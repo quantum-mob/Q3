@@ -2,8 +2,8 @@
 (* Mathematica package for complex variables. *)
 
 (* Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com) *)
-(* $Date: 2020-11-02 10:41:55+09 $ *)
-(* $Revision: 1.8 $ *)
+(* $Date: 2020-11-02 18:43:11+09 $ *)
+(* $Revision: 1.10 $ *)
 
 BeginPackage["Q3`Cauchy`"]
 
@@ -11,8 +11,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.8 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-02 10:41:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.10 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-02 18:43:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -115,7 +115,7 @@ SupplementBy[a_List, b__List, f_] := Module[
   Pick[ a, aa ]
  ]
 
-Common::usage = "Common[a, b, c, ...] only returns the elements of \*StyleMbox[a] that appear in all subsequent lists.\nIt is similar to the built-in function Intersection, but treats the first argument as a List (not mathematical sets) and hence preserves the order."
+Common::usage = "Common[a, b, c, ...] returns the elements of a that appear in all subsequent lists.\nIt is similar to the built-in function Intersection, but treats the first argument as a List (not mathematical sets) and hence preserves the order."
 
 Common[a_List, b__List] := Cases[ a, Alternatives @@ Intersection[b], 1 ]
 (* Implementation 3: Fast and versatile. *)
