@@ -1,0 +1,409 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     13664,        400]
+NotebookOptionsPosition[      9685,        312]
+NotebookOutlinePosition[     12188,        373]
+CellTagsIndexPosition[     12103,        368]
+WindowTitle->QuissoCorrelationMatrix
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["QUISSO PACKAGE SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"QuissoReduced\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/QuissoReduced"], "\<\"ReducedDensityMatrix\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/ReducedDensityMatrix"], \
+"\<\"QuissoCoefficientTensor\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/QuissoCoefficientTensor"], "\<\"QuissoAssemble\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/QuissoAssemble"], "\<\"QuissoCorrelationTensor\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/QuissoCorrelationTensor"], "\<\"QuissoCorrelationMatrix\
+\"\>":>Documentation`HelpLookup["paclet:Q3/ref/QuissoCorrelationMatrix"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Quisso\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Quisso"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/QuissoCorrelationMatrix\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/QuissoCorrelationMatrix"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+QuissoCorrelationMatrix.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$162488], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/QuissoCorrelationMatrix", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[TextData[{
+ Cell["QuissoCorrelationMatrix", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"QuissoCorrelationMatrix", "[", 
+       StyleBox["a", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]analyses the correlation tensor in the Association a; \
+it takes the product of each tensor with itself and contract over the indices \
+but two belonging to the same ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Qubit"]], "paclet:Q3/ref/Qubit"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     ". The result is an Association of 3x3 matrices describing the \
+transformation of the state vector (associated with the Association a) under \
+local unitary (LU) transformations. The association a is usually generated by \
+",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["QuissoCoefficientTensor"]], 
+         "paclet:Q3/ref/QuissoCoefficientTensor"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", "]"}]], "InlineFormula"],
+     " or ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["QuissoCorrelationTensor"]], 
+         "paclet:Q3/ref/QuissoCorrelationTensor"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", "]"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1],
+
+Cell[TextData[{
+ "See ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoCorrelationTensor"]], 
+    "paclet:Q3/ref/QuissoCorrelationTensor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " for examples."
+}], "ExampleText",
+ CellID->301566609]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "SectionFooterSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoReduced"]], "paclet:Q3/ref/QuissoReduced"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["ReducedDensityMatrix"]], "paclet:Q3/ref/ReducedDensityMatrix"},
+   
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoCoefficientTensor"]], 
+    "paclet:Q3/ref/QuissoCoefficientTensor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoAssemble"]], "paclet:Q3/ref/QuissoAssemble"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoCorrelationTensor"]], 
+    "paclet:Q3/ref/QuissoCorrelationTensor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoCorrelationMatrix"]], 
+    "paclet:Q3/ref/QuissoCorrelationMatrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso"]], "paclet:Q3/guide/Quisso"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"QuissoCorrelationMatrix",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2020, 11, 2, 16, 0, 57.546752}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Quisso`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
+     "status" -> "None", "summary" -> 
+    "QuissoCorrelationMatrix[a] analyses the correlation tensor in the \
+Association a; it takes the product of each tensor with itself and contract \
+over the indices but two belonging to the same Qubit. The result is an \
+Association of 3x3 matrices describing the transformation of the state vector \
+(associated with the Association a) under local unitary (LU) transformations. \
+The association a is usually generated by QuissoCoefficientTensor[] or \
+QuissoCorrelationTensor[].", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "QuissoCorrelationMatrix", "titlemodifier" -> "", "windowtitle" -> 
+    "QuissoCorrelationMatrix", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/QuissoCorrelationMatrix"}},
+CellContext->"Global`",
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6342, 173, 259, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"f8b3d2f6-f493-4ad9-8b70-faf35ddef7be",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 11913, 361}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[595, 21, 4116, 99, 70, "AnchorBarGrid",ExpressionUUID->"8a8a5bac-4139-43da-ad6a-90d4c0fd4709",
+ CellID->1],
+Cell[4714, 122, 180, 6, 70, "ObjectNameGrid",ExpressionUUID->"6fd3bb12-bedb-40ab-a41d-df3e202ab082"],
+Cell[4897, 130, 1420, 39, 70, "Usage",ExpressionUUID->"24892e5d-4481-4f34-bfc9-1745b0ddf3f5"],
+Cell[CellGroupData[{
+Cell[6342, 173, 259, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"f8b3d2f6-f493-4ad9-8b70-faf35ddef7be",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[6626, 187, 187, 6, 70, "ExampleSection",ExpressionUUID->"89253e06-a566-4710-ada3-5738cd489c15",
+ CellID->1],
+Cell[6816, 195, 279, 11, 70, "ExampleText",ExpressionUUID->"5c10f91e-72aa-4479-9c84-a981e5fc2f40",
+ CellID->301566609]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7144, 212, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"8a635e1a-d79d-4631-81e2-5a7aa6007ef0"],
+Cell[7178, 214, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"c3fb123d-59fe-48d2-964a-d316825a3119",
+ CellID->1255426704],
+Cell[7331, 223, 1927, 62, 70, "SeeAlso",ExpressionUUID->"8a635142-f508-4740-8aa3-b8b5f6d1f267",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9295, 290, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"51fa9425-67b5-4e70-afec-651efe58e164",
+ CellID->38303248],
+Cell[9454, 299, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"25be5fee-61e2-4273-bdda-e7511b871fc0"],
+Cell[9488, 301, 155, 6, 70, "MoreAbout",ExpressionUUID->"f042fd0f-4c8a-4037-8b62-319b1aaa23d4",
+ CellID->1]
+}, Open  ]],
+Cell[9658, 310, 23, 0, 70, "FooterCell",ExpressionUUID->"f6f7ec1f-94c7-47a4-99d1-13c1629fc401"]
+}
+]
+*)
+
+(* End of internal cache information *)

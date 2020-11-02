@@ -1,0 +1,892 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     30651,        883]
+NotebookOptionsPosition[     26499,        788]
+NotebookOutlinePosition[     28633,        844]
+CellTagsIndexPosition[     28548,        839]
+WindowTitle->PauliExpand
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["QUISSO PACKAGE SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Pauli"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/PauliExpand\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/PauliExpand"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/PauliExpand.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$140307], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/PauliExpand",
+              ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["PauliExpand", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PauliExpand", "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns more explicit form of the expression ",
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->142784788],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1044698217],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Pauli`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1079460827],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"a", "=", 
+  RowBox[{"Pauli", "[", 
+   RowBox[{"1", ",", "5", ",", "2", ",", "3", ",", "4", ",", 
+    RowBox[{"-", "7"}], ",", "6"}], "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1225725740],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{
+   SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", 
+    StyleBox["\<\"-\"\>",
+     StripOnInput->False,
+     FontSize->Larger,
+     FontWeight->Bold]], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", 
+    StyleBox["\<\"+\"\>",
+     StripOnInput->False,
+     FontSize->Larger,
+     FontWeight->Bold]], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", 
+    RowBox[{"-", "S"}]], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", "H"]}],
+  DisplayForm]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1613586756]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"aa", "=", 
+  RowBox[{"a", "//", "PauliExpand"}]}], "\[IndentingNewLine]", 
+ RowBox[{"bb", "=", 
+  RowBox[{
+   RowBox[{"Pauli", "[", 
+    RowBox[{"1", ",", "Lower", ",", "2", ",", "3", ",", "Raise", ",", 
+     RowBox[{"-", "7"}], ",", "Hadamard"}], "]"}], "//", 
+   "PauliExpand"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"aa", "-", "bb"}], "//", "Simplify"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1524167216],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->685012854],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "-", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "x"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      FractionBox["1", "8"], "+", 
+      FractionBox["\[ImaginaryI]", "8"]}], ")"}], " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "z"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->266653922],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->2001579412]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli"]], "paclet:Q3/guide/Pauli"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->416635247]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"PauliExpand",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2020, 11, 2, 16, 0, 8.075229}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Pauli`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
+     "status" -> "None", "summary" -> 
+    "PauliExpand[expr] returns more explicit form of the expression expr.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "PauliExpand", 
+    "titlemodifier" -> "", "windowtitle" -> "PauliExpand", "type" -> "Symbol",
+     "uri" -> "Q3/ref/PauliExpand", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[4229, 124, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"abd5e261-ea9f-4c06-89d0-62438e3ebd8f",
+   CellTags->"PrimaryExamplesSection",
+   CellID->142784788]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 28350, 832}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[583, 21, 2999, 74, 70, "AnchorBarGrid",ExpressionUUID->"8a64ccd2-9b6a-49b0-b325-1916b970a010",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3607, 99, 168, 6, 70, "ObjectNameGrid",ExpressionUUID->"714ae8b4-9499-4e82-89a7-bf4d5bde7ca8"],
+Cell[3778, 107, 414, 12, 70, "Usage",ExpressionUUID->"069a63d0-6a8a-4c08-a838-22aa2e8de68d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4229, 124, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"abd5e261-ea9f-4c06-89d0-62438e3ebd8f",
+ CellTags->"PrimaryExamplesSection",
+ CellID->142784788],
+Cell[CellGroupData[{
+Cell[4521, 138, 196, 6, 70, "ExampleSection",ExpressionUUID->"becb9e14-1aba-408c-aff4-fbf4c8247bce",
+ CellID->1044698217],
+Cell[4720, 146, 97, 3, 70, "Input",ExpressionUUID->"21fa9988-a127-4439-bf3b-fc6bd852f627",
+ CellID->1079460827],
+Cell[CellGroupData[{
+Cell[4842, 153, 219, 6, 70, "Input",ExpressionUUID->"feadf027-4cb6-48d1-adf3-d5237a223aa3",
+ CellID->1225725740],
+Cell[5064, 161, 682, 21, 70, "Output",ExpressionUUID->"12134179-f8d9-4fb0-9996-7517a796b171",
+ CellID->1613586756]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5783, 187, 446, 12, 70, "Input",ExpressionUUID->"95f6923d-d6c5-4046-a633-4b1dcc6e30a2",
+ CellID->1524167216],
+Cell[6232, 201, 9849, 275, 70, "Output",ExpressionUUID->"027ce251-d1d3-4b38-95e4-23c1c942222b",
+ CellID->685012854],
+Cell[16084, 478, 9849, 275, 70, "Output",ExpressionUUID->"17cfbdfb-48e1-4ea9-b228-97a527254fc0",
+ CellID->266653922],
+Cell[25936, 755, 72, 2, 70, "Output",ExpressionUUID->"fec342a6-9327-4c88-a736-9cd19859d671",
+ CellID->2001579412]
+}, Open  ]]
+}, Open  ]],
+Cell[26035, 761, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"e9291aed-eda9-405d-b92d-6755627c8be1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26103, 766, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"a6ca2e3e-6455-4435-839e-16ee3b57ef2b",
+ CellID->38303248],
+Cell[26262, 775, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"76005ecf-96d7-434c-9701-c854000ae97f"],
+Cell[26296, 777, 161, 6, 70, "MoreAbout",ExpressionUUID->"0541b76c-a02e-40f0-a9ee-0f5a2d63aa0d",
+ CellID->416635247]
+}, Open  ]],
+Cell[26472, 786, 23, 0, 70, "FooterCell",ExpressionUUID->"10118ac0-9927-4518-80c6-0d3a4f4f21dc"]
+}
+]
+*)
+
+(* End of internal cache information *)

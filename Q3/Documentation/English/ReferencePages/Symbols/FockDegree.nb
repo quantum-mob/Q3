@@ -1,0 +1,655 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     19618,        646]
+NotebookOptionsPosition[     13797,        516]
+NotebookOutlinePosition[     16285,        577]
+CellTagsIndexPosition[     16200,        572]
+WindowTitle->FockDegree
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["QUISSO PACKAGE SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FockBilinearQ\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockBilinearQ"], "\<\"FockBilinearSystem\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockBilinearSystem"], "\<\"FockBilinearOperators\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockBilinearOperators"], "\<\"FockBilienarMatrix\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockBilienarMatrix"], "\<\"FockBasis\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/FockBasis"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Fock"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/FockDegree\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/FockDegree"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/FockDegree.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$76508], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/FockDegree", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["FockDegree", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockDegree", "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the highest degree of the terms in ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Fock"]], "paclet:Q3/ref/Fock"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " expression expr. The degree of a term is the sum of the exponents of \
+the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Fock"]], "paclet:Q3/ref/Fock"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " operators that appear in the term. The concept is like the degree of a \
+polynomial. "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockDegree", "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is 0, if expr is free of ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Fock"]], "paclet:Q3/ref/Fock"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " operators. Note that ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Grassmann"]], "paclet:Q3/ref/Grassmann"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " variables are regarded as special numbers and do NOT count for the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Fock"]], "paclet:Q3/ref/Fock"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " degree. See also ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["GrassmannGrade"]], "paclet:Q3/ref/GrassmannGrade"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->2074725611],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1221367738],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Fock`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->339365742],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1798884704],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"expr", "=", 
+  RowBox[{"Hop", "[", 
+   RowBox[{"c", "[", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2", ",", "3"}], "}"}], "]"}], "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1580437662],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"c"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"c"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"3"},
+        "RowDefault"]],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1512393651]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"FockDegree", "[", "expr", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"FockDegree", "[", 
+  RowBox[{
+   RowBox[{"MultiplyPower", "[", 
+    RowBox[{"expr", ",", "2"}], "]"}], "-", 
+   RowBox[{"3", "expr"}]}], "]"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->768019560],
+
+Cell[BoxData["2"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->641182460],
+
+Cell[BoxData["4"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->280664574]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FockDegree", "[", 
+  RowBox[{
+   RowBox[{"c", "[", "3", "]"}], "**", 
+   RowBox[{"Exp", "[", 
+    RowBox[{"3", "*", 
+     RowBox[{"c", "[", "1", "]"}]}], "]"}]}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->184442331],
+
+Cell[BoxData["2"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1566467637]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MultiplyExp", "[", 
+  RowBox[{
+   RowBox[{"c", "[", "1", "]"}], "+", 
+   RowBox[{"c", "[", "2", "]"}]}], "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->557722427],
+
+Cell[BoxData[
+ RowBox[{"1", "+", 
+  TagBox[
+   SubscriptBox[
+    TemplateBox[{"c"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]],
+   DisplayForm], "+", 
+  TagBox[
+   SubscriptBox[
+    TemplateBox[{"c"},
+     "RowDefault"], 
+    TemplateBox[{"2"},
+     "RowDefault"]],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1839645137]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Exp", "[", 
+   RowBox[{"c", "[", "1", "]"}], "]"}], "**", 
+  RowBox[{"Exp", "[", 
+   RowBox[{"c", "[", "2", "]"}], "]"}]}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1651661141],
+
+Cell[BoxData[
+ RowBox[{"1", "+", 
+  TagBox[
+   SubscriptBox[
+    TemplateBox[{"c"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]],
+   DisplayForm], "+", 
+  TagBox[
+   SubscriptBox[
+    TemplateBox[{"c"},
+     "RowDefault"], 
+    TemplateBox[{"2"},
+     "RowDefault"]],
+   DisplayForm], "-", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->947063375]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{"c", "[", "1", "]"}], "]"}], "**", 
+   RowBox[{"Exp", "[", 
+    RowBox[{"c", "[", "2", "]"}], "]"}]}], "//", "FockDegree"}]], "Input",
+ CellLabel->"In[8]:=",
+ CellID->956528945],
+
+Cell[BoxData["2"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->2115645900]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBilinearQ"]], "paclet:Q3/ref/FockBilinearQ"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBilinearSystem"]], "paclet:Q3/ref/FockBilinearSystem"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBilinearOperators"]], 
+    "paclet:Q3/ref/FockBilinearOperators"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBilienarMatrix"]], "paclet:Q3/ref/FockBilienarMatrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBasis"]], "paclet:Q3/ref/FockBasis"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock"]], "paclet:Q3/ref/Fock"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1878874540]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"FockDegree",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2020, 11, 2, 15, 57, 28.443573}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Fock`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
+     "status" -> "None", "summary" -> 
+    "FockDegree[expr] returns the highest degree of the terms in Fock \
+expression expr. The degree of a term is the sum of the exponents of the Fock \
+operators that appear in the term. The concept is like the degree of a \
+polynomial. FockDegree[expr] is 0, if expr is free of Fock operators. Note \
+that Grassmann variables are regarded as special numbers and do NOT count for \
+the Fock degree. See also GrassmannGrade[expr].", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "FockDegree", "titlemodifier" -> "", 
+    "windowtitle" -> "FockDegree", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/FockDegree", "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> 
+  "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6761, 196, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"677cc36d-87cb-4999-b6b2-6b357ec61e90",
+   CellTags->"PrimaryExamplesSection",
+   CellID->2074725611]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 16001, 565}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[582, 21, 3922, 97, 70, "AnchorBarGrid",ExpressionUUID->"0155198e-b685-4886-b04e-d7509e250aba",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4529, 122, 167, 6, 70, "ObjectNameGrid",ExpressionUUID->"96710edc-f00b-4080-a625-b338f35446c5"],
+Cell[4699, 130, 2025, 61, 70, "Usage",ExpressionUUID->"87b9a61e-2372-4916-801d-119237c0eb6d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6761, 196, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"677cc36d-87cb-4999-b6b2-6b357ec61e90",
+ CellTags->"PrimaryExamplesSection",
+ CellID->2074725611],
+Cell[CellGroupData[{
+Cell[7054, 210, 196, 6, 70, "ExampleSection",ExpressionUUID->"5be1b155-a5b9-47cb-bfeb-6434ebf72ce2",
+ CellID->1221367738],
+Cell[7253, 218, 95, 3, 70, "Input",ExpressionUUID->"e404a9e3-62df-4220-87ae-6414be294dd7",
+ CellID->339365742],
+Cell[7351, 223, 129, 4, 70, "Input",ExpressionUUID->"70ab4182-231d-4f5c-a673-0296ce3f99a0",
+ CellID->1798884704],
+Cell[CellGroupData[{
+Cell[7505, 231, 216, 7, 70, "Input",ExpressionUUID->"22b566eb-5be6-4c6f-bdaa-4433d5bb1bf8",
+ CellID->1580437662],
+Cell[7724, 240, 1040, 45, 70, "Output",ExpressionUUID->"69959d29-f909-4342-a4a7-fe13116c62bb",
+ CellID->1512393651]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8801, 290, 289, 8, 70, "Input",ExpressionUUID->"8fec36c6-3dfa-404e-8957-35d4f06a87de",
+ CellID->768019560],
+Cell[9093, 300, 71, 2, 70, "Output",ExpressionUUID->"033c3a1d-81b6-47f9-b262-b131cd73e259",
+ CellID->641182460],
+Cell[9167, 304, 71, 2, 70, "Output",ExpressionUUID->"748a488d-8051-452e-a4a5-53e04e103edf",
+ CellID->280664574]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9275, 311, 246, 8, 70, "Input",ExpressionUUID->"c83d6083-a22f-46b9-a1d8-10a9eb5c56df",
+ CellID->184442331],
+Cell[9524, 321, 72, 2, 70, "Output",ExpressionUUID->"8a07c712-9f79-4b6c-a708-f037b3264c1f",
+ CellID->1566467637]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9633, 328, 188, 6, 70, "Input",ExpressionUUID->"1a09b6bc-ed4b-45f3-8467-b60612f85743",
+ CellID->557722427],
+Cell[9824, 336, 360, 17, 70, "Output",ExpressionUUID->"b140d7e7-691d-4b89-a78f-7282db754d04",
+ CellID->1839645137]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10221, 358, 212, 7, 70, "Input",ExpressionUUID->"09d68292-ddfb-4a97-85a6-3102ed061bb1",
+ CellID->1651661141],
+Cell[10436, 367, 775, 38, 70, "Output",ExpressionUUID->"281c85cf-4b1f-4fcd-95f2-3b1fd037e655",
+ CellID->947063375]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11248, 410, 248, 8, 70, "Input",ExpressionUUID->"0af40964-890f-4f36-8346-73bdd33199ca",
+ CellID->956528945],
+Cell[11499, 420, 72, 2, 70, "Output",ExpressionUUID->"c4f082cc-8655-45cf-b81c-bff92062ff71",
+ CellID->2115645900]
+}, Open  ]]
+}, Open  ]],
+Cell[11598, 426, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"226d154f-e104-437c-aa8e-da183b1a5da7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11666, 431, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"6f05e4a8-2fe4-48a7-add0-cac83ecbd7a9",
+ CellID->1255426704],
+Cell[11819, 440, 1548, 49, 70, "SeeAlso",ExpressionUUID->"b7ae2fda-b662-4730-a8b6-6ea03cbed616",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13404, 494, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"c6866999-8254-4e4d-b8d5-18921a06cb10",
+ CellID->38303248],
+Cell[13563, 503, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"735fa804-5332-458c-9014-5a74d58557cf"],
+Cell[13597, 505, 158, 6, 70, "MoreAbout",ExpressionUUID->"2e26e179-1b64-4d3e-afce-1b81e3bd7f2a",
+ CellID->1878874540]
+}, Open  ]],
+Cell[13770, 514, 23, 0, 70, "FooterCell",ExpressionUUID->"3904915c-b43d-4b0d-92df-848db391f843"]
+}
+]
+*)
+
+(* End of internal cache information *)

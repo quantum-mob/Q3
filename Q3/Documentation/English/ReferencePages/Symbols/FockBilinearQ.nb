@@ -1,0 +1,636 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     20051,        627]
+NotebookOptionsPosition[     14564,        509]
+NotebookOutlinePosition[     16733,        562]
+CellTagsIndexPosition[     16690,        559]
+WindowTitle->FockBilinearQ
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["QUISSO PACKAGE SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FockBilinearQ\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockBilinearQ"], "\<\"FockBilinearOperators\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockBilinearOperators"], "\<\"FockBilinearMatrix\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockBilinearMatrix"], "\<\"FockBilinearSystem\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockBilinearSystem"], "\<\"CoefficientTensor\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/CoefficientTensor"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3 Application\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"], "\<\"Fock\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Fock"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/FockBilinearQ\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/FockBilinearQ"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/FockBilinearQ.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$72218], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/FockBilinearQ", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["FockBilinearQ", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockBilinearQ", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", " ", 
+        TemplateBox[{
+          Cell[
+           TextData["False"]], "paclet:ref/False"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]retunrs True if expr is a bilinear combination of \
+operators, either normal or anomalous. "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockBilinearQ", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", 
+        TemplateBox[{
+          Cell[
+           TextData["True"]], "paclet:ref/True"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns True if expr is a bilinear combination AND \
+includes at least one anomalous combination such as creator times creator. "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockBilinearQ", "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to ",
+     Cell[BoxData[
+      RowBox[{"FockBilinearQ", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", " ", 
+        TemplateBox[{
+          Cell[
+           TextData["False"]], "paclet:ref/False"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}]}], "]"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBilinearQ"]], "paclet:Q3/ref/FockBilinearQ"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBilinearOperators"]], 
+    "paclet:Q3/ref/FockBilinearOperators"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBilinearMatrix"]], "paclet:Q3/ref/FockBilinearMatrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockBilinearSystem"]], "paclet:Q3/ref/FockBilinearSystem"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CoefficientTensor"]], "paclet:Q3/ref/CoefficientTensor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->106072771],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock"]], "paclet:Q3/guide/Fock"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->353635187]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+FockBilinearQ, FockBilinearOperators, FockBilinearMatrix, FockBilinearSystem\
+\>", "Section",
+ CellID->899126497],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Fock`"}]], "Input",
+ CellID->1452328583],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Boson", ",", "a"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Boson", ",", "b", ",", 
+   RowBox[{"Spin", "\[Rule]", "1"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c", ",", "d"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "f", ",", 
+   RowBox[{"Spin", "\[Rule]", 
+    RowBox[{"3", "/", "2"}]}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Majorana", ",", " ", "h"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "z"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "x", ",", "y"}], "]"}]}], "Input",
+ CellLabel->"In[39]:=",
+ CellID->2103761548],
+
+Cell["\<\
+Here I demonstrate the Fock implementation of the Baker-Hausdorff relation.\
+\>", "ExampleText",
+ CellID->1727786872],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Sx", "=", 
+  RowBox[{"FockSpin", "[", 
+   RowBox[{"c", ",", "1"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Sy", "=", 
+  RowBox[{"FockSpin", "[", 
+   RowBox[{"c", ",", "2"}], "]"}]}]}], "Input",
+ CellLabel->"In[46]:=",
+ CellID->640082970],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"c"}, "RowDefault"], 
+         TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"c"},
+         "RowDefault"], 
+        TemplateBox[{"\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm], "2"], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"c"}, "RowDefault"], 
+         TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"c"},
+         "RowDefault"], 
+        TemplateBox[{"\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm], "2"]}]], "Output",
+ CellLabel->"Out[46]=",
+ CellID->1767310361],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   FractionBox["1", "2"], " ", "\[ImaginaryI]", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"c"}, "RowDefault"], 
+         TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"c"},
+         "RowDefault"], 
+        TemplateBox[{"\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "2"], " ", "\[ImaginaryI]", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"c"}, "RowDefault"], 
+         TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"c"},
+         "RowDefault"], 
+        TemplateBox[{"\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm]}]}]], "Output",
+ CellLabel->"Out[47]=",
+ CellID->1338915670]
+}, Open  ]],
+
+Cell["\<\
+It is always a good idea to test before jumping to calculation.\
+\>", "ExampleText",
+ CellID->1671609404],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"FockBilinearQ", "[", "Sx", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"FockBilinearQ", "[", 
+  RowBox[{"Sx", ",", "True"}], "]"}]}], "Input",
+ CellLabel->"In[48]:=",
+ CellID->1358182974],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[48]=",
+ CellID->750157916],
+
+Cell[BoxData["False"], "Output",
+ CellLabel->"Out[49]=",
+ CellID->27602675]
+}, Open  ]],
+
+Cell["\<\
+FockBilinearQ checks if the given expression is a bilinear combination of \
+operators. Note that it fails linear combinations and only passes the exactly \
+bilinear expressions.\
+\>", "ExampleText",
+ CellID->1436835001],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"FockBilinearQ", "[", 
+  RowBox[{
+   RowBox[{"3", 
+    RowBox[{"c", "[", "Up", "]"}]}], "+", "Sx"}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"FockBilinearQ", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"3", 
+     RowBox[{"c", "[", "Up", "]"}]}], "+", "Sx"}], ",", "True"}], 
+  "]"}]}], "Input",
+ CellLabel->"In[50]:=",
+ CellID->432251292],
+
+Cell[BoxData["False"], "Output",
+ CellLabel->"Out[50]=",
+ CellID->444051099],
+
+Cell[BoxData["False"], "Output",
+ CellLabel->"Out[51]=",
+ CellID->661147568]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"FockBilinearQ", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"c", "[", "Up", "]"}], "**", 
+    RowBox[{"c", "[", "Down", "]"}]}], "+", "Sx"}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"FockBilinearQ", "[", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"c", "[", "Up", "]"}], "**", 
+     RowBox[{"c", "[", "Down", "]"}]}], "+", "Sx"}], ",", "True"}], 
+  "]"}]}], "Input",
+ CellLabel->"In[52]:=",
+ CellID->1633976044],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[52]=",
+ CellID->698220579],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[53]=",
+ CellID->1142624045]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"FockBilinearQ",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2020, 11, 2, 15, 57, 18.340050}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Fock`", 
+    "keywords" -> {"Baker-Hausdorff lemma"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
+     "status" -> "None", "summary" -> 
+    "FockBilinearQ[expr, False] retunrs True if expr is a bilinear \
+combination of operators, either normal or anomalous. FockBilinearQ[expr, \
+True] returns True if expr is a bilinear combination AND includes at least \
+one anomalous combination such as creator times creator. FockBilinearQ[expr] \
+is equivalent to FockBilinearQ[expr, False].", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "FockBilinearQ", "titlemodifier" -> "", 
+    "windowtitle" -> "FockBilinearQ", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/FockBilinearQ", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[585, 21, 4034, 98, 70, "AnchorBarGrid",ExpressionUUID->"ef3a6ef9-6c20-46b5-bb10-f9b24171ca58",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4644, 123, 170, 6, 70, "ObjectNameGrid",ExpressionUUID->"01d72d5a-02db-4171-82f6-e483918b11b4"],
+Cell[4817, 131, 1539, 45, 70, "Usage",ExpressionUUID->"705b99a3-a0aa-46ed-aa29-27ac6881b363"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6393, 181, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"c719ce11-e113-40c3-ac9e-a9f0b443ab45",
+ CellID->1255426704],
+Cell[6546, 190, 1564, 49, 70, "SeeAlso",ExpressionUUID->"13d8dc55-6f7a-484c-911e-3989113f3d70",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8147, 244, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"41692b6c-deea-45fb-9527-2dd0026fd962",
+ CellID->38303248],
+Cell[8306, 253, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"b5285071-71a4-4a65-a8b5-d442e109a513"],
+Cell[8340, 255, 167, 6, 70, "MoreAbout",ExpressionUUID->"2cb7f18a-b36a-4416-bbda-472db6d4bbf5",
+ CellID->106072771],
+Cell[8510, 263, 159, 6, 70, "MoreAbout",ExpressionUUID->"f0384926-fbe2-4bdc-8823-c99629ca3f9e",
+ CellID->353635187]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8706, 274, 123, 3, 70, "Section",ExpressionUUID->"574efc47-f1a6-4660-9471-3afcc6cb19c2",
+ CellID->899126497],
+Cell[8832, 279, 73, 2, 70, "Input",ExpressionUUID->"2e862605-8ba2-46b9-80a5-ec29204618dd",
+ CellID->1452328583],
+Cell[8908, 283, 778, 19, 70, "Input",ExpressionUUID->"b701636b-b48e-492e-96e8-f0901e5f33dc",
+ CellID->2103761548],
+Cell[9689, 304, 127, 3, 70, "ExampleText",ExpressionUUID->"f2057c58-0475-402e-b857-80c54b8ce546",
+ CellID->1727786872],
+Cell[CellGroupData[{
+Cell[9841, 311, 265, 8, 70, "Input",ExpressionUUID->"3413d616-eea3-49f6-8ebe-754a85e0bf65",
+ CellID->640082970],
+Cell[10109, 321, 1181, 47, 70, "Output",ExpressionUUID->"7070cde0-c96f-4aca-829a-3f3d1deec67a",
+ CellID->1767310361],
+Cell[11293, 370, 1273, 49, 70, "Output",ExpressionUUID->"e8c68f25-4fe6-45e6-9b0d-1f0204a10ebf",
+ CellID->1338915670]
+}, Open  ]],
+Cell[12581, 422, 115, 3, 70, "ExampleText",ExpressionUUID->"39db4333-29a3-4072-87f9-5c83539caa74",
+ CellID->1671609404],
+Cell[CellGroupData[{
+Cell[12721, 429, 208, 5, 70, "Input",ExpressionUUID->"c61cd067-daf7-4afc-8d8d-8d9cb703a3d9",
+ CellID->1358182974],
+Cell[12932, 436, 75, 2, 70, "Output",ExpressionUUID->"5758e1c1-3be9-4714-b4f9-7150b6793bd8",
+ CellID->750157916],
+Cell[13010, 440, 75, 2, 70, "Output",ExpressionUUID->"ad7e0ebc-8d78-4a19-b8d4-42285263e20b",
+ CellID->27602675]
+}, Open  ]],
+Cell[13100, 445, 229, 5, 70, "ExampleText",ExpressionUUID->"3ed06836-946f-4ec3-91dd-48732f21e793",
+ CellID->1436835001],
+Cell[CellGroupData[{
+Cell[13354, 454, 362, 13, 70, "Input",ExpressionUUID->"1707f134-1cb6-4f24-9d9f-f0a3eb8f6243",
+ CellID->432251292],
+Cell[13719, 469, 76, 2, 70, "Output",ExpressionUUID->"2c98a911-95d4-4e3d-914f-e1eab11ee29b",
+ CellID->444051099],
+Cell[13798, 473, 76, 2, 70, "Output",ExpressionUUID->"f2001d7d-b86c-4e8d-addc-2530ca827af4",
+ CellID->661147568]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13911, 480, 442, 15, 70, "Input",ExpressionUUID->"5efd41a4-6e11-4a31-af68-230abb711282",
+ CellID->1633976044],
+Cell[14356, 497, 75, 2, 70, "Output",ExpressionUUID->"4fda7d0b-e976-40dc-b340-c082b324c073",
+ CellID->698220579],
+Cell[14434, 501, 76, 2, 70, "Output",ExpressionUUID->"d9a41434-5710-4436-9f8e-fe48066983d2",
+ CellID->1142624045]
+}, Open  ]]
+}, Open  ]],
+Cell[14537, 507, 23, 0, 70, "FooterCell",ExpressionUUID->"06d7a00e-8ee3-4d8c-92bd-5895a86fc36d"]
+}
+]
+*)
+
+(* End of internal cache information *)

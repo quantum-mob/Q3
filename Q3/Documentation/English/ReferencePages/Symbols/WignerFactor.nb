@@ -1,0 +1,1358 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     40049,       1349]
+NotebookOptionsPosition[     33234,       1204]
+NotebookOutlinePosition[     35400,       1260]
+CellTagsIndexPosition[     35314,       1255]
+WindowTitle->WignerFactor
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["QUISSO PACKAGE SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Wigner\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/tutorial/Wigner"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"WignerReduced\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/WignerReduced"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Wigner\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Wigner"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/WignerFactor\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/WignerFactor"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/WignerFactor.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$218700], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/WignerFactor", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["WignerFactor", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"WignerFactor", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", " ", 
+        TemplateBox[{
+          Cell[
+           TextData["S"]], "paclet:ref/S"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]or ",
+     Cell[BoxData[
+      RowBox[{"WignerFactor", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          TemplateBox[{
+            Cell[
+             TextData["S$1"]], "paclet:ref/S$1"},
+           "RefLink",
+           BaseStyle->{"InlineFormula"}], ",", 
+          TemplateBox[{
+            Cell[
+             TextData["S$2"]], "paclet:ref/S$2"},
+           "RefLink",
+           BaseStyle->{"InlineFormula"}], ",", " ", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     " factors the Ket expression ",
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1342170399],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->689667905],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Wigner`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->702762416],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Spin", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1737833850],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"u", "=", 
+  RowBox[{
+   RowBox[{"-", "2"}], 
+   RowBox[{"Ket", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], "\[Rule]", 
+      RowBox[{
+       RowBox[{"-", "1"}], "/", "2"}]}], ",", 
+     RowBox[{
+      RowBox[{"S", "[", "3", "]"}], "\[Rule]", 
+      RowBox[{
+       RowBox[{"-", "1"}], "/", "2"}]}]}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"uu", "=", 
+  RowBox[{"WignerFactor", "[", 
+   RowBox[{"u", ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "}"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"uu", "=", 
+  RowBox[{"WignerFactor", "[", 
+   RowBox[{"u", ",", 
+    RowBox[{"S", "[", "1", "]"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1995917750],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "2"}], " ", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox[
+        RowBox[{"-", 
+          FractionBox["1", "2"]}], 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+       SubscriptBox[
+        RowBox[{"-", 
+          FractionBox["1", "2"]}], 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+     DisplayForm]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1185535240],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", "2"}], " ", 
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox[
+           RowBox[{"-", 
+             FractionBox["1", "2"]}], 
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"S"}, "RowDefault"], 
+             TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, "RowDefault"],
+         DisplayForm]},
+      "Ket"]}], ")"}]}],
+  DisplayForm]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->937501814],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", "2"}], " ", 
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox[
+           RowBox[{"-", 
+             FractionBox["1", "2"]}], 
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"S"}, "RowDefault"], 
+             TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, "RowDefault"],
+         DisplayForm]},
+      "Ket"]}], ")"}]}],
+  DisplayForm]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->505469859]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"v", "=", 
+  RowBox[{
+   RowBox[{"Ket", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], "\[Rule]", 
+      RowBox[{"1", "/", "2"}]}], ",", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], "\[Rule]", 
+      RowBox[{"1", "/", "2"}]}]}], "]"}], "+", 
+   RowBox[{"Ket", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], "\[Rule]", 
+      RowBox[{"1", "/", "2"}]}], ",", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], "\[Rule]", 
+      RowBox[{
+       RowBox[{"-", "1"}], "/", "2"}]}]}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"vv", "=", 
+  RowBox[{"WignerFactor", "[", 
+   RowBox[{"v", ",", 
+    RowBox[{"S", "[", "1", "]"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->742715967],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{"\"\[SpaceIndicator]\""},
+   "Ket"], "+", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox[
+        RowBox[{"-", 
+          FractionBox["1", "2"]}], 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+     DisplayForm]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->804337210],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   TemplateBox[{"\"\[SpaceIndicator]\""},
+    "Ket"],
+   HoldForm], "\[CircleTimes]", 
+  RowBox[{"(", 
+   TagBox[
+    RowBox[{
+     TemplateBox[{"\"\[SpaceIndicator]\""},
+      "Ket"], "+", 
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox[
+           RowBox[{"-", 
+             FractionBox["1", "2"]}], 
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"S"}, "RowDefault"], 
+             TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"],
+         DisplayForm]},
+      "Ket"]}],
+    HoldForm], ")"}]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->85930605]
+}, Open  ]],
+
+Cell["\<\
+The result from WignerFactor involves HoldTimes, which is similar to \
+CircleTimes[] but \[OpenCurlyDoubleQuote]holds\[CloseCurlyDoubleQuote] (see \
+Hold[]) the arguments.\
+\>", "ExampleText",
+ CellID->1169155952],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"InputForm", "[", "vv", "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->528715214],
+
+Cell["OSlash[Ket[<||>], Ket[<||>] + Ket[<|S[2, None] -> -1/2|>]]", "Output",
+ CellLabel->"Out[5]//InputForm=",
+ CellID->1154187645]
+}, Open  ]],
+
+Cell["Here is another example.", "ExampleText",
+ CellID->1733450523],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"v", "=", 
+  RowBox[{
+   RowBox[{"Ket", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], "\[Rule]", 
+      RowBox[{"1", "/", "2"}]}], ",", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], "\[Rule]", 
+      RowBox[{
+       RowBox[{"-", "1"}], "/", "2"}]}]}], "]"}], "-", 
+   RowBox[{"Ket", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], "\[Rule]", 
+      RowBox[{
+       RowBox[{"-", "1"}], "/", "2"}]}], ",", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], "\[Rule]", 
+      RowBox[{
+       RowBox[{"-", "1"}], "/", "2"}]}]}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"vv", "=", 
+  RowBox[{"WignerFactor", "[", 
+   RowBox[{"v", ",", 
+    RowBox[{"S", "[", "1", "]"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"WignerFactor", "[", 
+  RowBox[{"v", ",", 
+   RowBox[{"S", "[", "2", "]"}]}], "]"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1339784859],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox[
+         RowBox[{"-", 
+           FractionBox["1", "2"]}], 
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+        SubscriptBox[
+         RowBox[{"-", 
+           FractionBox["1", "2"]}], 
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+      DisplayForm]},
+    "Ket"]}], "+", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox[
+        RowBox[{"-", 
+          FractionBox["1", "2"]}], 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+     DisplayForm]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1953187189],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   TagBox[
+    TemplateBox[{"\"\[SpaceIndicator]\""},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm]}], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox[
+           RowBox[{"-", 
+             FractionBox["1", "2"]}], 
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"S"}, "RowDefault"], 
+             TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"],
+         DisplayForm]},
+      "Ket"],
+     HoldForm], "\[CircleTimes]", 
+    RowBox[{"(", 
+     RowBox[{"-", 
+      TemplateBox[{
+        TagBox[
+         TemplateBox[{
+           SubscriptBox[
+            RowBox[{"-", 
+              FractionBox["1", "2"]}], 
+            TagBox[
+             SubscriptBox[
+              TemplateBox[{"S"}, "RowDefault"], 
+              TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, 
+          "RowDefault"], DisplayForm]},
+       "Ket"]}], ")"}]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->782057481],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox[
+         RowBox[{"-", 
+           FractionBox["1", "2"]}], 
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+      DisplayForm]},
+    "Ket"],
+   HoldForm], "\[CircleTimes]", 
+  RowBox[{"(", 
+   TagBox[
+    RowBox[{
+     TemplateBox[{"\"\[SpaceIndicator]\""},
+      "Ket"], "-", 
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox[
+           RowBox[{"-", 
+             FractionBox["1", "2"]}], 
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"S"}, "RowDefault"], 
+             TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"],
+         DisplayForm]},
+      "Ket"]}],
+    HoldForm], ")"}]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1440163527]
+}, Open  ]],
+
+Cell["Here is a more complicated example.", "ExampleText",
+ CellID->707359428],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"v", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Multiply", "@@", 
+     RowBox[{"S", "[", 
+      RowBox[{
+       RowBox[{"Range", "[", "3", "]"}], ",", "Hadamard"}], "]"}]}], "**", 
+    RowBox[{"Multiply", "@@", 
+     RowBox[{"S", "[", 
+      RowBox[{
+       RowBox[{"Range", "[", "3", "]"}], ",", "2"}], "]"}]}], "**", 
+    RowBox[{"Ket", "[", "]"}]}], "//", "Garner"}]}], "\[IndentingNewLine]", 
+ RowBox[{"vv", "=", 
+  RowBox[{"WignerFactor", "[", 
+   RowBox[{"v", ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "}"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"vv", "=", 
+  RowBox[{"vv", "//", "Expand"}]}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->120436604],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", 
+   FractionBox[
+    RowBox[{"\[ImaginaryI]", " ", 
+     TemplateBox[{"\"\[SpaceIndicator]\""},
+      "Ket"]}], 
+    RowBox[{"16", " ", 
+     SqrtBox["2"]}]]}], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1520587592],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   TagBox[
+    TemplateBox[{"\"\[SpaceIndicator]\""},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      RowBox[{"-", 
+       FractionBox[
+        RowBox[{"\[ImaginaryI]", " ", 
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"]}], 
+        RowBox[{"16", " ", 
+         SqrtBox["2"]}]]}], "+", 
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox[
+              RowBox[{"-", 
+                FractionBox["1", "2"]}], 
+              TagBox[
+               SubscriptBox[
+                TemplateBox[{"S"}, "RowDefault"], 
+                TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, 
+            "RowDefault"], DisplayForm]},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]]}],
+     HoldForm], ")"}]}], "+", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{"\"\[SpaceIndicator]\""},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]], "-", 
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox[
+              RowBox[{"-", 
+                FractionBox["1", "2"]}], 
+              TagBox[
+               SubscriptBox[
+                TemplateBox[{"S"}, "RowDefault"], 
+                TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, 
+            "RowDefault"], DisplayForm]},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]]}],
+     HoldForm], ")"}]}], "+", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      RowBox[{"-", 
+       FractionBox[
+        RowBox[{"\[ImaginaryI]", " ", 
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"]}], 
+        RowBox[{"16", " ", 
+         SqrtBox["2"]}]]}], "+", 
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox[
+              RowBox[{"-", 
+                FractionBox["1", "2"]}], 
+              TagBox[
+               SubscriptBox[
+                TemplateBox[{"S"}, "RowDefault"], 
+                TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, 
+            "RowDefault"], DisplayForm]},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]]}],
+     HoldForm], ")"}]}], "+", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{"\"\[SpaceIndicator]\""},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]], "-", 
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox[
+              RowBox[{"-", 
+                FractionBox["1", "2"]}], 
+              TagBox[
+               SubscriptBox[
+                TemplateBox[{"S"}, "RowDefault"], 
+                TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, 
+            "RowDefault"], DisplayForm]},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]]}],
+     HoldForm], ")"}]}]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1460259444],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   TagBox[
+    TemplateBox[{"\"\[SpaceIndicator]\""},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      RowBox[{"-", 
+       FractionBox[
+        RowBox[{"\[ImaginaryI]", " ", 
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"]}], 
+        RowBox[{"16", " ", 
+         SqrtBox["2"]}]]}], "+", 
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox[
+              RowBox[{"-", 
+                FractionBox["1", "2"]}], 
+              TagBox[
+               SubscriptBox[
+                TemplateBox[{"S"}, "RowDefault"], 
+                TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, 
+            "RowDefault"], DisplayForm]},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]]}],
+     HoldForm], ")"}]}], "+", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{"\"\[SpaceIndicator]\""},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]], "-", 
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox[
+              RowBox[{"-", 
+                FractionBox["1", "2"]}], 
+              TagBox[
+               SubscriptBox[
+                TemplateBox[{"S"}, "RowDefault"], 
+                TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, 
+            "RowDefault"], DisplayForm]},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]]}],
+     HoldForm], ")"}]}], "+", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      RowBox[{"-", 
+       FractionBox[
+        RowBox[{"\[ImaginaryI]", " ", 
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"]}], 
+        RowBox[{"16", " ", 
+         SqrtBox["2"]}]]}], "+", 
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox[
+              RowBox[{"-", 
+                FractionBox["1", "2"]}], 
+              TagBox[
+               SubscriptBox[
+                TemplateBox[{"S"}, "RowDefault"], 
+                TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, 
+            "RowDefault"], DisplayForm]},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]]}],
+     HoldForm], ")"}]}], "+", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox[
+          RowBox[{"-", 
+            FractionBox["1", "2"]}], 
+          TagBox[
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+       DisplayForm]},
+     "Ket"],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{"\"\[SpaceIndicator]\""},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]], "-", 
+      FractionBox[
+       RowBox[{"\[ImaginaryI]", " ", 
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox[
+              RowBox[{"-", 
+                FractionBox["1", "2"]}], 
+              TagBox[
+               SubscriptBox[
+                TemplateBox[{"S"}, "RowDefault"], 
+                TemplateBox[{"3"}, "RowDefault"]], DisplayForm]]}, 
+            "RowDefault"], DisplayForm]},
+         "Ket"]}], 
+       RowBox[{"16", " ", 
+        SqrtBox["2"]}]]}],
+     HoldForm], ")"}]}]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1137357392]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["WignerReduced"]], "paclet:Q3/ref/WignerReduced"},
+  "RefLink",
+  BaseStyle->{
+   "InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Wigner"]], "paclet:Q3/tutorial/Wigner"},
+   "RefLink",
+   BaseStyle->"Tutorials"]], "InlineFormula"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Wigner"]], "paclet:Q3/guide/Wigner"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1279236476]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"WignerFactor",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2020, 11, 2, 16, 3, 12.324657}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Wigner`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
+     "status" -> "None", "summary" -> 
+    "WignerFactor[expr, S] or WignerFactor[expr, {S$1, S$2, ...}] factors the \
+Ket expression expr.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "WignerFactor", "titlemodifier" -> "", "windowtitle" -> "WignerFactor", 
+    "type" -> "Symbol", "uri" -> "Q3/ref/WignerFactor", "WorkflowDockedCell" -> 
+    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6148, 182, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"d9fe913d-a8f3-48ca-b6a8-1f32f1c64e01",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1342170399]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 35115, 1248}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[584, 21, 4187, 108, 70, "AnchorBarGrid",ExpressionUUID->"1acc3ec3-0143-49b1-8d1c-f0f5bb141975",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4796, 133, 169, 6, 70, "ObjectNameGrid",ExpressionUUID->"b9ea597d-36fc-42c5-87c6-656bbd795cb6"],
+Cell[4968, 141, 1143, 36, 70, "Usage",ExpressionUUID->"50fee93c-be60-4cfe-adb2-9175b8f1f7d2"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6148, 182, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"d9fe913d-a8f3-48ca-b6a8-1f32f1c64e01",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1342170399],
+Cell[CellGroupData[{
+Cell[6441, 196, 195, 6, 70, "ExampleSection",ExpressionUUID->"a37a2927-b007-4e2c-9816-40e4b523017c",
+ CellID->689667905],
+Cell[6639, 204, 97, 3, 70, "Input",ExpressionUUID->"c2a6d48d-396b-47d1-ab49-55042371112a",
+ CellID->702762416],
+Cell[6739, 209, 126, 4, 70, "Input",ExpressionUUID->"97f13e3a-6e8b-4217-9180-ff5ccbdb5a90",
+ CellID->1737833850],
+Cell[CellGroupData[{
+Cell[6890, 217, 789, 26, 70, "Input",ExpressionUUID->"4a9bad93-ff95-4a58-a064-9be324cee93f",
+ CellID->1995917750],
+Cell[7682, 245, 650, 23, 70, "Output",ExpressionUUID->"2e1a8b6a-3788-4536-aa2d-cfd207ffadd5",
+ CellID->1185535240],
+Cell[8335, 270, 916, 34, 70, "Output",ExpressionUUID->"65882e53-702a-469d-8a83-0793b71005b8",
+ CellID->937501814],
+Cell[9254, 306, 916, 34, 70, "Output",ExpressionUUID->"5984e9fd-9ff7-46c3-b3ec-a8d600db1743",
+ CellID->505469859]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10207, 345, 760, 25, 70, "Input",ExpressionUUID->"99db6276-1f32-4bc3-ab7e-f3ff9f895271",
+ CellID->742715967],
+Cell[10970, 372, 455, 17, 70, "Output",ExpressionUUID->"436e8968-08b9-419d-8a42-d9f71f0d9657",
+ CellID->804337210],
+Cell[11428, 391, 657, 25, 70, "Output",ExpressionUUID->"ca6d86e3-9b7c-4b94-abcc-33b5a61ce5d4",
+ CellID->85930605]
+}, Open  ]],
+Cell[12100, 419, 223, 5, 70, "ExampleText",ExpressionUUID->"ee91d322-d80d-46b2-a41c-3d070703e4b3",
+ CellID->1169155952],
+Cell[CellGroupData[{
+Cell[12348, 428, 106, 3, 70, "Input",ExpressionUUID->"d108975e-69a6-4a0e-8323-8c1ca6695675",
+ CellID->528715214],
+Cell[12457, 433, 131, 2, 70, "Output",ExpressionUUID->"2af7f2ac-6c90-42c0-8323-0a47871a8685",
+ CellID->1154187645]
+}, Open  ]],
+Cell[12603, 438, 68, 1, 70, "ExampleText",ExpressionUUID->"f17ae212-5b92-42ab-a5c5-2434b96a767d",
+ CellID->1733450523],
+Cell[CellGroupData[{
+Cell[12696, 443, 925, 30, 70, "Input",ExpressionUUID->"fdc85ecb-72f2-45d5-af4d-ff26585724fb",
+ CellID->1339784859],
+Cell[13624, 475, 983, 35, 70, "Output",ExpressionUUID->"881494ed-f282-4d57-8ba9-399741a326aa",
+ CellID->1953187189],
+Cell[14610, 512, 1422, 53, 70, "Output",ExpressionUUID->"e1832d0d-9b0a-410a-b341-0e136440c086",
+ CellID->782057481],
+Cell[16035, 567, 935, 35, 70, "Output",ExpressionUUID->"6f82fba0-00ad-4132-b8ee-26105dc21b6a",
+ CellID->1440163527]
+}, Open  ]],
+Cell[16985, 605, 78, 1, 70, "ExampleText",ExpressionUUID->"7cdea494-b751-413c-83bf-5ab4da8e55f8",
+ CellID->707359428],
+Cell[CellGroupData[{
+Cell[17088, 610, 759, 23, 70, "Input",ExpressionUUID->"753ccf49-b009-45da-b4f2-379d1542e69f",
+ CellID->120436604],
+Cell[17850, 635, 4554, 157, 70, "Output",ExpressionUUID->"2ec78403-1487-40d6-b006-997c69831ae6",
+ CellID->1520587592],
+Cell[22407, 794, 4718, 166, 70, "Output",ExpressionUUID->"09382322-0885-4640-a651-cb981d2d7761",
+ CellID->1460259444],
+Cell[27128, 962, 4718, 166, 70, "Output",ExpressionUUID->"f55e93fe-0822-400c-82d1-f92a850be4ba",
+ CellID->1137357392]
+}, Open  ]]
+}, Open  ]],
+Cell[31873, 1132, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"58e98f59-b0b6-4383-9866-8442eb9698fc"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[31941, 1137, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"0844cf9e-9cc7-4e57-bb69-fbd0dac1be7f",
+ CellID->1255426704],
+Cell[32094, 1146, 241, 7, 70, "SeeAlso",ExpressionUUID->"e0e5de65-8577-4d7f-86bf-75cbe69299b9",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32372, 1158, 152, 7, 70, "TutorialsSection",ExpressionUUID->"089c6ef7-76bb-4ce3-8950-48c7ef15344a",
+ CellID->250839057],
+Cell[32527, 1167, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"71c89c54-17cd-46e6-9c75-d1e94811c6cc"],
+Cell[32561, 1169, 203, 6, 70, "Tutorials",ExpressionUUID->"4d2cb715-99c4-44f6-9891-4a7fdd957c35",
+ CellID->341631938],
+Cell[32767, 1177, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"1d2b0398-21c3-4ceb-bd50-f3448e4270ff"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32835, 1182, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"b8133873-b889-4d08-86e9-7e0f9ba469f4",
+ CellID->38303248],
+Cell[32994, 1191, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"872fd307-7f95-4ab0-bdaa-6b81b9f454e4"],
+Cell[33028, 1193, 164, 6, 70, "MoreAbout",ExpressionUUID->"fda3cbd1-ea07-42b4-a62c-ce49bfc1d09f",
+ CellID->1279236476]
+}, Open  ]],
+Cell[33207, 1202, 23, 0, 70, "FooterCell",ExpressionUUID->"79358075-e878-4b5c-8be7-c1ea9c6ab094"]
+}
+]
+*)
+
+(* End of internal cache information *)

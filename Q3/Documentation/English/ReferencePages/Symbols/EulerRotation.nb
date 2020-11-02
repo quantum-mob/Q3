@@ -1,0 +1,898 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     28167,        889]
+NotebookOptionsPosition[     20189,        720]
+NotebookOutlinePosition[     22436,        777]
+CellTagsIndexPosition[     22351,        772]
+WindowTitle->EulerRotation
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["QUISSO PACKAGE SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"QuissoCircuit Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/QuissoCircuitTutorial"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Rotation\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Rotation"], "\<\"EulerRotation\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/EulerRotation"], "\<\"QuissoRotation\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/QuissoRotation"], "\<\"QuissoEulerRotation\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/QuissoEulerRotation"], "\<\"EulerAngles\"\>":>
+       Documentation`HelpLookup["paclet:ref/EulerAngles"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3 Application\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"], "\<\"Pauli\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Pauli"], "\<\"Quisso\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Quisso"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/EulerRotation\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/EulerRotation"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/EulerRotation.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$62379], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/EulerRotation", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["EulerRotation", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"EulerRotation", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         StyleBox["a", "TI"], ",", " ", 
+         StyleBox["b", "TI"], ",", " ", 
+         StyleBox["c", "TI"]}], "}"}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]= ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Rotation"]], "paclet:Q3/ref/Rotation"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"3", ",", " ", 
+        StyleBox["a", "TI"]}], "]"}]], "InlineFormula"],
+     ".",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Rotation"]], "paclet:Q3/ref/Rotation"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"2", ",", " ", 
+        StyleBox["b", "TI"]}], "]"}]], "InlineFormula"],
+     ".",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Rotation"]], "paclet:Q3/ref/Rotation"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"3", ",", " ", 
+        StyleBox["c", "TI"]}], "]"}]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      RowBox[{"EulerRotation", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         StyleBox["a", "TI"], ",", " ", 
+         StyleBox["b", "TI"]}], "}"}], "]"}]], "InlineFormula"],
+     " = ",
+     Cell[BoxData[
+      RowBox[{"EulerRotation", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         StyleBox["a", "TI"], ",", " ", 
+         StyleBox["b", "TI"], ",", " ", "0"}], "}"}], "]"}]], "InlineFormula"],
+     " represent the Euler rotations in SU(2) space."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1572679777],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell["The following options can be given: ", "Notes"],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "TableRowIcon"], 
+    ButtonBox["Label",
+     BaseStyle->"Link",
+     ButtonData->"paclet:ref/Label"], 
+    ButtonBox["Automatic",
+     BaseStyle->"Link",
+     ButtonData->"paclet:ref/Automatic"], Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Label", "[", 
+       StyleBox["tag", "TI"], "]"}]], "InlineFormula"],
+     " ",
+     "represents a point in a compound expression to which control can be \
+transferred using ",
+     "Goto",
+     ". "
+    }], "TableText"]}
+  }]], "3ColumnTableMod",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}},
+ GridBoxDividers->{"Rows" -> {{True, True}}}}],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->800284763],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->695930580],
+
+Cell[TextData[{
+ "See ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Rotation"]], "paclet:Q3/ref/Rotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " for examples."
+}], "ExampleText",
+ CellID->870350137]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Scope",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1293636265],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Pauli`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->134445714],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"U", "=", 
+   RowBox[{"RandomUnitary", "[", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"U", "/=", 
+    RowBox[{"Sqrt", "[", 
+     RowBox[{"Det", "[", "U", "]"}], "]"}]}], ";"}], " ", 
+  RowBox[{"(*", " ", 
+   RowBox[{"Make", " ", "it", " ", "a", " ", "special", " ", 
+    RowBox[{"unitary", "."}]}], " ", "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"U", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->993516844],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"0.2332401293852039`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.14562108613673558`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.7953780118538339`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.540154940342281`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "0.7953780118538338`"}], "-", 
+       RowBox[{"0.540154940342281`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.23324012938520391`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.14562108613673555`", " ", "\[ImaginaryI]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->1597282833]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ang", "=", 
+  RowBox[{"TheEulerAngles", "[", "U", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->306529980],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", "3.103144258105358`"}], ",", "2.584483379515148`", ",", 
+   "1.9868954694925305`"}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->651317276]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"V", "=", 
+   RowBox[{"TheEulerRotation", "[", "ang", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"V", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"U", "-", "V"}], "//", "Chop"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1221422095],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"0.23324012938520416`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.14562108613673572`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.7953780118538338`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.540154940342281`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "0.7953780118538338`"}], "-", 
+       RowBox[{"0.540154940342281`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.23324012938520416`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.14562108613673572`", " ", "\[ImaginaryI]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->1746632945],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0"}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1705935772]
+}, Open  ]],
+
+Cell["The ranges of the Euler angles", "ExampleText",
+ CellID->1349924290],
+
+Cell["\<\
+The returned Euler angles {\[Alpha],\[Beta],\[Gamma]} are limited to: -\[Pi]<\
+\[Alpha],\[Gamma]<\[Pi], 0<\[Beta]<\[Pi].\
+\>", "ExampleText",
+ CellID->12811475],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"U", "=", 
+   RowBox[{"TheEulerRotation", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"2", " ", 
+       RowBox[{"Pi", "/", "3"}]}], ",", 
+      RowBox[{"5", " ", 
+       RowBox[{"Pi", "/", "4"}]}], ",", 
+      RowBox[{
+       RowBox[{"-", "Pi"}], "/", "3"}]}], "}"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"U", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->574095625],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       RowBox[{"-", 
+        SuperscriptBox["\[ExponentialE]", 
+         RowBox[{"-", 
+          FractionBox[
+           RowBox[{"\[ImaginaryI]", " ", "\[Pi]"}], "6"]}]]}], " ", 
+       RowBox[{"Sin", "[", 
+        FractionBox["\[Pi]", "8"], "]"}]}], 
+      RowBox[{"\[ImaginaryI]", " ", 
+       RowBox[{"Cos", "[", 
+        FractionBox["\[Pi]", "8"], "]"}]}]},
+     {
+      RowBox[{"\[ImaginaryI]", " ", 
+       RowBox[{"Cos", "[", 
+        FractionBox["\[Pi]", "8"], "]"}]}], 
+      RowBox[{
+       RowBox[{"-", 
+        SuperscriptBox["\[ExponentialE]", 
+         FractionBox[
+          RowBox[{"\[ImaginaryI]", " ", "\[Pi]"}], "6"]]}], " ", 
+       RowBox[{"Sin", "[", 
+        FractionBox["\[Pi]", "8"], "]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->484140501]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ang", "=", 
+  RowBox[{"TheEulerAngles", "[", "U", "]"}]}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1492863229],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", 
+    FractionBox["\[Pi]", "3"]}], ",", 
+   FractionBox[
+    RowBox[{"3", " ", "\[Pi]"}], "4"], ",", 
+   RowBox[{"-", 
+    FractionBox[
+     RowBox[{"4", " ", "\[Pi]"}], "3"]}]}], "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->509197471]
+}, Open  ]],
+
+Cell["EulerAngles of Pauli expression", "ExampleText",
+ CellID->306929252],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op", "=", 
+  RowBox[{"Rotation", "[", 
+   RowBox[{"1", ",", 
+    RowBox[{"Pi", "/", "3"}]}], "]"}]}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->304218270],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   RowBox[{
+    SqrtBox["3"], " ", 
+    TagBox[
+     SuperscriptBox["\[Sigma]", "0"],
+     DisplayForm]}], "2"], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TagBox[
+     SuperscriptBox["\[Sigma]", "x"],
+     DisplayForm]}], "2"]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1957200616]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"TheEulerAngles", "[", "op", "]"}]], "Input",
+ CellLabel->"In[8]:=",
+ CellID->748485124],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"-", 
+    FractionBox["\[Pi]", "2"]}], ",", 
+   FractionBox["\[Pi]", "3"], ",", 
+   FractionBox["\[Pi]", "2"]}], "}"}]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->531965725]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"EulerRotation", "[", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", "Pi"}], "/", "2"}], ",", 
+    RowBox[{"Pi", "/", "3"}], ",", 
+    RowBox[{"Pi", "/", "2"}]}], "}"}], "]"}]], "Input",
+ CellLabel->"In[9]:=",
+ CellID->1436717057],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   RowBox[{
+    SqrtBox["3"], " ", 
+    TagBox[
+     SuperscriptBox["\[Sigma]", "0"],
+     DisplayForm]}], "2"], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TagBox[
+     SuperscriptBox["\[Sigma]", "x"],
+     DisplayForm]}], "2"]}]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->1516578127]
+}, Open  ]]
+}, Closed]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Rotation"]], "paclet:Q3/ref/Rotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["EulerRotation"]], "paclet:Q3/ref/EulerRotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoRotation"]], "paclet:Q3/ref/QuissoRotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoEulerRotation"]], "paclet:Q3/ref/QuissoEulerRotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["QuissoCircuit Tutorial"]], 
+   "paclet:Q3/tutorial/QuissoCircuitTutorial"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1309316498],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli"]], "paclet:Q3/guide/Pauli"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->417451077],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso"]], "paclet:Q3/guide/Quisso"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->271176390]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"EulerRotation",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2020, 11, 2, 15, 56, 50.233928}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Pauli`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
+     "status" -> "None", "summary" -> 
+    "EulerRotation[{a, b, c}] = Rotation[3, a].Rotation[2, b].Rotation[3, c] \
+and EulerRotation[{a, b}] = EulerRotation[{a, b, 0}] represent the Euler \
+rotations in SU(2) space.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "EulerRotation", "titlemodifier" -> "", "windowtitle" -> "EulerRotation", 
+    "type" -> "Symbol", "uri" -> "Q3/ref/EulerRotation", "WorkflowDockedCell" -> 
+    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[8825, 264, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a386d033-8ac8-4d64-a00b-39d7a36e99b0",
+   CellTags->"PrimaryExamplesSection",
+   CellID->800284763]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 22153, 765}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[585, 21, 4759, 117, 70, "AnchorBarGrid",ExpressionUUID->"6ecc68ee-0f22-4caa-ba57-8d39333fbb5b",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5369, 142, 170, 6, 70, "ObjectNameGrid",ExpressionUUID->"4218bd57-1529-427a-b8d9-726272fa79fb"],
+Cell[5542, 150, 1785, 57, 70, "Usage",ExpressionUUID->"8871da3e-e17e-440d-9de9-ab96053894d2"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7364, 212, 630, 19, 70, "NotesSection",ExpressionUUID->"1fb4cd82-c5f8-4696-a3be-74b7b0c6d6b7",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1572679777],
+Cell[7997, 233, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"60d9a355-7513-4f82-9def-7684914b2e5c"],
+Cell[8031, 235, 53, 0, 70, "Notes",ExpressionUUID->"cfd85fb6-d174-4b91-aac8-9e9da03d1e82"],
+Cell[8087, 237, 667, 20, 70, "3ColumnTableMod",ExpressionUUID->"49252e99-72d6-42a2-9fd9-af5509d29aae"],
+Cell[8757, 259, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"05db14b4-e188-48f4-bec4-b26a3052f6bd"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[8825, 264, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a386d033-8ac8-4d64-a00b-39d7a36e99b0",
+ CellTags->"PrimaryExamplesSection",
+ CellID->800284763],
+Cell[CellGroupData[{
+Cell[9117, 278, 195, 6, 70, "ExampleSection",ExpressionUUID->"7ef5ba1a-6189-4324-8099-62de7f67f815",
+ CellID->695930580],
+Cell[9315, 286, 244, 10, 70, "ExampleText",ExpressionUUID->"03abc27d-d297-40e7-af53-24909982aa2c",
+ CellID->870350137]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9596, 301, 187, 6, 70, "ExampleSection",ExpressionUUID->"b872e7f7-6af0-426d-b03a-8d6460d01628",
+ CellID->1293636265],
+Cell[9786, 309, 96, 3, 70, "Input",ExpressionUUID->"834ff76c-5b55-4aed-8eef-3046619d1596",
+ CellID->134445714],
+Cell[CellGroupData[{
+Cell[9907, 316, 492, 14, 70, "Input",ExpressionUUID->"4b88e6d8-be32-41d7-afac-70a91aaa7c0c",
+ CellID->993516844],
+Cell[10402, 332, 1034, 26, 70, "Output",ExpressionUUID->"ac9bd2f9-d37c-4db6-b586-d74d85221555",
+ CellID->1597282833]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11473, 363, 135, 4, 70, "Input",ExpressionUUID->"e72e56be-0e7e-4706-b59e-0ac4f3ffff59",
+ CellID->306529980],
+Cell[11611, 369, 201, 6, 70, "Output",ExpressionUUID->"fe02ff7f-d691-4b5d-abe5-fc625346a5ef",
+ CellID->651317276]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11849, 380, 299, 9, 70, "Input",ExpressionUUID->"1553329d-2581-4c49-969c-969afe8b09c8",
+ CellID->1221422095],
+Cell[12151, 391, 1035, 26, 70, "Output",ExpressionUUID->"6c807453-93e6-40bf-bcf2-e9ed70a2eb47",
+ CellID->1746632945],
+Cell[13189, 419, 215, 8, 70, "Output",ExpressionUUID->"edfd51f6-05e7-4c83-befc-5ee991ca5188",
+ CellID->1705935772]
+}, Open  ]],
+Cell[13419, 430, 74, 1, 70, "ExampleText",ExpressionUUID->"6e719cf7-2358-4bd2-bb27-a0bbb37a3a9f",
+ CellID->1349924290],
+Cell[13496, 433, 170, 4, 70, "ExampleText",ExpressionUUID->"5f58f834-2ba1-4f2a-9323-d3d424b6aa9d",
+ CellID->12811475],
+Cell[CellGroupData[{
+Cell[13691, 441, 443, 15, 70, "Input",ExpressionUUID->"c136af7b-9ad4-4915-83d8-7f1ac1d39e91",
+ CellID->574095625],
+Cell[14137, 458, 1244, 38, 70, "Output",ExpressionUUID->"d0b866af-df00-4e6c-869f-974aa4149900",
+ CellID->484140501]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15418, 501, 136, 4, 70, "Input",ExpressionUUID->"be51c417-b0f1-485d-9f91-ea30511a5f55",
+ CellID->1492863229],
+Cell[15557, 507, 295, 11, 70, "Output",ExpressionUUID->"5e0f94b5-4284-4b1e-aff4-fa3c19990f03",
+ CellID->509197471]
+}, Open  ]],
+Cell[15867, 521, 74, 1, 70, "ExampleText",ExpressionUUID->"2b459709-7ca1-449f-aa1a-13ce0ce38df8",
+ CellID->306929252],
+Cell[CellGroupData[{
+Cell[15966, 526, 178, 6, 70, "Input",ExpressionUUID->"90118453-0709-414d-b239-3c54d7627369",
+ CellID->304218270],
+Cell[16147, 534, 340, 14, 70, "Output",ExpressionUUID->"dfc187ad-e040-4892-8740-3df7c025d95c",
+ CellID->1957200616]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16524, 553, 111, 3, 70, "Input",ExpressionUUID->"33e9b769-c6cb-4c68-bcc4-3643250781ed",
+ CellID->748485124],
+Cell[16638, 558, 224, 8, 70, "Output",ExpressionUUID->"5c81cc88-b94a-4884-8247-c862ae57c510",
+ CellID->531965725]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16899, 571, 266, 9, 70, "Input",ExpressionUUID->"8a72ba56-1053-415c-bfff-4c9d58be1117",
+ CellID->1436717057],
+Cell[17168, 582, 340, 14, 70, "Output",ExpressionUUID->"a6c2aa06-5e39-4d78-84da-a4df7cf20d74",
+ CellID->1516578127]
+}, Open  ]]
+}, Closed]],
+Cell[17535, 600, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"1226d31f-e691-4a85-983a-5ad7442f7d1f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17603, 605, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"7170ccb4-b86b-4379-bb88-5d61d92cb9b0",
+ CellID->1255426704],
+Cell[17756, 614, 1202, 38, 70, "SeeAlso",ExpressionUUID->"57aff129-fb0f-4a77-ae24-132ca93a70ad",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18995, 657, 152, 7, 70, "TutorialsSection",ExpressionUUID->"5d33ced1-1b11-4e30-bc69-3facdeb20118",
+ CellID->250839057],
+Cell[19150, 666, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"5cf85681-7a2d-4ee8-aa65-63b26e4c8314"],
+Cell[19184, 668, 201, 7, 70, "Tutorials",ExpressionUUID->"c55e9fc5-b596-4ba8-ad5b-af2e1e980a70",
+ CellID->341631938],
+Cell[19388, 677, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"a138d463-03ba-4d6a-93e2-00278436af59"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19456, 682, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"8bb97ea7-1c86-40c1-b652-f3ced707b6fd",
+ CellID->38303248],
+Cell[19615, 691, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"0d510ba1-dd4d-4aa2-8a6c-085690d2b3fd"],
+Cell[19649, 693, 168, 6, 70, "MoreAbout",ExpressionUUID->"def639d1-bdf5-41a3-a153-9d9a3680c615",
+ CellID->1309316498],
+Cell[19820, 701, 161, 6, 70, "MoreAbout",ExpressionUUID->"07d396b3-4a3f-4f88-84ab-95c425a76000",
+ CellID->417451077],
+Cell[19984, 709, 163, 6, 70, "MoreAbout",ExpressionUUID->"f8931208-e478-408d-960b-e58757c1d9ed",
+ CellID->271176390]
+}, Open  ]],
+Cell[20162, 718, 23, 0, 70, "FooterCell",ExpressionUUID->"cf575293-eaad-43c1-8c58-6def60170dae"]
+}
+]
+*)
+
+(* End of internal cache information *)

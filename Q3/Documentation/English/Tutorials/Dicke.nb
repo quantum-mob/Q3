@@ -1,0 +1,743 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     21750,        734]
+NotebookOptionsPosition[     15613,        603]
+NotebookOutlinePosition[     17887,        661]
+CellTagsIndexPosition[     17844,        658]
+WindowTitle->Dicke Quick-Start Tutorial
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/tutorial/Fock"], "\<\"Quisso\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/tutorial/Quisso"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Dicke\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Dicke"], "\<\"Quisso\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Quisso"], "\<\"Fock\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Fock"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialMoreAboutSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/tutorial/Dicke\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/Dicke"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/Dicke.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$230256], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/tutorial/Dicke", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Dicke Quick-Start Tutorial", "Title",
+ CellID->509267359],
+
+Cell["Dicke allows users to efficiently handle Bosons and Qubits.", "Text",
+ CellID->1534169418],
+
+Cell[BoxData[GridBox[{
+   {"DickeBasis", Cell["Basis for Dicke systems", "TableText"]}
+  }]], "DefinitionBox",
+ CellID->2096742444],
+
+Cell["See the examples below.", "Caption",
+ CellID->1891092685],
+
+Cell["Let us consider the quantum Rabi Hamiltonian.", "MathCaption",
+ CellID->836781195],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Dicke`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1829023409],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Boson", ",", "b"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->695175008],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Rabi", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Dagger", "[", "b", "]"}], "**", "b"}], "+", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"b", "+", 
+      RowBox[{"Dagger", "[", "b", "]"}]}], ")"}], "**", 
+    RowBox[{"S", "[", "1", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"S", "[", "3", "]"}], "/", "2"}]}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1495319776],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox["\<\"b\"\>",
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Superscript"],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"b"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Superscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox["\<\"b\"\>",
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"b"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Superscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Superscript"],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  FractionBox[
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm], "2"]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->110005899]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"v", "=", 
+   RowBox[{"Ket", "[", 
+    RowBox[{
+     RowBox[{"S", "\[Rule]", "1"}], ",", 
+     RowBox[{"b", "\[Rule]", "5"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vv", "=", 
+   RowBox[{"Rabi", "**", "v"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"v", "//", "LogicalForm"}], "\[IndentingNewLine]", 
+ RowBox[{"vv", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1936546639],
+
+Cell[BoxData[
+ TemplateBox[{
+   TagBox[
+    TemplateBox[{
+      SubscriptBox["5", "b"], 
+      SubscriptBox["1", 
+       TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+  "Ket"]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1952646984],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SqrtBox["5"], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["4", "b"], 
+        SubscriptBox["0", 
+         TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  FractionBox[
+   RowBox[{"9", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox["5", "b"], 
+         SubscriptBox["1", 
+          TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+     "Ket"]}], "2"], "+", 
+  RowBox[{
+   SqrtBox["6"], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["6", "b"], 
+        SubscriptBox["0", 
+         TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->292766634]
+}, Open  ]],
+
+Cell[TextData[{
+ "One can also consider ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Qudits"]], "paclet:Q3/ref/Qudits"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " coupled to ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Boson"]], "paclet:Q3/ref/Boson"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " modes."
+}], "MathCaption",
+ CellID->795378418],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qudit", ",", "A"}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1623038753],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"opH", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Dagger", "[", "b", "]"}], "**", "b"}], "+", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"A", "[", 
+      RowBox[{"1", "\[Rule]", "1"}], "]"}], "+", 
+     RowBox[{"3", 
+      RowBox[{"A", "[", 
+       RowBox[{"2", "\[Rule]", "2"}], "]"}]}]}], ")"}], "+", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"Dagger", "[", "b", "]"}], "+", "b"}], ")"}], "**", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"A", "[", 
+       RowBox[{"1", "\[Rule]", "2"}], "]"}], "+", 
+      RowBox[{"A", "[", 
+       RowBox[{"2", "\[Rule]", "1"}], "]"}]}], ")"}]}]}]}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1075037477],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{"(", 
+    RowBox[{
+     TemplateBox[{"1"},
+      "Ket"], 
+     TemplateBox[{"1"},
+      "Bra"]}], ")"}],
+   DisplayForm], "+", 
+  RowBox[{"3", " ", 
+   TagBox[
+    RowBox[{"(", 
+     RowBox[{
+      TemplateBox[{"2"},
+       "Ket"], 
+      TemplateBox[{"2"},
+       "Bra"]}], ")"}],
+    DisplayForm]}], "+", 
+  TagBox[
+   RowBox[{
+    TagBox["\<\"b\"\>",
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      RowBox[{"(", 
+       RowBox[{
+        TemplateBox[{"2"},
+         "Ket"], 
+        TemplateBox[{"1"},
+         "Bra"]}], ")"}],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox["\<\"b\"\>",
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      RowBox[{"(", 
+       RowBox[{
+        TemplateBox[{"1"},
+         "Ket"], 
+        TemplateBox[{"2"},
+         "Bra"]}], ")"}],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"b"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Superscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox["\<\"b\"\>",
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"b"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Superscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      RowBox[{"(", 
+       RowBox[{
+        TemplateBox[{"2"},
+         "Ket"], 
+        TemplateBox[{"1"},
+         "Bra"]}], ")"}],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"b"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Superscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      RowBox[{"(", 
+       RowBox[{
+        TemplateBox[{"1"},
+         "Ket"], 
+        TemplateBox[{"2"},
+         "Bra"]}], ")"}],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1022217876]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"v", "=", 
+   RowBox[{
+    RowBox[{"Ket", "[", 
+     RowBox[{
+      RowBox[{"A", "\[Rule]", "2"}], ",", 
+      RowBox[{"b", "\[Rule]", "3"}]}], "]"}], "+", 
+    RowBox[{"I", " ", 
+     RowBox[{"Ket", "[", 
+      RowBox[{
+       RowBox[{"A", "\[Rule]", "0"}], ",", 
+       RowBox[{"b", "\[Rule]", "1"}]}], "]"}]}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"v", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1923264776],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", "b"], 
+        SubscriptBox["0", 
+         TagBox["A", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["3", "b"], 
+       SubscriptBox["2", 
+        TagBox["A", DisplayForm]]}, "RowDefault"], DisplayForm]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1782100809]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"vv", "=", 
+   RowBox[{"opH", "**", "v"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"vv", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[8]:=",
+ CellID->1393077106],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", "b"], 
+        SubscriptBox["0", 
+         TagBox["A", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  RowBox[{
+   SqrtBox["3"], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["2", "b"], 
+        SubscriptBox["1", 
+         TagBox["A", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  RowBox[{"6", " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["3", "b"], 
+        SubscriptBox["2", 
+         TagBox["A", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  RowBox[{"2", " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["4", "b"], 
+        SubscriptBox["1", 
+         TagBox["A", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1719966542]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "TutorialMoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->23220180],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Dicke",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/guide/Dicke"]], "TutorialMoreAbout",
+ CellID->1567025153],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso"]], "paclet:Q3/guide/Quisso"},
+  "RefLink",
+  BaseStyle->{"InlineFormula"}]], "InlineFormula"]], "TutorialMoreAbout",
+ CellID->1293653116],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock"]], "paclet:Q3/guide/Fock"},
+  "RefLink",
+  BaseStyle->{"InlineFormula"}]], "InlineFormula"]], "TutorialMoreAbout",
+ CellID->210741004],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Tutorials"
+}], "RelatedTutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->415694126],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock"]], "paclet:Q3/tutorial/Fock"},
+  "RefLink",
+  BaseStyle->{"InlineFormula"}]], "InlineFormula"]], "RelatedTutorials",
+ CellID->1776851603],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso"]], "paclet:Q3/tutorial/Quisso"},
+  "RefLink",
+  BaseStyle->{"InlineFormula"}]], "InlineFormula"]], "RelatedTutorials",
+ CellID->806871991]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Dicke Quick-Start Tutorial",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
+  "LinkTrails" -> GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2020, 11, 2, 16, 3, 33.863093}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Dicke allows users to efficiently handle Bosons and Qubits. See the \
+examples below. Let us consider the quantum Rabi Hamiltonian.", 
+    "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$230200, "title" -> 
+    "Dicke Quick-Start Tutorial", "titlemodifier" -> "", "windowtitle" -> 
+    "Dicke Quick-Start Tutorial", "type" -> "Tutorial", "uri" -> 
+    "Q3/tutorial/Dicke", "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> 
+  ""},
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[598, 21, 3766, 92, 70, "AnchorBarGrid",ExpressionUUID->"5b8a3e65-7c24-466b-b102-450d0bb6db52",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4389, 117, 63, 1, 70, "Title",ExpressionUUID->"c1f11119-798d-48a0-afad-9c83d579a597",
+ CellID->509267359],
+Cell[4455, 120, 96, 1, 70, "Text",ExpressionUUID->"9bab56e1-6840-437a-b5bb-d958451e7009",
+ CellID->1534169418],
+Cell[4554, 123, 131, 3, 70, "DefinitionBox",ExpressionUUID->"fcbdff76-c1a6-4449-9b35-4aea298e605a",
+ CellID->2096742444],
+Cell[4688, 128, 63, 1, 70, "Caption",ExpressionUUID->"5f3fc6b5-d663-411b-852e-51835abf64a8",
+ CellID->1891092685],
+Cell[4754, 131, 88, 1, 70, "MathCaption",ExpressionUUID->"cbcf9018-907e-4c58-9058-0a161df6f5f1",
+ CellID->836781195],
+Cell[4845, 134, 97, 3, 70, "Input",ExpressionUUID->"1578cde5-476e-41ef-a7fe-8b3dfbb58d88",
+ CellID->1829023409],
+Cell[4945, 139, 212, 6, 70, "Input",ExpressionUUID->"c360eec0-9e3d-4869-89e5-3305bd41bdf5",
+ CellID->695175008],
+Cell[CellGroupData[{
+Cell[5182, 149, 386, 13, 70, "Input",ExpressionUUID->"fd648d13-a5d6-438b-93da-90d4c0c9fa8e",
+ CellID->1495319776],
+Cell[5571, 164, 1288, 55, 70, "Output",ExpressionUUID->"45f4df8f-c481-4a7b-9113-a5ece83196a3",
+ CellID->110005899]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6896, 224, 453, 13, 70, "Input",ExpressionUUID->"249f9a2a-9b88-43db-a104-0d6ad337878d",
+ CellID->1936546639],
+Cell[7352, 239, 243, 9, 70, "Output",ExpressionUUID->"4831d19c-95c4-4375-bd1b-b82d0193bb36",
+ CellID->1952646984],
+Cell[7598, 250, 782, 30, 70, "Output",ExpressionUUID->"20fbbdf4-c48b-4222-8972-0424571dd47b",
+ CellID->292766634]
+}, Open  ]],
+Cell[8395, 283, 425, 17, 70, "MathCaption",ExpressionUUID->"79c2c561-47f3-476c-b78b-c6ded9a6e0bd",
+ CellID->795378418],
+Cell[8823, 302, 127, 4, 70, "Input",ExpressionUUID->"0b13fbc0-269f-4595-88f4-c32412144fda",
+ CellID->1623038753],
+Cell[CellGroupData[{
+Cell[8975, 310, 684, 23, 70, "Input",ExpressionUUID->"86a02e83-1aa6-4057-8071-a1c1dd0edc01",
+ CellID->1075037477],
+Cell[9662, 335, 2179, 105, 70, "Output",ExpressionUUID->"aa664509-9e09-4c3f-8455-7314b1ee17f3",
+ CellID->1022217876]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11878, 445, 478, 16, 70, "Input",ExpressionUUID->"3ee77388-d32a-4399-bc70-5b054815e09d",
+ CellID->1923264776],
+Cell[12359, 463, 492, 18, 70, "Output",ExpressionUUID->"1da2d00a-c8e4-448c-90a2-7897b82e2849",
+ CellID->1782100809]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12888, 486, 203, 6, 70, "Input",ExpressionUUID->"d6d1eafc-7c20-4981-800a-9b85088c26d5",
+ CellID->1393077106],
+Cell[13094, 494, 971, 36, 70, "Output",ExpressionUUID->"1de4c147-552a-4de5-8d9b-62e57d1db673",
+ CellID->1719966542]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14102, 535, 164, 7, 70, "TutorialMoreAboutSection",ExpressionUUID->"dc35fb02-142f-4b5b-99df-408147016285",
+ CellID->23220180],
+Cell[14269, 544, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"8b4d5755-0785-440a-aa03-a5efd5d617be"],
+Cell[14303, 546, 134, 3, 70, "TutorialMoreAbout",ExpressionUUID->"4bdaac39-e621-4f3c-aa98-ec804776315a",
+ CellID->1567025153],
+Cell[14440, 551, 211, 6, 70, "TutorialMoreAbout",ExpressionUUID->"3a7dec18-6c62-4ddc-bb13-acffdaa7518b",
+ CellID->1293653116],
+Cell[14654, 559, 206, 6, 70, "TutorialMoreAbout",ExpressionUUID->"037117c1-b06b-41ff-9e9c-55a544ce5747",
+ CellID->210741004],
+Cell[14863, 567, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"59122d77-2002-44d5-b8d8-7f293324e54f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14931, 572, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"fee7d4a5-17e4-42f4-8c8c-9561fd95d5a6",
+ CellID->415694126],
+Cell[15101, 581, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7b442cdd-a3ef-4844-8635-9f7b18cab986"],
+Cell[15135, 583, 209, 6, 70, "RelatedTutorials",ExpressionUUID->"dd6e3634-2827-4df5-b639-e5d77237f56f",
+ CellID->1776851603],
+Cell[15347, 591, 212, 6, 70, "RelatedTutorials",ExpressionUUID->"2149c617-eb46-4d15-9aaa-e1a60aaa543e",
+ CellID->806871991]
+}, Open  ]]
+}, Open  ]],
+Cell[15586, 601, 23, 0, 70, "FooterCell",ExpressionUUID->"c89f1cd3-b712-4f7c-b056-48e3532e9159"]
+}
+]
+*)
+
+(* End of internal cache information *)

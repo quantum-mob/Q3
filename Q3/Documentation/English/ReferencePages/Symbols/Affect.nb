@@ -1,0 +1,807 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     26702,        798]
+NotebookOptionsPosition[     20962,        674]
+NotebookOutlinePosition[     23455,        735]
+CellTagsIndexPosition[     23370,        730]
+WindowTitle->Affect
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["QUISSO PACKAGE SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Multiply\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Multiply"], "\<\"Matrix\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Matrix"], "\<\"QuissoCircuit\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/QuissoCircuit"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Pauli"], "\<\"Quisso\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Quisso"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/Affect\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/Affect"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/Affect.html"], 
+                StandardForm]], "Input", TextClipboardType -> "PlainText"]}, 
+            Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$20959], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/Affect", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["Affect", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Affect", "[", 
+       RowBox[{
+        StyleBox["ket", "TI"], ",", " ", 
+        SubscriptBox[
+         StyleBox["op", "TI"], 
+         StyleBox["1", "TR"]], ",", " ", 
+        SubscriptBox[
+         StyleBox["op", "TI"], 
+         StyleBox["2", "TR"]], ",", "  ", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]operates the operators op1, op2, ... (earlier operators \
+first) on ket. Notice the order of the arguments. The result should be \
+equivalent to ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Multiply"]], "paclet:Q3/ref/Multiply"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"...", ",", " ", 
+        StyleBox["op2", "TI"], ",", " ", 
+        StyleBox["op1", "TI"], ",", " ", 
+        StyleBox["ket", "TI"]}], "]"}]], "InlineFormula"],
+     ", but it is much faster than the counterpart for deep (the numer of \
+operators is much bigger than the number of particles) expression. First \
+first argument does not need to be a Ket, but otherwise ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Affect"]], "paclet:Q3/ref/Affect"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " is not an advantage over ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Multiply"]], "paclet:Q3/ref/Multiply"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1248396462],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->884105644],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Quisso`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1715384244],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1739475329],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$N", "=", "5"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ss", "=", 
+  RowBox[{"S", "[", 
+   RowBox[{
+    RowBox[{"Range", "[", "$N", "]"}], ",", "None"}], "]"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1666967892],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"S"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"S"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"S"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"S"},
+      "RowDefault"], 
+     TemplateBox[{"4"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"S"},
+      "RowDefault"], 
+     TemplateBox[{"5"},
+      "RowDefault"]],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->539647565]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"CP", "[", 
+   RowBox[{"j_", ",", "j_"}], "]"}], ":=", 
+  RowBox[{"S", "[", 
+   RowBox[{"j", ",", "6"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"CP", "[", 
+   RowBox[{"j_", ",", "k_"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"Controlled", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "j", "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Phase", "[", 
+      RowBox[{
+       RowBox[{"S", "[", "k", "]"}], ",", 
+       RowBox[{"Pi", " ", 
+        RowBox[{"Power", "[", 
+         RowBox[{"2", ",", 
+          RowBox[{"k", "-", "j"}]}], "]"}]}], ",", 
+       RowBox[{"Label", "\[Rule]", 
+        RowBox[{"Subscript", "[", 
+         RowBox[{"\"\<S\>\"", ",", 
+          RowBox[{"j", "-", "k"}]}], "]"}]}]}], "]"}]}], 
+    "\[IndentingNewLine]", "]"}], "/;", 
+   RowBox[{"j", ">", "k"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"CP", "[", 
+   RowBox[{"j_", ",", "k_"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"Controlled", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "j", "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Phase", "[", 
+      RowBox[{
+       RowBox[{"S", "[", "k", "]"}], ",", 
+       RowBox[{"Pi", " ", 
+        RowBox[{"Power", "[", 
+         RowBox[{"2", ",", 
+          RowBox[{"j", "-", "k"}]}], "]"}]}], ",", 
+       RowBox[{"Label", "\[Rule]", 
+        RowBox[{"Subscript", "[", 
+         RowBox[{"\"\<S\>\"", ",", 
+          RowBox[{"k", "-", "j"}]}], "]"}]}]}], "]"}]}], 
+    "\[IndentingNewLine]", "]"}], "/;", 
+   RowBox[{"j", "<", "k"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SW", "[", "j_", "]"}], ":=", 
+  RowBox[{"SWAP", "[", 
+   RowBox[{
+    RowBox[{"S", "[", "j", "]"}], ",", 
+    RowBox[{"S", "[", 
+     RowBox[{"$N", "-", "j", "+", "1"}], "]"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->900561065],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"swaps", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"SW", "[", "j", "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"j", ",", "1", ",", 
+       RowBox[{"$N", "/", "2"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"gates4a", "=", 
+   RowBox[{"Catenate", "@", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"CP", "[", 
+       RowBox[{"j", ",", "k"}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"k", ",", "1", ",", "$N"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"j", ",", "k", ",", "$N"}], "}"}]}], "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"qft4a", "=", 
+   RowBox[{"Join", "[", 
+    RowBox[{"gates4a", ",", "swaps"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"qc4a", "=", 
+  RowBox[{"QuissoCircuit", "[", 
+   RowBox[{
+    RowBox[{"Sequence", "@@", "qft4a"}], ",", 
+    RowBox[{"ImageSize", "\[Rule]", "Large"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->265075399],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {18, -1}}, {{0, -2}, {18, -2}}, {{0, -3}, {18, -3}}, {{
+    0, -4}, {18, -4}}, {{0, -5}, {18, -5}}}], {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -1.4}, {1.4, -0.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "H"], {1, -1}, ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    DiskBox[{2, -2}, 0.09], LineBox[{{2, -2}, {2, -1}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{1.6, -1.4}, {2.4, -0.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {2, -1}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {DiskBox[{3, -3}, 0.09], 
+    LineBox[{{3, -3}, {3, -1}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{2.6, -1.4}, {3.4, -0.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {3, -1}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {DiskBox[{4, -4}, 0.09], 
+    LineBox[{{4, -4}, {4, -1}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{3.6, -1.4}, {4.4, -0.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {4, -1}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {DiskBox[{5, -5}, 0.09], 
+    LineBox[{{5, -5}, {5, -1}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -1.4}, {5.4, -0.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "4"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {5, -1}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{5.6, -2.4}, {6.4, -1.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "H"], {6, -2}, ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    DiskBox[{7, -3}, 0.09], LineBox[{{7, -3}, {7, -2}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{6.6, -2.4}, {7.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {7, -2}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {DiskBox[{8, -4}, 0.09], 
+    LineBox[{{8, -4}, {8, -2}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{7.6, -2.4}, {8.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {8, -2}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {DiskBox[{9, -5}, 0.09], 
+    LineBox[{{9, -5}, {9, -2}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{8.6, -2.4}, {9.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {9, -2}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{9.6, -3.4}, {10.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "H"], {10, -3}, ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    DiskBox[{11, -4}, 0.09], LineBox[{{11, -4}, {11, -3}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{10.6, -3.4}, {11.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {11, -3}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {DiskBox[{12, -5}, 0.09], 
+    LineBox[{{12, -5}, {12, -3}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{11.6, -3.4}, {12.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {12, -3}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{12.6, -4.4}, {13.4, -3.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "H"], {13, -4}, ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    DiskBox[{14, -5}, 0.09], LineBox[{{14, -5}, {14, -4}}], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{13.6, -4.4}, {14.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "\[CapitalPhi]"], {14, -4}, 
+     ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{14.6, -5.4}, {15.4, -4.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.026666666666666665`],
+      FontWeight->"Light",
+      FontSlant->Italic,
+      Label -> "H"], {15, -5}, ImageScaled[{Rational[1, 2], 0.6}]]}, {
+    LineBox[{{{15.91, -1.09}, {16.09, -0.91}}, {{15.91, -0.91}, {
+     16.09, -1.09}}}], LineBox[{{16, -1}, {16, -5}}], 
+    LineBox[{{{15.91, -5.09}, {16.09, -4.91}}, {{15.91, -4.91}, {
+     16.09, -5.09}}}]}, {
+    LineBox[{{{16.91, -2.09}, {17.09, -1.91}}, {{16.91, -1.91}, {
+     17.09, -2.09}}}], LineBox[{{17, -2}, {17, -4}}], 
+    LineBox[{{{16.91, -4.09}, {17.09, -3.91}}, {{16.91, -3.91}, {
+     17.09, -4.09}}}]}},
+  ImageSize->Large,
+  PlotRangePadding->NCache[{
+     Rational[1, 2], 0}, {0.5, 0}]]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->681323570]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"expr", "=", 
+   RowBox[{"QuissoExpand", "@", "qft4a"}]}], ";"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1450898494],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{"v1", "=", 
+    RowBox[{"Affect", "[", 
+     RowBox[{
+      RowBox[{"Ket", "[", "]"}], ",", 
+      RowBox[{"Sequence", "@@", "expr"}]}], "]"}]}], ";"}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{"v2", "=", 
+    RowBox[{"Fold", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"Garner", "@", 
+        RowBox[{"Multiply", "[", 
+         RowBox[{"#2", ",", "#1"}], "]"}]}], "&"}], ",", 
+      RowBox[{"Ket", "[", "]"}], ",", "expr"}], "]"}]}], ";"}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Timing", "[", 
+  RowBox[{
+   RowBox[{"v3", "=", 
+    RowBox[{"QuissoExpression", "[", 
+     RowBox[{"Prepend", "[", 
+      RowBox[{"qc4a", ",", 
+       RowBox[{"Ket", "[", "]"}]}], "]"}], "]"}]}], ";"}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"v1", "-", "v2"}], "\[IndentingNewLine]", 
+ RowBox[{"v1", "-", "v3"}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->574176973],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0.296917`", ",", "Null"}], "}"}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->671667266],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0.244299`", ",", "Null"}], "}"}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->2005292498],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0.356504`", ",", "Null"}], "}"}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->342657868],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1647129869],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->100014806]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Multiply"]], "paclet:Q3/ref/Multiply"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Matrix"]], "paclet:Q3/ref/Matrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoCircuit"]], "paclet:Q3/ref/QuissoCircuit"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli"]], "paclet:Q3/guide/Pauli"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->724205115],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso"]], "paclet:Q3/guide/Quisso"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1925540256]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Affect",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2020, 11, 2, 15, 55, 15.372680}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Pauli`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
+     "status" -> "None", "summary" -> 
+    "Affect[ket, op1, op2, ...] operates the operators op1, op2, ... (earlier \
+operators first) on ket. Notice the order of the arguments. The result should \
+be equivalent to Multiply[..., op2, op1, ket], but it is much faster than the \
+counterpart for deep (the numer of operators is much bigger than the number \
+of particles) expression. First first argument does not need to be a Ket, but \
+otherwise Affect is not an advantage over Multiply.", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "Affect", "titlemodifier" -> "", 
+    "windowtitle" -> "Affect", "type" -> "Symbol", "uri" -> "Q3/ref/Affect", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "NewStyles" -> 
+  False},
+CellContext->"Global`",
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6231, 177, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"695da6cf-8219-49f7-a43b-7e401bb5320c",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1248396462]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 23171, 723}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[578, 21, 3738, 92, 70, "AnchorBarGrid",ExpressionUUID->"fde959ad-8c58-423f-9bf8-840b00b96177",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4341, 117, 163, 6, 70, "ObjectNameGrid",ExpressionUUID->"41d13fbd-4c42-400a-98c2-197e2bf492de"],
+Cell[4507, 125, 1687, 47, 70, "Usage",ExpressionUUID->"a47363c4-19bf-4162-80b2-7b51f7f1906b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6231, 177, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"695da6cf-8219-49f7-a43b-7e401bb5320c",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1248396462],
+Cell[CellGroupData[{
+Cell[6524, 191, 195, 6, 70, "ExampleSection",ExpressionUUID->"a3f0b59c-d6cb-4c49-bf4e-bad04aec2dfd",
+ CellID->884105644],
+Cell[6722, 199, 98, 3, 70, "Input",ExpressionUUID->"3c266b94-15f5-4c16-8d94-c929321e4411",
+ CellID->1715384244],
+Cell[6823, 204, 127, 4, 70, "Input",ExpressionUUID->"da171a82-ca69-42ba-9224-46c35541e6a0",
+ CellID->1739475329],
+Cell[CellGroupData[{
+Cell[6975, 212, 255, 8, 70, "Input",ExpressionUUID->"549601d3-e54f-401e-834e-bc1c8f8c5723",
+ CellID->1666967892],
+Cell[7233, 222, 821, 39, 70, "Output",ExpressionUUID->"43cfd177-f302-411b-8d68-39013320991b",
+ CellID->539647565]
+}, Open  ]],
+Cell[8069, 264, 1797, 54, 70, "Input",ExpressionUUID->"a61112b0-5da9-415e-8894-e7ab4a25961b",
+ CellID->900561065],
+Cell[CellGroupData[{
+Cell[9891, 322, 1011, 33, 70, "Input",ExpressionUUID->"cc91e744-ed83-4684-9beb-67fbb9f090bd",
+ CellID->265075399],
+Cell[10905, 357, 6654, 167, 70, "Output",ExpressionUUID->"c3c3aa09-8a68-4147-af2e-d6e68926f771",
+ CellID->681323570]
+}, Open  ]],
+Cell[17574, 527, 153, 5, 70, "Input",ExpressionUUID->"c5eea9de-126c-49bc-a8df-f4bc6f4ad50c",
+ CellID->1450898494],
+Cell[CellGroupData[{
+Cell[17752, 536, 965, 31, 70, "Input",ExpressionUUID->"944df267-336f-458f-a77f-c63ac7628bde",
+ CellID->574176973],
+Cell[18720, 569, 127, 4, 70, "Output",ExpressionUUID->"111fa6a7-a4be-434c-834b-e4b005122068",
+ CellID->671667266],
+Cell[18850, 575, 128, 4, 70, "Output",ExpressionUUID->"6a55f9df-ad92-45d7-9191-2edbdc0cce30",
+ CellID->2005292498],
+Cell[18981, 581, 127, 4, 70, "Output",ExpressionUUID->"d3d92a97-ad17-40a0-a78e-7f981240578c",
+ CellID->342657868],
+Cell[19111, 587, 72, 2, 70, "Output",ExpressionUUID->"ea7d548b-296a-4fc3-b152-cc1ccb7b1248",
+ CellID->1647129869],
+Cell[19186, 591, 71, 2, 70, "Output",ExpressionUUID->"47c4d24b-c06a-458b-bf4c-641df81d702c",
+ CellID->100014806]
+}, Open  ]]
+}, Open  ]],
+Cell[19284, 597, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"7410f1dd-e3e2-437c-8a03-01fedae1078a"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19352, 602, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"66b6579c-5543-4767-84e5-958672917607",
+ CellID->1255426704],
+Cell[19505, 611, 857, 28, 70, "SeeAlso",ExpressionUUID->"b37744a9-160c-409f-85bf-95713257731a",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20399, 644, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"48d58294-691a-4793-b075-739e25c6e830",
+ CellID->38303248],
+Cell[20558, 653, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"12efa549-a5fd-4475-96c2-b546ad2137ee"],
+Cell[20592, 655, 161, 6, 70, "MoreAbout",ExpressionUUID->"2a5bfdf6-f350-45c7-81f7-851797dd046d",
+ CellID->724205115],
+Cell[20756, 663, 164, 6, 70, "MoreAbout",ExpressionUUID->"9291bb04-37f4-4090-9de6-b4b28fbf2cfc",
+ CellID->1925540256]
+}, Open  ]],
+Cell[20935, 672, 23, 0, 70, "FooterCell",ExpressionUUID->"2f694650-703b-40b5-ae41-fc77533ef3fc"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,439 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     13767,        430]
+NotebookOptionsPosition[      9206,        326]
+NotebookOutlinePosition[     11552,        384]
+CellTagsIndexPosition[     11509,        381]
+WindowTitle->Quisso Quick-Start Tutorial
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Functions",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Functions", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Ket\"\>":>Documentation`HelpLookup[
+       "paclet:ref/Ket"], "\<\"Matrix\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Matrix"], "\<\"Qubit\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Qubit"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialFunction"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/tutorial/QuissoTutorial\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuissoTutorial"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuissoTutorial.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$233389], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/tutorial/QuissoTutorial", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Quisso Quick-Start Tutorial", "Title",
+ CellID->509267359],
+
+Cell["\<\
+Quisso is a Mathematica package to facilitate the study of quantum \
+computation and quantum information.\
+\>", "Text",
+ CellID->1534169418],
+
+Cell[BoxData[GridBox[{
+   {
+    ButtonBox["Qubit",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/Qubit"], Cell[
+    "Object representing quantum bits (qubits)", "TableText"]},
+   {
+    ButtonBox["Ket",
+     BaseStyle->"Link",
+     ButtonData->"paclet:ref/Ket"], Cell["Quantum states", "TableText"]},
+   {
+    ButtonBox["Matrix",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/Matrix"], Cell[
+    "Matrix representation", "TableText"]}
+  }]], "DefinitionBox",
+ CellID->2096742444],
+
+Cell["Qubit can be both gate operator and the two-level system.", "Caption",
+ CellID->1891092685],
+
+Cell["First load the package", "MathCaption",
+ CellID->836781195],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->2058623809],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->302770792],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"S", "[", "All", "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->687323028],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"x\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"y\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1283885387]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"S", "[", "1", "]"}], "**", 
+  RowBox[{"S", "[", "2", "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->75834095],
+
+Cell[BoxData[
+ RowBox[{"\[ImaginaryI]", " ", 
+  TagBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Superscript"],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->563442527]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v", "=", 
+  RowBox[{
+   RowBox[{"Ket", "[", "]"}], "-", 
+   RowBox[{"I", " ", 
+    RowBox[{"Ket", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"S", "[", "1", "]"}], "\[Rule]", "1"}], ",", 
+      RowBox[{
+       RowBox[{"S", "[", "2", "]"}], "\[Rule]", "1"}]}], "]"}]}]}]}]], "Input",\
+
+ CellLabel->"In[5]:=",
+ CellID->97443302],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{"\"\[SpaceIndicator]\""},
+   "Ket"], "-", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+        SubscriptBox["1", 
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+      DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1181806564]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"LogicalForm", "[", 
+  RowBox[{"v", ",", 
+   RowBox[{"S", "@", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2"}], "}"}]}]}], "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->223524691],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["0", 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+       SubscriptBox["0", 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+     DisplayForm]},
+   "Ket"], "-", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+        SubscriptBox["1", 
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+      DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->522140324]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"S", "[", 
+   RowBox[{"1", ",", "1"}], "]"}], "**", "v"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->685726275],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["1", 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+     DisplayForm]},
+   "Ket"], "-", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+      DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1630948382]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quisso Quick-Start Tutorial",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
+  "LinkTrails" -> GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Wolfram Language", ButtonData -> "paclet:guide/WolframRoot", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2020, 11, 2, 16, 3, 52.715892}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Quisso is a Mathematica package to facilitate the study of quantum \
+computation and quantum information. Qubit can be both gate operator and the \
+two-level system. First load the package", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$233333, "title" -> 
+    "Quisso Quick-Start Tutorial", "titlemodifier" -> "", "windowtitle" -> 
+    "Quisso Quick-Start Tutorial", "type" -> "Tutorial", "uri" -> 
+    "Q3/tutorial/QuissoTutorial", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[599, 21, 3160, 76, 70, "AnchorBarGrid",ExpressionUUID->"61c0fb4a-2bd2-4b7a-846a-8166961fe4d2",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3784, 101, 64, 1, 70, "Title",ExpressionUUID->"369bc563-1a0e-4714-bad5-7ffa706c83e1",
+ CellID->509267359],
+Cell[3851, 104, 150, 4, 70, "Text",ExpressionUUID->"8ea0132d-a33f-4eb3-b2cc-ed8d86f00fee",
+ CellID->1534169418],
+Cell[4004, 110, 498, 16, 70, "DefinitionBox",ExpressionUUID->"abadf000-121e-4336-b366-dd02d7a42514",
+ CellID->2096742444],
+Cell[4505, 128, 97, 1, 70, "Caption",ExpressionUUID->"2abf0911-d958-4289-b305-6885e1106d43",
+ CellID->1891092685],
+Cell[4605, 131, 65, 1, 70, "MathCaption",ExpressionUUID->"3481dfef-9f5d-415a-a301-56eff34ccec8",
+ CellID->836781195],
+Cell[4673, 134, 91, 3, 70, "Input",ExpressionUUID->"c31d02b9-0292-4e68-83fb-9173e605e6ec",
+ CellID->2058623809],
+Cell[4767, 139, 126, 4, 70, "Input",ExpressionUUID->"4d935764-0168-4901-8fd9-e269a6cbc9a5",
+ CellID->302770792],
+Cell[CellGroupData[{
+Cell[4918, 147, 99, 3, 70, "Input",ExpressionUUID->"25104351-d118-45bf-ad5f-486118bb627c",
+ CellID->687323028],
+Cell[5020, 152, 577, 22, 70, "Output",ExpressionUUID->"b4858092-18d0-4e51-affb-f746a3391ccd",
+ CellID->1283885387]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5634, 179, 148, 5, 70, "Input",ExpressionUUID->"d94dddb5-2591-41c4-a460-0e891d39eaa7",
+ CellID->75834095],
+Cell[5785, 186, 249, 9, 70, "Output",ExpressionUUID->"bdb7c659-ad89-4458-9991-0e7fd959d752",
+ CellID->563442527]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6071, 200, 356, 13, 70, "Input",ExpressionUUID->"c038c956-80fd-4042-ac2f-015a66a4a2f0",
+ CellID->97443302],
+Cell[6430, 215, 624, 21, 70, "Output",ExpressionUUID->"4b027f3d-df58-4e89-890f-865d809c1eaa",
+ CellID->1181806564]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7091, 241, 205, 7, 70, "Input",ExpressionUUID->"b9b87221-4c57-42d7-9541-e7ff5b9e4366",
+ CellID->223524691],
+Cell[7299, 250, 1007, 34, 70, "Output",ExpressionUUID->"a50b9840-5ac6-47fc-900e-8c63014a5383",
+ CellID->522140324]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8343, 289, 145, 5, 70, "Input",ExpressionUUID->"a6bac72a-be59-4052-b6bc-bd486f1429fc",
+ CellID->685726275],
+Cell[8491, 296, 661, 24, 70, "Output",ExpressionUUID->"bc2bf29d-4abd-43b1-ab7a-58b71811e5de",
+ CellID->1630948382]
+}, Open  ]]
+}, Open  ]],
+Cell[9179, 324, 23, 0, 70, "FooterCell",ExpressionUUID->"633f6dec-8af1-4f16-a3c6-4d3f6bab8ca5"]
+}
+]
+*)
+
+(* End of internal cache information *)
