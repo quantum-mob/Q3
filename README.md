@@ -17,5 +17,4 @@ in the search field of the Wolfram Language Documentation Center (Mathematica he
 ---
 Mahn-Soo Choi
 
-Korea University
 mahnsoo.choi@gmail.com
