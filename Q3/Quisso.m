@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-02 09:43:12+09 $
-  $Revision: 1.2 $
+  $Date: 2020-11-04 02:16:15+09 $
+  $Revision: 1.4 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,13 +15,11 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.2 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-02 09:43:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.4 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
-
-Quisso::usage = "Quisso is a Mathematica package to facilitate simulation of quantum information processing."
 
 { Qubit, QubitQ, Qubits,
   Classical, ClassicalQ };
@@ -2394,8 +2392,8 @@ End[] (* `Qudit` *)
 
 
 
-Quisso`Quisso`Prelude`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3`Quisso`Prelude`symbs = Protect[Evaluate[$Context<>"*"]]
 
-SetAttributes[Evaluate[Quisso`Quisso`Prelude`symbs], ReadProtected]
+SetAttributes[Evaluate[Q3`Quisso`Prelude`symbs], ReadProtected]
 
 EndPackage[]

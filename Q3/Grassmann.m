@@ -2,8 +2,8 @@
 
 (* Adopted from a package by M. Headrick (April 2003) *)
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-01 14:00:55+09 $ *)
-(* $Revision: 1.1 $ *)
+(* $Date: 2020-11-04 02:12:35+09 $ *)
+(* $Revision: 1.3 $ *)
 
 BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`" } ]
 
@@ -11,13 +11,10 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.1 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-01 14:00:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.3 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:12:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
-
-Grassmann::usage="Grassmann is a Mathematica package to facilitate the Grassmann variables.\nGrassmann also represents the Grassmann algebra: Let[Grassmann, a, b, ...] or Let[Grassmann, {a, b, ...}] declares a, b, ... to be *generators* (not generic elements) of a Grassmann algebra over complex numbers."
-
 
 { Let, Grassmann, GrassmannQ, AnyGrassmanQ };
 { GD, GIntegrate };
@@ -154,8 +151,8 @@ Protect[ Evaluate @ $symbs ]
 End[]
 
 
-Protect[Evaluate[$Context<>"*"]]
+Q3`Grassmann`Private`symbs = Protect[Evaluate[$Context<>"*"]]
 
-Unprotect[GrassmannGrade]
+SetAttributes[Evaluate[Q3`Grassmann`Private`symbs], ReadProtected]
 
 EndPackage[]

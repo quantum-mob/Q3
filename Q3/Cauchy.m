@@ -2,8 +2,8 @@
 (* Mathematica package for complex variables. *)
 
 (* Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com) *)
-(* $Date: 2020-11-02 18:43:11+09 $ *)
-(* $Revision: 1.10 $ *)
+(* $Date: 2020-11-04 02:16:15+09 $ *)
+(* $Revision: 1.14 $ *)
 
 BeginPackage["Q3`Cauchy`"]
 
@@ -11,12 +11,10 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.10 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-02 18:43:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.14 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
-
-Cauchy::usage="Cauchy is a Mathematica package for non-commutative algebra over the field of complex numbers. It also facilitates complex analysis."
 
 { Supplement, SupplementBy, Common, CommonBy };
 { Choices, Successive };
@@ -142,9 +140,7 @@ Successive[f_, a_List, n_Integer] := f @@@ Transpose @ Table[
  ] /; n > 0
 
 
-ShiftLeft::usage = "Like RotateLeft, but just shift and pad right with zero or speicified value.";
-
-ShiftRight::usage = "Like RotateRight, but just shift and pad left with zero or speicified value.";
+ShiftLeft::usage = "ShiftLeft[list, n] shifts the elements in list by n positions to the left and pad n 0s on the right.\nSimilar to RotateLeft, but does not cycle the elements.\nIf n is omitted, it is assumed to be 1."
 
 ShiftLeft[a_List, n_Integer, x_:0] := PadRight[Drop[a,n], Length[a], x] /; n>0
 
@@ -153,6 +149,9 @@ ShiftLeft[a_List, n_Integer, x_:0] := PadLeft[Drop[a,n], Length[a], x] /; n<0
 ShiftLeft[a_List, 0, x_:0] := a
 
 ShiftLeft[a_List] := ShiftLeft[a, 1, 0]
+
+
+ShiftRight::usage = "ShiftRight[list, n] shifts the elements in list by n positions to the right and pad n 0s on the left.\nSimilar to RotateRight, but does not cycle the elements.\nIf n is omitted, it is assumed to be 1."
 
 ShiftRight[a_List, n_Integer, x_:0] := PadLeft[Drop[a,-n], Length[a], x] /; n>0
 
@@ -1417,12 +1416,12 @@ Protect[ Evaluate @ $symb ]
 End[] (* `Complex` *)
 
 
-Quisso`Cauchy`Prelude`$symb = Protect[Evaluate[$Context<>"*"]]
+Q3`Cauchy`Prelude`$symb = Protect[Evaluate[$Context<>"*"]]
 
-SetAttributes[Evaluate[Quisso`Cauchy`Prelude`$symb], {ReadProtected}]
+SetAttributes[Evaluate[Q3`Cauchy`Prelude`$symb], {ReadProtected}]
 
-Quisso`Cauchy`Prelude`$symb = Unprotect[Evaluate[$Context<>"$*"]]
+Q3`Cauchy`Prelude`$symb = Unprotect[Evaluate[$Context<>"$*"]]
 
-ClearAttributes[Evaluate[Quisso`Cauchy`Prelude`$symb], ReadProtected]
+ClearAttributes[Evaluate[Q3`Cauchy`Prelude`$symb], ReadProtected]
 
 EndPackage[]

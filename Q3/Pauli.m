@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-02 17:23:44+09 $
-  $Revision: 1.3 $
+  $Date: 2020-11-04 02:16:15+09 $
+  $Revision: 1.5 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`" } ]
@@ -12,12 +12,10 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.3 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-02 17:23:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.5 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
-
-Once[ Pauli::usage = "Pauli is a Mathematica package to manipulate the Pauli matrices and facilitate related matrix analysis." ]
 
 { Spin, SpinNumberQ };
 
@@ -772,7 +770,7 @@ $PauliExpandRules = {
  }
 
 
-Once[ Pauli::usage = Pauli::usage <> "\nPauli also represents the Pauli matrices.\nPauli[n] (n=1,2,3) represents the Pauli matrix. Pauli[0] represents the 2x2 identity matrix, Pauli[4] the Pauli raising matrix, Pauli[5] the Pauli lowering matrix, and Pauli[6] the Hadamard matrix." ]
+Pauli::usage = "Pauli[n] (n=1,2,3) represents the Pauli matrix. Pauli[0] represents the 2x2 identity matrix, Pauli[4] the Pauli raising matrix, Pauli[5] the Pauli lowering matrix, and Pauli[6] the Hadamard matrix."
 
 SetAttributes[Pauli, {NHoldAll, ReadProtected}]
 (* The integers in Pauli[] should not be converted to real numbers by N[]. *)
@@ -2409,12 +2407,12 @@ Protect[ Evaluate @ $symbs ]
 End[]
 
 
-Quisso`Pauli`Private`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3`Pauli`Private`symbs = Protect[Evaluate[$Context<>"*"]]
 
-SetAttributes[Evaluate[Quisso`Pauli`Private`symbs], {ReadProtected}]
+SetAttributes[Evaluate[Q3`Pauli`Private`symbs], {ReadProtected}]
 
-Quisso`Pauli`Private`$symb = Unprotect[Evaluate[$Context<>"$*"]]
+Q3`Pauli`Private`$symb = Unprotect[Evaluate[$Context<>"$*"]]
 
-ClearAttributes[Evaluate[Quisso`Pauli`Private`$symb], ReadProtected]
+ClearAttributes[Evaluate[Q3`Pauli`Private`$symb], ReadProtected]
 
 EndPackage[]

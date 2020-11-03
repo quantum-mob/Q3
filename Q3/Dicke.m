@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-03 13:07:27+09 $ *)
-(* $Revision: 1.2 $ *)
+(* $Date: 2020-11-04 02:13:11+09 $ *)
+(* $Revision: 1.4 $ *)
 
 
 BeginPackage[ "Q3`Dicke`",
@@ -13,13 +13,11 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.2 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-03 13:07:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.4 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:13:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
-
-Dicke::usage = "Dicke is a package to deal with Bosons and Qubits at the same level."
 
 { DickeBasis };
 
@@ -49,8 +47,8 @@ Protect[ Evaluate @ $symbs ]
 End[]
 
 
-Quisso`Dicke`Private`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3`Dicke`Private`symbs = Protect[Evaluate[$Context<>"*"]]
 
-SetAttributes[Evaluate[Quisso`Dicke`Private`symbs], ReadProtected]
+SetAttributes[Evaluate[Q3`Dicke`Private`symbs], ReadProtected]
 
 EndPackage[]

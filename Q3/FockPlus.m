@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2020-11-02 10:20:11+09 $
-  $Revision: 1.2 $
+  $Date: 2020-11-04 02:09:13+09 $
+  $Revision: 1.3 $
   ****)
 
 BeginPackage[ "Q3`FockPlus`",
@@ -15,14 +15,9 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.2 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-02 10:20:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.3 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:09:13+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ]
-
-If[ $VersionNumber < 10,
-  Fock::old = "The package Fock requires Mathematica 10 or later.";
-  Message[Fock::old];
  ]
 
 { Pairings, Wick, Average };

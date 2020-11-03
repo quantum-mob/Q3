@@ -2,8 +2,8 @@
 
 (* SU(3) Algebra *)
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-03 21:01:41+09 $ *)
-(* $Revision: 1.18 $ *)
+(* $Date: 2020-11-04 02:08:55+09 $ *)
+(* $Revision: 1.19 $ *)
 
 BeginPackage[ "Q3`GellMann`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
 
@@ -11,12 +11,10 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.18 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-03 21:01:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.19 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:08:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-GellMann::usage = "GellMann is a Mathematica package to facilitate the SU(3) algebra."
 
 { GellMann, TheGellMann };
 

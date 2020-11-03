@@ -1,7 +1,11 @@
 (* -*- mode:math -*- *)
+
+(* Gray is a Mathematica package to simulate the universal quantum computation
+   based on the Gray code. *)
+
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-02 17:23:02+09 $ *)
-(* $Revision: 1.3 $ *)
+(* $Date: 2020-11-04 02:16:15+09 $ *)
+(* $Revision: 1.5 $ *)
 
 BeginPackage[ "Q3`Gray`",
   { "Q3`Quisso`", "Q3`Pauli`", "Q3`Cauchy`" }
@@ -11,12 +15,10 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.3 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-02 17:23:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.5 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
-
-Gray::usage = "Gray is a Mathematica package to simulate the universal quantum computation based on the Gray code."
 
 { GrayCode, GrayCodeSubsets };
 
@@ -93,8 +95,8 @@ Protect[ Evaluate @ $symbs ]
 End[] (* `Qudit` *)
 
 
-Quisso`QuissoPlus`Private`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3`Gray`Private`symbs = Protect[Evaluate[$Context<>"*"]]
 
-SetAttributes[Evaluate[Quisso`QuissoPlus`Private`symbs], ReadProtected]
+SetAttributes[Evaluate[Q3`Gray`Private`symbs], ReadProtected]
 
 EndPackage[]

@@ -6,13 +6,10 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.8 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-02 10:28:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.10 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
-
-
-Wigner::usage = "Wigner is a Mathematica package to facilitate the SU(2) algebra of angular momentum operators."
 
 { TheWigner, TheWignerKet, TheRotation, TheEulerRotation };
 
@@ -1088,8 +1085,8 @@ Protect[Evaluate @ $symbs]
 End[]
 
 
-Quisso`Wigner`Private`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3`Wigner`Private`symbs = Protect[Evaluate[$Context<>"*"]]
 
-SetAttributes[Evaluate[Wigner`Private`symbs], ReadProtected]
+SetAttributes[Evaluate[Q3`Wigner`Private`symbs], ReadProtected]
 
 EndPackage[]
