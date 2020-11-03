@@ -1,0 +1,435 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     13385,        427]
+NotebookOptionsPosition[     10431,        357]
+NotebookOutlinePosition[     10823,        373]
+CellTagsIndexPosition[     10780,        370]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Fock: Quick-Start", "Title",
+ CellChangeTimes->{{3.8133770097661743`*^9, 
+  3.813377016008645*^9}},ExpressionUUID->"048be855-7ca0-454a-b5e1-\
+e4748fc2f803"],
+
+Cell["You first need to load the package.", "Text",
+ CellChangeTimes->{{3.813358424012785*^9, 3.813358432314662*^9}},
+ CellID->836781195,ExpressionUUID->"f6acb3ee-417e-4928-9ebe-35d7ecf59c30"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Fock`"}]], "Input",
+ CellChangeTimes->{{3.8133584354983273`*^9, 3.813358441010819*^9}},
+ CellLabel->"In[1]:=",
+ CellID->2058623809,ExpressionUUID->"60075ec2-9a1d-4158-a296-40c2dea63d23"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellChangeTimes->{{3.8133584706667*^9, 3.8133584870428953`*^9}},
+ CellLabel->"In[3]:=",
+ CellID->1033714979,ExpressionUUID->"a13d9cf1-c3af-4fd4-b9f3-e860f156c126"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"c", "[", "1", "]"}], "**", 
+  RowBox[{"c", "[", "2", "]"}]}]], "Input",
+ CellChangeTimes->{{3.813358477595334*^9, 3.813358491340723*^9}},
+ CellLabel->"In[5]:=",
+ CellID->853827381,ExpressionUUID->"b3f26b04-e3e5-45e9-beeb-d7da91d05ba9"],
+
+Cell[BoxData[
+ RowBox[{"-", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellChangeTimes->{{3.813358479707121*^9, 3.8133584930923147`*^9}},
+ CellLabel->"Out[5]=",
+ CellID->875302296,ExpressionUUID->"22a82bf4-19bf-4f90-bb54-4afab0af656f"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Ket[] returns the ",
+ Cell[BoxData[
+  ButtonBox["Vacuum",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Q3/ref/Vacuum"]], "InlineFormula",ExpressionUUID->
+  "8a27e30a-c67f-4ec3-af3c-2f6f3e96b5c2"],
+ " state."
+}], "Text",
+ CellChangeTimes->{{3.8133586472355413`*^9, 3.813358704070136*^9}},
+ CellID->634665310,ExpressionUUID->"97509cfa-17e2-422d-80e2-36200024dbc4"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v1", "=", 
+  RowBox[{"Ket", "[", "]"}]}]], "Input",
+ CellChangeTimes->{{3.813358498057486*^9, 3.813358551176887*^9}, 
+   3.813358652141301*^9},
+ CellLabel->"In[28]:=",
+ CellID->2088374135,ExpressionUUID->"c5d96d2f-12a5-437c-bc53-0878da246a9d"],
+
+Cell[BoxData[
+ TemplateBox[{"\"\[SpaceIndicator]\""},
+  "Ket"]], "Output",
+ CellChangeTimes->{3.8133587073744097`*^9},
+ CellLabel->"Out[28]=",
+ CellID->538263779,ExpressionUUID->"2368b88f-d2d0-43e1-b11a-746f7d05f5de"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v1", "//", "InputForm"}]], "Input",
+ CellChangeTimes->{{3.813358708136712*^9, 3.8133587102168694`*^9}},
+ CellLabel->"In[29]:=",
+ CellID->1991237149,ExpressionUUID->"7c1293b1-82b2-41de-95f4-4eabc6dde70a"],
+
+Cell["Ket[<||>]", "Output",
+ CellChangeTimes->{3.813358710499559*^9},
+ CellLabel->"Out[29]//InputForm=",
+ CellID->221349581,ExpressionUUID->"f481fed8-f2d9-432b-89fe-11230fd81469"]
+}, Open  ]],
+
+Cell["The Fermion operators act on the state vectors.", "Text",
+ CellChangeTimes->{{3.8133587232673273`*^9, 3.813358740511582*^9}},
+ CellID->719909995,ExpressionUUID->"68be8555-331e-4fe8-977e-566ba683106f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v2", "=", 
+  RowBox[{
+   RowBox[{"Dagger", "[", 
+    RowBox[{"c", "[", "1", "]"}], "]"}], "**", 
+   RowBox[{"Dagger", "[", 
+    RowBox[{"c", "[", "2", "]"}], "]"}], "**", 
+   RowBox[{"Ket", "[", "]"}]}]}]], "Input",
+ CellChangeTimes->{{3.813358498057486*^9, 3.813358551176887*^9}, 
+   3.813358652141301*^9},
+ CellLabel->"In[30]:=",
+ CellID->2125282454,ExpressionUUID->"4b0e930c-d869-4d33-b2a8-3bf56453c140"],
+
+Cell[BoxData[
+ TemplateBox[{
+   TagBox[
+    TemplateBox[{
+      SubscriptBox["1", 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+      SubscriptBox["1", 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
+    DisplayForm]},
+  "Ket"]], "Output",
+ CellChangeTimes->{{3.813358523351206*^9, 3.8133585515261707`*^9}, 
+   3.813358742246387*^9},
+ CellLabel->"Out[30]=",
+ CellID->1730443456,ExpressionUUID->"7cc0ccd3-36cc-4bf6-9623-cf141ce4223a"]
+}, Open  ]],
+
+Cell["Hamiltonians are written in terms of Fermion operators.", "Text",
+ CellChangeTimes->{{3.8133587471714363`*^9, 3.813358788164134*^9}},
+ CellID->1183449467,ExpressionUUID->"5886e56c-023a-42b6-8b4e-fbd1ce7d3ea8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op", "=", 
+  RowBox[{
+   RowBox[{"Q", "[", 
+    RowBox[{
+     RowBox[{"c", "[", "1", "]"}], ",", 
+     RowBox[{"c", "[", "2", "]"}]}], "]"}], "+", " ", 
+   RowBox[{"t", " ", 
+    RowBox[{"PlusDagger", "@", 
+     RowBox[{"FockHopping", "[", 
+      RowBox[{
+       RowBox[{"c", "[", "1", "]"}], ",", 
+       RowBox[{"c", "[", "2", "]"}]}], "]"}]}]}]}]}]], "Input",
+ CellChangeTimes->{{3.8133585623376627`*^9, 3.813358623757962*^9}},
+ CellLabel->"In[31]:=",
+ CellID->143203304,ExpressionUUID->"0570e2f0-061b-4b32-a046-f1a7d855edfd"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"c"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  RowBox[{"t", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"1"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}], ")"}]}], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"c"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellChangeTimes->{{3.813358581202759*^9, 3.81335858278308*^9}, {
+   3.813358617353694*^9, 3.8133586349258213`*^9}, 3.8133587900860577`*^9},
+ CellLabel->"Out[31]=",
+ CellID->287894502,ExpressionUUID->"7d6dfac2-f9d3-47ee-87d8-2863589041f1"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Its matrix representation in the standard basis can be obtained by means of \
+",
+ Cell[BoxData[
+  ButtonBox["Matrix",
+   BaseStyle->"Link",
+   ButtonData->"paclet:Q3/ref/Matrix"]], "InlineFormula",ExpressionUUID->
+  "d92d23ff-e36a-420b-a40a-1e30ce0de207"],
+ "."
+}], "Text",
+ CellChangeTimes->{{3.813358793822858*^9, 3.81335882921451*^9}},
+ CellID->362238423,ExpressionUUID->"41f910d3-0bc6-41d7-b702-418c86bc6239"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"Matrix", "[", "op", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellChangeTimes->{{3.8133585840935802`*^9, 3.813358592338253*^9}},
+ CellLabel->"In[26]:=",
+ CellID->2023682302,ExpressionUUID->"927cf50f-ef0b-4467-8754-171124798695"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", "0", "0"},
+     {"0", "1", "t", "0"},
+     {"0", "t", "1", "0"},
+     {"0", "0", "0", "2"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 0, 2, 4, 5}, {{2}, {3}, {3}, {2}, {4}}}, {
+      1, $CellContext`t, 1, $CellContext`t, 2}}]]]]], "Output",
+ CellChangeTimes->{{3.813358587662052*^9, 3.813358592587779*^9}, {
+  3.8133586313588333`*^9, 3.8133586356612463`*^9}},
+ CellLabel->"Out[27]//MatrixForm=",
+ CellID->1598818040,ExpressionUUID->"376ebdbb-e940-4bbb-b830-b4328fd62ccb"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["See also", "Subsection",
+ CellChangeTimes->{{3.813377068285184*^9, 
+  3.813377069690794*^9}},ExpressionUUID->"d6c61f1b-39ab-4db0-a68a-\
+1ea0ee2fbacd"],
+
+Cell[TextData[{
+ " Example ",
+ ButtonBox["Kitaev Chain",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/tutorial/KitaevChain"],
+ "."
+}], "Item",
+ CellChangeTimes->{{3.813377073378265*^9, 
+  3.8133771070282393`*^9}},ExpressionUUID->"5d87bda5-9836-4f9b-b0e0-\
+3b344e7ccc2b"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{853, 1395},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"8faf9272-db44-410b-8d9f-74c081738d3c"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 162, 3, 98, "Title",ExpressionUUID->"048be855-7ca0-454a-b5e1-e4748fc2f803"],
+Cell[745, 27, 192, 2, 35, "Text",ExpressionUUID->"f6acb3ee-417e-4928-9ebe-35d7ecf59c30",
+ CellID->836781195],
+Cell[940, 31, 219, 4, 30, "Input",ExpressionUUID->"60075ec2-9a1d-4158-a296-40c2dea63d23",
+ CellID->2058623809],
+Cell[1162, 37, 250, 5, 30, "Input",ExpressionUUID->"a13d9cf1-c3af-4fd4-b9f3-e860f156c126",
+ CellID->1033714979],
+Cell[CellGroupData[{
+Cell[1437, 46, 270, 6, 30, "Input",ExpressionUUID->"b3f26b04-e3e5-45e9-beeb-d7da91d05ba9",
+ CellID->853827381],
+Cell[1710, 54, 617, 25, 34, "Output",ExpressionUUID->"22a82bf4-19bf-4f90-bb54-4afab0af656f",
+ CellID->875302296]
+}, Open  ]],
+Cell[2342, 82, 380, 10, 39, "Text",ExpressionUUID->"97509cfa-17e2-422d-80e2-36200024dbc4",
+ CellID->634665310],
+Cell[CellGroupData[{
+Cell[2747, 96, 267, 6, 30, "Input",ExpressionUUID->"c5d96d2f-12a5-437c-bc53-0878da246a9d",
+ CellID->2088374135],
+Cell[3017, 104, 217, 5, 38, "Output",ExpressionUUID->"2368b88f-d2d0-43e1-b11a-746f7d05f5de",
+ CellID->538263779]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3271, 114, 227, 4, 30, "Input",ExpressionUUID->"7c1293b1-82b2-41de-95f4-4eabc6dde70a",
+ CellID->1991237149],
+Cell[3501, 120, 179, 3, 45, "Output",ExpressionUUID->"f481fed8-f2d9-432b-89fe-11230fd81469",
+ CellID->221349581]
+}, Open  ]],
+Cell[3695, 126, 206, 2, 35, "Text",ExpressionUUID->"68be8555-331e-4fe8-977e-566ba683106f",
+ CellID->719909995],
+Cell[CellGroupData[{
+Cell[3926, 132, 431, 11, 30, "Input",ExpressionUUID->"4b0e930c-d869-4d33-b2a8-3bf56453c140",
+ CellID->2125282454],
+Cell[4360, 145, 639, 19, 38, "Output",ExpressionUUID->"7cc0ccd3-36cc-4bf6-9623-cf141ce4223a",
+ CellID->1730443456]
+}, Open  ]],
+Cell[5014, 167, 215, 2, 35, "Text",ExpressionUUID->"5886e56c-023a-42b6-8b4e-fbd1ce7d3ea8",
+ CellID->1183449467],
+Cell[CellGroupData[{
+Cell[5254, 173, 553, 15, 30, "Input",ExpressionUUID->"0570e2f0-061b-4b32-a046-f1a7d855edfd",
+ CellID->143203304],
+Cell[5810, 190, 2390, 92, 37, "Output",ExpressionUUID->"7d6dfac2-f9d3-47ee-87d8-2863589041f1",
+ CellID->287894502]
+}, Open  ]],
+Cell[8215, 285, 431, 11, 39, "Text",ExpressionUUID->"41f910d3-0bc6-41d7-b702-418c86bc6239",
+ CellID->362238423],
+Cell[CellGroupData[{
+Cell[8671, 300, 336, 7, 52, "Input",ExpressionUUID->"927cf50f-ef0b-4467-8754-171124798695",
+ CellID->2023682302],
+Cell[9010, 309, 926, 25, 94, "Output",ExpressionUUID->"376ebdbb-e940-4bbb-b830-b4328fd62ccb",
+ CellID->1598818040]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9973, 339, 156, 3, 54, "Subsection",ExpressionUUID->"d6c61f1b-39ab-4db0-a68a-1ea0ee2fbacd"],
+Cell[10132, 344, 271, 9, 32, "Item",ExpressionUUID->"5d87bda5-9836-4f9b-b0e0-3b344e7ccc2b"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
