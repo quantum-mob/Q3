@@ -1,0 +1,2755 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 11.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     88267,       2747]
+NotebookOptionsPosition[     86343,       2687]
+NotebookOutlinePosition[     86735,       2703]
+CellTagsIndexPosition[     86692,       2700]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+
+Cell[CellGroupData[{
+Cell["Kitaev Chain", "Title",
+ CellChangeTimes->{{3.8132484056176233`*^9, 
+  3.8132484285888577`*^9}},ExpressionUUID->"d828f133-73c6-4202-a7ba-\
+9c1cd19f07b5"],
+
+Cell["A topological superconductor with p-wave pairing", "Subtitle",
+ CellChangeTimes->{{3.813248434022477*^9, 
+  3.813248449277071*^9}},ExpressionUUID->"9a1eb1bb-0af0-430e-b15c-\
+8c15eecb54ce"],
+
+Cell[BoxData[
+ RowBox[{"Quit", "[", "]"}]], "Input",
+ CellChangeTimes->{{3.7114082331085997`*^9, 
+  3.711408234963113*^9}},ExpressionUUID->"5eee49a2-c8f6-49d4-9f46-\
+2d7d96e75eb0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Fock`"}]], "Input",
+ CellChangeTimes->{{3.711159076036584*^9, 3.711159079914678*^9}, 
+   3.813248151731946*^9},
+ CellLabel->"In[1]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["\<\"Q3/Cauchy.m v1.10 (2020-11-02) Mahn-Soo Choi\"\>"], "Print",
+ CellChangeTimes->{
+  3.711159080861125*^9, 3.711407384902796*^9, {3.711408231143874*^9, 
+   3.711408241519351*^9}, {3.711408361596031*^9, 3.711408363663125*^9}, {
+   3.7114084803661127`*^9, 3.711408488469161*^9}, 3.711408632127468*^9, 
+   3.7114094610209923`*^9, 3.711409571496113*^9, 3.7114096260901213`*^9, 
+   3.7114115170693703`*^9, 3.7114175591695833`*^9, 3.7114176277080183`*^9, 
+   3.711418381345175*^9, 3.711419429189261*^9, 3.711419484517703*^9, 
+   3.711419673713361*^9, 3.7114199593877068`*^9, 3.711420030280864*^9, 
+   3.711420163771154*^9, 3.7114203071960773`*^9, 3.711420454409317*^9, 
+   3.711420499916729*^9, 3.711420678199951*^9, 3.7114207840903587`*^9, 
+   3.711420986357831*^9, 3.7114592609514637`*^9, 3.711459676330138*^9, 
+   3.711602271058782*^9, {3.711664549791872*^9, 3.711664554130187*^9}, 
+   3.716765270719118*^9, 3.721198903629727*^9, 3.813248161553624*^9, 
+   3.81335122146979*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData["\<\"Q3/Grassmann.m v1.1 (2020-11-01) Mahn-Soo Choi\"\>"], \
+"Print",
+ CellChangeTimes->{
+  3.711159080861125*^9, 3.711407384902796*^9, {3.711408231143874*^9, 
+   3.711408241519351*^9}, {3.711408361596031*^9, 3.711408363663125*^9}, {
+   3.7114084803661127`*^9, 3.711408488469161*^9}, 3.711408632127468*^9, 
+   3.7114094610209923`*^9, 3.711409571496113*^9, 3.7114096260901213`*^9, 
+   3.7114115170693703`*^9, 3.7114175591695833`*^9, 3.7114176277080183`*^9, 
+   3.711418381345175*^9, 3.711419429189261*^9, 3.711419484517703*^9, 
+   3.711419673713361*^9, 3.7114199593877068`*^9, 3.711420030280864*^9, 
+   3.711420163771154*^9, 3.7114203071960773`*^9, 3.711420454409317*^9, 
+   3.711420499916729*^9, 3.711420678199951*^9, 3.7114207840903587`*^9, 
+   3.711420986357831*^9, 3.7114592609514637`*^9, 3.711459676330138*^9, 
+   3.711602271058782*^9, {3.711664549791872*^9, 3.711664554130187*^9}, 
+   3.716765270719118*^9, 3.721198903629727*^9, 3.813248161553624*^9, 
+   3.813351221530497*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData["\<\"Q3/Pauli.m v1.3 (2020-11-02) Mahn-Soo Choi\"\>"], "Print",
+ CellChangeTimes->{
+  3.711159080861125*^9, 3.711407384902796*^9, {3.711408231143874*^9, 
+   3.711408241519351*^9}, {3.711408361596031*^9, 3.711408363663125*^9}, {
+   3.7114084803661127`*^9, 3.711408488469161*^9}, 3.711408632127468*^9, 
+   3.7114094610209923`*^9, 3.711409571496113*^9, 3.7114096260901213`*^9, 
+   3.7114115170693703`*^9, 3.7114175591695833`*^9, 3.7114176277080183`*^9, 
+   3.711418381345175*^9, 3.711419429189261*^9, 3.711419484517703*^9, 
+   3.711419673713361*^9, 3.7114199593877068`*^9, 3.711420030280864*^9, 
+   3.711420163771154*^9, 3.7114203071960773`*^9, 3.711420454409317*^9, 
+   3.711420499916729*^9, 3.711420678199951*^9, 3.7114207840903587`*^9, 
+   3.711420986357831*^9, 3.7114592609514637`*^9, 3.711459676330138*^9, 
+   3.711602271058782*^9, {3.711664549791872*^9, 3.711664554130187*^9}, 
+   3.716765270719118*^9, 3.721198903629727*^9, 3.813248161553624*^9, 
+   3.813351221561365*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData["\<\"Q3/Fock.m v1.9 (2020-11-02) Mahn-Soo Choi\"\>"], "Print",
+ CellChangeTimes->{
+  3.711159080861125*^9, 3.711407384902796*^9, {3.711408231143874*^9, 
+   3.711408241519351*^9}, {3.711408361596031*^9, 3.711408363663125*^9}, {
+   3.7114084803661127`*^9, 3.711408488469161*^9}, 3.711408632127468*^9, 
+   3.7114094610209923`*^9, 3.711409571496113*^9, 3.7114096260901213`*^9, 
+   3.7114115170693703`*^9, 3.7114175591695833`*^9, 3.7114176277080183`*^9, 
+   3.711418381345175*^9, 3.711419429189261*^9, 3.711419484517703*^9, 
+   3.711419673713361*^9, 3.7114199593877068`*^9, 3.711420030280864*^9, 
+   3.711420163771154*^9, 3.7114203071960773`*^9, 3.711420454409317*^9, 
+   3.711420499916729*^9, 3.711420678199951*^9, 3.7114207840903587`*^9, 
+   3.711420986357831*^9, 3.7114592609514637`*^9, 3.711459676330138*^9, 
+   3.711602271058782*^9, {3.711664549791872*^9, 3.711664554130187*^9}, 
+   3.716765270719118*^9, 3.721198903629727*^9, 3.813248161553624*^9, 
+   3.813351221617708*^9},
+ CellLabel->
+  "During evaluation of \
+In[1]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "t", ",", "\[Mu]", ",", "\[CapitalDelta]"}], 
+  "]"}]}], "Input",
+ CellChangeTimes->{{3.71145941805424*^9, 3.711459433142825*^9}, {
+  3.721198908235574*^9, 3.7211989105105247`*^9}},
+ CellLabel->"In[2]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell["The number of sites of the one-dimensional lattice.", "Text",
+ CellChangeTimes->{{3.813351506254611*^9, 
+  3.813351523668706*^9}},ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"$L", "=", "8"}], ";"}]], "Input",
+ CellChangeTimes->{{3.711159138973585*^9, 3.711159172462483*^9}, {
+   3.711159225092456*^9, 3.711159231483368*^9}, {3.711159262762162*^9, 
+   3.711159295784648*^9}, {3.7114074394399776`*^9, 3.7114075706552973`*^9}, {
+   3.711459469923321*^9, 3.7114594704784403`*^9}, {3.711459520214575*^9, 
+   3.711459594672206*^9}, {3.7116026992197723`*^9, 3.711602709647195*^9}, 
+   3.813248251336814*^9, {3.813248313647099*^9, 3.8132483160661287`*^9}, {
+   3.813351486558352*^9, 3.813351487896637*^9}},
+ CellLabel->"In[21]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell["Define some Lists of operators to be used later.", "Text",
+ CellChangeTimes->{{3.81335157190662*^9, 
+  3.813351583953772*^9}},ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"cc", "=", 
+  RowBox[{"c", "[", 
+   RowBox[{"Range", "[", 
+    RowBox[{"1", ",", "$L"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"cccc", "=", 
+  RowBox[{"Join", "[", 
+   RowBox[{"cc", ",", 
+    RowBox[{"Dagger", "@", "cc"}]}], "]"}]}]}], "Input",
+ CellChangeTimes->{{3.711159138973585*^9, 3.711159172462483*^9}, {
+   3.711159225092456*^9, 3.711159231483368*^9}, {3.711159262762162*^9, 
+   3.711159295784648*^9}, {3.7114074394399776`*^9, 3.7114075706552973`*^9}, {
+   3.711459469923321*^9, 3.7114594704784403`*^9}, {3.711459520214575*^9, 
+   3.711459594672206*^9}, {3.7116026992197723`*^9, 3.711602709647195*^9}, 
+   3.813248251336814*^9, {3.813248313647099*^9, 3.8132483160661287`*^9}, {
+   3.813351486558352*^9, 3.813351490370501*^9}, {3.813351560826293*^9, 
+   3.8133515642790823`*^9}},
+ CellLabel->"In[22]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"4"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"5"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"6"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"7"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"8"},
+      "RowDefault"]],
+    DisplayForm]}], "}"}]], "Output",
+ CellChangeTimes->{3.813351565538158*^9},
+ CellLabel->"Out[22]=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"4"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"5"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"6"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"7"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"8"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"2"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"3"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"4"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"5"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"6"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"7"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"8"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm]}], "}"}]], "Output",
+ CellChangeTimes->{3.813351565569504*^9},
+ CellLabel->"Out[23]=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"]
+}, Open  ]],
+
+Cell["Now constructs the model Hamiltonian.", "Text",
+ CellChangeTimes->{{3.813351605497324*^9, 
+  3.813351619322886*^9}},ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"H0", "=", 
+  RowBox[{
+   RowBox[{"-", "\[Mu]"}], "*", 
+   RowBox[{"Q", "[", "cc", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Hhop", "=", 
+  RowBox[{
+   RowBox[{"-", "t"}], "*", 
+   RowBox[{"PlusDagger", " ", "@", " ", 
+    RowBox[{"FockHopping", "[", "cc", "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Hpair", "=", 
+  RowBox[{
+   RowBox[{"-", "\[CapitalDelta]"}], "*", 
+   RowBox[{"PlusDagger", " ", "@", " ", 
+    RowBox[{"FockPairing", "[", "cc", "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Htotal", "=", 
+  RowBox[{"H0", "+", "Hhop", "+", "Hpair"}]}]}], "Input",
+ CellChangeTimes->{{3.711159138973585*^9, 3.711159172462483*^9}, {
+   3.711159225092456*^9, 3.711159231483368*^9}, {3.711159262762162*^9, 
+   3.711159295784648*^9}, {3.7114074394399776`*^9, 3.7114075706552973`*^9}, {
+   3.711459469923321*^9, 3.7114594704784403`*^9}, {3.711459520214575*^9, 
+   3.711459594672206*^9}, {3.7116026992197723`*^9, 3.711602709647195*^9}, 
+   3.813248251336814*^9, {3.813248313647099*^9, 3.8132483160661287`*^9}, {
+   3.813351486558352*^9, 3.813351490370501*^9}, 
+   3.813351560826293*^9},ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "\[Mu]"}], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"8"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"8"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellChangeTimes->{{3.711159163698298*^9, 3.7111591732312403`*^9}, 
+   3.7111592321122017`*^9, {3.711159283279591*^9, 3.71115929644671*^9}, 
+   3.711407387048957*^9, {3.7114074376456823`*^9, 3.711407482337822*^9}, {
+   3.711407563818091*^9, 3.71140757109864*^9}, 3.711459472233498*^9, 
+   3.7114595065082273`*^9, {3.711459544257629*^9, 3.711459599588543*^9}, 
+   3.711459678037078*^9, 3.711602276358878*^9, 3.711602666285853*^9, {
+   3.711602700359436*^9, 3.711602710050076*^9}, 3.711664559733591*^9, 
+   3.716765274566169*^9, 3.721198912286643*^9, {3.8132481644186907`*^9, 
+   3.8132481898419933`*^9}, 3.813248251781289*^9, 3.813248285868781*^9, 
+   3.8132483164215612`*^9, 3.813351223781005*^9},
+ CellLabel->"Out[7]=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "t"}], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"8"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"8"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellChangeTimes->{{3.711159163698298*^9, 3.7111591732312403`*^9}, 
+   3.7111592321122017`*^9, {3.711159283279591*^9, 3.71115929644671*^9}, 
+   3.711407387048957*^9, {3.7114074376456823`*^9, 3.711407482337822*^9}, {
+   3.711407563818091*^9, 3.71140757109864*^9}, 3.711459472233498*^9, 
+   3.7114595065082273`*^9, {3.711459544257629*^9, 3.711459599588543*^9}, 
+   3.711459678037078*^9, 3.711602276358878*^9, 3.711602666285853*^9, {
+   3.711602700359436*^9, 3.711602710050076*^9}, 3.711664559733591*^9, 
+   3.716765274566169*^9, 3.721198912286643*^9, {3.8132481644186907`*^9, 
+   3.8132481898419933`*^9}, 3.813248251781289*^9, 3.813248285868781*^9, 
+   3.8132483164215612`*^9, 3.81335122381145*^9},
+ CellLabel->"Out[8]=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "\[CapitalDelta]"}], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{"-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"1"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"8"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"8"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellChangeTimes->{{3.711159163698298*^9, 3.7111591732312403`*^9}, 
+   3.7111592321122017`*^9, {3.711159283279591*^9, 3.71115929644671*^9}, 
+   3.711407387048957*^9, {3.7114074376456823`*^9, 3.711407482337822*^9}, {
+   3.711407563818091*^9, 3.71140757109864*^9}, 3.711459472233498*^9, 
+   3.7114595065082273`*^9, {3.711459544257629*^9, 3.711459599588543*^9}, 
+   3.711459678037078*^9, 3.711602276358878*^9, 3.711602666285853*^9, {
+   3.711602700359436*^9, 3.711602710050076*^9}, 3.711664559733591*^9, 
+   3.716765274566169*^9, 3.721198912286643*^9, {3.8132481644186907`*^9, 
+   3.8132481898419933`*^9}, 3.813248251781289*^9, 3.813248285868781*^9, 
+   3.8132483164215612`*^9, 3.813351223815189*^9},
+ CellLabel->"Out[9]=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"-", "\[CapitalDelta]"}], " ", 
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"-", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"2"},
+            "RowDefault"]],
+          DisplayForm],
+         DisplayForm], 
+        TagBox[
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"1"},
+            "RowDefault"]],
+          DisplayForm],
+         DisplayForm]}],
+       DisplayForm]}], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"3"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"4"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"3"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"5"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"4"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"6"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"5"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"7"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"6"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"8"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"7"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"4"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"4"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"5"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"5"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"6"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"6"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"7"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"7"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"8"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}], ")"}]}], "-", 
+  RowBox[{"t", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"1"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"3"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"4"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"4"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"3"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"4"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"5"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"5"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"4"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"5"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"6"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"6"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"5"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"6"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"7"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"7"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"6"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"7"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"8"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"8"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"7"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}], ")"}]}], "-", 
+  RowBox[{"\[Mu]", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"1"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"3"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"4"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"4"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"5"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"5"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"6"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"6"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"7"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"7"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"8"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"8"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}], ")"}]}]}]], "Output",
+ CellChangeTimes->{{3.711159163698298*^9, 3.7111591732312403`*^9}, 
+   3.7111592321122017`*^9, {3.711159283279591*^9, 3.71115929644671*^9}, 
+   3.711407387048957*^9, {3.7114074376456823`*^9, 3.711407482337822*^9}, {
+   3.711407563818091*^9, 3.71140757109864*^9}, 3.711459472233498*^9, 
+   3.7114595065082273`*^9, {3.711459544257629*^9, 3.711459599588543*^9}, 
+   3.711459678037078*^9, 3.711602276358878*^9, 3.711602666285853*^9, {
+   3.711602700359436*^9, 3.711602710050076*^9}, 3.711664559733591*^9, 
+   3.716765274566169*^9, 3.721198912286643*^9, {3.8132481644186907`*^9, 
+   3.8132481898419933`*^9}, 3.813248251781289*^9, 3.813248285868781*^9, 
+   3.8132483164215612`*^9, 3.813351223819994*^9},
+ CellLabel->"Out[10]=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"]
+}, Open  ]],
+
+Cell["Let us take a look at the connectivity of the model.", "Text",
+ CellChangeTimes->{{3.813351627208797*^9, 
+  3.81335164982028*^9}},ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"GraphForm", "[", "Htotal", "]"}]], "Input",
+ CellChangeTimes->{{3.813351242806131*^9, 3.813351250892824*^9}},
+ CellLabel->"In[15]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{
+       $CellContext`c[1], 
+       $CellContext`c[2], 
+       $CellContext`c[3], 
+       $CellContext`c[4], 
+       $CellContext`c[5], 
+       $CellContext`c[6], 
+       $CellContext`c[7], 
+       $CellContext`c[8]}, {
+      Null, {{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {1, 2}, {
+       2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}}, {
+       Null, Null, Null, Null, Null, Null, Null, "Pairing", "Pairing", 
+        "Pairing", "Pairing", "Pairing", "Pairing", "Pairing"}}, {
+      EdgeLabels -> {UndirectedEdge[
+           $CellContext`c[7], 
+           $CellContext`c[8]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[4], 
+           $CellContext`c[5], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[3], 
+           $CellContext`c[4], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[1], 
+           $CellContext`c[2]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[7], 
+           $CellContext`c[8], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[2], 
+           $CellContext`c[3]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[4], 
+           $CellContext`c[5]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[3], 
+           $CellContext`c[4]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[6], 
+           $CellContext`c[7]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[6], 
+           $CellContext`c[7], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[5], 
+           $CellContext`c[6], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[1], 
+           $CellContext`c[2], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[2], 
+           $CellContext`c[3], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[5], 
+           $CellContext`c[6]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]]}, EdgeStyle -> {UndirectedEdge[
+           $CellContext`c[7], 
+           $CellContext`c[8], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[1], 
+           $CellContext`c[2], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[2], 
+           $CellContext`c[3], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[4], 
+           $CellContext`c[5], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[3], 
+           $CellContext`c[4], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[6], 
+           $CellContext`c[7], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[5], 
+           $CellContext`c[6], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]]}, ImageSize -> Large, 
+       VertexLabels -> {$CellContext`c[6] -> $CellContext`c[
+          6], $CellContext`c[3] -> $CellContext`c[3], $CellContext`c[
+          1] -> $CellContext`c[1], $CellContext`c[8] -> $CellContext`c[
+          8], $CellContext`c[4] -> $CellContext`c[4], $CellContext`c[
+          7] -> $CellContext`c[7], $CellContext`c[2] -> $CellContext`c[
+          2], $CellContext`c[5] -> $CellContext`c[5]}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {Hue[0.6, 0.7, 0.5], Opacity[0.7], {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{0., 1.3471114790620886`*^-15}, {
+           0.49999999999999933`, 0.16444074718311757`}, {1., 
+           1.2246467991473533`*^-15}}], 0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {0.5, 0.07000000000000134}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{0., 1.3471114790620886`*^-15}, {
+            0.5000000000000001, -0.16444074718311505`}, {1., 
+            1.2246467991473533`*^-15}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {0.5, -0.06999999999999879}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{1., 1.2246467991473533`*^-15}, {
+           1.499999999999998, 0.16444074718311724`}, {2., 
+           1.102182119232618*^-15}}], 0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {1.5, 0.07000000000000123}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{1., 1.2246467991473533`*^-15}, {
+            1.4999999999999984`, -0.16444074718311505`}, {2., 
+            1.102182119232618*^-15}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {1.5, -0.0699999999999989}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{2., 1.102182119232618*^-15}, {2.5, 
+           0.16444074718311807`}, {3., 9.797174393178826*^-16}}], 
+           0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {2.5, 0.07000000000000112}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{2., 1.102182119232618*^-15}, {
+            2.5, -0.16444074718311552`}, {3., 9.797174393178826*^-16}}], 
+            0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {2.5, -0.06999999999999901}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{3., 9.797174393178826*^-16}, {
+           3.499999999999999, 0.16444074718311727`}, {4., 
+           7.347880794884119*^-16}}], 0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {3.5, 0.0700000000000009}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{3., 9.797174393178826*^-16}, {
+            3.4999999999999996`, -0.16444074718311605`}, {4., 
+            7.347880794884119*^-16}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {3.5, -0.06999999999999923}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{4., 7.347880794884119*^-16}, {4.5, 
+           0.1644407471831153}, {5., 4.898587196589413*^-16}}], 
+           0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {4.5, 0.07000000000000067}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{4., 7.347880794884119*^-16}, {
+            4.500000000000002, -0.1644407471831138}, {5., 
+            4.898587196589413*^-16}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {4.5, -0.06999999999999945}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{5., 4.898587196589413*^-16}, {
+           5.499999999999999, 0.16444074718311485`}, {6., 
+           2.449293598294707*^-16}}], 0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {5.5, 0.07000000000000045}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{5., 4.898587196589413*^-16}, {
+            5.500000000000001, -0.16444074718311322`}, {6., 
+            2.449293598294707*^-16}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {5.5, -0.06999999999999967}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{6., 2.449293598294707*^-16}, {6.5, 
+           0.16444074718311427`}, {7., 0.}}], 0.05338164251207729]}, 
+         InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {6.5, 0.07000000000000023}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{6., 2.449293598294707*^-16}, {
+            6.500000000000004, -0.16444074718311544`}, {7., 0.}}], 
+            0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {6.5, -0.0699999999999999}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}}, 
+       {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[
+        0.7]}], {DiskBox[{0., 1.3471114790620886*^-15}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"1"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {0.05338164251207729, 0.053381642512078636}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{1., 1.2246467991473533*^-15}, 0.05338164251207729], InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"2"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {1.0533816425120772, 0.05338164251207851}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{2., 1.102182119232618*^-15}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"3"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {2.053381642512077, 0.053381642512078394}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{3., 9.797174393178826*^-16}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"4"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {3.053381642512077, 0.05338164251207827}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{4., 7.347880794884119*^-16}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"5"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {4.053381642512077, 0.053381642512078026}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{5., 4.898587196589413*^-16}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"6"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {5.053381642512077, 0.05338164251207778}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{6., 2.449293598294707*^-16}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"7"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {6.053381642512077, 0.05338164251207753}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {DiskBox[{7., 0.}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"8"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {7.053381642512077, 0.05338164251207729}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->{
+   "NetworkGraphics", FrontEnd`GraphicsHighlightColor -> Hue[0.8, 1., 0.6]},
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->{604.671875, Automatic}]], "Output",
+ CellChangeTimes->{3.8133512516031103`*^9},
+ CellLabel->"Out[15]=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"]
+}, Open  ]],
+
+Cell["\<\
+Here the black thin lines indicate single-particle tunneling and the red \
+thick lines represent the p-wave pairing.\
+\>", "Text",
+ CellChangeTimes->{{3.8133516590334873`*^9, 
+  3.8133517299376907`*^9}},ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"],
+
+Cell["\<\
+To investigate the quasi-particle spectrum (by means of the Bogoliubov-de \
+Gennes equation), obtain the single-particle BdG Hamiltonian.\
+\>", "Text",
+ CellChangeTimes->{{3.813351744562454*^9, 
+  3.813351818560998*^9}},ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matK", "=", 
+   RowBox[{"CoefficientTensor", "[", 
+    RowBox[{"Htotal", ",", 
+     RowBox[{"Dagger", "@", "cccc"}], ",", "cccc"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matK", "//", "MatrixForm"}]}], "Input",
+ CellChangeTimes->{{3.8132483189693203`*^9, 3.813248353656302*^9}},
+ CellLabel->"In[11]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0", "0", "0", "0"},
+     {
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0", "0", "0"},
+     {"0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0", "0"},
+     {"0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0"},
+     {"0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0"},
+     {"0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0"},
+     {"0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"]},
+     {"0", "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], "0", "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0"},
+     {"0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", "0", 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0", "0", "0", "0", "0"},
+     {
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0", "0", "0", "0"},
+     {"0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0", "0", "0"},
+     {"0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0", "0"},
+     {"0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0"},
+     {"0", "0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0"},
+     {"0", "0", "0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"]},
+     {"0", "0", "0", "0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0", "0", "0", "0", "0", 
+      
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {16, 16}, 0, {
+     1, {{0, 3, 8, 13, 18, 23, 28, 33, 36, 39, 44, 49, 54, 59, 64, 69, 72}, {{
+       1}, {2}, {10}, {1}, {2}, {3}, {9}, {11}, {2}, {3}, {4}, {10}, {12}, {
+       3}, {4}, {5}, {11}, {13}, {4}, {5}, {6}, {12}, {14}, {5}, {6}, {7}, {
+       13}, {15}, {6}, {7}, {8}, {14}, {16}, {7}, {8}, {15}, {2}, {9}, {10}, {
+       1}, {3}, {9}, {10}, {11}, {2}, {4}, {10}, {11}, {12}, {3}, {5}, {11}, {
+       12}, {13}, {4}, {6}, {12}, {13}, {14}, {5}, {7}, {13}, {14}, {15}, {
+       6}, {8}, {14}, {15}, {16}, {7}, {15}, {16}}}, {
+      Rational[-1, 2] $CellContext`\[Mu], Rational[-1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[Mu], Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[Mu]}}]]]]], "Output",
+ CellChangeTimes->{3.813248354234358*^9, 3.813351225087373*^9},
+ CellLabel->
+  "Out[12]//MatrixForm=",ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"]
+}, Open  ]],
+
+Cell["\<\
+Now study the quasi-particle energy spectrum of the model. (Be aware of the \
+finite size effects.)\
+\>", "Text",
+ CellChangeTimes->{{3.813351423121439*^9, 3.813351472045054*^9}, {
+  3.813351837061471*^9, 
+  3.813351842618182*^9}},ExpressionUUID->"00000000-0000-0000-0000-\
+000000000000"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"KK", "[", 
+    RowBox[{"\[Mu]_", ",", "t_", ",", "\[CapitalDelta]_"}], "]"}], "=", 
+   "matK"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Module", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"eval", "=", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"Sort", "@", 
+          RowBox[{"Eigenvalues", "[", 
+           RowBox[{"KK", "[", 
+            RowBox[{"\[Mu]", ",", "1.", ",", "\[CapitalDelta]"}], "]"}], 
+           "]"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"\[Mu]", ",", "0", ",", "5", ",", "0.05"}], "}"}]}], 
+        "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"ListLinePlot", "[", 
+      RowBox[{
+       RowBox[{"Transpose", "@", "eval"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"Axes", "\[Rule]", "None"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"Frame", "\[Rule]", "True"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"FrameLabel", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"\"\<\[Mu] / t\>\"", ",", "\"\<Eenergy / t\>\""}], "}"}]}], 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{"DataRange", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "5"}], "}"}]}]}], "]"}]}], "\[IndentingNewLine]", 
+    "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\[CapitalDelta]", ",", "1"}], "}"}], ",", "0", ",", "2", ",", 
+     "0.1"}], "}"}]}], "\[IndentingNewLine]", "]"}]}], "Input",
+ CellChangeTimes->{{3.7111595693706703`*^9, 3.711159597201733*^9}, {
+  3.711459664010548*^9, 3.711459666712419*^9}, {3.711602339837862*^9, 
+  3.711602487040008*^9}, {3.711602533493128*^9, 3.711602536163187*^9}, {
+  3.711602567480686*^9, 3.71160262789923*^9}, {3.7116645756896267`*^9, 
+  3.711664586079467*^9}, {3.813351327120635*^9, 3.813351411140767*^9}, {
+  3.813351453136277*^9, 3.813351453584732*^9}},
+ CellLabel->"In[19]:=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`\[CapitalDelta]$$ = 1, Typeset`show$$ = 
+    True, Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`\[CapitalDelta]$$], 1}, 0, 2, 0.1}}, 
+    Typeset`size$$ = {576., {188., 192.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`\[CapitalDelta]$$ = 1}, 
+      "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      Module[{$CellContext`eval = Table[
+           Sort[
+            Eigenvalues[
+             $CellContext`KK[$CellContext`\[Mu], 
+              1., $CellContext`\[CapitalDelta]$$]]], {$CellContext`\[Mu], 0, 
+            5, 0.05}]}, 
+        ListLinePlot[
+         Transpose[$CellContext`eval], Axes -> None, Frame -> True, 
+         FrameLabel -> {"\[Mu] / t", "Eenergy / t"}, DataRange -> {0, 5}]], 
+      "Specifications" :> {{{$CellContext`\[CapitalDelta]$$, 1}, 0, 2, 0.1}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{621., {233., 239.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellChangeTimes->{{3.711602473089302*^9, 3.711602490230184*^9}, 
+   3.711602537040613*^9, 3.711602574790309*^9, 3.711602628691331*^9, {
+   3.711602669605455*^9, 3.711602682172413*^9}, {3.7116027157373047`*^9, 
+   3.71160272331773*^9}, {3.7116645664393272`*^9, 3.711664586601575*^9}, 
+   3.721198926897546*^9, 3.8132482607900763`*^9, 3.81324837571126*^9, 
+   3.813351227292691*^9, 3.81335134831221*^9, 3.813351412006466*^9, 
+   3.81335145476514*^9},
+ CellLabel->"Out[20]=",ExpressionUUID->"00000000-0000-0000-0000-000000000000"]
+}, Open  ]]
+}, Open  ]]
+},
+WindowSize->{853, 1395},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->"Default.nb",
+ExpressionUUID->"0339765b-b0d2-4d67-88fb-849cb71fc895"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[CellGroupData[{
+Cell[580, 22, 159, 3, 98, "Title",ExpressionUUID->"d828f133-73c6-4202-a7ba-9c1cd19f07b5"],
+Cell[742, 27, 194, 3, 53, "Subtitle",ExpressionUUID->"9a1eb1bb-0af0-430e-b15c-8c15eecb54ce"],
+Cell[939, 32, 180, 4, 30, "Input",ExpressionUUID->"5eee49a2-c8f6-49d4-9f46-2d7d96e75eb0"],
+Cell[CellGroupData[{
+Cell[1144, 40, 222, 4, 30, "Input"],
+Cell[CellGroupData[{
+Cell[1391, 48, 1094, 17, 24, "Print"],
+Cell[2488, 67, 1099, 18, 24, "Print"],
+Cell[3590, 87, 1093, 17, 24, "Print"],
+Cell[4686, 106, 1092, 17, 24, "Print"]
+}, Open  ]]
+}, Open  ]],
+Cell[5805, 127, 405, 8, 52, "Input"],
+Cell[6213, 137, 193, 3, 35, "Text"],
+Cell[6409, 142, 637, 10, 30, "Input"],
+Cell[7049, 154, 189, 3, 35, "Text"],
+Cell[CellGroupData[{
+Cell[7263, 161, 900, 17, 52, "Input"],
+Cell[8166, 180, 1334, 60, 34, "Output"],
+Cell[9503, 242, 3030, 116, 37, "Output"]
+}, Open  ]],
+Cell[12548, 361, 179, 3, 35, "Text"],
+Cell[CellGroupData[{
+Cell[12752, 368, 1170, 25, 94, "Input"],
+Cell[13925, 395, 5075, 183, 37, "Output"],
+Cell[19003, 580, 8220, 309, 37, "Output"],
+Cell[27226, 891, 8276, 310, 37, "Output"],
+Cell[35505, 1203, 20728, 779, 83, "Output"]
+}, Open  ]],
+Cell[56248, 1985, 193, 3, 35, "Text"],
+Cell[CellGroupData[{
+Cell[56466, 1992, 212, 3, 30, "Input"],
+Cell[56681, 1997, 15001, 337, 68, "Output"]
+}, Open  ]],
+Cell[71697, 2337, 270, 6, 35, "Text"],
+Cell[71970, 2345, 287, 6, 58, "Text"],
+Cell[CellGroupData[{
+Cell[72282, 2355, 407, 9, 52, "Input"],
+Cell[72692, 2366, 8829, 208, 426, "Output"]
+}, Open  ]],
+Cell[81536, 2577, 298, 7, 35, "Text"],
+Cell[CellGroupData[{
+Cell[81859, 2588, 2046, 46, 262, "Input"],
+Cell[83908, 2636, 2407, 47, 491, "Output"]
+}, Open  ]]
+}, Open  ]]
+}
+]
+*)
+
