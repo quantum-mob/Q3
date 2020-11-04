@@ -2,8 +2,8 @@
 
 (* SU(3) Algebra *)
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-04 02:08:55+09 $ *)
-(* $Revision: 1.19 $ *)
+(* $Date: 2020-11-04 09:53:15+09 $ *)
+(* $Revision: 1.20 $ *)
 
 BeginPackage[ "Q3`GellMann`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
 
@@ -11,8 +11,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:08:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 09:53:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -243,8 +243,7 @@ GellMann /:
 Dot[ GellMann[a_, b__], GellMann[c_, d__] ] :=
   CircleTimes @@ Dot @@@ Transpose[{ GellMann /@ {a,b}, GellMann /@ {c,d} }]
 
-
-Once[ TheKet::usage = TheKet::usage <> "\nTheKet[\"r\"]={1,0,0}, TheKet[\"b\"]={0,1,0}, TheKet[\"g\"]={0,0,1}." ]
+(* TheKet for GellMann *)
 
 TheKet["r"] := {1, 0, 0}
 

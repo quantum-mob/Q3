@@ -6,8 +6,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.10 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.11 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 10:15:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -421,9 +421,6 @@ Once[
 
 (* MultiplyDegree for operators *)
 MultiplyDegree[_?SpinQ] = 1
-
-
-Once[ Ket::usage = Ket::usage <> "\nKet[J1->m1, J2->m2, ...] stores the magnetic quantum numbers m1, m2, ... for Spins J1, J2, ..., respectively, in the place holder Ket[<|J1->m1, J2->m2, ...|>]." ]
 
 
 (* Base: See Cauchy *)

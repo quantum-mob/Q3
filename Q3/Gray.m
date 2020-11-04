@@ -4,8 +4,8 @@
    based on the Gray code. *)
 
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-04 02:16:15+09 $ *)
-(* $Revision: 1.5 $ *)
+(* $Date: 2020-11-04 10:10:36+09 $ *)
+(* $Revision: 1.6 $ *)
 
 BeginPackage[ "Q3`Gray`",
   { "Q3`Quisso`", "Q3`Pauli`", "Q3`Cauchy`" }
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.5 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.6 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 10:10:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -92,7 +92,7 @@ grayCtrl[{aa__?QubitQ, b_?QubitQ}, V_] := With[
 
 Protect[ Evaluate @ $symbs ]
 
-End[] (* `Qudit` *)
+End[]
 
 
 Q3`Gray`Private`symbs = Protect[Evaluate[$Context<>"*"]]

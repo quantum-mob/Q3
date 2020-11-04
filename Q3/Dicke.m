@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-04 02:13:11+09 $ *)
-(* $Revision: 1.4 $ *)
+(* $Date: 2020-11-04 09:06:07+09 $ *)
+(* $Revision: 1.5 $ *)
 
 
 BeginPackage[ "Q3`Dicke`",
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.4 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:13:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.5 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 09:06:07+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -26,7 +26,7 @@ Begin["`Private`"]
 
 $symbs = Unprotect[ Multiply ]
 
-DickeBasis::usage = "DickeBasis[ {S1, S2, ...}, {b1, b2, ...}, {m,n}] constructs a basis for Qubits/Qudits S1, S2, ... and Bosonic modes b1, b2, ..., where the number of particles in each Bosonic modes is limited in the range [m, n].\nDickeBasis[ {S1, S2, ...}, {b1, b2, ...}, n] is equivalent to DickeBasis[ {S1, S2, ...}, {b1, b2, ...}, {0,n}]."
+DickeBasis::usage = "DickeBasis[{S1, S2, ...}, {b1, b2, ...}, {m,n}] constructs a basis for Qubits/Qudits S1, S2, ... and Bosonic modes b1, b2, ..., where the number of particles in each Bosonic modes is limited in the range [m, n].\nDickeBasis[ {S1, S2, ...}, {b1, b2, ...}, n] is equivalent to DickeBasis[ {S1, S2, ...}, {b1, b2, ...}, {0,n}]."
 
 DickeBasis[ ss:{__?QubitQ}, bb:{__?BosonQ}, n_Integer ] :=
   DickeBasis[ ss, bb, {0, n} ]

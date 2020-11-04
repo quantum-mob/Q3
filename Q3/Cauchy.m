@@ -2,8 +2,8 @@
 (* Mathematica package for complex variables. *)
 
 (* Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com) *)
-(* $Date: 2020-11-04 02:16:15+09 $ *)
-(* $Revision: 1.14 $ *)
+(* $Date: 2020-11-04 09:20:39+09 $ *)
+(* $Revision: 1.18 $ *)
 
 BeginPackage["Q3`Cauchy`"]
 
@@ -11,8 +11,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.14 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.18 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 09:20:39+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -327,9 +327,11 @@ Begin["`Algebra`"]
 $symb = Unprotect[ Conjugate, NonCommutativeMultiply ]
 
 
-Base::usage = "Base[c[j,s]] returns the generator c[j] with the Flavor indices sans the final if it is special at all; otherwise just c[j,s]."
+Base::usage = "Base[c[j,...,s]] returns the generator c[j,...] with the Flavor indices sans the final if c is a Species and the final Flavor index is special at all; otherwise just c[j,...,s]."
 
 SetAttributes[Base, Listable]
+
+Base[z_] := z
 
 
 Flavors::usage = "Flavors[c[j]] returns the list of Flavor indices {j} of the generator c[j]."
@@ -416,7 +418,7 @@ SetAttributes[Dimension, Listable]
 
 Let::usage = "Let[Symbol, a, b, ...] defines the symbols a, b, ... to be Symbol, which can be Species, Complex, Real, Integer, etc."
 
-Species::usage = "Species represents a tensor quantity, which is regarded as a multi-dimensional regular array of numbers. Let[Species, a, b, ...] declares the symbols a, b, ... to be 'apparent' tensors. In the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, ...] does not take a specific structure, but only regarded seemingly so."
+Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, ...] declares the symbols a, b, ... to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, ...] does not take a specific structure, but only regarded seemingly so."
 
 SetAttributes[Let, {HoldAll, ReadProtected}]
 
@@ -1156,10 +1158,6 @@ Begin["`Complex`"]
 $symb = Unprotect[
   Mod, IntegerQ, OddQ, EvenQ
 ]
-
-Once[
-  Complex::usage = Complex::usage <> "\nLet[Complex, a,b,...] declares a, b, ... as complex numbers."
- ]
 
 Let[Complex, {ls__Symbol}] := (
   Let[Species, {ls}];

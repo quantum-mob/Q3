@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2020-11-04 02:09:13+09 $
-  $Revision: 1.3 $
+  $Date: 2020-11-04 09:52:24+09 $
+  $Revision: 1.4 $
   ****)
 
 BeginPackage[ "Q3`FockPlus`",
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.3 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:09:13+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.4 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 09:52:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -56,6 +56,9 @@ Pairings[a_List] := Module[
 iPairings[a : {_, _}, b : {_, _}] := {{a, b}}
 
 iPairings[a : {_, _}, b_List] := Map[Join[{a}, #] &, Pairings[b]]
+
+
+Average::usage = "Average[expr] represents the quantum mechanical expectation value of expr."
 
 
 Wick::usage = "Wick[a, b, ...] applies the Wick theorem."

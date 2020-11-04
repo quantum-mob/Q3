@@ -45,9 +45,11 @@ setGrassmann[x_Symbol] := (
   GrassmannGrade[x[___]] ^= 1;
  )
 
+
 GrassmannQ::usage = "GrassmannQ[z] returns True if z is a *generator* (but not a generic element) of the Grassmann algebra over complex numbers."
 
 GrassmannQ[_] = False
+
 
 AnyGrassmannQ::usage = "AnyGrassmannQ[z] returns true z itself a Grassmann generator or a conjugate z = Conjugate[x] of another Grassmann generator x."
 

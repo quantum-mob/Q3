@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-04 02:16:15+09 $
-  $Revision: 1.5 $
+  $Date: 2020-11-04 10:13:42+09 $
+  $Revision: 1.6 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`" } ]
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.5 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.6 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 10:13:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -116,8 +116,8 @@ SpinNumberQ[{j_, m_}] := SpinNumberQ[j, m]
 SpinNumberQ[__] = False
 
 
-Once[ TheKet::usage = "TheKet[0]={1,0}, TheKet[1]={0,1}.
-  TheKet[s1,s2,...] = TheKet[s1]\[CircleTimes]TheKet[s2]\[CircleTimes]...." ]
+TheKet::usage = "TheKet[0]={1,0}, TheKet[1]={0,1}.
+  TheKet[s1,s2,...] = TheKet[s1]\[CircleTimes]TheKet[s2]\[CircleTimes]...."
 
 TheKet[0] = TheKet[Up] = {1, 0}
 
@@ -385,7 +385,7 @@ doAffect[ket_, op_Multiply] := doAffect[ket, Sequence @@ Reverse[op]]
 doAffect[ket_, op_] := Garner @ Multiply[op, ket]
 
 
-Once[ Ket::usage = "Ket represents a basis state of a system of spins or equivalent systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3]. Ket[s$1, s$2, ...] represents the tensor product Ket[s$1] \[CircleTimes] Ket[s$2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, TheState, Pauli, ThePauli, Operator, TheOperator." ]
+ Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3]. Ket[s$1, s$2, ...] represents the tensor product Ket[s$1] \[CircleTimes] Ket[s$2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, TheState, Pauli, ThePauli, Operator, TheOperator."
 
 Bra::usage = "Bra[expr] = Dagger[ Ket[expr] ].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
 
@@ -1186,8 +1186,7 @@ ParityOddQ[ v_Ket, op:{__?SpeciesQ} ] :=
 
 (* Rotational Operators *)
 
-Once[ TheRotation::usage = "TheRotation[1,\[Phi]], TheRotation[2,\[Phi]], TheRotation[3,\[Phi]] are three rotations abouit x, y, and z axes, respective, in the SU(2) Hilbert  space.
-  TheRotation[{n1,x1}, {n2,x2}, ...] = TheRotation[{{n1,x1}, {n2,x2}, ...}] =
+Once[ TheRotation::usage = "TheRotation[1,\[Phi]], TheRotation[2,\[Phi]], TheRotation[3,\[Phi]] are three rotations abouit x, y, and z axes, respective, in the SU(2) Hilbert  space.\nTheRotation[{n1,x1}, {n2,x2}, ...] = TheRotation[{{n1,x1}, {n2,x2}, ...}] =
   TheRotation[n1,x1] \[CircleTimes] Rotation[n2,x2] \[CircleTimes] ..." ]
 
 Once[ TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[3,a].TheRotation[2,b].TheRotation[3,c] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space." ]

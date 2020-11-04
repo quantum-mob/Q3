@@ -4,8 +4,8 @@
   Fock is a Mathematica package for the complex Weyl and Clifford algebra.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2020-11-04 02:16:15+09 $
-  $Revision: 1.13 $
+  $Date: 2020-11-04 09:47:57+09 $
+  $Revision: 1.15 $
   ****)
 
 BeginPackage[ "Q3`Fock`",
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.13 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.15 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 09:47:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -28,8 +28,7 @@ Print @ StringJoin[
 { AnnihilatorQ, CreatorQ };
 { AntiCommuting };
 
-{ Body, SpinZ, Any };
-{ Spin, TrueSpin, Vacuum };
+{ Spin, SpinZ, TrueSpin, Vacuum };
 
 (*** Tools for operator expressions ***)
 
@@ -502,21 +501,6 @@ AnySpeciesQ[ Cannon[_?HeisenbergQ] ] = True
 (* Heisenberg's canonical conjugate is not very common, and was not defined in
    the Cauchy package. *)
 
-
-Once[ Flavors::usage = Flavors::usage <> "\nThe final Flavor index for spinful Bosons and Fermions refers to the Spin Z quantum number." ]
-
-
-Body::usage = "Body[c[j,s]] returns the generator c[j] with the Flavor index sans the final spin index (if any)."
-
-SetAttributes[Body, Listable]
-
-Body[ op:c_Symbol?ParticleQ[j___,s_] ] := c[j] /; spinfulQ[op]
-
-Body[ op_?OperatorQ ] := op
-
-
-(* Base defined in Cauchy *)
-(* 2020-05-01 Body to be replaced with Base. *)
 
 Base[ op:c_Symbol?ParticleQ[j___,s_] ] := c[j] /; spinfulQ[op]
 
@@ -1697,8 +1681,8 @@ FockAddSpin[irb_Association, irc_Association] := Module[
   { S1 = Union @ Map[First] @ Keys @ irb,
     S2 = Union @ Map[First] @ Keys @ irc,
     SS,
-    gb = Union @ Map[Body] @ Cases[irb, _?ParticleQ, Infinity],
-    gc = Union @ Map[Body] @ Cases[irc, _?ParticleQ, Infinity],
+    gb = Union @ Map[Base] @ Cases[irb, _?ParticleQ, Infinity],
+    gc = Union @ Map[Base] @ Cases[irc, _?ParticleQ, Infinity],
     new },
   SS = Flatten[
     Outer[Thread[{#1, #2, Range[Abs[#1 - #2], #1 + #2]}] &, S1, S2], 
@@ -1813,9 +1797,7 @@ toKetExpression[ HoldPattern @ Multiply[expr__, Ket[{}]] ] := Module[
  ]
 
 
-Once[ Ket::usage = Ket::usage <> "\nKet[a1->n1, a2->n2, ...] stores the occupation numbers n1, n2, ... in the place holder Ket[<|a1->n1, a2->n2, ...|>].
-    Ket[{}] represent the \"vacuum state\".
-    FockKet[expr] converts the Fock state expression (a series of generators mulitiplied on VacuumState) and returns a linear combination of Ket[...]." ]
+(* Ket for Fock *)
 
 KetRule[ r:Rule[_?ParticleQ, _] ] := r
 
@@ -2314,7 +2296,7 @@ basisCatSpin::usage = "Generates the irreducible basis in the Generator represen
 basisKetSpin::usage = "Generates the irreducible basis when Spin is conserved, i.e., in the presence of SU(2) symmetry, in the occupation-number representation."
 
 basisCatSpin[cc__?FermionQ] := Module[
-  { irb = FockAddSpin @@ Body @ FockSpinor[cc] },
+  { irb = FockAddSpin @@ Base @ FockSpinor[cc] },
   irb = KeySelect[irb, (Equal @@ #) &];
   KeyMap[Take[#, 1]&, irb]
  ]

@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-04 02:16:15+09 $
-  $Revision: 1.4 $
+  $Date: 2020-11-04 10:14:34+09 $
+  $Revision: 1.5 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.4 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:16:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.5 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-04 10:14:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -546,8 +546,6 @@ KetRule[ Rule["Span", qq:{__?QubitQ}] ] := Rule["Span", FlavorNone @ qq]
 
 KetTrim[_?QubitQ, 0] = Nothing
 
-
-Once[ Ket::usage = Ket::usage <> "\nKet[S$1 -> m$1, S$2 -> m$2, ...] sets and returns a state vector, where S$j represent different qubits and m$j their corresponding values.\nKet[<|...|>] produced by Ket[...] provides a convenient way of accessing the values. For example, Ket[<|S$j -> m$j, ...|>][S$j] gives m$j, Ket[<|S$1 -> m$1, S$2 -> m$2, ...|>][{S$1, S$2}] gives {m$1, m$2}, and so on.\nKet[<|...|>][S$1 -> m$1, S$2 -> m$2, ...] resets the values of S$1, S$2, ... if already exit; otherwise, newly set." ]
 
 (* ******************************************************************* *)
 
