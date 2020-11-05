@@ -4,8 +4,8 @@
   Fock is a Mathematica package for the complex Weyl and Clifford algebra.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2020-11-04 09:47:57+09 $
-  $Revision: 1.15 $
+  $Date: 2020-11-05 18:34:48+09 $
+  $Revision: 1.20 $
   ****)
 
 BeginPackage[ "Q3`Fock`",
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.15 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 09:47:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-05 18:34:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -26,7 +26,7 @@ Print @ StringJoin[
 { HermitianQ, HeisenbergQ, BosonQ, FermionQ, MajoranaQ, ParticleQ, OperatorQ };
 { AnyHeisenbergQ, AnyBosonQ, AnyFermionQ, AnyParticleQ, AnyOperatorQ };
 { AnnihilatorQ, CreatorQ };
-{ AntiCommuting };
+{ AnticommutativeQ };
 
 { Spin, SpinZ, TrueSpin, Vacuum };
 
@@ -843,17 +843,21 @@ ACMT[_?AnyFermionQ, _?AnyFermionQ] = 0
 
 (* Originally defined in Cauchy,
    Redefined for Fermion, Majorana, Grassmann *)
+(* NOTE: _?AnySpeciesQ NOT _?AnyNonCommutativeQ.
+   This is to handle Ket and Bra separately. *)
 HoldPattern @ Multiply[ops__?AnySpeciesQ] := Module[
-  { aa = GroupBy[{ops}, Kind],
+  { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
     bb },
-  bb = Values @ KeySort @ KeyDrop[aa, "UnknownSpecies"];
-  aa = Flatten @ Values @ KeyTake[aa, "UnknownSpecies"];
-
-  Multiply @@ Join[ aa, Multiply @@@ bb ] * fSignature[
-    Cases[ {ops}, _?AnyFermionQ|_?MajoranaQ|_?GrassmannQ ],
-    Cases[ Flatten @ bb, _?AnyFermionQ|_?MajoranaQ|_?GrassmannQ ]
+  bb = Multiply @@@ aa;
+  bb = Multiply @@ bb;
+  bb * fSignature[
+    Cases[ {ops}, _?AnticommutativeQ ],
+    Cases[ Flatten @ aa, _?AnticommutativeQ ]
    ]
- ] /; Not @ OrderedQ[ Kind @ {ops} /. {"UnknownSpecies" -> 0} ]
+ ] /;
+  Not @ OrderedQ[ Kind @ {ops} ] /;
+  NoneTrue[{ops}, ObscureQ]
+
 
 fSignature::usage = "fSignature[a, b] returns the signature of the permutation that converts a to b for two expressions that differ only in the order of their arguments."
 fSignature[a_, b_] := 
@@ -2013,17 +2017,17 @@ matrixHeaders[qnn:{{___}..}, cnt:{___Integer}] := Module[
 (*     <Matrix>                                                         *)
 (* ******************************************************************** *)
 
-AntiCommuting::usage = "AntiCommuting is a Boolean function.\nAntiCommuting[c] returns 1 if c is an anti-commuting Species (such as Fermion, Majorana, and Grassmann) and 0 otherwise."
+AnticommutativeQ::usage = "AnticommutativeQ[c] returns True if c is an anticommutative Species such as Fermion, Majorana, and Grassmann, and False otherwise.\nIt is a low-level function intended to be used in Multiply and Matrix.\nIt affects how Multiply and Matrix manipulate expressions involving Fermion, Majorana, and Grassmann Species, which brings about a factor of -1 when exchanged."
 
-SetAttributes[AntiCommuting, Listable]
+SetAttributes[AnticommutativeQ, Listable]
 
-AntiCommuting[op_?AnyFermionQ] = 1
+AnticommutativeQ[op_?AnyFermionQ] = True
 
-AntiCommuting[op_?MajoranaQ] = 1
+AnticommutativeQ[op_?MajoranaQ] = True
 
-AntiCommuting[op_?GrassmannQ] = 1
+AnticommutativeQ[op_?GrassmannQ] = True
 
-AntiCommuting[_] = 0
+AnticommutativeQ[_] = False
 
 
 (* Originally defined in Pauli, Redefined for Fermions *)
@@ -2042,13 +2046,13 @@ BuildMatrix[ op:{__?AnySpeciesQ}, qq:{__?SpeciesQ} ] :=
       rr = 1
      ];
 
-    aa = AntiCommuting @ pp;
+    aa = AnticommutativeQ @ pp;
 
-    bb = Pick[ op, AntiCommuting @ op, 1 ];
-    cc = Pick[ Flatten @ Values @ pp, Flatten @ Values @ aa, 1 ];
+    bb = Pick[ op, AnticommutativeQ @ op ];
+    cc = Pick[ Flatten @ Values @ pp, Flatten @ Values @ aa ];
     bb = fSignature[bb, cc];
 
-    aa = Total /@ aa;
+    aa = Total /@ Boole[aa];
     aa = Thread @ Rule[
       Keys @ aa,
       ShiftLeft @ Reverse @ Accumulate @ Reverse @ Values @ aa

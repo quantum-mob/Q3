@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-04 10:13:42+09 $
-  $Revision: 1.6 $
+  $Date: 2020-11-05 17:17:56+09 $
+  $Revision: 1.7 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`" } ]
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.6 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 10:13:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.7 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-05 17:17:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -419,9 +419,9 @@ Ket /: NonCommutativeQ[ Ket[___] ] = True
 
 Bra /: NonCommutativeQ[ Bra[___] ] = True
 
-Ket /: Kind[ Ket[_Association] ] = Ket
+Ket /: Kind[ Ket[_Association] ] = NonCommutative
 
-Bra /: Kind[ Bra[_Association] ] = Bra
+Bra /: Kind[ Bra[_Association] ] = NonCommutative
 
 Ket /: Dagger[Ket[a___]] := Bra[a]
 

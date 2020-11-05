@@ -2,8 +2,8 @@
 (* Mathematica package for complex variables. *)
 
 (* Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com) *)
-(* $Date: 2020-11-04 09:20:39+09 $ *)
-(* $Revision: 1.18 $ *)
+(* $Date: 2020-11-05 19:38:11+09 $ *)
+(* $Revision: 1.36 $ *)
 
 BeginPackage["Q3`Cauchy`"]
 
@@ -11,8 +11,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.18 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 09:20:39+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.36 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-05 19:38:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -29,8 +29,10 @@ Print @ StringJoin[
 
 { Species, SpeciesQ, AnySpeciesQ,
   NonCommutative, NonCommutativeQ, AnyNonCommutativeQ, CommutativeQ,
+  ObscureQ,
   Kind, Dimension,
   Hermitian, HermitianQ,
+  Antihermitian, AntihermitianQ,
   Complex, ComplexQ,
   Real, RealQ,
   Integer, IntegerQ, HalfIntegerQ };
@@ -324,7 +326,9 @@ End[] (* `Prelude` *)
 
 Begin["`Algebra`"]
 
-$symb = Unprotect[ Conjugate, NonCommutativeMultiply ]
+$symb = Unprotect[
+  Conjugate, NonCommutativeMultiply, Inverse
+ ]
 
 
 Base::usage = "Base[c[j,...,s]] returns the generator c[j,...] with the Flavor indices sans the final if c is a Species and the final Flavor index is special at all; otherwise just c[j,...,s]."
@@ -402,6 +406,8 @@ Kind::usage = "Kind[a] returns the type of Species."
 
 SetAttributes[Kind, Listable]
 
+Kind[ Inverse[x_] ] := Kind[x]
+
 Kind[ Conjugate[x_] ] := Kind[x]
 
 Kind[ Dagger[x_] ] := Kind[x]
@@ -465,6 +471,8 @@ AnySpeciesQ::usaage = "AnySpeciesQ[z] returns True if z itself is an Species or 
 
 AnySpeciesQ[ _?SpeciesQ ] = True
 
+AnySpeciesQ[ Inverse[_?SpeciesQ] ] = True
+
 AnySpeciesQ[ Conjugate[_?SpeciesQ] ] = True
 
 AnySpeciesQ[ Dagger[_?SpeciesQ] ] = True
@@ -490,6 +498,18 @@ setNonCommutative[x_Symbol] := (
  )
 
 
+Format[ Inverse[op_?NonCommutativeQ] ] :=
+  DisplayForm @ SpeciesBox[op, { }, {"-1"}] /; $FormatSpecies
+ 
+Format[ Inverse[op_Symbol?NonCommutativeQ[j___]] ] :=
+  DisplayForm @ SpeciesBox[op, {j}, {"-1"}] /; $FormatSpecies
+
+Inverse[ Power[E, expr_] ] := MultiplyExp[- expr] /;
+  Not @ CommutativeQ @ expr
+(* NOTE: Recall that Not[CommutativeQ[expr]] is not the same as
+   NonCommutativeQ[expr]. *)
+
+
 NonCommutativeQ::usage = "NonCommutativeQ[a] returns True of a is a non-commutative element."
 
 SetAttributes[NonCommutativeQ, Listable]
@@ -497,11 +517,13 @@ SetAttributes[NonCommutativeQ, Listable]
 NonCommutativeQ[_] = False
 
 
-AnyNonCommutativeQ::usaage = "AnyNonCommutativeQ[z] returns True if z itself is a NonCommutative element or has the form z = Conjugate[x], Dagger[x], Tee[x] of another NonCommutative x."
+AnyNonCommutativeQ::usaage = "AnyNonCommutativeQ[z] returns True if z itself is a NonCommutative element or has the form Conjugate[x], Dagger[x], Tee[x] of another NonCommutative x."
 
 SetAttributes[AnyNonCommutativeQ, Listable]
 
 AnyNonCommutativeQ[ _?NonCommutativeQ ] = True
+
+AnyNonCommutativeQ[ Inverse[_?NonCommutativeQ] ] = True
 
 AnyNonCommutativeQ[ Conjugate[_?NonCommutativeQ] ] = True
 
@@ -761,6 +783,27 @@ HermitianQ[ HoldPattern @ Tee[a_?HermitianQ] ] = True;
 HermitianQ[ Conjugate[a_?HermitianQ] ] = True;
 
 
+Antihermitian::usage = "Antihermitian represents Antihermitian operators.\nLet[Antihermitian, a, b, ...] declares a, b, ... as Antihermitian operators."
+
+Antihermitian /:
+Let[Antihermitian, {ls__Symbol}] := (
+  Let[NonCommutative, {ls}];
+  Scan[setAntihermitian, {ls}];
+ )
+
+setAntihermitian[a_Symbol] := (
+  AntihermitianQ[a] ^= True;
+  AntihermitianQ[a[___]] ^= True;
+  
+  Dagger[a] ^= -a;
+  Dagger[a[j___]] ^:= -a[j];
+ )
+
+AntihermitianQ[ HoldPattern @ Tee[a_?AntihermitianQ] ] = True;
+
+AntihermitianQ[ Conjugate[a_?AntihermitianQ] ] = True;
+
+
 (*** Commutation and Anticommutation Relations ***)
 
 Commutator::usage = "Commutator[a,b] = Multiply[a,b] - Multiply[b,a].\nCommutator[a, b, n] = [a, [a, ... [a, b]]],
@@ -822,7 +865,7 @@ DistributableQ::usage = "DistributableQ[x, y, ...] returns True if any of the ar
 DistributableQ[args__] := Not @ MissingQ @ FirstCase[ {args}, _Plus ]
 
 
-Multiply::usage = "Multiply[a, b, ...] represents non-commutative multiplication of the Species a, b, etc. Unlike the native NonCommutativeMultiply[...], it does not have the attributes Flat and OneIdentity."
+Multiply::usage = "Multiply[a, b, ...] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[...], it does not have the attributes Flat and OneIdentity."
 
 SetAttributes[Multiply, {Listable, ReadProtected}]
 
@@ -885,11 +928,19 @@ HoldPattern @ Multiply[ pre___, Power[E, expr_], post___] :=
 
 (*** Baker-Hausdorff relations for simple cases ***)
 
-HoldPattern @ Multiply[pre___, Power[E, a_], Power[E, b_], post___] :=
+HoldPattern @
+  Multiply[ pre___, MultiplyExp[a_], MultiplyExp[b_], post___ ] :=
   Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
   Garner[ Commutator[a, b] ] === 0
 
+(*
 HoldPattern @ Multiply[pre___, Power[E, a_], Power[E, b_], post___] :=
+  Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
+  Garner[ Commutator[a, b] ] === 0
+ *)
+
+HoldPattern @
+  Multiply[pre___, MultiplyExp[a_], MultiplyExp[b_], post___] :=
   Multiply[
     Multiply[pre],
     MultiplyExp[ a + b + Commutator[a, b]/2 ],
@@ -898,12 +949,25 @@ HoldPattern @ Multiply[pre___, Power[E, a_], Power[E, b_], post___] :=
   Garner[ Commutator[a, b, 2] ] === 0 /;
   Garner[ Commutator[b, a, 2] ] === 0
 
-HoldPattern @ Multiply[pre___, Power[E, a_], b_?AnySpeciesQ, post___] :=
+(*
+HoldPattern @ Multiply[pre___, Power[E, a_], Power[E, b_], post___] :=
+  Multiply[
+    Multiply[pre],
+    MultiplyExp[ a + b + Commutator[a, b]/2 ],
+    Multiply[post]
+   ] /;
+  Garner[ Commutator[a, b, 2] ] === 0 /;
+  Garner[ Commutator[b, a, 2] ] === 0
+ *)
+
+HoldPattern @
+  Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
   Multiply[ Multiply[pre, b], MultiplyExp[a], Multiply[post] ] /;
   Garner[ Commutator[a, b] ] === 0
 (* Exp is pushed to the right if possible *)
 
-HoldPattern @ Multiply[pre___, Power[E, a_], b_?AnySpeciesQ, post___] :=
+HoldPattern @
+  Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
   With[
     { new = Multiply[post] },
     Multiply[ Multiply[pre, b], MultiplyExp[a], new] +
@@ -915,24 +979,48 @@ HoldPattern @ Multiply[pre___, Power[E, a_], b_?AnySpeciesQ, post___] :=
    skip Exp[op]. Commutators involving Exp[op] usually takes long in vain. *)
 
 
-(* General rule *)
+(* General rules *)
+
+ObscureQ::usage = "Obscure[op] returns True if op is Kind[NonCommutative] === NonCommutative.\nNote that most NonCommuative Species are associated with a definite Kind."
+
+ObscureQ[op_?AnyNonCommutativeQ] := SameQ[Kind[op], NonCommutative]
+
+ObscureQ[_] := False
+
+(* NOTE: Notice _?AnyNonCommutativeQ NOT _?AnySpeciesQ .
+   This is to handle the case involving Ket and Bra. *)
+HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
+  { aa = SplitBy[{ops}, ObscureQ],
+    bb },
+  ( bb = Multiply @@@ aa;
+    Multiply @@ bb ) /;
+    Not @ AllTrue[Kind[aa], OrderedQ]
+ ] /;
+  Not @ AllTrue[
+    DeleteCases[Kind @ SplitBy[{ops}, ObscureQ], NonCommutative, {2}],
+    OrderedQ
+   ] /;
+  Not @ AllTrue[{ops}, ObscureQ] /;
+  AnyTrue[{ops}, ObscureQ]
+
 Once[ (* To be redefined in Fock for Fermion, Majorana, Grassmann *)
-  HoldPattern[ Multiply[ops__?AnySpeciesQ] ] := Module[
-    { aa = GroupBy[{ops}, Kind],
+  (* NOTE: Notice _?AnySpeciesQ NOT _?AnyNonCommutativeQ.
+     This is to handle Ket and Bra separately. *)
+  HoldPattern @ Multiply[ops__?AnySpeciesQ] := Module[
+    { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
       bb },
-    bb = Values @ KeySort @ KeyDrop[aa, "UnknownSpecies"];
-    aa = Flatten @ Values @ KeyTake[aa, "UnknownSpecies"];
-    
-    Multiply @@ Join[ aa, Multiply @@@ bb ]
-   ] /; Not @ OrderedQ[ Kind @ {ops} /. {"UnknownSpecies" -> 0} ]
+    bb = Multiply @@@ aa;
+    Multiply @@ bb
+   ] /;
+    Not @ OrderedQ[ Kind @ {ops} ] /;
+    NoneTrue[{ops}, ObscureQ]
  ]
 
 (* ****************************************************************** *)
 (*     </Multiply>                                                    *)
 (* ****************************************************************** *)
 
-MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr."
-(* NOTE: It is introduced to facilitate some special rules in Exp[]. *)
+MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[]."
 
 SetAttributes[MultiplyExp, Listable]
 
@@ -943,11 +1031,19 @@ MultiplyExp[op_] := Module[
   { z = Garner @ MultiplyPower[op, 2] },
   If[ z === 0,
     1 + op,
-    Cosh[Sqrt[z]] + op Sinh[Sqrt[z]]/Sqrt[z]
+    FunctionExpand[ Cosh[Sqrt[z]] + op Sinh[Sqrt[z]]/Sqrt[z] ]
    ] /; CommutativeQ[z]
  ]
 
+MultiplyExp /:
 HoldPattern @ Dagger[ MultiplyExp[expr_] ] := MultiplyExp[ Dagger[expr] ]
+
+MultiplyExp /:
+HoldPattern @ Inverse[ MultiplyExp[op_] ] := MultiplyExp[-op]
+
+MultiplyExp /:
+HoldPattern @ Power[ MultiplyExp[op_], z_?CommutativeQ ] :=
+  MultiplyExp[z * op]
 
 
 (* ****************************************************************** *)
@@ -960,6 +1056,10 @@ Lie[a_, b_] := Commutator[a, b]
 
 
 LiePower::usage = "LiePower[a, b, n] returns the nth order commutator [a, [a, ..., [a, b]...]]."
+
+LiePower[a_, b_List, n_Integer] := Map[LiePower[a, #, n]&, b] /; n>1
+
+LiePower[a_, b_, 0] := b
 
 LiePower[a_, b_, 1] := Commutator[a, b]
 
