@@ -4,8 +4,8 @@
   Fock is a Mathematica package for the complex Weyl and Clifford algebra.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2020-11-05 18:34:48+09 $
-  $Revision: 1.20 $
+  $Date: 2020-11-05 19:48:14+09 $
+  $Revision: 1.21 $
   ****)
 
 BeginPackage[ "Q3`Fock`",
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-05 18:34:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.21 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-05 19:48:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 

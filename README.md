@@ -14,4 +14,6 @@ in the search field of the Wolfram Language Documentation Center (Mathematica he
 ---
 Mahn-Soo Choi
 
-mahnsoo.choi@gmail.com
+mahnsoo.choi@gmail.com <br/>
+https://qclab.korea.ac.kr <br/>
+

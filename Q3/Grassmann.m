@@ -2,8 +2,8 @@
 
 (* Adopted from a package by M. Headrick (April 2003) *)
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-04 02:12:35+09 $ *)
-(* $Revision: 1.3 $ *)
+(* $Date: 2020-11-05 19:48:14+09 $ *)
+(* $Revision: 1.4 $ *)
 
 BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`" } ]
 
@@ -11,8 +11,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.3 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 02:12:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.4 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-05 19:48:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
