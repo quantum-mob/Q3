@@ -4,8 +4,8 @@
    based on the Gray code. *)
 
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-04 10:10:36+09 $ *)
-(* $Revision: 1.6 $ *)
+(* $Date: 2020-11-07 08:12:23+09 $ *)
+(* $Revision: 1.13 $ *)
 
 BeginPackage[ "Q3`Gray`",
   { "Q3`Quisso`", "Q3`Pauli`", "Q3`Cauchy`" }
@@ -15,14 +15,14 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.6 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 10:10:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.13 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-07 08:12:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
 { GrayCode, GrayCodeSubsets };
 
-{ GrayControlled };
+{ GrayControlledU, GrayControlledW };
 
 
 Begin["`Private`"]
@@ -56,37 +56,78 @@ GrayCodeSubsets[l_List] := Block[
  ]
 
 
-GrayControlled::usage = "GrayControlled[qq, U] decomposes the n-bit controlled U into elementary gates."
+GrayControlledU::usage = "GrayControlledU[qq, expr] decomposes the n-bit controlled expr into elementary gates, where qq is the list of control qubits and expr is supposed to be a unitary operator."
 
 (* See Barenco et al. PRB (1995). *)
 
-GrayControlled[qq:{__?QubitQ}, U_?MatrixQ] := Module[
-  { rr = Reverse @ GrayCodeSubsets[Sort @ FlavorNone @ qq],
-    ss, n, V },
+GrayControlledU[q_?QubitQ, expr_] := GrayControlledU[{q}, expr]
+
+GrayControlledU[{q_?QubitQ}, expr_] := ControlledU[{q}, expr]
+
+GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
+  { mm = Matrix[expr],
+    nn = Power[2, Length[qq]-1], 
+    op, rr, cc, dd, vv, ll, cV, cn },
+
+  mm = FunctionExpand @ MatrixPower[mm, 1/nn];
+  op = QuissoExpression[mm, Qubits @ expr];
+
+  rr = Reverse /@ GrayCodeSubsets[ReverseSort @ FlavorNone @ qq];
+  rr = Rest[rr];
+
+  nq = Length @ qq;
+  cc = Last /@ rr;
+  vv = Riffle[ ConstantArray[op, nn], Dagger @ op ];
+  ll = Riffle[
+    ConstantArray[Label -> "V", nn], 
+    Label -> Superscript["V", "\[Dagger]"]
+   ];
+  cV = ControlledU @@@ Transpose[{cc, vv, ll}];
+
+  dd = Flatten @ Successive[MutualComplement, Most /@ rr];
+  cn = CNOT @@@ Transpose[{dd, Rest @ cc}];
+
+  Riffle[cV, cn]
+ ]
+
+MutualComplement[a_, b_] := Union[Complement[a, b], Complement[b, a]]
+
+
+GrayControlledW::usage = "GrayControlledW[qq, expr] decomposes the n-bit controlled expr into elementary gates, expr is supposed to be a unitary operator.\nThis version is merely for heuristic purposes. Use GrayControlledU instead."
+
+GrayControlledW[q_?QubitQ, expr_] := ControlledU[{q}, expr]
+
+GrayControlledW[{q_?QubitQ}, expr_] := ControlledU[{q}, expr]
+
+GrayControlledW[qq:{__?QubitQ}, expr_] := Module[
+  { mm = Matrix[expr],
+    tt = Qubits[expr],
+    rr = Reverse /@ GrayCodeSubsets[ReverseSort @ FlavorNone @ qq],
+    ss, op, n, V },
   ss = Map[Length, rr];
   ss = -Power[-1, ss];
   
   n = Length @ qq;
-  V = MatrixPower[U, 1/(n-1)];
+  V = FunctionExpand @ MatrixPower[mm, Power[2, 1-n]];
+  op = QuissoExpression[V, tt];
 
-  Print["rr = ", rr];
-  Print["ss = ", ss];
-  Flatten @ MapThread[grayCtrl[#1, V, #2]&, {rr, ss}]
+  Flatten @ MapThread[grayCtrl[#1, op, #2]&, {rr, ss}]
  ]
 
 
-grayCtrl[qq_, V_, 1] := grayCtrl[qq, V]
+grayCtrl[qq_, op_,  1] := grayCtrl[qq, op, "V"]
 
-grayCtrl[qq_, V_, -1] := grayCtrl[qq, Topple @ V]
+grayCtrl[qq_, op_, -1] :=
+  grayCtrl[qq, Dagger @ op, Superscript["V","\[Dagger]"]]
 
 
-grayCtrl[{ }, V_] := {}
+grayCtrl[{ }, op_, lbl_] := {}
 
-grayCtrl[{q_?QubitQ}, V_] := Controlled[{q}, V]
+grayCtrl[{q_?QubitQ}, op_, lbl_] := ControlledU[{q}, op, Label->lbl]
 
-grayCtrl[{aa__?QubitQ, b_?QubitQ}, V_] := With[
+grayCtrl[{aa__?QubitQ, b_?QubitQ}, op_, lbl_] := With[
   { cn = Map[CNOT[#, b]&, {aa}] },
-  Flatten @ { cn, Controlled[{b}, V], cn }
+  Flatten @ { cn, ControlledU[{b}, op, Label->lbl], cn }
  ]
 
 

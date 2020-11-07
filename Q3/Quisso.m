@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-04 10:14:34+09 $
-  $Revision: 1.5 $
+  $Date: 2020-11-07 08:27:04+09 $
+  $Revision: 1.10 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.5 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 10:14:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.10 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-07 08:27:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -28,7 +28,7 @@ Print @ StringJoin[
 
 { Dirac };
 
-{ QuissoCollect, QuissoExpand };
+{ QuissoExpand };
 
 { QuissoExpression };
 
@@ -47,7 +47,7 @@ Print @ StringJoin[
   QuissoRotation, Rotation,
   QuissoEulerRotation, EulerRotation };
 
-{ QuissoControlled, Controlled,
+{ QuissoControlledU, ControlledU,
   QuissoCZ, CZ,
   QuissoCNOT, CNOT,
   QuissoSWAP, SWAP,
@@ -420,12 +420,6 @@ Once[
   $RepresentableTests = Union @ Join[$RepresentableTests, {QubitQ}];
  ]
 
-
-QuissoCollect::usage = "QuissoCollect[expr] collects together terms involving the same Quisso operators. It is an alias to Garner."
-
-QuissoCollect = Garner
-
-
 Once[
   $RaiseLowerRules = Join[ $RaiseLowerRules,
     { S_?QubitQ[j___,1] :> (S[j,4] + S[j,5]),
@@ -453,7 +447,7 @@ $QuissoExpandRules = {
   v_ProductState :> Expand[v],
   OTimes -> DefaultForm @* CircleTimes,
   OSlash -> DefaultForm @* CircleTimes,
-  Controlled -> QuissoControlled,
+  ControlledU -> QuissoControlledU,
   Phase -> QuissoPhase,
   Rotation -> QuissoRotation,
   EulerRotation -> QuissoEulerRotation,
@@ -1204,41 +1198,41 @@ QuissoToffoli[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] := Module[
  ]
 
 
-Controlled::usage = "Controlled[{C$1, C$2, ...}, T[j, ..., k]] represents a multi-qubit controlled gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., None] controlled by the qubits C$1, C$2.\nControlled[C, T] is equivalent to Controlled[{C}, T]."
+ControlledU::usage = "ControlledU[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., None] controlled by the qubits C1, C2.\nControlledU[C, T] is equivalent to ControlledU[{C}, T].\nControlledU[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it."
 
-Controlled[ S_?QubitQ, expr_, opts___?OptionQ ] :=
-  Controlled[ { S[None] }, expr, opts ]
+ControlledU[ S_?QubitQ, expr_, opts___?OptionQ ] :=
+  ControlledU[ { S[None] }, expr, opts ]
 
-Controlled[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] :=
-  Controlled[ FlavorNone @ ss, expr, opts ] /;
+ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] :=
+  ControlledU[ FlavorNone @ ss, expr, opts ] /;
   Not @ ContainsOnly[ FlavorLast[ss], {None} ]
 
-Controlled /:
-Dagger[ Controlled[ S_?QubitQ, expr_, opts___?OptionQ ] ] :=
-  Controlled[ { S[None] }, Dagger[expr], opts ]
+ControlledU /:
+Dagger[ ControlledU[ S_?QubitQ, expr_, opts___?OptionQ ] ] :=
+  ControlledU[ { S[None] }, Dagger[expr], opts ]
 
-Controlled /:
-Dagger[ Controlled[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] ] :=
-  Controlled[ss, Dagger[expr], opts]
+ControlledU /:
+Dagger[ ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] ] :=
+  ControlledU[ss, Dagger[expr], opts]
 
-Controlled /:
-HoldPattern @ Multiply[a___, Controlled[b__, opts___?OptionQ], c___] :=
-  Multiply[a, QuissoControlled[b], c]
+ControlledU /:
+HoldPattern @ Multiply[a___, ControlledU[b__, opts___?OptionQ], c___] :=
+  Multiply[a, QuissoControlledU[b], c]
 (* Options are for QuissoCircuit[] and ignore in calculations. *)
 
 
-QuissoControlled::usage = "QuissoControlled[...] is the same as Controlled[...], but unlike the latter, it exapands immediately in terms of the elementary Pauli gates."
+QuissoControlledU::usage = "QuissoControlledU[...] is the same as ControlledU[...], but unlike the latter, it exapands immediately in terms of the elementary gates."
 
-QuissoControlled[ a_, b_, __?OptionQ ] := QuissoControlled[a, b]
+QuissoControlledU[ a_, b_, __?OptionQ ] := QuissoControlledU[a, b]
 
-QuissoControlled[ S_?QubitQ, expr_ ] :=
-  QuissoControlled[ { S[None] }, expr ]
+QuissoControlledU[ S_?QubitQ, expr_ ] :=
+  QuissoControlledU[ { S[None] }, expr ]
 
-QuissoControlled[ ss:{__?QubitQ}, expr_ ] :=
-  QuissoControlled[ FlavorNone @ ss, expr ] /;
+QuissoControlledU[ ss:{__?QubitQ}, expr_ ] :=
+  QuissoControlledU[ FlavorNone @ ss, expr ] /;
   Not @ ContainsOnly[ FlavorLast[ss], {None} ]
 
-QuissoControlled[ ss:{__?QubitQ}, expr_ ] := Module[
+QuissoControlledU[ ss:{__?QubitQ}, expr_ ] := Module[
   { P = Multiply @@ Map[ ((1-#[3])/2)&, Most /@ ss ] },
   ExpandAll[ P ** expr + (1-P) ]
  ]
@@ -1434,7 +1428,8 @@ $InOutOffset := 0.1 $GateDistance
 $BraceWidth := 0.1 $GateDistance
 
 
-Format[ qc:QuissoCircuit[___, opts___?OptionQ] ] := Graphics[qc, opts]
+Format[ qc:QuissoCircuit[___, opts___?OptionQ] ] :=
+  Graphics[qc, opts, ImageSize -> Large]
 
 (*
  * User Interface
@@ -1648,13 +1643,13 @@ qCircuitElement[ EulerRotation[ G_?QubitQ, ang:{_,_,_}, opts___?OptionQ ], more_
   Gate[ {G}, opts, more, Label -> qGateLabel[ EulerRotation[G, ang] ] ]
 
 
-qCircuitElement[ Controlled[ cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
+qCircuitElement[ ControlledU[ cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
   Gate[ cc, Qubits @ S, opts, more, Label -> qGateLabel[S] ]
 
-qCircuitElement[ Controlled[ cc:{__?QubitQ}, op:(Phase|Rotation|EulerRotation)[j__, optsA___?OptionQ], optsB___?OptionQ ], optsC___?OptionQ ] :=
+qCircuitElement[ ControlledU[ cc:{__?QubitQ}, op:(Phase|Rotation|EulerRotation)[j__, optsA___?OptionQ], optsB___?OptionQ ], optsC___?OptionQ ] :=
   Gate[ cc, Qubits @ op, optsA, optsB, optsC, Label -> qGateLabel[op] ]
 
-qCircuitElement[ Controlled[ cc:{__?QubitQ}, expr_, opts___?OptionQ ], more___?OptionQ ] :=
+qCircuitElement[ ControlledU[ cc:{__?QubitQ}, expr_, opts___?OptionQ ], more___?OptionQ ] :=
   Gate[ cc, Qubits[expr], opts, more ] /; !FreeQ[expr, _?QubitQ]
 
 
