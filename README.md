@@ -18,7 +18,7 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
    $BaseDirectory/Applications/
 
-   Here $UserBaseDirectory is the Mathematica(R) symbol, whose value you can check on your Mathematica.
+   Here $UserBaseDirectory is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
 
 # Usage
 
@@ -28,7 +28,5 @@ Once the application is installed, put
 
 in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get more information about the application.
 
-## NOTE
-
-After installing the application, the first time you search a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.
+NOTE: After installing the application, the first time you search a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.
 
