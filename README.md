@@ -12,11 +12,11 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
 3. Move (or copy) the folder Q3 to either
 
-   $UserBaseDirectory/Applications/ (recommended)
+    $UserBaseDirectory/Applications/ (recommended)
 
    or
 
-   $BaseDirectory/Applications/
+    $BaseDirectory/Applications/
 
    Here $UserBaseDirectory is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
 
