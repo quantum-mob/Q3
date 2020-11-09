@@ -22,7 +22,7 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
    $BaseDirectory/Applications/
    ```
 
-   Here $UserBaseDirectory is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
+   Here `$UserBaseDirectory` is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
 
 # Usage
 
