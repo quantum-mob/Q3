@@ -30,7 +30,7 @@ Once the application is installed, put
 
      "Q3" or "Q3/guide/Q3"
 
-in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get more information about the application.
+in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get more information about the application. It will give users' guides and tutorials.
 
 NOTE: After installing the application, the first time you search a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.
 

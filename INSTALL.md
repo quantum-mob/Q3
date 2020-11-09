@@ -6,13 +6,17 @@
 
 3. Move (or copy) the folder Q3 to either
 
+   ```
    $UserBaseDirectory/Applications/ (recommended)
+   ```
 
    or
-
+   
+   ```
    $BaseDirectory/Applications/
+   ```
 
-   Here $UserBaseDirectory is the Mathematica(R) symbol, whose value you can check on your Mathematica.
+   Here `$UserBaseDirectory` is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
 
 ## NOTE
 
