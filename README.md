@@ -30,3 +30,10 @@ in the search field of the Wolfram Language Documentation Center (Mathematica he
 
 NOTE: After installing the application, the first time you search a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.
 
+
+# Feedback
+
+Any comment, suggestion, or bug report will be appreciated. Please address it to
+
+quantum.mob21@gmail.com
+
