@@ -35,5 +35,5 @@ NOTE: After installing the application, the first time you search a keyword in W
 
 Any comment, suggestion, or bug report will be appreciated. Please address it to
 
-> quantum.mob21@gmail.com
+    quantum.mob21@gmail.com
 
