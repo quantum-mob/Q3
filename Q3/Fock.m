@@ -4,8 +4,8 @@
   Fock is a Mathematica package for the complex Weyl and Clifford algebra.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2020-11-05 19:48:14+09 $
-  $Revision: 1.21 $
+  $Date: 2020-11-10 19:23:34+09 $
+  $Revision: 1.24 $
   ****)
 
 BeginPackage[ "Q3`Fock`",
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.21 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-05 19:48:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.24 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-10 19:23:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -1255,14 +1255,17 @@ LieExp[gen_, expr_] := Module[
 (* TODO: To support Heisenbergs *)
 
 LieExp[gen_, expr_] := Module[
-  { ops, mat, rules },
+  { ops, mat, new, rules },
   { ops, mat } = FockBilinearSystem[gen];
 
   If[ And @@ MajoranaQ /@ ops, mat *= 2; ];
 
-  mat = Simplify @ MatrixExp[-mat];
-  rules = Thread[ Rule[ops, mat.ops] ];
-  rules = Join[ Dagger[rules], rules ];
+  new = FunctionExpand @ MatrixExp[+mat];
+  rules = Thread[ Dagger[ops] -> Dagger[ops].new ];
+
+  new = FunctionExpand @ MatrixExp[-mat];
+  rules = Join[ rules, Thread[ops -> new.ops] ];
+  
   Garner[ expr /. rules ]
  ] /; FockBilinearQ[gen]
 (* TODO: To support Heisenbergs *)

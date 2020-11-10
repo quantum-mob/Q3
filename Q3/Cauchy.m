@@ -2,8 +2,8 @@
 (* Mathematica package for complex variables. *)
 
 (* Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com) *)
-(* $Date: 2020-11-05 19:38:11+09 $ *)
-(* $Revision: 1.36 $ *)
+(* $Date: 2020-11-10 19:04:23+09 $ *)
+(* $Revision: 1.40 $ *)
 
 BeginPackage["Q3`Cauchy`"]
 
@@ -11,8 +11,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.36 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-05 19:38:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.40 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-10 19:04:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -504,7 +504,7 @@ Format[ Inverse[op_?NonCommutativeQ] ] :=
 Format[ Inverse[op_Symbol?NonCommutativeQ[j___]] ] :=
   DisplayForm @ SpeciesBox[op, {j}, {"-1"}] /; $FormatSpecies
 
-Inverse[ Power[E, expr_] ] := MultiplyExp[- expr] /;
+Inverse[ Power[E, expr_] ] := MultiplyExp[-expr] /;
   Not @ CommutativeQ @ expr
 (* NOTE: Recall that Not[CommutativeQ[expr]] is not the same as
    NonCommutativeQ[expr]. *)
@@ -1070,6 +1070,8 @@ LiePower[a_, b_, n_Integer] := Garner[
 
 LieSeries::usage = "LieSeries[a, b, n] returns the finite series up to the nth order of Exp[a] ** b ** Exp[-a].\nLieSeries[a, b, Infinity] is equivalent to LieExp[a, b]."
 
+LieSeries[a_, b_, Infinity] := LieExp[a, b]
+
 LieSeries[a_, b_, n_Integer] := With[
   { aa = FoldList[Commutator, b, ConstantArray[a, n]],
     ff = Table[Power[-1, k]/(k!), {k, 0, n}] },
@@ -1083,12 +1085,14 @@ LieExp[a_, z_?CommutativeQ] := z
 
 LieExp[a_, z_?CommutativeQ b_] := z LieExp[a, b]
 
-LieExp[a_, expr_Plus] :=
-  Garner @ Total @ Map[ LieExp[a, #]&, List @@ expr ]
-
-LieExp[a_, Exp[expr_]] := Exp @ LieExp[a, expr]
-
 LieExp[a_, expr_List] := Map[ LieExp[a, #]&, expr ]
+
+LieExp[a_, expr_Plus] :=
+  Garner @ Total @ LieExp[a, List @@ expr]
+
+LieExp[a_, Exp[expr_]] := MultiplyExp @ LieExp[a, expr]
+
+LieExp[a_, MultiplyExp[expr_]] := MultiplyExp @ LieExp[a, expr]
 
 (* Baker-Hausdorff Lemma. *)
 
@@ -1101,12 +1105,13 @@ LieExp[a_, b_] := b + Commutator[a, b] /;
 (* Mendas-Milutinovic Lemma: The anticommutator analogues of the
    Baker-Hausdorff lemma.  See Mendas and Milutinovic (1989a) *)
 
-LieExp[a_, b_] := Multiply[Exp[2 a], b] /;
+LieExp[a_, b_] := Multiply[MultiplyExp[2 a], b] /;
   Garner @ Anticommutator[a, b] == 0
 (* NOTE: Exp is pushed to the left. *)
 
 LieExp[a_, b_] :=
-  Multiply[ Exp[2 a], b ] - Multiply[ Exp[2 a], Anticommutator[a, b] ] /;
+  Multiply[ MultiplyExp[2 a], b ] -
+  Multiply[ MultiplyExp[2 a], Anticommutator[a, b] ] /;
   Garner @ Anticommutator[a, b, 2] == 0 
 (* NOTE: Exp is pushed to the left. *)
 
@@ -1145,19 +1150,21 @@ CoefficientTensor[expr_, ops:{__?AnySpeciesQ}] := Coefficient[expr, ops]
 CoefficientTensor[expr_, ops:{__?AnySpeciesQ}..] := 
   CoefficientTensor[expr, ops, Multiply]
 
-CoefficientTensor[expr_, ops : {__?AnySpeciesQ} .., func_Symbol] :=  Module[
+CoefficientTensor[expr_, ops:{__?AnySpeciesQ}.., func_Symbol] :=  Module[
   { k = Length @ {ops},
     mn = Length /@ {ops},
     pp, qq, rr, cc, ij,
     G },
   pp = G @@@ Tuples @ {ops};
   qq = GroupBy[pp, Sort];
-  rr = Cases[expr, x : Blank[func] :> Sort[G @@ x], Infinity];
+  rr = Cases[expr, x:Blank[func] :> Sort[G @@ x], {0, Infinity}];
+  (* NOTE: The 0th level should be included. *)
+
   rr = Intersection[rr, Keys @ qq];
-  
+
   If[ rr == {}, Return[SparseArray[{}, mn]] ];
   
-  qq = Catenate@KeyTake[qq, rr];
+  qq = Catenate @ KeyTake[qq, rr];
   pp = ArrayReshape[pp, mn];
   ij = Map[FirstPosition[pp, #] &, qq];
   
@@ -1169,6 +1176,7 @@ CoefficientTensor[expr_, ops : {__?AnySpeciesQ} .., func_Symbol] :=  Module[
   
   rr = Normal @ Merge[Thread[rr -> cc], Mean];
   rr = Coefficient[expr /. rr, qq];
+
   SparseArray[Thread[ij -> rr], mn]
  ]
 
