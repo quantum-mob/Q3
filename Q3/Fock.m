@@ -4,8 +4,8 @@
   Fock is a Mathematica package for the complex Weyl and Clifford algebra.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2020-11-10 19:23:34+09 $
-  $Revision: 1.24 $
+  $Date: 2020-11-11 06:25:30+09 $
+  $Revision: 1.26 $
   ****)
 
 BeginPackage[ "Q3`Fock`",
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.24 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-10 19:23:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.26 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-11 06:25:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -1247,7 +1247,7 @@ LieExp[gen_, expr_] := Module[
     mat[[1+n;;, All]] *= -1;
    ];
 
-  mat = Simplify @ MatrixExp[-2*mat];
+  mat = FunctionExpand @ MatrixExp[-2*mat];
   rules = Thread[ Rule[ops, mat.ops] ];
   
   Garner[ expr /. rules ]
@@ -1265,7 +1265,11 @@ LieExp[gen_, expr_] := Module[
 
   new = FunctionExpand @ MatrixExp[-mat];
   rules = Join[ rules, Thread[ops -> new.ops] ];
-  
+  (* NOTE: In general, the rules for Dagger[c[j]] is not equal to Dagger of
+     the rules for c[j]. For example, consider the case where mat (i.e., gen)
+     is not anti-Hermitian. *)
+  (* NOTE: The rules of Dagger[c[j]] should come before the ones for c[j]. *)
+
   Garner[ expr /. rules ]
  ] /; FockBilinearQ[gen]
 (* TODO: To support Heisenbergs *)
