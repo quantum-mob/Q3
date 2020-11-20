@@ -6,12 +6,12 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.11 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 10:15:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.13 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-20 21:13:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
-{ TheWigner, TheWignerKet, TheRotation, TheEulerRotation };
+{ TheWigner, TheWignerKet };
 
 { Spin, SpinQ, Spins };
 
@@ -128,20 +128,35 @@ TheWignerKet[ {j_?SpinNumberQ, m:{__?NumericQ}, t:Except[_List], p:Except[_List]
   CircleTimes @@ Map[TheWignerKet] @ Tuples[{{j}, m, {t}, {p}}]
 
 
-(* TheRotation[], TheEulerRotation[] *)
+Once[ TheRotation::usage = TheRotation::usage <> "\nTheRotation[\[Phi], {J, 1}], TheRotation[\[Phi], {J, 2}], TheRotation[\[Phi], {J, 3}] give the rotation matrices by angle \[Phi] around the x, y, and z axis, respective, for Spin = J." ]
 
-Once[ TheRotation::usage = TheRotation::usage <> "\nTheRotation[J, 1,\[Phi]], TheRotation[J, 2,\[Phi]], TheRotation[J, 3,\[Phi]] are three rotations abouit x, y, and z axes, respective, for higher spins." ]
+TheRotation[_, {_?SpinNumberQ, 0}] := IdentityMatrix[2*J+1]
 
-TheRotation[J_?SpinNumberQ, 0, phi_] := IdentityMatrix[2J+1]
+TheRotation[phi_, {J_?SpinNumberQ, n:(1|2|3)}] :=
+  MatrixExp[ -I phi TheWigner[{J, n}] ]
 
-TheRotation[J_?SpinNumberQ, n:(1|2|3), phi_] :=
-  MatrixExp[-I TheWigner[{J,n}] phi]
+TheRotation[{phi_, {J_?SpinNumberQ, n:(1|2|3)}}] :=
+  TheRotation[phi, {J, n}]
+
+TheRotation[
+  a:{_, {_?SpinNumberQ, (0|1|2|3)}},
+  b:{_, {_?SpinNumberQ, (0|1|2|3)}}.. ] :=
+  CircleTimes @@ Map[TheRotation, {a, b}]
 
 
-Once[ TheEulerRotation::usage = TheEulerRotation::usage <> "\nTheEulerRotation[{J,a,b,c}] gives the Euler rotation in the angular momentum J representation." ]
+Once[ TheEulerRotation::usage = TheEulerRotation::usage <> "\nTheEulerRotation[{a, b, c}, J] gives the Euler rotation matrix in the angular momentum J representation." ]
 
-TheEulerRotation[ {J_?SpinNumberQ, phi_,theta_,chi_} ] :=
-  TheRotation[J,3,phi] . TheRotation[J,2,theta] . TheRotation[J,3,chi]
+TheEulerRotation[ {phi_, theta_, chi_}, J_?SpinNumberQ ] :=
+  TheRotation[phi, {J, 3}] . TheRotation[theta, {J, 2}] .
+  TheRotation[chi, {J, 3}]
+
+TheEulerRotation[{{a_, b_, c_}, J_?SpinNumberQ}] :=
+  TheEulerRotation[{a, b, c}, J]
+
+TheEulerRotation[
+  a:{{_, _, _}, _?SpinNumberQ},
+  b:{{_, _, _}, _?SpinNumberQ}.. ] :=
+  CircleTimes @@ Map[TheEulerRotation, {a, b}]
 
 
 Spin::wrongS = "Wrong spin value ``. Spin should be a non-negative integer or half-integer. Spin 1/2 is assumed."
@@ -641,28 +656,28 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
  ]
 
 
-WignerRotation::usage = "WignerRotation[S[j, ..., k], angle] operates the rotation by angle angle around the axis k on the Spin S[j, ..., None]."
+WignerRotation::usage = "WignerRotation[angle, S[j, ..., k]] operates the rotation by angle around the axis k on the Spin S[j, ..., None].\nWignerRotation[angle, S, {x, y, z}] gives the rotation operator by angle around the axis {x, y, z} on the Spin S."
 
-WignerRotation[S_?SpinQ[j___,k:(1|2|3)], a_] := Module[
-  { bs = Basis[ S[j,None] ],
-    Rn = MatrixExp[ -I a TheWigner[{Spin[S], k}] ] },
-  MultiplyDot[ bs . Rn, Dagger[bs] ]
+WignerRotation[phi_, S_?SpinQ[j___,k:(1|2|3)]] := Module[
+  { bs = Basis[ S[j, None] ],
+    Rn = MatrixExp[ -I phi TheWigner[{Spin[S], k}] ] },
+  MultiplyDot[ bs, Rn, Dagger[bs] ]
  ]
 
-WignerRotation[S_?SpinQ[j___, None], a_, v:{_,_,_}] := Module[
-  { bs = Basis[ S[j,None] ],
+WignerRotation[phi_, S_?SpinQ[j___, None], v:{_,_,_}] := Module[
+  { bs = Basis[ S[j, None] ],
     vn = v / Norm[v],
     Rn },
   Rn = vn . {
     TheWigner[{Spin[S], 1}],
     TheWigner[{Spin[S], 2}],
     TheWigner[{Spin[S], 3}] };
-  Rn = MatrixExp[ -I a Rn ];
-  MultiplyDot[ bs . Rn, Dagger[bs] ]
+  Rn = MatrixExp[ -I phi Rn ];
+  MultiplyDot[ bs, Rn, Dagger[bs] ]
  ]
 
-WignerRotation[S_?SpinQ, a_, v:{_,_,_}] :=
-  WignerRotation[ FlavorNone[ Drop[S,-1] ], a, v] /;
+WignerRotation[phi_, S_?SpinQ, v:{_,_,_}] :=
+  WignerRotation[ phi, S[None], v] /;
   FlavorLast[S] =!= None
 
 

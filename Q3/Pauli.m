@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-19 11:57:45+09 $
-  $Revision: 1.16 $
+  $Date: 2020-11-21 07:38:49+09 $
+  $Revision: 1.19 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`" } ]
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.16 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-19 11:57:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.19 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-21 07:38:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -138,8 +138,8 @@ TheKet[a:(0 | 1 | Up | Down) ..] := Module[
 (* It takes quite for bit strings longer than 10. *)
 
 
-TheState::usage = "TheState[{0,theta,phi}] = TheRotation[3,phi].TheRotation[2,theta].TheKet[0].
-TheState[{1,theta,phi}] = TheRotation[3,phi].TheRotation[2,theta].TheKet[1].
+TheState::usage = "TheState[{0, theta, phi}] = TheRotation[phi, 3].TheRotation[theta, 2].TheKet[0].
+TheState[{1, theta, phi}] = TheRotation[phi,3].TheRotation[theta,2].TheKet[1].
 TheState[{s1,t1,p1}, {s2,t2,p2}, ...] = TheState[{s1,t1,p1}] \[CircleTimes]
 TheState[s2,t2,p2]\[CircleTimes]....  TheState[{{s1,s2,...}, th, ph}] =
 TheState[{s1,th,ph}, {s2,th,ph}, ...]."
@@ -170,7 +170,7 @@ TheRaise::usage = "TheRaise[]=(ThePauli[1]+I*ThePauli[2])/2={{0,1},{0,0}}.\nTheR
 
 TheLower::usage = "TheLower[]=(ThePauli[1]-I*ThePauli[2])/2={{0,0},{1,0}}.\nTheLower[{J,1}] returns the raising operator for angular momentum J.\nTheLower[{J,0}] returns the identity matrix."
 
-TheHadamard::usage = "TheHadamard[0]=IdentityMatrix[2]. TheHadamard[1]={{1,1},{1,-1}}/Sqrt[2] is the matrix corresponding to TheRotation[2,Pi/2].ThePauli[3].\nTheHadamard[{J,1}] returns TheRotation[{J,2,Pi/2}].ThePauli[{J,3}] for angular momentum J.\nTheHadamard[{J,0}] returns the identity matrix."
+TheHadamard::usage = "TheHadamard[0]=IdentityMatrix[2]. TheHadamard[1]={{1,1},{1,-1}}/Sqrt[2] is the matrix corresponding to TheRotation[Pi/2,2].ThePauli[3].\nTheHadamard[{J,1}] returns TheRotation[Pi/2, {J,2}].TheWigner[{J,3}] for angular momentum J.\nTheHadamard[{J,0}] returns the identity matrix."
 
 SetAttributes[ThePauli, {NHoldAll, ReadProtected}]
 
@@ -760,7 +760,7 @@ Once[
 PauliExpand::usage = "PauliExpand[expr] returns more explicit form of the expression expr."
 
 PauliExpand[ expr_ ] := Garner[
-  expr //. $PauliExpandRules /. { MultiplyExp -> Exp }
+  expr //. $PauliExpandRules
  ]
 
 $PauliExpandRules = {
@@ -1212,33 +1212,31 @@ ParityOddQ[ v_Ket, op:{__?SpeciesQ} ] :=
 
 (* *********************************************************************** *)
 
+Once[ TheRotation::usage = "TheRotation[\[Phi], 1], TheRotation[\[Phi], 2], TheRotation[\[Phi], 3] give the 2x2 matrix representing the rotation by angle \[Phi] around the x, y, and z axis, respective in the two-dimensional Hilbert  space.\nTheRotation[{x1, n1,}, {x2, n2,}, ...] =
+  TheRotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] ..." ]
 
-(* Rotational Operators *)
+TheRotation[_, 0] := ThePauli[0]
 
-Once[ TheRotation::usage = "TheRotation[1,\[Phi]], TheRotation[2,\[Phi]], TheRotation[3,\[Phi]] are three rotations abouit x, y, and z axes, respective, in the SU(2) Hilbert  space.\nTheRotation[{n1,x1}, {n2,x2}, ...] = TheRotation[{{n1,x1}, {n2,x2}, ...}] =
-  TheRotation[n1,x1] \[CircleTimes] Rotation[n2,x2] \[CircleTimes] ..." ]
+TheRotation[ph_, n:(1|2|3)] :=
+  Cos[ph/2] * ThePauli[0] - I*Sin[ph/2] * ThePauli[n]
 
-Once[ TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[3,a].TheRotation[2,b].TheRotation[3,c] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space." ]
+TheRotation[{ph_, n:(0|1|2|3)}] := TheRotation[ph, n]
 
-TheRotation[0, ph_] := ThePauli[0]
-
-TheRotation[n:(1|2|3), ph_] := Cos[ph/2]*ThePauli[0] - I*Sin[ph/2]*ThePauli[n]
-
-TheRotation[{n:(0|1|2|3), ph_}] := TheRotation[n, ph]
-
-TheRotation[a_List, b__List] :=
-  CircleTimes @@ Map[(TheRotation @@ #)&, {a,b}]
+TheRotation[a:{_, (0|1|2|3)}, b:{_, (0|1|2|3)}..] :=
+  CircleTimes @@ Map[TheRotation, {a, b}]
 
 
-TheEulerRotation[ {phi_,theta_,chi_} ] := {
+Once[ TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[a,3].TheRotation[b,2].TheRotation[c,3] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space." ]
+
+TheEulerRotation[ {phi_, theta_, chi_} ] := {
   {Cos[theta/2]*Exp[-I*(phi+chi)/2], -Sin[theta/2]*Exp[-I*(phi-chi)/2]},
   {Sin[theta/2]*Exp[+I*(phi-chi)/2],  Cos[theta/2]*Exp[+I*(phi+chi)/2]}
  }
 
-TheEulerRotation[ {phi_,theta_} ] := TheEulerRotation[ {phi,theta,0} ]
+TheEulerRotation[ {phi_,theta_} ] := TheEulerRotation[ {phi, theta, 0} ]
 
-TheEulerRotation[a_List, b__List] :=
-  CircleTimes @@ Map[TheEulerRotation, {a,b}]
+TheEulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
+  CircleTimes @@ Map[TheEulerRotation, {a, b}]
 
 
 TheEulerAngles::usage = "TheEulerAngles[U] gives the Euler angles {\[Alpha],\[Beta],\[Gamma]} of the SU(2) matrix U, where -\[Pi] < \[Alpha],\[Gamma] \[LessEqual] \[Pi] and 0 \[LessEqual] \[Beta] \[LessEqual] \[Pi]. TheEulerRotation[TheEulerAngles[U]] == U.\nTheEulerAngles[expr] gives the Euler angles {\[Alpha],\[Beta],\[Gamma]} of the single-qubit unitary operator given by expr in terms of Pauli operators."
@@ -1279,30 +1277,25 @@ TheEulerAngles[expr_] := Module[
 
 (* *********************************************************************** *)
 
-Rotation::usage = "Rotation[1,\[Phi]], Rotation[2,\[Phi]], Rotation[3,\[Phi]]  are three rotations abouit x, y, and z axes, respective, in the SU(2) Hilbert  space. Rotation[{n1,x1}, {n2,x2}, ...] = Rotation[{{n1,x1}, {n2,x2}, ...}] = Rotation[n1,x1] \[CircleTimes] Rotation[n2,x2] \[CircleTimes] ..."
+Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], Rotation[\[Phi], 3] represent the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{x1, n1}, {x2, n2}, ...] = Rotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] ..."
 
-EulerRotation::usage = "EulerRotation[{a, b, c}] = Rotation[3, a].Rotation[2, b].Rotation[3, c] and EulerRotation[{a, b}] = EulerRotation[{a, b, 0}] represent the Euler rotations in SU(2) space."
+Rotation[_, 0] := Pauli[0]
 
-Rotation[0, phi_] := Pauli[0]
+Rotation[phi_, n:(1|2|3)] := Cos[phi/2]*Pauli[0]-I*Sin[phi/2]*Pauli[n]
 
-(* Rotation[J_?SpinNumberQ, 0, phi_] := Pauli[{J,0}] *)
+Rotation[{phi_, n:(0|1|2|3)}] := Rotation[phi, n]
 
-Rotation[n:(1|2|3), phi_] := Cos[phi/2]*Pauli[0]-I*Sin[phi/2]*Pauli[n]
+Rotation[a:{_, (0|1|2|3)}, b:{_, (0|1|2|3)}..] :=
+  CircleTimes @@ Map[Rotation, {a, b}]
 
-(* Rotation[J_?SpinNumberQ, n:(1|2|3), phi_] := Exp[-I phi Pauli[{J,n}]] *)
 
-Rotation[a_List, b__List] :=
-  CircleTimes @@ Map[(Rotation @@ #)&, {a,b}]
+EulerRotation::usage = "EulerRotation[{a, b, c}] = Rotation[a, 3].Rotation[b, 2].Rotation[c, 3] represent the Euler rotation by angles a, b, c in a two-dimensional Hilbert space."
 
-EulerRotation[ {phi_,theta_,chi_} ] := Rotation[3,phi].Rotation[2,theta].Rotation[3,chi]
+EulerRotation[ {a_, b_, c_} ] :=
+  Rotation[a, 3].Rotation[b, 2].Rotation[c, 3]
 
-(*
- EulerRotation[ {J_?SpinNumberQ, phi_,theta_,chi_} ] :=
-  Rotation[J,3,phi] . Rotation[J,2,theta] . Rotation[J,3,chi]
- *)
-
-EulerRotation[ a_List, b__List ] :=
-  CircleTimes @@ Map[(EulerRotation @@ #)&, {a,b}]
+EulerRotation[ a:{_, _, _}, b:{_, _, _}.. ] :=
+  CircleTimes @@ Map[EulerRotation, {a, b}]
 
 
 (* *********************************************************************** *)

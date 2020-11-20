@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-07 08:27:04+09 $
-  $Revision: 1.10 $
+  $Date: 2020-11-21 08:21:58+09 $
+  $Revision: 1.14 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.10 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-07 08:27:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.14 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-21 08:21:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -973,117 +973,191 @@ QuissoAssemble[ ss:{__?QubitQ}, m_?TensorQ ] := Module[
   Total @ Flatten[vv]
  ]
 
-(* QuissoPhase, Phase *)
 
-QuissoPhase::usage = "QuissoPhase[G, \[Phi]] operates the relative phase shift by \[Phi] on the qubit G.
-  Unlike Phase[G, \[Phi]], it expands immediately in terms of the elementary Pauli gates."
+QuissoPhase::usage = "QuissoPhase[\[Phi], S] operates the relative phase shift by \[Phi] on the qubit S.\nUnlike Phase, it expands immediately in terms of the elementary Pauli gates."
 
 QuissoPhase[ a__, opts__?OptionQ ] := QuissoPhase[ a ]
 (* NOTE: opts__, NOT opts___; just for the interface with Phase[]. *)
 
-QuissoPhase[ S_?QubitQ[j___,None], a_ ] :=
-  (1+Exp[I a])/2 + S[j,3] (1-Exp[I a])/2
+QuissoPhase[ a_, qq:{__?QubitQ} ] := Garner[
+  Multiply @@ Map[QuissoPhase[a, #]&, qq]
+ ]
+
+QuissoPhase[ a_, S_?QubitQ[j___, None] ] :=
+  (1+Exp[I*a])/2 + S[j,3] (1-Exp[I*a])/2
 (* Phase[...] can results in this case. *)
 
-QuissoPhase[ G_?QubitQ, phi_ ] := QuissoPhase[ G[None], phi ] /;
-  FlavorLast[G] =!= None
+QuissoPhase[ a_, S_?QubitQ ] := QuissoPhase[a, S[None]] /;
+  FlavorLast[S] =!= None
+
+QuissoPhase::newUI = "An angle should come first. The order of the input arguments of this function has been changed since Q3 v1.2.0."
+
+QuissoPhase[S_?QubitQ, ang_] := (
+  Message[QuissoPhase::newUI];
+  QuissoPhase[ang, S]
+ )
+
+QuissoPhase[qq:{__?QubitQ}, ang_] := (
+  Message[QuissoPhase::newUI];
+  QuissoPhase[ang, qq]
+ )
+
 
 Phase::usage = "Phase[G, \[Phi]] represents the relative phase shift by \[Phi] on the qubit G."
 
 Options[Phase] = { Label -> "\[CapitalPhi]" }
 
-Phase /:
-Dagger[ Phase[ G_?QubitQ, phi_, opts___?OptionQ ] ] :=
-  Phase[ G, -Conjugate[phi], opts ]
-  
-Phase[ G_?QubitQ, phi_, opts___?OptionQ ] :=
-  Phase[ G[None], phi, opts ] /; FlavorLast[G] =!= None
+Phase[ phi_, qq:{__?QubitQ} ] := Map[Phase[phi, #]&, FlavorNone @ qq]
 
-Phase[ qq:{__?QubitQ}, phi_, opts___?OptionQ ] :=
-  Map[ Phase[#, phi, opts]&, FlavorNone @ qq ]
+Phase[ phi_, G_?QubitQ, opts___?OptionQ ] :=
+  Phase[ phi, G[None], opts ] /; FlavorLast[G] =!= None
 
 HoldPattern @ Multiply[
-  a___,
-  Phase[g_?QubitQ, phi_, opts___?OptionQ ],
-  b___ ] := Multiply[ a, QuissoPhase[g, phi], b ]
+  pre___,
+  Phase[phi_, S_?QubitQ, opts___?OptionQ ],
+  post___
+ ] := Multiply[ pre, QuissoPhase[phi, S], post ]
 (* Options are for QuissoCircuit[] and ignore in calculations. *)
 
+Phase /:
+Dagger[ Phase[ phi_, G_?QubitQ, opts___?OptionQ ] ] :=
+  Phase[ -Conjugate[phi], G, opts ]
+  
+Phase::newUI = QuissoPhase::newUI
 
-(* QuissoRotation, Rotation, QuissoEulerRotation, EulerRotation *)
+Phase[q_?QubitQ, ang_, rest___] := (
+  Message[Phase::newUI];
+  Phase[ang, q, rest]
+ )
 
-QuissoRotation::usage = "QuissoRotation[G[j,...,k], angle] gives the operator corresonding to the rotation by angle angle around the axis k on the qubit G[j, ..., None]."
+Phase[qq:{__?QubitQ}, ang_, rest___] := (
+  Message[Phase::newUI];
+  Phase[ang, qq, rest]
+ )
 
-QuissoRotation[ a__, opts__?OptionQ ] := QuissoRotation[ a ]
+
+QuissoRotation::usage = "QuissoRotation[angle, G[j,...,k]] gives the operator corresonding to the rotation by angle around the axis k on the qubit G[j, ..., None]."
+
+QuissoRotation[ args__, opts__?OptionQ ] := QuissoRotation[ args ]
 (* NOTE: opts__, NOT opts___; just for the interface with Rotation[]. *)
 
-QuissoRotation[S_?QubitQ[j___,k:(1|2|3)], a_] :=
+QuissoRotation[ a_, S_?QubitQ[j___,k:(1|2|3)] ] :=
   Cos[a/2] - I Sin[a/2] S[j,k]
 
-QuissoRotation[S_?QubitQ[j___, None], a_, v:{_,_,_}] :=
-  Cos[a/2] - I Sin[a/2] Dot[ S[j,{1,2,3}], Normalize[v] ]
+QuissoRotation[ a_, S_?QubitQ[j___, None], v:{_,_,_} ] := Garner[
+  Cos[a/2] - I Sin[a/2] Dot[ S[j,All], Normalize[v] ]
+ ]
 (* Rotation[...] can results in this case. *)
 
-QuissoRotation[S_?QubitQ, a_, v:{_,_,_}] :=
-  Cos[a/2] - I Sin[a/2] Dot[ S[{1,2,3}], Normalize[v] ] /;
-  FlavorLast[S] =!= None
+QuissoRotation[ a_, S_?QubitQ, v:{_,_,_}] :=
+  QuissoRotation[a, S[None], v] /; FlavorLast[S] =!= None
 
-QuissoRotation[SS:{__?QubitQ}, a_] :=
-  Multiply @@ Map[ QuissoRotation[#,a]&, SS ]
+QuissoRotation[ a_, SS:{__?QubitQ} ] := Garner[
+  Multiply @@ Map[ QuissoRotation[a, #]&, SS ]
+ ]
+
+QuissoRotation::newUI = Phase::newUI
+
+QuissoRotation[S_?QubitQ, ang_, rest___] := (
+  Message[QuissoRotation::newUI];
+  QuissoRotation[ang, S, rest]
+ )
+
+QuissoRotation[ss:{__?QubitQ}, ang_, rest___] := (
+  Message[QuissoRotation::newUI];
+  QuissoRotation[ang, ss, rest]
+ )
 
 
-Once[ Rotation::usage = Rotation::usage <> "\nRotation[G[j, ..., k], angle] represents the rotation by angle angle around the axis k on the qubit G[j, ..., None]." ]
+Once[ Rotation::usage = Rotation::usage <> "\nRotation[angle, G[j, ..., k]] represents the rotation by angle angle around the axis k on the qubit G[j, ..., None]." ]
 
 Options[Rotation] = { Label -> Automatic }
 
-Rotation[ qq:{__?QubitQ}, rest__ ] :=
-  Map[ Rotation[#,rest]&, FlavorNone @ qq ]
+Rotation[ phi_, qq:{__?QubitQ}, rest___ ] :=
+  Map[ Rotation[phi, #, rest]&, FlavorNone @ qq ]
 
 Rotation /:
-HoldPattern @ Multiply[a___, Rotation[g_?QubitQ, rest__], b___ ] :=
-  Multiply[ a, QuissoRotation[g, rest], b ]
+HoldPattern @ Multiply[pre___, Rotation[phi_, S_?QubitQ, rest___], post___ ] :=
+  Multiply[ pre, QuissoRotation[phi, S, rest], post ]
 (* Options are for QuissoCircuit[] and ignored in calculations. *)
 
 Rotation /:
-Dagger[ Rotation[S_?QubitQ, ang_, rest___] ] :=
-  Rotation[S, -Conjugate[ang], rest]
+Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
+  Rotation[-Conjugate[ang], S, rest]
+
+Rotation::newUI = QuissoRotation::newUI
+
+Rotation[q_?QubitQ, ang_, rest___] := (
+  Message[Rotation::newUI];
+  Rotation[ang, q, rest]
+ )
+
+Rotation[qq:{__?QubitQ}, ang_, rest___] := (
+  Message[Rotation::newUI];
+  Rotation[ang, qq, rest]
+ )
 
 
-QuissoEulerRotation::usage = "QuissoEulerRotation[G[j, ..., None], {a, b, c}] operates the Euler rotation by the angles a,  b and c on the qubit G[j, ..., None].\nUnlike EulerRotation[G[j, ..., None], {a, b, c}] it expands immediately in terms of the elementary Pauli gates."
+QuissoEulerRotation::usage = "QuissoEulerRotation[{a, b, c}, G[j, ..., None]] operates the Euler rotation by the angles a,  b and c on the qubit G[j, ..., None].\nUnlike EulerRotation, it expands immediately in terms of the elementary Pauli gates."
 
-QuissoEulerRotation[ a__, opts__?OptionQ ] := QuissoEulerRotation[ a ]
+QuissoEulerRotation[ args__, opts__?OptionQ ] := QuissoEulerRotation[ args ]
 (* NOTE: opts__, NOT opts___; just for the interface with Rotation[]. *)
 
-QuissoEulerRotation[SS:{__?QubitQ}, a_List] :=
-  Multiply @@ Map[ QuissoEulerRotation[#,a]&, SS ]
+QuissoEulerRotation[aa:{_, _, _}, SS:{__?QubitQ}] :=
+  Multiply @@ Map[ QuissoEulerRotation[aa, #]&, SS ]
 
-QuissoEulerRotation[ S_?QubitQ[j___,None], {a_, b_, c_} ] := Multiply[
-  QuissoRotation[S[j,3],a],
-  QuissoRotation[S[j,2],b],
-  QuissoRotation[S[j,3],c]
- ]
+QuissoEulerRotation[ {a_, b_, c_}, S_?QubitQ[j___,None] ] :=
+  Garner @ Multiply[
+    QuissoRotation[a, S[j,3]],
+    QuissoRotation[b, S[j,2]],
+    QuissoRotation[c, S[j,3]]
+   ]
 (* EulerRotation[...] can results in this case. *)
 
-QuissoEulerRotation[ S_?QubitQ, {a_, b_, c_} ] := Multiply[
-  QuissoRotation[S[3],a],
-  QuissoRotation[S[2],b],
-  QuissoRotation[S[3],c]
- ] /; FlavorLast[S] =!= None
+QuissoEulerRotation[ {a_, b_, c_}, S_?QubitQ ] :=
+  QuissoEulerRotation[ {a, b, c}, S[None] ] /; FlavorLast[S] =!= None
 
-Once[ EulerRotation::usage = EulerRotation::usage <> "\nEulerRotation[G[j, ..., None], {a, b, c}] operates the Euler rotation by the angles a,  b and c on the qubit G[j, ..., None]." ]
+
+QuissoEulerRotation::newUI = Rotation::newUI
+
+QuissoEulerRotation[q_?QubitQ, ang_, rest___] := (
+  Message[QuissoEulerRotation::newUI];
+  QuissoEulerRotation[ang, q, rest]
+ )
+
+QuissoEulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
+  Message[QuissoEulerRotation::newUI];
+  QuissoEulerRotation[ang, qq, rest]
+ )
+
+
+Once[ EulerRotation::usage = EulerRotation::usage <> "\nEulerRotation[{a, b, c}, G[j, ..., None]] operates the Euler rotation by the angles a,  b and c on the qubit G[j, ..., None]." ]
 
 Options[EulerRotation] = { Label -> Automatic }
 
-EulerRotation[ qq:{__?QubitQ}, rest__ ] :=
-  Map[ EulerRotation[#,rest]&, FlavorNone @ qq ]
+EulerRotation[ aa:{_, _, _}, qq:{__?QubitQ}, rest___ ] :=
+  Map[ EulerRotation[aa, #, rest]&, FlavorNone @ qq ]
 
-EulerRotation[ G_?QubitQ, angles:{_, _, _}, opts___?OptionQ ] :=
-  EulerRotation[ G[None], angles, opts ] /; FlavorLast[G] =!= None
+EulerRotation[ angles:{_, _, _}, G_?QubitQ, opts___?OptionQ ] :=
+  EulerRotation[ angles, G[None], opts ] /; FlavorLast[G] =!= None
   
 HoldPattern @ Multiply[
-  a___,
-  EulerRotation[g_?QubitQ, angles:{_, _, _}, opts___?OptionQ ],
-  b___ ] := Multiply[ a, QuissoEulerRotation[g, angles], b ]
+  pre___,
+  EulerRotation[angles:{_, _, _}, S_?QubitQ, opts___?OptionQ ],
+  post___ ] := Multiply[ pre, QuissoEulerRotation[angles, S], post ]
 (* Options are for QuissoCircuit[] and ignore in calculations. *)
+
+EulerRotation::newUI = Rotation::newUI
+
+EulerRotation[q_?QubitQ, ang_, rest___] := (
+  Message[EulerRotation::newUI];
+  EulerRotation[ang, q, rest]
+ )
+
+EulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
+  Message[EulerRotation::newUI];
+  EulerRotation[ang, qq, rest]
+ )
 
 
 (* *************************************************************
@@ -1633,24 +1707,31 @@ qCircuitElement[ Measure[ S_?QubitQ ], opts___?OptionQ ] :=
 qCircuitElement[ p_Projector, opts___?OptionQ ] :=
   Gate[ Qubits @ p, "TargetFunction" -> qGateProjector, Label -> None, opts ]
 
-qCircuitElement[ Phase[ G_?QubitQ, ang_, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, Label -> qGateLabel[ Phase[G, ang] ] ]
+qCircuitElement[ Phase[ ang_, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
+  Gate[ Qubits @ G, opts, more, Label -> qGateLabel[ Phase[ang, G] ] ]
 
-qCircuitElement[ Rotation[ G_?QubitQ, ang_, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, Label -> qGateLabel[ Rotation[G, ang] ] ]
+qCircuitElement[ Rotation[ ang_, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
+  Gate[ Qubits @ G, opts, more, Label -> qGateLabel[ Rotation[ang, G] ] ]
 
-qCircuitElement[ EulerRotation[ G_?QubitQ, ang:{_,_,_}, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ {G}, opts, more, Label -> qGateLabel[ EulerRotation[G, ang] ] ]
+qCircuitElement[ EulerRotation[ ang:{_,_,_}, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
+  Gate[ {G}, opts, more, Label -> qGateLabel[ EulerRotation[ang, G] ] ]
 
 
 qCircuitElement[ ControlledU[ cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
   Gate[ cc, Qubits @ S, opts, more, Label -> qGateLabel[S] ]
 
-qCircuitElement[ ControlledU[ cc:{__?QubitQ}, op:(Phase|Rotation|EulerRotation)[j__, optsA___?OptionQ], optsB___?OptionQ ], optsC___?OptionQ ] :=
+qCircuitElement[
+  ControlledU[
+    cc:{__?QubitQ},
+    op:(Phase|Rotation|EulerRotation)[j__, optsA___?OptionQ],
+    optsB___?OptionQ ],
+  optsC___?OptionQ ] :=
   Gate[ cc, Qubits @ op, optsA, optsB, optsC, Label -> qGateLabel[op] ]
 
-qCircuitElement[ ControlledU[ cc:{__?QubitQ}, expr_, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ cc, Qubits[expr], opts, more ] /; !FreeQ[expr, _?QubitQ]
+qCircuitElement[
+  ControlledU[ cc:{__?QubitQ}, expr_, opts___?OptionQ ],
+  more___?OptionQ ] :=
+  Gate[ cc, Qubits[expr], opts, more ] /; Not @ FreeQ[expr, _?QubitQ]
 
 
 qCircuitElement[ CNOT[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
@@ -1689,10 +1770,10 @@ qGateLabel[ S_?QubitQ ] := Last[S] /. {
 
 qGateLabel[ gate_Phase ] := "\[CapitalPhi]"
 
-qGateLabel[ Rotation[S_?QubitQ, __] ] :=
-  Subscript[ "U", FlavorLast[S] /. {1->"x",2->"y",3->"z"} ]
+qGateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
+  Subscript[ "U", FlavorLast[S] /. {1->"x", 2->"y", 3->"z"} ]
 
-qGateLabel[ EulerRotation[S_?QubitQ, __] ] := Subscript["U", "E"]
+qGateLabel[ EulerRotation[{_, _, _}, S_?QubitQ, ___] ] := Subscript["U", "E"]
 
 qGateCirclePlus::usage = "..."
 
