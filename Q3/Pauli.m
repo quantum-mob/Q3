@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-05 17:17:56+09 $
-  $Revision: 1.7 $
+  $Date: 2020-11-19 11:57:45+09 $
+  $Revision: 1.16 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`" } ]
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.7 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-05 17:17:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.16 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-19 11:57:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -31,6 +31,8 @@ Print @ StringJoin[
 { BraKet };
 
 { Basis, Matrix, BuildMatrix, $RepresentableTests };
+
+{ HermitianProduct, HermitianNorm };
 
 { Affect };
 
@@ -71,8 +73,8 @@ Print @ StringJoin[
 
 { TensorFlatten, Tensorize, PartialTrace };
 
-{ PauliDecompose, PauliCompose, PauliExtract };
-{ PauliDecomposeRL, PauliComposeRL, PauliExtractRL };
+{ PauliDecompose, PauliCompose };
+{ PauliDecomposeRL, PauliComposeRL };
 { PauliEmbed, PauliApply };
 
 { SchmidtDecomposition };
@@ -83,6 +85,8 @@ Print @ StringJoin[
 
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
+
+{ PauliExtract, PauliExtractRL }; (* obsolete *)
 
 
 Begin["`Private`"]
@@ -938,6 +942,27 @@ PauliInner[m1_?MatrixQ, m2_?MatrixQ] :=
 PauliInner[v1_?VectorQ, v2_?VectorQ] := Topple[v1].v2
 
 
+HermitianNorm::usage = "HermitianNorm[a] gives the norm of a complex number, vector, or matrix a.\nFor complex numbers, it is Abs[z].\nFor vectors, it is Sqrt[Conjugate[a].a].\nFor matrices, it is the Frobenius norm, i.e., Tr[ConjugateTranspose[a].a].\nIt should be distinguished from the TraceNorm."
+
+HermitianNorm[a_?VectorQ] := Norm[a]
+
+HermitianNorm[a_?MatrixQ] := Norm[a, "Frobenius"]
+
+Format[ HermitianNorm[a_] ] := Sqrt @ AngleBracket[a, a]
+
+
+HermitianProduct::usage = "HermitianProduct[a, b] returns the Hermitian product of two vectors a and b.\nFor two matrices a and b, it is equivalent to the Frobenius inner product, i.e., Tr[ConjugateTranspose[a].b]."
+
+HermitianProduct[a_?VectorQ, b_?VectorQ] := Conjugate[a].b
+
+HermitianProduct[a_?MatrixQ, b_?MatrixQ] :=
+  HermitianProduct[Flatten @ a, Flatten @ b]
+
+Format[ HermitianProduct[a_, b_] ] := AngleBracket[a, b]
+
+
+(* *********************************************************************** *)
+(*     <Basis>                                                             *)
 (* *********************************************************************** *)
 
 $RepresentableTests::usage = "$RepresentableTests gives the list of Pattern Tests to be considered in Basis and Matrix."
@@ -964,6 +989,10 @@ Basis[ {} ] := { Ket @ Association[] }
 (* This is necessary as a fallback. *)
 
 Basis[ expr_ ] := Basis @@ Representables[expr]
+
+(* *********************************************************************** *)
+(*     </Basis>                                                            *)
+(* *********************************************************************** *)
 
 (* *********************************************************************** *)
 (*     <Matrix>                                                            *)
@@ -1582,42 +1611,55 @@ One[{m_Integer, n_Integer}, p_Integer] :=
 
 (* ********************************************************************* *)
 
-PauliDecompose::usage = "PauliDecompose[M], where M is a matrix of size 2^n*2^n, gives the coefficients of a Pauli decomposition of M as a tensor of rank n."
+PauliExtract::usage = "PauliExtract has been deprecated. Use PauliDecompose instead."
+
+PaulieExtract[m_?MatrixQ, dd_] := (
+  Message[Pauli::obsolete, "PaulieExtract", "PauliDecompose"];
+  PauliDecompose[m, dd]
+ )
+
+
+PauliExtractRL::usage = "PauliExtractRL has been deprecated. Use PauliDecomposeRL instead."
+
+PaulieExtractRL[m_?MatrixQ, dd_] := (
+  Message[Pauli::obsolete, "PaulieExtractRL", "PauliDecomposeRL"];
+  PauliDecomposeRL[m, dd]
+ )
+
+
+(* ********************************************************************* *)
+
+PauliDecompose::usage = "PauliDecompose[m] gives the coefficients in the Pauli decomposition of m as a tensor of rank n, where m is a 2^n x 2^n matrix."
 
 PauliDecompose::badarg = "The argument M of PauliDecompose[M] should be a matrix of size 2^n*2^n."
 
-PauliCompose::usage = "PauliCompose[coeff], where coeff is a tensor of rank n, gives a Pauli composed matrix of size 2^n*2^n with coefficients coeff."
+PauliDecompose[dd:(0|1|2|3)..][m_?MatrixQ] := PauliDecompose[m, {dd}]
 
-PauliExtract::usage = "PauliExtract[M,{ind}] gives the coefficient of the Pauli matrix indexed by ind in the Pauli decomposition of M, see also PauliDecompose."
+PauliDecompose[{dd:(0|1|2|3)..}][m_?MatrixQ] := PauliDecompose[m, {dd}]
 
-PauliDecomposeRL::badarg = "The argument M of PauliDecomposeRL[M] should be a matrix of size 2^n*2^n."
 
-PauliDecomposeRL::usage = "PauliDecomposeRL[M], where M is a matrix of size 2^n*2^n, gives the coefficients of a Pauli decomposition of M as a tensor of rank n."
+PauliDecompose[m_?MatrixQ, d:(0|1|2|3)] := PauliDecompose[m, {d}]
 
-PauliComposeRL::usage = "PauliComposeRL[coeff], where coeff is a tensor of rank n, gives a Pauli composed matrix of size 2^n*2^n with coefficients coeff."
+PauliDecompose[m_?MatrixQ, idx:{ (0|1|2|3).. }] :=
+  Tr @ Dot[m, CircleTimes @@ ThePauli /@ idx] / Length[m]
 
-PauliExtractRL::usage = "PauliExtractRL[M,{ind}] gives the coefficient of the Pauli matrix indexed by ind in the Pauli decomposition of M, see also PauliDecomposeRL."
-
-PauliDecomposeRL::badarg = "The argument M of PauliDecomposeRL[M] should be a matrix of size 2^n*2^n."
-
-PauliExtract[M_, n:(0|1|2|3)] := Tr[ M . ThePauli[n] ] / 2
-
-PauliExtract[M_, indices_List] :=
-  Tr[M . (CircleTimes @@ ThePauli /@ indices)] / Length[M]
 
 PauliDecompose[ m_?MatrixQ ] := Module[
   { n = Log[2, Length[m]],
-    indextable, indexlist },
+    idxTable, idxList },
   If [ !IntegerQ[n],
-       Message[PauliDecompose::badarg];
-       Return[0]
+    Message[PauliDecompose::badarg];
+    Return[0]
    ];
-  indextable = Table[{0,1,2,3}, {n}];
-  indexlist = Outer[ List, Sequence @@ indextable ];
-  Map[ PauliExtract[m,#]&, indexlist, {n} ]
+  idxTable = Table[{0, 1, 2, 3}, {n}];
+  idxList = Outer[ List, Sequence @@ idxTable ];
+  Map[ PauliDecompose[m, #]&, idxList, {n} ]
  ]
 
-PauliCompose[c_] := Module[
+
+PauliCompose::usage = "PauliCompose[coeff] constructs a 2^n x 2^n matrix using the coefficients specified in the tensor coeff.\nIt is an inverse of PauliDecompose and coeff is usually the tensor returned by it."
+
+PauliCompose[c_?TensorQ] := Module[
   { n = TensorRank[c],
     indextable, indexlist, result = 0 },
   indextable = Table[ {{0},{1},{2},{3}}, {n} ];
@@ -1625,45 +1667,60 @@ PauliCompose[c_] := Module[
   indexlist = Flatten[ indexlist, TensorRank[indexlist]-2 ];
   For[ i=1, i<=Length[indexlist], i++,
     result += c[[ Sequence @@ (indexlist[[i]]+1) ]] *
-      CircleTimes @@ Pauli /@ indexlist[[i]]
+      CircleTimes @@ ThePauli /@ indexlist[[i]]
    ];
   Return[result]
  ]
 
 
-PauliExtractRL[M_, n:(0|3|4|5)] := PauliExtractRL[M,{n}]
+PauliDecomposeRL::usage = "PauliDecomposeRL[M], where M is a matrix of size 2^n*2^n, gives the coefficients of a Pauli decomposition of M as a tensor of rank n."
 
-PauliExtractRL[M_, indices_List] := Module[
-  {T},
+PauliDecomposeRL::badarg = "The argument M of PauliDecomposeRL[M] should be a matrix of size 2^n*2^n."
+
+PauliDecomposeRL[dd:(0|3|4|5)..][m_?MatrixQ] := PauliDecomposeRL[m, {dd}]
+
+PauliDecomposeRL[{dd:(0|3|4|5)..}][m_?MatrixQ] := PauliDecomposeRL[m, {dd}]
+
+
+PauliDecomposeRL[M_?MatrixQ, n:(0|3|4|5)] := PauliDecomposeRL[M, {n}]
+
+PauliDecomposeRL[M_?MatrixQ, idx:{(0|3|4|5)..}] := Module[
+  { T },
   T[0] = ThePauli[0];
   T[3] = ThePauli[3];
-  T[4] = ThePauli[5]*2;
-  T[5] = ThePauli[4]*2;
-  Tr[M.(CircleTimes @@ T /@ indices)] / Length[M]
+  T[4] = ThePauli[5] * 2;
+  T[5] = ThePauli[4] * 2;
+  Tr @ Dot[ M, CircleTimes @@ T /@ idx ] / Length[M]
  ]
 
 
-PauliDecomposeRL[m_] := Module[
-  {tiefe = Log[2,Length[m]],indextable,indexlist},
-  If [ !IntegerQ[tiefe],
+PauliDecomposeRL[m_?MatrixQ] := Module[
+  { nn = Log[2, Length[m]],
+    idxTable, idxList },
+  If [ !IntegerQ[nn],
        Message[PauliDecompose::badarg];
        Return[0]
    ];
-  indextable = Table[{0,3,4,5},{tiefe}];
-  indexlist = Outer[List,Sequence@@indextable];
-  Map[PauliExtractRL[m,#]&, indexlist, {tiefe}]
+  idxTable = Table[{0,3,4,5}, {nn}];
+  idxList = Outer[List,Sequence@@idxTable];
+  Map[ PauliDecomposeRL[m,#]&, idxList, {nn} ]
 ]
 
 
-PauliComposeRL[c_] := Module[
-  {tiefe = TensorRank[c], indextable, indexlist, result = 0, T},
-  indextable = Table[{{0},{1},{2},{3}},{tiefe}];
+PauliComposeRL::usage = "PauliComposeRL[coeff], where coeff is a tensor of rank n, gives a Pauli composed matrix of size 2^n*2^n with coefficients coeff."
+
+PauliComposeRL[c_?TensorQ] := Module[
+  { tiefe = TensorRank[c],
+    indextable, indexlist, result = 0, T },
+  indextable = Table[{{0}, {1}, {2}, {3}}, {tiefe}];
   indexlist = Outer[Join,Sequence@@indextable,1];
   indexlist = Flatten[indexlist,TensorRank[indexlist]-2];
+  
   T[0] = ThePauli[0];
   T[1] = ThePauli[3];
   T[2] = ThePauli[4];
   T[3] = ThePauli[5];
+  
   For[ i=1, i<=Length[indexlist], i++,
     result += c[[Sequence @@ (indexlist[[i]]+1)]] *
       CircleTimes @@ T /@ indexlist[[i]]
@@ -1837,7 +1894,7 @@ PauliEmbed[A_, bits_List, len_Integer] := Module[
   PauliCompose @ ReplacePart[d, AA, c, b]
  ]
 
-PauliApply::usage = "PauliApply[A,qubits,v] applies the linear operator A on
+PauliApply::usage = "PauliApply[A, qubits, v] applies the linear operator A on
   qubits of the state vector v."
 
 PauliApply[A_, bits_List, v_List] := With[

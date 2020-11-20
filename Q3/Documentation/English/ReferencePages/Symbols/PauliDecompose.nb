@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      8848,        257]
-NotebookOptionsPosition[      5841,        191]
-NotebookOutlinePosition[      7726,        240]
-CellTagsIndexPosition[      7683,        237]
+NotebookDataLength[     33791,       1125]
+NotebookOptionsPosition[     25728,        949]
+NotebookOutlinePosition[     28425,       1012]
+CellTagsIndexPosition[     28339,       1007]
 WindowTitle->PauliDecompose
 WindowFrame->Normal*)
 
@@ -37,6 +37,33 @@ Cell[BoxData[GridBox[{
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"PauliCompose\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/PauliCompose"], "\<\"PauliEmbed\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/PauliEmbed"], "\<\"PauliApply\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/PauliApply"], "\<\"PauliDecomposeRL\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/PauliDecomposeRL"], "\<\"PauliComposeRL\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/PauliComposeRL"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
       LineSpacing->{1.4, 0}],
      "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
 \[ThickSpace]",
@@ -98,7 +125,7 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$141782], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$143377], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], 
              "Q3/ref/PauliDecompose", ".html"]], None}]}]},
@@ -109,6 +136,8 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
     }], "AnchorBar"]}
   }]], "AnchorBarGrid",
  CellID->1],
+
+Cell[CellGroupData[{
 
 Cell[TextData[{
  Cell["PauliDecompose", "ObjectName"],
@@ -122,24 +151,753 @@ Cell[BoxData[GridBox[{
    {"", Cell[TextData[{
      Cell[BoxData[
       RowBox[{"PauliDecompose", "[", 
+       StyleBox["m", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]gives the coefficients in the Pauli decomposition of ",
+     Cell[BoxData[
+      StyleBox["m", "TI"]], "InlineFormula"],
+     " as a tensor of rank ",
+     Cell[BoxData[
+      StyleBox["n", "TI"]], "InlineFormula"],
+     ", where m is a ",
+     Cell[BoxData[
+      RowBox[{
+       SuperscriptBox["2", "n"], "\[Times]", 
+       SuperscriptBox["2", "n"]}]]],
+     " matrix."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PauliDecompose", "[", 
+       RowBox[{
+        StyleBox["m", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["2", "TR"]], ",", "..."}], "}"}]}], "]"}]], 
+      "InlineFormula"],
+     "\[LineSeparator]returns the particular coefficient of ",
+     Cell[BoxData[
+      RowBox[{
        TemplateBox[{
          Cell[
-          TextData["M"]], "paclet:ref/M"},
+          TextData["Pauli"]], "paclet:Q3/ref/Pauli"},
         "RefLink",
-        BaseStyle->{"InlineFormula"}], "]"}]], "InlineFormula"],
-     "\[LineSeparator], where M is a matrix of size 2^n*2^n, gives the \
-coefficients of a ",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["\[Mu]", "TR"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["\[Mu]", "TR"], 
+         StyleBox["2", "TR"]], ",", "..."}], "]"}]], "InlineFormula"],
+     " in the Pauli decomposition of ",
      Cell[BoxData[
-      TemplateBox[{
-        Cell[
-         TextData["Pauli"]], "paclet:Q3/ref/Pauli"},
-       "RefLink",
-       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
-     " decomposition of M as a tensor of rank n."
+      StyleBox["m", "TI"]], "InlineFormula"],
+     ". The value of ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["\[Mu]", "TR"], 
+       StyleBox["j", "TI"]]], "InlineFormula"],
+     " should be 0, 1, 2, or 3."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PauliDecompose", "[", 
+       RowBox[{"m", ",", "\[Mu]"}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to ",
+     Cell[BoxData[
+      RowBox[{"PauliDecompose", "[", 
+       RowBox[{
+        StyleBox["m", "TI"], ",", 
+        RowBox[{"{", 
+         StyleBox["\[Mu]", "TR"], "}"}]}], "]"}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PauliDecompose", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox[
+          StyleBox["\[Mu]", "TR"], 
+          StyleBox["1", "TR"]], ",", 
+         SubscriptBox[
+          StyleBox["\[Mu]", "TR"], 
+          StyleBox["2", "TR"]], ",", "..."}], "}"}], "]"}]], "InlineFormula"],
+     
+     "\[LineSeparator]represents an operator form of ",
+     Cell[BoxData["PauliDecompose"], "InlineFormula"],
+     " that can be applied to a matrix."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PauliDecompose", "[", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["\[Mu]", "TR"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["\[Mu]", "TR"], 
+         StyleBox["2", "TR"]], ",", "..."}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to ",
+     Cell[BoxData[
+      RowBox[{"PauliDecompose", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox[
+          StyleBox["\[Mu]", "TR"], 
+          StyleBox["1", "TR"]], ",", 
+         SubscriptBox[
+          StyleBox["\[Mu]", "TR"], 
+          StyleBox["2", "TR"]], ",", "..."}], "}"}], "]"}]], "InlineFormula"],
+     
+     "."
     }]]}
   }]], "Usage",
  GridBoxOptions->{
- GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}],
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "Rows" -> {None, None, None, None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1993061061],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->927326321],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Pauli`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->2131795104],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "x"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->713496102],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"dd", "=", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1", ",", "2", ",", "3"}], "}"}]}], ";"}], "\n", 
+ RowBox[{"op", "=", 
+  RowBox[{"Dot", "[", 
+   RowBox[{
+    RowBox[{"x", "[", "dd", "]"}], ",", 
+    RowBox[{"Pauli", "/@", "dd"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1835794947],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   TagBox[
+    SuperscriptBox["\[Sigma]", "0"],
+    DisplayForm], " ", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"x"},
+      "RowDefault"], 
+     TemplateBox[{"0"},
+      "RowDefault"]],
+    DisplayForm]}], "+", 
+  RowBox[{
+   TagBox[
+    SuperscriptBox["\[Sigma]", "x"],
+    DisplayForm], " ", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"x"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm]}], "+", 
+  RowBox[{
+   TagBox[
+    SuperscriptBox["\[Sigma]", "y"],
+    DisplayForm], " ", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"x"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm]}], "+", 
+  RowBox[{
+   TagBox[
+    SuperscriptBox["\[Sigma]", "z"],
+    DisplayForm], " ", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"x"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm]}]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1575418094]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"H", "=", 
+   RowBox[{"Matrix", "@", "op"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"H", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1468325838],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"x"},
+          "RowDefault"], 
+         TemplateBox[{"0"},
+          "RowDefault"]],
+        DisplayForm], "+", 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"x"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm]}], 
+      RowBox[{
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"x"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        DisplayForm], "-", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"x"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm]}]}]},
+     {
+      RowBox[{
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"x"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        DisplayForm], "+", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"x"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm]}]}], 
+      RowBox[{
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"x"},
+          "RowDefault"], 
+         TemplateBox[{"0"},
+          "RowDefault"]],
+        DisplayForm], "-", 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"x"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {2, 2}, 0, {
+     1, {{0, 2, 4}, {{1}, {2}, {2}, {
+       1}}}, {$CellContext`x[0] + $CellContext`x[3], $CellContext`x[1] + 
+       Complex[0, -1] $CellContext`x[2], $CellContext`x[0] - $CellContext`x[
+       3], $CellContext`x[1] + 
+       Complex[0, 1] $CellContext`x[2]}}]]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->1783802687]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"cc", "=", 
+  RowBox[{
+   RowBox[{"PauliDecompose", "[", "H", "]"}], "//", "Simplify"}]}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->102370549],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"x"},
+      "RowDefault"], 
+     TemplateBox[{"0"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"x"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"x"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"x"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1432223280]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1769120990],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"H", "=", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"ThePauli", "[", 
+       RowBox[{"2", ",", "3"}], "]"}], "+", 
+      RowBox[{"I", " ", 
+       RowBox[{"ThePauli", "[", 
+        RowBox[{"1", ",", "0"}], "]"}]}], "-", 
+      RowBox[{"ThePauli", "[", 
+       RowBox[{"3", ",", "1"}], "]"}]}], ")"}], "/", 
+    RowBox[{"Sqrt", "[", "2", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"H", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->90872639],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0"},
+     {
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0", 
+      RowBox[{"\[ImaginaryI]", " ", 
+       SqrtBox["2"]}]},
+     {
+      RowBox[{"\[ImaginaryI]", " ", 
+       SqrtBox["2"]}], "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]]},
+     {"0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 2, 4, 6, 8}, {{2}, {3}, {1}, {4}, {4}, {1}, {3}, {
+       2}}}, {-2^Rational[-1, 2], 0, -2^Rational[-1, 2], Complex[0, 1] 
+       2^Rational[1, 2], 2^Rational[-1, 2], Complex[0, 1] 2^Rational[1, 2], 2^
+       Rational[-1, 2], 0}}]]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->986819918]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op", "=", 
+  RowBox[{"PauliExpression", "[", "H", "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1243425203],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TagBox[
+     RowBox[{
+      SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+      SuperscriptBox["\[Sigma]", "0"]}],
+     DisplayForm]}], 
+   SqrtBox["2"]], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+     SuperscriptBox["\[Sigma]", "z"]}],
+    DisplayForm], 
+   SqrtBox["2"]], "-", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     SuperscriptBox["\[Sigma]", "z"], "\[CircleTimes]", 
+     SuperscriptBox["\[Sigma]", "x"]}],
+    DisplayForm], 
+   SqrtBox["2"]]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->500552076]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"cc", "=", 
+  RowBox[{"PauliDecompose", "[", "H", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->770065405],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["\[ImaginaryI]", 
+      SqrtBox["2"]], ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "0", ",", "0", ",", 
+     FractionBox["1", 
+      SqrtBox["2"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", 
+     RowBox[{"-", 
+      FractionBox["1", 
+       SqrtBox["2"]]}], ",", "0", ",", "0"}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->592268347]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"PauliCompose", "[", "cc", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1578424347],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0"},
+     {
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0", 
+      RowBox[{"\[ImaginaryI]", " ", 
+       SqrtBox["2"]}]},
+     {
+      RowBox[{"\[ImaginaryI]", " ", 
+       SqrtBox["2"]}], "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]]},
+     {"0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 4, 8, 12, 16}, {{1}, {2}, {3}, {4}, {2}, {1}, {4}, {3}, {3}, {
+       4}, {1}, {2}, {4}, {3}, {2}, {1}}}, {
+      0, -2^Rational[-1, 2], 0, 0, 0, -2^Rational[-1, 2], Complex[0, 1] 
+       2^Rational[1, 2], 0, 0, 2^Rational[-1, 2], Complex[0, 1] 
+       2^Rational[1, 2], 0, 0, 2^Rational[-1, 2], 0, 0}}]]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->81308073]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"H", "-", "mat"}], "//", "MatrixForm"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1245523394],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 4, 8, 12, 16}, {{2}, {3}, {1}, {4}, {1}, {4}, {2}, {3}, {4}, {
+       1}, {3}, {2}, {3}, {2}, {4}, {1}}}, {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
+      0, 0, 0, 0, 0}}]]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->1086594453]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->330381144],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"H", "=", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"ThePauli", "[", 
+       RowBox[{"2", ",", "3"}], "]"}], "+", 
+      RowBox[{"I", " ", 
+       RowBox[{"ThePauli", "[", 
+        RowBox[{"1", ",", "0"}], "]"}]}], "-", 
+      RowBox[{"ThePauli", "[", 
+       RowBox[{"3", ",", "1"}], "]"}]}], ")"}], "/", 
+    RowBox[{"Sqrt", "[", "2", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"H", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1653564035],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0"},
+     {
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0", 
+      RowBox[{"\[ImaginaryI]", " ", 
+       SqrtBox["2"]}]},
+     {
+      RowBox[{"\[ImaginaryI]", " ", 
+       SqrtBox["2"]}], "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]]},
+     {"0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 2, 4, 6, 8}, {{2}, {3}, {1}, {4}, {4}, {1}, {3}, {
+       2}}}, {-2^Rational[-1, 2], 0, -2^Rational[-1, 2], Complex[0, 1] 
+       2^Rational[1, 2], 2^Rational[-1, 2], Complex[0, 1] 2^Rational[1, 2], 2^
+       Rational[-1, 2], 0}}]]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->1127213337]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PauliDecompose", "[", 
+  RowBox[{"H", ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "3"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->523333313],
+
+Cell[BoxData[
+ FractionBox["1", 
+  SqrtBox["2"]]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1827944407]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"PauliDecompose", "[", 
+   RowBox[{"2", ",", "3"}], "]"}], "[", "H", "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1988503068],
+
+Cell[BoxData[
+ FractionBox["1", 
+  SqrtBox["2"]]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1847729033]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PauliCompose"]], "paclet:Q3/ref/PauliCompose"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PauliEmbed"]], "paclet:Q3/ref/PauliEmbed"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PauliApply"]], "paclet:Q3/ref/PauliApply"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PauliDecomposeRL"]], "paclet:Q3/ref/PauliDecomposeRL"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PauliComposeRL"]], "paclet:Q3/ref/PauliComposeRL"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -184,7 +942,7 @@ Cell[BoxData[
     TextData["Pauli"]], "paclet:Q3/guide/Pauli"},
   "RefLink",
   BaseStyle->"MoreAbout"]], "MoreAbout",
- CellID->1]
+ CellID->1284650768]
 }, Open  ]],
 
 Cell[" ", "FooterCell"]
@@ -204,17 +962,24 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2020, 11, 11, 20, 58, 47.057365}", 
+   "built" -> "{2020, 11, 20, 12, 11, 20.985854}", 
     "history" -> {"XX", "", "", ""}, "context" -> "Q3`Pauli`", 
     "keywords" -> {}, "specialkeywords" -> {}, 
     "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
     "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
      "status" -> "None", "summary" -> 
-    "PauliDecompose[M] , where M is a matrix of size 2^n*2^n, gives the \
-coefficients of a Pauli decomposition of M as a tensor of rank n.", 
+    "PauliDecompose[m] gives the coefficients in the Pauli decomposition of m \
+as a tensor of rank n, where m is a 2^n*2^n matrix. PauliDecompose[m, \
+{\\[Mu]1, \\[Mu]2, ...}] returns the particular coefficient of Pauli[\\[Mu]1, \
+\\[Mu]2, ...] in the Pauli decomposition of m. The value of \\[Mu]j should be \
+0, 1, 2, or 3. PauliDecompose[m, \\[Mu]] is equivalent to PauliDecompose[m, {\
+\\[Mu]}]. PauliDecompose[{\\[Mu]1, \\[Mu]2, ...}] represents an operator form \
+of PauliDecompose that can be applied to a matrix. PauliDecompose[\\[Mu]1, \
+\\[Mu]2, ...] is equivalent to PauliDecompose[{\\[Mu]1, \\[Mu]2, ...}].", 
     "synonyms" -> {}, "tabletags" -> {}, "title" -> "PauliDecompose", 
     "titlemodifier" -> "", "windowtitle" -> "PauliDecompose", "type" -> 
-    "Symbol", "uri" -> "Q3/ref/PauliDecompose"}},
+    "Symbol", "uri" -> "Q3/ref/PauliDecompose", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
 CellContext->"Global`",
 FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
 StyleDefinitions->Notebook[{
@@ -232,33 +997,136 @@ StyleDefinitions->Notebook[{
 
 (* Internal cache information *)
 (*CellTagsOutline
-CellTagsIndex->{}
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[8944, 267, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"24d33200-2264-46ba-b05c-dd83b38bcf4b",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1993061061]}
+ }
 *)
 (*CellTagsIndex
-CellTagsIndex->{}
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 28140, 1000}
+ }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[586, 21, 3528, 89, 70, "AnchorBarGrid",ExpressionUUID->"8c7ad770-c66c-43a1-9fd2-40d7ec243c2d",
+Cell[586, 21, 4589, 116, 70, "AnchorBarGrid",ExpressionUUID->"438d6bb0-10f3-45dd-ab29-a574f0ea8a91",
  CellID->1],
-Cell[4117, 112, 171, 6, 70, "ObjectNameGrid",ExpressionUUID->"7349d461-926d-4ef7-a1da-c1f91332d655"],
-Cell[4291, 120, 701, 21, 70, "Usage",ExpressionUUID->"1792c1d9-b63a-48a7-b68b-2ba38aebb1d2"],
 Cell[CellGroupData[{
-Cell[5017, 145, 152, 7, 70, "TutorialsSection",ExpressionUUID->"2c24400b-4809-4610-84ae-76807cf881c5",
+Cell[5200, 141, 171, 6, 70, "ObjectNameGrid",ExpressionUUID->"6ca6f3df-78b2-48fb-add0-46765852a659"],
+Cell[5374, 149, 3533, 113, 70, "Usage",ExpressionUUID->"1028e0b5-456f-4b0e-87f0-1a71cdd1ac13"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8944, 267, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"24d33200-2264-46ba-b05c-dd83b38bcf4b",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1993061061],
+Cell[CellGroupData[{
+Cell[9237, 281, 195, 6, 70, "ExampleSection",ExpressionUUID->"8f5f8f8e-2b28-4328-8a2e-5958a9d752dd",
+ CellID->927326321],
+Cell[9435, 289, 97, 3, 70, "Input",ExpressionUUID->"1adfda4b-ee6a-471d-9780-fda3d1d849e9",
+ CellID->2131795104],
+Cell[9535, 294, 125, 4, 70, "Input",ExpressionUUID->"bb1c3a5a-fb1c-4f4f-8038-a8a08dae7ada",
+ CellID->713496102],
+Cell[CellGroupData[{
+Cell[9685, 302, 333, 11, 70, "Input",ExpressionUUID->"f2cf5827-6753-481e-8b1a-183c407a6207",
+ CellID->1835794947],
+Cell[10021, 315, 994, 47, 70, "Output",ExpressionUUID->"5dcac4a1-1901-417e-8c01-55d5064cb62e",
+ CellID->1575418094]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11052, 367, 203, 6, 70, "Input",ExpressionUUID->"3e6ac704-61e6-4863-9ba2-20ec1122a1e1",
+ CellID->1468325838],
+Cell[11258, 375, 2341, 86, 70, "Output",ExpressionUUID->"20227320-accc-4477-b846-895251c599da",
+ CellID->1783802687]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13636, 466, 166, 5, 70, "Input",ExpressionUUID->"c4e41ae1-8d29-4a78-9fdf-fd6409da9f0d",
+ CellID->102370549],
+Cell[13805, 473, 677, 32, 70, "Output",ExpressionUUID->"d66ea993-70b6-4811-8f2d-ad7c91ab4c72",
+ CellID->1432223280]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14519, 510, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"ac6b169e-13fd-4d52-a43f-c476f0e996af",
+ CellID->1769120990],
+Cell[CellGroupData[{
+Cell[14670, 517, 519, 16, 70, "Input",ExpressionUUID->"76e4df84-ecf9-4074-9ed1-fc72646dcfad",
+ CellID->90872639],
+Cell[15192, 535, 1217, 39, 70, "Output",ExpressionUUID->"8ee70db0-b779-491f-92e5-b447d5a1dd73",
+ CellID->986819918]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16446, 579, 136, 4, 70, "Input",ExpressionUUID->"07f320de-147a-41b6-a6fe-3fcd626ead63",
+ CellID->1243425203],
+Cell[16585, 585, 651, 25, 70, "Output",ExpressionUUID->"6f95f4d5-8ced-4d77-a9ad-f1b7575d5b51",
+ CellID->500552076]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17273, 615, 134, 4, 70, "Input",ExpressionUUID->"696c0be6-3541-4d23-925b-2f954c9d8eb2",
+ CellID->770065405],
+Cell[17410, 621, 567, 19, 70, "Output",ExpressionUUID->"a731d54c-a9bf-43ca-b56f-6423a6439f4b",
+ CellID->592268347]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18014, 645, 218, 6, 70, "Input",ExpressionUUID->"f947199c-0340-4027-81c3-186fbcb9bbcc",
+ CellID->1578424347],
+Cell[18235, 653, 1289, 40, 70, "Output",ExpressionUUID->"8d3ca43d-06da-4bb3-9eef-e8aedec40c6c",
+ CellID->81308073]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19561, 698, 128, 4, 70, "Input",ExpressionUUID->"5f8eccb5-dbdd-4228-9d5a-6057b9be3a73",
+ CellID->1245523394],
+Cell[19692, 704, 823, 24, 70, "Output",ExpressionUUID->"0661fd18-de01-4cd3-816f-a71120966acd",
+ CellID->1086594453]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20564, 734, 125, 3, 70, "ExampleDelimiter",ExpressionUUID->"ee25ddaa-63c9-4aa7-a06d-e019527a377d",
+ CellID->330381144],
+Cell[CellGroupData[{
+Cell[20714, 741, 521, 16, 70, "Input",ExpressionUUID->"7149110e-270d-4ded-8ec3-6f8070873670",
+ CellID->1653564035],
+Cell[21238, 759, 1218, 39, 70, "Output",ExpressionUUID->"9c671bd4-4702-4511-81fe-ec1971ac70ca",
+ CellID->1127213337]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22493, 803, 182, 6, 70, "Input",ExpressionUUID->"be834df7-0d71-46ec-8748-acfce1f185bd",
+ CellID->523333313],
+Cell[22678, 811, 104, 4, 70, "Output",ExpressionUUID->"22aedd95-23f2-4308-8bfb-9215504fe641",
+ CellID->1827944407]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22819, 820, 163, 5, 70, "Input",ExpressionUUID->"2b3caf26-6129-43b3-bdbe-49ae755c1786",
+ CellID->1988503068],
+Cell[22985, 827, 104, 4, 70, "Output",ExpressionUUID->"6b117fe2-b9d5-4707-a279-b8ca19ba1f57",
+ CellID->1847729033]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[23128, 836, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"80d7d201-a0a9-4d8d-9922-1ef6dea7967b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23196, 841, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"6b86b905-a6e0-4dcc-8fa9-5490c96155cd",
+ CellID->1255426704],
+Cell[23349, 850, 1509, 48, 70, "SeeAlso",ExpressionUUID->"2d0c5785-8b43-441e-ba21-c58cfd26aab0",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[24895, 903, 152, 7, 70, "TutorialsSection",ExpressionUUID->"d13b8d6d-3901-405e-b792-6318f87961af",
  CellID->250839057],
-Cell[5172, 154, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7ef08f0b-b904-4a4f-a20d-1dd34aacec84"],
-Cell[5206, 156, 176, 6, 70, "Tutorials",ExpressionUUID->"d47a58e6-4e94-4ece-afd7-af5a9efd4564",
+Cell[25050, 912, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"8bff227a-4cc9-4d2c-871d-1c3dad77d4e0"],
+Cell[25084, 914, 176, 6, 70, "Tutorials",ExpressionUUID->"0f43d91d-52b1-48ba-a1f1-ad5157c06937",
  CellID->696591071],
-Cell[5385, 164, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"3af2e986-0d20-41cc-a5c5-37461947a499"]
+Cell[25263, 922, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"85c0ba6f-6355-4ec4-a17c-c325a3f504e0"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5453, 169, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"4a1139cc-e881-4db4-9c46-135e4afcb6ee",
+Cell[25331, 927, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"fe416f1f-7884-48fc-86f4-6a0fd9e6288a",
  CellID->38303248],
-Cell[5612, 178, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"c233414a-dbf9-459a-a968-9cea0f8b2b24"],
-Cell[5646, 180, 153, 6, 70, "MoreAbout",ExpressionUUID->"27a1e6a4-791c-4d49-86b8-a5de49d75f3e",
- CellID->1]
+Cell[25490, 936, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"9f84763e-5159-4bff-a6f7-a377a7bfe23d"],
+Cell[25524, 938, 162, 6, 70, "MoreAbout",ExpressionUUID->"3a4b7f57-5944-494a-97b4-46d83eab3efb",
+ CellID->1284650768]
 }, Open  ]],
-Cell[5814, 189, 23, 0, 70, "FooterCell",ExpressionUUID->"c8c60e4d-3060-4a40-9aa5-60e0e450e2ef"]
+Cell[25701, 947, 23, 0, 70, "FooterCell",ExpressionUUID->"bad07683-39e7-4d28-b073-3f169d3b5b47"]
 }
 ]
 *)
