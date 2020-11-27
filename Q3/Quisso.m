@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-21 08:21:58+09 $
-  $Revision: 1.14 $
+  $Date: 2020-11-27 20:20:19+09 $
+  $Revision: 1.15 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.14 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-21 08:21:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.15 $"][[2]], " (",
+  StringSplit["$Date: 2020-11-27 20:20:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -80,7 +80,8 @@ $symbs = Unprotect[
   DefaultForm, LogicalForm,
   Base, FlavorNone, FlavorMute, Missing,
   Rotation, EulerRotation,
-  Matrix, Parity, ParityEvenQ, ParityOddQ
+  Matrix, SchmidtDecomposition,
+  Parity, ParityEvenQ, ParityOddQ
  ]
 
 Quisso::obsolete = "`` is OBSOLETE, use `` instead."
@@ -746,6 +747,20 @@ DensityOperator::usage = "DensityOperator[v] constructs the operator expression 
 
 DensityOperator[v_] := 
   QuissoExpression[DensityMatrix @ v, Qubits @ v]
+
+(* ******************************************************************** *)
+
+SchmidtDecomposition[expr_, aa:{__?QubitQ}, bb:{__?QubitQ}] := Module[
+  { qq = FlavorNone @ Join[aa, bb],
+    ww, ss, uu, vv },
+  ww = Matrix[expr, qq];
+  {ss, uu, vv} = SchmidtDecomposition[
+    ww, {Power[2, Length @ aa], Power[2, Length @ bb]}
+   ];
+  uu = QuissoExpression[#, aa]& /@ uu;
+  vv = QuissoExpression[#, bb]& /@ vv;
+  ss . MapThread[OTimes, {uu, vv}]
+ ]
 
 (* ******************************************************************** *)
 
