@@ -1,10 +1,10 @@
 (* Paclet Info File *)
 
-(* created 2020/11/21*)
+(* created 2020/12/01*)
 
 Paclet[
     Name -> "Q3",
-    Version -> "1.2.1",
+    Version -> "1.2.2",
     MathematicaVersion -> "6+",
     Description -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems.",
     Creator -> "Mahn-Soo Choi (Korea University)",
