@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-21 07:38:49+09 $
-  $Revision: 1.19 $
+  $Date: 2020-12-08 19:56:43+09 $
+  $Revision: 1.20 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`" } ]
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-21 07:38:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2020-12-08 19:56:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -2163,7 +2163,7 @@ Fidelity[a_?VectorQ, b_?MatrixQ] := Chop @ Sqrt[Conjugate[a].b.a]
 
 Fidelity[a_?MatrixQ, b_?VectorQ] := Fidelity[b, a]
 
-Fidelity[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]^2
+Fidelity[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]
 
 
 (* ***************************************************************** *)
