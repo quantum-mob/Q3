@@ -1,0 +1,2015 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     73475,       2006]
+NotebookOptionsPosition[     60984,       1751]
+NotebookOutlinePosition[     63990,       1818]
+CellTagsIndexPosition[     63947,       1815]
+WindowTitle->The Postulates of Quantum Mechanics
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Quisso Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/Quisso"], "\<\"Quantum Operations\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/QuantumOperations"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/tutorial/QuantumPostulates\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuantumPostulates"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumPostulates.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$241891], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/tutorial/QuantumPostulates", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["The Postulates of Quantum Mechanics", "Title",
+ CellID->509267359],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Overview"], "paclet:Q3/tutorial/QuantumPostulates#673358486", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Postulate 3. Measurements on Quantum States"], 
+      "paclet:Q3/tutorial/QuantumPostulates#1856861102", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Postulate 1. Quantum States of System"], 
+      "paclet:Q3/tutorial/QuantumPostulates#1740090795", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["References"], "paclet:Q3/tutorial/QuantumPostulates#1444711814", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Postulate 2. Evolution of Quantum States"], 
+      "paclet:Q3/tutorial/QuantumPostulates#1097312280", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], ""}
+  }]], "TutorialJumpBox"],
+
+Cell[CellGroupData[{
+
+Cell["Overview", "Section",
+ CellID->673358486],
+
+Cell[TextData[{
+ StyleBox["Postulate 1",
+  FontWeight->"Bold"],
+ ": The quantum state of a system is completely described by a state vector \
+in the Hilbert space associated with the system."
+}], "Text",
+ CellID->2044738159],
+
+Cell[TextData[{
+ StyleBox["Postulate 2",
+  FontWeight->"Bold"],
+ ": The evolution of a closed quantum system is described by a unitary \
+transformation. Equivalently, the evolution is governed by the Schrodinger \
+equation."
+}], "Text",
+ CellID->1151042940],
+
+Cell[TextData[{
+ StyleBox["Postulate 3",
+  FontWeight->"Bold"],
+ ": Quantum measurements are described by a set ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   SubscriptBox[
+    TemplateBox[{
+      Cell[
+       TextData["M"]], "paclet:ref/M"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], 
+    StyleBox["m", "TI"]], "}"}]], "InlineFormula"],
+ " of measurement operators corresponding to measurement outcomes ",
+ Cell[BoxData[
+  StyleBox["m", "TI"]], "InlineFormula"],
+ ". If the quantum state of the system is |\[Psi]\[RightAngleBracket] \
+immediately before the measurement, then the probability that result m occurs \
+is given by ",
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox[
+    StyleBox["P", "TI"], 
+    StyleBox["m", "TI"]], "=", 
+   RowBox[{"\[LeftAngleBracket]", 
+    RowBox[{
+     StyleBox["\[Psi]", "TR"], "|", 
+     RowBox[{
+      SubsuperscriptBox[
+       ButtonBox["M",
+        BaseStyle->"Link",
+        ButtonData->"paclet:ref/M"], 
+       StyleBox["m", "TI"], "\[Dagger]"], 
+      SubscriptBox[
+       StyleBox["M", "TI"], 
+       StyleBox["m", "TI"]]}], "|", 
+     StyleBox["\[Psi]", "TR"]}], "\[RightAngleBracket]"}]}]]],
+ ", and the state after measurement is ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     SubscriptBox[
+      StyleBox["M", "TI"], 
+      StyleBox["m", "TI"]], "|", 
+     StyleBox["\[Psi]", "TR"]}], "\[RightAngleBracket]"}], "/", 
+   SubscriptBox[
+    TemplateBox[{
+      Cell[
+       TextData["P"]], "paclet:ref/P"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], 
+    StyleBox["m", "TI"]]}]], "InlineFormula"],
+ "."
+}], "Text",
+ CellID->166450194],
+
+Cell["XXXX.", "Caption",
+ CellID->1646668493],
+
+Cell["\<\
+Here the fundamental postulates of quantum mechanics are demonstrated using \
+Quisso.\
+\>", "MathCaption",
+ CellID->935602962],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Quisso`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->265246803]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Postulate 1. Quantum States of System", "Section",
+ CellID->1740090795],
+
+Cell["\<\
+The quantum state of a system is completely described by a state vector in \
+the Hilbert space associated with the system.\
+\>", "Text",
+ CellID->1534169418],
+
+Cell[TextData[{
+ "Consider a two-level quantum system, ",
+ Cell[BoxData["S"]],
+ "."
+}], "MathCaption",
+ CellID->836781195],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->972990807],
+
+Cell["The associated Hilbert space is two dimensional.", "MathCaption",
+ CellID->1420381729],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bs", "=", 
+  RowBox[{"Basis", "[", "S", "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->434733679],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TemplateBox[{"\"\[SpaceIndicator]\""},
+    "Ket"], ",", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->828566453]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"LogicalForm", "[", "bs", "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->656343208],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["0", 
+         TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"], ",", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->380555470]
+}, Open  ]],
+
+Cell["\<\
+A general quantum state of S is a linear combination of the two basis states \
+by means of two complex coefficients c[0] and c[1].\
+\>", "MathCaption",
+ CellID->1612912112],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"\[Psi]", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Ket", "[", 
+      RowBox[{"S", "\[Rule]", "0"}], "]"}], 
+     RowBox[{"c", "[", "0", "]"}]}], "+", 
+    RowBox[{
+     RowBox[{"Ket", "[", 
+      RowBox[{"S", "\[Rule]", "1"}], "]"}], 
+     RowBox[{"c", "[", "1", "]"}]}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"\[Psi]", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1862888414],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"0"},
+      "RowDefault"]],
+    DisplayForm], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["0", 
+         TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->741160789]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Postulate 2. Evolution of Quantum States", "Section",
+ CellID->1097312280],
+
+Cell["\<\
+The evolution of a closed quantum system is described by a unitary \
+transformation. Equivalently, the evolution is governed by the Schrodinger \
+equation.\
+\>", "Text",
+ CellID->1851977940],
+
+Cell[TextData[{
+ "Consider a two-level quantum state, ",
+ Cell[BoxData["S"]],
+ "."
+}], "MathCaption",
+ CellID->1542355105],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "B"}], "]"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->500737436],
+
+Cell["\<\
+A time-independent Hamiltonian can be expressed in terms of Pauli operators.\
+\>", "MathCaption",
+ CellID->1304028494],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"H", "=", 
+  RowBox[{
+   RowBox[{"B", "[", "0", "]"}], "+", 
+   RowBox[{
+    RowBox[{"S", "[", "1", "]"}], 
+    RowBox[{"B", "[", "1", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"S", "[", "2", "]"}], 
+    RowBox[{"B", "[", "2", "]"}]}], "+", 
+   RowBox[{
+    RowBox[{"S", "[", "3", "]"}], 
+    RowBox[{"B", "[", "3", "]"}]}]}]}]], "Input",
+ CellLabel->"In[8]:=",
+ CellID->389458127],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   SubscriptBox[
+    TemplateBox[{"B"},
+     "RowDefault"], 
+    TemplateBox[{"0"},
+     "RowDefault"]],
+   DisplayForm], "+", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"B"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], " ", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"x\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm]}], "+", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"B"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm], " ", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"y\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm]}], "+", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"B"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm], " ", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm]}]}]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1311748194]
+}, Open  ]],
+
+Cell["In this case, the time-evolution operator is given by", "MathCaption",
+ CellID->161657680],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"U", "[", "t_", "]"}], "=", 
+  RowBox[{"MultiplyExp", "[", 
+   RowBox[{
+    RowBox[{"-", "I"}], " ", "t", " ", "H"}], "]"}]}]], "Input",
+ CellLabel->"In[9]:=",
+ CellID->1048742628],
+
+Cell[BoxData[
+ SuperscriptBox["\[ExponentialE]", 
+  RowBox[{
+   RowBox[{"-", "\[ImaginaryI]"}], " ", "t", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"B"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]],
+      DisplayForm], "+", 
+     RowBox[{
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"B"},
+         "RowDefault"], 
+        TemplateBox[{"1"},
+         "RowDefault"]],
+       DisplayForm], " ", 
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"\"x\""}, "RowDefault"]},
+        "Superscript"],
+       DisplayForm]}], "+", 
+     RowBox[{
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"B"},
+         "RowDefault"], 
+        TemplateBox[{"2"},
+         "RowDefault"]],
+       DisplayForm], " ", 
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"\"y\""}, "RowDefault"]},
+        "Superscript"],
+       DisplayForm]}], "+", 
+     RowBox[{
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"B"},
+         "RowDefault"], 
+        TemplateBox[{"3"},
+         "RowDefault"]],
+       DisplayForm], " ", 
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"\"z\""}, "RowDefault"]},
+        "Superscript"],
+       DisplayForm]}]}], ")"}]}]]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->1174388111]
+}, Open  ]],
+
+Cell[TextData[{
+ "When a system is interacting with another system, it is in mixed states in \
+general. Unlike a pure state, which is represented by a single state vector, \
+a mixed state is characterized by a set of state vectors and the associated \
+probability that the system is found to be in those states. It is efficiently \
+represented by a density matrix which is constructed as ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{"\[Rho]", "=", 
+    RowBox[{
+     RowBox[{"\[CapitalSigma]", " ", 
+      StyleBox[
+       SubscriptBox["p", "j"],
+       FontSlant->"Italic"]}], "|", 
+     SubscriptBox["\[Psi]", "j"]}]}], "\[RightAngleBracket]"}]]],
+ "."
+}], "Text",
+ CellID->706967999],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Species", ",", "\[Psi]"}], "]"}]], "Input",
+ CellLabel->"In[10]:=",
+ CellID->137315394],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"states", "=", 
+  RowBox[{"Ket", "/@", 
+   RowBox[{"\[Psi]", "@", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2", ",", "3"}], "}"}]}]}]}]], "Input",
+ CellLabel->"In[11]:=",
+ CellID->522383727],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TemplateBox[{
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"\[Psi]"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"]], DisplayForm]},
+    "Ket"], ",", 
+   TemplateBox[{
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"\[Psi]"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"]], DisplayForm]},
+    "Ket"], ",", 
+   TemplateBox[{
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"\[Psi]"}, "RowDefault"], 
+       TemplateBox[{"3"}, "RowDefault"]], DisplayForm]},
+    "Ket"]}], "}"}]], "Output",
+ CellLabel->"Out[11]=",
+ CellID->1845866019]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "p"}], "]"}]], "Input",
+ CellLabel->"In[12]:=",
+ CellID->229098184],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"pp", "=", 
+  RowBox[{"p", "@", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2", ",", "3"}], "}"}]}]}]], "Input",
+ CellLabel->"In[13]:=",
+ CellID->182138233],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"p"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"p"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"p"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[13]=",
+ CellID->778754193]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[Rho]", "=", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"states", "**", 
+     RowBox[{"Dagger", "[", "states", "]"}]}], ")"}], ".", "pp"}]}]], "Input",\
+
+ CellLabel->"In[14]:=",
+ CellID->146972408],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"\[Psi]"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]], DisplayForm]},
+       "Ket"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"\[Psi]"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]], DisplayForm]},
+       "Bra"],
+      DisplayForm]}],
+    DisplayForm], " ", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"p"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm]}], "+", 
+  RowBox[{
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"\[Psi]"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]], DisplayForm]},
+       "Ket"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"\[Psi]"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]], DisplayForm]},
+       "Bra"],
+      DisplayForm]}],
+    DisplayForm], " ", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"p"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm]}], "+", 
+  RowBox[{
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"\[Psi]"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"]], DisplayForm]},
+       "Ket"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"\[Psi]"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"]], DisplayForm]},
+       "Bra"],
+      DisplayForm]}],
+    DisplayForm], " ", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"p"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm]}]}]], "Output",
+ CellLabel->"Out[14]=",
+ CellID->59599650]
+}, Open  ]],
+
+Cell["Let us consider a more specific example.", "MathCaption",
+ CellID->282795955],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"states", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"Ket", "[", "]"}], "-", 
+        RowBox[{"I", " ", 
+         RowBox[{"Ket", "[", 
+          RowBox[{"S", "\[Rule]", "1"}], "]"}]}]}], ")"}], "/", 
+      RowBox[{"Sqrt", "[", "2", "]"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Ket", "[", "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"Ket", "[", "]"}], "-", 
+        RowBox[{"I", " ", 
+         RowBox[{"Sqrt", "[", "2", "]"}], " ", 
+         RowBox[{"Ket", "[", 
+          RowBox[{"S", "\[Rule]", "1"}], "]"}]}]}], ")"}], "/", 
+      RowBox[{"Sqrt", "[", "3", "]"}]}]}], "\[IndentingNewLine]", "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"states", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[20]:=",
+ CellID->542475177],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox[
+    RowBox[{
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox["0", 
+           TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+      "Ket"], "-", 
+     RowBox[{"\[ImaginaryI]", " ", 
+      TemplateBox[{
+        TagBox[
+         TemplateBox[{
+           SubscriptBox["1", 
+            TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+       "Ket"]}]}], 
+    SqrtBox["2"]], ",", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["0", 
+         TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+    "Ket"], ",", 
+   FractionBox[
+    RowBox[{
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox["0", 
+           TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+      "Ket"], "-", 
+     RowBox[{"\[ImaginaryI]", " ", 
+      SqrtBox["2"], " ", 
+      TemplateBox[{
+        TagBox[
+         TemplateBox[{
+           SubscriptBox["1", 
+            TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+       "Ket"]}]}], 
+    SqrtBox["3"]]}], "}"}]], "Output",
+ CellLabel->"Out[21]=",
+ CellID->1947619484]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"pp", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"1", "/", "2"}], ",", 
+    RowBox[{"1", "/", "4"}], ",", 
+    RowBox[{"1", "/", "4"}]}], "}"}]}]], "Input",
+ CellLabel->"In[22]:=",
+ CellID->929871267],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", "2"], ",", 
+   FractionBox["1", "4"], ",", 
+   FractionBox["1", "4"]}], "}"}]], "Output",
+ CellLabel->"Out[22]=",
+ CellID->1325527322]
+}, Open  ]],
+
+Cell["\<\
+The density operator corresponding to the above specification is\
+\>", "MathCaption",
+ CellID->941547150],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[Rho]", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"states", "**", 
+      RowBox[{"Dagger", "[", "states", "]"}]}], ")"}], ".", "pp"}], "//", 
+   "Garner"}]}]], "Input",
+ CellLabel->"In[37]:=",
+ CellID->1938935276],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   RowBox[{"7", " ", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{"\"\[SpaceIndicator]\""},
+        "Ket"],
+       DisplayForm], 
+      TagBox[
+       TemplateBox[{"\"\[SpaceIndicator]\""},
+        "Bra"],
+       DisplayForm]}],
+     DisplayForm]}], "12"], "+", 
+  RowBox[{
+   FractionBox["1", "12"], " ", "\[ImaginaryI]", " ", 
+   RowBox[{"(", 
+    RowBox[{"3", "+", 
+     SqrtBox["2"]}], ")"}], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{"\"\[SpaceIndicator]\""},
+       "Ket"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TagBox[
+         TemplateBox[{
+           SubscriptBox["1", 
+            TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+       "Bra"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "12"], " ", "\[ImaginaryI]", " ", 
+   RowBox[{"(", 
+    RowBox[{"3", "+", 
+     SqrtBox["2"]}], ")"}], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TagBox[
+         TemplateBox[{
+           SubscriptBox["1", 
+            TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+       "Ket"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{"\"\[SpaceIndicator]\""},
+       "Bra"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   RowBox[{"5", " ", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", 
+             TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+        "Ket"],
+       DisplayForm], 
+      TagBox[
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", 
+             TagBox["S", DisplayForm]]}, "RowDefault"], DisplayForm]},
+        "Bra"],
+       DisplayForm]}],
+     DisplayForm]}], "12"]}]], "Output",
+ CellLabel->"Out[37]=",
+ CellID->2076905387]
+}, Open  ]],
+
+Cell["Here is its matrix representation.", "MathCaption",
+ CellID->855648095],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat\[Rho]", "=", 
+   RowBox[{"Outer", "[", 
+    RowBox[{"Multiply", ",", 
+     RowBox[{"Dagger", "[", "bs", "]"}], ",", 
+     RowBox[{"\[Rho]", "**", "bs"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat\[Rho]", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[38]:=",
+ CellID->1961749626],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["7", "12"], 
+      RowBox[{
+       FractionBox["1", "12"], " ", "\[ImaginaryI]", " ", 
+       RowBox[{"(", 
+        RowBox[{"3", "+", 
+         SqrtBox["2"]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["1", "12"]}], " ", "\[ImaginaryI]", " ", 
+       RowBox[{"(", 
+        RowBox[{"3", "+", 
+         SqrtBox["2"]}], ")"}]}], 
+      FractionBox["5", "12"]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[39]//MatrixForm=",
+ CellID->528259019]
+}, Open  ]],
+
+Cell["\<\
+The density operator can be expressed in terms of the elementary Pauli \
+operators.\
+\>", "MathCaption",
+ CellID->409509264],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"\[Rho]", "=", 
+  RowBox[{"QuissoExpression", "[", 
+   RowBox[{"mat\[Rho]", ",", "S"}], "]"}]}]], "Input",
+ CellLabel->"In[40]:=",
+ CellID->792225342],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", "2"], "-", 
+  FractionBox[
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"y\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm], "4"], "-", 
+  FractionBox[
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"y\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm], 
+   RowBox[{"6", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm], "12"]}]], "Output",
+ CellLabel->"Out[40]=",
+ CellID->1243512379]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Postulate 3. Measurements on Quantum States", "Section",
+ CellID->1856861102],
+
+Cell[TextData[{
+ "Quantum measurements are described by a set ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   SubscriptBox[
+    TemplateBox[{
+      Cell[
+       TextData["M"]], "paclet:ref/M"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], 
+    StyleBox["m", "TI"]], "}"}]], "InlineFormula"],
+ " of measurement operators corresponding to measurement outcomes ",
+ Cell[BoxData[
+  StyleBox["m", "TI"]], "InlineFormula"],
+ ". If the quantum state of the system is |\[Psi]\[RightAngleBracket] \
+immediately before the measurement, then the probability that result m occurs \
+is given by ",
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox[
+    StyleBox["P", "TI"], 
+    StyleBox["m", "TI"]], "=", 
+   RowBox[{"\[LeftAngleBracket]", 
+    RowBox[{
+     StyleBox["\[Psi]", "TR"], "|", 
+     RowBox[{
+      SubsuperscriptBox[
+       ButtonBox["M",
+        BaseStyle->"Link",
+        ButtonData->"paclet:ref/M"], 
+       StyleBox["m", "TI"], "\[Dagger]"], 
+      SubscriptBox[
+       StyleBox["M", "TI"], 
+       StyleBox["m", "TI"]]}], "|", 
+     StyleBox["\[Psi]", "TR"]}], "\[RightAngleBracket]"}]}]]],
+ ", and the state after measurement is"
+}], "Text",
+ CellID->1032183110],
+
+Cell[TextData[{
+ "        ",
+ Cell[BoxData[
+  FractionBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["M", "m"], "|", "\[Psi]"}], "\[RightAngleBracket]"}], 
+   SubscriptBox["P", "m"]]]]
+}], "Text",
+ CellID->398320030],
+
+Cell["Examples under construction.", "MathCaption",
+ CellID->528629304],
+
+Cell[BoxData["XXXX"], "Input",
+ CellLabel->"In[18]:=",
+ CellID->532864689],
+
+Cell[TextData[{
+ "The projection measurement, also known as the von Neumann measurement, is a \
+special example of the generalized measurement. For the projection \
+measurements, the measurement operators are projection operators, ",
+ Cell[BoxData[
+  RowBox[{
+   SuperscriptBox[
+    SubscriptBox["M", "m"], "2"], " ", "=", " ", 
+   SubscriptBox["M", "m"]}]],
+  FontSlant->"Italic"],
+ "."
+}], "Text",
+ CellID->1419073051],
+
+Cell["Examples under construction.", "MathCaption",
+ CellID->168067083],
+
+Cell[BoxData["XXXX"], "Input",
+ CellLabel->"In[18]:=",
+ CellID->762468176],
+
+Cell[TextData[{
+ "Measurement is a special case of ",
+ ButtonBox["quantum operations ",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/tutorial/QuantumOperations"],
+ "[1,2]. Consider a measurement with outcomes {m} and associated measurement \
+operators ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   SubscriptBox["M", "m"], "}"}]]],
+ ". Suppose that a system is in the mixed state \[Rho] immediately before the \
+measurement. The mapping ",
+ Cell[BoxData[
+  SubscriptBox["\[ScriptCapitalE]", "m"]]],
+ " defined by ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{
+    SubscriptBox["\[ScriptCapitalE]", "m"], 
+    RowBox[{"(", "\[Rho]", ")"}]}], "=", 
+   RowBox[{
+    SubscriptBox["M", "m"], "\[Rho]", " ", 
+    SuperscriptBox[
+     SubscriptBox["M", "m"], "\[Dagger]"]}]}]]],
+ "for each ",
+ StyleBox["m",
+  FontSlant->"Italic"],
+ " is obviously a quantum operation. The probability to obtain an outcome m \
+is given by p(m)=Tr[",
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox["\[ScriptCapitalE]", "m"], 
+   RowBox[{"(", "\[Rho]", ")"}]}]]],
+ "]. The state of the system right after the measurement is given by"
+}], "Text",
+ CellID->1808565329],
+
+Cell[TextData[{
+ "        ",
+ Cell[BoxData[
+  FractionBox[
+   RowBox[{
+    SubscriptBox["\[ScriptCapitalE]", "m"], 
+    RowBox[{"(", "\[Rho]", ")"}]}], 
+   RowBox[{"Tr", " ", 
+    SubscriptBox["\[ScriptCapitalE]", "m"], 
+    RowBox[{"(", "\[Rho]", ")"}]}]]]]
+}], "Text",
+ CellID->82172964],
+
+Cell[TextData[{
+ "Note that the quantum operation ",
+ Cell[BoxData[
+  SubscriptBox["\[ScriptCapitalE]", "m"]]],
+ " is not trace-preserving in general, ",
+ Cell[BoxData[
+  RowBox[{"0", "\[LessEqual]", 
+   RowBox[{
+    SubscriptBox["\[ScriptCapitalE]", "m"], 
+    RowBox[{"(", "\[Rho]", ")"}]}], "\[LessEqual]", "1"}]]],
+ "."
+}], "Text",
+ CellID->191235034],
+
+Cell[TextData[{
+ "The measurement given above is a selective measurement. A non-selective \
+measurement is represented by the quantum operation ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{"\[ScriptCapitalE]", 
+    RowBox[{"(", "\[Rho]", ")"}]}], "=", 
+   RowBox[{
+    UnderscriptBox["\[Sum]", "m"], 
+    RowBox[{
+     SubscriptBox["M", "m"], " ", "\[Rho]", " ", 
+     SuperscriptBox[
+      SubscriptBox["M", "m"], "\[Dagger]"]}]}]}]]],
+ "[2]. It is trace-preserving."
+}], "Text",
+ CellID->2054315034],
+
+Cell["Examples under construction.", "MathCaption",
+ CellID->1099416030],
+
+Cell[BoxData["XXXX"], "Input",
+ CellLabel->"In[18]:=",
+ CellID->935917422]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["References", "Section",
+ CellID->1444711814],
+
+Cell["\<\
+[1] M. Nielsen and I. L. Chuang, Quantum Computation and Quantum Information \
+(Cambridge University Press, 2011).\
+\>", "Text",
+ CellID->637342624],
+
+Cell["\<\
+[2] H.-P. Breuer and F. Petruccion, The Theory of Open Quantum Systems \
+(Oxford University Press, 2002).\
+\>", "Text",
+ CellID->307548723]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Tutorials"
+}], "RelatedTutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->415694126],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Quisso Quick Start",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/Quisso"]], "RelatedTutorials",
+ CellID->806871991],
+
+Cell[TextData[ButtonBox["Quantum Operations",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/QuantumOperations"]], "RelatedTutorials",
+ CellID->224376731]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"The Postulates of Quantum Mechanics",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
+  "LinkTrails" -> GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2020, 12, 22, 9, 42, 33.288506}", 
+    "history" -> {"1.2", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Postulate 1: The quantum state of a system is completely described by a \
+state vector in the Hilbert space associated with the system. Postulate 2: \
+The evolution of a closed quantum system is described by a unitary \
+transformation. Equivalently, the evolution is governed by the Schrodinger \
+equation. Postulate 3: Quantum measurements are described by a set {M_m} of \
+measurement operators corresponding to measurement outcomes m. If the quantum \
+state of the system is |\[Psi]\[RightAngleBracket] immediately before the \
+measurement, then the probability that result m occurs is given by P_m=\
+\[LeftAngleBracket]\[Psi]|ButtonBox[M_BaseStyle -> Link^ButtonData -> \
+paclet:ref/M, StyleBox[m, TI], \[Dagger]]M_m|\[Psi]\[RightAngleBracket], and \
+the state after measurement is M_m|\[Psi]\[RightAngleBracket]/P_m.", 
+    "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$241786, "title" -> 
+    "The Postulates of Quantum Mechanics", "titlemodifier" -> "", 
+    "windowtitle" -> "The Postulates of Quantum Mechanics", "type" -> 
+    "Tutorial", "uri" -> "Q3/tutorial/QuantumPostulates", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> ""},
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[607, 21, 3183, 76, 70, "AnchorBarGrid",ExpressionUUID->"ab988136-e199-4b2d-9c73-8b9a72bbab91",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3815, 101, 72, 1, 70, "Title",ExpressionUUID->"89afac8e-79ac-498f-a56a-9d22854a8fb7",
+ CellID->509267359],
+Cell[3890, 104, 29524, 522, 70, "TutorialJumpBox",ExpressionUUID->"b06a5b17-24e9-430d-b656-d19b05da8aae"],
+Cell[CellGroupData[{
+Cell[33439, 630, 47, 1, 70, "Section",ExpressionUUID->"5fbd4ffc-717b-41db-8d52-1e3f9fb1b107",
+ CellID->673358486],
+Cell[33489, 633, 224, 6, 70, "Text",ExpressionUUID->"ccbf3b39-7ff4-4090-b20b-b7ae6c492a7f",
+ CellID->2044738159],
+Cell[33716, 641, 257, 7, 70, "Text",ExpressionUUID->"739e494d-9f8f-46aa-bec5-95dbfcf5d2db",
+ CellID->1151042940],
+Cell[33976, 650, 1597, 55, 70, "Text",ExpressionUUID->"ede0f18a-204e-4f10-b412-cf00a3241c07",
+ CellID->166450194],
+Cell[35576, 707, 45, 1, 70, "Caption",ExpressionUUID->"e0b5fd65-f948-4364-925c-23fdcf95c0a2",
+ CellID->1646668493],
+Cell[35624, 710, 136, 4, 70, "MathCaption",ExpressionUUID->"625e03e8-96a9-4389-9505-3db334b35156",
+ CellID->935602962],
+Cell[35763, 716, 97, 3, 70, "Input",ExpressionUUID->"08c7f194-3d12-402d-8424-57ee89498099",
+ CellID->265246803]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[35897, 724, 77, 1, 70, "Section",ExpressionUUID->"756232a9-d12c-449e-85da-04625cf8462f",
+ CellID->1740090795],
+Cell[35977, 727, 167, 4, 70, "Text",ExpressionUUID->"65c655eb-edc3-4aa0-bfe1-92ac6d8f1b9e",
+ CellID->1534169418],
+Cell[36147, 733, 122, 5, 70, "MathCaption",ExpressionUUID->"75107e58-2d2e-4d46-bf03-b83e66d50297",
+ CellID->836781195],
+Cell[36272, 740, 126, 4, 70, "Input",ExpressionUUID->"56b1c582-308c-4b91-baab-6917f7855e8b",
+ CellID->972990807],
+Cell[36401, 746, 92, 1, 70, "MathCaption",ExpressionUUID->"97249344-2adc-4810-8836-22d4b94b0cbe",
+ CellID->1420381729],
+Cell[CellGroupData[{
+Cell[36518, 751, 125, 4, 70, "Input",ExpressionUUID->"9ddd4f70-9b62-4dde-b4d3-3bdf8811b323",
+ CellID->434733679],
+Cell[36646, 757, 318, 12, 70, "Output",ExpressionUUID->"3eeb3e69-8013-43ad-80d5-5654c632fa07",
+ CellID->828566453]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[37001, 774, 108, 3, 70, "Input",ExpressionUUID->"99af87e5-c5fc-44a1-8225-2b0cd3a58631",
+ CellID->656343208],
+Cell[37112, 779, 420, 16, 70, "Output",ExpressionUUID->"d2d5d932-fbb5-4e3f-823e-019f644f9c1e",
+ CellID->380555470]
+}, Open  ]],
+Cell[37547, 798, 182, 4, 70, "MathCaption",ExpressionUUID->"c1c31dbd-a16a-46d7-83d6-02b4c285573e",
+ CellID->1612912112],
+Cell[CellGroupData[{
+Cell[37754, 806, 528, 16, 70, "Input",ExpressionUUID->"e68331d6-c34f-4fd3-8345-6ff6966ef3f8",
+ CellID->1862888414],
+Cell[38285, 824, 713, 31, 70, "Output",ExpressionUUID->"ebe6822a-d500-4d93-a256-5a3c2ad23f93",
+ CellID->741160789]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[39047, 861, 80, 1, 70, "Section",ExpressionUUID->"7cb95428-f7ba-49b9-b241-18759a828eef",
+ CellID->1097312280],
+Cell[39130, 864, 200, 5, 70, "Text",ExpressionUUID->"f5e030b0-d4ec-4942-a351-f47ba0c86595",
+ CellID->1851977940],
+Cell[39333, 871, 122, 5, 70, "MathCaption",ExpressionUUID->"0c83b547-c593-49a3-a384-71b0eb691a37",
+ CellID->1542355105],
+Cell[39458, 878, 125, 4, 70, "Input",ExpressionUUID->"3636fac4-4954-40da-a1ed-ac059108d00f",
+ CellID->500737436],
+Cell[39586, 884, 128, 3, 70, "MathCaption",ExpressionUUID->"f55ae8e7-cb08-4d0b-9786-8e1e4fb134d6",
+ CellID->1304028494],
+Cell[CellGroupData[{
+Cell[39739, 891, 401, 14, 70, "Input",ExpressionUUID->"1f0b2788-a638-4ba4-b883-0f5aaefaa778",
+ CellID->389458127],
+Cell[40143, 907, 1166, 52, 70, "Output",ExpressionUUID->"a44d0f1d-a7c7-4b14-a1f0-532637671b41",
+ CellID->1311748194]
+}, Open  ]],
+Cell[41324, 962, 96, 1, 70, "MathCaption",ExpressionUUID->"314523ee-13a8-44ba-b537-b9d077b77f0c",
+ CellID->161657680],
+Cell[CellGroupData[{
+Cell[41445, 967, 214, 7, 70, "Input",ExpressionUUID->"19234b0a-adbb-4251-8f7f-5495c714f93c",
+ CellID->1048742628],
+Cell[41662, 976, 1441, 56, 70, "Output",ExpressionUUID->"e742341b-2813-43e9-bbb0-d256bf2bc32d",
+ CellID->1174388111]
+}, Open  ]],
+Cell[43118, 1035, 681, 17, 70, "Text",ExpressionUUID->"823831e9-1036-4e88-bf6a-e6327a462155",
+ CellID->706967999],
+Cell[43802, 1054, 134, 4, 70, "Input",ExpressionUUID->"20adc6c0-bd4b-4c5e-ac87-9dcc6f0915a9",
+ CellID->137315394],
+Cell[CellGroupData[{
+Cell[43961, 1062, 214, 7, 70, "Input",ExpressionUUID->"dd50ecca-794f-44b1-8fce-f1022696ebfd",
+ CellID->522383727],
+Cell[44178, 1071, 614, 22, 70, "Output",ExpressionUUID->"a3421ac1-fb00-4c66-941b-fa8b3d1170ce",
+ CellID->1845866019]
+}, Open  ]],
+Cell[44807, 1096, 126, 4, 70, "Input",ExpressionUUID->"dceb7324-5da3-4b85-82bb-4f2a08b187da",
+ CellID->229098184],
+Cell[CellGroupData[{
+Cell[44958, 1104, 176, 6, 70, "Input",ExpressionUUID->"b7ac12f1-916c-4113-98db-501468b1172b",
+ CellID->182138233],
+Cell[45137, 1112, 532, 25, 70, "Output",ExpressionUUID->"da19296c-8807-4c9e-9c97-f7ba47506fff",
+ CellID->778754193]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[45706, 1142, 220, 8, 70, "Input",ExpressionUUID->"472ad3d6-e23e-4b07-a1fa-fd4f72e0fdf3",
+ CellID->146972408],
+Cell[45929, 1152, 2002, 84, 70, "Output",ExpressionUUID->"43b74bf5-f1c0-4224-bd75-15d0601b2c16",
+ CellID->59599650]
+}, Open  ]],
+Cell[47946, 1239, 83, 1, 70, "MathCaption",ExpressionUUID->"105c2044-00ea-4628-9670-5a25a8278688",
+ CellID->282795955],
+Cell[CellGroupData[{
+Cell[48054, 1244, 914, 26, 70, "Input",ExpressionUUID->"ab2f06cd-def6-46aa-be39-301d8804f3a2",
+ CellID->542475177],
+Cell[48971, 1272, 1172, 43, 70, "Output",ExpressionUUID->"fbda7897-97ed-4803-99aa-7b794bf6a0b5",
+ CellID->1947619484]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[50180, 1320, 226, 8, 70, "Input",ExpressionUUID->"f5ae036a-3003-4b07-b55f-428edd643364",
+ CellID->929871267],
+Cell[50409, 1330, 194, 7, 70, "Output",ExpressionUUID->"15c23d04-fc8c-4f4f-9e53-2ad208176fca",
+ CellID->1325527322]
+}, Open  ]],
+Cell[50618, 1340, 115, 3, 70, "MathCaption",ExpressionUUID->"dc2dd462-1911-478e-8b70-e165a819afc7",
+ CellID->941547150],
+Cell[CellGroupData[{
+Cell[50758, 1347, 256, 9, 70, "Input",ExpressionUUID->"4675d5ac-0e2c-4d32-9549-f4f9796cdc71",
+ CellID->1938935276],
+Cell[51017, 1358, 1885, 77, 70, "Output",ExpressionUUID->"61280fd0-c9ea-4a28-8fff-255c02843da3",
+ CellID->2076905387]
+}, Open  ]],
+Cell[52917, 1438, 77, 1, 70, "MathCaption",ExpressionUUID->"78f24dc6-ca9d-4725-9021-09b232173c87",
+ CellID->855648095],
+Cell[CellGroupData[{
+Cell[53019, 1443, 338, 10, 70, "Input",ExpressionUUID->"970cb453-01b5-499a-b638-aa220a1fc674",
+ CellID->1961749626],
+Cell[53360, 1455, 918, 30, 70, "Output",ExpressionUUID->"af48977a-80c2-45ca-817a-51faf265b8e7",
+ CellID->528259019]
+}, Open  ]],
+Cell[54293, 1488, 134, 4, 70, "MathCaption",ExpressionUUID->"03485704-b258-4e47-9792-b2709270b747",
+ CellID->409509264],
+Cell[CellGroupData[{
+Cell[54452, 1496, 173, 5, 70, "Input",ExpressionUUID->"4921c06b-dc7c-44c6-88d5-71e3eb110f4e",
+ CellID->792225342],
+Cell[54628, 1503, 688, 27, 70, "Output",ExpressionUUID->"87d7514a-3d86-4345-99c8-88c678bda145",
+ CellID->1243512379]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55365, 1536, 83, 1, 70, "Section",ExpressionUUID->"fe3fc472-1da0-4abc-a7ce-49c14ca531ec",
+ CellID->1856861102],
+Cell[55451, 1539, 1157, 37, 70, "Text",ExpressionUUID->"7672c6de-97dc-4b0c-a63a-da55d9ce2d3e",
+ CellID->1032183110],
+Cell[56611, 1578, 217, 9, 70, "Text",ExpressionUUID->"61be64d6-311a-426e-825a-17745d042ebd",
+ CellID->398320030],
+Cell[56831, 1589, 71, 1, 70, "MathCaption",ExpressionUUID->"c9c42c24-b3d8-4662-9542-08fc9c80556e",
+ CellID->528629304],
+Cell[56905, 1592, 74, 2, 70, "Input",ExpressionUUID->"cf8fa685-794a-462d-b86d-2bd0fd2656e6",
+ CellID->532864689],
+Cell[56982, 1596, 420, 12, 70, "Text",ExpressionUUID->"6feda7ee-7d78-4a85-bd52-ae387272c050",
+ CellID->1419073051],
+Cell[57405, 1610, 71, 1, 70, "MathCaption",ExpressionUUID->"1b8d3ca1-c101-4f60-8930-f0f67de8323e",
+ CellID->168067083],
+Cell[57479, 1613, 74, 2, 70, "Input",ExpressionUUID->"1d8016ed-bded-46ae-b358-d6b5762bf85a",
+ CellID->762468176],
+Cell[57556, 1617, 1120, 35, 70, "Text",ExpressionUUID->"beaa469a-22cf-4fed-81b2-50c852edf518",
+ CellID->1808565329],
+Cell[58679, 1654, 289, 11, 70, "Text",ExpressionUUID->"8d3e7509-4f9f-4db7-9a6f-c4771871a8ba",
+ CellID->82172964],
+Cell[58971, 1667, 355, 12, 70, "Text",ExpressionUUID->"8d153d80-4b36-4f16-a05c-00a2908e6e91",
+ CellID->191235034],
+Cell[59329, 1681, 496, 15, 70, "Text",ExpressionUUID->"b4baec2d-14a6-4fea-bb43-e67c4bab8dab",
+ CellID->2054315034],
+Cell[59828, 1698, 72, 1, 70, "MathCaption",ExpressionUUID->"cb2581f0-25d4-426f-9615-89965063fe4c",
+ CellID->1099416030],
+Cell[59903, 1701, 74, 2, 70, "Input",ExpressionUUID->"a99513c1-6c86-4696-a732-ef5a0db3b914",
+ CellID->935917422]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[60014, 1708, 50, 1, 70, "Section",ExpressionUUID->"786d2411-9d7b-459a-9705-7723012f2434",
+ CellID->1444711814],
+Cell[60067, 1711, 158, 4, 70, "Text",ExpressionUUID->"ab866dd1-aeae-41c5-91d8-932e444252aa",
+ CellID->637342624],
+Cell[60228, 1717, 149, 4, 70, "Text",ExpressionUUID->"01f52d1b-219f-46d3-91de-c23b9e920d7d",
+ CellID->307548723]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[60414, 1726, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"3d7f4496-e181-4fd3-97e5-dcc536a6317d",
+ CellID->415694126],
+Cell[60584, 1735, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"5fb2e4d9-092a-4f04-8d1c-b94444787c25"],
+Cell[60618, 1737, 149, 3, 70, "RelatedTutorials",ExpressionUUID->"1e0664c0-affc-40cd-89c1-c3b9d8d64c0a",
+ CellID->806871991],
+Cell[60770, 1742, 160, 3, 70, "RelatedTutorials",ExpressionUUID->"ac0348e9-caa6-4495-9c78-5674c5261e4b",
+ CellID->224376731]
+}, Open  ]]
+}, Open  ]],
+Cell[60957, 1749, 23, 0, 70, "FooterCell",ExpressionUUID->"e23ac27c-07ef-469f-b58a-aef40c61c9a4"]
+}
+]
+*)
+
+(* End of internal cache information *)

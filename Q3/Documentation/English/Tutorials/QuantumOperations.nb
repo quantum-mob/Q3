@@ -1,0 +1,1178 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     48084,       1169]
+NotebookOptionsPosition[     41312,       1016]
+NotebookOutlinePosition[     43950,       1085]
+CellTagsIndexPosition[     43850,       1079]
+WindowTitle->Quantum Operations
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"The Postulates of Quantum Mechanics\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/QuantumPostulates"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/tutorial/QuantumOperations\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuantumOperations"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumOperations.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$241298], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/tutorial/QuantumOperations", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Operations", "Title",
+ CellID->509267359],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Definition"], "paclet:Q3/tutorial/QuantumOperations#125913918", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["References"], "paclet:Q3/tutorial/QuantumOperations#1444711814", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Unitary Representation"], 
+      "paclet:Q3/tutorial/QuantumOperations#980772836", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Notes"], "paclet:Q3/tutorial/QuantumOperations#1965447309", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Operator-Sum Representation"], 
+      "paclet:Q3/tutorial/QuantumOperations#1327865358", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "BasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "MediaManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}], 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "InstanceID" -> 
+                  "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A"}], 
+               "RightsManagementSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}], 
+               "PagedTextSchema" -> 
+               Association[{
+                 "DerivedFrom" -> 
+                  Association[{
+                    "DerivedFrom" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], ""}
+  }]], "TutorialJumpBox"],
+
+Cell["Under construction.", "Text",
+ CellID->1534169418],
+
+Cell["XXXX.", "Caption",
+ CellID->1891092685],
+
+Cell["\<\
+In this tutorial, the properties of quantum operations are demonstrated using \
+the Quisso package.\
+\>", "MathCaption",
+ CellID->836781195],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Quisso`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->2058623809],
+
+Cell[CellGroupData[{
+
+Cell["Definition", "Section",
+ CellID->125913918],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData["\[ScriptCapitalA]"]],
+ "and ",
+ Cell[BoxData["\[ScriptCapitalB]"]],
+ " be Hilbert spaces of dimension ",
+ Cell[BoxData["N"],
+  FontSlant->"Italic"],
+ " and ",
+ Cell[BoxData[
+  SuperscriptBox["N", "\[Prime]"]],
+  FontSlant->"Italic"],
+ ", respectively.",
+ ButtonBox[Cell[TextData[StyleBox[ButtonBox["1",
+  ButtonData->"paclet:ref/1"],
+  FontVariations->{"CompatibilityType"->"Superscript"}]], "Citation",
+  Editable->False],
+  BaseStyle->"Hyperlink",
+  ButtonData->"00006893"],
+ " Recall that ",
+ Cell[BoxData[
+  RowBox[{"\[ScriptCapitalL]", 
+   RowBox[{"(", "\[ScriptCapitalA]", ")"}]}]]],
+ "is the vector space of all linear operators on ",
+ Cell[BoxData["\[ScriptCapitalA]"]],
+ ". A quantum operation ",
+ Cell[BoxData[
+  RowBox[{"\[ScriptCapitalE]", ":", 
+   RowBox[{
+    RowBox[{"\[ScriptCapitalL]", 
+     RowBox[{"(", "\[ScriptCapitalA]", ")"}]}], "\[RightArrow]", 
+    RowBox[{"\[ScriptCapitalL]", 
+     RowBox[{"(", "\[ScriptCapitalB]", ")"}]}]}]}]]],
+ " is a linear map from one to another set of density operators satisfying \
+the following three axioms."
+}], "Text",
+ CellID->845606612],
+
+Cell[TextData[{
+ StyleBox["Axiom 1",
+  FontWeight->"Bold"],
+ ". Trace decreasing.",
+ ButtonBox[Cell[TextData[StyleBox[ButtonBox["2",
+  ButtonData->"paclet:ref/2"],
+  FontVariations->{"CompatibilityType"->"Superscript"}]], "Citation",
+  Editable->False],
+  BaseStyle->"Hyperlink",
+  ButtonData->"00007273"],
+ " For any density operator ",
+ Cell[BoxData[
+  RowBox[{"\[Rho]", "\[Element]", 
+   RowBox[{"\[ScriptCapitalL]", 
+    RowBox[{"(", "\[ScriptCapitalA]", ")"}]}]}]]],
+ ", 0\[LessEqual]Tr[\[ScriptCapitalE](\[Rho])]\[LessEqual]1 so that Tr[\
+\[ScriptCapitalE](\[Rho])] is the probability for the process represented by \
+\[ScriptCapitalE] to occur."
+}], "Text",
+ CellID->1469796523],
+
+Cell["\<\
+Most quantum operations preserve the trace, i.e., \
+Tr[\[ScriptCapitalE](\[Rho])]=1. An important exception is the process \
+associated with a (generalized selective) measurement.\
+\>", "Text",
+ CellID->234030493],
+
+Cell[TextData[{
+ StyleBox["Axiom 2",
+  FontWeight->"Bold"],
+ ". Convexity. \[ScriptCapitalE] is a ",
+ StyleBox["convex linear map",
+  FontSlant->"Italic"],
+ ". That is, for probabilities ",
+ Cell[BoxData[
+  SubscriptBox["p", 
+   StyleBox["j",
+    FontSlant->"Italic"]]]],
+ " ",
+ Cell[BoxData[
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{"0", "\[LessEqual]", 
+     SubscriptBox["p", 
+      StyleBox["j",
+       FontSlant->"Italic"]], "\[LessEqual]", "1"}], ",", " ", 
+    RowBox[{
+     RowBox[{
+      UnderscriptBox["\[Sum]", "j"], 
+      SubscriptBox["p", 
+       StyleBox["j",
+        FontSlant->"Italic"]]}], "=", "1"}]}], ")"}]]],
+ ", ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{"\[ScriptCapitalE]", 
+    RowBox[{"(", 
+     RowBox[{
+      UnderscriptBox["\[Sum]", 
+       StyleBox["j",
+        FontSlant->"Italic"]], 
+      RowBox[{
+       SubscriptBox["\[Rho]", 
+        StyleBox["j",
+         FontSlant->"Italic"]], 
+       SubscriptBox["p", 
+        StyleBox["j",
+         FontSlant->"Italic"]]}]}], ")"}]}], "=", 
+   RowBox[{
+    UnderscriptBox["\[Sum]", 
+     StyleBox["j",
+      FontSlant->"Italic"]], 
+    RowBox[{"\[ScriptCapitalE]", 
+     RowBox[{"(", 
+      SubscriptBox["\[Rho]", 
+       StyleBox["j",
+        FontSlant->"Italic"]], ")"}], 
+     SubscriptBox["p", 
+      StyleBox["j",
+       FontSlant->"Italic"]]}]}]}]]],
+ ", where ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox[
+    SubscriptBox["\[Rho]", "j"],
+    FontSlant->"Italic"], "\[Element]", 
+   RowBox[{"\[ScriptCapitalL]", 
+    RowBox[{"(", "\[ScriptCapitalA]", ")"}]}]}]]],
+ ". "
+}], "Text",
+ CellID->1446406405],
+
+Cell[TextData[{
+ StyleBox["Axiom 3",
+  FontWeight->"Bold"],
+ ". Complete positivity. \[ScriptCapitalE] is a ",
+ StyleBox["completely positive map",
+  FontSlant->"Italic"],
+ ". That is, \[ScriptCapitalE](\[Rho]) should be positive for any positive \
+operator ",
+ Cell[BoxData[
+  RowBox[{"\[Rho]", "\[Element]", 
+   RowBox[{"\[ScriptCapitalL]", 
+    RowBox[{"(", "\[ScriptCapitalA]", ")"}]}]}]]],
+ ". Furthermore, (\[ScriptCapitalE]\[CircleTimes]\[ScriptCapitalI])(\[Rho]) \
+is positive for any positive operator ",
+ Cell[BoxData[
+  RowBox[{"\[Rho]", "\[Element]", 
+   RowBox[{"\[ScriptCapitalL]", 
+    RowBox[{"(", 
+     RowBox[{"\[ScriptCapitalA]", "\[CircleTimes]", "\[ScriptCapitalR]"}], 
+     ")"}]}]}]]],
+ ", where \[ScriptCapitalR] is a Hilbert space of arbitrary dimensionality."
+}], "Text",
+ CellID->1228251533],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["XXXX"], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1807018358],
+
+Cell[BoxData["XXXX"], "Output",
+ CellLabel->"Out[1]=",
+ CellID->843807032]
+}, Open  ]],
+
+Cell["\<\
+There are two important ways commonly used to represent quantum operations.\
+\>", "Text",
+ CellID->1540071857]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Unitary Representation", "Section",
+ CellID->980772836],
+
+Cell["\<\
+The environment-augmented unitary representation provides quantum operations \
+with physical motivations.\
+\>", "Text",
+ CellID->1728680626],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["XXXX"], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1113127381],
+
+Cell[BoxData["XXXX"], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1601843450]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Operator-Sum Representation", "Section",
+ CellID->1327865358],
+
+Cell["\<\
+This representation provides quantum operations with mathematical convenience.\
+\>", "Text",
+ CellID->946558894],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["XXXX"], "Input",
+ CellLabel->"In[1]:=",
+ CellID->307634758],
+
+Cell[BoxData["XXXX"], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1424239377]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["References", "Section",
+ CellID->1444711814],
+
+Cell["\<\
+[1] M. Nielsen and I. L. Chuang, Quantum Computation and Quantum Information \
+(Cambridge University Press, 2011).\
+\>", "Text",
+ CellID->637342624],
+
+Cell["\<\
+[2] H.-P. Breuer and F. Petruccion, The Theory of Open Quantum Systems \
+(Oxford University Press, 2002).\
+\>", "Text",
+ CellID->307548723]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Tutorials"
+}], "RelatedTutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->415694126],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["The Postulates of Quantum Mechanics",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/QuantumPostulates"]], "RelatedTutorials",
+ CellID->806871991]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Notes", "Section",
+ CellID->1965447309],
+
+Cell[TextData[{
+ "\t",
+ StyleBox["1",
+  FontVariations->{"CompatibilityType"->"Superscript"}],
+ "\t",
+ "Quantum",
+ " ",
+ "operations",
+ " ",
+ "can",
+ " ",
+ "be",
+ " ",
+ "extended",
+ " ",
+ "to",
+ " ",
+ "infinite",
+ "-",
+ "dimensional",
+ " ",
+ "cases",
+ ",",
+ " ",
+ "but",
+ " ",
+ "here",
+ " ",
+ "we",
+ " ",
+ "will",
+ " ",
+ "confine",
+ " ",
+ "ourselves",
+ " ",
+ "to",
+ " ",
+ "the",
+ " ",
+ "finite",
+ "-",
+ "dimensional",
+ " ",
+ "case",
+ "."
+}], "Reference",
+ Editable->False,
+ CellTags->"00006893",
+ CellID->568250564],
+
+Cell[TextData[{
+ "\t",
+ StyleBox["2",
+  FontVariations->{"CompatibilityType"->"Superscript"}],
+ "\t",
+ "Many",
+ " ",
+ "authors",
+ " ",
+ "reserve",
+ " ",
+ "the",
+ " ",
+ "term",
+ " ",
+ "\"quantum channel\"",
+ " ",
+ "for",
+ " ",
+ "a",
+ " ",
+ "trace",
+ "-",
+ "preserving",
+ " ",
+ "completely",
+ " ",
+ "positive",
+ " ",
+ "map",
+ ";",
+ " ",
+ "For",
+ " ",
+ "quantum",
+ " ",
+ "operations",
+ ",",
+ " ",
+ "the",
+ " ",
+ "trace",
+ " ",
+ "decreases",
+ " ",
+ "in",
+ " ",
+ "general",
+ ".",
+ " "
+}], "Reference",
+ Editable->False,
+ CellTags->"00007273",
+ CellID->727450939]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quantum Operations",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
+  "LinkTrails" -> GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2020, 12, 22, 9, 42, 32.085414}", 
+    "history" -> {"1.2", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Under construction. XXXX. In this tutorial, the properties of quantum \
+operations are demonstrated using the Quisso package.", "synonyms" -> {}, 
+    "tabletags" -> DocumentationBuild`Make`Private`tabletaggingrules$241218, 
+    "title" -> "Quantum Operations", "titlemodifier" -> "", "windowtitle" -> 
+    "Quantum Operations", "type" -> "Tutorial", "uri" -> 
+    "Q3/tutorial/QuantumOperations", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "00006893"->{
+  Cell[40183, 906, 515, 49, 70, "Reference",ExpressionUUID->"ac7c7c7a-3509-4c84-ac88-7db317c765b4",
+   CellTags->"00006893",
+   CellID->568250564]},
+ "00007273"->{
+  Cell[40701, 957, 557, 53, 70, "Reference",ExpressionUUID->"ef32ae0e-06c5-4290-8b94-1435b55027e2",
+   CellTags->"00007273",
+   CellID->727450939]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"00006893", 43514, 1068},
+ {"00007273", 43678, 1072}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[590, 21, 3099, 74, 70, "AnchorBarGrid",ExpressionUUID->"201566b4-3280-40d0-b2c1-2da89294bba6",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3714, 99, 55, 1, 70, "Title",ExpressionUUID->"ef31f69b-e21e-46bc-b288-19815ac8d334",
+ CellID->509267359],
+Cell[3772, 102, 29452, 521, 70, "TutorialJumpBox",ExpressionUUID->"bb8abf55-6338-463b-b292-247c39a360eb"],
+Cell[33227, 625, 56, 1, 70, "Text",ExpressionUUID->"4addbcfe-7e73-4008-9a43-9f43d051cac3",
+ CellID->1534169418],
+Cell[33286, 628, 45, 1, 70, "Caption",ExpressionUUID->"e421d734-ea95-4aa3-b27b-c59addb21ea5",
+ CellID->1891092685],
+Cell[33334, 631, 150, 4, 70, "MathCaption",ExpressionUUID->"59262cd4-8baf-4557-bae3-9a163f4110fd",
+ CellID->836781195],
+Cell[33487, 637, 98, 3, 70, "Input",ExpressionUUID->"16aae15c-8c80-41d2-b55b-746b7366f190",
+ CellID->2058623809],
+Cell[CellGroupData[{
+Cell[33610, 644, 49, 1, 70, "Section",ExpressionUUID->"013f44c2-5da3-445f-92f9-0d3ea73d805e",
+ CellID->125913918],
+Cell[33662, 647, 1135, 36, 70, "Text",ExpressionUUID->"d889e11a-02c1-497c-a78d-c6fa3f1d263d",
+ CellID->845606612],
+Cell[34800, 685, 685, 19, 70, "Text",ExpressionUUID->"3ae23456-06e5-45cb-ae12-a4b0b1ccc01d",
+ CellID->1469796523],
+Cell[35488, 706, 223, 5, 70, "Text",ExpressionUUID->"6283098a-d74d-492f-98cc-a10c20d9b839",
+ CellID->234030493],
+Cell[35714, 713, 1577, 63, 70, "Text",ExpressionUUID->"57bc6193-6bf4-4a12-b37f-d5759bf390ee",
+ CellID->1446406405],
+Cell[37294, 778, 818, 22, 70, "Text",ExpressionUUID->"00346a42-3d86-4b91-9bae-cc56159837af",
+ CellID->1228251533],
+Cell[CellGroupData[{
+Cell[38137, 804, 74, 2, 70, "Input",ExpressionUUID->"59de5249-ab17-41d6-936c-cacd08013ccd",
+ CellID->1807018358],
+Cell[38214, 808, 74, 2, 70, "Output",ExpressionUUID->"c27d6bb1-bbe7-4ef3-af54-14850ebf1565",
+ CellID->843807032]
+}, Open  ]],
+Cell[38303, 813, 120, 3, 70, "Text",ExpressionUUID->"c4550b94-a379-43ae-ba77-90c151e73da4",
+ CellID->1540071857]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[38460, 821, 61, 1, 70, "Section",ExpressionUUID->"ca0769dc-e2df-4dd8-8f7d-3887cac2defd",
+ CellID->980772836],
+Cell[38524, 824, 150, 4, 70, "Text",ExpressionUUID->"a796b03d-ac70-42d8-9868-7e54c37ba0d6",
+ CellID->1728680626],
+Cell[CellGroupData[{
+Cell[38699, 832, 74, 2, 70, "Input",ExpressionUUID->"becd80d3-f3b6-46bd-95c1-06834d8d3bf6",
+ CellID->1113127381],
+Cell[38776, 836, 75, 2, 70, "Output",ExpressionUUID->"fd240837-f63a-4b1e-8795-48b6c759fadd",
+ CellID->1601843450]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[38900, 844, 67, 1, 70, "Section",ExpressionUUID->"21f365c0-98b6-42e6-a4f7-b202045dcb2f",
+ CellID->1327865358],
+Cell[38970, 847, 122, 3, 70, "Text",ExpressionUUID->"a21ca845-3911-4d32-a9b5-cbb41bfa856e",
+ CellID->946558894],
+Cell[CellGroupData[{
+Cell[39117, 854, 73, 2, 70, "Input",ExpressionUUID->"36f5a872-9750-418f-9417-dce168cfb1aa",
+ CellID->307634758],
+Cell[39193, 858, 75, 2, 70, "Output",ExpressionUUID->"9cff3871-01c6-4f29-8910-4b78dac22e0d",
+ CellID->1424239377]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[39317, 866, 50, 1, 70, "Section",ExpressionUUID->"fca0283b-4645-400b-bfd5-a7a7160e849d",
+ CellID->1444711814],
+Cell[39370, 869, 158, 4, 70, "Text",ExpressionUUID->"fa43e81d-a1b8-419e-8a6a-0fb3e1bb5d9c",
+ CellID->637342624],
+Cell[39531, 875, 149, 4, 70, "Text",ExpressionUUID->"42a40d65-9be5-4b9e-8fa0-d13296eb2212",
+ CellID->307548723]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[39717, 884, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"4b0b90a0-f98d-485f-ba1f-97e54e0345ff",
+ CellID->415694126],
+Cell[39887, 893, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"35232305-bb84-4764-a891-85373be82648"],
+Cell[39921, 895, 177, 3, 70, "RelatedTutorials",ExpressionUUID->"6d9c1b75-f3d4-4b75-a7d9-91714ea82a0c",
+ CellID->806871991]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40135, 903, 45, 1, 70, "Section",ExpressionUUID->"7f8ba01a-1800-460d-8354-64cb8421a1d5",
+ CellID->1965447309],
+Cell[40183, 906, 515, 49, 70, "Reference",ExpressionUUID->"ac7c7c7a-3509-4c84-ac88-7db317c765b4",
+ CellTags->"00006893",
+ CellID->568250564],
+Cell[40701, 957, 557, 53, 70, "Reference",ExpressionUUID->"ef32ae0e-06c5-4290-8b94-1435b55027e2",
+ CellTags->"00007273",
+ CellID->727450939]
+}, Open  ]]
+}, Open  ]],
+Cell[41285, 1014, 23, 0, 70, "FooterCell",ExpressionUUID->"83af2723-ab71-4917-90c8-192d3a5188f7"]
+}
+]
+*)
+
+(* End of internal cache information *)
