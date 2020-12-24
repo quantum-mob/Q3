@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-11-27 20:20:19+09 $
-  $Revision: 1.15 $
+  $Date: 2020-12-24 18:54:16+09 $
+  $Revision: 1.18 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.15 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-27 20:20:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.18 $"][[2]], " (",
+  StringSplit["$Date: 2020-12-24 18:54:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -53,7 +53,7 @@ Print @ StringJoin[
   QuissoSWAP, SWAP,
   QuissoToffoli, Toffoli,
   QuissoProjector, Projector,
-  Measure, Readout };
+  Measurement, Readout };
 
 { ProductState, BellState, GraphState, DickeState, RandomState };
 
@@ -472,6 +472,9 @@ Format[ ProductState[a_Association] ] := Module[
    ];
   CircleTimes @@ vv
  ]
+
+ProductState /:
+NonCommutativeQ[ ProductState[___] ] = True
 
 ProductState /:
 HoldPattern[ Expand[ ProductState[a_Association] ] ] := 
@@ -1360,30 +1363,33 @@ QuissoProjector[v_] := (
  ) /; FreeQ[v, _Ket]
 
 
-Measure::usage = "Measure[G][expr] represents a measurement on the qubit G for the state vector in expr, which is supposed to be a Ket exrepssion. The resulting state vector is returned in a Ket expression."
+Measurement::usage = "Measurement[expr, {s1, s2, ...}] performs the projective measurements on the Qubits {s1, s2, ...}.\nMeasurement[expr, s] is equivalent to Measurement[expr, {s}].\nMeasurement[s] represents the projective measurement on the qubit s and returns the state vector corresponding to the measurement outcome.\nMeasurement[{s1, s2, ...}] is equivalent to Map[Measurement, {s1, s2, ...}]."
 
-Measure::nonum = "Cannot perform a measurement on a non-numeric state vector. Probability half is assumed."
+Measurement::nonum = "Cannot perform a measurement on a non-numeric state vector. Probability half is assumed."
 
-Measure::novec = "The expression `` does not seem to be a valid Quisso Ket expression. Null vector is returned."
+Measurement::novec = "The expression `` does not seem to be a valid Quisso Ket expression. Null vector is returned."
 
-SetAttributes[Measure, Listable]
+SetAttributes[Measurement, Listable]
 
-Measure[ gg:{__?QubitQ} ] := Measure /@ FlavorNone @ gg
+Measurement[ gg:{__?QubitQ} ] := Measurement /@ FlavorNone @ gg
 
-Measure[ g_?QubitQ ] := Measure @ FlavorNone @ g /;
+Measurement[ g_?QubitQ ] := Measurement @ FlavorNone @ g /;
   FlavorLast[g] =!= None
 (* This is for the interface with QuissoCircuit[]. *)
 
-Measure[ b_?QubitQ ][ vec_ ] := Module[
+Measurement[vec_, qq:{__?QubitQ}] := Fold[ Measurement, vec, FlavorNone @ qq ]
+  
+Measurement[vec_, S_?QubitQ] := Module[
   { r = RandomReal[],
+    b = FlavorNone[S],
     expr = QuissoExpand @ vec,
     vx, v0, v1, p0, p1 },
   vx = Cases[expr, v:Ket[_Association] :> v[b], Infinity];
   vx = DeleteCases[ vx, (0|1) ];
   If[ vx == {},
     Null,
-    Message[Measure::novec, expr]; Return[0],
-    Message[Measure::novec, expr]; Return[0]
+    Message[Measurement::novec, expr]; Return[0],
+    Message[Measurement::novec, expr]; Return[0]
    ];
 
   v0 = expr /. { v:Ket[_Association] :> (1-v[b]) v };
@@ -1395,18 +1401,19 @@ Measure[ b_?QubitQ ][ vec_ ] := Module[
   If [ r < N[p0 / (p0 + p1)],
     v0 / Sqrt[p0],
     v1 / Sqrt[p1],
-    Message[Measure::nonum];
+    Message[Measurement::nonum];
     If[ r < 0.5, v0, v1 ]
    ]
  ]
 
-Readout::usage = "Readout[S, expr] or Readout[{S1, S2, ...}, expr] reads the measurement result from the expr that is supposed to be the Quisso Ket[] expression corresponding to the wave function after measurements."
+
+Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
 
 Readout::badout = "Multiple measurement results: ``. The Qubit may not have been measured; or, it may have been corrupted after measurement."
 
-Readout[S_?QubitQ, expr_] := First @ Readout[{S}, expr]
+Readout[expr_, S_?QubitQ] := First @ Readout[expr, {S}]
 
-Readout[ss:{__?QubitQ}, expr_] := Module[
+Readout[expr_, ss:{__?QubitQ}] := Module[
   { vv = Cases[{expr}, Ket[_Association], Infinity] },
   vv = Union @ Map[#[ss]&, vv];
   If[ Length[vv] > 1, Message[Readout::badout, vv] ];
@@ -1575,52 +1582,32 @@ QuissoExpression[ QuissoCircuit[ gg__, ___?OptionQ ] ] := Module[
 QuissoCircuit /:
 Matrix[ QuissoCircuit[ gg__, ___?OptionQ ] ] := Module[
   { expr = Flatten @ qSansDecor @ {gg} },
-  qCircuitMatrix[ Qubits @ expr, Sequence @@ expr ]
- ]
-
-QuissoCircuit /:
-Matrix[ QuissoCircuit[ gg__, ___?OptionQ ] ] := Module[
-  { expr = Flatten @ qSansDecor @ {gg} },
-  qcMatrix[ Qubits @ expr, Sequence @@ expr ]
+  qCircuitMatrix[ Sequence @@ expr, Qubits @ expr ]
  ]
 
 
 qCircuitOperate::usage = "..."
 
-qCircuitOperate[a___, M_Measure, b___] := 
-  qCircuitOperate[ M @ qCircuitOperate[a], b ]
+qCircuitOperate[a___, Measurement[q_?QubitQ], b___] := 
+  qCircuitOperate[ Measurement[qCircuitOperate[a], q], b ]
 
-(* qCircuitOperate[a___, M_Measure, b___] := {qCircuitOperate[a], M, Y[b]} *)
-
-qCircuitOperate[ op:Except[_Measure].. ] := 
+qCircuitOperate[ op:Except[_Measurement].. ] := 
   Fold[ Garner @ Multiply[#2, #1]&, 1, {op} ]
 
 
 qCircuitMatrix::usage = "Based on Matrix[] ..."
 
-qCircuitMatrix[ qq:{__?QubitQ}, a___, M_Measure, b___ ] := With[
-  { ss = Qubits @ {a, M} },
-  qCircuitMatrix[ qq,
-    M @ QuissoExpression[ qCircuitMatrix[ss, a], ss ],
-    b ]
- ]
+qCircuitMatrix[ a___, Measurement[q_?QubitQ], b___,  qq:{__?QubitQ} ] :=
+  With[
+    { ss = Qubits @ {a, q} },
+    qCircuitMatrix[
+      Measurement[ QuissoExpression[qCircuitMatrix[a, ss], ss], q ],
+      b,
+      qq
+     ]
+   ]
 
-qCircuitMatrix[ qq:{__?QubitQ}, op:Except[_Measure].. ] := Module[
-  { new },
-  new = Map[Topple] @ Map[Matrix[#, qq]&] @ QuissoExpand @ {op};
-  Topple[ Dot @@ new ]
- ]
-
-
-qcMatrix::usage = "Based on Matrix[] ... "
-
-qcMatrix[ qq:{__?QubitQ}, a___, M_Measure, b___ ] := With[
-  { ss = Qubits @ {a, M} },
-  qCircuitMatrix[ qq,
-    M @ QuissoExpression[ qcMatrix[ss, a], ss ],
-    b ]
- ]
-qcMatrix[ qq:{__?QubitQ}, op:Except[_Measure].. ] := Module[
+qCircuitMatrix[ op:Except[_Measurement].., qq:{__?QubitQ} ] := Module[
   { new },
   new = Map[Topple] @ Map[Matrix[#, qq]&] @ QuissoExpand @ {op};
   Topple[ Dot @@ new ]
@@ -1716,8 +1703,8 @@ qCircuitElement[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
 qCircuitElement[ S_?QubitQ, opts___?OptionQ ] :=
   Gate[ Qubits @ S, opts, Label -> qGateLabel[S] ]
 
-qCircuitElement[ Measure[ S_?QubitQ ], opts___?OptionQ ] :=
-  Gate[ {S}, "TargetFunction" -> qGateMeasure, Label -> None, opts ]
+qCircuitElement[ Measurement[ S_?QubitQ ], opts___?OptionQ ] :=
+  Gate[ {S}, "TargetFunction" -> qGateMeasurement, Label -> None, opts ]
 
 qCircuitElement[ p_Projector, opts___?OptionQ ] :=
   Gate[ Qubits @ p, "TargetFunction" -> qGateProjector, Label -> None, opts ]
@@ -1809,9 +1796,9 @@ qGateCross[ x_, y_, ___ ] := Line[{
     { {x,y}+{-1,+1}$DotSize, {x,y}+{+1,-1}$DotSize }
    }]
 
-qGateMeasure::usage = "..."
+qGateMeasurement::usage = "..."
 
-qGateMeasure[ x_, y_, ___ ] := Module[
+qGateMeasurement[ x_, y_, ___ ] := Module[
   { arc, needle },
   pane = qGatePane[x, y];
   arc = Circle[ {x, y - 0.25 $GateSize}, .5 $GateSize, {1,5} Pi/6 ];
@@ -1919,13 +1906,13 @@ qDrawElement[ "Separator", x_, yy_Association ] := Module[
 qDrawElement[ g_, x_, yy_Association ] := g
 
 
-qCircuitLines::usage = "qCircuitLines[xmax, x, y] finds when Measure occurs in the QuissoCircuit and renders the qubit line after Measure in dashes."
+qCircuitLines::usage = "qCircuitLines[xmax, x, y] finds when Measurement occurs in the QuissoCircuit and renders the qubit line after Measurement in dashes."
 
 qCircuitLines[ gg_List, xx_List, yy_Association ] := Module[
   { mm, zz, dashed, plain },
   
-  (* mm = Map[ Cases[{#}, Measure[___,S_?QubitQ] -> S, Infinity]&, gg ]; *)
-  mm = Map[ Cases[{#}, Gate[{S_?QubitQ}, "TargetFunction" -> qGateMeasure, ___?OptionQ] -> S, Infinity]&, gg ];
+  (* mm = Map[ Cases[{#}, Measurement[___,S_?QubitQ] -> S, Infinity]&, gg ]; *)
+  mm = Map[ Cases[{#}, Gate[{S_?QubitQ}, "TargetFunction" -> qGateMeasurement, ___?OptionQ] -> S, Infinity]&, gg ];
   mm = Flatten[ Thread /@ Thread[ mm -> xx ] ];
   mm = KeySort @ Association @ mm;
   
