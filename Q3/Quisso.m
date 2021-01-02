@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-12-24 18:54:16+09 $
-  $Revision: 1.18 $
+  $Date: 2020-12-31 21:38:09+09 $
+  $Revision: 1.19 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.18 $"][[2]], " (",
-  StringSplit["$Date: 2020-12-24 18:54:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.19 $"][[2]], " (",
+  StringSplit["$Date: 2020-12-31 21:38:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -89,17 +89,11 @@ Quisso::obsolete = "`` is OBSOLETE, use `` instead."
 
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\". A Qubit is declared by Let.\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., None] or S[j,..., ] for short represents the qubit located at the physical site specified by the indices j, .... In the StandardForm, S[j,..., None] is formatted as S$j... . On the other hand S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., None]. In the StandardForm, S[j, ..., k] is formatted as \*SubsuperscriptBox[S, RowBox[{j,\", ...\"}], k].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., None] represents the qubit."
 
-Options[Qubit] = { Classical -> False }
-
 Qubit /:
-Let[Qubit, {ls__Symbol}, opts___?OptionQ] := Module[
-  { classic },
-  classic = Classical /. {opts} /. Options[Qubit];
-
+Let[Qubit, {ls__Symbol}, opts___?OptionQ] := (
   Let[NonCommutative, {ls}];
-  
   Scan[setQubit, {ls}];
- ]
+ )
 
 setQubit[x_Symbol] := (
   Kind[x] ^= Qubit;

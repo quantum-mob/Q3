@@ -2,8 +2,8 @@
 (* Mathematica package for complex variables. *)
 
 (* Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com) *)
-(* $Date: 2020-11-10 19:04:23+09 $ *)
-(* $Revision: 1.40 $ *)
+(* $Date: 2021-01-03 07:54:54+09 $ *)
+(* $Revision: 1.42 $ *)
 
 BeginPackage["Q3`Cauchy`"]
 
@@ -11,8 +11,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.40 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-10 19:04:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.42 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-03 07:54:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -762,9 +762,8 @@ TimesDaggerRight[expr_] := Multiply[expr, Dagger @@ expr]
 TimesDaggerLeft[expr_]  := Multiply[Dagger @@ expr, expr]
 
 
-Hermitian::usage = "Hermitian represents Hermitian operators.\nLet[Hermitian, a, b, ...] declares a, b, ... as Hermitian operators."
+Hermitian::usage = System`Hermitian::usage <> "\nHermitian represents Hermitian operators (Q3`Cauchy`Hermitian).\nLet[Hermitian, a, b, ...] declares a, b, ... as Hermitian operators.\nSee \!\(\*TemplateBox[{\"Q3`Cauchy`Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
-Hermitian /:
 Let[Hermitian, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
   Scan[setHermitian, {ls}];
@@ -783,9 +782,8 @@ HermitianQ[ HoldPattern @ Tee[a_?HermitianQ] ] = True;
 HermitianQ[ Conjugate[a_?HermitianQ] ] = True;
 
 
-Antihermitian::usage = "Antihermitian represents Antihermitian operators.\nLet[Antihermitian, a, b, ...] declares a, b, ... as Antihermitian operators."
+Antihermitian::usage = System`Antihermitian::usage <> "\nAntihermitian represents Antihermitian operators (Q3`Cauchy`Antihermitian).\nLet[Antihermitian, a, b, ...] declares a, b, ... as Antihermitian operators.\nSee \!\(\*TemplateBox[{\"Q3`Cauchy`Antihermitian\", \"paclet:Q3/ref/Antihermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
-Antihermitian /:
 Let[Antihermitian, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
   Scan[setAntihermitian, {ls}];
