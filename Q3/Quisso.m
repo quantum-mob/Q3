@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-12-31 21:38:09+09 $
-  $Revision: 1.19 $
+  $Date: 2021-01-03 20:10:46+09 $
+  $Revision: 1.21 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2020-12-31 21:38:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.21 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-03 20:10:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -54,6 +54,8 @@ Print @ StringJoin[
   QuissoToffoli, Toffoli,
   QuissoProjector, Projector,
   Measurement, Readout };
+
+{ QuissoOracle, Oracle };
 
 { ProductState, BellState, GraphState, DickeState, RandomState };
 
@@ -449,7 +451,8 @@ $QuissoExpandRules = {
   CNOT -> QuissoCNOT,
   SWAP -> QuissoSWAP,
   CZ -> QuissoCZ,
-  Toffoli -> QuissoToffoli
+  Toffoli -> QuissoToffoli,
+  Oracle -> QuissoOracle
  }
 
 
@@ -1304,7 +1307,7 @@ Dagger[ ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] ] :=
 ControlledU /:
 HoldPattern @ Multiply[a___, ControlledU[b__, opts___?OptionQ], c___] :=
   Multiply[a, QuissoControlledU[b], c]
-(* Options are for QuissoCircuit[] and ignore in calculations. *)
+(* Options are for QuissoCircuit[] and ignored in calculations. *)
 
 
 QuissoControlledU::usage = "QuissoControlledU[...] is the same as ControlledU[...], but unlike the latter, it exapands immediately in terms of the elementary gates."
@@ -1322,6 +1325,67 @@ QuissoControlledU[ ss:{__?QubitQ}, expr_ ] := Module[
   { P = Multiply @@ Map[ ((1-#[3])/2)&, Most /@ ss ] },
   ExpandAll[ P ** expr + (1-P) ]
  ]
+
+
+(* <Oracle> *)
+
+Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
+
+Oracle[f_, c_?QubitQ, t_?QubitQ, opts___?OptionQ] :=
+  Oracle[f, {c}, {t}, opts]
+
+Oracle[f_, c_?QubitQ, tt:{__?QubitQ}, opts___?OptionQ] :=
+  Oracle[f, {c}, tt, opts]
+
+Oracle[f_, cc:{__?QubitQ}, t_?QubitQ, opts___?OptionQ] :=
+  Oracle[f, cc, {t}, opts]
+
+Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
+  Oracle[f, FlavorNone @ cc, FlavorNone @ tt, opts] /;
+  Not @ ContainsOnly[ FlavorLast @ Join[cc, tt], {None} ]
+
+Oracle /:
+NonCommutativeQ[ Oracle[___] ] = True
+
+
+QuissoOracle::usage = "QuissoOracle[f,control,target] returns the operator corresponding to the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
+
+QuissoOracle[f_, c_?QubitQ, t_?QubitQ] :=
+  QuissoOracle[f, {c}, {t}]
+
+QuissoOracle[f_, c_?QubitQ, tt:{__?QubitQ}] :=
+  QuissoOracle[f, {c}, tt]
+
+QuissoOracle[f_, cc:{__?QubitQ}, t_?QubitQ] :=
+  QuissoOracle[f, cc, {t}]
+
+QuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := 
+  QuissoExpression[matOracle[f, cc, tt], Join[cc, tt]]
+
+matOracle[f_, c_?QubitQ, t_?QubitQ] := matOracle[f, {c}, {t}]
+
+matOracle[f_, c_?QubitQ, tt:{__?QubitQ}] := matOracle[f, {c}, tt]
+
+matOracle[f_, cc:{__?QubitQ}, t_?QubitQ] := matOracle[f, cc, {t}]
+
+matOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+  { cn = Length @ cc,
+    tn = Length @ tt,
+    cN, bb},
+  cN = 2^cn;
+  bb = GroupBy[IntegerDigits[Range[0, cN - 1], 2, cn], f];
+  bb = 1 + Map[FromDigits[#, 2] &, bb, {2}];
+  Total[
+    CircleTimes @@@ KeyValueMap[{diag[#2, cN], ThePauli @@ #1} &, bb]
+   ]
+  ]
+
+diag::usage = "diag[{i,j,...},n] returns a nxn matrix in which only digonal elements i, j, ... are 1 and all others are zero.";
+
+diag[jj:{__Integer}, n_Integer] := 
+ SparseArray[Thread[Transpose@{jj, jj} -> 1], {n, n}]
+
+(* </Oracle> *)
 
 
 Projector::usage = "Projector[state] represents the projection operator onto the state, which is given in the Ket expression."
@@ -1568,7 +1632,7 @@ QuissoExpand[ qc_QuissoCircuit ] := QuissoExpand @ QuissoExpression[ qc ]
 QuissoCircuit /:
 QuissoExpression[ QuissoCircuit[ gg__, ___?OptionQ ] ] := Module[
   { expr = Flatten @ qSansDecor @ {gg} },
-  Garner @ QuissoExpand @ QuissoExpression[ qCircuitOperate @@ expr ]
+  Garner @ QuissoExpression @ QuissoExpand[ qCircuitOperate @@ expr ]
  ]
 (* NOTE: This makes the evaluation much faster, especially, when the initial
    state is specified in the circuit. *)
@@ -1742,12 +1806,23 @@ qCircuitElement[ CZ[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
 qCircuitElement[ SWAP[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
   Gate[ {c}, {t}, "ControlFunction" -> qGateCross, "TargetFunction" -> qGateCross ]
 
+
+qCircuitElement[
+  Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ],
+  more__?OptionQ
+ ] := qCircuitElement @ Oracle[f, cc, tt, opts, more]
+
+qCircuitElement @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
+  Gate[ cc, tt, "TargetFunction" -> qGateCirclePlus ]
+
+
 qCircuitElement[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
   Gate[ Qubits @ expr, opts ]
 
 qCircuitElement[ z_?NumericQ, opts___?OptinQ ] := "Spacer"
 
 qCircuitElement[ gate:("Separator" | "Spacer"), opts___?OptinQ ] := gate
+
 
 qCircuitElement[ expr_, opts___?OptinQ ] := expr /; FreeQ[expr, _?QubitQ]
 (* Graphics primitives corresponds to this case. *)
@@ -1881,7 +1956,8 @@ qDrawElement[ Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Asso
 qDrawElement[ Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association ] := Module[
   { zz = MinMax @ Lookup[yy, tt],
     target, label, pane, text },
-  { target, label } = { "TargetFunction", Label } /. {opts} /. Options[qCircuitElement];
+  { target, label } = { "TargetFunction", Label } /. {opts} /.
+    Options[qCircuitElement];
   
   pane = target[x, Sequence @@ zz];
   
