@@ -2,7 +2,7 @@
 
 ## v1.3.2
 
-- Support for Mathematica 12.2
+- Support for Mathematica 12.2. To be refined further.
 - The option Label to many elements (Phase, ControlledU, etc.) of QuissoCircuit has been renamed as "Label".
 - New function Oracle and QuissoOracle.
 
