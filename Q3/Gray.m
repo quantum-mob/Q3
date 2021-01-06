@@ -4,8 +4,8 @@
    based on the Gray code. *)
 
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-07 08:12:23+09 $ *)
-(* $Revision: 1.13 $ *)
+(* $Date: 2021-01-06 12:43:42+09 $ *)
+(* $Revision: 1.14 $ *)
 
 BeginPackage[ "Q3`Gray`",
   { "Q3`Quisso`", "Q3`Pauli`", "Q3`Cauchy`" }
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.13 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-07 08:12:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.14 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-06 12:43:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -79,8 +79,8 @@ GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
   cc = Last /@ rr;
   vv = Riffle[ ConstantArray[op, nn], Dagger @ op ];
   ll = Riffle[
-    ConstantArray[Label -> "V", nn], 
-    Label -> Superscript["V", "\[Dagger]"]
+    ConstantArray["Label" -> "V", nn], 
+    "Label" -> Superscript["V", "\[Dagger]"]
    ];
   cV = ControlledU @@@ Transpose[{cc, vv, ll}];
 
@@ -123,11 +123,11 @@ grayCtrl[qq_, op_, -1] :=
 
 grayCtrl[{ }, op_, lbl_] := {}
 
-grayCtrl[{q_?QubitQ}, op_, lbl_] := ControlledU[{q}, op, Label->lbl]
+grayCtrl[{q_?QubitQ}, op_, lbl_] := ControlledU[{q}, op, "Label"->lbl]
 
 grayCtrl[{aa__?QubitQ, b_?QubitQ}, op_, lbl_] := With[
   { cn = Map[CNOT[#, b]&, {aa}] },
-  Flatten @ { cn, ControlledU[{b}, op, Label->lbl], cn }
+  Flatten @ { cn, ControlledU[{b}, op, "Label"->lbl], cn }
  ]
 
 
