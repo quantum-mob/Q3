@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2020-12-08 19:56:43+09 $
-  $Revision: 1.20 $
+  $Date: 2021-01-06 09:08:43+09 $
+  $Revision: 1.22 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`" } ]
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2020-12-08 19:56:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.22 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-06 09:08:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -774,7 +774,7 @@ $PauliExpandRules = {
  }
 
 
-Pauli::usage = "Pauli[n] (n=1,2,3) represents the Pauli matrix. Pauli[0] represents the 2x2 identity matrix, Pauli[4] the Pauli raising matrix, Pauli[5] the Pauli lowering matrix, and Pauli[6] the Hadamard matrix."
+Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
 SetAttributes[Pauli, {NHoldAll, ReadProtected}]
 (* The integers in Pauli[] should not be converted to real numbers by N[]. *)
@@ -1254,8 +1254,8 @@ TheEulerAngles[U_?MatrixQ] := Module[
      ];
    ];
   
-  ang[[1]] = +(arg[[2, 1]] - arg[[1, 1]]);
-  ang[[3]] = -(arg[[2, 1]] + arg[[1, 1]]);
+  ang[[1]] = -arg[[1, 1]] + arg[[2, 1]];
+  ang[[3]] = -arg[[1, 1]] - arg[[2, 1]];
   ang[[2]] = 2 ArcSin[ Abs[U[[2, 1]]] ];
   ang
  ]

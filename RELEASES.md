@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v1.3.2
+
+- Support for Mathematica 12.2
+- The option Label to many elements (Phase, ControlledU, etc.) of QuissoCircuit has been renamed as "Label".
+- New function Oracle and QuissoOracle.
+
 ## v1.3.0
 
 - Measure has been renamed as Measurement.

@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-01-03 20:10:46+09 $
-  $Revision: 1.21 $
+  $Date: 2021-01-05 20:09:12+09 $
+  $Revision: 1.33 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.21 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-03 20:10:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.33 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-05 20:09:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -73,7 +73,7 @@ Print @ StringJoin[
 { QuditExpression };
 
 
-Begin["`Prelude`"]
+Begin["`Private`"]
 
 $symbs = Unprotect[
   Multiply, MultiplyDegree, CircleTimes, OTimes, Dagger, Dyad,
@@ -1020,7 +1020,7 @@ QuissoPhase[qq:{__?QubitQ}, ang_] := (
 
 Phase::usage = "Phase[G, \[Phi]] represents the relative phase shift by \[Phi] on the qubit G."
 
-Options[Phase] = { Label -> "\[CapitalPhi]" }
+Options[Phase] = { "Label" -> "\[CapitalPhi]" }
 
 Phase[ phi_, qq:{__?QubitQ} ] := Map[Phase[phi, #]&, FlavorNone @ qq]
 
@@ -1086,7 +1086,7 @@ QuissoRotation[ss:{__?QubitQ}, ang_, rest___] := (
 
 Once[ Rotation::usage = Rotation::usage <> "\nRotation[angle, G[j, ..., k]] represents the rotation by angle angle around the axis k on the qubit G[j, ..., None]." ]
 
-Options[Rotation] = { Label -> Automatic }
+Options[Rotation] = { "Label" -> Automatic }
 
 Rotation[ phi_, qq:{__?QubitQ}, rest___ ] :=
   Map[ Rotation[phi, #, rest]&, FlavorNone @ qq ]
@@ -1148,7 +1148,7 @@ QuissoEulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
 
 Once[ EulerRotation::usage = EulerRotation::usage <> "\nEulerRotation[{a, b, c}, G[j, ..., None]] operates the Euler rotation by the angles a,  b and c on the qubit G[j, ..., None]." ]
 
-Options[EulerRotation] = { Label -> Automatic }
+Options[EulerRotation] = { "Label" -> Automatic }
 
 EulerRotation[ aa:{_, _, _}, qq:{__?QubitQ}, rest___ ] :=
   Map[ EulerRotation[aa, #, rest]&, FlavorNone @ qq ]
@@ -1350,6 +1350,8 @@ NonCommutativeQ[ Oracle[___] ] = True
 
 QuissoOracle::usage = "QuissoOracle[f,control,target] returns the operator corresponding to the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
 
+QuissoOracle::incmp = "Function `` of the control qubits `` is not compatible with the target qubits ``. Check the function. The zero is returned."
+
 QuissoOracle[f_, c_?QubitQ, t_?QubitQ] :=
   QuissoOracle[f, {c}, {t}]
 
@@ -1372,18 +1374,25 @@ matOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
   { cn = Length @ cc,
     tn = Length @ tt,
     cN, bb},
-  cN = 2^cn;
+  If[ Length[f @ ConstantArray[0, cn]] != tn,
+    Message[QuissoOracle::incmp, f, FlavorNone @ cc, FlavorNone @ tt];
+    cN = Power[2, cn + tn];
+    Return @ Zero[cN, cN]
+   ];
+  cN = Power[2, cn];
   bb = GroupBy[IntegerDigits[Range[0, cN - 1], 2, cn], f];
-  bb = 1 + Map[FromDigits[#, 2] &, bb, {2}];
-  Total[
-    CircleTimes @@@ KeyValueMap[{diag[#2, cN], ThePauli @@ #1} &, bb]
-   ]
-  ]
+  Total @ KeyValueMap[ matOracle[#1, #2, cN]&, bb ]
+ ]
 
-diag::usage = "diag[{i,j,...},n] returns a nxn matrix in which only digonal elements i, j, ... are 1 and all others are zero.";
+matOracle[key:(0|1), val_List, n_Integer] := matOracle[{key}, val, n]
 
-diag[jj:{__Integer}, n_Integer] := 
- SparseArray[Thread[Transpose@{jj, jj} -> 1], {n, n}]
+matOracle[key:{(0|1)..}, val_List, n_Integer] := Module[
+  { jj, matC, matT },
+  jj = 1 + Map[FromDigits[#, 2]&, val];
+  matC = SparseArray[Thread[Transpose@{jj, jj} -> 1], {n, n}];
+  matT = ThePauli @@ key;
+  CircleTimes[matC, matT]
+ ]
 
 (* </Oracle> *)
 
@@ -1549,7 +1558,7 @@ GraphState[ g_Graph ] := Module[
 
 Protect[ Evaluate @ $symbs ]
 
-End[] (* `Prelude` *)
+End[] (* `Private` *)
 
 
 
@@ -1583,7 +1592,7 @@ $BraceWidth := 0.1 $GateDistance
 
 
 Format[ qc:QuissoCircuit[___, opts___?OptionQ] ] :=
-  Graphics[qc, opts, ImageSize -> Large]
+  Graphics[qc, opts, ImageSize -> Medium]
 
 (*
  * User Interface
@@ -1752,33 +1761,33 @@ Options[ qCircuitElement ] = {
   "TargetFunction"  -> qGatePane,
   "ControlFunction" -> qGateDot,
   "LabelSize" -> 1, (* RELATIVE size *)
-  Label -> None
+  "Label" -> None
  }
 
 (* Gate *)
 qCircuitElement[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
   
 qCircuitElement[ S_?QubitQ, opts___?OptionQ ] :=
-  Gate[ Qubits @ S, opts, Label -> qGateLabel[S] ]
+  Gate[ Qubits @ S, opts, "Label" -> qGateLabel[S] ]
 
 qCircuitElement[ Measurement[ S_?QubitQ ], opts___?OptionQ ] :=
-  Gate[ {S}, "TargetFunction" -> qGateMeasurement, Label -> None, opts ]
+  Gate[ {S}, "TargetFunction" -> qGateMeasurement, "Label" -> None, opts ]
 
 qCircuitElement[ p_Projector, opts___?OptionQ ] :=
-  Gate[ Qubits @ p, "TargetFunction" -> qGateProjector, Label -> None, opts ]
+  Gate[ Qubits @ p, "TargetFunction" -> qGateProjector, "Label" -> None, opts ]
 
 qCircuitElement[ Phase[ ang_, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, Label -> qGateLabel[ Phase[ang, G] ] ]
+  Gate[ Qubits @ G, opts, more, "Label" -> qGateLabel[ Phase[ang, G] ] ]
 
 qCircuitElement[ Rotation[ ang_, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, Label -> qGateLabel[ Rotation[ang, G] ] ]
+  Gate[ Qubits @ G, opts, more, "Label" -> qGateLabel[ Rotation[ang, G] ] ]
 
 qCircuitElement[ EulerRotation[ ang:{_,_,_}, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ {G}, opts, more, Label -> qGateLabel[ EulerRotation[ang, G] ] ]
+  Gate[ {G}, opts, more, "Label" -> qGateLabel[ EulerRotation[ang, G] ] ]
 
 
 qCircuitElement[ ControlledU[ cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ cc, Qubits @ S, opts, more, Label -> qGateLabel[S] ]
+  Gate[ cc, Qubits @ S, opts, more, "Label" -> qGateLabel[S] ]
 
 qCircuitElement[
   ControlledU[
@@ -1786,7 +1795,7 @@ qCircuitElement[
     op:(Phase|Rotation|EulerRotation)[j__, optsA___?OptionQ],
     optsB___?OptionQ ],
   optsC___?OptionQ ] :=
-  Gate[ cc, Qubits @ op, optsA, optsB, optsC, Label -> qGateLabel[op] ]
+  Gate[ cc, Qubits @ op, optsA, optsB, optsC, "Label" -> qGateLabel[op] ]
 
 qCircuitElement[
   ControlledU[ cc:{__?QubitQ}, expr_, opts___?OptionQ ],
@@ -1804,7 +1813,10 @@ qCircuitElement[ CZ[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
   Gate[ {c}, {t}, "ControlFunction" -> qGateDot, "TargetFunction" -> qGateDot ]
 
 qCircuitElement[ SWAP[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
-  Gate[ {c}, {t}, "ControlFunction" -> qGateCross, "TargetFunction" -> qGateCross ]
+  Gate[ {c}, {t},
+    "ControlFunction" -> qGateCross,
+    "TargetFunction" -> qGateCross
+   ]
 
 
 qCircuitElement[
@@ -1813,7 +1825,10 @@ qCircuitElement[
  ] := qCircuitElement @ Oracle[f, cc, tt, opts, more]
 
 qCircuitElement @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
-  Gate[ cc, tt, "TargetFunction" -> qGateCirclePlus ]
+  Gate[ cc, tt, opts,
+    "ControlFunction" -> qGateConditionalPane,
+    "TargetFunction" -> qGateCirclePlus,
+    "Label" -> "f" ]
 
 
 qCircuitElement[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
@@ -1827,9 +1842,13 @@ qCircuitElement[ gate:("Separator" | "Spacer"), opts___?OptinQ ] := gate
 qCircuitElement[ expr_, opts___?OptinQ ] := expr /; FreeQ[expr, _?QubitQ]
 (* Graphics primitives corresponds to this case. *)
 
-qCircuitElement[ a_List, opts___?OptionQ ] := qCircuitElement @@ Join[ a, {opts} ]
+qCircuitElement[ a_List, opts___?OptionQ ] :=
+  qCircuitElement @@ Join[ a, {opts} ]
 
-qCircuitElement[ a_, b__, opts___?OptionQ ] := Map[ qCircuitElement[#, opts]&, {a, b} ]
+qCircuitElement[ a_, b__, opts___?OptionQ ] := Map[
+  qCircuitElement[#, opts]&,
+  {a, b}
+ ]
 
 
 qGateLabel::usage = "qGateLabel[G] returns the label of the circuit element to be displayed in the circuit diagram."
@@ -1846,9 +1865,11 @@ qGateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
 
 qGateLabel[ EulerRotation[{_, _, _}, S_?QubitQ, ___] ] := Subscript["U", "E"]
 
-qGateCirclePlus::usage = "..."
 
-qGateCirclePlus[ x_, y_, ___ ] := Module[
+qGateCirclePlus[ x_, yy_List, ___ ] :=
+  qGateCirclePlus @@@ Thread @ {x, yy}
+
+qGateCirclePlus[ x_, y_?NumericQ, ___ ] := Module[
   { circ, crss },
   circ = Circle[ {x, y}, $GateSize / 3 ];
   crss = Line[ {
@@ -1858,14 +1879,16 @@ qGateCirclePlus[ x_, y_, ___ ] := Module[
   { circ, crss }
  ]
 
-qGateCross::usage = "..."
 
-qGateCross[ x_, y_, ___ ] := Line[{
+qGateCross[x_, {y_}, ___] := qGateCross[x, y]
+
+qGateCross[x_, y_, ___] := List @ Line[{
     { {x,y}+{-1,-1}$DotSize, {x,y}+{+1,+1}$DotSize },
     { {x,y}+{-1,+1}$DotSize, {x,y}+{+1,-1}$DotSize }
    }]
 
-qGateMeasurement::usage = "..."
+
+qGateMeasurement[ x_, {y_}, ___] := qGateMeasurement[x, y]
 
 qGateMeasurement[ x_, y_, ___ ] := Module[
   { arc, needle },
@@ -1875,10 +1898,11 @@ qGateMeasurement[ x_, y_, ___ ] := Module[
   { pane, arc, needle }
  ]
 
-qGateProjector::usage = "..."
 
-qGateProjector[ x_, y1_, y2_, ___ ] := Module[
-  { pane, symb },
+qGateProjector[ x_, yy_List, ___ ] := Module[
+  { y1 = Min @ yy,
+    y2 = Max @ yy,
+    pane, symb },
   pane = Polygon[{
       {x, y2} + $GateSize {+1,+1}/2,
       {x, y2} + $GateSize {-1,+1}/2,
@@ -1892,30 +1916,64 @@ qGateProjector[ x_, y1_, y2_, ___ ] := Module[
   { White, EdgeForm[], pane, EdgeForm[Black], White, symb }
  ]
 
-qGateDot::usage = " ... "
 
-qGateDot[ x_, y_, ___, opts___?OptionQ ] := Disk[ {x, y}, $DotSize ];
+qGateDot[ x_, yy_List, ___ ] := qGateDot @@@ Thread @ {x, yy}
 
-qGatePane::usage = " ... "
+qGateDot[ x_, y_?NumericQ, ___ ] := Disk[ {x, y}, $DotSize ]
 
-qGatePane[ x_, y_, opts___?OptionQ ] := qGatePane[ x, y, y, opts ]
 
-qGatePane[ x_, y1_, y2_, opts___?OptionQ ] := Module[
-  { pane },
+qGatePane[ x_, yy_List, opts___?OptionQ ] := Module[
+  { y1 = Min @ yy,
+    y2 = Max @ yy,
+    pane, text },
+  text = "Label" /. {opts} /. Options[qCircuitElement];
+  text = If[ text === None,
+    Nothing,
+    qGateText[text, {x, Mean @ {y1, y2}}, opts]
+   ];
+
   pane = Rectangle[
     {x, y1} - 0.5{1,1}$GateSize,
     {x, y2} + 0.5{1,1}$GateSize ];
-  { EdgeForm[Black], White, pane }
+  { {EdgeForm[Black], White, pane}, text }
  ]
 
-qGateText::usage = " ... "
+qGatePane[ x_, y_?NumericQ, opts___?OptionQ ] := qGatePane[x, {y}, opts]
+
+
+qGateConditionalPane[ x_, yy_List, opts___?OptionQ ] := Module[
+  { x1 = x - $GateSize/2,
+    x2 = x + $GateSize/2,
+    y1 = Min @ yy,
+    y2 = Max @ yy,
+    y0, y3, ff, pane, text},
+  text = "Label" /. {opts} /. Options[qCircuitElement];
+  text = If[ text === None,
+    Nothing,
+    qGateText[text, {x, Mean @ {y1, y2}}, opts]
+   ];
+
+  ff = 0.657;
+  y0 = y1 - $GateSize ff;
+  y3 = y2 + $GateSize ff;
+  pane = FilledCurve @ {
+    BezierCurve @ {{x2, y2}, {x2, y3}, {x1, y3}, {x1, y2}}, 
+    Line @ {{x1, y2}, {x1, y1}}, 
+    BezierCurve @ {{x1, y0}, {x2, y0}, {x2, y1}}
+   };
+  { {EdgeForm[Black], White, pane}, text }
+ ]
+
+qGateConditionalPane[ x_, y_?NumericQ, opts___?OptionQ ] :=
+  qGateConditionalPane[x, {y}, opts]
+
 
 qGateText[ label_, {x_, y_}, opts___?OptionQ ] := With[
   { factor = "LabelSize" /. {opts} /. Options[qCircuitElement] },
   Text[
     Style[ label, Italic, opts,
       FontWeight -> "Light",
-      FontSize   -> Scaled[(0.6 $GateSize / $CircuitSize) factor] ],
+      FontSize   -> Scaled[(0.5 $GateSize / $CircuitSize) factor] ],
     {x, y},
     {0, 0.2} (* Notice the y-offset; y-offset=0 shifts a bit upward. *)
    ]
@@ -1939,32 +1997,28 @@ qDrawElement[ gg_List, x_, yy_Association ] := Map[ qDrawElement[#, x, yy]&, gg 
 qDrawElement[ Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association ] := Module[
   { yc = Lookup[yy, cc],
     yt = Lookup[yy, tt],
-    control, dots, link, pane },
+    control, target, dots, link, pane },
 
-  control = "ControlFunction" /. {opts} /. Options[qCircuitElement];
+  { control, target } = {"ControlFunction", "TargetFunction"} /.
+    {opts} /. Options[qCircuitElement];
   
-  dots = control @@@ Thread[ {x, yc} ];
+  link = Line @ Join[ Thread @ {x, yc}, Thread @ {x, yt} ];
   
-  link = Line @ Join[ Thread[ {x, yc} ], Thread[ {x, yt} ] ];
-
-  pane = qDrawElement[ Gate[tt, opts], x, yy ];
+  dots = control[x, yc, opts];
+  pane = target[x, yt, opts];
   
-  Join[ dots, {link}, pane]
+  Join[{link}, dots, pane]
  ]
 
 
 qDrawElement[ Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association ] := Module[
-  { zz = MinMax @ Lookup[yy, tt],
-    target, label, pane, text },
-  { target, label } = { "TargetFunction", Label } /. {opts} /.
-    Options[qCircuitElement];
-  
-  pane = target[x, Sequence @@ zz];
-  
-  text = If[ label === None, Nothing, qGateText[label, {x, Mean @ zz}, opts] ];
-  
-  {pane, text}
+  { yt = Lookup[yy, tt],
+    target },
+  target = "TargetFunction" /. {opts} /. Options[qCircuitElement];
+
+  target[x, yt, opts]
  ]
+
 
 qDrawElement[ "Spacer", _, _Association ] = Nothing
 
@@ -2031,7 +2085,7 @@ qCircuitInput[ gg:{___}, xx_List, yy_Association ] := Module[
 qCircuitPort::usage = "Handles various input and output forms of QuissoCircuit."
 
 Options[ qCircuitPort ] = {
-  Label -> Automatic,
+  "Label" -> Automatic,
   "Pivot" -> {-1, 0},
   "Type"  -> 1 (* 1: input, -1: output *)
  }
@@ -2065,7 +2119,7 @@ qDrawPort[ gg_List, xy_Association ] := Map[ qDrawPort[#, xy]&, gg ]
 qDrawPort[ Port[ Ket[v_], opts___?OptionQ ], xy_Association ] := Module[
   { vv = Ket /@ v,
     tt, label, pivot },
-  { label, pivot } = {Label, "Pivot"} /. {opts} /. Options[qCircuitPort];
+  { label, pivot } = {"Label", "Pivot"} /. {opts} /. Options[qCircuitPort];
   
   tt = If [ label === Automatic, vv,
     If[ Not @ ListQ @ label, label = {label} ];
@@ -2078,7 +2132,7 @@ qDrawPort[ Port[ Ket[v_], opts___?OptionQ ], xy_Association ] := Module[
 qDrawPort[ Port[ ProductState[v_Association], opts___?OptionQ ],
   xy_Association ] := Module[
   { label, pivot, tt },
-  { label, pivot } = {Label, "Pivot"} /. {opts} /. Options[qCircuitPort];
+  { label, pivot } = {"Label", "Pivot"} /. {opts} /. Options[qCircuitPort];
 
   tt = If [ label === Automatic,
     Map[ Simplify @ Dot[{Ket[0], Ket[1]}, #]&, v ],
@@ -2095,7 +2149,7 @@ qDrawPort[ Port[ expr_, opts___?OptionQ ], xy_Association ] := Module[
   { qq = Qubits @ expr,
     label, pivot, dir, brace, text, zz },
 
-  { label, pivot, dir } = { Label, "Pivot", "Type" } /. {opts} /. Options[qCircuitPort];
+  { label, pivot, dir } = { "Label", "Pivot", "Type" } /. {opts} /. Options[qCircuitPort];
   
   If[ qq == {},
     Message[QuissoCircuit::noqubit, expr];
@@ -2538,8 +2592,8 @@ End[] (* `Qudit` *)
 
 
 
-Q3`Quisso`Prelude`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3`Quisso`Private`symbs = Protect[Evaluate[$Context<>"*"]]
 
-SetAttributes[Evaluate[Q3`Quisso`Prelude`symbs], ReadProtected]
+SetAttributes[Evaluate[Q3`Quisso`Private`symbs], ReadProtected]
 
 EndPackage[]

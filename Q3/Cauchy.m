@@ -763,8 +763,8 @@ TimesDaggerLeft[expr_]  := Multiply[Dagger @@ expr, expr]
 
 
 (* A quick support for Mathematica v12.2 *)
-$tempMessage = If[ StringQ[System`Hermitian::usage],
-  System`Hermitian::usage <> "\n",
+$tempMessage = If[ NameQ["System`Hermitian"],
+  Hermitian::usage <> "\n",
   ""
  ]
 
@@ -789,8 +789,8 @@ HermitianQ[ Conjugate[a_?HermitianQ] ] = True;
 
 
 (* A quick support for Mathematica v12.2 *)
-$tempMessage = If[ StringQ[System`Antihermitian::usage],
-  System`Antihermitian::usage <> "\n",
+$tempMessage = If[ NameQ["System`Antihermitian"],
+  Antihermitian::usage <> "\n",
   ""
  ]
 
