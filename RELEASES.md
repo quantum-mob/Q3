@@ -1,5 +1,12 @@
 # Select Release Notes
 
+## v1.4.0
+- Dyad gets major enhancement.
+- Projector is improved based on Dyad.
+- The feature of restricted Ket or Bra is removed.
+- New function Elaborate to unify several functions including CauchyExpand, PauliExpand, QuissoExpand, etc.
+- New package Abel, which hosts many algebra-related symbols and functions. Those were scattered around different packages.
+
 ## v1.3.2
 
 - Support for Mathematica 12.2

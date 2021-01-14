@@ -1,13 +1,13 @@
 (* -*- mode: math; -*- *)
 
-BeginPackage["Q3`Wigner`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
+BeginPackage["Q3`Wigner`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.13 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-20 21:13:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.15 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-12 03:16:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -25,8 +25,6 @@ Print @ StringJoin[
   WignerCoefficients,
   WignerExpression };
 
-{ WignerExpand };
-
 { WignerAdd, WignerAddZ };
 
 { WignerCoherent };
@@ -40,6 +38,8 @@ Print @ StringJoin[
 
 { NineJSymbol, WignerEckart };
 
+{ WignerExpand }; (* obsolete *)
+
 
 Begin["`Private`"]
 
@@ -48,11 +48,11 @@ $symbs = Unprotect[
   KetRule, KetTrim, Ket, Bra, Spin, Missing,
   Basis, Matrix,
   Base, FlavorNone, FlavorMute,
-  $GarnerHeads, $GarnerTests, $RepresentableTests, $RaiseLowerRules,
+  $GarnerHeads, $GarnerTests,
+  $ElaborationRules, $ElaborationHeads,
+  $RepresentableTests, $RaiseLowerRules,
   TheRotation, TheEulerRotation
  ]
-
-Wigner::obsolete = "`` is OBSOLETE. Use `` instead."
 
 
 (* TheWigner, like ThePauli in Pauli package *)
@@ -429,8 +429,18 @@ HoldPattern @ Multiply[ x___, a_?SpinQ[j___,3], Ket[b_Association], y___ ] :=
 
 
 Once[
-  $GarnerTests = Join[$GarnerTests, {SpinQ}];
   $RepresentableTests = Join[$RepresentableTests, {SpinQ}];
+
+  $GarnerTests = Join[$GarnerTests, {SpinQ}];
+  
+  $ElaborationRules = Join[
+    $ElaborationRules,
+    { G_?SpinQ[j___,0] -> 1,
+      G_?SpinQ[j___,4] -> G[j, Raise],
+      G_?SpinQ[j___,5] -> G[j, Lower],
+      G_?SpinQ[j___,6] -> G[j, Hadamard]
+     }
+   ];
  ]
 
 
@@ -797,25 +807,10 @@ WignerExpression[v_?VectorQ, S_?SpinQ] := WignerExpression[v, {S}]
 
 WignerExpand::usage = "WignerExpand[expr] expands the expression expr revealing the explicit forms of various operator or state-vector expressions."
 
-WignerExpand[ expr_ ] := Garner[
-  expr //. $WignerExpandRules /. { MultiplyExp -> Exp }
- ]
-
-$WignerExpandRules = {
-  G_?SpinQ[j___,0] -> 1,
-  G_?SpinQ[j___,4] -> G[j, Raise],
-  G_?SpinQ[j___,5] -> G[j, Lower],
-  G_?SpinQ[j___,6] -> G[j, Hadamard]
- }
-
-
-Once[
-  $RaiseLowerRules = Join[ $RaiseLowerRules,
-    { S_?SpinQ[j___,1] :> (S[j,4] + S[j,5]) / 2,
-      S_?SpinQ[j___,2] :> (S[j,4] - S[j,5]) / (2 I)
-     }
-   ]
- ]
+WignerExpand[expr_] := (
+  Message[Notice::obsolete, WignerExpand, Elaborate];
+  Elaborate[expr]
+ )
 
 
 WignerCoefficients::usage = "WignerCoefficients[expr] gives the Pauli decomposition of the density matrix by finding the coefficients to the operators."

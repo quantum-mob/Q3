@@ -2,18 +2,18 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-01-06 09:08:43+09 $
-  $Revision: 1.22 $
+  $Date: 2021-01-14 11:42:12+09 $
+  $Revision: 2.19 $
   ****)
 
-BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`" } ]
+BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`Abel`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.22 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-06 09:08:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.19 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-14 11:42:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -24,8 +24,6 @@ Print @ StringJoin[
 
 { KetRule, KetTrim, VerifyKet };
 
-{ Restrict, Loose };
-
 { DefaultForm, LogicalForm, ProductForm, SimpleForm };
 
 { BraKet };
@@ -33,6 +31,8 @@ Print @ StringJoin[
 { Basis, Matrix, BuildMatrix, $RepresentableTests };
 
 { HermitianProduct, HermitianNorm };
+
+{ BlochSphere, BlochVector };
 
 { Affect };
 
@@ -42,7 +42,6 @@ Print @ StringJoin[
 
 { OTimes, OSlash }; (* Variants of CircleTimes for Ket[] and Bra[] *)
 
-{ PauliExpand };
 { RaiseLower, $RaiseLowerRules };
 
 { PauliExpression, PauliExpressionRL };
@@ -87,18 +86,18 @@ Print @ StringJoin[
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
 { PauliExtract, PauliExtractRL }; (* obsolete *)
+{ PauliExpand }; (* OBSOLETE *)
 
+Pauli::obsolete = "`` is OBSOLETE! Use `` instead."
 
 Begin["`Private`"]
 
 $symbs = Unprotect[
   Multiply, CircleTimes, CirclePlus,
   $GarnerHeads, $GarnerTests,
+  $ElaborationRules, $ElaborationHeads,
   Dot, Ket, Bra, BraKet
  ]
-
-Pauli::obsolete = "`` is OBSOLETE! Use `` instead."
-
 
 Spin::usage = "Spin is an option of several Species.\nSpin[c] returns the Spin quantum number of the Species c.\nLet[Spin, s] declares that s is the Spin species."
 
@@ -260,7 +259,7 @@ LogicalForm[ expr_ ] := LogicalForm[ expr, {} ]
 LogicalForm[ expr_, S_ ] := LogicalForm[ expr, {S} ]
 
 LogicalForm[ expr_, _List ] := expr /;
-  FreeQ[ expr, (Ket[_Association] | Bra[_Association]) ]
+  FreeQ[ expr, (Ket[_Association] | Bra[_Association] | _Dyad) ]
 
 LogicalForm[ Ket[a_Association], gg_List ] := Module[
   { ss = Union[Keys @ a, FlavorNone @ gg] },
@@ -270,6 +269,15 @@ LogicalForm[ Ket[a_Association], gg_List ] := Module[
 LogicalForm[ Bra[a_Association], gg_List ] :=
   Dagger @ LogicalForm[Ket[a], gg]
 
+LogicalForm[ Dyad[a_Association, b_Association, All], gg_List ] := Module[
+  { ss = Union[Keys @ a, Keys @ b, FlavorNone @ gg] },
+  Dyad[
+    Association @ Thread[ ss -> Lookup[a, ss] ],
+    Association @ Thread[ ss -> Lookup[b, ss] ],
+    All
+   ]
+ ]
+
 (* For some irreducible basis, e.g., from QuissoAdd[] *)
 LogicalForm[ expr_Association, gg_List ] :=
   Map[ LogicalForm[#,gg]&, expr ]
@@ -278,15 +286,14 @@ LogicalForm[ expr_Association, gg_List ] :=
    you would expect.  *)
 
 LogicalForm[ expr_, gg_List ] := Module[
-  { ss },
-  ss = Union @ Flatten @
-    Cases[expr, (Ket|Bra)[a_Association] :> Keys[a], Infinity];
+  { ss = NonCommutativeSpecies @ expr },
   ss = Union[ ss, FlavorNone @ gg ];
   expr /. {
     ot_OTimes -> ot, (* NOTE 1 *)
     OSlash[v_Ket, ex_ ] :> OSlash[ v, LogicalForm[ex, gg] ],
     v_Ket :> LogicalForm[v, ss],
     v_Bra :> LogicalForm[v, ss],
+    d_Dyad :> LogicalForm[d, ss],
     a_Association :> LogicalForm[a, ss] (* NOTE 3 *)
    }
  ]
@@ -393,7 +400,7 @@ doAffect[ket_, op_] := Garner @ Multiply[op, ket]
 
 Bra::usage = "Bra[expr] = Dagger[ Ket[expr] ].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
 
-SetAttributes[{Ket, Bra}, {NHoldAll, ReadProtected}]
+SetAttributes[{Ket, Bra}, NHoldAll]
 (* The integers in Ket[] and Bra[] should not be converted to real
    numbers by N[]. *)
 
@@ -408,16 +415,9 @@ Format[ Bra[Association[]] ] := Bra[Any]
 Format[ Ket[a_Association] ] :=
   Ket @ DisplayForm @ Row @ KeyValueMap[ Subscript[#2,#1]&, a]
 
-Format[ Ket[a_Association, b_List] ] := With[
-  { val = Lookup[a,b] /. { Missing["KeyAbsent", _] -> Any } },
-  Ket @ DisplayForm @ Row @ Thread[ Subscript[val, b] ]
- ]
-
 Format[ Bra[a_Association] ] :=
   Bra @ DisplayForm @ Row @ KeyValueMap[ Subscript[#2,#1]&, a]
 
-Format[ Bra[a_Association, b_List] ] :=
-  Bra @ DisplayForm @ Row @ Thread[ Subscript[Lookup[a,b], b] ]
 
 Ket /: NonCommutativeQ[ Ket[___] ] = True
 
@@ -431,24 +431,13 @@ Ket /: Dagger[Ket[a___]] := Bra[a]
 
 Bra /: Dagger[Bra[a___]] := Ket[a]
 
-Ket /: CircleTimes[a:Ket[_Association], b:Ket[_Association]..] :=
+Ket /:
+CircleTimes[a:Ket[_Association], b:Ket[_Association]..] :=
   KeySort /@ Join[a, b, 2]
 
-Ket /: CircleTimes[a:Ket[_Association, _List], b:Ket[_Association, _List]..] :=
-  Module[
-    { aa, qq },
-    { aa, qq } = Transpose[ List @@@ {a, b} ];
-    Ket[ KeySort[Join @@ aa], Union @@ qq ]
-   ]
-
-(* Bra /: Bra[ Bra[_Association] ] = Bra *)
-(* 2020-10-06 Why is this necessary? *)
-
-Bra /: CircleTimes[a:Bra[_Association], b:Bra[_Association]..] :=
+Bra /:
+CircleTimes[a:Bra[_Association], b:Bra[_Association]..] :=
   KeySort /@ Join[a, b, 2]
-
-Bra /: CircleTimes[a:Bra[_Association, _List], b:Bra[_Association, _List]..] :=
-  Dagger @ CircleTimes[Dagger @ a, Dagger @ b]
 
 Ket /: CircleTimes[a_Ket, b__Ket] := Ket @@ Catenate[List @@@ {a, b}]
 
@@ -459,48 +448,35 @@ Bra /: CircleTimes[a_Bra, b__Bra] := Bra @@ Catenate[List @@@ {a, b}]
 
 Ket[] = Ket[ Association[] ]
 
-Ket[ a_Association, {} ] := 1 (* for BraKet *)
-
-Ket[ a_Association, All ] := Ket[a]
-
-Ket[ a_Association, __, b_ ] := Ket[a, b]
-
 Ket[ spec__Rule ] := Ket[ Ket[], spec ]
 
-Ket[ Ket[a_Association, b_:All], spec__Rule ] := Module[
-  { rules = Flatten @ KetRule @ {spec},
-    span, v },
-  span = FlavorNone[ "Span" /. {spec} /. {"Span" -> b} /. Options[Ket] ];
-  v = Ket @ KeySort @ KetTrim @ Join[a, Association @ rules];
-  VerifyKet @ Append[v, span]
+Ket[ Ket[a_Association], spec__Rule ] := With[
+  { rules = Flatten @ KetRule @ {spec} },
+  VerifyKet @ Ket @ KeySort @ KetTrim @ Join[a, Association @ rules]
  ]
 
-Options[Ket] = { "Span" -> All }
-
 (* operator form *)
-Ket[a_Association, b_:All][spec__Rule] := Ket[ Ket[a, b], spec ]
+Ket[a_Association][spec__Rule] := Ket[ Ket[a], spec ]
 
 (* extracting the values *)
-Ket[a_Association, b_:All][ss_List] := Lookup[a, FlavorNone @ ss]
+Ket[a_Association][ss_List] := Lookup[a, FlavorNone @ ss]
 
 (* extracting a value *)
-Ket[a_Association, b_:All][s_] := a[FlavorNone @ s]
+Ket[a_Association][s_] := a[FlavorNone @ s]
 
 
 Bra[] = Bra[ Association[] ]
-
-Bra[a_Association, {}] := 1 (* for BraKet *)
 
 Bra[spec__Rule] := Dagger @ Ket[Ket[], spec]
 
 Bra[v_Bra, spec__Rule] := Dagger @ Ket[Dagger @ v, spec]
 
 
-Bra[a_Association, b_:All][spec__Rule] := Bra[ Bra[a, b], spec ]
+Bra[a_Association][spec__Rule] := Bra[ Bra[a], spec ]
 
-Bra[a_Association, b_:All][ss_List] := Lookup[a, FlavorNone @ ss]
+Bra[a_Association][ss_List] := Lookup[a, FlavorNone @ ss]
 
-Bra[a_Association, b_:All][s_] := a[FlavorNone @ s]
+Bra[a_Association][s_] := a[FlavorNone @ s]
 
 
 KetRule::usage = "KetRule is a low-level function used in various packages. KetRule[expr] generates proper rules to be store in the Ket[<|...|>] data form."
@@ -527,14 +503,9 @@ VerifyKet::usage = "VerifyKet[v] returns v if v is an valid Ket; 0 otherwise."
 
 SetAttributes[VerifyKet, Listable]
 
-VerifyKet[expr_] := expr //. {v_Ket :> VerifyKet[v]}
+VerifyKet[ expr_ ] := expr //. {v_Ket :> VerifyKet[v]}
 
-VerifyKet[Ket[a_Association, b_List]] := With[
-  { aa = KeyValueMap[VerifyKet, KeyTake[a, b]] },
-  If[MemberQ[aa, 0], 0, Ket[Association@aa, b], Ket[Association@aa, b]]
- ]
-
-VerifyKet[Ket[a_Association]] := With[
+VerifyKet[ Ket[a_Association] ] := With[
   { aa = KeyValueMap[VerifyKet, a] },
   If[MemberQ[aa, 0], 0, Ket@Association@aa, Ket@Association@aa]
  ]
@@ -542,91 +513,47 @@ VerifyKet[Ket[a_Association]] := With[
 VerifyKet[a_, b_] := Rule[a, b]
 
 
-Restrict::usage = "Restrict[expr, {S1, S2, ...}] puts every Ket[...] in expr into the restricted form Ket[<|...|>, {S1, S2, ...}]. The restricted form is useful, e.g., for partial scalar product."
-
-Restrict[ Ket[a_Association, ___List], ss_List ] :=
-  VerifyKet @ Ket[a, FlavorNone @ ss]
-
-Restrict[ Bra[a_Association, ___List], ss_List ] :=
-  Dagger @ VerifyKet @ Ket[a, FlavorNone @ ss]
-
-Restrict[ expr_, ss_List ] := expr /. {
-  v_Ket :> Restrict[v, ss],
-  w_Bra :> Restrict[w, ss]
- }
-
-
-Loose::usage = "Loose[expr] releases any restricted Ket[...] in expr of the restriction."
-
-Loose[ expr_ ] := expr /. {
-  Ket[a_Association, _List] -> Ket[a],
-  Bra[a_Association, _List] -> Bra[a]
- }
-
-
 (* <Multiply> *)
 
- HoldPattern @ Multiply[pre___, op_?AnySpeciesQ, Ket[a_Association, b_List], post___] :=
-  Multiply[pre, Ket[a, b], op, post] /;
-  Not @ MemberQ[b, FlavorMute @ Peel @ op]
-
-HoldPattern @ Multiply[pre___, Bra[a_Association, b_List], op_?AnySpeciesQ, post___] :=
-  Multiply[pre, op, Bra[a, b], post] /;
-  Not @ MemberQ[b, FlavorMute @ Peel @ op]
-
-
 (* Ket[] ** Ket[] = Ket[] x Ket[] *)
-HoldPattern @ Multiply[ pre___, a:Ket[_Association], b:Ket[_Association], post___ ] :=
-  Multiply[pre, CircleTimes[a, b], post]
-
-HoldPattern @ Multiply[ pre___,
-  a:Ket[_Association, _List], b:Ket[_Association, _List], post___ ] :=
+HoldPattern @
+  Multiply[ pre___, a:Ket[_Association], b:Ket[_Association], post___ ] :=
   Multiply[pre, CircleTimes[a, b], post]
 
 (* Bra[] ** Bra[] = Bra[] x Bra[] *)
-HoldPattern @ Multiply[ pre___, a:Bra[_Association], b:Bra[_Association], post___ ] :=
+HoldPattern @
+  Multiply[ pre___, a:Bra[_Association], b:Bra[_Association], post___ ] :=
   Multiply[pre, CircleTimes[a, b], post]
 
-HoldPattern @ Multiply[ pre___,
-  a:Bra[_Association, _List], b:Bra[_Association, _List], post___ ] :=
-  Multiply[pre, CircleTimes[a, b], post]
-
-
-HoldPattern @ Multiply[ pre___, Bra[a_Association], Ket[b_Association], post___ ] :=
+HoldPattern @
+  Multiply[ pre___, Bra[a_Association], Ket[b_Association], post___ ] :=
   BraKet[a, b] Multiply[pre, post]
 
-HoldPattern @ Multiply[ pre___,
-  Bra[a_Association], b:Ket[_Association, _List], post___ ] :=
-  Multiply[pre, BraKet[a, List @@ b], post]
-
-HoldPattern @ Multiply[ pre___,
-  a:Bra[_Association, _List], Ket[b_Association], post___ ] :=
-  Multiply[pre, BraKet[List @@ a, b], post]
-
-HoldPattern @ Multiply[ pre___,
-  a:Bra[_Association, _List], b:Ket[_Association, _List], post___ ] :=
-  Multiply[pre, BraKet[List @@ a, List @@ b], post]
-
-HoldPattern @ Multiply[ pre___, Bra[a_Association], Ket[{}], post___ ] :=
-  BraKet[ a, Association[] ] Multiply[pre, post]
+HoldPattern @
+  Multiply[ pre___, Bra[a_Association], Ket[{}], post___ ] :=
+  BraKet[a, Association[]] Multiply[pre, post]
 
 HoldPattern @ Multiply[ pre___, Bra[{}], Ket[b_Association], post___ ] :=
-  BraKet[ Association[], b ] Multiply[pre, post]
+  BraKet[Association[], b] Multiply[pre, post]
 
-HoldPattern @ Multiply[ pre___, Bra[{}], Ket[{}], post___ ] :=
-  BraKet[ {}, {} ] Multiply[pre, post]
+HoldPattern @
+  Multiply[ pre___, Bra[{}], Ket[{}], post___ ] :=
+  BraKet[{}, {}] Multiply[pre, post]
 
-HoldPattern @ Multiply[ pre___, Bra[a___], Ket[b___], post___ ] :=
+HoldPattern @
+  Multiply[ pre___, Bra[a___], Ket[b___], post___ ] :=
   BraKet[{a}, {b}] Multiply[pre, post]
 (* Recall that Multiply has no Flat attribute. *)
 
-HoldPattern @ Multiply[Bra[u___], b__, Ket[v___], c__] :=
-  Multiply[Bra[u], b, Ket[v]] Multiply[c]
+HoldPattern @
+  Multiply[Bra[u___], op__, Ket[v___], post__] :=
+  Multiply[Bra[u], op, Ket[v]] Multiply[post]
 
-HoldPattern @ Multiply[a__, Bra[u___], b__, Ket[v___], c___] :=
-  Multiply[Bra[u], b, Ket[v]] Multiply[a,c]
+HoldPattern @
+  Multiply[pre__, Bra[u___], op__, Ket[v___], post___] :=
+  Multiply[Bra[u], op, Ket[v]] Multiply[pre, post]
 (* NOTE: Do not try to combine the above two definitions into one by using
-   a___ and c___. It will result in infinite loop. *)
+   pre___ and post___. It will result in infinite loop. *)
 
 
 Multiply /:
@@ -656,7 +583,7 @@ State[ { m:{(0|1|Up|Down)..}, t:Except[_List], p:Except[_List] } ] :=
   CircleTimes @@ Map[State] @ Tuples[{m,{t},{p}}]
 
 
-BraKet::usage = "BraKet[{a}, {b}] represents the Hermitian product \[LeftAngleBracket]a | b\[RightAngleBracket] of the two states Ket[a] and Ket[b]."
+BraKet::usage = "BraKet[{a}, {b}] represents the Hermitian product \[LeftAngleBracket]a|b\[RightAngleBracket] of the two states Ket[a] and Ket[b]."
 
 SetAttributes[BraKet, {NHoldAll, ReadProtected}]
 (* The integers in BraKet[] should not be converted to real numbers by N[]. *)
@@ -666,8 +593,8 @@ Format[ BraKet[{}, b_List] ] := BraKet[{Any}, b]
 Format[ BraKet[a_List, {}] ] := BraKet[a, {Any}]
 
 Format[
-  BraKet[a:Except[(_List|_Association)], b:Except[(_List|_Association)] ]
- ] := BraKet[{a},{b}]
+  BraKet[ a:Except[_List|_Association], b:Except[_List|_Association] ]
+ ] := BraKet[{a}, {b}]
 
 BraKet /: ComplexQ[ BraKet[_List, _List] ] = True
 
@@ -680,34 +607,9 @@ Dot[ Bra[a___], Ket[b___] ] := BraKet[{a}, {b}]
 
 BraKet[ a_List, b_List ] := KroneckerDelta[a, b]
 
-BraKet[ a:Association[(_->_)...], b:Association[(_->_)...] ] := With[
+BraKet[ a_Association, b_Association ] := With[
   { qq = Union[Keys @ a, Keys @ b] },
-  KroneckerDelta[ Lookup[a,qq], Lookup[b,qq] ]
- ]
-
-(* between restricted Ket and Bra with specific Span *)
-
-BraKet[ { a_Association, b_List }, { c_Association, d_List } ] := Module[
-  { cc = Intersection[b, d],
-    sb, sd },
-  sb = Complement[b, d];
-  sd = Complement[d, b];
-  KroneckerDelta[ Lookup[a,cc], Lookup[c,cc] ] *
-    Ket[ KeyTake[c, sd], sd ] ** Bra[ KeyTake[a, sb], sb ]  
- ]
-
-BraKet[ a_Association, { c_Association, d_List } ] := Module[
-  { sb },
-  sb = Complement[Keys @ a, d];
-  KroneckerDelta[ Lookup[a,d], Lookup[c,d] ] *
-    Bra[ KeyTake[a, sb] ] 
- ]
-
-BraKet[ { a_Association, b_List }, c_Association ] := Module[
-  { sd },
-  sd = Complement[Keys @ c, b];
-  KroneckerDelta[ Lookup[a,b], Lookup[c,b] ] *
-    Ket[ KeyTake[c, sd] ] 
+  KroneckerDelta[ Lookup[a, qq], Lookup[b, qq] ]
  ]
 
 
@@ -722,7 +624,7 @@ OTimes /:
 HoldPattern @ Dagger[ OTimes[a__] ] := OTimes @@ Dagger @ {a}
 
 
-OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
+OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
 
 Format[ HoldPattern[ OSlash[a:(_Ket|_Bra), b:Times[__]] ] ] :=
   DisplayForm @ CircleTimes[ HoldForm[a], RowBox[{"(",b,")"}] ]
@@ -738,9 +640,23 @@ OSlash /:
 HoldPattern @ Dagger[ OSlash[a__] ] := OSlash @@ Dagger @ {a}
 
 
-(* <Garner> *)
-Once[ $GarnerHeads = Join[$GarnerHeads, {Pauli, Dyad, Ket, Bra}]; ]
-(* </Garner> *)
+Once[
+  $GarnerHeads = Join[$GarnerHeads, {Pauli, Dyad, Ket, Bra}];
+
+  $ElaborationHeads = Join[$ElaborationHeads, {Dyad}];
+
+  $ElaborationRules = Join[
+    $ElaborationRules,
+    { Pauli[a___, 4, b___] :> Pauli[a, Raise, b],
+      Pauli[a___, 5, b___] :> Pauli[a, Lower, b],
+      Pauli[a___, 6, b___] :> Pauli[a, Hadamard, b],
+      Pauli[a___, 7, b___] :> Pauli[a, Quadrant, b],
+      Pauli[a___, 8, b___] :> Pauli[a, Octant, b],
+      Pauli[a___, -7, b___] :> Dagger @ Pauli[a, Quadrant, b],
+      Pauli[a___, -8, b___] :> Dagger @ Pauli[a, Octant, b]
+     }
+   ];
+ ]
 
 
 RaiseLower::usage = "RaiseLower[expr] converts expr by rewriting Pauli or Spin X and Y operators in terms of the raising and lowering operators."
@@ -759,19 +675,10 @@ Once[
 
 PauliExpand::usage = "PauliExpand[expr] returns more explicit form of the expression expr."
 
-PauliExpand[ expr_ ] := Garner[
-  expr //. $PauliExpandRules
- ]
-
-$PauliExpandRules = {
-  Pauli[a___, 4, b___] :> Pauli[a, Raise, b],
-  Pauli[a___, 5, b___] :> Pauli[a, Lower, b],
-  Pauli[a___, 6, b___] :> Pauli[a, Hadamard, b],
-  Pauli[a___, 7, b___] :> Pauli[a, Quadrant, b],
-  Pauli[a___, 8, b___] :> Pauli[a, Octant, b],
-  Pauli[a___, -7, b___] :> Dagger @ Pauli[a, Quadrant, b],
-  Pauli[a___, -8, b___] :> Dagger @ Pauli[a, Octant, b]
- }
+PauliExpand[expr_] := (
+  Message[Pauli::obsolete, PauliExpand, Elaborate];
+  Elaborate[expr]
+ )
 
 
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
@@ -783,6 +690,10 @@ Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|-7|-8)..] ] := With[
   { aa = {a} /. theIndexRules },
   DisplayForm[ CircleTimes @@ Map[SuperscriptBox["\[Sigma]",#]&] @ aa ]
  ]
+
+Format @ Pauli[a:{(0|1)..} -> b:{(0|1)..}] :=
+  Row @ {Ket @@ b, Bra @@ a}
+
 
 thePlus  = Style["+", Larger, Bold];
 theMinus = Style["-", Larger, Bold];
@@ -961,6 +872,66 @@ HermitianProduct[a_?MatrixQ, b_?MatrixQ] :=
 Format[ HermitianProduct[a_, b_] ] := AngleBracket[a, b]
 
 
+BlochVector::usage = "BlochSphere[{c0, c1}] returns the point on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
+
+BlochVector[Ket[]] := BlochVector @ {1, 0}
+
+BlochVector[rho_?MatrixQ] := Rest @ PauliDecompose[rho] /;
+  Dimensions[rho] == {2, 2}
+
+BlochVector[cc_?VectorQ] := Module[
+  { dd = Normalize[cc] },
+  { Conjugate[dd] . ThePauli[1] . dd,
+    Conjugate[dd] . ThePauli[2] . dd,
+    Conjugate[dd] . ThePauli[3] . dd }
+ ] /; Length[cc] == 2
+
+
+BlochSphere::usage = "BlochSphere[{p1, p2, ...}] displays the points along with the Bloch sphere in Graphics3D.\nBlochSphere[p1, p2, ...] is equivalent to BlochSphere[{p1, p2, ...}].\nBlochSphere[] returns the Graphics3D elements to render the Bloch sphere."
+
+Options[BlochSphere] = {
+  "Opacity" -> 0.8,
+  "PointSize" -> 0.03,
+  Ticks -> None,
+  Axes -> True,
+  AxesOrigin -> {0, 0, 0},
+  AxesStyle -> Thick,
+  Boxed -> False
+ }
+
+BlochSphere[vv:{_?NumericQ, _?NumericQ, _?NumericQ}.., opts___?OptionQ] :=
+  BlochSphere[{vv}, opts]
+
+BlochSphere[vv:{{_?NumericQ, _?NumericQ, _?NumericQ}...}, opts___?OptionQ] :=
+  Module[
+    { rr },
+    rr = "PointSize" /. {opts} /. Options[BlochSphere];
+    Graphics3D[
+      { BlochSphere[opts],
+        Prepend[ Map[Sphere[#, rr]&, vv], Red ]
+       },
+      Sequence @@ FilterRules[
+        Join[{opts}, Options @ BlochSphere],
+        Options @ Graphics3D
+       ]
+     ]
+   ]
+  
+BlochSphere[opts___?OptionQ] := Module[
+  { dd },
+  dd = "Opacity" /. {opts} /. Options[BlochSphere];
+  { { Opacity[dd], Cyan, Sphere[] },
+    { Thick, GrayLevel[0.4],
+      Line @ {
+        Table[{0, Cos[t Pi], Sin[t Pi]}, {t, 0, 2, 0.01}],
+        Table[{Cos[t Pi], 0, Sin[t Pi]}, {t, 0, 2, 0.01}],
+        Table[{Cos[t Pi], Sin[t Pi], 0}, {t, 0, 2, 0.01}] }
+     }
+   }
+ ]
+
+
+
 (* *********************************************************************** *)
 (*     <Basis>                                                             *)
 (* *********************************************************************** *)
@@ -1000,7 +971,7 @@ Basis[ expr_ ] := Basis @@ Representables[expr]
 
 Matrix::usage = "Matrix[expr, {a1, a2, ...}] constructs the matrix representation of the expression expr on the total system consisting of a1, a2, ....\nMatrix[expr] feagures out the subsystems involved in expr."
 
-Matrix::insuff = "There remain some elements, ``, that are not specified for matrix representation."
+Matrix::rem = "There remain some elements, ``, that are not specified for matrix representation."
 
 (* For Pauli Ket/Bra *)
 
@@ -1063,7 +1034,7 @@ HoldPattern @ Matrix[ expr:(_List|_Association), qq:{__?SpeciesQ} ] :=
 Matrix[ expr:Except[_Pauli|_Ket|_Bra|_?NonCommutativeQ] ] :=
   Matrix[expr, Representables @ expr]
 
-Matrix[ expr_, {} ] := expr /; FreeQ[expr, _Pauli|_Ket|_Bra]
+Matrix[ expr_, {} ] := expr /; FreeQ[expr, _Pauli|_Dyad|_Ket|_Bra]
 
 Matrix[ expr_, q_?SpeciesQ ] := Matrix[expr, {q}] (* for flexibility *)
 
@@ -1083,51 +1054,48 @@ Matrix[ z_?CommutativeQ, qq:{__?NonCommutativeQ} ] := With[
 (* NOTE: __, not ___ *)
 HoldPattern @
   Matrix[ op_?AnyNonCommutativeQ, qq:{__?NonCommutativeQ} ] :=
-  BuildMatrix[{op}, qq]
+  BuildMatrix[op, FlavorNone @ qq]
     
 (* NOTE: __, not ___ *)
 HoldPattern @
-  Matrix[ Multiply[op__?AnyNonCommutativeQ], qq:{__?NonCommutativeQ} ] :=
-  BuildMatrix[{op}, qq]
-
-
-(* Dyad *)
-HoldPattern @
-  Matrix[ Multiply[pre___, op_Dyad, post___], qq:{__?SpeciesQ} ] :=
-  Matrix[ Multiply[pre, Expand[op], post], qq ]
+  Matrix[ Multiply[ops__], qq:{__?NonCommutativeQ} ] :=
+  BuildMatrix[{ops}, FlavorNone @ qq]
 
   
 BuildMatrix::usage = "BuildMatrix is a low-level function that builds the matrix from an operator or a set of operators.\nSee Matrix."
 
-(* NOTE: __, not ___ *)
-BuildMatrix[ op:{__?AnySpeciesQ}, qq:{__?SpeciesQ} ] :=
-  Module[
-    { ss = FlavorNone @ qq,
-      pp, rr },
-    pp = GroupBy[op, FlavorMute @* Peel]; (* NOT works for Fermions *)
-    pp = Join[ AssociationThread[ss -> One /@ ss], pp ];
+BuildMatrix[ops_List, qq:{__?SpeciesQ}] := Dot @@ Map[
+  BuildMatrix[#, qq]&,
+  ops
+ ]
 
-    rr = KeyDrop[pp, ss];
-    If[ Length[rr] > 0,
-      Message[Matrix::insuff, rr];
-      rr = Multiply @@ Flatten[Values @ rr];
-      pp = KeyTake[pp, ss],
-      rr = 1
-     ];
+BuildMatrix[v:Bra[_Association], qq:{__?SpeciesQ}] :=
+  Transpose @ Transpose @ List @ Matrix[v, qq]
+(* To preserve the SparseArray structure *)
 
-    pp = CircleTimes @@ Map[BuildMatrix, pp];
-    pp rr
-   ]
+BuildMatrix[v:Ket[_Association], qq:{__?SpeciesQ}] :=
+  Transpose @ List @ Matrix[v, qq]
 
-BuildMatrix[ One[q_?NonCommutativeQ] ] := One @ Dimension @ q
+BuildMatrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := (
+  Message[Matrix::rem, op];
+  op Matrix[1, qq]
+ ) /; Not @ MemberQ[qq, FlavorMute @ Peel @ op]
 
-BuildMatrix[ {q_} ] := BuildMatrix[q]
+BuildMatrix[ op:Dyad[_, _, _List], qq:{__?SpeciesQ} ] :=
+  Matrix[ Elaborate[op], qq ]
 
-BuildMatrix[ qq:{__} ] := Dot @@ Map[BuildMatrix, qq]
 
-BuildMatrix[ op_Dagger ] := Topple @ BuildMatrix @ Peel @ op
+(* NOTE: Leave op_ unspecified so as for BuildMatrix to be further defined for
+   Fermions in Fock`. *)
+BuildMatrix[op_, qq:{__?SpeciesQ}] := Module[
+  { sp = FlavorMute @ Peel @ op,
+    mm = Matrix[op],
+    rr },
+  rr = One /@ Dimension[qq];
+  rr = Association @ Join[ Thread[qq -> rr], {sp -> mm} ];
+  CircleTimes @@ rr
+ ]
 
-BuildMatrix[ op_?NonCommutativeQ ] := Matrix[op]
 
 (* *********************************************************************** *)
 (*     </Matrix>                                                           *)
@@ -1487,83 +1455,158 @@ CirclePlus[ v:(_?VectorQ).. ] := Join[v]
 
 Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of order 2 and rank 1) corresponding to the dyadic product of two vectors.\nDyad[v] = Dyad[v, v] for a vector v.\nDyad[a, b, qq] for two associations a and b and for a list qq of Species represents the dyadic product of Ket[a] and Ket[b], i.e., Ket[a]**Bra[b], operating on the systems in qq.\nWhen All is given for qq, the operator acts on all systems without restriction."
 
-Format[ Dyad[a_Association, b_Association, qq:{__?SpeciesQ}] ] :=
-  DisplayForm @ RowBox @ { LogicalForm[Ket[a], qq], LogicalForm[Bra[b], qq] }
-
-Format[ Dyad[a_Association, b_Association, All] ] :=
-  DisplayForm @ RowBox @ { Ket[a], Bra[b] }
-
+(* For simple column vectors *)
 
 Dyad[a_?VectorQ] := KroneckerProduct[a, Conjugate @ a]
 
 Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Conjugate @ b]
 
+(* For Pauli Kets *)
 
-Dyad[Ket[a_Association], Ket[b_Association], qq:(All|{__?SpeciesQ})] := 
+Dyad[Ket[a:(0|1)..], Ket[b:(0|1)..], All|{}] := Pauli[{b} -> {a}]
+
+(* For general Kets *)
+
+Format @ Dyad[a_Association, b_Association, qq:{___?SpeciesQ}] :=
+  Row @ { LogicalForm[Ket[a], qq], LogicalForm[Bra[b], qq] }
+
+Dyad /: NonCommutativeQ[ Dyad[___] ] = True
+
+Dyad /:
+Kind[ Dyad[_Association, _Association, qq_List] ] := First @ Kind @ qq
+
+Dyad /:
+HoldPattern @ Elaborate[ Dyad[a_, b_, c_List] ] := Module[
+  { aa = Lookup[a, c],
+    bb = Lookup[b, c],
+    op },
+  op = Construct @@@ Thread @ {c, Thread[bb -> aa]};
+  Multiply @@ op
+ ]
+
+Dyad[a_Association, b_Association, All] := Multiply[Ket[a], Bra[b]]
+(* NOTE: No particlar reason to store it as Dyad. *)
+
+Dyad[Ket[a_Association], Ket[b_Association], qq:{__?SpeciesQ}] := 
   Dyad[a, b, FlavorNone @ qq]
 
+Dyad[a_Association, b_Association, qq:{__?SpeciesQ}] := Module[
+  { rr = KeySort @ GroupBy[qq, Kind] },
+  Multiply @@ Map[ Dyad[KeyTake[a, #], KeyTake[b, #], #]&, Values @ rr]
+ ] /; Length @ Union @ Kind[qq] > 1
 
-Dyad[Ket[a:(0|1)..], Ket[b:(0|1)..], All|{}] := Dyad[Ket[a], Ket[b]]
 
-Dyad[Ket[a:(0|1)..], Ket[b:(0|1)..]] :=
-  PauliExpression @ KroneckerProduct[TheKet[a], TheKet[b]]
-
-
-Dyad[a_Plus, b_Plus, qq:(_List|All)] :=
+Dyad[a_Plus, b_Plus, qq_List] :=
   Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @@ a, List @@ b]
 
-Dyad[a_Plus, b_, qq:(_List|All)] :=
+Dyad[a_Plus, b_, qq_List] :=
   Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @@ a, List @ b]
 
-Dyad[a_, b_Plus, qq:(_List|All)] :=
+Dyad[a_, b_Plus, qq_List] :=
   Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @ a, List @@ b]
 
-Dyad[z_ a_, b_, qq:(_List|All)] :=
+Dyad[z_ a_, b_, qq_List] :=
   Garner[z Dyad[a, b, qq]] /; FreeQ[z, _Ket]
 
-Dyad[a_, z_ b_, qq:(_List|All)] :=
+Dyad[a_, z_ b_, qq_List] :=
   Garner[Conjugate[z] Dyad[a, b, qq]] /; FreeQ[z, _Ket]
 
+
+Dyad[a_, b_, All] := Multiply[a, Dagger[b]] /;
+  Not @ Or[FreeQ[a, _Ket], FreeQ[b, _Ket]]
 
 Dyad[a_, b_] := Module[
   { qq = Cases[{a, b}, Ket[c_Association] :> Keys[c], Infinity] },
   Dyad[a, b, Union @ Flatten @ qq]
- ]
+ ] /; Not @ Or[FreeQ[a, _Ket], FreeQ[b, _Ket]]
 
 
-HoldPattern @ Multiply[pre___,
-  op_?AnySpeciesQ, Dyad[a_Association, b_Association, c_List], post___] :=
-  Multiply[pre, Ket[a, c], op, Bra[b, c], post] /;
-  Not @ MemberQ[c, FlavorMute @ Peel @ op]
+HoldPattern @ Multiply[
+  pre___,
+  Dyad[a_Association, b_Association, qq_List],
+  Dyad[b_Association, c_Association, qq_List],
+  post___
+ ] := Multiply[pre, Dyad[a, c, qq], post]
 
-HoldPattern @ Multiply[pre___,
-  Dyad[a_Association, b_Association, c_List], op_?AnySpeciesQ, post___] :=
-  Multiply[pre, Ket[a, c], op, Bra[b, c], post] /;
-  Not @ MemberQ[c, FlavorMute @ Peel @ op]
+HoldPattern @ Multiply[
+  pre___,
+  op_?AnySpeciesQ, Dyad[a_Association, b_Association, c_List],
+  post___
+ ] := Multiply[
+   pre,
+   Dyad[ op ** Ket[a], Ket[b], c ],
+   post
+  ] /; MemberQ[c, FlavorMute @ Peel @ op]
 
+HoldPattern @ Multiply[
+  pre___,
+  Dyad[a_Association, b_Association, c_List], op_?AnySpeciesQ,
+  post___
+ ] := Multiply[
+   pre,
+   Dyad[ Ket[a], Dagger[op] ** Ket[b], c ],
+   post
+  ] /; MemberQ[c, FlavorMute @ Peel @ op]
 
-HoldPattern @
-  Multiply[pre___, Dyad[a_Association, b_Association, qq_], v_Ket, post___] :=
-  With[
-    { result = Multiply[Bra[b, qq], v] },
-    Multiply[pre, Ket[a, qq], result, post]
+HoldPattern @ Multiply[
+  pre___,
+  dd:Dyad[_Association, _Association, qq_List], op_?AnySpeciesQ,
+  post___
+ ] := Multiply[
+   pre,
+   op, dd,
+   post
+  ] /; With[
+    { sp = FlavorMute @ Peel @ op },
+    And[
+      Kind[dd] == Kind[op],
+      Not @ MemberQ[qq, sp],
+      Not @ OrderedQ @ Join[qq, {sp}]
+     ]
    ]
 
-HoldPattern @
-  Multiply[pre___, v_Bra, Dyad[a_Association, b_Association, qq_], post___] :=
-  With[
-    { result = Multiply[v, Ket[a, qq]] },
-    Multiply[pre, result, Bra[b, qq], post]
+HoldPattern @ Multiply[
+  pre___,
+  op_?AnySpeciesQ, dd:Dyad[_Association, _Association, qq_List],
+  post___
+ ] := Multiply[
+   pre,
+   dd, op,
+   post
+  ] /; With[
+    { sp = FlavorMute @ Peel @ op },
+    And[
+      Kind[dd] == Kind[op],
+      Not @ MemberQ[qq, sp],
+      Not @ OrderedQ @ Join[{sp}, qq]
+     ]
    ]
 
 
-Dyad /:
-HoldPattern @
-  Matrix[ Dyad[a_Association, b_Association, c_List], qq:{__?SpeciesQ} ] :=
-  Matrix[ Expand @ Dyad[a, b, c], qq ]
-    
-Dyad /:
-Expand[ Dyad[a_Association, b_Association, c_List] ] := Module[
+HoldPattern @ Multiply[
+  pre___,
+  Bra[v_Association],
+  Dyad[a_Association, b_Association, qq_List],
+  post___
+ ] := Module[
+   { w = KeyDrop[v, qq],
+     u = KeyTake[v, qq] },
+   BraKet[u, a] Multiply[pre, Bra[w], Bra[b], post]
+  ]
+
+HoldPattern @ Multiply[
+  pre___,
+  Dyad[a_Association, b_Association, qq_List],
+  Ket[v_Association],
+  post___
+ ] := Module[
+   { w = KeyDrop[v, qq],
+     u = KeyTake[v, qq] },
+   BraKet[b, u] Multiply[pre, Ket[a], Ket[w], post]
+  ]
+
+(*
+factorize[ Dyad[a_Association, b_Association, c_List] ] := Module[
   { ops },
   ops = Construct @@@ Thread @ {
     Dyad /@ c,
@@ -1571,6 +1614,7 @@ Expand[ Dyad[a_Association, b_Association, c_List] ] := Module[
    };
   Multiply @@ ops
  ]
+ *)
 
 (* </Dyad> *)
 
@@ -1767,7 +1811,7 @@ SchmidtDecomposition[
 
 TensorFlatten::usage = "TensorFlatten[t] flattens out the given tensor t and returns the resulting matrix. It generalizes ArrayFlatten and operates on tensors of any rank. To flatten out a tensor to a vector (rather than a matrix), just use Flatten."
 
-TensorFlatten[t_List] := With[
+TensorFlatten[t_?TensorQ] := With[
   { r = TensorRank[t] },
   Flatten[t, {Range[1,r,2], Range[2,r,2]}]
  ]
@@ -1852,6 +1896,19 @@ PartialTrace[v_?VectorQ, dd:{__Integer}, jj:{__Integer}] := Module[
 
 PartialTrace[v_?VectorQ, jj:{__Integer}] :=
   PartialTrace[v, ConstantArray[2,Log[2,Length[v]]], jj]
+
+
+PartialTrace[expr_, q_?SpeciesQ, func_] := PartialTrace[expr, {q}, func]
+
+PartialTrace[expr_, qq:{__?SpeciesQ}, func_] := Module[
+  { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
+    ss = NonCommutativeSpecies[expr],
+    dd, jj },
+  ss = Union[ss, rr];
+  dd = Dimension[ss];
+  jj = Flatten @ Map[FirstPosition[ss, #] &, rr];
+  func[ PartialTrace[Matrix[expr, ss], dd, jj], Complement[ss, rr] ]
+ ]
 
 
 Purification::usage = "Purification[m] returns the purification of the mixed state m."

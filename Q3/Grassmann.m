@@ -2,17 +2,17 @@
 
 (* Adopted from a package by M. Headrick (April 2003) *)
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-05 19:48:14+09 $ *)
-(* $Revision: 1.4 $ *)
+(* $Date: 2021-01-14 11:41:50+09 $ *)
+(* $Revision: 1.5 $ *)
 
-BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`" } ]
+BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`", "Q3`Abel`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.4 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-05 19:48:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.5 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-14 11:41:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 

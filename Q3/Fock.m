@@ -1,23 +1,14 @@
 (* -*- mode: math; -*- *)
-
-(****
-  Fock is a Mathematica package for the complex Weyl and Clifford algebra.
- 
-  Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2020-11-11 06:25:30+09 $
-  $Revision: 1.26 $
-  ****)
-
 BeginPackage[ "Q3`Fock`",
-  { "Q3`Grassmann`", "Q3`Pauli`", "Q3`Cauchy`" }
+  { "Q3`Grassmann`", "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" }
  ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.26 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-11 06:25:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.5 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-12 03:29:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -87,8 +78,6 @@ $symbs = Unprotect[
   $GarnerHeads, $GarnerTests, $RepresentableTests,
   Spin, ComplexQ
  ]
-
-Fock::obsolete = "`` is OBSOLETE, use `` instead."
 
 
 FlavorNone[a_?AnyParticleQ] := a
@@ -641,12 +630,12 @@ FockFourier::usage = "FockFourier is OBSOLETE. Use ReplaceByFourier instead."
 FockInverseFourier::usage = "FockInverseFourier is now obsolete. Use ReplaceByFourierInverse instead."
 
 FockFourier[args__] := (
-  Message[Fock::obsolete, "FockFourier", "ReplaceByFourier"];
+  Message[Notice::obsolete, "FockFourier", "ReplaceByFourier"];
   FourierMap[args]
  )
 
 FockInverseFourier[args__] := (
-  Message[Fock::obsolete, "FockInverseFourier", "ReplaceByFourierInvere"];
+  Message[Notice::obsolete, "FockInverseFourier", "ReplaceByFourierInvere"];
   InverseFourierMap[args]
  )
 
@@ -844,8 +833,9 @@ ACMT[_?AnyFermionQ, _?AnyFermionQ] = 0
 (* Originally defined in Cauchy,
    Redefined for Fermion, Majorana, Grassmann *)
 (* NOTE: _?AnySpeciesQ NOT _?AnyNonCommutativeQ.
-   This is to handle Ket and Bra separately. *)
-HoldPattern @ Multiply[ops__?AnySpeciesQ] := Module[
+   This is to handle Ket and Bra separately.
+   Now __?AnyNonCommutativeQ to hanle Dyad. *)
+HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
   { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
     bb },
   bb = Multiply @@@ aa;
@@ -1285,14 +1275,6 @@ HoldPattern @ doExpandBakerHausdorff[
   Garner[a + c] == 0
 
 doExpandBakerHausdorff[expr_] := expr
-
-
-FockTransformRules::usage = "OBSOLETE: Use ReplaceBy instead."
-
-FockTransformRules[old_List, new_List, mat_?MatrixQ] := (
-  Message[Fock::obsolete, "FockTransformRules", "ReplaceBy"];
-  ReplaceBy[old -> new, mat]
- )
 
 
 (* ********************************************************************** *)
@@ -2024,6 +2006,25 @@ matrixHeaders[qnn:{{___}..}, cnt:{___Integer}] := Module[
 (*     <Matrix>                                                         *)
 (* ******************************************************************** *)
 
+BuildMatrix[op_?AnyFermionQ, qq:{__?SpeciesQ}] := Module[
+  { mm = Matrix[op],
+    sp = FlavorMute @ Peel @ op,
+    id, rr, ss },
+  id = First @ FirstPosition[qq, sp];
+  rr = qq[[ ;; id - 1]];
+  ss = qq[[id + 1 ;; ]];
+
+  rr = fermionOne /@ rr;
+  ss = One /@ Dimension[ss];
+  CircleTimes @@ Join[rr, {mm}, ss]
+ ]
+
+fermionOne[q_?FermionQ] := ThePauli[3]
+
+fermionOne[q_] := One @ Dimension @ q
+
+
+(*
 AnticommutativeQ::usage = "AnticommutativeQ[c] returns True if c is an anticommutative Species such as Fermion, Majorana, and Grassmann, and False otherwise.\nIt is a low-level function intended to be used in Multiply and Matrix.\nIt affects how Multiply and Matrix manipulate expressions involving Fermion, Majorana, and Grassmann Species, which brings about a factor of -1 when exchanged."
 
 SetAttributes[AnticommutativeQ, Listable]
@@ -2035,46 +2036,7 @@ AnticommutativeQ[op_?MajoranaQ] = True
 AnticommutativeQ[op_?GrassmannQ] = True
 
 AnticommutativeQ[_] = False
-
-
-(* Originally defined in Pauli, Redefined for Fermions *)
-BuildMatrix[ op:{__?AnySpeciesQ}, qq:{__?SpeciesQ} ] :=
-  Module[
-    { ss = FlavorNone @ qq,
-      pp, rr, aa, bb, cc },
-    pp = GroupBy[op, FlavorMute @* Peel];
-    pp = Join[ AssociationThread[ss -> One /@ ss], pp ];
-
-    rr = KeyDrop[pp, ss];
-    If[ Length[rr] > 0,
-      Message[Matrix::insuff, rr];
-      rr = Multiply @@ Flatten[Values @ rr];
-      pp = KeyTake[pp, ss],
-      rr = 1
-     ];
-
-    aa = AnticommutativeQ @ pp;
-
-    bb = Pick[ op, AnticommutativeQ @ op ];
-    cc = Pick[ Flatten @ Values @ pp, Flatten @ Values @ aa ];
-    bb = fSignature[bb, cc];
-
-    aa = Total /@ Boole[aa];
-    aa = Thread @ Rule[
-      Keys @ aa,
-      ShiftLeft @ Reverse @ Accumulate @ Reverse @ Values @ aa
-     ];
-    aa = CircleTimes @@ Map[selectiveZ, aa];
-    
-    pp = CircleTimes @@ Map[BuildMatrix, pp];
-    pp.aa bb rr
-   ]
-
-selectiveZ[op_?FermionQ -> 0] := ThePauli[0]
-
-selectiveZ[op_?FermionQ -> 1] := ThePauli[3]
-  
-selectiveZ[op_ -> _] := One @ Dimension @ op
+*)
 
 
 (* Matrix[] for Fermions *)

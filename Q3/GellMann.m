@@ -2,17 +2,17 @@
 
 (* SU(3) Algebra *)
 (* Mahn-Soo Choi *)
-(* $Date: 2020-11-04 09:53:15+09 $ *)
-(* $Revision: 1.20 $ *)
+(* $Date: 2021-01-14 11:41:44+09 $ *)
+(* $Revision: 1.21 $ *)
 
-BeginPackage[ "Q3`GellMann`", { "Q3`Pauli`", "Q3`Cauchy`" } ]
+BeginPackage[ "Q3`GellMann`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2020-11-04 09:53:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.21 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-14 11:41:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

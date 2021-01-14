@@ -4,19 +4,19 @@
    based on the Gray code. *)
 
 (* Mahn-Soo Choi *)
-(* $Date: 2021-01-06 12:43:42+09 $ *)
-(* $Revision: 1.14 $ *)
+(* $Date: 2021-01-14 11:41:59+09 $ *)
+(* $Revision: 1.15 $ *)
 
 BeginPackage[ "Q3`Gray`",
-  { "Q3`Quisso`", "Q3`Pauli`", "Q3`Cauchy`" }
+  { "Q3`Quisso`", "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" }
  ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.14 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-06 12:43:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.15 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-14 11:41:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
