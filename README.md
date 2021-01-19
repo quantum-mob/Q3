@@ -41,6 +41,11 @@ in the search field of the Wolfram Language Documentation Center (Mathematica he
 
 NOTE: The first time you search a keyword in Wolfram Language Documentation Center (help window) after installing the application, Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on the performance of your computer. It happens only once (everytime you update the application), though.
 
+## For Beginners of Mathematica
+
+If this is your first time to use Mathematica, this guide written by Stephen Wolfram himself might be a good starting point:
+
+   https://www.wolfram.com/language/elementary-introduction/2nd-ed/
 
 # Feedback
 

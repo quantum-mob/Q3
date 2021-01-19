@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-01-14 11:30:57+09 $ *)
-(* $Revision: 1.5 $ *)
+(* $Date: 2021-01-15 10:06:32+09 $ *)
+(* $Revision: 1.6 $ *)
 
 BeginPackage["Q3`Abel`"]
 
@@ -401,8 +401,11 @@ CommutativeQ[z_] := FreeQ[z, _?NonCommutativeQ]
 
 NonCommutativeSpecies::usage = "NonCommutativeSpecies[expr] returns the list of all NonCommutative Species appearing in EXPR."
 
-NonCommutativeSpecies[expr_] := Union @ FlavorMute @
-  Cases[ { Normal[expr, Association] }, _?SpeciesQ, Infinity ]
+NonCommutativeSpecies[expr_] := Select[
+  Union @ FlavorMute @
+    Cases[ { Normal[expr, Association] }, _?SpeciesQ, Infinity ],
+  NonCommutativeQ
+ ]
 
 
 $FormatSpecies::usage = "$FormatSpecies controls the formatting of Species. If True, the ouputs of Species are formatted."

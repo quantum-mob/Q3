@@ -4,8 +4,8 @@
    based on the Gray code. *)
 
 (* Mahn-Soo Choi *)
-(* $Date: 2021-01-14 11:41:59+09 $ *)
-(* $Revision: 1.15 $ *)
+(* $Date: 2021-01-17 12:09:22+09 $ *)
+(* $Revision: 1.16 $ *)
 
 BeginPackage[ "Q3`Gray`",
   { "Q3`Quisso`", "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" }
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.15 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-14 11:41:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.16 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-17 12:09:22+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -69,7 +69,7 @@ GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
     nn = Power[2, Length[qq]-1], 
     op, rr, cc, dd, vv, ll, cV, cn },
 
-  mm = FunctionExpand @ MatrixPower[mm, 1/nn];
+  mm = MatrixPower[mm, 1/nn];
   op = QuissoExpression[mm, Qubits @ expr];
 
   rr = Reverse /@ GrayCodeSubsets[ReverseSort @ FlavorNone @ qq];
@@ -87,7 +87,7 @@ GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
   dd = Flatten @ Successive[MutualComplement, Most /@ rr];
   cn = CNOT @@@ Transpose[{dd, Rest @ cc}];
 
-  Riffle[cV, cn]
+  FunctionExpand @ Riffle[cV, cn]
  ]
 
 MutualComplement[a_, b_] := Union[Complement[a, b], Complement[b, a]]
@@ -110,6 +110,8 @@ GrayControlledW[qq:{__?QubitQ}, expr_] := Module[
   n = Length @ qq;
   V = FunctionExpand @ MatrixPower[mm, Power[2, 1-n]];
   op = QuissoExpression[V, tt];
+
+  Print["op = ", op];
 
   Flatten @ MapThread[grayCtrl[#1, op, #2]&, {rr, ss}]
  ]

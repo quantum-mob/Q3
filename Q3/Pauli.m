@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-01-14 11:42:12+09 $
-  $Revision: 2.19 $
+  $Date: 2021-01-17 14:52:17+09 $
+  $Revision: 2.27 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`Abel`" } ]
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.19 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-14 11:42:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.27 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-17 14:52:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -40,7 +40,7 @@ Print @ StringJoin[
   ThePauli, TheRaise, TheLower, TheHadamard };
 { Operator, TheOperator };
 
-{ OTimes, OSlash }; (* Variants of CircleTimes for Ket[] and Bra[] *)
+{ OTimes, OSlash, ReleaseTimes };
 
 { RaiseLower, $RaiseLowerRules };
 
@@ -64,7 +64,7 @@ Print @ StringJoin[
 
 { CircleTimes, CirclePlus, BlockDiagonalMatrix };
 
-{ Dyad };
+{ Dyad, DyadExpression };
 
 { Zero, One };
 
@@ -259,7 +259,7 @@ LogicalForm[ expr_ ] := LogicalForm[ expr, {} ]
 LogicalForm[ expr_, S_ ] := LogicalForm[ expr, {S} ]
 
 LogicalForm[ expr_, _List ] := expr /;
-  FreeQ[ expr, (Ket[_Association] | Bra[_Association] | _Dyad) ]
+  FreeQ[ expr, Ket[_Association] | Bra[_Association] | _Dyad ]
 
 LogicalForm[ Ket[a_Association], gg_List ] := Module[
   { ss = Union[Keys @ a, FlavorNone @ gg] },
@@ -312,7 +312,21 @@ Once[
   $KetGroupDelimiter = ";";
  ]
 
-SimpleForm::usage = "SimpleForm[expr] represents every Ket in \*StayleBox[expr,Italic] in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {S1, ..., {S2,S3,...}, ...}] splits each Ket into the form Row[{Ket[S1], ..., Ket[S2,S3,...], ...}]."
+SimpleForm::usage = "SimpleForm[expr] represents every Ket in expr in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {S1, ..., {S2, S3, ...}, ...}] splits each Ket into the form Ket @ Row @ {S1, ..., Ket[S2, S3, ...], ...}."
+
+SimpleForm[ expr_ ] := SimpleForm[ expr, {} ]
+
+SimpleForm[ expr_, {} ] := Module[
+  { ss },
+  ss = Union @ Flatten @ Cases[
+    {expr},
+    (Ket|Bra)[a_Association] :> Keys[a],
+    Infinity
+   ];
+  SimpleForm[ expr, {ss}]
+ ]
+
+SimpleForm[ expr_, S_?SpeciesQ ] := SimpleForm[ expr, {S} ]
 
 SimpleForm[ v:Ket[_Association], gg_List ] := Ket @ Row @ Riffle[
   v /@ gg, $KetDelimiter
@@ -325,17 +339,6 @@ SimpleForm[ v:Ket[_Association], gg_List ] := Ket @ Row @ Riffle[
 
 SimpleForm[ v:Bra[a_Association], gg_List ] :=
   Dagger @ SimpleForm[Ket[a], gg]
-
-SimpleForm[ expr_ ] := SimpleForm[ expr, {} ]
-
-SimpleForm[ expr_, {} ] := Module[
-  { ss },
-  ss = Union @ Flatten @
-    Cases[expr, (Ket|Bra)[a_Association] :> Keys[a], Infinity];
-  SimpleForm[ expr, {ss}]
- ]
-
-SimpleForm[ expr_, S_?SpeciesQ ] := SimpleForm[ expr, {S} ]
 
 (* For some irreducible basis, e.g., from QuissoAdd[] *)
 SimpleForm[ expr_Association, gg_List ] :=
@@ -354,19 +357,17 @@ SimpleForm[ expr_, gg_List ] := expr /. {
 
 ProductForm::usage = "ProductForm[expr] represents every Ket in \*StayleBox[expr,Italic] in the simplest form dropping all subsystem indices.\nProductForm[expr, {S1, ..., {S2,S3,...}, ...}] splits each Ket into the form Row[{Ket[S1], ..., Ket[S2,S3,...], ...}]."
 
-ProductForm[ v:Ket[_Association], gg_List ] := Row @ Map[
+ProductForm[ expr_ ] := ProductForm[expr, NonCommutativeSpecies @ expr]
+
+ProductForm[ expr_, S_?SpeciesQ ] := SimpleForm[ expr, {S} ]
+
+ProductForm[ Ket[a_Association], gg_List ] := Row @ Map[
   Ket @ Row @ Riffle[#, $KetDelimiter]&,
-  Flatten /@ List /@ v /@ gg 
+  Flatten /@ List /@ Lookup[a, FlavorNone @ gg]
  ]
 
 ProductForm[ v:Bra[a_Association], gg_List ] :=
   Dagger @ ProductForm[Ket[a], gg]
-
-ProductForm[ expr_ ] := SimpleForm[ expr, {} ]
-
-ProductForm[ expr_, {} ] := SimpleForm[ expr, {} ]
-
-ProductForm[ expr_, S_?SpeciesQ ] := SimpleForm[ expr, {S} ]
 
 (* For some irreducible basis, e.g., from QuissoAdd[] *)
 ProductForm[ expr_Association, gg_List ] :=
@@ -613,12 +614,21 @@ BraKet[ a_Association, b_Association ] := With[
  ]
 
 
+ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression."
+
+ReleaseTimes[expr_] := DefaultForm[
+  expr /. {OTimes -> CircleTimes, OSlash -> CircleTimes}
+ ]
+
+
 OTimes::usage = "OTimes represents CircleTimes, but holds the arguments. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
 (* It is used, e.g., for QuissoFactor[]. *)
 
 Format[ HoldPattern[ OTimes[a__] ] ] := CircleTimes @@ Map[HoldForm] @ {a}
 
 OTimes[a_] := a
+
+OTimes[a___, b_?CommutativeQ, c___] := b OTimes[a, c]
 
 OTimes /:
 HoldPattern @ Dagger[ OTimes[a__] ] := OTimes @@ Dagger @ {a}
@@ -641,7 +651,7 @@ HoldPattern @ Dagger[ OSlash[a__] ] := OSlash @@ Dagger @ {a}
 
 
 Once[
-  $GarnerHeads = Join[$GarnerHeads, {Pauli, Dyad, Ket, Bra}];
+  $GarnerHeads = Join[$GarnerHeads, {Pauli, Dyad, Ket, Bra, OTimes, OSlash}];
 
   $ElaborationHeads = Join[$ElaborationHeads, {Dyad}];
 
@@ -1085,7 +1095,7 @@ BuildMatrix[ op:Dyad[_, _, _List], qq:{__?SpeciesQ} ] :=
   Matrix[ Elaborate[op], qq ]
 
 
-(* NOTE: Leave op_ unspecified so as for BuildMatrix to be further defined for
+(* NOTE: Leave op_ unspecified so as for BuildMatrix to be further refined for
    Fermions in Fock`. *)
 BuildMatrix[op_, qq:{__?SpeciesQ}] := Module[
   { sp = FlavorMute @ Peel @ op,
@@ -1617,6 +1627,39 @@ factorize[ Dyad[a_Association, b_Association, c_List] ] := Module[
  *)
 
 (* </Dyad> *)
+
+
+DyadExpression::usage = "DyadExpression[expr,{s1,s2,..}] converts the operator expression expr to the form in terms of Dyad acting on the systems s1, s2, .... If the systems are not specified, then they are extracted from expr.\nDyadExpression[mat,{s1,s2,...}] converts the matrix representation into an operator expresion in terms of Dyad acting on the systems s1, s2, ...."
+
+DyadExpression[expr_] := 
+  DyadExpression[expr, NonCommutativeSpecies[expr]]
+
+DyadExpression[expr_, q_?SpeciesQ] := 
+  DyadExpression[expr, FlavorNone@{q}]
+
+DyadExpression[expr_, qq : {__?SpeciesQ}] := 
+  DyadExpression[Matrix[expr, FlavorNone@qq], FlavorNone@qq]
+
+DyadExpression[mat_?MatrixQ, q_?SpeciesQ] := 
+  DyadExpression[mat, FlavorNone@{q}]
+
+DyadExpression[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
+  { rr = FlavorNone @ qq,
+    dd = Dimension @ qq,
+    mm },
+  mm = Tensorize[mat, Flatten @ Transpose  @  {dd, dd}];
+  mm = Association @ Most @ ArrayRules @ mm;
+  Total @ KeyValueMap[theDyadExpr[#1, dd, rr] #2 &, mm]
+ ]
+
+theDyadExpr[ij_, dd_, qq_] := Module[
+  {kl = Transpose @ Partition[ij - 1, 2]},
+  Dyad[
+    AssociationThread[qq -> First @ kl],
+    AssociationThread[qq -> Last @ kl],
+    qq
+   ]
+ ]
 
 
 (* ********************************************************************* *)

@@ -1,6 +1,14 @@
 # Select Release Notes
 
+## v1.4.1
+
+- New function ReleaseTimes.
+- Enhanced SchmidtDecomposition.
+- New function QuissoCircuitTrim.
+- Improved QuissoCircuit user interface.
+
 ## v1.4.0
+
 - Dyad gets major enhancement.
 - Projector is improved based on Dyad.
 - The feature of restricted Ket or Bra is removed.
@@ -16,7 +24,7 @@
 ## v1.3.0
 
 - Measure has been renamed as Measurement.
-- Measurement[q][expr] is undefined, use Measurement[expr, q] instead.
+- Measurement\[q\]\[expr\] is undefined, use Measurement\[expr, q\] instead.
 - The input arguments of Readout are exchanged.
 - A bug fix in ProductState.
 
