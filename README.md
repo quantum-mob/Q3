@@ -45,7 +45,7 @@ NOTE: The first time you search a keyword in Wolfram Language Documentation Cent
 
 If this is your first time to use Mathematica, this guide written by Stephen Wolfram himself might be a good starting point:
 
-    https://www.wolfram.com/language/elementary-introduction/2nd-ed/
+> [An Elementary Introduction to Wolfram Language](https://www.wolfram.com/language/elementary-introduction/2nd-ed/)
 
 # Feedback
 
