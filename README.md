@@ -35,7 +35,7 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
 Once the application is installed, put
 
-     "Q3" or "Q3/guide/Q3"
+    "Q3" or "Q3/guide/Q3"
 
 in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get detailed technical information about the application. It will give you users' guides and tutorials.
 
@@ -45,7 +45,7 @@ NOTE: The first time you search a keyword in Wolfram Language Documentation Cent
 
 If this is your first time to use Mathematica, this guide written by Stephen Wolfram himself might be a good starting point:
 
-   https://www.wolfram.com/language/elementary-introduction/2nd-ed/
+    https://www.wolfram.com/language/elementary-introduction/2nd-ed/
 
 # Feedback
 
