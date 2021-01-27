@@ -4,7 +4,7 @@
 
 - Fredkin gate.
 - New options "Visible" and "Invisible" for QuissoCircuit.
-- Qubit specifications S[..., 10] and S[..., 11] are holded.
+- Qubit specifications S[..., 10] and S[..., 11] are held (instead of being expanded immediately).
 
 ## v1.4.1
 
