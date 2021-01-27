@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-01-17 19:12:14+09 $
-  $Revision: 1.67 $
+  $Date: 2021-01-26 13:20:48+09 $
+  $Revision: 1.80 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" } ]
@@ -15,8 +15,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.67 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-17 19:12:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.80 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-26 13:20:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -50,6 +50,7 @@ Print @ StringJoin[
   QuissoCNOT, CNOT,
   QuissoSWAP, SWAP,
   QuissoToffoli, Toffoli,
+  QuissoFredkin, Fredkin,
   Projector, Measurement, Readout };
 
 { QuissoOracle, Oracle };
@@ -88,7 +89,7 @@ $symbs = Unprotect[
   PartialTrace
  ]
 
-Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\". A Qubit is declared by Let.\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., None] or S[j,..., ] for short represents the qubit located at the physical site specified by the indices j, .... In the StandardForm, S[j,..., None] is formatted as S$j... . On the other hand S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., None]. In the StandardForm, S[j, ..., k] is formatted as \*SubsuperscriptBox[S, RowBox[{j,\", ...\"}], k].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., None] represents the qubit."
+Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., None] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., None].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., None] represents the qubit."
 
 Qubit /:
 Let[Qubit, {ls__Symbol}, opts___?OptionQ] := (
@@ -106,7 +107,7 @@ setQubit[x_Symbol] := (
   QubitQ[x] ^= True;
   QubitQ[x[___]] ^= True;
 
-  x/: Dagger[ x[j___, k:(0|1|2|3|6)] ] := x[j, k];
+  x/: Dagger[ x[j___, k:(0|1|2|3|6|10|11)] ] := x[j, k];
   x/: Dagger[ x[j___, 4] ] := x[j,5];
   x/: Dagger[ x[j___, 5] ] := x[j,4];
 
@@ -125,8 +126,9 @@ setQubit[x_Symbol] := (
   x[j___, Quadrant] := (1+I)/2 + x[j,3] (1-I)/2;
   x[j___, Octant]   := (1+Exp[I Pi/4])/2 + x[j,3] (1-Exp[I Pi/4])/2;
 
-  x[j___, 10] := (1 + x[j,3]) / 2;
-  x[j___, 11] := (1 - x[j,3]) / 2;
+  (* x[j___, 10] := (1 + x[j,3]) / 2; *)
+  (* x[j___, 11] := (1 - x[j,3]) / 2; *)
+  (* NOTE: It interferes, say, with Ket[] encountered with short-cut inputs *)
 
   x[j___, 0 -> 0] := (1 + x[j,3]) / 2;
   x[j___, 1 -> 1] := (1 - x[j,3]) / 2;
@@ -142,17 +144,26 @@ setQubit[x_Symbol] := (
   x[j___, None, k_] := x[j, k];
   (* In particular, x[j,None,None] = x[j,None]. *)
   
-  Format[ x[j___,None] ] := DisplayForm @ SpeciesBox[x, {j}, {}];
+  Format[ x[j___,None] ] := SpeciesBox[x, {j}, {}];
   
-  Format[ x[j___,0] ] := DisplayForm @ SpeciesBox[x, {j}, {0}];
-  Format[ x[j___,1] ] := DisplayForm @ SpeciesBox[x, {j}, {"x"}];
-  Format[ x[j___,2] ] := DisplayForm @ SpeciesBox[x, {j}, {"y"}];
-  Format[ x[j___,3] ] := DisplayForm @ SpeciesBox[x, {j}, {"z"}];
-  Format[ x[j___,4] ] := DisplayForm @ SpeciesBox[x, {j}, {"+"}];
-  Format[ x[j___,5] ] := DisplayForm @ SpeciesBox[x, {j}, {"-"}];
-  Format[ x[j___,6] ] := DisplayForm @ SpeciesBox[x, {j}, {"H"}];
-  Format[ x[j___,7] ] := DisplayForm @ SpeciesBox[x, {j}, {"S"}];
-  Format[ x[j___,8] ] := DisplayForm @ SpeciesBox[x, {j}, {"T"}];
+  Format[ x[j___, 0] ] := SpeciesBox[x, {j}, {0}];
+  Format[ x[j___, 1] ] := SpeciesBox[x, {j}, {"x"}];
+  Format[ x[j___, 2] ] := SpeciesBox[x, {j}, {"y"}];
+  Format[ x[j___, 3] ] := SpeciesBox[x, {j}, {"z"}];
+  Format[ x[j___, 4] ] := SpeciesBox[x, {j}, {"+"}];
+  Format[ x[j___, 5] ] := SpeciesBox[x, {j}, {"-"}];
+  Format[ x[j___, 6] ] := SpeciesBox[x, {j}, {"H"}];
+  Format[ x[j___, 7] ] := SpeciesBox[x, {j}, {"S"}];
+  Format[ x[j___, 8] ] := SpeciesBox[x, {j}, {"T"}];
+  
+  Format[ x[j___, 10] ] := Subscript[
+    DisplayForm @ RowBox @ {"(", Ket[0], Bra[0], ")"},
+    x[j, None]
+   ];
+  Format[ x[j___, 11] ] := Subscript[
+    DisplayForm @ RowBox @ {"(", Ket[1], Bra[1], ")"},
+    x[j, None]
+   ];
  )
 
 Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := 0
@@ -440,12 +451,14 @@ QuissoExpand[expr_] := (
 Once[
   $ElaborationRules = Join[
     $ElaborationRules,
-    { G_?QubitQ[j___,0] -> 1,
-      G_?QubitQ[j___,4] -> G[j, Raise],
-      G_?QubitQ[j___,5] -> G[j, Lower],
-      G_?QubitQ[j___,6] -> G[j, Hadamard],
-      G_?QubitQ[j___,7] -> G[j, Quadrant],
-      G_?QubitQ[j___,8] -> G[j, Octant],
+    { G_?QubitQ[j___, 0] -> 1,
+      G_?QubitQ[j___, 4] -> G[j, Raise],
+      G_?QubitQ[j___, 5] -> G[j, Lower],
+      G_?QubitQ[j___, 6] -> G[j, Hadamard],
+      G_?QubitQ[j___, 7] -> G[j, Quadrant],
+      G_?QubitQ[j___, 8] -> G[j, Octant],
+      G_?QubitQ[j___, 10] -> (1 + G[j,3]) / 2,
+      G_?QubitQ[j___, 11] -> (1 - G[j,3]) / 2,
       HoldPattern[ Projector[v_, qq_] ] :> Elaborate[Dyad[v, v, qq]],
       Exp[a_] /; Not[FreeQ[a,_?QubitQ]] -> MultiplyExp[a],
       v_ProductState :> Expand[v],
@@ -459,6 +472,7 @@ Once[
       SWAP -> QuissoSWAP,
       CZ -> QuissoCZ,
       Toffoli -> QuissoToffoli,
+      Fredkin -> QuissoFredkin,
       Oracle -> QuissoOracle
      }
    ]
@@ -469,7 +483,7 @@ ProductState::usage = "ProductState[...] is similar to Ket[...] but reserved onl
 
 Format[ ProductState[Association[]] ] := Ket[Any]
 
-Format[ ProductState[a_Association] ] := Module[
+Format[ ProductState[a_Association, ___] ] := Module[
   { aa = Map[ Dot[{Ket[0], Ket[1]}, #]&, a ],
     vv },
   vv = KeyValueMap[
@@ -483,57 +497,56 @@ ProductState /:
 NonCommutativeQ[ ProductState[___] ] = True
 
 ProductState /:
-HoldPattern[ Expand[ ProductState[a_Association] ] ] := 
-  Simplify[ CircleTimes @@ KeyValueMap[QuissoExpression[#2,#1]&, a] ]
+HoldPattern[ Expand[ ProductState[a_Association, ___] ] ] := 
+  Garner[ CircleTimes @@ KeyValueMap[QuissoExpression[#2,#1]&, a] ]
 
-HoldPattern @ Multiply[ a___, b:ProductState[_Association], c___ ] :=
-  Simplify @ Multiply[ a, Expand[b], c ]
+HoldPattern @ Multiply[ a___, b:ProductState[_Association, ___], c___ ] :=
+  Garner @ Multiply[ a, Expand[b], c ]
 
 ProductState[] = ProductState[Association[]]
 
-ProductState[ set:(_?QubitQ|{__?QubitQ}|_Rule).. ] :=
-  Fold[ ProductState, ProductState[], {set} ]
+ProductState[spec__Rule] :=
+  Fold[ ProductState, ProductState[<||>], {spec} ]
+
+ProductState[v:ProductState[_Association, ___], spec_Rule, more__Rule] :=
+  Fold[ ProductState, v, {spec} ]
+
+ProductState[ v:ProductState[_Association, ___], rule:(_String -> _) ] :=
+  Append[v, rule]
+
+ProductState[ ProductState[a_Association, opts___],
+  rule:(_?QubitQ -> {_, _}) ] :=
+  ProductState[ KeySort @ Append[a, FlavorNone @ rule], opts ]
 
 ProductState[
-  v:ProductState[_Association],
-  aa:(_?QubitQ|{__?QubitQ}|_Rule),
-  bb:(_?QubitQ|{__?QubitQ}|_Rule).. ] :=
-  Fold[ ProductState, v, {aa, bb} ]
-
-ProductState[ ProductState[a_Association], rule:( _?QubitQ -> {_, _} ) ] :=
-  ProductState @ KeySort @ Append[a, FlavorNone @ rule]
-
-ProductState[ ProductState[a_Association], G_?QubitQ] :=
-  ProductState[ProductState[a], G -> {1, 0}]
-
-ProductState[
-  ProductState[a_Association],
-  rule:( {__?QubitQ} -> {(Null|{_, _})..} )
- ] := Module[
-   {rr = rule /. {Null -> {1, 0}}},
-   ProductState @ KeySort @ Append[ a, FlavorNone @ Thread[rr] ]
+  ProductState[a_Association, opts___],
+  rule:({__?QubitQ} -> {{_, _}..})
+ ] := ProductState[
+   KeySort @ Append[ a, FlavorNone @ Thread[rule] ],
+   opts
   ]
 
-ProductState[ ProductState[a_Association], gg:{__?QubitQ} -> v:{_, _} ] := Module[
-  { rr = Map[Rule[#, v]&, gg] },
-  ProductState @ KeySort @ Append[a, FlavorNone @ rr]
- ]
-
-ProductState[ ProductState[a_Association], gg:{__?QubitQ} ] :=
-  ProductState[ ProductState[a], gg -> {1, 0} ]
+ProductState[
+  ProductState[a_Association, opts___],
+  gg:{__?QubitQ} -> v:{_, _}
+ ] := Module[
+   { rr = Map[Rule[#, v]&, gg] },
+   ProductState[ KeySort @ Append[a, FlavorNone @ rr], opts ]
+  ]
 
 (* Resetting the qubit values *)
 
-ProductState[a_Association][v__Rule] := ProductState[ ProductState[a], v ]
+ProductState[a_Association, otps___][v__Rule] :=
+  ProductState[ ProductState[a, opts], v ]
 
 (* Assessing the qubit values *)
 
-ProductState[a_Association][S:{__?QubitQ}] := With[
+ProductState[a_Association, opts___][S:{__?QubitQ}] := With[
   { SS = FlavorNone @ S },
   Lookup[a, SS]
  ]
 
-ProductState[a_Association][S_?QubitQ] := With[
+ProductState[a_Association, opts___][S_?QubitQ] := With[
   { SS = S[None] },
   a[SS]
  ]
@@ -1275,7 +1288,7 @@ QuissoSWAP[ x_?QubitQ, y_?QubitQ ] := Module[
 
 Toffoli::usage = "Toffoli[A, B, C] operates the Toffoli gate, i.e., the three-qubit controlled-note gate on C controlled by A and B."
 
-QuissoToffoli::usage = "QuissoToffoli[A, B, C] is the same as Toffoli[A, B, B], but unlike it expands immediately in terms of elementary Pauli gates."
+QuissoToffoli::usage = "QuissoToffoli[A, B, C] is the same as Toffoli[A, B, C], but expands immediately in terms of elementary Pauli gates."
 
 SetAttributes[Toffoli, Listable]
 
@@ -1294,14 +1307,36 @@ QuissoToffoli[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
   QuissoToffoli @@ FlavorNone @ {a,b,c} /;
   FlavorLast[{a,b,c}] =!= {None, None, None}
 
-QuissoToffoli[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] := Module[
-  { aa = Most @ a,
-    bb = Most @ b,
-    cc = Most @ c },
-  
-  ExpandAll[ 3 + aa[3] + bb[3] + cc[1] -
-      aa[3]**bb[3] - aa[3]**cc[1] - bb[3]**cc[1] +
-      aa[3]**bb[3]**cc[1] ] / 4
+QuissoToffoli[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] := Garner[
+  3 + a[3] + b[3] + c[1] -
+    a[3]**b[3] - a[3]**c[1] - b[3]**c[1] +
+    a[3]**b[3]**c[1]
+ ] / 4
+
+
+Fredkin::usage = "Fredkin[a, b, c] represents the Fredkin gate, i.e., the SWAP gate on b and c controlled by a."
+
+QuissoFredkin::usage = "QuissoFredkin[A, B, C] is the same as Fredkin[A, B, C], but expands immediately in terms of elementary Pauli gates."
+
+SetAttributes[Fredkin, Listable]
+
+SetAttributes[QuissoFredkin, Listable]
+
+Fredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
+  Fredkin @@ FlavorNone @ {a,b,c} /;
+  Not @ ContainsOnly[FlavorLast @ {a,b,c}, {None}]
+
+Fredkin /: Dagger[ op_Fredkin ] := op
+
+Fredkin /: HoldPattern @ Multiply[a___, Fredkin[b__], c___] :=
+  Multiply[a, QuissoFredkin[b], c]
+
+QuissoFredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
+  QuissoFredkin @@ FlavorNone @ {a,b,c} /;
+  Not @ ContainsOnly[FlavorLast @ {a,b,c}, {None}]
+
+QuissoFredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] := Garner[
+  (1+a[3])/2 + ((1-a[3])/2) ** QuissoSWAP[b, c]
  ]
 
 
@@ -1391,18 +1426,19 @@ matOracle[f_, cc:{__?QubitQ}, t_?QubitQ] := matOracle[f, cc, {t}]
 matOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
   { cn = Length @ cc,
     tn = Length @ tt,
-    cN, bb},
-  If[ Length[f @ ConstantArray[0, cn]] != tn,
+    cN, bb, ff },
+
+  ff[x_List] := Flatten @ List[f @@ x];
+
+  If[ Length[ff @ ConstantArray[0, cn]] != tn,
     Message[QuissoOracle::incmp, f, FlavorNone @ cc, FlavorNone @ tt];
     cN = Power[2, cn + tn];
     Return @ Zero[cN, cN]
    ];
   cN = Power[2, cn];
-  bb = GroupBy[IntegerDigits[Range[0, cN - 1], 2, cn], f];
+  bb = GroupBy[ IntegerDigits[Range[0, cN - 1], 2, cn], ff ];
   Total @ KeyValueMap[ matOracle[#1, #2, cN]&, bb ]
  ]
-
-matOracle[key:(0|1), val_List, n_Integer] := matOracle[{key}, val, n]
 
 matOracle[key:{(0|1)..}, val_List, n_Integer] := Module[
   { jj, matC, matT },
@@ -1593,8 +1629,8 @@ Options[QuissoCircuit] = {
   "ControlFunction" -> "Dot",
   "LabelSize" -> 1, 
   "Label" -> Automatic,
-  "Pivot" -> {-1, 0},
-  "Type" -> "Input"
+  "Visible" -> {},
+  "Invisible" -> {}
  }
 
 $CircuitSize = 1
@@ -1610,8 +1646,8 @@ $InOutOffset := 0.1 $GateDistance
 $BraceWidth := 0.1 $GateDistance
 
 
-Format[ qc:QuissoCircuit[___, opts___?OptionQ] ] :=
-  Graphics[qc, opts, ImageSize -> Medium]
+Format[ qc:QuissoCircuit[__, opts___?OptionQ] ] :=
+  Graphics[qc, FilterRules[{opts}, Options @ Graphics], ImageSize -> Medium]
 
 (*
  * User Interface
@@ -1720,17 +1756,19 @@ QuissoCircuitTrim[ _QuissoOut ] = Nothing
 
 QuissoCircuitTrim[ _?OptionQ ] = Nothing
 
-QuissoCircuitTrim[ Gate[expr_, ___?OptionQ ] ] := expr
+QuissoCircuitTrim[ g_ ] := Nothing /;
+  FreeQ[ g, _?QubitQ | _Ket | _ProductState ]
 
 QuissoCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
   Dyad[v, v, qq]
 
-QuissoCircuitTrim[ v:ProductState[_Association] ] := Expand[v]
+QuissoCircuitTrim[ v:ProductState[_Association, ___] ] := Expand[v]
+
+QuissoCircuitTrim[ Gate[expr_, ___?OptionQ] ] := expr
+
+QuissoCircuitTrim[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
 
 QuissoCircuitTrim[ g_?NumericQ ] := g
-
-QuissoCircuitTrim[ g_ ] := Nothing /;
-  FreeQ[ g, _?QubitQ | _Ket | _ProductState ]
 
 QuissoCircuitTrim[ g_ ] := g
 
@@ -1740,40 +1778,46 @@ QuissoCircuitTrim[ g_ ] := g
  *)
 
 QuissoCircuit /:
-Graphics[
-  QuissoCircuit[ gg__, qcOpts___?OptionQ ],
-  grOpts___?OptionQ
- ] := Module[
-   { ss = ss = Qubits @ {gg},
-     (* NOTE: Pure Qubits should be given None index properly. *)
-     cc = qCircuitGate @ gg,
-     xx, yy, nodes, lines, in, out },
+Graphics[ QuissoCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
+  Module[
+    { ss = Qubits @ {gg},
+      (* NOTE: Pure Qubits should be given None index properly. *)
+      cc = qCircuitGate @ gg,
+      vv, ww, xx, yy, nodes, lines, in, out },
 
-   If[ !ListQ[cc], cc = List @ cc ];
-   (* It happens when there is only one circuit element. *)
+    {vv, ww} = FlavorNone[
+      {{"Visible"}, {"Invisible"}} /. {opts} /. Options[QuissoCircuit]
+     ];
 
-   If[ cc == {}, cc = {"Spacer"} ];
-   (* There could be only input elements for temporary. *)
-   
-   xx  = Accumulate @ Boole[ qGateQ /@ cc ];
-   xx *= $GateDistance;
-   $CircuitSize = 1 + Max[xx];
-   
-   yy = Range[ Length @ ss ] $GateDistance;
-   yy = AssociationThread[ss, -yy];
-   
-   nodes = qCircuitNodes[ cc, xx, yy ];
-   lines = qCircuitLines[ cc, xx, yy ];
+    ss = Union @ Flatten @ {ss, vv, ww};
 
-   in = FirstCase[ {gg}, QuissoIn[kk___] :> {kk} ];
-   in = qCircuitInput[ in, xx, yy ];
+    If[ !ListQ[cc], cc = List @ cc ];
+    (* It happens when there is only one circuit element. *)
 
-   out = FirstCase[ {gg}, QuissoOut[kk___] :> {kk} ];
-   out = qCircuitOutput[ out, xx, yy ];
+    If[ cc == {}, cc = {"Spacer"} ];
+    (* There could be only input elements for temporary. *)
+    
+    xx  = Accumulate @ Boole[ qGateQ /@ cc ];
+    xx *= $GateDistance;
+    $CircuitSize = 1 + Max[xx];
+    
+    yy = Range[ Length @ ss ] $GateDistance;
+    yy = AssociationThread[ss, -yy];
+    
+    nodes = qCircuitNodes[ cc, xx, yy ];
+    lines = qCircuitLines[ cc, xx, KeyDrop[yy, ww] ];
 
-   Graphics[ Join[lines, in, nodes, out], qcOpts, grOpts,
-     PlotRangePadding -> {$GateDistance/2,0} ]
-  ]
+    in = FirstCase[ {gg}, QuissoIn[kk___] :> {kk} ];
+    in = qCircuitInput[ in, xx, yy ];
+
+    out = FirstCase[ {gg}, QuissoOut[kk___] :> {kk} ];
+    out = qCircuitOutput[ out, xx, yy ];
+
+    Graphics[ Join[lines, in, nodes, out],
+      (* FilterRules[{opts}, Options @ Graphics], *)
+      more,
+      PlotRangePadding -> {$GateDistance/2, 0} ]
+   ]
 
 qGateQ::usage = "qGateQ[expr] is True if expr is an expression of operators."
 
@@ -1852,6 +1896,12 @@ qCircuitGate[ SWAP[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
     "TargetFunction" -> "Cross"
    ]
 
+qCircuitGate[ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
+  Gate[ {a}, {b, c},
+    "ControlFunction" -> "Dot",
+    "TargetFunction" -> "Cross"
+   ]
+
 
 qCircuitGate[
   Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ],
@@ -1914,7 +1964,7 @@ qDrawGateCirclePlus[ x_, y_?NumericQ, ___ ] := Module[
  ]
 
 
-qDrawGateCross[x_, {y_}, ___] := qDrawGateCross[x, y]
+qDrawGateCross[x_, yy_List, ___] := qDrawGateCross @@@ Thread @ {x, yy}
 
 qDrawGateCross[x_, y_, ___] := List @ Line[{
     { {x,y}+{-1,-1}$DotSize, {x,y}+{+1,+1}$DotSize },
@@ -2195,11 +2245,12 @@ qDrawPort[ Port[ Ket[v_], opts___?OptionQ ], xy_Association ] := Module[
  ]
 
 qDrawPort[
-  Port[ ProductState[v_Association], opts___?OptionQ ],
+  Port[ ProductState[v_Association, opts___], more___?OptionQ ],
   xy_Association
  ] := Module[
    { label, pivot, tt },
-   { label, pivot } = {"Label", "Pivot"} /. {opts} /. Options[qCircuitPort];
+   { label, pivot } = {"Label", "Pivot"} /. {opts, more} /.
+     Options[qCircuitPort];
 
    tt = If [ label === Automatic,
      Map[ Simplify @ Dot[{Ket[0], Ket[1]}, #]&, v ],
@@ -2208,7 +2259,7 @@ qDrawPort[
     ];
    
    Values @ MapThread[
-     qPortText[#1, #2, pivot, opts]&,
+     qPortText[#1, #2, pivot, opts, more]&,
      KeyIntersection @ {tt, xy}
     ]
   ]

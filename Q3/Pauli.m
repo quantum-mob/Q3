@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-01-17 14:52:17+09 $
-  $Revision: 2.27 $
+  $Date: 2021-01-27 14:43:01+09 $
+  $Revision: 2.31 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`Abel`" } ]
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 
 Print @ StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.27 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-17 14:52:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.31 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-27 14:43:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ]
 
@@ -236,23 +236,24 @@ TheOperator[ { n:{(0|1|2|3|4|5|6|Raise|Lower|Hadamard)..},
 
 (* ************************************************************************** *)
 
-DefaultForm::usage = "DefaultForm[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.
-  To be compared with LogicalForm."
+DefaultForm::usage = "DefaultForm[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.\nTo be compared with LogicalForm."
 
 DefaultForm[ expr_ ] := expr /;
-  FreeQ[ expr, (Ket[_Association] | Bra[_Association]) ]
+  FreeQ[ expr, _Ket | _Bra | _Dyad ]
 
 DefaultForm[ expr_ ] := expr /. {
   a_OTimes -> a, (* NOTE *)
-  OSlash[v_Ket, ex_] :> OSlash[v, DefaultForm @ ex],
+  OSlash[v_Ket, expre_] :> OSlash[v, DefaultForm @ expre],
   Ket[a_Association] :> Ket @ KetTrim @ a,
-  Bra[a_Association] :> Bra @ KetTrim @ a
+  Bra[a_Association] :> Bra @ KetTrim @ a,
+  Dyad[a_Association, b_Association, qq_List] :>
+    Dyad[KetTrim @ a, KetTrim @ b, qq]
  }
 (* NOTE: This line is necessary to prevent the Kets and Bras in OTimes from
    being affected. *)
 
 
-LogicalForm::usage = "LogicalForm[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nLogicalForm[expr, {S$1, S$2, ...}] assumes that expr involves systems labeled by S$1, S$2, ....\nLogicalForm[expr, S] is quivalent to LogicalForm[expr, {S}].\nSee also DefaultForm."
+LogicalForm::usage = "LogicalForm[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nLogicalForm[expr, {S1, S2, ...}] assumes that expr involves systems labeled by S1, S2, ....\nLogicalForm[expr, S] is quivalent to LogicalForm[expr, {S}].\nSee also DefaultForm."
 
 LogicalForm[ expr_ ] := LogicalForm[ expr, {} ]
 
@@ -689,6 +690,13 @@ PauliExpand[expr_] := (
   Message[Pauli::obsolete, PauliExpand, Elaborate];
   Elaborate[expr]
  )
+
+
+Hadamard::usage = "Hadamard is a flavor index representing the Hadamard gate."
+
+Quadrant::usage = "Quadrant is a flavor index representing the quadrant gate, i.e., the relative phase gate with phase angle 2Pi/4."
+
+Octant::usage = "Octant is a flavor index representing the octant gate, i.e., the relative phase gate with phase angle 2Pi/8."
 
 
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
@@ -1653,10 +1661,10 @@ DyadExpression[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
  ]
 
 theDyadExpr[ij_, dd_, qq_] := Module[
-  {kl = Transpose @ Partition[ij - 1, 2]},
+  { kl = Transpose @ Partition[ij - 1, 2] },
   Dyad[
-    AssociationThread[qq -> First @ kl],
-    AssociationThread[qq -> Last @ kl],
+    KetTrim @ AssociationThread[qq -> First @ kl],
+    KetTrim @ AssociationThread[qq -> Last @ kl],
     qq
    ]
  ]

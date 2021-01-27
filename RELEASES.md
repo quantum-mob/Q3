@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v1.4.2
+
+- Fredkin gate.
+- New options "Visible" and "Invisible" for QuissoCircuit.
+- Qubit specifications S[..., 10] and S[..., 11] are holded.
+
 ## v1.4.1
 
 - New function ReleaseTimes.

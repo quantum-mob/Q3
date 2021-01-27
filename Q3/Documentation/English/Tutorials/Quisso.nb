@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     44949,       1371]
-NotebookOptionsPosition[     36758,       1194]
-NotebookOutlinePosition[     39108,       1252]
-CellTagsIndexPosition[     39065,       1249]
+NotebookDataLength[     63521,       1972]
+NotebookOptionsPosition[     49168,       1673]
+NotebookOutlinePosition[     51681,       1733]
+CellTagsIndexPosition[     51638,       1730]
 WindowTitle->Quisso Quick-Start Tutorial
 WindowFrame->Normal*)
 
@@ -103,7 +103,7 @@ QuissoTutorial.html"], StandardForm]], "Input", TextClipboardType ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$251696], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$255009], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], 
              "Q3/tutorial/QuissoTutorial", ".html"]], None}]}]},
@@ -159,8 +159,28 @@ Frequently used functions and symbols with Qubits and Qudits.\
 
 Cell[CellGroupData[{
 
-Cell["Basic Usage", "Section",
+Cell["Quantum Bits (Qubits)", "Section",
  CellID->337125431],
+
+Cell[TextData[{
+ "A quantum bit, or qubit for short, is a two-level quantum system. Qubits \
+are the elementary units of quantum computers. In Quisso, the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Species"]], "paclet:Q3/ref/Species"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Qubit"]], "paclet:Q3/ref/Qubit"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " is reserved to represent qubits."
+}], "Text",
+ CellID->83665415],
 
 Cell["First load the package", "MathCaption",
  CellID->836781195],
@@ -170,7 +190,11 @@ Cell[BoxData[
  CellLabel->"In[352]:=",
  CellID->1428407696],
 
-Cell["Choose the symbol (in this case S) to denote the Qubits.", "MathCaption",
+Cell[TextData[{
+ "Choose the symbol (in this case ",
+ StyleBox["S", "Input"],
+ ") to denote the qubits."
+}], "MathCaption",
  CellID->452840402],
 
 Cell[BoxData[
@@ -187,51 +211,197 @@ Cell[TextData[{
      TextData["Flavors"]], "paclet:Q3/ref/Flavors"},
    "RefLink",
    BaseStyle->{"InlineFormula"}]], "InlineFormula"],
- ") distinguishes among Pauli X, Y, Z operators. ",
+ ") distinguishes among the Pauli X, Y, Z operators."
+}], "MathCaption",
+ CellID->1848859370],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"S", "[", 
+  RowBox[{"1", ",", "1"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"S", "[", 
+  RowBox[{"1", ",", "2"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"S", "[", 
+  RowBox[{"2", ",", "1", ",", "3"}], "]"}]}], "Input",
+ CellLabel->"In[172]:=",
+ CellID->391816822],
+
+Cell[BoxData[
+ TemplateBox[{
+   TemplateBox[{"S"}, "RowDefault"], 
+   TemplateBox[{"1"}, "RowDefault"], 
+   TemplateBox[{"\"x\""}, "RowDefault"]},
+  "Subsuperscript"]], "Output",
+ CellLabel->"Out[172]=",
+ CellID->1507363167],
+
+Cell[BoxData[
+ TemplateBox[{
+   TemplateBox[{"S"}, "RowDefault"], 
+   TemplateBox[{"1"}, "RowDefault"], 
+   TemplateBox[{"\"y\""}, "RowDefault"]},
+  "Subsuperscript"]], "Output",
+ CellLabel->"Out[173]=",
+ CellID->388164110],
+
+Cell[BoxData[
+ TemplateBox[{
+   TemplateBox[{"S"}, "RowDefault"], 
+   TemplateBox[{"2", "\",\"", "1"}, "RowDefault"], 
+   TemplateBox[{"\"z\""}, "RowDefault"]},
+  "Subsuperscript"]], "Output",
+ CellLabel->"Out[174]=",
+ CellID->1966360831]
+}, Open  ]],
+
+Cell[TextData[{
+ StyleBox["None", "Input"],
+ " for the last flavor index is reserved to indicate the Qubit itself."
+}], "MathCaption",
+ CellID->68744040],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"S", "[", 
+  RowBox[{"1", ",", "None"}], "]"}]], "Input",
+ CellLabel->"In[175]:=",
+ CellID->1626788463],
+
+Cell[BoxData[
+ SubscriptBox[
+  TemplateBox[{"S"},
+   "RowDefault"], 
+  TemplateBox[{"1"},
+   "RowDefault"]]], "Output",
+ CellLabel->"Out[175]=",
+ CellID->1103191776]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"%", "//", "InputForm"}]], "Input",
+ CellLabel->"In[157]:=",
+ CellID->370836262],
+
+Cell["S[1, None]", "Output",
+ CellLabel->"Out[157]//InputForm=",
+ CellID->317459299]
+}, Open  ]],
+
+Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{
     Cell[
      TextData["All"]], "paclet:ref/All"},
    "RefLink",
    BaseStyle->{"InlineFormula"}]], "InlineFormula"],
- " in this case gives all three operators."
+ " for the last flavor index indicates the all non-identity Pauli operators \
+acting on the qubit ",
+ StyleBox["S[\[Ellipsis],None]", "Input"],
+ "."
 }], "MathCaption",
- CellID->1848859370],
+ CellID->2133402809],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"S", "[", 
   RowBox[{"1", ",", "All"}], "]"}]], "Input",
- CellLabel->"In[354]:=",
+ CellLabel->"In[176]:=",
  CellID->687323028],
 
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"S"}, "RowDefault"], 
-      TemplateBox[{"1"}, "RowDefault"], 
-      TemplateBox[{"\"x\""}, "RowDefault"]},
-     "Subsuperscript"],
-    DisplayForm], ",", 
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"S"}, "RowDefault"], 
-      TemplateBox[{"1"}, "RowDefault"], 
-      TemplateBox[{"\"y\""}, "RowDefault"]},
-     "Subsuperscript"],
-    DisplayForm], ",", 
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"S"}, "RowDefault"], 
-      TemplateBox[{"1"}, "RowDefault"], 
-      TemplateBox[{"\"z\""}, "RowDefault"]},
-     "Subsuperscript"],
-    DisplayForm]}], "}"}]], "Output",
- CellLabel->"Out[354]=",
- CellID->1608023534]
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Subsuperscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"]}], "}"}]], "Output",
+ CellLabel->"Out[176]=",
+ CellID->1508582016]
+}, Open  ]],
+
+Cell["\<\
+Giving a list for a flavor index, you can specify a list of Pauli operators.\
+\>", "MathCaption",
+ CellID->1605082332],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"S", "[", 
+  RowBox[{"1", ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2", ",", "3"}], "}"}]}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"S", "[", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}], ",", "2"}], 
+  "]"}]}], "Input",
+ CellLabel->"In[307]:=",
+ CellID->696768349],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Subsuperscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"]}], "}"}]], "Output",
+ CellLabel->"Out[307]=",
+ CellID->458440084],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"3"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"4"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"]}], "}"}]], "Output",
+ CellLabel->"Out[308]=",
+ CellID->1978649999]
 }, Open  ]],
 
 Cell[TextData[{
@@ -275,24 +445,205 @@ Cell[BoxData[
    DisplayForm]}]], "Output",
  CellLabel->"Out[355]=",
  CellID->2022039805]
+}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell[BoxData[
- RowBox[{"v", "=", 
-  RowBox[{
-   RowBox[{"Ket", "[", "]"}], "-", 
-   RowBox[{"I", " ", 
-    RowBox[{"Ket", "[", 
-     RowBox[{
-      RowBox[{
-       RowBox[{"S", "[", "1", "]"}], "\[Rule]", "1"}], ",", 
-      RowBox[{
-       RowBox[{"S", "[", "2", "]"}], "\[Rule]", "1"}]}], "]"}]}]}]}]], "Input",\
+Cell["Quantum States of Qubits", "Section",
+ CellID->819847555],
 
- CellLabel->"In[356]:=",
- CellID->97443302],
+Cell[TextData[{
+ "The quantum states of a system of qubits can be specified by ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Ket"]], "paclet:ref/Ket"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ". "
+}], "Text",
+ CellID->982594352],
+
+Cell[TextData[{
+ "Assuming ",
+ StyleBox["S", "Input"],
+ " has been declared as ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Qubit"]], "paclet:Q3/ref/Qubit"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ", the logical basis for the Qubit ",
+ StyleBox["S[1,None]", "Input"],
+ " is comprised of these two states."
+}], "MathCaption",
+ CellID->1355826419],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+v0=Ket[S[1,None]->0]
+v1=Ket[S[1,None]->1]\
+\>", "Input",
+ CellLabel->"In[252]:=",
+ CellID->1626373073],
+
+Cell[BoxData[
+ TemplateBox[{"\"\[SpaceIndicator]\""},
+  "Ket"]], "Output",
+ CellLabel->"Out[252]=",
+ CellID->170462774],
+
+Cell[BoxData[
+ TemplateBox[{
+   TagBox[
+    TemplateBox[{
+      SubscriptBox["1", 
+       SubscriptBox[
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+  "Ket"]], "Output",
+ CellLabel->"Out[253]=",
+ CellID->224657520]
+}, Open  ]],
+
+Cell[TextData[{
+ "Typing in the special flavor index ",
+ StyleBox["None", "Input"],
+ " every time you specify a state vector would be cumbersome, and within ",
+ StyleBox["Ket[\[Ellipsis]]", "Input"],
+ ", it can be dropped. (Several other functions defined in Quisso also allow \
+it.)"
+}], "MathCaption",
+ CellID->558490327],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+v0=Ket[S[1]->0]
+v1=Ket[S[1]->1]\
+\>", "Input",
+ CellLabel->"In[262]:=",
+ CellID->942181504],
+
+Cell[BoxData[
+ TemplateBox[{"\"\[SpaceIndicator]\""},
+  "Ket"]], "Output",
+ CellLabel->"Out[262]=",
+ CellID->1240011537],
+
+Cell[BoxData[
+ TemplateBox[{
+   TagBox[
+    TemplateBox[{
+      SubscriptBox["1", 
+       SubscriptBox[
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+  "Ket"]], "Output",
+ CellLabel->"Out[263]=",
+ CellID->1692591871]
+}, Open  ]],
+
+Cell[TextData[{
+ "Internally, any ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Ket"]], "paclet:ref/Ket"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " is stored in the form of ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{"<|", 
+    RowBox[{
+     RowBox[{
+      SubscriptBox[
+       StyleBox["s", "TI"], 
+       StyleBox["1", "TR"]], "\[Rule]", 
+      SubscriptBox[
+       StyleBox["b", "TI"], 
+       StyleBox["1", "TR"]]}], ",", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["s", "TI"], 
+       StyleBox["2", "TR"]], "\[Rule]", 
+      SubscriptBox[
+       StyleBox["b", "TI"], 
+       StyleBox["2", "TR"]]}], ",", 
+     StyleBox["\[Ellipsis]", "TR"]}], "|>"}], "]"}]], "InlineFormula"],
+ "."
+}], "MathCaption",
+ CellID->308766017],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"v0", ",", "v1"}], "}"}], "//", "InputForm"}]], "Input",
+ CellLabel->"In[266]:=",
+ CellID->308729066],
+
+Cell["{Ket[<||>], Ket[<|S[1, None] -> 1|>]}", "Output",
+ CellLabel->"Out[266]//InputForm=",
+ CellID->472862400]
+}, Open  ]],
+
+Cell[TextData[{
+ "As you can see in ",
+ StyleBox["v0", "Input"],
+ " above, Qubits in the logical basis state Ket[0] are omitted from ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{"<|", "\[Ellipsis]", "|>"}], "]"}]], "InlineFormula"],
+ " for efficiency reasons. You can force them to be displayed with ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["LogicalForm"]], "paclet:Q3/ref/LogicalForm"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "MathCaption",
+ CellID->1972471494],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"ket", "=", 
+  RowBox[{"v0", "-", 
+   RowBox[{"I", " ", "v1"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"LogicalForm", "[", 
+  RowBox[{"ket", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"S", "[", 
+      RowBox[{"1", ",", "None"}], "]"}], ",", 
+     RowBox[{"S", "[", 
+      RowBox[{"2", ",", "None"}], "]"}]}], "}"}]}], 
+  "]"}], "\[IndentingNewLine]", 
+ RowBox[{"LogicalForm", "[", 
+  RowBox[{"ket", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"S", "[", "1", "]"}], ",", 
+     RowBox[{"S", "[", "2", "]"}]}], "}"}]}], "]"}]}], "Input",
+ CellLabel->"In[296]:=",
+ CellID->223524691],
 
 Cell[BoxData[
  RowBox[{
@@ -303,37 +654,12 @@ Cell[BoxData[
      TagBox[
       TemplateBox[{
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
-        SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"]}]}]], "Output",
- CellLabel->"Out[356]=",
- CellID->1819544330]
-}, Open  ]],
-
-Cell["\<\
-In the above expression, Qubits in 0 state have been omitted for efficiency \
-reasons. You can force them to be displayed.\
-\>", "MathCaption",
- CellID->1972471494],
-
-Cell[CellGroupData[{
-
-Cell[BoxData[
- RowBox[{"LogicalForm", "[", 
-  RowBox[{"v", ",", 
-   RowBox[{"S", "@", 
-    RowBox[{"{", 
-     RowBox[{"1", ",", "2"}], "}"}]}]}], "]"}]], "Input",
- CellLabel->"In[357]:=",
- CellID->223524691],
+ CellLabel->"Out[296]=",
+ CellID->985061294],
 
 Cell[BoxData[
  RowBox[{
@@ -341,208 +667,312 @@ Cell[BoxData[
     TagBox[
      TemplateBox[{
        SubscriptBox["0", 
-        TagBox[
-         SubscriptBox[
-          TemplateBox[{"S"}, "RowDefault"], 
-          TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]]], 
        SubscriptBox["0", 
-        TagBox[
-         SubscriptBox[
-          TemplateBox[{"S"}, "RowDefault"], 
-          TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-     DisplayForm]},
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
    "Ket"], "-", 
   RowBox[{"\[ImaginaryI]", " ", 
    TemplateBox[{
      TagBox[
       TemplateBox[{
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
-        SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"]}]}]], "Output",
- CellLabel->"Out[357]=",
- CellID->1374162790]
-}, Open  ]],
-
-Cell[CellGroupData[{
+ CellLabel->"Out[297]=",
+ CellID->973733535],
 
 Cell[BoxData[
  RowBox[{
-  RowBox[{"S", "[", 
-   RowBox[{"1", ",", "1"}], "]"}], "**", "v"}]], "Input",
- CellLabel->"In[358]:=",
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["0", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]]], 
+       SubscriptBox["0", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"], "-", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[298]=",
+ CellID->1714132605]
+}, Open  ]],
+
+Cell[TextData[{
+ "You can operate any Pauli operators on the state vector. Recall that the \
+Pauli operator ",
+ StyleBox["S[j,\[Ellipsis],\[Mu]]", "Input"],
+ " acts on the qubit ",
+ StyleBox["S[j,\[Ellipsis],None]", "Input"],
+ ". In the example below, ",
+ StyleBox["S[1,1]", "Input"],
+ " is the Pauli X acting on the qubit ",
+ StyleBox["S[1,None]", "Input"],
+ "."
+}], "MathCaption",
+ CellID->1370114080],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"new", "=", 
+  RowBox[{
+   RowBox[{"S", "[", 
+    RowBox[{"1", ",", "1"}], "]"}], "**", "ket"}]}], "\[IndentingNewLine]", 
+ RowBox[{"new", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[299]:=",
  CellID->685726275],
 
 Cell[BoxData[
  RowBox[{
+  RowBox[{
+   RowBox[{"-", "\[ImaginaryI]"}], " ", 
+   TemplateBox[{"\"\[SpaceIndicator]\""},
+    "Ket"]}], "+", 
   TemplateBox[{
     TagBox[
      TemplateBox[{
        SubscriptBox["1", 
-        TagBox[
-         SubscriptBox[
-          TemplateBox[{"S"}, "RowDefault"], 
-          TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-     DisplayForm]},
-   "Ket"], "-", 
-  RowBox[{"\[ImaginaryI]", " ", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[299]=",
+ CellID->851081589],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"-", "\[ImaginaryI]"}], " ", 
    TemplateBox[{
      TagBox[
       TemplateBox[{
-        SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
-    "Ket"]}]}]], "Output",
- CellLabel->"Out[358]=",
- CellID->822268989]
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[300]=",
+ CellID->1887177303]
 }, Open  ]],
+
+Cell["You can act more complicated operators on the state vector.", \
+"MathCaption",
+ CellID->1397076271],
 
 Cell[CellGroupData[{
 
-Cell[BoxData[
- RowBox[{"expr", "=", 
+Cell[BoxData[{
+ RowBox[{"op", "=", 
   RowBox[{
-   RowBox[{"CNOT", "[", 
-    RowBox[{
-     RowBox[{"S", "[", "1", "]"}], ",", 
-     RowBox[{"S", "[", "2", "]"}]}], "]"}], "**", 
    RowBox[{"S", "[", 
-    RowBox[{"2", ",", "6"}], "]"}]}]}]], "Input",
- CellLabel->"In[359]:=",
+    RowBox[{"1", ",", "1"}], "]"}], "+", 
+   RowBox[{"I", " ", 
+    RowBox[{"S", "[", 
+     RowBox[{"1", ",", "2"}], "]"}]}], "+", 
+   RowBox[{"S", "[", 
+    RowBox[{"2", ",", "1"}], "]"}], "-", 
+   RowBox[{"I", " ", 
+    RowBox[{"S", "[", 
+     RowBox[{"2", ",", "2"}], "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"new2", "=", 
+   RowBox[{"op", "**", "ket"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"LogicalForm", "[", 
+  RowBox[{"new2", ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"S", "[", 
+      RowBox[{"1", ",", "None"}], "]"}], ",", 
+     RowBox[{"S", "[", 
+      RowBox[{"2", ",", "None"}], "]"}]}], "}"}]}], "]"}]}], "Input",
+ CellLabel->"In[301]:=",
  CellID->1598562236],
 
 Cell[BoxData[
  RowBox[{
-  FractionBox["1", 
-   RowBox[{"2", " ", 
-    SqrtBox["2"]}]], "+", 
-  FractionBox[
-   TagBox[
-    RowBox[{
+  TemplateBox[{
+    TemplateBox[{"S"}, "RowDefault"], 
+    TemplateBox[{"1"}, "RowDefault"], 
+    TemplateBox[{"\"x\""}, "RowDefault"]},
+   "Subsuperscript"], "+", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"]}], "+", 
+  TemplateBox[{
+    TemplateBox[{"S"}, "RowDefault"], 
+    TemplateBox[{"2"}, "RowDefault"], 
+    TemplateBox[{"\"x\""}, "RowDefault"]},
+   "Subsuperscript"], "-", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"]}]}]], "Output",
+ CellLabel->"Out[301]=",
+ CellID->627516168],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"-", "2"}], " ", "\[ImaginaryI]", " ", 
+   TemplateBox[{
      TagBox[
-      TagBox[
-       TemplateBox[{
-         TemplateBox[{"S"}, "RowDefault"], 
-         TemplateBox[{"1"}, "RowDefault"], 
-         TemplateBox[{"\"z\""}, "RowDefault"]},
-        "Subsuperscript"],
-       DisplayForm],
-      DisplayForm], 
-     TagBox[
-      TagBox[
-       TemplateBox[{
-         TemplateBox[{"S"}, "RowDefault"], 
-         TemplateBox[{"2"}, "RowDefault"], 
-         TemplateBox[{"\"x\""}, "RowDefault"]},
-        "Subsuperscript"],
-       DisplayForm],
-      DisplayForm]}],
-    DisplayForm], 
-   RowBox[{"2", " ", 
-    SqrtBox["2"]}]], "+", 
-  FractionBox[
-   RowBox[{"\[ImaginaryI]", " ", 
-    TagBox[
-     RowBox[{
-      TagBox[
-       TagBox[
-        TemplateBox[{
+      TemplateBox[{
+        SubscriptBox["0", 
+         SubscriptBox[
           TemplateBox[{"S"}, "RowDefault"], 
-          TemplateBox[{"1"}, "RowDefault"], 
-          TemplateBox[{"\"z\""}, "RowDefault"]},
-         "Subsuperscript"],
-        DisplayForm],
-       DisplayForm], 
-      TagBox[
-       TagBox[
-        TemplateBox[{
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["0", 
+         SubscriptBox[
           TemplateBox[{"S"}, "RowDefault"], 
-          TemplateBox[{"2"}, "RowDefault"], 
-          TemplateBox[{"\"y\""}, "RowDefault"]},
-         "Subsuperscript"],
-        DisplayForm],
-       DisplayForm]}],
-     DisplayForm]}], 
-   RowBox[{"2", " ", 
-    SqrtBox["2"]}]], "+", 
-  FractionBox[
-   TagBox[
-    RowBox[{
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  RowBox[{"2", " ", 
+   TemplateBox[{
      TagBox[
-      TagBox[
-       TemplateBox[{
-         TemplateBox[{"S"}, "RowDefault"], 
-         TemplateBox[{"1"}, "RowDefault"], 
-         TemplateBox[{"\"z\""}, "RowDefault"]},
-        "Subsuperscript"],
-       DisplayForm],
-      DisplayForm], 
+      TemplateBox[{
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "-", 
+  RowBox[{"2", " ", "\[ImaginaryI]", " ", 
+   TemplateBox[{
      TagBox[
-      TagBox[
-       TemplateBox[{
-         TemplateBox[{"S"}, "RowDefault"], 
-         TemplateBox[{"2"}, "RowDefault"], 
-         TemplateBox[{"\"z\""}, "RowDefault"]},
-        "Subsuperscript"],
-       DisplayForm],
-      DisplayForm]}],
-    DisplayForm], 
-   RowBox[{"2", " ", 
-    SqrtBox["2"]}]], "-", 
-  FractionBox[
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"S"}, "RowDefault"], 
-      TemplateBox[{"1"}, "RowDefault"], 
-      TemplateBox[{"\"z\""}, "RowDefault"]},
-     "Subsuperscript"],
-    DisplayForm], 
-   RowBox[{"2", " ", 
-    SqrtBox["2"]}]], "-", 
-  FractionBox[
-   RowBox[{"\[ImaginaryI]", " ", 
-    TagBox[
-     TemplateBox[{
-       TemplateBox[{"S"}, "RowDefault"], 
-       TemplateBox[{"2"}, "RowDefault"], 
-       TemplateBox[{"\"y\""}, "RowDefault"]},
-      "Subsuperscript"],
-     DisplayForm]}], 
-   RowBox[{"2", " ", 
-    SqrtBox["2"]}]], "+", 
-  FractionBox[
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"S"}, "RowDefault"], 
-      TemplateBox[{"2"}, "RowDefault"], 
-      TemplateBox[{"\"H\""}, "RowDefault"]},
-     "Subsuperscript"],
-    DisplayForm], "2"]}]], "Output",
- CellLabel->"Out[359]=",
- CellID->1458629651]
+      TemplateBox[{
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[303]=",
+ CellID->372045159]
+}, Open  ]]
 }, Open  ]],
 
-Cell["Check the matrix representation of the above expression.", "MathCaption",
+Cell[CellGroupData[{
+
+Cell["Linear Operators", "Section",
+ CellID->798918039],
+
+Cell["\<\
+Any operator on a system of qubits can be specified by a combination of the \
+Pauli operators.\
+\>", "Text",
+ CellID->2063446138],
+
+Cell["This is a typical form of a linear operator.", "MathCaption",
+ CellID->1728070850],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op", "=", 
+  RowBox[{
+   RowBox[{"S", "[", 
+    RowBox[{"1", ",", "1"}], "]"}], "+", 
+   RowBox[{"I", " ", 
+    RowBox[{
+     RowBox[{"S", "[", 
+      RowBox[{"1", ",", "2"}], "]"}], "**", 
+     RowBox[{"S", "[", 
+      RowBox[{"2", ",", "3"}], "]"}]}]}]}]}]], "Input",
+ CellLabel->"In[312]:=",
+ CellID->1820765392],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"\[ImaginaryI]", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  TemplateBox[{
+    TemplateBox[{"S"}, "RowDefault"], 
+    TemplateBox[{"1"}, "RowDefault"], 
+    TemplateBox[{"\"x\""}, "RowDefault"]},
+   "Subsuperscript"]}]], "Output",
+ CellLabel->"Out[312]=",
+ CellID->706758001]
+}, Open  ]],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Matrix"]], "paclet:Q3/ref/Matrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " converts the operator into a matrix representation in the standard basis \
+of the qubits involved in the expression."
+}], "MathCaption",
  CellID->1573319784],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{"mat", "=", 
-  RowBox[{"Matrix", "[", "expr", "]"}]}], "\[IndentingNewLine]", 
+  RowBox[{"Matrix", "[", "op", "]"}]}], "\[IndentingNewLine]", 
  RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
- CellLabel->"In[360]:=",
+ CellLabel->"In[317]:=",
  CellID->819464177],
 
 Cell[BoxData[
@@ -557,21 +987,21 @@ Cell[BoxData[
             PaneBox[
              ButtonBox[
               DynamicBox[
-               FEPrivate`FrontEndResource[
-               "FEBitmaps", "SquarePlusIconMedium"]], 
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]], 
               ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
               BaseStyle -> {}, Evaluator -> Automatic, Method -> 
               "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
              Dynamic[{
-               Automatic, 3.5 CurrentValue["FontCapHeight"]/
-                AbsoluteCurrentValue[Magnification]}]], 
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
             GraphicsBox[
              RasterBox[CompressedData["
-1:eJxTTMoPSmVmYGBggWIQ26p8d9wspXP2c4wXbTH/ccX+xSLFx4GrXtnjEt/Z
-beC6c8sL+xvuy9fVTHtrfzIi91/81/c4xallvsL7UG3huqP2DFAgsuXkw8l+
-l0lWP9j8CwDSN8p4
-              "], {{0, 0}, {4, 4}}, {0, 1}], AspectRatio -> 
-             1, Axes -> False, Frame -> False, FrameLabel -> {None, None}, 
+1:eJxTTMoPSmVmYGBggWIQ26p8d9wspXP2c4wXbTH/ccX+xSLFx4GrXtnv7DZw
+3bnlhf0N9+Xraqa9tT8Zkfsv/ut7e1zqR8XJCzcAwabPOg==
+              "], {{0, 0}, {
+              4, 4}}, {0, 1}], AspectRatio -> 1, Axes -> False, 
+             AxesStyle -> {}, Frame -> False, FrameLabel -> {None, None}, 
              FrameStyle -> Directive[
                Opacity[0.5], 
                Thickness[Tiny], 
@@ -580,8 +1010,9 @@ l0lWP9j8CwDSN8p4
              Directive[
                GrayLevel[0.5, 0.4]], ImageSize -> 
              Dynamic[{
-               Automatic, 3.5 CurrentValue["FontCapHeight"]/
-                AbsoluteCurrentValue[Magnification]}], 
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}], 
              Method -> {
               "AxisPadding" -> Scaled[0.02], "DefaultBoundaryStyle" -> 
                Automatic, 
@@ -594,12 +1025,13 @@ l0lWP9j8CwDSN8p4
                     "freeformCursorMode" -> True, 
                     "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
                "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
-               Scaled[0.02], "RangePadding" -> Scaled[0.05]}], 
+               Scaled[0.02], "RangePadding" -> Scaled[0.05]}, AxesStyle -> 
+             Large, FrameStyle -> Large, ImageSize -> Large], 
             GridBox[{{
                RowBox[{
                  TagBox["\"Specified elements: \"", "SummaryItemAnnotation"], 
                  "\[InvisibleSpace]", 
-                 TagBox["8", "SummaryItem"]}]}, {
+                 TagBox["4", "SummaryItem"]}]}, {
                RowBox[{
                  TagBox["\"Dimensions: \"", "SummaryItemAnnotation"], 
                  "\[InvisibleSpace]", 
@@ -614,28 +1046,29 @@ l0lWP9j8CwDSN8p4
               BaseStyle -> {
               ShowStringCharacters -> False, NumberMarks -> False, 
                PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
-          GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
           GridBoxItemSize -> {
            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
           BaselinePosition -> {1, 1}], True -> GridBox[{{
             PaneBox[
              ButtonBox[
               DynamicBox[
-               FEPrivate`FrontEndResource[
-               "FEBitmaps", "SquareMinusIconMedium"]], 
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
               ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
               BaseStyle -> {}, Evaluator -> Automatic, Method -> 
               "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
              Dynamic[{
-               Automatic, 3.5 CurrentValue["FontCapHeight"]/
-                AbsoluteCurrentValue[Magnification]}]], 
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
             GraphicsBox[
              RasterBox[CompressedData["
-1:eJxTTMoPSmVmYGBggWIQ26p8d9wspXP2c4wXbTH/ccX+xSLFx4GrXtnjEt/Z
-beC6c8sL+xvuy9fVTHtrfzIi91/81/c4xallvsL7UG3huqP2DFAgsuXkw8l+
-l0lWP9j8CwDSN8p4
-              "], {{0, 0}, {4, 4}}, {0, 1}], AspectRatio -> 
-             1, Axes -> False, Frame -> False, FrameLabel -> {None, None}, 
+1:eJxTTMoPSmVmYGBggWIQ26p8d9wspXP2c4wXbTH/ccX+xSLFx4GrXtnv7DZw
+3bnlhf0N9+Xraqa9tT8Zkfsv/ut7e1zqR8XJCzcAwabPOg==
+              "], {{0, 0}, {
+              4, 4}}, {0, 1}], AspectRatio -> 1, Axes -> False, 
+             AxesStyle -> {}, Frame -> False, FrameLabel -> {None, None}, 
              FrameStyle -> Directive[
                Opacity[0.5], 
                Thickness[Tiny], 
@@ -644,8 +1077,9 @@ l0lWP9j8CwDSN8p4
              Directive[
                GrayLevel[0.5, 0.4]], ImageSize -> 
              Dynamic[{
-               Automatic, 3.5 CurrentValue["FontCapHeight"]/
-                AbsoluteCurrentValue[Magnification]}], 
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}], 
              Method -> {
               "AxisPadding" -> Scaled[0.02], "DefaultBoundaryStyle" -> 
                Automatic, 
@@ -658,12 +1092,13 @@ l0lWP9j8CwDSN8p4
                     "freeformCursorMode" -> True, 
                     "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
                "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
-               Scaled[0.02], "RangePadding" -> Scaled[0.05]}], 
+               Scaled[0.02], "RangePadding" -> Scaled[0.05]}, AxesStyle -> 
+             Large, FrameStyle -> Large, ImageSize -> Large], 
             GridBox[{{
                RowBox[{
                  TagBox["\"Specified elements: \"", "SummaryItemAnnotation"], 
                  "\[InvisibleSpace]", 
-                 TagBox["8", "SummaryItem"]}]}, {
+                 TagBox["4", "SummaryItem"]}]}, {
                RowBox[{
                  TagBox["\"Dimensions: \"", "SummaryItemAnnotation"], 
                  "\[InvisibleSpace]", 
@@ -677,7 +1112,7 @@ l0lWP9j8CwDSN8p4
                RowBox[{
                  TagBox["\"Density: \"", "SummaryItemAnnotation"], 
                  "\[InvisibleSpace]", 
-                 TagBox["0.5`", "SummaryItem"]}]}, {
+                 TagBox["0.25`", "SummaryItem"]}]}, {
                RowBox[{
                  TagBox["\"Elements:\"", "SummaryItemAnnotation"], 
                  "\[InvisibleSpace]", 
@@ -687,49 +1122,40 @@ l0lWP9j8CwDSN8p4
                  GridBox[{{
                     RowBox[{
                     RowBox[{"{", 
-                    RowBox[{"1", ",", "1"}], "}"}], "\[Rule]", 
+                    RowBox[{"1", ",", "3"}], "}"}], "\[Rule]", 
                     StyleBox[
                     PaneBox[
-                    FractionBox["1", 
-                    SqrtBox["2"]], ContentPadding -> False, FrameMargins -> 0,
-                     StripOnInput -> True, BaselinePosition -> Baseline, 
+                    "2", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
                     ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
                     False]}]}, {
                     RowBox[{
                     RowBox[{"{", 
-                    RowBox[{"1", ",", "2"}], "}"}], "\[Rule]", 
+                    RowBox[{"2", ",", "4"}], "}"}], "\[Rule]", 
                     StyleBox[
                     PaneBox[
-                    FractionBox["1", 
-                    SqrtBox["2"]], ContentPadding -> False, FrameMargins -> 0,
-                     StripOnInput -> True, BaselinePosition -> Baseline, 
+                    "0", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
                     ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
                     False]}]}, {
                     RowBox[{
                     RowBox[{"{", 
-                    RowBox[{"2", ",", "2"}], "}"}], "\[Rule]", 
+                    RowBox[{"3", ",", "1"}], "}"}], "\[Rule]", 
                     StyleBox[
                     PaneBox[
-                    RowBox[{"-", 
-                    FractionBox["1", 
-                    SqrtBox["2"]]}], ContentPadding -> False, FrameMargins -> 
-                    0, StripOnInput -> True, BaselinePosition -> Baseline, 
+                    "0", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
                     ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
                     False]}]}, {
                     RowBox[{
                     RowBox[{"{", 
-                    RowBox[{"2", ",", "1"}], "}"}], "\[Rule]", 
+                    RowBox[{"4", ",", "2"}], "}"}], "\[Rule]", 
                     StyleBox[
                     PaneBox[
-                    FractionBox["1", 
-                    SqrtBox["2"]], ContentPadding -> False, FrameMargins -> 0,
-                     StripOnInput -> True, BaselinePosition -> Baseline, 
+                    "2", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
                     ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
-                    False]}]}, {
-                    ItemBox[
-                    "\"\[VerticalEllipsis]\"", Alignment -> Center, 
-                    StripOnInput -> False]}}, 
-                  GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    False]}]}}, GridBoxAlignment -> {"Columns" -> {{Left}}}, 
                   DefaultBaseStyle -> "Column", 
                   GridBoxItemSize -> {
                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
@@ -742,7 +1168,8 @@ l0lWP9j8CwDSN8p4
               BaseStyle -> {
               ShowStringCharacters -> False, NumberMarks -> False, 
                PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
-          GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
           GridBoxItemSize -> {
            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
           BaselinePosition -> {1, 1}]}, 
@@ -751,41 +1178,20 @@ l0lWP9j8CwDSN8p4
     DynamicModuleValues:>{}], "]"}],
   SparseArray[
   Automatic, {4, 4}, 0, {
-   1, {{0, 2, 4, 6, 8}, {{1}, {2}, {2}, {1}, {3}, {4}, {4}, {3}}}, {
-    2^Rational[-1, 2], 2^Rational[-1, 2], -2^Rational[-1, 2], 2^
-     Rational[-1, 2], 2^Rational[-1, 2], -2^Rational[-1, 2], 2^
-     Rational[-1, 2], 2^Rational[-1, 2]}}],
+   1, {{0, 1, 2, 3, 4}, {{3}, {4}, {1}, {2}}}, {2, 0, 0, 2}}],
   Editable->False,
   SelectWithContents->True,
   Selectable->False]], "Output",
- CellLabel->"Out[360]=",
- CellID->796742160],
+ CellLabel->"Out[317]=",
+ CellID->978759289],
 
 Cell[BoxData[
  TagBox[
   RowBox[{"(", "\[NoBreak]", GridBox[{
-     {
-      FractionBox["1", 
-       SqrtBox["2"]], 
-      FractionBox["1", 
-       SqrtBox["2"]], "0", "0"},
-     {
-      FractionBox["1", 
-       SqrtBox["2"]], 
-      RowBox[{"-", 
-       FractionBox["1", 
-        SqrtBox["2"]]}], "0", "0"},
-     {"0", "0", 
-      FractionBox["1", 
-       SqrtBox["2"]], 
-      RowBox[{"-", 
-       FractionBox["1", 
-        SqrtBox["2"]]}]},
-     {"0", "0", 
-      FractionBox["1", 
-       SqrtBox["2"]], 
-      FractionBox["1", 
-       SqrtBox["2"]]}
+     {"0", "0", "2", "0"},
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"},
+     {"0", "2", "0", "0"}
     },
     GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
     GridBoxSpacings->{"Columns" -> {
@@ -799,12 +1205,10 @@ Cell[BoxData[
    MatrixForm[
    SparseArray[
     Automatic, {4, 4}, 0, {
-     1, {{0, 2, 4, 6, 8}, {{1}, {2}, {2}, {1}, {3}, {4}, {4}, {3}}}, {
-      2^Rational[-1, 2], 2^Rational[-1, 2], -2^Rational[-1, 2], 2^
-       Rational[-1, 2], 2^Rational[-1, 2], -2^Rational[-1, 2], 2^
-       Rational[-1, 2], 2^Rational[-1, 2]}}]]]]], "Output",
- CellLabel->"Out[361]//MatrixForm=",
- CellID->1284944075]
+     1, {{0, 1, 2, 3, 4}, {{3}, {4}, {1}, {2}}}, {2, 0, 0, 2}}]]]]], "Output",\
+
+ CellLabel->"Out[318]//MatrixForm=",
+ CellID->282634203]
 }, Open  ]],
 
 Cell["\<\
@@ -822,7 +1226,7 @@ Cell[BoxData[{
     RowBox[{"S", "[", "1", "]"}], ",", 
     RowBox[{"S", "[", "2", "]"}]}], "]"}]}], "\[IndentingNewLine]", 
  RowBox[{"bs", "//", "LogicalForm"}]}], "Input",
- CellLabel->"In[362]:=",
+ CellLabel->"In[319]:=",
  CellID->1906086722],
 
 Cell[BoxData[
@@ -834,39 +1238,32 @@ Cell[BoxData[
      TagBox[
       TemplateBox[{
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"], ",", 
    TemplateBox[{
      TagBox[
       TemplateBox[{
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"], ",", 
    TemplateBox[{
      TagBox[
       TemplateBox[{
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"]}], "}"}]], "Output",
- CellLabel->"Out[362]=",
- CellID->37384194],
+ CellLabel->"Out[319]=",
+ CellID->1405658204],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -875,64 +1272,148 @@ Cell[BoxData[
      TagBox[
       TemplateBox[{
         SubscriptBox["0", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
         SubscriptBox["0", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"], ",", 
    TemplateBox[{
      TagBox[
       TemplateBox[{
         SubscriptBox["0", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"], ",", 
    TemplateBox[{
      TagBox[
       TemplateBox[{
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
         SubscriptBox["0", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"], ",", 
    TemplateBox[{
      TagBox[
       TemplateBox[{
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"1"}, "RowDefault"]], DisplayForm]], 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
         SubscriptBox["1", 
-         TagBox[
-          SubscriptBox[
-           TemplateBox[{"S"}, "RowDefault"], 
-           TemplateBox[{"2"}, "RowDefault"]], DisplayForm]]}, "RowDefault"], 
-      DisplayForm]},
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
     "Ket"]}], "}"}]], "Output",
- CellLabel->"Out[363]=",
- CellID->1250923634]
+ CellLabel->"Out[320]=",
+ CellID->429833981]
+}, Open  ]],
+
+Cell[TextData[{
+ "You can recover the operator expression from the matrix representation \
+using ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoExpression"]], "paclet:Q3/ref/QuissoExpression"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "MathCaption",
+ CellID->1461917125],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"new", "=", 
+  RowBox[{"QuissoExpression", "[", 
+   RowBox[{"mat", ",", 
+    RowBox[{"S", "@", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2"}], "}"}]}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"op", "-", "new"}]}], "Input",
+ CellLabel->"In[328]:=",
+ CellID->1927069963],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"\[ImaginaryI]", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  TemplateBox[{
+    TemplateBox[{"S"}, "RowDefault"], 
+    TemplateBox[{"1"}, "RowDefault"], 
+    TemplateBox[{"\"x\""}, "RowDefault"]},
+   "Subsuperscript"]}]], "Output",
+ CellLabel->"Out[328]=",
+ CellID->1938776342],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[329]=",
+ CellID->1244604063]
+}, Open  ]],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["MultiplyExp"]], "paclet:Q3/ref/MultiplyExp"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " returns is another way to generate an operator from another operator."
+}], "MathCaption",
+ CellID->1701925778],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"expr", "=", 
+  RowBox[{"MultiplyExp", "[", 
+   RowBox[{
+    RowBox[{"-", "I"}], " ", 
+    RowBox[{"S", "[", 
+     RowBox[{"1", ",", "2"}], "]"}], " ", "\[Phi]"}], "]"}]}]], "Input",
+ CellLabel->"In[330]:=",
+ CellID->1849711540],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Cos", "[", "\[Phi]", "]"}], "-", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"], " ", 
+   RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]], "Output",
+ CellLabel->"Out[330]=",
+ CellID->410253685]
 }, Open  ]]
 }, Open  ]],
 
@@ -976,12 +1457,12 @@ transformation rules. \[LineSeparator]\t",
   StyleBox[
    RowBox[{
     RowBox[{"U", " ", 
-     SuperscriptBox["J", "j"], 
+     SuperscriptBox["J", "\[Nu]"], 
      SuperscriptBox["U", "\[Dagger]"]}], "=", 
     RowBox[{
      SubscriptBox["\[CapitalSigma]", "j"], 
-     SuperscriptBox["J", "i"], 
-     SubscriptBox["R", "ij"], 
+     SuperscriptBox["J", "\[Mu]"], 
+     SubscriptBox["R", "\[Mu]\[Nu]"], 
      RowBox[{"(", 
       RowBox[{
        StyleBox["n",
@@ -1001,13 +1482,23 @@ transformation rules. \[LineSeparator]\t",
   FontWeight->"Bold",
   FontSlant->"Italic"],
  " by angle \[Phi]."
-}], "MathCaption",
+}], "Text",
  CellID->1079829954],
+
+Cell["\<\
+The Pauli operators are the generators of the rotation transformation in the \
+Hilbert space, and satisfy the above commutation relations (up to a \
+normalization constant).\
+\>", "Text",
+ CellID->181099458],
+
+Cell["Let us choose a different symbol to represent qubits.", "MathCaption",
+ CellID->998535662],
 
 Cell[BoxData[
  RowBox[{"Let", "[", 
   RowBox[{"Qubit", ",", "J"}], "]"}]], "Input",
- CellLabel->"In[364]:=",
+ CellLabel->"In[333]:=",
  CellID->661463422],
 
 Cell[CellGroupData[{
@@ -1015,32 +1506,26 @@ Cell[CellGroupData[{
 Cell[BoxData[
  RowBox[{"vecJ", "=", 
   RowBox[{"J", "[", "All", "]"}]}]], "Input",
- CellLabel->"In[365]:=",
+ CellLabel->"In[334]:=",
  CellID->1840376682],
 
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"J"}, "RowDefault"], 
-      TemplateBox[{"\"x\""}, "RowDefault"]},
-     "Superscript"],
-    DisplayForm], ",", 
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"J"}, "RowDefault"], 
-      TemplateBox[{"\"y\""}, "RowDefault"]},
-     "Superscript"],
-    DisplayForm], ",", 
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"J"}, "RowDefault"], 
-      TemplateBox[{"\"z\""}, "RowDefault"]},
-     "Superscript"],
-    DisplayForm]}], "}"}]], "Output",
- CellLabel->"Out[365]=",
- CellID->902296596]
+   TemplateBox[{
+     TemplateBox[{"J"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Superscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"J"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Superscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"J"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Superscript"]}], "}"}]], "Output",
+ CellLabel->"Out[334]=",
+ CellID->1235975237]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1055,7 +1540,7 @@ Cell[BoxData[
     RowBox[{
      RowBox[{"-", "\[Phi]"}], ",", 
      RowBox[{"J", "[", "2", "]"}]}], "]"}]}]}]], "Input",
- CellLabel->"In[367]:=",
+ CellLabel->"In[340]:=",
  CellID->215906352],
 
 Cell[BoxData[
@@ -1064,45 +1549,35 @@ Cell[BoxData[
    RowBox[{
     RowBox[{
      RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
-     TagBox[
-      TemplateBox[{
-        TemplateBox[{"J"}, "RowDefault"], 
-        TemplateBox[{"\"x\""}, "RowDefault"]},
-       "Superscript"],
-      DisplayForm]}], "-", 
+     TemplateBox[{
+       TemplateBox[{"J"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Superscript"]}], "-", 
     RowBox[{
-     TagBox[
-      TemplateBox[{
-        TemplateBox[{"J"}, "RowDefault"], 
-        TemplateBox[{"\"z\""}, "RowDefault"]},
-       "Superscript"],
-      DisplayForm], " ", 
+     TemplateBox[{
+       TemplateBox[{"J"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Superscript"], " ", 
      RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ",", 
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"J"}, "RowDefault"], 
-      TemplateBox[{"\"y\""}, "RowDefault"]},
-     "Superscript"],
-    DisplayForm], ",", 
+   TemplateBox[{
+     TemplateBox[{"J"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Superscript"], ",", 
    RowBox[{
     RowBox[{
      RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
-     TagBox[
-      TemplateBox[{
-        TemplateBox[{"J"}, "RowDefault"], 
-        TemplateBox[{"\"z\""}, "RowDefault"]},
-       "Superscript"],
-      DisplayForm]}], "+", 
+     TemplateBox[{
+       TemplateBox[{"J"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Superscript"]}], "+", 
     RowBox[{
-     TagBox[
-      TemplateBox[{
-        TemplateBox[{"J"}, "RowDefault"], 
-        TemplateBox[{"\"x\""}, "RowDefault"]},
-       "Superscript"],
-      DisplayForm], " ", 
+     TemplateBox[{
+       TemplateBox[{"J"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Superscript"], " ", 
      RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]}], "}"}]], "Output",
- CellLabel->"Out[367]=",
- CellID->1889412902]
+ CellLabel->"Out[340]=",
+ CellID->281555690]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -1114,7 +1589,7 @@ Cell[BoxData[
     RowBox[{"\[Phi]", ",", 
      RowBox[{"{", 
       RowBox[{"0", ",", "1", ",", "0"}], "}"}]}], "]"}]}]}]], "Input",
- CellLabel->"In[368]:=",
+ CellLabel->"In[341]:=",
  CellID->2122014227],
 
 Cell[BoxData[
@@ -1123,45 +1598,49 @@ Cell[BoxData[
    RowBox[{
     RowBox[{
      RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
-     TagBox[
-      TemplateBox[{
-        TemplateBox[{"J"}, "RowDefault"], 
-        TemplateBox[{"\"x\""}, "RowDefault"]},
-       "Superscript"],
-      DisplayForm]}], "-", 
+     TemplateBox[{
+       TemplateBox[{"J"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Superscript"]}], "-", 
     RowBox[{
-     TagBox[
-      TemplateBox[{
-        TemplateBox[{"J"}, "RowDefault"], 
-        TemplateBox[{"\"z\""}, "RowDefault"]},
-       "Superscript"],
-      DisplayForm], " ", 
+     TemplateBox[{
+       TemplateBox[{"J"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Superscript"], " ", 
      RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ",", 
-   TagBox[
-    TemplateBox[{
-      TemplateBox[{"J"}, "RowDefault"], 
-      TemplateBox[{"\"y\""}, "RowDefault"]},
-     "Superscript"],
-    DisplayForm], ",", 
+   TemplateBox[{
+     TemplateBox[{"J"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Superscript"], ",", 
    RowBox[{
     RowBox[{
      RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
-     TagBox[
-      TemplateBox[{
-        TemplateBox[{"J"}, "RowDefault"], 
-        TemplateBox[{"\"z\""}, "RowDefault"]},
-       "Superscript"],
-      DisplayForm]}], "+", 
+     TemplateBox[{
+       TemplateBox[{"J"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Superscript"]}], "+", 
     RowBox[{
-     TagBox[
-      TemplateBox[{
-        TemplateBox[{"J"}, "RowDefault"], 
-        TemplateBox[{"\"x\""}, "RowDefault"]},
-       "Superscript"],
-      DisplayForm], " ", 
+     TemplateBox[{
+       TemplateBox[{"J"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Superscript"], " ", 
      RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]}], "}"}]], "Output",
- CellLabel->"Out[368]=",
- CellID->277990936]
+ CellLabel->"Out[341]=",
+ CellID->298451091]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"expr1", "-", "expr2"}]], "Input",
+ CellLabel->"In[342]:=",
+ CellID->2139695524],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[342]=",
+ CellID->547002569]
 }, Open  ]]
 }, Open  ]],
 
@@ -1206,15 +1685,17 @@ TaggingRules->{
          BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
     Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
   "", "Metadata" -> {
-   "built" -> "{2021, 1, 18, 14, 2, 50.644660}", 
+   "built" -> "{2021, 1, 27, 20, 48, 2.261275}", 
     "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
     "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
      "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
     "None", "summary" -> 
     "Quisso is a Mathematica package to facilitate the study of quantum \
 computation and quantum information. Frequently used functions and symbols \
-with Qubits and Qudits. First load the package", "synonyms" -> {}, 
-    "tabletags" -> DocumentationBuild`Make`Private`tabletaggingrules$251611, 
+with Qubits and Qudits. A quantum bit, or qubit for short, is a two-level \
+quantum system. Qubits are the elementary units of quantum computers. In \
+Quisso, the Species Qubit is reserved to represent qubits.", "synonyms" -> {},
+     "tabletags" -> DocumentationBuild`Make`Private`tabletaggingrules$254891, 
     "title" -> "Quisso Quick-Start Tutorial", "titlemodifier" -> "", 
     "windowtitle" -> "Quisso Quick-Start Tutorial", "type" -> "Tutorial", 
     "uri" -> "Q3/tutorial/QuissoTutorial", "WorkflowDockedCell" -> ""}, 
@@ -1251,128 +1732,248 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[599, 21, 3946, 94, 70, "AnchorBarGrid",ExpressionUUID->"8dc8681d-a9c1-4b56-b2b5-68577b2406ef",
+Cell[599, 21, 3946, 94, 70, "AnchorBarGrid",ExpressionUUID->"01c4a34f-412b-4fb8-8a8e-a017a8d6d0e8",
  CellID->1],
 Cell[CellGroupData[{
-Cell[4570, 119, 64, 1, 70, "Title",ExpressionUUID->"74871dcf-01c0-4d11-abc0-9cf00c7f6b90",
+Cell[4570, 119, 64, 1, 70, "Title",ExpressionUUID->"3766be91-4364-4b40-8baf-8edd99af4b6c",
  CellID->509267359],
-Cell[4637, 122, 150, 4, 70, "Text",ExpressionUUID->"1e523414-eb24-4b46-b031-2113679c6883",
+Cell[4637, 122, 150, 4, 70, "Text",ExpressionUUID->"23a9461f-751a-4d1f-9748-9812138a832c",
  CellID->1534169418],
-Cell[4790, 128, 755, 24, 70, "DefinitionBox",ExpressionUUID->"8198af93-19a0-40d3-9dc9-fce2cb8a4b99",
+Cell[4790, 128, 755, 24, 70, "DefinitionBox",ExpressionUUID->"9b0e8d9a-4869-4d54-8026-c2143092c4ea",
  CellID->2096742444],
-Cell[5548, 154, 109, 3, 70, "Caption",ExpressionUUID->"651263b4-d8bf-476d-bcd4-9210266bb52a",
+Cell[5548, 154, 109, 3, 70, "Caption",ExpressionUUID->"36c6c03f-fdfd-4f33-aaa1-80dc00f0ab42",
  CellID->1891092685],
 Cell[CellGroupData[{
-Cell[5682, 161, 50, 1, 70, "Section",ExpressionUUID->"a3e2e568-052a-4f65-9322-a371430da652",
+Cell[5682, 161, 60, 1, 70, "Section",ExpressionUUID->"bc22ee1f-b45b-45be-bd7d-d79f1603df53",
  CellID->337125431],
-Cell[5735, 164, 65, 1, 70, "MathCaption",ExpressionUUID->"0a19e582-8cf8-4a92-a431-6bcfd7405719",
+Cell[5745, 164, 549, 18, 70, "Text",ExpressionUUID->"1fdeb730-cb7e-4024-9b63-49de7387338b",
+ CellID->83665415],
+Cell[6297, 184, 65, 1, 70, "MathCaption",ExpressionUUID->"8b9ed6ad-adfe-44c2-8d0c-6caec9db3d2c",
  CellID->836781195],
-Cell[5803, 167, 100, 3, 70, "Input",ExpressionUUID->"ce7e8709-0d4d-42d6-a532-81e51e003446",
+Cell[6365, 187, 100, 3, 70, "Input",ExpressionUUID->"8e3816c2-3729-4495-b65d-241ce1220294",
  CellID->1428407696],
-Cell[5906, 172, 99, 1, 70, "MathCaption",ExpressionUUID->"6ab085a3-548d-4bc6-bd21-ab5e45df8dc0",
+Cell[6468, 192, 143, 5, 70, "MathCaption",ExpressionUUID->"9ddac9fc-7a04-4ab5-9754-9790e66a2343",
  CellID->452840402],
-Cell[6008, 175, 128, 4, 70, "Input",ExpressionUUID->"e9ff7766-39b3-4918-88f5-4e1fbe35dd4f",
+Cell[6614, 199, 128, 4, 70, "Input",ExpressionUUID->"43f3435f-8079-44dc-9c79-2c1152b130ff",
  CellID->206591446],
-Cell[6139, 181, 495, 17, 70, "MathCaption",ExpressionUUID->"79413a64-33a2-4e45-89ca-be475f1ece8c",
+Cell[6745, 205, 303, 10, 70, "MathCaption",ExpressionUUID->"212b0ac8-2812-42d0-a6b8-33273f0e29b7",
  CellID->1848859370],
 Cell[CellGroupData[{
-Cell[6659, 202, 124, 4, 70, "Input",ExpressionUUID->"400de9aa-bd81-4dc3-854e-2ac926e42e4c",
- CellID->687323028],
-Cell[6786, 208, 711, 25, 70, "Output",ExpressionUUID->"176e9f08-0371-40ba-9b28-459a1db857c3",
- CellID->1608023534]
+Cell[7073, 219, 290, 8, 70, "Input",ExpressionUUID->"52a9f252-ac5d-40d6-a966-b4f355db9bf1",
+ CellID->391816822],
+Cell[7366, 229, 224, 7, 70, "Output",ExpressionUUID->"2d448149-552d-4a13-96fb-51940ef6733b",
+ CellID->1507363167],
+Cell[7593, 238, 223, 7, 70, "Output",ExpressionUUID->"f8e3c96a-2b45-4f72-a110-81e0ab999e94",
+ CellID->388164110],
+Cell[7819, 247, 238, 7, 70, "Output",ExpressionUUID->"6b1d7451-8d88-4f98-a14f-70efe7e44d32",
+ CellID->1966360831]
 }, Open  ]],
-Cell[7512, 236, 520, 17, 70, "MathCaption",ExpressionUUID->"dcff1d45-34d5-4740-baec-c82396989d70",
+Cell[8072, 257, 153, 4, 70, "MathCaption",ExpressionUUID->"f8b5a446-096f-4554-be0f-348cded2eae4",
+ CellID->68744040],
+Cell[CellGroupData[{
+Cell[8250, 265, 126, 4, 70, "Input",ExpressionUUID->"97567970-6c45-4612-8263-6ecb24df8e74",
+ CellID->1626788463],
+Cell[8379, 271, 165, 7, 70, "Output",ExpressionUUID->"25098fb0-8ea5-45e2-8451-42e0c021b2da",
+ CellID->1103191776]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8581, 283, 103, 3, 70, "Input",ExpressionUUID->"f22359b5-712d-4cce-8d47-f06e89743d88",
+ CellID->370836262],
+Cell[8687, 288, 84, 2, 70, "Output",ExpressionUUID->"dc24727d-f7fe-4e27-a34e-bd7107c28d76",
+ CellID->317459299]
+}, Open  ]],
+Cell[8786, 293, 354, 12, 70, "MathCaption",ExpressionUUID->"c891a9d5-ce4e-45a5-b019-c37f0bd9baaf",
+ CellID->2133402809],
+Cell[CellGroupData[{
+Cell[9165, 309, 124, 4, 70, "Input",ExpressionUUID->"379ff877-3b31-4320-9cc1-dd3697d32bbf",
+ CellID->687323028],
+Cell[9292, 315, 609, 19, 70, "Output",ExpressionUUID->"98905e8c-54f5-412c-9433-1181167550f6",
+ CellID->1508582016]
+}, Open  ]],
+Cell[9916, 337, 128, 3, 70, "MathCaption",ExpressionUUID->"edf9a064-a7bd-4897-b946-4571062d3dc2",
+ CellID->1605082332],
+Cell[CellGroupData[{
+Cell[10069, 344, 336, 12, 70, "Input",ExpressionUUID->"35010d25-1576-4a9b-8517-8d7d4a495ed4",
+ CellID->696768349],
+Cell[10408, 358, 608, 19, 70, "Output",ExpressionUUID->"7f0d0e42-6264-4f26-8244-4ffafb9cb29b",
+ CellID->458440084],
+Cell[11019, 379, 779, 24, 70, "Output",ExpressionUUID->"78f0e455-00b5-47cd-9a40-b3bff7ced1e0",
+ CellID->1978649999]
+}, Open  ]],
+Cell[11813, 406, 520, 17, 70, "MathCaption",ExpressionUUID->"50c67f22-c63d-4735-b18e-45cb6c570251",
  CellID->252474946],
 Cell[CellGroupData[{
-Cell[8057, 257, 198, 7, 70, "Input",ExpressionUUID->"724c851c-db66-46a5-9592-0e49a674f3d1",
+Cell[12358, 427, 198, 7, 70, "Input",ExpressionUUID->"e3c18b7f-e29c-42b7-8cda-07391aa0eaf1",
  CellID->75834095],
-Cell[8258, 266, 295, 10, 70, "Output",ExpressionUUID->"f39a5661-f5ab-4487-a2c5-828dcdccc90e",
+Cell[12559, 436, 295, 10, 70, "Output",ExpressionUUID->"a4476e5c-ab18-4d58-a205-6cca91c548d0",
  CellID->2022039805]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[8590, 281, 358, 13, 70, "Input",ExpressionUUID->"10814f84-66b9-484a-9ba0-d08d3f59c626",
- CellID->97443302],
-Cell[8951, 296, 626, 21, 70, "Output",ExpressionUUID->"bcf50a62-05dc-474c-a70a-652d5ad42eb6",
- CellID->1819544330]
+Cell[12903, 452, 63, 1, 70, "Section",ExpressionUUID->"3d962640-1353-4b07-9ba8-4d09bdb43bc5",
+ CellID->819847555],
+Cell[12969, 455, 269, 10, 70, "Text",ExpressionUUID->"473b9c51-7e21-4685-942d-50d95dbe6ee5",
+ CellID->982594352],
+Cell[13241, 467, 388, 14, 70, "MathCaption",ExpressionUUID->"ba1eb545-1538-4d0a-8ad4-ef032a4541aa",
+ CellID->1355826419],
+Cell[CellGroupData[{
+Cell[13654, 485, 112, 5, 70, "Input",ExpressionUUID->"a0bfe395-7894-403c-98a1-835f42f0de75",
+ CellID->1626373073],
+Cell[13769, 492, 119, 4, 70, "Output",ExpressionUUID->"dbd17b03-e56f-46f6-b19a-827351697119",
+ CellID->170462774],
+Cell[13891, 498, 287, 10, 70, "Output",ExpressionUUID->"0f80b11d-9c24-4f9e-803c-5c214ec8f1e4",
+ CellID->224657520]
 }, Open  ]],
-Cell[9592, 320, 174, 4, 70, "MathCaption",ExpressionUUID->"0e416b88-25a9-4924-9d6d-c5a684d6ca44",
+Cell[14193, 511, 323, 8, 70, "MathCaption",ExpressionUUID->"e8829ac7-6a69-424d-a834-bd04f514ff90",
+ CellID->558490327],
+Cell[CellGroupData[{
+Cell[14541, 523, 101, 5, 70, "Input",ExpressionUUID->"be6219ba-9427-4d0a-92e5-e380de2b825f",
+ CellID->942181504],
+Cell[14645, 530, 120, 4, 70, "Output",ExpressionUUID->"02b30083-63b4-4fa7-820f-7f809b184ffb",
+ CellID->1240011537],
+Cell[14768, 536, 288, 10, 70, "Output",ExpressionUUID->"635df3ff-cd23-4d09-a415-bf71639c8daa",
+ CellID->1692591871]
+}, Open  ]],
+Cell[15071, 549, 897, 35, 70, "MathCaption",ExpressionUUID->"5108fdf6-6036-4e51-8a29-22b0559a3428",
+ CellID->308766017],
+Cell[CellGroupData[{
+Cell[15993, 588, 152, 5, 70, "Input",ExpressionUUID->"adaa6a78-e437-48c2-bd8a-9761de470e17",
+ CellID->308729066],
+Cell[16148, 595, 111, 2, 70, "Output",ExpressionUUID->"d5a0e2a5-d327-478f-886d-028636ebb406",
+ CellID->472862400]
+}, Open  ]],
+Cell[16274, 600, 638, 21, 70, "MathCaption",ExpressionUUID->"cd46d9a6-5579-453c-8705-03fdc16c84fe",
  CellID->1972471494],
 Cell[CellGroupData[{
-Cell[9791, 328, 207, 7, 70, "Input",ExpressionUUID->"8f27810a-aa7d-4fc5-b93f-50d3b4874b41",
+Cell[16937, 625, 612, 20, 70, "Input",ExpressionUUID->"7936e1c8-e8e6-4df1-b8b8-5ac6fb33be2e",
  CellID->223524691],
-Cell[10001, 337, 1010, 34, 70, "Output",ExpressionUUID->"4354529c-e310-426f-8e84-7b02f3be6912",
- CellID->1374162790]
+Cell[17552, 647, 408, 14, 70, "Output",ExpressionUUID->"5d823ffc-f4a8-4f0f-aaf2-79d5fa2493a7",
+ CellID->985061294],
+Cell[17963, 663, 862, 28, 70, "Output",ExpressionUUID->"a0923cf8-c7ba-407d-859e-e49bd43ce2c1",
+ CellID->973733535],
+Cell[18828, 693, 863, 28, 70, "Output",ExpressionUUID->"62ce2e37-0028-4d06-9201-f9b93d936ba8",
+ CellID->1714132605]
 }, Open  ]],
+Cell[19706, 724, 403, 12, 70, "MathCaption",ExpressionUUID->"5f37ece7-7ff7-4d38-ae0f-aba1e1077a47",
+ CellID->1370114080],
 Cell[CellGroupData[{
-Cell[11048, 376, 147, 5, 70, "Input",ExpressionUUID->"67e03ed8-093a-4de5-86b4-f68a88b2eff4",
+Cell[20134, 740, 241, 7, 70, "Input",ExpressionUUID->"0d29f0c6-de5f-489c-a8b6-0fd5a3cc5a9b",
  CellID->685726275],
-Cell[11198, 383, 662, 24, 70, "Output",ExpressionUUID->"f473d7d3-04eb-4842-945c-00069c0c3e00",
- CellID->822268989]
+Cell[20378, 749, 421, 15, 70, "Output",ExpressionUUID->"f65a715e-d417-4c04-92d1-5be61c7355fa",
+ CellID->851081589],
+Cell[20802, 766, 602, 21, 70, "Output",ExpressionUUID->"d194202f-3c71-4e85-9d4b-c2b0093164cf",
+ CellID->1887177303]
+}, Open  ]],
+Cell[21419, 790, 105, 2, 70, "MathCaption",ExpressionUUID->"3a398a4e-d77c-4671-aff8-b871598c7c38",
+ CellID->1397076271],
+Cell[CellGroupData[{
+Cell[21549, 796, 770, 25, 70, "Input",ExpressionUUID->"fcf7447c-c251-4fd4-b7cb-b48994933887",
+ CellID->1598562236],
+Cell[22322, 823, 815, 25, 70, "Output",ExpressionUUID->"d0777f4c-0690-4cc7-b0c8-51446bbbc037",
+ CellID->627516168],
+Cell[23140, 850, 1353, 43, 70, "Output",ExpressionUUID->"2ab1b035-825e-451f-a4d9-fc394c9389a5",
+ CellID->372045159]
+}, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[11897, 412, 295, 10, 70, "Input",ExpressionUUID->"424f0766-b7c5-4416-9102-bc788a054000",
- CellID->1598562236],
-Cell[12195, 424, 2838, 108, 70, "Output",ExpressionUUID->"3f49978b-223a-4375-aa2e-f27226db5a1f",
- CellID->1458629651]
+Cell[24542, 899, 55, 1, 70, "Section",ExpressionUUID->"54d63d69-5c1a-4eff-b73f-8dc12b6b6605",
+ CellID->798918039],
+Cell[24600, 902, 139, 4, 70, "Text",ExpressionUUID->"69e03732-1da4-4cff-a5fb-cced7bdf2cb6",
+ CellID->2063446138],
+Cell[24742, 908, 88, 1, 70, "MathCaption",ExpressionUUID->"c58c917b-162f-4c4e-93db-67a740dedc34",
+ CellID->1728070850],
+Cell[CellGroupData[{
+Cell[24855, 913, 339, 12, 70, "Input",ExpressionUUID->"5cd381e4-fc1a-49ed-8344-44829bd9b85e",
+ CellID->1820765392],
+Cell[25197, 927, 750, 26, 70, "Output",ExpressionUUID->"8ca9dce6-7466-442b-b232-98e8ae54f3a4",
+ CellID->706758001]
 }, Open  ]],
-Cell[15048, 535, 100, 1, 70, "MathCaption",ExpressionUUID->"67bc4331-fd7d-4cad-8c9c-4b3f6002dd9f",
+Cell[25962, 956, 335, 10, 70, "MathCaption",ExpressionUUID->"ff0dd79e-d7ac-473c-83b3-454bf45cffa8",
  CellID->1573319784],
 Cell[CellGroupData[{
-Cell[15173, 540, 196, 5, 70, "Input",ExpressionUUID->"ce501f92-e427-45ef-a61b-63d39797bb9c",
+Cell[26322, 970, 194, 5, 70, "Input",ExpressionUUID->"aaa734e2-0ca7-47c0-a5bc-609b3d6c5237",
  CellID->819464177],
-Cell[15372, 547, 10113, 214, 70, "Output",ExpressionUUID->"0da65278-cf71-43de-8caf-5595a1d4207f",
- CellID->796742160],
-Cell[25488, 763, 1281, 43, 70, "Output",ExpressionUUID->"4dc30e57-e9f7-4a12-972e-5efb334b2f55",
- CellID->1284944075]
+Cell[26519, 977, 9806, 208, 70, "Output",ExpressionUUID->"43277ffc-67c9-4f10-8161-e8e71c26c457",
+ CellID->978759289],
+Cell[36328, 1187, 713, 23, 70, "Output",ExpressionUUID->"96246d25-9dbe-4aae-86ce-abb463a5af03",
+ CellID->282634203]
 }, Open  ]],
-Cell[26784, 809, 138, 4, 70, "MathCaption",ExpressionUUID->"25e3cbc2-bb3d-40dd-895f-298ba57c82a3",
+Cell[37056, 1213, 138, 4, 70, "MathCaption",ExpressionUUID->"5fcbadcd-e6e5-447c-b6d3-c7b2cf29e640",
  CellID->1050919950],
 Cell[CellGroupData[{
-Cell[26947, 817, 276, 8, 70, "Input",ExpressionUUID->"2641a121-7f48-41c1-acd7-9f70233f6c11",
+Cell[37219, 1221, 276, 8, 70, "Input",ExpressionUUID->"4899eca6-639d-487f-82d3-00b05f875451",
  CellID->1906086722],
-Cell[27226, 827, 1176, 41, 70, "Output",ExpressionUUID->"54d79957-d44d-40c7-a0d0-4bd4ea02afec",
- CellID->37384194],
-Cell[28405, 870, 1927, 64, 70, "Output",ExpressionUUID->"173471dd-fa2f-4727-97c7-e00793dc731f",
- CellID->1250923634]
+Cell[37498, 1231, 1021, 34, 70, "Output",ExpressionUUID->"5344676f-e29f-4ef1-b4a3-82152126c76d",
+ CellID->1405658204],
+Cell[38522, 1267, 1626, 52, 70, "Output",ExpressionUUID->"eb7df215-dfad-401a-8886-f95b8e30694d",
+ CellID->429833981]
+}, Open  ]],
+Cell[40163, 1322, 323, 11, 70, "MathCaption",ExpressionUUID->"2dc9014d-43b7-40b2-b564-6b2f09083aa8",
+ CellID->1461917125],
+Cell[CellGroupData[{
+Cell[40511, 1337, 299, 9, 70, "Input",ExpressionUUID->"0dc82d08-0e09-46db-aaf7-093441b02636",
+ CellID->1927069963],
+Cell[40813, 1348, 751, 26, 70, "Output",ExpressionUUID->"db9775d5-0389-4150-9040-d26136451db7",
+ CellID->1938776342],
+Cell[41567, 1376, 74, 2, 70, "Output",ExpressionUUID->"527597da-f1e5-41e2-b2d4-c0bff32f7652",
+ CellID->1244604063]
+}, Open  ]],
+Cell[41656, 1381, 298, 9, 70, "MathCaption",ExpressionUUID->"910ae8d9-30c0-49b5-b698-9e93698b9496",
+ CellID->1701925778],
+Cell[CellGroupData[{
+Cell[41979, 1394, 251, 8, 70, "Input",ExpressionUUID->"432e7158-6333-4c72-a8dd-0ab91ca211cb",
+ CellID->1849711540],
+Cell[42233, 1404, 371, 11, 70, "Output",ExpressionUUID->"f766e41c-46e3-4807-8140-298092bec2cc",
+ CellID->410253685]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[30381, 940, 98, 1, 70, "Section",ExpressionUUID->"30e6e0c7-fedc-4a50-9820-39e9c1deca82",
+Cell[42653, 1421, 98, 1, 70, "Section",ExpressionUUID->"0466de0e-4799-4db2-ab8e-3cf55a599fbb",
  CellID->1521459369],
-Cell[30482, 943, 1620, 61, 70, "MathCaption",ExpressionUUID->"57623ef3-97ba-414b-89b3-aacaeef8de65",
+Cell[42754, 1424, 1629, 61, 70, "Text",ExpressionUUID->"568f62db-a746-4ffb-bb83-a9ba252ea5dd",
  CellID->1079829954],
-Cell[32105, 1006, 128, 4, 70, "Input",ExpressionUUID->"8bc663bc-30e0-4682-ad12-cc611d9621c7",
+Cell[44386, 1487, 217, 5, 70, "Text",ExpressionUUID->"2a584af9-b724-40be-afda-475c749f749e",
+ CellID->181099458],
+Cell[44606, 1494, 96, 1, 70, "MathCaption",ExpressionUUID->"e9b8e35f-dea3-4cb7-8908-6014c41d139f",
+ CellID->998535662],
+Cell[44705, 1497, 128, 4, 70, "Input",ExpressionUUID->"52f02c50-5e44-491b-a7f0-95d2b0548473",
  CellID->661463422],
 Cell[CellGroupData[{
-Cell[32258, 1014, 128, 4, 70, "Input",ExpressionUUID->"8857a241-aba6-49b8-9075-e1ec6edc7bbd",
+Cell[44858, 1505, 128, 4, 70, "Input",ExpressionUUID->"a8921dbb-fc65-409b-843a-68a581ec60f9",
  CellID->1840376682],
-Cell[32389, 1020, 578, 22, 70, "Output",ExpressionUUID->"bf06a5cd-5055-4280-bdb9-96a402cf1878",
- CellID->902296596]
+Cell[44989, 1511, 480, 16, 70, "Output",ExpressionUUID->"c22ff425-f043-400d-bca1-b015ca11e272",
+ CellID->1235975237]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[33004, 1047, 351, 11, 70, "Input",ExpressionUUID->"201cacea-58e0-47bc-890d-9f71ec56fb73",
+Cell[45506, 1532, 351, 11, 70, "Input",ExpressionUUID->"f8c861d4-15ba-46aa-92c7-374259dcf0d1",
  CellID->215906352],
-Cell[33358, 1060, 1227, 44, 70, "Output",ExpressionUUID->"8bb390e9-e688-45ed-bab7-bc3dabaa6146",
- CellID->1889412902]
+Cell[45860, 1545, 1045, 34, 70, "Output",ExpressionUUID->"bf335f11-d9c4-4a92-857a-241f18aba33f",
+ CellID->281555690]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[34622, 1109, 260, 8, 70, "Input",ExpressionUUID->"02b7900b-aeff-47d2-b53f-635366db39e9",
+Cell[46942, 1584, 260, 8, 70, "Input",ExpressionUUID->"25b7ae0d-7826-4473-860b-168b4d1814de",
  CellID->2122014227],
-Cell[34885, 1119, 1226, 44, 70, "Output",ExpressionUUID->"d86c2d3a-8bd6-479e-afa5-6948e3afa443",
- CellID->277990936]
+Cell[47205, 1594, 1045, 34, 70, "Output",ExpressionUUID->"d5b14e64-7178-4ddf-897d-c02f323dd8be",
+ CellID->298451091]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[48287, 1633, 103, 3, 70, "Input",ExpressionUUID->"c175d685-2923-4813-b154-d37c6e9c7e13",
+ CellID->2139695524],
+Cell[48393, 1638, 128, 4, 70, "Output",ExpressionUUID->"78e79227-1442-4a1b-a7fb-d4fb3d25ee60",
+ CellID->547002569]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[36160, 1169, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"b6558c68-6b5a-48ca-b9d3-c4a7a7f6c003",
+Cell[48570, 1648, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"cfbdb3e8-755c-44ca-95bb-20bba52dfcf8",
  CellID->415694126],
-Cell[36330, 1178, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"4e2864d8-cb14-49b7-9d52-2e773a475f23"],
-Cell[36364, 1180, 171, 3, 70, "RelatedTutorials",ExpressionUUID->"555fb136-e158-4c41-ab5f-56d6b1b5855c",
+Cell[48740, 1657, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"f71bea6c-22e3-4ed6-8ab5-c7d98014ee99"],
+Cell[48774, 1659, 171, 3, 70, "RelatedTutorials",ExpressionUUID->"255b336b-dd94-4196-80b6-21f35f2f7e08",
  CellID->806871991],
-Cell[36538, 1185, 166, 3, 70, "RelatedTutorials",ExpressionUUID->"b9b5f141-4b03-4830-961a-d54bd27cde34",
+Cell[48948, 1664, 166, 3, 70, "RelatedTutorials",ExpressionUUID->"47575c62-f14c-4d49-b6cd-e17ef1b6490c",
  CellID->877842390]
 }, Open  ]]
 }, Open  ]],
-Cell[36731, 1192, 23, 0, 70, "FooterCell",ExpressionUUID->"e814a057-9a1b-4364-bb4f-ddd6b1d3ff39"]
+Cell[49141, 1671, 23, 0, 70, "FooterCell",ExpressionUUID->"7540bd98-4b5a-4eb9-b9d1-23ac98bbe138"]
 }
 ]
 *)
