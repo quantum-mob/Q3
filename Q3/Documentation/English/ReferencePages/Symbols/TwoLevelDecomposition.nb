@@ -1,0 +1,988 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     34486,        979]
+NotebookOptionsPosition[     28531,        850]
+NotebookOutlinePosition[     30784,        907]
+CellTagsIndexPosition[     30699,        902]
+WindowTitle->TwoLevelDecomposition
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"QuissoCircuit Usage Tutorial\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/QuissoCircuitUsage"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"TwoLevelU\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/TwoLevelU"], "\<\"GrayTwoLevelU\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/GrayTwoLevelU"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Quisso Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Quisso"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/TwoLevelDecomposition\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/TwoLevelDecomposition"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+TwoLevelDecomposition.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$156612], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/TwoLevelDecomposition", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["TwoLevelDecomposition", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"TwoLevelDecomposition", "[", 
+       StyleBox["mat", "TI"], "]"}]], "InlineFormula"],
+     " \[LineSeparator]returns a list of two-level unitary matrices ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["u", "TI"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["u", "TI"], 
+         StyleBox["2", "TR"]], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "}"}]], "InlineFormula"],
+     " in terms of TwoLevelU, where ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Dot"]], "paclet:ref/Dot"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["u", "TI"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["u", "TI"], 
+         StyleBox["2", "TR"]], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     " is formally equivalent to ",
+     Cell[BoxData[
+      StyleBox["mat", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->198958963],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->271252762],
+
+Cell[TextData[{
+ StyleBox["Gray", "Input"],
+ " is a supplementary package and is not loaded by default when the ",
+ StyleBox["Q3", "Input"],
+ " App is loaded. You need to load it manually."
+}], "ExampleText",
+ CellID->658460129],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Gray`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->615462090],
+
+Cell[TextData[{
+ "Consider a ",
+ Cell[BoxData[
+  RowBox[{
+   SuperscriptBox["2", 
+    StyleBox["n", "TI"]], "\[Times]", 
+   SuperscriptBox["2", 
+    StyleBox["n", "TI"]]}]], "InlineFormula"],
+ " unitary matrix."
+}], "ExampleText",
+ CellID->1918357742],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"n", "=", "2"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"RandomUnitary", "[", 
+    RowBox[{"2", "^", "n"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1893084922],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       RowBox[{"-", "0.2565603038720275`"}], "+", 
+       RowBox[{"0.09760627759745812`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.2602656241078555`"}], "+", 
+       RowBox[{"0.11578824286339245`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.49588608954994506`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.042671016592310596`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.28583606472410006`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.7169927666370844`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "0.1416936101926199`"}], "-", 
+       RowBox[{"0.05384096946423671`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.7336575843434774`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.15237399819377484`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.1469439212282388`"}], "+", 
+       RowBox[{"0.5308796124818782`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.1153546658435277`"}], "-", 
+       RowBox[{"0.31435713222505146`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{"0.8165732571929265`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.44053656997376023`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.08656211665658328`"}], "+", 
+       RowBox[{"0.03295409806515414`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.20297283066514585`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.20008284913316127`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.0947060440919822`"}], "-", 
+       RowBox[{"0.20088883055241397`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{"0.1969931157130233`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.04475773009390803`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.5731904776914679`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.14232815953480718`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.1359276824555082`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.5908832712438322`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.4897972629309142`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.05352658570865057`", " ", "\[ImaginaryI]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->1674872903]
+}, Open  ]],
+
+Cell[TextData[{
+ "Here is a two-level decomposition, where the results are in terms of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TwoLevelU"]], "paclet:Q3/ref/TwoLevelU"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "ExampleText",
+ CellID->81370039],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"mm", "=", 
+  RowBox[{"TwoLevelDecomposition", "[", "mat", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->874151237],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"TwoLevelU", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"1.`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], ",", 
+         RowBox[{"0.`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.`", " ", "\[ImaginaryI]"}]}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"0.`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], ",", 
+         RowBox[{
+          RowBox[{"-", "0.9953428783825229`"}], "-", 
+          RowBox[{"0.09639789651851582`", " ", "\[ImaginaryI]"}]}]}], "}"}]}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "4"}], "}"}], ",", "4"}], "]"}], ",", 
+   RowBox[{"TwoLevelU", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"0.8599444625841774`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.4639350855268786`", " ", "\[ImaginaryI]"}]}], ",", 
+         RowBox[{"0.20194628256680214`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.06691380011198944`", " ", "\[ImaginaryI]"}]}]}], "}"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "0.20194628256680214`"}], "+", 
+          RowBox[{"0.06691380011198944`", " ", "\[ImaginaryI]"}]}], ",", 
+         RowBox[{"0.8599444625841774`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.4639350855268786`", " ", "\[ImaginaryI]"}]}]}], "}"}]}], 
+      "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "4"}], "}"}], ",", "4"}], "]"}], ",", 
+   RowBox[{"TwoLevelU", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"0.14735389494112808`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.055991773709318876`", " ", "\[ImaginaryI]"}]}], ",", 
+         "0.9874977219834806`"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "0.9874977219834806`"}], ",", 
+         RowBox[{"0.14735389494112808`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.055991773709318876`", " ", "\[ImaginaryI]"}]}]}], 
+        "}"}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "3"}], "}"}], ",", "4"}], "]"}], ",", 
+   RowBox[{"TwoLevelU", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "0.7649105241930976`"}], "-", 
+          RowBox[{"0.15743372593990698`", " ", "\[ImaginaryI]"}]}], ",", 
+         RowBox[{
+          RowBox[{"-", "0.42166257823640535`"}], "-", 
+          RowBox[{"0.46078973733184037`", " ", "\[ImaginaryI]"}]}]}], "}"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"0.42166257823640535`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.46078973733184037`", " ", "\[ImaginaryI]"}]}], ",", 
+         RowBox[{
+          RowBox[{"-", "0.7649105241930976`"}], "+", 
+          RowBox[{"0.15743372593990698`", " ", "\[ImaginaryI]"}]}]}], "}"}]}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "4"}], "}"}], ",", "4"}], "]"}], ",", 
+   RowBox[{"TwoLevelU", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "0.25656030387202744`"}], "+", 
+          RowBox[{"0.09760627759745809`", " ", "\[ImaginaryI]"}]}], ",", 
+         "0.961587138563459`"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "0.961587138563459`"}], ",", 
+         RowBox[{
+          RowBox[{"-", "0.25656030387202744`"}], "-", 
+          RowBox[{"0.09760627759745809`", " ", "\[ImaginaryI]"}]}]}], "}"}]}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2"}], "}"}], ",", "4"}], "]"}], ",", 
+   RowBox[{"TwoLevelU", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "0.27066254702269965`"}], "+", 
+          RowBox[{"0.12041367674319314`", " ", "\[ImaginaryI]"}]}], ",", 
+         "0.9551137796578849`"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"-", "0.9551137796578849`"}], ",", 
+         RowBox[{
+          RowBox[{"-", "0.27066254702269965`"}], "-", 
+          RowBox[{"0.12041367674319314`", " ", "\[ImaginaryI]"}]}]}], "}"}]}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "3"}], "}"}], ",", "4"}], "]"}], ",", 
+   RowBox[{"TwoLevelU", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"0.5399308831003644`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.04646107272818763`", " ", "\[ImaginaryI]"}]}], ",", 
+         RowBox[{"0.3112241341322646`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.7806763404439954`", " ", "\[ImaginaryI]"}]}]}], "}"}], 
+       ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "0.3112241341322646`"}], "-", 
+          RowBox[{"0.7806763404439954`", " ", "\[ImaginaryI]"}]}], ",", 
+         RowBox[{"0.5399308831003644`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.04646107272818763`", " ", "\[ImaginaryI]"}]}]}], "}"}]}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "4"}], "}"}], ",", "4"}], "]"}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->250130260]
+}, Open  ]],
+
+Cell[TextData[{
+ "You can convert the above results to more human readable full matrix form \
+by means of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Matrix"]], "paclet:Q3/ref/Matrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "ExampleText",
+ CellID->1784857577],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"Matrix", "/@", "mm"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->344948808],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1", "0", "0", "0"},
+       {"0", "1", "0", "0"},
+       {"0", "0", 
+        RowBox[{"1.`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], "0"},
+       {"0", "0", "0", 
+        RowBox[{
+         RowBox[{"-", "0.9953428783825229`"}], "-", 
+         RowBox[{"0.09639789651851582`", " ", "\[ImaginaryI]"}]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 1, 2, 3, 4}, {{1}, {2}, {3}, {4}}}, {
+        1, 1, Complex[1., 0.], 
+         Complex[-0.9953428783825229, -0.09639789651851582]}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1", "0", "0", "0"},
+       {"0", "1", "0", "0"},
+       {"0", "0", 
+        RowBox[{"0.8599444625841774`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.4639350855268786`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{"0.20194628256680214`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.06691380011198944`", " ", "\[ImaginaryI]"}]}]},
+       {"0", "0", 
+        RowBox[{
+         RowBox[{"-", "0.20194628256680214`"}], "+", 
+         RowBox[{"0.06691380011198944`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{"0.8599444625841774`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.4639350855268786`", " ", "\[ImaginaryI]"}]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 1, 2, 4, 6}, {{1}, {2}, {3}, {4}, {4}, {3}}}, {
+        1, 1, Complex[0.8599444625841774, -0.4639350855268786], Complex[
+         0.20194628256680214`, 0.06691380011198944], Complex[
+         0.8599444625841774, 0.4639350855268786], 
+         Complex[-0.20194628256680214`, 0.06691380011198944]}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1", "0", "0", "0"},
+       {"0", 
+        RowBox[{"0.14735389494112808`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.055991773709318876`", " ", "\[ImaginaryI]"}]}], 
+        "0.9874977219834806`", "0"},
+       {"0", 
+        RowBox[{"-", "0.9874977219834806`"}], 
+        RowBox[{"0.14735389494112808`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.055991773709318876`", " ", "\[ImaginaryI]"}]}], "0"},
+       {"0", "0", "0", "1"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 1, 3, 5, 6}, {{1}, {2}, {3}, {3}, {2}, {4}}}, {
+        1, Complex[0.14735389494112808`, 0.055991773709318876`], 
+         0.9874977219834806, Complex[
+         0.14735389494112808`, -0.055991773709318876`], -0.9874977219834806, 
+         1}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1", "0", "0", "0"},
+       {"0", "1", "0", "0"},
+       {"0", "0", 
+        RowBox[{
+         RowBox[{"-", "0.7649105241930976`"}], "-", 
+         RowBox[{"0.15743372593990698`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{
+         RowBox[{"-", "0.42166257823640535`"}], "-", 
+         RowBox[{"0.46078973733184037`", " ", "\[ImaginaryI]"}]}]},
+       {"0", "0", 
+        RowBox[{"0.42166257823640535`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.46078973733184037`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{
+         RowBox[{"-", "0.7649105241930976`"}], "+", 
+         RowBox[{"0.15743372593990698`", " ", "\[ImaginaryI]"}]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 1, 2, 4, 6}, {{1}, {2}, {3}, {4}, {4}, {3}}}, {
+        1, 1, Complex[-0.7649105241930976, -0.15743372593990698`], 
+         Complex[-0.42166257823640535`, -0.46078973733184037`], 
+         Complex[-0.7649105241930976, 0.15743372593990698`], Complex[
+         0.42166257823640535`, -0.46078973733184037`]}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{
+         RowBox[{"-", "0.25656030387202744`"}], "+", 
+         RowBox[{"0.09760627759745809`", " ", "\[ImaginaryI]"}]}], 
+        "0.961587138563459`", "0", "0"},
+       {
+        RowBox[{"-", "0.961587138563459`"}], 
+        RowBox[{
+         RowBox[{"-", "0.25656030387202744`"}], "-", 
+         RowBox[{"0.09760627759745809`", " ", "\[ImaginaryI]"}]}], "0", "0"},
+       {"0", "0", "1", "0"},
+       {"0", "0", "0", "1"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 2, 4, 5, 6}, {{1}, {2}, {2}, {1}, {3}, {4}}}, {
+        Complex[-0.25656030387202744`, 0.09760627759745809], 
+         0.961587138563459, 
+         Complex[-0.25656030387202744`, -0.09760627759745809], \
+-0.961587138563459, 1, 1}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1", "0", "0", "0"},
+       {"0", 
+        RowBox[{
+         RowBox[{"-", "0.27066254702269965`"}], "+", 
+         RowBox[{"0.12041367674319314`", " ", "\[ImaginaryI]"}]}], 
+        "0.9551137796578849`", "0"},
+       {"0", 
+        RowBox[{"-", "0.9551137796578849`"}], 
+        RowBox[{
+         RowBox[{"-", "0.27066254702269965`"}], "-", 
+         RowBox[{"0.12041367674319314`", " ", "\[ImaginaryI]"}]}], "0"},
+       {"0", "0", "0", "1"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 1, 3, 5, 6}, {{1}, {2}, {3}, {3}, {2}, {4}}}, {
+        1, Complex[-0.27066254702269965`, 0.12041367674319314`], 
+         0.9551137796578849, 
+         Complex[-0.27066254702269965`, -0.12041367674319314`], \
+-0.9551137796578849, 1}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1", "0", "0", "0"},
+       {"0", "1", "0", "0"},
+       {"0", "0", 
+        RowBox[{"0.5399308831003644`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.04646107272818763`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{"0.3112241341322646`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.7806763404439954`", " ", "\[ImaginaryI]"}]}]},
+       {"0", "0", 
+        RowBox[{
+         RowBox[{"-", "0.3112241341322646`"}], "-", 
+         RowBox[{"0.7806763404439954`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{"0.5399308831003644`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.04646107272818763`", " ", "\[ImaginaryI]"}]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 1, 2, 4, 6}, {{1}, {2}, {3}, {4}, {4}, {3}}}, {
+        1, 1, Complex[0.5399308831003644, 0.04646107272818763], Complex[
+         0.3112241341322646, -0.7806763404439954], Complex[
+         0.5399308831003644, -0.04646107272818763], 
+         Complex[-0.3112241341322646, -0.7806763404439954]}}]]]]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->510159525]
+}, Open  ]],
+
+Cell["Check the decomposition with the original matrix.", "ExampleText",
+ CellID->732431213],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"Dot", "@@", 
+    RowBox[{"Matrix", "/@", "mm"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"mat", "-", "new"}], "//", "Chop"}], "//", 
+  "MatrixForm"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->367426686],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->829318640]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TwoLevelU"]], "paclet:Q3/ref/TwoLevelU"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GrayTwoLevelU"]], "paclet:Q3/ref/GrayTwoLevelU"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["QuissoCircuit Usage Tutorial"]], 
+   "paclet:Q3/tutorial/QuissoCircuitUsage"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso Package Guide"]], "paclet:Q3/guide/Quisso"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1984872000]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"TwoLevelDecomposition",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 2, 14, 12, 27, 19.669280}", 
+    "history" -> {"1.5", "", "", ""}, "context" -> "Q3`Gray`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "TwoLevelDecomposition[mat] returns a list of two-level unitary matrices \
+{u1, u2, ...} in terms of TwoLevelU, where Dot[u1, u2, ...] is formally \
+equivalent to mat.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "TwoLevelDecomposition", "titlemodifier" -> "", "windowtitle" -> 
+    "TwoLevelDecomposition", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/TwoLevelDecomposition", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.2 for Mac OS X x86 (64-bit) (December 12, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6442, 187, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"3bb68d79-3721-4b89-ab75-d66082e579d3",
+   CellTags->"PrimaryExamplesSection",
+   CellID->198958963]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 30501, 895}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[593, 21, 4342, 109, 70, "AnchorBarGrid",ExpressionUUID->"dcc2f833-3bd0-4919-9acc-a3d7c9de5dcd",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4960, 134, 178, 6, 70, "ObjectNameGrid",ExpressionUUID->"dd34366e-5d59-4c46-9534-00a04df0464d"],
+Cell[5141, 142, 1264, 40, 70, "Usage",ExpressionUUID->"4a17677c-704c-4114-9270-10125ef7d485",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6442, 187, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"3bb68d79-3721-4b89-ab75-d66082e579d3",
+ CellTags->"PrimaryExamplesSection",
+ CellID->198958963],
+Cell[CellGroupData[{
+Cell[6734, 201, 195, 6, 70, "ExampleSection",ExpressionUUID->"e984cf06-aaad-41b6-8c0a-139d5a4c56be",
+ CellID->271252762],
+Cell[6932, 209, 228, 6, 70, "ExampleText",ExpressionUUID->"42226fad-54af-4d96-81fc-94c5bfef4714",
+ CellID->658460129],
+Cell[7163, 217, 95, 3, 70, "Input",ExpressionUUID->"36249e61-a1f9-41b3-bfc5-a0ffc7cca901",
+ CellID->615462090],
+Cell[7261, 222, 251, 10, 70, "ExampleText",ExpressionUUID->"65297c46-02b7-4436-9097-60b16b1bf824",
+ CellID->1918357742],
+Cell[CellGroupData[{
+Cell[7537, 236, 311, 9, 70, "Input",ExpressionUUID->"3d516e44-60a6-4929-8c26-2f71c572905e",
+ CellID->1893084922],
+Cell[7851, 247, 2619, 58, 70, "Output",ExpressionUUID->"1680c6a2-9a08-4316-bb50-d09b0463a92e",
+ CellID->1674872903]
+}, Open  ]],
+Cell[10485, 308, 297, 10, 70, "ExampleText",ExpressionUUID->"d4b4f2f8-64e5-4299-bd21-e86b5a07c236",
+ CellID->81370039],
+Cell[CellGroupData[{
+Cell[10807, 322, 143, 4, 70, "Input",ExpressionUUID->"e8835029-a175-4a40-a3e4-e838f0dd1542",
+ CellID->874151237],
+Cell[10953, 328, 5325, 144, 70, "Output",ExpressionUUID->"f728b593-6e17-4caa-b7ec-30532aa43f5d",
+ CellID->250130260]
+}, Open  ]],
+Cell[16293, 475, 312, 11, 70, "ExampleText",ExpressionUUID->"113edfc6-d802-4130-bc20-0d810cd80f35",
+ CellID->1784857577],
+Cell[CellGroupData[{
+Cell[16630, 490, 132, 4, 70, "Input",ExpressionUUID->"ddc92827-4b91-456f-88ed-f0c6731c9654",
+ CellID->344948808],
+Cell[16765, 496, 9011, 227, 70, "Output",ExpressionUUID->"0edcdcb5-d19a-4d0d-8bea-8c5abcbfb49a",
+ CellID->510159525]
+}, Open  ]],
+Cell[25791, 726, 92, 1, 70, "ExampleText",ExpressionUUID->"6f70ce15-fe5e-4647-8583-f12bc4867f0a",
+ CellID->732431213],
+Cell[CellGroupData[{
+Cell[25908, 731, 291, 10, 70, "Input",ExpressionUUID->"dd2c1770-290f-4dcd-8798-d31f145a12ff",
+ CellID->367426686],
+Cell[26202, 743, 611, 19, 70, "Output",ExpressionUUID->"3d939b6d-4950-481d-a1ad-35668f002091",
+ CellID->829318640]
+}, Open  ]]
+}, Open  ]],
+Cell[26840, 766, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"2cf4bac5-29a0-4a00-9312-4d1c7246afeb"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26908, 771, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"2c0a38d4-7024-4686-a2fd-a5c59af46184",
+ CellID->1255426704],
+Cell[27061, 780, 556, 18, 70, "SeeAlso",ExpressionUUID->"d111ead2-fcf1-4b46-bd46-927116755193",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27654, 803, 152, 7, 70, "TutorialsSection",ExpressionUUID->"eb235ce9-c5e6-49f2-b945-b39ccead65b5",
+ CellID->250839057],
+Cell[27809, 812, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"8088f8fa-2ab8-40fe-a9a8-5f61a251bc8c"],
+Cell[27843, 814, 204, 7, 70, "Tutorials",ExpressionUUID->"dd78fb23-8cbc-4c96-8fd6-5e6b8a4eae23",
+ CellID->341631938],
+Cell[28050, 823, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"6fb00902-de0b-4880-aba3-cd651fe697be"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[28118, 828, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"0c1e408c-c2db-4f84-a8d4-cbe5ff5f8445",
+ CellID->38303248],
+Cell[28277, 837, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"a7b438e2-498b-4790-8a4b-965372a458aa"],
+Cell[28311, 839, 178, 6, 70, "MoreAbout",ExpressionUUID->"1939ba3b-0e31-4b25-b7ff-1dd58cab4548",
+ CellID->1984872000]
+}, Open  ]],
+Cell[28504, 848, 23, 0, 70, "FooterCell",ExpressionUUID->"7dbafe1c-3172-4a2a-88ab-d2138183e22c"]
+}
+]
+*)
+
+(* End of internal cache information *)

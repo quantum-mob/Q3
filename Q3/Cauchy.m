@@ -2,19 +2,21 @@
 (* Mathematica package for complex variables. *)
 
 (* Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com) *)
-(* $Date: 2021-01-14 11:26:12+09 $ *)
-(* $Revision: 2.0 $ *)
+(* $Date: 2021-01-28 11:24:56+09 $ *)
+(* $Revision: 2.5 $ *)
 
-BeginPackage["Q3`Cauchy`", { "Q3`Abel`" }]
+BeginPackage["Q3`Cauchy`", { "Q3`" }]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Print @ StringJoin[
+Begin["`Private`"]
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.0 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-14 11:26:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.5 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-28 11:24:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ]
+ ];
+End[]
 
 { Complex, ComplexQ,
   Real, RealQ,
@@ -91,14 +93,14 @@ Power[E, Times[z_Complex, Pi, n_]] /; OddQ[n*z/I] = -1
 $Star = Style["*", FontColor -> Red]
 
 Format[ HoldPattern[ Conjugate[z_Symbol] ] ] :=
-  DisplayForm @ SpeciesBox[z, {}, {$Star}] /; $FormatSpecies
+  SpeciesBox[z, {}, {$Star}] /; $FormatSpecies
  
 Format[ HoldPattern[ Conjugate[z_Symbol?SpeciesQ[j___]] ] ] :=
-  DisplayForm @ SpeciesBox[z, {j}, {$Star}] /; $FormatSpecies
+  SpeciesBox[z, {j}, {$Star}] /; $FormatSpecies
 
 (* f[...] with f not declared as a Species is regarded as a normal function. *)
 Format[ HoldPattern[ Conjugate[f_Symbol[z___]] ] ] :=
-  DisplayForm @ SpeciesBox[
+  SpeciesBox[
     RowBox @ { "(", f[z], ")" },
     {},
     {$Star}
@@ -337,7 +339,7 @@ rulesCauchySimplify = {
 CauchyExpand::usage = "CauchyExpand[expr] expands out functions of complex variables."
 
 CauchyExpand[expr_] := (
-  Message[Notice::obsolete, CauchyExpand, Elaborate];
+  Message[Q3General::obsolete, CauchyExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -346,12 +348,7 @@ Protect[ Evaluate @ $symb ]
 End[] (* `Complex` *)
 
 
-Q3`Cauchy`Prelude`$symb = Protect[Evaluate[$Context<>"*"]]
+Q3Protect[]
 
-SetAttributes[Evaluate[Q3`Cauchy`Prelude`$symb], {ReadProtected}]
-
-Q3`Cauchy`Prelude`$symb = Unprotect[Evaluate[$Context<>"$*"]]
-
-ClearAttributes[Evaluate[Q3`Cauchy`Prelude`$symb], ReadProtected]
 
 EndPackage[]

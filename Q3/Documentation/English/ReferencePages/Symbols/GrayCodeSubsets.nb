@@ -3,17 +3,17 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Mathematica 12.1' *)
+(* CreatedBy='Mathematica 12.2' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     16606,        555]
-NotebookOptionsPosition[     11536,        443]
-NotebookOutlinePosition[     13658,        498]
-CellTagsIndexPosition[     13573,        493]
+NotebookDataLength[     17848,        574]
+NotebookOptionsPosition[     12534,        458]
+NotebookOutlinePosition[     14784,        515]
+CellTagsIndexPosition[     14699,        510]
 WindowTitle->GrayCodeSubsets
 WindowFrame->Normal*)
 
@@ -33,7 +33,10 @@ Cell[BoxData[GridBox[{
           Row[{"See Also", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
         StripOnInput->False], {"\<\"GrayCode\"\>":>Documentation`HelpLookup[
-       "paclet:Q3/ref/GrayCode"]},
+       "paclet:Q3/ref/GrayCode"], "\<\"GrayControlledU\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/GrayControlledU"], "\<\"GrayControlledW\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/GrayControlledW"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"SeeAlso"]],
@@ -51,9 +54,8 @@ Cell[BoxData[GridBox[{
          TextCell[
           Row[{"Related Guides", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Gray\"\>":>Documentation`HelpLookup[
-       "paclet:guide/Gray"], "\<\"Quisso\"\>":>Documentation`HelpLookup[
-       "paclet:Q3/guide/Quisso"]},
+        StripOnInput->False], {"\<\"Quisso Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Quisso"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"MoreAbout"]],
@@ -99,7 +101,7 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$108601], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$77361], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], 
              "Q3/ref/GrayCodeSubsets", ".html"]], None}]}]},
@@ -125,11 +127,14 @@ Cell[BoxData[GridBox[{
    {"", Cell[TextData[{
      Cell[BoxData[
       RowBox[{"GrayCodeSubsets", "[", 
-       StyleBox["a", "TI"], "]"}]], "InlineFormula"],
-     " \[LineSeparator]constructs a binary reflected Gray code on set ",
+       StyleBox["set", "TI"], "]"}]], "InlineFormula"],
+     " \[LineSeparator]constructs a binary reflected Gray code on ",
      Cell[BoxData[
-      StyleBox["a", "TI"]], "InlineFormula"],
-     "."
+      StyleBox["set", "TI"]], "InlineFormula"],
+     ", that is, it returns the list of all subsets of ",
+     Cell[BoxData[
+      StyleBox["set", "TI"]], "InlineFormula"],
+     " each of which differs from its predecessor by only one element."
     }]]}
   }]], "Usage",
  GridBoxOptions->{
@@ -158,7 +163,7 @@ Cell[TextData[Cell[BoxData[
   Method->"Preemptive"]]]], "NotesSection",
  WholeCellGroupOpener->True,
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->877676057],
+ CellID->1425236489],
 
 Cell["", "SectionHeaderSpacer"],
 
@@ -170,6 +175,25 @@ Cell[TextData[{
  " package."
 }], "Notes",
  CellID->1067943069],
+
+Cell[TextData[{
+ "It is used internally in ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GrayControlledU"]], "paclet:Q3/ref/GrayControlledU"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " and ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GrayControlledW"]], "paclet:Q3/ref/GrayControlledW"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ", but are useful for other tasks as well."
+}], "Notes",
+ CellID->25547298],
 
 Cell["", "SectionFooterSpacer"]
 }, Closed]],
@@ -186,7 +210,7 @@ Cell[TextData[{
 }], "PrimaryExamplesSection",
  WholeCellGroupOpener->True,
  CellTags->"PrimaryExamplesSection",
- CellID->36318756],
+ CellID->917071985],
 
 Cell[CellGroupData[{
 
@@ -196,7 +220,15 @@ Cell[TextData[{
  Cell["(1)", "ExampleCount"]
 }], "ExampleSection", "ExampleSection",
  WholeCellGroupOpener->True,
- CellID->523976344],
+ CellID->738717376],
+
+Cell[TextData[{
+ StyleBox["Gray", "Input"],
+ " is a supplementary package and is not loaded by default when the ",
+ StyleBox["Q3", "Input"],
+ " App is loaded. You need to load it manually."
+}], "ExampleText",
+ CellID->658460129],
 
 Cell[BoxData[
  RowBox[{"<<", "Q3`Gray`"}]], "Input",
@@ -224,29 +256,23 @@ Cell[BoxData[
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   TagBox[
-    SubscriptBox[
-     TemplateBox[{"S"},
-      "RowDefault"], 
-     TemplateBox[{"1"},
-      "RowDefault"]],
-    DisplayForm], ",", 
-   TagBox[
-    SubscriptBox[
-     TemplateBox[{"S"},
-      "RowDefault"], 
-     TemplateBox[{"2"},
-      "RowDefault"]],
-    DisplayForm], ",", 
-   TagBox[
-    SubscriptBox[
-     TemplateBox[{"S"},
-      "RowDefault"], 
-     TemplateBox[{"3"},
-      "RowDefault"]],
-    DisplayForm]}], "}"}]], "Output",
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"2"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"3"},
+     "RowDefault"]]}], "}"}]], "Output",
  CellLabel->"Out[3]=",
- CellID->1829769056]
+ CellID->257609558]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -264,102 +290,78 @@ Cell[BoxData[
   RowBox[{
    RowBox[{"{", "}"}], ",", 
    RowBox[{"{", 
-    TagBox[
-     SubscriptBox[
-      TemplateBox[{"S"},
-       "RowDefault"], 
-      TemplateBox[{"3"},
-       "RowDefault"]],
-     DisplayForm], "}"}], ",", 
+    SubscriptBox[
+     TemplateBox[{"S"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]], "}"}], ",", 
    RowBox[{"{", 
     RowBox[{
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"2"},
-        "RowDefault"]],
-      DisplayForm], ",", 
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"3"},
-        "RowDefault"]],
-      DisplayForm]}], "}"}], ",", 
-   RowBox[{"{", 
-    TagBox[
      SubscriptBox[
       TemplateBox[{"S"},
        "RowDefault"], 
       TemplateBox[{"2"},
-       "RowDefault"]],
-     DisplayForm], "}"}], ",", 
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"S"},
+       "RowDefault"], 
+      TemplateBox[{"3"},
+       "RowDefault"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    SubscriptBox[
+     TemplateBox[{"S"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]], "}"}], ",", 
    RowBox[{"{", 
     RowBox[{
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"1"},
-        "RowDefault"]],
-      DisplayForm], ",", 
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"2"},
-        "RowDefault"]],
-      DisplayForm]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"1"},
-        "RowDefault"]],
-      DisplayForm], ",", 
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"2"},
-        "RowDefault"]],
-      DisplayForm], ",", 
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"3"},
-        "RowDefault"]],
-      DisplayForm]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"1"},
-        "RowDefault"]],
-      DisplayForm], ",", 
-     TagBox[
-      SubscriptBox[
-       TemplateBox[{"S"},
-        "RowDefault"], 
-       TemplateBox[{"3"},
-        "RowDefault"]],
-      DisplayForm]}], "}"}], ",", 
-   RowBox[{"{", 
-    TagBox[
      SubscriptBox[
       TemplateBox[{"S"},
        "RowDefault"], 
       TemplateBox[{"1"},
-       "RowDefault"]],
-     DisplayForm], "}"}]}], "}"}]], "Output",
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"S"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     SubscriptBox[
+      TemplateBox[{"S"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"S"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"S"},
+       "RowDefault"], 
+      TemplateBox[{"3"},
+       "RowDefault"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     SubscriptBox[
+      TemplateBox[{"S"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"S"},
+       "RowDefault"], 
+      TemplateBox[{"3"},
+       "RowDefault"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    SubscriptBox[
+     TemplateBox[{"S"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]], "}"}]}], "}"}]], "Output",
  CellLabel->"Out[4]=",
- CellID->144724845],
+ CellID->138739114],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -381,7 +383,7 @@ Cell[BoxData[
    RowBox[{"{", 
     RowBox[{"1", ",", "0", ",", "0"}], "}"}]}], "}"}]], "Output",
  CellLabel->"Out[4]=",
- CellID->1438981511]
+ CellID->1768532003]
 }, Open  ]]
 }, Open  ]],
 
@@ -399,13 +401,34 @@ Cell[TextData[{
  WholeCellGroupOpener->True,
  CellID->1255426704],
 
-Cell[TextData[Cell[BoxData[
- TemplateBox[{
-   Cell[
-    TextData["GrayCode"]], "paclet:Q3/ref/GrayCode"},
-  "RefLink",
-  BaseStyle->{
-   "InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]], "SeeAlso",
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GrayCode"]], "paclet:Q3/ref/GrayCode"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GrayControlledU"]], "paclet:Q3/ref/GrayControlledU"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GrayControlledW"]], "paclet:Q3/ref/GrayControlledW"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
  CellID->929782353]
 }, Open  ]],
 
@@ -425,18 +448,10 @@ Cell["", "SectionHeaderSpacer"],
 Cell[BoxData[
  TemplateBox[{
    Cell[
-    TextData["Gray"]], "paclet:guide/Gray"},
+    TextData["Quisso Package Guide"]], "paclet:Q3/guide/Quisso"},
   "RefLink",
   BaseStyle->"MoreAbout"]], "MoreAbout",
- CellID->1787460908],
-
-Cell[BoxData[
- TemplateBox[{
-   Cell[
-    TextData["Quisso"]], "paclet:Q3/guide/Quisso"},
-  "RefLink",
-  BaseStyle->"MoreAbout"]], "MoreAbout",
- CellID->706742873]
+ CellID->1019975125]
 }, Open  ]],
 
 Cell[" ", "FooterCell"]
@@ -456,18 +471,20 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 1, 27, 20, 41, 58.740920}", 
+   "built" -> "{2021, 2, 14, 12, 21, 23.144685}", 
     "history" -> {"1.0", "", "", ""}, "context" -> "Q3`Gray`", 
     "keywords" -> {}, "specialkeywords" -> {}, 
     "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
     "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
-    "GrayCodeSubsets[a] constructs a binary reflected Gray code on set a.", 
-    "synonyms" -> {}, "tabletags" -> {}, "title" -> "GrayCodeSubsets", 
-    "titlemodifier" -> "", "windowtitle" -> "GrayCodeSubsets", "type" -> 
-    "Symbol", "uri" -> "Q3/ref/GrayCodeSubsets", "WorkflowDockedCell" -> ""}, 
-  "SearchTextTranslated" -> "", "NewStyles" -> False},
+    "GrayCodeSubsets[set] constructs a binary reflected Gray code on set, \
+that is, it returns the list of all subsets of set each of which differs from \
+its predecessor by only one element.", "synonyms" -> {}, "tabletags" -> {}, 
+    "title" -> "GrayCodeSubsets", "titlemodifier" -> "", "windowtitle" -> 
+    "GrayCodeSubsets", "type" -> "Symbol", "uri" -> "Q3/ref/GrayCodeSubsets", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "NewStyles" -> 
+  False},
 CellContext->"Global`",
-FrontEndVersion->"12.1 for Mac OS X x86 (64-bit) (June 19, 2020)",
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
 StyleDefinitions->Notebook[{
    Cell[
     StyleData[
@@ -476,7 +493,7 @@ StyleDefinitions->Notebook[{
     StyleData["Input"], CellContext -> "Global`"], 
    Cell[
     StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
-  FrontEndVersion -> "12.1 for Mac OS X x86 (64-bit) (June 19, 2020)", 
+  FrontEndVersion -> "12.2 for Mac OS X x86 (64-bit) (December 12, 2020)", 
   StyleDefinitions -> "Default.nb"]
 ]
 (* End of Notebook Content *)
@@ -485,78 +502,80 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "PrimaryExamplesSection"->{
-  Cell[5817, 178, 266, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"4c6a8814-d8e7-4d7d-b143-f262453b0d2f",
+  Cell[6633, 202, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c616e580-5317-430a-9b3a-5a1d473ef200",
    CellTags->"PrimaryExamplesSection",
-   CellID->36318756]}
+   CellID->917071985]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"PrimaryExamplesSection", 13376, 486}
+ {"PrimaryExamplesSection", 14501, 503}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[587, 21, 3578, 90, 70, "AnchorBarGrid",ExpressionUUID->"39ae6c8f-10b5-4e0f-84bb-966d59a3a5f5",
+Cell[587, 21, 3716, 92, 70, "AnchorBarGrid",ExpressionUUID->"e4d28736-3a76-4ea1-95f5-961e2e5f02d9",
  CellID->1],
 Cell[CellGroupData[{
-Cell[4190, 115, 172, 6, 70, "ObjectNameGrid",ExpressionUUID->"b1b0b806-05fe-4a29-b0e8-977abd750307"],
-Cell[4365, 123, 435, 13, 70, "Usage",ExpressionUUID->"763a559d-8ad3-452f-bb5b-537efe7b90b8",
+Cell[4328, 117, 172, 6, 70, "ObjectNameGrid",ExpressionUUID->"bfbaf691-6cc5-4038-922d-058c3e99ed20"],
+Cell[4503, 125, 623, 16, 70, "Usage",ExpressionUUID->"79bbc842-3fb1-43aa-b1de-b4a93d6c40c2",
  CellID->982511436]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[4837, 141, 629, 19, 70, "NotesSection",ExpressionUUID->"273d8646-5c9c-48f8-b3cc-c244989b8781",
+Cell[5163, 146, 630, 19, 70, "NotesSection",ExpressionUUID->"94049d63-511e-499d-af65-c63cd95b2e54",
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->877676057],
-Cell[5469, 162, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"b33c9db1-37bb-4f3c-8e6e-1a611d38a2b2"],
-Cell[5503, 164, 243, 7, 70, "Notes",ExpressionUUID->"4715181d-701d-4a40-bbff-1ac23059bd83",
+ CellID->1425236489],
+Cell[5796, 167, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"69be817a-a509-4b78-a378-a1db68aa4417"],
+Cell[5830, 169, 243, 7, 70, "Notes",ExpressionUUID->"7f917a8b-24c7-4fad-92c0-b656327f0a75",
  CellID->1067943069],
-Cell[5749, 173, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"4dcddf4e-e828-4c66-9221-a0be1abb0095"]
+Cell[6076, 178, 486, 17, 70, "Notes",ExpressionUUID->"7f2b9e17-cfe9-49b1-af4c-48a5c1d0391f",
+ CellID->25547298],
+Cell[6565, 197, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"d11edc0a-1d8a-4726-aa5c-64464a3562fd"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[5817, 178, 266, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"4c6a8814-d8e7-4d7d-b143-f262453b0d2f",
+Cell[6633, 202, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c616e580-5317-430a-9b3a-5a1d473ef200",
  CellTags->"PrimaryExamplesSection",
- CellID->36318756],
+ CellID->917071985],
 Cell[CellGroupData[{
-Cell[6108, 192, 195, 6, 70, "ExampleSection",ExpressionUUID->"0fca145b-c199-4615-86a6-1bd6dc28140b",
- CellID->523976344],
-Cell[6306, 200, 95, 3, 70, "Input",ExpressionUUID->"55469392-c0b3-4787-bb31-341afaa311e3",
+Cell[6925, 216, 195, 6, 70, "ExampleSection",ExpressionUUID->"c0e92be3-6020-4100-b083-c1efc88e916a",
+ CellID->738717376],
+Cell[7123, 224, 228, 6, 70, "ExampleText",ExpressionUUID->"f3abaddf-07b3-4e23-961a-e9df97d94d58",
+ CellID->658460129],
+Cell[7354, 232, 95, 3, 70, "Input",ExpressionUUID->"e353d382-9ac6-48a6-9ec7-4e628c31a420",
  CellID->950644482],
-Cell[6404, 205, 127, 4, 70, "Input",ExpressionUUID->"41eef706-a354-40be-b5c9-8db2a190aea7",
+Cell[7452, 237, 127, 4, 70, "Input",ExpressionUUID->"21200487-8644-4934-b25e-92b2bee04c27",
  CellID->1743990720],
 Cell[CellGroupData[{
-Cell[6556, 213, 213, 8, 70, "Input",ExpressionUUID->"2a549d39-8a5e-448f-a856-ab0112af1fb8",
+Cell[7604, 245, 213, 8, 70, "Input",ExpressionUUID->"e742e469-c228-46bc-a248-414ed62e7e10",
  CellID->247733137],
-Cell[6772, 223, 532, 25, 70, "Output",ExpressionUUID->"194087fd-9d56-4d24-b117-9d90636a9f24",
- CellID->1829769056]
+Cell[7820, 255, 429, 19, 70, "Output",ExpressionUUID->"1d586edc-e97b-4295-8501-e77daa28185a",
+ CellID->257609558]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7341, 253, 226, 6, 70, "Input",ExpressionUUID->"460c0d15-bc24-44f2-a334-942103c220eb",
+Cell[8286, 279, 226, 6, 70, "Input",ExpressionUUID->"4ddaba90-c120-460f-a278-b390ea06a434",
  CellID->1912866717],
-Cell[7570, 261, 2240, 100, 70, "Output",ExpressionUUID->"2d0a70e2-f80d-40c2-a106-b19dfa28f23b",
- CellID->144724845],
-Cell[9813, 363, 649, 20, 70, "Output",ExpressionUUID->"924cc02c-a600-4f7c-9f6f-bd85dfc7878e",
- CellID->1438981511]
+Cell[8515, 287, 1790, 76, 70, "Output",ExpressionUUID->"754d1a95-c9e9-4218-932c-6a27eca703c4",
+ CellID->138739114],
+Cell[10308, 365, 649, 20, 70, "Output",ExpressionUUID->"5de6f633-42d7-46a1-91b6-7c6775714656",
+ CellID->1768532003]
 }, Open  ]]
 }, Open  ]],
-Cell[10489, 387, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"2b1b5515-e89f-4ea7-81f0-66b8a7b0894b"]
+Cell[10984, 389, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"e8b4042a-34e3-438b-9d31-8c64279baa28"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[10557, 392, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"94463120-9dd8-4475-9b84-837db90531d2",
+Cell[11052, 394, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"ccb8e0b9-9cb6-406b-9399-11e7068f42e8",
  CellID->1255426704],
-Cell[10710, 401, 231, 7, 70, "SeeAlso",ExpressionUUID->"ad7efd47-17b1-4169-b846-1d1281b8bb6d",
+Cell[11205, 403, 879, 28, 70, "SeeAlso",ExpressionUUID->"58103728-16ee-4420-a2c4-872a3e82807f",
  CellID->929782353]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[10978, 413, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"8d978f55-7f38-4c21-8b1a-e80cf5ee63d6",
+Cell[12121, 436, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"4f4007a9-638a-424c-9613-57dde9da0fa9",
  CellID->38303248],
-Cell[11137, 422, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"348365dd-aa84-47e1-bc8b-b7bdf0e7bcf8"],
-Cell[11171, 424, 157, 6, 70, "MoreAbout",ExpressionUUID->"ba755965-6508-4314-b15c-305676690afe",
- CellID->1787460908],
-Cell[11331, 432, 163, 6, 70, "MoreAbout",ExpressionUUID->"7196d09c-eb9b-48c8-b5a6-a35a0d7708f2",
- CellID->706742873]
+Cell[12280, 445, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"8576d21b-4e78-4a6e-ad74-80146989865a"],
+Cell[12314, 447, 178, 6, 70, "MoreAbout",ExpressionUUID->"766311e9-e5a5-4baf-8863-7ec6be552f06",
+ CellID->1019975125]
 }, Open  ]],
-Cell[11509, 441, 23, 0, 70, "FooterCell",ExpressionUUID->"b556240c-e68e-402c-b1c6-5264cf2aa317"]
+Cell[12507, 456, 23, 0, 70, "FooterCell",ExpressionUUID->"a5f9242c-a0c7-4099-9135-b9a7797a20c1"]
 }
 ]
 *)

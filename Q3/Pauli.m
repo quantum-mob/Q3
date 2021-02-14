@@ -2,20 +2,22 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-01-27 14:43:01+09 $
-  $Revision: 2.31 $
+  $Date: 2021-01-28 11:23:46+09 $
+  $Revision: 2.36 $
   ****)
 
-BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`Abel`" } ]
+BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Print @ StringJoin[
+Begin["`Private`"]
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.31 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-27 14:43:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.36 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-28 11:23:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ]
+ ];
+End[]
 
 { Spin, SpinNumberQ };
 
@@ -425,9 +427,9 @@ Ket /: NonCommutativeQ[ Ket[___] ] = True
 
 Bra /: NonCommutativeQ[ Bra[___] ] = True
 
-Ket /: Kind[ Ket[_Association] ] = NonCommutative
+Ket /: Kind[ Ket[___] ] = NonCommutative
 
-Bra /: Kind[ Bra[_Association] ] = NonCommutative
+Bra /: Kind[ Bra[___] ] = NonCommutative
 
 Ket /: Dagger[Ket[a___]] := Bra[a]
 
@@ -1860,12 +1862,15 @@ SchmidtDecomposition[
 
 (* ********************************************************************* *)
 
-TensorFlatten::usage = "TensorFlatten[t] flattens out the given tensor t and returns the resulting matrix. It generalizes ArrayFlatten and operates on tensors of any rank. To flatten out a tensor to a vector (rather than a matrix), just use Flatten."
+TensorFlatten::usage = "TensorFlatten[tsr] flattens out the given tensor tsr to a matrix and returns it.\nIt generalizes ArrayFlatten and operates on tensors of any rank.\nTo flatten out a tensor to a vector (rather than a matrix), just use Flatten."
 
 TensorFlatten[t_?TensorQ] := With[
   { r = TensorRank[t] },
   Flatten[t, {Range[1,r,2], Range[2,r,2]}]
  ]
+
+TensorFlatten[c:Except[_List]] := c
+
 
 Tensorize::usage = "Tensorize[m] gives the tensor product form of the matrix m. The matrix m is supposed to be the matrix representation of a multi-qubit system and hence a square matrix of size 2^n, where n is the number of qubits.\nTensorize[v] gives the tensor product form of the vector v. The vector v is supposed to be the matrix representation of a multi-qubit system and hence a column vector of size 2^n.\nTensorize[m, dim] and Tensor[v, dim] are the same but for general subsystems of dimensions dim.\nNotice the difference between TensorProduct and CircleTimes. While TensorProduct preseves the tensor product form (in blocks), CircleTimes gives the matrix direct product with component blocks flattened. In fact, CircleTimes = Flatten @ TensorProdut for vectors and CircleTimes = TensorFlatten @ TensorProduct for matrices. Tensorize recovers the tensor product form from the matrix direct product form."
 
@@ -2564,12 +2569,7 @@ Protect[ Evaluate @ $symbs ]
 End[]
 
 
-Q3`Pauli`Private`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3Protect[]
 
-SetAttributes[Evaluate[Q3`Pauli`Private`symbs], {ReadProtected}]
-
-Q3`Pauli`Private`$symb = Unprotect[Evaluate[$Context<>"$*"]]
-
-ClearAttributes[Evaluate[Q3`Pauli`Private`$symb], ReadProtected]
 
 EndPackage[]

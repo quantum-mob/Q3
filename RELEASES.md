@@ -1,5 +1,17 @@
 # Select Release Notes
 
+## v1.5.0
+
+- New function Q3Version.
+- No messages printed when Q3` is loaded.
+- Symbols commonly used in all packages have context Q3`.
+- New function FockAddSpinZ.
+- Renamed: Cannon -> Canon
+- CNOT now acts on multiple qubits. This is for convenience.
+- Improved documentation for GrayCodeSubsets
+- New functions: BinaryToGray, GrayToBinary
+- New functions: TwoLevelU, GrayTwoLevelU, TwoLevelDecomposition
+
 ## v1.4.2
 
 - Fredkin gate.

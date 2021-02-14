@@ -2,23 +2,25 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@me.com)
-  $Date: 2021-01-14 11:41:11+09 $
-  $Revision: 1.5 $
+  $Date: 2021-01-28 11:24:27+09 $
+  $Revision: 1.9 $
   ****)
 
 BeginPackage[ "Q3`FockPlus`",
   { "Q3`Fock`", "Q3`Grassmann`", 
-    "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" }
+    "Q3`Pauli`", "Q3`Cauchy`", "Q3`" }
  ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Print @ StringJoin[
+Begin["`Private`"]
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-14 11:41:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.9 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-28 11:24:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ]
+ ];
+End[]
 
 { Pairings, Wick, Average };
 
@@ -488,6 +490,6 @@ Protect[ Evaluate @ $symbs ]
 
 End[]
 
-Protect[Evaluate[$Context<>"*"]]
+Q3Protect[]
 
 EndPackage[]

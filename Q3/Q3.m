@@ -1,18 +1,22 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-01-15 10:06:32+09 $ *)
-(* $Revision: 1.6 $ *)
+(* $Date: 2021-01-28 19:16:26+09 $ *)
+(* $Revision: 1.13 $ *)
 
-BeginPackage["Q3`Abel`"]
+BeginPackage["Q3`"]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Notice::usage = "Notice is a symbol to which general messages concerning Q3 are attached.\nIt is similar to General, but its Context is Q3."
+Begin["`Private`"]
+Q3`Private`Version = StringJoin[
+  $Input, " v",
+  StringSplit["$Revision: 1.13 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-28 19:16:26+09 $"][[2]], ") ",
+  "Mahn-Soo Choi"
+ ];
+End[]
 
-Notice::obsolete = "The symbol `` is OBSOLETE. Use `` instead."
-
-Notice::newUI = "An angle should come first. The order of the input arguments of `` has been changed since Q3 v1.2.0."
-
+{ Q3Version, Q3General, Q3Protect };
 
 { Supplement, SupplementBy, Common, CommonBy };
 { Choices, Successive };
@@ -72,6 +76,40 @@ $symb = Unprotect[
   Conjugate, NonCommutativeMultiply, Inverse
  ]
 
+Q3General::usage = "Notice is a symbol to which general messages concerning Q3 are attached.\nIt is similar to General, but its Context is Q3."
+
+Q3General::obsolete = "The symbol `` is OBSOLETE. Use `` instead."
+
+Q3General::newUI = "An angle should come first. The order of the input arguments of `` has been changed since Q3 v1.2.0."
+
+
+Q3Version::usage = "Q3Version[] prints the information about the Q3 release and versions of packages in it."
+
+Q3Version[] := Module[
+  { pkg = Contexts["Q3`*`Private`"],
+    pac = Get["Q3/PacletInfo.m"] },
+  pkg = Symbol @* StringJoin /@ Thread @ {pkg, "Version"};
+  If[ Not @ FailureQ[pac],
+    If[ SymbolName @ Head[pac] == "Paclet",
+      pac = ReplaceAll[Version, List @@ pac] /. {Version -> 0};
+      PrependTo[pkg, "Q3 Application Release v" <> pac]
+     ];
+   ];
+  Print @ StringJoin @ Riffle[pkg, "\n"];
+ ]
+
+Q3Protect::usage = "Q3Protect[context] protects all symbols in the specified context. In addition, sets the ReadProtected attribute to all non-variable symbols, those the name of which does not start with the character \"$\")."
+
+Q3Protect[] := Q3Protect[$Context]
+
+Q3Protect[context_String] := Module[
+  { vars = Names[context <> "$*"],
+    symb = Names[context <> "*"] },
+  symb = Complement[symb, vars];
+  SetAttributes[Evaluate @ symb, ReadProtected];
+  Protect[Evaluate @ symb]
+ ]
+
 Choices::usage = "Choices[a,n] gives all possible choices of n elements out of the list a.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
 Choices[a_List, n_Integer] := Union[Sort /@ Tuples[a, n]]
@@ -83,10 +121,10 @@ Supplement[a_List, b__List] := DeleteCases[ a, Alternatives @@ Union[b], 1 ]
 (* Implementation 3: Fast and versatile. *)
 
 (* Supplement[a_List, b__List] := a /. Thread[Union[b] -> Nothing] *)
-(* Implementation 2: Faster than the obvious approach as in Implementation 1 below.
-   However, it works only when a and b are simple arrays (not allowed to
-   include sublists, in which case unexpected results will arise).
-   *)
+
+(* Implementation 2: Faster than the obvious approach as in Implementation 1
+   below.  However, it works only when a and b are simple arrays (not allowed
+   to include sublists, in which case unexpected results will arise). *)
 
 (* Supplement[a_List, b_List] := Select[a, ! MemberQ[b, #] &] *)
 (* Implementation 1: Straightforward, but slow. *)
@@ -316,7 +354,7 @@ setSpecies[x_Symbol] := (
      See Let[Bosons, ...] and Let[Fermions, ...]. *)
   (* NOTE: Distribute[x[j], List] will hit the recursion limit. *)
 
-  Format[ x[j___] ] := DisplayForm @ SpeciesBox[x, {j}, {}] /; $FormatSpecies;
+  Format[ x[j___] ] := SpeciesBox[x, {j}, {}] /; $FormatSpecies;
  )
 
 
@@ -357,10 +395,10 @@ setNonCommutative[x_Symbol] := (
 
 
 Format[ Inverse[op_?NonCommutativeQ] ] :=
-  DisplayForm @ SpeciesBox[op, { }, {"-1"}] /; $FormatSpecies
+  SpeciesBox[op, { }, {"-1"}] /; $FormatSpecies
  
 Format[ Inverse[op_Symbol?NonCommutativeQ[j___]] ] :=
-  DisplayForm @ SpeciesBox[op, {j}, {"-1"}] /; $FormatSpecies
+  SpeciesBox[op, {j}, {"-1"}] /; $FormatSpecies
 
 Inverse[ Power[E, expr_] ] := MultiplyExp[-expr] /;
   Not @ CommutativeQ @ expr
@@ -434,13 +472,13 @@ SpeciesBox[c_, {}, sup:{__}, delimiter_String:"\[ThinSpace]"] :=
 SpeciesBox[c_, sub:{__}, {}] :=
   Subscript[
     Row @ {c},
-    Row @ Riffle[sub, $SubscriptDelimiter]
+    Row @ Riffle[FlavorForm @ sub, $SubscriptDelimiter]
    ]
 
 SpeciesBox[ c_, sub:{__}, sup:{__} ] :=
   Subsuperscript[
     Row @ {c},
-    Row @ Riffle[sub, $SubscriptDelimiter],
+    Row @ Riffle[FlavorForm @ sub, $SubscriptDelimiter],
     Row @ Riffle[sup, $SuperscriptDelimiter]
    ]
 (* NOTE(2020-10-14): Superscript[] instead of SuperscriptBox[], etc.
@@ -452,6 +490,17 @@ SpeciesBox[ c_, sub:{__}, sup:{__} ] :=
    when $SubscriptDelimiter=Nothing (or similar). *)
 (* NOTE: ToBoxes have been removed; with it, TeXForm generates spurious
    \text{...} *)
+
+
+FlavorForm::usage = "FlavorForm[j] converts the flavor index j into a more intuitively appealing form."
+
+SetAttributes[FlavorForm, Listable]
+
+FlavorForm[Up] := "\[UpArrow]"
+
+FlavorForm[Down] := "\[DownArrow]"
+
+FlavorForm[j_] := j
 
 
 LinearMap::usage = "LinearMap represents linear maps.\nLet[LinearMap, f, g, ...] defines f, g, ... to be linear maps."
@@ -513,10 +562,10 @@ HoldPattern @ Tee[ expr_Multiply ] := Multiply @@ Reverse @ Tee[ List @@ expr ]
 Tee /: HoldPattern[ Power[a_, Tee] ] := Tee[a]
 
 Format[ HoldPattern @ Tee[ c_Symbol?SpeciesQ[j___] ] ] := 
-  DisplayForm @ SpeciesBox[c, {j}, {"T"} ] /; $FormatSpecies
+  SpeciesBox[c, {j}, {"T"} ] /; $FormatSpecies
 
 Format[ HoldPattern @ Tee[ c_Symbol?SpeciesQ ] ] := 
-  DisplayForm @ SpeciesBox[c, {}, {"T"} ] /; $FormatSpecies
+  SpeciesBox[c, {}, {"T"} ] /; $FormatSpecies
 
 
 Primed::usage = "Primed[a] represents another object closely related to a."
@@ -605,10 +654,10 @@ HoldPattern[ Power[op_Dagger, n_Integer] ] := MultiplyPower[op, n]
 
 
 Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] ] :=
-  DisplayForm @ SpeciesBox[c, {j}, {"\[Dagger]"} ] /; $FormatSpecies
+  SpeciesBox[c, {j}, {"\[Dagger]"} ] /; $FormatSpecies
 
 Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] ] :=
-  DisplayForm @ SpeciesBox[c, {}, {"\[Dagger]"} ] /; $FormatSpecies
+  SpeciesBox[c, {}, {"\[Dagger]"} ] /; $FormatSpecies
 
 Format[ HoldPattern @ Dagger[a_] ] := Superscript[a, "\[Dagger]"]
 (* for the undefined *)
@@ -1231,16 +1280,12 @@ Protect[ Evaluate @ $symb ]
 
 End[]
 
+Q3Protect[]
 
-Q3`Abel`Private`$symb = Protect[Evaluate[$Context<>"*"]]
-
-SetAttributes[Evaluate[Q3`Abel`Private`$symb], {ReadProtected}]
-
-Q3`Abel`Private`$symb = Unprotect[Evaluate[$Context<>"$*"]]
-
-ClearAttributes[Evaluate[Q3`Abel`Private`$symb], ReadProtected]
-
-SetAttributes[$ElaborationRules, ReadProtected]
 (* $ElaborationRules is too messay to show the value. *)
+SetAttributes[$ElaborationRules, ReadProtected]
+Protect[$ElaborationRules]
+
+Protect[$GarnerTests, $GarnerHeads]
 
 EndPackage[]

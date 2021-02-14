@@ -2,19 +2,21 @@
 
 (* SU(3) Algebra *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-01-14 11:41:44+09 $ *)
-(* $Revision: 1.21 $ *)
+(* $Date: 2021-01-28 11:24:19+09 $ *)
+(* $Revision: 1.25 $ *)
 
-BeginPackage[ "Q3`GellMann`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" } ]
+BeginPackage[ "Q3`GellMann`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Print @ StringJoin[
+Begin["`Private`"]
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.21 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-14 11:41:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.25 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-28 11:24:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
+End[]
 
 { GellMann, TheGellMann };
 
@@ -298,6 +300,6 @@ Protect[ Evaluate @ $symbs ]
 
 End[]
 
-Protect[Evaluate[$Context<>"*"]]
+Q3Protect[]
 
 EndPackage[]

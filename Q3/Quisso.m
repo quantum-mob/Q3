@@ -5,21 +5,22 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-01-26 13:20:48+09 $
-  $Revision: 1.80 $
+  $Date: 2021-02-13 20:04:37+09 $
+  $Revision: 1.86 $
   ****)
 
-BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" } ]
+BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Print @ StringJoin[
+Begin["`Private`"]
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.80 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-26 13:20:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.86 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-13 20:04:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ]
-
+ ];
+End[]
 
 { Qubit, QubitQ, Qubits,
   Classical, ClassicalQ };
@@ -444,7 +445,7 @@ Once[
 QuissoExpand::usage = "QuissoExpand[expr] expands the expression expr revealing the explicit forms of various operator or state-vector expressions."
 
 QuissoExpand[expr_] := (
-  Message[Notice::obsolete, QuissoExpand, Elaborate];
+  Message[Q3General::obsolete, QuissoExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -1045,12 +1046,12 @@ QuissoPhase[ a_, S_?QubitQ ] := QuissoPhase[a, S[None]] /;
   FlavorLast[S] =!= None
 
 QuissoPhase[S_?QubitQ, ang_] := (
-  Message[Notice::newUI, QuissoPhase];
+  Message[Q3General::newUI, QuissoPhase];
   QuissoPhase[ang, S]
  )
 
 QuissoPhase[qq:{__?QubitQ}, ang_] := (
-  Message[Notice::newUI, QuissoPhase];
+  Message[Q3General::newUI, QuissoPhase];
   QuissoPhase[ang, qq]
  )
 
@@ -1077,12 +1078,12 @@ Dagger[ Phase[ phi_, G_?QubitQ, opts___?OptionQ ] ] :=
   
 
 Phase[q_?QubitQ, ang_, rest___] := (
-  Message[Notice::newUI, Phase];
+  Message[Q3General::newUI, Phase];
   Phase[ang, q, rest]
  )
 
 Phase[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Notice::newUI, Phase];
+  Message[Q3General::newUI, Phase];
   Phase[ang, qq, rest]
  )
 
@@ -1109,12 +1110,12 @@ QuissoRotation[ a_, SS:{__?QubitQ} ] := Garner[
 
 
 QuissoRotation[S_?QubitQ, ang_, rest___] := (
-  Message[Notice::newUI, QuissoRotation];
+  Message[Q3General::newUI, QuissoRotation];
   QuissoRotation[ang, S, rest]
  )
 
 QuissoRotation[ss:{__?QubitQ}, ang_, rest___] := (
-  Message[Notice::newUI, QuissoRotation];
+  Message[Q3General::newUI, QuissoRotation];
   QuissoRotation[ang, ss, rest]
  )
 
@@ -1137,12 +1138,12 @@ Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
 
 
 Rotation[q_?QubitQ, ang_, rest___] := (
-  Message[Notice::newUI, Rotation];
+  Message[Q3General::newUI, Rotation];
   Rotation[ang, q, rest]
  )
 
 Rotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Notice::newUI, Rotation];
+  Message[Q3General::newUI, Rotation];
   Rotation[ang, qq, rest]
  )
 
@@ -1168,12 +1169,12 @@ QuissoEulerRotation[ {a_, b_, c_}, S_?QubitQ ] :=
 
 
 QuissoEulerRotation[q_?QubitQ, ang_, rest___] := (
-  Message[Notice::newUI, QuissoEulerRotation];
+  Message[Q3General::newUI, QuissoEulerRotation];
   QuissoEulerRotation[ang, q, rest]
  )
 
 QuissoEulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Notice::newUI, QuissoEulerRotation];
+  Message[Q3General::newUI, QuissoEulerRotation];
   QuissoEulerRotation[ang, qq, rest]
  )
 
@@ -1196,12 +1197,12 @@ HoldPattern @ Multiply[
 
 
 EulerRotation[q_?QubitQ, ang_, rest___] := (
-  Message[Notice::newUI, EulerRotation];
+  Message[Q3General::newUI, EulerRotation];
   EulerRotation[ang, q, rest]
  )
 
 EulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Notice::newUI, EulerRotation];
+  Message[Q3General::newUI, EulerRotation];
   EulerRotation[ang, qq, rest]
  )
 
@@ -1214,24 +1215,32 @@ CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, wh
 
 QuissoCNOT::usage = "QuissoCNOT[C, T] operates the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. See also CNOT."
 
-SetAttributes[CNOT, Listable]
+CNOT[c_?QubitQ, t_] := CNOT[{c}, t]
 
-SetAttributes[QuissoCNOT, Listable]
+CNOT[c_, t_?QubitQ] := CNOT[c, {t}]
 
-CNOT[ c_?QubitQ, t_?QubitQ ] := CNOT @@ FlavorNone @ {c,t} /;
-  FlavorLast[{c,t}] =!= {None, None}
+CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
+  CNOT[FlavorNone @ cc, FlavorNone @ tt] /;
+  Not @ ContainsOnly[FlavorLast @ Join[cc, tt], {None}]
 
 CNOT /: Dagger[ op_CNOT ] := op
 
-CNOT /: HoldPattern @ Multiply[a___, CNOT[b__], c___] := Multiply[a, QuissoCNOT[b], c]
+CNOT /:
+HoldPattern @ Multiply[pre___, CNOT[qq__], post___] :=
+  Multiply[pre, QuissoCNOT[qq], post]
 
-QuissoCNOT[ c_?QubitQ, t_?QubitQ ] :=
-  QuissoCNOT @@ FlavorNone @ {c,t} /; FlavorLast[{c,t}] =!= {None, None}
+QuissoCNOT[c_?QubitQ, t_] := QuissoCNOT[{c}, t]
 
-QuissoCNOT[ c_?QubitQ, t_?QubitQ ] := Module[
-  { cc = Most @ c,
-    tt = Most @ t },
-  ExpandAll[ (1 + cc[3] + tt[1] - cc[3]**tt[1]) / 2 ]
+QuissoCNOT[c_, t_?QubitQ] := QuissoCNOT[c, {t}]
+
+QuissoCNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
+  QuissoCNOT[FlavorNone @ cc, FlavorNone @ tt] /;
+  Not @ ContainsOnly[FlavorLast @ Join[cc, tt], {None}]
+
+QuissoCNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+  { ccc = Multiply @@ Through[cc[11]],
+    ttt = Multiply @@ Through[tt[1]] },
+  Elaborate[(1-ccc) + ccc ** ttt]
  ]
 
 
@@ -1881,8 +1890,8 @@ qCircuitGate[
   Gate[ cc, Qubits[expr], opts, more ] /; Not @ FreeQ[expr, _?QubitQ]
 
 
-qCircuitGate[ CNOT[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
-  Gate[ {c}, {t}, "TargetFunction" -> "CirclePlus" ]
+qCircuitGate[ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}], opts___?OptionQ ] :=
+  Gate[ cc, tt, "TargetFunction" -> "CirclePlus" ]
 
 qCircuitGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
   Gate[ {a, b}, {c}, "TargetFunction" -> "CirclePlus" ]
@@ -2722,10 +2731,6 @@ Protect[ Evaluate @ $symbs ]
 
 End[] (* `Qudit` *)
 
-
-
-Q3`Quisso`Private`symbs = Protect[Evaluate[$Context<>"*"]]
-
-SetAttributes[Evaluate[Q3`Quisso`Private`symbs], ReadProtected]
+Q3Protect[]
 
 EndPackage[]

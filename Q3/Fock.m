@@ -1,16 +1,18 @@
 (* -*- mode: math; -*- *)
 BeginPackage[ "Q3`Fock`",
-  { "Q3`Grassmann`", "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" }
+  { "Q3`Grassmann`", "Q3`Pauli`", "Q3`Cauchy`", "Q3`" }
  ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Print @ StringJoin[
+Begin["`Private`"]
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-12 03:29:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.16 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-29 17:48:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ]
+ ];
+End[]
 
 { Let, Hermitian, Heisenberg, Boson, Fermion, Majorana };
 { Bosons, Heisenbergs, Fermions, Majoranas };
@@ -23,7 +25,7 @@ Print @ StringJoin[
 
 (*** Tools for operator expressions ***)
 
-{ CanonicalConjugate = Cannon };
+{ CanonicalConjugate = Canon };
 
 { NormalOrder, FockColon };
 
@@ -52,14 +54,12 @@ Print @ StringJoin[
 
 { FockKet, FockCat, FockPad };
 { FockNorm, FockAvg };
-{ BosonBasis,
-  FermionBasis, {Representation, Conserved}, BasisForm, $BasisStyle };
-{ FockMatrix, {DiagonalOnly}, FockMatrixFast, FockMatrixSparse,
-  FockMatrixForm, $FockMatrixStyle };
+{ BosonBasis, FermionBasis, PrintFermionBasis };
+{ FockMatrix, FockMatrixForm };
 
 { FockDecompose, FockOrthogonalize };
 
-{ FockAddSpin };
+{ FockAddSpin, FockAddSpinZ };
 
 { FockExpand, $FockExpandMethods };
 
@@ -182,10 +182,10 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
     x[j___, Up] := x[j, 1/2];
     x[j___, Down] := x[j, -1/2];
     Format[ x[j___,+1/2] ] :=
-      DisplayForm @ SpeciesBox[x , {j,"\[UpArrow]"}, {}] /;
+      SpeciesBox[x , {j,"\[UpArrow]"}, {}] /;
       $FormatSpecies;
     Format[ x[j___,-1/2] ] :=
-      DisplayForm @ SpeciesBox[x , {j,"\[DownArrow]"}, {}] /;
+      SpeciesBox[x , {j,"\[DownArrow]"}, {}] /;
       $FormatSpecies;
    ];
  )
@@ -327,10 +327,10 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
     x[j___, Up] := x[j, 1/2];
     x[j___, Down] := x[j, -1/2];
     Format[ x[j___,+1/2] ] :=
-      DisplayForm @ SpeciesBox[x , {j,"\[UpArrow]"}, {}] /;
+      SpeciesBox[x , {j,"\[UpArrow]"}, {}] /;
       $FormatSpecies;
     Format[ x[j___,-1/2] ] :=
-      DisplayForm @ SpeciesBox[x , {j,"\[DownArrow]"}, {}] /;
+      SpeciesBox[x , {j,"\[DownArrow]"}, {}] /;
       $FormatSpecies;
    ];
  )
@@ -340,13 +340,13 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
 Format[
   HoldPattern @ Dagger[c_Symbol?SpeciesQ[j___, Rational[1,2]]] /;
     Spin[c] == 1/2 ] :=
-  DisplayForm @ SpeciesBox[c , {j,"\[UpArrow]"}, {"\[Dagger]"}] /;
+  SpeciesBox[c , {j,"\[UpArrow]"}, {"\[Dagger]"}] /;
   $FormatSpecies
 
 Format[
   HoldPattern @ Dagger[c_Symbol?SpeciesQ[j___, Rational[-1,2]]] /;
     Spin[c] == 1/2 ] :=
-  DisplayForm @ SpeciesBox[c , {j,"\[DownArrow]"}, {"\[Dagger]"}] /;
+  SpeciesBox[c , {j,"\[DownArrow]"}, {"\[Dagger]"}] /;
   $FormatSpecies
 
 
@@ -447,7 +447,7 @@ AnyBosonQ::usage = "AnyBosonQ[c] returns True if c is a bosonic operaor with or 
 
 HeisenbergQ::usage = "HeisenbergQ[c] returns True if c is a Heisenberg operator (without Canon on it)."
 
-AnyHeisenbergQ::usage = "AnyHeisenbergQ[c] returns True if c is a Heisenberg operator with or without Cannon on it."
+AnyHeisenbergQ::usage = "AnyHeisenbergQ[c] returns True if c is a Heisenberg operator with or without Canon on it."
 
 FermionQ::usage = "FermionQ[c] returns True if c is a fermionic operator. FermionQ[c[i, j, ...]] returns True if c[i, j, ...] is a fermionic operator (without Dagger on it)."
 
@@ -478,7 +478,7 @@ ParticleQ[_] = False
 Scan[
   With[
     { anyQ = Symbol["Any" <> ToString[#]] },
-    anyQ[Cannon[_?#]] = True;
+    anyQ[Canon[_?#]] = True;
     anyQ[HoldPattern @ Dagger[_?#]] = True;
     anyQ[_?#] = True;
     anyQ[_] = False;
@@ -486,7 +486,7 @@ Scan[
   {OperatorQ, ParticleQ, HeisenbergQ, BosonQ, FermionQ}
  ]
 
-AnySpeciesQ[ Cannon[_?HeisenbergQ] ] = True
+AnySpeciesQ[ Canon[_?HeisenbergQ] ] = True
 (* Heisenberg's canonical conjugate is not very common, and was not defined in
    the Cauchy package. *)
 
@@ -509,29 +509,29 @@ SpinZ[ op_ ] = 0
 
 (*** Canonical Conjugate ***)
 
-Cannon::usage = "Cannon[x] denotes the canonical conjugate of a Heisenberg canonical operator x."
+Canon::usage = "Canon[x] denotes the canonical conjugate of a Heisenberg canonical operator x."
 
-SetAttributes[Cannon, Listable]
+SetAttributes[Canon, Listable]
 
-Cannon[ Cannon[q_?HeisenbergQ] ] := q
+Canon[ Canon[q_?HeisenbergQ] ] := q
 
-Cannon /:
-Kind[ Cannon[q_] ] := Kind[q]
+Canon /:
+Kind[ Canon[q_] ] := Kind[q]
 
-Cannon /:
-Dagger[ Cannon[q_?HeisenbergQ] ] := Cannon[q]
+Canon /:
+Dagger[ Canon[q_?HeisenbergQ] ] := Canon[q]
 
-Cannon /: 
-Format[ Cannon[c_Symbol?SpeciesQ[j___]] ] :=
-  DisplayForm @ SpeciesBox[c, {j}, {"c"} ] /; $FormatSpecies
+Canon /: 
+Format[ Canon[c_Symbol?SpeciesQ[j___]] ] :=
+  SpeciesBox[c, {j}, {"c"} ] /; $FormatSpecies
 
-Cannon /: 
-Format[ Cannon[ c_Symbol?SpeciesQ ] ] := 
-    DisplayForm @ SpeciesBox[c, {}, {"c"} ] /; $FormatSpecies
+Canon /: 
+Format[ Canon[ c_Symbol?SpeciesQ ] ] := 
+    SpeciesBox[c, {}, {"c"} ] /; $FormatSpecies
 
-(* Allows op^Cannon as a equivalent to Cannon[op] *)
-Cannon /:
-HoldPattern[ Power[expr_, Cannon] ] := Cannon[expr]
+(* Allows op^Canon as a equivalent to Canon[op] *)
+Canon /:
+HoldPattern[ Power[expr_, Canon] ] := Canon[expr]
 
 
 (*** CreatorQ[], AnnihilatorQ[] ***)
@@ -630,12 +630,12 @@ FockFourier::usage = "FockFourier is OBSOLETE. Use ReplaceByFourier instead."
 FockInverseFourier::usage = "FockInverseFourier is now obsolete. Use ReplaceByFourierInverse instead."
 
 FockFourier[args__] := (
-  Message[Notice::obsolete, "FockFourier", "ReplaceByFourier"];
+  Message[Q3General::obsolete, "FockFourier", "ReplaceByFourier"];
   FourierMap[args]
  )
 
 FockInverseFourier[args__] := (
-  Message[Notice::obsolete, "FockInverseFourier", "ReplaceByFourierInvere"];
+  Message[Q3General::obsolete, "FockInverseFourier", "ReplaceByFourierInvere"];
   InverseFourierMap[args]
  )
 
@@ -724,7 +724,7 @@ FockHeisenbergToBoson[expr_, rr:({__?HeisenbergQ} -> {__?BosonQ})..] :=
   Simplify[ expr //. rulesHeisenbergToBoson[rr] ]
 
 rulesHeisenbergToBoson[x_?HeisenbergQ -> a_?BosonQ] :=
-  { Cannon[x] -> (a - Dagger[a]) / (I Sqrt[2]),
+  { Canon[x] -> (a - Dagger[a]) / (I Sqrt[2]),
     x -> (a + Dagger[a]) / Sqrt[2] }
 
 rulesHeisenbergToBoson[rr:(_?HeisenbergQ -> _?BosonQ)..] :=
@@ -743,7 +743,7 @@ FockBosonToHeisenberg[expr_, rr:({__?BosonQ} -> {__?HeisenbergQ})..] :=
   Simplify[ expr //. rulesBosonToHeisenberg[rr] ]
 
 rulesBosonToHeisenberg[a_?BosonQ -> x_?HeisenbergQ] :=
-  { a -> (x + I Cannon[x]) / Sqrt[2] }
+  { a -> (x + I Canon[x]) / Sqrt[2] }
 
 rulesBosonToHeisenberg[rr:(_?BosonQ -> _?HeisenbergQ)..] :=
   Flatten[ rulesBosonToHeisenberg /@ {rr}, 1 ]
@@ -777,14 +777,14 @@ HoldPattern @ Conjugate[ Multiply[a_?AnyOperatorQ, b__?AnyOperatorQ] ] :=
 
 (* For Heisenberg canonical operators *)
 
-CMT[op_, Cannon[op_]] := +I /; HeisenbergQ[op]
+CMT[op_, Canon[op_]] := +I /; HeisenbergQ[op]
 
-CMT[Cannon[op_], op_] := -I /; HeisenbergQ[op]
+CMT[Canon[op_], op_] := -I /; HeisenbergQ[op]
 
-CMT[op_[j1___], Cannon[op_[j2___]]] := +I * KroneckerDelta[{j1},{j2}] /;
+CMT[op_[j1___], Canon[op_[j2___]]] := +I * KroneckerDelta[{j1},{j2}] /;
   HeisenbergQ[op]
 
-CMT[Cannon[op_[j2___]], op_[j1___]] := -I * KroneckerDelta[{j1},{j2}] /;
+CMT[Canon[op_[j2___]], op_[j1___]] := -I * KroneckerDelta[{j1},{j2}] /;
   HeisenbergQ[op]
 
 CMT[_?AnyHeisenbergQ, _?AnyHeisenbergQ] = 0
@@ -830,9 +830,10 @@ ACMT[_?AnyFermionQ, _?AnyFermionQ] = 0
 (*     <Multiply>                                                       *)
 (* ******************************************************************** *)
 
-(* Originally defined in Cauchy,
+(* Originally defined in Q3,
    Redefined for Fermion, Majorana, Grassmann *)
-(* NOTE: _?AnySpeciesQ NOT _?AnyNonCommutativeQ.
+(* NOTE:
+   Before _?AnySpeciesQ NOT _?AnyNonCommutativeQ.
    This is to handle Ket and Bra separately.
    Now __?AnyNonCommutativeQ to hanle Dyad. *)
 HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
@@ -854,21 +855,33 @@ fSignature[a_, b_] :=
   Signature @ PermutationList @ FindPermutation[a, b] /;
   Length[a] == Length[b]
 
+AnticommutativeQ::usage = "AnticommutativeQ[c] returns True if c is an anticommutative Species such as Fermion, Majorana, and Grassmann, and False otherwise.\nIt is a low-level function intended to be used in Multiply and Matrix.\nIt affects how Multiply and Matrix manipulate expressions involving Fermion, Majorana, and Grassmann Species, which brings about a factor of -1 when exchanged."
+
+SetAttributes[AnticommutativeQ, Listable]
+
+AnticommutativeQ[op_?AnyFermionQ] = True
+
+AnticommutativeQ[op_?MajoranaQ] = True
+
+AnticommutativeQ[op_?GrassmannQ] = True
+
+AnticommutativeQ[_] = False
+
 
 (** Heisenbergs **)
 
 HoldPattern @
-  Multiply[pre___, a:_?HeisenbergQ, b:Cannon[_?HeisenbergQ], post___] :=
+  Multiply[pre___, a:_?HeisenbergQ, b:Canon[_?HeisenbergQ], post___] :=
   Multiply[pre, CMT[a, b], post] + Multiply[pre, b, a, post]
 
 HoldPattern @
-  Multiply[pre___, a:Cannon[_?HeisenbergQ], b:Cannon[_?HeisenbergQ], post___] :=
+  Multiply[pre___, a:Canon[_?HeisenbergQ], b:Canon[_?HeisenbergQ], post___] :=
   Multiply[pre, b, a, post] /; Not @ OrderedQ[{a, b}]
 
 HoldPattern @
   Multiply[pre___, a:_?HeisenbergQ, b:_?HeisenbergQ, post___] :=
   Multiply[pre, b, a, post] /; Not @ OrderedQ[{b, a}]
-(* NOTE: Operators without Cannon are ordered in REVERSE canonical order. *)
+(* NOTE: Operators without Canon are ordered in REVERSE canonical order. *)
 
 
 (** Bosons **)
@@ -913,7 +926,7 @@ HoldPattern @
 (* NOTE: Operators without Dagger are ordered in REVERSE canonical order. *)
 
 
-(* Majoranas *)
+(** Majoranas **)
 
 HoldPattern @
   Multiply[pre___, op_, op_, post___] := 1/2 Multiply[pre, post] /;
@@ -1118,11 +1131,11 @@ FockSpinSpin[dir:(PatternSequence[]|1|2|3|4|5|{Repeated[1|2|3,3]})][op__] := Foc
 FockSpinSpin[dir:Repeated[1|2|3,3]][op__] := FockSpinSpin[op, {dir}]
 
 
-FockSpinor::usage = "FockSpinor[c] returns a list that is practically equal to c[All]. Dagger[FockSpinor[c]] forms a spherical irreducible tensor, whose order is Spin[c[Any]]."
+FockSpinor::usage = "FockSpinor[c] returns a list that is practically equal to c[All]. Dagger[FockSpinor[c]] forms a spherical irreducible tensor, whose order is Spin[c[Any]].\nFockSpinor[{c1, c2, ...}] or FockSpinor[c1, c2, ...] returns the join list of the results from FockSpinor applied to each of c1, c2, ...."
 
-FockSpinor[ cc_List ] := Flatten @ (FockSpinor /@ cc)
+FockSpinor[ cc_List ] := Flatten[FockSpinor /@ cc]
 
-FockSpinor[ a_, b__ ] := FockSpinor[{a,b}]
+FockSpinor[ a_, b__ ] := FockSpinor @ {a, b}
 
 FockSpinor[ c_?ParticleQ ] := c[All] /; spinfulQ[c[Any]]
 
@@ -1223,7 +1236,7 @@ FockBilinearOperators[expr_] := getOperators[expr] /; FockBilinearQ[expr, False]
 
 (* Extract the list of all operators appearing in the Fock expression. *)
 getOperators[expr_] :=
-  Union @ Cases[ expr, _?OperatorQ | Cannon[_?HeisenbergQ], {0, Infinity} ]
+  Union @ Cases[ expr, _?OperatorQ | Canon[_?HeisenbergQ], {0, Infinity} ]
 
 
 (* LieExp: Baker-Hausdorff theorem *)
@@ -1644,8 +1657,7 @@ AppendTo[ $FockExpandMethods,
 
 (* ********************************************************************** *)
 
-FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of the total angular momentum S[c1] + S[c2] + ....
-  FockAddSpin[] returns the trivial basis including only the VacuumState."
+FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of the total angular momentum S[c1] + S[c2] + ....\nFockAddSpin[] returns the trivial basis including only the VacuumState."
 
 FockAddSpin[ ls:{(_?ParticleQ|_Association)...} ] :=
   FockAddSpin @@ Map[FockAddSpin] @ ls
@@ -1679,9 +1691,10 @@ FockAddSpin[irb_Association, irc_Association] := Module[
     new },
   SS = Flatten[
     Outer[Thread[{#1, #2, Range[Abs[#1 - #2], #1 + #2]}] &, S1, S2], 
-    2]; SS = 
-    Flatten[Map[Thread[{Sequence @@ #, Range[-Last@#, Last@#]}] &]@SS, 
-      1];
+    2 ];
+  SS = Flatten[
+    Map[Thread[{Sequence @@ #, Range[-Last@#, Last@#]}] &]@SS, 
+    1 ];
   new = doFockAddSpin[irb, irc, #]& /@ SS;
   new = Merge[new, Catenate];
   If[ ContainsAny[gb, gc],
@@ -1696,10 +1709,11 @@ doFockAddSpin[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
   min = Max[-S1, Sz - S2, (Sz - (S1 + S2))/2];
   max = Min[S1, Sz + S2, (Sz + (S1 + S2))/2];
   new = Sum[
-    Multiply @@@ Tuples[{irb[{S1, m}], irc[{S2, Sz - m}]}]*
+    Multiply @@@ Tuples[{irb[{S1, m}], irc[{S2, Sz - m}]}] *
       ClebschGordan[{S1, m}, {S2, Sz - m}, {S, Sz}],
-    {m, Range[min, max]}];
-  new = Simplify @ Multiply[(new /. Ket[{}] -> 1), Ket[{}]];
+    {m, Range[min, max]}
+   ];
+  new = Garner @ Multiply[(new /. Ket[{}] -> 1), Ket[{}]];
   Association[ {S, Sz} -> new ]
  ]
 
@@ -1709,6 +1723,21 @@ trimIrreducibleBasis[irb_Association] := Module[
   irc
  ]
 
+
+FockAddSpinZ::usage = "FockAddSpinZ[c1, c2, ...] returns the irreducible basis of the total directional angular momentum Sz[c1] + Sz[c2] + ....\nFockAddSpinZ[] returns the trivial basis including only the VacuumState."
+
+FockAddSpinZ[ops__?FermionQ] := FockAddSpinZ @ {ops}
+
+FockAddSpinZ[ops:{__?FermionQ}] := Module[
+  { cc = FockSpinor[ops],
+    nn, zz },
+  zz = SpinZ[cc];
+  nn = Tuples[{0, 1}, Length @ cc];
+  nn = GroupBy[nn, (zz.#)&];
+  FockCat @ KeySort @ Map[Ket[cc->#]&, nn, {2}]
+ ]
+
+FockAddSpinZ[] := Association[ 0 -> Ket[{}] ]
 
 (*** Vectors in the Fock Space ***)
 
@@ -1733,20 +1762,25 @@ catQ[ _ ] = False
 
 FockCat::usage = "FockCat[n1,n2,...] or equivalently FockCat[Ket[n1,n2,...] converts the occupation-number representation into the creation-operator representation, i.e., as a multiplication of a series of generators on the VacuumState."
 
-FockCat[rr:(_?AnyParticleQ -> _Integer?NonNegative) ...] := toCatForm @ Ket[rr]
+FockCat[rr:(_?AnyParticleQ -> _Integer?NonNegative) ...] :=
+  toCatForm @ Ket[rr]
 
-FockCat[rr:({__?AnyParticleQ} -> {__Integer?NonNegative})] := toCatForm @ Ket[rr]
+FockCat[rr:({__?AnyParticleQ} -> {__Integer?NonNegative})] :=
+  toCatForm @ Ket[rr]
 
-FockCat[expr_] := toCatForm[expr] /; !FreeQ[expr, Ket]
+FockCat[expr_] := toCatForm[expr] /; Not @ FreeQ[expr, Ket]
 
 FockCat[0] = 0
 
 
 toCatForm::usage = "Returns a multiplication of generators (creation operators generating the Fock space basis) equivalent to the Fock state v in the occupation number representation."
 
-Let[LinearMap, toCatForm]
-
 SetAttributes[toCatForm, Listable]
+
+toCatForm[expr_Plus] := Garner @ Total @
+  Map[toCatForm, List @@ expr]
+
+toCatForm[z_?CommutativeQ expr_] := z toCatForm[expr]
 
 toCatForm[ Ket[Null] ] = Ket[Null]
 
@@ -1762,30 +1796,33 @@ FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall th
 
 FockKet::badExpr = "`1` does not seem to represent a state vector in the Fock space, which in the creation-operator representation, takes the form of Dagger[c1]**Dagger[c2]**...**VacuumState."
 
-FockKet[expr_] := toKetExpression[ expr ] /;
-  !FreeQ[expr, Ket[{}] | Ket[<|___|>]]
+FockKet[expr_] := toKetForm[ expr ] /;
+  Not @ FreeQ[expr, Ket[{}] | Ket[_Association]]
 
 FockKet[expr__] := (
   Message[FockKet::badExpr, {expr}];
   expr
  )
 
-toKetExpression::usage = "Returns a Fock state in the occupation representation (Ket[<|c1->n1,c2->n2,...|>]) equivalent to expr, which is a multiplication of generators."
+toKetForm::usage = "Returns a Fock state in the occupation representation (Ket[<|c1->n1,c2->n2,...|>]) equivalent to expr, which is a multiplication of generators."
 
-SetAttributes[toKetExpression, Listable]
+SetAttributes[toKetForm, Listable]
 
-Let[LinearMap, toKetExpression]
+toKetForm[expr_Plus] := Garner @ Total @
+  Map[toKetForm, List @@ expr]
 
-toKetExpression[ Ket[{}] ] := Ket[]
+toKetForm[z_?CommutativeQ expr_] := z toKetForm[expr]
+
+toKetForm[ Ket[{}] ] := Ket[]
 
 toFockKet[ Ket[Null] ] = Ket[Null]
 
-toKetExpression[ v:Ket[_Association] ] := v
+toKetForm[ v:Ket[_Association] ] := v
 
-toKetExpression[ HoldPattern @ Multiply[expr__, Ket[{}]] ] := Module[
+toKetForm[ HoldPattern @ Multiply[expr__, Ket[{}]] ] := Module[
   {ops, val},
   {ops, val} = Transpose @ Tally @ {expr};
-  ops = ops /. {Dagger->Identity};
+  ops = ops /. {Dagger -> Identity};
   (Times @@ Sqrt[val!]) * Ket[ops -> val]
  ]
 
@@ -1895,12 +1932,12 @@ FockAvg[op_, a_] := Multiply[Dagger @ a, op, a]
 
 FockMatrix::usage = "FockMatrix[op, vlist] computes the matrix elements of the operator op between the vectors in the list vlist. Vecotrs in vlist can be either in the Ket or Cat form (the latter is slightly more efficient. FockMatrix[op, vlist1, vlist2] calculates the matrix elements between two vectors, one from vlist1 and the other from vlist2. FockMatrix[op, basis] calculates the matrix elements between vectors in the basis 'basis'. The basis is a list with particular structure and can be constructed by FermionBasis."
 
-Options[FockMatrix] = {DiagonalOnly -> True}
+Options[FockMatrix] = {"DiagonalOnly" -> True}
 
 FockMatrix[op_, vv_List?VectorQ] := FockMatrix[op, vv, vv]
 
 FockMatrix[op_, basis_Association, opts___?OptionQ] := Module[
-  { only = DiagonalOnly /. {opts} /. Options[FockMatrix] },
+  { only = "DiagonalOnly" /. {opts} /. Options[FockMatrix] },
   If[ only,
     diagonalBlocks[op, basis],
     allBlocks[op, basis]
@@ -1908,19 +1945,19 @@ FockMatrix[op_, basis_Association, opts___?OptionQ] := Module[
  ]
 
 FockMatrix[op_, vv1:{___?catQ}, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ toKetExpression @ vv1, toKetExpression @ vv2 ]
+  Outer[ Multiply[#1, op, #2]&, Dagger @ toKetForm @ vv1, toKetForm @ vv2 ]
 (* FockKet[] is much faster to evalculate *)
 
 FockMatrix[op_, vv1_List?VectorQ, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, toKetExpression @ vv2 ]
+  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, toKetForm @ vv2 ]
 (* FockKet[] is much faster to evalculate *)
 
 FockMatrix[op_, vv1_List?VectorQ, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, toKetExpression @ vv2 ]
+  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, toKetForm @ vv2 ]
 (* FockKet[] is much faster to evalculate *)
 
 FockMatrix[op_, vv1:{___?catQ}, vv2_List?VectorQ] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ toKetExpression @ vv1, vv2 ]
+  Outer[ Multiply[#1, op, #2]&, Dagger @ toKetForm @ vv1, vv2 ]
 (* FockKet[] is much faster to evalculate *)
 
 FockMatrix[op_, vv1_List?VectorQ, vv2_List?VectorQ] :=
@@ -1941,12 +1978,10 @@ allBlocks[op_, basis_Association] := Module[
 
 FockMatrixForm::usage = "FockMatrixForm[m] displays in a human-friendly form the 'matrix' m, which is usually produced by FockMatrix and has a special data structure."
 
-$FockMatrixStyle::usage = "$FockMatrixStyle is a list of options of Grid that are used in FockMatrixForm to format the output of FockMatrix."
-
-$FockMatrixStyle = {Frame -> True, Alignment -> Center}
-
-Format[
-  FockMatrixForm[mat:Association[({{___},{___}}->_?MatrixQ)..], title_String:""]
+Format @ FockMatrixForm[
+  mat:Association[({{___},{___}}->_?MatrixQ)..],
+  title_String:"",
+  opts___?OptionQ
  ] := Module[
    { row, col, bdy, cnt },
    row = DeleteDuplicates[ First /@ Keys @ mat ];
@@ -1964,7 +1999,11 @@ Format[
    cnt = 2 + Accumulate @ cnt;
    cnt = Thread[Rule[Most@cnt, Dashed]];
    
-   Grid[bdy, Sequence @@ $FockMatrixStyle,
+   Grid[
+     bdy,
+     opts,
+     Frame -> True,
+     Alignment -> Center,
      Dividers -> {
        {2 -> True, Sequence @@ cnt},
        {2 -> True, Sequence @@ cnt}
@@ -1972,8 +2011,10 @@ Format[
     ]
   ]
 
-Format[
-  FockMatrixForm[mat:Association[({___} -> _?MatrixQ)..], title_String:""]
+Format @ FockMatrixForm[
+  mat:Association[({___} -> _?MatrixQ)..],
+  title_String:"",
+  opts___?OptionQ
  ] := Module[
    { bdy = Values @ mat,
      cnt = Length /@ Values @ mat,
@@ -1987,7 +2028,11 @@ Format[
    cnt = 2 + Accumulate @ cnt;
    cnt = Thread[Rule[Most@cnt, Dashed]];
 
-   Grid[bdy, Sequence @@ $FockMatrixStyle,
+   Grid[
+     bdy,
+     opts,
+     Frame -> True,
+     Alignment -> Center,
      Dividers -> {
        {2 -> True, Sequence @@ cnt},
        {2 -> True, Sequence @@ cnt}
@@ -1997,7 +2042,10 @@ Format[
 
 matrixHeaders[qnn:{{___}..}, cnt:{___Integer}] := Module[
   {row, col},
-  row = { Catenate @ MapThread[ PadRight[{#1}, #2, SpanFromLeft]&, {qnn, cnt} ] };
+  row = List @ Catenate @ MapThread[
+    PadRight[{#1}, #2, SpanFromLeft]&,
+    {qnn, cnt}
+   ];
   col = Transpose @ (row /. SpanFromLeft -> SpanFromAbove);
   {row, col}
  ]
@@ -2022,21 +2070,6 @@ BuildMatrix[op_?AnyFermionQ, qq:{__?SpeciesQ}] := Module[
 fermionOne[q_?FermionQ] := ThePauli[3]
 
 fermionOne[q_] := One @ Dimension @ q
-
-
-(*
-AnticommutativeQ::usage = "AnticommutativeQ[c] returns True if c is an anticommutative Species such as Fermion, Majorana, and Grassmann, and False otherwise.\nIt is a low-level function intended to be used in Multiply and Matrix.\nIt affects how Multiply and Matrix manipulate expressions involving Fermion, Majorana, and Grassmann Species, which brings about a factor of -1 when exchanged."
-
-SetAttributes[AnticommutativeQ, Listable]
-
-AnticommutativeQ[op_?AnyFermionQ] = True
-
-AnticommutativeQ[op_?MajoranaQ] = True
-
-AnticommutativeQ[op_?GrassmannQ] = True
-
-AnticommutativeQ[_] = False
-*)
 
 
 (* Matrix[] for Fermions *)
@@ -2152,17 +2185,13 @@ BosonBasis[bb:{__?BosonQ}, {n_Integer}] :=
   Ket /@ Counts /@ Union[ Sort /@ Tuples[bb, n] ]
 
 
-FermionBasis::usage = "FermionBasis[c1, c2, ...] or FermionBasis[{c1, c2, ...}] returns the many-particle basis states (in the creation operators representation) for a single site, i.e. for operators c1, c2, .... It accepts two options Representation and Conserved."
+FermionBasis::usage = "FermionBasis[c1, c2, ...] or FermionBasis[{c1, c2, ...}] returns the many-particle basis states (in the creation operators representation) for a single site, i.e. for operators c1, c2, .... It accepts two options \"Representation\" and \"Conserved\"."
 
 FermionBasis::bigSpin = "Sorry, but for the moment, it can handle only spin-1/2 Fermion operators. These operators will be ignored: ``."
 
-Representation::usage = "Representation is an option of FermionBasis. It can be either \"Occupations\" (default) or \"Generators\"."
-
-Conserved::usage = "Conserved is an option of FermionBasis, specifying the conserved quantities. It can be either None or any combination of Spin, SpinZ, and Number."
-
 Options[FermionBasis] = {
-  Representation -> "Occupations",
-  Conserved -> {"Number", "Spin"}
+  "Representation" -> "Occupations",
+  "Conserved" -> {"Number", "Spin"}
  }
 
 (* Basic constructions *)
@@ -2190,7 +2219,8 @@ FermionBasis[cc__?FermionQ, opts___?OptionQ] := FermionBasis[{cc}, opts]
 
 FermionBasis[{cc__?FermionQ}, opts___?OptionQ] := Module[
   {rep, qn, name},
-  {rep, qn} = {Representation, Conserved} /. {opts} /. Options[FermionBasis];
+  {rep, qn} = {"Representation", "Conserved"} /. {opts} /.
+    Options[FermionBasis];
 
   rep = rep /.
     { s_Symbol :> SymbolName[s],
@@ -2210,18 +2240,16 @@ FermionBasis[{cc__?FermionQ}, opts___?OptionQ] := Module[
  ]
 
 
-BasisForm::usage = "BasisForm[bs] prints the basis bs in table form. Note that a basis is a list of particular structure."
+PrintFermionBasis::usage = "PrintFermionBasis[bs] prints the Fermion basis bs in table form. Note that a Fermion basis is an association of particular structure.\nSee also FermionBasis."
 
-$BasisStyle::usage = "$BasisStyle is a list of options of Grid that are used in BasisForm to format bases."
-
-Format[ BasisForm[bs_Association] ] :=
-  Grid[ Normal[bs] /. {Rule -> List}, $BasisStyle ]
-
-$BasisStyle = {
+Options[PrintFermionBasis] = {
   Frame -> False,
   Alignment -> {{Center, {Left}}, Center},
   Dividers -> {{}, {True, {Dashed}, True}}
  }
+
+PrintFermionBasis[bs_Association] :=
+  Grid[ Normal[bs] /. {Rule -> List}, Options[PrintFermionBasis] ]
 
 
 basisKetNone::usage = "Make basis with no symmetries, i.e. no good quantum numbers.  Similar to FermionBasis[...] for a single site, but conforms to the proper basis format."
@@ -2246,12 +2274,7 @@ basisKetNumber[ops__?FermionQ] := Module[
 basisCatNumber[ops__?FermionQ] := Map[toCatForm] @ basisKetNumber[ops]
 
 
-basisKetNumberSpinZ::usage = "basisKetNumberSpinZ[{ops}] returns the basis with well defined charge and spin projection quantum numbers (Q,S_z) in occupation number representation."
-
-basisCatNumberSpinZ::usage = "basisCatNumberSpinZ[{ops}] returns the basis with well defined charge and spin projection quantum numbers (Q,S_z) in creation operator representation."
-
-(* Make a basis of good quantum numbers Q and S_z. This is trivially done in
-   the occupation number representation Ket[...]. *) 
+basisKetNumberSpinZ::usage = "basisKetNumberSpinZ[{ops}] returns the basis with well defined charge and spin projection quantum numbers (Q, Sz) in occupation number representation."
 
 basisKetNumberSpinZ[ops__?FermionQ] := Module[
   { cc = FockSpinor[ops], nn, z },
@@ -2260,6 +2283,8 @@ basisKetNumberSpinZ[ops__?FermionQ] := Module[
   nn = GroupBy[nn, {Total@#, z.#}&];
   KeySort @ Map[Ket[cc->#]&, nn, {2}]
  ]
+
+basisCatNumberSpinZ::usage = "basisCatNumberSpinZ[{ops}] returns the basis with well defined charge and spin projection quantum numbers (Q,S_z) in creation operator representation."
 
 basisCatNumberSpinZ[ops__?FermionQ] := Map[toCatForm] @ basisKetNumberSpinZ[ops];
 
@@ -2352,8 +2377,7 @@ Protect[ Evaluate @ $symbs ]
 End[]
 
 
-Q3`Fock`Private`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3Protect[]
 
-SetAttributes[Evaluate[Q3`Fock`Private`symbs], ReadProtected]
 
 EndPackage[]

@@ -1,15 +1,17 @@
 (* -*- mode: math; -*- *)
 
-BeginPackage["Q3`Wigner`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`Abel`" } ]
+BeginPackage["Q3`Wigner`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Print @ StringJoin[
+Begin["`Private`"]
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.15 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-12 03:16:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-28 11:23:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ]
+ ];
+End[]
 
 { TheWigner, TheWignerKet };
 
@@ -215,15 +217,15 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   x[j___, None, k_] := x[j,k];
   (* In particular, x[j,None,None] = x[j,None]. *)
   
-  Format[ x[j___,None] ] := DisplayForm @ SpeciesBox[x, {j}, {}];
+  Format[ x[j___,None] ] := SpeciesBox[x, {j}, {}];
 
-  Format[ x[j___,0] ] := DisplayForm @ SpeciesBox[x, {j}, {0}];
-  Format[ x[j___,1] ] := DisplayForm @ SpeciesBox[x, {j}, {"x"}];
-  Format[ x[j___,2] ] := DisplayForm @ SpeciesBox[x, {j}, {"y"}];
-  Format[ x[j___,3] ] := DisplayForm @ SpeciesBox[x, {j}, {"z"}];
-  Format[ x[j___,4] ] := DisplayForm @ SpeciesBox[x, {j}, {"+"}];
-  Format[ x[j___,5] ] := DisplayForm @ SpeciesBox[x, {j}, {"-"}];
-  Format[ x[j___,6] ] := DisplayForm @ SpeciesBox[x, {j}, {"H"}];
+  Format[ x[j___,0] ] := SpeciesBox[x, {j}, {0}];
+  Format[ x[j___,1] ] := SpeciesBox[x, {j}, {"x"}];
+  Format[ x[j___,2] ] := SpeciesBox[x, {j}, {"y"}];
+  Format[ x[j___,3] ] := SpeciesBox[x, {j}, {"z"}];
+  Format[ x[j___,4] ] := SpeciesBox[x, {j}, {"+"}];
+  Format[ x[j___,5] ] := SpeciesBox[x, {j}, {"-"}];
+  Format[ x[j___,6] ] := SpeciesBox[x, {j}, {"H"}];
  )
 
 Missing["KeyAbsent", S_Symbol?SpinQ[___, None]] := Spin[S]
@@ -808,7 +810,7 @@ WignerExpression[v_?VectorQ, S_?SpinQ] := WignerExpression[v, {S}]
 WignerExpand::usage = "WignerExpand[expr] expands the expression expr revealing the explicit forms of various operator or state-vector expressions."
 
 WignerExpand[expr_] := (
-  Message[Notice::obsolete, WignerExpand, Elaborate];
+  Message[Q3General::obsolete, WignerExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -1092,8 +1094,7 @@ Protect[Evaluate @ $symbs]
 End[]
 
 
-Q3`Wigner`Private`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3Protect[]
 
-SetAttributes[Evaluate[Q3`Wigner`Private`symbs], ReadProtected]
 
 EndPackage[]

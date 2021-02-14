@@ -2,19 +2,21 @@
 
 (* Adopted from a package by M. Headrick (April 2003) *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-01-14 11:41:50+09 $ *)
-(* $Revision: 1.5 $ *)
+(* $Date: 2021-01-28 11:24:06+09 $ *)
+(* $Revision: 1.9 $ *)
 
-BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`", "Q3`Abel`" } ]
+BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`", "Q3`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
 
-Print @ StringJoin[
+Begin["`Private`"]
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-14 11:41:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.9 $"][[2]], " (",
+  StringSplit["$Date: 2021-01-28 11:24:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ]
+ ];
+End[]
 
 { Let, Grassmann, GrassmannQ, AnyGrassmanQ };
 { GD, GIntegrate };
@@ -153,8 +155,7 @@ Protect[ Evaluate @ $symbs ]
 End[]
 
 
-Q3`Grassmann`Private`symbs = Protect[Evaluate[$Context<>"*"]]
+Q3Protect[]
 
-SetAttributes[Evaluate[Q3`Grassmann`Private`symbs], ReadProtected]
 
 EndPackage[]
