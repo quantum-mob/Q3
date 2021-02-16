@@ -2,6 +2,10 @@
 
 ## Automatic Installation
 
+1. First, make sure to remove the old copy of `Q3` that you manually installed (older than `Q3 v1.5.1`), and restart your Mathematica.
+
+2. Just copy the following code and run it on your Mathematica front end.
+
 ```Mathematica
 Q3Install[opts___?OptionQ] := Module[
   { jsn, url },
@@ -16,6 +20,12 @@ Q3Install[opts___?OptionQ] := Module[
   
   PacletInstall[url, opts]
  ]
+```
+
+3. Finally, run the following command on your Mathematica front end.
+
+```Mathematica
+Q3Install[]
 ```
 
 ## Semi-Automatic Installation
