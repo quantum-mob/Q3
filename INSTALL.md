@@ -1,6 +1,6 @@
 # Installation Guide
 
-## Automatic Installation
+## Automatic Installation from Remote Server (recommended)
 
 1. First, make sure to remove the old copy of `Q3` that you manually installed (older than `Q3 v1.5.1`), and restart your Mathematica.
 
@@ -24,11 +24,20 @@
 
 3. Finally, run the following command on your Mathematica front end.
 
-```Mathematica
-Q3Install[]
-```
+   ```Mathematica
+   Q3Install[]
+   ```
 
-## Semi-Automatic Installation
+4. Later on, you can check an update of Q3 by the following command.
+   ```Mathematica
+   Q3CheckUpdate[]
+   ```
+
+5. You can update Q3 with this command.
+   ```Mathematica
+   Q3Update[]
+   ```
+   Depending on the situation, you may need to give an option `AllowVersionUpdate` or `ForceVersionInstall` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
 
 
 ## Manual Installation
@@ -51,6 +60,4 @@ Q3Install[]
 
    Here `$UserBaseDirectory` is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
 
-## NOTE
-
-After installing the application, the first time you search a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.
+   After installing the application in this method, the first time you search a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.
