@@ -6,21 +6,21 @@
 
 2. Just copy the following code and run it on your Mathematica front end.
 
-```Mathematica
-Q3Install[opts___?OptionQ] := Module[
-  { jsn, url },
-
-  jsn = Import[
-    "https://api.github.com/repos/quantum-mob/Q3App/releases/latest", 
-    "JSON"
-   ];
-  url = Lookup[First @ Lookup[jsn, "assets"], "browser_download_url"];
+   ```Mathematica
+   Q3Install[opts___?OptionQ] := Module[
+     { jsn, url },
+   
+     jsn = Import[
+       "https://api.github.com/repos/quantum-mob/Q3App/releases/latest", 
+       "JSON"
+      ];
+     url = Lookup[First @ Lookup[jsn, "assets"], "browser_download_url"];
   
-  Print["Installing Q3 directly from GitHub. It may take serveral minutes or longer depending on your network conditions and your computer. Please be patient."];
+     Print["Installing Q3 directly from GitHub. It may take serveral minutes or longer depending on your network conditions and your computer. Please be patient."];
   
-  PacletInstall[url, opts]
- ]
-```
+     PacletInstall[url, opts]
+    ]
+   ```
 
 3. Finally, run the following command on your Mathematica front end.
 
