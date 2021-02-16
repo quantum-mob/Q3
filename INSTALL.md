@@ -1,11 +1,12 @@
 # Installation Guide
 
+You can install Q3 in two methods: The first is based on the `paclet` system that has recently been introduced by Wolfram Research. It is not only fully automatic but also convenient to get updates later on. Obviously, it requires a stable network connection -- a moderate speed of network is usually enough. The other method is to download and copy the files to a proper folder -- just the traditional method. If your network is unstable or unreliable, then this is the only option for you.
+
 ## Automatic Installation from Remote Server (recommended)
 
 1. First, make sure to remove the old copy of `Q3` that you manually installed (older than `Q3 v1.5.1`), and restart your Mathematica.
 
-2. Just copy the following code and run it on your Mathematica front end.
-
+2. Copy the following code and run it on your Mathematica front end.
    ```Mathematica
    Q3Install[opts___?OptionQ] := Module[
      { jsn, url },
@@ -23,7 +24,6 @@
    ```
 
 3. Finally, run the following command on your Mathematica front end.
-
    ```Mathematica
    Q3Install[]
    ```
@@ -33,7 +33,7 @@
    Q3CheckUpdate[]
    ```
 
-5. You can update Q3 with this command.
+5. When a newer release is available on the server, you can update Q3 with this command.
    ```Mathematica
    Q3Update[]
    ```

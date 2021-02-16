@@ -12,34 +12,15 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
 # Installation
 
-1. Download the whole folder as a ZIP file.
-
-2. Unzip the ZIP file to extract the files and subfolders.
-
-3. Move (or copy) the folder Q3 to either
-
-   ```
-   $UserBaseDirectory/Applications/ (recommended)
-   ```
-
-   or
-   
-   ```
-   $BaseDirectory/Applications/
-   ```
-
-   Here `$UserBaseDirectory` is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
-
+Please take a look at the "Installation Guide" (`INSTALL.md`).
 
 # Usage
 
 Once the application is installed, put
-
-    "Q3" or "Q3/guide/Q3"
-
+```
+"Q3" or "Q3/guide/Q3"
+```
 in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get detailed technical information about the application. It will give you users' guides and tutorials.
-
-NOTE: The first time you search a keyword in Wolfram Language Documentation Center (help window) after installing the application, Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on the performance of your computer. It happens only once (everytime you update the application), though.
 
 ## For Beginners of Mathematica
 
@@ -50,6 +31,6 @@ If this is your first time to use Mathematica, this guide written by Stephen Wol
 # Feedback
 
 Any comment, suggestion, or bug report will be appreciated. Please address it to
-
-    quantum.mob21@gmail.com
-
+```
+quantum.mob21@gmail.com
+```
