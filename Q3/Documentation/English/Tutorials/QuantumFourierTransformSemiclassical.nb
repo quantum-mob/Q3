@@ -1,0 +1,1752 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     76734,       1743]
+NotebookOptionsPosition[     69316,       1588]
+NotebookOutlinePosition[     72308,       1655]
+CellTagsIndexPosition[     72265,       1652]
+WindowTitle->Quantum Fourier Transform: Semiclassical Implementation
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Quantum Fourier Transform\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/QuantumFourierTransform"], "\<\"QuissoCircuit \
+Usage\"\>":>Documentation`HelpLookup["paclet:Q3/tutorial/QuissoCircuitUsage"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->
+         False], {"\<\"Q3/tutorial/QuantumFourierTransformSemiclassical\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuantumFourierTransformSemiclassical"]}, 
+            Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumFourierTransformSemiclassical.html"], StandardForm]], "Input", 
+              TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$178215], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/tutorial/QuantumFourierTransformSemiclassical", ".html"]], 
+           None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Fourier Transform: Semiclassical Implementation", "Title",
+ CellID->509267359],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["References"], 
+      "paclet:Q3/tutorial/QuantumFourierTransformSemiclassical#890220681", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "XMPBasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "XMPMediaManagementSchema" -> 
+               Association[{
+                 "InstanceID" -> "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A", 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "DerivedFrom" -> 
+                  Association[{
+                    "Reference" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Tests"], 
+      "paclet:Q3/tutorial/QuantumFourierTransformSemiclassical#1221384869", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "XMPBasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "XMPMediaManagementSchema" -> 
+               Association[{
+                 "InstanceID" -> "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A", 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "DerivedFrom" -> 
+                  Association[{
+                    "Reference" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Demonstration"], 
+      "paclet:Q3/tutorial/QuantumFourierTransformSemiclassical#2119699967", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "XMPBasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "XMPMediaManagementSchema" -> 
+               Association[{
+                 "InstanceID" -> "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A", 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "DerivedFrom" -> 
+                  Association[{
+                    "Reference" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], ""}
+  }]], "TutorialJumpBox"],
+
+Cell["\<\
+It is widely believed that the quantum entanglement is essential for quantum \
+speed-up of quantum computation [1] or the precision measurement beyond the \
+quantum standard limit (also known as the Heisenberg limit) [2]. The \
+semiclassical implementation, to be demonstrated below, of the quantum \
+Fourier transform (QFT) suggests that it is not necessarily the case.  In the \
+semiclassical scheme, the single-qubit measurements and subsequent \
+single-qubit gates controlled by the measurement results (classical signals) \
+are sufficient to perform the QFT efficiently.\
+\>", "Text",
+ CellID->1534169418],
+
+Cell[CellGroupData[{
+
+Cell["References", "Section",
+ CellID->890220681],
+
+Cell[TextData[{
+ "[1] Griffiths & Niu, Physical Review Letters ",
+ StyleBox["76",
+  FontWeight->"Bold"],
+ ", 3228 (1996)."
+}], "Text",
+ CellID->686433325],
+
+Cell["[2] Higgins, et al., Nature 450, 393 (2007).", "Text",
+ CellID->602741591]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Demonstration", "Section",
+ CellID->2119699967],
+
+Cell["First, load the package.", "MathCaption",
+ CellID->890565600],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->869712048],
+
+Cell[TextData[{
+ "For Qubits, the symbol ",
+ Cell[BoxData["S"], "InlineFormula"],
+ " is used."
+}], "MathCaption",
+ CellID->1683689702],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1182432969],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$N", "=", "5"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ss", "=", 
+  RowBox[{"S", "[", 
+   RowBox[{
+    RowBox[{"Range", "[", "$N", "]"}], ",", "None"}], "]"}]}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->337240645],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"2"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"3"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"4"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"5"},
+     "RowDefault"]]}], "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->519279881]
+}, Open  ]],
+
+Cell["\<\
+Here are some handy functions to be used in the circuit implementations.\
+\>", "MathCaption",
+ CellID->2019302784],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"CP", "[", 
+   RowBox[{"j_", ",", "j_"}], "]"}], ":=", 
+  RowBox[{"S", "[", 
+   RowBox[{"j", ",", "6"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"CP", "[", 
+   RowBox[{"j_", ",", "k_"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"ControlledU", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "j", "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Phase", "[", 
+      RowBox[{
+       RowBox[{"Pi", " ", 
+        RowBox[{"Power", "[", 
+         RowBox[{"2", ",", 
+          RowBox[{"k", "-", "j"}]}], "]"}]}], ",", 
+       RowBox[{"S", "[", "k", "]"}], ",", 
+       RowBox[{"\"\<Label\>\"", "\[Rule]", 
+        RowBox[{"Subscript", "[", 
+         RowBox[{"\"\<S\>\"", ",", 
+          RowBox[{"j", "-", "k"}]}], "]"}]}]}], "]"}]}], 
+    "\[IndentingNewLine]", "]"}], "/;", 
+   RowBox[{"j", ">", "k"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"CP", "[", 
+   RowBox[{"j_", ",", "k_"}], "]"}], ":=", 
+  RowBox[{
+   RowBox[{"ControlledU", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "j", "]"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"Phase", "[", 
+      RowBox[{
+       RowBox[{"Pi", " ", 
+        RowBox[{"Power", "[", 
+         RowBox[{"2", ",", 
+          RowBox[{"j", "-", "k"}]}], "]"}]}], ",", 
+       RowBox[{"S", "[", "k", "]"}], ",", 
+       RowBox[{"\"\<Label\>\"", "\[Rule]", 
+        RowBox[{"Subscript", "[", 
+         RowBox[{"\"\<S\>\"", ",", 
+          RowBox[{"k", "-", "j"}]}], "]"}]}]}], "]"}]}], 
+    "\[IndentingNewLine]", "]"}], "/;", 
+   RowBox[{"j", "<", "k"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"SW", "[", "j_", "]"}], ":=", 
+  RowBox[{"SWAP", "[", 
+   RowBox[{
+    RowBox[{"S", "[", "j", "]"}], ",", 
+    RowBox[{"S", "[", 
+     RowBox[{"$N", "-", "j", "+", "1"}], "]"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1106544069],
+
+Cell["This is the typical QFT circuit explained in most textbooks.", \
+"MathCaption",
+ CellID->477784663],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"swaps", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"SW", "[", "j", "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"j", ",", "1", ",", 
+       RowBox[{"$N", "/", "2"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"gates4a", "=", 
+   RowBox[{"Catenate", "@", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"CP", "[", 
+       RowBox[{"j", ",", "k"}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"k", ",", "1", ",", "$N"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"j", ",", "k", ",", "$N"}], "}"}]}], "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"qft4a", "=", 
+   RowBox[{"Join", "[", 
+    RowBox[{"gates4a", ",", "swaps"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"qc4a", "=", 
+  RowBox[{"QuissoCircuit", "[", 
+   RowBox[{
+    RowBox[{"Sequence", "@@", "qft4a"}], ",", 
+    RowBox[{"ImageSize", "\[Rule]", "Large"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[11]:=",
+ CellID->685474908],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {18, -1}}, {{0, -2}, {18, -2}}, {{0, -3}, {18, -3}}, {{
+    0, -4}, {18, -4}}, {{0, -5}, {18, -5}}}], {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -1.4}, {1.4, -0.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {1, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{2, -2}, {2, -1}}], DiskBox[{2, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{1.6, -1.4}, {2.4, -0.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {2, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{3, -3}, {3, -1}}], DiskBox[{3, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{2.6, -1.4}, {3.4, -0.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {3, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{4, -4}, {4, -1}}], DiskBox[{4, -4}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{3.6, -1.4}, {4.4, -0.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {4, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{5, -5}, {5, -1}}], DiskBox[{5, -5}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -1.4}, {5.4, -0.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "4"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {5, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{5.6, -2.4}, {6.4, -1.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {6, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{7, -3}, {7, -2}}], DiskBox[{7, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{6.6, -2.4}, {7.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {7, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{8, -4}, {8, -2}}], DiskBox[{8, -4}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{7.6, -2.4}, {8.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {8, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{9, -5}, {9, -2}}], DiskBox[{9, -5}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{8.6, -2.4}, {9.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {9, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{9.6, -3.4}, {10.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {10, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{11, -4}, {11, -3}}], DiskBox[{11, -4}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{10.6, -3.4}, {11.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {11, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{12, -5}, {12, -3}}], DiskBox[{12, -5}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{11.6, -3.4}, {12.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {12, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{12.6, -4.4}, {13.4, -3.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {13, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{14, -5}, {14, -4}}], DiskBox[{14, -5}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{13.6, -4.4}, {14.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {14, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{14.6, -5.4}, {15.4, -4.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {15, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{16, -1}, {16, -5}}], 
+    LineBox[{{{15.91, -1.09}, {16.09, -0.91}}, {{15.91, -0.91}, {
+     16.09, -1.09}}}], 
+    LineBox[{{{15.91, -5.09}, {16.09, -4.91}}, {{15.91, -4.91}, {
+     16.09, -5.09}}}]}, {LineBox[{{17, -2}, {17, -4}}], 
+    LineBox[{{{16.91, -2.09}, {17.09, -1.91}}, {{16.91, -1.91}, {
+     17.09, -2.09}}}], 
+    LineBox[{{{16.91, -4.09}, {17.09, -3.91}}, {{16.91, -3.91}, {
+     17.09, -4.09}}}]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImageSize->Large,
+  PlotRangePadding->NCache[{
+     Rational[1, 2], 0}, {0.5, 0}]]], "Output",
+ CellLabel->"Out[14]=",
+ CellID->637488403]
+}, Open  ]],
+
+Cell["\<\
+You can convince yourself that this circuit is equivalent to the above.\
+\>", "MathCaption",
+ CellID->485246201],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"swaps", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"SW", "[", "j", "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"j", ",", "1", ",", 
+       RowBox[{"$N", "/", "2"}]}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"gates4b", "=", 
+   RowBox[{"Catenate", "@", 
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"CP", "[", 
+       RowBox[{"j", ",", "k"}], "]"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"k", ",", "1", ",", "$N"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"j", ",", "1", ",", "k"}], "}"}]}], "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"qft4b", "=", 
+   RowBox[{"Join", "[", 
+    RowBox[{"gates4b", ",", "swaps"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"qc4b", "=", 
+  RowBox[{"QuissoCircuit", "[", 
+   RowBox[{
+    RowBox[{"Sequence", "@@", "qft4b"}], ",", 
+    RowBox[{"ImageSize", "\[Rule]", "Large"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[15]:=",
+ CellID->1537492548],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {18, -1}}, {{0, -2}, {18, -2}}, {{0, -3}, {18, -3}}, {{
+    0, -4}, {18, -4}}, {{0, -5}, {18, -5}}}], {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -1.4}, {1.4, -0.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {1, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{2, -1}, {2, -2}}], DiskBox[{2, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{1.6, -2.4}, {2.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {2, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{2.6, -2.4}, {3.4, -1.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {3, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{4, -1}, {4, -3}}], DiskBox[{4, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{3.6, -3.4}, {4.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {4, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{5, -2}, {5, -3}}], DiskBox[{5, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -3.4}, {5.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {5, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{5.6, -3.4}, {6.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {6, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{7, -1}, {7, -4}}], DiskBox[{7, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{6.6, -4.4}, {7.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {7, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{8, -2}, {8, -4}}], DiskBox[{8, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{7.6, -4.4}, {8.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {8, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{9, -3}, {9, -4}}], DiskBox[{9, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{8.6, -4.4}, {9.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {9, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{9.6, -4.4}, {10.4, -3.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {10, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{11, -1}, {11, -5}}], DiskBox[{11, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{10.6, -5.4}, {11.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "4"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {11, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{12, -2}, {12, -5}}], DiskBox[{12, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{11.6, -5.4}, {12.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {12, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{13, -3}, {13, -5}}], DiskBox[{13, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{12.6, -5.4}, {13.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {13, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{14, -4}, {14, -5}}], DiskBox[{14, -4}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{13.6, -5.4}, {14.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {14, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{14.6, -5.4}, {15.4, -4.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.022222222222222223`],
+      FontWeight->"Light",
+      FontSlant->Italic], {15, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{16, -1}, {16, -5}}], 
+    LineBox[{{{15.91, -1.09}, {16.09, -0.91}}, {{15.91, -0.91}, {
+     16.09, -1.09}}}], 
+    LineBox[{{{15.91, -5.09}, {16.09, -4.91}}, {{15.91, -4.91}, {
+     16.09, -5.09}}}]}, {LineBox[{{17, -2}, {17, -4}}], 
+    LineBox[{{{16.91, -2.09}, {17.09, -1.91}}, {{16.91, -1.91}, {
+     17.09, -2.09}}}], 
+    LineBox[{{{16.91, -4.09}, {17.09, -3.91}}, {{16.91, -3.91}, {
+     17.09, -4.09}}}]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImageSize->Large,
+  PlotRangePadding->NCache[{
+     Rational[1, 2], 0}, {0.5, 0}]]], "Output",
+ CellLabel->"Out[18]=",
+ CellID->1976590709]
+}, Open  ]],
+
+Cell["Now consider measurements at the end of the calculation.", "MathCaption",
+ CellID->108492709],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"qft4c", "=", 
+   RowBox[{"Join", "[", 
+    RowBox[{"gates4b", ",", "swaps", ",", 
+     RowBox[{"{", 
+      RowBox[{"\"\<Spacer\>\"", ",", 
+       RowBox[{"Measurement", "[", "ss", "]"}], ",", "\"\<Spacer\>\""}], 
+      "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"qc4c", "=", 
+  RowBox[{"QuissoCircuit", "[", 
+   RowBox[{
+    RowBox[{"Sequence", "@@", "qft4c"}], ",", 
+    RowBox[{"ImageSize", "\[Rule]", "Large"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[19]:=",
+ CellID->223343860],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], 
+    LineBox[{{{19, -1}, {21, -1}}, {{19, -2}, {21, -2}}, {{19, -3}, {
+     21, -3}}, {{19, -4}, {21, -4}}, {{19, -5}, {21, -5}}}]}, 
+   LineBox[{{{0, -1}, {19, -1}}, {{0, -2}, {19, -2}}, {{0, -3}, {19, -3}}, {{
+    0, -4}, {19, -4}}, {{0, -5}, {19, -5}}}], {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -1.4}, {1.4, -0.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {1, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{2, -1}, {2, -2}}], DiskBox[{2, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{1.6, -2.4}, {2.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {2, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{2.6, -2.4}, {3.4, -1.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {3, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{4, -1}, {4, -3}}], DiskBox[{4, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{3.6, -3.4}, {4.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {4, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{5, -2}, {5, -3}}], DiskBox[{5, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -3.4}, {5.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {5, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{5.6, -3.4}, {6.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {6, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{7, -1}, {7, -4}}], DiskBox[{7, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{6.6, -4.4}, {7.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {7, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{8, -2}, {8, -4}}], DiskBox[{8, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{7.6, -4.4}, {8.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {8, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{9, -3}, {9, -4}}], DiskBox[{9, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{8.6, -4.4}, {9.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {9, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{9.6, -4.4}, {10.4, -3.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {10, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{11, -1}, {11, -5}}], DiskBox[{11, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{10.6, -5.4}, {11.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "4"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {11, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{12, -2}, {12, -5}}], DiskBox[{12, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{11.6, -5.4}, {12.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {12, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{13, -3}, {13, -5}}], DiskBox[{13, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{12.6, -5.4}, {13.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {13, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{14, -4}, {14, -5}}], DiskBox[{14, -4}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{13.6, -5.4}, {14.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {14, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{14.6, -5.4}, {15.4, -4.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.01904761904761905],
+      FontWeight->"Light",
+      FontSlant->Italic], {15, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{16, -1}, {16, -5}}], 
+    LineBox[{{{15.91, -1.09}, {16.09, -0.91}}, {{15.91, -0.91}, {
+     16.09, -1.09}}}], 
+    LineBox[{{{15.91, -5.09}, {16.09, -4.91}}, {{15.91, -4.91}, {
+     16.09, -5.09}}}]}, {LineBox[{{17, -2}, {17, -4}}], 
+    LineBox[{{{16.91, -2.09}, {17.09, -1.91}}, {{16.91, -1.91}, {
+     17.09, -2.09}}}], 
+    LineBox[{{{16.91, -4.09}, {17.09, -3.91}}, {{16.91, -3.91}, {
+     17.09, -4.09}}}]}, {{
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{18.6, -1.4}, {19.4, -0.6}]}, 
+     CircleBox[{19, -1.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{19, -1.2}, {19.24, -0.76}}]}, {
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{18.6, -2.4}, {19.4, -1.6}]}, 
+     CircleBox[{19, -2.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{19, -2.2}, {19.24, -1.76}}]}, {
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{18.6, -3.4}, {19.4, -2.6}]}, 
+     CircleBox[{19, -3.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{19, -3.2}, {19.24, -2.76}}]}, {
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{18.6, -4.4}, {19.4, -3.6}]}, 
+     CircleBox[{19, -4.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{19, -4.2}, {19.24, -3.76}}]}, {
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{18.6, -5.4}, {19.4, -4.6}]}, 
+     CircleBox[{19, -5.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{19, -5.2}, {19.24, -4.76}}]}}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImageSize->Large,
+  PlotRangePadding->NCache[{
+     Rational[1, 2], 0}, {0.5, 0}]]], "Output",
+ CellLabel->"Out[20]=",
+ CellID->931451699]
+}, Open  ]],
+
+Cell["\<\
+The measurements and SWAP gates can be exchanged. The resulting circuit is \
+equivalent to the semiclassical implementation of the QFT as discussed in \
+Ref. [1].\
+\>", "MathCaption",
+ CellID->729622561],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mm", "=", 
+   RowBox[{"Measurement", "[", "ss", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"mm", "=", 
+   RowBox[{"Transpose", "@", 
+    RowBox[{"{", 
+     RowBox[{"Measurement", "[", "ss", "]"}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"gates4d", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"CP", "[", 
+      RowBox[{"j", ",", "k"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"k", ",", "1", ",", "$N"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"j", ",", "1", ",", "k"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"more", "=", 
+   RowBox[{"Catenate", "[", 
+    RowBox[{"Join", "@@@", 
+     RowBox[{"Thread", "[", 
+      RowBox[{"{", 
+       RowBox[{"gates4d", ",", "mm"}], "}"}], "]"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"qft4d", "=", 
+   RowBox[{"Join", "[", 
+    RowBox[{"more", ",", 
+     RowBox[{"{", "\"\<Separator\>\"", "}"}], ",", "swaps"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"qc4d", "=", 
+  RowBox[{"QuissoCircuit", "[", 
+   RowBox[{
+    RowBox[{"Sequence", "@@", "qft4d"}], ",", 
+    RowBox[{"ImageSize", "\[Rule]", "Large"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[21]:=",
+ CellID->634758357],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], 
+    LineBox[{{{2, -1}, {24, -1}}, {{5, -2}, {24, -2}}, {{9, -3}, {24, -3}}, {{
+     14, -4}, {24, -4}}, {{20, -5}, {24, -5}}}]}, 
+   LineBox[{{{0, -1}, {2, -1}}, {{0, -2}, {5, -2}}, {{0, -3}, {9, -3}}, {{
+    0, -4}, {14, -4}}, {{0, -5}, {20, -5}}}], {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -1.4}, {1.4, -0.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {1, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{1.6, -1.4}, {2.4, -0.6}]}, 
+    CircleBox[{2, -1.2}, 0.4, 
+     NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+      2.6179938779914944`}]], LineBox[{{2, -1.2}, {2.24, -0.76}}]}, {
+    LineBox[{{3, -1}, {3, -2}}], DiskBox[{3, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{2.6, -2.4}, {3.4, -1.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {3, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{3.6, -2.4}, {4.4, -1.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {4, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -2.4}, {5.4, -1.6}]}, 
+    CircleBox[{5, -2.2}, 0.4, 
+     NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+      2.6179938779914944`}]], LineBox[{{5, -2.2}, {5.24, -1.76}}]}, {
+    LineBox[{{6, -1}, {6, -3}}], DiskBox[{6, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{5.6, -3.4}, {6.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {6, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{7, -2}, {7, -3}}], DiskBox[{7, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{6.6, -3.4}, {7.4, -2.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {7, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{7.6, -3.4}, {8.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {8, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{8.6, -3.4}, {9.4, -2.6}]}, 
+    CircleBox[{9, -3.2}, 0.4, 
+     NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+      2.6179938779914944`}]], LineBox[{{9, -3.2}, {9.24, -2.76}}]}, {
+    LineBox[{{10, -1}, {10, -4}}], DiskBox[{10, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{9.6, -4.4}, {10.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {10, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{11, -2}, {11, -4}}], DiskBox[{11, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{10.6, -4.4}, {11.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {11, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{12, -3}, {12, -4}}], DiskBox[{12, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{11.6, -4.4}, {12.4, -3.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {12, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{12.6, -4.4}, {13.4, -3.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {13, -4}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{13.6, -4.4}, {14.4, -3.6}]}, 
+    CircleBox[{14, -4.2}, 0.4, 
+     NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+      2.6179938779914944`}]], LineBox[{{14, -4.2}, {14.24, -3.76}}]}, {
+    LineBox[{{15, -1}, {15, -5}}], DiskBox[{15, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{14.6, -5.4}, {15.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "4"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {15, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{16, -2}, {16, -5}}], DiskBox[{16, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{15.6, -5.4}, {16.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "3"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {16, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{17, -3}, {17, -5}}], DiskBox[{17, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{16.6, -5.4}, {17.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "2"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {17, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{18, -4}, {18, -5}}], DiskBox[{18, -4}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{17.6, -5.4}, {18.4, -4.6}]}, InsetBox[
+     StyleBox[
+      SubscriptBox["\<\"S\"\>", "1"],
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {18, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{18.6, -5.4}, {19.4, -4.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.016666666666666666`],
+      FontWeight->"Light",
+      FontSlant->Italic], {19, -5}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{19.6, -5.4}, {20.4, -4.6}]}, 
+    CircleBox[{20, -5.2}, 0.4, 
+     NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+      2.6179938779914944`}]], LineBox[{{20, -5.2}, {20.24, -4.76}}]}, 
+   {Dashing[{0, Small}], 
+    LineBox[NCache[{{21, Rational[-11, 2]}, {21, Rational[-1, 2]}}, {{
+       21, -5.5}, {21, -0.5}}]]}, {LineBox[{{22, -1}, {22, -5}}], 
+    LineBox[{{{21.91, -1.09}, {22.09, -0.91}}, {{21.91, -0.91}, {
+     22.09, -1.09}}}], 
+    LineBox[{{{21.91, -5.09}, {22.09, -4.91}}, {{21.91, -4.91}, {
+     22.09, -5.09}}}]}, {LineBox[{{23, -2}, {23, -4}}], 
+    LineBox[{{{22.91, -2.09}, {23.09, -1.91}}, {{22.91, -1.91}, {
+     23.09, -2.09}}}], 
+    LineBox[{{{22.91, -4.09}, {23.09, -3.91}}, {{22.91, -3.91}, {
+     23.09, -4.09}}}]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImageSize->Large,
+  PlotRangePadding->NCache[{
+     Rational[1, 2], 0}, {0.5, 0}]]], "Output",
+ CellLabel->"Out[26]=",
+ CellID->1391481893]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Tests", "Section",
+ CellID->1221384869],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat4a", "=", 
+   RowBox[{"Matrix", "[", "qc4a", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"mat4b", "=", 
+   RowBox[{"Matrix", "[", "qc4b", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"mat4a", "-", "mat4b"}], "//", "Simplify"}], "//", "Normal"}], "//",
+   "Flatten"}]}], "Input",
+ CellLabel->"In[27]:=",
+ CellID->174807191],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[29]=",
+ CellID->948296906]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Tutorials"
+}], "RelatedTutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->415694126],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Quantum Fourier Transform",
+ BaseStyle->"Link",
+ ButtonData->
+  "paclet:Q3/tutorial/QuantumFourierTransform"]], "RelatedTutorials",
+ CellID->806871991],
+
+Cell[TextData[ButtonBox["QuissoCircuit Usage",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/QuissoCircuitUsage"]], "RelatedTutorials",
+ CellID->485574297]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quantum Fourier Transform: Semiclassical Implementation",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
+  "LinkTrails" -> GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2021, 2, 16, 12, 45, 30.159621}", 
+    "history" -> {"1.2", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"quantum Fourier transform"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "It is widely believed that the quantum entanglement is essential for \
+quantum speed-up of quantum computation [1] or the precision measurement \
+beyond the quantum standard limit (also known as the Heisenberg limit) [2]. \
+The semiclassical implementation, to be demonstrated below, of the quantum \
+Fourier transform (QFT) suggests that it is not necessarily the case. In the \
+semiclassical scheme, the single-qubit measurements and subsequent \
+single-qubit gates controlled by the measurement results (classical signals) \
+are sufficient to perform the QFT efficiently. [1] Griffiths & Niu, Physical \
+Review Letters 76, 3228 (1996). [2] Higgins, et al., Nature 450, 393 (2007).",
+     "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$178152, "title" -> 
+    "Quantum Fourier Transform: Semiclassical Implementation", 
+    "titlemodifier" -> "", "windowtitle" -> 
+    "Quantum Fourier Transform: Semiclassical Implementation", "type" -> 
+    "Tutorial", "uri" -> "Q3/tutorial/QuantumFourierTransformSemiclassical", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> ""},
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "12.2 for Mac OS X x86 (64-bit) (December 12, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[627, 21, 3314, 79, 70, "AnchorBarGrid",ExpressionUUID->"f63ad7b5-eb3c-4189-bf17-a10ead89d1c5",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3966, 104, 92, 1, 70, "Title",ExpressionUUID->"285813da-633f-4c36-8faf-71631781844e",
+ CellID->509267359],
+Cell[4061, 107, 15316, 258, 70, "TutorialJumpBox",ExpressionUUID->"0736931c-c55c-41a4-9555-902ed40f7d48"],
+Cell[19380, 367, 620, 10, 70, "Text",ExpressionUUID->"89965a08-91ef-48b7-8ca1-ebc36d74a869",
+ CellID->1534169418],
+Cell[CellGroupData[{
+Cell[20025, 381, 49, 1, 70, "Section",ExpressionUUID->"da8f69ef-f074-4f06-8adf-c5213727e33e",
+ CellID->890220681],
+Cell[20077, 384, 154, 6, 70, "Text",ExpressionUUID->"4333591f-62fa-44bc-9fb6-677f99f0b5a0",
+ CellID->686433325],
+Cell[20234, 392, 80, 1, 70, "Text",ExpressionUUID->"28a29c6b-8a2d-4afc-93b6-46546407680d",
+ CellID->602741591]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20351, 398, 53, 1, 70, "Section",ExpressionUUID->"7a12c5d2-e9b0-4b9a-b769-8a719f46a67a",
+ CellID->2119699967],
+Cell[20407, 401, 67, 1, 70, "MathCaption",ExpressionUUID->"b7c71554-07ca-4111-ad11-63f2d51d2d34",
+ CellID->890565600],
+Cell[20477, 404, 90, 3, 70, "Input",ExpressionUUID->"932fc6d3-8c50-4cf2-905d-b2b09926bf58",
+ CellID->869712048],
+Cell[20570, 409, 134, 5, 70, "MathCaption",ExpressionUUID->"8744cade-4fed-44c0-99ee-22229f20a5ce",
+ CellID->1683689702],
+Cell[20707, 416, 127, 4, 70, "Input",ExpressionUUID->"a6b8fffc-70e3-4361-8af1-30e76a7c8946",
+ CellID->1182432969],
+Cell[CellGroupData[{
+Cell[20859, 424, 254, 8, 70, "Input",ExpressionUUID->"aa19cdc5-6d9a-47ef-a3ef-433554a8a53a",
+ CellID->337240645],
+Cell[21116, 434, 651, 29, 70, "Output",ExpressionUUID->"42598ed0-c89f-481e-bd0c-36480b22ea9f",
+ CellID->519279881]
+}, Open  ]],
+Cell[21782, 466, 124, 3, 70, "MathCaption",ExpressionUUID->"ff2ed0d4-beae-43cb-9445-c19f64a6b513",
+ CellID->2019302784],
+Cell[21909, 471, 1816, 54, 70, "Input",ExpressionUUID->"8f4987ef-3a86-474a-a478-65a60cb01b92",
+ CellID->1106544069],
+Cell[23728, 527, 105, 2, 70, "MathCaption",ExpressionUUID->"8cc62856-51a3-4ea8-9cf0-b386eab7cd38",
+ CellID->477784663],
+Cell[CellGroupData[{
+Cell[23858, 533, 1012, 33, 70, "Input",ExpressionUUID->"dcf61510-7058-49e3-8482-eb6ab1e4d9da",
+ CellID->685474908],
+Cell[24873, 568, 6476, 160, 70, "Output",ExpressionUUID->"89b5ba64-0fc5-4f22-994a-8201fba26c7d",
+ CellID->637488403]
+}, Open  ]],
+Cell[31364, 731, 122, 3, 70, "MathCaption",ExpressionUUID->"9b6a069d-0028-4e63-a3ba-cc3e223b4425",
+ CellID->485246201],
+Cell[CellGroupData[{
+Cell[31511, 738, 1012, 33, 70, "Input",ExpressionUUID->"b5b1a504-e008-440d-be1a-c71d62f793aa",
+ CellID->1537492548],
+Cell[32526, 773, 6480, 160, 70, "Output",ExpressionUUID->"17c29ad0-ca32-4b7a-9563-6ee6e42db192",
+ CellID->1976590709]
+}, Open  ]],
+Cell[39021, 936, 99, 1, 70, "MathCaption",ExpressionUUID->"8f69561e-00d1-4b6f-815b-697cb015971e",
+ CellID->108492709],
+Cell[CellGroupData[{
+Cell[39145, 941, 531, 15, 70, "Input",ExpressionUUID->"849c44ee-8415-41f8-8d4d-c3b4d1afa853",
+ CellID->223343860],
+Cell[39679, 958, 7950, 187, 70, "Output",ExpressionUUID->"dc6d1e9d-8360-4baa-8ad7-e74ef727d257",
+ CellID->931451699]
+}, Open  ]],
+Cell[47644, 1148, 213, 5, 70, "MathCaption",ExpressionUUID->"86349659-682e-45ab-9cf8-a4825826b71f",
+ CellID->729622561],
+Cell[CellGroupData[{
+Cell[47882, 1157, 1282, 41, 70, "Input",ExpressionUUID->"9cc5b457-be88-4f23-9955-917012b95103",
+ CellID->634758357],
+Cell[49167, 1200, 8078, 189, 70, "Output",ExpressionUUID->"06552faf-00f1-4c7c-8d40-2edc3d0116a7",
+ CellID->1391481893]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[57294, 1395, 45, 1, 70, "Section",ExpressionUUID->"b121e041-8322-45ce-b450-00b73f6e4882",
+ CellID->1221384869],
+Cell[CellGroupData[{
+Cell[57364, 1400, 417, 13, 70, "Input",ExpressionUUID->"9770e00b-8318-45a9-b9aa-ad866b93dc54",
+ CellID->174807191],
+Cell[57784, 1415, 10884, 141, 70, "Output",ExpressionUUID->"fa9c84f2-01fa-482c-a054-4214a379a675",
+ CellID->948296906]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[68717, 1562, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"e53834aa-eb95-40d0-9816-84b5b03b12c9",
+ CellID->415694126],
+Cell[68887, 1571, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"dc8478ff-7789-4c22-9898-71eaf28f3f10"],
+Cell[68921, 1573, 176, 4, 70, "RelatedTutorials",ExpressionUUID->"e8189293-e1ee-4123-ba6e-ac37645a5b1f",
+ CellID->806871991],
+Cell[69100, 1579, 162, 3, 70, "RelatedTutorials",ExpressionUUID->"91fccfa5-320b-4b7c-91ff-60b6aae19e5f",
+ CellID->485574297]
+}, Open  ]]
+}, Open  ]],
+Cell[69289, 1586, 23, 0, 70, "FooterCell",ExpressionUUID->"ff27fdf9-0a8f-4248-9f67-fafc8a0ecabf"]
+}
+]
+*)
+
+(* End of internal cache information *)

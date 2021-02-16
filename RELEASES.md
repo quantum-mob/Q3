@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.5.1
+
+- Supports installation from a paclet archive.
+- New functions: Q3Release, Q3CheckUpdate, Q3Update.
+
 ## v1.5.0
 
 - New function Q3Version.

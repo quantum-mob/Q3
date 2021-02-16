@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-01-28 19:16:26+09 $ *)
-(* $Revision: 1.13 $ *)
+(* $Date: 2021-02-14 18:54:52+09 $ *)
+(* $Revision: 1.17 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,13 +10,14 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.13 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-28 19:16:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.17 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-14 18:54:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
-{ Q3Version, Q3General, Q3Protect };
+{ Q3Release, Q3Version, Q3General, Q3Protect,
+  Q3CheckUpdate, Q3Update };
 
 { Supplement, SupplementBy, Common, CommonBy };
 { Choices, Successive };
@@ -83,20 +84,34 @@ Q3General::obsolete = "The symbol `` is OBSOLETE. Use `` instead."
 Q3General::newUI = "An angle should come first. The order of the input arguments of `` has been changed since Q3 v1.2.0."
 
 
+Q3Release::usage = "Q3Release[] returns a string containing the release version of Q3. If it fails to find and open the paclet of Q3, then it returns Failure or $Failed."
+
+Q3Release[] := Module[
+  { pac = PacletObject["Q3"] },
+  If[ Not @ FailureQ[pac],
+    If[ SymbolName @ Head[pac] == "PacletObject", 
+      pac["Version"],
+      $Failed
+     ],
+    pac
+   ]
+ ]
+
+
 Q3Version::usage = "Q3Version[] prints the information about the Q3 release and versions of packages in it."
 
 Q3Version[] := Module[
-  { pkg = Contexts["Q3`*`Private`"],
-    pac = Get["Q3/PacletInfo.m"] },
-  pkg = Symbol @* StringJoin /@ Thread @ {pkg, "Version"};
-  If[ Not @ FailureQ[pac],
-    If[ SymbolName @ Head[pac] == "Paclet",
-      pac = ReplaceAll[Version, List @@ pac] /. {Version -> 0};
-      PrependTo[pkg, "Q3 Application Release v" <> pac]
-     ];
+  { pac = Q3Release[],
+    pkg = Contexts["Q3`*`Private`"] },
+  If[ FailureQ[pac],
+    pac = "Q3 Application has not been installed properly.",
+    pac = "Q3 Application v" <> pac;
    ];
+  pkg = Symbol @* StringJoin /@ Thread @ {pkg, "Version"};
+  pkg = Join[{pac}, pkg];
   Print @ StringJoin @ Riffle[pkg, "\n"];
  ]
+
 
 Q3Protect::usage = "Q3Protect[context] protects all symbols in the specified context. In addition, sets the ReadProtected attribute to all non-variable symbols, those the name of which does not start with the character \"$\")."
 
@@ -109,6 +124,61 @@ Q3Protect[context_String] := Module[
   SetAttributes[Evaluate @ symb, ReadProtected];
   Protect[Evaluate @ symb]
  ]
+
+
+Q3CheckUpdate::usage = "Q3CheckUpdate[] checks if there is a newer release of Q3 in the GitHub repository."
+
+Q3CheckUpdate[] := Module[
+  { pac = "v" <> Q3Release[],
+    ver = Lookup[getRemoteQ3[], "tag_name"] },
+  If[ Not @ OrderedQ @ {ver, pac},
+    Print["Q3,", ver, " is available; you are using ", pac, "."],
+    Print["You are using the latest release ", pac, " of Q3."]
+   ];
+ ]
+
+Q3Update::usage = "Q3Update[\"folder\"] downloads the lastest paclet archive of Q3 to the local \"folder\" and installs it.\nQ3Update[] installs the update of Q3 directly from the GitHub repository.\nIt accepts all the options for PacletInstall."
+
+Q3Update::downfail = "Could not download the paclet archive ``."
+
+Q3Update[folder_?StringQ, opts___?OptionQ] := Module[
+  { jsn = getRemoteQ3[],
+    url, dir, new, file },
+
+  If[ Not @ FileExistsQ[folder],
+    dir = CreateDirectory[folder],
+    dir = folder
+   ];
+  
+  url = Lookup[First @ Lookup[jsn, "assets"], "browser_download_url"];
+  file = FileNameJoin @ {dir, FileNameTake[url]};
+  Print["Downloading the paclet archive ", url, " to ", file, " ...."];
+  new = URLDownload[url, file];
+  If[ FailureQ[new],
+    Message[Q3Update::downfail, url];
+    Return[],
+    Print["Done!"]
+   ];
+  
+  Print["Installing the paclet ", file, " ...."];
+  PacletInstall[file, opts]
+ ]
+
+Q3Update[opts___?OptionQ] := Module[
+  { jsn = getRemoteQ3[],
+    url },
+  
+  Print["Installing Q3 directly from GitHub. It may take serveral minutes or longer depending on your network conditions and your computer. Please be patient."];
+  
+  url = Lookup[First @ Lookup[jsn, "assets"], "browser_download_url"];
+  PacletInstall[url, opts]
+ ]
+
+getRemoteQ3[] := Import[
+  "https://api.github.com/repos/quantum-mob/Q3App/releases/latest", 
+  "JSON"
+ ]
+
 
 Choices::usage = "Choices[a,n] gives all possible choices of n elements out of the list a.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 

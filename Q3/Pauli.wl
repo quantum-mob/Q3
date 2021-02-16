@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-01-28 11:23:46+09 $
-  $Revision: 2.36 $
+  $Date: 2021-02-15 11:41:54+09 $
+  $Revision: 2.38 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.36 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-28 11:23:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.38 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-15 11:41:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -907,7 +907,7 @@ BlochVector[cc_?VectorQ] := Module[
  ] /; Length[cc] == 2
 
 
-BlochSphere::usage = "BlochSphere[{p1, p2, ...}] displays the points along with the Bloch sphere in Graphics3D.\nBlochSphere[p1, p2, ...] is equivalent to BlochSphere[{p1, p2, ...}].\nBlochSphere[] returns the Graphics3D elements to render the Bloch sphere."
+BlochSphere::usage = "BlochSphere[{p1, p2, ...}] displays the points along with the Bloch sphere in Graphics3D.\nBlochSphere[p1, p2, ...] is equivalent to BlochSphere[{p1, p2, ...}].\nBlochSphere[{p1, p2, ...}, g1, g2, ...] displays points p1, p2, ... together with the Bloch sphere and Graphics3D objects g1, g2, .... BlochSphere[] returns the Graphics3D elements to render the Bloch sphere."
 
 Options[BlochSphere] = {
   "Opacity" -> 0.8,
@@ -919,16 +919,21 @@ Options[BlochSphere] = {
   Boxed -> False
  }
 
-BlochSphere[vv:{_?NumericQ, _?NumericQ, _?NumericQ}.., opts___?OptionQ] :=
-  BlochSphere[{vv}, opts]
+BlochSphere[
+  vv:{_?NumericQ, _?NumericQ, _?NumericQ}..,
+  Shortest[gg___],
+  opts___?OptionQ ] := BlochSphere[{vv}, gg, opts]
 
-BlochSphere[vv:{{_?NumericQ, _?NumericQ, _?NumericQ}...}, opts___?OptionQ] :=
-  Module[
-    { rr },
+BlochSphere[
+  vv:{{_?NumericQ, _?NumericQ, _?NumericQ}...},
+  Shortest[gg___],
+  opts___?OptionQ ] := Module[
+    { pp, rr },
     rr = "PointSize" /. {opts} /. Options[BlochSphere];
-    Graphics3D[
-      { BlochSphere[opts],
-        Prepend[ Map[Sphere[#, rr]&, vv], Red ]
+    pp = Map[Sphere[#, rr]&, vv];
+    Graphics3D[{
+        {BlochSphere[opts], Prepend[pp, Red]},
+        gg
        },
       Sequence @@ FilterRules[
         Join[{opts}, Options @ BlochSphere],
@@ -936,7 +941,7 @@ BlochSphere[vv:{{_?NumericQ, _?NumericQ, _?NumericQ}...}, opts___?OptionQ] :=
        ]
      ]
    ]
-  
+
 BlochSphere[opts___?OptionQ] := Module[
   { dd },
   dd = "Opacity" /. {opts} /. Options[BlochSphere];
