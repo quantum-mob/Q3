@@ -1,5 +1,28 @@
 # Installation Guide
 
+## Automatic Installation
+
+```Mathematica
+Q3Install[opts___?OptionQ] := Module[
+  { jsn, url },
+
+  jsn = Import[
+    "https://api.github.com/repos/quantum-mob/Q3App/releases/latest", 
+    "JSON"
+   ];
+  url = Lookup[First @ Lookup[jsn, "assets"], "browser_download_url"];
+  
+  Print["Installing Q3 directly from GitHub. It may take serveral minutes or longer depending on your network conditions and your computer. Please be patient."];
+  
+  PacletInstall[url, opts]
+ ]
+```
+
+## Semi-Automatic Installation
+
+
+## Manual Installation
+
 1. Download the whole folder as a ZIP file.
 
 2. Unzip the ZIP file to extract the files and subfolders.

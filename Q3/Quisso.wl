@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-13 20:04:37+09 $
-  $Revision: 1.86 $
+  $Date: 2021-02-16 15:10:02+09 $
+  $Revision: 1.87 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.86 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-13 20:04:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.87 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-16 15:10:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -76,7 +76,7 @@ End[]
 
 Begin["`Private`"]
 
-$symbs = Unprotect[
+$symb = Unprotect[
   Multiply, MultiplyDegree, CircleTimes, OTimes, Dagger, Dyad,
   KetTrim, KetRule, Ket, Bra, BraKet, Basis,
   $RepresentableTests, $RaiseLowerRules,
@@ -1612,7 +1612,7 @@ GraphState[ g_Graph ] := Module[
  ]
 
 
-Protect[ Evaluate @ $symbs ]
+Protect[Evaluate @ $symb]
 
 End[] (* `Private` *)
 
@@ -2436,7 +2436,7 @@ End[] (* `Special` *)
 
 Begin["`Qudit`"]
 
-$symbs = Unprotect[
+$symb = Unprotect[
   Multiply, MultiplyDegree, Dyad,
   Basis, Matrix, Parity, ParityEvenQ, ParityOddQ,
   $GarnerHeads, $GarnerTests, $RepresentableTests,
@@ -2727,7 +2727,7 @@ ReplaceByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
   Garner[ expr /. ReplaceByFourier[old -> new, opts] ]
 
 
-Protect[ Evaluate @ $symbs ]
+Protect[Evaluate @ $symb]
 
 End[] (* `Qudit` *)
 
