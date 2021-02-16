@@ -12,7 +12,7 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
 # Installation
 
-Please take a look at the [Installation Guide](./INSTALL.md).
+Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md`.
 
 # Usage
 
