@@ -27,7 +27,11 @@ You can install Q3 in two methods: The first is based on the `paclet` system tha
    ```Mathematica
    Q3Install[]
    ```
-   That's all! The additional steps below are for maintaining updates.
+   That's all!
+
+***
+
+The additional steps below are for maintaining updates.
 
 - Later on, you can check an update of Q3 by the following command.
   ```Mathematica
