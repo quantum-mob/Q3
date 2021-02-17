@@ -30,7 +30,7 @@ in the search field of the Wolfram Language Documentation Center (Mathematica he
 
 If this is your first time to use Mathematica, this guide written by Stephen Wolfram himself might be a good starting point:
 
-> [An Elementary Introduction to the Wolfram Language (2nd edition)](https://www.wolfram.com/language/elementary-introduction/2nd-ed/)
+- [An Elementary Introduction to the Wolfram Language (2nd edition)](https://www.wolfram.com/language/elementary-introduction/2nd-ed/)
 
 ## Feedback
 
