@@ -29,16 +29,16 @@ You can install Q3 in two methods: The first is based on the `paclet` system tha
    ```
    That's all! The additional steps below are for maintaining updates.
 
-4. Later on, you can check an update of Q3 by the following command.
-   ```Mathematica
-   Q3CheckUpdate[]
-   ```
+- Later on, you can check an update of Q3 by the following command.
+  ```Mathematica
+  Q3CheckUpdate[]
+  ```
 
-5. When a newer release is available on the server, you can update Q3 with this command.
-   ```Mathematica
-   Q3Update[]
-   ```
-   Depending on the situation, you may need to give an option `AllowVersionUpdate` or `ForceVersionInstall` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
+- When a newer release is available on the server, you can update Q3 with this command.
+  ```Mathematica
+  Q3Update[]
+  ```
+  Depending on the situation, you may need to give an option `AllowVersionUpdate` or `ForceVersionInstall` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
 
 
 ## Manual Installation
