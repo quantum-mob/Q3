@@ -6,9 +6,9 @@ You can install Q3 in two methods: The first is based on the `paclet` system tha
 
 1. First, make sure to remove the old copy of `Q3` that you manually installed (older than `Q3 v1.5.1`), and restart your Mathematica.
 
-2. Copy the following code and run it on your Mathematica front end.
+2. Copy the following code, and run it on your Mathematica front end (Notebook interface).
    ```Mathematica
-   Q3Install[opts___?OptionQ] := Module[
+   Module[
      { jsn, url },
    
      jsn = Import[
@@ -19,13 +19,8 @@ You can install Q3 in two methods: The first is based on the `paclet` system tha
   
      Print["Installing Q3 directly from GitHub. It may take serveral minutes or longer depending on your network conditions and your computer. Please be patient."];
   
-     PacletInstall[url, opts]
+     PacletInstall[url]
     ]
-   ```
-
-3. Finally, run the following command on your Mathematica front end.
-   ```Mathematica
-   Q3Install[]
    ```
    That's all!
 
