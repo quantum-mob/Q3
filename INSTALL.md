@@ -29,7 +29,6 @@ You can install Q3 in two methods: The first is based on the `paclet` system tha
    ```
    That's all!
 
-___
 
 The additional steps below are for maintaining updates.
 
