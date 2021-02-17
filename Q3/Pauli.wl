@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-15 11:41:54+09 $
-  $Revision: 2.38 $
+  $Date: 2021-02-16 21:45:46+09 $
+  $Revision: 2.39 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.38 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-15 11:41:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.39 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-16 21:45:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1974,12 +1974,14 @@ PartialTrace[expr_, qq:{__?SpeciesQ}, func_] := Module[
 
 Purification::usage = "Purification[m] returns the purification of the mixed state m."
 
-Purification::NA = "Not available yet. Sorry!"
+Purification[m_?MatrixQ] := Module[
+  {val, vec},
+  {val, vec} = Eigensystem[m]; (* m is supposed to be Hermitian. *)
+  Sqrt[val] . MapThread[CircleTimes, {vec, One @ Dimensions @ m}]
+ ]
 
-Purification[m_?MatrixQ] := Message[Purification:NA]
 
-
-Purge::usage = "Purge[m] returns the pure state closest to the mixed state m. It is different from purification."
+Purge::usage = "Purge[m] returns the pure state closest to the mixed state m.\nIt is different from purification."
 
 Purge[m_?MatrixQ] := Module[
   {val, vec},
