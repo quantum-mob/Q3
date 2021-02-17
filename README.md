@@ -1,6 +1,6 @@
 # Q3 Application
 
-> Since v1.5.1, Q3 supports automatic installation directly from this repository. Take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
+Since v1.5.1, Q3 supports automatic installation directly from this repository. Take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
 
 ---
 
@@ -9,16 +9,16 @@ Q3 is a Mathematica application to help study quantum information processing, qu
 Q3 consists of several packages at different levels. Quisso, Fock, and Wigner are the three main packages, and they are devoted to the simulation of quantum information processing, quantum many-body systems, and quantum spin systems, respectively. They are based on two other lower-level packages, Pauli and Cauchy. Pauli itself provides useful tools to handle Pauli operators directly, but it also defines programming structures and objects for the aforementioned three and other higher-level packages. Cauchy, at the lowest level, defines the programming structure of the whole application. But it can also be used individually to facilitate complex analysis.
 
 
-# Requirements
+## Requirements
 
 - Mathematica v12.0 or later.
 
 
-# Installation
+## Installation
 
 Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
 
-# Usage
+## Usage
 
 Once the application is installed, put
 ```
@@ -32,7 +32,7 @@ If this is your first time to use Mathematica, this guide written by Stephen Wol
 
 > [An Elementary Introduction to the Wolfram Language (2nd edition)](https://www.wolfram.com/language/elementary-introduction/2nd-ed/)
 
-# Feedback
+## Feedback
 
 Any comment, suggestion, or bug report will be appreciated. Please address it to
 ```
