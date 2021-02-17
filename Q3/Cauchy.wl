@@ -2,8 +2,8 @@
 (* Mathematica package for complex variables. *)
 
 (* Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com) *)
-(* $Date: 2021-01-28 11:24:56+09 $ *)
-(* $Revision: 2.5 $ *)
+(* $Date: 2021-02-17 10:27:00+09 $ *)
+(* $Revision: 2.6 $ *)
 
 BeginPackage["Q3`Cauchy`", { "Q3`" }]
 
@@ -12,8 +12,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-28 11:24:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.6 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-17 10:27:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -101,7 +101,7 @@ Format[ HoldPattern[ Conjugate[z_Symbol?SpeciesQ[j___]] ] ] :=
 (* f[...] with f not declared as a Species is regarded as a normal function. *)
 Format[ HoldPattern[ Conjugate[f_Symbol[z___]] ] ] :=
   SpeciesBox[
-    RowBox @ { "(", f[z], ")" },
+    Row @ { "(", f[z], ")" },
     {},
     {$Star}
    ] /; $FormatSpecies
