@@ -18,7 +18,7 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
 Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
 
-## Usage
+## Quick Start
 
 Once the application is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get detailed technical information about the application. It will give you users' guides and tutorials.
 
