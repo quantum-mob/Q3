@@ -24,7 +24,7 @@ Q3 supports the paclet mechanism of Mathematica packages. It allows remote insta
      PacletInstall[url]
     ]
    ```
-   That's all!
+   That's all! Put `Q3` or `Q3\guide\Q3` in the search field of the Wolfram Language Documentation Center (the Help window) to start.
 
 
 ## Keeping Q3 Updated
