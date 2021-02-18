@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.5.3
+
+- New functions Q3RemoteFetch, Q3RemoteRelease, Q3RemoteURL.
+- New function Q3UpdateSubmit and enhanced Q3Update.
+
 ## v1.5.1
 
 - Supports installation from a paclet archive.

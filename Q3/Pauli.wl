@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-16 21:45:46+09 $
-  $Revision: 2.39 $
+  $Date: 2021-02-18 00:05:02+09 $
+  $Revision: 2.44 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.39 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-16 21:45:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.44 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-18 00:05:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -89,8 +89,6 @@ End[]
 
 { PauliExtract, PauliExtractRL }; (* obsolete *)
 { PauliExpand }; (* OBSOLETE *)
-
-Pauli::obsolete = "`` is OBSOLETE! Use `` instead."
 
 Begin["`Private`"]
 
@@ -689,7 +687,7 @@ Once[
 PauliExpand::usage = "PauliExpand[expr] returns more explicit form of the expression expr."
 
 PauliExpand[expr_] := (
-  Message[Pauli::obsolete, PauliExpand, Elaborate];
+  Message[Q3General::obsolete, PauliExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -789,6 +787,16 @@ Pauli /: Conjugate[ Pauli[a_, b__] ] := CircleTimes @@ Map[
 Pauli /:
 CircleTimes[a_Pauli, b__Pauli] := Pauli @@ Catenate[List @@@ {a, b}]
 (* CircleTimes[ Pauli[a], Pauli[b], ... ] are stored into Pauli[a, b, ...], where a, b, ... are elementry (0,1,2,3). *)
+
+
+(* <Pauli in Multipy> *)
+HoldPattern @ Multiply[pre___, op__Pauli, vec:Ket[(0|1)..], post___] :=
+  Multiply[pre, Dot[op, vec], post]
+
+HoldPattern @ Multiply[pre___, op_Pauli, more__Pauli, Shortest[post___]] :=
+  Multiply[pre, Dot[op, more], post]
+
+(* </Pauli in Multiply> *)
 
 
 Operator::usage = "Operator[{k, th, ph}] returns the Pauli matrix in the rotated frame.\nOperator[{{k1,k2,...}, th, ph}] = Operator[{k1, th, ph}, {k2, th, ph}, ...]."
@@ -974,8 +982,12 @@ Representables[expr_] := Module[
  ]
 
 
-Basis::usage = "Basis[q1, q2, ...] constructs the tensor product basis for the system consising of Species q1, q2, ...\nBasis[q1, {q2, q3}, ...] is equivalent to Basis[q1, q2, q3, ...].\nBasis[expr] finds the relevant systems from the expression expr and constructs the basis."
+Basis::usage = "Basis[n] constructs the standard tensor-product basis of a system of n unlabelled qubits.\nBasis[{dim1, dim2, ..., dimn}] constructs the standard tensor-product basis of a total of n unlabelled systems with the Hilbert space dimensions dim1, dim2, ..., respectively.\nBasis[q1, q2, ...] constructs the tensor product basis for the system consising of Species q1, q2, ...\nBasis[q1, {q2, q3}, ...] is equivalent to Basis[q1, q2, q3, ...].\nBasis[expr] finds the relevant systems from the expression expr and constructs the basis."
 
+Basis[n_Integer] := Ket @@@ Tuples[{0, 1}, n]
+
+Basis[dim:{__Integer}] := Ket @@@ Tuples[Range[0,#-1]& /@ dim]
+  
 Basis[
   a:Alternatives[_?SpeciesQ, {__?SpeciesQ}],
   b:Alternatives[_?SpeciesQ, {__?SpeciesQ}].. ] :=
@@ -1709,7 +1721,7 @@ One[{m_Integer, n_Integer}, p_Integer] :=
 PauliExtract::usage = "PauliExtract has been deprecated. Use PauliDecompose instead."
 
 PaulieExtract[m_?MatrixQ, dd_] := (
-  Message[Pauli::obsolete, "PaulieExtract", "PauliDecompose"];
+  Message[Q3General::obsolete, "PaulieExtract", "PauliDecompose"];
   PauliDecompose[m, dd]
  )
 
@@ -1717,7 +1729,7 @@ PaulieExtract[m_?MatrixQ, dd_] := (
 PauliExtractRL::usage = "PauliExtractRL has been deprecated. Use PauliDecomposeRL instead."
 
 PaulieExtractRL[m_?MatrixQ, dd_] := (
-  Message[Pauli::obsolete, "PaulieExtractRL", "PauliDecomposeRL"];
+  Message[Q3General::obsolete, "PaulieExtractRL", "PauliDecomposeRL"];
   PauliDecomposeRL[m, dd]
  )
 

@@ -4,6 +4,8 @@ You can install Q3 in two methods: The first is based on the `paclet` system tha
 
 ## Automatic Installation from Remote Server (recommended)
 
+Q3 supports the paclet mechanism of Mathematica packages. It allows remote installation and update. To install remotely, please follow these steps:
+
 1. First, make sure to remove the old copy of `Q3` that you manually installed (older than `Q3 v1.5.1`), and restart your Mathematica.
 
 2. Copy the following code, and run it on your Mathematica front end (Notebook interface).
@@ -59,4 +61,7 @@ The additional steps below are for maintaining updates.
 
    Here `$UserBaseDirectory` is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
 
-   After installing the application in this method, the first time you search a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.
+
+## Note
+
+After installing/updating the application, the first time you search a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.
