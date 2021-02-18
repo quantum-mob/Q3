@@ -20,11 +20,7 @@ Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- 
 
 ## Usage
 
-Once the application is installed, put
-```
-"Q3" or "Q3/guide/Q3"
-```
-in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get detailed technical information about the application. It will give you users' guides and tutorials.
+Once the application is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get detailed technical information about the application. It will give you users' guides and tutorials.
 
 ## For Beginners of Mathematica
 
