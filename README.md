@@ -16,7 +16,7 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
 ## Installation
 
-Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
+Q3 supports a fully automatic installation directly from this repository. Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
 
 ## Quick Start
 
