@@ -1,6 +1,6 @@
 # Installation Guide
 
-You can install Q3 in two methods: The first is based on the `paclet` system that has recently been introduced by Wolfram Research. It is not only fully automatic but also convenient to get updates later on. Obviously, it requires a stable network connection -- a moderate speed of network is usually enough. The other method is to download and copy the files to a proper folder -- just the traditional method. If your network is unstable or unreliable, then this is the only option for you.
+You can install Q3 in two methods: The first is based on the `paclet` system that has recently been introduced by Wolfram Research. It is not only fully automatic but also convenient to get updates later on. The other method is to download and copy the files to a proper folder -- just the traditional method.
 
 ## Automatic Installation from Remote Server (recommended)
 
@@ -27,9 +27,11 @@ Q3 supports the paclet mechanism of Mathematica packages. It allows remote insta
    That's all!
 
 
-The additional steps below are for maintaining updates.
+## Keeping Q3 Updated
 
-- Later on, you can check an update of Q3 by the following command.
+Once Q3 is installed, it provides some utility functions with which you can check and install updates.
+
+- You can check an update of Q3 by the following command.
   ```Mathematica
   Q3CheckUpdate[]
   ```
