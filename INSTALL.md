@@ -46,7 +46,7 @@ Once Q3 is installed, it provides some utility functions with which you can chec
   ```Mathematica
   Q3Update["your_download_folder"]
   ```
-  (replace "your_download_folder" with your own folder name), which first downloads and installs the update from the locally saved file.
+  (replace "your_download_folder" with your own folder name), which first downloads the latest paclet archive to a local file and then installs the update from the locally saved file.
   
   In both cases, depending on the situation, you may like to give an option `AllowVersionUpdate` or `ForceVersionInstall` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
 
