@@ -38,7 +38,13 @@ The additional steps below are for maintaining updates.
   ```Mathematica
   Q3Update[]
   ```
-  Depending on the situation, you may need to give an option `AllowVersionUpdate` or `ForceVersionInstall` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
+  In case you network is slow or unstable, you can try
+  ```Mathematica
+  Q3Update["your_download_folder"]
+  ```
+  (replace "your_download_folder" with your own folder name), which first downloads and installs the update from the locally saved file.
+  
+  In both cases, depending on the situation, you may need to give an option `AllowVersionUpdate` or `ForceVersionInstall` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
 
 
 ## Manual Installation
