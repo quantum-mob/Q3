@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     12720,        395]
-NotebookOptionsPosition[      8221,        293]
-NotebookOutlinePosition[     10482,        350]
-CellTagsIndexPosition[     10439,        347]
+NotebookDataLength[     31425,        996]
+NotebookOptionsPosition[     21684,        794]
+NotebookOutlinePosition[     24087,        853]
+CellTagsIndexPosition[     24044,        850]
 WindowTitle->Pauli: Quick Start
 WindowFrame->Normal*)
 
@@ -25,6 +25,27 @@ Cell[BoxData[GridBox[{
       ActionMenuBox[
        FrameBox[
         InterpretationBox[Cell[TextData[{
+          "Related Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Quisso: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/Quisso"], "\<\"Q3: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
           "Related Guides",
           StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
            StripOnInput->False]
@@ -32,7 +53,11 @@ Cell[BoxData[GridBox[{
          TextCell[
           Row[{"Related Guides", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Q3 Application Guide\"\>":>
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/Pauli2"], "\<\"Quisso Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/Quisso"], "\<\"Q3 Application Guide\"\>":>
        Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
        Appearance->None,
        MenuAppearance->Automatic,
@@ -52,7 +77,7 @@ Cell[BoxData[GridBox[{
           Row[{"Functions", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
         StripOnInput->False], {"\<\"Ket\"\>":>Documentation`HelpLookup[
-       "paclet:ref/Ket"], "\<\"Operator\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Ket"], "\<\"Operator\"\>":>Documentation`HelpLookup[
        "paclet:Q3/ref/Operator"]},
        Appearance->None,
        MenuAppearance->Automatic,
@@ -99,7 +124,7 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$175478], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$180362], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], "Q3/tutorial/Pauli", 
              ".html"]], None}]}]},
@@ -117,7 +142,24 @@ Cell["Pauli: Quick Start", "Title",
  CellID->509267359],
 
 Cell[TextData[{
- "Pauli is convenient to handle Pauli operators and (especially, ",
+ StyleBox["Pauli", "Input"],
+ " is a Mathematica package to handle Pauli operators and other matrices. ",
+ ButtonBox["Pauli",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Pauli"],
+ " and ",
+ ButtonBox["Quisso",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Quisso"],
+ " provide complementary tools to handle a system of qubits."
+}], "Text",
+ CellID->2001916300],
+
+Cell[TextData[{
+ ButtonBox["Pauli",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Pauli"],
+ " is convenient to handle Pauli operators and (especially, ",
  Cell[BoxData[
   RowBox[{
    SuperscriptBox["2", 
@@ -151,15 +193,26 @@ Cell[BoxData[GridBox[{
    {
     ButtonBox["Ket",
      BaseStyle->"Link",
-     ButtonData->"paclet:ref/Ket"], Cell["Product basis element", "TableText"]}
+     ButtonData->"paclet:Q3/ref/Ket"], Cell[
+    "Product basis element", "TableText"]}
   }]], "DefinitionBox",
  CellID->2096742444],
 
 Cell["Frequently used functions.", "Caption",
  CellID->1891092685],
 
-Cell["Here are examples.", "MathCaption",
- CellID->836781195],
+Cell[TextData[{
+ "To use the features from ",
+ ButtonBox["Pauli",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Pauli"],
+ " package, just load the application ",
+ ButtonBox["Q3",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Q3"],
+ "."
+}], "MathCaption",
+ CellID->365402771],
 
 Cell[BoxData[
  RowBox[{"<<", "Q3`"}]], "Input",
@@ -168,88 +221,257 @@ Cell[BoxData[
 
 Cell[CellGroupData[{
 
-Cell[BoxData[
- RowBox[{"v", "=", 
-  RowBox[{
-   RowBox[{"Ket", "[", 
-    RowBox[{"0", ",", "1"}], "]"}], "-", 
-   RowBox[{"Ket", "[", 
-    RowBox[{"1", ",", "0"}], "]"}]}]}]], "Input",
- CellLabel->"In[2]:=",
- CellID->1936468066],
+Cell["Quantum Bits (Qubits)", "Subsection",
+ CellID->1511474152],
 
-Cell[BoxData[
- RowBox[{
+Cell["\<\
+A quantum bit, or qubit for short, is a two-level quantum system. Qubits are \
+the elementary units of quantum computers.\
+\>", "Text",
+ CellID->83665415],
+
+Cell[TextData[{
+ "In ",
+ ButtonBox["Pauli",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Pauli"],
+ ", qubits are unlabelled and distinguished by their positions in the \
+arguments (slots) of ",
+ Cell[BoxData["Pauli"], "InlineFormula"],
+ " and ",
+ Cell[BoxData[
   TemplateBox[{
-    RowBox[{"0", ",", "1"}]},
-   "Ket"], "-", 
-  TemplateBox[{
-    RowBox[{"1", ",", "0"}]},
-   "Ket"]}]], "Output",
- CellLabel->"Out[2]=",
- CellID->795237207]
-}, Open  ]],
+    Cell[
+     TextData["Ket"]], "paclet:ref/Ket"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "Text",
+ CellID->685187277],
+
+Cell["\<\
+This implies a system of three qubits as there are three arguments. The first \
+qubit is in the logical basis sate |0\[RightAngleBracket]. The second and \
+third are in |1\[RightAngleBracket] and |0\[RightAngleBracket], respectively.\
+\
+\>", "MathCaption",
+ CellID->836781195],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{
-  RowBox[{"Pauli", "[", 
-   RowBox[{"1", ",", "0"}], "]"}], ".", "v"}]], "Input",
- CellLabel->"In[3]:=",
- CellID->1414623215],
+ RowBox[{"Ket", "[", 
+  RowBox[{"0", ",", "1", ",", "0"}], "]"}]], "Input",
+ CellLabel->"In[10]:=",
+ CellID->1469401347],
 
 Cell[BoxData[
- RowBox[{
-  RowBox[{"-", 
-   TemplateBox[{
-     RowBox[{"0", ",", "0"}]},
-    "Ket"]}], "+", 
-  TemplateBox[{
-    RowBox[{"1", ",", "1"}]},
-   "Ket"]}]], "Output",
- CellLabel->"Out[3]=",
- CellID->1848466647]
+ TemplateBox[{
+   RowBox[{"0", ",", "1", ",", "0"}]},
+  "Ket"]], "Output",
+ CellLabel->"Out[10]=",
+ CellID->1327164175]
 }, Open  ]],
+
+Cell["\<\
+This also implies a three-qubit system as there are three arguments. It \
+represents a tensor-product operator which operates the Pauli X, Y, and X on \
+the first, second, and third qubits, respectively.\
+\>", "MathCaption",
+ CellID->434543700],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
  RowBox[{"Pauli", "[", 
-  RowBox[{"1", ",", "0"}], "]"}]], "Input",
- CellLabel->"In[4]:=",
+  RowBox[{"1", ",", "2", ",", "1"}], "]"}]], "Input",
+ CellLabel->"In[11]:=",
+ CellID->403977888],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{
+   SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", "y"], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", "x"]}],
+  DisplayForm]], "Output",
+ CellLabel->"Out[11]=",
+ CellID->888377227]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Quantum States", "Subsection",
+ CellID->1319956421],
+
+Cell["\<\
+Consider again a three-qubit system. Here is the standard tensor-product \
+basis of the system.\
+\>", "MathCaption",
+ CellID->1039439238],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bs", "=", 
+  RowBox[{"Basis", "[", "3", "]"}]}]], "Input",
+ CellLabel->"In[109]:=",
+ CellID->2120640671],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TemplateBox[{
+     RowBox[{"0", ",", "0", ",", "0"}]},
+    "Ket"], ",", 
+   TemplateBox[{
+     RowBox[{"0", ",", "0", ",", "1"}]},
+    "Ket"], ",", 
+   TemplateBox[{
+     RowBox[{"0", ",", "1", ",", "0"}]},
+    "Ket"], ",", 
+   TemplateBox[{
+     RowBox[{"0", ",", "1", ",", "1"}]},
+    "Ket"], ",", 
+   TemplateBox[{
+     RowBox[{"1", ",", "0", ",", "0"}]},
+    "Ket"], ",", 
+   TemplateBox[{
+     RowBox[{"1", ",", "0", ",", "1"}]},
+    "Ket"], ",", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1", ",", "0"}]},
+    "Ket"], ",", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1", ",", "1"}]},
+    "Ket"]}], "}"}]], "Output",
+ CellLabel->"Out[109]=",
+ CellID->73392697]
+}, Open  ]],
+
+Cell["\<\
+ A state vector is a linear superposition of the standard basis states.\
+\>", "MathCaption",
+ CellID->1607205605],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vec", "=", 
+  RowBox[{
+   RowBox[{"Ket", "[", 
+    RowBox[{"0", ",", "1", ",", "0"}], "]"}], "-", 
+   RowBox[{"Ket", "[", 
+    RowBox[{"1", ",", "0", ",", "0"}], "]"}]}]}]], "Input",
+ CellLabel->"In[111]:=",
+ CellID->1936468066],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{
+    RowBox[{"0", ",", "1", ",", "0"}]},
+   "Ket"], "-", 
+  TemplateBox[{
+    RowBox[{"1", ",", "0", ",", "0"}]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[111]=",
+ CellID->844092529]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Linear Operators", "Subsection",
+ CellID->780316335],
+
+Cell["\<\
+This operator acts trivially on the second qubit, and yet it should be \
+explicitly indicated by the index 0.\
+\>", "MathCaption",
+ CellID->1184192489],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op", "=", 
+  RowBox[{"Pauli", "[", 
+   RowBox[{"1", ",", "0", ",", "2"}], "]"}]}]], "Input",
+ CellLabel->"In[112]:=",
  CellID->718250702],
 
 Cell[BoxData[
  TagBox[
   RowBox[{
    SuperscriptBox["\[Sigma]", "x"], "\[CircleTimes]", 
-   SuperscriptBox["\[Sigma]", "0"]}],
+   SuperscriptBox["\[Sigma]", "0"], "\[CircleTimes]", 
+   SuperscriptBox["\[Sigma]", "y"]}],
   DisplayForm]], "Output",
- CellLabel->"Out[4]=",
- CellID->1396472889]
+ CellLabel->"Out[112]=",
+ CellID->1565962921]
 }, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"new", "=", 
+  RowBox[{"op", "**", "vec"}]}]], "Input",
+ CellLabel->"In[113]:=",
+ CellID->1414623215],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"-", "\[ImaginaryI]"}], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "0", ",", "1"}]},
+    "Ket"]}], "+", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1", ",", "1"}]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[113]=",
+ CellID->667998397]
+}, Open  ]],
+
+Cell[TextData[{
+ "The matrix representation of an operator in the standard tensor-product \
+basis can be obtained using ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Matrix"]], "paclet:Q3/ref/Matrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "MathCaption",
+ CellID->22913229],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
   RowBox[{"mat", "=", 
-   RowBox[{
-    RowBox[{"Pauli", "[", 
-     RowBox[{"1", ",", "0"}], "]"}], "//", "Matrix"}]}], 
-  ";"}], "\[IndentingNewLine]", 
+   RowBox[{"Matrix", "[", "op", "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
- CellLabel->"In[5]:=",
+ CellLabel->"In[114]:=",
  CellID->45005476],
 
 Cell[BoxData[
  TagBox[
   RowBox[{"(", "\[NoBreak]", GridBox[{
-     {"0", "0", "1", "0"},
-     {"0", "0", "0", "1"},
-     {"1", "0", "0", "0"},
-     {"0", "1", "0", "0"}
+     {"0", "0", "0", "0", "0", 
+      RowBox[{"-", "\[ImaginaryI]"}], "0", "0"},
+     {"0", "0", "0", "0", "\[ImaginaryI]", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", 
+      RowBox[{"-", "\[ImaginaryI]"}]},
+     {"0", "0", "0", "0", "0", "0", "\[ImaginaryI]", "0"},
+     {"0", 
+      RowBox[{"-", "\[ImaginaryI]"}], "0", "0", "0", "0", "0", "0"},
+     {"\[ImaginaryI]", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", 
+      RowBox[{"-", "\[ImaginaryI]"}], "0", "0", "0", "0"},
+     {"0", "0", "\[ImaginaryI]", "0", "0", "0", "0", "0"}
     },
     GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
     GridBoxSpacings->{"Columns" -> {
@@ -262,11 +484,220 @@ Cell[BoxData[
   Function[BoxForm`e$, 
    MatrixForm[
    SparseArray[
-    Automatic, {4, 4}, 0, {
-     1, {{0, 1, 2, 3, 4}, {{3}, {4}, {1}, {2}}}, {1, 1, 1, 1}}]]]]], "Output",\
+    Automatic, {8, 8}, 0, {
+     1, {{0, 1, 2, 3, 4, 5, 6, 7, 8}, {{6}, {5}, {8}, {7}, {2}, {1}, {4}, {
+       3}}}, {Complex[0, -1], Complex[0, 1], Complex[0, -1], Complex[0, 1], 
+       Complex[0, -1], Complex[0, 1], Complex[0, -1], Complex[
+       0, 1]}}]]]]], "Output",
+ CellLabel->"Out[115]//MatrixForm=",
+ CellID->20177549]
+}, Open  ]]
+}, Open  ]],
 
- CellLabel->"Out[5]//MatrixForm=",
- CellID->617802663]
+Cell[CellGroupData[{
+
+Cell["Fundamental Commutation Relations", "Subsection",
+ CellID->1519984524],
+
+Cell["\<\
+The Pauli operators satisfy the fundamental commutation relations of angular \
+momenta. This implies that any unitary operator on a single qubit is (up to a \
+global phase factor) a rotation.\
+\>", "Text",
+ CellID->1554641090],
+
+Cell["\<\
+Consider a rotation around the z-axis. The following two expressions are \
+equivalent.\
+\>", "MathCaption",
+ CellID->1808905414],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"transform", "=", 
+  RowBox[{
+   RowBox[{"Rotation", "[", 
+    RowBox[{"\[Phi]", ",", "3"}], "]"}], "**", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"Pauli", "[", "1", "]"}], ",", 
+     RowBox[{"Pauli", "[", "2", "]"}], ",", 
+     RowBox[{"Pauli", "[", "3", "]"}]}], "}"}], "**", 
+   RowBox[{"Rotation", "[", 
+    RowBox[{
+     RowBox[{"-", "\[Phi]"}], ",", "3"}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"rotation", "=", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"Pauli", "[", "1", "]"}], ",", 
+     RowBox[{"Pauli", "[", "2", "]"}], ",", 
+     RowBox[{"Pauli", "[", "3", "]"}]}], "}"}], ".", 
+   RowBox[{"RotationMatrix", "[", 
+    RowBox[{"\[Phi]", ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", "1"}], "}"}]}], "]"}]}]}]}], "Input",
+ CellLabel->"In[138]:=",
+ CellID->1694939150],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+     TagBox[
+      SuperscriptBox["\[Sigma]", "x"],
+      DisplayForm]}], "+", 
+    RowBox[{
+     TagBox[
+      SuperscriptBox["\[Sigma]", "y"],
+      DisplayForm], " ", 
+     RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ",", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+     TagBox[
+      SuperscriptBox["\[Sigma]", "y"],
+      DisplayForm]}], "-", 
+    RowBox[{
+     TagBox[
+      SuperscriptBox["\[Sigma]", "x"],
+      DisplayForm], " ", 
+     RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ",", 
+   TagBox[
+    SuperscriptBox["\[Sigma]", "z"],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[138]=",
+ CellID->955322298],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+     TagBox[
+      SuperscriptBox["\[Sigma]", "x"],
+      DisplayForm]}], "+", 
+    RowBox[{
+     TagBox[
+      SuperscriptBox["\[Sigma]", "y"],
+      DisplayForm], " ", 
+     RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ",", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+     TagBox[
+      SuperscriptBox["\[Sigma]", "y"],
+      DisplayForm]}], "-", 
+    RowBox[{
+     TagBox[
+      SuperscriptBox["\[Sigma]", "x"],
+      DisplayForm], " ", 
+     RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ",", 
+   TagBox[
+    SuperscriptBox["\[Sigma]", "z"],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[139]=",
+ CellID->1514117514]
+}, Open  ]],
+
+Cell["It holds for rotations around other axes as well.", "MathCaption",
+ CellID->1619467539],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"transform", "=", 
+  RowBox[{
+   RowBox[{"Rotation", "[", 
+    RowBox[{"\[Phi]", ",", "2"}], "]"}], "**", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"Pauli", "[", "1", "]"}], ",", 
+     RowBox[{"Pauli", "[", "2", "]"}], ",", 
+     RowBox[{"Pauli", "[", "3", "]"}]}], "}"}], "**", 
+   RowBox[{"Rotation", "[", 
+    RowBox[{
+     RowBox[{"-", "\[Phi]"}], ",", "2"}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"rotation", "=", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"Pauli", "[", "1", "]"}], ",", 
+     RowBox[{"Pauli", "[", "2", "]"}], ",", 
+     RowBox[{"Pauli", "[", "3", "]"}]}], "}"}], ".", 
+   RowBox[{"RotationMatrix", "[", 
+    RowBox[{"\[Phi]", ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1", ",", "0"}], "}"}]}], "]"}]}]}]}], "Input",
+ CellLabel->"In[144]:=",
+ CellID->44682360],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+     TagBox[
+      SuperscriptBox["\[Sigma]", "x"],
+      DisplayForm]}], "-", 
+    RowBox[{
+     TagBox[
+      SuperscriptBox["\[Sigma]", "z"],
+      DisplayForm], " ", 
+     RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ",", 
+   TagBox[
+    SuperscriptBox["\[Sigma]", "y"],
+    DisplayForm], ",", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+     TagBox[
+      SuperscriptBox["\[Sigma]", "z"],
+      DisplayForm]}], "+", 
+    RowBox[{
+     TagBox[
+      SuperscriptBox["\[Sigma]", "x"],
+      DisplayForm], " ", 
+     RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]}], "}"}]], "Output",
+ CellLabel->"Out[144]=",
+ CellID->430342318],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+     TagBox[
+      SuperscriptBox["\[Sigma]", "x"],
+      DisplayForm]}], "-", 
+    RowBox[{
+     TagBox[
+      SuperscriptBox["\[Sigma]", "z"],
+      DisplayForm], " ", 
+     RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ",", 
+   TagBox[
+    SuperscriptBox["\[Sigma]", "y"],
+    DisplayForm], ",", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+     TagBox[
+      SuperscriptBox["\[Sigma]", "z"],
+      DisplayForm]}], "+", 
+    RowBox[{
+     TagBox[
+      SuperscriptBox["\[Sigma]", "x"],
+      DisplayForm], " ", 
+     RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]}], "}"}]], "Output",
+ CellLabel->"Out[145]=",
+ CellID->38415530]
+}, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -282,10 +713,80 @@ Cell[TextData[{
 
 Cell["", "SectionHeaderSpacer"],
 
+Cell[TextData[ButtonBox["Pauli Package Guide",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/guide/Pauli2"]], "TutorialMoreAbout",
+ CellID->406164861],
+
+Cell[TextData[ButtonBox["Quisso Package Guide",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/guide/Quisso"]], "TutorialMoreAbout",
+ CellID->2117293796],
+
 Cell[TextData[ButtonBox["Q3 Application Guide",
  BaseStyle->"Link",
  ButtonData->"paclet:Q3/guide/Q3"]], "TutorialMoreAbout",
- CellID->1567025153]
+ CellID->1567025153],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Tutorials"
+}], "RelatedTutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->415694126],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Quisso: Quick Start",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/Quisso"]], "RelatedTutorials",
+ CellID->1122239077],
+
+Cell[TextData[ButtonBox["Q3: Quick Start",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/Q3"]], "RelatedTutorials",
+ CellID->874954265],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Wolfram Education Group Courses"
+}], "TutorialRelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->415694148],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["An Elementary Introduction to the Wolfram Language"]], 
+   "https://www.wolfram.com/language/elementary-introduction/"},
+  "WebLink",
+  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
+ CellID->415694149],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["The Wolfram Language: Fast Introduction for Programmers"]], 
+   "https://www.wolfram.com/language/fast-introduction-for-programmers/"},
+  "WebLink",
+  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
+ CellID->1480169507]
 }, Open  ]]
 }, Open  ]],
 
@@ -305,16 +806,18 @@ TaggingRules->{
          BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
     Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
   "", "Metadata" -> {
-   "built" -> "{2021, 2, 17, 10, 54, 15.763080}", 
-    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
-    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
-     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
-    "None", "summary" -> 
-    "Pauli is convenient to handle Pauli operators and (especially, 2^n\
-\[Times]2^n) matrices. Frequently used functions. Here are examples.", 
-    "synonyms" -> {}, "tabletags" -> 
-    DocumentationBuild`Make`Private`tabletaggingrules$175423, "title" -> 
-    "Pauli: Quick Start", "titlemodifier" -> "", "windowtitle" -> 
+   "built" -> "{2021, 2, 21, 7, 28, 36.723040}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`Pauli`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "Pauli is a Mathematica package to handle Pauli operators and other \
+matrices. Pauli and Quisso provide complementary tools to handle a system of \
+qubits. Pauli is convenient to handle Pauli operators and (especially, 2^n\
+\[Times]2^n) matrices. Frequently used functions.", "synonyms" -> {}, 
+    "tabletags" -> DocumentationBuild`Make`Private`tabletaggingrules$180268, 
+    "title" -> "Pauli: Quick Start", "titlemodifier" -> "", "windowtitle" -> 
     "Pauli: Quick Start", "type" -> "Tutorial", "uri" -> "Q3/tutorial/Pauli", 
     "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> ""},
 FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
@@ -349,54 +852,152 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[590, 21, 3592, 90, 70, "AnchorBarGrid",ExpressionUUID->"866cc0aa-5012-46fc-8827-e7231ee1cb6e",
+Cell[590, 21, 4601, 115, 70, "AnchorBarGrid",ExpressionUUID->"87b17aba-8a3a-471f-82c8-accaa51c385f",
  CellID->1],
 Cell[CellGroupData[{
-Cell[4207, 115, 55, 1, 70, "Title",ExpressionUUID->"13798443-c074-47a5-9c2f-4a4145329dbe",
+Cell[5216, 140, 55, 1, 70, "Title",ExpressionUUID->"eb63ec67-edbc-4ba0-94b4-fd585ba849c3",
  CellID->509267359],
-Cell[4265, 118, 291, 10, 70, "Text",ExpressionUUID->"42084c90-ce0d-44fb-befd-d08a0c3f0e75",
+Cell[5274, 143, 390, 12, 70, "Text",ExpressionUUID->"35625462-0e11-476b-aa53-2b8e2fb3b784",
+ CellID->2001916300],
+Cell[5667, 157, 367, 13, 70, "Text",ExpressionUUID->"20ed94dc-e633-41c3-b40d-78adc47ed879",
  CellID->1534169418],
-Cell[4559, 130, 752, 25, 70, "DefinitionBox",ExpressionUUID->"33fec070-42e7-4e2a-9120-f659151c2a8b",
+Cell[6037, 172, 760, 26, 70, "DefinitionBox",ExpressionUUID->"df5131cf-bccf-4ccc-95e1-725b3e83548b",
  CellID->2096742444],
-Cell[5314, 157, 66, 1, 70, "Caption",ExpressionUUID->"0b86c9a3-4f19-4cec-ab96-c962f0547758",
+Cell[6800, 200, 66, 1, 70, "Caption",ExpressionUUID->"19052022-2ba1-4baa-abf7-8e516ff28e6b",
  CellID->1891092685],
-Cell[5383, 160, 61, 1, 70, "MathCaption",ExpressionUUID->"fd0a9245-916d-4d62-9145-b41df241eddb",
- CellID->836781195],
-Cell[5447, 163, 91, 3, 70, "Input",ExpressionUUID->"a23004a0-668b-4a17-94e0-2cbbdeb9e009",
+Cell[6869, 203, 286, 11, 70, "MathCaption",ExpressionUUID->"e0fb11e0-bca4-4a6b-90bd-712120d3a953",
+ CellID->365402771],
+Cell[7158, 216, 91, 3, 70, "Input",ExpressionUUID->"f119b906-5fbf-4ed4-b170-afb901c07470",
  CellID->2058623809],
 Cell[CellGroupData[{
-Cell[5563, 170, 228, 8, 70, "Input",ExpressionUUID->"bd09290e-7a25-41c0-bfa1-ba4ec0170508",
- CellID->1936468066],
-Cell[5794, 180, 199, 9, 70, "Output",ExpressionUUID->"a6679d39-da4f-4cf6-bb5b-9e717ce2bbc3",
- CellID->795237207]
-}, Open  ]],
+Cell[7274, 223, 64, 1, 70, "Subsection",ExpressionUUID->"dad0a467-6a3d-4dce-b49c-cdb630f98df9",
+ CellID->1511474152],
+Cell[7341, 226, 164, 4, 70, "Text",ExpressionUUID->"c6427e46-91dc-4490-98bf-71be1726ab88",
+ CellID->83665415],
+Cell[7508, 232, 439, 17, 70, "Text",ExpressionUUID->"bbb675cd-436e-4cce-b651-86fd9c7ddc76",
+ CellID->685187277],
+Cell[7950, 251, 286, 6, 70, "MathCaption",ExpressionUUID->"961b8a05-ed4e-43f5-9b6d-5d7a6823e2ab",
+ CellID->836781195],
 Cell[CellGroupData[{
-Cell[6030, 194, 149, 5, 70, "Input",ExpressionUUID->"316e2bee-7bd1-4f8e-a28c-bac4a57fb5af",
- CellID->1414623215],
-Cell[6182, 201, 221, 10, 70, "Output",ExpressionUUID->"074c5b67-35ae-4057-a68a-8a60ae5a45d6",
- CellID->1848466647]
+Cell[8261, 261, 134, 4, 70, "Input",ExpressionUUID->"16ded9ab-ce1e-4aac-8000-a008ec875cf8",
+ CellID->1469401347],
+Cell[8398, 267, 133, 5, 70, "Output",ExpressionUUID->"c30ef6ac-55e6-470b-bcfc-74ac73fba13f",
+ CellID->1327164175]
 }, Open  ]],
+Cell[8546, 275, 254, 5, 70, "MathCaption",ExpressionUUID->"3624a5e0-e2ba-4a1b-9172-14ac0b74c500",
+ CellID->434543700],
 Cell[CellGroupData[{
-Cell[6440, 216, 124, 4, 70, "Input",ExpressionUUID->"30c32879-24f7-4282-bc5e-4f28d31d0884",
- CellID->718250702],
-Cell[6567, 222, 197, 7, 70, "Output",ExpressionUUID->"e945b040-5a61-4022-97a5-2d1701c066de",
- CellID->1396472889]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[6801, 234, 268, 9, 70, "Input",ExpressionUUID->"5a18b740-a164-4061-9b98-828edb893cdc",
- CellID->45005476],
-Cell[7072, 245, 711, 23, 70, "Output",ExpressionUUID->"3f50758a-e041-4e90-9f4e-b2be7be627f9",
- CellID->617802663]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[7820, 273, 164, 7, 70, "TutorialMoreAboutSection",ExpressionUUID->"295e59bb-10a8-4f7a-ab63-deae3c67254a",
- CellID->23220180],
-Cell[7987, 282, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"f2ebba33-7107-48f8-a72c-1bf812ff5dcd"],
-Cell[8021, 284, 146, 3, 70, "TutorialMoreAbout",ExpressionUUID->"0957d9a7-b183-48ac-a518-a9e3519132ee",
- CellID->1567025153]
+Cell[8825, 284, 135, 4, 70, "Input",ExpressionUUID->"725fcf5b-06d9-4413-910b-30fc15ac2d9d",
+ CellID->403977888],
+Cell[8963, 290, 252, 8, 70, "Output",ExpressionUUID->"37ef9844-ca76-4fac-8378-1cae04ffd326",
+ CellID->888377227]
 }, Open  ]]
 }, Open  ]],
-Cell[8194, 291, 23, 0, 70, "FooterCell",ExpressionUUID->"b014359b-4b2c-44ed-8cb6-16784446df03"]
+Cell[CellGroupData[{
+Cell[9264, 304, 57, 1, 70, "Subsection",ExpressionUUID->"90e37b2c-4948-4538-b8cc-5fc491847ab0",
+ CellID->1319956421],
+Cell[9324, 307, 147, 4, 70, "MathCaption",ExpressionUUID->"dc9f0993-f40c-4d72-847f-ce566e794d26",
+ CellID->1039439238],
+Cell[CellGroupData[{
+Cell[9496, 315, 128, 4, 70, "Input",ExpressionUUID->"3ba9ee92-9b8a-4a5d-b954-091ebb76419b",
+ CellID->2120640671],
+Cell[9627, 321, 705, 28, 70, "Output",ExpressionUUID->"42f0a31e-9804-4078-af5f-3caf4981312e",
+ CellID->73392697]
+}, Open  ]],
+Cell[10347, 352, 123, 3, 70, "MathCaption",ExpressionUUID->"01be4dad-a8b4-4423-870d-6b4402e0c6ca",
+ CellID->1607205605],
+Cell[CellGroupData[{
+Cell[10495, 359, 252, 8, 70, "Input",ExpressionUUID->"e26428e5-4f5e-4706-95b6-c4320cc9f031",
+ CellID->1936468066],
+Cell[10750, 369, 221, 9, 70, "Output",ExpressionUUID->"bfff0374-3d03-4e8c-860a-d37c664f0ecd",
+ CellID->844092529]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11020, 384, 58, 1, 70, "Subsection",ExpressionUUID->"2f119181-d253-4c5b-b0cb-dec59655e6a5",
+ CellID->780316335],
+Cell[11081, 387, 161, 4, 70, "MathCaption",ExpressionUUID->"66405f0a-e4f4-4ac3-a739-cde608d2f770",
+ CellID->1184192489],
+Cell[CellGroupData[{
+Cell[11267, 395, 161, 5, 70, "Input",ExpressionUUID->"bebfe24f-a827-4c58-b4f8-6d42979a9cb9",
+ CellID->718250702],
+Cell[11431, 402, 254, 8, 70, "Output",ExpressionUUID->"170b3314-2804-41f3-80e8-0cb2efb704f5",
+ CellID->1565962921]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11722, 415, 124, 4, 70, "Input",ExpressionUUID->"fb9e69b3-9b45-49d9-8957-cd154e99a9ac",
+ CellID->1414623215],
+Cell[11849, 421, 316, 12, 70, "Output",ExpressionUUID->"9c9c3941-6070-4448-8b6d-46282856d309",
+ CellID->667998397]
+}, Open  ]],
+Cell[12180, 436, 324, 11, 70, "MathCaption",ExpressionUUID->"1dfeef84-87f9-4457-9472-e9d27ffd8bcf",
+ CellID->22913229],
+Cell[CellGroupData[{
+Cell[12529, 451, 212, 6, 70, "Input",ExpressionUUID->"6888a847-5f91-4df5-af83-a8c80128ff46",
+ CellID->45005476],
+Cell[12744, 459, 1330, 33, 70, "Output",ExpressionUUID->"4032c386-4228-464e-97ae-d35837f524fc",
+ CellID->20177549]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14123, 498, 76, 1, 70, "Subsection",ExpressionUUID->"dabf6dbd-dcf1-4d44-880d-23769362b195",
+ CellID->1519984524],
+Cell[14202, 501, 236, 5, 70, "Text",ExpressionUUID->"dc2c32cd-84d9-4fac-ad9d-e928f43ab0ca",
+ CellID->1554641090],
+Cell[14441, 508, 138, 4, 70, "MathCaption",ExpressionUUID->"8173ab3c-d27d-4356-9733-e59c71340491",
+ CellID->1808905414],
+Cell[CellGroupData[{
+Cell[14604, 516, 836, 25, 70, "Input",ExpressionUUID->"c70eeae6-c560-4c9f-beee-67ab48319051",
+ CellID->1694939150],
+Cell[15443, 543, 762, 29, 70, "Output",ExpressionUUID->"d060e497-1bb4-45f6-83ce-528209c98526",
+ CellID->955322298],
+Cell[16208, 574, 763, 29, 70, "Output",ExpressionUUID->"a51857c8-d4e7-46d3-8a56-7867830ae887",
+ CellID->1514117514]
+}, Open  ]],
+Cell[16986, 606, 93, 1, 70, "MathCaption",ExpressionUUID->"ffb27a66-b9d3-40d3-bd38-aa52cbc40b26",
+ CellID->1619467539],
+Cell[CellGroupData[{
+Cell[17104, 611, 834, 25, 70, "Input",ExpressionUUID->"24a0737e-8fdd-4214-b65a-3756b80d237c",
+ CellID->44682360],
+Cell[17941, 638, 762, 29, 70, "Output",ExpressionUUID->"1ec08315-d997-4e82-ab03-94de02ecd3b2",
+ CellID->430342318],
+Cell[18706, 669, 761, 29, 70, "Output",ExpressionUUID->"7e87440b-cf5e-4522-a223-28810c973fae",
+ CellID->38415530]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19516, 704, 164, 7, 70, "TutorialMoreAboutSection",ExpressionUUID->"cf047f93-ee8a-4856-8346-661abf2131f4",
+ CellID->23220180],
+Cell[19683, 713, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"42423055-1d88-49d5-996a-7686ba05a04b"],
+Cell[19717, 715, 148, 3, 70, "TutorialMoreAbout",ExpressionUUID->"23a72356-0b5e-410f-b98d-f57f7e062a6c",
+ CellID->406164861],
+Cell[19868, 720, 150, 3, 70, "TutorialMoreAbout",ExpressionUUID->"f40dbb5b-dc20-4987-aaa0-0f479038df76",
+ CellID->2117293796],
+Cell[20021, 725, 146, 3, 70, "TutorialMoreAbout",ExpressionUUID->"fb9f12a1-e1c3-4c04-977a-264add9c1785",
+ CellID->1567025153],
+Cell[20170, 730, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"5493dce6-61b2-45e6-a03b-bee7cd8c19c6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20238, 735, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"1a30acf6-faf2-4a61-a5ce-dd337d0e5da6",
+ CellID->415694126],
+Cell[20408, 744, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"e18864e8-5d23-4894-8b0e-501eee840c88"],
+Cell[20442, 746, 151, 3, 70, "RelatedTutorials",ExpressionUUID->"4fac7cd7-fad8-4586-83de-b958112ab08b",
+ CellID->1122239077],
+Cell[20596, 751, 142, 3, 70, "RelatedTutorials",ExpressionUUID->"41489e6a-bf36-4724-95f0-bba639aeb15f",
+ CellID->874954265],
+Cell[20741, 756, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"10d4b0a3-8736-4b1e-94ad-846eb1a389e9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20809, 761, 193, 7, 70, "TutorialRelatedLinksSection",ExpressionUUID->"fc6827c1-7f79-48e5-8bc3-92d673f93ef7",
+ CellID->415694148],
+Cell[21005, 770, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"12e7e30b-53e7-48f5-b2af-4609e2555b62"],
+Cell[21039, 772, 286, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"44ba0ba9-7deb-436f-a631-337109ccdd7d",
+ CellID->415694149],
+Cell[21328, 781, 302, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"7443360a-ee28-4f67-879c-a4f868c85bce",
+ CellID->1480169507]
+}, Open  ]]
+}, Open  ]],
+Cell[21657, 792, 23, 0, 70, "FooterCell",ExpressionUUID->"96a1b6f0-d132-412c-9e21-653988dd77a1"]
 }
 ]
 *)

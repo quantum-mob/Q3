@@ -1,0 +1,783 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     24773,        774]
+NotebookOptionsPosition[     18344,        639]
+NotebookOutlinePosition[     20805,        699]
+CellTagsIndexPosition[     20720,        694]
+WindowTitle->Bead
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/Pauli"], "\<\"Quisso: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Quisso"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"BlochSphere\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/BlochSphere"], "\<\"Bead\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Bead"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/Pauli"], "\<\"Quisso Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/Quisso"], "\<\"Q3 Application\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/Bead\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/Bead"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/Bead.html"], 
+                StandardForm]], "Input", TextClipboardType -> "PlainText"]}, 
+            Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$29945], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/Bead", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["Bead", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData["Bead"], "InlineFormula"],
+     "\[LineSeparator]is a shortcut to render bead-like small sphere of \
+radius ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Scaled"]], "paclet:ref/Scaled"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", "0.01", "]"}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Bead", "[", 
+       StyleBox["pt", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Sphere"]], "paclet:ref/Sphere"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["pt", "TI"], ",", 
+        RowBox[{"Scale", "[", "0.01", "]"}]}], "]"}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Bead", "[", 
+       RowBox[{
+        StyleBox["pt", "TI"], ",", 
+        StyleBox["r", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Sphere"]], "paclet:ref/Sphere"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["pt", "TI"], ",", 
+        StyleBox["r", "TI"]}], "]"}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Bead"]], "paclet:Q3/ref/BlochSphere"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox[
+          StyleBox["p", "TI"], 
+          StyleBox["1", "TR"]], ",", 
+         SubscriptBox[
+          StyleBox["p", "TI"], 
+          StyleBox["2", "TR"]], ",", 
+         StyleBox["\[Ellipsis]", "TR"]}], "}"}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Sphere"]], "paclet:ref/Sphere"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["p", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["p", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        RowBox[{"Scaled", "[", "0.01", "]"}]}], "]"}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Bead"]], "paclet:Q3/ref/BlochSphere"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["p", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["p", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        StyleBox["r", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Sphere"]], "paclet:ref/Sphere"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["p", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["p", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        StyleBox["r", "TI"]}], "]"}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{"Bead", "[", 
+        StyleBox["primitive", "TI"], "]"}], " "}]], "InlineFormula"],
+     " or ",
+     Cell[BoxData[
+      RowBox[{"Bead", "[", 
+       RowBox[{
+        StyleBox["primitive", "TI"], ",", 
+        StyleBox["r", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]applies ",
+     Cell[BoxData["Bead"], "InlineFormula"],
+     " to each set of three-dimensional coordinates of point in ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Graphics3D"]], "paclet:ref/Graphics3D"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " ",
+     Cell[BoxData[
+      StyleBox["primitive", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "Rows" -> {None, None, None, None, None, {None}}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->934195685],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData["Bead"], "InlineFormula"],
+ " has been motivated by ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Tube"]], "paclet:ref/Tube"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1427418980],
+
+Cell[TextData[{
+ "In ",
+ Cell[BoxData[
+  RowBox[{"Bead", "[", 
+   RowBox[{
+    StyleBox["primitive", "TI"], ",", 
+    StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+ ", the following ",
+ Cell[BoxData[
+  StyleBox["primitive", "TI"]], "InlineFormula"],
+ " specification can be used:"
+}], "Notes",
+ CellID->116430867],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "TableRowIcon"], 
+    RowBox[{
+     ButtonBox["Point",
+      BaseStyle->"Link",
+      ButtonData->"paclet:ref/Point"], "[", 
+     StyleBox["\[Ellipsis]", "TR"], "]"}], Cell[
+    "a point or a set of points", "TableText"]},
+   {Cell["      ", "TableRowIcon"], 
+    RowBox[{
+     ButtonBox["Line",
+      BaseStyle->"Link",
+      ButtonData->"paclet:ref/Line"], "[", 
+     StyleBox["\[Ellipsis]", "TR"], "]"}], Cell[
+    "a piecewise line segments", "TableText"]}
+  }]], "2ColumnTableMod",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}},
+ GridBoxDividers->{"Rows" -> {{True, True, True}}}},
+ CellID->460773248],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->773934578],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->210002567],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1675432006],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Graphics3D", "[", "\[IndentingNewLine]", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0", ",", "0"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"3", ",", "3", ",", "3"}], "}"}]}], "}"}]}], ",", 
+    "\[IndentingNewLine]", "Red", ",", 
+    RowBox[{"Bead", "@", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", "0"}], "}"}]}], ",", "\[IndentingNewLine]", 
+    "Blue", ",", 
+    RowBox[{"Bead", "@", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1", ",", "1"}], "}"}]}]}], "}"}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1993240850],
+
+Cell[BoxData[
+ Graphics3DBox[{Line3DBox[{{0, 0, 0}, {3, 3, 3}}], 
+   {RGBColor[1, 0, 0], SphereBox[{0, 0, 0}, Scaled[0.01]]}, 
+   {RGBColor[0, 0, 1], SphereBox[{1, 1, 1}, Scaled[0.01]]}},
+  AxesStyle->Large,
+  ImageSize->Large]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1915988094]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Graphics3D", "[", "\[IndentingNewLine]", 
+  RowBox[{"{", 
+   RowBox[{"Red", ",", 
+    RowBox[{"Bead", "@", 
+     RowBox[{"Point", "@", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0", ",", "0"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "1", ",", "0"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], "}"}]}]}]}], "}"}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1511598479],
+
+Cell[BoxData[
+ Graphics3DBox[
+  {RGBColor[1, 0, 0], 
+   SphereBox[{{0, 0, 0}, {0, 1, 0}, {2, 2, 2}}, Scaled[0.01]]},
+  AxesStyle->Large,
+  ImageSize->Large]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1621323519]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Graphics3D", "[", "\[IndentingNewLine]", 
+  RowBox[{"{", 
+   RowBox[{"Red", ",", 
+    RowBox[{"Bead", "@", 
+     RowBox[{"Line", "@", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"0", ",", "0", ",", "1"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "1", ",", "1"}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", "2", ",", "1"}], "}"}]}], "}"}]}]}], ",", 
+    "\[IndentingNewLine]", "Blue", ",", 
+    RowBox[{"Bead", "@", 
+     RowBox[{"Line", "@", 
+      RowBox[{"{", "\[IndentingNewLine]", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"0", ",", "0", ",", "0"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"0", ",", "1", ",", "0"}], "}"}]}], "}"}], ",", 
+        "\[IndentingNewLine]", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"1", ",", "0", ",", "0"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"1", ",", "1", ",", "0"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{"2", ",", "2", ",", "0"}], "}"}]}], "}"}]}], 
+       "\[IndentingNewLine]", "}"}]}]}]}], "\[IndentingNewLine]", "}"}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1924583185],
+
+Cell[BoxData[
+ Graphics3DBox[{
+   {RGBColor[1, 0, 0], 
+    SphereBox[{{0, 0, 1}, {0, 1, 1}, {2, 2, 1}}, Scaled[0.01]]}, 
+   {RGBColor[0, 0, 1], SphereBox[{{0, 0, 0}, {0, 1, 0}}, Scaled[0.01]], 
+    SphereBox[{{1, 0, 0}, {1, 1, 0}, {2, 2, 0}}, Scaled[0.01]]}},
+  AxesStyle->Large,
+  ImageSize->Large]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->543676828]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["BlochSphere"]], "paclet:Q3/ref/BlochSphere"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Bead"]], "paclet:Q3/ref/Bead"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/Pauli"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso: Quick Start"]], "paclet:Q3/tutorial/Quisso"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1347266842],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/Pauli"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1197511548],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso Package Guide"]], "paclet:Q3/guide/Quisso"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->359847552],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->643856512]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Bead",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 2, 21, 7, 16, 11.848356}", 
+    "history" -> {"1.4", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Bead is a shortcut to render bead-like small sphere of radius \
+Scaled[0.01]. Bead[pt] is equivalent Sphere[pt, Scale[0.01]]. Bead[pt, r] is \
+equivalent to Sphere[pt, r]. Bead[{p1, p2, ...}] is equivalent to Sphere[{p1, \
+p2, ...}, Scaled[0.01]]. Bead[{p1, p2, ...}, r] is equivalent to Sphere[{p1, \
+p2, ...}, r]. Bead[primitive] or Bead[primitive, r] applies Bead to each set \
+of three-dimensional coordinates of point in Graphics3D primitive.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "Bead", "titlemodifier" -> 
+    "", "windowtitle" -> "Bead", "type" -> "Symbol", "uri" -> "Q3/ref/Bead", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "NewStyles" -> 
+  False},
+CellContext->"Global`",
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.2 for Mac OS X x86 (64-bit) (December 12, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[12073, 386, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c0ea81f2-b293-452d-9adb-ddf2347b1195",
+   CellTags->"PrimaryExamplesSection",
+   CellID->773934578]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 20521, 687}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[576, 21, 4539, 115, 70, "AnchorBarGrid",ExpressionUUID->"27a516d1-016b-4b73-935a-a31e350d1c5c",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5140, 140, 161, 6, 70, "ObjectNameGrid",ExpressionUUID->"295cfe4d-6f8d-494b-a0f1-a60dbb29512a"],
+Cell[5304, 148, 4697, 157, 70, "Usage",ExpressionUUID->"5ebc57d0-4bc5-46e4-a61b-6513136736e5",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10038, 310, 629, 19, 70, "NotesSection",ExpressionUUID->"9a8d1d3e-1718-41fd-b240-cac4892accee",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->934195685],
+Cell[10670, 331, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"0025e302-1c3a-47d9-81e9-fcc04cd2375d"],
+Cell[10704, 333, 275, 11, 70, "Notes",ExpressionUUID->"4ea2e0ae-dfe7-4fdf-8239-a4207646494e",
+ CellID->1427418980],
+Cell[10982, 346, 326, 12, 70, "Notes",ExpressionUUID->"4937230d-c420-41ee-8073-e45d3454e82a",
+ CellID->116430867],
+Cell[11311, 360, 691, 19, 70, "2ColumnTableMod",ExpressionUUID->"a615f164-7f36-45ed-ab30-f5438ceb943b",
+ CellID->460773248],
+Cell[12005, 381, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"05c7747a-e185-4c7c-a440-27751321d900"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[12073, 386, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c0ea81f2-b293-452d-9adb-ddf2347b1195",
+ CellTags->"PrimaryExamplesSection",
+ CellID->773934578],
+Cell[CellGroupData[{
+Cell[12365, 400, 195, 6, 70, "ExampleSection",ExpressionUUID->"02511758-270d-48eb-aa17-2723d7b13564",
+ CellID->210002567],
+Cell[12563, 408, 91, 3, 70, "Input",ExpressionUUID->"d57c4826-49c4-4b81-9df7-4cd8b713f8bf",
+ CellID->1675432006],
+Cell[CellGroupData[{
+Cell[12679, 415, 691, 21, 70, "Input",ExpressionUUID->"5563aaf8-47ba-461a-982e-9197ecba58d8",
+ CellID->1993240850],
+Cell[13373, 438, 283, 7, 70, "Output",ExpressionUUID->"14450838-dd41-4072-b9eb-5f7434b0afa3",
+ CellID->1915988094]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13693, 450, 535, 16, 70, "Input",ExpressionUUID->"755ea9e7-0018-4916-ba7f-538b625eaf6c",
+ CellID->1511598479],
+Cell[14231, 468, 212, 7, 70, "Output",ExpressionUUID->"dde88787-6acb-4aed-ad48-5601df7deff9",
+ CellID->1621323519]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14480, 480, 1299, 37, 70, "Input",ExpressionUUID->"e386995d-04db-4619-9d02-43fabdef4511",
+ CellID->1924583185],
+Cell[15782, 519, 354, 9, 70, "Output",ExpressionUUID->"504285ae-1bf1-4596-8e8d-dcbc34b0af42",
+ CellID->543676828]
+}, Open  ]]
+}, Open  ]],
+Cell[16163, 532, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"07b22423-99da-4e7a-b003-b28ad7220356"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16231, 537, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"0dfa3d43-e4d8-4e88-b2a2-ca26e4412ef8",
+ CellID->1255426704],
+Cell[16384, 546, 542, 18, 70, "SeeAlso",ExpressionUUID->"2ff21b44-8f4a-486f-944f-5ff86d5c1962",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16963, 569, 152, 7, 70, "TutorialsSection",ExpressionUUID->"76cd13c1-e5a6-4a03-8f1c-540da715a2b3",
+ CellID->250839057],
+Cell[17118, 578, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"775584fa-622c-4774-9be1-484c152740fd"],
+Cell[17152, 580, 177, 6, 70, "Tutorials",ExpressionUUID->"542da92e-82b3-468e-b75e-b1b73ae07888",
+ CellID->341631938],
+Cell[17332, 588, 180, 6, 70, "Tutorials",ExpressionUUID->"2a9bc14b-ccd6-4910-949f-42d07496f0b0",
+ CellID->1347266842],
+Cell[17515, 596, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"4e5560d6-f59b-4493-9e5a-9059e3841932"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17583, 601, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"21f6e08a-6d9e-4a8a-8408-8952fb4432aa",
+ CellID->38303248],
+Cell[17742, 610, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"aa6f3aa1-73c4-4dbc-8e78-73b9e67e5470"],
+Cell[17776, 612, 176, 6, 70, "MoreAbout",ExpressionUUID->"d96c8edc-8482-44b2-ae64-cea075142674",
+ CellID->1197511548],
+Cell[17955, 620, 177, 6, 70, "MoreAbout",ExpressionUUID->"1a572366-6240-4a4d-92ec-c389620b864f",
+ CellID->359847552],
+Cell[18135, 628, 167, 6, 70, "MoreAbout",ExpressionUUID->"0dc0c9d5-a88d-4b5d-b546-086fdf27cbf8",
+ CellID->643856512]
+}, Open  ]],
+Cell[18317, 637, 23, 0, 70, "FooterCell",ExpressionUUID->"90189c63-c65d-4f33-b56f-00122139b093"]
+}
+]
+*)
+
+(* End of internal cache information *)

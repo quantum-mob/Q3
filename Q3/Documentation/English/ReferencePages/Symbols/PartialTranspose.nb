@@ -1,0 +1,2246 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     64801,       2237]
+NotebookOptionsPosition[     57726,       2091]
+NotebookOutlinePosition[     60581,       2156]
+CellTagsIndexPosition[     60495,       2151]
+WindowTitle->PartialTranspose
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Pauli"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Tensorize\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Tensorize"], "\<\"TensorFlatten\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/TensorFlatten"], "\<\"PartialTrace\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/PartialTrace"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Pauli"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/PartialTranspose\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/PartialTranspose"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+PartialTranspose.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$105653], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/PartialTranspose", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["PartialTranspose", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PartialTranspose", "[", 
+       RowBox[{
+        StyleBox["mat", "TI"], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          StyleBox["i", "TI"], ",", 
+          StyleBox["j", "TI"], ",", " ", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]takes the partial trace of the matrix ",
+     Cell[BoxData[
+      StyleBox["mat", "TI"]], "InlineFormula"],
+     " over the ",
+     Cell[BoxData[
+      StyleBox["i", "TI"]], "InlineFormula"],
+     "th, ",
+     Cell[BoxData[
+      StyleBox["j", "TI"]], "InlineFormula"],
+     "th, ... qubits and returns the resulting reduced matrix. "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PartialTranspose", "[", 
+       RowBox[{
+        StyleBox["mat", "TI"], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          StyleBox["m", "TI"], ",", 
+          StyleBox["n", "TI"], ",", " ", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          StyleBox["i", "TI"], ",", 
+          StyleBox["j", "TI"], ",", " ", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]assumes a system of dimensions ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["m", "TI"], ",", " ", 
+       StyleBox["n", "TI"], ",", " ", "..."}]], "InlineFormula"],
+     ", takes the partial trace of the matrix ",
+     Cell[BoxData[
+      StyleBox["mat", "TI"]], "InlineFormula"],
+     " over the ",
+     Cell[BoxData[
+      StyleBox["i", "TI"]], "InlineFormula"],
+     "th, ",
+     Cell[BoxData[
+      StyleBox["j", "TI"]], "InlineFormula"],
+     "th, ... subsystems and returns the resulting reduced matrix. "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PartialTranspose", "[", 
+       RowBox[{
+        StyleBox["vec", "TI"], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          StyleBox["i", "TI"], ",", 
+          StyleBox["j", "TI"], ",", " ", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     " or ",
+     Cell[BoxData[
+      RowBox[{"PartialTranspose", "[", 
+       RowBox[{
+        StyleBox["vec", "TI"], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          StyleBox["m", "TI"], ",", 
+          StyleBox["n", "TI"], ",", " ", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          StyleBox["i", "TI"], ",", 
+          StyleBox["j", "TI"], ",", " ", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is the same but operate on the column vector ",
+     Cell[BoxData[
+      StyleBox["vec", "TI"]], "InlineFormula"],
+     ". Note that the result is a square matrix, i.e., the reduced density \
+matrix, not a pure-state column vector any longer."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PartialTranspose", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the partial trace of the density matrix \
+described in an operator expression ",
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     " over the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Species"]], "paclet:Q3/ref/Species"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["s", "TI"], 
+        StyleBox["1", "TR"]], ",", 
+       SubscriptBox[
+        StyleBox["s", "TI"], 
+        StyleBox["2", "TR"]], ",", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "Rows" -> {None, None, None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1205497384],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1433807090],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1832939186],
+
+Cell[TextData[{
+ "Consider a system consisting of two subsystem with Hilbert-space dimensions \
+2 and 3, respectively. ",
+ StyleBox["A", "MathCaption"],
+ " and ",
+ StyleBox["B", "MathCaption"],
+ " are matrix representations of operators on two respective systems."
+}], "ExampleText",
+ CellID->1317285909],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Species", ",", "a", ",", "b"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"A", "=", 
+  RowBox[{"Array", "[", 
+   RowBox[{"a", ",", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", "2"}], "}"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"B", "=", 
+  RowBox[{"Array", "[", 
+   RowBox[{"b", ",", 
+    RowBox[{"{", 
+     RowBox[{"3", ",", "3"}], "}"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1206982195],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     SubscriptBox[
+      TemplateBox[{"a"},
+       "RowDefault"], 
+      TemplateBox[{"1", "\",\"", "1"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"a"},
+       "RowDefault"], 
+      TemplateBox[{"1", "\",\"", "2"},
+       "RowDefault"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     SubscriptBox[
+      TemplateBox[{"a"},
+       "RowDefault"], 
+      TemplateBox[{"2", "\",\"", "1"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"a"},
+       "RowDefault"], 
+      TemplateBox[{"2", "\",\"", "2"},
+       "RowDefault"]]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1072210332],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"1", "\",\"", "1"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"1", "\",\"", "2"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"1", "\",\"", "3"},
+       "RowDefault"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"2", "\",\"", "1"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"2", "\",\"", "2"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"2", "\",\"", "3"},
+       "RowDefault"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"3", "\",\"", "1"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"3", "\",\"", "2"},
+       "RowDefault"]], ",", 
+     SubscriptBox[
+      TemplateBox[{"b"},
+       "RowDefault"], 
+      TemplateBox[{"3", "\",\"", "3"},
+       "RowDefault"]]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1103767947]
+}, Open  ]],
+
+Cell["\<\
+Let us take a special case -- an operator with a single term of tensor \
+product.\
+\>", "ExampleText",
+ CellID->784747577],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matAB", "=", 
+   RowBox[{"CircleTimes", "[", 
+    RowBox[{"A", ",", "B"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matAB", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->722936245],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->1862494557]
+}, Open  ]],
+
+Cell[TextData[{
+ "This is the partial trace of ",
+ StyleBox["matAB", "MathCaption"],
+ " with respect to the second subsystem."
+}], "ExampleText",
+ CellID->2003302514],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"PartialTranspose", "[", 
+    RowBox[{"matAB", ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "3"}], "}"}], ",", 
+     RowBox[{"{", "2", "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"new", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1365426207],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->1778313897]
+}, Open  ]],
+
+Cell["Take close look at individual blocks.", "ExampleText",
+ CellID->181748958],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"new", "[", 
+   RowBox[{"[", 
+    RowBox[{
+     RowBox[{"1", ";;", "3"}], ",", 
+     RowBox[{"1", ";;", "3"}]}], "]"}], "]"}], "//", 
+  "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"new", "[", 
+   RowBox[{"[", 
+    RowBox[{
+     RowBox[{"1", ";;", "3"}], ",", 
+     RowBox[{
+      RowBox[{"1", "+", "3"}], ";;", 
+      RowBox[{"3", "+", "3"}]}]}], "]"}], "]"}], "//", 
+  "MatrixForm"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1365014381],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->1723546139],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->233043790]
+}, Open  ]],
+
+Cell["\<\
+This is the partial trace with respect to the first subsystem.\
+\>", "ExampleText",
+ CellID->2097002229],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"PartialTranspose", "[", 
+    RowBox[{"matAB", ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "3"}], "}"}], ",", 
+     RowBox[{"{", "1", "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"new", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->293416867],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "3"},
+         "RowDefault"]]}]},
+     {
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "1"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "2"},
+         "RowDefault"]]}], 
+      RowBox[{
+       SubscriptBox[
+        TemplateBox[{"a"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "2"},
+         "RowDefault"]], " ", 
+       SubscriptBox[
+        TemplateBox[{"b"},
+         "RowDefault"], 
+        TemplateBox[{"3", "\",\"", "3"},
+         "RowDefault"]]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[6]//MatrixForm=",
+ CellID->1967022171]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Tensorize"]], "paclet:Q3/ref/Tensorize"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TensorFlatten"]], "paclet:Q3/ref/TensorFlatten"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PartialTrace"]], "paclet:Q3/ref/PartialTrace"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/Pauli"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->696591071],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/Pauli"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1081758643]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"PartialTranspose",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 2, 21, 7, 22, 16.436736}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Pauli`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "PartialTranspose[mat, {i, j, ...}] takes the partial trace of the matrix \
+mat over the ith, jth, ... qubits and returns the resulting reduced matrix. \
+PartialTranspose[mat, {m, n, ...}, {i, j, ...}] assumes a system of \
+dimensions m, n, ..., takes the partial trace of the matrix mat over the ith, \
+jth, ... subsystems and returns the resulting reduced matrix. \
+PartialTranspose[vec, {i, j, ...}] or PartialTranspose[vec, {m, n, ...}, {i, \
+j, ...}] is the same but operate on the column vector vec. Note that the \
+result is a square matrix, i.e., the reduced density matrix, not a pure-state \
+column vector any longer. PartialTranspose[expr, {s1, s2, ...}] returns the \
+partial trace of the density matrix described in an operator expression expr \
+over the Species s1, s2, ....", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "PartialTranspose", "titlemodifier" -> "", "windowtitle" -> 
+    "PartialTranspose", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/PartialTranspose", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.2 for Mac OS X x86 (64-bit) (December 12, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[9384, 273, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"20794157-7bb3-4e81-951f-ae3ee5f38e62",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1205497384]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 60296, 2144}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[588, 21, 4393, 111, 70, "AnchorBarGrid",ExpressionUUID->"90cdaba9-5010-4655-86b2-8d1d117f2a56",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5006, 136, 173, 6, 70, "ObjectNameGrid",ExpressionUUID->"c90cb603-196b-47d4-aaf4-6e0b6cc0e65a"],
+Cell[5182, 144, 4165, 124, 70, "Usage",ExpressionUUID->"4ac50056-4a49-4819-bf81-99e6cfd50e83"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9384, 273, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"20794157-7bb3-4e81-951f-ae3ee5f38e62",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1205497384],
+Cell[CellGroupData[{
+Cell[9677, 287, 196, 6, 70, "ExampleSection",ExpressionUUID->"eb95bae3-b99e-4ec0-8149-4e4d39f959f3",
+ CellID->1433807090],
+Cell[9876, 295, 91, 3, 70, "Input",ExpressionUUID->"3d83870f-6b85-4b6e-b0b8-bc54bd9aa341",
+ CellID->1832939186],
+Cell[9970, 300, 304, 8, 70, "ExampleText",ExpressionUUID->"92167f0b-1acd-4231-af4a-d2ce63c2d290",
+ CellID->1317285909],
+Cell[CellGroupData[{
+Cell[10299, 312, 455, 14, 70, "Input",ExpressionUUID->"be153013-7a36-40a6-bd5c-482668682f7a",
+ CellID->1206982195],
+Cell[10757, 328, 715, 28, 70, "Output",ExpressionUUID->"d360dda9-e6b9-4853-88a3-ed591aaa5455",
+ CellID->1072210332],
+Cell[11475, 358, 1429, 55, 70, "Output",ExpressionUUID->"419c042d-a063-4b43-b8b7-4f9bdffdec2d",
+ CellID->1103767947]
+}, Open  ]],
+Cell[12919, 416, 132, 4, 70, "ExampleText",ExpressionUUID->"08216cbb-80b9-452f-9052-6de9ed86359c",
+ CellID->784747577],
+Cell[CellGroupData[{
+Cell[13076, 424, 244, 7, 70, "Input",ExpressionUUID->"98b68ca0-d054-4bbe-b9c9-cd9e339b9481",
+ CellID->722936245],
+Cell[13323, 433, 11418, 417, 70, "Output",ExpressionUUID->"65ebb80b-3698-45d1-8697-01c96e39f52a",
+ CellID->1862494557]
+}, Open  ]],
+Cell[24756, 853, 166, 5, 70, "ExampleText",ExpressionUUID->"8f96ae4d-74a4-42d9-ace1-fa6a6b836e60",
+ CellID->2003302514],
+Cell[CellGroupData[{
+Cell[24947, 862, 339, 10, 70, "Input",ExpressionUUID->"b29acd90-2c87-4889-83ff-5767d7222bcd",
+ CellID->1365426207],
+Cell[25289, 874, 11418, 417, 70, "Output",ExpressionUUID->"4bb27195-abf9-40bb-a032-5c0f02a0af40",
+ CellID->1778313897]
+}, Open  ]],
+Cell[36722, 1294, 80, 1, 70, "ExampleText",ExpressionUUID->"207f6ab2-ad7f-4956-84f3-c1f1a6bb2550",
+ CellID->181748958],
+Cell[CellGroupData[{
+Cell[36827, 1299, 491, 18, 70, "Input",ExpressionUUID->"27d52370-02f2-4979-a98d-4d49b6921765",
+ CellID->1365014381],
+Cell[37321, 1319, 3243, 117, 70, "Output",ExpressionUUID->"c3d8a248-53e7-4eaa-a8c8-73bb1ec7d50c",
+ CellID->1723546139],
+Cell[40567, 1438, 3242, 117, 70, "Output",ExpressionUUID->"9b7f1666-9137-4e3f-853f-58fabc4ed636",
+ CellID->233043790]
+}, Open  ]],
+Cell[43824, 1558, 114, 3, 70, "ExampleText",ExpressionUUID->"1f25f17b-29d1-4868-b2e7-37de52af5a9a",
+ CellID->2097002229],
+Cell[CellGroupData[{
+Cell[43963, 1565, 338, 10, 70, "Input",ExpressionUUID->"209b8f2b-f473-4b41-beb9-c7beba2f320f",
+ CellID->293416867],
+Cell[44304, 1577, 11418, 417, 70, "Output",ExpressionUUID->"ddc0b168-de2b-4539-9bcb-9fc78ec5eb7a",
+ CellID->1967022171]
+}, Open  ]]
+}, Open  ]],
+Cell[55749, 1998, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"ffa59f31-ce3e-4977-b7cf-2329e492d9a6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55817, 2003, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"832e6b54-2996-4135-8654-dd5ddf102f34",
+ CellID->1255426704],
+Cell[55970, 2012, 871, 28, 70, "SeeAlso",ExpressionUUID->"239c3c77-2323-4a14-a0e3-2508f320e312",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[56878, 2045, 152, 7, 70, "TutorialsSection",ExpressionUUID->"5fd071a0-f61c-4cc2-899e-a34f21273c51",
+ CellID->250839057],
+Cell[57033, 2054, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"37e01b6c-033f-4f21-9db4-ba891196c9b7"],
+Cell[57067, 2056, 177, 6, 70, "Tutorials",ExpressionUUID->"2795d1a2-629e-4795-87d0-eefdb59c4985",
+ CellID->696591071],
+Cell[57247, 2064, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"707ef6c5-9ab6-44fc-901e-72176e802385"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[57315, 2069, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"f0db2b67-2b71-4669-bbc1-f9a4e3df5860",
+ CellID->38303248],
+Cell[57474, 2078, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"1847d40f-47ff-4a5d-aabf-60ad16ee7338"],
+Cell[57508, 2080, 176, 6, 70, "MoreAbout",ExpressionUUID->"a3fa29d0-ba31-4a98-b786-972255c93649",
+ CellID->1081758643]
+}, Open  ]],
+Cell[57699, 2089, 23, 0, 70, "FooterCell",ExpressionUUID->"2ebc0e3a-a748-4bc5-8623-f1c1516886df"]
+}
+]
+*)
+
+(* End of internal cache information *)

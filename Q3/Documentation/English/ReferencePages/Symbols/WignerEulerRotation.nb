@@ -1,0 +1,772 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     24363,        763]
+NotebookOptionsPosition[     18968,        647]
+NotebookOutlinePosition[     21168,        703]
+CellTagsIndexPosition[     21083,        698]
+WindowTitle->WignerEulerRotation
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Wigner: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Wigner"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Rotation\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Rotation"], "\<\"QuissoRotation\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/QuissoRotation"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Wigner Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Wigner"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/WignerEulerRotation\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/WignerEulerRotation"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+WignerEulerRotation.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$169447], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/WignerEulerRotation", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["WignerEulerRotation", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"WignerEulerRotation", "[", 
+       RowBox[{
+        StyleBox["angle", "TI"], ",", " ", 
+        RowBox[{
+         TemplateBox[{
+           Cell[
+            TextData["S"]], "paclet:ref/S"},
+          "RefLink",
+          BaseStyle->{"InlineFormula"}], "[", 
+         RowBox[{
+          StyleBox["j", "TI"], ",", " ", "...", ",", " ", 
+          StyleBox["k", "TI"]}], "]"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]operates the rotation by ",
+     Cell[BoxData[
+      StyleBox["angle", "TI"]], "InlineFormula"],
+     " around the axis ",
+     Cell[BoxData[
+      StyleBox["k", "TI"]], "InlineFormula"],
+     " on the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Spin"]], "paclet:Q3/ref/Spin"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["S"]], "paclet:Global/ref/S"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["j", "TI"], ",", " ", "...", ",", " ", 
+        TemplateBox[{
+          Cell[
+           TextData["None"]], "paclet:ref/None"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}]}], "]"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->2056610733],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "Just like ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WignerRotation"]], "paclet:Q3/ref/WignerRotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ", ",
+ Cell[BoxData["WignerEulerRotation"], "InlineFormula"],
+ " returns the operator in terms of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Dyad"]], "paclet:Q3/ref/Dyad"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ", and thus is almost the same as the matrix representation."
+}], "Notes",
+ CellID->1067943069],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1707291066],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1911938695],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->364503190],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Spin", ",", "S", ",", 
+   RowBox[{"Spin", "\[Rule]", "1"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->824050189],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"expr", "=", 
+  RowBox[{
+   RowBox[{"WignerRotation", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"Pi", "/", "3"}], ",", 
+       RowBox[{"Pi", "/", "2"}], ",", 
+       RowBox[{"Pi", "/", "6"}]}], "}"}], ",", 
+     RowBox[{"S", "[", "1", "]"}]}], "]"}], "//", "Simplify"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1211659721],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", "3"], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"1", "+", 
+       RowBox[{"2", " ", 
+        RowBox[{"Cos", "[", 
+         FractionBox["\[Pi]", 
+          RowBox[{"2", " ", 
+           SqrtBox["2"]}]], "]"}]}]}], ")"}], " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      "RowDefault"]}], "+", 
+    RowBox[{
+     RowBox[{"(", 
+      RowBox[{"2", "+", 
+       RowBox[{"Cos", "[", 
+        FractionBox["\[Pi]", 
+         RowBox[{"2", " ", 
+          SqrtBox["2"]}]], "]"}]}], ")"}], " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox[
+             RowBox[{"-", "1"}], "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox[
+             RowBox[{"-", "1"}], "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      
+      "RowDefault"]}], "+", 
+    RowBox[{"3", " ", 
+     RowBox[{"Cos", "[", 
+      FractionBox["\[Pi]", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], "]"}], " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["0", "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["0", "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      "RowDefault"]}], "-", 
+    RowBox[{"4", " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox[
+             RowBox[{"-", "1"}], "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      
+      "RowDefault"], " ", 
+     SuperscriptBox[
+      RowBox[{"Sin", "[", 
+       FractionBox["\[Pi]", 
+        RowBox[{"4", " ", 
+         SqrtBox["2"]}]], "]"}], "2"]}], "-", 
+    RowBox[{"2", " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox[
+             RowBox[{"-", "1"}], "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      "RowDefault"], " ", 
+     SuperscriptBox[
+      RowBox[{"Sin", "[", 
+       FractionBox["\[Pi]", 
+        RowBox[{"4", " ", 
+         SqrtBox["2"]}]], "]"}], "2"]}], "-", 
+    RowBox[{"2", " ", "\[ImaginaryI]", " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["0", "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      "RowDefault"], " ", 
+     RowBox[{"Sin", "[", 
+      FractionBox["\[Pi]", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], "]"}]}], "-", 
+    RowBox[{"\[ImaginaryI]", " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox[
+             RowBox[{"-", "1"}], "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["0", "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      "RowDefault"], " ", 
+     RowBox[{"Sin", "[", 
+      FractionBox["\[Pi]", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], "]"}]}], "-", 
+    RowBox[{"3", " ", "\[ImaginaryI]", " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["0", "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      "RowDefault"], " ", 
+     RowBox[{"Sin", "[", 
+      FractionBox["\[Pi]", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], "]"}]}], "-", 
+    RowBox[{"3", " ", "\[ImaginaryI]", " ", 
+     TemplateBox[{
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["0", "S"]}, "RowDefault"], DisplayForm]}, "Ket"], 
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox[
+             RowBox[{"-", "1"}], "S"]}, "RowDefault"], DisplayForm]}, "Bra"]},
+      
+      "RowDefault"], " ", 
+     RowBox[{"Sin", "[", 
+      FractionBox["\[Pi]", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], "]"}]}]}], ")"}]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1511118441]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"Matrix", "[", "expr", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->754818290],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       FractionBox["1", "3"], " ", 
+       RowBox[{"(", 
+        RowBox[{"1", "+", 
+         RowBox[{"2", " ", 
+          RowBox[{"Cos", "[", 
+           FractionBox["\[Pi]", 
+            RowBox[{"2", " ", 
+             SqrtBox["2"]}]], "]"}]}]}], ")"}]}], 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["2", "3"]}], " ", "\[ImaginaryI]", " ", 
+       RowBox[{"Sin", "[", 
+        FractionBox["\[Pi]", 
+         RowBox[{"2", " ", 
+          SqrtBox["2"]}]], "]"}]}], 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["4", "3"]}], " ", 
+       SuperscriptBox[
+        RowBox[{"Sin", "[", 
+         FractionBox["\[Pi]", 
+          RowBox[{"4", " ", 
+           SqrtBox["2"]}]], "]"}], "2"]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "\[ImaginaryI]"}], " ", 
+       RowBox[{"Sin", "[", 
+        FractionBox["\[Pi]", 
+         RowBox[{"2", " ", 
+          SqrtBox["2"]}]], "]"}]}], 
+      RowBox[{"Cos", "[", 
+       FractionBox["\[Pi]", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]], "]"}], 
+      RowBox[{
+       RowBox[{"-", "\[ImaginaryI]"}], " ", 
+       RowBox[{"Sin", "[", 
+        FractionBox["\[Pi]", 
+         RowBox[{"2", " ", 
+          SqrtBox["2"]}]], "]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["2", "3"]}], " ", 
+       SuperscriptBox[
+        RowBox[{"Sin", "[", 
+         FractionBox["\[Pi]", 
+          RowBox[{"4", " ", 
+           SqrtBox["2"]}]], "]"}], "2"]}], 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["1", "3"]}], " ", "\[ImaginaryI]", " ", 
+       RowBox[{"Sin", "[", 
+        FractionBox["\[Pi]", 
+         RowBox[{"2", " ", 
+          SqrtBox["2"]}]], "]"}]}], 
+      RowBox[{
+       FractionBox["1", "3"], " ", 
+       RowBox[{"(", 
+        RowBox[{"2", "+", 
+         RowBox[{"Cos", "[", 
+          FractionBox["\[Pi]", 
+           RowBox[{"2", " ", 
+            SqrtBox["2"]}]], "]"}]}], ")"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {3, 3}, 0, {
+     1, {{0, 3, 6, 9}, {{1}, {2}, {3}, {1}, {2}, {3}, {1}, {2}, {3}}}, {
+      Rational[1, 3] (1 + 2 Cos[Rational[1, 2] 2^Rational[-1, 2] Pi]), 
+       Complex[0, Rational[-2, 3]] Sin[Rational[1, 2] 2^Rational[-1, 2] Pi], 
+       Rational[-4, 3] Sin[Rational[1, 4] 2^Rational[-1, 2] Pi]^2, 
+       Complex[0, -1] Sin[Rational[1, 2] 2^Rational[-1, 2] Pi], Cos[
+       Rational[1, 2] 2^Rational[-1, 2] Pi], Complex[0, -1] 
+       Sin[Rational[1, 2] 2^Rational[-1, 2] Pi], Rational[-2, 3] 
+       Sin[Rational[1, 4] 2^Rational[-1, 2] Pi]^2, 
+       Complex[0, Rational[-1, 3]] Sin[Rational[1, 2] 2^Rational[-1, 2] Pi], 
+       Rational[1, 3] (2 + 
+        Cos[Rational[1, 2] 2^Rational[-1, 2] Pi])}}]]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->414998479]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Rotation"]], "paclet:Q3/ref/Rotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuissoRotation"]], "paclet:Q3/ref/QuissoRotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Wigner: Quick Start"]], "paclet:Q3/tutorial/Wigner"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Wigner Package Guide"]], "paclet:Q3/guide/Wigner"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1155836804]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"WignerEulerRotation",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 2, 21, 7, 27, 36.295325}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Wigner`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "WignerEulerRotation[angle, S[j, ..., k]] operates the rotation by angle \
+around the axis k on the Spin S[j, ..., None].", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "WignerEulerRotation", "titlemodifier" -> 
+    "", "windowtitle" -> "WignerEulerRotation", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/WignerEulerRotation", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.2 for Mac OS X x86 (64-bit) (December 12, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7893, 243, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"516e2727-8c4e-4066-b3f9-df6b2af180b1",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1707291066]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 20884, 691}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[591, 21, 4313, 109, 70, "AnchorBarGrid",ExpressionUUID->"31027a1d-6deb-4eee-995a-52e49433478c",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4929, 134, 176, 6, 70, "ObjectNameGrid",ExpressionUUID->"290f609f-0ec5-4a11-929b-2d3c32cafe30"],
+Cell[5108, 142, 1451, 47, 70, "Usage",ExpressionUUID->"8ce96d43-1267-4f3a-be1e-444e7a940ed9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6596, 194, 630, 19, 70, "NotesSection",ExpressionUUID->"f50a6916-fcfa-4849-b257-b42b98627b92",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->2056610733],
+Cell[7229, 215, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6bcad093-d121-4b48-b5a6-9b0395de8bab"],
+Cell[7263, 217, 559, 19, 70, "Notes",ExpressionUUID->"12544048-d196-4fb0-8807-b05e2512fd1e",
+ CellID->1067943069],
+Cell[7825, 238, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"2f72a724-4ab5-4025-8187-40f706de0f45"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7893, 243, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"516e2727-8c4e-4066-b3f9-df6b2af180b1",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1707291066],
+Cell[CellGroupData[{
+Cell[8186, 257, 196, 6, 70, "ExampleSection",ExpressionUUID->"14dadf77-65d2-4dc4-bd29-e68cf84769ab",
+ CellID->1911938695],
+Cell[8385, 265, 90, 3, 70, "Input",ExpressionUUID->"00fb89bb-2025-43ac-9021-54c6ed6b43de",
+ CellID->364503190],
+Cell[8478, 270, 168, 5, 70, "Input",ExpressionUUID->"9f5552c7-739d-42db-9625-5f920226f1ea",
+ CellID->824050189],
+Cell[CellGroupData[{
+Cell[8671, 279, 375, 12, 70, "Input",ExpressionUUID->"0bc01a56-437e-4f0e-b843-9bd426f1c701",
+ CellID->1211659721],
+Cell[9049, 293, 4820, 160, 70, "Output",ExpressionUUID->"dd57e665-00d0-4754-bd01-b94cef7fe57f",
+ CellID->1511118441]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13906, 458, 213, 6, 70, "Input",ExpressionUUID->"c05caa7d-04af-45f1-b7a5-1445b9a9f704",
+ CellID->754818290],
+Cell[14122, 466, 3153, 94, 70, "Output",ExpressionUUID->"16432ebd-e20c-4701-8bae-a5f5c202a468",
+ CellID->414998479]
+}, Open  ]]
+}, Open  ]],
+Cell[17302, 564, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"a5907147-769c-44eb-94ed-b55ba039b2e3"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17370, 569, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"b083b0ff-6758-4a5b-935c-a7c441e4b28f",
+ CellID->1255426704],
+Cell[17523, 578, 556, 18, 70, "SeeAlso",ExpressionUUID->"12ef1dfc-3f94-4d15-b9d7-0fb5ea923c96",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18116, 601, 152, 7, 70, "TutorialsSection",ExpressionUUID->"408e37f5-7806-4871-aa90-83abec58ce00",
+ CellID->250839057],
+Cell[18271, 610, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"fc995eba-41ad-48c0-82d2-e42bd6e498f4"],
+Cell[18305, 612, 179, 6, 70, "Tutorials",ExpressionUUID->"2b0b0882-36a2-442e-a1c8-e8833e267af9",
+ CellID->341631938],
+Cell[18487, 620, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"ddc79a59-3e4b-481f-b428-4e59e7aa8b70"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18555, 625, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"c3340e0b-a16a-455c-a72d-ffed5fd7057a",
+ CellID->38303248],
+Cell[18714, 634, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"bb6e2c75-d75a-4a49-957a-da8758ffb8a9"],
+Cell[18748, 636, 178, 6, 70, "MoreAbout",ExpressionUUID->"780ce32c-6ee2-47de-b310-79771881b5ee",
+ CellID->1155836804]
+}, Open  ]],
+Cell[18941, 645, 23, 0, 70, "FooterCell",ExpressionUUID->"d988b6ed-283b-49da-b963-c5881a654489"]
+}
+]
+*)
+
+(* End of internal cache information *)

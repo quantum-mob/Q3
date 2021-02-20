@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-02-17 16:56:05+09 $ *)
-(* $Revision: 1.19 $ *)
+(* $Date: 2021-02-20 16:53:51+09 $ *)
+(* $Revision: 1.28 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,8 +10,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-17 16:56:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.28 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-20 16:53:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -19,7 +19,7 @@ End[]
 { Q3General, Q3Protect, Q3Info };
 
 { Q3Release, Q3RemoteFetch, Q3RemoteRelease, Q3RemoteURL,
-  Q3CheckUpdate, Q3Update, Q3UpdateSubmit };
+  Q3Update, Q3CheckUpdate };
 
 { Supplement, SupplementBy, Common, CommonBy };
 { Choices, Successive };
@@ -27,6 +27,7 @@ End[]
 { PseudoDivide };
 
 { Chain };
+{ Bead, GreatCircle };
 
 { Let };
 
@@ -103,12 +104,11 @@ Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versio
 
 Q3Info[] := Module[
   { pac = Q3Release[],
-    pkg = Contexts["Q3`*`Private`"] },
+    pkg = Symbol /@ Names["Q3`*`Version"] },
   If[ FailureQ[pac],
     pac = "Q3 Application has not been installed properly.",
     pac = "Q3 Application v" <> pac;
    ];
-  pkg = Symbol @* StringJoin /@ Thread @ {pkg, "Version"};
   pkg = Join[{pac}, pkg];
   Print @ StringJoin @ Riffle[pkg, "\n"];
  ]
@@ -160,35 +160,79 @@ Q3CheckUpdate[] := Module[
    ]
  ]
 
-Q3Update::usage = "Q3Update[\"folder\"] downloads the lastest paclet archive of Q3 to the local \"folder\" and installs it.\nQ3Update[] installs the update of Q3 directly from the GitHub repository.\nIt accepts all the options for PacletInstall."
+Q3Update::usage = "Q3Update[] installs the update of Q3 from the GitHub repository.\nIt accepts all the options for PacletInstall -- ForceVersionInstall and AllowVersionUpdate in particular."
 
-Q3Update::dirfail = "Could not create the folder ``."
+Q3Update::dirfail = "Could not create a temporary download folder. Check whether you have proper permissions or not."
 
 Q3Update::downfail = "Could not download the paclet archive ``."
 
-Q3Update[folder_?StringQ, opts___?OptionQ] := Module[
+handlerDownloadProgress[assoc_] := Module[
+  { frac = Lookup[assoc, "FractionComplete"] },
+  $Fraction = If[ MissingQ[frac],
+    $FractionMissing = True;
+    Lookup[assoc, "ByteCountDownloaded"],
+    frac
+   ]
+ ]
+
+handlerDownloadFinished[assoc_] := Module[
+  { down = Lookup[assoc, "ByteCountDownloaded"],
+    full = Lookup[assoc, "ByteCountTotal"],
+    file = Lookup[assoc, "File"] },
+  If[ FileExistsQ[file],
+    If[ MissingQ[full],
+      PrintTemporary[down, " bytes downloaded to ", file],
+      PrintTemporary[down, " bytes of ", full, " bytes downloaded to ", file]
+     ],
+    Message[Q3Update::downfail, file]
+   ];
+ ]
+
+Q3Update[opts___?OptionQ] := Module[
   { url = Q3RemoteURL[],
-    dir, new, file },
-  
-  dir = If[FileExistsQ[folder], folder, CreateDirectory[folder]];
+    dir = CreateDirectory[],
+    new, file },
+
   If[ FailureQ[dir],
     Message[Q3Update::dirfail, folder];
     Return[dir]
    ];
   
   file = FileNameJoin @ {dir, FileNameTake[url]};
-  Print["Downloading the paclet archive ", url, " to ", file, " ...."];
-  new = URLDownload[url, file];
-  If[ FailureQ[new],
-    Message[Q3Update::downfail, url];
-    Return[new],
-    Print["Done!"]
+  Print["Downloading the update from ", url, " to ", file, " ...."];
+
+  $Fraction = 0.;
+  $FractionMissing = False;
+
+  Check[
+    Monitor[
+      TaskWait[
+        URLDownloadSubmit[url, file,
+          HandlerFunctions -> Association[
+            "TaskProgress" -> handlerDownloadProgress,
+            "TaskFinished" -> handlerDownloadFinished
+           ],
+          HandlerFunctionsKeys -> {
+            "ByteCountDownloaded",
+            "ByteCountTotal",
+            "FractionComplete", 
+            "File"
+           }
+         ]
+       ],
+      If[ $FractionMissing,
+        $Fraction,
+        ProgressIndicator[Dynamic[$Fraction]]
+       ]
+     ],
+    Return[$Failed]
    ];
   
-  Print["Installing the paclet ", file, " ...."];
+  Print["Installing the update from ", file, " ...."];
   PacletInstall[file, opts]
  ]
 
+(*
 Q3Update[opts___?OptionQ] := Module[
   { url = Q3RemoteURL[] },
   
@@ -196,7 +240,9 @@ Q3Update[opts___?OptionQ] := Module[
   
   PacletInstall[url, opts]
  ]
+ *)
 
+(*
 Q3UpdateSubmit::usage = "Q3UpdateSubmit[] asynchronously (i.e., in the background) installs an update of Q3 from the GitHub repository.\nIt returns an AsynchronousTaskObject representing the dowload and install operation that is occuring in the background, or the existing paclet if no update occurred, or $Failed if no such paclet is available.\nIf you want to wait for completion, use TaskWait or WaitAsynchronousTask."
 
 Q3UpdateSubmit[opts___?OptionQ] := Module[
@@ -206,6 +252,7 @@ Q3UpdateSubmit[opts___?OptionQ] := Module[
 
   PacletInstallSubmit[url, opts]
  ]
+*)
 
 
 Choices::usage = "Choices[a,n] gives all possible choices of n elements out of the list a.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
@@ -245,13 +292,14 @@ Common[a_List, b__List] := Cases[ a, Alternatives @@ Intersection[b], 1 ]
 (* Common[a_List, b_List] := Select[a, MemberQ[b,#]& ] *)
 (* Implementation 1: Straightforward, but slow. *)
 
-CommonBy::usage = "CommonBy[a, b, c, ..., f] returns the elements of a that appear in all of b, c, ..., after applying f.\nLike Common, the order is preserved."
+CommonBy::usage = "CommonBy[a, b, c, ..., func] returns the elements of a that appear in all of b, c, ... with all the tests made after applying func.\nLike Common, the order is preserved."
   
-CommonBy[a_List, b__List, f_] := Module[
-  { aa = f /@ a,
-    form = Alternatives @@ Map[f, Intersection[b]] },
-  aa = Map[ MatchQ[#, form]&, aa ];
-  Pick[ a, aa ]
+CommonBy[a_List, b__List, func_] := Module[
+  { aa = func /@ a,
+    ff },
+  ff = Alternatives @@ Intersection @@ Map[func, {b}, {2}];
+  aa = Map[MatchQ[#, ff]&, aa];
+  Pick[a, aa]
  ]
 
 Successive::usage = "Successive[f, {x1,x2,x3,...}] returns {f[x1,x2], f[x2,x3], ...}. Successive[f, list, n] applies f on n successive elements of list. Successive[f, list, 2] is equivalent to Successive[f,list]. Successive[f, list, 1] is equivalent to Map[f, list]."
@@ -323,6 +371,95 @@ Chain[a__, m_List, b__] :=
 Chain[a_, b_, c__] := Flatten @ { Chain[a, b], Chain[b, c] }
 
 Chain[aa_List] := Chain @@ aa
+
+
+Bead::usage = "Bead[pt] or Bead[{pt1, pt2, ...}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01]. It has been motivated by Tube.\nBead[pt] is equvalent to Sphere[pt, Scaled[0.01]].\nBead[{p1, p2, ...}] is equivalent to Sphere[{p1, p2, ...}, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r]."
+
+Bead[pnt:{_?NumericQ, _?NumericQ, _?NumericQ}, r_:Scaled[0.01]] :=
+  Sphere[pnt, r]
+
+Bead[pnt:{{_?NumericQ, _?NumericQ, _?NumericQ}..}, r_:Scaled[0.01]] :=
+  Sphere[pnt, r]
+
+Bead[Point[spec_?MatrixQ], r_:Scaled[0.01]] := Bead[spec, r]
+
+Bead[Line[spec_?MatrixQ], r_:Scaled[0.01]] := Bead[spec, r]
+
+Bead[Line[spec:{__?MatrixQ}], r_:Scaled[0.01]] := Bead[#,r]& /@ spec
+
+
+GreatCircle::usage = "GreateCircle[center, apex, radius, {a1, a2, da}] returns Line corresponding to the great arc centered at center in the plane normal to apex - center from angle a1 to a2 in steps of da.\nGreatCircle[center, {u, v}, radius, {a1, a2, da}] corresponds to a great arc of radius centered at center in the plane containing center, u and v from angle a1 to a2 in step of da.\nGreatCircle[center, {u, v}] assumes raidus given by Norm[u-center] and angle by Vector[u-center,v-center]."
+
+GreatCircle[] := GreatCircle[{0, 0, 0}, {0, 0, 1}, 1, {0, 2 Pi, 0.01}]
+
+GreatCircle[center:{_, _, _}, apex:{_, _, _}] :=
+  GreatCircle[center, apex, 1, {0, 2 Pi}]
+
+GreatCircle[
+  center:{_, _, _},
+  apex:{_?NumericQ, _?NumericQ, _?NumericQ},
+  radius_?NumericQ ] :=
+  GreatCircle[center, apex, radius, {0, 2 Pi}]
+
+GreatCircle[
+  center:{_, _, _},
+  apex:{_?NumericQ, _?NumericQ, _?NumericQ},
+  radius_?NumericQ,
+  {a1_, a2_, da_:0.01}
+ ] := Module[
+  { mat = RotationMatrix @ {{0, 0, 1}, apex - center},
+    dat },
+  dat = Table[
+    radius*{Cos[ang], Sin[ang], 0},
+    {ang, a1, a2, da}
+   ];
+  Line[(center + mat . #)& /@ dat]
+ ]
+
+GreatCircle[center_ -> {vec:{_, _, _}, wec:{_, _, _}}] := GreatCircle[
+  center -> N @ {vec, wec},
+  Norm @ N[vec-center],
+  {0, VectorAngle[N[vec-center], N[wec-center]]}
+ ]
+
+GreatCircle[
+  Rule[
+    center:{_?NumericQ, _?NumericQ, _?NumericQ},
+    { vec:{_?NumericQ, _?NumericQ, _?NumericQ},
+      wec:{_?NumericQ, _?NumericQ, _?NumericQ} }
+   ],
+  spec___
+ ] := GreatCircle[{vec, center, wec}, spec]
+
+GreatCircle[
+  { vec:{_?NumericQ, _?NumericQ, _?NumericQ},
+    center:{_?NumericQ, _?NumericQ, _?NumericQ},
+    wec:{_?NumericQ, _?NumericQ, _?NumericQ} }
+ ] := GreatCircle[{vec, center, wec}, Norm @ N[vec-center], {0, 2 Pi}]
+
+GreatCircle[
+  { vec:{_?NumericQ, _?NumericQ, _?NumericQ},
+    center:{_?NumericQ, _?NumericQ, _?NumericQ},
+    wec:{_?NumericQ, _?NumericQ, _?NumericQ} },
+  radius:(Automatic|_?NumericQ),
+  {a1_?NumericQ, a2_?NumericQ, da_:0.01}
+ ] := Module[
+   { ax = N[vec-center],
+     az = Cross[N[vec-center], N[wec-center]],
+     ay, mat, dat, rad },
+   ay = Cross[az, ax];
+   mat = Transpose @ {
+     Normalize[ax],
+     Normalize[ay],
+     Normalize[az]
+    };
+   rad = If[radius === Automatic, Norm[ax], radius];
+   dat = Table[
+     rad * {Cos[th], Sin[th], 0},
+     {th, a1, a2, da}
+    ];
+   Line[(center + mat . #)& /@ dat]
+  ]
 
 
 Base::usage = "Base[c[j,...,s]] returns the generator c[j,...] with the Flavor indices sans the final if c is a Species and the final Flavor index is special at all; otherwise just c[j,...,s]."

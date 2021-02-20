@@ -10,17 +10,36 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     27815,        771]
-NotebookOptionsPosition[     22365,        649]
-NotebookOutlinePosition[     24850,        710]
-CellTagsIndexPosition[     24765,        705]
+NotebookDataLength[     30450,        852]
+NotebookOptionsPosition[     24418,        721]
+NotebookOutlinePosition[     26870,        781]
+CellTagsIndexPosition[     26785,        776]
 WindowTitle->One
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
 Cell[BoxData[GridBox[{
-   {Cell["QUISSO PACKAGE SYMBOL", "PacletNameCell"], Cell[TextData[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Pauli"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
      Cell[BoxData[
       ActionMenuBox[
        FrameBox[
@@ -52,8 +71,10 @@ Cell[BoxData[GridBox[{
          TextCell[
           Row[{"Related Guides", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Pauli\"\>":>Documentation`HelpLookup[
-       "paclet:Q3/guide/Pauli"]},
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/Pauli"], "\<\"Q3 Application Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"MoreAbout"]],
@@ -99,7 +120,7 @@ Cell[BoxData[GridBox[{
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$98926], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$100610], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], "Q3/ref/One", 
              ".html"]], None}]}]},
@@ -126,41 +147,51 @@ Cell[BoxData[GridBox[{
      Cell[BoxData[
       RowBox[{"One", "[", 
        StyleBox["n", "TI"], "]"}]], "InlineFormula"],
-     "\[LineSeparator]\[Congruent] ",
+     " or ",
      Cell[BoxData[
       RowBox[{"One", "[", 
        RowBox[{"{", 
         StyleBox["n", "TI"], "}"}], "]"}]], "InlineFormula"],
-     " is almost the same as Identity",
+     "\[LineSeparator]returns the ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["n", "TI"], "\[Times]", 
+       StyleBox["n", "TI"]}]], "InlineFormula"],
+     " identity matrix in a sparse array. Except that it is in a sparse \
+array, the result is identical to ",
      Cell[BoxData[
       RowBox[{
        TemplateBox[{
          Cell[
-          TextData["Matrix"]], "paclet:Q3/ref/Matrix"},
+          TextData["IdentityMatrix"]], "paclet:ref/IdentityMatrix"},
         "RefLink",
         BaseStyle->{"InlineFormula"}], "[", 
        StyleBox["n", "TI"], "]"}]], "InlineFormula"],
-     ", but returns the identity matrix in a sparse array. "
+     "."
     }]]},
    {"", Cell[TextData[{
      Cell[BoxData[
       RowBox[{"One", "[", 
        RowBox[{
-        StyleBox["m", "TI"], ",", " ", 
-        StyleBox["n", "TI"], ",", "  ", 
+        StyleBox["m", "TI"], ",", 
+        StyleBox["n", "TI"], ",", 
         StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
-     "\[LineSeparator]\[Congruent] ",
+     " or ",
      Cell[BoxData[
       RowBox[{"One", "[", 
-       RowBox[{
-        RowBox[{"{", 
-         RowBox[{
-          StyleBox["m", "TI"], ",", " ", 
-          StyleBox["n", "TI"]}], "}"}], ",", "  ", 
-        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
-     " returns the m \[Times] n \[Times] ... pseudo-identity tensor, i.e., \
-the tensor where the main diagonal elements are 1 and the other elements are \
-all zero. "
+       RowBox[{"{", 
+        RowBox[{
+         StyleBox["m", "TI"], ",", 
+         StyleBox["n", "TI"], ",", 
+         StyleBox["\[Ellipsis]", "TR"]}], "}"}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["m", "TI"], "\[Times]", 
+       StyleBox["n", "TI"], "\[Times]", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     " pseudo-identity tensor, i.e., the tensor where the main diagonal \
+elements are 1 and the other elements are all zero. "
     }]]},
    {"", Cell[TextData[{
      Cell[BoxData[
@@ -168,11 +199,18 @@ all zero. "
        RowBox[{
         RowBox[{"{", 
          RowBox[{
-          StyleBox["m", "TI"], ",", " ", 
-          StyleBox["n", "TI"]}], "}"}], ",", " ", 
+          StyleBox["m", "TI"], ",", 
+          StyleBox["n", "TI"]}], "}"}], ",", 
         StyleBox["k", "TI"]}], "]"}]], "InlineFormula"],
-     "\[LineSeparator]returns an m \[Times] n matrix with the elements on the \
-\*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere."
+     "\[LineSeparator]returns an ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["m", "TI"], "\[Times]", 
+       StyleBox["n", "TI"]}]], "InlineFormula"],
+     " matrix with the elements on the ",
+     Cell[BoxData[
+      StyleBox["k", "TI"]], "InlineFormula"],
+     "th diagonal being 1 and zero elsewhere."
     }]]}
   }]], "Usage",
  GridBoxOptions->{
@@ -191,7 +229,7 @@ Cell[TextData[{
 }], "PrimaryExamplesSection",
  WholeCellGroupOpener->True,
  CellTags->"PrimaryExamplesSection",
- CellID->1587341586],
+ CellID->1723496546],
 
 Cell[CellGroupData[{
 
@@ -201,10 +239,10 @@ Cell[TextData[{
  Cell["(1)", "ExampleCount"]
 }], "ExampleSection", "ExampleSection",
  WholeCellGroupOpener->True,
- CellID->260689221],
+ CellID->1547017886],
 
 Cell[BoxData[
- RowBox[{"<<", "Q3`Pauli`"}]], "Input",
+ RowBox[{"<<", "Q3`"}]], "Input",
  CellLabel->"In[1]:=",
  CellID->290400593],
 
@@ -229,8 +267,7 @@ Cell[BoxData[
             PaneBox[
              ButtonBox[
               DynamicBox[
-               FEPrivate`FrontEndResource[
-               "FEBitmaps", "SquarePlusIconMedium"]], 
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]], 
               ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
               BaseStyle -> {}, Evaluator -> Automatic, Method -> 
               "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
@@ -245,8 +282,8 @@ Cell[BoxData[
               0.833291}, {0.772061, 0.92462, 0.998703}, {0.235431, 0.32765, 
               0.833291}}, {{0.772061, 0.92462, 0.998703}, {0.235431, 0.32765, 
               0.833291}, {0.235431, 0.32765, 0.833291}}}, {{0, 0}, {3, 3}}, {
-              0, 1}], AspectRatio -> 1, Axes -> False, Frame -> False, 
-             FrameLabel -> {None, None}, FrameStyle -> Directive[
+              0, 1}], AspectRatio -> 1, Axes -> False, AxesStyle -> {}, Frame -> 
+             False, FrameLabel -> {None, None}, FrameStyle -> Directive[
                Opacity[0.5], 
                Thickness[Tiny], 
                RGBColor[0.368417, 0.506779, 0.709798]], 
@@ -269,7 +306,8 @@ Cell[BoxData[
                     "freeformCursorMode" -> True, 
                     "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
                "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
-               Scaled[0.02], "RangePadding" -> Scaled[0.05]}], 
+               Scaled[0.02], "RangePadding" -> Scaled[0.05]}, AxesStyle -> 
+             Large, FrameStyle -> Large, ImageSize -> Large], 
             GridBox[{{
                RowBox[{
                  TagBox["\"Specified elements: \"", "SummaryItemAnnotation"], 
@@ -289,15 +327,15 @@ Cell[BoxData[
               BaseStyle -> {
               ShowStringCharacters -> False, NumberMarks -> False, 
                PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
-          GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
           GridBoxItemSize -> {
            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
           BaselinePosition -> {1, 1}], True -> GridBox[{{
             PaneBox[
              ButtonBox[
               DynamicBox[
-               FEPrivate`FrontEndResource[
-               "FEBitmaps", "SquareMinusIconMedium"]], 
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
               ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
               BaseStyle -> {}, Evaluator -> Automatic, Method -> 
               "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
@@ -312,8 +350,8 @@ Cell[BoxData[
               0.833291}, {0.772061, 0.92462, 0.998703}, {0.235431, 0.32765, 
               0.833291}}, {{0.772061, 0.92462, 0.998703}, {0.235431, 0.32765, 
               0.833291}, {0.235431, 0.32765, 0.833291}}}, {{0, 0}, {3, 3}}, {
-              0, 1}], AspectRatio -> 1, Axes -> False, Frame -> False, 
-             FrameLabel -> {None, None}, FrameStyle -> Directive[
+              0, 1}], AspectRatio -> 1, Axes -> False, AxesStyle -> {}, Frame -> 
+             False, FrameLabel -> {None, None}, FrameStyle -> Directive[
                Opacity[0.5], 
                Thickness[Tiny], 
                RGBColor[0.368417, 0.506779, 0.709798]], 
@@ -336,7 +374,8 @@ Cell[BoxData[
                     "freeformCursorMode" -> True, 
                     "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
                "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
-               Scaled[0.02], "RangePadding" -> Scaled[0.05]}], 
+               Scaled[0.02], "RangePadding" -> Scaled[0.05]}, AxesStyle -> 
+             Large, FrameStyle -> Large, ImageSize -> Large], 
             GridBox[{{
                RowBox[{
                  TagBox["\"Specified elements: \"", "SummaryItemAnnotation"], 
@@ -402,7 +441,8 @@ Cell[BoxData[
               BaseStyle -> {
               ShowStringCharacters -> False, NumberMarks -> False, 
                PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
-          GridBoxAlignment -> {"Rows" -> {{Top}}}, AutoDelete -> False, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
           GridBoxItemSize -> {
            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
           BaselinePosition -> {1, 1}]}, 
@@ -415,7 +455,7 @@ Cell[BoxData[
   SelectWithContents->True,
   Selectable->False]], "Output",
  CellLabel->"Out[2]=",
- CellID->1788875634],
+ CellID->2005404285],
 
 Cell[BoxData[
  TagBox[
@@ -438,7 +478,7 @@ Cell[BoxData[
     Automatic, {3, 3}, 0, {
      1, {{0, 1, 2, 3}, {{1}, {2}, {3}}}, {1, 1, 1}}]]]]], "Output",
  CellLabel->"Out[2]//MatrixForm=",
- CellID->861722638]
+ CellID->73978330]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -473,7 +513,7 @@ Cell[BoxData[
     Automatic, {3, 4}, 0, {
      1, {{0, 1, 2, 3}, {{1}, {2}, {3}}}, {1, 1, 1}}]]]]], "Output",
  CellLabel->"Out[3]//MatrixForm=",
- CellID->564330257]
+ CellID->1079037090]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -509,7 +549,7 @@ Cell[BoxData[
     Automatic, {3, 4}, 0, {
      1, {{0, 1, 2, 3}, {{1}, {2}, {3}}}, {1, 1, 1}}]]]]], "Output",
  CellLabel->"Out[4]//MatrixForm=",
- CellID->21452226]
+ CellID->1083547677]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -547,7 +587,7 @@ Cell[BoxData[
     Automatic, {3, 4}, 0, {
      1, {{0, 1, 2, 3}, {{2}, {3}, {4}}}, {1, 1, 1}}]]]]], "Output",
  CellLabel->"Out[5]//MatrixForm=",
- CellID->391618359]
+ CellID->1030069416]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -584,7 +624,7 @@ Cell[BoxData[
     Automatic, {3, 3}, 0, {
      1, {{0, 1, 2, 2}, {{2}, {3}}}, {1, 1}}]]]]], "Output",
  CellLabel->"Out[6]//MatrixForm=",
- CellID->470345952]
+ CellID->225671541]
 }, Open  ]]
 }, Open  ]],
 
@@ -629,6 +669,30 @@ Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{6},
    "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/Pauli"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->696591071],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
  "Related Guides"
 }], "MoreAboutSection",
  WholeCellGroupOpener->True,
@@ -639,10 +703,18 @@ Cell["", "SectionHeaderSpacer"],
 Cell[BoxData[
  TemplateBox[{
    Cell[
-    TextData["Pauli"]], "paclet:Q3/guide/Pauli"},
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/Pauli"},
   "RefLink",
   BaseStyle->"MoreAbout"]], "MoreAbout",
- CellID->537097467]
+ CellID->1145095773],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application Guide"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->2023696044]
 }, Open  ]],
 
 Cell[" ", "FooterCell"]
@@ -662,18 +734,17 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 2, 17, 10, 47, 24.027686}", 
+   "built" -> "{2021, 2, 21, 7, 21, 39.940488}", 
     "history" -> {"XX", "", "", ""}, "context" -> "Q3`Pauli`", 
     "keywords" -> {}, "specialkeywords" -> {}, 
-    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
-    "Quisso Package Symbol", "language" -> "en", "paclet" -> "Quisso Package",
-     "status" -> "None", "summary" -> 
-    "One[n] \\[Congruent] One[{n}] is almost the same as IdentityMatrix[n], \
-but returns the identity matrix in a sparse array. One[m, n, ...] \
-\\[Congruent] One[{m, n}, ...] returns the m * n * ... pseudo-identity \
-tensor, i.e., the tensor where the main diagonal elements are 1 and the other \
-elements are all zero. One[{m, n}, k] returns an m * n matrix with the \
-elements on the SuperscriptBox[k,th] diagonal being 1 and zero elsewhere.", 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "One[n] or One[{n}] returns the n*n identity matrix in a sparse array. \
+Except that it is in a sparse array, the result is identical to \
+IdentityMatrix[n]. One[m, n, ...] or One[{m, n, ...}] returns the m*n*... \
+pseudo-identity tensor, i.e., the tensor where the main diagonal elements are \
+1 and the other elements are all zero. One[{m, n}, k] returns an m*n matrix \
+with the elements on the kth diagonal being 1 and zero elsewhere.", 
     "synonyms" -> {}, "tabletags" -> {}, "title" -> "One", "titlemodifier" -> 
     "", "windowtitle" -> "One", "type" -> "Symbol", "uri" -> "Q3/ref/One", 
     "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "NewStyles" -> 
@@ -697,82 +768,92 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "PrimaryExamplesSection"->{
-  Cell[6283, 183, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"3914aa85-bf54-4911-b322-9f77f49505f0",
+  Cell[7498, 221, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"149cc11a-4233-4f57-81da-6fd678ad151d",
    CellTags->"PrimaryExamplesSection",
-   CellID->1587341586]}
+   CellID->1723496546]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"PrimaryExamplesSection", 24566, 698}
+ {"PrimaryExamplesSection", 26586, 769}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[575, 21, 3563, 90, 70, "AnchorBarGrid",ExpressionUUID->"4601cfc1-edac-493a-a563-a350a38565a7",
+Cell[575, 21, 4343, 111, 70, "AnchorBarGrid",ExpressionUUID->"7f3a52de-d7a9-400f-b09d-855a4a8a71fd",
  CellID->1],
 Cell[CellGroupData[{
-Cell[4163, 115, 160, 6, 70, "ObjectNameGrid",ExpressionUUID->"20866f31-941b-4586-9e86-edcbdb223a93"],
-Cell[4326, 123, 1920, 55, 70, "Usage",ExpressionUUID->"75cd0491-e2f1-43af-a5fa-fafc2f5ab761"]
+Cell[4943, 136, 160, 6, 70, "ObjectNameGrid",ExpressionUUID->"befb999b-f2e2-4672-9885-44e4fd9a3385"],
+Cell[5106, 144, 2355, 72, 70, "Usage",ExpressionUUID->"54eec7d4-19b8-4fed-960a-15810e184a63"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6283, 183, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"3914aa85-bf54-4911-b322-9f77f49505f0",
+Cell[7498, 221, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"149cc11a-4233-4f57-81da-6fd678ad151d",
  CellTags->"PrimaryExamplesSection",
- CellID->1587341586],
+ CellID->1723496546],
 Cell[CellGroupData[{
-Cell[6576, 197, 195, 6, 70, "ExampleSection",ExpressionUUID->"e6f25d0b-9fa2-48f2-a739-6910037f067a",
- CellID->260689221],
-Cell[6774, 205, 96, 3, 70, "Input",ExpressionUUID->"5a3aedec-066b-4a0e-9a7a-3cd8f06a4f14",
+Cell[7791, 235, 196, 6, 70, "ExampleSection",ExpressionUUID->"006d3122-8cb3-459c-8e43-8b24e311d4fd",
+ CellID->1547017886],
+Cell[7990, 243, 90, 3, 70, "Input",ExpressionUUID->"9d2ea432-1e02-4f00-8ba9-8c148c1e2a29",
  CellID->290400593],
 Cell[CellGroupData[{
-Cell[6895, 212, 184, 5, 70, "Input",ExpressionUUID->"cdef9cc6-4f31-4419-bd60-eba82291275d",
+Cell[8105, 250, 184, 5, 70, "Input",ExpressionUUID->"3ce4d286-bd35-4c77-8e9d-2f3eeb2ee8ac",
  CellID->622980504],
-Cell[7082, 219, 9554, 198, 70, "Output",ExpressionUUID->"6a7ed969-11f2-4a38-8e91-2dda421ed905",
- CellID->1788875634],
-Cell[16639, 419, 656, 21, 70, "Output",ExpressionUUID->"43d81765-ddd1-4aaa-9300-8cb129e092ba",
- CellID->861722638]
+Cell[8292, 257, 9765, 200, 70, "Output",ExpressionUUID->"94ad6056-896b-4626-8292-dd494afa4784",
+ CellID->2005404285],
+Cell[18060, 459, 655, 21, 70, "Output",ExpressionUUID->"d3b4fdd1-9820-48e8-8b98-de23e393c631",
+ CellID->73978330]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[17332, 445, 228, 7, 70, "Input",ExpressionUUID->"c9cc4371-97be-4b98-83ef-a1ab8470fb05",
+Cell[18752, 485, 228, 7, 70, "Input",ExpressionUUID->"90474ed2-4230-40e7-90f6-8648fe59703c",
  CellID->958087344],
-Cell[17563, 454, 671, 21, 70, "Output",ExpressionUUID->"1c46edf1-cdbd-4a7b-8c6f-e2a00fe8a09e",
- CellID->564330257]
+Cell[18983, 494, 672, 21, 70, "Output",ExpressionUUID->"99b9da28-3a7d-4291-ac5b-d7ce0d6a1a29",
+ CellID->1079037090]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[18271, 480, 254, 8, 70, "Input",ExpressionUUID->"ec17d51c-c7ca-4139-bed4-ed05f7e6fd9c",
+Cell[19692, 520, 254, 8, 70, "Input",ExpressionUUID->"a3f2fa89-8d5d-4560-b865-779016b4467a",
  CellID->166904226],
-Cell[18528, 490, 670, 21, 70, "Output",ExpressionUUID->"fcd140bc-4dde-42b4-ab0c-b36f78846454",
- CellID->21452226]
+Cell[19949, 530, 672, 21, 70, "Output",ExpressionUUID->"c6c70ea2-6cee-45f4-a5bf-df5545d6d7c8",
+ CellID->1083547677]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[19235, 516, 285, 10, 70, "Input",ExpressionUUID->"74a132b1-f587-4adf-a69d-9b119996cd79",
+Cell[20658, 556, 285, 10, 70, "Input",ExpressionUUID->"ef9a604a-4118-4e7f-a733-d2789ce00191",
  CellID->1545731110],
-Cell[19523, 528, 671, 21, 70, "Output",ExpressionUUID->"35187cf5-7249-41cc-b324-c907483ab299",
- CellID->391618359]
+Cell[20946, 568, 672, 21, 70, "Output",ExpressionUUID->"f51749a1-ecfa-48f6-8d24-c0b991df5179",
+ CellID->1030069416]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[20231, 554, 257, 9, 70, "Input",ExpressionUUID->"0b0c8ad4-3c95-4bf4-9980-b7e3142cb67b",
+Cell[21655, 594, 257, 9, 70, "Input",ExpressionUUID->"3bb10cfb-ffb1-4ba1-91af-afe6f9f51015",
  CellID->587296393],
-Cell[20491, 565, 648, 21, 70, "Output",ExpressionUUID->"8ad710b9-7704-47ea-b577-02f635a83396",
- CellID->470345952]
+Cell[21915, 605, 648, 21, 70, "Output",ExpressionUUID->"6c7d3565-662b-4914-bc6b-16d9e3ead8ae",
+ CellID->225671541]
 }, Open  ]]
 }, Open  ]],
-Cell[21166, 590, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"f51ffc6c-000f-4602-9bd6-35f62a43f385"]
+Cell[22590, 630, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"844f59be-d468-41b6-9aed-054cfd0159c7"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21234, 595, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"37a401cd-4566-4ad3-83c5-9be095dd270b",
+Cell[22658, 635, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"c6ed533f-3095-4743-bf79-2ba5ef8c0077",
  CellID->1255426704],
-Cell[21387, 604, 545, 18, 70, "SeeAlso",ExpressionUUID->"8697187f-e143-4668-9619-5a12719aa2d3",
+Cell[22811, 644, 545, 18, 70, "SeeAlso",ExpressionUUID->"d97f4df4-c280-4747-992c-55d8d316290f",
  CellID->929782353]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21969, 627, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"85a8fcc2-b1cb-464c-b060-486e23ebb7fe",
- CellID->38303248],
-Cell[22128, 636, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6996ae6c-0c59-489e-af16-ad4131e2194c"],
-Cell[22162, 638, 161, 6, 70, "MoreAbout",ExpressionUUID->"d2f23d56-1c7e-4cbe-859b-e2ac2be755bc",
- CellID->537097467]
+Cell[23393, 667, 152, 7, 70, "TutorialsSection",ExpressionUUID->"7e84b6a8-5eae-4388-86fd-ac97d0397c64",
+ CellID->250839057],
+Cell[23548, 676, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"fdcfd762-01d2-4315-8360-874b576935b2"],
+Cell[23582, 678, 177, 6, 70, "Tutorials",ExpressionUUID->"aa147e6b-01b3-4a84-9069-f3a82e376755",
+ CellID->696591071],
+Cell[23762, 686, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"7a089e22-6679-47a5-b2ac-220de859aa4b"]
 }, Open  ]],
-Cell[22338, 647, 23, 0, 70, "FooterCell",ExpressionUUID->"b20258e9-2806-4748-a50a-3cb4dd95f3fa"]
+Cell[CellGroupData[{
+Cell[23830, 691, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"3ac1cb9c-3b70-4e50-b32c-b07d5fd677d0",
+ CellID->38303248],
+Cell[23989, 700, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"5a49cd21-4aa2-4f86-8e3a-e9d55be621c3"],
+Cell[24023, 702, 176, 6, 70, "MoreAbout",ExpressionUUID->"7990190d-effc-4de3-92e2-8ae8adcc07dd",
+ CellID->1145095773],
+Cell[24202, 710, 174, 6, 70, "MoreAbout",ExpressionUUID->"a93fd4f5-d2b2-4377-86d1-026bd4ebc0bb",
+ CellID->2023696044]
+}, Open  ]],
+Cell[24391, 719, 23, 0, 70, "FooterCell",ExpressionUUID->"400defb7-6ac9-46cc-9e61-d55decfaa339"]
 }
 ]
 *)

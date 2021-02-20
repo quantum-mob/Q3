@@ -7,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-28 11:23:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.22 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-21 07:03:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -82,6 +82,11 @@ TheWigner[{J_?SpinNumberQ, 5}] := SparseArray @ With[
 TheWigner[{J_?SpinNumberQ, Raise}] := TheWigner[{J,4}]
 
 TheWigner[{J_?SpinNumberQ, Lower}] := TheWigner[{J,5}]
+
+TheWigner[{J_?SpinNumberQ, s_ -> t_}] := SparseArray[
+  {J+1 - t, J+1 - s} -> 1,
+  {2*J+1, 2*J+1}
+ ]
 
 TheWigner[{J_?SpinNumberQ, 0, theta_, phi_}] := TheWigner[{J,0}]
 
@@ -673,7 +678,7 @@ WignerRotation::usage = "WignerRotation[angle, S[j, ..., k]] operates the rotati
 WignerRotation[phi_, S_?SpinQ[j___,k:(1|2|3)]] := Module[
   { bs = Basis[ S[j, None] ],
     Rn = MatrixExp[ -I phi TheWigner[{Spin[S], k}] ] },
-  MultiplyDot[ bs, Rn, Dagger[bs] ]
+  Inner[Dyad, bs.Rn, bs]
  ]
 
 WignerRotation[phi_, S_?SpinQ[j___, None], v:{_,_,_}] := Module[
@@ -685,13 +690,21 @@ WignerRotation[phi_, S_?SpinQ[j___, None], v:{_,_,_}] := Module[
     TheWigner[{Spin[S], 2}],
     TheWigner[{Spin[S], 3}] };
   Rn = MatrixExp[ -I phi Rn ];
-  MultiplyDot[ bs, Rn, Dagger[bs] ]
+  Inner[Dyad, bs.Rn, bs]
  ]
 
 WignerRotation[phi_, S_?SpinQ, v:{_,_,_}] :=
   WignerRotation[ phi, S[None], v] /;
   FlavorLast[S] =!= None
 
+
+WignerEulerRotation::usage = "WignerEulerRotation[{a, b, c}, S] returns the Euler rotation operator acting on the spin S."
+
+WignerEulerRotation[{a_, b_, c_}, S_?SpinQ] := Multiply[
+  WignerRotation[a, S[3]],
+  WignerRotation[b, S[2]],
+  WignerRotation[c, S[3]]
+ ]
 
 (* ***************
    Special Topics

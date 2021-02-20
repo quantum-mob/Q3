@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-18 00:05:02+09 $
-  $Revision: 2.44 $
+  $Date: 2021-02-21 06:36:03+09 $
+  $Revision: 2.55 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.44 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-18 00:05:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.55 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-21 06:36:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -72,7 +72,7 @@ End[]
 
 { Parity, ParityEvenQ, ParityOddQ };
 
-{ TensorFlatten, Tensorize, PartialTrace };
+{ TensorFlatten, Tensorize, PartialTrace, PartialTranspose };
 
 { PauliDecompose, PauliCompose };
 { PauliDecomposeRL, PauliComposeRL };
@@ -210,11 +210,20 @@ ThePauli[Quadrant] := ThePauli[7]
 
 ThePauli[Octant] := ThePauli[8]
 
-
 TheRaise[0] = TheLower[0] = TheHadamard[0] = TheQuadrant[0] = ThePauli[0]
 
 
-ThePauli[ nn:(0|1|2|3|4|5|6|7|8|10|11|Raise|Lower|Hadamard).. ] :=
+(* These are for Matrix[Dyad[...]]. *)
+ThePauli[1 -> 0] := ThePauli[4]
+
+ThePauli[0 -> 1] := ThePauli[5]
+
+ThePauli[0 -> 0] := ThePauli[10]
+
+ThePauli[1 -> 1] := ThePauli[11]
+
+
+ThePauli[ nn:(0|1|2|3|4|5|6|7|8|_Rule).. ] :=
   CircleTimes @@ Map[ThePauli] @ {nn}
 
 
@@ -654,19 +663,7 @@ HoldPattern @ Dagger[ OSlash[a__] ] := OSlash @@ Dagger @ {a}
 Once[
   $GarnerHeads = Join[$GarnerHeads, {Pauli, Dyad, Ket, Bra, OTimes, OSlash}];
 
-  $ElaborationHeads = Join[$ElaborationHeads, {Dyad}];
-
-  $ElaborationRules = Join[
-    $ElaborationRules,
-    { Pauli[a___, 4, b___] :> Pauli[a, Raise, b],
-      Pauli[a___, 5, b___] :> Pauli[a, Lower, b],
-      Pauli[a___, 6, b___] :> Pauli[a, Hadamard, b],
-      Pauli[a___, 7, b___] :> Pauli[a, Quadrant, b],
-      Pauli[a___, 8, b___] :> Pauli[a, Octant, b],
-      Pauli[a___, -7, b___] :> Dagger @ Pauli[a, Quadrant, b],
-      Pauli[a___, -8, b___] :> Dagger @ Pauli[a, Octant, b]
-     }
-   ];
+  $ElaborationHeads = Join[$ElaborationHeads, {Dyad, Pauli}];
  ]
 
 
@@ -709,8 +706,10 @@ Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|-7|-8)..] ] := With[
   DisplayForm[ CircleTimes @@ Map[SuperscriptBox["\[Sigma]",#]&] @ aa ]
  ]
 
-Format @ Pauli[a:{(0|1)..} -> b:{(0|1)..}] :=
-  Row @ {Ket @@ b, Bra @@ a}
+Format @ Pauli[map__Rule] := With[
+  { vv = Ket @@@ Transpose[List @@@ {map}] },
+  Row @ {First @ vv, Dagger @ Last @ vv}
+ ]
 
 
 thePlus  = Style["+", Larger, Bold];
@@ -755,10 +754,35 @@ Pauli[ a___, b:(Raise|Lower|Hadamard|Quadrant|Octant|10|11), c___ ] :=
   Garner @ CircleTimes[Pauli[a], Pauli[b], Pauli[c]]
  *)
 Pauli[a__] := Garner @ Apply[CircleTimes, Pauli /@ {a}] /;
-  ContainsAny[{a}, {10, 11, Raise, Lower, Hadamard, Quadrant, Octant}]
+  ContainsAny[
+    { a },
+    { 10, 11, Raise, Lower, Hadamard,
+      Quadrant, Octant, -Quadrant, -Octant }
+   ]
 (* NOTE: Multi-spin Pauli operators are stored in Pauli[a, b, c, ...],
    NOT CircleTimes[Pauli[a], Pauli[b], Pauli[c], ...].
    Namely, Pauli[...] is not expanded into CircleTimes. *)
+
+Pauli[a:{(0|1)..} -> b:{(0|1)..}] := Pauli @@ Thread[a -> b]
+
+Pauli /:
+HoldPattern @ Elaborate[ Pauli[jj__] ] := Module[
+  { new },
+  new = {jj} /. {
+    HoldPattern[0 -> 0] :> 10,
+    HoldPattern[1 -> 1] :> 11,
+    HoldPattern[1 -> 0] :> Raise,
+    HoldPattern[0 -> 1] :> Lower,
+    4 -> Raise,
+    5 -> Lower,
+    6 -> Hadamard,
+    7 -> Quadrant,
+    8 -> Octant,
+    -7 -> -Quadrant,
+    -8 -> -Octant
+   };
+  Garner @ Apply[CircleTimes, Pauli /@ new]
+ ]
 
 Pauli /:
 Dagger[ Pauli[a__] ] := Pauli[a] /. {4->5, 5->4, 7->-7, -7->7, 8->-8, -8->8}
@@ -902,59 +926,85 @@ Format[ HermitianProduct[a_, b_] ] := AngleBracket[a, b]
 
 BlochVector::usage = "BlochSphere[{c0, c1}] returns the point on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
 
-BlochVector[Ket[]] := BlochVector @ {1, 0}
-
-BlochVector[rho_?MatrixQ] := Rest @ PauliDecompose[rho] /;
+BlochVector[rho_?MatrixQ] := Simplify[Rest @ PauliDecompose[rho] * 2] /;
   Dimensions[rho] == {2, 2}
 
 BlochVector[cc_?VectorQ] := Module[
   { dd = Normalize[cc] },
-  { Conjugate[dd] . ThePauli[1] . dd,
+  Simplify @ {
+    Conjugate[dd] . ThePauli[1] . dd,
     Conjugate[dd] . ThePauli[2] . dd,
-    Conjugate[dd] . ThePauli[3] . dd }
+    Conjugate[dd] . ThePauli[3] . dd
+   }
  ] /; Length[cc] == 2
 
 
-BlochSphere::usage = "BlochSphere[{p1, p2, ...}] displays the points along with the Bloch sphere in Graphics3D.\nBlochSphere[p1, p2, ...] is equivalent to BlochSphere[{p1, p2, ...}].\nBlochSphere[{p1, p2, ...}, g1, g2, ...] displays points p1, p2, ... together with the Bloch sphere and Graphics3D objects g1, g2, .... BlochSphere[] returns the Graphics3D elements to render the Bloch sphere."
+BlochVector[Ket[]] := BlochVector @ {1, 0}
+
+BlochVector[expr_, q_?SpeciesQ] := Module[
+  { ss = Species[expr],
+    qq = FlavorNone @ q,
+    cc },
+  If[ Length[ss] > 1,
+    cc = Complement[ss, {qq}];
+    BlochVector @ PartialTrace[expr, cc, Identity],
+    BlochVector @ Matrix[expr, qq]
+   ]
+ ]
+
+BlochVector[expr_] := BlochVector[expr, 1] /;
+  Not @ FreeQ[expr, _Pauli | _Ket]
+
+BlochVector[expr_, j_Integer] := Module[
+  { mat = Matrix[expr],
+    n },
+  n = Log[2, Length @ mat];
+  If[ n > 1,
+    BlochVector @ PartialTrace[mat, Complement[Range @ n, {j}]],
+    BlochVector @ mat
+   ]
+ ] /; Not @ FreeQ[expr, _Pauli | _Ket]
+
+
+BlochSphere::usage = "BlochSphere[primitives, options] returns Graphics3D containing the Bloch sphere as well as primitives.\nIt accepts all Graphics3D primitives and, in addition, BlochPoint.\nBlochSphere[options] just displays the Bloch sphere."
 
 Options[BlochSphere] = {
   "Opacity" -> 0.8,
   "PointSize" -> 0.03,
   Ticks -> None,
-  Axes -> True,
-  AxesOrigin -> {0, 0, 0},
-  AxesStyle -> Thick,
+  (* Axes -> True, *)
+  (* AxesOrigin -> {0, 0, 0}, *)
+  (* AxesStyle -> Thick, *)
   Boxed -> False
  }
 
-BlochSphere[
-  vv:{_?NumericQ, _?NumericQ, _?NumericQ}..,
-  Shortest[gg___],
-  opts___?OptionQ ] := BlochSphere[{vv}, gg, opts]
-
-BlochSphere[
-  vv:{{_?NumericQ, _?NumericQ, _?NumericQ}...},
-  Shortest[gg___],
-  opts___?OptionQ ] := Module[
-    { pp, rr },
-    rr = "PointSize" /. {opts} /. Options[BlochSphere];
-    pp = Map[Sphere[#, rr]&, vv];
-    Graphics3D[{
-        {BlochSphere[opts], Prepend[pp, Red]},
-        gg
-       },
-      Sequence @@ FilterRules[
-        Join[{opts}, Options @ BlochSphere],
-        Options @ Graphics3D
-       ]
+BlochSphere[opts___?OptionQ] := BlochSphere[Nothing, opts]
+  
+BlochSphere[primitives_, opts___?OptionQ] := Block[ (* Block NOT Module *)
+  { BlochPoint, rr },
+  rr = "PointSize" /. {opts} /. Options[BlochSphere];
+  
+  BlochPoint[pnt_, r_:rr] := Sphere[pnt, r];
+  
+  Graphics3D[
+    { theBlochSphere[opts], primitives },
+    Sequence @@ FilterRules[
+      Join[{opts}, Options @ BlochSphere],
+      Options @ Graphics3D
      ]
    ]
+ ]
 
-BlochSphere[opts___?OptionQ] := Module[
+theBlochSphere[opts___?OptionQ] := Module[
   { dd },
   dd = "Opacity" /. {opts} /. Options[BlochSphere];
   { { Opacity[dd], Cyan, Sphere[] },
     { Thick, GrayLevel[0.4],
+      Line @ {
+        1.1 {{-1,0,0}, {1,0,0}},
+        1.1 {{0,-1,0}, {0,1,0}},
+        1.1 {{0,0,-1}, {0,0,1}}
+       },
       Line @ {
         Table[{0, Cos[t Pi], Sin[t Pi]}, {t, 0, 2, 0.01}],
         Table[{Cos[t Pi], 0, Sin[t Pi]}, {t, 0, 2, 0.01}],
@@ -962,7 +1012,6 @@ BlochSphere[opts___?OptionQ] := Module[
      }
    }
  ]
-
 
 
 (* *********************************************************************** *)
@@ -1521,8 +1570,11 @@ HoldPattern @ Elaborate[ Dyad[a_, b_, c_List] ] := Module[
   Multiply @@ op
  ]
 
-Dyad[a_Association, b_Association, All] := Multiply[Ket[a], Bra[b]]
+Dyad[a_Association, b_Association, {}|All] := Multiply[Ket[a], Bra[b]]
 (* NOTE: No particlar reason to store it as Dyad. *)
+
+Dyad[Ket[a_Association], Ket[b_Association], {}|All] :=
+  Multiply[Ket[a], Bra[b]]
 
 Dyad[Ket[a_Association], Ket[b_Association], qq:{__?SpeciesQ}] := 
   Dyad[a, b, FlavorNone @ qq]
@@ -1533,24 +1585,21 @@ Dyad[a_Association, b_Association, qq:{__?SpeciesQ}] := Module[
  ] /; Length @ Union @ Kind[qq] > 1
 
 
-Dyad[a_Plus, b_Plus, qq_List] :=
+Dyad[a_Plus, b_Plus, qq:(_List|All)] :=
   Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @@ a, List @@ b]
 
-Dyad[a_Plus, b_, qq_List] :=
+Dyad[a_Plus, b_, qq:(_List|All)] :=
   Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @@ a, List @ b]
 
-Dyad[a_, b_Plus, qq_List] :=
+Dyad[a_, b_Plus, qq:(_List|All)] :=
   Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @ a, List @@ b]
 
-Dyad[z_ a_, b_, qq_List] :=
+Dyad[z_ a_, b_, qq:(_List|All)] :=
   Garner[z Dyad[a, b, qq]] /; FreeQ[z, _Ket]
 
-Dyad[a_, z_ b_, qq_List] :=
+Dyad[a_, z_ b_, qq:(_List|All)] :=
   Garner[Conjugate[z] Dyad[a, b, qq]] /; FreeQ[z, _Ket]
 
-
-Dyad[a_, b_, All] := Multiply[a, Dagger[b]] /;
-  Not @ Or[FreeQ[a, _Ket], FreeQ[b, _Ket]]
 
 Dyad[a_, b_] := Module[
   { qq = Cases[{a, b}, Ket[c_Association] :> Keys[c], Infinity] },
@@ -1598,7 +1647,7 @@ HoldPattern @ Multiply[
     And[
       Kind[dd] == Kind[op],
       Not @ MemberQ[qq, sp],
-      Not @ OrderedQ @ Join[qq, {sp}]
+      Not @ OrderedQ @ {First @ qq, sp}
      ]
    ]
 
@@ -1615,7 +1664,7 @@ HoldPattern @ Multiply[
     And[
       Kind[dd] == Kind[op],
       Not @ MemberQ[qq, sp],
-      Not @ OrderedQ @ Join[{sp}, qq]
+      Not @ OrderedQ @ {sp, First @ qq}
      ]
    ]
 
@@ -1641,17 +1690,6 @@ HoldPattern @ Multiply[
      u = KeyTake[v, qq] },
    BraKet[b, u] Multiply[pre, Ket[a], Ket[w], post]
   ]
-
-(*
-factorize[ Dyad[a_Association, b_Association, c_List] ] := Module[
-  { ops },
-  ops = Construct @@@ Thread @ {
-    Dyad /@ c,
-    Thread[ Lookup[b, c] ->  Lookup[a, c] ]
-   };
-  Multiply @@ ops
- ]
- *)
 
 (* </Dyad> *)
 
@@ -1937,11 +1975,21 @@ Tensorize[v_?VectorQ] := Module[
   ArrayReshape[v, ConstantArray[2,n]]
  ]
 
+
+PartialTranspose::usage = "..."
+
+PartialTranspose[m_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
+  { tns = Tensorize[m, Flatten @ Transpose @ {dd, dd}],
+    cyc = Cycles @ Transpose @ {2*jj-1, 2*jj} },
+  TensorFlatten @ Transpose[tns, cyc]
+ ]
+
+
 PartialTrace::usage = "PartialTrace[m, {i,j,...}] takes the partial trace over the qubits i, j, ... and returns the resulting reduced matrix.\nPartialTrace[m, {m,n,...}, {i,j,...}] assumes a system of dimensions m, n, ..., takes the partial trace over the subsystems i, j, ..., and returns the resulting reduced matrix.\nPartialTrace[v, {i,j,...}] and PartialTrace[v, {m,n,...}, {i,j,...}] are the same but operate on the column vector v. Note that the result is a square matrix, i.e., the reduced density matrix, not a pure-state column vector any longer."
 
 PartialTrace::notSubsystem = "Illegal qubit index(es) in ``."
 
-PartialTrace[m_?MatrixQ, dd:{__Integer}, jj:{__Integer}] := Module[
+PartialTrace[m_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
   { M = Tensorize[m, Flatten @ Transpose @ {dd, dd}] },
   If[ !ContainsOnly[jj, Range @ Length[dd]],
     Message[PartialTrace::notSubsystem, jj];
@@ -1950,8 +1998,11 @@ PartialTrace[m_?MatrixQ, dd:{__Integer}, jj:{__Integer}] := Module[
   TensorFlatten @ TensorContract[ M, Transpose @ {2jj-1,2jj} ]
  ]
 
-PartialTrace[m_?MatrixQ, jj:{__Integer}] :=
+PartialTrace[m_?MatrixQ, jj:{___Integer}] :=
   PartialTrace[m, ConstantArray[2, Log[2, Length[m]]], jj]
+
+PartialTrace[v_?VectorQ, dd:{__Integer}, {}] :=
+  KroneckerProduct[v, Conjugate[v]]
 
 PartialTrace[v_?VectorQ, dd:{__Integer}, jj:{__Integer}] := Module[
   { nn = Range @ Length @ dd,
@@ -1967,6 +2018,8 @@ PartialTrace[v_?VectorQ, dd:{__Integer}, jj:{__Integer}] := Module[
    inefficient. In this sense, returning the list of states involved in the
    mixed state will provide the user with more flexibility. *)
 
+PartialTrace[v_?VectorQ, {}] := KroneckerProduct[v, Conjugate[v]]
+
 PartialTrace[v_?VectorQ, jj:{__Integer}] :=
   PartialTrace[v, ConstantArray[2,Log[2,Length[v]]], jj]
 
@@ -1979,7 +2032,7 @@ PartialTrace[expr_, qq:{__?SpeciesQ}, func_] := Module[
     dd, jj },
   ss = Union[ss, rr];
   dd = Dimension[ss];
-  jj = Flatten @ Map[FirstPosition[ss, #] &, rr];
+  jj = Flatten @ Map[FirstPosition[ss, #]&, rr];
   func[ PartialTrace[Matrix[expr, ss], dd, jj], Complement[ss, rr] ]
  ]
 

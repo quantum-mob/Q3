@@ -2,8 +2,13 @@
 
 ## v1.5.3
 
+- Q3Update shows a progress indicator.
 - New functions Q3RemoteFetch, Q3RemoteRelease, Q3RemoteURL.
-- New function Q3UpdateSubmit and enhanced Q3Update.
+- New functions GreatCircle, Bead, PartialTranspose.
+- BlochSphere received modification in usage.
+- BlochVector enhanced.
+- Bug fixes concerning Dyad.
+- Pauli[i->j, ...] and ThePauli[i->j, ...].
 
 ## v1.5.1
 

@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[      9777,        294]
-NotebookOptionsPosition[      6485,        217]
-NotebookOutlinePosition[      8654,        273]
-CellTagsIndexPosition[      8570,        268]
+NotebookDataLength[     25785,        821]
+NotebookOptionsPosition[     17599,        650]
+NotebookOutlinePosition[     20452,        715]
+CellTagsIndexPosition[     20367,        710]
 WindowTitle->BlochVector
 WindowFrame->Normal*)
 
@@ -21,6 +21,27 @@ WindowFrame->Normal*)
 Notebook[{
 Cell[BoxData[GridBox[{
    {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/Pauli"], "\<\"Quisso: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Quisso"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
      Cell[BoxData[
       ActionMenuBox[
        FrameBox[
@@ -33,10 +54,34 @@ Cell[BoxData[GridBox[{
           Row[{"See Also", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
         StripOnInput->False], {"\<\"BlochSphere\"\>":>
-       Documentation`HelpLookup["paclet:Q3/ref/BlochSphere"]},
+       Documentation`HelpLookup["paclet:Q3/ref/BlochSphere"], "\<\"Bead\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Bead"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/Pauli"], "\<\"Quisso Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/Quisso"], "\<\"Q3 Application\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
       LineSpacing->{1.4, 0}],
      "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
 \[ThickSpace]",
@@ -70,8 +115,8 @@ Cell[BoxData[GridBox[{
                 Hyperlink[
                 "http://reference.wolfram.com/language/Q3/ref/BlochVector.\
 html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
-            False]]; 
-        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
         NotebookClose[DocumentationSearch`Private`nb$]; 
         Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
@@ -79,7 +124,7 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$30795], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$31730], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], "Q3/ref/BlochVector",
               ".html"]], None}]}]},
@@ -89,11 +134,9 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
       LineSpacing->{1.4, 0}]
     }], "AnchorBar"]}
   }]], "AnchorBarGrid",
- GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
-     Scaled[0.65], {
-      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
-   "RowsIndexed" -> {}}},
  CellID->1],
+
+Cell[CellGroupData[{
 
 Cell[TextData[{
  Cell["BlochVector", "ObjectName"],
@@ -115,8 +158,8 @@ Cell[BoxData[GridBox[{
          SubscriptBox[
           StyleBox["c", "TI"], 
           StyleBox["1", "TR"]]}], "}"}], "]"}]], "InlineFormula"],
-     " \[LineSeparator]returns the point on the Bloch sphere corresponding to \
-the pure state ",
+     " \[LineSeparator]returns the coordinates of the point on the Bloch \
+sphere corresponding to the pure state ",
      Cell[BoxData[
       RowBox[{
        RowBox[{
@@ -144,13 +187,76 @@ the pure state ",
    {"", Cell[TextData[{
      Cell[BoxData[
       RowBox[{"BlochVector", "[", "\[Rho]", "]"}]], "InlineFormula"],
-     "\[LineSeparator]returns the point in the Bloch sphere corresponding to \
-the density matrix \[Rho]."
+     "\[LineSeparator]returns the coordinates of the point in the Bloch \
+sphere corresponding to the density matrix \[Rho]."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"BlochVector", "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]assumes ",
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     " to be expressed in terms of ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Ket"]], "paclet:ref/Ket"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " or ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Pauli"]], "paclet:Q3/ref/Pauli"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " for unlabelled qubits, get the reduced density matrix for the first \
+qubit, and finally returns the coordinates of the point in the Bloch sphere."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"BlochVector", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", 
+        StyleBox["j", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is similar to ",
+     Cell[BoxData[
+      RowBox[{"BlochVector", "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula"],
+     " but tracing out all qubits except for the ",
+     Cell[BoxData[
+      StyleBox["j", "TI"]], "InlineFormula"],
+     "th qubit."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"BlochVector", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", 
+        StyleBox["q", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]assumes that expr is expressed in terms of ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Ket"]], "paclet:ref/Ket"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " or operators of the species ",
+     Cell[BoxData[
+      StyleBox["q", "TI"]], "InlineFormula"],
+     ", get the reduced density matrix for ",
+     Cell[BoxData[
+      StyleBox["q", "TI"]], "InlineFormula"],
+     ", and finally returns the coordinates of the point in the Bloch \
+sphere."
     }]]}
   }]], "Usage",
  GridBoxOptions->{
- GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}}},
- CellID->982511436],
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "Rows" -> {None, None, None, None, {None}}}},
+ CellID->982511436]
+}, Open  ]],
 
 Cell[CellGroupData[{
 
@@ -160,39 +266,285 @@ Cell[TextData[{
    "Spacer1"]]],
  "Examples",
  "\[NonBreakingSpace]\[NonBreakingSpace]",
- Cell["(1)", "ExampleCount"]
+ Cell["(2)", "ExampleCount"]
 }], "PrimaryExamplesSection",
  WholeCellGroupOpener->True,
  CellTags->"PrimaryExamplesSection",
- CellID->1],
+ CellID->731820401],
 
 Cell[CellGroupData[{
 
 Cell[TextData[{
  "Basic Examples",
  "\[NonBreakingSpace]\[NonBreakingSpace]",
- Cell["(1)", "ExampleCount"]
+ Cell["(2)", "ExampleCount"]
 }], "ExampleSection", "ExampleSection",
  WholeCellGroupOpener->True,
- CellID->1],
+ CellID->1066633238],
 
-Cell[TextData[{
- "See examples in ",
- Cell[BoxData[
-  TemplateBox[{
-    Cell[
-     TextData["BlochSphere"]], "paclet:Q3/ref/BlochSphere"},
-   "RefLink",
-   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
- "."
-}], "ExampleText",
- CellID->1945294144]
-}, Open  ]]
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->634562681],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"vec", "=", 
+  RowBox[{"{", 
+   RowBox[{"1", ",", "1"}], "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{"BlochVector", "[", "vec", "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->2061295666],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "1"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1026421749],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->334199092]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
-Cell["", "SectionFooterSpacer"],
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"\[Rho]", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], ",", "1"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       RowBox[{"1", "/", "2"}]}], "}"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"\[Rho]", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{"BlochVector", "[", "\[Rho]", "]"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->2036126255],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["1", "2"], "1"},
+     {"1", 
+      FractionBox["1", "2"]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->2127072638],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->549555257]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"ket", "=", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"Ket", "[", "0", "]"}], "+", 
+     RowBox[{"Ket", "[", "1", "]"}]}], ")"}], "/", 
+   RowBox[{"Sqrt", "[", "2", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"BlochVector", "[", "ket", "]"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->716685724],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{
+   TemplateBox[{"0"},
+    "Ket"], "+", 
+   TemplateBox[{"1"},
+    "Ket"]}], 
+  SqrtBox["2"]]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->583988167],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", "2"], ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1088855979]
+}, Open  ]],
+
+Cell["\<\
+For a maximally entangled state, the reduced density matrix is a multiple of \
+identity.\
+\>", "ExampleText",
+ CellID->1948249040],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"ket", "=", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{"Ket", "[", 
+      RowBox[{"0", ",", "1"}], "]"}], "+", 
+     RowBox[{"Ket", "[", 
+      RowBox[{"1", ",", "0"}], "]"}]}], ")"}], "/", 
+   RowBox[{"Sqrt", "[", "2", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"BlochVector", "[", "ket", "]"}], "\[IndentingNewLine]", 
+ RowBox[{"BlochVector", "[", 
+  RowBox[{"ket", ",", "1"}], "]"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->443456111],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{
+   TemplateBox[{
+     RowBox[{"0", ",", "1"}]},
+    "Ket"], "+", 
+   TemplateBox[{
+     RowBox[{"1", ",", "0"}]},
+    "Ket"]}], 
+  SqrtBox["2"]]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1794074158],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->186485979],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1091208080]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"expr", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"Pauli", "[", "0", "]"}], "/", "2"}], "+", 
+   RowBox[{"Pauli", "[", "1", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"BlochVector", "[", "expr", "]"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->211631353],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   TagBox[
+    SuperscriptBox["\[Sigma]", "0"],
+    DisplayForm], "2"], "+", 
+  TagBox[
+   SuperscriptBox["\[Sigma]", "x"],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1885082307],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->752089558]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1363763454],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->323767864],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ket", "=", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"Ket", "[", "]"}], "+", 
+      RowBox[{"Ket", "[", 
+       RowBox[{
+        RowBox[{"S", "[", "1", "]"}], "\[Rule]", "1"}], "]"}]}], ")"}], "/", 
+    RowBox[{"Sqrt", "[", "2", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ket", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->470141540],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"], "+", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], 
+  SqrtBox["2"]]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1494335460]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"BlochVector", "[", "ket", "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->327063633],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->682153242]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
 
 Cell[TextData[{
  Cell[BoxData[
@@ -203,14 +555,95 @@ Cell[TextData[{
  WholeCellGroupOpener->True,
  CellID->1255426704],
 
-Cell[TextData[Cell[BoxData[
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["BlochSphere"]], "paclet:Q3/ref/BlochSphere"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Bead"]], "paclet:Q3/ref/Bead"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
  TemplateBox[{
    Cell[
-    TextData["BlochSphere"]], "paclet:Q3/ref/BlochSphere"},
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/Pauli"},
   "RefLink",
-  BaseStyle->{
-   "InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]], "SeeAlso",
- CellID->929782353]
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso: Quick Start"]], "paclet:Q3/tutorial/Quisso"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1347266842],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/Pauli"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1858829557],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso Package Guide"]], "paclet:Q3/guide/Quisso"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1903751590],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->994116477]
 }, Open  ]],
 
 Cell[" ", "FooterCell"]
@@ -230,17 +663,26 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 2, 17, 10, 41, 59.655146}", 
-    "history" -> {"1.4", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
-    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
-     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
-    "None", "summary" -> 
-    "BlochVector[{c0, c1}] returns the point on the Bloch sphere \
-corresponding to the pure state Ket[0]*c0 + Ket[1]*c1. BlochVector[\\[Rho]] \
-returns the point in the Bloch sphere corresponding to the density matrix \
-\\[Rho].", "synonyms" -> {}, "tabletags" -> {}, "title" -> "BlochVector", 
-    "titlemodifier" -> "", "windowtitle" -> "BlochVector", "type" -> "Symbol",
-     "uri" -> "Q3/ref/BlochVector"}},
+   "built" -> "{2021, 2, 21, 7, 16, 20.645372}", 
+    "history" -> {"1.4", "", "", ""}, "context" -> "Q3`Pauli`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "BlochVector[{c0, c1}] returns the coordinates of the point on the Bloch \
+sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1. \
+BlochVector[\\[Rho]] returns the coordinates of the point in the Bloch sphere \
+corresponding to the density matrix \\[Rho]. BlochVector[expr] assumes expr \
+to be expressed in terms of Ket or Pauli for unlabelled qubits, get the \
+reduced density matrix for the first qubit, and finally returns the \
+coordinates of the point in the Bloch sphere. BlochVector[expr, j] is similar \
+to BlochVector[expr] but tracing out all qubits except for the jth qubit. \
+BlochVector[expr, q] assumes that expr is expressed in terms of Ket or \
+operators of the species q, get the reduced density matrix for q, and finally \
+returns the coordinates of the point in the Bloch sphere.", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "BlochVector", "titlemodifier" -> "", 
+    "windowtitle" -> "BlochVector", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/BlochVector", "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> 
+  "", "NewStyles" -> False},
 CellContext->"Global`",
 FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
 StyleDefinitions->Notebook[{
@@ -260,42 +702,127 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "PrimaryExamplesSection"->{
-  Cell[5246, 156, 259, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c6cafa0b-5686-4b75-b849-7bf7ebde1f66",
+  Cell[8937, 262, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"342a513e-74e4-4f1b-86da-c25b9b3b85f3",
    CellTags->"PrimaryExamplesSection",
-   CellID->1]}
+   CellID->731820401]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"PrimaryExamplesSection", 8380, 261}
+ {"PrimaryExamplesSection", 20169, 703}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[583, 21, 2981, 74, 70, "AnchorBarGrid",ExpressionUUID->"624ad0c0-172e-47f0-8d86-b0dc491ff031",
+Cell[583, 21, 4553, 115, 70, "AnchorBarGrid",ExpressionUUID->"8099d168-9902-474c-bbc8-0146b49784fe",
  CellID->1],
-Cell[3567, 97, 168, 6, 70, "ObjectNameGrid",ExpressionUUID->"135a7231-64e5-42c4-b531-ee5f117052ce"],
-Cell[3738, 105, 1483, 47, 70, "Usage",ExpressionUUID->"92a3c6b5-cc59-4667-877b-fa005055c681",
- CellID->982511436],
 Cell[CellGroupData[{
-Cell[5246, 156, 259, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c6cafa0b-5686-4b75-b849-7bf7ebde1f66",
+Cell[5161, 140, 168, 6, 70, "ObjectNameGrid",ExpressionUUID->"055405d6-eedf-4578-aa03-ecb5ff6b2e1b"],
+Cell[5332, 148, 3568, 109, 70, "Usage",ExpressionUUID->"1f2e98a6-66c3-4e2b-acc9-9ba7bbce630a",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8937, 262, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"342a513e-74e4-4f1b-86da-c25b9b3b85f3",
  CellTags->"PrimaryExamplesSection",
- CellID->1],
+ CellID->731820401],
 Cell[CellGroupData[{
-Cell[5530, 170, 187, 6, 70, "ExampleSection",ExpressionUUID->"4c505a29-0b56-488e-a60f-f7902075e4f3",
- CellID->1],
-Cell[5720, 178, 250, 10, 70, "ExampleText",ExpressionUUID->"8822a901-28c4-4125-b69a-1f558b612d55",
- CellID->1945294144]
+Cell[9229, 276, 196, 6, 70, "ExampleSection",ExpressionUUID->"3458a798-d5b8-4c42-8510-cb0deb826f92",
+ CellID->1066633238],
+Cell[9428, 284, 90, 3, 70, "Input",ExpressionUUID->"684d04a4-bc78-4fab-9644-1b331413897d",
+ CellID->634562681],
+Cell[CellGroupData[{
+Cell[9543, 291, 211, 6, 70, "Input",ExpressionUUID->"5cf6def2-a48c-4292-bb16-3ab5e5c6c753",
+ CellID->2061295666],
+Cell[9757, 299, 117, 4, 70, "Output",ExpressionUUID->"ae963cd1-39d8-47ca-8624-ab62d62a55d6",
+ CellID->1026421749],
+Cell[9877, 305, 126, 4, 70, "Output",ExpressionUUID->"faf4da1d-9153-4f39-ad72-16af8530c8e2",
+ CellID->334199092]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10040, 314, 467, 15, 70, "Input",ExpressionUUID->"fae5e7a5-9af3-456e-af0c-4438bb1f9262",
+ CellID->2036126255],
+Cell[10510, 331, 588, 19, 70, "Output",ExpressionUUID->"f7079fe9-6f87-45eb-a924-6bcbc721ca68",
+ CellID->2127072638],
+Cell[11101, 352, 126, 4, 70, "Output",ExpressionUUID->"69a5b603-7b6f-426a-bf77-fb1af83c286e",
+ CellID->549555257]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11264, 361, 333, 10, 70, "Input",ExpressionUUID->"9130a3a0-1f03-4ee7-a282-a12c4b306a28",
+ CellID->716685724],
+Cell[11600, 373, 186, 9, 70, "Output",ExpressionUUID->"bc125467-905c-4553-b147-61181042a6d2",
+ CellID->583988167],
+Cell[11789, 384, 149, 5, 70, "Output",ExpressionUUID->"93e3b4ce-7211-450d-84ab-41f307497fdd",
+ CellID->1088855979]
+}, Open  ]],
+Cell[11953, 392, 140, 4, 70, "ExampleText",ExpressionUUID->"518d4138-2676-476a-8edd-8e5b463a936f",
+ CellID->1948249040],
+Cell[CellGroupData[{
+Cell[12118, 400, 477, 14, 70, "Input",ExpressionUUID->"f76e7a15-dc12-4a9e-94a4-b0892ba488a0",
+ CellID->443456111],
+Cell[12598, 416, 239, 11, 70, "Output",ExpressionUUID->"b43b5e92-5ecf-435e-9c78-0a2d1c274d86",
+ CellID->1794074158],
+Cell[12840, 429, 126, 4, 70, "Output",ExpressionUUID->"d62cd78c-1c09-403a-95e1-2ca8520fd1a6",
+ CellID->186485979],
+Cell[12969, 435, 127, 4, 70, "Output",ExpressionUUID->"bf510792-eec1-4c0b-af25-2769c467d736",
+ CellID->1091208080]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13133, 444, 279, 8, 70, "Input",ExpressionUUID->"f8222fa1-79c6-43c7-a61f-7d5cfb25a39f",
+ CellID->211631353],
+Cell[13415, 454, 236, 10, 70, "Output",ExpressionUUID->"09c39c02-1297-45f5-94bd-1e60cb33e500",
+ CellID->1885082307],
+Cell[13654, 466, 126, 4, 70, "Output",ExpressionUUID->"f8ff8ec9-eb01-4c8d-adc5-c0657a7e0e4f",
+ CellID->752089558]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13817, 475, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"5232d218-b63a-4b20-ba6d-a15e572841e1",
+ CellID->1363763454],
+Cell[13946, 480, 126, 4, 70, "Input",ExpressionUUID->"09c4e39d-4d90-4a1b-802d-80c19440f9ec",
+ CellID->323767864],
+Cell[CellGroupData[{
+Cell[14097, 488, 416, 13, 70, "Input",ExpressionUUID->"4d53cdf2-9a3e-4426-a687-4a20f1912a7a",
+ CellID->470141540],
+Cell[14516, 503, 587, 21, 70, "Output",ExpressionUUID->"7e53fbc7-777d-4410-941f-61d0e4fdb6ef",
+ CellID->1494335460]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15140, 529, 109, 3, 70, "Input",ExpressionUUID->"a404cf03-bfa5-4a20-8094-eb88e5368947",
+ CellID->327063633],
+Cell[15252, 534, 126, 4, 70, "Output",ExpressionUUID->"8f1ab27a-5b00-4b74-91f3-7d522df7e880",
+ CellID->682153242]
+}, Open  ]]
 }, Open  ]]
 }, Open  ]],
+Cell[15417, 543, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"d39e16b3-d94e-4f5d-9ca7-2d74566ec8dd"]
+}, Open  ]],
 Cell[CellGroupData[{
-Cell[6019, 194, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"071c2558-fb90-4d8b-b66a-d8c94d22e80e"],
-Cell[6053, 196, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"1482f6bf-3fa0-4e9c-942a-b34c37037315",
+Cell[15485, 548, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"8beba038-ace9-4cc7-9dd8-ee6dd28c3b7b",
  CellID->1255426704],
-Cell[6206, 205, 237, 7, 70, "SeeAlso",ExpressionUUID->"47138b92-8fb0-4414-86fe-833dc7fc6172",
+Cell[15638, 557, 542, 18, 70, "SeeAlso",ExpressionUUID->"045d1c7e-a3a3-4946-a090-237c2a7b806a",
  CellID->929782353]
 }, Open  ]],
-Cell[6458, 215, 23, 0, 70, "FooterCell",ExpressionUUID->"43248450-26e1-4ef2-8dc9-23d35a5c466d"]
+Cell[CellGroupData[{
+Cell[16217, 580, 152, 7, 70, "TutorialsSection",ExpressionUUID->"0b2664f2-e130-4d8e-8595-aba5fc251d76",
+ CellID->250839057],
+Cell[16372, 589, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"a8a63f83-3c40-4d98-89f8-8ab4148a7760"],
+Cell[16406, 591, 177, 6, 70, "Tutorials",ExpressionUUID->"1cca67bf-d0ec-4566-a08c-2e1d5eec2f7e",
+ CellID->341631938],
+Cell[16586, 599, 180, 6, 70, "Tutorials",ExpressionUUID->"3ef33949-2cc9-4437-8afb-16ee11e431d4",
+ CellID->1347266842],
+Cell[16769, 607, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"f9d71ea1-239c-4a4f-a6dc-620a0040d2b9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16837, 612, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"498813d9-97c6-47b2-b40c-2180988a53b5",
+ CellID->38303248],
+Cell[16996, 621, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"63e3f0f8-2dbe-4a47-a0e6-72e3c347eb83"],
+Cell[17030, 623, 176, 6, 70, "MoreAbout",ExpressionUUID->"b22610d4-daf0-4200-b63a-925781d030a0",
+ CellID->1858829557],
+Cell[17209, 631, 178, 6, 70, "MoreAbout",ExpressionUUID->"0dbcad62-cd3e-4fec-b3c8-c5b0fc089755",
+ CellID->1903751590],
+Cell[17390, 639, 167, 6, 70, "MoreAbout",ExpressionUUID->"d05e1a43-7e30-48b1-9759-ca89b47fc95a",
+ CellID->994116477]
+}, Open  ]],
+Cell[17572, 648, 23, 0, 70, "FooterCell",ExpressionUUID->"cb07b2d8-211f-4031-9d8c-14b2f412193f"]
 }
 ]
 *)
