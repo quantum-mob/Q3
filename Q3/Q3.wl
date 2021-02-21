@@ -1103,7 +1103,7 @@ Elaborate[expr_] := Module[
   { pttn = Alternatives @@ Blank /@ $ElaborationHeads,
     noon },
   noon = expr /. { v:pttn :> Elaborate[v] };
-  Garner[ expr //. $ElaborationRules ]
+  Garner[ noon //. $ElaborationRules ]
  ] /; Not @ MemberQ[$ElaborationHeads, Head[expr]]
 
 $ElaborationHeads::usage = "$ElaborationHeads is a list of heads to be directly used in Elaborate."
