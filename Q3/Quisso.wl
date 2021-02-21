@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-16 15:10:02+09 $
-  $Revision: 1.87 $
+  $Date: 2021-02-21 19:03:10+09 $
+  $Revision: 1.90 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
@@ -16,14 +16,13 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.87 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-16 15:10:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.90 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-21 19:03:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
-{ Qubit, QubitQ, Qubits,
-  Classical, ClassicalQ };
+{ Qubit, QubitQ, Qubits };
 
 { SpinForm };
 
@@ -112,6 +111,7 @@ setQubit[x_Symbol] := (
   x/: Dagger[ x[j___, 4] ] := x[j,5];
   x/: Dagger[ x[j___, 5] ] := x[j,4];
 
+  (* for time reversal *)
   x/: Conjugate[ x[j___, k:(0|1|3|4|5|6)] ] := x[j, k];
   x/: Conjugate[ x[j___, 2] ] := -x[j, 2];
   x/: Conjugate[ x[j___, 7] ] := Dagger @ x[j, 7];
@@ -131,10 +131,10 @@ setQubit[x_Symbol] := (
   (* x[j___, 11] := (1 - x[j,3]) / 2; *)
   (* NOTE: It interferes, say, with Ket[] encountered with short-cut inputs *)
 
-  x[j___, 0 -> 0] := (1 + x[j,3]) / 2;
-  x[j___, 1 -> 1] := (1 - x[j,3]) / 2;
-  x[j___, 1 -> 0] := (x[j,1] + I x[j,2]) / 2;
-  x[j___, 0 -> 1] := (x[j,1] - I x[j,2]) / 2;
+  x[j___, 0 -> 0] := x[j, 10];
+  x[j___, 1 -> 1] := x[j, 11];
+  x[j___, 1 -> 0] := x[j, 4];
+  x[j___, 0 -> 1] := x[j, 5];
   
   x[j___, All]  := Flatten @ x[j, {1,2,3}];
 
@@ -145,7 +145,7 @@ setQubit[x_Symbol] := (
   x[j___, None, k_] := x[j, k];
   (* In particular, x[j,None,None] = x[j,None]. *)
   
-  Format[ x[j___,None] ] := SpeciesBox[x, {j}, {}];
+  Format[ x[j___, None] ] := SpeciesBox[x, {j}, {}];
   
   Format[ x[j___, 0] ] := SpeciesBox[x, {j}, {0}];
   Format[ x[j___, 1] ] := SpeciesBox[x, {j}, {"x"}];
@@ -204,65 +204,33 @@ Qubits[ expr_ ] := FlavorNone @ Union @ Map[Most] @
    Association. *)
 
 
-Dyad[S_?QubitQ][0 -> 0] := (1 + S[3]) / 2
-
-Dyad[S_?QubitQ][0 -> 1] := S[5]
-
-Dyad[S_?QubitQ][1 -> 0] := S[4]
-
-Dyad[S_?QubitQ][1 -> 1] := (1 - S[3]) / 2
-
-
 (* <Multiply> *)
 
 (* Speical Rules: Involving identity *)
 
 HoldPattern @ Multiply[a___, _?QubitQ[___, 0], b___] := Multiply[a, b]
 
-(* Gates on Ket *)
-(* NOTE: Put this code before Gates on Gates rules so that Gates on Ket[] are
-   handled with higher priority? *)
-
-(* Multiply for restricted Ket and Bra *)
-
-HoldPattern @
-  Multiply[ x___, a_?QubitQ, Ket[b_Association, c_List], y___ ] := With[
-  { new = Restrict[ Multiply[a, Ket[b]], c ] },
-  Multiply[x, new, y]
- ] /; MemberQ[c, FlavorMute @ a]
-
-HoldPattern @ Multiply[ pre___,
-  op_?QubitQ, Dyad[a_Association, b_Association, c_List], post___ ] := With[
-  { new = Multiply[op, Ket[a]] },
-  Garner @ Multiply[pre, Dyad[new, Ket @ b, c] post]
- ] /; MemberQ[c, FlavorMute @ op]
-
-HoldPattern @ Multiply[ pre___,
-  Dyad[a_Association, b_Association, c_List], op_?QubitQ, post___ ] := With[
-  { new = Multiply[Bra[b], op] },
-  Garner @ Multiply[pre, Dyad[Ket @ a, Dagger @ new, c] post]
- ] /; MemberQ[c, FlavorMute @ op]
-
-
 (* Multiply operators on Ket[] *)
 
 HoldPattern @
-  Multiply[ x___, a_?QubitQ[j___,1], Ket[b_Association], y___ ] := With[
+  Multiply[ pre___, a_?QubitQ[j___,1], Ket[b_Association], post___ ] :=
+  With[
     { m = Mod[ 1 + b[ a[j,None] ], 2 ] },
     Multiply[
-      x,
+      pre,
       Ket @ KeySort @ KetTrim @ Append[ b, a[j,None]->m ],
-      y
+      post
      ]
    ]
 
 HoldPattern @
-  Multiply[ x___, a_?QubitQ[j___,2], Ket[b_Association], y___ ] := With[
+  Multiply[ pre___, a_?QubitQ[j___,2], Ket[b_Association], post___ ] :=
+  With[
     { m = Mod[ 1 + b[ a[j,None] ], 2 ] },
     (2 m - 1) I Multiply[
-      x,
+      pre,
       Ket @ KeySort @ KetTrim @ Append[ b, a[j,None]->m ],
-      y
+      post
      ]
    ]
 

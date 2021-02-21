@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-21 06:36:03+09 $
-  $Revision: 2.55 $
+  $Date: 2021-02-21 19:48:59+09 $
+  $Revision: 2.62 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.55 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-21 06:36:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.62 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-21 19:48:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -117,6 +117,11 @@ SpinNumberQ[j:Rational[_,2]?Positive, m:Rational[_,2]] := And[ -j <= m <= j ]
 SpinNumberQ[{j_, m_}] := SpinNumberQ[j, m]
 
 SpinNumberQ[__] = False
+
+
+TheBra::usage = "TheBra[...] is formally different from but equalt to TheKet[...]."
+
+TheBra[args__] := TheKet[args]
 
 
 TheKet::usage = "TheKet[0]={1,0}, TheKet[1]={0,1}.
@@ -415,7 +420,7 @@ SetAttributes[{Ket, Bra}, NHoldAll]
 (* The integers in Ket[] and Bra[] should not be converted to real
    numbers by N[]. *)
 
-Format[ Ket[{}] ] := Ket[Any]
+Format[ Ket[None] ] := Ket[Any]
 
 Format[ Bra[{}] ] := Bra[Any]
 
@@ -541,14 +546,14 @@ HoldPattern @
   BraKet[a, b] Multiply[pre, post]
 
 HoldPattern @
-  Multiply[ pre___, Bra[a_Association], Ket[{}], post___ ] :=
+  Multiply[ pre___, Bra[a_Association], Ket[None], post___ ] :=
   BraKet[a, Association[]] Multiply[pre, post]
 
 HoldPattern @ Multiply[ pre___, Bra[{}], Ket[b_Association], post___ ] :=
   BraKet[Association[], b] Multiply[pre, post]
 
 HoldPattern @
-  Multiply[ pre___, Bra[{}], Ket[{}], post___ ] :=
+  Multiply[ pre___, Bra[{}], Ket[None], post___ ] :=
   BraKet[{}, {}] Multiply[pre, post]
 
 HoldPattern @
@@ -745,9 +750,11 @@ Pauli[Hadamard] := (Pauli[1]+Pauli[3])/Sqrt[2]
 
 Pauli[Quadrant] := Pauli[0] (1+I)/2 + Pauli[3] (1-I)/2
 (* Pauli[7] is kept without being expanded *)
+Pauli[-Quadrant] := Pauli[0] (1-I)/2 + Pauli[3] (1+I)/2
 
 Pauli[Octant] := Pauli[0] (1+Exp[I Pi/4])/2 + Pauli[3] (1-Exp[I Pi/4])/2
 (* Pauli[8] is kept without being expanded *)
+Pauli[-Octant] := Pauli[0] (1+Exp[-I Pi/4])/2 + Pauli[3] (1-Exp[-I Pi/4])/2
 
 (*
 Pauli[ a___, b:(Raise|Lower|Hadamard|Quadrant|Octant|10|11), c___ ] :=
@@ -1078,6 +1085,12 @@ Pauli /: Matrix[Pauli[j___], {___}] := ThePauli[j]
 Pauli /: NonCommutativeQ[ Pauli[__] ] = True
 
 
+(* For Dyad *)
+(* Matrix[Dyad[...], {s1, s2, ...}] is handled below. *)
+Dyad /: Matrix[ op:Dyad[_, _, qq_List] ] :=
+  Matrix[ Elaborate[op], qq ]
+
+
 (* For general Ket/Bra *)
 
 Matrix[ Ket[Associatoin[]] ] := 0
@@ -1117,7 +1130,7 @@ HoldPattern @ Matrix[ expr:(_List|_Association), qq:{__?SpeciesQ} ] :=
 
 (* General Code for Operators *)
 
-Matrix[ expr:Except[_Pauli|_Ket|_Bra|_?NonCommutativeQ] ] :=
+Matrix[ expr:Except[_Pauli|_Dyad|_Ket|_Bra|_?NonCommutativeQ] ] :=
   Matrix[expr, Representables @ expr]
 
 Matrix[ expr_, {} ] := expr /; FreeQ[expr, _Pauli|_Dyad|_Ket|_Bra]
@@ -1169,6 +1182,8 @@ BuildMatrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := (
 
 BuildMatrix[ op:Dyad[_, _, _List], qq:{__?SpeciesQ} ] :=
   Matrix[ Elaborate[op], qq ]
+(* NOTE: The case of Matrix[Dyad[...]] needs to be handled separately and,
+   indeed, has already been done above. *)
 
 
 (* NOTE: Leave op_ unspecified so as for BuildMatrix to be further refined for
@@ -1567,7 +1582,7 @@ HoldPattern @ Elaborate[ Dyad[a_, b_, c_List] ] := Module[
     bb = Lookup[b, c],
     op },
   op = Construct @@@ Thread @ {c, Thread[bb -> aa]};
-  Multiply @@ op
+  Garner @ Elaborate[Multiply @@ op]
  ]
 
 Dyad[a_Association, b_Association, {}|All] := Multiply[Ket[a], Bra[b]]
@@ -2059,7 +2074,7 @@ Purge[m_?MatrixQ] := Module[
 
 PauliEmbed::usage = "PauliEmbed[A, qubits, n] returns the fully expanded form of A operating on the whole tensor product space. Here A is a linear operator on the Hilbert space of qubits={i, j, k, ...} among total n qubits."
 
-PauliEmbed[A_, bits_List, len_Integer] := Module[
+PauliEmbed[A_?MatrixQ, bits_List, len_Integer] := Module[
   { a, b, c, d, none,
     n = Length[bits],
     AA = PauliDecompose[A] },
@@ -2075,7 +2090,7 @@ PauliEmbed[A_, bits_List, len_Integer] := Module[
 PauliApply::usage = "PauliApply[A, qubits, v] applies the linear operator A on
   qubits of the state vector v."
 
-PauliApply[A_, bits_List, v_List] := With[
+PauliApply[A_?MatrixQ, bits_List, v_?VectorQ] := With[
   { n = Log[2, Length[v]] },
   PauliEmbed[A, bits, n] . v
  ]
@@ -2355,7 +2370,7 @@ Fidelity[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]
 (*     <GraphForm>                                                   *)
 (* ***************************************************************** *)
 
-Vertex::usage = "Vertex[a, b, ...] represents a interaction vertex.\nNot to be confused with Vertices in Graph or related functions."
+Vertex::usage = "Vertex[a, b, ...] represents an interaction vertex.\nNot to be confused with Vertices in Graph or related functions."
 
 
 VertexLabelFunction::usage = "VertexLabelFunction is an option for GraphForm and ChiralGraphForm that specifies the function to generate primities for redering each vertex label.\nSee also VertexLabels."

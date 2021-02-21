@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-02-20 16:53:51+09 $ *)
-(* $Revision: 1.28 $ *)
+(* $Date: 2021-02-21 19:13:19+09 $ *)
+(* $Revision: 1.29 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,8 +10,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.28 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-20 16:53:51+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.29 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-21 19:13:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1099,9 +1099,11 @@ Garner[expr_] := Module[
 
 Elaborate::usage = "Elaborate[expr] transforms expr into a more explicit form."
 
-Elaborate[expr_] := With[
-  { pttn = Alternatives @@ Blank /@ $ElaborationHeads },
-  Garner[ expr /. { v:pttn :> Elaborate[v] } //. $ElaborationRules ]
+Elaborate[expr_] := Module[
+  { pttn = Alternatives @@ Blank /@ $ElaborationHeads,
+    noon },
+  noon = expr /. { v:pttn :> Elaborate[v] };
+  Garner[ expr //. $ElaborationRules ]
  ] /; Not @ MemberQ[$ElaborationHeads, Head[expr]]
 
 $ElaborationHeads::usage = "$ElaborationHeads is a list of heads to be directly used in Elaborate."

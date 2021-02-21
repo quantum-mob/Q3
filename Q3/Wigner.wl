@@ -7,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.22 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-21 07:03:20+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.23 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-21 16:23:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -871,7 +871,7 @@ WignerCoherent[S_?SpinQ, th_, ph_] := Module[
     Sqrt[Binomial[2 J, J + m]] * cot^m * Exp[-I*ph*(J+m)],
     {m, J, -J, -1} ];
   
-  sin^J * Dot[cc, basis]
+  Power[sin, J] * Dot[cc, basis]
  ]
 
 

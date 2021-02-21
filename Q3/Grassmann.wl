@@ -2,8 +2,8 @@
 
 (* Adopted from a package by M. Headrick (April 2003) *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-01-28 11:24:06+09 $ *)
-(* $Revision: 1.9 $ *)
+(* $Date: 2021-02-21 12:29:33+09 $ *)
+(* $Revision: 1.10 $ *)
 
 BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`", "Q3`" } ]
 
@@ -12,13 +12,13 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.9 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-28 11:24:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.10 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-21 12:29:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
-{ Let, Grassmann, GrassmannQ, AnyGrassmanQ };
+{ Let, Grassmann, GrassmannQ, AnyGrassmannQ };
 { GD, GIntegrate };
 { GrassmannExpand, GrassmannCollect };
 { GrassmannGrade }

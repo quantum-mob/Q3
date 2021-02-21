@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.16 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-29 17:48:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.20 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-21 17:48:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -47,10 +47,10 @@ End[]
 
 (*** Tools for many-particle states ***)
 
-{ VacuumState = Ket[{}],
-  VacuumExpectation, SurviveVacuum,
-  Displacement, CoherentState, SqueezedState,
-  NullState = Ket[Null] };
+{ VacuumState[] = Ket[None],
+  NullState[] = Ket[Null] };
+{ VacuumExpectation, SurviveVacuum,
+  Displacement, CoherentState, SqueezedState };
 
 { FockKet, FockCat, FockPad };
 { FockNorm, FockAvg };
@@ -1330,7 +1330,7 @@ FockExpand[expr_, opts___?OptionQ] := Module[
 (* *** Fock Space ******************************************************* *)
 (* ********************************************************************** *)
 
-NullState::usage = "NullState refers to an impossible Fock-space vector in the creation-operator representation. It is denoted by Ket[Null]. The arising of NullState implies something is going wrong during the evaluation. Any operator on NullState simply returns NullState again."
+NullState::usage = "NullState[] refers to an impossible Fock-space vector in the creation-operator representation. It is denoted by Ket[Null]. The arising of NullState[] implies something is going wrong during the evaluation. Any operator on NullState[] simply returns NullState[] again."
 
 HoldPattern @ Multiply[___, Ket[Null], ___] = Ket[Null]
 
@@ -1339,29 +1339,29 @@ HoldPattern @ Multiply[___, Bra[Null], ___] = Bra[Null]
 
 (*** VacuumState and Vacuum Expectation Values ***)
 
-VacuumState::usage = "VacuumState represents the vacuum state in the Fock space. It is denoted by Ket[{}]. It is the state that is annihilated by any annihilation operator."
+VacuumState::usage = "VacuumState[] refers to the vacuum state in the Fock space. It is denoted by Ket[None]. It is the state that is annihilated by any annihilation operator."
 
-HoldPattern @ Multiply[a___, op_?AnnihilatorQ, Ket[{}], b___] = 0 
+HoldPattern @ Multiply[a___, op_?AnnihilatorQ, Ket[None], b___] = 0 
 
 HoldPattern @ Multiply[a___, Bra[{}], op_?CreatorQ, b___] = 0
 
 HoldPattern @
-  Multiply[___, op_?BosonQ, __?(FreeQ[#, Dagger[_?BosonQ]]&), Ket[{}], ___] := 0
+  Multiply[___, op_?BosonQ, __?(FreeQ[#, Dagger[_?BosonQ]]&), Ket[None], ___] := 0
 (* Without this, because of the ordering policy, the bosonic annihilator may
-   not directly see VacuumState when mixed with other types. *)
+   not directly see VacuumState[] when mixed with other types. *)
 
 HoldPattern @
   Multiply[___, Bra[{}], __?(FreeQ[#, _?FermionQ]&), op_?AnyFermionQ, ___] :=
   0 /; CreatorQ[op]
 (* Without this, because of the ordering polity, the fermionic creator may
-   not directly see VacuumState when mixed with other types. *)
+   not directly see VacuumState[] when mixed with other types. *)
 
 SurviveVacuum::usage = "SurviveVacuum[expr] drops vacuum-annihilating parts of expression expr."
 
 SurviveVacuum[expr_] := Block[
   { saved },
-  Multiply[ expr /. {Ket[{}] -> saved}, Ket[{}] ] /.
-    {Ket[{}] -> 1, saved -> Ket[{}]}
+  Multiply[ expr /. {Ket[None] -> saved}, Ket[None] ] /.
+    {Ket[None] -> 1, saved -> Ket[None]}
  ]
 
 VacuumExpectation::usage = "VacuumExpectation[expr] returns the vacuum expectation value of an operator expression.
@@ -1377,46 +1377,46 @@ BraKet[{},{}] = 1 (* Bra[].Ket[] = 1 *)
 VacuumExpectation[expr_, OptionsPattern[]] :=
   fVacuumExpectation[OptionValue[Method]][expr]
 
-fVacuumExpectation["Algebra"][expr_] := Multiply[ Bra[{}], expr, Ket[{}] ]
+fVacuumExpectation["Algebra"][expr_] := Multiply[ Bra[{}], expr, Ket[None] ]
 
 fVacuumExpectation["Occupations"][expr_] := Multiply[ Bra[<||>], expr, Ket[<||>] ]
 
 
 (* Odd number of operators *)
 
-HoldPattern @ Multiply[Bra[{}], x__?AnyParticleQ, Ket[{}]] /; OddQ[Length @ {x}] = 0
+HoldPattern @ Multiply[Bra[{}], x__?AnyParticleQ, Ket[None]] /; OddQ[Length @ {x}] = 0
 
 (* Special rules for bosons *)
 
-HoldPattern @ Multiply[ Bra[{}], __?BosonQ, Ket[{}] ] = 0
+HoldPattern @ Multiply[ Bra[{}], __?BosonQ, Ket[None] ] = 0
 
-HoldPattern @ Multiply[ Bra[{}], Dagger[_?BosonQ].., Ket[{}] ] = 0
+HoldPattern @ Multiply[ Bra[{}], Dagger[_?BosonQ].., Ket[None] ] = 0
 
 (* Special rules for Vacuum == "Sea" *)
 
 (* (1-n_k) |0> *)
 HoldPattern @
-  Multiply[Bra[{}], a___, op:c_[k_,j___], Dagger[op:c_[k_,j___]], Ket[{}]] := 
+  Multiply[Bra[{}], a___, op:c_[k_,j___], Dagger[op:c_[k_,j___]], Ket[None]] := 
   UnitStep[k] VacuumExpectation[Multiply[a]] /;
   FermionQ[c] && seaQ[op]
 (* 2016-09-01 Can this case occur with Dagger[c] always pushed to the left? *)
 
 (* <0| (1-n_k) *)
 HoldPattern @
-  Multiply[Bra[{}], op:c_[k_,j___], Dagger[op:c_[k_,j___]], b___, Ket[{}]] :=
+  Multiply[Bra[{}], op:c_[k_,j___], Dagger[op:c_[k_,j___]], b___, Ket[None]] :=
   UnitStep[k] VacuumExpectation[Multiply[b]] /;
   FermionQ[c] && seaQ[op]
 (* 2016-09-01 Can this case occur with Dagger[c] always pushed to the left? *)
 
 (* n_k |0> *)
 HoldPattern @
-  Multiply[Bra[{}], a___, Dagger[op:c_[k_,j___]], op:c_[k_,j___], Ket[{}]] :=
+  Multiply[Bra[{}], a___, Dagger[op:c_[k_,j___]], op:c_[k_,j___], Ket[None]] :=
   UnitStep[-k] VacuumExpectation[Multiply[a]] /;
 j  FermionQ[c] && seaQ[op]
 
 (* <0| n_k *)
 HoldPattern @
-  Multiply[Bra[{}], Dagger[op:c_[k_,j___]], op:c_[k_,j___], b___, Ket[{}]] :=
+  Multiply[Bra[{}], Dagger[op:c_[k_,j___]], op:c_[k_,j___], b___, Ket[None]] :=
   UnitStep[-k] VacuumExpectation[Multiply[b]]  /;
   FermionQ[c] && seaQ[op]
 
@@ -1424,7 +1424,7 @@ HoldPattern @
    Assumption: The vacuum has a well-defined particle number and spin
    z-compoenent. Otherwise, this rule gives a wrong result. *)
 
-HoldPattern @ Multiply[Bra[{}], x__?electronQ, Ket[{}]] := Module[
+HoldPattern @ Multiply[Bra[{}], x__?electronQ, Ket[None]] := Module[
   {isospin, spin},
   {isospin, spin} = Transpose @ Map[getIsospinSpin, {x}];
   isospin = Total @ isospin;
@@ -1448,7 +1448,7 @@ getIsospinSpin[_Symbol?ParticleQ[__, s_]] := {-1/2, -s}
 
 (* Special reule for unpaired operators *)
 
-HoldPattern @ Multiply[Bra[{}], a__?AnyParticleQ, Ket[{}]] /;
+HoldPattern @ Multiply[Bra[{}], a__?AnyParticleQ, Ket[None]] /;
   unpairedQ[a] = 0
 
 (* Returns True if the operators sequence is DEFINITELY unpaired. False does
@@ -1492,7 +1492,7 @@ speciesForm[ a_Symbol?ParticleQ ] := {a, {}, -1}
 HoldPattern @ Multiply[
   Bra[{}],
   Dagger[x:a_Symbol?FermionQ[k1_,j1___]], y:a_[k2_,j2___],
-  Ket[{}]
+  Ket[None]
  ] := KroneckerDelta[k1,k2] * KroneckerDelta[{j1},{j2}] * UnitStep[-k1] /;
   seaQ[x] && seaQ[y]
 (* NOTE: Operators with different Heads are assumed to be different
@@ -1501,7 +1501,7 @@ HoldPattern @ Multiply[
 (* For operators with NUMERIC Flavor indices, for which CreatorQ[] and
    AnnihilatorQ[] give definite answers. *)
 
-HoldPattern @ Multiply[Bra[{}], ops__?AnyOperatorQ, Ket[{}]] := Module[
+HoldPattern @ Multiply[Bra[{}], ops__?AnyOperatorQ, Ket[None]] := Module[
   { Zz, new },
   (* NOTE: Zz can be replaced by any symbol which can be canonically
      ordered either lastest or earliest. *)
@@ -1530,7 +1530,7 @@ rulesParticleHoleInverse[f_] := {
 (* By definition, the vacuum expectation value of a normal ordered
    expression is zero! *)
 
-HoldPattern @ Multiply[Bra[{}], FockColon[_], Ket[{}]] = 0
+HoldPattern @ Multiply[Bra[{}], FockColon[_], Ket[None]] = 0
 
 
 (* ********************************************************************** *)
@@ -1646,7 +1646,7 @@ doExpandBasic[expr_] := expr //. {
   CoherentState[a_Association] :>
     ( Multiply @@
         Map[ Exp[-(#[[2]]**#[[2]])/2 + (Dagger[#[[1]]]**#[[2]])]& ] @
-        Normal[a] ) ** Ket[{}]
+        Normal[a] ) ** Ket[None]
  }
 (* TODO: SqueezedState *)
 
@@ -1657,23 +1657,23 @@ AppendTo[ $FockExpandMethods,
 
 (* ********************************************************************** *)
 
-FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of the total angular momentum S[c1] + S[c2] + ....\nFockAddSpin[] returns the trivial basis including only the VacuumState."
+FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of the total angular momentum S[c1] + S[c2] + ....\nFockAddSpin[] returns the trivial basis including only VacuumState[]."
 
 FockAddSpin[ ls:{(_?ParticleQ|_Association)...} ] :=
   FockAddSpin @@ Map[FockAddSpin] @ ls
 
-FockAddSpin[] := Association[ {0,0} -> {Ket[{}]} ]
+FockAddSpin[] := Association[ {0,0} -> {Ket[None]} ]
 
 FockAddSpin[irb_Association] := irb
 
 FockAddSpin[c_?ParticleQ] := Module[
   { cc = FockSpinor[c], irb },
-  irb = Multiply[Dagger[#], Ket[{}]]& /@ GroupBy[cc, {TrueSpin[#], SpinZ[#]}&];
+  irb = Multiply[Dagger[#], Ket[None]]& /@ GroupBy[cc, {TrueSpin[#], SpinZ[#]}&];
   (* NOTICE TrueSpin[#], not Spin[#]. This is a fallback for
      inconsistent Flavor indices, in which case SpinZ vanishes. *)
-  Merge[{Association[{0,0} -> {Ket[{}]}], irb}, Catenate]
+  Merge[{Association[{0,0} -> {Ket[None]}], irb}, Catenate]
   (* NOTE: The following code does not work for Spinless case:
-     Prepend[ irb, {0,0} -> {Ket[{}]} ]
+     Prepend[ irb, {0,0} -> {Ket[None]} ]
      *)
  ]
 
@@ -1713,7 +1713,7 @@ doFockAddSpin[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
       ClebschGordan[{S1, m}, {S2, Sz - m}, {S, Sz}],
     {m, Range[min, max]}
    ];
-  new = Garner @ Multiply[(new /. Ket[{}] -> 1), Ket[{}]];
+  new = Garner @ Multiply[(new /. Ket[None] -> 1), Ket[None]];
   Association[ {S, Sz} -> new ]
  ]
 
@@ -1724,7 +1724,7 @@ trimIrreducibleBasis[irb_Association] := Module[
  ]
 
 
-FockAddSpinZ::usage = "FockAddSpinZ[c1, c2, ...] returns the irreducible basis of the total directional angular momentum Sz[c1] + Sz[c2] + ....\nFockAddSpinZ[] returns the trivial basis including only the VacuumState."
+FockAddSpinZ::usage = "FockAddSpinZ[c1, c2, ...] returns the irreducible basis of the total directional angular momentum Sz[c1] + Sz[c2] + ....\nFockAddSpinZ[] returns the trivial basis including only VacuumState[]."
 
 FockAddSpinZ[ops__?FermionQ] := FockAddSpinZ @ {ops}
 
@@ -1737,21 +1737,21 @@ FockAddSpinZ[ops:{__?FermionQ}] := Module[
   FockCat @ KeySort @ Map[Ket[cc->#]&, nn, {2}]
  ]
 
-FockAddSpinZ[] := Association[ 0 -> Ket[{}] ]
+FockAddSpinZ[] := Association[ 0 -> Ket[None] ]
 
 (*** Vectors in the Fock Space ***)
 
 (* Ket := The occupation-number representation of a basis vector in the Fock space. *)
 (* Cat := The creation-operator represenation of a basis vector in the Fock space.
-   Hence, Cat is an multiplication of creators on VacuumState. *)
+   Hence, Cat is an multiplication of creators on VacuumState[]. *)
 
-catQ[ Ket[{}] ] = True
+catQ[ Ket[None] ] = True
 
-catQ[ z_?ComplexQ Ket[{}] ] = True
+catQ[ z_?ComplexQ Ket[None] ] = True
 
-catQ[ HoldPattern @ Multiply[__, Ket[{}]] ] = True
+catQ[ HoldPattern @ Multiply[__, Ket[None]] ] = True
 
-catQ[ z_?ComplexQ HoldPattern @ Multiply[__, Ket[{}]] ] = True
+catQ[ z_?ComplexQ HoldPattern @ Multiply[__, Ket[None]] ] = True
 
 catQ[ z_?ComplexQ expr_ ] := catQ[expr]
 
@@ -1760,7 +1760,7 @@ catQ[ a_ + b_ ] := catQ[a] && catQ[b]
 catQ[ _ ] = False
 
 
-FockCat::usage = "FockCat[n1,n2,...] or equivalently FockCat[Ket[n1,n2,...] converts the occupation-number representation into the creation-operator representation, i.e., as a multiplication of a series of generators on the VacuumState."
+FockCat::usage = "FockCat[n1,n2,...] or equivalently FockCat[Ket[n1,n2,...] converts the occupation-number representation into the creation-operator representation, i.e., as a multiplication of a series of generators on VacuumState[]."
 
 FockCat[rr:(_?AnyParticleQ -> _Integer?NonNegative) ...] :=
   toCatForm @ Ket[rr]
@@ -1788,16 +1788,16 @@ toCatForm[ Ket[v_Association] ] := Module[
   { cc = Keys @ v,
     nn = Values @ v },
   cc = MultiplyPower[Dagger @ cc, nn] / Sqrt[nn!];
-  Multiply[ Multiply @@ cc, Ket[{}] ]
+  Multiply[ Multiply @@ cc, Ket[None] ]
  ]
 
 
-FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall that FockCat[] gives a Fock state with VacuumState is multiplied at the rightmost."
+FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall that FockCat[] gives a Fock state with VacuumState[] is multiplied at the rightmost."
 
-FockKet::badExpr = "`1` does not seem to represent a state vector in the Fock space, which in the creation-operator representation, takes the form of Dagger[c1]**Dagger[c2]**...**VacuumState."
+FockKet::badExpr = "`1` does not seem to represent a state vector in the Fock space, which in the creation-operator representation, takes the form of Dagger[c1]**Dagger[c2]**...**VacuumState[]."
 
 FockKet[expr_] := toKetForm[ expr ] /;
-  Not @ FreeQ[expr, Ket[{}] | Ket[_Association]]
+  Not @ FreeQ[expr, Ket[None] | Ket[_Association]]
 
 FockKet[expr__] := (
   Message[FockKet::badExpr, {expr}];
@@ -1813,13 +1813,13 @@ toKetForm[expr_Plus] := Garner @ Total @
 
 toKetForm[z_?CommutativeQ expr_] := z toKetForm[expr]
 
-toKetForm[ Ket[{}] ] := Ket[]
+toKetForm[ Ket[None] ] := Ket[]
 
 toFockKet[ Ket[Null] ] = Ket[Null]
 
 toKetForm[ v:Ket[_Association] ] := v
 
-toKetForm[ HoldPattern @ Multiply[expr__, Ket[{}]] ] := Module[
+toKetForm[ HoldPattern @ Multiply[expr__, Ket[None]] ] := Module[
   {ops, val},
   {ops, val} = Transpose @ Tally @ {expr};
   ops = ops /. {Dagger -> Identity};
