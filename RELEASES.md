@@ -10,6 +10,8 @@
 
 ### Known Issues
 
+After release v1.6.0, these issues have been found:
+
 - There is a bug in ProductState when used in Multiply. To be fixed in the next release.
 
 ## v1.5.3
