@@ -1,10 +1,10 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-02-16 11:42:21+09 $ *)
-(* $Revision: 1.2 $ *)
+(* $Date: 2021-02-22 10:00:17+09 $ *)
+(* $Revision: 1.3 $ *)
 
 
-Q3Install[opts___?OptionQ] := Module[
+Module[
   { jsn, url },
 
   jsn = Import[
@@ -15,5 +15,5 @@ Q3Install[opts___?OptionQ] := Module[
   
   Print["Installing Q3 directly from GitHub. It may take serveral minutes or longer depending on your network conditions and your computer. Please be patient."];
   
-  PacletInstall[url, opts]
+  PacletInstall[url]
  ]

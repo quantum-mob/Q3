@@ -7,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.23 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-21 16:23:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.24 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-23 11:30:13+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -29,7 +29,7 @@ End[]
 
 { WignerAdd, WignerAddZ };
 
-{ WignerCoherent };
+{ SpinCoherentState };
 
 { WignerRotation, WignerEulerRotation };
 
@@ -855,13 +855,13 @@ WignerCoefficients[op_, {n_Integer}] := Module[
  ]
 
 
-WignerCoherent::usage = "WignerCoherent[S, th, ph] gives the spin coherent state."
+SpinCoherentState::usage = "SpinCoherentState[S, th, ph] gives the spin coherent state."
 
-WignerCoherent[S_?SpinQ, 0, ph_] := Ket[S -> Spin[S]]
+SpinCoherentState[S_?SpinQ, 0, ph_] := Ket[S -> Spin[S]]
 
-WignerCoherent[S_?SpinQ, Pi, ph_] := Ket[S -> -Spin[S]]
+SpinCoherentState[S_?SpinQ, Pi, ph_] := Ket[S -> -Spin[S]]
 
-WignerCoherent[S_?SpinQ, th_, ph_] := Module[
+SpinCoherentState[S_?SpinQ, th_, ph_] := Module[
   { J = Spin[S],
     sin = Sin[th]/2,
     cot = Cot[th/2],

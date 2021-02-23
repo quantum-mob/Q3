@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-02-21 21:47:16+09 $ *)
-(* $Revision: 1.30 $ *)
+(* $Date: 2021-02-23 11:18:42+09 $ *)
+(* $Revision: 1.35 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,8 +10,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.30 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-21 21:47:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.35 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-23 11:18:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -24,7 +24,7 @@ End[]
 { Supplement, SupplementBy, Common, CommonBy };
 { Choices, Successive };
 { ShiftLeft, ShiftRight };
-{ PseudoDivide };
+{ Unless, PseudoDivide };
 
 { Chain };
 { Bead, GreatCircle };
@@ -69,9 +69,9 @@ End[]
 { Multiply, MultiplyExp, MultiplyPower, MultiplyDot,
   DistributableQ };
 
-{ MultiplyExpand };
-
 { Lie, LiePower, LieSeries, LieExp };
+
+{ MultiplyExpand }; (* obsolete *)
 
 
 Begin["`Private`"]
@@ -332,6 +332,13 @@ ShiftRight[a_List, n_Integer, x_:0] := PadRight[Drop[a,-n], Length[a], x] /; n<0
 ShiftRight[a_List, 0, x_:0] := a
 
 ShiftRight[a_List] := ShiftRight[a, 1, 0]
+
+
+Unless::usage = "Unless[condition, result] gives result unless condition evaluates to True, and Null otherwise."
+
+SetAttributes[Unless, HoldRest]
+
+Unless[condition_, out_] := If[Not[condition], out]
 
 
 PseudoDivide::usage = "PseudoDivide[x, y] returns x times the PseudoInverse of y."
@@ -1114,7 +1121,8 @@ Once[
   $ElaborationHeads = {};
   
   $ElaborationRules = {
-    Abs[z_] :> Sqrt[z Conjugate[z]]
+    Abs[z_] :> Sqrt[z Conjugate[z]],
+    Exp[a_] :> MultiplyExp[a] /; Not[FreeQ[a, _?NonCommutativeQ]]
    }
 ]
 
@@ -1196,12 +1204,6 @@ HoldPattern @
   Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
   Garner[ Commutator[a, b] ] === 0
 
-(*
-HoldPattern @ Multiply[pre___, Power[E, a_], Power[E, b_], post___] :=
-  Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
-  Garner[ Commutator[a, b] ] === 0
- *)
-
 HoldPattern @
   Multiply[pre___, MultiplyExp[a_], MultiplyExp[b_], post___] :=
   Multiply[
@@ -1211,17 +1213,6 @@ HoldPattern @
    ] /;
   Garner[ Commutator[a, b, 2] ] === 0 /;
   Garner[ Commutator[b, a, 2] ] === 0
-
-(*
-HoldPattern @ Multiply[pre___, Power[E, a_], Power[E, b_], post___] :=
-  Multiply[
-    Multiply[pre],
-    MultiplyExp[ a + b + Commutator[a, b]/2 ],
-    Multiply[post]
-   ] /;
-  Garner[ Commutator[a, b, 2] ] === 0 /;
-  Garner[ Commutator[b, a, 2] ] === 0
- *)
 
 HoldPattern @
   Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
@@ -1402,36 +1393,13 @@ MultiplyDegree[ MultiplyExp[expr_] ] := Infinity /; MultiplyDegree[expr] > 0
 
 MultiplyDegree[ expr_ ] := 0 /; FreeQ[expr, _?AnySpeciesQ]
 
-MultiplyExpand::usage = "MultiplyExpand[expr] expands expr according to certain rules. Typically expr involves non-commutative multiply Multiply."
 
-MultiplyExpand::unknown = "Unknown expand method: ``. \"Basic\" is used."
+MultiplyExpand::usage = "MultiplyExpand is obsolete. Use Elaborate instead."
 
-Options[MultiplyExpand] = {Method->"Basic"}
-
-expandMethods = {"Basic", "BakerHausdorff", "BakerHausdorffPlus"}
-
-MultiplyExpand[expr_, opts___?OptionQ] := Module[
-  { method, func },
-  method = Method /. {opts} /. Options[MultiplyExpand] /.
-    { s_Symbol :> SymbolName[s],
-      s_ :> ToString[s] };
-  If[ !MemberQ[expandMethods, method],
-    Message[MultiplyExpand::unknown, method];
-    method = "Basic";
-   ];
-  func = Symbol[ Context[method] <> "doExpand" <> method];
-  func[expr]
- ]
-
-(* To be called through MultiplyExpand[expr, Method->"Basic"] *)
-doExpandBasic[expr_] := expr /. {
-  Power[E, op_] :> MultiplyExp[op]
- }
-(* TODO *)
-
-(* To be called through MultiplyExpand[expr, Method->"BakerHausdorff"] *)
-doExpandBakerHausdorff[expr_] := expr
-(* TODO *)
+MultiplyExpand[expr_, opts___?OptionQ] := (
+  Message[Q3General::obsolete, "MultiplyExpand", "Elaborate"];
+  Elaborate[expr]
+ )
 
 
 ReplaceBy::usage = "ReplaceBy[old \[RightArrow] new, M] construct a list of Rules to be used in ReplaceAll by applying the linear transformation associated with the matrix M on new. That is, the Rules old$i \[RightArrow] \[CapitalSigma]$j M$ij new$j. If new is a higher dimensional tensor, the transform acts on its first index.\nReplaceBy[expr, old \[RightArrow] new] applies ReplaceAll on expr with the resulting Rules."
@@ -1521,7 +1489,7 @@ Q3Protect[]
 
 (* $ElaborationRules is too messay to show the value. *)
 SetAttributes[$ElaborationRules, ReadProtected]
-Protect[$ElaborationRules]
+Protect[$ElaborationRules, $ElaborationHeads]
 
 Protect[$GarnerTests, $GarnerHeads]
 

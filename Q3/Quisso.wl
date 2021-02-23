@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-21 19:03:10+09 $
-  $Revision: 1.90 $
+  $Date: 2021-02-23 10:57:27+09 $
+  $Revision: 1.91 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.90 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-21 19:03:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.91 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-23 10:57:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -418,8 +418,7 @@ QuissoExpand[expr_] := (
  )
 
 Once[
-  $ElaborationRules = Join[
-    $ElaborationRules,
+  $ElaborationRules = Join[ $ElaborationRules,
     { G_?QubitQ[j___, 0] -> 1,
       G_?QubitQ[j___, 4] -> G[j, Raise],
       G_?QubitQ[j___, 5] -> G[j, Lower],
@@ -428,9 +427,6 @@ Once[
       G_?QubitQ[j___, 8] -> G[j, Octant],
       G_?QubitQ[j___, 10] -> (1 + G[j,3]) / 2,
       G_?QubitQ[j___, 11] -> (1 - G[j,3]) / 2,
-      HoldPattern[ Projector[v_, qq_] ] :> Elaborate[Dyad[v, v, qq]],
-      Exp[a_] /; Not[FreeQ[a,_?QubitQ]] -> MultiplyExp[a],
-      v_ProductState :> Expand[v],
       OTimes -> DefaultForm @* CircleTimes,
       OSlash -> DefaultForm @* CircleTimes,
       ControlledU -> QuissoControlledU,
@@ -462,12 +458,14 @@ Format[ ProductState[a_Association, ___] ] := Module[
   CircleTimes @@ vv
  ]
 
-ProductState /:
-NonCommutativeQ[ ProductState[___] ] = True
+Once[ AppendTo[$ElaborationHeads, ProductState]; ]
 
 ProductState /:
-HoldPattern[ Expand[ ProductState[a_Association, ___] ] ] := 
+HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := 
   Garner[ CircleTimes @@ KeyValueMap[QuissoExpression[#2,#1]&, a] ]
+
+ProductState /:
+NonCommutativeQ[ ProductState[___] ] = True
 
 HoldPattern @ Multiply[ a___, b:ProductState[_Association, ___], c___ ] :=
   Garner @ Multiply[ a, Expand[b], c ]
@@ -1432,13 +1430,20 @@ Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection op
 
 Projector::noKet = "No Ket expression found for projection in the provided expression ``. Identity operator is returned."
 
-Projector /: Dagger[ op_Projector ] := op
+Once[ AppendTo[$ElaborationHeads, Projector]; ]
 
 Projector /:
-QuissoExpression[ HoldPattern @ Projector[v_, qq_] ] :=
+Dagger[ op_Projector ] := op
+
+Projector /:
+HoldPattern @ Elaborate[ Projector[v_, qq_] ] :=
+  Elaborate[Dyad[v, v, qq]]
+
+Projector /:
+HoldPattern @ QuissoExpression[ Projector[v_, qq_] ] :=
   Dirac[v, Dagger @ v, qq]
 
-Projector[expr_, ___] := (
+HoldPattern @ Projector[expr_, ___] := (
   Message[Projector::noKet, expr];
   1
  ) /; FreeQ[expr, _Ket]

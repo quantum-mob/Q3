@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.20 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-21 17:48:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.27 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-23 11:11:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -61,7 +61,7 @@ End[]
 
 { FockAddSpin, FockAddSpinZ };
 
-{ FockExpand, $FockExpandMethods };
+{ FockExpand, $FockExpandMethods }; (* Obsolete *)
 
 { FockFourier, FockInverseFourier }; (* Obsolete *)
 
@@ -75,6 +75,7 @@ $symbs = Unprotect[
   Basis, Matrix, BuildMatrix,
   Parity, ParityEvenQ, ParityOddQ,
   LogicalForm,
+  $ElaborationRules, $ElaborationHeads,
   $GarnerHeads, $GarnerTests, $RepresentableTests,
   Spin, ComplexQ
  ]
@@ -1278,17 +1279,28 @@ LieExp[gen_, expr_] := Module[
 (* TODO: To support Heisenbergs *)
 
 
+$ElaborationRules = Join[ $ElaborationRules,
+  { HoldPattern @ Multiply[
+      pre___,
+      MultiplyExp[a_], b__, MultiplyExp[c_],
+      post___
+     ] :> Multiply[pre, LieExp[a, Multiply[b]], post] /;
+      Garner[a + c] == 0
+   }
+ ]
+
 (* To be called through FockExpand[expr, Method->"BakerHausdorff"] *)
-
-(* Let[LinearMap, doExpandBakerHausdorff] *)
-
+(*
 HoldPattern @ doExpandBakerHausdorff[
   Multiply[pre___, MultiplyExp[a_], b__, MultiplyExp[c_], post___]
  ] := Multiply[pre, LieExp[a, Multiply[b]], post] /;
   Garner[a + c] == 0
 
-doExpandBakerHausdorff[expr_] := expr
-
+doExpandBakerHausdorff[expr_] := expr /. {
+  op:HoldPattern[Multiply[___, MultiplyExp[a_], b__, MultiplyExp[c_], ___]] :>
+    doExpandBakerHausdorff[op] /; Garner[a + c] == 0
+ }
+ *)
 
 (* ********************************************************************** *)
 
@@ -1300,30 +1312,14 @@ Once[
 (* ********************************************************************** *)
 
 
-FockExpand::usage = "FockExpand[expr] expands expr including Fock space operators."
+FockExpand::usage = "FockExpand is obsolete now. Use Elaborate instead."
 
-FockExpand::unknown = "Unknown expand method: ``. Basic is used."
+$FockExpandMethods::usage = "$FockExpandMethods is obsolete and not used any longer."
 
-$FockExpandMethods::usage = "$FockExpandMethods is an Association for the available FockExpand methods."
-
-
-Options[FockExpand] = {Method->"Basic"}
-
-$FockExpandMethods = Association[
-  "BakerHausdorff" -> doExpandBakerHausdorff
- ]
-
-FockExpand[expr_, opts___?OptionQ] := Module[
-  { method },
-  method = Method /. {opts} /. Options[FockExpand] /.
-    { s_Symbol :> SymbolName[s],
-      s_ :> ToString[s] };
-  If[ !KeyExistsQ[$FockExpandMethods, method],
-    Message[FockExpand::unknown, method];
-    method = "Basic";
-   ];
-  $FockExpandMethods[method][expr]
- ]
+FockExpand[expr_, opts___?OptionQ] := (
+  Message[Q3General::obsolete, "FockExpand", "Elaborate"];
+  Elaborate[expr]
+ )
 
 
 (* ********************************************************************** *)
@@ -1589,20 +1585,28 @@ Displacement[z_?GrassmannQ, c_?FermionQ] := Multiply[
 
 (* ********************************************************************** *)
 
-CoherentState::usage = "CoherentState[c[k]->z] = Ket[c[k]->z] gives the coherent state of the operator c[k].  CoherentState is normalized to 1.  It is actually a place holder, but using FockExpand, you can represent it explicitly in terms of the creation and annihilation operator."
+CoherentState::usage = "CoherentState[c[k]->z] = Ket[c[k]->z] gives the coherent state of the operator c[k].  CoherentState is normalized to 1.  It is actually a place holder, but using Elaborate, you can represent it explicitly in terms of the creation and annihilation operator."
 
 Format[ CoherentState[a_Association] ] := Ket[a]
 
 Format[ HoldPattern @ Dagger[v_CoherentState] ] := Bra @@ v
 
+CoherentState /:
+CommutativeQ[ CoherentState[_Association] ] := False
 
-coherentSpec = Alternatives[_?BosonQ->_?ComplexQ, _?FermionQ->_?GrassmannQ]
+$coherentSpec = Alternatives[
+  _?BosonQ -> _?ComplexQ,
+  _?FermionQ -> _?GrassmannQ,
+  {__?BosonQ} -> _?ComplexQ,
+  {__?BosonQ} -> {__?ComplexQ},
+  {__?FermionQ} -> __?GrassmannQ,
+  {__?FermionQ} -> {__?GrassmannQ}
+ ]
 
-CoherentState[ op:coherentSpec.. ] := CoherentState[ CoherentState[<||>], op ]
+CoherentState[ op:$coherentSpec.. ] := CoherentState[ CoherentState[<||>], op ]
 
-CoherentState[ CoherentState[a_Association], op:coherentSpec.. ] := Module[
+CoherentState[ CoherentState[a_Association], op:$coherentSpec.. ] := Module[
   { rules = Flatten @ KetRule @ {op} },
-  (* Print["rules = ", rules]; *)
   CoherentState @ KeySort @ KetTrim @ Join[a, Association @ rules]
  ]
 
@@ -1628,31 +1632,49 @@ HoldPattern @
   Multiply[a, CoherentState[v], v[op], b] /; KeyExistsQ[v, op]
 (* NOTE: v[op] can be a Grassmann variable *)
 
-HoldPattern @ Multiply[a___, op_?ParticleQ, CoherentState[v_Association], b___] := 
+HoldPattern @
+  Multiply[a___, op_?ParticleQ, CoherentState[v_Association], b___] := 
   Multiply[a, CoherentState[v], op, b]
 
-HoldPattern @ Multiply[a___, Dagger[CoherentState[v_Association]], Dagger[op_?ParticleQ], b___] := Multiply[a, Dagger[op ** CoherentState[v]], b]
+HoldPattern @
+  Multiply[a___, Dagger[CoherentState[v_Association]], Dagger[op_?ParticleQ], b___] := Multiply[a, Dagger[op ** CoherentState[v]], b]
 
 
-HoldPattern @ Multiply[a___, Dagger[op_?ParticleQ], CoherentState[v_Association], b___] := 
+HoldPattern @
+  Multiply[a___, Dagger[op_?ParticleQ], CoherentState[v_Association], b___] := 
   Multiply[a, CoherentState[v], Dagger[op], b] /; Not @ KeyExistsQ[v, op]
 
-HoldPattern @ Multiply[a___, Dagger[CoherentState[v_Association]], op_?ParticleQ, b___] := 
+HoldPattern @
+  Multiply[a___, Dagger[CoherentState[v_Association]], op_?ParticleQ, b___] := 
   Multiply[a, op, Dagger[CoherentState[v]], b] /; Not @ KeyExistsQ[v, op]
 
 
+Once[
+  AppendTo[$GarnerHeads, CoherentState];
+  AppendTo[$ElaborationHeads, CoherentState];
+ ]
+
+CoherentState /:
+HoldPattern @ Elaborate[ CoherentState[vec_Association] ] := Module[
+  { val = Values[vec],
+    expr },
+  expr = Multiply @@ KeyValueMap[
+    MultiplyExp[-(#2 ** #2)/2 + (Dagger[#1] ** #2)]&,
+    vec
+   ];
+  expr ** Ket[None]
+ ]
+
 (* To be called through FockExpand[expr, Method->"Basic"] *)
+(*
 doExpandBasic[expr_] := expr //. {
   CoherentState[a_Association] :>
     ( Multiply @@
-        Map[ Exp[-(#[[2]]**#[[2]])/2 + (Dagger[#[[1]]]**#[[2]])]& ] @
-        Normal[a] ) ** Ket[None]
+        Map[ MultiplyExp[-(#[[2]]**#[[2]])/2 + (Dagger[#[[1]]]**#[[2]])]& ] @
+        Normal[a]
+     ) ** Ket[None]
  }
-(* TODO: SqueezedState *)
-
-AppendTo[ $FockExpandMethods,
-  "Basic" -> Symbol[ Context[doExpandBasic] <> "doExpandBasic" ]
- ]
+ *)
 
 
 (* ********************************************************************** *)

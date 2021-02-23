@@ -1,5 +1,13 @@
 # Select Release Notes
 
+## v1.6.0
+
+- FockExpand is deprecated now.
+- Elaborate has been enhanced further.
+- Various broken links in documentation pages have been fixed.
+- Documentation pages have been updated to better support Mathematica v12.2.
+- CoherentState is enhanced.
+
 ## v1.5.3
 
 - Q3Update shows a progress indicator.

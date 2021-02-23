@@ -10,11 +10,11 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     85592,       2371]
-NotebookOptionsPosition[     78485,       2220]
-NotebookOutlinePosition[     81124,       2287]
-CellTagsIndexPosition[     81044,       2282]
-WindowTitle->Kitaev Chain
+NotebookDataLength[     87473,       2421]
+NotebookOptionsPosition[     80153,       2267]
+NotebookOutlinePosition[     82890,       2335]
+CellTagsIndexPosition[     82810,       2330]
+WindowTitle->Demo: Kitaev Chain
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -33,10 +33,36 @@ Cell[BoxData[GridBox[{
           Row[{"Related Tutorials", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
         StripOnInput->False], {"\<\"Fock\"\>":>Documentation`HelpLookup[
-       "paclet:Q3/tutorial/Fock"]},
+       "paclet:Q3/tutorial/FockQuickStart"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Functions",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Functions", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FockHopping\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockHopping"], "\<\"FockNumber\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockNumber"], "\<\"FockPairing\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/FockPairing"], "\<\"Hop\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Hop"], "\<\"Pair\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Pair"], "\<\"Q\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Q"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialFunction"]],
       LineSpacing->{1.4, 0}],
      "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
 \[ThickSpace]",
@@ -51,12 +77,12 @@ Cell[BoxData[GridBox[{
          TextCell[
           Row[{"URL", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Q3/tutorial/KitaevChain\"\>":>
+        StripOnInput->False], {"\<\"Q3/tutorial/DemoKitaevChain\"\>":>
        None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
        Module[{DocumentationSearch`Private`nb$}, 
         DocumentationSearch`Private`nb$ = NotebookPut[
            Notebook[{
-             Cell["Q3/tutorial/KitaevChain"]}, Visible -> False]]; 
+             Cell["Q3/tutorial/DemoKitaevChain"]}, Visible -> False]]; 
         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
         NotebookClose[DocumentationSearch`Private`nb$]; Null], 
@@ -69,7 +95,7 @@ Cell[BoxData[GridBox[{
                MakeBoxes[
                 Hyperlink[
                 "http://reference.wolfram.com/language/Q3/tutorial/\
-KitaevChain.html"], StandardForm]], "Input", TextClipboardType -> 
+DemoKitaevChain.html"], StandardForm]], "Input", TextClipboardType -> 
               "PlainText"]}, Visible -> False]]; 
         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
@@ -79,31 +105,27 @@ KitaevChain.html"], StandardForm]], "Input", TextClipboardType ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$179712], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$177409], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], 
-             "Q3/tutorial/KitaevChain", ".html"]], None}]}]},
+             "Q3/tutorial/DemoKitaevChain", ".html"]], None}]}]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"URLMenu"]],
       LineSpacing->{1.4, 0}]
     }], "AnchorBar"]}
   }]], "AnchorBarGrid",
- GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
-     Scaled[0.65], {
-      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
-   "RowsIndexed" -> {}}},
  CellID->1],
 
 Cell[CellGroupData[{
 
-Cell["Kitaev Chain", "Title",
+Cell["Demo: Kitaev Chain", "Title",
  CellID->509267359],
 
 Cell[TextData[{
  "The Kitaev chain is a prototype example of the topological superconductor. \
 Here we demonstrate how to examine its properties using ",
- ButtonBox["Q3 Application",
+ ButtonBox["Q3",
   BaseStyle->"Link",
   ButtonData->"paclet:Q3/guide/Q3"],
  "."
@@ -111,13 +133,38 @@ Here we demonstrate how to examine its properties using ",
  CellID->1534169418],
 
 Cell[BoxData[GridBox[{
-   {"FockNumber", Cell["Number operator", "TableText"]},
-   {"FockHopping", Cell[
+   {
+    RowBox[{
+     ButtonBox["FockNumber",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/FockNumber"], " ", "or", " ", 
+     ButtonBox["Q",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/Q"]}], Cell[
+    "Number operator", "TableText"]},
+   {
+    RowBox[{
+     ButtonBox["FockHopping",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/FockHopping"], " ", "or", " ", 
+     ButtonBox["Hop",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/Hop"]}], Cell[
     "Constructs the hopping Hamiltonian terms", "TableText"]},
-   {"FockPairing", Cell[
+   {
+    RowBox[{
+     ButtonBox["FockPairing",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/FockPairing"], " ", "or", " ", 
+     ButtonBox["Pair",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/Pair"]}], Cell[
     "Constructs the pairing Hamiltonian terms", "TableText"]}
   }]], "DefinitionBox",
  CellID->2096742444],
+
+Cell["Some useful functions to study the Kitaev chain.", "Caption",
+ CellID->1891092685],
 
 Cell[TextData[{
  "See Kitaev original paper [",
@@ -127,17 +174,17 @@ Cell[TextData[{
      TextData["A. Kitaev, Physics-Uspekhi 44, 131 (2001)"]], 
     "https://doi.org/10.1070/1063-7869/44/10S/S29"},
    "WebLink",
-   BaseStyle->{"Caption"}]]],
+   BaseStyle->{"Text"}]]],
  "] for technical details of the model."
-}], "Caption",
- CellID->1891092685],
+}], "Text",
+ CellID->2023724769],
 
 Cell[TextData[{
  "Load the ",
  Cell[BoxData[
   TemplateBox[{
     Cell[
-     TextData["Fock"]], "paclet:Q3/guide/Fock"},
+     TextData["Fock"]], "paclet:Q3/guide/FockPackageGuide"},
    "RefLink",
    BaseStyle->{"InlineFormula"}]], "InlineFormula"],
  " package."
@@ -145,7 +192,7 @@ Cell[TextData[{
  CellID->836781195],
 
 Cell[BoxData[
- RowBox[{"<<", "Q3`Fock`"}]], "Input",
+ RowBox[{"<<", "Q3`"}]], "Input",
  CellLabel->"In[1]:=",
  CellID->784376994],
 
@@ -1511,7 +1558,7 @@ AAAAAAAAAAAAAABuwv8HDZ70wA==
   PlotRange->{{0, 511.}, {0, 76.}}]], "Output",
  CellTags->"RasterizedOutput",
  CellLabel->"Out[6]=",
- CellID->237724496]
+ CellID->1791944592]
 }, Open  ]],
 
 Cell["Let us take a look at the connectivity of the model.", "MathCaption",
@@ -2209,7 +2256,7 @@ Cell["", "SectionHeaderSpacer"],
 Cell[TextData[Cell[BoxData[
  TemplateBox[{
    Cell[
-    TextData["Fock"]], "paclet:Q3/tutorial/Fock"},
+    TextData["Fock"]], "paclet:Q3/tutorial/FockQuickStart"},
   "RefLink",
   BaseStyle->{"InlineFormula"}]], "InlineFormula"]], "RelatedTutorials",
  CellID->806871991]
@@ -2222,7 +2269,7 @@ Saveable->False,
 ScreenStyleEnvironment->"Working",
 WindowSize->{725, 750},
 WindowMargins->{{0, Automatic}, {Automatic, 0}},
-WindowTitle->"Kitaev Chain",
+WindowTitle->"Demo: Kitaev Chain",
 TaggingRules->{
  "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
   "LinkTrails" -> GridBox[{{
@@ -2232,21 +2279,22 @@ TaggingRules->{
          BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
     Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
   "", "Metadata" -> {
-   "built" -> "{2021, 2, 21, 21, 5, 47.340101}", 
-    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+   "built" -> "{2021, 2, 23, 12, 38, 54.461476}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`Fock`", 
+    "keywords" -> {"topological insulator", "topological superconductor"}, 
     "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
      "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
     "None", "summary" -> 
     "The Kitaev chain is a prototype example of the topological \
-superconductor. Here we demonstrate how to examine its properties using Q3 \
-Application. See Kitaev original paper [A. Kitaev, Physics-Uspekhi 44, 131 \
-(2001)] for technical details of the model. Load the Fock package.", 
-    "synonyms" -> {}, "tabletags" -> 
-    DocumentationBuild`Make`Private`tabletaggingrules$179643, "title" -> 
-    "Kitaev Chain", "titlemodifier" -> "", "windowtitle" -> "Kitaev Chain", 
-    "type" -> "Tutorial", "uri" -> "Q3/tutorial/KitaevChain", 
-    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "TryRealOnly" -> 
-  False},
+superconductor. Here we demonstrate how to examine its properties using Q3. \
+Some useful functions to study the Kitaev chain. See Kitaev original paper \
+[A. Kitaev, Physics-Uspekhi 44, 131 (2001)] for technical details of the \
+model.", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$177332, "title" -> 
+    "Demo: Kitaev Chain", "titlemodifier" -> "", "windowtitle" -> 
+    "Demo: Kitaev Chain", "type" -> "Tutorial", "uri" -> 
+    "Q3/tutorial/DemoKitaevChain", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "TryRealOnly" -> False},
 FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
 StyleDefinitions->Notebook[{
    Cell[
@@ -2274,105 +2322,107 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "RasterizedOutput"->{
-  Cell[30696, 1195, 18981, 318, 70, "Output",ExpressionUUID->"92aa6693-7672-48d6-b874-eba302964e38",
+  Cell[32353, 1242, 18982, 318, 70, "Output",ExpressionUUID->"85d11d67-8fc6-48ec-910a-945a4085eaca",
    CellTags->"RasterizedOutput",
-   CellID->237724496]}
+   CellID->1791944592]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"RasterizedOutput", 80863, 2275}
+ {"RasterizedOutput", 82628, 2323}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[584, 21, 3031, 74, 70, "AnchorBarGrid",ExpressionUUID->"31099412-b885-4b11-8182-99ca7a42dcf4",
+Cell[590, 21, 3970, 96, 70, "AnchorBarGrid",ExpressionUUID->"7043abc6-dd50-49f5-8851-3288b8915b02",
  CellID->1],
 Cell[CellGroupData[{
-Cell[3640, 99, 49, 1, 70, "Title",ExpressionUUID->"29520007-f2aa-4b87-a318-c69f7cf35d9a",
+Cell[4585, 121, 55, 1, 70, "Title",ExpressionUUID->"c39c4559-6172-4848-b89e-2aa37a0f1eb4",
  CellID->509267359],
-Cell[3692, 102, 278, 8, 70, "Text",ExpressionUUID->"eb456784-2262-455c-b597-ebc33509aa5a",
+Cell[4643, 124, 266, 8, 70, "Text",ExpressionUUID->"a5f43891-06da-4ae1-8438-68f9f2abd57c",
  CellID->1534169418],
-Cell[3973, 112, 299, 7, 70, "DefinitionBox",ExpressionUUID->"e7d9af69-2268-470b-96d9-de39821e721a",
+Cell[4912, 134, 925, 29, 70, "DefinitionBox",ExpressionUUID->"e376e302-15b0-4a7c-bb1d-c2d7b5473e78",
  CellID->2096742444],
-Cell[4275, 121, 324, 11, 70, "Caption",ExpressionUUID->"2bf5bcac-18d4-4441-8227-ec1ef003e763",
+Cell[5840, 165, 88, 1, 70, "Caption",ExpressionUUID->"57dd597c-3a20-487b-82ce-e08a8d1e85d1",
  CellID->1891092685],
-Cell[4602, 134, 238, 10, 70, "MathCaption",ExpressionUUID->"4059d60d-fe7f-4e7a-b5dd-83cf03a5ee25",
+Cell[5931, 168, 318, 11, 70, "Text",ExpressionUUID->"747b7453-19ba-40a6-9154-26844f80d4d6",
+ CellID->2023724769],
+Cell[6252, 181, 250, 10, 70, "MathCaption",ExpressionUUID->"ba67d533-60f1-4c05-9bba-8d297e5d6e86",
  CellID->836781195],
-Cell[4843, 146, 95, 3, 70, "Input",ExpressionUUID->"71d201f6-a080-4553-a7dd-8275c5881a46",
+Cell[6505, 193, 90, 3, 70, "Input",ExpressionUUID->"65c33b9e-9383-43d5-b8d0-84c1d5e3c9db",
  CellID->784376994],
-Cell[4941, 151, 260, 10, 70, "MathCaption",ExpressionUUID->"3c51a395-c549-4923-b848-fc497e2c678a",
+Cell[6598, 198, 260, 10, 70, "MathCaption",ExpressionUUID->"c29aaac6-6a81-4919-a604-d6baabb6215e",
  CellID->1974511739],
-Cell[5204, 163, 128, 4, 70, "Input",ExpressionUUID->"d167d8af-f497-4efb-b1c4-e1bf9b0d1e46",
+Cell[6861, 210, 128, 4, 70, "Input",ExpressionUUID->"385ca5e3-6810-42b3-9264-2de9391bc281",
  CellID->393078912],
-Cell[5335, 169, 173, 4, 70, "MathCaption",ExpressionUUID->"c6626e02-9015-43c3-863a-0d63cb2ed26f",
+Cell[6992, 216, 173, 4, 70, "MathCaption",ExpressionUUID->"50c6699c-d0d7-4024-85f0-eafda5b299ed",
  CellID->272490924],
-Cell[5511, 175, 167, 5, 70, "Input",ExpressionUUID->"d32b9073-c564-48d3-ae9e-41342cc9f422",
+Cell[7168, 222, 167, 5, 70, "Input",ExpressionUUID->"57951165-633e-4f3c-87bb-4b3c809d97a7",
  CellID->1481935487],
-Cell[5681, 182, 94, 1, 70, "MathCaption",ExpressionUUID->"335ab8c6-5066-404e-92f6-89e673c638b1",
+Cell[7338, 229, 94, 1, 70, "MathCaption",ExpressionUUID->"2e9e6abc-b327-42da-bdda-b667a1ef86d5",
  CellID->817575812],
-Cell[5778, 185, 112, 4, 70, "Input",ExpressionUUID->"a3044613-001b-4a30-978b-48f09203f2c8",
+Cell[7435, 232, 112, 4, 70, "Input",ExpressionUUID->"0e003ee9-83cd-400e-982d-d3c73b473568",
  CellID->1396298778],
-Cell[5893, 191, 92, 1, 70, "MathCaption",ExpressionUUID->"8699f73b-be3c-418f-86f3-d95b206b89e0",
+Cell[7550, 238, 92, 1, 70, "MathCaption",ExpressionUUID->"1315c9a4-c404-4ddf-8b38-66c807ec1255",
  CellID->2039751077],
 Cell[CellGroupData[{
-Cell[6010, 196, 323, 10, 70, "Input",ExpressionUUID->"ce310e39-aacd-4857-9d16-3440f769b766",
+Cell[7667, 243, 323, 10, 70, "Input",ExpressionUUID->"114f2782-bd9f-4790-8642-e50243085efa",
  CellID->1814894078],
-Cell[6336, 208, 1257, 60, 70, "Output",ExpressionUUID->"371fe8ec-a2ce-4a8d-8e8f-c66575ee9c72",
+Cell[7993, 255, 1257, 60, 70, "Output",ExpressionUUID->"5560bada-452a-4215-9140-f862ecae66fe",
  CellID->1893560920],
-Cell[7596, 270, 2953, 116, 70, "Output",ExpressionUUID->"2b7ee639-9879-465f-85f4-7522d15f66d2",
+Cell[9253, 317, 2953, 116, 70, "Output",ExpressionUUID->"c5b1b320-5f48-4d3b-850d-3fdda9e44374",
  CellID->1518217547]
 }, Open  ]],
-Cell[10564, 389, 81, 1, 70, "MathCaption",ExpressionUUID->"79818f16-3630-4618-863a-bca0ea071c6d",
+Cell[12221, 436, 81, 1, 70, "MathCaption",ExpressionUUID->"15ec3d39-05de-48e8-a24d-ef7d88158362",
  CellID->1196250966],
 Cell[CellGroupData[{
-Cell[10670, 394, 640, 18, 70, "Input",ExpressionUUID->"4f108883-ba3e-4de8-b5e3-f98321753e47",
+Cell[12327, 441, 640, 18, 70, "Input",ExpressionUUID->"c703c5bd-2fd9-49a3-ba2d-645610a92240",
  CellID->648082348],
-Cell[11313, 414, 4343, 174, 70, "Output",ExpressionUUID->"0a3415a8-dcae-4de1-967f-392fcb7a325a",
+Cell[12970, 461, 4343, 174, 70, "Output",ExpressionUUID->"82264ea0-a4a4-4ebd-84d1-23f25aee3bc0",
  CellID->2051228747],
-Cell[15659, 590, 7488, 300, 70, "Output",ExpressionUUID->"c7056975-baa0-4bbe-b843-1e8b81bba244",
+Cell[17316, 637, 7488, 300, 70, "Output",ExpressionUUID->"87354f4d-cbbb-48d7-9c02-0bd13811a0fc",
  CellID->764629479],
-Cell[23150, 892, 7543, 301, 70, "Output",ExpressionUUID->"c39fb788-7cf6-4897-8671-bf39ab9a5da1",
+Cell[24807, 939, 7543, 301, 70, "Output",ExpressionUUID->"303b55d5-84d9-40b5-9331-167da453f810",
  CellID->585509905],
-Cell[30696, 1195, 18981, 318, 70, "Output",ExpressionUUID->"92aa6693-7672-48d6-b874-eba302964e38",
+Cell[32353, 1242, 18982, 318, 70, "Output",ExpressionUUID->"85d11d67-8fc6-48ec-910a-945a4085eaca",
  CellTags->"RasterizedOutput",
- CellID->237724496]
+ CellID->1791944592]
 }, Open  ]],
-Cell[49692, 1516, 95, 1, 70, "MathCaption",ExpressionUUID->"10580dd2-b63f-4f67-ab48-7c0b4ffd1d4c",
+Cell[51350, 1563, 95, 1, 70, "MathCaption",ExpressionUUID->"3ad63b92-be7c-49cd-9959-8b90bc3aa367",
  CellID->342635466],
 Cell[CellGroupData[{
-Cell[49812, 1521, 111, 3, 70, "Input",ExpressionUUID->"91f8da05-c000-4631-aab6-64d5ecd18a47",
+Cell[51470, 1568, 111, 3, 70, "Input",ExpressionUUID->"4cd26fd0-ffa3-466c-a8e8-948533f33b38",
  CellID->1270619455],
-Cell[49926, 1526, 14903, 337, 70, "Output",ExpressionUUID->"b4f5cb4d-1938-4d81-8329-c4abd6277d03",
+Cell[51584, 1573, 14903, 337, 70, "Output",ExpressionUUID->"d4b62768-872c-4ebc-93fd-7c1dd0c6df8c",
  CellID->345864902]
 }, Open  ]],
-Cell[64844, 1866, 168, 4, 70, "MathCaption",ExpressionUUID->"a32d33c6-487b-4d29-9f94-b362b731edf2",
+Cell[66502, 1913, 168, 4, 70, "MathCaption",ExpressionUUID->"d45d4556-4c63-4ef5-b519-dcd221b3442a",
  CellID->1465389911],
-Cell[65015, 1872, 189, 4, 70, "MathCaption",ExpressionUUID->"e2aca3f8-f057-4abc-8625-11fd81b25c24",
+Cell[66673, 1919, 189, 4, 70, "MathCaption",ExpressionUUID->"b03945f2-4a5b-45ef-923f-0bd850f4936e",
  CellID->1465770381],
 Cell[CellGroupData[{
-Cell[65229, 1880, 304, 9, 70, "Input",ExpressionUUID->"8334c51d-152f-4589-b86b-5aa595df679e",
+Cell[66887, 1927, 304, 9, 70, "Input",ExpressionUUID->"8aef788d-89cb-46c1-bf11-f90f5d006110",
  CellID->1417878730],
-Cell[65536, 1891, 8725, 206, 70, "Output",ExpressionUUID->"c0050e68-f649-4674-9934-41bf2a05138b",
+Cell[67194, 1938, 8725, 206, 70, "Output",ExpressionUUID->"b72f9c6e-bddf-43f1-bae3-be651ae0224a",
  CellID->2042763249]
 }, Open  ]],
-Cell[74276, 2100, 151, 4, 70, "MathCaption",ExpressionUUID->"3ff45b22-73a2-470c-80d4-2023113289bc",
+Cell[75934, 2147, 151, 4, 70, "MathCaption",ExpressionUUID->"8a861f2f-a0f7-46a7-823f-80541faf955a",
  CellID->2146284513],
 Cell[CellGroupData[{
-Cell[74452, 2108, 1605, 41, 70, "Input",ExpressionUUID->"7f12911f-a54c-4c90-9990-39db947350aa",
+Cell[76110, 2155, 1605, 41, 70, "Input",ExpressionUUID->"c9a112c7-3d76-4dcf-a789-d758b8650fd3",
  CellID->1320991332],
-Cell[76060, 2151, 1922, 41, 70, "Output",ExpressionUUID->"c2f4b92a-4eaf-4251-a701-b4206142cb00",
+Cell[77718, 2198, 1922, 41, 70, "Output",ExpressionUUID->"ec22ffff-f66c-4909-a4a6-f21de3542242",
  CellID->2132119283]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[78019, 2197, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"8863bd14-0aa4-4adf-a1ed-073f83d01afd",
+Cell[79677, 2244, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"1d8367e9-624d-4e06-bafb-087969a93774",
  CellID->415694126],
-Cell[78189, 2206, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"029746e3-51a2-4290-92f6-14187b027e3e"],
-Cell[78223, 2208, 208, 6, 70, "RelatedTutorials",ExpressionUUID->"497606b5-0200-487a-a6d2-c2182fbaac65",
+Cell[79847, 2253, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6b4c099b-9bd0-43dd-bc03-ab3bed768571"],
+Cell[79881, 2255, 218, 6, 70, "RelatedTutorials",ExpressionUUID->"49c67adb-0e2b-4a5a-b574-5dd668e3057e",
  CellID->806871991]
 }, Open  ]]
 }, Open  ]],
-Cell[78458, 2218, 23, 0, 70, "FooterCell",ExpressionUUID->"454f5934-2739-4712-96c4-33e7e71237bb"]
+Cell[80126, 2265, 23, 0, 70, "FooterCell",ExpressionUUID->"09a3054e-a82c-4bae-afbc-ca6e2abe93bc"]
 }
 ]
 *)
