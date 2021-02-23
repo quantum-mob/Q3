@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-23 10:57:27+09 $
-  $Revision: 1.91 $
+  $Date: 2021-02-23 17:01:48+09 $
+  $Revision: 1.92 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.91 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-23 10:57:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.92 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-23 17:01:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -444,7 +444,7 @@ Once[
  ]
 
   
-ProductState::usage = "ProductState[...] is similar to Ket[...] but reserved only for product states. ProductState[..., S -> {a, b}, ...] expresses the qubit S has a linear combination of a Ket[0] + b Ket[1]."
+ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
 
 Format[ ProductState[Association[]] ] := Ket[Any]
 
@@ -458,17 +458,37 @@ Format[ ProductState[a_Association, ___] ] := Module[
   CircleTimes @@ vv
  ]
 
+(* LogicalForm[...] *)
+
+ProductState /:
+HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
+  Module[
+    { ss = Union[Keys @ a, FlavorNone @ gg] },
+    Module[
+      { Missing },
+      Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := {1, 0};
+      Ket @ Association @ Thread[ ss -> Lookup[a, ss] ]
+     ]
+   ]
+(* TODO: DefaultForm[...] for ProductState *)
+
+(* Elaborate[...] *)
+
 Once[ AppendTo[$ElaborationHeads, ProductState]; ]
 
 ProductState /:
-HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := 
-  Garner[ CircleTimes @@ KeyValueMap[QuissoExpression[#2,#1]&, a] ]
+HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := Garner[
+  CircleTimes @@ KeyValueMap[QuissoExpression[#2, #1]&, a]
+ ]
+
+(* input specifications *)
 
 ProductState /:
 NonCommutativeQ[ ProductState[___] ] = True
 
-HoldPattern @ Multiply[ a___, b:ProductState[_Association, ___], c___ ] :=
-  Garner @ Multiply[ a, Expand[b], c ]
+HoldPattern @
+  Multiply[ pre___, vec:ProductState[_Association, ___], post___ ] :=
+  Garner @ Multiply[pre, Elaborate[vec], post]
 
 ProductState[] = ProductState[Association[]]
 
@@ -508,15 +528,12 @@ ProductState[a_Association, otps___][v__Rule] :=
 
 (* Assessing the qubit values *)
 
-ProductState[a_Association, opts___][S:{__?QubitQ}] := With[
-  { SS = FlavorNone @ S },
-  Lookup[a, SS]
- ]
-
-ProductState[a_Association, opts___][S_?QubitQ] := With[
-  { SS = S[None] },
-  a[SS]
- ]
+ProductState[a_Association, opts___][qq:(_?QubitQ | {__?QubitQ})] :=
+  Block[
+    { Missing },
+    Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := {1, 0};
+    Lookup[a, FlavorNone @ qq]
+   ]
 
 
 (* ******************************************************************* *)

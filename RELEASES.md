@@ -8,6 +8,10 @@
 - Documentation pages have been updated to better support Mathematica v12.2.
 - CoherentState is enhanced.
 
+### Known Issues
+
+- There is a bug in ProductState when used in Multiply. To be fixed in the next release.
+
 ## v1.5.3
 
 - Q3Update shows a progress indicator.
