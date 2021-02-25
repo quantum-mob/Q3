@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     12466,        384]
-NotebookOptionsPosition[      8242,        287]
-NotebookOutlinePosition[     10376,        342]
-CellTagsIndexPosition[     10291,        337]
+NotebookDataLength[     14709,        466]
+NotebookOptionsPosition[      9490,        347]
+NotebookOutlinePosition[     11614,        402]
+CellTagsIndexPosition[     11529,        397]
 WindowTitle->VacuumState
 WindowFrame->Normal*)
 
@@ -82,7 +82,7 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$163248], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$163014], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], "Q3/ref/VacuumState",
               ".html"]], None}]}]},
@@ -112,14 +112,7 @@ Cell[BoxData[GridBox[{
    {"", Cell[TextData[{
      Cell[BoxData[
       RowBox[{"VacuumState", "[", "]"}]], "InlineFormula"],
-     "\[LineSeparator]represents the vacuum state in the ",
-     Cell[BoxData[
-      TemplateBox[{
-        Cell[
-         TextData["Fock"]], "paclet:Q3/ref/Fock"},
-       "RefLink",
-       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
-     " space. It is denoted by ",
+     "\[LineSeparator]returns ",
      Cell[BoxData[
       RowBox[{
        TemplateBox[{
@@ -129,10 +122,10 @@ Cell[BoxData[GridBox[{
         BaseStyle->{"InlineFormula"}], "[", 
        TemplateBox[{
          Cell[
-          TextData["None"]], "paclet:ref/None"},
+          TextData["Vacuum"]], "paclet:ref/Vacuum"},
         "RefLink",
         BaseStyle->{"InlineFormula"}], "]"}]], "InlineFormula"],
-     "."
+     " which refers the vacuum state in the Fock space."
     }]]}
   }]], "Usage",
  GridBoxOptions->{
@@ -160,13 +153,25 @@ Cell[TextData[Cell[BoxData[
   Method->"Preemptive"]]]], "NotesSection",
  WholeCellGroupOpener->True,
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->1158897272],
+ CellID->1937355973],
 
 Cell["", "SectionHeaderSpacer"],
 
-Cell["\<\
-It is the state that is annihilated by any annihilation operator.\
-\>", "Notes",
+Cell[TextData[{
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   TemplateBox[{
+     Cell[
+      TextData["Vacuum"]], "paclet:ref/Vacuum"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "]"}]], "InlineFormula"],
+ " is annihilated by any annihilation operator."
+}], "Notes",
  CellID->1067943069]
 }, Closed]],
 
@@ -182,7 +187,7 @@ Cell[TextData[{
 }], "PrimaryExamplesSection",
  WholeCellGroupOpener->True,
  CellTags->"PrimaryExamplesSection",
- CellID->2057255861],
+ CellID->994782397],
 
 Cell[CellGroupData[{
 
@@ -192,7 +197,7 @@ Cell[TextData[{
  Cell["(1)", "ExampleCount"]
 }], "ExampleSection", "ExampleSection",
  WholeCellGroupOpener->True,
- CellID->1812539127],
+ CellID->1147554484],
 
 Cell[BoxData[
  RowBox[{"<<", "Q3`"}]], "Input",
@@ -202,7 +207,8 @@ Cell[BoxData[
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"VacuumState", "[", "]"}]], "Input",
+ RowBox[{"vac", "=", 
+  RowBox[{"VacuumState", "[", "]"}]}]], "Input",
  CellLabel->"In[2]:=",
  CellID->200372083],
 
@@ -210,21 +216,75 @@ Cell[BoxData[
  TemplateBox[{"\"\[SpaceIndicator]\""},
   "Ket"]], "Output",
  CellLabel->"Out[2]=",
- CellID->721841552]
+ CellID->943294150]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[
- RowBox[{"Ket", "[", "None", "]"}]], "Input",
+ RowBox[{"vac", "//", "InputForm"}]], "Input",
  CellLabel->"In[3]:=",
+ CellID->895666409],
+
+Cell["Ket[Vacuum]", "Output",
+ CellLabel->"Out[3]//InputForm=",
+ CellID->399270775]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Ket", "[", "Vacuum", "]"}]], "Input",
+ CellLabel->"In[4]:=",
  CellID->1236351784],
 
 Cell[BoxData[
  TemplateBox[{"\"\[SpaceIndicator]\""},
   "Ket"]], "Output",
- CellLabel->"Out[3]=",
- CellID->1091679097]
+ CellLabel->"Out[4]=",
+ CellID->143040561]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Bra", "[", "Vacuum", "]"}], "**", 
+  RowBox[{"Ket", "[", "Vacuum", "]"}]}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->18678056],
+
+Cell[BoxData["1"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1222930248]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Boson", ",", "a"}], "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1854261271],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"Dagger", "[", "vac", "]"}], "**", 
+  RowBox[{"Ket", "[", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Dagger", "[", "vac", "]"}], "**", 
+  RowBox[{"Ket", "[", 
+   RowBox[{"a", "\[Rule]", "1"}], "]"}]}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1879679019],
+
+Cell[BoxData["1"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1503531696],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->417140423]
 }, Open  ]]
 }, Open  ]],
 
@@ -300,16 +360,16 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 2, 23, 12, 37, 29.999420}", 
+   "built" -> "{2021, 2, 25, 18, 4, 23.005237}", 
     "history" -> {"XX", "", "", ""}, "context" -> "Q3`Fock`", 
     "keywords" -> {}, "specialkeywords" -> {}, 
     "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
     "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
-    "VacuumState[] represents the vacuum state in the Fock space. It is \
-denoted by Ket[None].", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
-    "VacuumState", "titlemodifier" -> "", "windowtitle" -> "VacuumState", 
-    "type" -> "Symbol", "uri" -> "Q3/ref/VacuumState", "WorkflowDockedCell" -> 
-    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
+    "VacuumState[] returns Ket[Vacuum] which refers the vacuum state in the \
+Fock space.", "synonyms" -> {}, "tabletags" -> {}, "title" -> "VacuumState", 
+    "titlemodifier" -> "", "windowtitle" -> "VacuumState", "type" -> "Symbol",
+     "uri" -> "Q3/ref/VacuumState", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
 CellContext->"Global`",
 FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
 StyleDefinitions->Notebook[{
@@ -329,63 +389,85 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "PrimaryExamplesSection"->{
-  Cell[5709, 174, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"63ca7a7c-2f45-42cd-a433-f7744de269b3",
+  Cell[5814, 179, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"f5a0222a-4442-4100-a50e-61f679e8604b",
    CellTags->"PrimaryExamplesSection",
-   CellID->2057255861]}
+   CellID->994782397]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"PrimaryExamplesSection", 10092, 330}
+ {"PrimaryExamplesSection", 11331, 390}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[583, 21, 3211, 77, 70, "AnchorBarGrid",ExpressionUUID->"09288230-89fd-4e49-8f97-7803ab5547c7",
+Cell[583, 21, 3211, 77, 70, "AnchorBarGrid",ExpressionUUID->"0f41439b-fe04-4687-a5a0-a01bb179d8d6",
  CellID->1],
 Cell[CellGroupData[{
-Cell[3819, 102, 168, 6, 70, "ObjectNameGrid",ExpressionUUID->"ec71d30e-7baa-49f7-bc0c-a8ae68d5191c"],
-Cell[3990, 110, 867, 28, 70, "Usage",ExpressionUUID->"f1cce2c0-36a3-430b-a3d8-941f837b79f0"]
+Cell[3819, 102, 168, 6, 70, "ObjectNameGrid",ExpressionUUID->"0ad13ea7-0da9-4745-88de-ef3c108043f4"],
+Cell[3990, 110, 679, 21, 70, "Usage",ExpressionUUID->"cfbeac02-f16e-4aac-89da-5fe5ee7a64e3"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[4894, 143, 630, 19, 70, "NotesSection",ExpressionUUID->"15e08106-6e40-459e-aa85-9bc57b561d9d",
+Cell[4706, 136, 630, 19, 70, "NotesSection",ExpressionUUID->"b59a5150-fac3-4273-8454-9b6256bcc86d",
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->1158897272],
-Cell[5527, 164, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"28f8eacc-e751-4378-a2b6-b8ee625b7517"],
-Cell[5561, 166, 111, 3, 70, "Notes",ExpressionUUID->"35a2b339-cfc4-4ba1-aac2-887deba800d3",
+ CellID->1937355973],
+Cell[5339, 157, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"a2ed269e-f10f-40dd-a3e4-c138a561fde2"],
+Cell[5373, 159, 404, 15, 70, "Notes",ExpressionUUID->"447a7979-2f37-4b0a-9296-622866fe3f5f",
  CellID->1067943069]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[5709, 174, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"63ca7a7c-2f45-42cd-a433-f7744de269b3",
+Cell[5814, 179, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"f5a0222a-4442-4100-a50e-61f679e8604b",
  CellTags->"PrimaryExamplesSection",
- CellID->2057255861],
+ CellID->994782397],
 Cell[CellGroupData[{
-Cell[6002, 188, 196, 6, 70, "ExampleSection",ExpressionUUID->"2ebab078-4171-484e-829b-3ffcfacac384",
- CellID->1812539127],
-Cell[6201, 196, 91, 3, 70, "Input",ExpressionUUID->"b3a9e030-cbd0-483e-8454-e501ab47752f",
+Cell[6106, 193, 196, 6, 70, "ExampleSection",ExpressionUUID->"b6ba0bec-8b5e-4744-87c2-ba6534f7df80",
+ CellID->1147554484],
+Cell[6305, 201, 91, 3, 70, "Input",ExpressionUUID->"d8d95e3f-1bb5-4676-b680-9a6fa75aa2cc",
  CellID->1310837623],
 Cell[CellGroupData[{
-Cell[6317, 203, 102, 3, 70, "Input",ExpressionUUID->"6b9e40a6-4865-48ed-a213-e9e07651114e",
+Cell[6421, 208, 127, 4, 70, "Input",ExpressionUUID->"2a87ac74-a0d0-4214-8c5c-bdf083edba34",
  CellID->200372083],
-Cell[6422, 208, 117, 4, 70, "Output",ExpressionUUID->"ad2f87ab-fa8e-4d3e-8ac5-ca54cc4c1924",
- CellID->721841552]
+Cell[6551, 214, 117, 4, 70, "Output",ExpressionUUID->"4dba9750-31d4-41c0-a67a-1457543d294b",
+ CellID->943294150]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6576, 217, 103, 3, 70, "Input",ExpressionUUID->"640afcde-e807-4a42-b5b3-2581b03a08bf",
+Cell[6705, 223, 103, 3, 70, "Input",ExpressionUUID->"bdf7124d-4c50-4917-93c3-cfb4fc371e0e",
+ CellID->895666409],
+Cell[6811, 228, 83, 2, 70, "Output",ExpressionUUID->"a907c36f-306c-479e-b158-8b280faddeea",
+ CellID->399270775]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6931, 235, 105, 3, 70, "Input",ExpressionUUID->"c9838761-08fe-4ddf-96a2-8fa08b361c19",
  CellID->1236351784],
-Cell[6682, 222, 118, 4, 70, "Output",ExpressionUUID->"ab280cec-b79f-48a3-91be-1521f2a13003",
- CellID->1091679097]
+Cell[7039, 240, 117, 4, 70, "Output",ExpressionUUID->"af0d4b45-7c2d-4a6c-9f70-d9f03d5b8cab",
+ CellID->143040561]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7193, 249, 162, 5, 70, "Input",ExpressionUUID->"b2c6979f-4b81-42e1-94bb-45bf7c71f56f",
+ CellID->18678056],
+Cell[7358, 256, 72, 2, 70, "Output",ExpressionUUID->"286aebbf-b3c7-4b56-81b6-0fa38cad2a44",
+ CellID->1222930248]
+}, Open  ]],
+Cell[7445, 261, 127, 4, 70, "Input",ExpressionUUID->"90e7c76e-8d04-4244-9d6f-65b454005f7e",
+ CellID->1854261271],
+Cell[CellGroupData[{
+Cell[7597, 269, 302, 9, 70, "Input",ExpressionUUID->"d1f7cc7b-7ecf-4f70-afe5-36091b0aa04a",
+ CellID->1879679019],
+Cell[7902, 280, 72, 2, 70, "Output",ExpressionUUID->"bc3dd4ec-7fac-4b1c-b494-5495dcb3fa15",
+ CellID->1503531696],
+Cell[7977, 284, 71, 2, 70, "Output",ExpressionUUID->"32330225-ef80-4b38-8892-64070621e488",
+ CellID->417140423]
 }, Open  ]]
 }, Open  ]],
-Cell[6827, 230, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"1750bb15-0da1-439e-9543-b0f1b0c7a8c5"]
+Cell[8075, 290, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"1246d92c-7e37-4ef2-99cc-9558d226b8d0"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[6895, 235, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"6c805973-403e-47c3-8fc2-f3b3900ea3ac",
+Cell[8143, 295, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"a5fa0eed-4347-4258-aa61-c08d20157a81",
  CellID->1255426704],
-Cell[7048, 244, 1152, 38, 70, "SeeAlso",ExpressionUUID->"15408120-f7e7-4efc-aabd-04bfc670de5b",
+Cell[8296, 304, 1152, 38, 70, "SeeAlso",ExpressionUUID->"ef11eae3-d4a8-46ca-a3f2-8167de718b71",
  CellID->929782353]
 }, Open  ]],
-Cell[8215, 285, 23, 0, 70, "FooterCell",ExpressionUUID->"f88880ea-3b6b-4ce4-baee-cd9809a81014"]
+Cell[9463, 345, 23, 0, 70, "FooterCell",ExpressionUUID->"cf44c0ac-cec9-4991-a6ae-66076e5b36a6"]
 }
 ]
 *)

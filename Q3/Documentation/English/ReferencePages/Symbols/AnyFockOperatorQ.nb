@@ -10,17 +10,36 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     13329,        391]
-NotebookOptionsPosition[     10874,        334]
-NotebookOutlinePosition[     12668,        381]
-CellTagsIndexPosition[     12625,        378]
-WindowTitle->OperatorQ
+NotebookDataLength[     16544,        496]
+NotebookOptionsPosition[     13124,        422]
+NotebookOutlinePosition[     15008,        470]
+CellTagsIndexPosition[     14965,        467]
+WindowTitle->AnyFockOperatorQ
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
 Cell[BoxData[GridBox[{
    {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/FockQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
      Cell[BoxData[
       ActionMenuBox[
        FrameBox[
@@ -50,10 +69,10 @@ Cell[BoxData[GridBox[{
        Documentation`HelpLookup[
        "paclet:Q3/ref/ParticleQ"], "\<\"AnyParticleQ\"\>":>
        Documentation`HelpLookup[
-       "paclet:Q3/ref/AnyParticleQ"], "\<\"OperatorQ\"\>":>
+       "paclet:Q3/ref/AnyParticleQ"], "\<\"FockOperatorQ\"\>":>
        Documentation`HelpLookup[
-       "paclet:Q3/ref/OperatorQ"], "\<\"AnyOperatorQ\"\>":>
-       Documentation`HelpLookup["paclet:Q3/ref/AnyOperatorQ"]},
+       "paclet:Q3/ref/FockOperatorQ"], "\<\"AnyFockOperatorQ\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/AnyFockOperatorQ"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"SeeAlso"]],
@@ -71,8 +90,10 @@ Cell[BoxData[GridBox[{
          TextCell[
           Row[{"Related Guides", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Fock\"\>":>Documentation`HelpLookup[
-       "paclet:Q3/guide/FockPackageGuide"]},
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/FockPackageGuide"], "\<\"Q3\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"MoreAbout"]],
@@ -90,12 +111,12 @@ Cell[BoxData[GridBox[{
          TextCell[
           Row[{"URL", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Q3/ref/OperatorQ\"\>":>
+        StripOnInput->False], {"\<\"Q3/ref/AnyFockOperatorQ\"\>":>
        None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
        Module[{DocumentationSearch`Private`nb$}, 
         DocumentationSearch`Private`nb$ = NotebookPut[
            Notebook[{
-             Cell["Q3/ref/OperatorQ"]}, Visible -> False]]; 
+             Cell["Q3/ref/AnyFockOperatorQ"]}, Visible -> False]]; 
         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
         NotebookClose[DocumentationSearch`Private`nb$]; Null], 
@@ -107,10 +128,10 @@ Cell[BoxData[GridBox[{
               BoxData[
                MakeBoxes[
                 Hyperlink[
-                "http://reference.wolfram.com/language/Q3/ref/OperatorQ.html"]\
-, StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
-            False]]; SelectionMove[
-         DocumentationSearch`Private`nb$, All, Notebook]; 
+                "http://reference.wolfram.com/language/Q3/ref/\
+AnyFockOperatorQ.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
         NotebookClose[DocumentationSearch`Private`nb$]; 
         Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
@@ -118,10 +139,10 @@ Cell[BoxData[GridBox[{
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$100100], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$24158], 
               "http://reference.wolfram.com/system-modeler/", 
-              "http://reference.wolfram.com/language/"], "Q3/ref/OperatorQ", 
-             ".html"]], None}]}]},
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/AnyFockOperatorQ", ".html"]], None}]}]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"URLMenu"]],
@@ -131,7 +152,7 @@ Cell[BoxData[GridBox[{
  CellID->1],
 
 Cell[TextData[{
- Cell["OperatorQ", "ObjectName"],
+ Cell["AnyFockOperatorQ", "ObjectName"],
  Cell[BoxData[
   TemplateBox[{8},
    "Spacer1"]]],
@@ -141,12 +162,18 @@ Cell[TextData[{
 Cell[BoxData[GridBox[{
    {"", Cell[TextData[{
      Cell[BoxData[
-      RowBox[{"OperatorQ", "[", 
-       StyleBox["c", "TI"], "]"}]], "InlineFormula"],
-     "\[LineSeparator]returns True if ",
+      RowBox[{"AnyFockOperatorQ", "[", "c", "]"}]], "InlineFormula"],
+     " \[LineSeparator]returns ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["True"]], "paclet:ref/True"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " if ",
      Cell[BoxData[
       StyleBox["c", "TI"]], "InlineFormula"],
-     " is any operator (",
+     " is any Fock-space operator (",
      Cell[BoxData[
       TemplateBox[{
         Cell[
@@ -174,11 +201,26 @@ Cell[BoxData[GridBox[{
          TextData["Majorana"]], "paclet:Q3/ref/Majorana"},
        "RefLink",
        BaseStyle->{"InlineFormula"}]], "InlineFormula"],
-     ")."
+     ") with or without ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Dagger"]], "paclet:Q3/ref/Dagger"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " or ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Canon"]], "paclet:Q3/ref/Canon"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " on it."
     }]]}
   }]], "Usage",
  GridBoxOptions->{
- GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}],
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->982511436],
 
 Cell[CellGroupData[{
 
@@ -305,7 +347,7 @@ Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{
     Cell[
-     TextData["OperatorQ"]], "paclet:Q3/ref/OperatorQ"},
+     TextData["FockOperatorQ"]], "paclet:Q3/ref/FockOperatorQ"},
    "RefLink",
    BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
  "\[NonBreakingSpace]",
@@ -315,20 +357,66 @@ Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{
     Cell[
-     TextData["AnyOperatorQ"]], "paclet:Q3/ref/AnyOperatorQ"},
+     TextData["AnyFockOperatorQ"]], "paclet:Q3/ref/AnyFockOperatorQ"},
    "RefLink",
    BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
 }], "SeeAlso",
  CellID->929782353]
 }, Open  ]],
 
-Cell[BoxData[Cell[BoxData[
-  TemplateBox[{
-    Cell[
-     TextData["Fock"]], "paclet:Q3/guide/FockPackageGuide"},
-   "RefLink",
-   BaseStyle->"MoreAbout"]], "InlineFormula"]], "MoreAbout",
- CellID->1665078683],
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock: Quick Start"]], "paclet:Q3/tutorial/FockQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1]
+}, Open  ]],
 
 Cell[" ", "FooterCell"]
 },
@@ -336,7 +424,7 @@ Saveable->False,
 ScreenStyleEnvironment->"Working",
 WindowSize->{725, 750},
 WindowMargins->{{0, Automatic}, {Automatic, 0}},
-WindowTitle->"OperatorQ",
+WindowTitle->"AnyFockOperatorQ",
 TaggingRules->{
  "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
   GridBox[{{
@@ -347,15 +435,16 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 2, 23, 12, 32, 14.411509}", 
-    "history" -> {"XX", "", "", ""}, "context" -> "Q3`Fock`", 
+   "built" -> "{2021, 2, 25, 17, 53, 14.895326}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`Fock`", 
     "keywords" -> {}, "specialkeywords" -> {}, 
     "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
     "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
-    "OperatorQ[c] returns True if c is any operator (Boson, Fermion, \
-Heisenberg, or Majorana).", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
-    "OperatorQ", "titlemodifier" -> "", "windowtitle" -> "OperatorQ", "type" -> 
-    "Symbol", "uri" -> "Q3/ref/OperatorQ"}},
+    "AnyFockOperatorQ[c] returns True if c is any Fock-space operator (Boson, \
+Fermion, Heisenberg, or Majorana) with or without Dagger or Canon on it.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "AnyFockOperatorQ", 
+    "titlemodifier" -> "", "windowtitle" -> "AnyFockOperatorQ", "type" -> 
+    "Symbol", "uri" -> "Q3/ref/AnyFockOperatorQ"}},
 CellContext->"Global`",
 FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
 StyleDefinitions->Notebook[{
@@ -380,19 +469,35 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[581, 21, 4549, 109, 70, "AnchorBarGrid",ExpressionUUID->"6ff50f91-f0c1-4f66-b860-4732f2ca5ea2",
+Cell[588, 21, 5374, 130, 70, "AnchorBarGrid",ExpressionUUID->"375a793c-6436-4604-b416-cbe3320383cc",
  CellID->1],
-Cell[5133, 132, 166, 6, 70, "ObjectNameGrid",ExpressionUUID->"1f48d4f4-ec1d-4a93-b1dc-af32651c9fb7"],
-Cell[5302, 140, 1185, 40, 70, "Usage",ExpressionUUID->"6224f65b-5e6e-4f9b-a226-5665de7cc13e"],
+Cell[5965, 153, 173, 6, 70, "ObjectNameGrid",ExpressionUUID->"6ab9e4d7-4f13-4783-8a57-040954bd35d3"],
+Cell[6141, 161, 1790, 61, 70, "Usage",ExpressionUUID->"e310113a-353b-44b4-ab01-474e7d984870",
+ CellID->982511436],
 Cell[CellGroupData[{
-Cell[6512, 184, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"277acc9f-8fc4-40f9-9ad1-b3360ba1e3af",
+Cell[7956, 226, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"97e1dbf5-8fff-4864-89a5-70ff87dc7747",
  CellID->1255426704],
-Cell[6665, 193, 3955, 128, 70, "SeeAlso",ExpressionUUID->"1aa3c484-bc2f-4913-b8bf-21fff15eb769",
+Cell[8109, 235, 3971, 128, 70, "SeeAlso",ExpressionUUID->"9d056613-1089-4db5-b7da-336b6273e1e9",
  CellID->929782353]
 }, Open  ]],
-Cell[10635, 324, 209, 6, 70, "MoreAbout",ExpressionUUID->"4127947f-7952-4cea-b102-66edd271ff55",
- CellID->1665078683],
-Cell[10847, 332, 23, 0, 70, "FooterCell",ExpressionUUID->"38a760ed-cb96-4b92-b40d-15fc3613ec98"]
+Cell[CellGroupData[{
+Cell[12117, 368, 152, 7, 70, "TutorialsSection",ExpressionUUID->"01eb1a76-733a-474e-b5ad-ca3ae3fdcdf8",
+ CellID->250839057],
+Cell[12272, 377, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7c11e413-28a9-4edf-8b31-23a76a16f0ed"],
+Cell[12306, 379, 185, 6, 70, "Tutorials",ExpressionUUID->"5f787638-4d3a-4f87-8f38-9b1eb354c493",
+ CellID->341631938],
+Cell[12494, 387, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"41c9fca3-ffce-47d8-b9f6-54ff5eb2b13d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12562, 392, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"a36927a5-1f62-4551-bad1-03b87544a3b3",
+ CellID->38303248],
+Cell[12721, 401, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"3250fc8c-2d2e-47e3-8d2f-ae4da26d9a3a"],
+Cell[12755, 403, 177, 6, 70, "MoreAbout",ExpressionUUID->"2fce4242-39c2-46b3-b440-890ec3f79437",
+ CellID->1],
+Cell[12935, 411, 147, 6, 70, "MoreAbout",ExpressionUUID->"a0880711-ae28-46ae-afac-7c929da18ce1",
+ CellID->1]
+}, Open  ]],
+Cell[13097, 420, 23, 0, 70, "FooterCell",ExpressionUUID->"94a13f8f-c96c-4c13-85eb-a4a757c886a8"]
 }
 ]
 *)

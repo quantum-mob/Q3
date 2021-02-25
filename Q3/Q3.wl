@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-02-25 10:19:05+09 $ *)
-(* $Revision: 1.44 $ *)
+(* $Date: 2021-02-25 17:33:04+09 $ *)
+(* $Revision: 1.45 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,8 +10,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.44 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-25 10:19:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.45 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-25 17:33:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -39,9 +39,7 @@ End[]
   $FormatSpecies,
   $SubscriptDelimiter, $SuperscriptDelimiter };
 
-{ NonCommutative,
-  NonCommutativeSpecies,
-  NonCommutativeQ, AnyNonCommutativeQ,
+{ NonCommutative, NonCommutativeSpecies, NonCommutativeQ,
   CommutativeQ, AnticommutativeQ,
   Kind, Dimension,
   Hermitian, HermitianQ,
@@ -654,28 +652,22 @@ Inverse[ Power[E, expr_] ] := MultiplyExp[-expr] /;
    NonCommutativeQ[expr]. *)
 
 
-NonCommutativeQ::usage = "NonCommutativeQ[a] returns True of a is a non-commutative element."
+NonCommutativeQ::usage = "NonCommutativeQ[op] or NonCommutativeQ[op[...]] returns True if op or op[...] is a non-commutative element."
 
 SetAttributes[NonCommutativeQ, Listable]
 
+(* NOTE: HoldPattern is required to prevent infinite recursion when the
+   package is loaded again. *)
+
+HoldPattern @ NonCommutativeQ[ Inverse[_?NonCommutativeQ] ] = True
+
+HoldPattern @ NonCommutativeQ[ Conjugate[_?NonCommutativeQ] ] = True
+
+HoldPattern @ NonCommutativeQ[ Dagger[_?NonCommutativeQ] ] = True
+
+HoldPattern @ NonCommutativeQ[ Tee[_?NonCommutativeQ] ] = True
+
 NonCommutativeQ[_] = False
-
-
-AnyNonCommutativeQ::usaage = "AnyNonCommutativeQ[z] returns True if z itself is a NonCommutative element or has the form Conjugate[x], Dagger[x], Tee[x] of another NonCommutative x."
-
-SetAttributes[AnyNonCommutativeQ, Listable]
-
-AnyNonCommutativeQ[ _?NonCommutativeQ ] = True
-
-AnyNonCommutativeQ[ Inverse[_?NonCommutativeQ] ] = True
-
-AnyNonCommutativeQ[ Conjugate[_?NonCommutativeQ] ] = True
-
-AnyNonCommutativeQ[ Dagger[_?NonCommutativeQ] ] = True
-
-AnyNonCommutativeQ[ Tee[_?NonCommutativeQ] ] = True
-
-AnyNonCommutativeQ[ _ ] = False
 
 
 CommutativeQ::usage = "CommutativeQ[expr] returns True if the expression expr is free of any non-commutative element.\nCommutativeQ[expr] is equivalent to FreeQ[expr, _?NonCommutativeQ]."
@@ -1323,7 +1315,7 @@ HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
   NoneTrue[{ops}, ObscureQ]
  *)
 
-HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
+HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
   { aa = SplitBy[{ops}, MultiplyGenus],
     bb },
   bb = Multiply @@@ aa;
@@ -1332,7 +1324,7 @@ HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
   Not @ OrderedKindsQ @ {ops} /;
   Length[Union @ MultiplyGenus @ {ops}] > 1
 
-HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
+HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
   { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
     bb },
   bb = Multiply @@@ aa;

@@ -1143,7 +1143,7 @@ Matrix[ z_?CommutativeQ, qq:{__?NonCommutativeQ} ] := With[
 
 (* NOTE: __, not ___ *)
 HoldPattern @
-  Matrix[ op_?AnyNonCommutativeQ, qq:{__?NonCommutativeQ} ] :=
+  Matrix[ op_?NonCommutativeQ, qq:{__?NonCommutativeQ} ] :=
   BuildMatrix[op, FlavorNone @ qq]
     
 (* NOTE: __, not ___ *)
@@ -1200,11 +1200,11 @@ Parity /: Peel[ Parity[a_] ] := a (* for Matrix[] *)
 
 Parity /: Kind[ Parity[a_] ] := Kind[a] (* for Multiply[] *)
 
-Parity /: MultiplyGenus[Parity[_]] := "Singleton" (* for Multiply *)
+Parity /: MultiplyGenus[ Parity[_] ] := "Singleton" (* for Multiply *)
 
 Parity /: AnySpeciesQ[ Parity[a_] ] := AnySpeciesQ[a] (* for Multiply[] *)
 
-Parity /: AnyNonCommutativeQ[ Parity[a_] ] := AnyNonCommutativeQ[a] (* for Multiply[] *)
+Parity /: NonCommutativeQ[ Parity[a_] ] := NonCommutativeQ[a] (* for Multiply[] *)
 
 Parity[a_?SpeciesQ, b__?SpeciesQ] := Multiply @@ Parity /@ {a, b}
 
