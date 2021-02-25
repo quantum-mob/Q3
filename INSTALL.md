@@ -39,14 +39,8 @@ Once Q3 is installed, it provides some utility functions with which you can chec
 - When a newer release is available on the server, you can update Q3 with this command.
   ```Mathematica
   Q3Update[]
-  ```
-  In case you network is slow or unstable, you can try
-  ```Mathematica
-  Q3Update["your_download_folder"]
-  ```
-  (replace "your_download_folder" with your own folder name), which first downloads the latest paclet archive to a local file and then installs the update from the locally saved file.
-  
-  In both cases, depending on the situation, you may like to give an option `AllowVersionUpdate` or `ForceVersionInstall` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
+  ```  
+  You may like to give an option `ForceVersionInstall->True` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
 
 
 ## Manual Installation
