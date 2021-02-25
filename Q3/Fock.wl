@@ -8,18 +8,17 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.27 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-23 11:11:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.41 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-25 17:04:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
-{ Let, Hermitian, Heisenberg, Boson, Fermion, Majorana };
+{ Heisenberg, Boson, Fermion, Majorana };
 { Bosons, Heisenbergs, Fermions, Majoranas };
-{ HermitianQ, HeisenbergQ, BosonQ, FermionQ, MajoranaQ, ParticleQ, OperatorQ };
-{ AnyHeisenbergQ, AnyBosonQ, AnyFermionQ, AnyParticleQ, AnyOperatorQ };
+{ HeisenbergQ, BosonQ, FermionQ, MajoranaQ, ParticleQ, FockOperatorQ };
+{ AnyHeisenbergQ, AnyBosonQ, AnyFermionQ, AnyParticleQ, AnyFockOperatorQ };
 { AnnihilatorQ, CreatorQ };
-{ AnticommutativeQ };
 
 { Spin, SpinZ, TrueSpin, Vacuum };
 
@@ -47,7 +46,7 @@ End[]
 
 (*** Tools for many-particle states ***)
 
-{ VacuumState[] = Ket[None],
+{ VacuumState[] = Ket[Vacuum],
   NullState[] = Ket[Null] };
 { VacuumExpectation, SurviveVacuum,
   Displacement, CoherentState, SqueezedState };
@@ -69,9 +68,10 @@ End[]
 Begin["`Private`"]
 
 $symbs = Unprotect[
-  Base, FlavorNone, AnySpeciesQ,
-  Multiply, Dagger, MultiplyDegree, LieExp,
-  Missing, KetTrim, KetRule, VerifyKet, Ket, Bra, BraKet,
+  Base, FlavorNone, AnySpeciesQ, AnticommutativeQ,
+  Multiply, MultiplyDegree, Dagger, LieExp,
+  Missing, KetTrim, KetRule, VerifyKet,
+  Ket, Bra, BraKet,
   Basis, Matrix, BuildMatrix,
   Parity, ParityEvenQ, ParityOddQ,
   LogicalForm,
@@ -434,9 +434,9 @@ seaQ[_] = False
 Missing["KeyAbsent", _?ParticleQ] := 0
 
 
-OperatorQ::usage = "OperatorQ[c] returns True if c is any operator (Boson, Fermion, Heisenberg, or Majorana)."
+FockOperatorQ::usage = "FockOperatorQ[c] returns True if c is any Fock-space operator (Boson, Fermion, Heisenberg, or Majorana) without Dagger on it.\nGrassmann is not regarded as a Fock-space operator."
 
-AnyOperatorQ::usage = "AnyOperatorQ[c] returns True if c is a Boson, Fermion, Heisenberg, or Majorana operator with or without Dagger on it."
+AnyFockOperatorQ::usage = "AnyFockOperatorQ[c] returns True if c is any Fock-space operator (Boson, Fermion, Heisenberg, or Majorana) with or without Dagger on it."
 
 ParticleQ::usage = "ParticleQ[c] returns True if c is either a Bosonic or Fermionic operator (without Dagger on it); i.e., a normal particle distinguished from a Majorana Fermion, which is both particle and atni-particle."
 
@@ -465,9 +465,14 @@ FermionQ[_] = False
 MajoranaQ[_] = False
 
 
-OperatorQ[ _?HeisenbergQ | _?BosonQ | _?FermionQ | _?MajoranaQ ] = True
+AnticommutativeQ[_?AnyFermionQ | _?MajoranaQ | _?GrassmannQ] = True
 
-OperatorQ[_] = False
+AnticommutativeQ[_] = False
+
+
+FockOperatorQ[ _?HeisenbergQ | _?BosonQ | _?FermionQ | _?MajoranaQ ] = True
+
+FockOperatorQ[_] = False
 
 
 ParticleQ[ _?BosonQ | _?FermionQ ] = True
@@ -484,17 +489,17 @@ Scan[
     anyQ[_?#] = True;
     anyQ[_] = False;
    ] &,
-  {OperatorQ, ParticleQ, HeisenbergQ, BosonQ, FermionQ}
+  {FockOperatorQ, ParticleQ, HeisenbergQ, BosonQ, FermionQ}
  ]
 
 AnySpeciesQ[ Canon[_?HeisenbergQ] ] = True
 (* Heisenberg's canonical conjugate is not very common, and was not defined in
-   the Cauchy package. *)
+   the Q3 package. *)
 
 
 Base[ op:c_Symbol?ParticleQ[j___,s_] ] := c[j] /; spinfulQ[op]
 
-Base[ op_?OperatorQ ] := op
+Base[ op_?FockOperatorQ ] := op
 
 
 SpinZ::usage = "SpinZ[c[j,s]] returns the Spin Z quantum number s (i.e., the final spin index) of the operator c[j,s]."
@@ -518,6 +523,9 @@ Canon[ Canon[q_?HeisenbergQ] ] := q
 
 Canon /:
 Kind[ Canon[q_] ] := Kind[q]
+
+Canon /:
+MultiplyGenus[ Canon[q_] ] := MultiplyGenus[q]
 
 Canon /:
 Dagger[ Canon[q_?HeisenbergQ] ] := Canon[q]
@@ -758,10 +766,10 @@ rulesBosonToHeisenberg[rr:({__?BosonQ} -> {__?HeisenbergQ})] :=
 (* **************************************************************** *)
 
 Dagger /:
-HoldPattern @ Conjugate @ Dagger[q_?OperatorQ] := Dagger[q]
+HoldPattern @ Conjugate @ Dagger[q_?FockOperatorQ] := Dagger[q]
 
 Multiply /:
-HoldPattern @ Conjugate[ Multiply[a_?AnyOperatorQ, b__?AnyOperatorQ] ] :=
+HoldPattern @ Conjugate[ Multiply[a_?AnyFockOperatorQ, b__?AnyFockOperatorQ] ] :=
   Multiply[ a, b ]
 (* NOTE: Do not generalize it too much. For example, <a|op|b> is a complex
    number and under Dagger switches to complex conjugation. If the above is
@@ -830,44 +838,6 @@ ACMT[_?AnyFermionQ, _?AnyFermionQ] = 0
 (* ******************************************************************** *)
 (*     <Multiply>                                                       *)
 (* ******************************************************************** *)
-
-(* Originally defined in Q3,
-   Redefined for Fermion, Majorana, Grassmann *)
-(* NOTE:
-   Before _?AnySpeciesQ NOT _?AnyNonCommutativeQ.
-   This is to handle Ket and Bra separately.
-   Now __?AnyNonCommutativeQ to hanle Dyad. *)
-HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
-  { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
-    bb },
-  bb = Multiply @@@ aa;
-  bb = Multiply @@ bb;
-  bb * fSignature[
-    Cases[ {ops}, _?AnticommutativeQ ],
-    Cases[ Flatten @ aa, _?AnticommutativeQ ]
-   ]
- ] /;
-  Not @ OrderedQ[ Kind @ {ops} ] /;
-  NoneTrue[{ops}, ObscureQ]
-
-
-fSignature::usage = "fSignature[a, b] returns the signature of the permutation that converts a to b for two expressions that differ only in the order of their arguments."
-fSignature[a_, b_] := 
-  Signature @ PermutationList @ FindPermutation[a, b] /;
-  Length[a] == Length[b]
-
-AnticommutativeQ::usage = "AnticommutativeQ[c] returns True if c is an anticommutative Species such as Fermion, Majorana, and Grassmann, and False otherwise.\nIt is a low-level function intended to be used in Multiply and Matrix.\nIt affects how Multiply and Matrix manipulate expressions involving Fermion, Majorana, and Grassmann Species, which brings about a factor of -1 when exchanged."
-
-SetAttributes[AnticommutativeQ, Listable]
-
-AnticommutativeQ[op_?AnyFermionQ] = True
-
-AnticommutativeQ[op_?MajoranaQ] = True
-
-AnticommutativeQ[op_?GrassmannQ] = True
-
-AnticommutativeQ[_] = False
-
 
 (** Heisenbergs **)
 
@@ -982,9 +952,9 @@ FockHopping[a:Except[_List]] = 0
 
 FockHopping[a:Except[_List], b:Except[_List]] := Multiply[ Dagger[a], b ]
 
-FockHopping[x_?VectorQ, b_?OperatorQ] := Sum[ FockHopping[a,b], {a, x} ]
+FockHopping[x_?VectorQ, b_?FockOperatorQ] := Sum[ FockHopping[a,b], {a, x} ]
 
-FockHopping[a_?OperatorQ, y_?VectorQ] := Sum[ FockHopping[a,b], {b, y} ]
+FockHopping[a_?FockOperatorQ, y_?VectorQ] := Sum[ FockHopping[a,b], {b, y} ]
 
 FockHopping[x_?VectorQ, y_?VectorQ] :=
   Total @ Apply[ FockHopping, Tuples @ {x, y}, {1} ]
@@ -1177,14 +1147,14 @@ FockDegree[a_ b_] := FockDegree[a] + FockDegree[b]
 
 FockDegree[HoldPattern @ Multiply[a_, b__]] := FockDegree[a] + FockDegree[Multiply[b]]
 
-FockDegree[_?AnyOperatorQ] = 1
+FockDegree[_?AnyFockOperatorQ] = 1
 
 FockDegree[_?CommutativeQ] = 0
 
-FockDegree[expr_] := 0 /; FreeQ[expr, _?AnyOperatorQ]
+FockDegree[expr_] := 0 /; FreeQ[expr, _?AnyFockOperatorQ]
 
 (* MultiplyDegree for operators *)
-MultiplyDegree[_?AnyOperatorQ] = 1
+MultiplyDegree[_?AnyFockOperatorQ] = 1
 
 
 FockBilinearQ::usage = "FockBilinearQ[expr, False] retunrs True if expr is a bilinear combination of operators, either normal or anomalous. FockBilinearQ[expr,True] returns True if expr is a bilinear combination AND includes at least one anomalous combination such as creator times creator. FockBilinearQ[expr] is equivalent to FockBilinearQ[expr, False]."
@@ -1237,7 +1207,7 @@ FockBilinearOperators[expr_] := getOperators[expr] /; FockBilinearQ[expr, False]
 
 (* Extract the list of all operators appearing in the Fock expression. *)
 getOperators[expr_] :=
-  Union @ Cases[ expr, _?OperatorQ | Canon[_?HeisenbergQ], {0, Infinity} ]
+  Union @ Cases[ expr, _?FockOperatorQ | Canon[_?HeisenbergQ], {0, Infinity} ]
 
 
 (* LieExp: Baker-Hausdorff theorem *)
@@ -1279,6 +1249,7 @@ LieExp[gen_, expr_] := Module[
 (* TODO: To support Heisenbergs *)
 
 
+(* Baker-Hausdorff Lemma *)
 $ElaborationRules = Join[ $ElaborationRules,
   { HoldPattern @ Multiply[
       pre___,
@@ -1289,23 +1260,10 @@ $ElaborationRules = Join[ $ElaborationRules,
    }
  ]
 
-(* To be called through FockExpand[expr, Method->"BakerHausdorff"] *)
-(*
-HoldPattern @ doExpandBakerHausdorff[
-  Multiply[pre___, MultiplyExp[a_], b__, MultiplyExp[c_], post___]
- ] := Multiply[pre, LieExp[a, Multiply[b]], post] /;
-  Garner[a + c] == 0
-
-doExpandBakerHausdorff[expr_] := expr /. {
-  op:HoldPattern[Multiply[___, MultiplyExp[a_], b__, MultiplyExp[c_], ___]] :>
-    doExpandBakerHausdorff[op] /; Garner[a + c] == 0
- }
- *)
-
 (* ********************************************************************** *)
 
 Once[
-  $GarnerTests = Join[$GarnerTests, {AnyOperatorQ}];
+  $GarnerTests = Join[$GarnerTests, {AnyFockOperatorQ}];
   $RepresentableTests = Join[$RepresentableTests, {AnyParticleQ}];
  ]
 
@@ -1335,30 +1293,43 @@ HoldPattern @ Multiply[___, Bra[Null], ___] = Bra[Null]
 
 (*** VacuumState and Vacuum Expectation Values ***)
 
-VacuumState::usage = "VacuumState[] refers to the vacuum state in the Fock space. It is denoted by Ket[None]. It is the state that is annihilated by any annihilation operator."
+VacuumState::usage = "VacuumState[] returns Ket[Vacuum] which refers to the vacuum state in the Fock space. It is the state that is annihilated by any annihilation operator."
 
-HoldPattern @ Multiply[a___, op_?AnnihilatorQ, Ket[None], b___] = 0 
+Format[ Ket[Vacuum] ] := Ket[Any]
 
-HoldPattern @ Multiply[a___, Bra[{}], op_?CreatorQ, b___] = 0
+Format[ Bra[Vacuum] ] := Bra[Any]
 
 HoldPattern @
-  Multiply[___, op_?BosonQ, __?(FreeQ[#, Dagger[_?BosonQ]]&), Ket[None], ___] := 0
+  Multiply[ pre___, Bra[a_Association], Ket[Vacuum], post___ ] :=
+  BraKet[a, Association[]] Multiply[pre, post]
+
+HoldPattern @ Multiply[ pre___, Bra[Vacuum], Ket[b_Association], post___ ] :=
+  BraKet[Association[], b] Multiply[pre, post]
+
+HoldPattern @
+  Multiply[ pre___, Bra[Vacuum], Ket[Vacuum], post___ ] :=
+  BraKet[{}, {}] Multiply[pre, post]
+
+
+HoldPattern @ Multiply[a___, op_?AnnihilatorQ, Ket[Vacuum], b___] = 0 
+
+HoldPattern @ Multiply[a___, Bra[Vacuum], op_?CreatorQ, b___] = 0
+
+HoldPattern @ Multiply[___, op_?BosonQ, more__, Ket[Vacuum], ___] := 0 /;
+  FreeQ[{more}, Dagger[_?BosonQ]]
 (* Without this, because of the ordering policy, the bosonic annihilator may
    not directly see VacuumState[] when mixed with other types. *)
 
-HoldPattern @
-  Multiply[___, Bra[{}], __?(FreeQ[#, _?FermionQ]&), op_?AnyFermionQ, ___] :=
-  0 /; CreatorQ[op]
+HoldPattern @ Multiply[___, Bra[Vacuum], more__, op_?AnyFermionQ, ___] := 0 /;
+  CreatorQ[op] /; FreeQ[{more}, _?FermionQ]
 (* Without this, because of the ordering polity, the fermionic creator may
    not directly see VacuumState[] when mixed with other types. *)
 
+
 SurviveVacuum::usage = "SurviveVacuum[expr] drops vacuum-annihilating parts of expression expr."
 
-SurviveVacuum[expr_] := Block[
-  { saved },
-  Multiply[ expr /. {Ket[None] -> saved}, Ket[None] ] /.
-    {Ket[None] -> 1, saved -> Ket[None]}
- ]
+SurviveVacuum[expr_] := Multiply[expr, Ket[Vacuum]] /. {Ket[Vacuum] -> 1}
+
 
 VacuumExpectation::usage = "VacuumExpectation[expr] returns the vacuum expectation value of an operator expression.
   The option Method specifies the evaluation method: With
@@ -1373,46 +1344,46 @@ BraKet[{},{}] = 1 (* Bra[].Ket[] = 1 *)
 VacuumExpectation[expr_, OptionsPattern[]] :=
   fVacuumExpectation[OptionValue[Method]][expr]
 
-fVacuumExpectation["Algebra"][expr_] := Multiply[ Bra[{}], expr, Ket[None] ]
+fVacuumExpectation["Algebra"][expr_] := Multiply[ Bra[{}], expr, Ket[Vacuum] ]
 
 fVacuumExpectation["Occupations"][expr_] := Multiply[ Bra[<||>], expr, Ket[<||>] ]
 
 
 (* Odd number of operators *)
 
-HoldPattern @ Multiply[Bra[{}], x__?AnyParticleQ, Ket[None]] /; OddQ[Length @ {x}] = 0
+HoldPattern @ Multiply[Bra[{}], x__?AnyParticleQ, Ket[Vacuum]] /; OddQ[Length @ {x}] = 0
 
 (* Special rules for bosons *)
 
-HoldPattern @ Multiply[ Bra[{}], __?BosonQ, Ket[None] ] = 0
+HoldPattern @ Multiply[ Bra[{}], __?BosonQ, Ket[Vacuum] ] = 0
 
-HoldPattern @ Multiply[ Bra[{}], Dagger[_?BosonQ].., Ket[None] ] = 0
+HoldPattern @ Multiply[ Bra[{}], Dagger[_?BosonQ].., Ket[Vacuum] ] = 0
 
 (* Special rules for Vacuum == "Sea" *)
 
 (* (1-n_k) |0> *)
 HoldPattern @
-  Multiply[Bra[{}], a___, op:c_[k_,j___], Dagger[op:c_[k_,j___]], Ket[None]] := 
+  Multiply[Bra[{}], a___, op:c_[k_,j___], Dagger[op:c_[k_,j___]], Ket[Vacuum]] := 
   UnitStep[k] VacuumExpectation[Multiply[a]] /;
   FermionQ[c] && seaQ[op]
 (* 2016-09-01 Can this case occur with Dagger[c] always pushed to the left? *)
 
 (* <0| (1-n_k) *)
 HoldPattern @
-  Multiply[Bra[{}], op:c_[k_,j___], Dagger[op:c_[k_,j___]], b___, Ket[None]] :=
+  Multiply[Bra[{}], op:c_[k_,j___], Dagger[op:c_[k_,j___]], b___, Ket[Vacuum]] :=
   UnitStep[k] VacuumExpectation[Multiply[b]] /;
   FermionQ[c] && seaQ[op]
 (* 2016-09-01 Can this case occur with Dagger[c] always pushed to the left? *)
 
 (* n_k |0> *)
 HoldPattern @
-  Multiply[Bra[{}], a___, Dagger[op:c_[k_,j___]], op:c_[k_,j___], Ket[None]] :=
+  Multiply[Bra[{}], a___, Dagger[op:c_[k_,j___]], op:c_[k_,j___], Ket[Vacuum]] :=
   UnitStep[-k] VacuumExpectation[Multiply[a]] /;
 j  FermionQ[c] && seaQ[op]
 
 (* <0| n_k *)
 HoldPattern @
-  Multiply[Bra[{}], Dagger[op:c_[k_,j___]], op:c_[k_,j___], b___, Ket[None]] :=
+  Multiply[Bra[{}], Dagger[op:c_[k_,j___]], op:c_[k_,j___], b___, Ket[Vacuum]] :=
   UnitStep[-k] VacuumExpectation[Multiply[b]]  /;
   FermionQ[c] && seaQ[op]
 
@@ -1420,7 +1391,7 @@ HoldPattern @
    Assumption: The vacuum has a well-defined particle number and spin
    z-compoenent. Otherwise, this rule gives a wrong result. *)
 
-HoldPattern @ Multiply[Bra[{}], x__?electronQ, Ket[None]] := Module[
+HoldPattern @ Multiply[Bra[{}], x__?electronQ, Ket[Vacuum]] := Module[
   {isospin, spin},
   {isospin, spin} = Transpose @ Map[getIsospinSpin, {x}];
   isospin = Total @ isospin;
@@ -1444,7 +1415,7 @@ getIsospinSpin[_Symbol?ParticleQ[__, s_]] := {-1/2, -s}
 
 (* Special reule for unpaired operators *)
 
-HoldPattern @ Multiply[Bra[{}], a__?AnyParticleQ, Ket[None]] /;
+HoldPattern @ Multiply[Bra[{}], a__?AnyParticleQ, Ket[Vacuum]] /;
   unpairedQ[a] = 0
 
 (* Returns True if the operators sequence is DEFINITELY unpaired. False does
@@ -1488,7 +1459,7 @@ speciesForm[ a_Symbol?ParticleQ ] := {a, {}, -1}
 HoldPattern @ Multiply[
   Bra[{}],
   Dagger[x:a_Symbol?FermionQ[k1_,j1___]], y:a_[k2_,j2___],
-  Ket[None]
+  Ket[Vacuum]
  ] := KroneckerDelta[k1,k2] * KroneckerDelta[{j1},{j2}] * UnitStep[-k1] /;
   seaQ[x] && seaQ[y]
 (* NOTE: Operators with different Heads are assumed to be different
@@ -1497,7 +1468,7 @@ HoldPattern @ Multiply[
 (* For operators with NUMERIC Flavor indices, for which CreatorQ[] and
    AnnihilatorQ[] give definite answers. *)
 
-HoldPattern @ Multiply[Bra[{}], ops__?AnyOperatorQ, Ket[None]] := Module[
+HoldPattern @ Multiply[Bra[{}], ops__?AnyFockOperatorQ, Ket[Vacuum]] := Module[
   { Zz, new },
   (* NOTE: Zz can be replaced by any symbol which can be canonically
      ordered either lastest or earliest. *)
@@ -1526,18 +1497,24 @@ rulesParticleHoleInverse[f_] := {
 (* By definition, the vacuum expectation value of a normal ordered
    expression is zero! *)
 
-HoldPattern @ Multiply[Bra[{}], FockColon[_], Ket[None]] = 0
+HoldPattern @ Multiply[Bra[{}], FockColon[_], Ket[Vacuum]] = 0
 
 
 (* ********************************************************************** *)
 
 Displacement::usage = "Displacement[z, a] represents the displacement operator of the Bosonic mode a, where z is a complex number.\nDisplacement[\[Xi], c] for Fermion c, \[Xi] is a Grassmann number."
 
-Displacement /: Peel[ Displacement[_, a_] ] := a (* for Matrix[] *)
+Displacement /:
+Peel[ Displacement[_, a_] ] := a (* for Matrix[] *)
 
-Displacement /: Kind[ Displacement[_, a_] ] := Kind[a] (* for Multiply[] *)
+Displacement /:
+Kind[ Displacement[_, a_] ] := Kind[a] (* for Multiply[] *)
 
-Displacement /: AnySpeciesQ[ Displacement[_, a_] ] := AnySpeciesQ[a] (* for Multiply[] *)
+Displacement /:
+MultiplyGenus[ Displacement[_, a_] ] := "Singleon" (* for Multiply[] *)
+
+Displacement /:
+AnySpeciesQ[ Displacement[_, a_] ] := AnySpeciesQ[a] (* for Multiply[] *)
 
 HoldPattern @ Dagger[ Displacement[z_?CommutativeQ, a_?BosonQ] ] :=
   Displacement[-z, a]
@@ -1592,62 +1569,13 @@ Format[ CoherentState[a_Association] ] := Ket[a]
 Format[ HoldPattern @ Dagger[v_CoherentState] ] := Bra @@ v
 
 CoherentState /:
-CommutativeQ[ CoherentState[_Association] ] := False
+NonCommutativeQ[ CoherentState[_Association] ] = True
 
-$coherentSpec = Alternatives[
-  _?BosonQ -> _?ComplexQ,
-  _?FermionQ -> _?GrassmannQ,
-  {__?BosonQ} -> _?ComplexQ,
-  {__?BosonQ} -> {__?ComplexQ},
-  {__?FermionQ} -> __?GrassmannQ,
-  {__?FermionQ} -> {__?GrassmannQ}
- ]
+CoherentState /:
+Kind[ CoherentState[_Association] ] = NonCommutative
 
-CoherentState[ op:$coherentSpec.. ] := CoherentState[ CoherentState[<||>], op ]
-
-CoherentState[ CoherentState[a_Association], op:$coherentSpec.. ] := Module[
-  { rules = Flatten @ KetRule @ {op} },
-  CoherentState @ KeySort @ KetTrim @ Join[a, Association @ rules]
- ]
-
-
-(* Hermitian product between CoherentStates *)
-CoherentState[ a:_Association, a ] := 1
-
-CoherentState[ a_Association, b_Association ] := Module[
-  { op = Union[ Keys @ a, Keys @ b ],
-    za, zb },
-  za = Lookup[a, op];
-  zb = Lookup[b, op];
-  Times @@ Exp[-Dagger[za]**za/2-Dagger[zb]**zb/2 + Dagger[za]**zb]
- ]
-
-
-HoldPattern @ Multiply[ x___,
-  Dagger[CoherentState[a_Association]], CoherentState[b_Association],
-  y___ ] := CoherentState[ a, b ] * Multiply[x, y]
-
-HoldPattern @
-  Multiply[a___, op_?ParticleQ, CoherentState[v_Association], b___] := 
-  Multiply[a, CoherentState[v], v[op], b] /; KeyExistsQ[v, op]
-(* NOTE: v[op] can be a Grassmann variable *)
-
-HoldPattern @
-  Multiply[a___, op_?ParticleQ, CoherentState[v_Association], b___] := 
-  Multiply[a, CoherentState[v], op, b]
-
-HoldPattern @
-  Multiply[a___, Dagger[CoherentState[v_Association]], Dagger[op_?ParticleQ], b___] := Multiply[a, Dagger[op ** CoherentState[v]], b]
-
-
-HoldPattern @
-  Multiply[a___, Dagger[op_?ParticleQ], CoherentState[v_Association], b___] := 
-  Multiply[a, CoherentState[v], Dagger[op], b] /; Not @ KeyExistsQ[v, op]
-
-HoldPattern @
-  Multiply[a___, Dagger[CoherentState[v_Association]], op_?ParticleQ, b___] := 
-  Multiply[a, op, Dagger[CoherentState[v]], b] /; Not @ KeyExistsQ[v, op]
-
+CoherentState /:
+MultiplyGenus[ CoherentState[_Association] ] = "Ket"
 
 Once[
   AppendTo[$GarnerHeads, CoherentState];
@@ -1662,19 +1590,84 @@ HoldPattern @ Elaborate[ CoherentState[vec_Association] ] := Module[
     MultiplyExp[-(#2 ** #2)/2 + (Dagger[#1] ** #2)]&,
     vec
    ];
-  expr ** Ket[None]
+  expr ** Ket[Vacuum]
  ]
 
-(* To be called through FockExpand[expr, Method->"Basic"] *)
+
+(*  Constructing CoherentState *)
+
+$coherentSpec = Alternatives[
+  _?BosonQ -> _?ComplexQ,
+  _?FermionQ -> _?GrassmannQ,
+  {__?BosonQ} -> _?ComplexQ,
+  {__?BosonQ} -> {__?ComplexQ},
+  {__?FermionQ} -> __?GrassmannQ,
+  {__?FermionQ} -> {__?GrassmannQ}
+ ]
+
+CoherentState[ op:$coherentSpec.. ] :=
+  CoherentState[ CoherentState[<||>], op ]
+
+CoherentState[ CoherentState[a_Association], op:$coherentSpec.. ] := Module[
+  { rules = Flatten @ KetRule @ {op} },
+  CoherentState @ KeySort @ KetTrim @ Join[a, Association @ rules]
+ ]
+
+
+(* Hermitian product between CoherentStates *)
+
+CoherentState[ a:_Association, a ] := 1
+
+CoherentState[ a_Association, b_Association ] := Module[
+  { op = Union[ Keys @ a, Keys @ b ],
+    za, zb },
+  za = Lookup[a, op];
+  zb = Lookup[b, op];
+  Times @@ Exp[-Dagger[za]**za/2-Dagger[zb]**zb/2 + Dagger[za]**zb]
+ ]
+
+HoldPattern @ Multiply[ x___,
+  Dagger[CoherentState[a_Association]], CoherentState[b_Association],
+  y___ ] := CoherentState[ a, b ] * Multiply[x, y]
+
+
+(* Op ** CoherentState[...] *)
+
+HoldPattern @
+  Multiply[pre___, op_?ParticleQ, CoherentState[v_Association], post___] := 
+  Multiply[pre, CoherentState[v], v[op], post] /;
+  KeyExistsQ[v, op]
+(* NOTE: v[op] can be a Grassmann variable; hence still inside Multiply. *)
+
+HoldPattern @
+  Multiply[pre___, op_?ParticleQ, CoherentState[v_Association], post___] := 0 /;
+  Not @ KeyExistsQ[v, op]
+(* NOTE: Default value for unspecified particles is 0. *)
+
+HoldPattern @ Multiply[ pre___,
+  Dagger[CoherentState[v_Association]], Dagger[op_?ParticleQ],
+  post___ ] := Multiply[pre, Dagger[op ** CoherentState[v]], post]
+
 (*
-doExpandBasic[expr_] := expr //. {
-  CoherentState[a_Association] :>
-    ( Multiply @@
-        Map[ MultiplyExp[-(#[[2]]**#[[2]])/2 + (Dagger[#[[1]]]**#[[2]])]& ] @
-        Normal[a]
-     ) ** Ket[None]
- }
+HoldPattern @ Multiply[ pre___,
+  Dagger[op_?ParticleQ], CoherentState[v_Association],
+  post___ ] :=
+  Multiply[pre, Multiply[Dagger[op], Ket[]], CoherentState[v], post] /;
+  Not @ KeyExistsQ[v, op]
  *)
+(* This is not particularly helpful. *)
+(* NOTE 1: Default value for unspecified particles is 0. *)
+(* NOTE 2: The reuslt of op ** Ket[] is a Fock state. *)
+
+(*
+HoldPattern @ Multiply[
+  pre___,
+  Dagger[CoherentState[v_Association]], op_?ParticleQ,
+  post___ ] :=
+  Multiply[pre, Dagger[Dagger[op] ** CoherentState[v]], post] /;
+  Not @ KeyExistsQ[v, op]
+ *)
+(* This is not particularly helpful. *)
 
 
 (* ********************************************************************** *)
@@ -1684,18 +1677,18 @@ FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of 
 FockAddSpin[ ls:{(_?ParticleQ|_Association)...} ] :=
   FockAddSpin @@ Map[FockAddSpin] @ ls
 
-FockAddSpin[] := Association[ {0,0} -> {Ket[None]} ]
+FockAddSpin[] := Association[ {0,0} -> {Ket[Vacuum]} ]
 
 FockAddSpin[irb_Association] := irb
 
 FockAddSpin[c_?ParticleQ] := Module[
   { cc = FockSpinor[c], irb },
-  irb = Multiply[Dagger[#], Ket[None]]& /@ GroupBy[cc, {TrueSpin[#], SpinZ[#]}&];
+  irb = Multiply[Dagger[#], Ket[Vacuum]]& /@ GroupBy[cc, {TrueSpin[#], SpinZ[#]}&];
   (* NOTICE TrueSpin[#], not Spin[#]. This is a fallback for
      inconsistent Flavor indices, in which case SpinZ vanishes. *)
-  Merge[{Association[{0,0} -> {Ket[None]}], irb}, Catenate]
+  Merge[{Association[{0,0} -> {Ket[Vacuum]}], irb}, Catenate]
   (* NOTE: The following code does not work for Spinless case:
-     Prepend[ irb, {0,0} -> {Ket[None]} ]
+     Prepend[ irb, {0,0} -> {Ket[Vacuum]} ]
      *)
  ]
 
@@ -1735,7 +1728,7 @@ doFockAddSpin[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
       ClebschGordan[{S1, m}, {S2, Sz - m}, {S, Sz}],
     {m, Range[min, max]}
    ];
-  new = Garner @ Multiply[(new /. Ket[None] -> 1), Ket[None]];
+  new = Garner @ Multiply[(new /. Ket[Vacuum] -> 1), Ket[Vacuum]];
   Association[ {S, Sz} -> new ]
  ]
 
@@ -1759,7 +1752,7 @@ FockAddSpinZ[ops:{__?FermionQ}] := Module[
   FockCat @ KeySort @ Map[Ket[cc->#]&, nn, {2}]
  ]
 
-FockAddSpinZ[] := Association[ 0 -> Ket[None] ]
+FockAddSpinZ[] := Association[ 0 -> Ket[Vacuum] ]
 
 (*** Vectors in the Fock Space ***)
 
@@ -1767,13 +1760,13 @@ FockAddSpinZ[] := Association[ 0 -> Ket[None] ]
 (* Cat := The creation-operator represenation of a basis vector in the Fock space.
    Hence, Cat is an multiplication of creators on VacuumState[]. *)
 
-catQ[ Ket[None] ] = True
+catQ[ Ket[Vacuum] ] = True
 
-catQ[ z_?ComplexQ Ket[None] ] = True
+catQ[ z_?ComplexQ Ket[Vacuum] ] = True
 
-catQ[ HoldPattern @ Multiply[__, Ket[None]] ] = True
+catQ[ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True
 
-catQ[ z_?ComplexQ HoldPattern @ Multiply[__, Ket[None]] ] = True
+catQ[ z_?ComplexQ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True
 
 catQ[ z_?ComplexQ expr_ ] := catQ[expr]
 
@@ -1810,7 +1803,7 @@ toCatForm[ Ket[v_Association] ] := Module[
   { cc = Keys @ v,
     nn = Values @ v },
   cc = MultiplyPower[Dagger @ cc, nn] / Sqrt[nn!];
-  Multiply[ Multiply @@ cc, Ket[None] ]
+  Multiply[ Multiply @@ cc, Ket[Vacuum] ]
  ]
 
 
@@ -1819,7 +1812,7 @@ FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall th
 FockKet::badExpr = "`1` does not seem to represent a state vector in the Fock space, which in the creation-operator representation, takes the form of Dagger[c1]**Dagger[c2]**...**VacuumState[]."
 
 FockKet[expr_] := toKetForm[ expr ] /;
-  Not @ FreeQ[expr, Ket[None] | Ket[_Association]]
+  Not @ FreeQ[expr, Ket[Vacuum] | Ket[_Association]]
 
 FockKet[expr__] := (
   Message[FockKet::badExpr, {expr}];
@@ -1835,13 +1828,13 @@ toKetForm[expr_Plus] := Garner @ Total @
 
 toKetForm[z_?CommutativeQ expr_] := z toKetForm[expr]
 
-toKetForm[ Ket[None] ] := Ket[]
+toKetForm[ Ket[Vacuum] ] := Ket[]
 
 toFockKet[ Ket[Null] ] = Ket[Null]
 
 toKetForm[ v:Ket[_Association] ] := v
 
-toKetForm[ HoldPattern @ Multiply[expr__, Ket[None]] ] := Module[
+toKetForm[ HoldPattern @ Multiply[expr__, Ket[Vacuum]] ] := Module[
   {ops, val},
   {ops, val} = Transpose @ Tally @ {expr};
   ops = ops /. {Dagger -> Identity};

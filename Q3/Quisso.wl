@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-23 17:01:48+09 $
-  $Revision: 1.92 $
+  $Date: 2021-02-25 10:17:21+09 $
+  $Revision: 1.95 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.92 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-23 17:01:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.95 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-25 10:17:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -443,7 +443,7 @@ Once[
    ]
  ]
 
-  
+
 ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
 
 Format[ ProductState[Association[]] ] := Ket[Any]
@@ -481,14 +481,22 @@ HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := Garner[
   CircleTimes @@ KeyValueMap[QuissoExpression[#2, #1]&, a]
  ]
 
-(* input specifications *)
+(* ProductState in Multiply[...] *)
 
 ProductState /:
 NonCommutativeQ[ ProductState[___] ] = True
 
+ProductState /:
+Kind[ ProductState[___] ] = Ket
+
+ProductState /:
+MultiplyGenus[ ProductState[___] ] = "Ket"
+
 HoldPattern @
   Multiply[ pre___, vec:ProductState[_Association, ___], post___ ] :=
   Garner @ Multiply[pre, Elaborate[vec], post]
+
+(* input specifications *)
 
 ProductState[] = ProductState[Association[]]
 

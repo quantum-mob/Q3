@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-21 19:48:59+09 $
-  $Revision: 2.62 $
+  $Date: 2021-02-25 11:16:21+09 $
+  $Revision: 2.66 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,16 +13,15 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.62 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-21 19:48:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.66 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-25 11:16:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
 { Spin, SpinNumberQ };
 
-{ Ket, Bra, State,
-  TheKet, TheBra, TheState };
+{ State, TheKet, TheBra, TheState };
 
 { KetRule, KetTrim, VerifyKet };
 
@@ -420,10 +419,6 @@ SetAttributes[{Ket, Bra}, NHoldAll]
 (* The integers in Ket[] and Bra[] should not be converted to real
    numbers by N[]. *)
 
-Format[ Ket[None] ] := Ket[Any]
-
-Format[ Bra[{}] ] := Bra[Any]
-
 Format[ Ket[Association[]] ] := Ket[Any]
 
 Format[ Bra[Association[]] ] := Bra[Any]
@@ -439,9 +434,13 @@ Ket /: NonCommutativeQ[ Ket[___] ] = True
 
 Bra /: NonCommutativeQ[ Bra[___] ] = True
 
-Ket /: Kind[ Ket[___] ] = NonCommutative
+Ket /: Kind[ Ket[___] ] = Ket
 
-Bra /: Kind[ Bra[___] ] = NonCommutative
+Bra /: Kind[ Bra[___] ] = Bra
+
+Ket /: MultiplyGenus[ Ket[___] ] = "Ket"
+
+Bra /: MultiplyGenus[ Bra[___] ] = "Bra"
 
 Ket /: Dagger[Ket[a___]] := Bra[a]
 
@@ -544,17 +543,6 @@ HoldPattern @
 HoldPattern @
   Multiply[ pre___, Bra[a_Association], Ket[b_Association], post___ ] :=
   BraKet[a, b] Multiply[pre, post]
-
-HoldPattern @
-  Multiply[ pre___, Bra[a_Association], Ket[None], post___ ] :=
-  BraKet[a, Association[]] Multiply[pre, post]
-
-HoldPattern @ Multiply[ pre___, Bra[{}], Ket[b_Association], post___ ] :=
-  BraKet[Association[], b] Multiply[pre, post]
-
-HoldPattern @
-  Multiply[ pre___, Bra[{}], Ket[None], post___ ] :=
-  BraKet[{}, {}] Multiply[pre, post]
 
 HoldPattern @
   Multiply[ pre___, Bra[a___], Ket[b___], post___ ] :=
@@ -705,6 +693,9 @@ Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] repre
 
 SetAttributes[Pauli, {NHoldAll, ReadProtected}]
 (* The integers in Pauli[] should not be converted to real numbers by N[]. *)
+
+Pauli /:
+MultiplyGenus[ Pauli[___] ] = "Singleton"
 
 Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|-7|-8)..] ] := With[
   { aa = {a} /. theIndexRules },
@@ -1209,6 +1200,8 @@ Parity /: Peel[ Parity[a_] ] := a (* for Matrix[] *)
 
 Parity /: Kind[ Parity[a_] ] := Kind[a] (* for Multiply[] *)
 
+Parity /: MultiplyGenus[Parity[_]] := "Singleton" (* for Multiply *)
+
 Parity /: AnySpeciesQ[ Parity[a_] ] := AnySpeciesQ[a] (* for Multiply[] *)
 
 Parity /: AnyNonCommutativeQ[ Parity[a_] ] := AnyNonCommutativeQ[a] (* for Multiply[] *)
@@ -1575,6 +1568,9 @@ Dyad /: NonCommutativeQ[ Dyad[___] ] = True
 
 Dyad /:
 Kind[ Dyad[_Association, _Association, qq_List] ] := First @ Kind @ qq
+
+Dyad /:
+MultiplyGenus[ Dyad[___] ] := "Singleton"
 
 Dyad /:
 HoldPattern @ Elaborate[ Dyad[a_, b_, c_List] ] := Module[

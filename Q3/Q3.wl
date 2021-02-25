@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-02-23 11:18:42+09 $ *)
-(* $Revision: 1.35 $ *)
+(* $Date: 2021-02-25 10:19:05+09 $ *)
+(* $Revision: 1.44 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,8 +10,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.35 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-23 11:18:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.44 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-25 10:19:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -21,7 +21,7 @@ End[]
 { Q3Release, Q3RemoteFetch, Q3RemoteRelease, Q3RemoteURL,
   Q3Update, Q3CheckUpdate };
 
-{ Supplement, SupplementBy, Common, CommonBy };
+{ Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Choices, Successive };
 { ShiftLeft, ShiftRight };
 { Unless, PseudoDivide };
@@ -39,10 +39,10 @@ End[]
   $FormatSpecies,
   $SubscriptDelimiter, $SuperscriptDelimiter };
 
-{ NonCommutative, NonCommutativeQ, AnyNonCommutativeQ,
+{ NonCommutative,
   NonCommutativeSpecies,
-  CommutativeQ,
-  ObscureQ,
+  NonCommutativeQ, AnyNonCommutativeQ,
+  CommutativeQ, AnticommutativeQ,
   Kind, Dimension,
   Hermitian, HermitianQ,
   Antihermitian, AntihermitianQ };
@@ -56,8 +56,6 @@ End[]
 
 { PlusDagger, TimesDaggerRight, TimesDaggerLeft };
 
-{ CoefficientTensor, MultiplyDegree };
-
 { ReplaceBy, ReplaceByFourier, ReplaceByInverseFourier };
 
 { Garner, $GarnerHeads, $GarnerTests };
@@ -66,10 +64,13 @@ End[]
 
 { Commutator, Anticommutator };
 
-{ Multiply, MultiplyExp, MultiplyPower, MultiplyDot,
+{ Multiply, MultiplyGenus, MultiplyDegree,
+  MultiplyExp, MultiplyPower, MultiplyDot,
   DistributableQ };
 
 { Lie, LiePower, LieSeries, LieExp };
+
+{ CoefficientTensor };
 
 { MultiplyExpand }; (* obsolete *)
 
@@ -199,7 +200,7 @@ Q3Update[opts___?OptionQ] := Module[
    ];
   
   file = FileNameJoin @ {dir, FileNameTake[url]};
-  Print["Downloading the update from ", url, " to ", file, " ...."];
+  PrintTemporary["Downloading the update from ", url, " to ", file, " ...."];
 
   $Fraction = 0.;
   $FractionMissing = False;
@@ -228,7 +229,7 @@ Q3Update[opts___?OptionQ] := Module[
     Return[$Failed]
    ];
   
-  Print["Installing the update from ", file, " ...."];
+  PrintTemporary["Installing the update from ", file, " ...."];
   PacletInstall[file, opts]
  ]
 
@@ -301,6 +302,11 @@ CommonBy[a_List, b__List, func_] := Module[
   aa = Map[MatchQ[#, ff]&, aa];
   Pick[a, aa]
  ]
+
+SignatureTo::usage = "SignatureTo[a, b] returns the signature of the permutation that converts the list a to b, where the two lists are assumed to differ only in the order of their elements."
+SignatureTo[a_, b_] := 
+  Signature @ PermutationList @ FindPermutation[a, b] /;
+  Length[a] == Length[b]
 
 Successive::usage = "Successive[f, {x1,x2,x3,...}] returns {f[x1,x2], f[x2,x3], ...}. Successive[f, list, n] applies f on n successive elements of list. Successive[f, list, 2] is equivalent to Successive[f,list]. Successive[f, list, 1] is equivalent to Map[f, list]."
 
@@ -540,7 +546,7 @@ SetAttributes[Any, ReadProtected]
 Format[Any] = "\[SpaceIndicator]"
 
 
-Kind::usage = "Kind[a] returns the type of Species."
+Kind::usage = "Kind[op] returns the type of op, which may be a Species or related function.\nKind is the lowest category class of Species and functions for Multiply. It affects how Multiply rearranges the non-commutative elements.\nIt is intended for internal use."
 
 SetAttributes[Kind, Listable]
 
@@ -551,8 +557,6 @@ Kind[ Conjugate[x_] ] := Kind[x]
 Kind[ Dagger[x_] ] := Kind[x]
 
 Kind[ Tee[x_] ] := Kind[x]
-
-Kind[_] = "UnknownSpecies"
 
 
 Dimension::usage = "Dimension[A] gives the Hilbert space dimension associated with the system A."
@@ -633,6 +637,8 @@ setNonCommutative[x_Symbol] := (
 
   Kind[x] ^= NonCommutative;
   Kind[x[___]] ^= NonCommutative;
+  MultiplyGenus[x] ^= "Singleton";
+  MultiplyGenus[x[___]] ^= "Singleton";
  )
 
 
@@ -679,11 +685,19 @@ SetAttributes[CommutativeQ, Listable]
 CommutativeQ[z_] := FreeQ[z, _?NonCommutativeQ]
 
 
+AnticommutativeQ::usage = "AnticommutativeQ[c] returns True if c is an anticommutative Species such as Fermion, Majorana, and Grassmann, and False otherwise.\nIt is a low-level function intended to be used in Multiply and Matrix.\nIt affects how Multiply and Matrix manipulate expressions involving Fermion, Majorana, and Grassmann Species, which brings about a factor of -1 when exchanged."
+
+SetAttributes[AnticommutativeQ, Listable]
+
+
 NonCommutativeSpecies::usage = "NonCommutativeSpecies[expr] returns the list of all NonCommutative Species appearing in EXPR."
 
 NonCommutativeSpecies[expr_] := Select[
-  Union @ FlavorMute @
-    Cases[ { Normal[expr, Association] }, _?SpeciesQ, Infinity ],
+  Union @ FlavorMute @ Cases[
+    List @ Normal[expr, Association],
+    _?SpeciesQ,
+    Infinity
+   ],
   NonCommutativeQ
  ]
 
@@ -1136,6 +1150,26 @@ DistributableQ::usage = "DistributableQ[x, y, ...] returns True if any of the ar
 DistributableQ[args__] := Not @ MissingQ @ FirstCase[ {args}, _Plus ]
 
 
+MultiplyGenus::usage = "MultiplyGenus[op] returns the Genus of op, which may be a Species or related function.\nGenus is a category class of Species and functions for Multiply that ranks above Kind. It affects how Multiply rearranges the non-commutative elements.\nMultiplyGenus is intended for internal use."
+
+SetAttributes[MultiplyGenus, Listable]
+
+HoldPattern @ MultiplyGenus[ Inverse[x_?SpeciesQ] ] = "Singleton"
+
+HoldPattern @ MultiplyGenus[ Conjugate[x_?SpeciesQ] ] = "Singleton"
+
+HoldPattern @ MultiplyGenus[ Tee[x_?SpeciesQ] ] = "Singleton"
+
+
+HoldPattern @ MultiplyGenus[ Dagger[x_?SpeciesQ] ] = "Singleton"
+
+HoldPattern @ MultiplyGenus[ Dagger[any_] ] := "Bra" /;
+  MultiplyGenus[any] == "Ket"
+  
+HoldPattern @ MultiplyGenus[ Dagger[any_] ] := "Ket" /;
+  MultiplyGenus[any] == "Bra"
+
+
 Multiply::usage = "Multiply[a, b, ...] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[...], it does not have the attributes Flat and OneIdentity."
 
 SetAttributes[Multiply, {Listable, ReadProtected}]
@@ -1156,11 +1190,12 @@ NonCommutativeMultiply[a___] := Multiply[a]
 
 Multiply[] = 1 (* See also Times[]. *)
 
-Multiply[ c_ ] := c
+Multiply[c_] := c
 
 (* Associativity *)
 
-HoldPattern @ Multiply[a___, Multiply[b__], c___] := Multiply[a, b, c]
+HoldPattern @
+  Multiply[pre___, Multiply[op__], post___] := Multiply[pre, op, post]
 (* NOTE: An alternative approach is to set the attributes Flat and
    OneIdentity. But then infinite recursion loop can easily happen. It is
    possible to avoid it, but tedious and sometimes slow. *)
@@ -1186,18 +1221,18 @@ HoldPattern @ Multiply[ args__ ] := Garner @ Block[
   Distribute[ F[args] ] /. { F -> Multiply }
  ] /; DistributableQ[args]
 
-HoldPattern @ Multiply[ a___, z_?CommutativeQ, b___] :=
-  Garner[ z Multiply[a, b] ]
+HoldPattern @ Multiply[ pre___, z_?CommutativeQ, post___] :=
+  Garner[ z Multiply[pre, post] ]
 
-HoldPattern @ Multiply[ a___, z_?CommutativeQ b_, c___] :=
-  Garner[ z Multiply[a, b, c] ]
+HoldPattern @ Multiply[ pre___, z_?CommutativeQ op_, post___] :=
+  Garner[ z Multiply[pre, op, post] ]
 
 
 HoldPattern @ Multiply[ pre___, Power[E, expr_], post___] :=
   Multiply[pre, MultiplyExp[expr], post]
 
 
-(*** Baker-Hausdorff relations for simple cases ***)
+(*** Baker-Hausdorff lemma for simple cases ***)
 
 HoldPattern @
   Multiply[ pre___, MultiplyExp[a_], MultiplyExp[b_], post___ ] :=
@@ -1228,21 +1263,31 @@ HoldPattern @
       Multiply[ Multiply[pre, Commutator[a, b]], MultiplyExp[a], new]
    ] /; Garner[ Commutator[a, b, 2] ] === 0
 (* NOTE: Exp is pushed to the right. *)
-(* NOTE: Here notice BlankSequence(__), which allows for more than one
-   operators. At the same time, the PatternTest AnySpeciesQ is put in order to
-   skip Exp[op]. Commutators involving Exp[op] usually takes long in vain. *)
+(* NOTE: Here notice the PatternTest AnySpeciesQ is put in order to skip
+   Exp[op] or MultiplyExp[op]. Commutators involving Exp[op] or
+   MultiplyExp[op] usually takes long in vain. *)
 
 
 (* General rules *)
 
+(* No operator is moved across Ket or Bra. *)
+(* Operators of different kinds (see Kind) are regarded either mutually
+   commutative or mutually anticommuative. *)
+(* Unless specified explicitly, any symbol or function is regarded commutative
+   (i.e., commutes with any other symbol or function). *)
+
+(*
 ObscureQ::usage = "ObscureQ[op] returns True if Kind[op] === NonCommutative.\nNote that most NonCommuative Species are associated with a definite Kind."
 
 ObscureQ[op_?AnyNonCommutativeQ] := SameQ[Kind[op], NonCommutative]
 
 ObscureQ[_] := False
+ *)
 
 (* NOTE: Notice _?AnyNonCommutativeQ NOT _?AnySpeciesQ .
    This is to handle the case involving Ket and Bra. *)
+
+(*
 HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
   { aa = SplitBy[{ops}, ObscureQ],
     bb },
@@ -1256,18 +1301,52 @@ HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
    ] /;
   Not @ AllTrue[{ops}, ObscureQ] /;
   AnyTrue[{ops}, ObscureQ]
+ *)
 
-Once[ (* To be redefined in Fock for Fermion, Majorana, Grassmann *)
-  (* NOTE: At first, __?AnySpeciesQ.
-     Now __?AnyNonCommutativeQ to handle Dyad. *)
-  HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
-    { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
-      bb },
-    bb = Multiply @@@ aa;
-    Multiply @@ bb
-   ] /;
-    Not @ OrderedQ[ Kind @ {ops} ] /;
-    NoneTrue[{ops}, ObscureQ]
+(* Handles Fermion, Majorana, Grassmann properly *)
+(* NOTE:
+   Before, it was _?AnySpeciesQ NOT _?AnyNonCommutativeQ.
+   This was to handle Ket and Bra separately.
+   Now, __?AnyNonCommutativeQ to hanle Dyad. *)
+(*
+HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
+  { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
+    bb },
+  bb = Multiply @@@ aa;
+  bb = Multiply @@ bb;
+  bb * SignatureTo[
+    Cases[ {ops}, _?AnticommutativeQ ],
+    Cases[ Flatten @ aa, _?AnticommutativeQ ]
+   ]
+ ] /;
+  Not @ OrderedQ[ Kind @ {ops} ] /;
+  NoneTrue[{ops}, ObscureQ]
+ *)
+
+HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
+  { aa = SplitBy[{ops}, MultiplyGenus],
+    bb },
+  bb = Multiply @@@ aa;
+  Multiply @@ bb
+ ] /;
+  Not @ OrderedKindsQ @ {ops} /;
+  Length[Union @ MultiplyGenus @ {ops}] > 1
+
+HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
+  { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
+    bb },
+  bb = Multiply @@@ aa;
+  bb = Multiply @@ bb;
+  bb * SignatureTo[
+    Cases[ {ops}, _?AnticommutativeQ ],
+    Cases[ Flatten @ aa, _?AnticommutativeQ ]
+   ]  
+ ] /; Not @ OrderedKindsQ @ {ops}
+
+OrderedKindsQ[ops_List] := Module[
+  { qq = Kind @ SplitBy[ops, MultiplyGenus],
+    kk },
+  AllTrue[qq, OrderedQ]
  ]
 
 (* ****************************************************************** *)
