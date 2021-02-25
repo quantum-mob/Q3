@@ -1,5 +1,12 @@
 # Select Release Notes
 
+## v1.6.1
+
+- Multiply has been enhanced based on a new mechanism.
+- A bug fix in ProductState when used in Multiply.
+- Various tutorial pages have been improved.
+
+
 ## v1.6.0
 
 - FockExpand is deprecated now.
@@ -8,11 +15,6 @@
 - Documentation pages have been updated to better support Mathematica v12.2.
 - CoherentState is enhanced.
 
-### Known Issues
-
-After the release of v1.6.0, these issues have been found:
-
-- There is a bug in ProductState when used in Multiply. To be fixed in the next release.
 
 ## v1.5.3
 
