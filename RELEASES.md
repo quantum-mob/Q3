@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v1.6.2
+
+- A bug fix in Multiply involving Pauli.
+- A bug fix in ProductForm.
+- Enhanced SpinForm.
+
 ## v1.6.1
 
 - Multiply has been enhanced based on a new mechanism.

@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-26 19:07:23+09 $
-  $Revision: 2.68 $
+  $Date: 2021-02-26 23:53:36+09 $
+  $Revision: 2.69 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.68 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-26 19:07:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.69 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-26 23:53:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -727,6 +727,9 @@ SetAttributes[Pauli, {NHoldAll, ReadProtected}]
 (* The integers in Pauli[] should not be converted to real numbers by N[]. *)
 
 Pauli /:
+Kind[ Pauli[___] ] = Pauli
+
+Pauli /:
 MultiplyGenus[ Pauli[___] ] = "Singleton"
 
 Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|-7|-8)..] ] := With[
@@ -1372,6 +1375,9 @@ TheEulerAngles[expr_] := Module[
 (* *********************************************************************** *)
 
 Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], Rotation[\[Phi], 3] represent the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{x1, n1}, {x2, n2}, ...] = Rotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] ..."
+
+Rotation /:
+Kind[ Rotation[_, 0|1|2|3] ] = Pauli
 
 Rotation[_, 0] := Pauli[0]
 

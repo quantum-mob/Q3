@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     30998,        950]
-NotebookOptionsPosition[     23808,        801]
-NotebookOutlinePosition[     26289,        862]
-CellTagsIndexPosition[     26204,        857]
+NotebookDataLength[     32549,        997]
+NotebookOptionsPosition[     25327,        848]
+NotebookOutlinePosition[     27839,        909]
+CellTagsIndexPosition[     27754,        904]
 WindowTitle->QuissoCircuit
 WindowFrame->Normal*)
 
@@ -32,10 +32,10 @@ Cell[BoxData[GridBox[{
          TextCell[
           Row[{"Tutorials", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Quisso Quick Start\"\>":>
+        StripOnInput->False], {"\<\"Quisso: Quick Start\"\>":>
        Documentation`HelpLookup[
        "paclet:Q3/tutorial/QuissoQuickStart"], "\<\"QuissoCircuit Usage \
-Tutorial\"\>":>Documentation`HelpLookup[
+Examples\"\>":>Documentation`HelpLookup[
        "paclet:Q3/tutorial/QuissoCircuitUsage"]},
        Appearance->None,
        MenuAppearance->Automatic,
@@ -61,8 +61,13 @@ Tutorial\"\>":>Documentation`HelpLookup[
        "paclet:Q3/ref/ControlledU"], "\<\"Measurement\"\>":>
        Documentation`HelpLookup[
        "paclet:Q3/ref/Measurement"], "\<\"Toffoli\"\>":>
-       Documentation`HelpLookup["paclet:Q3/ref/Toffoli"], "\<\"Projector\"\>":>
-       Documentation`HelpLookup["paclet:Q3/ref/Projector"]},
+       Documentation`HelpLookup["paclet:Q3/ref/Toffoli"], "\<\"Fredkin\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Fredkin"], "\<\"Projector\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/Projector"], "\<\"Rotation\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/Rotation"], "\<\"EulerRotation\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/EulerRotation"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"SeeAlso"]],
@@ -129,7 +134,7 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$124508], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$124827], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], 
              "Q3/ref/QuissoCircuit", ".html"]], None}]}]},
@@ -156,16 +161,24 @@ Cell[BoxData[GridBox[{
      Cell[BoxData[
       RowBox[{"QuissoCircuit", "[", 
        RowBox[{
-        StyleBox["a", "TI"], ",", " ", 
-        StyleBox["b", "TI"], ",", "  ", 
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"], ",", " ", 
         StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
      "\[LineSeparator]represents the quantum circuit model consisting of the \
 gate operations ",
      Cell[BoxData[
       RowBox[{
-       StyleBox["a", "TI"], ",", " ", 
-       StyleBox["b", "TI"], ",", " ", "..."}]], "InlineFormula"],
-     ".   In the StandardForm, it is displayed in a graphical form."
+       StyleBox["a", "TI"], ",", 
+       StyleBox["b", "TI"], ",", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     ".   In the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["StandardForm"]], "paclet:ref/StandardForm"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     ", it is displayed in a graphical form."
     }]]},
    {"", Cell[TextData[{
      Cell[BoxData[
@@ -177,14 +190,18 @@ gate operations ",
         BaseStyle->{"InlineFormula"}], "[", 
        RowBox[{"QuissoCircuit", "[", "...", "]"}], "]"}]], "InlineFormula"],
      "\[LineSeparator]takes the non-commutative product of the elements in \
-the quantum circuit; namely, converts the quantum circuit to a ",
+the quantum circuit -- converts the quantum circuit to an expression in terms \
+of Pauli operators or ",
      Cell[BoxData[
-      TemplateBox[{
-        Cell[
-         TextData["Quisso"]], "paclet:Q3/ref/Quisso"},
-       "RefLink",
-       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
-     " expression."
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Ket"]], "paclet:ref/Ket"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"<|", 
+        StyleBox["\[Ellipsis]", "TR"], "|>"}], "]"}]], "InlineFormula"],
+     "."
     }]]}
   }]], "Usage",
  GridBoxOptions->{
@@ -212,7 +229,7 @@ Cell[TextData[Cell[BoxData[
   Method->"Preemptive"]]]], "NotesSection",
  WholeCellGroupOpener->True,
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->323048501],
+ CellID->1363351907],
 
 Cell["", "SectionHeaderSpacer"],
 
@@ -277,7 +294,7 @@ Cell[TextData[{
 }], "PrimaryExamplesSection",
  WholeCellGroupOpener->True,
  CellTags->"PrimaryExamplesSection",
- CellID->637496691],
+ CellID->204987459],
 
 Cell[CellGroupData[{
 
@@ -287,7 +304,7 @@ Cell[TextData[{
  Cell["(1)", "ExampleCount"]
 }], "ExampleSection", "ExampleSection",
  WholeCellGroupOpener->True,
- CellID->610970754],
+ CellID->660453625],
 
 Cell[BoxData[
  RowBox[{"<<", "Q3`"}]], "Input",
@@ -693,7 +710,37 @@ Cell[TextData[{
  Cell[BoxData[
   TemplateBox[{
     Cell[
+     TextData["Fredkin"]], "paclet:Q3/ref/Fredkin"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
      TextData["Projector"]], "paclet:Q3/ref/Projector"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Rotation"]], "paclet:Q3/ref/Rotation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["EulerRotation"]], "paclet:Q3/ref/EulerRotation"},
    "RefLink",
    BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
 }], "SeeAlso",
@@ -716,7 +763,7 @@ Cell["", "SectionHeaderSpacer"],
 Cell[BoxData[
  TemplateBox[{
    Cell[
-    TextData["Quisso Quick Start"]], "paclet:Q3/tutorial/QuissoQuickStart"},
+    TextData["Quisso: Quick Start"]], "paclet:Q3/tutorial/QuissoQuickStart"},
   "RefLink",
   BaseStyle->"Tutorials"]], "Tutorials",
  CellID->1430896196],
@@ -724,7 +771,7 @@ Cell[BoxData[
 Cell[BoxData[
  TemplateBox[{
    Cell[
-    TextData["QuissoCircuit Usage Tutorial"]], 
+    TextData["QuissoCircuit Usage Examples"]], 
    "paclet:Q3/tutorial/QuissoCircuitUsage"},
   "RefLink",
   BaseStyle->"Tutorials"]], "Tutorials",
@@ -752,7 +799,7 @@ Cell[BoxData[
     TextData["Quisso Package"]], "paclet:Q3/guide/QuissoPackageGuide"},
   "RefLink",
   BaseStyle->"MoreAbout"]], "MoreAbout",
- CellID->1466146171],
+ CellID->2048587679],
 
 Cell[BoxData[
  TemplateBox[{
@@ -760,7 +807,7 @@ Cell[BoxData[
     TextData["Q3 Application"]], "paclet:Q3/guide/Q3"},
   "RefLink",
   BaseStyle->"MoreAbout"]], "MoreAbout",
- CellID->1291330319],
+ CellID->7808602],
 
 Cell["", "SectionFooterSpacer"]
 }, Open  ]],
@@ -814,7 +861,7 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 2, 26, 19, 16, 57.083665}", 
+   "built" -> "{2021, 2, 27, 1, 29, 39.386835}", 
     "history" -> {"XX", "", "", ""}, "context" -> "Q3`Quisso`", 
     "keywords" -> {
      "quantum circuit model", "quantum computation", "quantum information"}, 
@@ -824,12 +871,12 @@ TaggingRules->{
     "QuissoCircuit[a, b, ...] represents the quantum circuit model consisting \
 of the gate operations a, b, .... In the StandardForm, it is displayed in a \
 graphical form. QuissoExpression[QuissoCircuit[ ...]] takes the \
-non-commutative product of the elements in the quantum circuit; namely, \
-converts the quantum circuit to a Quisso expression.", "synonyms" -> {}, 
-    "tabletags" -> {}, "title" -> "QuissoCircuit", "titlemodifier" -> "", 
-    "windowtitle" -> "QuissoCircuit", "type" -> "Symbol", "uri" -> 
-    "Q3/ref/QuissoCircuit", "WorkflowDockedCell" -> ""}, 
-  "SearchTextTranslated" -> "", "NewStyles" -> False},
+non-commutative product of the elements in the quantum circuit -- converts \
+the quantum circuit to an expression in terms of Pauli operators or \
+Ket[<|...|>].", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "QuissoCircuit", "titlemodifier" -> "", "windowtitle" -> "QuissoCircuit", 
+    "type" -> "Symbol", "uri" -> "Q3/ref/QuissoCircuit", "WorkflowDockedCell" -> 
+    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
 CellContext->"Global`",
 FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
 StyleDefinitions->Notebook[{
@@ -849,109 +896,109 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "PrimaryExamplesSection"->{
-  Cell[9635, 269, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"32e65495-eaf9-44c8-8fc3-090f41973661",
+  Cell[10227, 286, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"718c3f97-066e-41e6-a7ff-3f9da03a3b0c",
    CellTags->"PrimaryExamplesSection",
-   CellID->637496691]}
+   CellID->204987459]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"PrimaryExamplesSection", 26006, 850}
+ {"PrimaryExamplesSection", 27555, 897}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[585, 21, 4898, 120, 70, "AnchorBarGrid",ExpressionUUID->"6fb933ec-4f44-4bb5-a3f8-bee8fe4571b6",
+Cell[585, 21, 5163, 125, 70, "AnchorBarGrid",ExpressionUUID->"ed2fea51-b92c-4c68-acb7-d2b55ba51a49",
  CellID->1],
 Cell[CellGroupData[{
-Cell[5508, 145, 170, 6, 70, "ObjectNameGrid",ExpressionUUID->"84699c06-8ece-4f6a-8111-054c80045dc5"],
-Cell[5681, 153, 1355, 37, 70, "Usage",ExpressionUUID->"2fc34d98-39bf-4d54-9bb2-2c2e8a32d945"]
+Cell[5773, 150, 170, 6, 70, "ObjectNameGrid",ExpressionUUID->"41d71333-1288-44ea-ae91-f36645b30072"],
+Cell[5946, 158, 1681, 49, 70, "Usage",ExpressionUUID->"26ad9d5b-599b-45e2-8bd4-dcc3652ba619"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7073, 195, 629, 19, 70, "NotesSection",ExpressionUUID->"dd7997bd-528b-4941-a355-2595261811e3",
+Cell[7664, 212, 630, 19, 70, "NotesSection",ExpressionUUID->"8726d316-3a8f-439d-915c-d8ce8fed0a18",
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->323048501],
-Cell[7705, 216, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"22fcb8b4-bf50-456b-ba18-d4779fe15787"],
-Cell[7739, 218, 159, 4, 70, "Notes",ExpressionUUID->"4dd7f2e2-98f8-496a-a5b4-0af74bb1c20d",
+ CellID->1363351907],
+Cell[8297, 233, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"4c0c9581-c19b-466e-b5bf-3ea4d7444f42"],
+Cell[8331, 235, 159, 4, 70, "Notes",ExpressionUUID->"1f147824-1264-43f3-aabc-e5dd123b5d3d",
  CellID->1067943069],
-Cell[7901, 224, 1663, 38, 70, "3ColumnTableMod",ExpressionUUID->"7f163f4c-d1ed-4827-b6c8-ca760e84982f",
+Cell[8493, 241, 1663, 38, 70, "3ColumnTableMod",ExpressionUUID->"a4ae0c47-d54f-4aba-9859-96b0d5bfedcc",
  CellID->881096984],
-Cell[9567, 264, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"be1ae920-ce6f-4741-b94b-84046492ff38"]
+Cell[10159, 281, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"59c405ce-92d8-4a68-addb-2568e3ddcfc2"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[9635, 269, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"32e65495-eaf9-44c8-8fc3-090f41973661",
+Cell[10227, 286, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"718c3f97-066e-41e6-a7ff-3f9da03a3b0c",
  CellTags->"PrimaryExamplesSection",
- CellID->637496691],
+ CellID->204987459],
 Cell[CellGroupData[{
-Cell[9927, 283, 195, 6, 70, "ExampleSection",ExpressionUUID->"e16483af-4730-4b0a-9014-c58b970ff299",
- CellID->610970754],
-Cell[10125, 291, 90, 3, 70, "Input",ExpressionUUID->"620b2906-4942-4076-8ba8-c4fae761dc6f",
+Cell[10519, 300, 195, 6, 70, "ExampleSection",ExpressionUUID->"067b6356-b74e-4c34-9f0c-f86898f39aee",
+ CellID->660453625],
+Cell[10717, 308, 90, 3, 70, "Input",ExpressionUUID->"dcb517b2-c0dc-48e3-b06d-c44ccdbddb50",
  CellID->657505804],
-Cell[10218, 296, 127, 4, 70, "Input",ExpressionUUID->"b3881231-8cb3-4756-8c9b-96573c47e68b",
+Cell[10810, 313, 127, 4, 70, "Input",ExpressionUUID->"60ad58ae-1db8-4c6b-803f-2b8da255065a",
  CellID->1218779485],
 Cell[CellGroupData[{
-Cell[10370, 304, 402, 13, 70, "Input",ExpressionUUID->"c7ade215-c15f-4033-aab0-29bf88e1ecbc",
+Cell[10962, 321, 402, 13, 70, "Input",ExpressionUUID->"c1e962b8-98a8-4386-adcc-b26e6618d6df",
  CellID->236330027],
-Cell[10775, 319, 1159, 30, 70, "Output",ExpressionUUID->"fe187eee-96ea-4291-b558-ce46c3cdd01f",
+Cell[11367, 336, 1159, 30, 70, "Output",ExpressionUUID->"a8ae80c8-6016-4ba5-bb4c-2452df6ffad3",
  CellID->800948034]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[11971, 354, 622, 17, 70, "Input",ExpressionUUID->"de6a1017-4c5b-4dc1-95ec-a00e64a84c47",
+Cell[12563, 371, 622, 17, 70, "Input",ExpressionUUID->"71595ecd-e101-415d-9402-e3a170734f6b",
  CellID->624306844],
-Cell[12596, 373, 1179, 30, 70, "Output",ExpressionUUID->"82a9b5af-74c8-433e-afb3-c3a257a0cfee",
+Cell[13188, 390, 1179, 30, 70, "Output",ExpressionUUID->"dabf0ef7-db4e-4048-a9f7-6660c3192483",
  CellID->826541083]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[13812, 408, 108, 3, 70, "Input",ExpressionUUID->"e84939e1-57bf-4d88-8c0b-e2de61f93d44",
+Cell[14404, 425, 108, 3, 70, "Input",ExpressionUUID->"d5a6275c-fe66-4cf8-9270-6eaa28a2037f",
  CellID->690840210],
-Cell[13923, 413, 3935, 143, 70, "Output",ExpressionUUID->"4506ddb1-c9c7-40cb-aa82-3d0a80d3d2b1",
+Cell[14515, 430, 3935, 143, 70, "Output",ExpressionUUID->"2e933057-752b-4863-a1cc-7b612e8f7af7",
  CellID->853780367]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[17895, 561, 207, 6, 70, "Input",ExpressionUUID->"cd194a0e-2b21-476a-bc61-cb6166b71e02",
+Cell[18487, 578, 207, 6, 70, "Input",ExpressionUUID->"fa92d01f-974a-4776-8c32-233ff2e824e4",
  CellID->1963037580],
-Cell[18105, 569, 1281, 44, 70, "Output",ExpressionUUID->"411406b4-a0b2-46bf-8628-d9a1655a2b84",
+Cell[18697, 586, 1281, 44, 70, "Output",ExpressionUUID->"7e2cec85-d0a3-49aa-8368-187e62414864",
  CellID->1037960381]
 }, Open  ]]
 }, Open  ]],
-Cell[19413, 617, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"0a15d605-9801-482d-a08e-e4a8df8dee31"]
+Cell[20005, 634, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"342adc5a-da46-42e8-b12e-597255fa248e"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[19481, 622, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"4b352fe7-d37f-4d3e-9dcb-a395e3a59ba5",
+Cell[20073, 639, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"2d174cf2-1115-4d76-b367-bc2b45955b6e",
  CellID->1255426704],
-Cell[19634, 631, 2063, 68, 70, "SeeAlso",ExpressionUUID->"a21724f2-9154-400b-9435-ae46d93de826",
+Cell[20226, 648, 2992, 98, 70, "SeeAlso",ExpressionUUID->"f38db0dd-e458-4e38-b983-5106a80270a1",
  CellID->929782353]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21734, 704, 152, 7, 70, "TutorialsSection",ExpressionUUID->"d70644a4-9e40-4d21-ad65-136f7e3a41fd",
+Cell[23255, 751, 152, 7, 70, "TutorialsSection",ExpressionUUID->"eb807741-6720-4ca5-b55e-855e5dcb1e4d",
  CellID->250839057],
-Cell[21889, 713, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"fbfef278-56b8-48ed-939d-f0fc8823f062"],
-Cell[21923, 715, 189, 6, 70, "Tutorials",ExpressionUUID->"4cda3ec2-b332-4bbc-8b0f-a1eb06484a1f",
+Cell[23410, 760, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"72a045c3-55a6-43a9-9562-09a385dec07f"],
+Cell[23444, 762, 190, 6, 70, "Tutorials",ExpressionUUID->"24398724-eff4-4d07-877f-eca44d84d25a",
  CellID->1430896196],
-Cell[22115, 723, 205, 7, 70, "Tutorials",ExpressionUUID->"40b900b7-ec5d-46a2-a1cf-8a817a2d17e7",
+Cell[23637, 770, 205, 7, 70, "Tutorials",ExpressionUUID->"69972643-bb88-44ee-8913-46c780f0cc35",
  CellID->1339748392],
-Cell[22323, 732, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"23036f80-7141-4946-ae66-bf15e6307ac4"]
+Cell[23845, 779, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"ed0ecdca-1eb6-4979-9995-c3938761ba4e"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[22391, 737, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"cbfbae4d-1b9e-46b1-8be2-f43706d4714d",
+Cell[23913, 784, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"41496270-309a-415e-9c58-9553ecef0fa7",
  CellID->38303248],
-Cell[22550, 746, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"d1e0d876-22ac-42a9-b573-1d88b835afec"],
-Cell[22584, 748, 184, 6, 70, "MoreAbout",ExpressionUUID->"18166fc0-fc52-4873-a48a-b3ed5a6277a7",
- CellID->1466146171],
-Cell[22771, 756, 168, 6, 70, "MoreAbout",ExpressionUUID->"8a9f652d-faa1-493a-b8b2-f0d6808c4275",
- CellID->1291330319],
-Cell[22942, 764, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"992f4dda-dd98-418e-adc1-4810fefd76a1"]
+Cell[24072, 793, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7d6e7158-0562-4b76-b971-db766803e53c"],
+Cell[24106, 795, 184, 6, 70, "MoreAbout",ExpressionUUID->"9a51ec9f-2be9-4394-a64e-07f61504b958",
+ CellID->2048587679],
+Cell[24293, 803, 165, 6, 70, "MoreAbout",ExpressionUUID->"b0e5b89c-b85e-4286-b741-36cc8d351572",
+ CellID->7808602],
+Cell[24461, 811, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"65034ff3-f997-4981-991e-defe6179a1fe"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[23010, 769, 160, 7, 70, "RelatedLinksSection",ExpressionUUID->"2ddd5d86-80b0-4d60-b3b1-c86f78d34157",
+Cell[24529, 816, 160, 7, 70, "RelatedLinksSection",ExpressionUUID->"3008a9c8-b009-4236-906c-90c21ef6274f",
  CellID->1584193535],
-Cell[23173, 778, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"0c620f0c-866f-4b03-827a-f621dddc6779"],
-Cell[23207, 780, 270, 7, 70, "RelatedLinks",ExpressionUUID->"fac8d61d-adb1-4922-b58f-ce57075e9cf3",
+Cell[24692, 825, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"e61c2076-5e66-49a3-9ba8-d074de94e0f9"],
+Cell[24726, 827, 270, 7, 70, "RelatedLinks",ExpressionUUID->"4b6fe8f4-b510-49e2-a6d6-7c4417c2d538",
  CellID->415694149],
-Cell[23480, 789, 286, 7, 70, "RelatedLinks",ExpressionUUID->"64151770-1193-4fcf-a321-d3b6b342fb11",
+Cell[24999, 836, 286, 7, 70, "RelatedLinks",ExpressionUUID->"59c19712-02e7-4bc7-8129-c2254e76e80b",
  CellID->1480169507]
 }, Open  ]],
-Cell[23781, 799, 23, 0, 70, "FooterCell",ExpressionUUID->"02a70607-9165-4b65-b73c-47fc86817e28"]
+Cell[25300, 846, 23, 0, 70, "FooterCell",ExpressionUUID->"b977acfc-2adf-4d17-9866-65199a880a20"]
 }
 ]
 *)

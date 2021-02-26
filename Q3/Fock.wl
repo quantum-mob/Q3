@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.41 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-25 17:04:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.43 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-27 01:12:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1344,46 +1344,47 @@ BraKet[{},{}] = 1 (* Bra[].Ket[] = 1 *)
 VacuumExpectation[expr_, OptionsPattern[]] :=
   fVacuumExpectation[OptionValue[Method]][expr]
 
-fVacuumExpectation["Algebra"][expr_] := Multiply[ Bra[{}], expr, Ket[Vacuum] ]
+fVacuumExpectation["Algebra"][expr_] :=
+  Multiply[ Bra[Vacuum], expr, Ket[Vacuum] ]
 
 fVacuumExpectation["Occupations"][expr_] := Multiply[ Bra[<||>], expr, Ket[<||>] ]
 
 
 (* Odd number of operators *)
 
-HoldPattern @ Multiply[Bra[{}], x__?AnyParticleQ, Ket[Vacuum]] /; OddQ[Length @ {x}] = 0
+HoldPattern @ Multiply[Bra[Vacuum], x__?AnyParticleQ, Ket[Vacuum]] /; OddQ[Length @ {x}] = 0
 
 (* Special rules for bosons *)
 
-HoldPattern @ Multiply[ Bra[{}], __?BosonQ, Ket[Vacuum] ] = 0
+HoldPattern @ Multiply[ Bra[Vacuum], __?BosonQ, Ket[Vacuum] ] = 0
 
-HoldPattern @ Multiply[ Bra[{}], Dagger[_?BosonQ].., Ket[Vacuum] ] = 0
+HoldPattern @ Multiply[ Bra[Vacuum], Dagger[_?BosonQ].., Ket[Vacuum] ] = 0
 
 (* Special rules for Vacuum == "Sea" *)
 
 (* (1-n_k) |0> *)
 HoldPattern @
-  Multiply[Bra[{}], a___, op:c_[k_,j___], Dagger[op:c_[k_,j___]], Ket[Vacuum]] := 
+  Multiply[Bra[Vacuum], a___, op:c_[k_,j___], Dagger[op:c_[k_,j___]], Ket[Vacuum]] := 
   UnitStep[k] VacuumExpectation[Multiply[a]] /;
   FermionQ[c] && seaQ[op]
 (* 2016-09-01 Can this case occur with Dagger[c] always pushed to the left? *)
 
 (* <0| (1-n_k) *)
 HoldPattern @
-  Multiply[Bra[{}], op:c_[k_,j___], Dagger[op:c_[k_,j___]], b___, Ket[Vacuum]] :=
+  Multiply[Bra[Vacuum], op:c_[k_,j___], Dagger[op:c_[k_,j___]], b___, Ket[Vacuum]] :=
   UnitStep[k] VacuumExpectation[Multiply[b]] /;
   FermionQ[c] && seaQ[op]
 (* 2016-09-01 Can this case occur with Dagger[c] always pushed to the left? *)
 
 (* n_k |0> *)
 HoldPattern @
-  Multiply[Bra[{}], a___, Dagger[op:c_[k_,j___]], op:c_[k_,j___], Ket[Vacuum]] :=
+  Multiply[Bra[Vacuum], a___, Dagger[op:c_[k_,j___]], op:c_[k_,j___], Ket[Vacuum]] :=
   UnitStep[-k] VacuumExpectation[Multiply[a]] /;
 j  FermionQ[c] && seaQ[op]
 
 (* <0| n_k *)
 HoldPattern @
-  Multiply[Bra[{}], Dagger[op:c_[k_,j___]], op:c_[k_,j___], b___, Ket[Vacuum]] :=
+  Multiply[Bra[Vacuum], Dagger[op:c_[k_,j___]], op:c_[k_,j___], b___, Ket[Vacuum]] :=
   UnitStep[-k] VacuumExpectation[Multiply[b]]  /;
   FermionQ[c] && seaQ[op]
 
@@ -1391,7 +1392,7 @@ HoldPattern @
    Assumption: The vacuum has a well-defined particle number and spin
    z-compoenent. Otherwise, this rule gives a wrong result. *)
 
-HoldPattern @ Multiply[Bra[{}], x__?electronQ, Ket[Vacuum]] := Module[
+HoldPattern @ Multiply[Bra[Vacuum], x__?electronQ, Ket[Vacuum]] := Module[
   {isospin, spin},
   {isospin, spin} = Transpose @ Map[getIsospinSpin, {x}];
   isospin = Total @ isospin;
@@ -1415,7 +1416,7 @@ getIsospinSpin[_Symbol?ParticleQ[__, s_]] := {-1/2, -s}
 
 (* Special reule for unpaired operators *)
 
-HoldPattern @ Multiply[Bra[{}], a__?AnyParticleQ, Ket[Vacuum]] /;
+HoldPattern @ Multiply[Bra[Vacuum], a__?AnyParticleQ, Ket[Vacuum]] /;
   unpairedQ[a] = 0
 
 (* Returns True if the operators sequence is DEFINITELY unpaired. False does
@@ -1457,7 +1458,7 @@ speciesForm[ a_Symbol?ParticleQ ] := {a, {}, -1}
    conjunction with Wick's theorem. *)
 
 HoldPattern @ Multiply[
-  Bra[{}],
+  Bra[Vacuum],
   Dagger[x:a_Symbol?FermionQ[k1_,j1___]], y:a_[k2_,j2___],
   Ket[Vacuum]
  ] := KroneckerDelta[k1,k2] * KroneckerDelta[{j1},{j2}] * UnitStep[-k1] /;
@@ -1468,7 +1469,7 @@ HoldPattern @ Multiply[
 (* For operators with NUMERIC Flavor indices, for which CreatorQ[] and
    AnnihilatorQ[] give definite answers. *)
 
-HoldPattern @ Multiply[Bra[{}], ops__?AnyFockOperatorQ, Ket[Vacuum]] := Module[
+HoldPattern @ Multiply[Bra[Vacuum], ops__?AnyFockOperatorQ, Ket[Vacuum]] := Module[
   { Zz, new },
   (* NOTE: Zz can be replaced by any symbol which can be canonically
      ordered either lastest or earliest. *)
@@ -1497,7 +1498,7 @@ rulesParticleHoleInverse[f_] := {
 (* By definition, the vacuum expectation value of a normal ordered
    expression is zero! *)
 
-HoldPattern @ Multiply[Bra[{}], FockColon[_], Ket[Vacuum]] = 0
+HoldPattern @ Multiply[Bra[Vacuum], FockColon[_], Ket[Vacuum]] = 0
 
 
 (* ********************************************************************** *)
@@ -1570,9 +1571,6 @@ Format[ HoldPattern @ Dagger[v_CoherentState] ] := Bra @@ v
 
 CoherentState /:
 NonCommutativeQ[ CoherentState[_Association] ] = True
-
-CoherentState /:
-Kind[ CoherentState[_Association] ] = NonCommutative
 
 CoherentState /:
 MultiplyGenus[ CoherentState[_Association] ] = "Ket"
