@@ -7,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.24 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-23 11:30:13+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.25 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-26 17:28:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -48,7 +48,7 @@ Begin["`Private`"]
 $symbs = Unprotect[
   Multiply, MultiplyDegree, CircleTimes,
   KetRule, KetTrim, Ket, Bra, Spin, Missing,
-  Basis, Matrix,
+  Basis, Matrix, SpinForm,
   Base, FlavorNone, FlavorMute,
   $GarnerHeads, $GarnerTests,
   $ElaborationRules, $ElaborationHeads,
@@ -258,6 +258,18 @@ Spins[ expr_ ] := FlavorNone @ Union @ Map[Most] @
 (* NOTE 2: Normal[{expr}, Association] does not convert nested Association[]s;
    i.e., Association[ ... Association[] ...]. This is due to HoldAllComplete
    Attribute of Association. *)
+
+
+(* SpinForm *)
+
+SpinForm[vec:Ket[_Association], qq:{__?SpinQ}] := Module[
+  { ss },
+  ss = vec[FlavorNone @ qq] /. {
+    +1/2 -> "\[UpArrow]",
+    -1/2 -> "\[DownArrow]"
+   };
+  Ket[vec, qq -> ss]
+ ] /; And @@ Thread[Spin[qq] == 1/2]
 
 
 (* Multiply *)

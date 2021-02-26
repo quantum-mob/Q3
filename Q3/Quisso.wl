@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-25 10:17:21+09 $
-  $Revision: 1.95 $
+  $Date: 2021-02-26 19:07:41+09 $
+  $Revision: 1.97 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
@@ -16,15 +16,13 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.95 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-25 10:17:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.97 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-26 19:07:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
 { Qubit, QubitQ, Qubits };
-
-{ SpinForm };
 
 { Dirac };
 
@@ -77,7 +75,7 @@ Begin["`Private`"]
 
 $symb = Unprotect[
   Multiply, MultiplyDegree, CircleTimes, OTimes, Dagger, Dyad,
-  KetTrim, KetRule, Ket, Bra, BraKet, Basis,
+  KetTrim, KetRule, Ket, Bra, BraKet, Basis, SpinForm,
   $RepresentableTests, $RaiseLowerRules,
   $GarnerHeads, $GarnerTests,
   $ElaborationRules, $ElaborationHeads,
@@ -603,22 +601,16 @@ QuissoFactor[ Ket[a_Association], S:{__?QubitQ} ] := Module[
  ]
 
 
-SpinForm::usage = "SpinForm[expr, qq] converts Qubit value 0 tp \[UpArrow] and 1 to \[DownArrow] in every Ket appearing in expr."
+(* SpinForm *)
 
-SpinForm[v_Ket, {}] := v
-
-SpinForm[v_Ket, qq:{__?QubitQ}] := Module[
+SpinForm[vec:Ket[_Association], qq:{__?QubitQ}] := Module[
   { ss },
-  ss = v[qq] /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"};
-  Ket[v, qq -> ss]
+  ss = vec[FlavorNone @ qq] /. {
+    0 -> "\[UpArrow]",
+    1 -> "\[DownArrow]"
+   };
+  Ket[vec, qq -> ss]
  ]
-
-SpinForm[expr_, qq:{___?QubitQ}] := 
-  expr /. { v_Ket :> SpinForm[v, FlavorNone@qq] }
-
-SpinForm[expr_, q_?QubitQ] := SpinForm[expr, {q}]
-
-SpinForm[expr_] := SpinForm[expr, Qubits @ expr]
 
 
 Dirac::usage = "Dirac[Ket[a], Bra[b], qq] returns the operator corresponding to |a\[RightAngleBracket]**\[LeftAngleBracket]b|, operating on the Qubits qq.\nDirac[Ket[a], Bra[b]] extracts the list of Qubits from Ket[a] and Bra[b] automatically."

@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-25 11:16:21+09 $
-  $Revision: 2.66 $
+  $Date: 2021-02-26 19:07:23+09 $
+  $Revision: 2.68 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.66 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-25 11:16:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.68 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-26 19:07:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -25,7 +25,7 @@ End[]
 
 { KetRule, KetTrim, VerifyKet };
 
-{ DefaultForm, LogicalForm, ProductForm, SimpleForm };
+{ DefaultForm, LogicalForm, ProductForm, SimpleForm, SpinForm };
 
 { BraKet };
 
@@ -369,15 +369,15 @@ SimpleForm[ expr_, gg_List ] := expr /. {
 (* NOTE 3: See the NOTE for LogicalForm[_Association, ...] *)
 
 
-ProductForm::usage = "ProductForm[expr] represents every Ket in \*StayleBox[expr,Italic] in the simplest form dropping all subsystem indices.\nProductForm[expr, {S1, ..., {S2,S3,...}, ...}] splits each Ket into the form Row[{Ket[S1], ..., Ket[S2,S3,...], ...}]."
+ProductForm::usage = "ProductForm[expr] displays every Ket[...] in expr in the product form.\nProductForm[expr, {S1, ..., {S2,S3,...}, ...}] splits each Ket into the form Row[{Ket[S1], ..., Ket[S2,S3,...], ...}]."
 
 ProductForm[ expr_ ] := ProductForm[expr, NonCommutativeSpecies @ expr]
 
 ProductForm[ expr_, S_?SpeciesQ ] := SimpleForm[ expr, {S} ]
 
-ProductForm[ Ket[a_Association], gg_List ] := Row @ Map[
+ProductForm[ v:Ket[_Association], gg_List ] := Row @ Map[
   Ket @ Row @ Riffle[#, $KetDelimiter]&,
-  Flatten /@ List /@ Lookup[a, FlavorNone @ gg]
+  Flatten /@ List /@ v /@ gg
  ]
 
 ProductForm[ v:Bra[a_Association], gg_List ] :=
@@ -396,6 +396,38 @@ ProductForm[ expr_, gg_List ] := expr /. {
   a_Aggociation :> ProductForm[a, gg] (* NOTE 3 *)
  }
 (* NOTE 3: See the NOTE for LogicalForm[_Association, ...] *)
+
+
+SpinForm::usage = "SpinForm[expr, {s1, s2, ...}] converts the values to \[UpArrow] or \[DownArrow] in every Ket[<|...|>] appearing in expr.\nIf the Species is a Qubit, SpinForm converts 0 to \[UpArrow] and 1 to \[DownArrow].\nIf the Species is a Spin, SpinForm converts 1/2 to \[UpArrow] and -1/2 to \[DownArrow]."
+
+SpinForm[Bra[spec__], rest___] := Dagger @ SpinForm[Ket[spec], rest]
+  
+SpinForm[vec:Ket[(0|1)..], ___] := vec /. {
+  0 -> "\[UpArrow]",
+  1 -> "\[DownArrow]"
+ }
+
+SpinForm[Ket[a_Association], qq:{__?SpeciesQ}] := Module[
+  { ss = Values @ GroupBy[FlavorNone @ qq, Kind],
+    uu, vv },
+  ( uu = List @ Ket @ KeyDrop[a, FlavorNone @ qq];
+    vv = Ket /@ Map[KeyTake[a, #]&, ss];
+    vv = MapThread[SpinForm, {vv, ss}];
+    CircleTimes @@ Join[uu, vv] ) /;
+    Length[ss] > 1
+ ]
+  
+SpinForm[expr_] := SpinForm[expr, NonCommutativeSpecies[expr]]
+
+SpinForm[expr_, q_?SpeciesQ] := SpinForm[expr, {q}]
+
+SpinForm[expr:Except[_Ket|_Bra], qq:{___?SpeciesQ}] := With[
+  { ss = FlavorNone @ qq },
+  expr /. {
+    v_Ket :> SpinForm[v, ss],
+    v_Bra :> SpinForm[v, ss]
+   }
+ ]
 
 
 Affect::usage = "Affect[ket, op1, op2, ...] operates the operators op1, op2, ... (earlier operators first) on ket. Notice the order of the arguments. The result should be equivalent to Multiply[..., op2, op1, ket], but it is much faster than the counterpart for deep (the numer of operators is much bigger than the number of particles) expression. First first argument does not need to be a Ket, but otherwise Affect is not an advantage over Multiply."
