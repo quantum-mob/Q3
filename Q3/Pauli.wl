@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-27 12:33:46+09 $
-  $Revision: 2.70 $
+  $Date: 2021-02-27 18:32:45+09 $
+  $Revision: 2.72 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.70 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-27 12:33:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.72 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-27 18:32:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -497,9 +497,11 @@ Ket[] = Ket[ Association[] ]
 
 Ket[ spec__Rule ] := Ket[ Ket[], spec ]
 
-Ket[ Ket[a_Association], spec__Rule ] := With[
-  { rules = Flatten @ KetRule @ {spec} },
-  VerifyKet @ Ket @ KeySort @ KetTrim @ Join[a, Association @ rules]
+Ket[ Ket[a_Association], spec__Rule ] := Module[
+  { rules = Flatten @ KetRule @ {spec},
+    vec },
+  vec = Ket @ KeySort @ KetTrim @ Join[a, Association @ rules];
+  If[FailureQ @ VerifyKet @ vec, $Failed, vec]
  ]
 
 (* operator form *)
@@ -546,15 +548,19 @@ KetTrim[{}, _] := Nothing (* a fallback *)
 KetTrim[_String, _] := Nothing (* an actual option *)
 
 
-VerifyKet::usage = "VerifyKet[v] returns v if v is an valid Ket; 0 otherwise."
+VerifyKet::usage = "VerifyKet[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nVerifyKet[a, b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise.\nVerifyKet[expr] checks every Ket[<|...|>] in expr."
 
 SetAttributes[VerifyKet, Listable]
 
-VerifyKet[ expr_ ] := expr //. {v_Ket :> VerifyKet[v]}
+VerifyKet[ expr_ ] := expr //. { v_Ket :> VerifyKet[v] }
 
 VerifyKet[ Ket[a_Association] ] := With[
   { aa = KeyValueMap[VerifyKet, a] },
-  If[MemberQ[aa, 0], 0, Ket@Association@aa, Ket@Association@aa]
+  If[ Or @@ Map[FailureQ, aa],
+    $Failed,
+    Ket @ Association @ aa,
+    Ket @ Association @ aa
+   ]
  ]
 
 VerifyKet[a_, b_] := Rule[a, b]

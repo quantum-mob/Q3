@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-27 12:22:46+09 $
-  $Revision: 1.101 $
+  $Date: 2021-02-27 17:21:42+09 $
+  $Revision: 1.102 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.101 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-27 12:22:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.102 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-27 17:21:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -65,9 +65,9 @@ End[]
 
 { Qudit, QuditQ, Qudits };
 
-{ TheQuditKet };
-
 { QuditExpression };
+
+{ TheQuditKet };
 
 { QuissoExpand }; (* OBSOLETE *)
 
@@ -2616,22 +2616,22 @@ Basis[ qq : {__?QuditQ} ] := Module[
  ]
 
 
-TheQuditKet::usage = "TheQuditKet[{J,M,th,ph}] is the rotated-frame version of TheQuditKet[{J,M}].\nTheQuditKet[{j1,m1,t1,p1}, {j2,m2,t2,p2}, ...] returns CircleTimes of the vectors  indicated by the indices.\nTheQuditKet[{J, {m1,m2,...}, th, ph}] = TheQuditKet[{J,m1,th,ph}, {J,m2,th,ph}, ...]."
+TheQuditKet::usage = "TheQuditKet[{j,m}] returns the (m+1)th unit column vector in the j-dimensional complex vector space.\nTheQuditKet[{j1,m1}, {j2,m2}, ...] returns the direct product of vectors.\nTheQuditKet[j, {m1, m2, ...}] is equivalent to TheQuditKet[{j,m1}, {j,m2}, ...]."
 
-TheQuditKet[ {dim_Integer, val_Integer} ] :=
-  UnitVector[dim, val+1] /; 0 <= val < dim
+TheQuditKet[ {dim_Integer, m_Integer} ] :=
+  SparseArray[{(m+1) -> 1}, dim] /; 0 <= m < dim
 
-TheQuditKet[ {dim_Integer, m:{__Integer}} ] :=
-  TheQuditKet @@ Tuples[ {{dim}, m} ]
+TheQuditKet[ dim_Integer, mm:{__Integer} ] :=
+  TheQuditKet @@ Thread @ {dim, mm}
 
-TheQuditKet[ a:{_Integer, _Integer} .. ] := Module[
-  { aa = Transpose @ {a},
+TheQuditKet[ cc:{_Integer, _Integer}.. ] := Module[
+  { aa = Transpose @ {cc},
     dd, pwrs, bits, p},
   dd = First @ aa;
   pwrs = Reverse @ FoldList[ Times, 1, Reverse @ Rest @ dd ];
   bits = Last @ aa;
   p = 1 + bits.pwrs;
-  Normal @ SparseArray[ {p -> 1}, Times @@ dd ]
+  SparseArray[ {p -> 1}, Times @@ dd ]
  ]
 
 

@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.43 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-27 01:12:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.47 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-27 18:43:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1848,20 +1848,33 @@ KetRule[ r:Rule[{__?ParticleQ}, _] ] := Thread[r]
 
 KetTrim[_?ParticleQ, 0] = Nothing
 
-VerifyKet[_?BosonQ, _?Negative] = 0
+VerifyKet::bosneg = "For Boson ``, the assigned value `` is negative."
 
-VerifyKet[_?FermionQ, b_] := 0 /; Or[ Negative[b], b > 1 ]
+VerifyKet[a_?BosonQ, v_?Negative] := (
+  Message[VerifyKet::bosneg, a, v];
+  $Failed
+ )
+
+VerifyKet::ferneg = "For Fermion ``, the assigned valued `` is neither 0 nor 1."
+
+VerifyKet[c_?FermionQ, v_] := (
+  Message[VerifyKet::ferneg, c, v];
+  $Failed
+ ) /; Or[ Negative[v], v > 1 ]
 (* The following definition would not allow to assign a symbolic value:
-   VerifyKet[ _?FermionQ, Except[0|1] ] = 0
+   VerifyKet[ _?FermionQ, Except[0|1] ] = $Failed
  *)
 
 
 (* Multiply for restricted Ket and Bra *)
-HoldPattern @ Multiply[pre___, op_?AnyParticleQ, Ket[a_Association, b_List], post___] := With[
-  { new = Restrict[ Multiply[op, Ket[a]], b ] },
-  Multiply[pre, new, post]
- ] /; MemberQ[b, Peel @ op]
-
+(*
+HoldPattern @
+  Multiply[pre___, op_?AnyParticleQ, Ket[a_Association, b_List], post___] :=
+  With[
+    { new = Restrict[ Multiply[op, Ket[a]], b ] },
+    Multiply[pre, new, post]
+   ] /; MemberQ[b, Peel @ op]
+ *)
 
 (* Operations on Ket[] *)
 

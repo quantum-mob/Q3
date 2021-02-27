@@ -7,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.25 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-26 17:28:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.27 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-27 18:52:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -18,8 +18,6 @@ End[]
 { Spin, SpinQ, Spins };
 
 { WignerSpinSpin };
-
-{ WignerKetQ };
 
 { WignerReduced, WignerFactor };
 
@@ -40,14 +38,16 @@ End[]
 
 { NineJSymbol, WignerEckart };
 
-{ WignerExpand }; (* obsolete *)
+
+{ WignerKetQ, WignerExpand }; (* obsolete *)
 
 
 Begin["`Private`"]
 
 $symbs = Unprotect[
   Multiply, MultiplyDegree, CircleTimes,
-  KetRule, KetTrim, Ket, Bra, Spin, Missing,
+  KetRule, KetTrim, Ket, Bra, VerifyKet,
+  Spin, Missing,
   Basis, Matrix, SpinForm,
   Base, FlavorNone, FlavorMute,
   $GarnerHeads, $GarnerTests,
@@ -106,34 +106,35 @@ TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raise|Lower)..},
   CircleTimes @@ Map[TheWigner] @ Tuples[{{j}, n, {th}, {ph}}]
 
 
-TheWignerKet::usage = "TheWignerKet[{J,M,th,ph}] is the rotated-frame version of TheWignerKet[{J,M}].\nTheWignerKet[{j1,m1,t1,p1}, {j2,m2,t2,p2}, ...] returns CircleTimes of the vectors  indicated by the indices.\nTheWignerKet[{J, {m1,m2,...}, th, ph}] = TheWignerKet[{J,m1,th,ph}, {J,m2,th,ph}, ...]."
+TheWignerKet::usage = "TheWignerKet[{j,m}] or TheWignerKet[j,m] returns column vector representation of the spin angular momentum basis state Ket[j,m].\nTheWignerKet[{j1,m1}, {j2,m2}, ...] returns the direct product of TheWignerKet[{j1,m1}], TheWignerKet[{j2,m2}], ....\nTheWignerKet[j, {m1, m2, ...}] is equivalent to TheWignerKet[{j,m1}, {j,m2}, ...]."
 
-TheWignerKet[ {J_,M_} ] := UnitVector[2J+1,J-M+1] /; SpinNumberQ[J,M]
+TheWignerKet[{j_, m_}] := SparseArray[(j-m+1)->1, 2*j+1] /; SpinNumberQ[j, m]
 
-TheWignerKet[ {j_?SpinNumberQ, m:{__?NumericQ}} ] := TheWignerKet @@ Tuples[{{j},m}]
+TheWignerKet[j:Except[_List], m:Except[_List]] := TheWignerKet @ {j, m}
 
-TheWignerKet[ a:{_?SpinNumberQ, _?NumericQ} .. ] := Module[
-  { aa = Transpose@{a}, jj,
-    pwrs, bits, p},
-  jj = 2 First[aa] + 1;
-  pwrs = Reverse @ FoldList[ Times, 1, Reverse @ Rest @ jj ];
-  bits = Subtract @@ aa;
-  p = 1 + bits.pwrs;
-  Normal @ SparseArray[ {p -> 1}, Times @@ jj ]
+TheWignerKet[j:Except[_List], mm:{__?NumericQ}] := With[
+  { jm = Thread @ {j, mm} },
+  TheWignerKet @@ jm /; AllTrue[jm, SpinNumberQ]
  ]
 
+TheWignerKet[jm:{_, _}, more:{_, _}..] :=
+  CircleTimes @@ Map[TheWignerKet, {jm, more}] /;
+  AllTrue[{jm, more}, SpinNumberQ]
+
+(*
 TheWignerKet[ {J_, M_, theta:Except[_List], phi:Except[_List]} ] :=
   TheEulerRotation[{J,phi,theta,0}] . TheWignerKet[{J,M}] /;
   SpinNumberQ[J,M]
 
 TheWignerKet[ a:{Repeated[Except[_List],{4}]}, b:{Repeated[Except[_List],{4}]}.. ] :=
   CircleTimes @@ Map[TheWignerKet, {a, b}]
-(* NOTE: TheWignerKet[a:{Repeated[Except[_List],{4}]..}] is dangerous for bad inputs
-   like {1/2,0,Pi/2,Pi/2}. *)
-  
+ *)
+(* NOTE: TheWignerKet[a:{Repeated[Except[_List],{4}]..}] is dangerous for bad
+   inputs like {1/2,0,Pi/2,Pi/2}. *)
+(*
 TheWignerKet[ {j_?SpinNumberQ, m:{__?NumericQ}, t:Except[_List], p:Except[_List]} ] :=
   CircleTimes @@ Map[TheWignerKet] @ Tuples[{{j}, m, {t}, {p}}]
-
+*)
 
 Once[ TheRotation::usage = TheRotation::usage <> "\nTheRotation[\[Phi], {J, 1}], TheRotation[\[Phi], {J, 2}], TheRotation[\[Phi], {J, 3}] give the rotation matrices by angle \[Phi] around the x, y, and z axis, respective, for Spin = J." ]
 
@@ -500,18 +501,13 @@ KetRule[ r:Rule[_?SpinQ, _] ] := FlavorNone[r]
 
 KetRule[ r:Rule[{__?SpinQ}, _] ] := FlavorNone @ Thread[r]
 
+VerifyKet::spininv = "For spin ``, the assigned value `` is not a valid directional spin quantum number."
 
-WignerKetQ::usage = "WignerKetQ[v] varifies the Ket v."
-
-Ket::badQN = "Bad spin quantum numbers `1`."
-
-WignerKetQ[ Ket[a_Association] ] := Module[
-  { tf = KeyValueMap[ SpinNumberQ[Spin[#1],#2]&, a ] },
-  If[ And @@ tf,
-    Return[True],
-    Message[ Ket::badQN, Pick[ Normal @ a, tf, False ] ];
-    Return[False]
-   ]
+VerifyKet[op_?SpinQ, m_] := If[
+  SpinNumberQ @ {Spin[op], m},
+  Rule[op, m],
+  Message[VerifyKet::spininv, op, m];
+  $Failed
  ]
 
 (* ****************************************************************** *)
@@ -571,6 +567,19 @@ Matrix[ Ket[ Association[S_?SpinQ -> m_] ] ] := TheWignerKet @ {Spin[S], m}
 
 (* ****************************************************************** *)
 
+WignerKetQ::usage = "WignerKetQ is obsolete. Use VerifyKet instead."
+
+WignerKetQ[ Ket[a_Association] ] := Module[
+  { chk },
+  Message[Q3General::obsolete, WignerKetQ, VerifyKet];
+  chk = KeyValueMap[VerifyKet, a];
+  If[ Or @@ chk,
+    False,
+    True
+   ]
+ ]
+
+(* ****************************************************************** *)
 
 WignerSpinSpin::usage = "WignerSpinSpin[dir][S1, S2, ...] returns the sum of exchange couplings between Spins S1, S2, ... for components specified by dir."
 

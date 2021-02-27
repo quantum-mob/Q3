@@ -4,7 +4,9 @@
 
 - A bug fix in Multiply involving Pauli.
 - A bug fix in ProductForm.
+- A bug fix in Kind.
 - Enhanced SpinForm.
+- New function VerifyOracle.
 
 ## v1.6.1
 
