@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-02-25 17:33:04+09 $ *)
-(* $Revision: 1.45 $ *)
+(* $Date: 2021-02-27 12:40:24+09 $ *)
+(* $Revision: 1.48 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,8 +10,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.45 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-25 17:33:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.48 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-27 12:40:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -19,7 +19,7 @@ End[]
 { Q3General, Q3Protect, Q3Info };
 
 { Q3Release, Q3RemoteFetch, Q3RemoteRelease, Q3RemoteURL,
-  Q3Update, Q3CheckUpdate };
+  Q3Update, Q3CheckUpdate, Q3CleanUp };
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Choices, Successive };
@@ -231,28 +231,25 @@ Q3Update[opts___?OptionQ] := Module[
   PacletInstall[file, opts]
  ]
 
-(*
-Q3Update[opts___?OptionQ] := Module[
-  { url = Q3RemoteURL[] },
-  
-  Print["Updating Q3 directly from GitHub. It may take serveral minutes or longer depending on your network conditions and your computer. Please be patient."];
-  
-  PacletInstall[url, opts]
+Q3CleanUp::ussage = "Q3CleanUp[] uninstalls all but the lastest version of Q3."
+
+Q3CleanUp::noq3 = "Q3 is not found."
+
+Q3CleanUp[] := Module[
+  { pacs = PacletFind["Q3"],
+    vers, mssg },
+  If[ pacs == {},
+    Message[Q3CleanUp::noq3];
+    Return[{Null}]
+   ];
+  vers = Map[#["Version"]&, pacs];
+  mssg = StringJoin[
+    "Are you sure to remove old versions ",
+    StringRiffle[Rest @ vers, ", "],
+    " of Q3?"
+   ];
+  PacletUninstall @ Rest @ pacs
  ]
- *)
-
-(*
-Q3UpdateSubmit::usage = "Q3UpdateSubmit[] asynchronously (i.e., in the background) installs an update of Q3 from the GitHub repository.\nIt returns an AsynchronousTaskObject representing the dowload and install operation that is occuring in the background, or the existing paclet if no update occurred, or $Failed if no such paclet is available.\nIf you want to wait for completion, use TaskWait or WaitAsynchronousTask."
-
-Q3UpdateSubmit[opts___?OptionQ] := Module[
-  { url = Q3RemoteURL[] },
-  
-  Print["Updating Q3 in the backgroun from GitHub. Meanwhile, you can do whatever you were doing. If you want to wait for completion, use TaskWait."];
-
-  PacletInstallSubmit[url, opts]
- ]
-*)
-
 
 Choices::usage = "Choices[a,n] gives all possible choices of n elements out of the list a.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
@@ -343,7 +340,6 @@ Unless::usage = "Unless[condition, result] gives result unless condition evaluat
 SetAttributes[Unless, HoldRest]
 
 Unless[condition_, out_] := If[Not[condition], out]
-
 
 PseudoDivide::usage = "PseudoDivide[x, y] returns x times the PseudoInverse of y."
 
@@ -548,13 +544,16 @@ Kind::usage = "Kind[op] returns the type of op, which may be a Species or relate
 
 SetAttributes[Kind, Listable]
 
-Kind[ Inverse[x_] ] := Kind[x]
+(* NOTE: HoldPattern is necessary here to prevent $IterationLimit::itlim error
+   when the package is loaded again. *)
 
-Kind[ Conjugate[x_] ] := Kind[x]
+HoldPattern @ Kind[ Inverse[x_] ] := Kind[x]
 
-Kind[ Dagger[x_] ] := Kind[x]
+HoldPattern @ Kind[ Conjugate[x_] ] := Kind[x]
 
-Kind[ Tee[x_] ] := Kind[x]
+HoldPattern @ Kind[ Dagger[x_] ] := Kind[x]
+
+HoldPattern @ Kind[ Tee[x_] ] := Kind[x]
 
 
 Dimension::usage = "Dimension[A] gives the Hilbert space dimension associated with the system A."
@@ -656,7 +655,7 @@ NonCommutativeQ::usage = "NonCommutativeQ[op] or NonCommutativeQ[op[...]] return
 
 SetAttributes[NonCommutativeQ, Listable]
 
-(* NOTE: HoldPattern is required to prevent infinite recursion when the
+(* NOTE: HoldPattern is required here to prevent infinite recursion when the
    package is loaded again. *)
 
 HoldPattern @ NonCommutativeQ[ Inverse[_?NonCommutativeQ] ] = True
@@ -1145,6 +1144,9 @@ DistributableQ[args__] := Not @ MissingQ @ FirstCase[ {args}, _Plus ]
 MultiplyGenus::usage = "MultiplyGenus[op] returns the Genus of op, which may be a Species or related function.\nGenus is a category class of Species and functions for Multiply that ranks above Kind. It affects how Multiply rearranges the non-commutative elements.\nMultiplyGenus is intended for internal use."
 
 SetAttributes[MultiplyGenus, Listable]
+
+(* NOTE: HoldPattern is necessary here to prevent $IterationLimit::itlim error
+   when the package is loaded again. *)
 
 HoldPattern @ MultiplyGenus[ Inverse[x_?SpeciesQ] ] = "Singleton"
 

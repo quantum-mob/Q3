@@ -5,8 +5,8 @@
   processing.
  
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-26 19:07:41+09 $
-  $Revision: 1.97 $
+  $Date: 2021-02-27 12:22:46+09 $
+  $Revision: 1.101 $
   ****)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
@@ -16,8 +16,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.97 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-26 19:07:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.101 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-27 12:22:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -51,7 +51,7 @@ End[]
   QuissoFredkin, Fredkin,
   Projector, Measurement, Readout };
 
-{ QuissoOracle, Oracle };
+{ QuissoOracle, Oracle, VerifyOracle };
 
 { ProductState, BellState, GraphState, DickeState, RandomState };
 
@@ -1376,6 +1376,9 @@ QuissoControlledU[ ss:{__?QubitQ}, expr_ ] := Module[
 
 Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
 
+Oracle /:
+NonCommutativeQ[ Oracle[___] ] = True
+
 Oracle[f_, c_?QubitQ, t_?QubitQ, opts___?OptionQ] :=
   Oracle[f, {c}, {t}, opts]
 
@@ -1389,13 +1392,8 @@ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
   Oracle[f, FlavorNone @ cc, FlavorNone @ tt, opts] /;
   Not @ ContainsOnly[ FlavorLast @ Join[cc, tt], {None} ]
 
-Oracle /:
-NonCommutativeQ[ Oracle[___] ] = True
-
 
 QuissoOracle::usage = "QuissoOracle[f,control,target] returns the operator corresponding to the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
-
-QuissoOracle::incmp = "Function `` of the control qubits `` is not compatible with the target qubits ``. Check the function. The zero is returned."
 
 QuissoOracle[f_, c_?QubitQ, t_?QubitQ] :=
   QuissoOracle[f, {c}, {t}]
@@ -1417,16 +1415,14 @@ matOracle[f_, cc:{__?QubitQ}, t_?QubitQ] := matOracle[f, cc, {t}]
 
 matOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
   { cn = Length @ cc,
-    tn = Length @ tt,
     cN, bb, ff },
 
+  If[ FailureQ @ VerifyOracle[f, cc, tt],
+    Return @ One @ Power[2, Length[cc] + Length[tt]]
+   ];
+  
   ff[x_List] := Flatten @ List[f @@ x];
 
-  If[ Length[ff @ ConstantArray[0, cn]] != tn,
-    Message[QuissoOracle::incmp, f, FlavorNone @ cc, FlavorNone @ tt];
-    cN = Power[2, cn + tn];
-    Return @ Zero[cN, cN]
-   ];
   cN = Power[2, cn];
   bb = GroupBy[ IntegerDigits[Range[0, cN - 1], 2, cn], ff ];
   Total @ KeyValueMap[ matOracle[#1, #2, cN]&, bb ]
@@ -1438,6 +1434,32 @@ matOracle[key:{(0|1)..}, val_List, n_Integer] := Module[
   matC = SparseArray[Thread[Transpose@{jj, jj} -> 1], {n, n}];
   matT = ThePauli @@ key;
   CircleTimes[matC, matT]
+ ]
+
+
+VerifyOracle::usage = "VerifyOracle[f, {c1, c2, ...}, {t1, t2, ...}] checks if the classical oracle f is properly defined consistently with the control qubits {c1, c2, ...} and the target qubits {t1, t2, ...}.\nVerifyOracle[f, m, n] checks if the classical oracle f is a properly defined mapping consistent with m control qubits and n target qubits."
+
+VerifyOracle::undef = "Either undefined or improperly defined values: ``"
+
+VerifyOracle::range = "Expected is a mapping ``:{0,1\!\(\*SuperscriptBox[\(}\),``]\)\[RightArrow]{0,1\!\(\*SuperscriptBox[\(}\),``]\). Check the classical oracle again."
+
+VerifyOracle[f_, cc : {__?QubitQ}, tt : {__?QubitQ}] :=  
+  VerifyOracle[f, Length@cc, Length@tt]
+
+VerifyOracle[f_, m_Integer, n_Integer] := Module[
+  { in = IntegerDigits[Range[0, 2^m - 1], 2, m],
+    ff, out, pos },
+  ff[x_List] := Flatten@List[f @@ x];
+  out = ff /@ in;
+  pos = Position[out, Except[0 | 1], {2}, Heads -> False];
+  If[ pos != {},
+    Message[VerifyOracle::undef, Extract[out, pos]];
+    Return[$Failed]
+   ];
+  If[ Not[ MatrixQ[out] && Dimensions[out] == {2^m, n} ],
+    Message[VerifyOracle::range, f, m, n];
+    Return[$Failed]
+   ];
  ]
 
 (* </Oracle> *)

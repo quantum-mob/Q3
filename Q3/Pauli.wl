@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-26 23:53:36+09 $
-  $Revision: 2.69 $
+  $Date: 2021-02-27 12:33:46+09 $
+  $Revision: 2.70 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.69 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-26 23:53:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.70 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-27 12:33:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1375,9 +1375,6 @@ TheEulerAngles[expr_] := Module[
 (* *********************************************************************** *)
 
 Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], Rotation[\[Phi], 3] represent the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{x1, n1}, {x2, n2}, ...] = Rotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] ..."
-
-Rotation /:
-Kind[ Rotation[_, 0|1|2|3] ] = Pauli
 
 Rotation[_, 0] := Pauli[0]
 
