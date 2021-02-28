@@ -2100,7 +2100,7 @@ fermionOne[q_] := One @ Dimension @ q
 
 (* Matrix[] for Fermions *)
 
-Matrix[ _?FermionQ ] := SparseArray[ {1,2}->1, {2, 2} ]
+Matrix[ _?FermionQ ] := SparseArray[{1,2} -> 1, {2, 2}]
 
 Matrix[ Parity[a_?FermionQ] ] :=
   SparseArray[ { {1,1} -> 1, {2,2} -> -1 }, {2, 2} ]

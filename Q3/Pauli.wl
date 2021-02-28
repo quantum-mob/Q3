@@ -2,8 +2,8 @@
 
 (****
   Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-27 18:32:45+09 $
-  $Revision: 2.72 $
+  $Date: 2021-02-28 18:42:00+09 $
+  $Revision: 2.78 $
   ****)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
@@ -13,8 +13,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.72 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-27 18:32:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.78 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-28 18:42:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -30,6 +30,8 @@ End[]
 { BraKet };
 
 { Basis, Matrix, BuildMatrix, $RepresentableTests };
+
+{ ProperSystem, ProperValues, ProperStates };
 
 { HermitianProduct, HermitianNorm };
 
@@ -732,12 +734,6 @@ Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] repre
 SetAttributes[Pauli, {NHoldAll, ReadProtected}]
 (* The integers in Pauli[] should not be converted to real numbers by N[]. *)
 
-Pauli /:
-Kind[ Pauli[___] ] = Pauli
-
-Pauli /:
-MultiplyGenus[ Pauli[___] ] = "Singleton"
-
 Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|-7|-8)..] ] := With[
   { aa = {a} /. theIndexRules },
   DisplayForm[ CircleTimes @@ Map[SuperscriptBox["\[Sigma]",#]&] @ aa ]
@@ -748,13 +744,22 @@ Format @ Pauli[map__Rule] := With[
   Row @ {First @ vv, Dagger @ Last @ vv}
  ]
 
-
 thePlus  = Style["+", Larger, Bold];
 theMinus = Style["-", Larger, Bold];
 theIndexRules = {
   1->"x", 2->"y", 3->"z",
   4->thePlus, 5->theMinus,
   6->"H", 7->"S", 8->"T", -7->"-S", -8->"-T" };
+
+
+Pauli /:
+Kind[ Pauli[___] ] = Pauli
+
+Pauli /:
+MultiplyGenus[ Pauli[___] ] = "Singleton"
+
+Pauli /:
+NonCommutativeQ[ Pauli[__] ] = True
 
 
 Raise[0] = Lower[0] = Hadamard[0] = Pauli[0]
@@ -934,6 +939,8 @@ PauliExpressionRL[m_?MatrixQ] := Block[
   Garner @ Dot[vv, ss]
  ]
 
+PauliExpressionRL[vec_?VectorQ] := PauliExpression[vec]
+
 
 PauliInner::usage = "PauliInner[m1, m2] = Tr[Topple[m1].m2] / Length[m2] returns the Hermitian product of two square matrices M1 and M2."
 
@@ -1066,7 +1073,8 @@ Representables::usage = "Representables[expr] finds all operators appreaing in t
 Representables[expr_] := Module[
   { tt = PatternTest[_, #]& /@ $RepresentableTests },
   Union @ FlavorMute @ Peel @
-    Cases[ Normal @ expr, Alternatives @@ tt, Infinity ]
+    Cases[ Normal @ {expr}, Alternatives @@ tt, Infinity ]
+  (* NOTE: {expr} -- not just expr. *)
  ]
 
 
@@ -1110,17 +1118,18 @@ Matrix[ Bra[j__Integer], {___} ] := TheKet[j]
 
 (* For Pauli operators *)
 
-Pauli /: Matrix[Pauli[j___]] := ThePauli[j]
+Pauli /:
+Matrix[Pauli[j___]] := ThePauli[j]
 
-Pauli /: Matrix[Pauli[j___], {___}] := ThePauli[j]
+Pauli /:
+Matrix[Pauli[j___], {___}] := ThePauli[j]
 
-Pauli /: NonCommutativeQ[ Pauli[__] ] = True
 
 
 (* For Dyad *)
 (* Matrix[Dyad[...], {s1, s2, ...}] is handled below. *)
-Dyad /: Matrix[ op:Dyad[_, _, qq_List] ] :=
-  Matrix[ Elaborate[op], qq ]
+Dyad /:
+Matrix[ op:Dyad[_, _, qq_List] ] := Matrix[ Elaborate[op], qq ]
 
 
 (* For general Ket/Bra *)
@@ -1153,8 +1162,8 @@ HoldPattern @ Matrix[ Dagger[a_?NonCommutativeQ] ] := Topple @ Matrix[a]
 
 (* Arrays *)
 
-HoldPattern @ Matrix[ expr:(_List|_Association), qq:{__?SpeciesQ} ] :=
-  With[
+HoldPattern @
+  Matrix[ expr:(_List|_Association), qq:{__?SpeciesQ} ] := With[
     { ss = FlavorNone @ qq },
     Map[ Matrix[#, ss]&, expr ]
    ]
@@ -1234,6 +1243,180 @@ BuildMatrix[op_, qq:{__?SpeciesQ}] := Module[
 (*     </Matrix>                                                           *)
 (* *********************************************************************** *)
 
+ProperSystem::usage = "ProperSystem[expr] returns a list of {values, vectors} of the eigenvalues and eigenstates of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
+
+ProperSystem::mixed = "The operator `` contains the Pauli operators of unlabelled qubits as well as other labelled operators for Species."
+
+ProperSystem::incon = "Inconsistent Pauli operators in ``."
+
+ProperSystem::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
+
+ProperSystem[expr_] := Module[
+  { ss = Representables[expr],
+    pp = Cases[{expr}, _Pauli, Infinity],
+    nn, mat, res, val, vec },
+
+  If[ ss == {}, Null,
+    Messsage[ProperSystem::mixed, expr];
+    Return[$Failed]
+   ];
+
+  nn = Length /@ pp;
+  If[ Equal @@ nn,
+    nn = First[nn],
+    Message[ProperSystem::incon, expr];
+    Return[$Failed]
+   ];
+  
+  mat = Matrix[expr];
+  res = Eigensystem[mat];
+  If[ ListQ @ res,
+    val = First[res];
+    vec = Last[res] . Basis[nn],
+    Message[ProperSystem::eigsysno, expr];
+    Return[$Failed]
+   ];
+  
+  {val, vec}
+ ] /; Not @ FreeQ[expr, _Pauli]
+
+
+ProperSystem[expr_] := ProperSystem[expr, {}] /; FreeQ[expr, _Pauli]
+
+ProperSystem[expr_, qq:{___?SpeciesQ}] := Module[
+  { ss = Representables[expr],
+    rr, mat, res, val, vec },
+
+  mat = Matrix[expr, ss];
+  res = Eigensystem[mat];
+  If[ ListQ @ res,
+    val = First[res];
+    vec = Last[res] . Basis[ss],
+    Message[ProperSystem::eigsysno, expr];
+    Return[$Failed]
+   ];
+  
+  rr = Complement[FlavorNone @ qq, ss];
+  If[ rr == {}, Null,
+    val = Flatten @ Transpose @ ConstantArray[val, Times @@ Dimension[rr]];
+    vec = Flatten @ Outer[CircleTimes, vec, Basis[rr]]
+   ];
+  {val, vec}
+ ]
+
+
+ProperStates::usage = "ProperStates[expr] returns a list of the eigenstates of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
+
+ProperStates::mixed = "The operator `` contains the Pauli operators of unlabelled qubits as well as other labelled operators for Species."
+
+ProperStates::incon = "Inconsistent Pauli operators in ``."
+
+ProperStates::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
+
+ProperStates[expr_] := Module[
+  { ss = Representables[expr],
+    pp = Cases[{expr}, _Pauli, Infinity],
+    nn, mat, vec },
+
+  If[ ss == {}, Null,
+    Messsage[ProperStates::mixed, expr];
+    Return[$Failed]
+   ];
+
+  nn = Length /@ pp;
+  If[ Equal @@ nn,
+    nn = First[nn],
+    Message[ProperStates::incon, expr];
+    Return[$Failed]
+   ];
+  
+  mat = Matrix[expr];
+  vec = Eigenvectors[mat];
+  If[ ListQ @ vec,
+    Return[vec . Basis[nn]],
+    Message[ProperStates::eigsysno, expr];
+    Return[$Failed]
+   ];
+ ] /; Not @ FreeQ[expr, _Pauli]
+
+
+ProperStates[expr_] := ProperStates[expr, {}] /; FreeQ[expr, _Pauli]
+
+ProperStates[expr_, qq:{___?SpeciesQ}] := Module[
+  { ss = Representables[expr],
+    rr, mat, vec },
+  
+  mat = Matrix[expr, ss];
+  vec = Eigenvectors[mat];
+  If[ ListQ @ vec,
+    vec = vec . Basis[ss],
+    Message[ProperStates::eigsysno, expr];
+    Return[$Failed]
+   ];
+  
+  rr = Complement[FlavorNone @ qq, ss];
+  If[ rr == {},
+    Return @ vec,
+    Return @ Flatten @ Outer[CircleTimes, vec, Basis[rr]]
+   ];
+ ]
+
+
+ProperValues::usage = "ProperValues[expr] returns a list of the eigenvalues of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
+
+ProperValues::mixed = "The operator `` contains the Pauli operators of unlabelled qubits as well as other labelled operators for Species."
+
+ProperValues::incon = "Inconsistent Pauli operators in ``."
+
+ProperValues::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
+
+ProperValues[expr_] := Module[
+  { ss = Representables[expr],
+    pp = Cases[{expr}, _Pauli, Infinity],
+    nn, mat, val },
+
+  If[ ss == {}, Null,
+    Messsage[ProperValues::mixed, expr];
+    Return[$Failed]
+   ];
+
+  nn = Length /@ pp;
+  If[ Equal @@ nn,
+    nn = First[nn],
+    Message[ProperValues::incon, expr];
+    Return[$Failed]
+   ];
+  
+  mat = Matrix[expr];
+  val = Eigenvalues[mat];
+  If[ ListQ @ val,
+    Return[val],
+    Message[ProperValues::eigsysno, expr];
+    Return[$Failed]
+   ];
+ ] /; Not @ FreeQ[expr, _Pauli]
+
+
+ProperValues[expr_] := ProperValues[expr, {}] /; FreeQ[expr, _Pauli]
+
+ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
+  { ss = Representables[expr],
+    rr, mat, val },
+  
+  mat = Matrix[expr, ss];
+  val = Eigenvalues[mat];
+  If[ ListQ @ val, Null,
+    Message[ProperValues::eigsysno, expr];
+    Return[$Failed]
+   ];
+  
+  rr = Complement[FlavorNone @ qq, ss];
+  If[ rr == {},
+    Return[val],
+    Return @ Flatten @ Transpose @ ConstantArray[val, Times @@ Dimension[rr]]
+   ];
+ ]
+
 
 Parity::usage = "Parity[op] represents the parity operator of the species op. For a particle (Boson or Fermion) op, it refers to the even-odd parity of the occupation number. For a Qubit, it refers to the Pauli-Z.\nParity[{a, b, ...}] representts the overall parity of species a, b, ...."
 
@@ -1245,7 +1428,8 @@ Parity /: MultiplyGenus[ Parity[_] ] := "Singleton" (* for Multiply *)
 
 Parity /: AnySpeciesQ[ Parity[a_] ] := AnySpeciesQ[a] (* for Multiply[] *)
 
-Parity /: NonCommutativeQ[ Parity[a_] ] := NonCommutativeQ[a] (* for Multiply[] *)
+Parity /:
+NonCommutativeQ[ Parity[a_] ] := NonCommutativeQ[a] (* for Multiply[] *)
 
 Parity[a_?SpeciesQ, b__?SpeciesQ] := Multiply @@ Parity /@ {a, b}
 
@@ -1549,7 +1733,7 @@ HoldPattern[ CircleTimes[ args__ ] ] := Garner @ Block[
   Distribute[ F[args] ] /. { F -> CircleTimes }
  ] /; DistributableQ[args]
 
-CircleTimes[a___, z_?ComplexQ b_, c___] := z CircleTimes[a, b, c]
+CircleTimes[pre___, z_?ComplexQ op_, post___] := z CircleTimes[pre, op, post]
 
 CircleTimes[a___, 0, c___] := 0
 (* This happens when some Kets are null. *)

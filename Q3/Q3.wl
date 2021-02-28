@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-02-27 12:40:24+09 $ *)
-(* $Revision: 1.48 $ *)
+(* $Date: 2021-02-28 08:14:37+09 $ *)
+(* $Revision: 1.50 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,8 +10,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.48 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-27 12:40:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.50 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-28 08:14:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1226,42 +1226,6 @@ HoldPattern @ Multiply[ pre___, Power[E, expr_], post___] :=
   Multiply[pre, MultiplyExp[expr], post]
 
 
-(*** Baker-Hausdorff lemma for simple cases ***)
-
-HoldPattern @
-  Multiply[ pre___, MultiplyExp[a_], MultiplyExp[b_], post___ ] :=
-  Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
-  Garner[ Commutator[a, b] ] === 0
-
-HoldPattern @
-  Multiply[pre___, MultiplyExp[a_], MultiplyExp[b_], post___] :=
-  Multiply[
-    Multiply[pre],
-    MultiplyExp[ a + b + Commutator[a, b]/2 ],
-    Multiply[post]
-   ] /;
-  Garner[ Commutator[a, b, 2] ] === 0 /;
-  Garner[ Commutator[b, a, 2] ] === 0
-
-HoldPattern @
-  Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
-  Multiply[ Multiply[pre, b], MultiplyExp[a], Multiply[post] ] /;
-  Garner[ Commutator[a, b] ] === 0
-(* Exp is pushed to the right if possible *)
-
-HoldPattern @
-  Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
-  With[
-    { new = Multiply[post] },
-    Multiply[ Multiply[pre, b], MultiplyExp[a], new] +
-      Multiply[ Multiply[pre, Commutator[a, b]], MultiplyExp[a], new]
-   ] /; Garner[ Commutator[a, b, 2] ] === 0
-(* NOTE: Exp is pushed to the right. *)
-(* NOTE: Here notice the PatternTest AnySpeciesQ is put in order to skip
-   Exp[op] or MultiplyExp[op]. Commutators involving Exp[op] or
-   MultiplyExp[op] usually takes long in vain. *)
-
-
 (* General rules *)
 
 (* No operator is moved across Ket or Bra. *)
@@ -1346,6 +1310,49 @@ OrderedKindsQ[ops_List] := Module[
 (* ****************************************************************** *)
 (*     </Multiply>                                                    *)
 (* ****************************************************************** *)
+
+
+(* ****************************************************************** *)
+(* <Baker-Hausdorff Lemma: Simple Cases>                              *)
+(* ****************************************************************** *)
+
+HoldPattern @
+  Multiply[ pre___, MultiplyExp[a_], MultiplyExp[b_], post___ ] :=
+  Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
+  Garner[ Commutator[a, b] ] === 0
+
+HoldPattern @
+  Multiply[pre___, MultiplyExp[a_], MultiplyExp[b_], post___] :=
+  Multiply[
+    Multiply[pre],
+    MultiplyExp[ a + b + Commutator[a, b]/2 ],
+    Multiply[post]
+   ] /;
+  Garner[ Commutator[a, b, 2] ] === 0 /;
+  Garner[ Commutator[b, a, 2] ] === 0
+
+HoldPattern @
+  Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
+  Multiply[ Multiply[pre, b], MultiplyExp[a], Multiply[post] ] /;
+  Garner[ Commutator[a, b] ] === 0
+(* Exp is pushed to the right if possible *)
+
+HoldPattern @
+  Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
+  With[
+    { new = Multiply[post] },
+    Multiply[ Multiply[pre, b], MultiplyExp[a], new] +
+      Multiply[ Multiply[pre, Commutator[a, b]], MultiplyExp[a], new]
+   ] /; Garner[ Commutator[a, b, 2] ] === 0
+(* NOTE: Exp is pushed to the right. *)
+(* NOTE: Here notice the PatternTest AnySpeciesQ is put in order to skip
+   Exp[op] or MultiplyExp[op]. Commutators involving Exp[op] or
+   MultiplyExp[op] usually takes long in vain. *)
+
+(* ****************************************************************** *)
+(* </Baker-Hausdorff Lemma>                                           *)
+(* ****************************************************************** *)
+
 
 MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[]."
 

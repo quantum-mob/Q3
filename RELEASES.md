@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.6.3
+
+- New functions ProperSystem, ProperStates, ProperValues.
+
 ## v1.6.2
 
 - A bug fix in Multiply involving Pauli.
