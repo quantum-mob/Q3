@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 
 BeginPackage[ "Q3`Einstein`",
-  { "Q3`Fock`", "Q3`Wigner", "Q3`Quisso`", "Q3`Pauli`",
+  { "Q3`Fock`", "Q3`Wigner`", "Q3`Quisso`", "Q3`Pauli`",
     "Q3`Cauchy`", "Q3`" }
  ]
 
@@ -10,8 +10,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.1 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 22:31:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.3 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 23:06:53+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -21,7 +21,7 @@ End[]
 
 Begin["`Private`"]
 
-$symbs = Unprotect[ Multiply ]
+$symbs = Unprotect[ Multiply, MultiplyExp ]
 
 JordanWignerTransform::usage = "JordanWignerTransform[]"
 
@@ -50,6 +50,13 @@ JordanWignerTransform[ff:{__?FermionQ} -> qq:{__?QubitQ}] := Module[
   Thread[ff -> cc]
  ] /; Length[qq] == Length[ff]
 
+
+(**** <fallbacks> ****)
+
+MultiplyExp /:
+HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := MultiplyExp[expr]
+
+(**** </fallbacks> ****)
 
 Protect[ Evaluate @ $symbs ]
 

@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.84 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 17:11:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.85 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 23:15:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -88,7 +88,8 @@ End[]
 Begin["`Private`"]
 
 $symbs = Unprotect[
-  Multiply, CircleTimes, CirclePlus,
+  Multiply, MultiplyExp,
+  CircleTimes, CirclePlus,
   $GarnerHeads, $GarnerTests,
   $ElaborationRules, $ElaborationHeads,
   Dot, Ket, Bra, BraKet
@@ -562,7 +563,7 @@ VerifyKet[ Ket[a_Association] ] := With[
 VerifyKet[a_, b_] := Rule[a, b]
 
 
-(* <Multiply> *)
+(**** <Multiply> ****)
 
 (* Ket[] ** Ket[] = Ket[] x Ket[] *)
 HoldPattern @
@@ -602,7 +603,15 @@ Multiply /:
 HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
   Multiply[Bra[b], Dagger @ Multiply[op], Ket[a]]
 
-(* </Multiply> *)
+(**** </Multiply> ****)
+
+
+MultiplyExp /:
+HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
+  PauliExpression @ MatrixExp @ Matrix @ expr /;
+  NonCommutativeSpecies[expr] == {} /;
+  Not @ FreeQ[expr, _Pauli]
+
 
 State::usage = "State[{0, \[Theta], \[Phi]}] and Ket[{1, \[Theta], \[Phi]}] returns the eigenvectors of Pauli[3] in the (\[Theta], \[Phi])-rotated frame.\nState[{s$1, \[Theta]$1, \[Phi]$1}, {s$2, \[Theta]$2, \[Phi]$2}, ...] returns the tensor product State[{s$1, \[Theta]$1, \[Phi]$1}]\[CircleTimes] State[{s$2, \[Theta]$2, \[Phi]$2}, ...]\[CircleTimes]....\nState[{{s$1, s$2, ...}, \[Theta], \[Phi]}] = State[{s$1, \[Theta], \[Phi]}, {s$2, \[Theta], \[Phi]}, ...].\nSee also Ket, TheKet, TheState, Pauli, ThePauli, Operator, TheOperator."
 

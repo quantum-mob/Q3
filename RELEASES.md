@@ -4,6 +4,7 @@
 
 - New functions ProperSystem, ProperStates, ProperValues.
 - New function JordanWignerTransform.
+- Enhanced Elaborate concerning MultiplyExp.
 
 ## v1.6.2
 

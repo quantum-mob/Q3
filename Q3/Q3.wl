@@ -7,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.53 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 11:44:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.54 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 22:49:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1120,7 +1120,7 @@ $ElaborationHeads::usage = "$ElaborationHeads is a list of heads to be directly 
 $ElaborationRules::usage = "$ElaborationRules is a list of replacement rules to be used by Elaborate."
 
 Once[
-  $ElaborationHeads = {};
+  $ElaborationHeads = { MultiplyExp };
   
   $ElaborationRules = {
     Abs[z_] :> Sqrt[z Conjugate[z]],

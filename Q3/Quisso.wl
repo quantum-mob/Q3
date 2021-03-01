@@ -9,8 +9,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.104 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 16:43:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.105 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 22:48:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -67,7 +67,8 @@ End[]
 Begin["`Private`"]
 
 $symb = Unprotect[
-  Multiply, MultiplyDegree, CircleTimes, OTimes, Dagger, Dyad,
+  Multiply, MultiplyExp, MultiplyDegree,
+  CircleTimes, OTimes, Dagger, Dyad,
   KetTrim, KetRule, Ket, Bra, BraKet, Basis, SpinForm,
   $RepresentableTests, $RaiseLowerRules,
   $GarnerHeads, $GarnerTests,
@@ -195,7 +196,7 @@ Qubits[ expr_ ] := FlavorNone @ Union @ Map[Most] @
    Association. *)
 
 
-(* <Multiply> *)
+(**** <Multiply> ****)
 
 (* Speical Rules: Involving identity *)
 
@@ -358,7 +359,17 @@ HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,8], b___ ] := Multiply[a, x[j
 HoldPattern @ Multiply[a___, x1_?QubitQ, x2_?QubitQ, b___] := Multiply[a, x2, x1, b] /;
   Not @ OrderedQ @ {x1,x2}
 
-(* </Multiply> *)
+(**** </Multiply> ****)
+
+
+MultiplyExp /:
+HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
+  { ss = Qubits[expr],
+    mm },
+  mm = Matrix[expr, ss];
+  QuissoExpression[MatrixExp[mm], ss]
+ ] /; ContainsOnly[ Kind @ NonCommutativeSpecies[expr], List @ Qubit ]
+
 
 
 (* MultiplyDegree for operators *)
