@@ -9,8 +9,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.103 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 11:44:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.104 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 16:43:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -19,7 +19,7 @@ End[]
 
 { Dirac };
 
-{ QuissoExpression };
+{ QuissoExpression, QuissoExpressionRL };
 
 { DensityMatrix, DensityOperator };
 
@@ -893,9 +893,7 @@ doQuissoAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
  ]
 
 
-QuissoExpression::usage = "QuissoExpression[expr] converts Ket[...]**Bra[...]  for in the expression expr to the form in terms of the Gate operators.
-  QuissoExpression[m, {S$1, S$2, ...}] converts the square matrix m into a Quisso expression.
-  QuissoExpression[v, {S$1, S$2, ...}] converts the column vector v into a Ket expression."
+QuissoExpression::usage = "QuissoExpression[expr] converts Ket[...]**Bra[...]  for in the expression expr to the form in terms of the Gate operators.\nQuissoExpression[m, {S$1, S$2, ...}] converts the square matrix m into a Quisso expression.\nQuissoExpression[v, {S$1, S$2, ...}] converts the column vector v into a Ket expression."
 
 (* Let[LinearMap, QuissoExpression] *)
 (* NOTE: When there are many terms, larger than 512?,
@@ -909,24 +907,27 @@ QuissoExpression[ z_?ComplexQ a_ ] := z QuissoExpression[a]
 
 QuissoExpression::incon = "The matrix/vector `1` is not compatible with the Qubit list `2`."
 
-QuissoExpression[ m_?MatrixQ, S_?QubitQ ] := QuissoExpression[ m, {S} ]
+QuissoExpression[ mat_?MatrixQ, S_?QubitQ ] := QuissoExpression[ mat, {S} ]
 
-QuissoExpression[ m_?MatrixQ, ss:{__?QubitQ} ] := Module[
+QuissoExpression[ mat_List?MatrixQ, ss:{__?QubitQ} ] :=
+  QuissoExpression[SparseArray @ mat, FlavorNone @ ss]
+  
+QuissoExpression[ mat_?MatrixQ, ss:{__?QubitQ} ] := Module[
   { nL = Power[2, Length @ ss] {1, 1},
-    mm = SparseArray[ ArrayRules[m], Dimensions[m] ],
     tt, op, tensor, HoldTimes },
 
-  If[ Dimensions[m] != nL,
+  If[ Dimensions[mat] != nL,
     Message[QuissoExpression::incon, m, FlavorNone @ ss];
     Return[0]
    ];
   
-  tensor = Tensorize[mm];
+  tensor = Tensorize[mat];
   tt = Map[
     Function[ {S},
       { {1/2+S[3]/2, S[Raise]},
         {S[Lower], 1/2-S[3]/2} } ],
-    ss ];
+    ss
+   ];
   op = Outer[ HoldTimes, Sequence @@ tt ];
   Garner[ Total @ Flatten[tensor * op] /. {HoldTimes -> Multiply} ]
  ]
@@ -948,6 +949,43 @@ QuissoExpression[ v_?VectorQ, ss:{__?QubitQ} ] := Module[
  ]
 
 QuissoExpression[ expr_ ] := expr
+
+
+QuissoExpressionRL::usage = "QuissoExpressionRL[expr] converts Ket[...]**Bra[...]  for in the expression expr to the form in terms of the Pauli operators operators.\nQuissoExpressionRL[m, {S$1, S$2, ...}] converts the square matrix m into an expression in terms of Pauli operators.\nQuissoExpressionRL[v, {S$1, S$2, ...}] converts the column vector v into a Ket expression."
+
+QuissoExpressionRL[ a_ + b_ ] := QuissoExpressionRL[a] + QuissoExpressionRL[b] 
+
+QuissoExpressionRL[ z_?ComplexQ ] := z
+
+QuissoExpressionRL[ z_?ComplexQ a_ ] := z QuissoExpressionRL[a]
+
+
+QuissoExpressionRL[ mat_?MatrixQ, S_?QubitQ ] := QuissoExpressionRL[ mat, {S} ]
+
+QuissoExpressionRL[ mat_List?MatrixQ, ss:{__?QubitQ} ] :=
+  QuissoExpressionRL[SparseArray @ mat, FlavorNone @ ss]  /;
+  Length[mat] == Power[2, Length @ ss]
+
+QuissoExpressionRL[ mat_?MatrixQ, ss:{__?QubitQ} ] := Module[
+  { tt, op, tensor, HoldTimes },
+
+  tensor = Tensorize[mat];
+  tt = Map[
+    Function[ {S},
+      { {1/2+S[3]/2, S[4]},
+        {S[5], 1/2-S[3]/2} } ],
+    ss
+   ];
+  op = Outer[ HoldTimes, Sequence @@ tt ];
+  Garner[ Total @ Flatten[tensor * op] /. {HoldTimes -> Multiply} ]
+ ] /; Length[mat] == Power[2, Length @ ss]
+
+
+QuissoExpressionRL[ v_?VectorQ, S_?QubitQ ] := QuissoExpressionRL[ v, {S} ]
+
+QuissoExpressionRL[ v_?VectorQ, ss:{__?QubitQ} ] := QuissoExpression[v, ss]
+
+QuissoExpressionRL[ expr_ ] := expr
 
 
 (* QuissoCoefficientTensor *)

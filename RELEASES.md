@@ -3,6 +3,7 @@
 ## v1.6.3
 
 - New functions ProperSystem, ProperStates, ProperValues.
+- New function JordanWignerTransform.
 
 ## v1.6.2
 

@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.79 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 11:43:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.84 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 17:11:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -43,8 +43,6 @@ End[]
 { RaiseLower, $RaiseLowerRules };
 
 { PauliExpression, PauliExpressionRL };
-
-{ PauliInner };
 
 { Rotation, EulerRotation,
   TheRotation, TheEulerRotation,
@@ -83,6 +81,7 @@ End[]
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
+{ PauliInner }; (* obsolete *)
 { PauliExtract, PauliExtractRL }; (* obsolete *)
 { PauliExpand }; (* OBSOLETE *)
 
@@ -909,8 +908,25 @@ PauliExpression[a_?VectorQ] :=
 
 (* for square matrices *)
 
+PauliExpression[mat_List?MatrixQ] := PauliExpression[SparseArray @ mat] /;
+  IntegerQ @ Log[2, Length @ mat]
+
+PauliExpression[mat_SparseArray?MatrixQ] := Module[
+  { tt, pp, j, n },
+  n = Log[2, Length @ mat];
+  tt = Tensorize[mat];
+  pp = Table[
+    {{Pauli[10], Pauli[Raise]},
+      {Pauli[Lower], Pauli[11]}},
+    {j, n}
+   ];
+  pp = Outer[CircleTimes, Sequence @@ pp];
+  Garner @ Total @ Flatten[tt * pp]
+ ] /; IntegerQ @ Log[2, Length @ mat]
+
+(*
 PauliExpression[m_?MatrixQ] := Block[
-  {nn, ss, vv, jj},
+  { nn, ss, vv, jj },
   nn = Log[2, Length[m]];
   ss = Tuples[{0,1,2,3}, nn];
   vv = Map[ PauliInner[ThePauli@@#, m]&, ss ];
@@ -919,31 +935,55 @@ PauliExpression[m_?MatrixQ] := Block[
   vv = vv[[jj]];
   Garner @ Dot[vv, ss]
  ]
+ *)
 
 PauliExpressionRL::usage = "PauliExpressionRL[m] returns an expression for the matrix M in terms of the Pauli matrices."
 
+PauliExpressionRL[mat_List?MatrixQ] :=
+  PauliExpressionRL[SparseArray @ mat] /;
+  IntegerQ @ Log[2, Length @ mat]
+
+PauliExpressionRL[mat_SparseArray?MatrixQ] := Module[
+  { tt, pp, j, n },
+  n = Log[2, Length @ mat];
+  tt = Tensorize[mat];
+  pp = Table[
+    {{Pauli[10], Pauli[4]},
+      {Pauli[5], Pauli[11]}},
+    {j, n}
+   ];
+  pp = Outer[CircleTimes, Sequence @@ pp];
+  Garner @ Total @ Flatten[tt * pp]
+ ] /; IntegerQ @ Log[2, Length @ mat]
+
+(*
 PauliExpressionRL[m_?MatrixQ] := Block[
-  {nn, ss, vv, jj},
+  { nn, ss, vv, jj },
   nn = Log[2, Length[m]];
-  ss = Tuples[{0,3,4,5}, nn];
-  vv = Map[ PauliInner[ThePauli@@#, m]&, ss ];
+  ss = Tuples[{0, 3, 4, 5}, nn];
+  vv = Map[ PauliInner[ThePauli @@ #, m]&, ss ];
   jj = Flatten @ Position[vv, Except[0|0.], {1}, Heads->False];
   ss = Apply[Pauli, ss[[jj]], {1}];
   ss = Map[ (# * 2^Count[#,4|5])&, ss ];
   vv = vv[[jj]];
   Garner @ Dot[vv, ss]
  ]
+ *)
 
 PauliExpressionRL[vec_?VectorQ] := PauliExpression[vec]
 
 
-PauliInner::usage = "PauliInner[m1, m2] = Tr[Topple[m1].m2] / Length[m2] returns the Hermitian product of two square matrices M1 and M2."
+PauliInner::usage = "PauliInner is obsolete. Use HermitianProduct instead. Notice the difference in normalization -- PauliInner[m1, m2] = HermitianProduct[m1,m2] / Length[m2] for matrices m1 and m2."
 
-PauliInner[m1_?MatrixQ, m2_?MatrixQ] :=
-  Tr[ Topple[m1].m2 ] / Length[m2] /;
-  Dimensions[m1] == Dimensions[m2]
+PauliInner[m1_?MatrixQ, m2_?MatrixQ] := (
+  Message[Q3General::obsolete, PauliInner, HermitianProduct];
+  HermitianProduct[m1, m2] / Length[m2]
+ )
 
-PauliInner[v1_?VectorQ, v2_?VectorQ] := Topple[v1].v2
+PauliInner[v1_?VectorQ, v2_?VectorQ] := (
+  Message[Q3General::obsolete, PauliInner, HermitianProduct];
+  HermitianProduct[v1, v2]
+ )
 
 
 HermitianNorm::usage = "HermitianNorm[a] gives the norm of a complex number, vector, or matrix a.\nFor complex numbers, it is Abs[z].\nFor vectors, it is Sqrt[Conjugate[a].a].\nFor matrices, it is the Frobenius norm, i.e., Tr[ConjugateTranspose[a].a].\nIt should be distinguished from the TraceNorm."
@@ -1425,6 +1465,9 @@ Parity /: AnySpeciesQ[ Parity[a_] ] := AnySpeciesQ[a] (* for Multiply[] *)
 
 Parity /:
 NonCommutativeQ[ Parity[a_] ] := NonCommutativeQ[a] (* for Multiply[] *)
+
+Parity /:
+HoldPattern @ Dagger[op:Parity[___]] := op
 
 Parity[a_?SpeciesQ, b__?SpeciesQ] := Multiply @@ Parity /@ {a, b}
 

@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-03-01 11:39:07+09 $ *)
-(* $Revision: 1.1 $ *)
+(* $Date: 2021-03-01 22:33:19+09 $ *)
+(* $Revision: 1.3 $ *)
 
 If[ $VersionNumber < 12,
   Version::old = "Q3 requires Mathematica 12 or later.";
@@ -15,4 +15,5 @@ Get["Q3`Quisso`"]
 Get["Q3`Fock`"]
 Get["Q3`Wigner`"]
 Get["Q3`Dicke`"]
+Get["Q3`Einstein`"]
 

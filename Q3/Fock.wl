@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.48 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-28 22:06:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.50 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 12:38:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -288,7 +288,12 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
   
   x /: Conjugate[x] := x;
   x /: Conjugate[x[j___]] := x[j];
-  
+
+  (*
+  x /: Parity[x] := 1 - 2*Multiply[Dagger[x], x];
+  x /: Parity[x[j___]] := 1 - 2*Multiply[Dagger @ x[j], x[j]];
+   *)
+
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
@@ -1248,16 +1253,17 @@ LieExp[gen_, expr_] := Module[
  ] /; FockBilinearQ[gen]
 (* TODO: To support Heisenbergs *)
 
-
 (* Baker-Hausdorff Lemma *)
-$ElaborationRules = Join[ $ElaborationRules,
-  { HoldPattern @ Multiply[
-      pre___,
-      MultiplyExp[a_], b__, MultiplyExp[c_],
-      post___
-     ] :> Multiply[pre, LieExp[a, Multiply[b]], post] /;
-      Garner[a + c] == 0
-   }
+Once[
+  $ElaborationRules = Join[ $ElaborationRules,
+    { HoldPattern @ Multiply[
+        pre___,
+        MultiplyExp[a_], b__, MultiplyExp[c_],
+        post___
+       ] :> Multiply[pre, LieExp[a, Multiply[b]], post] /;
+        Garner[a + c] == 0
+     }
+   ]
  ]
 
 (* ********************************************************************** *)
@@ -2137,27 +2143,15 @@ Matrix[ Ket[ Association[a_?BosonQ -> n_Integer] ] ] := SparseArray[
 (* ******************************************************************** *)
 
 
-(* ************************************************************************** *)
+(**** <Parity> ****)
 
-(* Basis[] for fermions *)
-
-(* Simple construction of basis for fermions; see FermionBasis for more
-   elaborate constructions. *)
-
-Basis[c_?FermionQ] := Ket /@ Thread[ c->{0, 1} ]
-
-Basis[cc:{__?FermionQ}] := Map[ Ket[cc->#]&, Tuples[{0, 1}, Length@cc] ]
-
-(* Basis[] for bosons *)
-
-Basis[b_?BosonQ] := Ket /@ Thread[ b->Range[Bottom@b, Top@b] ]
-
-Basis[bb:{__?BosonQ}] := Map[
-  Ket[bb->#]&,
-  Tuples [ Range @@@ Transpose @ {Bottom /@ bb, Top /@ bb} ]
+Once[
+  $ElaborationHeads = Append[$ElaborationHeads, Parity]
  ]
 
-(* ******************************************************************** *)
+Parity /:
+HoldPattern @ Elaborate[ Parity[c_?FermionQ] ] :=
+  1 - 2 * Multiply[Dagger[c], c]
 
 Parity /:
 HoldPattern @
@@ -2185,7 +2179,31 @@ ParityEvenQ[v_Ket, a_?ParticleQ] := EvenQ @ v @ a
 
 ParityOddQ[v_Ket, a_?ParticleQ] := OddQ @ v @ a
 
-(* ******************************************************************** *)
+(**** </Parity> ****)
+
+
+(**** <Basis> ****)
+
+(* Basis[] for fermions *)
+
+(* Simple construction of basis for fermions; see FermionBasis for more
+   elaborate constructions. *)
+
+Basis[c_?FermionQ] := Ket /@ Thread[ c->{0, 1} ]
+
+Basis[cc:{__?FermionQ}] := Map[ Ket[cc->#]&, Tuples[{0, 1}, Length@cc] ]
+
+(* Basis[] for bosons *)
+
+Basis[b_?BosonQ] := Ket /@ Thread[ b->Range[Bottom@b, Top@b] ]
+
+Basis[bb:{__?BosonQ}] := Map[
+  Ket[bb->#]&,
+  Tuples [ Range @@@ Transpose @ {Bottom /@ bb, Top /@ bb} ]
+ ]
+
+(**** </Basis> ****)
+
 
 BosonBasis::usage = "BosonBasis[{b1, b2, ...}, n] returns the Fock-state basis for Bosons b1, b2, ... with total number of particles up to n.\nBosonBasis[{b1, b2, ...}, {n}] gives the basis with exactly n particles.\nBosonBasis[{b1, b2, ...}, {m, n}] gives the basis with m to n particles.\nNote that if either m or n or both are specified the corresponding value of Bottom and/or Top of the Bosons are ignore."
 

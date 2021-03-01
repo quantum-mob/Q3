@@ -1,7 +1,8 @@
 (* -*- mode:math -*- *)
+
 BeginPackage[ "Q3`Dicke`",
-  { "Q3`Fock`", "Q3`Quisso`",
-    "Q3`Pauli`", "Q3`Cauchy`", "Q3`" }
+  { "Q3`Fock`", "Q3`Quisso`", "Q3`Pauli`",
+    "Q3`Cauchy`", "Q3`" }
  ]
 
 Unprotect[Evaluate[$Context<>"*"]]
@@ -9,14 +10,13 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.10 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 11:39:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.15 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 22:32:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
 { DickeBasis };
-
 
 Begin["`Private`"]
 
@@ -36,7 +36,6 @@ DickeBasis[ ss:{__?QuditQ}, bb:{__?BosonQ}, n_Integer ] :=
 
 DickeBasis[ ss:{__?QuditQ}, bb:{__?BosonQ}, {m_Integer, n_Integer} ] :=
   Flatten @ Outer[ CircleTimes, Basis @ ss, BosonBasis[bb, {m,n}] ]
-
 
 Protect[ Evaluate @ $symbs ]
 
