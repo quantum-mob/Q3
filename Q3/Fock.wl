@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.47 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-27 18:43:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.48 $"][[2]], " (",
+  StringSplit["$Date: 2021-02-28 22:06:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1582,8 +1582,7 @@ Once[
 
 CoherentState /:
 HoldPattern @ Elaborate[ CoherentState[vec_Association] ] := Module[
-  { val = Values[vec],
-    expr },
+  { expr },
   expr = Multiply @@ KeyValueMap[
     MultiplyExp[-(#2 ** #2)/2 + (Dagger[#1] ** #2)]&,
     vec

@@ -1,9 +1,4 @@
 (* -*- mode:math -*- *)
-(* Mahn-Soo Choi *)
-(* $Date: 2021-01-28 11:24:46+09 $ *)
-(* $Revision: 1.9 $ *)
-
-
 BeginPackage[ "Q3`Dicke`",
   { "Q3`Fock`", "Q3`Quisso`",
     "Q3`Pauli`", "Q3`Cauchy`", "Q3`" }
@@ -14,8 +9,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.9 $"][[2]], " (",
-  StringSplit["$Date: 2021-01-28 11:24:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.10 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 11:39:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]

@@ -1,7 +1,4 @@
 (* -*- mode:math -*- *)
-(* Mahn-Soo Choi *)
-(* $Date: 2021-02-28 08:14:37+09 $ *)
-(* $Revision: 1.50 $ *)
 
 BeginPackage["Q3`"]
 
@@ -10,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.50 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-28 08:14:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.53 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 11:44:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -190,7 +187,7 @@ handlerDownloadFinished[assoc_] := Module[
 Q3Update[opts___?OptionQ] := Module[
   { url = Q3RemoteURL[],
     dir = CreateDirectory[],
-    new, file },
+    file },
 
   If[ FailureQ[dir],
     Message[Q3Update::dirfail, folder];
@@ -1302,8 +1299,7 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
  ] /; Not @ OrderedKindsQ @ {ops}
 
 OrderedKindsQ[ops_List] := Module[
-  { qq = Kind @ SplitBy[ops, MultiplyGenus],
-    kk },
+  { qq = Kind @ SplitBy[ops, MultiplyGenus] },
   AllTrue[qq, OrderedQ]
  ]
 

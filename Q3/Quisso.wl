@@ -1,13 +1,6 @@
 (* -*- mode: math; -*- *)
-
-(****
-  Mathematica Package to facilitate simulation of quantum information
-  processing.
- 
-  Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-27 17:21:42+09 $
-  $Revision: 1.102 $
-  ****)
+(* Mathematica Package to facilitate simulation of quantum information
+  processing. *)
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
 
@@ -16,8 +9,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.102 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-27 17:21:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.103 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 11:44:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]

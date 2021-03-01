@@ -1,10 +1,6 @@
 (* -*- mode: math; -*- *)
-
+(* Grassmann algebra *)
 (* Adopted from a package by M. Headrick (April 2003) *)
-(* Mahn-Soo Choi *)
-(* $Date: 2021-02-21 12:29:33+09 $ *)
-(* $Revision: 1.10 $ *)
-
 BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`", "Q3`" } ]
 
 Unprotect[Evaluate[$Context<>"*"]]
@@ -12,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.10 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-21 12:29:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.11 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 11:42:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]

@@ -1,10 +1,5 @@
 (* -*- mode: math; -*- *)
-
-(****
-  Mahn-Soo Choi (Korea Univ, mahnsoo.choi@gmail.com)
-  $Date: 2021-02-28 18:42:00+09 $
-  $Revision: 2.78 $
-  ****)
+(* Pauli operators on unlabelled qubits *)
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
 
@@ -13,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.78 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-28 18:42:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.79 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-01 11:43:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
