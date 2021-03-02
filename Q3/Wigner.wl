@@ -7,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.27 $"][[2]], " (",
-  StringSplit["$Date: 2021-02-27 18:52:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.0 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-03 08:46:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -48,11 +48,11 @@ $symbs = Unprotect[
   Multiply, MultiplyDegree, CircleTimes,
   KetRule, KetTrim, Ket, Bra, VerifyKet,
   Spin, Missing,
-  Basis, Matrix, SpinForm,
+  Basis, TheMatrix, SpinForm,
   Base, FlavorNone, FlavorMute,
   $GarnerHeads, $GarnerTests,
   $ElaborationRules, $ElaborationHeads,
-  $RepresentableTests, $RaiseLowerRules,
+  $RaiseLowerRules,
   TheRotation, TheEulerRotation
  ]
 
@@ -449,8 +449,6 @@ HoldPattern @ Multiply[ x___, a_?SpinQ[j___,3], Ket[b_Association], y___ ] :=
 
 
 Once[
-  $RepresentableTests = Join[$RepresentableTests, {SpinQ}];
-
   $GarnerTests = Join[$GarnerTests, {SpinQ}];
   
   $ElaborationRules = Join[
@@ -510,19 +508,16 @@ VerifyKet[op_?SpinQ, m_] := If[
   $Failed
  ]
 
-(* ****************************************************************** *)
 
-Basis[ S_?SpinQ ] := Basis @ {S}
+(**** <Basis> ****)
 
-Basis[ ss:{__?SpinQ} ] := Module[
-  { tt = Union @ FlavorNone[ss],
-    dims, bits },
-  dims = Map[Spin, tt];
-  bits = Map[Range[#, -#, -1]&, dims];
-  Map[ Ket[tt->#]&, Tuples @ bits ]
+Basis[ op_?SpinQ ] := With[
+  { J = Spin[op] },
+  Ket /@ Thread[ FlavorNone[op] -> Range[J, -J, -1] ]
  ]
 
-(* ****************************************************************** *)
+(**** </Basis> ****)
+
 
 WignerFactor::usage = "WignerFactor[expr, S] or WignerFactor[expr, {S1,S2,...}] factors the Ket expression expr."
 
@@ -557,15 +552,14 @@ wReduced[ expr_Plus ] := Module[
  ]
 
 
-(* ****************************************************************** *)
+(**** <Matrix> ****)
 
-(* Matrix[] for Wigner *)
+TheMatrix[S_?SpinQ[___,j_]] := TheWigner @ {Spin[S], j}
 
-Matrix[S_?SpinQ[___,j_]] := TheWigner @ {Spin[S], j}
+TheMatrix[ Ket[ Association[S_?SpinQ -> m_] ] ] := TheWignerKet @ {Spin[S], m}
 
-Matrix[ Ket[ Association[S_?SpinQ -> m_] ] ] := TheWignerKet @ {Spin[S], m}
+(**** </Matrix> ****)
 
-(* ****************************************************************** *)
 
 WignerKetQ::usage = "WignerKetQ is obsolete. Use VerifyKet instead."
 

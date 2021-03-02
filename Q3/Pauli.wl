@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.85 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 23:15:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.0 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-03 08:46:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -24,7 +24,7 @@ End[]
 
 { BraKet };
 
-{ Basis, Matrix, BuildMatrix, $RepresentableTests };
+{ Basis, Matrix, TheMatrix };
 
 { ProperSystem, ProperValues, ProperStates };
 
@@ -933,18 +933,6 @@ PauliExpression[mat_SparseArray?MatrixQ] := Module[
   Garner @ Total @ Flatten[tt * pp]
  ] /; IntegerQ @ Log[2, Length @ mat]
 
-(*
-PauliExpression[m_?MatrixQ] := Block[
-  { nn, ss, vv, jj },
-  nn = Log[2, Length[m]];
-  ss = Tuples[{0,1,2,3}, nn];
-  vv = Map[ PauliInner[ThePauli@@#, m]&, ss ];
-  jj = Flatten @ Position[vv, Except[0|0.], {1}, Heads->False];
-  ss = Apply[Pauli, ss[[jj]], {1}];
-  vv = vv[[jj]];
-  Garner @ Dot[vv, ss]
- ]
- *)
 
 PauliExpressionRL::usage = "PauliExpressionRL[m] returns an expression for the matrix M in terms of the Pauli matrices."
 
@@ -964,20 +952,6 @@ PauliExpressionRL[mat_SparseArray?MatrixQ] := Module[
   pp = Outer[CircleTimes, Sequence @@ pp];
   Garner @ Total @ Flatten[tt * pp]
  ] /; IntegerQ @ Log[2, Length @ mat]
-
-(*
-PauliExpressionRL[m_?MatrixQ] := Block[
-  { nn, ss, vv, jj },
-  nn = Log[2, Length[m]];
-  ss = Tuples[{0, 3, 4, 5}, nn];
-  vv = Map[ PauliInner[ThePauli @@ #, m]&, ss ];
-  jj = Flatten @ Position[vv, Except[0|0.], {1}, Heads->False];
-  ss = Apply[Pauli, ss[[jj]], {1}];
-  ss = Map[ (# * 2^Count[#,4|5])&, ss ];
-  vv = vv[[jj]];
-  Garner @ Dot[vv, ss]
- ]
- *)
 
 PauliExpressionRL[vec_?VectorQ] := PauliExpression[vec]
 
@@ -1108,94 +1082,72 @@ theBlochSphere[opts___?OptionQ] := Module[
 (*     <Basis>                                                             *)
 (* *********************************************************************** *)
 
-$RepresentableTests::usage = "$RepresentableTests gives the list of Pattern Tests to be considered in Basis and Matrix."
-
-Once[ $RepresentableTests = {}; ]
-
-Representables::usage = "Representables[expr] finds all operators appreaing in the expression expr that allows for matrix representation."
-
-Representables[expr_] := Module[
-  { tt = PatternTest[_, #]& /@ $RepresentableTests },
-  Union @ FlavorMute @ Peel @
-    Cases[ Normal @ {expr}, Alternatives @@ tt, Infinity ]
-  (* NOTE: {expr} -- not just expr. *)
- ]
-
-
 Basis::usage = "Basis[n] constructs the standard tensor-product basis of a system of n unlabelled qubits.\nBasis[{dim1, dim2, ..., dimn}] constructs the standard tensor-product basis of a total of n unlabelled systems with the Hilbert space dimensions dim1, dim2, ..., respectively.\nBasis[q1, q2, ...] constructs the tensor product basis for the system consising of Species q1, q2, ...\nBasis[q1, {q2, q3}, ...] is equivalent to Basis[q1, q2, q3, ...].\nBasis[expr] finds the relevant systems from the expression expr and constructs the basis."
 
 Basis[n_Integer] := Ket @@@ Tuples[{0, 1}, n]
 
+Basis[m_Integer, n__Integer] := Basis @ {m, n}
+
 Basis[dim:{__Integer}] := Ket @@@ Tuples[Range[0,#-1]& /@ dim]
-  
+
+
+Basis[] := { Ket @ Association[] } (* fallback *)
+
+Basis[a_?SpeciesQ, b__?SpeciesQ] := Basis @ {a, b}
+
+Basis[ss:{__?SpeciesQ}] := CircleTimes @@@ Tuples[Basis /@ ss]
+
 Basis[
   a:Alternatives[_?SpeciesQ, {__?SpeciesQ}],
   b:Alternatives[_?SpeciesQ, {__?SpeciesQ}].. ] :=
-  Flatten @ Outer[ CircleTimes, Sequence @@ Map[Basis, {a, b}] ]
+  Basis @ Flatten @ {a, b}
 
-Basis[ {} ] := { Ket @ Association[] }
-(* This is necessary as a fallback. *)
 
-Basis[ expr_ ] := Basis @@ Representables[expr]
+Basis[ expr:Except[_?SpeciesQ] ] := Basis @@ NonCommutativeSpecies[expr]
 
-(* *********************************************************************** *)
-(*     </Basis>                                                            *)
-(* *********************************************************************** *)
+(**** </Basis> ****)
 
-(* *********************************************************************** *)
-(*     <Matrix>                                                            *)
-(* *********************************************************************** *)
+
+(**** <TheMatrix> ****)
+
+TheMatrix::usage = "TheMatrix[op] returns the matrix representation of op. Here op is an elementary operators.\nThis function is a low-level function intended for internal use."
+
+HoldPattern @ TheMatrix[ Dagger[op_] ] := Topple @ TheMatrix[op]
+
+(* For Ket/Bra of unlabelled qubits *)
+
+TheMatrix[ Ket[j__Integer] ] := TheKet[j]
+
+TheMatrix[ Bra[j__Integer] ] := TheKet[j]
+
+(* For Pauli operators of unlabelled qubits *)
+
+TheMatrix[ Pauli[j__] ] := ThePauli[j]
+
+(**** </TheMatrix> ****)
+
+
+(**** <Matrix> ****)
 
 Matrix::usage = "Matrix[expr, {a1, a2, ...}] constructs the matrix representation of the expression expr on the total system consisting of a1, a2, ....\nMatrix[expr] feagures out the subsystems involved in expr."
 
 Matrix::rem = "There remain some elements, ``, that are not specified for matrix representation."
 
-(* For Pauli Ket/Bra *)
+(* General Code for Operators *)
 
-Matrix[ Ket[j__Integer] ] := TheKet[j]
+Matrix[ expr_ ] := Matrix[expr, NonCommutativeSpecies @ expr]
 
-Matrix[ Ket[j__Integer], {___} ] := TheKet[j]
+Matrix[ expr_, q_?SpeciesQ ] := Matrix[expr, {q}]
 
-Matrix[ Bra[j__Integer] ] := TheKet[j]
+Matrix[ expr_Plus, qq:{___?SpeciesQ} ] :=
+  Total @ Map[ Matrix[#, qq]&, List @@ expr ]
 
-Matrix[ Bra[j__Integer], {___} ] := TheKet[j]
+Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ} ] := z Matrix[op, qq]
 
-(* For Pauli operators *)
-
-Pauli /:
-Matrix[Pauli[j___]] := ThePauli[j]
-
-Pauli /:
-Matrix[Pauli[j___], {___}] := ThePauli[j]
-
-
-
-(* For Dyad *)
-(* Matrix[Dyad[...], {s1, s2, ...}] is handled below. *)
-Dyad /:
-Matrix[ op:Dyad[_, _, qq_List] ] := Matrix[ Elaborate[op], qq ]
-
-
-(* For general Ket/Bra *)
-
-Matrix[ Ket[Associatoin[]] ] := 0
-
-Matrix[ Ket[a_Association] ] := Matrix[Ket[a], Keys @ a] /; Length[a] > 1
-  
-Matrix[ Ket[a_Association], qq:{__?SpeciesQ} ] := With[
-  { ss = FlavorNone @ qq },
-  CircleTimes @@ Map[
-    Matrix @* Ket @* Association,
-    Thread[ ss -> Lookup[a, ss] ]
-   ]
+Matrix[ z_?CommutativeQ, qq:{___?SpeciesQ} ] := With[
+  { jj = Range[ Times @@ (Dimension /@ qq) ] },
+  SparseArray @ Thread[ Transpose @ {jj, jj} -> z ]
  ]
-
-Matrix[ Bra[Association[]] ] := 0
-
-Matrix[ Bra[a_Association] ] := Matrix[Bra[a], Keys @ a] /; Length[a] > 1
-
-Matrix[ Bra[v_Association], qq:{__?SpeciesQ} ] :=
-  Conjugate[ Matrix[Ket[v], qq] ]
 
 
 (* Dagger *)
@@ -1213,79 +1165,98 @@ HoldPattern @
    ]
 
 
-(* General Code for Operators *)
+(* For Ket/Bra of unlabelled qubits *)
 
-Matrix[ expr:Except[_Pauli|_Dyad|_Ket|_Bra|_?NonCommutativeQ] ] :=
-  Matrix[expr, Representables @ expr]
+Matrix[ vec:Ket[__], {___} ] := TheMatrix[vec]
 
-Matrix[ expr_, {} ] := expr /; FreeQ[expr, _Pauli|_Dyad|_Ket|_Bra]
+Matrix[ vec:Bra[__], {___} ] := TheMatrix[vec]
 
-Matrix[ expr_, q_?SpeciesQ ] := Matrix[expr, {q}] (* for flexibility *)
 
-(* NOTE: ___, not __ *)
-Matrix[ expr_Plus, qq:{___?SpeciesQ} ] :=
-  Total @ Map[ Matrix[#, qq]&, List @@ expr ]
+(* For Ket/Bra of labelled qubits *)
 
-(* NOTE: ___ (not __) to support Pauli *)
-Matrix[ z_?CommutativeQ op_, qq:{___?NonCommutativeQ} ] := z Matrix[op, qq]
+Matrix[ Ket[<||>], {} ] := 0
 
-(* NOTE: __, not ___ *)
-Matrix[ z_?CommutativeQ, qq:{__?NonCommutativeQ} ] := With[
-  { jj = Range[ Times @@ (Dimension /@ qq) ] },
-  SparseArray @ Thread[ Transpose @ {jj, jj} -> z ]
+Matrix[ Ket[a_Association], qq:{__?SpeciesQ} ] := With[
+  { ss = FlavorNone @ qq },
+  CircleTimes @@ Map[
+    TheMatrix @* Ket @* Association,
+    Thread[ ss -> Lookup[a, ss] ]
+   ]
  ]
 
-(* NOTE: __, not ___ *)
-HoldPattern @
-  Matrix[ op_?NonCommutativeQ, qq:{__?NonCommutativeQ} ] :=
-  BuildMatrix[op, FlavorNone @ qq]
-    
-(* NOTE: __, not ___ *)
-HoldPattern @
-  Matrix[ Multiply[ops__], qq:{__?NonCommutativeQ} ] :=
-  BuildMatrix[{ops}, FlavorNone @ qq]
+Matrix[ Bra[<||>], {} ] := 0
 
-  
-BuildMatrix::usage = "BuildMatrix is a low-level function that builds the matrix from an operator or a set of operators.\nSee Matrix."
+Matrix[ Bra[a_Association] ] := Matrix[Bra[a], Keys @ a] /; Length[a] > 1
 
-BuildMatrix[ops_List, qq:{__?SpeciesQ}] := Dot @@ Map[
-  BuildMatrix[#, qq]&,
-  ops
- ]
-
-BuildMatrix[v:Bra[_Association], qq:{__?SpeciesQ}] :=
-  Transpose @ Transpose @ List @ Matrix[v, qq]
-(* To preserve the SparseArray structure *)
-
-BuildMatrix[v:Ket[_Association], qq:{__?SpeciesQ}] :=
-  Transpose @ List @ Matrix[v, qq]
-
-BuildMatrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := (
-  Message[Matrix::rem, op];
-  op Matrix[1, qq]
- ) /; Not @ MemberQ[qq, FlavorMute @ Peel @ op]
-
-BuildMatrix[ op:Dyad[_, _, _List], qq:{__?SpeciesQ} ] :=
-  Matrix[ Elaborate[op], qq ]
-(* NOTE: The case of Matrix[Dyad[...]] needs to be handled separately and,
-   indeed, has already been done above. *)
+Matrix[ Bra[v_Association], qq:{__?SpeciesQ} ] :=
+  Conjugate[ Matrix[Ket[v], qq] ]
 
 
-(* NOTE: Leave op_ unspecified so as for BuildMatrix to be further refined for
-   Fermions in Fock`. *)
-BuildMatrix[op_, qq:{__?SpeciesQ}] := Module[
-  { sp = FlavorMute @ Peel @ op,
-    mm = Matrix[op],
+(* For Pauli[...] *)
+
+Matrix[ op:Pauli[__], {___} ] := TheMatrix[op]
+
+(* For Fermions *)
+Matrix[op_?AnyFermionQ, qq:{__?SpeciesQ}] := Module[
+  { mm = TheMatrix @ op,
+    sp = FlavorMute @ Peel @ op,
+    id, rr, ss },
+  id = First @ FirstPosition[qq, sp];
+  rr = qq[[ ;; id - 1]];
+  ss = qq[[id + 1 ;; ]];
+
+  rr = fermionOne /@ rr;
+  ss = One /@ Dimension[ss];
+  CircleTimes @@ Join[rr, {mm}, ss]
+ ] /; MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
+
+fermionOne[q_?FermionQ] := ThePauli[3]
+
+fermionOne[q_] := One @ Dimension @ q
+
+(* For Species *)
+Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := Module[
+  { mm = TheMatrix @ op,
+    sp = FlavorMute @ Peel @ op,
+    ss = FlavorNone @ qq,
     rr },
   rr = One /@ Dimension[qq];
-  rr = Association @ Join[ Thread[qq -> rr], {sp -> mm} ];
+  rr = Association @ Join[ Thread[ss -> rr], {sp -> mm} ];
   CircleTimes @@ rr
- ]
+ ] /; MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
 
+Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := (
+  Message[Matrix::rem, op];
+  op Matrix[1, qq]
+ )
 
-(* *********************************************************************** *)
-(*     </Matrix>                                                           *)
-(* *********************************************************************** *)
+(* For MultiplyExp *)
+HoldPattern @ Matrix[ MultiplyExp[op_], qq:{__?SpeciesQ} ] :=
+  MatrixExp @ Matrix @ op
+
+(* For Dyad[...] *)
+Matrix[ op:Dyad[_, _, _List], qq:{__?SpeciesQ} ] :=
+  Matrix[Elaborate @ op, FlavorNone @ qq]
+
+(* For Dyad-like (but not Dyad) expression *)
+HoldPattern @ Matrix[
+  Multiply[pre___, ket_Ket, bra_Bra, post___],
+  qq:{___?SpeciesQ}
+ ] := Dyad[
+   Matrix[pre ** ket, qq],
+   Dagger @ Matrix[bra ** post, qq]
+  ]
+(* NOTE: Dagger -- not Conjugate -- here. *)
+
+(* For Multiply[...] *)
+HoldPattern @
+  Matrix[ Multiply[ops__], qq:{___?SpeciesQ} ] := Dot @@ Map[
+    Matrix[#, qq]&,
+    {ops}
+   ]
+
+(**** </Matrix> ****)
+
 
 ProperSystem::usage = "ProperSystem[expr] returns a list of {values, vectors} of the eigenvalues and eigenstates of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
 
@@ -1296,7 +1267,7 @@ ProperSystem::incon = "Inconsistent Pauli operators in ``."
 ProperSystem::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
 
 ProperSystem[expr_] := Module[
-  { ss = Representables[expr],
+  { ss = NonCommutativeSpecies[expr],
     pp = Cases[{expr}, _Pauli, Infinity],
     nn, mat, res, val, vec },
 
@@ -1328,7 +1299,7 @@ ProperSystem[expr_] := Module[
 ProperSystem[expr_] := ProperSystem[expr, {}] /; FreeQ[expr, _Pauli]
 
 ProperSystem[expr_, qq:{___?SpeciesQ}] := Module[
-  { ss = Representables[expr],
+  { ss = NonCommutativeSpecies[expr],
     rr, mat, res, val, vec },
 
   mat = Matrix[expr, ss];
@@ -1358,7 +1329,7 @@ ProperStates::incon = "Inconsistent Pauli operators in ``."
 ProperStates::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
 
 ProperStates[expr_] := Module[
-  { ss = Representables[expr],
+  { ss = NonCommutativeSpecies[expr],
     pp = Cases[{expr}, _Pauli, Infinity],
     nn, mat, vec },
 
@@ -1387,7 +1358,7 @@ ProperStates[expr_] := Module[
 ProperStates[expr_] := ProperStates[expr, {}] /; FreeQ[expr, _Pauli]
 
 ProperStates[expr_, qq:{___?SpeciesQ}] := Module[
-  { ss = Representables[expr],
+  { ss = NonCommutativeSpecies[expr],
     rr, mat, vec },
   
   mat = Matrix[expr, ss];
@@ -1415,7 +1386,7 @@ ProperValues::incon = "Inconsistent Pauli operators in ``."
 ProperValues::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
 
 ProperValues[expr_] := Module[
-  { ss = Representables[expr],
+  { ss = NonCommutativeSpecies[expr],
     pp = Cases[{expr}, _Pauli, Infinity],
     nn, mat, val },
 
@@ -1444,7 +1415,7 @@ ProperValues[expr_] := Module[
 ProperValues[expr_] := ProperValues[expr, {}] /; FreeQ[expr, _Pauli]
 
 ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
-  { ss = Representables[expr],
+  { ss = NonCommutativeSpecies[expr],
     rr, mat, val },
   
   mat = Matrix[expr, ss];
@@ -1503,10 +1474,10 @@ ParityEvenQ[ qq:{__?SpeciesQ} ][ expr_ ] := ParityEvenQ[expr, qq]
 ParityOddQ[ qq:{__?SpeciesQ} ][ expr_ ] := ParityOddQ[expr, qq]
 
 
-ParityEvenQ[ expr_  ] := ParityEvenQ[expr, Representables[expr]] /;
+ParityEvenQ[ expr_  ] := ParityEvenQ[expr, NonCommutativeSpecies[expr]] /;
   Not @ FreeQ[expr, _Ket]
 
-ParityOddQ[ expr_  ] := ParityOddQ[expr, Representables[expr]] /;
+ParityOddQ[ expr_  ] := ParityOddQ[expr, NonCommutativeSpecies[expr]] /;
   Not @ FreeQ[expr, _Ket]
 
 
@@ -1823,9 +1794,10 @@ Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of o
 
 (* For simple column vectors *)
 
-Dyad[a_?VectorQ] := KroneckerProduct[a, Conjugate @ a]
+Dyad[a_?VectorQ] := KroneckerProduct[a, Dagger @ a]
 
-Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Conjugate @ b]
+Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
+(* NOTE: Dagger -- not Conjugate -- in the above two definitions. *)
 
 (* For Pauli Kets *)
 

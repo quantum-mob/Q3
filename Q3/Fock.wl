@@ -8,8 +8,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.50 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 12:38:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.0 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-03 08:46:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -68,15 +68,17 @@ End[]
 Begin["`Private`"]
 
 $symbs = Unprotect[
+  Boson, BosonQ, AnyBosonQ,
+  Fermion, FermionQ, AnyFermionQ,
   Base, FlavorNone, AnySpeciesQ, AnticommutativeQ,
   Multiply, MultiplyDegree, Dagger, LieExp,
   Missing, KetTrim, KetRule, VerifyKet,
   Ket, Bra, BraKet,
-  Basis, Matrix, BuildMatrix,
+  Basis, TheMatrix,
   Parity, ParityEvenQ, ParityOddQ,
   LogicalForm,
   $ElaborationRules, $ElaborationHeads,
-  $GarnerHeads, $GarnerTests, $RepresentableTests,
+  $GarnerHeads, $GarnerTests,
   Spin, ComplexQ
  ]
 
@@ -1270,7 +1272,6 @@ Once[
 
 Once[
   $GarnerTests = Join[$GarnerTests, {AnyFockOperatorQ}];
-  $RepresentableTests = Join[$RepresentableTests, {AnyParticleQ}];
  ]
 
 (* ********************************************************************** *)
@@ -2081,42 +2082,23 @@ matrixHeaders[qnn:{{___}..}, cnt:{___Integer}] := Module[
   {row, col}
  ]
 
-(* ******************************************************************** *)
-(*     <Matrix>                                                         *)
-(* ******************************************************************** *)
 
-BuildMatrix[op_?AnyFermionQ, qq:{__?SpeciesQ}] := Module[
-  { mm = Matrix[op],
-    sp = FlavorMute @ Peel @ op,
-    id, rr, ss },
-  id = First @ FirstPosition[qq, sp];
-  rr = qq[[ ;; id - 1]];
-  ss = qq[[id + 1 ;; ]];
+(**** <Matrix> ****)
 
-  rr = fermionOne /@ rr;
-  ss = One /@ Dimension[ss];
-  CircleTimes @@ Join[rr, {mm}, ss]
- ]
+(* Matrix for Fermions *)
 
-fermionOne[q_?FermionQ] := ThePauli[3]
+TheMatrix[ _?FermionQ ] := SparseArray[{1,2} -> 1, {2, 2}]
 
-fermionOne[q_] := One @ Dimension @ q
-
-
-(* Matrix[] for Fermions *)
-
-Matrix[ _?FermionQ ] := SparseArray[{1,2} -> 1, {2, 2}]
-
-Matrix[ Parity[a_?FermionQ] ] :=
+TheMatrix[ Parity[a_?FermionQ] ] :=
   SparseArray[ { {1,1} -> 1, {2,2} -> -1 }, {2, 2} ]
 
-Matrix[ Ket[ Association[_?FermionQ -> n:(0|1)] ] ] :=
+TheMatrix[ Ket[ Association[_?FermionQ -> n:(0|1)] ] ] :=
   SparseArray[ n+1 -> 1, 2 ]
 
 
-(* Matrix[] for Bosons *)
+(* Matrix for Bosons *)
 
-Matrix[ a_?BosonQ ] := Module[
+TheMatrix[ a_?BosonQ ] := Module[
   { nn, ii, jj, rr },
   nn = Range[Bottom @ a, Top @ a];
   ii = Most @ nn - Bottom[a] + 1;
@@ -2125,7 +2107,7 @@ Matrix[ a_?BosonQ ] := Module[
   SparseArray[ rr, {1, 1} (1+Top[a]-Bottom[a]) ]
  ]
 
-Matrix[ Parity[a_?BosonQ] ] := Module[
+TheMatrix[ Parity[a_?BosonQ] ] := Module[
   { jj = Range[Bottom @ a, Top @ a],
     pp },
   pp = Power[-1, jj];
@@ -2133,14 +2115,12 @@ Matrix[ Parity[a_?BosonQ] ] := Module[
   SparseArray @ Thread[ Transpose @ {jj, jj} -> pp ]
  ]
 
-Matrix[ Ket[ Association[a_?BosonQ -> n_Integer] ] ] := SparseArray[
+TheMatrix[ Ket[ Association[a_?BosonQ -> n_Integer] ] ] := SparseArray[
   If[ Bottom[a] <= n <= Top[a], (1+n-Bottom[a])->1, {}, {} ],
   Dimension[a]
  ]
 
-(* ******************************************************************** *)
-(*     </Matrix>                                                        *)
-(* ******************************************************************** *)
+(**** </Matrix> ****)
 
 
 (**** <Parity> ****)
@@ -2184,23 +2164,9 @@ ParityOddQ[v_Ket, a_?ParticleQ] := OddQ @ v @ a
 
 (**** <Basis> ****)
 
-(* Basis[] for fermions *)
-
-(* Simple construction of basis for fermions; see FermionBasis for more
-   elaborate constructions. *)
-
 Basis[c_?FermionQ] := Ket /@ Thread[ c->{0, 1} ]
 
-Basis[cc:{__?FermionQ}] := Map[ Ket[cc->#]&, Tuples[{0, 1}, Length@cc] ]
-
-(* Basis[] for bosons *)
-
 Basis[b_?BosonQ] := Ket /@ Thread[ b->Range[Bottom@b, Top@b] ]
-
-Basis[bb:{__?BosonQ}] := Map[
-  Ket[bb->#]&,
-  Tuples [ Range @@@ Transpose @ {Bottom /@ bb, Top /@ bb} ]
- ]
 
 (**** </Basis> ****)
 

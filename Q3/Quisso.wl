@@ -9,8 +9,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.105 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 22:48:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.0 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-03 08:46:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -70,13 +70,13 @@ $symb = Unprotect[
   Multiply, MultiplyExp, MultiplyDegree,
   CircleTimes, OTimes, Dagger, Dyad,
   KetTrim, KetRule, Ket, Bra, BraKet, Basis, SpinForm,
-  $RepresentableTests, $RaiseLowerRules,
+  $RaiseLowerRules,
   $GarnerHeads, $GarnerTests,
   $ElaborationRules, $ElaborationHeads,
   DefaultForm, LogicalForm,
   Base, FlavorNone, FlavorMute, Missing,
   Rotation, EulerRotation,
-  Matrix, SchmidtDecomposition,
+  TheMatrix, SchmidtDecomposition,
   Parity, ParityEvenQ, ParityOddQ,
   PartialTrace
  ]
@@ -400,7 +400,6 @@ FlavorMute[S_Symbol?QubitQ[j___, _] -> m_] := S[j, None] -> m
 
 Once[
   $GarnerTests = Union @ Join[$GarnerTests, {QubitQ}];
-  $RepresentableTests = Union @ Join[$RepresentableTests, {QubitQ}];
  ]
 
 Once[
@@ -558,17 +557,12 @@ KetRule[ Rule["Span", qq:{__?QubitQ}] ] := Rule["Span", FlavorNone @ qq]
 KetTrim[_?QubitQ, 0] = Nothing
 
 
-(* ******************************************************************* *)
+(**** <Basis> ****)
 
-Basis[ S_?QubitQ ] := Basis[ {S} ]
+Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorNone[S] -> {0, 1}]
 
-Basis[ ss:{__?QubitQ} ] := Module[
-  { tt = FlavorNone[ss],
-    nS = Length[ss] },
-  Map[ Ket[tt->#]&, Tuples[{0,1}, nS] ]
- ]
+(**** </Basis> ****)
 
-(* ******************************************************************* *)
 
 QuissoFactor::usage = "QuissoFactor takes two dfiferent forms resulting in different results.\nQuissoFactor[expr] tries to factorize the Ket expression expr and, if successful at all, returns the result in the form of OTimes[...]. Otherwise it just throws expr out.\nQuissoFactor[expr, S] or QuissoFactor[expr, {S$1, S$2, ...}] factors out the state concerning the specified qubits and returns the result in OSlash[...]."
 
@@ -789,7 +783,8 @@ SchmidtDecomposition[expr_, aa:{__?QubitQ}, bb:{__?QubitQ}] := Module[
    ]
  ]
 
-(* ******************************************************************** *)
+
+(**** <Parity for Qubits> ****)
 
 Parity[S_?QubitQ] := S[3]
 
@@ -798,15 +793,16 @@ ParityEvenQ[v_Ket, a_?QubitQ] := EvenQ @ v @ a
 
 ParityOddQ[v_Ket, a_?QubitQ] := OddQ @ v @ a
 
-(* ******************************************************************** *)
+(**** </Parity> ****)
 
-(* Matrix[] for Qubits *)
 
-Matrix[ _?QubitQ[___,j_] ] := ThePauli[j]
+(**** <Matrix for Qubits> ****)
 
-Matrix[ Ket[ Association[_?QubitQ -> s:(0|1)] ] ] := SparseArray @ TheKet[s]
+TheMatrix[ _?QubitQ[___, j_] ] := ThePauli[j]
 
-(* ******************************************************************** *)
+TheMatrix[ Ket[ Association[_?QubitQ -> s:(0|1)] ] ] := SparseArray @ TheKet[s]
+
+(**** </Matrix> ****)
 
 
 QuissoAddZ::usage = "QuissoAddZ[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... invariant under the U(1) rotation around spin z-axis, regarding the qubits S$1, S$2, ... as 1/2 spins."
@@ -2492,8 +2488,9 @@ Begin["`Qudit`"]
 
 $symb = Unprotect[
   Multiply, MultiplyDegree, Dyad,
-  Basis, Matrix, Parity, ParityEvenQ, ParityOddQ,
-  $GarnerHeads, $GarnerTests, $RepresentableTests,
+  Basis, TheMatrix,
+  Parity, ParityEvenQ, ParityOddQ,
+  $GarnerHeads, $GarnerTests,
   Base, FlavorNone, FlavorMute,
   KetRule, KetTrim, Missing,
   ReplaceByFourier, ReplaceByInverseFourier
@@ -2642,20 +2639,15 @@ HoldPattern @ Multiply[pre___, A_?QuditQ, B_?QuditQ, post___] :=
   Multiply[pre, B, A, post] /; Not @ OrderedQ @ {A, B}
 
 
-Once[
-  $GarnerTests = Join[$GarnerTests, {QuditQ}];
-  $RepresentableTests = Join[$RepresentableTests, {QuditQ}];
- ]
+Once[ $GarnerTests = Join[$GarnerTests, {QuditQ}]; ]
 
 
-Basis[ S_?QuditQ ] := Basis @ {S}
+(**** <Basis> ****)
 
-Basis[ qq : {__?QuditQ} ] := Module[
-  { rr = FlavorNone @ qq,
-    dd = Dimension @ qq  },
-  dd = Tuples @ Map[ Range[0,#-1]&, dd ];
-  Map[ Ket[rr->#]&, dd ]
- ]
+Basis[ S_?QuditQ ] :=
+  Ket /@ Thread[FlavorNone[S] -> Range[0, Dimension[S]-1]]
+
+(**** </Basis> ****)
 
 
 TheQuditKet::usage = "TheQuditKet[{j,m}] returns the (m+1)th unit column vector in the j-dimensional complex vector space.\nTheQuditKet[{j1,m1}, {j2,m2}, ...] returns the direct product of vectors.\nTheQuditKet[j, {m1, m2, ...}] is equivalent to TheQuditKet[{j,m1}, {j,m2}, ...]."
@@ -2677,7 +2669,7 @@ TheQuditKet[ cc:{_Integer, _Integer}.. ] := Module[
  ]
 
 
-(* ******************************************************************** *)
+(**** <Parity> ****)
 
 Parity[A_?QuditQ] := Module[
   { jj = Range[0, Dimension[A]-1],
@@ -2691,20 +2683,20 @@ ParityEvenQ[v_Ket, a_?QuditQ] := EvenQ @ v @ a
 
 ParityOddQ[v_Ket, a_?QuditQ] := OddQ @ v @ a
 
+(**** </Parity> ****)
 
-(* ******************************************************************* *)
 
-(* Matrix[] for Qudits *)
+(**** <Matrix for Qudits> ****)
 
-Matrix[ S_?QuditQ[___, i_ -> j_] ] :=
+TheMatrix[ S_?QuditQ[___, i_ -> j_] ] :=
   SparseArray[ {1+j,1+i} -> 1, Dimension[S] {1, 1} ]
 
-Matrix[ Ket[ Association[ S_?QuditQ -> n_Integer] ] ] := SparseArray[
+TheMatrix[ Ket[ Association[ S_?QuditQ -> n_Integer] ] ] := SparseArray[
   If[ 0 <= n < Dimension[S], n+1 -> 1, {}, {} ],
   Dimension[S]
  ]
 
-(* ******************************************************************** *)
+(**** </Matrix> *****)
 
 
 QuditExpression::usage = "QuditExpression[expr] converts Ket[...]**Bra[...]  for in the expression expr to the form in terms of the Gate operators.\nQuditExpression[m, {S$1, S$2, ...}] converts the square matrix m into a Qudit expression.\nQuditExpression[v, {S$1, S$2, ...}] converts the column vector v into a Ket expression."

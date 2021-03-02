@@ -7,8 +7,8 @@ Unprotect[Evaluate[$Context<>"*"]]
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.54 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 22:49:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.57 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-03 05:53:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -31,6 +31,10 @@ End[]
 { Base, Flavors, FlavorMost, FlavorLast, FlavorNone, FlavorMute, Any };
 
 { Species, SpeciesQ, AnySpeciesQ };
+
+{ Boson, BosonQ, AnyBosonQ };
+{ Fermion, FermionQ, AnyFermionQ };
+(* NOTE: Fermion and the like are here for Matrix. *)
 
 { SpeciesBox,
   $FormatSpecies,
