@@ -2,18 +2,18 @@
 
 BeginPackage["Q3`"]
 
-Unprotect[Evaluate[$Context<>"*"]]
+Q3Clear[];
 
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.57 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-03 05:53:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.60 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-08 02:28:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
-{ Q3General, Q3Protect, Q3Info };
+{ Q3General, Q3Info, Q3Clear, Q3Protect };
 
 { Q3Release, Q3RemoteFetch, Q3RemoteRelease, Q3RemoteURL,
   Q3Update, Q3CheckUpdate, Q3CleanUp };
@@ -87,7 +87,17 @@ Q3General::obsolete = "The symbol `` is OBSOLETE. Use `` instead."
 Q3General::newUI = "An angle should come first. The order of the input arguments of `` has been changed since Q3 v1.2.0."
 
 
-Q3Protect::usage = "Q3Protect[context] protects all symbols in the specified context. In addition, sets the ReadProtected attribute to all non-variable symbols, those the name of which does not start with the character \"$\")."
+Q3Clear::usage = "Q3Clear[ctxt] first unprotects all symbols defined in the context of ctxt and then CleaAll all non-variable symbols -- those the name of which does not start with '$'.\nQ3Clear is for internal use."
+
+Q3Clear[] := Q3Clear@Context[]
+
+Q3Clear[context_String] := (
+  Unprotect @ Evaluate[context <> "*"];
+  ClearAll @@ Names @ RegularExpression[context <> "[^`$]*"]
+ )
+
+
+Q3Protect::usage = "Q3Protect[context] protects all symbols in the specified context. In addition, it sets the ReadProtected attribute to all non-variable symbols -- those the name of which does not start with the character '$'.\nQ3Protect is for internal use."
 
 Q3Protect[] := Q3Protect[$Context]
 

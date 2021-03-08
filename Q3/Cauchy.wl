@@ -1,19 +1,14 @@
 (* -*- mode:math -*- *)
 
-Get["Q3`Q3`"];
-(* NOTE:
-   - Necessary to prevent Q3/Kernel/init.wl is loaded again.
-   - Needs["Q3`Q3`"] does not work in this case. *)
-
 BeginPackage["Q3`Cauchy`", {"Q3`"}]
 
-Unprotect[Evaluate[$Context<>"*"]]
+Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.7 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 11:41:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.11 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-08 10:39:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]

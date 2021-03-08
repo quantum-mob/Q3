@@ -4,13 +4,13 @@
 
 BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
 
-Unprotect[Evaluate[$Context<>"*"]]
+Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.0 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-03 08:46:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.2 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-08 09:32:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -76,7 +76,7 @@ $symb = Unprotect[
   DefaultForm, LogicalForm,
   Base, FlavorNone, FlavorMute, Missing,
   Rotation, EulerRotation,
-  TheMatrix, SchmidtDecomposition,
+  TheMatrix,
   Parity, ParityEvenQ, ParityOddQ,
   PartialTrace
  ]
@@ -754,34 +754,6 @@ DensityOperator[v_] :=
 PartialTrace[expr_, q_?QubitQ] := PartialTrace[expr, {q}]
 
 PartialTrace[expr_, qq:{__?QubitQ}] := PartialTrace[expr, qq, QuissoExpression]
-
-
-(* ******************************************************************** *)
-
-SchmidtDecomposition[expr_, a_?QubitQ, b_?QubitQ] :=
-  SchmidtDecomposition[expr, {a}, {b}]
-
-SchmidtDecomposition[expr_, a_?QubitQ, bb:{__?QubitQ}] :=
-  SchmidtDecomposition[expr, {a}, bb]
-
-SchmidtDecomposition[expr_, aa:{__?QubitQ}, b_?QubitQ] :=
-  SchmidtDecomposition[expr, aa, {b}]
-
-SchmidtDecomposition[expr_, aa:{__?QubitQ}, bb:{__?QubitQ}] := Module[
-  { qq = FlavorNone @ Join[aa, bb],
-    ww, ss, uu, vv },
-  ww = Matrix[expr, qq];
-  {ss, uu, vv} = SchmidtDecomposition[
-    ww, {Power[2, Length @ aa], Power[2, Length @ bb]}
-   ];
-  uu = QuissoExpression[#, aa]& /@ uu;
-  vv = QuissoExpression[#, bb]& /@ vv;
-  ss . MapThread[
-    OTimes,
-    { LogicalForm[uu, aa],
-      LogicalForm[vv, bb] }
-   ]
- ]
 
 
 (**** <Parity for Qubits> ****)

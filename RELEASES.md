@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v1.6.5
+
+- New function SchmidtForm.
+- SchmidtDecomposition has been generalized and enhanced.
+- SchmidtDecomposition recieves a small change in its usage. 
+
 ## v1.6.3
 
 - New functions ProperSystem, ProperStates, ProperValues.

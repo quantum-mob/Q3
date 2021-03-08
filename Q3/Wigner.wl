@@ -2,13 +2,13 @@
 
 BeginPackage["Q3`Wigner`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
 
-Unprotect[Evaluate[$Context<>"*"]]
+Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.0 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-03 08:46:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.2 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-08 09:31:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -136,8 +136,6 @@ TheWignerKet[ {j_?SpinNumberQ, m:{__?NumericQ}, t:Except[_List], p:Except[_List]
   CircleTimes @@ Map[TheWignerKet] @ Tuples[{{j}, m, {t}, {p}}]
 *)
 
-Once[ TheRotation::usage = TheRotation::usage <> "\nTheRotation[\[Phi], {J, 1}], TheRotation[\[Phi], {J, 2}], TheRotation[\[Phi], {J, 3}] give the rotation matrices by angle \[Phi] around the x, y, and z axis, respective, for Spin = J." ]
-
 TheRotation[_, {_?SpinNumberQ, 0}] := IdentityMatrix[2*J+1]
 
 TheRotation[phi_, {J_?SpinNumberQ, n:(1|2|3)}] :=
@@ -151,8 +149,6 @@ TheRotation[
   b:{_, {_?SpinNumberQ, (0|1|2|3)}}.. ] :=
   CircleTimes @@ Map[TheRotation, {a, b}]
 
-
-Once[ TheEulerRotation::usage = TheEulerRotation::usage <> "\nTheEulerRotation[{a, b, c}, J] gives the Euler rotation matrix in the angular momentum J representation." ]
 
 TheEulerRotation[ {phi_, theta_, chi_}, J_?SpinNumberQ ] :=
   TheRotation[phi, {J, 3}] . TheRotation[theta, {J, 2}] .

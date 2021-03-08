@@ -6,13 +6,13 @@ BeginPackage[ "Q3`Gray`",
   { "Q3`Quisso`", "Q3`Pauli`", "Q3`Cauchy`", "Q3`" }
  ]
 
-Unprotect[Evaluate[$Context<>"*"]]
+Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.27 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-01 11:43:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.28 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-08 02:31:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]

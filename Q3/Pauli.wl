@@ -3,13 +3,13 @@
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
 
-Unprotect[Evaluate[$Context<>"*"]]
+Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.0 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-03 08:46:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.6 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-08 11:18:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -72,7 +72,7 @@ End[]
 { PauliDecomposeRL, PauliComposeRL };
 { PauliEmbed, PauliApply };
 
-{ SchmidtDecomposition };
+{ SchmidtDecomposition, SchmidtForm };
 
 { TraceNorm, TraceDistance, Fidelity };
 
@@ -440,7 +440,42 @@ doAffect[ket_, op_Multiply] := doAffect[ket, Sequence @@ Reverse[op]]
 doAffect[ket_, op_] := Garner @ Multiply[op, ket]
 
 
- Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3]. Ket[s$1, s$2, ...] represents the tensor product Ket[s$1] \[CircleTimes] Ket[s$2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, TheState, Pauli, ThePauli, Operator, TheOperator."
+fPauliKetQ::usage = "fPauliKetQ[expr] returns True if expr is a valid expression for a state vector of a system of unlabelled qubits.\nPauli[\[Ellipsis]] operates consistently on such an expression.";
+
+fPauliKetQ[expr_] := False /; FreeQ[expr, Ket[(0 | 1) ..]]
+
+fPauliKetQ[expr_] := False /;
+  Not[Equal @@ Length /@ Cases[{expr}, _Ket, Infinity]]
+
+HoldPattern@fPauliKetQ[Ket[(0 | 1) ..]] = True
+
+HoldPattern@fPauliKetQ[Multiply[__, Ket[(0 | 1) ..]]] = True
+
+HoldPattern@fPauliKetQ[z_?CommutativeQ expr_] := fPauliKetQ[expr]
+
+HoldPattern@fPauliKetQ[Plus[terms__]] := TrueQ[And @@ fPauliKetQ /@ {terms}]
+
+HoldPattern@fPauliKetQ[expr_Times] := fPauliKetQ@Expand[expr]
+
+
+fKetQ::usage = "fKetQ[expr] returns True if expr is a valid expression for a state vector of a system of labelled qubits.";
+
+fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
+
+HoldPattern@fKetQ[Ket[_Association]] = True
+
+HoldPattern@fKetQ[Multiply[__, Ket[_Association]]] = True
+
+HoldPattern@fKetQ[z_?CommutativeQ expr_] := fKetQ[expr]
+
+HoldPattern@fKetQ[Plus[terms__]] := TrueQ[And @@ fKetQ /@ {terms}]
+
+HoldPattern@fKetQ[expr_Times] := fKetQ@Expand[expr]
+
+
+(**** <Ket & Bra> ****)
+
+Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3]. Ket[s$1, s$2, ...] represents the tensor product Ket[s$1] \[CircleTimes] Ket[s$2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, TheState, Pauli, ThePauli, Operator, TheOperator."
 
 Bra::usage = "Bra[expr] = Dagger[ Ket[expr] ].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
 
@@ -561,6 +596,8 @@ VerifyKet[ Ket[a_Association] ] := With[
  ]
 
 VerifyKet[a_, b_] := Rule[a, b]
+
+(**** </Ket & Bra> ****)
 
 
 (**** <Multiply> ****)
@@ -1086,8 +1123,6 @@ Basis::usage = "Basis[n] constructs the standard tensor-product basis of a syste
 
 Basis[n_Integer] := Ket @@@ Tuples[{0, 1}, n]
 
-Basis[m_Integer, n__Integer] := Basis @ {m, n}
-
 Basis[dim:{__Integer}] := Ket @@@ Tuples[Range[0,#-1]& /@ dim]
 
 
@@ -1103,7 +1138,13 @@ Basis[
   Basis @ Flatten @ {a, b}
 
 
-Basis[ expr:Except[_?SpeciesQ] ] := Basis @@ NonCommutativeSpecies[expr]
+Basis[ expr:Except[_?SpeciesQ] ] := Basis @@ NonCommutativeSpecies[expr] /;
+  FreeQ[ expr, _Pauli | Ket[(0|1)..] | Bra[(0|1)..] ]
+
+Basis[ expr:Except[_?SpeciesQ] ] := With[
+  { pp = Length /@ Cases[{expr}, _Pauli|Ket[(0|1)..]|Bra[(0|1)..], Infinity] },
+  Basis @ First[pp] /; Equal @@ pp
+ ]
 
 (**** </Basis> ****)
 
@@ -1517,8 +1558,7 @@ ParityOddQ[ v_Ket, op:{__?SpeciesQ} ] :=
 
 (* *********************************************************************** *)
 
-Once[ TheRotation::usage = "TheRotation[\[Phi], 1], TheRotation[\[Phi], 2], TheRotation[\[Phi], 3] give the 2x2 matrix representing the rotation by angle \[Phi] around the x, y, and z axis, respective in the two-dimensional Hilbert  space.\nTheRotation[{x1, n1,}, {x2, n2,}, ...] =
-  TheRotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] ..." ]
+TheRotation::usage = "TheRotation[\[Phi], 1], TheRotation[\[Phi], 2], TheRotation[\[Phi], 3] give the 2x2 matrix representing the rotation by angle \[Phi] around the x, y, and z axis, respective in the two-dimensional Hilbert  space.\nTheRotation[{x1, n1,}, {x2, n2,}, \[Ellipsis]] = TheRotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] \[Ellipsis].\nTheRotation[\[Phi], {J, 1}], TheRotation[\[Phi], {J, 2}], TheRotation[\[Phi], {J, 3}] give the rotation matrices by angle \[Phi] around the x, y, and z axis, respective, for Spin = J."
 
 TheRotation[_, 0] := ThePauli[0]
 
@@ -1531,7 +1571,8 @@ TheRotation[a:{_, (0|1|2|3)}, b:{_, (0|1|2|3)}..] :=
   CircleTimes @@ Map[TheRotation, {a, b}]
 
 
-Once[ TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[a,3].TheRotation[b,2].TheRotation[c,3] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space." ]
+TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[a,3].TheRotation[b,2].TheRotation[c,3] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space.\nTheEulerRotation[{a, b, c}, J] gives the Euler rotation matrix in the angular momentum J representation."
+
 
 TheEulerRotation[ {phi_, theta_, chi_} ] := {
   {Cos[theta/2]*Exp[-I*(phi+chi)/2], -Sin[theta/2]*Exp[-I*(phi-chi)/2]},
@@ -2128,11 +2169,14 @@ PauliComposeRL[c_?TensorQ] := Module[
   result
  ]
 
-(* ********************************************************************* *)
+
+(**** <SchmidtDecomposition> ****)
 
 SchmidtDecomposition::usage = "SchmidtDecomposition[v, {m, n}] returns the Schmidt decomposition of the pure state vector v of a bipartite system of dimensions m and n.\nSchmidtDecomposition[v, {d1, d2, ...}, {i1, i2, ...}, {j1, j2, ...}] returns the Schmidt decomposition of a pure state vector v for a system of multiple subsystems of dimensions d1, d2, .... The i1th, i2th, ... systems are grouped into one part and the j1th, j2th, ... subsystems are grouped into the other part."
 
-SchmidtDecomposition::bad = "Incompatible dimensions `1` x `2` for a vector of length `3`."
+SchmidtDecomposition::baddim = "Incompatible dimensions `1` x `2` for a vector of length `3`."
+
+SchmidtDecomposition::badspec = "The specifications `2` and `3` for partitioning is not compatible with the expression `1` for a state vector of unlabelled qubits."
 
 SchmidtDecomposition[v_?VectorQ] :=
   SchmidtDecomposition[v, {Length[v]/2, 2}]
@@ -2143,19 +2187,19 @@ SchmidtDecomposition[v_?VectorQ, n_Integer] :=
 SchmidtDecomposition[v_?VectorQ, {n_Integer, Automatic}] :=
   SchmidtDecomposition[v, {n, Length[v]/n}]
 
-SchmidtDecomposition[v_?VectorQ, {m_Integer, n_Integer}] := Module[
-  { L = Min[m, n],
-    U, S, V },
-  { U, S, V } = SingularValueDecomposition @ Partition[v, n];
-  { Diagonal @ S,
-    Take[ Transpose @ U, L ],
-    Take[ ConjugateTranspose @ V, L ]
+SchmidtDecomposition[vec_?VectorQ, {m_Integer, n_Integer}] := Module[
+  { mn = Min[m, n],
+    uu, ww, vv },
+  { uu, ww, vv } = SingularValueDecomposition @ Partition[vec, n];
+  { Diagonal @ ww,
+    Take[ Transpose @ uu, mn ],
+    Take[ ConjugateTranspose @ vv, mn ]
    }
- ] /; Length[v] == m*n
+ ] /; Length[vec] == m*n
 
-SchmidtDecomposition[v_?VectorQ, {m_Integer, n_Integer}] := (
-  Message[SchmidtDecomposition::bad, m, n, Length@v];
-  {{1}, v, {1}}
+SchmidtDecomposition[vec_?VectorQ, {m_Integer, n_Integer}] := (
+  Message[SchmidtDecomposition::baddim, m, n, Length @ v];
+  {{1}, vec, {1}}
  )
 
 SchmidtDecomposition[v_?VectorQ, ii:{__Integer}, jj:{__Integer}] :=
@@ -2164,13 +2208,89 @@ SchmidtDecomposition[v_?VectorQ, ii:{__Integer}, jj:{__Integer}] :=
 SchmidtDecomposition[
   v_?VectorQ, dd:{__Integer}, ii:{__Integer}, jj:{__Integer}
  ] := Module[
-   { M = Tensorize[v, dd],
-     u },
-   u = Flatten@Transpose[M, Ordering@Join[ii, jj]];
-   SchmidtDecomposition[ u, Times @@@ { Part[dd, ii], Part[dd, jj] } ]
+   { mat = Tensorize[v, dd],
+     tsr },
+   tsr = Flatten @ Transpose[mat, Ordering @ Join[ii, jj]];
+   SchmidtDecomposition[ tsr, Times @@@ { Part[dd, ii], Part[dd, jj] } ]
   ]
 
-(* ********************************************************************* *)
+
+SchmidtDecomposition[expr_, aa:{__Integer}, bb:{__Integer}] := Module[
+  { nn = Length @ First @ Cases[{expr}, _Ket, Infinity],
+    ww, uu, vv },
+  If[ nn == Length[aa] + Length[bb], Null,
+    Message[SchmidtDecomposition::badspec, expr, aa, bb];
+    Return @ {{1}, expr, {1}}
+   ];
+  
+  {ww, uu, vv} = SchmidtDecomposition[
+    Matrix[expr],
+    ConstantArray[2, Length[aa] + Length[bb]],
+    aa, bb
+   ];
+  { ww, PauliExpression /@ uu, PauliExpression /@ vv }
+ ] /; fPauliKetQ[expr]
+
+SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
+  { ab = FlavorNone @ Join[aa, bb],
+    ww, uu, vv },
+  { ww, uu, vv } = SchmidtDecomposition[
+    Matrix[expr, ab],
+    { Times @@ Dimension[aa], Times @@ Dimension[bb] }
+   ];
+  { ww, uu . Basis[aa], vv . Basis[bb] }
+ ]
+
+
+SchmidtForm::usage = "SchmidtForm[\[Ellipsis]] is formally equivalent to SchmidtDecomposition[\[Ellipsis]], but returns the result in the form s1 Ket[u1]\[CircleTimes]Ket[v1] + s2 Ket[u2]\[CircleTimes]Ket[v2] + \[Ellipsis] keeping \[CircleTimes] unevaluated.\nSchmidtForm is for a quick overview of the Schmidt decomposition of the vector in question. For a more thorough analysis of the result, use SchmidtDecomposition."
+
+SchmidtForm[vec_?VectorQ] :=
+  SchmidtForm[vec, {Length[vec]/2, 2}]
+
+SchmidtForm[vec_?VectorQ, n_Integer] :=
+  SchmidtForm[vec, {Length[vec]/n, n}]
+
+SchmidtForm[vec_?VectorQ, {n_Integer, Automatic}] :=
+  SchmidtForm[vec, {n, Length[vec]/n}]
+
+SchmidtForm[vec_?VectorQ, {m_Integer, n_Integer}] := Module[
+  { ww, uu, vv },
+  { ww, uu, vv } = SchmidtDecomposition[vec, {m, n}];
+  ww . MapThread[OTimes, {uu . Basis @ {m}, vv . Basis @ {n}}]
+ ]
+
+SchmidtForm[vec_?VectorQ, ii:{__Integer}, jj:{__Integer}] :=
+  SchmidtForm[vec, ConstantArray[2, Length[ii]+Length[jj]], ii, jj]
+
+SchmidtForm[
+  vec_?VectorQ, dd:{__Integer}, ii:{__Integer}, jj:{__Integer}
+ ] := Module[
+   { ww, uu, vv },
+   { ww, uu, vv } = SchmidtDecomposition[vec, dd, ii, jj];
+   ww . MapThread[
+     OTimes,
+     { uu . Basis @ Part[dd, ii],
+       vv . Basis @ Part[dd, jj]
+      }
+    ]
+  ]
+
+SchmidtForm[expr_, aa:{__Integer}, bb:{__Integer}] := Module[
+  { ww, uu, vv },
+  { ww, uu, vv } = SchmidtDecomposition[expr, aa, bb];
+  ww . MapThread[OTimes, {uu, vv}]
+ ] /; fPauliKetQ[expr]
+
+SchmidtForm[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
+  { ww, uu, vv },
+  { ww, uu, vv } = SchmidtDecomposition[expr, aa, bb];
+  ww . MapThread[ OTimes, {LogicalForm[uu, aa], LogicalForm[vv, bb]} ]
+ ]
+
+(**** </SchmidtDecomposition> ****)
+
+
+(**** <Tensorize> ****)
 
 TensorFlatten::usage = "TensorFlatten[tsr] flattens out the given tensor tsr to a matrix and returns it.\nIt generalizes ArrayFlatten and operates on tensors of any rank.\nTo flatten out a tensor to a vector (rather than a matrix), just use Flatten."
 
@@ -2230,6 +2350,8 @@ Tensorize[v_?VectorQ] := Module[
   ArrayReshape[v, ConstantArray[2,n]]
  ]
 
+(**** </Tensorize> ****)
+
 
 PartialTranspose::usage = "..."
 
@@ -2239,6 +2361,8 @@ PartialTranspose[m_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
   TensorFlatten @ Transpose[tns, cyc]
  ]
 
+
+(**** <PartialTrace> ****)
 
 PartialTrace::usage = "PartialTrace[m, {i,j,...}] takes the partial trace over the qubits i, j, ... and returns the resulting reduced matrix.\nPartialTrace[m, {m,n,...}, {i,j,...}] assumes a system of dimensions m, n, ..., takes the partial trace over the subsystems i, j, ..., and returns the resulting reduced matrix.\nPartialTrace[v, {i,j,...}] and PartialTrace[v, {m,n,...}, {i,j,...}] are the same but operate on the column vector v. Note that the result is a square matrix, i.e., the reduced density matrix, not a pure-state column vector any longer."
 
@@ -2290,6 +2414,8 @@ PartialTrace[expr_, qq:{__?SpeciesQ}, func_] := Module[
   jj = Flatten @ Map[FirstPosition[ss, #]&, rr];
   func[ PartialTrace[Matrix[expr, ss], dd, jj], Complement[ss, rr] ]
  ]
+
+(**** </PartialTrace> ****)
 
 
 Purification::usage = "Purification[m] returns the purification of the mixed state m."
