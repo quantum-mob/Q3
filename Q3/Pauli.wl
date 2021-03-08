@@ -8,8 +8,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.6 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 11:18:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.7 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-08 12:45:39+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -2239,7 +2239,7 @@ SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
     { Times @@ Dimension[aa], Times @@ Dimension[bb] }
    ];
   { ww, uu . Basis[aa], vv . Basis[bb] }
- ]
+ ] /; fKetQ[expr]
 
 
 SchmidtForm::usage = "SchmidtForm[\[Ellipsis]] is formally equivalent to SchmidtDecomposition[\[Ellipsis]], but returns the result in the form s1 Ket[u1]\[CircleTimes]Ket[v1] + s2 Ket[u2]\[CircleTimes]Ket[v2] + \[Ellipsis] keeping \[CircleTimes] unevaluated.\nSchmidtForm is for a quick overview of the Schmidt decomposition of the vector in question. For a more thorough analysis of the result, use SchmidtDecomposition."
@@ -2285,7 +2285,7 @@ SchmidtForm[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { ww, uu, vv },
   { ww, uu, vv } = SchmidtDecomposition[expr, aa, bb];
   ww . MapThread[ OTimes, {LogicalForm[uu, aa], LogicalForm[vv, bb]} ]
- ]
+ ] /; fKetQ[expr]
 
 (**** </SchmidtDecomposition> ****)
 
