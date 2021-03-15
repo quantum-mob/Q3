@@ -7,8 +7,8 @@ Q3Clear[];
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.60 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 02:28:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.61 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-11 01:20:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1090,10 +1090,9 @@ MultiplyDot::usage = "MultiplyDot[a, b, ...] returns the products of vectors, ma
 
 (* Makes MultiplyDot associative for the case
    MultiplyDot[vector, matrix, matrix, ...] *)
-SetAttributes[ MultiplyDot, { Flat, OneIdentity, ReadProtected } ]
+SetAttributes[MultiplyDot, {Flat, OneIdentity, ReadProtected}]
 
-MultiplyDot[a:(_List|_SparseArray), b:(_List|_SparseArray)] :=
-  Inner[Multiply, a, b]
+MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
 (* TODO: Special algorithm is required for SparseArray *)
 
 
@@ -1371,6 +1370,7 @@ SetAttributes[MultiplyExp, Listable]
 Format[ HoldPattern @ MultiplyExp[expr_] ] := Power[E, expr]
 
 (* Exp for Grassmann- or Clifford-like Species *)
+(*
 MultiplyExp[op_] := Module[
   { z = Garner @ MultiplyPower[op, 2] },
   If[ z === 0,
@@ -1378,6 +1378,8 @@ MultiplyExp[op_] := Module[
     FunctionExpand[ Cosh[Sqrt[z]] + op Sinh[Sqrt[z]]/Sqrt[z] ]
    ] /; CommutativeQ[z]
  ]
+ *)
+(* NOTE: Better to use Elaborate *)
 
 MultiplyExp /:
 HoldPattern @ Dagger[ MultiplyExp[expr_] ] := MultiplyExp[ Dagger[expr] ]

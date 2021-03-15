@@ -7,8 +7,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.11 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 10:39:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.13 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-11 01:18:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -23,7 +23,6 @@ End[]
 
 { CauchyExpand }; (* OBSOLETE *)
 
-(* SECTION 1. Extending the field of complex numbers *)
 
 Begin["`Prelude`"]
 
@@ -57,30 +56,30 @@ NonNegative[ Power[_?RealQ, _?EvenQ] ] = True
 
 NonNegative[ HoldPattern[ _?NonNegative + _?NonNegative ] ] = True
 
-Abs[z_Times] := Times[ Abs /@ z ]
+(* Abs[z_Times] := Times[ Abs /@ z ] *)
+(* Mathematica 12.2: Use FunctionExpand[expr] *)
 
-Abs[Power[z_,-1]] := 1 / Abs[z]
+(* Abs[Power[z_,-1]] := 1 / Abs[z] *)
+(* Integrated into Mathematica v12.2 *)
 
-Abs[Power[z_,-1/2]] := 1 / Sqrt[Abs[z]]
+(* Abs[Power[z_,-1/2]] := 1 / Sqrt[Abs[z]] *)
+(* Integrated into Mathematica v12.2 *)
 
-Power[ Abs[x_?RealQ],n_?EvenQ ] := Power[x,n]
+(* Power[ Abs[x_?RealQ], n_?EvenQ ] := Power[x, n] *)
+(* Mathematica 12.2: Use Simplify[expr, Element[x, Reals]] *)
 
-Power[ Power[x_?RealQ, n_?EvenQ], 1/2] :=   Power[Abs[x], n/2]
+(* Power[ Power[x_?RealQ, n_?EvenQ], 1/2] :=   Power[Abs[x], n/2] *)
+(* Mathematica 12.2: Use Simplify[expr, Element[x, Reals]] *)
 
-Power[-Power[x_?RealQ, n_?EvenQ], 1/2] := I Power[Abs[x], n/2]
-
-Power[ Power[f_[a___], n_?EvenQ], 1/2] :=   Power[Abs[f[a]], n/2] /;
-  RealQ[f[a]]
-
-Power[-Power[f_[a___], n_?EvenQ], 1/2] := I Power[Abs[f[a]], n/2] /;
-  RealQ[f[a]]
+(* Power[-Power[x_?RealQ, n_?EvenQ], 1/2] := I Power[Abs[x], n/2] *)
+(* Mathematica 12.2: Use Simplify[expr, Element[x, Reals]] *)
 
 Power[E, Times[z_Complex, Pi, n_]] /; EvenQ[n*z/I] = +1
 
 Power[E, Times[z_Complex, Pi, n_]] /; OddQ[n*z/I] = -1
 
 
-(*** Formatting ***)
+(**** <Formatting> ****)
 
 (* Tip: TeXForm[expr] is equivalent to TeXForm[TraditionalForm[expr]].
    Use TeXForm[StandardForm[expr]] to use StandarfForm. *)
@@ -103,6 +102,8 @@ Format[ HoldPattern[ Conjugate[f_Symbol[z___]] ] ] :=
 
 Format[ HoldPattern[ Abs[z_] ] ] := BracketingBar[z]
 
+(**** </Formatting> ****)
+
 
 (* If all internal handlings fail, then these are the final resort. *)
 
@@ -115,8 +116,7 @@ Protect[ Evaluate @ $symb ]
 
 End[] (* `Prelude` *)
 
-
-(* SECTION 3. The field of complex numbers *)
+(**********************************************************************)
 
 Begin["`Complex`"]
 
@@ -290,7 +290,7 @@ HalfIntegerQ[Rational[_, 2]] = True
 HalfIntegerQ[n_] := OddQ[ Expand[2 n] ]
 
 
-(*** Simplification ***)
+(**** <Simplification> ****)
 
 CauchySimplify::usage = "CauchySimplify[expr] calls the built-in function Simplify but performs some extra transformations concerning complex variables. All options of Simplify are also available to CauchySimplify."
 
@@ -329,6 +329,8 @@ rulesCauchySimplify = {
   Tanh[a_. Sqrt[z_] Sqrt[Conjugate[z_]]] -> 
     Tanh[a Abs[z]] Sqrt[z] Sqrt[Conjugate[z]] / Abs[z]
  }
+
+(**** </Simplifications> ****)
 
 
 CauchyExpand::usage = "CauchyExpand[expr] expands out functions of complex variables."
