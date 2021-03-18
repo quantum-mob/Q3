@@ -8,8 +8,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.7 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 12:45:39+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.8 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-17 10:44:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1775,8 +1775,7 @@ Dot[ Bra[c_, d__], Pauli[a_, b__] ] := CircleTimes @@
 (* *********************************************************************** *)
 
 
-CircleTimes::usage = "a \[CircleTimes] b \[CircleTimes] c or CircleTimes[a,b,c] represents the tensor product of Hilbert space vectors or operators on them.
-  When a, b, c, ... are vectors or matrices, it returns the matrix direct product of them."
+CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, ....\nWhen a, b, c, ... are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3."
 
 SetAttributes[CircleTimes, {ReadProtected}]
 
@@ -1803,8 +1802,6 @@ CircleTimes[A__?MatrixQ] := KroneckerProduct[A]
 (* For vectors, our CircleTimes[] is different from KroneckerProduct[]. *)
 CircleTimes[A__?VectorQ] := Flatten[ TensorProduct[A] ]
 
-
-(* Direct Sum *)
 
 BlockDiagonalMatrix::usage = "BlockDiagonalMatrix[{a,b,c,...}] returns a matrix with the matrices a, b, c, ... as its blocks. BlockDiagonalMatrix[a,b,c,...] is the same."
 
