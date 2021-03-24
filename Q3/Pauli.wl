@@ -8,8 +8,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.8 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-17 10:44:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.10 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-23 12:44:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1775,7 +1775,7 @@ Dot[ Bra[c_, d__], Pauli[a_, b__] ] := CircleTimes @@
 (* *********************************************************************** *)
 
 
-CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, ....\nWhen a, b, c, ... are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3."
+CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, ....\nWhen a, b, c, ... are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/CircleTimes\", \"paclet:Q3/ref/CircleTimes\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
 SetAttributes[CircleTimes, {ReadProtected}]
 
@@ -2228,6 +2228,16 @@ SchmidtDecomposition[expr_, aa:{__Integer}, bb:{__Integer}] := Module[
   { ww, PauliExpression /@ uu, PauliExpression /@ vv }
  ] /; fPauliKetQ[expr]
 
+
+SchmidtDecomposition[expr_, a_?SpeciesQ, b_?SpeciesQ] := 
+  SchmidtDecomposition[expr, {a}, {b}]
+
+SchmidtDecomposition[expr_, a_?SpeciesQ, bb:{__?SpeciesQ}] := 
+  SchmidtDecomposition[expr, {a}, bb]
+
+SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, b_?SpeciesQ] :=
+  SchmidtDecomposition[expr, aa, {b}]
+
 SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { ab = FlavorNone @ Join[aa, bb],
     ww, uu, vv },
@@ -2277,6 +2287,16 @@ SchmidtForm[expr_, aa:{__Integer}, bb:{__Integer}] := Module[
   { ww, uu, vv } = SchmidtDecomposition[expr, aa, bb];
   ww . MapThread[OTimes, {uu, vv}]
  ] /; fPauliKetQ[expr]
+
+
+SchmidtForm[expr_, a_?SpeciesQ, b_?SpeciesQ] := 
+  SchmidtForm[expr, {a}, {b}]
+
+SchmidtForm[expr_, a_?SpeciesQ, bb:{__?SpeciesQ}] := 
+  SchmidtForm[expr, {a}, bb]
+
+SchmidtForm[expr_, aa:{__?SpeciesQ}, b_?SpeciesQ] :=
+  SchmidtForm[expr, aa, {b}]
 
 SchmidtForm[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { ww, uu, vv },

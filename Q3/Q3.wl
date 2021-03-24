@@ -7,8 +7,8 @@ Q3Clear[];
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.61 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-11 01:20:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.62 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-18 10:01:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -940,7 +940,7 @@ $tempMessage = If[ NameQ["System`Hermitian"],
   ""
  ]
 
-Hermitian::usage = $tempMessage <> "Hermitian represents Hermitian operators (Q3`Cauchy`Hermitian).\nLet[Hermitian, a, b, ...] declares a, b, ... as Hermitian operators.\nSee \!\(\*TemplateBox[{\"Q3`Cauchy`Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
+Hermitian::usage = $tempMessage <> "In Q3, Hermitian represents Hermitian operators.\nLet[Hermitian, a, b, ...] declares a, b, ... as Hermitian operators.\nSince Mathematica v12.1, Hermitian is a built-in symbol, and is extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
 Let[Hermitian, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
@@ -966,7 +966,7 @@ $tempMessage = If[ NameQ["System`Antihermitian"],
   ""
  ]
 
-Antihermitian::usage = $tempMessage <> "Antihermitian represents Antihermitian operators (Q3`Cauchy`Antihermitian).\nLet[Antihermitian, a, b, ...] declares a, b, ... as Antihermitian operators.\nSee \!\(\*TemplateBox[{\"Q3`Cauchy`Antihermitian\", \"paclet:Q3/ref/Antihermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
+Antihermitian::usage = $tempMessage <> "In Q3, Antihermitian represents Antihermitian operators.\nLet[Antihermitian, a, b, ...] declares a, b, ... as Antihermitian operators.\nSee \!\(\*TemplateBox[{\"Q3/ref/Antihermitian\", \"paclet:Q3/ref/Antihermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
 Let[Antihermitian, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
