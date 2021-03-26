@@ -16,7 +16,7 @@ Q3 requires *Mathematica v12.0 or later*.
 
 ## Installation
 
-Q3 provides a *fully automatic installation method*. Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
+Q3 provides a *fully automatic installation method*. Please take a look at the [Installation Guide](./INSTALL.md)---`INSTALL.md`---for the instructions.
 
 
 ## Quick Start
