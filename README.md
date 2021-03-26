@@ -11,20 +11,23 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
 ## Requirements
 
-Q3 requires **Mathematica v12.0 or later**.
+Q3 requires *Mathematica v12.0 or later*.
 
 
 ## Installation
 
-Q3 provides a fully automatic installation method. Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
+Q3 provides a *fully automatic installation method*. Please take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
+
 
 ## Quick Start
 
 Once the application is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get detailed technical information about the application. It will give you users' guides and tutorials.
 
+
 ## For Beginners of Mathematica
 
 If this is your first time to use Mathematica, this guide written by Stephen Wolfram himself might be a good starting point: [An Elementary Introduction to the Wolfram Language (2nd edition)](https://www.wolfram.com/language/elementary-introduction/2nd-ed/).
+
 
 ## Feedback
 
