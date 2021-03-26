@@ -1,6 +1,6 @@
 # Q3 Application
 
-Since v1.5.1, Q3 supports *automatic installation* directly from this repository. Take a look at the [Installation Guide](./INSTALL.md) -- `INSTALL.md` -- for the instructions.
+Since v1.5.1, Q3 supports *automatic installation* directly from this repository. Take a look at the [Installation Guide](./INSTALL.md)---`INSTALL.md`---for the instructions.
 
 ---
 
