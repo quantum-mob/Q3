@@ -8,8 +8,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.10 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-23 12:44:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.11 $"][[2]], " (",
+  StringSplit["$Date: 2021-03-30 13:49:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1621,9 +1621,7 @@ TheEulerAngles[expr_] := Module[
  ] /; Not @ FreeQ[expr, _Pauli]
 
 
-(* *********************************************************************** *)
-
-Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], Rotation[\[Phi], 3] represent the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{x1, n1}, {x2, n2}, ...] = Rotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] ..."
+Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], Rotation[\[Phi], 3] represent the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{x1, n1}, {x2, n2}, ...] = Rotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] ...\nRotation[\[Phi], S[j, ..., k]] represents the rotation by angle \[Phi] around the axis k on the qubit S[j, ..., None]."
 
 Rotation[_, 0] := Pauli[0]
 

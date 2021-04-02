@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v1.6.9
+
+- A bug fix in Rotation for qubits.
+- The size of QuissoCircuit display has been readjusted.
+- New options to QuissoCircuit: UnitLength, PortSize
+
 ## v1.6.5
 
 - New function SchmidtForm.

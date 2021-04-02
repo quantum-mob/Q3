@@ -9,8 +9,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.2 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 09:32:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.7 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-02 16:34:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1081,12 +1081,14 @@ Phase[qq:{__?QubitQ}, ang_, rest___] := (
  )
 
 
+(**** <Rotation> ****)
+
 QuissoRotation::usage = "QuissoRotation[angle, G[j,...,k]] gives the operator corresonding to the rotation by angle around the axis k on the qubit G[j, ..., None]."
 
 QuissoRotation[ args__, opts__?OptionQ ] := QuissoRotation[ args ]
 (* NOTE: opts__, NOT opts___; just for the interface with Rotation[]. *)
 
-QuissoRotation[ a_, S_?QubitQ[j___,k:(1|2|3)] ] :=
+QuissoRotation[ a_, S_?QubitQ[j___, k:(1|2|3)] ] :=
   Cos[a/2] - I Sin[a/2] S[j,k]
 
 QuissoRotation[ a_, S_?QubitQ[j___, None], v:{_,_,_} ] := Garner[
@@ -1113,12 +1115,12 @@ QuissoRotation[ss:{__?QubitQ}, ang_, rest___] := (
  )
 
 
-Once[ Rotation::usage = Rotation::usage <> "\nRotation[angle, G[j, ..., k]] represents the rotation by angle angle around the axis k on the qubit G[j, ..., None]." ]
-
 Options[Rotation] = { "Label" -> Automatic }
 
 Rotation[ phi_, qq:{__?QubitQ}, rest___ ] :=
-  Map[ Rotation[phi, #, rest]&, FlavorNone @ qq ]
+  Map[ Rotation[phi, #, rest]&, qq ]
+(* NOTE: NOT FlavorNone@qq because rest may include {x, y, z} indicating the
+   roation axis. *)
 
 Rotation /:
 HoldPattern @ Multiply[pre___, Rotation[phi_, S_?QubitQ, rest___], post___ ] :=
@@ -1139,6 +1141,8 @@ Rotation[qq:{__?QubitQ}, ang_, rest___] := (
   Message[Q3General::newUI, Rotation];
   Rotation[ang, qq, rest]
  )
+
+(**** </Rotation> ****)
 
 
 QuissoEulerRotation::usage = "QuissoEulerRotation[{a, b, c}, G[j, ..., None]] operates the Euler rotation by the angles a,  b and c on the qubit G[j, ..., None].\nUnlike EulerRotation, it expands immediately in terms of the elementary Pauli gates."
@@ -1344,12 +1348,19 @@ QuissoFredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] := Garner[
 
 ControlledU::usage = "ControlledU[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., None] controlled by the qubits C1, C2.\nControlledU[C, T] is equivalent to ControlledU[{C}, T].\nControlledU[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it."
 
+ControlledU::nonuni = "The operator `` is not unitary."
+
 ControlledU[ S_?QubitQ, expr_, opts___?OptionQ ] :=
   ControlledU[ { S[None] }, expr, opts ]
 
 ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] :=
   ControlledU[ FlavorNone @ ss, expr, opts ] /;
   Not @ ContainsOnly[ FlavorLast[ss], {None} ]
+
+ControlledU[ {s_?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
+  If[ Abs[z] != 1, Message[ControlledU::nonuni, z] ];
+  Phase[Arg[z], s, opts]
+ )
 
 ControlledU /:
 Dagger[ ControlledU[ S_?QubitQ, expr_, opts___?OptionQ ] ] :=
@@ -1367,6 +1378,8 @@ HoldPattern @ Multiply[a___, ControlledU[b__, opts___?OptionQ], c___] :=
 
 QuissoControlledU::usage = "QuissoControlledU[...] is the same as ControlledU[...], but unlike the latter, it exapands immediately in terms of the elementary gates."
 
+QuissoControlledU::nonuni = "The operator `` is not unitary."
+
 QuissoControlledU[ a_, b_, __?OptionQ ] := QuissoControlledU[a, b]
 
 QuissoControlledU[ S_?QubitQ, expr_ ] :=
@@ -1379,6 +1392,18 @@ QuissoControlledU[ ss:{__?QubitQ}, expr_ ] :=
 QuissoControlledU[ ss:{__?QubitQ}, expr_ ] := Module[
   { P = Multiply @@ Map[ ((1-#[3])/2)&, Most /@ ss ] },
   ExpandAll[ P ** expr + (1-P) ]
+ ]
+
+QuissoControlledU[ {s_?QubitQ}, z_?CommutativeQ] := (
+  If[ Abs[z] != 1, Message[QuissoControlledU::nonuni, z] ];
+  QuissoPhase[Arg[z], s, opts]
+ )
+
+QuissoControlledU[ ss:{_?QubitQ, __?QubitQ}, z_?CommutativeQ] := Module[
+  { aa = Multiply @@ Through[ss[10]],
+    bb = Multiply @@ Through[ss[11]] },
+  If[ Abs[z] != 1, Message[QuissoControlledU::nonuni, z] ];
+  Elaborate[aa + z * bb]
  ]
 
 
@@ -1658,6 +1683,8 @@ SetAttributes[ {QuissoOut, QuissoIn}, Flat ]
 Options[QuissoCircuit] = {
   "TargetFunction" -> "Rectangle",
   "ControlFunction" -> "Dot",
+  "UnitLength" -> 36,
+  "PortSize" -> 0.65,
   "LabelSize" -> 1, 
   "Label" -> Automatic,
   "Visible" -> {},
@@ -1666,19 +1693,18 @@ Options[QuissoCircuit] = {
 
 $CircuitSize = 1
 
-$GateDistance = 1
+$CircuitUnit = 1
 
-$GateSize := 0.8 $GateDistance
+$GateSize := 0.8 $CircuitUnit
 
-$DotSize := 0.09 $GateDistance
+$DotSize := 0.09 $CircuitUnit
 
-$InOutOffset := 0.1 $GateDistance
+$InOutOffset := 0.1 $CircuitUnit
 
-$BraceWidth := 0.1 $GateDistance
+$BraceWidth := 0.1 $CircuitUnit
 
 
-Format[ qc:QuissoCircuit[__, opts___?OptionQ] ] :=
-  Graphics[qc, FilterRules[{opts}, Options @ Graphics], ImageSize -> Medium]
+Format[ qc:QuissoCircuit[__, opts___?OptionQ] ] := Graphics[qc]
 
 (*
  * User Interface
@@ -1814,11 +1840,14 @@ Graphics[ QuissoCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
     { ss = Qubits @ {gg},
       (* NOTE: Pure Qubits should be given None index properly. *)
       cc = qCircuitGate @ gg,
-      vv, ww, xx, yy, nodes, lines, in, out },
+      vv, ww, xx, yy, nodes, lines, in, out, unit },
 
-    {vv, ww} = FlavorNone[
-      {{"Visible"}, {"Invisible"}} /. {opts} /. Options[QuissoCircuit]
-     ];
+    {vv, ww, unit, port} = {
+      FlavorNone @ {"Visible"},
+      FlavorNone @ {"Invisible"},
+      "UnitLength", "PortSize"
+     } /. {opts} /. Options[QuissoCircuit];
+    If[ ListQ[port], Null, port = {port, port} ];
 
     ss = Union @ Flatten @ {ss, vv, ww};
 
@@ -1829,10 +1858,10 @@ Graphics[ QuissoCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
     (* There could be only input elements for temporary. *)
     
     xx  = Accumulate @ Boole[ qGateQ /@ cc ];
-    xx *= $GateDistance;
-    $CircuitSize = 1 + Max[xx];
+    xx *= $CircuitUnit;
+    $CircuitSize = $CircuitUnit + Max[xx];
     
-    yy = Range[ Length @ ss ] $GateDistance;
+    yy = Range[ Length @ ss ] $CircuitUnit;
     yy = AssociationThread[ss, -yy];
     
     nodes = qCircuitNodes[ cc, xx, yy ];
@@ -1845,14 +1874,16 @@ Graphics[ QuissoCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
     out = qCircuitOutput[ out, xx, yy ];
 
     Graphics[ Join[lines, in, nodes, out],
-      (* FilterRules[{opts}, Options @ Graphics], *)
+      Sequence @@ FilterRules[{opts}, Options @ Graphics],
       more,
-      PlotRangePadding -> {$GateDistance/2, 0} ]
+      ImagePadding -> { unit*port, 5*{1, 1} },
+      ImageSize -> unit * ($CircuitSize + Total[port])
+     ]
    ]
 
 qGateQ::usage = "qGateQ[expr] is True if expr is an expression of operators."
 
-qGateQ[expr_] := !FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
+qGateQ[expr_] := Not @ FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
 (* Recall that FreeQ[ Ket[<|...|>], _?QubitQ] = True . *)
 
 
@@ -2171,8 +2202,8 @@ qDrawGate[ "Separator", x_, yy_Association ] := Module[
   { xy = Tuples[{{x}, MinMax @ yy }] },
   { Dotted,
     Line @ {
-      {0,-$GateDistance/2} + First @ xy,
-      {0,+$GateDistance/2} + Last @ xy }
+      {0,-$CircuitUnit/2} + First @ xy,
+      {0,+$CircuitUnit/2} + Last @ xy }
    }
  ]
 
@@ -2329,7 +2360,7 @@ qPortText[text_, pt:{_, _}, pivot:{_, _}, opts___?OptionQ] := Module[
     Style[
       text,
       FontWeight -> "Light",
-      FontSize -> Scaled[(0.2 $GateSize / $CircuitSize) factor]
+      FontSize -> Scaled[(0.4 $GateSize / $CircuitSize) factor]
      ],
     pt, pivot
    ]
