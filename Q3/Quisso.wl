@@ -9,8 +9,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.7 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-02 16:34:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.8 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-02 17:57:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1843,12 +1843,14 @@ Graphics[ QuissoCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
       vv, ww, xx, yy, nodes, lines, in, out, unit },
 
     {vv, ww, unit, port} = {
-      FlavorNone @ {"Visible"},
-      FlavorNone @ {"Invisible"},
+      {"Visible"}, {"Invisible"},
       "UnitLength", "PortSize"
      } /. {opts} /. Options[QuissoCircuit];
+
     If[ ListQ[port], Null, port = {port, port} ];
 
+    vv = FlavorNone @ vv;
+    ww = FlavorNone @ ww;
     ss = Union @ Flatten @ {ss, vv, ww};
 
     If[ !ListQ[cc], cc = List @ cc ];
