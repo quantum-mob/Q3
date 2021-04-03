@@ -9,8 +9,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.8 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-02 17:57:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.9 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-04 02:40:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -588,7 +588,7 @@ QuissoFactor[ expr_ ] := Module[
 QuissoFactor[ a_ + b_ , qq:(_?QubitQ|{__?QubitQ}) ] :=
   QuissoFactor[a, qq] + QuissoFactor[b, qq]
 
-QuissoFactor[ z_?ComplexQ a_ , qq:(_?QubitQ|{__?QubitQ}) ] :=
+QuissoFactor[ z_?CommutativeQ a_ , qq:(_?QubitQ|{__?QubitQ}) ] :=
   z QuissoFactor[a, qq]
 
 QuissoFactor[ Ket[a_Association], S_?QubitQ ] := QuissoFactor[Ket[a], {S}]
@@ -1535,7 +1535,7 @@ HoldPattern @
 
 Measurement::usage = "Measurement[expr, {s1, s2, ...}] performs the projective measurements on the Qubits {s1, s2, ...}.\nMeasurement[expr, s] is equivalent to Measurement[expr, {s}].\nMeasurement[s] represents the projective measurement on the qubit s and returns the state vector corresponding to the measurement outcome.\nMeasurement[{s1, s2, ...}] is equivalent to Map[Measurement, {s1, s2, ...}]."
 
-Measurement::nonum = "Cannot perform a measurement on a non-numeric state vector. Probability half is assumed."
+Measurement::nonum = "Cannot perform a measurement on a nonnumeric state vector. Probability half is assumed."
 
 Measurement::novec = "The expression `` does not seem to be a valid Quisso Ket expression. Null vector is returned."
 

@@ -11,18 +11,14 @@ Q3 supports the paclet mechanism of Mathematica packages. It allows remote insta
 2. Copy the following code, and run it on your Mathematica front end (Notebook interface).
    ```Mathematica
    Module[
-     { jsn, url },
-   
-     jsn = Import[
-       "https://api.github.com/repos/quantum-mob/Q3App/releases/latest", 
-       "JSON"
+     { ps },
+     ps = PacletSiteRegister[
+       "https://github.com/quantum-mob/PacletServer/raw/main",
+       "Quamtum Mob Paclet Server"
       ];
-     url = Lookup[First @ Lookup[jsn, "assets"], "browser_download_url"];
-  
-     Print["Installing Q3 directly from GitHub. It may take serveral minutes or longer depending on your network conditions and your computer. Please be patient."];
-  
-     PacletInstall[url]
-    ]
+     PacletSiteUpdate[ps];
+     PacletInstall["Q3"]
+   ]
    ```
    That's all!
 

@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.7.0
+
+- Improved QuissoFactor.
+- Distributed using the paclet server.
+
 ## v1.6.9
 
 - A bug fix in Rotation for qubits.

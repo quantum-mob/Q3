@@ -7,15 +7,15 @@ Q3Clear[];
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.62 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-18 10:01:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.64 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-04 04:15:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
 { Q3General, Q3Info, Q3Clear, Q3Protect };
 
-{ Q3Release, Q3RemoteFetch, Q3RemoteRelease, Q3RemoteURL,
+{ Q3Release, Q3RemoteRelease,
   Q3Update, Q3CheckUpdate, Q3CleanUp };
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
@@ -123,124 +123,65 @@ Q3Info[] := Module[
   Print @ StringJoin @ Riffle[pkg, "\n"];
  ]
 
-
 Q3Release::usage = "Q3Release[] returns a string containing the release version of Q3. If it fails to find and open the paclet of Q3, then it returns Failure."
 
 Q3Release[] := Module[
-  { pac = PacletObject["Q3"] },
-  If[FailureQ[pac], pac, pac["Version"]]
- ]
-
-Q3RemoteFetch::usage = "Q3RemoteFetch[] fetches a JSON object concerning the release of Q3 from the GitHub repository."
-
-Q3RemoteFetch[] := Import[
-  "https://api.github.com/repos/quantum-mob/Q3App/releases/latest", 
-  "JSON"
+  { pac = PacletObject @ "Q3" },
+  If[ FailureQ[pac], pac, pac["Version"] ]
  ]
 
 Q3RemoteRelease::usage = "Q3RemoteRelease[] returns a string containing the release version of Q3 at the GitHub repository."
 
 Q3RemoteRelease[] := Module[
-  { jsn = Q3RemoteFetch[] },
-  If[ FailureQ[jsn],
-    Return[jsn],
-    StringReplace[ Lookup[jsn, "tag_name"], "v" -> "" ]
-   ]
+  { pac = PacletFindRemote @ "Q3" },
+  If[ pac == {}, $Failed, First[pac]["Version"] ]
  ]
 
-Q3RemoteURL::usage = "Q3RemoteURL[] returns the URL of the paclet archive of Q3 at the GitHub repository."
 
-Q3RemoteURL[] := Module[
-  { jsn = Q3RemoteFetch[] },
-  If[ FailureQ[jsn],
-    Return[jsn],
-    Lookup[First @ Lookup[jsn, "assets"], "browser_download_url"]
-   ]
+(***** <Paclet Server> ****)
+
+$serverURL = "https://github.com/quantum-mob/PacletServer/raw/main"
+
+serverRegisteredQ[url_:$serverURL] := Module[
+  { ps = PacletSites[] },
+  MemberQ[ Through[ps["URL"]], url ]
  ]
+
+serverRegister[url_:$serverURL] :=
+  PacletSiteUpdate @ PacletSiteRegister[url, "Quamtum Mob Paclet Server"]
+
+serverEnsure[] := If[ serverRegisteredQ[], Null, serverRegister[] ]
+
+pacletVersion[pp:{__PacletObject}] := pacletVersion[First @ pp]
+
+pacletVersion[pac_] := ToExpression @ StringSplit[pac["Version"], "."]
+
+(***** </Paclet Server> ****)
+
 
 Q3CheckUpdate::usage = "Q3CheckUpdate[] checks if there is a newer release of Q3 in the GitHub repository."
 
 Q3CheckUpdate[] := Module[
-  { pac = Q3Release[],
-    new = Q3RemoteRelease[] },
+  { pac = PacletFind["Q3"],
+    new = PacletFindRemote["Q3", UpdatePacletSites->True] },
+  If[ FailureQ[pac], Return[pac], pac = pacletVersion[pac] ];
+  If[ FailureQ[new], Return[new], new = pacletVersion[new] ];
   If[ OrderedQ @ {new, pac},
-    Print["You are using the latest release v", pac, " of Q3."],
-    Print["Q3,v", new, " is now available -- you are using v", pac,
-      ".\nUse Q3Update or Q3UpdateSubmit to update your Q3."]
+    Print["You are using the latest release v",
+      StringRiffle[pac, "."], " of Q3."],
+    Print["Q3,v", StringRiffle[new, "."],
+      " is now available -- you are using v",
+      StringRiffle[pac, "."], ".\nUse Q3Update to update your Q3."]
    ]
  ]
 
-Q3Update::usage = "Q3Update[] installs the update of Q3 from the GitHub repository.\nIt accepts all the options for PacletInstall -- ForceVersionInstall and AllowVersionUpdate in particular."
+Q3Update::usage = "Q3Update[] installs the latest update of Q3 from the GitHub repository.\nIt accepts all the options for PacletInstall -- ForceVersionInstall and AllowVersionUpdate in particular."
 
-Q3Update::dirfail = "Could not create a temporary download folder. Check whether you have proper permissions or not."
+Q3Update[opts___?OptionQ] := (
+  serverEnsure[];
+  PacletInstall["Q3", opts]
+ )
 
-Q3Update::downfail = "Could not download the paclet archive ``."
-
-handlerDownloadProgress[assoc_] := Module[
-  { frac = Lookup[assoc, "FractionComplete"] },
-  $Fraction = If[ MissingQ[frac],
-    $FractionMissing = True;
-    Lookup[assoc, "ByteCountDownloaded"],
-    frac
-   ]
- ]
-
-handlerDownloadFinished[assoc_] := Module[
-  { down = Lookup[assoc, "ByteCountDownloaded"],
-    full = Lookup[assoc, "ByteCountTotal"],
-    file = Lookup[assoc, "File"] },
-  If[ FileExistsQ[file],
-    If[ MissingQ[full],
-      PrintTemporary[down, " bytes downloaded to ", file],
-      PrintTemporary[down, " bytes of ", full, " bytes downloaded to ", file]
-     ],
-    Message[Q3Update::downfail, file]
-   ];
- ]
-
-Q3Update[opts___?OptionQ] := Module[
-  { url = Q3RemoteURL[],
-    dir = CreateDirectory[],
-    file },
-
-  If[ FailureQ[dir],
-    Message[Q3Update::dirfail, folder];
-    Return[dir]
-   ];
-  
-  file = FileNameJoin @ {dir, FileNameTake[url]};
-  PrintTemporary["Downloading the update from ", url, " to ", file, " ...."];
-
-  $Fraction = 0.;
-  $FractionMissing = False;
-
-  Check[
-    Monitor[
-      TaskWait[
-        URLDownloadSubmit[url, file,
-          HandlerFunctions -> Association[
-            "TaskProgress" -> handlerDownloadProgress,
-            "TaskFinished" -> handlerDownloadFinished
-           ],
-          HandlerFunctionsKeys -> {
-            "ByteCountDownloaded",
-            "ByteCountTotal",
-            "FractionComplete", 
-            "File"
-           }
-         ]
-       ],
-      If[ $FractionMissing,
-        $Fraction,
-        ProgressIndicator[Dynamic[$Fraction]]
-       ]
-     ],
-    Return[$Failed]
-   ];
-  
-  PrintTemporary["Installing the update from ", file, " ...."];
-  PacletInstall[file, opts]
- ]
 
 Q3CleanUp::ussage = "Q3CleanUp[] uninstalls all but the lastest version of Q3."
 
@@ -261,6 +202,7 @@ Q3CleanUp[] := Module[
    ];
   PacletUninstall @ Rest @ pacs
  ]
+
 
 Choices::usage = "Choices[a,n] gives all possible choices of n elements out of the list a.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
