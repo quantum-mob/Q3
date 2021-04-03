@@ -1,6 +1,6 @@
 # Select Release Notes
 
-## v1.7.0
+## v1.7.1
 
 - Improved QuissoFactor.
 - Distributed using the paclet server.
