@@ -7,8 +7,8 @@ Q3Clear[];
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.65 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-04 11:07:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.67 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-04 12:49:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -154,7 +154,17 @@ serverEnsure[] := If[ serverRegisteredQ[], Null, serverRegister[] ]
 
 pacletVersion[pp:{__PacletObject}] := pacletVersion[First @ pp]
 
-pacletVersion[pac_] := ToExpression @ StringSplit[pac["Version"], "."]
+pacletVersion[pac_PacletObject] := pac["Version"]
+
+versionNumber[vv:{__String}] := versionNumber[First @ vv]
+
+versionNumber[ver_String] := With[
+  { new = StringSplit[ver, "."] },
+  If[ AllTrue[new, DigitQ],
+    ToExpression @ new,
+    ver
+   ]
+ ]
 
 (***** </Paclet Server> ****)
 
@@ -166,12 +176,10 @@ Q3CheckUpdate[] := Module[
     new = PacletFindRemote["Q3", UpdatePacletSites->True] },
   If[ FailureQ[pac], Return[pac], pac = pacletVersion[pac] ];
   If[ FailureQ[new], Return[new], new = pacletVersion[new] ];
-  If[ OrderedQ @ {new, pac},
-    Print["You are using the latest release v",
-      StringRiffle[pac, "."], " of Q3."],
-    Print["Q3,v", StringRiffle[new, "."],
-      " is now available -- you are using v",
-      StringRiffle[pac, "."], ".\nUse Q3Update to update your Q3."]
+  If[ OrderedQ @ {versionNumber @ new, versionNumber @ pac},
+    Print["You are using the latest release v", pac, " of Q3."],
+    Print["Q3,v", new, " is now available -- you are using v",
+      pac, ".\nUse Q3Update to install the update."]
    ]
  ]
 

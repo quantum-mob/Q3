@@ -4,7 +4,7 @@
 
 Paclet[
   Name -> "Q3",
-  Version -> "1.7.2",
+  Version -> "1.7.3",
   WolframVersion -> "12+",
   MathematicaVersion -> "12+",
   Description -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems.",
