@@ -14,7 +14,7 @@ Q3 supports the paclet mechanism of Mathematica packages. It allows remote insta
      { ps },
      ps = PacletSiteRegister[
        "https://github.com/quantum-mob/PacletServer/raw/main",
-       "Quamtum Mob Paclet Server"
+       "Quantum Mob Paclet Server"
       ];
      PacletSiteUpdate[ps];
      PacletInstall["Q3"]

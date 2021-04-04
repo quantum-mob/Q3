@@ -7,8 +7,8 @@ Q3Clear[];
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.64 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-04 04:15:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.65 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-04 11:07:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -148,7 +148,7 @@ serverRegisteredQ[url_:$serverURL] := Module[
  ]
 
 serverRegister[url_:$serverURL] :=
-  PacletSiteUpdate @ PacletSiteRegister[url, "Quamtum Mob Paclet Server"]
+  PacletSiteUpdate @ PacletSiteRegister[url, "Quantum Mob Paclet Server"]
 
 serverEnsure[] := If[ serverRegisteredQ[], Null, serverRegister[] ]
 
