@@ -10,9 +10,6 @@ Paclet[
   Description -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems.",
   Creator -> "Mahn-Soo Choi (Korea University)",
   Extensions -> {
-    { "Documentation",
-      Language -> "English",
-      MainPage -> "Guides/Q3" },
     { "Kernel",
       Root -> ".",
       Context -> {
@@ -22,7 +19,10 @@ Paclet[
       (* Context specifies the package context or list of contexts . Used by
          FindFile. Also causes documentation links to be added to usage
          messages when documentation is present. *)
-     }
+     },
+    { "Documentation",
+      Language -> "English",
+      MainPage -> "Guides/Q3" }
    },
   URL -> "https://github.com/quantum-mob/Q3App",
   Updating -> Automatic,
@@ -33,5 +33,4 @@ Paclet[
     "Quantum Spins"
    }
 ]
-
 
