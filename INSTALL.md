@@ -38,6 +38,13 @@ Once Q3 is installed, it provides some utility functions with which you can chec
   ```  
   You may like to give an option `ForceVersionInstall->True` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
 
+## Uninstall
+
+If you do not want to use Q3 any longer, then you can uninstall it by evaluating the following code:
+
+```Mathematica
+PacletUninstall["Q3"]
+```
 
 ## Manual Installation
 

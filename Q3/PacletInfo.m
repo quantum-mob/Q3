@@ -9,6 +9,7 @@ Paclet[
   MathematicaVersion -> "12+",
   Description -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems.",
   Creator -> "Mahn-Soo Choi (Korea University)",
+  Updating -> Automatic,
   Extensions -> {
     { "Kernel",
       Root -> ".",
@@ -25,7 +26,6 @@ Paclet[
       MainPage -> "Guides/Q3" }
    },
   URL -> "https://github.com/quantum-mob/Q3App",
-  Updating -> Automatic,
   Category -> "Physics",
   Keywords -> {
     "Quantum Computation",

@@ -7,8 +7,8 @@ Q3Clear[];
 Begin["`Private`"]
 Q3`Private`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.67 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-04 12:49:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.69 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-05 09:17:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -172,10 +172,12 @@ versionNumber[ver_String] := With[
 Q3CheckUpdate::usage = "Q3CheckUpdate[] checks if there is a newer release of Q3 in the GitHub repository."
 
 Q3CheckUpdate[] := Module[
-  { pac = PacletFind["Q3"],
-    new = PacletFindRemote["Q3", UpdatePacletSites->True] },
-  If[ FailureQ[pac], Return[pac], pac = pacletVersion[pac] ];
-  If[ FailureQ[new], Return[new], new = pacletVersion[new] ];
+  { pac, new },
+  serverEnsure[];
+  pac = PacletFind["Q3"];
+  new = PacletFindRemote["Q3", UpdatePacletSites->True];
+  If[ pac=={}, Return[$Failed], pac = pacletVersion[pac] ];
+  If[ new=={}, Return[$Failed], new = pacletVersion[new] ];
   If[ OrderedQ @ {versionNumber @ new, versionNumber @ pac},
     Print["You are using the latest release v", pac, " of Q3."],
     Print["Q3,v", new, " is now available -- you are using v",
