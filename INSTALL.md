@@ -40,7 +40,7 @@ Once Q3 is installed, it provides some utility functions with which you can chec
 
 ## Uninstall
 
-If you do not want to use Q3 any longer, then you can uninstall it by evaluating the following code:
+If you do not want Q3 any longer, then you can uninstall it by evaluating the following code:
 
 ```Mathematica
 PacletUninstall["Q3"]
