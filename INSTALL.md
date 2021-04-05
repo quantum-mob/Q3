@@ -25,7 +25,9 @@ Q3 supports the paclet mechanism of Mathematica packages. It allows remote insta
 
 ## Keeping Q3 Updated
 
-Once Q3 is installed, it provides some utility functions with which you can check for updates and install an update remotely.
+Once Q3 is installed, it will automatically check for updates and install the newest update (if any). This feature has been introducted in v1.7.3. If you have an older version, you have to manually update Q3 to the most recent one (see the instruction below).
+
+If you want to want to manually check for updates and install them, follow these instructions:
 
 - You can check for updates of Q3 by the following command.
   ```Mathematica
