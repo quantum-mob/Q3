@@ -11,7 +11,7 @@ Q3 consists of several packages at different levels. Quisso, Fock, and Wigner ar
 
 ## Requirements
 
-Q3 requires *Mathematica v12.0 or later*.
+Q3 requires *Mathematica v12.1 or later*.
 
 
 ## Installation
