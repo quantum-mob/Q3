@@ -8,8 +8,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.11 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-30 13:49:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.12 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-08 15:41:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -280,6 +280,11 @@ LogicalForm[ Ket[a_Association], gg_List ] := Module[
 LogicalForm[ Bra[a_Association], gg_List ] :=
   Dagger @ LogicalForm[Ket[a], gg]
 
+LogicalForm[ OSlash[Ket[a_Association], expr_], gg_List ] := With[
+  { ss = FlavorNone @ gg },
+  OSlash[Ket[a], LogicalForm[expr, Supplement[ss, Keys @ a]]]
+ ]
+
 LogicalForm[ Dyad[a_Association, b_Association, All], gg_List ] := Module[
   { ss = Union[Keys @ a, Keys @ b, FlavorNone @ gg] },
   Dyad[
@@ -301,7 +306,7 @@ LogicalForm[ expr_, gg_List ] := Module[
   ss = Union[ ss, FlavorNone @ gg ];
   expr /. {
     ot_OTimes -> ot, (* NOTE 1 *)
-    OSlash[v_Ket, ex_ ] :> OSlash[ v, LogicalForm[ex, gg] ],
+    os_OSlash :> LogicalForm[os, ss],
     v_Ket :> LogicalForm[v, ss],
     v_Bra :> LogicalForm[v, ss],
     d_Dyad :> LogicalForm[d, ss],

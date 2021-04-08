@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.7.4
+
+- Imroved LogicalForm on OSlash, which affects QuissoFactor
+
 ## v1.7.1
 
 - Improved QuissoFactor.
