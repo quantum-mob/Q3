@@ -1,8 +1,12 @@
 # Select Release Notes
 
+## v1.7.5
+
+- Imroved Elaborate on QuissoCircuit.
+
 ## v1.7.4
 
-- Imroved LogicalForm on OSlash, which affects QuissoFactor
+- Imroved LogicalForm on OSlash, which affects QuissoFactor.
 
 ## v1.7.1
 

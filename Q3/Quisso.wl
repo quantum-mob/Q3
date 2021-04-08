@@ -9,8 +9,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.9 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-04 02:40:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.10 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-08 17:59:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1667,6 +1667,8 @@ End[] (* `Private` *)
 
 Begin["`Circuit`"]
 
+$symb = Unprotect[$ElaborationRules, $ElaborationHeads]
+
 QuissoCircuit::usage = "QuissoCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nQuissoExpression[ QuissoCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a Quisso expression.\nMatrix[ QuissoCircuit[...] ] returns the matrix representation of the quantum circuit model."
 
 QuissoCircuit::noqubit = "No Qubit found in the expression ``. Use LogicalForm to specify the Qubits explicitly."
@@ -1755,6 +1757,9 @@ QuissoCircuit[a___, g_Graph, b___] := Module[
 
 QuissoCircuit /:
 Elaborate[ qc_QuissoCircuit ] := QuissoExpression[ qc ]
+
+Once[ AppendTo[$ElaborationHeads, QuissoCircuit]; ]
+
 
 QuissoCircuit /:
 QuissoExpression[ QuissoCircuit[ gg__, ___?OptionQ ] ] := Module[
@@ -2371,6 +2376,9 @@ qPortText[text_, pt:{_, _}, pivot:{_, _}, opts___?OptionQ] := Module[
 
 qPortBrace[ dir:(-1|1), { a:{_, _}, b:{_, _} } ] :=
   Line[{ a, a + $BraceWidth {dir, 0}, b + $BraceWidth {dir, 0}, b }]
+
+
+Protect[Evaluate @ $symb]
 
 End[] (* `Circuit`*)
 
