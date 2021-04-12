@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.8.1
+
+- The internal structure of package codes has been slightly changed.
+- In many cases, QuissoCircuit is automatically converted to an operator expression.
+
 ## v1.7.5
 
 - Imroved Elaborate on QuissoCircuit.
