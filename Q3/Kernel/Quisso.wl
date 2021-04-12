@@ -14,8 +14,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.12 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-12 13:58:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.13 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-12 18:41:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1726,8 +1726,8 @@ Kind[ QuissoCircuit[__] ] = NonCommutative
 QuissoCircuit /:
 MultiplyGenus[ QuissoCircuit[__] ] := "QuantumCircuit"
 
-Multiply[pre___, qc__QuissoCircuit, post___] :=
-  Multiply[pre, Sequence @@ Reverse[Elaborate /@ {qc}], post]
+Multiply[pre___, Longest[qc__QuissoCircuit], post___] :=
+  Multiply[pre, Multiply @@ Map[Elaborate] @ {qc}, post]
 
 (*
  * User Interface
