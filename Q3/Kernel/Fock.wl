@@ -1,6 +1,10 @@
 (* -*- mode: math; -*- *)
 BeginPackage[ "Q3`Fock`",
-  { "Q3`Grassmann`", "Q3`Pauli`", "Q3`Cauchy`", "Q3`" }
+  { "Q3`Abel`",
+    "Q3`Cauchy`",
+    "Q3`Pauli`",
+    "Q3`Grassmann`"
+   }
  ]
 
 Q3Clear[];
@@ -8,8 +12,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.1 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 02:31:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.2 $"][[2]], " (",
+  StringSplit["$Date: 2021/04/11 10:17:42 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -646,12 +650,12 @@ FockFourier::usage = "FockFourier is OBSOLETE. Use ReplaceByFourier instead."
 FockInverseFourier::usage = "FockInverseFourier is now obsolete. Use ReplaceByFourierInverse instead."
 
 FockFourier[args__] := (
-  Message[Q3General::obsolete, "FockFourier", "ReplaceByFourier"];
+  Message[Q3`Q3General::obsolete, "FockFourier", "ReplaceByFourier"];
   FourierMap[args]
  )
 
 FockInverseFourier[args__] := (
-  Message[Q3General::obsolete, "FockInverseFourier", "ReplaceByFourierInvere"];
+  Message[Q3`Q3General::obsolete, "FockInverseFourier", "ReplaceByFourierInvere"];
   InverseFourierMap[args]
  )
 
@@ -1282,7 +1286,7 @@ FockExpand::usage = "FockExpand is obsolete now. Use Elaborate instead."
 $FockExpandMethods::usage = "$FockExpandMethods is obsolete and not used any longer."
 
 FockExpand[expr_, opts___?OptionQ] := (
-  Message[Q3General::obsolete, "FockExpand", "Elaborate"];
+  Message[Q3`Q3General::obsolete, "FockExpand", "Elaborate"];
   Elaborate[expr]
  )
 

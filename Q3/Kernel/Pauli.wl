@@ -1,15 +1,15 @@
 (* -*- mode: math; -*- *)
 (* Pauli operators on unlabelled qubits *)
 
-BeginPackage[ "Q3`Pauli`", { "Q3`Cauchy`", "Q3`" } ]
+BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.12 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-08 15:41:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.13 $"][[2]], " (",
+  StringSplit["$Date: 2021/04/11 10:17:42 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -762,7 +762,7 @@ Once[
 PauliExpand::usage = "PauliExpand[expr] returns more explicit form of the expression expr."
 
 PauliExpand[expr_] := (
-  Message[Q3General::obsolete, PauliExpand, Elaborate];
+  Message[Q3`Q3General::obsolete, PauliExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -1001,12 +1001,12 @@ PauliExpressionRL[vec_?VectorQ] := PauliExpression[vec]
 PauliInner::usage = "PauliInner is obsolete. Use HermitianProduct instead. Notice the difference in normalization -- PauliInner[m1, m2] = HermitianProduct[m1,m2] / Length[m2] for matrices m1 and m2."
 
 PauliInner[m1_?MatrixQ, m2_?MatrixQ] := (
-  Message[Q3General::obsolete, PauliInner, HermitianProduct];
+  Message[Q3`Q3General::obsolete, PauliInner, HermitianProduct];
   HermitianProduct[m1, m2] / Length[m2]
  )
 
 PauliInner[v1_?VectorQ, v2_?VectorQ] := (
-  Message[Q3General::obsolete, PauliInner, HermitianProduct];
+  Message[Q3`Q3General::obsolete, PauliInner, HermitianProduct];
   HermitianProduct[v1, v2]
  )
 
@@ -2055,7 +2055,7 @@ One[{m_Integer, n_Integer}, p_Integer] :=
 PauliExtract::usage = "PauliExtract has been deprecated. Use PauliDecompose instead."
 
 PaulieExtract[m_?MatrixQ, dd_] := (
-  Message[Q3General::obsolete, "PaulieExtract", "PauliDecompose"];
+  Message[Q3`Q3General::obsolete, "PaulieExtract", "PauliDecompose"];
   PauliDecompose[m, dd]
  )
 
@@ -2063,7 +2063,7 @@ PaulieExtract[m_?MatrixQ, dd_] := (
 PauliExtractRL::usage = "PauliExtractRL has been deprecated. Use PauliDecomposeRL instead."
 
 PaulieExtractRL[m_?MatrixQ, dd_] := (
-  Message[Q3General::obsolete, "PaulieExtractRL", "PauliDecomposeRL"];
+  Message[Q3`Q3General::obsolete, "PaulieExtractRL", "PauliDecomposeRL"];
   PauliDecomposeRL[m, dd]
  )
 

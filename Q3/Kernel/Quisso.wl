@@ -2,15 +2,20 @@
 (* Mathematica Package to facilitate simulation of quantum information
   processing. *)
 
-BeginPackage[ "Q3`Quisso`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
+BeginPackage[ "Q3`Quisso`",
+  { "Q3`Abel`",
+    "Q3`Cauchy`",
+    "Q3`Pauli`"
+   }
+ ]
 
 Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.10 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-08 17:59:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.12 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-12 13:58:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -414,7 +419,7 @@ Once[
 QuissoExpand::usage = "QuissoExpand[expr] expands the expression expr revealing the explicit forms of various operator or state-vector expressions."
 
 QuissoExpand[expr_] := (
-  Message[Q3General::obsolete, QuissoExpand, Elaborate];
+  Message[Q3`Q3General::obsolete, QuissoExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -1039,12 +1044,12 @@ QuissoPhase[ a_, S_?QubitQ ] := QuissoPhase[a, S[None]] /;
   FlavorLast[S] =!= None
 
 QuissoPhase[S_?QubitQ, ang_] := (
-  Message[Q3General::newUI, QuissoPhase];
+  Message[Q3`Q3General::newUI, QuissoPhase];
   QuissoPhase[ang, S]
  )
 
 QuissoPhase[qq:{__?QubitQ}, ang_] := (
-  Message[Q3General::newUI, QuissoPhase];
+  Message[Q3`Q3General::newUI, QuissoPhase];
   QuissoPhase[ang, qq]
  )
 
@@ -1071,12 +1076,12 @@ Dagger[ Phase[ phi_, G_?QubitQ, opts___?OptionQ ] ] :=
   
 
 Phase[q_?QubitQ, ang_, rest___] := (
-  Message[Q3General::newUI, Phase];
+  Message[Q3`Q3General::newUI, Phase];
   Phase[ang, q, rest]
  )
 
 Phase[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3General::newUI, Phase];
+  Message[Q3`Q3General::newUI, Phase];
   Phase[ang, qq, rest]
  )
 
@@ -1105,12 +1110,12 @@ QuissoRotation[ a_, SS:{__?QubitQ} ] := Garner[
 
 
 QuissoRotation[S_?QubitQ, ang_, rest___] := (
-  Message[Q3General::newUI, QuissoRotation];
+  Message[Q3`Q3General::newUI, QuissoRotation];
   QuissoRotation[ang, S, rest]
  )
 
 QuissoRotation[ss:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3General::newUI, QuissoRotation];
+  Message[Q3`Q3General::newUI, QuissoRotation];
   QuissoRotation[ang, ss, rest]
  )
 
@@ -1133,12 +1138,12 @@ Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
 
 
 Rotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3General::newUI, Rotation];
+  Message[Q3`Q3General::newUI, Rotation];
   Rotation[ang, q, rest]
  )
 
 Rotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3General::newUI, Rotation];
+  Message[Q3`Q3General::newUI, Rotation];
   Rotation[ang, qq, rest]
  )
 
@@ -1166,12 +1171,12 @@ QuissoEulerRotation[ {a_, b_, c_}, S_?QubitQ ] :=
 
 
 QuissoEulerRotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3General::newUI, QuissoEulerRotation];
+  Message[Q3`Q3General::newUI, QuissoEulerRotation];
   QuissoEulerRotation[ang, q, rest]
  )
 
 QuissoEulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3General::newUI, QuissoEulerRotation];
+  Message[Q3`Q3General::newUI, QuissoEulerRotation];
   QuissoEulerRotation[ang, qq, rest]
  )
 
@@ -1194,12 +1199,12 @@ HoldPattern @ Multiply[
 
 
 EulerRotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3General::newUI, EulerRotation];
+  Message[Q3`Q3General::newUI, EulerRotation];
   EulerRotation[ang, q, rest]
  )
 
 EulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3General::newUI, EulerRotation];
+  Message[Q3`Q3General::newUI, EulerRotation];
   EulerRotation[ang, qq, rest]
  )
 
@@ -1707,6 +1712,22 @@ $BraceWidth := 0.1 $CircuitUnit
 
 
 Format[ qc:QuissoCircuit[__, opts___?OptionQ] ] := Graphics[qc]
+
+(*
+ * Multiply
+ *)
+
+QuissoCircuit /:
+NonCommutativeQ[ QuissoCircuit[__] ] = True
+
+QuissoCircuit /:
+Kind[ QuissoCircuit[__] ] = NonCommutative
+
+QuissoCircuit /:
+MultiplyGenus[ QuissoCircuit[__] ] := "QuantumCircuit"
+
+Multiply[pre___, qc__QuissoCircuit, post___] :=
+  Multiply[pre, Sequence @@ Reverse[Elaborate /@ {qc}], post]
 
 (*
  * User Interface

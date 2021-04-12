@@ -1,14 +1,19 @@
 (* -*- mode: math; -*- *)
 (* SU(3) Algebra *)
-BeginPackage[ "Q3`GellMann`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
+BeginPackage[ "Q3`GellMann`",
+  { "Q3`Abel`",
+    "Q3`Cauchy`",
+    "Q3`Pauli`"
+   }
+ ]
 
 Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.27 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 02:31:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.28 $"][[2]], " (",
+  StringSplit["$Date: 2021/04/11 10:17:42 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]

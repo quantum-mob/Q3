@@ -1,14 +1,19 @@
 (* -*- mode: math; -*- *)
 
-BeginPackage["Q3`Wigner`", { "Q3`Pauli`", "Q3`Cauchy`", "Q3`" } ]
+BeginPackage[ "Q3`Wigner`",
+  { "Q3`Abel`",
+    "Q3`Cauchy`",
+    "Q3`Pauli`"
+   }
+ ]
 
 Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.2 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 09:31:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.3 $"][[2]], " (",
+  StringSplit["$Date: 2021/04/11 10:17:42 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -561,7 +566,7 @@ WignerKetQ::usage = "WignerKetQ is obsolete. Use VerifyKet instead."
 
 WignerKetQ[ Ket[a_Association] ] := Module[
   { chk },
-  Message[Q3General::obsolete, WignerKetQ, VerifyKet];
+  Message[Q3`Q3General::obsolete, WignerKetQ, VerifyKet];
   chk = KeyValueMap[VerifyKet, a];
   If[ Or @@ chk,
     False,
@@ -834,7 +839,7 @@ WignerExpression[v_?VectorQ, S_?SpinQ] := WignerExpression[v, {S}]
 WignerExpand::usage = "WignerExpand[expr] expands the expression expr revealing the explicit forms of various operator or state-vector expressions."
 
 WignerExpand[expr_] := (
-  Message[Q3General::obsolete, WignerExpand, Elaborate];
+  Message[Q3`Q3General::obsolete, WignerExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -1117,8 +1122,6 @@ Protect[Evaluate @ $symbs]
 
 End[]
 
-
 Q3Protect[]
-
 
 EndPackage[]

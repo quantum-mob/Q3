@@ -4,17 +4,17 @@
 
 Paclet[
   Name -> "Q3",
-  Version -> "1.7.5",
+  Version -> "1.8.0",
   WolframVersion -> "12+",
   Description -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems.",
   Creator -> "Mahn-Soo Choi (Korea University)",
   Updating -> Automatic,
   Extensions -> {
     { "Kernel",
-      Root -> ".",
+      Root -> "Kernel",
       Context -> {
-        "Q3`", "Q3`Cauchy`", "Q3`Pauli`", "Q3`Grassmann`",
-        "Q3`Quisso`", "Q3`Fock`", "Q3`Wigner`"
+        "Q3`", "Q3`Abel`", "Q3`Cauchy`", "Q3`Pauli`", "Q3`Grassmann`",
+        "Q3`Quisso`", "Q3`Fock`", "Q3`Wigner`", "Q3`Einstein`"
        }
       (* Context specifies the package context or list of contexts . Used by
          FindFile. Also causes documentation links to be added to usage

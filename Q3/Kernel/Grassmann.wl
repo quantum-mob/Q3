@@ -1,15 +1,15 @@
 (* -*- mode: math; -*- *)
-(* Grassmann algebra *)
 (* Adopted from a package by M. Headrick (April 2003) *)
-BeginPackage[ "Q3`Grassmann`", { "Q3`Cauchy`", "Q3`" } ]
+
+BeginPackage[ "Q3`Grassmann`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 Q3Clear[];
 
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.12 $"][[2]], " (",
-  StringSplit["$Date: 2021-03-08 02:31:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.13 $"][[2]], " (",
+  StringSplit["$Date: 2021/04/11 10:17:42 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]

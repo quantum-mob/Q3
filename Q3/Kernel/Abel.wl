@@ -1,22 +1,24 @@
 (* -*- mode:math -*- *)
 
-BeginPackage["Q3`"]
-
-Q3Clear[];
+BeginPackage["Q3`Abel`"]
 
 Begin["`Private`"]
-Q3`Private`Version = StringJoin[
+`Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.69 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-05 09:17:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.3 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-12 12:46:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
 
-{ Q3General, Q3Info, Q3Clear, Q3Protect };
 
-{ Q3Release, Q3RemoteRelease,
-  Q3Update, Q3CheckUpdate, Q3CleanUp };
+Begin["Q3`"]
+Q3Clear;
+Q3Protect;
+End[]
+
+
+Q3Clear[];
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Choices, Successive };
@@ -79,140 +81,6 @@ Begin["`Private`"]
 $symb = Unprotect[
   Conjugate, NonCommutativeMultiply, Inverse
  ]
-
-Q3General::usage = "Notice is a symbol to which general messages concerning Q3 are attached.\nIt is similar to General, but its Context is Q3."
-
-Q3General::obsolete = "The symbol `` is OBSOLETE. Use `` instead."
-
-Q3General::newUI = "An angle should come first. The order of the input arguments of `` has been changed since Q3 v1.2.0."
-
-
-Q3Clear::usage = "Q3Clear[ctxt] first unprotects all symbols defined in the context of ctxt and then CleaAll all non-variable symbols -- those the name of which does not start with '$'.\nQ3Clear is for internal use."
-
-Q3Clear[] := Q3Clear@Context[]
-
-Q3Clear[context_String] := (
-  Unprotect @ Evaluate[context <> "*"];
-  ClearAll @@ Names @ RegularExpression[context <> "[^`$]*"]
- )
-
-
-Q3Protect::usage = "Q3Protect[context] protects all symbols in the specified context. In addition, it sets the ReadProtected attribute to all non-variable symbols -- those the name of which does not start with the character '$'.\nQ3Protect is for internal use."
-
-Q3Protect[] := Q3Protect[$Context]
-
-Q3Protect[context_String] := Module[
-  { vars = Names[context <> "$*"],
-    symb = Names[context <> "*"] },
-  symb = Complement[symb, vars];
-  SetAttributes[Evaluate @ symb, ReadProtected];
-  Protect[Evaluate @ symb]
- ]
-
-
-Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versions of packages in it."
-
-Q3Info[] := Module[
-  { pac = Q3Release[],
-    pkg = Symbol /@ Names["Q3`*`Version"] },
-  If[ FailureQ[pac],
-    pac = "Q3 Application has not been installed properly.",
-    pac = "Q3 Application v" <> pac;
-   ];
-  pkg = Join[{pac}, pkg];
-  Print @ StringJoin @ Riffle[pkg, "\n"];
- ]
-
-Q3Release::usage = "Q3Release[] returns a string containing the release version of Q3. If it fails to find and open the paclet of Q3, then it returns Failure."
-
-Q3Release[] := Module[
-  { pac = PacletObject @ "Q3" },
-  If[ FailureQ[pac], pac, pac["Version"] ]
- ]
-
-Q3RemoteRelease::usage = "Q3RemoteRelease[] returns a string containing the release version of Q3 at the GitHub repository."
-
-Q3RemoteRelease[] := Module[
-  { pac = PacletFindRemote @ "Q3" },
-  If[ pac == {}, $Failed, First[pac]["Version"] ]
- ]
-
-
-(***** <Paclet Server> ****)
-
-$serverURL = "https://github.com/quantum-mob/PacletServer/raw/main"
-
-serverRegisteredQ[url_:$serverURL] := Module[
-  { ps = PacletSites[] },
-  MemberQ[ Through[ps["URL"]], url ]
- ]
-
-serverRegister[url_:$serverURL] :=
-  PacletSiteUpdate @ PacletSiteRegister[url, "Quantum Mob Paclet Server"]
-
-serverEnsure[] := If[ serverRegisteredQ[], Null, serverRegister[] ]
-
-pacletVersion[pp:{__PacletObject}] := pacletVersion[First @ pp]
-
-pacletVersion[pac_PacletObject] := pac["Version"]
-
-versionNumber[vv:{__String}] := versionNumber[First @ vv]
-
-versionNumber[ver_String] := With[
-  { new = StringSplit[ver, "."] },
-  If[ AllTrue[new, DigitQ],
-    ToExpression @ new,
-    ver
-   ]
- ]
-
-(***** </Paclet Server> ****)
-
-
-Q3CheckUpdate::usage = "Q3CheckUpdate[] checks if there is a newer release of Q3 in the GitHub repository."
-
-Q3CheckUpdate[] := Module[
-  { pac, new },
-  serverEnsure[];
-  pac = PacletFind["Q3"];
-  new = PacletFindRemote["Q3", UpdatePacletSites->True];
-  If[ pac=={}, Return[$Failed], pac = pacletVersion[pac] ];
-  If[ new=={}, Return[$Failed], new = pacletVersion[new] ];
-  If[ OrderedQ @ {versionNumber @ new, versionNumber @ pac},
-    Print["You are using the latest release v", pac, " of Q3."],
-    Print["Q3,v", new, " is now available -- you are using v",
-      pac, ".\nUse Q3Update to install the update."]
-   ]
- ]
-
-Q3Update::usage = "Q3Update[] installs the latest update of Q3 from the GitHub repository.\nIt accepts all the options for PacletInstall -- ForceVersionInstall and AllowVersionUpdate in particular."
-
-Q3Update[opts___?OptionQ] := (
-  serverEnsure[];
-  PacletInstall["Q3", opts]
- )
-
-
-Q3CleanUp::ussage = "Q3CleanUp[] uninstalls all but the lastest version of Q3."
-
-Q3CleanUp::noq3 = "Q3 is not found."
-
-Q3CleanUp[] := Module[
-  { pacs = PacletFind["Q3"],
-    vers, mssg },
-  If[ pacs == {},
-    Message[Q3CleanUp::noq3];
-    Return[{Null}]
-   ];
-  vers = Map[#["Version"]&, pacs];
-  mssg = StringJoin[
-    "Are you sure to remove old versions ",
-    StringRiffle[Rest @ vers, ", "],
-    " of Q3?"
-   ];
-  PacletUninstall @ Rest @ pacs
- ]
-
 
 Choices::usage = "Choices[a,n] gives all possible choices of n elements out of the list a.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
@@ -715,8 +583,6 @@ FlavorForm[j_] := j
 
 LinearMap::usage = "LinearMap represents linear maps.\nLet[LinearMap, f, g, ...] defines f, g, ... to be linear maps."
 
-LinearMapFirst::usage = "LinearMapFirst represents functions that are linear for the first argument.\nLet[LinearMapFirst, f, g, ...] defines f, g, ... to be linear maps for their first argument."
-
 Let[LinearMap, {ls__Symbol}] := Scan[setLinearMap, {ls}]
 
 setLinearMap[op_Symbol] := (
@@ -725,6 +591,8 @@ setLinearMap[op_Symbol] := (
   op[a___, z_?ComplexQ b_, c___] := z op[a, b, c];
  )
 
+
+LinearMapFirst::usage = "LinearMapFirst represents functions that are linear for the first argument.\nLet[LinearMapFirst, f, g, ...] defines f, g, ... to be linear maps for their first argument."
 
 Let[LinearMapFirst, {ls__Symbol}] := Scan[setLinearMapFirst, {ls}]
 
@@ -1441,7 +1309,7 @@ MultiplyDegree[ expr_ ] := 0 /; FreeQ[expr, _?AnySpeciesQ]
 MultiplyExpand::usage = "MultiplyExpand is obsolete. Use Elaborate instead."
 
 MultiplyExpand[expr_, opts___?OptionQ] := (
-  Message[Q3General::obsolete, "MultiplyExpand", "Elaborate"];
+  Message[Q3`Q3General::obsolete, "MultiplyExpand", "Elaborate"];
   Elaborate[expr]
  )
 
@@ -1528,6 +1396,7 @@ SetAttributes[{DiscreteDelta, UnitStep}, {ReadProtected}]
 Protect[ Evaluate @ $symb ]
 
 End[]
+
 
 Q3Protect[]
 
