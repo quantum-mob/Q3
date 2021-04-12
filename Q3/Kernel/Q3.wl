@@ -14,7 +14,8 @@ BeginPackage[ "Q3`",
     "Q3`Fock`",
     "Q3`Wigner`",
     "Q3`Dicke`",
-    "Q3`Einstein`"
+    "Q3`Einstein`",
+    "Q3`Custom`"
    }
  ]
 
