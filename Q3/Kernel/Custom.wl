@@ -1,6 +1,13 @@
 (* -*- mode:math -*- *)
+(* Mahn-Soo Choi *)
+(* $Date: 2021-04-13 12:21:29+09 $ *)
+(* $Revision: 1.3 $ *)
 
 BeginPackage["Q3`Custom`"]
+
+Unprotect[Customization]
+
+ClearAll[Customization]
 
 $Customizations::usage = "Custom options for various frequently used functions."
 
@@ -9,20 +16,16 @@ Customization::usage = "Customization[symb, options] sets the options for symb w
 
 Begin["`Private`"]
 
-(***** <Customization> ****)
-
 $Customizations = {
   (* Graphics *)
   Axes -> False,
   Frame -> True,
   FrameStyle -> Large,
-  PlotRangePadding -> Scaled[0.025],
-  PlotStyle -> Thick,
   GridLines -> Automatic,
-  FrameStyle -> Large,
+  PlotRangePadding -> Scaled[0.025],
   (* Graphics3D *)
-  PlotStyle -> Thick,
   (* Common *)
+  PlotStyle -> Thick,
   AxesStyle -> Large,
   ImageSize -> Large
  };
@@ -55,17 +58,17 @@ Customization @ {
 
 (* Graphics3D-related functions *)
 
+Customization[Graphics3D];
+
 Customization[
-  { Graphics3D,
-    Plot3D,
+  { Plot3D,
     ParametricPlot3D
    },
   Axes -> True
  ]
 
-(***** </Customization> ****)
-
-
 End[]
+
+Protect[Customization]
 
 EndPackage[]

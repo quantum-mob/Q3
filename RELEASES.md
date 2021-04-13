@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.8.2
+
+- Qubits[QuissoCircuit[...]] and Matrix[QuissoCircuit[...]] now respect the "Visible" option.
+
 ## v1.8.1
 
 - The internal structure of package codes has been slightly changed.

@@ -14,8 +14,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.13 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-12 18:41:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.14 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-13 12:49:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1773,7 +1773,7 @@ QuissoCircuit[a___, g_Graph, b___] := Module[
  ]
 
 (*
- * QuissoCircuit to QuissoExpression
+ * QuissoCircuit to QuissoExpression and Matrix
  *)
 
 QuissoCircuit /:
@@ -1783,7 +1783,7 @@ Once[ AppendTo[$ElaborationHeads, QuissoCircuit]; ]
 
 
 QuissoCircuit /:
-QuissoExpression[ QuissoCircuit[ gg__, ___?OptionQ ] ] := Module[
+QuissoExpression[ QuissoCircuit[gg__, ___?OptionQ] ] := Module[
   { expr = Flatten @ QuissoCircuitTrim @ {gg} },
   Garner[ qCircuitOperate @@ expr ]
  ]
@@ -1791,13 +1791,21 @@ QuissoExpression[ QuissoCircuit[ gg__, ___?OptionQ ] ] := Module[
    state is specified in the circuit. *)
 
 QuissoCircuit /:
-Matrix[ QuissoCircuit[ gg__, ___?OptionQ ] ] := Module[
+Qubits[ QuissoCircuit[gg__, opts___?OptionQ] ] := Union[
+  Qubits @ {gg},
+  FlavorNone @ Flatten[
+    {"Visible"} /. {opts} /. Options[QuissoCircuit]
+   ]
+ ]
+
+QuissoCircuit /:
+Matrix[ qc:QuissoCircuit[gg__, ___?OptionQ] ] := Module[
   { expr = Flatten @ QuissoCircuitTrim @ {gg} },
-  qCircuitMatrix[ Sequence @@ expr, Qubits @ expr ]
+  qCircuitMatrix[ Sequence @@ expr, Qubits @ qc ]
  ]
 
 
-qCircuitOperate::usage = "..."
+qCircuitOperate::usage = "Converts gates to operators ..."
 
 qCircuitOperate[a___, Measurement[q_?QubitQ], b___] := 
   qCircuitOperate[ Measurement[qCircuitOperate[a], q], b ]

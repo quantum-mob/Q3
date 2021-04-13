@@ -8,8 +8,8 @@ Q3Clear[];
 Begin["`Private`"]
 `Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.13 $"][[2]], " (",
-  StringSplit["$Date: 2021/04/11 10:17:42 $"][[2]], ") ",
+  StringSplit["$Revision: 3.14 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-13 12:10:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 End[]
@@ -1078,7 +1078,7 @@ Options[BlochSphere] = {
   "Opacity" -> 0.8,
   "PointSize" -> 0.03,
   Ticks -> None,
-  (* Axes -> True, *)
+  Axes -> False,
   (* AxesOrigin -> {0, 0, 0}, *)
   (* AxesStyle -> Thick, *)
   Boxed -> False
