@@ -2,7 +2,7 @@
 
 ## v1.8.2
 
-- `Qubits[QuissoCircuit[...]]` and `Matrix[QuissoCircuit[...]]` now respect the "Visible" option.
+- `Qubits[QuissoCircuit[...]]` and `Matrix[QuissoCircuit[...]]` now respect the <code>"Visible"</code> option.
 
 - Refinements in <code>Q3\`Custom\`</code> and a corresponding adjustment in `Options[BlochSphere]`.
 
