@@ -3,16 +3,14 @@
 
 BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
-Q3Clear[];
-
-Begin["`Private`"]
-`Version = StringJoin[
+`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.14 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-13 12:10:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.15 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-End[]
+
+Q3Clear[];
 
 { Spin, SpinNumberQ };
 

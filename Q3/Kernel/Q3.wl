@@ -19,6 +19,13 @@ BeginPackage[ "Q3`",
    }
  ]
 
+`Information`$Version = StringJoin[
+  $Input, " v",
+  StringSplit["$Revision: 2.2 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
+  "Mahn-Soo Choi"
+ ];
+
 Q3Clear[];
 
 { Q3General };
@@ -27,16 +34,6 @@ Q3Clear[];
 
 { Q3Info, Q3Release, Q3RemoteRelease,
   Q3Update, Q3CheckUpdate, Q3Purge };
-
-
-Begin["`Private`"]
-`Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 2.1 $"][[2]], " (",
-  StringSplit["$Date: 2021/04/11 10:07:49 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-End[]
 
 
 Begin["`Private`"]
@@ -75,7 +72,7 @@ Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versio
 
 Q3Info[] := Module[
   { pac = Q3Release[],
-    pkg = Symbol /@ Names["Q3`*`Version"] },
+    pkg = Symbol /@ Names["Q3`*Information`$Version"] },
   If[ FailureQ[pac],
     pac = "Q3 Application has not been installed properly.",
     pac = "Q3 Application v" <> pac;

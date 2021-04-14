@@ -2,21 +2,17 @@
 
 BeginPackage["Q3`Abel`"]
 
-Begin["`Private`"]
-`Version = StringJoin[
+`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.3 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-12 12:46:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.4 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-End[]
-
 
 Begin["Q3`"]
 Q3Clear;
 Q3Protect;
 End[]
-
 
 Q3Clear[];
 

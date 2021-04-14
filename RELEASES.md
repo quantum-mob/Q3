@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.8.3
+
+- Q3`*`Information`$Version instead of Q3`*`Private`Version
+
 ## v1.8.2
 
 - `Qubits[QuissoCircuit[...]]` and `Matrix[QuissoCircuit[...]]` now respect the <code>"Visible"</code> option.
