@@ -14,7 +14,8 @@ Paclet[
       Root -> "Kernel",
       Context -> {
         "Q3`", "Q3`Abel`", "Q3`Cauchy`", "Q3`Pauli`", "Q3`Grassmann`",
-        "Q3`Quisso`", "Q3`Fock`", "Q3`Wigner`", "Q3`Einstein`"
+        "Q3`Quisso`", "Q3`Fock`", "Q3`Wigner`", "Q3`Einstein`",
+        "Q3`Custom`"
        }
       (* Context specifies the package context or list of contexts . Used by
          FindFile. Also causes documentation links to be added to usage

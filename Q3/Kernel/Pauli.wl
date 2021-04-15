@@ -5,8 +5,8 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.15 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.16 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-15 14:43:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,7 +16,7 @@ Q3Clear[];
 
 { State, TheKet, TheBra, TheState };
 
-{ KetRule, KetTrim, VerifyKet };
+{ KetChop, KetRule, KetTrim, VerifyKet };
 
 { DefaultForm, LogicalForm, ProductForm, SimpleForm, SpinForm };
 
@@ -445,35 +445,41 @@ doAffect[ket_, op_] := Garner @ Multiply[op, ket]
 
 fPauliKetQ::usage = "fPauliKetQ[expr] returns True if expr is a valid expression for a state vector of a system of unlabelled qubits.\nPauli[\[Ellipsis]] operates consistently on such an expression.";
 
-fPauliKetQ[expr_] := False /; FreeQ[expr, Ket[(0 | 1) ..]]
+HoldPattern @ fPauliKetQ[Ket[(0 | 1) ..]] = True
 
-fPauliKetQ[expr_] := False /;
+HoldPattern @ fPauliKetQ[Multiply[__, Ket[(0 | 1) ..]]] = True
+
+HoldPattern @ fPauliKetQ[z_?CommutativeQ expr_] := fPauliKetQ[expr]
+
+HoldPattern @ fPauliKetQ[Plus[terms__]] := TrueQ[
+  And @@ fPauliKetQ /@ DeleteCases[ {terms}, (Complex[0., 0.] | 0.) ]
+ ]
+(* NOTE: 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
+
+HoldPattern @ fPauliKetQ[expr_Times] := fPauliKetQ@Expand[expr]
+
+HoldPattern @ fPauliKetQ[expr_] := False /; FreeQ[expr, Ket[(0 | 1) ..]]
+
+HoldPattern @ fPauliKetQ[expr_] := False /;
   Not[Equal @@ Length /@ Cases[{expr}, _Ket, Infinity]]
-
-HoldPattern@fPauliKetQ[Ket[(0 | 1) ..]] = True
-
-HoldPattern@fPauliKetQ[Multiply[__, Ket[(0 | 1) ..]]] = True
-
-HoldPattern@fPauliKetQ[z_?CommutativeQ expr_] := fPauliKetQ[expr]
-
-HoldPattern@fPauliKetQ[Plus[terms__]] := TrueQ[And @@ fPauliKetQ /@ {terms}]
-
-HoldPattern@fPauliKetQ[expr_Times] := fPauliKetQ@Expand[expr]
 
 
 fKetQ::usage = "fKetQ[expr] returns True if expr is a valid expression for a state vector of a system of labelled qubits.";
 
-fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
+HoldPattern @ fKetQ[Ket[_Association]] = True
 
-HoldPattern@fKetQ[Ket[_Association]] = True
+HoldPattern @ fKetQ[Multiply[__, Ket[_Association]]] = True
 
-HoldPattern@fKetQ[Multiply[__, Ket[_Association]]] = True
+HoldPattern @ fKetQ[z_?CommutativeQ expr_] := fKetQ[expr]
 
-HoldPattern@fKetQ[z_?CommutativeQ expr_] := fKetQ[expr]
+HoldPattern @ fKetQ[Plus[terms__]] := TrueQ[
+  And @@ fKetQ /@ DeleteCases[ {terms}, (Complex[0., 0.] | 0.) ]
+ ]
+(* NOTE: 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
 
-HoldPattern@fKetQ[Plus[terms__]] := TrueQ[And @@ fKetQ /@ {terms}]
+HoldPattern @ fKetQ[expr_Times] := fKetQ @ Expand[expr]
 
-HoldPattern@fKetQ[expr_Times] := fKetQ@Expand[expr]
+HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
 
 
 (**** <Ket & Bra> ****)
@@ -563,14 +569,14 @@ Bra[a_Association][ss_List] := Lookup[a, FlavorNone @ ss]
 Bra[a_Association][s_] := a[FlavorNone @ s]
 
 
-KetRule::usage = "KetRule is a low-level function used in various packages. KetRule[expr] generates proper rules to be store in the Ket[<|...|>] data form."
+KetRule::usage = "KetRule[rule] is a low-level function used when constructing Ket[<|\[Ellipsis]|>] to generate proper elementary rules from the compound rule specified in rule."
 
 SetAttributes[KetRule, Listable]
 
 KetRule[r_Rule] := r
 
 
-KetTrim::usage = "KetTrim[ ]..."
+KetTrim::usage = "KetTrim[Ket[assoc]] removes from assoc the elements that are either irrelevant or associated with the default value.\nKetTrim[assoc] is the same but returns the resulting Association."
 
 KetTrim[Ket[a_Association]] := Ket @ KetTrim[a]
 
@@ -599,6 +605,15 @@ VerifyKet[ Ket[a_Association] ] := With[
  ]
 
 VerifyKet[a_, b_] := Rule[a, b]
+
+
+KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[ImaginaryI], from expr, where the rest is a valid Ket expression."
+
+KetChop[0. + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
+
+KetChop[Complex[0., 0.] + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
+
+KetChop[expr_] := expr
 
 (**** </Ket & Bra> ****)
 
@@ -1045,19 +1060,21 @@ BlochVector[cc_?VectorQ] := Module[
 
 BlochVector[Ket[]] := BlochVector @ {1, 0}
 
+BlochVector[z_?CommutativeQ Ket[]] := BlochVector @ {1, 0}
+
 BlochVector[expr_, q_?SpeciesQ] := Module[
-  { ss = Species[expr],
+  { ss = NonCommutativeSpecies[expr],
     qq = FlavorNone @ q,
     cc },
   If[ Length[ss] > 1,
     cc = Complement[ss, {qq}];
-    BlochVector @ PartialTrace[expr, cc, Identity],
+    BlochVector @ PartialTrace[expr, cc, None],
     BlochVector @ Matrix[expr, qq]
    ]
  ]
 
 BlochVector[expr_] := BlochVector[expr, 1] /;
-  Not @ FreeQ[expr, _Pauli | _Ket]
+  Not @ FreeQ[expr, _Pauli | _Ket | _?NonCommutativeQ]
 
 BlochVector[expr_, j_Integer] := Module[
   { mat = Matrix[expr],
@@ -1067,7 +1084,7 @@ BlochVector[expr_, j_Integer] := Module[
     BlochVector @ PartialTrace[mat, Complement[Range @ n, {j}]],
     BlochVector @ mat
    ]
- ] /; Not @ FreeQ[expr, _Pauli | _Ket]
+ ] /; Not @ FreeQ[expr, _Pauli | _Ket | _?NonCommutativeQ]
 
 
 BlochSphere::usage = "BlochSphere[primitives, options] returns Graphics3D containing the Bloch sphere as well as primitives.\nIt accepts all Graphics3D primitives and, in addition, BlochPoint.\nBlochSphere[options] just displays the Bloch sphere."
@@ -2426,11 +2443,15 @@ PartialTrace[expr_, q_?SpeciesQ, func_] := PartialTrace[expr, {q}, func]
 PartialTrace[expr_, qq:{__?SpeciesQ}, func_] := Module[
   { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
     ss = NonCommutativeSpecies[expr],
-    dd, jj },
+    dd, jj, mm },
   ss = Union[ss, rr];
   dd = Dimension[ss];
   jj = Flatten @ Map[FirstPosition[ss, #]&, rr];
-  func[ PartialTrace[Matrix[expr, ss], dd, jj], Complement[ss, rr] ]
+  mm = PartialTrace[Matrix[expr, ss], dd, jj];
+  If[ func === None,
+    mm,
+    func[mm, Complement[ss, rr]]
+   ]
  ]
 
 (**** </PartialTrace> ****)
