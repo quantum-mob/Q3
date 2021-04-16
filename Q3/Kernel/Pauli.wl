@@ -5,12 +5,12 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.16 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-15 14:43:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.17 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-Q3Clear[];
+Q3`Q3Clear[];
 
 { Spin, SpinNumberQ };
 
@@ -3061,7 +3061,7 @@ Protect[ Evaluate @ $symbs ]
 End[]
 
 
-Q3Protect[]
+Q3`Q3Protect[]
 
 
 EndPackage[]

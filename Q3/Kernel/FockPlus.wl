@@ -10,12 +10,12 @@ BeginPackage[ "Q3`FockPlus`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.13 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.14 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-Q3Clear[];
+Q3`Q3Clear[];
 
 { Pairings, Wick, Average };
 
@@ -485,6 +485,6 @@ Protect[ Evaluate @ $symbs ]
 
 End[]
 
-Q3Protect[]
+Q3`Q3Protect[]
 
 EndPackage[]

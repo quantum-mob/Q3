@@ -9,12 +9,12 @@ BeginPackage[ "Q3`Quisso`",
    }
  ]
 
-Q3Clear[];
+Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.15 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.16 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1670,7 +1670,10 @@ End[] (* `Private` *)
 
 Begin["`Circuit`"]
 
-$symb = Unprotect[$ElaborationRules, $ElaborationHeads]
+$symb = Unprotect[
+  $ElaborationRules, $ElaborationHeads,
+  Multiply
+ ]
 
 QuissoCircuit::usage = "QuissoCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nQuissoExpression[ QuissoCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a Quisso expression.\nMatrix[ QuissoCircuit[...] ] returns the matrix representation of the quantum circuit model."
 
@@ -1724,7 +1727,7 @@ Kind[ QuissoCircuit[__] ] = NonCommutative
 QuissoCircuit /:
 MultiplyGenus[ QuissoCircuit[__] ] := "QuantumCircuit"
 
-Multiply[pre___, Longest[qc__QuissoCircuit], post___] :=
+HoldPattern @ Multiply[pre___, Longest[qc__QuissoCircuit], post___] :=
   Multiply[pre, Multiply @@ Map[Elaborate] @ {qc}, post]
 
 (*
@@ -2817,6 +2820,6 @@ Protect[Evaluate @ $symb]
 
 End[] (* `Qudit` *)
 
-Q3Protect[]
+Q3`Q3Protect[]
 
 EndPackage[]

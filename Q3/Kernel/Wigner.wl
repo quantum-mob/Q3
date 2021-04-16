@@ -7,12 +7,12 @@ BeginPackage[ "Q3`Wigner`",
    }
  ]
 
-Q3Clear[];
+Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.4 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.5 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1120,6 +1120,6 @@ Protect[Evaluate @ $symbs]
 
 End[]
 
-Q3Protect[]
+Q3`Q3Protect[]
 
 EndPackage[]

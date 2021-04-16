@@ -16,27 +16,6 @@ BeginPackage[ "Q3`Lindblad`",
 
 Begin["`Private`"]
 
-OperatorBasis[n_] := Module[
-  { zz = ConstantArray[0, n],
-    aa = ConstantArray[1, n],
-    bs },
-  bs = Join[
-    {Normalize @ aa},
-    Table[ Normalize @ ReplacePart[zz, {j -> 1, -j -> -1}], {j, 1, n/2}]
-   ];
-  Join[bs,
-    Table[
-      Normalize @ ReplacePart[zz,
-        { j -> 1,
-          -j -> 1,
-          j+1 -> -1,
-          -(j+1) -> -1
-         }
-       ],
-      {j, 1, n/2-1}
-     ]
-   ]
- ]
 
 LindbladSolve::usage = "LindbladSolve[...] returns the solution of the Lindblad equation ..."
 

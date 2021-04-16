@@ -4,12 +4,12 @@ BeginPackage["Q3`Cauchy`", {"Q3`Abel`"}]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.15 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.16 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-Q3Clear[];
+Q3`Q3Clear[];
 
 { Complex, ComplexQ,
   Real, RealQ,
@@ -343,7 +343,7 @@ Protect[ Evaluate @ $symb ]
 End[] (* `Complex` *)
 
 
-Q3Protect[]
+Q3`Q3Protect[]
 
 
 EndPackage[]

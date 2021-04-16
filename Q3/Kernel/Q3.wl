@@ -5,24 +5,12 @@ If[ $VersionNumber < 12,
   Message[Version::old];
  ]
 
-BeginPackage[ "Q3`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`",
-    "Q3`Quisso`",
-    "Q3`Grassmann`",
-    "Q3`Fock`",
-    "Q3`Wigner`",
-    "Q3`Dicke`",
-    "Q3`Einstein`",
-    "Q3`Custom`"
-   }
- ]
+BeginPackage["Q3`"]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.2 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-15 06:14:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.3 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-16 11:38:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -176,3 +164,25 @@ End[]
 Q3Protect[]
 
 EndPackage[]
+
+
+(**** <Packages Loading> ****)
+
+(* NOTE 2021-04-16 on v12.2.0: Just to load the package, one can put these in
+   the second argument of BeginPackage["Q3`", {...}]. In this case, however,
+   the symbols defined in those contexts are not listed/showed in the
+   "AutoPopupEable" feature.
+   *)
+
+Get["Q3`Abel`"];
+Get["Q3`Cauchy`"];
+Get["Q3`Pauli`"];
+Get["Q3`Quisso`"];
+Get["Q3`Grassmann`"];
+Get["Q3`Fock`"];
+Get["Q3`Wigner`"];
+Get["Q3`Dicke`"];
+Get["Q3`Einstein`"];
+Get["Q3`Custom`"];
+
+(**** </Packages Loading> ****)
