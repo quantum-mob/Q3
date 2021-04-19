@@ -1,0 +1,1589 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     49361,       1580]
+NotebookOptionsPosition[     41008,       1400]
+NotebookOutlinePosition[     43496,       1461]
+CellTagsIndexPosition[     43410,       1456]
+WindowTitle->LindbladConvert
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Kraus: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/KrausQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"LindbladSolve\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/LindbladSolve"], "\<\"LindbladBasis\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/LindbladBasis"], "\<\"LindbladGenerator\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/LindbladGenerator"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Kraus Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/KrausPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/LindbladConvert\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/LindbladConvert"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/LindbladConvert.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$94098], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/LindbladConvert", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["LindbladConvert", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"LindbladConvert", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         StyleBox["a", "TI"], ",", 
+         SubscriptBox[
+          StyleBox["b", "TI"], 
+          StyleBox["1", "TR"]], ",", 
+         SubscriptBox[
+          StyleBox["b", "TI"], 
+          StyleBox["2", "TR"]], ",", 
+         StyleBox["\[Ellipsis]", "TR"]}], "}"}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]converts the Lindblad equation specified by the \
+effective Hamiltonian ",
+     Cell[BoxData[
+      StyleBox["a", "TI"]], "InlineFormula"],
+     " and the Lindblad operators ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["b", "TI"], 
+        StyleBox["1", "TR"]], ",", 
+       SubscriptBox[
+        StyleBox["b", "TI"], 
+        StyleBox["2", "TR"]], ",", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     " into the matrix equation for the expansion coefficients of the density \
+matrix in the so-called ",
+     StyleBox["Kraus basis",
+      FontSlant->"Italic"],
+     " (see ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["LindbladBasis"]], "paclet:Q3/ref/LindbladBasis"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     ")."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"LindbladConvert", "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["b", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["b", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]are also allowed."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1071797057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData["LindbladConvert"], "InlineFormula"],
+ " returns ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     StyleBox["n", "TI"], "-", "1"}], ")"}], "\[Times]", 
+   RowBox[{"(", 
+    RowBox[{
+     StyleBox["n", "TI"], "-", "1"}], ")"}]}]], "InlineFormula"],
+ " matrix and ",
+ Cell[BoxData[
+  RowBox[{"(", 
+   RowBox[{
+    StyleBox["n", "TI"], "-", "1"}], ")"}]], "InlineFormula"],
+ "-component column vector, where ",
+ Cell[BoxData[
+  StyleBox["n", "TI"]], "InlineFormula"],
+ " is the Hilbert-space dimension of the system."
+}], "Notes",
+ CellID->1067943069],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->600305963],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->464146535],
+
+Cell["Lindblad is still experimental and must be loaded manually.", \
+"ExampleText",
+ CellID->789443279],
+
+Cell[BoxData[{
+ RowBox[{"<<", "Q3`"}], "\[IndentingNewLine]", 
+ RowBox[{"<<", "Q3`Kraus`"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->387884857],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"opH", "=", 
+   RowBox[{"Zero", "[", 
+    RowBox[{"2", ",", "2"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"opH", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->575047188],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0"},
+     {"0", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[Automatic, {2, 2}, 0, {1, {{0, 0, 0}, {}}, {}}]]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->2047899098]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "\[CapitalGamma]"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"opL", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"Sqrt", "[", 
+       RowBox[{"\[CapitalGamma]", "[", "\"\<+\>\"", "]"}], "]"}], " ", 
+      RowBox[{"ThePauli", "[", "4", "]"}]}], ",", 
+     RowBox[{
+      RowBox[{"Sqrt", "[", 
+       RowBox[{"\[CapitalGamma]", "[", "\"\<-\>\"", "]"}], "]"}], 
+      RowBox[{"ThePauli", "[", "5", "]"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"MatrixForm", "/@", "opL"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1820491489],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"0", 
+        SqrtBox[
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"+\""},
+           "RowDefault"]]]},
+       {"0", "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {2, 2}, 0, {
+       1, {{0, 1, 1}, {{2}}}, {$CellContext`\[CapitalGamma]["+"]^
+         Rational[1, 2]}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"0", "0"},
+       {
+        SqrtBox[
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"-\""},
+           "RowDefault"]]], "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {2, 2}, 0, {
+       1, {{0, 0, 1}, {{1}}}, {$CellContext`\[CapitalGamma]["-"]^
+         Rational[1, 2]}}]]]]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->2019350172]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"LindbladConvert", "[", 
+   RowBox[{"opH", ",", "opL"}], "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1152845036],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{
+         RowBox[{"-", 
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"-\""},
+            "RowDefault"]]}], "-", 
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"+\""},
+           "RowDefault"]]}], "0", "0"},
+       {"0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}], "0"},
+       {"0", "0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", 
+     TagBox[GridBox[{
+        {
+         RowBox[{
+          RowBox[{"-", 
+           FractionBox[
+            RowBox[{
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"], "-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"+\""},
+                "RowDefault"]], "2"]}], 
+            SqrtBox["2"]]}], "+", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"]}], "+", 
+            FractionBox[
+             SubscriptBox[
+              TemplateBox[{"\[CapitalGamma]"},
+               "RowDefault"], 
+              TemplateBox[{"\"+\""},
+               "RowDefault"]], "2"]}], 
+           SqrtBox["2"]]}]},
+        {"0"},
+        {"0"}
+       },
+       GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+       GridBoxSpacings->{"Columns" -> {
+           Offset[0.27999999999999997`], {
+            Offset[0.5599999999999999]}, 
+           Offset[0.27999999999999997`]}, "Rows" -> {
+           Offset[0.2], {
+            Offset[0.4]}, 
+           Offset[0.2]}}],
+      Column], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1082822996]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ops", "=", 
+   RowBox[{"Prepend", "[", 
+    RowBox[{"opL", ",", "opH"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"MatrixForm", "/@", "ops"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->838964454],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"0", "0"},
+       {"0", "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[Automatic, {2, 2}, 0, {1, {{0, 0, 0}, {}}, {}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"0", 
+        SqrtBox[
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"+\""},
+           "RowDefault"]]]},
+       {"0", "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {2, 2}, 0, {
+       1, {{0, 1, 1}, {{2}}}, {$CellContext`\[CapitalGamma]["+"]^
+         Rational[1, 2]}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"0", "0"},
+       {
+        SqrtBox[
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"-\""},
+           "RowDefault"]]], "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {2, 2}, 0, {
+       1, {{0, 0, 1}, {{1}}}, {$CellContext`\[CapitalGamma]["-"]^
+         Rational[1, 2]}}]]]]}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->397903728]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"LindbladConvert", "[", "ops", "]"}]}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->359386143],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{
+         RowBox[{"-", 
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"-\""},
+            "RowDefault"]]}], "-", 
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"+\""},
+           "RowDefault"]]}], "0", "0"},
+       {"0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}], "0"},
+       {"0", "0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", 
+     TagBox[GridBox[{
+        {
+         RowBox[{
+          RowBox[{"-", 
+           FractionBox[
+            RowBox[{
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"], "-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"+\""},
+                "RowDefault"]], "2"]}], 
+            SqrtBox["2"]]}], "+", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"]}], "+", 
+            FractionBox[
+             SubscriptBox[
+              TemplateBox[{"\[CapitalGamma]"},
+               "RowDefault"], 
+              TemplateBox[{"\"+\""},
+               "RowDefault"]], "2"]}], 
+           SqrtBox["2"]]}]},
+        {"0"},
+        {"0"}
+       },
+       GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+       GridBoxSpacings->{"Columns" -> {
+           Offset[0.27999999999999997`], {
+            Offset[0.5599999999999999]}, 
+           Offset[0.27999999999999997`]}, "Rows" -> {
+           Offset[0.2], {
+            Offset[0.4]}, 
+           Offset[0.2]}}],
+      Column], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]]}], "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1981189397]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->104323313],
+
+Cell["\<\
+Let us consider the case where the Lindblad operators are given in the Pauli \
+operators (not matrices).\
+\>", "ExampleText",
+ CellID->143316561],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->491220298],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"opH", "=", "0"}], ";"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->145392952],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "\[CapitalGamma]"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"opL", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Sqrt", "[", 
+      RowBox[{"\[CapitalGamma]", "[", "\"\<+\>\"", "]"}], "]"}], " ", 
+     RowBox[{"S", "[", "4", "]"}]}], ",", 
+    RowBox[{
+     RowBox[{"Sqrt", "[", 
+      RowBox[{"\[CapitalGamma]", "[", "\"\<-\>\"", "]"}], "]"}], 
+     RowBox[{"S", "[", "5", "]"}]}]}], "}"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->682224499],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"+\""}, "RowDefault"]},
+     "Superscript"], " ", 
+    SqrtBox[
+     SubscriptBox[
+      TemplateBox[{"\[CapitalGamma]"},
+       "RowDefault"], 
+      TemplateBox[{"\"+\""},
+       "RowDefault"]]]}], ",", 
+   RowBox[{
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"\"-\""}, "RowDefault"]},
+     "Superscript"], " ", 
+    SqrtBox[
+     SubscriptBox[
+      TemplateBox[{"\[CapitalGamma]"},
+       "RowDefault"], 
+      TemplateBox[{"\"-\""},
+       "RowDefault"]]]}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1647836533]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"LindbladConvert", "[", 
+   RowBox[{"None", ",", "opL"}], "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->279780807],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{
+         RowBox[{"-", 
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"-\""},
+            "RowDefault"]]}], "-", 
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"+\""},
+           "RowDefault"]]}], "0", "0"},
+       {"0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}], "0"},
+       {"0", "0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", 
+     TagBox[GridBox[{
+        {
+         RowBox[{
+          RowBox[{"-", 
+           FractionBox[
+            RowBox[{
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"], "-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"+\""},
+                "RowDefault"]], "2"]}], 
+            SqrtBox["2"]]}], "+", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"]}], "+", 
+            FractionBox[
+             SubscriptBox[
+              TemplateBox[{"\[CapitalGamma]"},
+               "RowDefault"], 
+              TemplateBox[{"\"+\""},
+               "RowDefault"]], "2"]}], 
+           SqrtBox["2"]]}]},
+        {"0"},
+        {"0"}
+       },
+       GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+       GridBoxSpacings->{"Columns" -> {
+           Offset[0.27999999999999997`], {
+            Offset[0.5599999999999999]}, 
+           Offset[0.27999999999999997`]}, "Rows" -> {
+           Offset[0.2], {
+            Offset[0.4]}, 
+           Offset[0.2]}}],
+      Column], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->844512591]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"LindbladConvert", "[", 
+   RowBox[{"opH", ",", "opL"}], "]"}]}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1321861504],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{
+         RowBox[{"-", 
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"-\""},
+            "RowDefault"]]}], "-", 
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"+\""},
+           "RowDefault"]]}], "0", "0"},
+       {"0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}], "0"},
+       {"0", "0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", 
+     TagBox[GridBox[{
+        {
+         RowBox[{
+          RowBox[{"-", 
+           FractionBox[
+            RowBox[{
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"], "-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"+\""},
+                "RowDefault"]], "2"]}], 
+            SqrtBox["2"]]}], "+", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"]}], "+", 
+            FractionBox[
+             SubscriptBox[
+              TemplateBox[{"\[CapitalGamma]"},
+               "RowDefault"], 
+              TemplateBox[{"\"+\""},
+               "RowDefault"]], "2"]}], 
+           SqrtBox["2"]]}]},
+        {"0"},
+        {"0"}
+       },
+       GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+       GridBoxSpacings->{"Columns" -> {
+           Offset[0.27999999999999997`], {
+            Offset[0.5599999999999999]}, 
+           Offset[0.27999999999999997`]}, "Rows" -> {
+           Offset[0.2], {
+            Offset[0.4]}, 
+           Offset[0.2]}}],
+      Column], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]]}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->143587550]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ops", "=", 
+   RowBox[{"Prepend", "[", 
+    RowBox[{"opL", ",", "opH"}], "]"}]}], ";"}], "\n", 
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"LindbladConvert", "[", "ops", "]"}]}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->416889041],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{
+         RowBox[{"-", 
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"-\""},
+            "RowDefault"]]}], "-", 
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"+\""},
+           "RowDefault"]]}], "0", "0"},
+       {"0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}], "0"},
+       {"0", "0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", 
+     TagBox[GridBox[{
+        {
+         RowBox[{
+          RowBox[{"-", 
+           FractionBox[
+            RowBox[{
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"], "-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"+\""},
+                "RowDefault"]], "2"]}], 
+            SqrtBox["2"]]}], "+", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"]}], "+", 
+            FractionBox[
+             SubscriptBox[
+              TemplateBox[{"\[CapitalGamma]"},
+               "RowDefault"], 
+              TemplateBox[{"\"+\""},
+               "RowDefault"]], "2"]}], 
+           SqrtBox["2"]]}]},
+        {"0"},
+        {"0"}
+       },
+       GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+       GridBoxSpacings->{"Columns" -> {
+           Offset[0.27999999999999997`], {
+            Offset[0.5599999999999999]}, 
+           Offset[0.27999999999999997`]}, "Rows" -> {
+           Offset[0.2], {
+            Offset[0.4]}, 
+           Offset[0.2]}}],
+      Column], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]]}], "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->730749426]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"opH", "=", 
+   RowBox[{"S", "[", "1", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"LindbladConvert", "[", 
+   RowBox[{"opH", ",", "opL"}], "]"}]}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1787165088],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{
+         RowBox[{"-", 
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"-\""},
+            "RowDefault"]]}], "-", 
+         SubscriptBox[
+          TemplateBox[{"\[CapitalGamma]"},
+           "RowDefault"], 
+          TemplateBox[{"\"+\""},
+           "RowDefault"]]}], "0", "2"},
+       {"0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}], "0"},
+       {
+        RowBox[{"-", "2"}], "0", 
+        RowBox[{
+         RowBox[{"-", 
+          FractionBox[
+           SubscriptBox[
+            TemplateBox[{"\[CapitalGamma]"},
+             "RowDefault"], 
+            TemplateBox[{"\"-\""},
+             "RowDefault"]], "2"]}], "-", 
+         FractionBox[
+          SubscriptBox[
+           TemplateBox[{"\[CapitalGamma]"},
+            "RowDefault"], 
+           TemplateBox[{"\"+\""},
+            "RowDefault"]], "2"]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", 
+     TagBox[GridBox[{
+        {
+         RowBox[{
+          RowBox[{"-", 
+           FractionBox[
+            RowBox[{
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"], "-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"+\""},
+                "RowDefault"]], "2"]}], 
+            SqrtBox["2"]]}], "+", 
+          FractionBox[
+           RowBox[{
+            RowBox[{"-", 
+             FractionBox[
+              SubscriptBox[
+               TemplateBox[{"\[CapitalGamma]"},
+                "RowDefault"], 
+               TemplateBox[{"\"-\""},
+                "RowDefault"]], "2"]}], "+", 
+            FractionBox[
+             SubscriptBox[
+              TemplateBox[{"\[CapitalGamma]"},
+               "RowDefault"], 
+              TemplateBox[{"\"+\""},
+               "RowDefault"]], "2"]}], 
+           SqrtBox["2"]]}]},
+        {"0"},
+        {"0"}
+       },
+       GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+       GridBoxSpacings->{"Columns" -> {
+           Offset[0.27999999999999997`], {
+            Offset[0.5599999999999999]}, 
+           Offset[0.27999999999999997`]}, "Rows" -> {
+           Offset[0.2], {
+            Offset[0.4]}, 
+           Offset[0.2]}}],
+      Column], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]]}], "}"}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1998337436]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["LindbladSolve"]], "paclet:Q3/ref/LindbladSolve"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["LindbladBasis"]], "paclet:Q3/ref/LindbladBasis"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["LindbladGenerator"]], "paclet:Q3/ref/LindbladGenerator"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tech Notes"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Kraus: Quick Start"]], "paclet:Q3/tutorial/KrausQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Kraus Package Guide"]], "paclet:Q3/guide/KrausPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1250207841]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"LindbladConvert",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 4, 19, 10, 59, 29.081182}", 
+    "history" -> {"1.8", "", "", ""}, "context" -> "Q3`Kraus`", 
+    "keywords" -> {
+     "Lindblad equation", "quantum master equation", "decoherence", 
+      "quantum noise"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "LindbladConvert[{a, b1, b2, ...}] converts the Lindblad equation \
+specified by the effective Hamiltonian a and the Lindblad operators b1, b2, \
+... into the matrix equation for the expansion coefficients of the density \
+matrix in the so-called Kraus basis (see LindbladBasis). LindbladConvert[a, \
+{b1, b2, ...}] are also allowed.", "synonyms" -> {}, "tabletags" -> {}, 
+    "title" -> "LindbladConvert", "titlemodifier" -> "", "windowtitle" -> 
+    "LindbladConvert", "type" -> "Symbol", "uri" -> "Q3/ref/LindbladConvert", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "NewStyles" -> 
+  False},
+CellContext->"Global`",
+FrontEndVersion->"12.2 for Mac OS X x86 (64-bit) (December 12, 2020)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.2 for Mac OS X x86 (64-bit) (December 12, 2020)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[8510, 261, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a4e09493-599e-4ab4-ab67-703c40980003",
+   CellTags->"PrimaryExamplesSection",
+   CellID->600305963]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 43212, 1449}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[587, 21, 4435, 112, 70, "AnchorBarGrid",ExpressionUUID->"8e400d75-10ef-472e-87b1-6bb8fe51352a",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5047, 137, 172, 6, 70, "ObjectNameGrid",ExpressionUUID->"97e5793a-31b7-4d6f-9d57-6ed1b00413bc"],
+Cell[5222, 145, 1921, 60, 70, "Usage",ExpressionUUID->"4eb576d8-8a58-421d-99c6-501ef3d425d1",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7180, 210, 630, 19, 70, "NotesSection",ExpressionUUID->"a7a7ab9d-71d2-40a4-8b72-8ea65e25365a",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1071797057],
+Cell[7813, 231, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"9e1b87c9-c80a-4525-acfc-24614bdf71d4"],
+Cell[7847, 233, 592, 21, 70, "Notes",ExpressionUUID->"f30c6e94-8819-4517-9c7d-24012aac8c1b",
+ CellID->1067943069],
+Cell[8442, 256, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"4d64b582-171d-4427-8981-98164ed57068"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[8510, 261, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a4e09493-599e-4ab4-ab67-703c40980003",
+ CellTags->"PrimaryExamplesSection",
+ CellID->600305963],
+Cell[CellGroupData[{
+Cell[8802, 275, 195, 6, 70, "ExampleSection",ExpressionUUID->"ee8e65fb-693b-4221-9063-7b1aad822fda",
+ CellID->464146535],
+Cell[9000, 283, 104, 2, 70, "ExampleText",ExpressionUUID->"15e7aa3e-52d8-4c34-bce4-f5a8ef6b2086",
+ CellID->789443279],
+Cell[9107, 287, 146, 4, 70, "Input",ExpressionUUID->"e8ade1ff-11cc-43d4-bf8a-775e883783f4",
+ CellID->387884857],
+Cell[CellGroupData[{
+Cell[9278, 295, 233, 7, 70, "Input",ExpressionUUID->"56702f94-f074-4ba1-afc0-0a36b623c094",
+ CellID->575047188],
+Cell[9514, 304, 591, 18, 70, "Output",ExpressionUUID->"302d687f-0249-4cff-9c7e-8c86df0c5287",
+ CellID->2047899098]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10142, 327, 631, 18, 70, "Input",ExpressionUUID->"0391c1da-b262-4a1d-9769-cb97d29d38a6",
+ CellID->1820491489],
+Cell[10776, 347, 1681, 54, 70, "Output",ExpressionUUID->"fe00eff9-1f4c-4b55-9a40-26f0e08968e3",
+ CellID->2019350172]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12494, 406, 173, 5, 70, "Input",ExpressionUUID->"65dd8cac-5f59-443b-8a48-2dfe2a927ad4",
+ CellID->1152845036],
+Cell[12670, 413, 3452, 111, 70, "Output",ExpressionUUID->"de43dcf1-b474-4399-bece-cf054de55e9f",
+ CellID->1082822996]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16159, 529, 240, 7, 70, "Input",ExpressionUUID->"362cb652-b900-497d-b4a8-405c1fa3d05b",
+ CellID->838964454],
+Cell[16402, 538, 2229, 70, 70, "Output",ExpressionUUID->"09752b78-4e7b-4548-b84d-6ceaa6a6e660",
+ CellID->397903728]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18668, 613, 146, 4, 70, "Input",ExpressionUUID->"a41f8b18-3bb8-40d3-b7f1-6ef2ffff478f",
+ CellID->359386143],
+Cell[18817, 619, 3452, 111, 70, "Output",ExpressionUUID->"21e216c1-76de-4c4b-a5c6-40e571858e72",
+ CellID->1981189397]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22306, 735, 125, 3, 70, "ExampleDelimiter",ExpressionUUID->"dc3eb530-906c-476b-ab96-97ac5ab347fa",
+ CellID->104323313],
+Cell[22434, 740, 155, 4, 70, "ExampleText",ExpressionUUID->"0bee7ac3-21be-4333-95c2-9370af2785a6",
+ CellID->143316561],
+Cell[22592, 746, 126, 4, 70, "Input",ExpressionUUID->"2148841e-6c45-48a9-b68c-f2b5b8c685be",
+ CellID->491220298],
+Cell[22721, 752, 112, 4, 70, "Input",ExpressionUUID->"bea5de33-4e48-420e-818b-22304f6d6a7f",
+ CellID->145392952],
+Cell[CellGroupData[{
+Cell[22858, 760, 523, 15, 70, "Input",ExpressionUUID->"cd2d7903-452a-41a3-a690-7211aefb2c95",
+ CellID->682224499],
+Cell[23384, 777, 693, 26, 70, "Output",ExpressionUUID->"446747d9-cdb8-49f7-bded-873ec208da34",
+ CellID->1647836533]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[24114, 808, 173, 5, 70, "Input",ExpressionUUID->"6314780d-80a6-4c4e-b057-dfbf16696fe0",
+ CellID->279780807],
+Cell[24290, 815, 3451, 111, 70, "Output",ExpressionUUID->"87cf3088-c32e-4924-bb6a-31d843519cbd",
+ CellID->844512591]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27778, 931, 173, 5, 70, "Input",ExpressionUUID->"c2e18a88-3952-44b3-913a-b96531ba9177",
+ CellID->1321861504],
+Cell[27954, 938, 3451, 111, 70, "Output",ExpressionUUID->"442d9606-6e8b-413b-8816-29e5e79308ec",
+ CellID->143587550]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[31442, 1054, 265, 8, 70, "Input",ExpressionUUID->"1adf3aba-4a14-4bf8-be9d-d77587102713",
+ CellID->416889041],
+Cell[31710, 1064, 3451, 111, 70, "Output",ExpressionUUID->"b8f93b02-d859-4090-8348-7816faa9ae52",
+ CellID->730749426]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[35198, 1180, 274, 8, 70, "Input",ExpressionUUID->"8eae969a-c44f-460d-b74f-35c54923e81d",
+ CellID->1787165088],
+Cell[35475, 1190, 3476, 112, 70, "Output",ExpressionUUID->"86a02875-a74d-409e-ae5f-6d51efa42bc0",
+ CellID->1998337436]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[38990, 1307, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"7c9d579e-51a3-4feb-95b1-f8d5cb016e6e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[39058, 1312, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"d28211ae-b95e-4469-8986-58be78460575",
+ CellID->1255426704],
+Cell[39211, 1321, 889, 28, 70, "SeeAlso",ExpressionUUID->"be18abb2-a5ee-4209-9d34-92d9b0b65021",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40137, 1354, 153, 7, 70, "TutorialsSection",ExpressionUUID->"f68b5097-01a5-4dc1-96bb-8ece6d205aba",
+ CellID->250839057],
+Cell[40293, 1363, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"e5da74c5-0988-4641-bb44-70c0413082d0"],
+Cell[40327, 1365, 187, 6, 70, "Tutorials",ExpressionUUID->"68bb6f91-24a7-4313-8e45-b48530d3ca6b",
+ CellID->341631938],
+Cell[40517, 1373, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"b10c347e-a9ac-435e-8f36-e531b654390f"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40585, 1378, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"c73a087c-d72e-4895-af0e-2f2a79d52c98",
+ CellID->38303248],
+Cell[40744, 1387, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"612e6c66-377d-4ee1-b2ef-35750fe2d98c"],
+Cell[40778, 1389, 188, 6, 70, "MoreAbout",ExpressionUUID->"d8a3cee7-c8d8-4f9e-8bd3-b2ca7aba7514",
+ CellID->1250207841]
+}, Open  ]],
+Cell[40981, 1398, 23, 0, 70, "FooterCell",ExpressionUUID->"2ade06be-b09e-4a53-bf44-6c28d934d634"]
+}
+]
+*)
+
+(* End of internal cache information *)

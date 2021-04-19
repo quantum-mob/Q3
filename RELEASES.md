@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.8.5
+
+- New package Kraus to facilitate the study of quatum operations.
+- New functions Supermap, ChoiMatrix, KrausProduct, LindbladBasis, LindbladGenerator, LindblandConvert, LindbladSolve, etc.
+
 ## v1.8.3
 
 - Q3`*`Information`$Version instead of Q3`*`Private`Version

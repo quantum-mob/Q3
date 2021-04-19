@@ -2,6 +2,8 @@
 (* Mathematica package to simulate the universal quantum computation based on
    the Gray code. *)
 
+Needs["Q3`"]
+
 BeginPackage[ "Q3`Gray`",
   { "Q3`Abel`",
     "Q3`Cauchy`",
@@ -12,8 +14,8 @@ BeginPackage[ "Q3`Gray`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.31 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.32 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-17 01:05:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

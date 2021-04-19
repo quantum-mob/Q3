@@ -5,8 +5,8 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.17 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.18 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-16 18:40:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2109,7 +2109,7 @@ PauliDecompose[ m_?MatrixQ ] := Module[
    ];
   idxTable = Table[{0, 1, 2, 3}, {n}];
   idxList = Outer[ List, Sequence @@ idxTable ];
-  Map[ PauliDecompose[m, #]&, idxList, {n} ]
+  Simplify @ Map[ PauliDecompose[m, #]&, idxList, {n} ]
  ]
 
 
