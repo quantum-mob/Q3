@@ -14,8 +14,8 @@ BeginPackage[ "Q3`Kraus`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.8 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-19 10:52:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.19 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-24 06:18:14+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 
@@ -26,8 +26,10 @@ BeginPackage[ "Q3`Kraus`",
 
 { LindbladGenerator, DampingOperator };
 
-{ LindbladBasis, LindbladConvert, LindbladSolve, LindbladSolveNaive };
+{ LindbladBasis, LindbladBasisMatrix,
+  LindbladConvert, LindbladSolve };
 
+{ LindbladConvertOld, LindbladSolveNaive};
 
 Begin["`Private`"]
 
@@ -169,15 +171,25 @@ theVectorX[mat_?MatrixQ, mbs:{__?MatrixQ}] :=
 
 (**** </LindbladBasis> ****)
 
-DampingOperator::usage = "DampingOperator[{b1, b2, \[Ellipsis]}] returns the effective damping operator corresponding to the Lindblad operators b1, b2, \[Ellipsis]."
+LindbladBasisMatrix::usage = "LindbladBasisMatrix[n] returns the Choi matrix of the supermap that maps the standard basis of \[ScriptCapitalL](n) to the Lindblad basis."
 
-DampingOperator[{opL__}] := DampingOperator[opL]
+LindbladBasisMatrix[n_] := Module[
+  { lbs = LindbladBasis[n] },
+  SparseArray @ Transpose[ArrayReshape[lbs, {n, n, n, n}], {2, 4, 1, 3}]
+ ]
 
-DampingOperator[opL__?MatrixQ] :=
-  Plus @@ MapThread[Dot, {Topple /@ {opL}, {opL}}] / 2 /;
-  ArrayQ @ {opL}
 
-DampingOperator[opL__] := MultiplyDot[Dagger @ {opL}, {opL}] / 2
+DampingOperator::usage = "DampingOperator[{b1, b2, \[Ellipsis]}] or DampingOperator[b1, b2, \[Ellipsis]]  returns the effective damping operator corresponding to the Lindblad operators b1, b2, \[Ellipsis]."
+
+DampingOperator[opL__] := DampingOperator @ {opL}
+
+DampingOperator[opL:{__?MatrixQ}] :=
+  Plus @@ MapThread[Dot, {Topple /@ opL, opL}] / 2 /;
+  ArrayQ @ opL
+
+DampingOperator[opL:{__}] := MultiplyDot[Dagger @ opL, opL] / 2
+
+DampingOperator[{}] = 0
 
 
 LindbladGenerator::usage = "LindbladGenerator[opH, opL1, opL2, \[Ellipsis]] represents a superoperator generating the Lindblad equation specified by the effective Hamiltonian opH and the Lindblad operators opL1, opL2, \[Ellipsis].\nLindbladGenerator[opH, opL1, opL2, \[Ellipsis]][rho] transforms the matrix rho."
@@ -191,23 +203,17 @@ LindbladGenerator[ops:{_?MatrixQ, __?MatrixQ}] := (
 
 LindbladGenerator[opH_, {opL__}] := LindbladGenerator @ {opH, opL}
 
-LindbladGenerator[opH_?MatrixQ] := LindbladGenerator[{opH, None}]
-
-LindbladGenerator[opH:Except[_List]] := LindbladGenerator[{opH, None}]
-
 LindbladGenerator[opH_, None] := LindbladGenerator[{opH, None}]
 
 LindbladGenerator[{opH_?MatrixQ, None}] :=
   LindbladGenerator @ {opH, Zero @ Dimensions @ opH}
 
-LindbladGenerator[{opH_?MatrixQ, None}] :=
-  LindbladGenerator @ {opH, 0}
+LindbladGenerator[{opH_, None}] := LindbladGenerator @ {opH, 0}
 
 LindbladGenerator[{None, opL__?MatrixQ}] :=
   LindbladGenerator @ {Zero @ Dimensions @ First @ opL, opL}
 
-LindbladGenerator[{None, opL__}] :=
-  LindbladGenerator @ {0, opL}
+LindbladGenerator[{None, opL__}] := LindbladGenerator @ {0, opL}
 
 LindbladGenerator[{opH_?MatrixQ, opL__?MatrixQ}][rho_?MatrixQ] := Module[
   { opG = DampingOperator[opL],
@@ -227,7 +233,7 @@ LindbladGenerator[{opH_, opL__}][rho_] := Module[
 
 
 LindbladGenerator /:
-ChoiMatrix[ LindbladGenerator @ {opH_?MatrixQ, opL__?MatrixQ} ] := Module[
+ChoiMatrix @ LindbladGenerator @ {opH_?MatrixQ, opL__?MatrixQ} := Module[
   { one = One @ Length @ opH,
     opG = DampingOperator[opL] },
   -I(ChoiMatrix[opH, one] - ChoiMatrix[one, opH]) -
@@ -235,14 +241,20 @@ ChoiMatrix[ LindbladGenerator @ {opH_?MatrixQ, opL__?MatrixQ} ] := Module[
     ChoiMatrix @ {opL}
  ]
 
+LindbladGenerator /:
+HoldPattern @ ChoiMatrix @ LindbladGenerator[ops:{_, __}] := Module[
+  { ss = NonCommutativeSpecies @ ops },
+  ChoiMatrix @ LindbladGenerator @ Matrix[ops, ss]
+ ]
 
-LindbladConvert::usage = "LindbladConvert[...] returns the pair {matrix, offset vector} corresponding to the generator of the Lindblad equation."
 
-LindbladConvert::incmp = "The matrices `` are not compatible with each other."
+LindbladConvertOld::usage = "See LindbladConvert."
 
-LindbladConvert[opH_, {opL__}] := LindbladConvert[{opH, opL}]
+LindbladConvertOld::incmp = "The matrices `` are not compatible with each other."
 
-LindbladConvert[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
+LindbladConvertOld[opH_, {opL__}] := LindbladConvertOld[{opH, opL}]
+
+LindbladConvertOld[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
   { len = Length[opH],
     mbs, var, rho, gen, x },
   mbs = LindbladBasis[len];
@@ -258,9 +270,41 @@ LindbladConvert[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
    }
  ] /; ArrayQ @ {opH, opL}
 
+LindbladConvertOld[ops:{__?MatrixQ}] :=
+  Message[LindbladConvertOld::incmp, Normal @ ops]
+
+LindbladConvertOld[ops:{_, __}] := Module[
+  { ss = NonCommutativeSpecies @ ops },
+  LindbladConvertOld @ Matrix[ops, ss]
+ ]
+
+
+LindbladConvert::usage = "LindbladConvert[{opH, opL}] converts the Lindblad equation into an ordinary differential equation for the column vector consisting of the components of the density operator in the so-called Lindblad basis.\nIt returns the pair {generator matrix, offset vector}."
+
+LindbladConvert::incmp = "The matrices `` are not compatible with each other."
+
+LindbladConvert[opH_, {opL__}] := LindbladConvert[{opH, opL}]
+
+LindbladConvert[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
+  { n = Length[opH],
+    mat, gen },
+  mat = LindbladBasisMatrix[n];
+  mat = ArrayReshape[Transpose[mat, 2 <-> 3], {n*n, n*n}];
+
+  gen = ChoiMatrix @ LindbladGenerator @ {opH, opL};
+  gen = ArrayReshape[Transpose[gen, 2 <-> 3], {n*n, n*n}];
+
+  gen = Topple[mat] . gen . mat;
+  
+  { gen[[2;;, 2;;]],
+    gen[[2;;, 1]] / Sqrt[n]
+   }
+ ] /; ArrayQ @ {opH, opL}
+
 LindbladConvert[ops:{__?MatrixQ}] :=
   Message[LindbladConvert::incmp, Normal @ ops]
 
+LindbladConvert[{None, opL__}] := LindbladConvert[{0, opL}]
 
 LindbladConvert[ops:{_, __}] := Module[
   { ss = NonCommutativeSpecies @ ops },
