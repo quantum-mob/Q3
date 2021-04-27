@@ -4,8 +4,8 @@ BeginPackage["Q3`Abel`"]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.8 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-26 13:10:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -879,23 +879,25 @@ CoefficientTensor[expr_, ops:{__?AnySpeciesQ}.., Times] := Module[
 MultiplyPower::usage = "MultiplyPower[expr, i] raises an expression to the i-th
 power using the non-commutative multiplication Multiply."
 
-MultiplyPower::negativePower = "Negative power detected: (``)^(``)";
-
 SetAttributes[MultiplyPower, {Listable, ReadProtected}];
-
-(* Recursive calculation, it makes better use of Mathematica's result caching
-   capabilities! *)
 
 MultiplyPower[op_, 0] = 1
 
 MultiplyPower[op_, 1] := op
 
 MultiplyPower[op_, n_Integer] := Multiply[MultiplyPower[op, n-1], op] /; n > 1
+(* NOTE: Recursive calculation as it makes better use of Mathematica's caching
+   capabilities! *)
 
-MultiplyPower[op_, n_?Negative] := (
-  Message[MultiplyPower::negativePower, op, n];
-  Null
- )
+MultiplyPower[z_?CommutativeQ, n_] := Power[z, n]
+
+MultiplyPower[op_, n_, func_] := Module[
+  { ss = NonCommutativeSpecies[op],
+    mat },
+  mat = MatrixPower[Q3`Pauli`Matrix[op, ss], n]; 
+  If[func === None, mat, func[mat, ss]]
+ ]
+
 
 MultiplyDot::usage = "MultiplyDot[a, b, ...] returns the products of vectors, matrices, and tensors of Species.\nMultiplyDot is a non-commutative equivalent to the native Dot with Times replaced with Multiply"
 

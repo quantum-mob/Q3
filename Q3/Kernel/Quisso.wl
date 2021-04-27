@@ -13,8 +13,8 @@ Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.16 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.23 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-26 20:25:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -70,7 +70,7 @@ Q3`Q3Clear[];
 Begin["`Private`"]
 
 $symb = Unprotect[
-  Multiply, MultiplyExp, MultiplyDegree,
+  Multiply, MultiplyExp, MultiplyPower, MultiplyDegree,
   CircleTimes, OTimes, Dagger, Dyad,
   KetTrim, KetRule, Ket, Bra, BraKet, Basis, SpinForm,
   $RaiseLowerRules,
@@ -371,8 +371,13 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
     mm },
   mm = Matrix[expr, ss];
   QuissoExpression[MatrixExp[mm], ss]
- ] /; ContainsOnly[ Kind @ NonCommutativeSpecies[expr], List @ Qubit ]
+ ] /; ContainsOnly[ Kind @ NonCommutativeSpecies[expr], {Qubit} ]
 
+
+
+HoldPattern @ MultiplyPower[expr_, n_] :=
+  MultiplyPower[expr, n, QuissoExpression] /;
+  ContainsOnly[ Kind @ NonCommutativeSpecies[expr], {Qubit} ]
 
 
 (* MultiplyDegree for operators *)
@@ -905,9 +910,11 @@ QuissoExpression[ mat_?MatrixQ, ss:{__?QubitQ} ] := Module[
   
   tensor = Tensorize[mat];
   tt = Map[
-    Function[ {S},
+    Function[
+      {S},
       { {1/2+S[3]/2, S[Raise]},
-        {S[Lower], 1/2-S[3]/2} } ],
+        {S[Lower], 1/2-S[3]/2} }
+     ],
     ss
    ];
   op = Outer[ HoldTimes, Sequence @@ tt ];
@@ -1550,8 +1557,10 @@ Measurement[ g_?QubitQ ] := Measurement @ FlavorNone @ g /;
   FlavorLast[g] =!= None
 (* This is for the interface with QuissoCircuit[]. *)
 
-Measurement[vec_, qq:{__?QubitQ}] := Fold[ Measurement, vec, FlavorNone @ qq ]
-  
+Measurement[vec_, qq:{__?QubitQ}] :=
+  Fold[ Measurement, vec, FlavorNone @ qq ] /;
+  Not @ FreeQ[Elaborate[vec], Ket[_Association]]
+
 Measurement[vec_, S_?QubitQ] := Module[
   { r = RandomReal[],
     b = FlavorNone[S],
@@ -1577,7 +1586,15 @@ Measurement[vec_, S_?QubitQ] := Module[
     Message[Measurement::nonum];
     If[ r < 0.5, v0, v1 ]
    ]
- ]
+ ] /; Not @ FreeQ[Elaborate[vec], Ket[_Association]]
+
+
+(* DANGEROUS because Multiply is a multi-linear function. *)
+(*
+HoldPattern @ Multiply[pre___, Measurement[op_, q_?QubitQ], post___] :=
+  Multiply[pre, Measurement[Multiply[op, post], q]]
+ *)
+(* NOTE: This occurs when op is not a Ket[<|...|>] expression. *)
 
 
 Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
@@ -1808,8 +1825,13 @@ Matrix[ qc:QuissoCircuit[gg__, ___?OptionQ] ] := Module[
 
 qCircuitOperate::usage = "Converts gates to operators ..."
 
-qCircuitOperate[a___, Measurement[q_?QubitQ], b___] := 
-  qCircuitOperate[ Measurement[qCircuitOperate[a], q], b ]
+qCircuitOperate[] = 1
+
+qCircuitOperate[pre__, Measurement[q_?QubitQ], post___] := 
+  qCircuitOperate[ Measurement[qCircuitOperate[pre], q], post ]
+
+qCircuitOperate[m_Measurement, post___] :=
+  Multiply[qCircuitOperate[post], m]
 
 qCircuitOperate[ op:Except[_Measurement].. ] := 
   Fold[ Garner @ Multiply[#2, #1]&, 1, Elaborate @ {op} ]
@@ -2530,7 +2552,7 @@ End[] (* `Special` *)
 Begin["`Qudit`"]
 
 $symb = Unprotect[
-  Multiply, MultiplyDegree, Dyad,
+  Multiply, MultiplyPower, MultiplyDegree, Dyad,
   Basis, TheMatrix,
   Parity, ParityEvenQ, ParityOddQ,
   $GarnerHeads, $GarnerTests,
@@ -2599,6 +2621,11 @@ Qudits[ expr_ ] := FlavorNone @ Union @ Map[Most] @
   Cases[ Normal[{expr}, Association], _?QuditQ, Infinity ]
 (* NOTE: { } are necessary around expr; otherwise, Qudits[S[1,2]] does
    not give the trivial result. *)
+
+
+HoldPattern @ MultiplyPower[expr_, n_] :=
+  MultiplyPower[expr, n, QuditExpression] /;
+  ContainsOnly[ Kind @ NonCommutativeSpecies[expr], {Qudit} ]
 
 
 (* MultiplyDegree for operators *)

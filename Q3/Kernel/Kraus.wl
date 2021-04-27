@@ -14,8 +14,8 @@ BeginPackage[ "Q3`Kraus`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-24 06:18:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-26 17:16:13+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 
@@ -132,12 +132,24 @@ KrausProduct[a_, b_?CommutativeQ] := Conjugate[Tr @ Matrix @ a] * b
 
 LindbladBasis::usage = "LindbladBasis[n] returns a basis of the vector space \[ScriptCapitalM](n) of n\[Times]n matrices.\nThe basis is orthonormal with respect to the trace Hermitian product, and all but one elements are traceless."
   
-LindbladBasis[n_] := Module[
+LindbladBasis[n_Integer] := Module[
   { dbs = SparseArray /@ DiagonalMatrix /@ theBasisX[n],
     obs = Subsets[Range[n], {2}] },
   obs = SparseArray[# -> 1, {n, n}]& /@ obs;
   obs = Join[ (Transpose /@ obs + obs), I(Transpose /@ obs - obs) ] / Sqrt[2];
   Join[dbs, obs]
+ ] /; n > 1
+
+LindbladBasis[op_?SpeciesQ] := LindbladBasis @ {op}
+
+LindbladBasis[qq:{_?QubitQ}] := Module[
+  { lbs = LindbladBasis[Times @@ Dimension[qq]] },
+  QuissoExpression[#, qq]& /@ lbs
+ ]
+
+LindbladBasis[qq:{_?QuditQ}] := Module[
+  { lbs = LindbladBasis[Times @@ Dimension[qq]] },
+  QuditExpression[#, qq]& /@ lbs
  ]
 
 

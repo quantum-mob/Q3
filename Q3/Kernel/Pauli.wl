@@ -5,8 +5,8 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.18 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 18:40:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.21 $"][[2]], " (",
+  StringSplit["$Date: 2021-04-26 13:11:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -86,7 +86,7 @@ Q3`Q3Clear[];
 Begin["`Private`"]
 
 $symbs = Unprotect[
-  Multiply, MultiplyExp,
+  Multiply, MultiplyExp, MultiplyPower,
   CircleTimes, CirclePlus,
   $GarnerHeads, $GarnerTests,
   $ElaborationRules, $ElaborationHeads,
@@ -664,6 +664,12 @@ HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
 MultiplyExp /:
 HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
   PauliExpression @ MatrixExp @ Matrix @ expr /;
+  NonCommutativeSpecies[expr] == {} /;
+  Not @ FreeQ[expr, _Pauli]
+
+
+HoldPattern @ MultiplyPower[expr_, n_] :=
+  PauliExpression @ MatrixPower[Matrix @ expr, n] /;
   NonCommutativeSpecies[expr] == {} /;
   Not @ FreeQ[expr, _Pauli]
 
@@ -2352,8 +2358,8 @@ Tensorize[m_?MatrixQ, dim:{__Integer}] := Module[
     Message[Tensorize::badShape, ll, dim];
     Return[m]
    ];
-  ii = Join[ Range[1,r,2], Range[2,r,2] ];
-  Transpose[ ArrayReshape[m, Join[oo,ee]], ii ]
+  ii = Join[ Range[1, r, 2], Range[2, r, 2] ];
+  Transpose[ ArrayReshape[m, Join[oo, ee]], ii ]
  ]
 
 Tensorize[m_?MatrixQ] := Module[
@@ -2363,7 +2369,7 @@ Tensorize[m_?MatrixQ] := Module[
     Message[Tensorize::notQubit];
     Return[m]
    ];
-  ii = Join[ Range[1,2*n,2], Range[2,2*n,2] ];
+  ii = Join[ Range[1, 2*n, 2], Range[2, 2*n, 2] ];
   Transpose[ ArrayReshape[m, ConstantArray[2, 2*n]], ii ]
  ]
 
