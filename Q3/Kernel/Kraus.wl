@@ -14,8 +14,8 @@ BeginPackage[ "Q3`Kraus`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-26 17:16:13+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.24 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-06 20:30:45+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 
@@ -27,7 +27,8 @@ BeginPackage[ "Q3`Kraus`",
 { LindbladGenerator, DampingOperator };
 
 { LindbladBasis, LindbladBasisMatrix,
-  LindbladConvert, LindbladSolve };
+  LindbladConvert, LindbladSolve,
+  LindbladStationary };
 
 { LindbladConvertOld, LindbladSolveNaive};
 
@@ -199,7 +200,7 @@ DampingOperator[opL:{__?MatrixQ}] :=
   Plus @@ MapThread[Dot, {Topple /@ opL, opL}] / 2 /;
   ArrayQ @ opL
 
-DampingOperator[opL:{__}] := MultiplyDot[Dagger @ opL, opL] / 2
+DampingOperator[opL:{Except[_?ListQ]..}] := MultiplyDot[Dagger @ opL, opL] / 2
 
 DampingOperator[{}] = 0
 
@@ -324,11 +325,49 @@ LindbladConvert[ops:{_, __}] := Module[
  ]
 
 
+LindbladStationary::usage = "LindbladStationary[{op, b1, b2, \[Ellipsis]}] returns the stationary state of the Lindblad equation specified by the effective Hamiltonian op and the Lindblad operators b1, b2, \[Ellipsis]."
+
+LindbladStationary::incmp = "The matrices `` are not compatible with each other."
+
+LindbladStationary[opH_, {opL__}] := LindbladStationary[{opH, opL}]
+
+LindbladStationary[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
+  { len = Length @ opH,
+    mat, gen, lb, rho },
+  { mat, gen } = LindbladConvert @ {opH, opL};
+  rho = - Inverse[mat] . gen;
+  rho = Prepend[rho, 1/Sqrt[len]];
+  lbs = LindbladBasis @ len;
+  Return[rho . lbs]
+ ] /; ArrayQ @ {opH, opL}
+
+LindbladStationary[ops:{__?MatrixQ}] :=
+  Message[LindbladStationary::incmp, Normal @ ops]
+
+LindbladStationary[{None, opL__}] := LindbladStationary[{0, opL}]
+
+LindbladStationary[ops:{_, __}] :=
+  PauliExpression @ LindbladStationary[Matrix /@ ops] /;
+  Not @ FreeQ[ops, _Pauli]
+
+LindbladStationary[ops:{_, __}] :=
+  LindbladStationary[ops, QuissoExpression] /;
+  AllTrue[NonCommutativeSpecies @ ops, QubitQ]
+
+LindbladStationary[ops:{_, __}, func_] := Module[
+  { ss = NonCommutativeSpecies @ ops,
+    rho },
+  rho = LindbladStationary @ Matrix[ops, ss];
+  If[ func === None, rho, func[rho, ss] ]
+ ]
+
+
 LindbladSolve::usage = "LindbladSolve[{opH, opL1, opL2, ...}, init, t] returns the solution of the Lindblad equation."
 
 LindbladSolve::incmp = "The matrices `` are not compatible with each other."
 
-LindbladSolve[opH_, {opL__}, init_, t_] := LindbladSolve[{opH, opL}, init, t]
+LindbladSolve[opH_, {opL__}, init_, rest__] :=
+  LindbladSolve[{opH, opL}, init, rest]
 
 
 LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
@@ -359,14 +398,19 @@ LindbladSolve[ops:{_, __}, init_, t_] :=
   LindbladSolve[ops, init, t, QuissoExpression] /;
   AllTrue[NonCommutativeSpecies @ Append[ops, init], QubitQ]
 
+LindbladSolve[ops:{_, __}, init_, t_] :=
+  PauliExpression @ LindbladSolve[Matrix /@ ops, Matrix @ init, t] /;
+  Not @ FreeQ[Append[ops, init], _Pauli]
+
+LindbladSolve[ops:{_, __}, init_, t_, PauliExpression] :=
+  PauliExpression @ LindbladSolve[Matrix /@ ops, Matrix @ init, t]
+
 LindbladSolve[ops:{_, __}, init_, t_, func_] := Module[
   { ss = NonCommutativeSpecies @ Append[ops, init],
     rho },
+  Print["ss = ", ss];
   rho = LindbladSolve[Matrix[ops, ss], Matrix[init, ss], t];
-  If[ func === None,
-    rho,
-    func[rho, ss]
-   ]
+  If[ func === None, rho, func[rho, ss] ]
  ]
 
 
@@ -384,8 +428,8 @@ LindbladSolveNaive[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
   bgn = Rest @ theVectorX[init, mbs];
 
   { gen, off } = LindbladConvert[ops];
-  off = Integrate[MatrixExp[-s gen].off, {s, 0, t}];
-  var = MatrixExp[t gen] . (bgn + off);
+  off = Integrate[MatrixExp[s gen].off, {s, 0, t}];
+  var = MatrixExp[t gen] . bgn + off;
   var = Prepend[var, 1/Sqrt[len]];
   var . mbs
  ] /; ArrayQ @ Join[{init}, ops]

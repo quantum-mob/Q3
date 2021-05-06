@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.8.7
+
+- Bug fixes in DampingOperator, LindbladSolve in the Kraus package.
+- New function LindbladStationary in the Kraus package.
+
 ## v1.8.5
 
 - New package Kraus to facilitate the study of quatum operations.
