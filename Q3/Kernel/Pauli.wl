@@ -5,8 +5,8 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.22 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-07 15:42:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.24 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-07 19:09:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1227,10 +1227,23 @@ HoldPattern @ Matrix[ Dagger[a_?NonCommutativeQ] ] := Topple @ Matrix[a]
 (* NOTE: Matrix[a] may still include some operators; and hence Topple instead
    of ConjugateTranspose. *)
 
+
 (* Arrays *)
 
 HoldPattern @
-  Matrix[ expr:(_List|_Association), qq:{__?SpeciesQ} ] := With[
+  Matrix[ expr:(_List|_Association), {} ] := Module[
+    { dim, mat },
+    dim = Power[2, FirstCase[expr, op_Pauli :> Length[op], 0, Infinity]];
+    mat = Zero @ {dim, dim};
+    Replace[
+      expr,
+      {0 -> mat, else_ :> Matrix[else]},
+      {1}
+     ]
+   ] /; And[Not @ FreeQ[expr, _Pauli], MemberQ[expr, 0]]
+
+HoldPattern @
+  Matrix[ expr:(_List|_Association), qq:{___?SpeciesQ} ] := With[
     { ss = FlavorNone @ qq },
     Map[ Matrix[#, ss]&, expr ]
    ]

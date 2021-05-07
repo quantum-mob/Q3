@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.8.9
+
+- Updates for the Kraus package: Several functions such as LindbladConvert, LindbladGenerator, LindbladStationary have been enhanced and are more robust for inputs specified in the Pauli expressions.
+
 ## v1.8.8
 
 - A quick bug fix in KetRule affecting the specification of Ket[{a,b,..}->{v1,v2,...}] for mixed species.

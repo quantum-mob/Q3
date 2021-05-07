@@ -14,8 +14,8 @@ BeginPackage[ "Q3`Kraus`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.24 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-06 20:30:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.25 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-07 19:33:07+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 
@@ -255,10 +255,8 @@ ChoiMatrix @ LindbladGenerator @ {opH_?MatrixQ, opL__?MatrixQ} := Module[
  ]
 
 LindbladGenerator /:
-HoldPattern @ ChoiMatrix @ LindbladGenerator[ops:{_, __}] := Module[
-  { ss = NonCommutativeSpecies @ ops },
-  ChoiMatrix @ LindbladGenerator @ Matrix[ops, ss]
- ]
+HoldPattern @ ChoiMatrix @ LindbladGenerator[ops:{_, __}] :=
+  ChoiMatrix @ LindbladGenerator @ Matrix[ops]
 
 
 LindbladConvertOld::usage = "See LindbladConvert."
@@ -286,10 +284,7 @@ LindbladConvertOld[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
 LindbladConvertOld[ops:{__?MatrixQ}] :=
   Message[LindbladConvertOld::incmp, Normal @ ops]
 
-LindbladConvertOld[ops:{_, __}] := Module[
-  { ss = NonCommutativeSpecies @ ops },
-  LindbladConvertOld @ Matrix[ops, ss]
- ]
+LindbladConvertOld[ops:{_, __}] := LindbladConvertOld @ Matrix[ops]
 
 
 LindbladConvert::usage = "LindbladConvert[{opH, opL}] converts the Lindblad equation into an ordinary differential equation for the column vector consisting of the components of the density operator in the so-called Lindblad basis.\nIt returns the pair {generator matrix, offset vector}."
@@ -319,10 +314,7 @@ LindbladConvert[ops:{__?MatrixQ}] :=
 
 LindbladConvert[{None, opL__}] := LindbladConvert[{0, opL}]
 
-LindbladConvert[ops:{_, __}] := Module[
-  { ss = NonCommutativeSpecies @ ops },
-  LindbladConvert @ Matrix[ops, ss]
- ]
+LindbladConvert[ops:{_, __}] := LindbladConvert @ Matrix[ops]
 
 
 LindbladStationary::usage = "LindbladStationary[{op, b1, b2, \[Ellipsis]}] returns the stationary state of the Lindblad equation specified by the effective Hamiltonian op and the Lindblad operators b1, b2, \[Ellipsis]."
@@ -347,7 +339,7 @@ LindbladStationary[ops:{__?MatrixQ}] :=
 LindbladStationary[{None, opL__}] := LindbladStationary[{0, opL}]
 
 LindbladStationary[ops:{_, __}] :=
-  PauliExpression @ LindbladStationary[Matrix /@ ops] /;
+  PauliExpression @ LindbladStationary @ Matrix[ops] /;
   Not @ FreeQ[ops, _Pauli]
 
 LindbladStationary[ops:{_, __}] :=
@@ -395,15 +387,15 @@ LindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
 
 
 LindbladSolve[ops:{_, __}, init_, t_] :=
+  PauliExpression @ LindbladSolve[Matrix @ ops, Matrix @ init, t] /;
+  Not @ FreeQ[Append[ops, init], _Pauli]
+
+LindbladSolve[ops:{_, __}, init_, t_] :=
   LindbladSolve[ops, init, t, QuissoExpression] /;
   AllTrue[NonCommutativeSpecies @ Append[ops, init], QubitQ]
 
-LindbladSolve[ops:{_, __}, init_, t_] :=
-  PauliExpression @ LindbladSolve[Matrix /@ ops, Matrix @ init, t] /;
-  Not @ FreeQ[Append[ops, init], _Pauli]
-
 LindbladSolve[ops:{_, __}, init_, t_, PauliExpression] :=
-  PauliExpression @ LindbladSolve[Matrix /@ ops, Matrix @ init, t]
+  PauliExpression @ LindbladSolve[Matrix @ ops, Matrix @ init, t]
 
 LindbladSolve[ops:{_, __}, init_, t_, func_] := Module[
   { ss = NonCommutativeSpecies @ Append[ops, init],
