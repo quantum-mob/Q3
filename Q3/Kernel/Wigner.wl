@@ -11,8 +11,8 @@ Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.6 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-07 15:41:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -387,13 +387,6 @@ HoldPattern @ Multiply[a___, x1_?SpinQ, x2_?SpinQ, b___] :=
 
 (* Wigner on Ket *)
 
-(* Multiply for restricted Ket and Bra *)
-HoldPattern @ Multiply[ x___, a_?SpinQ, Ket[b_Association, c_List], y___ ] := With[
-  { new = Restrict[ Multiply[a, Ket[b]], c ] },
-  Multiply[x, new, y]
- ] /; MemberQ[c, FlavorMute @ a]
-
-
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,0], Ket[b_Association], y___ ] :=
   Multiply[ x, Ket[b], y ]
 
@@ -487,16 +480,15 @@ FlavorMute[S_Symbol?SpinQ[j___, _]] := S[j, None]
 FlavorMute[S_Symbol?SpinQ[j___, _] -> m_] := S[j, None] -> m
 
 
-(* KetTrim / See Pauli *)
+(**** <Ket for Spins> ****)
 
-KetTrim[S_?SpinQ, m_] := Nothing /; Spin[S] == m
-
-
-(* KetRule / See Pauli *)
-
+(*
 KetRule[ r:Rule[_?SpinQ, _] ] := FlavorNone[r]
 
 KetRule[ r:Rule[{__?SpinQ}, _] ] := FlavorNone @ Thread[r]
+ *)
+
+KetTrim[S_?SpinQ, m_] := Nothing /; Spin[S] == m
 
 VerifyKet::spininv = "For spin ``, the assigned value `` is not a valid directional spin quantum number."
 
@@ -506,6 +498,8 @@ VerifyKet[op_?SpinQ, m_] := If[
   Message[VerifyKet::spininv, op, m];
   $Failed
  ]
+
+(**** </Ket for Spins> ****)
 
 
 (**** <Basis> ****)

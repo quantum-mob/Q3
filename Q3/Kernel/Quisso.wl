@@ -13,8 +13,8 @@ Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.23 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-26 20:25:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.24 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-07 15:42:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -553,16 +553,15 @@ ProductState[a_Association, opts___][qq:(_?QubitQ | {__?QubitQ})] :=
    ]
 
 
-(* ******************************************************************* *)
-(* Ket in Quisso *)
-
+(**** <Ket for Qubits> ****)
+(*
 KetRule[ r:Rule[_?QubitQ, _] ] := FlavorNone[r]
 
 KetRule[ r:Rule[{__?QubitQ}, _] ] := FlavorNone @ Thread[r]
-
-KetRule[ Rule["Span", qq:{__?QubitQ}] ] := Rule["Span", FlavorNone @ qq]
+ *)
 
 KetTrim[_?QubitQ, 0] = Nothing
+(**** </Ket for Qubits> ****)
 
 
 (**** <Basis> ****)
@@ -2657,11 +2656,13 @@ FlavorMute[S_Symbol?QuditQ[j___, _]] := S[j, None]
 FlavorMute[S_Symbol?QuditQ[j___, _] -> m_] := S[j, None] -> m
 
 
-(* Ket[] for Qudits *)
+(**** <Ket for Qudits> ****)
 
+(*
 KetRule[ r:Rule[_?QuditQ, _] ] := FlavorNone[r]
 
 KetRule[ r:Rule[{__?QuditQ}, _] ] := FlavorNone @ Thread[r]
+ *)
 
 KetTrim[_?QuditQ, 0] = Nothing
 
@@ -2670,16 +2671,10 @@ KetTrim[A_?QuditQ, s_Integer] := (
   Nothing
  ) /; s >= Dimension[A]
 
+(**** </Ket for Qubits> ****)
+
 
 (* Qudit on Ket *)
-
-HoldPattern @
-  Multiply[pre___, op_?QuditQ, Ket[a_Association, b_List], post___] :=
-  With[
-    { new = Restrict[ Multiply[op, Ket[a]], b ] },
-    Multiply[pre, new, post]
-   ] /; MemberQ[b, FlavorMute @ op]
-
 
 HoldPattern @
   Multiply[a___, S_?QuditQ[j___, Rule[x_,y_]], v:Ket[_Association], b___] :=

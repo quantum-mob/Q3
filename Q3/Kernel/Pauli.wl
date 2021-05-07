@@ -5,8 +5,8 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.21 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-26 13:11:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.22 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-07 15:42:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -572,6 +572,10 @@ Bra[a_Association][s_] := a[FlavorNone @ s]
 KetRule::usage = "KetRule[rule] is a low-level function used when constructing Ket[<|\[Ellipsis]|>] to generate proper elementary rules from the compound rule specified in rule."
 
 SetAttributes[KetRule, Listable]
+
+KetRule[ r:Rule[_?SpeciesQ, _] ] := FlavorNone[r]
+
+KetRule[ r:Rule[{__?SpeciesQ}, _] ] := FlavorNone @ Thread[r]
 
 KetRule[r_Rule] := r
 

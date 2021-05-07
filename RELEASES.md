@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.8.8
+
+- A quick bug fix in KetRule affecting the specification of Ket[{a,b,..}->{v1,v2,...}] for mixed species.
+
 ## v1.8.7
 
 - Bug fixes in DampingOperator, LindbladSolve in the Kraus package.

@@ -12,8 +12,8 @@ BeginPackage[ "Q3`Dicke`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-07 15:12:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -26,6 +26,15 @@ Begin["`Private`"]
 $symbs = Unprotect[ Multiply ]
 
 DickeBasis::usage = "DickeBasis[{S1, S2, ...}, {b1, b2, ...}, {m,n}] constructs a basis for Qubits/Qudits S1, S2, ... and Bosonic modes b1, b2, ..., where the number of particles in each Bosonic modes is limited in the range [m, n].\nDickeBasis[ {S1, S2, ...}, {b1, b2, ...}, n] is equivalent to DickeBasis[ {S1, S2, ...}, {b1, b2, ...}, {0,n}]."
+
+DickeBasis[ s_?QubitQ, b_?BosonQ, n_Integer ] :=
+  DickeBasis[{s}, {b}, n]
+
+DickeBasis[ ss:{__?QubitQ}, b_?BosonQ, n_Integer ] :=
+  DickeBasis[ss, {b}, n]
+
+DickeBasis[ s_?QubitQ, bb:{__?BosonQ}, n_Integer ] :=
+  DickeBasis[{s}, bb, n]
 
 DickeBasis[ ss:{__?QubitQ}, bb:{__?BosonQ}, n_Integer ] :=
   DickeBasis[ ss, bb, {0, n} ]

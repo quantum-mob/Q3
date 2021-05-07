@@ -9,8 +9,8 @@ BeginPackage[ "Q3`Fock`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.4 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.5 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-07 15:43:18+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1848,11 +1848,13 @@ toKetForm[ HoldPattern @ Multiply[expr__, Ket[Vacuum]] ] := Module[
  ]
 
 
-(* Ket for Fock *)
+(**** <Ket for Fock> ****)
 
+(*
 KetRule[ r:Rule[_?ParticleQ, _] ] := r
 
 KetRule[ r:Rule[{__?ParticleQ}, _] ] := Thread[r]
+ *)
 
 KetTrim[_?ParticleQ, 0] = Nothing
 
@@ -1873,16 +1875,7 @@ VerifyKet[c_?FermionQ, v_] := (
    VerifyKet[ _?FermionQ, Except[0|1] ] = $Failed
  *)
 
-
-(* Multiply for restricted Ket and Bra *)
-(*
-HoldPattern @
-  Multiply[pre___, op_?AnyParticleQ, Ket[a_Association, b_List], post___] :=
-  With[
-    { new = Restrict[ Multiply[op, Ket[a]], b ] },
-    Multiply[pre, new, post]
-   ] /; MemberQ[b, Peel @ op]
- *)
+(**** </Ket for Fock> ****)
 
 (* Operations on Ket[] *)
 
