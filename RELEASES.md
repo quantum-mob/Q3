@@ -1,5 +1,14 @@
 # Select Release Notes
 
+## v1.9.0
+
+- QuissoCircuit has been renamed QuantumCircuit.
+- A bug fix in Measurement[vec, {q1, q2, ...}].
+- New function ExpressionFor to replace PauliExpression, QuissoExpression, QuditExpression, and WignerExpression.
+- DyadExpression has been re-implemented.
+- More efficient implementation of QuissoOracle.
+- New function FlavorThread.
+
 ## v1.8.9
 
 - Updates for the Kraus package: Several functions such as LindbladConvert, LindbladGenerator, LindbladStationary have been enhanced and are more robust for inputs specified in the Pauli expressions.

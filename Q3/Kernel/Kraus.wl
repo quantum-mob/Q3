@@ -14,8 +14,8 @@ BeginPackage[ "Q3`Kraus`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.25 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-07 19:33:07+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.29 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-16 20:48:37+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 
@@ -143,14 +143,9 @@ LindbladBasis[n_Integer] := Module[
 
 LindbladBasis[op_?SpeciesQ] := LindbladBasis @ {op}
 
-LindbladBasis[qq:{_?QubitQ}] := Module[
+LindbladBasis[qq:{__?SpeciesQ}] := Module[
   { lbs = LindbladBasis[Times @@ Dimension[qq]] },
-  QuissoExpression[#, qq]& /@ lbs
- ]
-
-LindbladBasis[qq:{_?QuditQ}] := Module[
-  { lbs = LindbladBasis[Times @@ Dimension[qq]] },
-  QuditExpression[#, qq]& /@ lbs
+  ExpressionFor[#, qq]& /@ lbs
  ]
 
 
@@ -339,18 +334,14 @@ LindbladStationary[ops:{__?MatrixQ}] :=
 LindbladStationary[{None, opL__}] := LindbladStationary[{0, opL}]
 
 LindbladStationary[ops:{_, __}] :=
-  PauliExpression @ LindbladStationary @ Matrix[ops] /;
+  ExpressionFor @ LindbladStationary @ Matrix[ops] /;
   Not @ FreeQ[ops, _Pauli]
 
-LindbladStationary[ops:{_, __}] :=
-  LindbladStationary[ops, QuissoExpression] /;
-  AllTrue[NonCommutativeSpecies @ ops, QubitQ]
-
-LindbladStationary[ops:{_, __}, func_] := Module[
+LindbladStationary[ops:{_, __}] := Module[
   { ss = NonCommutativeSpecies @ ops,
     rho },
   rho = LindbladStationary @ Matrix[ops, ss];
-  If[ func === None, rho, func[rho, ss] ]
+  ExpressionFor[rho, ss]
  ]
 
 
@@ -387,22 +378,14 @@ LindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
 
 
 LindbladSolve[ops:{_, __}, init_, t_] :=
-  PauliExpression @ LindbladSolve[Matrix @ ops, Matrix @ init, t] /;
+  ExpressionFor @ LindbladSolve[Matrix @ ops, Matrix @ init, t] /;
   Not @ FreeQ[Append[ops, init], _Pauli]
 
-LindbladSolve[ops:{_, __}, init_, t_] :=
-  LindbladSolve[ops, init, t, QuissoExpression] /;
-  AllTrue[NonCommutativeSpecies @ Append[ops, init], QubitQ]
-
-LindbladSolve[ops:{_, __}, init_, t_, PauliExpression] :=
-  PauliExpression @ LindbladSolve[Matrix @ ops, Matrix @ init, t]
-
-LindbladSolve[ops:{_, __}, init_, t_, func_] := Module[
+LindbladSolve[ops:{_, __}, init_, t_] := Module[
   { ss = NonCommutativeSpecies @ Append[ops, init],
     rho },
-  Print["ss = ", ss];
   rho = LindbladSolve[Matrix[ops, ss], Matrix[init, ss], t];
-  If[ func === None, rho, func[rho, ss] ]
+  ExpressionFor[rho, ss]
  ]
 
 

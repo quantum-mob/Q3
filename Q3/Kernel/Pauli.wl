@@ -5,8 +5,8 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.24 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-07 19:09:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.45 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-16 20:34:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -24,6 +24,8 @@ Q3`Q3Clear[];
 
 { Basis, Matrix, TheMatrix };
 
+{ ExpressionFor, TheExpression };
+
 { ProperSystem, ProperValues, ProperStates };
 
 { HermitianProduct, HermitianNorm };
@@ -39,8 +41,6 @@ Q3`Q3Clear[];
 { OTimes, OSlash, ReleaseTimes };
 
 { RaiseLower, $RaiseLowerRules };
-
-{ PauliExpression, PauliExpressionRL };
 
 { Rotation, EulerRotation,
   TheRotation, TheEulerRotation,
@@ -79,6 +79,7 @@ Q3`Q3Clear[];
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
+{ PauliExpression, PauliExpressionRL }; (* obsolete *)
 { PauliInner }; (* obsolete *)
 { PauliExtract, PauliExtractRL }; (* obsolete *)
 { PauliExpand }; (* OBSOLETE *)
@@ -667,15 +668,40 @@ HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
 
 MultiplyExp /:
 HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
-  PauliExpression @ MatrixExp @ Matrix @ expr /;
+  ExpressionFor @ MatrixExp @ Matrix @ expr /;
   NonCommutativeSpecies[expr] == {} /;
   Not @ FreeQ[expr, _Pauli]
 
+MultiplyExp /:
+HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
+  { ss = NonCommutativeSpecies[expr],
+    mm },
+  mm = Matrix[expr, ss];
+  ExpressionFor[MatrixExp[mm], ss]
+ ] /; ContainsOnly[
+   Kind @ NonCommutativeSpecies[expr],
+   { Q3`Quisso`Qubit,
+     Q3`Quisso`Qudit,
+     Spin }
+  ]
+(* NOTE: In principle, it can handle fermions as well. But fermions have been
+   excluded here because the method of converting first to matrix and back to
+   operator expression is slow for fermions due to the requirement of the
+   Jordan-Wigner transformation. MultiplyExp usually appears in the
+   Baker-Hausdorff form, and the latter can be treated more efficiently using
+   LieExp or related methods. *)
 
 HoldPattern @ MultiplyPower[expr_, n_] :=
-  PauliExpression @ MatrixPower[Matrix @ expr, n] /;
+  ExpressionFor @ MatrixPower[Matrix @ expr, n] /;
   NonCommutativeSpecies[expr] == {} /;
   Not @ FreeQ[expr, _Pauli]
+
+HoldPattern @ MultiplyPower[op_, n_] := Module[
+  { ss = NonCommutativeSpecies[op],
+    mat },
+  mat = MatrixPower[Matrix[op, ss], n]; 
+  ExpressionFor[mat, ss]
+ ]
 
 
 State::usage = "State[{0, \[Theta], \[Phi]}] and Ket[{1, \[Theta], \[Phi]}] returns the eigenvectors of Pauli[3] in the (\[Theta], \[Phi])-rotated frame.\nState[{s$1, \[Theta]$1, \[Phi]$1}, {s$2, \[Theta]$2, \[Phi]$2}, ...] returns the tensor product State[{s$1, \[Theta]$1, \[Phi]$1}]\[CircleTimes] State[{s$2, \[Theta]$2, \[Phi]$2}, ...]\[CircleTimes]....\nState[{{s$1, s$2, ...}, \[Theta], \[Phi]}] = State[{s$1, \[Theta], \[Phi]}, {s$2, \[Theta], \[Phi]}, ...].\nSee also Ket, TheKet, TheState, Pauli, ThePauli, Operator, TheOperator."
@@ -770,7 +796,7 @@ Once[
 
 RaiseLower::usage = "RaiseLower[expr] converts expr by rewriting Pauli or Spin X and Y operators in terms of the raising and lowering operators."
 
-RaiseLower[ expr_ ] := Garner[
+RaiseLower[expr_] := Garner[
    expr //. $RaiseLowerRules
  ]
 
@@ -959,66 +985,128 @@ Operator[ { kk:{(0|1|2|3|4|5|6|7|8|-7|-8)..}, th:Except[_List], ph:Except[_List]
 (* These are first expanded because they are not elementry. *)
 
 
-PauliExpression::usage = "PauliExpression[m] returns an expression for the matrix M in terms of the Pauli matrices.\nPauliExpression[v] takes a 2^n dimensional vector v and rewrites it in a natural form expanded in the logical basis.\nPauliExpression[{j1,j2,...}, v] is for (2*j1+1)x(2*j2+1)x ... dimensional vector v."
+(**** <ExpressionFor> ****)
 
-(* for column vectors *)
+ExpressionFor::usage = "ExpressionFor[mat] returns the operator expression corresponding to the matrix representation mat.\nExpressionForm[mat, {s1, s2, ...}] returns the operator expression corresponding to the matrix representation mat and acting on the systems in {s1, s2, ...}."
 
-Ket::badLen = "Incompatible length of the Ket."
+ExpressionFor::notls = "The matrix/vector `` is not representing an operator/state on a system of qubits."
 
-PauliExpression[a_SparseArray?VectorQ] := Module[
-  { n = Log[2,Length[a]], bits, vals },
-  If[ !IntegerQ[n],
-    Message[Ket::badLen];
+ExpressionFor::incmpt = "The matrix/vector `` is not representing an operator/state on the systems ``."
+
+(* Column vector to state vector *)
+
+ExpressionFor[vec_?VectorQ] := Module[
+  { n = Log[2, Length @ vec],
+    bits, vals },
+  If[ IntegerQ[n],
+    Null,
+    Message[ExpressionFor::notls, vec];
     Return[a]
    ];
-  bits = Cases[ Flatten @ Keys @ Association @ ArrayRules @ a, _Integer ];
-  vals = a[[bits]];
-  bits = Apply[Ket, IntegerDigits[bits-1,2,n], {1}];
+  bits = Flatten @ Keys @ Most @ ArrayRules @ vec;
+  vals = vec[[bits]];
+  bits = Ket @@@ IntegerDigits[bits-1, 2, n];
   Garner @ Dot[vals, bits]
  ]
 
-PauliExpression[a_?VectorQ] :=
-  PauliExpression @ SparseArray[ ArrayRules[a], {Length @ a} ]
 
-(* for square matrices *)
+(* Matrix to operator for unlabeled qubits *)
 
-PauliExpression[mat_List?MatrixQ] := PauliExpression[SparseArray @ mat] /;
-  IntegerQ @ Log[2, Length @ mat]
-
-PauliExpression[mat_SparseArray?MatrixQ] := Module[
-  { tt, pp, j, n },
+ExpressionFor[mat_?MatrixQ] := Module[
+  { n = Log[2, Length @ mat],
+    tt, pp },
   n = Log[2, Length @ mat];
-  tt = Tensorize[mat];
-  pp = Table[
-    {{Pauli[10], Pauli[Raise]},
-      {Pauli[Lower], Pauli[11]}},
-    {j, n}
+  If[ IntegerQ[n], Null,
+    Message[ExpressionForm::notls, mat];
+    Return[0];
    ];
-  pp = Outer[CircleTimes, Sequence @@ pp];
-  Garner @ Total @ Flatten[tt * pp]
- ] /; IntegerQ @ Log[2, Length @ mat]
-
-
-PauliExpressionRL::usage = "PauliExpressionRL[m] returns an expression for the matrix M in terms of the Pauli matrices."
-
-PauliExpressionRL[mat_List?MatrixQ] :=
-  PauliExpressionRL[SparseArray @ mat] /;
-  IntegerQ @ Log[2, Length @ mat]
-
-PauliExpressionRL[mat_SparseArray?MatrixQ] := Module[
-  { tt, pp, j, n },
-  n = Log[2, Length @ mat];
-  tt = Tensorize[mat];
+  
   pp = Table[
-    {{Pauli[10], Pauli[4]},
-      {Pauli[5], Pauli[11]}},
-    {j, n}
+    { {Pauli[0]/2 + Pauli[3]/2, Pauli[4]},
+      {Pauli[5], Pauli[0]/2 - Pauli[3]/2} },
+    { n }
    ];
-  pp = Outer[CircleTimes, Sequence @@ pp];
-  Garner @ Total @ Flatten[tt * pp]
- ] /; IntegerQ @ Log[2, Length @ mat]
+  (* NOTE: This makes ExpressionFor to generate an operator expression in
+     terms of the Pauli raising and lowering operators instead of the Pauli X
+     and Y operators. Many evaluations are faster with the raising and
+     lowering operators rather than X and Y operators. When an expression in
+     terms of the X and Y operators are necessary, one can use Elaborate. *)
 
-PauliExpressionRL[vec_?VectorQ] := PauliExpression[vec]
+  pp = Outer[CircleTimes, Sequence @@ pp];
+
+  tt = Tensorize[mat]; (* It must be Tensorize, not ArrayReshape. *)
+  Garner @ Total @ Flatten[tt * pp]
+ ]
+
+
+(* Column vector to state vector for labeled systems *)
+
+ExpressionFor[vec_?VectorQ, S_?SpeciesQ] :=
+  ExpressionFor[vec, {S}]
+
+ExpressionFor[vec_?VectorQ, ss:{__?SpeciesQ}] := Module[
+  { nL = Times @@ Dimension @ ss,
+    bs = Basis @ ss },
+  
+  If[ nL == Length[vec], Null,
+    Message[Expression::incmpt, vec, FlavorNone @ ss];
+    Return[0];
+   ];
+  
+  Garner[vec . bs]
+ ]
+
+(* Matrix to operator for labeled systems *)
+
+ExpressionFor[mat_?MatrixQ, S_?SpeciesQ] :=
+  ExpressionFor[mat, {S}]
+
+ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
+  { dd = Dimension @ ss,
+    ff = Q3`Fock`Fermions @ ss,
+    rr, qq, S, tsr, ops },
+  If[ Times @@ dd == Length[mat], Null,
+    Message[ExpressionFor::incmpt, mat, FlavorNone @ ss];
+    Return[0]
+   ];
+
+  Let[Q3`Quisso`Qubit, S];
+  qq = S[Range @ Length @ ff, None];
+  rr = ss /. Thread[ff -> qq];
+  
+  tsr = Tensorize[mat, Flatten @ Transpose @ {dd, dd}];
+  ops = Outer[Multiply, Sequence @@ TheExpression /@ rr];
+  ops = Garner @ Total @ Flatten[tsr * ops];
+  Q3`Einstein`JordanWignerTransform[ops, qq -> ff]
+ ]
+
+TheExpression::usage = "TheExpression[spc] returns the matrix of operators required to construct the operator expresion from the matrix representation involving the species spc.\nIt is a low-level function to be used internally.\nSee also TheMatrix, which serves similar purposes."
+
+TheExpression[S_] := Table[
+  S[j -> i],
+  {i, LogicalValues @ S},
+  {j, LogicalValues @ S}
+ ]
+(* NOTE: This method is also used for Elaborate[Dyad[...]]. However, to
+   optimize ExpressionFor independently of Dyad, TheExpression can be
+   redefined for specific Species S. *)
+
+(**** </ExpressionFor> ****)
+
+PauliExpression::usage = "PauliExpression is obsolete now. Use ExpressionFor instead."
+
+PauliExpression[args___] := (
+  Message[Q3`Q3General::obsolete, "PauliExpression", "ExpressionFor"];
+  ExpressionFor[args]
+ )
+
+
+PauliExpressionRL::usage = "PauliExpressionRL is obsolete now. Use ExpressionFor instead."
+
+PauliExpressionRL[args___] := (
+  Message[Q3`Q3General::obsolete, "PauliExpressionRL", "ExpressionFor"];
+  ExpressionFor[args]
+ )
 
 
 PauliInner::usage = "PauliInner is obsolete. Use HermitianProduct instead. Notice the difference in normalization -- PauliInner[m1, m2] = HermitianProduct[m1,m2] / Length[m2] for matrices m1 and m2."
@@ -1181,7 +1269,7 @@ Basis[ expr:Except[_?SpeciesQ] ] := With[
 
 (**** <TheMatrix> ****)
 
-TheMatrix::usage = "TheMatrix[op] returns the matrix representation of op. Here op is an elementary operators.\nThis function is a low-level function intended for internal use."
+TheMatrix::usage = "TheMatrix[op] returns the matrix representation of op. Here op is an elementary operators.\nThis function is a low-level function intended for internal use.\nSee also TheExpression, which serves for similar purposes."
 
 HoldPattern @ TheMatrix[ Dagger[op_] ] := Topple @ TheMatrix[op]
 
@@ -1867,7 +1955,7 @@ CirclePlus[ m:(_?MatrixQ).. ] := BlockDiagonalMatrix[{m}]
 CirclePlus[ v:(_?VectorQ).. ] := Join[v]
 
 
-(* <Dyad> *)
+(**** <Dyad> ****)
 
 Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of order 2 and rank 1) corresponding to the dyadic product of two vectors.\nDyad[v] = Dyad[v, v] for a vector v.\nDyad[a, b, qq] for two associations a and b and for a list qq of Species represents the dyadic product of Ket[a] and Ket[b], i.e., Ket[a]**Bra[b], operating on the systems in qq.\nWhen All is given for qq, the operator acts on all systems without restriction."
 
@@ -2025,38 +2113,60 @@ HoldPattern @ Multiply[
    BraKet[b, u] Multiply[pre, Ket[a], Ket[w], post]
   ]
 
-(* </Dyad> *)
+(**** </Dyad> ****)
 
 
 DyadExpression::usage = "DyadExpression[expr,{s1,s2,..}] converts the operator expression expr to the form in terms of Dyad acting on the systems s1, s2, .... If the systems are not specified, then they are extracted from expr.\nDyadExpression[mat,{s1,s2,...}] converts the matrix representation into an operator expresion in terms of Dyad acting on the systems s1, s2, ...."
+
+DyadExpression[expr_] := DyadExpression[Matrix @ expr] /;
+  Not @ FreeQ[expr, _Pauli]
 
 DyadExpression[expr_] := 
   DyadExpression[expr, NonCommutativeSpecies[expr]]
 
 DyadExpression[expr_, q_?SpeciesQ] := 
-  DyadExpression[expr, FlavorNone@{q}]
+  DyadExpression[expr, FlavorNone @ {q}]
 
-DyadExpression[expr_, qq : {__?SpeciesQ}] := 
-  DyadExpression[Matrix[expr, FlavorNone@qq], FlavorNone@qq]
+DyadExpression[expr_, qq:{__?SpeciesQ}] := 
+  DyadExpression[Matrix[expr, FlavorNone @ qq], FlavorNone @ qq]
 
 DyadExpression[mat_?MatrixQ, q_?SpeciesQ] := 
-  DyadExpression[mat, FlavorNone@{q}]
+  DyadExpression[mat, FlavorNone @ {q}]
 
-DyadExpression[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
-  { rr = FlavorNone @ qq,
-    dd = Dimension @ qq,
-    mm },
-  mm = Tensorize[mat, Flatten @ Transpose  @  {dd, dd}];
-  mm = Association @ Most @ ArrayRules @ mm;
-  Total @ KeyValueMap[theDyadExpr[#1, dd, rr] #2 &, mm]
+
+DyadExpression[mat_?MatrixQ] := Module[
+  { n = Log[2, Length @ mat],
+    tsr },
+  tsr = ArrayReshape[mat, ConstantArray[2, 2*n]];
+  tsr = Association @ Most @ ArrayRules @ tsr;
+  Garner @ Total @ KeyValueMap[theDyad[#1, n] * #2&, tsr]
+ ] /; IntegerQ[Log[2, Length @ mat]]
+
+theDyad[val:{__}, n_Integer] := Module[
+  {a, b},
+  {a, b} = ArrayReshape[val-1, {2, n}];
+  Thread @ Pauli[b -> a]
  ]
 
-theDyadExpr[ij_, dd_, qq_] := Module[
-  { kl = Transpose @ Partition[ij - 1, 2] },
+
+DyadExpression[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
+  { dim = Dimension @ qq,
+    spc = FlavorNone @ qq,
+    tsr },
+  tsr = ArrayReshape[mat, Join[dim, dim]];
+  tsr = Association @ Most @ ArrayRules @ tsr;
+  Garner @ Total @ KeyValueMap[theDyad[#1, spc] * #2&, tsr]
+ ]
+
+theDyad[val:{__}, spc:{__?SpeciesQ}] := Module[
+  {a, b},
+  {a, b} = ArrayReshape[val, {2, Length @ spc}];
+  a = MapThread[Part, {LogicalValues @ spc, a}];
+  b = MapThread[Part, {LogicalValues @ spc, b}];
   Dyad[
-    KetTrim @ AssociationThread[qq -> First @ kl],
-    KetTrim @ AssociationThread[qq -> Last @ kl],
-    qq
+    KetTrim @ AssociationThread[spc -> a], 
+    KetTrim @ AssociationThread[spc -> b],
+    spc
    ]
  ]
 
@@ -2266,7 +2376,7 @@ SchmidtDecomposition[expr_, aa:{__Integer}, bb:{__Integer}] := Module[
     ConstantArray[2, Length[aa] + Length[bb]],
     aa, bb
    ];
-  { ww, PauliExpression /@ uu, PauliExpression /@ vv }
+  { ww, ExpressionFor /@ uu, ExpressionFor /@ vv }
  ] /; fPauliKetQ[expr]
 
 
@@ -2453,7 +2563,7 @@ PartialTrace[v_?VectorQ, dd:{__Integer}, jj:{__Integer}] := Module[
  ]
 (* REMARK: In many cases, handling density matrix is computationally
    inefficient. In this sense, returning the list of states involved in the
-   mixed state will provide the user with more flexibility. *)
+   mixed state may provide the user with more flexibility. *)
 
 PartialTrace[v_?VectorQ, {}] := KroneckerProduct[v, Conjugate[v]]
 
@@ -2461,9 +2571,16 @@ PartialTrace[v_?VectorQ, jj:{__Integer}] :=
   PartialTrace[v, ConstantArray[2,Log[2,Length[v]]], jj]
 
 
-PartialTrace[expr_, q_?SpeciesQ, func_] := PartialTrace[expr, {q}, func]
+(* For unlabelled qubits *)
+PartialTrace[expr_, jj:{___Integer}] := Module[
+  { vec = Matrix[expr] },
+  ExpressionFor @ PartialTrace[vec, jj]
+ ] /; Or[fPauliKetQ @ expr, Not @ FreeQ[expr, _Pauli]]
 
-PartialTrace[expr_, qq:{__?SpeciesQ}, func_] := Module[
+
+PartialTrace[expr_, q_?SpeciesQ] := PartialTrace[expr, {q}]
+
+PartialTrace[expr_, qq:{__?SpeciesQ}] := Module[
   { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
     ss = NonCommutativeSpecies[expr],
     dd, jj, mm },
@@ -2471,10 +2588,7 @@ PartialTrace[expr_, qq:{__?SpeciesQ}, func_] := Module[
   dd = Dimension[ss];
   jj = Flatten @ Map[FirstPosition[ss, #]&, rr];
   mm = PartialTrace[Matrix[expr, ss], dd, jj];
-  If[ func === None,
-    mm,
-    func[mm, Complement[ss, rr]]
-   ]
+  ExpressionFor[mm, Complement[ss, rr]]
  ]
 
 (**** </PartialTrace> ****)

@@ -11,8 +11,8 @@ Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.6 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-07 15:41:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.14 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-16 20:33:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -25,8 +25,7 @@ Q3`Q3Clear[];
 { WignerReduced, WignerFactor };
 
 { WignerDecompose, WignerCompose,
-  WignerCoefficients,
-  WignerExpression };
+  WignerCoefficients };
 
 { WignerAdd, WignerAddZ };
 
@@ -42,6 +41,7 @@ Q3`Q3Clear[];
 { NineJSymbol, WignerEckart };
 
 
+{ WignerExpression }; (* obsolete *)
 { WignerKetQ, WignerExpand }; (* obsolete *)
 
 
@@ -50,9 +50,9 @@ Begin["`Private`"]
 $symbs = Unprotect[
   Multiply, MultiplyDegree, CircleTimes,
   KetRule, KetTrim, Ket, Bra, VerifyKet,
-  Spin, Missing,
-  Basis, TheMatrix, SpinForm,
-  Base, FlavorNone, FlavorMute,
+  Base, FlavorNone, FlavorMute, Missing,
+  Basis, SpinForm, Spin,
+  TheMatrix, TheExpression,
   $GarnerHeads, $GarnerTests,
   $ElaborationRules, $ElaborationHeads,
   $RaiseLowerRules,
@@ -194,35 +194,45 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   Dimension[x] ^= 2 spin + 1;
   Dimension[x[___]] ^= 2 spin + 1;
 
+  LogicalValues[x] ^= Range[spin, -spin, -1];
+  LogicalValues[x[___]] ^= Range[spin, -spin, -1];
+
   SpinQ[x] ^= True;
   SpinQ[x[___]] ^= True;
 
   Spin[x] ^= spin;
   Spin[x[___]] ^= spin;
-  x[___,Spin] = spin;
+  x[___, Spin] = spin;
 
-  x/: Dagger[ x[j___,k:(0|1|2|3|6)] ] := x[j,k];
-  x/: Dagger[ x[j___,4] ] := x[j,5];
-  x/: Dagger[ x[j___,5] ] := x[j,4];
+  If[ spin == 1/2,
+    x[j___,  1/2 ->  1/2] := 1/2 + x[j,3];
+    x[j___, -1/2 -> -1/2] := 1/2 - x[j,3];
+    x[j___, -1/2 ->  1/2] := x[j, 4];
+    x[j___,  1/2 -> -1/2] := x[j, 5]
+   ];
+
+  x/: Dagger[ x[j___, k:(0|1|2|3|6)] ] := x[j, k];
+  x/: Dagger[ x[j___, 4] ] := x[j, 5];
+  x/: Dagger[ x[j___, 5] ] := x[j, 4];
 
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
-  x[j___,Raise] := x[j,1] + I x[j,2];
-  x[j___,Lower] := x[j,1] - I x[j,2];
+  x[j___, Raise] := x[j,1] + I x[j,2];
+  x[j___, Lower] := x[j,1] - I x[j,2];
   
-  x[j___,Hadamard] := MultiplyExp[-I (Pi/2) x[j,2]] ** x[j,3] / spin;
+  x[j___, Hadamard] := MultiplyExp[-I (Pi/2) x[j,2]] ** x[j,3] / spin;
   (* NOTE: For Spin-1/2, this is enough to reduce it to (X+Z)/Sqrt[2].
      See Cauchy.m for Exp[ (Clifford- or Grassmann-like elements) ] .*)
   
-  x[j___,All] := Flatten @ x[j,{1,2,3}];
+  x[j___, All] := Flatten @ x[j, {1,2,3}];
 
-  x[j___,Null] := x[j,None];
+  x[j___, Null] := x[j,None];
 
   x[j___, None, k_] := x[j,k];
   (* In particular, x[j,None,None] = x[j,None]. *)
   
-  Format[ x[j___,None] ] := SpeciesBox[x, {j}, {}];
+  Format[ x[j___, None] ] := SpeciesBox[x, {j}, {}];
 
   Format[ x[j___,0] ] := SpeciesBox[x, {j}, {0}];
   Format[ x[j___,1] ] := SpeciesBox[x, {j}, {"x"}];
@@ -231,6 +241,10 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   Format[ x[j___,4] ] := SpeciesBox[x, {j}, {"+"}];
   Format[ x[j___,5] ] := SpeciesBox[x, {j}, {"-"}];
   Format[ x[j___,6] ] := SpeciesBox[x, {j}, {"H"}];
+  Format[ x[j___, a_->b_] ] := DisplayForm @ SpeciesBox[
+    RowBox @ {"(",Ket[b],Bra[a],")"}, {x[j, None]},
+    {}
+   ];
  )
 
 Missing["KeyAbsent", S_Symbol?SpinQ[___, None]] := Spin[S]
@@ -451,6 +465,12 @@ Once[
       G_?SpinQ[j___,6] -> G[j, Hadamard]
      }
    ];
+
+  $RaiseLowerRules = Join[ $RaiseLowerRules,
+    { S_?SpinQ[j___,1] :> (S[j,4] + S[j,5]) / 2 ,
+      S_?SpinQ[j___,2] :> (S[j,4] - S[j,5]) / (2 I)
+     }
+   ]
  ]
 
 
@@ -552,6 +572,21 @@ TheMatrix[S_?SpinQ[___,j_]] := TheWigner @ {Spin[S], j}
 TheMatrix[ Ket[ Association[S_?SpinQ -> m_] ] ] := TheWignerKet @ {Spin[S], m}
 
 (**** </Matrix> ****)
+
+
+(**** <ExpressionFor> ****)
+
+TheExpression[S_?SpinQ] := {
+  {1/2 + S[3], S[4]},
+  {S[5], 1/2 - S[3]}
+ } /; Spin[S] == 1/2
+(* NOTE: This makes ExpressionFor to generate an operator expression in terms
+   of the Pauli raising and lowering operators instead of the Pauli X and Y
+   operators. Many evaluations are faster with the raising and lowering
+   operators rather than X and Y operators. When an expression in terms of the
+   X and Y operators are necessary, one can use Elaborate. *)
+
+(**** </ExpressionFor> ****)
 
 
 WignerKetQ::usage = "WignerKetQ is obsolete. Use VerifyKet instead."
@@ -767,65 +802,12 @@ WignerCompose[ ss:{__?SpinQ}, m_List ] := Module[
  ]
 
 
-WignerExpression::usage = "WignerExpression[m] gives the operator expression for the matrix representation m.\nWignerExpression[v] gives the Ket expression for the vector representation v."
+WignerExpression::usage = "WignerExpression is obsolete now. Use ExpressionFor instead."
 
-(* Let[LinearMap, WignerExpression] *)
-(* NOTE: Where there are many terms, larger than 512?,
-   strange $RecursionLimit::reclim2 error occurs.*)
-
-WignerExpression[ expr_ ] := ReplaceAll[
-  LogicalForm @ expr,
-  Multiply[ a:Ket[_Association], b:Bra[_Association] ] :> WignerExpression[a,b]
- ]
-
-WignerExpression[ Ket[a_Association], Bra[b_Association] ] :=
-  Multiply @@ Thread[ WignerExpression[Normal@a, Normal@b] ]
-
-WignerExpression[S_?SpinQ ->  1/2, S_?SpinQ ->  1/2] := 1/2 + S[3]
-
-WignerExpression[S_?SpinQ -> -1/2, S_?SpinQ -> -1/2] := 1/2 - S[3]
-
-WignerExpression[S_?SpinQ ->  1/2, S_?SpinQ -> -1/2] := S[Raise]
-
-WignerExpression[S_?SpinQ -> -1/2, S_?SpinQ ->  1/2] := S[Lower]
-
-WignerExpression::incon = "Inconsistent matrix and spin-operators list."
-
-(* At the moment, only for Spin 1/2 *)
-WignerExpression[ m_?MatrixQ, s:{__?SpinQ} ] := Module[
-  { nL = Log[2, Length[m]],
-    mm = Tensorize[m],
-    ss, op },
-
-  If[ nL != Length[s],
-    Message[WignerExpression::incon];
-    Return[0]
-   ];
-  
-  ss = Map[
-    Function[ {S},
-      { {1/2+S[3], S[Raise]},
-        {S[Lower], 1/2-S[3]} } ],
-    s ];
-  op = Outer[ Multiply, Sequence @@ ss ];
-  Total @ Flatten[mm * op]
- ]
-
-WignerExpression[m_?MatrixQ, S_?SpinQ] := WignerExpression[m, {S}]
-
-WignerExpression[v_?VectorQ, j:{__?SpinQ}] := Module[
-  { jj = Map[Spin] @ j,
-    ss = FlavorNone @ j,
-    basis },
-  If[ Length[v] != Times @@ (2jj+1),
-    Message[WignerExpression::incon];
-    Return[{0}]
-   ];
-  basis = Basis[ss];
-  Dot[ v, basis ]
- ]
-
-WignerExpression[v_?VectorQ, S_?SpinQ] := WignerExpression[v, {S}]
+WignerExpression[args___] := (
+  Message[Q3`Q3General::obsolete, "WignerExpression", "ExpressionFor"];
+  ExpressionFor[args]
+ )
 
 
 WignerExpand::usage = "WignerExpand[expr] expands the expression expr revealing the explicit forms of various operator or state-vector expressions."

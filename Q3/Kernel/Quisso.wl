@@ -13,16 +13,14 @@ Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.24 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-07 15:42:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.41 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-16 20:34:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Qubit, QubitQ, Qubits };
 
 { Dirac };
-
-{ QuissoExpression, QuissoExpressionRL };
 
 { DensityMatrix, DensityOperator };
 
@@ -51,8 +49,8 @@ Q3`Q3Clear[];
 
 { ProductState, BellState, GraphState, DickeState, RandomState };
 
-{ QuissoCircuit, QuissoIn, QuissoOut,
-  QuissoCircuitTrim };
+{ QuantumCircuit, QuissoIn, QuissoOut,
+  QuantumCircuitTrim };
 
 { QuissoCorrelationTensor, QuissoCorrelationMatrix,
   QuissoNormalState };
@@ -61,16 +59,20 @@ Q3`Q3Clear[];
 
 { Qudit, QuditQ, Qudits };
 
-{ QuditExpression };
-
 { TheQuditKet };
 
-{ QuissoExpand }; (* OBSOLETE *)
+(* Obsolete Symbols *)
+
+{ QuissoExpression, QuissoExpressionRL }; (* obsolete *)
+
+{ QuissoCircuit, QuissoExpand }; (* OBSOLETE *)
+
+{ QuditExpression }; (* OBSOLETE *)
 
 Begin["`Private`"]
 
 $symb = Unprotect[
-  Multiply, MultiplyExp, MultiplyPower, MultiplyDegree,
+  Multiply, MultiplyDegree,
   CircleTimes, OTimes, Dagger, Dyad,
   KetTrim, KetRule, Ket, Bra, BraKet, Basis, SpinForm,
   $RaiseLowerRules,
@@ -79,9 +81,8 @@ $symb = Unprotect[
   DefaultForm, LogicalForm,
   Base, FlavorNone, FlavorMute, Missing,
   Rotation, EulerRotation,
-  TheMatrix,
-  Parity, ParityEvenQ, ParityOddQ,
-  PartialTrace
+  TheMatrix, TheExpression,
+  Parity, ParityEvenQ, ParityOddQ
  ]
 
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., None] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., None].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., None] represents the qubit."
@@ -97,7 +98,10 @@ setQubit[x_Symbol] := (
   Kind[x[___]] ^= Qubit;
   
   Dimension[x] ^= 2;
-  Dimension[x[___]] ^= 2;  
+  Dimension[x[___]] ^= 2;
+
+  LogicalValues[x] ^= {0, 1};
+  LogicalValues[x[___]] ^= {0, 1};
 
   QubitQ[x] ^= True;
   QubitQ[x[___]] ^= True;
@@ -208,6 +212,30 @@ HoldPattern @ Multiply[a___, _?QubitQ[___, 0], b___] := Multiply[a, b]
 (* Multiply operators on Ket[] *)
 
 HoldPattern @
+  Multiply[ pre___, a_?QubitQ[j___,4], Ket[b_Association], post___ ] :=
+  0 /; b @ a[j, None] == 0
+
+HoldPattern @
+  Multiply[ pre___, a_?QubitQ[j___,4], Ket[b_Association], post___ ] :=
+  Multiply[
+    pre,
+    Ket @ KeyDrop[b, a[j, None]],
+    post
+   ] /; b @ a[j, None] == 1
+
+HoldPattern @
+  Multiply[ pre___, a_?QubitQ[j___,5], Ket[b_Association], post___ ] :=
+  0 /; b @ a[j, None] == 1
+
+HoldPattern @
+  Multiply[ pre___, a_?QubitQ[j___,5], Ket[b_Association], post___ ] :=
+  Multiply[
+    pre,
+    Ket[b][a[j, None] -> 1],
+    post
+   ] /; b @ a[j, None] == 0
+
+HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,1], Ket[b_Association], post___ ] :=
   With[
     { m = Mod[ 1 + b[ a[j,None] ], 2 ] },
@@ -234,12 +262,13 @@ HoldPattern @
   (1 - 2 b[a[j,None]]) *
   Multiply[x, Ket @ KetTrim @ b, y]
 
-
+(*
 HoldPattern @ Multiply[ x___, a_?QubitQ[j___,4], Ket[b_Association], y___ ] :=
   Multiply[x, a[j,Raise], Ket[b], y]
 
 HoldPattern @ Multiply[ x___, a_?QubitQ[j___,5], Ket[b_Association], y___ ] :=
   Multiply[x, a[j,Lower], Ket[b], y]
+ *)
 
 HoldPattern @ Multiply[ x___, a_?QubitQ[j___,6], Ket[b_Association], y___ ] :=
   Multiply[x, a[j,Hadamard], Ket[b], y]
@@ -262,122 +291,133 @@ HoldPattern @ Multiply[ x___, Bra[v_Association, s_List], G_?QubitQ, y___ ] :=
 
 (* Special rules for Pauli matrices *)
  
-HoldPattern @ Multiply[
-  a___,
+HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,k:(1|2|3|6)], x_Symbol?QubitQ[j___,k:(1|2|3|6)],
-  b___ ] := Multiply[a, b]
+  post___ ] := Multiply[pre, post]
 
-HoldPattern @ Multiply[ a___,
+HoldPattern @ Multiply[ ___,
   x_Symbol?QubitQ[j___,k:(4|5)], x_Symbol?QubitQ[j___,k:(4|5)],
-  b___ ] := 0
+  ___ ] := 0
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,7], x_Symbol?QubitQ[j___,7], b___ ] :=
-  Multiply[a, x[j,3], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,7], x_Symbol?QubitQ[j___,7], post___ ] :=
+  Multiply[pre, x[j,3], post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,8], x_Symbol?QubitQ[j___,7], b___ ] :=
-  Multiply[a, x[j,7], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,8], x_Symbol?QubitQ[j___,8], post___ ] :=
+  Multiply[pre, x[j,7], post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,2], b___ ] :=
-  Multiply[a, I x[j,3], b]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,3], b___ ] :=
-  Multiply[a, I x[j,1], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,2], post___ ] :=
+  Multiply[pre, I x[j,3], post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,1], b___ ] :=
-  Multiply[a, I x[j,2], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,3], post___ ] :=
+  Multiply[pre, I x[j,1], post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,1], b___ ] :=
-  Multiply[a, -I x[j,3], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,1], post___ ] :=
+  Multiply[pre, I x[j,2], post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,2], b___ ] :=
-  Multiply[a, -I x[j,1], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,1], post___ ] :=
+  Multiply[pre, -I x[j,3], post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,3], b___ ] :=
-  Multiply[a, -I x[j,2], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,2], post___ ] :=
+  Multiply[pre, -I x[j,1], post]
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,3], post___ ] :=
+  Multiply[pre, -I x[j,2], post]
 (* Again, the last three definitions can be deduced from the commutation
    relations below, but explicit definition makes the evaluation much
    faster. *)
 
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,4], b___ ] :=
-  Multiply[a, (1-x[j,3])/2, b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,4], post___ ] :=
+  Multiply[pre, 1/2 - x[j,3]/2, post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,1], b___ ] :=
-  Multiply[a, (1+x[j,3])/2, b]
-
-
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,5], b___ ] :=
-  Multiply[a, (1+x[j,3])/2, b]
-
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,1], b___ ] :=
-  Multiply[a, (1-x[j,3])/2, b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,1], post___ ] :=
+  Multiply[pre, 1/2 + x[j,3]/2, post]
 
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,4], b___ ] :=
-  Multiply[a, (1-x[j,3])I/2, b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,5], post___ ] :=
+  Multiply[pre, 1/2 + x[j,3]/2, post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,2], b___ ] :=
-  Multiply[a, (1+x[j,3])I/2, b]
-
-
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,5], b___ ] :=
-  Multiply[a, -(1+x[j,3])I/2, b]
-
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,2], b___ ] :=
-  Multiply[a, -(1-x[j,3])I/2, b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,1], post___ ] :=
+  Multiply[pre, 1/2 - x[j,3]/2, post]
 
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,4], b___ ] :=
-  Multiply[a, +x[j,4], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,4], post___ ] :=
+  Multiply[pre, I/2 - x[j,3]*I/2, post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,3], b___ ] :=
-  Multiply[a, -x[j,4], b]
-
-
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,5], b___ ] :=
-  Multiply[a, -x[j,5], b]
-
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,3], b___ ] :=
-  Multiply[a, +x[j,5], b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,2], post___ ] :=
+  Multiply[pre, I/2 + x[j,3]*I/2, post]
 
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,5], b___ ] :=
-  Multiply[a, (1+x[j,3])/2, b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,5], post___ ] :=
+  Multiply[pre, -I/2 - x[j,3]*I/2, post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,4], b___ ] :=
-  Multiply[a, (1-x[j,3])/2, b]
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,2], post___ ] :=
+  Multiply[pre, -I/2 + x[j,3]*I/2, post]
+
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,4], post___ ] :=
+  Multiply[pre, +x[j,4], post]
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,3], post___ ] :=
+  Multiply[pre, -x[j,4], post]
+
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,5], post___ ] :=
+  Multiply[pre, -x[j,5], post]
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,3], post___ ] :=
+  Multiply[pre, +x[j,5], post]
+
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,5], post___ ] :=
+  Multiply[pre, 1/2 + x[j,3]/2, post]
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,4], post___ ] :=
+  Multiply[pre, 1/2 - x[j,3]/2, post]
 
 
 (* Hadamard, Quadrant, Octant *)
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,6], b___ ] := Multiply[a, x[j,Hadamard], b]
+HoldPattern @ Multiply[ pre___, x_Symbol?QubitQ[j___,6], post___ ] :=
+  Multiply[pre, x[j,Hadamard], post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,7], b___ ] := Multiply[a, x[j,Quadrant], b]
+HoldPattern @ Multiply[ pre___, x_Symbol?QubitQ[j___,7], post___ ] :=
+  Multiply[pre, x[j,Quadrant], post]
 
-HoldPattern @ Multiply[ a___, x_Symbol?QubitQ[j___,8], b___ ] := Multiply[a, x[j,Octant], b]
+HoldPattern @ Multiply[ pre___, x_Symbol?QubitQ[j___,8], post___ ] :=
+  Multiply[pre, x[j,Octant], post]
 
 
 (* General Rules *)
 
-HoldPattern @ Multiply[a___, x1_?QubitQ, x2_?QubitQ, b___] := Multiply[a, x2, x1, b] /;
-  Not @ OrderedQ @ {x1,x2}
+HoldPattern @ Multiply[pre___, x1_?QubitQ, x2_?QubitQ, post___] :=
+  Multiply[pre, x2, x1, post] /;
+  Not @ OrderedQ @ {x1, x2}
 
 (**** </Multiply> ****)
-
-
-MultiplyExp /:
-HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
-  { ss = Qubits[expr],
-    mm },
-  mm = Matrix[expr, ss];
-  QuissoExpression[MatrixExp[mm], ss]
- ] /; ContainsOnly[ Kind @ NonCommutativeSpecies[expr], {Qubit} ]
-
-
-
-HoldPattern @ MultiplyPower[expr_, n_] :=
-  MultiplyPower[expr, n, QuissoExpression] /;
-  ContainsOnly[ Kind @ NonCommutativeSpecies[expr], {Qubit} ]
 
 
 (* MultiplyDegree for operators *)
@@ -487,7 +527,7 @@ Once[ AppendTo[$ElaborationHeads, ProductState]; ]
 
 ProductState /:
 HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := Garner[
-  CircleTimes @@ KeyValueMap[QuissoExpression[#2, #1]&, a]
+  CircleTimes @@ KeyValueMap[ExpressionFor[#2, #1]&, a]
  ]
 
 (* ProductState in Multiply[...] *)
@@ -755,12 +795,7 @@ DensityMatrix[v_] := Module[
 DensityOperator::usage = "DensityOperator[v] constructs the operator expression for the density matrix corresponding to the pure state v."
 
 DensityOperator[v_] := 
-  QuissoExpression[DensityMatrix @ v, Qubits @ v]
-
-
-PartialTrace[expr_, q_?QubitQ] := PartialTrace[expr, {q}]
-
-PartialTrace[expr_, qq:{__?QubitQ}] := PartialTrace[expr, qq, QuissoExpression]
+  ExpressionFor[DensityMatrix @ v, Qubits @ v]
 
 
 (**** <Parity for Qubits> ****)
@@ -879,102 +914,35 @@ doQuissoAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
  ]
 
 
-QuissoExpression::usage = "QuissoExpression[expr] converts Ket[...]**Bra[...]  for in the expression expr to the form in terms of the Gate operators.\nQuissoExpression[m, {S$1, S$2, ...}] converts the square matrix m into a Quisso expression.\nQuissoExpression[v, {S$1, S$2, ...}] converts the column vector v into a Ket expression."
+QuissoExpression::usage = "QuissoExpression is obsolete now. Use ExpressionFor instead."
 
-(* Let[LinearMap, QuissoExpression] *)
-(* NOTE: When there are many terms, larger than 512?,
-   strange $RecursionLimit::reclim2 error occurs.*)
-
-QuissoExpression[ a_ + b_ ] := QuissoExpression[a] + QuissoExpression[b] 
-
-QuissoExpression[ z_?ComplexQ ] := z
-
-QuissoExpression[ z_?ComplexQ a_ ] := z QuissoExpression[a]
-
-QuissoExpression::incon = "The matrix/vector `1` is not compatible with the Qubit list `2`."
-
-QuissoExpression[ mat_?MatrixQ, S_?QubitQ ] := QuissoExpression[ mat, {S} ]
-
-QuissoExpression[ mat_List?MatrixQ, ss:{__?QubitQ} ] :=
-  QuissoExpression[SparseArray @ mat, FlavorNone @ ss]
-  
-QuissoExpression[ mat_?MatrixQ, ss:{__?QubitQ} ] := Module[
-  { nL = Power[2, Length @ ss] {1, 1},
-    tt, op, tensor, HoldTimes },
-
-  If[ Dimensions[mat] != nL,
-    Message[QuissoExpression::incon, m, FlavorNone @ ss];
-    Return[0]
-   ];
-  
-  tensor = Tensorize[mat];
-  tt = Map[
-    Function[
-      {S},
-      { {1/2+S[3]/2, S[Raise]},
-        {S[Lower], 1/2-S[3]/2} }
-     ],
-    ss
-   ];
-  op = Outer[ HoldTimes, Sequence @@ tt ];
-  Garner[ Total @ Flatten[tensor * op] /. {HoldTimes -> Multiply} ]
- ]
-
-QuissoExpression[ v_?VectorQ, S_?QubitQ ] := QuissoExpression[ v, {S} ]
-
-QuissoExpression[ v_?VectorQ, ss:{__?QubitQ} ] := Module[
-  { nL = Length[ss],
-    tt = FlavorNone[ss],
-    basis },
-
-  If[ Length[v] != Power[2, nL],
-    Message[QuissoExpression::incon, v, FlavorNone @ ss];
-    Return[{0}]
-   ];
-  
-  basis = Basis[tt];
-  Dot[v, basis]
- ]
-
-QuissoExpression[ expr_ ] := expr
+QuissoExpression[args___] := (
+  Message[Q3`Q3General::obsolete, "QuissoExpression", "ExpressionFor"];
+  ExpressionFor[args]
+ )
 
 
-QuissoExpressionRL::usage = "QuissoExpressionRL[expr] converts Ket[...]**Bra[...]  for in the expression expr to the form in terms of the Pauli operators operators.\nQuissoExpressionRL[m, {S$1, S$2, ...}] converts the square matrix m into an expression in terms of Pauli operators.\nQuissoExpressionRL[v, {S$1, S$2, ...}] converts the column vector v into a Ket expression."
+QuissoExpressionRL::usage = "QuissoExpressionRL is obsolete now. Use ExpressionFor instead."
 
-QuissoExpressionRL[ a_ + b_ ] := QuissoExpressionRL[a] + QuissoExpressionRL[b] 
-
-QuissoExpressionRL[ z_?ComplexQ ] := z
-
-QuissoExpressionRL[ z_?ComplexQ a_ ] := z QuissoExpressionRL[a]
-
-
-QuissoExpressionRL[ mat_?MatrixQ, S_?QubitQ ] := QuissoExpressionRL[ mat, {S} ]
-
-QuissoExpressionRL[ mat_List?MatrixQ, ss:{__?QubitQ} ] :=
-  QuissoExpressionRL[SparseArray @ mat, FlavorNone @ ss]  /;
-  Length[mat] == Power[2, Length @ ss]
-
-QuissoExpressionRL[ mat_?MatrixQ, ss:{__?QubitQ} ] := Module[
-  { tt, op, tensor, HoldTimes },
-
-  tensor = Tensorize[mat];
-  tt = Map[
-    Function[ {S},
-      { {1/2+S[3]/2, S[4]},
-        {S[5], 1/2-S[3]/2} } ],
-    ss
-   ];
-  op = Outer[ HoldTimes, Sequence @@ tt ];
-  Garner[ Total @ Flatten[tensor * op] /. {HoldTimes -> Multiply} ]
- ] /; Length[mat] == Power[2, Length @ ss]
+QuissoExpressionRL[args___] := (
+  Message[Q3`Q3General::obsolete, "QuissoExpressionRL", "ExpressionFor"];
+  ExpressionFor[args]
+ )
 
 
-QuissoExpressionRL[ v_?VectorQ, S_?QubitQ ] := QuissoExpressionRL[ v, {S} ]
+(**** <ExpressionFor> ****)
 
-QuissoExpressionRL[ v_?VectorQ, ss:{__?QubitQ} ] := QuissoExpression[v, ss]
+TheExpression[S_?QubitQ] := {
+  {1/2 + S[3]/2, S[4]},
+  {S[5], 1/2 - S[3]/2}
+ }
+(* NOTE: This makes ExpressionFor to generate an operator expression in terms
+   of the Pauli raising and lowering operators instead of the Pauli X and Y
+   operators. Many evaluations are faster with the raising and lowering
+   operators rather than X and Y operators. When an expression in terms of the
+   X and Y operators are necessary, one can use Elaborate. *)
 
-QuissoExpressionRL[ expr_ ] := expr
-
+(**** </ExpressionFor> ****)
 
 (* QuissoCoefficientTensor *)
 
@@ -1072,7 +1040,7 @@ HoldPattern @ Multiply[
   Phase[phi_, S_?QubitQ, opts___?OptionQ ],
   post___
  ] := Multiply[ pre, QuissoPhase[phi, S], post ]
-(* Options are for QuissoCircuit[] and ignore in calculations. *)
+(* Options are for QuantumCircuit[] and ignore in calculations. *)
 
 Phase /:
 Dagger[ Phase[ phi_, G_?QubitQ, opts___?OptionQ ] ] :=
@@ -1134,7 +1102,7 @@ Rotation[ phi_, qq:{__?QubitQ}, rest___ ] :=
 Rotation /:
 HoldPattern @ Multiply[pre___, Rotation[phi_, S_?QubitQ, rest___], post___ ] :=
   Multiply[ pre, QuissoRotation[phi, S, rest], post ]
-(* Options are for QuissoCircuit[] and ignored in calculations. *)
+(* Options are for QuantumCircuit[] and ignored in calculations. *)
 
 Rotation /:
 Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
@@ -1199,7 +1167,7 @@ HoldPattern @ Multiply[
   pre___,
   EulerRotation[angles:{_, _, _}, S_?QubitQ, opts___?OptionQ ],
   post___ ] := Multiply[ pre, QuissoEulerRotation[angles, S], post ]
-(* Options are for QuissoCircuit[] and ignore in calculations. *)
+(* Options are for QuantumCircuit[] and ignore in calculations. *)
 
 
 EulerRotation[q_?QubitQ, ang_, rest___] := (
@@ -1382,7 +1350,7 @@ Dagger[ ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] ] :=
 ControlledU /:
 HoldPattern @ Multiply[a___, ControlledU[b__, opts___?OptionQ], c___] :=
   Multiply[a, QuissoControlledU[b], c]
-(* Options are for QuissoCircuit[] and ignored in calculations. *)
+(* Options are for QuantumCircuit[] and ignored in calculations. *)
 
 
 QuissoControlledU::usage = "QuissoControlledU[...] is the same as ControlledU[...], but unlike the latter, it exapands immediately in terms of the elementary gates."
@@ -1416,7 +1384,7 @@ QuissoControlledU[ ss:{_?QubitQ, __?QubitQ}, z_?CommutativeQ] := Module[
  ]
 
 
-(* <Oracle> *)
+(**** <Oracle> ****)
 
 Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
 
@@ -1448,8 +1416,45 @@ QuissoOracle[f_, c_?QubitQ, tt:{__?QubitQ}] :=
 QuissoOracle[f_, cc:{__?QubitQ}, t_?QubitQ] :=
   QuissoOracle[f, cc, {t}]
 
-QuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := 
+QuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+  { cn = Length @ cc,
+    cN, bb, ff },
+
+  If[ FailureQ @ VerifyOracle[f, cc, tt],
+    Return @ One @ Power[2, Length[cc] + Length[tt]]
+   ];
+  
+  ff[x_List] := Flatten @ List[f @@ x];
+
+  cN = Power[2, cn];
+  bb = GroupBy[ IntegerDigits[Range[0, cN - 1], 2, cn], ff ];
+  bb = ReplaceAll[bb, {0 -> 10, 1 -> 11}];
+  Total @ KeyValueMap[qtmOracle[cc, tt], bb]
+ ]
+
+qtmOracle[cc_, tt_][key_, val_] := Module[
+  { onC = Multiply @@@ FlavorThread[cc, val],
+    onT = Multiply @@ FlavorThread[tt, key] },
+  Elaborate[Total @ onC] ** onT
+ ]
+
+
+varQuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := 
+  ExpressionFor[matOracle[f, cc, tt], Join[cc, tt]]
+(* NOTE: Usually, ExpresionFor, which is based on the raising and lowering
+   operators, is faster than the old QuissoExpression, which is based on the
+   Pauli X and Y operators. However, for quantum oracles, somehow
+   QuissoExpression is faster. I guess it is because of the particular
+   structure of the quantum oracle. *)
+
+oldQuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := 
   QuissoExpression[matOracle[f, cc, tt], Join[cc, tt]]
+(* NOTE: Usually, ExpresionFor, which is based on the raising and lowering
+   operators, is faster than the old QuissoExpression, which is based on the
+   Pauli X and Y operators. However, for quantum oracles, somehow
+   QuissoExpression is faster. I guess it is because of the particular
+   structure of the quantum oracle. *)
+
 
 matOracle[f_, c_?QubitQ, t_?QubitQ] := matOracle[f, {c}, {t}]
 
@@ -1469,6 +1474,7 @@ matOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
 
   cN = Power[2, cn];
   bb = GroupBy[ IntegerDigits[Range[0, cN - 1], 2, cn], ff ];
+  Print["bb = ", bb];
   Total @ KeyValueMap[ matOracle[#1, #2, cN]&, bb ]
  ]
 
@@ -1506,7 +1512,7 @@ VerifyOracle[f_, m_Integer, n_Integer] := Module[
    ];
  ]
 
-(* </Oracle> *)
+(**** </Oracle> ****)
 
 
 Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection operator on the qubits {q1, q2, ...} into state, which is given in the Ket expression.\nProjector[expr] automatically extracts the list of qubits from expr."
@@ -1523,7 +1529,7 @@ HoldPattern @ Elaborate[ Projector[v_, qq_] ] :=
   Elaborate[Dyad[v, v, qq]]
 
 Projector /:
-HoldPattern @ QuissoExpression[ Projector[v_, qq_] ] :=
+HoldPattern @ ExpressionFor[ Projector[v_, qq_] ] :=
   Dirac[v, Dagger @ v, qq]
 
 HoldPattern @ Projector[expr_, ___] := (
@@ -1548,13 +1554,11 @@ Measurement::nonum = "Cannot perform a measurement on a nonnumeric state vector.
 
 Measurement::novec = "The expression `` does not seem to be a valid Quisso Ket expression. Null vector is returned."
 
-SetAttributes[Measurement, Listable]
-
 Measurement[ gg:{__?QubitQ} ] := Measurement /@ FlavorNone @ gg
 
 Measurement[ g_?QubitQ ] := Measurement @ FlavorNone @ g /;
   FlavorLast[g] =!= None
-(* This is for the interface with QuissoCircuit[]. *)
+(* This is for the interface with QuantumCircuit[]. *)
 
 Measurement[vec_, qq:{__?QubitQ}] :=
   Fold[ Measurement, vec, FlavorNone @ qq ] /;
@@ -1691,20 +1695,28 @@ $symb = Unprotect[
   Multiply
  ]
 
-QuissoCircuit::usage = "QuissoCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nQuissoExpression[ QuissoCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a Quisso expression.\nMatrix[ QuissoCircuit[...] ] returns the matrix representation of the quantum circuit model."
+QuissoCircuit::usage = "QuissoCircuit has been renamed QuantumCircuit."
 
-QuissoCircuit::noqubit = "No Qubit found in the expression ``. Use LogicalForm to specify the Qubits explicitly."
+QuissoCircuit[args___] := (
+  Message[Q3`Q3General::renamed, "QuissoCircuit", "QuantumCircuit"];
+  QuantumCircuit[args]
+ )
 
-QuissoCircuit::nofunc = "Unknown function \"``\" to draw the gate. \"Rectangle\" is assumed."
 
-QuissoIn::usage = "QuissoIn is a holder for input expression in QuissoCircuit.\nSee also QuissoOut."
+QuantumCircuit::usage = "QuantumCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nExpressionFor[ QuantumCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a Quisso expression.\nMatrix[ QuantumCircuit[...] ] returns the matrix representation of the quantum circuit model."
 
-QuissoOut::usage = "QuissoOut is a holder for expected output expressions in QuissoCircuit. Note that the output expressions are just expected output and may be different from the actual output. They are used only for output label and ignored by QuissoExpression.\nSee also QuissoIn."
+QuantumCircuit::noqubit = "No Qubit found in the expression ``. Use LogicalForm to specify the Qubits explicitly."
+
+QuantumCircuit::nofunc = "Unknown function \"``\" to draw the gate. \"Rectangle\" is assumed."
+
+QuissoIn::usage = "QuissoIn is a holder for input expression in QuantumCircuit.\nSee also QuissoOut."
+
+QuissoOut::usage = "QuissoOut is a holder for expected output expressions in QuantumCircuit. Note that the output expressions are just expected output and may be different from the actual output. They are used only for output label and ignored by ExpressionFor and Elaborate.\nSee also QuissoIn."
 
 
 SetAttributes[ {QuissoOut, QuissoIn}, Flat ]
 
-Options[QuissoCircuit] = {
+Options[QuantumCircuit] = {
   "TargetFunction" -> "Rectangle",
   "ControlFunction" -> "Dot",
   "UnitLength" -> 36,
@@ -1728,52 +1740,52 @@ $InOutOffset := 0.1 $CircuitUnit
 $BraceWidth := 0.1 $CircuitUnit
 
 
-Format[ qc:QuissoCircuit[__, opts___?OptionQ] ] := Graphics[qc]
+Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] := Graphics[qc]
 
 (*
  * Multiply
  *)
 
-QuissoCircuit /:
-NonCommutativeQ[ QuissoCircuit[__] ] = True
+QuantumCircuit /:
+NonCommutativeQ[ QuantumCircuit[__] ] = True
 
-QuissoCircuit /:
-Kind[ QuissoCircuit[__] ] = NonCommutative
+QuantumCircuit /:
+Kind[ QuantumCircuit[__] ] = NonCommutative
 
-QuissoCircuit /:
-MultiplyGenus[ QuissoCircuit[__] ] := "QuantumCircuit"
+QuantumCircuit /:
+MultiplyGenus[ QuantumCircuit[__] ] := "QuantumCircuit"
 
-HoldPattern @ Multiply[pre___, Longest[qc__QuissoCircuit], post___] :=
+HoldPattern @ Multiply[pre___, Longest[qc__QuantumCircuit], post___] :=
   Multiply[pre, Multiply @@ Map[Elaborate] @ {qc}, post]
 
 (*
  * User Interface
  *)
 
-QuissoCircuit[ a___, QuissoCircuit[b___], c___] := QuissoCircuit[a, b, c]
+QuantumCircuit[ a___, QuantumCircuit[b___], c___] := QuantumCircuit[a, b, c]
 (* Similar effect as the Flat attribute. *)
 
-QuissoCircuit[ a__?qKetQ ] := QuissoCircuit[ QuissoIn[a] ]
+QuantumCircuit[ a__?qKetQ ] := QuantumCircuit[ QuissoIn[a] ]
 
-QuissoCircuit[ a__?qKetQ, b:Except[_?qKetQ], c___ ] :=
-  QuissoCircuit[ QuissoIn[a], b, c ]
+QuantumCircuit[ a__?qKetQ, b:Except[_?qKetQ], c___ ] :=
+  QuantumCircuit[ QuissoIn[a], b, c ]
 
-QuissoCircuit[ a___, b__?qKetQ, opts___?OptionQ ] :=
-  QuissoCircuit[ a, QuissoOut[b], opts ]
+QuantumCircuit[ a___, b__?qKetQ, opts___?OptionQ ] :=
+  QuantumCircuit[ a, QuissoOut[b], opts ]
 
-QuissoCircuit[ a___, b__?OptionQ, c:Except[_?OptionQ].. ] :=
-  QuissoCircuit[a, c, b]
+QuantumCircuit[ a___, b__?OptionQ, c:Except[_?OptionQ].. ] :=
+  QuantumCircuit[a, c, b]
 
-QuissoCircuit[ x___, a_QuissoOut, b__QuissoOut, y___ ] :=
-  QuissoCircuit[x, QuissoOut[a, b], y]
+QuantumCircuit[ x___, a_QuissoOut, b__QuissoOut, y___ ] :=
+  QuantumCircuit[x, QuissoOut[a, b], y]
 
-QuissoCircuit[ x___, a_QuissoIn, b__QuissoIn, y___ ] :=
-  QuissoCircuit[x, QuissoIn[a, b], y]
+QuantumCircuit[ x___, a_QuissoIn, b__QuissoIn, y___ ] :=
+  QuantumCircuit[x, QuissoIn[a, b], y]
 
-QuissoCircuit[ a__, b_QuissoIn, c___ ] := QuissoCircuit[ b, a, c ]
+QuantumCircuit[ a__, b_QuissoIn, c___ ] := QuantumCircuit[ b, a, c ]
 
-QuissoCircuit[ a___, b_QuissoOut, c:Except[_?OptionQ].., opts___?OptionQ ] :=
-  QuissoCircuit[a, c, b, opts]
+QuantumCircuit[ a___, b_QuissoOut, c:Except[_?OptionQ].., opts___?OptionQ ] :=
+  QuantumCircuit[a, c, b, opts]
 
 qKetQ[expr_] := And[
   FreeQ[expr, _QuissoIn | _QuissoOut | _Projector],
@@ -1781,43 +1793,42 @@ qKetQ[expr_] := And[
  ]
 
 (* See also GraphState[] *)
-QuissoCircuit[a___, g_Graph, b___] := Module[
+QuantumCircuit[a___, g_Graph, b___] := Module[
   { qubits = VertexList[g],
     links  = EdgeList[g] },
   links = links /. { UndirectedEdge -> CZ };
-  QuissoCircuit[a, Map[#[6]&] @ qubits, Sequence @@ links, b]
+  QuantumCircuit[a, Map[#[6]&] @ qubits, Sequence @@ links, b]
   /; AllTrue[ qubits, QubitQ ]
  ]
 
 (*
- * QuissoCircuit to QuissoExpression and Matrix
+ * ExpressionFor and Matrix on QuantumCircuit
  *)
 
-QuissoCircuit /:
-Elaborate[ qc_QuissoCircuit ] := QuissoExpression[ qc ]
+QuantumCircuit /:
+ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
 
-Once[ AppendTo[$ElaborationHeads, QuissoCircuit]; ]
+Once[ AppendTo[$ElaborationHeads, QuantumCircuit]; ]
 
-
-QuissoCircuit /:
-QuissoExpression[ QuissoCircuit[gg__, ___?OptionQ] ] := Module[
-  { expr = Flatten @ QuissoCircuitTrim @ {gg} },
+QuantumCircuit /:
+Elaborate[ QuantumCircuit[gg__, ___?OptionQ] ] := Module[
+  { expr = Flatten @ QuantumCircuitTrim @ {gg} },
   Garner[ qCircuitOperate @@ expr ]
  ]
 (* NOTE: This makes the evaluation much faster, especially, when the initial
    state is specified in the circuit. *)
 
-QuissoCircuit /:
-Qubits[ QuissoCircuit[gg__, opts___?OptionQ] ] := Union[
+QuantumCircuit /:
+Qubits[ QuantumCircuit[gg__, opts___?OptionQ] ] := Union[
   Qubits @ {gg},
   FlavorNone @ Flatten[
-    {"Visible"} /. {opts} /. Options[QuissoCircuit]
+    {"Visible"} /. {opts} /. Options[QuantumCircuit]
    ]
  ]
 
-QuissoCircuit /:
-Matrix[ qc:QuissoCircuit[gg__, ___?OptionQ] ] := Module[
-  { expr = Flatten @ QuissoCircuitTrim @ {gg} },
+QuantumCircuit /:
+Matrix[ qc:QuantumCircuit[gg__, ___?OptionQ] ] := Module[
+  { expr = Flatten @ QuantumCircuitTrim @ {gg} },
   qCircuitMatrix[ Sequence @@ expr, Qubits @ qc ]
  ]
 
@@ -1832,7 +1843,7 @@ qCircuitOperate[pre__, Measurement[q_?QubitQ], post___] :=
 qCircuitOperate[m_Measurement, post___] :=
   Multiply[qCircuitOperate[post], m]
 
-qCircuitOperate[ op:Except[_Measurement].. ] := 
+qCircuitOperate[ op:Except[_Measurement].. ] :=
   Fold[ Garner @ Multiply[#2, #1]&, 1, Elaborate @ {op} ]
 
 
@@ -1842,7 +1853,7 @@ qCircuitMatrix[ a___, Measurement[q_?QubitQ], b___,  qq:{__?QubitQ} ] :=
   With[
     { ss = Qubits @ {a, q} },
     qCircuitMatrix[
-      Measurement[ QuissoExpression[qCircuitMatrix[a, ss], ss], q ],
+      Measurement[ ExpressionFor[qCircuitMatrix[a, ss], ss], q ],
       b,
       qq
      ]
@@ -1855,43 +1866,43 @@ qCircuitMatrix[ op:Except[_Measurement].., qq:{__?QubitQ} ] := Module[
  ]
 
 
-QuissoCircuitTrim::usage = "QuissoCircuitTrim[expr] removes visualization options and Graphics Directives that are not evaluable expressions. Useful to convert QuissoCircuit to an evaluation-ready expression."
+QuantumCircuitTrim::usage = "QuantumCircuitTrim[expr] removes visualization options and Graphics Directives that are not evaluable expressions. Useful to convert QuantumCircuit to an evaluation-ready expression."
 
-SetAttributes[ QuissoCircuitTrim, Listable ];
+SetAttributes[ QuantumCircuitTrim, Listable ];
 
-QuissoCircuitTrim[ QuissoCircuit[gg__] ] :=
-  Flatten @ QuissoCircuitTrim @ {gg}
+QuantumCircuitTrim[ QuantumCircuit[gg__] ] :=
+  Flatten @ QuantumCircuitTrim @ {gg}
 
-QuissoCircuitTrim[ QuissoIn[a__] ]  := Multiply @@ QuissoCircuitTrim[ {a} ]
-(* NOTE: Useful to apply Matrix directly to QuissoCircuit.  *)
+QuantumCircuitTrim[ QuissoIn[a__] ]  := Multiply @@ QuantumCircuitTrim[ {a} ]
+(* NOTE: Useful to apply Matrix directly to QuantumCircuit.  *)
 
-QuissoCircuitTrim[ _QuissoOut ] = Nothing
+QuantumCircuitTrim[ _QuissoOut ] = Nothing
 
-QuissoCircuitTrim[ _?OptionQ ] = Nothing
+QuantumCircuitTrim[ _?OptionQ ] = Nothing
 
-QuissoCircuitTrim[ g_ ] := Nothing /;
+QuantumCircuitTrim[ g_ ] := Nothing /;
   FreeQ[ g, _?QubitQ | _Ket | _ProductState ]
 
-QuissoCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
+QuantumCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
   Dyad[v, v, qq]
 
-QuissoCircuitTrim[ v:ProductState[_Association, ___] ] := Expand[v]
+QuantumCircuitTrim[ v:ProductState[_Association, ___] ] := Expand[v]
 
-QuissoCircuitTrim[ Gate[expr_, ___?OptionQ] ] := expr
+QuantumCircuitTrim[ Gate[expr_, ___?OptionQ] ] := expr
 
-QuissoCircuitTrim[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
+QuantumCircuitTrim[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
 
-QuissoCircuitTrim[ g_?NumericQ ] := g
+QuantumCircuitTrim[ g_?NumericQ ] := g
 
-QuissoCircuitTrim[ g_ ] := g
+QuantumCircuitTrim[ g_ ] := g
 
 
 (*
  * Graphical display of circuit
  *)
 
-QuissoCircuit /:
-Graphics[ QuissoCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
+QuantumCircuit /:
+Graphics[ QuantumCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
   Module[
     { ss = Qubits @ {gg},
       (* NOTE: Pure Qubits should be given None index properly. *)
@@ -1901,19 +1912,19 @@ Graphics[ QuissoCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
     {vv, ww, unit, port} = {
       {"Visible"}, {"Invisible"},
       "UnitLength", "PortSize"
-     } /. {opts} /. Options[QuissoCircuit];
+     } /. {opts} /. Options[QuantumCircuit];
 
     If[ ListQ[port], Null, port = {port, port} ];
 
-    vv = FlavorNone @ vv;
-    ww = FlavorNone @ ww;
+    vv = FlavorNone @ Flatten @ vv;
+    ww = FlavorNone @ Flatten @ ww;
     ss = Union @ Flatten @ {ss, vv, ww};
 
     If[ !ListQ[cc], cc = List @ cc ];
     (* It happens when there is only one circuit element. *)
 
     If[ cc == {}, cc = {"Spacer"} ];
-    (* There could be only input elements for temporary. *)
+    (* There can be only input elements. *)
     
     xx  = Accumulate @ Boole[ qGateQ /@ cc ];
     xx *= $CircuitUnit;
@@ -1924,7 +1935,7 @@ Graphics[ QuissoCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
     
     nodes = qCircuitNodes[ cc, xx, yy ];
     lines = qCircuitLines[ cc, xx, KeyDrop[yy, ww] ];
-
+    
     in = FirstCase[ {gg}, QuissoIn[kk___] :> {kk} ];
     in = qCircuitInput[ in, xx, yy ];
 
@@ -2198,7 +2209,7 @@ qDrawGateSymbol[name_?StringQ] :=
    ]
 
 qDrawGateSymbol[name_?StringQ] := (
-  Message[QuissoCircuit::nofunc, name];
+  Message[QuantumCircuit::nofunc, name];
   qDrawGateSymbol["Rectangle"]
  )
 
@@ -2268,14 +2279,16 @@ qDrawGate[ "Separator", x_, yy_Association ] := Module[
 qDrawGate[ g_, x_, yy_Association ] := g
 
 
-qCircuitLines::usage = "qCircuitLines[xmax, x, y] finds when Measurement occurs in the QuissoCircuit and renders the qubit line after Measurement in dashes."
+qCircuitLines::usage = "qCircuitLines[gg, x, y] finds when Measurement occurs in the QuantumCircuit and renders the qubit line after Measurement in dashes."
 
 qCircuitLines[ gg_List, xx_List, yy_Association ] := Module[
   { mm, zz, dashed, plain },
-  
-  mm = Map[ Cases[{#}, Gate[{S_?QubitQ}, "TargetFunction" -> "Measurement", ___?OptionQ] -> S, Infinity]&, gg ];
-  mm = Flatten[ Thread /@ Thread[ mm -> xx ] ];
-  mm = KeySort @ Association @ mm;
+  mm = Map[
+    Cases[{#}, Gate[{S_?QubitQ}, "TargetFunction" -> "Measurement", ___?OptionQ] -> S, Infinity]&,
+    gg
+   ];
+  mm = Flatten[ Thread /@ Thread[mm -> xx] ];
+  mm = KeySort @ KeyTake[Association @ mm, Keys @ yy];
   
   zz = Lookup[yy, Keys @ mm];
   dashed = Line @ Transpose @ {
@@ -2319,7 +2332,7 @@ qCircuitInput[ gg:{___}, xx_List, yy_Association ] := Module[
  ]
 
 
-qCircuitPort::usage = "qCircuitPorts preprocesses various input and output forms of QuissoCircuit."
+qCircuitPort::usage = "qCircuitPorts preprocesses various input and output forms of QuantumCircuit."
 
 Options[ qCircuitPort ] = {
   "Label" -> Automatic,
@@ -2385,7 +2398,7 @@ qDrawPort[
   ]
 
 qDrawPort[ Port[ expr_, opts___?OptionQ ], xy_Association ] := (
-  Message[QuissoCircuit::noqubit, expr];
+  Message[QuantumCircuit::noqubit, expr];
   Return @ {};
  ) /; Qubits[expr] == {}
 
@@ -2452,7 +2465,7 @@ QuissoNormalState[v_, S_?QubitQ] := Module[
   m = Matrix @ QuissoReduced[v, {S}];
   {p, u} = Eigensystem[m];
   u = Transpose[ Normalize /@ u ];
-  op = QuissoExpression[ u, {S} ];
+  op = ExpressionFor[ u, {S} ];
   Simplify[ Dagger[op] ** v ]
  ]
 
@@ -2466,13 +2479,13 @@ QuissoCorrelationTensor::usage = "QuissoCorrelationTensor[v] gives the Associati
 
 (*
 QuissoCorrelationTensor[v_] :=
-  QuissoCoefficientTensor[ QuissoExpression @ Dirac[v, Dagger[v]] ]
+  QuissoCoefficientTensor[ ExpressionFor @ Dirac[v, Dagger[v]] ]
 
 QuissoCorrelationTensor[v_, n_Integer] :=
-  QuissoCoefficientTensor[ QuissoExpression @ Dirac[v, Dagger[v]], n ]
+  QuissoCoefficientTensor[ ExpressionFor @ Dirac[v, Dagger[v]], n ]
 
 QuissoCorrelationTensor[v_, {n_Integer}] :=
-  QuissoCoefficientTensor[ QuissoExpression @ Dirac[v, Dagger[v]], {n} ]
+  QuissoCoefficientTensor[ ExpressionFor @ Dirac[v, Dagger[v]], {n} ]
  *)
 
 (* Method 2: This is slower than Method 1 above, but does not suffer from the
@@ -2533,7 +2546,6 @@ CommonEigensystem::usage = "CommonEigensystem[{m$1, m$2, ...}] finds the simulta
 CommonEigensystem[ mm:{__?MatrixQ} ] := Module[
   { val, U },
   U = Fold[ CommonEigensystem, IdentityMatrix[Length @ First @ mm], mm ];
-  (* Print[ Det[U] ]; *)
   If[ Det[U] < 0, U[[All,3]] *= -1 ];
   val = Map[ Diagonal[ Topple[U].#.U ]&, mm ];
   {val, U}
@@ -2551,7 +2563,7 @@ End[] (* `Special` *)
 Begin["`Qudit`"]
 
 $symb = Unprotect[
-  Multiply, MultiplyPower, MultiplyDegree, Dyad,
+  Multiply, MultiplyDegree, Dyad,
   Basis, TheMatrix,
   Parity, ParityEvenQ, ParityOddQ,
   $GarnerHeads, $GarnerTests,
@@ -2585,6 +2597,9 @@ setQudit[x_Symbol, dim_Integer] := (
   
   Dimension[x] ^= dim;
   Dimension[x[___]] ^= dim;
+
+  LogicalValues[x] ^= Range[0, dim-1];
+  LogicalValues[x[___]] ^= Range[0, dim-1];
 
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
@@ -2620,11 +2635,6 @@ Qudits[ expr_ ] := FlavorNone @ Union @ Map[Most] @
   Cases[ Normal[{expr}, Association], _?QuditQ, Infinity ]
 (* NOTE: { } are necessary around expr; otherwise, Qudits[S[1,2]] does
    not give the trivial result. *)
-
-
-HoldPattern @ MultiplyPower[expr_, n_] :=
-  MultiplyPower[expr, n, QuditExpression] /;
-  ContainsOnly[ Kind @ NonCommutativeSpecies[expr], {Qudit} ]
 
 
 (* MultiplyDegree for operators *)
@@ -2764,59 +2774,12 @@ TheMatrix[ Ket[ Association[ S_?QuditQ -> n_Integer] ] ] := SparseArray[
 (**** </Matrix> *****)
 
 
-QuditExpression::usage = "QuditExpression[expr] converts Ket[...]**Bra[...]  for in the expression expr to the form in terms of the Gate operators.\nQuditExpression[m, {S$1, S$2, ...}] converts the square matrix m into a Qudit expression.\nQuditExpression[v, {S$1, S$2, ...}] converts the column vector v into a Ket expression."
+QuditExpression::usage = "QuditExpression is obsolete now. Use ExpressionFor instead."
 
-(* Let[LinearMap, QuditExpression] *)
-(* NOTE: When there are many terms, larger than 512?,
-   strange $RecursionLimit::reclim2 error occurs.*)
-
-QuditExpression[ a_ + b_ ] := QuditExpression[a] + QuditExpression[b] 
-
-QuditExpression[ z_?ComplexQ ] := z
-
-QuditExpression[ z_?ComplexQ a_ ] := z QuditExpression[a]
-
-QuditExpression::incon = "The matrix/vector `1` is not compatible with the Qudit list `2`."
-
-QuditExpression[ m_?MatrixQ, S_?QuditQ ] := QuditExpression[ m, {S} ]
-
-QuditExpression[ m_?MatrixQ, ss:{__?QuditQ} ] := Module[
-  { nL = Times @@ Dimension @ ss,
-    mm = SparseArray[ ArrayRules[m], Dimensions[m] ],
-    tt, op, tensor, HoldTimes },
-
-  If[ Dimensions[m] != {nL, nL},
-    Message[QuditExpression::incon, m, FlavorNone @ ss];
-    Return[0]
-   ];
-  
-  tensor = Tensorize[ mm, Join[Dimension @ ss, Dimension @ ss] ];
-  tt = Map[
-    Function[ {S},
-      Table[ S[j->i], {i, 0, Dimension[S]-1}, {j, 0, Dimension[S]-1}]
-     ],
-    ss ];
-  op = Outer[ HoldTimes, Sequence @@ tt ];
-  Expand[ Total @ Flatten[tensor * op] /. {HoldTimes -> Multiply} ]
- ]
-
-QuditExpression[ v_?VectorQ, S_?QuditQ ] := QuditExpression[ v, {S} ]
-
-QuditExpression[ v_?VectorQ, ss:{__?QuditQ} ] := Module[
-  { nL = Times @@ Dimension @ ss,
-    tt = FlavorNone[ss],
-    basis },
-
-  If[ Length[v] != nL,
-    Message[QuditExpression::incon, v, FlavorNone @ ss];
-    Return[{0}]
-   ];
-  
-  basis = Basis[tt];
-  Dot[v, basis]
- ]
-
-QuditExpression[ expr_ ] := expr
+QuditExpression[args___] := (
+  Message[Q3`Q3General::obsolete, "QuditExpression", "ExpressionFor"];
+  ExpressionFor[args]
+ )
 
 
 ReplaceByFourier[old_?QuditQ -> new_?QuditQ, opts___?OptionQ] := Module[

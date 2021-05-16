@@ -4,8 +4,8 @@ BeginPackage["Q3`Abel`"]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.8 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-26 13:10:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.11 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-16 17:09:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,9 +21,12 @@ Q3`Q3Clear[];
 
 { Let };
 
-{ Base, Flavors, FlavorMost, FlavorLast, FlavorNone, FlavorMute, Any };
-
 { Species, SpeciesQ, AnySpeciesQ };
+
+{ Kind, Dimension, LogicalValues };
+
+{ Any, Base, Flavors, FlavorMost, FlavorLast,
+  FlavorNone, FlavorMute, FlavorThread };
 
 { Boson, BosonQ, AnyBosonQ };
 { Fermion, FermionQ, AnyFermionQ };
@@ -35,7 +38,6 @@ Q3`Q3Clear[];
 
 { NonCommutative, NonCommutativeSpecies, NonCommutativeQ,
   CommutativeQ, AnticommutativeQ,
-  Kind, Dimension,
   Hermitian, HermitianQ,
   Antihermitian, AntihermitianQ };
 
@@ -355,6 +357,20 @@ SetAttributes[FlavorMute, Listable]
 FlavorMute[a_] := a (* Does nothing unless specified explicitly *)
 
 
+FlavorThread::usage = "FlavorThread[{s1, s2, ...}, m] returns {s1[m], s2[m], ...}.\nFlavorThread[{s1, s2, ...}, {m1, m2, ...}] returns {s1[m1], s2[m2], s3[m3]}.\n
+FlavorThread[{s1, s2, ...}, {list1, list2, ...}] maps over the lists."
+
+FlavorThread[ss:{__?SpeciesQ}, flv_?AtomQ] :=
+  Through @ Construct[ss, flv]
+
+FlavorThread[ss:{__?SpeciesQ}, flv:{__List}] :=
+  Map[FlavorThread[ss, #]&, flv] /;
+  ArrayQ[flv]
+
+FlavorThread[ss:{__?SpeciesQ}, flv:{__}] :=
+  MapThread[Construct, {ss, flv}]
+
+
 Any::usage = "Any represents a dummy Flavor index."
 
 SetAttributes[Any, ReadProtected]
@@ -383,6 +399,11 @@ Dimension::usage = "Dimension[A] gives the Hilbert space dimension associated wi
 SetAttributes[Dimension, Listable]
 
 
+LogicalValues::usage = "LogicalValues[spc] gives the list of logical values labeling the logical basis states of the system spc."
+
+SetAttributes[LogicalValues, Listable]
+
+
 Let::usage = "Let[Symbol, a, b, ...] defines the symbols a, b, ... to be Symbol, which can be Species, Complex, Real, Integer, etc."
 
 Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, ...] declares the symbols a, b, ... to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, ...] does not take a specific structure, but only regarded seemingly so."
@@ -404,6 +425,9 @@ setSpecies[x_Symbol] := (
 
   Dimension[x] ^= 1;
   Dimension[x[___]] ^= 1;
+
+  LogicalValues[x] ^= {0};
+  LogicalValues[x[___]] ^= {0};
 
   x[jj__] := x @@ ReplaceAll[{jj}, q_?SpeciesQ :> ToString[q]] /;
     Or @@ SpeciesQ /@ {jj};
@@ -890,13 +914,6 @@ MultiplyPower[op_, n_Integer] := Multiply[MultiplyPower[op, n-1], op] /; n > 1
    capabilities! *)
 
 MultiplyPower[z_?CommutativeQ, n_] := Power[z, n]
-
-MultiplyPower[op_, n_, func_] := Module[
-  { ss = NonCommutativeSpecies[op],
-    mat },
-  mat = MatrixPower[Q3`Pauli`Matrix[op, ss], n]; 
-  If[func === None, mat, func[mat, ss]]
- ]
 
 
 MultiplyDot::usage = "MultiplyDot[a, b, ...] returns the products of vectors, matrices, and tensors of Species.\nMultiplyDot is a non-commutative equivalent to the native Dot with Times replaced with Multiply"

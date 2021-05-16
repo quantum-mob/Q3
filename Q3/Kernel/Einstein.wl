@@ -12,8 +12,8 @@ BeginPackage[ "Q3`Einstein`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.7 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.9 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-14 23:15:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -28,20 +28,31 @@ $symbs = Unprotect[ Multiply, MultiplyExp ]
 
 JordanWignerTransform::usage = "JordanWignerTransform[]"
 
+JordanWignerTransform[expr_, {} -> {}] := expr
+
 JordanWignerTransform[expr_, qq:{__?QubitQ} -> ff:{__?FermionQ}] :=
   Garner @ Elaborate[ expr /. JordanWignerTransform[qq -> ff] ]
 
 JordanWignerTransform[expr_, ff:{__?FermionQ} -> qq:{__?QubitQ}] :=
   Garner @ Elaborate[ expr /. JordanWignerTransform[ff -> qq] ]
 
+JordanWignerTransform[{} -> {}] := {}
+
 JordanWignerTransform[qq:{__?QubitQ} -> ff:{__?FermionQ}] := Module[
   { rr = Through[Construct[qq, 4]],
+    xx = Through[Construct[qq, 1]],
+    yy = Through[Construct[qq, 2]],
     zz = Through[Construct[qq, 3]],
     cc, pp, rules },
   pp = FoldList[Multiply, 1, Parity /@ Most[ff]];
-  cc = Multiply @@@ Transpose @ {pp, ff};
-  rules = Thread[rr -> cc];
-  Join[ Dagger[rules], rules, Thread[zz -> Map[Parity, ff]] ]
+  cc = pp ** ff;
+  Join[
+    Thread[Dagger[rr] -> Dagger[cc]],
+    Thread[rr -> cc],
+    Thread[xx -> Dagger[cc] + cc],
+    Thread[yy -> I (Dagger[cc] - cc)],
+    Thread[zz -> Map[Parity, ff]]
+   ]
  ] /; Length[qq] == Length[ff]
 
 JordanWignerTransform[ff:{__?FermionQ} -> qq:{__?QubitQ}] := Module[

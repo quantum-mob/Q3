@@ -14,8 +14,8 @@ BeginPackage[ "Q3`Gray`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.32 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-17 01:05:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.34 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-16 20:17:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -65,7 +65,7 @@ GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
     op, rr, cc, dd, vv, ll, cV, cn },
 
   mm = MatrixPower[mm, 1/nn];
-  op = QuissoExpression[mm, Qubits @ expr];
+  op = ExpressionFor[mm, Qubits @ expr];
 
   rr = Reverse /@ GrayCodeSubsets[ReverseSort @ FlavorNone @ qq];
   rr = Rest[rr];
@@ -104,9 +104,7 @@ GrayControlledW[qq:{__?QubitQ}, expr_] := Module[
   
   n = Length @ qq;
   V = FunctionExpand @ MatrixPower[mm, Power[2, 1-n]];
-  op = QuissoExpression[V, tt];
-
-  Print["op = ", op];
+  op = ExpressionFor[V, tt];
 
   Flatten @ MapThread[grayCtrl[#1, op, #2]&, {rr, ss}]
  ]
@@ -197,7 +195,7 @@ grayCtrlU[g1_, g2_, mat_, qq_] := Module[
   xx = Pick[qq, xx, 0];
   xx = Through[xx[1]];
   cc = GroupBy[Transpose @ {cc, qq}, First, Last @* Transpose];
-  op = QuissoExpression[mat, cc[1]];
+  op = ExpressionFor[mat, cc[1]];
   If[ Not @ OrderedQ @ {g1, g2},
     With[
       { tt = First @ cc[1] },

@@ -9,8 +9,8 @@ BeginPackage[ "Q3`Fock`",
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-07 15:43:18+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.6 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-14 15:55:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -165,6 +165,9 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
   Dimension[x] ^= 1 + top - bottom;
   Dimension[x[___]] ^= 1 + top - bottom;
   
+  LogicalValues[x] ^= Range[bottom, top];
+  LogicalValues[x[___]] ^= Range[bottom, top];
+
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
@@ -231,6 +234,9 @@ setHeisenberg[x_Symbol, spin_?SpinNumberQ, top_Integer] := (
   Dimension[x] ^= 1 + top;
   Dimension[x[___]] ^= 1 + top;
   
+  LogicalValues[x] ^= Range[0, top];
+  LogicalValues[x[___]] ^= Range[0, top];
+
   Dagger[x] ^= x;
   Dagger[x[j___]] ^:= x[j];
 
@@ -290,6 +296,9 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
   Dimension[x] ^= 2;
   Dimension[x[___]] ^= 2;
   
+  LogicalValues[x] ^= {0, 1};
+  LogicalValues[x[___]] ^= {0, 1};
+
   x /: Conjugate[x] := x;
   x /: Conjugate[x[j___]] := x[j];
 

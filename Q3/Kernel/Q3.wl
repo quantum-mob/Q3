@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.3 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:38:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.4 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-12 19:04:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -29,6 +29,8 @@ Begin["`Private`"]
 Q3General::usage = "Notice is a symbol to which general messages concerning Q3 are attached.\nIt is similar to General, but its Context is Q3."
 
 Q3General::obsolete = "The symbol `` is OBSOLETE. Use `` instead."
+
+Q3General::renamed = "The symbol `` has been renamed ``."
 
 Q3General::newUI = "An angle should come first. The order of the input arguments of `` has been changed since Q3 v1.2.0."
 
