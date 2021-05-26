@@ -37,7 +37,7 @@ Q3General::newUI = "An angle should come first. The order of the input arguments
 
 Q3Clear::usage = "Q3Clear[ctxt] first unprotects all symbols defined in the context of ctxt and then CleaAll all non-variable symbols -- those the name of which does not start with '$'.\nQ3Clear is for internal use."
 
-Q3Clear[] := Q3Clear@Context[]
+Q3Clear[] := Q3Clear @ Context[]
 
 Q3Clear[context_String] := (
   Unprotect @ Evaluate[context <> "*"];

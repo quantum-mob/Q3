@@ -5,8 +5,8 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.45 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-16 20:34:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.49 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-26 12:50:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -248,15 +248,13 @@ TheOperator[ { n:{(0|1|2|3|4|5|6|Raise|Lower|Hadamard)..},
 DefaultForm::usage = "DefaultForm[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.\nTo be compared with LogicalForm."
 
 DefaultForm[ expr_ ] := expr /;
-  FreeQ[ expr, _Ket | _Bra | _Dyad ]
+  FreeQ[ expr, _Ket | _Bra ]
 
 DefaultForm[ expr_ ] := expr /. {
   a_OTimes -> a, (* NOTE *)
   OSlash[v_Ket, expre_] :> OSlash[v, DefaultForm @ expre],
   Ket[a_Association] :> Ket @ KetTrim @ a,
-  Bra[a_Association] :> Bra @ KetTrim @ a,
-  Dyad[a_Association, b_Association, qq_List] :>
-    Dyad[KetTrim @ a, KetTrim @ b, qq]
+  Bra[a_Association] :> Bra @ KetTrim @ a
  }
 (* NOTE: This line is necessary to prevent the Kets and Bras in OTimes from
    being affected. *)
@@ -269,7 +267,7 @@ LogicalForm[ expr_ ] := LogicalForm[ expr, {} ]
 LogicalForm[ expr_, S_ ] := LogicalForm[ expr, {S} ]
 
 LogicalForm[ expr_, _List ] := expr /;
-  FreeQ[ expr, Ket[_Association] | Bra[_Association] | _Dyad ]
+  FreeQ[ expr, Ket[_Association] | Bra[_Association] ]
 
 LogicalForm[ Ket[a_Association], gg_List ] := Module[
   { ss = Union[Keys @ a, FlavorNone @ gg] },
@@ -282,15 +280,6 @@ LogicalForm[ Bra[a_Association], gg_List ] :=
 LogicalForm[ OSlash[Ket[a_Association], expr_], gg_List ] := With[
   { ss = FlavorNone @ gg },
   OSlash[Ket[a], LogicalForm[expr, Supplement[ss, Keys @ a]]]
- ]
-
-LogicalForm[ Dyad[a_Association, b_Association, All], gg_List ] := Module[
-  { ss = Union[Keys @ a, Keys @ b, FlavorNone @ gg] },
-  Dyad[
-    Association @ Thread[ ss -> Lookup[a, ss] ],
-    Association @ Thread[ ss -> Lookup[b, ss] ],
-    All
-   ]
  ]
 
 (* For some irreducible basis, e.g., from QuissoAdd[] *)
@@ -308,7 +297,6 @@ LogicalForm[ expr_, gg_List ] := Module[
     os_OSlash :> LogicalForm[os, ss],
     v_Ket :> LogicalForm[v, ss],
     v_Bra :> LogicalForm[v, ss],
-    d_Dyad :> LogicalForm[d, ss],
     a_Association :> LogicalForm[a, ss] (* NOTE 3 *)
    }
  ]
@@ -721,6 +709,8 @@ State[ { m:{(0|1|Up|Down)..}, t:Except[_List], p:Except[_List] } ] :=
   CircleTimes @@ Map[State] @ Tuples[{m,{t},{p}}]
 
 
+(**** <BraKet> ****)
+
 BraKet::usage = "BraKet[{a}, {b}] represents the Hermitian product \[LeftAngleBracket]a|b\[RightAngleBracket] of the two states Ket[a] and Ket[b]."
 
 SetAttributes[BraKet, {NHoldAll, ReadProtected}]
@@ -749,6 +739,8 @@ BraKet[ a_Association, b_Association ] := With[
   { qq = Union[Keys @ a, Keys @ b] },
   KroneckerDelta[ Lookup[a, qq], Lookup[b, qq] ]
  ]
+
+(**** </BraKet> ****)
 
 
 ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression."
@@ -1992,6 +1984,10 @@ HoldPattern @ Elaborate[ Dyad[a_, b_, c_List] ] := Module[
   Garner @ Elaborate[Multiply @@ op]
  ]
 
+Dyad[0, _, _List] = 0
+
+Dyad[_, 0, _List] = 0
+
 Dyad[a_Association, b_Association, {}|All] := Multiply[Ket[a], Bra[b]]
 (* NOTE: No particlar reason to store it as Dyad. *)
 
@@ -2032,9 +2028,9 @@ Dyad[a_, b_] := Module[
 HoldPattern @ Multiply[
   pre___,
   Dyad[a_Association, b_Association, qq_List],
-  Dyad[b_Association, c_Association, qq_List],
+  Dyad[c_Association, d_Association, qq_List],
   post___
- ] := Multiply[pre, Dyad[a, c, qq], post]
+ ] := BraKet[b, c] * Multiply[pre, Dyad[a, d, qq], post]
 
 HoldPattern @ Multiply[
   pre___,

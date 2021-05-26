@@ -13,8 +13,8 @@ Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.41 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-16 20:34:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.48 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-26 09:47:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -46,6 +46,8 @@ Q3`Q3Clear[];
   Projector, Measurement, Readout };
 
 { QuissoOracle, Oracle, VerifyOracle };
+
+{ QuantumFourierTransform };
 
 { ProductState, BellState, GraphState, DickeState, RandomState };
 
@@ -497,15 +499,11 @@ ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved
 
 Format[ ProductState[Association[]] ] := Ket[Any]
 
-Format[ ProductState[a_Association, ___] ] := Module[
-  { aa = Map[ Dot[{Ket[0], Ket[1]}, #]&, a ],
-    vv },
-  vv = KeyValueMap[
-    DisplayForm @ SubscriptBox[ RowBox[{"(",#2,")"}], #1 ]&,
-    aa
-   ];
-  CircleTimes @@ vv
- ]
+Format[ ProductState[assoc_Association, ___] ] :=
+  CircleTimes @@ KeyValueMap[
+    DisplayForm @ Subscript[RowBox @ {"(", {Ket[0], Ket[1]}.#2, ")"}, #1]&,
+    assoc
+   ]
 
 (* LogicalForm[...] *)
 
@@ -1515,6 +1513,33 @@ VerifyOracle[f_, m_Integer, n_Integer] := Module[
 (**** </Oracle> ****)
 
 
+(**** <QuantumFourierTransform> ****)
+
+QuantumFourierTransform::usage = "QuantumFourierTransform[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transform on the qubits S1, S2, \[Ellipsis].\nDagger[QuantumFourierTransform[\[Ellipsis]]] represents the inverse quantum Fourier transform.\nElaborate[QuantumFourierTransform[\[Ellipsis]]] returns the explicit expression of the operator in terms of the Pauli operators."
+
+Options[QuantumFourierTransform] = {
+  "Label" -> "QFT",
+  "LabelRotation" -> Pi/2
+ }
+
+Once[ AppendTo[$ElaborationHeads, QuantumFourierTransform]; ]
+
+QuantumFourierTransform[S_?QubitQ] := S[6]
+
+QuantumFourierTransform @ {S_?QubitQ} := S[6]
+
+QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] :=
+  QuantumFourierTransform[FlavorNone @ qq, opts] /;
+  Not @ ContainsOnly[FlavorLast[qq], {None}]
+
+QuantumFourierTransform /:
+HoldPattern @ Elaborate @
+  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] :=
+  ExpressionFor[FourierMatrix @ Power[2, Length @ qq], qq]
+
+(**** </QuantumFourierTransform> ****)
+
+
 Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection operator on the qubits {q1, q2, ...} into state, which is given in the Ket expression.\nProjector[expr] automatically extracts the list of qubits from expr."
 
 Projector::noKet = "No Ket expression found for projection in the provided expression ``. Identity operator is returned."
@@ -1849,17 +1874,17 @@ qCircuitOperate[ op:Except[_Measurement].. ] :=
 
 qCircuitMatrix::usage = "Based on Matrix[] ..."
 
-qCircuitMatrix[ a___, Measurement[q_?QubitQ], b___,  qq:{__?QubitQ} ] :=
+qCircuitMatrix[pre___, Measurement[q_?QubitQ], post___,  qq:{__?QubitQ}] :=
   With[
-    { ss = Qubits @ {a, q} },
+    { ss = Qubits @ {pre, q} },
     qCircuitMatrix[
-      Measurement[ ExpressionFor[qCircuitMatrix[a, ss], ss], q ],
-      b,
+      Measurement[ ExpressionFor[qCircuitMatrix[pre, ss], ss], q ],
+      post,
       qq
      ]
    ]
 
-qCircuitMatrix[ op:Except[_Measurement].., qq:{__?QubitQ} ] := Module[
+qCircuitMatrix[op:Except[_Measurement].., qq:{__?QubitQ}] := Module[
   { new },
   new = Map[Topple] @ Map[Matrix[#, qq]&] @ Elaborate @ {op};
   Topple[ Dot @@ new ]
@@ -2044,6 +2069,36 @@ qCircuitGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
     "ControlFunction" -> "Oval",
     "TargetFunction" -> "CirclePlus",
     "Label" -> "f" ]
+
+
+qCircuitGate[
+  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  more__?OptionQ
+ ] := qCircuitGate @ QuantumFourierTransform[qq, opts, more]
+
+qCircuitGate[ QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] ] :=
+  Module[
+    { more = Join[{opts}, Options @ QuantumFourierTransform],
+      lbl, ang },
+    { lbl, ang } = {"Label", "LabelRotation"} /. more;
+    Gate[qq, "Label" -> Rotate[lbl, ang], Sequence @@ more]
+   ]
+
+qCircuitGate[
+  HoldPattern @
+    Dagger @ QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  more__?OptionQ
+ ] := qCircuitGate @ Dagger @ QuantumFourierTransform[qq, opts, more]
+
+qCircuitGate[
+  HoldPattern @
+    Dagger @ QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ]
+ ] := Module[
+   { more = Join[{opts}, Options @ QuantumFourierTransform],
+     lbl, ang },
+   { lbl, ang } = {"Label", "LabelRotation"} /. more;
+   Gate[qq, "Label" -> Rotate[SuperDagger[lbl], ang], Sequence @@ more]
+  ]
 
 
 qCircuitGate[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
@@ -2364,6 +2419,8 @@ qDrawPort[ Port[ Ket[v_], opts___?OptionQ ], xy_Association ] := Module[
   { vv = Ket /@ v,
     tt, label, pivot },
   { label, pivot } = {"Label", "Pivot"} /. {opts} /. Options[qCircuitPort];
+
+  If[ label === None, Return @ {} ];
   
   tt = If [ label === Automatic,
     vv,
@@ -2408,6 +2465,8 @@ qDrawPort[ Port[ expr_, opts___?OptionQ ], xy_Association ] := Module[
 
   { label, pivot, dir } = { "Label", "Pivot", "Type" } /.
     {opts} /. Options[qCircuitPort];
+
+  If[ label === None, Return @ {} ];
   
   text = If[label === Automatic, SimpleForm[expr, qq], label];
   

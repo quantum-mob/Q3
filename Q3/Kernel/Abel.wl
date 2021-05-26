@@ -4,8 +4,8 @@ BeginPackage["Q3`Abel`"]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.11 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-16 17:09:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.12 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-26 10:16:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,7 +16,7 @@ Q3`Q3Clear[];
 { ShiftLeft, ShiftRight };
 { Unless, PseudoDivide };
 
-{ Chain };
+{ Chain, ChainBy };
 { Bead, GreatCircle };
 
 { Let };
@@ -80,7 +80,7 @@ Choices::usage = "Choices[a,n] gives all possible choices of n elements out of t
 Choices[a_List, n_Integer] := Union[Sort /@ Tuples[a, n]]
 
 
-Supplement::usage = "Supplement[a, b, c, ...] returns the elements in a that are not in any of b, c, .... It is similar to the builtin Complement, but unlike Complement, treats a as a List (not Mathematical set). That is, the order is preserved."
+Supplement::usage = "Supplement[a, b, c, \[Ellipsis]] returns the elements in a that are not in any of b, c, \[Ellipsis]. It is similar to the builtin Complement, but unlike Complement, treats a as a List (not Mathematical set). That is, the order is preserved."
 
 Supplement[a_List, b__List] := DeleteCases[ a, Alternatives @@ Union[b], 1 ]
 (* Implementation 3: Fast and versatile. *)
@@ -95,7 +95,7 @@ Supplement[a_List, b__List] := DeleteCases[ a, Alternatives @@ Union[b], 1 ]
 (* Implementation 1: Straightforward, but slow. *)
 
 
-SupplementBy::usage = "SupplementBy[a, b, c, ..., f] returns the elements in a that do not appear in any of sets on b, c, ... with all the tests made after applying f on a, b, c, ... .\nLike Supplement, the order is preserved."
+SupplementBy::usage = "SupplementBy[a, b, c, \[Ellipsis], f] returns the elements in a that do not appear in any of sets on b, c, \[Ellipsis] with all the tests made after applying f on a, b, c, \[Ellipsis] .\nLike Supplement, the order is preserved."
   
 SupplementBy[a_List, b__List, f_] := Module[
   { aa = f /@ a,
@@ -104,7 +104,7 @@ SupplementBy[a_List, b__List, f_] := Module[
   Pick[ a, aa ]
  ]
 
-Common::usage = "Common[a, b, c, ...] returns the elements of a that appear in all subsequent lists.\nIt is similar to the built-in function Intersection, but treats the first argument as a List (not mathematical sets) and hence preserves the order."
+Common::usage = "Common[a, b, c, \[Ellipsis]] returns the elements of a that appear in all subsequent lists.\nIt is similar to the built-in function Intersection, but treats the first argument as a List (not mathematical sets) and hence preserves the order."
 
 Common[a_List, b__List] := Cases[ a, Alternatives @@ Intersection[b], 1 ]
 (* Implementation 3: Fast and versatile. *)
@@ -112,7 +112,7 @@ Common[a_List, b__List] := Cases[ a, Alternatives @@ Intersection[b], 1 ]
 (* Common[a_List, b_List] := Select[a, MemberQ[b,#]& ] *)
 (* Implementation 1: Straightforward, but slow. *)
 
-CommonBy::usage = "CommonBy[a, b, c, ..., func] returns the elements of a that appear in all of b, c, ... with all the tests made after applying func.\nLike Common, the order is preserved."
+CommonBy::usage = "CommonBy[a, b, c, \[Ellipsis], func] returns the elements of a that appear in all of b, c, \[Ellipsis] with all the tests made after applying func.\nLike Common, the order is preserved."
   
 CommonBy[a_List, b__List, func_] := Module[
   { aa = func /@ a,
@@ -127,7 +127,7 @@ SignatureTo[a_, b_] :=
   Signature @ PermutationList @ FindPermutation[a, b] /;
   Length[a] == Length[b]
 
-Successive::usage = "Successive[f, {x1,x2,x3,...}] returns {f[x1,x2], f[x2,x3], ...}. Successive[f, list, n] applies f on n successive elements of list. Successive[f, list, 2] is equivalent to Successive[f,list]. Successive[f, list, 1] is equivalent to Map[f, list]."
+Successive::usage = "Successive[f, {x1,x2,x3,\[Ellipsis]}] returns {f[x1,x2], f[x2,x3], \[Ellipsis]}. Successive[f, list, n] applies f on n successive elements of list. Successive[f, list, 2] is equivalent to Successive[f,list]. Successive[f, list, 1] is equivalent to Map[f, list]."
 
 Successive[f_, a_List] := f @@@ Transpose @ {Most @ a, Rest @ a}
 
@@ -176,7 +176,7 @@ PseudoDivide[x_, 0.] = 0.
 PseudoDivide[x_, y_] := x/y
 
 
-Chain::usage = "Chain[a, b, ...] constructs a chain of links connecting a, b, ... consecutively."
+Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting a, b, \[Ellipsis] consecutively."
 
 Chain[a:Except[_List]] := {}
 
@@ -188,7 +188,7 @@ Chain[m_List] :=
 Chain[m_List, b_] := Flatten @ { Chain@m, Chain[Last@m, b] } /;
   ArrayQ[m, Except[1]]
 
-Chain[m_?VectorQ, b_] := Flatten @ Map[Chain[#, b] &, m]
+Chain[m_?VectorQ, b_] := Flatten @ Map[Chain[#, b]&, m]
 
 Chain[a_, m_List] := Flatten @ { Chain[a, First@m], Chain@m } /;
   ArrayQ[m, Except[1]]
@@ -204,7 +204,12 @@ Chain[a_, b_, c__] := Flatten @ { Chain[a, b], Chain[b, c] }
 Chain[aa_List] := Chain @@ aa
 
 
-Bead::usage = "Bead[pt] or Bead[{pt1, pt2, ...}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01]. It has been motivated by Tube.\nBead[pt] is equvalent to Sphere[pt, Scaled[0.01]].\nBead[{p1, p2, ...}] is equivalent to Sphere[{p1, p2, ...}, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r]."
+ChainBy::usage = "ChainBy[a, b, \[Ellipsis], func] constructs a chain of links connecting a, b, \[Ellipsis] consecutively with each link created by means of func."
+
+ChainBy[args___, func_] := func @@@ Chain[args]
+
+
+Bead::usage = "Bead[pt] or Bead[{pt1, pt2, \[Ellipsis]}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01]. It has been motivated by Tube.\nBead[pt] is equvalent to Sphere[pt, Scaled[0.01]].\nBead[{p1, p2, \[Ellipsis]}] is equivalent to Sphere[{p1, p2, \[Ellipsis]}, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r]."
 
 Bead[pnt:{_?NumericQ, _?NumericQ, _?NumericQ}, r_:Scaled[0.01]] :=
   Sphere[pnt, r]
@@ -293,7 +298,7 @@ GreatCircle[
   ]
 
 
-Base::usage = "Base[c[j,...,s]] returns the generator c[j,...] with the Flavor indices sans the final if c is a Species and the final Flavor index is special at all; otherwise just c[j,...,s]."
+Base::usage = "Base[c[j,\[Ellipsis],s]] returns the generator c[j,\[Ellipsis]] with the Flavor indices sans the final if c is a Species and the final Flavor index is special at all; otherwise just c[j,\[Ellipsis],s]."
 
 SetAttributes[Base, Listable]
 
@@ -343,22 +348,22 @@ FlavorLast[ _Symbol?SpeciesQ[___,j_] ] := j
 FlavorLast[ _?SpeciesQ ] = Missing["NoFlavor"]
 
 
-FlavorNone::usage = "FlavorNone[S[i, j, ...]] for some Species S gives S[i, j, ..., None]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorNone is Listable."
+FlavorNone::usage = "FlavorNone[S[i, j, \[Ellipsis]]] for some Species S gives S[i, j, \[Ellipsis], None]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorNone is Listable."
   
 SetAttributes[FlavorNone, Listable]
 
 FlavorNone[a_] := a (* Does nothing unless specified explicitly *)
 
 
-FlavorMute::usage = "FlavorMute[S[i, j, ..., k]] for some Species S gives S[i, j, ..., None], i.e., with the last Flavor replaced with None. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorMute is Listable."
+FlavorMute::usage = "FlavorMute[S[i, j, \[Ellipsis], k]] for some Species S gives S[i, j, \[Ellipsis], None], i.e., with the last Flavor replaced with None. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorMute is Listable."
   
 SetAttributes[FlavorMute, Listable]
 
 FlavorMute[a_] := a (* Does nothing unless specified explicitly *)
 
 
-FlavorThread::usage = "FlavorThread[{s1, s2, ...}, m] returns {s1[m], s2[m], ...}.\nFlavorThread[{s1, s2, ...}, {m1, m2, ...}] returns {s1[m1], s2[m2], s3[m3]}.\n
-FlavorThread[{s1, s2, ...}, {list1, list2, ...}] maps over the lists."
+FlavorThread::usage = "FlavorThread[{s1, s2, \[Ellipsis]}, m] returns {s1[m], s2[m], \[Ellipsis]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {m1, m2, \[Ellipsis]}] returns {s1[m1], s2[m2], s3[m3]}.\n
+FlavorThread[{s1, s2, \[Ellipsis]}, {list1, list2, \[Ellipsis]}] maps over the lists."
 
 FlavorThread[ss:{__?SpeciesQ}, flv_?AtomQ] :=
   Through @ Construct[ss, flv]
@@ -404,9 +409,9 @@ LogicalValues::usage = "LogicalValues[spc] gives the list of logical values labe
 SetAttributes[LogicalValues, Listable]
 
 
-Let::usage = "Let[Symbol, a, b, ...] defines the symbols a, b, ... to be Symbol, which can be Species, Complex, Real, Integer, etc."
+Let::usage = "Let[Symbol, a, b, \[Ellipsis]] defines the symbols a, b, \[Ellipsis] to be Symbol, which can be Species, Complex, Real, Integer, etc."
 
-Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, ...] declares the symbols a, b, ... to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, ...] does not take a specific structure, but only regarded seemingly so."
+Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, \[Ellipsis]] declares the symbols a, b, \[Ellipsis] to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, \[Ellipsis]] does not take a specific structure, but only regarded seemingly so."
 
 SetAttributes[Let, {HoldAll, ReadProtected}]
 
@@ -440,7 +445,7 @@ setSpecies[x_Symbol] := (
   x[j___] := Flatten @ ReplaceAll[ Distribute[Hold[j], List], Hold -> x ] /;
     MemberQ[{j}, _List];
   (* NOTE: Flatten is required for All with spinful bosons and fermions.
-     See Let[Bosons, ...] and Let[Fermions, ...]. *)
+     See Let[Bosons, \[Ellipsis]] and Let[Fermions, \[Ellipsis]]. *)
   (* NOTE: Distribute[x[j], List] will hit the recursion limit. *)
 
   Format[ x[j___] ] := SpeciesBox[x, {j}, {}] /; $FormatSpecies;
@@ -467,7 +472,7 @@ AnySpeciesQ[ Tee[_?SpeciesQ] ] = True
 AnySpeciesQ[ _ ] = False
 
 
-NonCommutative::usage = "NonCommutative represents a non-commutative element.\nLet[NonCommutative, a, b, ...] declares a[...], b[...], ... to be NonCommutative."
+NonCommutative::usage = "NonCommutative represents a non-commutative element.\nLet[NonCommutative, a, b, \[Ellipsis]] declares a[\[Ellipsis]], b[\[Ellipsis]], \[Ellipsis] to be NonCommutative."
 
 Let[NonCommutative, {ls__Symbol}] := (
   Let[Species, {ls}];
@@ -497,7 +502,7 @@ Inverse[ Power[E, expr_] ] := MultiplyExp[-expr] /;
    NonCommutativeQ[expr]. *)
 
 
-NonCommutativeQ::usage = "NonCommutativeQ[op] or NonCommutativeQ[op[...]] returns True if op or op[...] is a non-commutative element."
+NonCommutativeQ::usage = "NonCommutativeQ[op] or NonCommutativeQ[op[\[Ellipsis]]] returns True if op or op[\[Ellipsis]] is a non-commutative element."
 
 SetAttributes[NonCommutativeQ, Listable]
 
@@ -576,13 +581,13 @@ SpeciesBox[ c_, sub:{__}, sup:{__} ] :=
    ]
 (* NOTE(2020-10-14): Superscript[] instead of SuperscriptBox[], etc.
    This is for Complex Species with NonCommutative elements as index
-   (see Let[Complex, ...]), but I am not sure if this is a right choice.
+   (see Let[Complex, \[Ellipsis]]), but I am not sure if this is a right choice.
    So far, there seems to be no problem. *)
 (* NOTE(2020-08-04): The innner-most RowBox[] have been replaced by Row[]. The
    former produces a spurious multiplication sign ("x") between subscripts
    when $SubscriptDelimiter=Nothing (or similar). *)
 (* NOTE: ToBoxes have been removed; with it, TeXForm generates spurious
-   \text{...} *)
+   \text{\[Ellipsis]} *)
 
 
 FlavorForm::usage = "FlavorForm[j] converts the flavor index j into a more intuitively appealing form."
@@ -596,7 +601,7 @@ FlavorForm[Down] := "\[DownArrow]"
 FlavorForm[j_] := j
 
 
-LinearMap::usage = "LinearMap represents linear maps.\nLet[LinearMap, f, g, ...] defines f, g, ... to be linear maps."
+LinearMap::usage = "LinearMap represents linear maps.\nLet[LinearMap, f, g, \[Ellipsis]] defines f, g, \[Ellipsis] to be linear maps."
 
 Let[LinearMap, {ls__Symbol}] := Scan[setLinearMap, {ls}]
 
@@ -607,7 +612,7 @@ setLinearMap[op_Symbol] := (
  )
 
 
-LinearMapFirst::usage = "LinearMapFirst represents functions that are linear for the first argument.\nLet[LinearMapFirst, f, g, ...] defines f, g, ... to be linear maps for their first argument."
+LinearMapFirst::usage = "LinearMapFirst represents functions that are linear for the first argument.\nLet[LinearMapFirst, f, g, \[Ellipsis]] defines f, g, \[Ellipsis] to be linear maps for their first argument."
 
 Let[LinearMapFirst, {ls__Symbol}] := Scan[setLinearMapFirst, {ls}]
 
@@ -713,7 +718,7 @@ HermitianConjugate::usage = "HermitianConjugate is an alias to Dagger."
 Dagger::usage = "Dagger[expr] returns the Hermitian conjugate the expression expr.\nWARNING: Dagger has the attribute Listable, meaning that the common expectation Dagger[m] == Tranpose[Conjugate[m]] for a matrix m of c-numbers does NOT hold any longer. For such purposes use Topple[] instead.\nSee also Conjugate[], Topple[], and TeeTranspose[]."
 
 SetAttributes[Dagger, {Listable, ReadProtected}]
-(* Enabling Dagger[...] Listable makes many things much simpler. One notable
+(* Enabling Dagger[\[Ellipsis]] Listable makes many things much simpler. One notable
    drawback is that it is not applicable to matrices. This is why a separate
    function Topple[m] has been defined for matrix or vector m. *)
 
@@ -775,7 +780,7 @@ $tempMessage = If[ NameQ["System`Hermitian"],
   ""
  ]
 
-Hermitian::usage = $tempMessage <> "In Q3, Hermitian represents Hermitian operators.\nLet[Hermitian, a, b, ...] declares a, b, ... as Hermitian operators.\nSince Mathematica v12.1, Hermitian is a built-in symbol, and is extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
+Hermitian::usage = $tempMessage <> "In Q3, Hermitian represents Hermitian operators.\nLet[Hermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Hermitian operators.\nSince Mathematica v12.1, Hermitian is a built-in symbol, and is extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
 Let[Hermitian, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
@@ -801,7 +806,7 @@ $tempMessage = If[ NameQ["System`Antihermitian"],
   ""
  ]
 
-Antihermitian::usage = $tempMessage <> "In Q3, Antihermitian represents Antihermitian operators.\nLet[Antihermitian, a, b, ...] declares a, b, ... as Antihermitian operators.\nSee \!\(\*TemplateBox[{\"Q3/ref/Antihermitian\", \"paclet:Q3/ref/Antihermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
+Antihermitian::usage = $tempMessage <> "In Q3, Antihermitian represents Antihermitian operators.\nLet[Antihermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Antihermitian operators.\nSee \!\(\*TemplateBox[{\"Q3/ref/Antihermitian\", \"paclet:Q3/ref/Antihermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
 Let[Antihermitian, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
@@ -823,10 +828,10 @@ AntihermitianQ[ Conjugate[a_?AntihermitianQ] ] = True;
 
 (*** Commutation and Anticommutation Relations ***)
 
-Commutator::usage = "Commutator[a,b] = Multiply[a,b] - Multiply[b,a].\nCommutator[a, b, n] = [a, [a, ... [a, b]]],
+Commutator::usage = "Commutator[a,b] = Multiply[a,b] - Multiply[b,a].\nCommutator[a, b, n] = [a, [a, \[Ellipsis] [a, b]]],
 this is order-n nested commutator."
 
-Anticommutator::usage = "Anticommutator[a,b] = Multiply[a,b] + Multiply[b,a].\nAnticommutator[a, b, n] = {a, {a, ... {a, b}}}, this is order-n nested anti-commutator."
+Anticommutator::usage = "Anticommutator[a,b] = Multiply[a,b] + Multiply[b,a].\nAnticommutator[a, b, n] = {a, {a, \[Ellipsis] {a, b}}}, this is order-n nested anti-commutator."
 
 SetAttributes[{Commutator, Anticommutator}, {Listable, ReadProtected}]
 
@@ -850,7 +855,7 @@ Anticommutator[a_, b_, n_Integer] :=
   Anticommutator[a, Anticommutator[a, b, n-1] ] /; n > 1
 
 
-CoefficientTensor::usage = "CoefficientTensor[expr, opList1, opList2, ...] returns the tensor of coefficients of Multiply[opList1[i], opList2[j], ...] in expr. Note that when calculating the coefficients, lower-order terms are ignored.\nCoefficientTensor[expr, list1, list2, ..., func] returns the tensor of coefficients of func[list1[i], list2[j], ...]."
+CoefficientTensor::usage = "CoefficientTensor[expr, opList1, opList2, \[Ellipsis]] returns the tensor of coefficients of Multiply[opList1[i], opList2[j], \[Ellipsis]] in expr. Note that when calculating the coefficients, lower-order terms are ignored.\nCoefficientTensor[expr, list1, list2, \[Ellipsis], func] returns the tensor of coefficients of func[list1[i], list2[j], \[Ellipsis]]."
 
 CoefficientTensor[expr_List, ops:{__?AnySpeciesQ} ..] :=
   Map[ CoefficientTensor[#,ops]&, expr ]
@@ -890,7 +895,7 @@ CoefficientTensor[expr_, ops:{__?AnySpeciesQ}.., func_Symbol] :=  Module[
   SparseArray[Thread[ij -> rr], mn]
  ]
 
-(* Times[...] is special *)
+(* Times[\[Ellipsis]] is special *)
 CoefficientTensor[expr_, ops:{__?AnySpeciesQ}.., Times] := Module[
   { pp = Times @@@ Tuples @ {ops},
     cc, mm },
@@ -916,10 +921,10 @@ MultiplyPower[op_, n_Integer] := Multiply[MultiplyPower[op, n-1], op] /; n > 1
 MultiplyPower[z_?CommutativeQ, n_] := Power[z, n]
 
 
-MultiplyDot::usage = "MultiplyDot[a, b, ...] returns the products of vectors, matrices, and tensors of Species.\nMultiplyDot is a non-commutative equivalent to the native Dot with Times replaced with Multiply"
+MultiplyDot::usage = "MultiplyDot[a, b, \[Ellipsis]] returns the products of vectors, matrices, and tensors of Species.\nMultiplyDot is a non-commutative equivalent to the native Dot with Times replaced with Multiply"
 
 (* Makes MultiplyDot associative for the case
-   MultiplyDot[vector, matrix, matrix, ...] *)
+   MultiplyDot[vector, matrix, matrix, \[Ellipsis]] *)
 SetAttributes[MultiplyDot, {Flat, OneIdentity, ReadProtected}]
 
 MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
@@ -976,7 +981,7 @@ Once[
 (*     <Multiply>                                                     *)
 (* ****************************************************************** *)
 
-DistributableQ::usage = "DistributableQ[x, y, ...] returns True if any of the arguments x, y, ... has head of Plus."
+DistributableQ::usage = "DistributableQ[x, y, \[Ellipsis]] returns True if any of the arguments x, y, \[Ellipsis] has head of Plus."
 
 DistributableQ[args__] := Not @ MissingQ @ FirstCase[ {args}, _Plus ]
 
@@ -1004,7 +1009,7 @@ HoldPattern @ MultiplyGenus[ Dagger[any_] ] := "Ket" /;
   MultiplyGenus[any] == "Bra"
 
 
-Multiply::usage = "Multiply[a, b, ...] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[...], it does not have the attributes Flat and OneIdentity."
+Multiply::usage = "Multiply[a, b, \[Ellipsis]] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[\[Ellipsis]], it does not have the attributes Flat and OneIdentity."
 
 SetAttributes[Multiply, {Listable, ReadProtected}]
 
@@ -1231,7 +1236,7 @@ Lie::usage = "Lie[a, b] returns the commutator [a, b]."
 Lie[a_, b_] := Commutator[a, b]
 
 
-LiePower::usage = "LiePower[a, b, n] returns the nth order commutator [a, [a, ..., [a, b]...]]."
+LiePower::usage = "LiePower[a, b, n] returns the nth order commutator [a, [a, \[Ellipsis], [a, b]\[Ellipsis]]]."
 
 LiePower[a_, b_List, n_Integer] := Map[LiePower[a, #, n]&, b] /; n>1
 
