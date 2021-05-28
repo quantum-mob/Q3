@@ -11,8 +11,8 @@ Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.14 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-16 20:33:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.15 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-28 14:55:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -31,8 +31,6 @@ Q3`Q3Clear[];
 
 { SpinCoherentState };
 
-{ WignerRotation, WignerEulerRotation };
-
 { WignerDistributionW,
   WignerDistributionC };
 
@@ -40,6 +38,8 @@ Q3`Q3Clear[];
 
 { NineJSymbol, WignerEckart };
 
+
+{ WignerRotation, WignerEulerRotation }; (* obsolete *)
 
 { WignerExpression }; (* obsolete *)
 { WignerKetQ, WignerExpand }; (* obsolete *)
@@ -56,7 +56,7 @@ $symbs = Unprotect[
   $GarnerHeads, $GarnerTests,
   $ElaborationRules, $ElaborationHeads,
   $RaiseLowerRules,
-  TheRotation, TheEulerRotation
+  Rotation, EulerRotation, TheRotation, TheEulerRotation
  ]
 
 
@@ -124,20 +124,8 @@ TheWignerKet[jm:{_, _}, more:{_, _}..] :=
   CircleTimes @@ Map[TheWignerKet, {jm, more}] /;
   AllTrue[{jm, more}, SpinNumberQ]
 
-(*
-TheWignerKet[ {J_, M_, theta:Except[_List], phi:Except[_List]} ] :=
-  TheEulerRotation[{J,phi,theta,0}] . TheWignerKet[{J,M}] /;
-  SpinNumberQ[J,M]
 
-TheWignerKet[ a:{Repeated[Except[_List],{4}]}, b:{Repeated[Except[_List],{4}]}.. ] :=
-  CircleTimes @@ Map[TheWignerKet, {a, b}]
- *)
-(* NOTE: TheWignerKet[a:{Repeated[Except[_List],{4}]..}] is dangerous for bad
-   inputs like {1/2,0,Pi/2,Pi/2}. *)
-(*
-TheWignerKet[ {j_?SpinNumberQ, m:{__?NumericQ}, t:Except[_List], p:Except[_List]} ] :=
-  CircleTimes @@ Map[TheWignerKet] @ Tuples[{{j}, m, {t}, {p}}]
-*)
+(**** <TheRotation and TheEulerRotation> ****)
 
 TheRotation[_, {_?SpinNumberQ, 0}] := IdentityMatrix[2*J+1]
 
@@ -164,6 +152,8 @@ TheEulerRotation[
   a:{{_, _, _}, _?SpinNumberQ},
   b:{{_, _, _}, _?SpinNumberQ}.. ] :=
   CircleTimes @@ Map[TheEulerRotation, {a, b}]
+
+(**** </TheRotation and TheEulerRotation> ****)
 
 
 Spin::wrongS = "Wrong spin value ``. Spin should be a non-negative integer or half-integer. Spin 1/2 is assumed."
@@ -716,16 +706,38 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
  ]
 
 
-WignerRotation::usage = "WignerRotation[angle, S[j, ..., k]] operates the rotation by angle around the axis k on the Spin S[j, ..., None].\nWignerRotation[angle, S, {x, y, z}] gives the rotation operator by angle around the axis {x, y, z} on the Spin S."
+(**** <Rotation and EulerRotation> ****)
 
-WignerRotation[phi_, S_?SpinQ[j___,k:(1|2|3)]] := Module[
-  { bs = Basis[ S[j, None] ],
-    Rn = MatrixExp[ -I phi TheWigner[{Spin[S], k}] ] },
+Rotation[phi_, S_?SpinQ, v:{_, _, _}, opts___?OptionQ] :=
+  Rotation[phi, S[None], v, opts] /;
+  FlavorLast[S] =!= None
+
+Rotation[phi_, qq:{__?SpinQ}, rest___] :=
+  Map[Rotation[phi, #, rest]&, qq]
+
+
+Rotation /:
+Dagger[ Rotation[ang_, S_?SpinQ, rest___] ] :=
+  Rotation[-Conjugate[ang], S, rest]
+
+Rotation /:
+HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] :=
+  Cos[phi/2] - I Sin[phi/2]*S
+
+Rotation /:
+HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, v:{_, _, _}, ___] :=
+  Garner[ Cos[phi/2] - I Sin[phi/2] Dot[S @ All, Normalize @ v] ]
+
+Rotation /:
+HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] := Module[
+  { bs = Basis[S],
+    Rn = MatrixExp[ -I phi TheWigner[{Spin @ S, FlavorLast @ S}] ] },
   Inner[Dyad, bs.Rn, bs]
  ]
 
-WignerRotation[phi_, S_?SpinQ[j___, None], v:{_,_,_}] := Module[
-  { bs = Basis[ S[j, None] ],
+Rotation /:
+HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, v:{_,_,_}, ___] := Module[
+  { bs = Basis[S],
     vn = v / Norm[v],
     Rn },
   Rn = vn . {
@@ -736,18 +748,35 @@ WignerRotation[phi_, S_?SpinQ[j___, None], v:{_,_,_}] := Module[
   Inner[Dyad, bs.Rn, bs]
  ]
 
-WignerRotation[phi_, S_?SpinQ, v:{_,_,_}] :=
-  WignerRotation[ phi, S[None], v] /;
-  FlavorLast[S] =!= None
+
+EulerRotation[aa:{_, _, _}, S_?SpinQ, opts___?OptionQ] :=
+  EulerRotation[ aa, S[None], opts ] /; FlavorLast[S] =!= None
 
 
-WignerEulerRotation::usage = "WignerEulerRotation[{a, b, c}, S] returns the Euler rotation operator acting on the spin S."
+EulerRotation /:
+HoldPattern @ Elaborate @ EulerRotation[{a_, b_, c_}, S_?SpinQ, ___] :=
+  Multiply[
+    Elaborate @ Rotation[a, S[3]],
+    Elaborate @ Rotation[b, S[2]],
+    Elaborate @ Rotation[c, S[3]]
+   ]
 
-WignerEulerRotation[{a_, b_, c_}, S_?SpinQ] := Multiply[
-  WignerRotation[a, S[3]],
-  WignerRotation[b, S[2]],
-  WignerRotation[c, S[3]]
- ]
+
+WignerRotation::usage = "WignerRotation is obsolete now. Use Rotation instead."
+WignerRotation[args__] := (
+  Message[Q3`Q3`General::obsolete, "WignerRotation", "Rotation"];
+  Rotation[args]
+ )
+
+
+WignerEulerRotation::usage = "WignerEulerRotation is obsolete now. Use EulerRotation instead."
+WignerEulerRotation[args__] := (
+  Message[Q3`Q3`General::obsolete, "WignerEulerRotation", "EulerRotation"];
+  EulerRotation[args]
+ )
+
+(**** </Rotation and EulerRotation> ****)
+
 
 (* ***************
    Special Topics

@@ -13,8 +13,8 @@ Q3`Q3Clear[];
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.48 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-26 09:47:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.58 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-28 14:55:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -33,19 +33,12 @@ Q3`Q3Clear[];
 
 { QuissoAdd, QuissoAddZ };
 
-{ QuissoPhase, Phase,
-  QuissoRotation, Rotation,
-  QuissoEulerRotation, EulerRotation };
+{ Phase, Rotation, EulerRotation };
 
-{ QuissoControlledU, ControlledU,
-  QuissoCZ, CZ,
-  QuissoCNOT, CNOT,
-  QuissoSWAP, SWAP,
-  QuissoToffoli, Toffoli,
-  QuissoFredkin, Fredkin,
+{ ControlledU, CZ, CNOT, SWAP, Toffoli, Fredkin,
   Projector, Measurement, Readout };
 
-{ QuissoOracle, Oracle, VerifyOracle };
+{ Oracle, VerifyOracle };
 
 { QuantumFourierTransform };
 
@@ -64,6 +57,11 @@ Q3`Q3Clear[];
 { TheQuditKet };
 
 (* Obsolete Symbols *)
+
+{ QuissoPhase, QuissoControlledU,
+  QuissoRotation, QuissoEulerRotation,
+  QuissoCZ, QuissoCNOT, QuissoSWAP, QuissoToffoli, QuissoFredkin,
+  QuissoOracle }; (* obsolete *)
 
 { QuissoExpression, QuissoExpressionRL }; (* obsolete *)
 
@@ -468,7 +466,16 @@ QuissoExpand[expr_] := (
   Elaborate[expr]
  )
 
+
 Once[
+  $ElaborationHeads = Join[ $ElaborationHeads,
+    { QuantumCircuit, QuantumFourierTransform,
+      ControlledU, CZ, CNOT, SWAP, Toffoli, Fredkin, Oracle,
+      Phase, Rotation, EulerRotation,
+      Projector, ProductState
+     }
+   ];
+  
   $ElaborationRules = Join[ $ElaborationRules,
     { G_?QubitQ[j___, 0] -> 1,
       G_?QubitQ[j___, 4] -> G[j, Raise],
@@ -479,19 +486,9 @@ Once[
       G_?QubitQ[j___, 10] -> (1 + G[j,3]) / 2,
       G_?QubitQ[j___, 11] -> (1 - G[j,3]) / 2,
       OTimes -> DefaultForm @* CircleTimes,
-      OSlash -> DefaultForm @* CircleTimes,
-      ControlledU -> QuissoControlledU,
-      Phase -> QuissoPhase,
-      Rotation -> QuissoRotation,
-      EulerRotation -> QuissoEulerRotation,
-      CNOT -> QuissoCNOT,
-      SWAP -> QuissoSWAP,
-      CZ -> QuissoCZ,
-      Toffoli -> QuissoToffoli,
-      Fredkin -> QuissoFredkin,
-      Oracle -> QuissoOracle
+      OSlash -> DefaultForm @* CircleTimes
      }
-   ]
+   ];
  ]
 
 
@@ -520,8 +517,6 @@ HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
 (* TODO: DefaultForm[...] for ProductState *)
 
 (* Elaborate[...] *)
-
-Once[ AppendTo[$ElaborationHeads, ProductState]; ]
 
 ProductState /:
 HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := Garner[
@@ -997,53 +992,41 @@ QuissoAssemble[ ss:{__?QubitQ}, m_?TensorQ ] := Module[
  ]
 
 
-QuissoPhase::usage = "QuissoPhase[\[Phi], S] operates the relative phase shift by \[Phi] on the qubit S.\nUnlike Phase, it expands immediately in terms of the elementary Pauli gates."
-
-QuissoPhase[ a__, opts__?OptionQ ] := QuissoPhase[ a ]
-(* NOTE: opts__, NOT opts___; just for the interface with Phase[]. *)
-
-QuissoPhase[ a_, qq:{__?QubitQ} ] := Garner[
-  Multiply @@ Map[QuissoPhase[a, #]&, qq]
- ]
-
-QuissoPhase[ a_, S_?QubitQ[j___, None] ] :=
-  (1+Exp[I*a])/2 + S[j,3] (1-Exp[I*a])/2
-(* Phase[...] can results in this case. *)
-
-QuissoPhase[ a_, S_?QubitQ ] := QuissoPhase[a, S[None]] /;
-  FlavorLast[S] =!= None
-
-QuissoPhase[S_?QubitQ, ang_] := (
-  Message[Q3`Q3General::newUI, QuissoPhase];
-  QuissoPhase[ang, S]
- )
-
-QuissoPhase[qq:{__?QubitQ}, ang_] := (
-  Message[Q3`Q3General::newUI, QuissoPhase];
-  QuissoPhase[ang, qq]
- )
-
+(**** <Phase> ****)
 
 Phase::usage = "Phase[G, \[Phi]] represents the relative phase shift by \[Phi] on the qubit G."
 
 Options[Phase] = { "Label" -> "\[CapitalPhi]" }
 
-Phase[ phi_, qq:{__?QubitQ} ] := Map[Phase[phi, #]&, FlavorNone @ qq]
+Phase[phi_, qq:{__?QubitQ}, opts___?OptionQ] :=
+  Map[Phase[phi, #, opts]&, FlavorNone @ qq]
 
-Phase[ phi_, G_?QubitQ, opts___?OptionQ ] :=
-  Phase[ phi, G[None], opts ] /; FlavorLast[G] =!= None
+Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
+  Phase[phi, S[None], opts] /; FlavorLast[S] =!= None
 
-HoldPattern @ Multiply[
-  pre___,
-  Phase[phi_, S_?QubitQ, opts___?OptionQ ],
-  post___
- ] := Multiply[ pre, QuissoPhase[phi, S], post ]
-(* Options are for QuantumCircuit[] and ignore in calculations. *)
 
 Phase /:
-Dagger[ Phase[ phi_, G_?QubitQ, opts___?OptionQ ] ] :=
-  Phase[ -Conjugate[phi], G, opts ]
+Dagger[ Phase[phi_, G_?QubitQ, opts___?OptionQ] ] :=
+  Phase[-Conjugate[phi], G, opts]
   
+Phase /:
+HoldPattern @ Elaborate @ Phase[a_, S_?QubitQ, ___] :=
+  (1+Exp[I*a])/2 + S[3] (1-Exp[I*a])/2
+
+Phase /:
+HoldPattern @ Multiply[pre___,
+  Phase[phi_, S_?QubitQ, ___?OptionQ],
+  post___] := Multiply[pre, Elaborate @ Phase[phi, S], post]
+(* Options are for QuantumCircuit[] and ignored in calculations. *)
+
+Phase /:
+HoldPattern @ Matrix[op_Phase, rest__] := Matrix[Elaborate[op], rest]
+
+Phase /:
+HoldPattern @ Matrix @ Phase[a_, S_?QubitQ, ___] :=
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[I a]}, {2, 2}]
+(* NOTE: This is just a short-cut. *)
+
 
 Phase[q_?QubitQ, ang_, rest___] := (
   Message[Q3`Q3General::newUI, Phase];
@@ -1055,56 +1038,51 @@ Phase[qq:{__?QubitQ}, ang_, rest___] := (
   Phase[ang, qq, rest]
  )
 
+QuissoPhase::usage = "QuissoPhase[...] is obsolete. Use Elaborate[Phase[...]] instead."
 
-(**** <Rotation> ****)
-
-QuissoRotation::usage = "QuissoRotation[angle, G[j,...,k]] gives the operator corresonding to the rotation by angle around the axis k on the qubit G[j, ..., None]."
-
-QuissoRotation[ args__, opts__?OptionQ ] := QuissoRotation[ args ]
-(* NOTE: opts__, NOT opts___; just for the interface with Rotation[]. *)
-
-QuissoRotation[ a_, S_?QubitQ[j___, k:(1|2|3)] ] :=
-  Cos[a/2] - I Sin[a/2] S[j,k]
-
-QuissoRotation[ a_, S_?QubitQ[j___, None], v:{_,_,_} ] := Garner[
-  Cos[a/2] - I Sin[a/2] Dot[ S[j,All], Normalize[v] ]
- ]
-(* Rotation[...] can results in this case. *)
-
-QuissoRotation[ a_, S_?QubitQ, v:{_,_,_}] :=
-  QuissoRotation[a, S[None], v] /; FlavorLast[S] =!= None
-
-QuissoRotation[ a_, SS:{__?QubitQ} ] := Garner[
-  Multiply @@ Map[ QuissoRotation[a, #]&, SS ]
- ]
-
-
-QuissoRotation[S_?QubitQ, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, QuissoRotation];
-  QuissoRotation[ang, S, rest]
+QuissoPhase[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "QuissoPhase",
+    "Elaborate[Phase[\[Ellipsis]]]"
+   ];
+  Elaborate @ Phase[args]
  )
 
-QuissoRotation[ss:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, QuissoRotation];
-  QuissoRotation[ang, ss, rest]
- )
+(**** </Phase> ****)
 
+
+(**** <Rotation and EulerRotation> ****)
 
 Options[Rotation] = { "Label" -> Automatic }
 
-Rotation[ phi_, qq:{__?QubitQ}, rest___ ] :=
-  Map[ Rotation[phi, #, rest]&, qq ]
-(* NOTE: NOT FlavorNone@qq because rest may include {x, y, z} indicating the
-   roation axis. *)
+Rotation[phi_, S_?QubitQ, v:{_, _, _}, opts___?OptionQ] :=
+  Rotation[phi, S[None], v, opts] /;
+  FlavorLast[S] =!= None
+
+Rotation[phi_, qq:{__?QubitQ}, rest___] :=
+  Map[Rotation[phi, #, rest]&, qq]
+(* NOTE: NOT FlavorNone@qq because S[..., k] in qq may indicate the rotation
+   axis. *)
 
 Rotation /:
-HoldPattern @ Multiply[pre___, Rotation[phi_, S_?QubitQ, rest___], post___ ] :=
-  Multiply[ pre, QuissoRotation[phi, S, rest], post ]
-(* Options are for QuantumCircuit[] and ignored in calculations. *)
+HoldPattern @ Multiply[pre___, op_Rotation, post___] :=
+  Multiply[ pre, Elaborate[op], post ]
 
 Rotation /:
 Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
   Rotation[-Conjugate[ang], S, rest]
+
+Rotation /:
+HoldPattern @ Elaborate @ Rotation[phi_, S_?QubitQ, ___?OptionQ] :=
+  Cos[phi/2] - I Sin[phi/2]*S
+
+Rotation /:
+HoldPattern @ Elaborate @ Rotation[phi_, S_?QubitQ, v:{_, _, _}, ___] :=
+  Garner[ Cos[phi/2] - I Sin[phi/2] Dot[S @ All, Normalize @ v] ]
+
+Rotation /:
+HoldPattern @ Matrix[op_Rotation, rest___] := Matrix[Elaborate[op], rest]
 
 
 Rotation[q_?QubitQ, ang_, rest___] := (
@@ -1117,55 +1095,41 @@ Rotation[qq:{__?QubitQ}, ang_, rest___] := (
   Rotation[ang, qq, rest]
  )
 
-(**** </Rotation> ****)
 
+QuissoRotation::usage = "QuissoRotation is obsolete now. Use Elaborate[Rotation[...]] instead."
 
-QuissoEulerRotation::usage = "QuissoEulerRotation[{a, b, c}, G[j, ..., None]] operates the Euler rotation by the angles a,  b and c on the qubit G[j, ..., None].\nUnlike EulerRotation, it expands immediately in terms of the elementary Pauli gates."
-
-QuissoEulerRotation[ args__, opts__?OptionQ ] := QuissoEulerRotation[ args ]
-(* NOTE: opts__, NOT opts___; just for the interface with Rotation[]. *)
-
-QuissoEulerRotation[aa:{_, _, _}, SS:{__?QubitQ}] :=
-  Multiply @@ Map[ QuissoEulerRotation[aa, #]&, SS ]
-
-QuissoEulerRotation[ {a_, b_, c_}, S_?QubitQ[j___,None] ] :=
-  Garner @ Multiply[
-    QuissoRotation[a, S[j,3]],
-    QuissoRotation[b, S[j,2]],
-    QuissoRotation[c, S[j,3]]
-   ]
-(* EulerRotation[...] can results in this case. *)
-
-QuissoEulerRotation[ {a_, b_, c_}, S_?QubitQ ] :=
-  QuissoEulerRotation[ {a, b, c}, S[None] ] /; FlavorLast[S] =!= None
-
-
-QuissoEulerRotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, QuissoEulerRotation];
-  QuissoEulerRotation[ang, q, rest]
+QuissoRotation[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "QuissoRotation",
+    "Elaborate[QuissoRotation[\[Ellipsis]]]"
+   ];
+  Elaborate @ Rotation[args]
  )
 
-QuissoEulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, QuissoEulerRotation];
-  QuissoEulerRotation[ang, qq, rest]
- )
-
-
-Once[ EulerRotation::usage = EulerRotation::usage <> "\nEulerRotation[{a, b, c}, G[j, ..., None]] operates the Euler rotation by the angles a,  b and c on the qubit G[j, ..., None]." ]
 
 Options[EulerRotation] = { "Label" -> Automatic }
 
-EulerRotation[ aa:{_, _, _}, qq:{__?QubitQ}, rest___ ] :=
+EulerRotation[aa:{_, _, _}, qq:{__?QubitQ}, rest___] :=
   Map[ EulerRotation[aa, #, rest]&, FlavorNone @ qq ]
 
-EulerRotation[ angles:{_, _, _}, G_?QubitQ, opts___?OptionQ ] :=
-  EulerRotation[ angles, G[None], opts ] /; FlavorLast[G] =!= None
-  
-HoldPattern @ Multiply[
-  pre___,
-  EulerRotation[angles:{_, _, _}, S_?QubitQ, opts___?OptionQ ],
-  post___ ] := Multiply[ pre, QuissoEulerRotation[angles, S], post ]
-(* Options are for QuantumCircuit[] and ignore in calculations. *)
+EulerRotation[aa:{_, _, _}, G_?QubitQ, opts___?OptionQ] :=
+  EulerRotation[ aa, G[None], opts ] /; FlavorLast[G] =!= None
+
+EulerRotation /:
+HoldPattern @ Multiply[pre___, op_EulerRotation, post___ ] :=
+  Multiply[pre, Elaborate[op], post]
+
+EulerRotation /:
+HoldPattern @ Elaborate @ EulerRotation[{a_, b_, c_}, S_?QubitQ, ___] :=
+  Garner @ Multiply[
+    Elaborate @ Rotation[a, S[3]],
+    Elaborate @ Rotation[b, S[2]],
+    Elaborate @ Rotation[c, S[3]]
+   ]
+
+EulerRotation /:
+HoldPattern @ Matrix[op_EulerRotation, rest___] := Matrix[Elaborate[op], rest]
 
 
 EulerRotation[q_?QubitQ, ang_, rest___] := (
@@ -1178,14 +1142,22 @@ EulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
   EulerRotation[ang, qq, rest]
  )
 
+QuissoEulerRotation::usage = "QuissoEulerRotation is obsolete now. Use Elaborate[EulerRotation[\[Ellipsis]]] instead."
 
-(* *************************************************************
-   * Quantum Computation
-   ************************************************************* *)
+QuissoEulerRotation[args___] := (
+  Message[Q3`Q3General::obsolete,
+    "QuissoEulerRotation",
+    "Elaborate[EulerRotation[\[Ellipsis]]]"
+   ];
+  Elaborate @ EulerRotation[args]
+ )
+
+(**** </Rotation and EulerRotation> ****)
+
+
+(**** <CNOT> ****)
 
 CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. Note that it does not expand until necessary (e.g., multiplied to a Ket); use QuissoCNOT or Elaborate in order to expand it immediately."
-
-QuissoCNOT::usage = "QuissoCNOT[C, T] operates the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. See also CNOT."
 
 CNOT[c_?QubitQ, t_] := CNOT[{c}, t]
 
@@ -1195,77 +1167,121 @@ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
   CNOT[FlavorNone @ cc, FlavorNone @ tt] /;
   Not @ ContainsOnly[FlavorLast @ Join[cc, tt], {None}]
 
-CNOT /: Dagger[ op_CNOT ] := op
+CNOT /:
+Dagger[ op_CNOT ] := op
 
 CNOT /:
-HoldPattern @ Multiply[pre___, CNOT[qq__], post___] :=
-  Multiply[pre, QuissoCNOT[qq], post]
-
-QuissoCNOT[c_?QubitQ, t_] := QuissoCNOT[{c}, t]
-
-QuissoCNOT[c_, t_?QubitQ] := QuissoCNOT[c, {t}]
-
-QuissoCNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
-  QuissoCNOT[FlavorNone @ cc, FlavorNone @ tt] /;
-  Not @ ContainsOnly[FlavorLast @ Join[cc, tt], {None}]
-
-QuissoCNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
-  { ccc = Multiply @@ Through[cc[11]],
-    ttt = Multiply @@ Through[tt[1]] },
-  Elaborate[(1-ccc) + ccc ** ttt]
+HoldPattern @ Elaborate @ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+  { prj = Multiply @@ Through[cc[11]],
+    not = Multiply @@ Through[tt[1]] },
+  Garner @ Elaborate[(1-prj) + prj ** not]
  ]
 
+CNOT /:
+HoldPattern @ Multiply[pre___, op_CNOT, post___] :=
+  Multiply[pre, Elaborate[op], post]
+
+CNOT /:
+HoldPattern @ Matrix[op_CNOT, rest___] := Matrix[Elaborate[op], rest]
+
+
+QuissoCNOT::usage = "QuissoCNOT is obsolete now. Use Elaborate[CNOT[\[Ellipsis]]] instead."
+
+QuissoCNOT[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "CNOT",
+    "Elaborate[CNOT[\[Ellipsis]]]"
+   ];
+  Elaborate @ CNOT[args]
+ )
+
+(**** </CNOT> ****)
+
+
+(**** <CZ> ****)
 
 CZ::usage = "CZ[C, T] operates the controlled-Z gate on the two qubits associated with C and T. C and T are the control and target qubits, respectively; in fact, contol and target qubits are symmetric for this gate."
 
-QuissoCZ::usage = "QuissoCZ[C, T] operates the controlled-Z gate on the two qubits associated with C and T. C and T are the control and target qubits, respectively; in fact, contol and target qubits are symmetric for this gate."
-
 SetAttributes[CZ, Listable]
-
-SetAttributes[QuissoCZ, Listable]
 
 CZ[ c_?QubitQ, t_?QubitQ ] := CZ @@ FlavorNone @ {c,t} /;
   FlavorLast[{c,t}] =!= {None, None}
 
-CZ /: Dagger[ op_CZ ] := op
+CZ /:
+Dagger[ op_CZ ] := op
 
-CZ /: HoldPattern @ Multiply[a___, CZ[b__], c___] := Multiply[a, QuissoCZ[b], c]
-
-QuissoCZ[ c_?QubitQ, t_?QubitQ ] := QuissoCZ @@ FlavorNone @ {c,t} /;
-  FlavorLast[{c,t}] =!= {None, None}
-
-QuissoCZ[ c_?QubitQ, t_?QubitQ ] := Module[
+CZ /:
+HoldPattern @ Elaborate @ CZ[c_?QubitQ, t_?QubitQ] := Module[
   { a = Most @ c,
     b = Most @ t },
-  ExpandAll[ (1 - a[3]**b[3] + a[3] + b[3]) / 2 ]
+  Garner[ (1 - a[3]**b[3] + a[3] + b[3]) / 2 ]
  ]
 
+CZ /:
+HoldPattern @ Multiply[pre___, op_CZ, post___] :=
+  Multiply[pre, Elaborate[op], post]
 
+CZ /:
+HoldPattern @ Matrix[op_CZ, rest___] := Matrix[Elaborate[op], rest]
+
+
+QuissoCZ::usage = "QuissoCZ is obsolete now. Use Elaborate[CZ[\[Ellipsis]]] instead."
+
+QuissoCZ[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "CZ",
+    "Elaborate[CZ[\[Ellipsis]]]"
+   ];
+  Elaborate @ CZ[args]
+ )
+
+(**** </CZ> ****)
+
+
+(**** <SWAP> ****)
 
 SWAP::usage = "SWAP[A, B] operates the SWAP gate on the two qubits A and B."
 
-QuissoSWAP::usage = "QuissoSWAP[A, C] operates the SWAP gate on the two qubits A and B. Unlike SWAP, QuissoSWAPS expands immediately in terms of the elementary Pauli gates."
-
 SetAttributes[SWAP, Listable]
 
-SetAttributes[QuissoSWAP, Listable]
+SWAP[a_?QubitQ, b_?QubitQ] := SWAP @@ FlavorNone @ {a, b} /;
+  FlavorLast[{a, b}] =!= {None, None}
 
-SWAP[ a_?QubitQ, b_?QubitQ ] := SWAP @@ FlavorNone @ {a,b} /;
-  FlavorLast[{a,b}] =!= {None, None}
+SWAP /:
+Dagger[ op_SWAP ] := op
 
-SWAP /: Dagger[ op_SWAP ] := op
-
-SWAP /: HoldPattern @ Multiply[a___, SWAP[b__], c___] := Multiply[a, QuissoSWAP[b], c]
-
-QuissoSWAP[ a_?QubitQ, b_?QubitQ ] := QuissoSWAP @@ FlavorNone @ {a,b} /;
-  FlavorLast[{a,b}] =!= {None, None}
-
-QuissoSWAP[ x_?QubitQ, y_?QubitQ ] := Module[
+SWAP /:
+HoldPattern @ Elaborate @ SWAP[x_?QubitQ, y_?QubitQ] := Module[
   { a = Most @ x,
     b = Most @ y },
-  ExpandAll[ (1 + a[1]**b[1] + a[2]**b[2] + a[3]**b[3]) / 2 ]
+  Garner[ (1 + a[1]**b[1] + a[2]**b[2] + a[3]**b[3]) / 2 ]
  ]
 
+SWAP /:
+HoldPattern @ Multiply[pre___, op_SWAP, post___] :=
+  Multiply[pre, Elaborate[op], post]
+
+SWAP /:
+HoldPattern @ Matrix[op_SWAP, rest___] := Matrix[Elaborate[op], rest]
+
+
+QuissoSWAP::usage = "QuissoSWAP is obsolete now. Use Elaborate[SWAP[\[Ellipsis]]] instead."
+
+QuissoSWAP[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "SWAP",
+    "Elaborate[SWAP[\[Ellipsis]]]"
+   ];
+  Elaborate @ SWAP[args]
+ )
+
+(**** </SWAP> ****)
+
+
+(**** <Toffoli> ****)
 
 Toffoli::usage = "Toffoli[A, B, C] operates the Toffoli gate, i.e., the three-qubit controlled-note gate on C controlled by A and B."
 
@@ -1273,53 +1289,83 @@ QuissoToffoli::usage = "QuissoToffoli[A, B, C] is the same as Toffoli[A, B, C], 
 
 SetAttributes[Toffoli, Listable]
 
-SetAttributes[QuissoToffoli, Listable]
+Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ] :=
+  Toffoli @@ FlavorNone @ {a, b, c} /;
+  FlavorLast[{a, b, c}] =!= {None, None, None}
 
-Toffoli[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
-  Toffoli @@ FlavorNone @ {a,b,c} /;
-  FlavorLast[{a,b,c}] =!= {None, None, None}
+Toffoli /:
+Dagger[ op_Toffoli ] := op
 
-Toffoli /: Dagger[ op_Toffoli ] := op
+Toffoli /:
+HoldPattern @ Elaborate @ Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ] := Garner[
+  ( 3 + a[3] + b[3] + c[1] -
+      a[3]**b[3] - a[3]**c[1] - b[3]**c[1] +
+      a[3]**b[3]**c[1]
+   ) / 4
+ ]
 
-Toffoli /: HoldPattern @ Multiply[a___, Toffoli[b__], c___] :=
-  Multiply[a, QuissoToffoli[b], c]
+Toffoli /:
+HoldPattern @ Multiply[pre___, op_Toffoli, post___] :=
+  Multiply[pre, Elaborate[op], post]
 
-QuissoToffoli[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
-  QuissoToffoli @@ FlavorNone @ {a,b,c} /;
-  FlavorLast[{a,b,c}] =!= {None, None, None}
+Toffoli /:
+HoldPattern @ Matrix[op_Toffoli, rest___] := Matrix[Elaborate[op], rest]
 
-QuissoToffoli[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] := Garner[
-  3 + a[3] + b[3] + c[1] -
-    a[3]**b[3] - a[3]**c[1] - b[3]**c[1] +
-    a[3]**b[3]**c[1]
- ] / 4
 
+QuissoToffoli::usage = "QuissoToffoli is obsolete now. Use Elaborate[Toffoli[\[Ellipsis]]] instead."
+
+QuissoToffoli[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "Toffoli",
+    "Elaborate[Toffoli[\[Ellipsis]]]"
+   ];
+  Elaborate @ Toffoli[args]
+ )
+
+(**** </Toffoli> ****)
+
+
+(**** <Fredkin> ****)
 
 Fredkin::usage = "Fredkin[a, b, c] represents the Fredkin gate, i.e., the SWAP gate on b and c controlled by a."
 
-QuissoFredkin::usage = "QuissoFredkin[A, B, C] is the same as Fredkin[A, B, C], but expands immediately in terms of elementary Pauli gates."
-
 SetAttributes[Fredkin, Listable]
-
-SetAttributes[QuissoFredkin, Listable]
 
 Fredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
   Fredkin @@ FlavorNone @ {a,b,c} /;
   Not @ ContainsOnly[FlavorLast @ {a,b,c}, {None}]
 
-Fredkin /: Dagger[ op_Fredkin ] := op
+Fredkin /:
+Dagger[ op_Fredkin ] := op
 
-Fredkin /: HoldPattern @ Multiply[a___, Fredkin[b__], c___] :=
-  Multiply[a, QuissoFredkin[b], c]
+Fredkin /:
+HoldPattern @ Elaborate @ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ] :=
+  Garner @ Elaborate[ a[10] + a[11] ** SWAP[b, c] ]
 
-QuissoFredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
-  QuissoFredkin @@ FlavorNone @ {a,b,c} /;
-  Not @ ContainsOnly[FlavorLast @ {a,b,c}, {None}]
+Fredkin /:
+HoldPattern @ Multiply[pre___, op_Fredkin, post___] :=
+  Multiply[pre, Elaborate[op], post]
 
-QuissoFredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] := Garner[
-  (1+a[3])/2 + ((1-a[3])/2) ** QuissoSWAP[b, c]
- ]
+Fredkin /:
+HoldPattern @ Matrix[op_Fredkin, rest___] := Matrix[Elaborate[op], rest]
 
+
+QuissoFredkin::usage = "QuissoFredkin is obsolete now. Use Elaborate[Fredkin[\[Ellipsis]]] instead."
+
+QuissoFredkin[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "Fredkin",
+    "Elaborate[Fredkin[\[Ellipsis]]]"
+   ];
+  Elaborate @ Fredkin[args]
+ )
+
+(**** </Fredkin> ****)
+
+
+(**** <ControlledU> ****)
 
 ControlledU::usage = "ControlledU[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., None] controlled by the qubits C1, C2.\nControlledU[C, T] is equivalent to ControlledU[{C}, T].\nControlledU[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it."
 
@@ -1332,9 +1378,13 @@ ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] :=
   ControlledU[ FlavorNone @ ss, expr, opts ] /;
   Not @ ContainsOnly[ FlavorLast[ss], {None} ]
 
-ControlledU[ {s_?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
+
+ControlledU[ ss:{__?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
   If[ Abs[z] != 1, Message[ControlledU::nonuni, z] ];
-  Phase[Arg[z], s, opts]
+  If[ Length[ss] > 1,
+    ControlledU[Most @ ss, Phase[Arg[z], Last @ ss, opts]],
+    Phase[Arg[z], Last @ ss, opts]
+   ]
  )
 
 ControlledU /:
@@ -1346,40 +1396,33 @@ Dagger[ ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] ] :=
   ControlledU[ss, Dagger[expr], opts]
 
 ControlledU /:
-HoldPattern @ Multiply[a___, ControlledU[b__, opts___?OptionQ], c___] :=
-  Multiply[a, QuissoControlledU[b], c]
+HoldPattern @ Elaborate @ ControlledU[ss:{__?QubitQ}, expr_, ___] :=
+  Module[
+    { P = Multiply @@ Map[ ((1-#[3])/2)&, Most /@ ss ] },
+    Garner[ P ** Elaborate[expr] + (1-P) ]
+   ]
+
+ControlledU /:
+HoldPattern @ Matrix[op_ControlledU, rest___] := Matrix[Elaborate[op], rest]
+
+ControlledU /:
+HoldPattern @ Multiply[pre___, op_ControlledU, post___] :=
+  Multiply[pre, Elaborate[op], post]
 (* Options are for QuantumCircuit[] and ignored in calculations. *)
 
 
-QuissoControlledU::usage = "QuissoControlledU[...] is the same as ControlledU[...], but unlike the latter, it exapands immediately in terms of the elementary gates."
+QuissoControlledU::usage = "QuissoControlledU[...] is obsolete. Use Elaborate[ControlledU[...]] instead."
 
-QuissoControlledU::nonuni = "The operator `` is not unitary."
-
-QuissoControlledU[ a_, b_, __?OptionQ ] := QuissoControlledU[a, b]
-
-QuissoControlledU[ S_?QubitQ, expr_ ] :=
-  QuissoControlledU[ { S[None] }, expr ]
-
-QuissoControlledU[ ss:{__?QubitQ}, expr_ ] :=
-  QuissoControlledU[ FlavorNone @ ss, expr ] /;
-  Not @ ContainsOnly[ FlavorLast[ss], {None} ]
-
-QuissoControlledU[ ss:{__?QubitQ}, expr_ ] := Module[
-  { P = Multiply @@ Map[ ((1-#[3])/2)&, Most /@ ss ] },
-  ExpandAll[ P ** expr + (1-P) ]
- ]
-
-QuissoControlledU[ {s_?QubitQ}, z_?CommutativeQ] := (
-  If[ Abs[z] != 1, Message[QuissoControlledU::nonuni, z] ];
-  QuissoPhase[Arg[z], s, opts]
+QuissoControlledU[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "QuissoControlledU",
+    "Elaborate[ControlledU[...]]"
+   ];
+  Elaborate @ ControlledU[args]
  )
 
-QuissoControlledU[ ss:{_?QubitQ, __?QubitQ}, z_?CommutativeQ] := Module[
-  { aa = Multiply @@ Through[ss[10]],
-    bb = Multiply @@ Through[ss[11]] },
-  If[ Abs[z] != 1, Message[QuissoControlledU::nonuni, z] ];
-  Elaborate[aa + z * bb]
- ]
+(**** </ControlledU> ****)
 
 
 (**** <Oracle> ****)
@@ -1402,19 +1445,15 @@ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
   Oracle[f, FlavorNone @ cc, FlavorNone @ tt, opts] /;
   Not @ ContainsOnly[ FlavorLast @ Join[cc, tt], {None} ]
 
+Oracle /:
+Dagger[op_Oracle] := op
 
-QuissoOracle::usage = "QuissoOracle[f,control,target] returns the operator corresponding to the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
+Oracle /:
+HoldPattern @ Multiply[pre___, op_Oracle, post___] :=
+  Multiply[pre, Elaborate[op], post]
 
-QuissoOracle[f_, c_?QubitQ, t_?QubitQ] :=
-  QuissoOracle[f, {c}, {t}]
-
-QuissoOracle[f_, c_?QubitQ, tt:{__?QubitQ}] :=
-  QuissoOracle[f, {c}, tt]
-
-QuissoOracle[f_, cc:{__?QubitQ}, t_?QubitQ] :=
-  QuissoOracle[f, cc, {t}]
-
-QuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+Oracle /:
+HoldPattern @ Elaborate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
   { cn = Length @ cc,
     cN, bb, ff },
 
@@ -1427,7 +1466,7 @@ QuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
   cN = Power[2, cn];
   bb = GroupBy[ IntegerDigits[Range[0, cN - 1], 2, cn], ff ];
   bb = ReplaceAll[bb, {0 -> 10, 1 -> 11}];
-  Total @ KeyValueMap[qtmOracle[cc, tt], bb]
+  Elaborate @ Total @ KeyValueMap[qtmOracle[cc, tt], bb]
  ]
 
 qtmOracle[cc_, tt_][key_, val_] := Module[
@@ -1436,23 +1475,11 @@ qtmOracle[cc_, tt_][key_, val_] := Module[
   Elaborate[Total @ onC] ** onT
  ]
 
+Oracle /:
+HoldPattern @ Matrix[op_Oracle, rest__] := Matrix[Elaborate[op], rest]
 
-varQuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := 
-  ExpressionFor[matOracle[f, cc, tt], Join[cc, tt]]
-(* NOTE: Usually, ExpresionFor, which is based on the raising and lowering
-   operators, is faster than the old QuissoExpression, which is based on the
-   Pauli X and Y operators. However, for quantum oracles, somehow
-   QuissoExpression is faster. I guess it is because of the particular
-   structure of the quantum oracle. *)
-
-oldQuissoOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := 
-  QuissoExpression[matOracle[f, cc, tt], Join[cc, tt]]
-(* NOTE: Usually, ExpresionFor, which is based on the raising and lowering
-   operators, is faster than the old QuissoExpression, which is based on the
-   Pauli X and Y operators. However, for quantum oracles, somehow
-   QuissoExpression is faster. I guess it is because of the particular
-   structure of the quantum oracle. *)
-
+Oracle /:
+HoldPattern @ Matrix[Oracle[args__]] := matOracle[args]
 
 matOracle[f_, c_?QubitQ, t_?QubitQ] := matOracle[f, {c}, {t}]
 
@@ -1472,7 +1499,6 @@ matOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
 
   cN = Power[2, cn];
   bb = GroupBy[ IntegerDigits[Range[0, cN - 1], 2, cn], ff ];
-  Print["bb = ", bb];
   Total @ KeyValueMap[ matOracle[#1, #2, cN]&, bb ]
  ]
 
@@ -1510,6 +1536,18 @@ VerifyOracle[f_, m_Integer, n_Integer] := Module[
    ];
  ]
 
+
+QuissoOracle::usage = "QuissoOracle[...] is obsolete. Use Elaborate[Oracle[...]] instead."
+
+QuissoOracle[args___] := (
+  Message[
+    Q3`Q3General::obsolete,
+    "QuissoOracle",
+    "Elaborate[Oracle[...]]"
+   ];
+  Elaborate @ Oracle[args]
+ )
+
 (**** </Oracle> ****)
 
 
@@ -1521,8 +1559,6 @@ Options[QuantumFourierTransform] = {
   "Label" -> "QFT",
   "LabelRotation" -> Pi/2
  }
-
-Once[ AppendTo[$ElaborationHeads, QuantumFourierTransform]; ]
 
 QuantumFourierTransform[S_?QubitQ] := S[6]
 
@@ -1537,14 +1573,21 @@ HoldPattern @ Elaborate @
   QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] :=
   ExpressionFor[FourierMatrix @ Power[2, Length @ qq], qq]
 
+QuantumFourierTransform /:
+HoldPattern @ Matrix[op_QuantumFourierTransform, rest__] :=
+  Matrix[Elaborate[op], rest]
+
+QuantumFourierTransform /:
+HoldPattern @ Matrix @ QuantumFourierTransform[qq:{__?QubitQ}, ___] :=
+  FourierMatrix @ Power[2, Length @ qq]
+
+
 (**** </QuantumFourierTransform> ****)
 
 
 Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection operator on the qubits {q1, q2, ...} into state, which is given in the Ket expression.\nProjector[expr] automatically extracts the list of qubits from expr."
 
 Projector::noKet = "No Ket expression found for projection in the provided expression ``. Identity operator is returned."
-
-Once[ AppendTo[$ElaborationHeads, Projector]; ]
 
 Projector /:
 Dagger[ op_Projector ] := op
@@ -1701,8 +1744,8 @@ GraphState[ g_Graph ] := Module[
     cz = EdgeList[g],
     hh },
   hh = Multiply @@ Map[#[6]&, vv];
-  cz = Multiply @@ QuissoCZ @@@ cz; 
-  Simplify[ cz ** (hh ** Ket[]) ]
+  cz = Multiply @@ CZ @@@ cz; 
+  Garner[ cz ** (hh ** Ket[]) ]
   /; AllTrue[ vv, QubitQ ]
  ]
 
@@ -1832,8 +1875,6 @@ QuantumCircuit[a___, g_Graph, b___] := Module[
 
 QuantumCircuit /:
 ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
-
-Once[ AppendTo[$ElaborationHeads, QuantumCircuit]; ]
 
 QuantumCircuit /:
 Elaborate[ QuantumCircuit[gg__, ___?OptionQ] ] := Module[

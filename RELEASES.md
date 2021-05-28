@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v1.9.2
+
+- QuissoXXX, where XXX is for Phase, Rotation, EulerRotation, CZ, CNOT, SWAP, ControlledU, Toffoli, Fredkin, Oracle, is now obsolete. Use Elaborate[XXX[...]] instead.
+
+- WignerRotation and WignerEulerRotation have been superceded by Rotation and EulerRotation, respectively.
+
 ## v1.9.0
 
 - QuissoCircuit has been renamed QuantumCircuit.
