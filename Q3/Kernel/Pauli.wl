@@ -5,8 +5,8 @@ BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.49 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-26 12:50:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.53 $"][[2]], " (",
+  StringSplit["$Date: 2021-05-28 19:49:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2880,10 +2880,18 @@ WignerFunction[j_, m_, 0, z_] := Conjugate[ WignerFunction[j, 0, m, z] ]
 
 TraceNorm::usage = "TraceNorm[m] returns the trace norm of the matrix m, that is, Tr @ Sqrt[Dagger[m] ** m]."
 
-TraceNorm[m_?MatrixQ] := With[
-  { ss = SingularValueList[m] },
-  Norm[ss, 1] (* Schattern norm with p = 1 *)
- ]
+TraceNorm[m_?MatrixQ] := Norm[SingularValueList[m], 1]
+(* NOTE: Schattern norm with p = 1 *)
+
+TraceNorm[v_?VectorQ] := Norm[v]^2
+
+
+TraceNorm[rho_] := TraceNorm @ Matrix[rho]
+
+TraceNorm[rho_, q_?SpeciesQ] := TraceNorm[rho, {q}]
+
+TraceNorm[rho_, qq:{__?SpeciesQ}] := TraceNorm @ Matrix[rho, qq]
+
 
 TraceDistance::usage = "TraceDistance[a, b] returns the trace distance of the two square matrices a and b, which equals to (1/2) TraceNorm[a - b]."
 
@@ -2897,11 +2905,27 @@ Fidelity[a_?MatrixQ, b_?MatrixQ] := With[
   Tr @ MatrixPower[c.b.c, 1/2]
  ]
 
-Fidelity[a_?VectorQ, b_?MatrixQ] := Chop @ Sqrt[Conjugate[a].b.a]
+Fidelity[v_?VectorQ, m_?MatrixQ] := Chop @ Sqrt[Conjugate[v].m.v]
 
-Fidelity[a_?MatrixQ, b_?VectorQ] := Fidelity[b, a]
+Fidelity[m_?MatrixQ, v_?VectorQ] := Fidelity[v, m]
 
 Fidelity[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]
+
+
+Fidelity[rho_, sgm_] := Fidelity @@ Matrix @ {rho, sgm} /;
+  And[FreeQ[rho, _Ket], FreeQ[sgm, _Ket]]
+
+Fidelity[vec_, rho_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
+  And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
+
+Fidelity[rho_, vec_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
+  And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
+
+Fidelity[vec_, rho_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
+  And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
+
+Fidelity[vec_, wec_] := Abs[Dagger[vec] ** wec] /;
+  And[Not @ FreeQ[vec, _Ket], Not @ FreeQ[wec, _Ket]]
 
 
 (* ***************************************************************** *)
