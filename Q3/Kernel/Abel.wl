@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.14 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.18 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 20:02:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -26,8 +26,10 @@ BeginPackage["Q3`"]
 { Any, Base, Flavors, FlavorMost, FlavorLast,
   FlavorNone, FlavorMute, FlavorThread };
 
-{ Boson, BosonQ, AnyBosonQ };
-{ Fermion, FermionQ, AnyFermionQ };
+{ Qubit, Qubits, QubitQ };
+{ Qudit, Qudits, QuditQ };
+{ Boson, Bosons, BosonQ, AnyBosonQ };
+{ Fermion, Fermoions, FermionQ, AnyFermionQ };
 (* NOTE: Fermion and the like are here for Matrix. *)
 
 { SpeciesBox,
@@ -50,6 +52,8 @@ BeginPackage["Q3`"]
 
 { ReplaceBy, ReplaceByFourier, ReplaceByInverseFourier };
 
+{ JordanWignerTransform };
+
 { Garner, $GarnerHeads, $GarnerTests };
 
 { Elaborate, $ElaborationRules, $ElaborationHeads };
@@ -71,9 +75,16 @@ Begin["`Private`"]
 
 $symb = Unprotect[Conjugate, NonCommutativeMultiply, Inverse]
 
-Choices::usage = "Choices[a,n] gives all possible choices of n elements out of the list a.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
+Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
-Choices[a_List, n_Integer] := Union[Sort /@ Tuples[a, n]]
+Choices[a_List] := Choices[a, {0, Length @ a}]
+
+Choices[a_List, n_Integer] := Choices[a, {0, n}]
+
+Choices[a_List, {m_Integer, n_Integer}] :=
+  Catenate @ Table[Choices[a, {j}], {j, m, n}]
+
+Choices[a_List, {n_Integer}] := Union[Sort /@ Tuples[a, n]]
 
 
 Supplement::usage = "Supplement[a, b, c, \[Ellipsis]] returns the elements in a that are not in any of b, c, \[Ellipsis]. It is similar to the builtin Complement, but unlike Complement, treats a as a List (not Mathematical set). That is, the order is preserved."
@@ -1407,12 +1418,5 @@ SetAttributes[{DiscreteDelta, UnitStep}, {ReadProtected}]
 Protect[ Evaluate @ $symb ]
 
 End[]
-
-
-(* $ElaborationRules is too messay to show the value. *)
-SetAttributes[$ElaborationRules, ReadProtected]
-Protect[$ElaborationRules, $ElaborationHeads]
-
-Protect[$GarnerTests, $GarnerHeads]
 
 EndPackage[]

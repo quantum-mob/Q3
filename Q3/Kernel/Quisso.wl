@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.60 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.62 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 19:30:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -62,7 +62,7 @@ BeginPackage["Q3`"]
 
 Begin["`Private`"]
 
-$symb = Unprotect[CircleTimes, Dagger, Ket, Bra]
+$symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
 
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., None] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., None].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., None] represents the qubit."
 
@@ -487,7 +487,7 @@ ProductState /:
 HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
   Module[
     { ss = Union[Keys @ a, FlavorNone @ gg] },
-    Module[
+    Block[
       { Missing },
       Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := {1, 0};
       Ket @ Association @ Thread[ ss -> Lookup[a, ss] ]
@@ -2206,7 +2206,6 @@ qDrawGateDot[ x_, yy_List, ___ ] := qDrawGateDot @@@ Thread @ {x, yy}
 
 qDrawGateDot[ x_, y_?NumericQ, ___ ] := Disk[ {x, y}, $DotSize ]
 
-
 qDrawGateRectangle[ x_, yy_List, opts___?OptionQ ] := Module[
   { y1 = Min @ yy,
     y2 = Max @ yy,
@@ -2271,7 +2270,7 @@ qGateText[ x_, y_, opts___?OptionQ ] := Module[
 SetAttributes[qDrawGateSymbol, Listable]
 
 qDrawGateSymbol[name_?StringQ] :=
-  Symbol["Q3`Quisso`Circuit`" <> "qDrawGate" <> name] /;
+  Symbol["Q3`Circuit`" <> "qDrawGate" <> name] /;
   MemberQ[
     { "Dot", "CirclePlus", "Projector", "Measurement",
       "Rectangle", "Oval", "Cross" },
@@ -2632,6 +2631,8 @@ End[] (* `Special` *)
 
 Begin["`Qudit`"]
 
+$symb = Unprotect[Missing]
+
 Qudit::usage = "Qudit represents a multidimensional system."
 
 Qudit::range = "The quantum level specification s should be within the range 0 \[LessEqual] s < d, where the dimension d = `` for ``."
@@ -2859,6 +2860,9 @@ ReplaceByFourier[
 
 ReplaceByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
   Garner[ expr /. ReplaceByFourier[old -> new, opts] ]
+
+
+Protect[Evaluate @ $symb]
 
 End[] (* `Qudit` *)
 

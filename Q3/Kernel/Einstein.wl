@@ -4,12 +4,12 @@ BeginPackage["Q3`"]
 
 `Einstein`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.10 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.11 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 19:56:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ JordanWignerTransform };
+{ JordanWignerTransform }; (* Q3`Abel` *)
 
 
 Begin["`Private`"]

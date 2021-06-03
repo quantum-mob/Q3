@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.56 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.59 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 20:02:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1046,21 +1046,21 @@ ExpressionFor[mat_?MatrixQ, S_?SpeciesQ] :=
 
 ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
   { dd = Dimension @ ss,
-    ff = Q3`Fock`Fermions @ ss,
+    ff = Fermions @ ss,
     rr, qq, S, tsr, ops },
   If[ Times @@ dd == Length[mat], Null,
     Message[ExpressionFor::incmpt, mat, FlavorNone @ ss];
     Return[0]
    ];
 
-  Let[Q3`Quisso`Qubit, S];
+  Let[Qubit, S];
   qq = S[Range @ Length @ ff, None];
   rr = ss /. Thread[ff -> qq];
   
   tsr = Tensorize[mat, Flatten @ Transpose @ {dd, dd}];
   ops = Outer[Multiply, Sequence @@ TheExpression /@ rr];
   ops = Garner @ Total @ Flatten[tsr * ops];
-  Q3`Einstein`JordanWignerTransform[ops, qq -> ff]
+  JordanWignerTransform[ops, qq -> ff]
  ]
 
 TheExpression::usage = "TheExpression[spc] returns the matrix of operators required to construct the operator expresion from the matrix representation involving the species spc.\nIt is a low-level function to be used internally.\nSee also TheMatrix, which serves similar purposes."

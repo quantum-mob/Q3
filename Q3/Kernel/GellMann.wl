@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `GellMann`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.32 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 12:02:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.33 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 18:25:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -18,6 +18,8 @@ BeginPackage["Q3`"]
 
 
 Begin["`Private`"]
+
+$symbs = Unprotect[Dot]
 
 Once[ $GarnerHeads = Join[$GarnerHeads, {GellMann}]; ]
 
@@ -280,6 +282,9 @@ Dot[ GellMann[a_, b__], Ket[c_, d__] ] := CircleTimes @@
 GellMann /:
 Dot[ Bra[c_, d__], GellMann[a_, b__] ] := CircleTimes @@
   Dot @@@ Transpose[{ Bra /@ {c,d}, GellMann /@ {a,b} }]
+
+
+Protect[ Evaluate @ $symbs ]
 
 End[]
 

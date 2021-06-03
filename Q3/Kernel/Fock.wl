@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.9 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 10:00:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.10 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 18:24:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -985,16 +985,6 @@ FockPairing::usage = "FockPairing[a, b, c, ...] returns a**b + b**c + ..., descr
 
 FockPairing[x__] := FockHopping[x] /. {Dagger -> Identity}
 
-
-(*
-S::usage = "S[dir][a,b,...] is an alias to FockSpin[a,b,..., dir]."
-
-S[op__?ParticleQ] := FockSpin[op, {1,2,3}]
-
-S[dir_][op__] := FockSpin[op, dir]
-
-S[dir_, ddir__][op__] := FockSpin[op, {dir,ddir}]
-*)
 
 FockSpin::usage = "FockSpin[c] returns the list of the spin operators in all three directions. FockSpin[c,dir] returns the spin operator in the dir direction (dir = 1 for X, 2 for Y, 3 for Z). The spin raising and lowering operator is returned by dir = 4 and 5, respectively. FockSpin[c1, c2, ...] returns the total spin associated with the operators c1, c2, .... FockSpin[c1, c2, ..., dir] returns the total spin in the particular direction dir."
 
@@ -2350,17 +2340,18 @@ SetAttributes[NormalOrder, Listable]
 NormalOrder[expr_] := expr - VacuumExpectation[expr]
 
 
-FockColon::usage = "FockColon[expr] denotes the normal ordering of the operators in expr.
-    This is merely a placeholder, although its output is displayed with double dots surrounding expr. To explicitly evaluate the normal ordered expression, use NormalOrder function."
+FockColon::usage = "FockColon[expr] denotes the normal ordering of the operators in expr.\nThis is merely a placeholder, although its output is displayed with double dots surrounding expr. To explicitly evaluate the normal ordered expression, use NormalOrder function."
 
 Let[LinearMap, FockColon]
 
 FockColon[] = 1
 
-Format[ FockColon[op__] ] := DisplayForm @ RowBox[{ RowBox[
-      { Style["\[Colon]", FontColor -> Red], op, 
-        Style["\[Colon]", FontColor -> Red] }
-     ]} ]
+HoldPattern @ Format[ FockColon[op__] ] := DisplayForm @ RowBox @ {
+  RowBox @ {
+    Style["\[Colon]", FontColor -> Red], op, 
+    Style["\[Colon]", FontColor -> Red]
+   }
+ }
 (* NOTE: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 :f**f: is formated as
    -2(:f f:). For more details on spurious parentheses, see

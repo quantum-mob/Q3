@@ -12,9 +12,7 @@ Paclet[
   Extensions -> {
     { "Kernel",
       Root -> "Kernel",
-      Context -> {
-        "Q3`", "Q3`FockPlus`", "Q3`GellMann`"
-       }
+      Context -> { "Q3`" }
       (* Context specifies the package context or list of contexts . Used by
          FindFile. Also causes documentation links to be added to usage
          messages when documentation is present. *)

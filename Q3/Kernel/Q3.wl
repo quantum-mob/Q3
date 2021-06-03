@@ -9,10 +9,10 @@ Q3`Q3Clear["Q3`"];
 
 BeginPackage["Q3`"]
 
-`Q3`$Version = StringJoin[
+`Q3`Information`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.8 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 18:32:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -62,7 +62,7 @@ Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versio
 
 Q3Info[] := Module[
   { pac = Q3Release[],
-    pkg = Symbol /@ Names["Q3`*$Version"] },
+    pkg = Symbol /@ Names["Q3`*Information`$Version"] },
   If[ FailureQ[pac],
     pac = "Q3 Application has not been installed properly.",
     pac = "Q3 Application v" <> pac;
@@ -185,6 +185,19 @@ Get["Q3`Dicke`"];
 Get["Q3`Einstein`"];
 Get["Q3`Custom`"];
 
+(**** </Packages Loading> ****)
+
+
+BeginPackage["Q3`"]
+
+(* $ElaborationRules is too messay to show the value. *)
+SetAttributes[$ElaborationRules, ReadProtected];
+Protect[$ElaborationRules, $ElaborationHeads];
+
+Protect[$GarnerTests, $GarnerHeads];
+
+EndPackage[]
+
+
 Q3`Q3Protect["Q3`"];
 
-(**** </Packages Loading> ****)
