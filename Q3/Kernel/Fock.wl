@@ -1,20 +1,13 @@
 (* -*- mode: math; -*- *)
-BeginPackage[ "Q3`Fock`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`",
-    "Q3`Grassmann`"
-   }
- ]
 
-`Information`$Version = StringJoin[
+BeginPackage["Q3`"]
+
+`Fock`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.6 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-14 15:55:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.9 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 10:00:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { Heisenberg, Boson, Fermion, Majorana };
 { Bosons, Heisenbergs, Fermions, Majoranas };
@@ -69,20 +62,7 @@ Q3`Q3Clear[];
 
 Begin["`Private`"]
 
-$symbs = Unprotect[
-  Boson, BosonQ, AnyBosonQ,
-  Fermion, FermionQ, AnyFermionQ,
-  Base, FlavorNone, AnySpeciesQ, AnticommutativeQ,
-  Multiply, MultiplyDegree, Dagger, LieExp,
-  Missing, KetTrim, KetRule, VerifyKet,
-  Ket, Bra, BraKet,
-  Basis, TheMatrix,
-  Parity, ParityEvenQ, ParityOddQ,
-  LogicalForm,
-  $ElaborationRules, $ElaborationHeads,
-  $GarnerHeads, $GarnerTests,
-  Spin, ComplexQ
- ]
+$symbs = Unprotect[Missing]
 
 
 FlavorNone[a_?AnyParticleQ] := a
@@ -533,7 +513,9 @@ SpinZ[ op_ ] = 0
 
 (*** Canonical Conjugate ***)
 
-Canon::usage = "Canon[x] denotes the canonical conjugate of a Heisenberg canonical operator x."
+CanonicalConjugate::usage = "CanonicalConjugate[op] or Canon[op] denotes the canonical conjugate of a Heisenberg operator op.\nSee also Heisenberg."
+
+Canon::usage = "Canon[x] denotes the canonical conjugate of a Heisenberg canonical operator x.\nSee also Heisenberg."
 
 SetAttributes[Canon, Listable]
 
@@ -1612,10 +1594,10 @@ HoldPattern @ Elaborate[ CoherentState[vec_Association] ] := Module[
 (*  Constructing CoherentState *)
 
 $coherentSpec = Alternatives[
-  _?BosonQ -> _?ComplexQ,
+  _?BosonQ -> _?CommutativeQ,
   _?FermionQ -> _?GrassmannQ,
-  {__?BosonQ} -> _?ComplexQ,
-  {__?BosonQ} -> {__?ComplexQ},
+  {__?BosonQ} -> _?CommutativeQ,
+  {__?BosonQ} -> {__?CommutativeQ},
   {__?FermionQ} -> __?GrassmannQ,
   {__?FermionQ} -> {__?GrassmannQ}
  ]
@@ -1777,13 +1759,13 @@ FockAddSpinZ[] := Association[ 0 -> Ket[Vacuum] ]
 
 catQ[ Ket[Vacuum] ] = True
 
-catQ[ z_?ComplexQ Ket[Vacuum] ] = True
+catQ[ z_?CommutativeQ Ket[Vacuum] ] = True
 
 catQ[ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True
 
-catQ[ z_?ComplexQ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True
+catQ[ z_?CommutativeQ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True
 
-catQ[ z_?ComplexQ expr_ ] := catQ[expr]
+catQ[ z_?CommutativeQ expr_ ] := catQ[expr]
 
 catQ[ a_ + b_ ] := catQ[a] && catQ[b]
 
@@ -2388,9 +2370,5 @@ Format[ FockColon[op__] ] := DisplayForm @ RowBox[{ RowBox[
 Protect[ Evaluate @ $symbs ]
 
 End[]
-
-
-Q3`Q3Protect[]
-
 
 EndPackage[]

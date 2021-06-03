@@ -1,18 +1,11 @@
 (* -*- mode: math; -*- *)
 
-BeginPackage[ "Q3`Wigner`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`"
-   }
- ]
+BeginPackage["Q3`"]
 
-Q3`Q3Clear[];
-
-`Information`$Version = StringJoin[
+`Wigner`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.15 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-28 14:55:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.16 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -46,21 +39,6 @@ Q3`Q3Clear[];
 
 
 Begin["`Private`"]
-
-$symbs = Unprotect[
-  Multiply, MultiplyDegree, CircleTimes,
-  KetRule, KetTrim, Ket, Bra, VerifyKet,
-  Base, FlavorNone, FlavorMute, Missing,
-  Basis, SpinForm, Spin,
-  TheMatrix, TheExpression,
-  $GarnerHeads, $GarnerTests,
-  $ElaborationRules, $ElaborationHeads,
-  $RaiseLowerRules,
-  Rotation, EulerRotation, TheRotation, TheEulerRotation
- ]
-
-
-(* TheWigner, like ThePauli in Pauli package *)
 
 TheWigner::usage = "TheWigner[{J,k}] returns the matrix representation of the angular momentum operator of magnitude J in the k'th direction.\nTheWigner[{J,k,theta,phi}] = U.TheWigner[{J,k}].Topple[U] returns the matrix representation in the rotated frame.\nTheWigner[{J1,k1},{J2,k2},...] returns TheWigner[{J1,k1}] \[CircleTimes] TheWigner[{J2,k2}] \[CircleTimes] ...\nTheWigner[{J, {k1,k2,...}, th, ph}] = TheWigner[{J,k1,th,ph}, {J,k2,th,ph}, ...]."
 
@@ -1117,14 +1095,6 @@ WignerEckart[{i1_,i2_,ii_}, {k1_,k2_,kk_}, {j1_,j2_,jj_}] :=
   Sqrt[(2*i1+1)(2*i2+1)(2*kk+1)(2*jj+1)] *
   NineJSymbol[{j1,j2,jj}, {k1,k2,kk}, {i1,i2,ii}]
 
-(*
- * Epiloque
- *)
-
-Protect[Evaluate @ $symbs]
-
 End[]
-
-Q3`Q3Protect[]
 
 EndPackage[]

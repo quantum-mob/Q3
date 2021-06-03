@@ -1,13 +1,9 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-04-13 12:21:29+09 $ *)
-(* $Revision: 1.3 $ *)
+(* $Date: 2021-06-03 09:03:42+09 $ *)
+(* $Revision: 1.4 $ *)
 
-BeginPackage["Q3`Custom`"]
-
-Unprotect[Customization]
-
-ClearAll[Customization]
+BeginPackage["Q3`"]
 
 $Customizations::usage = "Custom options for various frequently used functions."
 
@@ -68,7 +64,5 @@ Customization[
  ]
 
 End[]
-
-Protect[Customization]
 
 EndPackage[]

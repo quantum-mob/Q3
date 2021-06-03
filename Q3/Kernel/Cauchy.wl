@@ -1,15 +1,13 @@
 (* -*- mode:math -*- *)
 
-BeginPackage["Q3`Cauchy`", {"Q3`Abel`"}]
+BeginPackage["Q3`"]
 
-`Information`$Version = StringJoin[
+`Cauchy`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.16 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.17 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { Complex, ComplexQ,
   Real, RealQ,
@@ -24,9 +22,7 @@ Q3`Q3Clear[];
 
 Begin["`Prelude`"]
 
-$symb = Unprotect[
-  Conjugate, Abs, Power, NonNegative, Re, Im
- ]
+$symb = Unprotect[Conjugate, Abs, Power, NonNegative, Re, Im]
 
 (*** Conjugate[] and Power[] ***)
 
@@ -118,10 +114,7 @@ End[] (* `Prelude` *)
 
 Begin["`Complex`"]
 
-$symb = Unprotect[
-  Mod, IntegerQ, OddQ, EvenQ,
-  Let
-]
+$symb = Unprotect[Mod, IntegerQ, OddQ, EvenQ]
 
 Let[Complex, {ls__Symbol}] := (
   Let[Species, {ls}];
@@ -341,9 +334,5 @@ CauchyExpand[expr_] := (
 Protect[ Evaluate @ $symb ]
 
 End[] (* `Complex` *)
-
-
-Q3`Q3Protect[]
-
 
 EndPackage[]

@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.9.3
+
+- Internal code structures and relations have been change. No change from users' point of view.
+- All packages included in Q3 are now working in the same context of Q3`.
+
 ## v1.9.2
 
 - QuissoXXX, where XXX is for Phase, Rotation, EulerRotation, CZ, CNOT, SWAP, ControlledU, Toffoli, Fredkin, Oracle, is now obsolete. Use Elaborate[XXX[...]] instead.

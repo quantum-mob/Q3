@@ -1,21 +1,13 @@
 (* -*- mode:math -*- *)
-BeginPackage[ "Q3`FockPlus`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`",
-    "Q3`Grassmann`",
-    "Q3`Fock`"
-   }
- ]
 
-`Information`$Version = StringJoin[
+BeginPackage["Q3`"]
+
+`FockPlus`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.14 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.17 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 12:01:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { Pairings, Wick, Average };
 
@@ -29,14 +21,13 @@ Q3`Q3Clear[];
 
 Begin["`Private`"]
 
-$symbs = Unprotect[
-  Multiply
- ]
-
-
 Pairings::usage = "Pairings[list] generates all possible pairings of the elements in list."
 
-Pairings[a : {_, _}] := {a}
+Pairings::odd = "There are an odd number of elements in ``."
+
+Pairings[a_List] := (Message[Pairings::odd, a]; {}) /; OddQ @ Length[a]
+
+Pairings[a:{_, _}] := {a}
 
 Pairings[a_List] := Module[
   { pairs = Thread[{First @ a, Rest @ a}] },
@@ -44,15 +35,15 @@ Pairings[a_List] := Module[
  ] /; DuplicateFreeQ[a]
 
 Pairings[a_List] := Module[
-  {jj = Range@Length@a,
-    pp},
+  { jj = Range @ Length @ a,
+    pp },
   pp = Pairings[jj];
-  Map[Part[a, #] &, pp, {3}]
- ] /; Not@DuplicateFreeQ[a]
+  Map[Part[a, #]&, pp, {3}]
+ ] /; Not @ DuplicateFreeQ[a]
 
-iPairings[a : {_, _}, b : {_, _}] := {{a, b}}
+iPairings[a:{_, _}, b:{_, _}] := {{a, b}}
 
-iPairings[a : {_, _}, b_List] := Map[Join[{a}, #] &, Pairings[b]]
+iPairings[a:{_, _}, b_List] := Map[Join[{a}, #] &, Pairings[b]]
 
 
 Average::usage = "Average[expr] represents the quantum mechanical expectation value of expr."
@@ -481,10 +472,6 @@ funcSumFullSimplifyClassic[expr_] := Module[
   ex = Simplify[ex]
 ]
 
-Protect[ Evaluate @ $symbs ]
-
 End[]
-
-Q3`Q3Protect[]
 
 EndPackage[]

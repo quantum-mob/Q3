@@ -1,20 +1,14 @@
 (* -*- mode: math; -*- *)
 (* SU(3) Algebra *)
-BeginPackage[ "Q3`GellMann`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`"
-   }
- ]
 
-`Information`$Version = StringJoin[
+BeginPackage["Q3`"]
+
+`GellMann`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.30 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.32 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 12:02:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { GellMann, TheGellMann };
 
@@ -24,12 +18,6 @@ Q3`Q3Clear[];
 
 
 Begin["`Private`"]
-
-$symbs = Unprotect[
-  TheKet,
-  Multiply,
-  $GarnerHeads, $GarnerTests
- ]
 
 Once[ $GarnerHeads = Join[$GarnerHeads, {GellMann}]; ]
 
@@ -293,11 +281,6 @@ GellMann /:
 Dot[ Bra[c_, d__], GellMann[a_, b__] ] := CircleTimes @@
   Dot @@@ Transpose[{ Bra /@ {c,d}, GellMann /@ {a,b} }]
 
-
-Protect[ Evaluate @ $symbs ]
-
 End[]
-
-Q3`Q3Protect[]
 
 EndPackage[]

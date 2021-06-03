@@ -1,21 +1,11 @@
 (* -*- mode:math -*- *)
 
-Needs["Q3`"]
-
-BeginPackage[ "Q3`Kraus`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`",
-    "Q3`Quisso`",
-    "Q3`Fock`",
-    "Q3`Wigner`"
-   }
- ]
+BeginPackage["Q3`"]
 
 `Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.29 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-16 20:48:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.30 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 

@@ -1,20 +1,11 @@
 (* -*- mode: math; -*- *)
-(* Mathematica Package to facilitate simulation of quantum information
-  processing. *)
 
-BeginPackage[ "Q3`Quisso`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`"
-   }
- ]
+BeginPackage["Q3`"]
 
-Q3`Q3Clear[];
-
-`Information`$Version = StringJoin[
+`Quisso`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.58 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-28 14:55:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.60 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -71,19 +62,7 @@ Q3`Q3Clear[];
 
 Begin["`Private`"]
 
-$symb = Unprotect[
-  Multiply, MultiplyDegree,
-  CircleTimes, OTimes, Dagger, Dyad,
-  KetTrim, KetRule, Ket, Bra, BraKet, Basis, SpinForm,
-  $RaiseLowerRules,
-  $GarnerHeads, $GarnerTests,
-  $ElaborationRules, $ElaborationHeads,
-  DefaultForm, LogicalForm,
-  Base, FlavorNone, FlavorMute, Missing,
-  Rotation, EulerRotation,
-  TheMatrix, TheExpression,
-  Parity, ParityEvenQ, ParityOddQ
- ]
+$symb = Unprotect[CircleTimes, Dagger, Ket, Bra]
 
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., None] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., None].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., None] represents the qubit."
 
@@ -668,9 +647,9 @@ theDirac[a_Plus, b_, qq_] :=
 theDirac[a_, b_Plus, qq_] :=
   Garner @ Total @ Flatten @ Outer[theDirac[#1, #2, qq]&, List @ a, List @@ b]
 
-theDirac[ z_?ComplexQ a_, b_, qq_ ] := Garner[ z theDirac[a, b, qq] ]
+theDirac[ z_?CommutativeQ a_, b_, qq_ ] := Garner[ z theDirac[a, b, qq] ]
 
-theDirac[ a_, z_?ComplexQ b_, qq_ ] := Garner[ z theDirac[a, b, qq] ]
+theDirac[ a_, z_?CommutativeQ b_, qq_ ] := Garner[ z theDirac[a, b, qq] ]
 
 theDirac[ a:Ket[_Association], b:Ket[_Association], qq_ ] := Module[
   { aa = a[qq],
@@ -1758,11 +1737,6 @@ End[] (* `Private` *)
 
 Begin["`Circuit`"]
 
-$symb = Unprotect[
-  $ElaborationRules, $ElaborationHeads,
-  Multiply
- ]
-
 QuissoCircuit::usage = "QuissoCircuit has been renamed QuantumCircuit."
 
 QuissoCircuit[args___] := (
@@ -2541,11 +2515,7 @@ qPortText[text_, pt:{_, _}, pivot:{_, _}, opts___?OptionQ] := Module[
 qPortBrace[ dir:(-1|1), { a:{_, _}, b:{_, _} } ] :=
   Line[{ a, a + $BraceWidth {dir, 0}, b + $BraceWidth {dir, 0}, b }]
 
-
-Protect[Evaluate @ $symb]
-
 End[] (* `Circuit`*)
-
 
 
 Begin["`Special`"]
@@ -2661,16 +2631,6 @@ End[] (* `Special` *)
 
 
 Begin["`Qudit`"]
-
-$symb = Unprotect[
-  Multiply, MultiplyDegree, Dyad,
-  Basis, TheMatrix,
-  Parity, ParityEvenQ, ParityOddQ,
-  $GarnerHeads, $GarnerTests,
-  Base, FlavorNone, FlavorMute,
-  KetRule, KetTrim, Missing,
-  ReplaceByFourier, ReplaceByInverseFourier
- ]
 
 Qudit::usage = "Qudit represents a multidimensional system."
 
@@ -2900,11 +2860,7 @@ ReplaceByFourier[
 ReplaceByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
   Garner[ expr /. ReplaceByFourier[old -> new, opts] ]
 
-
-Protect[Evaluate @ $symb]
-
 End[] (* `Qudit` *)
 
-Q3`Q3Protect[]
 
 EndPackage[]

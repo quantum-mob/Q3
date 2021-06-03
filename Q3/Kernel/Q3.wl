@@ -5,16 +5,16 @@ If[ $VersionNumber < 12,
   Message[Version::old];
  ]
 
+Q3`Q3Clear["Q3`"];
+
 BeginPackage["Q3`"]
 
-`Information`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 2.4 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-12 19:04:05+09 $"][[2]], ") ",
+`Q3`$Version = StringJoin[
+  "Q3/", $Input, " v",
+  StringSplit["$Revision: 2.5 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3Clear[];
 
 { Q3General };
 
@@ -35,7 +35,7 @@ Q3General::renamed = "The symbol `` has been renamed ``."
 Q3General::newUI = "An angle should come first. The order of the input arguments of `` has been changed since Q3 v1.2.0."
 
 
-Q3Clear::usage = "Q3Clear[ctxt] first unprotects all symbols defined in the context of ctxt and then CleaAll all non-variable symbols -- those the name of which does not start with '$'.\nQ3Clear is for internal use."
+Q3Clear::usage = "Q3Clear[context] first unprotects all symbols defined in the context of context, and then CleaAll all non-variable symbols -- those the name of which does not start with '$'.\nQ3Clear is for internal use."
 
 Q3Clear[] := Q3Clear @ Context[]
 
@@ -62,7 +62,7 @@ Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versio
 
 Q3Info[] := Module[
   { pac = Q3Release[],
-    pkg = Symbol /@ Names["Q3`*Information`$Version"] },
+    pkg = Symbol /@ Names["Q3`*$Version"] },
   If[ FailureQ[pac],
     pac = "Q3 Application has not been installed properly.",
     pac = "Q3 Application v" <> pac;
@@ -163,8 +163,6 @@ Q3Purge[] := Module[
 
 End[]
 
-Q3Protect[]
-
 EndPackage[]
 
 
@@ -186,5 +184,7 @@ Get["Q3`Wigner`"];
 Get["Q3`Dicke`"];
 Get["Q3`Einstein`"];
 Get["Q3`Custom`"];
+
+Q3`Q3Protect["Q3`"];
 
 (**** </Packages Loading> ****)

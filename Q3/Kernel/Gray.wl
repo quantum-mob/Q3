@@ -1,25 +1,14 @@
 (* -*- mode:math -*- *)
-(* Mathematica package to simulate the universal quantum computation based on
-   the Gray code. *)
+(* To simulate the universal quantum computation based on the Gray code. *)
 
-Needs["Q3`"]
+BeginPackage["Q3`"]
 
-BeginPackage[ "Q3`Gray`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`",
-    "Q3`Quisso`"
-   }
- ]
-
-`Information`$Version = StringJoin[
+`Gray`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.34 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-16 20:17:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.36 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:06:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { BinaryToGray, GrayToBinary };
 
@@ -31,9 +20,6 @@ Q3`Q3Clear[];
 
 
 Begin["`Private`"]
-
-$symbs = Unprotect[]
-
 
 GrayCodeSubsets::usage = "GrayCodeSubsets[set] constructs a binary-reflected Gray code on set, that is, returns the list of all subsets of set each of which differs from its predecessor by only one element."
 
@@ -264,12 +250,6 @@ twoLevelDCMP[vec_?VectorQ, {k_Integer}] := With[
  ] /; k == Length[vec]
 
 
-Protect[ Evaluate @ $symbs ]
-
 End[]
-
-
-Q3`Q3Protect[]
-
 
 EndPackage[]

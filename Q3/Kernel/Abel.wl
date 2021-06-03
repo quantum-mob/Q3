@@ -1,15 +1,13 @@
 (* -*- mode:math -*- *)
 
-BeginPackage["Q3`Abel`"]
+BeginPackage["Q3`"]
 
-`Information`$Version = StringJoin[
+`Abel`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.12 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-26 10:16:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.14 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Choices, Successive };
@@ -71,9 +69,7 @@ Q3`Q3Clear[];
 
 Begin["`Private`"]
 
-$symb = Unprotect[
-  Conjugate, NonCommutativeMultiply, Inverse
- ]
+$symb = Unprotect[Conjugate, NonCommutativeMultiply, Inverse]
 
 Choices::usage = "Choices[a,n] gives all possible choices of n elements out of the list a.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
@@ -607,8 +603,8 @@ Let[LinearMap, {ls__Symbol}] := Scan[setLinearMap, {ls}]
 
 setLinearMap[op_Symbol] := (
   op[a___, b1_ + b2_, c___] := op[a, b1, c] + op[a, b2, c];
-  op[a___, z_?ComplexQ, b___] := z op[a, b];
-  op[a___, z_?ComplexQ b_, c___] := z op[a, b, c];
+  op[a___, z_?CommutativeQ, b___] := z op[a, b];
+  op[a___, z_?CommutativeQ b_, c___] := z op[a, b, c];
  )
 
 
@@ -617,9 +613,9 @@ LinearMapFirst::usage = "LinearMapFirst represents functions that are linear for
 Let[LinearMapFirst, {ls__Symbol}] := Scan[setLinearMapFirst, {ls}]
 
 setLinearMapFirst[op_Symbol] := (
-  op[z_?ComplexQ] := z;
-  op[z_?ComplexQ, b__] := z op[b];
-  op[z_?ComplexQ b_, c___] := z op[b, c]; (* NOTE: b_, not b__ ! *)
+  op[z_?CommutativeQ] := z;
+  op[z_?CommutativeQ, b__] := z op[b];
+  op[z_?CommutativeQ b_, c___] := z op[b, c]; (* NOTE: b_, not b__ ! *)
   op[b1_ + b2_, c___] := op[b1, c] + op[b2, c];
  )
 
@@ -1412,8 +1408,6 @@ Protect[ Evaluate @ $symb ]
 
 End[]
 
-
-Q3`Q3Protect[]
 
 (* $ElaborationRules is too messay to show the value. *)
 SetAttributes[$ElaborationRules, ReadProtected]

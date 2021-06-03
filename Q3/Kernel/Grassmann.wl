@@ -1,16 +1,14 @@
 (* -*- mode: math; -*- *)
 (* Adopted from a package by M. Headrick (April 2003) *)
 
-BeginPackage[ "Q3`Grassmann`", { "Q3`Abel`", "Q3`Cauchy`" } ]
+BeginPackage["Q3`"]
 
-`Information`$Version = StringJoin[
+`Grassmann`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.15 $"][[2]], " (",
-  StringSplit["$Date: 2021-04-16 11:40:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.16 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { Let, Grassmann, GrassmannQ, AnyGrassmannQ };
 { GD, GIntegrate };
@@ -20,9 +18,7 @@ Q3`Q3Clear[];
 
 Begin["`Private`"]
 
-$symbs = Unprotect[
-  Power, Multiply, Dagger, Tee
- ]
+$symbs = Unprotect[Power]
 
 Grassmann /:
 Let[Grassmann, {ls__Symbol}] := (
@@ -147,9 +143,5 @@ GrassmannGrade[_] = 0
 Protect[ Evaluate @ $symbs ]
 
 End[]
-
-
-Q3`Q3Protect[]
-
 
 EndPackage[]

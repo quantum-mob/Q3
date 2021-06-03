@@ -1,29 +1,17 @@
 (* -*- mode:math -*- *)
 
-BeginPackage[ "Q3`Dicke`",
-  { "Q3`Abel`",
-    "Q3`Cauchy`",
-    "Q3`Pauli`",
-    "Q3`Quisso`",
-    "Q3`Fock`",
-    "Q3`Wigner`"
-   }
- ]
+BeginPackage["Q3`"]
 
-`Information`$Version = StringJoin[
+`Dicke`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-07 15:12:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.21 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { DickeBasis };
 
 Begin["`Private`"]
-
-$symbs = Unprotect[ Multiply ]
 
 DickeBasis::usage = "DickeBasis[{S1, S2, ...}, {b1, b2, ...}, {m,n}] constructs a basis for Qubits/Qudits S1, S2, ... and Bosonic modes b1, b2, ..., where the number of particles in each Bosonic modes is limited in the range [m, n].\nDickeBasis[ {S1, S2, ...}, {b1, b2, ...}, n] is equivalent to DickeBasis[ {S1, S2, ...}, {b1, b2, ...}, {0,n}]."
 
@@ -49,12 +37,6 @@ DickeBasis[ ss:{__?QuditQ}, bb:{__?BosonQ}, n_Integer ] :=
 DickeBasis[ ss:{__?QuditQ}, bb:{__?BosonQ}, {m_Integer, n_Integer} ] :=
   Flatten @ Outer[ CircleTimes, Basis @ ss, BosonBasis[bb, {m,n}] ]
 
-Protect[ Evaluate @ $symbs ]
-
 End[]
-
-
-Q3`Q3Protect[]
-
 
 EndPackage[]

@@ -1,16 +1,13 @@
 (* -*- mode: math; -*- *)
-(* Pauli operators on unlabelled qubits *)
 
-BeginPackage[ "Q3`Pauli`", { "Q3`Abel`", "Q3`Cauchy`" } ]
+BeginPackage["Q3`"]
 
-`Information`$Version = StringJoin[
+`Pauli`Information`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.53 $"][[2]], " (",
-  StringSplit["$Date: 2021-05-28 19:49:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.56 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-Q3`Q3Clear[];
 
 { Spin, SpinNumberQ };
 
@@ -86,13 +83,7 @@ Q3`Q3Clear[];
 
 Begin["`Private`"]
 
-$symbs = Unprotect[
-  Multiply, MultiplyExp, MultiplyPower,
-  CircleTimes, CirclePlus,
-  $GarnerHeads, $GarnerTests,
-  $ElaborationRules, $ElaborationHeads,
-  Dot, Ket, Bra, BraKet
- ]
+$symbs = Unprotect[CircleTimes, CirclePlus, Dot, Ket, Bra]
 
 Spin::usage = "Spin is an option of several Species.\nSpin[c] returns the Spin quantum number of the Species c.\nLet[Spin, s] declares that s is the Spin species."
 
@@ -1652,10 +1643,10 @@ ParityOddQ[ expr_List, op_List ] := Map[ ParityOddQ[#,op]&, expr ] /;
   Not @ FreeQ[expr, _Ket]
 
 
-ParityEvenQ[ z_?ComplexQ expr_, op_List ] := ParityEvenQ[expr, op] /;
+ParityEvenQ[ z_?CommutativeQ expr_, op_List ] := ParityEvenQ[expr, op] /;
   Not @ FreeQ[expr, _Ket]
 
-ParityOddQ[ z_?ComplexQ expr_, op_List ] := ParityOddQ[expr, op] /;
+ParityOddQ[ z_?CommutativeQ expr_, op_List ] := ParityOddQ[expr, op] /;
   Not @ FreeQ[expr, _Ket]
 
 
@@ -1896,9 +1887,11 @@ Dot[ Bra[c_, d__], Pauli[a_, b__] ] := CircleTimes @@
 (* *********************************************************************** *)
 
 
+(**** <CircleTimes> ****)
+
 CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, ....\nWhen a, b, c, ... are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/CircleTimes\", \"paclet:Q3/ref/CircleTimes\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
-SetAttributes[CircleTimes, {ReadProtected}]
+SetAttributes[CircleTimes, ReadProtected]
 
 CircleTimes[] = 1 (* See also Times[]. *)
 
@@ -1907,22 +1900,27 @@ CircleTimes[a_] := a (* See also Times[]. *)
 (* NOTE: DO NOT set the Flat and OneIdentity attributes for
    Cirlcetimes. Otherwise, the following definitions cause infinite loops. *)
 
-HoldPattern[ CircleTimes[ args__ ] ] := Garner @ Block[
+HoldPattern @ CircleTimes[args__] := Garner @ Block[
   { F },
-  Distribute[ F[args] ] /. { F -> CircleTimes }
+  Distribute @ F[args] /. {F -> CircleTimes}
  ] /; DistributableQ[args]
 
-CircleTimes[pre___, z_?ComplexQ op_, post___] := z CircleTimes[pre, op, post]
+CircleTimes[pre___, z_?CommutativeQ op_, post___] :=
+  z CircleTimes[pre, op, post]
 
-CircleTimes[a___, 0, c___] := 0
-(* This happens when some Kets are null. *)
+CircleTimes[___, 0, ___] = 0
+(* This happens when some vectors or operators are null. *)
 
 (* On matrices, it operates the same as KroneckerProduct[]. *)
-CircleTimes[A__?MatrixQ] := KroneckerProduct[A]
+CircleTimes[mats__?MatrixQ] := KroneckerProduct[mats]
 
 (* For vectors, our CircleTimes[] is different from KroneckerProduct[]. *)
-CircleTimes[A__?VectorQ] := Flatten[ TensorProduct[A] ]
+CircleTimes[vecs__?VectorQ] := Flatten @ TensorProduct[vecs]
 
+(**** </CircleTimes> ****)
+
+
+(**** <CirclePlus> ****)
 
 BlockDiagonalMatrix::usage = "BlockDiagonalMatrix[{a,b,c,...}] returns a matrix with the matrices a, b, c, ... as its blocks. BlockDiagonalMatrix[a,b,c,...] is the same."
 
@@ -1945,6 +1943,8 @@ returns the direct sum of the matrices a, b, and c."
 CirclePlus[ m:(_?MatrixQ).. ] := BlockDiagonalMatrix[{m}]
 
 CirclePlus[ v:(_?VectorQ).. ] := Join[v]
+
+(**** </CirclePlus> ****)
 
 
 (**** <Dyad> ****)
@@ -3216,9 +3216,5 @@ chiralVertexRulesShort[ii_List, jj_List, spec:{row_, col_}] :=
 Protect[ Evaluate @ $symbs ]
 
 End[]
-
-
-Q3`Q3Protect[]
-
 
 EndPackage[]
