@@ -3,21 +3,18 @@
 
 BeginPackage["Q3`"]
 
-`Gray`Information`$Version = StringJoin[
+`Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.36 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 09:06:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.40 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-05 21:04:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ BinaryToGray, GrayToBinary };
+{ BinaryToGray, GrayToBinary,
+  GrayCode, GrayCodeSubsets };
 
-{ GrayCode, GrayCodeSubsets };
-
-{ GrayControlledU, GrayControlledW };
-
-{ GrayTwoLevelU, TwoLevelU, TwoLevelDecomposition };
-
+{ GrayControlledU, GrayControlledW,
+  GrayTwoLevelU, TwoLevelU, TwoLevelDecomposition };
 
 Begin["`Private`"]
 

@@ -2,17 +2,16 @@
 
 BeginPackage["Q3`"]
 
-`Information`$Version = StringJoin[
+`Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.30 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.32 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-05 21:05:15+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 
 { Supermap, ChoiOperator, ChoiMatrix };
 
 { KrausProduct };
-
 
 { LindbladGenerator, DampingOperator };
 

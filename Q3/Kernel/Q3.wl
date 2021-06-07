@@ -9,16 +9,16 @@ Q3`Q3Clear["Q3`"];
 
 BeginPackage["Q3`"]
 
-`Q3`Information`$Version = StringJoin[
+`Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.8 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 18:32:51+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.12 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-05 21:16:18+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Q3General };
 
-{ Q3Clear, Q3Protect };
+{ Q3Clear, Q3Unprotect, Q3Protect };
 
 { Q3Info, Q3Release, Q3RemoteRelease,
   Q3Update, Q3CheckUpdate, Q3Purge };
@@ -37,12 +37,23 @@ Q3General::newUI = "An angle should come first. The order of the input arguments
 
 Q3Clear::usage = "Q3Clear[context] first unprotects all symbols defined in the context of context, and then CleaAll all non-variable symbols -- those the name of which does not start with '$'.\nQ3Clear is for internal use."
 
-Q3Clear[] := Q3Clear @ Context[]
+Q3Clear[] := Q3Clear[$Context]
 
-Q3Clear[context_String] := (
-  Unprotect @ Evaluate[context <> "*"];
-  ClearAll @@ Names @ RegularExpression[context <> "[^`$]*"]
- )
+Q3Clear[context_String] := Module[
+  { vars = Names[context <> "$*"],
+    symb = Names[context <> "*"] },
+  Unprotect[Evaluate @ symb];
+  symb = Complement[symb, vars];
+  ClearAll @@ Evaluate[symb]
+ ]
+
+
+Q3Unprotect::usage = "Q3Unprotect[context] unprotects all symbols in the specified context.\nQ3Unprotect is for internal use."
+
+Q3Unprotect[] := Q3Unprotect[$Context]
+
+Q3Unprotect[context_String] :=
+  Unprotect @ Evaluate @ Names[context <> "$*"]
 
 
 Q3Protect::usage = "Q3Protect[context] protects all symbols in the specified context. In addition, it sets the ReadProtected attribute to all non-variable symbols -- those the name of which does not start with the character '$'.\nQ3Protect is for internal use."
@@ -58,14 +69,14 @@ Q3Protect[context_String] := Module[
  ]
 
 
-Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versions of packages in it."
+Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versions of packages included in it."
 
 Q3Info[] := Module[
   { pac = Q3Release[],
-    pkg = Symbol /@ Names["Q3`*Information`$Version"] },
+    pkg = Symbol /@ Names["Q3`*`$Version"] },
   If[ FailureQ[pac],
     pac = "Q3 Application has not been installed properly.",
-    pac = "Q3 Application v" <> pac;
+    pac = "Q3 Application v" <> pac
    ];
   pkg = Join[{pac}, pkg];
   Print @ StringJoin @ Riffle[pkg, "\n"];
@@ -178,6 +189,8 @@ Get["Q3`Abel`"];
 Get["Q3`Cauchy`"];
 Get["Q3`Pauli`"];
 Get["Q3`Quisso`"];
+Get["Q3`Kraus`"];
+Get["Q3`Gray`"];
 Get["Q3`Grassmann`"];
 Get["Q3`Fock`"];
 Get["Q3`Wigner`"];
@@ -200,4 +213,3 @@ EndPackage[]
 
 
 Q3`Q3Protect["Q3`"];
-

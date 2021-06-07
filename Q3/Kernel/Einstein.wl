@@ -2,10 +2,10 @@
 
 BeginPackage["Q3`"]
 
-`Einstein`Information`$Version = StringJoin[
+`Einstein`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.11 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 19:56:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.12 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

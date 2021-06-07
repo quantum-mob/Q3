@@ -2,10 +2,10 @@
 
 BeginPackage["Q3`"]
 
-`Abel`Information`$Version = StringJoin[
+`Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.18 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 20:02:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -29,7 +29,7 @@ BeginPackage["Q3`"]
 { Qubit, Qubits, QubitQ };
 { Qudit, Qudits, QuditQ };
 { Boson, Bosons, BosonQ, AnyBosonQ };
-{ Fermion, Fermoions, FermionQ, AnyFermionQ };
+{ Fermion, Fermions, FermionQ, AnyFermionQ };
 (* NOTE: Fermion and the like are here for Matrix. *)
 
 { SpeciesBox,

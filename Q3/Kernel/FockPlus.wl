@@ -1,27 +1,30 @@
 (* -*- mode:math -*- *)
 
+Needs["Q3`"]
+
 BeginPackage["Q3`"]
 
-`FockPlus`Information`$Version = StringJoin[
+`FockPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.17 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 12:01:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.19 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ Pairings, Wick, Average };
-
-{ FockSeries };
-
-{ FockSum, FockSumThread, FockSumExpand, FockSumCollect };
-
-{ FockSimplify, FockFullSimplify,
-  FockSumSimplify, FockSumFullSimplify }
+ClearAll @@ Evaluate @ Unprotect[
+  Pairings, Wick, Average,
+  (* *** *)
+  FockSeries,
+  FockSum, FockSumThread, FockSumExpand, FockSumCollect,
+  (* *** *)
+  FockSimplify, FockFullSimplify,
+  FockSumSimplify, FockSumFullSimplify
+ ];
 
 
 Begin["`Private`"]
 
-Pairings::usage = "Pairings[list] generates all possible pairings of the elements in list."
+Pairings::usage = "Pairings[list] generates all possible pairings of the elements in list.\nSee also the built-in function Groupings."
 
 Pairings::odd = "There are an odd number of elements in ``."
 
@@ -473,5 +476,7 @@ funcSumFullSimplifyClassic[expr_] := Module[
 ]
 
 End[]
+
+Q3Protect[];
 
 EndPackage[]

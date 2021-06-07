@@ -4,7 +4,7 @@
 
 Paclet[
   Name -> "Q3",
-  Version -> "1.9.3",
+  Version -> "1.9.5",
   WolframVersion -> "12+",
   Description -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems.",
   Creator -> "Mahn-Soo Choi (Korea University)",
@@ -13,8 +13,9 @@ Paclet[
     { "Kernel",
       Root -> "Kernel",
       Context -> { "Q3`" }
-      (* Context specifies the package context or list of contexts . Used by
-         FindFile. Also causes documentation links to be added to usage
+      (* Context specifies the package context or list of contexts.
+         The list is also used by FindFile.
+         The list also causes documentation links to be added to usage
          messages when documentation is present. *)
      },
     { "Documentation",

@@ -2,10 +2,10 @@
 
 BeginPackage["Q3`"]
 
-`Cauchy`Information`$Version = StringJoin[
+`Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.17 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-03 09:03:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.18 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
