@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.60 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.78 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-30 10:45:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -40,8 +40,10 @@ BeginPackage["Q3`"]
 { RaiseLower, $RaiseLowerRules };
 
 { Rotation, EulerRotation,
-  TheRotation, TheEulerRotation,
-  EulerAngles, TheEulerAngles };
+  TheRotation, TheEulerRotation };
+
+{ RotationAngle, RotationAxis, RotationSystem,
+  TheEulerAngles }
 
 { WignerFunction };
 
@@ -931,17 +933,15 @@ Pauli /: Conjugate[ Pauli[a_, b__] ] := CircleTimes @@ Map[
   
 Pauli /:
 CircleTimes[a_Pauli, b__Pauli] := Pauli @@ Catenate[List @@@ {a, b}]
-(* CircleTimes[ Pauli[a], Pauli[b], ... ] are stored into Pauli[a, b, ...], where a, b, ... are elementry (0,1,2,3). *)
 
 
-(* <Pauli in Multipy> *)
+(**** <Pauli in Multipy> ****)
 HoldPattern @ Multiply[pre___, op__Pauli, vec:Ket[(0|1)..], post___] :=
   Multiply[pre, Dot[op, vec], post]
 
 HoldPattern @ Multiply[pre___, op_Pauli, more__Pauli, Shortest[post___]] :=
   Multiply[pre, Dot[op, more], post]
-
-(* </Pauli in Multiply> *)
+(**** </Pauli in Multiply> ****)
 
 
 Operator::usage = "Operator[{k, th, ph}] returns the Pauli matrix in the rotated frame.\nOperator[{{k1,k2,...}, th, ph}] = Operator[{k1, th, ph}, {k2, th, ph}, ...]."
@@ -1670,33 +1670,95 @@ ParityEvenQ[ v_Ket, op:{__?SpeciesQ} ] :=
 ParityOddQ[ v_Ket, op:{__?SpeciesQ} ] :=
   Xor @@ Map[ParityOddQ[v,#]&, FlavorNone @ op]
 
-(* *********************************************************************** *)
 
-TheRotation::usage = "TheRotation[\[Phi], 1], TheRotation[\[Phi], 2], TheRotation[\[Phi], 3] give the 2x2 matrix representing the rotation by angle \[Phi] around the x, y, and z axis, respective in the two-dimensional Hilbert  space.\nTheRotation[{x1, n1,}, {x2, n2,}, \[Ellipsis]] = TheRotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] \[Ellipsis].\nTheRotation[\[Phi], {J, 1}], TheRotation[\[Phi], {J, 2}], TheRotation[\[Phi], {J, 3}] give the rotation matrices by angle \[Phi] around the x, y, and z axis, respective, for Spin = J."
+(**** <RotationSystem> <TheEulerAngles> ****)
 
-TheRotation[_, 0] := ThePauli[0]
+RotationSystem::usage = "RotationSystem[mat] returns the rotation angle and axis in the form {angle, {x, y, z}} that the matrix mat represents.\nFor rotations in the three-dimensional space of real vectors, mat is a 3\[Times]3 real orthogonal matrix. In this case, the returned angle is in the range from -\[Pi] to \[Pi].\nFor rotations in the Bloch space, mat is a 2\[Times]2 unitary matrix. Angle is in the range from -2\[\Pi] to 2\[Pi].\nIn either case, the axis vector always points to the upper hemisphere."
 
-TheRotation[ph_, n:(1|2|3)] :=
-  Cos[ph/2] * ThePauli[0] - I*Sin[ph/2] * ThePauli[n]
+RotationSystem::notuni = "`` is not a unitary matrix."
 
-TheRotation[{ph_, n:(0|1|2|3)}] := TheRotation[ph, n]
+RotationSystem::notorth = "`` is not an orthogonal matrix."
 
-TheRotation[a:{_, (0|1|2|3)}, b:{_, (0|1|2|3)}..] :=
-  CircleTimes @@ Map[TheRotation, {a, b}]
+RotationSystem[mat_?MatrixQ] := Module[
+  { cc, ang, vec },
+  If[ Not @ UnitaryMatrixQ @ mat,
+    Message[RotationSystem::notuni, Normal @ mat];
+    Return[{0, {0, 0, 1}}]
+   ];
+  cc = {1, I, I, I} * PauliDecompose[mat] / Sqrt[Det @ mat];
+  cc = Simplify[ExpToTrig @ cc];
+  ang = 2 ArcCos[First @ cc];
+  vec = Normalize[Rest @ cc];
+  Which[
+    vec[[3]] < 0,
+    ang = -ang;
+    vec = -vec,
+    vec[[3]] == 0,
+    Which[
+      vec[[2]] < 0,
+      ang = -ang;
+      vec = -vec,
+      vec[[2]] == 0,
+      Which[
+        vec[[1]] < 0,
+        ang = -ang;
+        vec = -vec,
+        vec[[1]] == 0,
+        ang = 0
+       ]
+     ]
+   ];
+  {ang, vec}
+ ] /; Dimensions[mat] == {2, 2}
 
 
-TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[a,3].TheRotation[b,2].TheRotation[c,3] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space.\nTheEulerRotation[{a, b, c}, J] gives the Euler rotation matrix in the angular momentum J representation."
+RotationSystem[mat_?MatrixQ] := Module[
+  { new = Det[mat] * mat,
+    ang, vec },
+  If[ Not @ OrthogonalMatrixQ[mat],
+    Message[RotationSystem::notorth, Normal @ mat];
+    Return[{0, {0, 0, 1}}]
+   ];
+  ang = ArcCos[(Tr[new] - 1) / 2];
+  vec = - {
+    new[[2,3]] - new[[3,2]],
+    new[[3,1]] - new[[1,3]],
+    new[[1,2]] - new[[2,1]]
+   } / 2;
+  vec = Normalize[vec];
+  Which[
+    vec[[3]] < 0,
+    ang = -ang;
+    vec = -vec,
+    vec[[3]] == 0,
+    Which[
+      vec[[2]] < 0,
+      ang = -ang;
+      vec = -vec,
+      vec[[2]] == 0,
+      Which[
+        vec[[1]] < 0,
+        ang = -ang;
+        vec = -vec,
+        vec[[1]] == 0,
+        ang = 0
+       ]
+     ]
+   ];
+  {ang, vec}
+ ] /; Dimensions[mat] == {3, 3}
 
 
-TheEulerRotation[ {phi_, theta_, chi_} ] := {
-  {Cos[theta/2]*Exp[-I*(phi+chi)/2], -Sin[theta/2]*Exp[-I*(phi-chi)/2]},
-  {Sin[theta/2]*Exp[+I*(phi-chi)/2],  Cos[theta/2]*Exp[+I*(phi+chi)/2]}
- }
+RotationAxis::usage = "RotationAxis[mat] returns the vector pointing along the rotation axis that the matrix mat represents. The axis vector always points to the upper hemisphere."
 
-TheEulerRotation[ {phi_,theta_} ] := TheEulerRotation[ {phi, theta, 0} ]
+RotationAxis[mat_?MatrixQ] := Last @ RotationSystem[mat] /;
+  Dimensions[mat] == {2, 2} || Dimensions[mat] == {3, 3}
 
-TheEulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
-  CircleTimes @@ Map[TheEulerRotation, {a, b}]
+
+RotationAngle::usage = "RotationAngle[mat] returns the rotation angle that the matrix mat describes. The angle is in the range from -2\[Pi] to 2\[Pi] for a 2\[Times]2 unitary matrix mat, and in the range from -\[Pi] to \[Pi] for a 3\[Times]3 orthogonal matrix mat."
+
+RotationAngle[mat_?MatrixQ] := First @ RotationSystem[mat] /;
+  Dimensions[mat] == {2, 2} || Dimensions[mat] == {3, 3}
 
 
 TheEulerAngles::usage = "TheEulerAngles[U] gives the Euler angles {\[Alpha],\[Beta],\[Gamma]} of the SU(2) matrix U, where -\[Pi] < \[Alpha],\[Gamma] \[LessEqual] \[Pi] and 0 \[LessEqual] \[Beta] \[LessEqual] \[Pi]. TheEulerRotation[TheEulerAngles[U]] == U.\nTheEulerAngles[expr] gives the Euler angles {\[Alpha],\[Beta],\[Gamma]} of the single-qubit unitary operator given by expr in terms of Pauli operators."
@@ -1734,8 +1796,52 @@ TheEulerAngles[expr_] := Module[
   TheEulerAngles[U]
  ] /; Not @ FreeQ[expr, _Pauli]
 
+(**** </RotationSystem> </TheEulerAngles> ****)
 
-Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], Rotation[\[Phi], 3] represent the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{x1, n1}, {x2, n2}, ...] = Rotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] ...\nRotation[\[Phi], S[j, ..., k]] represents the rotation by angle \[Phi] around the axis k on the qubit S[j, ..., None]."
+
+(**** <TheRotation and TheEulerRotation> ****)
+
+TheRotation::usage = "TheRotation[\[Phi], 1], TheRotation[\[Phi], 2], TheRotation[\[Phi], 3] give the 2x2 matrix representing the rotation by angle \[Phi] around the x, y, and z axis, respective in the two-dimensional Hilbert  space.\nTheRotation[{x1, n1,}, {x2, n2,}, \[Ellipsis]] = TheRotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] \[Ellipsis].\nTheRotation[\[Phi], {J, 1}], TheRotation[\[Phi], {J, 2}], TheRotation[\[Phi], {J, 3}] give the rotation matrices by angle \[Phi] around the x, y, and z axis, respective, for Spin = J."
+
+TheRotation[_, 0] := ThePauli[0]
+
+TheRotation[ph_, n:(1|2|3)] :=
+  Cos[ph/2] * ThePauli[0] - I*Sin[ph/2] * ThePauli[n]
+
+TheRotation[{ph_, n:(0|1|2|3)}] := TheRotation[ph, n]
+
+TheRotation[a:{_, (0|1|2|3)}, b:{_, (0|1|2|3)}..] :=
+  Apply[CircleTimes, TheRotation @@@ {a, b}]
+
+
+TheRotation[{ph_, v:{_, _, _}}] := TheRotation[ph, v]
+
+TheRotation[ph_, v:{_, _, _}] := Cos[ph/2] * ThePauli[0] -
+  I*Sin[ph/2] * Normalize[v] . {ThePauli[1], ThePauli[2], ThePauli[3]}
+
+TheRotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
+  Apply[CircleTimes, TheRotation @@@ {a, b}]
+
+
+TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[a,3].TheRotation[b,2].TheRotation[c,3] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space.\nTheEulerRotation[{a, b, c}, J] gives the Euler rotation matrix in the angular momentum J representation."
+
+
+TheEulerRotation[ {phi_, theta_, chi_} ] := {
+  {Cos[theta/2]*Exp[-I*(phi+chi)/2], -Sin[theta/2]*Exp[-I*(phi-chi)/2]},
+  {Sin[theta/2]*Exp[+I*(phi-chi)/2],  Cos[theta/2]*Exp[+I*(phi+chi)/2]}
+ }
+
+TheEulerRotation[ {phi_,theta_} ] := TheEulerRotation[ {phi, theta, 0} ]
+
+TheEulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
+  CircleTimes @@ Map[TheEulerRotation, {a, b}]
+
+(**** </TheRotation and TheEulerRotation> ****)
+
+
+(**** <Rotation and EulerRotation> ****)
+
+Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, ...] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] ...\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], S[j, ..., k]] represents the rotation by angle \[Phi] around the axis k on the qubit S[j, ..., None]."
 
 Rotation[_, 0] := Pauli[0]
 
@@ -1747,6 +1853,15 @@ Rotation[a:{_, (0|1|2|3)}, b:{_, (0|1|2|3)}..] :=
   CircleTimes @@ Map[Rotation, {a, b}]
 
 
+Rotation[{ph_, v:{_, _, _}}] := Rotation[ph, v]
+
+Rotation[ph_, v:{_, _, _}] := Cos[ph/2] Pauli[0] -
+  I Sin[ph/2] * Normalize[v] . {Pauli[1], Pauli[2], Pauli[3]}
+
+Rotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
+  Apply[CircleTimes, Rotation @@@ {a, b}]
+
+
 EulerRotation::usage = "EulerRotation[{a, b, c}] = Rotation[a, 3].Rotation[b, 2].Rotation[c, 3] represent the Euler rotation by angles a, b, c in a two-dimensional Hilbert space."
 
 EulerRotation[ {a_, b_, c_} ] :=
@@ -1754,6 +1869,8 @@ EulerRotation[ {a_, b_, c_} ] :=
 
 EulerRotation[ a:{_, _, _}, b:{_, _, _}.. ] :=
   CircleTimes @@ Map[EulerRotation, {a, b}]
+
+(**** </Rotation and EulerRotation> ****)
 
 
 (* *********************************************************************** *)
@@ -2834,17 +2951,24 @@ RandomUnitary[n_Integer] := With[
  ]
 
 
-BasisComplement::usage = "BasisComplement[a, b] returns the subspace B\[UpTee] of H that is orgohtonal to B, where H is the Hilbert space spanned by the basis a, and B is the subspace of H spanned by the basis b."
+BasisComplement::usage = "BasisComplement[{v1,v2,\[Ellipsis]}, {w1,w2,\[Ellipsis]}] returns a new basis of the subspace W\[UpTee]\[Subset]\[ScriptCapitalV] that is orgohtonal to \[ScriptCapitalW], where \[ScriptCapitalV] is the vector space spanned by the basis {v1,v2,\[Ellipsis]}, and \[ScriptCapitalW] is a subspace of \[ScriptCapitalV] spanned by the basis {w1,w2,\[Ellipsis]}.\nBoth bases are assumed to be orthonormal."
 
-BasisComplement[a_List, b_List] := Module[
-  { Pr, cc, mm, dd, u, v },
-  Pr = Total @ Map[(# ** Dagger[#]) &, b];
-  cc = DeleteCases[ Union[a - Pr ** a], 0 ];
-  mm = Outer[Multiply, Dagger @ a, cc];
-  {u, d, v} = SingularValueDecomposition[mm];
-  dd = PseudoInverse[d];
-  DeleteCases[ Garner[cc.v.dd], 0 ]
+BasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
+  { prj = Total[Dyad /@ bb],
+    mm, uu, dd, vv },
+  mm = Transpose[aa] - prj.Transpose[aa];
+  {uu, dd, vv} = SingularValueDecomposition[mm];
+  Select[Transpose[vv . PseudoInverse[dd]], (Norm[#]>0)&]
  ]
+
+BasisComplement[aa_List, bb_List] := Module[
+  { prj = Total[Dyad[#, #]& /@ bb],
+    new, mat, dd, uu, vv },
+  new = DeleteCases[Union[aa - prj ** aa], 0];
+  mat = Outer[Multiply, Dagger[aa], new];
+  {uu, dd, vv} = SingularValueDecomposition[mat];
+  DeleteCases[Garner[new.vv.PseudoInverse[dd]], 0]
+ ] /; NoneTrue[Join[aa, bb], FreeQ[#, _Ket]&]
 
 
 WignerFunction::usage = "WignerFunction[j,m1,m2,\[Beta]] returns the matrix element WignerFunction[j,m1,m2,\[Beta]] = TheBra[j,m1].U[y,\[Beta]].TheKet[j,m2] of the rotation operator U[y,\[Beta]] around the spin y-axis by angule \[Beta] between the two angular momentum states TheKet[j,m1] and TheKet[j,m2] (notice the same j). These matrix elements are useful to calculate the matrix elements of an arbitrary rotation operator for large angular momentum."

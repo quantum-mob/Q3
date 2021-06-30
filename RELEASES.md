@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.9.6
+
+- New package Stabilizer for stabilizer formalism.
+- New functions PauliGroup, CliffordGroup, PauliForm.
+
 ## v1.9.5
 
 - Internal code structures and relations have been change. No change from users' point of view.

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.11 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.12 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-28 15:32:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2208,17 +2208,11 @@ FermionBasis[{cc__?FermionQ}, opts___?OptionQ] := Module[
     Options[FermionBasis];
 
   rep = rep /.
-    { s_Symbol :> SymbolName[s],
-      s_ :> ToString[s] } /.
     { "Occupations" -> "Ket",
       "Generators" -> "Cat",
       _ -> "Cat" };
   
-  qn = If[ AtomQ[qn], {qn}, Sort[qn] ];
-  qn = StringJoin @ Map[
-    ( # /. { s_Symbol :> SymbolName[s], s_ :> ToString[s] } )&,
-    qn
-   ];
+  qn = StringJoin @ If[ListQ[qn], Sort[qn], {qn}];
   
   name = StringJoin[Context[name], "basis", rep, qn];
   If[ NameQ[name], Symbol[name][cc], {{}->{}} ]

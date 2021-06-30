@@ -4,13 +4,13 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.23 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-28 14:57:13+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
-{ Choices, Successive };
+{ Choices, Partitions, Successive };
 { ShiftLeft, ShiftRight };
 { Unless, PseudoDivide };
 
@@ -85,6 +85,17 @@ Choices[a_List, {m_Integer, n_Integer}] :=
   Catenate @ Table[Choices[a, {j}], {j, m, n}]
 
 Choices[a_List, {n_Integer}] := Union[Sort /@ Tuples[a, n]]
+
+
+Partitions::usage = "Partitions[list] gives a list of all possible ways to partition list into smaller lists.\nPartitions[list, spec] gives partitions corresponding to the specification spec. For spec, see IntegerPartitions."
+
+Partitions[data_List, spec___] := Module[
+  { parts = IntegerPartitions[Length @ data, spec] },
+  parts = Flatten[Permutations /@ parts, 1];
+  FoldPairList[TakeDrop, data, #]& /@ parts
+ ]
+(* NOTE: Permutations of parts is necessary to find all possible
+   decompositions of the integer Length[list]. *)
 
 
 Supplement::usage = "Supplement[a, b, c, \[Ellipsis]] returns the elements in a that are not in any of b, c, \[Ellipsis]. It is similar to the builtin Complement, but unlike Complement, treats a as a List (not Mathematical set). That is, the order is preserved."

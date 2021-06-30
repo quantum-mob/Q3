@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.64 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.67 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-21 16:37:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -83,6 +83,10 @@ setQubit[x_Symbol] := (
   x/: Dagger[ x[j___, k:(0|1|2|3|6|10|11)] ] := x[j, k];
   x/: Dagger[ x[j___, 4] ] := x[j,5];
   x/: Dagger[ x[j___, 5] ] := x[j,4];
+
+  x/: Inverse[ x[j___, k:(0|1|2|3|6)] ] := x[j, k];
+  x/: Inverse[ x[j___, 7] ] := Dagger @ x[j, 7];
+  x/: Inverse[ x[j___, 8] ] := Dagger @ x[j, 8];
 
   (* for time reversal *)
   x/: Conjugate[ x[j___, k:(0|1|3|4|5|6)] ] := x[j, k];
@@ -1677,14 +1681,14 @@ BellState[g:{_?QubitQ, _?QubitQ}, 3] :=
 
 DickeState::usage = "DickeState[qubits, n] gives the generalized Dicke state for the qubits, where n qubits are in the state Ket[1]."
 
-DickeState[ss : {__?QubitQ}, n_] := Module[
+DickeState[ss:{__?QubitQ}, n_] := Module[
   { byte = ConstantArray[1, n] },
-  byte = PadRight[byte, Length[ss]];
+  byte = PadRight[byte, Length @ ss];
   byte = Permutations[byte];
   Total[ Map[Ket[ss -> #]&, byte] ] / Sqrt[Length[byte]]
  ]
 
-DickeState[ ss:{__?QubitQ} ] := Table[ DickeState[ss, n], {n, 0, Length[ss]} ]
+DickeState[ss:{__?QubitQ}] := Table[DickeState[ss, n], {n, 0, Length @ ss}]
 
 
 RandomState::usage = "RandomState[{S1,S2,...}] gives a normalized random state for the system of multiple qubits {S1,S2,...}.
