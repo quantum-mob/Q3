@@ -5,18 +5,21 @@ BeginPackage["Q3`"]
 
 `Stabilizer`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.17 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-30 11:01:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.26 $"][[2]], " (",
+  StringSplit["$Date: 2021-07-19 10:39:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ PauliGroup, CliffordGroup,
-  PauliForm };
+{ PauliForm };
+
+{ PauliGroup, CliffordGroup };
+
+{ GottesmanVector, FromGottesmanVector };
 
 
 Begin["`Private`"]
 
-(**** </PauliForm> ****)
+(**** <PauliForm> ****)
 
 PauliForm::usage = "PauliForm[expr] rewrites expr in a more conventional form, where the Pauli operators are denoted by I, X, Y, and Z."
 
@@ -63,11 +66,27 @@ PauliForm[expr_] := PauliForm[expr, Qubits @ expr] /; FreeQ[expr, _Pauli]
 
 PauliGroup::usage = "PauliGroup[n] represents the Pauli group, the of group of tensor products of the Pauli operators, on n qubits.\nPauliGroup[{s1, s2, ...}] represents the Pauli group on the labelled qubits {s1, s2, \[Ellipsis]}."
 
+PauliGroup::todo = "Not supported yet."
+
+PauliGroup[S_?QubitQ] := PauliGroup @ {S}
+
+PauliGroup[ss:{__?QubitQ}] := PauliGroup[FlavorNone @ ss] /;
+  Not @ ContainsOnly[FlavorLast @ ss, {None}]
+
+
+PauliGroup /:
+GroupOrder @ PauliGroup[n_Integer] := Power[4, n+1] /; n > 0
+
+PauliGroup /:
+GroupOrder @ PauliGroup[ss:{__?QubitQ}] :=
+  GroupOrder @ PauliGroup @ Length @ ss
+
+
 PauliGroup /:
 GroupElements @ PauliGroup[n_Integer] := Module[
   { op = Pauli @@@ Tuples[{0, 1, 2, 3}, n] },
-  Union @ Catenate @ {op, -op, I op, -I op}
- ]
+  Catenate @ {op, -op, I op, -I op}
+ ] /; n > 0
 
 PauliGroup /:
 GroupGenerators @ PauliGroup[n_Integer] := Module[
@@ -75,28 +94,49 @@ GroupGenerators @ PauliGroup[n_Integer] := Module[
     kk = Range[n] },
   kk = Flatten[ Thread /@ {kk -> 1, kk -> 2, kk ->3 } ];
   Sort @ Map[ReplacePart[op, #]&, kk]
- ]
+ ] /; n > 0
 
-
-PauliGroup /:
-GroupElements @ PauliGroup[S_?QubitQ] :=
-  GroupElements @ PauliGroup @ S @ {None}
 
 PauliGroup /:
 GroupElements @ PauliGroup[qq:{__?QubitQ}] := Module[
   { op = Elaborate @ Through @ qq[Full] },
   op = Multiply @@@ Tuples[op];
-  Union @ Catenate @ {op, -op, I op, -I op}
+  Catenate @ {op, -op, I op, -I op}
  ]
-
-PauliGroup /:
-GroupGenerators @ PauliGroup[S_?QubitQ] :=
-  GroupGenerators @ PauliGroup @ S @ {None}
 
 PauliGroup /:
 GroupGenerators @ PauliGroup[qq:{__?QubitQ}] :=
   Sort @ Flatten @ Through @ qq[All]
 
+
+PauliGroup /:
+GroupMultiplicationTable @ PauliGroup[1] = {
+  {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, 
+  {2, 1, 12, 15, 6, 5, 16, 11, 10, 9, 8, 3, 14, 13, 4, 7}, 
+  {3, 16, 1, 10, 7, 12, 5, 14, 11, 4, 9, 6, 15, 8, 13, 2}, 
+  {4, 11, 14, 1, 8, 15, 10, 5, 12, 7, 2, 9, 16, 3, 6, 13}, 
+  {5, 6, 7, 8, 1, 2, 3, 4, 13, 14, 15, 16, 9, 10, 11, 12}, 
+  {6, 5, 16, 11, 2, 1, 12, 15, 14, 13, 4, 7, 10, 9, 8, 3}, 
+  {7, 12, 5, 14, 3, 16, 1, 10, 15, 8, 13, 2, 11, 4, 9, 6}, 
+  {8, 15, 10, 5, 4, 11, 14, 1, 16, 3, 6, 13, 12, 7, 2, 9}, 
+  {9, 10, 11, 12, 13, 14, 15, 16, 5, 6, 7, 8, 1, 2, 3, 4}, 
+  {10, 9, 8, 3, 14, 13, 4, 7, 6, 5, 16, 11, 2, 1, 12, 15}, 
+  {11, 4, 9, 6, 15, 8, 13, 2, 7, 12, 5, 14, 3, 16, 1, 10}, 
+  {12, 7, 2, 9, 16, 3, 6, 13, 8, 15, 10, 5, 4, 11, 14, 1}, 
+  {13, 14, 15, 16, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8}, 
+  {14, 13, 4, 7, 10, 9, 8, 3, 2, 1, 12, 15, 6, 5, 16, 11}, 
+  {15, 8, 13, 2, 11, 4, 9, 6, 3, 16, 1, 10, 7, 12, 5, 14}, 
+  {16, 3, 6, 13, 12, 7, 2, 9, 4, 11, 14, 1, 8, 15, 10, 5}
+ }
+
+PauliGroup /:
+GroupMultiplicationTable @ PauliGroup[n_Integer] :=
+  Message[PauliGroup::todo]
+
+PauliGroup /:
+GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=
+  GroupMultiplicationTable @ PauliGroup @ Length @ ss
+  
 (**** </PauliGroup> ****)
 
 
@@ -105,6 +145,26 @@ GroupGenerators @ PauliGroup[qq:{__?QubitQ}] :=
 CliffordGroup::usage = "CliffordGroup[n] represents the Clifford group, the normalizer group of the Pauli group, on n qubits.\nCliffordGroup[{s1, s2, ...}] represents the Clifford group, the normalizer group of the Pauli group, on the qubits {s1, s2, \[Ellipsis]}."
 
 CliffordGroup::toobig = "Too many elements in the Clifford group on two or more qubits to list."
+
+CliffordGroup::todo = "Not supported yet."
+
+CliffordGroup[S_?QubitQ] := CliffordGroup @ {S}
+
+CliffordGroup[ss:{__?QubitQ}] := CliffordGroup[FlavorNone @ ss] /;
+  Not @ ContainsOnly[FlavorLast @ ss, {None}]
+
+
+CliffordGroup /:
+GroupOrder @ CliffordGroup[1] = 192 
+
+CliffordGroup /:
+GroupOrder @ CliffordGroup[n_Integer] :=
+  Message[CliffordGroup::todo] /; n > 1
+
+CliffordGroup /:
+GroupOrder @ CliffordGroup[ss:{__?QubitQ}] :=
+  GroupOrder @ CliffordGroup @ Length @ ss
+
 
 CliffordGroup /:
 GroupGenerators @ CliffordGroup[n_Integer] := Module[
@@ -124,10 +184,6 @@ GroupGenerators @ CliffordGroup[n_Integer] := Module[
   Garner @ Flatten @ {ss, CZ @@@ cz}
  ]
 
-
-CliffordGroup /:
-GroupGenerators @ CliffordGroup[S_?QubitQ] :=
-  GroupGenerators @ CliffordGroup @ S @ {None}
 
 CliffordGroup /:
 GroupGenerators @ CliffordGroup[qq:{__?QubitQ}] := Module[
@@ -165,10 +221,6 @@ GroupElements @ CliffordGroup[1] := Module[
 
 
 CliffordGroup /:
-GroupElements @ CliffordGroup[S_?QubitQ] :=
-  GroupElements @ CliffordGroup @ S @ {None}
-
-CliffordGroup /:
 GroupElements @ CliffordGroup[{_?QubitQ, __?QubitQ}] :=
   Message[CliffordGroup::toobig]
 
@@ -195,6 +247,86 @@ GroupElements @ CliffordGroup[{S_?QubitQ}] := Module[
  ]
 
 (**** </CliffordGroup> ****)
+
+
+(**** <GottesmanVector> ****)
+
+GottesmanVector::usage = "Gottesmann[op] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on n (unlabeled) qubits.\nGottesmann[op, {S1,S2,...,Sn}] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on the (labeled) qubits {S1, S2, ..., Sn}."
+
+GottesmanVector[z_?CommutativeQ op_Pauli] := GottesmanVector[op]
+
+GottesmanVector[op_Pauli] := Flatten @ ReplaceAll[
+  List @@ op,
+  { 0 -> {0, 0},
+    1 -> {0, 1},
+    2 -> {1, 1},
+    3 -> {1, 0} }
+ ]
+
+GottesmanVector[z_?CommutativeQ, ss:{__?QubitQ}] :=
+  GottesmanVector[Pauli @@ ConstantArray[0, Length @ ss]]
+
+GottesmanVector[z_?CommutativeQ op_?QubitQ, ss:{__?QubitQ}] :=
+  GottesmanVector[op, ss]
+
+GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := Module[
+  { aa = Thread[FlavorNone[ss] -> 0],
+    bb = FlavorMute[op] -> FlavorLast[op] },
+  GottesmanVector[Pauli @@ Values @ Join[Association @ aa, Association[bb]]]
+ ]
+
+HoldPattern @
+  GottesmanVector[z_?CommutativeQ Multiply[op__?QubitQ], ss:{__?QubitQ}] :=
+  GottesmanVector[Multiply[op], ss]
+
+HoldPattern @ GottesmanVector[Multiply[op__?QubitQ], ss:{__?QubitQ}] :=
+  Module[
+    { aa = Thread[FlavorNone[ss] -> 0],
+      bb = Thread[FlavorMute @ {op} -> FlavorLast @ {op}] },
+    GottesmanVector[Pauli @@ Values @ Join[Association @ aa, Association @ bb]]
+   ]
+
+GottesmanVector[expr_] := GottesmanVector[expr, Qubits @ expr] /;
+  FreeQ[expr, _Pauli]
+
+
+FromGottesmanVector::usage = "FromGottesmanVector[vec] returns the Pauli operator on unlabeled qubits representing the coset corresponding to the GottesmanVector vec in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\), where n is the number of (unlabeled) qubits.\nFromGottesmanVector[vec, {S1,S2,...,Sn}] returns the Pauli operator on qubits {S1,S2,...,Sn} representing the coset corresponding to the GottesmanVector vec in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\)."
+
+FromGottesmanVector::wrong = "Invalid Gottesman vector ``."
+
+FromGottesmanVector[vec:{(0|1)..}] :=
+  Message[FromGottesmanVector::wrong, vec] /;
+  OddQ[Length @ vec]
+
+FromGottesmanVector[vec:{(0|1)..}] := Pauli @@ ReplaceAll[
+  Partition[vec, 2],
+  { {0, 0} -> 0,
+    {0, 1} -> 1,
+    {1, 1} -> 2,
+    {1, 0} -> 3 }
+ ]
+
+
+FromGottesmanVector[vec:{(0|1)..}, ss:{__?QubitQ}] :=
+  Message[FromGottesmanVector::wrong, vec] /;
+  Length[vec] != 2 Length[ss]
+
+FromGottesmanVector[vec:{(0|1)..}, S_?QubitQ] :=
+  FromGottesmanVector[vec, {S}]
+
+FromGottesmanVector[vec:{(0|1)..}, ss:{__?QubitQ}] := Multiply @@ MapThread[
+  Construct,
+  { ss,
+    ReplaceAll[
+      Partition[vec, 2],
+      { {0, 0} -> 0,
+        {0, 1} -> 1,
+        {1, 1} -> 2,
+        {1, 0} -> 3 }
+     ] }
+ ]
+
+(**** </GottesmanVector> ****)
 
 
 End[]
