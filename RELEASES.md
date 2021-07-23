@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.9.8
+
+- New functions: CommonEigensystem, CommonEigenvalues, CommonEigenvectors.
+- A change in GotttesmanVector and FromGottesmanVector.
+
 ## v1.9.6
 
 - New package Stabilizer for stabilizer formalism.
