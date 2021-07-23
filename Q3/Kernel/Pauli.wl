@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.78 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-30 10:45:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.83 $"][[2]], " (",
+  StringSplit["$Date: 2021-07-21 16:02:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -24,6 +24,8 @@ BeginPackage["Q3`"]
 { ExpressionFor, TheExpression };
 
 { ProperSystem, ProperValues, ProperStates };
+
+{ CommonEigensystem, CommonEigenvectors, CommonEigenvalues };
 
 { HermitianProduct, HermitianNorm };
 
@@ -1586,6 +1588,51 @@ ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
     Return @ Flatten @ Transpose @ ConstantArray[val, Times @@ Dimension[rr]]
    ];
  ]
+
+
+(**** <CommonEigensystem> ****)
+
+CommonEigensystem::usage = "CommonEigensystem[{m1, m2, ...}] finds the simultaneous eigenvectors and corresponding eigenvales of the mutually commuting square matrices."
+
+CommonEigenvectors::usage = "CommonEigenvectors[{m1, m2, ...}] finds the simultaneous eigenvectors of the mutually commuting square matrices."
+
+CommonEigenvalues::usage = "CommonEigenvalues[{m1, m2, ...}] finds the simultaneous eigenvalues of the mutually commuting square matrices."
+
+CommonEigensystem[mm:{__?MatrixQ}] := Module[
+  { id = IdentityMatrix[Length @ First @ mm],
+    val, vec },
+  { val, vec } = Transpose @ FoldPairList[blockEigensystem, {id}, mm, Identity];
+  { Transpose @ val, Catenate @ Last @ vec }
+ ]
+
+CommonEigenvalues[mm:{__?MatrixQ}] := Module[
+  { id = IdentityMatrix[Length @ First @ mm] },
+  Transpose @ FoldPairList[blockEigensystem, {id}, mm]
+ ]
+
+CommonEigenvectors[mm:{__?MatrixQ}] := Module[
+  { id = IdentityMatrix[Length @ First @ mm] },
+  Catenate @ FoldPair[blockEigensystem, {id}, mm, Last]
+ ]
+
+
+blockEigensystem[bs:{__?MatrixQ}, mat_?MatrixQ] := Module[
+  { sys, val, vec },
+  sys = Transpose @ Map[blockEigensystem[#, mat]&, bs];
+  {val, vec} = Catenate /@ sys;
+  {Catenate @ val, vec}
+ ]
+
+blockEigensystem[bs_?MatrixQ, mat_?MatrixQ] := Module[
+  { sys, val, vec },
+  sys = Transpose @ Eigensystem[Conjugate[bs].mat.Transpose[bs]];
+  {val, vec} = Transpose[GatherBy[sys, First], {2, 3, 1}];
+  vec = Map[Normalize, vec, {2}] . bs;
+  {val, vec}
+ ]
+(* The basis in bs is assumed to be orthonormal. *)
+
+(**** </CommonEigensystem> ****)
 
 
 Parity::usage = "Parity[op] represents the parity operator of the species op. For a particle (Boson or Fermion) op, it refers to the even-odd parity of the occupation number. For a Qubit, it refers to the Pauli-Z.\nParity[{a, b, ...}] representts the overall parity of species a, b, ...."

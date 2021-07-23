@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Stabilizer`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.26 $"][[2]], " (",
-  StringSplit["$Date: 2021-07-19 10:39:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.30 $"][[2]], " (",
+  StringSplit["$Date: 2021-07-23 08:01:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,7 +14,8 @@ BeginPackage["Q3`"]
 
 { PauliGroup, CliffordGroup };
 
-{ GottesmanVector, FromGottesmanVector };
+{ GottesmanVector, FromGottesmanVector,
+  GottesmanTest };
 
 
 Begin["`Private`"]
@@ -130,8 +131,12 @@ GroupMultiplicationTable @ PauliGroup[1] = {
  }
 
 PauliGroup /:
-GroupMultiplicationTable @ PauliGroup[n_Integer] :=
-  Message[PauliGroup::todo]
+GroupMultiplicationTable @ PauliGroup[n_Integer] := Module[
+  { elm = GroupElements @ PauliGroup[n],
+    mat },
+  mat = Outer[Multiply, elm, elm];
+  Map[First @ FirstPosition[elm, #]&, mat, {2}]
+ ]
 
 PauliGroup /:
 GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=
@@ -253,38 +258,37 @@ GroupElements @ CliffordGroup[{S_?QubitQ}] := Module[
 
 GottesmanVector::usage = "Gottesmann[op] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on n (unlabeled) qubits.\nGottesmann[op, {S1,S2,...,Sn}] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on the (labeled) qubits {S1, S2, ..., Sn}."
 
-GottesmanVector[z_?CommutativeQ op_Pauli] := GottesmanVector[op]
+GottesmanVector[_?CommutativeQ op_] := GottesmanVector[op]
 
 GottesmanVector[op_Pauli] := Flatten @ ReplaceAll[
   List @@ op,
   { 0 -> {0, 0},
-    1 -> {0, 1},
+    1 -> {1, 0},
     2 -> {1, 1},
-    3 -> {1, 0} }
+    3 -> {0, 1} }
  ]
 
-GottesmanVector[z_?CommutativeQ, ss:{__?QubitQ}] :=
+GottesmanVector[_?CommutativeQ, ss:{__?QubitQ}] :=
   GottesmanVector[Pauli @@ ConstantArray[0, Length @ ss]]
 
-GottesmanVector[z_?CommutativeQ op_?QubitQ, ss:{__?QubitQ}] :=
+GottesmanVector[_?CommutativeQ op_, ss:{__?QubitQ}] :=
   GottesmanVector[op, ss]
 
-GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := Module[
-  { aa = Thread[FlavorNone[ss] -> 0],
-    bb = FlavorMute[op] -> FlavorLast[op] },
-  GottesmanVector[Pauli @@ Values @ Join[Association @ aa, Association[bb]]]
+GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := With[
+  { qq = FlavorNone[ss] },
+  GottesmanVector @ Apply[
+    Pauli,
+    qq /. {FlavorMute[op] -> FlavorLast[op]} /. Thread[qq -> 0]
+   ]
  ]
 
-HoldPattern @
-  GottesmanVector[z_?CommutativeQ Multiply[op__?QubitQ], ss:{__?QubitQ}] :=
-  GottesmanVector[Multiply[op], ss]
-
-HoldPattern @ GottesmanVector[Multiply[op__?QubitQ], ss:{__?QubitQ}] :=
-  Module[
-    { aa = Thread[FlavorNone[ss] -> 0],
-      bb = Thread[FlavorMute @ {op} -> FlavorLast @ {op}] },
-    GottesmanVector[Pauli @@ Values @ Join[Association @ aa, Association @ bb]]
+HoldPattern @ GottesmanVector[Multiply[op__?QubitQ], ss:{__?QubitQ}] := With[
+  { qq = FlavorNone[ss] },
+  GottesmanVector @ Apply[
+    Pauli,
+    qq /. Thread[FlavorMute @ {op} -> FlavorLast @ {op}] /. Thread[qq -> 0]
    ]
+ ]
 
 GottesmanVector[expr_] := GottesmanVector[expr, Qubits @ expr] /;
   FreeQ[expr, _Pauli]
@@ -301,9 +305,9 @@ FromGottesmanVector[vec:{(0|1)..}] :=
 FromGottesmanVector[vec:{(0|1)..}] := Pauli @@ ReplaceAll[
   Partition[vec, 2],
   { {0, 0} -> 0,
-    {0, 1} -> 1,
+    {1, 0} -> 1,
     {1, 1} -> 2,
-    {1, 0} -> 3 }
+    {0, 1} -> 3 }
  ]
 
 
@@ -320,10 +324,19 @@ FromGottesmanVector[vec:{(0|1)..}, ss:{__?QubitQ}] := Multiply @@ MapThread[
     ReplaceAll[
       Partition[vec, 2],
       { {0, 0} -> 0,
-        {0, 1} -> 1,
+        {1, 0} -> 1,
         {1, 1} -> 2,
-        {1, 0} -> 3 }
+        {0, 1} -> 3 }
      ] }
+ ]
+
+
+GottesmanTest::usage = "GottesmanTest[a, b] returns 1 if the two operators a and b commute with each other, -1 if they anti-commute, and 0 otherwise."
+
+GottesmanTest[a_, b_] := If[
+  TrueQ[Commutator[a, b] == 0],
+  1,
+  If[Anticommutator[a, b] == 0, -1, 0, 0]
  ]
 
 (**** </GottesmanVector> ****)

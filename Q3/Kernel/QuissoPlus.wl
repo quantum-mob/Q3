@@ -7,17 +7,16 @@ Needs["Q3`"]
 
 BeginPackage["Q3`"]
 
-`Quisso`$Version = StringJoin[
+`QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.3 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.4 $"][[2]], " (",
+  StringSplit["$Date: 2021-07-21 15:16:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 ClearAll @@ Evaluate @ Unprotect[
   QuissoCorrelationTensor, QuissoCorrelationMatrix,
-  QuissoNormalState,
-  CommonEigensystem
+  QuissoNormalState
  ];
 
 
@@ -113,22 +112,6 @@ QuissoCorrelationMatrix[T_] := Module[
   Power[2,2n] CC (* make elements order of unity *)
  ]
 
-
-CommonEigensystem::usage = "CommonEigensystem[{m$1, m$2, ...}] finds the simultaneous eigenvectors and corresponding eigenvales of the mutually commuting square matrices."
-
-CommonEigensystem[ mm:{__?MatrixQ} ] := Module[
-  { val, U },
-  U = Fold[ CommonEigensystem, IdentityMatrix[Length @ First @ mm], mm ];
-  If[ Det[U] < 0, U[[All,3]] *= -1 ];
-  val = Map[ Diagonal[ Topple[U].#.U ]&, mm ];
-  {val, U}
- ]
-
-CommonEigensystem[U_?MatrixQ, m_?MatrixQ] := Module[
-  { val, vec },
-  { val, vec } = Eigensystem[ Topple[U].m.U ];
-  U.Transpose[vec]
- ]
 
 End[]
 
