@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.83 $"][[2]], " (",
-  StringSplit["$Date: 2021-07-21 16:02:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.84 $"][[2]], " (",
+  StringSplit["$Date: 2021-07-25 23:03:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -663,9 +663,7 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
   ExpressionFor[MatrixExp[mm], ss]
  ] /; ContainsOnly[
    Kind @ NonCommutativeSpecies[expr],
-   { Q3`Quisso`Qubit,
-     Q3`Quisso`Qudit,
-     Spin }
+   {Qubit, Qudit, Spin}
   ]
 (* NOTE: In principle, it can handle fermions as well. But fermions have been
    excluded here because the method of converting first to matrix and back to
