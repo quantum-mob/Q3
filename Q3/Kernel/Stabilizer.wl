@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Stabilizer`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.30 $"][[2]], " (",
-  StringSplit["$Date: 2021-07-23 08:01:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.31 $"][[2]], " (",
+  StringSplit["$Date: 2021-07-27 14:04:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,6 +16,8 @@ BeginPackage["Q3`"]
 
 { GottesmanVector, FromGottesmanVector,
   GottesmanTest };
+
+{ Stabilizer };
 
 
 Begin["`Private`"]
@@ -337,6 +339,18 @@ GottesmanTest[a_, b_] := If[
   TrueQ[Commutator[a, b] == 0],
   1,
   If[Anticommutator[a, b] == 0, -1, 0, 0]
+ ]
+
+
+Stabilizer::usage = "Stabilizer[graph] returns a generating set of the stabilizer of the graph state associated with the graph.\nStabilizer[graph, vtx] gives the operator associated with the vertex vtx that stabilize the graph state associated with graph."
+
+Stabilizer[grp_Graph] := Map[Stabilizer[grp, #] &, VertexList[grp]]
+
+Stabilizer[grp_Graph, vtx_] := Module[
+  { new = If[FlavorLast[vtx] === None, Drop[vtx, -1], vtx],
+    adj },
+  adj = AdjacencyList[grp, new|new[None]];
+  vtx[1] ** Apply[Multiply, Through[adj[3]]]
  ]
 
 (**** </GottesmanVector> ****)

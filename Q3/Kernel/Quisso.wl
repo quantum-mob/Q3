@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.67 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-21 16:37:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.69 $"][[2]], " (",
+  StringSplit["$Date: 2021-07-27 20:33:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1616,7 +1616,7 @@ Measurement[vec_, S_?QubitQ] := Module[
     expr = Elaborate @ vec,
     vx, v0, v1, p0, p1 },
   vx = Cases[expr, v:Ket[_Association] :> v[b], Infinity];
-  vx = DeleteCases[ vx, (0|1) ];
+  vx = DeleteCases[vx, (0|1)];
   If[ vx == {},
     Null,
     Message[Measurement::novec, expr]; Return[0],
@@ -1796,8 +1796,13 @@ Kind[ QuantumCircuit[__] ] = NonCommutative
 QuantumCircuit /:
 MultiplyGenus[ QuantumCircuit[__] ] := "QuantumCircuit"
 
+HoldPattern @ Multiply[
+  Longest[pre___],
+  QuantumCircuit[elm__], Longest[v__Ket],
+  post___] := Multiply[pre, Elaborate @ QuantumCircuit[v, elm], post]
+  
 HoldPattern @ Multiply[pre___, Longest[qc__QuantumCircuit], post___] :=
-  Multiply[pre, Multiply @@ Map[Elaborate] @ {qc}, post]
+  Multiply[pre, Multiply @@ Map[Elaborate, {qc}], post]
 
 (*
  * User Interface

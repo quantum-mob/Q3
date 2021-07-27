@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.9.10
+
+- QuantumCircuit[...] ** Ket[...] is handled better.
+
 ## v1.9.8
 
 - New functions: CommonEigensystem, CommonEigenvalues, CommonEigenvectors.

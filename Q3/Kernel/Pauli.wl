@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.84 $"][[2]], " (",
-  StringSplit["$Date: 2021-07-25 23:03:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.85 $"][[2]], " (",
+  StringSplit["$Date: 2021-07-27 10:29:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -13,7 +13,7 @@ BeginPackage["Q3`"]
 
 { State, TheKet, TheBra, TheState };
 
-{ KetChop, KetRule, KetTrim, VerifyKet };
+{ KetChop, KetPurge, KetRule, KetTrim, VerifyKet };
 
 { DefaultForm, LogicalForm, ProductForm, SimpleForm, SpinForm };
 
@@ -75,7 +75,7 @@ BeginPackage["Q3`"]
 
 { TraceNorm, TraceDistance, Fidelity };
 
-{ Purification, Purge };
+{ Purification, Snapping };
 
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
@@ -602,6 +602,14 @@ KetChop[0. + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
 KetChop[Complex[0., 0.] + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
 
 KetChop[expr_] := expr
+
+
+KetPurge::usage = "KetPurge[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed."
+
+KetPurge[v_Ket, S_?SpeciesQ] := KetPurge[v, {S}]
+
+KetPurge[Ket[a_Association], ss:{__?SpeciesQ}] :=
+  Ket @ KeyDrop[a, FlavorNone @ ss]
 
 (**** </Ket & Bra> ****)
 
@@ -2761,9 +2769,9 @@ Purification[m_?MatrixQ] := Module[
  ]
 
 
-Purge::usage = "Purge[m] returns the pure state closest to the mixed state m.\nIt is different from purification."
+Snapping::usage = "Snapping[m] returns the pure state closest to the mixed state m.\nIt is different from purification."
 
-Purge[m_?MatrixQ] := Module[
+Snapping[m_?MatrixQ] := Module[
   {val, vec},
   {val, vec} = Eigensystem[m]; (* m is suppposed to be Hermitian. *)
   {val, vec} = Last @ Sort @ Transpose @ {val, vec};
