@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.69 $"][[2]], " (",
-  StringSplit["$Date: 2021-07-27 20:33:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.70 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-01 18:32:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1626,8 +1626,8 @@ Measurement[vec_, S_?QubitQ] := Module[
   v0 = expr /. { v:Ket[_Association] :> (1-v[b]) v };
   v1 = expr /. { v:Ket[_Association] :> (v[b]) v };
 
-  p0 = Simplify[ Dagger[v0] ** v0 ];
-  p1 = Simplify[ Dagger[v1] ** v1 ];
+  p0 = Re @ Simplify[ Dagger[v0] ** v0 ];
+  p1 = Re @ Simplify[ Dagger[v1] ** v1 ];
   
   If [ r < N[p0 / (p0 + p1)],
     v0 / Sqrt[p0],
