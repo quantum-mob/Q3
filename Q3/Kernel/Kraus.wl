@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.32 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 21:05:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.34 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-02 09:53:14+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 
@@ -102,6 +102,39 @@ ChoiMatrix[ops:{__?MatrixQ}, cc_?VectorQ] :=
 
 ChoiMatrix[ops:{__?MatrixQ}, cc_?MatrixQ] :=
   Apply[Plus, cc * Outer[ChoiMatrix, ops, ops, 1]] /; ArrayQ @ ops
+
+
+ChoiMatrix[most__, S_?SpeciesQ] := ChoiMatrix[most, FlavorNone @ {S}]
+
+ChoiMatrix[most__, ss:{__?SpeciesQ}] :=
+  ChoiMatrix[most, FlavorNone @ ss] /;
+  Not @ ContainsOnly[FlavorLast @ ss, {None}]
+
+
+ChoiMatrix[ops:{__}, ss:{__?SpeciesQ}] := With[
+  { qq = NonCommutativeSpecies @ Join[ops, ss] },
+  ChoiMatrix @ Matrix[ops, qq]
+ ]
+
+ChoiMatrix[ops:{__}] := With[
+  { qq = NonCommutativeSpecies[ops] },
+  ChoiMatrix @ Matrix[ops, qq]
+ ] /; FreeQ[ops, _Pauli]
+
+ChoiMatrix[ops:{__}] := ChoiMatrix @ Matrix[ops]
+
+
+ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ), ss:{__?SpeciesQ}] := With[
+  { qq = NonCommutativeSpecies @ Join[ops, ss] },
+  ChoiMatrix[Matrix[ops, qq], cc]
+ ]
+
+ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := With[
+  { qq = NonCommutativeSpecies[ops] },
+  ChoiMatrix[Matrix[ops, qq], cc]
+ ] /; FreeQ[ops, _Pauli]
+
+ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := ChoiMatrix[Matrix[ops], cc]
 
 
 KrausProduct::usage = "KrausProduct[a, b] returns the trace Hermitian product (also known as the Frobenius product) of two matrices (operators) a and b."

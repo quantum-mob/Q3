@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.9.12
+
+- A bug fix concerning S[..., 10] and S[..., 11] inside Multiply[...].
+
 ## v1.9.10
 
 - QuantumCircuit[...] ** Ket[...] is handled better.

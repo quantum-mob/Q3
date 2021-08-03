@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.70 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-01 18:32:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.72 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-02 18:33:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -258,6 +258,22 @@ HoldPattern @ Multiply[ x___, a_?QubitQ[j___,8], Ket[b_Association], y___ ] :=
   Multiply[x, a[j,Octant], Ket[b], y]
 
 
+HoldPattern @
+  Multiply[ pre___, a_?QubitQ[j___,10], Ket[b_Association], post___ ] :=
+  Multiply[pre, Ket[b], post] /; b @ a[j, None] == 0
+
+HoldPattern @
+  Multiply[ pre___, a_?QubitQ[j___,10], Ket[b_Association], post___ ] :=
+  0 /; b @ a[j, None] == 1
+
+HoldPattern @
+  Multiply[ pre___, a_?QubitQ[j___,11], Ket[b_Association], post___ ] :=
+  Multiply[pre, Ket[b], post] /; b @ a[j, None] == 1
+
+HoldPattern @
+  Multiply[ pre___, a_?QubitQ[j___,11], Ket[b_Association], post___ ] :=
+  0 /; b @ a[j, None] == 0
+
 (* Gates on Bra *)
 
 HoldPattern @ Multiply[ x___, Bra[v_Association], G_?QubitQ, y___ ] :=
@@ -377,16 +393,22 @@ HoldPattern @ Multiply[ pre___,
   Multiply[pre, 1/2 - x[j,3]/2, post]
 
 
-(* Hadamard, Quadrant, Octant *)
+(* Hadamard, Quadrant, Octant, Projectors *)
 
-HoldPattern @ Multiply[ pre___, x_Symbol?QubitQ[j___,6], post___ ] :=
+HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,6], post___] :=
   Multiply[pre, x[j,Hadamard], post]
 
-HoldPattern @ Multiply[ pre___, x_Symbol?QubitQ[j___,7], post___ ] :=
+HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,7], post___] :=
   Multiply[pre, x[j,Quadrant], post]
 
-HoldPattern @ Multiply[ pre___, x_Symbol?QubitQ[j___,8], post___ ] :=
+HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,8], post___] :=
   Multiply[pre, x[j,Octant], post]
+
+HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,10], post___] :=
+  Multiply[pre, (1 + x[j,3])/2, post]
+
+HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,11], post___] :=
+  Multiply[pre, (1 - x[j,3])/2, post]
 
 
 (* General Rules *)
