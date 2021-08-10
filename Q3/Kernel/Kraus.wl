@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.34 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-02 09:53:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.35 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-09 09:33:21+09 $"][[2]], ") ",
   "Ha-Eum Kim, Mahn-Soo Choi"
  ];
 
@@ -342,7 +342,7 @@ LindbladStationary[opH_, {opL__}] := LindbladStationary[{opH, opL}]
 
 LindbladStationary[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
   { len = Length @ opH,
-    mat, gen, lb, rho },
+    mat, gen, rho, lbs },
   { mat, gen } = LindbladConvert @ {opH, opL};
   rho = - Inverse[mat] . gen;
   rho = Prepend[rho, 1/Sqrt[len]];

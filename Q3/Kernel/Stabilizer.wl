@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Stabilizer`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.31 $"][[2]], " (",
-  StringSplit["$Date: 2021-07-27 14:04:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.56 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-09 09:32:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -15,9 +15,17 @@ BeginPackage["Q3`"]
 { PauliGroup, CliffordGroup };
 
 { GottesmanVector, FromGottesmanVector,
-  GottesmanTest };
+  GottesmanTest,
+  GottesmanInner,
+  GottesmanBasis };
 
 { Stabilizer };
+
+{ BinarySymplecticGroup,
+  BinarySymplecticGroupElement };
+
+{ Transvection,
+  FindTransvections };
 
 
 Begin["`Private`"]
@@ -25,27 +33,6 @@ Begin["`Private`"]
 (**** <PauliForm> ****)
 
 PauliForm::usage = "PauliForm[expr] rewrites expr in a more conventional form, where the Pauli operators are denoted by I, X, Y, and Z."
-
-PauliForm[expr_List] := Map[PauliForm, expr] /; Not @ FreeQ[expr, _Pauli]
-
-PauliForm[expr_Plus] := Plus @@ Map[PauliForm, List @@ expr] /;
-  Not @ FreeQ[expr, _Pauli]
-
-PauliForm[z_?CommutativeQ op_] := z * PauliForm[op]
-
-PauliForm[op_Pauli] :=
-  CircleTimes @@ ReplaceAll[op, {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z"}]
-
-
-PauliForm[expr_List, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, expr]
-
-PauliForm[expr_Plus, qq:{__?QubitQ}] :=
-  Plus @@ PauliForm[List @@ expr, qq]
-
-PauliForm[z_?CommutativeQ, qq:{__?QubitQ}] :=
-  z * PauliForm[Multiply @@ Through @ qq[0], qq]
-
-PauliForm[z_?CommutativeQ op_, qq:{__?QubitQ}] := z * PauliForm[op, qq]
 
 HoldPattern @ PauliForm[Multiply[ss__?QubitQ], qq:{__?QubitQ}] :=
   PauliForm[ss, qq]
@@ -61,6 +48,25 @@ PauliForm[ss__?QubitQ, qq:{__?QubitQ}] := Module[
  ]
 
 PauliForm[expr_] := PauliForm[expr, Qubits @ expr] /; FreeQ[expr, _Pauli]
+
+PauliForm[assc_Association, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, assc]
+(* NOTE: For some unknown reason, a special handling is required for
+   Association[...]. *)
+
+PauliForm[expr_, qq:{__?QubitQ}] := expr /. {
+  HoldPattern @ Multiply[ss__?QubitQ] :> PauliForm[ss, qq],
+  op_?QubitQ :> PauliForm[op, qq]
+ }
+
+
+PauliForm[op_Pauli] :=
+  CircleTimes @@ ReplaceAll[op, {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z"}]
+
+PauliForm[assc_Association] := Map[PauliForm, assc]
+(* NOTE: For some unknown reason, a special handling is required for
+   Association[...]. *)
+
+PauliForm[expr_] := expr /. { op_Pauli :> PauliForm[op] }
 
 (**** </PauliForm> ****)
 
@@ -162,11 +168,11 @@ CliffordGroup[ss:{__?QubitQ}] := CliffordGroup[FlavorNone @ ss] /;
 
 
 CliffordGroup /:
-GroupOrder @ CliffordGroup[1] = 192 
-
-CliffordGroup /:
-GroupOrder @ CliffordGroup[n_Integer] :=
-  Message[CliffordGroup::todo] /; n > 1
+GroupOrder @ CliffordGroup[n_Integer] := Module[
+  {j},
+  Power[2, n^2 + 2*n + 3] * Product[4^j-1, {j, 1, n}]
+ ]
+(* NOTE: See Koenig (2014a). *)
 
 CliffordGroup /:
 GroupOrder @ CliffordGroup[ss:{__?QubitQ}] :=
@@ -342,6 +348,54 @@ GottesmanTest[a_, b_] := If[
  ]
 
 
+GottesmanInner::usage = "GottesmanInner[v, w] gives the symplectic inner product in the Gottesman vector space."
+
+GottesmanInner::incon = "Inconsistent vectors `1` and `2`."
+
+GottesmanInner::odd = "Odd-dimensional vectors `1` and `2`."
+
+GottesmanInner[v_?VectorQ, w_?VectorQ] :=
+  Mod[Dot[v, Flatten[Reverse /@ Partition[w, 2]]], 2] /;
+  ArrayQ[{v, w}] && EvenQ[Length @ v]
+
+GottesmanInner[v_?VectorQ, w_?VectorQ] := (
+  Message[GottesmanInner::odd, v, w];
+  0 ) /; ArrayQ[{v, w}] && OddQ[Length @ v]
+
+GottesmanInner[v_?VectorQ, w_?VectorQ] := (
+  Message[GottesmanInner::incon, v, w];
+  0 ) /; Not @ ArrayQ @ {v, w}
+
+GottesmanBasis::usage = "GottesmanBasis[{v1, v2, \[Ellipsis]}] returns a symplectic basis of the vector space spanned by {v1, v2, \[Ellipsis]}.\nGottesmanBasis[v] returns a symplectic basis {v, \[Ellipsis]} spanning the Gottesman vector space containing v.\nGottesmanBasis[n] returns the standard basis of the n-qubit (2n-dimensional) Gottesman vector space, which happens to be a symplectic basis with respect to GottesmanInner."
+
+GottesmanBasis[bs:{__?VectorQ}] := Module[
+  { v = First @ bs,
+    w, new },
+  w = Select[bs, GottesmanInner[v, #]==1&];
+  If[ Length[w] == 0,
+    Return[bs],
+    w = First[w]
+   ];
+  new = Map[
+    Mod[# + w * GottesmanInner[v, #] + v * GottesmanInner[w, #], 2]&,
+    DeleteCases[Rest @ bs, w]
+   ];
+  Join[{v, w}, new]
+ ] /; ArrayQ @ bs
+
+GottesmanBasis[v_?VectorQ] := One[Length @ v] /;
+  v == UnitVector[Length @ v, 1]
+
+GottesmanBasis[v_?VectorQ] := With[
+  { id = IdentityMatrix[Length @ v] },
+  GottesmanBasis @ Join[{v}, Rest @ id]
+ ]
+
+GottesmanBasis[n_Integer] := One[2*n] /; n > 0
+
+(**** </GottesmanVector> ****)
+
+
 Stabilizer::usage = "Stabilizer[graph] returns a generating set of the stabilizer of the graph state associated with the graph.\nStabilizer[graph, vtx] gives the operator associated with the vertex vtx that stabilize the graph state associated with graph."
 
 Stabilizer[grp_Graph] := Map[Stabilizer[grp, #] &, VertexList[grp]]
@@ -353,7 +407,148 @@ Stabilizer[grp_Graph, vtx_] := Module[
   vtx[1] ** Apply[Multiply, Through[adj[3]]]
  ]
 
-(**** </GottesmanVector> ****)
+
+(**** <BinarySymplecticGroup> ****)
+
+BinarySymplecticGroup::usage = "BinarySymplecticGroup[n] represents the symplectic group Sp(2n, {0, 1}), that is, the group of 2n\[Times]2n symplectic matrices with elements 0 or 1."
+
+BinarySymplecticGroup::toobig = "Too many elements to list in the binary symplectic group on two or more qubits."
+
+
+BinarySymplecticGroup /:
+GroupOrder @ BinarySymplecticGroup[n_Integer] := Module[
+  { j },
+  Power[2, n^2] * Product[4^j - 1, {j, 1, n}]
+ ] /; n > 0
+
+
+BinarySymplecticGroup /:
+GroupElements @ BinarySymplecticGroup[1] :=
+  BinarySymplecticGroupElement[1, Range[6]]
+
+BinarySymplecticGroup /:
+GroupElements @ BinarySymplecticGroup[n_Integer] := (
+  Message[BinarySymplecticGroup::toobig];
+  BinarySymplecticGroupElement[2, Range[6]]
+ )
+
+
+BinarySymplecticGroupElement::usage = "BinarySymplecticGroupElement[n, j] returns the j'th symplectic matrix in BinarySymplecticGroup[n], where j=1, 2, \[Ellipsis], (group order)."
+
+SetAttributes[BinarySymplecticGroupElement, Listable];
+
+(* See Koenig (2014a) for the algorithm. *)
+BinarySymplecticGroupElement[n_Integer, j_Integer] := Module[
+  { nn = 2*n, s, k,
+    js, e1, f1, h0, tt, bb, ep, id, gg },
+  (* step 1 *)
+  s = BitShiftLeft[1, nn] - 1;
+  k = Mod[j, s, 1]; (* NOTE: j start from 1. *)
+  js = Quotient[j-1, s]; (* NOTE: j start from 1. *)
+
+  (* step 2 *)
+  f1 = IntegerDigits[k, 2, nn];
+
+  (* step 3 *)
+  e1 = UnitVector[nn, 1];
+  tt = FindTransvections[e1, f1];
+
+  (* step 4 *)
+  bb = IntegerDigits[Mod[js, BitShiftLeft[1, nn-1]], 2, nn-1];
+
+  (* step 5 *)
+  ep = Join[e1[[;;2]], Rest @ bb];
+  h0 = Transvection[tt[[2]], Transvection[tt[[1]], ep]];
+
+  (* step 6 *)
+  If[First[bb] == 1, f1 *= 0];
+
+  (* step 7 *)
+  id = One[2];
+  gg = If[ n == 1,
+    id,
+    CirclePlus[
+      id,
+      BinarySymplecticGroupElement[n-1, 1 + BitShiftRight[js, nn-1]]
+      (* NOTE: j starts from 1. *)
+     ]
+   ];
+  Map[
+    Transvection[f1,
+      Transvection[h0,
+        Transvection[tt[[2]],
+          Transvection[tt[[1]], #]]]]&,
+    gg
+   ]
+ ] /; n > 0 && (1 <= j <= GroupOrder[BinarySymplecticGroup[n]])
+
+(**** </BinarySymplecticGroup> ****)
+
+
+
+(**** <Transvection> ****)
+(* See Koenig (2014a) *)
+
+Transvection::usage = "Transvection[v, w] gives w + v\[LeftAngleBracket]v,w\[RightAngleBracket], where \[LeftAngleBracket]\[CenterDot],\[CenterDot]\[RightAngleBracket] is the Gottesman inner product. It is a symplectic Householder transformation."
+
+Transvection::incon = "Inconsistent vectors `` and ``."
+
+Transvection[v_?VectorQ, w_?VectorQ] :=
+  Mod[w + v * GottesmanInner[v, w], 2] /;
+  ArrayQ @ {v, w}
+
+Transvection[v_?VectorQ, w_?VectorQ] := (
+  Message[Transvection::incon, v, w];
+  w
+ )
+
+
+FindTransvections::usage = "FindTransvections[v, w] returns a list of two vectors {u1, u2} such that w = Transvection[u1, Transvection[u2, v]]."
+
+FindTransvections[m_?MatrixQ] := FindTransvections[m[[1]], m[[2]]]
+
+FindTransvections[x_?VectorQ, y_?VectorQ] := Zero[2, Length @ x] /; x == y
+
+FindTransvections[x_?VectorQ, y_?VectorQ] := {
+  Mod[x + y, 2],
+  Zero[Length @ x]
+ } /; GottesmanInner[x, y] == 1
+
+FindTransvections[x_?VectorQ, y_?VectorQ] := Module[
+  { assoc, k, z },
+  assoc = PositionIndex @ Transpose @ Map[
+    Positive,
+    {Total /@ Partition[x, 2], Total /@ Partition[y, 2]},
+    {2}
+   ];
+  z = Zero[Length @ x];
+  If[ KeyExistsQ[assoc, {True, True}],
+    k = First @ assoc @ {True, True};
+    z[[2*k-1;;2*k]] = solveBinaryEq[x[[2*k-1;;2*k]], y[[2*k-1;;2*k]]],
+    k = First @ assoc @ {True, False};
+    z[[2*k-1;;2*k]] = solveBinaryEq[x[[2*k-1;;2*k]]];
+    k = First @ assoc @ {False, True};
+    z[[2*k-1;;2*k]] = solveBinaryEq[y[[2*k-1;;2*k]]];
+   ];
+  {Mod[x+z, 2], Mod[y+z, 2]}
+ ] /; ArrayQ @ {x, y}
+
+(* Solves the set of equations
+   x1 * b + x2 * a = 1;
+   y1 * b + y2 * a = 1;
+   *)
+solveBinaryEq[x:{_, _}, y:{_, _}] := Module[
+  { z = Mod[x + y, 2] },
+  If[Total[z] == 0, z[[2]] = 1];
+  z
+ ]
+
+(* Solve the quation
+   x1 * b + x2 * a = 1
+   *)
+solveBinaryEq[x:{_, _}] := If[First[x] == 0, {1, 0}, {0, 1}]
+
+(**** </Transvection> ****)
 
 
 End[]

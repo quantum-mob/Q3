@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Einstein`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.12 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.13 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-09 09:34:18+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -31,7 +31,7 @@ JordanWignerTransform[qq:{__?QubitQ} -> ff:{__?FermionQ}] := Module[
     xx = Through[Construct[qq, 1]],
     yy = Through[Construct[qq, 2]],
     zz = Through[Construct[qq, 3]],
-    cc, pp, rules },
+    cc, pp },
   pp = FoldList[Multiply, 1, Parity /@ Most[ff]];
   cc = pp ** ff;
   Join[
