@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.85 $"][[2]], " (",
-  StringSplit["$Date: 2021-07-27 10:29:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.88 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-12 19:25:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1040,7 +1040,7 @@ ExpressionFor[vec_?VectorQ, ss:{__?SpeciesQ}] := Module[
     bs = Basis @ ss },
   
   If[ nL == Length[vec], Null,
-    Message[Expression::incmpt, vec, FlavorNone @ ss];
+    Message[ExpressionFor::incmpt, vec, FlavorNone @ ss];
     Return[0];
    ];
   
@@ -2687,12 +2687,34 @@ Tensorize[v_?VectorQ] := Module[
 (**** </Tensorize> ****)
 
 
-PartialTranspose::usage = "..."
+PartialTranspose::usage = "PartialTranspose[mat, {i, j, \[Ellipsis]}] returns the partial transposition of the matrix mat with respect to the ith, jth, \[Ellipsis] qubits.\nPartialTranspose[mat, {m, n, \[Ellipsis]}, {i, j, \[Ellipsis]}] assumes subsystems of dimensions m, n, \[Ellipsis].\nPartialTranspose[expr, {s1, s2, \[Ellipsis]}] considers subsystems for the species {s1, s2, \[Ellipsis]}."
 
-PartialTranspose[m_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
-  { tns = Tensorize[m, Flatten @ Transpose @ {dd, dd}],
+PartialTranspose[mat_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
+  { tns = Tensorize[mat, Flatten @ Transpose @ {dd, dd}],
     cyc = Cycles @ Transpose @ {2*jj-1, 2*jj} },
   TensorFlatten @ Transpose[tns, cyc]
+ ]
+
+PartialTranspose[mat_?MatrixQ, jj:{___Integer}] :=
+  PartialTranspose[mat, ConstantArray[2, Log[2, Length @ mat]], jj]
+
+
+PartialTranspose[expr_, jj:{__Integer}] :=
+  ExpressionFor @ PartialTranspose[Matrix @ expr, jj] /;
+  Not @ FreeQ[expr, _Pauli]
+
+
+PartialTranspose[expr_, S_?SpeciesQ] := PartialTranspose[expr, {S}]
+
+PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
+  { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
+    ss = NonCommutativeSpecies[expr],
+    dd, jj, mm },
+  ss = Union[ss, rr];
+  dd = Dimension[ss];
+  jj = Flatten @ Map[FirstPosition[ss, #]&, rr];
+  mm = PartialTranspose[Matrix[expr, ss], dd, jj];
+  ExpressionFor[mm, ss]
  ]
 
 
@@ -2760,13 +2782,48 @@ PartialTrace[expr_, qq:{__?SpeciesQ}] := Module[
 (**** </PartialTrace> ****)
 
 
+(**** <Purification> ****)
+
 Purification::usage = "Purification[m] returns the purification of the mixed state m."
 
-Purification[m_?MatrixQ] := Module[
+Purification[mat_?MatrixQ] := Module[
   {val, vec},
-  {val, vec} = Eigensystem[m]; (* m is supposed to be Hermitian. *)
-  Sqrt[val] . MapThread[CircleTimes, {vec, One @ Dimensions @ m}]
+  {val, vec} = Eigensystem[mat];
+  vec = Normalize /@ vec;
+  Sqrt[val] . MapThread[CircleTimes, {vec, One @ Dimensions @ mat}]
  ]
+(* NOTE: mat is supposed to be Hermitian. *)
+(* NOTE: Normalize is necessary because Eigensystem does not give the
+   normalized eigenvectors for a matrix of exact numbers. *)
+
+Purification[rho_, ss:{__?SpeciesQ}, rr:{__?SpeciesQ}] :=
+  ExpressionFor[Purification @ Matrix[rho, ss], Join[ss, rr]]
+
+Purification[rho_, S_?SpeciesQ, rr:{__?SpeciesQ}] :=
+  Purification[rho, {S}, rr]
+
+Purification[rho_, ss:{__?SpeciesQ}, R_?SpeciesQ] :=
+  Purification[rho, ss, {R}]
+
+Purification[rho_, S_?SpeciesQ, R_?SpeciesQ] :=
+  Purification[rho, {S}, {R}]
+
+Purification[rho_, ss:{__?SpeciesQ}] := Purification @ Matrix[rho, ss]
+
+Purification[rho_, S_?SpeciesQ] := Purification[rho, FlavorNone @ {S}]
+
+Purification[rho_] := With[
+  { ss = NonCommutativeSpecies[rho] },
+  Purification[rho, ss]
+ ] /; FreeQ[rho, _Pauli]
+
+Purification[rho_] := ExpressionFor @ Purification @ Matrix[rho] /;
+  Not @ FreeQ[rho, _Pauli]
+
+Purification[z_?CommutativeQ] := ExpressionFor @ Purification[z*One[2]]
+(* NOTE: Single qubit is assumed. *)
+
+(**** </Purification> ****)
 
 
 Snapping::usage = "Snapping[m] returns the pure state closest to the mixed state m.\nIt is different from purification."
