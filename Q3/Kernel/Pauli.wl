@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.88 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-12 19:25:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.103 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-22 12:06:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -66,6 +66,7 @@ BeginPackage["Q3`"]
 { Parity, ParityEvenQ, ParityOddQ };
 
 { TensorFlatten, Tensorize, PartialTrace, PartialTranspose };
+{ ReducedMatrix, Reduced };
 
 { PauliDecompose, PauliCompose };
 { PauliDecomposeRL, PauliComposeRL };
@@ -604,12 +605,16 @@ KetChop[Complex[0., 0.] + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
 KetChop[expr_] := expr
 
 
-KetPurge::usage = "KetPurge[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed."
-
-KetPurge[v_Ket, S_?SpeciesQ] := KetPurge[v, {S}]
+KetPurge::usage = "KetPurge[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetPurge[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr."
 
 KetPurge[Ket[a_Association], ss:{__?SpeciesQ}] :=
   Ket @ KeyDrop[a, FlavorNone @ ss]
+
+KetPurge[expr_, ss:{__?SpeciesQ}] := expr /. {
+  v:Ket[_Association] :> KetPurge[v, ss]
+ }
+
+KetPurge[any_, S_?SpeciesQ] := KetPurge[any, {S}]
 
 (**** </Ket & Bra> ****)
 
@@ -1152,13 +1157,10 @@ BlochVector[Ket[]] := BlochVector @ {1, 0}
 BlochVector[z_?CommutativeQ Ket[]] := BlochVector @ {1, 0}
 
 BlochVector[expr_, q_?SpeciesQ] := Module[
-  { ss = NonCommutativeSpecies[expr],
-    qq = FlavorNone @ q,
-    cc },
+  { ss = NonCommutativeSpecies[expr] },
   If[ Length[ss] > 1,
-    cc = Complement[ss, {qq}];
-    BlochVector @ PartialTrace[expr, cc, None],
-    BlochVector @ Matrix[expr, qq]
+    BlochVector @ ReducedMatrix[expr, FlavorNone @ {q}],
+    BlochVector @ Matrix[expr, FlavorNone @ {q}]
    ]
  ]
 
@@ -1170,7 +1172,7 @@ BlochVector[expr_, j_Integer] := Module[
     n },
   n = Log[2, Length @ mat];
   If[ n > 1,
-    BlochVector @ PartialTrace[mat, Complement[Range @ n, {j}]],
+    BlochVector @ ReducedMatrix[mat, {j}],
     BlochVector @ mat
    ]
  ] /; Not @ FreeQ[expr, _Pauli | _Ket | _?NonCommutativeQ]
@@ -1294,7 +1296,9 @@ Matrix[ expr_Plus, qq:{___?SpeciesQ} ] :=
 
 Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ} ] := z Matrix[op, qq]
 
-Matrix[ z_?CommutativeQ, qq:{___?SpeciesQ} ] := With[
+Matrix[ z_?CommutativeQ, {} ] := z One[2]
+
+Matrix[ z_?CommutativeQ, qq:{__?SpeciesQ} ] := With[
   { jj = Range[ Times @@ (Dimension /@ qq) ] },
   SparseArray @ Thread[ Transpose @ {jj, jj} -> z ]
  ]
@@ -2782,6 +2786,65 @@ PartialTrace[expr_, qq:{__?SpeciesQ}] := Module[
 (**** </PartialTrace> ****)
 
 
+(**** <ReducedMatrix> ****)
+
+ReducedMatrix::usage = "ReducedMatrix[vec|mat, {d1, d2, \[Ellipsis]}, {k1, k2, \[Ellipsis]}] returns the reduced matrix from 'vec' or 'mat' after tracing out the subsystems other than k1, k2, \[Ellipsis]. The subsystems are assumed to be associated with the Hilbert spaces with dimensions d1, d2, \[Ellipsis].\nReducedMatrix[vec|mat, {k1, k2, \[Ellipsis]}] assumes that the subsystems are qubits.\nReducedMatrix[expr, {k1, k2, \[Ellipsis]}] assumes that 'expr' is an ket or operator expression for unlabelled qubits k1, k2, \[Ellipsis].\nReducedMatrix[expr, {s1, s2, \[Ellipsis]}] assumes subsystems specified by the species {s1, s2, \[Ellipsis]}."
+
+ReducedMatrix::noqubit = "`` does not seem to be a vector or matrix for qubits."
+
+ReducedMatrix[rho:(_?VectorQ|_?MatrixQ), dd:{__Integer}, jj:{__Integer}] :=
+  PartialTrace[rho, dd, Complement[Range[Length @ dd], jj]]
+
+ReducedMatrix[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] := (
+  Message[ReducedMatrix::noqubit, rho];
+  rho
+ ) /; Not @ IntegerQ @ Log[2, Length @ rho]
+
+ReducedMatrix[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] :=
+  ReducedMatrix[rho, ConstantArray[2, Log[2, Length @ rho]], jj]
+
+
+ReducedMatrix[expr_, S_?SpeciesQ] := ReducedMatrix[expr, {S}]
+
+ReducedMatrix[expr_, ss:{__?SpeciesQ}] := Module[
+  { qq = NonCommutativeSpecies[expr],
+    rr = FlavorNone @ Select[ss, NonCommutativeQ],
+    jj },
+  qq = Union[qq, rr];
+  jj = Flatten @ Map[FirstPosition[qq, #]&, Complement[qq, rr]];
+  PartialTrace[Matrix[expr, qq], Dimension[qq], jj]
+ ]
+
+
+ReducedMatrix[expr_, jj:{__Integer}] := Module[
+  { nn = Length @ FirstCase[expr, _Ket, Infinity] },
+  PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
+ ] /; fPauliKetQ[expr]
+
+ReducedMatrix[expr_, jj:{__Integer}] := Module[
+  { nn = Length @ FirstCase[expr, _Pauli, Infinity] },
+  PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
+ ] /; Not @ FreeQ[expr, _Pauli]
+
+
+Reduced::usage = "Reduced[vec|mat, \[Ellipsis]] is equivalent to ReducedMatrix[vec|mat, \[Ellipsis]].\nReduced[expr, {k1, k2, \[Ellipsis]}] returns the reduced operator in terms of the Pauli operators on unlabelled qubits {k1, k2, \[Ellipsis]}.\nReduced[expr, {s1, s2, \[Ellipsis]}] returns the reduced operator acting on the species {s1, s2, \[Ellipsis]}."
+
+Reduced[rho:(_?VectorQ|_?MatrixQ), rest__] := ReducedMatrix[rho, rest]
+
+
+Reduced[expr_, S_?SpeciesQ] := Reduced[expr, {S}]
+
+Reduced[expr_, ss:{__?SpeciesQ}] :=
+  ExpressionFor[ReducedMatrix[expr, ss], Select[ss, NonCommutativeQ]]
+
+
+Reduced[expr_, jj:{__Integer}] := 
+  ExpressionFor[ReducedMatrix[expr, jj]] /;
+  Or[fPauliKetQ @ expr, Not @ FreeQ[expr, _Pauli]]
+
+(**** </ReducedMatrix> ****)
+
+
 (**** <Purification> ****)
 
 Purification::usage = "Purification[m] returns the purification of the mixed state m."
@@ -2789,7 +2852,9 @@ Purification::usage = "Purification[m] returns the purification of the mixed sta
 Purification[mat_?MatrixQ] := Module[
   {val, vec},
   {val, vec} = Eigensystem[mat];
-  vec = Normalize /@ vec;
+  If[ AllTrue[Flatten @ vec, NumericQ] && Not[UnitaryMatrixQ @ vec],
+    vec = Orthogonalize[vec]
+   ];
   Sqrt[val] . MapThread[CircleTimes, {vec, One @ Dimensions @ mat}]
  ]
 (* NOTE: mat is supposed to be Hermitian. *)
@@ -3112,10 +3177,9 @@ WignerFunction[j_, 0, m_, z_] :=
 WignerFunction[j_, m_, 0, z_] := Conjugate[ WignerFunction[j, 0, m, z] ]
 
 
-TraceNorm::usage = "TraceNorm[m] returns the trace norm of the matrix m, that is, Tr @ Sqrt[Dagger[m] ** m]."
+TraceNorm::usage = "TraceNorm[m] returns the trace norm of the matrix m, that is, Tr @ Sqrt[Dagger[m] ** m].\nTraceNorm[v] gives TraceNorm[v.Transepose[v]]."
 
-TraceNorm[m_?MatrixQ] := Norm[SingularValueList[m], 1]
-(* NOTE: Schattern norm with p = 1 *)
+TraceNorm[m_?MatrixQ] := Total @ SingularValueList[m]
 
 TraceNorm[v_?VectorQ] := Norm[v]^2
 
@@ -3127,12 +3191,23 @@ TraceNorm[rho_, q_?SpeciesQ] := TraceNorm[rho, {q}]
 TraceNorm[rho_, qq:{__?SpeciesQ}] := TraceNorm @ Matrix[rho, qq]
 
 
-TraceDistance::usage = "TraceDistance[a, b] returns the trace distance of the two square matrices a and b, which equals to (1/2) TraceNorm[a - b]."
+TraceDistance::usage = "TraceDistance[a, b] returns the trace distance of the two square matrices a and b, which equals to TraceNorm[a - b]."
 
-TraceDistance[a_?MatrixQ, b_?MatrixQ] := (1/2) TraceNorm[a-b]
+TraceDistance[a_?MatrixQ, b_?MatrixQ] := TraceNorm[a-b]
+
+TraceDistance[a_?VectorQ, b_?MatrixQ] := TraceNorm[Dyad[a, a] - b]
+
+TraceDistance[a_?MatrixQ, b_?VectorQ] := TraceNorm[a - Dyad[b, b]]
+
+TraceDistance[a_?VectorQ, b_?VectorQ] := TraceNorm[Dyad[a, a] - Dyad[b, b]]
+
+TraceDistance[a_, b_] := TraceDistance[a, b, NonCommutativeSpecies @ {a, b}]
+
+TraceDistance[a_, b_, ss:{___?SpeciesQ}] :=
+  TraceDistance[Matrix[a, ss], Matrix[b, ss]]
 
 
-Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the two mixed states \[Rho] and \[Sigma]."
+Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states \[Rho] and \[Sigma]. \[Rho] and \[Sigma] can take a vector (pure state), matrix (mixed state), ket expression (pure state), or opertor expression (mixed state)."
 
 Fidelity[a_?MatrixQ, b_?MatrixQ] := With[
   {c = MatrixPower[a, 1/2]},
@@ -3153,9 +3228,6 @@ Fidelity[vec_, rho_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
   And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
 
 Fidelity[rho_, vec_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
-  And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
-
-Fidelity[vec_, rho_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
   And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
 
 Fidelity[vec_, wec_] := Abs[Dagger[vec] ** wec] /;

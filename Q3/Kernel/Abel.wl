@@ -4,13 +4,13 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.23 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-28 14:57:13+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.24 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-14 09:09:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
-{ Choices, Partitions, Successive };
+{ Choices, ListPartitions, Successive };
 { ShiftLeft, ShiftRight };
 { Unless, PseudoDivide };
 
@@ -87,14 +87,14 @@ Choices[a_List, {m_Integer, n_Integer}] :=
 Choices[a_List, {n_Integer}] := Union[Sort /@ Tuples[a, n]]
 
 
-Partitions::usage = "Partitions[list] gives a list of all possible ways to partition list into smaller lists.\nPartitions[list, spec] gives partitions corresponding to the specification spec. For spec, see IntegerPartitions."
+ListPartitions::usage = "ListPartitions[list] gives a list of all possible ways to partition 'list' into smaller lists.\nListPartitions[list, spec] gives partitions corresponding to the specification spec. For spec, see IntegerPartitions."
 
-Partitions[data_List, spec___] := Module[
+ListPartitions[data_List, spec___] := Module[
   { parts = IntegerPartitions[Length @ data, spec] },
   parts = Flatten[Permutations /@ parts, 1];
   FoldPairList[TakeDrop, data, #]& /@ parts
  ]
-(* NOTE: Permutations of parts is necessary to find all possible
+(* NOTE: Permutations /@ parts is necessary to find all possible
    decompositions of the integer Length[list]. *)
 
 

@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.9.15
+
+- Changes in internal filenames.
+- Partitions renamed ListPartitions to avoid a conflict with Combinatorica.
+
 ## v1.9.12
 
 - A bug fix concerning S[..., 10] and S[..., 11] inside Multiply[...].
