@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v1.9.16
+
+- HermitianProduct has been renamed HilbertSchmidtProduct.
+- HermitianNorm has been renamed HilbertSchmidtNorm.
+- New function FrobeniusNorm.
+
 ## v1.9.15
 
 - Changes in internal filenames.

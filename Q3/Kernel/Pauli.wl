@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.103 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-22 12:06:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.108 $"][[2]], " (",
+  StringSplit["$Date: 2021-08-27 21:27:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -27,7 +27,8 @@ BeginPackage["Q3`"]
 
 { CommonEigensystem, CommonEigenvectors, CommonEigenvalues };
 
-{ HermitianProduct, HermitianNorm };
+{ HilbertSchmidtProduct, HilbertSchmidtNorm,
+  FrobeniusProduct, FrobeniusNorm };
 
 { BlochSphere, BlochVector };
 
@@ -49,7 +50,7 @@ BeginPackage["Q3`"]
 
 { WignerFunction };
 
-{ RandomVector, RandomMatrix, RandomHermitian, RandomUnitary };
+{ RandomVector, RandomMatrix, RandomHermitian, RandomPositive, RandomUnitary };
 
 { BasisComplement };
 
@@ -1105,36 +1106,54 @@ PauliExpressionRL[args___] := (
  )
 
 
-PauliInner::usage = "PauliInner is obsolete. Use HermitianProduct instead. Notice the difference in normalization -- PauliInner[m1, m2] = HermitianProduct[m1,m2] / Length[m2] for matrices m1 and m2."
+PauliInner::usage = "PauliInner is obsolete. Use HilbertSchmidtProduct instead. Notice the difference in normalization -- PauliInner[m1, m2] = HilbertSchmidtProduct[m1,m2] / Length[m2] for matrices m1 and m2."
 
 PauliInner[m1_?MatrixQ, m2_?MatrixQ] := (
-  Message[Q3`Q3General::obsolete, PauliInner, HermitianProduct];
-  HermitianProduct[m1, m2] / Length[m2]
+  Message[Q3`Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
+  HilbertSchmidtProduct[m1, m2] / Length[m2]
  )
 
 PauliInner[v1_?VectorQ, v2_?VectorQ] := (
-  Message[Q3`Q3General::obsolete, PauliInner, HermitianProduct];
-  HermitianProduct[v1, v2]
+  Message[Q3`Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
+  HilbertSchmidtProduct[v1, v2]
  )
 
 
-HermitianNorm::usage = "HermitianNorm[a] gives the norm of a complex number, vector, or matrix a.\nFor complex numbers, it is Abs[z].\nFor vectors, it is Sqrt[Conjugate[a].a].\nFor matrices, it is the Frobenius norm, i.e., Tr[ConjugateTranspose[a].a].\nIt should be distinguished from the TraceNorm."
+FrobeniusNorm::usage = "FrobeniusNorm is an alias to HilbertSchmidtNorm."
 
-HermitianNorm[a_?VectorQ] := Norm[a]
+FrobeniusNorm = HilbertSchmidtNorm
 
-HermitianNorm[a_?MatrixQ] := Norm[a, "Frobenius"]
+HilbertSchmidtNorm::usage = "HilbertSchmidtNorm[a] gives the Hilbert-Schmidt norm (i.e., Frobenius norm) of a complex matrix a.\nIf a is a vector, it is regarded as Dyad[a,a].\nSee also TraceNorm."
 
-Format[ HermitianNorm[a_] ] := Sqrt @ AngleBracket[a, a]
+Format[ HilbertSchmidtNorm[a_] ] := Sqrt @ AngleBracket[a, a]
+
+HilbertSchmidtNorm[a_?VectorQ] := Norm[a]^2
+
+HilbertSchmidtNorm[a_?MatrixQ] := Norm[a, "Frobenius"]
+
+HilbertSchmidtNorm[rho_] := HilbertSchmidtNorm @ Matrix[rho]
+
+HilbertSchmidtNorm[rho_, q_?SpeciesQ] := HilbertSchmidtNorm[rho, {q}]
+
+HilbertSchmidtNorm[rho_, qq:{__?SpeciesQ}] :=
+  HilbertSchmidtNorm @ Matrix[rho, qq]
 
 
-HermitianProduct::usage = "HermitianProduct[a, b] returns the Hermitian product of two vectors a and b.\nFor two matrices a and b, it is equivalent to the Frobenius inner product, i.e., Tr[ConjugateTranspose[a].b]."
+FrobeniusProduct::usage = "FrobeniusProduct is an alias to HilbertSchmidtProduct."
 
-HermitianProduct[a_?VectorQ, b_?VectorQ] := Conjugate[a].b
+FrobeniusProduct = HilbertSchmidtProduct
 
-HermitianProduct[a_?MatrixQ, b_?MatrixQ] :=
-  HermitianProduct[Flatten @ a, Flatten @ b]
+HilbertSchmidtProduct::usage = "HilbertSchmidtProduct[a, b] returns the Hilbert-Schmidt (or Frobenius) inner product of two matrices a and b, that is, Tr[ConjugateTranspose[a].b].\nIf a is a vector, it is regarded as Dyad[a,a], and similary for b."
 
-Format[ HermitianProduct[a_, b_] ] := AngleBracket[a, b]
+HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a].b]
+
+HilbertSchmidtProduct[a_?VectorQ, b_?MatrixQ] := Conjugate[a].b.a
+
+HilbertSchmidtProduct[a_?MatrixQ, b_?VectorQ] := Conjugate[a].Topple[b].a
+
+HilbertSchmidtProduct[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]^2
+
+Format[ HilbertSchmidtProduct[a_, b_] ] := AngleBracket[a, b]
 
 
 BlochVector::usage = "BlochSphere[{c0, c1}] returns the point on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
@@ -3092,7 +3111,7 @@ RandomVector[n_Integer] := RandomComplex[(1+I){-1, 1}, n]
 RandomVector[range_, n_Integer] := RandomComplex[range, n]
 
 
-RandomMatrix::usage = "RandomMatrix is a shortcut to RandomComplex.\nRandomMatrix[] returns a randomly generated 2x2 matrix.\nRanbdomMatrix[n] returns an nxn random matrix.\nRandomMatrix[range, n] \[Congruent] RandomComplex[range, {n, n}].\nRandomMatrix[range, {m, n}] \[Congruent] RandomComplex[range, {m, n}]."
+RandomMatrix::usage = "RandomMatrix is a shortcut to RandomComplex.\nRandomMatrix[] returns a randomly generated 2\[Times]2 matrix.\nRanbdomMatrix[n] returns an n\[Times]n random matrix.\nRandomMatrix[range, n] \[Congruent] RandomComplex[range, {n, n}].\nRandomMatrix[range, {m, n}] \[Congruent] RandomComplex[range, {m, n}]."
 
 RandomMatrix[] := RandomComplex[(1+I){-1, 1}, {2, 2}]
 
@@ -3105,7 +3124,7 @@ RandomMatrix[range_, n_Integer] := RandomComplex[range, {n, n}]
 RandomMatrix[range_, mn:{_Integer, _Integer}] := RandomComplex[range, mn]
 
 
-RandomHermitian::usage = "RandomHermitian[range, n] gives a randomly generated n x n Hermitian matrix. The range specifies the range (see RandomComplex) of the elements."
+RandomHermitian::usage = "RandomHermitian[n] gives a randomly generated n\[Times]n Hermitian matrix with each element in the range between -(1+I) and (1+I).\nRandomHermitian[] assumes n=2.\nRandomHermitian[range, n] gives a randomly generated n\[Times]n Hermitian matrix. The range specifies the range (see RandomComplex) of the elements."
 
 RandomHermitian[] := RandomHermitian[(1+I){-1, 1}, 2]
 
@@ -3114,6 +3133,17 @@ RandomHermitian[n_Integer] := RandomHermitian[(1+I){-1, 1}, n]
 RandomHermitian[range_, n_Integer] := With[
   { m = RandomComplex[range, {n, n}] },
   ( m + ConjugateTranspose[m] ) / 2
+ ]
+
+RandomPositive::usage = "RandomPositive[n] gives a randomly generated n\[Times]n positive matrix with each element in the range between -(1+I) and (1+I).\nRandomPositive[] assumes n=2.\nRandomPositive[range, n] gives a random  positive matrix with each element in the specified 'range' (see RandomComplex for the details of the specification of range)."
+
+RandomPositive[] := RandomPositive[(1+I){-1, 1}, 2]
+
+RandomPositive[n_Integer] := RandomPositive[(1+I){-1, 1}, n]
+
+RandomPositive[range_, n_Integer] := With[
+  { m = RandomMatrix[range, {n, n}] },
+  Topple[m].m
  ]
 
 RandomUnitary::usage = "RandomUnitary[n] gives a randomly generated n x n Unitary matrix. The range specifies the range (see RandomComplex) of the elements."
