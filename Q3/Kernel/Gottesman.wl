@@ -5,12 +5,10 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.57 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-13 18:28:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.59 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-04 17:58:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-{ PauliForm };
 
 { PauliGroup, CliffordGroup };
 
@@ -29,47 +27,6 @@ BeginPackage["Q3`"]
 
 
 Begin["`Private`"]
-
-(**** <PauliForm> ****)
-
-PauliForm::usage = "PauliForm[expr] rewrites expr in a more conventional form, where the Pauli operators are denoted by I, X, Y, and Z."
-
-HoldPattern @ PauliForm[Multiply[ss__?QubitQ], qq:{__?QubitQ}] :=
-  PauliForm[ss, qq]
-
-PauliForm[ss__?QubitQ, qq:{__?QubitQ}] := Module[
-  { jj = Lookup[PositionIndex[FlavorNone @ qq], FlavorMute @ {ss}],
-    mm },
-  mm = FlavorLast @ {ss} /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z"};
-  CircleTimes @@ ReplacePart[
-    ConstantArray["I", Length @ qq],
-    Flatten[ Thread /@ Thread[jj -> mm] ]
-   ]
- ]
-
-PauliForm[expr_] := PauliForm[expr, Qubits @ expr] /; FreeQ[expr, _Pauli]
-
-PauliForm[assc_Association, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, assc]
-(* NOTE: For some unknown reason, a special handling is required for
-   Association[...]. *)
-
-PauliForm[expr_, qq:{__?QubitQ}] := expr /. {
-  HoldPattern @ Multiply[ss__?QubitQ] :> PauliForm[ss, qq],
-  op_?QubitQ :> PauliForm[op, qq]
- }
-
-
-PauliForm[op_Pauli] :=
-  CircleTimes @@ ReplaceAll[op, {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z"}]
-
-PauliForm[assc_Association] := Map[PauliForm, assc]
-(* NOTE: For some unknown reason, a special handling is required for
-   Association[...]. *)
-
-PauliForm[expr_] := expr /. { op_Pauli :> PauliForm[op] }
-
-(**** </PauliForm> ****)
-
 
 (**** <PauliGroup> ****)
 

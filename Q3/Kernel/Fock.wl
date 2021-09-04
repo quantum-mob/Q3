@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.12 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-28 15:32:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.13 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-03 21:18:39+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1839,21 +1839,21 @@ KetRule[ r:Rule[{__?ParticleQ}, _] ] := Thread[r]
 
 KetTrim[_?ParticleQ, 0] = Nothing
 
-VerifyKet::bosneg = "For Boson ``, the assigned value `` is negative."
+KetVerify::bosneg = "For Boson ``, the assigned value `` is negative."
 
-VerifyKet[a_?BosonQ, v_?Negative] := (
-  Message[VerifyKet::bosneg, a, v];
+KetVerify[a_?BosonQ, v_?Negative] := (
+  Message[KetVerify::bosneg, a, v];
   $Failed
  )
 
-VerifyKet::ferneg = "For Fermion ``, the assigned valued `` is neither 0 nor 1."
+KetVerify::ferneg = "For Fermion ``, the assigned valued `` is neither 0 nor 1."
 
-VerifyKet[c_?FermionQ, v_] := (
-  Message[VerifyKet::ferneg, c, v];
+KetVerify[c_?FermionQ, v_] := (
+  Message[KetVerify::ferneg, c, v];
   $Failed
  ) /; Or[ Negative[v], v > 1 ]
 (* The following definition would not allow to assign a symbolic value:
-   VerifyKet[ _?FermionQ, Except[0|1] ] = $Failed
+   KetVerify[ _?FermionQ, Except[0|1] ] = $Failed
  *)
 
 (**** </Ket for Fock> ****)

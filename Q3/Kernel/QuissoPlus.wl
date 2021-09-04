@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.4 $"][[2]], " (",
-  StringSplit["$Date: 2021-07-21 15:16:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.5 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-04 18:16:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -51,13 +51,13 @@ QuissoCorrelationTensor::usage = "QuissoCorrelationTensor[v] gives the Associati
 
 (*
 QuissoCorrelationTensor[v_] :=
-  QuissoCoefficientTensor[ ExpressionFor @ Dirac[v, Dagger[v]] ]
+  QuissoCoefficientTensor[ ExpressionFor @ Dyad[v, v] ]
 
 QuissoCorrelationTensor[v_, n_Integer] :=
-  QuissoCoefficientTensor[ ExpressionFor @ Dirac[v, Dagger[v]], n ]
+  QuissoCoefficientTensor[ ExpressionFor @ Dyad[v, v], n ]
 
 QuissoCorrelationTensor[v_, {n_Integer}] :=
-  QuissoCoefficientTensor[ ExpressionFor @ Dirac[v, Dagger[v]], {n} ]
+  QuissoCoefficientTensor[ ExpressionFor @ Dyad[v, v], {n} ]
  *)
 
 (* Method 2: This is slower than Method 1 above, but does not suffer from the

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.18 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.20 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-04 18:42:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -481,12 +481,12 @@ KetRule[ r:Rule[{__?SpinQ}, _] ] := FlavorNone @ Thread[r]
 
 KetTrim[S_?SpinQ, m_] := Nothing /; Spin[S] == m
 
-VerifyKet::spininv = "For spin ``, the assigned value `` is not a valid directional spin quantum number."
+KetVerify::spininv = "For spin ``, the assigned value `` is not a valid directional spin quantum number."
 
-VerifyKet[op_?SpinQ, m_] := If[
+KetVerify[op_?SpinQ, m_] := If[
   SpinNumberQ @ {Spin[op], m},
   Rule[op, m],
-  Message[VerifyKet::spininv, op, m];
+  Message[KetVerify::spininv, op, m];
   $Failed
  ]
 
@@ -524,7 +524,7 @@ WignerReduced[v_, S : {__?SpinQ}] :=
   wReduced @ WignerFactor[ Expand @ v, S ]
 
 wReduced[ OSlash[a_Ket, b_] ] :=
-  Multiply[a, Dagger[a]] * Conjugate[ Dagger[b] ** b ]
+  Dyad[a, a] * (Dagger[b] ** b)
 
 wReduced[ expr_Plus ] := Module[
   { vv = List @@ expr,
@@ -560,12 +560,12 @@ TheExpression[S_?SpinQ] := {
 (**** </ExpressionFor> ****)
 
 
-WignerKetQ::usage = "WignerKetQ is obsolete. Use VerifyKet instead."
+WignerKetQ::usage = "WignerKetQ is obsolete. Use KetVerify instead."
 
 WignerKetQ[ Ket[a_Association] ] := Module[
   { chk },
-  Message[Q3`Q3General::obsolete, WignerKetQ, VerifyKet];
-  chk = KeyValueMap[VerifyKet, a];
+  Message[Q3`Q3General::obsolete, WignerKetQ, KetVerify];
+  chk = KeyValueMap[KetVerify, a];
   If[ Or @@ chk,
     False,
     True

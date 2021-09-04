@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.108 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-27 21:27:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.119 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-04 19:17:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -13,7 +13,10 @@ BeginPackage["Q3`"]
 
 { State, TheKet, TheBra, TheState };
 
-{ KetChop, KetPurge, KetRule, KetTrim, VerifyKet };
+{ KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
+  KetFactor, KetPurge };
+
+{ OTimes, OSlash, ReleaseTimes };
 
 { DefaultForm, LogicalForm, ProductForm, SimpleForm, SpinForm };
 
@@ -37,8 +40,6 @@ BeginPackage["Q3`"]
 { Pauli, Raise, Lower, Hadamard, Quadrant, Octant,
   ThePauli, TheRaise, TheLower, TheHadamard };
 { Operator, TheOperator };
-
-{ OTimes, OSlash, ReleaseTimes };
 
 { RaiseLower, $RaiseLowerRules };
 
@@ -249,7 +250,7 @@ DefaultForm[ expr_ ] := expr /;
 
 DefaultForm[ expr_ ] := expr /. {
   a_OTimes -> a, (* NOTE *)
-  OSlash[v_Ket, expre_] :> OSlash[v, DefaultForm @ expre],
+  OSlash[v_Ket, new_] :> OSlash[v, DefaultForm @ new],
   Ket[a_Association] :> Ket @ KetTrim @ a,
   Bra[a_Association] :> Bra @ KetTrim @ a
  }
@@ -384,6 +385,8 @@ ProductForm[ expr_, gg_List ] := expr /. {
 (* NOTE 3: See the NOTE for LogicalForm[_Association, ...] *)
 
 
+(**** <SpinForm> ****)
+
 SpinForm::usage = "SpinForm[expr, {s1, s2, ...}] converts the values to \[UpArrow] or \[DownArrow] in every Ket[<|...|>] appearing in expr.\nIf the Species is a Qubit, SpinForm converts 0 to \[UpArrow] and 1 to \[DownArrow].\nIf the Species is a Spin, SpinForm converts 1/2 to \[UpArrow] and -1/2 to \[DownArrow]."
 
 SpinForm[Bra[spec__], rest___] := Dagger @ SpinForm[Ket[spec], rest]
@@ -414,6 +417,8 @@ SpinForm[expr:Except[_Ket|_Bra], qq:{___?SpeciesQ}] := With[
     v_Bra :> SpinForm[v, ss]
    }
  ]
+
+(**** </SpinForm> ****)
 
 
 Affect::usage = "Affect[ket, op1, op2, ...] operates the operators op1, op2, ... (earlier operators first) on ket. Notice the order of the arguments. The result should be equivalent to Multiply[..., op2, op1, ket], but it is much faster than the counterpart for deep (the numer of operators is much bigger than the number of particles) expression. First first argument does not need to be a Ket, but otherwise Affect is not an advantage over Multiply."
@@ -528,7 +533,7 @@ Ket[ Ket[a_Association], spec__Rule ] := Module[
   { rules = Flatten @ KetRule @ {spec},
     vec },
   vec = Ket @ KeySort @ KetTrim @ Join[a, Association @ rules];
-  If[FailureQ @ VerifyKet @ vec, $Failed, vec]
+  If[FailureQ @ KetVerify @ vec, $Failed, vec]
  ]
 
 (* operator form *)
@@ -579,14 +584,14 @@ KetTrim[{}, _] := Nothing (* a fallback *)
 KetTrim[_String, _] := Nothing (* an actual option *)
 
 
-VerifyKet::usage = "VerifyKet[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nVerifyKet[a, b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise.\nVerifyKet[expr] checks every Ket[<|...|>] in expr."
+KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[a, b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
 
-SetAttributes[VerifyKet, Listable]
+SetAttributes[KetVerify, Listable]
 
-VerifyKet[ expr_ ] := expr //. { v_Ket :> VerifyKet[v] }
+KetVerify[ expr_ ] := expr //. { v_Ket :> KetVerify[v] }
 
-VerifyKet[ Ket[a_Association] ] := With[
-  { aa = KeyValueMap[VerifyKet, a] },
+KetVerify[ Ket[a_Association] ] := With[
+  { aa = KeyValueMap[KetVerify, a] },
   If[ Or @@ Map[FailureQ, aa],
     $Failed,
     Ket @ Association @ aa,
@@ -594,7 +599,7 @@ VerifyKet[ Ket[a_Association] ] := With[
    ]
  ]
 
-VerifyKet[a_, b_] := Rule[a, b]
+KetVerify[a_, b_] := Rule[a, b]
 
 
 KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[ImaginaryI], from expr, where the rest is a valid Ket expression."
@@ -606,18 +611,153 @@ KetChop[Complex[0., 0.] + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
 KetChop[expr_] := expr
 
 
-KetPurge::usage = "KetPurge[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetPurge[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr."
+KetDrop::usage = "KetDrop[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetDrop[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr."
 
-KetPurge[Ket[a_Association], ss:{__?SpeciesQ}] :=
+KetDrop[Ket[a_Association], ss:{__?SpeciesQ}] :=
   Ket @ KeyDrop[a, FlavorNone @ ss]
 
-KetPurge[expr_, ss:{__?SpeciesQ}] := expr /. {
-  v:Ket[_Association] :> KetPurge[v, ss]
+KetDrop[expr_, ss:{__?SpeciesQ}] := expr /. {
+  v:Ket[_Association] :> KetDrop[v, ss]
  }
 
-KetPurge[any_, S_?SpeciesQ] := KetPurge[any, {S}]
+KetDrop[any_, S_?SpeciesQ] := KetDrop[any, {S}]
+
+
+KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if test holds true. Here test is an inequality or equality in terms of species."
+
+KetPurge[Ket[a_Association], test_] := With[
+  { ss = NonCommutativeSpecies[test] },
+  If[ test /. {S_?SpeciesQ :> FlavorNone[S]} /. Normal[LogicalForm[a, ss]],
+    0, Ket[a], Ket[a] ]
+ ]
+
+KetPurge[expr_, test_] := expr /. {
+  v:Ket[_Association] :> KetPurge[v, test]
+ }
+
+KetUpdate::usage = "KetUpdate[ket, {s1->expr1, s2->expr2, \[Ellipsis]}] updates ket according to the rules specified by {s1->expr1, s2->expr2, \[Ellipsis]}.\nKetUpdate[expr, spec] converts every ket in expr."
+
+KetUpdate[Ket[a_Association], spec:{__Rule}] := With[
+  { rr = Flatten @ KetRule @ spec },
+  Ket @ KetUpdate[a, rr /. {s_?SpeciesQ :> FlavorNone[s]}]
+ ]
+
+KetUpdate[aa_Association, rr:{__Rule}] := Module[
+  { kk = Keys[rr],
+    vv = Values[rr],
+    qq },
+  qq = NonCommutativeSpecies[vv];
+  vv = vv /. Thread[qq -> Lookup[aa, qq]];
+  KeySort @ KetTrim @ Join[aa, AssociationThread[kk -> vv]]
+ ]
+
+KetUpdate[expr_, spec:{__Rule}] :=
+  expr /. { v_Ket :> KetUpdate[v, spec] }
+
+KetUpdate[expr_, spec__Rule] := KetUpdate[expr, {spec}]
 
 (**** </Ket & Bra> ****)
+
+
+(**** <KetFactor> ****)
+
+KetFactor::usage = "KetFactor[expr] tries to factorize the ket expression expr, and if successful, it returns the result in terms of OTimes[\[Ellipsis]]. Otherwise it just throws expr out.\nKetFactor[expr, s] or KetFactor[expr, {s1, s2, \[Ellipsis]}] factors out the state concerning the specified species and returns the result in terms of OSlash[\[Ellipsis]]."
+
+ketSplit[ Ket[] ] := Ket[]
+
+ketSplit[ Ket[a_Association] ] := 
+  Times @@ Map[ Ket @* Association, Normal @ a ] /;
+  Length[a] > 0
+
+ketSplit[ Bra[] ] := Bra[]
+
+ketSplit[ Bra[a_Association] ] := 
+  Times @@ Map[ Bra @* Association, Normal @ a ] /;
+  Length[a] > 0
+
+ketSplit[expr_] := LogicalForm[expr] /. {
+  v_Ket :> ketSplit[v],
+  v_Bra :> ketSplit[v]
+ }
+
+
+KetFactor[v_Ket] := v
+
+KetFactor[OSlash[vec_, expr_]] := OSlash[vec, KetFactor[expr]]
+
+KetFactor[expr_] := Module[
+  { new },
+  new = Factor[ketSplit @ expr];
+  DefaultForm @ ReplaceAll[new, Times -> OTimes]
+ ]
+
+
+KetFactor[expr_Plus, qq:{__?SpeciesQ}] :=
+  KetFactor @ Total @ Map[KetFactor[#, qq]&, List @@ expr]
+
+KetFactor[z_?CommutativeQ expr_ , qq:{__?SpeciesQ}] :=
+  z KetFactor[expr, qq]
+
+KetFactor[Ket[a_Association], qq:{__?SpeciesQ}] := Module[
+  { ss = FlavorNone[qq] },
+  OSlash[ LogicalForm[Ket[KeyTake[a, ss]], ss], Ket[KeyDrop[a, ss]] ]
+ ]
+
+KetFactor[expr_, S_?SpeciesQ] := KetFactor[expr, {S}]
+
+
+ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression."
+
+ReleaseTimes[expr_] := DefaultForm[
+  expr /. {OTimes -> CircleTimes, OSlash -> CircleTimes}
+ ]
+
+
+OTimes::usage = "OTimes represents CircleTimes, but holds the arguments. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
+(* It is used, e.g., for QuissoFactor[]. *)
+
+Format[ HoldPattern[ OTimes[a__] ] ] := CircleTimes @@ Map[HoldForm] @ {a}
+
+OTimes[a_] := a
+
+OTimes[pre___, z_?CommutativeQ, post___] := z OTimes[pre, post]
+
+OTimes[pre___, vv:Repeated[_Ket, {2, Infinity}], post___] :=
+  OTimes[pre, CircleTimes[vv], post]
+
+OTimes /:
+HoldPattern @ Dagger[ OTimes[a__] ] := OTimes @@ Dagger @ {a}
+
+
+OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
+
+Format[ HoldPattern[ OSlash[a:(_Ket|_Bra), b:Times[__]] ] ] :=
+  DisplayForm @ CircleTimes[ HoldForm[a], RowBox[{"(",b,")"}] ]
+
+Format[ OSlash[a:(_Ket|_Bra), b_] ] := CircleTimes[ HoldForm[a], HoldForm[b] ]
+
+OSlash /: z_ OSlash[a_Ket, b_] := OSlash[a, z b]
+
+OSlash /: OSlash[a_Ket, b_] + OSlash[a_Ket, c_] := 
+  OSlash[a, b + c]
+
+OSlash /:
+HoldPattern @ Dagger[ OSlash[a__] ] := OSlash @@ Dagger @ {a}
+
+HoldPattern @ OSlash[vec_, OTimes[ff__]] := OTimes[vec, ff]
+
+HoldPattern @ OSlash[vec_, z_?CommutativeQ OTimes[ff__]] :=
+  z OTimes @@ Sort @ {vec, ff}
+(* NOTE: This form occurs in KetFactor. *)
+
+
+Once[
+  $GarnerHeads = Join[$GarnerHeads, {Pauli, Dyad, Ket, Bra, OTimes, OSlash}];
+
+  $ElaborationHeads = Join[$ElaborationHeads, {Dyad, Pauli}];
+ ]
+
+(**** </KetFactor> ****)
 
 
 (**** <Multiply> ****)
@@ -748,50 +888,6 @@ BraKet[ a_Association, b_Association ] := With[
  ]
 
 (**** </BraKet> ****)
-
-
-ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression."
-
-ReleaseTimes[expr_] := DefaultForm[
-  expr /. {OTimes -> CircleTimes, OSlash -> CircleTimes}
- ]
-
-
-OTimes::usage = "OTimes represents CircleTimes, but holds the arguments. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
-(* It is used, e.g., for QuissoFactor[]. *)
-
-Format[ HoldPattern[ OTimes[a__] ] ] := CircleTimes @@ Map[HoldForm] @ {a}
-
-OTimes[a_] := a
-
-OTimes[a___, b_?CommutativeQ, c___] := b OTimes[a, c]
-
-OTimes /:
-HoldPattern @ Dagger[ OTimes[a__] ] := OTimes @@ Dagger @ {a}
-
-
-OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
-
-Format[ HoldPattern[ OSlash[a:(_Ket|_Bra), b:Times[__]] ] ] :=
-  DisplayForm @ CircleTimes[ HoldForm[a], RowBox[{"(",b,")"}] ]
-
-Format[ OSlash[a:(_Ket|_Bra), b_] ] := CircleTimes[ HoldForm[a], HoldForm[b] ]
-
-OSlash /: z_ OSlash[a_Ket, b_] := OSlash[a, z b]
-
-OSlash /: OSlash[a_Ket, b_] + OSlash[a_Ket, c_] := 
-  OSlash[a, b + c]
-
-OSlash /:
-HoldPattern @ Dagger[ OSlash[a__] ] := OSlash @@ Dagger @ {a}
-
-
-Once[
-  $GarnerHeads = Join[$GarnerHeads, {Pauli, Dyad, Ket, Bra, OTimes, OSlash}];
-
-  $ElaborationHeads = Join[$ElaborationHeads, {Dyad, Pauli}];
- ]
-
 
 RaiseLower::usage = "RaiseLower[expr] converts expr by rewriting Pauli or Spin X and Y operators in terms of the raising and lowering operators."
 

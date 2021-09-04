@@ -1,5 +1,12 @@
 # Select Release Notes
 
+## v1.9.17
+
+- The old KetPurge renamed KetDrop.
+- KetPurge has a new functionality.
+- QuissoFactor is obsolete. Use KetFactor instead.
+- Dirac is obsolete. Use Dyad instead.
+
 ## v1.9.16
 
 - HermitianProduct has been renamed HilbertSchmidtProduct.

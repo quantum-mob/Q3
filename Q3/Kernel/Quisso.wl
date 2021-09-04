@@ -4,19 +4,18 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.72 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-02 18:33:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.80 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-04 19:36:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Qubit, QubitQ, Qubits };
 
-{ Dirac };
+{ PauliForm };
 
 { DensityMatrix, DensityOperator };
 
-{ QuissoReduced, QuissoFactor,
-  ReducedDensityMatrix };
+{ QuissoReduced, ReducedDensityMatrix };
 
 { QuissoCoefficientTensor, QuissoAssemble };
 
@@ -49,11 +48,15 @@ BeginPackage["Q3`"]
   QuissoCZ, QuissoCNOT, QuissoSWAP, QuissoToffoli, QuissoFredkin,
   QuissoOracle }; (* obsolete *)
 
+{ QuissoFactor }; (* OBSOLETE *)
+
 { QuissoExpression, QuissoExpressionRL }; (* obsolete *)
 
 { QuissoCircuit, QuissoExpand }; (* OBSOLETE *)
 
 { QuditExpression }; (* OBSOLETE *)
+
+{ Dirac }; (* OBSOLETE *)
 
 Begin["`Private`"]
 
@@ -511,10 +514,9 @@ HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
     Block[
       { Missing },
       Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := {1, 0};
-      Ket @ Association @ Thread[ ss -> Lookup[a, ss] ]
+      ProductState @ Association @ Thread[ ss -> Lookup[a, ss] ]
      ]
    ]
-(* TODO: DefaultForm[...] for ProductState *)
 
 (* Elaborate[...] *)
 
@@ -586,60 +588,29 @@ ProductState[a_Association, opts___][qq:(_?QubitQ | {__?QubitQ})] :=
    ]
 
 
-(**** <Ket for Qubits> ****)
-(*
-KetRule[ r:Rule[_?QubitQ, _] ] := FlavorNone[r]
-
-KetRule[ r:Rule[{__?QubitQ}, _] ] := FlavorNone @ Thread[r]
- *)
+(**** <Ket for Qubit> ****)
 
 KetTrim[_?QubitQ, 0] = Nothing
-(**** </Ket for Qubits> ****)
+
+(**** </Ket for Qubit> ****)
 
 
-(**** <Basis> ****)
+(**** <Basis for Qubit> ****)
 
 Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorNone[S] -> {0, 1}]
 
-(**** </Basis> ****)
+(**** </Basis for Qubit> ****)
 
 
-QuissoFactor::usage = "QuissoFactor takes two dfiferent forms resulting in different results.\nQuissoFactor[expr] tries to factorize the Ket expression expr and, if successful at all, returns the result in the form of OTimes[...]. Otherwise it just throws expr out.\nQuissoFactor[expr, S] or QuissoFactor[expr, {S$1, S$2, ...}] factors out the state concerning the specified qubits and returns the result in OSlash[...]."
+QuissoFactor::usage = "QuissoFactor is OBSOLETE. Use KetFactor instead."
 
-splitState[ Ket[a_Association] ] := 
-  Times @@ Map[ Ket @* Association, Normal @ a ]
-
-splitState[ Bra[a_Association] ] := 
-  Times @@ Map[ Bra @* Association, Normal @ a ]
-
-
-QuissoFactor[ expr_ ] := Module[
-  { new },
-  new = Factor[ LogicalForm[expr] /. {
-      v_Ket :> splitState[v],
-      v_Bra :> splitState[v]
-     } ];
-  new = Replace[new, Times -> OTimes, 1, Heads -> True];
-  new /. Times[a___, b_Ket, c__Ket, d___] :> 
-    Times[a, CircleTimes[b, c], d]
- ]
+QuissoFactor[expr__] := (
+  Message[Q3`Q3General::obsolete, QuissoFactor, KetFactor];
+  KetFactor[expr]
+ )
 
 
-QuissoFactor[ a_ + b_ , qq:(_?QubitQ|{__?QubitQ}) ] :=
-  QuissoFactor[a, qq] + QuissoFactor[b, qq]
-
-QuissoFactor[ z_?CommutativeQ a_ , qq:(_?QubitQ|{__?QubitQ}) ] :=
-  z QuissoFactor[a, qq]
-
-QuissoFactor[ Ket[a_Association], S_?QubitQ ] := QuissoFactor[Ket[a], {S}]
-
-QuissoFactor[ Ket[a_Association], S:{__?QubitQ} ] := Module[
-  { SS = FlavorNone[S] },
-  OSlash[ LogicalForm[ Ket[KeyTake[a, SS]], SS ], Ket[KeyDrop[a, SS]]]
- ]
-
-
-(* SpinForm *)
+(**** <SpinForm> ****)
 
 SpinForm[vec:Ket[_Association], qq:{__?QubitQ}] := Module[
   { ss },
@@ -650,48 +621,68 @@ SpinForm[vec:Ket[_Association], qq:{__?QubitQ}] := Module[
   Ket[vec, qq -> ss]
  ]
 
-
-Dirac::usage = "Dirac[Ket[a], Bra[b], qq] returns the operator corresponding to |a\[RightAngleBracket]**\[LeftAngleBracket]b|, operating on the Qubits qq.\nDirac[Ket[a], Bra[b]] extracts the list of Qubits from Ket[a] and Bra[b] automatically."
-
-Dirac[ a_, b_ ] := theDirac[ Garner @ a, Garner @ Dagger @ b, Qubits @ {a, b} ]
-
-Dirac[ a_, b_, qq:{__?QubitQ} ] :=
-  theDirac[ Garner @ a, Garner @ Dagger @ b, FlavorNone @ qq ]
+(**** </SpinForm> ****)
 
 
-theDirac[a_Plus, b_Plus, qq_] :=
-  Garner @ Total @ Flatten @ Outer[theDirac[#1, #2, qq]&, List @@ a, List @@ b]
+(**** <PauliForm> ****)
 
-theDirac[a_Plus, b_, qq_] :=
-  Garner @ Total @ Flatten @ Outer[theDirac[#1, #2, qq]&, List @@ a, List @ b]
+PauliForm::usage = "PauliForm[expr] rewrites expr in a more conventional form, where the Pauli operators are denoted by I, X, Y, and Z."
 
-theDirac[a_, b_Plus, qq_] :=
-  Garner @ Total @ Flatten @ Outer[theDirac[#1, #2, qq]&, List @ a, List @@ b]
+HoldPattern @ PauliForm[Multiply[ss__?QubitQ], qq:{__?QubitQ}] :=
+  PauliForm[ss, qq]
 
-theDirac[ z_?CommutativeQ a_, b_, qq_ ] := Garner[ z theDirac[a, b, qq] ]
-
-theDirac[ a_, z_?CommutativeQ b_, qq_ ] := Garner[ z theDirac[a, b, qq] ]
-
-theDirac[ a:Ket[_Association], b:Ket[_Association], qq_ ] := Module[
-  { aa = a[qq],
-    bb = b[qq],
-    op },
-  op = Map[theDirac] @ Transpose @ {qq, aa, bb};
-  Garner[ Multiply @@ op ]
+PauliForm[ss__?QubitQ, qq:{__?QubitQ}] := Module[
+  { jj = Lookup[PositionIndex[FlavorNone @ qq], FlavorMute @ {ss}],
+    mm },
+  mm = FlavorLast @ {ss} /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z"};
+  CircleTimes @@ ReplacePart[
+    ConstantArray["I", Length @ qq],
+    Flatten[ Thread /@ Thread[jj -> mm] ]
+   ]
  ]
 
-theDirac[ {S:_Symbol?QubitQ[___,None], 0, 0} ] := (1 + S[3]) / 2
+PauliForm[expr_] := PauliForm[expr, Qubits @ expr] /; FreeQ[expr, _Pauli]
 
-theDirac[ {S:_Symbol?QubitQ[___,None], 1, 1} ] := (1 - S[3]) / 2
+PauliForm[expr_List, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, expr]
 
-theDirac[ {S:_Symbol?QubitQ[___,None], 0, 1} ] := S[4]
+PauliForm[assc_Association, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, assc]
+(* NOTE: For some unknown reason, a special handling is required for
+   Association[...]. *)
 
-theDirac[ {S:_Symbol?QubitQ[___,None], 1, 0} ] := S[5]
+PauliForm[expr_Plus, qq:{__?QubitQ}] :=
+  Plus @@ PauliForm[List @@ expr, qq]
 
-Dirac/:
-Dagger[ Dirac[ a_Ket, b_Bra, qq:{__?QubitQ} ] ] :=
-  Dirac[ Dagger[b], Dagger[a], qq ]
-(* Normally, such an operation is not necessary. *)
+PauliForm[z_?CommutativeQ, qq:{__?QubitQ}] :=
+  z * PauliForm[Multiply @@ Through @ qq[0], qq]
+
+PauliForm[expr_, qq:{__?QubitQ}] := expr /. {
+  HoldPattern @ Multiply[ss__?QubitQ] :> PauliForm[ss, qq],
+  op_?QubitQ :> PauliForm[op, qq]
+ }
+
+
+PauliForm[op_Pauli] :=
+  CircleTimes @@ ReplaceAll[op, {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z"}]
+
+PauliForm[assc_Association] := Map[PauliForm, assc]
+(* NOTE: For some unknown reason, a special handling is required for
+   Association[...]. *)
+
+PauliForm[expr_] := expr /. { op_Pauli :> PauliForm[op] }
+
+(**** </PauliForm> ****)
+
+
+(**** <Dirac> ****)
+
+Dirac::usage = "Dirac is OBSOLETE. Instead, use Dyad."
+
+Dirac[expr__] := (
+  Message[Q3`Q3General::obsolete, Dirac, Dyad];
+  Dyad[expr]
+ )
+
+(**** </Dirac> ****)
 
 
 QuissoReduced::usage = "QuissoReduced[v, {S}] gives the reduced density operator (in the Ket[...]**Bra[...] form) for the qubits in {S}. For the single-qubit reduced density operator, QuissoReduced[v, S] can be used.
@@ -706,14 +697,14 @@ QuissoReduced[v_, S:{__?QubitQ}] :=
   wReduced @ QuissoFactor[ Garner @ v, S ]
 
 wReduced[ OSlash[a_Ket, b_] ] :=
-  Dirac[a, Dagger[a]] * Conjugate[ Dagger[b] ** b ]
+  Dyad[a, a] * (Dagger[b] ** b)
 
 wReduced[ expr_Plus ] := Module[
   { vv = List @@ expr,
     aa, bb, qq },
   { aa, bb } = Transpose[vv /. {OSlash -> List}];
   qq = Qubits[aa];
-  aa = Outer[ Dirac[#1, #2, qq]&, aa, Dagger[aa] ];
+  aa = Outer[ Dyad[#1, #2, qq]&, aa, aa ];
   bb = Outer[ Multiply, Dagger[bb], bb ];
   Total @ Flatten[ Conjugate[bb] * aa ]
  ]
@@ -1598,7 +1589,7 @@ HoldPattern @ Elaborate[ Projector[v_, qq_] ] :=
 
 Projector /:
 HoldPattern @ ExpressionFor[ Projector[v_, qq_] ] :=
-  Dirac[v, Dagger @ v, qq]
+  Dyad[v, v, qq]
 
 HoldPattern @ Projector[expr_, ___] := (
   Message[Projector::noKet, expr];
@@ -2579,12 +2570,15 @@ setQudit[x_Symbol, dim_Integer] := (
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
-  x[j___, ij:Rule[_List, _List]] := x[j, Thread @ ij];
+  x[j___, ij:Rule[_List, _]] := x[j, Thread @ ij];
+  x[j___, ij:Rule[_, _List]] := x[j, Thread @ ij];
+  
   x[j___, All] := x[j, Rule @@@ Tuples[Range[0, dim-1], 2]];
   
   x[j___, Null] := x[j, None];
+  
   x[j___, None, k_] := x[j, k];
-  (* In particular, x[j,None,None] = x[j,None]. *)
+  (* In particular, x[j, None, None] = x[j, None]. *)
 
   x /: Dagger[ x[j___, Rule[a_Integer, b_Integer]] ] := x[j, Rule[b,a]];
 

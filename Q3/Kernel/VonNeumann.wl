@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `VonNeumann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.9 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-21 11:35:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.11 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-03 20:24:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -59,23 +59,22 @@ QuantumLog[a_?VectorQ, b_?VectorQ] :=
   If[Fidelity[a, b] == 1, 0, Infinity]
 
 QuantumLog[a_?MatrixQ, b_?VectorQ] := Module[
-  { aval, avec,
-    bval, bvec },
-  {aval, avec} = Transpose @ Select[Transpose @ Eigensystem[a], First[#] > 0&];
-  If[ Length[aval] > 1, Return[Infinity] ];
+  {val, vec},
+  {val, vec} = Transpose @ Select[Transpose @ Eigensystem[a], First[#] > 0&];
+  If[ Length[val] > 1, Return[Infinity] ];
 
-  avec = Flatten[avec];
-  If[ AllTrue[avec, NumericQ], avec = Normalize[avec] ];
-  If[ Fidelity[avec, b] == 1, 0, Infinity ]
+  vec = Flatten[vec];
+  If[ AllTrue[vec, NumericQ], vec = Normalize[vec] ];
+  If[ Fidelity[vec, b] == 1, 0, Infinity ]
  ]
 
 QuantumLog[a_?VectorQ, b_?MatrixQ] := Module[
-  { bval, bvec },
-  {bval, bvec} = Eigensystem[b];
-  If[ AllTrue[Flatten @ bvec, NumericQ] && Not[UnitaryMatrixQ @ bvec],
-    bvec = Orthogonalize[bvec]
+  {val, vec},
+  {val, vec} = Eigensystem[b];
+  If[ AllTrue[Flatten @ vec, NumericQ] && Not[UnitaryMatrixQ @ vec],
+    vec = Orthogonalize[vec]
    ];
-  Total @ WeightedLog[Abs[Conjugate[a] . Transpose[bvec]]^2, bval]
+  Total @ WeightedLog[Abs[Conjugate[a] . Transpose[vec]]^2, val]
  ]
 
 QuantumLog[a_?MatrixQ, b_?MatrixQ] := Module[
