@@ -1,0 +1,558 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     17229,        549]
+NotebookOptionsPosition[     11789,        429]
+NotebookOutlinePosition[     13959,        486]
+CellTagsIndexPosition[     13874,        481]
+WindowTitle->FockExpand
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/FockQuickStart"], "\<\"Demo: Baker-Hausdorff Lemma\
+\"\>":>Documentation`HelpLookup["paclet:Q3/tutorial/DemoBakerHausdorffLemma"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Lie\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Lie"], "\<\"LieExp\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/LieExp"], "\<\"Elaborate\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Elaborate"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/FockPackageGuide"], "\<\"Q3 Application Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/FockExpand\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/FockExpand"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/FockExpand.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$68032], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/FockExpand", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["FockExpand", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData["FockExpand"], "InlineFormula"],
+     " is obsolete now. Use ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Elaborate"]], "paclet:Q3/ref/Elaborate"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " instead.\[LineSeparator]expands ",
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     " including ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Fock"]], "paclet:Q3/ref/Fock"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " space operators."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1113773074],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1716587466],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1063604500],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Boson", ",", "a"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->516890710],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"H", "=", 
+  RowBox[{"Q", "[", "a", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->572832844],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{
+   TagBox[
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"a"}, "RowDefault"], 
+       TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+      "Superscript"],
+     DisplayForm],
+    DisplayForm], 
+   TagBox["\<\"a\"\>",
+    DisplayForm]}],
+  DisplayForm]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->472452211]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"expr", "=", 
+  RowBox[{
+   RowBox[{"Exp", "[", 
+    RowBox[{"I", " ", "H"}], "]"}], "**", "a", "**", 
+   RowBox[{"Exp", "[", 
+    RowBox[{
+     RowBox[{"-", "I"}], " ", "H"}], "]"}]}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->807956244],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{
+   TagBox[
+    SuperscriptBox["\[ExponentialE]", 
+     RowBox[{"\[ImaginaryI]", " ", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"a"}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Superscript"],
+          DisplayForm],
+         DisplayForm], 
+        TagBox["\<\"a\"\>",
+         DisplayForm]}],
+       DisplayForm]}]],
+    DisplayForm], 
+   TagBox["\<\"a\"\>",
+    DisplayForm], 
+   TagBox[
+    SuperscriptBox["\[ExponentialE]", 
+     RowBox[{
+      RowBox[{"-", "\[ImaginaryI]"}], " ", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"a"}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Superscript"],
+          DisplayForm],
+         DisplayForm], 
+        TagBox["\<\"a\"\>",
+         DisplayForm]}],
+       DisplayForm]}]],
+    DisplayForm]}],
+  DisplayForm]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->566380057]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FockExpand", "[", "expr", "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->667081723],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Q3General", "obsolete", 
+   "\"The symbol \\!\\(\\*RowBox[{\\\"\\\\\\\"FockExpand\\\\\\\"\\\"}]\\) is \
+OBSOLETE. Use \\!\\(\\*RowBox[{\\\"\\\\\\\"Elaborate\\\\\\\"\\\"}]\\) \
+instead.\"", 2, 194, 6, 21855194413612068774, "Local", "Q3`Q3General"},
+  "MessageTemplate2"]], "Message", "MSG",
+ CellLabel->"During evaluation of In[5]:=",
+ CellID->277561114],
+
+Cell[BoxData[
+ RowBox[{"a", " ", 
+  SuperscriptBox["\[ExponentialE]", 
+   RowBox[{"-", "\[ImaginaryI]"}]]}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->635161714]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Lie"]], "paclet:Q3/ref/Lie"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["LieExp"]], "paclet:Q3/ref/LieExp"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Elaborate"]], "paclet:Q3/ref/Elaborate"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock: Quick Start"]], "paclet:Q3/tutorial/FockQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Demo: Baker-Hausdorff Lemma"]], 
+   "paclet:Q3/tutorial/DemoBakerHausdorffLemma"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1737933471],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1390227264],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application Guide"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->927546688]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"FockExpand",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 32, 10.644822}", 
+    "history" -> {"XX", "", "1.6", ""}, "context" -> "Q3`", 
+    "keywords" -> {"Baker-Hausdorff lemma", "Lie algebra"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "FockExpand is obsolete now. Use Elaborate instead. expands expr \
+including Fock space operators.", "synonyms" -> {}, "tabletags" -> {}, 
+    "title" -> "FockExpand", "titlemodifier" -> "", "windowtitle" -> 
+    "FockExpand", "type" -> "Symbol", "uri" -> "Q3/ref/FockExpand", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "NewStyles" -> 
+  False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6137, 176, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"cd8dc087-ffc9-48ff-bbfc-4312351a4ea0",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1113773074]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 13675, 474}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[582, 21, 4562, 114, 70, "AnchorBarGrid",ExpressionUUID->"078445a8-d787-438d-9458-90cfab5bdfc1",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5169, 139, 167, 6, 70, "ObjectNameGrid",ExpressionUUID->"49be6a20-348d-4a3b-9899-aa3837ef2e9d"],
+Cell[5339, 147, 761, 24, 70, "Usage",ExpressionUUID->"e8925a0c-9d6d-4f9c-92c3-51be3e7f0f87"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6137, 176, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"cd8dc087-ffc9-48ff-bbfc-4312351a4ea0",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1113773074],
+Cell[CellGroupData[{
+Cell[6430, 190, 196, 6, 70, "ExampleSection",ExpressionUUID->"d2f15069-a683-4336-b08e-f23a7e696dc5",
+ CellID->1716587466],
+Cell[6629, 198, 91, 3, 70, "Input",ExpressionUUID->"bd5fa7bf-b34f-49b7-980e-340d90e82ccd",
+ CellID->1063604500],
+Cell[6723, 203, 126, 4, 70, "Input",ExpressionUUID->"3f9d0287-fdb5-403d-b468-2e9cd0e41a3f",
+ CellID->516890710],
+Cell[CellGroupData[{
+Cell[6874, 211, 120, 4, 70, "Input",ExpressionUUID->"472e0883-43ae-48a8-bffc-ffb004d14e85",
+ CellID->572832844],
+Cell[6997, 217, 344, 15, 70, "Output",ExpressionUUID->"16826739-2600-4497-a496-f294b126eef3",
+ CellID->472452211]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7378, 237, 263, 9, 70, "Input",ExpressionUUID->"4ee4a1bb-b154-4429-a301-e3ef6a534f26",
+ CellID->807956244],
+Cell[7644, 248, 1068, 42, 70, "Output",ExpressionUUID->"c5e71beb-e6fb-49b0-bca3-63a2723a9597",
+ CellID->566380057]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8749, 295, 109, 3, 70, "Input",ExpressionUUID->"5bc1d8c9-933f-4df2-96bb-6b03a3b1676b",
+ CellID->667081723],
+Cell[8861, 300, 385, 8, 70, "Message",ExpressionUUID->"55e9e8e8-c019-4d8b-8840-a18d19e8daa0",
+ CellID->277561114],
+Cell[9249, 310, 162, 5, 70, "Output",ExpressionUUID->"d5aaf5ed-363b-4ada-a9ba-8d55dd910aa0",
+ CellID->635161714]
+}, Open  ]]
+}, Open  ]],
+Cell[9438, 319, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"3dcae977-c307-45f2-92c4-107a093ffb61"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9506, 324, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"281460fd-e403-49ae-a45d-684dd5e5ec57",
+ CellID->1255426704],
+Cell[9659, 333, 839, 28, 70, "SeeAlso",ExpressionUUID->"06fac105-f863-4820-8eb4-ae9bcd4d076a",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10535, 366, 152, 7, 70, "TutorialsSection",ExpressionUUID->"d8ca90b4-2f06-45ce-802c-58051bed85b0",
+ CellID->250839057],
+Cell[10690, 375, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"3d14ee0a-d576-409a-9fcd-460196e464ca"],
+Cell[10724, 377, 185, 6, 70, "Tutorials",ExpressionUUID->"0dbb49ff-9c52-4ef8-867a-5f02a1994445",
+ CellID->341631938],
+Cell[10912, 385, 209, 7, 70, "Tutorials",ExpressionUUID->"88e20bc5-4c75-46b2-8d0d-dab5b8950fd2",
+ CellID->1737933471],
+Cell[11124, 394, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"0142be81-58b1-4d8b-a98d-a0f2a306de26"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11192, 399, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"cfcb17c4-82db-4b76-a438-0e501495fb17",
+ CellID->38303248],
+Cell[11351, 408, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"9a9b8d1d-d493-4d45-ae08-6f35e7804374"],
+Cell[11385, 410, 186, 6, 70, "MoreAbout",ExpressionUUID->"2925eefa-22f3-48ed-863e-41e07e088bbb",
+ CellID->1390227264],
+Cell[11574, 418, 173, 6, 70, "MoreAbout",ExpressionUUID->"45108a49-8341-4cb1-975f-45914c373825",
+ CellID->927546688]
+}, Open  ]],
+Cell[11762, 427, 23, 0, 70, "FooterCell",ExpressionUUID->"d9fcac1f-b3a2-4d5a-93d6-36f8d39b0c9b"]
+}
+]
+*)
+
+(* End of internal cache information *)

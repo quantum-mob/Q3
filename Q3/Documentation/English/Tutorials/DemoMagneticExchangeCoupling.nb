@@ -1,0 +1,3122 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    101061,       3113]
+NotebookOptionsPosition[     92409,       2936]
+NotebookOutlinePosition[     94757,       2994]
+CellTagsIndexPosition[     94714,       2991]
+WindowTitle->Demo: Magnetic Exchange Coupling
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/FockQuickStart"], "\<\"Q3: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/FockPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialMoreAboutSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Functions",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Functions", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FermionBasis\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FermionBasis"], "\<\"FockAddSpin\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockAddSpin"], "\<\"FockAddSpinZ\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockAddSpinZ"], "\<\"FockHopping\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockHopping"], "\<\"FockNumber\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/FockNumber"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialFunction"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->
+         False], {"\<\"Q3/tutorial/DemoMagneticExchangeCoupling\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/DemoMagneticExchangeCoupling"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+DemoMagneticExchangeCoupling.html"], StandardForm]], "Input", 
+              TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$205655], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/tutorial/DemoMagneticExchangeCoupling", ".html"]], None}]}]},
+       
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Demo: Magnetic Exchange Coupling", "Title",
+ CellID->509267359],
+
+Cell[TextData[{
+ "Here we discuss the magnetic exchange coupling as an example of possible \
+applications of the ",
+ ButtonBox["Fock",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/FockPackageGuide"],
+ " package."
+}], "Text",
+ CellID->1534169418],
+
+Cell[BoxData[GridBox[{
+   {
+    ButtonBox["FermionBasis",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/FermionBasis"], Cell["\<\
+Constucts the basis the elements of which are grouped by conserved quantities\
+\
+\>", "TableText"]},
+   {
+    ButtonBox["FockAddSpin",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/FockAddSpin"], Cell["\<\
+Constructs the irreducible basis of the total angular momentum.\
+\>", "TableText"]},
+   {
+    ButtonBox["FockAddSpinZ",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/FockAddSpinZ"], Cell["\<\
+Constructs the irreducible basis of the total directional angular momentum.\
+\>", "TableText"]},
+   {
+    ButtonBox["FockNumber",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/FockNumber"], Cell["\<\
+Returns an operator corresponding to the total number of particles.\
+\>", "TableText"]},
+   {
+    ButtonBox["FockHopping",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/FockHopping"], Cell[
+    "Returns an operator describing hoppings.", "TableText"]}
+  }]], "DefinitionBox",
+ CellID->2096742444],
+
+Cell["Some useful functions used in the example.", "Caption",
+ CellID->1891092685],
+
+Cell["Load the package.", "MathCaption",
+ CellID->836781195],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->2058623809],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c", ",", "d", ",", 
+   RowBox[{"Spin", "\[Rule]", 
+    RowBox[{"1", "/", "2"}]}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "t", ",", "\[Epsilon]", ",", "U"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->744409588],
+
+Cell["Single quantum dot", "MathCaption",
+ CellID->1179448192],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"H0", "=", 
+  RowBox[{"\[Epsilon]", "*", 
+   RowBox[{"FockNumber", "[", 
+    RowBox[{"d", "[", "All", "]"}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Hu", "=", 
+  RowBox[{
+   RowBox[{"U", "[", "0", "]"}], "*", 
+   RowBox[{
+    RowBox[{"FockNumber", "[", 
+     RowBox[{"d", "[", "Up", "]"}], "]"}], "**", 
+    RowBox[{"FockNumber", "[", 
+     RowBox[{"d", "[", "Down", "]"}], "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"HH", "=", 
+  RowBox[{"H0", "+", "Hu"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1768036553],
+
+Cell[BoxData[
+ RowBox[{"\[Epsilon]", " ", 
+  RowBox[{"(", 
+   RowBox[{
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->781006731],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"d"}, "RowDefault"], 
+       TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+       TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"d"}, "RowDefault"], 
+       TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+       TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"d"},
+       "RowDefault"], 
+      TemplateBox[{"\"\[UpArrow]\""},
+       "RowDefault"]],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"d"},
+       "RowDefault"], 
+      TemplateBox[{"\"\[DownArrow]\""},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm], " ", 
+  SubscriptBox[
+   TemplateBox[{"U"},
+    "RowDefault"], 
+   TemplateBox[{"0"},
+    "RowDefault"]]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->960077453],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"\[Epsilon]", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"\"\[DownArrow]\""},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"\"\[UpArrow]\""},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm]}], ")"}]}], "+", 
+  RowBox[{
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"d"}, "RowDefault"], 
+        TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"d"}, "RowDefault"], 
+        TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"d"},
+        "RowDefault"], 
+       TemplateBox[{"\"\[UpArrow]\""},
+        "RowDefault"]],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"d"},
+        "RowDefault"], 
+       TemplateBox[{"\"\[DownArrow]\""},
+        "RowDefault"]],
+      DisplayForm]}],
+    DisplayForm], " ", 
+   SubscriptBox[
+    TemplateBox[{"U"},
+     "RowDefault"], 
+    TemplateBox[{"0"},
+     "RowDefault"]]}]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1977112660]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"bsNS", "=", 
+   RowBox[{"FermionBasis", "[", 
+    RowBox[{"d", ",", 
+     RowBox[{"\"\<Representation\>\"", "\[Rule]", "\"\<Generators\>\""}]}], 
+    "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"bsNS", "//", "PrintFermionBasis"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->598998768],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      TemplateBox[{"\"\[SpaceIndicator]\""},
+       "Ket"], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"],
+         DisplayForm]}],
+       DisplayForm], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"-", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm]}], "}"}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {Center, {Left}}, "Rows" -> {{Center}}},
+   GridBoxDividers->{"Rows" -> {True, {
+        Dashing[{Small, Small}]}, True}},
+   GridBoxFrame->{"Columns" -> False, "Rows" -> False},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1663725653]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mNS", "=", 
+   RowBox[{"FockMatrix", "[", 
+    RowBox[{"HH", ",", "bsNS"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mNS", "//", "FockMatrixForm"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->92774701],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"\"\>", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], "0", "\[Epsilon]", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], "0", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Center}}},
+   GridBoxDividers->{
+    "ColumnsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 4 -> Dashing[{Small, Small}]}, 
+     "RowsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 4 -> Dashing[{Small, Small}]}},
+   
+   GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->2062802497]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mNS", "=", 
+   RowBox[{"FockMatrix", "[", 
+    RowBox[{"HH", ",", "bsNS", ",", 
+     RowBox[{"\"\<DiagonalOnly\>\"", "\[Rule]", "False"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mNS", "//", "FockMatrixForm"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->2072715983],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"\"\>", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], "0", "\[Epsilon]", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], "0", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Center}}},
+   GridBoxDividers->{
+    "ColumnsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 4 -> Dashing[{Small, Small}]}, 
+     "RowsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 4 -> Dashing[{Small, Small}]}},
+   
+   GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1892055194]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"bsNS", "=", 
+   RowBox[{"FermionBasis", "[", 
+    RowBox[{"c", ",", "d", ",", 
+     RowBox[{"\"\<Representation\>\"", "\[Rule]", "\"\<Generators\>\""}]}], 
+    "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"bsNS", "//", "PrintFermionBasis"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"mNS", "=", 
+   RowBox[{"FockMatrix", "[", 
+    RowBox[{"HH", ",", "bsNS"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mNS", "//", 
+  RowBox[{
+   RowBox[{"FockMatrixForm", "[", 
+    RowBox[{"#", ",", "\"\<H\>\""}], "]"}], "&"}]}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1831392442],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      TemplateBox[{"\"\[SpaceIndicator]\""},
+       "Ket"], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"c"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"c"}, "RowDefault"], 
+             TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"c"}, "RowDefault"], 
+             TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}], ",", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox[
+          TagBox[
+           RowBox[{
+            TagBox[
+             TemplateBox[{
+               TemplateBox[{"c"}, "RowDefault"], 
+               TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+               TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+              "Subsuperscript"],
+             DisplayForm], 
+            TagBox[
+             TemplateBox[{
+               TemplateBox[{"d"}, "RowDefault"], 
+               TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+               TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+              "Subsuperscript"],
+             DisplayForm], 
+            TagBox[
+             TemplateBox[{"\"\[SpaceIndicator]\""},
+              "Ket"],
+             DisplayForm]}],
+           DisplayForm], 
+          SqrtBox["2"]]}], "+", 
+        FractionBox[
+         TagBox[
+          RowBox[{
+           TagBox[
+            TemplateBox[{
+              TemplateBox[{"c"}, "RowDefault"], 
+              TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+              TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+             "Subsuperscript"],
+            DisplayForm], 
+           TagBox[
+            TemplateBox[{
+              TemplateBox[{"d"}, "RowDefault"], 
+              TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+              TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+             "Subsuperscript"],
+            DisplayForm], 
+           TagBox[
+            TemplateBox[{"\"\[SpaceIndicator]\""},
+             "Ket"],
+            DisplayForm]}],
+          DisplayForm], 
+         SqrtBox["2"]]}], ",", 
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], 
+     RowBox[{"{", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"],
+         DisplayForm]}],
+       DisplayForm], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"c"}, "RowDefault"], 
+             TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"c"}, "RowDefault"], 
+             TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"c"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"],
+         DisplayForm]}],
+       DisplayForm], "}"}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {Center, {Left}}, "Rows" -> {{Center}}},
+   GridBoxDividers->{"Rows" -> {True, {
+        Dashing[{Small, Small}]}, True}},
+   GridBoxFrame->{"Columns" -> False, "Rows" -> False},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->202493629],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"H\"\>", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], "\[SpanFromLeft]", "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], "0", "\[Epsilon]", "0", "0", "0", "0", 
+     "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "\[Epsilon]", "0", "0", "0", "0",
+      "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}], "0", "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], "0", "0", "0", "0", "0", "0", 
+     "\[Epsilon]", "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], "0", "0", "0", "0", "0", "0", "0", 
+     "\[Epsilon]", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}], "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}], "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Center}}},
+   GridBoxDividers->{
+    "ColumnsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 5 -> Dashing[{Small, Small}], 
+       8 -> Dashing[{Small, Small}], 9 -> Dashing[{Small, Small}], 11 -> 
+       Dashing[{Small, Small}]}, 
+     "RowsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 5 -> Dashing[{Small, Small}], 
+       8 -> Dashing[{Small, Small}], 9 -> Dashing[{Small, Small}], 11 -> 
+       Dashing[{Small, Small}]}},
+   GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1696325755]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"bsNS", "=", 
+   RowBox[{"FermionBasis", "[", 
+    RowBox[{"c", ",", "d", ",", 
+     RowBox[{"\"\<Representation\>\"", "\[Rule]", "\"\<Generators\>\""}]}], 
+    "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"bsNS", "//", "PrintFermionBasis"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"mNS", "=", 
+   RowBox[{"FockMatrix", "[", 
+    RowBox[{"HH", ",", "bsNS", ",", 
+     RowBox[{"\"\<DiagonalOnly\>\"", "\[Rule]", "False"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mNS", "//", "FockMatrixForm"}]}], "Input",
+ CellLabel->"In[8]:=",
+ CellID->435850494],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      TemplateBox[{"\"\[SpaceIndicator]\""},
+       "Ket"], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"c"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"c"}, "RowDefault"], 
+             TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"c"}, "RowDefault"], 
+             TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}], ",", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox[
+          TagBox[
+           RowBox[{
+            TagBox[
+             TemplateBox[{
+               TemplateBox[{"c"}, "RowDefault"], 
+               TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+               TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+              "Subsuperscript"],
+             DisplayForm], 
+            TagBox[
+             TemplateBox[{
+               TemplateBox[{"d"}, "RowDefault"], 
+               TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+               TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+              "Subsuperscript"],
+             DisplayForm], 
+            TagBox[
+             TemplateBox[{"\"\[SpaceIndicator]\""},
+              "Ket"],
+             DisplayForm]}],
+           DisplayForm], 
+          SqrtBox["2"]]}], "+", 
+        FractionBox[
+         TagBox[
+          RowBox[{
+           TagBox[
+            TemplateBox[{
+              TemplateBox[{"c"}, "RowDefault"], 
+              TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+              TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+             "Subsuperscript"],
+            DisplayForm], 
+           TagBox[
+            TemplateBox[{
+              TemplateBox[{"d"}, "RowDefault"], 
+              TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+              TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+             "Subsuperscript"],
+            DisplayForm], 
+           TagBox[
+            TemplateBox[{"\"\[SpaceIndicator]\""},
+             "Ket"],
+            DisplayForm]}],
+          DisplayForm], 
+         SqrtBox["2"]]}], ",", 
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], 
+     RowBox[{"{", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"],
+         DisplayForm]}],
+       DisplayForm], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"c"}, "RowDefault"], 
+             TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"c"}, "RowDefault"], 
+             TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"c"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"],
+         DisplayForm]}],
+       DisplayForm], "}"}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {Center, {Left}}, "Rows" -> {{Center}}},
+   GridBoxDividers->{"Rows" -> {True, {
+        Dashing[{Small, Small}]}, True}},
+   GridBoxFrame->{"Columns" -> False, "Rows" -> False},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->764423370],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"\"\>", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], "\[SpanFromLeft]", "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], "0", "\[Epsilon]", "0", "0", "0", "0", 
+     "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "\[Epsilon]", "0", "0", "0", "0",
+      "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}], "0", "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], "0", "0", "0", "0", "0", "0", 
+     "\[Epsilon]", "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], "0", "0", "0", "0", "0", "0", "0", 
+     "\[Epsilon]", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}], "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}], "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Center}}},
+   GridBoxDividers->{
+    "ColumnsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 5 -> Dashing[{Small, Small}], 
+       8 -> Dashing[{Small, Small}], 9 -> Dashing[{Small, Small}], 11 -> 
+       Dashing[{Small, Small}]}, 
+     "RowsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 5 -> Dashing[{Small, Small}], 
+       8 -> Dashing[{Small, Small}], 9 -> Dashing[{Small, Small}], 11 -> 
+       Dashing[{Small, Small}]}},
+   GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1416403236]
+}, Open  ]],
+
+Cell["Double quantum dot", "MathCaption",
+ CellID->1176213036],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"H0", "=", 
+  RowBox[{"\[Epsilon]", "*", 
+   RowBox[{"FockNumber", "[", 
+    RowBox[{
+     RowBox[{"d", "[", 
+      RowBox[{"1", ",", "All"}], "]"}], ",", 
+     RowBox[{"d", "[", 
+      RowBox[{"2", ",", "All"}], "]"}]}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Ht", "=", 
+  RowBox[{
+   RowBox[{"-", "t"}], "*", 
+   RowBox[{"PlusDagger", "@", 
+    RowBox[{"FockHopping", "[", 
+     RowBox[{
+      RowBox[{"d", "[", 
+       RowBox[{"1", ",", "All"}], "]"}], ",", 
+      RowBox[{"d", "[", 
+       RowBox[{"2", ",", "All"}], "]"}]}], "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Hu", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"U", "[", "0", "]"}], "*", 
+    RowBox[{"Sum", "[", " ", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"FockNumber", "[", 
+        RowBox[{"d", "[", 
+         RowBox[{"j", ",", "Up"}], "]"}], "]"}], "**", 
+       RowBox[{"FockNumber", "[", 
+        RowBox[{"d", "[", 
+         RowBox[{"j", ",", "Down"}], "]"}], "]"}]}], ",", " ", 
+      RowBox[{"{", 
+       RowBox[{"j", ",", "1", ",", "2"}], "}"}]}], "]"}]}], "+", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"U", "[", 
+      RowBox[{"1", ",", "2"}], "]"}], "/", "2"}], "*", 
+    RowBox[{
+     RowBox[{"FockNumber", "[", 
+      RowBox[{"d", "[", 
+       RowBox[{"1", ",", "All"}], "]"}], "]"}], "**", 
+     RowBox[{"FockNumber", "[", 
+      RowBox[{"d", "[", 
+       RowBox[{"2", ",", "All"}], "]"}], "]"}]}]}]}]}]}], "Input",
+ CellLabel->"In[9]:=",
+ CellID->1380633336],
+
+Cell[BoxData[
+ RowBox[{"\[Epsilon]", " ", 
+  RowBox[{"(", 
+   RowBox[{
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->1023919150],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "t"}], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->1222690639],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""},
+          "RowDefault"]],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""},
+          "RowDefault"]],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm]}], ")"}], " ", 
+   SubscriptBox[
+    TemplateBox[{"U"},
+     "RowDefault"], 
+    TemplateBox[{"0"},
+     "RowDefault"]]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   RowBox[{"(", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""},
+          "RowDefault"]],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""},
+          "RowDefault"]],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""},
+          "RowDefault"]],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"d"}, "RowDefault"], 
+          TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""},
+          "RowDefault"]],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"d"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm]}], ")"}], " ", 
+   SubscriptBox[
+    TemplateBox[{"U"},
+     "RowDefault"], 
+    TemplateBox[{"1", "\",\"", "2"},
+     "RowDefault"]]}]}]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->490551530]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"HH", "=", 
+   RowBox[{"H0", "+", "Ht", "+", "Hu"}]}], ";"}]], "Input",
+ CellLabel->"In[10]:=",
+ CellID->1491023421],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"bsNS", "=", 
+   RowBox[{"FermionBasis", "[", 
+    RowBox[{
+     RowBox[{"d", "[", "1", "]"}], ",", 
+     RowBox[{"d", "[", "2", "]"}], ",", 
+     RowBox[{"\"\<Representation\>\"", "\[Rule]", "\"\<Generators\>\""}], ",", 
+     RowBox[{"\"\<Conserved\>\"", "\[Rule]", 
+      RowBox[{"{", 
+       RowBox[{"\"\<Number\>\"", ",", "\"\<Spin\>\""}], "}"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"bsNS", "//", "PrintFermionBasis"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"bsNone", "=", 
+   RowBox[{"FermionBasis", "[", 
+    RowBox[{
+     RowBox[{"d", "[", "1", "]"}], ",", 
+     RowBox[{"d", "[", "2", "]"}], ",", 
+     RowBox[{"\"\<Representation\>\"", "\[Rule]", "\"\<Generators\>\""}], ",", 
+     RowBox[{"\"\<Conserved\>\"", "\[Rule]", "\"\<None\>\""}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"bsNone", "//", 
+  "PrintFermionBasis"}], "\[IndentingNewLine]"}], "Input",
+ CellLabel->"In[11]:=",
+ CellID->643959904],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      TemplateBox[{"\"\[SpaceIndicator]\""},
+       "Ket"], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}], ",", 
+       RowBox[{
+        RowBox[{"-", 
+         FractionBox[
+          TagBox[
+           RowBox[{
+            TagBox[
+             TemplateBox[{
+               TemplateBox[{"d"}, "RowDefault"], 
+               TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+               
+               TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+              "Subsuperscript"],
+             DisplayForm], 
+            TagBox[
+             TemplateBox[{
+               TemplateBox[{"d"}, "RowDefault"], 
+               TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+               TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+              "Subsuperscript"],
+             DisplayForm], 
+            TagBox[
+             TemplateBox[{"\"\[SpaceIndicator]\""},
+              "Ket"],
+             DisplayForm]}],
+           DisplayForm], 
+          SqrtBox["2"]]}], "+", 
+        FractionBox[
+         TagBox[
+          RowBox[{
+           TagBox[
+            TemplateBox[{
+              TemplateBox[{"d"}, "RowDefault"], 
+              TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+              TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+             "Subsuperscript"],
+            DisplayForm], 
+           TagBox[
+            TemplateBox[{
+              TemplateBox[{"d"}, "RowDefault"], 
+              TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+              TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+             "Subsuperscript"],
+            DisplayForm], 
+           TagBox[
+            TemplateBox[{"\"\[SpaceIndicator]\""},
+             "Ket"],
+            DisplayForm]}],
+          DisplayForm], 
+         SqrtBox["2"]]}], ",", 
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], 
+     RowBox[{"{", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"],
+         DisplayForm]}],
+       DisplayForm], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"-", 
+        TagBox[
+         RowBox[{
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{
+             TemplateBox[{"d"}, "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+             TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+            "Subsuperscript"],
+           DisplayForm], 
+          TagBox[
+           TemplateBox[{"\"\[SpaceIndicator]\""},
+            "Ket"],
+           DisplayForm]}],
+         DisplayForm]}], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      TagBox[
+       RowBox[{
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"d"}, "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm], 
+        TagBox[
+         TemplateBox[{"\"\[SpaceIndicator]\""},
+          "Ket"],
+         DisplayForm]}],
+       DisplayForm], "}"}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {Center, {Left}}, "Rows" -> {{Center}}},
+   GridBoxDividers->{"Rows" -> {True, {
+        Dashing[{Small, Small}]}, True}},
+   GridBoxFrame->{"Columns" -> False, "Rows" -> False},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[11]=",
+ CellID->1665265317],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", "}"}], 
+     RowBox[{"{", 
+      RowBox[{
+       TemplateBox[{"\"\[SpaceIndicator]\""},
+        "Ket"], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm], ",", 
+       TagBox[
+        RowBox[{
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[DownArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{"d"}, "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "\"\[UpArrow]\""}, "RowDefault"], 
+            TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+           "Subsuperscript"],
+          DisplayForm], 
+         TagBox[
+          TemplateBox[{"\"\[SpaceIndicator]\""},
+           "Ket"],
+          DisplayForm]}],
+        DisplayForm]}], "}"}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {Center, {Left}}, "Rows" -> {{Center}}},
+   GridBoxDividers->{"Rows" -> {True, {
+        Dashing[{Small, Small}]}, True}},
+   GridBoxFrame->{"Columns" -> False, "Rows" -> False},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[11]=",
+ CellID->2107295115]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mNS", "=", 
+   RowBox[{"FockMatrix", "[", 
+    RowBox[{"HH", ",", "bsNS"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mNS", "//", 
+  RowBox[{
+   RowBox[{"FockMatrixForm", "[", 
+    RowBox[{"#", ",", "\"\<H\>\""}], "]"}], "&"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"mNone", "=", 
+   RowBox[{"FockMatrix", "[", 
+    RowBox[{"HH", ",", "bsNone"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mNone", "//", 
+  RowBox[{
+   RowBox[{"FockMatrixForm", "[", 
+    RowBox[{"#", ",", "\"\<H\>\""}], "]"}], "&"}]}]}], "Input",
+ CellLabel->"In[12]:=",
+ CellID->1594727082],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"H\"\>", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], "\[SpanFromLeft]", "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], 
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], "\[SpanFromLeft]", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0"}], "}"}], "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", 
+       FractionBox["1", "2"]}], "}"}], "0", "\[Epsilon]", 
+     RowBox[{"-", "t"}], "0", "0", "0", "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", 
+     RowBox[{"-", "t"}], "\[Epsilon]", "0", "0", "0", "0", "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], "0", "0", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}], 
+     RowBox[{
+      RowBox[{"-", 
+       SqrtBox["2"]}], " ", "t"}], "0", "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"-", 
+       SqrtBox["2"]}], " ", "t"}], 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"4", " ", "\[Epsilon]"}], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2"},
+          "RowDefault"]]}], ")"}]}], 
+     RowBox[{
+      RowBox[{"-", 
+       SqrtBox["2"]}], " ", "t"}], "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"-", 
+       SqrtBox["2"]}], " ", "t"}], 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}], "0", "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], "0", "0", "0", "0", "0", "0", 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"4", " ", "\[Epsilon]"}], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2"},
+          "RowDefault"]]}], ")"}]}], "0", "0", "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", 
+       FractionBox["1", "2"]}], "}"}], "0", "0", "0", "0", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"3", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2"},
+        "RowDefault"]]}], 
+     RowBox[{"-", "t"}], "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", 
+     RowBox[{"-", "t"}], 
+     RowBox[{
+      RowBox[{"3", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2"},
+        "RowDefault"]]}], "0"},
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "0"}], "}"}], "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", 
+     RowBox[{"2", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"0"},
+          "RowDefault"]], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2"},
+          "RowDefault"]]}], ")"}]}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Center}}},
+   GridBoxDividers->{
+    "ColumnsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 5 -> Dashing[{Small, Small}], 
+       8 -> Dashing[{Small, Small}], 9 -> Dashing[{Small, Small}], 11 -> 
+       Dashing[{Small, Small}]}, 
+     "RowsIndexed" -> {
+      2 -> True, 3 -> Dashing[{Small, Small}], 5 -> Dashing[{Small, Small}], 
+       8 -> Dashing[{Small, Small}], 9 -> Dashing[{Small, Small}], 11 -> 
+       Dashing[{Small, Small}]}},
+   GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[12]=",
+ CellID->1783934938],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {"\<\"H\"\>", 
+     RowBox[{"{", "}"}], "\[SpanFromLeft]", "\[SpanFromLeft]", 
+     "\[SpanFromLeft]", "\[SpanFromLeft]", "\[SpanFromLeft]", 
+     "\[SpanFromLeft]", "\[SpanFromLeft]", "\[SpanFromLeft]", 
+     "\[SpanFromLeft]", "\[SpanFromLeft]", "\[SpanFromLeft]", 
+     "\[SpanFromLeft]", "\[SpanFromLeft]", "\[SpanFromLeft]", 
+     "\[SpanFromLeft]"},
+    {
+     RowBox[{"{", "}"}], "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", "0", "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "\[Epsilon]", "0", "0", 
+     RowBox[{"-", "t"}], "0", "0", "0", 
+     RowBox[{"-", "t"}], "0", "0", "0", "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "\[Epsilon]", "0", 
+     RowBox[{"-", "t"}], "0", "0", "0", 
+     RowBox[{"-", "t"}], "0", "0", "0", "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}], "0", "t", 
+     RowBox[{"-", "t"}], "0", "0", "t", 
+     RowBox[{"-", "t"}], "0", "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", 
+     RowBox[{"-", "t"}], 
+     RowBox[{"-", "t"}], "0", "\[Epsilon]", "0", "0", "0", "0", "0", "0", "0",
+      "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "t", "0", 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"4", " ", "\[Epsilon]"}], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2"},
+          "RowDefault"]]}], ")"}]}], "0", "0", "0", "0", "0", "0", 
+     RowBox[{"-", "t"}], "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", 
+     RowBox[{"-", "t"}], "0", "0", 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"4", " ", "\[Epsilon]"}], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2"},
+          "RowDefault"]]}], ")"}]}], "0", "0", "0", "0", "0", 
+     RowBox[{"-", "t"}], "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", 
+     RowBox[{
+      RowBox[{"3", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2"},
+        "RowDefault"]]}], "0", "0", "0", "0", "0", "t", 
+     RowBox[{"-", "t"}], "0"},
+    {"\[SpanFromAbove]", "0", 
+     RowBox[{"-", "t"}], 
+     RowBox[{"-", "t"}], "0", "0", "0", "0", "0", "\[Epsilon]", "0", "0", "0",
+      "0", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "t", "0", "0", "0", "0", "0", 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"4", " ", "\[Epsilon]"}], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2"},
+          "RowDefault"]]}], ")"}]}], "0", "0", "t", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", 
+     RowBox[{"-", "t"}], "0", "0", "0", "0", "0", "0", 
+     RowBox[{
+      FractionBox["1", "2"], " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"4", " ", "\[Epsilon]"}], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2"},
+          "RowDefault"]]}], ")"}]}], "0", "t", "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", 
+     RowBox[{
+      RowBox[{"3", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2"},
+        "RowDefault"]]}], "0", 
+     RowBox[{"-", "t"}], "t", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", 
+     RowBox[{"-", "t"}], 
+     RowBox[{"-", "t"}], "0", "0", "t", "t", "0", 
+     RowBox[{
+      RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]]}], "0", "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", "t", "0", "0", 
+     "0", 
+     RowBox[{"-", "t"}], "0", 
+     RowBox[{
+      RowBox[{"3", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2"},
+        "RowDefault"]]}], "0", "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", 
+     RowBox[{"-", "t"}], "0", "0", "0", "t", "0", "0", 
+     RowBox[{
+      RowBox[{"3", " ", "\[Epsilon]"}], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]], "+", 
+      SubscriptBox[
+       TemplateBox[{"U"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2"},
+        "RowDefault"]]}], "0"},
+    {"\[SpanFromAbove]", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", 
+     "0", "0", "0", "0", "0", 
+     RowBox[{"2", " ", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{"2", " ", "\[Epsilon]"}], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"0"},
+          "RowDefault"]], "+", 
+        SubscriptBox[
+         TemplateBox[{"U"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2"},
+          "RowDefault"]]}], ")"}]}]}
+   },
+   AutoDelete->False,
+   GridBoxAlignment->{"Columns" -> {{Center}}},
+   GridBoxDividers->{
+    "ColumnsIndexed" -> {2 -> True}, "RowsIndexed" -> {2 -> True}},
+   GridBoxFrame->{"ColumnsIndexed" -> {{{1, -1}, {1, -1}} -> True}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[12]=",
+ CellID->1873837128]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "TutorialMoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->23220180],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Fock Package Guide",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/guide/FockPackageGuide"]], "TutorialMoreAbout",
+ CellID->278336517],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Tutorials"
+}], "RelatedTutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->415694126],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Fock: Quick Start",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/FockQuickStart"]], "RelatedTutorials",
+ CellID->946479228],
+
+Cell[TextData[ButtonBox["Q3: Quick Start",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/Q3QuickStart"]], "RelatedTutorials",
+ CellID->1598263231],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Wolfram Education Group Courses"
+}], "TutorialRelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->415694148],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["An Elementary Introduction to the Wolfram Language"]], 
+   "https://www.wolfram.com/language/elementary-introduction/"},
+  "WebLink",
+  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
+ CellID->415694149],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["The Wolfram Language: Fast Introduction for Programmers"]], 
+   "https://www.wolfram.com/language/fast-introduction-for-programmers/"},
+  "WebLink",
+  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
+ CellID->1480169507]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Demo: Magnetic Exchange Coupling",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
+  "LinkTrails" -> GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 45, 45.365802}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Here we discuss the magnetic exchange coupling as an example of possible \
+applications of the Fock package. Some useful functions used in the example. \
+Load the package.", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$205574, "title" -> 
+    "Demo: Magnetic Exchange Coupling", "titlemodifier" -> "", "windowtitle" -> 
+    "Demo: Magnetic Exchange Coupling", "type" -> "Tutorial", "uri" -> 
+    "Q3/tutorial/DemoMagneticExchangeCoupling", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[604, 21, 4869, 121, 70, "AnchorBarGrid",ExpressionUUID->"dcdef84c-33ee-4025-9fb6-c26cdb5d7853",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5498, 146, 69, 1, 70, "Title",ExpressionUUID->"524f0b85-e555-463d-8498-3a63980a5568",
+ CellID->509267359],
+Cell[5570, 149, 252, 8, 70, "Text",ExpressionUUID->"e8b7a848-d33f-4f5a-81dd-bba1c42352ef",
+ CellID->1534169418],
+Cell[5825, 159, 1074, 32, 70, "DefinitionBox",ExpressionUUID->"2f527140-c123-4304-8ebc-c66a4e7502ec",
+ CellID->2096742444],
+Cell[6902, 193, 82, 1, 70, "Caption",ExpressionUUID->"bb1a1f1f-e7af-43a4-b3ed-f9f931f5f959",
+ CellID->1891092685],
+Cell[6987, 196, 60, 1, 70, "MathCaption",ExpressionUUID->"de45c142-2c3f-446e-ad83-982c62a2c01f",
+ CellID->836781195],
+Cell[7050, 199, 91, 3, 70, "Input",ExpressionUUID->"13ccb08e-fb8e-4641-a7ac-19b3e4bd7c99",
+ CellID->2058623809],
+Cell[7144, 204, 320, 8, 70, "Input",ExpressionUUID->"faccf2d0-afce-40f2-8e5d-18dc91acbd2c",
+ CellID->744409588],
+Cell[7467, 214, 62, 1, 70, "MathCaption",ExpressionUUID->"12654fa1-d23a-4e43-8cc7-ca79895111cc",
+ CellID->1179448192],
+Cell[CellGroupData[{
+Cell[7554, 219, 546, 16, 70, "Input",ExpressionUUID->"fb46d180-6b06-4975-a786-b4ad723bef98",
+ CellID->1768036553],
+Cell[8103, 237, 1067, 39, 70, "Output",ExpressionUUID->"b661885e-dbb4-442f-989f-022cfab396e1",
+ CellID->781006731],
+Cell[9173, 278, 1003, 39, 70, "Output",ExpressionUUID->"f90cdf6e-7708-4a15-a40e-76a3e93f317a",
+ CellID->960077453],
+Cell[10179, 319, 2096, 77, 70, "Output",ExpressionUUID->"7fae46e6-c157-4717-9618-66f6bd03fd63",
+ CellID->1977112660]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12312, 401, 325, 9, 70, "Input",ExpressionUUID->"b16c2fab-13fc-49b9-b6ee-edef56cf1032",
+ CellID->598998768],
+Cell[12640, 412, 1899, 62, 70, "Output",ExpressionUUID->"8aae37f7-5e0d-4b6c-b7a1-901f3f259af6",
+ CellID->1663725653]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14576, 479, 246, 7, 70, "Input",ExpressionUUID->"cfe864a1-9140-4cd8-9fab-c0c4f91a1761",
+ CellID->92774701],
+Cell[14825, 488, 1219, 40, 70, "Output",ExpressionUUID->"32218071-e7b8-4a9c-8812-9fc1c6b7b34a",
+ CellID->2062802497]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16081, 533, 316, 9, 70, "Input",ExpressionUUID->"7f3a885c-48fd-42e3-b0b3-82e246e16c63",
+ CellID->2072715983],
+Cell[16400, 544, 1219, 40, 70, "Output",ExpressionUUID->"216c9665-5d3f-467e-8c2f-6b082aece38a",
+ CellID->1892055194]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17656, 589, 619, 17, 70, "Input",ExpressionUUID->"27e641cb-1b4d-4390-9fba-841fa70ba9d8",
+ CellID->1831392442],
+Cell[18278, 608, 8906, 275, 70, "Output",ExpressionUUID->"95728489-bc9d-4103-bde6-eb541b19b510",
+ CellID->202493629],
+Cell[27187, 885, 2908, 85, 70, "Output",ExpressionUUID->"12b592f0-add3-4af5-9278-6bf570140c9c",
+ CellID->1696325755]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30132, 975, 606, 16, 70, "Input",ExpressionUUID->"121b1ec8-9251-4073-8ae6-0836b39d2df3",
+ CellID->435850494],
+Cell[30741, 993, 8906, 275, 70, "Output",ExpressionUUID->"c27082f0-4bcb-41c2-acaa-c638a3a656b3",
+ CellID->764423370],
+Cell[39650, 1270, 2907, 85, 70, "Output",ExpressionUUID->"9bbee297-4279-4484-bc8c-655c0f9307ca",
+ CellID->1416403236]
+}, Open  ]],
+Cell[42572, 1358, 62, 1, 70, "MathCaption",ExpressionUUID->"fe4fb930-8869-4fc1-b3ea-e5c9f324fd8a",
+ CellID->1176213036],
+Cell[CellGroupData[{
+Cell[42659, 1363, 1496, 47, 70, "Input",ExpressionUUID->"febef54a-cb58-44bc-b33d-5c617696a833",
+ CellID->1380633336],
+Cell[44158, 1412, 2118, 73, 70, "Output",ExpressionUUID->"ae3b384c-d5e7-4e5b-95ae-935dd49f3792",
+ CellID->1023919150],
+Cell[46279, 1487, 4115, 142, 70, "Output",ExpressionUUID->"88e311b9-3147-40f7-96b5-3683af31d3f3",
+ CellID->1222690639],
+Cell[50397, 1631, 6283, 206, 70, "Output",ExpressionUUID->"9e73a64d-0340-4f17-a8bd-0c7ebd041be1",
+ CellID->490551530]
+}, Open  ]],
+Cell[56695, 1840, 150, 5, 70, "Input",ExpressionUUID->"28d7c9f4-cdec-4ca5-ba44-66e1494d2029",
+ CellID->1491023421],
+Cell[CellGroupData[{
+Cell[56870, 1849, 983, 25, 70, "Input",ExpressionUUID->"71d72191-a3fb-4963-a937-b97e987b12ef",
+ CellID->643959904],
+Cell[57856, 1876, 9232, 276, 70, "Output",ExpressionUUID->"f9784e88-a79f-4240-b98f-e1ed682409ee",
+ CellID->1665265317],
+Cell[67091, 2154, 11982, 346, 70, "Output",ExpressionUUID->"b433af77-4dff-432c-ad5c-d383f7d12cd6",
+ CellID->2107295115]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[79110, 2505, 618, 18, 70, "Input",ExpressionUUID->"11566ce5-f2cf-4612-a300-b81155f309eb",
+ CellID->1594727082],
+Cell[79731, 2525, 4626, 147, 70, "Output",ExpressionUUID->"8ac7856d-a937-408a-a458-6db75e2fc459",
+ CellID->1783934938],
+Cell[84360, 2674, 6121, 177, 70, "Output",ExpressionUUID->"e96b2424-c73d-478b-9cf5-f9b3cf4b5bd9",
+ CellID->1873837128]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[90518, 2856, 164, 7, 70, "TutorialMoreAboutSection",ExpressionUUID->"6f85b76d-25d4-467e-8997-3b6fc256d8c0",
+ CellID->23220180],
+Cell[90685, 2865, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"19066879-c4ee-4865-8c07-95a967f4704d"],
+Cell[90719, 2867, 157, 3, 70, "TutorialMoreAbout",ExpressionUUID->"b32021d1-f06c-41a8-9824-0c52441c3c0c",
+ CellID->278336517],
+Cell[90879, 2872, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"170abaff-7b8f-4369-955f-108b3a41d6c9"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[90947, 2877, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"750fa5af-e834-485e-8951-5fb66f0ca656",
+ CellID->415694126],
+Cell[91117, 2886, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"b2f3a701-e6ee-43d1-9131-7325307323ce"],
+Cell[91151, 2888, 156, 3, 70, "RelatedTutorials",ExpressionUUID->"0a4bf65d-e6f4-419b-bf2b-464b6efdf70f",
+ CellID->946479228],
+Cell[91310, 2893, 153, 3, 70, "RelatedTutorials",ExpressionUUID->"2bd8eaf5-90f0-4db0-86a9-96435ef6ce96",
+ CellID->1598263231],
+Cell[91466, 2898, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"71f8f538-32e0-435e-8180-642ff371b25b"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[91534, 2903, 193, 7, 70, "TutorialRelatedLinksSection",ExpressionUUID->"1a5ba173-8c1f-4335-8026-451a99064673",
+ CellID->415694148],
+Cell[91730, 2912, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7b4bc448-0c9e-4b17-99d4-bb2071443231"],
+Cell[91764, 2914, 286, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"ad4641b7-6a29-440b-9e85-def223f5a395",
+ CellID->415694149],
+Cell[92053, 2923, 302, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"d5a39e85-1c81-433a-ba3a-3b097c3a2bbc",
+ CellID->1480169507]
+}, Open  ]]
+}, Open  ]],
+Cell[92382, 2934, 23, 0, 70, "FooterCell",ExpressionUUID->"57d9a9d5-09be-4419-9e70-80728c102f2b"]
+}
+]
+*)
+
+(* End of internal cache information *)

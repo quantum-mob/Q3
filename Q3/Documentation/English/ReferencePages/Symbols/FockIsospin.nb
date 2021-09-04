@@ -1,0 +1,556 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     17121,        547]
+NotebookOptionsPosition[     12531,        446]
+NotebookOutlinePosition[     14719,        502]
+CellTagsIndexPosition[     14634,        497]
+WindowTitle->FockIsospin
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/FockQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FockSpin\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/FockSpin"], "\<\"FockSpinor\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockSpinor"], "\<\"FockIsospinor\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/FockIsospinor"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/FockPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/FockIsospin\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/FockIsospin"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/FockIsospin.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$70532], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/FockIsospin",
+              ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["FockIsospin", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockIsospin", "[", 
+       StyleBox["c", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the isospin operator corresponding to the \
+fermionic operator ",
+     Cell[BoxData[
+      StyleBox["c", "TI"]], "InlineFormula"],
+     ". The phase factor is either 1 or -1. The default value of factor is \
+1."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1152269398],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->184243540],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->2002923607],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1793132042],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"FockIsospin", "[", "c", "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->748970066],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox[
+      TagBox[
+       RowBox[{
+        TagBox[
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""},
+            "RowDefault"]],
+          DisplayForm],
+         DisplayForm], 
+        TagBox[
+         TagBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"\"\[DownArrow]\""},
+            "RowDefault"]],
+          DisplayForm],
+         DisplayForm]}],
+       DisplayForm], "2"]}], "-", 
+    RowBox[{
+     FractionBox["1", "2"], " ", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}]}], ",", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", 
+      FractionBox["1", "2"]}], " ", "\[ImaginaryI]", " ", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"\"\[UpArrow]\""},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"\"\[DownArrow]\""},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}], "+", 
+    RowBox[{
+     FractionBox["1", "2"], " ", "\[ImaginaryI]", " ", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}]}], ",", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox["1", "2"]}], "+", 
+    FractionBox[
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"\"\[DownArrow]\""},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "2"], "+", 
+    FractionBox[
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"\"\[UpArrow]\""},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm], "2"]}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1717462155]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockSpin"]], "paclet:Q3/ref/FockSpin"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockSpinor"]], "paclet:Q3/ref/FockSpinor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockIsospinor"]], "paclet:Q3/ref/FockIsospinor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock: Quick Start"]], "paclet:Q3/tutorial/FockQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->2057241453]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"FockIsospin",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 32, 21.478184}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "FockIsospin[c] returns the isospin operator corresponding to the \
+fermionic operator c. The phase factor is either 1 or -1. The default value \
+of factor is 1.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "FockIsospin", "titlemodifier" -> "", "windowtitle" -> "FockIsospin", 
+    "type" -> "Symbol", "uri" -> "Q3/ref/FockIsospin", "WorkflowDockedCell" -> 
+    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[5705, 163, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"349d8c86-1275-4ccf-ab40-f6a6c7423c16",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1152269398]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 14435, 490}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[583, 21, 4383, 111, 70, "AnchorBarGrid",ExpressionUUID->"707130a4-95da-4d97-a752-1a9224869a44",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4991, 136, 168, 6, 70, "ObjectNameGrid",ExpressionUUID->"cec98e2c-3ecd-498e-ad95-0555ddbb2659"],
+Cell[5162, 144, 506, 14, 70, "Usage",ExpressionUUID->"c6d446d9-d79d-407b-bedd-d65b299919fc"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5705, 163, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"349d8c86-1275-4ccf-ab40-f6a6c7423c16",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1152269398],
+Cell[CellGroupData[{
+Cell[5998, 177, 195, 6, 70, "ExampleSection",ExpressionUUID->"3463fafd-0f77-44c3-85ce-e1082ff836cd",
+ CellID->184243540],
+Cell[6196, 185, 91, 3, 70, "Input",ExpressionUUID->"6fde994e-6b85-4df9-a232-442ad9267b88",
+ CellID->2002923607],
+Cell[6290, 190, 129, 4, 70, "Input",ExpressionUUID->"d4b57429-45d2-419a-bcba-41f6d1fde2b2",
+ CellID->1793132042],
+Cell[CellGroupData[{
+Cell[6444, 198, 107, 3, 70, "Input",ExpressionUUID->"d187cb58-848a-4b06-83f3-aea1beeeda23",
+ CellID->748970066],
+Cell[6554, 203, 3961, 146, 70, "Output",ExpressionUUID->"1a228c6b-3e1e-445e-a52c-fcad73a5a3ac",
+ CellID->1717462155]
+}, Open  ]]
+}, Open  ]],
+Cell[10542, 353, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"ed4cde2a-0bc3-4cc3-a330-224bb33cfd34"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10610, 358, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"01129cbf-fce4-4356-b409-37f4337f704b",
+ CellID->1255426704],
+Cell[10763, 367, 865, 28, 70, "SeeAlso",ExpressionUUID->"bd464286-967d-4789-ae88-eb52849636ce",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11665, 400, 152, 7, 70, "TutorialsSection",ExpressionUUID->"bc049df5-02f4-4c0a-beea-87f17e2d2945",
+ CellID->250839057],
+Cell[11820, 409, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6b8cfc29-3f04-4199-9ec9-89263194a807"],
+Cell[11854, 411, 185, 6, 70, "Tutorials",ExpressionUUID->"fff1e8ed-9d23-45c5-9e60-279cf8e96c2b",
+ CellID->341631938],
+Cell[12042, 419, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"5d5f8d96-30f9-4050-b118-ec7902f90cd6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12110, 424, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"8c34d009-2312-4889-a488-0289498c8209",
+ CellID->38303248],
+Cell[12269, 433, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"3b647b94-8c5b-415e-964a-5c4b9e003b23"],
+Cell[12303, 435, 186, 6, 70, "MoreAbout",ExpressionUUID->"6baaa980-cc2c-4fe5-ae0e-26176e4066d1",
+ CellID->2057241453]
+}, Open  ]],
+Cell[12504, 444, 23, 0, 70, "FooterCell",ExpressionUUID->"99d3b9b3-20b5-4387-ac0c-04d5ec024fce"]
+}
+]
+*)
+
+(* End of internal cache information *)

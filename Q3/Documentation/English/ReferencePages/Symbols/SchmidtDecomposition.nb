@@ -1,0 +1,2838 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     90852,       2829]
+NotebookOptionsPosition[     72930,       2468]
+NotebookOutlinePosition[     76064,       2537]
+CellTagsIndexPosition[     75978,       2532]
+WindowTitle->SchmidtDecomposition
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/PauliQuickStart"], "\<\"Quisso: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/QuissoQuickStart"], "\<\"Q3: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"SingularValueDecomposition\"\>":>
+       Documentation`HelpLookup[
+       "paclet:ref/SingularValueDecomposition"], "\<\"SchmidtForm\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/SchmidtForm"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/PauliPackageGuide"], "\<\"Quisso Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/QuissoPackageGuide"], "\<\"Q3\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/SchmidtDecomposition\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/SchmidtDecomposition"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+SchmidtDecomposition.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$164603], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/SchmidtDecomposition", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["SchmidtDecomposition", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"SchmidtDecomposition", "[", 
+       RowBox[{
+        StyleBox["v", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["d", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["d", "TI"], 
+           StyleBox["2", "TR"]]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the Schmidt decomposition of the vector ",
+     Cell[BoxData[
+      StyleBox["v", "TI"]], "InlineFormula"],
+     " in a tensor-product space of two vector spaces of dimensions ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["d", "TI"], 
+       StyleBox["1", "TR"]]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["d", "TI"], 
+       StyleBox["2", "TR"]]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"SchmidtDecomposition", "[", 
+       RowBox[{
+        StyleBox["v", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["d", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["d", "TI"], 
+           StyleBox["2", "TR"]], ",", " ", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["i", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["i", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["j", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["j", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the Schmidt decomposition of the vector ",
+     Cell[BoxData[
+      StyleBox["v", "TI"]], "InlineFormula"],
+     " in a tensor-product space of multiple vector spaces of dimensions ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["d", "TI"], 
+        StyleBox["1", "TR"]], ",", 
+       SubscriptBox[
+        StyleBox["d", "TI"], 
+        StyleBox["2", "TR"]], ",", "\[Ellipsis]"}]], "InlineFormula"],
+     ", where the ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["i", "TI"], 
+       StyleBox["1", "TR"]]], "InlineFormula"],
+     "th, ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["i", "TI"], 
+       StyleBox["2", "TR"]]], "InlineFormula"],
+     "th, ... spaces are grouped into one part and the ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["j", "TI"], 
+       StyleBox["1", "TR"]]], "InlineFormula"],
+     "th, ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["j", "TI"], 
+       StyleBox["2", "TR"]]], "InlineFormula"],
+     "th, ... spaces are grouped into the other part."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"SchmidtDecomposition", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["i", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["i", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["j", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["j", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the Schmidt decomposition of the state vector ",
+     
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     ", where the ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["i", "TI"], 
+       StyleBox["1", "TR"]]], "InlineFormula"],
+     "th, ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["i", "TI"], 
+       StyleBox["2", "TR"]]], "InlineFormula"],
+     "th, ... qubits are grouped into one part and the  ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["j", "TI"], 
+       StyleBox["1", "TR"]]], "InlineFormula"],
+     "th, ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["j", "TI"], 
+       StyleBox["2", "TR"]]], "InlineFormula"],
+     "th, ... qubits are grouped into the other part."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"SchmidtDecomposition", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["a", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["a", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["b", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["b", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the Schmidt decomposition of the state vector ",
+     
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     ", where the qubits ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["a", "TI"], 
+        StyleBox["1", "TR"]], ",", " ", 
+       SubscriptBox[
+        StyleBox["a", "TI"], 
+        StyleBox["2", "TR"]], ",", "\[Ellipsis]"}]], "InlineFormula"],
+     " form one part and the qubits ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["b", "TI"], 
+        StyleBox["1", "TR"]], ",", 
+       SubscriptBox[
+        StyleBox["b", "TI"], 
+        StyleBox["2", "TR"]], ",", "\[Ellipsis]"}]], "InlineFormula"],
+     " form the other part of the bipartite system."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "Rows" -> {None, None, None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->949605017],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "In the form ",
+ Cell[BoxData[
+  RowBox[{"SchmidtDecomposition", "[", 
+   RowBox[{
+    StyleBox["v", "TI"], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["d", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["d", "TI"], 
+       StyleBox["2", "TR"]]}], "}"}]}], "]"}]], "InlineFormula"],
+ ", the vector ",
+ Cell[BoxData[
+  StyleBox["v", "TI"]], "InlineFormula"],
+ " should be a list of length ",
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox[
+    StyleBox["d", "TI"], 
+    StyleBox["1", "TR"]], "\[Times]", 
+   SubscriptBox[
+    StyleBox["d", "TI"], 
+    StyleBox["2", "TR"]]}]], "InlineFormula"],
+ ". It returns a list ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["s", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["s", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["u", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["u", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["v", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["v", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "}"}]], "InlineFormula"],
+ ", where ",
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox[
+    StyleBox["s", "TI"], 
+    StyleBox["1", "TR"]], ",", 
+   SubscriptBox[
+    StyleBox["s", "TI"], 
+    StyleBox["2", "TR"]], ",", 
+   StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+ " are the Schmidt numbers (including zeros) and ",
+ Cell[BoxData[
+  SubscriptBox[
+   StyleBox["u", "TI"], 
+   StyleBox["j", "TI"]]], "InlineFormula"],
+ " and ",
+ Cell[BoxData[
+  SubscriptBox[
+   StyleBox["v", "TI"], 
+   StyleBox["j", "TI"]]], "InlineFormula"],
+ " are Schmidt vectors in the first and second subspace corresponding to the \
+Schmidt number ",
+ Cell[BoxData[
+  SubscriptBox[
+   StyleBox["s", "TI"], 
+   StyleBox["j", "TI"]]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1067943069],
+
+Cell[TextData[{
+ "In the form ",
+ Cell[BoxData[
+  RowBox[{"SchmidtDecomposition", "[", 
+   RowBox[{
+    StyleBox["v", "TI"], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["d", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["d", "TI"], 
+       StyleBox["2", "TR"]], ",", " ", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["i", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["i", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["j", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["j", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+ ", the vector ",
+ Cell[BoxData[
+  StyleBox["v", "TI"]], "InlineFormula"],
+ " should be a list of length ",
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox[
+    StyleBox["d", "TI"], 
+    StyleBox["1", "TR"]], "\[Times]", 
+   SubscriptBox[
+    StyleBox["d", "TI"], 
+    StyleBox["2", "TR"]], "\[Times]", 
+   StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+ ". It returns a list similar to the result of the first form."
+}], "Notes",
+ CellID->254030307],
+
+Cell[TextData[{
+ "In the form ",
+ Cell[BoxData[
+  RowBox[{"SchmidtDecomposition", "[", 
+   RowBox[{
+    StyleBox["expr", "TI"], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["i", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["i", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["j", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["j", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+ ", the state vector ",
+ Cell[BoxData[
+  StyleBox["expr", "TI"]], "InlineFormula"],
+ " must be expressed in terms of ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:Q3/ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   StyleBox["\[Ellipsis]", "TR"], "]"}]], "InlineFormula"],
+ " (for unlabelled qubits). It returns a list similar to the results of the \
+above forms, but the Schmidt vectors are also expressed in terms of ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:Q3/ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   StyleBox["\[Ellipsis]", "TR"], "]"}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->288413008],
+
+Cell[TextData[{
+ "In the form ",
+ Cell[BoxData[
+  RowBox[{"SchmidtDecomposition", "[", 
+   RowBox[{
+    StyleBox["expr", "TI"], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["a", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["a", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox[
+       StyleBox["b", "TI"], 
+       StyleBox["1", "TR"]], ",", 
+      SubscriptBox[
+       StyleBox["b", "TI"], 
+       StyleBox["2", "TR"]], ",", 
+      StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+ ", the state vector ",
+ Cell[BoxData[
+  StyleBox["expr", "TI"]], "InlineFormula"],
+ " must be expressed in terms of ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:Q3/ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{"<|", 
+    StyleBox["\[Ellipsis]", "TR"], "|>"}], "]"}]], "InlineFormula"],
+ ". It returns a list similar to the results of the above forms, but the \
+Schmidt vectors are also expressed in terms of ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:Q3/ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{"<|", 
+    StyleBox["\[Ellipsis]", "TR"], "|>"}], "]"}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1371034532],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(5)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->2060539862],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(5)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1172169112],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->537783606],
+
+Cell[TextData[{
+ "Consider an arbitrary vector in a ",
+ Cell[BoxData[
+  RowBox[{"(", 
+   RowBox[{"4", "\[Times]", "3"}], ")"}]], "InlineFormula"],
+ "-dimensional space."
+}], "ExampleText",
+ CellID->714137415],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vec", "=", " ", 
+  RowBox[{"RandomVector", "[", 
+   RowBox[{"4", "*", "3"}], "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1895877600],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "0.06641920477543195`"}], "-", 
+    RowBox[{"0.7204093154421076`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.0672488355286518`"}], "-", 
+    RowBox[{"0.5893272454128473`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.05209163285793039`"}], "-", 
+    RowBox[{"0.6641526855044706`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.6613255094933841`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.3306375966849062`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.7066982883482842`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.8810864457716661`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.18374756052761043`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.8739817206836529`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.6355176586562448`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.9711032601897589`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.5536886970260371`"}], "-", 
+    RowBox[{"0.5506069585813784`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.2939350442714037`"}], "-", 
+    RowBox[{"0.9662421609566287`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.9955613967866612`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.8201733737830574`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.9295271318373435`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.11309712545783501`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.26268698479919594`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.0011096194905544365`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1487183571]
+}, Open  ]],
+
+Cell["\<\
+This gives the Schmidt decomposition. The first list stores the Schmidt \
+numbers and the rest lists store the corresponding vectors in the first and \
+second part of the total tensor-product space.\
+\>", "ExampleText",
+ CellID->1542106748],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"weight", ",", "vecA", ",", "vecB"}], "}"}], "=", 
+  RowBox[{"SchmidtDecomposition", "[", 
+   RowBox[{"vec", ",", 
+    RowBox[{"{", 
+     RowBox[{"4", ",", "3"}], "}"}]}], "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->128957547],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+    "2.3743417239347253`", ",", "1.9457751995749237`", ",", 
+     "0.3191358406812675`"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "0.07891826166571166`"}], "-", 
+        RowBox[{"0.4615227466278158`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.3395787393056241`", "\[VeryThinSpace]", "-", 
+        RowBox[{"0.5396671064450637`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{
+        RowBox[{"-", "0.08710652316794455`"}], "-", 
+        RowBox[{"0.07109352117601425`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.5570349378335462`", "\[VeryThinSpace]", "-", 
+        RowBox[{"0.22646103253045408`", " ", "\[ImaginaryI]"}]}]}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"0.04551519985336288`", "\[VeryThinSpace]", "-", 
+        RowBox[{"0.013372384102556622`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.14779168018828565`", "\[VeryThinSpace]", "+", 
+        RowBox[{"0.2415251227401475`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.5018907985832637`", "\[VeryThinSpace]", "+", 
+        RowBox[{"0.7179021088015952`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.16717143982477675`", "\[VeryThinSpace]", "-", 
+        RowBox[{"0.3497837595726672`", " ", "\[ImaginaryI]"}]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"0.29562674394536426`", "\[VeryThinSpace]", "+", 
+        RowBox[{"0.8031983832296186`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.21777008411056856`", "\[VeryThinSpace]", "-", 
+        RowBox[{"0.4396212722652196`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{
+        RowBox[{"-", "0.04219373295696299`"}], "+", 
+        RowBox[{"0.0533753895273905`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.10671450309426203`", "\[VeryThinSpace]", "-", 
+        RowBox[{"0.10377516273788845`", " ", "\[ImaginaryI]"}]}]}], "}"}]}], 
+    "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"0.571373608244549`", "\[VeryThinSpace]", "+", 
+        RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.6622086626933821`", "\[VeryThinSpace]", "+", 
+        RowBox[{"0.15994071517011954`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.4572058116584453`", "\[VeryThinSpace]", "-", 
+        RowBox[{"0.019841881767099334`", " ", "\[ImaginaryI]"}]}]}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"0.7677772493917808`", "\[VeryThinSpace]", "+", 
+        RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{
+        RowBox[{"-", "0.339650143727548`"}], "+", 
+        RowBox[{"0.07018516812208868`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{
+        RowBox[{"-", "0.5007312914951273`"}], "-", 
+        RowBox[{"0.19874126666483458`", " ", "\[ImaginaryI]"}]}]}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"-", "0.2899142892614912`"}], "+", 
+        RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{"0.40561263884855037`", "\[VeryThinSpace]", "+", 
+        RowBox[{"0.5010876808828552`", " ", "\[ImaginaryI]"}]}], ",", 
+       RowBox[{
+        RowBox[{"-", "0.4250040922947556`"}], "-", 
+        RowBox[{"0.5654297035781479`", " ", "\[ImaginaryI]"}]}]}], "}"}]}], 
+    "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->187449357]
+}, Open  ]],
+
+Cell[TextData[{
+ "You can reconstruct the original vector from the Schmidt numbers and \
+vectors by means of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CircleTimes"]], "paclet:ref/CircleTimes"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "ExampleText",
+ CellID->1649400246],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"new", "=", 
+  RowBox[{"weight", ".", 
+   RowBox[{"MapThread", "[", 
+    RowBox[{"CircleTimes", ",", 
+     RowBox[{"{", 
+      RowBox[{"vecA", ",", "vecB"}], "}"}]}], 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vec", "-", "new"}], "//", "Chop"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1697255812],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "0.06641920477543183`"}], "-", 
+    RowBox[{"0.7204093154421073`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.06724883552865182`"}], "-", 
+    RowBox[{"0.5893272454128461`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.05209163285793025`"}], "-", 
+    RowBox[{"0.6641526855044702`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.6613255094933834`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.3306375966849056`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.7066982883482833`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.8810864457716657`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.1837475605276106`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.8739817206836532`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.6355176586562448`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.9711032601897588`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.5536886970260371`"}], "-", 
+    RowBox[{"0.5506069585813783`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.2939350442714039`"}], "-", 
+    RowBox[{"0.9662421609566288`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.9955613967866604`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.820173373783057`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.9295271318373425`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.1130971254578348`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.2626869847991957`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.0011096194905543698`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->243234556],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1381802451]
+}, Open  ]],
+
+Cell["\<\
+This gives the same Schmidt decomposition, but just the presentation is \
+different and in a more intuitively appealing form.\
+\>", "ExampleText",
+ CellID->1925762130],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SchmidtForm", "[", 
+  RowBox[{"vec", ",", 
+   RowBox[{"{", 
+    RowBox[{"4", ",", "3"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->4732016],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"0.3191358406812675`", " ", 
+   RowBox[{
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.29562674394536426`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.8031983832296186`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"0"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.21777008411056856`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.4396212722652196`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"1"},
+         "Ket"]}], "-", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.04219373295696299`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.0533753895273905`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"2"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.10671450309426203`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.10377516273788845`", " ", "\[ImaginaryI]"}]}], ")"}], 
+        " ", 
+        TemplateBox[{"3"},
+         "Ket"]}]}],
+      HoldForm], ")"}], "\[CircleTimes]", 
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"-", "0.2899142892614912`"}], "+", 
+          RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"0"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.40561263884855037`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.5010876808828552`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"1"},
+         "Ket"]}], "-", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.4250040922947556`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.5654297035781479`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"2"},
+         "Ket"]}]}],
+      HoldForm], ")"}]}]}], "+", 
+  RowBox[{"1.9457751995749237`", " ", 
+   RowBox[{
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.04551519985336288`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.013372384102556622`", " ", "\[ImaginaryI]"}]}], ")"}], 
+        " ", 
+        TemplateBox[{"0"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.14779168018828565`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.2415251227401475`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"1"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.5018907985832637`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.7179021088015952`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"2"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.16717143982477675`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.3497837595726672`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"3"},
+         "Ket"]}]}],
+      HoldForm], ")"}], "\[CircleTimes]", 
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.7677772493917808`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"0"},
+         "Ket"]}], "-", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.339650143727548`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.07018516812208868`", " ", "\[ImaginaryI]"}]}], ")"}], 
+        " ", 
+        TemplateBox[{"1"},
+         "Ket"]}], "-", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.5007312914951273`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.19874126666483458`", " ", "\[ImaginaryI]"}]}], ")"}], 
+        " ", 
+        TemplateBox[{"2"},
+         "Ket"]}]}],
+      HoldForm], ")"}]}]}], "+", 
+  RowBox[{"2.3743417239347253`", " ", 
+   RowBox[{
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{
+          RowBox[{"-", "0.07891826166571166`"}], "-", 
+          RowBox[{"0.4615227466278158`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"0"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.3395787393056241`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.5396671064450637`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"1"},
+         "Ket"]}], "-", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.08710652316794455`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.07109352117601425`", " ", "\[ImaginaryI]"}]}], ")"}], 
+        " ", 
+        TemplateBox[{"2"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.5570349378335462`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.22646103253045408`", " ", "\[ImaginaryI]"}]}], ")"}], 
+        " ", 
+        TemplateBox[{"3"},
+         "Ket"]}]}],
+      HoldForm], ")"}], "\[CircleTimes]", 
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.571373608244549`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+        TemplateBox[{"0"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.6622086626933821`", "\[VeryThinSpace]", "+", 
+          RowBox[{"0.15994071517011954`", " ", "\[ImaginaryI]"}]}], ")"}], 
+        " ", 
+        TemplateBox[{"1"},
+         "Ket"]}], "+", 
+       RowBox[{
+        RowBox[{"(", 
+         RowBox[{"0.4572058116584453`", "\[VeryThinSpace]", "-", 
+          RowBox[{"0.019841881767099334`", " ", "\[ImaginaryI]"}]}], ")"}], 
+        " ", 
+        TemplateBox[{"2"},
+         "Ket"]}]}],
+      HoldForm], ")"}]}]}]}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1372413270]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1532242326],
+
+Cell["\<\
+When you have multiple subsystems of different dimensions, you can specify \
+the partition of the subsystems. Here we consider a tensor-product space of \
+three subspaces of dimensions 4, 3, and 2, respectively. Here we consider a \
+special case where the vector is separable -- a tensor product of three \
+vectors.\
+\>", "ExampleText",
+ CellID->1446658248],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"vec1", "=", 
+   RowBox[{"RandomVector", "[", "4", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vec2", "=", 
+   RowBox[{"RandomVector", "[", "3", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vec3", "=", 
+   RowBox[{"RandomVector", "[", "2", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"vec", "=", 
+  RowBox[{"CircleTimes", "[", 
+   RowBox[{"vec1", ",", "vec2", ",", "vec3"}], "]"}]}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->175322802],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"0.17954362862453754`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.04991448869718436`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.06133575144067195`"}], "-", 
+    RowBox[{"0.09595388029231129`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.23188306379557905`"}], "-", 
+    RowBox[{"0.32147023870138913`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.025624293198496143`"}], "+", 
+    RowBox[{"0.24087026772464687`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.43879661683972077`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.3768104859182179`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.35337743941093946`"}], "-", 
+    RowBox[{"0.0075392791459313845`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.001646859420989688`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.1023565721260435`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.042503768858886126`"}], "+", 
+    RowBox[{"0.04590331981109665`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.13874045011059305`"}], "+", 
+    RowBox[{"0.16781713788866015`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.13158859859314792`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.019765019565175637`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.2611167637905949`"}], "-", 
+    RowBox[{"0.18101874153371156`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.04497235985772123`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.18888620634380288`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.10650199487824719`"}], "+", 
+    RowBox[{"0.039325715907431946`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.06450358063225342`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.025551138294703374`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.22914418021070093`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.07619674246737426`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.0731840584736589`"}], "-", 
+    RowBox[{"0.12814664051823244`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.08251637027909892`"}], "+", 
+    RowBox[{"0.34256755552469653`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.177291140874315`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.12221691929015466`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.03182342835556702`"}], "-", 
+    RowBox[{"0.2004839373727748`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.06730302233258058`"}], "+", 
+    RowBox[{"0.10420759832194748`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.21353485438218592`"}], "+", 
+    RowBox[{"0.37527144984897`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.2502491697603429`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.08365163378747945`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.5719750775877841`"}], "-", 
+    RowBox[{"0.26417216119373077`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.15250080856978027`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.3535320453427937`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->362071357]
+}, Open  ]],
+
+Cell["\<\
+As the vector in question is separable, the Schmidt rank must be 1 -- there \
+is only one non-zero Schmidt number.\
+\>", "ExampleText",
+ CellID->1619579837],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"weight", ",", "vecA", ",", "vecB"}], "}"}], "=", 
+   RowBox[{"SchmidtDecomposition", "[", 
+    RowBox[{"vec", ",", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "3", ",", "2"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", "2", "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", "weight"}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1258730967],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1.437796237404478`", ",", "0.`", ",", "0.`"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1307973381]
+}, Open  ]],
+
+Cell["To check the result, reconstruct the original vector.", "ExampleText",
+ CellID->1549653304],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"new", "=", 
+  RowBox[{"weight", ".", 
+   RowBox[{"MapThread", "[", 
+    RowBox[{"CircleTimes", ",", 
+     RowBox[{"{", 
+      RowBox[{"vecA", ",", "vecB"}], "}"}]}], 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"new", "-", 
+   RowBox[{"CircleTimes", "[", 
+    RowBox[{"vec3", ",", "vec1", ",", "vec2"}], "]"}]}], "//", 
+  "Chop"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1894323573],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"0.17954362862453774`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.049914488697184387`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.23188306379557905`"}], "-", 
+    RowBox[{"0.3214702387013892`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.43879661683972077`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.3768104859182183`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.0016468594209896876`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.10235657212604356`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.13874045011059305`"}], "+", 
+    RowBox[{"0.16781713788866015`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.2611167637905949`"}], "-", 
+    RowBox[{"0.18101874153371153`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.10650199487824726`"}], "+", 
+    RowBox[{"0.03932571590743197`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.22914418021070096`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.0761967424673743`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.08251637027909886`"}], "+", 
+    RowBox[{"0.3425675555246966`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.03182342835556704`"}], "-", 
+    RowBox[{"0.20048393737277495`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.21353485438218595`"}], "+", 
+    RowBox[{"0.3752714498489698`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.571975077587784`"}], "-", 
+    RowBox[{"0.2641721611937306`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.06133575144067198`"}], "-", 
+    RowBox[{"0.09595388029231135`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.025624293198496215`"}], "+", 
+    RowBox[{"0.24087026772464679`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.3533774394109394`"}], "-", 
+    RowBox[{"0.007539279145931352`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.042503768858886154`"}], "+", 
+    RowBox[{"0.04590331981109669`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.1315885985931479`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.01976501956517561`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.04497235985772126`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.18888620634380282`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.06450358063225348`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.025551138294703384`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.0731840584736589`"}], "-", 
+    RowBox[{"0.12814664051823244`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.17729114087431497`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.12221691929015471`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.0673030223325806`"}], "+", 
+    RowBox[{"0.10420759832194754`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.2502491697603428`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.08365163378747938`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.1525008085697803`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.35353204534279353`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1964808964],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->688218029]
+}, Open  ]],
+
+Cell["\<\
+The Schmidt decomposition is presented in Dirac's bra-ket notation.\
+\>", "ExampleText",
+ CellID->675381336],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SchmidtForm", "[", 
+   RowBox[{"vec", ",", 
+    RowBox[{"{", 
+     RowBox[{"4", ",", "3", ",", "2"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"3", ",", "1"}], "}"}], ",", 
+    RowBox[{"{", "2", "}"}]}], "]"}], "//", "Chop"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->359809898],
+
+Cell[BoxData[
+ RowBox[{"1.437796237404478`", " ", 
+  RowBox[{
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"-", "0.48616287893385324`"}], "-", 
+         RowBox[{"0.13515696274737088`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       TemplateBox[{
+         RowBox[{"0", ",", "0"}]},
+        "Ket"]}], "-", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.004459316788021425`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.27715807107062723`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       TemplateBox[{
+         RowBox[{"0", ",", "1"}]},
+        "Ket"]}], "+", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.28838292307483704`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.10648499981958733`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       TemplateBox[{
+         RowBox[{"0", ",", "2"}]},
+        "Ket"]}], "+", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.08617052949977676`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.5428644219782798`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       
+       TemplateBox[{
+         RowBox[{"0", ",", "3"}]},
+        "Ket"]}], "+", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.16608311712539947`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.25982105321786386`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       TemplateBox[{
+         RowBox[{"1", ",", "0"}]},
+        "Ket"]}], "+", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.11509043674942798`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.12429563935489164`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       TemplateBox[{
+         RowBox[{"1", ",", "1"}]},
+        "Ket"]}], "-", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.17466087046339498`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.06918660967561809`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       TemplateBox[{
+         RowBox[{"1", ",", "2"}]},
+        "Ket"]}], "+", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.18224111514745794`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.28217022455820395`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       TemplateBox[{
+         RowBox[{"1", ",", "3"}]},
+        "Ket"]}]}],
+     HoldForm], ")"}], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      RowBox[{
+       RowBox[{"-", "0.2568566773194294`"}], " ", 
+       TemplateBox[{"0"},
+        "Ket"]}], "+", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.4266166516918424`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.34129546005312794`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       TemplateBox[{"1"},
+        "Ket"]}], "-", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{"0.4435963986192707`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.6623915185861008`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+       
+       TemplateBox[{"2"},
+        "Ket"]}]}],
+     HoldForm], ")"}]}]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1141725416]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1920361905],
+
+Cell["\<\
+If the vector is for qubits (2 dimensions), then you can omit the \
+specification of the dimensions.\
+\>", "ExampleText",
+ CellID->151786058],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"vec1", "=", 
+   RowBox[{"RandomVector", "[", "2", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vec2", "=", 
+   RowBox[{"RandomVector", "[", "2", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"vec3", "=", 
+   RowBox[{"RandomVector", "[", "2", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"vec", "=", 
+  RowBox[{"CircleTimes", "[", 
+   RowBox[{"vec1", ",", "vec2", ",", "vec3"}], "]"}]}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->2005187817],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "0.7949006156022721`"}], "+", 
+    RowBox[{"0.5227598752283237`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.13949162375417756`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.7216217757528754`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.922515413701443`"}], "-", 
+    RowBox[{"0.5845834340672599`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.8208569986383629`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.19505786424738614`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.5616391647097833`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.5102448399669932`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.02062378732662027`"}], "+", 
+    RowBox[{"0.5858400848853127`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.7991986411880794`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.3464649523802358`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.6226365742843903`"}], "+", 
+    RowBox[{"0.25525299890825154`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1013020687]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"weight", ",", "vecA", ",", "vecB"}], "}"}], "=", 
+   RowBox[{"SchmidtDecomposition", "[", 
+    RowBox[{"vec", ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", "2", "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", "weight", "\[IndentingNewLine]", 
+ RowBox[{"new", "=", 
+  RowBox[{"weight", ".", 
+   RowBox[{"MapThread", "[", 
+    RowBox[{"CircleTimes", ",", 
+     RowBox[{"{", 
+      RowBox[{"vecA", ",", "vecB"}], "}"}]}], 
+    "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"new", "-", 
+   RowBox[{"CircleTimes", "[", 
+    RowBox[{"vec3", ",", "vec1", ",", "vec2"}], "]"}]}], "//", 
+  "Chop"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->557924843],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"2.34114847047273`", ",", "0.`"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1540251884],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "0.7949006156022723`"}], "+", 
+    RowBox[{"0.5227598752283238`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.9225154137014435`"}], "-", 
+    RowBox[{"0.5845834340672604`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.5616391647097831`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.5102448399669932`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.7991986411880798`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.3464649523802359`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.13949162375417756`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.7216217757528753`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.8208569986383631`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.1950578642473862`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.02062378732662026`"}], "+", 
+    RowBox[{"0.5858400848853126`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.6226365742843908`"}], "+", 
+    RowBox[{"0.2552529989082517`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1245533450],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}],
+   "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->10103194]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1990392464],
+
+Cell[TextData[{
+ Cell[BoxData["SchmidtDecomposition"], "InlineFormula"],
+ " also works for expressions in terms of ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:Q3/ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   StyleBox["\[Ellipsis]", "TR"], "]"}]], "InlineFormula"],
+ " for unlabelled systems. For a reference, first examine a column vector."
+}], "ExampleText",
+ CellID->1173373129],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vec", "=", 
+  RowBox[{"{", 
+   RowBox[{"1", ",", "1", ",", "1", ",", 
+    RowBox[{"-", "1"}]}], "}"}]}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->414548710],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "1", ",", "1", ",", 
+   RowBox[{"-", "1"}]}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->924089894]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SchmidtDecomposition", "[", 
+  RowBox[{"vec", ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->839672250],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     SqrtBox["2"], ",", 
+     SqrtBox["2"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       FractionBox["1", 
+        SqrtBox["2"]], ",", 
+       RowBox[{"-", 
+        FractionBox["1", 
+         SqrtBox["2"]]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       FractionBox["1", 
+        SqrtBox["2"]], ",", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->2033418527]
+}, Open  ]],
+
+Cell[TextData[{
+ "Convert the column vector representation into a ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:Q3/ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   StyleBox["\[Ellipsis]", "TR"], "]"}]], "InlineFormula"],
+ "-expression."
+}], "ExampleText",
+ CellID->1138586640],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ket", "=", 
+  RowBox[{"ExpressionFor", "[", "vec", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->2146363710],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{
+    RowBox[{"0", ",", "0"}]},
+   "Ket"], "+", 
+  TemplateBox[{
+    RowBox[{"0", ",", "1"}]},
+   "Ket"], "+", 
+  TemplateBox[{
+    RowBox[{"1", ",", "0"}]},
+   "Ket"], "-", 
+  TemplateBox[{
+    RowBox[{"1", ",", "1"}]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->171479774]
+}, Open  ]],
+
+Cell[TextData[{
+ "This gives the Schmidt decomposition of the state vector ",
+ StyleBox["ket", "Input"],
+ "."
+}], "ExampleText",
+ CellID->2070518492],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"ww", ",", "uu", ",", "vv"}], "}"}], "=", 
+  RowBox[{"SchmidtDecomposition", "[", 
+   RowBox[{"ket", ",", 
+    RowBox[{"{", "1", "}"}], ",", 
+    RowBox[{"{", "2", "}"}]}], "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1379279056],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     SqrtBox["2"], ",", 
+     SqrtBox["2"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      FractionBox[
+       TemplateBox[{"0"},
+        "Ket"], 
+       SqrtBox["2"]], "-", 
+      FractionBox[
+       TemplateBox[{"1"},
+        "Ket"], 
+       SqrtBox["2"]]}], ",", 
+     RowBox[{
+      FractionBox[
+       TemplateBox[{"0"},
+        "Ket"], 
+       SqrtBox["2"]], "+", 
+      FractionBox[
+       TemplateBox[{"1"},
+        "Ket"], 
+       SqrtBox["2"]]}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TemplateBox[{"1"},
+      "Ket"], ",", 
+     TemplateBox[{"0"},
+      "Ket"]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->326148084]
+}, Open  ]],
+
+Cell[TextData[{
+ "You can reconstruct the original expression by means of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CircleTimes"]], "paclet:ref/CircleTimes"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " as above."
+}], "ExampleText",
+ CellID->554983492],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"new", "=", 
+  RowBox[{
+   RowBox[{"ww", ".", 
+    RowBox[{"MapThread", "[", 
+     RowBox[{"CircleTimes", ",", 
+      RowBox[{"{", 
+       RowBox[{"uu", ",", "vv"}], "}"}]}], "]"}]}], "//", 
+   "Garner"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ket", "-", "new"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1086071123],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{
+    RowBox[{"0", ",", "0"}]},
+   "Ket"], "+", 
+  TemplateBox[{
+    RowBox[{"0", ",", "1"}]},
+   "Ket"], "+", 
+  TemplateBox[{
+    RowBox[{"1", ",", "0"}]},
+   "Ket"], "-", 
+  TemplateBox[{
+    RowBox[{"1", ",", "1"}]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->497566545],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->299600397]
+}, Open  ]],
+
+Cell[TextData[{
+ "To get a more intuitively-appealing form, use ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SchmidtForm"]], "paclet:Q3/ref/SchmidtForm"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "ExampleText",
+ CellID->1763377339],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"new2", "=", 
+  RowBox[{"SchmidtForm", "[", 
+   RowBox[{"ket", ",", 
+    RowBox[{"{", "1", "}"}], ",", 
+    RowBox[{"{", "2", "}"}]}], "]"}]}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1808607973],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SqrtBox["2"], " ", 
+   RowBox[{
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       FractionBox[
+        TemplateBox[{"0"},
+         "Ket"], 
+        SqrtBox["2"]], "-", 
+       FractionBox[
+        TemplateBox[{"1"},
+         "Ket"], 
+        SqrtBox["2"]]}],
+      HoldForm], ")"}], "\[CircleTimes]", 
+    TagBox[
+     TemplateBox[{"1"},
+      "Ket"],
+     HoldForm]}]}], "+", 
+  RowBox[{
+   SqrtBox["2"], " ", 
+   RowBox[{
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       FractionBox[
+        TemplateBox[{"0"},
+         "Ket"], 
+        SqrtBox["2"]], "+", 
+       FractionBox[
+        TemplateBox[{"1"},
+         "Ket"], 
+        SqrtBox["2"]]}],
+      HoldForm], ")"}], "\[CircleTimes]", 
+    TagBox[
+     TemplateBox[{"0"},
+      "Ket"],
+     HoldForm]}]}]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1866855047]
+}, Open  ]],
+
+Cell[TextData[{
+ "To recover the original expression, just use ReleaseTimes to evaluate \
+\[CircleTimes] (",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["OTimes"]], "paclet:Q3/ref/OTimes"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ") in the above expression."
+}], "ExampleText",
+ CellID->830035353],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ket", "-", 
+   RowBox[{"ReleaseTimes", "[", "new", "]"}]}], "//", "Garner"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->350406959],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1926140844]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1762713114],
+
+Cell[TextData[{
+ Cell[BoxData["SchmidtDecomposition"], "InlineFormula"],
+ " also works for expressions in terms of ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:Q3/ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{"<|", 
+    StyleBox["\[Ellipsis]", "TR"], "|>"}], "]"}]], "InlineFormula"],
+ " for labelled systems. Consider a system of qubits as an example."
+}], "ExampleText",
+ CellID->6929990],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->892474447],
+
+Cell["For a reference, first examine a column vector.", "ExampleText",
+ CellID->1013544102],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vec", "=", 
+  RowBox[{"{", 
+   RowBox[{"1", ",", "1", ",", "1", ",", 
+    RowBox[{"-", "1"}]}], "}"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1452446751],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "1", ",", "1", ",", 
+   RowBox[{"-", "1"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->648825752]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"SchmidtDecomposition", "[", 
+  RowBox[{"vec", ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "2"}], "}"}]}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1733024308],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     SqrtBox["2"], ",", 
+     SqrtBox["2"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       FractionBox["1", 
+        SqrtBox["2"]], ",", 
+       RowBox[{"-", 
+        FractionBox["1", 
+         SqrtBox["2"]]}]}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+       FractionBox["1", 
+        SqrtBox["2"]], ",", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->976918719]
+}, Open  ]],
+
+Cell[TextData[{
+ "Convert the column vector representation into a ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Ket"]], "paclet:Q3/ref/Ket"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{"<|", 
+    StyleBox["\[Ellipsis]", "TR"], "|>"}], "]"}]], "InlineFormula"],
+ "-expression."
+}], "ExampleText",
+ CellID->1714326193],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ket", "=", 
+  RowBox[{"ExpressionFor", "[", 
+   RowBox[{"vec", ",", 
+    RowBox[{"S", "@", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2"}], "}"}]}]}], "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->605700555],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{"\"\[SpaceIndicator]\""},
+   "Ket"], "+", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"], "-", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]]], 
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"], "+", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1312557659]
+}, Open  ]],
+
+Cell[TextData[{
+ "This gives the Schmidt decomposition of the state vector ",
+ StyleBox["ket", "Input"],
+ "."
+}], "ExampleText",
+ CellID->1064994389],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{"ww", ",", "uu", ",", "vv"}], "}"}], "=", 
+  RowBox[{"SchmidtDecomposition", "[", 
+   RowBox[{"ket", ",", 
+    RowBox[{"S", "@", 
+     RowBox[{"{", "1", "}"}]}], ",", 
+    RowBox[{"S", "@", 
+     RowBox[{"{", "2", "}"}]}]}], "]"}]}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->149782861],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     SqrtBox["2"], ",", 
+     SqrtBox["2"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      FractionBox[
+       TemplateBox[{"\"\[SpaceIndicator]\""},
+        "Ket"], 
+       SqrtBox["2"]], "-", 
+      FractionBox[
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", 
+             SubscriptBox[
+              TemplateBox[{"S"}, "RowDefault"], 
+              TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+          DisplayForm]},
+        "Ket"], 
+       SqrtBox["2"]]}], ",", 
+     RowBox[{
+      FractionBox[
+       TemplateBox[{"\"\[SpaceIndicator]\""},
+        "Ket"], 
+       SqrtBox["2"]], "+", 
+      FractionBox[
+       TemplateBox[{
+         TagBox[
+          TemplateBox[{
+            SubscriptBox["1", 
+             SubscriptBox[
+              TemplateBox[{"S"}, "RowDefault"], 
+              TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+          DisplayForm]},
+        "Ket"], 
+       SqrtBox["2"]]}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox["1", 
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+      
+      "Ket"], ",", 
+     TemplateBox[{"\"\[SpaceIndicator]\""},
+      "Ket"]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->455304357]
+}, Open  ]],
+
+Cell[TextData[{
+ "You can reconstruct the original expression by means of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CircleTimes"]], "paclet:ref/CircleTimes"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " as above."
+}], "ExampleText",
+ CellID->1475496926],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"new", "=", 
+  RowBox[{
+   RowBox[{"ww", ".", 
+    RowBox[{"MapThread", "[", 
+     RowBox[{"CircleTimes", ",", 
+      RowBox[{"{", 
+       RowBox[{"uu", ",", "vv"}], "}"}]}], "]"}]}], "//", 
+   "Garner"}]}], "\[IndentingNewLine]", 
+ RowBox[{"ket", "-", "new"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1810449836],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{"\"\[SpaceIndicator]\""},
+   "Ket"], "+", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"], "-", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"]]], 
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"], "+", 
+  TemplateBox[{
+    TagBox[
+     TemplateBox[{
+       SubscriptBox["1", 
+        SubscriptBox[
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+   "Ket"]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->583792900],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->2101970804]
+}, Open  ]],
+
+Cell[TextData[{
+ "To get a more intuitively-appealing form, use ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SchmidtForm"]], "paclet:Q3/ref/SchmidtForm"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "ExampleText",
+ CellID->239380575],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"new2", "=", 
+  RowBox[{"SchmidtForm", "[", 
+   RowBox[{"ket", ",", 
+    RowBox[{"S", "@", 
+     RowBox[{"{", "1", "}"}]}], ",", 
+    RowBox[{"S", "@", 
+     RowBox[{"{", "2", "}"}]}]}], "]"}]}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1333849902],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SqrtBox["2"], " ", 
+   RowBox[{
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       FractionBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"], 
+        SqrtBox["2"]], "-", 
+       FractionBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"], 
+        SqrtBox["2"]]}],
+      HoldForm], ")"}], "\[CircleTimes]", 
+    TagBox[
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox["1", 
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+      
+      "Ket"],
+     HoldForm]}]}], "+", 
+  RowBox[{
+   SqrtBox["2"], " ", 
+   RowBox[{
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       FractionBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"], 
+        SqrtBox["2"]], "+", 
+       FractionBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"], 
+        SqrtBox["2"]]}],
+      HoldForm], ")"}], "\[CircleTimes]", 
+    TagBox[
+     TemplateBox[{
+       TagBox[
+        TemplateBox[{
+          SubscriptBox["0", 
+           SubscriptBox[
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+      
+      "Ket"],
+     HoldForm]}]}]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->710159928]
+}, Open  ]],
+
+Cell[TextData[{
+ "To recover the original expression, just use ReleaseTimes to evaluate \
+\[CircleTimes] (",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["OTimes"]], "paclet:Q3/ref/OTimes"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ") in the above expression."
+}], "ExampleText",
+ CellID->743045368],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ket", "-", 
+   RowBox[{"ReleaseTimes", "[", "new", "]"}]}], "//", "Garner"}]], "Input",
+ CellLabel->"In[8]:=",
+ CellID->1754356681],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1584948191]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SingularValueDecomposition"]], 
+    "paclet:ref/SingularValueDecomposition"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SchmidtForm"]], "paclet:Q3/ref/SchmidtForm"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Quick Start"]], "paclet:Q3/tutorial/PauliQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso: Quick Start"]], "paclet:Q3/tutorial/QuissoQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->537751834],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1352944060],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/PauliPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1778771453],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso Package Guide"]], "paclet:Q3/guide/QuissoPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->691960684],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1159267483],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Links"
+}], "RelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->1584193535],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Linear Algebra"]], "paclet:tutorial/LinearAlgebra"},
+  "RefLink",
+  BaseStyle->"RelatedLinks"]], "RelatedLinks",
+ CellID->1191137959],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Matrix Operations"]], "paclet:guide/MatrixOperations"},
+  "RefLink",
+  BaseStyle->"RelatedLinks"]], "RelatedLinks",
+ CellID->227425889],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["An Elementary Introduction to the Wolfram Language"]], 
+   "https://www.wolfram.com/language/elementary-introduction/"},
+  "WebLink",
+  BaseStyle->{"RelatedLinks"}]]]], "RelatedLinks",
+ CellID->1692878672],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["The Wolfram Language: Fast Introduction for Programmers"]], 
+   "http://www.wolfram.com/language/fast-introduction-for-programmers/"},
+  "WebLink",
+  BaseStyle->{"RelatedLinks"}]]]], "RelatedLinks",
+ CellID->1998801680]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"SchmidtDecomposition",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 41, 11.968293}", 
+    "history" -> {"1.5", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {
+     "quantum entanglement", "Schmidt decomposition", 
+      "Singular value decomposition"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "SchmidtDecomposition[v, {d1, d2}] returns the Schmidt decomposition of \
+the vector v in a tensor-product space of two vector spaces of dimensions d1 \
+and d2. SchmidtDecomposition[v, {d1, d2, ...}, {i1, i2, ...}, {j1, j2, ...}] \
+returns the Schmidt decomposition of the vector v in a tensor-product space \
+of multiple vector spaces of dimensions d1, d2, ..., where the i1th, i2th, \
+... spaces are grouped into one part and the j1th, j2th, ... spaces are \
+grouped into the other part. SchmidtDecomposition[expr, {i1, i2, ...}, {j1, \
+j2, ...}] returns the Schmidt decomposition of the state vector expr, where \
+the i1th, i2th, ... qubits are grouped into one part and the j1th, j2th, ... \
+qubits are grouped into the other part. SchmidtDecomposition[expr, {a1, a2, \
+...}, {b1, b2, ...}] returns the Schmidt decomposition of the state vector \
+expr, where the qubits a1, a2, ... form one part and the qubits b1, b2, ... \
+form the other part of the bipartite system.", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "SchmidtDecomposition", "titlemodifier" -> 
+    "", "windowtitle" -> "SchmidtDecomposition", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/SchmidtDecomposition", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[18978, 617, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"36b4d9d3-d7a1-4ce2-8805-01eaebe48f12",
+   CellTags->"PrimaryExamplesSection",
+   CellID->2060539862]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 75778, 2525}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[592, 21, 4775, 118, 70, "AnchorBarGrid",ExpressionUUID->"5a99e7c2-49f6-4c2c-b84d-c441edac2520",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5392, 143, 177, 6, 70, "ObjectNameGrid",ExpressionUUID->"42da5597-50e7-4bbe-a7b4-fc07f56fa4f4"],
+Cell[5572, 151, 6178, 194, 70, "Usage",ExpressionUUID->"affdbc22-c5b2-49e4-8c00-932c49c18b40"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11787, 350, 629, 19, 70, "NotesSection",ExpressionUUID->"7aa77cde-5fe8-46aa-973b-48787f7c24a0",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->949605017],
+Cell[12419, 371, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"feb634a4-7565-4f47-b003-62fe19fa6e0c"],
+Cell[12453, 373, 2255, 85, 70, "Notes",ExpressionUUID->"2d8fda06-b456-4bc4-842b-73f4ec1eb372",
+ CellID->1067943069],
+Cell[14711, 460, 1363, 48, 70, "Notes",ExpressionUUID->"7242540d-5d54-4735-9e34-27323e99db1c",
+ CellID->254030307],
+Cell[16077, 510, 1398, 48, 70, "Notes",ExpressionUUID->"34a3b393-7269-484d-a0d3-32e99a2af666",
+ CellID->288413008],
+Cell[17478, 560, 1429, 50, 70, "Notes",ExpressionUUID->"76b9fdad-d358-4976-86f0-aeaa8511ce83",
+ CellID->1371034532],
+Cell[18910, 612, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"4dac6f9d-6f30-45a4-b297-37719894216a"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[18978, 617, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"36b4d9d3-d7a1-4ce2-8805-01eaebe48f12",
+ CellTags->"PrimaryExamplesSection",
+ CellID->2060539862],
+Cell[CellGroupData[{
+Cell[19271, 631, 196, 6, 70, "ExampleSection",ExpressionUUID->"def82a43-7473-49f7-9c22-64a4e1842e46",
+ CellID->1172169112],
+Cell[19470, 639, 90, 3, 70, "Input",ExpressionUUID->"f48dcc48-7a62-4f4a-aa63-1c927322c6c3",
+ CellID->537783606],
+Cell[19563, 644, 208, 7, 70, "ExampleText",ExpressionUUID->"1c9462f3-30cf-4910-a5d2-41bc7c4206da",
+ CellID->714137415],
+Cell[CellGroupData[{
+Cell[19796, 655, 163, 5, 70, "Input",ExpressionUUID->"ce6c61ff-10d3-4ea8-b1cf-a61383d94a96",
+ CellID->1895877600],
+Cell[19962, 662, 1632, 34, 70, "Output",ExpressionUUID->"8e506774-fdc3-487a-a1cb-e15b2b9099ca",
+ CellID->1487183571]
+}, Open  ]],
+Cell[21609, 699, 250, 5, 70, "ExampleText",ExpressionUUID->"0f2d5c0b-4f60-4cc9-8f6e-23b6fa4ac883",
+ CellID->1542106748],
+Cell[CellGroupData[{
+Cell[21884, 708, 284, 9, 70, "Input",ExpressionUUID->"7e378f8f-4d11-43ee-a029-9158f61135d9",
+ CellID->128957547],
+Cell[22171, 719, 3427, 78, 70, "Output",ExpressionUUID->"bf76f7cf-58ab-4241-be27-435e61199a83",
+ CellID->187449357]
+}, Open  ]],
+Cell[25613, 800, 322, 11, 70, "ExampleText",ExpressionUUID->"1c73367f-435b-4b8a-a0bb-194d63a98d7b",
+ CellID->1649400246],
+Cell[CellGroupData[{
+Cell[25960, 815, 342, 11, 70, "Input",ExpressionUUID->"cdb0edff-ba13-42a9-afc2-4ebc1eb93a42",
+ CellID->1697255812],
+Cell[26305, 828, 1628, 34, 70, "Output",ExpressionUUID->"7332d431-7061-4c10-9136-56027cd207a4",
+ CellID->243234556],
+Cell[27936, 864, 224, 6, 70, "Output",ExpressionUUID->"6cbee603-6ac4-4712-a99b-832ac213e8a5",
+ CellID->1381802451]
+}, Open  ]],
+Cell[28175, 873, 177, 4, 70, "ExampleText",ExpressionUUID->"ccfbfa07-36a9-4b2b-b82b-0ce32980219f",
+ CellID->1925762130],
+Cell[CellGroupData[{
+Cell[28377, 881, 179, 6, 70, "Input",ExpressionUUID->"a3962a0d-22e5-4e8b-a9f8-cb5ddec9749a",
+ CellID->4732016],
+Cell[28559, 889, 5720, 169, 70, "Output",ExpressionUUID->"cebd23a2-ace9-4c7e-b68c-528e842f7792",
+ CellID->1372413270]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[34316, 1063, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"292bdebd-77f5-4405-9a34-62483896ec7d",
+ CellID->1532242326],
+Cell[34445, 1068, 367, 7, 70, "ExampleText",ExpressionUUID->"47737eb4-4eee-45c1-884a-222afdfc1a6b",
+ CellID->1446658248],
+Cell[CellGroupData[{
+Cell[34837, 1079, 510, 14, 70, "Input",ExpressionUUID->"b954b709-cb49-4060-a6f3-b9ddae85c434",
+ CellID->175322802],
+Cell[35350, 1095, 3190, 67, 70, "Output",ExpressionUUID->"c3988688-1dca-488b-8ca7-37d9f227697f",
+ CellID->362071357]
+}, Open  ]],
+Cell[38555, 1165, 166, 4, 70, "ExampleText",ExpressionUUID->"8f9a0adc-31eb-4540-ab66-b47a9a684873",
+ CellID->1619579837],
+Cell[CellGroupData[{
+Cell[38746, 1173, 456, 14, 70, "Input",ExpressionUUID->"1a4d70b3-c77a-4f03-98a1-52e92d175366",
+ CellID->1258730967],
+Cell[39205, 1189, 148, 4, 70, "Output",ExpressionUUID->"af203360-84b8-49a9-a88b-2dc6ac06a2b2",
+ CellID->1307973381]
+}, Open  ]],
+Cell[39368, 1196, 97, 1, 70, "ExampleText",ExpressionUUID->"09a54a44-4be2-4673-8ccb-8c141377c40e",
+ CellID->1549653304],
+Cell[CellGroupData[{
+Cell[39490, 1201, 426, 14, 70, "Input",ExpressionUUID->"d454f3fe-6b85-4904-b627-de5bd04e48a9",
+ CellID->1894323573],
+Cell[39919, 1217, 3188, 67, 70, "Output",ExpressionUUID->"6bdfe885-f246-4157-aa38-f5e532fa790e",
+ CellID->1964808964],
+Cell[43110, 1286, 351, 8, 70, "Output",ExpressionUUID->"00273386-5249-4f91-8494-01b3c964c082",
+ CellID->688218029]
+}, Open  ]],
+Cell[43476, 1297, 118, 3, 70, "ExampleText",ExpressionUUID->"4f84791e-2aaa-4728-8744-d606785b2354",
+ CellID->675381336],
+Cell[CellGroupData[{
+Cell[43619, 1304, 317, 10, 70, "Input",ExpressionUUID->"9ba5f62e-b6fa-4c3b-9626-cd7e16e792be",
+ CellID->359809898],
+Cell[43939, 1316, 2957, 87, 70, "Output",ExpressionUUID->"9ba0800d-3de8-411f-857b-8e88357b5f72",
+ CellID->1141725416]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[46945, 1409, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"e37c75fa-4617-4f0c-a68b-6e166b0b5833",
+ CellID->1920361905],
+Cell[47074, 1414, 151, 4, 70, "ExampleText",ExpressionUUID->"f004dd68-ff17-48c4-8d24-32e8c139137b",
+ CellID->151786058],
+Cell[CellGroupData[{
+Cell[47250, 1422, 511, 14, 70, "Input",ExpressionUUID->"99779314-210b-4654-9d3e-fd9dd45d9ed4",
+ CellID->2005187817],
+Cell[47764, 1438, 1119, 25, 70, "Output",ExpressionUUID->"5f2f9d32-80c3-459f-b2cd-613cc52bd318",
+ CellID->1013020687]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[48920, 1468, 763, 24, 70, "Input",ExpressionUUID->"af1acfab-7417-4339-b2ec-195617094bf5",
+ CellID->557924843],
+Cell[49686, 1494, 135, 4, 70, "Output",ExpressionUUID->"62db990a-6d46-4e65-982c-a70897ea3def",
+ CellID->1540251884],
+Cell[49824, 1500, 1118, 25, 70, "Output",ExpressionUUID->"c96aebb8-49df-42c0-bda2-14ab5ba9dccb",
+ CellID->1245533450],
+Cell[50945, 1527, 181, 6, 70, "Output",ExpressionUUID->"0dfffe51-4992-4bcd-a1e4-a04b838907ae",
+ CellID->10103194]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[51175, 1539, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"1afd787c-cc8c-4a00-927c-c38afaa6594b",
+ CellID->1990392464],
+Cell[51304, 1544, 449, 13, 70, "ExampleText",ExpressionUUID->"a6e7479f-5df3-4a31-92fd-dc33c501510f",
+ CellID->1173373129],
+Cell[CellGroupData[{
+Cell[51778, 1561, 181, 6, 70, "Input",ExpressionUUID->"b0909664-5783-488d-b593-9309af2d2039",
+ CellID->414548710],
+Cell[51962, 1569, 155, 5, 70, "Output",ExpressionUUID->"6aa2f123-358e-4a43-bc7c-794eec8b4b56",
+ CellID->924089894]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[52154, 1579, 190, 6, 70, "Input",ExpressionUUID->"46983181-67f0-4f11-9f56-6d26da092260",
+ CellID->839672250],
+Cell[52347, 1587, 717, 29, 70, "Output",ExpressionUUID->"c71613f3-05aa-4a02-a5fa-cd36ba398120",
+ CellID->2033418527]
+}, Open  ]],
+Cell[53079, 1619, 340, 12, 70, "ExampleText",ExpressionUUID->"fc4c1769-959d-4fca-9855-90c80bc97b4e",
+ CellID->1138586640],
+Cell[CellGroupData[{
+Cell[53444, 1635, 137, 4, 70, "Input",ExpressionUUID->"0951430b-e657-4af3-a9b1-db838a1462e6",
+ CellID->2146363710],
+Cell[53584, 1641, 325, 15, 70, "Output",ExpressionUUID->"39164ec9-4490-404c-a42c-f8117dcfdd69",
+ CellID->171479774]
+}, Open  ]],
+Cell[53924, 1659, 149, 5, 70, "ExampleText",ExpressionUUID->"006af42a-9e30-48e5-a98b-587fb795a55a",
+ CellID->2070518492],
+Cell[CellGroupData[{
+Cell[54098, 1668, 286, 9, 70, "Input",ExpressionUUID->"a9c5bbcd-5bb8-4912-98b5-09e9799d6f31",
+ CellID->1379279056],
+Cell[54387, 1679, 743, 34, 70, "Output",ExpressionUUID->"3396f1f9-85f7-4ab4-8a83-47b70be2e5d5",
+ CellID->326148084]
+}, Open  ]],
+Cell[55145, 1716, 295, 10, 70, "ExampleText",ExpressionUUID->"a5f4df57-5ba1-45b4-bf0b-0389696cc720",
+ CellID->554983492],
+Cell[CellGroupData[{
+Cell[55465, 1730, 340, 11, 70, "Input",ExpressionUUID->"2097e9c8-26e4-4930-b142-a96e9d0663ff",
+ CellID->1086071123],
+Cell[55808, 1743, 325, 15, 70, "Output",ExpressionUUID->"1116713e-393a-418d-9e0c-1cee48e7b724",
+ CellID->497566545],
+Cell[56136, 1760, 71, 2, 70, "Output",ExpressionUUID->"df67dea2-25ff-4e94-9cd1-632e24d10e76",
+ CellID->299600397]
+}, Open  ]],
+Cell[56222, 1765, 280, 10, 70, "ExampleText",ExpressionUUID->"2c2a6132-9512-4b49-bc55-52384fdb2404",
+ CellID->1763377339],
+Cell[CellGroupData[{
+Cell[56527, 1779, 220, 7, 70, "Input",ExpressionUUID->"4dda00a7-9aa3-4315-a613-42a7cd58a11a",
+ CellID->1808607973],
+Cell[56750, 1788, 864, 41, 70, "Output",ExpressionUUID->"2c2fcef5-55e7-40f7-8f82-522379d053a9",
+ CellID->1866855047]
+}, Open  ]],
+Cell[57629, 1832, 336, 11, 70, "ExampleText",ExpressionUUID->"3d044471-2e98-4cac-95fc-ee1e3ce7f379",
+ CellID->830035353],
+Cell[CellGroupData[{
+Cell[57990, 1847, 165, 5, 70, "Input",ExpressionUUID->"dab4e7d8-9bfb-4453-827d-a7c9c8f73af4",
+ CellID->350406959],
+Cell[58158, 1854, 72, 2, 70, "Output",ExpressionUUID->"492b2a2c-3855-40c6-8b8a-8bc1319d41b6",
+ CellID->1926140844]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[58279, 1862, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"8f370deb-2f16-47c2-8226-806ab58ccb6b",
+ CellID->1762713114],
+Cell[58408, 1867, 466, 14, 70, "ExampleText",ExpressionUUID->"ad18b529-59c2-409d-a458-cf4cab5e7986",
+ CellID->6929990],
+Cell[58877, 1883, 126, 4, 70, "Input",ExpressionUUID->"102336fc-9dd9-4de5-8990-b3a2f4985428",
+ CellID->892474447],
+Cell[59006, 1889, 91, 1, 70, "ExampleText",ExpressionUUID->"3f6493fe-0e64-463f-a905-20f751202a4e",
+ CellID->1013544102],
+Cell[CellGroupData[{
+Cell[59122, 1894, 182, 6, 70, "Input",ExpressionUUID->"75cd3bfc-0c3e-4226-bbf5-65a647f9dd76",
+ CellID->1452446751],
+Cell[59307, 1902, 155, 5, 70, "Output",ExpressionUUID->"580df35d-4741-41dc-ad7e-debb9ef7253b",
+ CellID->648825752]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[59499, 1912, 191, 6, 70, "Input",ExpressionUUID->"8ce8029b-d9e6-47f6-93d9-ef2a5df19143",
+ CellID->1733024308],
+Cell[59693, 1920, 716, 29, 70, "Output",ExpressionUUID->"7f65f4dd-9989-4e82-bdb7-cdbe6d22fe43",
+ CellID->976918719]
+}, Open  ]],
+Cell[60424, 1952, 367, 13, 70, "ExampleText",ExpressionUUID->"bfdb0b15-497b-44e0-a0af-d04989e3f643",
+ CellID->1714326193],
+Cell[CellGroupData[{
+Cell[60816, 1969, 238, 8, 70, "Input",ExpressionUUID->"599a4e50-f058-4ec7-ac03-a3b60040afcf",
+ CellID->605700555],
+Cell[61057, 1979, 966, 33, 70, "Output",ExpressionUUID->"7ecf2b58-934d-404f-a03c-72beaf375cf3",
+ CellID->1312557659]
+}, Open  ]],
+Cell[62038, 2015, 149, 5, 70, "ExampleText",ExpressionUUID->"bec5cca6-0fd0-4c30-bc90-e7b3e8927690",
+ CellID->1064994389],
+Cell[CellGroupData[{
+Cell[62212, 2024, 337, 11, 70, "Input",ExpressionUUID->"4a98db7c-3065-4434-96fd-240371e15cce",
+ CellID->149782861],
+Cell[62552, 2037, 1492, 55, 70, "Output",ExpressionUUID->"41334f21-efbd-4d96-a759-cbfb75c85c58",
+ CellID->455304357]
+}, Open  ]],
+Cell[64059, 2095, 296, 10, 70, "ExampleText",ExpressionUUID->"47de752d-640d-4907-873a-996bec677623",
+ CellID->1475496926],
+Cell[CellGroupData[{
+Cell[64380, 2109, 340, 11, 70, "Input",ExpressionUUID->"049d279b-107d-4859-b78a-0c1ba04aa1ff",
+ CellID->1810449836],
+Cell[64723, 2122, 965, 33, 70, "Output",ExpressionUUID->"c0e6c0aa-0124-4845-9f9e-f84d036a427d",
+ CellID->583792900],
+Cell[65691, 2157, 72, 2, 70, "Output",ExpressionUUID->"bd158fa4-5085-4e67-b462-bc465601824e",
+ CellID->2101970804]
+}, Open  ]],
+Cell[65778, 2162, 279, 10, 70, "ExampleText",ExpressionUUID->"1d756991-7d42-4605-a93d-19729b2992d0",
+ CellID->239380575],
+Cell[CellGroupData[{
+Cell[66082, 2176, 272, 9, 70, "Input",ExpressionUUID->"c54d27d1-5875-4551-bc2a-4e5d6e3f5985",
+ CellID->1333849902],
+Cell[66357, 2187, 2269, 83, 70, "Output",ExpressionUUID->"27292799-3ca0-4d54-9a6d-aafb5ff630c9",
+ CellID->710159928]
+}, Open  ]],
+Cell[68641, 2273, 336, 11, 70, "ExampleText",ExpressionUUID->"1e8400d2-9ca9-4b81-bc94-e9a756688284",
+ CellID->743045368],
+Cell[CellGroupData[{
+Cell[69002, 2288, 166, 5, 70, "Input",ExpressionUUID->"da8d5fc4-3c99-4484-8bab-de88917852c0",
+ CellID->1754356681],
+Cell[69171, 2295, 72, 2, 70, "Output",ExpressionUUID->"4d6181f4-733a-4172-8461-f799036864ba",
+ CellID->1584948191]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[69282, 2302, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"26e4b4b6-3608-4ef5-a7b4-ff9ac5c302b6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[69350, 2307, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"17620999-df1f-41c3-8af1-d90583ca415b",
+ CellID->1255426704],
+Cell[69503, 2316, 588, 19, 70, "SeeAlso",ExpressionUUID->"11d7068b-cd8f-4ec4-b1f1-3bd0a7fc4c90",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[70128, 2340, 152, 7, 70, "TutorialsSection",ExpressionUUID->"2c009718-88e9-4f8a-b16a-a30d7a01f269",
+ CellID->250839057],
+Cell[70283, 2349, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"62ca89bd-aece-42e0-9352-c3e3577b1b85"],
+Cell[70317, 2351, 186, 6, 70, "Tutorials",ExpressionUUID->"8dd7b015-9cad-4247-8035-900f358ed2b2",
+ CellID->341631938],
+Cell[70506, 2359, 189, 6, 70, "Tutorials",ExpressionUUID->"74bffe30-b04c-4fa4-b5f1-a39de4341635",
+ CellID->537751834],
+Cell[70698, 2367, 182, 6, 70, "Tutorials",ExpressionUUID->"72760b82-1a39-456a-a8dd-b1c8b9861b08",
+ CellID->1352944060],
+Cell[70883, 2375, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"b516801a-9750-4c85-8dc8-30629514890d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[70951, 2380, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"51dc8cab-4025-45b7-8969-a326ba0290a2",
+ CellID->38303248],
+Cell[71110, 2389, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"427513b1-d643-4fc7-b71f-48e4fb3e0f37"],
+Cell[71144, 2391, 188, 6, 70, "MoreAbout",ExpressionUUID->"0d833833-f69a-47b9-8de7-3a30326bea39",
+ CellID->1778771453],
+Cell[71335, 2399, 189, 6, 70, "MoreAbout",ExpressionUUID->"019d9f77-9954-4622-b457-dd9b32a42809",
+ CellID->691960684],
+Cell[71527, 2407, 156, 6, 70, "MoreAbout",ExpressionUUID->"0d9ecb79-c423-4724-a35f-c75e66834279",
+ CellID->1159267483],
+Cell[71686, 2415, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"f758e806-7667-4cbc-889f-3813edff0ff0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[71754, 2420, 160, 7, 70, "RelatedLinksSection",ExpressionUUID->"e08b1ea0-6615-4ee1-b1f4-0a487983a657",
+ CellID->1584193535],
+Cell[71917, 2429, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"da6563c4-508a-4c5f-85aa-ebe1e84c4a4a"],
+Cell[71951, 2431, 185, 6, 70, "RelatedLinks",ExpressionUUID->"cf4f2666-39ca-4d34-bd1a-e246b91bf030",
+ CellID->1191137959],
+Cell[72139, 2439, 187, 6, 70, "RelatedLinks",ExpressionUUID->"58b2025b-42fe-4d7c-b467-adb78ec22edc",
+ CellID->227425889],
+Cell[72329, 2447, 271, 7, 70, "RelatedLinks",ExpressionUUID->"deed7c15-7f24-444c-b537-9b5546c94465",
+ CellID->1692878672],
+Cell[72603, 2456, 285, 7, 70, "RelatedLinks",ExpressionUUID->"a7366a3f-4cfa-400e-95cc-3eb6c44b8682",
+ CellID->1998801680]
+}, Open  ]],
+Cell[72903, 2466, 23, 0, 70, "FooterCell",ExpressionUUID->"c96b5168-0c81-4b45-8c50-dc97e4df00c1"]
+}
+]
+*)
+
+(* End of internal cache information *)

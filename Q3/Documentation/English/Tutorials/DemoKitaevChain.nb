@@ -1,0 +1,2528 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     90973,       2519]
+NotebookOptionsPosition[     82408,       2345]
+NotebookOutlinePosition[     85105,       2413]
+CellTagsIndexPosition[     85025,       2408]
+WindowTitle->Demo: Kitaev Chain
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/FockQuickStart"], "\<\"Q3: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/FockPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialMoreAboutSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Functions",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Functions", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FockHopping\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockHopping"], "\<\"FockNumber\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockNumber"], "\<\"FockPairing\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/FockPairing"], "\<\"Hop\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Hop"], "\<\"Pair\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Pair"], "\<\"Q\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Q"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialFunction"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/tutorial/DemoKitaevChain\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/DemoKitaevChain"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+DemoKitaevChain.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$205361], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/tutorial/DemoKitaevChain", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Demo: Kitaev Chain", "Title",
+ CellID->509267359],
+
+Cell[TextData[{
+ "The Kitaev chain is a prototype example of the topological superconductor. \
+Here we demonstrate how to examine its properties using ",
+ ButtonBox["Q3",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Q3"],
+ "."
+}], "Text",
+ CellID->1534169418],
+
+Cell[BoxData[GridBox[{
+   {
+    RowBox[{
+     ButtonBox["FockNumber",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/FockNumber"], " ", "or", " ", 
+     ButtonBox["Q",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/Q"]}], Cell[
+    "Number operator", "TableText"]},
+   {
+    RowBox[{
+     ButtonBox["FockHopping",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/FockHopping"], " ", "or", " ", 
+     ButtonBox["Hop",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/Hop"]}], Cell[
+    "Constructs the hopping Hamiltonian terms", "TableText"]},
+   {
+    RowBox[{
+     ButtonBox["FockPairing",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/FockPairing"], " ", "or", " ", 
+     ButtonBox["Pair",
+      BaseStyle->"Link",
+      ButtonData->"paclet:Q3/ref/Pair"]}], Cell[
+    "Constructs the pairing Hamiltonian terms", "TableText"]}
+  }]], "DefinitionBox",
+ CellID->2096742444],
+
+Cell["Some useful functions to study the Kitaev chain.", "Caption",
+ CellID->1891092685],
+
+Cell[TextData[{
+ "See Kitaev original paper [",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["A. Kitaev, Physics-Uspekhi 44, 131 (2001)"]], 
+    "https://doi.org/10.1070/1063-7869/44/10S/S29"},
+   "WebLink",
+   BaseStyle->{"Text"}]]],
+ "] for technical details of the model."
+}], "Text",
+ CellID->2023724769],
+
+Cell[TextData[{
+ "Load the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Fock"]], "paclet:Q3/guide/FockPackageGuide"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " package."
+}], "MathCaption",
+ CellID->836781195],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->784376994],
+
+Cell[TextData[{
+ "Let c denote the (Dirac) ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Fermion"]], "paclet:Q3/ref/Fermion"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " operator."
+}], "MathCaption",
+ CellID->1974511739],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->393078912],
+
+Cell["\<\
+Let t, \[Mu], and \[CapitalDelta] denote the hopping amplitude, chemical \
+potential, and pairing potential, respectively.\
+\>", "MathCaption",
+ CellID->272490924],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "t", ",", "\[Mu]", ",", "\[CapitalDelta]"}], 
+  "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1481935487],
+
+Cell["The number of sites of the one-dimensional lattice.", "MathCaption",
+ CellID->817575812],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"$L", "=", "8"}], ";"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1396298778],
+
+Cell["Define some Lists of operators to be used later.", "MathCaption",
+ CellID->2039751077],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"cc", "=", 
+  RowBox[{"c", "[", 
+   RowBox[{"Range", "[", 
+    RowBox[{"1", ",", "$L"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"cccc", "=", 
+  RowBox[{"Join", "[", 
+   RowBox[{"cc", ",", 
+    RowBox[{"Dagger", "@", "cc"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1814894078],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"4"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"5"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"6"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"7"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"8"},
+      "RowDefault"]],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1893560920],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"1"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"2"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"3"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"4"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"5"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"6"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"7"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"8"},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"2"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"3"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"4"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"5"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"6"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"7"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"8"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1518217547]
+}, Open  ]],
+
+Cell["Now constructs the model Hamiltonian.", "MathCaption",
+ CellID->1196250966],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"H0", "=", 
+  RowBox[{
+   RowBox[{"-", "\[Mu]"}], "*", 
+   RowBox[{"Q", "[", "cc", "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Hhop", "=", 
+  RowBox[{
+   RowBox[{"-", "t"}], "*", 
+   RowBox[{"PlusDagger", " ", "@", " ", 
+    RowBox[{"FockHopping", "[", "cc", "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Hpair", "=", 
+  RowBox[{
+   RowBox[{"-", "\[CapitalDelta]"}], "*", 
+   RowBox[{"PlusDagger", " ", "@", " ", 
+    RowBox[{"FockPairing", "[", "cc", "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"Htotal", "=", 
+  RowBox[{"H0", "+", "Hhop", "+", "Hpair"}]}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->648082348],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "\[Mu]"}], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"8"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"8"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->2051228747],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "t"}], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"8"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "+", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"8"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->764629479],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "\[CapitalDelta]"}], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    RowBox[{"-", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"2"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        TagBox[
+         SubscriptBox[
+          TemplateBox[{"c"},
+           "RowDefault"], 
+          TemplateBox[{"1"},
+           "RowDefault"]],
+         DisplayForm],
+        DisplayForm]}],
+      DisplayForm]}], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"3"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"4"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"5"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"6"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"8"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"7"},
+          "RowDefault"]],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"3"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"4"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"5"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"6"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm], "-", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"7"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm], 
+      TagBox[
+       TagBox[
+        TemplateBox[{
+          TemplateBox[{"c"}, "RowDefault"], 
+          TemplateBox[{"8"}, "RowDefault"], 
+          TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+         "Subsuperscript"],
+        DisplayForm],
+       DisplayForm]}],
+     DisplayForm]}], ")"}]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->585509905],
+
+Cell[BoxData[
+ GraphicsBox[
+  TagBox[RasterBox[CompressedData["
+1:eJztnQtQFFe+/3n7gBVKAwZ8IBIvibKJSoKiYu3qxmBSiw9iuFRKdH2skoCP
+q+6/vCrZhKClyV4ur0KsVO3GiBUfNSUpvaWlZdDcGBQ1gLpsUIKPi0ZRMcLK
+Q2T+v2tX5o4wzJx+nD49M99PlRYzc/rbv+/p031+55yenohFK+f+0cvDw2NN
+X/pv7h/+32//7d/+sD4piF7MW7EmbdmKpUtmrli7dNnSf5u4yJve3E7/uuiP
+//3bDAAAAAAAAAAAAAAAAAAAAAAAAAAAAAByePz48dtvv/3TTz+JDgQAAAAA
+AADAEZPJNHTo0K6uLtGBAAAAAAAAADiSkJCwcuVK0VEAAAAAAAAAOHL16lUv
+L69vvvlGdCAAAAAAAAAAjnz00UehoaFPnjwRHQgAAAAAAACAIzExMenp6aKj
+AAAAAAAAAHDkxo0bHh4eZWVlogMBAAAAAAAA2CM7O3vq1KlNTU3KNi8sLAwJ
+CcGtPgAAAAAAABiZ+/fv+/v79+nTZ+vWrcoUkpOTExMTtY1KoqGhoaKiorm5
+mYe4DvpqgHd4d0Z9NbizdwAAAEAftmzZMmnSpLy8vKFDh3Z0dChQiIqKyszM
+1DCka9eupaSkBAYGejzFy8vrpZdeKigo0OrHAnjrGzk2eId3eDeOdwAAAEBP
+2tvbQ0ND9+/f39zcHBQUtGvXLrkKLS0t1JOaTCatQiopKenXr5/URw8fPjw+
+Pv65556TXi5cuND4+kaODd7hHd6N4x0AAADQmb/+9a8RERHSLfp/+tOfxo8f
+L1fh9OnT1IfW1dVpEk9NTU3//v1J8OWXX66oqLC8v2fPHhqhqP8SMW99I8cG
+7/AO79rqAwAAAM5FdHT0f/7nf0p/X79+3cfHR25vePDgQepYHz16pEk8CQkJ
+pBYSEnL37t1uH2myNM9bXw3wDu/dPoJ3g+sDAAAATsThw4cDAwOtv++WkpLy
++9//XpZISUmJn5+fJvFQXxwUFEQ9dU5OjsPC586dy8jIiImJGT16dHJycmVl
+pbb6RFNTE7kj8aKiIpbyapAV2/nz59PS0mJjY0eNGjVz5sy9e/dqq6+gbtUg
+97hIdHR0LF26NCkp6d69exrqK6hbNciKbe3atXOfhWpAQ30L7HWrBrmxNTY2
+rly5cuLEiVFRUe+8805paamG+grqFgAAABAIdXNPesfmJr/73e+ov7N+58yZ
+M56enj/88AP7fgsLC4ODgzWJqq6uTrr/9tSpU/Z3WlxcTMONgQMHUgJACSpt
+4uvrSzmb/a3Y9c1Pv/hMVSGVZ88BFBwFubFt377d29t70KBBlJjNmjVLupkh
+Ozvb/la869asi3dr0tPTpa1+/PFH+yV5161ZL++RkZEBAQG/tiI+Pt7+Jrzr
+1qyX96qqqrCwMC8vr+nTp7/77rvh4eG04b59+7TSV1C3ZhXeAQAAAJW8/vrr
+Hr3TswevrKz08fG5fv16t/enTJmSlpbGvt+tW7dGRERoEtXly5el963vyLVJ
+Zmbm1KlT79+/L700mUy01bx58+xvxa5PlJeXFxUVbdu2TVbmL/coKIittrY2
+JSWlsbFRennlyhVKh4YMGWJ/K951a9bFu4Vdu3ZReXLtwfAdE951a9bLOw3H
+5syZ47CYYn0JWXVr1sv7jBkzaEB64MAB6WVrayudnvaza951a1bhHQAAAFDJ
+zZs3a3unZxc5f/78f/3Xf+2pQ5le//79e94W2xv5+fkDBgzQJKrOzk7pKRw7
+duxwuF8qbPmbdEJCQsaMGeNwE3Z9iTt37njIyfzlHgU1sVkYN25cQECAdYWo
+1FdQt2YdvVdXV1MTHT9+fFZWFkt+xbtuzbp47+rqomHI8uXLZcXPu27Nung/
+c+YMFZM1IyFLX1ndmlV4BwAAAPTkf/7nf3x9fak/7fkR9VYjR478+OOPGaWk
+GcKWlhZNAouLiyO1ESNG9BSkfry3nxtob2/39/d/8803NdeXm/mrQZn3PXv2
++Pj4vPfee5z02etWDeyxPXjwYNSoUYMGDaqvr6dWypid8q5bNTDG1tTURMXW
+rVtXVla2f//+8vLy1tZWDfXNSutWDYyx5ebmUjEaldDfbW1t7Fcb3nULAAAA
+OAV/+tOfpkyZ0tun1M8+//zzlPKxSEnP9rl8+bImgZ08edLLy4sEp06daq15
+7ty5mJiYxYsX29yqoKCANikuLtZcX8/MX1Zshw4domw8IiKCUtNVq1ZR6qKt
+vgX2ulUDY2xdXV2zZ88my8ePH6eX7Nkp77pVA2NsZLPbzSRhYWFfffWVVvqK
+61YNjLFlZGR4enpSYPHx8X369KHyNEKxf5O/LH3FdQsAAAAYn4cPH/7qV78q
+LCy82Qu1tbW+vr5/+9vfWNSoD6WO8sSJE1qFl5WVJX21lmJ45ZVX3nrrLenb
+fMS4ceN6jkcqKyv79u07adIkxrV1Wfp6Zv6yYjOZTJMnTx42bJiU1TA+fod3
+3aqBJbYtW7bQy7y8PGkTWdkp77pVA0tsra2tmZmZe/fubW5uvnbtGg3PAwIC
+/P396W9N9NXUrRpYYktMTJQK0BCgtLQ0Ozs7MjKSUvrvvvtOE301dQsAAAAY
+nO3bt3swMGHCBBY16jS9vb2//PJLDSOkDj0uLk6arJMYOnTop59+2vN26wsX
+LoSEhFCSJquPZtfXOfOXFZvEqVOnyP7AgQNv3bqlrb6yulWD/djIKbW0oKCg
+D39h+vTpVGbVqlWffPKJev2eyK1bNciNjUhLS6Nin3/+uXp99XWrBofeFy1a
+RG8eOnTIssnhw4fpnRUrVmii3xNZdQsAAAC4FS+++KKsp4UzQmOKqqqq48eP
+U/pts0BlZWVwcPDgwYNlPYaUXd8sIvOXYInNwmeffUZB7ty5U0N9lXWrht5i
+27dvX8Sz+Pv7S1ncq6++ql7fJgrqVg2yYistLaXYZGXmvOtWDXa8b968mYKx
+vv2GknZfX9/Zs2drot8TBXULAAAAuAnJycnvv/++zjs9duzYgAEDwsPDuaam
+ojJ/O1D+c+HCBet31q9f3y0vUok+daseze9I0aFuFXPkyJFuSw8LFiyg2KTb
+8jVHt7t9WDh//rynp+fcuXMt75w9e5bC27Bhgyb6OtctAAAA4NTk5eWNHj1a
+zz3u3r3bz8+PuubVq1dTipL1C1p93aC2tjb3KR9++CHtJS4uTnr59ddfa6Kv
+mI6ODkrIyfuyZct27tx58ODB9PR0Ly+vyMhI699iVgPvutUQbbNTHepWMW1t
+bcHBwQMHDszMzDx8+LDJZEpKSiLv06ZNc/jEUWUYKvM3P30KMSX/GRkZZWVl
+1ETpSAUGBtbX16tX1r9uAQAAAKfmypUr1FE2NDTotscJEybY/G7CBx98oIn+
+vn37bOovWbJEE3013LlzJzU1dfDgwVJIlA4lJiay/OISI7zrVkOkL6VqmJ3y
+rls11NTUzJ49WxqUET4+PsuXL7f84JrmaF63KqFx2Zo1a/r27SvZj46OZvl6
+LyM61y0AAADg7ERFReHbcDpDQ63q6mrh09EuiWHrtqWl5cKFCxcvXmR86K6L
+8fjxY/LOaZLBzesWAAAAYGf16tVJSUmiowAAAAAAAADw5ezZs35+fvfu3RMd
+CAAAAAAAAIAvMTExhYWFoqMAAAAAAAAA8GXHjh2xsbGiowAAAAAAAADwpbm5
++YUXXmhsbBQdCAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAHBMZ2fn0aNHnVdfDfDuvPpqgHfn1VcDvDuvPgAAAK14+PBh
+VFSU8+qrAd6dV18N8O68+mqAd+fVBwAAoBXu3CPAu/PqqwHenVdfDfAuUH/T
+pk1YFAAAALFcunSpqKgoJycnODi46Cm3bt1yIn01wDu8wzu8O4u+Ggzifdu2
+bW+88YaG+wUAACAX6Yqdn5/PtUfgp68GeId3eId3Z9FXg0G8NzQ0+Pr61tfX
+a7hrAAAACmhvb+e6CsxbXw3w7rz6aoB359VXA7yL1X/jjTc2bNjALwYAAAAs
+GKFHEAW8O6++GuDdefXVAO9i9UtKSoYNG8YvBgAAACwYoUcQBbw7r74a4N15
+9dUA72L1Hzx44O3tXVlZyS8MAAAADjFCjyAKeHdefTXAu/PqqwHehetPmDAh
+KyuLXxgAAAAcYpAeQQjw7rz6aoB359VXA7wL19+4cWNsbCy/MAAA1jQ0NFRU
+VDQ3Nzupvhrg3U5sKnsE3vpqgHd4twm8G1ZfDfBufO/Hjx/38vL65z//qTgS
+AIBDrl27lpKSEhgY6PEUOuleeumlgoKCrq4up9A3cmyu4V1Zj8BbXw3wDu/w
+Du/wrj42zfVpBEE65eXlciMBADBSUlLSr18/6ZwdPnx4fHz8c889J71cuHCh
+8fWNHJvLeKdr+FdffWUofTXAO7zDO7zDu/rYeOh3dnZ6e3sXFxfLigQAwEhN
+TU3//v3pJH355ZcrKios7+/Zsyc0NLSsrMzg+kaODd7hHd611TdybPAO7/Cu
+lf6QIUPee+89leEBAGySkJBAp21ISMjdu3e7faTJ7Si89dUA7/De7SN4N7i+
+GuAd3rt9BO+G1Y+NjZ07d64aBQCATejcDAoKojM3JyfHfsmMjIy5tti2bZsm
++hKNjY0rV66cOHFiVFTUO++8U1paKsOMTGTF1tHRkZeXN3Xq1IiICPqfNqF3
+tNJXVrdqkHtcjKavBniHd2fUVwO8w7vT6c+ZM2fatGmaywIA6urqpPvxTp06
+Zb9kYmLir58lODiYNqSsVRN9oqqqKiwszMvLa/r06e+++254eDhtuG/fPvtb
+0cXnSe9oFduSJUuo5KRJk9auXRsdHU1/L1++3P4mvOvWrJd3BfDWN8M7vMM7
+vMO763pPT08fP348e3nFtQSAu3H58mXpzLW+Q4+Fjo6OsWPHjhgx4ueff9ZK
+f8aMGX5+fgcOHJBetra2FhUVOTxnX3/9dY/e+fHHH9XH9ujRI29v78mTJ1ve
++c1vfuPj49PW1mZnK951a9bFu0RTU1NJSUlycjIdEZbysvTPnTtHY5yYmJjR
+o0fTLhh/ulEf7wpik6V//vz5tLS02NjYUaNGzZw5c+/evQ43MevlXUFsyto8
+NfilS5cmJSXdu3fPYWHd2rzc2GTpr127ttsCH+3F4Vb6eFcQm9y6VbC2q9tx
+lxsbu77itV0dvCuLTVbdyl03z8rKoquuQ1kLimsJAHejs7NT+lb+jh07ZG24
+ceNGSoa//fZbrfTPnDlDxSjTkBUGcfPmzdresTNwYI9NesLYhg0bLO98+umn
+9M6NGzfsbMW7bs26eCe2bNni6ekpXT9Z8hNZ+sXFxTTcGzhwIHWylGDTJr6+
+vpRzOtyFDt6Vxcauv337djrQgwYNosRy1qxZ0hflsrOz7W9l1sW7stiUtfn0
+9HT23lmfNq8gNln6kZGRAQEB1st88fHxDrfSx7uC2GTpK1vb1ce7gtjY9RWv
+7ergXVlssupW7rr5pk2bxo4d61DWguJaAsANiYuLo3NwxIgRLS0t3T6i89rm
+qLyurs7Hx8fh7S6y9HNzc6lYdXU1/d3W1tazMA/YvVPiFxoa+v3339PfdA2Z
+MWMGXRs11Lcgq27VwB5beXl5UVHRtm3b2DN/dv3MzMypU6fev39femkymWir
+efPmKbHEDO/YGPWpP0pJSWlsbJReXrlyhVKOIUOGKPbFAu/Y5Lb5Xbt2UXlS
+pv+p8SuxxAzv2Nj1aTg5Z84cRSYUwjs2dn1la7tq4B2bguu8Wc7arhp4x8ao
+r2DdfMWKFbjPHwBOnDx5kvp0Onkpybl8+bLl/XPnzlG6u3jx4p6bLFq0iC6P
+169f11A/IyPD09Pz+PHj8fHxffr0ofKjRo1yOBGkEnbvNTU1w4cPp8KznkKd
+I8v6Ju+6VYPc2O7cuSMr82fXpw7C8jd1siEhIWPGjFFiiRnesSk47hLjxo0L
+CAiw3qnm8I5Nlj6N9Pv37z9+/PisrCwdVuR5x8ao39XVRcV0GN3rGRujvuK1
+XTXwjk3ZOcW+tqsG3rEx6itYN1+4cGFSUpLDAAAAyqCuTbqdw9fX95VXXnnr
+rbekVU6Cuvv29nbrwrdv36ah+oIFC7TVT0xMlArQEKC0tDQ7OzsyMpIuKd99
+9522ZhXEZn56maI0ICEhYeTIkfTR0KFDjxw5oqG+hIK6VYOs2ORm/nL1JehN
+f3//N998U6030bEp0N+zZw8dfR0eYc07Nkb9Bw8e0Oh+0KBB9fX1H3/8sQ6Z
+vw6xseg3NTXRy3Xr1pWVle3fv7+8vLy1tZWjZ71iY9EXsrarQ2xyzynd1nZ1
+iI1RX+66ORXQeYQIgLtBCXZcXJw0eJeg5JbS3Z5TfF988QV9unv3bm31Fy1a
+RG8eOnTIssnhw4fpnRUrVqi0pj62goICD6tbGY8ePUpZAft0De+6VQN7bAoy
+f1n6ElJV6/PTjbxjY9SnNk+jiYiICOptV61aRamXWmMGiM2hfldX1+zZs0n2
++PHj9FK3zF+H2Bzqk5THs4SFhenzo668Y3OoL2RtV5/YZF1PdFvb1Sc2Fn25
+6+bU8BgfKAEAUENra2tVVRVd+ijN661Mamoqnde3bt3SVn/z5s0ka93F0EXD
+19eXumAFO9I2ttdee40uWda/S/L3v/+dopU1Pcu7btXAEpuyzJ9dn6isrOzb
+t++kSZP0/DYW79gc6ptMpsmTJw8bNszj6Yo546ONNIF3bHb0t2zZQpp5eXnS
+Sz0zf31is6NPH2VmZu7du7e5ufnatWu5ubkBAQH+/v70t2I7horNjr6otV3d
+YmO5nui8tmuBd2z29WWtm9+/f5/KnD59WkEYAADNiYmJodG65rLnz5/39PS0
+/s2+s2fPejx7Z6AoJk6c2K9fP+uE/MSJE3IzfxY41a0mqMn8Wbhw4UJISAgl
+mbrlP+zoE9upU6doF9QA9B/6OUTb2EjN29s7KCjow1+YPn06ta5Vq1Z98skn
+6vWdLra0tDTaxeeff85JXw3axiZwbdchusWm/9ouO5xik7tuTj0sffro0SNt
+wwAAKCM0NDQqKoqH8vz58yn5z8jIKCsroytPeHh4YGBgfX09j33JoqioiK5a
+cXFxxcXFZ86coZdjxoyh6xJdnbTdEb+6VQ/XzL+ysjI4OHjw4ME//PADD301
+6BnbZ599RpW8c+dO3jtSgIax7du3L+JZ/P39pWnAV199Vb2+08VWWlpKuxA+
+6rGJtrEJX9u1g26xiVrbZYFTbHLXzTdt2hQTE6NtDAAAZdCZS1fCKVOm8BDv
+6OhYs2ZN3759pRsFo6OjdVsCdkh+fv7zzz9vuYlx5MiRmt+byrVu1cMv8z92
+7NiAAQNooGfAtJ9rbJRjXLhwwfqd9evXd8s9RKFzbPrf7cOO5rEdOXKkW2a1
+YMEC2oX0tQKx8I7NyGu7usVm5LVdTrHJXTcfPXr01q1bNQ8DAGBMHj9+fPHi
+xYaGBtGBdIcyc4qKeofbt2+LjkU/amtrc5/y4YcfSgsf0suvv/5aE/3du3f7
++fmR8urVqynFyvoFzddTjBYbjXNpQEH6y5Yt27lz58GDB9PT0728vCIjI5ub
+m9XrO1ds7pP5t7W1BQcHU3KVmZl5+PBhk8mUlJRE+tOmTeP6NFfjxGbYtV2z
+XrEZeW2XU2yy1s3/8Y9/0FEw4G2fAADgDuzbt8/DFkuWLNFEf8KECTb1P/jg
+A030jRzbnTt3UlNTBw8eLMlSZ5eYmMj716wY0Tk26Uu1xsz8NY+tpqZm9uzZ
+0qCSkJ6gaPnBOLHoEJuR13Z1iM3Ia7tcY2NfN9+8ebP1b34BAAAALkZDQ0N1
+dbXwqX6bGDk2p6alpeXChQsXL160+QMKYtEhNsOu7ZqNHZtTw7huHhMTU1BQ
+oFtUAAAAAAAAAP25evWqj4+PW91SCwAAAAAAgBuSk5MzY8YM0VEAAAAAAAAA
++JKamlpSUiI6CgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAgAudnZ1Hjx4VHYUY4F10FGKAd9FRiAHeRUchBngXHYUY4F10FMC4PHz4
+MCoqSnQUYoB30VGIAd5FRyEGeBcdhRjgXXQUYoB30VEALjx+/Pjtt9/+6aef
+1Ii4cwuBd9FRiAHeRUchBngXHYUY4F10FGKAd9FRAC6YTKahQ4d2dXUp2/zS
+pUtFRUU5OTnBwcFFT7l165a2ERoWeId3eId3dwDe4R3e4R24DAkJCStXrlS8
+udRC8vPz3bCFwDu8wzu8uwPwDu/wDu/ANbh69aqXl9c333yjUqe9vd1tV4Xg
+XXQUYoB30VGIAd5FRyEGeBcdhRjgXXQUQHs++uij0NDQJ0+eqNRx5xYC76Kj
+EAO8i45CDPAuOgoxwLvoKMQA76KjAM9QXV1dUVGhMmmPiYlJT09XH4w7txB4
+Fx2FGOBddBRigHfRUYgB3kVHIQZ4Fx0FeIbg4GAPD4+HDx8qVrhx4wYplJWV
+qQ/GnVsIvIuOQgzwLjoKMcC76CjEAO+ioxADvIuOAvwfT5488fLyUpn5FxYW
+hoSEqL/Vx+zeLQTeRUchBngXHYUY4F10FGKAd9FRiAHeRUcB/o/GxkaPp6jJ
+/JOTkxMTE1lKNjQ0VFRUNDc391ZAZQtxqC8QeId3m8A7P32BwDu82wTe+ekL
+BN7d07tzUVxc/MILLwwZMiQoKEjK/H/1q18NsOK3v/0tuxod08zMTDsFrl27
+lpKSEhgYKO3Ly8vrpZdeKigo6Pnwf2UthF1ff+Ad3uEd3uHdGnjnp68/8A7v
+7ubdSSksLJQyfD8/P5WZf0tLCx0Rk8nUW4GSkpJ+/fpJexk+fHh8fPxzzz0n
+vVy4cGG3wnRMv/rqK1leZOmroa6u7tixY/xig3d++mqAd36xwTs/fTXAO7/Y
+4J2fvhrgnV9sLubdBTh37pxUmYrv9jl9+jRtTrVn89Oampr+/ftTgZdffrmi
+osLy/p49e0JDQ9V/KZi3vjXFxcWTJ082TmzwDu/wrq2+NfBunNjgHd7hXVt9
+a+BdQ0GnQH3mf/DgQdr80aNHNj9NSEigT0NCQu7evdvtI02WbHjrWyO3hcA7
+vHf7CN5VAu/wzkPfGnhnLw/v8N7tI5f37hqoz/xLSkr8/PxsfkTHSPoeQU5O
+jooYe0WWPjnNyMiIiYkZPXp0cnJyZWWl3N3JaiGG8k40NTXRkSLjRUVFCnbn
+vN7Pnz+flpYWGxs7atSomTNn7t27V+7unNe7m7d5iY6OjqVLlyYlJd27d0/W
+7pzXuzu3+bVr1859Fjr6snbnvN4tuGGbNz99XMnKlSsnTpwYFRX1zjvvlJaW
+ytqd83p32zZPvdtcW2zbto19d8j8lSkUFhYGBwfb/Kiurk4SP3XqlIoYe4Vd
+nw4uDU8GDhxIFwRKhGgTX19f6h8d7oIa4ZNfoJx50qRJT6zQJDZlyNLfsmWL
+p6enVJ79muAC3rdv3+7t7T1o0CDqBGfNmiUtIGZnZzvchQt4d/M2byE9PV3a
+6scff3RY2AW8u3ObJyIjIwMCAn5tRXx8vMOtXMO7BXdr80RVVVVYWJiXl9f0
+6dPffffd8PBw2nDfvn32t3IN727b5hMTE3/9LNKvU9GIwP6Gir27DOoz/61b
+t0ZERNj86PLly5K49Z1adpA7L82un5mZOXXq1Pv370svTSYTbTVv3jyHu3j9
+9dc9esfOdVWWdwVzs7L0y8vLqUppIOwhJ/N3Ae+1tbUpKSmNjY3SyytXrlDX
+MGTIEIe70Me7grlZl2nzXL1b2LVrF5WnI+7R+3eRrNHHuwX2uVmXafMWeHgn
+aKg7Z84c9jAk9PGuYG7WZdo8b+8zZszw8/M7cOCA9LK1tZW6PIdZnG5tXu56
+hMu0eTNn79bQJWXs2LEjRoz4+eef7ZdU7N1lqK6ulszeuXNHmUJ+fv6AAQNs
+ftTZ2Sl9O3vHjh0OdRTMS8vSp8KWv+mCEBISMmbMGIdb3bx5s/YX/vznP1O7
+qrXCzoWFPTZlc7OyvEvQIWavW7Nrebcwbty4gIAA68ZgEx28K5ubdY02r4N3
+89OLGymPHz8+KyuL8Xqug3dr2OdmXaPNW8PDe1dXFw1zli9fzh6GhD7eFczN
+ukyb5+r9zJkzVCwtLc1hGN3Qx7uC9QiXafNcvXdj48aN1K18++23Dksq9u4y
+3L17V7r8lpeXK1OQZhhaWlpsfhoXF0ef0iisZwE6vjRGs7xUNi/Nrm9Ne3u7
+v7//m2++ybgXCbn3gzHGpnhuVq53uZm/Nc7uXWLPnj0+Pj7vvfceuxEzN++1
+SudmXaDN6+D9wYMHo0aNosFFfX39xx9/rGAmh5N3C3LnZl2gzVvg5L2pqYmK
+rVu3rqysbP/+/dSntLa2sruQ4Odd2dysa7R5rt5zc3OpGI166O+2trbeshH7
+8POubD3CNdo8V+/W0GWELnQKRkDueZ8/QSMyquTExEQ6ZSxvUnNi3Fx6ts/l
+y5dtfnry5Enq06kAJXjWZc6dOxcTE7N48eJu5eVmp3L1JQoKCmgTOuKMe5GQ
+20LYY1M2N8u7bq1xau+HDh2ijDciIoKuDKtWrWJv2xL8vHeDcW7WNdp8N7T1
+3tXVNXv2bDrcx48fp5f6ZEGyvCuYm3WZNs/PO0l1W7in3k3ug8Q5eVc8N+sC
+bZ6394yMDE9PTzIeHx/fp08fKk8jIIc3+XeDk3fF6xEu0OZ5e7dm0aJFNMS4
+fv263H25beb/l7/8RWow4eHhSU+Jjo6mK3NvD+rshvRNgRMnTvRWgC7v0m08
+vr6+r7zyyltvvSWt+BDU3be3t1sXVpCdytInKisr+/btK32ng30vZkUtRG5s
+Zplzs7zr1oJTezeZTBT8sGHDpCuJ3Efc6ONd1tysi7V5zb1v2bKFXubl5Umb
+6JMFMcZmVjE36wJtnqv31tbWzMzMvXv3Njc3X7t2LTc3l4aTdEmhv4V7VzM3
+6+xtnrf3xMREqQANAUpLS7OzsyMjIyl1/O6774R7V7Me4extnrd3C7dv36Ye
+ZMGCBbIsSLht5k/JAF00pJGyBFX4+PHjr1y5wrI5NTxvb+8vv/zSThk6AePi
+4qRBnMTQoUM//fTTnlN8yrJTdv0LFy6EhIRQhyjrvJCgMc5nn30mdyv22CTk
+zs3yrlsJZ/cucerUKTr0AwcOvHXrFrsLrt4Vz826QJvn5J2OMl2RgoKCPvyF
+6dOnUxnaxSeffMLugpN3lXOzTt3mdfZOpKWlUbHPP/+c3QUn7yrnZp26zXP1
+bn4630tv0vXEssnhw4fpnRUrVrC74ORd5XqEU7d53bx/8cUX9Onu3bvlWjAr
+9e4y0BiKauDkyZPff/+95b5rRl588UWWJ7vSGKGqqoqagZ1vE6vJTh3qV1ZW
+BgcHDx48+IcfflCgrwYW72YVc7O861YNRvBugc5xqoSdO3fK2oViHMamcm7W
+qds8J+/Us0Q8i7+/v9RrvPrqq8r9aBGbWaO5WSdt8/p7Ly0tpV3Iyn7VYCc2
+TeZmnbTNc/VObN68mcxaDyUoOfT19aVhpmI7srATmybrEU7a5nXznpqaSjuS
+NbkB1JOcnPz+++9rIsUvOz127NiAAQPCw8P1T4EYUTM3y4KozJ8FTt6pLyBl
+63fWr1/frY8wCMrmZu1j/DYvwcO7NcoyTB5oNTdrB8O2eR28HzlypFsTWrBg
+Ae1CWmIwGgrmZtkxTpu3ibbez58/7+npOXfuXMs7Z8+eJf0NGzZooq8GTdYj
+7GDkNs/bu4WYmBjqPrTVBA7Jy8sbPXq0JlKcstPdu3f7+fmR8urVq+mSmPUL
+dr6eoDP85mZra2tzn0JdLdVAXFyc9PLrr7/WdkeK4eS9o6ODkl467suWLdu5
+c+fBgwfT09O9vLwiIyObm5s13JFWaDs3a/w2bw3XeWnjZEG852aN3OZ5e29r
+a6PLCCUAmZmZlGCYTKakpCTSnzZtmsNvjguB69yscdq8TTT3Pn/+fEr+MzIy
+ysrK6NJHZ0FgYGB9fb1W+orhuh5h8Dav21pMaGhoVFSUtprAIVeuXKHj29DQ
+oF6KU+Y/YcIED1t88MEH2u5IGVznZqnDtel9yZIlmu9LAVy9U3NKTU2lMYVk
+mbqGxMRElqcI6gDvuVkjt3md56Wlm0yMmQVpnqEZuc13Q3PvNTU1lFRIA15C
+esqf3JtXOaHz3Kyh2rwO3mnMu2bNmr59+0qHPjo6WtYtJfzgvR5h5Davz1pM
+V1cXjSamTJmioSZghAZcalbujD8vzQ/nmpvVFt2807C0urpa+LSnBSPPzfLG
+nb33hN/crNHafE84eW9paaFx5cWLF20+SEoIBp+b5Yqe3h8/fkzHXZNJSA3R
+YT3CgG1ewrBrMUATKHOj01nx5gafl+aKkedmeePO3p1oblZz3Nl7Nww1N6sz
+buXdyHOzvHFn72YDr0fogDt7dwfOnj1L5/W9e/dEBwKAk2H8uVl+uLN34IYY
+dm5WB9zZu9mo6xH64M7eXZ6YmJjCwkLRUQAAAAAAAAD4smPHjtjYWNFRAAAA
+AAAAAPjS3Nz8wgsvNDY2ig4EAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAADy6OzsPHr0qOgoxADvoqMA/4s7Hwt4Fx2FGOBd
+dBRigHfRUYjBnb0bk4cPH0ZFRYmOQgzwLjoK8L+487GAd9FRiAHeRUchBngX
+HYUY3Nm7MXHnIwLvAgPYtGmTC0wCPH78+O233/7pp5/UiAg/FgKBd9FRiAHe
+RUchBngXHYUYhHt3jXxDEy5dulRUVJSTkxMcHFz0lFu3bokOSifgXbj3bdu2
+vfHGG/rvV1tMJtPQoUO7urqUbW6QYyEEeId3eId3dwDehXt3jXxDE6Qjkp+f
+77atEd4Fem9oaPD19a2vr9d/1xqSkJCwcuVKxZsb5FgIAd7hHd7h3R2Ad+He
+XSPf0JD29na3XYGCd7Ex0Bh8w4YNYmNQw9WrV728vL755huVOkY4FqKAd9FR
+iAHeRUchBngXHYUYjODd2fMNbTHCEREFvIuNoaSkZNiwYWJjUMNHH30UGhr6
+5MkTlTpGOBaigHfRUYgB3kVHIQZ4Fx2FGIzg3dnzDW0xwhERBbyLjeHBgwfe
+3t6VlZViw1BMTExMenq6eh0jHAtRwLvoKMQA76KjEAO8i45CDEbw7uz5hrYY
+4YiIAt5FR2GeMGFCVlaW6CiUcOPGDQ8Pj7KyMvVSBjkWQoB30VGIAd5FRyEG
+eBcdhRgM4t158w3NMcgREQK8i47CvHHjxtjYWNFRKKGwsDAkJET9rT5mwxwL
+IcC76CjEAO+ioxADvIuOQgwG8e68+YZcGhoaKioqmpubeyug8og41BcIvBvf
++/Hjx728vP75z3+q1NGf5OTkxMRElpLOcix4AO/wbhN456cvEHiHd5sYxLvz
+5huMXLt2LSUlJTAw0OMpZPall14qKCjo+eBxZUeEXV9/4N2JvNMZTTrl5eXK
+NhcI1V5mZqadAk53LDQE3uEd3uEd3q2Bd376jDhvvsFCSUlJv379pLoaPnx4
+fHz8c889J71cuHBht8JUh1999RU/fTXU1dUdO3aMX2zwzk+fkc7OTm9v7+Li
+YmWbK4D2tXjx4p7v0xVm165djCItLS10FTKZTL0VcMZjYRM3aYc2gXd+scE7
+P301wDu/2OCdnz4j+ucbulFTU9O/f3+qnJdffrmiosLy/p49e0JDQ9V/IZG3
+vjV0gCZPnmyc2OCdh/6QIUPee+89leGxM3v27OXLl3d7s729vU+fPocPH2YU
+OX36NFUFXS1tfuq8x6In7tMOewLvxokN3uEd3rXVt8Z9vOucb+hGQkICVVdI
+SMjdu3e7faTJ8hBvfWvktkZ4d0bvsbGxc+fOVaMgi7CwsL/+9a/d3jxz5oyn
+p+f9+/cZRQ4ePEi18ejRI5ufOu+x6In7tMOewDt7eXiH924fwbtK4N0F8g19
+oDoJCgqiGsvJyTGCfmNj48qVKydOnBgVFfXOO++UlpbK2p2s1mgo7x0dHXl5
+eVOnTo2IiKD/aRN6R9bunNR7RkbGXFts27att03mzJkzbdo0rUO2jfQozkuX
+LnV7Pz8/X9ZdiCUlJX5+fjY/Ms6xkGhqaqJok5OTi4qKFOzOSdshce7cOWqN
+MTExo0ePJvsKHuPsvN7Pnz+flpZGfdyoUaNmzpy5d+9eubtzXu8W6JK7dOnS
+pKSke/fuydqd83pfu3Zttwsv1YCs3Tmvd7O75hsK+tyeOKl3s/xcS898Qzfq
+6uqk+6BOnTolXL+qqiosLMzLy2v69OnvvvtueHg4bbhv3z77W9FBf/ILlKtM
+mjTpiRVaxaYAWfpLliyhkhQ8XYqjo6Pp7553mPTEBbwnJib++lmCg4NpQ7o6
+9bZJenr6+PHj2YOxrqWe2N92//79AwYM6DlpMH/+/NTUVPYYCgsLyZfNj4xz
+LIgtW7Z4enpK5dlzABdoh9SR0dBs4MCBlABQ8k+b+Pr6Uj7scBcu4H379u3e
+3t6DBg2ipHfWrFnSonl2drbDXbiAd2vowiJt9eOPPzos7BreIyMjAwICrC+/
+8fHxDrdyDe9um28o6HMlXMC7WX6uJTffcAouX74s1Zj1nVE2UTZOZNcnZsyY
+QZ3vgQMHpJetra3UuhzmZq+//rpH79i5hhvH+6NHj6jntR5B/+Y3v/Hx8Wlr
+a7O/oQ7ezYrWI2Tpd9vX2LFjR4wY8fPPP/dWJisra/To0eyaimuJWLduHfUL
+Pd//l3/5F0rm2WPYunUr1Z7Nj+TWldw5eVn65eXlJEsN20NO5q9PO1QwJ8+u
+n5mZSW3bcvuWyWSirebNm+dwF/p4VzAnz65fW1ubkpLS2Ngovbxy5QqlQ0OG
+DHG4C328W2Cfk1egv2vXLipPrj16/z6ONfp4VzAnL0ufhrpz5sxxWKwbuh13
+uXPyyDfknlNmtj5XwgXyDQW5ltx8wyno7OyUvg29Y8cO+yWVjRPZ9c+cOUPF
+qHeTa+HmzZu1v/DnP/+Z2nCtFXZOZON4l54ctWHDBss7n376Kb1z48YN+xvq
+4N2saD1Clr41GzdupBPz22+/tVNm06ZN5JRd07qWemL/Uk9Xnn//93/v9ibl
+h56enmfPnmWPIT8/f8CAATY/klVXCubkFRyLO3fusOubdWmHyubkZXmnwpa/
+KeaQkJAxY8Y43EoH78rm5BWfg8S4ceMCAgKsK8Qm+lx/LLDPycvVr66uplod
+P3489fIs+ma9vCuYk2fX7+rqoiEey+JyN/TxrmBOHvkGpz5XwgXyDQW5ltx8
+w1mIi4sj4zTia2lp6fYR1Wdvoy32cSKjfm5uLhWjKzD9TeOvnoVZkPutE4N4
+JyiZCQ0N/f77781Ps44ZM2bQ+c5uxMzNu+L1CAV1W1dXR8oOT/MVK1boc98d
+xenv72+ZFJKg7pIyELrOPH78mF1KmlHsrVWz15WyOXm5x0Ju5m8Np3aoeE5e
+2Tne3t5Oh/7NN99kN2Lm5r1W6Zy8Mu979uyh01Du4yx4X3vlzsmz6z948GDU
+qFE0sKqvr//4448ZM39r+HlXNifPqN/U1ETF1q1bV1ZWtn//frq2tLa2yt0X
+P+/K5uSRb/Doc3vivPmG3FxLt3xDZ06ePEn9CFUadayXL1+2vH/u3DmqIptP
+MjfLGScy6tN41tPT8/jx4/Hx8X369KHydDV2eNNdN+S2RoN4Nz99JtXw4cOp
+8Kyn0AVf7podJ++K1yMU1O2iRYvoUn/9+nX7ygsXLkxKSnJoUD1VVVUU/3ff
+fWd5hy4U0ozEa6+9JktKeraPdT1YI7eu5GbmvPWt4XcOKpuTV3aOFxQU0CZy
+H+Osz/XHzDwnL0v/0KFDNNKJiIigfnbVqlWUFrIbMXP2rmBOnlGfBvKzZ88m
+y9T10Et9Mn/22JTNyTPqk81uN2yEhYXJfYg6J++K5+SRb/Doc3vivPmG3FxL
+t3xDf+hyKt1C4Ovr+8orr7z11lvSyhpBXUx7e3u38nLHiSz6iYmJUgE6JUtL
+S7OzsyMjI+noWOddDpHbGhljs4aHd/PT5k1dW0JCwsiRI+mjoUOHHjlyRJYR
+ft4Vr0fIqtvbt29TxS5YsMChLAWgoEdQwI4dOyhUyoKkb/heunSJdk2p0R/+
+8IcXX3yRrpbsPw5O1x+SOnHiRG8FZNWVgsyct74FHc5Bs8w5ebn6lZWVffv2
+lb6/JsuIPt5lzcmz65tMJgp+2LBhUu8p99FG/LwrnpNn0d+yZQu9zMvLkzbR
+J/NnjE3NnDyLPqllZmbu3buXrmPXrl3Lzc2l4SSdVvS3cO9q5uSRb2je5/bE
+efMNubmWbvmGEKjBx8XFSYMmCaoQqiKb00oKxokO9UmT3jx06JBlk8OHD9M7
+K1asYN8L5VefffYZe3nG2Kzh4V2aYLTconb06FHq6RiH+Rb4eVezHsFet198
+8QV9unv3boeaYWFhyh44KZfFixfTgaCrxODBg6lfoOP+xz/+8f79+3//+9/H
+jh1LFxn2qQDqZOmAfvnll3bKsNeVssyct76EDuegWf6cPLv+hQsXQkJCKAGW
+lf9IcPWueE5ebt2eOnWK7NNpfuvWLXYXnLyrnJO3r09O6awMCgr68BemT5/u
+8XSw/8knn7C74ORd5Zy83ONOUIZDxT7//HN2F5y8q5yTR76hbZ/bEyfNNxTk
+WrrlGwKh/KSqqopON+r6eyujZpxoR3/z5s10RKwva3SwaOxGl30FO9I2Nguc
+vL/22mvU1K0fHUm5JdWGbr8cZ9+7+vUIlrpNTU0lcYfJBiXeVOz06dOyAlBG
+dHT0X/7yF7rqHjhw4L/+679++uknNWovvvgiy9OGWepKTWbOW18NLLGZVczJ
+O9Qn5eDgYBro/fDDD7KU1eMwNpVz8ox1K0F9Ou1l586dsnahGDuxaTIn35s+
+ZZIRz+Lv7y9d4l599VU1jtTHZtZoTl7WcS8tLSX7skY9arATmyZz8sg3NOlz
+NUdgviE319Iz3zA4asaJdjh//jyN8a1/K+3s2bMez97xJRxO3idOnNivXz/r
+E/DEiRN6Zv520GQ9goWYmBga3TssRjVDe+/tx3A15OHDh9TR/Pd//7dWgsnJ
+ye+//74mUrwzc1GZPwtq5uTtc+zYsQEDBoSHh+uf9stC2Zy8HSj/oVq1fmf9
++vXd8iIhaDUnz46ykYVuKJiTtwMlVN2aECWZpC8tr4hFkzl5O7hzvmGBsc/V
+E975htxcS7d8w/jwGyfOnz+fTkYa45eVlVFrpy44MDCwvr5e8x0phpP3oqIi
+ko2LiysuLj5z5gy9HDNmDLU3O7eF64Zu6xGhoaEsv4q7adMmul5pu2ubfP31
+1z4+Phqe8nl5eVo9FphTZl5bW5v7FEqxpAYpvaSq0HZHiuE3J08XHD8/P3K9
+evVqSv+yfsEI52BPNJyT7+jooCsteV+2bBkJHjx4MD09nca8kZGR7F9j4YT+
+c/IGz/w1nJNva2ujU4kSv8zMTEqqTSZTUlISiU+bNs3hN8d1QIc5ebfNNyww
+9rl6wjvfkJtr6ZZvGB9+40Tqg9asWdO3b1/pBq3o6GhZS3s6wM97fn7+888/
+b7k5beTIkXKfM8AJfdYj6Eynq/qUKVMclqTkeevWrRruujf+4z/+Y9y4cRoK
+XrlyheqtoaFBvRSnzJ+anIctlixZou2OlMF1Tn7ChAk2vX/wwQea70suvOfk
+qTlRjkHjKckypUOJiYksT87UH96ZuXRzkUEyf95z8jU1NZRISwNeQvomqeXB
+uWLRYU7enfMNs5w+V090yDdk5Vq65RvGh/c48fHjxxcvXtQkQdIcrt7pTCTX
+dMW7ffs2p10owFDrEf/4xz+oO9D8No/esJ550ARqPGpW6o0/J88P55qT1xA9
+5+Tp+lNdXS18qt8OBp+T1xDd5uRbWlpoXEl9rs0HSQlEnzl5t803jIk++QZj
+rqVzvmFkjDlO1Ae39W6c9YjNmzfLfZKYoaCsVc2TgQ0+J88VI8/J88aJ5uR5
+Y6g5ed4YeU5eB4w/J88V5BvINwAQi0HWI2JiYgoKCgQGoJKzZ89SP37v3j3R
+gQCnxPhz8kBzDDsnrw9GnpMHnEC+AQCQuHr1qo+Pj6FuhVIAXUwKCwtFRwEA
+AAAA27hGvgGAs5OTkzNjxgzRUahlx44dsbGxoqMAAAAAgG1cI98AwNlJTU0t
+KSkRHYVampubX3jhhcbGRtGBAAAAAMAGrpFvAAAAAAAAAAAAAAAAAAAAAAAA
+AAAAAAAAAAAAAABuwv8HDZ70wA==
+    "], {{0, 76.}, {511., 0}}, {0, 255},
+    ColorFunction->RGBColor,
+    ImageResolution->{144., 144.}],
+   BoxForm`ImageTag["Byte", ColorSpace -> "RGB", Interleaving -> True],
+   Selectable->False],
+  DefaultBaseStyle->"ImageGraphics",
+  ImageSize->Automatic,
+  ImageSizeRaw->{511., 76.},
+  PlotRange->{{0, 511.}, {0, 76.}}]], "Output",
+ CellTags->"RasterizedOutput",
+ CellLabel->"Out[6]=",
+ CellID->1431189638]
+}, Open  ]],
+
+Cell["Let us take a look at the connectivity of the model.", "MathCaption",
+ CellID->342635466],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"GraphForm", "[", "Htotal", "]"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1270619455],
+
+Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{
+       $CellContext`c[1], 
+       $CellContext`c[2], 
+       $CellContext`c[3], 
+       $CellContext`c[4], 
+       $CellContext`c[5], 
+       $CellContext`c[6], 
+       $CellContext`c[7], 
+       $CellContext`c[8]}, {
+      Null, {{1, 2}, {2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}, {1, 2}, {
+       2, 3}, {3, 4}, {4, 5}, {5, 6}, {6, 7}, {7, 8}}, {
+       Null, Null, Null, Null, Null, Null, Null, "Pairing", "Pairing", 
+        "Pairing", "Pairing", "Pairing", "Pairing", "Pairing"}}, {
+      EdgeLabels -> {UndirectedEdge[
+           $CellContext`c[7], 
+           $CellContext`c[8]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[4], 
+           $CellContext`c[5], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[3], 
+           $CellContext`c[4], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[1], 
+           $CellContext`c[2]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[7], 
+           $CellContext`c[8], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[2], 
+           $CellContext`c[3]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[4], 
+           $CellContext`c[5]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[3], 
+           $CellContext`c[4]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[6], 
+           $CellContext`c[7]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[6], 
+           $CellContext`c[7], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[5], 
+           $CellContext`c[6], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[1], 
+           $CellContext`c[2], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[2], 
+           $CellContext`c[3], "Pairing"] -> 
+         Framed[$CellContext`\[CapitalDelta], FrameStyle -> None, Background -> 
+           GrayLevel[1]], UndirectedEdge[
+           $CellContext`c[5], 
+           $CellContext`c[6]] -> 
+         Framed[-$CellContext`t, FrameStyle -> None, Background -> 
+           GrayLevel[1]]}, EdgeStyle -> {UndirectedEdge[
+           $CellContext`c[7], 
+           $CellContext`c[8], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[1], 
+           $CellContext`c[2], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[2], 
+           $CellContext`c[3], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[4], 
+           $CellContext`c[5], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[3], 
+           $CellContext`c[4], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[6], 
+           $CellContext`c[7], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]], UndirectedEdge[
+           $CellContext`c[5], 
+           $CellContext`c[6], "Pairing"] -> Directive[
+           RGBColor[1, 0, 0], 
+           Thickness[Large]]}, ImageSize -> Large, 
+       VertexLabels -> {$CellContext`c[6] -> $CellContext`c[
+          6], $CellContext`c[3] -> $CellContext`c[3], $CellContext`c[
+          1] -> $CellContext`c[1], $CellContext`c[8] -> $CellContext`c[
+          8], $CellContext`c[4] -> $CellContext`c[4], $CellContext`c[
+          7] -> $CellContext`c[7], $CellContext`c[2] -> $CellContext`c[
+          2], $CellContext`c[5] -> $CellContext`c[5]}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {Hue[0.6, 0.7, 0.5], Opacity[0.7], {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{0., 1.3471114790620886`*^-15}, {
+           0.49999999999999933`, 0.16444074718311757`}, {1., 
+           1.2246467991473533`*^-15}}], 0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {0.5, 0.07000000000000134}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{0., 1.3471114790620886`*^-15}, {
+            0.5000000000000001, -0.16444074718311505`}, {1., 
+            1.2246467991473533`*^-15}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {0.5, -0.06999999999999879}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{1., 1.2246467991473533`*^-15}, {
+           1.499999999999998, 0.16444074718311724`}, {2., 
+           1.102182119232618*^-15}}], 0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {1.5, 0.07000000000000123}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{1., 1.2246467991473533`*^-15}, {
+            1.4999999999999984`, -0.16444074718311505`}, {2., 
+            1.102182119232618*^-15}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {1.5, -0.0699999999999989}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{2., 1.102182119232618*^-15}, {2.5, 
+           0.16444074718311807`}, {3., 9.797174393178826*^-16}}], 
+           0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {2.5, 0.07000000000000112}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{2., 1.102182119232618*^-15}, {
+            2.5, -0.16444074718311552`}, {3., 9.797174393178826*^-16}}], 
+            0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {2.5, -0.06999999999999901}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{3., 9.797174393178826*^-16}, {
+           3.499999999999999, 0.16444074718311727`}, {4., 
+           7.347880794884119*^-16}}], 0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {3.5, 0.0700000000000009}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{3., 9.797174393178826*^-16}, {
+            3.4999999999999996`, -0.16444074718311605`}, {4., 
+            7.347880794884119*^-16}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {3.5, -0.06999999999999923}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{4., 7.347880794884119*^-16}, {4.5, 
+           0.1644407471831153}, {5., 4.898587196589413*^-16}}], 
+           0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {4.5, 0.07000000000000067}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{4., 7.347880794884119*^-16}, {
+            4.500000000000002, -0.1644407471831138}, {5., 
+            4.898587196589413*^-16}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {4.5, -0.06999999999999945}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{5., 4.898587196589413*^-16}, {
+           5.499999999999999, 0.16444074718311485`}, {6., 
+           2.449293598294707*^-16}}], 0.05338164251207729]}, InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {5.5, 0.07000000000000045}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{5., 4.898587196589413*^-16}, {
+            5.500000000000001, -0.16444074718311322`}, {6., 
+            2.449293598294707*^-16}}], 0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {5.5, -0.06999999999999967}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {Arrowheads[0.], 
+          ArrowBox[BezierCurveBox[{{6., 2.449293598294707*^-16}, {6.5, 
+           0.16444074718311427`}, {7., 0.}}], 0.05338164251207729]}, 
+         InsetBox[
+          FrameBox[
+           RowBox[{"-", "t"}],
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {6.5, 0.07000000000000023}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}, {
+         {RGBColor[1, 0, 0], Thickness[Large], 
+          {Arrowheads[0.], 
+           ArrowBox[BezierCurveBox[{{6., 2.449293598294707*^-16}, {
+            6.500000000000004, -0.16444074718311544`}, {7., 0.}}], 
+            0.05338164251207729]}}, InsetBox[
+          FrameBox["\[CapitalDelta]",
+           Background->GrayLevel[1],
+           FrameStyle->None,
+           StripOnInput->False], {6.5, -0.0699999999999999}, ImageScaled[{0.5, 0.5}],
+          BaseStyle->"Graphics"]}}, 
+       {Hue[0.6, 0.2, 0.8], EdgeForm[{GrayLevel[0], Opacity[
+        0.7]}], {DiskBox[{0., 1.3471114790620886*^-15}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"1"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {0.05338164251207729, 0.053381642512078636}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{1., 1.2246467991473533*^-15}, 0.05338164251207729], InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"2"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {1.0533816425120772, 0.05338164251207851}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{2., 1.102182119232618*^-15}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"3"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {2.053381642512077, 0.053381642512078394}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{3., 9.797174393178826*^-16}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"4"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {3.053381642512077, 0.05338164251207827}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{4., 7.347880794884119*^-16}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"5"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {4.053381642512077, 0.053381642512078026}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{5., 4.898587196589413*^-16}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"6"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {5.053381642512077, 0.05338164251207778}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{6., 2.449293598294707*^-16}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"7"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {6.053381642512077, 0.05338164251207753}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}, {DiskBox[{7., 0.}, 0.05338164251207729], 
+         InsetBox[
+          SubscriptBox[
+           TemplateBox[{"c"},
+            "RowDefault"], 
+           TemplateBox[{"8"},
+            "RowDefault"]], 
+          Offset[{2, 2}, {7.053381642512077, 0.05338164251207729}], 
+          ImageScaled[{0, 0}],
+          BaseStyle->"Graphics"]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->{
+   "NetworkGraphics", FrontEnd`GraphicsHighlightColor -> Hue[0.8, 1., 0.6]},
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->Large]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->345864902]
+}, Open  ]],
+
+Cell["\<\
+Here the black thin lines indicate single-particle tunneling and the red \
+thick lines represent the p-wave pairing.\
+\>", "MathCaption",
+ CellID->1465389911],
+
+Cell["\<\
+To investigate the quasi-particle spectrum (by means of the Bogoliubov-de \
+Gennes equation), obtain the single-particle BdG Hamiltonian.\
+\>", "MathCaption",
+ CellID->1465770381],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matK", "=", 
+   RowBox[{"CoefficientTensor", "[", 
+    RowBox[{"Htotal", ",", 
+     RowBox[{"Dagger", "@", "cccc"}], ",", "cccc"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matK", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[8]:=",
+ CellID->1417878730],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0", "0", "0", "0"},
+     {
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0", "0", "0"},
+     {"0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0", "0"},
+     {"0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0"},
+     {"0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0"},
+     {"0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0"},
+     {"0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", 
+      FractionBox["\[CapitalDelta]", "2"]},
+     {"0", "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["t", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["\[Mu]", "2"]}], "0", "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0"},
+     {"0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", "0", 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0", "0", "0", "0", "0"},
+     {
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0", "0", "0", "0"},
+     {"0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0", "0", "0"},
+     {"0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0", "0"},
+     {"0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0", "0"},
+     {"0", "0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"], "0"},
+     {"0", "0", "0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", 
+      RowBox[{"-", 
+       FractionBox["\[CapitalDelta]", "2"]}], "0", "0", "0", "0", "0", 
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"], 
+      FractionBox["t", "2"]},
+     {"0", "0", "0", "0", "0", "0", 
+      FractionBox["\[CapitalDelta]", "2"], "0", "0", "0", "0", "0", "0", "0", 
+      
+      FractionBox["t", "2"], 
+      FractionBox["\[Mu]", "2"]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {16, 16}, 0, {
+     1, {{0, 3, 8, 13, 18, 23, 28, 33, 36, 39, 44, 49, 54, 59, 64, 69, 72}, {{
+       1}, {2}, {10}, {1}, {2}, {3}, {9}, {11}, {2}, {3}, {4}, {10}, {12}, {
+       3}, {4}, {5}, {11}, {13}, {4}, {5}, {6}, {12}, {14}, {5}, {6}, {7}, {
+       13}, {15}, {6}, {7}, {8}, {14}, {16}, {7}, {8}, {15}, {2}, {9}, {10}, {
+       1}, {3}, {9}, {10}, {11}, {2}, {4}, {10}, {11}, {12}, {3}, {5}, {11}, {
+       12}, {13}, {4}, {6}, {12}, {13}, {14}, {5}, {7}, {13}, {14}, {15}, {
+       6}, {8}, {14}, {15}, {16}, {7}, {15}, {16}}}, {
+      Rational[-1, 2] $CellContext`\[Mu], Rational[-1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`t, 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`t, Rational[-1, 2] $CellContext`\[Mu], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`\[Mu], Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[-1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, Rational[1, 2] $CellContext`\[Mu], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[CapitalDelta], 
+       Rational[1, 2] $CellContext`t, 
+       Rational[1, 2] $CellContext`\[Mu]}}]]]]], "Output",
+ CellLabel->"Out[8]//MatrixForm=",
+ CellID->2042763249]
+}, Open  ]],
+
+Cell["\<\
+Now study the quasi-particle energy spectrum of the model. (Be aware of the \
+finite size effects.)\
+\>", "MathCaption",
+ CellID->2146284513],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"KK", "[", 
+    RowBox[{"\[Mu]_", ",", "t_", ",", "\[CapitalDelta]_"}], "]"}], "=", 
+   "matK"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Manipulate", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Module", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"eval", "=", 
+       RowBox[{"Table", "[", 
+        RowBox[{
+         RowBox[{"Sort", "@", 
+          RowBox[{"Eigenvalues", "[", 
+           RowBox[{"KK", "[", 
+            RowBox[{"\[Mu]", ",", "1.", ",", "\[CapitalDelta]"}], "]"}], 
+           "]"}]}], ",", 
+         RowBox[{"{", 
+          RowBox[{"\[Mu]", ",", "0", ",", "5", ",", "0.05"}], "}"}]}], 
+        "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+     RowBox[{"ListLinePlot", "[", 
+      RowBox[{
+       RowBox[{"Transpose", "@", "eval"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"Axes", "\[Rule]", "None"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"Frame", "\[Rule]", "True"}], ",", "\[IndentingNewLine]", 
+       RowBox[{"FrameLabel", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"\"\<\[Mu] / t\>\"", ",", "\"\<Eenergy / t\>\""}], "}"}]}], 
+       ",", "\[IndentingNewLine]", 
+       RowBox[{"DataRange", "\[Rule]", 
+        RowBox[{"{", 
+         RowBox[{"0", ",", "5"}], "}"}]}]}], "]"}]}], "\[IndentingNewLine]", 
+    "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"\[CapitalDelta]", ",", "1"}], "}"}], ",", "0", ",", "2", ",", 
+     "0.1"}], "}"}]}], "\[IndentingNewLine]", "]"}]}], "Input",
+ CellLabel->"In[9]:=",
+ CellID->1320991332],
+
+Cell[BoxData[
+ TagBox[
+  StyleBox[
+   DynamicModuleBox[{$CellContext`\[CapitalDelta]$$ = 1, Typeset`show$$ = 
+    True, Typeset`bookmarkList$$ = {}, Typeset`bookmarkMode$$ = "Menu", 
+    Typeset`animator$$, Typeset`animvar$$ = 1, Typeset`name$$ = 
+    "\"untitled\"", Typeset`specs$$ = {{{
+       Hold[$CellContext`\[CapitalDelta]$$], 1}, 0, 2, 0.1}}, 
+    Typeset`size$$ = {576., {183., 188.}}, Typeset`update$$ = 0, 
+    Typeset`initDone$$, Typeset`skipInitDone$$ = True}, 
+    DynamicBox[Manipulate`ManipulateBoxes[
+     1, StandardForm, "Variables" :> {$CellContext`\[CapitalDelta]$$ = 1}, 
+      "ControllerVariables" :> {}, 
+      "OtherVariables" :> {
+       Typeset`show$$, Typeset`bookmarkList$$, Typeset`bookmarkMode$$, 
+        Typeset`animator$$, Typeset`animvar$$, Typeset`name$$, 
+        Typeset`specs$$, Typeset`size$$, Typeset`update$$, Typeset`initDone$$,
+         Typeset`skipInitDone$$}, "Body" :> 
+      Module[{$CellContext`eval = Table[
+           Sort[
+            Eigenvalues[
+             $CellContext`KK[$CellContext`\[Mu], 
+              1., $CellContext`\[CapitalDelta]$$]]], {$CellContext`\[Mu], 0, 
+            5, 0.05}]}, 
+        ListLinePlot[
+         Transpose[$CellContext`eval], Axes -> None, Frame -> True, 
+         FrameLabel -> {"\[Mu] / t", "Eenergy / t"}, DataRange -> {0, 5}]], 
+      "Specifications" :> {{{$CellContext`\[CapitalDelta]$$, 1}, 0, 2, 0.1}}, 
+      "Options" :> {}, "DefaultOptions" :> {}],
+     ImageSizeCache->{619., {227., 233.}},
+     SingleEvaluation->True],
+    Deinitialization:>None,
+    DynamicModuleValues:>{},
+    SynchronousInitialization->True,
+    UndoTrackedVariables:>{Typeset`show$$, Typeset`bookmarkMode$$},
+    UnsavedVariables:>{Typeset`initDone$$},
+    UntrackedVariables:>{Typeset`size$$}], "Manipulate",
+   Deployed->True,
+   StripOnInput->False],
+  Manipulate`InterpretManipulate[1]]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->2132119283]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "TutorialMoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->23220180],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Fock Package Guide",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/guide/FockPackageGuide"]], "TutorialMoreAbout",
+ CellID->278336517],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Tutorials"
+}], "RelatedTutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->415694126],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Fock: Quick Start",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/FockQuickStart"]], "RelatedTutorials",
+ CellID->946479228],
+
+Cell[TextData[ButtonBox["Q3: Quick Start",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/Q3QuickStart"]], "RelatedTutorials",
+ CellID->1598263231],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Wolfram Education Group Courses"
+}], "TutorialRelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->415694148],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["An Elementary Introduction to the Wolfram Language"]], 
+   "https://www.wolfram.com/language/elementary-introduction/"},
+  "WebLink",
+  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
+ CellID->415694149],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["The Wolfram Language: Fast Introduction for Programmers"]], 
+   "https://www.wolfram.com/language/fast-introduction-for-programmers/"},
+  "WebLink",
+  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
+ CellID->1480169507]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Demo: Kitaev Chain",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
+  "LinkTrails" -> GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 45, 41.852593}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"topological insulator", "topological superconductor"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "The Kitaev chain is a prototype example of the topological \
+superconductor. Here we demonstrate how to examine its properties using Q3. \
+Some useful functions to study the Kitaev chain. See Kitaev original paper \
+[A. Kitaev, Physics-Uspekhi 44, 131 (2001)] for technical details of the \
+model.", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$205280, "title" -> 
+    "Demo: Kitaev Chain", "titlemodifier" -> "", "windowtitle" -> 
+    "Demo: Kitaev Chain", "type" -> "Tutorial", "uri" -> 
+    "Q3/tutorial/DemoKitaevChain", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "RasterizedOutput"->{
+  Cell[33184, 1263, 18991, 318, 70, "Output",ExpressionUUID->"7a123f6b-edc2-43bc-83b4-b7d70487acae",
+   CellTags->"RasterizedOutput",
+   CellID->1431189638]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"RasterizedOutput", 84843, 2401}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[590, 21, 4801, 117, 70, "AnchorBarGrid",ExpressionUUID->"0bf9eb61-54cd-4fbc-9191-bc166ea53582",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5416, 142, 55, 1, 70, "Title",ExpressionUUID->"abcec3aa-511d-4c99-a894-2a9d9d1fa221",
+ CellID->509267359],
+Cell[5474, 145, 266, 8, 70, "Text",ExpressionUUID->"bc8826b9-d5ad-418d-8160-880731b505fd",
+ CellID->1534169418],
+Cell[5743, 155, 925, 29, 70, "DefinitionBox",ExpressionUUID->"5ed247d9-ae37-456c-9ad4-fec7fe7fbc79",
+ CellID->2096742444],
+Cell[6671, 186, 88, 1, 70, "Caption",ExpressionUUID->"82218f49-7b65-4a20-b692-f5b96f393852",
+ CellID->1891092685],
+Cell[6762, 189, 318, 11, 70, "Text",ExpressionUUID->"20722d4c-9290-47dd-bad7-0b946652b6e3",
+ CellID->2023724769],
+Cell[7083, 202, 250, 10, 70, "MathCaption",ExpressionUUID->"b17a0fd7-c800-4b38-a4f5-5dbfa65ef6cf",
+ CellID->836781195],
+Cell[7336, 214, 90, 3, 70, "Input",ExpressionUUID->"895d0580-7dff-40be-9624-e8fea56956eb",
+ CellID->784376994],
+Cell[7429, 219, 260, 10, 70, "MathCaption",ExpressionUUID->"7311e752-2919-459d-b4c9-69040a6f8b5a",
+ CellID->1974511739],
+Cell[7692, 231, 128, 4, 70, "Input",ExpressionUUID->"a5a3b61a-1e26-4a57-8dc0-ade0b9a09c62",
+ CellID->393078912],
+Cell[7823, 237, 173, 4, 70, "MathCaption",ExpressionUUID->"52ea8426-c24b-4459-b43f-e137ef1a2488",
+ CellID->272490924],
+Cell[7999, 243, 167, 5, 70, "Input",ExpressionUUID->"87e8f325-d03a-4dd0-8a38-44b2975ebd8e",
+ CellID->1481935487],
+Cell[8169, 250, 94, 1, 70, "MathCaption",ExpressionUUID->"2dece12e-d9bf-4b1b-8d18-e141eb6f22c1",
+ CellID->817575812],
+Cell[8266, 253, 112, 4, 70, "Input",ExpressionUUID->"f15d30be-9350-4e78-b1b3-6ea0f69ecea7",
+ CellID->1396298778],
+Cell[8381, 259, 92, 1, 70, "MathCaption",ExpressionUUID->"49b076bf-c6c2-45ce-aaa8-2a876ab58a34",
+ CellID->2039751077],
+Cell[CellGroupData[{
+Cell[8498, 264, 323, 10, 70, "Input",ExpressionUUID->"f7480a87-dfd1-4e51-bb74-811486bdbe2a",
+ CellID->1814894078],
+Cell[8824, 276, 1257, 60, 70, "Output",ExpressionUUID->"68640fbd-921e-4514-bdd7-b98018cdc982",
+ CellID->1893560920],
+Cell[10084, 338, 2953, 116, 70, "Output",ExpressionUUID->"bc9cfc39-1b4f-4564-ac0e-0f8be9f805ec",
+ CellID->1518217547]
+}, Open  ]],
+Cell[13052, 457, 81, 1, 70, "MathCaption",ExpressionUUID->"07e711f6-363b-47b8-ae9b-47f4449208bf",
+ CellID->1196250966],
+Cell[CellGroupData[{
+Cell[13158, 462, 640, 18, 70, "Input",ExpressionUUID->"026a3399-9093-4336-b97f-10041d186c8a",
+ CellID->648082348],
+Cell[13801, 482, 4343, 174, 70, "Output",ExpressionUUID->"167d9e05-6e32-4d60-aca0-e1dccd9e08e9",
+ CellID->2051228747],
+Cell[18147, 658, 7488, 300, 70, "Output",ExpressionUUID->"98f41d2e-e0bb-49bb-a4cd-0cbc53d405ed",
+ CellID->764629479],
+Cell[25638, 960, 7543, 301, 70, "Output",ExpressionUUID->"5eee2aad-5d4a-44fe-8ad8-64e3ef022cbe",
+ CellID->585509905],
+Cell[33184, 1263, 18991, 318, 70, "Output",ExpressionUUID->"7a123f6b-edc2-43bc-83b4-b7d70487acae",
+ CellTags->"RasterizedOutput",
+ CellID->1431189638]
+}, Open  ]],
+Cell[52190, 1584, 95, 1, 70, "MathCaption",ExpressionUUID->"f9aa0b44-26c9-4798-b0de-86434be1888a",
+ CellID->342635466],
+Cell[CellGroupData[{
+Cell[52310, 1589, 111, 3, 70, "Input",ExpressionUUID->"3e5d94ff-6fe4-4b36-b8c2-fff2195549ef",
+ CellID->1270619455],
+Cell[52424, 1594, 14903, 337, 70, "Output",ExpressionUUID->"08e4f579-c0c0-4252-969a-128f654db7de",
+ CellID->345864902]
+}, Open  ]],
+Cell[67342, 1934, 168, 4, 70, "MathCaption",ExpressionUUID->"84ba77db-e3d9-4d70-b8d3-9f1c12bea4a6",
+ CellID->1465389911],
+Cell[67513, 1940, 189, 4, 70, "MathCaption",ExpressionUUID->"0e825068-42f0-4c5b-bbd7-f5953bcfcbcc",
+ CellID->1465770381],
+Cell[CellGroupData[{
+Cell[67727, 1948, 304, 9, 70, "Input",ExpressionUUID->"0ad2e3f8-20be-43af-9359-e2b02b603168",
+ CellID->1417878730],
+Cell[68034, 1959, 8725, 206, 70, "Output",ExpressionUUID->"cf7828c7-9777-4b66-8120-d7bda6c0d88d",
+ CellID->2042763249]
+}, Open  ]],
+Cell[76774, 2168, 151, 4, 70, "MathCaption",ExpressionUUID->"d1647b4b-aef1-477c-8530-efe6550a6a6a",
+ CellID->2146284513],
+Cell[CellGroupData[{
+Cell[76950, 2176, 1605, 41, 70, "Input",ExpressionUUID->"e63a91bc-11fd-4734-b0a7-c497f44935c8",
+ CellID->1320991332],
+Cell[78558, 2219, 1922, 41, 70, "Output",ExpressionUUID->"96bc9867-02b5-4a88-bde1-b60f0ea09939",
+ CellID->2132119283]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[80517, 2265, 164, 7, 70, "TutorialMoreAboutSection",ExpressionUUID->"66cc1e22-e0b7-47e0-8e81-93e348e46ad3",
+ CellID->23220180],
+Cell[80684, 2274, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"a48ae1ae-579e-4ff5-bb23-9426d3f7804c"],
+Cell[80718, 2276, 157, 3, 70, "TutorialMoreAbout",ExpressionUUID->"147f16f9-cf44-4cd7-8e39-287937f01f17",
+ CellID->278336517],
+Cell[80878, 2281, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"4588989a-928c-4439-8c63-098a576c55f8"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[80946, 2286, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"e38fa791-8bbb-437a-9dc4-2549420416b3",
+ CellID->415694126],
+Cell[81116, 2295, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"da161c87-7567-4de9-95a4-f8e52ebd2c5b"],
+Cell[81150, 2297, 156, 3, 70, "RelatedTutorials",ExpressionUUID->"fc1f4100-8af6-47b5-aa0c-3dbf143d0a1b",
+ CellID->946479228],
+Cell[81309, 2302, 153, 3, 70, "RelatedTutorials",ExpressionUUID->"c532eccb-0f1c-4c04-abf5-785c271d69b7",
+ CellID->1598263231],
+Cell[81465, 2307, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"947731df-c9b8-4bb0-9a82-9ae6c330614a"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[81533, 2312, 193, 7, 70, "TutorialRelatedLinksSection",ExpressionUUID->"4ecb2e4b-ecde-49a2-b883-544a9565ea25",
+ CellID->415694148],
+Cell[81729, 2321, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"d6f260d5-2871-419a-80ad-626780e58699"],
+Cell[81763, 2323, 286, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"c777e433-cb0a-4e7f-bf88-0661aff6e5e8",
+ CellID->415694149],
+Cell[82052, 2332, 302, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"bc445032-6070-459f-a492-c1657100ae92",
+ CellID->1480169507]
+}, Open  ]]
+}, Open  ]],
+Cell[82381, 2343, 23, 0, 70, "FooterCell",ExpressionUUID->"1c689aa6-4379-4d53-bf8a-7e3e7f02f835"]
+}
+]
+*)
+
+(* End of internal cache information *)

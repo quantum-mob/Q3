@@ -1,0 +1,3611 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    125794,       3602]
+NotebookOptionsPosition[    113913,       3356]
+NotebookOutlinePosition[    116745,       3423]
+CellTagsIndexPosition[    116621,       3417]
+WindowTitle->Tensorize
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/PauliQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"TensorFlatten\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/TensorFlatten"], "\<\"PartialTrace\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/PartialTrace"], "\<\"CircleTimes\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/CircleTimes"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/PauliPackageGuide"], "\<\"Q3\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/Tensorize\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/Tensorize"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/Tensorize.html"]\
+, StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$177820], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/Tensorize", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["Tensorize", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Tensorize", "[", 
+       StyleBox["m", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]gives the tensor product form of the matrix ",
+     Cell[BoxData[
+      StyleBox["m", "TI"]], "InlineFormula"],
+     ". The matrix ",
+     Cell[BoxData[
+      StyleBox["m", "TI"]], "InlineFormula"],
+     " is supposed to be the matrix representation of a multi-qubit system \
+and hence a ",
+     Cell[BoxData[
+      RowBox[{
+       SuperscriptBox["2", 
+        StyleBox["n", "TI"]], "\[Times]", 
+       SuperscriptBox["2", 
+        StyleBox["n", "TI"]]}]], "InlineFormula"],
+     " square matrix, where ",
+     Cell[BoxData[
+      StyleBox["n", "TI"]], "InlineFormula"],
+     " is the number of qubits."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Tensorize", "[", 
+       StyleBox["v", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]gives the tensor product form of the vector ",
+     Cell[BoxData[
+      StyleBox["v", "TI"]], "InlineFormula"],
+     ". The vector ",
+     Cell[BoxData[
+      StyleBox["v", "TI"]], "InlineFormula"],
+     " is supposed to be the column-vector representation of a multi-qubit \
+system and hence a column vector of size ",
+     Cell[BoxData[
+      SuperscriptBox["2", 
+       StyleBox["n", "TI"]]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Tensorize", "[", 
+       RowBox[{
+        RowBox[{
+         StyleBox["m", "TI"], "|", 
+         StyleBox["v", "TI"]}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["d", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["d", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]assumes the subsystems are associated with the Hilbert \
+spaces with dimensions ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["d", "TI"], 
+        StyleBox["1", "TR"]], ",", 
+       SubscriptBox[
+        StyleBox["d", "TI"], 
+        StyleBox["2", "TR"]], ",", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->778270514],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "Notice the difference between ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TensorProduct"]], "paclet:ref/TensorProduct"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " and ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CircleTimes"]], "paclet:Q3/ref/CircleTimes"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ". While ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TensorProduct"]], "paclet:ref/TensorProduct"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " preserves the tensor product form (in blocks), ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CircleTimes"]], "paclet:Q3/ref/CircleTimes"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " gives the matrix direct product with component blocks flattened."
+}], "Notes",
+ CellID->1067943069],
+
+Cell[TextData[{
+ "In fact, ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["CircleTimes"]], "paclet:Q3/ref/CircleTimes"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", 
+    StyleBox["\[Ellipsis]", "TR"], "]"}], " ", "=", " ", 
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["Flatten"]], "paclet:ref/Flatten"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], " ", "@", " ", 
+    RowBox[{
+     TemplateBox[{
+       Cell[
+        TextData["TensorProdut"]], "paclet:ref/TensorProdut"},
+      "RefLink",
+      BaseStyle->{"InlineFormula"}], "[", 
+     StyleBox["\[Ellipsis]", "TR"], "]"}]}]}]], "InlineFormula"],
+ " for vectors and ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["CircleTimes"]], "paclet:Q3/ref/CircleTimes"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", 
+    StyleBox["\[Ellipsis]", "TR"], "]"}], "=", 
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["TensorFlatten"]], "paclet:Q3/ref/TensorFlatten"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "@", 
+    RowBox[{
+     TemplateBox[{
+       Cell[
+        TextData["TensorProduct"]], "paclet:ref/TensorProduct"},
+      "RefLink",
+      BaseStyle->{"InlineFormula"}], "[", 
+     StyleBox["\[Ellipsis]", "TR"], "]"}]}]}]], "InlineFormula"],
+ " for matrices."
+}], "Notes",
+ CellID->489048990],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Tensorize"]], "paclet:Q3/ref/Tensorize"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " recovers the tensor product form from the matrix direct product."
+}], "Notes",
+ CellID->693042406],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(4)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->69634921],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(4)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->2123013279],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1138405048],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Species", ",", "T"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1028704576],
+
+Cell["\<\
+Let us first consider the case with an odd number of sub-dimensions.\
+\>", "ExampleText",
+ CellID->1271278204],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"TT", "=", 
+   RowBox[{"Array", "[", 
+    RowBox[{"T", ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "3", ",", "2"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"TT", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1057970625],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "1", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "1", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "2", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "2", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "3", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"1", "\",\"", "3", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "1", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "1", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "2", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "2", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "3", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"2", "\",\"", "3", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"3", "\",\"", "1", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"3", "\",\"", "1", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"3", "\",\"", "2", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"3", "\",\"", "2", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"3", "\",\"", "3", "\",\"", "1"},
+             "RowDefault"]]},
+          {
+           SubscriptBox[
+            TemplateBox[{"T"},
+             "RowDefault"], 
+            TemplateBox[{"3", "\",\"", "3", "\",\"", "2"},
+             "RowDefault"]]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->1857998243]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matT", "=", 
+   RowBox[{"TensorFlatten", "@", "TT"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matT", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->2003480220],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "3", "\",\"", "1"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "3", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "3", "\",\"", "1"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "3", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "3", "\",\"", "1"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "3", "\",\"", "2"},
+        "RowDefault"]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->85414613]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"T2", "=", 
+   RowBox[{"Tensorize", "[", 
+    RowBox[{"matT", ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "3", ",", "2"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"T2", "\[Equal]", "TT"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1562045448],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->864661861]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->445035080],
+
+Cell["\<\
+Next, let us consider the case with an even number of sub-dimensions.\
+\>", "ExampleText",
+ CellID->448869611],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"TT", "=", 
+   RowBox[{"Array", "[", 
+    RowBox[{"T", ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "3", ",", "2", ",", "2"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"TT", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->41500166],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "1", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "1", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "1", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "1", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "2", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "2", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "2", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "2", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "3", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "3", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "3", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"1", "\",\"", "3", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "1", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "1", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "1", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "1", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "2", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "2", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "2", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "2", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "3", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "3", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "3", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"2", "\",\"", "3", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "1", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "1", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "1", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "1", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "2", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "2", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "2", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "2", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", GridBox[{
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "3", "\",\"", "1", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "3", "\",\"", "1", "\",\"", "2"},
+            "RowDefault"]]},
+         {
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "3", "\",\"", "2", "\",\"", "1"},
+            "RowDefault"]], 
+          SubscriptBox[
+           TemplateBox[{"T"},
+            "RowDefault"], 
+           TemplateBox[{"3", "\",\"", "3", "\",\"", "2", "\",\"", "2"},
+            "RowDefault"]]}
+        },
+        GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+        GridBoxSpacings->{"Columns" -> {
+            Offset[0.27999999999999997`], {
+             Offset[0.7]}, 
+            Offset[0.27999999999999997`]}, "Rows" -> {
+            Offset[0.2], {
+             Offset[0.4]}, 
+            Offset[0.2]}}], "\[NoBreak]", ")"}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->1323034130]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matT", "=", 
+   RowBox[{"TensorFlatten", "@", "TT"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matT", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->92801854],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "1", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "1", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "3", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "3", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "1", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "1", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "3", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "3", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "1", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "1", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "2", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "2", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "3", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "3", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "1", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "1", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "2", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "2", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "3", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "3", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "1", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "1", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "2", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "2", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "3", "\",\"", "1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "3", "\",\"", "1", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "1", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "1", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "2", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "2", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "3", "\",\"", "2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{"3", "\",\"", "3", "\",\"", "2", "\",\"", "2"},
+        "RowDefault"]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->949429914]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"T2", "=", 
+   RowBox[{"Tensorize", "[", 
+    RowBox[{"matT", ",", 
+     RowBox[{"{", 
+      RowBox[{"3", ",", "3", ",", "2", ",", "2"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"T2", "\[Equal]", "TT"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1311564996],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->855242676]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1792646867],
+
+Cell["\<\
+Without sub-dimensions specified, the matrix is supposed to be for a \
+multi-qubit system.\
+\>", "ExampleText",
+ CellID->1245198378],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"TT", "=", 
+   RowBox[{"Array", "[", 
+    RowBox[{"T", ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "2", ",", "2", ",", "2", ",", "2", ",", "2"}], 
+      "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"TT", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->820999031],
+
+Cell[BoxData[
+ GraphicsBox[
+  TagBox[RasterBox[CompressedData["
+1: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
+d0zyugW56gf+9Kc/9fT0BHmld2eM5wyuvhdiOo8ePTr1u6amJu/zWrVqVe6P
+N27cyL9mdHTUu2zvb73UDA0NEesTGx/Jn7W02HPnzuU+vn//fu+Y+vO/hP3W
+RJnPMaeT1kxRy1nOlIRaDv4MIqw09QOSa5kzJMuZknCG+KOW3a5LLadp3SBc
+9QN/+tOf/v73vwd5pc2cwdX3Qkynra1txlTq6+snv6yxsbG0tNT7+J07d4j1
+j42J8M9aVOzKlSunjD1y5EiYWy70OeZ0Upwpatl5rKtMSajl4M8gwkpTPyC8
+ljlD8h/MWqYknCH+qGW361LLKVu3IFf9QDJzBptYm2cf9vbt2+dd/NOnT4kV
+TuMdk5kpmc8x7WnMlMwdEjeNd0xmppJ5BhEW/UAWYt3SeMdkZop+gFi3NN4x
+mZly1Q/InzPYPPuw5N2Z6urq9evXEyucxjsmNlMyn2Na0pgpsTskVhrvmNhM
+JfMMIiz6gdTHuqXxjonNFP1AxmPd0njHxGbKVT8gf85gE2vj6tWr5eXlNTU1
+XV1dxEqm8Y5JzpTMf1/Y0JgpyTskPhrvmORMJdMbhEU/kO5YtzTeMcmZknkO
+2NCYKck7JD4a75jkTLnqB5gzTKe9vf3AgQNm39aVtVi3NN4xyZlKX1+hMVOS
+d0h8NN4xyZlizhAVjTtE8s6Mj8Y7JjlTMs8BGxozJXmHxEfjHZOcKeYMccQC
+CCt9fQWQTcwZANiQeQ4ACIs5QxyxAMKirwDSgTkDABsyzwEAYTFniCMWQFj0
+FUA6MGcAYEPmOQAgLOYMccQCCIu+AkgH5gwAbMg8BwCExZwhjlgAYdFXAOnA
+nAGADZnnAICwmDPEEQsgLPoKIB2YMwCwIfMcABAWc4Y4YgGERV8BpANzBgA2
+ZJ4DAMJizhBHLICw6CuAdGDOAMCGzHMAQFjMGeKIBRAWfQWQDswZANiQeQ4A
+CIs5QxyxAMKirwDSgTkDABsyzwEAYTFniCMWQFj0FUA6MGcAYEPmOQAgLOYM
+ccQCCIu+AkgH5gwAbMg8BwCExZwhjlgAYdFXAOnAnAGADZnnAICwmDPYx/4z
+gLGxMbPLQITIlGQS+gp2iBZkSrIszxnYmVqQKckknAPsEC3IlGTMGSxju7u7
+ZwRw6NAhs8tAVMiUcM77CnaIFmRKuMzOGdiZWpAp4ZyfA+wQLciUcMwZLGN7
+enpe+3f5XT35g83NzWaXgaiQKeGc9xXsEC3IlHCZnTOwM7UgU8I5PwfYIVqQ
+KeGYM0QeO3v2bC/2/PnzZusiMWRKFOd9xcvYIVqQKVEyO2d4GTtTCzIlisBz
+gB2iBZkShTlD5LHscC3IlCj0FTBGpkRhzpDHztSCTIki8Bxgh2hBpkRhzhB5
+LDtcCzIlCn0FjJEpUZgz5LEztSBTogg8B9ghWpApUZgzRB7LDteCTIlCXwFj
+ZEoU5gx57EwtyJQoAs8BdogWZEoU5gyRx7LDtSBTotBXwBiZEoU5Qx47Uwsy
+JYrAc4AdogWZEoU5Q+Sx7HAtyJQo9BUwRqZEYc6Qx87UgkyJIvAcYIdoQaZE
+Yc4QeWzBHT44OHj27NkdO3a0tLSEfXN1sXfv3m1oaFi+fPmSJUu88M7OzmTW
+DYJMTWaTKcss53hnQnd3t0FgQdRynsMsU8uhAl1lynktC/z3hU1sfDvTYT1q
+vOaCyNRkqs8Qf9RyJOtSy1nIlPNaTvec4ZVXXonjLDpx4kRRUVHuV7vu2bMn
+1Duri21tbS0pKamoqNi+fbu3Ub3wmTNndnR0JHDNQZCpPJtMWWY5r7q6uqen
+J2xUENRyjsMsU8sqMiWhlmXOGaSdIQ7rUeM1B0GmIrlmCWeIP2rZfl1qOQuZ
+klDL6Z4zvPrqq8PDwwaB/jv89u3bLS0tzc3NBvWlLraxsXHdunUDAwO5P166
+dMl7h23btiVwzUGQqTybTFlmOa+ysrK3tzdsVBDUco7DLFPLKjIloZZlzhmk
+nSEO61HjNQdBpiK5ZglniD9q2X5dankiA5mSUMvpnjOUlZU9e/bMIDDI/zOo
+v7/fuL50xY6NjeX/e3x83NtvS5cuTWDdIMjUZDaZss+yp6Kioq+vL2xUENRy
+ntssU8vBucqU81qWOWcQeIa4rUeN1+yPTE2m+gzxRy1Hsi61nIVMOa/ldM8Z
+Xn/9dbM7k76O1z42Z2RkxDvht2zZkvC60yFT0zHLlGWs8Vf/gqjlKSWfZWrZ
+jJN6tIm1qWWZcwaxZ0hO8vWo8Zr9kanpqDtD/FHLEa5rE0stJ7muw1hX/YD8
+OUNNTc3jx48NAtPa8dpXx+nTp713aG1tTXjd6ZCp6ZhlyjK2uLh4fHzcYMWC
+qOUpJZ9latmMk3q0ibWpZZlzBrFnSE7y9ajxmv2RqemoO0P8UcsRrmsTSy0n
+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
+8uXLlyxZ4oV3dnYms67D2ILIVFSxltd85syZkydPhgoJi1q2j7W5ZsvYgsiU
+hGueiKKWxc4ZpJ0hGneXw9iCyFRUsc7PkIKoZfvYCWo5A5lyXsupnzO8//77
+t27dChvlv8NPnDhRVFSU+9Wue/bsCfXOxrGtra0lJSUVFRXbt2/3NowXPnPm
+zI6OjrjXdRgbBJmScM2evr6+NWvWhLrasKhly1iba7aMDYJMOb/mHPtaFjtn
+EHWGaNxdDmODIFORxEo4Qwqili1jJ6jlDGRKQi2ne87w4sWLxYsXB/+VN3n+
+O/z27dstLS3Nzc0G9WUc29jYuG7duoGBgdwfL1265L3Dtm3b4l7XYWwQZErC
+NecsW7Ys/w6Ro5btY22u2TI2CDLl/JrzLGtZ5pxB2hmicXc5jA2CTEUSK+EM
+8Uct28dOUMsZyJSEWk73nOHHH3/cuHGjQWCQ/2dQf3+/cX2ZxY6NjeX/e3x8
+vLKycunSpQms6zbWH5mKKtb+mvfu3Rv2hzIFRy1HEptDLQenMVPOa1nmnEHg
+GaJxd7mN9Uemoop1fob4o5Yjic2hltOdKee1nO45w1dffdXQ0GAQKLPjnWxk
+ZKSsrGzLli2JrZu1s8g+NkdXpnLMrvnUqVPHjx83XtQftRxhLLVsRlembNa1
+rGWZcwaxZ0iOrt2VzTMkJzuZyqEfCCv5HWITSy1nIVM26zrsB+TPGY4ePfrF
+F18YBMrveE+fPu29Q2tra2LrZvMsylqmcsyu+fLlyzt37jRe1B+1HGEstWxG
+V6Zs1rWsZZlzBrFnSI6u3ZXNMyQnO5nKoR8IK/kdYhNLLWchUzbrOuwH5M8Z
+6urq2traDAKFd7ydnZ2lpaWrV68eHx9PbN1snkVZy9SExTV3dHSsXbvWbNGC
+qOUIY6llA+oyZbOuZS3LnDOIPUMmFO6ubJ4hExnL1AT9QHhOdohNLLWchUzZ
+rOuwH5A/Z6itrb1586ZB4Jw5c7x1L1y44PMaV7V5//79ysrKefPmPXnyJMl1
+ZZ5FZCraWJtr7u3tXbhwocGiQVDLEcZSy2FpzJTDWpY5ZxB7hmjcXdk8Q7KW
+KfqBsFztEI27yx+ZepnSWk73nGHZsmX37t0ziy3ISW12dnbOnTu3qqrq4cOH
+Sa7rMNYemQrI8pqHh4fLy8sNAoOglqOKnaCWQ9KYKbe1LHPOIPMM0bi7HMba
+I1MB0Q+EDXS1QzTurkiQqWTWddgPyJ8zLFq06PHjx2axBfln/ODBg/Pnzz92
+7FiEsdevX/dyvWDBAp+tEse6ccfGjUxFdc0FFRcXG3wXWRDUciSxNtccJDZu
+ZCqqdQuyqWWZcwaBZ4jG3RV3bNzIVFTXXFCm+gFXO0Ty7oobmYpq3YJc9QPy
+5wwVFRVeXsxip/Po0aNTv2tqavKubdWqVbk/3rhxI/+a0dHRkpIS72+91AwN
+DUUSe+7cudzH9+/f722kP//L5G8ei2PduGPjQ6aiveYgZs2aNTg4GCokIGrZ
+PpZazkKmJNSyzDmDtDNE4+7K5hmStUxJOEP8Ucv2sdRyFjIloZbTPWcoKyt7
+9uyZWex02traZkylvr5+8ssaGxtLS0u9j9+5cyeS2JUrV04Ze+TIkVjXTSA2
+JmQq8msuyPvq39fXFyokIGrZPpZazkKmJNSyzDmDtDNE4+7K5hmStUxJOEP8
+Ucv2sdRyFjIloZbTPWcoKSkZHh42i7W3b98+7+KfPn1KrHAa75jMTFVVVfX2
+9kb+thPUsp5YtzTeMZmZsqllmXMGzhAtsW5pvGMyM0U/QKxbGu+YzEy56gfk
+zxmKioqMYy15d6a6unr9+vXECqfxjonNlHcm9PT0xPHO1LKKWLc03jGxmbKp
+ZZlzBs4QFbFuabxjYjNFP5DxWLc03jGxmXLVD8ifM9jE2rh69Wp5eXlNTU1X
+Vxexkmm8Y5IzJfPfFzY0ZkryDomPxjsmOVPJ9AZh0Q+kO9YtjXdMcqZkngM2
+NGZK8g6Jj8Y7JjlTrvoB5gzTaW9vP3DggNm3dWUt1i2Nd0xyptLXV2jMlOQd
+Eh+Nd0xyppgzREXjDpG8M+Oj8Y5JzpTMc8CGxkxJ3iHx0XjHJGeKOUMcsQDC
+Sl9fAWQTcwYANmSeAwDCYs4QRyyAsOgrgHRgzgDAhsxzAEBYzBniiAUQFn0F
+kA7MGQDYkHkOAAiLOUMcsQDCoq8A0oE5AwAbMs8BAGExZ4gjFkBY9BVAOjBn
+AGBD5jkAICzmDHHEAgiLvgJIB+YMAGzIPAcAhMWcIY5YAGHRVwDpwJwBgA2Z
+5wCAsJgzxBELICz6CiAdmDMAsCHzHAAQFnOGOGIBhEVfAaQDcwYANmSeAwDC
+Ys4QRyyAsOgrgHRgzgDAhsxzAEBYzBniiAUQFn0FkA7MGQDYkHkOAAiLOUMc
+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
+Wazxs4/gO/z06dPeK1tbW0O9v8avONrPIjIVnNm9kvkcM607JEfjNU+HTMlZ
+16aWe3t7Fy5caBZbUCr7AZtYjV9l9J4hNrF67zb9QFi6TntqOQuZslnXYT+Q
+zJxh2bJl9+7dM4s1fvYRcId3dnaWlpauXr16fHw81Ptr/Iqj+iwiU8EZ3yuZ
+zzHTukMmdF6zDzIlZ12bWh4eHi4vLzeLLSiV/YBNrMavMnrPEJtYpXebfiDs
+EupOe2o5C5myWddhP5DMnGHRokWPHz82izV+9jFnzhzvmi9cuODzmvv371dW
+Vs6bN+/Jkydh31/jVxyZZxGZijbW5l7JfI6Z1h2i8Zr9kSk561rWcnFxsUHX
+F0Qq+wGNuzqbZ0jWMkU/EPb9NZ721HLYWI2ZUtoPJDNnqKio8O6tWazNsw9/
+nZ2dc+fOraqqevjwoUG4xq84Ms+igshUcJb3SuxzTH8ad4jGa7an8bN2dc1u
+a3nWrFmDg4PG4T7S1w9o3NUOYy2RqeDoB5KMnVD4VcYy1hKZSmxdh/1AMnOG
+srKyZ8+emcXaPPvwcf36de+eL1iwwCdlBw8enD9//rFjx6b8W//dkrXY+JCp
+4LFB7lVBMp9j+tC4QyRfc3wkf9bSMuW8lisqKvr6+oyX9pGyfkDjro47Nj5k
+Knis8zPEH7XsfN0gsfEhU9GuW5CrfiCZOUNJScnw8LBZrM2zj+mcO3fOuyTv
+M9q/f7+X0D//y+Rv4hodHc29xkvN0NBQ/uOPHj069bumpibvb1etWpX7440b
+NzIbGx8yFTw2yL0KQuZzzOlo3CGSrzk+kj9raZmSUMtVVVW9vb1msf7S1A9o
+3NXZPEOylikJZ4g/atntutSylkxJqGWbfiCZOUNRUZGT74WYzsqVK2dM5ciR
+I5Nf1tjYWFpa6n38zp07+Q+2tbVNGVtfX5/l2JiQqeCxAe9VQTKfY05H4w4R
+fs0xEf5Zi8qUhFr2eoOenh6zWH9p6gc07upsniFZy5SEM8Qftex2XWpZS6Yk
+1LJNP5DMnMEm1ubZh719+/Z5F//06VNihdN4x2RmSuZzTHsaMyVzh8RN4x2T
+malknkGERT+QhVi3NN4xmZmiHyDWLY13TGamXPUD8ucMNs8+LHl3prq6ev36
+9cQKp/GOic2UzOeYljRmSuwOiZXGOyY2U8k8gwiLfiD1sW5pvGNiM0U/kPFY
+tzTeMbGZctUPyJ8z2MTauHr1anl5eU1NTVdXF7GSabxjkjMl898XNjRmSvIO
+iY/GOyY5U8n0BmHRD6Q71i2Nd0xypmSeAzY0ZkryDomPxjsmOVOu+gHmDNNp
+b28/cOCA2bd1ZS3WLY13THKm0tdXaMyU5B0SH413THKmmDNEReMOkbwz46Px
+jknOlMxzwIbGTEneIfHReMckZ4o5QxyxAMJKX18BZBNzBgA2ZJ4DAMJizhBH
+LICw6CuAdGDOAMCGzHMAQFjMGeKIBRAWfQWQDswZANiQeQ4ACIs5QxyxAMKi
+rwDSgTkDABsyzwEAYTFniCMWQFj0FUA6MGcAYEPmOQAgLOYMccQCCIu+AkgH
+5gwAbMg8BwCExZwhjlgAYdFXAOnAnAGADZnnAICwmDPEEQsgLPoKIB2YMwCw
+IfMcABAWc4Y4YgGERV8BpANzBgA2ZJ4DAMJizhBHLICw6CuAdGDOAMCGzHMA
+QFjMGeKIBRAWfQWQDswZANiQeQ4ACIs5QxyxAMKirwDSgTkDABsyzwEAYTFn
+iCMWQFj0FUA6MGcAYEPmOQAgLOYM9rH/DGBsbMzsMhAhMiWZhL6CHaIFmZIs
+y3MGdqYWZEoyCecAO0QLMiUZcwbL2O7u7hkBHDp0yOwyEBUyJZzzvoIdogWZ
+Ei6zcwZ2phZkSjjn5wA7RAsyJRxzBsvYnp6e1/5dfldP/mBzc7PZZSAqZEo4
+530FO0QLMiVcZucM7EwtyJRwzs8BdogWZEo45gyRx86ePduLPX/+vNm6SAyZ
+EsV5X/EydogWZEqUzM4ZXsbO1IJMiSLwHGCHaEGmRGHOEHksO1wLMiUKfQWM
+kSlRmDPksTO1IFOiCDwH2CFakClRmDNEHssO14JMiUJfAWNkShTmDHnsTC3I
+lCgCzwF2iBZkShTmDJHHssO1IFOi0FfAGJkShTlDHjtTCzIlisBzgB2iBZkS
+hTlD5LHscC3IlCj0FTBGpkRhzpDHztSCTIki8Bxgh2hBpkRhzhB5LDtcCzIl
+Cn0FjJEpUZgz5LEztSBTogg8B9ghWpApUZgzRB7rv8Pv3r3b0NCwfPnyJUuW
+7Nixo7OzM9SbDw4Onj171gtsaWkJe2FOYh1+vgWRqclsPl/Le5XjnQnd3d0G
+gQVRy3kOs0wthwp0lSnntSzw3xc2sfHtzKztapt1gyBTk6k+Q/xRy6qvOQgy
+JSE2z1U/IH/O8Morr0R+FrW2tpaUlFRUVGzfvt1LnPeymTNndnR0BHznEydO
+FBUV5X4t7J49e0JdlZNYh59vEGQqz+bztbxXedXV1T09PWGjgqCW7a+ZWs5C
+piTUssw5g7QzJGu72vKagyBTkVyzhDPEH7Ws95oDIlPOYydz1Q/InzO8+uqr
+w8PDBoE+O7yxsXHdunUDAwO5P166dMl75bZt2wK+8+3bt1taWpqbmw1q00ms
+w883CDKVZ/P5Wt6rvMrKyt7e3rBRQVDL9tdMLWchUxJqWeacQdoZkrVdbXnN
+QZCpSK5Zwhnij1rWe80BkSnnsZO56gfkzxnKysqePXtmEOj/HTtjY2P5/x4f
+H/fu/9KlS0O9f39/v3FtJh/r9vP1R6Yms/l87e+Vp6Kioq+vL2xUENRyntss
+U8vBucqU81qWOWcQeIZkbVfbrBsEmZpM9Rnij1qOZF1qOQuZcl7L6Z4zvP76
+62Z3JvhPIBkZGfFOvC1btoR6f13/ep0s+c/XH5majtnnaxlr/NW/IGp5Ssln
+mVo246QebWJtalnmnEHsGWITq3FX6z1DbGI1ZsoyNoP9gE2sxixTy2boByKP
+dTVnqKmpefz4sUFg8B1++vRp75Wtra2h3l/vv16T/3z9kanpmH2+lrHFxcXj
+4+MGKxZELU8p+SxTy2ac1KNNrE0ty5wziD1DbGI17mq9Z4hNrMZMWcZmsB+w
+idWYZWrZDP1A5LGu5gxvvfXW999/bxAYcId3dnaWlpauXr067P1X+q9XJ5+v
+PzI1JePP1yb2t99+mzNnTtjlAqKWX+Yky9SyASeZsom1rGWZcwaxZ4hNrMZd
+rfcMsYnVmCmb2Gz2AzaxGrNMLRugH4gj1tWcYdOmTd9++61BoHdLvXUvXLjg
+85r79+9XVlbOmzfvyZMnYd9f479eXX2+/sjUy2w+X5vYn3/+uaamJmxUQNTy
+H7jKMrUclqtMOaxlmXMGsWdI1na13jMka5miHwj7/q52iMZr9kem5MQ67Afk
+zxnq6+u//PJLs1h/nZ2dc+fOraqqevjwoUG4un+9Ovx8LZGpZGInfv8tvRs2
+bDAIDIJansxhlqnlUFxlym0ty5wzyDxDsrarbda1R6aSiZ3IZD/gaodovGZ7
+Gj9r+oH4Yl3NGT7++OPPP//cLNbH9evXy8vLFyxY4JOygwcPzp8//9ixY1P+
+rf8ulRYb9+cbHzIVbay/b775Zvfu3WaxBVHLkVwztZyFTDmvZZlzBoFnSNZ2
+dZB140Omoo31l7V+wNUOkXzN8ZH8WUvLlPNaTvec4eLFix999JFZ7HTOnTtX
+UlLiXdX+/fu9hP75X27evJl/zejoaO41xcXFQ0ND+Y8/evTo1O+ampq8v121
+alXujzdu3BAbG/fnGx8yFfzzDRJb0MmTJz/55JPgrw+FWra/Zmo5C5mSUMsy
+5wzSzpCs7Wq9Z0jWMiXhDPFHLcu/5vhI/qylZUpCLad7ztDd3b1u3Tqz2Oms
+XLlyxlSOHDky+WWNjY2lpaXex+/cuZP/YFtb25Sx9fX1YmMT+HxjQqaCf74B
+Y/198MEH7e3twV8fCrVsf83UchYyJaGWZc4ZpJ0hWdvVes+QrGVKwhnij1pW
+cc0xEf5Zi8qUhFpO95zB88Ybb4yMjBiH29i3b5938U+fPiVWOI13TGCm3nzz
+zV9//TXa95yMWlYR65bGOyYwU5a1LHPOMMEZoiTWLY13TGCm6AeIdU7jHROY
+KYf9gIo5Q319vdmPpbXk3Znq6ur169cTK5zGOyYwU7/88kt8P/Qph1qWH+uW
+xjsmMFP2tSx2zsAZIj/WLY13TGCm6AeIdU7jHROYKbf9gIo5Q3t7+4EDB4zD
+zVy9erW8vLympqarq4tYyTTeMZmZ+s/fRfuef0AtC491S+Mdk5kp+1oWO2fg
+DBEe65bGOyYzU/QDxLql8Y7JzJTbfkDFnGF8fHzFihVjY2PG72AgdwAODw8T
+K5zGOyYzUxs2bBgYGIj8bSejloXHuqXxjsnMlH0ti50zcIYIj3VL4x2TmSn6
+AWLd0njHZGbKbT+gYs7g+fTTTy9evGjzDgB8dHR0JPOLjahlIFaR1LLYOcME
+ZwgQM/oBIB2c9wNa5gxDQ0ObNm2yeQcAPt57772ffvopgYWoZSBWkdSy5DkD
+ZwgQK/oBIB2c9wNa5gyezz777Ouvv7Z8EwAv++677z788MPElqOWgZhEVcuS
+5wwTnCFAbOgHgHSQ0A8omjOMjIy8++67o6Ojlu8D4A927drV39+f2HLUMhCT
+qGpZ+JyBMwSICf0AkA4S+gFFcwYAAJAA4XMGAACQAOYMAAAgKswZAAAAcwYA
+ABAV5gwAAIA5AwAAiApzBgAAwJwBAABEhTkDAABgzgAAAKLCnAEAADBnAAAA
+UWHOAAAAmDMAAICoMGcAAADMGQAAQFSYMwAAAOYMAAAgKswZAAAAcwYAABAV
+5gwAAIA5Q84/AxgbG4v7MlAQmYI/dogWZCqttM8Z2JlakCn4Y4doQabSijmD
+p7u7e0YAhw4divUyUBCZgj92iBZkKsVUzxnYmVqQKfhjh2hBplKMOYOnp6fn
+tX+X39WTP9jc3BzrZaAgMgV/7BAtyFSKqZ4zsDO1IFPwxw7RgkylGHOGKc2e
+Pdtb9/z58wmvi7DIFPyxQ7QgU6mhes7wMnamFmQK/tghWpCp1MjInOH58+eb
+N28eHR0N+Hp2uBZkyrmtW7f29vYmthy1nFZkyrmoaln4nIEzJK3IlHP0A4gE
+mXJOQj+gaM7Q1NR07dq14K9nh2tBppx78OBBXV1dYstRy2lFppyLqpaFzxk4
+Q9KKTDlHP4BIkCnnJPQDWuYMAwMD77zzTqgQdrgWZEoC7yzq6upKYCFqOcXI
+lASR1LLkOQNnSIqRKQnoB2CPTEngvB/QMmc4evTolStXQoWww7UgUxL88MMP
+u3btSmAhajnFyJQEkdSy5DkDZ0iKkSkJ6Adgj0xJ4LwfUDFnGB0dffvtt1+8
+eBEqih2uBZkSora2tr+/P9YlqOV0I1NC2Ney2DkDZ0i6kSkh6AdgiUwJ4bYf
+UDFnuHz58uHDh8NG+e/wu3fvNjQ0LF++fMmSJTt27Ojs7Az15oODg2fPnvUC
+W1paQgW6WtdhbEFkKqpYy2s+c+bMyZMnQ4WERS27vWbL2ILIlIRrnoiilsXO
+GaSdIRp3l8PYgshUVLHOz5CCqGX72AlqWUnshOZaTv2c4f33379161bYKJ8d
+3traWlJSUlFRsX37di9x3stmzpzZ0dER8J1PnDhRVFSU+7Wwe/bsCX5JrtZ1
+GBsEmZJwzZ6+vr41a9aEutqwqGWH12wZGwSZcn7NOfa1LHbOIOoM0bi7HMYG
+QaYiiZVwhhRELVvGTlDLSmInlNdyuucML168WLx4cfBfeZPns8MbGxvXrVs3
+MDCQ++OlS5e8V27bti3gO9++fbulpaW5uTnsbnG1rsPYIMiUhGvOWbZsWf4d
+Ikctu71my9ggyJTza86zrGWZcwZpZ4jG3eUwNggyFUmshDPEH7VsHztBLSuJ
+nVBey+meM/z4448bN240CPT/jp2xsbH8f4+Pj1dWVi5dujTU+/f39xvUpqt1
+3cb6I1NRxdpf8969e8P+UKbgqOVIYnOo5eA0Zsp5LcucMwg8QzTuLrex/shU
+VLHOzxB/1HIksTnUsvzYHKW1nO45w1dffdXQ0GAQGPwnkIyMjJSVlW3ZsiXU
++9vXZvLrajyLJiNTwZld86lTp44fP268qD9qOcJYatmMrkzZrGtZyzLnDGLP
+EFex9ANkKgj6gbB0xVLLWmKV1nK65wxHjx794osvDAKD7/DTp097r2xtbQ31
+/va7Jfl1tZ9FZCo4s2u+fPnyzp07jRf1Ry1HGEstm9GVKZt1LWtZ5pxB7Bni
+KpZ+gEwFQT8Qlq5YallLrNJaTvecoa6urq2tzSAw4A7v7OwsLS1dvXr1+Ph4
+qPe33C1O1lV9FpGp4IyvuaOjY+3atWaLFkQtRxhLLRtQlymbdS1rWeacQewZ
+4iqWfoBMFUQ/EHYJdbHUspZYpbWc7jlDbW3tzZs3DQLnzJnjrXvhwgWf19y/
+f7+ysnLevHlPnjwJ+/42u8XVujLPIjIVbazNNff29i5cuNBg0SCo5QhjqeWw
+NGbKYS3LnDOIPUM07q5sniFZyxT9QNj31xhLLWuJVVrL6Z4zLFu27N69e2ax
+/jo7O+fOnVtVVfXw4UODcOPd4mpdh7GWyFRwltc8PDxcXl5uEBgEtRxV7AS1
+nOC6Gq95wrqWZc4ZZJ4hGneXw1hLZCo4+oEsxE5Qy0piJ9TWcrrnDIsWLXr8
++LFZrI/r169793zBggU+KTt48OD8+fOPHTs25d/675bpYl2tG3dsfMhUtNdc
+UHFxscF3kQVBLTu/5iCx8SFT0a5bkE0ty5wzCDxDNO6uuGPjQ6aiveaCMtUP
+aIzNoZblx+YoreV0zxkqKiq8vJjFTufcuXMlJSXeVe3fv99L6J//ZfI3cY2O
+juZe46VmaGgo//FHjx6d+l1TU5P3t6tWrcr98caNGwVjXa0bd2x8yFS01xzE
+rFmzBgcHQ4UERC27vWZqWUumJNSyzDmDtDNE4+7K5hmStUxJOEP8Ucv2sdSy
+lljttZzuOUNZWdmzZ8/MYqezcuXKGVM5cuTI5Jc1NjaWlpZ6H79z507+g21t
+bVPG1tfXF4x1tW4CsTEhU5Ffc0HeV/++vr5QIQFRy26vmVrWkikJtSxzziDt
+DNG4u7J5hmQtUxLOEH/Usn0stawlVnstp3vOUFJSMjw8bBZrb9++fd7FP336
+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
+5Z07d5rFFpTKfkBjLWfzDMlapugHwr5/1mKp5SzEuuoHQsV++eWXDQ0NZgvZ
+xNbX13vhZrH+Ojs7586dW1VV9fDhQ4Nw49rM2rr2snbHbNa1vOa7d+9u2LDB
+IDAIallC7AS1nIHYCbtaPnXq1PHjx81iC0pfP6CxlrN5hmQtU/QDxBZELac+
+dsJdPxAq9tGjRxs3bjRbyCb2448//vzzz81ifVy/fr28vHzBggU+KTt48OD8
++fOPHTs25d/61+Z0sWldNz5pvWNxrBsk1t8333yze/dus9iCqGXnsTnUcjpi
+/dnU8t69e69cuWIWW1DK+gHJtcwZIiE2R+bZ5S9r/UDWYnOo5XTE+nPVD4SK
+ffHixeLFi0dHRw0Wsom9ePHiRx99ZBDo49y5cyUlJV5l7d+/30von/9l8g+n
+8q4295ri4uKhoaH8x70e6dTvmpqavL9dtWpV7o83btwoGJvWdeOT1jsWx7pB
+Ygs6efLkJ598Evz1oVDLbmOpZS2Zcl7Ly5Yty/+27silqR+QXMucIVnOlPMz
+pCBq2W0stZym2IJc9QNhY3fv3n3r1i2ztYxju7u7161bZ7bodFauXDljKkeO
+HJn8ssbGxtLSUu/jd+7cyX+wra1tytj6+vqCsSleNyYpvmORrxsw1t8HH3zQ
+3t4e/PWhUMtuY6llLZlyW8t9fX1r1qwxCAwuNf2A8FrmDHEeK/zs8pepfiBr
+sdRyymL9OekHDGL/+te/Hj582Gw5m9g33nhjZGTELNbSvn37vGw+ffqUWOE0
+3jGBmXrzzTd//fXXaN9zMmpZRaxbGu+YwEwZ1/KZM2dOnjwZ7cX8Af1A6mPd
+0njHBGaKfoBY5zTeMYGZctIPGMSOjo6uWLHixYsXBsvZxNbX15v9WFpLf//7
+36urq9evX0+scBrvmMBM/fLLL/H90Kccall+rFsa75jATNnUcm1tbX9/f7TX
+8wf0A+mOdUvjHROYKfoBYp3TeMcEZspVP2AWe+TIEeMfB2Ec297efuDAAbNF
+jV29erW8vLympqarq4tYyTTeMZmZ+s/fRfuef0AtC491S+Mdk5kp41r+29/+
+tmvXrmgvZkr0A2mNdUvjHZOZKfoBYt3SeMdkZspJP2Ac+49//GPLli1mixrH
+jo+Pr1ixYmxszGxdM7kDcHh4mFjhNN4xmZnasGFDfD/8LYdaFh7rlsY7JjNT
+xrVcV1eXTDtKP5DWWLc03jGZmaIfINYtjXdMZqac9AM2sUePHr127VrCsZ9+
++unFixfNFgVQUEdHRzK/2IhaBmJlXMsPHjzweoPIr2c69AOATPQDQDo46Qcs
+e4nnz59v3rzZ7JdSGccODQ1t2rTJYEUAQbz33ns//fRTAgtRy0CsjGt569at
+vb29kV/PdOgHAJnoB4B0cNIPJNxLROWzzz77+uuvXV8FkELffffdhx9+mNhy
+1DIQk4Rr2RXOECAm9ANAOmSkH4jKyMjIu+++a/Z9FAB87Nq1K+6fMD8ZtQzE
+JOFadoUzBIgJ/QCQDhnpBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAANLn/wIy
+8lT9
+    "], {{0, 156.}, {700., 0}}, {0, 255},
+    ColorFunction->RGBColor,
+    ImageResolution->{144., 144.}],
+   BoxForm`ImageTag["Byte", ColorSpace -> "RGB", Interleaving -> True],
+   Selectable->False],
+  DefaultBaseStyle->"ImageGraphics",
+  ImageSize->Automatic,
+  ImageSizeRaw->{700., 156.},
+  PlotRange->{{0, 700.}, {0, 156.}}]], "Output",
+ CellTags->"RasterizedOutput",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->1509957963]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matT", "=", 
+   RowBox[{"TensorFlatten", "[", "TT", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matT", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1300135507],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "1", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", 
+         "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "1", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "2", "\",\"", "1", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"T"},
+        "RowDefault"], 
+       TemplateBox[{
+        "2", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", "2", "\",\"", 
+         "2"},
+        "RowDefault"]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->721412477]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"T2", "=", 
+   RowBox[{"Tensorize", "[", "matT", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"T2", "\[Equal]", "TT"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1883716887],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->871792606]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1116529513],
+
+Cell["\<\
+This examples shows conversion between vector and tensor forms\
+\>", "ExampleText",
+ CellID->1726384919],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"TT", "=", 
+   RowBox[{"Array", "[", 
+    RowBox[{"T", ",", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "3", ",", "2"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"TT", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"matT", "=", 
+   RowBox[{"Flatten", "[", "TT", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matT", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->699779016],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "1", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "1", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "2", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "2", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "3", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "3", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "1", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "1", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "2", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "2", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "3", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "3", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"3", "\",\"", "1", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"3", "\",\"", "1", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"3", "\",\"", "2", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"3", "\",\"", "2", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"3", "\",\"", "3", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"3", "\",\"", "3", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"4", "\",\"", "1", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"4", "\",\"", "1", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"4", "\",\"", "2", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"4", "\",\"", "2", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"4", "\",\"", "3", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"4", "\",\"", "3", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->590599034],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", 
+   TagBox[GridBox[{
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "1", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "1", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "3", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "3", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "1", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "1", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "2", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "2", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "3", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "3", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"3", "\",\"", "1", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"3", "\",\"", "1", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"3", "\",\"", "2", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"3", "\",\"", "2", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"3", "\",\"", "3", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"3", "\",\"", "3", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"4", "\",\"", "1", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"4", "\",\"", "1", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"4", "\",\"", "2", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"4", "\",\"", "2", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"4", "\",\"", "3", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"4", "\",\"", "3", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]}
+     },
+     GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[0.5599999999999999]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    Column], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->528548004]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"T2", "=", 
+   RowBox[{"Tensorize", "[", 
+    RowBox[{"matT", ",", 
+     RowBox[{"{", 
+      RowBox[{"4", ",", "3", ",", "2"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"T2", "\[Equal]", "TT"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1825368212],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1565236301]
+}, Open  ]],
+
+Cell["\<\
+Without the sub-dimensions specified, the vector is supposed to be for a \
+multi-qubit system.\
+\>", "ExampleText",
+ CellID->329265429],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"TT", "=", 
+   RowBox[{"Array", "[", 
+    RowBox[{"T", ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "2", ",", "2"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"TT", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"matT", "=", 
+   RowBox[{"Flatten", "[", "TT", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matT", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->2046190531],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "1", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "1", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "2", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"1", "\",\"", "2", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]},
+     {
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "1", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "1", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}], 
+      RowBox[{"(", "\[NoBreak]", 
+       TagBox[GridBox[{
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "2", "\",\"", "1"},
+              "RowDefault"]],
+            DisplayForm]},
+          {
+           TagBox[
+            SubscriptBox[
+             TemplateBox[{"T"},
+              "RowDefault"], 
+             TemplateBox[{"2", "\",\"", "2", "\",\"", "2"},
+              "RowDefault"]],
+            DisplayForm]}
+         },
+         GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+         GridBoxSpacings->{"Columns" -> {
+             Offset[0.27999999999999997`], {
+              Offset[0.5599999999999999]}, 
+             Offset[0.27999999999999997`]}, "Rows" -> {
+             Offset[0.2], {
+              Offset[0.4]}, 
+             Offset[0.2]}}],
+        Column], "\[NoBreak]", ")"}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->931842778],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", 
+   TagBox[GridBox[{
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "1", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "1", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"1", "\",\"", "2", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "1", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "1", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "2", "\",\"", "1"},
+          "RowDefault"]],
+        DisplayForm]},
+      {
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"T"},
+          "RowDefault"], 
+         TemplateBox[{"2", "\",\"", "2", "\",\"", "2"},
+          "RowDefault"]],
+        DisplayForm]}
+     },
+     GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[0.5599999999999999]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    Column], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->2030815922]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"T2", "=", 
+   RowBox[{"Tensorize", "[", "matT", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"T2", "\[Equal]", "TT"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->963535378],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1962887449]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TensorFlatten"]], "paclet:Q3/ref/TensorFlatten"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PartialTrace"]], "paclet:Q3/ref/PartialTrace"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CircleTimes"]], "paclet:Q3/ref/CircleTimes"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/PauliQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->696591071],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/PauliPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1043385248],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1971885381],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Links"
+}], "RelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->1584193535],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Linear Algebra"]], "paclet:tutorial/LinearAlgebra"},
+  "RefLink",
+  BaseStyle->"RelatedLinks"]], "RelatedLinks",
+ CellID->1191137959],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Matrix Operations"]], "paclet:guide/MatrixOperations"},
+  "RefLink",
+  BaseStyle->"RelatedLinks"]], "RelatedLinks",
+ CellID->227425889],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["An Elementary Introduction to the Wolfram Language"]], 
+   "https://www.wolfram.com/language/elementary-introduction/"},
+  "WebLink",
+  BaseStyle->{"RelatedLinks"}]]]], "RelatedLinks",
+ CellID->1692878672],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["The Wolfram Language: Fast Introduction for Programmers"]], 
+   "http://www.wolfram.com/language/fast-introduction-for-programmers/"},
+  "WebLink",
+  BaseStyle->{"RelatedLinks"}]]]], "RelatedLinks",
+ CellID->1998801680]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Demonstrations", "RelatedDemonstrationsSection",
+ CellID->1268215905],
+
+Cell[TextData[ButtonBox["Matrix Usage Examples",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/MatrixUsage"]], "RelatedDemonstrations",
+ CellID->1854510926]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Tensorize",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 42, 34.712902}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"linear algebra", "tensor analysis", "direct product"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Tensorize[m] gives the tensor product form of the matrix m. The matrix m \
+is supposed to be the matrix representation of a multi-qubit system and hence \
+a 2^n*2^n square matrix, where n is the number of qubits. Tensorize[v] gives \
+the tensor product form of the vector v. The vector v is supposed to be the \
+column-vector representation of a multi-qubit system and hence a column \
+vector of size 2^n. Tensorize[m | v, {d1, d2, ...}] assumes the subsystems \
+are associated with the Hilbert spaces with dimensions d1, d2, ....", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "Tensorize", 
+    "titlemodifier" -> "", "windowtitle" -> "Tensorize", "type" -> "Symbol", 
+    "uri" -> "Q3/ref/Tensorize", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[10974, 347, 266, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"8ec4586f-ad97-45ca-8a6a-7305070e141f",
+   CellTags->"PrimaryExamplesSection",
+   CellID->69634921]},
+ "RasterizedOutput"->{
+  Cell[43374, 1375, 26485, 441, 70, "Output",ExpressionUUID->"972d2860-24d2-4a0f-a172-7fb0e9583eeb",
+   CellTags->"RasterizedOutput",
+   CellID->1509957963]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 116241, 3406},
+ {"RasterizedOutput", 116439, 3410}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[581, 21, 4476, 114, 70, "AnchorBarGrid",ExpressionUUID->"d8828e49-eb37-4120-842c-1953e02eadb7",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5082, 139, 166, 6, 70, "ObjectNameGrid",ExpressionUUID->"f9e12a0e-8d5e-47e9-bec5-d3035cc1b17b"],
+Cell[5251, 147, 2369, 72, 70, "Usage",ExpressionUUID->"728550a3-f1ff-4cdd-a7a4-c3d2bd9c7f23"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7657, 224, 629, 19, 70, "NotesSection",ExpressionUUID->"56d5247b-95c8-4f9c-ad66-964a42cc4d18",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->778270514],
+Cell[8289, 245, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7bb96f0b-ebd8-44f6-b80d-496a3f1d6cdb"],
+Cell[8323, 247, 907, 31, 70, "Notes",ExpressionUUID->"424a55d6-3bf3-44d9-bddc-9cb79dd7ad3c",
+ CellID->1067943069],
+Cell[9233, 280, 1385, 49, 70, "Notes",ExpressionUUID->"4c36a950-5204-4020-a04a-7874080b0b20",
+ CellID->489048990],
+Cell[10621, 331, 282, 9, 70, "Notes",ExpressionUUID->"90face84-c532-4a1a-8570-d00e56df61cb",
+ CellID->693042406],
+Cell[10906, 342, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"77b69c3e-6e1e-48c6-ace1-e571f639ce31"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[10974, 347, 266, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"8ec4586f-ad97-45ca-8a6a-7305070e141f",
+ CellTags->"PrimaryExamplesSection",
+ CellID->69634921],
+Cell[CellGroupData[{
+Cell[11265, 361, 196, 6, 70, "ExampleSection",ExpressionUUID->"162c9507-3777-4026-9d10-d929eb5f86bb",
+ CellID->2123013279],
+Cell[11464, 369, 91, 3, 70, "Input",ExpressionUUID->"a5abcb22-fe85-4808-88c5-3f0d20786575",
+ CellID->1138405048],
+Cell[11558, 374, 129, 4, 70, "Input",ExpressionUUID->"8fab2ee3-5d8c-4c51-9b97-0e8763f8d740",
+ CellID->1028704576],
+Cell[11690, 380, 120, 3, 70, "ExampleText",ExpressionUUID->"18e43a3d-91d4-4ce3-a914-bbc8a0b05868",
+ CellID->1271278204],
+Cell[CellGroupData[{
+Cell[11835, 387, 299, 10, 70, "Input",ExpressionUUID->"71546f0f-9a23-42a8-a1af-9dae3f409fe0",
+ CellID->1057970625],
+Cell[12137, 399, 8004, 234, 70, "Output",ExpressionUUID->"efd4ed88-923c-480b-9c83-d72930b31eed",
+ CellID->1857998243]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20178, 638, 216, 6, 70, "Input",ExpressionUUID->"6c2c1af7-0b05-4234-aa71-1ec50cd352d6",
+ CellID->2003480220],
+Cell[20397, 646, 3226, 111, 70, "Output",ExpressionUUID->"8d475990-d28c-4bb6-b27a-e4e2d5d8f952",
+ CellID->85414613]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23660, 762, 304, 10, 70, "Input",ExpressionUUID->"58b8fe7b-c09d-4fd8-b72f-2f35c310eff0",
+ CellID->1562045448],
+Cell[23967, 774, 74, 2, 70, "Output",ExpressionUUID->"cd111fa9-e31f-4644-8b9b-f8461f4342f1",
+ CellID->864661861]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[24078, 781, 125, 3, 70, "ExampleDelimiter",ExpressionUUID->"39bb18f9-b23f-47e1-9775-7bd6350ae02f",
+ CellID->445035080],
+Cell[24206, 786, 120, 3, 70, "ExampleText",ExpressionUUID->"95dc4052-b46b-4d24-8422-01df491a0585",
+ CellID->448869611],
+Cell[CellGroupData[{
+Cell[24351, 793, 307, 10, 70, "Input",ExpressionUUID->"e3cd887b-3782-4c1c-b978-d3988d35cb10",
+ CellID->41500166],
+Cell[24661, 805, 10938, 306, 70, "Output",ExpressionUUID->"b19caf20-0c0e-4fd3-b8f9-28f8f0360855",
+ CellID->1323034130]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[35636, 1116, 214, 6, 70, "Input",ExpressionUUID->"97a99095-ce74-4926-8ccd-dc11808b3066",
+ CellID->92801854],
+Cell[35853, 1124, 6413, 201, 70, "Output",ExpressionUUID->"1a770a86-1c89-4ec4-a985-a64c2db9bad2",
+ CellID->949429914]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42303, 1330, 314, 10, 70, "Input",ExpressionUUID->"ceb4dbd1-f546-414d-ae69-69fd16a33e15",
+ CellID->1311564996],
+Cell[42620, 1342, 74, 2, 70, "Output",ExpressionUUID->"67a5e34b-e873-444c-88b6-95ad4bc7fefa",
+ CellID->855242676]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42743, 1350, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"407c9bd4-f202-4c15-b566-fc46c07029c8",
+ CellID->1792646867],
+Cell[42872, 1355, 142, 4, 70, "ExampleText",ExpressionUUID->"f9df4d63-504e-45eb-985b-c42bc5f4bf61",
+ CellID->1245198378],
+Cell[CellGroupData[{
+Cell[43039, 1363, 332, 10, 70, "Input",ExpressionUUID->"ec358567-12b7-4c64-ac35-8eb7a9ff2b87",
+ CellID->820999031],
+Cell[43374, 1375, 26485, 441, 70, "Output",ExpressionUUID->"972d2860-24d2-4a0f-a172-7fb0e9583eeb",
+ CellTags->"RasterizedOutput",
+ CellID->1509957963]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[69896, 1821, 224, 7, 70, "Input",ExpressionUUID->"3d6844bc-3d6a-4915-b5d2-39430e90564c",
+ CellID->1300135507],
+Cell[70123, 1830, 13999, 471, 70, "Output",ExpressionUUID->"df25f443-d423-49f5-89eb-fad59d5c1752",
+ CellID->721412477]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[84159, 2306, 213, 6, 70, "Input",ExpressionUUID->"cad227ce-802e-4103-9908-3cf9fce786b8",
+ CellID->1883716887],
+Cell[84375, 2314, 74, 2, 70, "Output",ExpressionUUID->"8e471dea-01e8-44a9-b564-59667f17a47e",
+ CellID->871792606]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[84498, 2322, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"45fa728f-0c46-4b32-b5c0-020c7b10291a",
+ CellID->1116529513],
+Cell[84627, 2327, 114, 3, 70, "ExampleText",ExpressionUUID->"091346c9-5e7d-4d8d-990e-7a58a5475fc1",
+ CellID->1726384919],
+Cell[CellGroupData[{
+Cell[84766, 2334, 468, 14, 70, "Input",ExpressionUUID->"817f0713-a963-49a2-8dd7-5c20f4dd364c",
+ CellID->699779016],
+Cell[85237, 2350, 11703, 355, 70, "Output",ExpressionUUID->"8fdedc03-e1e0-47a2-aa3a-4d2167c2db14",
+ CellID->590599034],
+Cell[96943, 2707, 5447, 209, 70, "Output",ExpressionUUID->"f4fdcf60-baaf-4cde-b6bd-1f673f32e025",
+ CellID->528548004]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[102427, 2921, 304, 10, 70, "Input",ExpressionUUID->"7d83d2f3-f0ea-4509-ad22-e31cc84f1da6",
+ CellID->1825368212],
+Cell[102734, 2933, 75, 2, 70, "Output",ExpressionUUID->"d755688c-8201-43bd-b387-10be8e9951c9",
+ CellID->1565236301]
+}, Open  ]],
+Cell[102824, 2938, 145, 4, 70, "ExampleText",ExpressionUUID->"93c7cd0a-c1b5-4e78-be95-fe13c9723428",
+ CellID->329265429],
+Cell[CellGroupData[{
+Cell[102994, 2946, 469, 14, 70, "Input",ExpressionUUID->"a7e385b1-0eaf-4088-a26a-9c9932e59875",
+ CellID->2046190531],
+Cell[103466, 2962, 4241, 129, 70, "Output",ExpressionUUID->"9027b43a-2945-4ede-8654-d28fcb0e1d92",
+ CellID->931842778],
+Cell[107710, 3093, 2184, 81, 70, "Output",ExpressionUUID->"ac2fc5a3-c1eb-4b10-b8e1-97d057498b07",
+ CellID->2030815922]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[109931, 3179, 212, 6, 70, "Input",ExpressionUUID->"45d74506-96f6-4313-927f-f6ef5d709914",
+ CellID->963535378],
+Cell[110146, 3187, 75, 2, 70, "Output",ExpressionUUID->"6f7979cf-4dff-4576-9ee5-663d5d61bc21",
+ CellID->1962887449]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[110260, 3194, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"ae7c57f1-6812-47b5-9024-786db2735a5e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[110328, 3199, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"6ed9dbf3-ffd7-48ce-8bb6-871fc76d03b8",
+ CellID->1255426704],
+Cell[110481, 3208, 875, 28, 70, "SeeAlso",ExpressionUUID->"d9157b48-c88a-4c61-b3e0-205cacd74cae",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[111393, 3241, 152, 7, 70, "TutorialsSection",ExpressionUUID->"d153a6ca-fe99-49ba-9f39-6b0edad59a19",
+ CellID->250839057],
+Cell[111548, 3250, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"02929a92-5376-4c13-9cb2-d05b38fc582d"],
+Cell[111582, 3252, 187, 6, 70, "Tutorials",ExpressionUUID->"c073f65e-39b6-4b6f-896a-59668deafca5",
+ CellID->696591071],
+Cell[111772, 3260, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"82657c1f-c791-47e0-af43-f96731407950"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[111840, 3265, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"a415232f-a97a-4257-adb4-f6b9617e89c7",
+ CellID->38303248],
+Cell[111999, 3274, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"665cad5f-cf9d-4e87-974b-52bd1925d4b4"],
+Cell[112033, 3276, 188, 6, 70, "MoreAbout",ExpressionUUID->"e8bec325-0e58-47a0-b7b8-45bfad368507",
+ CellID->1043385248],
+Cell[112224, 3284, 156, 6, 70, "MoreAbout",ExpressionUUID->"006607c9-7578-4ddf-9b9a-ff3350f0293b",
+ CellID->1971885381],
+Cell[112383, 3292, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"50946a9c-b532-4417-8d53-072abb43c157"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[112451, 3297, 160, 7, 70, "RelatedLinksSection",ExpressionUUID->"163a196f-160f-4073-adc8-0b4dc1aa7c98",
+ CellID->1584193535],
+Cell[112614, 3306, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"ff10e226-2c1b-41e8-a54d-f89b215e6131"],
+Cell[112648, 3308, 185, 6, 70, "RelatedLinks",ExpressionUUID->"437d7a63-6a1c-41af-844e-d715d12fb22b",
+ CellID->1191137959],
+Cell[112836, 3316, 187, 6, 70, "RelatedLinks",ExpressionUUID->"71047b4d-e440-40cc-945e-7a2da3d59070",
+ CellID->227425889],
+Cell[113026, 3324, 271, 7, 70, "RelatedLinks",ExpressionUUID->"33cfa6fa-95cc-4786-8be2-5c699e5e9350",
+ CellID->1692878672],
+Cell[113300, 3333, 285, 7, 70, "RelatedLinks",ExpressionUUID->"36fb7d71-3569-45ef-8395-bef02fd6f9fb",
+ CellID->1998801680]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[113622, 3345, 83, 1, 70, "RelatedDemonstrationsSection",ExpressionUUID->"4d8ee595-d156-44f1-96b2-b932aa08d014",
+ CellID->1268215905],
+Cell[113708, 3348, 163, 3, 70, "RelatedDemonstrations",ExpressionUUID->"cfa2a86c-49ad-44f9-b161-fcfb28ba7493",
+ CellID->1854510926]
+}, Open  ]],
+Cell[113886, 3354, 23, 0, 70, "FooterCell",ExpressionUUID->"68312886-4500-4178-aded-7dd1f83dec9c"]
+}
+]
+*)
+
+(* End of internal cache information *)

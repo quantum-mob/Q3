@@ -1,0 +1,847 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     27149,        838]
+NotebookOptionsPosition[     19270,        669]
+NotebookOutlinePosition[     21597,        727]
+CellTagsIndexPosition[     21512,        722]
+WindowTitle->HilbertSchmidtProduct
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/PauliQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Inner\"\>":>Documentation`HelpLookup[
+       "paclet:ref/Inner"], "\<\"Basis\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Basis"], "\<\"Matrix\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Matrix"], "\<\"BraKet\"\>":>Documentation`HelpLookup[
+       "paclet:ref/BraKet"], "\<\"HilbertSchmidtNorm\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/HilbertSchmidtNorm"], "\<\"TraceNorm\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/TraceNorm"], "\<\"Norm\"\>":>
+       Documentation`HelpLookup["paclet:ref/Norm"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/PauliPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/HilbertSchmidtProduct\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/HilbertSchmidtProduct"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+HilbertSchmidtProduct.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$94366], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/HilbertSchmidtProduct", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["HilbertSchmidtProduct", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"HilbertSchmidtProduct", "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"]}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]returns the Hilbert-Schmidt inner product (also known \
+as Frobenius inner product) of two complex matrices ",
+     Cell[BoxData[
+      StyleBox["a", "TI"]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      StyleBox["b", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->637758347],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "If ",
+ Cell[BoxData[
+  StyleBox["a", "TI"]], "InlineFormula"],
+ " is a vector, it is regarded as ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Dyad"]], "paclet:Q3/ref/Dyad"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{
+    StyleBox["a", "TI"], ",", 
+    StyleBox["a", "TI"]}], "]"}]], "InlineFormula"],
+ ", that is, ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{
+    RowBox[{"\[VerticalSeparator]", 
+     StyleBox["a", "TI"]}], "\[RightAngleBracket]"}], 
+   RowBox[{"\[LeftAngleBracket]", 
+    RowBox[{
+     StyleBox["a", "TI"], "|"}]}]}]], "InlineFormula"],
+ ". The same for ",
+ Cell[BoxData[
+  StyleBox["b", "TI"]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1552729392],
+
+Cell[TextData[{
+ "For square matrices, it is equivalent to the Frobenius inner product, i.e., \
+ ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["Tr"]], "paclet:ref/Tr"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["Dot"]], "paclet:ref/Dot"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", 
+    RowBox[{
+     RowBox[{
+      TemplateBox[{
+        Cell[
+         TextData["ConjugateTranspose"]], "paclet:ref/ConjugateTranspose"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}], "[", 
+      StyleBox["a", "TI"], "]"}], ",", 
+     StyleBox["b", "TI"]}], "]"}], "]"}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1067943069],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->713655852],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->717736069],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->200241931],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"u", "=", 
+  RowBox[{"RandomVector", "[", "3", "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1921932933],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"0.001014662139585898`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.2437254580284507`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.25653528800775716`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.5407873475182741`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.4287852761716553`"}], "+", 
+    RowBox[{"0.19196528558965698`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1489762658]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v", "=", 
+  RowBox[{"RandomVector", "[", "3", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->93577147],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "0.06675288934335377`"}], "+", 
+    RowBox[{"0.1852589399089939`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.11690860206512355`"}], "-", 
+    RowBox[{"0.47346230262945044`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.9045714060370367`"}], "+", 
+    RowBox[{"0.24310008731835708`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1508543395]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"uv", "=", 
+  RowBox[{"HilbertSchmidtProduct", "[", 
+   RowBox[{"u", ",", "v"}], "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->569259649],
+
+Cell[BoxData["0.5077341651661763`"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->151450791]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"new", "=", 
+  RowBox[{
+   RowBox[{"Abs", "[", 
+    RowBox[{
+     RowBox[{"Conjugate", "[", "u", "]"}], ".", "v"}], "]"}], "^", 
+   "2"}]}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->82431424],
+
+Cell[BoxData["0.5077341651661763`"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1127338337]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"uv", "-", "new"}], "//", "Chop"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->228026571],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->928398053]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1748448608],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matA", "=", 
+   RowBox[{"RandomMatrix", "[", "3", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"matB", "=", 
+   RowBox[{"RandomMatrix", "[", "3", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matA", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{"matB", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->7662301],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       RowBox[{"-", "0.17749909749350623`"}], "+", 
+       RowBox[{"0.9713675638363815`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.6106507386370161`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.2392686898652765`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.4592473275001723`"}], "-", 
+       RowBox[{"0.7070959019848213`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "0.03658698964126428`"}], "-", 
+       RowBox[{"0.3817258018379359`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.47247845711364356`"}], "-", 
+       RowBox[{"0.3707233180007701`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.5940463202384065`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.018905590889029433`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "0.7552182121785442`"}], "-", 
+       RowBox[{"0.83277108341542`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.005167409222436525`"}], "-", 
+       RowBox[{"0.9761915611550127`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.8313723732013809`"}], "-", 
+       RowBox[{"0.8433063856861227`", " ", "\[ImaginaryI]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->897727857],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{
+       RowBox[{"-", "0.3436339083390192`"}], "+", 
+       RowBox[{"0.2105979080279825`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.19859212488650702`"}], "+", 
+       RowBox[{"0.2597429008020029`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.313203669054563`"}], "+", 
+       RowBox[{"0.011460317619072846`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "0.5866885454055137`"}], "+", 
+       RowBox[{"0.3062647913570018`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.01896850990452137`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.5639753848630735`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.9672426897712838`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.30094440554664015`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "0.9602959052987545`"}], "+", 
+       RowBox[{"0.6318908736981106`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.7008750446531371`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.4828571475470169`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.997155769273208`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.5276757601498123`", " ", "\[ImaginaryI]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->2039472424]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"HilbertSchmidtProduct", "[", 
+  RowBox[{"matA", ",", "matB"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->493036373],
+
+Cell[BoxData[
+ RowBox[{"1.1741848091867282`", "\[VeryThinSpace]", "+", 
+  RowBox[{"1.105545240963424`", " ", "\[ImaginaryI]"}]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->374353067]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Tr", "[", 
+  RowBox[{
+   RowBox[{"Topple", "[", "matA", "]"}], ".", "matB"}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->844661251],
+
+Cell[BoxData[
+ RowBox[{"1.1741848091867282`", "\[VeryThinSpace]", "+", 
+  RowBox[{"1.105545240963424`", " ", "\[ImaginaryI]"}]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->692268607]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Inner"]], "paclet:ref/Inner"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Basis"]], "paclet:Q3/ref/Basis"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Matrix"]], "paclet:Q3/ref/Matrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["HilbertSchmidtNorm"]], "paclet:Q3/ref/HilbertSchmidtNorm"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TraceNorm"]], "paclet:Q3/ref/TraceNorm"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Norm"]], "paclet:ref/Norm"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/PauliQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/PauliPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->574466484],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Links"
+}], "RelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->1584193535],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Linear Algebra"]], "paclet:/tutorial/LinearAlgebra"},
+  "RefLink",
+  BaseStyle->"RelatedLinks"]], "RelatedLinks",
+ CellID->1719663615]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"HilbertSchmidtProduct",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 34, 18.356401}", 
+    "history" -> {"1.1", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {
+     "linear algebra", "vector space", "Hermitian product", 
+      "Frobenius inner product", "inner product"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "HilbertSchmidtProduct[a, b] returns the Hilbert-Schmidt inner product \
+(also known as Frobenius inner product) of two complex matrices a and b.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "HilbertSchmidtProduct", 
+    "titlemodifier" -> "", "windowtitle" -> "HilbertSchmidtProduct", "type" -> 
+    "Symbol", "uri" -> "Q3/ref/HilbertSchmidtProduct", "WorkflowDockedCell" -> 
+    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[8400, 260, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"08efbc05-e8f6-4afa-a7a5-ec47c70223be",
+   CellTags->"PrimaryExamplesSection",
+   CellID->713655852]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 21314, 715}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[593, 21, 4719, 115, 70, "AnchorBarGrid",ExpressionUUID->"754b8703-3919-4f1f-8f4e-107c05120e9c",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5337, 140, 178, 6, 70, "ObjectNameGrid",ExpressionUUID->"9f37d612-bb66-4bff-ad2b-6dcf1ad92e17"],
+Cell[5518, 148, 635, 19, 70, "Usage",ExpressionUUID->"2f833bf0-d6a3-474e-a66d-1cb44b8b51ea",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6190, 172, 629, 19, 70, "NotesSection",ExpressionUUID->"174dbf40-95cb-415d-a88e-b260a5264149",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->637758347],
+Cell[6822, 193, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"e4e3e655-bacf-40fa-8ae3-94201661d282"],
+Cell[6856, 195, 737, 29, 70, "Notes",ExpressionUUID->"9a667419-500b-4f9a-ad9b-b9f7f29610ed",
+ CellID->1552729392],
+Cell[7596, 226, 733, 27, 70, "Notes",ExpressionUUID->"a78282fc-7951-4df0-8784-6c6ab3263ba5",
+ CellID->1067943069],
+Cell[8332, 255, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"21c34e73-1614-4e55-ad95-1acf726e39ac"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[8400, 260, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"08efbc05-e8f6-4afa-a7a5-ec47c70223be",
+ CellTags->"PrimaryExamplesSection",
+ CellID->713655852],
+Cell[CellGroupData[{
+Cell[8692, 274, 195, 6, 70, "ExampleSection",ExpressionUUID->"1e350b90-5e29-456c-a0a4-8e56da4ba882",
+ CellID->717736069],
+Cell[8890, 282, 90, 3, 70, "Input",ExpressionUUID->"858569c2-2e0f-4056-9be7-c89c9915272f",
+ CellID->200241931],
+Cell[CellGroupData[{
+Cell[9005, 289, 132, 4, 70, "Input",ExpressionUUID->"06e83479-605f-4799-bee7-01cd478c711c",
+ CellID->1921932933],
+Cell[9140, 295, 485, 12, 70, "Output",ExpressionUUID->"bd0a4d50-2cf9-4108-9e22-a3e419c7b9db",
+ CellID->1489762658]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9662, 312, 130, 4, 70, "Input",ExpressionUUID->"41de0c10-6c49-46d9-add4-7872c8050bba",
+ CellID->93577147],
+Cell[9795, 318, 485, 14, 70, "Output",ExpressionUUID->"9c8339e5-fa01-4267-a9ea-9419cfe362ee",
+ CellID->1508543395]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10317, 337, 165, 5, 70, "Input",ExpressionUUID->"98ad57fb-c81a-422b-bf28-537ffd767d9e",
+ CellID->569259649],
+Cell[10485, 344, 89, 2, 70, "Output",ExpressionUUID->"1a66904e-5c4d-42dc-b8a1-395202cf5c7a",
+ CellID->151450791]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10611, 351, 215, 8, 70, "Input",ExpressionUUID->"390a1436-b52e-4166-89fb-20ae79fb2a78",
+ CellID->82431424],
+Cell[10829, 361, 90, 2, 70, "Output",ExpressionUUID->"4c7920e4-48e6-40c8-9c9f-0d1df7bc76a2",
+ CellID->1127338337]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10956, 368, 122, 4, 70, "Input",ExpressionUUID->"e1a0cba8-7939-4053-aa57-b9eeb18eb81b",
+ CellID->228026571],
+Cell[11081, 374, 71, 2, 70, "Output",ExpressionUUID->"abc19337-c864-4c5d-a97a-da8d7ea37aaf",
+ CellID->928398053]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11189, 381, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"55568a6b-6c1e-48fa-9b73-53a3b651589b",
+ CellID->1748448608],
+Cell[CellGroupData[{
+Cell[11340, 388, 390, 10, 70, "Input",ExpressionUUID->"548cd913-d2b0-447b-86f7-5d6d877150f0",
+ CellID->7662301],
+Cell[11733, 400, 1702, 43, 70, "Output",ExpressionUUID->"e697c9a4-defd-4162-b808-1b8df5d61585",
+ CellID->897727857],
+Cell[13438, 445, 1695, 41, 70, "Output",ExpressionUUID->"e6d69993-aec5-41c5-81e8-7a52d1944283",
+ CellID->2039472424]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15170, 491, 146, 4, 70, "Input",ExpressionUUID->"faa65117-796d-4203-b5f4-4e10818c649c",
+ CellID->493036373],
+Cell[15319, 497, 183, 4, 70, "Output",ExpressionUUID->"4bec4e81-e1b0-4a4f-88c3-9f5bfdf72aa5",
+ CellID->374353067]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15539, 506, 161, 5, 70, "Input",ExpressionUUID->"50ad04ae-dd41-4f2d-b1e8-7d7ee08bed88",
+ CellID->844661251],
+Cell[15703, 513, 183, 4, 70, "Output",ExpressionUUID->"ae46420d-5087-483d-9716-2f0a1f7b4846",
+ CellID->692268607]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[15925, 522, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"db92c8fb-b925-4738-8508-9be69cbf5ee4"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15993, 527, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"a54da2f1-9f27-442c-9307-9d3f8938e799",
+ CellID->1255426704],
+Cell[16146, 536, 1764, 58, 70, "SeeAlso",ExpressionUUID->"d0dc6841-a3bf-4543-a9f5-39ed384dd208",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17947, 599, 152, 7, 70, "TutorialsSection",ExpressionUUID->"c322db63-bb90-49a5-8f87-8618da56e69a",
+ CellID->250839057],
+Cell[18102, 608, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"70a05f11-f4c1-4680-95a6-59603a19ab0b"],
+Cell[18136, 610, 187, 6, 70, "Tutorials",ExpressionUUID->"b23eaed6-cf26-4a04-b8d4-fd3ac684465d",
+ CellID->341631938],
+Cell[18326, 618, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"c5302a78-63e7-4193-9092-ace4686e6ff5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18394, 623, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"9a86203a-2c0b-4baf-9fb4-8fe628f9a084",
+ CellID->38303248],
+Cell[18553, 632, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"0fb0837d-b713-4eac-98d3-c4777a40e4e2"],
+Cell[18587, 634, 187, 6, 70, "MoreAbout",ExpressionUUID->"13343152-c740-4382-8b2d-249984ed8b35",
+ CellID->574466484],
+Cell[18777, 642, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"072a0a55-47dd-4dd5-8c33-3c403d26eb92"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18845, 647, 160, 7, 70, "RelatedLinksSection",ExpressionUUID->"41eb2215-34f8-44d1-8f67-144b00e3d5cb",
+ CellID->1584193535],
+Cell[19008, 656, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"f4ca2bd2-0ec7-4c66-985a-0c8429b521ee"],
+Cell[19042, 658, 186, 6, 70, "RelatedLinks",ExpressionUUID->"d4c1ecf5-6a0e-4ee2-aeb4-e40e3aa38046",
+ CellID->1719663615]
+}, Open  ]],
+Cell[19243, 667, 23, 0, 70, "FooterCell",ExpressionUUID->"ec79d4fe-ade0-4f69-b1b9-c128c9dc00f6"]
+}
+]
+*)
+
+(* End of internal cache information *)

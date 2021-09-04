@@ -1,0 +1,1088 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     32168,       1079]
+NotebookOptionsPosition[     23419,        883]
+NotebookOutlinePosition[     25540,        938]
+CellTagsIndexPosition[     25455,        933]
+WindowTitle->QuantumLog
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"WeightedLog\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/WeightedLog"], "\<\"ShannonEntropy\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/ShannonEntropy"], "\<\"VonNeumannEntropy\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/VonNeumannEntropy"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/QuantumLog\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/QuantumLog"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/QuantumLog.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$140818], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/QuantumLog", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell["QuantumLog", "ObjectName"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]]],
+     Cell[BoxData[""], "ObjectNameTranslation"]
+    }]], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        GraphicsBox[InsetBox[
+          StyleBox["\<\"NEW IN ??\"\>",
+           StripOnInput->False,
+           FontFamily->"Source Sans Pro",
+           FontSize->18,
+           FontWeight->"Bold",
+           FontSlant->"Italic",
+           FontColor->RGBColor[0.968627, 0.466667, 0]], {0, 0}],
+         AxesStyle->Large,
+         FrameStyle->Large,
+         ImageSize->{120, 24},
+         PlotRangePadding->Scaled[0.025]],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewIn10Graphic",
+       StripOnInput->False],
+      "New in 11",
+      TooltipDelay->0.3]],
+     Magnification->1]}
+  }]], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["QuantumLog"]], "paclet:Q3/ref/QuantumLog"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["p", "TI"], ",", 
+        StyleBox["q", "TI"]}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]returns ",
+     Cell[BoxData[
+      RowBox[{"-", 
+       RowBox[{
+        TemplateBox[{
+          Cell[
+           TextData["Tr"]], "paclet:ref/Tr"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}], "[", 
+        RowBox[{
+         StyleBox["p", "TI"], " ", "**", " ", 
+         RowBox[{
+          TemplateBox[{
+            Cell[
+             TextData["Log"]], "paclet:ref/Log"},
+           "RefLink",
+           BaseStyle->{"InlineFormula"}], "[", 
+          RowBox[{"2", ",", " ", 
+           StyleBox["q", "TI"]}], "]"}]}], "]"}]}]], "InlineFormula"],
+     " for the observables ",
+     Cell[BoxData[
+      StyleBox["p", "TI"]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      StyleBox["q", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->386687074]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->260662532],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuantumLog"]], "paclet:Q3/ref/QuantumLog"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " is intended for mixed states and is a quantum version of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WeightedLog"]], "paclet:Q3/ref/WeightedLog"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " for classical probabilities."
+}], "Notes",
+ CellID->659328335],
+
+Cell[TextData[{
+ "It is understood that ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["QuantumLog"]], "paclet:Q3/ref/QuantumLog"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", 
+    RowBox[{
+     StyleBox["p", "TI"], ",", 
+     StyleBox["q", "TI"]}], "]"}], "=", "\[Infinity]"}]], "InlineFormula"],
+ " when the support of ",
+ Cell[BoxData[
+  StyleBox["p", "TI"]], "InlineFormula"],
+ " has a finite intersection with the null space of ",
+ Cell[BoxData[
+  StyleBox["q", "TI"]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->764136896]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->88535444],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1956523584],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->568566390],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"a", "=", 
+  RowBox[{"Normalize", "[", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "I"}], "}"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"b", "=", 
+  RowBox[{"Normalize", "[", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1"}], "}"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"aa", "=", 
+  RowBox[{"Dyad", "[", "a", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"bb", "=", 
+  RowBox[{"Dyad", "[", "b", "]"}]}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1966752814],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", 
+    SqrtBox["2"]], ",", 
+   FractionBox["\[ImaginaryI]", 
+    SqrtBox["2"]]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->739885207],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", 
+    SqrtBox["2"]], ",", 
+   FractionBox["1", 
+    SqrtBox["2"]]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1320357919],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "2"], ",", 
+     RowBox[{"-", 
+      FractionBox["\[ImaginaryI]", "2"]}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["\[ImaginaryI]", "2"], ",", 
+     FractionBox["1", "2"]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1307020182],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "2"], ",", 
+     FractionBox["1", "2"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", "2"], ",", 
+     FractionBox["1", "2"]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->477973711]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QuantumLog", "[", 
+  RowBox[{"aa", ",", "aa"}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1386641625],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1213569979]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QuantumLog", "[", 
+  RowBox[{"aa", ",", "bb"}], "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1932037983],
+
+Cell[BoxData["\[Infinity]"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->253777195]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QuantumLog", "[", 
+  RowBox[{"aa", ",", "b"}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1746455638],
+
+Cell[BoxData["\[Infinity]"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->211225125]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QuantumLog", "[", 
+  RowBox[{"a", ",", "bb"}], "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1368352394],
+
+Cell[BoxData["\[Infinity]"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->683522828]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QuantumLog", "[", 
+  RowBox[{"a", ",", "b"}], "]"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1304657179],
+
+Cell[BoxData["\[Infinity]"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->251470789]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1200765697],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"v", "=", 
+  RowBox[{"Normalize", "@", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", 
+     RowBox[{"-", "1"}], ",", 
+     RowBox[{"3", "I"}], ",", "2"}], "}"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"w", "=", 
+  RowBox[{"Normalize", "@", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "I", ",", "I", ",", "0"}], "}"}]}]}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1520823006],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", 
+    SqrtBox["15"]], ",", 
+   RowBox[{"-", 
+    FractionBox["1", 
+     SqrtBox["15"]]}], ",", 
+   RowBox[{"\[ImaginaryI]", " ", 
+    SqrtBox[
+     FractionBox["3", "5"]]}], ",", 
+   FractionBox["2", 
+    SqrtBox["15"]]}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->301929906],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", 
+    SqrtBox["3"]], ",", 
+   FractionBox["\[ImaginaryI]", 
+    SqrtBox["3"]], ",", 
+   FractionBox["\[ImaginaryI]", 
+    SqrtBox["3"]], ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->32072281]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"rho", "=", 
+   RowBox[{"PartialTrace", "[", 
+    RowBox[{"v", ",", 
+     RowBox[{"{", "2", "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"rho", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->38375540],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["2", "15"], 
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["2", "15"]}], "-", 
+       FractionBox["\[ImaginaryI]", "5"]}]},
+     {
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox["2", "15"]}], "+", 
+       FractionBox["\[ImaginaryI]", "5"]}], 
+      FractionBox["13", "15"]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->1172261510]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"sig", "=", 
+   RowBox[{"PartialTrace", "[", 
+    RowBox[{"w", ",", 
+     RowBox[{"{", "2", "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"sig", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1874659103],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["2", "3"], 
+      RowBox[{"-", 
+       FractionBox["\[ImaginaryI]", "3"]}]},
+     {
+      FractionBox["\[ImaginaryI]", "3"], 
+      FractionBox["1", "3"]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->445211978]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"TraceDistance", "[", 
+   RowBox[{"rho", ",", "sig"}], "]"}], "//", "N"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1605349539],
+
+Cell[BoxData["0.5656854249492381`"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1249550855]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"val", "=", 
+  RowBox[{
+   RowBox[{"QuantumLog", "[", 
+    RowBox[{"rho", ",", "sig"}], "]"}], "//", 
+   "Simplify"}]}], "\[IndentingNewLine]", 
+ RowBox[{"val", "//", "N"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->760007620],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"-", "75"}], "+", 
+      SqrtBox["5"]}], ")"}], " ", 
+    RowBox[{"Log", "[", 
+     RowBox[{
+      FractionBox["1", "6"], " ", 
+      RowBox[{"(", 
+       RowBox[{"3", "-", 
+        SqrtBox["5"]}], ")"}]}], "]"}]}], "-", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"75", "+", 
+      SqrtBox["5"]}], ")"}], " ", 
+    RowBox[{"Log", "[", 
+     RowBox[{
+      FractionBox["1", "6"], " ", 
+      RowBox[{"(", 
+       RowBox[{"3", "+", 
+        SqrtBox["5"]}], ")"}]}], "]"}]}]}], 
+  RowBox[{"150", " ", 
+   RowBox[{"Log", "[", "2", "]"}]}]]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->52321371],
+
+Cell[BoxData["1.5435659110756204`"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1044470774]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1410425446],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1540572943],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"v", "=", 
+   RowBox[{"ExpressionFor", "[", 
+    RowBox[{
+     RowBox[{"Normalize", "@", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", 
+        RowBox[{"-", "1"}], ",", 
+        RowBox[{"3", "I"}], ",", "2"}], "}"}]}], ",", 
+     RowBox[{"S", "@", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "2"}], "}"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"w", "=", 
+   RowBox[{"ExpressionFor", "[", 
+    RowBox[{
+     RowBox[{"Normalize", "@", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "I", ",", "I", ",", "0"}], "}"}]}], ",", 
+     RowBox[{"S", "@", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "2"}], "}"}]}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"v", "//", "LogicalForm"}], "\[IndentingNewLine]", 
+ RowBox[{"w", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->397125546],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"], 
+   SqrtBox["15"]], "-", 
+  FractionBox[
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"], 
+   SqrtBox["15"]], "+", 
+  RowBox[{"\[ImaginaryI]", " ", 
+   SqrtBox[
+    FractionBox["3", "5"]], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  FractionBox[
+   RowBox[{"2", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox["1", 
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"]]], 
+         SubscriptBox["1", 
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+     "Ket"]}], 
+   SqrtBox["15"]]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->608544108],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"], 
+   SqrtBox["3"]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox["0", 
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"]]], 
+         SubscriptBox["1", 
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+     "Ket"]}], 
+   SqrtBox["3"]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TagBox[
+       TemplateBox[{
+         SubscriptBox["1", 
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"]]], 
+         SubscriptBox["0", 
+          SubscriptBox[
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+     "Ket"]}], 
+   SqrtBox["3"]]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1483696142]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"rho", "=", 
+  RowBox[{
+   RowBox[{"PartialTrace", "[", 
+    RowBox[{"v", ",", 
+     RowBox[{"S", "[", "2", "]"}]}], "]"}], "//", 
+   "Elaborate"}]}], "\[IndentingNewLine]", 
+ RowBox[{"sig", "=", 
+  RowBox[{
+   RowBox[{"PartialTrace", "[", 
+    RowBox[{"w", ",", 
+     RowBox[{"S", "[", "2", "]"}]}], "]"}], "//", "Elaborate"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1062214003],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", "2"], "-", 
+  FractionBox[
+   RowBox[{"2", " ", 
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"x\""}, "RowDefault"]},
+     "Subsuperscript"]}], "15"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"], "5"], "-", 
+  FractionBox[
+   RowBox[{"11", " ", 
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Subsuperscript"]}], "30"]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1950526701],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", "2"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"y\""}, "RowDefault"]},
+    "Subsuperscript"], "3"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "6"]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1164392252]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"QuantumLog", "[", 
+   RowBox[{"rho", ",", "sig"}], "]"}], "//", "N"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->771204841],
+
+Cell[BoxData["1.5435659110756201`"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1024604760]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->16425455],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WeightedLog"]], "paclet:Q3/ref/WeightedLog"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["ShannonEntropy"]], "paclet:Q3/ref/ShannonEntropy"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["VonNeumannEntropy"]], "paclet:Q3/ref/VonNeumannEntropy"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->1184715369]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"QuantumLog",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 39, 11.046474}", 
+    "history" -> {"??", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"quantum relative entropy"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "QuantumLog[p, q] returns -Tr[p ** Log[2, q]] for the observables p and \
+q.", "synonyms" -> {}, "tabletags" -> {}, "title" -> "QuantumLog", 
+    "titlemodifier" -> "", "windowtitle" -> "QuantumLog", "type" -> "Symbol", 
+    "uri" -> "Q3/ref/QuantumLog", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7742, 248, 266, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"84030f41-a435-438b-ac54-689ad8e56ffa",
+   CellTags->"PrimaryExamplesSection",
+   CellID->88535444]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 25258, 926}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[582, 21, 3185, 78, 70, "AnchorBarGrid",ExpressionUUID->"cb699348-f3cc-4ed6-99f5-de669dfea101",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3792, 103, 884, 29, 70, "ObjectNameGrid",ExpressionUUID->"21845c30-e2c1-44f5-ba45-1e229f01d3c2"],
+Cell[4679, 134, 1253, 42, 70, "Usage",ExpressionUUID->"e72e6cd0-e7ee-4c19-80b6-644b3bff81da",
+ CellID->386687074]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5969, 181, 629, 19, 70, "NotesSection",ExpressionUUID->"a3267017-9bd4-4b47-9810-92149c8f4581",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->260662532],
+Cell[6601, 202, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6ad5c91f-811e-430a-8d91-d44f4fd525cf"],
+Cell[6635, 204, 484, 16, 70, "Notes",ExpressionUUID->"e5ce9dc3-1a71-4132-9b4a-3a4599f16b1c",
+ CellID->659328335],
+Cell[7122, 222, 583, 21, 70, "Notes",ExpressionUUID->"377b4b20-3aaf-4b4c-8521-525ae9ac9cf2",
+ CellID->764136896]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7742, 248, 266, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"84030f41-a435-438b-ac54-689ad8e56ffa",
+ CellTags->"PrimaryExamplesSection",
+ CellID->88535444],
+Cell[CellGroupData[{
+Cell[8033, 262, 196, 6, 70, "ExampleSection",ExpressionUUID->"3a956db7-a69c-4d08-9787-a98a44554854",
+ CellID->1956523584],
+Cell[8232, 270, 90, 3, 70, "Input",ExpressionUUID->"497d6627-be2c-4e3b-b56b-e8696f3f6a25",
+ CellID->568566390],
+Cell[CellGroupData[{
+Cell[8347, 277, 479, 14, 70, "Input",ExpressionUUID->"3dab7b2e-2a82-494b-bbab-141cfcd1ab60",
+ CellID->1966752814],
+Cell[8829, 293, 200, 8, 70, "Output",ExpressionUUID->"e5880192-1087-42fa-80a7-f24c1f8b9ab0",
+ CellID->739885207],
+Cell[9032, 303, 189, 8, 70, "Output",ExpressionUUID->"3c723cb6-b24b-4bf1-8f2c-ad37504a221e",
+ CellID->1320357919],
+Cell[9224, 313, 357, 13, 70, "Output",ExpressionUUID->"23d38084-531b-4ef5-904b-10a8438ef038",
+ CellID->1307020182],
+Cell[9584, 328, 310, 12, 70, "Output",ExpressionUUID->"7ed7d20a-f8c9-460e-ad23-14441e7edf0b",
+ CellID->477973711]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9931, 345, 132, 4, 70, "Input",ExpressionUUID->"40a8f0d7-029d-4206-a9b7-67d390e05eab",
+ CellID->1386641625],
+Cell[10066, 351, 72, 2, 70, "Output",ExpressionUUID->"ed83003f-7391-4e6b-addc-47e28185c2f2",
+ CellID->1213569979]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10175, 358, 132, 4, 70, "Input",ExpressionUUID->"f1b8997c-2eaa-4658-aa5a-bfde2982db38",
+ CellID->1932037983],
+Cell[10310, 364, 81, 2, 70, "Output",ExpressionUUID->"540de91a-9ff7-4123-90e7-32ef9033f593",
+ CellID->253777195]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10428, 371, 131, 4, 70, "Input",ExpressionUUID->"394467bb-d8f8-47de-b9c9-e7bfe1852e59",
+ CellID->1746455638],
+Cell[10562, 377, 81, 2, 70, "Output",ExpressionUUID->"eb3e8fa4-833c-4832-996c-4a2528c41279",
+ CellID->211225125]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10680, 384, 131, 4, 70, "Input",ExpressionUUID->"d1f0219b-6832-47c1-bc81-ab72a498fd40",
+ CellID->1368352394],
+Cell[10814, 390, 81, 2, 70, "Output",ExpressionUUID->"9e180c54-a25e-4da9-8421-9b0f5526d6da",
+ CellID->683522828]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10932, 397, 130, 4, 70, "Input",ExpressionUUID->"9e249f0c-5bdd-48bd-aec0-4eda6a08b2f3",
+ CellID->1304657179],
+Cell[11065, 403, 81, 2, 70, "Output",ExpressionUUID->"cb92a9ab-dd72-4b88-b9cf-c8734832ef63",
+ CellID->251470789]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11183, 410, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"6bb4e650-810e-4fd1-9aea-d35baaa707f8",
+ CellID->1200765697],
+Cell[CellGroupData[{
+Cell[11334, 417, 387, 12, 70, "Input",ExpressionUUID->"fb0d3d13-2315-4b1a-93aa-ba8184be3532",
+ CellID->1520823006],
+Cell[11724, 431, 342, 14, 70, "Output",ExpressionUUID->"d03fc414-0d21-489e-b4f0-cfe4678cce03",
+ CellID->301929906],
+Cell[12069, 447, 267, 10, 70, "Output",ExpressionUUID->"b06b8c96-a27e-4c1a-8966-d582d47a84f8",
+ CellID->32072281]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12373, 462, 266, 8, 70, "Input",ExpressionUUID->"b8982438-922f-43df-87d6-156cf2c41923",
+ CellID->38375540],
+Cell[12642, 472, 823, 27, 70, "Output",ExpressionUUID->"5b110d8c-6bb1-4fc2-917d-5d3254085566",
+ CellID->1172261510]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13502, 504, 268, 8, 70, "Input",ExpressionUUID->"2bb1fc85-301c-43eb-9258-e42615b4da7b",
+ CellID->1874659103],
+Cell[13773, 514, 684, 22, 70, "Output",ExpressionUUID->"ec64e429-d28a-41ae-be9d-9bd272b54898",
+ CellID->445211978]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14494, 541, 162, 5, 70, "Input",ExpressionUUID->"e38a82ed-26a2-450f-a385-73a67bb90a3e",
+ CellID->1605349539],
+Cell[14659, 548, 90, 2, 70, "Output",ExpressionUUID->"5f466033-d483-4444-b94e-5b7d2240f2a7",
+ CellID->1249550855]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14786, 555, 251, 8, 70, "Input",ExpressionUUID->"0c7736ba-2c70-4c3e-b5a3-128bcc3eed9e",
+ CellID->760007620],
+Cell[15040, 565, 687, 27, 70, "Output",ExpressionUUID->"a084f34a-f1fc-42a9-b1a3-32d79590a5be",
+ CellID->52321371],
+Cell[15730, 594, 90, 2, 70, "Output",ExpressionUUID->"b0da6036-b8ec-452e-88be-5016958147ee",
+ CellID->1044470774]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15869, 602, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"990c7afb-4d58-42ba-ba7c-970f623f0d3f",
+ CellID->1410425446],
+Cell[15998, 607, 127, 4, 70, "Input",ExpressionUUID->"b597760b-6bc3-47a3-abf8-e11084bbad32",
+ CellID->1540572943],
+Cell[CellGroupData[{
+Cell[16150, 615, 868, 28, 70, "Input",ExpressionUUID->"68050bc2-3f0c-4f06-ac8c-3e942011edeb",
+ CellID->397125546],
+Cell[17021, 645, 1823, 61, 70, "Output",ExpressionUUID->"a360c7ed-8c0d-4672-9f54-03b53ffa4281",
+ CellID->608544108],
+Cell[18847, 708, 1418, 47, 70, "Output",ExpressionUUID->"398e8cf4-5847-4c5a-a39f-223c76081a93",
+ CellID->1483696142]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20302, 760, 409, 13, 70, "Input",ExpressionUUID->"88fda0c6-fb5c-4210-ba15-42e451df172a",
+ CellID->1062214003],
+Cell[20714, 775, 739, 24, 70, "Output",ExpressionUUID->"745e6cb6-acf3-409b-9ccd-35ea7012ff48",
+ CellID->1950526701],
+Cell[21456, 801, 487, 16, 70, "Output",ExpressionUUID->"3ef0aba0-dc4e-4917-9cf2-6555a99820ce",
+ CellID->1164392252]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21980, 822, 158, 5, 70, "Input",ExpressionUUID->"75873f5a-8859-4293-8792-ad51d31a3135",
+ CellID->771204841],
+Cell[22141, 829, 90, 2, 70, "Output",ExpressionUUID->"1558a557-0fbf-40c0-a7a7-513063411212",
+ CellID->1024604760]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[22270, 836, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"19d5170b-e5d0-4924-97da-70bdf2fa0464"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22338, 841, 148, 7, 70, "SeeAlsoSection",ExpressionUUID->"886dd27e-0ded-446c-a2d4-93211c6bcd18",
+ CellID->16425455],
+Cell[22489, 850, 888, 28, 70, "SeeAlso",ExpressionUUID->"438f7058-0352-4df4-b716-644153643972",
+ CellID->1184715369]
+}, Open  ]],
+Cell[23392, 881, 23, 0, 70, "FooterCell",ExpressionUUID->"14e09ee0-57ff-4191-b5f8-1958cab82308"]
+}
+]
+*)
+
+(* End of internal cache information *)

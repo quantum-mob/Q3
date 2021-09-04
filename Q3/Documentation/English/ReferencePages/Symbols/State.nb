@@ -1,0 +1,818 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     25515,        809]
+NotebookOptionsPosition[     19525,        680]
+NotebookOutlinePosition[     21963,        740]
+CellTagsIndexPosition[     21878,        735]
+WindowTitle->State
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/PauliQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Ket\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Ket"], "\<\"Bra\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Bra"], "\<\"BraKet\"\>":>Documentation`HelpLookup[
+       "paclet:ref/BraKet"], "\<\"Operator\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Operator"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/PauliPackageGuide"], "\<\"Q3 Application\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/State\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/State"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/State.html"], 
+                StandardForm]], "Input", TextClipboardType -> "PlainText"]}, 
+            Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$173074], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/State", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["State", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"State", "[", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", " ", 
+         StyleBox["\[Theta]", "TR"], ",", " ", 
+         StyleBox["\[Phi]", "TR"]}], "}"}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the eigenvectors of ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Pauli"]], "paclet:Q3/ref/Pauli"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", "3", "]"}]], "InlineFormula"],
+     " in the (\[Theta], \[Phi])-rotated frame. "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"State", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["1", "TR"]], ",", " ", 
+          SubscriptBox[
+           StyleBox["\[Theta]", "TR"], 
+           StyleBox["1", "TR"]], ",", " ", 
+          SubscriptBox[
+           StyleBox["\[Phi]", "TR"], 
+           StyleBox["1", "TR"]]}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["2", "TR"]], ",", " ", 
+          SubscriptBox[
+           StyleBox["\[Theta]", "TR"], 
+           StyleBox["2", "TR"]], ",", " ", 
+          SubscriptBox[
+           StyleBox["\[Phi]", "TR"], 
+           StyleBox["2", "TR"]]}], "}"}], ",", "  ", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the tensor product ",
+     Cell[BoxData[
+      RowBox[{"State", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox[
+          StyleBox["s", "TI"], 
+          StyleBox["1", "TR"]], ",", " ", 
+         SubscriptBox[
+          StyleBox["\[Theta]", "TR"], 
+          StyleBox["1", "TR"]], ",", " ", 
+         SubscriptBox[
+          StyleBox["\[Phi]", "TR"], 
+          StyleBox["1", "TR"]]}], "}"}], "]"}]], "InlineFormula"],
+     "\[CircleTimes] ",
+     Cell[BoxData[
+      RowBox[{"State", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["2", "TR"]], ",", " ", 
+          SubscriptBox[
+           StyleBox["\[Theta]", "TR"], 
+           StyleBox["2", "TR"]], ",", " ", 
+          SubscriptBox[
+           StyleBox["\[Phi]", "TR"], 
+           StyleBox["2", "TR"]]}], "}"}], ",", "  ", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "\[CircleTimes].... "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"State", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox[
+            StyleBox["s", "TI"], 
+            StyleBox["1", "TR"]], ",", " ", 
+           SubscriptBox[
+            StyleBox["s", "TI"], 
+            StyleBox["2", "TR"]], ",", "  ", 
+           StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", " ", 
+         StyleBox["\[Theta]", "TR"], ",", " ", 
+         StyleBox["\[Phi]", "TR"]}], "}"}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]= ",
+     Cell[BoxData[
+      RowBox[{"State", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["1", "TR"]], ",", " ", 
+          StyleBox["\[Theta]", "TR"], ",", " ", 
+          StyleBox["\[Phi]", "TR"]}], "}"}], ",", " ", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["2", "TR"]], ",", " ", 
+          StyleBox["\[Theta]", "TR"], ",", " ", 
+          StyleBox["\[Phi]", "TR"]}], "}"}], ",", "  ", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->731796015],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->656777736],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->815632943],
+
+Cell["In the rotated frame", "ExampleText",
+ CellID->1792660949],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "\[Theta]", ",", "\[Phi]"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->2052133286],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"v", "=", 
+  RowBox[{"State", "[", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"q", "=", 
+  RowBox[{"Operator", "[", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1616766982],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{"-", 
+     FractionBox[
+      RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}], "2"]}]], " ", 
+   RowBox[{"Cos", "[", 
+    FractionBox["\[Theta]", "2"], "]"}], " ", 
+   TemplateBox[{"0"},
+    "Ket"]}], "+", 
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    FractionBox[
+     RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}], "2"]], " ", 
+   TemplateBox[{"1"},
+    "Ket"], " ", 
+   RowBox[{"Sin", "[", 
+    FractionBox["\[Theta]", "2"], "]"}]}]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->892080983],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+   TagBox[
+    SuperscriptBox["\[Sigma]", "z"],
+    DisplayForm]}], "+", 
+  RowBox[{
+   RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+   TagBox[
+    SuperscriptBox["\[Sigma]", "x"],
+    DisplayForm], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+  RowBox[{
+   TagBox[
+    SuperscriptBox["\[Sigma]", "y"],
+    DisplayForm], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+   RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1621741574]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"State", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"0", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "\[Theta]", ",", "\[Phi]"}], "}"}]}], "]"}], "//", 
+  "Expand"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->748186494],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SuperscriptBox[
+    RowBox[{"Cos", "[", 
+     FractionBox["\[Theta]", "2"], "]"}], "2"], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "1"}]},
+    "Ket"]}], "-", 
+  RowBox[{
+   TemplateBox[{
+     RowBox[{"1", ",", "0"}]},
+    "Ket"], " ", 
+   SuperscriptBox[
+    RowBox[{"Sin", "[", 
+     FractionBox["\[Theta]", "2"], "]"}], "2"]}], "-", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+     RowBox[{"-", "\[ImaginaryI]"}], " ", "\[Phi]"}]], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "0"}]},
+    "Ket"], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}]], " ", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1"}]},
+    "Ket"], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1253651473]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CircleTimes", "[", 
+  RowBox[{
+   RowBox[{"State", "[", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}], ",", 
+   RowBox[{"State", "[", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}]}], 
+  "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1158245994],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SuperscriptBox[
+    RowBox[{"Cos", "[", 
+     FractionBox["\[Theta]", "2"], "]"}], "2"], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "1"}]},
+    "Ket"]}], "-", 
+  RowBox[{
+   TemplateBox[{
+     RowBox[{"1", ",", "0"}]},
+    "Ket"], " ", 
+   SuperscriptBox[
+    RowBox[{"Sin", "[", 
+     FractionBox["\[Theta]", "2"], "]"}], "2"]}], "-", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{
+     RowBox[{"-", "\[ImaginaryI]"}], " ", "\[Phi]"}]], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "0"}]},
+    "Ket"], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}]], " ", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1"}]},
+    "Ket"], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}]}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1848644750]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v", "=", 
+  RowBox[{"State", "[", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1", ",", "1"}], "}"}], ",", "\[Theta]", ",", 
+     "\[Phi]"}], "}"}], "]"}]}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->378908454],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    FractionBox[
+     RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}], "2"]], " ", 
+   SuperscriptBox[
+    RowBox[{"Cos", "[", 
+     FractionBox["\[Theta]", "2"], "]"}], "3"], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "1", ",", "1"}]},
+    "Ket"]}], "+", 
+  RowBox[{
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{"-", 
+     FractionBox[
+      RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}], "2"]}]], " ", 
+   TemplateBox[{
+     RowBox[{"1", ",", "0", ",", "0"}]},
+    "Ket"], " ", 
+   SuperscriptBox[
+    RowBox[{"Sin", "[", 
+     FractionBox["\[Theta]", "2"], "]"}], "3"]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{"-", 
+     FractionBox[
+      RowBox[{"3", " ", "\[ImaginaryI]", " ", "\[Phi]"}], "2"]}]], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "0", ",", "0"}]},
+    "Ket"], " ", 
+   RowBox[{"Sin", "[", 
+    FractionBox["\[Theta]", "2"], "]"}], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    FractionBox[
+     RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}], "2"]], " ", 
+   TemplateBox[{
+     RowBox[{"1", ",", "0", ",", "1"}]},
+    "Ket"], " ", 
+   RowBox[{"Sin", "[", 
+    FractionBox["\[Theta]", "2"], "]"}], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    FractionBox[
+     RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}], "2"]], " ", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1", ",", "0"}]},
+    "Ket"], " ", 
+   RowBox[{"Sin", "[", 
+    FractionBox["\[Theta]", "2"], "]"}], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{"-", 
+     FractionBox[
+      RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}], "2"]}]], " ", 
+   RowBox[{"Csc", "[", 
+    FractionBox["\[Theta]", "2"], "]"}], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "0", ",", "1"}]},
+    "Ket"], " ", 
+   SuperscriptBox[
+    RowBox[{"Sin", "[", "\[Theta]", "]"}], "2"]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    RowBox[{"-", 
+     FractionBox[
+      RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}], "2"]}]], " ", 
+   RowBox[{"Csc", "[", 
+    FractionBox["\[Theta]", "2"], "]"}], " ", 
+   TemplateBox[{
+     RowBox[{"0", ",", "1", ",", "0"}]},
+    "Ket"], " ", 
+   SuperscriptBox[
+    RowBox[{"Sin", "[", "\[Theta]", "]"}], "2"]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   SuperscriptBox["\[ExponentialE]", 
+    FractionBox[
+     RowBox[{"3", " ", "\[ImaginaryI]", " ", "\[Phi]"}], "2"]], " ", 
+   RowBox[{"Csc", "[", 
+    FractionBox["\[Theta]", "2"], "]"}], " ", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1", ",", "1"}]},
+    "Ket"], " ", 
+   SuperscriptBox[
+    RowBox[{"Sin", "[", "\[Theta]", "]"}], "2"]}]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1025373023]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Ket"]], "paclet:Q3/ref/Ket"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Bra"]], "paclet:Q3/ref/Bra"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Operator"]], "paclet:Q3/ref/Operator"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/PauliQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package"]], "paclet:Q3/guide/PauliPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->397463372],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1492751034]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"State",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 42, 5.414656}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "State[{0, \\[Theta], \\[Phi]}] returns the eigenvectors of Pauli[3] in \
+the (\\[Theta], \\[Phi])-rotated frame. State[{s1, \\[Theta]1, \\[Phi]1}, \
+{s2, \\[Theta]2, \\[Phi]2}, \\ ...] returns the tensor product State[{s1, \
+\\[Theta]1, \\[Phi]1}]\\[CircleTimes] State[{s2, \\[Theta]2, \\[Phi]2}, \
+...]\\[CircleTimes].... State[{{s1, s2, ...}, \\[Theta], \\[Phi]}] = \
+State[{s1, \\[Theta], \\[Phi]}, {s2, \\[Theta], \\[Phi]}, ...].", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "State", "titlemodifier" -> 
+    "", "windowtitle" -> "State", "type" -> "Symbol", "uri" -> "Q3/ref/State",
+     "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "NewStyles" -> 
+  False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[9125, 267, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"7bc39fc2-3744-49a5-9031-12a4525d5600",
+   CellTags->"PrimaryExamplesSection",
+   CellID->731796015]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 21680, 728}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[577, 21, 4493, 113, 70, "AnchorBarGrid",ExpressionUUID->"1f773000-13bc-4f6b-b92c-c950bf1a5d84",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5095, 138, 162, 6, 70, "ObjectNameGrid",ExpressionUUID->"acdf11ec-8929-465f-ad86-d108a6fa4376"],
+Cell[5260, 146, 3828, 116, 70, "Usage",ExpressionUUID->"04d482f4-63ab-4e13-8364-9f5535d7ecab"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9125, 267, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"7bc39fc2-3744-49a5-9031-12a4525d5600",
+ CellTags->"PrimaryExamplesSection",
+ CellID->731796015],
+Cell[CellGroupData[{
+Cell[9417, 281, 195, 6, 70, "ExampleSection",ExpressionUUID->"7a45afa7-cae0-4d4d-9093-6a70fb0dae05",
+ CellID->656777736],
+Cell[9615, 289, 90, 3, 70, "Input",ExpressionUUID->"18cc6685-117a-4ed7-b659-1bafd6325d7d",
+ CellID->815632943],
+Cell[9708, 294, 64, 1, 70, "ExampleText",ExpressionUUID->"e1b88d8f-7440-4e64-8f57-458ee6cd18f6",
+ CellID->1792660949],
+Cell[9775, 297, 148, 4, 70, "Input",ExpressionUUID->"09cc26ca-94e6-490f-8853-c8a5596a4ae5",
+ CellID->2052133286],
+Cell[CellGroupData[{
+Cell[9948, 305, 358, 11, 70, "Input",ExpressionUUID->"a3d1a0a0-85a1-4b67-8c3d-a9c28ca66da6",
+ CellID->1616766982],
+Cell[10309, 318, 573, 20, 70, "Output",ExpressionUUID->"8e1522ba-28d1-47fd-ab0d-0c3f02f8f872",
+ CellID->892080983],
+Cell[10885, 340, 565, 20, 70, "Output",ExpressionUUID->"7699c967-1c07-4763-8637-24b635909eca",
+ CellID->1621741574]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11487, 365, 303, 10, 70, "Input",ExpressionUUID->"6fb45a02-1d96-4bed-a95c-e22de27c73c4",
+ CellID->748186494],
+Cell[11793, 377, 949, 34, 70, "Output",ExpressionUUID->"d4590886-d65c-4b2c-845b-2cd487dc96c4",
+ CellID->1253651473]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12779, 416, 346, 11, 70, "Input",ExpressionUUID->"63ce600b-8186-42fc-bea8-b84a8ac9da52",
+ CellID->1158245994],
+Cell[13128, 429, 949, 34, 70, "Output",ExpressionUUID->"8a81d141-23ef-4f7b-a431-130184d2b8fa",
+ CellID->1848644750]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14114, 468, 264, 9, 70, "Input",ExpressionUUID->"f8517a4d-a3d2-4b2a-a349-a7f6d7d547a8",
+ CellID->378908454],
+Cell[14381, 479, 2994, 96, 70, "Output",ExpressionUUID->"f20354aa-b35b-4ca4-904f-231107f2b3be",
+ CellID->1025373023]
+}, Open  ]]
+}, Open  ]],
+Cell[17402, 579, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"4040b035-98a2-435d-9602-25f77b860b73"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17470, 584, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"7cca19a3-0ba7-4b3f-a65d-79f3039d6d3a",
+ CellID->1255426704],
+Cell[17623, 593, 831, 28, 70, "SeeAlso",ExpressionUUID->"76cc9196-593c-467a-91e3-0a12f472b138",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18491, 626, 152, 7, 70, "TutorialsSection",ExpressionUUID->"5ef58780-6946-4a65-bd15-fcf07729af8f",
+ CellID->250839057],
+Cell[18646, 635, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"17b1f675-ad8a-4547-8e57-794d5d44e19f"],
+Cell[18680, 637, 187, 6, 70, "Tutorials",ExpressionUUID->"7bd407a1-65ce-43d9-a5be-84c10a1856c2",
+ CellID->341631938],
+Cell[18870, 645, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"1a0a9e1c-2cbb-4cbc-97a4-014494e52684"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18938, 650, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"63c37312-23f6-4d8c-82c1-e24c21e298cd",
+ CellID->38303248],
+Cell[19097, 659, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"2d4ce115-ea83-44b6-b5d8-be799e854680"],
+Cell[19131, 661, 181, 6, 70, "MoreAbout",ExpressionUUID->"0e2f2aad-4bee-4de9-b72b-60b5a852b415",
+ CellID->397463372],
+Cell[19315, 669, 168, 6, 70, "MoreAbout",ExpressionUUID->"58dc510d-25c9-4b87-bcab-81bcd9651c0f",
+ CellID->1492751034]
+}, Open  ]],
+Cell[19498, 678, 23, 0, 70, "FooterCell",ExpressionUUID->"79f9067d-ba1f-4ced-b0ef-6ccc775620d9"]
+}
+]
+*)
+
+(* End of internal cache information *)

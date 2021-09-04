@@ -1,0 +1,639 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     19624,        630]
+NotebookOptionsPosition[     12350,        475]
+NotebookOutlinePosition[     14442,        530]
+CellTagsIndexPosition[     14357,        525]
+WindowTitle->PseudoDivide
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"CoefficientTensor\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/CoefficientTensor"], "\<\"PseudoInverse\"\>":>
+       Documentation`HelpLookup["paclet:ref/PseudoInverse"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/PseudoDivide\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/PseudoDivide"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/PseudoDivide.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$135313], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/PseudoDivide", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["PseudoDivide", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PseudoDivide", "[", 
+       RowBox[{
+        StyleBox["x", "TI"], ",", " ", 
+        StyleBox["y", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns ",
+     Cell[BoxData[
+      StyleBox["x", "TI"]], "InlineFormula"],
+     " times the pseudo inverse of ",
+     Cell[BoxData[
+      StyleBox["y", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1446139603],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  RowBox[{"PseudoDivide", "[", 
+   RowBox[{
+    StyleBox["x", "TI"], ",", 
+    StyleBox["y", "TI"]}], "]"}]], "InlineFormula"],
+ " is equal to ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox["x", "TI"], "/", 
+   StyleBox["y", "TI"]}]], "InlineFormula"],
+ " as long as ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox["y", "TI"], "\[NotEqual]", "0"}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->325159022],
+
+Cell[TextData[{
+ Cell[BoxData[
+  RowBox[{"PseudoDivide", "[", 
+   RowBox[{
+    StyleBox["x", "TI"], ",", 
+    StyleBox["y", "TI"]}], "]"}]], "InlineFormula"],
+ " gives 0 if ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox["y", "TI"], "=", "0"}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->720169095],
+
+Cell[TextData[{
+ "It is used in ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CoefficientTensor"]], "paclet:Q3/ref/CoefficientTensor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1067943069],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->48390875],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1556617559],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1117036729],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"3", "/", "1"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->955136183],
+
+Cell[BoxData["3"], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1945917159]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"3", "/", "1."}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->10080158],
+
+Cell[BoxData["3.`"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1302787963]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"3", "/", "0"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->155823778],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Power", "infy", 
+   "\"Infinite expression \\!\\(\\*FractionBox[\\\"1\\\", \\\"0\\\"]\\) \
+encountered.\"", 2, 128, 4, 21857207207402841614, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellLabel->"During evaluation of In[4]:=",
+ CellID->677017036],
+
+Cell[BoxData["ComplexInfinity"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1256962246]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"3", "/", "0."}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1327802903],
+
+Cell[BoxData[
+ TemplateBox[{
+  "Power", "infy", 
+   "\"Infinite expression \\!\\(\\*FractionBox[\\\"1\\\", \\\"0.`\\\"]\\) \
+encountered.\"", 2, 129, 5, 21857207207402841614, "Local"},
+  "MessageTemplate"]], "Message", "MSG",
+ CellLabel->"During evaluation of In[5]:=",
+ CellID->1722339807],
+
+Cell[BoxData["ComplexInfinity"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1433058336]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PseudoDivide", "[", 
+  RowBox[{"3", ",", "0"}], "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1712760683],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->920260431]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"PseudoDivide", "[", 
+  RowBox[{"3", ",", "1"}], "]"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->661509728],
+
+Cell[BoxData["3"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->11638119]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CoefficientTensor"]], "paclet:Q3/ref/CoefficientTensor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PseudoInverse"]], "paclet:ref/PseudoInverse"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->2001831463],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1425526359],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Links"
+}], "RelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->1584193535],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["An Elementary Introduction to the Wolfram Language"]], 
+   "https://www.wolfram.com/language/elementary-introduction/"},
+  "WebLink",
+  BaseStyle->{"RelatedLinks"}]]]], "RelatedLinks",
+ CellID->1692878672],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["The Wolfram Language: Fast Introduction for Programmers"]], 
+   "http://www.wolfram.com/language/fast-introduction-for-programmers/"},
+  "WebLink",
+  BaseStyle->{"RelatedLinks"}]]]], "RelatedLinks",
+ CellID->1998801680]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"PseudoDivide",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 38, 42.972651}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "PseudoDivide[x, y] returns x times the pseudo inverse of y.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "PseudoDivide", 
+    "titlemodifier" -> "", "windowtitle" -> "PseudoDivide", "type" -> 
+    "Symbol", "uri" -> "Q3/ref/PseudoDivide", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7352, 238, 266, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"9545f81f-e932-4d60-bc68-0ac8634d17e6",
+   CellTags->"PrimaryExamplesSection",
+   CellID->48390875]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 14160, 518}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[584, 21, 4285, 110, 70, "AnchorBarGrid",ExpressionUUID->"912e408c-59ff-41dd-9b10-ab889e943977",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4894, 135, 169, 6, 70, "ObjectNameGrid",ExpressionUUID->"9f1b2eab-d778-4da5-85a5-4ae4dde06d32"],
+Cell[5066, 143, 534, 17, 70, "Usage",ExpressionUUID->"d17fb5e7-ff97-4e58-b997-b87c8c7554be"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5637, 165, 630, 19, 70, "NotesSection",ExpressionUUID->"f5483e12-ddad-4477-9380-f74d64a009e9",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1446139603],
+Cell[6270, 186, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"17d359b1-328a-490f-a1f3-5c8ffc355f1e"],
+Cell[6304, 188, 423, 17, 70, "Notes",ExpressionUUID->"b8854eef-1cce-44a5-98ea-f8f8a2251ce8",
+ CellID->325159022],
+Cell[6730, 207, 294, 12, 70, "Notes",ExpressionUUID->"61d45dad-f4a1-4ba3-95ab-71de55e12eca",
+ CellID->720169095],
+Cell[7027, 221, 254, 10, 70, "Notes",ExpressionUUID->"36acd5b7-55bf-4290-98da-27a244cbe7ed",
+ CellID->1067943069],
+Cell[7284, 233, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"cf5398d7-c125-4d6a-b77f-44295622f1c6"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7352, 238, 266, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"9545f81f-e932-4d60-bc68-0ac8634d17e6",
+ CellTags->"PrimaryExamplesSection",
+ CellID->48390875],
+Cell[CellGroupData[{
+Cell[7643, 252, 196, 6, 70, "ExampleSection",ExpressionUUID->"574baec6-d31d-44a5-b79a-bd790682e40f",
+ CellID->1556617559],
+Cell[7842, 260, 91, 3, 70, "Input",ExpressionUUID->"fe3a6766-c101-4205-a072-1ad3ad9a741e",
+ CellID->1117036729],
+Cell[CellGroupData[{
+Cell[7958, 267, 92, 3, 70, "Input",ExpressionUUID->"e2424319-3aa8-436c-82e9-82cccbf59f12",
+ CellID->955136183],
+Cell[8053, 272, 72, 2, 70, "Output",ExpressionUUID->"412647bb-f066-4140-9781-f66422b38595",
+ CellID->1945917159]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8162, 279, 92, 3, 70, "Input",ExpressionUUID->"a3be3564-b9cd-41a3-8f9d-e829114c2f93",
+ CellID->10080158],
+Cell[8257, 284, 74, 2, 70, "Output",ExpressionUUID->"fb88f33b-0552-49fa-ab8a-83bf9b279385",
+ CellID->1302787963]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8368, 291, 92, 3, 70, "Input",ExpressionUUID->"ff812740-24e5-45f4-83c8-d181f0cceb34",
+ CellID->155823778],
+Cell[8463, 296, 287, 7, 70, "Message",ExpressionUUID->"791a3e6d-a9d7-469c-ac81-737694d67e90",
+ CellID->677017036],
+Cell[8753, 305, 86, 2, 70, "Output",ExpressionUUID->"bdfef74d-a790-4c9b-9a98-d88a91e3e89e",
+ CellID->1256962246]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8876, 312, 94, 3, 70, "Input",ExpressionUUID->"21583783-790f-48af-8e7e-776aa44ab038",
+ CellID->1327802903],
+Cell[8973, 317, 290, 7, 70, "Message",ExpressionUUID->"f1ab76a1-f533-43e1-a52e-25c0aa934eb6",
+ CellID->1722339807],
+Cell[9266, 326, 86, 2, 70, "Output",ExpressionUUID->"9bb56368-04a8-49ce-aded-d404381e9c0d",
+ CellID->1433058336]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9389, 333, 132, 4, 70, "Input",ExpressionUUID->"939bb7c0-c2c1-45ac-a322-abb717b86410",
+ CellID->1712760683],
+Cell[9524, 339, 71, 2, 70, "Output",ExpressionUUID->"ac516b6a-a027-4601-9626-571a441727b2",
+ CellID->920260431]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9632, 346, 131, 4, 70, "Input",ExpressionUUID->"bcdea4ad-8adf-4445-834d-10e5856e2224",
+ CellID->661509728],
+Cell[9766, 352, 70, 2, 70, "Output",ExpressionUUID->"7eb3b896-d19d-4580-881e-f6cd4a4b7028",
+ CellID->11638119]
+}, Open  ]]
+}, Open  ]],
+Cell[9863, 358, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"45d0c1f6-7376-44c6-a782-3b5962cb2662"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9931, 363, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"180a901a-4608-4433-9e4b-adccf1755dcb",
+ CellID->1255426704],
+Cell[10084, 372, 569, 18, 70, "SeeAlso",ExpressionUUID->"08ba4661-a21b-4f23-ae71-ffc77d8f7b4b",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10690, 395, 152, 7, 70, "TutorialsSection",ExpressionUUID->"852d241e-a76d-45b7-b293-fb19b7ce069f",
+ CellID->250839057],
+Cell[10845, 404, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"767200e5-3ea7-43be-8126-32e6355cde4b"],
+Cell[10879, 406, 182, 6, 70, "Tutorials",ExpressionUUID->"64e3d0a8-a413-4fd2-9fc3-39099db56437",
+ CellID->2001831463],
+Cell[11064, 414, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"e9a91209-b167-45a6-852b-398df7e15381"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11132, 419, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"f38be762-667a-4634-9cc8-3da49252ee57",
+ CellID->38303248],
+Cell[11291, 428, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"f3357c2a-78b2-4cd3-8b82-4207f35175ef"],
+Cell[11325, 430, 156, 6, 70, "MoreAbout",ExpressionUUID->"473396b5-41ea-42b4-bfe6-0802b7bb3f12",
+ CellID->1425526359],
+Cell[11484, 438, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"ad34a2b6-a88e-40f3-8e7f-89f050e63d13"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11552, 443, 160, 7, 70, "RelatedLinksSection",ExpressionUUID->"fcd8dbf3-0e5a-45bc-acd6-4361ac847c43",
+ CellID->1584193535],
+Cell[11715, 452, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"dd86e43a-ab31-4d5a-9e28-0cafb462a161"],
+Cell[11749, 454, 271, 7, 70, "RelatedLinks",ExpressionUUID->"98b51115-0c2a-4c41-bb9c-3ac1b2db69bf",
+ CellID->1692878672],
+Cell[12023, 463, 285, 7, 70, "RelatedLinks",ExpressionUUID->"a89e1e03-e09c-4da7-9942-db6610412c43",
+ CellID->1998801680]
+}, Open  ]],
+Cell[12323, 473, 23, 0, 70, "FooterCell",ExpressionUUID->"e6b71607-51a5-465f-bed6-a505d28b85e7"]
+}
+]
+*)
+
+(* End of internal cache information *)

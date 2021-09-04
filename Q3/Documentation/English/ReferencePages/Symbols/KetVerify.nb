@@ -1,0 +1,552 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     17613,        543]
+NotebookOptionsPosition[     12236,        427]
+NotebookOutlinePosition[     14486,        484]
+CellTagsIndexPosition[     14401,        479]
+WindowTitle->KetVerify
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/PauliQuickStart"], "\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/FockQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Ket\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Ket"], "\<\"Bra\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Bra"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/PauliPackageGuide"], "\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/FockPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/KetVerify\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/KetVerify"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/KetVerify.html"]\
+, StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$100018], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/KetVerify", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["KetVerify", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"KetVerify", "[", 
+       StyleBox["ket", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns ",
+     Cell[BoxData[
+      StyleBox["ket", "TI"]], "InlineFormula"],
+     " if ",
+     Cell[BoxData[
+      StyleBox["ket", "TI"]], "InlineFormula"],
+     " is a valid ",
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         TemplateBox[{
+           Cell[
+            TextData["Ket"]], "paclet:Q3/ref/Ket"},
+          "RefLink",
+          BaseStyle->{"InlineFormula"}], "[", 
+         RowBox[{"\[LeftAssociation]", 
+          StyleBox["\[Ellipsis]", "TR"]}]}], "|>"}], "]"}]], "InlineFormula"],
+     
+     "; ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["$Failed"]], "paclet:ref/$Failed"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " otherwise."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"KetVerify", "[", 
+       RowBox[{
+        StyleBox["op", "TI"], ",", 
+        StyleBox["val", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["op", "TI"], "\[Rule]", 
+       StyleBox["val", "TI"]}]], "InlineFormula"],
+     " if ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Ket"]], "paclet:Q3/ref/Ket"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"\[LeftAssociation]", 
+        RowBox[{
+         StyleBox["op", "TI"], "\[Rule]", 
+         StyleBox["val", "TI"]}], "\[RightAssociation]"}], "]"}]], 
+      "InlineFormula"],
+     " is valid; ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["$Failed"]], "paclet:ref/$Failed"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " otherwise."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"KetVerify", "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]checks every ",
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         TemplateBox[{
+           Cell[
+            TextData["Ket"]], "paclet:Q3/ref/Ket"},
+          "RefLink",
+          BaseStyle->{"InlineFormula"}], "[", 
+         RowBox[{"\[LeftAssociation]", 
+          StyleBox["\[Ellipsis]", "TR"]}]}], "|>"}], "]"}]], "InlineFormula"],
+     
+     " appearing in ",
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1746753405],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1583023345],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1476196146],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Boson", ",", "a"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1257523272],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Ket", "[", 
+  RowBox[{
+   RowBox[{"a", "[", "1", "]"}], "\[Rule]", 
+   RowBox[{"-", "1"}]}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1074185810],
+
+Cell[BoxData[
+ TemplateBox[{
+  "KetVerify", "bosneg", 
+   "\"For Boson \\!\\(\\*SubscriptBox[TemplateBox[List[\\\"a\\\"], \
+\\\"RowDefault\\\"], TemplateBox[List[\\\"1\\\"], \\\"RowDefault\\\"]]\\), \
+the assigned value \\!\\(\\*RowBox[{\\\"-\\\", \\\"1\\\"}]\\) is negative.\"",
+    2, 66, 3, 25674634848338027127, "Local", "Q3`KetVerify"},
+  "MessageTemplate2"]], "Message", "MSG",
+ CellLabel->"During evaluation of In[3]:=",
+ CellID->878322317],
+
+Cell[BoxData["$Failed"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->160592341]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Ket", "[", 
+  RowBox[{
+   RowBox[{"c", "[", "1", "]"}], "\[Rule]", "2"}], "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1315623072],
+
+Cell[BoxData[
+ TemplateBox[{
+  "KetVerify", "ferneg", 
+   "\"For Fermion \\!\\(\\*SubscriptBox[TemplateBox[List[\\\"c\\\"], \
+\\\"RowDefault\\\"], TemplateBox[List[\\\"1\\\"], \\\"RowDefault\\\"]]\\), \
+the assigned valued \\!\\(\\*RowBox[{\\\"2\\\"}]\\) is neither 0 nor 1.\"", 2,
+    67, 4, 25674634848338027127, "Local", "Q3`KetVerify"},
+  "MessageTemplate2"]], "Message", "MSG",
+ CellLabel->"During evaluation of In[4]:=",
+ CellID->1855690091],
+
+Cell[BoxData["$Failed"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->678354056]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Ket"]], "paclet:Q3/ref/Ket"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Bra"]], "paclet:Q3/ref/Bra"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/PauliQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock: Quick Start"]], "paclet:Q3/tutorial/FockQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->953633257],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/PauliPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->698456732],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->816680222]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"KetVerify",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 35, 1.502383}", 
+    "history" -> {"1.1", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "KetVerify[ket] returns ket if ket is a valid Ket[<|...|>]; $Failed \
+otherwise. KetVerify[op, val] returns op -> val if Ket[<|op -> val|>] is \
+valid; $Failed otherwise. KetVerify[expr] checks every Ket[<|...|>] appearing \
+in expr.", "synonyms" -> {}, "tabletags" -> {}, "title" -> "KetVerify", 
+    "titlemodifier" -> "", "windowtitle" -> "KetVerify", "type" -> "Symbol", 
+    "uri" -> "Q3/ref/KetVerify", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7924, 241, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"fa55328d-86db-419c-9c57-f06389bc90f9",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1746753405]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 14202, 472}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[581, 21, 4474, 113, 70, "AnchorBarGrid",ExpressionUUID->"4d0764ae-8c39-43aa-b04d-06556addef39",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5080, 138, 166, 6, 70, "ObjectNameGrid",ExpressionUUID->"1a168cf5-abdc-47c8-885a-5285cc9ef610"],
+Cell[5249, 146, 2638, 90, 70, "Usage",ExpressionUUID->"2e23ec45-0b57-4e80-9348-3ff3ece438f8"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7924, 241, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"fa55328d-86db-419c-9c57-f06389bc90f9",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1746753405],
+Cell[CellGroupData[{
+Cell[8217, 255, 196, 6, 70, "ExampleSection",ExpressionUUID->"bf46b17f-9d75-41d1-b4fc-1b1659668c9f",
+ CellID->1583023345],
+Cell[8416, 263, 91, 3, 70, "Input",ExpressionUUID->"e7dd5638-0531-45e4-ab42-fcd2b83bc4c3",
+ CellID->1476196146],
+Cell[8510, 268, 215, 6, 70, "Input",ExpressionUUID->"fcf67a5e-270b-4153-b36e-a8420c79531b",
+ CellID->1257523272],
+Cell[CellGroupData[{
+Cell[8750, 278, 177, 6, 70, "Input",ExpressionUUID->"c863140b-906e-4baf-aa27-5ff6b73ecdf7",
+ CellID->1074185810],
+Cell[8930, 286, 447, 9, 70, "Message",ExpressionUUID->"44e2e247-0258-414f-9f27-f255f8c321c1",
+ CellID->878322317],
+Cell[9380, 297, 77, 2, 70, "Output",ExpressionUUID->"a76f4e94-4c44-4283-a82d-8bae0cc7d4b5",
+ CellID->160592341]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9494, 304, 158, 5, 70, "Input",ExpressionUUID->"5fdedb2b-d4c3-48df-a3c9-4d57f686f43f",
+ CellID->1315623072],
+Cell[9655, 311, 447, 9, 70, "Message",ExpressionUUID->"80eb19b4-4600-4d25-8301-7060bebe85fc",
+ CellID->1855690091],
+Cell[10105, 322, 77, 2, 70, "Output",ExpressionUUID->"7b970dd7-65ad-4054-b9a6-9f383dd694c2",
+ CellID->678354056]
+}, Open  ]]
+}, Open  ]],
+Cell[10209, 328, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"5ae27c17-e0ac-4468-a30c-b8017bd916b8"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10277, 333, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"f33c6b91-ad9c-43b0-bae5-cbef7c1ac153",
+ CellID->1255426704],
+Cell[10430, 342, 524, 18, 70, "SeeAlso",ExpressionUUID->"d88e443c-b49e-4b7d-879e-24e6206abe11",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10991, 365, 152, 7, 70, "TutorialsSection",ExpressionUUID->"3cf4f370-670c-4159-a88a-b51e0b46bf0a",
+ CellID->250839057],
+Cell[11146, 374, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"c6ebb5ab-254f-4bdd-bbea-ea652c42e06a"],
+Cell[11180, 376, 187, 6, 70, "Tutorials",ExpressionUUID->"de06ed7c-0bb4-490f-8fb4-07d7b4b9f380",
+ CellID->341631938],
+Cell[11370, 384, 185, 6, 70, "Tutorials",ExpressionUUID->"27b2f483-bc23-421a-b4b4-b1ac5238e7dc",
+ CellID->953633257],
+Cell[11558, 392, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"923a9800-c586-4a97-9af0-9c54d49f3413"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11626, 397, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"9ce76e0a-fc6a-4078-b96f-3aa46f317e3d",
+ CellID->38303248],
+Cell[11785, 406, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"87e4d16c-1d62-4403-914c-c620d808193a"],
+Cell[11819, 408, 187, 6, 70, "MoreAbout",ExpressionUUID->"12874ff9-7f75-4fe5-b41a-fc980c110835",
+ CellID->698456732],
+Cell[12009, 416, 185, 6, 70, "MoreAbout",ExpressionUUID->"b6042d44-5540-4897-9904-96856ad53b1c",
+ CellID->816680222]
+}, Open  ]],
+Cell[12209, 425, 23, 0, 70, "FooterCell",ExpressionUUID->"cde78ea8-c629-43ee-97e3-0c9223d1bf8b"]
+}
+]
+*)
+
+(* End of internal cache information *)

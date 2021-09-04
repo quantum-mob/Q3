@@ -1,0 +1,459 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     14984,        450]
+NotebookOptionsPosition[     10479,        353]
+NotebookOutlinePosition[     12791,        411]
+CellTagsIndexPosition[     12706,        406]
+WindowTitle->FockMajoranaToDirac
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/FockQuickStart"], "\<\"Q3: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FockDiracToMajorana\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/FockDiracToMajorana"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/FockPackageGuide"], "\<\"Q3 Application Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/FockMajoranaToDirac\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/FockMajoranaToDirac"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+FockMajoranaToDirac.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$71923], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/FockMajoranaToDirac", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[TextData[{
+ Cell["FockMajoranaToDirac", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockMajoranaToDirac", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", " ", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox[
+            StyleBox["h", "TI"], 
+            StyleBox["1", "TR"]], ",", 
+           SubscriptBox[
+            StyleBox["h", "TI"], 
+            StyleBox["2", "TR"]], ",", 
+           SubscriptBox[
+            StyleBox["h", "TI"], 
+            StyleBox["3", "TR"]], ",", 
+           SubscriptBox[
+            StyleBox["h", "TI"], 
+            StyleBox["4", "TR"]], ",", " ", 
+           StyleBox["\[Ellipsis]", "TR"]}], "}"}], " ", "->", " ", 
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox[
+            StyleBox["c", "TI"], 
+            StyleBox["1", "TR"]], ",", 
+           SubscriptBox[
+            StyleBox["c", "TI"], 
+            StyleBox["2", "TR"]], ",", " ", 
+           StyleBox["\[Ellipsis]", "TR"]}], "}"}]}]}], "]"}]], 
+      "InlineFormula"],
+     "\[LineSeparator]converts expr written in ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Dirac"]], "paclet:Q3/ref/Dirac"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " fermion operators c1, c2, ... into an equivalent form in terms of the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Majorana"]], "paclet:Q3/ref/Majorana"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " fermion operators h1, h2, h3, h4, ... via a suitable transformation \
+between them. "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockMajoranaToDirac", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", " ", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox[
+            StyleBox["h", "TI"], 
+            StyleBox["1", "TR"]], ",", 
+           SubscriptBox[
+            StyleBox["h", "TI"], 
+            StyleBox["2", "TR"]]}], "}"}], " ", "->", " ", 
+         SubscriptBox[
+          StyleBox["c", "TI"], 
+          StyleBox["1", "TR"]]}], ",", " ", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox[
+            StyleBox["h", "TI"], 
+            StyleBox["3", "TR"]], ",", 
+           SubscriptBox[
+            StyleBox["h", "TI"], 
+            StyleBox["4", "TR"]]}], "}"}], " ", "->", " ", 
+         SubscriptBox[
+          StyleBox["c", "TI"], 
+          StyleBox["2", "TR"]]}], ",", "  ", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is the same."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}}}],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1],
+
+Cell[TextData[{
+ "See ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockDiracToMajorana"]], "paclet:Q3/ref/FockDiracToMajorana"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " for examples."
+}], "ExampleText",
+ CellID->1000791064]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["", "SectionFooterSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["FockDiracToMajorana"]], "paclet:Q3/ref/FockDiracToMajorana"},
+  "RefLink",
+  BaseStyle->{
+   "InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock: Quick Start"]], "paclet:Q3/tutorial/FockQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1301403986],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application Guide"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"FockMajoranaToDirac",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 32, 32.870769}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "FockMajoranaToDirac[expr, {h1, h2, h3, h4, ...} -> {c1, c2, ...}] \
+converts expr written in Dirac fermion operators c1, c2, ... into an \
+equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, \
+... via a suitable transformation between them. FockMajoranaToDirac[expr, \
+{h1, h2} -> c1, {h3, h4} -> c2, ...] is the same.", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "FockMajoranaToDirac", "titlemodifier" -> 
+    "", "windowtitle" -> "FockMajoranaToDirac", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/FockMajoranaToDirac"}},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[8002, 230, 259, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"7839131e-a67f-43f8-800e-0ba93ff732fd",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 12516, 399}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[591, 21, 4456, 112, 70, "AnchorBarGrid",ExpressionUUID->"98088663-ae71-4aa0-b1d9-de5bde981ddd",
+ CellID->1],
+Cell[5050, 135, 176, 6, 70, "ObjectNameGrid",ExpressionUUID->"b010db44-c45e-44a4-ad20-2147ff91f90e"],
+Cell[5229, 143, 2748, 83, 70, "Usage",ExpressionUUID->"9f0602e7-bdb7-41fa-a83e-d4b635aa5194"],
+Cell[CellGroupData[{
+Cell[8002, 230, 259, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"7839131e-a67f-43f8-800e-0ba93ff732fd",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[8286, 244, 187, 6, 70, "ExampleSection",ExpressionUUID->"85be1b3e-7dd7-45ca-80da-85f5f97cd9e9",
+ CellID->1],
+Cell[8476, 252, 267, 10, 70, "ExampleText",ExpressionUUID->"059d2c7d-e235-4d1f-9f69-b20895c4ee41",
+ CellID->1000791064]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8792, 268, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"8503256a-3354-4f95-a05b-f167a658e3a0"],
+Cell[8826, 270, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"de723bae-7c6b-4931-b087-bd78d964778d",
+ CellID->1255426704],
+Cell[8979, 279, 253, 7, 70, "SeeAlso",ExpressionUUID->"9a58b67f-88d2-4311-9039-90e52cbfb99e",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9269, 291, 152, 7, 70, "TutorialsSection",ExpressionUUID->"bb8579e3-8d80-454b-8126-e5c5ba2e70b5",
+ CellID->250839057],
+Cell[9424, 300, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"097bf0c0-c388-4974-a204-e72c35059094"],
+Cell[9458, 302, 185, 6, 70, "Tutorials",ExpressionUUID->"5af3288e-cc1d-4c58-90c5-b3a1ae8faba1",
+ CellID->341631938],
+Cell[9646, 310, 182, 6, 70, "Tutorials",ExpressionUUID->"1a5c3a3f-3e0c-4091-80c1-50dc3a58e36c",
+ CellID->1301403986],
+Cell[9831, 318, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"a8a574f0-bd4c-40b1-ba75-c04f055e14b3"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9899, 323, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"b46fa91a-b174-4741-b2ff-715ef968bd0a",
+ CellID->38303248],
+Cell[10058, 332, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"94f2562e-04ee-4675-b7d1-6034536daa12"],
+Cell[10092, 334, 177, 6, 70, "MoreAbout",ExpressionUUID->"bcc9633e-13f2-4330-8f4f-4497b4ae4c1e",
+ CellID->1],
+Cell[10272, 342, 165, 6, 70, "MoreAbout",ExpressionUUID->"6fd0f37c-e981-4476-b67c-5ef4b1c85fc5",
+ CellID->1]
+}, Open  ]],
+Cell[10452, 351, 23, 0, 70, "FooterCell",ExpressionUUID->"87aabf67-edf4-4906-896a-3b51474af421"]
+}
+]
+*)
+
+(* End of internal cache information *)

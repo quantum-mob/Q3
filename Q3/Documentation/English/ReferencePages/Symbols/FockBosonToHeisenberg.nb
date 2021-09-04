@@ -1,0 +1,966 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     27576,        957]
+NotebookOptionsPosition[     22168,        839]
+NotebookOutlinePosition[     24551,        898]
+CellTagsIndexPosition[     24466,        893]
+WindowTitle->FockBosonToHeisenberg
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FockHeisenbergToBoson\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockHeisenbergToBoson"], "\<\"FockDiracToMajorana\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockDiracToMajorana"], "\<\"FockMajoranaToDirac\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/FockMajoranaToDirac"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/FockPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/FockBosonToHeisenberg\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/FockBosonToHeisenberg"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+FockBosonToHeisenberg.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$65148], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/FockBosonToHeisenberg", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["FockBosonToHeisenberg", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockBosonToHeisenberg", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox[
+            StyleBox["x", "TI"], 
+            StyleBox["1", "TR"]], ",", 
+           SubscriptBox[
+            StyleBox["x", "TI"], 
+            StyleBox["2", "TR"]], ",", " ", 
+           StyleBox["\[Ellipsis]", "TR"]}], "}"}], "->", 
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox[
+            StyleBox["a", "TI"], 
+            StyleBox["1", "TR"]], ",", 
+           SubscriptBox[
+            StyleBox["a", "TI"], 
+            StyleBox["2", "TR"]], ",", " ", 
+           StyleBox["\[Ellipsis]", "TR"]}], "}"}]}]}], "]"}]], 
+      "InlineFormula"],
+     "\[LineSeparator]converts ",
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula"],
+     " written in canonical ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Heisenberg"]], "paclet:Q3/ref/Heisenberg"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " operators ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["x", "TI"], 
+        StyleBox["1", "TR"]], ",", 
+       SubscriptBox[
+        StyleBox["x", "TI"], 
+        StyleBox["2", "TR"]], ",", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     " into an equivalent form in terms of the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Boson"]], "paclet:Q3/ref/Boson"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " operators ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["a", "TI"], 
+        StyleBox["1", "TR"]], ",", 
+       SubscriptBox[
+        StyleBox["a", "TI"], 
+        StyleBox["2", "TR"]], ",", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     " via a suitable transformation between them. "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockBosonToHeisenberg", "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", 
+        RowBox[{
+         SubscriptBox[
+          StyleBox["x", "TI"], 
+          StyleBox["1", "TR"]], "->", 
+         SubscriptBox[
+          StyleBox["a", "TI"], 
+          StyleBox["1", "TR"]]}], ",", 
+        RowBox[{
+         SubscriptBox[
+          StyleBox["x", "TI"], 
+          StyleBox["2", "TR"]], "->", 
+         SubscriptBox[
+          StyleBox["a", "TI"], 
+          StyleBox["2", "TR"]]}], ",", " ", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is the same."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->777037898],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->827894279],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->383835310],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Heisenberg", ",", "x"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Boson", ",", "a"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Real", ",", "t"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->101390077],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"xx", "=", 
+  RowBox[{"x", "[", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2"}], "}"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"xp", "=", 
+  RowBox[{"Join", "[", 
+   RowBox[{"xx", ",", 
+    RowBox[{"Canon", "@", "xx"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"aa", "=", 
+   RowBox[{"a", "[", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2"}], "}"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"H0", "=", 
+   RowBox[{
+    RowBox[{"xx", "**", "xx"}], "+", 
+    RowBox[{
+     RowBox[{"Canon", "[", "xx", "]"}], "**", 
+     RowBox[{"Canon", "[", "xx", "]"}]}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"H0", "=", 
+  RowBox[{"Total", "@", "H0"}]}], "\[IndentingNewLine]", 
+ RowBox[{"Ht", "=", 
+  RowBox[{
+   RowBox[{"-", "2"}], "t", "*", 
+   RowBox[{"Hop", "[", 
+    RowBox[{
+     RowBox[{"Canon", "@", 
+      RowBox[{"x", "[", "1", "]"}]}], ",", 
+     RowBox[{"x", "[", "2", "]"}]}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"HH", "=", 
+  RowBox[{"H0", "+", "Ht"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1108492068],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"x"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"x"},
+     "RowDefault"], 
+    TemplateBox[{"2"},
+     "RowDefault"]]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->2006907718],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"x"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"x"},
+     "RowDefault"], 
+    TemplateBox[{"2"},
+     "RowDefault"]], ",", 
+   TemplateBox[{
+     TemplateBox[{"x"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"c\""}, "RowDefault"]},
+    "Subsuperscript"], ",", 
+   TemplateBox[{
+     TemplateBox[{"x"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"c\""}, "RowDefault"]},
+    "Subsuperscript"]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1719856644],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->500727088],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "2"}], " ", "t", " ", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1879239070],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm]}],
+   DisplayForm], "-", 
+  RowBox[{"2", " ", "t", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"x"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"c\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"x"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1329053061]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"HHa", "=", 
+  RowBox[{"FockHeisenbergToBoson", "[", 
+   RowBox[{"HH", ",", 
+    RowBox[{"xx", "\[Rule]", "aa"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"HHx", "=", 
+  RowBox[{"FockBosonToHeisenberg", "[", 
+   RowBox[{"HHa", ",", 
+    RowBox[{"aa", "\[Rule]", "xx"}]}], "]"}]}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->559252409],
+
+Cell[BoxData[
+ RowBox[{"2", "+", 
+  RowBox[{"\[ImaginaryI]", " ", "t", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"a"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"a"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{"2", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"a"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"a"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{"\[ImaginaryI]", " ", "t", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"a"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"a"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{"\[ImaginaryI]", " ", "t", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"a"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"a"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{"\[ImaginaryI]", " ", "t", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"a"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"a"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{"2", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"a"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"a"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm]}],
+    DisplayForm]}]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1467068961],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm]}],
+   DisplayForm], "-", 
+  RowBox[{"2", " ", "t", " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"x"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"c\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      SubscriptBox[
+       TemplateBox[{"x"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm], 
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"x"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"c\""}, "RowDefault"]},
+      "Subsuperscript"],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"x"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1768276320]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"HHx", "\[Equal]", "HH"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1483467745],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->2121191817]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockHeisenbergToBoson"]], 
+    "paclet:Q3/ref/FockHeisenbergToBoson"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockDiracToMajorana"]], "paclet:Q3/ref/FockDiracToMajorana"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockMajoranaToDirac"]], "paclet:Q3/ref/FockMajoranaToDirac"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->872598240]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"FockBosonToHeisenberg",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 31, 58.505047}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "FockBosonToHeisenberg[expr, {x1, x2, ...} -> {a1, a2, ...}] converts \
+expr written in canonical Heisenberg operators x1, x2, ... into an equivalent \
+form in terms of the Boson operators a1, a2, ... via a suitable \
+transformation between them. FockBosonToHeisenberg[expr, x1 -> a1, x2 -> a2, \
+...] is the same.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "FockBosonToHeisenberg", "titlemodifier" -> "", "windowtitle" -> 
+    "FockBosonToHeisenberg", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/FockBosonToHeisenberg", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7422, 220, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"7489b71a-8d03-42fe-a174-ebd9f76ea917",
+   CellTags->"PrimaryExamplesSection",
+   CellID->777037898]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 24268, 886}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[593, 21, 3799, 93, 70, "AnchorBarGrid",ExpressionUUID->"afd06cce-6e11-46bf-a331-700ff076ce3d",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4417, 118, 178, 6, 70, "ObjectNameGrid",ExpressionUUID->"9ff99326-3f43-4531-b35f-528b48c217c8"],
+Cell[4598, 126, 2787, 89, 70, "Usage",ExpressionUUID->"b9329f1c-3bc6-4639-a961-f91abfa694ed"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7422, 220, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"7489b71a-8d03-42fe-a174-ebd9f76ea917",
+ CellTags->"PrimaryExamplesSection",
+ CellID->777037898],
+Cell[CellGroupData[{
+Cell[7714, 234, 195, 6, 70, "ExampleSection",ExpressionUUID->"98f99e47-bb16-4df6-bf27-ef8901efc9a8",
+ CellID->827894279],
+Cell[7912, 242, 90, 3, 70, "Input",ExpressionUUID->"8a9cf08d-c356-4baa-88cf-3c7e8e4a79d4",
+ CellID->383835310],
+Cell[8005, 247, 300, 8, 70, "Input",ExpressionUUID->"77758adb-e864-40de-af3a-77fd2302b045",
+ CellID->101390077],
+Cell[CellGroupData[{
+Cell[8330, 259, 1080, 34, 70, "Input",ExpressionUUID->"dd861321-e3f1-49ad-911f-6e89b93ac7f5",
+ CellID->1108492068],
+Cell[9413, 295, 319, 14, 70, "Output",ExpressionUUID->"423c6563-32ee-4d0e-b593-091196b8c509",
+ CellID->2006907718],
+Cell[9735, 311, 659, 24, 70, "Output",ExpressionUUID->"ec9e30d1-ace9-4264-9da5-dd1aa0cc7c47",
+ CellID->1719856644],
+Cell[10397, 337, 1669, 71, 70, "Output",ExpressionUUID->"d6ce2719-2f4e-4c8d-941d-e6d00d4c81c7",
+ CellID->500727088],
+Cell[12069, 410, 511, 21, 70, "Output",ExpressionUUID->"46439cbc-8a23-4a9e-a941-cf51dfcaa952",
+ CellID->1879239070],
+Cell[12583, 433, 2119, 89, 70, "Output",ExpressionUUID->"be629cb0-39ef-4e21-8f90-9e29a6c92915",
+ CellID->1329053061]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14739, 527, 361, 10, 70, "Input",ExpressionUUID->"434c62aa-fec2-44aa-b0de-0ccfdeb378c5",
+ CellID->559252409],
+Cell[15103, 539, 3094, 123, 70, "Output",ExpressionUUID->"5681a431-9bb4-4953-a0be-7f7046fd1b95",
+ CellID->1467068961],
+Cell[18200, 664, 2119, 89, 70, "Output",ExpressionUUID->"1383b78e-43e4-45f3-b215-312e4a48c47f",
+ CellID->1768276320]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20356, 758, 103, 3, 70, "Input",ExpressionUUID->"5213f590-1f8e-4916-b659-8012250b579c",
+ CellID->1483467745],
+Cell[20462, 763, 75, 2, 70, "Output",ExpressionUUID->"701f7151-bd64-4d06-8190-f2b8e1fe4d33",
+ CellID->2121191817]
+}, Open  ]]
+}, Open  ]],
+Cell[20564, 769, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"b8b43244-b1ef-4880-88a1-e741b4cedbef"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20632, 774, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"ac3fa2ca-7eb6-4312-8725-44b97988ac44",
+ CellID->1255426704],
+Cell[20785, 783, 926, 29, 70, "SeeAlso",ExpressionUUID->"3365766b-fc22-4b65-b195-7c28d58bf993",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21748, 817, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"f4219a78-5cd4-402d-93dc-181100b9fb9a",
+ CellID->38303248],
+Cell[21907, 826, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"d998c50b-f929-4844-9857-56a3319b6a9b"],
+Cell[21941, 828, 185, 6, 70, "MoreAbout",ExpressionUUID->"13d2820d-4781-4b10-bce2-73873b12b095",
+ CellID->872598240]
+}, Open  ]],
+Cell[22141, 837, 23, 0, 70, "FooterCell",ExpressionUUID->"e81d8621-3640-41e4-93e1-af93a5149464"]
+}
+]
+*)
+
+(* End of internal cache information *)

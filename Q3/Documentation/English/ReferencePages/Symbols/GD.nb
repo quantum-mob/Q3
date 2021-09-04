@@ -1,0 +1,403 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     12973,        394]
+NotebookOptionsPosition[      9171,        313]
+NotebookOutlinePosition[     10951,        360]
+CellTagsIndexPosition[     10908,        357]
+WindowTitle->GD
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/FockQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"GIntegrate\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/GIntegrate"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Grassmann\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/guide/GrassmannPackageGuide"], "\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/FockPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/GD\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/GD"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/GD.html"], 
+                StandardForm]], "Input", TextClipboardType -> "PlainText"]}, 
+            Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$81534], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/GD", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[TextData[{
+ Cell["GD", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"GD", "[", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["z", "TI"], 
+         StyleBox["1", "TR"]], ",", " ", 
+        SubscriptBox[
+         StyleBox["z", "TI"], 
+         StyleBox["2", "TR"]], ",", "  ", 
+        StyleBox["\[Ellipsis]", "TR"], ",", " ", 
+        StyleBox["expr", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]for ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Grassmann"]], "paclet:Q3/ref/Grassmann"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+     " variables ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["z", "TI"], 
+        StyleBox["1", "TR"]], ",", " ", 
+       SubscriptBox[
+        StyleBox["z", "TI"], 
+        StyleBox["2", "TR"]], ",", " ", "..."}]], "InlineFormula"],
+     " is like ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["D"]], "paclet:ref/D"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["expr", "TI"], ",", " ", 
+        SubscriptBox[
+         StyleBox["z", "TI"], 
+         StyleBox["1", "TR"]], ",", " ", 
+        SubscriptBox[
+         StyleBox["z", "TI"], 
+         StyleBox["2", "TR"]], ",", " ", "..."}], "]"}]], "InlineFormula"],
+     " for real variables ",
+     Cell[BoxData[
+      RowBox[{
+       SubscriptBox[
+        StyleBox["z", "TI"], 
+        StyleBox["1", "TR"]], ",", " ", 
+       SubscriptBox[
+        StyleBox["z", "TI"], 
+        StyleBox["2", "TR"]], ",", " ", "..."}]], "InlineFormula"],
+     ". "
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "Notice that the variables list comes before the integrand ",
+ Cell[BoxData[
+  StyleBox["expr", "TI"]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1847263964],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["GIntegrate"]], "paclet:Q3/ref/GIntegrate"},
+  "RefLink",
+  BaseStyle->{
+   "InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock: Quick Start"]], "paclet:Q3/tutorial/FockQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1620743628],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Grassmann"]], "paclet:Q3/guide/GrassmannPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"GD",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 33, 16.356742}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "GD[z1, z2, ..., expr] for Grassmann variables z1, z2, ... is like \
+D[expr, z1, z2, ...] for real variables z1, z2, .... ", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "GD", "titlemodifier" -> "", "windowtitle" -> 
+    "GD", "type" -> "Symbol", "uri" -> "Q3/ref/GD"}},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[574, 21, 4279, 109, 70, "AnchorBarGrid",ExpressionUUID->"e687ccbc-2d47-4506-a25a-561b95f2016d",
+ CellID->1],
+Cell[4856, 132, 159, 6, 70, "ObjectNameGrid",ExpressionUUID->"8ac2735d-5381-4c51-a542-b52bf487b029"],
+Cell[5018, 140, 1763, 58, 70, "Usage",ExpressionUUID->"2decf43f-3679-451b-bf6f-b417bff29b08"],
+Cell[CellGroupData[{
+Cell[6806, 202, 621, 19, 70, "NotesSection",ExpressionUUID->"850c3225-0d1d-4a1d-a17b-625089d097c1",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1],
+Cell[7430, 223, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"8e06243d-c9ff-4868-97f6-0d56dcad400e"],
+Cell[7464, 225, 177, 6, 70, "Notes",ExpressionUUID->"d9434da0-a11d-4be9-a633-8e141db4a3ed",
+ CellID->1847263964],
+Cell[7644, 233, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"bfb2ec9b-9963-4591-889e-2ccda4e42ce8"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7712, 238, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"1bd42aac-4be7-4841-ad88-b93b8bdb6378",
+ CellID->1255426704],
+Cell[7865, 247, 235, 7, 70, "SeeAlso",ExpressionUUID->"0a0138b6-269c-4c92-b0f8-f967623c7317",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8137, 259, 152, 7, 70, "TutorialsSection",ExpressionUUID->"ccfa65bb-f0e3-4bfe-9884-b386020c14cc",
+ CellID->250839057],
+Cell[8292, 268, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"e8f0efc8-2303-44bc-93c4-e5fa8dd54735"],
+Cell[8326, 270, 186, 6, 70, "Tutorials",ExpressionUUID->"b2f2443c-9829-433d-be0d-92f53ab2ceb4",
+ CellID->1620743628],
+Cell[8515, 278, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"2cd2b324-8743-456a-b836-f66a47824f3e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8583, 283, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"2f94b057-b257-47d4-8c10-0ed16e986a02",
+ CellID->38303248],
+Cell[8742, 292, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6d7663be-86bf-4df5-8149-7e6831025ed1"],
+Cell[8776, 294, 173, 6, 70, "MoreAbout",ExpressionUUID->"0e334e59-48bf-477a-ae69-8d37ae578195",
+ CellID->1],
+Cell[8952, 302, 177, 6, 70, "MoreAbout",ExpressionUUID->"8160b559-286f-4998-9800-ab74df5af22e",
+ CellID->1]
+}, Open  ]],
+Cell[9144, 311, 23, 0, 70, "FooterCell",ExpressionUUID->"7a67edc0-077c-4dc1-be95-cb06452886aa"]
+}
+]
+*)
+
+(* End of internal cache information *)

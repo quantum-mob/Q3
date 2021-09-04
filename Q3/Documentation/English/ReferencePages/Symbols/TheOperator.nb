@@ -1,0 +1,1631 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     56723,       1622]
+NotebookOptionsPosition[     48846,       1457]
+NotebookOutlinePosition[     51625,       1522]
+CellTagsIndexPosition[     51539,       1517]
+WindowTitle->TheOperator
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/PauliQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"TheOperator\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/TheOperator"], "\<\"TheWigner\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/TheWigner"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/PauliPackageGuide"], "\<\"Q3 Application Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/TheOperator\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/TheOperator"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/TheOperator.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$180964], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/TheOperator",
+              ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["TheOperator", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"TheOperator", "[", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}]], 
+      "InlineFormula"],
+     "\[LineSeparator]returns the 2\[Times]2 identity matrix regardless of ",
+     Cell[BoxData[
+      StyleBox["\[Theta]", "TR"]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      StyleBox["\[Phi]", "TR"]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"TheOperator", "[", 
+       RowBox[{"{", 
+        RowBox[{
+         StyleBox["\[Mu]", "TR"], ",", 
+         StyleBox["\[Theta]", "TR"], ",", 
+         StyleBox["\[Phi]", "TR"]}], "}"}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the Pauli matrix in the rotated frame specified \
+by the angles ",
+     Cell[BoxData[
+      RowBox[{"(", 
+       RowBox[{
+        StyleBox["\[Theta]", "TR"], ",", 
+        StyleBox["\[Phi]", "TR"]}], ")"}]], "InlineFormula"],
+     ". It is the matrix representation of ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Operator"]], "paclet:Q3/ref/Operator"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"{", 
+        RowBox[{
+         StyleBox["\[Mu]", "TR"], ",", 
+         StyleBox["\[Theta]", "TR"], ",", 
+         StyleBox["\[Phi]", "TR"]}], "}"}], "]"}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"TheOperator", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Theta]", "TR"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Phi]", "TR"], 
+           StyleBox["1", "TR"]]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["2", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Theta]", "TR"], 
+           StyleBox["2", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Phi]", "TR"], 
+           StyleBox["2", "TR"]]}], "}"}], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to the matrix direct product ",
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{"TheOperator", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Theta]", "TR"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Phi]", "TR"], 
+           StyleBox["1", "TR"]]}], "}"}], "]"}], "\[CircleTimes]", 
+       RowBox[{"TheOperator", "[", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["2", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Theta]", "TR"], 
+           StyleBox["2", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Phi]", "TR"], 
+           StyleBox["2", "TR"]]}], "}"}], "]"}], "\[CircleTimes]", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"TheOperator", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        StyleBox["\[Theta]", "TR"], ",", 
+        StyleBox["\[Phi]", "TR"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to ",
+     Cell[BoxData[
+      RowBox[{"TheOperator", "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["1", "TR"]], ",", 
+          StyleBox["\[Theta]", "TR"], ",", 
+          StyleBox["\[Phi]", "TR"]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["\[Mu]", "TR"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Theta]", "TR"], ",", 
+          StyleBox["\[Phi]", "TR"]}], "}"}], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "Rows" -> {None, None, None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1730633060],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "TheOperator[{\[Mu],\[Theta],\[Phi]}] is equivalent to ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["TheEulerRotation"]], "paclet:Q3/ref/TheEulerRotation"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", 
+    RowBox[{"{", 
+     RowBox[{
+      StyleBox["\[Phi]", "TR"], ",", 
+      StyleBox["\[Theta]", "TR"], ",", "0"}], "}"}], "]"}], ".", 
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["ThePauli"]], "paclet:Q3/ref/ThePauli"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", 
+    StyleBox["\[Mu]", "TR"], "]"}], ".", 
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["Topple"]], "paclet:Q3/ref/Topple"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", 
+    RowBox[{
+     TemplateBox[{
+       Cell[
+        TextData["TheEulerRotation"]], "paclet:Q3/ref/TheEulerRotation"},
+      "RefLink",
+      BaseStyle->{"InlineFormula"}], "[", 
+     RowBox[{"{", 
+      RowBox[{
+       StyleBox["\[Phi]", "TR"], ",", 
+       StyleBox["\[Theta]", "TR"], ",", "0"}], "}"}], "]"}], "]"}]}]], 
+  "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1067943069]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1231324452],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1717642272],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->716020282],
+
+Cell["In the rotated frame", "ExampleText",
+ CellID->1587128926],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"TheOperator", "[", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}], "//", 
+  "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"TheOperator", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"3", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", "\[Theta]", ",", "\[Phi]"}], "}"}]}], "]"}], "//", 
+  "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"TheOperator", "[", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"3", ",", "2"}], "}"}], ",", "\[Theta]", ",", "\[Phi]"}], "}"}],
+    "]"}], "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->981479895],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"Cos", "[", "\[Theta]", "]"}], 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]},
+     {
+      RowBox[{
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], 
+      RowBox[{"-", 
+       RowBox[{"Cos", "[", "\[Theta]", "]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {2, 2}, 0, {
+     1, {{0, 2, 4}, {{1}, {2}, {2}, {1}}}, {
+      Cos[$CellContext`\[Theta]], 
+       Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+       Complex[0, -1] Sin[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]], -
+       Cos[$CellContext`\[Theta]], 
+       Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+       Complex[0, 1] Sin[$CellContext`\[Theta]] 
+        Sin[$CellContext`\[Phi]]}}]]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->2120909407],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{
+       RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0"},
+     {"0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Cos", "[", "\[Theta]", "]"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Cos", "[", "\[Theta]", "]"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 2, 4, 6, 8}, {{2}, {4}, {1}, {3}, {4}, {2}, {3}, {1}}}, {
+      Cos[$CellContext`\[Theta]] (Complex[0, -1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, -1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+        Complex[0, -1] Sin[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]]), 
+       Cos[$CellContext`\[Theta]] (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+        Complex[0, -1] Sin[$CellContext`\[Theta]] 
+         Sin[$CellContext`\[Phi]]), (-Cos[$CellContext`\[Theta]]) (
+        Complex[0, -1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]), (
+        Complex[0, -1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+        Complex[0, 1] Sin[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]]), (-
+        Cos[$CellContext`\[Theta]]) (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+        Complex[0, 1] Sin[$CellContext`\[Theta]] 
+         Sin[$CellContext`\[Phi]])}}]]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->43346896],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{
+       RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0"},
+     {"0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Cos", "[", "\[Theta]", "]"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Cos", "[", "\[Theta]", "]"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 2, 4, 6, 8}, {{2}, {4}, {1}, {3}, {4}, {2}, {3}, {1}}}, {
+      Cos[$CellContext`\[Theta]] (Complex[0, -1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, -1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+        Complex[0, -1] Sin[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]]), 
+       Cos[$CellContext`\[Theta]] (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+        Complex[0, -1] Sin[$CellContext`\[Theta]] 
+         Sin[$CellContext`\[Phi]]), (-Cos[$CellContext`\[Theta]]) (
+        Complex[0, -1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]), (
+        Complex[0, -1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+        Complex[0, 1] Sin[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]]), (-
+        Cos[$CellContext`\[Theta]]) (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+        Complex[0, 1] Sin[$CellContext`\[Theta]] 
+         Sin[$CellContext`\[Phi]])}}]]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->534324739]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"m", "[", "1", "]"}], "=", 
+   RowBox[{"TheOperator", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"2", ",", "\[Theta]", ",", "\[Phi]"}], "}"}]}], "]"}]}], ";", 
+  RowBox[{
+   RowBox[{"m", "[", "1", "]"}], "//", 
+   "MatrixForm"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"m", "[", "2", "]"}], "=", 
+   RowBox[{"TheOperator", "[", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"1", ",", "2"}], "}"}], ",", "\[Theta]", ",", "\[Phi]"}], 
+     "}"}], "]"}]}], ";", 
+  RowBox[{
+   RowBox[{"m", "[", "2", "]"}], "//", 
+   "MatrixForm"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"m", "[", "1", "]"}], "-", 
+   RowBox[{"m", "[", "2", "]"}]}], "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->691410609],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0"},
+     {"0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 2, 4, 6, 8}, {{2}, {4}, {1}, {3}, {4}, {2}, {3}, {
+       1}}}, {(-Sin[$CellContext`\[Theta]]) (
+        Complex[0, -1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]), (
+        Complex[0, -1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Theta]] Cos[$CellContext`\[Phi]] + 
+        Complex[0, -1] Cos[$CellContext`\[Theta]] 
+         Sin[$CellContext`\[Phi]]), (-Sin[$CellContext`\[Theta]]) (
+        Complex[0, 1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]), (
+        Complex[0, 1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Theta]] Cos[$CellContext`\[Phi]] + 
+        Complex[0, -1] Cos[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]]), 
+       Sin[$CellContext`\[Theta]] (Complex[0, -1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, -1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Theta]] Cos[$CellContext`\[Phi]] + 
+        Complex[0, 1] Cos[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]]), 
+       Sin[$CellContext`\[Theta]] (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Theta]] Cos[$CellContext`\[Phi]] + 
+        Complex[0, 1] Cos[$CellContext`\[Theta]] 
+         Sin[$CellContext`\[Phi]])}}]]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->167521665],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0"},
+     {"0", 
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], "0", 
+      RowBox[{
+       RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Cos", "[", "\[Phi]", "]"}]}], "-", 
+         RowBox[{"Sin", "[", "\[Phi]", "]"}]}], ")"}]}], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 2, 4, 6, 8}, {{2}, {4}, {1}, {3}, {4}, {2}, {3}, {
+       1}}}, {(-Sin[$CellContext`\[Theta]]) (
+        Complex[0, -1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]), (
+        Complex[0, -1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Theta]] Cos[$CellContext`\[Phi]] + 
+        Complex[0, -1] Cos[$CellContext`\[Theta]] 
+         Sin[$CellContext`\[Phi]]), (-Sin[$CellContext`\[Theta]]) (
+        Complex[0, 1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]), (
+        Complex[0, 1] Cos[$CellContext`\[Phi]] - Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Theta]] Cos[$CellContext`\[Phi]] + 
+        Complex[0, -1] Cos[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]]), 
+       Sin[$CellContext`\[Theta]] (Complex[0, -1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, -1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Theta]] Cos[$CellContext`\[Phi]] + 
+        Complex[0, 1] Cos[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]]), 
+       Sin[$CellContext`\[Theta]] (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]), (Complex[0, 1] Cos[$CellContext`\[Phi]] - 
+        Sin[$CellContext`\[Phi]]) (
+        Cos[$CellContext`\[Theta]] Cos[$CellContext`\[Phi]] + 
+        Complex[0, 1] Cos[$CellContext`\[Theta]] 
+         Sin[$CellContext`\[Phi]])}}]]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->185562438],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"},
+     {"0", "0", "0", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 2, 4, 6, 8}, {{2}, {4}, {1}, {3}, {4}, {2}, {3}, {1}}}, {0, 0, 0,
+       0, 0, 0, 0, 0}}]]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->601640022]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"s", "=", 
+   RowBox[{"TheOperator", "[", 
+    RowBox[{"{", 
+     RowBox[{"3", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"s", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->784367160],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"Cos", "[", "\[Theta]", "]"}], 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]},
+     {
+      RowBox[{
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], 
+      RowBox[{"-", 
+       RowBox[{"Cos", "[", "\[Theta]", "]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {2, 2}, 0, {
+     1, {{0, 2, 4}, {{1}, {2}, {2}, {1}}}, {
+      Cos[$CellContext`\[Theta]], 
+       Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+       Complex[0, -1] Sin[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]], -
+       Cos[$CellContext`\[Theta]], 
+       Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+       Complex[0, 1] Sin[$CellContext`\[Theta]] 
+        Sin[$CellContext`\[Phi]]}}]]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->939602936]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"TheHadamard", "[", "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->684052953],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", 
+      SqrtBox["2"]], ",", 
+     FractionBox["1", 
+      SqrtBox["2"]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     FractionBox["1", 
+      SqrtBox["2"]], ",", 
+     RowBox[{"-", 
+      FractionBox["1", 
+       SqrtBox["2"]]}]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1024528460]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"R", "=", 
+   RowBox[{
+    RowBox[{"TheRotation", "[", 
+     RowBox[{
+      RowBox[{"Pi", "/", "2"}], ",", "2"}], "]"}], ".", 
+    RowBox[{"ThePauli", "[", "3", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"R", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->881372933],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]]},
+     {
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {2, 2}, 0, {
+     1, {{0, 2, 4}, {{1}, {2}, {2}, {1}}}, {
+      2^Rational[-1, 2], 2^Rational[-1, 2], -2^Rational[-1, 2], 2^
+       Rational[-1, 2]}}]]]]], "Output",
+ CellLabel->"Out[6]//MatrixForm=",
+ CellID->1496738005]
+}, Open  ]],
+
+Cell["In a rotated frame: another test", "ExampleText",
+ CellID->292218955],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ss", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"Pauli", "[", "1", "]"}], ",", 
+     RowBox[{"Pauli", "[", "2", "]"}], ",", 
+     RowBox[{"Pauli", "[", "3", "]"}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"rotJ", "[", "n_", "]"}], ":=", 
+  RowBox[{"ss", ".", 
+   RowBox[{"EulerMatrix", "[", 
+    RowBox[{"{", 
+     RowBox[{"\[Phi]", ",", "\[Theta]", ",", "0"}], "}"}], "]"}], ".", 
+   RowBox[{"UnitVector", "[", 
+    RowBox[{"3", ",", "n"}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"matJ", "[", "n_", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"rotJ", "[", "n", "]"}], "//", "Matrix"}]}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->28875996],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"rotJ", "[", "3", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"matJ", "[", "3", "]"}], "//", "Simplify"}], "//", 
+  "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"TheOperator", "[", 
+   RowBox[{"{", 
+    RowBox[{"3", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}], "//", 
+  "MatrixForm"}]}], "Input",
+ CellLabel->"In[8]:=",
+ CellID->2135044197],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"Cos", "[", "\[Theta]", "]"}], " ", 
+   TagBox[
+    SuperscriptBox["\[Sigma]", "z"],
+    DisplayForm]}], "+", 
+  RowBox[{
+   RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+   TagBox[
+    SuperscriptBox["\[Sigma]", "x"],
+    DisplayForm], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+  RowBox[{
+   TagBox[
+    SuperscriptBox["\[Sigma]", "y"],
+    DisplayForm], " ", 
+   RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+   RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->782449602],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"Cos", "[", "\[Theta]", "]"}], 
+      RowBox[{
+       RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"Cos", "[", "\[Phi]", "]"}], "-", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}]},
+     {
+      RowBox[{
+       RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{"Cos", "[", "\[Phi]", "]"}], "+", 
+         RowBox[{"\[ImaginaryI]", " ", 
+          RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], ")"}]}], 
+      RowBox[{"-", 
+       RowBox[{"Cos", "[", "\[Theta]", "]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {2, 2}, 0, {
+     1, {{0, 2, 4}, {{1}, {2}, {2}, {1}}}, {
+      Cos[$CellContext`\[Theta]], 
+       Sin[$CellContext`\[Theta]] (Cos[$CellContext`\[Phi]] + 
+        Complex[0, -1] Sin[$CellContext`\[Phi]]), -Cos[$CellContext`\[Theta]],
+        Sin[$CellContext`\[Theta]] (Cos[$CellContext`\[Phi]] + 
+        Complex[0, 1] Sin[$CellContext`\[Phi]])}}]]]]], "Output",
+ CellLabel->"Out[8]//MatrixForm=",
+ CellID->1588090233],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"Cos", "[", "\[Theta]", "]"}], 
+      RowBox[{
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "-", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}]},
+     {
+      RowBox[{
+       RowBox[{
+        RowBox[{"Cos", "[", "\[Phi]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}]}], "+", 
+       RowBox[{"\[ImaginaryI]", " ", 
+        RowBox[{"Sin", "[", "\[Theta]", "]"}], " ", 
+        RowBox[{"Sin", "[", "\[Phi]", "]"}]}]}], 
+      RowBox[{"-", 
+       RowBox[{"Cos", "[", "\[Theta]", "]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {2, 2}, 0, {
+     1, {{0, 2, 4}, {{1}, {2}, {2}, {1}}}, {
+      Cos[$CellContext`\[Theta]], 
+       Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+       Complex[0, -1] Sin[$CellContext`\[Theta]] Sin[$CellContext`\[Phi]], -
+       Cos[$CellContext`\[Theta]], 
+       Cos[$CellContext`\[Phi]] Sin[$CellContext`\[Theta]] + 
+       Complex[0, 1] Sin[$CellContext`\[Theta]] 
+        Sin[$CellContext`\[Phi]]}}]]]]], "Output",
+ CellLabel->"Out[8]//MatrixForm=",
+ CellID->2105781115]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"TheOperator", "[", 
+    RowBox[{"{", 
+     RowBox[{"3", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}], "\[Equal]", 
+   
+   RowBox[{"matJ", "[", "3", "]"}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"TheOperator", "[", 
+    RowBox[{"{", 
+     RowBox[{"2", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}], "\[Equal]", 
+   
+   RowBox[{"matJ", "[", "2", "]"}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"TheOperator", "[", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "\[Theta]", ",", "\[Phi]"}], "}"}], "]"}], "\[Equal]", 
+   
+   RowBox[{"matJ", "[", "1", "]"}]}], "//", "Simplify"}]}], "Input",
+ CellLabel->"In[9]:=",
+ CellID->1323805232],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[9]=",
+ CellID->500937961],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[9]=",
+ CellID->1128414287],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[9]=",
+ CellID->830834952]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TheOperator"]], "paclet:Q3/ref/TheOperator"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["TheWigner"]], "paclet:Q3/ref/TheWigner"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/PauliQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->696591071],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/PauliPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->738140216],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3 Application Guide"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->228014889]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"TheOperator",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 42, 54.328577}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "TheOperator[{0, \\[Theta], \\[Phi]}] returns the 2*2 identity matrix \
+regardless of \\[Theta] and \\[Phi]. TheOperator[{\\[Mu], \\[Theta], \
+\\[Phi]}] returns the Pauli matrix in the rotated frame specified by the \
+angles (\\[Theta], \\[Phi]). It is the matrix representation of \
+Operator[{\\[Mu], \\[Theta], \\[Phi]}]. TheOperator[{\\[Mu]1, \\[Theta]1, \
+\\[Phi]1}, {\\[Mu]2, \\[Theta]2, \\ \\[Phi]2}, ...] is equivalent to the \
+matrix direct product TheOperator[{\\[Mu]1, \\[Theta]1, \
+\\[Phi]1}]\\[CircleTimes]TheOperator[{\\ \\[Mu]2, \\[Theta]2, \
+\\[Phi]2}]\\[CircleTimes].... TheOperator[{\\[Mu]1, \\[Mu]2, ...}, \\[Theta], \
+\\[Phi]] is equivalent to TheOperator[{\\[Mu]1, \\[Theta], \\[Phi]}, \
+{\\[Mu]2, \\[Theta], \\[Phi]}, \\ ...].", "synonyms" -> {}, "tabletags" -> {},
+     "title" -> "TheOperator", "titlemodifier" -> "", "windowtitle" -> 
+    "TheOperator", "type" -> "Symbol", "uri" -> "Q3/ref/TheOperator", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> "", "NewStyles" -> 
+  False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[11654, 359, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a2fa6a1b-e49d-4424-9414-19cdc4af0aa7",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1231324452]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 51339, 1510}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[583, 21, 4398, 112, 70, "AnchorBarGrid",ExpressionUUID->"16ee5559-94a1-48f2-9b0a-71b251a20554",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5006, 137, 168, 6, 70, "ObjectNameGrid",ExpressionUUID->"1ba510bd-aea8-42b0-a7aa-8e9d66115419"],
+Cell[5177, 145, 4592, 141, 70, "Usage",ExpressionUUID->"5078ab10-220f-4dcb-b07e-9b530a0d33fa"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9806, 291, 630, 19, 70, "NotesSection",ExpressionUUID->"0a5d85f4-ba70-4eae-8b8a-8fdc98bd535d",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1730633060],
+Cell[10439, 312, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"d6e44b1f-b578-4b6a-aca2-ff980673774e"],
+Cell[10473, 314, 1144, 40, 70, "Notes",ExpressionUUID->"43372098-b7cc-48a0-885d-64e9700ac867",
+ CellID->1067943069]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[11654, 359, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a2fa6a1b-e49d-4424-9414-19cdc4af0aa7",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1231324452],
+Cell[CellGroupData[{
+Cell[11947, 373, 196, 6, 70, "ExampleSection",ExpressionUUID->"a2676983-09cb-4ab6-a255-4bb458cb1730",
+ CellID->1717642272],
+Cell[12146, 381, 90, 3, 70, "Input",ExpressionUUID->"32dec389-321a-48a8-b274-3c3f4baec3cf",
+ CellID->716020282],
+Cell[12239, 386, 64, 1, 70, "ExampleText",ExpressionUUID->"bf9e213f-be7e-4b31-998e-6fcd01a26148",
+ CellID->1587128926],
+Cell[CellGroupData[{
+Cell[12328, 391, 713, 22, 70, "Input",ExpressionUUID->"ba2bb2f1-58aa-4530-bb49-bbe388f06025",
+ CellID->981479895],
+Cell[13044, 415, 1625, 44, 70, "Output",ExpressionUUID->"353e4f21-00ef-41cf-9682-1915f37717b5",
+ CellID->2120909407],
+Cell[14672, 461, 5332, 133, 70, "Output",ExpressionUUID->"48019007-a827-4489-b6f5-2e5a4a177c7d",
+ CellID->43346896],
+Cell[20007, 596, 5333, 133, 70, "Output",ExpressionUUID->"51fd7e65-7d70-4aa1-b775-3e390301e433",
+ CellID->534324739]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[25377, 734, 908, 30, 70, "Input",ExpressionUUID->"3dfcff9c-b7a3-4cfb-a21d-b5f616a79292",
+ CellID->691410609],
+Cell[26288, 766, 5333, 133, 70, "Output",ExpressionUUID->"1225d5ac-5f30-4e8f-a786-ec4e5250ba89",
+ CellID->167521665],
+Cell[31624, 901, 5333, 133, 70, "Output",ExpressionUUID->"0a646cd4-46be-41f3-893f-9cfc8650f7c5",
+ CellID->185562438],
+Cell[36960, 1036, 748, 23, 70, "Output",ExpressionUUID->"526fed16-1d3a-4b20-84f3-ed737de6b220",
+ CellID->601640022]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[37745, 1064, 287, 9, 70, "Input",ExpressionUUID->"af90b98c-cf41-4c15-b9c0-29969baf2d2e",
+ CellID->784367160],
+Cell[38035, 1075, 1624, 44, 70, "Output",ExpressionUUID->"41070575-0753-4e9e-9aa5-23f1b396b314",
+ CellID->939602936]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[39696, 1124, 102, 3, 70, "Input",ExpressionUUID->"f69ec7d8-e2ed-4cb3-a2a0-5be8d4b1d8a6",
+ CellID->684052953],
+Cell[39801, 1129, 398, 17, 70, "Output",ExpressionUUID->"dd3492b7-d753-4fb5-9fb9-0b1a6cc4c634",
+ CellID->1024528460]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40236, 1151, 327, 10, 70, "Input",ExpressionUUID->"82aa7ff9-0f85-4bba-9673-61c80bbf6df1",
+ CellID->881372933],
+Cell[40566, 1163, 902, 31, 70, "Output",ExpressionUUID->"2239a16a-0bee-4551-8f95-8015a0bc099a",
+ CellID->1496738005]
+}, Open  ]],
+Cell[41483, 1197, 75, 1, 70, "ExampleText",ExpressionUUID->"3da43241-43d1-4ae7-b7d4-14887cc98e4e",
+ CellID->292218955],
+Cell[41561, 1200, 715, 22, 70, "Input",ExpressionUUID->"aeeabe5f-5704-4ccc-9192-a73bcd5822eb",
+ CellID->28875996],
+Cell[CellGroupData[{
+Cell[42301, 1226, 401, 12, 70, "Input",ExpressionUUID->"94367e7b-65b9-4084-ab28-0f63d2601e14",
+ CellID->2135044197],
+Cell[42705, 1240, 564, 20, 70, "Output",ExpressionUUID->"54bc3508-fcdf-4638-9276-a8263314211e",
+ CellID->782449602],
+Cell[43272, 1262, 1520, 42, 70, "Output",ExpressionUUID->"acf5b81d-2119-4022-a0e8-5f2d531b2f1f",
+ CellID->1588090233],
+Cell[44795, 1306, 1625, 44, 70, "Output",ExpressionUUID->"63a59143-4376-48a0-b471-7ba787c875ee",
+ CellID->2105781115]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[46457, 1355, 759, 25, 70, "Input",ExpressionUUID->"5bf79658-0988-41b8-9f67-41b0b122dfae",
+ CellID->1323805232],
+Cell[47219, 1382, 74, 2, 70, "Output",ExpressionUUID->"bf39d614-fed9-44b4-a632-9a6012b29dba",
+ CellID->500937961],
+Cell[47296, 1386, 75, 2, 70, "Output",ExpressionUUID->"acaa8107-83bd-41f1-a8dc-221dae5bcecd",
+ CellID->1128414287],
+Cell[47374, 1390, 74, 2, 70, "Output",ExpressionUUID->"7b1c1af3-d0b0-4981-bf82-244f00977d39",
+ CellID->830834952]
+}, Open  ]]
+}, Open  ]],
+Cell[47475, 1396, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"524aff6a-eae9-4233-a07b-057de935c2b5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[47543, 1401, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"44993042-7c3d-4977-9022-40e845c38eb1",
+ CellID->1255426704],
+Cell[47696, 1410, 552, 18, 70, "SeeAlso",ExpressionUUID->"651ead41-fc22-4d5b-abf0-13a6f57be130",
+ CellID->929782353],
+Cell[48251, 1430, 187, 6, 70, "Tutorials",ExpressionUUID->"2b61b9a3-0363-404b-8a7b-b3070f94efad",
+ CellID->696591071],
+Cell[48441, 1438, 187, 6, 70, "MoreAbout",ExpressionUUID->"13977bb9-36e5-4d9f-bc92-34a793cc5194",
+ CellID->738140216],
+Cell[48631, 1446, 173, 6, 70, "MoreAbout",ExpressionUUID->"ea22f93a-0ae2-4856-928e-d898d92d6710",
+ CellID->228014889]
+}, Open  ]],
+Cell[48819, 1455, 23, 0, 70, "FooterCell",ExpressionUUID->"150e181d-1f00-4236-b605-84395158f712"]
+}
+]
+*)
+
+(* End of internal cache information *)

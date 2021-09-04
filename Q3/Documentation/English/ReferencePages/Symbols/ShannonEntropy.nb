@@ -1,0 +1,721 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     22076,        712]
+NotebookOptionsPosition[     15211,        563]
+NotebookOutlinePosition[     17551,        621]
+CellTagsIndexPosition[     17466,        616]
+WindowTitle->ShannonEntropy
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"VonNeumannEntropy\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/VonNeumannEntropy"], "\<\"Entropy\"\>":>
+       Documentation`HelpLookup["paclet:ref/Entropy"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/ShannonEntropy\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/ShannonEntropy"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                
+                "http://reference.wolfram.com/language/Q3/ref/ShannonEntropy.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$165621], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/ShannonEntropy", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell["ShannonEntropy", "ObjectName"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]]],
+     Cell[BoxData[""], "ObjectNameTranslation"]
+    }]], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        GraphicsBox[InsetBox[
+          StyleBox["\<\"NEW IN ??\"\>",
+           StripOnInput->False,
+           FontFamily->"Source Sans Pro",
+           FontSize->18,
+           FontWeight->"Bold",
+           FontSlant->"Italic",
+           FontColor->RGBColor[0.968627, 0.466667, 0]], {0, 0}],
+         AxesStyle->Large,
+         FrameStyle->Large,
+         ImageSize->{120, 24},
+         PlotRangePadding->Scaled[0.025]],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewIn10Graphic",
+       StripOnInput->False],
+      "New in 11",
+      TooltipDelay->0.3]],
+     Magnification->1]}
+  }]], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["ShannonEntropy"]], "paclet:Q3/ref/ShannonEntropy"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox[
+          StyleBox["p", "TI"], 
+          StyleBox["1", "TR"]], ",", 
+         SubscriptBox[
+          StyleBox["p", "TI"], 
+          StyleBox["2", "TR"]], ",", 
+         StyleBox["\[Ellipsis]", "TR"]}], "}"}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]returns the base 2 Shannon entropy for the classical \
+probability distribution ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["p", "TI"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["p", "TI"], 
+         StyleBox["2", "TR"]], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "}"}]], "InlineFormula"],
+     "."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["ShannonEntropy"]], "paclet:Q3/ref/ShannonEntropy"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["p", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["p", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["q", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["q", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the ",
+     StyleBox["relative",
+      FontSlant->"Italic"],
+     " entropy between the two probability distributions ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["p", "TI"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["p", "TI"], 
+         StyleBox["2", "TR"]], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "}"}]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["q", "TI"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["q", "TI"], 
+         StyleBox["2", "TR"]], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "}"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}}},
+ CellID->1301223039]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1777404181],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "The logarithm involved in the evaluation is to base 2. If other base is \
+necessary, multiply the result by a factor ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["Log"]], "paclet:ref/Log"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", "2", "]"}], "/", 
+   RowBox[{
+    TemplateBox[{
+      Cell[
+       TextData["Log"]], "paclet:ref/Log"},
+     "RefLink",
+     BaseStyle->{"InlineFormula"}], "[", 
+    StyleBox["base", "TI"], "]"}]}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1580299307],
+
+Cell["\<\
+Shannon entropy is a measure of the uncertainty of a random variable.\
+\>", "Notes",
+ CellID->1829639072],
+
+Cell["\<\
+Relative (Shannon) entropy is a measure of the difference between two \
+probability distributions.\
+\>", "Notes",
+ CellID->1608679502],
+
+Cell["\<\
+The relative entropy between any two probability distributions is \
+non-negative.\
+\>", "Notes",
+ CellID->2076158791],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1334540297],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1299562411],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1687087772],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"prb", "=", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "3", ",", "1", ",", "5", ",", "3", ",", "4"}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"prb", "/=", 
+  RowBox[{"Total", "[", "prb", "]"}]}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->680835463],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", "17"], ",", 
+   FractionBox["3", "17"], ",", 
+   FractionBox["1", "17"], ",", 
+   FractionBox["5", "17"], ",", 
+   FractionBox["3", "17"], ",", 
+   FractionBox["4", "17"]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->554063568]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ent", "=", 
+  RowBox[{"ShannonEntropy", "[", "prb", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->98851087],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox[
+   RowBox[{"5", " ", 
+    RowBox[{"Log", "[", 
+     FractionBox["17", "5"], "]"}]}], 
+   RowBox[{"17", " ", 
+    RowBox[{"Log", "[", "2", "]"}]}]], "+", 
+  FractionBox[
+   RowBox[{"4", " ", 
+    RowBox[{"Log", "[", 
+     FractionBox["17", "4"], "]"}]}], 
+   RowBox[{"17", " ", 
+    RowBox[{"Log", "[", "2", "]"}]}]], "+", 
+  FractionBox[
+   RowBox[{"6", " ", 
+    RowBox[{"Log", "[", 
+     FractionBox["17", "3"], "]"}]}], 
+   RowBox[{"17", " ", 
+    RowBox[{"Log", "[", "2", "]"}]}]], "+", 
+  FractionBox[
+   RowBox[{"2", " ", 
+    RowBox[{"Log", "[", "17", "]"}]}], 
+   RowBox[{"17", " ", 
+    RowBox[{"Log", "[", "2", "]"}]}]]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1018099588]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ent", "//", "N"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->565247807],
+
+Cell[BoxData["2.3745560483818835`"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1952551552]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1200765697],
+
+Cell["Consider two probability distributions.", "ExampleText",
+ CellID->358486227],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"pp", "=", 
+  RowBox[{"Normalize", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "3", ",", "1", ",", "5", ",", "3", ",", "4"}], "}"}], 
+    ",", "Total"}], "]"}]}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->98298485],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", "17"], ",", 
+   FractionBox["3", "17"], ",", 
+   FractionBox["1", "17"], ",", 
+   FractionBox["5", "17"], ",", 
+   FractionBox["3", "17"], ",", 
+   FractionBox["4", "17"]}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->870274440]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"qq", "=", 
+  RowBox[{"Normalize", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "3", ",", "2", ",", "4", ",", "1", ",", "1"}], "}"}], 
+    ",", "Total"}], "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->828444533],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   FractionBox["1", "12"], ",", 
+   FractionBox["1", "4"], ",", 
+   FractionBox["1", "6"], ",", 
+   FractionBox["1", "3"], ",", 
+   FractionBox["1", "12"], ",", 
+   FractionBox["1", "12"]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->604224727]
+}, Open  ]],
+
+Cell["\<\
+This gives the (classical) relative entropy between the two probability \
+distributions\
+\>", "ExampleText",
+ CellID->1316109597],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"rel", "=", 
+  RowBox[{"ShannonEntropy", "[", 
+   RowBox[{"pp", ",", "qq"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"rel", "//", "N"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1560551474],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["6", "17"], "+", 
+  FractionBox[
+   RowBox[{"5", " ", 
+    RowBox[{"Log", "[", "3", "]"}]}], 
+   RowBox[{"17", " ", 
+    RowBox[{"Log", "[", "2", "]"}]}]], "+", 
+  FractionBox[
+   RowBox[{"Log", "[", "6", "]"}], 
+   RowBox[{"17", " ", 
+    RowBox[{"Log", "[", "2", "]"}]}]], "+", 
+  FractionBox[
+   RowBox[{"8", " ", 
+    RowBox[{"Log", "[", "12", "]"}]}], 
+   RowBox[{"17", " ", 
+    RowBox[{"Log", "[", "2", "]"}]}]]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1999992844],
+
+Cell[BoxData["2.6582044123585993`"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1465686264]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->2047128619],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["VonNeumannEntropy"]], "paclet:Q3/ref/VonNeumannEntropy"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Entropy"]], "paclet:ref/Entropy"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->1255190946]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Links"
+}], "RelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->1827089769],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData[
+     "T. M. Cover and J. A. Thomas, Elements of Information Theory, 2nd Ed. \
+(Wiley, 2006)"]], "https://doi.org/10.1002/047174882X"},
+   "WebLink",
+   BaseStyle->{"RelatedLinks"}]]],
+ "."
+}], "RelatedLinks",
+ CellID->1029079130]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"ShannonEntropy",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 41, 22.061199}", 
+    "history" -> {"??", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"information theory"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "ShannonEntropy[{p1, p2, ...}] returns the base 2 Shannon entropy for the \
+classical probability distribution {p1, p2, ...}. ShannonEntropy[{p1, p2, \
+...}, {q1, q2, ...}] returns the relative entropy between the two probability \
+distributions {p1, p2, ...} and {q1, q2, ...}.", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "ShannonEntropy", "titlemodifier" -> "", 
+    "windowtitle" -> "ShannonEntropy", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/ShannonEntropy", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[9079, 294, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c2b8e404-5ba0-4d43-9f80-6aacb0d49c50",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1334540297]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 17267, 609}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[586, 21, 3107, 77, 70, "AnchorBarGrid",ExpressionUUID->"d28c2e2b-90db-4593-af66-c3f0e4a3913e",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3718, 102, 888, 29, 70, "ObjectNameGrid",ExpressionUUID->"b6789f4a-c087-4535-822d-9f81778cb72c"],
+Cell[4609, 133, 2737, 89, 70, "Usage",ExpressionUUID->"7db74b59-d472-4f6e-b238-36bec3ec2a41",
+ CellID->1301223039]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7383, 227, 630, 19, 70, "NotesSection",ExpressionUUID->"167c3578-7490-4d41-a3be-ddab78cefa2a",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1777404181],
+Cell[8016, 248, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"538bdf02-f3a1-4f0b-8455-085233f7487d"],
+Cell[8050, 250, 563, 20, 70, "Notes",ExpressionUUID->"18bd138c-16e1-41ca-9773-d5a70fe0763e",
+ CellID->1580299307],
+Cell[8616, 272, 115, 3, 70, "Notes",ExpressionUUID->"1c164117-c79b-4179-ba57-682180d748c2",
+ CellID->1829639072],
+Cell[8734, 277, 144, 4, 70, "Notes",ExpressionUUID->"c5b733c2-7ebe-4208-828a-7261cbfc1d78",
+ CellID->1608679502],
+Cell[8881, 283, 127, 4, 70, "Notes",ExpressionUUID->"b7c90b17-8244-40a9-b0d7-e551c0143d82",
+ CellID->2076158791],
+Cell[9011, 289, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"85c20c08-787b-491b-8309-ec9a0c3a603e"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[9079, 294, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c2b8e404-5ba0-4d43-9f80-6aacb0d49c50",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1334540297],
+Cell[CellGroupData[{
+Cell[9372, 308, 196, 6, 70, "ExampleSection",ExpressionUUID->"2a641927-8c42-488c-8240-c5995f43661d",
+ CellID->1299562411],
+Cell[9571, 316, 91, 3, 70, "Input",ExpressionUUID->"659612d0-7700-4b92-b358-7feb45193c8d",
+ CellID->1687087772],
+Cell[CellGroupData[{
+Cell[9687, 323, 293, 9, 70, "Input",ExpressionUUID->"1df7c839-0040-4907-adaa-c754e85a828b",
+ CellID->680835463],
+Cell[9983, 334, 294, 10, 70, "Output",ExpressionUUID->"71417918-8622-48cc-84fe-e9f0206fb26f",
+ CellID->554063568]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10314, 349, 136, 4, 70, "Input",ExpressionUUID->"dda5fd42-572b-4925-b8e9-8b9075c296ab",
+ CellID->98851087],
+Cell[10453, 355, 726, 26, 70, "Output",ExpressionUUID->"add1cf86-b48d-40b2-b2ab-0ec33a68763f",
+ CellID->1018099588]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11216, 386, 95, 3, 70, "Input",ExpressionUUID->"334c7ec7-4f02-46ca-8afc-6d9bb8af115f",
+ CellID->565247807],
+Cell[11314, 391, 90, 2, 70, "Output",ExpressionUUID->"c1ff0dec-975e-47d1-a717-c80bb7b97f6e",
+ CellID->1952551552]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11441, 398, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"226dceee-ab49-4c69-92b4-3402c588cc31",
+ CellID->1200765697],
+Cell[11570, 403, 82, 1, 70, "ExampleText",ExpressionUUID->"9a07696a-41e5-4a71-bb7a-73aa55842f51",
+ CellID->358486227],
+Cell[CellGroupData[{
+Cell[11677, 408, 252, 8, 70, "Input",ExpressionUUID->"9fb0dfd2-1e6a-41b8-881e-65c8d52edbb2",
+ CellID->98298485],
+Cell[11932, 418, 294, 10, 70, "Output",ExpressionUUID->"e8f35b90-b6a8-432b-8403-0eda91c45ba8",
+ CellID->870274440]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12263, 433, 253, 8, 70, "Input",ExpressionUUID->"50f3208b-97ed-464a-b207-79c7f810c9dd",
+ CellID->828444533],
+Cell[12519, 443, 291, 10, 70, "Output",ExpressionUUID->"5bae87b9-0bdc-4357-8565-6f85bc60488c",
+ CellID->604224727]
+}, Open  ]],
+Cell[12825, 456, 139, 4, 70, "ExampleText",ExpressionUUID->"69efbafb-86a8-44dc-bb2e-628551ed0838",
+ CellID->1316109597],
+Cell[CellGroupData[{
+Cell[12989, 464, 217, 6, 70, "Input",ExpressionUUID->"eefac7e5-20fb-46fa-ad84-76cf78bc4e7c",
+ CellID->1560551474],
+Cell[13209, 472, 514, 18, 70, "Output",ExpressionUUID->"d9fa343c-87c8-4189-893b-968449b2ce07",
+ CellID->1999992844],
+Cell[13726, 492, 90, 2, 70, "Output",ExpressionUUID->"e4044f06-ef4f-4ac8-900c-734942fdcc87",
+ CellID->1465686264]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[13855, 499, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"88cc88a9-5891-4493-aa0e-c99f3873f8e1"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13923, 504, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"fbea2d23-7db8-4418-b2ab-4d30d92659e5",
+ CellID->2047128619],
+Cell[14076, 513, 558, 18, 70, "SeeAlso",ExpressionUUID->"33a3530b-3136-41db-84f6-f36505f31823",
+ CellID->1255190946]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14671, 536, 160, 7, 70, "RelatedLinksSection",ExpressionUUID->"c65dbb52-55c7-4b05-b931-4b4654c4d1ea",
+ CellID->1827089769],
+Cell[14834, 545, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6e7a5f90-f362-4121-a97f-5937b98dcd80"],
+Cell[14868, 547, 301, 11, 70, "RelatedLinks",ExpressionUUID->"85f5401e-5ed7-422e-9899-9043b3523260",
+ CellID->1029079130]
+}, Open  ]],
+Cell[15184, 561, 23, 0, 70, "FooterCell",ExpressionUUID->"1af1fcc5-f5f3-42d8-9b1c-cfeedfb3a4a7"]
+}
+]
+*)
+
+(* End of internal cache information *)

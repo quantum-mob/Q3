@@ -1,0 +1,854 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     25155,        845]
+NotebookOptionsPosition[     17606,        684]
+NotebookOutlinePosition[     19818,        741]
+CellTagsIndexPosition[     19733,        736]
+WindowTitle->LieSeries
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/FockQuickStart"], "\<\"Demo: Baker-Hausdorff Lemma\
+\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/tutorial/DemoBakerHausdorffLemma"], "\<\"Q3: Quick \
+Start\"\>":>Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Lie\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Lie"], "\<\"LiePower\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/LiePower"], "\<\"LieExp\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/LieExp"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/FockPackageGuide"], "\<\"Q3\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/LieSeries\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/LieSeries"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/LieSeries.html"]\
+, StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$102688], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/LieSeries", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["LieSeries", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"LieSeries", "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", " ", 
+        StyleBox["b", "TI"], ",", " ", 
+        StyleBox["n", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the finite series up to the ",
+     Cell[BoxData[
+      StyleBox["n", "TI"]], "InlineFormula"],
+     "th order of ",
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{
+        TemplateBox[{
+          Cell[
+           TextData["Exp"]], "paclet:ref/Exp"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}], "[", 
+        StyleBox["a", "TI"], "]"}], " ", "**", " ", 
+       StyleBox["b", "TI"], " ", "**", " ", 
+       RowBox[{
+        TemplateBox[{
+          Cell[
+           TextData["Exp"]], "paclet:ref/Exp"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}], "[", 
+        RowBox[{"-", 
+         StyleBox["a", "TI"]}], "]"}]}]], "InlineFormula"],
+     ". "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"LieSeries", "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", " ", 
+        StyleBox["b", "TI"], ",", " ", 
+        TemplateBox[{
+          Cell[
+           TextData["Infinity"]], "paclet:ref/Infinity"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]is equivalent to ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["LieExp"]], "paclet:Q3/ref/LieExp"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", " ", 
+        StyleBox["b", "TI"]}], "]"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->2111761325],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{"LieSeries", "[", 
+    RowBox[{
+     StyleBox["a", "TI"], ",", 
+     StyleBox["b", "TI"], ",", 
+     StyleBox["n", "TI"]}], "]"}], "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      StyleBox["b", "TI"], "+", 
+      RowBox[{"[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"]}], "]"}], "+", 
+      RowBox[{
+       FractionBox["1", 
+        RowBox[{"2", "!"}]], "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        RowBox[{"[", 
+         RowBox[{
+          StyleBox["a", "TI"], ",", 
+          StyleBox["b", "TI"]}], "]"}]}], "]"}], "+"}], "..."}], "+", 
+    RowBox[{
+     FractionBox["1", 
+      RowBox[{"n", "!"}]], "[", 
+     RowBox[{
+      StyleBox["a", "TI"], ",", 
+      RowBox[{"[", 
+       RowBox[{"...", ",", 
+        RowBox[{
+         RowBox[{"[", 
+          RowBox[{
+           StyleBox["a", "TI"], ",", 
+           StyleBox["b", "TI"]}], "]"}], "..."}]}], "]"}]}]}]}]}]], 
+  "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1067943069],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->910355306],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1668126714],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Cauchy`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1552061332],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"NonCommutative", ",", "A", ",", "B"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->789925752],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"LieSeries", "[", 
+  RowBox[{"A", ",", "B", ",", "3"}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->717770604],
+
+Cell[BoxData[
+ RowBox[{"B", "+", 
+  TagBox[
+   RowBox[{
+    TagBox["\<\"A\"\>",
+     DisplayForm], 
+    TagBox["\<\"B\"\>",
+     DisplayForm]}],
+   DisplayForm], "-", 
+  TagBox[
+   RowBox[{
+    TagBox["\<\"B\"\>",
+     DisplayForm], 
+    TagBox["\<\"A\"\>",
+     DisplayForm]}],
+   DisplayForm], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"B\"\>",
+      DisplayForm]}],
+    DisplayForm], "2"], "-", 
+  TagBox[
+   RowBox[{
+    TagBox["\<\"A\"\>",
+     DisplayForm], 
+    TagBox["\<\"B\"\>",
+     DisplayForm], 
+    TagBox["\<\"A\"\>",
+     DisplayForm]}],
+   DisplayForm], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox["\<\"B\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm]}],
+    DisplayForm], "2"], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"B\"\>",
+      DisplayForm]}],
+    DisplayForm], "6"], "-", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"B\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm]}],
+    DisplayForm], "2"], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"B\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm]}],
+    DisplayForm], "2"], "-", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox["\<\"B\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm], 
+     TagBox["\<\"A\"\>",
+      DisplayForm]}],
+    DisplayForm], "6"]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1103755031]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1276361398],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Fock`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->780589485],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1832947586],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"opN", "=", 
+  RowBox[{"Q", "[", "c", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->827448507],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{
+   TagBox[
+    TagBox[
+     TemplateBox[{
+       TemplateBox[{"c"}, "RowDefault"], 
+       TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+      "Superscript"],
+     DisplayForm],
+    DisplayForm], 
+   TagBox["\<\"c\"\>",
+    DisplayForm]}],
+  DisplayForm]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->997427946]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"LieSeries", "[", 
+  RowBox[{"opN", ",", 
+   RowBox[{"Dagger", "[", "c", "]"}], ",", "3"}], "]"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1189191676],
+
+Cell[BoxData[
+ FractionBox[
+  RowBox[{"8", " ", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Superscript"],
+    DisplayForm]}], "3"]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->794645906]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"LieSeries", "[", 
+  RowBox[{"opN", ",", "c", ",", "3"}], "]"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->903801724],
+
+Cell[BoxData[
+ FractionBox["c", "3"]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->893778579]
+}, Open  ]],
+
+Cell["Let us test it for a large series.", "ExampleText",
+ CellID->152898674],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"LieSeries", "[", 
+   RowBox[{"opN", ",", 
+    RowBox[{"Dagger", "@", "c"}], ",", "50"}], "]"}], "//", "N"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->206071603],
+
+Cell[BoxData[
+ RowBox[{"2.718281828459045`", " ", 
+  TagBox[
+   TemplateBox[{
+     TemplateBox[{"c"}, "RowDefault"], 
+     TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+    "Superscript"],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->894823726]
+}, Open  ]],
+
+Cell["It compares to the infinite series.", "ExampleText",
+ CellID->1627506724],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"LieExp", "[", 
+  RowBox[{"opN", ",", 
+   RowBox[{"Dagger", "@", "c"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"LieExp", "[", 
+   RowBox[{"opN", ",", 
+    RowBox[{"Dagger", "@", "c"}]}], "]"}], "//", "N"}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1927729772],
+
+Cell[BoxData[
+ RowBox[{"\[ExponentialE]", " ", 
+  TagBox[
+   TemplateBox[{
+     TemplateBox[{"c"}, "RowDefault"], 
+     TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+    "Superscript"],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->718118355],
+
+Cell[BoxData[
+ RowBox[{"2.718281828459045`", " ", 
+  TagBox[
+   TemplateBox[{
+     TemplateBox[{"c"}, "RowDefault"], 
+     TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+    "Superscript"],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->557096345]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Lie"]], "paclet:Q3/ref/Lie"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["LiePower"]], "paclet:Q3/ref/LiePower"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["LieExp"]], "paclet:Q3/ref/LieExp"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock: Quick Start"]], "paclet:Q3/tutorial/FockQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Demo: Baker-Hausdorff Lemma"]], 
+   "paclet:Q3/tutorial/DemoBakerHausdorffLemma"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->427565718],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1248419314],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->806670613],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->648729180]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"LieSeries",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 35, 13.786300}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"Baker-Hausdorff lemma", "Lie algebra"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "LieSeries[a, b, n] returns the finite series up to the nth order of \
+Exp[a] ** b ** Exp[-a]. LieSeries[a, b, Infinity] is equivalent to LieExp[a, \
+b].", "synonyms" -> {}, "tabletags" -> {}, "title" -> "LieSeries", 
+    "titlemodifier" -> "", "windowtitle" -> "LieSeries", "type" -> "Symbol", 
+    "uri" -> "Q3/ref/LieSeries", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[9020, 282, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a5be32e1-6a2c-4315-9ec0-e9617ef9c70c",
+   CellTags->"PrimaryExamplesSection",
+   CellID->910355306]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 19535, 729}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[581, 21, 4637, 116, 70, "AnchorBarGrid",ExpressionUUID->"429306e6-e2d8-4e81-b08c-9c96f2d3aa0b",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5243, 141, 166, 6, 70, "ObjectNameGrid",ExpressionUUID->"8c0e374d-d28d-4f3e-adff-1314d78a19b6"],
+Cell[5412, 149, 1794, 58, 70, "Usage",ExpressionUUID->"c65216fb-c126-4a98-99d0-379ab37eeb3c"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7243, 212, 630, 19, 70, "NotesSection",ExpressionUUID->"562014ca-a21d-4ffb-92ff-4c02900fec7c",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->2111761325],
+Cell[7876, 233, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"e8abb7d3-8256-4211-b3e8-6cd921321bb1"],
+Cell[7910, 235, 1039, 40, 70, "Notes",ExpressionUUID->"34948daa-7f47-49a5-9177-3b2c695f3642",
+ CellID->1067943069],
+Cell[8952, 277, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"61801f17-034d-4b8f-9dc9-82773356e636"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[9020, 282, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a5be32e1-6a2c-4315-9ec0-e9617ef9c70c",
+ CellTags->"PrimaryExamplesSection",
+ CellID->910355306],
+Cell[CellGroupData[{
+Cell[9312, 296, 196, 6, 70, "ExampleSection",ExpressionUUID->"f208970f-46b3-49a8-a3cb-e7589e5a4a05",
+ CellID->1668126714],
+Cell[9511, 304, 98, 3, 70, "Input",ExpressionUUID->"e0974cc9-8013-4c17-b1c9-8a31963cb4a4",
+ CellID->1552061332],
+Cell[9612, 309, 145, 4, 70, "Input",ExpressionUUID->"5918bc57-69f2-4abe-b8b6-08dfdbcd0048",
+ CellID->789925752],
+Cell[CellGroupData[{
+Cell[9782, 317, 138, 4, 70, "Input",ExpressionUUID->"8fdc487a-b9b0-47e3-8e10-5c20f73e7f73",
+ CellID->717770604],
+Cell[9923, 323, 1962, 94, 70, "Output",ExpressionUUID->"d96f3d3b-b27c-4532-8187-7a6bb7c48b36",
+ CellID->1103755031]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11922, 422, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"97c0afd9-ab95-4937-8504-d2c6de66b699",
+ CellID->1276361398],
+Cell[12051, 427, 95, 3, 70, "Input",ExpressionUUID->"36d2200d-fd6a-4172-aa3d-ad4fa34d3b2c",
+ CellID->780589485],
+Cell[12149, 432, 129, 4, 70, "Input",ExpressionUUID->"8a8e5cc7-f60e-4b71-9aaf-92e90a134a0a",
+ CellID->1832947586],
+Cell[CellGroupData[{
+Cell[12303, 440, 122, 4, 70, "Input",ExpressionUUID->"39d63b18-68b0-436a-ad58-be235c2947a1",
+ CellID->827448507],
+Cell[12428, 446, 344, 15, 70, "Output",ExpressionUUID->"4f6b0eda-0d94-45ad-b650-2057cc7b7b54",
+ CellID->997427946]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12809, 466, 175, 5, 70, "Input",ExpressionUUID->"fa731006-73a6-4e6e-9b45-ef27eb5cef44",
+ CellID->1189191676],
+Cell[12987, 473, 272, 10, 70, "Output",ExpressionUUID->"b6764175-09ef-4b70-8555-2edd688f6166",
+ CellID->794645906]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13296, 488, 140, 4, 70, "Input",ExpressionUUID->"f5285d9b-918d-4bc4-8821-c0934c3d12c9",
+ CellID->903801724],
+Cell[13439, 494, 91, 3, 70, "Output",ExpressionUUID->"c9ab7ef8-afff-41fc-93bc-c980d1200e8d",
+ CellID->893778579]
+}, Open  ]],
+Cell[13545, 500, 77, 1, 70, "ExampleText",ExpressionUUID->"144373bf-dcf5-4b61-bfb2-c76e3c6f60a4",
+ CellID->152898674],
+Cell[CellGroupData[{
+Cell[13647, 505, 196, 6, 70, "Input",ExpressionUUID->"470bf0cb-52ef-413f-800a-52e5fab3c5e2",
+ CellID->206071603],
+Cell[13846, 513, 262, 9, 70, "Output",ExpressionUUID->"781bb42d-7307-4011-93b3-0d5c1156c867",
+ CellID->894823726]
+}, Open  ]],
+Cell[14123, 525, 79, 1, 70, "ExampleText",ExpressionUUID->"c309bdaf-5f4c-4cad-8223-52b361cf7948",
+ CellID->1627506724],
+Cell[CellGroupData[{
+Cell[14227, 530, 299, 9, 70, "Input",ExpressionUUID->"55db1915-40d8-4e21-a17e-95f8ae8bfc2d",
+ CellID->1927729772],
+Cell[14529, 541, 259, 9, 70, "Output",ExpressionUUID->"1dbc7e10-46b1-4714-906e-8dca1e9b012d",
+ CellID->718118355],
+Cell[14791, 552, 262, 9, 70, "Output",ExpressionUUID->"6fe8bf1f-4876-4948-a12b-9d3458bcdbd0",
+ CellID->557096345]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[15092, 566, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"8351a970-cefc-4bd6-a47a-c86cf35a9542"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15160, 571, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"b37c6567-d983-40d6-854b-8f0976f139d5",
+ CellID->1255426704],
+Cell[15313, 580, 837, 28, 70, "SeeAlso",ExpressionUUID->"06bdf3d3-469d-48e9-9a00-08d5b20c35a3",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16187, 613, 152, 7, 70, "TutorialsSection",ExpressionUUID->"994ed661-b99d-4bb6-a083-5d81d6fac174",
+ CellID->250839057],
+Cell[16342, 622, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"0a50c070-ec6e-4c75-9476-4d2b95808b4d"],
+Cell[16376, 624, 185, 6, 70, "Tutorials",ExpressionUUID->"1e53c49d-c8b1-417c-8e7b-d974fe670abb",
+ CellID->341631938],
+Cell[16564, 632, 208, 7, 70, "Tutorials",ExpressionUUID->"e69dbd52-c792-4eaa-899f-ec9ca8da7948",
+ CellID->427565718],
+Cell[16775, 641, 182, 6, 70, "Tutorials",ExpressionUUID->"c94b0b15-3af3-43ae-a868-094d127f6d63",
+ CellID->1248419314],
+Cell[16960, 649, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"e7449c32-2fea-4ae0-b930-bfb9349f05a7"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17028, 654, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"3f81fc35-ea28-47f6-a677-437602d58c9c",
+ CellID->38303248],
+Cell[17187, 663, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"cc7292e7-f54c-430e-978c-bc05c3557b90"],
+Cell[17221, 665, 185, 6, 70, "MoreAbout",ExpressionUUID->"4e5e12c3-836c-4de4-83e9-7af465c8858a",
+ CellID->806670613],
+Cell[17409, 673, 155, 6, 70, "MoreAbout",ExpressionUUID->"c8295444-b2da-4c06-ac30-6c03570cfa97",
+ CellID->648729180]
+}, Open  ]],
+Cell[17579, 682, 23, 0, 70, "FooterCell",ExpressionUUID->"59a89a1c-5eb8-411b-b673-ae8ef8e92bd6"]
+}
+]
+*)
+
+(* End of internal cache information *)

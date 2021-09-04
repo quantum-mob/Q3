@@ -1,0 +1,927 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     27895,        918]
+NotebookOptionsPosition[     21091,        769]
+NotebookOutlinePosition[     23584,        829]
+CellTagsIndexPosition[     23499,        824]
+WindowTitle->ListPartitions
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"IntegerPartitions\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/IntegerPartitions"], "\<\"FoldPairList\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FoldPairList"], "\<\"Choices\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Choices"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/ListPartitions\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/ListPartitions"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/ListPartitions.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$106630], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/ListPartitions", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["ListPartitions", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["ListPartitions"]], "paclet:Q3/ref/ListPartitions"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       StyleBox["list", "TI"], "]"}]], "InlineFormula"],
+     " \[LineSeparator]gives a list of all possible ways to partition ",
+     Cell[BoxData[
+      StyleBox["list", "TI"]], "InlineFormula"],
+     " into smaller lists."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["ListPartitions"]], "paclet:Q3/ref/ListPartitions"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["list", "TI"], ",", 
+        StyleBox["k", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]gives partitions into at most ",
+     Cell[BoxData[
+      StyleBox["k", "TI"]], "InlineFormula"],
+     " smaller lists."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["ListPartitions"]], "paclet:Q3/ref/ListPartitions"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["list", "TI"], ",", 
+        RowBox[{"{", 
+         StyleBox["k", "TI"], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]gives partitions into exactly ",
+     Cell[BoxData[
+      StyleBox["k", "TI"]], "InlineFormula"],
+     " smaller lists."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["ListPartitions"]], "paclet:Q3/ref/ListPartitions"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["list", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          StyleBox["kmin", "TI"], ",", 
+          StyleBox["kmax", "TI"]}], "}"}]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]gives partitions into between ",
+     Cell[BoxData[
+      StyleBox["kmin", "TI"]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      StyleBox["kmax", "TI"]], "InlineFormula"],
+     " smaller lists."
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["ListPartitions"]], "paclet:Q3/ref/ListPartitions"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["list", "TI"], ",", 
+        StyleBox["spec", "TI"], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]gives partitions consistent with the specifications ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["spec", "TI"], ",", 
+       StyleBox["\[Ellipsis]", "TR"]}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, "Rows" -> {None, None, None, None, {None}}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->2007427837],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "In ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["ListPartitions"]], "paclet:Q3/ref/ListPartitions"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{
+    StyleBox["list", "TI"], ",", 
+    StyleBox["spec", "TI"], ",", 
+    StyleBox["\[Ellipsis]", "TR"]}], "]"}]], "InlineFormula"],
+ ", ",
+ Cell[BoxData[
+  StyleBox["spec", "TI"]], "InlineFormula"],
+ " is like in ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["IntegerPartitions"]], "paclet:ref/IntegerPartitions"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "Notes",
+ CellID->1067943069]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1871562089],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1151052214],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1149322270],
+
+Cell["Consider a list.", "ExampleText",
+ CellID->341399121],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"list", "=", 
+  RowBox[{"{", 
+   RowBox[{"a", ",", "b", ",", "c", ",", "d", ",", "e"}], "}"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1281738291],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"a", ",", "b", ",", "c", ",", "d", ",", "e"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1190002200]
+}, Open  ]],
+
+Cell["This gives all possible partitions of the list.", "ExampleText",
+ CellID->1851166373],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ListPartitions", "[", "list", "]"}], "//", "Column"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1540086207],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{"{", 
+       RowBox[{"a", ",", "b", ",", "c", ",", "d", ",", "e"}], "}"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b", ",", "c", ",", "d"}], "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"b", ",", "c", ",", "d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b", ",", "c"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", "d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b", ",", "c"}], "}"}], ",", 
+       RowBox[{"{", "d", "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"b", ",", "c", ",", "d"}], "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", "b", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", "d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", "d"}], "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b"}], "}"}], ",", 
+       RowBox[{"{", "c", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"b", ",", "c"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b"}], "}"}], ",", 
+       RowBox[{"{", "c", "}"}], ",", 
+       RowBox[{"{", "d", "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"b", ",", "c"}], "}"}], ",", 
+       RowBox[{"{", "d", "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", "b", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", "d"}], "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", "b", "}"}], ",", 
+       RowBox[{"{", "c", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", "b", "}"}], ",", 
+       RowBox[{"{", "c", "}"}], ",", 
+       RowBox[{"{", "d", "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->853971201]
+}, Open  ]],
+
+Cell["\<\
+Each possible partition corresponds to a partition of the length of the list.\
+\
+\>", "ExampleText",
+ CellID->261378258],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"IntegerPartitions", "[", 
+   RowBox[{"Length", "@", "list"}], "]"}], "//", "Column"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->604513672],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", "5", "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "1"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", "2"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", "1", ",", "1"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "2", ",", "1"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1", ",", "1", ",", "1"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1", ",", "1", ",", "1", ",", "1"}], "}"}]}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1132314674]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"IntegerPartitions", "[", 
+   RowBox[{"5", ",", "2"}], "]"}], "//", "Column"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ListPartitions", "[", 
+   RowBox[{"list", ",", "2"}], "]"}], "//", "Column"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->737678770],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", "5", "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "1"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", "2"}], "}"}]}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1606835300],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{"{", 
+       RowBox[{"a", ",", "b", ",", "c", ",", "d", ",", "e"}], "}"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b", ",", "c", ",", "d"}], "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"b", ",", "c", ",", "d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b", ",", "c"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", "d", ",", "e"}], "}"}]}], "}"}]}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1474026075]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"IntegerPartitions", "[", 
+   RowBox[{"5", ",", 
+    RowBox[{"{", "2", "}"}]}], "]"}], "//", "Column"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ListPartitions", "[", 
+   RowBox[{"list", ",", 
+    RowBox[{"{", "2", "}"}]}], "]"}], "//", "Column"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->264082271],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{"4", ",", "1"}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{"3", ",", "2"}], "}"}]}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1828051797],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b", ",", "c", ",", "d"}], "}"}], ",", 
+       RowBox[{"{", "e", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"b", ",", "c", ",", "d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b", ",", "c"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"d", ",", "e"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", "b"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"c", ",", "d", ",", "e"}], "}"}]}], "}"}]}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->18014550]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Scope",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1293636265],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"list", "=", 
+  RowBox[{"{", 
+   RowBox[{"a", ",", 
+    RowBox[{"{", 
+     RowBox[{"b", ",", "c"}], "}"}], ",", "d", ",", "e", ",", "f"}], 
+   "}"}]}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1339112237],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"a", ",", 
+   RowBox[{"{", 
+    RowBox[{"b", ",", "c"}], "}"}], ",", "d", ",", "e", ",", "f"}], 
+  "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->2134449175]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"ListPartitions", "[", 
+   RowBox[{"list", ",", 
+    RowBox[{"{", "2", "}"}]}], "]"}], "//", "Column"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->225256881],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", 
+         RowBox[{"{", 
+          RowBox[{"b", ",", "c"}], "}"}], ",", "d", ",", "e"}], "}"}], ",", 
+       RowBox[{"{", "f", "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", "a", "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{"b", ",", "c"}], "}"}], ",", "d", ",", "e", ",", "f"}], 
+        "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", 
+         RowBox[{"{", 
+          RowBox[{"b", ",", "c"}], "}"}], ",", "d"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"e", ",", "f"}], "}"}]}], "}"}]},
+    {
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"a", ",", 
+         RowBox[{"{", 
+          RowBox[{"b", ",", "c"}], "}"}]}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"d", ",", "e", ",", "f"}], "}"}]}], "}"}]}
+   },
+   DefaultBaseStyle->"Column",
+   GridBoxAlignment->{"Columns" -> {{Left}}},
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Column"]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->776173020]
+}, Open  ]]
+}, Closed]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["IntegerPartitions"]], "paclet:Q3/ref/IntegerPartitions"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FoldPairList"]], "paclet:Q3/ref/FoldPairList"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Choices"]], "paclet:Q3/ref/Choices"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353],
+
+Cell["Tech Notes", "TechNotesSection",
+ CellID->250839057]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"ListPartitions",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 35, 38.943906}", 
+    "history" -> {"1.9", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"permutations"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "ListPartitions[list] gives a list of all possible ways to partition list \
+into smaller lists. ListPartitions[list, k] gives partitions into at most k \
+smaller lists. ListPartitions[list, {k}] gives partitions into exactly k \
+smaller lists. ListPartitions[list, {kmin, kmax}] gives partitions into \
+between kmin and kmax smaller lists. ListPartitions[list, spec, ...] gives \
+partitions consistent with the specifications spec, ....", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "ListPartitions", "titlemodifier" -> "", 
+    "windowtitle" -> "ListPartitions", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/ListPartitions", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[8301, 262, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"7cfd146b-54d2-4b05-b84c-9d96cbb0d0da",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1871562089]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 23300, 817}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[586, 21, 3189, 78, 70, "AnchorBarGrid",ExpressionUUID->"9fea83db-079e-4e82-a98d-75753a94b329",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3800, 103, 171, 6, 70, "ObjectNameGrid",ExpressionUUID->"65907a11-cdc8-46e0-8d90-df7370a74739"],
+Cell[3974, 111, 2941, 93, 70, "Usage",ExpressionUUID->"a4d7c92c-71eb-44ea-a1fe-3f92c20e7688",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6952, 209, 630, 19, 70, "NotesSection",ExpressionUUID->"7d915058-83b2-406c-a049-a50d86b0b28e",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->2007427837],
+Cell[7585, 230, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"1ec6b675-2d69-4fa8-8edd-e18d4692711f"],
+Cell[7619, 232, 645, 25, 70, "Notes",ExpressionUUID->"d4069335-4ece-48fa-9803-8d3b070f6e92",
+ CellID->1067943069]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[8301, 262, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"7cfd146b-54d2-4b05-b84c-9d96cbb0d0da",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1871562089],
+Cell[CellGroupData[{
+Cell[8594, 276, 196, 6, 70, "ExampleSection",ExpressionUUID->"7a743869-ac66-47c7-b99e-490d66b6d786",
+ CellID->1151052214],
+Cell[8793, 284, 91, 3, 70, "Input",ExpressionUUID->"30a3a5ce-29c7-41b3-a18d-a7b3364cb203",
+ CellID->1149322270],
+Cell[8887, 289, 59, 1, 70, "ExampleText",ExpressionUUID->"4a48c9af-b16f-4b37-9528-c2bcfd87dd78",
+ CellID->341399121],
+Cell[CellGroupData[{
+Cell[8971, 294, 173, 5, 70, "Input",ExpressionUUID->"8d179c34-27b2-4ab5-b3c4-04e6952e07d1",
+ CellID->1281738291],
+Cell[9147, 301, 147, 4, 70, "Output",ExpressionUUID->"358df8ee-2cf3-4ced-8367-a635f454a044",
+ CellID->1190002200]
+}, Open  ]],
+Cell[9309, 308, 91, 1, 70, "ExampleText",ExpressionUUID->"31240630-db9a-47e5-93d4-d055fb3180d1",
+ CellID->1851166373],
+Cell[CellGroupData[{
+Cell[9425, 313, 143, 4, 70, "Input",ExpressionUUID->"890be547-4939-4ba1-b2b6-f0e0db862d48",
+ CellID->1540086207],
+Cell[9571, 319, 3465, 123, 70, "Output",ExpressionUUID->"9bd7e14e-4bc8-4dd6-b28c-0de139ea1268",
+ CellID->853971201]
+}, Open  ]],
+Cell[13051, 445, 130, 4, 70, "ExampleText",ExpressionUUID->"cbd95404-6140-4c78-ac57-0cab9f26207e",
+ CellID->261378258],
+Cell[CellGroupData[{
+Cell[13206, 453, 174, 5, 70, "Input",ExpressionUUID->"865a2c6c-9037-44ae-a7bf-e0b0fcb30894",
+ CellID->604513672],
+Cell[13383, 460, 748, 28, 70, "Output",ExpressionUUID->"72fd6480-0b2a-4629-928d-0aea2a371f85",
+ CellID->1132314674]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14168, 493, 292, 8, 70, "Input",ExpressionUUID->"dfbfcd9f-fc6a-460a-8cf2-ae87470a92d7",
+ CellID->737678770],
+Cell[14463, 503, 422, 16, 70, "Output",ExpressionUUID->"3e2e2d82-6494-4480-a703-d4939e67012f",
+ CellID->1606835300],
+Cell[14888, 521, 1093, 38, 70, "Output",ExpressionUUID->"394cc113-d1bb-449f-afaf-218125ee5da8",
+ CellID->1474026075]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16018, 564, 342, 10, 70, "Input",ExpressionUUID->"a08b0cbe-ea88-45f0-ab1e-bf5e1d0f6774",
+ CellID->264082271],
+Cell[16363, 576, 385, 14, 70, "Output",ExpressionUUID->"e1d06bc8-277c-4876-bef1-dc6a6f231924",
+ CellID->1828051797],
+Cell[16751, 592, 969, 34, 70, "Output",ExpressionUUID->"814c1bfd-e6bf-4215-b0ad-1e5c88572894",
+ CellID->18014550]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17769, 632, 187, 6, 70, "ExampleSection",ExpressionUUID->"875bb661-c71a-4896-827b-9801b10c9d68",
+ CellID->1293636265],
+Cell[CellGroupData[{
+Cell[17981, 642, 228, 8, 70, "Input",ExpressionUUID->"c9bf289b-d69e-4796-9415-acaf6aae1fbe",
+ CellID->1339112237],
+Cell[18212, 652, 199, 7, 70, "Output",ExpressionUUID->"56439ada-c59d-43a8-ba74-707aba25bad5",
+ CellID->2134449175]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18448, 664, 191, 6, 70, "Input",ExpressionUUID->"f6b19d53-17df-4eec-97de-bdf33cbf0b0c",
+ CellID->225256881],
+Cell[18642, 672, 1223, 43, 70, "Output",ExpressionUUID->"e09b4de8-c99b-4e3b-a98a-24a65483c373",
+ CellID->776173020]
+}, Open  ]]
+}, Closed]],
+Cell[19892, 719, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"5613f472-becd-4f57-84fb-6364a4dc6f17"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19960, 724, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"4a113490-7cfb-4d45-b0f9-314a9ab2a9c0",
+ CellID->1255426704],
+Cell[20113, 733, 875, 28, 70, "SeeAlso",ExpressionUUID->"c0d76277-3124-4231-9b39-1b62aa87dbce",
+ CellID->929782353],
+Cell[20991, 763, 58, 1, 70, "TechNotesSection",ExpressionUUID->"18648aa7-a74b-498d-8187-64dd3e8d645b",
+ CellID->250839057]
+}, Open  ]],
+Cell[21064, 767, 23, 0, 70, "FooterCell",ExpressionUUID->"7bbf9f8e-6f7e-4519-a582-7fc812affe30"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -1,0 +1,620 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     19385,        611]
+NotebookOptionsPosition[     13590,        485]
+NotebookOutlinePosition[     15783,        541]
+CellTagsIndexPosition[     15698,        536]
+WindowTitle->PauliApply
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/PauliQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Ket\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Ket"], "\<\"Pauli\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Pauli"], "\<\"PauliEmbed\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/PauliEmbed"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/PauliPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/PauliApply\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/PauliApply"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/PauliApply.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$122792], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/PauliApply", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["PauliApply", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PauliApply", "[", 
+       RowBox[{
+        StyleBox["mat", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          StyleBox["i", "TI"], ",", 
+          StyleBox["j", "TI"], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+        StyleBox["vec", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]applies the matrix mat, which operates non-trivially \
+only on the qubits ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        StyleBox["i", "TI"], ",", 
+        StyleBox["j", "TI"], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "}"}]], "InlineFormula"],
+     " but trivially on the others, on the vector ",
+     Cell[BoxData[
+      StyleBox["vec", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->169805426],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ Cell[BoxData["PauliApply"], "InlineFormula"],
+ " was intended for a system of many qubits. As ThePauli now uses ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SparseArray"]], "paclet:ref/SparseArray"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ", this function is of no practical use."
+}], "Notes",
+ CellID->1067943069],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->2061511566],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->323729064],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1571680391],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"vec", "=", 
+   RowBox[{"TheKet", "[", 
+    RowBox[{"0", ",", "1", ",", "1", ",", "0"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"vec", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->101744380],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", 
+   TagBox[GridBox[{
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"1"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"},
+      {"0"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[0.5599999999999999]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    Column], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+    SparseArray[Automatic, {16}, 0, {1, {{0, 1}, {{7}}}, {1}}]]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->974245831]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{
+    RowBox[{"ThePauli", "[", 
+     RowBox[{"2", ",", "1"}], "]"}], "+", 
+    RowBox[{"ThePauli", "[", 
+     RowBox[{"3", ",", "1"}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->2040860922],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "1", "0", 
+      RowBox[{"-", "\[ImaginaryI]"}]},
+     {"1", "0", 
+      RowBox[{"-", "\[ImaginaryI]"}], "0"},
+     {"0", "\[ImaginaryI]", "0", 
+      RowBox[{"-", "1"}]},
+     {"\[ImaginaryI]", "0", 
+      RowBox[{"-", "1"}], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 2, 4, 6, 8}, {{2}, {4}, {1}, {3}, {4}, {2}, {3}, {1}}}, {
+      1, Complex[0, -1], 1, Complex[0, -1], -1, Complex[0, 1], -1, Complex[
+       0, 1]}}]]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->2023344257]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"PauliApply", "[", 
+    RowBox[{"mat", ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "3"}], "}"}], ",", "vec"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"new", "//", "Normal"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->698764044],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "\[ImaginaryI]", ",", "0", 
+   ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->197496992]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"org", "=", 
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"ThePauli", "[", 
+       RowBox[{"2", ",", "0", ",", "1", ",", "0"}], "]"}], "+", 
+      RowBox[{"ThePauli", "[", 
+       RowBox[{"3", ",", "0", ",", "1", ",", "0"}], "]"}]}], ")"}], ".", 
+    "vec"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"org", "-", "new"}], "//", "Normal"}], "//", "Flatten"}]}], "Input",\
+
+ CellLabel->"In[5]:=",
+ CellID->1018880513],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+   "0"}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->676398695]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Ket"]], "paclet:Q3/ref/Ket"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Pauli"]], "paclet:Q3/ref/Pauli"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PauliEmbed"]], "paclet:Q3/ref/PauliEmbed"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/PauliQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->696591071],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/PauliPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1338300797]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"PauliApply",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 37, 32.160408}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "PauliApply[mat, {i, j, ...}, vec] applies the matrix mat, which operates \
+non-trivially only on the qubits {i, j, ...} but trivially on the others, on \
+the vector vec.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "PauliApply", "titlemodifier" -> "", "windowtitle" -> "PauliApply", 
+    "type" -> "Symbol", "uri" -> "Q3/ref/PauliApply", "WorkflowDockedCell" -> 
+    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7186, 216, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"d992cad6-3ac7-41da-97ef-9f2087b5a79b",
+   CellTags->"PrimaryExamplesSection",
+   CellID->2061511566]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 15499, 529}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[582, 21, 4350, 110, 70, "AnchorBarGrid",ExpressionUUID->"1ef2642a-6aaa-4fd6-8fb1-49a3135f81be",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4957, 135, 167, 6, 70, "ObjectNameGrid",ExpressionUUID->"24b989e8-aa19-444b-b517-720e52ed2ab0"],
+Cell[5127, 143, 911, 27, 70, "Usage",ExpressionUUID->"fbf7fdf9-346e-41bb-a5f9-d26a6bbb32e0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6075, 175, 629, 19, 70, "NotesSection",ExpressionUUID->"a6909ae7-2cf6-4fa8-a585-9dbcea3dd58f",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->169805426],
+Cell[6707, 196, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"b478949c-220c-4867-a386-b794472237b4"],
+Cell[6741, 198, 374, 11, 70, "Notes",ExpressionUUID->"f837a65d-888d-4652-a0f6-06c3df33c936",
+ CellID->1067943069],
+Cell[7118, 211, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"3be0414d-0c94-4507-b151-2d2555b372da"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7186, 216, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"d992cad6-3ac7-41da-97ef-9f2087b5a79b",
+ CellTags->"PrimaryExamplesSection",
+ CellID->2061511566],
+Cell[CellGroupData[{
+Cell[7479, 230, 195, 6, 70, "ExampleSection",ExpressionUUID->"7146b13e-4a38-4372-8400-97dd7c37c2cb",
+ CellID->323729064],
+Cell[7677, 238, 91, 3, 70, "Input",ExpressionUUID->"5b1c2f75-713d-406a-8f41-83bb8fb4e685",
+ CellID->1571680391],
+Cell[CellGroupData[{
+Cell[7793, 245, 258, 8, 70, "Input",ExpressionUUID->"9c98ee74-0607-498b-b33d-c9e3b19bb3c3",
+ CellID->101744380],
+Cell[8054, 255, 812, 34, 70, "Output",ExpressionUUID->"7aea1a4c-2362-47a6-804a-cb4aee99fd27",
+ CellID->974245831]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8903, 294, 327, 10, 70, "Input",ExpressionUUID->"65549428-e123-43a1-88d0-229d913f7bc7",
+ CellID->2040860922],
+Cell[9233, 306, 945, 28, 70, "Output",ExpressionUUID->"99e0d53f-86da-4fe4-857c-1cacc2eb8108",
+ CellID->2023344257]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10215, 339, 305, 10, 70, "Input",ExpressionUUID->"ca355c37-0530-4661-a72c-5bbfd6e36874",
+ CellID->698764044],
+Cell[10523, 351, 279, 7, 70, "Output",ExpressionUUID->"6f100828-6138-4180-9459-e659d8a19e49",
+ CellID->197496992]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10839, 363, 487, 16, 70, "Input",ExpressionUUID->"504b2c64-1ba8-46fb-b137-592354f48904",
+ CellID->1018880513],
+Cell[11329, 381, 267, 7, 70, "Output",ExpressionUUID->"3cd65351-3b5c-4edd-a235-c133508cd084",
+ CellID->676398695]
+}, Open  ]]
+}, Open  ]],
+Cell[11623, 392, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"24116b46-dfb0-40f9-b5ce-4ccd2749822d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11691, 397, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"ee952ea4-5af8-40c8-bbea-d70816952871",
+ CellID->1255426704],
+Cell[11844, 406, 839, 28, 70, "SeeAlso",ExpressionUUID->"f25730c6-f392-409c-8396-0a23e09aa8f4",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12720, 439, 152, 7, 70, "TutorialsSection",ExpressionUUID->"c8f6a9a2-4c5c-4cab-b4b4-3c5391a7825f",
+ CellID->250839057],
+Cell[12875, 448, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"b9bf4aa8-4353-4625-a67d-a8d65bc8054c"],
+Cell[12909, 450, 187, 6, 70, "Tutorials",ExpressionUUID->"ee834000-7099-4ef1-a3dc-8cacbba858e1",
+ CellID->696591071],
+Cell[13099, 458, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"91d9a006-6ec8-419e-88bd-853fc3720b5d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13167, 463, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"730e17fd-efcb-4cdf-be40-68eefeae3580",
+ CellID->38303248],
+Cell[13326, 472, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"374393c4-bfb7-4282-a538-5c59fdca42fb"],
+Cell[13360, 474, 188, 6, 70, "MoreAbout",ExpressionUUID->"77089c3d-82ef-4d40-b121-8c6c8c98e0a1",
+ CellID->1338300797]
+}, Open  ]],
+Cell[13563, 483, 23, 0, 70, "FooterCell",ExpressionUUID->"11399e1a-21ab-4e96-b273-f2aad74afa6c"]
+}
+]
+*)
+
+(* End of internal cache information *)

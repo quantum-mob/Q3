@@ -1,0 +1,589 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     18329,        580]
+NotebookOptionsPosition[     13289,        467]
+NotebookOutlinePosition[     15512,        524]
+CellTagsIndexPosition[     15427,        519]
+WindowTitle->KrausProduct
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Kraus: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/KrausQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"LindbladBasis\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/LindbladBasis"], "\<\"Supermap\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/Supermap"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Kraus Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/KrausPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/KrausProduct\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/KrausProduct"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/KrausProduct.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$100438], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/KrausProduct", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["KrausProduct", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"KrausProduct", "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"]}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]returns the trace Hilbert-Schmidt inner product (also \
+known as the Frobenius product) of two matrices (operators) ",
+     Cell[BoxData[
+      StyleBox["a", "TI"]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      StyleBox["b", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1376503177],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->47566708],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->615462090],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"n", "=", "2"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "A", ",", "B"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AA", "=", 
+   RowBox[{"Array", "[", 
+    RowBox[{"A", ",", 
+     RowBox[{"{", 
+      RowBox[{"n", ",", "n"}], "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"AA", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"BB", "=", 
+   RowBox[{"Array", "[", 
+    RowBox[{"B", ",", 
+     RowBox[{"{", 
+      RowBox[{"n", ",", "n"}], "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"BB", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->792012204],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      SubscriptBox[
+       TemplateBox[{"A"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"A"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"A"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"A"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "2"},
+        "RowDefault"]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->1458928218],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      SubscriptBox[
+       TemplateBox[{"B"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"B"},
+        "RowDefault"], 
+       TemplateBox[{"1", "\",\"", "2"},
+        "RowDefault"]]},
+     {
+      SubscriptBox[
+       TemplateBox[{"B"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "1"},
+        "RowDefault"]], 
+      SubscriptBox[
+       TemplateBox[{"B"},
+        "RowDefault"], 
+       TemplateBox[{"2", "\",\"", "2"},
+        "RowDefault"]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[2]//MatrixForm=",
+ CellID->238278480]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"KrausProduct", "[", 
+  RowBox[{"AA", ",", "BB"}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1328668683],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"B"},
+     "RowDefault"], 
+    TemplateBox[{"1", "\",\"", "1"},
+     "RowDefault"]], " ", 
+   TemplateBox[{
+     TemplateBox[{"A"}, "RowDefault"], 
+     TemplateBox[{"1", "\",\"", "1"}, "RowDefault"], 
+     TemplateBox[{
+       StyleBox[
+       "\"*\"", FontColor -> RGBColor[1, 0, 0], StripOnInput -> False]}, 
+      "RowDefault"]},
+    "Subsuperscript"]}], "+", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"B"},
+     "RowDefault"], 
+    TemplateBox[{"1", "\",\"", "2"},
+     "RowDefault"]], " ", 
+   TemplateBox[{
+     TemplateBox[{"A"}, "RowDefault"], 
+     TemplateBox[{"1", "\",\"", "2"}, "RowDefault"], 
+     TemplateBox[{
+       StyleBox[
+       "\"*\"", FontColor -> RGBColor[1, 0, 0], StripOnInput -> False]}, 
+      "RowDefault"]},
+    "Subsuperscript"]}], "+", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"B"},
+     "RowDefault"], 
+    TemplateBox[{"2", "\",\"", "1"},
+     "RowDefault"]], " ", 
+   TemplateBox[{
+     TemplateBox[{"A"}, "RowDefault"], 
+     TemplateBox[{"2", "\",\"", "1"}, "RowDefault"], 
+     TemplateBox[{
+       StyleBox[
+       "\"*\"", FontColor -> RGBColor[1, 0, 0], StripOnInput -> False]}, 
+      "RowDefault"]},
+    "Subsuperscript"]}], "+", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"B"},
+     "RowDefault"], 
+    TemplateBox[{"2", "\",\"", "2"},
+     "RowDefault"]], " ", 
+   TemplateBox[{
+     TemplateBox[{"A"}, "RowDefault"], 
+     TemplateBox[{"2", "\",\"", "2"}, "RowDefault"], 
+     TemplateBox[{
+       StyleBox[
+       "\"*\"", FontColor -> RGBColor[1, 0, 0], StripOnInput -> False]}, 
+      "RowDefault"]},
+    "Subsuperscript"]}]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1126077751]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"KrausProduct", "[", 
+  RowBox[{
+   RowBox[{"3", "+", "I"}], ",", 
+   RowBox[{"S", "[", "0", "]"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"KrausProduct", "[", 
+  RowBox[{
+   RowBox[{"S", "[", "0", "]"}], ",", 
+   RowBox[{"3", "+", "I"}]}], "]"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1721946400],
+
+Cell[BoxData[
+ RowBox[{"6", "-", 
+  RowBox[{"2", " ", "\[ImaginaryI]"}]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1098606626],
+
+Cell[BoxData[
+ RowBox[{"6", "+", 
+  RowBox[{"2", " ", "\[ImaginaryI]"}]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->217166276]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["LindbladBasis"]], "paclet:Q3/ref/LindbladBasis"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Supermap"]], "paclet:Q3/ref/Supermap"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Kraus Package Guide"]], "paclet:Q3/guide/KrausPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->589744672],
+
+Cell["Tech Notes", "TechNotesSection",
+ CellID->250839057],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Kraus: Quick Start"]], "paclet:Q3/tutorial/KrausQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"KrausProduct",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 35, 3.459049}", 
+    "history" -> {"1.8", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"Hermitian product", "Frobenius product"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "KrausProduct[a, b] returns the trace Hilbert-Schmidt inner product (also \
+known as the Frobenius product) of two matrices (operators) a and b.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "KrausProduct", 
+    "titlemodifier" -> "", "windowtitle" -> "KrausProduct", "type" -> 
+    "Symbol", "uri" -> "Q3/ref/KrausProduct", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[5760, 167, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"e16a4644-313e-4eca-b881-79fd3a5f3553",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1376503177]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 15228, 512}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[584, 21, 4308, 110, 70, "AnchorBarGrid",ExpressionUUID->"516e0524-f022-44ee-a3f9-8807e0d9de5b",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4917, 135, 169, 6, 70, "ObjectNameGrid",ExpressionUUID->"be537699-06ee-4ecb-9b6c-4df414cfe427"],
+Cell[5089, 143, 634, 19, 70, "Usage",ExpressionUUID->"92c73162-d01f-4104-86f5-edf3f02c7ed7",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5760, 167, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"e16a4644-313e-4eca-b881-79fd3a5f3553",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1376503177],
+Cell[CellGroupData[{
+Cell[6053, 181, 194, 6, 70, "ExampleSection",ExpressionUUID->"fe8e302d-7b33-42ca-b670-dd6859534c28",
+ CellID->47566708],
+Cell[6250, 189, 90, 3, 70, "Input",ExpressionUUID->"cc2f9ff4-db84-43e3-9655-af23bf30c6fb",
+ CellID->615462090],
+Cell[CellGroupData[{
+Cell[6365, 196, 690, 20, 70, "Input",ExpressionUUID->"e94c645c-8097-4fe0-b58e-08401055ab57",
+ CellID->792012204],
+Cell[7058, 218, 1058, 37, 70, "Output",ExpressionUUID->"d35be82c-5a05-4333-983b-c82bb7928a95",
+ CellID->1458928218],
+Cell[8119, 257, 1057, 37, 70, "Output",ExpressionUUID->"5d7c3474-fa7a-4231-a5a6-a608ce5fd0e0",
+ CellID->238278480]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9213, 299, 134, 4, 70, "Input",ExpressionUUID->"5d5574c2-4602-4959-92d8-99ed8407d3f4",
+ CellID->1328668683],
+Cell[9350, 305, 1714, 59, 70, "Output",ExpressionUUID->"8274dd51-571c-44de-a583-7b2fb42b5c30",
+ CellID->1126077751]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11101, 369, 413, 12, 70, "Input",ExpressionUUID->"b6cf98eb-d03c-4f52-9ef1-7e5fa6f372bc",
+ CellID->1721946400],
+Cell[11517, 383, 129, 4, 70, "Output",ExpressionUUID->"2986d513-8e85-46b6-be89-e8b37c38fa46",
+ CellID->1098606626],
+Cell[11649, 389, 128, 4, 70, "Output",ExpressionUUID->"397cad59-7698-4e77-af4c-3d6ed107435e",
+ CellID->217166276]
+}, Open  ]]
+}, Open  ]],
+Cell[11804, 397, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"d113adc0-4e6e-48f2-a4d5-9ef64646e89c"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11872, 402, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"44f35cb9-39b7-4162-bf08-1cd1add5f82c",
+ CellID->1255426704],
+Cell[12025, 411, 554, 18, 70, "SeeAlso",ExpressionUUID->"3103d963-1424-479d-b78b-11d9d473b3b2",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12616, 434, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"b43bddb9-cfbc-4e4c-8602-b19e0fe68b55",
+ CellID->38303248],
+Cell[12775, 443, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"d3bfb7fb-69af-45a9-b939-2c05caeca9ee"],
+Cell[12809, 445, 187, 6, 70, "MoreAbout",ExpressionUUID->"93f8760e-43a7-4227-ad4f-96c1c44411f5",
+ CellID->589744672],
+Cell[12999, 453, 58, 1, 70, "TechNotesSection",ExpressionUUID->"54f678a0-24c0-49f1-bfe8-910e3836f23f",
+ CellID->250839057],
+Cell[13060, 456, 187, 6, 70, "Tutorials",ExpressionUUID->"4c1e7a40-a93b-422e-bee0-13f00d661267",
+ CellID->341631938]
+}, Open  ]],
+Cell[13262, 465, 23, 0, 70, "FooterCell",ExpressionUUID->"8e328a65-548c-4216-8a8b-14e1421240d1"]
+}
+]
+*)
+
+(* End of internal cache information *)

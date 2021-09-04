@@ -1,0 +1,1031 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     30577,       1022]
+NotebookOptionsPosition[     21896,        840]
+NotebookOutlinePosition[     24070,        896]
+CellTagsIndexPosition[     23985,        891]
+WindowTitle->FockIsospinor
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/FockQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"FockSpinor\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/FockSpinor"], "\<\"FockIsospin\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockIsospin"], "\<\"FockSpin\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/FockSpin"], "\<\"FockSpinSpin\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/FockSpinSpin"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Fock Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/FockPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/FockIsospinor\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/FockIsospinor"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/FockIsospinor.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$70953], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/FockIsospinor", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["FockIsospinor", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"FockIsospinor", "[", 
+       StyleBox["c", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the (2S+1)-component spinor in the Nambu (i.e., \
+particle-hole) space associate with the fermionic operator ",
+     Cell[BoxData[
+      StyleBox["c", "TI"]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1570383871],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "Unlike ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockSpinor"]], "paclet:Q3/ref/FockSpinor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ", ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockIsospinor"]], "paclet:Q3/ref/FockIsospinor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " is defined only for operators with half-integer spins."
+}], "Notes",
+ CellID->1067943069],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->867698267],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1990810339],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1746083828],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`Wigner`"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->716454761],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1395506448],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"iS", "[", "j_", "]"}], ":=", 
+  RowBox[{"Garner", "@", 
+   RowBox[{"FockIsospin", "[", 
+    RowBox[{"c", ",", "j"}], "]"}]}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1607962649],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "1", "]"}], ",", 
+     RowBox[{"iS", "[", "2", "]"}]}], "]"}], "\[Equal]", 
+   RowBox[{"I", " ", 
+    RowBox[{"iS", "[", "3", "]"}]}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "2", "]"}], ",", 
+     RowBox[{"iS", "[", "3", "]"}]}], "]"}], "\[Equal]", 
+   RowBox[{"I", " ", 
+    RowBox[{"iS", "[", "1", "]"}]}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "3", "]"}], ",", 
+     RowBox[{"iS", "[", "1", "]"}]}], "]"}], "\[Equal]", 
+   RowBox[{"I", " ", 
+    RowBox[{"iS", "[", "2", "]"}]}]}], "//", "Simplify"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1094027895],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1350037085],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1908557040],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->154936041]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"iS", "[", "3", "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->793889324],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", 
+   FractionBox["1", "2"]}], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"c"}, "RowDefault"], 
+         TemplateBox[{"\"\[DownArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"c"},
+         "RowDefault"], 
+        TemplateBox[{"\"\[DownArrow]\""},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm], "2"], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"c"}, "RowDefault"], 
+         TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"c"},
+         "RowDefault"], 
+        TemplateBox[{"\"\[UpArrow]\""},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm], "2"]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1157812768]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"sp", "=", 
+  RowBox[{"Dagger", "@", 
+   RowBox[{"FockIsospinor", "[", "c", "]"}]}]}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1523496761],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"c"}, "RowDefault"], 
+      TemplateBox[{"\"\[UpArrow]\""}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"c"},
+      "RowDefault"], 
+     TemplateBox[{"\"\[DownArrow]\""},
+      "RowDefault"]],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1820844517]
+}, Open  ]],
+
+Cell["Dagger[FockIsospin[c]] forms a spherical irreducible tensor.", \
+"ExampleText",
+ CellID->397752571],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "1", "]"}], ",", "sp"}], "]"}], "\[Equal]", 
+   RowBox[{"sp", ".", 
+    RowBox[{"TheWigner", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], ",", "1"}], "}"}], "]"}]}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "2", "]"}], ",", "sp"}], "]"}], "\[Equal]", 
+   RowBox[{"sp", ".", 
+    RowBox[{"TheWigner", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], ",", "2"}], "}"}], "]"}]}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "3", "]"}], ",", "sp"}], "]"}], "\[Equal]", 
+   RowBox[{"sp", ".", 
+    RowBox[{"TheWigner", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"1", "/", "2"}], ",", "3"}], "}"}], "]"}]}]}], "//", 
+  "Simplify"}]}], "Input",
+ CellLabel->"In[8]:=",
+ CellID->2058351333],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->2116134846],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1401678755],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->119227695]
+}, Open  ]],
+
+Cell["For S=3/2", "ExampleText",
+ CellID->913233944],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "d", ",", 
+   RowBox[{"Spin", "\[Rule]", 
+    RowBox[{"3", "/", "2"}]}]}], "]"}]], "Input",
+ CellLabel->"In[9]:=",
+ CellID->1064208996],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"iS", "[", "j_", "]"}], ":=", 
+  RowBox[{"FockIsospin", "[", 
+   RowBox[{"d", ",", "j"}], "]"}]}]], "Input",
+ CellLabel->"In[10]:=",
+ CellID->1916783556],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "1", "]"}], ",", 
+     RowBox[{"iS", "[", "2", "]"}]}], "]"}], "\[Equal]", 
+   RowBox[{"I", " ", 
+    RowBox[{"iS", "[", "3", "]"}]}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "2", "]"}], ",", 
+     RowBox[{"iS", "[", "3", "]"}]}], "]"}], "\[Equal]", 
+   RowBox[{"I", " ", 
+    RowBox[{"iS", "[", "1", "]"}]}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "3", "]"}], ",", 
+     RowBox[{"iS", "[", "1", "]"}]}], "]"}], "\[Equal]", 
+   RowBox[{"I", " ", 
+    RowBox[{"iS", "[", "2", "]"}]}]}], "//", "Simplify"}]}], "Input",
+ CellLabel->"In[11]:=",
+ CellID->979037045],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[11]=",
+ CellID->1411881901],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[11]=",
+ CellID->1952294404],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[11]=",
+ CellID->809405515]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"iS", "[", "3", "]"}]], "Input",
+ CellLabel->"In[12]:=",
+ CellID->1819335167],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", "2"}], "+", 
+  RowBox[{
+   FractionBox["3", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{
+           RowBox[{"-", 
+             FractionBox["3", "2"]}]}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{
+          RowBox[{"-", 
+            FractionBox["3", "2"]}]},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{
+           RowBox[{"-", 
+             FractionBox["1", "2"]}]}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{
+          RowBox[{"-", 
+            FractionBox["1", "2"]}]},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{
+           FractionBox["1", "2"]}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{
+          FractionBox["1", "2"]},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["3", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"d"}, "RowDefault"], 
+         TemplateBox[{
+           FractionBox["3", "2"]}, "RowDefault"], 
+         TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm],
+      DisplayForm], 
+     TagBox[
+      TagBox[
+       SubscriptBox[
+        TemplateBox[{"d"},
+         "RowDefault"], 
+        TemplateBox[{
+          FractionBox["3", "2"]},
+         "RowDefault"]],
+       DisplayForm],
+      DisplayForm]}],
+    DisplayForm]}]}]], "Output",
+ CellLabel->"Out[12]=",
+ CellID->370922170]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"sp", "=", 
+  RowBox[{"Dagger", "@", 
+   RowBox[{"FockIsospinor", "[", "d", "]"}]}]}]], "Input",
+ CellLabel->"In[13]:=",
+ CellID->1628346602],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"d"}, "RowDefault"], 
+      TemplateBox[{
+        FractionBox["3", "2"]}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    TemplateBox[{
+      TemplateBox[{"d"}, "RowDefault"], 
+      TemplateBox[{
+        FractionBox["1", "2"]}, "RowDefault"], 
+      TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+     "Subsuperscript"],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"d"},
+      "RowDefault"], 
+     TemplateBox[{
+       RowBox[{"-", 
+         FractionBox["1", "2"]}]},
+      "RowDefault"]],
+    DisplayForm], ",", 
+   TagBox[
+    SubscriptBox[
+     TemplateBox[{"d"},
+      "RowDefault"], 
+     TemplateBox[{
+       RowBox[{"-", 
+         FractionBox["3", "2"]}]},
+      "RowDefault"]],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[13]=",
+ CellID->1730500287]
+}, Open  ]],
+
+Cell["Dagger[FockIsospin[d]] forms a spherical irreducible tensor.", \
+"ExampleText",
+ CellID->767769728],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "1", "]"}], ",", "sp"}], "]"}], "\[Equal]", 
+   RowBox[{"sp", ".", 
+    RowBox[{"TheWigner", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"3", "/", "2"}], ",", "1"}], "}"}], "]"}]}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "2", "]"}], ",", "sp"}], "]"}], "\[Equal]", 
+   RowBox[{"sp", ".", 
+    RowBox[{"TheWigner", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"3", "/", "2"}], ",", "2"}], "}"}], "]"}]}]}], "//", 
+  "Simplify"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"Commutator", "[", 
+    RowBox[{
+     RowBox[{"iS", "[", "3", "]"}], ",", "sp"}], "]"}], "\[Equal]", 
+   RowBox[{"sp", ".", 
+    RowBox[{"TheWigner", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"3", "/", "2"}], ",", "3"}], "}"}], "]"}]}]}], "//", 
+  "Simplify"}]}], "Input",
+ CellLabel->"In[14]:=",
+ CellID->1824067320],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[14]=",
+ CellID->554750526],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[14]=",
+ CellID->1465578855],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[14]=",
+ CellID->346384895]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockSpinor"]], "paclet:Q3/ref/FockSpinor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockIsospin"]], "paclet:Q3/ref/FockIsospin"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockSpin"]], "paclet:Q3/ref/FockSpin"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FockSpinSpin"]], "paclet:Q3/ref/FockSpinSpin"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock: Quick Start"]], "paclet:Q3/tutorial/FockQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Fock Package Guide"]], "paclet:Q3/guide/FockPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1754147313]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"FockIsospinor",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 32, 23.171794}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "FockIsospinor[c] returns the (2S+1)-component spinor in the Nambu (i.e., \
+particle-hole) space associate with the fermionic operator c.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "FockIsospinor", 
+    "titlemodifier" -> "", "windowtitle" -> "FockIsospinor", "type" -> 
+    "Symbol", "uri" -> "Q3/ref/FockIsospinor", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6990, 211, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"4108beed-86ab-40e9-868f-62bc9df63389",
+   CellTags->"PrimaryExamplesSection",
+   CellID->867698267]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 23787, 884}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[585, 21, 4483, 113, 70, "AnchorBarGrid",ExpressionUUID->"b506ddc8-2a6b-42ab-bf54-b3cf97ec8b21",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5093, 138, 170, 6, 70, "ObjectNameGrid",ExpressionUUID->"d92aa88c-abfa-4935-be97-dbaa62e1985a"],
+Cell[5266, 146, 482, 13, 70, "Usage",ExpressionUUID->"16d41a8b-b3a5-4152-aa04-92e1145b622d"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5785, 164, 630, 19, 70, "NotesSection",ExpressionUUID->"29bd5f75-406c-49f7-9019-502bb9a4a354",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1570383871],
+Cell[6418, 185, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"8d778c8a-4c9e-48c1-af58-62f2ba5ac113"],
+Cell[6452, 187, 467, 17, 70, "Notes",ExpressionUUID->"a9264506-dd82-4fe2-8695-f32ea7614026",
+ CellID->1067943069],
+Cell[6922, 206, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"4c6080a2-cec0-49e1-adb3-523ea2bed5e6"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[6990, 211, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"4108beed-86ab-40e9-868f-62bc9df63389",
+ CellTags->"PrimaryExamplesSection",
+ CellID->867698267],
+Cell[CellGroupData[{
+Cell[7282, 225, 196, 6, 70, "ExampleSection",ExpressionUUID->"837d1478-288d-4986-88bf-214a1633a9bb",
+ CellID->1990810339],
+Cell[7481, 233, 91, 3, 70, "Input",ExpressionUUID->"75c9f14e-be58-4c45-a686-f50cff6ea806",
+ CellID->1746083828],
+Cell[7575, 238, 97, 3, 70, "Input",ExpressionUUID->"498310b6-8e05-4de7-8fe8-26e6a0b86f01",
+ CellID->716454761],
+Cell[7675, 243, 129, 4, 70, "Input",ExpressionUUID->"aa5e7106-66af-4160-ae56-b01e1c273585",
+ CellID->1395506448],
+Cell[7807, 249, 216, 7, 70, "Input",ExpressionUUID->"d3209ce7-57dd-4710-8712-38b8cce4ed52",
+ CellID->1607962649],
+Cell[CellGroupData[{
+Cell[8048, 260, 861, 28, 70, "Input",ExpressionUUID->"9a408e6f-8721-4268-84ae-4d45b5aa8ccc",
+ CellID->1094027895],
+Cell[8912, 290, 75, 2, 70, "Output",ExpressionUUID->"e4ee3e0f-09e4-427d-8295-404e98378506",
+ CellID->1350037085],
+Cell[8990, 294, 75, 2, 70, "Output",ExpressionUUID->"f5eba3ef-19cf-4de1-af1f-44e97bc8f5c1",
+ CellID->1908557040],
+Cell[9068, 298, 74, 2, 70, "Output",ExpressionUUID->"b3ada602-7224-4719-bcb3-3b32fd756d96",
+ CellID->154936041]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9179, 305, 98, 3, 70, "Input",ExpressionUUID->"f43dbad2-f327-4813-9d89-d8be1dfb02ab",
+ CellID->793889324],
+Cell[9280, 310, 1230, 49, 70, "Output",ExpressionUUID->"0bf6dcb6-e1e5-4b1a-8112-e55847d5bd31",
+ CellID->1157812768]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10547, 364, 163, 5, 70, "Input",ExpressionUUID->"ffff7a26-e2c8-4b28-b4f8-a4a47602fd4b",
+ CellID->1523496761],
+Cell[10713, 371, 482, 18, 70, "Output",ExpressionUUID->"1bccf2af-1d5f-4a33-8550-936e326a6254",
+ CellID->1820844517]
+}, Open  ]],
+Cell[11210, 392, 105, 2, 70, "ExampleText",ExpressionUUID->"fbadab57-6ef5-4b65-9a32-c423742cedbd",
+ CellID->397752571],
+Cell[CellGroupData[{
+Cell[11340, 398, 1038, 35, 70, "Input",ExpressionUUID->"ffb40ee2-bea0-4290-9e6d-774111c5e03c",
+ CellID->2058351333],
+Cell[12381, 435, 75, 2, 70, "Output",ExpressionUUID->"79c63329-f55d-4316-a208-5cd7fa6b0131",
+ CellID->2116134846],
+Cell[12459, 439, 75, 2, 70, "Output",ExpressionUUID->"6ec01bf4-3ae7-483e-95df-80ec14702b07",
+ CellID->1401678755],
+Cell[12537, 443, 74, 2, 70, "Output",ExpressionUUID->"6734830c-a850-4c14-a026-cd4028266459",
+ CellID->119227695]
+}, Open  ]],
+Cell[12626, 448, 52, 1, 70, "ExampleText",ExpressionUUID->"4752d441-0ea6-4186-9561-10c27d01f78f",
+ CellID->913233944],
+Cell[12681, 451, 197, 6, 70, "Input",ExpressionUUID->"75b0a9cd-c5e5-4a27-8fef-aa21d1050b79",
+ CellID->1064208996],
+Cell[12881, 459, 187, 6, 70, "Input",ExpressionUUID->"9899c445-9d4e-44f8-a28b-771a66752435",
+ CellID->1916783556],
+Cell[CellGroupData[{
+Cell[13093, 469, 861, 28, 70, "Input",ExpressionUUID->"643cd154-5ad4-4780-9e67-ad9edcf1cef9",
+ CellID->979037045],
+Cell[13957, 499, 76, 2, 70, "Output",ExpressionUUID->"1ef8e233-2dc0-490e-b32f-5b8cdb323f43",
+ CellID->1411881901],
+Cell[14036, 503, 76, 2, 70, "Output",ExpressionUUID->"3f779846-4c6b-449c-94b4-3454fd61769a",
+ CellID->1952294404],
+Cell[14115, 507, 75, 2, 70, "Output",ExpressionUUID->"98127f7b-ec90-42ac-8d79-e441dbae93b8",
+ CellID->809405515]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14227, 514, 100, 3, 70, "Input",ExpressionUUID->"d3255008-17ec-4d22-8e20-0d7496325713",
+ CellID->1819335167],
+Cell[14330, 519, 2648, 108, 70, "Output",ExpressionUUID->"055c3c02-e1fa-4926-b8eb-7f49fa6d4682",
+ CellID->370922170]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17015, 632, 164, 5, 70, "Input",ExpressionUUID->"a12981f5-7ac2-47a7-b182-1c5aee3042fc",
+ CellID->1628346602],
+Cell[17182, 639, 968, 38, 70, "Output",ExpressionUUID->"10f61794-f6ac-4c7f-b3e4-4822b9cb5dd4",
+ CellID->1730500287]
+}, Open  ]],
+Cell[18165, 680, 105, 2, 70, "ExampleText",ExpressionUUID->"7719f0ec-4e18-436e-b4b1-073a85accd35",
+ CellID->767769728],
+Cell[CellGroupData[{
+Cell[18295, 686, 1039, 35, 70, "Input",ExpressionUUID->"f9d12f2e-d05f-49aa-9619-2dc10662144a",
+ CellID->1824067320],
+Cell[19337, 723, 75, 2, 70, "Output",ExpressionUUID->"542ae9da-b1bd-4dd9-afed-be1d78b2073a",
+ CellID->554750526],
+Cell[19415, 727, 76, 2, 70, "Output",ExpressionUUID->"c474b2a8-b2d7-4a5c-ac47-39330a1ad7f7",
+ CellID->1465578855],
+Cell[19494, 731, 75, 2, 70, "Output",ExpressionUUID->"1905d6ef-1141-476a-9746-ff5b561b37e8",
+ CellID->346384895]
+}, Open  ]]
+}, Open  ]],
+Cell[19596, 737, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"07567528-ca6b-4d0a-be45-d629a18af7d6"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19664, 742, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"731c1433-ab3f-4175-9248-8d4f9c4705d6",
+ CellID->1255426704],
+Cell[19817, 751, 1176, 38, 70, "SeeAlso",ExpressionUUID->"81479ebe-c156-4675-8865-00e69b188cbf",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21030, 794, 152, 7, 70, "TutorialsSection",ExpressionUUID->"14e0781c-c2c4-4436-97a3-43de62c460c2",
+ CellID->250839057],
+Cell[21185, 803, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"74aba01a-aba3-4363-addb-3362804d265d"],
+Cell[21219, 805, 185, 6, 70, "Tutorials",ExpressionUUID->"d04f5576-9cc4-4e22-bfbb-d3e82435be29",
+ CellID->341631938],
+Cell[21407, 813, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"ef1cd477-f390-4aaf-a19f-79692d258d64"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21475, 818, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"3a83072d-19f8-4e86-bc6c-ed612e5e88ee",
+ CellID->38303248],
+Cell[21634, 827, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"efad7521-9435-4314-b95a-4b4f8182bfe1"],
+Cell[21668, 829, 186, 6, 70, "MoreAbout",ExpressionUUID->"1397eef8-b85c-459d-9069-f93f89c8f472",
+ CellID->1754147313]
+}, Open  ]],
+Cell[21869, 838, 23, 0, 70, "FooterCell",ExpressionUUID->"992ecba8-0ca3-4596-886c-0fe6b32cce00"]
+}
+]
+*)
+
+(* End of internal cache information *)

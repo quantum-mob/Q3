@@ -1,0 +1,1471 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     45747,       1462]
+NotebookOptionsPosition[     36756,       1271]
+NotebookOutlinePosition[     38897,       1327]
+CellTagsIndexPosition[     38811,       1322]
+WindowTitle->Fredkin
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Quisso: Quick Start\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/QuissoQuickStart"], "\<\"Q3: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"CNOT\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/CNOT"], "\<\"SWAP\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/SWAP"], "\<\"Toffoli\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Toffoli"], "\<\"Fredkin\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/Fredkin"], "\<\"CZ\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/CZ"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Quisso Package\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/guide/QuissoPackageGuide"], "\<\"Q3\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/Fredkin\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/Fredkin"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/Fredkin.html"], 
+                StandardForm]], "Input", TextClipboardType -> "PlainText"]}, 
+            Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$79359], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], "Q3/ref/Fredkin", 
+             ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["Fredkin", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Fredkin", "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"], ",", 
+        StyleBox["c", "TI"]}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]represents the quantum Fredkin gate or the \
+controlled-SWAP gate, which swaps ",
+     Cell[BoxData[
+      StyleBox["b", "TI"]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      StyleBox["c", "TI"]], "InlineFormula"],
+     " if ",
+     Cell[BoxData[
+      StyleBox["a", "TI"]], "InlineFormula"],
+     " is set to ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Ket"]], "paclet:Q3/ref/Ket"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", "1", "]"}]], "InlineFormula"],
+     "."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->982511436]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->64160770],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell["\<\
+The Fredkin gate was invented by Edward Fredkin for classical reversible \
+computation.\
+\>", "Notes",
+ CellID->1067943069],
+
+Cell["\<\
+For classical reversible computation, it is universal in the sense that any \
+logical or arithmetic operation can be constructed entirely of Fredkin gates.\
+\
+\>", "Notes",
+ CellID->168460463],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->313270596],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1656488175],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1037705342],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->925625303],
+
+Cell["This is the quantum circuit model of the Fredkin gate.", "ExampleText",
+ CellID->1848740225],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", 
+   RowBox[{"Fredkin", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "1", "]"}], ",", 
+     RowBox[{"S", "[", "2", "]"}], ",", 
+     RowBox[{"S", "[", "3", "]"}]}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"fred", "=", 
+  RowBox[{"Elaborate", "@", 
+   RowBox[{"Fredkin", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "1", "]"}], ",", 
+     RowBox[{"S", "[", "2", "]"}], ",", 
+     RowBox[{"S", "[", "3", "]"}]}], "]"}]}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->612928653],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {2, -1}}, {{0, -2}, {2, -2}}, {{0, -3}, {2, -3}}}], {
+    LineBox[{{1, -1}, {1, -2}, {1, -3}}], DiskBox[{1, -1}, 0.09], 
+    LineBox[{{{0.91, -2.09}, {1.09, -1.91}}, {{0.91, -1.91}, {1.09, -2.09}}}],
+     LineBox[{{{0.91, -3.09}, {1.09, -2.91}}, {{0.91, -2.91}, {
+     1.09, -3.09}}}]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->118.8,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->2115218554],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["3", "4"], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1033944640]
+}, Open  ]],
+
+Cell["\<\
+The Fredkin gate is equivalent to a combination of three Toffoli gates\
+\>", "ExampleText",
+ CellID->683383675],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Toffoli", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Toffoli", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Toffoli", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"expr", "=", 
+  RowBox[{"ExpressionFor", "[", "qc", "]"}]}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->655391084],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {4, -1}}, {{0, -2}, {4, -2}}, {{0, -3}, {4, -3}}}], {
+    LineBox[{{1, -1}, {1, -2}, {1, -3}}], DiskBox[{1, -1}, 0.09], 
+    DiskBox[{1, -2}, 0.09], {CircleBox[{1, -3}, 0.26666666666666666], 
+     LineBox[{{{0.7333333333333334, -3}, {1.2666666666666666`, -3}}, {{
+        1, -3.2666666666666666`}, {1, -2.7333333333333334`}}}]}}, {
+    LineBox[{{2, -1}, {2, -3}, {2, -2}}], DiskBox[{2, -1}, 0.09], 
+    DiskBox[{2, -3}, 0.09], {CircleBox[{2, -2}, 0.26666666666666666], 
+     LineBox[{{{1.7333333333333334`, -2}, {2.2666666666666666`, -2}}, {{
+        2, -2.2666666666666666`}, {2, -1.7333333333333334`}}}]}}, {
+    LineBox[{{3, -1}, {3, -2}, {3, -3}}], DiskBox[{3, -1}, 0.09], 
+    DiskBox[{3, -2}, 0.09], {CircleBox[{3, -3}, 0.26666666666666666], 
+     LineBox[{{{2.7333333333333334`, -3}, {3.2666666666666666`, -3}}, {{
+        3, -3.2666666666666666`}, {3, -2.7333333333333334`}}}]}}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->190.79999999999998`,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1687986301],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["3", "4"], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1726784037]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fred", "-", "expr"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->407102955],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->2147318290]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->144709360],
+
+Cell["\<\
+This is a simpler quantum circuit model that is equivalent to the Fredkin \
+gate [see Smolin and DiVincenzo (Phys. Rev. A, 1996)].\
+\>", "ExampleText",
+ CellID->667009192],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "3", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"Toffoli", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "3", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "]"}]}], "\[IndentingNewLine]", 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"expr", "=", 
+  RowBox[{"ExpressionFor", "[", "qc", "]"}]}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->343808826],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {4, -1}}, {{0, -2}, {4, -2}}, {{0, -3}, {4, -3}}}], {
+    LineBox[{{1, -3}, {1, -2}}], 
+    DiskBox[{1, -3}, 0.09], {CircleBox[{1, -2}, 0.26666666666666666], 
+     LineBox[{{{0.7333333333333334, -2}, {1.2666666666666666`, -2}}, {{
+        1, -2.2666666666666666`}, {1, -1.7333333333333334`}}}]}}, {
+    LineBox[{{2, -1}, {2, -2}, {2, -3}}], DiskBox[{2, -1}, 0.09], 
+    DiskBox[{2, -2}, 0.09], {CircleBox[{2, -3}, 0.26666666666666666], 
+     LineBox[{{{1.7333333333333334`, -3}, {2.2666666666666666`, -3}}, {{
+        2, -3.2666666666666666`}, {2, -2.7333333333333334`}}}]}}, {
+    LineBox[{{3, -3}, {3, -2}}], 
+    DiskBox[{3, -3}, 0.09], {CircleBox[{3, -2}, 0.26666666666666666], 
+     LineBox[{{{2.7333333333333334`, -2}, {3.2666666666666666`, -2}}, {{
+        3, -2.2666666666666666`}, {3, -1.7333333333333334`}}}]}}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->190.79999999999998`,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1598616768],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["3", "4"], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"]}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->784112159]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"fred", "-", "expr"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1446653054],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1360814046]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->995742001],
+
+Cell[TextData[{
+ "The relation between the Fredkin gate and the Toffoli gate is similar to \
+that between the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SWAP"]], "paclet:Q3/ref/SWAP"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " gate and the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CNOT"]], "paclet:Q3/ref/CNOT"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " gate."
+}], "ExampleText",
+ CellID->1744230603],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", 
+   RowBox[{"SWAP", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "1", "]"}], ",", 
+     RowBox[{"S", "[", "2", "]"}]}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"swap", "=", 
+  RowBox[{"ExpressionFor", "[", "qc", "]"}]}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1000472729],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {2, -1}}, {{0, -2}, {2, -2}}}], {
+    LineBox[{{1, -1}, {1, -2}}], 
+    LineBox[{{{0.91, -1.09}, {1.09, -0.91}}, {{0.91, -0.91}, {1.09, -1.09}}}],
+     LineBox[{{{0.91, -2.09}, {1.09, -1.91}}, {{0.91, -1.91}, {
+     1.09, -2.09}}}]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->118.8,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->66658422],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", "2"], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}]}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1489118467]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", 
+   RowBox[{
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "]"}], ",", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", "1", "]"}]}], "]"}], ",", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "]"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"expr", "=", 
+  RowBox[{"ExpressionFor", "[", "qc", "]"}]}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1721628052],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {4, -1}}, {{0, -2}, {4, -2}}}], {
+    LineBox[{{1, -1}, {1, -2}}], 
+    DiskBox[{1, -1}, 0.09], {CircleBox[{1, -2}, 0.26666666666666666], 
+     LineBox[{{{0.7333333333333334, -2}, {1.2666666666666666`, -2}}, {{
+        1, -2.2666666666666666`}, {1, -1.7333333333333334`}}}]}}, {
+    LineBox[{{2, -2}, {2, -1}}], 
+    DiskBox[{2, -2}, 0.09], {CircleBox[{2, -1}, 0.26666666666666666], 
+     LineBox[{{{1.7333333333333334`, -1}, {2.2666666666666666`, -1}}, {{
+        2, -1.2666666666666666`}, {2, -0.7333333333333334}}}]}}, {
+    LineBox[{{3, -1}, {3, -2}}], 
+    DiskBox[{3, -1}, 0.09], {CircleBox[{3, -2}, 0.26666666666666666], 
+     LineBox[{{{2.7333333333333334`, -2}, {3.2666666666666666`, -2}}, {{
+        3, -2.2666666666666666`}, {3, -1.7333333333333334`}}}]}}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->190.79999999999998`,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1810402753],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", "2"], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"y\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "2"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1890758975]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"swap", "-", "expr"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->21998682],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1552662305]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CNOT"]], "paclet:Q3/ref/CNOT"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SWAP"]], "paclet:Q3/ref/SWAP"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Toffoli"]], "paclet:Q3/ref/Toffoli"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Fredkin"]], "paclet:Q3/ref/Fredkin"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CZ"]], "paclet:Q3/ref/CZ"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso: Quick Start"]], "paclet:Q3/tutorial/QuissoQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1430896196],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Quisso Package"]], "paclet:Q3/guide/QuissoPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->618757517],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Q3"]], "paclet:Q3/guide/Q3"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->1341769445]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Related Demonstrations", "RelatedDemonstrationsSection",
+ CellID->1268215905],
+
+Cell[TextData[ButtonBox["QuantumCircuit Usage Examples",
+ BaseStyle->"Link",
+ ButtonData->
+  "paclet:Q3/tutorial/QuantumCircuitUsage"]], "RelatedDemonstrations",
+ CellID->1339748392]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Fredkin",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 33, 7.283480}", 
+    "history" -> {"1.4", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Fredkin[a, b, c] represents the quantum Fredkin gate or the \
+controlled-SWAP gate, which swaps b and c if a is set to Ket[1].", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "Fredkin", 
+    "titlemodifier" -> "", "windowtitle" -> "Fredkin", "type" -> "Symbol", 
+    "uri" -> "Q3/ref/Fredkin", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7492, 226, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"0ee0dd62-09d2-4dbd-99e8-656f453ac74a",
+   CellTags->"PrimaryExamplesSection",
+   CellID->313270596]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 38613, 1315}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[579, 21, 4671, 116, 70, "AnchorBarGrid",ExpressionUUID->"b598a2bb-3700-4670-b947-ec6346c7a300",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5275, 141, 164, 6, 70, "ObjectNameGrid",ExpressionUUID->"78928a93-51b4-40a2-b75a-3032ce337b47"],
+Cell[5442, 149, 939, 31, 70, "Usage",ExpressionUUID->"7aa069b2-3ab8-4fef-ac64-556779acfcf9",
+ CellID->982511436]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6418, 185, 628, 19, 70, "NotesSection",ExpressionUUID->"8e1a45e9-0c3d-425b-8b2e-171352aac2a1",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->64160770],
+Cell[7049, 206, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"ab576a60-4883-4a87-99a7-a98077e60cab"],
+Cell[7083, 208, 133, 4, 70, "Notes",ExpressionUUID->"a2af78cf-b810-43ca-ab59-b44282646c4b",
+ CellID->1067943069],
+Cell[7219, 214, 202, 5, 70, "Notes",ExpressionUUID->"94d562aa-343b-4695-8952-830ba710dbce",
+ CellID->168460463],
+Cell[7424, 221, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"fc9e97d2-c536-4f1a-8ba2-f16edc34baf8"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7492, 226, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"0ee0dd62-09d2-4dbd-99e8-656f453ac74a",
+ CellTags->"PrimaryExamplesSection",
+ CellID->313270596],
+Cell[CellGroupData[{
+Cell[7784, 240, 196, 6, 70, "ExampleSection",ExpressionUUID->"62c3406e-6bd0-4b10-835b-c5a04723bda2",
+ CellID->1656488175],
+Cell[7983, 248, 91, 3, 70, "Input",ExpressionUUID->"62d69c58-f884-4955-bce7-66e85f35e17a",
+ CellID->1037705342],
+Cell[8077, 253, 126, 4, 70, "Input",ExpressionUUID->"cd7453b4-c864-4a22-8e0e-8fd8efb3cede",
+ CellID->925625303],
+Cell[8206, 259, 98, 1, 70, "ExampleText",ExpressionUUID->"fd8eaf88-43de-4c94-9843-2d8635a6c351",
+ CellID->1848740225],
+Cell[CellGroupData[{
+Cell[8329, 264, 546, 16, 70, "Input",ExpressionUUID->"246e90a3-bae2-4c09-abfd-5561b062835d",
+ CellID->612928653],
+Cell[8878, 282, 604, 14, 70, "Output",ExpressionUUID->"697b099f-8394-4f2c-ba95-576ae2a00d84",
+ CellID->2115218554],
+Cell[9485, 298, 4055, 145, 70, "Output",ExpressionUUID->"06c04c46-b27b-4c80-84c4-20974e242226",
+ CellID->1033944640]
+}, Open  ]],
+Cell[13555, 446, 121, 3, 70, "ExampleText",ExpressionUUID->"833c0a2e-2ab8-4ac1-857d-b62d6fd3e461",
+ CellID->683383675],
+Cell[CellGroupData[{
+Cell[13701, 453, 837, 22, 70, "Input",ExpressionUUID->"64176588-77af-4a65-8592-460241629e8c",
+ CellID->655391084],
+Cell[14541, 477, 1219, 22, 70, "Output",ExpressionUUID->"485a2747-7af7-483a-b4c8-3ab4034e4391",
+ CellID->1687986301],
+Cell[15763, 501, 4055, 145, 70, "Output",ExpressionUUID->"ee86b0cd-76b9-4c08-99e4-c041df215aa5",
+ CellID->1726784037]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19855, 651, 98, 3, 70, "Input",ExpressionUUID->"5bad6f8e-e47f-46d7-96e0-21c4c1dce618",
+ CellID->407102955],
+Cell[19956, 656, 72, 2, 70, "Output",ExpressionUUID->"43069cbc-2715-4cec-a394-5e6051b92afa",
+ CellID->2147318290]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20065, 663, 125, 3, 70, "ExampleDelimiter",ExpressionUUID->"671a7d1a-c8eb-4b68-b935-6971a86b5472",
+ CellID->144709360],
+Cell[20193, 668, 181, 4, 70, "ExampleText",ExpressionUUID->"52b4ea64-79e6-4a6c-ad7e-4ea19c8afa7b",
+ CellID->667009192],
+Cell[CellGroupData[{
+Cell[20399, 676, 774, 21, 70, "Input",ExpressionUUID->"12329647-91cd-41d0-92f4-3c5b266e2824",
+ CellID->343808826],
+Cell[21176, 699, 1153, 22, 70, "Output",ExpressionUUID->"25dadaca-2850-4d7d-9043-9a94c1b74557",
+ CellID->1598616768],
+Cell[22332, 723, 4054, 145, 70, "Output",ExpressionUUID->"493b1f4f-d1b2-46cd-98e6-e8cf4d537a33",
+ CellID->784112159]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26423, 873, 99, 3, 70, "Input",ExpressionUUID->"e681dbc4-030f-4858-a626-a34e0bbf27c3",
+ CellID->1446653054],
+Cell[26525, 878, 72, 2, 70, "Output",ExpressionUUID->"d7a565f7-f2e8-43a0-a4e2-c0face444d6a",
+ CellID->1360814046]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26646, 886, 125, 3, 70, "ExampleDelimiter",ExpressionUUID->"b8e347e0-bb17-4ee9-8a61-1183905ffbff",
+ CellID->995742001],
+Cell[26774, 891, 491, 18, 70, "ExampleText",ExpressionUUID->"4de156a1-945a-42a6-b3ad-f62907c5322f",
+ CellID->1744230603],
+Cell[CellGroupData[{
+Cell[27290, 913, 350, 10, 70, "Input",ExpressionUUID->"4616c80d-a8ed-422a-a4dd-ee345c5d85f9",
+ CellID->1000472729],
+Cell[27643, 925, 549, 14, 70, "Output",ExpressionUUID->"62e5a865-1b47-4c67-9fb2-c7d667f99a19",
+ CellID->66658422],
+Cell[28195, 941, 1665, 61, 70, "Output",ExpressionUUID->"b84c3a6c-a29b-4b0a-b2ef-d9dea9c78c25",
+ CellID->1489118467]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29897, 1007, 634, 19, 70, "Input",ExpressionUUID->"86a52f9a-c0a7-45e8-acc8-35f2e97d76f3",
+ CellID->1721628052],
+Cell[30534, 1028, 1099, 22, 70, "Output",ExpressionUUID->"63e75484-7629-483c-a6a5-a1f9e0d7d715",
+ CellID->1810402753],
+Cell[31636, 1052, 1665, 61, 70, "Output",ExpressionUUID->"2d7ce8b6-e697-4149-b735-78fd10fe1eb6",
+ CellID->1890758975]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33338, 1118, 97, 3, 70, "Input",ExpressionUUID->"514898d9-3cb1-4edf-adb7-3a18715da2ff",
+ CellID->21998682],
+Cell[33438, 1123, 72, 2, 70, "Output",ExpressionUUID->"7c5fb950-3503-4759-8fa9-35fdb0c443fa",
+ CellID->1552662305]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[33549, 1130, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"96890c7d-ff45-4255-9a79-e920418d7404"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[33617, 1135, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"1bef86e0-d78c-439c-8a37-73205728aefe",
+ CellID->1255426704],
+Cell[33770, 1144, 1433, 48, 70, "SeeAlso",ExpressionUUID->"7ef082d8-53a5-41df-b278-931dc4344075",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[35240, 1197, 152, 7, 70, "TutorialsSection",ExpressionUUID->"f435efa8-e560-4408-8be9-9b0ef1410a26",
+ CellID->250839057],
+Cell[35395, 1206, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"42111d32-e66e-4db0-bb02-e3d765c24a0e"],
+Cell[35429, 1208, 190, 6, 70, "Tutorials",ExpressionUUID->"24a53c5c-2393-4c46-b276-98c55b151623",
+ CellID->1430896196],
+Cell[35622, 1216, 181, 6, 70, "Tutorials",ExpressionUUID->"68d1133e-f10d-452f-b3f1-0fbf35e2bb36",
+ CellID->341631938],
+Cell[35806, 1224, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"81497fbe-1a9b-4a2d-92c6-9b99b523cc9c"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[35874, 1229, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"e975584a-1c95-457e-90dc-7358df14f2a9",
+ CellID->38303248],
+Cell[36033, 1238, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"ed0f55df-b2d4-46c4-b46f-202a38f08c6f"],
+Cell[36067, 1240, 183, 6, 70, "MoreAbout",ExpressionUUID->"2d90501f-5220-481a-a280-25df6bf3eacd",
+ CellID->618757517],
+Cell[36253, 1248, 156, 6, 70, "MoreAbout",ExpressionUUID->"ef838445-21b1-4b3c-90e1-49f5789f64b5",
+ CellID->1341769445]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[36446, 1259, 83, 1, 70, "RelatedDemonstrationsSection",ExpressionUUID->"4699f866-4bd2-45aa-b6f8-16a313bee1da",
+ CellID->1268215905],
+Cell[36532, 1262, 182, 4, 70, "RelatedDemonstrations",ExpressionUUID->"9a2b6414-4de7-49df-9f31-61b37db2c119",
+ CellID->1339748392]
+}, Open  ]],
+Cell[36729, 1269, 23, 0, 70, "FooterCell",ExpressionUUID->"2796c8c4-e7db-48e5-bbd6-cedf6a042e86"]
+}
+]
+*)
+
+(* End of internal cache information *)

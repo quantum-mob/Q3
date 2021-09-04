@@ -1,0 +1,1799 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     63813,       1790]
+NotebookOptionsPosition[     54973,       1611]
+NotebookOutlinePosition[     57627,       1674]
+CellTagsIndexPosition[     57584,       1671]
+WindowTitle->Quantum Teleportation
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"QuantumCircuit Usage Examples\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/tutorial/QuantumCircuitUsage"], "\<\"Quisso: Quick \
+Start\"\>":>Documentation`HelpLookup["paclet:Q3/guide/QuissoQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"RelatedTutorialsSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Quisso Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/QuissoPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialMoreAboutSection"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Functions",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Functions", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"CNOT\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/CNOT"], "\<\"ExpressionFor\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/ExpressionFor"], "\<\"Matrix\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/Matrix"], "\<\"QuantumCircuit\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/QuantumCircuit"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"TutorialFunction"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/tutorial/QuantumTeleportation\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuantumTeleportation"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumTeleportation.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$211746], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/tutorial/QuantumTeleportation", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Teleportation", "Title",
+ CellID->509267359],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["References"], 
+      "paclet:Q3/tutorial/QuantumTeleportation#1175517547", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "XMPBasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "XMPMediaManagementSchema" -> 
+               Association[{
+                 "InstanceID" -> "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A", 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "DerivedFrom" -> 
+                  Association[{
+                    "Reference" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Quantum Circuit Model"], 
+      "paclet:Q3/tutorial/QuantumTeleportation#1178477808", 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
+          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
+          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
+          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
+          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
+          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
+          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
+          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
+          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
+          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
+          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
+          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
+          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
+          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
+          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
+          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
+          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
+          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
+          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
+         RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}], 
+      GraphicsBox[
+       TagBox[
+        RasterBox[
+        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
+          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
+          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
+          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
+          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
+          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
+          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
+          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
+           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
+          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
+          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
+           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
+          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
+           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
+          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
+          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
+          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
+        BoxForm`ImageTag[
+        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
+         Automatic, MetaInformation -> 
+         Association[{
+           "XMP" -> Association[{
+              "XMPBasicSchema" -> 
+               Association[{
+                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
+               "XMPMediaManagementSchema" -> 
+               Association[{
+                 "InstanceID" -> "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A", 
+                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
+                  "DerivedFrom" -> 
+                  Association[{
+                    "Reference" -> 
+                    Association[{
+                    "InstanceID" -> 
+                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
+                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
+            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
+        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
+       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
+       ImageSize -> {8, 9}]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]}
+  }]], "TutorialJumpBox"],
+
+Cell["\<\
+Quantum teleportation is a quantum communication protocol to transmit quantum \
+states between remotely separated parties using pre-shared entangled pairs \
+and classical channels. Unlike teleportation which is commonly depicted in \
+science fiction, quantum teleportation does not transfer the object (matter) \
+itself but only information. \
+\>", "Text",
+ CellID->1534169418],
+
+Cell["\<\
+Quantum teleportation was first investigated by C. H. Bennet and his \
+collaborators in 1993 [1].\
+\>", "Text",
+ CellID->1140158329],
+
+Cell[TextData[{
+ "Here we demonstrate the quantum teleportation using the ",
+ ButtonBox["Q3 Application",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Q3"],
+ "."
+}], "Text",
+ CellID->1381264378],
+
+Cell[BoxData[GridBox[{
+   {
+    ButtonBox["QuantumCircuit",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/QuantumCircuit"], Cell[
+    "Circuit representation of elementary gates", "TableText"]},
+   {
+    ButtonBox["CNOT",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/CNOT"], Cell[
+    "Two-qubit controlled-NOT gate", "TableText"]},
+   {
+    ButtonBox["Matrix",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/Matrix"], Cell["\<\
+Converts QuantumCircuit and operator (or Ket) expressions to the matrix \
+representation in the standard basis.\
+\>", "TableText"]},
+   {
+    ButtonBox["ExpressionFor",
+     BaseStyle->"Link",
+     ButtonData->"paclet:Q3/ref/ExpressionFor"], Cell["\<\
+Converts the matrix representation to the corresponding operator or \
+state-vector expression.\
+\>", "TableText"]}
+  }]], "DefinitionBox",
+ CellID->2096742444],
+
+Cell["\<\
+Functions used in the demonstration of the quantum teleportation protocol.\
+\>", "Caption",
+ CellID->1891092685],
+
+Cell[CellGroupData[{
+
+Cell["References", "Section",
+ CellID->1175517547],
+
+Cell["\<\
+[1] C. H. Bennet, G. Brassard, C. Crepeau, R. Jozsa, A. Peres, and W. K. \
+Wootters, \"Teleporting an Unknown Quantum State via Dual Classical and \
+Einstein-Podolsky-Rosen Channels,\" Physical Review Letters 70 (13), 1895 \
+(1993).\
+\>", "Text",
+ CellID->185004659]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Circuit Model", "Section",
+ CellID->1178477808],
+
+Cell["Start with loading the package", "MathCaption",
+ CellID->836781195],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[849]:=",
+ CellID->1548340954],
+
+Cell[TextData[{
+ "Choose the symbol to denote the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Qubits"]], "paclet:Q3/ref/Qubits"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ "."
+}], "MathCaption",
+ CellID->1728747163],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[850]:=",
+ CellID->1749295778],
+
+Cell[TextData[{
+ "Bob chooses an arbitrary state to teleport to Alice, and prepare the third ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Qubit"]], "paclet:Q3/ref/Qubit"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " ",
+ StyleBox["S[3,None]", "Input"],
+ " in it."
+}], "MathCaption",
+ CellID->1363013416],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"in", "=", 
+  RowBox[{"ProductState", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"S", "[", "3", "]"}], "->", 
+     RowBox[{"c", "@", 
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}]}]}], ",", 
+    RowBox[{"\"\<Label\>\"", "->", 
+     RowBox[{"Ket", "[", "\[Psi]", "]"}]}]}], "]"}]}]}], "Input",
+ CellLabel->"In[851]:=",
+ CellID->1033444918],
+
+Cell[BoxData[
+ TagBox[
+  SubscriptBox[
+   RowBox[{"(", 
+    RowBox[{
+     RowBox[{
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"0"},
+        "RowDefault"]], " ", 
+      TemplateBox[{"0"},
+       "Ket"]}], "+", 
+     RowBox[{
+      SubscriptBox[
+       TemplateBox[{"c"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]], " ", 
+      TemplateBox[{"1"},
+       "Ket"]}]}], ")"}], 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"3"},
+     "RowDefault"]]],
+  DisplayForm]], "Output",
+ CellLabel->"Out[852]=",
+ CellID->281072836]
+}, Open  ]],
+
+Cell[TextData[{
+ "Here is a quantum circuit model of quantum teleportation. The first, ",
+ StyleBox["S[1,None]", "Input"],
+ ", qubit belongs to Alice whereas Bob holds the two qubits ",
+ StyleBox["S[2,None]", "Input"],
+ " and ",
+ StyleBox["S[3,Non]", "Input"],
+ ". There is no notion of spatial distance in quantum circuit model. In the \
+model below, extra space is inserted between the first qubit and the rest \
+just to simulate the spatial distance."
+}], "MathCaption",
+ CellID->1120193876],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", "\[IndentingNewLine]", 
+   RowBox[{"in", ",", 
+    RowBox[{"LogicalForm", "[", 
+     RowBox[{
+      RowBox[{"Ket", "[", "]"}], ",", 
+      RowBox[{"S", "@", 
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2"}], "}"}]}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"S", "[", 
+     RowBox[{"1", ",", "6"}], "]"}], ",", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "]"}], ",", "\"\<Separator\>\"", ",", 
+    "\"\<Spacer\>\"", ",", "\[IndentingNewLine]", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"S", "[", 
+     RowBox[{"2", ",", "6"}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Measurement", "[", 
+       RowBox[{"S", "[", "2", "]"}], "]"}], ",", 
+      RowBox[{"Measurement", "[", 
+       RowBox[{"S", "[", "3", "]"}], "]"}]}], "}"}], ",", "\"\<Separator\>\"",
+     ",", "\[IndentingNewLine]", 
+    RowBox[{"ControlledU", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", 
+       RowBox[{"1", ",", "3"}], "]"}]}], "]"}], ",", 
+    RowBox[{"ControlledU", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "3", "]"}], ",", 
+      RowBox[{"S", "[", 
+       RowBox[{"1", ",", "1"}], "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"\"\<Invisible\>\"", "->", 
+     RowBox[{"S", "[", "1.5", "]"}]}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[853]:=",
+ CellID->109340683],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], 
+    LineBox[{{{7, -3}, {11, -3}}, {{7, -4}, {11, -4}}}]}, 
+   LineBox[{{{0, -1}, {11, -1}}, {{0, -3}, {7, -3}}, {{0, -4}, {7, -4}}}], {
+    InsetBox[
+     StyleBox[
+      TemplateBox[{"\[Psi]"},
+       "Ket"],
+      StripOnInput->False,
+      FontSize->Scaled[0.029090909090909098`],
+      FontWeight->"Light"], {-0.1, -4}, ImageScaled[{1, Rational[1, 2]}]], {
+     InsetBox[
+      StyleBox[
+       TemplateBox[{"0"},
+        "Ket"],
+       StripOnInput->False,
+       FontSize->Scaled[0.029090909090909098`],
+       FontWeight->"Light"], {-0.1, -1}, ImageScaled[{1, Rational[1, 2]}]], 
+     InsetBox[
+      StyleBox[
+       TemplateBox[{"0"},
+        "Ket"],
+       StripOnInput->False,
+       FontSize->Scaled[0.029090909090909098`],
+       FontWeight->"Light"], {-0.1, -3}, ImageScaled[{1, Rational[1, 2]}]]}}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -1.4}, {1.4, -0.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.03636363636363637],
+      FontWeight->"Light",
+      FontSlant->Italic], {1, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{2, -1}, {2, -3}}], 
+    DiskBox[{2, -1}, 0.09], {CircleBox[{2, -3}, 0.26666666666666666], 
+     LineBox[{{{1.7333333333333334`, -3}, {2.2666666666666666`, -3}}, {{
+        2, -3.2666666666666666`}, {2, -2.7333333333333334`}}}]}}, 
+   {Dashing[{0, Small}], 
+    LineBox[NCache[{{3, Rational[-9, 2]}, {3, Rational[-1, 2]}}, {{3, -4.5}, {
+       3, -0.5}}]]}, {LineBox[{{5, -3}, {5, -4}}], 
+    DiskBox[{5, -3}, 0.09], {CircleBox[{5, -4}, 0.26666666666666666], 
+     LineBox[{{{4.733333333333333, -4}, {5.266666666666667, -4}}, {{
+        5, -4.266666666666667}, {5, -3.7333333333333334`}}}]}}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{5.6, -3.4}, {6.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.03636363636363637],
+      FontWeight->"Light",
+      FontSlant->Italic], {6, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {{
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{6.6, -3.4}, {7.4, -2.6}]}, 
+     CircleBox[{7, -3.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{7, -3.2}, {7.24, -2.76}}]}, {
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{6.6, -4.4}, {7.4, -3.6}]}, 
+     CircleBox[{7, -4.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{7, -4.2}, {7.24, -3.76}}]}}, 
+   {Dashing[{0, Small}], 
+    LineBox[NCache[{{8, Rational[-9, 2]}, {8, Rational[-1, 2]}}, {{8, -4.5}, {
+       8, -0.5}}]]}, {LineBox[{{9, -3}, {9, -1}}], DiskBox[{9, -3}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{8.6, -1.4}, {9.4, -0.6}]}, InsetBox[
+     StyleBox["\<\"Z\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.03636363636363637],
+      FontWeight->"Light",
+      FontSlant->Italic], {9, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{10, -4}, {10, -1}}], DiskBox[{10, -4}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{9.6, -1.4}, {10.4, -0.6}]}, InsetBox[
+     StyleBox["\<\"X\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.03636363636363637],
+      FontWeight->"Light",
+      FontSlant->Italic], {10, -1}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->442.8,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[853]=",
+ CellID->1636905952]
+}, Open  ]],
+
+Cell[TextData[{
+ "Convert the quantum circuit model (represented by ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["QuantumCircuit"]], "paclet:Q3/ref/QuantumCircuit"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ ") to an operator expression by means of either ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["ExpresssionFor"]], "paclet:Q3/ref/ExpressionFor"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " or ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Matrix"]], "paclet:Q3/ref/Matrix"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula"],
+ " (usually faster)."
+}], "MathCaption",
+ CellID->1279649210],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"outAll", "=", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"ExpressionFor", "[", "qc", "]"}], "/.", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{"c", "[", "0", "]"}], "*", 
+        RowBox[{"Conjugate", "[", 
+         RowBox[{"c", "[", "0", "]"}], "]"}]}], "+", 
+       RowBox[{
+        RowBox[{"c", "[", "1", "]"}], "*", 
+        RowBox[{"Conjugate", "[", 
+         RowBox[{"c", "[", "1", "]"}], "]"}]}]}], "->", "1"}], "}"}]}], "//", 
+   "Simplify"}]}]], "Input",
+ CellLabel->"In[854]:=",
+ CellID->15547765],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"c"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]], 
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"c"},
+     "RowDefault"], 
+    TemplateBox[{"0"},
+     "RowDefault"]], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[854]=",
+ CellID->2055294744]
+}, Open  ]],
+
+Cell[TextData[{
+ "Let us examine the state in Alice\[CloseCurlyQuote]s qubit (",
+ StyleBox["S[1,None]", "Input"],
+ ")."
+}], "MathCaption",
+ CellID->1328583139],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{
+    RowBox[{"Last", "@", 
+     RowBox[{"KetFactor", "[", 
+      RowBox[{"outAll", ",", 
+       RowBox[{"S", "[", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", "3"}], "}"}], "]"}]}], "]"}]}], "//", 
+    "Simplify"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"out", "//", "LogicalForm"}]}], "Input",
+ CellLabel->"In[855]:=",
+ CellID->2109339314],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"c"},
+     "RowDefault"], 
+    TemplateBox[{"0"},
+     "RowDefault"]], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["0", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}], "+", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"c"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]], " ", 
+   TemplateBox[{
+     TagBox[
+      TemplateBox[{
+        SubscriptBox["1", 
+         SubscriptBox[
+          TemplateBox[{"S"}, "RowDefault"], 
+          TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+    "Ket"]}]}]], "Output",
+ CellLabel->"Out[856]=",
+ CellID->1146927908]
+}, Open  ]],
+
+Cell["\<\
+As quantum teleportation is deterministic, the result of the Bell measurement \
+by Bob does not matter. \
+\>", "MathCaption",
+ CellID->181806307],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{
+    RowBox[{"Table", "[", 
+     RowBox[{
+      RowBox[{"ExpressionFor", "[", "qc", "]"}], ",", 
+      RowBox[{"{", "10", "}"}]}], "]"}], "/.", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{"c", "[", "0", "]"}], "*", 
+       RowBox[{"Conjugate", "[", 
+        RowBox[{"c", "[", "0", "]"}], "]"}]}], "+", 
+      RowBox[{
+       RowBox[{"c", "[", "1", "]"}], "*", 
+       RowBox[{"Conjugate", "[", 
+        RowBox[{"c", "[", "1", "]"}], "]"}]}]}], "->", "1"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{
+     RowBox[{"KetFactor", "[", 
+      RowBox[{"#", ",", 
+       RowBox[{"S", "@", 
+        RowBox[{"{", 
+         RowBox[{"2", ",", "3"}], "}"}]}]}], "]"}], "&"}], "/@", "out"}], "//",
+    "LogicalForm"}], "//", "TableForm"}]}], "Input",
+ CellLabel->"In[857]:=",
+ CellID->1308606279],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["0", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]},
+     {
+      RowBox[{
+       TagBox[
+        TemplateBox[{
+          TagBox[
+           TemplateBox[{
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"2"}, "RowDefault"]]], 
+             SubscriptBox["1", 
+              SubscriptBox[
+               TemplateBox[{"S"}, "RowDefault"], 
+               TemplateBox[{"3"}, "RowDefault"]]]}, "RowDefault"], 
+           DisplayForm]},
+         "Ket"],
+        HoldForm], "\[CircleTimes]", 
+       RowBox[{"(", 
+        TagBox[
+         RowBox[{
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"0"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["0", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}], "+", 
+          RowBox[{
+           SubscriptBox[
+            TemplateBox[{"c"},
+             "RowDefault"], 
+            TemplateBox[{"1"},
+             "RowDefault"]], " ", 
+           TemplateBox[{
+             TagBox[
+              TemplateBox[{
+                SubscriptBox["1", 
+                 SubscriptBox[
+                  TemplateBox[{"S"}, "RowDefault"], 
+                  TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], 
+              DisplayForm]},
+            "Ket"]}]}],
+         HoldForm], ")"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.5599999999999999]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}],
+   Column],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[858]//TableForm=",
+ CellID->964431475]
+}, Open  ]],
+
+Cell["\<\
+For heuristic purposes, let us also take a look at Bob\[CloseCurlyQuote]s \
+measurement statistics.\
+\>", "MathCaption",
+ CellID->663794641],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"c", "[", "0", "]"}], ",", 
+    RowBox[{"c", "[", "1", "]"}]}], "}"}], "=", 
+  RowBox[{"Normalize", "@", 
+   RowBox[{"RandomVector", "[", "2", "]"}]}]}]], "Input",
+ CellLabel->"In[859]:=",
+ CellID->655193283],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "0.327383737508482`"}], "+", 
+    RowBox[{"0.744443642147858`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.12760337937125169`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.5677507636750883`", " ", "\[ImaginaryI]"}]}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[859]=",
+ CellID->1381266827]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"val", "=", 
+   RowBox[{"Table", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"out", "=", 
+       RowBox[{
+        RowBox[{"ExpressionFor", "[", "qc", "]"}], "//", "Simplify"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"Readout", "[", 
+       RowBox[{"out", ",", 
+        RowBox[{"S", "[", 
+         RowBox[{"{", 
+          RowBox[{"2", ",", "3"}], "}"}], "]"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", "100", "}"}]}], "\[IndentingNewLine]", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Histogram3D", "[", "val", "]"}], "\[IndentingNewLine]"}], "Input",
+ CellLabel->"In[860]:=",
+ CellID->1896855715],
+
+Cell[BoxData[
+ Graphics3DBox[
+  {RGBColor[0.9045776, 0.6888327999999999, 0.31364080000000005`], EdgeForm[
+   RGBColor[0.880722, 0.611041, 0.142051]], 
+   StyleBox[{{}, 
+     {RGBColor[0.9045776, 0.6888327999999999, 0.31364080000000005`], EdgeForm[
+      RGBColor[0.880722, 0.611041, 0.142051]], 
+      StyleBox[{
+        TagBox[
+         TooltipBox[
+          TagBox[{{}, 
+            TagBox[
+             DynamicBox[{
+               FEPrivate`If[
+                CurrentValue["MouseOver"], 
+                EdgeForm[{
+                  RGBColor[
+                  0.6666666666666666, 0.6666666666666666, 0.6666666666666666], 
+                  AbsoluteThickness[1.5]}], {}, {}], 
+               CuboidBox[{-0.5, -0.5, 0.}, {0.5, 0.5, 29.}]},
+              
+              ImageSizeCache->{{17.569314354980023`, 
+               127.90361919751683`}, {-61.78175867503896, 46.70817878010578}}],
+             "DelayedMouseEffectStyle"]},
+           StatusArea[#, 29]& ,
+           TagBoxNote->"29"],
+          StyleBox["29", {"Graphics3DLabel"}, StripOnInput -> False]],
+         Annotation[#, 
+          Style[29, {"Graphics3DLabel"}], "Tooltip"]& ], 
+        TagBox[
+         TooltipBox[
+          TagBox[{{}, 
+            TagBox[
+             DynamicBox[{
+               FEPrivate`If[
+                CurrentValue["MouseOver"], 
+                EdgeForm[{
+                  RGBColor[
+                  0.6666666666666666, 0.6666666666666666, 0.6666666666666666], 
+                  AbsoluteThickness[1.5]}], {}, {}], 
+               CuboidBox[{-0.5, 0.5, 0.}, {0.5, 1.5, 27.}]},
+              
+              ImageSizeCache->{{62.78065190525894, 
+               160.63112584287322`}, {-89.42809514788229, 2.993985010646668}}],
+             "DelayedMouseEffectStyle"]},
+           StatusArea[#, 27]& ,
+           TagBoxNote->"27"],
+          StyleBox["27", {"Graphics3DLabel"}, StripOnInput -> False]],
+         Annotation[#, 
+          Style[27, {"Graphics3DLabel"}], "Tooltip"]& ], 
+        TagBox[
+         TooltipBox[
+          TagBox[{{}, 
+            TagBox[
+             DynamicBox[{
+               FEPrivate`If[
+                CurrentValue["MouseOver"], 
+                EdgeForm[{
+                  RGBColor[
+                  0.6666666666666666, 0.6666666666666666, 0.6666666666666666], 
+                  AbsoluteThickness[1.5]}], {}, {}], 
+               CuboidBox[{0.5, -0.5, 0.}, {1.5, 0.5, 21.}]},
+              
+              ImageSizeCache->{{86.23197099014175, 
+               197.52957070019573`}, {-30.015492973414126`, 
+               74.56775572499677}}],
+             "DelayedMouseEffectStyle"]},
+           StatusArea[#, 21]& ,
+           TagBoxNote->"21"],
+          StyleBox["21", {"Graphics3DLabel"}, StripOnInput -> False]],
+         Annotation[#, 
+          Style[21, {"Graphics3DLabel"}], "Tooltip"]& ], 
+        TagBox[
+         TooltipBox[
+          TagBox[{{}, 
+            TagBox[
+             DynamicBox[{
+               FEPrivate`If[
+                CurrentValue["MouseOver"], 
+                EdgeForm[{
+                  RGBColor[
+                  0.6666666666666666, 0.6666666666666666, 0.6666666666666666], 
+                  AbsoluteThickness[1.5]}], {}, {}], 
+               CuboidBox[{0.5, 0.5, 0.}, {1.5, 1.5, 23.}]},
+              
+              ImageSizeCache->{{125.90361919751683`, 
+               225.2090964555161}, {-67.5270952081118, 25.557229256817152`}}],
+             
+             "DelayedMouseEffectStyle"]},
+           StatusArea[#, 23]& ,
+           TagBoxNote->"23"],
+          StyleBox["23", {"Graphics3DLabel"}, StripOnInput -> False]],
+         Annotation[#, 
+          Style[23, {"Graphics3DLabel"}], "Tooltip"]& ]},
+       FontColor->GrayLevel[0.4]]}, {}, {}},
+    FontColor->GrayLevel[0.4]]},
+  Axes->{True, True, True},
+  AxesLabel->{None, None, None},
+  AxesStyle->{},
+  BoxRatios->{1, 1, 0.4},
+  FaceGridsStyle->Automatic,
+  ImageSize->Automatic,
+  Lighting->"Neutral",
+  Method->{"RotationControl" -> "Globe"},
+  PlotRange->{{-0.5, 1.5}, {-0.5, 1.5}, {All, All}},
+  PlotRangePadding->{{
+     Scaled[0.02], 
+     Scaled[0.02]}, {
+     Scaled[0.02], 
+     Scaled[0.02]}, {
+     Scaled[0.02], 
+     Scaled[0.1]}},
+  Ticks->{Automatic, Automatic, Automatic}]], "Output",
+ CellLabel->"Out[861]=",
+ CellID->1645006839]
+}, Open  ]],
+
+Cell["\<\
+In the above example, the statistical distribution is not completely uniform. \
+You can try with an increased number of repetitions. However, the point is \
+that regardless of the statistical distribution of the measurement outcomes, \
+the teleportation protocol is always successful.\
+\>", "MathCaption",
+ CellID->1768694713]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "TutorialMoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->23220180],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["Quisso Package Guide",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/guide/QuissoPackageGuide"]], "TutorialMoreAbout",
+ CellID->495491210],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Tutorials"
+}], "RelatedTutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->415694126],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[ButtonBox["QuantumCircuit Usage Examples",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/tutorial/QuantumCircuitUsage"]], "RelatedTutorials",
+ CellID->208038625],
+
+Cell[TextData[ButtonBox["Quisso: Quick Start",
+ BaseStyle->"Link",
+ ButtonData->"paclet:Q3/guide/QuissoQuickStart"]], "RelatedTutorials",
+ CellID->778670582],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Wolfram Education Group Courses"
+}], "TutorialRelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->415694148],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["An Elementary Introduction to the Wolfram Language"]], 
+   "https://www.wolfram.com/language/elementary-introduction/"},
+  "WebLink",
+  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
+ CellID->454917981],
+
+Cell[TextData[Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["The Wolfram Language: Fast Introduction for Programmers"]], 
+   "https://www.wolfram.com/language/fast-introduction-for-programmers/"},
+  "WebLink",
+  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
+ CellID->1480169507]
+}, Open  ]]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quantum Teleportation",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
+  "LinkTrails" -> GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 47, 55.527182}", 
+    "history" -> {"1.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Quantum teleportation is a quantum communication protocol to transmit \
+quantum states between remotely separated parties using pre-shared entangled \
+pairs and classical channels. Unlike teleportation which is commonly depicted \
+in science fiction, quantum teleportation does not transfer the object \
+(matter) itself but only information. Quantum teleportation was first \
+investigated by C. H. Bennet and his collaborators in 1993 [1]. Here we \
+demonstrate the quantum teleportation using the Q3 Application.", 
+    "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$211661, "title" -> 
+    "Quantum Teleportation", "titlemodifier" -> "", "windowtitle" -> 
+    "Quantum Teleportation", "type" -> "Tutorial", "uri" -> 
+    "Q3/tutorial/QuantumTeleportation", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[593, 21, 4707, 115, 70, "AnchorBarGrid",ExpressionUUID->"8f52eedf-80f2-4cdd-9f71-ef8733a43ac6",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[5325, 140, 58, 1, 70, "Title",ExpressionUUID->"0ea23cc6-3318-4a91-9c59-60a412dc89fa",
+ CellID->509267359],
+Cell[5386, 143, 10203, 172, 70, "TutorialJumpBox",ExpressionUUID->"ca6ef0cc-882d-480f-a946-d6c1dce13706"],
+Cell[15592, 317, 387, 7, 70, "Text",ExpressionUUID->"6b1584ba-d792-4f13-87dc-5169751c055e",
+ CellID->1534169418],
+Cell[15982, 326, 142, 4, 70, "Text",ExpressionUUID->"3bcc4f28-30ff-4d2d-bb73-de8fd2d3486d",
+ CellID->1140158329],
+Cell[16127, 332, 201, 7, 70, "Text",ExpressionUUID->"3774ec3f-2eff-493d-87a4-6600dea47cd7",
+ CellID->1381264378],
+Cell[16331, 341, 870, 26, 70, "DefinitionBox",ExpressionUUID->"daef8fef-907f-4b90-9e65-27dd7f129413",
+ CellID->2096742444],
+Cell[17204, 369, 122, 3, 70, "Caption",ExpressionUUID->"f604ec51-7459-4095-9983-d72fd6b3339a",
+ CellID->1891092685],
+Cell[CellGroupData[{
+Cell[17351, 376, 50, 1, 70, "Section",ExpressionUUID->"b9affc4e-4884-473f-8f9a-bbd92a017a85",
+ CellID->1175517547],
+Cell[17404, 379, 276, 6, 70, "Text",ExpressionUUID->"57e4b27a-f6d5-431e-be63-b30810265d04",
+ CellID->185004659]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17717, 390, 61, 1, 70, "Section",ExpressionUUID->"60a862fb-34ff-407b-81fb-4c9447ea72f6",
+ CellID->1178477808],
+Cell[17781, 393, 73, 1, 70, "MathCaption",ExpressionUUID->"bb036f2a-7fa1-433e-a2cf-6c08afefaa3e",
+ CellID->836781195],
+Cell[17857, 396, 93, 3, 70, "Input",ExpressionUUID->"3ce31d86-1acf-4c39-9828-5537159fc1c8",
+ CellID->1548340954],
+Cell[17953, 401, 256, 10, 70, "MathCaption",ExpressionUUID->"93957ed8-5f0b-4dc3-9447-6db3b12c8fc8",
+ CellID->1728747163],
+Cell[18212, 413, 129, 4, 70, "Input",ExpressionUUID->"8202b238-f93e-4cd7-91eb-28f1eee5bc52",
+ CellID->1749295778],
+Cell[18344, 419, 342, 12, 70, "MathCaption",ExpressionUUID->"255da074-2201-41e9-ae4c-6a566a31be74",
+ CellID->1363013416],
+Cell[CellGroupData[{
+Cell[18711, 435, 461, 14, 70, "Input",ExpressionUUID->"d6b11303-753a-45ea-93ba-947d1796c991",
+ CellID->1033444918],
+Cell[19175, 451, 626, 28, 70, "Output",ExpressionUUID->"ac41da27-bd63-4552-a584-388226d4d0b5",
+ CellID->281072836]
+}, Open  ]],
+Cell[19816, 482, 494, 11, 70, "MathCaption",ExpressionUUID->"76ee0d9d-dbc3-4b10-a4cd-f391fbc9b885",
+ CellID->1120193876],
+Cell[CellGroupData[{
+Cell[20335, 497, 1620, 44, 70, "Input",ExpressionUUID->"f876a79b-c3dc-4062-87c7-978e012acae3",
+ CellID->109340683],
+Cell[21958, 543, 3764, 88, 70, "Output",ExpressionUUID->"b7474393-75b5-4d3f-9bc6-486216479589",
+ CellID->1636905952]
+}, Open  ]],
+Cell[25737, 634, 701, 24, 70, "MathCaption",ExpressionUUID->"5123c2cf-c4b1-47e9-810b-3ad68d4ca76f",
+ CellID->1279649210],
+Cell[CellGroupData[{
+Cell[26463, 662, 558, 18, 70, "Input",ExpressionUUID->"bcdcc0e4-3efb-45db-b786-aa5c4faf0113",
+ CellID->15547765],
+Cell[27024, 682, 946, 35, 70, "Output",ExpressionUUID->"86dc3d29-b35d-4447-9a87-670be2d40e3d",
+ CellID->2055294744]
+}, Open  ]],
+Cell[27985, 720, 159, 5, 70, "MathCaption",ExpressionUUID->"66697f78-5f14-409d-91b8-840402507e1d",
+ CellID->1328583139],
+Cell[CellGroupData[{
+Cell[28169, 729, 408, 13, 70, "Input",ExpressionUUID->"64d19c34-81f9-4948-9f2b-5e1135de389f",
+ CellID->2109339314],
+Cell[28580, 744, 804, 31, 70, "Output",ExpressionUUID->"4be35595-5592-443f-934e-619a36688692",
+ CellID->1146927908]
+}, Open  ]],
+Cell[29399, 778, 155, 4, 70, "MathCaption",ExpressionUUID->"bf09ad91-6b38-4677-9e0d-70e414717c6f",
+ CellID->181806307],
+Cell[CellGroupData[{
+Cell[29579, 786, 897, 30, 70, "Input",ExpressionUUID->"bf137fb0-6b6c-4dfb-94c0-ee730b789fb1",
+ CellID->1308606279],
+Cell[30479, 818, 16347, 526, 70, "Output",ExpressionUUID->"3b16d86b-934a-4586-a895-f2ef2ad8c6df",
+ CellID->964431475]
+}, Open  ]],
+Cell[46841, 1347, 150, 4, 70, "MathCaption",ExpressionUUID->"72d225d4-fd11-4e6b-a9ce-54942069c4ea",
+ CellID->663794641],
+Cell[CellGroupData[{
+Cell[47016, 1355, 272, 9, 70, "Input",ExpressionUUID->"8589b3ab-155f-44e2-865c-22d2bb5ee631",
+ CellID->655193283],
+Cell[47291, 1366, 355, 10, 70, "Output",ExpressionUUID->"bf9b9cd7-aab1-4b13-895e-7823aa848ae1",
+ CellID->1381266827]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[47683, 1381, 702, 20, 70, "Input",ExpressionUUID->"73ff6524-86c0-4fea-8890-4613051c2115",
+ CellID->1896855715],
+Cell[48388, 1403, 4281, 114, 70, "Output",ExpressionUUID->"a1a3db36-1b6c-400c-99d0-a15ae7aeaa11",
+ CellID->1645006839]
+}, Open  ]],
+Cell[52684, 1520, 336, 6, 70, "MathCaption",ExpressionUUID->"15dedbac-b707-4b33-b7c0-e9afc1aa86b7",
+ CellID->1768694713]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53057, 1531, 164, 7, 70, "TutorialMoreAboutSection",ExpressionUUID->"b2111ab8-66fd-4015-827b-712d388b780b",
+ CellID->23220180],
+Cell[53224, 1540, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"3788d4f2-86d5-4ae7-864c-0d53b5fba0e8"],
+Cell[53258, 1542, 161, 3, 70, "TutorialMoreAbout",ExpressionUUID->"65a405b1-f3f7-4a28-98ee-2655c4d06ef5",
+ CellID->495491210],
+Cell[53422, 1547, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"81d659ee-2370-43a8-8e52-025173fcfda0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53490, 1552, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"c0997320-c9b5-4e10-84e4-c6229b1d7a9e",
+ CellID->415694126],
+Cell[53660, 1561, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"e6385afb-be16-4fca-a55e-b291b4f9b194"],
+Cell[53694, 1563, 173, 3, 70, "RelatedTutorials",ExpressionUUID->"9f2ba228-5f92-4ac8-a0ac-f9abdca752cc",
+ CellID->208038625],
+Cell[53870, 1568, 157, 3, 70, "RelatedTutorials",ExpressionUUID->"3ada685a-4564-4579-904a-b4b814756e12",
+ CellID->778670582],
+Cell[54030, 1573, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"9a4f3874-1c2b-4ae7-914e-fa6a5bafcd76"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[54098, 1578, 193, 7, 70, "TutorialRelatedLinksSection",ExpressionUUID->"656b940e-9083-4f4c-ad66-111766bcb35d",
+ CellID->415694148],
+Cell[54294, 1587, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"49b786ae-839a-44fd-9b7b-fe28c769cfd1"],
+Cell[54328, 1589, 286, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"216c153a-6466-4991-aed7-b571bcbcec92",
+ CellID->454917981],
+Cell[54617, 1598, 302, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"75c42eda-f02e-4ad2-ad67-9fdd5601c90c",
+ CellID->1480169507]
+}, Open  ]]
+}, Open  ]],
+Cell[54946, 1609, 23, 0, 70, "FooterCell",ExpressionUUID->"594a2440-7575-4153-88b6-770e2eab6c2c"]
+}
+]
+*)
+
+(* End of internal cache information *)

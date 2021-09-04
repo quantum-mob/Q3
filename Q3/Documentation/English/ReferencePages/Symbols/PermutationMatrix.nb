@@ -1,0 +1,571 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     18160,        562]
+NotebookOptionsPosition[     11988,        432]
+NotebookOutlinePosition[     14264,        489]
+CellTagsIndexPosition[     14179,        484]
+WindowTitle->PermutationMatrix
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli: Quick Start\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/PauliQuickStart"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Cycles\"\>":>Documentation`HelpLookup[
+       "paclet:ref/Cycles"], "\<\"FindPermutation\"\>":>
+       Documentation`HelpLookup["paclet:ref/FindPermutation"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Related Guides",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Related Guides", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Pauli Package Guide\"\>":>
+       Documentation`HelpLookup["paclet:Q3/guide/PauliPackageGuide"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"MoreAbout"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/PermutationMatrix\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/PermutationMatrix"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/\
+PermutationMatrix.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$129774], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/PermutationMatrix", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["PermutationMatrix", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PermutationMatrix", "[", 
+       RowBox[{
+        StyleBox["perm", "TI"], ",", " ", 
+        StyleBox["n", "TI"]}], "]"}]], "InlineFormula"],
+     "\[LineSeparator]returns the n x n matrix representation of the \
+permutation ",
+     Cell[BoxData[
+      StyleBox["perm", "TI"]], "InlineFormula"],
+     ". "
+    }]]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"PermutationMatrix", "[", 
+       StyleBox["perm", "TI"], "]"}]], "InlineFormula"],
+     "\[LineSeparator]first tries to find the proper dimension of the matrix \
+from ",
+     Cell[BoxData[
+      StyleBox["perm", "TI"]], "InlineFormula"],
+     " and returns the permutation matrix."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, {None}}}}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->928861979],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1324651010],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->392093380],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"perm", "=", 
+  RowBox[{"FindPermutation", "[", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "4", ",", "2", ",", "3"}], "}"}], "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->2041780155],
+
+Cell[BoxData[
+ RowBox[{"Cycles", "[", 
+  RowBox[{"{", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "3", ",", "4"}], "}"}], "}"}], "]"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1280849445]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"PermutationMatrix", "[", 
+    RowBox[{"perm", ",", "4"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", ".", 
+  RowBox[{"{", 
+   RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->994953080],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "0"},
+     {"0", "0", "0", "1"},
+     {"0", "1", "0", "0"},
+     {"0", "0", "1", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->759264710],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "4", ",", "2", ",", "3"}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->614150496]
+}, Open  ]],
+
+Cell["\<\
+In this case, the proper dimension of the matrix can be found from the \
+permutation specification.\
+\>", "ExampleText",
+ CellID->1250567066],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"PermutationMatrix", "[", "perm", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", ".", 
+  RowBox[{"{", 
+   RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}]}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->858225073],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "0"},
+     {"0", "0", "0", "1"},
+     {"0", "1", "0", "0"},
+     {"0", "0", "1", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->1236032880],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "4", ",", "2", ",", "3"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1395296729]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1255426704],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Cycles"]], "paclet:ref/Cycles"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["FindPermutation"]], "paclet:ref/FindPermutation"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->929782353]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tutorials"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->250839057],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli: Quick Start"]], "paclet:Q3/tutorial/PauliQuickStart"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->341631938],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Guides"
+}], "MoreAboutSection",
+ WholeCellGroupOpener->True,
+ CellID->38303248],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Pauli Package Guide"]], "paclet:Q3/guide/PauliPackageGuide"},
+  "RefLink",
+  BaseStyle->"MoreAbout"]], "MoreAbout",
+ CellID->446556621],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Related Links"
+}], "RelatedLinksSection",
+ WholeCellGroupOpener->True,
+ CellID->1584193535],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Permutations"]], "paclet:tutorial/Permutations"},
+  "RefLink",
+  BaseStyle->"RelatedLinks"]], "RelatedLinks",
+ CellID->118250271],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Permutation Lists"]], "paclet:tutorial/PermutationLists"},
+  "RefLink",
+  BaseStyle->"RelatedLinks"]], "RelatedLinks",
+ CellID->1353967530],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Permutation Groups"]], "paclet:tutorial/PermutationGroups"},
+  "RefLink",
+  BaseStyle->"RelatedLinks"]], "RelatedLinks",
+ CellID->1018478105]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"PermutationMatrix",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 9, 4, 21, 38, 11.351393}", 
+    "history" -> {"XX", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "PermutationMatrix[perm, n] returns the n x n matrix representation of \
+the permutation perm. PermutationMatrix[perm] first tries to find the proper \
+dimension of the matrix from perm and returns the permutation matrix.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "PermutationMatrix", 
+    "titlemodifier" -> "", "windowtitle" -> "PermutationMatrix", "type" -> 
+    "Symbol", "uri" -> "Q3/ref/PermutationMatrix", "WorkflowDockedCell" -> 
+    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[5995, 172, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"2e6616d1-cdf4-4656-900b-f52d714514ae",
+   CellTags->"PrimaryExamplesSection",
+   CellID->928861979]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 13981, 477}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[589, 21, 4315, 109, 70, "AnchorBarGrid",ExpressionUUID->"e7497bda-76af-4d89-be51-b36da01a9888",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4929, 134, 174, 6, 70, "ObjectNameGrid",ExpressionUUID->"44e80c6a-ebb0-4b38-8544-7603686008d9"],
+Cell[5106, 142, 852, 25, 70, "Usage",ExpressionUUID->"3db6d67e-fb02-4cc6-976f-c37a65ca76d0"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5995, 172, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"2e6616d1-cdf4-4656-900b-f52d714514ae",
+ CellTags->"PrimaryExamplesSection",
+ CellID->928861979],
+Cell[CellGroupData[{
+Cell[6287, 186, 196, 6, 70, "ExampleSection",ExpressionUUID->"e0da0ed7-4b83-4ac4-8f3d-ab6620b89061",
+ CellID->1324651010],
+Cell[6486, 194, 90, 3, 70, "Input",ExpressionUUID->"7b777b11-a0e5-48d0-81cb-fbe4b7c13f55",
+ CellID->392093380],
+Cell[CellGroupData[{
+Cell[6601, 201, 207, 6, 70, "Input",ExpressionUUID->"3e52b9b6-9f96-4cb3-849e-45eb30a13e06",
+ CellID->2041780155],
+Cell[6811, 209, 186, 6, 70, "Output",ExpressionUUID->"b06daeee-404f-4ba1-b9ec-222fa8f6f09e",
+ CellID->1280849445]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7034, 220, 368, 10, 70, "Input",ExpressionUUID->"8d108d30-c5c9-4c01-bb7a-5db96ecd7166",
+ CellID->994953080],
+Cell[7405, 232, 611, 19, 70, "Output",ExpressionUUID->"0896c5fe-2841-4736-8f67-1276ec7a5d15",
+ CellID->759264710],
+Cell[8019, 253, 136, 4, 70, "Output",ExpressionUUID->"8d22ca60-b6dc-408e-96e5-23ad36935248",
+ CellID->614150496]
+}, Open  ]],
+Cell[8170, 260, 151, 4, 70, "ExampleText",ExpressionUUID->"86d4f990-1ad8-4152-951a-0e99255688b4",
+ CellID->1250567066],
+Cell[CellGroupData[{
+Cell[8346, 268, 346, 10, 70, "Input",ExpressionUUID->"3e67fc2a-9df3-493e-b570-4d0787d127fd",
+ CellID->858225073],
+Cell[8695, 280, 612, 19, 70, "Output",ExpressionUUID->"5bace2b5-3482-4efe-a94a-0b9f276a5d33",
+ CellID->1236032880],
+Cell[9310, 301, 137, 4, 70, "Output",ExpressionUUID->"7e6a7634-a716-4e23-94e4-16aa4f925e60",
+ CellID->1395296729]
+}, Open  ]]
+}, Open  ]],
+Cell[9474, 309, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"dd35e8c1-d895-4def-93c0-5e59d8cdf0aa"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9542, 314, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"747e2e28-d641-4c3e-abe6-844778057dd3",
+ CellID->1255426704],
+Cell[9695, 323, 548, 18, 70, "SeeAlso",ExpressionUUID->"d6bdb396-b2c1-4560-b55a-1a569c1777e9",
+ CellID->929782353]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10280, 346, 152, 7, 70, "TutorialsSection",ExpressionUUID->"7d678419-7fcd-4171-9669-7a23b961c65e",
+ CellID->250839057],
+Cell[10435, 355, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6fcfbc75-9fb1-4797-9f80-1df4c9992518"],
+Cell[10469, 357, 187, 6, 70, "Tutorials",ExpressionUUID->"85a6253a-93d8-42cb-873e-d4302e481e9b",
+ CellID->341631938],
+Cell[10659, 365, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"fd242a0b-d7cc-4cd2-884b-d62b12b84eb5"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10727, 370, 156, 7, 70, "MoreAboutSection",ExpressionUUID->"0087de3b-439f-49bc-a558-0cb9a4d6655d",
+ CellID->38303248],
+Cell[10886, 379, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"8ece2027-65bf-465c-92ad-5c1e97ba04b0"],
+Cell[10920, 381, 187, 6, 70, "MoreAbout",ExpressionUUID->"bec6f694-43d3-4e8d-b382-356e11997bc4",
+ CellID->446556621],
+Cell[11110, 389, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"471726d0-f08d-4062-aba1-8b7871e11a8e"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11178, 394, 160, 7, 70, "RelatedLinksSection",ExpressionUUID->"9bc3c0ad-5843-4f3b-a103-899738955869",
+ CellID->1584193535],
+Cell[11341, 403, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"3b0966fd-51da-4e8a-acba-1a7dbc9c1848"],
+Cell[11375, 405, 181, 6, 70, "RelatedLinks",ExpressionUUID->"0bdd2067-ab66-486f-9853-c7876e128e09",
+ CellID->118250271],
+Cell[11559, 413, 191, 6, 70, "RelatedLinks",ExpressionUUID->"825e0c17-67eb-4592-b8c6-3127acc0a71d",
+ CellID->1353967530],
+Cell[11753, 421, 193, 6, 70, "RelatedLinks",ExpressionUUID->"ec8d627a-e8be-4ff7-8541-48032e7602e7",
+ CellID->1018478105]
+}, Open  ]],
+Cell[11961, 430, 23, 0, 70, "FooterCell",ExpressionUUID->"1ca78431-a863-4dfe-85a9-dc3382a30304"]
+}
+]
+*)
+
+(* End of internal cache information *)
