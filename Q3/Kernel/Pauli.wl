@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.119 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-04 19:17:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.122 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-08 17:25:40+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -54,10 +54,6 @@ BeginPackage["Q3`"]
 { RandomVector, RandomMatrix, RandomHermitian, RandomPositive, RandomUnitary };
 
 { BasisComplement };
-
-{ KetPermute, KetSymmetrize };
-
-{ PermutationMatrix };
 
 { CircleTimes, CirclePlus, BlockDiagonalMatrix };
 
@@ -625,10 +621,11 @@ KetDrop[any_, S_?SpeciesQ] := KetDrop[any, {S}]
 
 KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if test holds true. Here test is an inequality or equality in terms of species."
 
-KetPurge[Ket[a_Association], test_] := With[
-  { ss = NonCommutativeSpecies[test] },
-  If[ test /. {S_?SpeciesQ :> FlavorNone[S]} /. Normal[LogicalForm[a, ss]],
-    0, Ket[a], Ket[a] ]
+KetPurge[v:Ket[_Association], test_] := Module[
+  { new = test /. {S_?SpeciesQ :> FlavorNone[S]},
+    ss },
+  ss = NonCommutativeSpecies[new];
+  If[ new /. Normal @@ LogicalForm[v, ss], 0, v, v ]
  ]
 
 KetPurge[expr_, test_] := expr /. {
@@ -642,6 +639,7 @@ KetUpdate[Ket[a_Association], spec:{__Rule}] := With[
   Ket @ KetUpdate[a, rr /. {s_?SpeciesQ :> FlavorNone[s]}]
  ]
 
+(* NOTE: Here all species appearing in rr are assumed to have None properly. *)
 KetUpdate[aa_Association, rr:{__Rule}] := Module[
   { kk = Keys[rr],
     vv = Values[rr],
@@ -3039,163 +3037,6 @@ PauliApply[A_?MatrixQ, bits_List, v_?VectorQ] := With[
   { n = Log[2, Length[v]] },
   PauliEmbed[A, bits, n] . v
  ]
-
-
-KetPermute::usage = "KetPermute[v, {q1, q2, ...}, cycles] returns a new Ket permuting the values of the particles q1, q2, ... in Ket v."
-
-(* for Pauli Kets *)
-
-KetPermute[Ket[ss__], perm_Cycles] :=
-  Ket @@ Permute[{ss}, perm]
-
-KetPermute[Ket[ss__],
-  group:(_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
- ] := Ket @@@ Permute[{ss}, group]
-
-KetPermute[expr_,
-  spec:(_Cycles|_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
- ] := expr /. { v_Ket :> KetPermute[v, spec] }
-
-KetPermute[expr_, pp:{__Cycles}] :=
-  Map[ KetPermute[expr, #]&, pp ]
-
-
-(* for general Kets *)
-
-KetPermute[v:Ket[_Association], qq:{__}, perm_Cycles] := Module[
-  { vv = v[qq] },
-  vv = Permute[vv, perm];
-  Ket[v, qq -> vv]
- ]
-
-KetPermute[v:Ket[_Association], qq:{__},
-  group:(_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
- ] := Module[
-   { vv = v[qq] },
-   vv = Permute[vv, group];
-   Map[ Ket[v, qq -> #]&, vv ]
-  ]
-
-KetPermute[expr_, qq:{__},
-  spec:(_Cycles|_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
- ] := expr /. { v:Ket[_Association] :> KetPermute[v, qq, spec] }
-
-KetPermute[expr_, qq:{__}, pp:{__Cycles}] :=
-  Map[ KetPermute[expr, qq, #]&, pp ]
-
-(* operator form *)
-KetPermute[qq:{__}, spec_][v_] := KetPermute[v, qq, perm]
-
-
-KetSymmetrize::usage = "KetSymmetrize[v, {q1, q2, ...}, {cyc, sign}] returns a new Ket resulting by symmetrizing the input Ket v with respect to the particles q1, q2, .... With sign = 1 (sign = -1), the Ket is symmerized (anti-symmetrized)."
-
-KetSymmetrize[ 0, qq:{__}, {c_Cycles, s:(-1|1)} ] := 0
-
-KetSymmetrize[ v_Ket, qq:{__}, {c_Cycles, s:(-1|1)} ] := Module[
-  { vv = KetPermute[v, qq, c],
-    ff },
-  ff = If[ v === vv, 2, Sqrt[2] ];
-  Sort[{v, vv}] . {1, s} / ff
- ]
-
-KetSymmetrize[ vv_List, qq:{__}, {c_Cycles, s:(-1|1)} ] := DeleteCases[
-  Simplify @ Union @ Map[ KetSymmetrize[#, qq, {c, s}]&, vv ],
-  0
- ]
-
-KetSymmetrize[ expr_, qq:{__}, {c_Cycles, s:(-1|1)} ] := (
-  expr /. {
-    v:_Ket :> KetSymmetrize[v, qq, {c,s}]
-   }
- ) /; Not @ FreeQ[expr, _Ket]
-
-KetSymmetrize[ expr_, qq:{__}, cc:{{_Cycles, (-1|1)}..} ] :=
-  Simplify @ Fold[ KetSymmetrize[#1,qq,#2]&, expr, cc ] /;
-  Not @ FreeQ[expr, _Ket]
-
-
-(* total symmetrization for Pauli Kets *)
-
-KetSymmetrize[any_] := KetSymmetrize[any, 1]
-
-KetSymmetrize[v_Ket, 1] := Module[
-  { vv },
-  vv = KetPermute[v, SymmetricGroup[Length @ v]];
-  Total @ vv / Sqrt[Length @ vv]
- ]
-
-KetSymmetrize[vv:{__}, 1] :=
-  Union[ KetSymmetrize[#, 1]& /@ vv ]
-
-KetSymmetrize[expr_, 1] :=
-  ReplaceAll[ expr, v_Ket :> KetSymmetrize[v, 1] ]
-
-
-KetSymmetrize[v_Ket, -1] := Module[
-  { n = Length @ v,
-    vv = Sort @ v,
-    ff },
-  vv = Permute[vv, SymmetricGroup[n]];
-  ff = Signature /@ vv;
-
-  ff . vv / Sqrt[Length @ vv]
- ]
-
-KetSymmetrize[vv:{__}, -1] := DeleteCases[
-  Union[ KetSymmetrize[#, -1]& /@ vv ],
-  0
- ]
-
-KetSymmetrize[expr_, -1] :=
-  ReplaceAll[ expr, v_Ket :> KetSymmetrize[v, -1] ]
-
-
-(* total symmetrization for general Kets *)
-
-KetSymmetrize[any_, qq:{__?SpeciesQ}] := KetSymmetrize[any, qq, 1]
-
-KetSymmetrize[v_Ket, qq:{__?SpeciesQ}, 1] := Module[
-  { vv },
-  vv = KetPermute[v, qq, SymmetricGroup[Length @ qq]];
-  Total @ vv / Sqrt[Length @ vv]
- ]
-
-KetSymmetrize[vv:{__}, qq:{__?SpeciesQ}, 1] :=
-  Union[ KetSymmetrize[#, qq, 1]& /@ vv ]
-
-KetSymmetrize[expr_, qq:{__?SpeciesQ}, 1] :=
-  ReplaceAll[ expr, v_Ket :> KetSymmetrize[v, qq, 1] ] /;
-  Not @ FreeQ[expr, _Ket]
-
-
-KetSymmetrize[v_Ket, qq:{__?SpeciesQ}, -1] := Module[
-  { n = Length @ qq,
-    vv = Sort @ v[qq],
-    ff },
-  vv = Permute[vv, SymmetricGroup[n]];
-  ff = Signature /@ vv;
-
-  vv = Map[ Ket[v, qq -> #]&, vv ];
-  ff . vv / Sqrt[Length @ vv]
- ]
-
-KetSymmetrize[vv:{__}, qq:{__?SpeciesQ}, -1] := DeleteCases[
-  Union[ KetSymmetrize[#, qq, -1]& /@ vv ],
-  0
- ]
-
-KetSymmetrize[expr_, qq:{__?SpeciesQ}, -1] :=
-  ReplaceAll[ expr, v_Ket :> KetSymmetrize[v, qq, -1] ] /;
-  Not @ FreeQ[expr, _Ket]
-
-
-PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix."
-
-PermutationMatrix[perm_?PermutationCyclesQ] :=
-  PermutationMatrix[ perm, Max @ Cases[perm, _Integer, Infinity] ]
-
-PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
-  Permute[ IdentityMatrix[n], perm ]
 
 
 RandomVector::usage = "RandomVector is a shortcut to RandomComplex.\nRandomVector[] gives a two-dimensional random vector.\nRanbdomVector[n] gives an n-dimensional random vector.\nRandomVector[range, n] \[Congruent] RandomComplex[range, n]."

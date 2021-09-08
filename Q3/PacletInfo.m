@@ -1,12 +1,12 @@
 (* Paclet Info File *)
-(* $Date: 2021-09-03 20:24:54+09 $ *)
-(* $Revision: 1.50 $ *)
+(* $Date: 2021-09-08 02:04:06+09 $ *)
+(* $Revision: 1.51 $ *)
 
 (* created 2021/02/11*)
 
 Paclet[
   Name -> "Q3",
-  Version -> "1.9.17",
+  Version -> "1.9.18",
   WolframVersion -> "12+",
   Description -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems.",
   Creator -> "Mahn-Soo Choi (Korea University)",

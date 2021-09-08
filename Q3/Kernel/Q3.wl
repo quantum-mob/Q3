@@ -198,6 +198,7 @@ Get["Q3`Wigner`"];
 Get["Q3`Dicke`"];
 Get["Q3`VonNeumann`"];
 Get["Q3`Einstein`"];
+Get["Q3`Young`"];
 Get["Q3`Custom`"];
 
 (**** </Packages Loading> ****)

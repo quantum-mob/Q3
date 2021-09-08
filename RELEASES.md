@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v1.9.18
+
+- New package Q3`Young` for the symmetric group.
+
 ## v1.9.17
 
 - The old KetPurge renamed KetDrop.
