@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.122 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-08 17:25:40+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.128 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-14 16:29:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,7 +14,7 @@ BeginPackage["Q3`"]
 { State, TheKet, TheBra, TheState };
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
-  KetFactor, KetPurge };
+  KetFactor, KetPurge, KetNormalize };
 
 { OTimes, OSlash, ReleaseTimes };
 
@@ -654,12 +654,52 @@ KetUpdate[expr_, spec:{__Rule}] :=
 
 KetUpdate[expr_, spec__Rule] := KetUpdate[expr, {spec}]
 
+
+KetNormalize::usage = "KetNormalize[expr] returns the normalized form of a ket expression expr.\nKetNormalize[expr, f] normalizes with respect to the norm function f."
+
+KetNormalize[expr_] := Garner[expr / Sqrt[Dagger[expr]**expr]] /;
+  Not @ FreeQ[expr, _Ket]
+
+KetNormalize[expr_, f_] := Garner[expr / f[expr]] /;
+  Not @ FreeQ[expr, _Ket]
+
 (**** </Ket & Bra> ****)
 
 
 (**** <KetFactor> ****)
 
 KetFactor::usage = "KetFactor[expr] tries to factorize the ket expression expr, and if successful, it returns the result in terms of OTimes[\[Ellipsis]]. Otherwise it just throws expr out.\nKetFactor[expr, s] or KetFactor[expr, {s1, s2, \[Ellipsis]}] factors out the state concerning the specified species and returns the result in terms of OSlash[\[Ellipsis]]."
+
+KetFactor[Ket[a_Association], qq:{__?SpeciesQ}] := Module[
+  { ss = FlavorNone[qq] },
+  OSlash[ LogicalForm[Ket[KeyTake[a, ss]], ss], Ket[KeyDrop[a, ss]] ]
+ ]
+
+KetFactor[z_?CommutativeQ expr_ , qq:{__?SpeciesQ}] :=
+  z KetFactor[expr, qq]
+
+KetFactor[expr_, S_?SpeciesQ] := KetFactor[expr, {S}]
+
+KetFactor[expr_Plus, qq:{__?SpeciesQ}] :=
+  KetFactor @ Total @ Map[KetFactor[#, qq]&, List @@ expr]
+
+KetFactor[expr_Plus, qq:{__?SpeciesQ}] := Module[
+  { new },
+  new = Factor[ketSplit @ LogicalForm[expr, qq]];
+  DefaultForm @ ReplaceAll[new, Times -> OTimes]
+ ] /; ContainsAll[FlavorNone @ qq, NonCommutativeSpecies @ expr]
+
+
+KetFactor[v_Ket] := v
+
+KetFactor[OSlash[vec_, expr_]] := OSlash[vec, KetFactor[expr]]
+
+KetFactor[expr_] := Module[
+  { new },
+  new = Factor[ketSplit @ expr];
+  DefaultForm @ ReplaceAll[new, Times -> OTimes]
+ ]
+
 
 ketSplit[ Ket[] ] := Ket[]
 
@@ -677,31 +717,6 @@ ketSplit[expr_] := LogicalForm[expr] /. {
   v_Ket :> ketSplit[v],
   v_Bra :> ketSplit[v]
  }
-
-
-KetFactor[v_Ket] := v
-
-KetFactor[OSlash[vec_, expr_]] := OSlash[vec, KetFactor[expr]]
-
-KetFactor[expr_] := Module[
-  { new },
-  new = Factor[ketSplit @ expr];
-  DefaultForm @ ReplaceAll[new, Times -> OTimes]
- ]
-
-
-KetFactor[expr_Plus, qq:{__?SpeciesQ}] :=
-  KetFactor @ Total @ Map[KetFactor[#, qq]&, List @@ expr]
-
-KetFactor[z_?CommutativeQ expr_ , qq:{__?SpeciesQ}] :=
-  z KetFactor[expr, qq]
-
-KetFactor[Ket[a_Association], qq:{__?SpeciesQ}] := Module[
-  { ss = FlavorNone[qq] },
-  OSlash[ LogicalForm[Ket[KeyTake[a, ss]], ss], Ket[KeyDrop[a, ss]] ]
- ]
-
-KetFactor[expr_, S_?SpeciesQ] := KetFactor[expr, {S}]
 
 
 ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression."
@@ -2025,7 +2040,8 @@ Rotation[a:{_, (0|1|2|3)}, b:{_, (0|1|2|3)}..] :=
 
 Rotation[{ph_, v:{_, _, _}}] := Rotation[ph, v]
 
-Rotation[ph_, v:{_, _, _}] := Cos[ph/2] Pauli[0] -
+Rotation[ph_, v:{Repeated[Except[_?QubitQ|_?SpinQ], {3}]}] :=
+  Cos[ph/2] Pauli[0] -
   I Sin[ph/2] * Normalize[v] . {Pauli[1], Pauli[2], Pauli[3]}
 
 Rotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
@@ -3144,7 +3160,7 @@ WignerFunction[j_, 0, m_, z_] :=
 WignerFunction[j_, m_, 0, z_] := Conjugate[ WignerFunction[j, 0, m, z] ]
 
 
-TraceNorm::usage = "TraceNorm[m] returns the trace norm of the matrix m, that is, Tr @ Sqrt[Dagger[m] ** m].\nTraceNorm[v] gives TraceNorm[v.Transepose[v]]."
+TraceNorm::usage = "TraceNorm[m] returns the trace norm of the matrix m, that is, Tr @ Sqrt[Dagger[m] ** m].\nTraceNorm[v] gives TraceNorm[v.Transepose[v]].\nTraceNorma[expr, {s1, s2, \[Ellipsis]}] returns the trace norm of operator expression expr acting on species s1, s2, \[Ellipsis]."
 
 TraceNorm[m_?MatrixQ] := Total @ SingularValueList[m]
 
