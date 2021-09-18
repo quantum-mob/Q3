@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.128 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-14 16:29:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.139 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-18 17:00:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -74,10 +74,14 @@ BeginPackage["Q3`"]
 
 { TraceNorm, TraceDistance, Fidelity };
 
+{ LogarithmicNegativity };
+
 { Purification, Snapping };
 
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
+
+(**** OBSOLETE SYMBOLS ****)
 
 { PauliExpression, PauliExpressionRL }; (* obsolete *)
 { PauliInner }; (* obsolete *)
@@ -165,7 +169,14 @@ TheLower::usage = "TheLower[]=(ThePauli[1]-I*ThePauli[2])/2={{0,0},{1,0}}.\nTheL
 
 TheHadamard::usage = "TheHadamard[0]=IdentityMatrix[2]. TheHadamard[1]={{1,1},{1,-1}}/Sqrt[2] is the matrix corresponding to TheRotation[Pi/2,2].ThePauli[3].\nTheHadamard[{J,1}] returns TheRotation[Pi/2, {J,2}].TheWigner[{J,3}] for angular momentum J.\nTheHadamard[{J,0}] returns the identity matrix."
 
-SetAttributes[ThePauli, {NHoldAll, ReadProtected}]
+SetAttributes[ThePauli, {NHoldAll, ReadProtected, Listable}]
+
+ThePauli[kk__] := ThePauli @@ ReplaceAll[
+  { kk },
+  { All -> {1, 2, 3},
+    Full -> {0, 1, 2, 3} }
+ ] /; ContainsAny[{kk}, {All, Full}]
+
 
 ThePauli[0] = SparseArray[{{1, 1} -> 1, {2, 2} -> 1}, {2, 2}]
 
@@ -933,7 +944,7 @@ Octant::usage = "Octant is a flavor index representing the octant gate, i.e., th
 
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
-SetAttributes[Pauli, {NHoldAll, ReadProtected}]
+SetAttributes[Pauli, {NHoldAll, ReadProtected, Listable}]
 (* The integers in Pauli[] should not be converted to real numbers by N[]. *)
 
 Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|-7|-8)..] ] := With[
@@ -977,14 +988,13 @@ Pauli[10] := (Pauli[0] + Pauli[3]) / 2
 
 Pauli[11] := (Pauli[0] - Pauli[3]) / 2
 
-
 Pauli[Raise] := (Pauli[1] + I Pauli[2]) / 2
 (* Pauli[4] is kept without being expanded in terms of Pauli[1] and Pauli[2] *)
 
 Pauli[Lower] := (Pauli[1] - I Pauli[2]) / 2
 (* Pauli[5] is kept without being expanded in terms of Pauli[1] and Pauli[2] *)
 
-Pauli[Hadamard] := (Pauli[1]+Pauli[3])/Sqrt[2]
+Pauli[Hadamard] := (Pauli[1] + Pauli[3])/Sqrt[2]
 (* Pauli[6] is kept without being expanded *)
 
 Pauli[Quadrant] := Pauli[0] (1+I)/2 + Pauli[3] (1-I)/2
@@ -995,13 +1005,15 @@ Pauli[Octant] := Pauli[0] (1+Exp[I Pi/4])/2 + Pauli[3] (1-Exp[I Pi/4])/2
 (* Pauli[8] is kept without being expanded *)
 Pauli[-Octant] := Pauli[0] (1+Exp[-I Pi/4])/2 + Pauli[3] (1-Exp[-I Pi/4])/2
 
-(*
-Pauli[ a___, b:(Raise|Lower|Hadamard|Quadrant|Octant|10|11), c___ ] :=
-  Garner @ CircleTimes[Pauli[a], Pauli[b], Pauli[c]]
- *)
-Pauli[a__] := Garner @ Apply[CircleTimes, Pauli /@ {a}] /;
+Pauli[kk__] := Pauli @@ ReplaceAll[
+  { kk },
+  { All -> {1, 2, 3},
+    Full -> {0, 1, 2, 3} }
+ ] /; ContainsAny[{kk}, {All, Full}]
+
+Pauli[kk__] := Garner @ Apply[CircleTimes, Pauli /@ {kk}] /;
   ContainsAny[
-    { a },
+    { kk },
     { 10, 11, Raise, Lower, Hadamard,
       Quadrant, Octant, -Quadrant, -Octant }
    ]
@@ -2820,7 +2832,12 @@ Tensorize[v_?VectorQ] := Module[
 (**** </Tensorize> ****)
 
 
+(**** <PartialTranspose> ****)
+
 PartialTranspose::usage = "PartialTranspose[mat, {i, j, \[Ellipsis]}] returns the partial transposition of the matrix mat with respect to the ith, jth, \[Ellipsis] qubits.\nPartialTranspose[mat, {m, n, \[Ellipsis]}, {i, j, \[Ellipsis]}] assumes subsystems of dimensions m, n, \[Ellipsis].\nPartialTranspose[expr, {s1, s2, \[Ellipsis]}] considers subsystems for the species {s1, s2, \[Ellipsis]}."
+
+PartialTranspose[vec_?VectorQ, dd:{__Integer}, jj:{___Integer}] :=
+  PartialTranspose[Dyad[vec, vec], dd, jj]
 
 PartialTranspose[mat_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
   { tns = Tensorize[mat, Flatten @ Transpose @ {dd, dd}],
@@ -2828,13 +2845,13 @@ PartialTranspose[mat_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
   TensorFlatten @ Transpose[tns, cyc]
  ]
 
-PartialTranspose[mat_?MatrixQ, jj:{___Integer}] :=
-  PartialTranspose[mat, ConstantArray[2, Log[2, Length @ mat]], jj]
+PartialTranspose[rho:(_?VectorQ|_?MatrixQ), jj:{___Integer}] :=
+  PartialTranspose[rho, ConstantArray[2, Log[2, Length @ rho]], jj]
 
 
 PartialTranspose[expr_, jj:{__Integer}] :=
   ExpressionFor @ PartialTranspose[Matrix @ expr, jj] /;
-  Not @ FreeQ[expr, _Pauli]
+  Or[fPauliKetQ[rho], Not @ FreeQ[expr, _Pauli]]
 
 
 PartialTranspose[expr_, S_?SpeciesQ] := PartialTranspose[expr, {S}]
@@ -2849,6 +2866,35 @@ PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
   mm = PartialTranspose[Matrix[expr, ss], dd, jj];
   ExpressionFor[mm, ss]
  ]
+
+(**** </PartialTranspose> ****)
+
+
+LogarithmicNegativity::usage = "LogarithmicNegativity[mat, spec] returns the logarithmic negativity of mixed state rho. For specification spec of the rest of the arguments, see PartialTranspose."
+
+LogarithmicNegativity[rho:(_?VectorQ|_?MatrixQ), spec__] :=
+  Log2 @ TraceNorm @ PartialTranspose[rho, spec]
+
+LogarithmicNegativity[rho_, jj:{__Integer}] :=
+  LogarithmicNegativity[Matrix @ rho, jj] /;
+  Or[fPauliKetQ[rho], Not @ FreeQ[expr, _Pauli]]
+
+LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
+  { all, mat, pos },
+  all = Union @ FlavorNone @ Join[aa, bb];
+  mat = Matrix[rho, all];
+  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
+  Log2 @ TraceNorm @ PartialTranspose[mat, Dimension @ all, pos]
+ ]
+
+LogarithmicNegativity[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] :=
+  LogarithmicNegativity[rho, {S}, bb]
+
+LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] :=
+  LogarithmicNegativity[rho, aa, {T}]
+
+LogarithmicNegativity[rho_, S_?SpeciesQ, T_?SpeciesQ] :=
+  LogarithmicNegativity[rho, {S}, {T}]
 
 
 (**** <PartialTrace> ****)
@@ -3111,22 +3157,33 @@ RandomUnitary[n_Integer] := With[
 
 BasisComplement::usage = "BasisComplement[{v1,v2,\[Ellipsis]}, {w1,w2,\[Ellipsis]}] returns a new basis of the subspace W\[UpTee]\[Subset]\[ScriptCapitalV] that is orgohtonal to \[ScriptCapitalW], where \[ScriptCapitalV] is the vector space spanned by the basis {v1,v2,\[Ellipsis]}, and \[ScriptCapitalW] is a subspace of \[ScriptCapitalV] spanned by the basis {w1,w2,\[Ellipsis]}.\nBoth bases are assumed to be orthonormal."
 
+BasisComplement::north = "Non-orthonormal basis ``."
+
 BasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
-  { prj = Total[Dyad /@ bb],
-    mm, uu, dd, vv },
-  mm = Transpose[aa] - prj.Transpose[aa];
-  {uu, dd, vv} = SingularValueDecomposition[mm];
-  Select[Transpose[vv . PseudoInverse[dd]], (Norm[#]>0)&]
- ]
+  { prj = Total[Dyad /@ Orthogonalize[bb]],
+    new = Transpose[aa] },
+  new = Orthogonalize @ Transpose[new - prj.new];
+  Select[new, (Norm[#]>0)&]
+ ] /; ArrayQ @ Join[aa, bb]
+(* NOTE: This works for non-orthonormal bases aa and bb. *)
 
 BasisComplement[aa_List, bb_List] := Module[
-  { prj = Total[Dyad[#, #]& /@ bb],
-    new, mat, dd, uu, vv },
+  { prj, new, mat, dd, uu, vv },
+  If[ Chop @ Norm[Outer[Multiply, Dagger[aa], aa] - One[Length @ aa]] > 0,
+    Message[BasisComplement::north, aa]
+   ];
+  If[ Chop @ Norm[Outer[Multiply, Dagger[bb], bb] - One[Length @ bb]] > 0,
+    Message[BasisComplement::north, bb]
+   ];
+  prj = Total[Dyad[#, #]& /@ bb];
   new = DeleteCases[Union[aa - prj ** aa], 0];
   mat = Outer[Multiply, Dagger[aa], new];
-  {uu, dd, vv} = SingularValueDecomposition[mat];
-  DeleteCases[Garner[new.vv.PseudoInverse[dd]], 0]
+  DeleteCases[Garner[Orthogonalize[Transpose @ mat] . aa], 0]
  ] /; NoneTrue[Join[aa, bb], FreeQ[#, _Ket]&]
+(* NOTE 1: This assumes that both aa and bb are orthonormal. *)
+(* NOTE 2: One could first convert aa and bb to matrix representations. There
+   are pros and cons. The major disadvantage is that in some cases, especially
+   when bosons are involved, the matrix representation may be huge. *)
 
 
 WignerFunction::usage = "WignerFunction[j,m1,m2,\[Beta]] returns the matrix element WignerFunction[j,m1,m2,\[Beta]] = TheBra[j,m1].U[y,\[Beta]].TheKet[j,m2] of the rotation operator U[y,\[Beta]] around the spin y-axis by angule \[Beta] between the two angular momentum states TheKet[j,m1] and TheKet[j,m2] (notice the same j). These matrix elements are useful to calculate the matrix elements of an arbitrary rotation operator for large angular momentum."

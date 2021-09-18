@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.24 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-14 09:09:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.25 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-18 17:01:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -435,12 +435,15 @@ SetAttributes[Let, {HoldAll, ReadProtected}]
 
 Let[name_Symbol, ls__Symbol, opts___?OptionQ] := Let[name, {ls}, opts]
 
-Let[Species, {ls__Symbol}] := (
-  ClearAll[ls];
-  Scan[setSpecies, {ls}]
- )
+Let[Species, {ls__Symbol}] := Scan[setSpecies, {ls}]
 
 setSpecies[x_Symbol] := (
+  Clear[x];
+  ClearAttributes[x, Attributes[x]];
+  (* NOTE: One could replace the above two lines with ClearAll, but then
+     Let[...] cannot used for local variables such as in Bloch. *)
+  (* NOTE: The messages and defaults associated with x are not affected. *)
+  
   SetAttributes[x, {NHoldAll, ReadProtected}];
 
   SpeciesQ[x] ^= True;
@@ -452,15 +455,15 @@ setSpecies[x_Symbol] := (
   LogicalValues[x] ^= {0};
   LogicalValues[x[___]] ^= {0};
 
-  x[jj__] := x @@ ReplaceAll[{jj}, q_?SpeciesQ :> ToString[q]] /;
-    Or @@ SpeciesQ /@ {jj};
+  x[i___][j___] := x[i, j];
+  
+  x[j__] := x @@ ReplaceAll[{j}, s_?SpeciesQ :> ToString[s, InputForm]] /;
+    AnyTrue[{j}, SpeciesQ];
   (* NOTE: If a Flavor index itself is a species, many tests fail to work
      properly. A common example is CommutativeQ. To prevent nasty errors, such
-     Flavors are converted to String. *)
+     Flavor indices are converted to String. *)
 
-  x[i___][j___] := x[i,j];
-  
-  x[j___] := Flatten @ ReplaceAll[ Distribute[Hold[j], List], Hold -> x ] /;
+  x[j___] := Flatten @ ReplaceAll[Distribute[Hold[j], List], Hold -> x] /;
     MemberQ[{j}, _List];
   (* NOTE: Flatten is required for All with spinful bosons and fermions.
      See Let[Bosons, \[Ellipsis]] and Let[Fermions, \[Ellipsis]]. *)
