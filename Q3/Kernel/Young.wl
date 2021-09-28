@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.9 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-09 13:33:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.28 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-26 17:57:39+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -109,21 +109,13 @@ GroupCharacters[SymmetricGroup[n_Integer],
 
 SymmetricGroupCharacters::uasge = "SymmetricGroupCharacters[n] returns the table of characters of SymmetricGroup[n].\nSymmetricGroupCharacters[irr] returns a list of characters of the irreducible representation 'irr'.\nSymmetricGroupCharacters[irr, class] returns the character of the irreducible representation 'irr' evaluated at the conjugacy class 'class'.\nBoth 'irr' and 'class' are specified by partitions of integer 'n'."
 
-SymmetricGroupCharacters[n_Integer] := With[
-  { weights = SymmetricGroupCentralizerSize/@IntegerPartitions[n],
-    rDimension = PartitionsP[n] },
-  Module[
-    { resTbl = CompoundYoungCharacters /@ IntegerPartitions[n],
-      denomVector,
-      kostkaNumbers },
-    For[ k=2, k<=rDimension, k++,
-      denomVector = resTbl[[k]]/weights;
-      kostkaNumbers = (Dot[denomVector,#])& /@ Take[resTbl,k-1];
-      resTbl[[k]] -= Dot[kostkaNumbers, Take[resTbl,k-1]];
-     ];
-    resTbl
-   ]
- ] /; n>0
+SymmetricGroupCharacters[n_Integer] := Module[
+  { pp = IntegerPartitions[n],
+    wght, vecs },
+  wght = SymmetricGroupCentralizerSize /@ pp;
+  vecs = CompoundYoungCharacters /@ pp;
+  Orthogonalize[vecs, ((#1/wght) . #2)&, Method -> "GramSchmidt"]
+ ]
 
 SymmetricGroupCharacters[irr_?IntegerPartitionQ] :=
   characterSymmetricGroup[irr, #]& /@ IntegerPartitions[Total @ irr]  
@@ -134,41 +126,42 @@ SymmetricGroupCharacters[irr_?IntegerPartitionQ, class_?IntegerPartitionQ] :=
 
 characterSymmetricGroup[{}, {}] := 1; 
 
-characterSymmetricGroup[
-  shape_?IntegerPartitionQ, \[Rho]_?IntegerPartitionQ] :=
-  CountYoungTableaux[shape] /;
-  Total[shape] == Total[\[Rho]] &&
-  Length[\[Rho]] >= 1 &&
-  First[\[Rho]] == 1;
+characterSymmetricGroup[shape_?IntegerPartitionQ, class_?IntegerPartitionQ] :=
+  CountYoungTableaux[shape] /; And[
+    Total[shape] == Total[class],
+    Length[class] >= 1,
+    First[class] == 1
+   ]
 
-
-characterSymmetricGroup[
-  shape_?IntegerPartitionQ, \[Rho]_?IntegerPartitionQ] := With[
-    { \[Rho]max=First[\[Rho]],\[Rho]0=Drop[\[Rho],1],
-      \[Mu]=YoungTranspose[shape],
-      \[Nu]=Append[shape,0] },
+characterSymmetricGroup[shape_?IntegerPartitionQ, class_?IntegerPartitionQ] :=
+  With[
+    { classmax = First[class],
+      class0 = Rest[class],
+      mu = YoungTranspose[shape],
+      nu = Append[shape,0] },
     Sum[
-      If[shape[[j]]+\[Mu][[i]] +1-j-i!=\[Rho]max,
+      If[shape[[j]]+mu[[i]]+1-j-i != classmax,
         0,
-        If[EvenQ[\[Rho]max+i-shape[[j]]], -1, 1] * 
+        If[EvenQ[classmax+i-shape[[j]]], -1, 1] * 
           characterSymmetricGroup[
             Select[
               Table[
-                If[k<j||\[Nu][[k]]<i, \[Nu][[k]], Max[\[Nu][[k+1]],i]-1],
+                If[k<j||nu[[k]]<i, nu[[k]], Max[nu[[k+1]],i]-1],
                 {k, Length[shape]}
                ],
               (#>0)&
              ],
-            \[Rho]0
+            class0
            ]
        ],
       {j, 1, Length[shape]},
       {i, 1, shape[[j]]}
      ]
-   ] /;
-  Total[shape] == Total[\[Rho]] &&
-  Length[\[Rho]] >= 1 &&
-  First[\[Rho]] > 1;
+   ] /; And[
+     Total[shape] == Total[class],
+     Length[class] >= 1,
+     First[class] > 1
+    ]
 
 
 GroupClassSize::usage = "GroupGlassSize[group, class] returns the number of elements in the conjugacy class 'class'."
@@ -196,18 +189,16 @@ GroupCentralizerSize[group_, g_] :=
   GroupOrder @ GroupCentralizer[group, g]
 
 
-SymmetricGroupCentralizerSize::usage="SymmetricGroupCentralizerSize[\[Rho]_?IntegerPartitionQ] returns the size of the centralizer class of an element of cycle type \[Rho].\nThe inverse of SymmetricGroupCentralizerSize[\[Rho]] coincides, up to a factor fo the group order, with the size of the conjugacy class; that is, SymmetricGroupCentralizerSize[\[Rho]] = GroupOrder[SymmetricGroup[n]] / (the size of the class \[Rho])."
+SymmetricGroupCentralizerSize::usage = "SymmetricGroupCentralizerSize[class] returns the size of the centralizer class of an element of cycle type class.\nThe inverse of SymmetricGroupCentralizerSize[class] coincides, up to a factor of the group order, with the size of the conjugacy class; that is, SymmetricGroupCentralizerSize[class] = GroupOrder[SymmetricGroup[n]] / (the size of the class class)."
 
-SymmetricGroupCentralizerSize[\[Rho]_?IntegerPartitionQ] := Apply[
-  Times,
-  Factorial /@ Counts[\[Rho]]
- ] * Apply[Times, \[Rho]];
+SymmetricGroupCentralizerSize[class_?IntegerPartitionQ] :=
+  Apply[Times, Factorial /@ Counts[class]] * Apply[Times, class];
 
 
-CompoundYoungCharacters::usage="CompoundYoungCharacters[shape] returns the composite Young character corresponding to partition shape."
+CompoundYoungCharacters::usage = "CompoundYoungCharacters[shape] returns the composite Young character corresponding to partition shape."
 
 CompoundYoungCharacters[pp_?IntegerPartitionQ] := Module[
-  { chrVect = Table[0, {PartitionsP[Total[pp]]}],
+  { chrVect = Table[0, PartitionsP[Total @ pp]],
     supPartitionTupel = Partition[pp,1],
     hashPositionTupel = Prime[pp],
     r, columnIdx },
@@ -221,32 +212,35 @@ CompoundYoungCharacters[pp_?IntegerPartitionQ] := Module[
        ]
      },
 
-    While[True,
+    While[ True,
       columnIdx = Part[hashPosList, Times @@ hashPositionTupel];
       chrVect[[columnIdx]] += Times @@ Apply[
         Multinomial,
         Map[
-          (Part[#,2])&,
-          SplitBy[Sort[Flatten[Tally/@supPartitionTupel,1]],First],{2}
+          Part[#, 2]&,
+          SplitBy[Sort @ Flatten[Tally /@ supPartitionTupel, 1], First],
+          {2}
          ],
         2
        ];
 
       r = Length[supPartitionTupel];
-
       While[(r>0) && (First[supPartitionTupel[[r]]]==1), r--];
       If[r<=0, Break[]];
+      
       supPartitionTupel = Join[
         Take[supPartitionTupel,r-1],
         {nextPartition[supPartitionTupel[[r]]]},
         Partition[Drop[pp,r],1]
        ];
       hashPositionTupel = Join[
-        Take[hashPositionTupel,r-1],
-        {Times@@Prime[supPartitionTupel[[r]]]},Prime[Drop[pp,r]]
+        Take[hashPositionTupel, r-1],
+        {Times @@ Prime[supPartitionTupel[[r]]]},
+        Prime @ Drop[pp,r]
        ]
      ]
    ];
+  
   chrVect
  ]
 
@@ -271,15 +265,6 @@ CharacterScalarProduct[f_List, g_List, n_Integer] := Total[
   ]
 
 
-YoungTableaux::usage = "YoungTableaux[shape] constructs all standard Young tableaux of 'shape' specified by an integer partitio.\nYoungTableaux[n] constructs all standard Young tableaux of rank 'n'."
-
-YoungTableaux[s_?IntegerPartitionQ] :=
-  NestList[NextYoungTableau, FirstYoungTableau[s], CountYoungTableaux[s]-1]
-
-YoungTableaux[n_Integer?Positive] :=
-  Catenate @ Map[YoungTableaux, IntegerPartitions @ n]
-
-
 YoungTableauQ::usage = "YoungTableauQ[t] yields True if and only if t represents a standard Young tableau."
 
 YoungTableauQ[{}] = True
@@ -292,58 +277,50 @@ YoungTableauQ[tb:{__List}] := And [
  ]
 
 
+YoungTableaux::usage = "YoungTableaux[shape] constructs all standard Young tableaux of 'shape' specified by an integer partition.\nYoungTableaux[n] constructs all standard Young tableaux of rank 'n'."
+
+YoungTableaux[s_?IntegerPartitionQ] :=
+  NestList[NextYoungTableau, FirstYoungTableau[s], CountYoungTableaux[s]-1]
+
+YoungTableaux[n_Integer?Positive] :=
+  Catenate @ Map[YoungTableaux, IntegerPartitions @ n]
+
+
 FirstYoungTableau::usage = "FirstYoungTableau[p] constructs the first standard Young tableau with shape described by partition p."
 
-FirstYoungTableau[s_?IntegerPartitionQ] :=
-  YoungTranspose @ LastYoungTableau @ YoungTranspose[s]
+FirstYoungTableau[shape_?IntegerPartitionQ] :=
+  YoungTranspose @ LastYoungTableau @ YoungTranspose[shape]
 
 LastYoungTableau::usage = "LastYoungTableau[p] constructs the last Young tableau with shape described by partition p."
 
-LastYoungTableau[s_?IntegerPartitionQ] :=
-  FoldPairList[TakeDrop, Range[Total @ s], s]
+LastYoungTableau[shape_?IntegerPartitionQ] :=
+  FoldPairList[TakeDrop, Range[Total @ shape], shape]
 
 
 NextYoungTableau::usage = "NextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in lexicographic order."
 
 NextYoungTableau[tb_?YoungTableauQ] := Module[
-  { yy, shp, row, val, i, new },
+  { yy, shp, row, val, new },
 
-  yy = RowsInTableau[tb];
+  yy = Values @ KeySort @ Flatten @ MapIndexed[(#1->First[#2])&, tb, {2}];
   If[LessEqual @@ yy, Return @ FirstYoungTableau[Length /@ tb]];
 
-  val = First @ FirstPosition[
-    FoldPairList[{#1 <= #2, #2}&, First @ yy, Rest @ yy],
-    False
-   ];
-  val++;
+  val = 1 + Length[First @ Split[yy, LessEqual]];
+  row = First @ FirstPosition[tb, val];
   
   shp = Length /@ DeleteCases[tb, k_/;k>val, {2}];
-  row = First @ Last @ Position[ shp,
-    shp[[First @ FirstPosition[tb, val] + 1]]
-   ];
+  row = First @ Last @ Position[shp, shp[[row+1]]];
   shp[[row]]--;
+  
   new = FirstYoungTableau[shp];
   If[ Length[new] < row,
     new = Append[new, {val}],
     new[[row]] = Append[new[[row]], val]
    ];
-  Join[
-    Table[
-      Join[new[[i]], Select[tb[[i]], (#>val)&]],
-      {i, Length @ new}
-     ],
-    Table[tb[[i]], {i, Length[new]+1, Length @ tb}]
-   ]
+
+  new = Flatten @ MapIndexed[(#2->#1)&, new, {2}];
+  ReplacePart[tb, new]
  ]
-
-
-RowsInTableau::usage = "RowsInTableau[tb] returns a list of rows where each integer appear in the standard Young tableau 'tb'."
-
-RowsInTableau[tb_] := Module[
-  { nn = Range[Length @ Flatten @ tb] },
-  Map[First[FirstPosition[tb, #]]&, nn]
- ]
-
 
 (**** <KetPermute> ****)
 

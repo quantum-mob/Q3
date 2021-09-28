@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.139 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-18 17:00:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.145 $"][[2]], " (",
+  StringSplit["$Date: 2021-09-25 01:13:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2334,6 +2334,11 @@ Dyad[a_, z_ b_, qq:(_List|All)] :=
   Garner[Conjugate[z] Dyad[a, b, qq]] /; FreeQ[z, _Ket]
 
 
+Dyad[a_] := Module[
+  { qq = Cases[a, Ket[c_Association] :> Keys[c], Infinity] },
+  Dyad[a, a, Union @ Flatten @ qq]
+ ] /; Not @ FreeQ[a, _Ket]
+
 Dyad[a_, b_] := Module[
   { qq = Cases[{a, b}, Ket[c_Association] :> Keys[c], Infinity] },
   Dyad[a, b, Union @ Flatten @ qq]
@@ -3286,11 +3291,34 @@ VertexLabelFunction::usage = "VertexLabelFunction is an option for GraphForm and
 
 EdgeLabelFunction::usage = "EdgeLabelFunction is an option for GraphForm and ChiralGraphForm that speicifes the function to generate primities for redering each edge label.\nSee also EdgeLabels."
 
+Clear[defaultEdgeLabelFunction]
+
 defaultEdgeLabelFunction[ Rule[edge_, None] ] := Nothing
 
-defaultEdgeLabelFunction[ Rule[edge_, lbl_] ] := Rule[ edge,
+defaultEdgeLabelFunction[ Rule[edge_, lbl_] ] := Rule[
+  edge,
   Framed[lbl, FrameStyle -> None, Background -> White]
  ]
+
+defaultEdgeLabelFunction[ RuleDelayed[edge_, cnd_Condition] ] := With[
+  { lbl = First @ cnd,
+    tst = Last @ cnd },
+  RuleDelayed @@ List[
+    edge,
+    Condition[
+      Framed[lbl, FrameStyle -> None, Background -> White],
+      tst
+     ]
+   ]
+ ]
+(* NOTE: This includes dirty tricks to overcome the restrictions put by
+   the HoldRest attribute of RuleDelayed. *)
+
+defaultEdgeLabelFunction[ RuleDelayed[edge_, lbl_] ] := RuleDelayed[
+  edge,
+  Framed[lbl, FrameStyle -> None, Background -> White]
+ ]
+
 
 
 GraphForm::usage = "GraphForm[A] converts the matrix A to a graph revealing the connectivity, assuming that the matrix is a linear map on one vector space.\nGraphForm allows the same options as Graph, but their specifications may be slightly different.\nGraphForm is a variation of the built-in function GraphPlot.\nGraphForm[expr] returns a graph visualizing the connectivity of different particles in the expression.\nGraphForm allows all options of Graph.\nSee also ChiralGraphForm, GraphPlot, AdjacencyGraph, IncidenceGraph."
@@ -3441,14 +3469,6 @@ vertexRulesShort[ jj_, spec_List ] := With[
  ]
 
 vertexRulesShort[ jj_, spec_ ] := { First[jj] -> spec }
-
-
-convertVertexLabel::usage = "converteVertexLabel[vtx -> lbl] converts the lbl applying $VertexLabelFunction[vtx, lbl]."
-  
-convertVertexLabel[spec:(None|All|Automatic|"Indexed"|"Name")] := spec
-
-convertVertexLabel[Rule[vtx_, lbl_]] :=
-  Rule[vtx, $VertexLabelFunction[vtx, lbl]]
 
 
 ChiralGraphForm::usage = "ChiralGraphForm[M] converts the matrix M to a graph exhibiting its connectivity. Here it is assumed that the matrix M maps one vector space (say, B) to a different space (say, A), M: B\[RightArrow]A. Such a matrix typically appears in the off-diagonal block of chiral-symmetric matrices in the chiral basis.\nChiralGraphForm allows the same options as Graph, but their specifications may be slightly different.\nChiralGraphForm is a variation of GraphPlot.\nSee also GraphForm, GraphPlot."
