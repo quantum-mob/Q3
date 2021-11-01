@@ -1,0 +1,655 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     21366,        646]
+NotebookOptionsPosition[     15810,        519]
+NotebookOutlinePosition[     17881,        573]
+CellTagsIndexPosition[     17796,        568]
+WindowTitle->KetOrthogonalize
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"KetNormalize\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/KetNormalize"], "\<\"KetSort\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/KetSort"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/KetOrthogonalize\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/KetOrthogonalize"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                
+                "http://reference.wolfram.com/language/Q3/ref/\
+KetOrthogonalize.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$100988], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/KetOrthogonalize", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["KetOrthogonalize", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"KetOrthogonalize", "[", "]"}]], "InlineFormula"],
+     " \[LineSeparator]XXXX"
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->1834446241]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1345486986],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->596970792],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1240721836],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vv", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Ket", "[", 
+      RowBox[{"0", ",", "1"}], "]"}], "+", 
+     RowBox[{"Ket", "[", 
+      RowBox[{"1", ",", "1"}], "]"}]}], ",", 
+    RowBox[{"Ket", "[", 
+     RowBox[{"1", ",", "1"}], "]"}]}], "}"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1017572649],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"0", ",", "1"}]},
+     "Ket"], "+", 
+    TemplateBox[{
+      RowBox[{"1", ",", "1"}]},
+     "Ket"]}], ",", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1"}]},
+    "Ket"]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->822330786]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"Outer", "[", 
+    RowBox[{"Multiply", ",", 
+     RowBox[{"Dagger", "[", "vv", "]"}], ",", "vv"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->585070679],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"2", "1"},
+     {"1", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->206583033]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bs", "=", 
+  RowBox[{"KetOrthogonalize", "[", "vv", "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1415531314],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    FractionBox[
+     TemplateBox[{
+       RowBox[{"0", ",", "1"}]},
+      "Ket"], 
+     SqrtBox["2"]], "+", 
+    FractionBox[
+     TemplateBox[{
+       RowBox[{"1", ",", "1"}]},
+      "Ket"], 
+     SqrtBox["2"]]}], ",", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox[
+      TemplateBox[{
+        RowBox[{"0", ",", "1"}]},
+       "Ket"], 
+      SqrtBox["2"]]}], "+", 
+    FractionBox[
+     TemplateBox[{
+       RowBox[{"1", ",", "1"}]},
+      "Ket"], 
+     SqrtBox["2"]]}]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1691437553]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"Outer", "[", 
+    RowBox[{"Multiply", ",", 
+     RowBox[{"Dagger", "[", "bs", "]"}], ",", "bs"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"new", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1116400015],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0"},
+     {"0", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->1659941263]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1978978756],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qudit", ",", "A"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AA", "=", 
+   RowBox[{"A", "@", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2", ",", "3"}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"bs", "=", 
+   RowBox[{"Basis", "[", "AA", "]"}]}], ";"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->246540827],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"vecs", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "2", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", 
+       RowBox[{"-", "2"}], ",", "0", ",", "1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "2"}], ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "1", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", 
+       ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "2"}], ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", 
+       ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "2", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "2", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0"}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->118763484],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"kets", "=", 
+   RowBox[{"vecs", ".", "bs"}]}], ";"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1724410087],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"Outer", "[", 
+    RowBox[{"Multiply", ",", 
+     RowBox[{"Dagger", "[", "kets", "]"}], ",", "kets"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1143259736],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"6", "0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "6", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "6", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "4", "2", 
+      RowBox[{"-", "2"}], "0", "0", "0"},
+     {"0", "0", "0", "2", "4", "2", "0", "0", "0"},
+     {"0", "0", "0", 
+      RowBox[{"-", "2"}], "2", "4", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "6", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "6", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0", "6"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->428073026]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"KetOrthogonalize", "[", "kets", "]"}]}], ";"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->8143461],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Outer", "[", 
+   RowBox[{"Multiply", ",", 
+    RowBox[{"Dagger", "[", "new", "]"}], ",", "new"}], "]"}], "//", 
+  "MatrixForm"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1156508098],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "1", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "1", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "1", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "1", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "1", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "1", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[6]//MatrixForm=",
+ CellID->2060909380]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->14209882],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["KetNormalize"]], "paclet:Q3/ref/KetNormalize"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["KetSort"]], "paclet:Q3/ref/KetSort"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->454801957],
+
+Cell["Tech Notes", "TechNotesSection",
+ CellID->18652362]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"KetOrthogonalize",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 11, 1, 16, 25, 14.408218}", 
+    "history" -> {"1.9", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> "KetOrthogonalize[] XXXX", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "KetOrthogonalize", "titlemodifier" -> "", 
+    "windowtitle" -> "KetOrthogonalize", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/KetOrthogonalize", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[4225, 124, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"afffec21-2802-4280-adb0-2b54929aaeb8",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1345486986]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 17597, 561}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[588, 21, 3109, 77, 70, "AnchorBarGrid",ExpressionUUID->"e8752bc7-6f79-4d54-8d56-a03b38ad7319",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3722, 102, 173, 6, 70, "ObjectNameGrid",ExpressionUUID->"cca2e575-2642-4ecc-b92b-e7bc991f4349"],
+Cell[3898, 110, 290, 9, 70, "Usage",ExpressionUUID->"05fa76ed-8731-4597-9555-cd6e018398f1",
+ CellID->1834446241]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[4225, 124, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"afffec21-2802-4280-adb0-2b54929aaeb8",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1345486986],
+Cell[CellGroupData[{
+Cell[4518, 138, 195, 6, 70, "ExampleSection",ExpressionUUID->"d165076a-72ab-442d-a0fe-22e1d838ea85",
+ CellID->596970792],
+Cell[4716, 146, 91, 3, 70, "Input",ExpressionUUID->"1fd3ae13-912b-4894-8ca0-6bde7e83389a",
+ CellID->1240721836],
+Cell[CellGroupData[{
+Cell[4832, 153, 344, 12, 70, "Input",ExpressionUUID->"02ec717e-2454-49a5-8b15-0a61721380c2",
+ CellID->1017572649],
+Cell[5179, 167, 314, 14, 70, "Output",ExpressionUUID->"83af0e8c-25b3-4446-9bd7-4eb21de51fe2",
+ CellID->822330786]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[5530, 186, 292, 9, 70, "Input",ExpressionUUID->"db43aa2f-4f5d-45fc-b0d5-0842503bb4a3",
+ CellID->585070679],
+Cell[5825, 197, 537, 17, 70, "Output",ExpressionUUID->"df0d7a2d-c0fd-4d92-bdfd-af5c31837009",
+ CellID->206583033]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6399, 219, 138, 4, 70, "Input",ExpressionUUID->"1523da81-90d2-4ad8-a221-6ff862d257ec",
+ CellID->1415531314],
+Cell[6540, 225, 590, 27, 70, "Output",ExpressionUUID->"8ddc2e97-b1aa-408f-b63b-f92bdef96467",
+ CellID->1691437553]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7167, 257, 293, 9, 70, "Input",ExpressionUUID->"d26cfe66-2230-481c-9533-eaac139f1d0d",
+ CellID->1116400015],
+Cell[7463, 268, 538, 17, 70, "Output",ExpressionUUID->"9e535397-2917-4f5d-b54f-633e05d69401",
+ CellID->1659941263]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8038, 290, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"2688afe8-eab5-4f2e-a817-92859bf2ba67",
+ CellID->1978978756],
+Cell[8167, 295, 388, 13, 70, "Input",ExpressionUUID->"45e67c13-31c7-42db-9eec-c5a4773c97cc",
+ CellID->246540827],
+Cell[8558, 310, 3559, 72, 70, "Input",ExpressionUUID->"bb6cf1c9-ab51-48ae-b799-80236434b586",
+ CellID->118763484],
+Cell[12120, 384, 142, 5, 70, "Input",ExpressionUUID->"405a5023-2592-403f-85c6-2c549480ebb5",
+ CellID->1724410087],
+Cell[CellGroupData[{
+Cell[12287, 393, 297, 9, 70, "Input",ExpressionUUID->"125cfd7f-9d8b-421e-b5c4-2de638c5cb70",
+ CellID->1143259736],
+Cell[12587, 404, 1015, 26, 70, "Output",ExpressionUUID->"9e9333c2-8453-4e15-a2bf-45b8418150cc",
+ CellID->428073026]
+}, Open  ]],
+Cell[13617, 433, 157, 5, 70, "Input",ExpressionUUID->"8bb21ff1-cbf3-4bc6-9801-0355a32cd7d5",
+ CellID->8143461],
+Cell[CellGroupData[{
+Cell[13799, 442, 218, 7, 70, "Input",ExpressionUUID->"47320a9c-611d-467d-be20-ccf9b0b3d8a4",
+ CellID->1156508098],
+Cell[14020, 451, 880, 23, 70, "Output",ExpressionUUID->"1e84c351-c726-4e62-ba6a-6c94cff9987e",
+ CellID->2060909380]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[14939, 479, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"8b37589f-30ee-4a35-a15a-6f8eb117c4d8"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15007, 484, 148, 7, 70, "SeeAlsoSection",ExpressionUUID->"7add833e-da6e-4ad4-9d6e-794afea46118",
+ CellID->14209882],
+Cell[15158, 493, 550, 18, 70, "SeeAlso",ExpressionUUID->"407402c3-7f6f-4a8e-ab8e-6131a6f09360",
+ CellID->454801957],
+Cell[15711, 513, 57, 1, 70, "TechNotesSection",ExpressionUUID->"ee5111cf-57f7-492c-b84d-7f63529d7a71",
+ CellID->18652362]
+}, Open  ]],
+Cell[15783, 517, 23, 0, 70, "FooterCell",ExpressionUUID->"ff8affc5-ee5e-4249-ac29-b5e1a189d33c"]
+}
+]
+*)
+
+(* End of internal cache information *)

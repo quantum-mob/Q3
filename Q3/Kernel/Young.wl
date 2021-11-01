@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.28 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-26 17:57:39+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.35 $"][[2]], " (",
+  StringSplit["$Date: 2021-10-27 23:25:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -299,6 +299,9 @@ LastYoungTableau[shape_?IntegerPartitionQ] :=
 
 NextYoungTableau::usage = "NextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in lexicographic order."
 
+(* NOTE 2021-10-27: It seems that the standard Young tableaux are ordered
+   according the "last letter sequence". See Pauncz (1995a, Section 3.2). *)
+
 NextYoungTableau[tb_?YoungTableauQ] := Module[
   { yy, shp, row, val, new },
 
@@ -321,6 +324,7 @@ NextYoungTableau[tb_?YoungTableauQ] := Module[
   new = Flatten @ MapIndexed[(#2->#1)&, new, {2}];
   ReplacePart[tb, new]
  ]
+
 
 (**** <KetPermute> ****)
 
@@ -377,6 +381,25 @@ KetPermute[qq:{__}, spec_][v_] := KetPermute[v, qq, spec]
 
 KetSymmetrize::usage = "KetSymmetrize[expr, {s1, s2, \[Ellipsis]}, tbl] symmetrizes every kets appearing in expr according to polytabloid specified by standard Young tableau tbl.\n"
 
+KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
+  { ts = YoungTranspose[tbl],
+    qq, bb },
+  qq = FoldPairList[TakeDrop, ss[[Flatten @ ts]], Length /@ ts];
+  bb = Fold[Union @* KetSort, bs, qq];
+  DeleteCases[
+    Garner @ Union @ Map[KetSymmetrize[#, ss, tbl]&, bb],
+    0
+   ]
+ ] /; NoneTrue[bs, FreeQ[#, Ket[_Association]]&]
+
+KetSymmetrize[expr_] := With[
+  { ss = NonCommutativeSpecies[expr] },
+  KetSymmetrize[expr, ss, {Range[Length @ ss]}]
+ ] /; Not @ FreeQ[expr, Ket[_Association]]
+
+KetSymmetrize[expr_, {}, ___] := expr /;
+  Not @ FreeQ[expr, Ket[_Association]]
+
 KetSymmetrize[expr_, ss:{__?SpeciesQ}] :=
   KetSymmetrize[expr, ss, {Range[Length @ ss]}] /;
   Not @ FreeQ[expr, Ket[_Association]]
@@ -390,7 +413,7 @@ KetSymmetrize[expr_, ss:{__?SpeciesQ}, -1] :=
   Not @ FreeQ[expr, Ket[_Association]]
 
 KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
-  { qq = ss[[Flatten@tbl]],
+  { qq = ss[[Flatten @ tbl]],
     aa, bb, cc, new },
   aa = Flatten /@ Tuples[Permutations /@ tbl];
   new = YoungTranspose[tbl];
@@ -398,10 +421,10 @@ KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
   cc = yngSignatureTo[new, #] & /@ bb;
   bb = Flatten /@ YoungTranspose /@ bb;
   expr /. {
-    v : Ket[_Association] :> 
+    v:Ket[_Association] :> 
       Dot[Ket[ss -> Permute[v[qq], #]]& /@ bb, cc]
    } /. {
-     w : Ket[_Association] :> 
+     w:Ket[_Association] :> 
        Total[Ket[ss -> Permute[w[qq], #]]& /@ aa]
     }
  ] /; Not @ FreeQ[expr, Ket[_Association]]
@@ -426,7 +449,7 @@ KetSymmetrize[expr_] := KetSymmetrize[expr, 1]
 
 KetSymmetrize[v_Ket, 1] := Total @ Permutations[v];
 
-KetSymmetrize[expr_, 1] := expr /. {v_Ket :> KetSymmetize[v, 1]}
+KetSymmetrize[expr_, 1] := expr /. {v_Ket :> KetSymmetrize[v, 1]}
 
 
 KetSymmetrize[v_Ket, -1] := Module[

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.145 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-25 01:13:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.152 $"][[2]], " (",
+  StringSplit["$Date: 2021-10-09 08:39:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,7 +14,7 @@ BeginPackage["Q3`"]
 { State, TheKet, TheBra, TheState };
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
-  KetFactor, KetPurge, KetNormalize };
+  KetFactor, KetPurge, KetOrthogonalize, KetNormalize, KetSort };
 
 { OTimes, OSlash, ReleaseTimes };
 
@@ -674,7 +674,47 @@ KetNormalize[expr_] := Garner[expr / Sqrt[Dagger[expr]**expr]] /;
 KetNormalize[expr_, f_] := Garner[expr / f[expr]] /;
   Not @ FreeQ[expr, _Ket]
 
+
+KetSort::usage = "KetSort[expr, {s1, s2, \[Ellipsis]}] sorts the logical values of species s1, s2, \[Ellipsis] in every Ket[<|\[Ellipsis]|>] appearing in expr.\nKetSort[expr] applies to all species involved in expr. When expr involves Ket[\[Ellipsis]] for unlabelled qubits, KetSort applies Sort[Ket[\[Ellipsis]]] to every Ket[\[Ellipsis]] in expr."
+
+KetSort[vec:Ket[_Association], ss:{__?SpeciesQ}] := Module[
+  { val = Sort @ vec[ss] },
+  vec[ss -> val]
+ ]
+
+KetSort[vec:Ket[Except[_Association], ___]] := Sort[vec] (* Pauli Ket *)
+
+KetSort[expr_] := KetSort[expr, NonCommutativeSpecies[expr]] /;
+  Not @ FreeQ[expr, Ket[_Association]]
+
+KetSort[expr_] := expr /. { v:Ket[__] :> KetSort[v] }
+
+KetSort[expr_, ss:{__?SpeciesQ}] := expr /. {
+  v:Ket[_Association] :> KetSort[v, ss]
+ }
+
 (**** </Ket & Bra> ****)
+
+
+KetOrthogonalize::usage = "KetOrthogonalize[vecs] orthgonalizes the vectors in vecs."
+
+KetOrthogonalize[{}] := {}
+
+KetOrthogonalize[vv:{__}] := Module[
+  { ss = NonCommutativeSpecies[vv],
+    bs, mm },
+  bs = Basis[ss];
+  mm = Matrix[vv, ss];
+  DeleteCases[Garner[Orthogonalize[mm] . bs], 0]
+ ] /; NoneTrue[vv, FreeQ[#, Ket[_Association]]&]
+
+KetOrthogonalize[vv:{__}] := Module[
+  { nn, bs, mm },
+  nn = Length @ FirstCase[vv, _Ket, {}, Infinity];
+  bs = Basis[nn];
+  mm = Matrix[vv];
+  DeleteCases[Garner[Orthogonalize[mm] . bs], 0]
+ ] /; NoneTrue[vv, FreeQ[#, Ket[(0|1)..]]&]
 
 
 (**** <KetFactor> ****)
@@ -3173,7 +3213,7 @@ BasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
 (* NOTE: This works for non-orthonormal bases aa and bb. *)
 
 BasisComplement[aa_List, bb_List] := Module[
-  { prj, new, mat, dd, uu, vv },
+  { prj, new, mat },
   If[ Chop @ Norm[Outer[Multiply, Dagger[aa], aa] - One[Length @ aa]] > 0,
     Message[BasisComplement::north, aa]
    ];
