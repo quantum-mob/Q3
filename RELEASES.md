@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v1.9.23
+
+- Fixed a bug that caused Series to produce inconsistent results.
+- New function Deutsch representing the Deutsch gate.
+
 ## v1.9.20
 
 - Let[Species, ...] uses Clear and ClearAttributes instead of ClearAll.

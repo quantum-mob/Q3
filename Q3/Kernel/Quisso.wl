@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.80 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-04 19:36:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.81 $"][[2]], " (",
+  StringSplit["$Date: 2021-11-16 17:39:18+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -23,7 +23,7 @@ BeginPackage["Q3`"]
 
 { Phase, Rotation, EulerRotation };
 
-{ ControlledU, CZ, CNOT, SWAP, Toffoli, Fredkin,
+{ ControlledU, CZ, CNOT, SWAP, Toffoli, Fredkin, Deutsch,
   Projector, Measurement, Readout };
 
 { Oracle, VerifyOracle };
@@ -473,7 +473,7 @@ QuissoExpand[expr_] := (
 Once[
   $ElaborationHeads = Join[ $ElaborationHeads,
     { QuantumCircuit, QuantumFourierTransform,
-      ControlledU, CZ, CNOT, SWAP, Toffoli, Fredkin, Oracle,
+      ControlledU, CZ, CNOT, SWAP, Toffoli, Fredkin, Deutsch, Oracle,
       Phase, Rotation, EulerRotation,
       Projector, ProductState
      }
@@ -1356,6 +1356,45 @@ QuissoFredkin[args___] := (
 (**** </Fredkin> ****)
 
 
+(**** <Deutsch> ****)
+
+Deutsch::usage = "Deutsch[angle, {a, b, c}] represents the Deutsch gate, i.e., \[ImaginaryI] times the rotation by angle around the x-axis on qubit c controlled by two qubits a and b."
+
+Deutsch[ph_, qq:{__?QubitQ}, opts___?OptionQ] :=
+  Deutsch[ph, FlavorNone @ qq, opts] /;
+  Not @ ContainsOnly[FlavorLast @ qq, {None}]
+
+(*
+Deutsch /:
+Dagger[ Deutsch[ph_, qq:{__?QubitQ}, opts___?OptionQ] ] :=
+  2*Elaborate[1 - Multiply@@Through[Most[qq][11]]] - Deutsch[-ph, qq, opts]
+ *)
+
+Deutsch /:
+HoldPattern @ Elaborate @
+  Deutsch[ph_, {a_?QubitQ, b_?QubitQ, c_?QubitQ}, opts___?OptionQ] := With[
+    { P = a[11]**b[11] },
+    Garner @ Elaborate[(1-P) + I*P**Rotation[ph, c[1]]]
+   ]
+
+Deutsch /:
+HoldPattern @ Multiply[pre___, op_Deutsch, post___] :=
+  Multiply[pre, Elaborate[op], post]
+
+Deutsch /:
+HoldPattern @ Matrix[op_Deutsch, rest___] := Matrix[Elaborate[op], rest]
+
+Dagger /:
+HoldPattern @ Multiply[pre___, Dagger[op_Deutsch], post___] :=
+  Multiply[pre, Dagger[Elaborate @ op], post]
+
+Dagger /:
+HoldPattern @ Matrix[Dagger[op_Deutsch], rest___] :=
+  Topple @ Matrix[Elaborate[op], rest]
+
+(**** </Deutsch> ****)
+
+
 (**** <ControlledU> ****)
 
 ControlledU::usage = "ControlledU[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., None] controlled by the qubits C1, C2.\nControlledU[C, T] is equivalent to ControlledU[{C}, T].\nControlledU[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it."
@@ -2089,6 +2128,11 @@ qCircuitGate[ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
     "ControlFunction" -> "Dot",
     "TargetFunction" -> "Cross"
    ]
+
+qCircuitGate[
+  Deutsch[ph_, {a_?QubitQ, b_?QubitQ, c_?QubitQ}, opts___?OptionQ],
+  more___?OptionQ ] :=
+  Gate[ {a, b}, {c}, opts, more, "Label" -> "D" ]
 
 
 qCircuitGate[

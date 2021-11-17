@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.21 $"][[2]], " (",
-  StringSplit["$Date: 2021-11-17 14:28:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.18 $"][[2]], " (",
+  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -22,7 +22,7 @@ BeginPackage["Q3`"]
 
 Begin["`Prelude`"]
 
-$symb = Unprotect[Conjugate, Abs, Power, NonNegative]
+$symb = Unprotect[Conjugate, Abs, Power, NonNegative, Re, Im]
 
 (*** Conjugate[] and Power[] ***)
 
@@ -49,6 +49,24 @@ NonNegative[ z_ Conjugate[z_] ] = True
 NonNegative[ Power[_?RealQ, _?EvenQ] ] = True
 
 NonNegative[ HoldPattern[ _?NonNegative + _?NonNegative ] ] = True
+
+(* Abs[z_Times] := Times[ Abs /@ z ] *)
+(* Mathematica 12.2: Use FunctionExpand[expr] *)
+
+(* Abs[Power[z_,-1]] := 1 / Abs[z] *)
+(* Integrated into Mathematica v12.2 *)
+
+(* Abs[Power[z_,-1/2]] := 1 / Sqrt[Abs[z]] *)
+(* Integrated into Mathematica v12.2 *)
+
+(* Power[ Abs[x_?RealQ], n_?EvenQ ] := Power[x, n] *)
+(* Mathematica 12.2: Use Simplify[expr, Element[x, Reals]] *)
+
+(* Power[ Power[x_?RealQ, n_?EvenQ], 1/2] :=   Power[Abs[x], n/2] *)
+(* Mathematica 12.2: Use Simplify[expr, Element[x, Reals]] *)
+
+(* Power[-Power[x_?RealQ, n_?EvenQ], 1/2] := I Power[Abs[x], n/2] *)
+(* Mathematica 12.2: Use Simplify[expr, Element[x, Reals]] *)
 
 Power[E, Times[z_Complex, Pi, n_]] /; EvenQ[n*z/I] = +1
 
@@ -81,11 +99,17 @@ Format[ HoldPattern[ Abs[z_] ] ] := BracketingBar[z]
 (**** </Formatting> ****)
 
 
+(* If all internal handlings fail, then these are the final resort. *)
+
+Re[ z:Except[_?NumericQ] ] := ( z + Conjugate[z] ) / 2
+
+Im[ z:Except[_?NumericQ] ] := ( z - Conjugate[z] ) / (2 I)
+
+
 Protect[ Evaluate @ $symb ]
 
 End[] (* `Prelude` *)
 
-(**********************************************************************)
 (**********************************************************************)
 
 Begin["`Complex`"]
