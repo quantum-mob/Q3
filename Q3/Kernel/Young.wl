@@ -8,14 +8,15 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.35 $"][[2]], " (",
-  StringSplit["$Date: 2021-10-27 23:25:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.47 $"][[2]], " (",
+  StringSplit["$Date: 2021-11-30 07:00:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { YoungTableauQ, YoungTableaux, CountYoungTableaux,
   NextYoungTableau, LastYoungTableau, FirstYoungTableau,
-  YoungTranspose, IntegerPartitionQ };
+  YoungTranspose, YoungShape,
+  IntegerPartitionQ, IntegerPartitionTrim };
 
 { GroupClassSize, SymmetricGroupClassSize,
   GroupCentralizerSize, SymmetricGroupCentralizerSize,
@@ -37,6 +38,14 @@ IntegerPartitionQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
 (* NOTE: Must allow 0 since some functions uses 0 in shape specification. *)
 
 
+IntegerPartitionTrim::usage="IntegerPartitionTrim[shape] trims trailing zeros from shape."
+
+IntegerPartitionTrim[{kk__, Longest[0 ..]}] := {kk} /; 
+  IntegerPartitionQ[{kk}]
+
+IntegerPartitionTrim[p_?IntegerPartitionQ] := p
+
+
 YoungTranspose::usage = "YoungTranspose[shape] reflects a partition 'shape' along the main diagonal.\nTransposeTableau[tb] reflects a standard Young tableau 'tb' along the main diagonal, creating a different tableau."
 
 YoungTranspose[shape_?IntegerPartitionQ] := Module[
@@ -47,13 +56,20 @@ YoungTranspose[shape_?IntegerPartitionQ] := Module[
    ]
  ]
 
-YoungTranspose[tb:{{__Integer?Positive}..}] := Module[
+YoungTranspose[tb:{{__Integer}..}] := Module[
   { new = YoungTranspose[Length /@ tb],
     i, j },
   Table[Part[tb, j, i], {i, Length[new]}, {j, Part[new,i]}]
- ] /; IntegerPartitionQ[Length /@ tb]
-(* NOTE: Cannot use tb_?YoungTableauQ since YoungTableauQ itself calls
-   YoungTranspose. It would cause $RecursionsLimit::reclim2 error. *)
+ ]
+(* NOTE 1: Cannot use tb_?YoungTableauQ since YoungTableauQ itself calls
+   YoungTranspose. It would cause $RecursionsLimit::reclim2 error.
+   NOTE 2: tb does not need to be a semi-standard Young tableau. Any
+   Young-like tableau is allowed. This is useful in Schur transform. *)
+
+
+YoungShape::usage = "YoungShape[tb] returns the shape, i.e., the integer partition of Young tableau tb."
+
+YoungShape[tb_?YoungTableauQ] := Length /@ tb
 
 
 CountYoungTableaux::usage = "CountYoungTableaux[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nCountYoungTableaux[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
@@ -265,13 +281,13 @@ CharacterScalarProduct[f_List, g_List, n_Integer] := Total[
   ]
 
 
-YoungTableauQ::usage = "YoungTableauQ[t] yields True if and only if t represents a standard Young tableau."
+YoungTableauQ::usage = "YoungTableauQ[t] yields True if t represents a semi-standard Young tableau."
 
 YoungTableauQ[{}] = True
 
 YoungTableauQ[tb:{__List}] := And [
   Apply[And, LessEqual @@@ tb],
-  Apply[And, LessEqual @@@ YoungTranspose[tb]],
+  Apply[And, Less @@@ YoungTranspose[tb]],
   Apply[GreaterEqual, Length /@ tb],
   Apply[GreaterEqual, Length /@ YoungTranspose[tb]]
  ]

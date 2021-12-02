@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.81 $"][[2]], " (",
-  StringSplit["$Date: 2021-11-16 17:39:18+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.82 $"][[2]], " (",
+  StringSplit["$Date: 2021-11-23 17:47:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -495,6 +495,8 @@ Once[
  ]
 
 
+(**** <ProductState> ****)
+
 ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
 
 Format[ ProductState[Association[]] ] := Ket[Any]
@@ -504,8 +506,6 @@ Format[ ProductState[assoc_Association, ___] ] :=
     DisplayForm @ Subscript[RowBox @ {"(", {Ket[0], Ket[1]}.#2, ")"}, #1]&,
     assoc
    ]
-
-(* LogicalForm[...] *)
 
 ProductState /:
 HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
@@ -518,14 +518,14 @@ HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
      ]
    ]
 
-(* Elaborate[...] *)
-
 ProductState /:
 HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := Garner[
   CircleTimes @@ KeyValueMap[ExpressionFor[#2, #1]&, a]
  ]
 
-(* ProductState in Multiply[...] *)
+ProductState /:
+HoldPattern @ Matrix[ ket:ProductState[_Association, ___] ] :=
+  Matrix[Elaborate @ ket]
 
 ProductState /:
 NonCommutativeQ[ ProductState[___] ] = True
@@ -586,6 +586,8 @@ ProductState[a_Association, opts___][qq:(_?QubitQ | {__?QubitQ})] :=
     Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := {1, 0};
     Lookup[a, FlavorNone @ qq]
    ]
+
+(**** </ProductState> ****)
 
 
 (**** <Ket for Qubit> ****)

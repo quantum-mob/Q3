@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.0.0
+
+- Q3`Schur` package for Schur transform.
+
+- A few changes in Q3`Young` to support Q3`Schur`.
+
 ## v1.9.23
 
 - Fixed a bug that caused Series to produce inconsistent results.

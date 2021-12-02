@@ -1,0 +1,1253 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     39627,       1244]
+NotebookOptionsPosition[     28826,       1015]
+NotebookOutlinePosition[     31159,       1073]
+CellTagsIndexPosition[     31073,       1068]
+WindowTitle->ClebschGordanX
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"SchurBasis\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/SchurBasis"], "\<\"NextSchurBasis\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/NextSchurBasis"], "\<\"ReducedWigner\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/ReducedWigner"], "\<\"GelfandZetlinQ\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/GelfandZetlinQ"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/ClebschGordanX\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/ClebschGordanX"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/ClebschGordanX.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$42757], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/ClebschGordanX", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["ClebschGordanX", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["ClebschGordanX"]], "paclet:Q3/ref/ClebschGordanX"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["in", "TI"], ",", 
+        StyleBox["s", "TI"], ",", 
+        StyleBox["out", "TI"]}], "]"}]], "InlineFormula"],
+     " or ",
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{
+        TemplateBox[{
+          Cell[
+           TextData["ClebschGordanX"]], "paclet:Q3/ref/ClebschGordanX"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}], "[", 
+        RowBox[{
+         RowBox[{"{", 
+          RowBox[{
+           StyleBox["in", "TI"], ",", 
+           StyleBox["s", "TI"]}], "}"}], ",", 
+         StyleBox["out", "TI"]}], "]"}], " "}]], "InlineFormula"],
+     "\[LineSeparator]returns the extended Clebsch-Gordan coefficient of \
+Gelfand-Zetlin basis state ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Ket"]], "paclet:Q3/ref/Ket"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       StyleBox["out", "TI"], "]"}]], "InlineFormula"],
+     " in terms of tensor product of Gelfand-Zetlin state ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Ket"]], "paclet:Q3/ref/Ket"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       StyleBox["in", "TI"], "]"}]], "InlineFormula"],
+     " and logical state ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["Ket"]], "paclet:Q3/ref/Ket"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       StyleBox["s", "TI"], "]"}]], "InlineFormula"],
+     ". Parameters ",
+     Cell[BoxData[
+      StyleBox["out", "TI"]], "InlineFormula"],
+     " and ",
+     Cell[BoxData[
+      StyleBox["in", "TI"]], "InlineFormula"],
+     " are  Gelfand-Zetlin patterns."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->976688044]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1286762839],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->1462709783],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->2069598393],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$N", "=", "2"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"$n", "=", "2"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"pp", "=", 
+  RowBox[{"IntegerPartitions", "[", 
+   RowBox[{"$N", ",", "$n"}], "]"}]}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->947560692],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", "2", "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->2061307939]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"outG", "=", 
+   RowBox[{"Catenate", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"GelfandZetlinPatterns", "[", 
+       RowBox[{"#", ",", "$n"}], "]"}], "&"}], "/@", "pp"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"TableForm", "/@", "outG"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1196337369],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[GridBox[{
+      {"2", "0"},
+      {"2", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{2, 0}, {2}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"2", "0"},
+      {"1", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{2, 0}, {1}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"2", "0"},
+      {"0", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{2, 0}, {0}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"1", "1"},
+      {"1", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{1, 1}, {1}}]]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->2100257569]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"inG", "=", 
+  RowBox[{"GelfandZetlinPatterns", "[", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0"}], "}"}], "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->840256444],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", "1", "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", "0", "}"}]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->337591636]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->250830878],
+
+Cell[BoxData["1"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->204167485],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1911536136],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->832478632],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->612407819]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1996577509],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->2046209388],
+
+Cell[BoxData[
+ FractionBox["1", 
+  SqrtBox["2"]]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->838061058],
+
+Cell[BoxData[
+ FractionBox["1", 
+  SqrtBox["2"]]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->2094444780],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1928959483]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "3", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1608895669],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1742909506],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1403122262],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->757929727],
+
+Cell[BoxData["1"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1799411332]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "4", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[8]:=",
+ CellID->1841539870],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1226274526],
+
+Cell[BoxData[
+ FractionBox["1", 
+  SqrtBox["2"]]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->595398223],
+
+Cell[BoxData[
+ RowBox[{"-", 
+  FractionBox["1", 
+   SqrtBox["2"]]}]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1731622588],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->682452372]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell["\t", "ExampleDelimiter"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1200765697],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$N", "=", "3"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"$n", "=", "2"}], ";"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1473729907],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"pp", "=", 
+  RowBox[{"IntegerPartitions", "[", 
+   RowBox[{"$N", ",", "$n"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"outG", "=", 
+   RowBox[{"Catenate", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"GelfandZetlinPatterns", "[", 
+       RowBox[{"#", ",", "$n"}], "]"}], "&"}], "/@", "pp"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"TableForm", "/@", "outG"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->2049646098],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", "3", "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"2", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->616787559],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[GridBox[{
+      {"3", "0"},
+      {"3", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{3, 0}, {3}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"3", "0"},
+      {"2", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{3, 0}, {2}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"3", "0"},
+      {"1", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{3, 0}, {1}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"3", "0"},
+      {"0", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{3, 0}, {0}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"2", "1"},
+      {"2", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{2, 1}, {2}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"2", "1"},
+      {"1", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{2, 1}, {1}}]]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->444940044]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qq", "=", 
+  RowBox[{"IntegerPartitions", "[", 
+   RowBox[{
+    RowBox[{"$N", "-", "1"}], ",", "$n"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"inG", "=", 
+   RowBox[{"Catenate", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"GelfandZetlinPatterns", "[", 
+       RowBox[{"#", ",", "$n"}], "]"}], "&"}], "/@", "qq"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"TableForm", "/@", "inG"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->569260654],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", "2", "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->524164393],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[GridBox[{
+      {"2", "0"},
+      {"2", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{2, 0}, {2}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"2", "0"},
+      {"1", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{2, 0}, {1}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"2", "0"},
+      {"0", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{2, 0}, {0}}]], ",", 
+   InterpretationBox[GridBox[{
+      {"1", "1"},
+      {"1", "\<\"\"\>"}
+     },
+     GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+     GridBoxSpacings->{"Columns" -> {
+         Offset[0.27999999999999997`], {
+          Offset[2.0999999999999996`]}, 
+         Offset[0.27999999999999997`]}, "Rows" -> {
+         Offset[0.2], {
+          Offset[0.4]}, 
+         Offset[0.2]}}],
+    TableForm[{{1, 1}, {1}}]]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->653033157]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1886833529],
+
+Cell[BoxData["1"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->120106654],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->2145389245],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1306607585],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->2133390520]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1507499328],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->529138390],
+
+Cell[BoxData[
+ FractionBox["1", 
+  SqrtBox["3"]]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->499138503],
+
+Cell[BoxData[
+ SqrtBox[
+  FractionBox["2", "3"]]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->949694739],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1421013869]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "3", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->814457996],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->534772794],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->707286063],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1034874696],
+
+Cell[BoxData[
+ SqrtBox[
+  FractionBox["2", "3"]]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->668958619]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "4", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->1110617488],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->220261092],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1813849463],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1837555476],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->832557625]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"out", "=", 
+   RowBox[{"outG", "[", 
+    RowBox[{"[", "5", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "1", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"in", "=", 
+   RowBox[{"inG", "[", 
+    RowBox[{"[", "2", "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "1", ",", "out"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"ClebschGordanX", "[", 
+  RowBox[{"in", ",", "2", ",", "out"}], "]"}]}], "Input",
+ CellLabel->"In[8]:=",
+ CellID->1940043170],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1061345789],
+
+Cell[BoxData[
+ SqrtBox[
+  FractionBox["2", "3"]]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1039503741],
+
+Cell[BoxData[
+ RowBox[{"-", 
+  FractionBox["1", 
+   SqrtBox["3"]]}]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1159906642],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1841868275]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->985119988],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SchurBasis"]], "paclet:Q3/ref/SchurBasis"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["NextSchurBasis"]], "paclet:Q3/ref/NextSchurBasis"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["ReducedWigner"]], "paclet:Q3/ref/ReducedWigner"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GelfandZetlinQ"]], "paclet:Q3/ref/GelfandZetlinQ"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->1960203593]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"ClebschGordanX",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 12, 2, 21, 38, 10.957624}", 
+    "history" -> {"2.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "ClebschGordanX[in, s, out] or ClebschGordanX[{in, s}, out] returns the \
+extended Clebsch-Gordan coefficient of Gelfand-Zetlin basis state Ket[out] in \
+terms of tensor product of Gelfand-Zetlin state Ket[in] and logical state \
+Ket[s]. Parameters out and in are Gelfand-Zetlin patterns.", "synonyms" -> {},
+     "tabletags" -> {}, "title" -> "ClebschGordanX", "titlemodifier" -> "", 
+    "windowtitle" -> "ClebschGordanX", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/ClebschGordanX", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X x86 (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X x86 (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6202, 184, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"8bd706a8-fb28-47fc-a531-d705cb358e66",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1286762839]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 30874, 1061}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[586, 21, 3282, 79, 70, "AnchorBarGrid",ExpressionUUID->"84aa6753-311a-4dc0-a2ea-7a37a58ec5e5",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[3893, 104, 171, 6, 70, "ObjectNameGrid",ExpressionUUID->"31f71aa7-3e5e-4553-bd0a-91d6eb2d35ee"],
+Cell[4067, 112, 2098, 67, 70, "Usage",ExpressionUUID->"466bf31e-1757-4da5-b229-15fab1012e89",
+ CellID->976688044]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6202, 184, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"8bd706a8-fb28-47fc-a531-d705cb358e66",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1286762839],
+Cell[CellGroupData[{
+Cell[6495, 198, 196, 6, 70, "ExampleSection",ExpressionUUID->"6599d526-f4b8-4dd9-ba75-f88ed1eb5287",
+ CellID->1462709783],
+Cell[6694, 206, 91, 3, 70, "Input",ExpressionUUID->"c951af6d-3329-4751-9d38-0bd5142e364e",
+ CellID->2069598393],
+Cell[CellGroupData[{
+Cell[6810, 213, 303, 9, 70, "Input",ExpressionUUID->"f3bef657-f390-4a10-99b5-288ec92e479b",
+ CellID->947560692],
+Cell[7116, 224, 190, 7, 70, "Output",ExpressionUUID->"306dab5f-24b1-4366-bff3-0cb640a7bbb8",
+ CellID->2061307939]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[7343, 236, 346, 11, 70, "Input",ExpressionUUID->"59f6c047-b71c-452d-a5fc-b55b664365ef",
+ CellID->1196337369],
+Cell[7692, 249, 1841, 56, 70, "Output",ExpressionUUID->"f1bc2ce2-ca6b-466c-96c2-05b3f2b155c9",
+ CellID->2100257569]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9570, 310, 191, 6, 70, "Input",ExpressionUUID->"d758e3da-ff4a-4d91-868f-12054a1e2d74",
+ CellID->840256444],
+Cell[9764, 318, 372, 14, 70, "Output",ExpressionUUID->"fcb8af64-ee10-48cb-b48c-c63ffe1a87ed",
+ CellID->337591636]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10173, 337, 837, 22, 70, "Input",ExpressionUUID->"c0285e72-937e-41c7-bbe2-52eb3e6db6d3",
+ CellID->250830878],
+Cell[11013, 361, 71, 2, 70, "Output",ExpressionUUID->"5aebe441-5cbe-4811-9f5d-e34a1447e5fb",
+ CellID->204167485],
+Cell[11087, 365, 72, 2, 70, "Output",ExpressionUUID->"59c8e934-b26a-4f3a-83c5-548d022e872d",
+ CellID->1911536136],
+Cell[11162, 369, 71, 2, 70, "Output",ExpressionUUID->"4abcec70-d6e8-45a2-80ea-7971b0a5b0b7",
+ CellID->832478632],
+Cell[11236, 373, 71, 2, 70, "Output",ExpressionUUID->"10d44872-be5f-4839-ac2e-c0c97b2b5380",
+ CellID->612407819]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11344, 380, 838, 22, 70, "Input",ExpressionUUID->"7596dee6-b7e2-4ea4-94ca-c24cad241851",
+ CellID->1996577509],
+Cell[12185, 404, 72, 2, 70, "Output",ExpressionUUID->"2ceea21c-5ce0-484c-a2c9-b028b869369a",
+ CellID->2046209388],
+Cell[12260, 408, 103, 4, 70, "Output",ExpressionUUID->"e5cdfc2c-54d3-4d9e-9502-c44e881975fa",
+ CellID->838061058],
+Cell[12366, 414, 104, 4, 70, "Output",ExpressionUUID->"4e1f36e5-658b-4129-8b83-7276af48eb5a",
+ CellID->2094444780],
+Cell[12473, 420, 72, 2, 70, "Output",ExpressionUUID->"f9e5633b-80f1-44bb-ae3c-cdb4c2a446f3",
+ CellID->1928959483]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12582, 427, 838, 22, 70, "Input",ExpressionUUID->"14a88653-b724-4a93-9081-22f04606ec2e",
+ CellID->1608895669],
+Cell[13423, 451, 72, 2, 70, "Output",ExpressionUUID->"9c247bc3-87c5-4330-b098-ba42f6af7431",
+ CellID->1742909506],
+Cell[13498, 455, 72, 2, 70, "Output",ExpressionUUID->"b5de4c07-c38c-4ca2-8c95-e4caa3b8b597",
+ CellID->1403122262],
+Cell[13573, 459, 71, 2, 70, "Output",ExpressionUUID->"26bde25c-927d-4cdd-9a2c-d7c45760fa7b",
+ CellID->757929727],
+Cell[13647, 463, 72, 2, 70, "Output",ExpressionUUID->"2e96e7c6-a7b5-421b-a570-c941d4e4fd69",
+ CellID->1799411332]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13756, 470, 838, 22, 70, "Input",ExpressionUUID->"4f5d682a-4394-42e2-863d-4985dce1418b",
+ CellID->1841539870],
+Cell[14597, 494, 72, 2, 70, "Output",ExpressionUUID->"cabb953a-c0a0-4cf1-a704-a8e9df72def8",
+ CellID->1226274526],
+Cell[14672, 498, 103, 4, 70, "Output",ExpressionUUID->"bd4cb445-6a2b-4b35-a621-0a30f49a77f0",
+ CellID->595398223],
+Cell[14778, 504, 123, 5, 70, "Output",ExpressionUUID->"6e99fea1-4224-4d2b-97e5-513022434fa7",
+ CellID->1731622588],
+Cell[14904, 511, 71, 2, 70, "Output",ExpressionUUID->"97aa2e1a-5ba6-4e1f-99b4-1bc7f5319831",
+ CellID->682452372]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[15012, 518, 126, 3, 70, "ExampleDelimiter",ExpressionUUID->"fb14785d-ebf1-4cfd-a817-051a71346866",
+ CellID->1200765697],
+Cell[15141, 523, 183, 6, 70, "Input",ExpressionUUID->"e06f4621-4417-470a-8c20-c2cfcf89f5ee",
+ CellID->1473729907],
+Cell[CellGroupData[{
+Cell[15349, 533, 467, 14, 70, "Input",ExpressionUUID->"eaea84e2-9f98-4912-a138-e7399b34cbd3",
+ CellID->2049646098],
+Cell[15819, 549, 189, 7, 70, "Output",ExpressionUUID->"0fc45d9b-9c22-4548-900d-49f3ea3f69ea",
+ CellID->616787559],
+Cell[16011, 558, 2712, 82, 70, "Output",ExpressionUUID->"f09b57c3-8471-4fb4-93bb-88936de91df9",
+ CellID->444940044]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18760, 645, 489, 15, 70, "Input",ExpressionUUID->"1dafe1b7-656b-4557-94a5-6e3340cb1a96",
+ CellID->569260654],
+Cell[19252, 662, 189, 7, 70, "Output",ExpressionUUID->"ac02ab0c-8f3a-42a0-96a2-fccd8b7dba3b",
+ CellID->524164393],
+Cell[19444, 671, 1840, 56, 70, "Output",ExpressionUUID->"0de809b5-e47b-4596-aabf-f7dae6a33e67",
+ CellID->653033157]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21321, 732, 838, 22, 70, "Input",ExpressionUUID->"de7564f4-a8e9-4aac-bfb4-fc9f233d7738",
+ CellID->1886833529],
+Cell[22162, 756, 71, 2, 70, "Output",ExpressionUUID->"4988de5a-7371-44b7-81ca-b6b9c0e9af07",
+ CellID->120106654],
+Cell[22236, 760, 72, 2, 70, "Output",ExpressionUUID->"b52f8d7e-59eb-4b28-9579-b7d4d08f44ff",
+ CellID->2145389245],
+Cell[22311, 764, 72, 2, 70, "Output",ExpressionUUID->"658a6a1b-1e6f-4703-83e3-87003445d155",
+ CellID->1306607585],
+Cell[22386, 768, 72, 2, 70, "Output",ExpressionUUID->"ea906a85-0dfb-4c66-beef-9d75df5d743e",
+ CellID->2133390520]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22495, 775, 838, 22, 70, "Input",ExpressionUUID->"7d09f70a-f6de-47f9-9299-03c5923e2001",
+ CellID->1507499328],
+Cell[23336, 799, 71, 2, 70, "Output",ExpressionUUID->"7e19d075-c4b0-4d0c-ab9b-070bc24e8d2f",
+ CellID->529138390],
+Cell[23410, 803, 103, 4, 70, "Output",ExpressionUUID->"7a54a27c-a9f1-4b4e-b735-b70d6da0ec92",
+ CellID->499138503],
+Cell[23516, 809, 103, 4, 70, "Output",ExpressionUUID->"577ac1dc-0a27-4f64-9dec-5f53c5d1b6c9",
+ CellID->949694739],
+Cell[23622, 815, 72, 2, 70, "Output",ExpressionUUID->"ffd6c28c-f145-4cc3-9c79-cc8b72249268",
+ CellID->1421013869]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23731, 822, 837, 22, 70, "Input",ExpressionUUID->"d2f030d6-f33a-4bfc-b8d0-be26849af7b4",
+ CellID->814457996],
+Cell[24571, 846, 71, 2, 70, "Output",ExpressionUUID->"4d52a681-a9de-43ad-aa50-1b1752eb6684",
+ CellID->534772794],
+Cell[24645, 850, 71, 2, 70, "Output",ExpressionUUID->"9b0428dc-20a7-4b8a-877b-80d60452fdf4",
+ CellID->707286063],
+Cell[24719, 854, 72, 2, 70, "Output",ExpressionUUID->"60f9bc10-edd6-4227-a98c-6f438f71969b",
+ CellID->1034874696],
+Cell[24794, 858, 103, 4, 70, "Output",ExpressionUUID->"9968eb37-ec70-4ed0-974a-54a8ccad1ff1",
+ CellID->668958619]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[24934, 867, 838, 22, 70, "Input",ExpressionUUID->"123b3168-e75d-4dbf-b578-fa71df4317e6",
+ CellID->1110617488],
+Cell[25775, 891, 71, 2, 70, "Output",ExpressionUUID->"cd57f7b5-8a62-43d3-b902-66d0c51a749c",
+ CellID->220261092],
+Cell[25849, 895, 72, 2, 70, "Output",ExpressionUUID->"165e793f-85cd-4822-9c6e-e97fa44bfaa0",
+ CellID->1813849463],
+Cell[25924, 899, 72, 2, 70, "Output",ExpressionUUID->"ba8ff651-264e-4a3f-b42c-98bd85bf919d",
+ CellID->1837555476],
+Cell[25999, 903, 71, 2, 70, "Output",ExpressionUUID->"74460ce7-470f-4984-a8f0-64f754213f23",
+ CellID->832557625]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26107, 910, 838, 22, 70, "Input",ExpressionUUID->"e897359c-4af3-4413-856c-e7163c6d3801",
+ CellID->1940043170],
+Cell[26948, 934, 72, 2, 70, "Output",ExpressionUUID->"1cbc854f-8fc0-4801-a22d-0cbeadeaec4f",
+ CellID->1061345789],
+Cell[27023, 938, 104, 4, 70, "Output",ExpressionUUID->"3d6b0bfb-5381-4cf1-823a-ab31014bbc73",
+ CellID->1039503741],
+Cell[27130, 944, 123, 5, 70, "Output",ExpressionUUID->"fd5cc621-4556-4408-a613-98b8704da075",
+ CellID->1159906642],
+Cell[27256, 951, 72, 2, 70, "Output",ExpressionUUID->"d821e537-eebf-4c94-a1b9-1b677f6d7297",
+ CellID->1841868275]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[27367, 958, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"358af5fc-145e-44df-9d00-5b75463c22fb"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27435, 963, 149, 7, 70, "SeeAlsoSection",ExpressionUUID->"d6b4e6ff-43c1-4bb5-ae23-43a8501110df",
+ CellID->985119988],
+Cell[27587, 972, 1197, 38, 70, "SeeAlso",ExpressionUUID->"fba462b3-fc7f-471d-9e0e-b6bcd0fe9a54",
+ CellID->1960203593]
+}, Open  ]],
+Cell[28799, 1013, 23, 0, 70, "FooterCell",ExpressionUUID->"e1e8cb99-5b19-4f78-ac76-d8501f5f543b"]
+}
+]
+*)
+
+(* End of internal cache information *)
