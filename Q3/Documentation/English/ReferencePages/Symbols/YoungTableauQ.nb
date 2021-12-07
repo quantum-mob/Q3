@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     20782,        653]
-NotebookOptionsPosition[     15265,        531]
-NotebookOutlinePosition[     17411,        586]
-CellTagsIndexPosition[     17326,        581]
+NotebookDataLength[     40745,       1482]
+NotebookOptionsPosition[     33387,       1320]
+NotebookOutlinePosition[     35533,       1375]
+CellTagsIndexPosition[     35447,       1370]
 WindowTitle->YoungTableauQ
 WindowFrame->Normal*)
 
@@ -37,7 +37,13 @@ Cell[BoxData[GridBox[{
        "paclet:Q3/ref/YoungTableaux"], "\<\"CountYoungTableaux\"\>":>
        Documentation`HelpLookup[
        "paclet:Q3/ref/CountYoungTableaux"], "\<\"YoungTranspose\"\>":>
-       Documentation`HelpLookup["paclet:Q3/ref/YoungTranspose"]},
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/YoungTranspose"], "\<\"WeylTableauQ\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/WeylTableauQ"], "\<\"WeylTableaux\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/WeylTableaux"], "\<\"CountWeylTableaux\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/CountWeylTableaux"]},
        Appearance->None,
        MenuAppearance->Automatic,
        MenuStyle->"SeeAlso"]],
@@ -83,7 +89,7 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$214124], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$218682], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], 
              "Q3/ref/YoungTableauQ", ".html"]], None}]}]},
@@ -165,16 +171,27 @@ Cell[TextData[Cell[BoxData[
   Method->"Preemptive"]]]], "NotesSection",
  WholeCellGroupOpener->True,
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->241500680],
+ CellID->1025605797],
 
 Cell["", "SectionHeaderSpacer"],
 
-Cell["\<\
-A Young tableau is said to be semi-standard if its entries weakly increase \
-along each row and strictly increase along each column of the underlying \
-Young diagram. A standard Young tableau is a semi-standard Young tableau with \
-entries strictly increasing along each row as well.\
-\>", "Notes",
+Cell[TextData[{
+ "A Young tableau is said to be ",
+ StyleBox["standard",
+  FontSlant->"Italic"],
+ " if its entries are all distinct and strictly increase along each row and \
+column of the underlying Young diagram."
+}], "Notes",
+ CellID->208732956],
+
+Cell[TextData[{
+ "A Young tableau is said to be ",
+ StyleBox["semi-standard",
+  FontSlant->"Italic"],
+ " if its entries weakly increase along each row and strictly increase along \
+each column. In semi-standard Young tableaux duplicate entries are allowed. \
+Semi-standard Young tableaux are also called Weyl tableaux."
+}], "Notes",
  CellID->1665931480],
 
 Cell["", "SectionFooterSpacer"]
@@ -192,7 +209,7 @@ Cell[TextData[{
 }], "PrimaryExamplesSection",
  WholeCellGroupOpener->True,
  CellTags->"PrimaryExamplesSection",
- CellID->157835930],
+ CellID->1652879357],
 
 Cell[CellGroupData[{
 
@@ -202,7 +219,7 @@ Cell[TextData[{
  Cell["(1)", "ExampleCount"]
 }], "ExampleSection", "ExampleSection",
  WholeCellGroupOpener->True,
- CellID->606171465],
+ CellID->94895507],
 
 Cell[BoxData[
  RowBox[{"<<", "Q3`"}]], "Input",
@@ -235,7 +252,7 @@ Cell[BoxData[
     RowBox[{"1", ",", "1", ",", "1", ",", "1", ",", "1"}], "}"}]}], 
   "}"}]], "Output",
  CellLabel->"Out[2]=",
- CellID->2143502450]
+ CellID->568795051]
 }, Open  ]],
 
 Cell["These are all standard Young tableau.", "ExampleText",
@@ -243,176 +260,612 @@ Cell["These are all standard Young tableau.", "ExampleText",
 
 Cell[CellGroupData[{
 
-Cell[BoxData[
- RowBox[{"tbs", "=", 
-  RowBox[{"YoungTableaux", "[", "5", "]"}]}]], "Input",
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"tbs", "=", 
+   RowBox[{"YoungTableaux", "[", "5", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"YoungTableauForm", "/@", "tbs"}]}], "Input",
  CellLabel->"In[3]:=",
  CellID->758973612],
 
 Cell[BoxData[
  RowBox[{"{", 
   RowBox[{
-   RowBox[{"{", 
-    RowBox[{"{", 
-     RowBox[{"1", ",", "2", ",", "3", ",", "4", ",", "5"}], "}"}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "3", ",", "4", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "2", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "4", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "3", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "3", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "4", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "3", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"2", ",", "4"}], "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"3", ",", "4"}], "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "3", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"2", ",", "5"}], "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"3", ",", "5"}], "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "3"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"4", ",", "5"}], "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "4", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "2", "}"}], ",", 
-     RowBox[{"{", "3", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "3", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "2", "}"}], ",", 
-     RowBox[{"{", "4", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "3", "}"}], ",", 
-     RowBox[{"{", "4", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "3", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", "2", "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", "3", "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2", ",", "3"}], "}"}], ",", 
-     RowBox[{"{", "4", "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"2", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "3", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "3"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"2", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "4", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"3", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "4", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "3"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"2", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2"}], "}"}], ",", 
-     RowBox[{"{", 
-      RowBox[{"3", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "5"}], "}"}], ",", 
-     RowBox[{"{", "2", "}"}], ",", 
-     RowBox[{"{", "3", "}"}], ",", 
-     RowBox[{"{", "4", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "4"}], "}"}], ",", 
-     RowBox[{"{", "2", "}"}], ",", 
-     RowBox[{"{", "3", "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "3"}], "}"}], ",", 
-     RowBox[{"{", "2", "}"}], ",", 
-     RowBox[{"{", "4", "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", 
-      RowBox[{"1", ",", "2"}], "}"}], ",", 
-     RowBox[{"{", "3", "}"}], ",", 
-     RowBox[{"{", "4", "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}], ",", 
-   RowBox[{"{", 
-    RowBox[{
-     RowBox[{"{", "1", "}"}], ",", 
-     RowBox[{"{", "2", "}"}], ",", 
-     RowBox[{"{", "3", "}"}], ",", 
-     RowBox[{"{", "4", "}"}], ",", 
-     RowBox[{"{", "5", "}"}]}], "}"}]}], "}"}]], "Output",
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], "", "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], "", "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], "", "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], "", "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], "", ""},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], "", ""},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], "", ""},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], "", ""},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], "", ""},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], "", ""},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], "", ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], ""},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], ""},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], ""},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], ""},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False], ""},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["4",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["5",
+        Frame->True,
+        StripOnInput->False]}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"]}], "}"}]], "Output",
  CellLabel->"Out[3]=",
- CellID->1444647434]
+ CellID->1722179922]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -431,7 +884,26 @@ Cell[BoxData[
    ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", 
    "True", ",", "True", ",", "True", ",", "True"}], "}"}]], "Output",
  CellLabel->"Out[4]=",
- CellID->959407786]
+ CellID->795954227]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"WeylTableauQ", "/@", "tbs"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->324508565],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", 
+   ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", 
+   "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", 
+   ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", 
+   "True", ",", "True", ",", "True", ",", "True"}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1342883012]
 }, Open  ]],
 
 Cell["Here is a semi-standard Young tableau.", "ExampleText",
@@ -439,20 +911,307 @@ Cell["Here is a semi-standard Young tableau.", "ExampleText",
 
 Cell[CellGroupData[{
 
-Cell[BoxData[
- RowBox[{"YoungTableauQ", "@", 
-  RowBox[{"{", 
-   RowBox[{
-    RowBox[{"{", 
-     RowBox[{"1", ",", "1", ",", "3"}], "}"}], ",", 
-    RowBox[{"{", 
-     RowBox[{"2", ",", "4"}], "}"}]}], "}"}]}]], "Input",
- CellLabel->"In[5]:=",
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"tbs", "=", 
+   RowBox[{"WeylTableaux", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"2", ",", "2", ",", "1"}], "}"}], ",", "3"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"YoungTableauForm", "/@", "tbs"}]}], "Input",
+ CellLabel->"In[6]:=",
  CellID->960165711],
 
-Cell[BoxData["True"], "Output",
- CellLabel->"Out[5]=",
- CellID->164819227]
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"]}], "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1096599935]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"YoungTableauQ", "/@", "tbs"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->23431756],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"False", ",", "False", ",", "False"}], "}"}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1967770051]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"WeylTableauQ", "/@", "tbs"}]], "Input",
+ CellLabel->"In[8]:=",
+ CellID->1230150297],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"True", ",", "True", ",", "True"}], "}"}]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->2005048219]
+}, Open  ]],
+
+Cell["\<\
+In a standard Young tableau, duplicate entries are not allowed. Therefore, \
+only the forth of the following Young tableaux is standard.\
+\>", "ExampleText",
+ CellID->1795167308],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"tbs", "=", 
+   RowBox[{"WeylTableaux", "[", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"2", ",", "1"}], "}"}], ",", "3"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"YoungTableauForm", "/@", "tbs"}]}], "Input",
+ CellLabel->"In[9]:=",
+ CellID->586943959],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"]}], "}"}]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->1488992073]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"YoungTableauQ", "/@", "tbs"}]], "Input",
+ CellLabel->"In[10]:=",
+ CellID->357033017],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "False", ",", "False", ",", "False", ",", "True", ",", "False", ",", "True",
+    ",", "False", ",", "False"}], "}"}]], "Output",
+ CellLabel->"Out[10]=",
+ CellID->560126019]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"WeylTableauQ", "/@", "tbs"}]], "Input",
+ CellLabel->"In[11]:=",
+ CellID->1332936892],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", 
+   ",", "True", ",", "True"}], "}"}]], "Output",
+ CellLabel->"Out[11]=",
+ CellID->1411944109]
 }, Open  ]]
 }, Open  ]],
 
@@ -495,6 +1254,36 @@ Cell[TextData[{
   TemplateBox[{
     Cell[
      TextData["YoungTranspose"]], "paclet:Q3/ref/YoungTranspose"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WeylTableauQ"]], "paclet:Q3/ref/WeylTableauQ"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WeylTableaux"]], "paclet:Q3/ref/WeylTableaux"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CountWeylTableaux"]], "paclet:Q3/ref/CountWeylTableaux"},
    "RefLink",
    BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
 }], "SeeAlso",
@@ -544,7 +1333,7 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 12, 2, 21, 53, 58.926953}", 
+   "built" -> "{2021, 12, 8, 2, 1, 53.609243}", 
     "history" -> {"1.9", "", "", ""}, "context" -> "Q3`", 
     "keywords" -> {"symmetric group"}, "specialkeywords" -> {}, 
     "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
@@ -573,88 +1362,128 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "PrimaryExamplesSection"->{
-  Cell[6056, 184, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"b8a7806a-5f71-43c5-86df-88ca7f04503a",
+  Cell[6630, 201, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"450c60a0-3bba-4cd1-a82b-f378933e8350",
    CellTags->"PrimaryExamplesSection",
-   CellID->157835930]}
+   CellID->1652879357]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"PrimaryExamplesSection", 17128, 574}
+ {"PrimaryExamplesSection", 35248, 1363}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[585, 21, 3203, 78, 70, "AnchorBarGrid",ExpressionUUID->"f668a4bf-f361-44b4-b55d-c1a76265b15f",
+Cell[585, 21, 3501, 84, 70, "AnchorBarGrid",ExpressionUUID->"c2a76fce-6eef-429f-ab76-a4f2a87c9f11",
  CellID->1],
 Cell[CellGroupData[{
-Cell[3813, 103, 170, 6, 70, "ObjectNameGrid",ExpressionUUID->"5a20fa35-dc9c-4392-ba61-d5f44670cbcd"],
-Cell[3986, 111, 967, 32, 70, "Usage",ExpressionUUID->"818cedb7-c11d-4cfc-a1fe-24eb71c8bc00",
+Cell[4111, 109, 170, 6, 70, "ObjectNameGrid",ExpressionUUID->"83c9ec02-803e-4e81-95f0-5c03150fee8f"],
+Cell[4284, 117, 967, 32, 70, "Usage",ExpressionUUID->"33ce49bf-b29e-4f65-aadf-ac1dad1ec75e",
  CellID->74846425]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[4990, 148, 629, 19, 70, "NotesSection",ExpressionUUID->"9c986e0a-7fba-43ec-b147-f506b4e42d4d",
+Cell[5288, 154, 630, 19, 70, "NotesSection",ExpressionUUID->"c2089e17-9572-46d0-b194-f37ad33632dd",
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->241500680],
-Cell[5622, 169, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"9ed96dfe-eb58-4d93-a50c-950d43b3adc6"],
-Cell[5656, 171, 329, 6, 70, "Notes",ExpressionUUID->"c541a5b1-2674-4667-a770-35ddd905454a",
+ CellID->1025605797],
+Cell[5921, 175, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"d153fb02-850d-441b-8fb9-28e86e0234a2"],
+Cell[5955, 177, 248, 7, 70, "Notes",ExpressionUUID->"a8fa1b2a-130c-4a28-a00b-87583822a95f",
+ CellID->208732956],
+Cell[6206, 186, 353, 8, 70, "Notes",ExpressionUUID->"6b34fabb-a583-4616-ab58-b12ca1decc13",
  CellID->1665931480],
-Cell[5988, 179, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"06b2ed6e-0841-4ec9-8583-216de6945e5f"]
+Cell[6562, 196, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"9692ea6e-732c-4eac-81ae-06698b759d1c"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[6056, 184, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"b8a7806a-5f71-43c5-86df-88ca7f04503a",
+Cell[6630, 201, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"450c60a0-3bba-4cd1-a82b-f378933e8350",
  CellTags->"PrimaryExamplesSection",
- CellID->157835930],
+ CellID->1652879357],
 Cell[CellGroupData[{
-Cell[6348, 198, 195, 6, 70, "ExampleSection",ExpressionUUID->"ddd7749d-6a89-40b9-9753-241c362b1821",
- CellID->606171465],
-Cell[6546, 206, 90, 3, 70, "Input",ExpressionUUID->"4c0b45f4-f844-41f9-9f3e-17af3f47b81a",
+Cell[6923, 215, 194, 6, 70, "ExampleSection",ExpressionUUID->"6332d501-133d-47ce-b061-a8d652d115e5",
+ CellID->94895507],
+Cell[7120, 223, 90, 3, 70, "Input",ExpressionUUID->"a5da596e-27af-4c89-b9b9-e2842f7e979f",
  CellID->991954234],
 Cell[CellGroupData[{
-Cell[6661, 213, 142, 4, 70, "Input",ExpressionUUID->"9c4339c6-78f2-4d23-8c9d-2cb4d8fc71c4",
+Cell[7235, 230, 142, 4, 70, "Input",ExpressionUUID->"d2b71cdb-2bae-4af6-aeba-77ffce24fb4e",
  CellID->1327628881],
-Cell[6806, 219, 558, 18, 70, "Output",ExpressionUUID->"68878265-b3f0-43af-8fa4-9151d6d8263f",
- CellID->2143502450]
+Cell[7380, 236, 557, 18, 70, "Output",ExpressionUUID->"24bc9389-e04f-402a-84be-0c4fdb159b5f",
+ CellID->568795051]
 }, Open  ]],
-Cell[7379, 240, 81, 1, 70, "ExampleText",ExpressionUUID->"0dc8eb64-9516-4359-92d4-e6b2b936a0a2",
+Cell[7952, 257, 81, 1, 70, "ExampleText",ExpressionUUID->"49723caf-ad17-4390-be77-4f75a01ffd59",
  CellID->1500974335],
 Cell[CellGroupData[{
-Cell[7485, 245, 134, 4, 70, "Input",ExpressionUUID->"5684996c-f780-4437-b134-e8cd75e43274",
+Cell[8058, 262, 223, 6, 70, "Input",ExpressionUUID->"009c754b-3930-47a2-ac80-cabf358a4644",
  CellID->758973612],
-Cell[7622, 251, 4887, 163, 70, "Output",ExpressionUUID->"1aa5c290-e877-43a6-b75e-951c75094dc4",
- CellID->1444647434]
+Cell[8284, 270, 14121, 597, 70, "Output",ExpressionUUID->"42ffa225-2ac0-410e-a566-af978e8a4e66",
+ CellID->1722179922]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[12546, 419, 107, 3, 70, "Input",ExpressionUUID->"a0656b93-b8fd-4ad9-9f9c-082c834d77bb",
+Cell[22442, 872, 107, 3, 70, "Input",ExpressionUUID->"13fbced4-d5d8-40ec-a9d7-a18083404a6c",
  CellID->938761914],
-Cell[12656, 424, 453, 9, 70, "Output",ExpressionUUID->"f73854e8-99a6-466b-9203-9de9a8128801",
- CellID->959407786]
+Cell[22552, 877, 453, 9, 70, "Output",ExpressionUUID->"62e003e2-a79d-474b-a3f0-d41ac75fee3a",
+ CellID->795954227]
 }, Open  ]],
-Cell[13124, 436, 82, 1, 70, "ExampleText",ExpressionUUID->"188832e1-60db-4544-9d47-c7a85cc6c223",
+Cell[CellGroupData[{
+Cell[23042, 891, 106, 3, 70, "Input",ExpressionUUID->"93209eff-e0d9-4cbf-9d11-33d233a22b5e",
+ CellID->324508565],
+Cell[23151, 896, 454, 9, 70, "Output",ExpressionUUID->"04035ad1-1067-418f-be32-c181d2cee47c",
+ CellID->1342883012]
+}, Open  ]],
+Cell[23620, 908, 82, 1, 70, "ExampleText",ExpressionUUID->"c97ce86b-705b-4840-b196-7ccdc07bd7db",
  CellID->2140238613],
 Cell[CellGroupData[{
-Cell[13231, 441, 263, 9, 70, "Input",ExpressionUUID->"caff5ec1-4423-455e-8c60-93e07391dd47",
+Cell[23727, 913, 313, 10, 70, "Input",ExpressionUUID->"370bf190-7148-46db-a453-c2689e1b6683",
  CellID->960165711],
-Cell[13497, 452, 74, 2, 70, "Output",ExpressionUUID->"a7b7c6e4-785a-4dae-a554-d0e49ac86ee0",
- CellID->164819227]
-}, Open  ]]
-}, Open  ]],
-Cell[13598, 458, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"1b6a3fee-b50a-443f-9a43-f6bcc6a4ad50"]
+Cell[24043, 925, 1705, 73, 70, "Output",ExpressionUUID->"0cdd1df2-761c-46bd-8688-d8ee13650b11",
+ CellID->1096599935]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[13666, 463, 149, 7, 70, "SeeAlsoSection",ExpressionUUID->"2145c758-9c8e-4510-af58-d8a1c680ea5d",
+Cell[25785, 1003, 106, 3, 70, "Input",ExpressionUUID->"505b6a21-3c7b-4234-998a-9308803da29f",
+ CellID->23431756],
+Cell[25894, 1008, 139, 4, 70, "Output",ExpressionUUID->"cff1eea2-7e43-410b-8a6c-af6cfad5c90f",
+ CellID->1967770051]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26070, 1017, 107, 3, 70, "Input",ExpressionUUID->"5d616943-aac1-4fe3-9543-d86245878c5a",
+ CellID->1230150297],
+Cell[26180, 1022, 136, 4, 70, "Output",ExpressionUUID->"a2b40f98-91ed-45d8-9425-888d911af187",
+ CellID->2005048219]
+}, Open  ]],
+Cell[26331, 1029, 188, 4, 70, "ExampleText",ExpressionUUID->"c9fc941b-ea87-40d2-bde6-bec7c6f0ceb6",
+ CellID->1795167308],
+Cell[CellGroupData[{
+Cell[26544, 1037, 303, 10, 70, "Input",ExpressionUUID->"041b9e4e-6a47-461a-9f41-99532a98f1dc",
+ CellID->586943959],
+Cell[26850, 1049, 3169, 132, 70, "Output",ExpressionUUID->"92e70b80-3ad9-4f57-9dde-164c67070d2d",
+ CellID->1488992073]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30056, 1186, 108, 3, 70, "Input",ExpressionUUID->"22e5f571-ca98-4b4a-9d38-cb5afb893efb",
+ CellID->357033017],
+Cell[30167, 1191, 214, 6, 70, "Output",ExpressionUUID->"33f0d377-4ef8-42de-af7d-092de15a5afe",
+ CellID->560126019]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30418, 1202, 108, 3, 70, "Input",ExpressionUUID->"c4b9f3ff-ac62-4f26-97be-fd64845e736e",
+ CellID->1332936892],
+Cell[30529, 1207, 209, 6, 70, "Output",ExpressionUUID->"0ddb94fd-1139-49d3-9ab9-c8e541cf1cb0",
+ CellID->1411944109]
+}, Open  ]]
+}, Open  ]],
+Cell[30765, 1217, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"8add45ff-b7b6-4fe4-ae35-be837f3eeafd"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[30833, 1222, 149, 7, 70, "SeeAlsoSection",ExpressionUUID->"4fe0806b-1f44-4a00-8594-d112d1e38e7a",
  CellID->249603891],
-Cell[13818, 472, 894, 28, 70, "SeeAlso",ExpressionUUID->"46d6c8db-a6c3-4284-a783-eb493d6eb007",
+Cell[30985, 1231, 1849, 58, 70, "SeeAlso",ExpressionUUID->"15f4b13a-38b3-44ca-b1cf-2f76e87826a4",
  CellID->1057033446]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[14749, 505, 159, 7, 70, "RelatedLinksSection",ExpressionUUID->"bd3fd127-e43f-401a-837f-71c01107d4e2",
+Cell[32871, 1294, 159, 7, 70, "RelatedLinksSection",ExpressionUUID->"09976d1f-5a75-4b21-9674-c5f6c3d6c9bd",
  CellID->681968736],
-Cell[14911, 514, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"cf6d47d9-be4a-4d36-a1cc-b7e3f895422d"],
-Cell[14945, 516, 278, 10, 70, "RelatedLinks",ExpressionUUID->"6a7e31d8-1ed6-4575-a923-d887d6d0f2da",
+Cell[33033, 1303, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"f6747511-6976-4973-bf3f-5e14079d0a7d"],
+Cell[33067, 1305, 278, 10, 70, "RelatedLinks",ExpressionUUID->"0fe32965-991c-468d-8c4e-35563b9aa083",
  CellID->728321913]
 }, Open  ]],
-Cell[15238, 529, 23, 0, 70, "FooterCell",ExpressionUUID->"ddca20a1-7b7a-469a-9fee-5458de39ca12"]
+Cell[33360, 1318, 23, 0, 70, "FooterCell",ExpressionUUID->"647b7d50-c57d-4758-9de5-cd08d5b55c09"]
 }
 ]
 *)

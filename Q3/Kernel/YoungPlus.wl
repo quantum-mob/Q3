@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.4 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-09 13:03:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.5 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-05 11:05:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -30,7 +30,7 @@ NTranspDecomp::usage="NTranspDecomp[pi_?PermutationListQ] represents pi as produ
 ExpandNTrDecom::usage="ExpandNTrDecom[ntr_List] is the inverse operation of NTranspDecomp."
 
 
-InvariantYMetric::usage="InvariantYMetric[\[Lambda]_?IntegerPartitionQ] is the scalar product invariant under Young's natural presentation corresponding to the integer partition \[Lambda]."
+InvariantYMetric::usage="InvariantYMetric[\[Lambda]_?YoungShapeQ] is the scalar product invariant under Young's natural presentation corresponding to the integer partition \[Lambda]."
 
 
 CoxeterTest::usage="CoxeterTest[ynr_] applied to the matrices of Young's natural representation checks whether these matrices satisfy Coxeter's relations, as they must. So unless you tamper with the definitions this function should always return TRUE."
@@ -39,28 +39,28 @@ CoxeterTest::usage="CoxeterTest[ynr_] applied to the matrices of Young's natural
 YnrCharacterTest::usage="YnrCharacterTest[ynr_,\[Lambda]_] applied to the matrices of Young's natural representation corresponding to the integer partition \[Lambda] computes the character and compares it to the relevant entry in the character table. So unless you tamper with the definitions this function should always return TRUE. A complete test would be for instance: \[IndentingNewLine]testPartition=RandomPartition[5];\[IndentingNewLine]testYnr=YoungsNaturalRepresentation[testPartition];\[IndentingNewLine]CoxeterTest[testYnr]&&YnrCharacterTest[testYnr,testPartition]"
 
 
-WeakLeftBruhatGraph::usage="WeakLeftBruhatGraph[\[Lambda]_?IntegerPartitionQ] Construct weak left Bruhat graph of standard tableaux.
+WeakLeftBruhatGraph::usage="WeakLeftBruhatGraph[\[Lambda]_?YoungShapeQ] Construct weak left Bruhat graph of standard tableaux.
 Start with rowwise ordered tableau (observe that it is smallest with respect to weak left Bruhat ordering) and then do breadth first algorithm.
 Output is a record with two components; first is the list of stanard tableaux.
 Second is the list of weighted edges, where weight i means that the transposition (i,i+1) the first connected tableau to the second. The edges are given as three component record with the first two components denoting the indices of the connected tableaux and the third record the weight."
 
 
-Seminormal2Natural::usage="Seminormal2natural[\[Lambda]_?IntegerPartitionQ] The transformation matrix turning the seminormal presentation into the natural presentation. Each row vector is the expansion of a natural basis vector in terms of the seminormal basis vectors."
+Seminormal2Natural::usage="Seminormal2natural[\[Lambda]_?YoungShapeQ] The transformation matrix turning the seminormal presentation into the natural presentation. Each row vector is the expansion of a natural basis vector in terms of the seminormal basis vectors."
 
 
 NormSquareOfTableau::usage="NormSquareOfTableau[myTableau_] computes the norm squares of the seminormal basis vectors."
 
 
-YoungsNaturalRepresentation::usage="YoungsNaturalRepresentation[\[Lambda]_?IntegerPartitionQ] computes the matrices of Young's natural representation of the symmetric group corresponding to the integer partition \[Lambda] by transforming the seminormal representation. The function returns the images of the transpositions of immediate neighbors, listed in order of the transposed elements. The matrices are supposed to operate from the right on row vectors."
+YoungsNaturalRepresentation::usage="YoungsNaturalRepresentation[\[Lambda]_?YoungShapeQ] computes the matrices of Young's natural representation of the symmetric group corresponding to the integer partition \[Lambda] by transforming the seminormal representation. The function returns the images of the transpositions of immediate neighbors, listed in order of the transposed elements. The matrices are supposed to operate from the right on row vectors."
 
 
-YoungsSeminormalRepresentation::usage="YoungsSeminormalRepresentation[\[Lambda]_?IntegerPartitionQ] computes the matrices of Young's seminormal representation of the symmetric group corresponding to the integer partition \[Lambda]. The function returns the images of the transpositions of immediate neighbors, listed in order of the transposed elements. The matrices are supposed to operate from the right on row vectors."
+YoungsSeminormalRepresentation::usage="YoungsSeminormalRepresentation[\[Lambda]_?YoungShapeQ] computes the matrices of Young's seminormal representation of the symmetric group corresponding to the integer partition \[Lambda]. The function returns the images of the transpositions of immediate neighbors, listed in order of the transposed elements. The matrices are supposed to operate from the right on row vectors."
 
 
-YoungsNaturalReprValue::usage="YoungsNaturalReprValue[\[Lambda]_?IntegerPartitionQ,pi_?PermutationListQ] is the matrix assigned to permutation \[Pi] by Young's natural representation corresponding to partition \[Lambda]."
+YoungsNaturalReprValue::usage="YoungsNaturalReprValue[\[Lambda]_?YoungShapeQ,pi_?PermutationListQ] is the matrix assigned to permutation \[Pi] by Young's natural representation corresponding to partition \[Lambda]."
 
 
-YoungsSeminormalReprValue::usage="YoungsSeminormalReprValue[\[Lambda]_?IntegerPartitionQ,pi_?PermutationListQ] is the matrix assigned to permutation \[Pi] by Young's seminormal representation corresponding to partition \[Lambda]."
+YoungsSeminormalReprValue::usage="YoungsSeminormalReprValue[\[Lambda]_?YoungShapeQ,pi_?PermutationListQ] is the matrix assigned to permutation \[Pi] by Young's seminormal representation corresponding to partition \[Lambda]."
 
 
 Begin["`Private`"]
@@ -82,13 +82,13 @@ And@@Flatten[Table[ynr[[r]].ynr[[s]]==ynr[[s]].ynr[[r]],
 {r,Length[ynr]-2},{s,r+2,Length[ynr]}]]];
 
 
-Seminormal2Natural[\[Lambda]_?IntegerPartitionQ]:=youngAuxiliary[\[Lambda],1]/; Total[\[Lambda]]>1
+Seminormal2Natural[\[Lambda]_?YoungShapeQ]:=youngAuxiliary[\[Lambda],1]/; Total[\[Lambda]]>1
 
 
-YoungsNaturalRepresentation[\[Lambda]_?IntegerPartitionQ]:=youngAuxiliary[\[Lambda],2]/; Total[\[Lambda]]>1
+YoungsNaturalRepresentation[\[Lambda]_?YoungShapeQ]:=youngAuxiliary[\[Lambda],2]/; Total[\[Lambda]]>1
 
 
-YoungsSeminormalRepresentation[\[Lambda]_?IntegerPartitionQ]:=youngAuxiliary[\[Lambda],3]/; Total[\[Lambda]]>1
+YoungsSeminormalRepresentation[\[Lambda]_?YoungShapeQ]:=youngAuxiliary[\[Lambda],3]/; Total[\[Lambda]]>1
 
 
 NormSquareOfTableau[myTableau_] := With[
@@ -100,10 +100,10 @@ NormSquareOfTableau[myTableau_] := With[
   {j2,j1,Length[trshape]},{i2,1,Part[trshape,j2]}]
  ]
 
-YoungsNaturalReprValue[pp_?IntegerPartitionQ,pi_?PermutationListQ]:=If[pi==Range[Total[pp]],IdentityMatrix[CountYoungTableaux[pp]],Dot@@Extract[YoungsNaturalRepresentation[pp],Partition[NTranspDecomp[pi],1]]]/;Total[pp]==Length[pi];
+YoungsNaturalReprValue[pp_?YoungShapeQ,pi_?PermutationListQ]:=If[pi==Range[Total[pp]],IdentityMatrix[CountYoungTableaux[pp]],Dot@@Extract[YoungsNaturalRepresentation[pp],Partition[NTranspDecomp[pi],1]]]/;Total[pp]==Length[pi];
 
 
-YoungsSeminormalReprValue[pp_?IntegerPartitionQ,pi_?PermutationListQ] := If[
+YoungsSeminormalReprValue[pp_?YoungShapeQ,pi_?PermutationListQ] := If[
   pi==Range[Total[pp]],
   IdentityMatrix[CountYoungTableaux[pp]],
   Dot @@ Extract[
@@ -113,7 +113,7 @@ YoungsSeminormalReprValue[pp_?IntegerPartitionQ,pi_?PermutationListQ] := If[
  ] /; Total[pp]==Length[pi];
 
 
-cTypeRepresentative[\[Lambda]_?IntegerPartitionQ]:=
+cTypeRepresentative[\[Lambda]_?YoungShapeQ]:=
 Flatten[Apply[Range,Transpose[{Prepend[Drop[#,-1]+1,1],#-1}],{1}]]&[Accumulate[\[Lambda]]];
 
 
@@ -132,7 +132,7 @@ YnrCharacterTest[ynr_,\[Lambda]_]:=(
  );
 
 
-InvariantYMetric[\[Lambda]_?IntegerPartitionQ]:=
+InvariantYMetric[\[Lambda]_?YoungShapeQ]:=
 With[{wlbg1=WeakLeftBruhatGraph[\[Lambda]],
 transform=Seminormal2Natural[\[Lambda]]},
 Times@@Factorial/@YoungTranspose[\[Lambda]]transform.DiagonalMatrix[NormSquareOfTableau/@First/@wlbg1].Transpose[transform]];
@@ -149,11 +149,11 @@ First/@invPListList],
 (Part[#1,1]==Part[#2,1])&]];
 
 
-rowWiseInvPList[\[Lambda]_?IntegerPartitionQ]:=
+rowWiseInvPList[\[Lambda]_?YoungShapeQ]:=
 PermutationList[System`InversePermutation[PermutationCycles[Join@@YoungTranspose[(Range@@#)&/@Drop[FoldList[{1+Last[#1],#2+Last[#1]}&,{0,0},\[Lambda]],1]]]],Total[\[Lambda]]];
 
 
-WeakLeftBruhatGraph[\[Lambda]_?IntegerPartitionQ]:=
+WeakLeftBruhatGraph[\[Lambda]_?YoungShapeQ]:=
 With[{x=rowWiseInvPList[\[Lambda]],n=Total[\[Lambda]],
 shape=Drop[FoldList[{1+Last[#1],#2+Last[#1]}&,{0,0},YoungTranspose[\[Lambda]]],1]},
 Function[v,{YoungTranspose[Function[w,Take[PermutationList[System`InversePermutation[PermutationCycles[Part[v,1]]],n],w]]/@shape],

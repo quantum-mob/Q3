@@ -8,15 +8,19 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.47 $"][[2]], " (",
-  StringSplit["$Date: 2021-11-30 07:00:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.58 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-05 11:49:22+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ YoungTableauQ, YoungTableaux, CountYoungTableaux,
+{ YoungDiagram, FerrersDiagram,
+  YoungShape, YoungShapeQ };
+
+{ YoungTranspose, YoungTrim };
+
+{ YoungTableauQ, YoungTableauForm, YoungTableaux, CountYoungTableaux,
   NextYoungTableau, LastYoungTableau, FirstYoungTableau,
-  YoungTranspose, YoungShape,
-  IntegerPartitionQ, IntegerPartitionTrim };
+  YoungTranspose };
 
 { GroupClassSize, SymmetricGroupClassSize,
   GroupCentralizerSize, SymmetricGroupCentralizerSize,
@@ -30,25 +34,35 @@ BeginPackage["Q3`"];
 
 Begin["`Private`"]
 
-IntegerPartitionQ::usage="IntegerPartitionQ[shape] is true if and only if shape is an integer partition, arranged in decreasing order."
+YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
 
-IntegerPartitionQ[_] = False
+YoungDiagram[shape_?YoungShapeQ] :=
+  YoungTableauForm @ Map[Table[" ", #]&, YoungTrim @ shape]
 
-IntegerPartitionQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
+FerrersDiagram[shape_?YoungShapeQ] :=
+  Grid @ Map[Table["\[FilledCircle]", #]&, shape]
+
+
+YoungShapeQ::usage="YoungShapeQ[shape] returns True if and only if shape is an integer partition, arranged in non-increasing order.\nA Young shape defines a Young diagram."
+
+YoungShapeQ[_] = False
+
+YoungShapeQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
 (* NOTE: Must allow 0 since some functions uses 0 in shape specification. *)
 
 
-IntegerPartitionTrim::usage="IntegerPartitionTrim[shape] trims trailing zeros from shape."
+YoungTrim::usage="YoungTrim[shape] trims trailing zeros from shape."
 
-IntegerPartitionTrim[{kk__, Longest[0 ..]}] := {kk} /; 
-  IntegerPartitionQ[{kk}]
+YoungTrim[{kk__, Longest[0...]}] := {kk} /; 
+  YoungShapeQ[{kk}]
 
-IntegerPartitionTrim[p_?IntegerPartitionQ] := p
+YoungTrim[{rows__List, Longest[{}...]}] := {rows} /;
+  anyYoungTableauQ[{rows}]
 
 
 YoungTranspose::usage = "YoungTranspose[shape] reflects a partition 'shape' along the main diagonal.\nTransposeTableau[tb] reflects a standard Young tableau 'tb' along the main diagonal, creating a different tableau."
 
-YoungTranspose[shape_?IntegerPartitionQ] := Module[
+YoungTranspose[shape_?YoungShapeQ] := Module[
   { y },
   Table[
     First @ Last @ Position[shape, x_/;x>=y],
@@ -56,25 +70,23 @@ YoungTranspose[shape_?IntegerPartitionQ] := Module[
    ]
  ]
 
-YoungTranspose[tb:{{__Integer}..}] := Module[
+YoungTranspose[tb_?anyYoungTableauQ] := Module[
   { new = YoungTranspose[Length /@ tb],
     i, j },
   Table[Part[tb, j, i], {i, Length[new]}, {j, Part[new,i]}]
  ]
-(* NOTE 1: Cannot use tb_?YoungTableauQ since YoungTableauQ itself calls
-   YoungTranspose. It would cause $RecursionsLimit::reclim2 error.
-   NOTE 2: tb does not need to be a semi-standard Young tableau. Any
-   Young-like tableau is allowed. This is useful in Schur transform. *)
+(* NOTE: tb does not need to be a semi-standard Young tableau. Any Young-like
+   tableau is allowed. This is useful in Schur transform. *)
 
 
 YoungShape::usage = "YoungShape[tb] returns the shape, i.e., the integer partition of Young tableau tb."
 
-YoungShape[tb_?YoungTableauQ] := Length /@ tb
+YoungShape[tb_?anyYoungTableauQ] := Length /@ tb
 
 
 CountYoungTableaux::usage = "CountYoungTableaux[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nCountYoungTableaux[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
 
-CountYoungTableaux[pp_?IntegerPartitionQ] := Module[
+CountYoungTableaux[pp_?YoungShapeQ] := Module[
   { qq = YoungTranspose[pp],
     j, k },
   Factorial[Total @ pp] /
@@ -89,7 +101,7 @@ CountYoungTableaux[n_Integer] :=
   Total @ Map[CountYoungTableaux, IntegerPartitions @ n]
 
 
-nextPartition[pp_?IntegerPartitionQ] := Module[
+nextPartition[pp_?YoungShapeQ] := Module[
   { i = First @ Last @ Position[pp, x_/;x>1],
     k = Length[pp],
     j, qr},
@@ -102,7 +114,7 @@ nextPartition[pp_?IntegerPartitionQ] := Module[
    ]
  ] /; AnyTrue[pp, #>1&]
 
-nextPartition[pp_?IntegerPartitionQ] := {Total @ pp} /; AllTrue[pp, #==1&]
+nextPartition[pp_?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
 (* Convention: at the last partition we cycle back to the first one. *)
 
 
@@ -114,11 +126,11 @@ GroupCharacters::usage = "GroupCharaters[group] returns the table of characters 
 GroupCharacters[SymmetricGroup[n_Integer]] :=
   SymmetricGroupCharacters[n] /; n > 0
 
-GroupCharacters[SymmetricGroup[n_Integer], irr_?IntegerPartitionQ] :=
+GroupCharacters[SymmetricGroup[n_Integer], irr_?YoungShapeQ] :=
   SymmetricGroupCharacters[irr] /; Total[irr] == n
 
 GroupCharacters[SymmetricGroup[n_Integer],
-  irr_?IntegerPartitionQ, class_?IntegerPartitionQ] :=
+  irr_?YoungShapeQ, class_?YoungShapeQ] :=
   SymmetricGroupCharacters[irr, class] /;
   Total[irr] == Total[class] == n
 
@@ -133,23 +145,23 @@ SymmetricGroupCharacters[n_Integer] := Module[
   Orthogonalize[vecs, ((#1/wght) . #2)&, Method -> "GramSchmidt"]
  ]
 
-SymmetricGroupCharacters[irr_?IntegerPartitionQ] :=
+SymmetricGroupCharacters[irr_?YoungShapeQ] :=
   characterSymmetricGroup[irr, #]& /@ IntegerPartitions[Total @ irr]  
   
-SymmetricGroupCharacters[irr_?IntegerPartitionQ, class_?IntegerPartitionQ] :=
+SymmetricGroupCharacters[irr_?YoungShapeQ, class_?YoungShapeQ] :=
   characterSymmetricGroup[irr, class]
 
 
 characterSymmetricGroup[{}, {}] := 1; 
 
-characterSymmetricGroup[shape_?IntegerPartitionQ, class_?IntegerPartitionQ] :=
+characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
   CountYoungTableaux[shape] /; And[
     Total[shape] == Total[class],
     Length[class] >= 1,
     First[class] == 1
    ]
 
-characterSymmetricGroup[shape_?IntegerPartitionQ, class_?IntegerPartitionQ] :=
+characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
   With[
     { classmax = First[class],
       class0 = Rest[class],
@@ -182,7 +194,7 @@ characterSymmetricGroup[shape_?IntegerPartitionQ, class_?IntegerPartitionQ] :=
 
 GroupClassSize::usage = "GroupGlassSize[group, class] returns the number of elements in the conjugacy class 'class'."
 
-GroupClassSize[SymmetricGroup[n_Integer], class_?IntegerPartitionQ] :=
+GroupClassSize[SymmetricGroup[n_Integer], class_?YoungShapeQ] :=
   SymmetricGroupClassSize[class] /; n > 0
 
 GroupClassSize[group_, g_] :=
@@ -191,14 +203,14 @@ GroupClassSize[group_, g_] :=
 
 SymmetricGroupClassSize::usage="SymmetricGroupClassSize[class] returns the number of elements in the conjugacy class 'class' in SymmetricGroup[n].\nThe conjugacy class is specified by a partition of integer 'n'.\nThe inverse of SymmetricGroupClassSize[class] = GroupOrder[SymmetricGroup[n]] / SymmetricGroupCentralizerSize[class]; see, e.g., Sagan, The Symmetric Group (Springer, 2001) Section 1.1."
 
-SymmetricGroupClassSize[class_?IntegerPartitionQ] :=
+SymmetricGroupClassSize[class_?YoungShapeQ] :=
   GroupOrder[SymmetricGroup @ Total @ class] /
   SymmetricGroupCentralizerSize[class]
 
 
 GroupCentralizerSize::usage = "GroupCentralizerSize[group, g] returns the number of elements in the conjugacy class containing the element 'g' of the group 'group'."
 
-GroupCentralizerSize[SymmetricGroup[n_Integer], class_?IntegerPartitionQ] :=
+GroupCentralizerSize[SymmetricGroup[n_Integer], class_?YoungShapeQ] :=
   SymmetricGroupCentralizerSize[class] /; n > 0
 
 GroupCentralizerSize[group_, g_] :=
@@ -207,13 +219,13 @@ GroupCentralizerSize[group_, g_] :=
 
 SymmetricGroupCentralizerSize::usage = "SymmetricGroupCentralizerSize[class] returns the size of the centralizer class of an element of cycle type class.\nThe inverse of SymmetricGroupCentralizerSize[class] coincides, up to a factor of the group order, with the size of the conjugacy class; that is, SymmetricGroupCentralizerSize[class] = GroupOrder[SymmetricGroup[n]] / (the size of the class class)."
 
-SymmetricGroupCentralizerSize[class_?IntegerPartitionQ] :=
+SymmetricGroupCentralizerSize[class_?YoungShapeQ] :=
   Apply[Times, Factorial /@ Counts[class]] * Apply[Times, class];
 
 
 CompoundYoungCharacters::usage = "CompoundYoungCharacters[shape] returns the composite Young character corresponding to partition shape."
 
-CompoundYoungCharacters[pp_?IntegerPartitionQ] := Module[
+CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
   { chrVect = Table[0, PartitionsP[Total @ pp]],
     supPartitionTupel = Partition[pp,1],
     hashPositionTupel = Prime[pp],
@@ -281,21 +293,41 @@ CharacterScalarProduct[f_List, g_List, n_Integer] := Total[
   ]
 
 
-YoungTableauQ::usage = "YoungTableauQ[t] yields True if t represents a semi-standard Young tableau."
+YoungTableauQ::usage = "YoungTableauQ[tb] yields True if tb represents a standard Young tableau and False otherwise."
 
 YoungTableauQ[{}] = True
 
-YoungTableauQ[tb:{__List}] := And [
-  Apply[And, LessEqual @@@ tb],
-  Apply[And, Less @@@ YoungTranspose[tb]],
-  Apply[GreaterEqual, Length /@ tb],
-  Apply[GreaterEqual, Length /@ YoungTranspose[tb]]
+YoungTableauQ[tb_?anyYoungTableauQ] := TrueQ[
+  And @@ Join[
+    List[DuplicateFreeQ @ Flatten @ tb],
+    Less @@@ tb,
+    Less @@@ YoungTranspose[tb]
+   ]
  ]
+
+YoungTableauQ[_] = False
+
+anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau and False otherwise."
+
+anyYoungTableauQ[tb:{__List}] := Apply[GreaterEqual, Length /@ tb]
+
+
+YoungTableauForm::usage = "YoungTableauForm[tb] displays Young tableau tb in the conventional form."
+
+YoungTableauForm::notyt = "Data `` is not a Young tableau."
+
+YoungTableauForm[tb_?anyYoungTableauQ] :=
+  Grid @ Map[Item[#, Frame->True]&, tb, {2}]
+
+YoungTableauForm[data_] := (
+  Message[YoungTableauForm::notyt, data];
+  data
+ )
 
 
 YoungTableaux::usage = "YoungTableaux[shape] constructs all standard Young tableaux of 'shape' specified by an integer partition.\nYoungTableaux[n] constructs all standard Young tableaux of rank 'n'."
 
-YoungTableaux[s_?IntegerPartitionQ] :=
+YoungTableaux[s_?YoungShapeQ] :=
   NestList[NextYoungTableau, FirstYoungTableau[s], CountYoungTableaux[s]-1]
 
 YoungTableaux[n_Integer?Positive] :=
@@ -304,12 +336,12 @@ YoungTableaux[n_Integer?Positive] :=
 
 FirstYoungTableau::usage = "FirstYoungTableau[p] constructs the first standard Young tableau with shape described by partition p."
 
-FirstYoungTableau[shape_?IntegerPartitionQ] :=
+FirstYoungTableau[shape_?YoungShapeQ] :=
   YoungTranspose @ LastYoungTableau @ YoungTranspose[shape]
 
 LastYoungTableau::usage = "LastYoungTableau[p] constructs the last Young tableau with shape described by partition p."
 
-LastYoungTableau[shape_?IntegerPartitionQ] :=
+LastYoungTableau[shape_?YoungShapeQ] :=
   FoldPairList[TakeDrop, Range[Total @ shape], shape]
 
 
