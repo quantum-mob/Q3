@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.0.2
+
+- More detailed explanations on the Schur transform.
+
 ## v2.0.0
 
 - Q3`Schur` package for Schur transform.
