@@ -1,5 +1,12 @@
 # Select Release Notes
 
+## v2.0.3
+
+- The order of input arguments of SchurBasis and DualSchurBasis has been reversed.
+- DualSchurBasis is merged into SchurBasis.
+- Improved performance of SchurBasis.
+- The data structure of the output of SchurBasis has been changed.
+
 ## v2.0.2
 
 - More detailed explanations on the Schur transform.

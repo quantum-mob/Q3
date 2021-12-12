@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.20 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-04 18:42:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.21 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-11 12:12:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -236,13 +236,13 @@ SpinHalfQ[_] = False
 
 Spins::usage = "Spins[expr] gives the list of all Spins appearing in expr."
 
-Spins[ expr_ ] := FlavorNone @ Union @ Map[Most] @
-  Cases[ { expr /. {Association->List} }, _?SpinQ, Infinity ]
-(* NOTE 1: The outermost { } are necessary around expr; otherwise, it does not
-   give the trivial result. *)
-(* NOTE 2: Normal[{expr}, Association] does not convert nested Association[]s;
-   i.e., Association[ ... Association[] ...]. This is due to HoldAllComplete
-   Attribute of Association. *)
+Spins[expr_] :=
+  Union @ FlavorMute @ Cases[List @ expr, _?SpinQ, Infinity] /;
+  FreeQ[expr, _Association]
+
+Spins[expr_] := Spins[Normal @ expr]
+(* NOTE: This recursion is necessary since Association inside Association is
+   not expanded by a single Normal. *)
 
 
 (* SpinForm *)

@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.58 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-05 11:49:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.59 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-11 10:38:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -18,7 +18,7 @@ BeginPackage["Q3`"];
 
 { YoungTranspose, YoungTrim };
 
-{ YoungTableauQ, YoungTableauForm, YoungTableaux, CountYoungTableaux,
+{ YoungTableauQ, YoungTableaux, CountYoungTableaux, YoungForm, 
   NextYoungTableau, LastYoungTableau, FirstYoungTableau,
   YoungTranspose };
 
@@ -37,7 +37,7 @@ Begin["`Private`"]
 YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
 
 YoungDiagram[shape_?YoungShapeQ] :=
-  YoungTableauForm @ Map[Table[" ", #]&, YoungTrim @ shape]
+  YoungForm @ Map[Table[" ", #]&, YoungTrim @ shape]
 
 FerrersDiagram[shape_?YoungShapeQ] :=
   Grid @ Map[Table["\[FilledCircle]", #]&, shape]
@@ -312,15 +312,15 @@ anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Y
 anyYoungTableauQ[tb:{__List}] := Apply[GreaterEqual, Length /@ tb]
 
 
-YoungTableauForm::usage = "YoungTableauForm[tb] displays Young tableau tb in the conventional form."
+YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional form."
 
-YoungTableauForm::notyt = "Data `` is not a Young tableau."
+YoungForm::notyt = "Data `` is not a Young tableau."
 
-YoungTableauForm[tb_?anyYoungTableauQ] :=
+YoungForm[tb_?anyYoungTableauQ] :=
   Grid @ Map[Item[#, Frame->True]&, tb, {2}]
 
-YoungTableauForm[data_] := (
-  Message[YoungTableauForm::notyt, data];
+YoungForm[data_] := (
+  Message[YoungForm::notyt, data];
   data
  )
 

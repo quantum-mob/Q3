@@ -4,14 +4,14 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.58 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-08 00:41:39+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.85 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-11 11:50:39+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { RSKMap };
 
-{ GelfandPatterns, GelfandPatternQ, GelfandPatternForm,
+{ GelfandPatterns, GelfandPatternQ, GelfandForm,
   ToYoungTableau, ToGelfandPattern };
 
 { WeylTableaux, CountWeylTableaux, WeylTableauQ };
@@ -20,9 +20,7 @@ BeginPackage["Q3`"];
 
 { PartialHook, GZtoMatrix };
 
-{ SchurBasisQ, SchurBasis, NextSchurBasis, NextIrreducibleLabels };
-
-{ DualSchurBasis, RelabelSchurBasis };
+{ SchurBasisQ, SchurBasis, NextSchurLabels, NextGelfandYoungPatterns };
 
 
 Begin["`Private`"]
@@ -68,34 +66,22 @@ anyGelfandPatternQ[tb_] :=
 (**** </GelfandPatternQ> ****)
 
 
-(**** <GelfandPatternForm> ****)
+(**** <GelfandForm> ****)
 
-GelfandPatternForm::usage = "GelfandPatternForm[tb] displays Gelfand pattern tb in the upper-left triangluar form."
+GelfandForm::usage = "GelfandForm[tb] displays Gelfand pattern tb in the upper-left triangluar form."
 
-GelfandPatternForm::notyt = "Data `` is not of Gelfand-pattern form."
+GelfandForm::notyt = "Data `` is not of Gelfand-pattern form."
 
-(* This is the conventional form. *)
-(*
-GelfandPatternForm[tb_?anyGelfandPatternQ] := DisplayForm @ RowBox @ {
-  "(",
-  Grid[
-    MapIndexed[ArrayPad[#1, #2-1, Null]&, Map[Riffle[#, Null]&, tb]],
-    Spacings -> {0, 0.5}
-   ],
-  ")"
- }
- *)
-
-GelfandPatternForm[tb_?anyGelfandPatternQ] := DisplayForm @ RowBox @ {
+GelfandForm[tb_?anyGelfandPatternQ] := DisplayForm @ RowBox @ {
   "(", Grid[tb, Spacings -> {0.5, 0}], ")"
  }
 
-GelfandPatternForm[data_] := (
-  Message[GelfandPatternForm::notyt, data];
+GelfandForm[data_] := (
+  Message[GelfandForm::notyt, data];
   data
  )
 
-(**** </GelfandPatternForm> ****)
+(**** </GelfandForm> ****)
 
 
 (**** <WeylTableaux> ****)
@@ -150,18 +136,20 @@ ToYoungTableau[tb_?GelfandPatternQ] := Module[
  ]
 
 
-ToGelfandPattern::usage = "ToGelfandPattern[tbl, n] converts a semi-standard Young tableau tbl to the corresponding Gelfand pattern of n letters."
+ToGelfandPattern::usage = "ToGelfandPattern[tbl, n] converts a semi-standard Young tableau tbl to the corresponding Gelfand pattern of n letters.\nToGelfandPattern[n] represents an operation form."
 
 ToGelfandPattern::onearg = "ToGelfandPattern requires two arguments. `` is assumed for the second argument."
+
+ToGelfandPattern[n_Integer][tb_?WeylTableauQ] := ToGelfandPattern[tb, n]
 
 ToGelfandPattern[{}, 1] := { {0} }
 
 ToGelfandPattern[tb_?WeylTableauQ, 1] := { Length /@ tb }
 
 ToGelfandPattern[tb_?WeylTableauQ, n_Integer] := Prepend[
-    ToGelfandPattern[YoungTrim @ DeleteCases[tb, n, {2}], n-1],
-    PadRight[Length /@ tb, n]
-   ]
+  ToGelfandPattern[YoungTrim @ DeleteCases[tb, n, {2}], n-1],
+  PadRight[Length /@ tb, n]
+ ]
 
 ToGelfandPattern[tb_?WeylTableauQ] := With[
   { n = Max[tb] },
@@ -308,116 +296,83 @@ ClebschGordanX[in_?GelfandPatternQ, s_Integer, out_?GelfandPatternQ] :=
 (**** </ClebschGordanX> ****)
 
 
+(**** <SchurBasis> ****)
+
 SchurBasisQ::usage = "SchurBasis[obj] returns True obj is an Schur basis."
 
-HoldPattern @ SchurBasisQ[bs:Association[(_?GelfandPatternQ -> _List)..]] :=
-  Module[
-    { kk = Keys @ bs },
-    If[ Equal @@ Map[Length, kk], True, False, False ]
-   ]
+HoldPattern @ SchurBasisQ[
+  bs:Association[({_?GelfandPatternQ, _?GelfandPatternQ} -> _)..]
+ ] := Apply[ And, Equal @@@ Map[Length, Transpose @ Keys[bs], {2}] ]
 
 SchurBasisQ[_] = False
 
 
-(**** <SchurBasis> ****)
-
-SchurBasis::usage = "SchurBasis[d, n] constructs the Schur basis for a system of n particles with d-dimensional Hilbert space.\nSchurBasis[{q1, q2, \[Ellipsis], qn}] is equivalent to SchurBasis[d, n] with d = Dimension[q1] = Dimension[q2] = \[Ellipsis] = Dimension[qn] but the states are expressed in terms of labelled species."
+SchurBasis::usage = "SchurBasis[n, d] constructs the Schur basis for a system of n particles with d-dimensional Hilbert space.\nSchurBasis[{q1, q2, \[Ellipsis], qn}] is equivalent to SchurBasis[d, n] with d = Dimension[q1] = Dimension[q2] = \[Ellipsis] = Dimension[qn] but the states are expressed in terms of labelled species {q1, q2, \[Ellipsis]}."
 
 SchurBasis::dimen = "Non-identical dimensions ``. All the dimensions of the Hilbert spaces associated with the systems should be the same."
   
-SchurBasis[d_Integer, n_Integer] := Nest[
-  NextSchurBasis[#, d]&,
-  Association[{{1}} -> Map[Ket, Range @ d]],
-  n-1
+SchurBasis[1, d_Integer] := AssociationThread @ Rule[
+  Tuples @ {GelfandPatterns[{1}, 1], GelfandPatterns[{1}, d]},
+  Basis @ {d}
  ]
 
-SchurBasis[qq:{__?QubitQ}] := Module[
-  { n = Length @ qq,
-    bs },
-  bs = SchurBasis[2, n];
-  Association[ Normal[bs] /. { Ket[ss__] :> Ket[qq -> {ss}-1] } ]
+SchurBasis[n_Integer, d_Integer] :=
+  Nest[SchurBasis[#, d]&, SchurBasis[1, d], n-1]
+
+
+SchurBasis[S_?SpeciesQ] := AssociationThread @ Rule[
+  Tuples @ {GelfandPatterns[{1}, 1], GelfandPatterns[{1}, Dimension @ S]},
+  Basis[S]
  ]
 
-SchurBasis[qq:{__?QuditQ}] := Module[
-  { n = Length @ qq,
-    d = Dimension @ qq,
-    bs },
-  If[ Equal @@ d, d = First[d],
-    Message[SchurBasis::dimen, d];
-    Return[{}]
-   ];
-  bs = SchurBasis[d, n];
-  Association[ Normal[bs] /. { Ket[ss__] :> Ket[qq -> {ss}-1] } ]
- ]
+SchurBasis[qq:{__?SpeciesQ}] :=
+    Fold[SchurBasis, SchurBasis[First @ qq], Rest @ qq]
   
 
-NextSchurBasis::usage = "NextSchurBasis[bs, n] constructs an irreducible basis for the enlarged system with one more node of n letters by using the Bacon-Chuang-Harrow algorithm."
+SchurBasis[bs_?SchurBasisQ, spec:(_Integer|_?SpeciesQ)] := With[
+  { node = Basis @ {spec} },
+  Join @@ KeyValueMap[nextSchurBasis[#1, #2, node]&, regroupSchurBasis @ bs]
+ ]
+  
+nextSchurBasis[yt_?GelfandPatternQ, bs_Association, node_List] := Module[
+  { d = Length @ node,
+    src, dst, mat, tsr },
+  src = Tuples @ {Keys[bs], Range[d]};
+  dst = NextSchurLabels[yt, d];
+  mat = SparseArray @ Outer[ClebschGordanX, src, Last @ Transpose @ dst, 1];
 
-NextSchurBasis[bs_?SchurBasisQ, d_Integer] :=
-  Join @@ KeyValueMap[NextSchurBasis[#1, #2, d]&, bs]
-
-NextSchurBasis[tb_?GelfandPatternQ, bs_List, d_Integer] := Module[
-  { tsr, dst, mat, new },
-  tsr = GelfandPatterns[First @ tb, d];
-  tsr = Tuples @ {tsr, Range[d]};
-  
-  dst = NextIrreducibleLabels[tb, d];
-  mat = matSchurTransform[#, tsr]& /@ dst;
-  
-  tsr = CircleTimes @@@ Tuples[{bs, Ket /@ Range[d]}];
-  
-  new = Garner @ Map[(tsr.#)&, mat];
-  AssociationThread[dst -> new]
+  tsr = Flatten @ Outer[CircleTimes, Values[bs], node, 1];
+  AssociationThread[dst -> Garner[tsr . mat]]
+ ]
+          
+regroupSchurBasis[bs_Association] := Merge[
+  KeyValueMap[(First[#1] -> Rule[Last[#1], #2])&, bs],
+  Association
  ]
 
-matSchurTransform[dst_?GelfandPatternQ, tsr_List] := Module[
-  { d = Length[First @ First @ tsr],
-    lbl },
-  lbl = GelfandPatterns[First @ dst, d];
-  Outer[ClebschGordanX, tsr, lbl, 1]
- ]
 
-NextIrreducibleLabels::usage = "NextIrreducibleLabels[tb, n] returns new Gelfand patterns when one adds a node of n letters to the existing representation specified by Gelfand pattern tb. Each of the resulting Gelfand patterns refers uniquely to an irreducible representation of both U(n) and S(N), where N = Length[tb] + 1."
+NextSchurLabels::usage = "NextSchurLabels[syt, n] returns a list of pairs {yt, wt} of Gelfand patterns that are allowed to arise when one adds a node of n letters to the existing representation specified by Gelfand pattern syt. Each of the resulting pairs refers uniquely an element of the Schur basis for U(n) and S(N) where N = Length[syt] + 1."
 
-NextIrreducibleLabels[tb_?GelfandPatternQ, d_Integer] := Module[
-  { L = Length[tb] + 1,
+NextSchurLabels[d_Integer][syt_?GelfandPatternQ] :=
+  NextSchurLabels[syt, d]
+          
+NextSchurLabels[syt_?GelfandPatternQ, d_Integer] := 
+  Join @@ Map[
+    Tuples[{List @ #, GelfandPatterns[First @ #, d]}]&,
+    NextGelfandYoungPatterns[syt, d]
+   ]
+
+NextGelfandYoungPatterns::usage = "NextGelfandYoungPatterns[yt, d] generates a list of new Gelfand-Young patterns that may arise when one adds a node of d-dimensional Hilbert space to the existing irreducible space associated with Gelfand-Young pattern yt."
+
+NextGelfandYoungPatterns[syt_?GelfandPatternQ, d_Integer] := Module[
+  { L = Length[syt] + 1,
     new },
-  new = PadRight[First @ tb, L];
+  new = PadRight[First @ syt, L];
   new = Table[new + UnitVector[L, j], {j, 1, Min @ {d, L}}];
-  Map[Prepend[tb, #]&, Select[new, YoungShapeQ]]
+  Map[Prepend[syt, #]&, Select[new, YoungShapeQ]]
  ]
 
 (**** </SchurBasis> ****)
-
-
-(**** <DualSchurBasis> ****)
-
-DualSchurBasis::usage = "DualSchurBasis[d, n] constructs the dual Schur basis for a system of n particles with d-dimensional Hilbert space."
-
-DualSchurBasis[args__] := RelabelSchurBasis @ SchurBasis[args]
-
-DualSchurBasis[d_Integer, n_Integer] :=
-  RelabelSchurBasis[SchurBasis[d, n], d]
-
-DualSchurBasis[qq:{__?QubitQ}] := 
-  RelabelSchurBasis[SchurBasis @ qq, 2]
-
-DualSchurBasis[qq:{__?QuditQ}] :=
-  RelabelSchurBasis[SchurBasis @ qq, Dimension @ First @ qq]
-
-
-RelabelSchurBasis::usage = "RelabelSchurBasis[bs, d] regroups the elements in Schur basis bs so that irreducible bases are labelled by Weyl tableaux (i.e, semi-standard Young tableaux), or more precisely, the Gelfand patterns corresponding to them."
-
-RelabelSchurBasis[bs_?SchurBasisQ, d_Integer] :=
-  Merge[KeyValueMap[RelabelSchurBasis[d], bs], Union]
-
-RelabelSchurBasis[d_Integer][gz_?GelfandPatternQ, bs_List] := Module[
-  { new },
-  new = GelfandPatterns[First @ gz, d];
-  Association @ MapThread[Rule, {new, bs}]
- ]
-
-(**** </DualSchurBasis> ****)
 
 
 End[]

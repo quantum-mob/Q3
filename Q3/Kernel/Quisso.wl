@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.82 $"][[2]], " (",
-  StringSplit["$Date: 2021-11-23 17:47:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.84 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-11 12:11:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -175,13 +175,13 @@ QubitQ[_] = False
 
 Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appearing in expr."
 
-Qubits[ expr_ ] := FlavorNone @ Union @ Map[Most] @
-  Cases[ { Normal[expr, Association] }, _?QubitQ, Infinity ]
-(* NOTE 1: The outermost { } is necessary around expr; otherwise,
-   Qubits[S[1,2]] does not give the trivial result. *)
-(* NOTE 2: Normal[{expr}, Association] is not enough as nested Association[]s
-   are not converted properly. This is due to the HoldAllComplete Attribute of
-   Association. *)
+Qubits[expr_] :=
+  Union @ FlavorMute @ Cases[List @ expr, _?QubitQ, Infinity] /;
+  FreeQ[expr, _Association]
+
+Qubits[expr_] := Qubits[Normal @ expr]
+(* NOTE: This recursion is necessary since Association inside Association is
+   not expanded by a single Normal. *)
 
 
 (**** <Multiply> ****)
@@ -2646,10 +2646,13 @@ Missing["KeyAbsent", _Symbol?QuditQ[___, None]] := 0
 
 Qudits::usage = "Qudits[expr] gives the list of all qudits appearing in expr."
 
-Qudits[ expr_ ] := FlavorNone @ Union @ Map[Most] @
-  Cases[ Normal[{expr}, Association], _?QuditQ, Infinity ]
-(* NOTE: { } are necessary around expr; otherwise, Qudits[S[1,2]] does
-   not give the trivial result. *)
+Qudits[expr_] :=
+  Union @ FlavorMute @ Cases[List @ expr, _?QuditQ, Infinity] /;
+  FreeQ[expr, _Association]
+
+Qudits[expr_] := Qudits[Normal @ expr]
+(* NOTE: This recursion is necessary since Association inside Association is
+   not expanded by a single Normal. *)
 
 
 (* MultiplyDegree for operators *)

@@ -1,0 +1,998 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 12.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     29849,        989]
+NotebookOptionsPosition[     24262,        868]
+NotebookOutlinePosition[     26619,        926]
+CellTagsIndexPosition[     26534,        921]
+WindowTitle->NextSchurLabels
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {Cell["Q3 SYMBOL", "PacletNameCell"], Cell[TextData[{
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "Tutorials",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"Tutorials", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Schur Transform\"\>":>
+       Documentation`HelpLookup["paclet:Q3/tutorial/SchurTransform"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"Tutorials"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "See Also",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"See Also", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"SchurBasis\"\>":>Documentation`HelpLookup[
+       "paclet:Q3/ref/SchurBasis"], "\<\"NextGelfandYoungPatterns\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/NextGelfandYoungPatterns"], "\<\"GelfandPatterns\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/GelfandPatterns"], "\<\"WeylTableaux\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/WeylTableaux"], "\<\"YoungTableaux\"\>":>
+       Documentation`HelpLookup["paclet:Q3/ref/YoungTableaux"]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"SeeAlso"]],
+      LineSpacing->{1.4, 0}],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      ActionMenuBox[
+       FrameBox[
+        InterpretationBox[Cell[TextData[{
+          "URL",
+          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
+           StripOnInput->False]
+         }]],
+         TextCell[
+          Row[{"URL", 
+            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
+        StripOnInput->False], {"\<\"Q3/ref/NextSchurLabels\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/ref/NextSchurLabels"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/ref/NextSchurLabels.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[
+            StringJoin[
+             If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$122783], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"], 
+             "Q3/ref/NextSchurLabels", ".html"]], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"]],
+      LineSpacing->{1.4, 0}]
+    }], "AnchorBar"]}
+  }]], "AnchorBarGrid",
+ CellID->1],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell["NextSchurLabels", "ObjectName"],
+ Cell[BoxData[
+  TemplateBox[{8},
+   "Spacer1"]]],
+ Cell[BoxData[""], "ObjectNameTranslation"]
+}], "ObjectNameGrid"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["NextSchurLabels"]], "paclet:Q3/ref/NextSchurLabels"},
+        "RefLink",
+        BaseStyle->{"InlineFormula"}], "[", 
+       RowBox[{
+        StyleBox["tb", "TI"], ",", 
+        StyleBox["n", "TI"]}], "]"}]], "InlineFormula"],
+     " \[LineSeparator]returns a list of pairs ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        StyleBox["yt", "TI"], ",", 
+        StyleBox["wt", "TI"]}], "}"}]], "InlineFormula"],
+     " of Gelfand-Young and Gelfand-Weyl patterns that may arise when when \
+one adds a node of ",
+     Cell[BoxData[
+      StyleBox["n", "TI"]], "InlineFormula"],
+     " letters to the existing Gelfand-Young pattern ",
+     Cell[BoxData[
+      StyleBox["tb", "TI"]], "InlineFormula"],
+     ". The order of Gelfand-Young pattern ",
+     Cell[BoxData[
+      StyleBox["yt", "TI"]], "InlineFormula"],
+     " is one order higher than ",
+     Cell[BoxData[
+      StyleBox["tb", "TI"]], "InlineFormula"],
+     " while Gelfand-Weyl pattern ",
+     Cell[BoxData[
+      StyleBox["wt", "TI"]], "InlineFormula"],
+     " is of order n."
+    }]]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->1547637990]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    TemplateBox[{6},
+     "Spacer1"]]],
+   "Details"
+  }], "NotesFrameText"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->"Preemptive"]]]], "NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->957510224],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[TextData[{
+ "Each of the resulting pairs Gelfand-Young and Gelfand-Weyl patterns refers \
+a unique element of the Schur basis associated with irreducible \
+representations of ",
+ ButtonBox["symmetric group",
+  BaseStyle->"Link",
+  ButtonData->"paclet:ref/SymmetricGroup"],
+ " S(",
+ StyleBox["N",
+  FontSlant->"Italic"],
+ ") with ",
+ Cell[BoxData[
+  RowBox[{
+   ButtonBox[
+    StyleBox["N",
+     FontSlant->"Italic"],
+    BaseStyle->"Link"], "=", 
+   RowBox[{
+    RowBox[{
+     TemplateBox[{
+       Cell[
+        TextData["Length"]], "paclet:ref/Length"},
+      "RefLink",
+      BaseStyle->{"InlineFormula"}], "[", 
+     StyleBox["tb", "TI"], "]"}], "+", "1"}]}]], "InlineFormula"],
+ " and unitary group U(",
+ Cell[BoxData[
+  StyleBox["d", "TI"]], "InlineFormula"],
+ ")."
+}], "Notes",
+ CellID->829765466],
+
+Cell["", "SectionFooterSpacer"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1779367797],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CellID->2124779704],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->449439470],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"p", "=", 
+  RowBox[{"{", 
+   RowBox[{"{", "1", "}"}], "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"pq", "=", 
+   RowBox[{"NextSchurLabels", "[", 
+    RowBox[{"p", ",", 
+     RowBox[{"$d", "=", "2"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Map", "[", 
+  RowBox[{"GelfandForm", ",", "pq", ",", 
+   RowBox[{"{", "2", "}"}]}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1029185791],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"{", "1", "}"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1957847617],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "0"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "0"},
+          {"2", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "0"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "0"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "0"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "0"},
+          {"0", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"1", "1"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"1", "1"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1800459585]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"p", "=", 
+  RowBox[{"Union", "[", 
+   RowBox[{"First", "/@", "pq"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"Catenate", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"NextSchurLabels", "[", 
+       RowBox[{"#", ",", "$d"}], "]"}], "&"}], "/@", "p"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Map", "[", 
+  RowBox[{"GelfandForm", ",", "new", ",", 
+   RowBox[{"{", "2", "}"}]}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"YoungForm", "/@", 
+  RowBox[{"ToYoungTableau", "/@", 
+   RowBox[{"Union", "[", 
+    RowBox[{"First", "/@", "new"}], "]"}]}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->444754876],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "1"}], "}"}], ",", 
+     RowBox[{"{", "1", "}"}]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"2", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", "1", "}"}]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->370893337],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "1", "0"},
+          {"1", "1", ""},
+          {"1", "", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "1"},
+          {"2", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "1", "0"},
+          {"1", "1", ""},
+          {"1", "", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "1"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"3", "0", "0"},
+          {"2", "0", ""},
+          {"1", "", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"3", "0"},
+          {"3", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"3", "0", "0"},
+          {"2", "0", ""},
+          {"1", "", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"3", "0"},
+          {"2", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"3", "0", "0"},
+          {"2", "0", ""},
+          {"1", "", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"3", "0"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"3", "0", "0"},
+          {"2", "0", ""},
+          {"1", "", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"3", "0"},
+          {"0", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "1", "0"},
+          {"2", "0", ""},
+          {"1", "", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "1"},
+          {"2", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "1", "0"},
+          {"2", "0", ""},
+          {"1", "", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm], ",", 
+     TagBox[
+      RowBox[{"(", 
+       TagBox[GridBox[{
+          {"2", "1"},
+          {"1", ""}
+         },
+         AutoDelete->False,
+         GridBoxItemSize->{
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+         GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+        "Grid"], ")"}],
+      DisplayForm]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1606771365],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->399470530]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"yt", "=", 
+   RowBox[{"Catenate", "[", 
+    RowBox[{"YoungTableaux", "/@", 
+     RowBox[{"IntegerPartitions", "[", 
+      RowBox[{"3", ",", "2"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"YoungForm", "/@", "yt"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1406447540],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"], ",", 
+   TagBox[GridBox[{
+      {
+       ItemBox["1",
+        Frame->True,
+        StripOnInput->False], 
+       ItemBox["2",
+        Frame->True,
+        StripOnInput->False]},
+      {
+       ItemBox["3",
+        Frame->True,
+        StripOnInput->False], ""}
+     },
+     AutoDelete->False,
+     GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+    "Grid"]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1728792837]
+}, Open  ]]
+}, Open  ]],
+
+Cell["", "SectionFooterSpacer"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "See Also"
+}], "SeeAlsoSection",
+ WholeCellGroupOpener->True,
+ CellID->1924154445],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SchurBasis"]], "paclet:Q3/ref/SchurBasis"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["NextGelfandYoungPatterns"]], 
+    "paclet:Q3/ref/NextGelfandYoungPatterns"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["GelfandPatterns"]], "paclet:Q3/ref/GelfandPatterns"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WeylTableaux"]], "paclet:Q3/ref/WeylTableaux"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["YoungTableaux"]], "paclet:Q3/ref/YoungTableaux"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"]
+}], "SeeAlso",
+ CellID->307516942]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{6},
+   "Spacer1"]]],
+ "Tech Notes"
+}], "TutorialsSection",
+ WholeCellGroupOpener->True,
+ CellID->1593622183],
+
+Cell["", "SectionHeaderSpacer"],
+
+Cell[BoxData[
+ TemplateBox[{
+   Cell[
+    TextData["Schur Transform"]], "paclet:Q3/tutorial/SchurTransform"},
+  "RefLink",
+  BaseStyle->"Tutorials"]], "Tutorials",
+ CellID->1210021744]
+}, Open  ]],
+
+Cell[" ", "FooterCell"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{725, 750},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"NextSchurLabels",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "SymbolColor", "LinkTrails" -> 
+  GridBox[{{
+      RowBox[{
+        ButtonBox[
+        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
+         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
+    Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
+  None, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 12, 13, 0, 53, 46.688459}", 
+    "history" -> {"2.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "NextSchurLabels[tb, n] returns a list of pairs {yt, wt} of Gelfand-Young \
+and Gelfand-Weyl patterns that may arise when when one adds a node of n \
+letters to the existing Gelfand-Young pattern tb. The order of Gelfand-Young \
+pattern yt is one order higher than tb while Gelfand-Weyl pattern wt is of \
+order n.", "synonyms" -> {}, "tabletags" -> {}, "title" -> "NextSchurLabels", 
+    "titlemodifier" -> "", "windowtitle" -> "NextSchurLabels", "type" -> 
+    "Symbol", "uri" -> "Q3/ref/NextSchurLabels", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> "", "NewStyles" -> False},
+CellContext->"Global`",
+FrontEndVersion->"12.3 for Mac OS X ARM (64-bit) (July 9, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "12.3 for Mac OS X ARM (64-bit) (July 9, 2021)", 
+  StyleDefinitions -> "Default.nb"]
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[7616, 233, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c22fe286-411b-4159-830f-85568343f37e",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1779367797]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 26335, 914}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[587, 21, 3929, 96, 70, "AnchorBarGrid",ExpressionUUID->"6b426611-5a87-4d2b-9380-1f85c1c9651a",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4541, 121, 172, 6, 70, "ObjectNameGrid",ExpressionUUID->"6ca59b41-6093-4016-b221-45670138f653"],
+Cell[4716, 129, 1318, 39, 70, "Usage",ExpressionUUID->"dbb5c544-62eb-4f19-98c2-9253a531cee1",
+ CellID->1547637990]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6071, 173, 629, 19, 70, "NotesSection",ExpressionUUID->"05af5621-7281-4e39-aab9-5b493484474a",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->957510224],
+Cell[6703, 194, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7edb2031-b8d1-47ca-8cc5-c73fbafba7aa"],
+Cell[6737, 196, 808, 30, 70, "Notes",ExpressionUUID->"f2e9391f-a62c-4a61-9d01-d4b87438f7d1",
+ CellID->829765466],
+Cell[7548, 228, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"13eaab3e-d824-4ee0-a912-fde6d1318b1f"]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[7616, 233, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"c22fe286-411b-4159-830f-85568343f37e",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1779367797],
+Cell[CellGroupData[{
+Cell[7909, 247, 196, 6, 70, "ExampleSection",ExpressionUUID->"e1fc84b8-96f4-426b-8efb-fd66ab2eecee",
+ CellID->2124779704],
+Cell[8108, 255, 90, 3, 70, "Input",ExpressionUUID->"6ef020da-cf42-4a81-b902-7ad8e6fc1b7e",
+ CellID->449439470],
+Cell[CellGroupData[{
+Cell[8223, 262, 431, 13, 70, "Input",ExpressionUUID->"75b97a06-346e-4edc-ac35-3cbf78986754",
+ CellID->1029185791],
+Cell[8657, 277, 117, 4, 70, "Output",ExpressionUUID->"0294acf6-2ad6-4b71-ad36-d52b3e04eb45",
+ CellID->1957847617],
+Cell[8777, 283, 3045, 108, 70, "Output",ExpressionUUID->"f688baac-ed01-4665-893b-ca914479f0d6",
+ CellID->1800459585]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11859, 396, 674, 20, 70, "Input",ExpressionUUID->"c59c0d28-fed9-40c0-93e0-400d8e9e2d53",
+ CellID->444754876],
+Cell[12536, 418, 372, 14, 70, "Output",ExpressionUUID->"7d0d6e52-6155-4d0a-80fd-7db03d08bceb",
+ CellID->370893337],
+Cell[12911, 434, 6273, 220, 70, "Output",ExpressionUUID->"31c584ca-367e-4705-b4e1-82adc5cbbef7",
+ CellID->1606771365],
+Cell[19187, 656, 1236, 51, 70, "Output",ExpressionUUID->"bf5eb013-b484-439a-bb91-abae9146b25f",
+ CellID->399470530]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20460, 712, 322, 9, 70, "Input",ExpressionUUID->"360e2436-09fb-43da-94a4-52979fc7452e",
+ CellID->1406447540],
+Cell[20785, 723, 1237, 51, 70, "Output",ExpressionUUID->"7353b6cf-6e4a-416e-8a27-3d9e139cfdb6",
+ CellID->1728792837]
+}, Open  ]]
+}, Open  ]],
+Cell[22049, 778, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"a6d17c53-42e8-4e17-ab2b-8869efbfd83a"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22117, 783, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"34ca4a03-82d9-46a7-a1fb-53a17aa3d3c8",
+ CellID->1924154445],
+Cell[22270, 792, 1538, 49, 70, "SeeAlso",ExpressionUUID->"e6248c39-18e4-4fb2-9dae-1861f84403ad",
+ CellID->307516942]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23845, 846, 154, 7, 70, "TutorialsSection",ExpressionUUID->"37200437-d5fb-4e70-bf5b-cedd1ed418a7",
+ CellID->1593622183],
+Cell[24002, 855, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"d127cfe8-67dd-4951-a33d-ad15f260cc0a"],
+Cell[24036, 857, 184, 6, 70, "Tutorials",ExpressionUUID->"3cab9190-834b-4d7c-bec5-1c886034008f",
+ CellID->1210021744]
+}, Open  ]],
+Cell[24235, 866, 23, 0, 70, "FooterCell",ExpressionUUID->"6b92e4b0-7ab6-4a3e-b2b3-3614f0140a88"]
+}
+]
+*)
+
+(* End of internal cache information *)

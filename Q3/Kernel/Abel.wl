@@ -4,14 +4,15 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.25 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-18 17:01:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.30 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-11 10:26:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Choices, ListPartitions, Successive };
 { ShiftLeft, ShiftRight };
+{ KeyGroupBy };
 { Unless, PseudoDivide };
 
 { Chain, ChainBy };
@@ -175,6 +176,21 @@ ShiftRight[a_List, n_Integer, x_:0] := PadRight[Drop[a,-n], Length[a], x] /; n<0
 ShiftRight[a_List, 0, x_:0] := a
 
 ShiftRight[a_List] := ShiftRight[a, 1, 0]
+
+
+KeyGroupBy::usage = "KeyGroupBy[assoc, f] converts the key->value pairs in Association assoc by applying f to the key and regroups the resulting key->value pairs.\nKeyGroupBy[assoc, f->g] applies f to keys and g to values.\nKeyGroupBy[assoc, f->g, post] applies function post to reduce list of values that are generated.\nKeyGroupBy[assoc, f, post] is equivalent to KeyGroupBy[assoc, f->Indeity, post]."
+
+KeyGroupBy[assoc_Association, f_] := 
+  KeyGroupBy[assoc, f -> Identity, Identity]
+
+KeyGroupBy[assoc_Association, f_ -> g_] := 
+  KeyGroupBy[assoc, f -> g, Identity]
+
+KeyGroupBy[assoc_Association, f_, post_] := 
+  KeyGroupBy[assoc, f -> Identity, post]
+
+KeyGroupBy[assoc_Association, f_ -> g_, post_] := 
+  Merge[KeyValueMap[(f[#1] -> g[#2])&, assoc], post]
 
 
 Unless::usage = "Unless[condition, result] gives result unless condition evaluates to True, and Null otherwise."
@@ -556,13 +572,13 @@ SetAttributes[AnticommutativeQ, Listable]
 NonCommutativeSpecies::usage = "NonCommutativeSpecies[expr] returns the list of all NonCommutative Species appearing in EXPR."
 
 NonCommutativeSpecies[expr_] := Select[
-  Union @ FlavorMute @ Cases[
-    List @ Normal[expr, Association],
-    _?SpeciesQ,
-    Infinity
-   ],
+  Union @ FlavorMute @ Cases[List @ expr, _?SpeciesQ, Infinity],
   NonCommutativeQ
- ]
+ ] /; FreeQ[expr, _Association]
+
+NonCommutativeSpecies[expr_] := NonCommutativeSpecies[Normal @ expr]
+(* NOTE: This recursion is necessary since Association inside Association is
+   not expanded by a single Normal. *)
 
 
 $FormatSpecies::usage = "$FormatSpecies controls the formatting of Species. If True, the ouputs of Species are formatted."

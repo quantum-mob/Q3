@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.152 $"][[2]], " (",
-  StringSplit["$Date: 2021-10-09 08:39:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.158 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-10 23:11:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -269,7 +269,7 @@ LogicalForm::usage = "LogicalForm[expr] converts every Ket[...] and Bra[...] in 
 
 LogicalForm[ expr_ ] := LogicalForm[ expr, {} ]
 
-LogicalForm[ expr_, S_ ] := LogicalForm[ expr, {S} ]
+LogicalForm[ expr_, S_?SpeciesQ ] := LogicalForm[ expr, {S} ]
 
 LogicalForm[ expr_, _List ] := expr /;
   FreeQ[ expr, Ket[_Association] | Bra[_Association] ]
@@ -287,13 +287,6 @@ LogicalForm[ OSlash[Ket[a_Association], expr_], gg_List ] := With[
   OSlash[Ket[a], LogicalForm[expr, Supplement[ss, Keys @ a]]]
  ]
 
-(* For some irreducible basis, e.g., from QuissoAdd[] *)
-LogicalForm[ expr_Association, gg_List ] :=
-  Map[ LogicalForm[#,gg]&, expr ]
-(* NOTE: Association needs to be handled carefully due to HoldAllComplete
-   Attribute of Association. Otherwise, the result may be different from what
-   you would expect.  *)
-
 LogicalForm[ expr_, gg_List ] := Module[
   { ss = NonCommutativeSpecies @ expr },
   ss = Union[ ss, FlavorNone @ gg ];
@@ -302,14 +295,16 @@ LogicalForm[ expr_, gg_List ] := Module[
     os_OSlash :> LogicalForm[os, ss],
     v_Ket :> LogicalForm[v, ss],
     v_Bra :> LogicalForm[v, ss],
-    a_Association :> LogicalForm[a, ss] (* NOTE 3 *)
+    a_Association :> Map[LogicalForm[#, ss]&, a] (* NOTE 3 *)
    }
  ]
 (* NOTE 1: This line is necessary to prevent the Kets and Bras in OTimes from
    being affected. *)
 (* NOTE 2: This implementation works when Missing["KeyAbsent", S] is properly
    defined. *)
-(* NOTE 3: See the NOTE for LogicalForm[_Association, ...] *)
+(* NOTE 3: Association needs to be handled carefully due to HoldAllComplete
+   Attribute of Association. Otherwise, the result may be different from what
+   you would expect.  *)
 
 $KetDelimiter::usage = "The charater delimiting values in a Ket."
 
@@ -618,10 +613,12 @@ KetChop[Complex[0., 0.] + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
 KetChop[expr_] := expr
 
 
-KetDrop::usage = "KetDrop[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetDrop[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr."
+KetDrop::usage = "KetDrop[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetDrop[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr.\nKetDrop[{s1,s2,\[Ellipsis]}] is an operator form of KetDrop."
 
 KetDrop[Ket[a_Association], ss:{__?SpeciesQ}] :=
   Ket @ KeyDrop[a, FlavorNone @ ss]
+
+KetDrop[assoc_Association, ss:{__?SpeciesQ}] := Map[KetDrop[ss], assoc]
 
 KetDrop[expr_, ss:{__?SpeciesQ}] := expr /. {
   v:Ket[_Association] :> KetDrop[v, ss]
@@ -629,8 +626,14 @@ KetDrop[expr_, ss:{__?SpeciesQ}] := expr /. {
 
 KetDrop[any_, S_?SpeciesQ] := KetDrop[any, {S}]
 
+KetDrop[S_?SpeciesQ][any_] := KetDrop[any, {S}]
 
-KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if test holds true. Here test is an inequality or equality in terms of species."
+KetDrop[ss:{__?SpeciesQ}][any_] := KetDrop[any, ss]
+
+
+KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if test holds true. Here test is an inequality or equality in terms of species.\nKetPurge[test] represents an operator form of KetPurge."
+
+KetPurge[test_][expr_] := KetPurge[expr, test]
 
 KetPurge[v:Ket[_Association], test_] := Module[
   { new = test /. {S_?SpeciesQ :> FlavorNone[S]},
@@ -638,6 +641,8 @@ KetPurge[v:Ket[_Association], test_] := Module[
   ss = NonCommutativeSpecies[new];
   If[ new /. Normal @@ LogicalForm[v, ss], 0, v, v ]
  ]
+
+KetPurge[assoc_Association, test_] := KetPurge[test] /@ assoc
 
 KetPurge[expr_, test_] := expr /. {
   v:Ket[_Association] :> KetPurge[v, test]
