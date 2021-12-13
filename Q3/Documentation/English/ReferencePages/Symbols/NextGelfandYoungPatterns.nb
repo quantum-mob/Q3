@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     20807,        678]
-NotebookOptionsPosition[     15381,        559]
-NotebookOutlinePosition[     17700,        617]
-CellTagsIndexPosition[     17615,        612]
+NotebookDataLength[     31827,       1034]
+NotebookOptionsPosition[     24887,        885]
+NotebookOutlinePosition[     27207,        943]
+CellTagsIndexPosition[     27122,        938]
 WindowTitle->NextGelfandYoungPatterns
 WindowFrame->Normal*)
 
@@ -51,7 +51,10 @@ Cell[BoxData[GridBox[{
          TextCell[
           Row[{"See Also", 
             Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"SchurBasis\"\>":>Documentation`HelpLookup[
+        StripOnInput->False], {"\<\"NextSchurLabels\"\>":>
+       Documentation`HelpLookup[
+       "paclet:Q3/ref/NextSchurLabels"], "\<\"SchurBasis\"\>":>
+       Documentation`HelpLookup[
        "paclet:Q3/ref/SchurBasis"], "\<\"GelfandPatterns\"\>":>
        Documentation`HelpLookup[
        "paclet:Q3/ref/GelfandPatterns"], "\<\"WeylTableaux\"\>":>
@@ -103,7 +106,7 @@ NextGelfandYoungPatterns.html"], StandardForm]], "Input", TextClipboardType ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$122331], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$122361], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], 
              "Q3/ref/NextGelfandYoungPatterns", ".html"]], None}]}]},
@@ -177,7 +180,7 @@ Cell[TextData[Cell[BoxData[
   Method->"Preemptive"]]]], "NotesSection",
  WholeCellGroupOpener->True,
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->1209768495],
+ CellID->2091474663],
 
 Cell["", "SectionHeaderSpacer"],
 
@@ -223,7 +226,7 @@ Cell[TextData[{
 }], "PrimaryExamplesSection",
  WholeCellGroupOpener->True,
  CellTags->"PrimaryExamplesSection",
- CellID->203925669],
+ CellID->1402326945],
 
 Cell[CellGroupData[{
 
@@ -233,26 +236,27 @@ Cell[TextData[{
  Cell["(1)", "ExampleCount"]
 }], "ExampleSection", "ExampleSection",
  WholeCellGroupOpener->True,
- CellID->2142301918],
+ CellID->275938790],
 
 Cell[BoxData[
  RowBox[{"<<", "Q3`"}]], "Input",
  CellLabel->"In[1]:=",
  CellID->449439470],
 
+Cell["\<\
+Consider the simplest Gelfand-Young pattern. Its Young diagram hosts a single \
+box.\
+\>", "ExampleText",
+ CellID->1180502943],
+
 Cell[CellGroupData[{
 
 Cell[BoxData[{
- RowBox[{"p", "=", 
+ RowBox[{"p1", "=", 
   RowBox[{"{", 
    RowBox[{"{", "1", "}"}], "}"}]}], "\[IndentingNewLine]", 
- RowBox[{
-  RowBox[{"p", "=", 
-   RowBox[{"NextGelfandYoungPatterns", "[", 
-    RowBox[{"p", ",", 
-     RowBox[{"$d", "=", "2"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
- RowBox[{"Map", "[", 
-  RowBox[{"GelfandForm", ",", "p"}], "]"}]}], "Input",
+ RowBox[{"YoungDiagram", "[", 
+  RowBox[{"First", "@", "p1"}], "]"}]}], "Input",
  CellLabel->"In[2]:=",
  CellID->1029185791],
 
@@ -260,7 +264,37 @@ Cell[BoxData[
  RowBox[{"{", 
   RowBox[{"{", "1", "}"}], "}"}]], "Output",
  CellLabel->"Out[2]=",
- CellID->1241432172],
+ CellID->1159287360],
+
+Cell[BoxData[
+ TagBox[GridBox[{
+    {
+     ItemBox["\<\" \"\>",
+      Frame->True,
+      StripOnInput->False]}
+   },
+   AutoDelete->False,
+   GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+  "Grid"]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->23530289]
+}, Open  ]],
+
+Cell["Now attach a box to the existing Young diagram.", "ExampleText",
+ CellID->1808274009],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"p2", "=", 
+   RowBox[{"NextGelfandYoungPatterns", "[", 
+    RowBox[{"p1", ",", 
+     RowBox[{"$d", "=", "2"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Map", "[", 
+  RowBox[{"GelfandForm", ",", "p2"}], "]"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->245130342],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -289,26 +323,302 @@ Cell[BoxData[
        GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
       "Grid"], ")"}],
     DisplayForm]}], "}"}]], "Output",
- CellLabel->"Out[2]=",
- CellID->1946884199]
+ CellLabel->"Out[3]=",
+ CellID->693612362]
 }, Open  ]],
+
+Cell[TextData[{
+ "Physically, the above procedure corresponds to take a tensor-product \
+representation ",
+ Cell[BoxData[
+  RowBox[{
+   SuperscriptBox["\[ScriptCapitalW]", 
+    RowBox[{"(", "1", ")"}]], "\[CircleTimes]", 
+   SubscriptBox["\[ScriptCapitalV]", 
+    StyleBox["d",
+     FontSlant->"Italic"]]}]], "InlineFormula"],
+ " of the existing irreducible representation ",
+ Cell[BoxData[
+  SuperscriptBox["\[ScriptCapitalW]", 
+   RowBox[{"(", "1", ")"}]]], "InlineFormula"],
+ " and the native representation ",
+ Cell[BoxData[
+  RowBox[{
+   SubscriptBox["\[ScriptCapitalV]", 
+    StyleBox["d",
+     FontSlant->"Italic"]], "\[Congruent]", 
+   SuperscriptBox["\[ScriptCapitalW]", 
+    RowBox[{"(", "1", ")"}]]}]], "InlineFormula"],
+ " of unitary group ",
+ Cell[BoxData[
+  SubscriptBox["\[ScriptCapitalU]", 
+   StyleBox["d",
+    FontSlant->"Italic"]]], "InlineFormula"],
+ "."
+}], "ExampleText",
+ CellID->981712212],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Row", "@", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"YoungDiagram", "[", 
+      RowBox[{"First", "@", "p1"}], "]"}], ",", "\"\<\[CircleTimes]\>\"", ",", 
+     RowBox[{"YoungDiagram", "@", 
+      RowBox[{"{", "1", "}"}]}]}], "}"}]}], "->", 
+  RowBox[{"YoungDiagram", "/@", 
+   RowBox[{"First", "/@", "p2"}]}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->25482913],
+
+Cell[BoxData[
+ RowBox[{
+  TemplateBox[{
+    TagBox[
+     GridBox[{{
+        ItemBox["\" \"", Frame -> True, StripOnInput -> False]}}, AutoDelete -> 
+      False, GridBoxItemSize -> {
+       "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], 
+    "\"\[CircleTimes]\"", 
+    TagBox[
+     GridBox[{{
+        ItemBox["\" \"", Frame -> True, StripOnInput -> False]}}, AutoDelete -> 
+      False, GridBoxItemSize -> {
+       "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"]},
+   "RowDefault"], "\[Rule]", 
+  RowBox[{"{", 
+   RowBox[{
+    TagBox[GridBox[{
+       {
+        ItemBox["\<\" \"\>",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["\<\" \"\>",
+         Frame->True,
+         StripOnInput->False]}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+     
+     "Grid"], ",", 
+    TagBox[GridBox[{
+       {
+        ItemBox["\<\" \"\>",
+         Frame->True,
+         StripOnInput->False]},
+       {
+        ItemBox["\<\" \"\>",
+         Frame->True,
+         StripOnInput->False]}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+     
+     "Grid"]}], "}"}]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->689116399]
+}, Open  ]],
+
+Cell[TextData[{
+ "One can go on to attach another box to decompose ",
+ Cell[BoxData[
+  RowBox[{
+   SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"], "\[CircleTimes]", 
+   SuperscriptBox["\[ScriptCapitalW]", 
+    RowBox[{"(", "1", ")"}]]}]], "InlineFormula"],
+ " for ",
+ Cell[BoxData[
+  RowBox[{"\[Lambda]", "=", 
+   RowBox[{"(", 
+    RowBox[{"2", ",", "0"}], ")"}]}]], "InlineFormula"],
+ " and ",
+ Cell[BoxData[
+  RowBox[{"\[Lambda]", "=", 
+   RowBox[{"(", 
+    RowBox[{"1", ",", "1"}], ")"}]}]], "InlineFormula"],
+ "."
+}], "ExampleText",
+ CellID->1395154389],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{"Row", "@", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"YoungDiagram", "[", 
+          RowBox[{"First", "@", "#"}], "]"}], ",", "\"\<\[CircleTimes]\>\"", 
+         ",", 
+         RowBox[{"YoungDiagram", "@", 
+          RowBox[{"{", "1", "}"}]}]}], "}"}]}], "->", 
+      RowBox[{"YoungDiagram", "/@", 
+       RowBox[{"First", "/@", 
+        RowBox[{"NextGelfandYoungPatterns", "[", 
+         RowBox[{"#", ",", "$d"}], "]"}]}]}]}], ")"}], "&"}], "/@", "p2"}], "//",
+   "TableForm"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->47236647],
+
+Cell[BoxData[
+ TagBox[
+  TagBox[GridBox[{
+     {
+      RowBox[{
+       TemplateBox[{
+         TagBox[
+          GridBox[{{
+             ItemBox["\" \"", Frame -> True, StripOnInput -> False], 
+             ItemBox["\" \"", Frame -> True, StripOnInput -> False]}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], 
+         "\"\[CircleTimes]\"", 
+         TagBox[
+          GridBox[{{
+             ItemBox["\" \"", Frame -> True, StripOnInput -> False]}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"]},
+        "RowDefault"], "\[Rule]", 
+       RowBox[{"{", 
+        RowBox[{
+         TagBox[GridBox[{
+            {
+             ItemBox["\<\" \"\>",
+              Frame->True,
+              StripOnInput->False], 
+             ItemBox["\<\" \"\>",
+              Frame->True,
+              StripOnInput->False], 
+             ItemBox["\<\" \"\>",
+              Frame->True,
+              StripOnInput->False]}
+           },
+           AutoDelete->False,
+           
+           GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+          "Grid"], ",", 
+         TagBox[GridBox[{
+            {
+             ItemBox["\<\" \"\>",
+              Frame->True,
+              StripOnInput->False], 
+             ItemBox["\<\" \"\>",
+              Frame->True,
+              StripOnInput->False]},
+            {
+             ItemBox["\<\" \"\>",
+              Frame->True,
+              StripOnInput->False], ""}
+           },
+           AutoDelete->False,
+           
+           GridBoxItemSize->{
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+          "Grid"]}], "}"}]}]},
+     {
+      RowBox[{
+       TemplateBox[{
+         TagBox[
+          GridBox[{{
+             ItemBox["\" \"", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["\" \"", Frame -> True, StripOnInput -> False]}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], 
+         "\"\[CircleTimes]\"", 
+         TagBox[
+          GridBox[{{
+             ItemBox["\" \"", Frame -> True, StripOnInput -> False]}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"]},
+        "RowDefault"], "\[Rule]", 
+       RowBox[{"{", 
+        TagBox[GridBox[{
+           {
+            ItemBox["\<\" \"\>",
+             Frame->True,
+             StripOnInput->False], 
+            ItemBox["\<\" \"\>",
+             Frame->True,
+             StripOnInput->False]},
+           {
+            ItemBox["\<\" \"\>",
+             Frame->True,
+             StripOnInput->False], ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+         "Grid"], "}"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Left}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.5599999999999999]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}],
+   Column],
+  Function[BoxForm`e$, 
+   TableForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//TableForm=",
+ CellID->409405167]
+}, Open  ]],
+
+Cell[TextData[{
+ "In the above example, one can see that the same shape ",
+ Cell[BoxData[
+  RowBox[{"(", 
+   RowBox[{"2", ",", "1"}], ")"}]], "InlineFormula"],
+ " arises both from ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"2", ",", "0"}], ")"}], "\[CircleTimes]", 
+   RowBox[{"(", "1", ")"}]}]], "InlineFormula"],
+ " and ",
+ Cell[BoxData[
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1", ",", "1"}], ")"}], "\[CircleTimes]", 
+   RowBox[{"(", "1", ")"}]}]], "InlineFormula"],
+ ". In order to label different irreducible representations arising from \
+different tensor products, one thus need to keep track of the history of the \
+resulting Young diagram. This can be achieved most conveniently in terms of \
+standard Young tableaux, or technically, in terms of the corresponding \
+Gelfand-Young patterns. "
+}], "ExampleText",
+ CellID->1225172054],
 
 Cell[CellGroupData[{
 
 Cell[BoxData[{
  RowBox[{
-  RowBox[{"new", "=", 
+  RowBox[{"p3", "=", 
    RowBox[{"Catenate", "[", 
     RowBox[{
      RowBox[{
       RowBox[{"NextGelfandYoungPatterns", "[", 
-       RowBox[{"#", ",", "$d"}], "]"}], "&"}], "/@", "p"}], "]"}]}], 
+       RowBox[{"#", ",", "$d"}], "]"}], "&"}], "/@", "p2"}], "]"}]}], 
   ";"}], "\[IndentingNewLine]", 
  RowBox[{"Map", "[", 
-  RowBox[{"GelfandForm", ",", "new"}], "]"}], "\[IndentingNewLine]", 
+  RowBox[{"GelfandForm", ",", "p3"}], "]"}], "\[IndentingNewLine]", 
  RowBox[{"YoungForm", "/@", 
-  RowBox[{"ToYoungTableau", "/@", "new"}]}]}], "Input",
- CellLabel->"In[3]:=",
+  RowBox[{"ToYoungTableau", "/@", "p3"}]}]}], "Input",
+ CellLabel->"In[6]:=",
  CellID->444754876],
 
 Cell[BoxData[
@@ -353,8 +663,8 @@ Cell[BoxData[
        GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
       "Grid"], ")"}],
     DisplayForm]}], "}"}]], "Output",
- CellLabel->"Out[3]=",
- CellID->564002018],
+ CellLabel->"Out[6]=",
+ CellID->1181160373],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -406,9 +716,15 @@ Cell[BoxData[
      AutoDelete->False,
      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
     "Grid"]}], "}"}]], "Output",
- CellLabel->"Out[3]=",
- CellID->189098668]
+ CellLabel->"Out[6]=",
+ CellID->423556143]
 }, Open  ]],
+
+Cell["\<\
+The above Gelfand-Young patterns (or the corresponding standard Young \
+tableaux) can be directly generated.\
+\>", "ExampleText",
+ CellID->919515131],
 
 Cell[CellGroupData[{
 
@@ -420,7 +736,7 @@ Cell[BoxData[{
      RowBox[{"IntegerPartitions", "[", 
       RowBox[{"3", ",", "2"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
  RowBox[{"YoungForm", "/@", "yt"}]}], "Input",
- CellLabel->"In[4]:=",
+ CellLabel->"In[7]:=",
  CellID->1406447540],
 
 Cell[BoxData[
@@ -473,8 +789,8 @@ Cell[BoxData[
      AutoDelete->False,
      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
     "Grid"]}], "}"}]], "Output",
- CellLabel->"Out[4]=",
- CellID->2037276862]
+ CellLabel->"Out[7]=",
+ CellID->1835575458]
 }, Open  ]]
 }, Open  ]],
 
@@ -493,6 +809,16 @@ Cell[TextData[{
  CellID->1924154445],
 
 Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["NextSchurLabels"]], "paclet:Q3/ref/NextSchurLabels"},
+   "RefLink",
+   BaseStyle->{"InlineFormula", FontFamily -> "Verdana"}]], "InlineFormula"],
+ "\[NonBreakingSpace]",
+ StyleBox["\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+  "InlineSeparator"],
+ " ",
  Cell[BoxData[
   TemplateBox[{
     Cell[
@@ -572,7 +898,7 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 12, 13, 0, 53, 45.615165}", 
+   "built" -> "{2021, 12, 13, 15, 5, 29.120244}", 
     "history" -> {"2.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
     "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
      "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
@@ -604,82 +930,112 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "PrimaryExamplesSection"->{
-  Cell[7088, 215, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"ab65b533-c613-404a-84e3-d141c113a7ca",
+  Cell[7198, 218, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a0f42586-a9ca-4ad6-acf0-c571f9f10db1",
    CellTags->"PrimaryExamplesSection",
-   CellID->203925669]}
+   CellID->1402326945]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"PrimaryExamplesSection", 17417, 605}
+ {"PrimaryExamplesSection", 26923, 931}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[596, 21, 3846, 94, 70, "AnchorBarGrid",ExpressionUUID->"8e063061-94d7-47ae-af82-379c3b62bdb5",
+Cell[596, 21, 3956, 97, 70, "AnchorBarGrid",ExpressionUUID->"496bde18-026e-47e9-a2c1-55044dd29651",
  CellID->1],
 Cell[CellGroupData[{
-Cell[4467, 119, 181, 6, 70, "ObjectNameGrid",ExpressionUUID->"93e1731e-b576-434a-afd2-82677e22e9db"],
-Cell[4651, 127, 965, 28, 70, "Usage",ExpressionUUID->"e3b4585d-be39-4403-91ca-01dc2af4e7c5",
+Cell[4577, 122, 181, 6, 70, "ObjectNameGrid",ExpressionUUID->"1a4c0fc5-2775-4859-aa98-6e8ba2fa01a0"],
+Cell[4761, 130, 965, 28, 70, "Usage",ExpressionUUID->"a2712654-ff66-41b9-8c8b-be2d26335d1b",
  CellID->1547637990]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[5653, 160, 630, 19, 70, "NotesSection",ExpressionUUID->"452365e8-e139-4e31-ac04-5acce0d3fbcd",
+Cell[5763, 163, 630, 19, 70, "NotesSection",ExpressionUUID->"6d214add-16b2-44d0-9166-d5c62038ac66",
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->1209768495],
-Cell[6286, 181, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7ec1e4bf-a189-4871-a041-9436f4e2d933"],
-Cell[6320, 183, 697, 25, 70, "Notes",ExpressionUUID->"34658a6e-219e-44fc-9b15-a0af4dc542df",
+ CellID->2091474663],
+Cell[6396, 184, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"7ca75769-7060-438c-bcee-871cc148b354"],
+Cell[6430, 186, 697, 25, 70, "Notes",ExpressionUUID->"2c95bcae-e1fa-455f-90ff-0971cc90f879",
  CellID->829765466],
-Cell[7020, 210, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"7e828c55-72f6-4d05-aa84-b74a1ed2aaef"]
+Cell[7130, 213, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"96b64b35-f637-4f2e-860f-859c946788a1"]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[7088, 215, 267, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"ab65b533-c613-404a-84e3-d141c113a7ca",
+Cell[7198, 218, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"a0f42586-a9ca-4ad6-acf0-c571f9f10db1",
  CellTags->"PrimaryExamplesSection",
- CellID->203925669],
+ CellID->1402326945],
 Cell[CellGroupData[{
-Cell[7380, 229, 196, 6, 70, "ExampleSection",ExpressionUUID->"8723574c-ae67-48a8-a285-8f7cd6fda34a",
- CellID->2142301918],
-Cell[7579, 237, 90, 3, 70, "Input",ExpressionUUID->"08be97a4-7130-4515-88ce-ca7171896069",
+Cell[7491, 232, 195, 6, 70, "ExampleSection",ExpressionUUID->"35c2d06b-116f-4bc7-b281-05d8d7b0da28",
+ CellID->275938790],
+Cell[7689, 240, 90, 3, 70, "Input",ExpressionUUID->"d2042410-e716-40fa-8e89-18c4d33226a6",
  CellID->449439470],
+Cell[7782, 245, 136, 4, 70, "ExampleText",ExpressionUUID->"46bcda4b-d647-46d7-826a-8a5cfa512109",
+ CellID->1180502943],
 Cell[CellGroupData[{
-Cell[7694, 244, 404, 12, 70, "Input",ExpressionUUID->"37ae2b6f-a315-4f1d-9e4d-e397665868fc",
+Cell[7943, 253, 237, 7, 70, "Input",ExpressionUUID->"8e8f21f2-fdfa-4db6-9877-f73cd1179725",
  CellID->1029185791],
-Cell[8101, 258, 117, 4, 70, "Output",ExpressionUUID->"122a8a5b-7210-4ece-b7fe-2d7fbefd4823",
- CellID->1241432172],
-Cell[8221, 264, 745, 28, 70, "Output",ExpressionUUID->"68c07150-fb04-4a7d-b24b-19b483c2260d",
- CellID->1946884199]
+Cell[8183, 262, 117, 4, 70, "Output",ExpressionUUID->"0b562b17-8283-478a-860a-a34f7ada0dd7",
+ CellID->1159287360],
+Cell[8303, 268, 278, 11, 70, "Output",ExpressionUUID->"96108131-b49d-4be2-b651-fe1a75a8ad33",
+ CellID->23530289]
 }, Open  ]],
+Cell[8596, 282, 91, 1, 70, "ExampleText",ExpressionUUID->"7aca922b-31d1-4573-841b-804e234bc93b",
+ CellID->1808274009],
 Cell[CellGroupData[{
-Cell[9003, 297, 474, 14, 70, "Input",ExpressionUUID->"03447e3f-5e1b-41b4-963f-53fc49f55adb",
+Cell[8712, 287, 309, 9, 70, "Input",ExpressionUUID->"2477e6ba-cca0-403c-ad26-155a3c0f4d46",
+ CellID->245130342],
+Cell[9024, 298, 744, 28, 70, "Output",ExpressionUUID->"e7758072-e30b-4d0a-a89e-bd5187624d47",
+ CellID->693612362]
+}, Open  ]],
+Cell[9783, 329, 913, 29, 70, "ExampleText",ExpressionUUID->"b4cfb005-fc16-425c-ae55-8f6a1b040fd9",
+ CellID->981712212],
+Cell[CellGroupData[{
+Cell[10721, 362, 400, 12, 70, "Input",ExpressionUUID->"8d38cffb-b460-4969-b198-8600b973859c",
+ CellID->25482913],
+Cell[11124, 376, 1290, 45, 70, "Output",ExpressionUUID->"c1cf0e7b-56b9-4809-a53e-e838afb3df94",
+ CellID->689116399]
+}, Open  ]],
+Cell[12429, 424, 559, 19, 70, "ExampleText",ExpressionUUID->"442cc1e7-4628-4d0f-be0b-67b4fa4d85de",
+ CellID->1395154389],
+Cell[CellGroupData[{
+Cell[13013, 447, 639, 20, 70, "Input",ExpressionUUID->"7b61123b-2045-4b20-88b8-7c417325bebd",
+ CellID->47236647],
+Cell[13655, 469, 3475, 108, 70, "Output",ExpressionUUID->"cccd618f-7aff-4e48-ac34-386215f66964",
+ CellID->409405167]
+}, Open  ]],
+Cell[17145, 580, 857, 23, 70, "ExampleText",ExpressionUUID->"c2f7e31b-550c-4325-b271-f3863276d9cc",
+ CellID->1225172054],
+Cell[CellGroupData[{
+Cell[18027, 607, 472, 14, 70, "Input",ExpressionUUID->"d5515d0c-f3f8-4a2a-a9b0-abc956b33ca1",
  CellID->444754876],
-Cell[9480, 313, 1167, 43, 70, "Output",ExpressionUUID->"13e28181-b12d-416e-a97b-b73e0b7c0f4a",
- CellID->564002018],
-Cell[10650, 358, 1236, 51, 70, "Output",ExpressionUUID->"e7022110-88b4-4a9f-9010-e782592b1b92",
- CellID->189098668]
+Cell[18502, 623, 1168, 43, 70, "Output",ExpressionUUID->"1a590040-e2d8-49ee-bda0-91bd3ae5b929",
+ CellID->1181160373],
+Cell[19673, 668, 1236, 51, 70, "Output",ExpressionUUID->"7ea44f4c-cfaa-42d9-aea7-5d1b63c3788d",
+ CellID->423556143]
 }, Open  ]],
+Cell[20924, 722, 159, 4, 70, "ExampleText",ExpressionUUID->"b9bd348f-6864-4e0d-a78a-0d811c9b51dc",
+ CellID->919515131],
 Cell[CellGroupData[{
-Cell[11923, 414, 322, 9, 70, "Input",ExpressionUUID->"4477f5ec-782d-48c5-b64e-d5467b2dfa4b",
+Cell[21108, 730, 322, 9, 70, "Input",ExpressionUUID->"33a313b6-1be1-4278-8dc6-673095578270",
  CellID->1406447540],
-Cell[12248, 425, 1237, 51, 70, "Output",ExpressionUUID->"1b2495a6-8d09-4833-a645-9e536e506231",
- CellID->2037276862]
+Cell[21433, 741, 1237, 51, 70, "Output",ExpressionUUID->"eff71fe3-8f17-458b-bffc-cad46bf3bf7d",
+ CellID->1835575458]
 }, Open  ]]
 }, Open  ]],
-Cell[13512, 480, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"5f53bcd5-7bb3-43e3-bb74-1fe6588af41b"]
+Cell[22697, 796, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"fc78ead7-eeb6-4dc5-b6fe-ff6098d02544"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[13580, 485, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"c87c512b-a457-4aad-82a0-fadc363d2a1e",
+Cell[22765, 801, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"bbd0f7ce-af0a-4c75-a0de-34655636af87",
  CellID->1924154445],
-Cell[13733, 494, 1194, 38, 70, "SeeAlso",ExpressionUUID->"32b510d0-19d1-48e3-b197-8c941cce7a11",
+Cell[22918, 810, 1515, 48, 70, "SeeAlso",ExpressionUUID->"24717fc8-db8e-43d0-a975-a0282f29a319",
  CellID->307516942]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[14964, 537, 154, 7, 70, "TutorialsSection",ExpressionUUID->"d75a8475-edc4-43ce-9134-6749022f863e",
+Cell[24470, 863, 154, 7, 70, "TutorialsSection",ExpressionUUID->"4303ed03-f449-41e3-a38a-08bc6d9d3ba0",
  CellID->1593622183],
-Cell[15121, 546, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"d6de19c4-4fc1-4258-a673-cf353bcfaa11"],
-Cell[15155, 548, 184, 6, 70, "Tutorials",ExpressionUUID->"7552571f-df8e-4f89-bc6e-1688df545350",
+Cell[24627, 872, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"353f2da0-5783-4047-a27d-f3a2fa49fcb1"],
+Cell[24661, 874, 184, 6, 70, "Tutorials",ExpressionUUID->"52c8c766-c01c-4029-b131-6d9b7a8f4050",
  CellID->1210021744]
 }, Open  ]],
-Cell[15354, 557, 23, 0, 70, "FooterCell",ExpressionUUID->"6ec6abc7-b1bb-40e4-82b9-755acc1e0b98"]
+Cell[24860, 883, 23, 0, 70, "FooterCell",ExpressionUUID->"5c681b84-3794-4a24-afe9-695f0e49c80e"]
 }
 ]
 *)

@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.59 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-11 10:38:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.60 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-13 10:52:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -34,13 +34,20 @@ BeginPackage["Q3`"];
 
 Begin["`Private`"]
 
-YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
+YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nYoungDiagram[yt] displays the Young diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
 
 YoungDiagram[shape_?YoungShapeQ] :=
   YoungForm @ Map[Table[" ", #]&, YoungTrim @ shape]
 
+YoungDiagram[yt_?anyYoungTableauQ] := YoungDiagram[YoungShape @ yt]
+
+
+FerrersDiagram::usage = "FerrersDiagram[shape] displays shape in a Ferrers diagram.\nYoungDiagram[yt] displays the Ferrers diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
+
 FerrersDiagram[shape_?YoungShapeQ] :=
   Grid @ Map[Table["\[FilledCircle]", #]&, shape]
+
+FerrersDiagram[yt_?anyYoungTableauQ] := FerrersDiagram[YoungShape @ yt]
 
 
 YoungShapeQ::usage="YoungShapeQ[shape] returns True if and only if shape is an integer partition, arranged in non-increasing order.\nA Young shape defines a Young diagram."

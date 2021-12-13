@@ -1,7 +1,9 @@
 # Select Release Notes
 
-## v2.0.3
+## v2.1.0
 
+- A complete technical note on the Schur transform.
+- Significant improvements of the implementations of SchurBasis and NextSchurBasis.
 - The order of input arguments of SchurBasis and DualSchurBasis has been reversed.
 - DualSchurBasis is merged into SchurBasis.
 - Improved performance of SchurBasis.
