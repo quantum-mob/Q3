@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.32 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-15 22:31:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.33 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-16 15:06:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -834,6 +834,8 @@ setHermitian[a_Symbol] := (
   Dagger[a[j___]] ^:= a[j];
  )
 
+HermitianQ::usage = "HermitianQ[s] returns True if species s represents an Hermitian operator and False otherwise."
+
 HermitianQ[ HoldPattern @ Tee[a_?HermitianQ] ] = True;
 
 HermitianQ[ Conjugate[a_?HermitianQ] ] = True;
@@ -859,6 +861,8 @@ setAntihermitian[a_Symbol] := (
   Dagger[a] ^= -a;
   Dagger[a[j___]] ^:= -a[j];
  )
+
+AntihermitianQ::usage = "AntihermitianQ[s] returns True if species s represents an anti-Hermitian operator and False otehrwise."
 
 AntihermitianQ[ HoldPattern @ Tee[a_?AntihermitianQ] ] = True;
 

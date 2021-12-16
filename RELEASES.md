@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.1.2
+
+- Documentaion built with PacletDocumentationBuild from Mathematica 13.
+
 ## v2.1.1
 
 - The output format of KeyGroupBy has been slightly changed.

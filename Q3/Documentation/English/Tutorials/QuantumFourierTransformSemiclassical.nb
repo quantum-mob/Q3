@@ -3,387 +3,247 @@
 (*** Wolfram Notebook File ***)
 (* http://www.wolfram.com/nb *)
 
-(* CreatedBy='Mathematica 12.3' *)
+(* CreatedBy='Mathematica 13.0' *)
 
 (*CacheID: 234*)
 (* Internal cache information:
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     80551,       1842]
-NotebookOptionsPosition[     71733,       1665]
-NotebookOutlinePosition[     74714,       1732]
-CellTagsIndexPosition[     74671,       1729]
+NotebookDataLength[     72911,       1710]
+NotebookOptionsPosition[     65649,       1561]
+NotebookOutlinePosition[     68645,       1628]
+CellTagsIndexPosition[     68602,       1625]
 WindowTitle->Quantum Fourier Transform: Semiclassical Implementation
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
 Notebook[{
 Cell[BoxData[GridBox[{
-   {Cell["Q3 TUTORIAL", "PacletNameCell"], Cell[TextData[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TUTORIAL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "84671e50-3342-451b-8388-a0134b7c8c47"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "cdc7e61a-0ef5-4b0b-b7a9-f11c999320a9"],
+        Background->RGBColor[
+         0.7450980392156863, 0.3254901960784314, 0.1411764705882353],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
      Cell[BoxData[
-      ActionMenuBox[
-       FrameBox[
-        InterpretationBox[Cell[TextData[{
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
           "Related Tutorials",
-          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
-           StripOnInput->False]
-         }]],
-         TextCell[
-          Row[{"Related Tutorials", 
-            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Quisso: Quick Start\"\>":>
-       Documentation`HelpLookup[
-       "paclet:Q3/tutorial/QuissoQuickStart"], "\<\"QuantumCircuit Usage \
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "b0ddb601-b990-4a4b-b97c-63e73b36f393"]
+         }],ExpressionUUID->"38e1594e-4267-474a-8751-4aaaef19eaac"],
+         StripOnInput->False], {"\<\"Quisso: Quick Start\"\>":>
+        Documentation`HelpLookup[
+        "paclet:Q3/tutorial/QuissoQuickStart"], "\<\"QuantumCircuit Usage \
 Examples\"\>":>Documentation`HelpLookup[
-       "paclet:Q3/tutorial/QuantumCircuitUsage"], "\<\"Quantum Fourier \
+        "paclet:Q3/tutorial/QuantumCircuitUsage"], "\<\"Quantum Fourier \
 Transform\"\>":>Documentation`HelpLookup[
-       "paclet:Q3/tutorial/QuantumFourierTransform"], "\<\"Quantum \
+        "paclet:Q3/tutorial/QuantumFourierTransform"], "\<\"Quantum \
 Teleportation\"\>":>Documentation`HelpLookup[
-       "paclet:Q3/tutorial/QuantumTeleportation"]},
-       Appearance->None,
-       MenuAppearance->Automatic,
-       MenuStyle->"RelatedTutorialsSection"]],
-      LineSpacing->{1.4, 0}],
+        "paclet:Q3/tutorial/QuantumTeleportation"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"RelatedTutorialsSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "27237fb7-faa4-4029-a16f-0de26bba5bed"],
      "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
 \[ThickSpace]",
      Cell[BoxData[
-      ActionMenuBox[
-       FrameBox[
-        InterpretationBox[Cell[TextData[{
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
           "Related Guides",
-          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
-           StripOnInput->False]
-         }]],
-         TextCell[
-          Row[{"Related Guides", 
-            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->False], {"\<\"Quisso Package Guide\"\>":>
-       Documentation`HelpLookup["paclet:Q3/guide/QuissoPackageGuide"]},
-       Appearance->None,
-       MenuAppearance->Automatic,
-       MenuStyle->"TutorialMoreAboutSection"]],
-      LineSpacing->{1.4, 0}],
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "3d80166d-4e8a-4d47-8e4a-ad2c91cae212"]
+         }],ExpressionUUID->"78ac3151-8e37-4337-b14d-a4bdddceead5"],
+         StripOnInput->False], {"\<\"Quisso Package Guide\"\>":>
+        Documentation`HelpLookup["paclet:Q3/guide/QuissoPackageGuide"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"TutorialMoreAboutSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "96ec392b-ecb0-4725-8819-fcaef4f526f2"],
      "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
 \[ThickSpace]",
      Cell[BoxData[
-      ActionMenuBox[
-       FrameBox[
-        InterpretationBox[Cell[TextData[{
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
           "URL",
-          StyleBox[" \[FilledDownTriangle]", "AnchorBarArrow",
-           StripOnInput->False]
-         }]],
-         TextCell[
-          Row[{"URL", 
-            Style[" \[FilledDownTriangle]", "AnchorBarArrow"]}]]],
-        StripOnInput->
-         False], {"\<\"Q3/tutorial/QuantumFourierTransformSemiclassical\"\>":>
-       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
-       Module[{DocumentationSearch`Private`nb$}, 
-        DocumentationSearch`Private`nb$ = NotebookPut[
-           Notebook[{
-             Cell["Q3/tutorial/QuantumFourierTransformSemiclassical"]}, 
-            Visible -> False]]; 
-        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
-        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
-        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
-       Delimiter, "\<\"Copy web URL\"\>":>
-       Module[{DocumentationSearch`Private`nb$}, 
-        DocumentationSearch`Private`nb$ = NotebookPut[
-           Notebook[{
-             Cell[
-              BoxData[
-               MakeBoxes[
-                Hyperlink[
-                "http://reference.wolfram.com/language/Q3/tutorial/\
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "03fcdbb8-f128-436c-b311-248b7e679ec0"]
+         }],ExpressionUUID->"941d3791-2f7b-4335-8a26-b747b6abb564"],
+         StripOnInput->
+          False], {"\<\"Q3/tutorial/QuantumFourierTransformSemiclassical\"\>":>
+        None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell["Q3/tutorial/QuantumFourierTransformSemiclassical"]}, 
+             Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+        Delimiter, "\<\"Copy web URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell[
+               BoxData[
+                MakeBoxes[
+                 Hyperlink[
+                 "http://reference.wolfram.com/language/Q3/tutorial/\
 QuantumFourierTransformSemiclassical.html"], StandardForm]], "Input", 
-              TextClipboardType -> "PlainText"]}, Visible -> False]]; 
-        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
-        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
-        NotebookClose[DocumentationSearch`Private`nb$]; 
-        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
-         NotebookLocate[{
-           URL[
-            StringJoin[
-             If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$233110], 
-              "http://reference.wolfram.com/system-modeler/", 
-              "http://reference.wolfram.com/language/"], 
-             "Q3/tutorial/QuantumFourierTransformSemiclassical", ".html"]], 
-           None}]}]},
-       Appearance->None,
-       MenuAppearance->Automatic,
-       MenuStyle->"URLMenu"]],
-      LineSpacing->{1.4, 0}]
-    }], "AnchorBar"]}
+               TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; 
+         Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+          NotebookLocate[{
+            URL[If[
+               TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$225403], 
+               "http://reference.wolfram.com/system-modeler/", 
+               "http://reference.wolfram.com/language/"] <> 
+             "Q3/tutorial/QuantumFourierTransformSemiclassical" <> ".html"], 
+            None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "4a65f709-5c57-4f02-9095-c5225afa2744"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "01e76241-2d9e-4245-8fd6-a3db75571faa"]}
   }]], "AnchorBarGrid",
- CellID->1],
+ CellID->1,ExpressionUUID->"9ccdc56d-48ee-40a8-9e2f-c95ff9270605"],
 
 Cell[CellGroupData[{
 
 Cell["Quantum Fourier Transform: Semiclassical Implementation", "Title",
- CellID->509267359],
+ CellID->509267359,ExpressionUUID->"05e8affd-31bf-4cbf-9a0a-56b5b4ae25ab"],
 
 Cell[BoxData[GridBox[{
    {
     TemplateBox[{
       Cell["References"], 
       "paclet:Q3/tutorial/QuantumFourierTransformSemiclassical#890220681", 
-      GraphicsBox[
-       TagBox[
-        RasterBox[
-        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
-          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
-          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
-          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
-          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
-          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
-          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
-          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
-          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
-          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
-          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
-          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
-          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
-          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
-          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
-          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
-          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
-          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
-          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
-          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
-          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
-          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
-         RGBColor], 
-        BoxForm`ImageTag[
-        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
-         Automatic, MetaInformation -> 
-         Association[{
-           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
-        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
-       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
-       ImageSize -> {8, 9}], 
-      GraphicsBox[
-       TagBox[
-        RasterBox[
-        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
-          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
-          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
-          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
-          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
-          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
-          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
-          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
-          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
-           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
-          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
-          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
-           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
-           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
-          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
-          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
-          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
-        BoxForm`ImageTag[
-        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
-         Automatic, MetaInformation -> 
-         Association[{
-           "XMP" -> Association[{
-              "XMPBasicSchema" -> 
-               Association[{
-                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
-               "XMPMediaManagementSchema" -> 
-               Association[{
-                 "InstanceID" -> "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A", 
-                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
-                  "DerivedFrom" -> 
-                  Association[{
-                    "Reference" -> 
-                    Association[{
-                    "InstanceID" -> 
-                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
-                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
-            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
-        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
-       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
-       ImageSize -> {8, 9}]},
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
      "GrayLinkWithIcon",
      BaseStyle->{"TutorialJumpBoxLink"}], 
     TemplateBox[{
       Cell["Tests"], 
       "paclet:Q3/tutorial/QuantumFourierTransformSemiclassical#1221384869", 
-      GraphicsBox[
-       TagBox[
-        RasterBox[
-        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
-          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
-          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
-          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
-          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
-          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
-          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
-          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
-          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
-          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
-          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
-          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
-          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
-          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
-          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
-          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
-          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
-          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
-          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
-          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
-          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
-          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
-         RGBColor], 
-        BoxForm`ImageTag[
-        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
-         Automatic, MetaInformation -> 
-         Association[{
-           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
-        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
-       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
-       ImageSize -> {8, 9}], 
-      GraphicsBox[
-       TagBox[
-        RasterBox[
-        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
-          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
-          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
-          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
-          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
-          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
-          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
-          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
-          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
-           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
-          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
-          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
-           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
-           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
-          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
-          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
-          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
-        BoxForm`ImageTag[
-        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
-         Automatic, MetaInformation -> 
-         Association[{
-           "XMP" -> Association[{
-              "XMPBasicSchema" -> 
-               Association[{
-                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
-               "XMPMediaManagementSchema" -> 
-               Association[{
-                 "InstanceID" -> "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A", 
-                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
-                  "DerivedFrom" -> 
-                  Association[{
-                    "Reference" -> 
-                    Association[{
-                    "InstanceID" -> 
-                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
-                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
-            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
-        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
-       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
-       ImageSize -> {8, 9}]},
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
      "GrayLinkWithIcon",
      BaseStyle->{"TutorialJumpBoxLink"}]},
    {
     TemplateBox[{
       Cell["Demonstration"], 
       "paclet:Q3/tutorial/QuantumFourierTransformSemiclassical#2119699967", 
-      GraphicsBox[
-       TagBox[
-        RasterBox[
-        RawArray["UnsignedInteger8",{{{128, 128, 128, 32}, {128, 128, 128, 
-          16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
-          128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 
-          128, 128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 
-          128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 16}, {128, 128, 
-          128, 143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 
-          128, 64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
-          128, 112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 
-          128, 32}}, {{128, 128, 128, 32}, {128, 128, 128, 16}, {128, 128, 
-          128, 16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 
-          128, 127}, {128, 128, 128, 0}, {128, 128, 128, 48}}, {{128, 128, 
-          128, 48}, {128, 128, 128, 239}, {128, 128, 128, 112}, {128, 128, 
-          128, 0}, {128, 128, 128, 16}, {128, 128, 128, 16}, {128, 128, 128, 
-          143}, {128, 128, 128, 239}}, {{128, 128, 128, 0}, {128, 128, 128, 
-          64}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
-          112}, {128, 128, 128, 223}, {128, 128, 128, 191}, {128, 128, 128, 
-          32}}, {{128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 
-          16}, {128, 128, 128, 175}, {128, 128, 128, 255}, {128, 128, 128, 
-          127}, {128, 128, 128, 0}, {128, 128, 128, 0}}, {{128, 128, 128, 
-          0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 128, 128, 0}, {
-          128, 128, 128, 16}, {128, 128, 128, 0}, {128, 128, 128, 0}, {128, 
-          128, 128, 0}}}], {{0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> 
-         RGBColor], 
-        BoxForm`ImageTag[
-        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
-         Automatic, MetaInformation -> 
-         Association[{
-           "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
-        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
-       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
-       ImageSize -> {8, 9}], 
-      GraphicsBox[
-       TagBox[
-        RasterBox[
-        RawArray["UnsignedInteger8",{{{229, 95, 28, 32}, {229, 95, 28, 16}, {
-          229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 48}, {229, 
-          95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 239}}, {{
-          229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {229, 95, 
-          28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95, 28, 
-          191}, {229, 95, 28, 32}}, {{229, 95, 28, 32}, {229, 95, 28, 16}, {
-          229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229, 95, 
-          28, 127}, {229, 95, 28, 0}, {229, 95, 28, 48}}, {{229, 95, 28, 
-          48}, {229, 95, 28, 239}, {229, 95, 28, 112}, {229, 95, 28, 0}, {229,
-           95, 28, 16}, {229, 95, 28, 16}, {229, 95, 28, 143}, {229, 95, 28, 
-          239}}, {{229, 95, 28, 0}, {229, 95, 28, 64}, {229, 95, 28, 223}, {
-          229, 95, 28, 191}, {229, 95, 28, 112}, {229, 95, 28, 223}, {229, 95,
-           28, 191}, {229, 95, 28, 32}}, {{229, 95, 28, 0}, {229, 95, 28, 
-          0}, {229, 95, 28, 16}, {229, 95, 28, 175}, {229, 95, 28, 255}, {229,
-           95, 28, 127}, {229, 95, 28, 0}, {229, 95, 28, 0}}, {{229, 95, 28, 
-          0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 
-          28, 16}, {229, 95, 28, 0}, {229, 95, 28, 0}, {229, 95, 28, 0}}}], {{
-          0, 8.}, {8., 0}}, {0, 255}, ColorFunction -> RGBColor], 
-        BoxForm`ImageTag[
-        "Byte", ColorSpace -> "RGB", Interleaving -> True, Magnification -> 
-         Automatic, MetaInformation -> 
-         Association[{
-           "XMP" -> Association[{
-              "XMPBasicSchema" -> 
-               Association[{
-                 "CreatorTool" -> "Adobe Photoshop CS5 Macintosh"}], 
-               "XMPMediaManagementSchema" -> 
-               Association[{
-                 "InstanceID" -> "xmp.iid:AA75CDBA059711E28ADB8BB95CCA5C5A", 
-                  "DocumentID" -> "xmp.did:AA75CDBB059711E28ADB8BB95CCA5C5A", 
-                  "DerivedFrom" -> 
-                  Association[{
-                    "Reference" -> 
-                    Association[{
-                    "InstanceID" -> 
-                    "xmp.iid:AA75CDB8059711E28ADB8BB95CCA5C5A", "DocumentID" -> 
-                    "xmp.did:AA75CDB9059711E28ADB8BB95CCA5C5A"}]}]}]}], 
-            "Comments" -> Association[{"Software" -> "Adobe ImageReady"}]}]], 
-        Selectable -> False], DefaultBaseStyle -> "ImageGraphics", 
-       ImageSizeRaw -> {8., 8.}, PlotRange -> {{0, 8.}, {0, 8.}}, 
-       ImageSize -> {8, 9}]},
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
      "GrayLinkWithIcon",
      BaseStyle->{"TutorialJumpBoxLink"}], ""}
-  }]], "TutorialJumpBox"],
+  }]], "TutorialJumpBox",ExpressionUUID->"3ce79343-18a0-4db9-ad7a-\
+06d67649d740"],
 
 Cell["\<\
 It is widely believed that the quantum entanglement is essential for quantum \
@@ -395,12 +255,12 @@ semiclassical scheme, the single-qubit measurements and subsequent \
 single-qubit gates controlled by the measurement results (classical signals) \
 are sufficient to perform the QFT efficiently.\
 \>", "Text",
- CellID->1534169418],
+ CellID->1534169418,ExpressionUUID->"b8b1513e-76c1-44f8-8039-496fd6b03351"],
 
 Cell[CellGroupData[{
 
 Cell["References", "Section",
- CellID->890220681],
+ CellID->890220681,ExpressionUUID->"742550ff-3997-4cef-8c9c-faabbed9ef31"],
 
 Cell[TextData[{
  "[1] Griffiths & Niu, Physical Review Letters ",
@@ -408,37 +268,37 @@ Cell[TextData[{
   FontWeight->"Bold"],
  ", 3228 (1996)."
 }], "Text",
- CellID->686433325],
+ CellID->686433325,ExpressionUUID->"dd18ac4f-af2f-4cb8-b2dd-bb50a7ed39a8"],
 
 Cell["[2] Higgins, et al., Nature 450, 393 (2007).", "Text",
- CellID->602741591]
+ CellID->602741591,ExpressionUUID->"70f3ab20-5686-4316-a55b-8a921081e3d8"]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell["Demonstration", "Section",
- CellID->2119699967],
+ CellID->2119699967,ExpressionUUID->"1de1f039-8822-483f-a749-62986e203eab"],
 
 Cell["First, load the package.", "MathCaption",
- CellID->890565600],
+ CellID->890565600,ExpressionUUID->"f6492a19-4c9d-4f28-a59e-f317b6528ac8"],
 
 Cell[BoxData[
  RowBox[{"<<", "Q3`"}]], "Input",
  CellLabel->"In[98]:=",
- CellID->869712048],
+ CellID->869712048,ExpressionUUID->"1678d380-cf34-4407-bc40-7079cb53109d"],
 
 Cell[TextData[{
  "Choose the symbol ",
  StyleBox["S", "Input"],
  " to represent qubits."
 }], "MathCaption",
- CellID->1683689702],
+ CellID->1683689702,ExpressionUUID->"76cbd505-feec-4ca4-8942-f0da16161f3a"],
 
 Cell[BoxData[
  RowBox[{"Let", "[", 
   RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
  CellLabel->"In[99]:=",
- CellID->1182432969],
+ CellID->1182432969,ExpressionUUID->"e9c7ace3-eb96-40e5-986a-57b2eccdb1a6"],
 
 Cell[CellGroupData[{
 
@@ -450,7 +310,7 @@ Cell[BoxData[{
    RowBox[{
     RowBox[{"Range", "[", "$N", "]"}], ",", "None"}], "]"}]}]}], "Input",
  CellLabel->"In[345]:=",
- CellID->337240645],
+ CellID->337240645,ExpressionUUID->"ae7750a1-a22f-4233-a1b7-b68fc4aaa0a8"],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -481,13 +341,13 @@ Cell[BoxData[
     TemplateBox[{"5"},
      "RowDefault"]]}], "}"}]], "Output",
  CellLabel->"Out[346]=",
- CellID->1940184002]
+ CellID->1940184002,ExpressionUUID->"8baa3c3f-532b-4f5a-b24a-fb212f630c3c"]
 }, Open  ]],
 
 Cell["\<\
 Here are some handy functions to be used in the circuit implementations.\
 \>", "MathCaption",
- CellID->2019302784],
+ CellID->2019302784,ExpressionUUID->"6e7e85c3-f361-4156-b837-47029cb784dd"],
 
 Cell[BoxData[{
  RowBox[{
@@ -543,11 +403,11 @@ Cell[BoxData[{
     RowBox[{"S", "[", 
      RowBox[{"$N", "-", "j", "+", "1"}], "]"}]}], "]"}]}]}], "Input",
  CellLabel->"In[347]:=",
- CellID->1106544069],
+ CellID->1106544069,ExpressionUUID->"ef7fa249-9ab0-430c-b2c5-7f9b04dea7a4"],
 
 Cell["This is the typical QFT circuit explained in most textbooks.", \
 "MathCaption",
- CellID->477784663],
+ CellID->477784663,ExpressionUUID->"1f32b3e1-cb34-4652-b463-52322ea07751"],
 
 Cell[CellGroupData[{
 
@@ -582,7 +442,7 @@ Cell[BoxData[{
   RowBox[{"QuantumCircuit", "[", 
    RowBox[{"Sequence", "@@", "qft4a"}], "]"}]}]}], "Input",
  CellLabel->"In[351]:=",
- CellID->685474908],
+ CellID->685474908,ExpressionUUID->"1849be49-253f-4bf7-9d81-4517edddd2cd"],
 
 Cell[BoxData[
  GraphicsBox[{
@@ -744,13 +604,13 @@ Cell[BoxData[
   ImageSize->694.8000000000001,
   PlotRangePadding->Scaled[0.025]]], "Output",
  CellLabel->"Out[354]=",
- CellID->2016098495]
+ CellID->2016098495,ExpressionUUID->"a7930844-16f3-471b-a8aa-004c7f9566c6"]
 }, Open  ]],
 
 Cell["\<\
 You can convince yourself that this circuit is equivalent to the above.\
 \>", "MathCaption",
- CellID->485246201],
+ CellID->485246201,ExpressionUUID->"7e7ea283-97e8-4b58-8596-7ea96ff4250c"],
 
 Cell[CellGroupData[{
 
@@ -785,7 +645,7 @@ Cell[BoxData[{
   RowBox[{"QuantumCircuit", "[", 
    RowBox[{"Sequence", "@@", "qft4b"}], "]"}]}]}], "Input",
  CellLabel->"In[355]:=",
- CellID->1537492548],
+ CellID->1537492548,ExpressionUUID->"805708c0-45e2-40db-8b07-9c135e041c98"],
 
 Cell[BoxData[
  GraphicsBox[{
@@ -947,11 +807,11 @@ Cell[BoxData[
   ImageSize->694.8000000000001,
   PlotRangePadding->Scaled[0.025]]], "Output",
  CellLabel->"Out[358]=",
- CellID->1000948618]
+ CellID->1000948618,ExpressionUUID->"be9d8db5-110a-48cc-ac75-9bd2692e3746"]
 }, Open  ]],
 
 Cell["Now consider measurements at the end of the calculation.", "MathCaption",
- CellID->108492709],
+ CellID->108492709,ExpressionUUID->"7e41702d-bff9-45c8-ab6b-ecff2b333e13"],
 
 Cell[CellGroupData[{
 
@@ -968,7 +828,7 @@ Cell[BoxData[{
   RowBox[{"QuantumCircuit", "[", 
    RowBox[{"Sequence", "@@", "qft4c"}], "]"}]}]}], "Input",
  CellLabel->"In[359]:=",
- CellID->223343860],
+ CellID->223343860,ExpressionUUID->"cad0641b-14fb-41c0-aa44-e72e3bca4e17"],
 
 Cell[BoxData[
  GraphicsBox[{
@@ -1157,7 +1017,7 @@ Cell[BoxData[
   ImageSize->802.8000000000001,
   PlotRangePadding->Scaled[0.025]]], "Output",
  CellLabel->"Out[360]=",
- CellID->1711681798]
+ CellID->1711681798,ExpressionUUID->"3c79b934-eb55-4c1f-86f2-bbb1673688c9"]
 }, Open  ]],
 
 Cell["\<\
@@ -1165,7 +1025,7 @@ The measurements and SWAP gates can be exchanged. The resulting circuit is \
 equivalent to the semiclassical implementation of the QFT as discussed in \
 Ref. [1].\
 \>", "MathCaption",
- CellID->729622561],
+ CellID->729622561,ExpressionUUID->"d2ec8b3e-2ce0-4440-a44c-42395edead7c"],
 
 Cell[CellGroupData[{
 
@@ -1208,7 +1068,7 @@ Cell[BoxData[{
   RowBox[{"QuantumCircuit", "[", 
    RowBox[{"Sequence", "@@", "qft4d"}], "]"}]}]}], "Input",
  CellLabel->"In[361]:=",
- CellID->634758357],
+ CellID->634758357,ExpressionUUID->"0326d641-452f-4fbd-a4a2-ff83a29dd499"],
 
 Cell[BoxData[
  GraphicsBox[{
@@ -1399,14 +1259,14 @@ Cell[BoxData[
   ImageSize->910.8000000000001,
   PlotRangePadding->Scaled[0.025]]], "Output",
  CellLabel->"Out[366]=",
- CellID->1147997445]
+ CellID->1147997445,ExpressionUUID->"90b97848-657c-4e8a-bd30-b9b517f24d9a"]
 }, Open  ]]
 }, Open  ]],
 
 Cell[CellGroupData[{
 
 Cell["Tests", "Section",
- CellID->1221384869],
+ CellID->1221384869,ExpressionUUID->"69d18794-ff82-41b9-a304-608020096538"],
 
 Cell[CellGroupData[{
 
@@ -1423,7 +1283,7 @@ Cell[BoxData[{
     RowBox[{"mat4a", "-", "mat4b"}], "//", "Simplify"}], "//", "Normal"}], "//",
    "Flatten"}]}], "Input",
  CellLabel->"In[367]:=",
- CellID->174807191],
+ CellID->174807191,ExpressionUUID->"27dea6b7-518b-4e08-ba9a-dfb00e10b2bf"],
 
 Cell[BoxData[
  RowBox[{"{", 
@@ -1566,118 +1426,153 @@ Cell[BoxData[
    ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
    "0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
  CellLabel->"Out[369]=",
- CellID->937671675]
+ CellID->937671675,ExpressionUUID->"987e2e4a-206d-46b8-9cd7-a0cfb8ac99e9"]
 }, Open  ]]
 }, Open  ]],
 
-Cell[CellGroupData[{
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quisso Package Guide",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/guide/QuissoPackageGuide"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "707b47df-85ea-4251-9607-bc8722129bdb"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"f1486ccf-e0ca-4fad-acd5-\
+882b4c77f6d2"],
 
-Cell[TextData[{
- Cell[BoxData[
-  TemplateBox[{6},
-   "Spacer1"]]],
- "Related Guides"
-}], "TutorialMoreAboutSection",
- WholeCellGroupOpener->True,
- CellID->23220180],
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quisso: Quick Start",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuissoQuickStart"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "64110647-28c7-4b60-8fea-a90a2eceeba3"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "QuantumCircuit Usage Examples",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumCircuitUsage"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "03560b32-9cae-43a5-9efc-1e7faea59bc1"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Fourier Transform",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumFourierTransform"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "1ea5975b-2e01-4327-baba-bbb29a85a162"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Teleportation",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumTeleportation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "7f71c2ab-3a48-430d-a06f-2f9f42f61676"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"a7347c44-f170-4551-91ff-\
+31e07e58eb04"],
 
-Cell["", "SectionHeaderSpacer"],
-
-Cell[TextData[ButtonBox["Quisso Package Guide",
- BaseStyle->"Link",
- ButtonData->"paclet:Q3/guide/QuissoPackageGuide"]], "TutorialMoreAbout",
- CellID->495491210],
-
-Cell["", "SectionFooterSpacer"]
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{
+         "Related", " ", "Wolfram", " ", "Education", " ", "Group", " ", 
+          "Courses"}], "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[Cell[BoxData[
+        TemplateBox[{
+          Cell[
+           TextData[
+            Cell[
+             TextData[{
+               Cell[
+                BoxData[
+                 DynamicBox[
+                  FEPrivate`ImportImage[
+                   
+                   FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+                    "RelatedLinks-EIWL.png"]]]]], 
+               Cell[
+                BoxData[
+                 TemplateBox[{4}, "Spacer1"]]], 
+               "An Elementary Introduction to the Wolfram Language"}]]]], 
+          "https://www.wolfram.com/language/elementary-introduction/"},
+         "WebLink",
+         BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+        "e90f1e9d-a254-481f-8f14-e8c72258b48e"]], "TutorialRelatedLinks",
+        ExpressionUUID->"d73692fc-afd9-4a6e-84d7-97d921e90c5d"]},
+      {Cell[TextData[Cell[BoxData[
+        TemplateBox[{
+          Cell[
+           TextData[
+            Cell[
+             TextData[{
+               Cell[
+                BoxData[
+                 DynamicBox[
+                  FEPrivate`ImportImage[
+                   
+                   FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+                    "RelatedLinks-FastIntro.png"]]]]], 
+               Cell[
+                BoxData[
+                 TemplateBox[{4}, "Spacer1"]]], 
+               "The Wolfram Language: Fast Introduction for Programmers"}]]]],
+           "https://www.wolfram.com/language/fast-introduction-for-\
+programmers/"},
+         "WebLink",
+         BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+        "02fe9940-f0da-42d5-b006-322c74e77914"]], "TutorialRelatedLinks",
+        ExpressionUUID->"8ccd6762-d88d-464e-a45d-b867d758af34"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"cd950a5e-8d12-4768-b7df-\
+0da9178e37eb"]
 }, Open  ]],
 
-Cell[CellGroupData[{
-
-Cell[TextData[{
- Cell[BoxData[
-  TemplateBox[{6},
-   "Spacer1"]]],
- "Related Tutorials"
-}], "RelatedTutorialsSection",
- WholeCellGroupOpener->True,
- CellID->415694126],
-
-Cell["", "SectionHeaderSpacer"],
-
-Cell[TextData[ButtonBox["Quisso: Quick Start",
- BaseStyle->"Link",
- ButtonData->"paclet:Q3/tutorial/QuissoQuickStart"]], "RelatedTutorials",
- CellID->2025894544],
-
-Cell[TextData[ButtonBox["QuantumCircuit Usage Examples",
- BaseStyle->"Link",
- ButtonData->"paclet:Q3/tutorial/QuantumCircuitUsage"]], "RelatedTutorials",
- CellID->485574297],
-
-Cell[TextData[ButtonBox["Quantum Fourier Transform",
- BaseStyle->"Link",
- ButtonData->
-  "paclet:Q3/tutorial/QuantumFourierTransform"]], "RelatedTutorials",
- CellID->806871991],
-
-Cell[TextData[ButtonBox["Quantum Teleportation",
- BaseStyle->"Link",
- ButtonData->"paclet:Q3/tutorial/QuantumTeleportation"]], "RelatedTutorials",
- CellID->1648188840],
-
-Cell["", "SectionFooterSpacer"]
-}, Open  ]],
-
-Cell[CellGroupData[{
-
-Cell[TextData[{
- Cell[BoxData[
-  TemplateBox[{6},
-   "Spacer1"]]],
- "Related Wolfram Education Group Courses"
-}], "TutorialRelatedLinksSection",
- WholeCellGroupOpener->True,
- CellID->415694148],
-
-Cell["", "SectionHeaderSpacer"],
-
-Cell[TextData[Cell[BoxData[
- TemplateBox[{
-   Cell[
-    TextData["An Elementary Introduction to the Wolfram Language"]], 
-   "https://www.wolfram.com/language/elementary-introduction/"},
-  "WebLink",
-  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
- CellID->415694149],
-
-Cell[TextData[Cell[BoxData[
- TemplateBox[{
-   Cell[
-    TextData["The Wolfram Language: Fast Introduction for Programmers"]], 
-   "https://www.wolfram.com/language/fast-introduction-for-programmers/"},
-  "WebLink",
-  BaseStyle->{"TutorialRelatedLinks"}]]]], "TutorialRelatedLinks",
- CellID->1480169507]
-}, Open  ]]
-}, Open  ]],
-
-Cell[" ", "FooterCell"]
+Cell[" ", "FooterCell",ExpressionUUID->"e8ff5e1c-a1d4-4ad2-92bd-c367ddcafbbc"]
 },
 Saveable->False,
 ScreenStyleEnvironment->"Working",
-WindowSize->{725, 750},
+WindowSize->{900, 830},
 WindowMargins->{{0, Automatic}, {Automatic, 0}},
 WindowTitle->"Quantum Fourier Transform: Semiclassical Implementation",
 TaggingRules->{
- "ModificationHighlight" -> False, "ColorType" -> "TutorialColor", 
-  "LinkTrails" -> GridBox[{{
-      RowBox[{
-        ButtonBox[
-        "Q3 Application", ButtonData -> "paclet:Q3/guide/Q3", 
-         BaseStyle -> {"Link", "DockedLinkTrail"}]}]}}, ColumnAlignments -> 
-    Left], "ExampleCounter" -> 1, "NeedPlatMsgIn" -> None, "RootCaptions" -> 
-  "", "Metadata" -> {
-   "built" -> "{2021, 12, 16, 11, 2, 1.189748}", 
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"1989", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2021, 12, 16, 17, 8, 25.170688}", 
     "history" -> {"1.2", "", "", ""}, "context" -> "Q3`", 
     "keywords" -> {"quantum Fourier transform"}, "specialkeywords" -> {}, 
     "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
@@ -1693,13 +1588,13 @@ single-qubit gates controlled by the measurement results (classical signals) \
 are sufficient to perform the QFT efficiently. [1] Griffiths & Niu, Physical \
 Review Letters 76, 3228 (1996). [2] Higgins, et al., Nature 450, 393 (2007).",
      "synonyms" -> {}, "tabletags" -> 
-    DocumentationBuild`Make`Private`tabletaggingrules$233042, "title" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$225368, "title" -> 
     "Quantum Fourier Transform: Semiclassical Implementation", 
     "titlemodifier" -> "", "windowtitle" -> 
     "Quantum Fourier Transform: Semiclassical Implementation", "type" -> 
     "Tutorial", "uri" -> "Q3/tutorial/QuantumFourierTransformSemiclassical", 
     "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> ""},
-FrontEndVersion->"12.3 for Mac OS X ARM (64-bit) (July 9, 2021)",
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (December 2, 2021)",
 StyleDefinitions->Notebook[{
    Cell[
     StyleData[
@@ -1717,8 +1612,9 @@ StyleDefinitions->Notebook[{
    Cell[
     StyleData["TutorialRelatedLinksSection"], 
     CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
-  FrontEndVersion -> "12.3 for Mac OS X ARM (64-bit) (July 9, 2021)", 
-  StyleDefinitions -> "Default.nb"]
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (December 2, 2021)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"5719d64d-651f-4f4e-acd2-509a521c5277"
 ]
 (* End of Notebook Content *)
 
@@ -1731,121 +1627,94 @@ CellTagsIndex->{}
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[627, 21, 4106, 99, 70, "AnchorBarGrid",ExpressionUUID->"f8d28111-dbec-4133-afb3-2d7e8362b7e4",
+Cell[627, 21, 6040, 144, 57, "AnchorBarGrid",ExpressionUUID->"9ccdc56d-48ee-40a8-9e2f-c95ff9270605",
  CellID->1],
 Cell[CellGroupData[{
-Cell[4758, 124, 92, 1, 70, "Title",ExpressionUUID->"f404c5c0-14a8-4a11-91f7-378dd28647bb",
+Cell[6692, 169, 147, 1, 110, "Title",ExpressionUUID->"05e8affd-31bf-4cbf-9a0a-56b5b4ae25ab",
  CellID->509267359],
-Cell[4853, 127, 15316, 258, 70, "TutorialJumpBox",ExpressionUUID->"a982b778-043a-44b2-bd39-14663d200358"],
-Cell[20172, 387, 620, 10, 70, "Text",ExpressionUUID->"002cdd27-1387-4c74-a114-72dee4d79c55",
+Cell[6842, 172, 3373, 73, 73, "TutorialJumpBox",ExpressionUUID->"3ce79343-18a0-4db9-ad7a-06d67649d740"],
+Cell[10218, 247, 675, 10, 132, "Text",ExpressionUUID->"b8b1513e-76c1-44f8-8039-496fd6b03351",
  CellID->1534169418],
 Cell[CellGroupData[{
-Cell[20817, 401, 49, 1, 70, "Section",ExpressionUUID->"bcc2a50a-2d4b-472f-8e74-4ff6c0001f76",
+Cell[10918, 261, 104, 1, 71, "Section",ExpressionUUID->"742550ff-3997-4cef-8c9c-faabbed9ef31",
  CellID->890220681],
-Cell[20869, 404, 154, 6, 70, "Text",ExpressionUUID->"3b247f58-fbe6-4afc-9dae-2e7696ca16fc",
+Cell[11025, 264, 209, 6, 36, "Text",ExpressionUUID->"dd18ac4f-af2f-4cb8-b2dd-bb50a7ed39a8",
  CellID->686433325],
-Cell[21026, 412, 80, 1, 70, "Text",ExpressionUUID->"1ada08c0-e8f9-4cea-8d78-2a7a813219c3",
+Cell[11237, 272, 135, 1, 36, "Text",ExpressionUUID->"70f3ab20-5686-4316-a55b-8a921081e3d8",
  CellID->602741591]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[21143, 418, 53, 1, 70, "Section",ExpressionUUID->"8fa27bbd-54b6-4246-bc0d-105d7099574d",
+Cell[11409, 278, 108, 1, 71, "Section",ExpressionUUID->"1de1f039-8822-483f-a749-62986e203eab",
  CellID->2119699967],
-Cell[21199, 421, 67, 1, 70, "MathCaption",ExpressionUUID->"99200ad4-5519-470c-80b5-cb0509ad2ebf",
+Cell[11520, 281, 122, 1, 36, "MathCaption",ExpressionUUID->"f6492a19-4c9d-4f28-a59e-f317b6528ac8",
  CellID->890565600],
-Cell[21269, 424, 91, 3, 70, "Input",ExpressionUUID->"09c6d814-ff6a-42fb-adad-4db09b72cbf4",
+Cell[11645, 284, 146, 3, 29, "Input",ExpressionUUID->"1678d380-cf34-4407-bc40-7079cb53109d",
  CellID->869712048],
-Cell[21363, 429, 128, 5, 70, "MathCaption",ExpressionUUID->"fdc10a9e-4798-468a-8b12-51ef65f9f278",
+Cell[11794, 289, 183, 5, 38, "MathCaption",ExpressionUUID->"76cbd505-feec-4ca4-8942-f0da16161f3a",
  CellID->1683689702],
-Cell[21494, 436, 128, 4, 70, "Input",ExpressionUUID->"3900d11a-bb1d-4bb8-90d5-fd1d21c73019",
+Cell[11980, 296, 183, 4, 29, "Input",ExpressionUUID->"e9c7ace3-eb96-40e5-986a-57b2eccdb1a6",
  CellID->1182432969],
 Cell[CellGroupData[{
-Cell[21647, 444, 256, 8, 70, "Input",ExpressionUUID->"df516940-2caf-4b87-ab02-417efd3f7ae0",
+Cell[12188, 304, 311, 8, 48, "Input",ExpressionUUID->"ae7750a1-a22f-4233-a1b7-b68fc4aaa0a8",
  CellID->337240645],
-Cell[21906, 454, 654, 29, 70, "Output",ExpressionUUID->"6c838602-18f4-4ab4-800e-3173aeab6c64",
+Cell[12502, 314, 709, 29, 37, "Output",ExpressionUUID->"8baa3c3f-532b-4f5a-b24a-fb212f630c3c",
  CellID->1940184002]
 }, Open  ]],
-Cell[22575, 486, 124, 3, 70, "MathCaption",ExpressionUUID->"60afb188-ece4-4c30-a50b-5a158c073bea",
+Cell[13226, 346, 179, 3, 36, "MathCaption",ExpressionUUID->"6e7e85c3-f361-4156-b837-47029cb784dd",
  CellID->2019302784],
-Cell[22702, 491, 1818, 54, 70, "Input",ExpressionUUID->"d29b7d44-f569-46db-9e13-fdbdc406eac3",
+Cell[13408, 351, 1873, 54, 70, "Input",ExpressionUUID->"ef7fa249-9ab0-430c-b2c5-7f9b04dea7a4",
  CellID->1106544069],
-Cell[24523, 547, 105, 2, 70, "MathCaption",ExpressionUUID->"b965fd60-51e7-468d-97e3-cfa97e1e9517",
+Cell[15284, 407, 160, 2, 70, "MathCaption",ExpressionUUID->"1f32b3e1-cb34-4652-b463-52322ea07751",
  CellID->477784663],
 Cell[CellGroupData[{
-Cell[24653, 553, 946, 31, 70, "Input",ExpressionUUID->"7c940e09-2517-4e56-a355-1e3958567a8d",
+Cell[15469, 413, 1001, 31, 70, "Input",ExpressionUUID->"1849be49-253f-4bf7-9d81-4517edddd2cd",
  CellID->685474908],
-Cell[25602, 586, 6530, 160, 70, "Output",ExpressionUUID->"055d5d90-24a7-4333-b770-b5c75b0d285b",
+Cell[16473, 446, 6585, 160, 204, "Output",ExpressionUUID->"a7930844-16f3-471b-a8aa-004c7f9566c6",
  CellID->2016098495]
 }, Open  ]],
-Cell[32147, 749, 122, 3, 70, "MathCaption",ExpressionUUID->"9bb6c3db-2aea-4690-a1d0-8e24289d4214",
+Cell[23073, 609, 177, 3, 70, "MathCaption",ExpressionUUID->"7e7ea283-97e8-4b58-8596-7ea96ff4250c",
  CellID->485246201],
 Cell[CellGroupData[{
-Cell[32294, 756, 946, 31, 70, "Input",ExpressionUUID->"bfc4de4b-7a62-492c-ad3b-68b30c30a758",
+Cell[23275, 616, 1001, 31, 70, "Input",ExpressionUUID->"805708c0-45e2-40db-8b07-9c135e041c98",
  CellID->1537492548],
-Cell[33243, 789, 6533, 160, 70, "Output",ExpressionUUID->"299fea68-6bad-4aa3-b12e-d84f4b70c340",
+Cell[24279, 649, 6588, 160, 204, "Output",ExpressionUUID->"be9d8db5-110a-48cc-ac75-9bd2692e3746",
  CellID->1000948618]
 }, Open  ]],
-Cell[39791, 952, 99, 1, 70, "MathCaption",ExpressionUUID->"aaef21b8-de29-4c6d-8427-acdd5b712007",
+Cell[30882, 812, 154, 1, 70, "MathCaption",ExpressionUUID->"7e41702d-bff9-45c8-ab6b-ecff2b333e13",
  CellID->108492709],
 Cell[CellGroupData[{
-Cell[39915, 957, 465, 13, 70, "Input",ExpressionUUID->"939196e0-c8ed-4fd6-9aca-8964682fe527",
+Cell[31061, 817, 520, 13, 70, "Input",ExpressionUUID->"cad0641b-14fb-41c0-aa44-e72e3bca4e17",
  CellID->223343860],
-Cell[40383, 972, 8004, 187, 70, "Output",ExpressionUUID->"2ab76924-db11-497a-9659-f3a6d11ff783",
+Cell[31584, 832, 8059, 187, 204, "Output",ExpressionUUID->"3c79b934-eb55-4c1f-86f2-bbb1673688c9",
  CellID->1711681798]
 }, Open  ]],
-Cell[48402, 1162, 213, 5, 70, "MathCaption",ExpressionUUID->"ff21e641-e6be-464d-b217-4c273f3cb28d",
+Cell[39658, 1022, 268, 5, 70, "MathCaption",ExpressionUUID->"d2ec8b3e-2ce0-4440-a44c-42395edead7c",
  CellID->729622561],
 Cell[CellGroupData[{
-Cell[48640, 1171, 1216, 39, 70, "Input",ExpressionUUID->"11a0ace3-2ba1-4bcd-aa39-004241206931",
+Cell[39951, 1031, 1271, 39, 70, "Input",ExpressionUUID->"0326d641-452f-4fbd-a4a2-ff83a29dd499",
  CellID->634758357],
-Cell[49859, 1212, 8131, 189, 70, "Output",ExpressionUUID->"65c1fa23-2694-47ea-b812-9fb5d53562a4",
+Cell[41225, 1072, 8186, 189, 211, "Output",ExpressionUUID->"90b97848-657c-4e8a-bd30-b9b517f24d9a",
  CellID->1147997445]
 }, Open  ]]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[58039, 1407, 45, 1, 70, "Section",ExpressionUUID->"7b6767b2-e36d-4c64-a334-671f47c4995c",
+Cell[49460, 1267, 100, 1, 70, "Section",ExpressionUUID->"69d18794-ff82-41b9-a304-608020096538",
  CellID->1221384869],
 Cell[CellGroupData[{
-Cell[58109, 1412, 418, 13, 70, "Input",ExpressionUUID->"a9e8eed6-dcd4-42de-ad98-20552f1fd9c4",
+Cell[49585, 1272, 473, 13, 70, "Input",ExpressionUUID->"27dea6b7-518b-4e08-ba9a-dfb00e10b2bf",
  CellID->174807191],
-Cell[58530, 1427, 10885, 141, 70, "Output",ExpressionUUID->"f6d28427-47b4-4b2f-af9c-207a8f0d55df",
+Cell[50061, 1287, 10940, 141, 480, "Output",ExpressionUUID->"987e2e4a-206d-46b8-9cd7-a0cfb8ac99e9",
  CellID->937671675]
 }, Open  ]]
 }, Open  ]],
-Cell[CellGroupData[{
-Cell[69464, 1574, 164, 7, 70, "TutorialMoreAboutSection",ExpressionUUID->"b579c494-9c99-40f8-b499-8f78ab3761ec",
- CellID->23220180],
-Cell[69631, 1583, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"9e8aa18c-4b35-439c-a5d7-7e8b0724baa7"],
-Cell[69665, 1585, 161, 3, 70, "TutorialMoreAbout",ExpressionUUID->"47937d80-1532-4a01-bcc7-06f712d90178",
- CellID->495491210],
-Cell[69829, 1590, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"7c7c04ac-ea35-4ecb-9219-9e599e40b78a"]
+Cell[61028, 1432, 700, 18, 70, "TutorialMoreAboutSection",ExpressionUUID->"f1486ccf-e0ca-4fad-acd5-882b4c77f6d2"],
+Cell[61731, 1452, 1655, 43, 70, "RelatedTutorialsSection",ExpressionUUID->"a7347c44-f170-4551-91ff-31e07e58eb04"],
+Cell[63389, 1497, 2163, 59, 70, "TutorialRelatedLinksSection",ExpressionUUID->"cd950a5e-8d12-4768-b7df-0da9178e37eb"]
 }, Open  ]],
-Cell[CellGroupData[{
-Cell[69897, 1595, 167, 7, 70, "RelatedTutorialsSection",ExpressionUUID->"6ebb62c9-5e55-49c4-849f-fcb4404ad007",
- CellID->415694126],
-Cell[70067, 1604, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"866f0d0e-5f60-446e-8da4-ad86d6753d89"],
-Cell[70101, 1606, 161, 3, 70, "RelatedTutorials",ExpressionUUID->"1dbe6cfe-6804-4d9d-918a-899badbf1ad6",
- CellID->2025894544],
-Cell[70265, 1611, 173, 3, 70, "RelatedTutorials",ExpressionUUID->"36982c16-6e3b-4e72-97ee-db841d7e130d",
- CellID->485574297],
-Cell[70441, 1616, 176, 4, 70, "RelatedTutorials",ExpressionUUID->"34b48698-63ec-43b3-b6b6-cea4bdc14716",
- CellID->806871991],
-Cell[70620, 1622, 167, 3, 70, "RelatedTutorials",ExpressionUUID->"7dddf240-0dc8-462d-b88a-ac652c92f7c4",
- CellID->1648188840],
-Cell[70790, 1627, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"6eda3247-9416-4523-b79c-41b4eb567ded"]
-}, Open  ]],
-Cell[CellGroupData[{
-Cell[70858, 1632, 193, 7, 70, "TutorialRelatedLinksSection",ExpressionUUID->"0dc79b56-66f3-444b-8bd9-cfe334a0a01d",
- CellID->415694148],
-Cell[71054, 1641, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"123d68da-5fe3-4c78-9f3c-de5f791cbda5"],
-Cell[71088, 1643, 286, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"b23c0c17-24a5-48f6-983e-f3ff5c324df7",
- CellID->415694149],
-Cell[71377, 1652, 302, 7, 70, "TutorialRelatedLinks",ExpressionUUID->"5e8ee7da-b1a6-422f-9bf7-db6f326a7261",
- CellID->1480169507]
-}, Open  ]]
-}, Open  ]],
-Cell[71706, 1663, 23, 0, 70, "FooterCell",ExpressionUUID->"5be1bc35-851c-4833-b792-d79aa3932f87"]
+Cell[65567, 1559, 78, 0, 70, "FooterCell",ExpressionUUID->"e8ff5e1c-a1d4-4ad2-92bd-c367ddcafbbc"]
 }
 ]
 *)
 
 (* End of internal cache information *)
+
