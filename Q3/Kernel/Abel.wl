@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.30 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-11 10:26:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.32 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-15 22:31:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -178,7 +178,7 @@ ShiftRight[a_List, 0, x_:0] := a
 ShiftRight[a_List] := ShiftRight[a, 1, 0]
 
 
-KeyGroupBy::usage = "KeyGroupBy[assoc, f] converts the key->value pairs in Association assoc by applying f to the key and regroups the resulting key->value pairs.\nKeyGroupBy[assoc, f->g] applies f to keys and g to values.\nKeyGroupBy[assoc, f->g, post] applies function post to reduce list of values that are generated.\nKeyGroupBy[assoc, f, post] is equivalent to KeyGroupBy[assoc, f->Indeity, post]."
+KeyGroupBy::usage = "KeyGroupBy[assoc, f] gives an Association that groups key$j->value$j into different Associations associated with distinct keys f[key$j].\nKeyGroupBy[assoc, f->g] groups key$j->g[value$j] according to f[key$j].\nKeyGroupBy[assoc, f->g, post] applies function post to Associations that are generated.\nKeyGroupBy[assoc, f, post] is equivalent to KeyGroupBy[assoc, f->Indeity, post]."
 
 KeyGroupBy[assoc_Association, f_] := 
   KeyGroupBy[assoc, f -> Identity, Identity]
@@ -189,8 +189,10 @@ KeyGroupBy[assoc_Association, f_ -> g_] :=
 KeyGroupBy[assoc_Association, f_, post_] := 
   KeyGroupBy[assoc, f -> Identity, post]
 
-KeyGroupBy[assoc_Association, f_ -> g_, post_] := 
-  Merge[KeyValueMap[(f[#1] -> g[#2])&, assoc], post]
+KeyGroupBy[assoc_Association, f_ -> g_, post_] := Merge[
+  KeyValueMap[(f[#1] -> Rule[#1, g[#2]])&, assoc],
+  post @* Association
+ ]
 
 
 Unless::usage = "Unless[condition, result] gives result unless condition evaluates to True, and Null otherwise."

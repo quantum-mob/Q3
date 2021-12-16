@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.84 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-11 12:11:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.85 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-16 07:07:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2685,12 +2685,6 @@ FlavorMute[S_Symbol?QuditQ[j___, _] -> m_] := S[j, None] -> m
 
 
 (**** <Ket for Qudits> ****)
-
-(*
-KetRule[ r:Rule[_?QuditQ, _] ] := FlavorNone[r]
-
-KetRule[ r:Rule[{__?QuditQ}, _] ] := FlavorNone @ Thread[r]
- *)
 
 KetTrim[_?QuditQ, 0] = Nothing
 

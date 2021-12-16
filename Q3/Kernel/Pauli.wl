@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.158 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-10 23:11:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.162 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-16 10:19:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,7 +14,7 @@ BeginPackage["Q3`"]
 { State, TheKet, TheBra, TheState };
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
-  KetFactor, KetPurge, KetOrthogonalize, KetNormalize, KetSort };
+  KetFactor, KetPurge, KetOrthogonalize, KetNormalize, KetSort, KetNorm };
 
 { OTimes, OSlash, ReleaseTimes };
 
@@ -22,7 +22,7 @@ BeginPackage["Q3`"]
 
 { BraKet };
 
-{ Basis, Matrix, TheMatrix };
+{ Basis, Matrix, MatrixIn, TheMatrix };
 
 { ExpressionFor, TheExpression };
 
@@ -699,6 +699,10 @@ KetSort[expr_, ss:{__?SpeciesQ}] := expr /. {
  }
 
 (**** </Ket & Bra> ****)
+
+KetNorm::usage = "KetNorm[expr] returns the norm of Ket expression expr."
+
+KetNorm[v_] := Sqrt[Dagger[v] ** v] /; Not @ FreeQ[v, _Ket]
 
 
 KetOrthogonalize::usage = "KetOrthogonalize[vecs] orthgonalizes the vectors in vecs."
@@ -1608,6 +1612,29 @@ HoldPattern @
    ]
 
 (**** </Matrix> ****)
+
+
+(**** <MatrixIn> ****)
+
+MatrixIn::ussage = "MatrixIn[op, bs] returns the matrix representation of operator op in basis bs. The basis bs may be a list of kets or an association of such lists.\nMatrixIn[bs] provides the operator form of MatrixIn."
+
+MatrixIn::notbs = "`` does not look like a valid basis."
+
+MatrixIn[op_, bs_List] := (
+  Message[MatrixIn::notbs, bs];
+  Zero[Length @ bs, Length @ bs]
+ ) /; AnyTrue[bs, FreeQ[#, _Ket]&]
+
+MatrixIn[bs_List][op_] := MatrixIn[op, bs]
+
+MatrixIn[op_, bs_List] := Garner @ Outer[Multiply, Dagger[bs], op ** bs]
+
+MatrixIn[op_, bs_Association] := Map[MatrixIn[op, #]&, bs]
+
+MatrixIn[op_, aa_List, bb_List] :=
+  Garner @ Outer[Multiply, Dagger[aa], op ** bb]
+
+(**** </MatrixIn> ****)
 
 
 ProperSystem::usage = "ProperSystem[expr] returns a list of {values, vectors} of the eigenvalues and eigenstates of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."

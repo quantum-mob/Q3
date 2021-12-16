@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.60 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-13 10:52:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.61 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-15 18:11:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -321,7 +321,7 @@ anyYoungTableauQ[tb:{__List}] := Apply[GreaterEqual, Length /@ tb]
 
 YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional form."
 
-YoungForm::notyt = "Data `` is not a Young tableau."
+YoungForm::notyt = "Data `` is not of the Young-tableau form."
 
 YoungForm[tb_?anyYoungTableauQ] :=
   Grid @ Map[Item[#, Frame->True]&, tb, {2}]

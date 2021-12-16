@@ -1,5 +1,13 @@
 # Select Release Notes
 
+## v2.1.1
+
+- The output format of KeyGroupBy has been slightly changed.
+
+- An operator form of SchurBasis.
+
+- A small change in the usage of SchurBasis.
+
 ## v2.1.0
 
 - A complete technical note on the Schur transform.

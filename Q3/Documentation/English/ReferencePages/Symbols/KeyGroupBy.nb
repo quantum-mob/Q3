@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       158,          7]
-NotebookDataLength[     17944,        562]
-NotebookOptionsPosition[     12826,        447]
-NotebookOutlinePosition[     15303,        507]
-CellTagsIndexPosition[     15218,        502]
+NotebookDataLength[     20143,        637]
+NotebookOptionsPosition[     14554,        511]
+NotebookOutlinePosition[     16973,        570]
+CellTagsIndexPosition[     16888,        565]
 WindowTitle->KeyGroupBy
 WindowFrame->Normal*)
 
@@ -82,7 +82,7 @@ html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible ->
            URL[
             StringJoin[
              If[
-              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$107983], 
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$109004], 
               "http://reference.wolfram.com/system-modeler/", 
               "http://reference.wolfram.com/language/"], "Q3/ref/KeyGroupBy", 
              ".html"]], None}]}]},
@@ -115,17 +115,23 @@ Cell[BoxData[GridBox[{
        RowBox[{
         StyleBox["assoc", "TI"], ",", 
         StyleBox["f", "TI"]}], "]"}]], "InlineFormula"],
-     " \[LineSeparator]converts ",
+     " \[LineSeparator]gives an Association that groups ",
      Cell[BoxData[
       RowBox[{
-       StyleBox["key", "TI"], "\[Rule]", 
-       StyleBox["value", "TI"]}]], "InlineFormula"],
-     " pairs by applying function f to the key and regroups the resulting ",
+       SubscriptBox[
+        StyleBox["key", "TI"], 
+        StyleBox["j", "TI"]], "\[Rule]", 
+       SubscriptBox[
+        StyleBox["value", "TI"], 
+        StyleBox["j", "TI"]]}]], "InlineFormula"],
+     " into different Associations associated with distinct keys ",
      Cell[BoxData[
       RowBox[{
-       StyleBox["key", "TI"], "\[Rule]", 
-       StyleBox["value", "TI"]}]], "InlineFormula"],
-     " pairs."
+       StyleBox["f", "TI"], "[", 
+       SubscriptBox[
+        StyleBox["key", "TI"], 
+        StyleBox["j", "TI"]], "]"}]], "InlineFormula"],
+     "."
     }]]},
    {"", Cell[TextData[{
      Cell[BoxData[
@@ -140,18 +146,25 @@ Cell[BoxData[GridBox[{
         RowBox[{
          StyleBox["f", "TI"], "\[Rule]", 
          StyleBox["g", "TI"]}]}], "]"}]], "InlineFormula"],
-     "\[LineSeparator]converts keys by ",
-     Cell[BoxData[
-      StyleBox["f", "TI"]], "InlineFormula"],
-     " and values by ",
-     Cell[BoxData[
-      StyleBox["g", "TI"]], "InlineFormula"],
-     " and then regroups the resulting ",
+     "\[LineSeparator]groups ",
      Cell[BoxData[
       RowBox[{
-       StyleBox["key", "TI"], "\[RightArrow]", 
-       StyleBox["value", "TI"]}]], "InlineFormula"],
-     " pairs."
+       SubscriptBox[
+        StyleBox["key", "TI"], 
+        StyleBox["j", "TI"]], "\[Rule]", 
+       RowBox[{
+        StyleBox["g", "TI"], "[", 
+        SubscriptBox[
+         StyleBox["value", "TI"], 
+         StyleBox["j", "TI"]], "]"}]}]], "InlineFormula"],
+     " according to ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["f", "TI"], "[", 
+       SubscriptBox[
+        StyleBox["key", "TI"], 
+        StyleBox["j", "TI"]], "]"}]], "InlineFormula"],
+     "."
     }]]},
    {"", Cell[TextData[{
      Cell[BoxData[
@@ -170,7 +183,7 @@ Cell[BoxData[GridBox[{
      "\[LineSeparator]applies function ",
      Cell[BoxData[
       StyleBox["post", "TI"]], "InlineFormula"],
-     " to reduce lists of values that are generated."
+     " to Associations that are generated."
     }]]},
    {"", Cell[TextData[{
      Cell[BoxData[
@@ -232,7 +245,7 @@ Cell[TextData[Cell[BoxData[
   Method->"Preemptive"]]]], "NotesSection",
  WholeCellGroupOpener->True,
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->628890060],
+ CellID->1032473671],
 
 Cell["", "SectionHeaderSpacer"],
 
@@ -267,7 +280,7 @@ Cell[TextData[{
 }], "PrimaryExamplesSection",
  WholeCellGroupOpener->True,
  CellTags->"PrimaryExamplesSection",
- CellID->1988211533],
+ CellID->1117120737],
 
 Cell[CellGroupData[{
 
@@ -277,7 +290,7 @@ Cell[TextData[{
  Cell["(1)", "ExampleCount"]
 }], "ExampleSection", "ExampleSection",
  WholeCellGroupOpener->True,
- CellID->1025687811],
+ CellID->2146184685],
 
 Cell[BoxData[
  RowBox[{"<<", "Q3`"}]], "Input",
@@ -305,7 +318,7 @@ Cell[BoxData[
    RowBox[{"3", "\[Rule]", "c"}], ",", 
    RowBox[{"4", "\[Rule]", "d"}]}], "\[RightAssociation]"}]], "Output",
  CellLabel->"Out[2]=",
- CellID->328211974]
+ CellID->1994653013]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -320,13 +333,18 @@ Cell[BoxData[
  RowBox[{"\[LeftAssociation]", 
   RowBox[{
    RowBox[{"False", "\[Rule]", 
-    RowBox[{"{", 
-     RowBox[{"a", ",", "c"}], "}"}]}], ",", 
+    RowBox[{"\[LeftAssociation]", 
+     RowBox[{
+      RowBox[{"1", "\[Rule]", "a"}], ",", 
+      RowBox[{"3", "\[Rule]", "c"}]}], "\[RightAssociation]"}]}], ",", 
    RowBox[{"True", "\[Rule]", 
-    RowBox[{"{", 
-     RowBox[{"b", ",", "d"}], "}"}]}]}], "\[RightAssociation]"}]], "Output",
+    RowBox[{"\[LeftAssociation]", 
+     RowBox[{
+      RowBox[{"2", "\[Rule]", "b"}], ",", 
+      RowBox[{"4", "\[Rule]", "d"}]}], "\[RightAssociation]"}]}]}], 
+  "\[RightAssociation]"}]], "Output",
  CellLabel->"Out[3]=",
- CellID->395347143]
+ CellID->712684665]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -342,18 +360,22 @@ Cell[BoxData[
  RowBox[{"\[LeftAssociation]", 
   RowBox[{
    RowBox[{"False", "\[Rule]", 
-    RowBox[{"{", 
+    RowBox[{"\[LeftAssociation]", 
      RowBox[{
-      RowBox[{"g", "[", "a", "]"}], ",", 
-      RowBox[{"g", "[", "c", "]"}]}], "}"}]}], ",", 
+      RowBox[{"1", "\[Rule]", 
+       RowBox[{"g", "[", "a", "]"}]}], ",", 
+      RowBox[{"3", "\[Rule]", 
+       RowBox[{"g", "[", "c", "]"}]}]}], "\[RightAssociation]"}]}], ",", 
    RowBox[{"True", "\[Rule]", 
-    RowBox[{"{", 
+    RowBox[{"\[LeftAssociation]", 
      RowBox[{
-      RowBox[{"g", "[", "b", "]"}], ",", 
-      RowBox[{"g", "[", "d", "]"}]}], "}"}]}]}], 
+      RowBox[{"2", "\[Rule]", 
+       RowBox[{"g", "[", "b", "]"}]}], ",", 
+      RowBox[{"4", "\[Rule]", 
+       RowBox[{"g", "[", "d", "]"}]}]}], "\[RightAssociation]"}]}]}], 
   "\[RightAssociation]"}]], "Output",
  CellLabel->"Out[4]=",
- CellID->182272940]
+ CellID->253547570]
 }, Open  ]],
 
 Cell[CellGroupData[{
@@ -384,7 +406,49 @@ Cell[BoxData[
        RowBox[{"g", "[", "d", "]"}]}], ")"}]}]}]}], 
   "\[RightAssociation]"}]], "Output",
  CellLabel->"Out[5]=",
- CellID->2042040468]
+ CellID->905096914]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"KeyGroupBy", "[", 
+  RowBox[{"aa", ",", "EvenQ", ",", "Values"}], "]"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1401722566],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"False", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"a", ",", "c"}], "}"}]}], ",", 
+   RowBox[{"True", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"b", ",", "d"}], "}"}]}]}], "\[RightAssociation]"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->992265666]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"KeyGroupBy", "[", 
+  RowBox[{"aa", ",", "EvenQ", ",", "Mean"}], "]"}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->236292776],
+
+Cell[BoxData[
+ RowBox[{"\[LeftAssociation]", 
+  RowBox[{
+   RowBox[{"False", "\[Rule]", 
+    FractionBox[
+     RowBox[{"a", "+", "c"}], "2"]}], ",", 
+   RowBox[{"True", "\[Rule]", 
+    FractionBox[
+     RowBox[{"b", "+", "d"}], "2"]}]}], "\[RightAssociation]"}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1403952241]
 }, Open  ]]
 }, Open  ]],
 
@@ -460,21 +524,20 @@ TaggingRules->{
     Left], "HasOptions" -> False, "ExampleCounter" -> 1, "NeedPlatMsgIn" -> 
   None, "RootCaptions" -> "", 
   "Metadata" -> {
-   "built" -> "{2021, 12, 13, 15, 4, 37.466750}", 
+   "built" -> "{2021, 12, 16, 10, 53, 47.614194}", 
     "history" -> {"2.0", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
     "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
      "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
     "None", "summary" -> 
-    "KeyGroupBy[assoc, f] converts key -> value pairs by applying function f \
-to the key and regroups the resulting key -> value pairs. KeyGroupBy[assoc, f \
--> g] converts keys by f and values by g and then regroups the resulting key \
-\\[RightArrow] value pairs. KeyGroupBy[assoc, f -> g, post] applies function \
-post to reduce lists of values that are generated. KeyGroupBy[assoc, f, post] \
-is equivalent to KeyGroupBy[assoc, f -> Identity, post].", "synonyms" -> {}, 
-    "tabletags" -> {}, "title" -> "KeyGroupBy", "titlemodifier" -> "", 
-    "windowtitle" -> "KeyGroupBy", "type" -> "Symbol", "uri" -> 
-    "Q3/ref/KeyGroupBy", "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> 
-  "", "NewStyles" -> False},
+    "KeyGroupBy[assoc, f] gives an Association that groups keyj -> valuej \
+into different Associations associated with distinct keys f[keyj]. \
+KeyGroupBy[assoc, f -> g] groups keyj -> g[valuej] according to f[keyj]. \
+KeyGroupBy[assoc, f -> g, post] applies function post to Associations that \
+are generated. KeyGroupBy[assoc, f, post] is equivalent to KeyGroupBy[assoc, \
+f -> Identity, post].", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "KeyGroupBy", "titlemodifier" -> "", "windowtitle" -> "KeyGroupBy", 
+    "type" -> "Symbol", "uri" -> "Q3/ref/KeyGroupBy", "WorkflowDockedCell" -> 
+    ""}, "SearchTextTranslated" -> "", "NewStyles" -> False},
 CellContext->"Global`",
 FrontEndVersion->"12.3 for Mac OS X ARM (64-bit) (July 9, 2021)",
 StyleDefinitions->Notebook[{
@@ -494,76 +557,88 @@ StyleDefinitions->Notebook[{
 (*CellTagsOutline
 CellTagsIndex->{
  "PrimaryExamplesSection"->{
-  Cell[8313, 259, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"ad0d81a2-1e45-4186-a4fd-3d0712849de0",
+  Cell[8616, 272, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"2e8de3ef-bcae-45bc-baea-7964b2be5933",
    CellTags->"PrimaryExamplesSection",
-   CellID->1988211533]}
+   CellID->1117120737]}
  }
 *)
 (*CellTagsIndex
 CellTagsIndex->{
- {"PrimaryExamplesSection", 15019, 495}
+ {"PrimaryExamplesSection", 16689, 558}
  }
 *)
 (*NotebookFileOutline
 Notebook[{
-Cell[582, 21, 3197, 77, 70, "AnchorBarGrid",ExpressionUUID->"26f279c4-c37e-4bd5-9682-14d67723e7b1",
+Cell[582, 21, 3197, 77, 70, "AnchorBarGrid",ExpressionUUID->"3706db74-fe3a-4ac4-bb98-d689a1b6a788",
  CellID->1],
 Cell[CellGroupData[{
-Cell[3804, 102, 167, 6, 70, "ObjectNameGrid",ExpressionUUID->"95cd8c31-66d6-47e8-a461-67287dd1d45f"],
-Cell[3974, 110, 3124, 100, 70, "Usage",ExpressionUUID->"076b336c-c1f1-4272-8bc6-0910bffe29c6",
+Cell[3804, 102, 167, 6, 70, "ObjectNameGrid",ExpressionUUID->"0fc8678e-0ac1-429e-9b55-6896e7a32fcd"],
+Cell[3974, 110, 3426, 113, 70, "Usage",ExpressionUUID->"77a5203d-9cde-491c-b237-2f742ee99ef9",
  CellID->2073418320]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[7135, 215, 629, 19, 70, "NotesSection",ExpressionUUID->"b2bb9378-6582-4a4c-8674-a692c4c6533d",
+Cell[7437, 228, 630, 19, 70, "NotesSection",ExpressionUUID->"a34611ca-0321-460c-9bb2-3d1d3e5e69aa",
  CellGroupingRules->{"SectionGrouping", 50},
- CellID->628890060],
-Cell[7767, 236, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"ea90e923-9b4f-4a92-ae34-5c0e4212b834"],
-Cell[7801, 238, 475, 16, 70, "Notes",ExpressionUUID->"3c46df72-126d-4015-a04c-e3d48d8ab9da",
+ CellID->1032473671],
+Cell[8070, 249, 31, 0, 70, "SectionHeaderSpacer",ExpressionUUID->"6c1b461c-42e5-4d7a-8302-40ff27a8972b"],
+Cell[8104, 251, 475, 16, 70, "Notes",ExpressionUUID->"7f64f2e8-a3b4-4c37-ad5d-2d3e47e82cee",
  CellID->724564371]
 }, Closed]],
 Cell[CellGroupData[{
-Cell[8313, 259, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"ad0d81a2-1e45-4186-a4fd-3d0712849de0",
+Cell[8616, 272, 268, 10, 70, "PrimaryExamplesSection",ExpressionUUID->"2e8de3ef-bcae-45bc-baea-7964b2be5933",
  CellTags->"PrimaryExamplesSection",
- CellID->1988211533],
+ CellID->1117120737],
 Cell[CellGroupData[{
-Cell[8606, 273, 196, 6, 70, "ExampleSection",ExpressionUUID->"40b5634b-46af-4526-a114-d6e56f79941b",
- CellID->1025687811],
-Cell[8805, 281, 90, 3, 70, "Input",ExpressionUUID->"a1c5797d-b44a-405e-8f2e-64661d131273",
+Cell[8909, 286, 196, 6, 70, "ExampleSection",ExpressionUUID->"f951f3e7-7399-4fad-bed2-f9b1419baca8",
+ CellID->2146184685],
+Cell[9108, 294, 90, 3, 70, "Input",ExpressionUUID->"a997dc9d-f004-4212-bd24-ceff557480fa",
  CellID->659819542],
 Cell[CellGroupData[{
-Cell[8920, 288, 266, 9, 70, "Input",ExpressionUUID->"1cb2499b-c37b-474f-b824-f216dbdbd7ac",
+Cell[9223, 301, 266, 9, 70, "Input",ExpressionUUID->"06b39a9b-caf1-4326-b933-4ce9ad83401d",
  CellID->714000245],
-Cell[9189, 299, 291, 8, 70, "Output",ExpressionUUID->"363c7dd1-746a-4a48-bd1b-497b001c7cb9",
- CellID->328211974]
+Cell[9492, 312, 292, 8, 70, "Output",ExpressionUUID->"003797ee-362a-4608-812c-001c09a27e03",
+ CellID->1994653013]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[9517, 312, 134, 4, 70, "Input",ExpressionUUID->"b18898a5-9d45-46bc-b0b6-99e9eed7b274",
+Cell[9821, 325, 134, 4, 70, "Input",ExpressionUUID->"64b09b55-b125-41ae-9a0b-1827850b9042",
  CellID->219177307],
-Cell[9654, 318, 320, 10, 70, "Output",ExpressionUUID->"a7d723c2-b89a-4124-8742-ef75c1783662",
- CellID->395347143]
+Cell[9958, 331, 525, 15, 70, "Output",ExpressionUUID->"d72abb2e-fd0a-412f-95b5-92f15d4776e9",
+ CellID->712684665]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[10011, 333, 159, 5, 70, "Input",ExpressionUUID->"ebeaf179-8231-4bbf-8125-092a028a2421",
+Cell[10520, 351, 159, 5, 70, "Input",ExpressionUUID->"c01dd78b-f339-4781-a6eb-d22df774ff6e",
  CellID->230711666],
-Cell[10173, 340, 451, 15, 70, "Output",ExpressionUUID->"a4172f70-e49c-4f74-8a99-ea28e37efaa0",
- CellID->182272940]
+Cell[10682, 358, 657, 19, 70, "Output",ExpressionUUID->"8acd70eb-4c24-41d9-b5ae-5b369b37d453",
+ CellID->253547570]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[10661, 360, 171, 5, 70, "Input",ExpressionUUID->"cdc69b72-2bdc-4e09-882a-2a09a59ecbe9",
+Cell[11376, 382, 171, 5, 70, "Input",ExpressionUUID->"4599c7b8-8fd5-48bf-aca5-3aa858f3250f",
  CellID->32554043],
-Cell[10835, 367, 558, 19, 70, "Output",ExpressionUUID->"4a2f98d1-1d87-49e9-be68-5ae8cbd43c71",
- CellID->2042040468]
+Cell[11550, 389, 557, 19, 70, "Output",ExpressionUUID->"9590e6b8-d4cd-4695-9f49-fa7c39fa43ce",
+ CellID->905096914]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12144, 413, 150, 4, 70, "Input",ExpressionUUID->"b3ba07bc-64b1-411f-a0e1-af072ed41049",
+ CellID->1401722566],
+Cell[12297, 419, 320, 10, 70, "Output",ExpressionUUID->"545c2cee-a469-4174-9665-de84860dd100",
+ CellID->992265666]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12654, 434, 147, 4, 70, "Input",ExpressionUUID->"d7a03708-af34-4663-8ae7-118870a9c590",
+ CellID->236292776],
+Cell[12804, 440, 317, 10, 70, "Output",ExpressionUUID->"1c672927-1e70-4730-a307-777a00288519",
+ CellID->1403952241]
 }, Open  ]]
 }, Open  ]],
-Cell[11420, 390, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"861d0da2-e8b3-45d1-a35f-bd1cf32fa465"]
+Cell[13148, 454, 31, 0, 70, "SectionFooterSpacer",ExpressionUUID->"82a46203-9697-4f38-bed3-171bbbafa46a"]
 }, Open  ]],
 Cell[CellGroupData[{
-Cell[11488, 395, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"03f9cf7d-c198-46e8-87fb-8a4a535a1fd2",
+Cell[13216, 459, 150, 7, 70, "SeeAlsoSection",ExpressionUUID->"aa80be18-3c54-4841-b3b2-601a0fc9b3e6",
  CellID->1624325580],
-Cell[11641, 404, 1143, 38, 70, "SeeAlso",ExpressionUUID->"283712db-867b-42b2-9a98-d7fa9533d1ed",
+Cell[13369, 468, 1143, 38, 70, "SeeAlso",ExpressionUUID->"d9429df4-6135-407f-9f9b-ae95345f82ab",
  CellID->1227902396]
 }, Open  ]],
-Cell[12799, 445, 23, 0, 70, "FooterCell",ExpressionUUID->"212527c4-0b24-44ec-8564-dd0e4cd9a69b"]
+Cell[14527, 509, 23, 0, 70, "FooterCell",ExpressionUUID->"ee80f27c-9aa8-4c45-9786-613275e6cf38"]
 }
 ]
 *)
