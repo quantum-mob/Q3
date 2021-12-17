@@ -67,8 +67,3 @@ PacletUninstall["Q3"]
    ```
 
    Here `$UserBaseDirectory` is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
-
-
-## Note
-
-After installing/updating the application, the first time you search for a keyword in Wolfram Language Documentation Center (help window) Mathematica builds the search index of the new documentation files. It can take a few seconds to minutes depending on your computer. It happens only once (everytime you update the application) though.

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.162 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-16 10:19:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.165 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-17 23:10:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -61,7 +61,7 @@ BeginPackage["Q3`"]
 
 { Zero, One };
 
-{ Parity, ParityEvenQ, ParityOddQ };
+{ Parity, ParityValue, ParityEvenQ, ParityOddQ };
 
 { TensorFlatten, Tensorize, PartialTrace, PartialTranspose };
 { ReducedMatrix, Reduced };
@@ -1857,6 +1857,8 @@ blockEigensystem[bs_?MatrixQ, mat_?MatrixQ] := Module[
 (**** </CommonEigensystem> ****)
 
 
+(**** <Parity> ****)
+
 Parity::usage = "Parity[op] represents the parity operator of the species op. For a particle (Boson or Fermion) op, it refers to the even-odd parity of the occupation number. For a Qubit, it refers to the Pauli-Z.\nParity[{a, b, ...}] representts the overall parity of species a, b, ...."
 
 Parity /: Peel[ Parity[a_] ] := a (* for Matrix[] *)
@@ -1884,6 +1886,34 @@ HoldPattern @ Multiply[pre___, a_Parity, b_Parity, post___] :=
   Multiply[pre, b, a, post] /; Not @ OrderedQ @ {a, b}
 
 
+ParityValue::usage = "ParityValue[state, {a, b, ...}] returns the parity eigenvalue \[PlusMinus]1 if state is a parity eigenstate of species {a,b,\[Ellipsis]} and 0 otherwise.\nParityValue[{a,b,\[Ellipsis]}] represents the operator form of ParityValue."
+
+ParityValue[ q_?SpeciesQ ][ expr_ ] := ParityValue[expr, {q}]
+
+ParityValue[ qq:{__?SpeciesQ} ][ expr_ ] := ParityValue[expr, qq]
+
+ParityValue[ expr_  ] := ParityValue[expr, NonCommutativeSpecies[expr]] /;
+  Not @ FreeQ[expr, _Ket]
+
+ParityValue[ expr_Association, op_List ] := Map[ ParityValue[op], expr ]
+
+ParityValue[ expr_List, op_List ] := Map[ ParityValue[op], expr ] /;
+  Not @ FreeQ[expr, _Ket]
+
+ParityValue[ z_?CommutativeQ expr_, op_List ] := ParityValue[expr, op] /;
+  Not @ FreeQ[expr, _Ket]
+
+ParityValue[ expr_Plus, op_List ] := With[
+  { vv = ParityValue[Cases[expr, _Ket, Infinity], op] },
+  If[Equal @@ vv, First @ vv, 0]
+ ] /; Not @ FreeQ[expr, _Ket]
+
+ParityValue[ v_Ket, op:{__?SpeciesQ} ] :=
+  Multiply @@ Map[ParityValue[v, #]&, FlavorNone @ op]
+
+ParityValue[ Ket[<||>], {} ] := True
+
+
 ParityEvenQ::usage = "ParityEvenQ[state_, {a, b, ...}] returns True if state (in a Ket expression) has a definite Even parity with respect to the systems a, b, .... Otherwise, False is returned.\nParityEvenQ[state] first finds all systems involved and tests the parity."
 
 ParityOddQ::usage = "ParityOddQ[state_, {a, b, ...}] returns True if state (in a Ket expression) has a definite Odd parity. Otherwise, False is returned.ParityOddQ[state] first finds all systems involved and tests the parity."
@@ -1905,10 +1935,15 @@ ParityOddQ[ expr_  ] := ParityOddQ[expr, NonCommutativeSpecies[expr]] /;
   Not @ FreeQ[expr, _Ket]
 
 
-ParityEvenQ[ expr_List, op_List ] := Map[ ParityEvenQ[#,op]&, expr ] /;
+ParityEvenQ[ expr_Association, op_List ] := Map[ ParityEvenQ[op], expr ]
+
+ParityOddQ[ expr_Association, op_List ] := Map[ ParityOddQ[op], expr ]
+
+
+ParityEvenQ[ expr_List, op_List ] := Map[ ParityEvenQ[op], expr ] /;
   Not @ FreeQ[expr, _Ket]
 
-ParityOddQ[ expr_List, op_List ] := Map[ ParityOddQ[#,op]&, expr ] /;
+ParityOddQ[ expr_List, op_List ] := Map[ ParityOddQ[op], expr ] /;
   Not @ FreeQ[expr, _Ket]
 
 
@@ -1938,6 +1973,8 @@ ParityEvenQ[ v_Ket, op:{__?SpeciesQ} ] :=
 
 ParityOddQ[ v_Ket, op:{__?SpeciesQ} ] :=
   Xor @@ Map[ParityOddQ[v,#]&, FlavorNone @ op]
+
+(**** </Parity> ****)
 
 
 (**** <RotationSystem> <TheEulerAngles> ****)

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.13 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-03 21:18:39+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.14 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-17 23:11:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2130,6 +2130,8 @@ HoldPattern @
   Multiply[pre, b, Parity[a], post] /;
   Commutator[a, b] == 0
 
+
+ParityValue[v_Ket, a_?ParticleQ] := 1 - 2*Mod[v[a], 2]
 
 ParityEvenQ[v_Ket, a_?ParticleQ] := EvenQ @ v @ a
 

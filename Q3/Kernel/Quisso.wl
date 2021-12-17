@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.85 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-16 07:07:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.1 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-17 23:04:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -23,7 +23,7 @@ BeginPackage["Q3`"]
 
 { Phase, Rotation, EulerRotation };
 
-{ ControlledU, CZ, CNOT, SWAP, Toffoli, Fredkin, Deutsch,
+{ ControlledU, CNOT, CX=CNOT, CZ, SWAP, Toffoli, Fredkin, Deutsch,
   Projector, Measurement, Readout };
 
 { Oracle, VerifyOracle };
@@ -788,6 +788,7 @@ DensityOperator[v_] :=
 
 Parity[S_?QubitQ] := S[3]
 
+ParityValue[v_Ket, a_?QubitQ] := 1 - 2*v[a]
 
 ParityEvenQ[v_Ket, a_?QubitQ] := EvenQ @ v @ a
 
@@ -1150,6 +1151,8 @@ QuissoEulerRotation[args___] := (
 
 (**** <CNOT> ****)
 
+CX::usage = "CX is an alias to CNOT."
+
 CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. Note that it does not expand until necessary (e.g., multiplied to a Ket); use QuissoCNOT or Elaborate in order to expand it immediately."
 
 CNOT[c_?QubitQ, t_] := CNOT[{c}, t]
@@ -1194,21 +1197,24 @@ QuissoCNOT[args___] := (
 
 (**** <CZ> ****)
 
-CZ::usage = "CZ[C, T] operates the controlled-Z gate on the two qubits associated with C and T. C and T are the control and target qubits, respectively; in fact, contol and target qubits are symmetric for this gate."
+CZ::usage = "CZ[C, T] represents the controlled-Z gate on the two qubits associated with C and T. C and T are the control and target qubits, respectively; in fact, contol and target qubits are symmetric for this gate.\nC[{c1,c2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] represents the multi-control Z gate."
 
-SetAttributes[CZ, Listable]
+CZ[c_?QubitQ, t_] := CZ[{c}, t]
 
-CZ[ c_?QubitQ, t_?QubitQ ] := CZ @@ FlavorNone @ {c,t} /;
-  FlavorLast[{c,t}] =!= {None, None}
+CZ[c_, t_?QubitQ] := CZ[c, {t}]
+
+CZ[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
+  CZ[FlavorNone @ cc, FlavorNone @ tt] /;
+  Not @ ContainsOnly[FlavorLast @ Join[cc, tt], {None}]
 
 CZ /:
 Dagger[ op_CZ ] := op
 
 CZ /:
-HoldPattern @ Elaborate @ CZ[c_?QubitQ, t_?QubitQ] := Module[
-  { a = Most @ c,
-    b = Most @ t },
-  Garner[ (1 - a[3]**b[3] + a[3] + b[3]) / 2 ]
+HoldPattern @ Elaborate @ CZ[cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+  { prj = Multiply @@ Through[cc[11]],
+    opz = Multiply @@ Through[tt[3]] },
+  Garner @ Elaborate[(1-prj) + prj ** opz]
  ]
 
 CZ /:
@@ -1217,6 +1223,7 @@ HoldPattern @ Multiply[pre___, op_CZ, post___] :=
 
 CZ /:
 HoldPattern @ Matrix[op_CZ, rest___] := Matrix[Elaborate[op], rest]
+
 
 
 QuissoCZ::usage = "QuissoCZ is obsolete now. Use Elaborate[CZ[\[Ellipsis]]] instead."
@@ -1775,10 +1782,10 @@ GraphState[ g_Graph ] := Module[
   { vv = VertexList[g],
     cz = EdgeList[g],
     hh },
-  hh = Multiply @@ Map[#[6]&, vv];
-  cz = Multiply @@ CZ @@@ cz; 
+  hh = Multiply @@ Through[vv[6]];
+  cz = Multiply @@ CZ @@@ cz;
   Garner[ cz ** (hh ** Ket[]) ]
-  /; AllTrue[ vv, QubitQ ]
+  /; AllTrue[vv, QubitQ]
  ]
 
 
@@ -1808,8 +1815,7 @@ QuissoIn::usage = "QuissoIn is a holder for input expression in QuantumCircuit.\
 
 QuissoOut::usage = "QuissoOut is a holder for expected output expressions in QuantumCircuit. Note that the output expressions are just expected output and may be different from the actual output. They are used only for output label and ignored by ExpressionFor and Elaborate.\nSee also QuissoIn."
 
-
-SetAttributes[ {QuissoOut, QuissoIn}, Flat ]
+SetAttributes[{QuantumCircuit, QuissoOut, QuissoIn}, Flat]
 
 Options[QuantumCircuit] = {
   "TargetFunction" -> "Rectangle",
@@ -1862,42 +1868,40 @@ HoldPattern @ Multiply[pre___, Longest[qc__QuantumCircuit], post___] :=
  * User Interface
  *)
 
-QuantumCircuit[ a___, QuantumCircuit[b___], c___] := QuantumCircuit[a, b, c]
-(* Similar effect as the Flat attribute. *)
+(* NOTE: QuantumCircuit has attribute Flat. *)
 
-QuantumCircuit[ a__?qKetQ ] := QuantumCircuit[ QuissoIn[a] ]
+QuantumCircuit[rest:Except[_?qcKetQ].., Longest[vv__?qcKetQ]] :=
+  QuantumCircuit[rest, QuissoOut[vv]]
 
-QuantumCircuit[ a__?qKetQ, b:Except[_?qKetQ], c___ ] :=
-  QuantumCircuit[ QuissoIn[a], b, c ]
+QuantumCircuit[Longest[vv__?qcKetQ]] :=
+  QuantumCircuit @ QuissoIn[vv]
 
-QuantumCircuit[ a___, b__?qKetQ, opts___?OptionQ ] :=
-  QuantumCircuit[ a, QuissoOut[b], opts ]
+QuantumCircuit[Longest[opts__?OptionQ], rest:Except[_?OptionQ]..] :=
+  QuantumCircuit[rest, opts]
 
-QuantumCircuit[ a___, b__?OptionQ, c:Except[_?OptionQ].. ] :=
-  QuantumCircuit[a, c, b]
+QuantumCircuit[a_QuissoOut, bb__QuissoOut] :=
+  QuantumCircuit @ QuissoOut[a, bb]
 
-QuantumCircuit[ x___, a_QuissoOut, b__QuissoOut, y___ ] :=
-  QuantumCircuit[x, QuissoOut[a, b], y]
+QuantumCircuit[a_QuissoIn, bb__QuissoIn] :=
+  QuantumCircuit @ QuissoIn[a, bb]
 
-QuantumCircuit[ x___, a_QuissoIn, b__QuissoIn, y___ ] :=
-  QuantumCircuit[x, QuissoIn[a, b], y]
+QuantumCircuit[rest__, in_QuissoIn] :=
+  QuantumCircuit[in, rest]
 
-QuantumCircuit[ a__, b_QuissoIn, c___ ] := QuantumCircuit[ b, a, c ]
+QuantumCircuit[out_QuissoOut, rest:Except[_?OptionQ|_QuissoOut]..] :=
+  QuantumCircuit[rest, out]
 
-QuantumCircuit[ a___, b_QuissoOut, c:Except[_?OptionQ].., opts___?OptionQ ] :=
-  QuantumCircuit[a, c, b, opts]
-
-qKetQ[expr_] := And[
+qcKetQ[expr_] := And[
   FreeQ[expr, _QuissoIn | _QuissoOut | _Projector],
-  !FreeQ[expr, _Ket | _ProductState]
+  Not @ FreeQ[expr, _Ket | _ProductState]
  ]
 
 (* See also GraphState[] *)
-QuantumCircuit[a___, g_Graph, b___] := Module[
+QuantumCircuit[g_Graph] := Module[
   { qubits = VertexList[g],
     links  = EdgeList[g] },
-  links = links /. { UndirectedEdge -> CZ };
-  QuantumCircuit[a, Map[#[6]&] @ qubits, Sequence @@ links, b]
+  links = links /. { UndirectedEdge -> CZ, DirectedEdge -> CZ };
+  QuantumCircuit[Through[qubits[6]], Sequence @@ links]
   /; AllTrue[ qubits, QubitQ ]
  ]
 
@@ -1909,7 +1913,7 @@ QuantumCircuit /:
 ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
 
 QuantumCircuit /:
-Elaborate[ QuantumCircuit[gg__, ___?OptionQ] ] := Module[
+HoldPattern @ Elaborate[ QuantumCircuit[gg__, ___?OptionQ] ] := Module[
   { expr = Flatten @ QuantumCircuitTrim @ {gg} },
   Garner[ qCircuitOperate @@ expr ]
  ]
@@ -1917,7 +1921,7 @@ Elaborate[ QuantumCircuit[gg__, ___?OptionQ] ] := Module[
    state is specified in the circuit. *)
 
 QuantumCircuit /:
-Qubits[ QuantumCircuit[gg__, opts___?OptionQ] ] := Union[
+HoldPattern @ Qubits[ QuantumCircuit[gg__, opts___?OptionQ] ] := Union[
   Qubits @ {gg},
   FlavorNone @ Flatten[
     {"Visible"} /. {opts} /. Options[QuantumCircuit]
@@ -1925,7 +1929,7 @@ Qubits[ QuantumCircuit[gg__, opts___?OptionQ] ] := Union[
  ]
 
 QuantumCircuit /:
-Matrix[ qc:QuantumCircuit[gg__, ___?OptionQ] ] := Module[
+HoldPattern @ Matrix[ qc:QuantumCircuit[gg__, ___?OptionQ] ] := Module[
   { expr = Flatten @ QuantumCircuitTrim @ {gg} },
   qCircuitMatrix[ Sequence @@ expr, Qubits @ qc ]
  ]
@@ -1968,7 +1972,7 @@ QuantumCircuitTrim::usage = "QuantumCircuitTrim[expr] removes visualization opti
 
 SetAttributes[ QuantumCircuitTrim, Listable ];
 
-QuantumCircuitTrim[ QuantumCircuit[gg__] ] :=
+QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__] ] :=
   Flatten @ QuantumCircuitTrim @ {gg}
 
 QuantumCircuitTrim[ QuissoIn[a__] ]  := Multiply @@ QuantumCircuitTrim[ {a} ]
@@ -2000,11 +2004,11 @@ QuantumCircuitTrim[ g_ ] := g
  *)
 
 QuantumCircuit /:
-Graphics[ QuantumCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
+HoldPattern @
+  Graphics[ QuantumCircuit[gg__, opts___?OptionQ], more___?OptionQ ] :=
   Module[
     { ss = Qubits @ {gg},
-      (* NOTE: Pure Qubits should be given None index properly. *)
-      cc = qCircuitGate @ gg,
+      cc = qCircuitGate @ {gg},
       vv, ww, xx, yy, nodes, lines, in, out, unit },
 
     {vv, ww, unit, port} = {
@@ -2017,9 +2021,6 @@ Graphics[ QuantumCircuit[ gg__, opts___?OptionQ ], more___?OptionQ ] :=
     vv = FlavorNone @ Flatten @ vv;
     ww = FlavorNone @ Flatten @ ww;
     ss = Union @ Flatten @ {ss, vv, ww};
-
-    If[ !ListQ[cc], cc = List @ cc ];
-    (* It happens when there is only one circuit element. *)
 
     If[ cc == {}, cc = {"Spacer"} ];
     (* There can be only input elements. *)
@@ -2056,7 +2057,7 @@ qGateQ[expr_] := Not @ FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
 
 qCircuitGate::usage = "qCircuitGate[expr, opts] preprocesses various circuit elements."
 
-(* NOTE: Do not set Listable attribute for qCircuitGate. *)
+(* NOTE: DO NOT set Listable attribute for qCircuitGate. *)
 
 Options[ qCircuitGate ] = {
   "TargetFunction"  -> "Rectangle",
@@ -2065,7 +2066,11 @@ Options[ qCircuitGate ] = {
   "Label" -> None
  }
 
-(* Gate *)
+
+qCircuitGate[{gg__, opts___?OptionQ}] :=
+  Map[qCircuitGate[#, opts]&, {gg}]
+
+
 qCircuitGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
   
 qCircuitGate[ S_?QubitQ, opts___?OptionQ ] :=
@@ -2116,8 +2121,13 @@ qCircuitGate[ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}], opts___?OptionQ ] :=
 qCircuitGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
   Gate[ {a, b}, {c}, "TargetFunction" -> "CirclePlus" ]
 
-qCircuitGate[ CZ[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
-  Gate[ {c}, {t}, "ControlFunction" -> "Dot", "TargetFunction" -> "Dot" ]
+
+qCircuitGate[ CZ[cc:{__?QubitQ}, tt:{__?QubitQ}], opts___?OptionQ ] :=
+  Sequence @@ Map[qcgCZ[cc, #, opts]&, tt]
+
+qcgCZ[ cc:{__?QubitQ}, t_?QubitQ, opts___?OptionQ ] :=
+  Gate[ cc, {t}, "ControlFunction" -> "Dot", "TargetFunction" -> "Dot" ]
+
 
 qCircuitGate[ SWAP[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
   Gate[ {c}, {t},
@@ -2189,14 +2199,6 @@ qCircuitGate[ gate:("Separator" | "Spacer"), opts___?OptinQ ] := gate
 
 qCircuitGate[ expr_, opts___?OptinQ ] := expr /; FreeQ[expr, _?QubitQ]
 (* Graphics primitives corresponds to this case. *)
-
-qCircuitGate[ a_List, opts___?OptionQ ] :=
-  qCircuitGate @@ Join[ a, {opts} ]
-
-qCircuitGate[ a_, b__, opts___?OptionQ ] := Map[
-  qCircuitGate[#, opts]&,
-  {a, b}
- ]
 
 
 qGateLabel::usage = "qGateLabel[G] returns the label of the circuit element to be displayed in the circuit diagram."
@@ -2765,6 +2767,7 @@ Parity[A_?QuditQ] := Module[
   Power[-1, jj] . op
  ]
 
+ParityValue[v_Ket, a_?QuditQ] := 1 - 2*Mod[v[a], 2]
 
 ParityEvenQ[v_Ket, a_?QuditQ] := EvenQ @ v @ a
 
