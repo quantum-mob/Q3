@@ -1,16 +1,12 @@
 (* Paclet Info File *)
-(* $Date: 2021-12-16 17:25:09+09 $ *)
-(* $Revision: 2.1 $ *)
-
-(* created 2021/02/11*)
+(* $Date: 2021-12-17 09:18:28+09 $ *)
+(* $Revision: 2.7 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.1.2",
+  "Version" -> "2.1.3",
   "WolframVersion" -> "12.1+",
-  "Description" -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems.",
-  "Creator" -> "Mahn-Soo Choi (Korea University)",
-  "AutoUpdating" -> True,
+  "Updating" -> Automatic,
   "Extensions" -> {
     { "Kernel",
       "Root" -> "Kernel",
@@ -23,5 +19,12 @@ Paclet[
     { "Documentation",
       "Language" -> "English",
       "MainPage" -> "Guides/Q3" }
-   }
-]
+   },
+  "Description" -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems",
+  "Creator" -> "Mahn-Soo Choi (Korea University)",
+  "URL" -> "https://github.com/quantum-mob/Q3App",
+  "Category" -> { "Physics", "Quantum Physics" },
+  "Keywords" -> { "quantum information", "quantum computation",
+    "quantum many-body systems", "quantum spins" },
+  "Support" -> "quantum.mob21@gmail.com"
+ ]

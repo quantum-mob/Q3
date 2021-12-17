@@ -2,7 +2,7 @@
 
 ## v2.1.2
 
-- Documentaion built with PacletDocumentationBuild from Mathematica 13.
+- Documentation built with PacletDocumentationBuild from Mathematica 13.
 
 ## v2.1.1
 
