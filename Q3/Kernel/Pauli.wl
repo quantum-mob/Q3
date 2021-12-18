@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.165 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-17 23:10:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.168 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-18 10:58:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -729,6 +729,12 @@ KetOrthogonalize[vv:{__}] := Module[
 (**** <KetFactor> ****)
 
 KetFactor::usage = "KetFactor[expr] tries to factorize the ket expression expr, and if successful, it returns the result in terms of OTimes[\[Ellipsis]]. Otherwise it just throws expr out.\nKetFactor[expr, s] or KetFactor[expr, {s1, s2, \[Ellipsis]}] factors out the state concerning the specified species and returns the result in terms of OSlash[\[Ellipsis]]."
+
+KetFactor[in_Association, qq:{__?SpeciesQ}] :=
+  Map[KetFactor[#, qq]&, in]
+
+KetFactor[in_List, qq:{__?SpeciesQ}] :=
+  Map[KetFactor[#, qq]&, in]
 
 KetFactor[Ket[a_Association], qq:{__?SpeciesQ}] := Module[
   { ss = FlavorNone[qq] },
@@ -1888,28 +1894,29 @@ HoldPattern @ Multiply[pre___, a_Parity, b_Parity, post___] :=
 
 ParityValue::usage = "ParityValue[state, {a, b, ...}] returns the parity eigenvalue \[PlusMinus]1 if state is a parity eigenstate of species {a,b,\[Ellipsis]} and 0 otherwise.\nParityValue[{a,b,\[Ellipsis]}] represents the operator form of ParityValue."
 
-ParityValue[ q_?SpeciesQ ][ expr_ ] := ParityValue[expr, {q}]
+ParityValue[ S_?SpeciesQ ][ expr_ ] := ParityValue[expr, {S}]
 
-ParityValue[ qq:{__?SpeciesQ} ][ expr_ ] := ParityValue[expr, qq]
+ParityValue[ ss:{__?SpeciesQ} ][ expr_ ] := ParityValue[expr, ss]
 
-ParityValue[ expr_  ] := ParityValue[expr, NonCommutativeSpecies[expr]] /;
+
+ParityValue[ expr_Association, ss:{__?SpeciesQ} ] :=
+  Map[ ParityValue[ss], expr ]
+
+ParityValue[ expr_List, ss:{__?SpeciesQ} ] :=
+  Map[ ParityValue[ss], expr ] /;
   Not @ FreeQ[expr, _Ket]
 
-ParityValue[ expr_Association, op_List ] := Map[ ParityValue[op], expr ]
-
-ParityValue[ expr_List, op_List ] := Map[ ParityValue[op], expr ] /;
+ParityValue[ z_?CommutativeQ expr_, ss:{__?SpeciesQ} ] :=
+  ParityValue[expr, ss] /;
   Not @ FreeQ[expr, _Ket]
 
-ParityValue[ z_?CommutativeQ expr_, op_List ] := ParityValue[expr, op] /;
-  Not @ FreeQ[expr, _Ket]
-
-ParityValue[ expr_Plus, op_List ] := With[
-  { vv = ParityValue[Cases[expr, _Ket, Infinity], op] },
+ParityValue[ expr_Plus, ss:{__?SpeciesQ} ] := With[
+  { vv = ParityValue[Cases[expr, _Ket, Infinity], ss] },
   If[Equal @@ vv, First @ vv, 0]
  ] /; Not @ FreeQ[expr, _Ket]
 
-ParityValue[ v_Ket, op:{__?SpeciesQ} ] :=
-  Multiply @@ Map[ParityValue[v, #]&, FlavorNone @ op]
+ParityValue[ v_Ket, ss:{__?SpeciesQ} ] :=
+  Multiply @@ Map[ParityValue[v, #]&, FlavorNone @ ss]
 
 ParityValue[ Ket[<||>], {} ] := True
 
@@ -1918,48 +1925,47 @@ ParityEvenQ::usage = "ParityEvenQ[state_, {a, b, ...}] returns True if state (in
 
 ParityOddQ::usage = "ParityOddQ[state_, {a, b, ...}] returns True if state (in a Ket expression) has a definite Odd parity. Otherwise, False is returned.ParityOddQ[state] first finds all systems involved and tests the parity."
 
-ParityEvenQ[ q_?SpeciesQ ][ expr_ ] := ParityEvenQ[expr, {q}]
+ParityEvenQ[ S_?SpeciesQ ][ expr_ ] := ParityEvenQ[expr, {S}]
 
-ParityOddQ[ q_?SpeciesQ ][ expr_ ] := ParityOddQ[expr, {q}]
-
-
-ParityEvenQ[ qq:{__?SpeciesQ} ][ expr_ ] := ParityEvenQ[expr, qq]
-
-ParityOddQ[ qq:{__?SpeciesQ} ][ expr_ ] := ParityOddQ[expr, qq]
+ParityOddQ[ S_?SpeciesQ ][ expr_ ] := ParityOddQ[expr, {S}]
 
 
-ParityEvenQ[ expr_  ] := ParityEvenQ[expr, NonCommutativeSpecies[expr]] /;
+ParityEvenQ[ ss:{__?SpeciesQ} ][ expr_ ] := ParityEvenQ[expr, ss]
+
+ParityOddQ[ ss:{__?SpeciesQ} ][ expr_ ] := ParityOddQ[expr, ss]
+
+
+ParityEvenQ[ expr_Association, ss:{__?SpeciesQ} ] :=
+  Map[ ParityEvenQ[ss], expr ]
+
+ParityOddQ[ expr_Association, ss:{__?SpeciesQ} ] :=
+  Map[ ParityOddQ[ss], expr ]
+
+
+ParityEvenQ[ expr_List, ss:{__?SpeciesQ} ] :=
+  Map[ ParityEvenQ[ss], expr ] /;
   Not @ FreeQ[expr, _Ket]
 
-ParityOddQ[ expr_  ] := ParityOddQ[expr, NonCommutativeSpecies[expr]] /;
-  Not @ FreeQ[expr, _Ket]
-
-
-ParityEvenQ[ expr_Association, op_List ] := Map[ ParityEvenQ[op], expr ]
-
-ParityOddQ[ expr_Association, op_List ] := Map[ ParityOddQ[op], expr ]
-
-
-ParityEvenQ[ expr_List, op_List ] := Map[ ParityEvenQ[op], expr ] /;
-  Not @ FreeQ[expr, _Ket]
-
-ParityOddQ[ expr_List, op_List ] := Map[ ParityOddQ[op], expr ] /;
+ParityOddQ[ expr_List, ss:{__?SpeciesQ} ] :=
+  Map[ ParityOddQ[ss], expr ] /;
   Not @ FreeQ[expr, _Ket]
 
 
-ParityEvenQ[ z_?CommutativeQ expr_, op_List ] := ParityEvenQ[expr, op] /;
+ParityEvenQ[ z_?CommutativeQ expr_, ss:{__?SpeciesQ} ] :=
+  ParityEvenQ[expr, ss] /;
   Not @ FreeQ[expr, _Ket]
 
-ParityOddQ[ z_?CommutativeQ expr_, op_List ] := ParityOddQ[expr, op] /;
+ParityOddQ[ z_?CommutativeQ expr_, ss:{__?SpeciesQ} ] :=
+  ParityOddQ[expr, ss] /;
   Not @ FreeQ[expr, _Ket]
 
 
-ParityEvenQ[ expr_Plus, op_List ] :=
-  And @@ ParityEvenQ[Cases[expr, _Ket, Infinity], op] /;
+ParityEvenQ[ expr_Plus, ss:{__?SpeciesQ} ] :=
+  And @@ ParityEvenQ[Cases[expr, _Ket, Infinity], ss] /;
   Not @ FreeQ[expr, _Ket]
 
-ParityOddQ[ expr_Plus, op_List ] :=
-  And @@ ParityOddQ[Cases[expr, _Ket, Infinity], op] /;
+ParityOddQ[ expr_Plus, ss:{__?SpeciesQ} ] :=
+  And @@ ParityOddQ[Cases[expr, _Ket, Infinity], ss] /;
   Not @ FreeQ[expr, _Ket]
 
 
@@ -1968,11 +1974,11 @@ ParityEvenQ[ Ket[<||>], {} ] := True
 ParityOddQ[ Ket[<||>], {} ] := False
 
 
-ParityEvenQ[ v_Ket, op:{__?SpeciesQ} ] :=
-  Not[ Xor @@ Map[ParityOddQ[v,#]&, FlavorNone @ op] ]
+ParityEvenQ[ v_Ket, ss:{__?SpeciesQ} ] :=
+  Not[ Xor @@ Map[ParityOddQ[v,#]&, FlavorNone @ ss] ]
 
-ParityOddQ[ v_Ket, op:{__?SpeciesQ} ] :=
-  Xor @@ Map[ParityOddQ[v,#]&, FlavorNone @ op]
+ParityOddQ[ v_Ket, ss:{__?SpeciesQ} ] :=
+  Xor @@ Map[ParityOddQ[v,#]&, FlavorNone @ ss]
 
 (**** </Parity> ****)
 

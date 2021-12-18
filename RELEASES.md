@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.1.3
+
+- QuantumCircuit has been improved and receives a bug fix.
+- The syntax of ParityEvenQ and ParityOddQ has been slightly changed.
+- New function ParityValue.
+
 ## v2.1.2
 
 - Documentation built with PacletDocumentationBuild from Mathematica 13.
