@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.1.4
+
+- A bug fix in Let.
+- New functions Observation and ObservationValue.
+- A buf fix in KetFactor.
+
 ## v2.1.3
 
 - QuantumCircuit has been improved and receives a bug fix.

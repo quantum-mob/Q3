@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.168 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-18 10:58:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.180 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-21 10:17:07+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -635,14 +635,18 @@ KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if t
 
 KetPurge[test_][expr_] := KetPurge[expr, test]
 
-KetPurge[v:Ket[_Association], test_] := Module[
-  { new = test /. {S_?SpeciesQ :> FlavorNone[S]},
-    ss },
-  ss = NonCommutativeSpecies[new];
-  If[ new /. Normal @@ LogicalForm[v, ss], 0, v, v ]
+KetPurge[Ket[asso_Association], test_] := Module[
+  { cond },
+  cond = ReleaseHold[
+    test /. {
+      S_?SpeciesQ[j___] :> Lookup[asso, S[j,None]],
+      S_Symbol?SpeciesQ :> Lookup[asso, S[None]]
+     }
+   ];
+  If[cond, 0, Ket[asso], Ket[asso]]
  ]
 
-KetPurge[assoc_Association, test_] := KetPurge[test] /@ assoc
+KetPurge[asso_Association, test_] := KetPurge[test] /@ asso
 
 KetPurge[expr_, test_] := expr /. {
   v:Ket[_Association] :> KetPurge[v, test]
@@ -700,6 +704,7 @@ KetSort[expr_, ss:{__?SpeciesQ}] := expr /. {
 
 (**** </Ket & Bra> ****)
 
+
 KetNorm::usage = "KetNorm[expr] returns the norm of Ket expression expr."
 
 KetNorm[v_] := Sqrt[Dagger[v] ** v] /; Not @ FreeQ[v, _Ket]
@@ -747,7 +752,7 @@ KetFactor[z_?CommutativeQ expr_ , qq:{__?SpeciesQ}] :=
 KetFactor[expr_, S_?SpeciesQ] := KetFactor[expr, {S}]
 
 KetFactor[expr_Plus, qq:{__?SpeciesQ}] :=
-  KetFactor @ Total @ Map[KetFactor[#, qq]&, List @@ expr]
+  KetFactor @ Map[KetFactor[#, qq]&, expr]
 
 KetFactor[expr_Plus, qq:{__?SpeciesQ}] := Module[
   { new },
@@ -759,6 +764,10 @@ KetFactor[expr_Plus, qq:{__?SpeciesQ}] := Module[
 KetFactor[v_Ket] := v
 
 KetFactor[OSlash[vec_, expr_]] := OSlash[vec, KetFactor[expr]]
+
+KetFactor[expr_Association] := Map[KetFactor, expr]
+
+KetFactor[expr_List] := Map[KetFactor, expr]
 
 KetFactor[expr_] := Module[
   { new },
@@ -793,9 +802,9 @@ ReleaseTimes[expr_] := DefaultForm[
 
 
 OTimes::usage = "OTimes represents CircleTimes, but holds the arguments. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
-(* It is used, e.g., for QuissoFactor[]. *)
+(* It is used, e.g., for KetFactor[]. *)
 
-Format[ HoldPattern[ OTimes[a__] ] ] := CircleTimes @@ Map[HoldForm] @ {a}
+Format[ HoldPattern @ OTimes[a__] ] := HoldForm @ CircleTimes[a]
 
 OTimes[a_] := a
 
@@ -805,7 +814,7 @@ OTimes[pre___, vv:Repeated[_Ket, {2, Infinity}], post___] :=
   OTimes[pre, CircleTimes[vv], post]
 
 OTimes /:
-HoldPattern @ Dagger[ OTimes[a__] ] := OTimes @@ Dagger @ {a}
+HoldPattern @ Dagger[ OTimes[a__] ] := OTimes @@ Dagger[{a}]
 
 
 OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
@@ -1624,7 +1633,15 @@ HoldPattern @
 
 MatrixIn::ussage = "MatrixIn[op, bs] returns the matrix representation of operator op in basis bs. The basis bs may be a list of kets or an association of such lists.\nMatrixIn[bs] provides the operator form of MatrixIn."
 
+MatrixIn::nullv = "`` includes the null vector (0 or 0.)."
+
 MatrixIn::notbs = "`` does not look like a valid basis."
+
+MatrixIn[op_, bs_List] := (
+  Message[MatrixIn::nullv, bs];
+  Garner @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
+ ) /; ContainsAny[bs, {0, 0.}]
+(* NOTE: This may happen numerically or in a illdefined basis. *)
 
 MatrixIn[op_, bs_List] := (
   Message[MatrixIn::notbs, bs];
@@ -1633,12 +1650,13 @@ MatrixIn[op_, bs_List] := (
 
 MatrixIn[bs_List][op_] := MatrixIn[op, bs]
 
-MatrixIn[op_, bs_List] := Garner @ Outer[Multiply, Dagger[bs], op ** bs]
+MatrixIn[op_, bs_List] :=
+  Garner @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
 
 MatrixIn[op_, bs_Association] := Map[MatrixIn[op, #]&, bs]
 
 MatrixIn[op_, aa_List, bb_List] :=
-  Garner @ Outer[Multiply, Dagger[aa], op ** bb]
+  Garner @ Outer[Multiply, Dagger[aa], Garner[op ** bb]]
 
 (**** </MatrixIn> ****)
 

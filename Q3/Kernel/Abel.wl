@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.33 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-16 15:06:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.53 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-21 09:54:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -39,10 +39,10 @@ BeginPackage["Q3`"]
 
 { NonCommutative, NonCommutativeSpecies, NonCommutativeQ,
   CommutativeQ, AnticommutativeQ,
-  Hermitian, HermitianQ,
-  Antihermitian, AntihermitianQ };
+  System`Hermitian, HermitianQ,
+  System`Antihermitian, AntihermitianQ };
 
-{ Dagger, HermitianConjugate = Dagger,
+{ Dagger, System`HermitianConjugate = Dagger,
   Topple, DaggerTranspose = Topple,
   Tee, TeeTranspose,
   Peel };
@@ -52,6 +52,8 @@ BeginPackage["Q3`"]
 { PlusDagger, TimesDaggerRight, TimesDaggerLeft };
 
 { ReplaceBy, ReplaceByFourier, ReplaceByInverseFourier };
+
+{ Observation, ObservationValue, Indefinite };
 
 { JordanWignerTransform };
 
@@ -197,9 +199,20 @@ KeyGroupBy[assoc_Association, f_ -> g_, post_] := Merge[
 
 Unless::usage = "Unless[condition, result] gives result unless condition evaluates to True, and Null otherwise."
 
+Unless::retrn = "`` includes Return, which may not function as you expect. See the help documentation on Unless."
+
 SetAttributes[Unless, HoldRest]
 
+Unless[condition_, out_] := (
+  Message[Unless::retrn, Hold @ out];
+  If[Not[condition], out];
+ ) /; Not @ FreeQ[Hold[out], _Return]
+(* NOTE: There is an important different between Unless[test, expr] and
+   If[Not[test], expr] when expr includes Return[...]. See the documentation
+   on Unless. *)
+
 Unless[condition_, out_] := If[Not[condition], out]
+
 
 PseudoDivide::usage = "PseudoDivide[x, y] returns x times the PseudoInverse of y."
 
@@ -453,13 +466,15 @@ SetAttributes[Let, {HoldAll, ReadProtected}]
 
 Let[name_Symbol, ls__Symbol, opts___?OptionQ] := Let[name, {ls}, opts]
 
-Let[Species, {ls__Symbol}] := Scan[setSpecies, {ls}]
+Let[Species, {ls__Symbol}] := (
+  Clear[ls]; (* NOTE: This must come before Scan. *)
+  Scan[setSpecies, {ls}]
+ )
 
 setSpecies[x_Symbol] := (
-  Clear[x];
   ClearAttributes[x, Attributes[x]];
-  (* NOTE: One could replace the above two lines with ClearAll, but then
-     Let[...] cannot used for local variables such as in Bloch. *)
+  (* NOTE: One could replace the above line and Clear with single ClearAll,
+     but then Let[...] cannot be used for local variables such as in Block. *)
   (* NOTE: The messages and defaults associated with x are not affected. *)
   
   SetAttributes[x, {NHoldAll, ReadProtected}];
@@ -467,6 +482,9 @@ setSpecies[x_Symbol] := (
   SpeciesQ[x] ^= True;
   SpeciesQ[x[___]] ^= True;
 
+  Kind[x] ^= Species;
+  Kind[x[___]] ^= Species;
+  
   Dimension[x] ^= 1;
   Dimension[x[___]] ^= 1;
 
@@ -688,13 +706,13 @@ HoldPattern @ Tee[ a_?HermitianQ ] := Conjugate[a];
 
 HoldPattern @ Tee[ z_?CommutativeQ a_ ] := z Tee[a]
 
-HoldPattern @ Tee[ expr_Plus ] := Total @ Tee[ List @@ expr ]
+HoldPattern @ Tee[ expr_Plus ] := Tee /@ expr
 
-HoldPattern @ Tee[ expr_Times ] := Times @@ Tee[ List @@ expr ]
+HoldPattern @ Tee[ expr_Times ] := Tee /@ expr
 
-HoldPattern @ Tee[ expr_Dot ] := Dot @@ Reverse @ Tee[ List @@ expr ]
+HoldPattern @ Tee[ expr_Dot ] := Dot @@ Reverse @ Tee[List @@ expr]
 
-HoldPattern @ Tee[ expr_Multiply ] := Multiply @@ Reverse @ Tee[ List @@ expr ]
+HoldPattern @ Tee[ expr_Multiply ] := Multiply @@ Reverse @ Tee[List @@ expr]
 
 Tee /: HoldPattern[ Power[a_, Tee] ] := Tee[a]
 
@@ -757,9 +775,9 @@ HermitianConjugate::usage = "HermitianConjugate is an alias to Dagger."
 Dagger::usage = "Dagger[expr] returns the Hermitian conjugate the expression expr.\nWARNING: Dagger has the attribute Listable, meaning that the common expectation Dagger[m] == Tranpose[Conjugate[m]] for a matrix m of c-numbers does NOT hold any longer. For such purposes use Topple[] instead.\nSee also Conjugate[], Topple[], and TeeTranspose[]."
 
 SetAttributes[Dagger, {Listable, ReadProtected}]
-(* Enabling Dagger[\[Ellipsis]] Listable makes many things much simpler. One notable
-   drawback is that it is not applicable to matrices. This is why a separate
-   function Topple[m] has been defined for matrix or vector m. *)
+(* Enabling Dagger[\[Ellipsis]] Listable makes many things much simpler. One
+   notable drawback is that it is not applicable to matrices. This is why a
+   separate function Topple[m] has been defined for matrix or vector m. *)
 
 Dagger[ Dagger[a_] ] := a
 
@@ -767,11 +785,12 @@ Dagger[ z_?CommutativeQ ] := Conjugate[z]
 
 HoldPattern @ Dagger[ Conjugate[z_?CommutativeQ] ] := z
 
-HoldPattern @ Dagger[ expr_Plus ] := Total @ Dagger[ List @@ expr ]
+HoldPattern @ Dagger[ expr_Plus ] := Dagger /@ expr
 
-HoldPattern @ Dagger[ expr_Times ] := Times @@ Dagger[ List @@ expr ]
+HoldPattern @ Dagger[ expr_Times ] := Dagger /@ expr
 
-HoldPattern @ Dagger[ expr_Dot ] := Dot @@ Reverse @ Dagger[ List @@ expr ]
+HoldPattern @ Dagger[ expr_Dot ] :=
+  Dot @@ Reverse @ Dagger[ List @@ expr ]
 
 HoldPattern @ Dagger[ expr_Multiply ] :=
   Multiply @@ Reverse @ Dagger[ List @@ expr ]
@@ -813,15 +832,10 @@ TimesDaggerRight[expr_] := Multiply[expr, Dagger @@ expr]
 TimesDaggerLeft[expr_]  := Multiply[Dagger @@ expr, expr]
 
 
-(* A quick support for Mathematica v12.2 *)
-$tempMessage = If[ NameQ["System`Hermitian"],
-  Hermitian::usage <> "\n",
-  ""
- ]
+System`Hermitian::usage = "In Q3, Hermitian represents Hermitian operators.\nLet[Hermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Hermitian operators.\nSince Mathematica v12.1, Hermitian is a built-in symbol, and is extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
+(* NOTE: Since Mathematica 12.2, System`Hermitian is a built-in symbol. *)
 
-Hermitian::usage = $tempMessage <> "In Q3, Hermitian represents Hermitian operators.\nLet[Hermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Hermitian operators.\nSince Mathematica v12.1, Hermitian is a built-in symbol, and is extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
-
-Let[Hermitian, {ls__Symbol}] := (
+Let[System`Hermitian, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
   Scan[setHermitian, {ls}];
  )
@@ -841,15 +855,11 @@ HermitianQ[ HoldPattern @ Tee[a_?HermitianQ] ] = True;
 HermitianQ[ Conjugate[a_?HermitianQ] ] = True;
 
 
-(* A quick support for Mathematica v12.2 *)
-$tempMessage = If[ NameQ["System`Antihermitian"],
-  Antihermitian::usage <> "\n",
-  ""
- ]
+System`Antihermitian::usage = "In Q3, Antihermitian represents Antihermitian operators.\nLet[Antihermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Antihermitian operators.\nSee \!\(\*TemplateBox[{\"Q3/ref/Antihermitian\", \"paclet:Q3/ref/Antihermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
-Antihermitian::usage = $tempMessage <> "In Q3, Antihermitian represents Antihermitian operators.\nLet[Antihermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Antihermitian operators.\nSee \!\(\*TemplateBox[{\"Q3/ref/Antihermitian\", \"paclet:Q3/ref/Antihermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
+(* NOTE: Since Mathematica 12.2, System`Antihermitian is a built-in symbol. *)
 
-Let[Antihermitian, {ls__Symbol}] := (
+Let[System`Antihermitian, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
   Scan[setAntihermitian, {ls}];
  )
@@ -1122,53 +1132,6 @@ HoldPattern @ Multiply[ pre___, Power[E, expr_], post___] :=
 (* Unless specified explicitly, any symbol or function is regarded commutative
    (i.e., commutes with any other symbol or function). *)
 
-(*
-ObscureQ::usage = "ObscureQ[op] returns True if Kind[op] === NonCommutative.\nNote that most NonCommuative Species are associated with a definite Kind."
-
-ObscureQ[op_?AnyNonCommutativeQ] := SameQ[Kind[op], NonCommutative]
-
-ObscureQ[_] := False
- *)
-
-(* NOTE: Notice _?AnyNonCommutativeQ NOT _?AnySpeciesQ .
-   This is to handle the case involving Ket and Bra. *)
-
-(*
-HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
-  { aa = SplitBy[{ops}, ObscureQ],
-    bb },
-  ( bb = Multiply @@@ aa;
-    Multiply @@ bb ) /;
-    Not @ AllTrue[Kind[aa], OrderedQ]
- ] /;
-  Not @ AllTrue[
-    DeleteCases[Kind @ SplitBy[{ops}, ObscureQ], NonCommutative, {2}],
-    OrderedQ
-   ] /;
-  Not @ AllTrue[{ops}, ObscureQ] /;
-  AnyTrue[{ops}, ObscureQ]
- *)
-
-(* Handles Fermion, Majorana, Grassmann properly *)
-(* NOTE:
-   Before, it was _?AnySpeciesQ NOT _?AnyNonCommutativeQ.
-   This was to handle Ket and Bra separately.
-   Now, __?AnyNonCommutativeQ to hanle Dyad. *)
-(*
-HoldPattern @ Multiply[ops__?AnyNonCommutativeQ] := Module[
-  { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
-    bb },
-  bb = Multiply @@@ aa;
-  bb = Multiply @@ bb;
-  bb * SignatureTo[
-    Cases[ {ops}, _?AnticommutativeQ ],
-    Cases[ Flatten @ aa, _?AnticommutativeQ ]
-   ]
- ] /;
-  Not @ OrderedQ[ Kind @ {ops} ] /;
-  NoneTrue[{ops}, ObscureQ]
- *)
-
 HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
   { aa = SplitBy[{ops}, MultiplyGenus],
     bb },
@@ -1309,10 +1272,9 @@ LieExp[a_, z_?CommutativeQ] := z
 
 LieExp[a_, z_?CommutativeQ b_] := z LieExp[a, b]
 
-LieExp[a_, expr_List] := Map[ LieExp[a, #]&, expr ]
+LieExp[a_, expr_List] := Map[LieExp[a, #]&, expr]
 
-LieExp[a_, expr_Plus] :=
-  Garner @ Total @ LieExp[a, List @@ expr]
+LieExp[a_, expr_Plus] := Garner @ Map[LieExp[a, #]&, expr]
 
 LieExp[a_, Exp[expr_]] := MultiplyExp @ LieExp[a, expr]
 
@@ -1416,6 +1378,95 @@ Begin["`Prelude`"]
 $symb = Unprotect[
   KroneckerDelta, DiscreteDelta, UnitStep
  ]
+
+
+(**** <Observation> ****)
+
+Observation::usage = "Observation[spec] represents an operator that has the spectrum specified by spec."
+
+(* Observation /: Peel[ Observation[a_] ] := a *)
+(* for Matrix[] *)
+
+(* Observation /: Kind[ Observation[a_] ] := Kind[a] *)
+(* for Multiply[] *)
+
+(* Observation /: MultiplyGenus[ Observation[_] ] := "Singleton" *)
+(* for Multiply *)
+
+(* Observation /: AnySpeciesQ[ Observation[a_] ] := AnySpeciesQ[a] *)
+(* for Multiply[] *)
+
+Observation /:
+NonCommutativeQ[ Observation[spec_] ] := Positive @ Length @
+  Cases[{spec}, _Symbol?SpeciesQ[___] | _Symbol?SpeciesQ, Infinity]
+
+Observation /:
+HoldPattern @ Dagger[op_Observation] := op
+
+Observation /:
+HoldPattern @ Multiply[pre___, op_Observation, v_Ket, post___] :=
+  Multiply[pre, op[v], post]
+
+Observation /:
+HoldPattern @ Matrix[Observation[spec_], ss:{__?SpeciesQ}] := Module[
+  { bs = Basis[ss],
+    vv },
+  vv = ObservationValue[spec][bs];
+  DiagonalMatrix[vv]
+ ]
+
+Observation /:
+HoldPattern @ NonCommutativeSpecies[Observation[spec_]] :=
+  Union @ FlavorNone @ Flatten @
+  Cases[{spec}, _Symbol?SpeciesQ | _?SpeciesQ[___], Infinity]
+(* NOTE: Since spec may include Hold[...] or HoldForm[...], usual
+   NonCommutativeSpecies would not work. *)
+
+Observation[spec_][vec_Ket] := ObservationValue[vec, spec] * vec
+
+Observation[spec_][expr_Association] := Observation[spec] /@ expr
+
+Observation[spec_][expr_List] := Observation[spec] /@ expr
+
+Observation[spec_][expr_Plus] := Observation[spec] /@ expr
+
+Observation[spec_][z_?CommutativeQ expr_] := z * Observation[spec][expr]
+
+
+ObservationValue::usage = "ObservationValue[state, spec] returns the eigenvalue of the operator Observation[spec] that state belongs to if state is an eigenstate of the operator. Otherwise, it returns Indefinite[value1, value2, \[Ellipsis]]."
+
+ObservationValue[spec_][expr_] :=
+  ObservationValue[expr, spec]
+
+ObservationValue[expr_Association, spec_] :=
+  Map[ObservationValue[#, spec]&, expr]
+
+ObservationValue[expr_List, spec_] :=
+  Map[ObservationValue[#, spec]&, expr] /;
+  Not @ FreeQ[expr, _Ket]
+
+ObservationValue[z_?CommutativeQ expr_, spec_] :=
+  ObservationValue[expr, spec] /;
+  Not @ FreeQ[expr, _Ket]
+
+ObservationValue[expr_Plus, spec_] := With[
+  { vv = ObservationValue[Cases[expr, _Ket, Infinity], spec] },
+  If[Equal @@ vv, First @ vv, Indefinite @@ Union[vv]]
+ ] /; Not @ FreeQ[expr, _Ket]
+
+ObservationValue[Ket[a_Association], spec_] := ReleaseHold[
+  spec /. {
+    S_?SpeciesQ[j___] :> Lookup[a, S[j,None]],
+    S_Symbol?SpeciesQ :> Lookup[a, S[None]]
+   }
+ ]
+(* NOTE: Remember that the spec may involve Hold or HoldForm. *)
+
+
+Indefinite::usage = "Indefinite[val$1,val$2,$$] represents an indefinite value among the possible values {val$1,val$2,$$}."
+
+(**** </Observation> ****)
+
 
 (* KroneckerDelta[] & UnitStep[] *)
 

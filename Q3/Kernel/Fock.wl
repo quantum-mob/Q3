@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.14 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-17 23:11:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.15 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-20 20:28:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -153,7 +153,9 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
 
   x /: Conjugate[x] := x;
   x /: Conjugate[x[j___]] := x[j];
-    
+
+  x[None] := x;
+  
   Spin[x] ^= spin;
   If[ spin == 0,
     Spin[x[___]] ^= spin;
@@ -220,6 +222,8 @@ setHeisenberg[x_Symbol, spin_?SpinNumberQ, top_Integer] := (
   Dagger[x] ^= x;
   Dagger[x[j___]] ^:= x[j];
 
+  x[None] := x;
+  
   x /: Conjugate[x] := x;
   x /: Conjugate[x[j___]] := x[j];
     
@@ -290,6 +294,8 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
+  x[None] := x;
+  
   Spin[x] ^= spin;
   Vacuum[x] ^= vac;
   Which[
@@ -364,6 +370,8 @@ setMajorana[x_Symbol] := (
   
   Dagger[x] ^= x;
   Dagger[x[j___]] ^:= x[j];
+  
+  x[None] := x;
   
   x /: Conjugate[x] := x;
   x /: Conjugate[x[j___]] := x[j];

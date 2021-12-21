@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.21 $"][[2]], " (",
-  StringSplit["$Date: 2021-11-17 14:28:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.23 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-18 23:26:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -101,6 +101,9 @@ setComplex[z_Symbol] := (
   ComplexQ[z] ^= True;
   ComplexQ[z[___]] ^= True;
 
+  Kind[z] ^= Complex;
+  Kind[z[___]] ^= Complex;
+
   z /: Element[z, Complexes] = True;
   z /: Element[z[___],Complexes] = True;
  )
@@ -114,6 +117,8 @@ Let[Real, {ls__Symbol}] := (
  )
 
 setReal[x_Symbol] := (
+  Kind[x] ^= Real;
+  Kind[x[___]] ^= Real;
   x /: RealQ[x] = True;
   x /: RealQ[x[___]] = True;
   x /: Element[x, Reals] = True;
@@ -130,6 +135,8 @@ Let[Integer, {ls__Symbol}] := (
  )
 
 setInteger[n_Symbol] := (
+  Kind[n] ^= Integer;
+  Kind[n[___]] ^= Integer;
   n /: IntegerQ[n] = True;
   n /: IntegerQ[n[___]] = True;
   n /: Element[n, Integers] = True;

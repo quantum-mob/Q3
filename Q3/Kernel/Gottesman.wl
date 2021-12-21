@@ -12,6 +12,8 @@ BeginPackage["Q3`"]
 
 { PauliGroup, CliffordGroup };
 
+{ PauliMeasurement };
+
 { GottesmanVector, FromGottesmanVector,
   GottesmanTest,
   GottesmanInner,

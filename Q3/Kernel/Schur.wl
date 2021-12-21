@@ -4,12 +4,12 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.96 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-16 07:14:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.98 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-19 17:26:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ RSKMap };
+{ YoungDominatesQ, YoungContent }
 
 { GelfandPatterns, GelfandPatternQ, GelfandForm,
   ToYoungTableau, ToGelfandPattern };
@@ -18,6 +18,8 @@ BeginPackage["Q3`"];
 
 { WeylTableaux, CountWeylTableaux, WeylTableauQ };
 
+{ RSKMap };
+
 { ClebschGordanX, ReducedWigner };
 
 { PartialHook, GZtoMatrix };
@@ -25,6 +27,21 @@ BeginPackage["Q3`"];
 { SchurBasisQ, SchurBasis, NextSchurLabels, NextGelfandYoungPatterns };
 
 Begin["`Private`"]
+
+YoungDominatesQ::usage = "YoungDominatesQ[a, b] returns True if shape a dominates shape b and False otherwise."
+
+YoungDominatesQ[a_?YoungShapeQ, b_?YoungShapeQ] := Module[
+  { d = Max[Length @ a, Length @ b],
+    aa, bb },
+  aa = Accumulate @ PadRight[a, d];
+  bb = Accumulate @ PadRight[b, d];
+  And @@ Thread[aa >= bb]
+ ]
+
+YoungContent::usage = "YoungContent[tb] returns the content of Weyl tableau tb.\nThe content of a Weyl tableau is the inversely sorted list of multiplicities of numbers (or letters) appearing in the tableau."
+
+YoungContent[tb_?WeylTableauQ] := ReverseSort@Values@Counts[Flatten@tb]
+
 
 (**** <GelfandPatterns> ****)
 
