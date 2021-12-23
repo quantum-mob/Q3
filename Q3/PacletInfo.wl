@@ -1,6 +1,6 @@
 (* Paclet Info File *)
-(* $Date: 2021-12-22 09:58:16+09 $ *)
-(* $Revision: 2.9 $ *)
+(* $Date: 2021-12-23 11:11:39+09 $ *)
+(* $Revision: 2.10 $ *)
 
 Paclet[
   "Name" -> "Q3",
@@ -22,7 +22,7 @@ Paclet[
    },
   "Description" -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems",
   "Creator" -> "Mahn-Soo Choi (Korea University)",
-  "URL" -> "https://github.com/quantum-mob/Q3App",
+  "URL" -> "https://github.com/quantum-mob/Q3",
   "Category" -> { "Physics", "Quantum Physics" },
   "Keywords" -> { "quantum information", "quantum computation",
     "quantum many-body systems", "quantum spins" },
