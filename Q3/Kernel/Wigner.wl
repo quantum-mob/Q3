@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.21 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-11 12:12:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.22 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -223,9 +223,12 @@ Missing["KeyAbsent", S_Symbol?SpinQ[___, None]] := Spin[S]
 
 SpinQ::usage = "SpinQ[J] or SpinQ[J[...]] returns True if J is declared as a Spin operator."
 
-SpinHalfQ::usage = "SpinHalfQ[J] or SpinHalfQ[J[...]] returns True if J is a Spin operator and its Spin is 1/2."
+AddGarnerPatterns[_?SpinQ];
 
 SpinQ[_] = False
+
+
+SpinHalfQ::usage = "SpinHalfQ[J] or SpinHalfQ[J[...]] returns True if J is a Spin operator and its Spin is 1/2."
 
 SpinHalfQ[J_Symbol?SpinQ] := Spin[J]==1/2
 
@@ -425,18 +428,14 @@ HoldPattern @ Multiply[ x___, a_?SpinQ[j___,3], Ket[b_Association], y___ ] :=
   b[a[j,None]] Multiply[x, KetTrim @ Ket[b], y]
 
 
-Once[
-  $GarnerTests = Join[$GarnerTests, {SpinQ}];
-  
-  $ElaborationRules = Join[
-    $ElaborationRules,
-    { G_?SpinQ[j___,0] -> 1,
-      G_?SpinQ[j___,4] -> G[j, Raise],
-      G_?SpinQ[j___,5] -> G[j, Lower],
-      G_?SpinQ[j___,6] -> G[j, Hadamard]
-     }
-   ];
+AddElaborationPatterns[
+  G_?SpinQ[j___,0] -> 1,
+  G_?SpinQ[j___,4] -> G[j, Raise],
+  G_?SpinQ[j___,5] -> G[j, Lower],
+  G_?SpinQ[j___,6] -> G[j, Hadamard]
+ ]
 
+Once[
   $RaiseLowerRules = Join[ $RaiseLowerRules,
     { S_?SpinQ[j___,1] :> (S[j,4] + S[j,5]) / 2 ,
       S_?SpinQ[j___,2] :> (S[j,4] - S[j,5]) / (2 I)

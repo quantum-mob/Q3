@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.15 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-20 20:28:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.16 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -443,6 +443,8 @@ Missing["KeyAbsent", _?ParticleQ] := 0
 FockOperatorQ::usage = "FockOperatorQ[c] returns True if c is any Fock-space operator (Boson, Fermion, Heisenberg, or Majorana) without Dagger on it.\nGrassmann is not regarded as a Fock-space operator."
 
 AnyFockOperatorQ::usage = "AnyFockOperatorQ[c] returns True if c is any Fock-space operator (Boson, Fermion, Heisenberg, or Majorana) with or without Dagger on it."
+
+AddGarnerPatterns[_?AnyFockOperatorQ]
 
 ParticleQ::usage = "ParticleQ[c] returns True if c is either a Bosonic or Fermionic operator (without Dagger on it); i.e., a normal particle distinguished from a Majorana Fermion, which is both particle and atni-particle."
 
@@ -1247,22 +1249,13 @@ LieExp[gen_, expr_] := Module[
 (* TODO: To support Heisenbergs *)
 
 (* Baker-Hausdorff Lemma *)
-Once[
-  $ElaborationRules = Join[ $ElaborationRules,
-    { HoldPattern @ Multiply[
-        pre___,
-        MultiplyExp[a_], b__, MultiplyExp[c_],
-        post___
-       ] :> Multiply[pre, LieExp[a, Multiply[b]], post] /;
-        Garner[a + c] == 0
-     }
-   ]
- ]
-
-(* ********************************************************************** *)
-
-Once[
-  $GarnerTests = Join[$GarnerTests, {AnyFockOperatorQ}];
+AddElaborationPatterns[
+  HoldPattern @ Multiply[
+    pre___,
+    MultiplyExp[a_], b__, MultiplyExp[c_],
+    post___
+   ] :> Multiply[pre, LieExp[a, Multiply[b]], post] /;
+    Garner[a + c] == 0
  ]
 
 (* ********************************************************************** *)
@@ -1563,20 +1556,21 @@ Displacement[z_?GrassmannQ, c_?FermionQ] := Multiply[
 
 CoherentState::usage = "CoherentState[c[k]->z] = Ket[c[k]->z] gives the coherent state of the operator c[k].  CoherentState is normalized to 1.  It is actually a place holder, but using Elaborate, you can represent it explicitly in terms of the creation and annihilation operator."
 
+AddGarnerPatterns[_CoherentState]
+
+AddElaborationPatterns[_CoherentState]
+
+
 Format[ CoherentState[a_Association] ] := Ket[a]
 
 Format[ HoldPattern @ Dagger[v_CoherentState] ] := Bra @@ v
+
 
 CoherentState /:
 NonCommutativeQ[ CoherentState[_Association] ] = True
 
 CoherentState /:
 MultiplyGenus[ CoherentState[_Association] ] = "Ket"
-
-Once[
-  AppendTo[$GarnerHeads, CoherentState];
-  AppendTo[$ElaborationHeads, CoherentState];
- ]
 
 CoherentState /:
 HoldPattern @ Elaborate[ CoherentState[vec_Association] ] := Module[
@@ -2108,10 +2102,6 @@ TheMatrix[ Ket[ Association[a_?BosonQ -> n_Integer] ] ] := SparseArray[
 
 
 (**** <Parity> ****)
-
-Once[
-  $ElaborationHeads = Append[$ElaborationHeads, Parity]
- ]
 
 Parity /:
 HoldPattern @ Elaborate[ Parity[c_?FermionQ] ] :=

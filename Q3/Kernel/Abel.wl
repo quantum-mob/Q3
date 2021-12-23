@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.53 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-21 09:54:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.58 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-23 10:34:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -54,12 +54,13 @@ BeginPackage["Q3`"]
 { ReplaceBy, ReplaceByFourier, ReplaceByInverseFourier };
 
 { Observation, ObservationValue, Indefinite };
+{ Occupation, OccupationValue };
 
 { JordanWignerTransform };
 
-{ Garner, $GarnerHeads, $GarnerTests };
+{ Garner, AddGarnerPatterns, $GarnerPatterns };
 
-{ Elaborate, $ElaborationRules, $ElaborationHeads };
+{ Elaborate, AddElaborationPatterns, $ElaborationPatterns };
 
 { Commutator, Anticommutator };
 
@@ -71,7 +72,14 @@ BeginPackage["Q3`"]
 
 { CoefficientTensor };
 
+
+(* Obsolete Symbols *)
+
 { MultiplyExpand }; (* obsolete *)
+
+{ $GarnerHeads, $GarnerTests }; (* obsolete *)
+
+{ $ElaborationHeads, $ElaborationRules }; (* obsolete *)
 
 
 Begin["`Private`"]
@@ -984,50 +992,89 @@ MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
 (* TODO: Special algorithm is required for SparseArray *)
 
 
-$GarnerHeads::usage = "$GarnerHeads gives the list of Heads to be considered in Garner."
-
-$GarnerTests::usage = "$GarnerTests gives the list of Pattern Tests to be considered in Garner."
-
-Once[ $GarnerHeads = {Multiply}; ]
-
-Once[ $GarnerTests = {}; ]
+(**** <Garner> ****)
 
 Garner::usage = "Garner[expr] collects together terms involving the same Species objects (operators, Kets, Bras, etc.)."
 
 SetAttributes[Garner, Listable]
 
 Garner[expr_] := Module[
-  { bb = Blank /@ $GarnerHeads,
-    tt = PatternTest[_, #]& /@ $GarnerTests,
+  { bb = $GarnerPatterns["Heads"],
+    tt = $GarnerPatterns["Tests"],
     qq },
-  bb = Union @ Cases[expr, Alternatives @@ bb, Infinity];
+  bb = Union @ Cases[expr, bb, Infinity];
   qq = expr /. {_Multiply -> 0};
-  qq = Union @ Cases[qq, Alternatives @@ tt, Infinity];
+  qq = Union @ Cases[qq, tt, Infinity];
   Collect[expr, Join[qq, bb], Simplify]
  ]
 
 
+AddGarnerPatterns::usage = "..."
+
+AddGarnerPatterns[spec:(_Blank|_PatternTest)..] := Module[
+  { heads = Cases[{spec}, _Blank],
+    tests = Cases[{spec}, _PatternTest] },
+  $GarnerPatterns["Heads"] =
+    Union[$GarnerPatterns["Heads"], Alternatives @@ heads];
+  $GarnerPatterns["Tests"] =
+    Union[$GarnerPatterns["Tests"], Alternatives @@ tests];
+  $GarnerPatterns
+ ]
+
+
+$GarnerPatterns::Usage = "..."
+
+$GarnerPatterns = Association[
+  "Heads" -> Alternatives[],
+  "Tests" -> Alternatives[]
+ ]
+
+
+$GarnerHeads::usage = "$GarnerHeads is obsolete now. Use $GarnerPatterns instead."
+
+$GarnerTests::usage = "$GarnerTests is obsolete now. Use $GarnerPatterns instead."
+
+(**** </Garner> ****)
+
+
+(**** <Elaborate> ****)
+
 Elaborate::usage = "Elaborate[expr] transforms expr into a more explicit form."
 
 Elaborate[expr_] := Module[
-  { pttn = Alternatives @@ Blank /@ $ElaborationHeads,
+  { pttn = $ElaborationPatterns["Heads"],
     noon },
   noon = expr /. { v:pttn :> Elaborate[v] };
-  Garner[ noon //. $ElaborationRules ]
- ] /; Not @ MemberQ[$ElaborationHeads, Head[expr]]
+  Garner[ noon //. $ElaborationPatterns["Rules"] ]
+ ] /; Not @ MemberQ[Identity @@@ $ElaborationPatterns[Heads], Head[expr]]
 
-$ElaborationHeads::usage = "$ElaborationHeads is a list of heads to be directly used in Elaborate."
 
-$ElaborationRules::usage = "$ElaborationRules is a list of replacement rules to be used by Elaborate."
+AddElaborationPatterns::usage = "..."
 
-Once[
-  $ElaborationHeads = { MultiplyExp };
-  
-  $ElaborationRules = {
-    Abs[z_] :> Sqrt[z Conjugate[z]],
-    Exp[a_] :> MultiplyExp[a] /; Not[FreeQ[a, _?NonCommutativeQ]]
-   }
-]
+AddElaborationPatterns[spec:(_Blank|_Rule|_RuleDelayed)..] := Module[
+  { heads = Cases[{spec}, _Blank],
+    rules = Cases[{spec}, _Rule|_RuleDelayed] },
+  $ElaborationPatterns["Heads"] =
+    Union[$ElaborationPatterns["Heads"], Alternatives @@ heads];
+  $ElaborationPatterns["Rules"] =
+    Union[$ElaborationPatterns["Rules"], rules];
+  $ElaborationPatterns
+ ]
+
+
+$ElaborationPatterns::Usage = "..."
+
+$ElaborationPatterns = Association[
+  "Heads" -> Alternatives[],
+  "Rules" -> {}
+ ]
+
+
+$ElaborationHeads::usage = "$ElaborationHeads is obsolete now. Use $ElaborationPatterns instead."
+
+$ElaborationRules::usage = "$ElaborationRules is obsolete now. Use $ElaborationPatterns instead."
+
+(**** <Elaborate> ****)
 
 
 (* ****************************************************************** *)
@@ -1065,6 +1112,9 @@ HoldPattern @ MultiplyGenus[ Dagger[any_] ] := "Ket" /;
 Multiply::usage = "Multiply[a, b, \[Ellipsis]] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[\[Ellipsis]], it does not have the attributes Flat and OneIdentity."
 
 SetAttributes[Multiply, {Listable, ReadProtected}]
+
+AddGarnerPatterns[_Multiply]
+
 
 Format[ HoldPattern @ Multiply[a__] ] :=
   DisplayForm @ RowBox @ List @ RowBox[ DisplayForm /@ MakeBoxes /@ {a} ]
@@ -1208,6 +1258,13 @@ MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator e
 
 SetAttributes[MultiplyExp, Listable]
 
+AddElaborationPatterns[_MultiplyExp];
+
+AddElaborationPatterns[
+  Exp[a_] :> MultiplyExp[a] /; Not[FreeQ[a, _?NonCommutativeQ]]
+ ]
+
+
 Format[ HoldPattern @ MultiplyExp[expr_] ] := Power[E, expr]
 
 (* Exp for Grassmann- or Clifford-like Species *)
@@ -1231,6 +1288,29 @@ HoldPattern @ Inverse[ MultiplyExp[op_] ] := MultiplyExp[-op]
 MultiplyExp /:
 HoldPattern @ Power[ MultiplyExp[op_], z_?CommutativeQ ] :=
   MultiplyExp[z * op]
+
+MultiplyExp /:
+HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
+  Elaborate @ ExpressionFor @ MatrixExp @ Matrix @ expr /;
+  NonCommutativeSpecies[expr] == {} /;
+  Not @ FreeQ[expr, _Pauli]
+
+MultiplyExp /:
+HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
+  { ss = NonCommutativeSpecies[expr],
+    mm },
+  mm = Matrix[expr, ss];
+  Elaborate @ ExpressionFor[MatrixExp[mm], ss]
+ ] /; ContainsOnly[
+   Kind @ NonCommutativeSpecies[expr],
+   {Qubit, Qudit, Spin}
+  ]
+(* NOTE: In principle, it can handle fermions as well. But fermions have been
+   excluded here because the method of converting first to matrix and back to
+   operator expression is slow for fermions due to the requirement of the
+   Jordan-Wigner transformation. MultiplyExp usually appears in the
+   Baker-Hausdorff form, and the latter can be treated more efficiently using
+   LieExp or related methods. *)
 
 
 (* ****************************************************************** *)
@@ -1466,6 +1546,29 @@ ObservationValue[Ket[a_Association], spec_] := ReleaseHold[
 Indefinite::usage = "Indefinite[val$1,val$2,$$] represents an indefinite value among the possible values {val$1,val$2,$$}."
 
 (**** </Observation> ****)
+
+
+(**** <Occupation> ****)
+(* It is a simple application of Observation. *)
+
+Occupation::usage = "Occupation[{s1,s2,\[Ellipsis]},k] represents the occupation operator of species {s1,s2,\[Ellipsis]} in the level k (the logical state Ket[k]).\nOccupation is a simple application of Observation."
+
+Occupation[ss:{__?SpeciesQ}, k_][expr_] :=
+  Observation[HoldForm @ Count[ss, k]][expr] /;
+  And[Equal @@ Kind[ss], Equal @@ Dimension[ss]]
+
+
+OccupationValue::usage = "OccupationValue[{s1,s2,\[Ellipsis]},k] returns the occupation number of species {s1,s2,\[Ellipsis]} in the level k (logical state Ket[k]).\nOccupationValue is a simple application of ObservationValue."
+
+OccupationValue[ss:{__?SpeciesQ}, val_][expr_] :=
+  OccupationValue[expr, ss, val] /;
+  And[Equal @@ Kind[ss], Equal @@ Dimension[ss]]
+
+OccupationValue[expr_, ss:{__?SpeciesQ}, val_] :=
+  ObservationValue[expr, HoldForm @ Count[ss, val]] /;
+  And[Equal @@ Kind[ss], Equal @@ Dimension[ss]]
+
+(**** </Occupation> ****)
 
 
 (* KroneckerDelta[] & UnitStep[] *)

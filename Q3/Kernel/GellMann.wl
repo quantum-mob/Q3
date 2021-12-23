@@ -7,8 +7,8 @@ BeginPackage["Q3`"]
 
 `GellMann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.35 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.36 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -22,8 +22,6 @@ ClearAll @@ Evaluate @ Unprotect[
 Begin["`Private`"]
 
 $symbs = Unprotect[Dot]
-
-Once[ $GarnerHeads = Join[$GarnerHeads, {GellMann}]; ]
 
 TheGellMann::usage="TheGellMann[n] (n=1,2,...,8) gives the original Gell-Mann matrices, a particular basis for the su(3) algebra by Murray Gell-Mann.\n TheGellMann[{i,j}] ..."
 
@@ -134,6 +132,8 @@ TheGellMann[ nn:(0|1|2|3|4|5|6|7|8).. ] :=
 
 
 GellMann::usage = "GellMann[n] represents the Gell-Mann matrix."
+
+AddGarnerPatterns[_GellMann]
 
 Format[ GellMann[a:(0|1|2|3|4|5|6|7|8)..] ] :=
   DisplayForm[ CircleTimes @@ Map[SuperscriptBox["\[Lambda]",#]&, {a}] ]

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.180 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-21 10:17:07+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.182 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-23 10:34:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -838,14 +838,12 @@ HoldPattern @ OSlash[vec_, z_?CommutativeQ OTimes[ff__]] :=
   z OTimes @@ Sort @ {vec, ff}
 (* NOTE: This form occurs in KetFactor. *)
 
-
-Once[
-  $GarnerHeads = Join[$GarnerHeads, {Pauli, Dyad, Ket, Bra, OTimes, OSlash}];
-
-  $ElaborationHeads = Join[$ElaborationHeads, {Dyad, Pauli}];
- ]
-
 (**** </KetFactor> ****)
+
+
+AddGarnerPatterns[_Pauli, _Dyad, _Ket, _Bra, _OTimes, _OSlash]
+
+AddElaborationPatterns[_Pauli, _Dyad]
 
 
 (**** <Multiply> ****)
@@ -890,29 +888,6 @@ HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
 
 (**** </Multiply> ****)
 
-
-MultiplyExp /:
-HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
-  ExpressionFor @ MatrixExp @ Matrix @ expr /;
-  NonCommutativeSpecies[expr] == {} /;
-  Not @ FreeQ[expr, _Pauli]
-
-MultiplyExp /:
-HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
-  { ss = NonCommutativeSpecies[expr],
-    mm },
-  mm = Matrix[expr, ss];
-  ExpressionFor[MatrixExp[mm], ss]
- ] /; ContainsOnly[
-   Kind @ NonCommutativeSpecies[expr],
-   {Qubit, Qudit, Spin}
-  ]
-(* NOTE: In principle, it can handle fermions as well. But fermions have been
-   excluded here because the method of converting first to matrix and back to
-   operator expression is slow for fermions due to the requirement of the
-   Jordan-Wigner transformation. MultiplyExp usually appears in the
-   Baker-Hausdorff form, and the latter can be treated more efficiently using
-   LieExp or related methods. *)
 
 HoldPattern @ MultiplyPower[expr_, n_] :=
   ExpressionFor @ MatrixPower[Matrix @ expr, n] /;
@@ -1884,6 +1859,9 @@ blockEigensystem[bs_?MatrixQ, mat_?MatrixQ] := Module[
 (**** <Parity> ****)
 
 Parity::usage = "Parity[op] represents the parity operator of the species op. For a particle (Boson or Fermion) op, it refers to the even-odd parity of the occupation number. For a Qubit, it refers to the Pauli-Z.\nParity[{a, b, ...}] representts the overall parity of species a, b, ...."
+
+AddElaborationPatterns[_Parity]
+
 
 Parity /: Peel[ Parity[a_] ] := a (* for Matrix[] *)
 

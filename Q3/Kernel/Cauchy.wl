@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.23 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-18 23:26:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.24 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -77,6 +77,11 @@ Format[ HoldPattern[ Conjugate[f_Symbol[z___]] ] ] :=
    ] /; $FormatSpecies
 
 Format[ HoldPattern[ Abs[z_] ] ] := BracketingBar[z]
+
+AddElaborationPatterns[
+  Abs[z_] :> Sqrt[z Conjugate[z]]
+ ]
+
 
 (**** </Formatting> ****)
 
