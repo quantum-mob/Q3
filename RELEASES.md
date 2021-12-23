@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.1.5
+
+- New function Occupation and OccupationValue.
+- QuantumCircuit is now maintained in Quville`.
+
 ## v2.1.4
 
 - A bug fix in Let.
