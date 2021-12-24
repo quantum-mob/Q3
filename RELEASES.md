@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.2.0
+
+- Measurement and Readout have been improved and support more arbitray Pauli operators (including tensor products of single-qubit Pauli operators).
+- New function MeasurementOdds.
+- Improved QuantumFourierTransform (it has a new optin N which indicates numerically approximate quantum Fourier transform).
+
 ## v2.1.5
 
 - New function Occupation and OccupationValue.

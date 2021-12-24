@@ -2,10 +2,10 @@
 
 BeginPackage["Q3`"]
 
-`Quisso`$Version = StringJoin[
+`Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.3 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:15:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.23 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-24 12:39:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -117,11 +117,12 @@ qCircuitOperate::usage = "Converts gates to operators ..."
 
 qCircuitOperate[] = 1
 
-qCircuitOperate[pre__, Measurement[q_?QubitQ], post___] := 
-  qCircuitOperate[ Measurement[qCircuitOperate[pre], q], post ]
+qCircuitOperate[pre__, op_Measurement, post___] := 
+  qCircuitOperate[op @ qCircuitOperate[pre], post] /;
+  Not @ FreeQ[Elaborate @ {pre}, Ket[_Association]]
 
-qCircuitOperate[m_Measurement, post___] :=
-  Multiply[qCircuitOperate[post], m]
+qCircuitOperate[op_Measurement, post___] :=
+  Multiply[qCircuitOperate[post], op]
 
 qCircuitOperate[ op:Except[_Measurement].. ] :=
   Fold[ Garner @ Multiply[#2, #1]&, 1, Elaborate @ {op} ]
@@ -129,20 +130,19 @@ qCircuitOperate[ op:Except[_Measurement].. ] :=
 
 qCircuitMatrix::usage = "Based on Matrix[] ..."
 
-qCircuitMatrix[pre___, Measurement[q_?QubitQ], post___,  qq:{__?QubitQ}] :=
-  With[
-    { ss = Qubits @ {pre, q} },
-    qCircuitMatrix[
-      Measurement[ ExpressionFor[qCircuitMatrix[pre, ss], ss], q ],
-      post,
-      qq
-     ]
+qCircuitMatrix[qq:{__?QubitQ}] := Matrix[1, qq]
+
+qCircuitMatrix[pre___, Measurement[op_], post___,  qq:{__?QubitQ}] :=
+  Module[
+    { mat = Matrix[op, qq] },
+    mat = Measurement[mat] @ qCircuitMatrix[pre, qq];
+    qCircuitMatrix[post, qq] . mat
    ]
 
 qCircuitMatrix[op:Except[_Measurement].., qq:{__?QubitQ}] := Module[
   { new },
-  new = Map[Topple] @ Map[Matrix[#, qq]&] @ Elaborate @ {op};
-  Topple[ Dot @@ new ]
+  new = Map[Matrix[#, qq]&] @ Elaborate @ Reverse @ {op};
+  Dot @@ new
  ]
 
 (**** </Multiply, ExpressionFor and Matrix on QuantumCircuit> ****)
@@ -164,19 +164,21 @@ QuantumCircuitTrim[ _QuissoOut ] = Nothing
 
 QuantumCircuitTrim[ _?OptionQ ] = Nothing
 
+QuantumCircuitTrim[ g_?ComplexQ ] = g (* NOT _?CommutativeQ *)
+
 QuantumCircuitTrim[ g_ ] := Nothing /;
-  FreeQ[ g, _?QubitQ | _Ket | _ProductState ]
+  FreeQ[g, _?QubitQ | _Ket | _ProductState]
 
 QuantumCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
   Dyad[v, v, qq]
 
 QuantumCircuitTrim[ v:ProductState[_Association, ___] ] := Expand[v]
 
+QuantumCircuitTrim[ op_QuantumFourierTransform ] := op
+
 QuantumCircuitTrim[ Gate[expr_, ___?OptionQ] ] := expr
 
 QuantumCircuitTrim[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
-
-QuantumCircuitTrim[ g_?NumericQ ] := g
 
 QuantumCircuitTrim[ g_ ] := g
 
@@ -283,9 +285,11 @@ qGateQ[expr_] := Not @ FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
 
 qCircuitGate::usage = "qCircuitGate[expr, opts] preprocesses various circuit elements."
 
+qCircuitGate::unknown = "Unknown quantum circuit element ``."
+
 (* NOTE: DO NOT set Listable attribute for qCircuitGate. *)
 
-Options[ qCircuitGate ] = {
+Options[qCircuitGate] = {
   "TargetFunction"  -> "Rectangle",
   "ControlFunction" -> "Dot",
   "LabelSize" -> 1, (* RELATIVE size *)
@@ -296,14 +300,34 @@ Options[ qCircuitGate ] = {
 qCircuitGate[{gg__, opts___?OptionQ}] :=
   Map[qCircuitGate[#, opts]&, {gg}]
 
+qCircuitGate[gg_List, opts___?OptionQ] :=
+  Map[qCircuitGate[#, opts]&, gg]
+
 
 qCircuitGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
   
 qCircuitGate[ S_?QubitQ, opts___?OptionQ ] :=
   Gate[ Qubits @ S, opts, "Label" -> qGateLabel[S] ]
 
-qCircuitGate[ Measurement[ S_?QubitQ ], opts___?OptionQ ] :=
-  Gate[ {S}, "TargetFunction" -> "Measurement", "Label" -> None, opts ]
+qCircuitGate[ Measurement[ss:{__?fPauliOpQ}], opts___?OptionQ ] :=
+  Map[ qCircuitGate[Measurement[#], opts]&, ss ]
+
+qCircuitGate[ Measurement[S_?QubitQ], opts___?OptionQ ] :=
+  Gate[
+    {FlavorMute @ S},
+    "TargetFunction" -> "Measurement",
+    opts,
+    "Label" -> qMeasurementLabel[S]
+   ]
+
+qCircuitGate[
+  HoldPattern @ Measurement[Multiply[ss__?QubitQ]], opts___?OptionQ ] :=
+  Gate[
+    FlavorMute @ {ss},
+    "TargetFunction" -> "Measurement",
+    opts,
+    "Label" -> qMeasurementLabel @ {ss}
+   ]
 
 qCircuitGate[
   HoldPattern @ Projector[v_, qq_, opts___?OptionQ], more___?OptionQ ] :=
@@ -418,16 +442,28 @@ qCircuitGate[
 qCircuitGate[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
   Gate[ Qubits @ expr, opts ]
 
-qCircuitGate[ z_?NumericQ, opts___?OptinQ ] := "Spacer"
+qCircuitGate[ z_?NumericQ, ___?OptionQ ] := "Spacer"
 
-qCircuitGate[ gate:("Separator" | "Spacer"), opts___?OptinQ ] := gate
+qCircuitGate[ gate:("Separator" | "Spacer"), ___?OptionQ ] := gate
 
 
-qCircuitGate[ expr_, opts___?OptinQ ] := expr /; FreeQ[expr, _?QubitQ]
+qCircuitGate[ expr_, ___?OptionQ ] := expr /; FreeQ[expr, _?QubitQ]
 (* Graphics primitives corresponds to this case. *)
 
 
+qMeasurementLabel::usage = "qMeasurementLabel[op] returns the default label of the measurement operator op (only Pauli operators allowed)."
+
+qMeasurementLabel[op_Multiply] := Map[qMeasurementLabel, List @@ op]
+
+qMeasurementLabel[ss:{___?QubitQ}] := qMeasurementLabel /@ ss
+
+qMeasurementLabel[S_?QubitQ] :=
+  FlavorLast[S] /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> None, _ -> "?"}
+
+
 qGateLabel::usage = "qGateLabel[G] returns the label of the circuit element to be displayed in the circuit diagram."
+
+SetAttributes[qGateLabel, Listable];
 
 qGateLabel[ S_?QubitQ ] := Last[S] /. {
   0 -> "I",
@@ -464,14 +500,37 @@ qDrawGateCross[x_, y_, ___] := List @ Line[{
    }]
 
 
-qDrawGateMeasurement[ x_, {y_}, ___] := qDrawGateMeasurement[x, y]
+qDrawGateMeasurement[ x_, {y_}, opts___?OptionQ ] :=
+  qDrawGateMeasurement[x, y, opts]
 
-qDrawGateMeasurement[ x_, y_, ___ ] := Module[
-  { arc, needle },
+qDrawGateMeasurement[ x_, yy:{_, __}, opts___?OptionQ ] := Module[
+  { cc, mm, tt, rest },
+
+  tt = "Label" /. {opts} /. Options[qCircuitGate];
+  rest = Normal @ KeyDrop[{opts}, "Label"];
+  mm = MapThread[
+    qDrawGateMeasurement[x, #1, "Label" -> #2, opts]&,
+    {yy, tt}
+   ];
+
+  cc = {
+    Line @ Thread @ {x-$DotSize/2, yy},
+    Line @ Thread @ {x+$DotSize/2, yy}
+   };
+
+  { cc, mm }
+ ]
+
+qDrawGateMeasurement[ x_, y_, opts___?OptionQ ] := Module[
+  { pane, text, arc, needle },
+
   pane = qDrawGateRectangle[x, y];
+  text = qMeasurementText[x, y, opts];
+  
   arc = Circle[ {x, y - 0.25 $GateSize}, .5 $GateSize, {1,5} Pi/6 ];
   needle = Line[{ {x, y - 0.25 $GateSize}, {x,y} + .3{1,1}$GateSize }];
-  { pane, arc, needle }
+  
+  { pane, text, arc, needle }
  ]
 
 
@@ -542,8 +601,8 @@ qDrawGateOval[ x_, yy_List, opts___?OptionQ ] := Module[
 
 qGateText[ x_, y_, opts___?OptionQ ] := Module[
   { label, factor },
-  { label, factor } = { "Label", "LabelSize" } /. {opts} /.
-      Options[qCircuitGate];
+  { label, factor } = { "Label", "LabelSize" } /.
+    {opts} /. Options[qCircuitGate];
   If[ label == None, Return @ Nothing ];
   Text[
     Style[ label, Italic,
@@ -554,6 +613,20 @@ qGateText[ x_, y_, opts___?OptionQ ] := Module[
     (* Notice the y-offset:
        Before v12.2, y-offset=0 shifted a bit upward.
        It seems different in v12.2. *)
+   ]
+ ]
+
+qMeasurementText[ x_, y_, opts___?OptionQ ] := Module[
+  { label, factor },
+  { label, factor } = { "Label", "LabelSize" } /.
+    {opts} /. Options[qCircuitGate];
+  If[ label == None, Return @ Nothing ];
+  Text[
+    Style[ label, Italic,
+      FontWeight -> "Light",
+      FontSize   -> Scaled[(0.5 $GateSize / $CircuitSize) factor] ],
+    {x + 0.65 $GateSize, y},
+    {-1, -1}
    ]
  ]
 
@@ -611,18 +684,17 @@ qDrawGate[
   ]
 
 
-qDrawGate[
-  Gate[tt:{__?QubitQ}, opts___?OptionQ],
-  x_, yy_Association
- ] := Module[
-   { yt = Lookup[yy, tt],
-     target },
-   target = qDrawGateSymbol[
-     "TargetFunction" /. {opts} /. Options[qCircuitGate]
-    ];
+qDrawGate[ Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association ] :=
+  Module[
+    { yt = Lookup[yy, tt],
+      target },
+    
+    target = qDrawGateSymbol[
+      "TargetFunction" /. {opts} /. Options[qCircuitGate]
+     ];
 
-   target[x, yt, opts]
-  ]
+    target[x, yt, opts]
+   ]
 
 
 qDrawGate[ "Spacer", _, _Association ] = Nothing
@@ -808,4 +880,3 @@ qPortBrace[ dir:(-1|1), { a:{_, _}, b:{_, _} } ] :=
 End[]
 
 EndPackage[]
-

@@ -5,14 +5,15 @@ If[ $VersionNumber < 12,
   Message[Version::old];
  ]
 
+Q3`Q3Clear["Q3`Private`"];
 Q3`Q3Clear["Q3`"];
 
 BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.18 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.19 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-24 12:43:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

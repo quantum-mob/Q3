@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.58 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:34:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.59 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-23 12:10:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1009,7 +1009,7 @@ Garner[expr_] := Module[
  ]
 
 
-AddGarnerPatterns::usage = "..."
+AddGarnerPatterns::usage = "AddGarnerPatterns[pattern$1,pattern$2,$$] adds patterns to be handled by Garner."
 
 AddGarnerPatterns[spec:(_Blank|_PatternTest)..] := Module[
   { heads = Cases[{spec}, _Blank],
@@ -1022,7 +1022,7 @@ AddGarnerPatterns[spec:(_Blank|_PatternTest)..] := Module[
  ]
 
 
-$GarnerPatterns::Usage = "..."
+$GarnerPatterns::Usage = "$GarnerPatterns gives the list of patterns to be handled by Garner."
 
 $GarnerPatterns = Association[
   "Heads" -> Alternatives[],
@@ -1049,7 +1049,7 @@ Elaborate[expr_] := Module[
  ] /; Not @ MemberQ[Identity @@@ $ElaborationPatterns[Heads], Head[expr]]
 
 
-AddElaborationPatterns::usage = "..."
+AddElaborationPatterns::usage = "AddElaborationPatterns[spec$1,spec$2,$$] adds patterns to be handled by Elaborate.\nThe spec$j may be _head or replacement rules."
 
 AddElaborationPatterns[spec:(_Blank|_Rule|_RuleDelayed)..] := Module[
   { heads = Cases[{spec}, _Blank],
@@ -1062,7 +1062,7 @@ AddElaborationPatterns[spec:(_Blank|_Rule|_RuleDelayed)..] := Module[
  ]
 
 
-$ElaborationPatterns::Usage = "..."
+$ElaborationPatterns::Usage = "$ElaborationPatterns gives the list of patterns or replacement rules to be handled by Elaborate."
 
 $ElaborationPatterns = Association[
   "Heads" -> Alternatives[],

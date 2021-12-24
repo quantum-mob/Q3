@@ -677,6 +677,8 @@ KetUpdate[expr_, spec__Rule] := KetUpdate[expr, {spec}]
 
 KetNormalize::usage = "KetNormalize[expr] returns the normalized form of a ket expression expr.\nKetNormalize[expr, f] normalizes with respect to the norm function f."
 
+KetNormalize[0] = 0
+
 KetNormalize[expr_] := Garner[expr / Sqrt[Dagger[expr]**expr]] /;
   Not @ FreeQ[expr, _Ket]
 
@@ -706,6 +708,8 @@ KetSort[expr_, ss:{__?SpeciesQ}] := expr /. {
 
 
 KetNorm::usage = "KetNorm[expr] returns the norm of Ket expression expr."
+
+KetNorm[0] = 0
 
 KetNorm[v_] := Sqrt[Dagger[v] ** v] /; Not @ FreeQ[v, _Ket]
 

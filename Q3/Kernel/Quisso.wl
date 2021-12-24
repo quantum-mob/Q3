@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.2 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.22 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-24 12:17:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -24,7 +24,11 @@ BeginPackage["Q3`"]
 { Rotation, EulerRotation, Phase };
 
 { ControlledU, CNOT, CX=CNOT, CZ, SWAP, Toffoli, Fredkin, Deutsch };
-{ Projector, Measurement, Readout };
+
+{ Measurement, MeasurementOdds, $MeasurementOut = <||>,
+  Readout };
+
+{ Projector };
 
 { Oracle, VerifyOracle };
 
@@ -60,7 +64,7 @@ Begin["`Private`"]
 
 $symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
 
-AddElaborationPatterns[_
+AddElaborationPatterns[
   _QuantumFourierTransform,
   _ControlledU, _CZ, _CX, _CNOT, _SWAP,
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
@@ -966,12 +970,12 @@ Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
   Rotation[-Conjugate[ang], S, rest]
 
 Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, S_?QubitQ, ___?OptionQ] :=
-  Cos[phi/2] - I Sin[phi/2]*S
-
-Rotation /:
 HoldPattern @ Elaborate @ Rotation[phi_, S_?QubitQ, v:{_, _, _}, ___] :=
   Garner[ Cos[phi/2] - I Sin[phi/2] Dot[S @ All, Normalize @ v] ]
+
+Rotation /:
+HoldPattern @ Elaborate @ Rotation[phi_, S_?QubitQ, ___?OptionQ] :=
+  Cos[phi/2] - I Sin[phi/2]*S
 
 Rotation /:
 HoldPattern @ Matrix[op_Rotation, rest___] := Matrix[Elaborate[op], rest]
@@ -1492,35 +1496,82 @@ QuissoOracle[args___] := (
 
 QuantumFourierTransform::usage = "QuantumFourierTransform[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transform on the qubits S1, S2, \[Ellipsis].\nDagger[QuantumFourierTransform[\[Ellipsis]]] represents the inverse quantum Fourier transform.\nElaborate[QuantumFourierTransform[\[Ellipsis]]] returns the explicit expression of the operator in terms of the Pauli operators."
 
+QuantumFourierTransform::badmat = "Some elements of `` does not appear in `` for Matrix[QuantumFourierTransform[\[Ellipsis]]]."
+
 Options[QuantumFourierTransform] = {
   "Label" -> "QFT",
-  "LabelRotation" -> Pi/2
+  "LabelRotation" -> Pi/2,
+  N -> False
  }
 
-QuantumFourierTransform[S_?QubitQ] := S[6]
+QuantumFourierTransform[S_?QubitQ, ___?OptionQ] := S[6]
 
-QuantumFourierTransform @ {S_?QubitQ} := S[6]
+QuantumFourierTransform[{S_?QubitQ}, ___?OptionQ] := S[6]
 
 QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] :=
   QuantumFourierTransform[FlavorNone @ qq, opts] /;
   Not @ ContainsOnly[FlavorLast[qq], {None}]
 
-QuantumFourierTransform /:
-HoldPattern @ Elaborate @
-  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] :=
-  ExpressionFor[FourierMatrix @ Power[2, Length @ qq], qq]
 
 QuantumFourierTransform /:
-HoldPattern @ Matrix[op_QuantumFourierTransform, rest__] :=
-  Matrix[Elaborate[op], rest]
+HoldPattern @ Elaborate[op_QuantumFourierTransform] :=
+    ExpressionFor[Matrix[op], Qubits @ op]
 
 QuantumFourierTransform /:
-HoldPattern @ Matrix @ QuantumFourierTransform[qq:{__?QubitQ}, ___] :=
-  FourierMatrix @ Power[2, Length @ qq]
+HoldPattern @ Multiply[pre___, op_QuantumFourierTransform, post___] :=
+  Multiply[pre, Elaborate[op], post]
 
+
+QuantumFourierTransform /:
+HoldPattern @ Matrix[
+  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ]
+ ] := With[
+   { mat = FourierMatrix @ Power[2, Length @ qq] },
+   If[ TrueQ[N /. {opts} /. Options[QuantumFourierTransform]],
+     N @ mat,
+     mat ]
+  ]
+
+QuantumFourierTransform /:
+HoldPattern @ Matrix[
+  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  ss:{__?QubitQ}
+ ] := Matrix @ QuantumFourierTransform[qq, opts] /;
+  FlavorNone[qq] == FlavorNone[ss]
+
+QuantumFourierTransform /:
+HoldPattern @ Matrix[
+  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  ss:{__?QubitQ}
+ ] := Module[
+   { mat = FourierMatrix @ Power[2, Length @ qq],
+     qqs, jdx },
+   mat = CircleTimes[mat, One @ Power[2, Length[ss]-Length[qq]]];
+   qqs = Join[qq, Complement[FlavorNone @ ss, FlavorNone @ qq]];
+   jdx = PermutationList @ FindPermutation[qqs, FlavorNone @ ss];
+   TensorFlatten @ Transpose[
+     Normal @ Tensorize[mat],
+     Riffle[2*jdx - 1, 2*jdx]
+    ]
+  ] /; ContainsAll[FlavorNone @ ss, FlavorNone @ qq]
+
+QuantumFourierTransform /:
+HoldPattern @ Matrix[
+  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  ss:{__?QubitQ}
+ ] := (
+   Message[QuantumFourierTransform::badmat,
+     FlavorNone @ qq, FlavorNone @ ss ];
+   One @ Length[ss]
+  )
+
+HoldPattern @ Matrix[Dagger[op_QuantumFourierTransform], rest___] :=
+  Topple @ Matrix[op, rest]
 
 (**** </QuantumFourierTransform> ****)
 
+
+(**** <Projector> ****)
 
 Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection operator on the qubits {q1, q2, ...} into state, which is given in the Ket expression.\nProjector[expr] automatically extracts the list of qubits from expr."
 
@@ -1552,71 +1603,150 @@ HoldPattern @
   Projector[expr_, qq:{__?QubitQ}] := Projector[expr, FlavorNone @ qq] /;
   Not @ ContainsOnly[ FlavorLast[qq], {None} ]
 
+(**** </Projector> ****)
 
-Measurement::usage = "Measurement[expr, {s1, s2, ...}] performs the projective measurements on the Qubits {s1, s2, ...}.\nMeasurement[expr, s] is equivalent to Measurement[expr, {s}].\nMeasurement[s] represents the projective measurement on the qubit s and returns the state vector corresponding to the measurement outcome.\nMeasurement[{s1, s2, ...}] is equivalent to Map[Measurement, {s1, s2, ...}]."
 
-Measurement::nonum = "Cannot perform a measurement on a nonnumeric state vector. Probability half is assumed."
+(***** <Measurement> ****)
+
+Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis]."
+
+Measurement::nonum = "Probability half is assumed for a state without explicitly numeric coefficients."
 
 Measurement::novec = "The expression `` does not seem to be a valid Quisso Ket expression. Null vector is returned."
 
-Measurement[ gg:{__?QubitQ} ] := Measurement /@ FlavorNone @ gg
-
-Measurement[ g_?QubitQ ] := Measurement @ FlavorNone @ g /;
-  FlavorLast[g] =!= None
-(* This is for the interface with QuantumCircuit[]. *)
-
-Measurement[vec_, qq:{__?QubitQ}] :=
-  Fold[ Measurement, vec, FlavorNone @ qq ] /;
+Measurement[qq:{__?fPauliOpQ}][vec_] :=
+  Last @ ComposeList[Measurement /@ qq, vec] /;
   Not @ FreeQ[Elaborate[vec], Ket[_Association]]
 
-Measurement[vec_, S_?QubitQ] := Module[
-  { r = RandomReal[],
-    b = FlavorNone[S],
-    expr = Elaborate @ vec,
-    vx, v0, v1, p0, p1 },
-  vx = Cases[expr, v:Ket[_Association] :> v[b], Infinity];
-  vx = DeleteCases[vx, (0|1)];
-  If[ vx == {},
-    Null,
-    Message[Measurement::novec, expr]; Return[0],
-    Message[Measurement::novec, expr]; Return[0]
-   ];
-
-  v0 = expr /. { v:Ket[_Association] :> (1-v[b]) v };
-  v1 = expr /. { v:Ket[_Association] :> (v[b]) v };
-
-  p0 = Re @ Simplify[ Dagger[v0] ** v0 ];
-  p1 = Re @ Simplify[ Dagger[v1] ** v1 ];
-  
-  If [ r < N[p0 / (p0 + p1)],
-    v0 / Sqrt[p0],
-    v1 / Sqrt[p1],
+Measurement[op_?fPauliOpQ][vec_] := Module[
+  { odds = MeasurementOdds[vec, op],
+    rand = RandomReal[] },
+  Garner @ If[ rand < Re @ First @ odds[0],
+    $MeasurementOut[op] = 0; Last @ odds[0],
+    $MeasurementOut[op] = 1; Last @ odds[1],
     Message[Measurement::nonum];
-    If[ r < 0.5, v0, v1 ]
+    If[ rand < 1/2,
+      $MeasurementOut[op] = 0; Last @ odds[0],
+      $MeasurementOut[op] = 1; Last @ odds[1]
+     ]
    ]
- ] /; Not @ FreeQ[Elaborate[vec], Ket[_Association]]
+ ]
 
 
-(* DANGEROUS because Multiply is a multi-linear function. *)
-(*
-HoldPattern @ Multiply[pre___, Measurement[op_, q_?QubitQ], post___] :=
-  Multiply[pre, Measurement[Multiply[op, post], q]]
- *)
-(* NOTE: This occurs when op is not a Ket[<|...|>] expression. *)
+Measurement[mm:{__?MatrixQ}][vec_] :=
+  Last @ ComposeList[Measurement /@ mm, vec]
+
+Measurement[mat_?MatrixQ][vec_?VectorQ] := Module[
+  { odds = MeasurementOdds[vec, mat],
+    rand = RandomReal[] },
+  Garner @ If[ rand < Re @ First @ odds[0],
+    $MeasurementOut[op] = 0; Last @ odds[0],
+    $MeasurementOut[op] = 1; Last @ odds[1],
+    Message[Measurement::nonum];
+    If[ rand < 1/2,
+      $MeasurementOut[op] = 0; Last @ odds[0],
+      $MeasurementOut[op] = 1; Last @ odds[1]
+     ]
+   ]
+ ]
+
+Measurement /:
+Dot[Measurement[mat_?MatrixQ], vec_?VectorQ] :=
+  Measurement[mat] @ vec
+
+
+$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j."
 
 
 Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
 
-Readout::badout = "Multiple measurement results: ``. The Qubit may not have been measured; or, it may have been corrupted after measurement."
+Readout::nopauli = "`` is not a Pauli operator. Only Pauli operators (including tensor products of single-qubit Pauli operators) can be measured and readout."
 
-Readout[expr_, S_?QubitQ] := First @ Readout[expr, {S}]
+Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout."
 
-Readout[expr_, ss:{__?QubitQ}] := Module[
-  { vv = Cases[{expr}, Ket[_Association], Infinity] },
-  vv = Union @ Map[#[ss]&, vv];
-  If[ Length[vv] > 1, Message[Readout::badout, vv] ];
-  First @ vv
+Readout::old = "Since Q3 v2.1.6, Readout requires only one input argument." 
+
+Readout[op_?fPauliOpQ] := (
+  If[ Not @ KeyExistsQ[$MeasurementOut, op],
+    Message[Readout::notob, op]
+   ];
+  $MeasurementOut[op]
+ )
+
+Readout[op:{__?fPauliOpQ}] := (
+  If[ Not @ AllTrue[op, KeyExistsQ[$MeasurementOut, #]&],
+    Message[Readout::notob, op]
+   ];
+  Lookup[$MeasurementOut, op]
+ )
+
+Readout[op_] := Message[Readout::nopauli, op]
+
+Readout[_, op_] := (
+  Message[Readout::old];
+  Readout[op]
+ )
+
+
+MeasurementOdds::usage = "MeasurementOdds[vec, op] returns an Association of elements of the form value->{probability, ket}, where value is one of the possible measurement results (\[PlusMinus]1), probability is the probability for value to be actually observed, and ket is the post-measurement state when value is actually observed.\nMesurementOdds[op] is an operator form of MeasurementOdds."
+
+MeasurementOdds[op_?fPauliOpQ][vec_] := MeasurementOdds[vec, op]
+
+MeasurementOdds[vec_, op_?fPauliOpQ] := Module[
+  { new = op ** vec,
+    pls, mns, p0, p1 },
+  pls = (vec + new)/2;
+  mns = (vec - new)/2;
+  p0 = Dagger[pls] ** pls;
+  p1 = Dagger[mns] ** mns;
+  pls = If[TrueQ[Chop[Re @ p0] == 0], 0, pls / Sqrt[p0]];
+  mns = If[TrueQ[Chop[Re @ p1] == 0], 0, mns / Sqrt[p1]];
+  Association[
+    0 -> {p0/(p0+p1), pls},
+    1 -> {p1/(p0+p1), mns}
+   ]
  ]
+(* NOTE:
+   1. vec, pls, or mns may be 0 (null vector).
+   2. The norms of pls and mns may have imaginary parts numerically.
+   3. Ganer or Simplify may significantly slow down the performance when the
+   coefficients are given by complicated exact numbers (such as from Fourier
+   transform).
+   *)
+
+MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] :=
+  MeasurementOdds[vec, mat]
+
+MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
+  { new = mat . vec,
+    pls, mns, p0, p1 },
+  pls = (vec + new)/2;
+  mns = (vec - new)/2;
+  p0 = Norm[pls];
+  p1 = Norm[mns];
+  pls = If[TrueQ[Chop[Re @ p0] == 0], 0, pls / p0];
+  mns = If[TrueQ[Chop[Re @ p1] == 0], 0, mns / p1];
+  p0 = p0^2;
+  p1 = p1^2;
+  Association[
+    0 -> {p0/(p0+p1), pls},
+    1 -> {p1/(p0+p1), mns}
+   ]
+ ]
+(* NOTE:
+   1. vec, pls, or mns may be 0 (null vector).
+   2. The norms of pls and mns may have imaginary parts numerically.
+   *)
+
+fPauliOpQ::uage = "fPauliOpQ[op] returns True if op is a Pauli operator, that is, either a single-qubit Pauli operator or a tensor product of single-qubit Pauli operators."
+
+fPauliOpQ[_Symbol?QubitQ[___]] = True
+
+HoldPattern @ fPauliOpQ[Multiply[__?fPauliOpQ]] = True
+
+fPauliOpQ[_] = False
+
+(**** </Measurement> ****)
 
 
 (**** <ProductState> ****)
