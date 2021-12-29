@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.22 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-24 12:17:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.25 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-26 16:57:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1914,10 +1914,10 @@ GraphState[ g_Graph ] := Module[
 
 Protect[Evaluate @ $symb]
 
-End[] (* `Private` *)
+End[] (* Qubits *)
 
 
-Begin["`Qudit`"]
+Begin["`Private`"]
 
 $symb = Unprotect[Missing]
 
@@ -2126,6 +2126,42 @@ TheMatrix[ Ket[ Association[ S_?QuditQ -> n_Integer] ] ] := SparseArray[
 (**** </Matrix> *****)
 
 
+(**** <TransformByFourier for Qudits> ****)
+
+TransformBy[old_?QuditQ -> new_?QuditQ, mat_?MatrixQ] := Module[
+  { ij = Range[0, Dimension[old]-1],
+    aa, bb },  
+  aa = old[All];
+  bb = Outer[new[#1 -> #2]&, ij, ij];
+  bb = Flatten[ Topple[mat] . bb . mat ];
+  Thread[aa -> bb]
+ ]
+
+TransformBy[
+  a:Rule[_?QuditQ, _?QuditQ],
+  b:Rule[_?QuditQ, _?QuditQ]..,
+  mat_?MatrixQ ] := Map[ TransformBy[#, mat]&, {a, b} ]
+
+TransformBy[expr_, old_?QuditQ -> new_?QuditQ, mat_?MatrixQ] :=
+  Garner[ expr /. TransformBy[old -> new, mat] ]
+
+
+TransformByFourier[old_?QuditQ -> new_?QuditQ, opts___?OptionQ] := With[
+  { mat = FourierMatrix[Dimension @ old, opts] },
+  TransformBy[old -> new, mat]
+ ]
+
+TransformByFourier[
+  a:Rule[_?QuditQ, _?QuditQ],
+  b:Rule[_?QuditQ, _?QuditQ]..,
+  opts___?OptionQ] := Map[ TransformByFourier[#, opts]&, {a, b} ]
+
+TransformByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
+  Garner[ expr /. TransformByFourier[old -> new, opts] ]
+
+(**** </TransformByFourier for Qudits> ****)
+
+
 QuditExpression::usage = "QuditExpression is obsolete now. Use ExpressionFor instead."
 
 QuditExpression[args___] := (
@@ -2134,28 +2170,9 @@ QuditExpression[args___] := (
  )
 
 
-ReplaceByFourier[old_?QuditQ -> new_?QuditQ, opts___?OptionQ] := Module[
-  { mm = FourierMatrix[Dimension @ old, opts],
-    ij = Range[0, Dimension[old]-1],
-    aa, bb },  
-  aa = old[All];
-  bb = Outer[new[#1 -> #2]&, ij, ij];
-  bb = Flatten[ Topple[mm] . bb . mm ];
-  Thread[aa -> bb]
- ]
-
-ReplaceByFourier[
-  a:Rule[_?QuditQ, _?QuditQ],
-  b:Rule[_?QuditQ, _?QuditQ]..,
-  opts___?OptionQ] := Map[ ReplaceByFourier[#, opts]&, {a, b} ]
-
-ReplaceByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
-  Garner[ expr /. ReplaceByFourier[old -> new, opts] ]
-
-
 Protect[Evaluate @ $symb]
 
-End[] (* `Qudit` *)
+End[] (* Qudits *)
 
 
 EndPackage[]

@@ -215,5 +215,4 @@ Protect[$GarnerPatterns, $ElaborationPatterns];
 
 EndPackage[]
 
-
 Q3`Q3Protect["Q3`"];

@@ -5,36 +5,42 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.60 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.0 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-29 15:39:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ PauliGroup, CliffordGroup };
-
-{ PauliMeasurement };
+{ PauliGroup, FullPauliGroup,
+  PauliGroupElements, FullPauliGroupElements,
+  CliffordGroup, FullCliffordGroup,
+  CliffordGroupElements, FullCliffordGroupElements };
 
 { GottesmanVector, FromGottesmanVector,
   GottesmanTest,
   GottesmanInner,
   GottesmanBasis };
 
+{ GottesmanMatrix, FromGottesmanMatrix };
+
 { Stabilizer };
 
 { BinarySymplecticGroup,
-  BinarySymplecticGroupElement };
-
-{ Transvection,
-  FindTransvections };
-
+  BinarySymplecticGroupElements };
 
 Begin["`Private`"]
 
 (**** <PauliGroup> ****)
 
-PauliGroup::usage = "PauliGroup[n] represents the Pauli group, the of group of tensor products of the Pauli operators, on n qubits.\nPauliGroup[{s1, s2, ...}] represents the Pauli group on the labelled qubits {s1, s2, \[Ellipsis]}."
+FullPauliGroup::usage = "FullPauliGroup[n] represents the Pauli group, the of group of tensor products of the Pauli operators, on n qubits.\nPauliGroup[{s1, s2, ...}] represents the Pauli group on the labelled qubits {s1, s2, \[Ellipsis]}."
+
+PauliGroup::usage = "PauliGroup[n] represents the Pauli group, the of group of tensor products of the Pauli operators up to global phase factors, on n qubits. It is a factor group FullPauliGroup[n]/{Exp[\[ImaginaryI] m\[Pi]/2]:m=0,1,2,3}.\nPauliGroup[{s1, s2, ...}] represents the Pauli group on the labelled qubits {s1, s2, \[Ellipsis]}."
 
 PauliGroup::todo = "Not supported yet."
+
+FullPauliGroup[S_?QubitQ] := FullPauliGroup @ {S}
+
+FullPauliGroup[ss:{__?QubitQ}] := FullPauliGroup[FlavorNone @ ss] /;
+  Not @ ContainsOnly[FlavorLast @ ss, {None}]
 
 PauliGroup[S_?QubitQ] := PauliGroup @ {S}
 
@@ -42,19 +48,33 @@ PauliGroup[ss:{__?QubitQ}] := PauliGroup[FlavorNone @ ss] /;
   Not @ ContainsOnly[FlavorLast @ ss, {None}]
 
 
-PauliGroup /:
-GroupOrder @ PauliGroup[n_Integer] := Power[4, n+1] /; n > 0
+FullPauliGroup /:
+GroupOrder @ FullPauliGroup[ss:{__?QubitQ}] :=
+  4 * GroupOrder[PauliGroup @ ss]
+
+FullPauliGroup /:
+GroupOrder @ FullPauliGroup[n_Integer] :=
+  4 * GroupOrder[PauliGroup @ n]
 
 PauliGroup /:
 GroupOrder @ PauliGroup[ss:{__?QubitQ}] :=
   GroupOrder @ PauliGroup @ Length @ ss
 
+PauliGroup /:
+GroupOrder @ PauliGroup[n_Integer] := Power[4, n] /; n >= 0
+
+
+FullPauliGroup /:
+GroupGenerators @ FullPauliGroup[qq:{__?QubitQ}] :=
+  GroupGenerators[PauliGroup @ qq]
+
+FullPauliGroup /:
+GroupGenerators @ FullPauliGroup[n_Integer] :=
+  GroupGenerators[PauliGroup @ n]
 
 PauliGroup /:
-GroupElements @ PauliGroup[n_Integer] := Module[
-  { op = Pauli @@@ Tuples[{0, 1, 2, 3}, n] },
-  Catenate @ {op, -op, I op, -I op}
- ] /; n > 0
+GroupGenerators @ PauliGroup[qq:{__?QubitQ}] :=
+  Sort @ Flatten @ Through @ qq[All]
 
 PauliGroup /:
 GroupGenerators @ PauliGroup[n_Integer] := Module[
@@ -65,43 +85,79 @@ GroupGenerators @ PauliGroup[n_Integer] := Module[
  ] /; n > 0
 
 
+FullPauliGroup /:
+GroupElements[FullPauliGroup[spec_], rest___] :=
+  FullPauliGroupElements[spec, rest]
+
 PauliGroup /:
-GroupElements @ PauliGroup[qq:{__?QubitQ}] := Module[
-  { op = Elaborate @ Through @ qq[Full] },
-  op = Multiply @@@ Tuples[op];
-  Catenate @ {op, -op, I op, -I op}
+GroupElements[PauliGroup[spec_], rest___] :=
+  PauliGroupElements[spec, rest]
+
+
+FullPauliGroupElements::usage = "FullPauliGroupElements[n] returns a list of all elements in the Pauli group on n qubits. FullPauliGroupElements[n, {k$1,k$2,$$}] gives a list of elements numbered k$1,k$2,$$. FullPauliGroupElements[{s$1,s$2,$$,s$n},{k$1,k$2,$$}] refers to the Pauli group on n labelled qubits {s$1,s$2,$$,s$n}."
+
+FullPauliGroupElements[spec_] :=
+  FullPauliGroupElements[spec, Range @ GroupOrder @ FullPauliGroup[spec]]
+
+FullPauliGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
+  Module[
+    { gn = GroupOrder[PauliGroup @ spec],
+      ff = {1, -1, I, -I},
+      qq, rr },
+    qq = Quotient[kk-1, gn] + 1;
+    rr = Mod[kk-1, gn] + 1;
+    MapThread[Times, {ff[[qq]], PauliGroupElements[spec, rr]}]
+   ]
+
+
+PauliGroupElements::usage = "PauliGroupElements[n] returns a list of all elements in the Pauli group on n qubits. PauliGroupElements[n, {k$1,k$2,$$}] gives a list of elements numbered k$1,k$2,$$. PauliGroupElements[{s$1,s$2,$$,s$n},{k$1,k$2,$$}] refers to the Pauli group on n labelled qubits {s$1,s$2,$$,s$n}."
+
+PauliGroupElements[ss:{__?QubitQ}] :=
+  PauliGroupElements[ss, Range @ GroupOrder @ PauliGroup @ ss]
+
+PauliGroupElements[ss:{__?QubitQ}, kk:{__Integer}] :=
+  getPauliGroupElement[ss, #]& /@ kk
+
+PauliGroupElements[n_Integer] :=
+  PauliGroupElements[n, Range @ GroupOrder @ PauliGroup @ n]
+
+PauliGroupElements[n_Integer, kk:{__Integer}] :=
+  getPauliGroupElement[n, #]& /@ kk
+
+
+getPauliGroupElement::usage = "getPauliGroupElement[n, k] ..."
+
+getPauliGroupElement[n_Integer?Positive, k_Integer] :=
+  FromGottesmanVector @ fPauliGroupElement[n, k]
+
+getPauliGroupElement[ss:{__?QubitQ}, k_Integer] :=
+  FromGottesmanVector[fPauliGroupElement[Length @ ss, k], ss] /.
+  { _?QubitQ[___, 0] -> 1 }
+
+fPauliGroupElement[n_Integer?Positive, k_Integer] := Module[
+  { cc = IntegerDigits[k-1, 2, 2*n] },
+  Flatten[Reverse /@ Reverse @ Partition[cc, 2]]
  ]
 
-PauliGroup /:
-GroupGenerators @ PauliGroup[qq:{__?QubitQ}] :=
-  Sort @ Flatten @ Through @ qq[All]
 
+FullPauliGroup /:
+GroupMultiplicationTable @ FullPauliGroup[n_Integer] := Module[
+  { elm = GroupElements @ FullPauliGroup[n],
+    mat },
+  mat = Outer[Multiply, elm, elm];
+  Map[First @ FirstPosition[elm, #]&, mat, {2}]
+ ]
 
-PauliGroup /:
-GroupMultiplicationTable @ PauliGroup[1] = {
-  {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16}, 
-  {2, 1, 12, 15, 6, 5, 16, 11, 10, 9, 8, 3, 14, 13, 4, 7}, 
-  {3, 16, 1, 10, 7, 12, 5, 14, 11, 4, 9, 6, 15, 8, 13, 2}, 
-  {4, 11, 14, 1, 8, 15, 10, 5, 12, 7, 2, 9, 16, 3, 6, 13}, 
-  {5, 6, 7, 8, 1, 2, 3, 4, 13, 14, 15, 16, 9, 10, 11, 12}, 
-  {6, 5, 16, 11, 2, 1, 12, 15, 14, 13, 4, 7, 10, 9, 8, 3}, 
-  {7, 12, 5, 14, 3, 16, 1, 10, 15, 8, 13, 2, 11, 4, 9, 6}, 
-  {8, 15, 10, 5, 4, 11, 14, 1, 16, 3, 6, 13, 12, 7, 2, 9}, 
-  {9, 10, 11, 12, 13, 14, 15, 16, 5, 6, 7, 8, 1, 2, 3, 4}, 
-  {10, 9, 8, 3, 14, 13, 4, 7, 6, 5, 16, 11, 2, 1, 12, 15}, 
-  {11, 4, 9, 6, 15, 8, 13, 2, 7, 12, 5, 14, 3, 16, 1, 10}, 
-  {12, 7, 2, 9, 16, 3, 6, 13, 8, 15, 10, 5, 4, 11, 14, 1}, 
-  {13, 14, 15, 16, 9, 10, 11, 12, 1, 2, 3, 4, 5, 6, 7, 8}, 
-  {14, 13, 4, 7, 10, 9, 8, 3, 2, 1, 12, 15, 6, 5, 16, 11}, 
-  {15, 8, 13, 2, 11, 4, 9, 6, 3, 16, 1, 10, 7, 12, 5, 14}, 
-  {16, 3, 6, 13, 12, 7, 2, 9, 4, 11, 14, 1, 8, 15, 10, 5}
- }
+FullPauliGroup /:
+GroupMultiplicationTable @ FullPauliGroup[ss:{__?QubitQ}] :=
+  GroupMultiplicationTable @ FullPauliGroup @ Length @ ss
+  
 
 PauliGroup /:
 GroupMultiplicationTable @ PauliGroup[n_Integer] := Module[
   { elm = GroupElements @ PauliGroup[n],
     mat },
-  mat = Outer[Multiply, elm, elm];
+  mat = Outer[Multiply, elm, elm] /. {_?CommutativeQ * op_ -> op};
   Map[First @ FirstPosition[elm, #]&, mat, {2}]
  ]
 
@@ -114,11 +170,20 @@ GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=
 
 (**** <CliffordGroup> ****)
 
-CliffordGroup::usage = "CliffordGroup[n] represents the Clifford group, the normalizer group of the Pauli group, on n qubits.\nCliffordGroup[{s1, s2, ...}] represents the Clifford group, the normalizer group of the Pauli group, on the qubits {s1, s2, \[Ellipsis]}."
+FullCliffordGroup::usage = "FullCliffordGroup[n] represents the full Clifford group (taking into account the global phase factors), the normalizer group of the full Pauli group, on n qubits.\nCliffordGroup[{s1, s2, ...}] represents the full Clifford group on labelled qubits {s1, s2, \[Ellipsis]}."
 
-CliffordGroup::toobig = "Too many elements in the Clifford group on two or more qubits to list."
+CliffordGroup::usage = "CliffordGroup[n] represents the Clifford group (ignoring global phase factors), the normalizer group of the Pauli group, on n qubits.\nCliffordGroup[{s1, s2, ...}] represents the Clifford group on labelled qubits {s1, s2, \[Ellipsis]}.\nCliffordGroup[n] is a quotient group FullCliffordGroup[n] / {Exp[\[ImaginaryI] m \[Pi]/4] : m=0,1,2,\[Ellipsis],7}."
+
+FullCliffordGroup::toobig = "There are about `` elements in the group. Only the first 10 elements are returned."
+
+CliffordGroup::toobig = "There are about `` elements in the group. Only the first 10 elements are returned."
 
 CliffordGroup::todo = "Not supported yet."
+
+FullCliffordGroup[S_?QubitQ] := FullCliffordGroup @ {S}
+
+FullCliffordGroup[ss:{__?QubitQ}] := FullCliffordGroup[FlavorNone @ ss] /;
+  Not @ ContainsOnly[FlavorLast @ ss, {None}]
 
 CliffordGroup[S_?QubitQ] := CliffordGroup @ {S}
 
@@ -126,36 +191,37 @@ CliffordGroup[ss:{__?QubitQ}] := CliffordGroup[FlavorNone @ ss] /;
   Not @ ContainsOnly[FlavorLast @ ss, {None}]
 
 
+FullCliffordGroup /:
+GroupOrder @ FullCliffordGroup[n_Integer] :=
+  8 * GroupOrder[CliffordGroup @ n]
+
+FullCliffordGroup /:
+GroupOrder @ FullCliffordGroup[ss:{__?QubitQ}] :=
+  8 * GroupOrder[CliffordGroup @ ss]
+
 CliffordGroup /:
-GroupOrder @ CliffordGroup[n_Integer] := Module[
-  {j},
-  Power[2, n^2 + 2*n + 3] * Product[4^j-1, {j, 1, n}]
+GroupOrder @ CliffordGroup[n_Integer] := Block[
+  {k},
+  Power[2, n^2 + 2*n] * Product[4^k-1, {k, 1, n}]
  ]
-(* NOTE: See Koenig (2014a). *)
 
 CliffordGroup /:
 GroupOrder @ CliffordGroup[ss:{__?QubitQ}] :=
   GroupOrder @ CliffordGroup @ Length @ ss
 
 
-CliffordGroup /:
-GroupGenerators @ CliffordGroup[n_Integer] := Module[
-  { ss, cz, CZ, PP },
-  ss = {
-    PP = Pauli @@ PadRight[{6}, n];
-    Table[RotateRight[PP, k], {k, 0, n-1}],
-    PP = Pauli @@ PadRight[{7}, n];
-    Table[RotateRight[PP, k], {k, 0, n-1}]
-   };    
-  
-  cz = Subsets[Range[n], {2}];
-  PP = Pauli @@ ConstantArray[0, n];
-  CZ[i_, j_] := ( PP +
-      ReplacePart[PP, i->3] + ReplacePart[PP, j->3] -
-      ReplacePart[PP, {i->3, j->3}] ) / 2;
-  Garner @ Flatten @ {ss, CZ @@@ cz}
- ]
+FullCliffordGroup /:
+GroupGenerators @ FullCliffordGroup[spec_] :=
+  GroupGenerators[CliffordGroup @ spec]
 
+CliffordGroup /:
+GroupGenerators @ CliffordGroup[n_Integer] := Block[
+  { S, ss },
+  Let[Qubit, S];
+  ss = S[Range @ n, None];
+  gg = GroupGenerators[CliffordGroup @ ss];
+  ExpressionFor /@ Matrix[gg, ss]
+ ]
 
 CliffordGroup /:
 GroupGenerators @ CliffordGroup[qq:{__?QubitQ}] := Module[
@@ -165,58 +231,56 @@ GroupGenerators @ CliffordGroup[qq:{__?QubitQ}] := Module[
  ]
 
 
-CliffordGroup /:
-GroupElements @ CliffordGroup[n_Integer] :=
-  Message[CliffordGroup::toobig] /; n > 1
+FullCliffordGroup /:
+GroupElements[grp_FullCliffordGroup] := (
+  Message[FullCliffordGroup::toobig,
+    ScientificForm[N @ GroupOrder @ grp, 2]];
+  GroupElements[grp, Range @ 10]
+ )
+
+FullCliffordGroup /:
+GroupElements[FullCliffordGroup[spec_], rest___] :=
+  FullCliffordGroupElements[spec, rest]
 
 CliffordGroup /:
-GroupElements @ CliffordGroup[1] := Module[
-  { op, ff },
-  op = Flatten @ {
-    Rotation[#, 1] & /@ {Pi/2, -Pi/2, Pi},
-    Rotation[#, 2] & /@ {Pi/2, -Pi/2, Pi},
-    Rotation[#, 3] & /@ {Pi/2, -Pi/2, Pi},
-    Rotation[Pi, {1, 1, 0}], Rotation[Pi, {-1, 1, 0}],
-    Rotation[Pi, {1, 0, 1}], Rotation[Pi, {0, 1, 1}],
-    Rotation[Pi, {-1, 0, 1}], Rotation[Pi, {0, -1, 1}],
-    Rotation[2 Pi/3, {1, 1, 1}], Rotation[4 Pi/3, {1, 1, 1}],
-    Rotation[2 Pi/3, {-1, 1, 1}], Rotation[4 Pi/3, {-1, 1, 1}],
-    Rotation[2 Pi/3, {1, -1, 1}], Rotation[4 Pi/3, {1, -1, 1}],
-    Rotation[2 Pi/3, {-1, -1, 1}], Rotation[4 Pi/3, {-1, -1, 1}],
-    Pauli[0] };
-  ff = {
-    1, -1, I, -I,
-    Exp[I Pi/4], -Exp[I Pi/4],
-    Exp[-I Pi/4], -Exp[-I Pi/4] };
-  Sort @ Garner @ ExpToTrig[ Times @@@ Tuples[{ff, op}] ]
- ]
-
+GroupElements[grp_CliffordGroup] := (
+  Message[CliffordGroup::toobig,
+    ScientificForm[N @ GroupOrder @ grp, 2]];
+  GroupElements[grp, Range @ 10]
+ )
 
 CliffordGroup /:
-GroupElements @ CliffordGroup[{_?QubitQ, __?QubitQ}] :=
-  Message[CliffordGroup::toobig]
+GroupElements[CliffordGroup[spec_], rest___] :=
+  CliffordGroupElements[spec, rest]
 
-CliffordGroup /:
-GroupElements @ CliffordGroup[{S_?QubitQ}] := Module[
-  { op, ff },
-  op = Flatten @ {
-    Rotation[#, S[1]] & /@ {Pi/2, -Pi/2, Pi},
-    Rotation[#, S[2]] & /@ {Pi/2, -Pi/2, Pi},
-    Rotation[#, S[3]] & /@ {Pi/2, -Pi/2, Pi},
-    Rotation[Pi, S, {1, 1, 0}], Rotation[Pi, S, {-1, 1, 0}],
-    Rotation[Pi, S, {1, 0, 1}], Rotation[Pi, S, {0, 1, 1}],
-    Rotation[Pi, S, {-1, 0, 1}], Rotation[Pi, S, {0, -1, 1}],
-    Rotation[2 Pi/3, S, {1, 1, 1}], Rotation[4 Pi/3, S, {1, 1, 1}],
-    Rotation[2 Pi/3, S, {-1, 1, 1}], Rotation[4 Pi/3, S, {-1, 1, 1}],
-    Rotation[2 Pi/3, S, {1, -1, 1}], Rotation[4 Pi/3, S, {1, -1, 1}],
-    Rotation[2 Pi/3, S, {-1, -1, 1}], Rotation[4 Pi/3, S, {-1, -1, 1}],
-    1 };
-  ff = {
-    1, -1, I, -I,
-    Exp[I Pi/4], -Exp[I Pi/4],
-    Exp[-I Pi/4], -Exp[-I Pi/4] };
-  Times @@@ Tuples[{ff, op}]
- ]
+
+FullCliffordGroupElements::usage = "CliffordGroupElements[n, {k$1,k$2,$$}] returns a list of the elements numbered k$1, k$2, $$ in the full Clifford group of degree n. FullCliffordGroupElements[{s$1,s$2,$$,s$n}, {k$1,k$2,$$}] refers to the group on n labelled qubits {s$1,s$2,$$}."
+
+CliffordGroupElements::usage = "CliffordGroupElements[n, {k$1,k$2,$$}] returns a list of the elements numbered k$1, k$2, $$ in the Clifford group of degree n. CliffordGroupElements[{s$1,s$2,$$,s$n}, {k$1,k$2,$$}] refers to the group on n labelled qubits {s$1,s$2,$$}."
+
+FullCliffordGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
+  Module[
+    { gn = GroupOrder[CliffordGroup @ spec],
+      ff, qq, rr, k },
+    ff = Table[Exp[I k Pi/4], {k, 0, 7}];
+    qq = Quotient[kk-1, gn] + 1;
+    rr = Mod[kk-1, gn] + 1;
+    MapThread[Times, {ff[[qq]], CliffordGroupElements[spec, rr]}]
+   ]
+
+CliffordGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
+  Module[
+    { gn = GroupOrder @ BinarySymplecticGroup[spec],
+      sp, qq, rr, ff },
+
+    qq = Quotient[kk-1, gn] + 1;
+    rr = Mod[kk-1, gn] + 1;
+
+    ff = PauliGroupElements[spec, qq];
+    sp = GroupElements[BinarySymplecticGroup[spec], rr];
+    sp = FromGottesmanMatrix[#, spec]& /@ sp;
+    Elaborate @ MapThread[Multiply, {ff, sp}]
+   ]
 
 (**** </CliffordGroup> ****)
 
@@ -249,13 +313,14 @@ GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := With[
    ]
  ]
 
-HoldPattern @ GottesmanVector[Multiply[op__?QubitQ], ss:{__?QubitQ}] := With[
-  { qq = FlavorNone[ss] },
-  GottesmanVector @ Apply[
-    Pauli,
-    qq /. Thread[FlavorMute @ {op} -> FlavorLast @ {op}] /. Thread[qq -> 0]
+HoldPattern @
+  GottesmanVector[Multiply[op__?QubitQ], ss:{__?QubitQ}] := With[
+    { qq = FlavorNone[ss] },
+    GottesmanVector @ Apply[
+      Pauli,
+      qq /. Thread[FlavorMute @ {op} -> FlavorLast @ {op}] /. Thread[qq -> 0]
+     ]
    ]
- ]
 
 GottesmanVector[expr_] := GottesmanVector[expr, Qubits @ expr] /;
   FreeQ[expr, _Pauli]
@@ -295,7 +360,7 @@ FromGottesmanVector[vec:{(0|1)..}, ss:{__?QubitQ}] := Multiply @@ MapThread[
         {1, 1} -> 2,
         {0, 1} -> 3 }
      ] }
- ]
+ ] /. { _?QubitQ[___, 0] -> 1 }
 
 
 GottesmanTest::usage = "GottesmanTest[a, b] returns 1 if the two operators a and b commute with each other, -1 if they anti-commute, and 0 otherwise."
@@ -371,33 +436,57 @@ Stabilizer[grp_Graph, vtx_] := Module[
 
 BinarySymplecticGroup::usage = "BinarySymplecticGroup[n] represents the symplectic group Sp(2n, {0, 1}), that is, the group of 2n\[Times]2n symplectic matrices with elements 0 or 1."
 
-BinarySymplecticGroup::toobig = "Too many elements to list in the binary symplectic group on two or more qubits."
+BinarySymplecticGroup::degree = "The binary symplectic group is not defined for degree ``; defined only for a degree of positive integer."
+
+BinarySymplecticGroup::toobig = "There are about `` elements in the group. Only the first 6 elements are returned."
+
+BinarySymplecticGroup[ss:{__?QubitQ}] := BinarySymplecticGroup[Length @ ss]
+
+BinarySymplecticGroup /:
+GroupOrder @ BinarySymplecticGroup[n_Integer] :=
+  BinarySymplecticGroupOrder[n]
+
+BinarySymplecticGroupOrder[n_Integer?Positive] := Block[
+  { k },
+  Power[2, n^2] * Product[4^k - 1, {k, 1, n}]
+ ]
+
+BinarySymplecticGroupOrder[n_] :=
+  (Message[BinarySymplecticGroup::degree, n]; 0)
 
 
 BinarySymplecticGroup /:
-GroupOrder @ BinarySymplecticGroup[n_Integer] := Module[
-  { j },
-  Power[2, n^2] * Product[4^j - 1, {j, 1, n}]
- ] /; n > 0
+GroupElements[BinarySymplecticGroup[n_], rest___] :=
+  BinarySymplecticGroupElements[n, rest]
 
-
-BinarySymplecticGroup /:
-GroupElements @ BinarySymplecticGroup[1] :=
-  BinarySymplecticGroupElement[1, Range[6]]
-
-BinarySymplecticGroup /:
-GroupElements @ BinarySymplecticGroup[n_Integer] := (
-  Message[BinarySymplecticGroup::toobig];
-  BinarySymplecticGroupElement[2, Range[6]]
+BinarySymplecticGroupElements[n_Integer?Positive] := (
+  If[ n > 1,
+    Message[BinarySymplecticGroup::toobig,
+      ScientificForm[N @ GroupOrder @ BinarySymplecticGroup @ n, 2]] ];
+  BinarySymplecticGroupElements[n, Range[6]]
  )
 
+BinarySymplecticGroupElements[ss:{__?QubitQ}, kk:{__Integer}] :=
+  getSpElement[Length @ ss, kk]
 
-BinarySymplecticGroupElement::usage = "BinarySymplecticGroupElement[n, j] returns the j'th symplectic matrix in BinarySymplecticGroup[n], where j=1, 2, \[Ellipsis], (group order)."
+BinarySymplecticGroupElements[n_Integer?Positive, kk:{__Integer}] :=
+  getSpElement[n, kk]
 
-SetAttributes[BinarySymplecticGroupElement, Listable];
+BinarySymplecticGroupElements[n_, kk:{__Integer}] :=
+  (Message[BinarySymplecticGroup::degree, n]; {})
+
+(**** </BinarySymplecticGroup> ****)
+
+
+(**** <Koenig-Smolin Algorihm for BinarySymplecticGroup> ****)
+(* See Koenig (2014a) *)
+
+getSpElement::usage = "getSpElement[n, k] returns the k'th symplectic matrix in BinarySymplecticGroup[n]."
+
+SetAttributes[getSpElement, Listable];
 
 (* See Koenig (2014a) for the algorithm. *)
-BinarySymplecticGroupElement[n_Integer, j_Integer] := Module[
+getSpElement[n_Integer, j_Integer] := Module[
   { nn = 2*n, s, k,
     js, e1, f1, h0, tt, bb, ep, id, gg },
   (* step 1 *)
@@ -410,14 +499,14 @@ BinarySymplecticGroupElement[n_Integer, j_Integer] := Module[
 
   (* step 3 *)
   e1 = UnitVector[nn, 1];
-  tt = FindTransvections[e1, f1];
+  tt = FindGottesmanShears[e1, f1];
 
   (* step 4 *)
   bb = IntegerDigits[Mod[js, BitShiftLeft[1, nn-1]], 2, nn-1];
 
   (* step 5 *)
   ep = Join[e1[[;;2]], Rest @ bb];
-  h0 = Transvection[tt[[2]], Transvection[tt[[1]], ep]];
+  h0 = GottesmanShear[tt[[2]], GottesmanShear[tt[[1]], ep]];
 
   (* step 6 *)
   If[First[bb] == 1, f1 *= 0];
@@ -428,52 +517,46 @@ BinarySymplecticGroupElement[n_Integer, j_Integer] := Module[
     id,
     CirclePlus[
       id,
-      BinarySymplecticGroupElement[n-1, 1 + BitShiftRight[js, nn-1]]
+      getSpElement[n-1, 1 + BitShiftRight[js, nn-1]]
       (* NOTE: j starts from 1. *)
      ]
    ];
   Map[
-    Transvection[f1,
-      Transvection[h0,
-        Transvection[tt[[2]],
-          Transvection[tt[[1]], #]]]]&,
+    GottesmanShear[f1,
+      GottesmanShear[h0,
+        GottesmanShear[tt[[2]],
+          GottesmanShear[tt[[1]], #]]]]&,
     gg
    ]
- ] /; n > 0 && (1 <= j <= GroupOrder[BinarySymplecticGroup[n]])
-
-(**** </BinarySymplecticGroup> ****)
+ ]
 
 
+GottesmanShear::usage = "GottesmanShear[v, w] gives w + v\[LeftAngleBracket]v,w\[RightAngleBracket], where \[LeftAngleBracket]\[CenterDot],\[CenterDot]\[RightAngleBracket] is the Gottesman inner product. GottesmanShear is a shear transformation."
 
-(**** <Transvection> ****)
-(* See Koenig (2014a) *)
+GottesmanShear::incon = "Inconsistent vectors `` and ``."
 
-Transvection::usage = "Transvection[v, w] gives w + v\[LeftAngleBracket]v,w\[RightAngleBracket], where \[LeftAngleBracket]\[CenterDot],\[CenterDot]\[RightAngleBracket] is the Gottesman inner product. It is a symplectic Householder transformation."
-
-Transvection::incon = "Inconsistent vectors `` and ``."
-
-Transvection[v_?VectorQ, w_?VectorQ] :=
+GottesmanShear[v_?VectorQ, w_?VectorQ] :=
   Mod[w + v * GottesmanInner[v, w], 2] /;
   ArrayQ @ {v, w}
 
-Transvection[v_?VectorQ, w_?VectorQ] := (
-  Message[Transvection::incon, v, w];
+GottesmanShear[v_?VectorQ, w_?VectorQ] := (
+  Message[GottesmanShear::incon, v, w];
   w
  )
 
 
-FindTransvections::usage = "FindTransvections[v, w] returns a list of two vectors {u1, u2} such that w = Transvection[u1, Transvection[u2, v]]."
+FindGottesmanShears::usage = "FindGottesmanShears[v, w] returns a list of two vectors {u1, u2} such that w = GottesmanShear[u1, GottesmanShear[u2, v]]."
 
-FindTransvections[m_?MatrixQ] := FindTransvections[m[[1]], m[[2]]]
+FindGottesmanShears[m_?MatrixQ] := FindGottesmanShears[m[[1]], m[[2]]]
 
-FindTransvections[x_?VectorQ, y_?VectorQ] := Zero[2, Length @ x] /; x == y
+FindGottesmanShears[x_?VectorQ, y_?VectorQ] := Zero[2, Length @ x] /; x == y
 
-FindTransvections[x_?VectorQ, y_?VectorQ] := {
+FindGottesmanShears[x_?VectorQ, y_?VectorQ] := {
   Mod[x + y, 2],
   Zero[Length @ x]
  } /; GottesmanInner[x, y] == 1
 
-FindTransvections[x_?VectorQ, y_?VectorQ] := Module[
+FindGottesmanShears[x_?VectorQ, y_?VectorQ] := Module[
   { assoc, k, z },
   assoc = PositionIndex @ Transpose @ Map[
     Positive,
@@ -507,8 +590,90 @@ solveBinaryEq[x:{_, _}, y:{_, _}] := Module[
    *)
 solveBinaryEq[x:{_, _}] := If[First[x] == 0, {1, 0}, {0, 1}]
 
-(**** </Transvection> ****)
+(**** </Koenig-Smolin Algorihm for BinarySymplecticGroup> ****)
 
+
+(**** <GottesmanMatrix> ****)
+
+GottesmanMatrix::usage = "GottesmanMatrix[op, {s$1,s$2,$$}] returns the binary symplectic matrix corresponding to Clifford operator op."
+
+GottesmanMatrix[op_, S_?QubitQ] := GottesmanMatrix[op, {FlavorNone @ S}]
+
+GottesmanMatrix[op_, ss:{__?QubitQ}] := Module[
+  { n = Length @ ss,
+    xz },
+  xz = Flatten @ Through[ss @ {1,3}];
+  GottesmanVector[#, ss]& /@ Elaborate[Supermap[op] /@ xz]
+ ]
+
+
+FromGottesmanMatrix::usage = "FromGottesmanMatrix[mat, {s$1,s$2,$$}] returns the Clifford operator corresponding to binary symplectic matrix mat."
+
+FromGottesmanMatrix::todo = "Oops! Sorry, this rare case `` is not supported yet."
+
+FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
+  { n = Length @ ss,
+    ff, hh, aa, bb, vv, qq,
+    new, opf, oph, opa, opb, opv },
+
+  ff = mat[[;;2, ;;2]];
+  If[ GottesmanInner[First @ ff, Last @ ff] == 0,
+    Message[FromGottesmanMatrix::todo, MatrixForm @ mat];
+    Return[1],
+    ff = Mod[fSpInverse[ff] . ThePauli[1], 2]
+   ];
+  opf = FromGottesmanMatrix[ff, {First @ ss}];
+  new = Mod[mat . CirclePlus[ff, One[2(n-1)]], 2];
+  
+  aa = FromGottesmanVector[new[[2, 3;;]], Rest @ ss];
+  bb = FromGottesmanVector[new[[1, 3;;]], Rest @ ss];
+  aa = GottesmanMatrix[opa = ControlledU[First @ ss, aa], ss];
+  bb = GottesmanMatrix[opb = ControlledU[First @ ss, bb], ss];
+  hh = GottesmanMatrix[oph = First[ss][6], ss];
+  vv = Mod[new . aa . hh. bb, 2];
+
+  opv = FromGottesmanMatrix[vv[[3;;, 3;;]], Rest @ ss];
+
+  Garner[ Dagger[opf] ** opa ** oph ** opb ** opv ]
+ ]
+
+
+FromGottesmanMatrix[mat_?MatrixQ, S_?QubitQ] :=
+  FromGottesmanMatrix[mat, {FlavorNone @ S}]
+
+FromGottesmanMatrix[mat_?MatrixQ, {S_?QubitQ}] :=
+  Elaborate @ Which[
+    mat == ThePauli[1], S[6],
+    mat == ThePauli[0], 1,
+    mat == {{1, 1}, {0, 1}}, S[7],
+    mat == {{0, 1}, {1, 1}}, S[7]**S[6],
+    mat == {{1, 0}, {1, 1}}, S[7]**S[6]**Dagger[S[7]],
+    mat == {{1, 1}, {1, 0}}, S[6]**Dagger[S[7]],
+    True, 1
+   ]
+
+FromGottesmanMatrix[mat_?MatrixQ, _Integer] :=
+  FromGottesmanMatrix[mat] (* for CliffordGroupElements *)
+
+FromGottesmanMatrix[mat_?MatrixQ] := Block[
+  { S, ss },
+  Let[Qubit, S];
+  ss = S[Range[Length[mat]/2], None];
+  op = FromGottesmanMatrix[mat, ss];
+  ExpressionFor @ Matrix[op, ss]
+ ]
+
+
+fSpInverse::usage = "fSpInverse[mat] returns the inverse of binary symplectic matrix mat (with respect to the Gottesman inner product)."
+
+fSpInverse[mat_] := Module[
+  { n = Length[mat] / 2,
+    JX },
+  JX = CircleTimes[One[n], ThePauli[1]];
+  Mod[JX . Transpose[mat] . JX, 2]
+ ]
+  
+(**** </GottesmanMatrix> ****)
 
 End[]
 

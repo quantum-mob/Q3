@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.59 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 12:10:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.61 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-26 17:01:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -51,7 +51,7 @@ BeginPackage["Q3`"]
 
 { PlusDagger, TimesDaggerRight, TimesDaggerLeft };
 
-{ ReplaceBy, ReplaceByFourier, ReplaceByInverseFourier };
+{ TransformBy, TransformByFourier, TransformByInverseFourier };
 
 { Observation, ObservationValue, Indefinite };
 { Occupation, OccupationValue };
@@ -1414,46 +1414,47 @@ MultiplyExpand[expr_, opts___?OptionQ] := (
  )
 
 
-ReplaceBy::usage = "ReplaceBy[old \[RightArrow] new, M] construct a list of Rules to be used in ReplaceAll by applying the linear transformation associated with the matrix M on new. That is, the Rules old$i \[RightArrow] \[CapitalSigma]$j M$ij new$j. If new is a higher dimensional tensor, the transform acts on its first index.\nReplaceBy[expr, old \[RightArrow] new] applies ReplaceAll on expr with the resulting Rules."
+TransformBy::usage = "TransformBy[old \[RightArrow] new, M] construct a list of Rules to be used in ReplaceAll by applying the linear transformation associated with the matrix M on new. That is, the Rules old$i \[RightArrow] \[CapitalSigma]$j M$ij new$j. If new is a higher dimensional tensor, the transform acts on its first index.\nTransformBy[expr, old \[RightArrow] new] applies ReplaceAll on expr with the resulting Rules."
 
-ReplaceBy[old_List -> new_List, M_?MatrixQ] :=
+TransformBy[old_List -> new_List, M_?MatrixQ] :=
   Thread[ Flatten @ old -> Flatten[M . new] ]
 
-ReplaceBy[a:Rule[_List, _List], b:Rule[_List, _List].., M_?MatrixQ] :=
-  ReplaceBy[ Transpose /@ Thread[{a, b}, Rule], M ]
+TransformBy[a:Rule[_List, _List], bb:Rule[_List, _List].., M_?MatrixQ] :=
+  TransformBy[ Transpose /@ Thread[{a, bb}, Rule], M ]
 
-ReplaceBy[expr_, rr:Rule[_List, _List].., M_?MatrixQ] :=
-  Garner[ expr /. ReplaceBy[rr, M] ]
+TransformBy[expr_, rr:Rule[_List, _List].., M_?MatrixQ] :=
+  Garner[ expr /. TransformBy[rr, M] ]
 
 
-ReplaceByFourier::usage = "ReplaceByFourier[v] is formally equivalent to Fourier[v] but v can be a list of non-numeric symbols. If v is a higher dimensional tensor the transform is on the last index.\nReplaceByFourier[old \[RightArrow] new] returns a list of Rules that make the discrete Fourier transform.\nReplaceByFourier[expr, old \[RightArrow] new] applies the discrete Fourier transformation on expr, which is expressed originally in the operators in the list old, to the expression in terms of operators in the list new."
+TransformByFourier::usage = "TransformByFourier[v] is formally equivalent to Fourier[v] but v can be a list of non-numeric symbols. If v is a higher dimensional tensor the transform is on the last index.\nTransformByFourier[old \[RightArrow] new] returns a list of Rules that make the discrete Fourier transform.\nTransformByFourier[expr, old \[RightArrow] new] applies the discrete Fourier transformation on expr, which is expressed originally in the operators in the list old, to the expression in terms of operators in the list new."
 
-ReplaceByFourier[vv_List, opts___?OptionQ] :=
+TransformByFourier[vv_List, opts___?OptionQ] :=
   vv . FourierMatrix[Last @ Dimensions @ vv, opts]
 
-ReplaceByFourier[old_List -> new_List, opts___?OptionQ] :=
-  Thread[ Flatten @ old -> Flatten @ ReplaceByFourier[new, opts] ]
+TransformByFourier[old_List -> new_List, opts___?OptionQ] :=
+  Thread[ Flatten @ old -> Flatten @ TransformByFourier[new, opts] ]
 
-ReplaceByFourier[a:Rule[_List, _List], b:Rule[_List, _List]..,
+TransformByFourier[a:Rule[_List, _List], b:Rule[_List, _List]..,
   opts___?OptionQ] :=
-  ReplaceByFourier @ Thread[{a, b}, Rule]
+  TransformByFourier @ Thread[{a, b}, Rule]
 
-ReplaceByFourier[expr_, rr:Rule[_List, _List].., opts___?OptionQ1] :=
-  Garner[ expr /. ReplaceByFourier[rr, opts] ]
+TransformByFourier[expr_, rr:Rule[_List, _List].., opts___?OptionQ1] :=
+  Garner[ expr /. TransformByFourier[rr, opts] ]
 
 
-ReplaceByInverseFourier::usage = "ReplaceByInverseFourier[old -> new] \[Congruent] Fourier[old -> new, -1].\nReplaceByInverseFourier[expr, old -> new] \[Congruent] Fourier[expr, old -> new, -1]"
+TransformByInverseFourier::usage = "TransformByInverseFourier[old -> new] \[Congruent] Fourier[old -> new, -1].\nTransformByInverseFourier[expr, old -> new] \[Congruent] Fourier[expr, old -> new, -1]"
 
-ReplaceByInverseFourier[args__, opts___?OptionQ] :=
-  ReplaceByFourier[args, opts, FourierParameters -> {0,-1}]
+TransformByInverseFourier[args__, opts___?OptionQ] :=
+  TransformByFourier[args, opts, FourierParameters -> {0,-1}]
 
 
 Protect[ Evaluate @ $symb ]
 
 End[]
 
+
 (* Section 2. Motifications to some built-in functions *)
-Begin["`Prelude`"]
+Begin["`Private`"]
 
 $symb = Unprotect[
   KroneckerDelta, DiscreteDelta, UnitStep

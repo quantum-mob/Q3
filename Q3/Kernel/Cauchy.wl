@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.24 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.25 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-26 17:00:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -20,7 +20,7 @@ BeginPackage["Q3`"]
 { CauchyExpand }; (* OBSOLETE *)
 
 
-Begin["`Prelude`"]
+Begin["`Private`"]
 
 $symb = Unprotect[Conjugate, Abs, Power, NonNegative]
 
@@ -82,18 +82,14 @@ AddElaborationPatterns[
   Abs[z_] :> Sqrt[z Conjugate[z]]
  ]
 
-
 (**** </Formatting> ****)
-
 
 Protect[ Evaluate @ $symb ]
 
-End[] (* `Prelude` *)
+End[]
 
-(**********************************************************************)
-(**********************************************************************)
 
-Begin["`Complex`"]
+Begin["`Private`"] (* Complex *)
 
 $symb = Unprotect[Mod, IntegerQ, OddQ, EvenQ]
 
@@ -321,6 +317,6 @@ CauchyExpand[expr_] := (
 
 Protect[ Evaluate @ $symb ]
 
-End[] (* `Complex` *)
+End[] (* Complex *)
 
 EndPackage[]

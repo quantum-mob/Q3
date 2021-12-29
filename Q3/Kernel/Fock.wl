@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.16 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.17 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-26 12:11:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -644,17 +644,17 @@ Majoranas[ expr_ ] :=
   Union @ Cases[ { Normal[expr, Association] }, _?MajoranaQ, Infinity ]
 
 
-FockFourier::usage = "FockFourier is OBSOLETE. Use ReplaceByFourier instead."
+FockFourier::usage = "FockFourier is now obsolete. Use TransformByFourier instead."
 
-FockInverseFourier::usage = "FockInverseFourier is now obsolete. Use ReplaceByFourierInverse instead."
+FockInverseFourier::usage = "FockInverseFourier is now obsolete. Use TransformByFourierInverse instead."
 
 FockFourier[args__] := (
-  Message[Q3`Q3General::obsolete, "FockFourier", "ReplaceByFourier"];
+  Message[Q3`Q3General::obsolete, "FockFourier", "TransformByFourier"];
   FourierMap[args]
  )
 
 FockInverseFourier[args__] := (
-  Message[Q3`Q3General::obsolete, "FockInverseFourier", "ReplaceByFourierInvere"];
+  Message[Q3`Q3General::obsolete, "FockInverseFourier", "TransformByFourierInvere"];
   InverseFourierMap[args]
  )
 

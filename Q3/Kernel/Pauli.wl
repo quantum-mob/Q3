@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.182 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:34:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.185 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-26 18:30:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -3406,8 +3406,6 @@ VertexLabelFunction::usage = "VertexLabelFunction is an option for GraphForm and
 
 EdgeLabelFunction::usage = "EdgeLabelFunction is an option for GraphForm and ChiralGraphForm that speicifes the function to generate primities for redering each edge label.\nSee also EdgeLabels."
 
-Clear[defaultEdgeLabelFunction]
-
 defaultEdgeLabelFunction[ Rule[edge_, None] ] := Nothing
 
 defaultEdgeLabelFunction[ Rule[edge_, lbl_] ] := Rule[
@@ -3435,10 +3433,10 @@ defaultEdgeLabelFunction[ RuleDelayed[edge_, lbl_] ] := RuleDelayed[
  ]
 
 
-
 GraphForm::usage = "GraphForm[A] converts the matrix A to a graph revealing the connectivity, assuming that the matrix is a linear map on one vector space.\nGraphForm allows the same options as Graph, but their specifications may be slightly different.\nGraphForm is a variation of the built-in function GraphPlot.\nGraphForm[expr] returns a graph visualizing the connectivity of different particles in the expression.\nGraphForm allows all options of Graph.\nSee also ChiralGraphForm, GraphPlot, AdjacencyGraph, IncidenceGraph."
 
 Options[GraphForm] = {
+  "HideSelfLinks" -> True, (* Not implemented yet. *)
   VertexLabels -> Automatic,
   VertexLabelFunction -> Automatic,
   EdgeLabels -> Automatic,
@@ -3448,7 +3446,7 @@ Options[GraphForm] = {
 GraphForm[A_SparseArray?MatrixQ, opts___?OptionQ] := Module[
   { data = Most @ ArrayRules[A] },
   data = KeySort @ Association @ Flatten[ survey /@ data ];
-  Return @ BuildGraph[data, opts];
+  Return @ fBuildGraph[data, opts];
  ]
 
 GraphForm[A_?MatrixQ, opts___?OptionQ] := Module[
@@ -3456,7 +3454,7 @@ GraphForm[A_?MatrixQ, opts___?OptionQ] := Module[
     jj = Range @ Max @ Dimensions @ A },
   data = Join[Thread[jj -> jj], data];
   data = KeySort @ Association @ data;
-  BuildGraph[data, opts]
+  fBuildGraph[data, opts]
  ]
 
 GraphForm[expr_, opts___?OptionQ] := Module[
@@ -3466,7 +3464,7 @@ GraphForm[expr_, opts___?OptionQ] := Module[
 
   data = KeySort @ Association @ Flatten[ survey /@ Thread[raw -> val] ];
   
-  BuildGraph[ data, opts,
+  fBuildGraph[ data, opts,
     EdgeStyle -> {
       UndirectedEdge[_, _, "Pairing"] -> Directive[Red, Thick],
       UndirectedEdge[_, _, "Interaction"] -> Dashed
@@ -3474,11 +3472,15 @@ GraphForm[expr_, opts___?OptionQ] := Module[
    ]
  ]
 
-BuildGraph[data_Association, opts___?OptionQ] := Module[
-   { nodes, edges, jj, ee, fVertexLabel, fEdgeLabel },
-   
+fBuildGraph[data_Association, opts___?OptionQ] := Module[
+  { nodes, edges, jj, ee, fVertexLabel, fEdgeLabel, v },
+
   edges = Normal @ KeySelect[ data, MatchQ[#, _UndirectedEdge]& ];
   nodes = Normal @ KeyDrop[ data, Keys @ edges ];
+
+  If[ "HideSelfLinks" /. {opts} /. Options[GraphForm],
+    edges = DeleteCases[edges, UndirectedEdge[v_, v_] -> _]
+   ];
 
   jj = Keys @ nodes;
   ee = Keys @ edges;
@@ -3512,7 +3514,7 @@ BuildGraph[data_Association, opts___?OptionQ] := Module[
    ]
  ]
 
-survey::usage = "Survey the matrix and constructs Vertices, Edges and relevant options for the graph corresponding to the matrix."
+survey::usage = "Surveys the matrix and constructs Vertices, Edges and relevant options for the graph corresponding to the matrix."
 
 survey[0, {_Integer, _Integer}] := Nothing
 
@@ -3521,8 +3523,6 @@ survey[_, {j_Integer, j_Integer}] := Nothing
 survey[val_, {i_Integer, j_Integer}] := {
   Sort @ UndirectedEdge[i, j] -> val
  }
-
-survey[{j_Integer, j_Integer} -> val_] := { j -> j }
 
 survey[{i_Integer, j_Integer} -> val_] := {
   i -> i,
@@ -3534,25 +3534,23 @@ survey[{i_Integer, j_Integer} -> val_] := {
 HoldPattern @ survey[ Multiply[Dagger[a_], Dagger[b_]] -> val_ ] := {
   a -> a,
   b -> b,
-  UndirectedEdge[ Sequence @@ Sort[{a,b}], "Pairing" ] -> val
+  UndirectedEdge[Sequence @@ Sort[{a, b}], "Pairing"] -> val
  }
 
 HoldPattern @ survey[ Multiply[a_?SpeciesQ, b_?SpeciesQ] -> val_ ] := {
   a -> a,
   b -> b,
-  UndirectedEdge[ Sequence @@ Sort[{a,b}], "Pairing" ] -> val
+  UndirectedEdge[Sequence @@ Sort[{a, b}], "Pairing"] -> val
  }
-
-HoldPattern @ survey[ Multiply[Dagger[a_], a_?SpeciesQ] -> val_ ] := { a -> a }
 
 HoldPattern @ survey[ Multiply[Dagger[a_], b_?SpeciesQ] -> val_ ] := {
   a -> a,
   b -> b,
-  UndirectedEdge @@ Sort[{a,b}] -> val
+  UndirectedEdge @@ Sort[{a, b}] -> val
  }
 
-HoldPattern @ survey[ Multiply[a_, b_, c__] -> val_ ] := Module[
-  { nodes = Sort[Peel @ {a,b,c}],
+HoldPattern @ survey[ Multiply[a_, b_, cc__] -> val_ ] := Module[
+  { nodes = Sort[Peel @ {a, b, cc}],
     edges, vtx },
   vtx = Vertex @@ nodes;
   edges = Thread @ UndirectedEdge[vtx, nodes, "Interaction"];
@@ -3598,7 +3596,7 @@ ChiralGraphForm[A_SparseArray?MatrixQ, opts___?OptionQ] := Module[
   data = Union /@ Merge[ chiralSurvey /@ data, Flatten ];
   ii = Cases[data["nodes"], _Integer];
   jj = Cases[data["nodes"], _Primed];
-  ChiralBuildGraph[ ii, jj, data["edges"], opts,
+  fChiralBuildGraph[ ii, jj, data["edges"], opts,
     Sequence @@ Normal @ KeyDrop[data, {"nodes", "edges"}],
     VertexStyle -> {Blue, Red}
    ]
@@ -3614,13 +3612,13 @@ ChiralGraphForm[A_?MatrixQ, opts___?OptionQ] := Module[
     { VertexLabels -> Join[Thread[ii -> ii], Thread[jj -> jj] ] }
    ];
   data = Union /@ Merge[data, Flatten];
-  ChiralBuildGraph[ ii, jj, data["edges"], opts,
+  fChiralBuildGraph[ ii, jj, data["edges"], opts,
     Sequence @@ Normal @ KeyDrop[data, {"nodes", "edges"}],
     VertexStyle -> {Blue, Red}
    ]
  ]
 
-ChiralBuildGraph[
+fChiralBuildGraph[
   ii:{__Integer},
   jj:{__Primed},
   ee:{(_UndirectedEdge|_TwoWayRule|_DirectedEdge|_Rule)..},
