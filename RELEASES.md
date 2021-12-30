@@ -6,6 +6,8 @@
 
 - Improved support for GroupElements on PauliGroup and CliffordGroup.
 
+- New functions GottesmanMatrix and FromGottesmanMatrix to describe Clifford operators.
+
 - New function Permutation, representing a permutation operator on a system of species.
 
 ## v2.2.0
