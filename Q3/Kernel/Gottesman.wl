@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.6 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-30 10:27:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.7 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-30 11:33:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -605,6 +605,16 @@ GottesmanMatrix[op_, ss:{__?QubitQ}] := Module[
   xz = Flatten @ Through[ss @ {1, 3}];
   GottesmanVector[#, ss]& /@ Elaborate[Supermap[op] /@ xz]
  ]
+
+GottesmanMatrix[op_] := Module[
+  { n = Length @ First @ Cases[op, _Pauli, Infinity],
+    xz },
+  xz = Pauli @@@ Riffle[
+    NestList[RotateRight, PadRight[{1}, n], n-1],
+    NestList[RotateRight, PadRight[{3}, n], n-1]
+   ];
+  GottesmanVector /@ Elaborate[Supermap[op] /@ xz]
+ ] /; Not @ FreeQ[op, _Pauli]
 
 
 FromGottesmanMatrix::usage = "FromGottesmanMatrix[mat, {s$1,s$2,$$}] returns the Clifford operator corresponding to binary symplectic matrix mat."
