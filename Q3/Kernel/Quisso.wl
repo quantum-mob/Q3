@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.25 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-26 16:57:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.27 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-30 10:01:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -898,7 +898,7 @@ Phase[phi_, qq:{__?QubitQ}, opts___?OptionQ] :=
   Map[Phase[phi, #, opts]&, FlavorNone @ qq]
 
 Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
-  Phase[phi, S[None], opts] /; FlavorLast[S] =!= None
+  Phase[phi, S[None], opts] /; Not @ FlavorNoneQ[S]
 
 
 Phase /:
@@ -954,7 +954,7 @@ Options[Rotation] = { "Label" -> Automatic }
 
 Rotation[phi_, S_?QubitQ, v:{_, _, _}, opts___?OptionQ] :=
   Rotation[phi, S[None], v, opts] /;
-  FlavorLast[S] =!= None
+  Not @ FlavorNoneQ[S]
 
 Rotation[phi_, qq:{__?QubitQ}, rest___] :=
   Map[Rotation[phi, #, rest]&, qq]
@@ -1010,7 +1010,7 @@ EulerRotation[aa:{_, _, _}, qq:{__?QubitQ}, rest___] :=
   Map[ EulerRotation[aa, #, rest]&, FlavorNone @ qq ]
 
 EulerRotation[aa:{_, _, _}, G_?QubitQ, opts___?OptionQ] :=
-  EulerRotation[ aa, G[None], opts ] /; FlavorLast[G] =!= None
+  EulerRotation[ aa, G[None], opts ] /; Not @ FlavorNoneQ[G]
 
 EulerRotation /:
 HoldPattern @ Multiply[pre___, op_EulerRotation, post___ ] :=
@@ -1063,7 +1063,7 @@ CNOT[c_, t_?QubitQ] := CNOT[c, {t}]
 
 CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
   CNOT[FlavorNone @ cc, FlavorNone @ tt] /;
-  Not @ ContainsOnly[FlavorLast @ Join[cc, tt], {None}]
+  Not @ FlavorNoneQ @ Join[cc, tt]
 
 CNOT /:
 Dagger[ op_CNOT ] := op
@@ -1107,7 +1107,7 @@ CZ[c_, t_?QubitQ] := CZ[c, {t}]
 
 CZ[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
   CZ[FlavorNone @ cc, FlavorNone @ tt] /;
-  Not @ ContainsOnly[FlavorLast @ Join[cc, tt], {None}]
+  Not @ FlavorNoneQ @ Join[cc, tt]
 
 CZ /:
 Dagger[ op_CZ ] := op
@@ -1149,7 +1149,10 @@ SWAP::usage = "SWAP[A, B] operates the SWAP gate on the two qubits A and B."
 SetAttributes[SWAP, Listable]
 
 SWAP[a_?QubitQ, b_?QubitQ] := SWAP @@ FlavorNone @ {a, b} /;
-  FlavorLast[{a, b}] =!= {None, None}
+  Not @ FlavorNoneQ @ {a, b}
+
+SWAP[a_?QubitQ, b_?QubitQ] := SWAP[b, a] /;
+  Not @ OrderedQ @ FlavorNone @ {a, b}
 
 SWAP /:
 Dagger[ op_SWAP ] := op
@@ -1193,7 +1196,7 @@ SetAttributes[Toffoli, Listable]
 
 Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ] :=
   Toffoli @@ FlavorNone @ {a, b, c} /;
-  FlavorLast[{a, b, c}] =!= {None, None, None}
+  Not @ FlavorNoneQ @ {a, b, c}
 
 Toffoli /:
 Dagger[ op_Toffoli ] := op
@@ -1236,7 +1239,7 @@ SetAttributes[Fredkin, Listable]
 
 Fredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
   Fredkin @@ FlavorNone @ {a,b,c} /;
-  Not @ ContainsOnly[FlavorLast @ {a,b,c}, {None}]
+  Not @ FlavorNoneQ @ {a, b, c}
 
 Fredkin /:
 Dagger[ op_Fredkin ] := op
@@ -1273,7 +1276,7 @@ Deutsch::usage = "Deutsch[angle, {a, b, c}] represents the Deutsch gate, i.e., \
 
 Deutsch[ph_, qq:{__?QubitQ}, opts___?OptionQ] :=
   Deutsch[ph, FlavorNone @ qq, opts] /;
-  Not @ ContainsOnly[FlavorLast @ qq, {None}]
+  Not @ FlavorNoneQ @ qq
 
 (*
 Deutsch /:
@@ -1317,7 +1320,7 @@ ControlledU[ S_?QubitQ, expr_, opts___?OptionQ ] :=
 
 ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] :=
   ControlledU[ FlavorNone @ ss, expr, opts ] /;
-  Not @ ContainsOnly[ FlavorLast[ss], {None} ]
+  Not @ FlavorNoneQ[ss]
 
 
 ControlledU[ ss:{__?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
@@ -1384,7 +1387,7 @@ Oracle[f_, cc:{__?QubitQ}, t_?QubitQ, opts___?OptionQ] :=
 
 Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
   Oracle[f, FlavorNone @ cc, FlavorNone @ tt, opts] /;
-  Not @ ContainsOnly[ FlavorLast @ Join[cc, tt], {None} ]
+  Not @ FlavorNoneQ @ Join[cc, tt]
 
 Oracle /:
 Dagger[op_Oracle] := op
@@ -1510,7 +1513,7 @@ QuantumFourierTransform[{S_?QubitQ}, ___?OptionQ] := S[6]
 
 QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] :=
   QuantumFourierTransform[FlavorNone @ qq, opts] /;
-  Not @ ContainsOnly[FlavorLast[qq], {None}]
+  Not @ FlavorNoneQ[qq]
 
 
 QuantumFourierTransform /:
@@ -1601,7 +1604,7 @@ HoldPattern @ Projector[expr_, q_?QubitQ] := Projector[expr, FlavorNone @ {q}]
 
 HoldPattern @
   Projector[expr_, qq:{__?QubitQ}] := Projector[expr, FlavorNone @ qq] /;
-  Not @ ContainsOnly[ FlavorLast[qq], {None} ]
+  Not @ FlavorNoneQ[qq]
 
 (**** </Projector> ****)
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.61 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-26 17:01:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.62 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-30 09:51:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -25,7 +25,7 @@ BeginPackage["Q3`"]
 { Kind, Dimension, LogicalValues };
 
 { Any, Base, Flavors, FlavorMost, FlavorLast,
-  FlavorNone, FlavorMute, FlavorThread };
+  FlavorNone, FlavorNoneQ, FlavorMute, FlavorThread };
 
 { Qubit, Qubits, QubitQ };
 { Qudit, Qudits, QuditQ };
@@ -405,11 +405,22 @@ FlavorLast[ _Symbol?SpeciesQ[___,j_] ] := j
 FlavorLast[ _?SpeciesQ ] = Missing["NoFlavor"]
 
 
+(**** <FlavorNone> ****)
+
 FlavorNone::usage = "FlavorNone[S[i, j, \[Ellipsis]]] for some Species S gives S[i, j, \[Ellipsis], None]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorNone is Listable."
   
 SetAttributes[FlavorNone, Listable]
 
 FlavorNone[a_] := a (* Does nothing unless specified explicitly *)
+
+FlavorNoneQ::usage = "FlavorNoneQ[{s$1,s$2,$$}] returns True if the flavor index ends properly with None for every species s$j. Note that for some species, the flavor index is not required to end with None."
+
+FlavorNoneQ[ss__?SpeciesQ] := FlavorNoneQ @ {ss}
+
+FlavorNoneQ[ss:{__?SpeciesQ}] :=
+  And @@ Thread[FlavorNone[ss] === ss]
+
+(**** </FlavorNone> ****)
 
 
 FlavorMute::usage = "FlavorMute[S[i, j, \[Ellipsis], k]] for some Species S gives S[i, j, \[Ellipsis], None], i.e., with the last Flavor replaced with None. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorMute is Listable."

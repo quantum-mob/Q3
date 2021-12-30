@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.0 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-29 15:39:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.6 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-30 10:27:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -602,41 +602,62 @@ GottesmanMatrix[op_, S_?QubitQ] := GottesmanMatrix[op, {FlavorNone @ S}]
 GottesmanMatrix[op_, ss:{__?QubitQ}] := Module[
   { n = Length @ ss,
     xz },
-  xz = Flatten @ Through[ss @ {1,3}];
+  xz = Flatten @ Through[ss @ {1, 3}];
   GottesmanVector[#, ss]& /@ Elaborate[Supermap[op] /@ xz]
  ]
 
 
 FromGottesmanMatrix::usage = "FromGottesmanMatrix[mat, {s$1,s$2,$$}] returns the Clifford operator corresponding to binary symplectic matrix mat."
 
-FromGottesmanMatrix::todo = "Oops! Sorry, this rare case `` is not supported yet."
+FromGottesmanMatrix::badmat = "`` is not a valid binary symplectic matrix."
 
 FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   { n = Length @ ss,
-    ff, hh, aa, bb, vv, qq,
-    new, opf, oph, opa, opb, opv },
+    kk, qq, rr,
+    ff, hh, aa, bb, vv,
+    opf, oph, opa, opb, opv, cyc, new },
 
-  ff = mat[[;;2, ;;2]];
-  If[ GottesmanInner[First @ ff, Last @ ff] == 0,
-    Message[FromGottesmanMatrix::todo, MatrixForm @ mat];
-    Return[1],
-    ff = Mod[fSpInverse[ff] . ThePauli[1], 2]
-   ];
-  opf = FromGottesmanMatrix[ff, {First @ ss}];
-  new = Mod[mat . CirclePlus[ff, One[2(n-1)]], 2];
+  ff = Transpose[Partition[#, 2]& /@ Take[mat, 2]];
+  kk = FirstPosition[GottesmanInner @@@ ff, 1];
   
-  aa = FromGottesmanVector[new[[2, 3;;]], Rest @ ss];
-  bb = FromGottesmanVector[new[[1, 3;;]], Rest @ ss];
-  aa = GottesmanMatrix[opa = ControlledU[First @ ss, aa], ss];
-  bb = GottesmanMatrix[opb = ControlledU[First @ ss, bb], ss];
-  hh = GottesmanMatrix[oph = First[ss][6], ss];
-  vv = Mod[new . aa . hh. bb, 2];
+  If[ MissingQ[kk], 
+    Message[FromGottesmanMatrix::badmat, MatrixForm @ mat];
+    Return[1]
+   ];
 
-  opv = FromGottesmanMatrix[vv[[3;;, 3;;]], Rest @ ss];
+  If[ (kk = First[kk]) != 1,
+    cyc = CircleTimes[
+      Transpose @ PermutationMatrix[Cycles @ {{1, kk}}, n],
+      One[2]
+     ];
+    new = Mod[mat . cyc, 2];
+    opf = SWAP @@ Part[ss, {1, kk}];
+    Return[opf ** FromGottesmanMatrix[new, ss]]
+   ];
 
-  Garner[ Dagger[opf] ** opa ** oph ** opb ** opv ]
+  {qq, rr} = TakeDrop[ss, 1];
+  
+  ff = First @ ff;
+  ff = Mod[fSpInverse[ff] . ThePauli[1], 2];
+  
+  opf = FromGottesmanMatrix[ff, qq];
+
+  new = CirclePlus[ff, One[2(n-1)]];
+  new = Mod[mat . new, 2];
+
+  aa = FromGottesmanVector[new[[2, 3;;]], rr];
+  bb = FromGottesmanVector[new[[1, 3;;]], rr];
+  aa = GottesmanMatrix[opa = ControlledU[qq, aa], ss];
+  bb = GottesmanMatrix[opb = ControlledU[qq, bb], ss];
+  hh = GottesmanMatrix[oph = First[qq][6], ss];
+
+  vv = Mod[new . aa . hh . bb, 2];
+  vv = vv[[3;;, 3;;]];
+
+  opv = FromGottesmanMatrix[vv, rr];
+
+  Elaborate[ Dagger[opf] ** opa ** oph ** opb ** opv ]
  ]
-
 
 FromGottesmanMatrix[mat_?MatrixQ, S_?QubitQ] :=
   FromGottesmanMatrix[mat, {FlavorNone @ S}]

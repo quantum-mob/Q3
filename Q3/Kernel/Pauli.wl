@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.185 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-26 18:30:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.187 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-30 08:56:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -15,6 +15,10 @@ BeginPackage["Q3`"]
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
   KetFactor, KetPurge, KetOrthogonalize, KetNormalize, KetSort, KetNorm };
+
+{ KetPermute, KetSymmetrize };
+
+{ Permutation, PermutationMatrix };
 
 { OTimes, OSlash, ReleaseTimes };
 
@@ -2354,25 +2358,26 @@ CircleTimes[vecs__?VectorQ] := Flatten @ TensorProduct[vecs]
 
 BlockDiagonalMatrix::usage = "BlockDiagonalMatrix[{a,b,c,...}] returns a matrix with the matrices a, b, c, ... as its blocks. BlockDiagonalMatrix[a,b,c,...] is the same."
 
-BlockDiagonalMatrix[m:(_?MatrixQ) ..] := BlockDiagonalMatrix[{m}]
+BlockDiagonalMatrix[mm:({}|_?MatrixQ)..] := BlockDiagonalMatrix @ {mm}
 
-BlockDiagonalMatrix[m:{__?MatrixQ}] := Module[
-  {x, y},
-  {x, y} = Transpose @ Map[Dimensions] @ m;
+BlockDiagonalMatrix[mm:{({}|_?MatrixQ)..}] := Module[
+  { new = DeleteCases[mm, {}],
+    x, y },
+  { x, y } = Transpose @ Map[Dimensions] @ new;
   x = Range[Accumulate @ Most @ Prepend[x, 1], Accumulate @ x];
   y = Range[Accumulate @ Most @ Prepend[y, 1], Accumulate @ y];
   x = Catenate @ Map[Tuples] @ Transpose @ {x, y};
-  SparseArray @ Thread[x -> Flatten @ m]
+  SparseArray @ Thread[x -> Flatten @ new]
  ]
-
-SetAttributes[CirclePlus, {ReadProtected}]
 
 CirclePlus::usage = "a \[CirclePlus] b \[CirclePlus] c or CirclePlus[a,b,c]
 returns the direct sum of the matrices a, b, and c."
 
-CirclePlus[ m:(_?MatrixQ).. ] := BlockDiagonalMatrix[{m}]
+CirclePlus[pre___, {}, post___] := CirclePlus[pre, post]
 
-CirclePlus[ v:(_?VectorQ).. ] := Join[v]
+CirclePlus[mm__?MatrixQ] := BlockDiagonalMatrix[{mm}]
+
+CirclePlus[vv__?VectorQ] := Join[vv]
 
 (**** </CirclePlus> ****)
 

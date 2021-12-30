@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.61 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-15 18:11:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.65 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-30 09:55:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -27,10 +27,6 @@ BeginPackage["Q3`"];
   GroupCharacters, SymmetricGroupCharacters,
   CharacterScalarProduct,
   CompoundYoungCharacters, KostkaMatrix };
-
-{ KetPermute, KetSymmetrize };
-{ PermutationMatrix };
-
 
 Begin["`Private`"]
 
@@ -381,6 +377,52 @@ NextYoungTableau[tb_?YoungTableauQ] := Module[
  ]
 
 
+(**** <Permutation> ****)
+
+Permutation::usage = "Permutation[cycles,{s$1,s$2,$$}] represents the permutation operator acting on species {s$1,s$2,$$}."
+
+Permutation::cyc = "`` does not represent a valid permutationin disjoint cyclic form. See PermutationCyclesQ."
+
+AddElaborationPatterns[_Permutation]
+
+Permutation[cyc_Cycles, ss:{__?SpeciesQ}] :=
+  Permutation[cyc, FlavorNone @ ss] /;
+  Not @ FlavorNoneQ[ss]
+
+Permutation /:
+HoldPattern @ Dagger @ Permutation[cyc_, ss:{__?SpeciesQ}] :=
+  Permutation[InversePermutation[cyc], ss]
+
+Permutation /:
+HoldPattern @ Elaborate @ Permutation[cyc_, ss:{__?SpeciesQ}] := Module[
+  { bs = Basis @ ss },
+  If[ Not @ PermutationCyclesQ[cyc],
+    Message[Permutation::cyc, cyc];
+    Return[1]
+   ];
+  Total @ Map[Dyad[KetPermute[#, ss, cyc], #, ss]&, bs]
+ ]
+
+Permutation /:
+HoldPattern @ Multiply[pre___, op_Permutation, post___] :=
+  Multiply[pre, Elaborate[op], post]
+
+Permutation /:
+HoldPattern @ Matrix[op_Permutation, rest___] := Matrix[Elaborate[op], rest]
+
+
+PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix."
+
+PermutationMatrix[perm_?PermutationCyclesQ] :=
+  PermutationMatrix[ perm, Max @ Cases[perm, _Integer, Infinity] ]
+
+PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
+  Permute[ IdentityMatrix[n], perm ]
+
+
+(**** </Permutation> ****)
+
+
 (**** <KetPermute> ****)
 
 KetPermute::usage = "KetPermute[v, {q1, q2, ...}, cycles] returns a new Ket permuting the values of the particles q1, q2, ... in Ket v."
@@ -537,15 +579,6 @@ KetSymmetrize[expr_, tbl_?YoungTableauQ] := Module[
  ]
 
 (**** </KetSymmetrize> ****)
-
-
-PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix."
-
-PermutationMatrix[perm_?PermutationCyclesQ] :=
-  PermutationMatrix[ perm, Max @ Cases[perm, _Integer, Infinity] ]
-
-PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
-  Permute[ IdentityMatrix[n], perm ]
 
 
 End[]
