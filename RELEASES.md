@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.2.2
+
+- Performance improvement in GottesmanMatrix.
+
+- GottesmanVector and GottesmanMatrix can now take a matrix as input.
+
 ## v2.2.1
 
 - PauliGroup and CliffordGroup now represent quotient groups. To refer to the corresponding full group, use FullPauliGroup and FullCliffordGroup.

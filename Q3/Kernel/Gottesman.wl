@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.7 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-30 11:33:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.13 $"][[2]], " (",
+  StringSplit["$Date: 2021-12-30 20:59:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -20,7 +20,8 @@ BeginPackage["Q3`"]
   GottesmanInner,
   GottesmanBasis };
 
-{ GottesmanMatrix, FromGottesmanMatrix };
+{ GottesmanMatrix, FromGottesmanMatrix,
+  GottesmanMatrixQ };
 
 { Stabilizer };
 
@@ -287,9 +288,10 @@ CliffordGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
 
 (**** <GottesmanVector> ****)
 
-GottesmanVector::usage = "Gottesmann[op] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on n (unlabeled) qubits.\nGottesmann[op, {S1,S2,...,Sn}] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on the (labeled) qubits {S1, S2, ..., Sn}."
+GottesmanVector::usage = "GottesmanVector[mat] returns the Gottesman vector for the Pauli operator with matrix representation mat.\nGottesmann[op] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on n (unlabeled) qubits.\nGottesmann[op, {S1,S2,...,Sn}] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on the (labeled) qubits {S1, S2, ..., Sn}."
 
-GottesmanVector[_?CommutativeQ op_] := GottesmanVector[op]
+GottesmanVector[mat_?MatrixQ] :=
+  GottesmanVector[Elaborate @ ExpressionFor @ mat]
 
 GottesmanVector[op_Pauli] := Flatten @ ReplaceAll[
   List @@ op,
@@ -298,6 +300,8 @@ GottesmanVector[op_Pauli] := Flatten @ ReplaceAll[
     2 -> {1, 1},
     3 -> {0, 1} }
  ]
+
+GottesmanVector[_?CommutativeQ op_] := GottesmanVector[op]
 
 GottesmanVector[_?CommutativeQ, ss:{__?QubitQ}] :=
   GottesmanVector[Pauli @@ ConstantArray[0, Length @ ss]]
@@ -595,7 +599,22 @@ solveBinaryEq[x:{_, _}] := If[First[x] == 0, {1, 0}, {0, 1}]
 
 (**** <GottesmanMatrix> ****)
 
-GottesmanMatrix::usage = "GottesmanMatrix[op, {s$1,s$2,$$}] returns the binary symplectic matrix corresponding to Clifford operator op."
+GottesmanMatrixQ::usage = "GottesmanMantrixQ[mat] returns True if 2n\[Times]2n matrix mat is symplectic with respect to the Gottesman inner product."
+
+GottesmanMatrixQ[mat_?MatrixQ] := False /;
+  OddQ @ Length[mat]
+
+GottesmanMatrixQ[mat_?MatrixQ] := Module[
+  { n = Length[mat] / 2,
+    Jx },
+  Jx = CircleTimes[One[n], ThePauli[1]];
+  TrueQ[Mod[mat . Jx . Transpose[mat], 2] == Jx]
+ ]
+
+
+GottesmanMatrix::usage = "GottesmanMatrix[mat] returns the binary symplectic matrix corresponding to the Clifford operator represented with matrix representation mat.\nGottesmanMatrix[op, {s$1,s$2,$$}] returns the binary symplectic matrix corresponding to Clifford operator op."
+
+GottesmanMatrix::dimen = "`` has wrong dimensions and is not a valid matrix representation of a Clifford operator."
 
 GottesmanMatrix[op_, S_?QubitQ] := GottesmanMatrix[op, {FlavorNone @ S}]
 
@@ -605,6 +624,8 @@ GottesmanMatrix[op_, ss:{__?QubitQ}] := Module[
   xz = Flatten @ Through[ss @ {1, 3}];
   GottesmanVector[#, ss]& /@ Elaborate[Supermap[op] /@ xz]
  ]
+(* NOTE: Often, GottesmanMatrix[Matrix[op, ss]] is faster. But there are cases
+   where this form is faster, and hence we keep this form. *)
 
 GottesmanMatrix[op_] := Module[
   { n = Length @ First @ Cases[op, _Pauli, Infinity],
@@ -615,6 +636,22 @@ GottesmanMatrix[op_] := Module[
    ];
   GottesmanVector /@ Elaborate[Supermap[op] /@ xz]
  ] /; Not @ FreeQ[op, _Pauli]
+(* NOTE: Often, GottesmanMatrix[Matrix[op]] is faster. But there are cases
+   where this form is faster, and hence we keep this form. *)
+
+GottesmanMatrix[mat_?MatrixQ] := Module[
+  { n = Log[2, First @ Dimensions @ mat],
+    xz },
+  If[ Not @ IntegerQ[n],
+    Message[GottesmanMatrix::dimen, MatrixForm @ mat];
+    Return[{{}}]
+   ];
+  xz = ThePauli @@@ Riffle[
+    NestList[RotateRight, PadRight[{1}, n], n-1],
+    NestList[RotateRight, PadRight[{3}, n], n-1]
+   ];
+  GottesmanVector /@ Supermap[mat] /@ xz
+ ]
 
 
 FromGottesmanMatrix::usage = "FromGottesmanMatrix[mat, {s$1,s$2,$$}] returns the Clifford operator corresponding to binary symplectic matrix mat."
