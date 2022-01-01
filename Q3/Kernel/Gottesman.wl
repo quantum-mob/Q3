@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.13 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-30 20:59:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.14 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-01 09:36:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -483,13 +483,11 @@ BinarySymplecticGroupElements[n_, kk:{__Integer}] :=
 
 
 (**** <Koenig-Smolin Algorihm for BinarySymplecticGroup> ****)
-(* See Koenig (2014a) *)
 
 getSpElement::usage = "getSpElement[n, k] returns the k'th symplectic matrix in BinarySymplecticGroup[n]."
 
 SetAttributes[getSpElement, Listable];
 
-(* See Koenig (2014a) for the algorithm. *)
 getSpElement[n_Integer, j_Integer] := Module[
   { nn = 2*n, s, k,
     js, e1, f1, h0, tt, bb, ep, id, gg },

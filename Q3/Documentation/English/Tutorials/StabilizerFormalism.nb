@@ -1,0 +1,301 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     11934,        291]
+NotebookOptionsPosition[      7927,        207]
+NotebookOutlinePosition[     10923,        276]
+CellTagsIndexPosition[     10880,        273]
+WindowTitle->Stabilizer Formalism
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "d131ad0d-a57b-4c50-9eac-a3f82d2916a5"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "0c4ae97f-a37f-4f6a-bb23-b8dad9752115"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "35301ce2-a141-4af1-9708-a8f32d7705f7"]
+        }],ExpressionUUID->"19cbf6ac-8627-4d41-8b69-a19ef277de5d"],
+        StripOnInput->False], {"\<\"Q3/tutorial/StabilizerFormalism\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/StabilizerFormalism"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+StabilizerFormalism.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$237132], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/StabilizerFormalism" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "8c472bfb-34f9-4518-9ddf-95f6b0c3e847"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "6a503f04-7846-4b2e-9688-7a9f636e8170"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"69c978d8-50e4-40c7-a49e-27c037e124e9"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Stabilizer Formalism", "TechNoteTitle",ExpressionUUID->
+      "fa5bb46f-dc75-4b52-a4fa-c7e0ce024485"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"5a464caf-0475-4abf-a743-1896c7234b4d"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "c77dafa3-2417-4072-bb3a-40157e02d8f9"]
+    }],ExpressionUUID->"a7593ece-c82c-472c-bca8-794eb85e2887"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 12",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "17a6577e-b5b2-4f2b-bdd2-0b10bc202b10"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"b5639af7-18c9-44a8-b61a-1eb0d0fd4878"],
+
+Cell["\<\
+Stabilizer formalism is a mathematical framework that describes and \
+characterizes states on multiple qubits in a compact way in terms of \
+operators preserving the states. It provides a powerful and elegant tool to \
+construct quantum error-correction codes, to build and analyse various \
+quantum algorithms, and to examine the properties of the graph states and \
+one-way quantum computation, and to formulate topological quantum \
+computation.
+Stabilizer formalism was first put forward by Gottesman (1996). This \
+formalism is explained in great detail in Gottesman (1997) and is also \
+presented in Nielsen & Chuang (2011). Recently, stabilizer formalism has been \
+extended to the measurement-based quantum computation scheme (Browne & \
+Briegel, 2016).\
+\>", "TechNoteText",
+ CellID->1426768759,ExpressionUUID->"c3c1d4dc-239e-458e-94d9-8e7531117137"],
+
+Cell["XXXX.", "TechNoteCaption",
+ CellID->1611966109,ExpressionUUID->"3645f929-228a-4aae-b555-0566ae6cc8df"],
+
+Cell["\<\
+Make sure that the Q3 package is loaded to use the demonstrations included in \
+this documentation.\
+\>", "TechNoteMathCaption",
+ CellID->1390646026,ExpressionUUID->"2b5bcdf9-6d00-44d3-ae29-23c460d6f25e"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1523228681,ExpressionUUID->"fa905c68-03c3-493c-a796-667b5db0bfa1"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->751885680,ExpressionUUID->"bedcf99d-7072-4cd5-9d49-ac94f4a88841"],
+
+Cell[BoxData[""], "Input",ExpressionUUID->"37870074-2ee3-4307-af3b-ce0f257b3532"]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "The Pauli and Clifford Groups",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/PauliAndCliffordGroups"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "fdcf5589-6d8a-412c-96ac-1c778e1bed54"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"899f6567-a9e5-4f21-bb3c-\
+f4bfb6ace3a5"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"fcee1354-f4fe-4751-9e7d-2411efded9f7"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Stabilizer Formalism",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"13", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 1, 1, 22, 51, 34.971255}", 
+    "history" -> {"13", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {
+     "stabilizer formalism", "quantum error-correction codes", 
+      "graph states"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "Stabilizer formalism is a mathematical framework that describes and \
+characterizes states on multiple qubits in a compact way in terms of \
+operators preserving the states. It provides a powerful and elegant tool to \
+construct quantum error-correction codes, to build and analyse various \
+quantum algorithms, and to examine the properties of the graph states and \
+one-way quantum computation, and to formulate topological quantum \
+computation. Stabilizer formalism was first put forward by Gottesman (1996). \
+This formalism is explained in great detail in Gottesman (1997) and is also \
+presented in Nielsen & Chuang (2011). Recently, stabilizer formalism has been \
+extended to the measurement-based quantum computation scheme (Browne & \
+Briegel, 2016).", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$237101, "title" -> 
+    "Stabilizer Formalism", "titlemodifier" -> "", "windowtitle" -> 
+    "Stabilizer Formalism", "type" -> "Tech Note", "uri" -> 
+    "Q3/tutorial/StabilizerFormalism", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (December 2, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (December 2, 2021)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"240e3bb9-d5af-42bf-be6e-326241aad273"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[592, 21, 3471, 80, 70, "AnchorBarGrid",ExpressionUUID->"69c978d8-50e4-40c7-a49e-27c037e124e9",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4088, 105, 1395, 38, 70, "ObjectNameGrid",ExpressionUUID->"b5639af7-18c9-44a8-b61a-1eb0d0fd4878"],
+Cell[5486, 145, 869, 14, 70, "TechNoteText",ExpressionUUID->"c3c1d4dc-239e-458e-94d9-8e7531117137",
+ CellID->1426768759],
+Cell[6358, 161, 108, 1, 70, "TechNoteCaption",ExpressionUUID->"3645f929-228a-4aae-b555-0566ae6cc8df",
+ CellID->1611966109],
+Cell[6469, 164, 214, 4, 70, "TechNoteMathCaption",ExpressionUUID->"2b5bcdf9-6d00-44d3-ae29-23c460d6f25e",
+ CellID->1390646026],
+Cell[6686, 170, 146, 3, 70, "Input",ExpressionUUID->"fa905c68-03c3-493c-a796-667b5db0bfa1",
+ CellID->1523228681],
+Cell[6835, 175, 181, 4, 70, "Input",ExpressionUUID->"bedcf99d-7072-4cd5-9d49-ac94f4a88841",
+ CellID->751885680],
+Cell[7019, 181, 81, 0, 70, "Input",ExpressionUUID->"37870074-2ee3-4307-af3b-ce0f257b3532"]
+}, Open  ]],
+Cell[7115, 184, 727, 19, 70, "RelatedTutorialsSection",ExpressionUUID->"899f6567-a9e5-4f21-bb3c-f4bfb6ace3a5"],
+Cell[7845, 205, 78, 0, 70, "FooterCell",ExpressionUUID->"fcee1354-f4fe-4751-9e7d-2411efded9f7"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
