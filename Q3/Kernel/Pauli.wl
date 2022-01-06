@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.187 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-30 08:56:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.191 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-05 19:04:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1152,7 +1152,7 @@ Operator[ { kk:{(0|1|2|3|4|5|6|7|8|-7|-8)..}, th:Except[_List], ph:Except[_List]
 
 (**** <ExpressionFor> ****)
 
-ExpressionFor::usage = "ExpressionFor[mat] returns the operator expression corresponding to the matrix representation mat.\nExpressionForm[mat, {s1, s2, ...}] returns the operator expression corresponding to the matrix representation mat and acting on the systems in {s1, s2, ...}."
+ExpressionFor::usage = "ExpressionFor[mat] returns the operator expression corresponding to the matrix representation mat.\nExpressionFor[mat, {s1, s2, ...}] returns the operator expression corresponding to the matrix representation mat and acting on the systems in {s1, s2, ...}."
 
 ExpressionFor::notls = "The matrix/vector `` is not representing an operator/state on a system of qubits."
 
@@ -1182,7 +1182,7 @@ ExpressionFor[mat_?MatrixQ] := Module[
     tt, pp },
   n = Log[2, Length @ mat];
   If[ IntegerQ[n], Null,
-    Message[ExpressionForm::notls, mat];
+    Message[ExpressionFor::notls, mat];
     Return[0];
    ];
   
@@ -2995,7 +2995,21 @@ PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
 (**** </PartialTranspose> ****)
 
 
+(**** <LogarithmicNegativity> ****)
+
 LogarithmicNegativity::usage = "LogarithmicNegativity[mat, spec] returns the logarithmic negativity of mixed state rho. For specification spec of the rest of the arguments, see PartialTranspose."
+
+LogarithmicNegativity::norm = "`` is not properly normalized. Trying to first normalize it."
+
+LogarithmicNegativity[vec_?VectorQ, spec__] := (
+  Message[LogarithmicNegativity::norm, vec];
+  LogarithmicNegativity[Normalize @ vec, spec]
+ ) /; Chop[Norm @ vec] != 1
+
+LogarithmicNegativity[mat_?MatrixQ, spec__] := (
+  Message[LogarithmicNegativity::norm, mat];
+  LogarithmicNegativity[mat / Tr[mat], spec]
+ ) /; Chop[Tr @ mat] != 1
 
 LogarithmicNegativity[rho:(_?VectorQ|_?MatrixQ), spec__] :=
   Log2 @ TraceNorm @ PartialTranspose[rho, spec]
@@ -3007,8 +3021,18 @@ LogarithmicNegativity[rho_, jj:{__Integer}] :=
 LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { all, mat, pos },
   all = Union @ FlavorNone @ Join[aa, bb];
-  mat = Matrix[rho, all];
   pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
+
+  mat = Matrix[rho, all];
+  If[ VectorQ[mat] && Chop[Norm @ mat] != 1,
+    Message[LogarithmicNegativity::norm, rho];
+    mat = Normalize[mat]
+   ];
+  If[ MatrixQ[mat] && Chop[Tr @ mat] != 1,
+    Message[LogarithmicNegativity::norm, rho];
+    mat = mat / Tr[mat]
+   ];
+
   Log2 @ TraceNorm @ PartialTranspose[mat, Dimension @ all, pos]
  ]
 
@@ -3020,6 +3044,8 @@ LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] :=
 
 LogarithmicNegativity[rho_, S_?SpeciesQ, T_?SpeciesQ] :=
   LogarithmicNegativity[rho, {S}, {T}]
+
+(**** </LogarithmicNegativity> ****)
 
 
 (**** <PartialTrace> ****)

@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.2.3
+
+- New functions GottesmanSplit and GottesmanMerge to handle Gottesman vectors.
+
 ## v2.2.2
 
 - Performance improvement in GottesmanMatrix.
