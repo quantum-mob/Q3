@@ -4,9 +4,9 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.35 $"][[2]], " (",
-  StringSplit["$Date: 2021-08-09 09:33:21+09 $"][[2]], ") ",
-  "Ha-Eum Kim, Mahn-Soo Choi"
+  StringSplit["$Revision: 1.36 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-07 23:48:20+09 $"][[2]], ") ",
+  "Mahn-Soo Choi with contributions from Ha-Eum Kim"
  ];
 
 { Supermap, ChoiOperator, ChoiMatrix };
