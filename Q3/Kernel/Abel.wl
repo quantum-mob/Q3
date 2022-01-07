@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.62 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-30 09:51:20+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.64 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-07 17:33:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -68,6 +68,8 @@ BeginPackage["Q3`"]
   MultiplyExp, MultiplyPower, MultiplyDot,
   DistributableQ };
 
+{ Matrix, ExpressionFor };
+
 { Lie, LiePower, LieSeries, LieExp };
 
 { CoefficientTensor };
@@ -125,12 +127,12 @@ Supplement[a_List, b__List] := DeleteCases[ a, Alternatives @@ Union[b], 1 ]
 
 
 SupplementBy::usage = "SupplementBy[a, b, c, \[Ellipsis], f] returns the elements in a that do not appear in any of sets on b, c, \[Ellipsis] with all the tests made after applying f on a, b, c, \[Ellipsis] .\nLike Supplement, the order is preserved."
-  
+
 SupplementBy[a_List, b__List, f_] := Module[
   { aa = f /@ a,
     form = Alternatives @@ Map[f, Union[b]] },
-  aa = Map[ Not @ MatchQ[#, form]&, aa ];
-  Pick[ a, aa ]
+  aa = Map[Not @ MatchQ[#, form]&, aa];
+  Pick[a, aa]
  ]
 
 Common::usage = "Common[a, b, c, \[Ellipsis]] returns the elements of a that appear in all subsequent lists.\nIt is similar to the built-in function Intersection, but treats the first argument as a List (not mathematical sets) and hence preserves the order."

@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.15 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-06 10:28:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.16 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-06 16:02:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -423,7 +423,7 @@ GottesmanBasis[n_Integer] := One[2*n] /; n > 0
 
 GottesmanSplit::usage = "GottesmanSplit[vec] returns a list of two vectors {{x$1,x$2,$$,x$n},{z$1,z$2,$$,z$n}} for Gottesman vector vec={x$1,z$1,x$2,z$2,$$,x$1n,z$n}.\nGottesmanSplit[mat] returns a list of the X- and Z-part of the matrix of Gottesman vectors, mat={{x$11,z$11,x$12,z$12,$$,x$1n,z$1n},{x$21,z$21,x$22,z$22,$$,x$2n,z$2n},$$}.";
 
-GottesmanSplit::odd = "`` is not a proper Gottesman vector (or a set of proper Gottesman vectors)."
+GottesmanSplit::odd = "`` is not a valid Gottesman vector (or a set of valid Gottesman vectors)."
 
 GottesmanSplit[vec_?VectorQ] := (
   Message[GottesmanSplit::odd, vec];
@@ -448,7 +448,7 @@ GottesmanSplit[mat_?MatrixQ] :=
 
 GottesmanMerge::usage = "GottesmanMerge[{x$1,x$2,$$,x$n}, {z$1,z$2,$$,z$n}] returns Gottesman vector {x$1,z$1,x$2,z$2,$$,x$n,z$n}.\nGottesmanMerge[xmat, zmat] returns the list of Gottesman vectors {{x$11,z$11,x$12,z$12,$$,x$1n,z$1n},{x$21,z$21,x$22,z$22,$$,x$2n,z$2n},$$} for xmat={{x$11,x$12,$$,x$1n},{x$21,x$22,$$,x$2n},$$} and zmat={{z$11,z$12,$$,z$1n},{z$21,z$22,$$,z$2n},$$}.";
 
-GottesmanMerge::bad = "`` and `` cannot be the X- and Z-part of a proper Gottesman vector."
+GottesmanMerge::bad = "`` and `` cannot be the X- and Z-part of a valid Gottesman vector."
 
 GottesmanMerge[xx_?VectorQ, zz_?VectorQ] := (
   Message[GottesmanMerge::bad, xx, zz];
