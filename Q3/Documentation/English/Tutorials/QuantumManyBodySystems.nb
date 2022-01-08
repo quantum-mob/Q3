@@ -1,0 +1,882 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     29493,        872]
+NotebookOptionsPosition[     22685,        726]
+NotebookOutlinePosition[     25109,        785]
+CellTagsIndexPosition[     25066,        782]
+WindowTitle->Quantum Many-Body Systems with Q3
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TUTORIAL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "5d6aa752-9b69-44fa-9c8c-bcecff928c45"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "d3ddea38-9d4e-4914-9fd0-4bf6d4afd06f"],
+        Background->RGBColor[
+         0.7450980392156863, 0.3254901960784314, 0.1411764705882353],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Tutorials",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "8b5e9107-18ae-430f-9f20-8add5ba4bb1f"]
+         }],ExpressionUUID->"25befd9c-112e-4ae6-9ab1-76dabe5b692c"],
+         StripOnInput->False], {"\<\"Demo: Kitaev Chain\"\>":>
+        Documentation`HelpLookup[
+        "paclet:Q3/tutorial/DemoKitaevChain"], "\<\"Demo: Baker-Hausdorff \
+Lemma\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/tutorial/DemoBakerHausdorffLemma"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"RelatedTutorialsSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "d3ed9ff4-8eae-4022-b593-c55fc2f644f3"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "09af7247-a40d-44cd-8b4e-67ab891e788b"]
+         }],ExpressionUUID->"8f8cafac-5fab-46c2-ab16-8a691219b7b2"],
+         StripOnInput->False], {"\<\"Quantum Many-Body Systems\"\>":>
+        Documentation`HelpLookup["paclet:Q3/guide/QuantumManyBodySystems"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"TutorialMoreAboutSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "389b9a29-cafb-4b2e-88ae-db9a569ae4e1"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "69cbc1c0-e8d6-426d-8535-8417c0e19452"]
+         }],ExpressionUUID->"0831b0a0-9b22-478e-a720-a79a338f1527"],
+         StripOnInput->False], {"\<\"Q3/tutorial/QuantumManyBodySystems\"\>":>
+        None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell["Q3/tutorial/QuantumManyBodySystems"]}, Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+        Delimiter, "\<\"Copy web URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell[
+               BoxData[
+                MakeBoxes[
+                 Hyperlink[
+                 "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumManyBodySystems.html"], StandardForm]], "Input", TextClipboardType -> 
+               "PlainText"]}, Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; 
+         Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+          NotebookLocate[{
+            URL[If[
+               TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$237089], 
+               "http://reference.wolfram.com/system-modeler/", 
+               "http://reference.wolfram.com/language/"] <> 
+             "Q3/tutorial/QuantumManyBodySystems" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "daf1fd5f-96e2-47af-9ff7-d67d63f3b5e7"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "cb4e3fce-5d8d-42d5-8071-f9460dc82e2f"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"3001b680-2472-4267-80c5-a9c41dbbe8c2"],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Many-Body Systems with Q3", "Title",
+ CellID->509267359,ExpressionUUID->"50914ae1-cdb8-4783-b8ac-07f0b960fd8b"],
+
+Cell["\<\
+Fock is a Mathematica package to help study quantum many-body systems. It \
+provides various tools and utilities for symbolic and numerical calculations \
+to simulate quantum many-body systems.\
+\>", "Text",
+ CellID->1534169418,ExpressionUUID->"d3bc919b-fdc4-4d79-a062-005859f6dfbc"],
+
+Cell["XXXX.", "Caption",
+ CellID->1891092685,ExpressionUUID->"6d371e52-f44b-41c9-9992-7dfe1666c12f"],
+
+Cell["You first need to load the package.", "MathCaption",
+ CellID->836781195,ExpressionUUID->"bd4fade7-042a-44be-a7f2-038a8abf9d97"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->2058623809,ExpressionUUID->"6a5e666d-96d9-4b42-a8ad-e8e4c029bb8d"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1033714979,ExpressionUUID->"2b1d8ba8-69f9-424a-80fa-fea3d6bf0b7d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"c", "[", "1", "]"}], "**", 
+  RowBox[{"c", "[", "2", "]"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->853827381,ExpressionUUID->"5c4237d2-c46b-4326-af3e-f2db74c68447"],
+
+Cell[BoxData[
+ RowBox[{"-", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"c"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"c"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->210132939,ExpressionUUID->"f8192c32-039e-492c-b242-5f6ee9cab4f2"]
+}, Open  ]],
+
+Cell[TextData[{
+ StyleBox["Ket[]", "Input"],
+ " returns the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Vacuum"]], "paclet:Q3/ref/Vacuum", "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "d3746837-6c08-41e5-8e13-42b9fcccc391"],
+ " state."
+}], "MathCaption",
+ CellID->634665310,ExpressionUUID->"a6a69228-0141-4222-b55a-169a3b6967b3"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v1", "=", 
+  RowBox[{"Ket", "[", "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->2088374135,ExpressionUUID->"41c9b631-4b08-40a8-841b-5aed7f6139cf"],
+
+Cell[BoxData[
+ TemplateBox[{"\"\[SpaceIndicator]\""},
+  "Ket"]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->452225847,ExpressionUUID->"27a622d9-822c-456e-a722-1325bcb2bef0"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v1", "//", "InputForm"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1991237149,ExpressionUUID->"a11f2d79-4a2d-4dad-98d6-012bcabe5c85"],
+
+Cell["Ket[<||>]", "Output",
+ CellLabel->"Out[5]//InputForm=",
+ CellID->413537305,ExpressionUUID->"31413353-82f1-4b69-a724-7af7976abcd5"]
+}, Open  ]],
+
+Cell["The Fermion operators act on the state vectors.", "MathCaption",
+ CellID->719909995,ExpressionUUID->"454f82dc-959c-466e-b758-25d4f10667c7"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"v2", "=", 
+  RowBox[{
+   RowBox[{"Dagger", "[", 
+    RowBox[{"c", "[", "1", "]"}], "]"}], "**", 
+   RowBox[{"Dagger", "[", 
+    RowBox[{"c", "[", "2", "]"}], "]"}], "**", 
+   RowBox[{"Ket", "[", "]"}]}]}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->2125282454,ExpressionUUID->"53794f91-c217-47c2-9272-fc1bfc516e07"],
+
+Cell[BoxData[
+ TemplateBox[{
+   TagBox[
+    TemplateBox[{
+      SubscriptBox["1", 
+       SubscriptBox[
+        TemplateBox[{"c"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"]]], 
+      SubscriptBox["1", 
+       SubscriptBox[
+        TemplateBox[{"c"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+  "Ket"]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->2074166127,ExpressionUUID->"9ef426e0-ef78-47f6-83eb-8b59ac25c07e"]
+}, Open  ]],
+
+Cell["Hamiltonians are written in terms of Fermion operators.", "MathCaption",
+ CellID->1183449467,ExpressionUUID->"360a5b97-831b-44b6-a661-e2a48b5f225f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op", "=", 
+  RowBox[{
+   RowBox[{"Q", "[", 
+    RowBox[{
+     RowBox[{"c", "[", "1", "]"}], ",", 
+     RowBox[{"c", "[", "2", "]"}]}], "]"}], "+", " ", 
+   RowBox[{"t", " ", 
+    RowBox[{"PlusDagger", "@", 
+     RowBox[{"FockHopping", "[", 
+      RowBox[{
+       RowBox[{"c", "[", "1", "]"}], ",", 
+       RowBox[{"c", "[", "2", "]"}]}], "]"}]}]}]}]}]], "Input",
+ CellLabel->"In[7]:=",
+ CellID->143203304,ExpressionUUID->"8a1c8007-77a6-46e3-9680-070aceef8c4b"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"c"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"c"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  RowBox[{"t", " ", 
+   RowBox[{"(", 
+    RowBox[{
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm], "+", 
+     TagBox[
+      RowBox[{
+       TagBox[
+        TagBox[
+         TemplateBox[{
+           TemplateBox[{"c"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+          "Subsuperscript"],
+         DisplayForm],
+        DisplayForm], 
+       TagBox[
+        SubscriptBox[
+         TemplateBox[{"c"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        DisplayForm]}],
+      DisplayForm]}], ")"}]}], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"c"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"c"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->384713256,ExpressionUUID->"2ef0390e-dad8-4e33-a8fe-39223f2edf2e"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Its matrix representation in the standard basis can be obtained by means of \
+",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Matrix"]], "paclet:Q3/ref/Matrix", "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "69cc64d1-dc51-488f-9891-1e5b7746ea39"],
+ "."
+}], "MathCaption",
+ CellID->362238423,ExpressionUUID->"ceb87f6e-c4af-4226-8d3f-d4281de292d6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"Matrix", "[", "op", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[8]:=",
+ CellID->2023682302,ExpressionUUID->"c1aef8e3-5466-463d-aac5-7168f1427b5f"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", "0", "0"},
+     {"0", "1", "t", "0"},
+     {"0", "t", "1", "0"},
+     {"0", "0", "0", "2"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 0, 2, 4, 5}, {{2}, {3}, {3}, {2}, {4}}}, {
+      1, $CellContext`t, 1, $CellContext`t, 2}}]]]]], "Output",
+ CellLabel->"Out[8]//MatrixForm=",
+ CellID->168578484,ExpressionUUID->"4d17997b-a516-4fcb-8e3e-458d0b000b5f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "bd34d522-f317-4604-a7d6-b063171a4caa"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1849438622,ExpressionUUID->"53396667-e897-4187-a2b6-52ebdf32f92c"],
+
+Cell["Now consider a Boson operator.", "MathCaption",
+ CellID->836613276,ExpressionUUID->"4b6e0222-7d3a-43f6-b041-056ab0a0f4ed"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Boson", ",", "a"}], "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->963450838,ExpressionUUID->"d062d8cc-8909-489c-8be4-3393599a19fc"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"op", "=", 
+   RowBox[{"Hop", "[", 
+    RowBox[{"a", "@", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2", ",", "3"}], "}"}]}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"op", "=", 
+  RowBox[{"PlusDagger", "[", "op", "]"}]}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1183914026,ExpressionUUID->"f5d24a0b-2889-4504-a5e2-ab060f3dd0fc"],
+
+Cell[BoxData[
+ RowBox[{
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"a"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"a"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"a"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"a"},
+       "RowDefault"], 
+      TemplateBox[{"1"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"a"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"a"},
+       "RowDefault"], 
+      TemplateBox[{"3"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm], "+", 
+  TagBox[
+   RowBox[{
+    TagBox[
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"a"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"\[Dagger]\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm],
+     DisplayForm], 
+    TagBox[
+     SubscriptBox[
+      TemplateBox[{"a"},
+       "RowDefault"], 
+      TemplateBox[{"2"},
+       "RowDefault"]],
+     DisplayForm]}],
+   DisplayForm]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->223921368,ExpressionUUID->"60184dd2-544f-4a83-8d78-86269607c56d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ket", "=", 
+  RowBox[{
+   RowBox[{"Dagger", "[", 
+    RowBox[{"a", "[", "1", "]"}], "]"}], "**", 
+   RowBox[{"Ket", "[", "]"}]}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1865813892,ExpressionUUID->"2f6c6bc2-a63b-4e40-b970-d3ea462a4ce4"],
+
+Cell[BoxData[
+ TemplateBox[{
+   TagBox[
+    TemplateBox[{
+      SubscriptBox["1", 
+       SubscriptBox[
+        TemplateBox[{"a"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+  "Ket"]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1346286944,ExpressionUUID->"3c0323cf-f1ba-4186-abd0-66be116f0bc9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op", "**", "ket"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->608875125,ExpressionUUID->"2163cd6f-b17d-41e0-9d65-fcef524a9888"],
+
+Cell[BoxData[
+ TemplateBox[{
+   TagBox[
+    TemplateBox[{
+      SubscriptBox["1", 
+       SubscriptBox[
+        TemplateBox[{"a"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"]]]}, "RowDefault"], DisplayForm]},
+  "Ket"]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1973433895,ExpressionUUID->"13c80501-9b7f-4dd8-bf8c-1bbcd2bda760"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Many-Body Systems",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/guide/QuantumManyBodySystems"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "2cdfc5ef-a696-4c40-a0c6-b5ff5bfe513a"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"9c9da451-eff2-499a-975d-\
+c87db8367d76"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Demo: Kitaev Chain",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/DemoKitaevChain"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "40988851-657b-4052-97b8-a6e469f5cd8a"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Demo: Baker-Hausdorff Lemma",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/DemoBakerHausdorffLemma"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "5b6b2d8a-7d52-4bae-8f6c-adf4412c5633"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"2fc0fa01-8efb-4899-9cf2-\
+510c06e47613"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{
+         "Related", " ", "Wolfram", " ", "Education", " ", "Group", " ", 
+          "Courses"}], "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[Cell[BoxData[
+        TemplateBox[{
+          Cell[
+           TextData[
+            Cell[
+             TextData[{
+               Cell[
+                BoxData[
+                 DynamicBox[
+                  FEPrivate`ImportImage[
+                   
+                   FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+                    "RelatedLinks-EIWL.png"]]]]], 
+               Cell[
+                BoxData[
+                 TemplateBox[{4}, "Spacer1"]]], 
+               "An Elementary Introduction to the Wolfram Language"}]]]], 
+          "https://www.wolfram.com/language/elementary-introduction/"},
+         "WebLink",
+         BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+        "fd16c806-503d-42a1-b2f1-d8565800f8e8"]], "TutorialRelatedLinks",
+        ExpressionUUID->"fe19b3fc-cf84-4a76-9383-8ebdb339986d"]},
+      {Cell[TextData[Cell[BoxData[
+        TemplateBox[{
+          Cell[
+           TextData[
+            Cell[
+             TextData[{
+               Cell[
+                BoxData[
+                 DynamicBox[
+                  FEPrivate`ImportImage[
+                   
+                   FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+                    "RelatedLinks-FastIntro.png"]]]]], 
+               Cell[
+                BoxData[
+                 TemplateBox[{4}, "Spacer1"]]], 
+               "The Wolfram Language: Fast Introduction for Programmers"}]]]],
+           "https://www.wolfram.com/language/fast-introduction-for-\
+programmers/"},
+         "WebLink",
+         BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+        "060fc65d-f2e3-482f-a111-69337436f02c"]], "TutorialRelatedLinks",
+        ExpressionUUID->"46e92b31-64c6-46dc-959f-157a10c7f1c5"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"5a3873da-ac81-464e-aa40-\
+dad580b976e5"]
+}, Open  ]],
+
+Cell[" ", "FooterCell",ExpressionUUID->"e1ec7be1-0ee7-4e1d-9415-df80e502feb1"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quantum Many-Body Systems with Q3",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2019", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 1, 8, 19, 47, 31.727022}", 
+    "history" -> {"12", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tutorial", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Fock is a Mathematica package to help study quantum many-body systems. \
+It provides various tools and utilities for symbolic and numerical \
+calculations to simulate quantum many-body systems. XXXX. You first need to \
+load the package.", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$237051, "title" -> 
+    "Quantum Many-Body Systems with Q3", "titlemodifier" -> "", "windowtitle" -> 
+    "Quantum Many-Body Systems with Q3", "type" -> "Tutorial", "uri" -> 
+    "Q3/tutorial/QuantumManyBodySystems", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (December 2, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (December 2, 2021)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"678c216b-d7d2-4138-9242-7bf9539e8855"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[605, 21, 5722, 137, 57, "AnchorBarGrid",ExpressionUUID->"3001b680-2472-4267-80c5-a9c41dbbe8c2",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[6352, 162, 125, 1, 63, "Title",ExpressionUUID->"50914ae1-cdb8-4783-b8ac-07f0b960fd8b",
+ CellID->509267359],
+Cell[6480, 165, 293, 5, 60, "Text",ExpressionUUID->"d3bc919b-fdc4-4d79-a062-005859f6dfbc",
+ CellID->1534169418],
+Cell[6776, 172, 100, 1, 36, "Caption",ExpressionUUID->"6d371e52-f44b-41c9-9992-7dfe1666c12f",
+ CellID->1891092685],
+Cell[6879, 175, 133, 1, 36, "MathCaption",ExpressionUUID->"bd4fade7-042a-44be-a7f2-038a8abf9d97",
+ CellID->836781195],
+Cell[7015, 178, 146, 3, 29, "Input",ExpressionUUID->"6a5e666d-96d9-4b42-a8ad-e8e4c029bb8d",
+ CellID->2058623809],
+Cell[7164, 183, 184, 4, 29, "Input",ExpressionUUID->"2b1d8ba8-69f9-424a-80fa-fea3d6bf0b7d",
+ CellID->1033714979],
+Cell[CellGroupData[{
+Cell[7373, 191, 204, 5, 29, "Input",ExpressionUUID->"5c4237d2-c46b-4326-af3e-f2db74c68447",
+ CellID->853827381],
+Cell[7580, 198, 473, 20, 37, "Output",ExpressionUUID->"f8192c32-039e-492c-b242-5f6ee9cab4f2",
+ CellID->210132939]
+}, Open  ]],
+Cell[8068, 221, 440, 13, 38, "MathCaption",ExpressionUUID->"a6a69228-0141-4222-b55a-169a3b6967b3",
+ CellID->634665310],
+Cell[CellGroupData[{
+Cell[8533, 238, 174, 4, 29, "Input",ExpressionUUID->"41c9b631-4b08-40a8-841b-5aed7f6139cf",
+ CellID->2088374135],
+Cell[8710, 244, 172, 4, 41, "Output",ExpressionUUID->"27a622d9-822c-456e-a722-1325bcb2bef0",
+ CellID->452225847]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[8919, 253, 158, 3, 29, "Input",ExpressionUUID->"a11f2d79-4a2d-4dad-98d6-012bcabe5c85",
+ CellID->1991237149],
+Cell[9080, 258, 136, 2, 50, "Output",ExpressionUUID->"31413353-82f1-4b69-a724-7af7976abcd5",
+ CellID->413537305]
+}, Open  ]],
+Cell[9231, 263, 145, 1, 36, "MathCaption",ExpressionUUID->"454f82dc-959c-466e-b758-25d4f10667c7",
+ CellID->719909995],
+Cell[CellGroupData[{
+Cell[9401, 268, 338, 9, 29, "Input",ExpressionUUID->"53794f91-c217-47c2-9272-fc1bfc516e07",
+ CellID->2125282454],
+Cell[9742, 279, 475, 14, 41, "Output",ExpressionUUID->"9ef426e0-ef78-47f6-83eb-8b59ac25c07e",
+ CellID->2074166127]
+}, Open  ]],
+Cell[10232, 296, 154, 1, 36, "MathCaption",ExpressionUUID->"360a5b97-831b-44b6-a661-e2a48b5f225f",
+ CellID->1183449467],
+Cell[CellGroupData[{
+Cell[10411, 301, 484, 14, 29, "Input",ExpressionUUID->"8a1c8007-77a6-46e3-9680-070aceef8c4b",
+ CellID->143203304],
+Cell[10898, 317, 2084, 82, 40, "Output",ExpressionUUID->"2ef0390e-dad8-4e33-a8fe-39223f2edf2e",
+ CellID->384713256]
+}, Open  ]],
+Cell[12997, 402, 470, 13, 38, "MathCaption",ExpressionUUID->"ceb87f6e-c4af-4226-8d3f-d4281de292d6",
+ CellID->362238423],
+Cell[CellGroupData[{
+Cell[13492, 419, 267, 6, 48, "Input",ExpressionUUID->"c1aef8e3-5466-463d-aac5-7168f1427b5f",
+ CellID->2023682302],
+Cell[13762, 427, 805, 23, 100, "Output",ExpressionUUID->"4d17997b-a516-4fcb-8e3e-458d0b000b5f",
+ CellID->168578484]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14604, 455, 243, 5, 70, "ExampleDelimiter",ExpressionUUID->"53396667-e897-4187-a2b6-52ebdf32f92c",
+ CellID->1849438622],
+Cell[14850, 462, 128, 1, 70, "MathCaption",ExpressionUUID->"4b6e0222-7d3a-43f6-b041-056ab0a0f4ed",
+ CellID->836613276],
+Cell[14981, 465, 181, 4, 70, "Input",ExpressionUUID->"d062d8cc-8909-489c-8be4-3393599a19fc",
+ CellID->963450838],
+Cell[CellGroupData[{
+Cell[15187, 473, 380, 11, 70, "Input",ExpressionUUID->"f5d24a0b-2889-4504-a5e2-ab060f3dd0fc",
+ CellID->1183914026],
+Cell[15570, 486, 1908, 79, 39, "Output",ExpressionUUID->"60184dd2-544f-4a83-8d78-86269607c56d",
+ CellID->223921368]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17515, 570, 264, 7, 70, "Input",ExpressionUUID->"2f6c6bc2-a63b-4e40-b970-d3ea462a4ce4",
+ CellID->1865813892],
+Cell[17782, 579, 341, 10, 41, "Output",ExpressionUUID->"3c0323cf-f1ba-4186-abd0-66be116f0bc9",
+ CellID->1346286944]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18160, 594, 151, 3, 70, "Input",ExpressionUUID->"2163cd6f-b17d-41e0-9d65-fcef524a9888",
+ CellID->608875125],
+Cell[18314, 599, 341, 10, 41, "Output",ExpressionUUID->"13c80501-9b7f-4dd8-bf8c-1bbcd2bda760",
+ CellID->1973433895]
+}, Open  ]]
+}, Open  ]],
+Cell[18682, 613, 709, 18, 70, "TutorialMoreAboutSection",ExpressionUUID->"9c9da451-eff2-499a-975d-c87db8367d76"],
+Cell[19394, 633, 1028, 27, 70, "RelatedTutorialsSection",ExpressionUUID->"2fc0fa01-8efb-4899-9cf2-510c06e47613"],
+Cell[20425, 662, 2163, 59, 70, "TutorialRelatedLinksSection",ExpressionUUID->"5a3873da-ac81-464e-aa40-dad580b976e5"]
+}, Open  ]],
+Cell[22603, 724, 78, 0, 70, "FooterCell",ExpressionUUID->"e1ec7be1-0ee7-4e1d-9415-df80e502feb1"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

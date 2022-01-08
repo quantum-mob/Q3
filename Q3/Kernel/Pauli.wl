@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.191 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-05 19:04:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.194 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-08 16:27:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -33,9 +33,6 @@ BeginPackage["Q3`"]
 { ProperSystem, ProperValues, ProperStates };
 
 { CommonEigensystem, CommonEigenvectors, CommonEigenvalues };
-
-{ HilbertSchmidtProduct, HilbertSchmidtNorm,
-  FrobeniusProduct, FrobeniusNorm };
 
 { BlochSphere, BlochVector };
 
@@ -75,6 +72,9 @@ BeginPackage["Q3`"]
 { PauliEmbed, PauliApply };
 
 { SchmidtDecomposition, SchmidtForm };
+
+{ HilbertSchmidtProduct, HilbertSchmidtNorm, HilbertSchmidtDistance,
+  FrobeniusProduct, FrobeniusNorm };
 
 { TraceNorm, TraceDistance, Fidelity };
 
@@ -1285,43 +1285,6 @@ PauliInner[v1_?VectorQ, v2_?VectorQ] := (
   Message[Q3`Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
   HilbertSchmidtProduct[v1, v2]
  )
-
-
-FrobeniusNorm::usage = "FrobeniusNorm is an alias to HilbertSchmidtNorm."
-
-FrobeniusNorm = HilbertSchmidtNorm
-
-HilbertSchmidtNorm::usage = "HilbertSchmidtNorm[a] gives the Hilbert-Schmidt norm (i.e., Frobenius norm) of a complex matrix a.\nIf a is a vector, it is regarded as Dyad[a,a].\nSee also TraceNorm."
-
-Format[ HilbertSchmidtNorm[a_] ] := Sqrt @ AngleBracket[a, a]
-
-HilbertSchmidtNorm[a_?VectorQ] := Norm[a]^2
-
-HilbertSchmidtNorm[a_?MatrixQ] := Norm[a, "Frobenius"]
-
-HilbertSchmidtNorm[rho_] := HilbertSchmidtNorm @ Matrix[rho]
-
-HilbertSchmidtNorm[rho_, q_?SpeciesQ] := HilbertSchmidtNorm[rho, {q}]
-
-HilbertSchmidtNorm[rho_, qq:{__?SpeciesQ}] :=
-  HilbertSchmidtNorm @ Matrix[rho, qq]
-
-
-FrobeniusProduct::usage = "FrobeniusProduct is an alias to HilbertSchmidtProduct."
-
-FrobeniusProduct = HilbertSchmidtProduct
-
-HilbertSchmidtProduct::usage = "HilbertSchmidtProduct[a, b] returns the Hilbert-Schmidt (or Frobenius) inner product of two matrices a and b, that is, Tr[ConjugateTranspose[a].b].\nIf a is a vector, it is regarded as Dyad[a,a], and similary for b."
-
-HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a].b]
-
-HilbertSchmidtProduct[a_?VectorQ, b_?MatrixQ] := Conjugate[a].b.a
-
-HilbertSchmidtProduct[a_?MatrixQ, b_?VectorQ] := Conjugate[a].Topple[b].a
-
-HilbertSchmidtProduct[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]^2
-
-Format[ HilbertSchmidtProduct[a_, b_] ] := AngleBracket[a, b]
 
 
 BlochVector::usage = "BlochSphere[{c0, c1}] returns the point on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
@@ -3368,6 +3331,54 @@ WignerFunction[j_, 0, m_, z_] :=
 WignerFunction[j_, m_, 0, z_] := Conjugate[ WignerFunction[j, 0, m, z] ]
 
 
+(**** <HilbertSchmidtNorm> *****)
+
+FrobeniusNorm::usage = "FrobeniusNorm is an alias to HilbertSchmidtNorm."
+
+FrobeniusNorm = HilbertSchmidtNorm
+
+HilbertSchmidtNorm::usage = "HilbertSchmidtNorm[a] gives the Hilbert-Schmidt norm (i.e., Frobenius norm) of a complex matrix a.\nIf a is a vector, it is regarded as Dyad[a,a].\nSee also TraceNorm."
+
+Format[ HilbertSchmidtNorm[a_] ] := Sqrt @ AngleBracket[a, a]
+
+HilbertSchmidtNorm[a_?VectorQ] := Norm[a]^2
+
+HilbertSchmidtNorm[a_?MatrixQ] := Norm[a, "Frobenius"]
+
+HilbertSchmidtNorm[rho_] := HilbertSchmidtNorm @ Matrix[rho]
+
+HilbertSchmidtNorm[rho_, q_?SpeciesQ] := HilbertSchmidtNorm[rho, {q}]
+
+HilbertSchmidtNorm[rho_, qq:{__?SpeciesQ}] :=
+  HilbertSchmidtNorm @ Matrix[rho, qq]
+
+
+HilbertSchmidtDistance::usage = "HilbertSchmidtDistance[a, b] returns the Hilbert-Schmidt distance of two (pure or mixed) states a and b. It is equivalent to HilbertSchmidtNorm[a-b]."
+
+HilbertSchmidtDistance[a_, b_] := HilbertSchmidtNorm[a - b]
+
+
+FrobeniusProduct::usage = "FrobeniusProduct is an alias to HilbertSchmidtProduct."
+
+FrobeniusProduct = HilbertSchmidtProduct
+
+HilbertSchmidtProduct::usage = "HilbertSchmidtProduct[a, b] returns the Hilbert-Schmidt (or Frobenius) inner product of two matrices a and b, that is, Tr[ConjugateTranspose[a].b].\nIf a is a vector, it is regarded as Dyad[a,a], and similary for b."
+
+HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a].b]
+
+HilbertSchmidtProduct[a_?VectorQ, b_?MatrixQ] := Conjugate[a].b.a
+
+HilbertSchmidtProduct[a_?MatrixQ, b_?VectorQ] := Conjugate[a].Topple[b].a
+
+HilbertSchmidtProduct[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]^2
+
+Format[ HilbertSchmidtProduct[a_, b_] ] := AngleBracket[a, b]
+
+(**** </HilbertSchmidtNorm> *****)
+
+
+(**** <TraceNorm> *****)
+
 TraceNorm::usage = "TraceNorm[m] returns the trace norm of the matrix m, that is, Tr @ Sqrt[Dagger[m] ** m].\nTraceNorm[v] gives TraceNorm[v.Transepose[v]].\nTraceNorma[expr, {s1, s2, \[Ellipsis]}] returns the trace norm of operator expression expr acting on species s1, s2, \[Ellipsis]."
 
 TraceNorm[m_?MatrixQ] := Total @ SingularValueList[m]
@@ -3397,6 +3408,10 @@ TraceDistance[a_, b_] := TraceDistance[a, b, NonCommutativeSpecies @ {a, b}]
 TraceDistance[a_, b_, ss:{___?SpeciesQ}] :=
   TraceDistance[Matrix[a, ss], Matrix[b, ss]]
 
+(**** </TraceNorm> *****)
+
+
+(**** <Fidelity> *****)
 
 Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states \[Rho] and \[Sigma]. \[Rho] and \[Sigma] can take a vector (pure state), matrix (mixed state), ket expression (pure state), or opertor expression (mixed state)."
 
@@ -3423,6 +3438,8 @@ Fidelity[rho_, vec_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
 
 Fidelity[vec_, wec_] := Abs[Dagger[vec] ** wec] /;
   And[Not @ FreeQ[vec, _Ket], Not @ FreeQ[wec, _Ket]]
+
+(**** </Fidelity> *****)
 
 
 (* ***************************************************************** *)
