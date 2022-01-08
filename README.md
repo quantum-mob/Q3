@@ -5,7 +5,7 @@ Q3 is a Wolfram Mathematica application to help study quantum information proces
 
 ## Requirements
 
-Q3 requires *Mathematica v12.1 (v12.2 for automatic installation) or later*.
+Q3 requires *Mathematica v12.2 or later*.
 
 
 ## Installation
