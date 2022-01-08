@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.3.1
+
+- Removed some garbage files from Documentation. 
+
 ## v2.3.0
 
 - New functions GottesmanSplit and GottesmanMerge to handle Gottesman vectors.
