@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.3.2
+
+- KetUpdate has been improved.
+
 ## v2.3.1
 
 - Removed some garbage files from Documentation. 

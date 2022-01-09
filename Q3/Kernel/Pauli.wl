@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.194 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-08 16:27:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.196 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-09 17:35:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -658,20 +658,19 @@ KetPurge[expr_, test_] := expr /. {
 
 KetUpdate::usage = "KetUpdate[ket, {s1->expr1, s2->expr2, \[Ellipsis]}] updates ket according to the rules specified by {s1->expr1, s2->expr2, \[Ellipsis]}.\nKetUpdate[expr, spec] converts every ket in expr."
 
-KetUpdate[Ket[a_Association], spec:{__Rule}] := With[
-  { rr = Flatten @ KetRule @ spec },
-  Ket @ KetUpdate[a, rr /. {s_?SpeciesQ :> FlavorNone[s]}]
+KetUpdate[Ket[asso_Association], spec:{__Rule}] := Module[
+  { new, kk, vv, qq },
+  new = Map[
+    ReleaseHold @ ReplaceAll[ #,
+      { S_?SpeciesQ[j___] :> Lookup[asso, S[j,None]],
+        S_Symbol?SpeciesQ :> Lookup[asso, S[None]] }
+     ]&,
+    Association @ spec
+   ];
+  Ket[Ket @ asso, Sequence @@ Normal[new, Association]]
  ]
 
-(* NOTE: Here all species appearing in rr are assumed to have None properly. *)
-KetUpdate[aa_Association, rr:{__Rule}] := Module[
-  { kk = Keys[rr],
-    vv = Values[rr],
-    qq },
-  qq = NonCommutativeSpecies[vv];
-  vv = vv /. Thread[qq -> Lookup[aa, qq]];
-  KeySort @ KetTrim @ Join[aa, AssociationThread[kk -> vv]]
- ]
+KetUpdate[asso_Association, spec__] := KetUpdate[#, spec]& /@ asso
 
 KetUpdate[expr_, spec:{__Rule}] :=
   expr /. { v_Ket :> KetUpdate[v, spec] }

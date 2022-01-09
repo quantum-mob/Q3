@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.25 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-26 17:00:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.27 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-09 17:15:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -107,6 +107,8 @@ setComplex[z_Symbol] := (
 
   z /: Element[z, Complexes] = True;
   z /: Element[z[___],Complexes] = True;
+
+  z[j___, None] := z[j];
  )
 
 
