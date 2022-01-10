@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.3.3
+
+- Updated tech note, Quantum Fourier Transform.
+
 ## v2.3.2
 
 - KetUpdate has been improved.
