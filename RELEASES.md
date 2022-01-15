@@ -2,6 +2,7 @@
 
 ## v2.3.3
 
+- More new tech notes.
 - Updated tech note, Quantum Fourier Transform.
 
 ## v2.3.2
