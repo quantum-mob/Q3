@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.196 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-09 17:35:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.198 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-23 00:05:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2630,17 +2630,15 @@ PauliDecompose[m_?MatrixQ, d:(0|1|2|3)] := PauliDecompose[m, {d}]
 PauliDecompose[m_?MatrixQ, idx:{ (0|1|2|3).. }] :=
   Tr @ Dot[m, CircleTimes @@ ThePauli /@ idx] / Length[m]
 
-
-PauliDecompose[ m_?MatrixQ ] := Module[
-  { n = Log[2, Length[m]],
-    idxTable, idxList },
+PauliDecompose[mat_?MatrixQ] := Module[
+  { n = Log[2, Length@mat],
+    idx },
   If [ !IntegerQ[n],
     Message[PauliDecompose::badarg];
     Return[0]
    ];
-  idxTable = Table[{0, 1, 2, 3}, {n}];
-  idxList = Outer[ List, Sequence @@ idxTable ];
-  Simplify @ Map[ PauliDecompose[m, #]&, idxList, {n} ]
+  idx = Tuples[{0, 1, 2, 3}, n];
+  ArrayReshape[PauliDecompose[mat, #]& /@ idx, Table[4, n]]
  ]
 
 
@@ -2681,17 +2679,16 @@ PauliDecomposeRL[M_?MatrixQ, idx:{(0|3|4|5)..}] := Module[
  ]
 
 
-PauliDecomposeRL[m_?MatrixQ] := Module[
-  { nn = Log[2, Length[m]],
-    idxTable, idxList },
-  If [ !IntegerQ[nn],
-       Message[PauliDecompose::badarg];
-       Return[0]
+PauliDecomposeRL[mat_?MatrixQ] := Module[
+  { n = Log[2, Length @ mat],
+    idx },
+  If [ !IntegerQ[n],
+    Message[PauliDecompose::badarg];
+    Return[0]
    ];
-  idxTable = Table[{0,3,4,5}, {nn}];
-  idxList = Outer[List,Sequence@@idxTable];
-  Map[ PauliDecomposeRL[m,#]&, idxList, {nn} ]
-]
+  idx = Tuples[{0, 3, 4, 5}, n];
+  ArrayReshape[PauliDecomposeRL[mat, #]& /@ idx, Table[4, n]]
+ ]
 
 
 PauliComposeRL::usage = "PauliComposeRL[coeff], where coeff is a tensor of rank n, gives a Pauli composed matrix of size 2^n*2^n with coefficients coeff."

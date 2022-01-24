@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.16 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-06 16:02:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.26 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-24 09:36:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -19,10 +19,10 @@ BeginPackage["Q3`"]
   GottesmanTest, GottesmanInner, GottesmanBasis,
   GottesmanSplit, GottesmanMerge };
 
-{ GottesmanMatrix, FromGottesmanMatrix,
+{ GottesmanMatrix, FromGottesmanMatrix, GottesmanInverse,
   GottesmanMatrixQ };
 
-{ Stabilizer };
+{ Stabilizer, StabilizerStateQ };
 
 { BinarySymplecticGroup,
   BinarySymplecticGroupElements };
@@ -467,7 +467,11 @@ GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := MapThread[Riffle, {xx, zz}]
 (**** </GottesmanVector> ****)
 
 
-Stabilizer::usage = "Stabilizer[graph] returns a generating set of the stabilizer of the graph state associated with the graph.\nStabilizer[graph, vtx] gives the operator associated with the vertex vtx that stabilize the graph state associated with graph."
+(**** <Stabilizer> ****)
+
+Stabilizer::usage = "Stabilzier[state] returns the stabilizer subgroup of the Pauli group that stabilizes state, which may be a column vecotr or expressed in terms of Ket[\[Ellipsis]] or Ket[<|\[Ellipsis]|>].\nStabilizer[state, {s1,s2,\[Ellipsis]}] assumes that state belongs to the Hilbert space associated with qubits {s1,s2,\[Ellipsis]}.\nStabilizer[graph] returns a generating set of the stabilizer subgroup of the Pauli group that stabilizes the graph state associated with the graph.\nStabilizer[graph, vtx] gives the operator associated with the vertex vtx that stabilize the graph state associated with graph."
+
+Stabilizer::notss = "`` is not a stabilizer state."
 
 Stabilizer[grp_Graph] := Map[Stabilizer[grp, #] &, VertexList[grp]]
 
@@ -477,6 +481,72 @@ Stabilizer[grp_Graph, vtx_] := Module[
   adj = AdjacencyList[grp, new|new[None]];
   vtx[1] ** Apply[Multiply, Through[adj[3]]]
  ]
+
+
+Stabilizer[vec_?VectorQ] := With[
+  { mm = getStabilizer[vec] },
+  If[ FailureQ[mm],
+    Message[Stabilizer::notss, expr];
+    Return[{}]
+   ];
+  (ThePauli @@@ Keys[mm]) * Values[mm]
+ ] /; IntegerQ @ Log[2, Length @ vec]
+
+
+Stabilizer[expr_] := With[
+  { mm = getStabilizer @ Matrix[expr] },
+  If[ FailureQ[mm],
+    Message[Stabilizer::notss, expr];
+    Return[{}]
+   ];
+  (Pauli @@@ Keys[mm]) * Values[mm]
+ ] /; fPauliKetQ[expr]
+
+
+Stabilizer[expr_] := Stabilizer[expr, Qubits @ expr]
+
+Stabilizer[expr_, ss:{__?QubitQ}] := With[
+  { mm = getStabilizer @ Matrix[expr, ss] },
+  If[ FailureQ[mm],
+    Message[Stabilizer::notss, expr];
+    Return[{}]
+   ];
+  Elaborate[ (Multiply @@@ FlavorThread[ss, Keys @ mm]) * Values[mm] ]
+ ]
+
+
+getStabilizer[vec_?VectorQ] := Module[
+  { rho = Dyad[vec, vec],
+    tsr },
+  tsr = Association @ Most @ ArrayRules @ PauliDecompose[rho];
+  If[ Not[Equal @@ Abs[Values @ tsr]],
+    Return[$Failed]
+   ];
+  Sign /@ KeyMap[(#-1)&, tsr]
+ ]
+
+
+StabilizerStateQ::usage = "StabilizerStateQ[state] returns True if state is a stabilizer state, a state that can be stabilized by a non-trivial subgroup of the Pauli group; and False otherwise. The state may be a column vector or expressed in terms of Ket[\[Ellipsis]] or Ket[<|\[Ellipsis]|>]."
+
+StabilizerStateQ::notqbt = "`` is not a state vector for qubits."
+
+StabilizerStateQ[vec_?VectorQ] := (
+  Message[StabilizerStateQ::notqbt, vec];
+  False
+ ) /; Not @ IntegerQ @ Log[2, Length @ vec]
+
+StabilizerStateQ[vec_?VectorQ] := Module[
+  { rho = Dyad[vec, vec],
+    tsr },
+  tsr = Most @ ArrayRules @ PauliDecompose[rho];
+  TrueQ[Equal @@ Abs[Values @ tsr]]
+ ]
+
+StabilizerStateQ[expr_] := StabilizerStateQ[Matrix @ expr]
+
+StabilizerStateQ[expr_, ss:{__?QubitQ}] := StabilizerStateQ[Matrix @ expr]
+
+(**** </Stabilizer> ****)
 
 
 (**** <BinarySymplecticGroup> ****)
@@ -726,7 +796,7 @@ FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   {qq, rr} = TakeDrop[ss, 1];
   
   ff = First @ ff;
-  ff = Mod[fSpInverse[ff] . ThePauli[1], 2];
+  ff = Mod[GottesmanInverse[ff] . ThePauli[1], 2];
   
   opf = FromGottesmanMatrix[ff, qq];
 
@@ -773,9 +843,9 @@ FromGottesmanMatrix[mat_?MatrixQ] := Block[
  ]
 
 
-fSpInverse::usage = "fSpInverse[mat] returns the inverse of binary symplectic matrix mat (with respect to the Gottesman inner product)."
+GottesmanInverse::usage = "GottesmanInverse[mat] returns the inverse of binary symplectic matrix mat (with respect to the Gottesman inner product)."
 
-fSpInverse[mat_] := Module[
+GottesmanInverse[mat_] := Module[
   { n = Length[mat] / 2,
     JX },
   JX = CircleTimes[One[n], ThePauli[1]];

@@ -16,31 +16,24 @@
 ## v2.3.0
 
 - New functions GottesmanSplit and GottesmanMerge to handle Gottesman vectors.
-
 - Documentation has been restructured and improved.
 
 ## v2.2.2
 
 - Performance improvement in GottesmanMatrix.
-
 - GottesmanVector and GottesmanMatrix can now take a matrix as input.
 
 ## v2.2.1
 
 - PauliGroup and CliffordGroup now represent quotient groups. To refer to the corresponding full group, use FullPauliGroup and FullCliffordGroup.
-
 - Improved support for GroupElements on PauliGroup and CliffordGroup.
-
 - New functions GottesmanMatrix and FromGottesmanMatrix to describe Clifford operators.
-
 - New function Permutation, representing a permutation operator on a system of species.
 
 ## v2.2.0
 
 - Measurement and Readout have been improved and support more arbitray Pauli operators (including tensor products of single-qubit Pauli operators).
-
 - New function MeasurementOdds.
-
 - Improved QuantumFourierTransform (it has a new optin N which indicates numerically approximate quantum Fourier transform).
 
 ## v2.1.5
@@ -67,9 +60,7 @@
 ## v2.1.1
 
 - The output format of KeyGroupBy has been slightly changed.
-
 - An operator form of SchurBasis.
-
 - A small change in the usage of SchurBasis.
 
 ## v2.1.0
@@ -88,7 +79,6 @@
 ## v2.0.0
 
 - Q3`Schur` package for Schur transform.
-
 - A few changes in Q3`Young` to support Q3`Schur`.
 
 ## v1.9.23
