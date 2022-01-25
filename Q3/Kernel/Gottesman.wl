@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.26 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-24 09:36:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.27 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-25 22:57:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -469,19 +469,9 @@ GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := MapThread[Riffle, {xx, zz}]
 
 (**** <Stabilizer> ****)
 
-Stabilizer::usage = "Stabilzier[state] returns the stabilizer subgroup of the Pauli group that stabilizes state, which may be a column vecotr or expressed in terms of Ket[\[Ellipsis]] or Ket[<|\[Ellipsis]|>].\nStabilizer[state, {s1,s2,\[Ellipsis]}] assumes that state belongs to the Hilbert space associated with qubits {s1,s2,\[Ellipsis]}.\nStabilizer[graph] returns a generating set of the stabilizer subgroup of the Pauli group that stabilizes the graph state associated with the graph.\nStabilizer[graph, vtx] gives the operator associated with the vertex vtx that stabilize the graph state associated with graph."
+Stabilizer::usage = "Stabilzier[state] returns the stabilizer subgroup of the Pauli group that stabilizes state, which may be a column vecotr or expressed in terms of Ket[\[Ellipsis]] or Ket[<|\[Ellipsis]|>].\nStabilizer[state, {s1,s2,\[Ellipsis]}] assumes that state belongs to the Hilbert space associated with qubits {s1,s2,\[Ellipsis]}.\nStabilizer[graph] returns the stabilizer subgroup of the Pauli group that stabilizes the graph state associated with  graph.\nStabilizer[graph, vtx] gives the operator associated with the vertex vtx that stabilize the graph state associated with graph."
 
 Stabilizer::notss = "`` is not a stabilizer state."
-
-Stabilizer[grp_Graph] := Map[Stabilizer[grp, #] &, VertexList[grp]]
-
-Stabilizer[grp_Graph, vtx_] := Module[
-  { new = If[FlavorLast[vtx] === None, Drop[vtx, -1], vtx],
-    adj },
-  adj = AdjacencyList[grp, new|new[None]];
-  vtx[1] ** Apply[Multiply, Through[adj[3]]]
- ]
-
 
 Stabilizer[vec_?VectorQ] := With[
   { mm = getStabilizer[vec] },
@@ -523,6 +513,19 @@ getStabilizer[vec_?VectorQ] := Module[
     Return[$Failed]
    ];
   Sign /@ KeyMap[(#-1)&, tsr]
+ ]
+
+
+Stabilizer[g_Graph] := Stabilizer @ GraphState[g]
+
+Stabilizer[g_Graph, ss:{__?QubitQ}] :=
+  Stabilizer[GraphState[g, FlavorNone @ ss], FlavorNone @ ss]
+
+Stabilizer[g_Graph, vtx_?QubitQ] := Module[
+  { new = If[FlavorLast[vtx] === None, Drop[vtx, -1], vtx],
+    adj },
+  adj = AdjacencyList[g, new|new[None]];
+  vtx[1] ** Apply[Multiply, Through[adj[3]]]
  ]
 
 
