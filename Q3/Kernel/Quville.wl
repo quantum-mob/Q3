@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.23 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-24 12:39:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.24 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-25 16:28:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -174,7 +174,7 @@ QuantumCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
 
 QuantumCircuitTrim[ v:ProductState[_Association, ___] ] := Expand[v]
 
-QuantumCircuitTrim[ op_QuantumFourierTransform ] := op
+QuantumCircuitTrim[ op_QFT ] := op
 
 QuantumCircuitTrim[ Gate[expr_, ___?OptionQ] ] := expr
 
@@ -410,13 +410,13 @@ qCircuitGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
 
 
 qCircuitGate[
-  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  QFT[qq:{__?QubitQ}, opts___?OptionQ],
   more__?OptionQ
- ] := qCircuitGate @ QuantumFourierTransform[qq, opts, more]
+ ] := qCircuitGate @ QFT[qq, opts, more]
 
-qCircuitGate[ QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] ] :=
+qCircuitGate[ QFT[qq:{__?QubitQ}, opts___?OptionQ] ] :=
   Module[
-    { more = Join[{opts}, Options @ QuantumFourierTransform],
+    { more = Join[{opts}, Options @ QFT],
       lbl, ang },
     { lbl, ang } = {"Label", "LabelRotation"} /. more;
     Gate[qq, "Label" -> Rotate[lbl, ang], Sequence @@ more]
@@ -424,15 +424,15 @@ qCircuitGate[ QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] ] :=
 
 qCircuitGate[
   HoldPattern @
-    Dagger @ QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+    Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ],
   more__?OptionQ
- ] := qCircuitGate @ Dagger @ QuantumFourierTransform[qq, opts, more]
+ ] := qCircuitGate @ Dagger @ QFT[qq, opts, more]
 
 qCircuitGate[
   HoldPattern @
-    Dagger @ QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ]
+    Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ]
  ] := Module[
-   { more = Join[{opts}, Options @ QuantumFourierTransform],
+   { more = Join[{opts}, Options @ QFT],
      lbl, ang },
    { lbl, ang } = {"Label", "LabelRotation"} /. more;
    Gate[qq, "Label" -> Rotate[SuperDagger[lbl], ang], Sequence @@ more]

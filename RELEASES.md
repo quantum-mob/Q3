@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.3.4
+
+- GraphState enhanced in usage and performance.
+- Stabilizer enhanced in usage and performance.
+
 ## v2.3.3
 
 - More new tech notes.

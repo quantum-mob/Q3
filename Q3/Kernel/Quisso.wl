@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.27 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-30 10:01:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.30 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-25 16:25:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -32,7 +32,7 @@ BeginPackage["Q3`"]
 
 { Oracle, VerifyOracle };
 
-{ QuantumFourierTransform };
+{ QFT };
 
 { ProductState, BellState, GraphState, DickeState, RandomState };
 
@@ -59,13 +59,15 @@ BeginPackage["Q3`"]
 
 { Dirac }; (* OBSOLETE *)
 
+{ QuantumFourierTransform }; (* OBSOLETE *)
+
 
 Begin["`Private`"]
 
 $symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
 
 AddElaborationPatterns[
-  _QuantumFourierTransform,
+  _QFT,
   _ControlledU, _CZ, _CX, _CNOT, _SWAP,
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
@@ -1495,56 +1497,56 @@ QuissoOracle[args___] := (
 (**** </Oracle> ****)
 
 
-(**** <QuantumFourierTransform> ****)
+(**** <QFT> ****)
 
-QuantumFourierTransform::usage = "QuantumFourierTransform[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transform on the qubits S1, S2, \[Ellipsis].\nDagger[QuantumFourierTransform[\[Ellipsis]]] represents the inverse quantum Fourier transform.\nElaborate[QuantumFourierTransform[\[Ellipsis]]] returns the explicit expression of the operator in terms of the Pauli operators."
+QFT::usage = "QFT[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transform on the qubits S1, S2, \[Ellipsis].\nDagger[QFT[\[Ellipsis]]] represents the inverse quantum Fourier transform.\nElaborate[QFT[\[Ellipsis]]] returns the explicit expression of the operator in terms of the Pauli operators."
 
-QuantumFourierTransform::badmat = "Some elements of `` does not appear in `` for Matrix[QuantumFourierTransform[\[Ellipsis]]]."
+QFT::badmat = "Some elements of `` does not appear in `` for Matrix[QFT[\[Ellipsis]]]."
 
-Options[QuantumFourierTransform] = {
+Options[QFT] = {
   "Label" -> "QFT",
   "LabelRotation" -> Pi/2,
   N -> False
  }
 
-QuantumFourierTransform[S_?QubitQ, ___?OptionQ] := S[6]
+QFT[S_?QubitQ, ___?OptionQ] := S[6]
 
-QuantumFourierTransform[{S_?QubitQ}, ___?OptionQ] := S[6]
+QFT[{S_?QubitQ}, ___?OptionQ] := S[6]
 
-QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ] :=
-  QuantumFourierTransform[FlavorNone @ qq, opts] /;
+QFT[qq:{__?QubitQ}, opts___?OptionQ] :=
+  QFT[FlavorNone @ qq, opts] /;
   Not @ FlavorNoneQ[qq]
 
 
-QuantumFourierTransform /:
-HoldPattern @ Elaborate[op_QuantumFourierTransform] :=
+QFT /:
+HoldPattern @ Elaborate[op_QFT] :=
     ExpressionFor[Matrix[op], Qubits @ op]
 
-QuantumFourierTransform /:
-HoldPattern @ Multiply[pre___, op_QuantumFourierTransform, post___] :=
+QFT /:
+HoldPattern @ Multiply[pre___, op_QFT, post___] :=
   Multiply[pre, Elaborate[op], post]
 
 
-QuantumFourierTransform /:
+QFT /:
 HoldPattern @ Matrix[
-  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ]
+  QFT[qq:{__?QubitQ}, opts___?OptionQ]
  ] := With[
    { mat = FourierMatrix @ Power[2, Length @ qq] },
-   If[ TrueQ[N /. {opts} /. Options[QuantumFourierTransform]],
+   If[ TrueQ[N /. {opts} /. Options[QFT]],
      N @ mat,
      mat ]
   ]
 
-QuantumFourierTransform /:
+QFT /:
 HoldPattern @ Matrix[
-  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  QFT[qq:{__?QubitQ}, opts___?OptionQ],
   ss:{__?QubitQ}
- ] := Matrix @ QuantumFourierTransform[qq, opts] /;
+ ] := Matrix @ QFT[qq, opts] /;
   FlavorNone[qq] == FlavorNone[ss]
 
-QuantumFourierTransform /:
+QFT /:
 HoldPattern @ Matrix[
-  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  QFT[qq:{__?QubitQ}, opts___?OptionQ],
   ss:{__?QubitQ}
  ] := Module[
    { mat = FourierMatrix @ Power[2, Length @ qq],
@@ -1558,20 +1560,28 @@ HoldPattern @ Matrix[
     ]
   ] /; ContainsAll[FlavorNone @ ss, FlavorNone @ qq]
 
-QuantumFourierTransform /:
+QFT /:
 HoldPattern @ Matrix[
-  QuantumFourierTransform[qq:{__?QubitQ}, opts___?OptionQ],
+  QFT[qq:{__?QubitQ}, opts___?OptionQ],
   ss:{__?QubitQ}
  ] := (
-   Message[QuantumFourierTransform::badmat,
+   Message[QFT::badmat,
      FlavorNone @ qq, FlavorNone @ ss ];
    One @ Length[ss]
   )
 
-HoldPattern @ Matrix[Dagger[op_QuantumFourierTransform], rest___] :=
+HoldPattern @ Matrix[Dagger[op_QFT], rest___] :=
   Topple @ Matrix[op, rest]
 
-(**** </QuantumFourierTransform> ****)
+
+QuantumFourierTransform::usage = "QuantumFourierTransform is obsolete now. Use QFT instead."
+
+QuantumFourierTransform[args___] := (
+  Message[Q3`Q3General::obsolete, QuantumFourierTransform, QFT];
+  QFT[args]
+ )
+
+(**** </QFT> ****)
 
 
 (**** <Projector> ****)
@@ -1902,17 +1912,54 @@ RandomState[qq : {__?QubitQ}, n_Integer] := Module[
  ]
 
 
-GraphState::usage = "GraphState[g] gives the graph state (aka cluster state) correponding to the graph g."
+(**** <Graph State> ****)
 
-GraphState[ g_Graph ] := Module[
-  { vv = VertexList[g],
+GraphState::usage = "GraphState[g] gives the graph state correponding to the graph g."
+
+GraphState::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``."
+
+GraphState[g_Graph] := GraphState[g, FlavorNone @ VertexList @ g] /;
+  AllTrue[VertexList @ g, QubitQ]
+
+GraphState[g_Graph, ss:{__?QubitQ}] := (
+  Message[GraphState::msmtch, g, FlavorNone @ ss];
+  Ket[]
+ ) /; Length[VertexList @ g] != Length[ss]
+
+GraphState[g_Graph, ss:{__?QubitQ}] := Module[
+  { dd = Power[2, Length @ ss],
+    vv = VertexList[g],
     cz = EdgeList[g],
-    hh },
-  hh = Multiply @@ Through[vv[6]];
-  cz = Multiply @@ CZ @@@ cz;
-  Garner[ cz ** (hh ** Ket[]) ]
-  /; AllTrue[vv, QubitQ]
+    in, rr },
+  rr = Thread[vv -> FlavorNone[ss]];
+  vv = vv /. rr;
+  cz = cz /. rr;
+  in = Table[1, dd] / Sqrt[dd];
+  cz = Dot @@ Matrix[CZ @@@ cz, vv];
+  ExpressionFor[cz . in, vv]
  ]
+
+
+GraphState[g_Graph] := GraphState[g, Length @ VertexList @ g] /;
+  AllTrue[VertexList @ g, IntegerQ]
+
+GraphState[g_Graph, n_Integer] := Module[
+  { dd = Power[2, n],
+    cz = EdgeList[g],
+    in },
+  in = Table[1, dd] / Sqrt[dd];
+  cz = Dot @@ theCZ[n] @@@ cz;
+  ExpressionFor[cz . in]
+ ] /; AllTrue[VertexList @ g, (#<=n)&]
+
+
+theCZ[n_Integer][i_Integer, j_Integer] := Module[
+  { pp = Tuples[{0, 1}, n] },
+  pp = 1 + Map[FromDigits[#, 2]&, Select[pp, Part[#, {i, j}] == {1, 1} &]];
+  DiagonalMatrix @ ReplacePart[Table[1, Power[2, n]], Thread[pp -> -1]]
+ ]
+
+(**** </Graph State> ****)
 
 
 Protect[Evaluate @ $symb]
