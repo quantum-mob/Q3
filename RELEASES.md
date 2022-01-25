@@ -4,6 +4,8 @@
 
 - GraphState enhanced in usage and performance.
 - Stabilizer enhanced in usage and performance.
+- QuantumFourierTransform has been renamed QFT.
+- Several tutorial documents on quantum algorithms.
 
 ## v2.3.3
 
