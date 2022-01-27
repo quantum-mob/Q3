@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.24 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-25 16:28:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.26 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-26 13:42:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -309,6 +309,9 @@ qCircuitGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
 qCircuitGate[ S_?QubitQ, opts___?OptionQ ] :=
   Gate[ Qubits @ S, opts, "Label" -> qGateLabel[S] ]
 
+qCircuitGate[ HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ ] :=
+  Map[ qCircuitGate[#, opts]&, {ss} ]
+
 qCircuitGate[ Measurement[ss:{__?fPauliOpQ}], opts___?OptionQ ] :=
   Map[ qCircuitGate[Measurement[#], opts]&, ss ]
 
@@ -354,10 +357,18 @@ qCircuitGate[
 qCircuitGate[
   ControlledU[
     cc:{__?QubitQ},
-    op:(Phase|Rotation|EulerRotation)[j__, optsA___?OptionQ],
-    optsB___?OptionQ ],
-  optsC___?OptionQ ] :=
-  Gate[ cc, Qubits @ op, optsA, optsB, optsC, "Label" -> qGateLabel[op] ]
+    op:(Phase|Rotation|EulerRotation)[j__, opts___?OptionQ],
+    more___?OptionQ ],
+  rest___?OptionQ ] :=
+  Gate[ cc, Qubits @ op, opts, more, rest, "Label" -> qGateLabel[op] ]
+
+qCircuitGate[
+  ControlledU[
+    cc:{__?QubitQ},
+    HoldPattern @ Multiply[ss__?QubitQ],
+    opts___?OptionQ ],
+  more___?OptionQ ] :=
+  Sequence @@ Map[qCircuitGate[ControlledU[cc, #], opts, more]&, {ss}]
 
 qCircuitGate[
   ControlledU[ cc:{__?QubitQ}, expr_, opts___?OptionQ ],

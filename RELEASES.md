@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.3.6
+
+- An emergency fix for an issue affecting KetPurge, KetUpdate, Observation, etc.
+
 ## v2.3.4
 
 - GraphState enhanced in usage and performance.
