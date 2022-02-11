@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.3.7
+
+- A bug fix concerning Matrix[Dyad[...], ...].
+- Several new tutorial documents on basic quantum computation.
+
 ## v2.3.6
 
 - An emergency fix for an issue affecting KetPurge, KetUpdate, Observation, etc.

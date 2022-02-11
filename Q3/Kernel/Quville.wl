@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.26 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-26 13:42:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.27 $"][[2]], " (",
+  StringSplit["$Date: 2022-01-29 13:58:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -306,8 +306,12 @@ qCircuitGate[gg_List, opts___?OptionQ] :=
 
 qCircuitGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
   
+
 qCircuitGate[ S_?QubitQ, opts___?OptionQ ] :=
   Gate[ Qubits @ S, opts, "Label" -> qGateLabel[S] ]
+
+qCircuitGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
+  Gate[ Qubits @ S, opts, "Label" -> Superscript[qGateLabel[S],"\[Dagger]"] ]
 
 qCircuitGate[ HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ ] :=
   Map[ qCircuitGate[#, opts]&, {ss} ]

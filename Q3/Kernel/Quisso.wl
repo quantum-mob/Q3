@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.30 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-25 16:25:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.31 $"][[2]], " (",
+  StringSplit["$Date: 2022-02-01 10:24:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1179,7 +1179,7 @@ QuissoSWAP::usage = "QuissoSWAP is obsolete now. Use Elaborate[SWAP[\[Ellipsis]]
 QuissoSWAP[args___] := (
   Message[
     Q3`Q3General::obsolete,
-    "SWAP",
+    "QuissoSWAP",
     "Elaborate[SWAP[\[Ellipsis]]]"
    ];
   Elaborate @ SWAP[args]

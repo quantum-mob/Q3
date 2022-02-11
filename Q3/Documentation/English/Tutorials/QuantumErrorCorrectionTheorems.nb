@@ -1,0 +1,1007 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     38033,        997]
+NotebookOptionsPosition[     30251,        856]
+NotebookOutlinePosition[     34123,        934]
+CellTagsIndexPosition[     34080,        931]
+WindowTitle->Quantum Error-Correction Theorems
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "9d110998-a85a-4444-9131-fb84872453a9"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "3a31bade-a526-41a7-91ba-e1ff22e90a1d"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "623b53ce-d85f-4aa8-8b8e-a2f71defca9e"]
+        }],ExpressionUUID->"d329da98-3e2f-4f6e-a82d-0c0864aa67e7"],
+        StripOnInput->
+         False], {"\<\"Q3/tutorial/QuantumErrorCorrectionTheorems\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuantumErrorCorrectionTheorems"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumErrorCorrectionTheorems.html"], StandardForm]], "Input", 
+              TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$246443], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/QuantumErrorCorrectionTheorems" <> ".html"], 
+           None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "bbd46c50-1ff3-41a3-a0ed-b35bbc231182"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "23078432-3b1c-4767-914e-e25ceb341b9b"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"ccd2843a-346f-4e90-abb0-45d252ab8c8f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Quantum Error-Correction Theorems", "TechNoteTitle",ExpressionUUID->
+      "84316246-eedb-4ffd-ae58-722705bbc11f"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"0177a80d-9396-4ada-8c83-b987cd1e04f3"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "b57ef44b-191a-4f2d-9140-e20a882bb461"]
+    }],ExpressionUUID->"378ae2f4-f853-4c8a-90e4-ad9bf3ad0826"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "d27217ad-d6f0-40e3-944a-6a3894e5cce9"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"957925ec-29bf-4e80-a0c4-c1e7691e7960"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Quantum Error-Correction Conditions"], 
+      "paclet:Q3/tutorial/QuantumErrorCorrectionTheorems#1509640923", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Discretization of Errors"], 
+      "paclet:Q3/tutorial/QuantumErrorCorrectionTheorems#209950438", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]}
+  }]], "TechNoteJumpBox",ExpressionUUID->"8a6c3215-a631-4d84-8b57-\
+823f3a1f13a1"],
+
+Cell[TextData[{
+ "See also Section 6.2 of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (Springer, 2022)"]], 
+    "https://github.com/quantum-mob/QuantumWorkbook"},
+   "WebLink",
+   BaseStyle->{"TechNoteText"}]],ExpressionUUID->
+  "c4466a09-2df6-4c5b-af4c-7ea24a140d4b"],
+ "."
+}], "TechNoteText",
+ TextAlignment->"Right",
+ CellID->1308734266,ExpressionUUID->"7dd19647-4b44-4a21-a172-a91853b14ebc"],
+
+Cell["\<\
+The characteristic property of quantum information that distinguishes it from \
+classical information is that it can take an arbitrary continuous \
+superposition of logical states. Naturally, errors in quantum information \
+form a continuum given that any slightest deviation in the superposition \
+results in an error. At first glance, it may cast immense difficulties even \
+in detecting errors. Ironically, \[OpenCurlyDoubleQuote]continuous\
+\[CloseCurlyDoubleQuote] quantum information bears a striking difference from \
+the information stored in classical analog systems, and errors in the quantum \
+information can be \[OpenCurlyDoubleQuote]discretized\[CloseCurlyDoubleQuote] \
+so to speak. In this section, we will show this in two stages. We first \
+discuss the conditions for the errors to be corrected. We then proceed to \
+show that correcting merely a discrete set of errors suffices to correct the \
+continuum of errors in quantum information. These form a basic theory of \
+quantum error-correction codes.\
+\>", "TechNoteText",
+ CellID->205711485,ExpressionUUID->"fc0d3cb5-c0d0-411c-9e77-e95519c49f24"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Error-Correction Conditions", "TechNoteSection",
+ CellID->1509640923,ExpressionUUID->"eb98f5d7-c148-4691-a264-6a75a168808a"],
+
+Cell[TextData[{
+ "We first present a set of simple yet general tests that allow us to \
+determine whether a quantum code protects against a certain class of quantum \
+noise. Consider a quantum code associated with code space ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "9feb5dcb-3671-4ad6-9009-bc6672fab6d3"],
+ ". We describe the quantum noise causing errors with a quantum operation ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalE]", TraditionalForm]],ExpressionUUID->
+  "c94f6267-b118-43b1-902e-31a12044bcaa"],
+ " specified by Kraus elements ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["E", "\[Mu]"], "}"}], TraditionalForm]],ExpressionUUID->
+  "d201a45b-d325-4276-824f-52493ef822a5"],
+ ". Then the ",
+ StyleBox["quantum error-correction conditions",
+  FontSlant->"Italic"],
+ " can be written in a compact way as follows: there exists an \
+error-correction or recovery operation ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalR]", TraditionalForm]],ExpressionUUID->
+  "a96b4e67-df1b-4399-8c09-02312ffb4ce7"],
+ " that corrects ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalE]", TraditionalForm]],ExpressionUUID->
+  "d34cc051-bfe0-4cf2-a12f-9fce727bebdd"],
+ " on ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "dcedeb51-03c7-4c12-a23a-ae2975260aaf"],
+ " if and only if every pair of the Kraus elements satisfies"
+}], "TechNoteText",
+ CellID->15703556,ExpressionUUID->"01c19185-dca4-4697-814f-11983dded100"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"P", " ", 
+     SubsuperscriptBox["E", "\[Mu]", "\[Dagger]"], 
+     SubscriptBox["E", "\[Nu]"], "P"}], "=", 
+    RowBox[{
+     SubscriptBox["A", 
+      RowBox[{"\[Mu]", " ", "\[Nu]"}]], "P"}]}], TraditionalForm]],
+  ExpressionUUID->"63a500ba-6484-4fb1-b941-660e532f1a45"]
+}], "TechNoteText",
+ CellID->1936660758,ExpressionUUID->"608f20ff-c30d-4998-b056-dfa82f30f69d"],
+
+Cell[TextData[{
+ "for a certain Hermitian matrix ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["A", "\[Mu]\[Nu]"], TraditionalForm]],ExpressionUUID->
+  "ac49d085-bd48-4ffe-9d47-cd4fa63f89e1"],
+ " and all \[Mu] and \[Nu], where ",
+ Cell[BoxData[
+  FormBox["P", TraditionalForm]],ExpressionUUID->
+  "5a85675f-5f3d-4f33-b6a7-b0dde0dba7c5"],
+ " is the projector onto code space ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "76db9a8a-2208-4877-808b-7e9653a97c7c"],
+ "."
+}], "TechNoteText",
+ CellID->47722127,ExpressionUUID->"43731f7c-79b7-4599-9d88-656d6f6f1e8b"],
+
+Cell[TextData[{
+ "\tOne can understand the meaning of the above condition by considering \
+specific code words ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     OverscriptBox["x", "_"]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "7f2df878-f86b-4516-b1a0-88afa3900aac"],
+ "  encoding ",
+ Cell[BoxData[
+  FormBox["k", TraditionalForm]],ExpressionUUID->
+  "905100e3-396a-4765-a32e-177a80b9aa38"],
+ "-qubit computational basis states ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"x"},
+     "Ket"], "\[Congruent]", 
+    TemplateBox[{
+      RowBox[{
+        SubscriptBox["x", "1"], 
+        SubscriptBox["x", "2"], "\[CenterEllipsis]", " ", 
+        SubscriptBox["x", "k"]}]},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "b854be86-bb22-4a59-85fb-c6d7a955f242"],
+ " in ",
+ Cell[BoxData[
+  FormBox["n", TraditionalForm]],ExpressionUUID->
+  "6fdcb355-fa36-409a-b59b-ce9826a1cdfc"],
+ " qubits. For any two code words ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     OverscriptBox["x", "_"]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "33c69610-d056-4a14-b6f3-a8bdbdf078b5"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     OverscriptBox["y", "_"]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "fb2b3be7-2d47-4df1-a73d-c9be0c7b296e"],
+ ", the above condition implies that"
+}], "TechNoteText",
+ CellID->1054388158,ExpressionUUID->"b4ada75c-05c6-4992-b0bb-a60856e423c4"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     TemplateBox[{
+       OverscriptBox["x", "_"]},
+      "Bra"], 
+     SubsuperscriptBox["E", "\[Mu]", "\[Dagger]"], 
+     SubscriptBox["E", "\[Nu]"], 
+     TemplateBox[{
+       OverscriptBox["y", "_"]},
+      "Ket"]}], "=", 
+    SubscriptBox["\[Delta]", 
+     RowBox[{"x", " ", "y"}]]}], TraditionalForm]],ExpressionUUID->
+  "b016412b-f112-42c5-aeff-68ce950495e2"]
+}], "TechNoteText",
+ CellID->66716462,ExpressionUUID->"ac515cb6-66d3-4a61-86da-052b15eda108"],
+
+Cell[TextData[{
+ "for every \[Mu] and \[Nu]. This means that corrupted code words ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["E", "\[Mu]"], 
+    TemplateBox[{
+      OverscriptBox["x", "_"]},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "fac7b03d-b651-49fe-88a8-c382c6027860"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["E", "\[Nu]"], 
+    TemplateBox[{
+      OverscriptBox["y", "_"]},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "55c9305b-a8f7-4d9d-8516-0c60714c6ab5"],
+ " must remain orthogonal to each other. This is natural since only \
+orthogonal states can be discriminated with certainty in quantum mechanics. \
+The above condition also implies that the expectation value of given error \
+operators,"
+}], "TechNoteText",
+ CellID->317113100,ExpressionUUID->"38992549-5db9-4349-a7d1-9e9e445d48df"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     TemplateBox[{
+       OverscriptBox["x", "_"]},
+      "Bra"], 
+     SubsuperscriptBox["E", "\[Mu]", "\[Dagger]"], 
+     SubscriptBox["E", "\[Nu]"], 
+     TemplateBox[{
+       OverscriptBox["x", "_"]},
+      "Ket"]}], "=", 
+    SubscriptBox["A", 
+     RowBox[{"\[Mu]", " ", "\[Nu]"}]]}], TraditionalForm]],ExpressionUUID->
+  "bd915e25-dd49-42b2-ac0d-60b97551d151"],
+ " ,"
+}], "TechNoteText",
+ CellID->1812943493,ExpressionUUID->"8e3953eb-25de-4380-8907-e08cb91a6f09"],
+
+Cell[TextData[{
+ "must be all the same regardless of code words ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     OverscriptBox["x", "_"]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "1e27e04e-3d39-4823-ae92-9cec92f552b7"],
+ ". This means that no error can reveal any information in encoded states."
+}], "TechNoteText",
+ CellID->1643303215,ExpressionUUID->"c4764d93-115e-4a7e-94b0-b06b56467451"],
+
+Cell[TextData[{
+ "\tA proof is referred to Section 6.2 of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (Springer, 2022)"]], 
+    "https://github.com/quantum-mob/QuantumWorkbook"},
+   "WebLink",
+   BaseStyle->{"TechNoteText"}]],ExpressionUUID->
+  "80301580-0ed9-4ae6-a25e-ecddfc69ba2a"],
+ "."
+}], "TechNoteText",
+ CellID->1525705079,ExpressionUUID->"1787609a-b006-49ce-a6ab-d605766ed4f2"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Discretization of Errors", "TechNoteSection",
+ CellID->209950438,ExpressionUUID->"fd291e0f-6b96-44c5-a1de-9429064c2ea6"],
+
+Cell[TextData[{
+ "Once a quantum code is proven to protect against a particular type of \
+quantum noise in accordance with the quantum error-correction conditions, it \
+is robust against a surprisingly wide class of types of quantum noise. In \
+fact, it turns out that if a quantum noise operation ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalE]", TraditionalForm]],ExpressionUUID->
+  "3227e52b-8285-47cf-9ecb-61dc79b78216"],
+ " with error operators ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["E", "\[Mu]"], "}"}], TraditionalForm]],ExpressionUUID->
+  "2e56b99c-1992-42b3-a9d8-15a3b2f53982"],
+ " can be corrected by a quantum code ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "da26abf3-f684-46a7-a956-636f6ce50e68"],
+ ", then the code also protects against any quantum noise ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "f4097556-3fbb-430e-a6a1-8d74e4cab72b"],
+ " with error operators ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["F", "\[Nu]"], "}"}], TraditionalForm]],ExpressionUUID->
+  "81aff6b8-0626-4cd1-8945-d4ce27a56359"],
+ " that are linear superpositions of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["E", "\[Mu]"], "}"}], TraditionalForm]],ExpressionUUID->
+  "43c07e93-12ba-43a0-b870-04fe098a3e8b"],
+ ","
+}], "TechNoteText",
+ CellID->321379445,ExpressionUUID->"0357535f-1449-47a5-8b3a-01b4116b9ee2"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["F", "\[Nu]"], "=", 
+    RowBox[{
+     SubscriptBox["\[Sum]", "\[Mu]"], 
+     RowBox[{
+      SubscriptBox["E", "\[Mu]"], " ", 
+      SubscriptBox["M", 
+       RowBox[{"\[Mu]", " ", "\[Nu]"}]]}]}]}], TraditionalForm]],
+  ExpressionUUID->"de0213ca-53fd-49b9-803b-d635680680b6"],
+ " ,"
+}], "TechNoteText",
+ CellID->502959910,ExpressionUUID->"967336ba-f990-433a-b7be-a934db0f88ad"],
+
+Cell[TextData[{
+ "where ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["M", 
+    RowBox[{"\[Mu]", " ", "\[Nu]"}]], TraditionalForm]],ExpressionUUID->
+  "56365a33-dd3f-4095-9914-efbedfd89f81"],
+ " is a matrix of complex numbers."
+}], "TechNoteText",
+ CellID->751572778,ExpressionUUID->"4971e232-d504-4f8f-9fd7-50d5530d3283"],
+
+Cell[TextData[{
+ "\tThe proof is simple. Given that the quantum noise ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalE]", TraditionalForm]],ExpressionUUID->
+  "79a6ad29-b1be-483c-bf5f-b66b62763259"],
+ " is correctable on code space ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "4bd0fc44-ec90-45c2-858d-83957d1ffdfe"],
+ ", it must satisfy the quantum error-correction conditions"
+}], "TechNoteText",
+ CellID->184868192,ExpressionUUID->"3895c024-d5ef-4bdc-910f-fc5cf8fc1e49"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"P", " ", 
+     SubsuperscriptBox["E", "\[Mu]", "\[Dagger]"], 
+     SubscriptBox["E", "\[Nu]"], "P"}], "=", 
+    RowBox[{
+     SubscriptBox["A", 
+      RowBox[{"\[Mu]", " ", "\[Nu]"}]], "P"}]}], TraditionalForm]],
+  ExpressionUUID->"cb0e13bb-6d59-44a6-9b16-80d4ffa7f1e9"]
+}], "TechNoteText",
+ CellID->1818349382,ExpressionUUID->"05a075c5-ce34-4624-8d19-5901fe64ae27"],
+
+Cell[TextData[{
+ "as discussed in the above section. Multiply equation with matrices ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["M", "\[Dagger]"], TraditionalForm]],ExpressionUUID->
+  "dd31c29d-0ffb-45f2-9ed7-786c2a2260dc"],
+ " and ",
+ Cell[BoxData[
+  FormBox["M", TraditionalForm]],ExpressionUUID->
+  "1553d4fa-30d5-433c-be9b-22d03d683528"],
+ ","
+}], "TechNoteText",
+ CellID->158282817,ExpressionUUID->"41c303ca-9521-4613-835d-2a4741c55542"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["\[Sum]", 
+      RowBox[{
+       RowBox[{"\[Mu]", "'"}], 
+       RowBox[{"\[Nu]", "'"}]}]], 
+     RowBox[{"P", " ", 
+      SubsuperscriptBox["M", 
+       RowBox[{"\[Mu]", " ", 
+        RowBox[{"\[Mu]", "'"}]}], "\[Dagger]"], 
+      SubscriptBox["E", 
+       RowBox[{"\[Mu]", "'"}]], 
+      SubscriptBox["E", 
+       RowBox[{"\[Nu]", "'"}]], 
+      SubscriptBox["M", 
+       RowBox[{
+        RowBox[{"\[Nu]", "'"}], "\[Nu]"}]], "P"}]}], "=", 
+    RowBox[{
+     SubscriptBox["\[Sum]", 
+      RowBox[{
+       RowBox[{"\[Mu]", "'"}], 
+       RowBox[{"\[Nu]", "'"}]}]], 
+     RowBox[{
+      SubsuperscriptBox["M", 
+       RowBox[{"\[Mu]", " ", 
+        RowBox[{"\[Mu]", "'"}]}], "\[Dagger]"], 
+      SubscriptBox["A", 
+       RowBox[{
+        RowBox[{"\[Mu]", "'"}], 
+        RowBox[{"\[Nu]", "'"}]}]], 
+      SubscriptBox["M", 
+       RowBox[{
+        RowBox[{"\[Nu]", "'"}], "\[Nu]"}]], "P"}]}]}], TraditionalForm]],
+  ExpressionUUID->"927146f3-421a-47f9-a7eb-779e8fad3fb6"],
+ " ."
+}], "TechNoteText",
+ CellID->1674550333,ExpressionUUID->"3c49de28-85cf-494a-9213-5308b83acbd0"],
+
+Cell["This leads to", "TechNoteText",
+ CellID->1394252796,ExpressionUUID->"9455f25c-78d9-4bf9-bb43-43cd4a6d962b"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"P", " ", 
+     SubsuperscriptBox["F", "\[Mu]", "\[Dagger]"], 
+     SubscriptBox["F", "\[Nu]"], "P"}], "=", 
+    RowBox[{
+     SubscriptBox[
+      RowBox[{"(", 
+       RowBox[{
+        SuperscriptBox["M", "\[Dagger]"], "A", " ", "M"}], ")"}], 
+      RowBox[{"\[Mu]", " ", "\[Nu]"}]], "P"}]}], TraditionalForm]],
+  ExpressionUUID->"9bf89de5-ccae-423b-84a0-5f36161906a9"],
+ " ,"
+}], "TechNoteText",
+ CellID->2012669955,ExpressionUUID->"70e8002f-58fe-4364-b10e-4c589c4f9bf4"],
+
+Cell[TextData[{
+ "which is formally the same as the quantum error-correction conditions. \
+Therefore, the quantum noise ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "260ae1a9-30da-4016-9358-10d29fc056bf"],
+ " must be correctable on ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "b07ed775-40e6-4e68-ad28-bc520a6be7b1"],
+ " as well."
+}], "TechNoteText",
+ CellID->1929009788,ExpressionUUID->"e2c7a46a-037a-44a8-b66a-89c04fc24b0a"],
+
+Cell[TextData[{
+ "\tAlthough quite simple to prove, the implication of the above statement is \
+huge. Consider a class of errors on single qubits. Suppose that it is \
+described by a quantum operation ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalE]", TraditionalForm]],ExpressionUUID->
+  "e3587b93-7469-4431-ac7f-d19c4d93a165"],
+ " specified by Kraus elements ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["E", 
+     RowBox[{"j", " ", "\[Mu]"}]], "}"}], TraditionalForm]],ExpressionUUID->
+  "771d59f3-6d54-4662-980b-0329096ae266"],
+ ", where the index ",
+ Cell[BoxData[
+  FormBox["j", TraditionalForm]],ExpressionUUID->
+  "bc680629-56d2-4fc4-8061-886619555b00"],
+ " indicates the qubit subject to the error and \[Mu] denotes different error \
+processes. Since ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["E", 
+    RowBox[{"j", " ", "\[Mu]"}]], TraditionalForm]],ExpressionUUID->
+  "35861f51-2a57-49ab-9df2-ad3564402d2b"],
+ " are operators on the single qubit ",
+ Cell[BoxData[
+  FormBox["j", TraditionalForm]],ExpressionUUID->
+  "b7e0b0be-0240-426f-adf0-ddf2bfbfa454"],
+ ", they can be expanded in terms of Pauli operators ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["S", "j", "0"], TraditionalForm]],ExpressionUUID->
+  "35df606b-a514-41fd-a956-39b56f29f30e"],
+ ", ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["S", "j", "x"], TraditionalForm]],ExpressionUUID->
+  "5795cd2e-3173-4fd2-b86a-f9b96e60f1d9"],
+ ", ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["S", "j", "y"], TraditionalForm]],ExpressionUUID->
+  "fb55d7d4-90fe-49e3-8c88-45746262a6fe"],
+ ", and ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["S", "j", "z"], TraditionalForm]],ExpressionUUID->
+  "55a5f71f-ca8c-4210-a634-fecaf45ddaf2"],
+ ". In order to check if a given quantum error-correction code protects \
+against arbitrary single-qubit errors, one has only to inspect the condition"
+}], "TechNoteText",
+ CellID->306888157,ExpressionUUID->"8668e4f6-243f-4998-85b9-9c8ce1517f2a"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"P", " ", 
+     SubsuperscriptBox["S", "j", "\[Mu]"], 
+     SubsuperscriptBox["E", "j", "\[Nu]"], "P"}], "=", 
+    RowBox[{
+     SubscriptBox["A", 
+      RowBox[{"\[Mu]", " ", "\[Nu]"}]], "P"}]}], TraditionalForm]],
+  ExpressionUUID->"278aa828-d25b-4018-81b9-5246284af020"]
+}], "TechNoteText",
+ CellID->1761018252,ExpressionUUID->"22b134f3-054f-4ab3-9a72-b97c69223532"],
+
+Cell[TextData[{
+ "for all ",
+ Cell[BoxData[
+  FormBox["j", TraditionalForm]],ExpressionUUID->
+  "fc0992d4-5e5c-41f1-a7d7-dc09785e6f40"],
+ " and a Hermitian matrix ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "e7860365-49c5-4d9a-b6ea-8da48652da51"],
+ ". In other words, when one constructs a quantum error-correction code, it \
+is sufficient to check a finite (and hence discrete) set of conditions to \
+ensure that the code protects against arbitrary single-qubit errors."
+}], "TechNoteText",
+ CellID->814138410,ExpressionUUID->"9a140362-bba6-4503-a795-4d1abd4b8261"]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/guide/QuantumComputationAndQuantumInformation"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "7dce7e49-b8aa-48a0-963a-94dfc3a4ce3b"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"eba460cc-208c-4759-8bd5-\
+9a1f73143943"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Stabilizer Formalism",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/StabilizerFormalism"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "bdefb2fb-02e2-471d-969f-ce8af59e0220"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Stabilizer Codes",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/StabilizerCodes"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "0f756c0d-e61e-4654-897b-fff4a593ebd2"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Error-Correction Codes",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumErrorCorrectionCodes"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "80b29216-0690-4111-90c2-80bf5f4c80a1"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "656ca971-14f3-4803-a853-6df3ca250d6d"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"b128c637-61ca-47af-96ce-\
+bf0d8fc3bca5"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang, Quantum Computation and \
+Quantum Information (Cambridge University Press, New York, 2011)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "872b2a8c-4230-4307-9be7-4f12b686f274"]}]],ExpressionUUID->
+         "c8cab32a-6818-462b-b080-7b57d3a5925b"],
+        StyleBox[".",
+         FontSlant->"Plain"]
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "7bf0c103-e6b8-4510-812d-1357361cf3ae"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi, A Quantum Computation Workbook (Springer, \
+2021)"}]]]], "https://github.com/quantum-mob/QuantumWorkbook"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "13c6f3c1-0dfe-4215-b891-6b8ae355998e"]}]],ExpressionUUID->
+         "4ddd8946-7ad2-4fcb-b187-76422de8d854"],
+        "."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "d9795259-32fa-485f-aff9-8bc15d6be297"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"f8ff0bfd-b9c7-4ca5-acda-\
+a97aa7faf7dc"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"fe29e6f1-15c7-4258-9cd6-c5cf869e86ed"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quantum Error-Correction Theorems",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2021", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 2, 11, 20, 7, 9.780899}", 
+    "history" -> {"13", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"quantum error-correction codes"}, "specialkeywords" -> {},
+     "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "See also Section 6.2 of the Quantum Workbook (Springer, 2022). The \
+characteristic property of quantum information that distinguishes it from \
+classical information is that it can take an arbitrary continuous \
+superposition of logical states. Naturally, errors in quantum information \
+form a continuum given that any slightest deviation in the superposition \
+results in an error. At first glance, it may cast immense difficulties even \
+in detecting errors. Ironically, 'continuous' quantum information bears a \
+striking difference from the information stored in classical analog systems, \
+and errors in the quantum information can be 'discretized' so to speak. In \
+this section, we will show this in two stages. We first discuss the \
+conditions for the errors to be corrected. We then proceed to show that \
+correcting merely a discrete set of errors suffices to correct the continuum \
+of errors in quantum information. These form a basic theory of quantum \
+error-correction codes. We first present a set of simple yet general tests \
+that allow us to determine whether a quantum code protects against a certain \
+class of quantum noise. Consider a quantum code associated with code space \
+\\[ScriptCapitalV]. We describe the quantum noise causing errors with a \
+quantum operation \\[ScriptCapitalE] specified by Kraus elements {E_\\[Mu]}. \
+Then the quantum error-correction conditions can be written in a compact way \
+as follows: there exists an error-correction or recovery operation \
+\\[ScriptCapitalR] that corrects \\[ScriptCapitalE] on \\[ScriptCapitalV] if \
+and only if every pair of the Kraus elements satisfies", "synonyms" -> {}, 
+    "tabletags" -> DocumentationBuild`Make`Private`tabletaggingrules$246406, 
+    "title" -> "Quantum Error-Correction Theorems", "titlemodifier" -> "", 
+    "windowtitle" -> "Quantum Error-Correction Theorems", "type" -> 
+    "Tech Note", "uri" -> "Q3/tutorial/QuantumErrorCorrectionTheorems", 
+    "WorkflowDockedCell" -> ""}, "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (December 2, 2021)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (December 2, 2021)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"477a376e-e709-4b35-ab79-65c4a1ee5eb9"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[605, 21, 3551, 83, 70, "AnchorBarGrid",ExpressionUUID->"ccd2843a-346f-4e90-abb0-45d252ab8c8f",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4181, 108, 1408, 38, 70, "ObjectNameGrid",ExpressionUUID->"957925ec-29bf-4e80-a0c4-c1e7691e7960"],
+Cell[5592, 148, 2307, 49, 70, "TechNoteJumpBox",ExpressionUUID->"8a6c3215-a631-4d84-8b57-823f3a1f13a1"],
+Cell[7902, 199, 431, 13, 70, "TechNoteText",ExpressionUUID->"7dd19647-4b44-4a21-a172-a91853b14ebc",
+ CellID->1308734266],
+Cell[8336, 214, 1127, 16, 70, "TechNoteText",ExpressionUUID->"fc0d3cb5-c0d0-411c-9e77-e95519c49f24",
+ CellID->205711485]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9500, 235, 138, 1, 70, "TechNoteSection",ExpressionUUID->"eb98f5d7-c148-4691-a264-6a75a168808a",
+ CellID->1509640923],
+Cell[9641, 238, 1499, 35, 70, "TechNoteText",ExpressionUUID->"01c19185-dca4-4697-814f-11983dded100",
+ CellID->15703556],
+Cell[11143, 275, 440, 13, 70, "TechNoteText",ExpressionUUID->"608f20ff-c30d-4998-b056-dfa82f30f69d",
+ CellID->1936660758],
+Cell[11586, 290, 598, 16, 70, "TechNoteText",ExpressionUUID->"43731f7c-79b7-4599-9d88-656d6f6f1e8b",
+ CellID->47722127],
+Cell[12187, 308, 1410, 46, 70, "TechNoteText",ExpressionUUID->"b4ada75c-05c6-4992-b0bb-a60856e423c4",
+ CellID->1054388158],
+Cell[13600, 356, 534, 18, 70, "TechNoteText",ExpressionUUID->"ac515cb6-66d3-4a61-86da-052b15eda108",
+ CellID->66716462],
+Cell[14137, 376, 854, 24, 70, "TechNoteText",ExpressionUUID->"38992549-5db9-4349-a7d1-9e9e445d48df",
+ CellID->317113100],
+Cell[14994, 402, 544, 19, 70, "TechNoteText",ExpressionUUID->"8e3953eb-25de-4380-8907-e08cb91a6f09",
+ CellID->1812943493],
+Cell[15541, 423, 402, 10, 70, "TechNoteText",ExpressionUUID->"c4764d93-115e-4a7e-94b0-b06b56467451",
+ CellID->1643303215],
+Cell[15946, 435, 422, 12, 70, "TechNoteText",ExpressionUUID->"1787609a-b006-49ce-a6ab-d605766ed4f2",
+ CellID->1525705079]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16405, 452, 126, 1, 70, "TechNoteSection",ExpressionUUID->"fd291e0f-6b96-44c5-a1de-9429064c2ea6",
+ CellID->209950438],
+Cell[16534, 455, 1448, 36, 70, "TechNoteText",ExpressionUUID->"0357535f-1449-47a5-8b3a-01b4116b9ee2",
+ CellID->321379445],
+Cell[17985, 493, 455, 15, 70, "TechNoteText",ExpressionUUID->"967336ba-f990-433a-b7be-a934db0f88ad",
+ CellID->502959910],
+Cell[18443, 510, 321, 9, 70, "TechNoteText",ExpressionUUID->"4971e232-d504-4f8f-9fd7-50d5530d3283",
+ CellID->751572778],
+Cell[18767, 521, 511, 11, 70, "TechNoteText",ExpressionUUID->"3895c024-d5ef-4bdc-910f-fc5cf8fc1e49",
+ CellID->184868192],
+Cell[19281, 534, 440, 13, 70, "TechNoteText",ExpressionUUID->"05a075c5-ce34-4624-8d19-5901fe64ae27",
+ CellID->1818349382],
+Cell[19724, 549, 446, 12, 70, "TechNoteText",ExpressionUUID->"41c303ca-9521-4613-835d-2a4741c55542",
+ CellID->158282817],
+Cell[20173, 563, 1166, 40, 70, "TechNoteText",ExpressionUUID->"3c49de28-85cf-494a-9213-5308b83acbd0",
+ CellID->1674550333],
+Cell[21342, 605, 113, 1, 70, "TechNoteText",ExpressionUUID->"9455f25c-78d9-4bf9-bb43-43cd4a6d962b",
+ CellID->1394252796],
+Cell[21458, 608, 545, 17, 70, "TechNoteText",ExpressionUUID->"70e8002f-58fe-4364-b10e-4c589c4f9bf4",
+ CellID->2012669955],
+Cell[22006, 627, 508, 12, 70, "TechNoteText",ExpressionUUID->"e2c7a46a-037a-44a8-b66a-89c04fc24b0a",
+ CellID->1929009788],
+Cell[22517, 641, 1978, 52, 70, "TechNoteText",ExpressionUUID->"8668e4f6-243f-4998-85b9-9c8ce1517f2a",
+ CellID->306888157],
+Cell[24498, 695, 442, 13, 70, "TechNoteText",ExpressionUUID->"22b134f3-054f-4ab3-9a72-b97c69223532",
+ CellID->1761018252],
+Cell[24943, 710, 592, 13, 70, "TechNoteText",ExpressionUUID->"9a140362-bba6-4503-a795-4d1abd4b8261",
+ CellID->814138410]
+}, Open  ]],
+Cell[25550, 726, 755, 19, 70, "TutorialMoreAboutSection",ExpressionUUID->"eba460cc-208c-4759-8bd5-9a1f73143943"],
+Cell[26308, 747, 1711, 44, 70, "RelatedTutorialsSection",ExpressionUUID->"b128c637-61ca-47af-96ce-bf0d8fc3bca5"],
+Cell[28022, 793, 2144, 59, 70, "TutorialRelatedLinksSection",ExpressionUUID->"f8ff0bfd-b9c7-4ca5-acda-a97aa7faf7dc"],
+Cell[30169, 854, 78, 0, 70, "FooterCell",ExpressionUUID->"fe29e6f1-15c7-4258-9cd6-c5cf869e86ed"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

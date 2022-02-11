@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.198 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-23 00:05:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.204 $"][[2]], " (",
+  StringSplit["$Date: 2022-02-11 19:12:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1463,7 +1463,7 @@ HoldPattern @ Matrix[ Dagger[a_?NonCommutativeQ] ] := Topple @ Matrix[a]
 (* Arrays *)
 
 HoldPattern @
-  Matrix[ expr:(_List|_Association), {} ] := Module[
+  Matrix[expr:(_List|_Association), {}] := Module[
     { dim, mat },
     dim = Power[2, FirstCase[expr, op_Pauli :> Length[op], 0, Infinity]];
     mat = Zero @ {dim, dim};
@@ -1475,7 +1475,7 @@ HoldPattern @
    ] /; And[Not @ FreeQ[expr, _Pauli], MemberQ[expr, 0]]
 
 HoldPattern @
-  Matrix[ expr:(_List|_Association), qq:{___?SpeciesQ} ] := With[
+  Matrix[expr:(_List|_Association), qq:{___?SpeciesQ}] := With[
     { ss = FlavorNone @ qq },
     Map[ Matrix[#, ss]&, expr ]
    ]
@@ -1512,7 +1512,9 @@ Matrix[ Bra[v_Association], qq:{__?SpeciesQ} ] :=
 
 Matrix[ op:Pauli[__], {___} ] := TheMatrix[op]
 
+
 (* For Fermions *)
+
 Matrix[op_?AnyFermionQ, qq:{__?SpeciesQ}] := Module[
   { mm = TheMatrix @ op,
     sp = FlavorMute @ Peel @ op,
@@ -1530,7 +1532,9 @@ fermionOne[q_?FermionQ] := ThePauli[3]
 
 fermionOne[q_] := One @ Dimension @ q
 
+
 (* For Species *)
+
 Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := Module[
   { mm = TheMatrix @ op,
     sp = FlavorMute @ Peel @ op,
@@ -1546,30 +1550,53 @@ Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := (
   op Matrix[1, qq]
  )
 
-(* For MultiplyExp *)
-HoldPattern @ Matrix[ MultiplyExp[op_], qq:{__?SpeciesQ} ] :=
-  MatrixExp @ Matrix @ op
 
 (* For Dyad[...] *)
-Matrix[ op:Dyad[_, _, _List], qq:{__?SpeciesQ} ] :=
-  Matrix[Elaborate @ op, FlavorNone @ qq]
+
+Matrix::dyad = "Some elements in `` are not included in ``."
+
+Matrix[op_Dyad, ss:{__?SpeciesQ}] := Matrix[op, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+Matrix[op_Dyad, ss:{__?SpeciesQ}] := Module[
+  { rr = One /@ Dimension[ss] },
+  rr = Association @ Join[Thread[ss -> rr], splitDyad[op]];
+  CircleTimes @@ rr
+ ] /; ContainsAll[ss, Last @ op]
+
+Matrix[op_Dyad, ss:{__?SpeciesQ}] := (
+  Message[Matrix::dyad, Last @ op, ss];
+  Apply[CircleTimes, One /@ Dimension[ss]]
+ )
+
+splitDyad[Dyad[a_Association, b_Association, ss:{__?SpeciesQ}]] := 
+  Module[
+    { aa = Lookup[a, ss],
+      bb = Lookup[b, ss] },
+    Thread[ss -> Thread @ theDyad[aa, bb, ss]]
+   ]
+
+theDyad[a_, b_, s_?SpeciesQ] := 
+  Dyad[Matrix[Ket[s -> a], s], Matrix[Ket[s -> b], s]]
+
 
 (* For Dyad-like (but not Dyad) expression *)
-HoldPattern @ Matrix[
-  Multiply[pre___, ket_Ket, bra_Bra, post___],
+Matrix[
+  HoldPattern @ Multiply[pre___, ket_Ket, bra_Bra, post___],
   qq:{___?SpeciesQ}
  ] := Dyad[
    Matrix[pre ** ket, qq],
    Dagger @ Matrix[bra ** post, qq]
   ]
-(* NOTE: Dagger -- not Conjugate -- here. *)
+(* NOTE: Dagger (not Conjugate) here. *)
+
+(* For MultiplyExp *)
+HoldPattern @ Matrix[ MultiplyExp[op_], qq:{__?SpeciesQ} ] :=
+  MatrixExp @ Matrix @ op
 
 (* For Multiply[...] *)
-HoldPattern @
-  Matrix[ Multiply[ops__], qq:{___?SpeciesQ} ] := Dot @@ Map[
-    Matrix[#, qq]&,
-    {ops}
-   ]
+Matrix[HoldPattern @ Multiply[ops__], qq:{___?SpeciesQ}] :=
+  Dot @@ Map[Matrix[#, qq]&, {ops}]
 
 (**** </Matrix> ****)
 
