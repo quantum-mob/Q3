@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.3.8
+
+- Tutorial documents on the Postulates of Quantum Mechanics
+
 ## v2.3.7
 
 - A bug fix concerning Matrix[Dyad[...], ...].
