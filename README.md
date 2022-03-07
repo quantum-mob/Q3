@@ -17,7 +17,9 @@ Since v1.5.1, Q3 provides a *fully automatic installation and update*. Please ta
 
 Once Q3 is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get detailed technical information about the application. It will give you users' guides and tutorials.
 
-For more advanced applications, take a look at the [QuantumWorkbook](https://github.com/quantum-mob/QuantumWorkbook) repository, providing a compilation of the Mathematica(R) Notebook files that have been used to generate the demonstrations in ["A Quantum Computation Workbook" (Springer, March 2022)](https://link.springer.com/book/9783030912130).
+For more advanced applications, take a look at textbook ["A Quantum Computation Workbook" (Springer, March 2022)](https://link.springer.com/book/9783030912130).
+A compilation of the Mathematica(R) Notebook files that have been used to generate the demonstrations in this textbook is available from
+the [QuantumWorkbook repository](https://github.com/quantum-mob/QuantumWorkbook).
 
 ![Quantum Workbook Cover](Examples/QuantumWorkbookCover.jpg?raw=true)
 
