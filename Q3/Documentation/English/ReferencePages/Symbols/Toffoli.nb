@@ -1,0 +1,2809 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     96340,       2799]
+NotebookOptionsPosition[     85962,       2589]
+NotebookOutlinePosition[     88104,       2644]
+CellTagsIndexPosition[     88018,       2639]
+WindowTitle->Toffoli
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "4ed1d26b-b5b8-402e-ad2d-0a7cab7a97e4"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "fd05d08d-c009-47df-88f3-f1f381d4bb86"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "989920c4-58c9-43b1-b1e0-40e9bf56d2a8"]
+         }],ExpressionUUID->"8fdb9fcf-9caf-4f12-99ea-1a85d504a373"],
+         StripOnInput->False], {"\<\"CNOT\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/ref/CNOT"], "\<\"SWAP\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/ref/SWAP"], "\<\"Toffoli\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/ref/Toffoli"], "\<\"Fredkin\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/ref/Fredkin"], "\<\"Deutsch\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/ref/Deutsch"], "\<\"CZ\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/ref/CZ"], "\<\"Hadamard\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/ref/Hadamard"], "\<\"Quadrant\"\>":>
+        Documentation`HelpLookup["paclet:Q3/ref/Quadrant"], "\<\"Octant\"\>":>
+        Documentation`HelpLookup["paclet:Q3/ref/Octant"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "a0262b05-a711-4c2d-be7b-f8afba03e9b0"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "3d9e04f1-b5ca-4b59-9d53-e4aaea498d06"]
+         }],ExpressionUUID->"699afc4c-d982-4bba-a08e-3f0a5334bdd7"],
+         StripOnInput->
+          False], {"\<\"Quantum Computation and Quantum Information\"\>":>
+        Documentation`HelpLookup[
+        "paclet:Q3/guide/QuantumComputationAndQuantumInformation"], "\<\"Q3\"\
+\>":>Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "40792520-b3ce-4c9c-b884-2ad63060118a"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tutorials",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "74bb203d-da68-41f6-aa81-eb3910bf0703"]
+         }],ExpressionUUID->"0c2b2e95-8eef-4e76-acbe-b86431265a1e"],
+         StripOnInput->False], {"\<\"Quantum Computation: Overview\"\>":>
+        Documentation`HelpLookup[
+        "paclet:Q3/tutorial/QuantumComputationOverview"], "\<\"Quantum \
+Computation and Quantum Information with Q3\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"], \
+"\<\"Q3: Quick Start\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/tutorial/Q3QuickStart"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "c384ec92-8dfd-486c-bbde-9edd12c30a19"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "c20035c5-b7cc-4d33-bd82-ff37eec8f2d7"]
+         }],ExpressionUUID->"be390c6f-ca92-4b55-b84d-41f8761cf1e6"],
+         StripOnInput->False], {"\<\"Q3/ref/Toffoli\"\>":>
+        None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell["Q3/ref/Toffoli"]}, Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+        Delimiter, "\<\"Copy web URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell[
+               BoxData[
+                MakeBoxes[
+                 Hyperlink[
+                 "http://reference.wolfram.com/language/Q3/ref/Toffoli.html"],
+                  StandardForm]], "Input", TextClipboardType -> "PlainText"]},
+              Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; 
+         Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+          NotebookLocate[{
+            URL[If[
+               TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$203866], 
+               "http://reference.wolfram.com/system-modeler/", 
+               "http://reference.wolfram.com/language/"] <> "Q3/ref/Toffoli" <> 
+             ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "72bf1f97-6dd8-4ca9-b1ef-28bd91c6b3e1"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "a6df26e8-40df-40ae-951b-f55508f8596c"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"03e91b8c-5ecf-429d-9759-dd1b83f87c59"],
+
+Cell["Q3`", "ContextNameCell",ExpressionUUID->"b4ce2fd0-70bb-419a-9876-238978418f17"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Toffoli", "ObjectName",ExpressionUUID->
+      "eafeae64-a34c-4a1b-9f95-2fe685655123"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"71dad237-d8f6-45d2-ae10-661d5b362fc1"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "dbde869e-ccf6-430c-8534-994c956919d1"]
+    }],ExpressionUUID->"e9a68741-4b86-4207-8b0c-ea1d813bb8fb"], 
+    "\[SpanFromLeft]"}
+  }]], "ObjectNameGrid",ExpressionUUID->"c58455ba-c4f1-4ee4-bae6-\
+840f009ae912"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"Toffoli", "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"], ",", 
+        StyleBox["c", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "cc8a114b-7055-4510-91f4-fcebb4680402"],
+     "\[LineSeparator]represents the quantum ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["Toffoli"]], "paclet:Q3/ref/Toffoli", "Q3 Package Symbol"},
+       "PackageLink",
+       BaseStyle->"InlineFormula"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "26011d19-8c78-4032-836f-3df8c9977467"],
+     " gate, i.e., the three-qubit controlled-note gate on ",
+     Cell[BoxData[
+      StyleBox["c", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "7ac9c7c3-5b86-4cbe-a560-e4296241e024"],
+     " controlled jointly by ",
+     Cell[BoxData[
+      StyleBox["a", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "4fff1046-b2f9-483a-9f92-b62f1f8c6fd4"],
+     " and ",
+     Cell[BoxData[
+      StyleBox["b", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "e1ba51f9-d38d-4663-95e7-31e85a15f437"],
+     "."
+    }],ExpressionUUID->"8a66669e-a2ea-420f-9b3e-4cba546f2dc1"]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{
+  "Columns" -> {{None}}, 
+   "Rows" -> {{
+     None}}}},ExpressionUUID->"30c0265e-7de1-4523-b5b7-606bf8633dcb"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    DynamicBox[ToBoxes[
+      If[
+       MatchQ[
+        CurrentValue[
+         EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, 
+         Closed], 
+        Alternatives[Open, True]], 
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], 
+       Rotate[
+        Style[
+         Graphics[{
+           Thickness[0.18], 
+           RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+           Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+          PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+         0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+     ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+    "536dbe19-6842-4ffa-bb4d-1981b42e57bb"],
+   Cell[BoxData[
+    TemplateBox[{1},
+     "Spacer1"]],ExpressionUUID->"60119b7e-4086-4fb4-8efe-9a7a93abb4b5"],
+   "Details"
+  }], "NotesFrameText",ExpressionUUID->"6661cceb-3197-4ff6-975b-f194f62c5bab"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->
+   "Preemptive"]],ExpressionUUID->"68a1cabc-80c8-48e9-b7ae-e608820a58dd"]], \
+"NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->416312897,ExpressionUUID->"a7f36bd4-2469-41d9-b2b5-c72db523761e"],
+
+Cell["\<\
+Toffoli gate was invented by Tommaso Toffoli for classical reversible \
+computation.\
+\>", "Notes",
+ CellID->1067943069,ExpressionUUID->"25191a3a-1342-4a9a-a5aa-5e930a0771ee"],
+
+Cell["\<\
+It is universal for classical reversible computation, but is not universal \
+for quantum computation.\
+\>", "Notes",
+ CellID->1640755739,ExpressionUUID->"7b14cfbe-781a-4cde-a8a3-43c1071b564e"],
+
+Cell[TextData[{
+ "The Hadamard, quadrant, CNOT, and Toffoli gates form a universal set of \
+gates in the sense that an arbitrary gate on ",
+ Cell[BoxData[
+  StyleBox["n", "TI"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "2fef75cb-4a39-43d7-8c44-a90be66e733d"],
+ " qubits can be approximated to an arbitrary accuracy using a quantum \
+circuit model composed of only these gates. The set still remains universal \
+if the Toffoli gate is replaced by the octant gate."
+}], "Notes",
+ CellID->325543624,ExpressionUUID->"0a97e4af-0d38-4a27-af0a-d43511529145"],
+
+Cell["\<\
+In fact, the Toffoli and Hadamard gates form a smaller set of quantum \
+universal gates (Shi, 2003; Aharonov, 2003).\
+\>", "Notes",
+ CellID->1768381377,ExpressionUUID->"908c1d68-579e-4f50-af46-79dbe5ea282c"]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "4fb16912-2bb0-491b-ba12-e74181c75a98"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"d6517c63-3bdd-4d3a-8382-bd9d4a9f02b8"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount",ExpressionUUID->
+  "996315d5-e215-4003-a8bc-84b8f31b4cbe"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->469137953,ExpressionUUID->"71c56f60-ac56-4974-a5fd-5a7755aeda60"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "b1566a12-229e-4e1b-9237-5f15ce5d31b5"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"0165817f-350e-45cd-936d-06db5bd52e8d"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount",ExpressionUUID->
+  "1d6f863a-c04c-4d4e-9cc5-fd38a328320d"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->1389107934,ExpressionUUID->"c3c77e65-913f-4182-82a8-62f14d8f03fc"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->615462090,ExpressionUUID->"83593cbe-6d92-42b3-ba2f-6eee8958a002"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->84693807,ExpressionUUID->"da4f9406-a698-4ed3-8a06-260448ab88f4"],
+
+Cell["This is a quantum circuit model of the Toffoli gate.", "ExampleText",
+ CellID->1169838411,ExpressionUUID->"2bdc2648-c166-420b-b21a-aa73437c004e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", 
+   RowBox[{"Toffoli", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "1", "]"}], ",", 
+     RowBox[{"S", "[", "2", "]"}], ",", 
+     RowBox[{"S", "[", "3", "]"}]}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"toff", "=", 
+  RowBox[{"ExpressionFor", "[", "qc", "]"}]}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1205134369,ExpressionUUID->"d0d14157-747c-4e8c-9e77-68070392bfd2"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {2, -1}}, {{0, -2}, {2, -2}}, {{0, -3}, {2, -3}}}], {
+    LineBox[{{1, -1}, {1, -2}, {1, -3}}], DiskBox[{1, -1}, 0.09], 
+    DiskBox[{1, -2}, 0.09], {CircleBox[{1, -3}, 0.26666666666666666], 
+     LineBox[{{{0.7333333333333334, -3}, {1.2666666666666666`, -3}}, {{
+        1, -3.2666666666666666`}, {1, -2.7333333333333334`}}}]}}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->118.8,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->467118760,ExpressionUUID->"c79b21f0-1755-48af-a176-7e023fd96ed3"],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["3", "4"], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"3"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Subsuperscript"], "4"]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1812269535,ExpressionUUID->"76c32f52-eb63-4723-841a-14545330304d"]
+}, Open  ]],
+
+Cell["It can be implemented by a combination of two-qubit gates.", \
+"ExampleText",
+ CellID->1178353731,ExpressionUUID->"3bc2b9ef-cf79-4c1a-8d14-8b0f7aada2f0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"gray", "=", 
+   RowBox[{"GrayControlledU", "[", 
+    RowBox[{
+     RowBox[{"S", "@", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "2"}], "}"}]}], ",", 
+     RowBox[{"S", "[", 
+      RowBox[{"3", ",", "1"}], "]"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", "gray", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"expr", "=", 
+  RowBox[{"ExpressionFor", "[", "qc", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"toff", "-", "expr"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1463439166,ExpressionUUID->"7959190d-4b63-4a24-8c9d-127e9e6016fd"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {6, -1}}, {{0, -2}, {6, -2}}, {{0, -3}, {6, -3}}}], {
+    LineBox[{{1, -1}, {1, -3}}], DiskBox[{1, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -3.4}, {1.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"V\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {1, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{2, -1}, {2, -2}}], 
+    DiskBox[{2, -1}, 0.09], {CircleBox[{2, -2}, 0.26666666666666666], 
+     LineBox[{{{1.7333333333333334`, -2}, {2.2666666666666666`, -2}}, {{
+        2, -2.2666666666666666`}, {2, -1.7333333333333334`}}}]}}, {
+    LineBox[{{3, -2}, {3, -3}}], DiskBox[{3, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{2.6, -3.4}, {3.4, -2.6}]}, InsetBox[
+     StyleBox[
+      TemplateBox[{"\"V\"", "\"\[Dagger]\""},
+       "Superscript"],
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {3, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{4, -1}, {4, -2}}], 
+    DiskBox[{4, -1}, 0.09], {CircleBox[{4, -2}, 0.26666666666666666], 
+     LineBox[{{{3.7333333333333334`, -2}, {4.266666666666667, -2}}, {{
+        4, -2.2666666666666666`}, {4, -1.7333333333333334`}}}]}}, {
+    LineBox[{{5, -2}, {5, -3}}], DiskBox[{5, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -3.4}, {5.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"V\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {5, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->262.8,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1143939698,ExpressionUUID->"5b8b991d-dc8f-4838-bd1d-5b0e12932b15"],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["3", "4"], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"3"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Subsuperscript"], "4"]}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1920896342,ExpressionUUID->"1242bd07-d02e-4df2-ae3d-8bf13f2f57ba"],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1383154643,ExpressionUUID->"b414bb9c-654f-4388-a98e-8f4e758090df"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Here ",
+ Cell[BoxData[
+  StyleBox[
+   RowBox[{"V", "=", 
+    SqrtBox["X"]}],
+   FontSlant->"Italic"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "93274b52-fcd1-4aed-9dc1-e1ac743fb39f"],
+ ", and its matrix representation looks like this."
+}], "ExampleText",
+ CellID->507963631,ExpressionUUID->"0047a7a8-a2fa-47cb-a890-60412b1f7798"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matV", "=", 
+   RowBox[{"MatrixPower", "[", 
+    RowBox[{
+     RowBox[{"ThePauli", "[", "1", "]"}], ",", 
+     RowBox[{"1", "/", "2"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"matV", "*", 
+   RowBox[{"2", "/", 
+    RowBox[{"(", 
+     RowBox[{"1", "+", "I"}], ")"}]}]}], "//", 
+  "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{"opV", "=", 
+  RowBox[{
+   RowBox[{"ExpressionFor", "[", 
+    RowBox[{"matV", ",", 
+     RowBox[{"S", "[", "3", "]"}]}], "]"}], "//", "Elaborate"}]}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1527310069,ExpressionUUID->"48d65fd1-c3ac-47d9-b207-5a7844ba6d2a"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", 
+      RowBox[{"-", "\[ImaginaryI]"}]},
+     {
+      RowBox[{"-", "\[ImaginaryI]"}], "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->1820252619,ExpressionUUID->"a3a0b917-6827-4c85-ae3a-e494c1462b3d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{
+    FractionBox["1", "2"], "+", 
+    FractionBox["\[ImaginaryI]", "2"]}], ")"}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{
+     FractionBox["1", "2"], "-", 
+     FractionBox["\[ImaginaryI]", "2"]}], ")"}], " ", 
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"3"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Subsuperscript"]}]}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->2081216018,ExpressionUUID->"9beba673-7766-48f7-aa6d-08daf20b3b8f"]
+}, Open  ]],
+
+Cell["Reversing the above circuit gives the identical result.", "ExampleText",
+ CellID->1796721321,ExpressionUUID->"5c2fcec9-4de9-4449-bbfd-88445e86a64b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", 
+   RowBox[{"Reverse", "@", "gray"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"expr", "=", 
+  RowBox[{"ExpressionFor", "[", "qc", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"toff", "-", "expr"}]}], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1727681580,ExpressionUUID->"d09a7ba6-4ea1-4c1d-bcff-a627a84554df"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {6, -1}}, {{0, -2}, {6, -2}}, {{0, -3}, {6, -3}}}], {
+    LineBox[{{1, -2}, {1, -3}}], DiskBox[{1, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -3.4}, {1.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"V\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {1, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{2, -1}, {2, -2}}], 
+    DiskBox[{2, -1}, 0.09], {CircleBox[{2, -2}, 0.26666666666666666], 
+     LineBox[{{{1.7333333333333334`, -2}, {2.2666666666666666`, -2}}, {{
+        2, -2.2666666666666666`}, {2, -1.7333333333333334`}}}]}}, {
+    LineBox[{{3, -2}, {3, -3}}], DiskBox[{3, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{2.6, -3.4}, {3.4, -2.6}]}, InsetBox[
+     StyleBox[
+      TemplateBox[{"\"V\"", "\"\[Dagger]\""},
+       "Superscript"],
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {3, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{4, -1}, {4, -2}}], 
+    DiskBox[{4, -1}, 0.09], {CircleBox[{4, -2}, 0.26666666666666666], 
+     LineBox[{{{3.7333333333333334`, -2}, {4.266666666666667, -2}}, {{
+        4, -2.2666666666666666`}, {4, -1.7333333333333334`}}}]}}, {
+    LineBox[{{5, -1}, {5, -3}}], DiskBox[{5, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -3.4}, {5.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"V\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {5, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->262.8,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1711514294,ExpressionUUID->"9051fc9f-50e0-4b7c-8ec0-0ff8a5261451"],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["3", "4"], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"3"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Subsuperscript"], "4"]}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->2024771340,ExpressionUUID->"aba323a6-565c-4218-8d3e-59455a6790c2"],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1306041018,ExpressionUUID->"d14c8c09-f316-482c-8f42-f5e3fea2a159"]
+}, Open  ]],
+
+Cell[TextData[{
+ "As noted by Smolin and DiVincenzo (Phys. Rev. A, 1996), it can also be \
+reordered as follows. This rearrangement is useful in optimizing the Fredkin \
+gate (see ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Fredkin"]], "paclet:Q3/ref/Fredkin", "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "135b0c01-bff4-459f-ba1d-2872c65aa649"],
+ ")."
+}], "ExampleText",
+ CellID->1066398032,ExpressionUUID->"6c68f7af-b772-48b9-bacf-4dd89d929571"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", 
+   RowBox[{"Permute", "[", 
+    RowBox[{"gray", ",", 
+     RowBox[{"Cycles", "[", 
+      RowBox[{"{", 
+       RowBox[{"{", 
+        RowBox[{"4", ",", "3", ",", "2", ",", "1"}], "}"}], "}"}], "]"}]}], 
+    "]"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"expr", "=", 
+  RowBox[{"ExpressionFor", "[", "qc", "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"toff", "-", "expr"}]}], "Input",
+ CellLabel->"In[7]:=",
+ CellID->485964845,ExpressionUUID->"47fc2a1d-62c2-4eec-b1ad-4bb8d66e02fa"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {6, -1}}, {{0, -2}, {6, -2}}, {{0, -3}, {6, -3}}}], {
+    LineBox[{{1, -1}, {1, -2}}], 
+    DiskBox[{1, -1}, 0.09], {CircleBox[{1, -2}, 0.26666666666666666], 
+     LineBox[{{{0.7333333333333334, -2}, {1.2666666666666666`, -2}}, {{
+        1, -2.2666666666666666`}, {1, -1.7333333333333334`}}}]}}, {
+    LineBox[{{2, -2}, {2, -3}}], DiskBox[{2, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{1.6, -3.4}, {2.4, -2.6}]}, InsetBox[
+     StyleBox[
+      TemplateBox[{"\"V\"", "\"\[Dagger]\""},
+       "Superscript"],
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {2, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{3, -1}, {3, -2}}], 
+    DiskBox[{3, -1}, 0.09], {CircleBox[{3, -2}, 0.26666666666666666], 
+     LineBox[{{{2.7333333333333334`, -2}, {3.2666666666666666`, -2}}, {{
+        3, -2.2666666666666666`}, {3, -1.7333333333333334`}}}]}}, {
+    LineBox[{{4, -1}, {4, -3}}], DiskBox[{4, -1}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{3.6, -3.4}, {4.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"V\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {4, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{5, -2}, {5, -3}}], DiskBox[{5, -2}, 0.09], 
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -3.4}, {5.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"V\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.06666666666666667],
+      FontWeight->"Light",
+      FontSlant->Italic], {5, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->262.8,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1481701299,ExpressionUUID->"8939d9d0-8ddd-490c-a5c6-b863b1863e60"],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["3", "4"], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"3"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Subsuperscript"], "4"]}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->733361681,ExpressionUUID->"83de02e0-db67-419a-8716-8d6c4d88bce0"],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1201122434,ExpressionUUID->"6c70cc5c-601c-4c2e-aa49-bbe5e0fccf6b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "7fd7fbc6-4b8c-46c6-aa43-ae6b2dd2b589"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->144709360,ExpressionUUID->"fa7ba31c-4fcf-4c1d-ad0b-58662b31f548"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"toff", "=", 
+  RowBox[{"Toffoli", "[", 
+   RowBox[{
+    RowBox[{"S", "[", "1", "]"}], ",", 
+    RowBox[{"S", "[", "2", "]"}], ",", 
+    RowBox[{"S", "[", "3", "]"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"toff", "**", 
+  RowBox[{"S", "[", 
+   RowBox[{"4", ",", "3"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"toff", "//", "Elaborate"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"toff", "//", "Elaborate"}], "//", "Matrix"}], "//", 
+  "MatrixForm"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1814639935,ExpressionUUID->"a07bd2fb-a6df-4e88-9e84-dbba9e297bd6"],
+
+Cell[BoxData[
+ RowBox[{"Toffoli", "[", 
+  RowBox[{
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"1"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"2"},
+     "RowDefault"]], ",", 
+   SubscriptBox[
+    TemplateBox[{"S"},
+     "RowDefault"], 
+    TemplateBox[{"3"},
+     "RowDefault"]]}], "]"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1676021011,ExpressionUUID->"ae485663-f530-4744-bccf-28af602255c6"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"4"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"4"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"4"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"4"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"4"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"4"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"4"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   RowBox[{"3", " ", 
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"4"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Subsuperscript"]}], "4"]}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->342134178,ExpressionUUID->"4d774726-0d9a-4023-8535-a13a9940b705"],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["3", "4"], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "-", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  RowBox[{
+   FractionBox["1", "4"], " ", 
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm]}], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], "4"], "+", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"3"}, "RowDefault"], 
+     TemplateBox[{"\"x\""}, "RowDefault"]},
+    "Subsuperscript"], "4"]}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1435406627,ExpressionUUID->"93c5361a-90c5-427f-ae71-1bbbfcbfa89e"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "1", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "1", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "1", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "1", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "1", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "1"},
+     {"0", "0", "0", "0", "0", "0", "1", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {8, 8}, 0, {
+     1, {{0, 2, 4, 6, 8, 10, 12, 14, 16}, {{1}, {2}, {2}, {1}, {3}, {4}, {
+       4}, {3}, {5}, {6}, {6}, {5}, {7}, {8}, {8}, {7}}}, {1, 0, 1, 0, 1, 0, 
+      1, 0, 1, 0, 1, 0, 0, 1, 0, 1}}]]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->47889591,ExpressionUUID->"3c548f72-7358-42f7-ad9e-c5ed63640863"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"Toffoli", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"S", "[", 
+     RowBox[{"3", ",", "6"}], "]"}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->145488415,ExpressionUUID->"8d130735-9975-4153-b9fc-5c4be03d3b5c"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {3, -1}}, {{0, -2}, {3, -2}}, {{0, -3}, {3, -3}}}], {
+    LineBox[{{1, -1}, {1, -2}, {1, -3}}], DiskBox[{1, -1}, 0.09], 
+    DiskBox[{1, -2}, 0.09], {CircleBox[{1, -3}, 0.26666666666666666], 
+     LineBox[{{{0.7333333333333334, -3}, {1.2666666666666666`, -3}}, {{
+        1, -3.2666666666666666`}, {1, -2.7333333333333334`}}}]}}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{1.6, -3.4}, {2.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.13333333333333333`],
+      FontWeight->"Light",
+      FontSlant->Italic], {2, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->154.79999999999998`,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1796313332,ExpressionUUID->"4ff5e76f-e10f-4450-927c-1ef169243f59"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"expr", "=", 
+  RowBox[{"qc", "//", "ExpressionFor"}]}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->664764407,ExpressionUUID->"a5f8865e-79be-45c0-8766-51e47617273e"],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"], 
+         TemplateBox[{"\"z\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"3"}, "RowDefault"], 
+         TemplateBox[{"\"y\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm]}],
+     DisplayForm]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"], 
+         TemplateBox[{"\"z\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"3"}, "RowDefault"], 
+         TemplateBox[{"\"y\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm]}],
+     DisplayForm]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"x\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TagBox[
+     RowBox[{
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"1"}, "RowDefault"], 
+         TemplateBox[{"\"z\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"2"}, "RowDefault"], 
+         TemplateBox[{"\"z\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm], 
+      TagBox[
+       TemplateBox[{
+         TemplateBox[{"S"}, "RowDefault"], 
+         TemplateBox[{"3"}, "RowDefault"], 
+         TemplateBox[{"\"y\""}, "RowDefault"]},
+        "Subsuperscript"],
+       DisplayForm]}],
+     DisplayForm]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   TagBox[
+    RowBox[{
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"1"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"2"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm], 
+     TagBox[
+      TemplateBox[{
+        TemplateBox[{"S"}, "RowDefault"], 
+        TemplateBox[{"3"}, "RowDefault"], 
+        TemplateBox[{"\"z\""}, "RowDefault"]},
+       "Subsuperscript"],
+      DisplayForm]}],
+    DisplayForm], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"1"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   TemplateBox[{
+     TemplateBox[{"S"}, "RowDefault"], 
+     TemplateBox[{"2"}, "RowDefault"], 
+     TemplateBox[{"\"z\""}, "RowDefault"]},
+    "Subsuperscript"], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"3", " ", 
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"3"}, "RowDefault"], 
+      TemplateBox[{"\"x\""}, "RowDefault"]},
+     "Subsuperscript"]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"3"}, "RowDefault"], 
+      TemplateBox[{"\"y\""}, "RowDefault"]},
+     "Subsuperscript"]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"3", " ", 
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"3"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Subsuperscript"]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]]}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->893973283,ExpressionUUID->"b6b1c73b-9999-449a-afd8-ae5d5950de13"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Matrix", "[", "expr", "]"}], "//", "MatrixForm"}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1574284910,ExpressionUUID->"fde42327-65fb-4abd-b77b-2791e511d9a0"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]], "0", "0", "0", "0", "0", "0"},
+     {
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0", "0", "0", "0", "0"},
+     {"0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]], "0", "0", "0", "0"},
+     {"0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0", "0", "0"},
+     {"0", "0", "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]], "0", "0"},
+     {"0", "0", "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0"},
+     {"0", "0", "0", "0", "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]]},
+     {"0", "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], 
+      FractionBox["1", 
+       SqrtBox["2"]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {8, 8}, 0, {
+     1, {{0, 2, 4, 6, 8, 10, 12, 14, 16}, {{1}, {2}, {2}, {1}, {3}, {4}, {
+       4}, {3}, {5}, {6}, {6}, {5}, {7}, {8}, {8}, {7}}}, {
+      2^Rational[-1, 2], 2^Rational[-1, 2], -2^Rational[-1, 2], 2^
+       Rational[-1, 2], 2^Rational[-1, 2], 2^
+       Rational[-1, 2], -2^Rational[-1, 2], 2^Rational[-1, 2], 2^
+       Rational[-1, 2], 2^Rational[-1, 2], -2^Rational[-1, 2], 2^
+       Rational[-1, 2], 2^Rational[-1, 2], 2^Rational[-1, 2], 2^
+       Rational[-1, 2], -2^Rational[-1, 2]}}]]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->653258818,ExpressionUUID->"797a8f32-36ae-43c3-a723-43ec42847705"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Matrix", "[", "qc", "]"}], "//", "MatrixForm"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->2079974352,ExpressionUUID->"0cc2a886-58de-4d4c-992e-bbc643617997"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]], "0", "0", "0", "0", "0", "0"},
+     {
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0", "0", "0", "0", "0"},
+     {"0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]], "0", "0", "0", "0"},
+     {"0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0", "0", "0"},
+     {"0", "0", "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]], "0", "0"},
+     {"0", "0", "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], "0", "0"},
+     {"0", "0", "0", "0", "0", "0", 
+      FractionBox["1", 
+       SqrtBox["2"]], 
+      FractionBox["1", 
+       SqrtBox["2"]]},
+     {"0", "0", "0", "0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["2"]]}], 
+      FractionBox["1", 
+       SqrtBox["2"]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {8, 8}, 0, {
+     1, {{0, 2, 4, 6, 8, 10, 12, 14, 16}, {{1}, {2}, {1}, {2}, {3}, {4}, {
+       3}, {4}, {5}, {6}, {5}, {6}, {7}, {8}, {7}, {8}}}, {
+      2^Rational[-1, 2], 2^Rational[-1, 2], 2^
+       Rational[-1, 2], -2^Rational[-1, 2], 2^Rational[-1, 2], 2^
+       Rational[-1, 2], 2^Rational[-1, 2], -2^Rational[-1, 2], 2^
+       Rational[-1, 2], 2^Rational[-1, 2], 2^
+       Rational[-1, 2], -2^Rational[-1, 2], 2^Rational[-1, 2], 2^
+       Rational[-1, 2], -2^Rational[-1, 2], 2^Rational[-1, 2]}}]]]]], "Output",\
+
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->1677182675,ExpressionUUID->"dd4086c7-a1a1-4eea-bf7b-5f18a898112f"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "65a9a5f1-79b2-4324-9faf-21f5bbe39538"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->2069943252,ExpressionUUID->"32c2a723-0cc8-47cd-988d-d1599d5438ba"],
+
+Cell["\<\
+As the Hadamard, quadrant, octant, and CNOT gates form a universal set of \
+gates (to an arbitrary accuracy), it is interesting to see how these gates \
+implement the Toffoli gate.\
+\>", "ExampleText",
+ CellID->2040007616,ExpressionUUID->"1d613cee-0d56-44a9-9170-d60fbf8f8d5e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", 
+   RowBox[{
+    RowBox[{"S", "[", 
+     RowBox[{"3", ",", "6"}], "]"}], ",", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Dagger", "[", 
+       RowBox[{"S", "[", 
+        RowBox[{"3", ",", "8"}], "]"}], "]"}], ",", 
+      RowBox[{
+      "\"\<Label\>\"", "->", 
+       "\"\<\!\(\*SuperscriptBox[\(T\), \(\[Dagger]\)]\)\>\""}]}], "}"}], ",",
+     "\[IndentingNewLine]", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}], ",", 
+    RowBox[{"S", "[", 
+     RowBox[{"3", ",", "8"}], "]"}], ",", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}], ",", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Dagger", "[", 
+       RowBox[{"S", "[", 
+        RowBox[{"3", ",", "8"}], "]"}], "]"}], ",", 
+      RowBox[{
+      "\"\<Label\>\"", "->", 
+       "\"\<\!\(\*SuperscriptBox[\(T\), \(\[Dagger]\)]\)\>\""}]}], "}"}], ",", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "3", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"Dagger", "[", 
+         RowBox[{"S", "[", 
+          RowBox[{"2", ",", "8"}], "]"}], "]"}], ",", 
+        RowBox[{
+        "\"\<Label\>\"", "->", 
+         "\"\<\!\(\*SuperscriptBox[\(T\), \(\[Dagger]\)]\)\>\""}]}], "}"}], 
+      ",", 
+      RowBox[{"S", "[", 
+       RowBox[{"3", ",", "8"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"CNOT", "[", 
+       RowBox[{
+        RowBox[{"S", "[", "1", "]"}], ",", 
+        RowBox[{"S", "[", "2", "]"}]}], "]"}], ",", 
+      RowBox[{"S", "[", 
+       RowBox[{"3", ",", "6"}], "]"}]}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"Dagger", "[", 
+       RowBox[{"S", "[", 
+        RowBox[{"2", ",", "8"}], "]"}], "]"}], ",", 
+      RowBox[{
+      "\"\<Label\>\"", "->", 
+       "\"\<\!\(\*SuperscriptBox[\(T\), \(\[Dagger]\)]\)\>\""}]}], "}"}], ",", 
+    RowBox[{"CNOT", "[", 
+     RowBox[{
+      RowBox[{"S", "[", "1", "]"}], ",", 
+      RowBox[{"S", "[", "2", "]"}]}], "]"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"S", "[", 
+       RowBox[{"1", ",", "8"}], "]"}], ",", 
+      RowBox[{"S", "[", 
+       RowBox[{"2", ",", "7"}], "]"}]}], "}"}]}], "\[IndentingNewLine]", 
+   "]"}]}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->49926131,ExpressionUUID->"ac0b988f-5323-4715-855a-bb0a072abba6"],
+
+Cell[BoxData[
+ GraphicsBox[{
+   {Dashing[{Small, Small}], LineBox[{}]}, 
+   LineBox[{{{0, -1}, {14, -1}}, {{0, -2}, {14, -2}}, {{0, -3}, {
+    14, -3}}}], {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{0.6, -3.4}, {1.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"H\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.02857142857142857],
+      FontWeight->"Light",
+      FontSlant->Italic], {1, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{2, -2}, {2, -3}}], 
+    DiskBox[{2, -2}, 0.09], {CircleBox[{2, -3}, 0.26666666666666666], 
+     LineBox[{{{1.7333333333333334`, -3}, {2.2666666666666666`, -3}}, {{
+        2, -3.2666666666666666`}, {2, -2.7333333333333334`}}}]}}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{2.6, -3.4}, {3.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"\\!\\(\\*SuperscriptBox[\\(T\\), \\(\[Dagger]\\)]\\)\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.02857142857142857],
+      FontWeight->"Light",
+      FontSlant->Italic], {3, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{4, -1}, {4, -3}}], 
+    DiskBox[{4, -1}, 0.09], {CircleBox[{4, -3}, 0.26666666666666666], 
+     LineBox[{{{3.7333333333333334`, -3}, {4.266666666666667, -3}}, {{
+        4, -3.2666666666666666`}, {4, -2.7333333333333334`}}}]}}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{4.6, -3.4}, {5.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"T\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.02857142857142857],
+      FontWeight->"Light",
+      FontSlant->Italic], {5, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{6, -2}, {6, -3}}], 
+    DiskBox[{6, -2}, 0.09], {CircleBox[{6, -3}, 0.26666666666666666], 
+     LineBox[{{{5.733333333333333, -3}, {6.266666666666667, -3}}, {{
+        6, -3.2666666666666666`}, {6, -2.7333333333333334`}}}]}}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{6.6, -3.4}, {7.4, -2.6}]}, InsetBox[
+     StyleBox["\<\"\\!\\(\\*SuperscriptBox[\\(T\\), \\(\[Dagger]\\)]\\)\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.02857142857142857],
+      FontWeight->"Light",
+      FontSlant->Italic], {7, -3}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{8, -1}, {8, -3}}], 
+    DiskBox[{8, -1}, 0.09], {CircleBox[{8, -3}, 0.26666666666666666], 
+     LineBox[{{{7.733333333333333, -3}, {8.266666666666667, -3}}, {{
+        8, -3.2666666666666666`}, {8, -2.7333333333333334`}}}]}}, {{
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{8.6, -2.4}, {9.4, -1.6}]}, InsetBox[
+      StyleBox["\<\"\\!\\(\\*SuperscriptBox[\\(T\\), \\(\[Dagger]\\)]\\)\"\>",
+       
+       StripOnInput->False,
+       FontSize->Scaled[0.02857142857142857],
+       FontWeight->"Light",
+       FontSlant->Italic], {9, -2}, 
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{8.6, -3.4}, {9.4, -2.6}]}, InsetBox[
+      StyleBox["\<\"T\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.02857142857142857],
+       FontWeight->"Light",
+       FontSlant->Italic], {9, -3}, 
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}}, {{
+     LineBox[{{10, -1}, {10, -2}}], 
+     DiskBox[{10, -1}, 0.09], {CircleBox[{10, -2}, 0.26666666666666666], 
+      LineBox[{{{9.733333333333333, -2}, {10.266666666666667`, -2}}, {{
+         10, -2.2666666666666666`}, {10, -1.7333333333333334`}}}]}}, {
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{9.6, -3.4}, {10.4, -2.6}]}, InsetBox[
+      StyleBox["\<\"H\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.02857142857142857],
+       FontWeight->"Light",
+       FontSlant->Italic], {10, -3}, 
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}}, {
+    {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+     RectangleBox[{10.6, -2.4}, {11.4, -1.6}]}, InsetBox[
+     StyleBox["\<\"\\!\\(\\*SuperscriptBox[\\(T\\), \\(\[Dagger]\\)]\\)\"\>",
+      StripOnInput->False,
+      FontSize->Scaled[0.02857142857142857],
+      FontWeight->"Light",
+      FontSlant->Italic], {11, -2}, 
+     ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+    LineBox[{{12, -1}, {12, -2}}], 
+    DiskBox[{12, -1}, 0.09], {CircleBox[{12, -2}, 0.26666666666666666], 
+     LineBox[{{{11.733333333333333`, -2}, {12.266666666666667`, -2}}, {{
+        12, -2.2666666666666666`}, {12, -1.7333333333333334`}}}]}}, {{
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{12.6, -1.4}, {13.4, -0.6}]}, InsetBox[
+      StyleBox["\<\"T\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.02857142857142857],
+       FontWeight->"Light",
+       FontSlant->Italic], {13, -1}, 
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}, {
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], 
+      RectangleBox[{12.6, -2.4}, {13.4, -1.6}]}, InsetBox[
+      StyleBox["\<\"S\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.02857142857142857],
+       FontWeight->"Light",
+       FontSlant->Italic], {13, -2}, 
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}]]}}},
+  AxesStyle->Large,
+  FrameStyle->Large,
+  ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {5, 5}},
+  ImageSize->550.8000000000001,
+  PlotRangePadding->Scaled[0.025]]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1085037506,ExpressionUUID->"20bd2be9-41cd-4344-b3ef-db3ee2cb5d48"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"qc", "==", 
+   RowBox[{"Toffoli", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "1", "]"}], ",", 
+     RowBox[{"S", "[", "2", "]"}], ",", 
+     RowBox[{"S", "[", "3", "]"}]}], "]"}]}], "//", "Elaborate"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1270488843,ExpressionUUID->"6e542e49-778c-4d6c-b904-ab1ef162451c"],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1671506216,ExpressionUUID->"3302d852-f3ee-4e0a-b002-8d7906fcabf7"]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["CNOT"]], "paclet:Q3/ref/CNOT", "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "74039d2c-21b1-42d5-8c8c-7f40342c1a47"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["SWAP"]], "paclet:Q3/ref/SWAP", "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "ca4043a3-3b86-4f34-8f78-f331467e4485"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Toffoli"]], "paclet:Q3/ref/Toffoli", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "7a221ba7-26e1-41ec-89be-1959d93b9b6d"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Fredkin"]], "paclet:Q3/ref/Fredkin", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "20edf258-b169-4210-b7bc-afcf35b37c84"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Deutsch"]], "paclet:Q3/ref/Deutsch", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "d2c655b1-074b-4b00-908c-4899b285b884"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["CZ"]], "paclet:Q3/ref/CZ", "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "872781b8-dbaa-4fde-82d9-659e82be1e06"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Hadamard"]], "paclet:Q3/ref/Hadamard", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "4db5caeb-48ca-4e6d-9232-00c9df126366"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quadrant"]], "paclet:Q3/ref/Quadrant", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "f0680fbe-34bc-497b-b0ea-fc356929322e"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Octant"]], "paclet:Q3/ref/Octant", "Q3 Package Symbol"},
+          
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "ebc735ce-b14c-4005-8bf3-5b0cb2577818"]
+       }], "SeeAlso",ExpressionUUID->"7cec21fa-b920-4fc4-b31b-b13a16b4b341"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"bd872dee-1591-4d0e-a54c-\
+36a9f82177e9"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox["Tutorials", "TutorialsSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Computation: Overview"]], 
+           "paclet:Q3/tutorial/QuantumComputationOverview"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "d602d010-f660-4689-949e-b9a1fb46b573"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Computation and Quantum Information with Q3"]], 
+           "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "8b9b495d-70f1-4293-8c83-35195acda6d0"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "01932fe4-68b0-4718-969f-9a7429b95cc7"]}]}
+     }]}
+  }]], "TutorialsSection",ExpressionUUID->"a7225a76-f778-4122-8c9c-\
+d4e07b8e6821"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Computation and Quantum Information"]], 
+           "paclet:Q3/guide/QuantumComputationAndQuantumInformation"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "9d864570-5b3e-4545-bba1-e60e143d7857"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3"]], "paclet:Q3/guide/Q3"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "44b86314-36bc-4535-848c-02919eebb310"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"92d108a0-1762-416d-9a2a-\
+1a557c179140"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[Cell[BoxData[
+        RowBox[{
+         TemplateBox[{16},
+          "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+          TemplateBox[{
+            Cell[
+             TextData[
+              Cell[
+               TextData[{
+                 Cell[
+                  BoxData[
+                   TemplateBox[{2}, "Spacer1"]]], 
+                 "Y. Shi, Quantum Information and Computation 3 (1), 84 \
+(2003): \"Both Toffoli and Controlled-NOT Need Little Help to Do Universal \
+Quantum Computing.\""}]]]], "https://dl.acm.org/doi/10.5555/2011508.2011515"},
+           
+           "WebLink",
+           BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+          "9ac265f6-74e3-4d72-86fc-b3423f1e912b"]}]],ExpressionUUID->
+        "5b7c4300-e572-4d92-89b9-86d3906c815f"]], "RelatedLinks",
+        ExpressionUUID->"23aa8f97-7bc3-4dee-b6dc-a3e17cae3d54"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "D. Aharonov, \"A Simple Proof that Toffoli and Hadamard \
+are Quantum Universal\" (quant-ph/0301040, 2003)"}]]]], 
+             "https://arxiv.org/abs/quant-ph/0301040"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "84523cf7-4126-4f78-8119-70b57bf91a48"]}]],ExpressionUUID->
+         "c8bcf997-7f70-4a33-a9ee-884d83bccd6c"],
+        "."
+       }], "RelatedLinks",ExpressionUUID->
+        "381ec688-f0f6-4252-8d45-1c747ec8ca4d"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"f2793c7b-31b9-43f3-99a9-\
+a16a2e290343"],
+
+Cell[CellGroupData[{
+
+Cell["Related Demonstrations", "RelatedDemonstrationsSection",
+ CellID->1268215905,ExpressionUUID->"bffcc418-fbee-4af0-8452-caa336b6003e"],
+
+Cell[TextData[ButtonBox["QuantumCircuit Usage Examples",
+ BaseStyle->"Link",
+ ButtonData->
+  "paclet:Q3/tutorial/QuantumCircuitUsage"]], "RelatedDemonstrations",
+ CellID->134209231,ExpressionUUID->"41e75c96-b4a2-4bdc-93aa-f5437992e5e4"]
+}, Open  ]],
+
+Cell[" ", "FooterCell",ExpressionUUID->"288e6c6a-5b0d-4acf-9c6b-a249fa332ea6"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Toffoli",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "NotesSection" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2022, 3, 9, 23, 38, 29.625934}", 
+    "history" -> {"12", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "Toffoli[a, b, c] represents the quantum Toffoli gate, i.e., the \
+three-qubit controlled-note gate on c controlled jointly by a and b.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "Toffoli", 
+    "titlemodifier" -> "", "windowtitle" -> "Toffoli", "type" -> "Symbol", 
+    "uri" -> "Q3/ref/Toffoli", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (February 4, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (February 4, 2022)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"c0eccb2a-ddbb-434a-8dba-d12ab9624477"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[13509, 350, 1389, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"71c56f60-ac56-4974-a5fd-5a7755aeda60",
+   CellTags->"PrimaryExamplesSection",
+   CellID->469137953]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 87818, 2632}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[579, 21, 7519, 177, 57, "AnchorBarGrid",ExpressionUUID->"03e91b8c-5ecf-429d-9759-dd1b83f87c59",
+ CellID->1],
+Cell[8101, 200, 85, 0, 23, "ContextNameCell",ExpressionUUID->"b4ce2fd0-70bb-419a-9876-238978418f17"],
+Cell[CellGroupData[{
+Cell[8211, 204, 550, 14, 60, "ObjectNameGrid",ExpressionUUID->"c58455ba-c4f1-4ee4-bae6-840f009ae912"],
+Cell[8764, 220, 1535, 41, 114, "Usage",ExpressionUUID->"30c0265e-7de1-4523-b5b7-606bf8633dcb"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10336, 266, 1851, 47, 38, "NotesSection",ExpressionUUID->"a7f36bd4-2469-41d9-b2b5-c72db523761e",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->416312897],
+Cell[12190, 315, 185, 4, 36, "Notes",ExpressionUUID->"25191a3a-1342-4a9a-a5aa-5e930a0771ee",
+ CellID->1067943069],
+Cell[12378, 321, 202, 4, 36, "Notes",ExpressionUUID->"7b14cfbe-781a-4cde-a8a3-43c1071b564e",
+ CellID->1640755739],
+Cell[12583, 327, 579, 11, 78, "Notes",ExpressionUUID->"0a97e4af-0d38-4a27-af0a-d43511529145",
+ CellID->325543624],
+Cell[13165, 340, 217, 4, 36, "Notes",ExpressionUUID->"908c1d68-579e-4f50-af46-79dbe5ea282c",
+ CellID->1768381377]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[13509, 350, 1389, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"71c56f60-ac56-4974-a5fd-5a7755aeda60",
+ CellTags->"PrimaryExamplesSection",
+ CellID->469137953],
+Cell[CellGroupData[{
+Cell[14923, 391, 1368, 36, 31, "ExampleSection",ExpressionUUID->"c3c77e65-913f-4182-82a8-62f14d8f03fc",
+ CellID->1389107934],
+Cell[16294, 429, 145, 3, 29, "Input",ExpressionUUID->"83593cbe-6d92-42b3-ba2f-6eee8958a002",
+ CellID->615462090],
+Cell[16442, 434, 180, 4, 29, "Input",ExpressionUUID->"da4f9406-a698-4ed3-8a06-260448ab88f4",
+ CellID->84693807],
+Cell[16625, 440, 151, 1, 38, "ExampleText",ExpressionUUID->"2bdc2648-c166-420b-b21a-aa73437c004e",
+ CellID->1169838411],
+Cell[CellGroupData[{
+Cell[16801, 445, 449, 11, 48, "Input",ExpressionUUID->"d0d14157-747c-4e8c-9e77-68070392bfd2",
+ CellID->1205134369],
+Cell[17253, 458, 701, 14, 116, "Output",ExpressionUUID->"c79b21f0-1755-48af-a176-7e023fd96ed3",
+ CellID->467118760],
+Cell[17957, 474, 3026, 105, 55, "Output",ExpressionUUID->"76c32f52-eb63-4723-841a-14545330304d",
+ CellID->1812269535]
+}, Open  ]],
+Cell[20998, 582, 159, 2, 70, "ExampleText",ExpressionUUID->"3bc2b9ef-cf79-4c1a-8d14-8b0f7aada2f0",
+ CellID->1178353731],
+Cell[CellGroupData[{
+Cell[21182, 588, 623, 16, 70, "Input",ExpressionUUID->"7959190d-4b63-4a24-8c9d-127e9e6016fd",
+ CellID->1463439166],
+Cell[21808, 606, 2099, 47, 121, "Output",ExpressionUUID->"5b8b991d-dc8f-4838-bd1d-5b0e12932b15",
+ CellID->1143939698],
+Cell[23910, 655, 3026, 105, 55, "Output",ExpressionUUID->"1242bd07-d02e-4df2-ae3d-8bf13f2f57ba",
+ CellID->1920896342],
+Cell[26939, 762, 127, 2, 37, "Output",ExpressionUUID->"b414bb9c-654f-4388-a98e-8f4e758090df",
+ CellID->1383154643]
+}, Open  ]],
+Cell[27081, 767, 375, 11, 70, "ExampleText",ExpressionUUID->"0047a7a8-a2fa-47cb-a890-60412b1f7798",
+ CellID->507963631],
+Cell[CellGroupData[{
+Cell[27481, 782, 647, 19, 70, "Input",ExpressionUUID->"48d65fd1-c3ac-47d9-b207-5a7844ba6d2a",
+ CellID->1527310069],
+Cell[28131, 803, 661, 19, 66, "Output",ExpressionUUID->"a3a0b917-6827-4c85-ae3a-e494c1462b3d",
+ CellID->1820252619],
+Cell[28795, 824, 546, 17, 52, "Output",ExpressionUUID->"9beba673-7766-48f7-aa6d-08daf20b3b8f",
+ CellID->2081216018]
+}, Open  ]],
+Cell[29356, 844, 154, 1, 70, "ExampleText",ExpressionUUID->"5c2fcec9-4de9-4449-bbfd-88445e86a64b",
+ CellID->1796721321],
+Cell[CellGroupData[{
+Cell[29535, 849, 375, 8, 70, "Input",ExpressionUUID->"d09a7ba6-4ea1-4c1d-bcff-a627a84554df",
+ CellID->1727681580],
+Cell[29913, 859, 2099, 47, 121, "Output",ExpressionUUID->"9051fc9f-50e0-4b7c-8ec0-0ff8a5261451",
+ CellID->1711514294],
+Cell[32015, 908, 3026, 105, 55, "Output",ExpressionUUID->"aba323a6-565c-4218-8d3e-59455a6790c2",
+ CellID->2024771340],
+Cell[35044, 1015, 127, 2, 37, "Output",ExpressionUUID->"d14c8c09-f316-482c-8f42-f5e3fea2a159",
+ CellID->1306041018]
+}, Open  ]],
+Cell[35186, 1020, 558, 14, 70, "ExampleText",ExpressionUUID->"6c68f7af-b772-48b9-bacf-4dd89d929571",
+ CellID->1066398032],
+Cell[CellGroupData[{
+Cell[35769, 1038, 549, 14, 70, "Input",ExpressionUUID->"47fc2a1d-62c2-4eec-b1ad-4bb8d66e02fa",
+ CellID->485964845],
+Cell[36321, 1054, 2100, 47, 121, "Output",ExpressionUUID->"8939d9d0-8ddd-490c-a5c6-b863b1863e60",
+ CellID->1481701299],
+Cell[38424, 1103, 3025, 105, 55, "Output",ExpressionUUID->"83de02e0-db67-419a-8716-8d6c4d88bce0",
+ CellID->733361681],
+Cell[41452, 1210, 127, 2, 37, "Output",ExpressionUUID->"6c70cc5c-601c-4c2e-aa49-bbe5e0fccf6b",
+ CellID->1201122434]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[41616, 1217, 242, 5, 70, "ExampleDelimiter",ExpressionUUID->"fa7ba31c-4fcf-4c1d-ad0b-58662b31f548",
+ CellID->144709360],
+Cell[CellGroupData[{
+Cell[41883, 1226, 607, 16, 70, "Input",ExpressionUUID->"a07bd2fb-a6df-4e88-9e84-dbba9e297bd6",
+ CellID->1814639935],
+Cell[42493, 1244, 496, 19, 37, "Output",ExpressionUUID->"ae485663-f530-4744-bccf-28af602255c6",
+ CellID->1676021011],
+Cell[42992, 1265, 5053, 178, 55, "Output",ExpressionUUID->"4d774726-0d9a-4023-8535-a13a9940b705",
+ CellID->342134178],
+Cell[48048, 1445, 3026, 105, 55, "Output",ExpressionUUID->"93c5361a-90c5-427f-ae71-1bbbfcbfa89e",
+ CellID->1435406627],
+Cell[51077, 1552, 1158, 28, 168, "Output",ExpressionUUID->"3c548f72-7358-42f7-ad9e-c5ed63640863",
+ CellID->47889591]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[52272, 1585, 510, 13, 70, "Input",ExpressionUUID->"8d130735-9975-4153-b9fc-5c4be03d3b5c",
+ CellID->145488415],
+Cell[52785, 1600, 1035, 22, 121, "Output",ExpressionUUID->"4ff5e76f-e10f-4450-927c-1ef169243f59",
+ CellID->1796313332]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[53857, 1627, 187, 4, 70, "Input",ExpressionUUID->"a5f8865e-79be-45c0-8766-51e47617273e",
+ CellID->664764407],
+Cell[54047, 1633, 7586, 273, 103, "Output",ExpressionUUID->"b6b1c73b-9999-449a-afd8-ae5d5950de13",
+ CellID->893973283]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[61670, 1911, 194, 4, 70, "Input",ExpressionUUID->"fde42327-65fb-4abd-b77b-2791e511d9a0",
+ CellID->1574284910],
+Cell[61867, 1917, 2227, 69, 248, "Output",ExpressionUUID->"797a8f32-36ae-43c3-a723-43ec42847705",
+ CellID->653258818]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[64131, 1991, 192, 4, 70, "Input",ExpressionUUID->"0cc2a886-58de-4d4c-992e-bbc643617997",
+ CellID->2079974352],
+Cell[64326, 1997, 2230, 70, 248, "Output",ExpressionUUID->"dd4086c7-a1a1-4eea-bf7b-5f18a898112f",
+ CellID->1677182675]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[66605, 2073, 243, 5, 70, "ExampleDelimiter",ExpressionUUID->"32c2a723-0cc8-47cd-988d-d1599d5438ba",
+ CellID->2069943252],
+Cell[66851, 2080, 287, 5, 70, "ExampleText",ExpressionUUID->"1d613cee-0d56-44a9-9170-d60fbf8f8d5e",
+ CellID->2040007616],
+Cell[CellGroupData[{
+Cell[67163, 2089, 2767, 82, 70, "Input",ExpressionUUID->"ac0b988f-5323-4715-855a-bb0a072abba6",
+ CellID->49926131],
+Cell[69933, 2173, 5373, 116, 132, "Output",ExpressionUUID->"20bd2be9-41cd-4344-b3ef-db3ee2cb5d48",
+ CellID->1085037506]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[75343, 2294, 345, 9, 70, "Input",ExpressionUUID->"6e542e49-778c-4d6c-b904-ab1ef162451c",
+ CellID->1270488843],
+Cell[75691, 2305, 130, 2, 37, "Output",ExpressionUUID->"3302d852-f3ee-4e0a-b002-8d7906fcabf7",
+ CellID->1671506216]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[76075, 2317, 4759, 131, 70, "SeeAlsoSection",ExpressionUUID->"bd872dee-1591-4d0e-a54c-36a9f82177e9"],
+Cell[80837, 2450, 1460, 36, 70, "TutorialsSection",ExpressionUUID->"a7225a76-f778-4122-8c9c-d4e07b8e6821"],
+Cell[82300, 2488, 1075, 27, 70, "MoreAboutSection",ExpressionUUID->"92d108a0-1762-416d-9a2a-1a557c179140"],
+Cell[83378, 2517, 2085, 56, 70, "RelatedLinksSection",ExpressionUUID->"f2793c7b-31b9-43f3-99a9-a16a2e290343"],
+Cell[CellGroupData[{
+Cell[85488, 2577, 138, 1, 70, "RelatedDemonstrationsSection",ExpressionUUID->"bffcc418-fbee-4af0-8452-caa336b6003e",
+ CellID->1268215905],
+Cell[85629, 2580, 236, 4, 70, "RelatedDemonstrations",ExpressionUUID->"41e75c96-b4a2-4bdc-93aa-f5437992e5e4",
+ CellID->134209231]
+}, Open  ]],
+Cell[85880, 2587, 78, 0, 70, "FooterCell",ExpressionUUID->"288e6c6a-5b0d-4acf-9c6b-a249fa332ea6"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

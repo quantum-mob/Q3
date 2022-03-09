@@ -1,0 +1,852 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     31306,        842]
+NotebookOptionsPosition[     25359,        726]
+NotebookOutlinePosition[     28006,        789]
+CellTagsIndexPosition[     27963,        786]
+WindowTitle->The No-Cloning Theorem
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "542734fd-8033-498e-b6fe-9e960dc4cfae"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "94703da3-13bd-4602-9495-33de8c13ef36"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "f51bd33c-627e-40ac-b163-3983439b6e15"]
+        }],ExpressionUUID->"000bbea8-f36f-4f08-8e0a-5ee1efa41a2f"],
+        StripOnInput->False], {"\<\"Q3/tutorial/NoCloningTheorem\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/NoCloningTheorem"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+NoCloningTheorem.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$237042], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/NoCloningTheorem" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "19cef021-ed42-444e-8d02-68489d982b52"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "624a9c40-3f0a-4615-a6e2-228b4a2b52e5"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"e9cea682-ad8b-4feb-a156-ce409f0235ea"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "The No-Cloning Theorem", "TechNoteTitle",ExpressionUUID->
+      "7b536ace-8cfb-47a4-abf1-98aa2925cbab"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"e7682f39-d94a-421a-a03f-224319ddde7e"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "763c70b5-e6cf-4403-a997-cb9458775568"]
+    }],ExpressionUUID->"881a2e3d-98b3-4647-a475-dec1d1103a76"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "fe24bd52-4fec-47c8-b800-a18269bcc4bc"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"6fec4d6b-b92f-4893-921c-dfa72235938b"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["A Proof"], "paclet:Q3/tutorial/NoCloningTheorem#1055628231", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Physical Implications"], 
+      "paclet:Q3/tutorial/NoCloningTheorem#945263909", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]}
+  }]], "TechNoteJumpBox",ExpressionUUID->"25a29b0c-6d97-4b9e-88ed-\
+2571fb8732b5"],
+
+Cell[TextData[{
+ "See also Section 1.3 of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (Springer, 2022)"]], 
+    "https://doi.org/10.1007/978-3-030-91214-7"},
+   "WebLink",
+   BaseStyle->{"TechNoteText"}]],ExpressionUUID->
+  "6825bd9b-624f-4154-ab35-17916c48417f"],
+ "."
+}], "TechNoteText",
+ TextAlignment->"Right",
+ CellID->1308734266,ExpressionUUID->"dda73fd7-b58f-4771-956c-6fe3883f585b"],
+
+Cell[TextData[{
+ "The no-cloning theorem dictates that it is impossible to make a copy of an ",
+ StyleBox["unknown",
+  FontSlant->"Italic"],
+ " quantum state. \[OpenCurlyDoubleQuote]You can clone a sheep, but not a \
+quantum state,\[CloseCurlyDoubleQuote] Zurek (2000) once declared. (Here, the \
+sheep refers to Dolly, cloned by a research group; see Wilmut ",
+ StyleBox["et al",
+  FontSlant->"Italic"],
+ ". (1997).) The theorem was discovered by Wootters and Zurek (1982)."
+}], "TechNoteText",
+ CellID->2109754189,ExpressionUUID->"50dfa354-c023-471e-a461-65b7fe01db85"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Measurement"]], "paclet:Q3/ref/Measurement", 
+      "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell["\<\
+Represents a measurement of Pauli operators (including the tensor products of \
+single-qubit Pauli operators).\
+\>", "TechNoteTableText",ExpressionUUID->
+     "dfdccb93-8ec6-4f8f-b831-0a2a61965c95"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["MeasurementOdds"]], "paclet:Q3/ref/MeasurementOdds", 
+      "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell["\<\
+Analyses the measurement outcomes, post-measurement states, and probabilities.\
+\>", "TechNoteTableText",ExpressionUUID->
+     "97947a97-faf9-44c8-a0a3-cd3b5a407a5c"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Readout"]], "paclet:Q3/ref/Readout", "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell["\<\
+Gives the measurement outcome of the most recent measurement.\
+\>", "TechNoteTableText",ExpressionUUID->
+     "8652860c-8f80-480c-adbd-d0f8736ec8c8"]}
+  }]], "DefinitionBox",
+ CellID->1536158906,ExpressionUUID->"971ef4b6-b220-461d-b562-eae3da1f2426"],
+
+Cell["Q3 functions related to the topic.", "TechNoteCaption",
+ CellID->1174328908,ExpressionUUID->"d1408130-ee25-49af-a0bb-f18dde556652"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["A Proof", "TechNoteSection",
+ CellID->1055628231,ExpressionUUID->"83b1efce-e1a6-416d-994c-ac36946d95b0"],
+
+Cell["\<\
+Why is it impossible to make a copy of an unknown quantum state?\
+\>", "TechNoteText",
+ CellID->971730044,ExpressionUUID->"36aa7165-0f23-41e7-951d-b39db7dbf76c"],
+
+Cell[TextData[{
+ "\tSuppose we have a machine that can clone a given unknown quantum state ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[Psi]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "3d5fcaef-a685-4579-addd-59fe1ead73ac"],
+ ". The machine would have two quantum registers, the input and target \
+registers. The input register is prepared in  ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[Psi]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "ba2d3d51-166a-4458-9729-522f0feb5f65"],
+ ", and the target register in a reference state, say, ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"0"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "4382ce71-82bc-484b-bc2f-0741fb468f0f"],
+ ". The overall state of the total system is a tensor-product state ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"\[Psi]"},
+     "Ket"], "\[CircleTimes]", 
+    TemplateBox[{"0"},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "91e8372f-34d9-4163-b842-37da79494c76"],
+ ". Let ",
+ Cell[BoxData[
+  FormBox["U", TraditionalForm]],ExpressionUUID->
+  "421dd519-8951-4ceb-ade4-4185de4d360e"],
+ " be the unitary operator corresponding to the operation of the copying \
+operation. By the hypothesis, we expect that"
+}], "TechNoteText",
+ CellID->1252526483,ExpressionUUID->"825cad63-eb83-465b-8a40-c2319b4c464a"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"U", "(", 
+     RowBox[{
+      TemplateBox[{"\[Psi]"},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{"0"},
+       "Ket"]}], ")"}], "=", 
+    RowBox[{
+     TemplateBox[{"\[Psi]"},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{"\[Psi]"},
+      "Ket"]}]}], TraditionalForm]],ExpressionUUID->
+  "0cf1d736-fe35-4e13-890f-1fc474a68228"],
+ " ."
+}], "TechNoteText",
+ CellID->1278858692,ExpressionUUID->"0dd203ef-815e-408e-9e16-2ad6d883fca2"],
+
+Cell[TextData[{
+ "Let us apply the operation to two orthogonal states ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[Alpha]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "f1e1b290-5351-4f70-8299-39d4fda8ae83"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[Beta]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "f5840a8e-a5cb-4298-a38f-e710eb1abb28"],
+ ". We have"
+}], "TechNoteText",
+ CellID->1761697268,ExpressionUUID->"b4af3a31-b26b-46f8-9b88-1cbf05cb8e71"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"U", "(", 
+     RowBox[{
+      TemplateBox[{"\[Alpha]"},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{"0"},
+       "Ket"]}], ")"}], "=", 
+    RowBox[{
+     TemplateBox[{"\[Alpha]"},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{"\[Alpha]"},
+      "Ket"]}]}], TraditionalForm]],ExpressionUUID->
+  "0cc47152-aec0-4018-b042-a5abeccc99a5"],
+ " ,    ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"U", "(", 
+     RowBox[{
+      TemplateBox[{"\[Beta]"},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{"0"},
+       "Ket"]}], ")"}], "=", 
+    RowBox[{
+     TemplateBox[{"\[Beta]"},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{"\[Beta]"},
+      "Ket"]}]}], TraditionalForm]],ExpressionUUID->
+  "a41bb8ee-bd82-4820-b9a8-7cfa318cc54f"],
+ " ."
+}], "TechNoteText",
+ CellID->1488942087,ExpressionUUID->"46b5e2fb-477a-43e2-a22b-6f2ce781427d"],
+
+Cell["So far nothing is wrong.", "TechNoteText",
+ CellID->22717718,ExpressionUUID->"8ba2cfa2-796b-45b8-977a-f869220da5da"],
+
+Cell[TextData[{
+ "\tNow, let us apply the operation to a linear superposition ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     TemplateBox[{"\[Alpha]"},
+      "Ket"], "a"}], "+", 
+    RowBox[{
+     TemplateBox[{"\[Beta]"},
+      "Ket"], "b"}]}], TraditionalForm]],ExpressionUUID->
+  "a3891d3e-e7ae-49d2-8412-a081b568b24b"],
+ " with arbitrary (and unknown) complex numbers ",
+ Cell[BoxData[
+  FormBox["a", TraditionalForm]],ExpressionUUID->
+  "03941d74-451f-4fa6-a16f-883aa7ee13b3"],
+ " and ",
+ Cell[BoxData[
+  FormBox["b", TraditionalForm]],ExpressionUUID->
+  "bd148c51-4039-4d3b-8c4a-b725e3df482e"],
+ ". From the linearity of ",
+ Cell[BoxData[
+  FormBox["U", TraditionalForm]],ExpressionUUID->
+  "4e9f8c1d-1313-4630-b2b1-6a4ab76d1554"],
+ ", we have"
+}], "TechNoteText",
+ CellID->1712080907,ExpressionUUID->"2bb13bcd-997a-4a85-a18d-6ac7a838ca91"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"U", "[", 
+     RowBox[{
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         TemplateBox[{"\[Alpha]"},
+          "Ket"], "a"}], "+", 
+        RowBox[{
+         TemplateBox[{"\[Beta]"},
+          "Ket"], "b"}]}], ")"}], "\[CircleTimes]", 
+      TemplateBox[{"0"},
+       "Ket"]}], "]"}], "=", 
+    RowBox[{
+     RowBox[{"U", "(", 
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         TemplateBox[{"\[Alpha]"},
+          "Ket"], "\[CircleTimes]", 
+         TemplateBox[{"0"},
+          "Ket"]}], "a"}], "+", 
+       RowBox[{
+        RowBox[{
+         TemplateBox[{"\[Beta]"},
+          "Ket"], "\[CircleTimes]", 
+         TemplateBox[{"0"},
+          "Ket"]}], "b"}]}], ")"}], "=", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        TemplateBox[{"\[Alpha]"},
+         "Ket"], "\[CircleTimes]", 
+        TemplateBox[{"\[Alpha]"},
+         "Ket"]}], "a"}], "+", 
+      RowBox[{
+       RowBox[{
+        TemplateBox[{"\[Beta]"},
+         "Ket"], "\[CircleTimes]", 
+        TemplateBox[{"\[Beta]"},
+         "Ket"]}], "b"}]}]}]}], TraditionalForm]],ExpressionUUID->
+  "5b5c9079-6ddc-4f08-8bcd-9e499762bea2"],
+ " ."
+}], "TechNoteText",
+ CellID->810417796,ExpressionUUID->"47321044-a39f-4c15-9184-5dc0a63654a9"],
+
+Cell["Clearly, the result is different from what we expect,", "TechNoteText",
+ CellID->1350608098,ExpressionUUID->"b73c4692-b742-40f6-8a60-85403ebf19d4"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       TemplateBox[{"\[Alpha]"},
+        "Ket"], "a"}], "+", 
+      RowBox[{
+       TemplateBox[{"\[Beta]"},
+        "Ket"], "b"}]}], ")"}], "\[CircleTimes]", 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       TemplateBox[{"\[Alpha]"},
+        "Ket"], "a"}], "+", 
+      RowBox[{
+       TemplateBox[{"\[Beta]"},
+        "Ket"], "b"}]}], ")"}]}], TraditionalForm]],ExpressionUUID->
+  "2011874c-efa7-475b-b8d1-5a436c6f2816"],
+ " ,"
+}], "TechNoteText",
+ CellID->768154296,ExpressionUUID->"4b2148f9-6b63-4fa7-b4c2-469112e13004"],
+
+Cell[TextData[{
+ "unless either ",
+ Cell[BoxData[
+  FormBox["a", TraditionalForm]],ExpressionUUID->
+  "b78edc91-6dc7-4746-807a-01b29776980f"],
+ " or ",
+ Cell[BoxData[
+  FormBox["b", TraditionalForm]],ExpressionUUID->
+  "74ce0e2f-6a6e-4220-a638-d35a1ffaad7f"],
+ " vanishes. Therefore, we conclude that it is impossible to copy a quantum \
+state."
+}], "TechNoteText",
+ CellID->1845050755,ExpressionUUID->"914dd4f7-93fc-4a18-89c1-7dec6406fb63"],
+
+Cell["\<\
+\tThe crucial point in the proof is the linearity of quantum mechanics.\
+\>", "TechNoteText",
+ CellID->104176605,ExpressionUUID->"b9f6711a-4314-411d-8b24-d74338df9945"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Physical Implications", "TechNoteSection",
+ CellID->945263909,ExpressionUUID->"d3e42ccc-9805-482a-81e2-26420e87ed79"],
+
+Cell["\<\
+The no-cloning theorem implies various counter-intuitive natures of quantum \
+physics.\
+\>", "TechNoteText",
+ CellID->1630004237,ExpressionUUID->"493551c9-45c6-4969-8742-2e9dcabb3cbb"],
+
+Cell[TextData[{
+ "\tFirst of all, if it were possible, one could produce a bunch of identical \
+copies of the same quantum state. Then, measurements of different \
+incompatible observables (such as conjugate variables) on the copies would \
+reveal precise information regarding the quantum state, violating the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["uncertainty principle"]], 
+    "https://en.wikipedia.org/wiki/Uncertainty_principle"},
+   "WebLink",
+   BaseStyle->{"TechNoteText", FontSlant -> "Italic"}]],ExpressionUUID->
+  "014af989-80d7-499d-b5a3-8a7a898c2fb2"],
+ "."
+}], "TechNoteText",
+ CellID->342734891,ExpressionUUID->"98dbc1c7-9da5-4c61-a8ad-6d81d83ed219"],
+
+Cell["\<\
+\tCloning of an (unknown) quantum state would also allow faster-than- light \
+communication. Furthermore, the no-cloning nature of quantum states is one of \
+the key features of quantum mechanics that provide unconditional security in \
+quantum communication.\
+\>", "TechNoteText",
+ CellID->1356795085,ExpressionUUID->"a6a8ddb6-0539-4ab6-9ca3-b88e2f753a9f"]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/guide/QuantumComputationAndQuantumInformation"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "4caccb5a-3f4b-4b29-9b9d-b83077e4960d"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"a77b1f88-3480-49f2-8a1d-\
+8e7d56edd487"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Teleportation",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumTeleportation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "c91ab6f0-e4b9-4369-ac68-6f695383d521"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Algorithms",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumAlgorithms"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "63e51677-9f07-4e91-b786-1587224d8be5"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Measurements on Quantum States",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/MeasurementsOnQuantumStates"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "ad165d27-141a-4f4d-9dd5-f306c63dbe41"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "fae18bd4-cf7c-4935-acbc-5c0119cc38b4"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"34329ba7-e9e4-4158-8595-\
+5e00d5a3254b"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "W. H. Zurek, Nature 404, 130 (2000)"}]]]], 
+             "https://doi.org/10.1038/35004684"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "b2e289a5-0adc-4e73-a397-53c340825c28"]}]],ExpressionUUID->
+         "682d8dcb-7a2c-4ef2-8595-35a7cfa68811"],
+        ", \[OpenCurlyDoubleQuote]Quantum cloning: Schrodinger\
+\[CloseCurlyQuote]s sheep.\[CloseCurlyDoubleQuote]"
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "fc92acb6-8858-4415-a406-9ebd19091a31"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "W. K. Wootters and W. H. Zurek, Nature 299, 802 \
+(1982)"}]]]], "https://doi.org/10.1038/299802a0"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "8a21621b-94a5-40dc-a788-0c8f484c1ead"]}]],ExpressionUUID->
+         "b8674c58-3bbe-4248-80d1-2555c30fca08"],
+        ", \"A Single Quantum Cannot be Cloned.\""
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "17b198f4-cc0d-4ad7-accd-3129ae14e211"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "I. Wilmut, A. E. Schnieke, J. McWhir, A. J. Kind, and K. \
+H. S. Campbell, Na- ture 385, 810 (1997)"}]]]], 
+             "https://doi.org/10.1038/385810a0"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "cb5922d1-3bd3-4c2e-a0cd-2d1f9ec834d4"]}]],ExpressionUUID->
+         "61b75ede-9bd1-4c5d-8204-1ff501316601"],
+        ", \[OpenCurlyDoubleQuote]Viable offspring derived from fetal and \
+adult mammalian cells.\[CloseCurlyDoubleQuote]"
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "f73ec0ae-e2dc-465f-b81d-3b332bdedfe8"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi, A Quantum Computation Workbook (Springer, \
+2021)"}]]]], "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "50e4b29f-687b-4257-9fb1-552ee415360f"]}]],ExpressionUUID->
+         "6d50b369-2182-435c-9c88-8dd19f767691"],
+        "."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "705ec951-aa79-4d9b-9fb0-1ea2af6c47f4"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"959ddf68-9f6f-4a92-969e-\
+56557584b3c8"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"704016e5-861e-4a69-b3f1-628cb62b5663"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"The No-Cloning Theorem",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2021", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 3, 9, 23, 39, 33.359024}", 
+    "history" -> {"13", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"quantum theory of measurement"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "See also Section 1.3 of the Quantum Workbook (Springer, 2022). The \
+no-cloning theorem dictates that it is impossible to make a copy of an \
+unknown quantum state. 'You can clone a sheep, but not a quantum state,' \
+Zurek (2000) once declared. (Here, the sheep refers to Dolly, cloned by a \
+research group; see Wilmut et al. (1997).) The theorem was discovered by \
+Wootters and Zurek (1982). Why is it impossible to make a copy of an unknown \
+quantum state?", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$236998, "title" -> 
+    "The No-Cloning Theorem", "titlemodifier" -> "", "windowtitle" -> 
+    "The No-Cloning Theorem", "type" -> "Tech Note", "uri" -> 
+    "Q3/tutorial/NoCloningTheorem", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (February 4, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (February 4, 2022)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"276c822d-82d0-42cf-ab7a-0886ee817c09"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[594, 21, 3459, 80, 70, "AnchorBarGrid",ExpressionUUID->"e9cea682-ad8b-4feb-a156-ce409f0235ea",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4078, 105, 1397, 38, 70, "ObjectNameGrid",ExpressionUUID->"6fec4d6b-b92f-4893-921c-dfa72235938b"],
+Cell[5478, 145, 2241, 48, 70, "TechNoteJumpBox",ExpressionUUID->"25a29b0c-6d97-4b9e-88ed-2571fb8732b5"],
+Cell[7722, 195, 426, 13, 70, "TechNoteText",ExpressionUUID->"dda73fd7-b58f-4771-956c-6fe3883f585b",
+ CellID->1308734266],
+Cell[8151, 210, 571, 11, 70, "TechNoteText",ExpressionUUID->"50dfa354-c023-471e-a461-65b7fe01db85",
+ CellID->2109754189],
+Cell[8725, 223, 1260, 32, 70, "DefinitionBox",ExpressionUUID->"971ef4b6-b220-461d-b562-eae3da1f2426",
+ CellID->1536158906],
+Cell[9988, 257, 137, 1, 70, "TechNoteCaption",ExpressionUUID->"d1408130-ee25-49af-a0bb-f18dde556652",
+ CellID->1174328908]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10162, 263, 110, 1, 70, "TechNoteSection",ExpressionUUID->"83b1efce-e1a6-416d-994c-ac36946d95b0",
+ CellID->1055628231],
+Cell[10275, 266, 171, 3, 70, "TechNoteText",ExpressionUUID->"36aa7165-0f23-41e7-951d-b39db7dbf76c",
+ CellID->971730044],
+Cell[10449, 271, 1318, 36, 70, "TechNoteText",ExpressionUUID->"825cad63-eb83-465b-8a40-c2319b4c464a",
+ CellID->1252526483],
+Cell[11770, 309, 518, 19, 70, "TechNoteText",ExpressionUUID->"0dd203ef-815e-408e-9e16-2ad6d883fca2",
+ CellID->1278858692],
+Cell[12291, 330, 480, 15, 70, "TechNoteText",ExpressionUUID->"b4af3a31-b26b-46f8-9b88-1cbf05cb8e71",
+ CellID->1761697268],
+Cell[12774, 347, 932, 35, 70, "TechNoteText",ExpressionUUID->"46b5e2fb-477a-43e2-a22b-6f2ce781427d",
+ CellID->1488942087],
+Cell[13709, 384, 122, 1, 70, "TechNoteText",ExpressionUUID->"8ba2cfa2-796b-45b8-977a-f869220da5da",
+ CellID->22717718],
+Cell[13834, 387, 856, 26, 70, "TechNoteText",ExpressionUUID->"2bb13bcd-997a-4a85-a18d-6ac7a838ca91",
+ CellID->1712080907],
+Cell[14693, 415, 1292, 48, 70, "TechNoteText",ExpressionUUID->"47321044-a39f-4c15-9184-5dc0a63654a9",
+ CellID->810417796],
+Cell[15988, 465, 153, 1, 70, "TechNoteText",ExpressionUUID->"b73c4692-b742-40f6-8a60-85403ebf19d4",
+ CellID->1350608098],
+Cell[16144, 468, 636, 24, 70, "TechNoteText",ExpressionUUID->"4b2148f9-6b63-4fa7-b4c2-469112e13004",
+ CellID->768154296],
+Cell[16783, 494, 441, 12, 70, "TechNoteText",ExpressionUUID->"914dd4f7-93fc-4a18-89c1-7dec6406fb63",
+ CellID->1845050755],
+Cell[17227, 508, 178, 3, 70, "TechNoteText",ExpressionUUID->"b9f6711a-4314-411d-8b24-d74338df9945",
+ CellID->104176605]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17442, 516, 123, 1, 70, "TechNoteSection",ExpressionUUID->"d3e42ccc-9805-482a-81e2-26420e87ed79",
+ CellID->945263909],
+Cell[17568, 519, 194, 4, 70, "TechNoteText",ExpressionUUID->"493551c9-45c6-4969-8742-2e9dcabb3cbb",
+ CellID->1630004237],
+Cell[17765, 525, 686, 15, 70, "TechNoteText",ExpressionUUID->"98dbc1c7-9da5-4c61-a8ad-6d81d83ed219",
+ CellID->342734891],
+Cell[18454, 542, 367, 6, 70, "TechNoteText",ExpressionUUID->"a6a8ddb6-0539-4ab6-9ca3-b88e2f753a9f",
+ CellID->1356795085]
+}, Open  ]],
+Cell[18836, 551, 755, 19, 70, "TutorialMoreAboutSection",ExpressionUUID->"a77b1f88-3480-49f2-8a1d-8e7d56edd487"],
+Cell[19594, 572, 1717, 44, 70, "RelatedTutorialsSection",ExpressionUUID->"34329ba7-e9e4-4158-8595-5e00d5a3254b"],
+Cell[21314, 618, 3960, 104, 70, "TutorialRelatedLinksSection",ExpressionUUID->"959ddf68-9f6f-4a92-969e-56557584b3c8"],
+Cell[25277, 724, 78, 0, 70, "FooterCell",ExpressionUUID->"704016e5-861e-4a69-b3f1-628cb62b5663"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

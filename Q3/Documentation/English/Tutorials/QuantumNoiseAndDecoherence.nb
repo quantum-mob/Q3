@@ -1,0 +1,475 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     20309,        465]
+NotebookOptionsPosition[     14516,        355]
+NotebookOutlinePosition[     18595,        439]
+CellTagsIndexPosition[     18552,        436]
+WindowTitle->Quantum Noise and Decoherence
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 OVERVIEW", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "bad21eb6-c4d2-4be8-ad2b-9d34b228ecb3"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "78650953-b05e-4d33-b88e-d3003d449fd4"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "4d2a40b5-6a50-46c7-95d6-4b343a56392b"]
+        }],ExpressionUUID->"e5491d0f-d3c4-4087-8dcd-6aab6ba47e4e"],
+        StripOnInput->
+         False], {"\<\"Q3/tutorial/QuantumNoiseAndDecoherence\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuantumNoiseAndDecoherence"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumNoiseAndDecoherence.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$244128], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/QuantumNoiseAndDecoherence" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "4fa1f161-b695-49be-97d7-cda94cad1a41"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "898db6e1-7c9e-46ef-aae3-6e0bec282fe3"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"b1e3ae6b-e587-4ed9-b9b0-2f9c63fd10af"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Quantum Noise and Decoherence", "Title",ExpressionUUID->
+      "8b84faa5-fafb-4874-ae99-bf71130a448b"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"60e9fb66-a95e-4326-9184-cede9fca206f"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "2cba1b70-a759-46c8-b6f5-ef210f298a93"]
+    }],ExpressionUUID->"afd689dd-0bb5-43e4-8a5d-5e947db5d9eb"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "d0416bb6-783b-4ee5-b3e0-cf6ed77ff4da"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"a35eb893-9a32-4b10-b78e-6b125121a656"],
+
+Cell[TextData[{
+ "See also Chapter 5 of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (Springer, 2022)"]], 
+    "https://doi.org/10.1007/978-3-030-91214-7"},
+   "WebLink",
+   BaseStyle->{"Text"}]],ExpressionUUID->
+  "02fbcad0-422c-44d0-b25f-b8cb109414b2"],
+ "."
+}], "Text",
+ TextAlignment->"Right",
+ CellID->1308734266,ExpressionUUID->"38124358-5974-4217-8229-7f51002bca82"],
+
+Cell["\<\
+No practical system is realistically closed. A system is naturally subjected \
+to its interactions with the surrounding system, which is commonly called the \
+environment. There is also a more fundamental reason for the notion of an \
+open quantum system in quantum mechanics. The theory of quantum mechanics is \
+intrinsically probabilistic, meaning that the verification of any quantum \
+principle should be tested statistically by taking repeated measurements and \
+incorporating the resulting data. The measurement process inevitably requires \
+coupling the system to a measuring device. Moreover, for quantum computation \
+and more generally for quantum information processing, we desire preparation, \
+manipulation, and measurement of quantum states. All those procedures require \
+the system to be coupled to external equipment.\
+\>", "Text",
+ CellID->568695052,ExpressionUUID->"904951f4-f4c6-4aca-bf6d-22eba71712fc"],
+
+Cell["\<\
+\tIn principle, one can regard the combined system enclosing both the system \
+and the environment as a closed system, and thus apply the quantum mechanical \
+principles to the total system. However, the environment is typically large\
+\[LongDash]and since perfect isolation is impossible, the total system is \
+eventually the whole universe\[LongDash]with a huge number of degrees of \
+freedom. A complete microscopic description incorporating the environmental \
+degrees of freedom is not only impractical but also of little use. First of \
+all, such a description is tremendously complicated and hard to solve. A \
+solution, if any, would lead to an intractable amount of information, the \
+vast majority of which would be irrelevant to the physical effects exhibited \
+by the system itself.\
+\>", "Text",
+ CellID->1746388261,ExpressionUUID->"e5c7b1e5-c4e8-44ff-aff1-359f7261fd2f"],
+
+Cell[TextData[{
+ "\tA more reasonable and practical approach is thus to seek an effective \
+description of open quantum systems in terms of only the system\
+\[CloseCurlyQuote]s degrees of freedom. An effective theory is achieved in \
+two stages: First, ignorance of the environmental degrees of freedom brings \
+about a statistical mixture of pure states for the system. The state of the \
+system is no longer a ",
+ ButtonBox["pure state",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/tutorial/QuantumStates#866638043"],
+ ". It is a ",
+ ButtonBox["mixed state",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/tutorial/QuantumStates#2028958569"],
+ " and described by a density operator. Second, the influence of the \
+environment should be reflected on the (effective) dynamical evolution of the \
+density operator in a way that does not depend on the details of the \
+environment and of the system-environment coupling. A powerful mathematical \
+tool is provided by the formalism of quantum operations."
+}], "Text",
+ CellID->1933172629,ExpressionUUID->"ac235f2c-84a0-47cf-8229-3c7846b74a03"],
+
+Cell["\<\
+\tIn this collection of tutorial documents, we first take toy models to \
+examine the decoherence process on the elementary and qualitative level. We \
+then introduce quantum operations formalism. The two common and complementary \
+representations of quantum operations are discussed together with simple \
+examples. Quantum operations are used not only for the dynamical processes of \
+open quantum systems but also for the quantum theory of generalized \
+measurement. Next, we turn to the quantum master equation approach to open \
+quantum systems. This is an approximate approach for quantum operations \
+formalism under the Markovian assumption. While quantum operations formalism \
+provides the most general mathematical tool, it is not always possible to \
+find explicit quantum operations for given specific systems. It is far \
+simpler and more insightful to construct the quantum master equation and thus \
+examine the solution to understand the behavior of the open quantum systems \
+in question. In the remaining part, we introduce distance measures between \
+quantum states.\
+\>", "Text",
+ CellID->698690588,ExpressionUUID->"98669cf9-b3b4-401c-8f82-2b584f3229f8"],
+
+Cell["\t(The following tutorial documents are being prepared.)", "Text",
+ CellID->1583779232,ExpressionUUID->"9024364d-a293-4095-b8ed-d10c4af8749d"]
+}, Open  ]],
+
+Cell["How Does Decoherence Occur?", "TOCChapter",
+ CellID->1888294123,ExpressionUUID->"223f6d7d-f2ac-4ba1-8a15-ccb4630cd5a8"],
+
+Cell["Measurements as Quantum Operations", "TOCChapter",
+ CellID->1963761455,ExpressionUUID->"a4fe29c6-5883-483b-83dc-0681ca7b2d8f"],
+
+Cell["Quantum Master Equation", "TOCChapter",
+ CellID->844410640,ExpressionUUID->"8ee627a2-4585-4770-9e0f-afb65c049e8a"],
+
+Cell["Distance Between Quantum States", "TOCChapter",
+ CellID->678509018,ExpressionUUID->"9d54c4b9-4ae7-46c5-bb23-38bf5c0e6c64"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/guide/QuantumComputationAndQuantumInformation"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "607ab8d5-ad9e-4733-a7fa-d04045185d49"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"dd034a93-f55b-4973-aaf0-\
+3da41e5ed9a0"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "4fbcaee8-bf58-42b2-8608-5ad8b24d65dd"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"3cfee68b-abe1-4c14-a351-\
+c4de41de0511"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang, Quantum Computation and \
+Quantum Information (Cambridge University Press, New York, 2011)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "e0ec41dd-8bef-435e-ae00-1103c715c9c7"]}]],ExpressionUUID->
+         "b8d0f6f4-bc5e-4d25-a8ed-65661dd0609b"],
+        StyleBox[".",
+         FontSlant->"Plain"]
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "739e27e5-96c5-4447-b901-6df13432ca83"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi, A Quantum Computation Workbook (Springer, \
+2021)"}]]]], "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "5812bf14-e66f-49db-8e2a-d68e053748b0"]}]],ExpressionUUID->
+         "a7c883c7-e878-4ff0-93b7-7d94dc8f9a3f"],
+        "."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "838c1ca6-b807-4111-b192-a72aede1ece4"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"648de9fd-00f0-4a13-bab4-\
+423f389c8abd"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"e66fc427-91ca-44be-918b-1e50c62e4028"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quantum Noise and Decoherence",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2021", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 3, 9, 23, 39, 51.444454}", 
+    "history" -> {"13", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {
+     "quantum noise", "quantum decoherence", "quantum operations", 
+      "quantum master equation"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Overview", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "See also Chapter 5 of the Quantum Workbook (Springer, 2022). No \
+practical system is realistically closed. A system is naturally subjected to \
+its interactions with the surrounding system, which is commonly called the \
+environment. There is also a more fundamental reason for the notion of an \
+open quantum system in quantum mechanics. The theory of quantum mechanics is \
+intrinsically probabilistic, meaning that the verification of any quantum \
+principle should be tested statistically by taking repeated measurements and \
+incorporating the resulting data. The measurement process inevitably requires \
+coupling the system to a measuring device. Moreover, for quantum computation \
+and more generally for quantum information processing, we desire preparation, \
+manipulation, and measurement of quantum states. All those procedures require \
+the system to be coupled to external equipment. In principle, one can regard \
+the combined system enclosing both the system and the environment as a closed \
+system, and thus apply the quantum mechanical principles to the total system. \
+However, the environment is typically large\\[LongDash]and since perfect \
+isolation is impossible, the total system is eventually the whole \
+universe\\[LongDash]with a huge number of degrees of freedom. A complete \
+microscopic description incorporating the environmental degrees of freedom is \
+not only impractical but also of little use. First of all, such a description \
+is tremendously complicated and hard to solve. A solution, if any, would lead \
+to an intractable amount of information, the vast majority of which would be \
+irrelevant to the physical effects exhibited by the system itself.", 
+    "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$244093, "title" -> 
+    "Quantum Noise and Decoherence", "titlemodifier" -> "", "windowtitle" -> 
+    "Quantum Noise and Decoherence", "type" -> "Overview", "uri" -> 
+    "Q3/tutorial/QuantumNoiseAndDecoherence", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (February 4, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TOCSubsubsection"], 
+    CellGroupingRules -> {"SectionGrouping", 69}], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (February 4, 2022)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"91df0838-aba9-4bde-b057-c3ff7b74df43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[601, 21, 3522, 82, 70, "AnchorBarGrid",ExpressionUUID->"b1e3ae6b-e587-4ed9-b9b0-2f9c63fd10af",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4148, 107, 1396, 38, 70, "ObjectNameGrid",ExpressionUUID->"a35eb893-9a32-4b10-b78e-6b125121a656"],
+Cell[5547, 147, 408, 13, 70, "Text",ExpressionUUID->"38124358-5974-4217-8229-7f51002bca82",
+ CellID->1308734266],
+Cell[5958, 162, 934, 13, 70, "Text",ExpressionUUID->"904951f4-f4c6-4aca-bf6d-22eba71712fc",
+ CellID->568695052],
+Cell[6895, 177, 894, 13, 70, "Text",ExpressionUUID->"e5c7b1e5-c4e8-44ff-aff1-359f7261fd2f",
+ CellID->1746388261],
+Cell[7792, 192, 1091, 20, 70, "Text",ExpressionUUID->"ac235f2c-84a0-47cf-8229-3c7846b74a03",
+ CellID->1933172629],
+Cell[8886, 214, 1185, 17, 70, "Text",ExpressionUUID->"98669cf9-b3b4-401c-8f82-2b584f3229f8",
+ CellID->698690588],
+Cell[10074, 233, 148, 1, 70, "Text",ExpressionUUID->"9024364d-a293-4095-b8ed-d10c4af8749d",
+ CellID->1583779232]
+}, Open  ]],
+Cell[10237, 237, 125, 1, 70, "TOCChapter",ExpressionUUID->"223f6d7d-f2ac-4ba1-8a15-ccb4630cd5a8",
+ CellID->1888294123],
+Cell[10365, 240, 132, 1, 70, "TOCChapter",ExpressionUUID->"a4fe29c6-5883-483b-83dc-0681ca7b2d8f",
+ CellID->1963761455],
+Cell[10500, 243, 120, 1, 70, "TOCChapter",ExpressionUUID->"8ee627a2-4585-4770-9e0f-afb65c049e8a",
+ CellID->844410640],
+Cell[10623, 246, 128, 1, 70, "TOCChapter",ExpressionUUID->"9d54c4b9-4ae7-46c5-bb23-38bf5c0e6c64",
+ CellID->678509018],
+Cell[10754, 249, 755, 19, 70, "TutorialMoreAboutSection",ExpressionUUID->"dd034a93-f55b-4973-aaf0-3da41e5ed9a0"],
+Cell[11512, 270, 777, 20, 70, "RelatedTutorialsSection",ExpressionUUID->"3cfee68b-abe1-4c14-a351-c4de41de0511"],
+Cell[12292, 292, 2139, 59, 70, "TutorialRelatedLinksSection",ExpressionUUID->"648de9fd-00f0-4a13-bab4-423f389c8abd"],
+Cell[14434, 353, 78, 0, 70, "FooterCell",ExpressionUUID->"e66fc427-91ca-44be-918b-1e50c62e4028"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

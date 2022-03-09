@@ -1,0 +1,758 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     27534,        748]
+NotebookOptionsPosition[     22100,        629]
+NotebookOutlinePosition[     24132,        682]
+CellTagsIndexPosition[     24047,        677]
+WindowTitle->KetOrthogonalize
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "de5922ac-3079-4cf6-af7f-5625c53a89e5"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "3df1f3a4-9fe1-4545-b3c9-28a8e21b70df"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "887225f0-ce0d-48c6-b40b-393f5f8e9c47"]
+         }],ExpressionUUID->"0be81923-1473-445f-9c98-131ab9edb805"],
+         StripOnInput->False], {"\<\"KetNormalize\"\>":>
+        Documentation`HelpLookup[
+        "paclet:Q3/ref/KetNormalize"], "\<\"KetSort\"\>":>
+        Documentation`HelpLookup["paclet:Q3/ref/KetSort"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "280b61e6-a8fe-42fe-9adb-a34510dc556f"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "fe6a0a6d-6edb-4699-9056-9b5a6a2155f2"]
+         }],ExpressionUUID->"cdf06d9b-d836-44ef-8b30-acc91a21f783"],
+         StripOnInput->False], {"\<\"Q3/ref/KetOrthogonalize\"\>":>
+        None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell["Q3/ref/KetOrthogonalize"]}, Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+        Delimiter, "\<\"Copy web URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell[
+               BoxData[
+                MakeBoxes[
+                 Hyperlink[
+                 "http://reference.wolfram.com/language/Q3/ref/\
+KetOrthogonalize.html"], StandardForm]], "Input", TextClipboardType -> 
+               "PlainText"]}, Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; 
+         Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+          NotebookLocate[{
+            URL[If[
+               TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$103146], 
+               "http://reference.wolfram.com/system-modeler/", 
+               "http://reference.wolfram.com/language/"] <> 
+             "Q3/ref/KetOrthogonalize" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "b0d23faa-627e-4b77-bcc4-e8626a84b0a6"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "e2f9ad8f-786d-4d03-af97-facf5c6c2f7e"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"76764764-0f4a-465e-a539-c05dcbfea0b3"],
+
+Cell["Q3`", "ContextNameCell",ExpressionUUID->"9b1f60d5-dd91-4c3e-8b7d-ebe47dcdb522"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "KetOrthogonalize", "ObjectName",ExpressionUUID->
+      "761b8c54-9c33-4fe3-9dc9-7a179584df50"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"b539419e-b171-4f2c-a45c-344b75301f04"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "a68f9453-1136-4a7b-85d8-b78ee29d56e1"]
+    }],ExpressionUUID->"3e10e5eb-42b3-412a-8df8-37586b517d46"], 
+    "\[SpanFromLeft]"}
+  }]], "ObjectNameGrid",ExpressionUUID->"f7e9f116-fb9b-46fb-8e2a-\
+61aaa21dbed5"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{"KetOrthogonalize", "[", "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "0d8411de-c739-49b1-8f40-6ff4dc956119"],
+     " \[LineSeparator]XXXX"
+    }],ExpressionUUID->"06667f1b-8036-467b-a6aa-eb9343d79441"]}
+  }]], "Usage",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {{None}}}},
+ CellID->1834446241,ExpressionUUID->"156e52e0-2ca4-4e6c-91ca-c8f4d6de7660"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "b0d43c19-daac-4452-b6fb-0e42b67975b3"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"fc38c768-b5b7-4816-bb2b-32ea40eabb59"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount",ExpressionUUID->
+  "0129dc5a-0840-4533-a09b-6b581e5d23d6"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->161553456,ExpressionUUID->"b16972be-055d-4fc8-82de-bf620d6b05b9"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "f8320215-b634-4ba3-b30b-339830c49240"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"5878307d-4d2b-4bc7-9703-451b4e5b6b26"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(2)", "ExampleCount",ExpressionUUID->
+  "caf9c9fe-63a3-4e19-a4b7-bda7e72ad6e8"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->809605184,ExpressionUUID->"1259fe38-80e5-4ea0-abd1-4a5768ac7d17"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->1240721836,ExpressionUUID->"2a87cf54-8185-4206-a48d-1691608aa7eb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vv", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"Ket", "[", 
+      RowBox[{"0", ",", "1"}], "]"}], "+", 
+     RowBox[{"Ket", "[", 
+      RowBox[{"1", ",", "1"}], "]"}]}], ",", 
+    RowBox[{"Ket", "[", 
+     RowBox[{"1", ",", "1"}], "]"}]}], "}"}]}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->1017572649,ExpressionUUID->"5fe556ee-71b1-4823-8500-3c132f887c50"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"0", ",", "1"}]},
+     "Ket"], "+", 
+    TemplateBox[{
+      RowBox[{"1", ",", "1"}]},
+     "Ket"]}], ",", 
+   TemplateBox[{
+     RowBox[{"1", ",", "1"}]},
+    "Ket"]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->822330786,ExpressionUUID->"4e6b1e55-5b32-4f86-8ba1-3a7423c1628f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"Outer", "[", 
+    RowBox[{"Multiply", ",", 
+     RowBox[{"Dagger", "[", "vv", "]"}], ",", "vv"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->585070679,ExpressionUUID->"1e76bc07-fafc-458b-8dab-fea507e81a38"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"2", "1"},
+     {"1", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->206583033,ExpressionUUID->"e59e4531-1e8e-4001-8da2-e76913f5a37e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bs", "=", 
+  RowBox[{"KetOrthogonalize", "[", "vv", "]"}]}]], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1415531314,ExpressionUUID->"1e75d2a8-8f04-4699-acae-858d6e1c6b7f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    FractionBox[
+     TemplateBox[{
+       RowBox[{"0", ",", "1"}]},
+      "Ket"], 
+     SqrtBox["2"]], "+", 
+    FractionBox[
+     TemplateBox[{
+       RowBox[{"1", ",", "1"}]},
+      "Ket"], 
+     SqrtBox["2"]]}], ",", 
+   RowBox[{
+    RowBox[{"-", 
+     FractionBox[
+      TemplateBox[{
+        RowBox[{"0", ",", "1"}]},
+       "Ket"], 
+      SqrtBox["2"]]}], "+", 
+    FractionBox[
+     TemplateBox[{
+       RowBox[{"1", ",", "1"}]},
+      "Ket"], 
+     SqrtBox["2"]]}]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1691437553,ExpressionUUID->"45e16f97-10ed-4bec-8537-e34b5b098826"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"Outer", "[", 
+    RowBox[{"Multiply", ",", 
+     RowBox[{"Dagger", "[", "bs", "]"}], ",", "bs"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"new", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->1116400015,ExpressionUUID->"71f8258e-a35c-4cc8-8a56-b362a3582aee"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0"},
+     {"0", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->1659941263,ExpressionUUID->"07e5542b-f491-4799-ba8f-cdada111417e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "6b5d6110-d249-4a5c-a749-025262564b30"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1978978756,ExpressionUUID->"467da569-c61c-4927-b225-9d327fb60b9d"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qudit", ",", "A"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"AA", "=", 
+   RowBox[{"A", "@", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2", ",", "3"}], "}"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"bs", "=", 
+   RowBox[{"Basis", "[", "AA", "]"}]}], ";"}]}], "Input",
+ CellLabel->"In[1]:=",
+ CellID->246540827,ExpressionUUID->"33c13aae-35aa-4699-8be6-5d17b71d9796"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"vecs", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "2", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], 
+     ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", 
+       RowBox[{"-", "2"}], ",", "0", ",", "1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "2"}], ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "1", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", 
+       ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}],
+       "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{
+      "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "1", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "2"}], ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", 
+       ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "2", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "2", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0", ",", 
+       RowBox[{"-", "1"}], ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+       ",", "0", ",", "0", ",", "0"}], "}"}]}], "}"}]}], ";"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->118763484,ExpressionUUID->"234270e0-8515-425c-ba41-dc054b718167"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"kets", "=", 
+   RowBox[{"vecs", ".", "bs"}]}], ";"}]], "Input",
+ CellLabel->"In[3]:=",
+ CellID->1724410087,ExpressionUUID->"3af81e1e-aeb8-430b-86fc-4610509711df"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"Outer", "[", 
+    RowBox[{"Multiply", ",", 
+     RowBox[{"Dagger", "[", "kets", "]"}], ",", "kets"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->1143259736,ExpressionUUID->"3187eac6-1da9-4d35-a416-8737a2042e2b"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"6", "0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "6", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "6", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "4", "2", 
+      RowBox[{"-", "2"}], "0", "0", "0"},
+     {"0", "0", "0", "2", "4", "2", "0", "0", "0"},
+     {"0", "0", "0", 
+      RowBox[{"-", "2"}], "2", "4", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "6", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "6", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0", "6"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->428073026,ExpressionUUID->"60ba7f0a-b476-4ed3-8d0d-2a0e47d1628c"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"new", "=", 
+   RowBox[{"KetOrthogonalize", "[", "kets", "]"}]}], ";"}]], "Input",
+ CellLabel->"In[5]:=",
+ CellID->8143461,ExpressionUUID->"2155fcd8-d5a6-4457-b872-a8200f82d78e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"Outer", "[", 
+   RowBox[{"Multiply", ",", 
+    RowBox[{"Dagger", "[", "new", "]"}], ",", "new"}], "]"}], "//", 
+  "MatrixForm"}]], "Input",
+ CellLabel->"In[6]:=",
+ CellID->1156508098,ExpressionUUID->"b73c0214-e3a1-4fdc-b8aa-6a16c90423cc"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "1", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "1", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "1", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "1", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "1", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "1", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[6]//MatrixForm=",
+ CellID->2060909380,ExpressionUUID->"e8411322-2881-401b-b490-021cd7b8846b"]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["KetNormalize"]], "paclet:Q3/ref/KetNormalize", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "a31d128d-24cd-4f98-a4da-7793453d1181"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["KetSort"]], "paclet:Q3/ref/KetSort", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "e16f2b7e-7b69-49ca-85e6-29fbe2c8797c"]
+       }], "SeeAlso",ExpressionUUID->"948c56ed-9d1c-4a35-8a8f-9c92dc2621a0"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"abf32830-e3ce-4d90-83fc-\
+31606c81d581"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"815067fd-b83f-4b4c-91e0-738767284072"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"KetOrthogonalize",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> $Failed, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 3, 9, 23, 36, 16.908715}", 
+    "history" -> {"12", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> "KetOrthogonalize[] XXXX", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "KetOrthogonalize", "titlemodifier" -> "", 
+    "windowtitle" -> "KetOrthogonalize", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/KetOrthogonalize", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (February 4, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (February 4, 2022)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"4a46549e-3e6b-4cb0-8df5-931851f004da"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[6408, 170, 1389, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"b16972be-055d-4fc8-82de-bf620d6b05b9",
+   CellTags->"PrimaryExamplesSection",
+   CellID->161553456]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 23848, 670}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[588, 21, 4609, 111, 57, "AnchorBarGrid",ExpressionUUID->"76764764-0f4a-465e-a539-c05dcbfea0b3",
+ CellID->1],
+Cell[5200, 134, 85, 0, 23, "ContextNameCell",ExpressionUUID->"9b1f60d5-dd91-4c3e-8b7d-ebe47dcdb522"],
+Cell[CellGroupData[{
+Cell[5310, 138, 559, 14, 60, "ObjectNameGrid",ExpressionUUID->"f7e9f116-fb9b-46fb-8e2a-61aaa21dbed5"],
+Cell[5872, 154, 499, 11, 112, "Usage",ExpressionUUID->"156e52e0-2ca4-4e6c-91ca-c8f4d6de7660",
+ CellID->1834446241]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[6408, 170, 1389, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"b16972be-055d-4fc8-82de-bf620d6b05b9",
+ CellTags->"PrimaryExamplesSection",
+ CellID->161553456],
+Cell[CellGroupData[{
+Cell[7822, 211, 1367, 36, 31, "ExampleSection",ExpressionUUID->"1259fe38-80e5-4ea0-abd1-4a5768ac7d17",
+ CellID->809605184],
+Cell[9192, 249, 146, 3, 29, "Input",ExpressionUUID->"2a87cf54-8185-4206-a48d-1691608aa7eb",
+ CellID->1240721836],
+Cell[CellGroupData[{
+Cell[9363, 256, 399, 12, 29, "Input",ExpressionUUID->"5fe556ee-71b1-4823-8500-3c132f887c50",
+ CellID->1017572649],
+Cell[9765, 270, 369, 14, 41, "Output",ExpressionUUID->"4e6b1e55-5b32-4f86-8ba1-3a7423c1628f",
+ CellID->822330786]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10171, 289, 347, 9, 48, "Input",ExpressionUUID->"1e76bc07-fafc-458b-8dab-fea507e81a38",
+ CellID->585070679],
+Cell[10521, 300, 592, 17, 66, "Output",ExpressionUUID->"e59e4531-1e8e-4001-8da2-e76913f5a37e",
+ CellID->206583033]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11150, 322, 193, 4, 29, "Input",ExpressionUUID->"1e75d2a8-8f04-4699-acae-858d6e1c6b7f",
+ CellID->1415531314],
+Cell[11346, 328, 645, 27, 62, "Output",ExpressionUUID->"45e16f97-10ed-4bec-8537-e34b5b098826",
+ CellID->1691437553]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12028, 360, 348, 9, 48, "Input",ExpressionUUID->"71f8258e-a35c-4cc8-8a56-b362a3582aee",
+ CellID->1116400015],
+Cell[12379, 371, 593, 17, 66, "Output",ExpressionUUID->"07e5542b-f491-4799-ba8f-cdada111417e",
+ CellID->1659941263]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[13009, 393, 243, 5, 14, "ExampleDelimiter",ExpressionUUID->"467da569-c61c-4927-b225-9d327fb60b9d",
+ CellID->1978978756],
+Cell[13255, 400, 443, 13, 66, "Input",ExpressionUUID->"33c13aae-35aa-4699-8be6-5d17b71d9796",
+ CellID->246540827],
+Cell[13701, 415, 3614, 72, 174, "Input",ExpressionUUID->"234270e0-8515-425c-ba41-dc054b718167",
+ CellID->118763484],
+Cell[17318, 489, 197, 5, 70, "Input",ExpressionUUID->"3af81e1e-aeb8-430b-86fc-4610509711df",
+ CellID->1724410087],
+Cell[CellGroupData[{
+Cell[17540, 498, 352, 9, 70, "Input",ExpressionUUID->"3187eac6-1da9-4d35-a416-8737a2042e2b",
+ CellID->1143259736],
+Cell[17895, 509, 1070, 26, 184, "Output",ExpressionUUID->"60ba7f0a-b476-4ed3-8d0d-2a0e47d1628c",
+ CellID->428073026]
+}, Open  ]],
+Cell[18980, 538, 212, 5, 70, "Input",ExpressionUUID->"2155fcd8-d5a6-4457-b872-a8200f82d78e",
+ CellID->8143461],
+Cell[CellGroupData[{
+Cell[19217, 547, 273, 7, 70, "Input",ExpressionUUID->"b73c0214-e3a1-4fdc-b8aa-6a16c90423cc",
+ CellID->1156508098],
+Cell[19493, 556, 935, 23, 168, "Output",ExpressionUUID->"e8411322-2881-401b-b490-021cd7b8846b",
+ CellID->2060909380]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[20682, 589, 1333, 36, 70, "SeeAlsoSection",ExpressionUUID->"abf32830-e3ce-4d90-83fc-31606c81d581"],
+Cell[22018, 627, 78, 0, 70, "FooterCell",ExpressionUUID->"815067fd-b83f-4b4c-91e0-738767284072"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
