@@ -1,0 +1,388 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     14416,        378]
+NotebookOptionsPosition[     10932,        302]
+NotebookOutlinePosition[     13237,        360]
+CellTagsIndexPosition[     13194,        357]
+WindowTitle->Quantum Factorization Algorithm
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "e1a5f924-a00c-4f22-92ed-4becb2fc06af"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "860f423e-3fb2-4604-a696-86fc3dfe83fb"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "ca940ac4-7df5-49a5-8c86-0c77747e8aaf"]
+        }],ExpressionUUID->"253bd8a8-1783-4e03-aabb-8d51d05718ec"],
+        StripOnInput->
+         False], {"\<\"Q3/tutorial/QuantumFactorizationAlgorithm\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuantumFactorizationAlgorithm"]}, Visible -> 
+            False]]; SelectionMove[
+         DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumFactorizationAlgorithm.html"], StandardForm]], "Input", 
+              TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$244332], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/QuantumFactorizationAlgorithm" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "2a04bc2b-84ad-4bc6-8469-657ff6e6b2b5"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "cc37fe4b-0c55-47ca-aa15-e904f8ba3b36"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"8b2a2ec5-0552-4ded-841d-994d5cdcaff5"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Quantum Factorization Algorithm", "TechNoteTitle",ExpressionUUID->
+      "d418300b-bef5-429d-acba-c7d7560102c2"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"0f87e0b9-9593-4c1c-abb3-a5050abc0308"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "cc383f52-80b6-486f-98a4-ce2bc8081930"]
+    }],ExpressionUUID->"bd7980f3-af99-47c6-9b61-7f62b4c1716b"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "9934fc7f-4726-4f44-a0ba-567662927c58"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"02944c1b-4126-4c32-b99f-ca7830375f1e"],
+
+Cell[TextData[{
+ "See also Section 4.5 of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (Springer, 2022)"]], 
+    "https://doi.org/10.1007/978-3-030-91214-7"},
+   "WebLink",
+   BaseStyle->{"Text"}]],ExpressionUUID->
+  "5139620f-1d68-47b2-8b4a-bec08fc6e87b"],
+ "."
+}], "TechNoteText",
+ TextAlignment->"Right",
+ CellID->1308734266,ExpressionUUID->"954a6e25-4c2c-4f90-be07-e58af68d7205"],
+
+Cell["Still in preparation.", "TechNoteText",
+ CellID->1514347467,ExpressionUUID->"d41db442-7682-451e-b4c0-37d546f3cab0"],
+
+Cell["XXXX.", "TechNoteCaption",
+ CellID->470106187,ExpressionUUID->"980a348d-6ea5-45ca-830e-24e035df0feb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["XXXX"], "Input",
+ CellLabel->"In[1]:=",
+ CellID->65278547,ExpressionUUID->"9cf89b2e-f714-4100-a1cf-aa269baa520c"],
+
+Cell[BoxData["XXXX"], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1919879459,ExpressionUUID->"6feb536d-e9e6-4f6c-87af-a555d5b36ecb"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/guide/QuantumComputationAndQuantumInformation"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "5be93eee-5648-442c-8ba6-7c7b29f3558f"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"884a19f2-fbf7-407c-809d-\
+b1fc99c2c7c1"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Abelian Hidden Subgroup Problems",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/AbelianHiddenSubgroupProblems"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "cec3936d-3710-436a-80f6-ffa179222ed0"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Algorithms",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumAlgorithms"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "730385e6-65ab-4c4b-a4d1-25189794d4b2"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "42638e65-de27-45d4-ae21-24a62c948439"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"ca337984-18b9-481a-9f9f-\
+8b015bb1fd94"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang, Quantum Computation and \
+Quantum Information (Cambridge University Press, New York, 2011)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "55dd84b3-8dd5-41ab-9dc8-127170f4f3c5"]}]],ExpressionUUID->
+         "00ed42de-77a0-4c8b-bab1-72ab28cde5ea"],
+        StyleBox[".",
+         FontSlant->"Plain"]
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "0c2cf5ff-277a-4779-9b53-1adde8bd70d2"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi, A Quantum Computation Workbook (Springer, \
+2021)"}]]]], "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "2f5d0e26-ed8f-4996-9913-129cd5eb37a0"]}]],ExpressionUUID->
+         "da2406f4-5e0e-4df5-abc4-d3bd8c5e440f"],
+        "."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "4c4d06f0-80e1-47ce-a325-e37d0e774c47"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"995d087a-6435-439d-a10c-\
+45b1705b2a4f"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"77b20cfe-86f9-4eb5-98eb-99c2454904d5"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quantum Factorization Algorithm",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2021", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 3, 14, 9, 42, 3.343099}", 
+    "history" -> {"13", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"hidden subgroup problem"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "See also Section 4.5 of the Quantum Workbook (Springer, 2022). Still in \
+preparation.", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$244296, "title" -> 
+    "Quantum Factorization Algorithm", "titlemodifier" -> "", "windowtitle" -> 
+    "Quantum Factorization Algorithm", "type" -> "Tech Note", "uri" -> 
+    "Q3/tutorial/QuantumFactorizationAlgorithm", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (February 4, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (February 4, 2022)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"f9708345-5c7f-4254-b96c-4509a514afc5"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[603, 21, 3535, 82, 57, "AnchorBarGrid",ExpressionUUID->"8b2a2ec5-0552-4ded-841d-994d5cdcaff5",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4163, 107, 1406, 38, 61, "ObjectNameGrid",ExpressionUUID->"02944c1b-4126-4c32-b99f-ca7830375f1e"],
+Cell[5572, 147, 418, 13, 38, "TechNoteText",ExpressionUUID->"954a6e25-4c2c-4f90-be07-e58af68d7205",
+ CellID->1308734266],
+Cell[5993, 162, 121, 1, 36, "TechNoteText",ExpressionUUID->"d41db442-7682-451e-b4c0-37d546f3cab0",
+ CellID->1514347467],
+Cell[6117, 165, 107, 1, 31, "TechNoteCaption",ExpressionUUID->"980a348d-6ea5-45ca-830e-24e035df0feb",
+ CellID->470106187],
+Cell[CellGroupData[{
+Cell[6249, 170, 127, 2, 29, "Input",ExpressionUUID->"9cf89b2e-f714-4100-a1cf-aa269baa520c",
+ CellID->65278547],
+Cell[6379, 174, 130, 2, 37, "Output",ExpressionUUID->"6feb536d-e9e6-4f6c-87af-a555d5b36ecb",
+ CellID->1919879459]
+}, Open  ]]
+}, Open  ]],
+Cell[6536, 180, 755, 19, 114, "TutorialMoreAboutSection",ExpressionUUID->"884a19f2-fbf7-407c-809d-b1fc99c2c7c1"],
+Cell[7294, 201, 1411, 36, 142, "RelatedTutorialsSection",ExpressionUUID->"ca337984-18b9-481a-9f9f-8b015bb1fd94"],
+Cell[8708, 239, 2139, 59, 130, "TutorialRelatedLinksSection",ExpressionUUID->"995d087a-6435-439d-a10c-45b1705b2a4f"],
+Cell[10850, 300, 78, 0, 24, "FooterCell",ExpressionUUID->"77b20cfe-86f9-4eb5-98eb-99c2454904d5"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

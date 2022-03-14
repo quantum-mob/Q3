@@ -1,0 +1,634 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     24568,        624]
+NotebookOptionsPosition[     19297,        521]
+NotebookOutlinePosition[     22156,        587]
+CellTagsIndexPosition[     22113,        584]
+WindowTitle->The Period-Finding Algorithm
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "d6285284-baba-4563-8e62-df184bdcefba"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "2b434667-bba2-4dee-bb87-74adc0282ab5"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "1e9ff6fb-a789-47eb-97b7-16732627df07"]
+        }],ExpressionUUID->"16b8b417-36bf-4c00-8abb-8808ae7e2b5f"],
+        StripOnInput->False], {"\<\"Q3/tutorial/PeriodFindingAlgorithm\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/PeriodFindingAlgorithm"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+PeriodFindingAlgorithm.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$239131], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/PeriodFindingAlgorithm" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "4da70b54-238d-43f8-b074-d3dced6acb95"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "e8e7902a-8b0e-4af4-af84-912c8f1bab3a"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"a5729d97-d5a6-47ba-a0d0-ae51793f74a3"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "The Period-Finding Algorithm", "TechNoteTitle",ExpressionUUID->
+      "ce70fff0-72fb-4dfd-8902-8c1703400eb3"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"93995973-ffa5-4c18-aa5b-aa620b7343d5"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "9124fc65-be41-48ed-a25d-03195d5d57c9"]
+    }],ExpressionUUID->"178e5b79-9ed4-412b-90a9-6c869ed8de95"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "25eb0049-9d3c-4f0e-983f-11a7d3eb3a39"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"f07318f5-ac3a-47d1-8f45-92d4c33b2ade"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Quantum Fourier Transform for a Function"], 
+      "paclet:Q3/tutorial/PeriodFindingAlgorithm#1765010670", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Continued Fraction Method: Post-Processing"], 
+      "paclet:Q3/tutorial/PeriodFindingAlgorithm#1487437411", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["The Quantum Algorithm"], 
+      "paclet:Q3/tutorial/PeriodFindingAlgorithm#1631226601", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], ""}
+  }]], "TechNoteJumpBox",ExpressionUUID->"3f3d8b47-e4f7-4d42-8aa8-\
+274656e4690d"],
+
+Cell[TextData[{
+ "See also Section 4.5 of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (Springer, 2022)"]], 
+    "https://doi.org/10.1007/978-3-030-91214-7"},
+   "WebLink",
+   BaseStyle->{"Text"}]],ExpressionUUID->
+  "8c1b62dc-d98a-4290-a36d-23587b9d24da"],
+ "."
+}], "TechNoteText",
+ TextAlignment->"Right",
+ CellID->1308734266,ExpressionUUID->"084eeb08-b83c-4f4b-991a-53585bceb87d"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"f", ":", 
+    RowBox[{
+     SuperscriptBox[
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}], "m"], "\[RightArrow]", 
+     SuperscriptBox[
+      RowBox[{"{", 
+       RowBox[{"0", ",", "1"}], "}"}], "n"]}]}], TraditionalForm]],
+  ExpressionUUID->"996dce6d-4ca7-46a0-8f1c-9a6840f88925"],
+ " be a periodic function, and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"f", "(", 
+     RowBox[{"x", "+", "\[Lambda]"}], ")"}], "=", 
+    RowBox[{"f", "(", "x", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "d25491df-d95b-44dc-bc9c-549b42948025"],
+ " for all ",
+ Cell[BoxData[
+  FormBox["x", TraditionalForm]],ExpressionUUID->
+  "904939a7-90bc-4a1e-a727-b9898d1ce4fc"],
+ " and fixed \[Lambda]. The period-finding problem is to find the unknown \
+(primary) period \[Lambda] with the least queries to the function ",
+ Cell[BoxData[
+  FormBox["f", TraditionalForm]],ExpressionUUID->
+  "80cb68f8-4ea0-4658-b33c-1a582e7fa793"],
+ ". For simplicity, we assume that \[Lambda] is a divider of ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["2", "m"], TraditionalForm]],ExpressionUUID->
+  "68e58120-7bb3-4f34-8088-85ff3cc64da7"],
+ ". As long as an efficient implementation of the ",
+ ButtonBox["quantum oracle",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/tutorial/QuantumOracle"],
+ " corresponding to function ",
+ Cell[BoxData[
+  FormBox["f", TraditionalForm]],ExpressionUUID->
+  "255e43b4-01c1-4e7b-b76f-5d0dd8c3d9a8"],
+ ","
+}], "TechNoteText",
+ CellID->151766818,ExpressionUUID->"0f19f4a2-2972-45af-a3d1-0f2556b8d3d5"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["U", "f"], ":", 
+    RowBox[{
+     RowBox[{
+      TemplateBox[{"x"},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{"y"},
+       "Ket"]}], "\[RightTeeArrow]", 
+     RowBox[{
+      TemplateBox[{"x"},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{
+        RowBox[{"y", "\[CirclePlus]", 
+          RowBox[{"f", "(", "x", ")"}]}]},
+       "Ket"]}]}]}], TraditionalForm]],ExpressionUUID->
+  "544336dd-a932-4b6e-878a-32f87c0592dd"],
+ ","
+}], "TechNoteText",
+ CellID->1681821137,ExpressionUUID->"ed5a4944-f11a-4320-9354-d025de3f1543"],
+
+Cell["\<\
+is available, there exists an efficient quantum algorithm for the \
+period-finding problem.\
+\>", "TechNoteText",
+ CellID->1188087745,ExpressionUUID->"d9838ffd-5a2b-459b-a22c-bc5093690e0e"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Oracle"]], "paclet:Q3/ref/Oracle", "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "Represents a quantum oracle", "TechNoteTableText",ExpressionUUID->
+     "f1017123-0c67-4579-8270-af7bedbc0c9e"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["PowerMod"]], "paclet:ref/PowerMod"},
+     "RefLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "Modular exponentiation", "TechNoteTableText",ExpressionUUID->
+     "63f9431b-9753-46b0-ba72-163032f35ee4"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["ContinuedFraction"]], "paclet:ref/ContinuedFraction"},
+     "RefLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "Generates the continued fraction representation of a number", 
+     "TechNoteTableText",ExpressionUUID->
+     "57d8d72d-492c-490b-9a18-9f906d1b7d3d"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Convergents"]], "paclet:ref/Convergents"},
+     "RefLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell["\<\
+Returns the convergents corresponding to a continued fraction\
+\>", "TechNoteTableText",ExpressionUUID->
+     "d0ec70ed-97c2-483e-b331-06a27251d39c"]}
+  }]], "DefinitionBox",
+ CellID->258195911,ExpressionUUID->"300057da-d54c-44fe-a50f-8091898a6c73"],
+
+Cell["Functions used in the period-finding algorithm.", "TechNoteCaption",
+ CellID->1581709237,ExpressionUUID->"e20cb0e9-7bd7-44ee-a3c5-750017bc755b"],
+
+Cell[TextData[{
+ "Make sure that the ",
+ ButtonBox["Q3",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Q3"],
+ " package is loaded to use the demonstrations in this documentation."
+}], "TechNoteMathCaption",
+ CellID->1428640008,ExpressionUUID->"22fbf7a5-a37b-41b4-ac1f-6919c66ff4e5"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[43]:=",
+ CellID->853967906,ExpressionUUID->"e01427a6-9f6b-4401-a015-d917fc0fc0ce"],
+
+Cell[TextData[{
+ "Throughout this document, symbol ",
+ StyleBox["S", "Input"],
+ " will be used to denote qubits and Pauli operators on them. Similarly, \
+symbol c will be used to denote complex-valued coefficients."
+}], "TechNoteMathCaption",
+ CellID->1937193009,ExpressionUUID->"01b97184-0041-4790-b645-05c6ae3f2d0d"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}]}], "Input",
+ CellLabel->"In[44]:=",
+ CellID->403330096,ExpressionUUID->"4fc25f59-db48-491b-b166-628e2dd2f6d2"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Fourier Transform for a Function", "TechNoteSection",
+ CellID->1765010670,ExpressionUUID->"7549dd2e-ddca-4405-b46e-ca29b759b83b"],
+
+Cell["Still in preparation.", "TechNoteText",
+ CellID->1514347467,ExpressionUUID->"48982afb-41ca-42d2-948f-2ad33b4e72af"]
+}, Open  ]],
+
+Cell["The Quantum Algorithm", "TechNoteSection",
+ CellID->1631226601,ExpressionUUID->"04655e3f-154f-4cc5-9941-304f26999001"],
+
+Cell["Continued Fraction Method: Post-Processing", "TechNoteSection",
+ CellID->1487437411,ExpressionUUID->"13dee461-86c7-4ccc-a4f2-f6066b9de37b"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/guide/QuantumComputationAndQuantumInformation"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "c9311936-6c2c-44fd-89d1-6aaba6ed01bb"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"e4a364cf-8c5e-4787-ab4e-\
+6215e39e41ff"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Abelian Hidden Subgroup Problems",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/AbelianHiddenSubgroupProblems"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "a15c57c8-4788-4263-ae67-be61826c5742"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Algorithms",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumAlgorithms"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "e9fa0b95-0867-42ea-a44d-689102f1b147"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "95dea44b-e803-4a09-b87b-0de636b86244"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"0492551c-5820-450e-8aed-\
+7bfb91b792af"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang, Quantum Computation and \
+Quantum Information (Cambridge University Press, New York, 2011)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "bf6899f8-3232-4ff8-b828-9b36e27fad7c"]}]],ExpressionUUID->
+         "9a2252a2-0487-4ee7-b263-673b4f3fb81e"],
+        StyleBox[".",
+         FontSlant->"Plain"]
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "ebe4f018-c08d-4078-8d19-bfc67d5636da"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi, A Quantum Computation Workbook (Springer, \
+2021)"}]]]], "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "3f3e5cff-33ef-4303-82a7-62720c32b5a5"]}]],ExpressionUUID->
+         "ee81eabb-51d9-4853-bcce-09537b6dca86"],
+        "."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "8ae7a770-b6b8-4d7e-b203-b3a8ab364909"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"c7adf23b-1c06-43de-a79f-\
+93550c9b7dbc"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"1e7b7cb3-d3dc-4a34-bcc5-ccd6d9a7136b"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"The Period-Finding Algorithm",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2021", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 3, 14, 9, 41, 50.209575}", 
+    "history" -> {"13", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"hidden subgroup problems"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "See also Section 4.5 of the Quantum Workbook (Springer, 2022). Let \
+f:{0,1}^m\\[RightArrow]{0,1}^n be a periodic function, and \
+f(x+\\[Lambda])=f(x) for all x and fixed \\[Lambda]. The period-finding \
+problem is to find the unknown (primary) period \\[Lambda] with the least \
+queries to the function f. For simplicity, we assume that \\[Lambda] is a \
+divider of 2^m. As long as an efficient implementation of the quantum oracle \
+corresponding to function f, U_f:TemplateBox[{x}, \
+Ket]\\[CircleTimes]TemplateBox[{y}, Ket]\\[RightTeeArrow]TemplateBox[{x}, \
+Ket]\\[CircleTimes]TemplateBox[{RowBox[{y, \\[CirclePlus], RowBox[{f, (, x, \
+)}]}]}, Ket],", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$239086, "title" -> 
+    "The Period-Finding Algorithm", "titlemodifier" -> "", "windowtitle" -> 
+    "The Period-Finding Algorithm", "type" -> "Tech Note", "uri" -> 
+    "Q3/tutorial/PeriodFindingAlgorithm", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (February 4, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (February 4, 2022)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"6a50b914-2e28-47d6-bc38-f621e123a2de"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[600, 21, 3483, 80, 70, "AnchorBarGrid",ExpressionUUID->"a5729d97-d5a6-47ba-a0d0-ae51793f74a3",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4108, 105, 1403, 38, 70, "ObjectNameGrid",ExpressionUUID->"f07318f5-ac3a-47d1-8f45-92d4c33b2ade"],
+Cell[5514, 145, 3407, 73, 70, "TechNoteJumpBox",ExpressionUUID->"3f3d8b47-e4f7-4d42-8aa8-274656e4690d"],
+Cell[8924, 220, 418, 13, 70, "TechNoteText",ExpressionUUID->"084eeb08-b83c-4f4b-991a-53585bceb87d",
+ CellID->1308734266],
+Cell[9345, 235, 1583, 45, 70, "TechNoteText",ExpressionUUID->"0f19f4a2-2972-45af-a3d1-0f2556b8d3d5",
+ CellID->151766818],
+Cell[10931, 282, 618, 22, 70, "TechNoteText",ExpressionUUID->"ed5a4944-f11a-4320-9354-d025de3f1543",
+ CellID->1681821137],
+Cell[11552, 306, 199, 4, 70, "TechNoteText",ExpressionUUID->"d9838ffd-5a2b-459b-a22c-bc5093690e0e",
+ CellID->1188087745],
+Cell[11754, 312, 1366, 36, 70, "DefinitionBox",ExpressionUUID->"300057da-d54c-44fe-a50f-8091898a6c73",
+ CellID->258195911],
+Cell[13123, 350, 150, 1, 70, "TechNoteCaption",ExpressionUUID->"e20cb0e9-7bd7-44ee-a3c5-750017bc755b",
+ CellID->1581709237],
+Cell[13276, 353, 288, 7, 70, "TechNoteMathCaption",ExpressionUUID->"22fbf7a5-a37b-41b4-ac1f-6919c66ff4e5",
+ CellID->1428640008],
+Cell[13567, 362, 146, 3, 70, "Input",ExpressionUUID->"e01427a6-9f6b-4401-a015-d917fc0fc0ce",
+ CellID->853967906],
+Cell[13716, 367, 318, 6, 70, "TechNoteMathCaption",ExpressionUUID->"01b97184-0041-4790-b645-05c6ae3f2d0d",
+ CellID->1937193009],
+Cell[14037, 375, 270, 6, 70, "Input",ExpressionUUID->"4fc25f59-db48-491b-b166-628e2dd2f6d2",
+ CellID->403330096]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14344, 386, 143, 1, 70, "TechNoteSection",ExpressionUUID->"7549dd2e-ddca-4405-b46e-ca29b759b83b",
+ CellID->1765010670],
+Cell[14490, 389, 121, 1, 70, "TechNoteText",ExpressionUUID->"48982afb-41ca-42d2-948f-2ad33b4e72af",
+ CellID->1514347467]
+}, Open  ]],
+Cell[14626, 393, 124, 1, 70, "TechNoteSection",ExpressionUUID->"04655e3f-154f-4cc5-9941-304f26999001",
+ CellID->1631226601],
+Cell[14753, 396, 145, 1, 70, "TechNoteSection",ExpressionUUID->"13dee461-86c7-4ccc-a4f2-f6066b9de37b",
+ CellID->1487437411],
+Cell[14901, 399, 755, 19, 70, "TutorialMoreAboutSection",ExpressionUUID->"e4a364cf-8c5e-4787-ab4e-6215e39e41ff"],
+Cell[15659, 420, 1411, 36, 70, "RelatedTutorialsSection",ExpressionUUID->"0492551c-5820-450e-8aed-7bfb91b792af"],
+Cell[17073, 458, 2139, 59, 70, "TutorialRelatedLinksSection",ExpressionUUID->"c7adf23b-1c06-43de-a79f-93550c9b7dbc"],
+Cell[19215, 519, 78, 0, 70, "FooterCell",ExpressionUUID->"1e7b7cb3-d3dc-4a34-bcc5-ccd6d9a7136b"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
