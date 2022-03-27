@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.40 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 21:04:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.41 $"][[2]], " (",
+  StringSplit["$Date: 2022-03-20 19:20:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -147,7 +147,7 @@ GrayCode[n_Integer] := Join[
  ] /; n > 1
 
 
-GrayTwoLevelU::usage = "GrayTwoLevelU[mat, {x, y}, {q1, q2, ...}] returns a list of CNOT gates and one controlled-U gate that compose the two-level unitary operation specified by mat."
+GrayTwoLevelU::usage = "GrayTwoLevelU[mat, {x, y}, {q1, q2, ...}] returns a list of multi-control NOT gates and one controlled-unitary gate that compose the two-level unitary operation specified by mat."
 
 GrayTwoLevelU[ TwoLevelU[mat_?MatrixQ, {x_, y_}, L_], qq:{__?QubitQ} ] :=
   GrayTwoLevelU[mat, {x, y}, FlavorNone @ qq] /;

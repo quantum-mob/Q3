@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.3.14
+
+- Qubit speices takes a negative value for the final flavor index.
+
 ## v2.3.7
 
 - A bug fix concerning Matrix[Dyad[...], ...].

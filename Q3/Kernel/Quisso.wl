@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.31 $"][[2]], " (",
-  StringSplit["$Date: 2022-02-01 10:24:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.34 $"][[2]], " (",
+  StringSplit["$Date: 2022-03-18 17:01:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -32,7 +32,7 @@ BeginPackage["Q3`"]
 
 { Oracle, VerifyOracle };
 
-{ QFT };
+{ QFT, ModExp, ModAdd, ModMultiply };
 
 { ProductState, BellState, GraphState, DickeState, RandomState };
 
@@ -83,6 +83,8 @@ AddElaborationPatterns[
   G_?QubitQ[j___, 8] -> G[j, Octant],
   G_?QubitQ[j___, 10] -> (1 + G[j,3]) / 2,
   G_?QubitQ[j___, 11] -> (1 - G[j,3]) / 2,
+  G_?QubitQ[j___, n_Integer?Negative] :>
+    Elaborate @ Phase[2*Pi*Power[2,n], G[j,None]],
   OTimes -> DefaultForm @* CircleTimes,
   OSlash -> DefaultForm @* CircleTimes
  ]
@@ -116,6 +118,7 @@ setQubit[x_Symbol] := (
   x/: Inverse[ x[j___, k:(0|1|2|3|6)] ] := x[j, k];
   x/: Inverse[ x[j___, 7] ] := Dagger @ x[j, 7];
   x/: Inverse[ x[j___, 8] ] := Dagger @ x[j, 8];
+  x/: Inverse[ x[j___, n_Integer?Negative] ] := Dagger @ x[j, n];
 
   (* for time reversal *)
   x/: Conjugate[ x[j___, k:(0|1|3|4|5|6)] ] := x[j, k];
@@ -132,6 +135,10 @@ setQubit[x_Symbol] := (
   x[j___, Hadamard] := (x[j,1] + x[j,3]) / Sqrt[2];
   x[j___, Quadrant] := (1+I)/2 + x[j,3] (1-I)/2;
   x[j___, Octant]   := (1+Exp[I Pi/4])/2 + x[j,3] (1-Exp[I Pi/4])/2;
+
+  x[j___, -1] := x[j, 3];
+  x[j___, -2] := x[j, 7];
+  x[j___, -3] := x[j, 8];
 
   (* x[j___, 10] := (1 + x[j,3]) / 2; *)
   (* x[j___, 11] := (1 - x[j,3]) / 2; *)
@@ -152,6 +159,9 @@ setQubit[x_Symbol] := (
   (* In particular, x[j,None,None] = x[j,None]. *)
   
   Format[ x[j___, None] ] := SpeciesBox[x, {j}, {}];
+
+  Format[ x[j___, n_Integer?Negative] ] :=
+    Surd[x[j,3], Superscript[2,-n-1]];
   
   Format[ x[j___, 0] ] := SpeciesBox[x, {j}, {0}];
   Format[ x[j___, 1] ] := SpeciesBox[x, {j}, {"x"}];
@@ -181,17 +191,23 @@ Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := 0
 
 Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] ] =. ;
 
+Format[ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, n_Integer?Negative] ] ] :=
+  DisplayForm @ SuperscriptBox[
+    RowBox @ {"(", c[j,n], ")"},
+    "\[Dagger]"
+   ] /; $FormatSpecies
+
 Format[ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 7] ] ] :=
-  DisplayForm @ SpeciesBox[c, {j}, {"S\[Dagger]"}] /; $FormatSpecies
+  SpeciesBox[c, {j}, {"S\[Dagger]"}] /; $FormatSpecies
 
 Format[ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 8] ] ] :=
-  DisplayForm @ SpeciesBox[c, {j}, {"T\[Dagger]"}] /; $FormatSpecies
+  SpeciesBox[c, {j}, {"T\[Dagger]"}] /; $FormatSpecies
 
 Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] ] := 
-  DisplayForm @ SpeciesBox[c, {j}, {"\[Dagger]"} ] /; $FormatSpecies
+  SpeciesBox[c, {j}, {"\[Dagger]"} ] /; $FormatSpecies
 
 Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] ] := 
-  DisplayForm @ SpeciesBox[c, {}, {"\[Dagger]"} ] /; $FormatSpecies
+  SpeciesBox[c, {}, {"\[Dagger]"} ] /; $FormatSpecies
 
 
 QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a Qubit through Let."
@@ -703,7 +719,10 @@ ParityOddQ[v_Ket, a_?QubitQ] := OddQ @ v @ a
 
 (**** <Matrix for Qubits> ****)
 
-TheMatrix[ _?QubitQ[___, j_] ] := ThePauli[j]
+TheMatrix[ _?QubitQ[___, m_Integer?Negative] ] :=
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[I*2*Pi*Power[2, m]]}, {2, 2}]
+
+TheMatrix[ _?QubitQ[___, m_] ] := ThePauli[m]
 
 TheMatrix[ Ket[ Association[_?QubitQ -> s:(0|1)] ] ] := SparseArray @ TheKet[s]
 

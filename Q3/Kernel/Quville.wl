@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.27 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-29 13:58:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.29 $"][[2]], " (",
+  StringSplit["$Date: 2022-03-18 16:57:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -479,6 +479,9 @@ qMeasurementLabel[S_?QubitQ] :=
 qGateLabel::usage = "qGateLabel[G] returns the label of the circuit element to be displayed in the circuit diagram."
 
 SetAttributes[qGateLabel, Listable];
+
+qGateLabel[ _Symbol?QubitQ[___, n_Integer?Negative] ] :=
+    Surd["Z", Superscript[2,-n-1]]
 
 qGateLabel[ S_?QubitQ ] := Last[S] /. {
   0 -> "I",
