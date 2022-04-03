@@ -1,10 +1,10 @@
 (* Paclet Info File *)
-(* $Date: 2022-03-27 19:37:09+09 $ *)
-(* $Revision: 2.31 $ *)
+(* $Date: 2022-04-03 00:24:16+09 $ *)
+(* $Revision: 2.33 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.3.16",
+  "Version" -> "2.3.17",
   "WolframVersion" -> "12.1+",
   "Updating" -> Automatic,
   "Extensions" -> {
@@ -18,7 +18,13 @@ Paclet[
      },
     { "Documentation",
       "Language" -> "English",
-      "MainPage" -> "Guides/Q3" }
+      "MainPage" -> "Guides/Q3" },
+    { "FrontEnd",
+      "Prepend" -> True }
+    (* Enables subdirectories within the FrontEnd to be handled,
+       e.g. FrontEnd/Palettes, FrontEnd/StyleSheets, FrontEnd/SystemResources,
+       FrontEnd/TextResources. These items will be recognized by the Front
+       End, e.g. palettes will show up in the Palettes menu. *)
    },
   "Description" -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems",
   "Creator" -> "Mahn-Soo Choi (Korea University)",

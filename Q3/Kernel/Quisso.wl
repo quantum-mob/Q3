@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.34 $"][[2]], " (",
-  StringSplit["$Date: 2022-03-18 17:01:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.35 $"][[2]], " (",
+  StringSplit["$Date: 2022-04-02 22:52:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1827,6 +1827,13 @@ HoldPattern @
   Garner @ Multiply[pre, Elaborate[vec], post]
 
 (* input specifications *)
+
+ProductState[spec___Rule, s_?QubitQ] :=
+  LogicalForm[ProductState[spec], {s}]
+
+ProductState[spec___Rule, ss:{__?QubitQ}] :=
+  LogicalForm[ProductState[spec], ss]
+
 
 ProductState[] = ProductState[Association[]]
 

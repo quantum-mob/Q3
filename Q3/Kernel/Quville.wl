@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.29 $"][[2]], " (",
-  StringSplit["$Date: 2022-03-18 16:57:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.35 $"][[2]], " (",
+  StringSplit["$Date: 2022-04-03 21:55:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -264,15 +264,16 @@ HoldPattern @
     lines = qCircuitLines[ cc, xx, KeyDrop[yy, ww] ];
     
     in = FirstCase[ {gg}, QuissoIn[kk___] :> {kk} ];
-    in = qCircuitInput[ in, xx, yy ];
+    in = qCircuitInput[in, xx, yy];
 
     out = FirstCase[ {gg}, QuissoOut[kk___] :> {kk} ];
-    out = qCircuitOutput[ out, xx, yy ];
+    out = qCircuitOutput[out, xx, yy];
 
     Graphics[ Join[lines, in, nodes, out],
       Sequence @@ FilterRules[{opts}, Options @ Graphics],
       more,
-      ImagePadding -> { unit*port, 5*{1, 1} },
+      PlotRange -> MinMax[yy] + {-1, 1}*$CircuitUnit/2,
+      ImagePadding -> { unit*port, {1, 1} },
       ImageSize -> unit * ($CircuitSize + Total[port])
      ]
    ]
@@ -306,6 +307,13 @@ qCircuitGate[gg_List, opts___?OptionQ] :=
 
 qCircuitGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
   
+
+qCircuitGate[ S_Symbol?QubitQ[j___, k_Integer?Negative], opts___?OptionQ ] :=
+  Gate[
+    {S[j,None]}, opts,
+    "Label" -> qGateLabel[S[j,k]],
+    "LabelSize" -> 0.5
+   ]
 
 qCircuitGate[ S_?QubitQ, opts___?OptionQ ] :=
   Gate[ Qubits @ S, opts, "Label" -> qGateLabel[S] ]
@@ -481,14 +489,14 @@ qGateLabel::usage = "qGateLabel[G] returns the label of the circuit element to b
 SetAttributes[qGateLabel, Listable];
 
 qGateLabel[ _Symbol?QubitQ[___, n_Integer?Negative] ] :=
-    Surd["Z", Superscript[2,-n-1]]
+  DisplayForm @ FractionBox[Row @ {2, Pi}, SuperscriptBox[2, -n]] 
 
 qGateLabel[ S_?QubitQ ] := Last[S] /. {
   0 -> "I",
   1 -> "X", 2 -> "Y", 3 -> "Z",
   6 -> "H", 7 -> "S", 8 -> "T" }
 
-qGateLabel[ gate_Phase ] := "\[CapitalPhi]"
+qGateLabel[ gate_Phase ] := "\[Phi]"
 
 qGateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
   Subscript[ "U", FlavorLast[S] /. {1->"x", 2->"y", 3->"z"} ]
@@ -762,7 +770,7 @@ qCircuitOutput[ Missing["NotFound"], xx_List, yy_Association ] = {}
 qCircuitOutput[ gg:{___}, xx_List, yy_Association ] := Module[
   { xy = Map[{$CircuitSize + $InOutOffset, #}&, yy],
     ff = List @ qCircuitPort @ gg },
-  Map[ qDrawPort[#, xy]&, ff ]
+  Map[qDrawPort[#, xy]&, ff]
  ]
 
 
@@ -774,11 +782,10 @@ qCircuitInput[ gg:{___}, xx_List, yy_Association ] := Module[
   { xy = Map[{-$InOutOffset, #}&, yy],
     ff },
   
-  (* ff = Join[ff, {"Pivot" -> {1,0}, "Type" -> -1} ]; *)
   ff = Join[gg, {"Pivot" -> {1, 0}, "Type" -> -1} ];
   ff = List @ qCircuitPort @ ff;
 
-  Map[ qDrawPort[#, xy]&, ff ]
+  Map[qDrawPort[#, xy]&, ff]
  ]
 
 
@@ -815,13 +822,19 @@ qDrawPort[ Port[ Ket[v_], opts___?OptionQ ], xy_Association ] := Module[
     tt, label, pivot },
   { label, pivot } = {"Label", "Pivot"} /. {opts} /. Options[qCircuitPort];
 
-  If[ label === None, Return @ {} ];
+  If[label === None, Return @ {}];
   
-  tt = If [ label === Automatic,
+  tt = If[ label === Automatic,
     vv,
     If[ Not @ ListQ @ label, label = {label} ];
     AssociationThread[ Keys[v] -> PadRight[label, Length[v], label] ]
    ];
+  tt = Association @ KeyValueMap[
+    Switch[ #2,
+      None, Nothing,
+      Automatic, #1 -> Ket[Lookup[v, #1]],
+      _, #1 -> #2 ]&,
+    tt ];
   
   Values @ MapThread[
     qPortText[#1, #2, pivot, opts]&,
@@ -842,7 +855,13 @@ qDrawPort[
      If[ Not @ ListQ @ label, label = {label} ];
      AssociationThread[ Keys[v] -> PadRight[label, Length[v], label] ]
     ];
-   
+  tt = Association @ KeyValueMap[
+    Switch[ #2,
+      None, Nothing,
+      Automatic, #1 -> {Ket[0], Ket[1]} . Lookup[v, #1],
+      _, #1 -> #2 ]&,
+    tt ];
+     
    Values @ MapThread[
      qPortText[#1, #2, pivot, opts, more]&,
      KeyIntersection @ {tt, xy}

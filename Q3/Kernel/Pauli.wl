@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.204 $"][[2]], " (",
-  StringSplit["$Date: 2022-02-11 19:12:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.205 $"][[2]], " (",
+  StringSplit["$Date: 2022-04-02 22:48:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -541,6 +541,15 @@ Ket[ Ket[a_Association], spec__Rule ] := Module[
   vec = Ket @ KeySort @ KetTrim @ Join[a, Association @ rules];
   If[FailureQ @ KetVerify @ vec, $Failed, vec]
  ]
+
+Ket[ spec___Rule, s_?QubitQ] := LogicalForm[Ket[spec], {s}]
+
+Ket[ spec___Rule, ss:{__?QubitQ}] := LogicalForm[Ket[spec], ss]
+
+Ket[ v_Ket, spec___Rule, s_?QubitQ] := LogicalForm[Ket[v, spec], {s}]
+
+Ket[ v_Ket, spec___Rule, ss:{__?QubitQ}] := LogicalForm[Ket[v, spec], ss]
+
 
 (* operator form *)
 Ket[a_Association][spec__Rule] := Ket[ Ket[a], spec ]
