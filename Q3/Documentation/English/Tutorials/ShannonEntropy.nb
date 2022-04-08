@@ -1,0 +1,1084 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     43261,       1074]
+NotebookOptionsPosition[     36224,        938]
+NotebookOutlinePosition[     39601,       1011]
+CellTagsIndexPosition[     39558,       1008]
+WindowTitle->Shannon Entropy
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "6d3f4ca2-bcfe-412f-b388-72f53d55227d"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "6cfd6d2a-356d-4f87-8e7e-b42d075b4ca8"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "8aa3daf9-a673-4d3b-b4c6-8112d7592d2f"]
+        }],ExpressionUUID->"fd1412a4-be30-4351-a0e2-6be17f60ba1c"],
+        StripOnInput->False], {"\<\"Q3/tutorial/ShannonEntropy\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/ShannonEntropy"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+ShannonEntropy.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$251451], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/ShannonEntropy" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "b183ca7d-a703-4ea8-a62a-e58e6bd32f1d"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "f95fb70b-9866-4ac4-8fd8-073c0403b2e1"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"547142ad-e9e0-4d71-852d-b51e5e529aab"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Shannon Entropy", "TechNoteTitle",ExpressionUUID->
+      "f17d58fe-2baf-48b0-b941-51aed87d1b20"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"f4e66afd-a77f-43ff-b68f-451eb7763b3a"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "99ba55dd-e352-4e8d-97bf-b9679db0cbd9"]
+    }],ExpressionUUID->"13af08ba-5ad5-43e3-a8ba-2df72f37d765"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "332fc267-9e16-4e70-802c-0470f9133d9c"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,
+ CellID->477517592,ExpressionUUID->"76d8bea7-4811-4d37-96f5-b323a78346f5"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Definition"], "paclet:Q3/tutorial/ShannonEntropy#1122958171", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Relative Entropy"], "paclet:Q3/tutorial/ShannonEntropy#240193879", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]}
+  }]], "TechNoteJumpBox",
+ CellID->491779905,ExpressionUUID->"7c2757fd-3c8e-4b3f-9414-db3ac3cd1ff9"],
+
+Cell[TextData[{
+ "See also Section 7.1 of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (Springer, 2022)"]], 
+    "https://doi.org/10.1007/978-3-030-91214-7"},
+   "WebLink",
+   BaseStyle->{"TechNoteText"}]],ExpressionUUID->
+  "b52823b7-6294-44ad-a772-8d3e26870d41"],
+ "."
+}], "TechNoteText",
+ TextAlignment->"Right",
+ CellID->1308734266,ExpressionUUID->"f727066b-d66b-48ba-8f91-6c2becbfdce0"],
+
+Cell["\<\
+Entropy is a measure of uncertainty. Entropy is an essential concept \
+ubiquitously used in every science that has statistical elements. Examples \
+include classical and quantum statistical mechanics, classical and quantum \
+information theory, data analysis, machine learning, and many more.\
+\>", "TechNoteText",
+ CellID->356897954,ExpressionUUID->"bd7dfab4-114c-4def-a05c-3620ef3fa4f3"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell[
+       TextData["ShannonEntropy"]], "paclet:Q3/ref/ShannonEntropy", 
+      "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The Shannon entropy of a probability distribution", "TechNoteTableText",
+     ExpressionUUID->"c2f1ec75-387f-42be-b710-7b4cf3995f86"]},
+   {"VonNeumannEntropy", Cell[
+    "The von Neumann entropy of a quantum state", "TechNoteTableText",
+     ExpressionUUID->"5999d74e-5e17-4360-8bc3-37187255692e"]}
+  }]], "DefinitionBox",
+ CellID->1765790819,ExpressionUUID->"d26922ec-1ec6-484e-83a9-452c8b19607e"],
+
+Cell["Q3 functions related to the Shannon entropy.", "TechNoteCaption",
+ CellID->1569777040,ExpressionUUID->"1934fe12-28d6-4ed5-a645-080617e1a3a6"],
+
+Cell[TextData[{
+ "Make sure that the ",
+ ButtonBox["Q3",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Q3"],
+ " package is loaded to use the demonstrations in this documentation."
+}], "TechNoteMathCaption",
+ CellID->1428640008,ExpressionUUID->"350c7d87-8cf9-4bfc-bed2-9bfd1488bf54"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->853967906,ExpressionUUID->"f2d2695b-7949-440f-962a-d502aee20f94"],
+
+Cell[TextData[{
+ "Throughout this document, symbol ",
+ StyleBox["S", "Input"],
+ " will be used to denote qubits and Pauli operators on them. Similarly, \
+symbol c will be used to denote complex-valued coefficients."
+}], "TechNoteMathCaption",
+ CellID->1937193009,ExpressionUUID->"c9858b2d-0627-4020-8105-8f63e269751b"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->403330096,ExpressionUUID->"f19afed8-375c-4a9e-a2fe-22648230896a"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Definition", "TechNoteSection",
+ CellID->1122958171,ExpressionUUID->"3c5a5bd7-87c0-4f1a-ae55-b791dd91b0e3"],
+
+Cell[TextData[{
+ "In classical information, entropy is concerned with random variables. \
+Suppose that ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "0e80d79e-b2f6-4bc8-897a-d234c924ccf8"],
+ " is a random variable taking a value from a discrete set ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", "x", "}"}], TraditionalForm]],ExpressionUUID->
+  "c30c8ff5-e8c8-44dd-9bef-756af2123a57"],
+ ". The value of ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "c1355ffc-dffb-4f80-9b0e-f4ba7619aa33"],
+ " is not fixed but determined randomly by a probability distribution, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", 
+    RowBox[{"(", "x", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "a0bb6ba2-c2e5-4fdb-a8d1-af187d15c5b0"],
+ ". Intuitively, the uncertainty in ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "c33cc047-aa04-4e93-9c78-68e647d581cb"],
+ " is lower if the probability distribution has a narrow peak at a particular \
+value ",
+ Cell[BoxData[
+  FormBox["x", TraditionalForm]],ExpressionUUID->
+  "ca4a8a05-deec-47da-b8d9-83740ffa57fd"],
+ ". For example, consider a binary case ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"0", ",", " ", "1"}], "}"}], TraditionalForm]],ExpressionUUID->
+  "d775223a-6ef5-4eed-9e1e-56a9628a2a14"],
+ ". When ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"p", "(", "0", ")"}], "=", "1"}], TraditionalForm]],
+  ExpressionUUID->"1abe0006-1596-436c-9e13-20d9c4388fce"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"p", "(", "1", ")"}], "=", "0"}], TraditionalForm]],
+  ExpressionUUID->"e9cf25b5-c46c-49de-88e3-c7d611bc6fff"],
+ ", we know the value of ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "bd34ca14-7766-4a46-93a1-88c9ae89a11f"],
+ " with certainty. In this case, there is no uncertainty at all. On the \
+contrary, the uncertainty is high when the probability is broadly \
+distributed. For example, in the binary case, if ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"p", "(", "0", ")"}], "=", 
+    RowBox[{
+     RowBox[{"p", "(", "1", ")"}], "=", 
+     RowBox[{"1", "/", "2"}]}]}], TraditionalForm]],ExpressionUUID->
+  "9120d829-ef2d-48a7-918c-f17add9b3ff4"],
+ ", it is hard to guess the value of ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "b78b05f1-c9b1-46a5-87dc-d2d0e0e6b462"],
+ ". The uncertainty is maximum in this case."
+}], "TechNoteText",
+ CellID->2095287155,ExpressionUUID->"7794593a-5cd9-4b40-be73-a7ac61aca92c"],
+
+Cell["\<\
+\tTo quantify such a tendency of the uncertainty in a random variable, we \
+define
+the entropy by\
+\>", "TechNoteText",
+ CellID->1270584561,ExpressionUUID->"ab78fa23-7dc7-48f5-bede-59b349b6212c"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"H", "(", "X", ")"}], "\[Congruent]", 
+     RowBox[{"H", "(", 
+      RowBox[{"{", 
+       RowBox[{"p", "(", "x", ")"}], "}"}], ")"}]}], ":=", 
+    RowBox[{"-", 
+     RowBox[{
+      SubscriptBox["\[Sum]", "x"], 
+      RowBox[{
+       RowBox[{"p", "(", "x", ")"}], "log", " ", 
+       RowBox[{"p", "(", "x", ")"}]}]}]}]}], TraditionalForm]],ExpressionUUID->
+  "2f7f93f8-baa3-4dfc-b59d-5adc5c044150"],
+ " ."
+}], "TechNoteText",
+ CellID->993262308,ExpressionUUID->"baa1f6da-694f-4223-b556-c518fbc85ee7"],
+
+Cell[TextData[{
+ "It is called the ",
+ StyleBox["Shannon entropy",
+  FontSlant->"Italic"],
+ " associated with the probability distribution ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"p", 
+     RowBox[{"(", "x", ")"}]}], "}"}], TraditionalForm]],ExpressionUUID->
+  "ce91ffc1-1703-4409-89d8-c4a00b781a25"],
+ ". The logarithm concerning entropies are taken to base 2. When ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"p", "(", "x", ")"}], "=", "0"}], TraditionalForm]],
+  ExpressionUUID->"8a81e269-c1b0-4207-bfb4-a9ecb96fd550"],
+ " for some values ",
+ Cell[BoxData[
+  FormBox["x", TraditionalForm]],ExpressionUUID->
+  "7486ebc9-39e1-4558-8587-a80360392049"],
+ ", then the logarithm alone is ill-defined. However, the function ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"x", " ", "log", " ", "x"}], TraditionalForm]],ExpressionUUID->
+  "9fa595c8-eb7e-4c5b-abd8-dea3947358ba"],
+ " converges to 0, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"x", " ", "log", " ", "x"}], " ", "\[RightArrow]", " ", 
+    SuperscriptBox["0", "-"]}], TraditionalForm]],ExpressionUUID->
+  "ad9619d3-9b5b-407f-97c8-30a20748d3f5"],
+ ", as ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"x", "\[RightArrow]", 
+    SuperscriptBox["0", "+"]}], TraditionalForm]],ExpressionUUID->
+  "a0a80e24-8889-4a0a-9174-df16246d55fa"],
+ ". We thus ",
+ StyleBox["define",
+  FontSlant->"Italic"],
+ " that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"0", "log0"}], "=", "0"}], TraditionalForm]],ExpressionUUID->
+  "aa611d3e-637e-4428-94e0-360952b26417"],
+ "."
+}], "TechNoteText",
+ CellID->231393651,ExpressionUUID->"b8c085e2-96a1-46a7-a7cd-3cad2bf4c45d"],
+
+Cell[TextData[{
+ "\tThe entropy is associated with the probability distribution rather than a \
+particular random variable or the indices of the values. In this respect, the \
+notation ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"H", 
+    RowBox[{"(", 
+     RowBox[{"{", 
+      RowBox[{"p", 
+       RowBox[{"(", "x", ")"}]}], "}"}], ")"}]}], TraditionalForm]],
+  ExpressionUUID->"05285c21-8e28-4cd1-93c1-a1ccc236e47e"],
+ " is more appropriate than ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"H", 
+    RowBox[{"(", "X", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "97f21bef-bcc8-4022-a60f-74ab8b07d4b2"],
+ ". Nevertheless, for notational convenience, we will often use both \
+notations interchangeably. The Shannon entropy defined above puts the \
+foundation of all variants of entropy. Every variant of entropy is \
+conceptually equivalent to the above definition."
+}], "TechNoteText",
+ CellID->1542993249,ExpressionUUID->"703d604a-e710-4eca-8173-df4a736c2e25"],
+
+Cell[TextData[{
+ "\tTo check whether the above definition reflects the expected tendency of \
+uncertainty, consider again the binary random variable with the value set ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1"}], "}"}], TraditionalForm]],ExpressionUUID->
+  "262f7425-0b0b-4fd5-b021-873f66b54bfc"],
+ ". Let ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"p", "(", "0", ")"}], "=", "p"}], TraditionalForm]],
+  ExpressionUUID->"bd4ae293-d7a9-477e-bacd-896067cfeebc"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"p", "(", "1", ")"}], "=", 
+    RowBox[{"1", "\[Minus]", "p"}]}], TraditionalForm]],ExpressionUUID->
+  "1687476f-3678-4a03-9e7a-9f62c8e248d2"],
+ ". ",
+ ButtonBox["Figure 1",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/tutorial/ShannonEntropy#1166102292"],
+ " shows the Shannon entropy ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"H", " ", 
+    RowBox[{"(", 
+     RowBox[{"{", 
+      RowBox[{"p", ",", 
+       RowBox[{"1", "\[Minus]", "p"}]}], "}"}], ")"}]}], TraditionalForm]],
+  ExpressionUUID->"994b6389-cd4b-47c0-9dbb-43324e58b521"],
+ " as a function of ",
+ Cell[BoxData[
+  FormBox["p", TraditionalForm]],ExpressionUUID->
+  "a5d5841a-76bc-45b5-8d4d-13673ca547bf"],
+ ". We observe that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"H", "(", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "1"}], "}"}], ")"}], "=", "0"}], TraditionalForm]],
+  ExpressionUUID->"53f54e71-5224-4294-a740-297af910bb1e"],
+ ". It is consistent because ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"X", "=", "1"}], TraditionalForm]],ExpressionUUID->
+  "d8dac80c-d283-482d-b041-d112615cab1b"],
+ " with certainty in this case. Similarly, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"H", 
+     RowBox[{"(", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}], ")"}]}], "=", "0"}], TraditionalForm]],
+  ExpressionUUID->"9b037321-f682-4534-8f6a-112119cbc32f"],
+ " because in this case ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"X", "=", "0"}], TraditionalForm]],ExpressionUUID->
+  "4cd0b791-d243-4049-bacb-5edd65c141f1"],
+ " without ambiguity. On the other hand, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"H", " ", 
+    RowBox[{"(", 
+     RowBox[{"{", 
+      RowBox[{"p", ",", 
+       RowBox[{"1", "\[Minus]", "p"}]}], "}"}], ")"}]}], TraditionalForm]],
+  ExpressionUUID->"90db7721-9a1e-4099-9b28-4b2d724312db"],
+ " has the maximum log 2 at ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "=", 
+    RowBox[{"1", "/", "2"}]}], TraditionalForm]],ExpressionUUID->
+  "95ad4e4d-e5ca-4d12-924d-3116ed23cedb"],
+ ". This is also consistent with our expectation because ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"p", "=", 
+    RowBox[{"1", "/", "2"}]}], TraditionalForm]],ExpressionUUID->
+  "d3eb4375-b72c-4734-8371-61d577950e70"],
+ " is the most uncertain situation."
+}], "TechNoteText",
+ CellID->447581990,ExpressionUUID->"885b33ff-7512-4777-aca8-e3322a14e4cb"],
+
+Cell[TextData[Cell[BoxData[
+ GraphicsBox[{{{}, {}, 
+    TagBox[
+     {RGBColor[0.368417, 0.506779, 0.709798], Thickness[Large], Opacity[1.], 
+      LineBox[CompressedData["
+1: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
+/9z/AEs1a7s=
+       "]]},
+     Annotation[#, "Charting`Private`Tag$7473#1"]& ]}, {}},
+  AspectRatio->NCache[GoldenRatio^(-1), 0.6180339887498948],
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox["\"Shanon entropy\"", TraditionalForm], None}, {
+     FormBox[
+     "\"\\!\\(\\*StyleBox[\\\"p\\\",FontSlant->\\\"Italic\\\"]\\)\"", 
+      TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImagePadding->All,
+  ImageSize->Large,
+  Method->{
+   "DefaultBoundaryStyle" -> Automatic, 
+    "DefaultGraphicsInteraction" -> {
+     "Version" -> 1.2, "TrackMousePosition" -> {True, False}, 
+      "Effects" -> {
+       "Highlight" -> {"ratio" -> 2}, "HighlightPoint" -> {"ratio" -> 2}, 
+        "Droplines" -> {
+         "freeformCursorMode" -> True, 
+          "placement" -> {"x" -> "All", "y" -> "None"}}}}, "DefaultMeshStyle" -> 
+    AbsolutePointSize[6], "ScalingFunctions" -> None, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        (Identity[#]& )[
+         Part[#, 1]], 
+        (Identity[#]& )[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        (Identity[#]& )[
+         Part[#, 1]], 
+        (Identity[#]& )[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0, 1}, {0., 0.9999999829081541}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{
+   Automatic, 
+    Automatic}]],ExpressionUUID->"d630fe79-fc52-4bc1-bfac-31310ebb6eeb"]], \
+"Picture",
+ CellID->1523489751,ExpressionUUID->"ea6ae8e8-dcd7-4f44-ac64-65c891a09155"],
+
+Cell[TextData[{
+ StyleBox["Figure 1",
+  FontWeight->"Bold"],
+ ". The Shannon entropy ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"H", "(", 
+    RowBox[{"{", 
+     RowBox[{"p", ",", 
+      RowBox[{"1", "\[Minus]", "p"}]}], "}"}], ")"}], TraditionalForm]],
+  ExpressionUUID->"d58999be-6877-4f37-b0ec-990c76fbd40e"],
+ " associated with a binary probability distribution ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"p", "(", "0", ")"}], "=", "p"}], ",", 
+     RowBox[{
+      RowBox[{"p", "(", "1", ")"}], "=", 
+      RowBox[{"1", "\[Minus]", "p"}]}]}], "}"}], TraditionalForm]],
+  ExpressionUUID->"a7df2417-6d9c-4def-acf0-c5d7a854f84a"],
+ " of a random variable with values in ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1"}], "}"}], TraditionalForm]],ExpressionUUID->
+  "25fa4c34-65e8-49ec-a237-9c26ef33798b"],
+ "."
+}], "TechNoteCaption",
+ CellID->1166102292,ExpressionUUID->"2c51f499-8727-449f-9ca9-89a7569bb325"],
+
+Cell[TextData[{
+ "\tSo far, entropy has been regarded as a measure of uncertainty. It may \
+sound contradictory at first glance, but a valuable alternative \
+interpretation is that entropy quantifies the information content in the \
+state of a physical system. Suppose that we have learned value ",
+ Cell[BoxData[
+  FormBox["x", TraditionalForm]],ExpressionUUID->
+  "fb46f00e-5bbf-4e82-a7eb-48ed4917f955"],
+ " of a random variable ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "e6ece940-6104-45ab-9e8e-4815eddffe83"],
+ ". Compared to the case we did not learn the value, our knowledge of the \
+random variable has increased. We then ask the question, \
+\[OpenCurlyDoubleQuote]How much of information, on average, have we acquired \
+by learning the value of ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "1cef3ef6-f13f-41ed-9748-3cfc30544da1"],
+ "?\[CloseCurlyDoubleQuote] Since the Shannon entropy is the amount of \
+uncertainty before we learn the value and it is the amount of uncertainty \
+that is cleared by learning the value, the information gain is also given by \
+the Shannon entropy. The two interpretations thus provide two alternative \
+views of entropy: One can regard the entropy as a measure of the uncertainty \
+before we learn the value of ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "a0ae9835-793f-4c4d-bf3a-8ab5ab37583b"],
+ ". But one can also regard it as a measure of the information gained after \
+we learn the value of ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "0e7df1b2-30b9-4100-b3b6-33314a7452c8"],
+ "."
+}], "TechNoteText",
+ CellID->2006559630,ExpressionUUID->"ca63020b-23f6-4cfb-93ac-1f2469a7e5f9"],
+
+Cell["\<\
+\tA basic yet significant property of the Shannon entropy is the inequality\
+\>", "TechNoteText",
+ CellID->772479020,ExpressionUUID->"33a68eca-73fa-4513-b851-69b9d68cdb1b"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"0", "<=", 
+    RowBox[{"H", "(", "X", ")"}], "<=", 
+    RowBox[{"log", " ", "d"}]}], TraditionalForm]],ExpressionUUID->
+  "85eb2ddb-9fbb-4223-a7ae-0f915be51589"],
+ " ,"
+}], "TechNoteText",
+ CellID->1448951521,ExpressionUUID->"3e040b09-47ca-41c0-bcc0-0664b39b7316"],
+
+Cell[TextData[{
+ "where ",
+ Cell[BoxData[
+  FormBox["d", TraditionalForm]],ExpressionUUID->
+  "2bfe8efc-42bf-498c-aff2-ecddb324d83f"],
+ " is the number of values that ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "636f233c-5ecd-4084-b9de-dd75b9969c66"],
+ " can take. The entropy becomes maximum, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"H", "(", "X", ")"}], "=", 
+    RowBox[{"log", " ", "d"}]}], TraditionalForm]],ExpressionUUID->
+  "9ddbae25-c97b-4618-bab0-52dbf79ba667"],
+ ", if and only if the probability is uniformly distributed. We defer proving \
+the property until we introduce ",
+ StyleBox["relative entropy",
+  FontSlant->"Italic"],
+ " since the proof is simplest by using this quantity."
+}], "TechNoteText",
+ CellID->79177064,ExpressionUUID->"1eaafbd5-3cce-4049-b657-9482797d7695"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Relative Entropy", "TechNoteSection",
+ CellID->240193879,ExpressionUUID->"1ec54078-5761-4a40-8c83-ae2d7188925c"],
+
+Cell["(to be completed soon)", "TechNoteText",
+ CellID->96959758,ExpressionUUID->"3308cd06-7559-469c-a3a7-b38d0eaa5f9e"]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/guide/QuantumComputationAndQuantumInformation"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "45d8f4fd-8e47-47a5-9589-0094c3a69ffe"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",
+ CellID->1827789679,ExpressionUUID->"81b21756-c148-4377-beb0-4958ccb4cccf"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Theory",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumInformationTheory"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "252288ce-ba7a-49f4-aa70-59ac766b9b45"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "26fe4c9e-7137-474f-ae45-4276dcf41060"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",
+ CellID->2055048265,ExpressionUUID->"11d8bfc5-9b9e-4620-99d0-141c1d43d4db"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang (2022)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "2a055ec2-4f23-4203-855d-d8fc43c7c237"]}]],ExpressionUUID->
+         "a86294d3-a64b-4a77-97d3-4593fe7b6d83"],
+        StyleBox[
+        ", Quantum Computation and Quantum Information (Cambridge University \
+Press, 2011).",
+         FontSlant->"Plain"]
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "3d2e90b4-5196-49f1-958a-87a2fa5e8bf3"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "c63e21f1-1ebd-4662-a44a-adfb52f14699"]}]],ExpressionUUID->
+         "390eb409-843e-477f-a608-a5a9d1f180d2"],
+        ", A Quantum Computation Workbook (Springer, 2022)."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "4f05efeb-a495-4f78-bd23-52413f850df7"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",
+ CellID->1216695154,ExpressionUUID->"860487ea-bd06-479c-8f2d-d48a22475e13"],
+
+Cell[" ", "FooterCell",
+ CellID->656166544,ExpressionUUID->"eb86f03b-c300-4311-9e2f-a18ddf6c9e26"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Shannon Entropy",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2021", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 4, 8, 17, 28, 46.593427}", 
+    "history" -> {"13", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"entropy"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> 
+    "See also Section 7.1 of the Quantum Workbook (Springer, 2022). Entropy \
+is a measure of uncertainty. Entropy is an essential concept ubiquitously \
+used in every science that has statistical elements. Examples include \
+classical and quantum statistical mechanics, classical and quantum \
+information theory, data analysis, machine learning, and many more. In \
+classical information, entropy is concerned with random variables. Suppose \
+that X is a random variable taking a value from a discrete set {x}. The value \
+of X is not fixed but determined randomly by a probability distribution, p \
+(x). Intuitively, the uncertainty in X is lower if the probability \
+distribution has a narrow peak at a particular value x. For example, consider \
+a binary case {0, 1}. When p(0)=1 and p(1)=0, we know the value of X with \
+certainty. In this case, there is no uncertainty at all. On the contrary, the \
+uncertainty is high when the probability is broadly distributed. For example, \
+in the binary case, if p(0)=p(1)=1/2, it is hard to guess the value of X. The \
+uncertainty is maximum in this case.", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$251412, "title" -> 
+    "Shannon Entropy", "titlemodifier" -> "", "windowtitle" -> 
+    "Shannon Entropy", "type" -> "Tech Note", "uri" -> 
+    "Q3/tutorial/ShannonEntropy", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (February 4, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]], 
+    CellID -> 1917104708], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook, CellID -> 2081671415], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook, CellID -> 1995378628], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}, CellID -> 1223969244], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}, CellID -> 505229295], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}, CellID -> 238420827]}, 
+  Visible -> False, FrontEndVersion -> 
+  "13.0 for Mac OS X ARM (64-bit) (February 4, 2022)", StyleDefinitions -> 
+  "Default.nb"],
+ExpressionUUID->"a14952f5-0bc1-4251-b804-bc4cb4e2c8b0"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[587, 21, 3451, 80, 70, "AnchorBarGrid",ExpressionUUID->"547142ad-e9e0-4d71-852d-b51e5e529aab",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4063, 105, 1410, 39, 70, "ObjectNameGrid",ExpressionUUID->"76d8bea7-4811-4d37-96f5-b323a78346f5",
+ CellID->477517592],
+Cell[5476, 146, 2246, 47, 70, "TechNoteJumpBox",ExpressionUUID->"7c2757fd-3c8e-4b3f-9414-db3ac3cd1ff9",
+ CellID->491779905],
+Cell[7725, 195, 426, 13, 70, "TechNoteText",ExpressionUUID->"f727066b-d66b-48ba-8f91-6c2becbfdce0",
+ CellID->1308734266],
+Cell[8154, 210, 399, 6, 70, "TechNoteText",ExpressionUUID->"bd7dfab4-114c-4def-a05c-3620ef3fa4f3",
+ CellID->356897954],
+Cell[8556, 218, 637, 14, 70, "DefinitionBox",ExpressionUUID->"d26922ec-1ec6-484e-83a9-452c8b19607e",
+ CellID->1765790819],
+Cell[9196, 234, 147, 1, 70, "TechNoteCaption",ExpressionUUID->"1934fe12-28d6-4ed5-a645-080617e1a3a6",
+ CellID->1569777040],
+Cell[9346, 237, 288, 7, 70, "TechNoteMathCaption",ExpressionUUID->"350c7d87-8cf9-4bfc-bed2-9bfd1488bf54",
+ CellID->1428640008],
+Cell[9637, 246, 145, 3, 70, "Input",ExpressionUUID->"f2d2695b-7949-440f-962a-d502aee20f94",
+ CellID->853967906],
+Cell[9785, 251, 318, 6, 70, "TechNoteMathCaption",ExpressionUUID->"c9858b2d-0627-4020-8105-8f63e269751b",
+ CellID->1937193009],
+Cell[10106, 259, 269, 6, 70, "Input",ExpressionUUID->"f19afed8-375c-4a9e-a2fe-22648230896a",
+ CellID->403330096]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10412, 270, 113, 1, 70, "TechNoteSection",ExpressionUUID->"3c5a5bd7-87c0-4f1a-ae55-b791dd91b0e3",
+ CellID->1122958171],
+Cell[10528, 273, 2520, 69, 70, "TechNoteText",ExpressionUUID->"7794593a-5cd9-4b40-be73-a7ac61aca92c",
+ CellID->2095287155],
+Cell[13051, 344, 205, 5, 70, "TechNoteText",ExpressionUUID->"ab78fa23-7dc7-48f5-bede-59b349b6212c",
+ CellID->1270584561],
+Cell[13259, 351, 586, 19, 70, "TechNoteText",ExpressionUUID->"baa1f6da-694f-4223-b556-c518fbc85ee7",
+ CellID->993262308],
+Cell[13848, 372, 1637, 50, 70, "TechNoteText",ExpressionUUID->"b8c085e2-96a1-46a7-a7cd-3cad2bf4c45d",
+ CellID->231393651],
+Cell[15488, 424, 956, 23, 70, "TechNoteText",ExpressionUUID->"703d604a-e710-4eca-8173-df4a736c2e25",
+ CellID->1542993249],
+Cell[16447, 449, 2892, 88, 70, "TechNoteText",ExpressionUUID->"885b33ff-7512-4777-aca8-e3322a14e4cb",
+ CellID->447581990],
+Cell[19342, 539, 8353, 161, 70, "Picture",ExpressionUUID->"ea6ae8e8-dcd7-4f44-ac64-65c891a09155",
+ CellID->1523489751],
+Cell[27698, 702, 975, 30, 70, "TechNoteCaption",ExpressionUUID->"2c51f499-8727-449f-9ca9-89a7569bb325",
+ CellID->1166102292],
+Cell[28676, 734, 1726, 35, 70, "TechNoteText",ExpressionUUID->"ca63020b-23f6-4cfb-93ac-1f2469a7e5f9",
+ CellID->2006559630],
+Cell[30405, 771, 182, 3, 70, "TechNoteText",ExpressionUUID->"33a68eca-73fa-4513-b851-69b9d68cdb1b",
+ CellID->772479020],
+Cell[30590, 776, 325, 10, 70, "TechNoteText",ExpressionUUID->"3e040b09-47ca-41c0-bcc0-0664b39b7316",
+ CellID->1448951521],
+Cell[30918, 788, 830, 22, 70, "TechNoteText",ExpressionUUID->"1eaafbd5-3cce-4049-b657-9482797d7695",
+ CellID->79177064]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[31785, 815, 118, 1, 70, "TechNoteSection",ExpressionUUID->"1ec54078-5761-4a40-8c83-ae2d7188925c",
+ CellID->240193879],
+Cell[31906, 818, 120, 1, 70, "TechNoteText",ExpressionUUID->"3308cd06-7559-469c-a3a7-b38d0eaa5f9e",
+ CellID->96959758]
+}, Open  ]],
+Cell[32041, 822, 774, 19, 70, "TutorialMoreAboutSection",ExpressionUUID->"81b21756-c148-4377-beb0-4958ccb4cccf",
+ CellID->1827789679],
+Cell[32818, 843, 1115, 28, 70, "RelatedTutorialsSection",ExpressionUUID->"11d8bfc5-9b9e-4620-99d0-141c1d43d4db",
+ CellID->2055048265],
+Cell[33936, 873, 2183, 60, 70, "TutorialRelatedLinksSection",ExpressionUUID->"860487ea-bd06-479c-8f2d-d48a22475e13",
+ CellID->1216695154],
+Cell[36122, 935, 98, 1, 70, "FooterCell",ExpressionUUID->"eb86f03b-c300-4311-9e2f-a18ddf6c9e26",
+ CellID->656166544]
+}
+]
+*)
+
+(* End of internal cache information *)
+
