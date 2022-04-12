@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.41 $"][[2]], " (",
-  StringSplit["$Date: 2022-03-20 19:20:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.42 $"][[2]], " (",
+  StringSplit["$Date: 2022-04-11 17:33:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -178,7 +178,7 @@ grayCtrlU[g1_, g2_, mat_, qq_] := Module[
   xx = Pick[qq, xx, 0];
   xx = Through[xx[1]];
   cc = GroupBy[Transpose @ {cc, qq}, First, Last @* Transpose];
-  op = ExpressionFor[mat, cc[1]];
+  op = Elaborate @ ExpressionFor[mat, cc[1]];
   If[ Not @ OrderedQ @ {g1, g2},
     With[
       { tt = First @ cc[1] },
