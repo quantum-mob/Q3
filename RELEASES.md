@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.3.23
+
+- Minor bug fixes.
+
 ## v2.3.14
 
 - Qubit speices takes a negative value for the final flavor index.
