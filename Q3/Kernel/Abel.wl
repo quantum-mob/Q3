@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.64 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-07 17:33:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.65 $"][[2]], " (",
+  StringSplit["$Date: 2022-05-25 10:00:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1280,17 +1280,9 @@ AddElaborationPatterns[
 
 Format[ HoldPattern @ MultiplyExp[expr_] ] := Power[E, expr]
 
-(* Exp for Grassmann- or Clifford-like Species *)
-(*
-MultiplyExp[op_] := Module[
-  { z = Garner @ MultiplyPower[op, 2] },
-  If[ z === 0,
-    1 + op,
-    FunctionExpand[ Cosh[Sqrt[z]] + op Sinh[Sqrt[z]]/Sqrt[z] ]
-   ] /; CommutativeQ[z]
- ]
- *)
-(* NOTE: Better to use Elaborate *)
+
+MultiplyExp[0] = 1
+
 
 MultiplyExp /:
 HoldPattern @ Dagger[ MultiplyExp[expr_] ] := MultiplyExp[ Dagger[expr] ]
