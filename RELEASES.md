@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.3.25
+
+- A new experimental function LieBasis.
+
 ## v2.3.23
 
 - Minor bug fixes.

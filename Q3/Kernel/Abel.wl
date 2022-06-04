@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.65 $"][[2]], " (",
-  StringSplit["$Date: 2022-05-25 10:00:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.66 $"][[2]], " (",
+  StringSplit["$Date: 2022-06-04 19:42:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -70,7 +70,7 @@ BeginPackage["Q3`"]
 
 { Matrix, ExpressionFor };
 
-{ Lie, LiePower, LieSeries, LieExp };
+{ Lie, LiePower, LieSeries, LieExp, LieBasis };
 
 { CoefficientTensor };
 
@@ -1389,6 +1389,28 @@ LieExp[a_, b_] :=
 (* ****************************************************************** *)
 (*     </Lie>                                                         *)
 (* ****************************************************************** *)
+
+
+(**** <LieBasis> ****)
+
+LieBasis::usage = "LieBasis[n] returns the standard generating set of Lie algebra su(n). See also LindbladBasis."
+
+LieBasis[n_Integer] := Module[
+  { bs },
+  bs = Catenate @ Table[{j, k}, {k, 2, n}, {j, 1, k}];
+  Catenate[theLieGenerators[n] /@ bs]
+ ]
+
+theLieGenerators[n_Integer][{j_Integer, k_Integer}] := {
+  SparseArray[{{j, k} ->  1, {k, j} -> 1}, {n, n}],
+  SparseArray[{{j, k} -> -I, {k, j} -> I}, {n, n}]
+ } /; j < k
+
+theLieGenerators[n_Integer][{k_Integer, k_Integer}] :=
+  List @ SparseArray @ DiagonalMatrix @
+  PadRight[Append[Table[1, k-1], 1-k]/Sqrt[k*(k-1)/2], n]
+
+(**** </LieBasis> ****)
 
 
 MultiplyDegree::usage = "MultiplyDegree[expr] returns the highest degree of the terms in the expression expr. The degree of a term is the sum of the exponents of the Species that appear in the term. The concept is like the degree of a polynomial."
