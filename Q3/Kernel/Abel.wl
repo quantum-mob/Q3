@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.66 $"][[2]], " (",
-  StringSplit["$Date: 2022-06-04 19:42:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.67 $"][[2]], " (",
+  StringSplit["$Date: 2022-06-06 10:19:39+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1402,13 +1402,13 @@ LieBasis[n_Integer] := Module[
  ]
 
 theLieGenerators[n_Integer][{j_Integer, k_Integer}] := {
-  SparseArray[{{j, k} ->  1, {k, j} -> 1}, {n, n}],
-  SparseArray[{{j, k} -> -I, {k, j} -> I}, {n, n}]
+  SparseArray[{{j, k} ->  1, {k, j} -> 1}, {n, n}] / Sqrt[2],
+  SparseArray[{{j, k} -> -I, {k, j} -> I}, {n, n}] / Sqrt[2]
  } /; j < k
 
 theLieGenerators[n_Integer][{k_Integer, k_Integer}] :=
   List @ SparseArray @ DiagonalMatrix @
-  PadRight[Append[Table[1, k-1], 1-k]/Sqrt[k*(k-1)/2], n]
+  PadRight[Append[Table[1, k-1], 1-k]/Sqrt[k*(k-1)], n]
 
 (**** </LieBasis> ****)
 
