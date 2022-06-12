@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.65 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-30 09:55:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.66 $"][[2]], " (",
+  StringSplit["$Date: 2022-06-12 18:39:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -419,13 +419,12 @@ PermutationMatrix[perm_?PermutationCyclesQ] :=
 PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
   Permute[ IdentityMatrix[n], perm ]
 
-
 (**** </Permutation> ****)
 
 
 (**** <KetPermute> ****)
 
-KetPermute::usage = "KetPermute[v, {q1, q2, ...}, cycles] returns a new Ket permuting the values of the particles q1, q2, ... in Ket v."
+KetPermute::usage = "KetPermute[vec, perm] returns a new state vector where each Ket[\[Ellipsis]] in state vector vec is replaced by a new one with the logical values permuted according to permutation perm.\nKetPermute[vec, {q1, q2, ...}, perm] returns a new state vector permuting the values of the particles q1, q2, ... in each Ket[<|\[Ellipsis]|>] in state vector vec according to permutation perm.\nPermutation perm may be SymmetricGroup, PermutationGroup, AlternatingGroup, or a list of Cycles, where a list of state vectors are returned after applying all elements of the group or list."
 
 (* for Pauli Kets *)
 
@@ -437,7 +436,8 @@ KetPermute[Ket[ss__],
  ] := Ket @@@ Permute[{ss}, group]
 
 KetPermute[expr_,
-  spec:(_Cycles|_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
+  spec:(_?PermutationListQ | _Cycles | _SymmetricGroup | _AlternatingGroup |
+    _PermutationGroup)
  ] := expr /. { v_Ket :> KetPermute[v, spec] }
 
 KetPermute[expr_, pp:{__Cycles}] :=
@@ -462,7 +462,8 @@ KetPermute[v:Ket[_Association], qq:{__},
   ]
 
 KetPermute[expr_, qq:{__},
-  spec:(_Cycles|_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
+  spec:(_?PermutationListQ | _Cycles | _SymmetricGroup | _AlternatingGroup |
+    _PermutationGroup)
  ] := expr /. { v:Ket[_Association] :> KetPermute[v, qq, spec] }
 
 KetPermute[expr_, qq:{__}, pp:{__Cycles}] :=

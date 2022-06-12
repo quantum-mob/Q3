@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.67 $"][[2]], " (",
-  StringSplit["$Date: 2022-06-06 10:19:39+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.68 $"][[2]], " (",
+  StringSplit["$Date: 2022-06-06 22:57:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1541,7 +1541,7 @@ Observation[spec_][expr_Plus] := Observation[spec] /@ expr
 Observation[spec_][z_?CommutativeQ expr_] := z * Observation[spec][expr]
 
 
-ObservationValue::usage = "ObservationValue[state, spec] returns the eigenvalue of the operator Observation[spec] that state belongs to if state is an eigenstate of the operator. Otherwise, it returns Indefinite[value1, value2, \[Ellipsis]]."
+ObservationValue::usage = "ObservationValue[state, spec] returns the eigenvalue of operator Observation[spec] that state belongs to if state is an eigenstate of the operator. Otherwise, it returns Indefinite[value1, value2, \[Ellipsis]]."
 
 ObservationValue[spec_][expr_] :=
   ObservationValue[expr, spec]
