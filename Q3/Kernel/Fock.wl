@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.22 $"][[2]], " (",
-  StringSplit["$Date: 2022-02-11 20:00:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.25 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-01 18:17:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -23,13 +23,13 @@ BeginPackage["Q3`"]
 
 { NormalOrder, FockColon };
 
-{ FockDegree, FockCoefficientTensor = CoefficientTensor };
+{ FockDegree, CoefficientTensor };
 
 { FockBilinearQ, FockBilinearSystem,
   FockBilinearOperators, FockBilinearMatrix };
 
-{ FockDiracToMajorana, FockMajoranaToDirac,
-  FockHeisenbergToBoson, FockBosonToHeisenberg };
+{ DiracToMajorana, MajoranaToDirac,
+  HeisenbergToBoson, BosonToHeisenberg };
 
 (* Common bilinear combinations *)
 
@@ -54,6 +54,9 @@ BeginPackage["Q3`"]
 { FockDecompose, FockOrthogonalize };
 
 { FockAddSpin, FockAddSpinZ };
+
+
+{ FockCoefficientTensor }; (* Obsolete *)
 
 { FockExpand, $FockExpandMethods }; (* Obsolete *)
 
@@ -443,7 +446,10 @@ seaQ[ op:c_Symbol?FermionQ[j___] ] := (
 seaQ[_] = False
 
 
-Missing["KeyAbsent", _?ParticleQ] := 0
+Missing["KeyAbsent", _?BosonQ] := 0
+Missing["KeyAbsent", _?HeisenbergQ] := 0
+Missing["KeyAbsent", _?FermionQ] := 0
+Missing["KeyAbsent", _?MajoranaQ] := 0
 
 
 FockOperatorQ::usage = "FockOperatorQ[c] returns True if c is any Fock-space operator (Boson, Fermion, Heisenberg, or Majorana) without Dagger on it.\nGrassmann is not regarded as a Fock-space operator."
@@ -664,20 +670,25 @@ FockInverseFourier[args__] := (
   InverseFourierMap[args]
  )
 
+FockCoefficientTensor[args__] := (
+  Message[Q3`Q3General::obsolete, "FockCoefficientTensor", "CoefficientTensor"];
+  InverseFourierMap[args]
+ )
+
 
 (*** Transformations between Dirac and Majorana Fermions ***)
 
-FockDiracToMajorana::usage = "FockDiracToMajorana[expr, {c1,c2,...} -> {h1,h2,h3,h4,...}] converts expr writtten in Dirac fermion operators c1, c2, ... into an equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, ... via a suitable transformation between them. FockDiracToMajorana[expr, c1 -> {h1,h2}, c2->{h3,h4}, ...] is the same."
+DiracToMajorana::usage = "DiracToMajorana[expr, {c1,c2,...} -> {h1,h2,h3,h4,...}] converts expr writtten in Dirac fermion operators c1, c2, ... into an equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, ... via a suitable transformation between them. DiracToMajorana[expr, c1 -> {h1,h2}, c2->{h3,h4}, ...] is the same."
 
-FockDiracToMajorana::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators."
+DiracToMajorana::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators."
 
-FockDiracToMajorana[expr_,
+DiracToMajorana[expr_,
   rr:HoldPattern[
     {__?FermionQ} -> {PatternSequence[_?MajoranaQ, _?MajoranaQ]..}
    ]
  ] := Simplify[ expr //. rulesDiracToMajorana[rr] ]
 
-FockDiracToMajorana[expr_,
+DiracToMajorana[expr_,
   rr:HoldPattern[
     _?FermionQ -> {_?MajoranaQ, _?MajoranaQ}]..
    ] := Simplify[ expr //. rulesDiracToMajorana[rr] ]
@@ -698,22 +709,22 @@ rulesDiracToMajorana[HoldPattern[
   Apply[rulesDiracToMajorana, Thread[Rule[cc, Partition[hh,2]]]]
 
 rulesDiracToMajorana[ HoldPattern[cc:{__} -> hh:{__}] ] := (
-  Message[FockDiracToMajorana::incnst, cc, hh];
+  Message[DiracToMajorana::incnst, cc, hh];
   Return[{}]
  )
 
 
-FockMajoranaToDirac::usage = "FockMajoranaToDirac[expr, {h1,h2,h3,h4,...} -> {c1,c2,...}] converts expr writtten in Dirac fermion operators c1, c2, ... into an equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, ... via a suitable transformation between them. FockMajoranaToDirac[expr, {h1,h2} -> c1, {h3,h4} -> c2, ...] is the same."
+MajoranaToDirac::usage = "MajoranaToDirac[expr, {h1,h2,h3,h4,...} -> {c1,c2,...}] converts expr writtten in Dirac fermion operators c1, c2, ... into an equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, ... via a suitable transformation between them. MajoranaToDirac[expr, {h1,h2} -> c1, {h3,h4} -> c2, ...] is the same."
 
-FockMajoranaToDirac::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators."
+MajoranaToDirac::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators."
 
-FockMajoranaToDirac[expr_,
+MajoranaToDirac[expr_,
   rr:HoldPattern[
     {PatternSequence[_?MajoranaQ, _?MajoranaQ]..} -> {__?FermionQ}
    ]
  ] := Simplify[ expr //. rulesMajoranaToDirac[rr] ]
 
-FockMajoranaToDirac[expr_,
+MajoranaToDirac[expr_,
   rr:HoldPattern[{_?MajoranaQ, _?MajoranaQ} -> _?FermionQ].. (* *)
  ] := Simplify[ expr //. rulesMajoranaToDirac[rr] ]
 
@@ -735,17 +746,17 @@ rulesMajoranaToDirac[HoldPattern[
   2 Length[cc] == Length[hh]
 
 rulesMajoranaToDirac[ HoldPattern[hh:{__} -> cc:{__}] ] := (
-  Message[FockMajoranaToDirac::incnst, cc, hh];
+  Message[MajoranaToDirac::incnst, cc, hh];
   Return[{}]
  )
 
 
-FockHeisenbergToBoson::usage = "FockHeisenbergToBoson[expr, {x1, x2, ...} -> {a1, a2, ...}] converts expr writtten in canonical Heisenberg operators x1, x2, ... into an equivalent form in terms of the Boson operators a1, a2, ... via a suitable transformation between them. FockHeisenbergToBoson[expr, x1 -> a1, x2 -> a2, ...] is the same."
+HeisenbergToBoson::usage = "HeisenbergToBoson[expr, {x1, x2, ...} -> {a1, a2, ...}] converts expr writtten in canonical Heisenberg operators x1, x2, ... into an equivalent form in terms of the Boson operators a1, a2, ... via a suitable transformation between them. HeisenbergToBoson[expr, x1 -> a1, x2 -> a2, ...] is the same."
 
-FockHeisenbergToBoson[expr_, rr:(_?HeisenbergQ -> _?BosonQ)..] :=
+HeisenbergToBoson[expr_, rr:(_?HeisenbergQ -> _?BosonQ)..] :=
   Simplify[ expr //. rulesHeisenbergToBoson[rr] ]
 
-FockHeisenbergToBoson[expr_, rr:({__?HeisenbergQ} -> {__?BosonQ})..] :=
+HeisenbergToBoson[expr_, rr:({__?HeisenbergQ} -> {__?BosonQ})..] :=
   Simplify[ expr //. rulesHeisenbergToBoson[rr] ]
 
 rulesHeisenbergToBoson[x_?HeisenbergQ -> a_?BosonQ] :=
@@ -759,12 +770,12 @@ rulesHeisenbergToBoson[rr:({__?HeisenbergQ} -> {__?BosonQ})] :=
   Apply[ rulesHeisenbergToBoson, Thread[rr] ]
 
 
-FockBosonToHeisenberg::usage = "FockBosonToHeisenberg[expr, {x1, x2, ...} -> {a1, a2, ...}] converts expr writtten in canonical Heisenberg operators x1, x2, ... into an equivalent form in terms of the Boson operators a1, a2, ... via a suitable transformation between them. FockBosonToHeisenberg[expr, x1 -> a1, x2 -> a2, ...] is the same."
+BosonToHeisenberg::usage = "BosonToHeisenberg[expr, {x1, x2, ...} -> {a1, a2, ...}] converts expr writtten in canonical Heisenberg operators x1, x2, ... into an equivalent form in terms of the Boson operators a1, a2, ... via a suitable transformation between them. BosonToHeisenberg[expr, x1 -> a1, x2 -> a2, ...] is the same."
 
-FockBosonToHeisenberg[expr_, rr:(_?BosonQ -> _?HeisenbergQ)..] :=
+BosonToHeisenberg[expr_, rr:(_?BosonQ -> _?HeisenbergQ)..] :=
   Simplify[ expr //. rulesBosonToHeisenberg[rr] ]
 
-FockBosonToHeisenberg[expr_, rr:({__?BosonQ} -> {__?HeisenbergQ})..] :=
+BosonToHeisenberg[expr_, rr:({__?BosonQ} -> {__?HeisenbergQ})..] :=
   Simplify[ expr //. rulesBosonToHeisenberg[rr] ]
 
 rulesBosonToHeisenberg[a_?BosonQ -> x_?HeisenbergQ] :=
@@ -1887,6 +1898,34 @@ HoldPattern @ Multiply[x___, Dagger[op_?BosonQ], Ket[v_Association], y___] := Mo
   Multiply[x, Ket[ KeySort @ AssociateTo[vv, op->1] ], y]
  ]
 
+HoldPattern @
+  Multiply[pre___, op_?HeisenbergQ, Ket[v_Association], post___] :=
+  Module[
+    { vv = v,
+      ww = v },
+    vv[op] = v[op] - 1;
+    ww[op] = v[op] + 1;
+    Multiply[
+      pre,
+      Sqrt[v[op]] * Ket[KetTrim @ vv] + Sqrt[v[op]+1] * Ket[ww]
+      post
+     ] / Sqrt[2] // Garner
+   ]
+
+HoldPattern @
+  Multiply[pre___, Canon[op_?HeisenbergQ], Ket[v_Association], post___] :=
+  Module[
+    { vv = v,
+      ww = v },
+    vv[op] = v[op] - 1;
+    ww[op] = v[op] + 1;
+    Multiply[
+      pre,
+      Sqrt[v[op]] * Ket[KetTrim @ vv] - Sqrt[v[op]+1] * Ket[ww]
+      post
+     ] / (I*Sqrt[2]) // Garner
+   ]
+
 HoldPattern @ Multiply[x___, op_?FermionQ, Ket[v_Association], y___] := Module[
   { sign },
   If[ v[op] == 0, Return[0] ];
@@ -1922,8 +1961,13 @@ HoldPattern @ Multiply[x___, Dagger[op_?FermionQ], Ket[v_Association], y___] := 
   Multiply[x, sign * Ket[vv], y]
  ]
 
-HoldPattern @ Multiply[x___, Bra[v_Association], op_?AnyParticleQ, y___] :=
-  Multiply[x, Dagger @ Multiply[ Dagger[op], Ket[v] ], y]
+HoldPattern @
+  Multiply[pre___, Bra[v_Association], op_?AnyParticleQ, post___] :=
+  Multiply[pre, Dagger @ Multiply[ Dagger[op], Ket[v] ], post]
+
+HoldPattern @
+  Multiply[pre___, Bra[v_Association], op_?AnyHeisenbergQ, post___] :=
+  Multiply[pre, Dagger @ Multiply[ Dagger[op], Ket[v] ], post]
 
 keySignature::usage = "Returns the signature for adding to or removing from the Ket a FERMION at the position j."
 

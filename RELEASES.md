@@ -1,5 +1,16 @@
 # Select Release Notes
 
+## v2.4.0
+
+- FockBosonToHeisenberg renamed BosonToHeisenberg.
+- FockHeisenbergToBoson renamed HeisenbergToBoson.
+- FockDiracToMajorana renamed DiracToMajorana.
+- FockMajoranaToDirac renamed MajoranaToDirac.
+
+- Heisenberg canonical operators now act directly on Ket[<|...|>].
+
+- Several refinements in reference and tutorial documents.
+
 ## v2.3.25
 
 - A new experimental function LieBasis.
