@@ -9,6 +9,8 @@
 
 - Heisenberg canonical operators now act directly on Ket[<|...|>].
 
+- WignerFunction is superceded by the WignerD built-in function.
+
 - Several refinements in reference and tutorial documents.
 
 ## v2.3.25
