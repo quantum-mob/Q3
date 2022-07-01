@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.205 $"][[2]], " (",
-  StringSplit["$Date: 2022-04-02 22:48:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.208 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-01 18:48:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -50,8 +50,6 @@ BeginPackage["Q3`"]
 { RotationAngle, RotationAxis, RotationSystem,
   TheEulerAngles }
 
-{ WignerFunction };
-
 { RandomVector, RandomMatrix, RandomHermitian, RandomPositive, RandomUnitary };
 
 { BasisComplement };
@@ -87,6 +85,7 @@ BeginPackage["Q3`"]
 
 (**** OBSOLETE SYMBOLS ****)
 
+{ WignerFunction }; (* obsolete *)
 { PauliExpression, PauliExpressionRL }; (* obsolete *)
 { PauliInner }; (* obsolete *)
 { PauliExtract, PauliExtractRL }; (* obsolete *)
@@ -3332,35 +3331,12 @@ BasisComplement[aa_List, bb_List] := Module[
    when bosons are involved, the matrix representation may be huge. *)
 
 
-WignerFunction::usage = "WignerFunction[j,m1,m2,\[Beta]] returns the matrix element WignerFunction[j,m1,m2,\[Beta]] = TheBra[j,m1].U[y,\[Beta]].TheKet[j,m2] of the rotation operator U[y,\[Beta]] around the spin y-axis by angule \[Beta] between the two angular momentum states TheKet[j,m1] and TheKet[j,m2] (notice the same j). These matrix elements are useful to calculate the matrix elements of an arbitrary rotation operator for large angular momentum."
+WignerFunction::usage = "WignerFunction is now obsolete; use the build-in WignerD function."
 
-(* 2016-09-12 Mathematica (v11) seems to handle quite efficiently the relevant
-   MatrixExp for large angular momena. In this case, WignerFunction[] is not
-   particularly useful (at least on the purpose of Pauli package). *)
-
-WignerFunction[j_, m_, n_, z_] :=
-  Conjugate[WignerFunction[j, n, m, -Conjugate[z]]] /; m > n
-
-WignerFunction[j_, m_, n_, z_] :=
-  Power[-1, m - n] WignerFunction[j, -m, -n, z] /; m < -n
-
-WignerFunction[j_, m_, n_, z_] := 
-  Sqrt[(j + m)! (j - m)! (j + n)! (j - n)!] *
-  Power[Cos[z/2], 2 j] / Power[Tan[z/2], m + n] *
-  With[
-    { tan = Tan[z/2] },
-    Sum[
-      Power[-1, k - n] * Power[ tan, 2 k] /
-        ((j - k)! (j + m + n - k)! (k - m)! (k - n)!),
-      {k, n, j} ]
-   ]
-
-(* For integer spins *)
-
-WignerFunction[j_, 0, m_, z_] :=
-  Power[-1, m] * Sqrt[(j-m)!/(j+m)!] LegendreP[j, m, Cos[z]]
-
-WignerFunction[j_, m_, 0, z_] := Conjugate[ WignerFunction[j, 0, m, z] ]
+WignerFunction[j_, m_, n_, z_] := (
+  Message[Q3`Q3General::obsolete, WignerFunction, WignerD];
+  WignerD[{j, m, n}, z]
+ )
 
 
 (**** <HilbertSchmidtNorm> *****)

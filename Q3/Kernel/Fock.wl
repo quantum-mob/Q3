@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.25 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-01 18:17:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.26 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-01 18:25:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -672,7 +672,7 @@ FockInverseFourier[args__] := (
 
 FockCoefficientTensor[args__] := (
   Message[Q3`Q3General::obsolete, "FockCoefficientTensor", "CoefficientTensor"];
-  InverseFourierMap[args]
+  CoefficientTensor[args]
  )
 
 
