@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.208 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-01 18:48:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.209 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-03 04:12:07+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2406,6 +2406,10 @@ Kind[ Dyad[_Association, _Association, qq_List] ] := First @ Kind @ qq
 
 Dyad /:
 MultiplyGenus[ Dyad[___] ] := "Singleton"
+
+Dyad /:
+HoldPattern @ Dagger[Dyad[a_Association, b_Association, c_List]] :=
+  Dyad[b, a, c]
 
 Dyad /:
 HoldPattern @ Elaborate[ Dyad[a_, b_, c_List] ] := Module[

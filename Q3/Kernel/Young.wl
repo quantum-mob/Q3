@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.66 $"][[2]], " (",
-  StringSplit["$Date: 2022-06-12 18:39:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.79 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-03 10:26:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -379,13 +379,15 @@ NextYoungTableau[tb_?YoungTableauQ] := Module[
 
 (**** <Permutation> ****)
 
-Permutation::usage = "Permutation[cycles,{s$1,s$2,$$}] represents the permutation operator acting on species {s$1,s$2,$$}."
+Permutation::usage = "Permutation[cyc,{s1,s2,\[Ellipsis]}] represents the permutation operator acting on species {s1,s2,\[Ellipsis]}."
 
 Permutation::cyc = "`` does not represent a valid permutationin disjoint cyclic form. See PermutationCyclesQ."
 
 AddElaborationPatterns[_Permutation]
 
-Permutation[cyc_Cycles, ss:{__?SpeciesQ}] :=
+Permutation[Cycles[{}], qq:{__?SpeciesQ}] := 1
+
+Permutation[cyc_, ss:{__?SpeciesQ}] :=
   Permutation[cyc, FlavorNone @ ss] /;
   Not @ FlavorNoneQ[ss]
 
@@ -394,21 +396,79 @@ HoldPattern @ Dagger @ Permutation[cyc_, ss:{__?SpeciesQ}] :=
   Permutation[InversePermutation[cyc], ss]
 
 Permutation /:
-HoldPattern @ Elaborate @ Permutation[cyc_, ss:{__?SpeciesQ}] := Module[
-  { bs = Basis @ ss },
-  If[ Not @ PermutationCyclesQ[cyc],
-    Message[Permutation::cyc, cyc];
-    Return[1]
-   ];
-  Total @ Map[Dyad[KetPermute[#, ss, cyc], #, ss]&, bs]
- ]
-
-Permutation /:
-HoldPattern @ Multiply[pre___, op_Permutation, post___] :=
-  Multiply[pre, Elaborate[op], post]
+HoldPattern @ Elaborate @
+  Permutation[cyc:(_Cycles|_?PermutationListQ), ss:{__?SpeciesQ}] :=
+  Module[
+    { bs = Basis @ ss },
+    If[ Not @ PermutationCyclesQ[cyc],
+      Message[Permutation::cyc, cyc];
+      Return[1]
+     ];
+    Elaborate @ Total @ Map[Dyad[KetPermute[#, cyc, ss], #, ss]&, bs]
+   ]
 
 Permutation /:
 HoldPattern @ Matrix[op_Permutation, rest___] := Matrix[Elaborate[op], rest]
+
+
+Permutation /:
+HoldPattern @ Multiply[pre___,
+  ops:Repeated[Permutation[_, qq:{__?SpeciesQ}], {2, Infinity}],
+  post___] :=
+  Multiply[pre,
+    Permutation[PermutationProduct @@ Reverse[First /@ {ops}], qq],
+    post]
+
+
+Permutation /:
+HoldPattern @ Multiply[pre___,
+  Permutation[spec_, qq:{__?SpeciesQ}], v_Ket,
+  post___] :=
+  Multiply[pre, KetPermute[v, spec, qq], post]
+
+Permutation /:
+HoldPattern @ Multiply[pre___,
+  v_Bra, Permutation[spec_, qq:{__?SpeciesQ}],
+  post___] :=
+  Multiply[pre, Dagger @ KetPermute[Dagger @ v, spec, qq], post]
+
+Permutation /:
+HoldPattern @ Multiply[
+  pre___,
+  Permutation[spec_, qq:{__?SpeciesQ}],
+  Dyad[a_Association, b_Association, c_List],
+  post___
+ ] := Multiply[
+   pre,
+   Dyad[ KetPermute[Ket[a], spec, qq], Ket[b], c ],
+   post
+  ] /; ContainsAll[c, FlavorNone @ qq]
+
+Permutation /:
+HoldPattern @ Multiply[
+  pre___,
+  Dyad[a_Association, b_Association, c_List],
+  Permutation[spec_, qq:{__?SpeciesQ}],
+  post___
+ ] := Multiply[
+   pre,
+   Dyad[ Ket[a], KetPermute[Ket[b], spec, qq], c ],
+   post
+  ] /; ContainsAll[c, FlavorNone @ qq]
+
+
+(* NOTE *)
+
+(* This method is significantly slower than the above methods.
+   It also overwrites the previous code pieces, so do not include it. *)
+
+(*
+Permutation /:
+HoldPattern @ Multiply[pre___,
+  op:Permutation[_, {__?SpeciesQ}],
+  post___] :=
+  Multiply[pre, Elaborate @ op, post]
+ *)
 
 
 PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix."
@@ -435,10 +495,8 @@ KetPermute[Ket[ss__],
   group:(_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
  ] := Ket @@@ Permute[{ss}, group]
 
-KetPermute[expr_,
-  spec:(_?PermutationListQ | _Cycles | _SymmetricGroup | _AlternatingGroup |
-    _PermutationGroup)
- ] := expr /. { v_Ket :> KetPermute[v, spec] }
+KetPermute[expr_, spec:(_?PermutationListQ | _Cycles | _SymmetricGroup | _AlternatingGroup | _PermutationGroup) ] :=
+  ( expr /. { v_Ket :> KetPermute[v, spec] } ) /; Not @ FreeQ[expr, _Ket]
 
 KetPermute[expr_, pp:{__Cycles}] :=
   Map[ KetPermute[expr, #]&, pp ]
@@ -446,31 +504,50 @@ KetPermute[expr_, pp:{__Cycles}] :=
 
 (* for general Kets *)
 
-KetPermute[v:Ket[_Association],
-  qq:{__?SpeciesQ}, perm:(_Cycles|_?PermutationListQ)] := Module[
-    { vv = v[qq] },
-    vv = Permute[vv, perm];
-    Ket[v, qq -> vv]
-   ]
+KetPermute[
+  v:Ket[_Association],
+  spec:(_Cycles|_?PermutationListQ),
+  qq:{__?SpeciesQ}
+ ] := Module[
+   { vv = v[qq] },
+   vv = Permute[vv, spec];
+   Ket[v, qq -> vv]
+  ]
 
-KetPermute[v:Ket[_Association], qq:{__},
-  group:(_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
+KetPermute[
+  v:Ket[_Association],
+  group:(_SymmetricGroup|_AlternatingGroup|_PermutationGroup),
+  qq:{__?SpeciesQ}
  ] := Module[
    { vv = v[qq] },
    vv = Permute[vv, group];
    Map[ Ket[v, qq -> #]&, vv ]
   ]
 
-KetPermute[expr_, qq:{__},
+KetPermute[
+  expr_,
   spec:(_?PermutationListQ | _Cycles | _SymmetricGroup | _AlternatingGroup |
-    _PermutationGroup)
- ] := expr /. { v:Ket[_Association] :> KetPermute[v, qq, spec] }
+    _PermutationGroup),
+  qq:{__?SpeciesQ}
+ ] := expr /. { v:Ket[_Association] :> KetPermute[v, spec, qq] }
 
-KetPermute[expr_, qq:{__}, pp:{__Cycles}] :=
-  Map[ KetPermute[expr, qq, #]&, pp ]
+KetPermute[expr_, pp:{__Cycles}, qq:{__?SpeciesQ}] :=
+  Map[ KetPermute[expr, #, qq]&, pp ]
 
-(* operator form *)
-KetPermute[qq:{__}, spec_][v_] := KetPermute[v, qq, spec]
+
+(* new user interface *)
+
+KetPermute::newUI = "The list of species must come last. The order of the input arguments of KetPermute has been changed since Q3 v2.4.1."
+
+KetPermute[qq:{__?SpeciesQ}, spec_] := (
+  Message[KetPermute::newUI];
+  KetPermute[spec, qq]
+ )
+
+KetPermute[expr_, qq:{__?SpeciesQ}, spec_] := (
+  Message[KetPermute::newUI];
+  KetPermute[expr, spec, qq]
+ )
 
 (**** </KetPermute> ****)
 
