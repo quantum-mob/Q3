@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.4.1
+
+- Permutation, an operator form of KetPermute, has been improved.
+- Another operator form of KetPermute has been removed.
+
 ## v2.4.0
 
 - FockBosonToHeisenberg renamed BosonToHeisenberg.
