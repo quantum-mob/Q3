@@ -1,0 +1,906 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     37129,        896]
+NotebookOptionsPosition[     29415,        758]
+NotebookOutlinePosition[     33608,        841]
+CellTagsIndexPosition[     33565,        838]
+WindowTitle->Quantum Operations
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "bafa8b91-de0a-414b-8a6c-1f8169ecdfd6"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "84165df5-fe18-49c5-8266-ef4b9cb31731"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "f7c23c24-1490-4a0c-82e0-9968bb0ac288"]
+        }],ExpressionUUID->"584c95e8-89d2-4a8e-afba-eff5d1c70557"],
+        StripOnInput->False], {"\<\"Q3/tutorial/QuantumOperations\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/QuantumOperations"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+QuantumOperations.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$248480], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/QuantumOperations" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "295be78a-afe2-4374-8ee5-a0df0b9d4dd9"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "08462b83-eea9-4745-8c62-669316566102"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"4b375275-7f22-4cb8-bb8c-2b7d64879d13"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Quantum Operations", "TechNoteTitle",ExpressionUUID->
+      "c3e468bb-3074-4dfb-baa9-a22a3b7cc941"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"5f68c4ce-838a-490b-a56b-1ed549cc5e9b"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "c9893bf1-9e55-4a59-9546-92832d01e708"]
+    }],ExpressionUUID->"89c6e45b-0767-4316-a3d2-a476322a9f47"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "6c3ab25a-45cf-4ae9-8579-c9018bbb28b3"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"b53d4c9c-0ff8-4be8-8fd9-6f69abeb4703"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Definition"], "paclet:Q3/tutorial/QuantumOperations#339532637", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Unitary Representation"], 
+      "paclet:Q3/tutorial/QuantumOperations#1215528911", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Kraus Representation"], 
+      "paclet:Q3/tutorial/QuantumOperations#982874389", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Examples"], "paclet:Q3/tutorial/QuantumOperations#269244870", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Choi Isomorphism"], 
+      "paclet:Q3/tutorial/QuantumOperations#2111356922", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], ""}
+  }]], "TechNoteJumpBox",ExpressionUUID->"59a3a4a6-3918-4ad0-bc4c-\
+271e53d614ea"],
+
+Cell[TextData[{
+ "See also Section 5.2 and Appendix B of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (Springer, 2022)"]], 
+    "https://doi.org/10.1007/978-3-030-91214-7"},
+   "WebLink",
+   BaseStyle->{"TechNoteText"}]],ExpressionUUID->
+  "8d178cdd-296b-4924-9b69-c24e4e0fff32"],
+ "."
+}], "TechNoteText",
+ TextAlignment->"Right",
+ CellID->1308734266,ExpressionUUID->"ec92d8a9-8531-4493-93ad-f95f62466d5c"],
+
+Cell[TextData[{
+ "Under a certain physical process, the state of a given system evolves into \
+another state. The time evolution of a closed system is described by unitary \
+operators. For an open quantum system, which interacts with its environment, \
+the evolution is not unitary any longer.\n\tDynamical processes of open \
+quantum systems are described by a special kind of supermaps called ",
+ StyleBox["quantum operations",
+  FontSlant->"Italic"],
+ ". A quantum operation transforms density operators to other density \
+operators while preserving the elementary properties of density operators. In \
+particular, density operators are positive, so a quantum operation needs to \
+preserve positivity. However, it turns out that merely preserving positivity \
+is not sufficient and a much stronger condition is required. Imagine that a \
+system has interacted with its surroundings and established an entanglement \
+with them. Physically, one expects the operation to preserve the properties, \
+positivity in particular, of the density operator of the whole containing the \
+system and surroundings. Essentially, a quantum operation needs to preserve \
+not only the positivity of density operators of a given system but also all \
+density operators of any extended system including the system itself and its \
+surrounding systems. Mathematically, such a condition is satisfied by ",
+ StyleBox["completely positive",
+  FontSlant->"Italic"],
+ " supermaps."
+}], "TechNoteText",
+ CellID->405309134,ExpressionUUID->"16e94768-f336-4663-978c-abd2c64f1b07"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Supermap"]], "paclet:Q3/ref/Supermap", "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "Describes the quantum operations", "TechNoteTableText",ExpressionUUID->
+     "201bde0b-a950-455a-a2e7-75db80c088b0"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["ChoiMatrix"]], "paclet:Q3/ref/ChoiMatrix", 
+      "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The Choi matrix of a supermap", "TechNoteTableText",ExpressionUUID->
+     "c5e37bcd-87ef-4d32-bbcb-91a0c347152a"]}
+  }]], "DefinitionBox",
+ CellID->2096742444,ExpressionUUID->"09a314f5-3b35-4fca-aa47-b07962d4a7d9"],
+
+Cell["Functions useful to handle quantum operations.", "TechNoteCaption",
+ CellID->1891092685,ExpressionUUID->"d8ece85e-8d28-486f-99f5-4a05cb85217d"],
+
+Cell[TextData[{
+ "Make sure that the ",
+ ButtonBox["Q3",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Q3"],
+ " package is loaded to use the demonstrations in this documentation."
+}], "TechNoteMathCaption",
+ CellID->1428640008,ExpressionUUID->"e7651b25-14ca-44f0-ab51-feed45979091"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->853967906,ExpressionUUID->"06e8a9a4-f421-42ef-b524-2006346ffdf4"],
+
+Cell[TextData[{
+ "Throughout this documentation, symbol ",
+ StyleBox["S", "Input"],
+ " will be used to denote qubits and Pauli operators on them. Similarly, \
+symbol c will be used to denote complex-valued coefficients."
+}], "TechNoteMathCaption",
+ CellID->1937193009,ExpressionUUID->"7d555dd1-c9de-4661-bc40-5008e9784afe"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->403330096,ExpressionUUID->"4befc1ac-ab2c-48ce-b7c0-9d1b711f5fbd"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Definition", "TechNoteSection",
+ CellID->339532637,ExpressionUUID->"ec76b01f-0812-4aac-81d9-2d1b3592d25e"],
+
+Cell[TextData[{
+ "A ",
+ StyleBox["supermap",
+  FontSlant->"Italic"],
+ " is a linear mapping of linear operators. Recall that linear operators on a \
+vector space \[ScriptCapitalV] themselves form a vector space ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalL]", "(", "\[ScriptCapitalV]", ")"}], 
+   TraditionalForm]],ExpressionUUID->"61513b6e-e8f0-4e57-8e48-695402144ca8"],
+ ". A considerable amount of interest in supermaps came with the booming of \
+quantum information theory in the 1990s when it became clear that supermaps \
+are important in the study of entanglement. Since then, mathematical theories \
+on supermaps have been developed at a notably fast pace and applied to a wide \
+range of subjects in quantum computation and quantum information."
+}], "TechNoteText",
+ CellID->964304217,ExpressionUUID->"f283fa02-45b1-47b4-be6d-78607343ce66"],
+
+Cell[TextData[{
+ "\tA quantum operation is a special kind of supermap. Let \[ScriptCapitalV] \
+and \[ScriptCapitalW] be vector spaces. Suppose that ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "9e085c93-f8ad-4a2d-8b5c-4e5a779ba13a"],
+ " is a supermap from ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalL]", "(", "\[ScriptCapitalV]", ")"}], 
+   TraditionalForm]],ExpressionUUID->"c7fff7dd-ad45-40ee-b2f5-8721048cd5e2"],
+ " onto ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalL]", "(", "\[ScriptCapitalW]", ")"}], 
+   TraditionalForm]],ExpressionUUID->"20693ae8-da58-41b3-8db3-5ff24c271e85"],
+ ". ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "f215e74b-d3fd-4e4a-9bc3-3251300c9dde"],
+ " is called a ",
+ StyleBox["quantum operation",
+  FontSlant->"Italic"],
+ " if it satisfies the following three axioms."
+}], "TechNoteText",
+ CellID->1049079936,ExpressionUUID->"868dea03-3dda-42f2-a005-304cbdbc2e4e"],
+
+Cell[TextData[{
+ "\t(a)  ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "ac37254a-340d-407a-ac7c-fdc33c75d083"],
+ " never increases the trace. That is, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"0", "\[LessEqual]", 
+    RowBox[{"Tr", " ", 
+     RowBox[{"\[ScriptCapitalF]", "(", 
+      OverscriptBox["\[Rho]", "^"], ")"}]}], "\[LessEqual]", "1"}], 
+   TraditionalForm]],ExpressionUUID->"a0528509-286a-424e-a9ad-8f66bdf4e00e"],
+ " for any ",
+ StyleBox["density operator",
+  FontSlant->"Italic"],
+ " ",
+ Cell[BoxData[
+  FormBox[
+   OverscriptBox["\[Rho]", "^"], TraditionalForm]],ExpressionUUID->
+  "1787fe72-c7a2-4dce-a539-7732751b4e58"],
+ ". "
+}], "TechNoteText",
+ CellID->1105000924,ExpressionUUID->"e841fde6-71ca-4bb6-b627-cb99dbe46469"],
+
+Cell[TextData[{
+ "\t(b)  ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "6757883c-2542-45a0-be4f-d65d03fd979a"],
+ " is ",
+ StyleBox["convex linear",
+  FontSlant->"Italic"],
+ ". That is, for any probabilities ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["p", "j"], TraditionalForm]],ExpressionUUID->
+  "51e0262a-b814-424c-9bec-4bf78b373319"],
+ " and density operators ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Rho]", "j"], TraditionalForm]],ExpressionUUID->
+  "6a8f3ad4-f1e9-48af-8045-96e041911376"],
+ " on \[ScriptCapitalV],"
+}], "TechNoteText",
+ CellID->92439615,ExpressionUUID->"1f34887a-5fc0-4aa8-94a0-9038b2a3dcda"],
+
+Cell[TextData[{
+ "\t\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[ScriptCapitalF]", "(", 
+     RowBox[{
+      SubscriptBox["\[Sum]", "j"], 
+      RowBox[{
+       SubscriptBox[
+        OverscriptBox["\[Rho]", "^"], "j"], 
+       SubscriptBox["p", "j"]}]}], ")"}], "=", 
+    RowBox[{
+     SubscriptBox["\[Sum]", "j"], 
+     RowBox[{
+      RowBox[{"\[ScriptCapitalF]", "(", 
+       SubscriptBox[
+        OverscriptBox["\[Rho]", "^"], "j"], ")"}], 
+      SubscriptBox["p", "j"]}]}]}], TraditionalForm]],ExpressionUUID->
+  "a9d26c63-1629-4022-9de7-0e24f59e06b4"],
+ "."
+}], "TechNoteText",
+ CellID->1185374639,ExpressionUUID->"48d47505-d58c-456d-b3fa-b3db7718e558"],
+
+Cell[TextData[{
+ "\t(c)  ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "a616d2b0-2a85-4dc3-bf6e-0d53ab517cdc"],
+ " is a ",
+ StyleBox["completely positive supermap",
+  FontSlant->"Italic"],
+ ". That is, not only ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalF]", "(", 
+    OverscriptBox["\[Rho]", "^"], ")"}], TraditionalForm]],ExpressionUUID->
+  "1f502d90-0c0f-42b7-b074-0b7f794ed0cc"],
+ "itself is positive for any positive operator ",
+ Cell[BoxData[
+  FormBox["\[Rho]", TraditionalForm]],ExpressionUUID->
+  "d46bf91c-9265-4630-9e39-08ba79a531da"],
+ " on ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "56eabae9-5972-4c94-8f8e-7f2b21388ce7"],
+ ", but ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"(", 
+     RowBox[{"\[ScriptCapitalF]", "\[CircleTimes]", "\[ScriptCapitalI]"}], 
+     ")"}], 
+    RowBox[{"(", 
+     OverscriptBox["\[Rho]", "^"], ")"}]}], TraditionalForm]],ExpressionUUID->
+  "702db124-cd6a-44ab-b3c3-fc9a5e25a118"],
+ " is also positive for any positive operator on ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalV]", "\[CircleTimes]", "\[ScriptCapitalE]"}], 
+   TraditionalForm]],ExpressionUUID->"fe7f3d11-b6ba-45b6-a774-c1182b59b63b"],
+ " with an arbitrary vector space ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalE]", TraditionalForm]],ExpressionUUID->
+  "e910b3c2-3d73-480a-9ce6-9ba62013d821"],
+ "."
+}], "TechNoteText",
+ CellID->1352792706,ExpressionUUID->"e95fda02-eb9d-4744-82de-a89096c54260"],
+
+Cell[TextData[{
+ "\tPhysically, the vector space ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalE]", TraditionalForm]],ExpressionUUID->
+  "ca108541-2085-4229-bdd6-c5f4c5c32858"],
+ " in (c) above is associated with an environment. ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalF]", "\[CircleTimes]", "\[ScriptCapitalI]"}], 
+   TraditionalForm]],ExpressionUUID->"8ebf29b5-79ba-4bd9-b8bb-befba29b263b"],
+ " acts non-trivially only on ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "26b4b902-5e47-47ca-8f93-98ff51c702f1"],
+ " associated with the system but trivially on ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalE]", TraditionalForm]],ExpressionUUID->
+  "877dd236-63ca-4286-a652-5b63f683af89"],
+ ". To be physically meaningful, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalF]", "\[CircleTimes]", "\[ScriptCapitalI]"}], 
+   TraditionalForm]],ExpressionUUID->"a89cf209-2af9-4c10-917b-5beedd1e78ba"],
+ " is expected to preserve the properties, especially positivity, of density \
+operators ",
+ Cell[BoxData[
+  FormBox[
+   OverscriptBox["\[Rho]", "^"], TraditionalForm]],ExpressionUUID->
+  "e33f3c37-075d-46f2-a1bd-0934ee388e74"],
+ " on ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalV]", "\[CircleTimes]", "\[ScriptCapitalE]"}], 
+   TraditionalForm]],ExpressionUUID->"579c18c8-47ba-47de-9dc3-6df6b5e18250"],
+ ". Note that ",
+ Cell[BoxData[
+  FormBox[
+   OverscriptBox["\[Rho]", "^"], TraditionalForm]],ExpressionUUID->
+  "3d93844a-ca85-4b8e-a6bc-256f7830805c"],
+ " may contain a considerable amount of entanglement due to prior \
+interactions between the system and environment."
+}], "TechNoteText",
+ CellID->253059528,ExpressionUUID->"aec809f0-5cd1-4242-99c7-6afcecccaae1"],
+
+Cell[TextData[{
+ "\tMost quantum operations preserve the trace. That is, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"Tr", " ", 
+     RowBox[{"\[ScriptCapitalF]", "(", 
+      OverscriptBox["\[Rho]", "^"], ")"}]}], "=", "1"}], TraditionalForm]],
+  ExpressionUUID->"f4af0945-2c90-45df-a058-aa05e31f385e"],
+ " for all density operators ",
+ Cell[BoxData[
+  FormBox[
+   OverscriptBox["\[Rho]", "^"], TraditionalForm]],ExpressionUUID->
+  "d0a81991-3fe8-4182-a630-8db25b24e89e"],
+ ". An important exception is the process associated with a (generalized \
+selective) measurement. When the trace is not preserved, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"Tr", " ", 
+     RowBox[{"\[ScriptCapitalF]", "(", 
+      OverscriptBox["\[Rho]", "^"], ")"}]}], "=", "1"}], TraditionalForm]],
+  ExpressionUUID->"75a01edc-9bb5-4546-8a53-dae4a40bda8b"],
+ " gives the probability for the dynamical process ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "91ab186b-d2e5-4d6f-9b16-9483119f8f60"],
+ " to occur."
+}], "TechNoteText",
+ CellID->261140628,ExpressionUUID->"7caa26e6-5db4-4863-9f0e-19f083f00ece"],
+
+Cell["\<\
+\tIn quantum information theory, quantum operations preserving trace, i.e., \
+completely positive and trace-preserving supermaps, are called quantum \
+channels. Physically, these describe communication channels that can transmit \
+quantum information, as well as classical information.\
+\>", "TechNoteText",
+ CellID->1336314412,ExpressionUUID->"f1031599-5ec6-4af4-8fde-21a7eb72ae27"],
+
+Cell["\<\
+\tAnother important class of physical phenomena described by quantum \
+operations is quantum decoherence or just decoherence for short, referring to \
+the loss of quantum coherence. We have briefly introduced this effect in the \
+previous section through toy models. Quantum operations offer a complete and \
+general description of decoherence.\
+\>", "TechNoteText",
+ CellID->1895202055,ExpressionUUID->"9ccbd098-218e-43d4-83b6-091d5608639c"]
+}, Open  ]],
+
+Cell["Kraus Representation", "TechNoteSection",
+ CellID->982874389,ExpressionUUID->"790f0fcc-eeb6-4506-bf47-d44582e61818"],
+
+Cell["Choi Isomorphism", "TechNoteSection",
+ CellID->2111356922,ExpressionUUID->"8dc6cae9-ae6c-4d1e-89b1-989f94347beb"],
+
+Cell["Unitary Representation", "TechNoteSection",
+ CellID->1215528911,ExpressionUUID->"5a658243-69b5-47f3-ae0b-143602198614"],
+
+Cell["Examples", "TechNoteSection",
+ CellID->269244870,ExpressionUUID->"3be003d6-6b99-4263-bde8-f5b145a65c90"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/guide/QuantumComputationAndQuantumInformation"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "ddec8780-307e-4dd4-9b47-d7b211d833d8"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[TextData[ButtonBox["Q3",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/guide/Q3"]], "TutorialMoreAbout",
+         ExpressionUUID->"58fc7fa9-b6ca-40c1-a8fa-854999b808a3"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"1434295b-4196-431e-838a-\
+e7fd3829c002"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tutorials"}], "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Noise and Decoherence",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumNoiseAndDecoherence"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "7221fbef-246b-458d-93b3-11d16508a3a3"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation and Quantum Information with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "607692b6-1a52-405b-b872-95e382f16c64"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox["Q3: Quick Start",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/Q3QuickStart"]], "RelatedTutorials",
+         ExpressionUUID->"5ef3bc68-778c-4bb4-8ee5-a18bbabc470c"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"b5bbe77e-ef4d-4fe1-8393-\
+d06135fba8de"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang (2022)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "06a20e74-71ce-4c2b-ac51-247d1655aac5"]}]],ExpressionUUID->
+         "071d1b28-3820-42bc-bd2c-fdf906553d00"],
+        StyleBox[
+        ", Quantum Computation and Quantum Information (Cambridge University \
+Press, 2011).",
+         FontSlant->"Plain"]
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "874ce045-42e1-481d-8dde-0f8b9eab9792"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "d6909e1c-9799-4eec-8cba-f0cdfdd873ec"]}]],ExpressionUUID->
+         "c19e732b-e91a-455c-924d-c6fffcf8a31f"],
+        ", A Quantum Computation Workbook (Springer, 2022)."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "b453b821-8fcd-4d51-a936-211c7516411d"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"37dd6919-d8f8-4f7e-831b-\
+198340f064c6"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"6409d88a-0495-4751-a2f1-1cc479c53a2d"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Quantum Operations",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2021", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2022, 7, 6, 8, 52, 0.936704}", 
+    "history" -> {"13", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"supermap", "completely positive supermap"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", 
+    "status" -> "None", "summary" -> 
+    "See also Section 5.2 and Appendix B of the Quantum Workbook (Springer, \
+2022). Under a certain physical process, the state of a given system evolves \
+into another state. The time evolution of a closed system is described by \
+unitary operators. For an open quantum system, which interacts with its \
+environment, the evolution is not unitary any longer. Dynamical processes of \
+open quantum systems are described by a special kind of supermaps called \
+quantum operations. A quantum operation transforms density operators to other \
+density operators while preserving the elementary properties of density \
+operators. In particular, density operators are positive, so a quantum \
+operation needs to preserve positivity. However, it turns out that merely \
+preserving positivity is not sufficient and a much stronger condition is \
+required. Imagine that a system has interacted with its surroundings and \
+established an entanglement with them. Physically, one expects the operation \
+to preserve the properties, positivity in particular, of the density operator \
+of the whole containing the system and surroundings. Essentially, a quantum \
+operation needs to preserve not only the positivity of density operators of a \
+given system but also all density operators of any extended system including \
+the system itself and its surrounding systems. Mathematically, such a \
+condition is satisfied by completely positive supermaps. A supermap is a \
+linear mapping of linear operators. Recall that linear operators on a vector \
+space \\[ScriptCapitalV] themselves form a vector space \\[ScriptCapitalL] \
+(\\[ScriptCapitalV]). A considerable amount of interest in supermaps came \
+with the booming of quantum information theory in the 1990s when it became \
+clear that supermaps are important in the study of entanglement. Since then, \
+mathematical theories on supermaps have been developed at a notably fast pace \
+and applied to a wide range of subjects in quantum computation and quantum \
+information.", "synonyms" -> {}, "tabletags" -> 
+    DocumentationBuild`Make`Private`tabletaggingrules$248439, "title" -> 
+    "Quantum Operations", "titlemodifier" -> "", "windowtitle" -> 
+    "Quantum Operations", "type" -> "Tech Note", "uri" -> 
+    "Q3/tutorial/QuantumOperations", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+FrontEndVersion->"13.0 for Mac OS X ARM (64-bit) (February 4, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.0 for Mac OS X ARM (64-bit) (February 4, 2022)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"2c77704f-ffb2-4ca3-a8b5-33470de7e72a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[590, 21, 3463, 80, 70, "AnchorBarGrid",ExpressionUUID->"4b375275-7f22-4cb8-bb8c-2b7d64879d13",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4078, 105, 1393, 38, 70, "ObjectNameGrid",ExpressionUUID->"b53d4c9c-0ff8-4be8-8fd9-6f69abeb4703"],
+Cell[5474, 145, 5467, 118, 70, "TechNoteJumpBox",ExpressionUUID->"59a3a4a6-3918-4ad0-bc4c-271e53d614ea"],
+Cell[10944, 265, 441, 13, 70, "TechNoteText",ExpressionUUID->"ec92d8a9-8531-4493-93ad-f95f62466d5c",
+ CellID->1308734266],
+Cell[11388, 280, 1552, 24, 70, "TechNoteText",ExpressionUUID->"16e94768-f336-4663-978c-abd2c64f1b07",
+ CellID->405309134],
+Cell[12943, 306, 759, 19, 70, "DefinitionBox",ExpressionUUID->"09a314f5-3b35-4fca-aa47-b07962d4a7d9",
+ CellID->2096742444],
+Cell[13705, 327, 149, 1, 70, "TechNoteCaption",ExpressionUUID->"d8ece85e-8d28-486f-99f5-4a05cb85217d",
+ CellID->1891092685],
+Cell[13857, 330, 288, 7, 70, "TechNoteMathCaption",ExpressionUUID->"e7651b25-14ca-44f0-ab51-feed45979091",
+ CellID->1428640008],
+Cell[14148, 339, 145, 3, 70, "Input",ExpressionUUID->"06e8a9a4-f421-42ef-b524-2006346ffdf4",
+ CellID->853967906],
+Cell[14296, 344, 323, 6, 70, "TechNoteMathCaption",ExpressionUUID->"7d555dd1-c9de-4661-bc40-5008e9784afe",
+ CellID->1937193009],
+Cell[14622, 352, 269, 6, 70, "Input",ExpressionUUID->"4befc1ac-ab2c-48ce-b7c0-9d1b711f5fbd",
+ CellID->403330096]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[14928, 363, 112, 1, 70, "TechNoteSection",ExpressionUUID->"ec76b01f-0812-4aac-81d9-2d1b3592d25e",
+ CellID->339532637],
+Cell[15043, 366, 861, 16, 70, "TechNoteText",ExpressionUUID->"f283fa02-45b1-47b4-be6d-78607343ce66",
+ CellID->964304217],
+Cell[15907, 384, 998, 25, 70, "TechNoteText",ExpressionUUID->"868dea03-3dda-42f2-a005-304cbdbc2e4e",
+ CellID->1049079936],
+Cell[16908, 411, 776, 23, 70, "TechNoteText",ExpressionUUID->"e841fde6-71ca-4bb6-b627-cb99dbe46469",
+ CellID->1105000924],
+Cell[17687, 436, 664, 20, 70, "TechNoteText",ExpressionUUID->"1f34887a-5fc0-4aa8-94a0-9038b2a3dcda",
+ CellID->92439615],
+Cell[18354, 458, 671, 22, 70, "TechNoteText",ExpressionUUID->"48d47505-d58c-456d-b3fa-b3db7718e558",
+ CellID->1185374639],
+Cell[19028, 482, 1520, 43, 70, "TechNoteText",ExpressionUUID->"e95fda02-eb9d-4744-82de-a89096c54260",
+ CellID->1352792706],
+Cell[20551, 527, 1735, 42, 70, "TechNoteText",ExpressionUUID->"aec809f0-5cd1-4242-99c7-6afcecccaae1",
+ CellID->253059528],
+Cell[22289, 571, 1140, 29, 70, "TechNoteText",ExpressionUUID->"7caa26e6-5db4-4863-9f0e-19f083f00ece",
+ CellID->261140628],
+Cell[23432, 602, 393, 6, 70, "TechNoteText",ExpressionUUID->"f1031599-5ec6-4af4-8fde-21a7eb72ae27",
+ CellID->1336314412],
+Cell[23828, 610, 452, 7, 70, "TechNoteText",ExpressionUUID->"9ccbd098-218e-43d4-83b6-091d5608639c",
+ CellID->1895202055]
+}, Open  ]],
+Cell[24295, 620, 122, 1, 70, "TechNoteSection",ExpressionUUID->"790f0fcc-eeb6-4506-bf47-d44582e61818",
+ CellID->982874389],
+Cell[24420, 623, 119, 1, 70, "TechNoteSection",ExpressionUUID->"8dc6cae9-ae6c-4d1e-89b1-989f94347beb",
+ CellID->2111356922],
+Cell[24542, 626, 125, 1, 70, "TechNoteSection",ExpressionUUID->"5a658243-69b5-47f3-ae0b-143602198614",
+ CellID->1215528911],
+Cell[24670, 629, 110, 1, 70, "TechNoteSection",ExpressionUUID->"3be003d6-6b99-4263-bde8-f5b145a65c90",
+ CellID->269244870],
+Cell[24783, 632, 999, 24, 70, "TutorialMoreAboutSection",ExpressionUUID->"1434295b-4196-431e-838a-e7fd3829c002"],
+Cell[25785, 658, 1378, 34, 70, "RelatedTutorialsSection",ExpressionUUID->"b5bbe77e-ef4d-4fe1-8393-d06135fba8de"],
+Cell[27166, 694, 2164, 60, 70, "TutorialRelatedLinksSection",ExpressionUUID->"37dd6919-d8f8-4f7e-831b-198340f064c6"],
+Cell[29333, 756, 78, 0, 70, "FooterCell",ExpressionUUID->"6409d88a-0495-4751-a2f1-1cc479c53a2d"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
