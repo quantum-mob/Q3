@@ -6,8 +6,8 @@ BeginPackage["Q3`"]
 
 `FockPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-07 20:53:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -136,6 +136,7 @@ exclusiveJoin::overlap = "Overlapping indexes detected when joining
    products. Typically, the resulting expressions can be simplified to a
    greater extent in this approach. *)
 
+FockSum /:
 HoldPattern @ Multiply[ FockSum[a1_, j1_List], FockSum[a2_, j2_List] ] :=
   renameDuplicateIndices[a1, a2, j1, j2]
 
@@ -233,6 +234,7 @@ rulesFockSumCollect = {
 
 (* Vacuum expectation *)
 
+FockSum /:
 HoldPattern @ Multiply[Dagger[VacuumState], FockSum[ops_, ls_List], VacuumState] :=
   FockSum[ VacuumExpectation[ops], ls ]
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.68 $"][[2]], " (",
-  StringSplit["$Date: 2022-06-06 22:57:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.70 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-07 19:45:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -111,7 +111,7 @@ ListPartitions[data_List, spec___] := Module[
    decompositions of the integer Length[list]. *)
 
 
-Supplement::usage = "Supplement[a, b, c, \[Ellipsis]] returns the elements in a that are not in any of b, c, \[Ellipsis]. It is similar to the builtin Complement, but unlike Complement, treats a as a List (not Mathematical set). That is, the order is preserved."
+Supplement::usage = "Supplement[a, b, c, \[Ellipsis]] returns the elements in a that are not in any of b, c, \[Ellipsis]. It is similar to the builtin Complement, but unlike Complement, treats a as a List (not Mathematical set). That is, the order is preserved.\nMathematica 13.1 introduced an experimental function DeleteElements with the same feature."
 
 Supplement[a_List, b__List] := DeleteCases[ a, Alternatives @@ Union[b], 1 ]
 (* Implementation 3: Fast and versatile. *)

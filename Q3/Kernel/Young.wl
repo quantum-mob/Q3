@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.79 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-03 10:26:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.84 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-07 19:26:39+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -27,6 +27,7 @@ BeginPackage["Q3`"];
   GroupCharacters, SymmetricGroupCharacters,
   CharacterScalarProduct,
   CompoundYoungCharacters, KostkaMatrix };
+
 
 Begin["`Private`"]
 
@@ -310,7 +311,7 @@ YoungTableauQ[tb_?anyYoungTableauQ] := TrueQ[
 
 YoungTableauQ[_] = False
 
-anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau and False otherwise."
+anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau (not necessarily semi-standard) and False otherwise."
 
 anyYoungTableauQ[tb:{__List}] := Apply[GreaterEqual, Length /@ tb]
 
@@ -470,16 +471,24 @@ HoldPattern @ Multiply[pre___,
   Multiply[pre, Elaborate @ op, post]
  *)
 
-
-PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix."
-
-PermutationMatrix[perm_?PermutationCyclesQ] :=
-  PermutationMatrix[ perm, Max @ Cases[perm, _Integer, Infinity] ]
-
-PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
-  Permute[ IdentityMatrix[n], perm ]
-
 (**** </Permutation> ****)
+
+
+(**** <PermutationMatrix> ****)
+
+(* PermutationMatrix is now included in Mathematica since v13.1. *)
+
+If[ $VersionNumber < 13.1,
+  PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix.";
+
+  PermutationMatrix[perm_?PermutationCyclesQ] :=
+    PermutationMatrix[ perm, Max @ Cases[perm, _Integer, Infinity] ];
+
+  PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
+    Transpose @ Permute[ IdentityMatrix[n], perm ];
+ ]
+
+(**** </PermutationMatrix> ****)
 
 
 (**** <KetPermute> ****)

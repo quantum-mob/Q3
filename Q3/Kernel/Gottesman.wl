@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.27 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-25 22:57:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.28 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-07 11:29:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -788,7 +788,7 @@ FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
 
   If[ (kk = First[kk]) != 1,
     cyc = CircleTimes[
-      Transpose @ PermutationMatrix[Cycles @ {{1, kk}}, n],
+      PermutationMatrix[Cycles @ {{1, kk}}, n],
       One[2]
      ];
     new = Mod[mat . cyc, 2];

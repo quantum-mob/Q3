@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.209 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-03 04:12:07+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.217 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-07 19:26:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -18,7 +18,7 @@ BeginPackage["Q3`"]
 
 { KetPermute, KetSymmetrize };
 
-{ Permutation, PermutationMatrix };
+{ Permutation };
 
 { OTimes, OSlash, ReleaseTimes };
 
@@ -54,7 +54,7 @@ BeginPackage["Q3`"]
 
 { BasisComplement };
 
-{ CircleTimes, CirclePlus, BlockDiagonalMatrix };
+{ CircleTimes, CirclePlus };
 
 { Dyad, DyadExpression };
 
@@ -84,6 +84,15 @@ BeginPackage["Q3`"]
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
 (**** OBSOLETE SYMBOLS ****)
+
+(* Now comes as a built-in function with v13.1, but with an additional
+   Transpose compared to the old one.
+   Kept here form backward compatibility. *)
+{ PermutationMatrix };
+
+(* Now an experimental built-in symbol since v13.1.
+   Kept here for backward compatibility. *)
+{ BlockDiagonalMatrix };
 
 { WignerFunction }; (* obsolete *)
 { PauliExpression, PauliExpressionRL }; (* obsolete *)
@@ -1628,15 +1637,22 @@ MatrixIn[op_, bs_List] := (
   Zero[Length @ bs, Length @ bs]
  ) /; AnyTrue[bs, FreeQ[#, _Ket]&]
 
-MatrixIn[bs_List][op_] := MatrixIn[op, bs]
+MatrixIn[bs:(_List|_Association)][op_] := MatrixIn[op, bs]
 
 MatrixIn[op_, bs_List] :=
   Garner @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
 
-MatrixIn[op_, bs_Association] := Map[MatrixIn[op, #]&, bs]
-
 MatrixIn[op_, aa_List, bb_List] :=
   Garner @ Outer[Multiply, Dagger[aa], Garner[op ** bb]]
+
+MatrixIn[op_, bs_Association] := Map[MatrixIn[op, #]&, bs]
+
+MatrixIn[op_, aa_Association, bb_Association] := Module[
+  { kk = Tuples @ {Keys @ aa, Keys @ bb},
+    mat },
+  mat = Outer[MatrixIn[op, #1, #2]&, Values @ aa, Values @ bb, 1];
+  AssociationThread[kk -> Flatten[mat,1] ]
+ ]
 
 (**** </MatrixIn> ****)
 
@@ -2353,18 +2369,22 @@ CircleTimes[vecs__?VectorQ] := Flatten @ TensorProduct[vecs]
 
 (**** <CirclePlus> ****)
 
-BlockDiagonalMatrix::usage = "BlockDiagonalMatrix[{a,b,c,...}] returns a matrix with the matrices a, b, c, ... as its blocks. BlockDiagonalMatrix[a,b,c,...] is the same."
+(* BlockDiagonalMatrix (experimental) is now included in Mathematica since v13.1. *)
 
-BlockDiagonalMatrix[mm:({}|_?MatrixQ)..] := BlockDiagonalMatrix @ {mm}
+If[ $VersionNumber < 13.1,
+  BlockDiagonalMatrix::usage = "BlockDiagonalMatrix[{a,b,c,...}] returns a matrix with the matrices a, b, c, ... as its blocks. BlockDiagonalMatrix[a,b,c,...] is the same.";
 
-BlockDiagonalMatrix[mm:{({}|_?MatrixQ)..}] := Module[
-  { new = DeleteCases[mm, {}],
-    x, y },
-  { x, y } = Transpose @ Map[Dimensions] @ new;
-  x = Range[Accumulate @ Most @ Prepend[x, 1], Accumulate @ x];
-  y = Range[Accumulate @ Most @ Prepend[y, 1], Accumulate @ y];
-  x = Catenate @ Map[Tuples] @ Transpose @ {x, y};
-  SparseArray @ Thread[x -> Flatten @ new]
+  BlockDiagonalMatrix[mm:({}|_?MatrixQ)..] := BlockDiagonalMatrix @ {mm};
+
+  BlockDiagonalMatrix[mm:{({}|_?MatrixQ)..}] := Module[
+    { new = DeleteCases[mm, {}],
+      x, y },
+    { x, y } = Transpose @ Map[Dimensions] @ new;
+    x = Range[Accumulate @ Most @ Prepend[x, 1], Accumulate @ x];
+    y = Range[Accumulate @ Most @ Prepend[y, 1], Accumulate @ y];
+    x = Catenate @ Map[Tuples] @ Transpose @ {x, y};
+    SparseArray @ Thread[x -> Flatten @ new]
+   ];
  ]
 
 CirclePlus::usage = "a \[CirclePlus] b \[CirclePlus] c or CirclePlus[a,b,c]

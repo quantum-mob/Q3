@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.41 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-02 15:48:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.48 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-07 00:18:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -86,6 +86,8 @@ Supermap[ops:{__}, cc_][rho_] := Garner @ Total @ Total[
  ]
 
 
+(**** <ChoiMatrix> ****)
+
 ChoiMatrix::usage = "ChoiMatrix[op1, op2, \[Ellipsis]] returns the Choi matrix corresponding to the superoperator represented by the Kraus elements op1, op2, \[Ellipsis]."
 
 ChoiMatrix[Supermap[spec__]] := ChoiMatrix[spec]
@@ -139,6 +141,24 @@ ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := With[
 ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := ChoiMatrix[Matrix[ops], cc]
 
 
+toSuperMatrix::usage = "toSuperMatrix[cm] converts Choi matrix cm to a regular matrix form; C[i,j;k,l] -> M[{i,k},{j,l}]."
+
+toSuperMatrix[cm_?TensorQ] := Module[
+  { dd = Times @@@ Transpose@Partition[Dimensions[cm], 2] },
+  ArrayReshape[Transpose[cm, 2 <-> 3], dd]
+ ]
+
+toChoiMatrix::usage = "toChoiMatrix[sm] converts super-matrix sm to a Choi matrix form;  M[{i,k},{j,l}] -> C[i,j;k,l]."
+
+toChoiMatrix[sm_?MatrixQ] := Module[
+  { dd = Sqrt @ Dimensions[sm] },
+  dd = Flatten @ Transpose @ Table[dd, 2];
+  Transpose[ArrayReshape[sm, dd], 2 <-> 3]
+ ]
+
+(**** </ChoiMatrix> ****)
+
+
 KrausProduct::usage = "KrausProduct[a, b] returns the trace Hermitian product (also known as the Frobenius product) of two matrices (operators) a and b."
 
 KrausProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a] . b]
@@ -156,7 +176,9 @@ KrausProduct[a_, b_?CommutativeQ] := Conjugate[Tr @ Matrix @ a] * b
 (**** <LindbladBasis> ****)
 
 LindbladBasis::usage = "LindbladBasis[n] returns a basis of the vector space \[ScriptCapitalM](n) of n\[Times]n matrices.\nThe basis is orthonormal with respect to the trace Hermitian product, and all but one elements are traceless."
-  
+
+LindbladBasis[1] := {{{1}}}
+
 LindbladBasis[n_Integer] := Module[
   { dbs = SparseArray /@ DiagonalMatrix /@ theBasisX[n],
     obs = Subsets[Range[n], {2}] },
@@ -185,7 +207,7 @@ theBasisX[n_?OddQ] := Module[
   bb = ArrayPad[bb, {{0, 0}, {0, 1}}];
   Join[
     { ConstantArray[1, n]/Sqrt[n],
-      Normalize@Append[ConstantArray[1, n - 1], 1 - n] },
+      Normalize @ Append[ConstantArray[1, n - 1], 1 - n] },
     bb
    ]
  ]
@@ -202,6 +224,7 @@ theVectorX[mat_?MatrixQ, mbs:{__?MatrixQ}] :=
   Map[ KrausProduct[#, mat]&, mbs ]
 
 (**** </LindbladBasis> ****)
+
 
 LindbladBasisMatrix::usage = "LindbladBasisMatrix[n] returns the Choi matrix of the supermap that maps the standard basis of \[ScriptCapitalL](n) to the Lindblad basis."
 
@@ -278,33 +301,7 @@ HoldPattern @ ChoiMatrix @ LindbladGenerator[ops:{_, __}] :=
   ChoiMatrix @ LindbladGenerator @ Matrix[ops]
 
 
-LindbladConvertOld::usage = "See LindbladConvert."
-
-LindbladConvertOld::incmp = "The matrices `` are not compatible with each other."
-
-LindbladConvertOld[opH_, {opL__}] := LindbladConvertOld[{opH, opL}]
-
-LindbladConvertOld[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
-  { len = Length[opH],
-    mbs, var, rho, gen, x },
-  mbs = LindbladBasis[len];
-  var = Array[x, len*len, 0];
-  rho = var . mbs;
-  var = Rest @ var;
-
-  gen = LindbladGenerator[{opH, opL}] @ rho;
-  gen = Rest @ theVectorX[gen, mbs];
-  
-  { Transpose[ Coefficient[gen, #]& /@ var ],
-    gen /. {x[0] -> 1/Sqrt[len], x[_] -> 0}
-   }
- ] /; ArrayQ @ {opH, opL}
-
-LindbladConvertOld[ops:{__?MatrixQ}] :=
-  Message[LindbladConvertOld::incmp, Normal @ ops]
-
-LindbladConvertOld[ops:{_, __}] := LindbladConvertOld @ Matrix[ops]
-
+(**** <LindbladConvert> ****)
 
 LindbladConvert::usage = "LindbladConvert[{opH, opL}] converts the Lindblad equation into an ordinary differential equation for the column vector consisting of the components of the density operator in the so-called Lindblad basis.\nIt returns the pair {generator matrix, offset vector}."
 
@@ -334,6 +331,36 @@ LindbladConvert[ops:{__?MatrixQ}] :=
 LindbladConvert[{None, opL__}] := LindbladConvert[{0, opL}]
 
 LindbladConvert[ops:{_, __}] := LindbladConvert @ Matrix[ops]
+
+
+LindbladConvertOld::usage = "See LindbladConvert."
+
+LindbladConvertOld::incmp = "The matrices `` are not compatible with each other."
+
+LindbladConvertOld[opH_, {opL__}] := LindbladConvertOld[{opH, opL}]
+
+LindbladConvertOld[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
+  { len = Length[opH],
+    mbs, var, rho, gen, x },
+  mbs = LindbladBasis[len];
+  var = Array[x, len*len, 0];
+  rho = var . mbs;
+  var = Rest @ var;
+
+  gen = LindbladGenerator[{opH, opL}] @ rho;
+  gen = Rest @ theVectorX[gen, mbs];
+  
+  { Transpose[ Coefficient[gen, #]& /@ var ],
+    gen /. {x[0] -> 1/Sqrt[len], x[_] -> 0}
+   }
+ ] /; ArrayQ @ {opH, opL}
+
+LindbladConvertOld[ops:{__?MatrixQ}] :=
+  Message[LindbladConvertOld::incmp, Normal @ ops]
+
+LindbladConvertOld[ops:{_, __}] := LindbladConvertOld @ Matrix[ops]
+
+(**** </LindbladConvert> ****)
 
 
 LindbladStationary::usage = "LindbladStationary[{op, b1, b2, \[Ellipsis]}] returns the stationary state of the Lindblad equation specified by the effective Hamiltonian op and the Lindblad operators b1, b2, \[Ellipsis]."

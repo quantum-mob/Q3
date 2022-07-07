@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.5.0
+
+- Compatibility update for Mathematica 13.1.
+- MatrixIn[op, assoc1, assoc2] is now allowed.
+
 ## v2.4.1
 
 - Permutation, an operator form of KetPermute, has been improved.

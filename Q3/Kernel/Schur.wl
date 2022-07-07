@@ -358,7 +358,7 @@ ClebschGordanX[in_?GelfandPatternQ, s_Integer, out_?GelfandPatternQ] :=
 
 (**** <SchurBasis> ****)
 
-SchurBasisQ::usage = "SchurBasis[obj] returns True obj is an Schur basis."
+SchurBasisQ::usage = "SchurBasisQ[obj] returns True obj is an Schur basis."
 
 HoldPattern @ SchurBasisQ[
   bs:Association[({_?GelfandPatternQ, _?GelfandPatternQ} -> _)..]
