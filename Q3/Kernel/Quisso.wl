@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.35 $"][[2]], " (",
-  StringSplit["$Date: 2022-04-02 22:52:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.36 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-17 17:07:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -34,7 +34,8 @@ BeginPackage["Q3`"]
 
 { QFT, ModExp, ModAdd, ModMultiply };
 
-{ ProductState, BellState, GraphState, DickeState, RandomState };
+{ ProductState, BellState, SmolinState,
+  GraphState, DickeState, RandomState };
 
 (* Qudit *)
 
@@ -1938,7 +1939,26 @@ RandomState[qq : {__?QubitQ}, n_Integer] := Module[
  ]
 
 
-(**** <Graph State> ****)
+(**** <SmolinState> ****)
+
+SmolinState::usage = "SmolinState[{s1,s2,\[Ellipsis]}] returns the generalized Smolin state for qubits {s1,s2,\[Ellipsis]}. See also Augusiak and Horodecki (2006).";
+
+SmolinState::badsys = "A generalized Smolin state is defined only for an even number of qubits: `` has an odd number of qubits. Returning the generalized Smolin state for the qubits excluding the last."
+
+SmolinState[ss:{__?QubitQ}] := (
+  Message[SmolinState::badsys, FlavorNone @ ss];
+  SmolinState[Most @ ss]
+ ) /; OddQ[Length @ ss]
+
+SmolinState[ss:{__?QubitQ}] :=
+  (1 + Power[-1, Length[ss]/2] *
+      Total @ MapThread[Multiply, Through[ss[All]]]) /
+  Power[2, Length @ ss]
+
+(**** </SmolinState> ****)
+
+
+(**** <GraphState> ****)
 
 GraphState::usage = "GraphState[g] gives the graph state correponding to the graph g."
 
@@ -1985,7 +2005,7 @@ theCZ[n_Integer][i_Integer, j_Integer] := Module[
   DiagonalMatrix @ ReplacePart[Table[1, Power[2, n]], Thread[pp -> -1]]
  ]
 
-(**** </Graph State> ****)
+(**** </GraphState> ****)
 
 
 Protect[Evaluate @ $symb]

@@ -12,8 +12,8 @@ BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.19 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-24 12:43:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.22 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-19 11:06:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -85,9 +85,17 @@ Q3Info[] := Module[
 
 Q3Release::usage = "Q3Release[] returns a string containing the release version of Q3. If it fails to find and open the paclet of Q3, then it returns Failure."
 
+Q3Release::local = "A beta version of Q3 is installed locally in ``. Note that v`` is available from the server."
+
 Q3Release[] := Module[
-  { pac = PacletObject @ "Q3" },
-  If[ FailureQ[pac], pac, pac["Version"] ]
+  { pac = PacletObject @ "Q3",
+    remote },
+  If[ FailureQ[pac], Return @ pac];
+  If[ StringMatchQ[pac @ "Location", "*Applications/Q3*"],
+    remote = First @ PacletFindRemote["Q3"];
+    Message[Q3Release::local, pac @ "Location", remote @ "Version"]
+   ];
+  pac["Version"]
  ]
 
 Q3RemoteRelease::usage = "Q3RemoteRelease[] returns a string containing the release version of Q3 at the GitHub repository."

@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.84 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-07 19:26:39+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.85 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-19 09:19:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -346,7 +346,7 @@ FirstYoungTableau[shape_?YoungShapeQ] :=
 LastYoungTableau::usage = "LastYoungTableau[p] constructs the last Young tableau with shape described by partition p."
 
 LastYoungTableau[shape_?YoungShapeQ] :=
-  FoldPairList[TakeDrop, Range[Total @ shape], shape]
+  TakeList[Range @ Total @ shape, shape]
 
 
 NextYoungTableau::usage = "NextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in lexicographic order."
@@ -568,7 +568,7 @@ KetSymmetrize::usage = "KetSymmetrize[expr, {s1, s2, \[Ellipsis]}, tbl] symmetri
 KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
   { ts = YoungTranspose[tbl],
     qq, bb },
-  qq = FoldPairList[TakeDrop, ss[[Flatten @ ts]], Length /@ ts];
+  qq = TakeList[ss[[Flatten @ ts]], Length /@ ts];
   bb = Fold[Union @* KetSort, bs, qq];
   DeleteCases[
     Garner @ Union @ Map[KetSymmetrize[#, ss, tbl]&, bb],

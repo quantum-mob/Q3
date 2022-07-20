@@ -1,5 +1,14 @@
 # Select Release Notes
 
+## v2.5.2
+
+- Enhancement of LindbladConvert, LindbladBasisMatrix.
+
+## v2.5.1
+
+- New function SmolinState.
+- Q3Release check local installation.
+
 ## v2.5.0
 
 - Compatibility update for Mathematica 13.1.

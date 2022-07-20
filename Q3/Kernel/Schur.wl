@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.98 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-19 17:26:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.99 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-20 20:31:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -358,11 +358,11 @@ ClebschGordanX[in_?GelfandPatternQ, s_Integer, out_?GelfandPatternQ] :=
 
 (**** <SchurBasis> ****)
 
-SchurBasisQ::usage = "SchurBasisQ[obj] returns True obj is an Schur basis."
+SchurBasisQ::usage = "SchurBasisQ[obj] returns True obj is a Schur basis."
 
 HoldPattern @ SchurBasisQ[
   bs:Association[({_?GelfandPatternQ, _?GelfandPatternQ} -> _)..]
- ] := Apply[ And, Equal @@@ Map[Length, Transpose @ Keys[bs], {2}] ]
+ ] := AllTrue[Map[Length, Transpose @ Keys[bs], {2}], Apply[Equal]]
 
 SchurBasisQ[_] = False
 

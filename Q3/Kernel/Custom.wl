@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2021-06-05 21:32:29+09 $ *)
-(* $Revision: 1.5 $ *)
+(* $Date: 2022-07-16 16:42:24+09 $ *)
+(* $Revision: 1.6 $ *)
 
 BeginPackage["Q3`"]
 
@@ -49,7 +49,8 @@ Customize[Graphics, Frame -> False, Axes -> False, GridLines -> None];
 Customize @ {
   Histogram,
   Plot, ParametricPlot, LogPlot, LogLinearPlot, LogLogPlot,
-  ListPlot, ListLinePlot, ListLogPlot, ListLogLinearPlot, ListLogLogPlot
+  ListPlot, ListLinePlot, ListLogPlot, ListLogLinearPlot, ListLogLogPlot,
+  ReImPlot, AbsArgPlot, ComplexListPlot
  };
 
 (* Graphics3D-related functions *)

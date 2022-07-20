@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.70 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-07 19:45:20+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.73 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-19 14:53:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -105,7 +105,7 @@ ListPartitions::usage = "ListPartitions[list] gives a list of all possible ways 
 ListPartitions[data_List, spec___] := Module[
   { parts = IntegerPartitions[Length @ data, spec] },
   parts = Flatten[Permutations /@ parts, 1];
-  FoldPairList[TakeDrop, data, #]& /@ parts
+  TakeList[data, #]& /@ parts
  ]
 (* NOTE: Permutations /@ parts is necessary to find all possible
    decompositions of the integer Length[list]. *)
@@ -1318,9 +1318,7 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
    LieExp or related methods. *)
 
 
-(* ****************************************************************** *)
-(*     <Lie>                                                          *)
-(* ****************************************************************** *)
+(**** <Lie> ****)
 
 Lie::usage = "Lie[a, b] returns the commutator [a, b]."
 
@@ -1386,9 +1384,7 @@ LieExp[a_, b_] :=
   Garner @ Anticommutator[a, b, 2] == 0 
 (* NOTE: Exp is pushed to the left. *)
 
-(* ****************************************************************** *)
-(*     </Lie>                                                         *)
-(* ****************************************************************** *)
+(**** </Lie> ****)
 
 
 (**** <LieBasis> ****)
@@ -1397,18 +1393,21 @@ LieBasis::usage = "LieBasis[n] returns the standard generating set of Lie algebr
 
 LieBasis[n_Integer] := Module[
   { bs },
-  bs = Catenate @ Table[{j, k}, {k, 2, n}, {j, 1, k}];
+  bs = Catenate @ Table[{j, k}, {k, 1, n}, {j, 1, k}];
   Catenate[theLieGenerators[n] /@ bs]
  ]
+
+theLieGenerators[n_Integer][{1, 1}] :=
+  { SparseArray @ IdentityMatrix[n] / Sqrt[n] }
+
+theLieGenerators[n_Integer][{k_Integer, k_Integer}] :=
+  List @ SparseArray @ DiagonalMatrix @
+  PadRight[Append[Table[1, k-1], 1-k]/Sqrt[k*(k-1)], n]
 
 theLieGenerators[n_Integer][{j_Integer, k_Integer}] := {
   SparseArray[{{j, k} ->  1, {k, j} -> 1}, {n, n}] / Sqrt[2],
   SparseArray[{{j, k} -> -I, {k, j} -> I}, {n, n}] / Sqrt[2]
  } /; j < k
-
-theLieGenerators[n_Integer][{k_Integer, k_Integer}] :=
-  List @ SparseArray @ DiagonalMatrix @
-  PadRight[Append[Table[1, k-1], 1-k]/Sqrt[k*(k-1)], n]
 
 (**** </LieBasis> ****)
 
