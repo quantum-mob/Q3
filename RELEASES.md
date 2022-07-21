@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.0
+
+- Some files have been renamed in the documentation.
+
 ## v2.5.2
 
 - Enhancement of LindbladConvert, LindbladBasisMatrix.

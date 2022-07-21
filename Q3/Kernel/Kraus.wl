@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.61 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-19 21:42:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.63 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-21 20:29:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -453,35 +453,40 @@ LindbladSolve[ops:{_, __}, init_, t_] := Module[
 
 (**** <NLindbladSolve> ****)
 
-NLindbladSolve::usage = "NLindbladSolve[{opH, opL1, opL2, ...}, init, {t, tmin, tmax}] finds a numerical solution to the Lindblad equation defined by Hamiltonian H and Lindblad operators opL1, opL2, \[Ellipsis]. Internally, it uses the NDSolve built-in function and hence takes all options of NDSolve."
+NLindbladSolve::usage = "NLindbladSolve[{opH, opL1, opL2, ...}, init, {t, tmin, tmax}] finds a numerical solution to the Lindblad equation defined by Hamiltonian opH and Lindblad operators opL1, opL2, \[Ellipsis].NLindblad[tsr, init, {t, tmin, tmax}] assumes that the Lindblad generator is specified by Choi matrix tsr.\nInternally, it uses the NDSolve built-in function and hence takes all options of NDSolve."
 
 NLindbladSolve::incmp = "The matrices `` are not compatible with each other."
+
+NLindbladSolve[tsr_?ChoiMatrixQ, init_?SquareMatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
+  Module[
+    { dim = Length[init],
+      lbm, bgn, gen, off, sol, var, x, f },
+    lbm = ToSuperMatrix @ LindbladBasisMatrix[dim];
+    bgn = Rest[Topple[lbm] . Flatten[init]];
+
+    {gen, off} = LindbladConvert[tsr];
+
+    var = Through[ Array[x, dim*dim-1][t] ];
+    eqn = Join[
+      Thread[ D[var, t] == gen.var + off ],
+      Thread[ (var /. {t -> 0}) == bgn ]
+     ];
+
+    var = Array[x, dim*dim-1];
+    sol = First @ NDSolve[eqn, var, {t, tmin, tmax}, opts];
+
+    var = Prepend[Through[var[t]], 1/Sqrt[dim]];
+    ArrayReshape[lbm . var, {dim, dim}] /. sol
+   ]
+
 
 NLindbladSolve[opH_, {opL__}, init_, rest__] :=
   NLindbladSolve[{opH, opL}, init, rest]
 
 
 NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
-  Module[
-    { len = Length[init],
-      kbs, bgn, gen, off, sol, var, x, f },
-    kbs = LindbladBasis[len];
-    bgn = Rest @ theVectorX[init, kbs];
-
-    {gen, off} = LindbladConvert[ops];
-
-    var = Through[ Array[x, len*len-1][t] ];
-    eqn = Join[
-      Thread[ D[var, t] == gen.var + off ],
-      Thread[ (var /. {t -> 0}) == bgn ]
-     ];
-
-    var = Array[x, len*len-1];
-    sol = First @ NDSolve[eqn, var, {t, tmin, tmax}, opts];
-
-    var = Prepend[Through[var[t]], 1/Sqrt[len]];
-    Dot[var, kbs] /. sol
-   ] /; ArrayQ @ Join[{init}, ops]
+  NLindbladSolve[ChoiMatrix @ LindbladGenerator @ ops, init, {t, tmin, tmax}] /;
+  ArrayQ @ Join[{init}, ops]
 
 NLindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
   Message[NLindbladSolve::incmp, Normal @ Append[ops, init]] 
