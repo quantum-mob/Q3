@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2022-07-16 16:42:24+09 $ *)
-(* $Revision: 1.6 $ *)
+(* $Date: 2022-07-23 00:53:51+09 $ *)
+(* $Revision: 1.7 $ *)
 
 BeginPackage["Q3`"]
 
@@ -50,8 +50,12 @@ Customize @ {
   Histogram,
   Plot, ParametricPlot, LogPlot, LogLinearPlot, LogLogPlot,
   ListPlot, ListLinePlot, ListLogPlot, ListLogLinearPlot, ListLogLogPlot,
-  ReImPlot, AbsArgPlot, ComplexListPlot
+  ReImPlot, AbsArgPlot
  };
+
+(* 2022-07-23 (v13.1): For some unknown reason, AxesStyle->Large causes a
+   problem with ComplexListPlot. *)
+Customize[ComplexListPlot, AxesStyle->{}];
 
 (* Graphics3D-related functions *)
 

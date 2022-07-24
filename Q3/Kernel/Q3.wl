@@ -12,8 +12,8 @@ BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.22 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-19 11:06:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.24 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-24 09:50:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -72,29 +72,37 @@ Q3Protect[context_String] := Module[
 
 Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versions of packages included in it."
 
+Q3Info::local = "A beta version of Q3 is installed locally in ``. Note that v`` is available from the server."
+
+Q3Info::notav = "The Q3 Application has not been installed properly. Go to `` for the instruction." 
+
 Q3Info[] := Module[
-  { pac = Q3Release[],
-    pkg = Symbol /@ Names["Q3`*`$Version"] },
-  If[ FailureQ[pac],
-    pac = "Q3 Application has not been installed properly.",
-    pac = "Q3 Application v" <> pac
+  { pac = PacletObject @ "Q3",
+    pkg = Symbol /@ Names["Q3`*`$Version"],
+    ver },
+  If[ FailureQ @ pac,
+    Message[Q3Info::notav,
+      Hyperlink["https://github.com/quantum-mob/Q3/blob/main/INSTALL.md"]
+     ];
+    Return[pac]
    ];
-  pkg = Join[{pac}, pkg];
-  Print @ StringJoin @ Riffle[pkg, "\n"];
+  
+  If[ StringMatchQ[pac @ "Location", "*Applications/Q3*"],
+    remote = First @ PacletFindRemote["Q3"];
+    Message[Q3Info::local, pac @ "Location", remote @ "Version"]
+   ];
+
+  ver = "Q3 Application v" <> pac["Version"];  
+  pkg = Join[{ver}, pkg];
+  Echo @ StringJoin @ Riffle[pkg, "\n"];
  ]
 
 Q3Release::usage = "Q3Release[] returns a string containing the release version of Q3. If it fails to find and open the paclet of Q3, then it returns Failure."
 
-Q3Release::local = "A beta version of Q3 is installed locally in ``. Note that v`` is available from the server."
-
 Q3Release[] := Module[
   { pac = PacletObject @ "Q3",
     remote },
-  If[ FailureQ[pac], Return @ pac];
-  If[ StringMatchQ[pac @ "Location", "*Applications/Q3*"],
-    remote = First @ PacletFindRemote["Q3"];
-    Message[Q3Release::local, pac @ "Location", remote @ "Version"]
-   ];
+  If[FailureQ @ pac, Return @ pac];
   pac["Version"]
  ]
 

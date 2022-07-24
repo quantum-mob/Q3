@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.6.1
+
+- Supermap[tsr_?ChoiMarrixQ][rho] is supported now.
+- New functions: ChoiMultiply, ChoiTopple.
+- LindbladBasis now uses LieBasis.
+
 ## v2.6.0
 
 - Some files have been renamed in the documentation.

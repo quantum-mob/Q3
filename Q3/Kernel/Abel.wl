@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.73 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-19 14:53:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.74 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-24 09:54:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1389,9 +1389,9 @@ LieExp[a_, b_] :=
 
 (**** <LieBasis> ****)
 
-LieBasis::usage = "LieBasis[n] returns the standard generating set of Lie algebra su(n). See also LindbladBasis."
+LieBasis::usage = "LieBasis[n] returns the standard generating set of Lie algebra u(n).\nSee also LindbladBasis."
 
-LieBasis[n_Integer] := Module[
+LieBasis[n_Integer?Positive] := Module[
   { bs },
   bs = Catenate @ Table[{j, k}, {k, 1, n}, {j, 1, k}];
   Catenate[theLieGenerators[n] /@ bs]

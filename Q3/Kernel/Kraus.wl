@@ -4,13 +4,15 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.63 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-21 20:29:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.81 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-24 10:16:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Supermap, ChoiMatrix, ChoiMatrixQ,
   SuperMatrixQ, ToSuperMatrix, ToChoiMatrix };
+
+{ ChoiMultiply, ChoiTopple };
 
 { KrausProduct };
 
@@ -24,11 +26,14 @@ BeginPackage["Q3`"]
 
 { LindbladSolveNaive}; (* legacy *)
 
+
 Begin["`Private`"]
 
 Supermap::usage = "Supermap[op1, op2, \[Ellipsis]] represents a superoperator (or super-mapping, in general) specified by the Kraus elements op1, op2, \[Ellipsis], which may be matrices or operators."
   
 Supermap::incmp = "The operators/matrices `` are not compatible with each other."
+
+Supermap::wrong = "`` trying to operate on a wrong object ``."
 
 Supermap[a_?MatrixQ, b_?MatrixQ] := (
   Message[Supermap::incmp, Normal @ {a, b}];
@@ -54,22 +59,44 @@ Supermap[ops:{__?MatrixQ}] :=  (
  ) /; Not @ ArrayQ @ {ops}
 
 
-Supermap[a_?MatrixQ][rho_?MatrixQ] :=
+Supermap[a_?MatrixQ][rho_?SquareMatrixQ] :=
   Dot[a, rho, Topple @ a]
 
-Supermap[a_?MatrixQ, b_?MatrixQ][rho_?MatrixQ] :=
+Supermap[a_?MatrixQ, b_?MatrixQ][rho_?SquareMatrixQ] :=
   Dot[a, rho, Topple @ b]
 
-Supermap[ops:{__?MatrixQ}, cc_?VectorQ][rho_?MatrixQ] :=
+Supermap[ops:{__?MatrixQ}, cc_?VectorQ][rho_?SquareMatrixQ] :=
   cc . Map[Dot[#, rho, Topple @ #]&, ops]
 
-Supermap[ops:{__?MatrixQ}, cc_?MatrixQ][rho_?MatrixQ] := Total @ Total[
-  cc * Outer[Dot[#1, rho, Topple @ #2]&, ops, ops, 1]
- ]
+Supermap[ops:{__?MatrixQ}, cc_?MatrixQ][rho_?SquareMatrixQ] :=
+  Total @ Total[
+    cc * Outer[Dot[#1, rho, Topple @ #2]&, ops, ops, 1]
+   ]
 
-Supermap[ops:{__?MatrixQ}][rho_?MatrixQ] :=
+(* completely positive supermap *)
+Supermap[ops:{__?MatrixQ}][rho_?SquareMatrixQ] :=
   Plus @@ Map[Dot[#, rho, Topple @ #]&, ops]
- (* completely positive supermap *)
+
+
+Supermap /:
+HoldPattern @ Dagger @ Supermap[tsr_?ChoiMatrixQ] :=
+  Supermap[ChoiTopple @ tsr]
+
+Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] :=
+  ChoiMultiply[tsr, rho] /;
+  Part[Dimensions[tsr], {2, 4}] == Dimensions[rho]
+
+Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] := (
+  Message[Supermap::wrong, Supermap[tsr], rho];
+  rho
+ )
+
+(*
+Supermap[tsr_?ChoiMatrixQ][rho_] := (
+  Message[Supermap::wrong, Supermap[tsr], rho];
+  rho
+ )
+ *)
 
 
 Supermap[a_][rho_] := a ** rho ** Dagger[a]
@@ -87,6 +114,39 @@ Supermap[ops:{__}, cc_][rho_] := Garner @ Total @ Total[
  ]
 
 
+(**** <ChoiMultiply> ****)
+
+ChoiMultiply::usage = "ChoiMultiply[a,b,\[Ellipsis]] returns the successive multiplication of Choi matrices a, b, \[Ellipsis]."
+
+ChoiMultiply[a_?ChoiMatrixQ, b_?ChoiMatrixQ] :=
+  ToChoiMatrix[ToSuperMatrix[a] . ToSuperMatrix[b]]
+
+(* 2022-07-23: This is too slow. Probably because TensorContract and
+   TensorProduct does not take advantage of SparseArray? *)
+(*
+ChoiMultiply[a_?ChoiMatrixQ, b_?ChoiMatrixQ] :=
+  Transpose[TensorContract[TensorProduct[a, b], {{2, 5}, {4,7}}], 2<->3]
+ *)
+
+ChoiMultiply[tsr_?ChoiMatrixQ, rho_?SquareMatrixQ] :=
+  ArrayReshape[ToSuperMatrix[tsr] . Flatten[rho], Dimensions@rho]
+
+(* 2022-07-23: This is also slower. *)
+(*
+ChoiMultiply[a_?ChoiMatrixQ, b_?SquareMatrixQ] :=
+  TensorContract[TensorProduct[a, b], {{2, 5}, {4,6}}]
+ *)
+
+ChoiMultiply[a_?ChoiMatrixQ, bb__?ChoiMatrixQ, rest___] :=
+  ChoiMultiply[Fold[ChoiMultiply, a, {bb}], rest]
+
+
+ChoiTopple::usage = "ChoiTopple[tsr] returns the Hermitian conjugate of Choi matrix tsr."
+ChoiTopple[tsr_?ChoiMatrixQ] := Transpose[Conjugate @ tsr, {2, 1, 4, 3}]
+
+(**** </ChoiMultiply> ****)
+
+
 (**** <ChoiMatrix> ****)
 
 ChoiMatrix::usage = "ChoiMatrix[op1, op2, \[Ellipsis]] returns the Choi matrix corresponding to the superoperator represented by the Kraus elements op1, op2, \[Ellipsis]."
@@ -99,7 +159,7 @@ ChoiMatrix[a_?MatrixQ, b_?MatrixQ] :=
   TensorProduct[a, Conjugate @ b] /; ArrayQ @ {a, b}
 
 ChoiMatrix[ops:{__?MatrixQ}] :=
-  Plus @@ Map[ChoiMatrix, ops] /; ArrayQ @ {ops}
+  Total @ Map[ChoiMatrix, ops] /; ArrayQ @ {ops}
 
 ChoiMatrix[ops:{__?MatrixQ}, cc_?VectorQ] :=
   cc . Map[ChoiMatrix, ops] /;
@@ -149,7 +209,8 @@ ChoiMatrixQ[tsr_?ArrayQ] := And[
   AllTrue[Transpose @ Partition[Dimensions @ tsr, 2], Apply[Equal]]
  ]
 
-ChoiMatrixQ[assoc_Association] := AllTrue[assoc, ChoiMatrixQ]
+(* Too dangerous! *)
+(* ChoiMatrixQ[assoc_Association] := AllTrue[assoc, ChoiMatrixQ] *)
 
 ChoiMatrixQ[_] = False
 
@@ -158,7 +219,8 @@ SuperMatrixQ::usage = "SuperMatrixQ[mat] returns True if matrix mat is a super-m
 
 SuperMatrixQ[mat_?MatrixQ] := AllTrue[Sqrt[Dimensions @ mat], IntegerQ]
 
-SuperMatrixQ[assoc_Association] := AllTrue[assoc, SuperMatrixQ]
+(* Too dangerous! *)
+(* SuperMatrixQ[assoc_Association] := AllTrue[assoc, SuperMatrixQ] *)
 
 SuperMatrixQ[_] = False
 
@@ -170,7 +232,8 @@ ToSuperMatrix[cm_?ChoiMatrixQ] := Module[
   ArrayReshape[Transpose[cm, 2 <-> 3], dd]
  ]
 
-ToSuperMatrix[assoc_Association?ChoiMatrixQ] := Map[ToSuperMatrix, assoc]
+ToSuperMatrix[assoc_Association] := Map[ToSuperMatrix, assoc] /;
+  AllTrue[assoc, ChoiMatrixQ]
 
 
 ToChoiMatrix::usage = "ToChoiMatrix[sm] converts super-matrix sm to a Choi matrix form;  M[{i,k},{j,l}] -> C[i,j;k,l]."
@@ -181,7 +244,8 @@ ToChoiMatrix[sm_?SuperMatrixQ] := Module[
   Transpose[ArrayReshape[sm, dd], 2 <-> 3]
  ]
 
-ToChoiMatrix[assoc_Association?SuperMatrixQ] := Map[ToChoiMatrix, assoc]
+ToChoiMatrix[assoc_Association] := Map[ToChoiMatrix, assoc] /;
+  AllTrue[assoc, SuperMatrixQ]
 
 (**** </ChoiMatrix> ****)
 
@@ -202,17 +266,7 @@ KrausProduct[a_, b_?CommutativeQ] := Conjugate[Tr @ Matrix @ a] * b
 
 (**** <LindbladBasis> ****)
 
-LindbladBasis::usage = "LindbladBasis[n] returns a basis of the vector space \[ScriptCapitalM](n) of n\[Times]n matrices.\nThe basis is orthonormal with respect to the trace Hermitian product, and all but one elements are traceless."
-
-LindbladBasis[1] := {{{1}}}
-
-LindbladBasis[n_Integer] := Module[
-  { dbs = SparseArray /@ DiagonalMatrix /@ theBasisX[n],
-    obs = Subsets[Range[n], {2}] },
-  obs = SparseArray[# -> 1, {n, n}]& /@ obs;
-  obs = Join[ (Transpose /@ obs + obs), I(Transpose /@ obs - obs) ] / Sqrt[2];
-  Join[dbs, obs]
- ] /; n > 1
+LindbladBasis::usage = "LindbladBasis[n] returns a basis of the vector space \[ScriptCapitalM](n) of n\[Times]n matrices.\nThe basis is orthonormal with respect to the Hilbert-Schmidt product, and all but one elements are traceless."
 
 LindbladBasis[op_?SpeciesQ] := LindbladBasis @ {op}
 
@@ -221,34 +275,7 @@ LindbladBasis[qq:{__?SpeciesQ}] := Module[
   ExpressionFor[#, qq]& /@ lbs
  ]
 
-
-theBasisX[2] = theKetX /@ {0, 1}
-
-theBasisX[n_?EvenQ] := Flatten[
-  Outer[CircleTimes, theBasisX[2], theBasisX[n/2], 1],
-  1
- ]
-
-theBasisX[n_?OddQ] := Module[
-  { bb = Rest @ theBasisX[n - 1] },
-  bb = ArrayPad[bb, {{0, 0}, {0, 1}}];
-  Join[
-    { ConstantArray[1, n]/Sqrt[n],
-      Normalize @ Append[ConstantArray[1, n - 1], 1 - n] },
-    bb
-   ]
- ]
-
-
-theKetX[0] = {1, 1}/Sqrt[2]
-
-theKetX[1] = {1, -1}/Sqrt[2]
-
-theKetX[a:(0 | 1), bb:(0 | 1) ..] := CircleTimes @@ Map[theKetX]@{a, bb}
-
-
-theVectorX[mat_?MatrixQ, mbs:{__?MatrixQ}] :=
-  Map[ KrausProduct[#, mat]&, mbs ]
+LindbladBasis[n_Integer?Positive] := LieBasis[n]
 
 
 LindbladBasisMatrix::usage = "LindbladBasisMatrix[n] returns the Choi matrix of the supermap that changes the standard basis of \[ScriptCapitalL](n) to the Lindblad basis."
@@ -414,14 +441,14 @@ LindbladSolve[opH_, {opL__}, init_, rest__] :=
 
 
 LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
-  { len = Length[init],
-    kbs, bgn, gen, off, sol, var, x },
-  kbs = LindbladBasis[len];
-  bgn = Rest @ theVectorX[init, kbs];
+  { dim = Length[init],
+    lbm, bgn, gen, off, sol, var, x },
+  lbm = ToSuperMatrix @ LindbladBasisMatrix[dim];
+  bgn = Rest[Topple[lbm] . Flatten[init]];
 
-  { gen, off } = LindbladConvert[ops];
+  {gen, off} = LindbladConvert[ops];
 
-  var = Through[ Array[x, len*len-1][t] ];
+  var = Through[ Array[x, dim*dim-1][t] ];
   eqn = Join[
     Thread[ D[var, t] == gen.var + off ],
     Thread[ (var /. {t -> 0}) == bgn ]
@@ -429,8 +456,8 @@ LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
 
   sol = First @ DSolve[eqn, var, t];
   
-  var = Prepend[var, 1/Sqrt[len]] /. sol;
-  Return[var . kbs]
+  var = Prepend[var, 1/Sqrt[dim]];
+  ArrayReshape[lbm . var, {dim, dim}] /. sol
  ] /; ArrayQ @ Join[{init}, ops]
 
 LindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
@@ -524,16 +551,17 @@ LindbladSolveNaive[opH_?MatrixQ, {opL__?MatrixQ}, init_?MatrixQ, t_] :=
   LindbladSolveNaive[{opH, opL}, init, t]
 
 LindbladSolveNaive[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
-  { len = Length[init],
-    mbs, bgn, gen, off, var },
-  mbs = LindbladBasis[len];
-  bgn = Rest @ theVectorX[init, mbs];
+  { dim = Length[init],
+    lbm, bgn, gen, off, var },
+  lbm = ToSuperMatrix @ LindbladBasisMatrix[dim];
+  bgn = Rest[Topple[lbm] . Flatten[init]];
 
-  { gen, off } = LindbladConvert[ops];
+  {gen, off} = LindbladConvert[ops];
+  
   off = Integrate[MatrixExp[s gen].off, {s, 0, t}];
   var = MatrixExp[t gen] . bgn + off;
-  var = Prepend[var, 1/Sqrt[len]];
-  var . mbs
+  var = Prepend[var, 1/Sqrt[dim]];
+  Return[lbm . var]
  ] /; ArrayQ @ Join[{init}, ops]
 
 LindbladSolveNaive[ops:{_, __}, in_?MatrixQ, _] :=
