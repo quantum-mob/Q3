@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 
-If[ $VersionNumber < 12,
-  Version::old = "Q3 requires Mathematica 12 or later.";
+If[ $VersionNumber < 12.3,
+  Version::old = "Q3 requires Mathematica 12.3 or later.";
   Message[Version::old];
  ]
 
@@ -12,28 +12,34 @@ BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.24 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-24 09:50:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.45 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-08 12:26:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Q3General };
 
 { Q3Info, Q3Release, Q3RemoteRelease,
-  Q3Update, Q3CheckUpdate, Q3Purge };
+  Q3Update, Q3CheckUpdate, Q3CheckVersion, Q3Purge };
 
 { Q3Clear, Q3Unprotect, Q3Protect };
 
 
 Begin["`Private`"]
 
-Q3General::usage = "Notice is a symbol to which general messages concerning Q3 are attached.\nIt is similar to General, but its Context is Q3."
+Q3General::usage = "Q3General is a symbol to which general messages concerning Q3 are attached.\nIt is similar to built-in symbol General."
 
-Q3General::obsolete = "The symbol `` is OBSOLETE. Use `` instead."
+Q3General::beta = "You are using a beta version of Q3 locally installed in `1` while v`2` is available from the server."
+
+Q3General::faulty = "The Q3 application has not been installed properly. Go to `` for the instruction." 
+
+Q3General::obsolete = "The symbol `` is obsolete. Use `` instead."
 
 Q3General::renamed = "The symbol `` has been renamed ``."
 
-Q3General::newUI = "An angle should come first. The order of the input arguments of `` has been changed since Q3 v1.2.0."
+Q3General::changed = "The patterns for the sequence of arguments for `1` have been changed: `2`"
+
+Q3General::angle = "An angle should come first in the sequence of arguments for ``. Effective since Q3 v1.2.0."
 
 
 Q3Clear::usage = "Q3Clear[context] first unprotects all symbols defined in the context of context, and then CleaAll all non-variable symbols -- those the name of which does not start with '$'.\nQ3Clear is for internal use."
@@ -72,24 +78,19 @@ Q3Protect[context_String] := Module[
 
 Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versions of packages included in it."
 
-Q3Info::local = "A beta version of Q3 is installed locally in ``. Note that v`` is available from the server."
-
-Q3Info::notav = "The Q3 Application has not been installed properly. Go to `` for the instruction." 
-
 Q3Info[] := Module[
   { pac = PacletObject @ "Q3",
     pkg = Symbol /@ Names["Q3`*`$Version"],
     ver },
   If[ FailureQ @ pac,
-    Message[Q3Info::notav,
+    Message[Q3General::faulty,
       Hyperlink["https://github.com/quantum-mob/Q3/blob/main/INSTALL.md"]
      ];
     Return[pac]
    ];
   
-  If[ StringMatchQ[pac @ "Location", "*Applications/Q3*"],
-    remote = First @ PacletFindRemote["Q3"];
-    Message[Q3Info::local, pac @ "Location", remote @ "Version"]
+  If[ Not @ StringContainsQ[pac @ "Location", "*/Paclets/Repository/Q3-*"],
+    Message[Q3General::beta, pac @ "Location", Q3RemoteRelease[]]
    ];
 
   ver = "Q3 Application v" <> pac["Version"];  
@@ -110,7 +111,7 @@ Q3RemoteRelease::usage = "Q3RemoteRelease[] returns a string containing the rele
 
 Q3RemoteRelease[] := Module[
   { pac = PacletFindRemote @ "Q3" },
-  If[ pac == {}, $Failed, First[pac]["Version"] ]
+  If[pac == {}, $Failed, First[pac] @ "Version"]
  ]
 
 
@@ -126,7 +127,7 @@ serverRegisteredQ[url_:$serverURL] := Module[
 serverRegister[url_:$serverURL] :=
   PacletSiteUpdate @ PacletSiteRegister[url, "Quantum Mob Paclet Server"]
 
-serverEnsure[] := If[ serverRegisteredQ[], Null, serverRegister[] ]
+serverEnsure[] := If[serverRegisteredQ[], Null, serverRegister[]]
 
 pacletVersion[pp:{__PacletObject}] := pacletVersion[First @ pp]
 
@@ -145,6 +146,15 @@ versionNumber[ver_String] := With[
 (***** </Paclet Server> ****)
 
 
+Q3CheckVersion::usage = "Q3CheckVersion[version] checks whether the current version of Q3 is newer than version that is required for the present development of task or package."
+
+Q3CheckVersion[version_?StringQ] := If[
+  Not @ OrderedQ @ {version, Q3Release[]},
+  PrintTemporary["Q3 v" <> version <> " or later is required and Q3 is being updated."];
+  If[FailureQ @ Q3Update[], $Failed, Get["Q3`"]]
+ ]
+
+
 Q3CheckUpdate::usage = "Q3CheckUpdate[] checks if there is a newer release of Q3 in the GitHub repository."
 
 Q3CheckUpdate[] := Module[
@@ -161,11 +171,12 @@ Q3CheckUpdate[] := Module[
    ]
  ]
 
+
 Q3Update::usage = "Q3Update[] installs the latest update of Q3 from the GitHub repository.\nIt accepts all the options for PacletInstall -- ForceVersionInstall and AllowVersionUpdate in particular."
 
 Q3Update[opts___?OptionQ] := (
   serverEnsure[];
-  PacletInstall["Q3", opts]
+  PacletInstall["Q3", opts, UpdatePacletSites->True]
  )
 
 
@@ -215,9 +226,9 @@ Get["Q3`Fock`"];
 Get["Q3`Wigner`"];
 Get["Q3`Dicke`"];
 Get["Q3`VonNeumann`"];
-Get["Q3`Einstein`"];
 Get["Q3`Young`"];
 Get["Q3`Schur`"];
+Get["Q3`Einstein`"]; (* should be loaded last *)
 Get["Q3`Custom`"];
 
 (**** </Packages Loading> ****)
@@ -227,6 +238,8 @@ BeginPackage["Q3`"]
 
 (* $ElaborationRules is too messay to show the value. *)
 SetAttributes[$ElaborationPatterns, ReadProtected];
+
+(* Too dangerous to allow users to change these. *)
 Protect[$GarnerPatterns, $ElaborationPatterns];
 
 EndPackage[]

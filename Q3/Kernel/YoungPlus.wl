@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-05 11:05:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.7 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-31 12:25:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -100,12 +100,12 @@ NormSquareOfTableau[myTableau_] := With[
   {j2,j1,Length[trshape]},{i2,1,Part[trshape,j2]}]
  ]
 
-YoungsNaturalReprValue[pp_?YoungShapeQ,pi_?PermutationListQ]:=If[pi==Range[Total[pp]],IdentityMatrix[CountYoungTableaux[pp]],Dot@@Extract[YoungsNaturalRepresentation[pp],Partition[NTranspDecomp[pi],1]]]/;Total[pp]==Length[pi];
+YoungsNaturalReprValue[pp_?YoungShapeQ,pi_?PermutationListQ]:=If[pi==Range[Total[pp]],IdentityMatrix[YoungTableauCount[pp]],Dot@@Extract[YoungsNaturalRepresentation[pp],Partition[NTranspDecomp[pi],1]]]/;Total[pp]==Length[pi];
 
 
 YoungsSeminormalReprValue[pp_?YoungShapeQ,pi_?PermutationListQ] := If[
   pi==Range[Total[pp]],
-  IdentityMatrix[CountYoungTableaux[pp]],
+  IdentityMatrix[YoungTableauCount[pp]],
   Dot @@ Extract[
     YoungsSeminormalRepresentation[pp],
     Partition[NTranspDecomp[pi], 1]
@@ -161,6 +161,9 @@ Part[v,2]}]/@
 Flatten[Nest[Append[#,predPermutations2[
 Last[#],Length[Flatten[#,1]],Length[Flatten[#,1]]-Length[Last[#]]]]&,
 {{{x,{}}}},permInversions[x]],1]];
+
+
+permInversions[pi_?PermutationListQ]:=Sum[If[Part[pi,i]>Part[pi,j],1,0],{j,Length[pi]},{i,j-1}]; (* The number of inversions in a permutation; substitute for the corresponding combinatorica function. *)
 
 
 youngAuxiliary[\[Lambda]_,modus_]:=

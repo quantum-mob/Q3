@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.6.2
+
+- New function LevelsPlot.
+- CountWeylTableaux renamed WeylTableauCount.
+- CountYoungTableaux renamed YoungTableauCount.
+
 ## v2.6.1
 
 - Supermap[tsr_?ChoiMarrixQ][rho] is supported now.

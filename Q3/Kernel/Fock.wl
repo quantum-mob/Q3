@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.26 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-01 18:25:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.27 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-08 09:22:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2400,6 +2400,50 @@ HoldPattern @ Format[ FockColon[op__] ] := DisplayForm @ RowBox @ {
    expression. For example, without it, -2 :f**f: is formated as
    -2(:f f:). For more details on spurious parentheses, see
    https://goo.gl/MfCwMF *)
+
+
+(**** JordanWignerTransform ****)
+
+JordanWignerTransform::usage = "JordanWignerTransform[{q1,q2,\[Ellipsis]}->{f1,f2,\[Ellipsis]}] returns a list of rules {q1->op1, q2->op2, \[Ellipsis]} corresponding to the Jordan-Wigner transformation of qubit operators q1, q2, \[Ellipsis] onto operators op1, op2, \[Ellipsis] in terms of fermion operators f1, f2, \[Ellipsis].\nJordanWignerTransform[{f1,f2,\[Ellipsis]}->{q1,q2,\[Ellipsis]}] returns a list of rules {q1->op1, q2->op2, \[Ellipsis]} corresponding to the inverse Jordan-Wigner transformation of fermion operators f1, f2, \[Ellipsis] onto operators op1, op2, \[Ellipsis] in terms of qubit operators q1, q2, \[Ellipsis]."
+
+JordanWignerTransform[expr_, {} -> {}] := expr
+
+JordanWignerTransform[expr_, qq:{__?QubitQ} -> ff:{__?FermionQ}] :=
+  Garner @ Elaborate[ expr /. JordanWignerTransform[qq -> ff] ]
+
+JordanWignerTransform[expr_, ff:{__?FermionQ} -> qq:{__?QubitQ}] :=
+  Garner @ Elaborate[ expr /. JordanWignerTransform[ff -> qq] ]
+
+JordanWignerTransform[{} -> {}] := {}
+
+JordanWignerTransform[qq:{__?QubitQ} -> ff:{__?FermionQ}] := Module[
+  { rr = Through[Construct[qq, 4]],
+    xx = Through[Construct[qq, 1]],
+    yy = Through[Construct[qq, 2]],
+    zz = Through[Construct[qq, 3]],
+    cc, pp },
+  pp = FoldList[Multiply, 1, Parity /@ Most[ff]];
+  cc = pp ** ff;
+  Join[
+    Thread[Dagger[rr] -> Dagger[cc]],
+    Thread[rr -> cc],
+    Thread[xx -> Dagger[cc] + cc],
+    Thread[yy -> I (Dagger[cc] - cc)],
+    Thread[zz -> Map[Parity, ff]]
+   ]
+ ] /; Length[qq] == Length[ff]
+
+JordanWignerTransform[ff:{__?FermionQ} -> qq:{__?QubitQ}] := Module[
+  { rr = Through[Construct[qq, 4]],
+    zz = Through[Construct[qq, 3]],
+    cc, pp },
+  pp = FoldList[Multiply, 1, Most @ zz];
+  cc = Multiply @@@ Transpose @ {pp, rr};
+  Thread[ff -> cc]
+ ] /; Length[qq] == Length[ff]
+
+
+(**** </JordanWignerTransform> ****)
 
 
 Protect[ Evaluate @ $symbs ]

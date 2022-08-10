@@ -1,13 +1,13 @@
 (* -*- mode:math -*- *)
 
-Needs["Q3`"]
+Get["Q3`"]
 
 BeginPackage["Q3`"]
 
 `FockPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-07 20:53:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.21 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-08 12:27:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

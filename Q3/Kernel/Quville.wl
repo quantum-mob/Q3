@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.35 $"][[2]], " (",
-  StringSplit["$Date: 2022-04-03 21:55:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.39 $"][[2]], " (",
+  StringSplit["$Date: 2022-07-28 05:57:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -61,7 +61,7 @@ $DotSize := 0.09 $CircuitUnit
 
 $InOutOffset := 0.1 $CircuitUnit
 
-$BraceWidth := 0.1 $CircuitUnit
+$BraceWidth := 0.125 $CircuitUnit
 
 
 Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] := Graphics[qc]
@@ -272,7 +272,7 @@ HoldPattern @
     Graphics[ Join[lines, in, nodes, out],
       Sequence @@ FilterRules[{opts}, Options @ Graphics],
       more,
-      PlotRange -> MinMax[yy] + {-1, 1}*$CircuitUnit/2,
+      PlotRange -> {Full, MinMax[yy] + {-1, 1}*$CircuitUnit/2},
       ImagePadding -> { unit*port, {1, 1} },
       ImageSize -> unit * ($CircuitSize + Total[port])
      ]
@@ -574,7 +574,8 @@ qDrawGateProjector[ x_, yy_List, ___ ] := Module[
       {x, y1} + $GateSize {-1,-1}/2,
       {x, y2} + $GateSize {-1,+1}/2,
       {x, y1} + $GateSize {+1,-1}/2 }];
-  { White, EdgeForm[], pane, EdgeForm[Black], White, symb }
+  { {EdgeForm[], White, pane},
+    {EdgeForm[Black], White, symb} }
  ]
 
 
@@ -585,12 +586,19 @@ qDrawGateDot[ x_, y_?NumericQ, ___ ] := Disk[ {x, y}, $DotSize ]
 qDrawGateRectangle[ x_, yy_List, opts___?OptionQ ] := Module[
   { y1 = Min @ yy,
     y2 = Max @ yy,
-    pane, text },
+    pane, line, text },
   text = qGateText[x, Mean @ {y1, y2}, opts];
   pane = Rectangle[
     {x, y1} - 0.5{1,1}$GateSize,
     {x, y2} + 0.5{1,1}$GateSize ];
-  { {EdgeForm[Black], White, pane}, text }
+  line = Line @ {
+    {x, y1} + {-1, -1}*$GateSize/2,
+    {x, y1} + {+1, -1}*$GateSize/2,
+    {x, y2} + {+1, +1}*$GateSize/2,
+    {x, y2} + {-1, +1}*$GateSize/2,
+    {x, y1} + {-1, -1}*$GateSize/2
+   };
+  {{EdgeForm[], White, pane}, line, text}
  ]
 
 qDrawGateRectangle[ x_, y_?NumericQ, opts___?OptionQ ] :=
@@ -910,9 +918,11 @@ qPortText[text_, pt:{_, _}, pivot:{_, _}, opts___?OptionQ] := Module[
    ]
  ]
 
+qPortBrace[-1, { a:{_, _}, b:{_, _} } ] :=
+  LeftBrace[a, b, "Width" -> $BraceWidth]
 
-qPortBrace[ dir:(-1|1), { a:{_, _}, b:{_, _} } ] :=
-  Line[{ a, a + $BraceWidth {dir, 0}, b + $BraceWidth {dir, 0}, b }]
+qPortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
+  RightBrace[a, b, "Width" -> $BraceWidth]
 
 End[]
 

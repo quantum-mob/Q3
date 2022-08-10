@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.85 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-19 09:19:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.94 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-08 12:32:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -18,7 +18,7 @@ BeginPackage["Q3`"];
 
 { YoungTranspose, YoungTrim };
 
-{ YoungTableauQ, YoungTableaux, CountYoungTableaux, YoungForm, 
+{ YoungTableauQ, YoungTableaux, YoungTableauCount, YoungForm, 
   NextYoungTableau, LastYoungTableau, FirstYoungTableau,
   YoungTranspose };
 
@@ -28,6 +28,10 @@ BeginPackage["Q3`"];
   CharacterScalarProduct,
   CompoundYoungCharacters, KostkaMatrix };
 
+
+(**** Obsolete ****)
+
+{ CountYoungTableaux }; (* renamed *)
 
 Begin["`Private`"]
 
@@ -88,9 +92,9 @@ YoungShape::usage = "YoungShape[tb] returns the shape, i.e., the integer partiti
 YoungShape[tb_?anyYoungTableauQ] := Length /@ tb
 
 
-CountYoungTableaux::usage = "CountYoungTableaux[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nCountYoungTableaux[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
+YoungTableauCount::usage = "YoungTableauCount[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nYoungTableauCount[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
 
-CountYoungTableaux[pp_?YoungShapeQ] := Module[
+YoungTableauCount[pp_?YoungShapeQ] := Module[
   { qq = YoungTranspose[pp],
     j, k },
   Factorial[Total @ pp] /
@@ -101,28 +105,14 @@ CountYoungTableaux[pp_?YoungShapeQ] := Module[
      ]
  ]
 
-CountYoungTableaux[n_Integer] :=
-  Total @ Map[CountYoungTableaux, IntegerPartitions @ n]
+YoungTableauCount[n_Integer] :=
+  Total @ Map[YoungTableauCount, IntegerPartitions @ n]
 
 
-nextPartition[pp_?YoungShapeQ] := Module[
-  { i = First @ Last @ Position[pp, x_/;x>1],
-    k = Length[pp],
-    j, qr},
-  j = Part[pp, i];
-  qr = QuotientRemainder[j+k-i, j-1];
-  Join[
-    Take[pp, i-1],
-    ConstantArray[j-1, Part[qr, 1]],
-    If[Part[qr, 2] >= 1, {Part[qr, 2]}, {}]
-   ]
- ] /; AnyTrue[pp, #>1&]
-
-nextPartition[pp_?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
-(* Convention: at the last partition we cycle back to the first one. *)
-
-
-permInversions[pi_?PermutationListQ]:=Sum[If[Part[pi,i]>Part[pi,j],1,0],{j,Length[pi]},{i,j-1}]; (* The number of inversions in a permutation; substitute for the corresponding combinatorica function. *)
+CountYoungTableaux[args__] := (
+  Message[Q3General::renamed, "CountYoungTableaux", "YoungTableauCount"];
+  YoungTableauCount[args]
+ )
 
 
 GroupCharacters::usage = "GroupCharaters[group] returns the table of characters of the irreducible representations of 'group'. The characters of each irreducible representation is stored in a row vector.\nGroupCharacters[group, irr] gives a list of the characters of the irreducible representation 'irr'.\nGroupCharacters[group, irr, class] returns the character of the irreducible representation 'irr' of 'group' evaluated at the conjugacy class 'class'.\nFor a symmetric group, both irreducible representation and class are specified by integer partitions."
@@ -159,7 +149,7 @@ SymmetricGroupCharacters[irr_?YoungShapeQ, class_?YoungShapeQ] :=
 characterSymmetricGroup[{}, {}] := 1; 
 
 characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
-  CountYoungTableaux[shape] /; And[
+  YoungTableauCount[shape] /; And[
     Total[shape] == Total[class],
     Length[class] >= 1,
     First[class] == 1
@@ -277,6 +267,23 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
  ]
 
 
+nextPartition[pp_?YoungShapeQ] := Module[
+  { i = First @ Last @ Position[pp, x_/;x>1],
+    k = Length[pp],
+    j, qr},
+  j = Part[pp, i];
+  qr = QuotientRemainder[j+k-i, j-1];
+  Join[
+    Take[pp, i-1],
+    ConstantArray[j-1, Part[qr, 1]],
+    If[Part[qr, 2] >= 1, {Part[qr, 2]}, {}]
+   ]
+ ] /; AnyTrue[pp, #>1&]
+
+nextPartition[pp_?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
+(* Convention: at the last partition we cycle back to the first one. *)
+
+
 KostkaMatrix::usage = "KostkaMatrix[n] returns the matrix of Kostka numbers of rank n."
 
 KostkaMatrix[n_Integer] := Dot[
@@ -332,7 +339,7 @@ YoungForm[data_] := (
 YoungTableaux::usage = "YoungTableaux[shape] constructs all standard Young tableaux of 'shape' specified by an integer partition.\nYoungTableaux[n] constructs all standard Young tableaux of rank 'n'."
 
 YoungTableaux[s_?YoungShapeQ] :=
-  NestList[NextYoungTableau, FirstYoungTableau[s], CountYoungTableaux[s]-1]
+  NestList[NextYoungTableau, FirstYoungTableau[s], YoungTableauCount[s]-1]
 
 YoungTableaux[n_Integer?Positive] :=
   Catenate @ Map[YoungTableaux, IntegerPartitions @ n]
@@ -343,6 +350,7 @@ FirstYoungTableau::usage = "FirstYoungTableau[p] constructs the first standard Y
 FirstYoungTableau[shape_?YoungShapeQ] :=
   YoungTranspose @ LastYoungTableau @ YoungTranspose[shape]
 
+
 LastYoungTableau::usage = "LastYoungTableau[p] constructs the last Young tableau with shape described by partition p."
 
 LastYoungTableau[shape_?YoungShapeQ] :=
@@ -352,7 +360,7 @@ LastYoungTableau[shape_?YoungShapeQ] :=
 NextYoungTableau::usage = "NextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in lexicographic order."
 
 (* NOTE 2021-10-27: It seems that the standard Young tableaux are ordered
-   according the "last letter sequence". See Pauncz (1995a, Section 3.2). *)
+   according to the "last letter sequence". See Pauncz (1995a, Section 3.2). *)
 
 NextYoungTableau[tb_?YoungTableauQ] := Module[
   { yy, shp, row, val, new },
@@ -382,7 +390,7 @@ NextYoungTableau[tb_?YoungTableauQ] := Module[
 
 Permutation::usage = "Permutation[cyc,{s1,s2,\[Ellipsis]}] represents the permutation operator acting on species {s1,s2,\[Ellipsis]}."
 
-Permutation::cyc = "`` does not represent a valid permutationin disjoint cyclic form. See PermutationCyclesQ."
+Permutation::cyc = "`` does not represent a valid permutation in disjoint cyclic form. See PermutationCyclesQ."
 
 AddElaborationPatterns[_Permutation]
 
@@ -543,18 +551,8 @@ KetPermute[
 KetPermute[expr_, pp:{__Cycles}, qq:{__?SpeciesQ}] :=
   Map[ KetPermute[expr, #, qq]&, pp ]
 
-
-(* new user interface *)
-
-KetPermute::newUI = "The list of species must come last. The order of the input arguments of KetPermute has been changed since Q3 v2.4.1."
-
-KetPermute[qq:{__?SpeciesQ}, spec_] := (
-  Message[KetPermute::newUI];
-  KetPermute[spec, qq]
- )
-
 KetPermute[expr_, qq:{__?SpeciesQ}, spec_] := (
-  Message[KetPermute::newUI];
+  Message[Q3General::changed, KetPermute, "The list of species must come last."];
   KetPermute[expr, spec, qq]
  )
 

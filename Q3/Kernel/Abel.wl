@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.74 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-24 09:54:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.89 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-03 23:38:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -17,6 +17,8 @@ BeginPackage["Q3`"]
 
 { Chain, ChainBy };
 { Bead, GreatCircle };
+
+{ LeftBrace, RightBrace, OverBrace, UnderBrace };
 
 { Let };
 
@@ -73,6 +75,8 @@ BeginPackage["Q3`"]
 { Lie, LiePower, LieSeries, LieExp, LieBasis };
 
 { CoefficientTensor };
+
+{ LevelsPlot };
 
 
 (* Obsolete Symbols *)
@@ -357,6 +361,77 @@ GreatCircle[
   ]
 
 
+(**** <LeftBrace> ****)
+
+LeftBrace::usage = "LeftBrace[y] returns the left brace spanning from -y to y."
+
+Options[LeftBrace] = {
+  "Width" -> 0.1
+ }
+
+LeftBrace[y_, OptionsPattern[]] := Module[
+  { width = OptionValue["Width"],
+    pts },
+  pts = {
+    {-width, 0},
+    {-width/2, width/4},
+    {-width/2, width/2},
+    {-width/2, y - width/2},
+    {-width/2, y - width/4},
+    {0, y}
+   };
+  BSplineCurve /@ {pts, Transpose[Transpose[pts]*{1, -1}]}
+ ]
+
+LeftBrace[x_, {ymin_, ymax_}, opts___?OptionQ] := Map[
+  TranslationTransform[Mean @ {{x, ymin}, {x, ymax}}], 
+  LeftBrace[Abs[(ymax - ymin)/2], opts],
+  {2}
+ ]
+
+LeftBrace[{xmin_, ymin_}, {xmax_, ymax_}, opts___?OptionQ] :=
+  LeftBrace[xmin, {ymin, ymax}, opts] /; xmin == xmax
+
+LeftBrace[{xmin_, ymin_}, {xmax_, ymax_}, opts___?OptionQ] := Module[
+  { center = Mean @ {{xmin, ymin}, {xmax, ymax}},
+    dir = {xmax-xmin, ymax-ymin} },
+  Map[
+    TranslationTransform[center] @* RotationTransform[{{0, 1}, dir}],
+    LeftBrace[Norm[dir]/2, opts],
+    {2}
+   ]
+ ]
+
+RightBrace::usage = "RightBrace[y] returns the right brace spanning from -y to y."
+
+RightBrace[y_, opts___?OptionQ] := Map[
+  ReflectionTransform[{1, 0}],
+  LeftBrace[y, opts],
+  {2}
+ ]
+
+RightBrace[x_, {ymin_, ymax_}, opts___?OptionQ] := Map[
+  TranslationTransform[Mean @ {{x, ymin}, {x, ymax}}], 
+  RightBrace[Abs[(ymax - ymin)/2], opts],
+  {2}
+ ]
+
+RightBrace[{xmin_, ymin_}, {xmax_, ymax_}, opts___?OptionQ] :=
+  RightBrace[xmin, {ymin, ymax}, opts] /; xmin == xmax
+
+RightBrace[{xmin_, ymin_}, {xmax_, ymax_}, opts___?OptionQ] := Module[
+  { center = Mean @ {{xmin, ymin}, {xmax, ymax}},
+    dir = {xmax-xmin, ymax-ymin} },
+  Map[
+    TranslationTransform[center] @* RotationTransform[{{0, 1}, dir}],
+    RightBrace[Norm[dir]/2, opts],
+    {2}
+   ]
+ ]
+
+(**** </LeftBrace> ****)
+
+
 Base::usage = "Base[c[j,\[Ellipsis],s]] returns the generator c[j,\[Ellipsis]] with the Flavor indices sans the final if c is a Species and the final Flavor index is special at all; otherwise just c[j,\[Ellipsis],s]."
 
 SetAttributes[Base, Listable]
@@ -484,6 +559,10 @@ Let::usage = "Let[Symbol, a, b, \[Ellipsis]] defines the symbols a, b, \[Ellipsi
 Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, \[Ellipsis]] declares the symbols a, b, \[Ellipsis] to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, \[Ellipsis]] does not take a specific structure, but only regarded seemingly so."
 
 SetAttributes[Let, {HoldAll, ReadProtected}]
+
+SyntaxInformation[Let] = {
+  "ArgumentsPattern" -> {_, __}
+ }
 
 Let[name_Symbol, ls__Symbol, opts___?OptionQ] := Let[name, {ls}, opts]
 
@@ -1630,6 +1709,114 @@ Format[ DiscreteDelta[j__] ] :=
 Format[ UnitStep[x_], StandardForm ] := Row[{"\[Theta]", "(", x, ")"}]
 
 SetAttributes[{DiscreteDelta, UnitStep}, {ReadProtected}]
+
+
+(***** <LevelsPlot> *****)
+
+LevelsPlot::usage = "LevelsPlot[{y1,y2,\[Ellipsis]}] generates a plot of levels at values y1, y2, \[Ellipsis]."
+
+Options[LevelsPlot] = {
+  "Size" -> 1,
+  "Gap" -> 0.5,
+  "Labels" -> None,
+  "DataLabels" -> None,
+  "DataStyles" -> None
+ };
+
+LevelsPlot[data:{__?NumericQ},
+  opts:OptionsPattern[{LevelsPlot, Graphics, Plot}]] :=
+  LevelsPlot[{data}, {0}, {1}, opts]
+
+LevelsPlot[data:{__?ListQ},
+  opts:OptionsPattern[{LevelsPlot, Graphics, Plot}]] :=
+  LevelsPlot[data, {0}, {1}, opts]
+
+LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ},
+  opts:OptionsPattern[{LevelsPlot, Graphics, Plot}]] :=
+  LevelsPlot[data, locale, {1}, opts]
+
+LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
+  opts:OptionsPattern[{LevelsPlot, Graphics, Plot}]] :=
+  Module[
+    { wid = OptionValue["Size"],
+      gap = OptionValue["Gap"],
+      sty = OptionValue["DataStyles"],
+      tag = OptionValue["DataLabels"],
+      txt = OptionValue["Labels"],
+      off = padCyclic[offset, Length @ data],
+      min, new, loc, lines, links, ticks, texts },
+    loc = padAccumulate[locale, Length @ data, wid + gap];
+    lines = MapThread[makeLines, {loc, loc+wid, data}];
+
+    If[ sty === Automatic || sty === None, Null,
+      sty = padCyclic[sty, Length @ data];
+      lines = Thread[{sty, lines}];
+     ];
+
+    new = MapThread[Part[#1, #2;;]&, {data, off}];
+    min = Min[Length /@ new];
+    new = Take[#, min]& /@ new;
+    
+    links = {
+      MapThread[Thread[{#1, #2}]&, {Most @ (loc+wid), Most @ new}],
+      MapThread[Thread[{#1, #2}]&, {Rest @ loc, Rest @ new}]
+     };
+    links = If[ links == {{}, {}},
+      Nothing,
+      Line /@ Catenate @ Transpose[links, 1 <-> 3]
+     ];
+
+    ticks = If[ tag === None,
+      None,
+      tag = padCyclic[tag, Length @ data];
+      Thread[{loc+wid/2, tag, 0}]
+     ];
+
+    texts = If[ txt === None,
+      Nothing,
+      txt = padCyclic[txt, Length @ data];
+      makeLabels @@@ Thread[{loc+wid/2, data, txt}]
+     ];
+
+    Graphics[
+      { {Thick, lines},
+        {Dashed, links},
+        texts },
+      FilterRules[{opts}, Options @ Graphics],
+      FrameTicks -> {{Automatic, None}, {ticks, None}},
+      FrameTicksStyle -> Directive[Large, Black],
+      FrameStyle -> {{Directive[Black,Large], None}, {White, None}},
+      Frame -> {{True, False}, {True, False}}
+     ]
+   ]
+
+padCyclic[set_, len_] := Module[
+  { new },
+  new =  If[ListQ @ set, set, List @ set];
+  PadRight[new, len, new]
+ ]
+
+padAccumulate[set_, len_, span_] := If[ len > Length[set],
+  Join[ set,
+    Max[set] + Accumulate @ Table[span, len-Length[set]] ],
+  Take[set, len]
+ ]
+
+makeLines[xmin_, xmax_, val:{__?NumericQ}] :=
+  Line /@ Transpose @ {Thread @ {xmin, val}, Thread @ {xmax, val}}
+
+
+makeLabels[x_, val:{__?NumericQ}, None] := {}
+
+makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
+  { new, loc },
+  new = padCyclic[txt, Length @ val];
+  loc = Thread[{x, val}];
+  MapThread[Text[#1, #2, Bottom]&, {new, loc}]
+ ]
+(* NOTE: txt may include Graphics[...] such as from MaTeX. *)
+
+(***** </LevelsPlot> ****)
 
 
 Protect[ Evaluate @ $symb ]

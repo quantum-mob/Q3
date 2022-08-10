@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.99 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-20 20:31:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.110 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-08 13:36:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,7 +16,7 @@ BeginPackage["Q3`"];
 
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
-{ WeylTableaux, CountWeylTableaux, WeylTableauQ };
+{ WeylTableaux, WeylTableauCount, WeylTableauQ };
 
 { RSKMap };
 
@@ -25,6 +25,10 @@ BeginPackage["Q3`"];
 { PartialHook, GZtoMatrix };
 
 { SchurBasisQ, SchurBasis, NextSchurLabels, NextGelfandYoungPatterns };
+
+(**** Obsoletes ****)
+
+{ CountWeylTableaux }; (* renamed *)
 
 Begin["`Private`"]
 
@@ -40,7 +44,7 @@ YoungDominatesQ[a_?YoungShapeQ, b_?YoungShapeQ] := Module[
 
 YoungContent::usage = "YoungContent[tb] returns the content of Weyl tableau tb.\nThe content of a Weyl tableau is the inversely sorted list of multiplicities of numbers (or letters) appearing in the tableau."
 
-YoungContent[tb_?WeylTableauQ] := ReverseSort@Values@Counts[Flatten@tb]
+YoungContent[tb_?WeylTableauQ] := ReverseSort @ Values @ Counts[Flatten @ tb]
 
 
 (**** <GelfandPatterns> ****)
@@ -114,6 +118,29 @@ GelfandYoungPatternQ[_] = False
 
 GelfandYoungPatterns::usage = "GelfandYoungPatterns[shape] gives a list of all Gelfand-Young patterns of shape.\nA Gelfand pattern is called a Gelfand-Young pattern if it corresponds to a standard Young tableau.\nThe resulting list must equal Reverse @ Map[ToGelfandPattern[n], YoungTableaux[shape]], where n = Total[shape]."
 
+GelfandYoungPatterns[shape_?YoungShapeQ] := With[
+  { n = Total @ shape },
+  Reverse @ Map[ToGelfandPattern[#, n]&, YoungTableaux @ shape]
+ ]
+
+(* Method 2: This method is slower than the above one. *)
+(*
+GelfandYoungPatterns[{}] := {{{}}}
+
+GelfandYoungPatterns[{k_Integer}] := {{{k}}}
+
+GelfandYoungPatterns[p_?YoungShapeQ] := Module[
+  { n = Total @ p,
+    qq },
+  qq = Tuples @ Successive[Range[#1, #2, -1]&, p];
+  qq = Select[qq, (Total[#] == n-1)&];
+  qq = Catenate[GelfandYoungPatterns /@ qq];
+  Map[Prepend[#, p]&, qq]
+ ]
+ *)
+
+(* Method 3: This is also slower than the first. *)
+(*
 GelfandYoungPatterns[p_?YoungShapeQ] :=
   makeGelfandYoung @ PadRight[p, Total @ p]
 
@@ -126,6 +153,7 @@ makeGelfandYoung[p_?YoungShapeQ] := Module[
   qq = Catenate[makeGelfandYoung /@ qq];
   Select[Map[Prepend[#, p]&, qq], GelfandYoungPatternQ]
  ]
+ *)
 
 (**** </GelfandYoungPatterns> ****)
 
@@ -146,18 +174,22 @@ WeylTableauQ[tb_?anyYoungTableauQ] := TrueQ[
 WeylTableauQ[_] = False
 
 
-WeylTableaux::usage = "WeylTableaux[shape, n] returns a list of all possible Weyl tableaux (semi-standard Young tableaux) of shape with entries of n letters.\nWeylTableaux[shape] is equivalent to WeylTableaux[shape, Length @ shape]."
+WeylTableaux::usage = "WeylTableaux[shape, n] returns a list of all possible Weyl tableaux (semi-standard Young tableaux) of shape with entries of n letters."
 
 WeylTableaux[shape_?YoungShapeQ, d_Integer] :=
-  WeylTableaux @ PadRight[shape, d]
+  ToYoungTableau /@ GelfandPatterns[shape, d]
 
-WeylTableaux[shape_?YoungShapeQ] :=
-  ToYoungTableau /@ GelfandPatterns[shape]
+SyntaxInformation[WeylTableaux] = {"ArgumentsPattern" -> {_, _}}
+
+WeylTableaux[shape_?YoungShapeQ] := (
+  CheckArguments[WeylTableaux[shape], 2];
+  WeylTableaux[shape, Max @ shape]
+ )
 
 
-CountWeylTableaux::usage = "CountWeylTableaux[shape, d] returns the number of Weyl tableaux of d letters consistent with shape."
+WeylTableauCount::usage = "WeylTableauCount[shape, d] returns the number of Weyl tableaux of d letters consistent with shape."
 
-CountWeylTableaux[shape_?YoungShapeQ, d_Integer] := Module[
+WeylTableauCount[shape_?YoungShapeQ, d_Integer] := Module[
   { pp = PadRight[shape, d],
     mm, vv },
   vv = Times @@
@@ -167,13 +199,20 @@ CountWeylTableaux[shape_?YoungShapeQ, d_Integer] := Module[
   vv / mm
  ]
 
+CountWeylTableaux[args__] := (
+  Message[Q3General::renamed, "CountWeylTableaux", "WeylTableauCount"];
+  WeylTableauCount[args]
+ )
+
 (**** </WeylTableaux> ****)
 
+
+(**** <ToYoungTableau> ****)
 
 ToYoungTableau::usage = "ToYoungTableau[gz] converts Gelfand pattern gz to the corresponding semi-standard Young tableau."
 (* See Krovi119a. *)
 
-ToYoungTableau::notgp = "Data `` is not a Gelfand pattern."
+ToYoungTableau::notgp = "Data `` is not a valid Gelfand pattern."
 
 ToYoungTableau[tb_?GelfandPatternQ] := Module[
   { n = Length @ tb,
@@ -188,12 +227,14 @@ ToYoungTableau[tb_] := (
   tb
  )
 
+(**** </ToYoungTableau> ****)
+
+
+(**** <ToGelfandPattern> ****)
 
 ToGelfandPattern::usage = "ToGelfandPattern[tbl, n] converts a semi-standard Young tableau tbl to the corresponding Gelfand pattern of n letters.\nToGelfandPattern[n] represents an operation form."
 
-ToGelfandPattern::notwt = "`` is not a Weyl tableau."
-
-ToGelfandPattern::onearg = "ToGelfandPattern requires two arguments. `` is assumed for the second argument."
+ToGelfandPattern::notwt = "`` is not a valid Weyl tableau."
 
 ToGelfandPattern[n_Integer][tb_?WeylTableauQ] := ToGelfandPattern[tb, n]
 
@@ -208,14 +249,16 @@ ToGelfandPattern[tb_?WeylTableauQ, n_Integer] := Prepend[
 
 ToGelfandPattern[tb_, _Integer] := (
   Message[ToGelfandPattern::notwt, tb];
-  tb
+  { {0} }
  )
 
-ToGelfandPattern[tb_?WeylTableauQ] := With[
-  { n = Max[tb] },
-  Message[ToGelfandPattern::onearg, n];
-  ToGelfandPattern[tb, n]
- ]
+ToGelfandPattern[tb_?WeylTableauQ] := (
+  CheckArguments[ToGelfandPattern[tb], 2];
+  ToGelfandPattern[tb, Max @ tb]
+ )
+
+(**** </ToGelfandPattern> ****)
+
 
 (**** <RSKMap> ****)
 

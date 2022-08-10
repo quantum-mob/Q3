@@ -3,14 +3,14 @@
 (* A special package to help study the local unitary equivalence between
    quantum states. *)
 
-Needs["Q3`"]
+Get["Q3`"]
 
 BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.5 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-04 18:16:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.6 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-08 12:27:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

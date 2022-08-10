@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.36 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-17 17:07:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.42 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-07 09:09:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -42,6 +42,8 @@ BeginPackage["Q3`"]
 { Qudit, QuditQ, Qudits };
 
 { TheQuditKet };
+
+{ WeylHeisenbergBasis };
 
 (* Obsolete Symbols *)
 
@@ -224,7 +226,7 @@ Qubits[expr_] :=
   Union @ FlavorMute @ Cases[List @ expr, _?QubitQ, Infinity] /;
   FreeQ[expr, _Association]
 
-Qubits[expr_] := Qubits[Normal @ expr]
+Qubits[expr_] := Qubits @ Normal[expr, Association]
 (* NOTE: This recursion is necessary since Association inside Association is
    not expanded by a single Normal. *)
 
@@ -947,12 +949,12 @@ HoldPattern @ Matrix @ Phase[a_, S_?QubitQ, ___] :=
 
 
 Phase[q_?QubitQ, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, Phase];
+  Message[Q3`Q3General::angle, Phase];
   Phase[ang, q, rest]
  )
 
 Phase[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, Phase];
+  Message[Q3`Q3General::angle, Phase];
   Phase[ang, qq, rest]
  )
 
@@ -1004,12 +1006,12 @@ HoldPattern @ Matrix[op_Rotation, rest___] := Matrix[Elaborate[op], rest]
 
 
 Rotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, Rotation];
+  Message[Q3`Q3General::angle, Rotation];
   Rotation[ang, q, rest]
  )
 
 Rotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, Rotation];
+  Message[Q3`Q3General::angle, Rotation];
   Rotation[ang, qq, rest]
  )
 
@@ -1051,12 +1053,12 @@ HoldPattern @ Matrix[op_EulerRotation, rest___] := Matrix[Elaborate[op], rest]
 
 
 EulerRotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, EulerRotation];
+  Message[Q3`Q3General::angle, EulerRotation];
   EulerRotation[ang, q, rest]
  )
 
 EulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3`Q3General::newUI, EulerRotation];
+  Message[Q3`Q3General::angle, EulerRotation];
   EulerRotation[ang, qq, rest]
  )
 
@@ -1641,6 +1643,9 @@ HoldPattern @
 
 (***** <Measurement> ****)
 
+$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j."
+
+
 Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis]."
 
 Measurement::nonum = "Probability half is assumed for a state without explicitly numeric coefficients."
@@ -1688,16 +1693,11 @@ Dot[Measurement[mat_?MatrixQ], vec_?VectorQ] :=
   Measurement[mat] @ vec
 
 
-$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j."
-
-
 Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
 
 Readout::nopauli = "`` is not a Pauli operator. Only Pauli operators (including tensor products of single-qubit Pauli operators) can be measured and readout."
 
 Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout."
-
-Readout::old = "Since Q3 v2.1.6, Readout requires only one input argument." 
 
 Readout[op_?fPauliOpQ] := (
   If[ Not @ KeyExistsQ[$MeasurementOut, op],
@@ -1716,7 +1716,7 @@ Readout[op:{__?fPauliOpQ}] := (
 Readout[op_] := Message[Readout::nopauli, op]
 
 Readout[_, op_] := (
-  Message[Readout::old];
+  CheckArguments[Readout[1, op], 1];
   Readout[op]
  )
 
@@ -2132,6 +2132,24 @@ KetTrim[A_?QuditQ, s_Integer] := (
  ) /; s >= Dimension[A]
 
 (**** </Ket for Qubits> ****)
+
+
+(**** <WeylHeisenbergBasis> ****)
+
+WeylHeisenbergBasis::usage = "WeylHeisenbergBasis[n] returns a generating set of matrices in GL(n).\nSee also Lie basis."
+
+WeylHeisenbergBasis[d_] := Module[
+  { dd = Range[0, d-1],
+    ww, ij },
+  Z = SparseArray@DiagonalMatrix@Exp[I 2 Pi*dd/d];
+  X = RotateRight@One[d];
+  MapApply[
+    (MatrixPower[Z, #1] . MatrixPower[X, #2]) &,
+    Tuples[dd, 2]
+   ]
+ ]
+
+(**** </WeylHeisenbergBasis> ****)
 
 
 (* Qudit on Ket *)
