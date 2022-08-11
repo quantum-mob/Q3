@@ -12,8 +12,8 @@ BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.45 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-08 12:26:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.46 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-11 09:19:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -89,7 +89,7 @@ Q3Info[] := Module[
     Return[pac]
    ];
   
-  If[ Not @ StringContainsQ[pac @ "Location", "*/Paclets/Repository/Q3-*"],
+  If[ Not @ StringContainsQ[pac @ "Location", "/Paclets/Repository/Q3-"],
     Message[Q3General::beta, pac @ "Location", Q3RemoteRelease[]]
    ];
 

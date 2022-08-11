@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.42 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-07 09:09:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.44 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-10 21:33:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -34,7 +34,7 @@ BeginPackage["Q3`"]
 
 { QFT, ModExp, ModAdd, ModMultiply };
 
-{ ProductState, BellState, SmolinState,
+{ ProductState, BellState, GHZState, SmolinState,
   GraphState, DickeState, RandomState };
 
 (* Qudit *)
@@ -1939,6 +1939,23 @@ RandomState[qq : {__?QubitQ}, n_Integer] := Module[
  ]
 
 
+(**** <GHZState for Qubits> ****)
+
+GHZState::usage = "GHZState[{k1,k2,\[Ellipsis]}, {s1,s2,\[Ellipsis]}] returns the generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
+
+GHZState[ss:{__?QubitQ}] := Map[
+  GHZState[#, ss]&,
+  Tuples[{0, 1}, Length @ ss]
+ ]
+
+GHZState[val:{(0|1)..}, ss:{__?QubitQ}] := With[
+  { new = Mod[val + 1, 2] },
+  (Ket[ss->val] + Ket[ss->new]*Power[-1, First @ val]) / Sqrt[2]
+ ]
+
+(**** </GHZState> ****)
+
+
 (**** <SmolinState> ****)
 
 SmolinState::usage = "SmolinState[{s1,s2,\[Ellipsis]}] returns the generalized Smolin state for qubits {s1,s2,\[Ellipsis]}. See also Augusiak and Horodecki (2006).";
@@ -2134,15 +2151,34 @@ KetTrim[A_?QuditQ, s_Integer] := (
 (**** </Ket for Qubits> ****)
 
 
+(**** <GHZState for Qudits> ****)
+
+GHZState[ss:{__?QuditQ}] := Map[
+  GHZState[#, ss]&,
+  Tuples[Range[0, Dimension[First @ ss]-1], Length @ ss]
+ ]
+
+GHZState[val:{__Integer}, ss:{__?QuditQ}] := Module[
+  { dim = Dimension[First @ ss],
+    kk, ww, vv },
+  kk = Range[0, dim-1];
+  ww = Exp[I* 2*Pi * kk * First[val] / dim] / Sqrt[dim];
+  vv = Map[Mod[val + #, dim]&,  kk];
+  Map[Ket[ss -> #]&, vv] . ww
+ ]
+
+(**** </GHZState> ****)
+
+
 (**** <WeylHeisenbergBasis> ****)
 
 WeylHeisenbergBasis::usage = "WeylHeisenbergBasis[n] returns a generating set of matrices in GL(n).\nSee also Lie basis."
 
-WeylHeisenbergBasis[d_] := Module[
+WeylHeisenbergBasis[d_Integer] := Module[
   { dd = Range[0, d-1],
     ww, ij },
-  Z = SparseArray@DiagonalMatrix@Exp[I 2 Pi*dd/d];
-  X = RotateRight@One[d];
+  Z = SparseArray @ DiagonalMatrix @ Exp[I 2 Pi*dd/d];
+  X = RotateRight @ One[d];
   MapApply[
     (MatrixPower[Z, #1] . MatrixPower[X, #2]) &,
     Tuples[dd, 2]
