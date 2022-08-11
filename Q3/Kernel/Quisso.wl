@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.44 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-10 21:33:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.45 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-11 21:54:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1941,16 +1941,16 @@ RandomState[qq : {__?QubitQ}, n_Integer] := Module[
 
 (**** <GHZState for Qubits> ****)
 
-GHZState::usage = "GHZState[{k1,k2,\[Ellipsis]}, {s1,s2,\[Ellipsis]}] returns the generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
+GHZState::usage = "GHZState[k, {s1,s2,\[Ellipsis]}] returns the kth generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nGHZState[{s1,s2,\[Ellipsis]}] returns the list of all GHZ states of species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
 
-GHZState[ss:{__?QubitQ}] := Map[
-  GHZState[#, ss]&,
-  Tuples[{0, 1}, Length @ ss]
- ]
+GHZState[ss:{__?QubitQ}] :=
+  Map[GHZState[#, ss]&, Range[0, Power[2, Length @ ss]-1]]
 
-GHZState[val:{(0|1)..}, ss:{__?QubitQ}] := With[
-  { new = Mod[val + 1, 2] },
-  (Ket[ss->val] + Ket[ss->new]*Power[-1, First @ val]) / Sqrt[2]
+GHZState[k_Integer, ss:{__?QubitQ}] := Module[
+  { kk = IntegerDigits[k, 2, Length @ ss],
+    nn },
+  nn =  Mod[kk+1, 2];
+  (Ket[ss->kk] + Ket[ss->nn]*Power[-1, First @ kk]) / Sqrt[2]
  ]
 
 (**** </GHZState> ****)
@@ -2155,15 +2155,16 @@ KetTrim[A_?QuditQ, s_Integer] := (
 
 GHZState[ss:{__?QuditQ}] := Map[
   GHZState[#, ss]&,
-  Tuples[Range[0, Dimension[First @ ss]-1], Length @ ss]
+  Range[0, Power[Dimension @ First @ ss, Length @ ss]-1]
  ]
 
-GHZState[val:{__Integer}, ss:{__?QuditQ}] := Module[
+GHZState[k_Integer, ss:{__?QuditQ}] := Module[
   { dim = Dimension[First @ ss],
-    kk, ww, vv },
-  kk = Range[0, dim-1];
-  ww = Exp[I* 2*Pi * kk * First[val] / dim] / Sqrt[dim];
-  vv = Map[Mod[val + #, dim]&,  kk];
+    xx, kk, ww, vv },
+  xx = Range[0, dim-1];
+  kk = IntegerDigits[k, dim, Length @ ss];
+  vv = Map[Mod[kk + #, dim]&,  xx];
+  ww = Exp[I* 2*Pi * xx * First[kk] / dim] / Sqrt[dim];
   Map[Ket[ss -> #]&, vv] . ww
  ]
 
