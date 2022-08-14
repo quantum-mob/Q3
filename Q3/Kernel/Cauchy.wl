@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.29 $"][[2]], " (",
-  StringSplit["$Date: 2022-01-26 13:19:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.30 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 16:44:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -314,7 +314,7 @@ rulesCauchySimplify = {
 CauchyExpand::usage = "CauchyExpand[expr] expands out functions of complex variables."
 
 CauchyExpand[expr_] := (
-  Message[Q3`Q3General::obsolete, CauchyExpand, Elaborate];
+  Message[Q3General::obsolete, CauchyExpand, Elaborate];
   Elaborate[expr]
  )
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.39 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-28 05:57:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.40 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 16:44:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,7 +21,7 @@ Begin["`Private`"]
 QuissoCircuit::usage = "QuissoCircuit has been renamed QuantumCircuit."
 
 QuissoCircuit[args___] := (
-  Message[Q3`Q3General::renamed, "QuissoCircuit", "QuantumCircuit"];
+  Message[Q3General::renamed, "QuissoCircuit", "QuantumCircuit"];
   QuantumCircuit[args]
  )
 

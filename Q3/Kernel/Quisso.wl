@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.45 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-11 21:54:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.46 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 16:44:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -508,7 +508,7 @@ Once[
 QuissoExpand::usage = "QuissoExpand[expr] expands the expression expr revealing the explicit forms of various operator or state-vector expressions."
 
 QuissoExpand[expr_] := (
-  Message[Q3`Q3General::obsolete, QuissoExpand, Elaborate];
+  Message[Q3General::obsolete, QuissoExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -530,7 +530,7 @@ Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorNone[S] -> {0, 1}]
 QuissoFactor::usage = "QuissoFactor is OBSOLETE. Use KetFactor instead."
 
 QuissoFactor[expr__] := (
-  Message[Q3`Q3General::obsolete, QuissoFactor, KetFactor];
+  Message[Q3General::obsolete, QuissoFactor, KetFactor];
   KetFactor[expr]
  )
 
@@ -603,7 +603,7 @@ PauliForm[expr_] := expr /. { op_Pauli :> PauliForm[op] }
 Dirac::usage = "Dirac is OBSOLETE. Instead, use Dyad."
 
 Dirac[expr__] := (
-  Message[Q3`Q3General::obsolete, Dirac, Dyad];
+  Message[Q3General::obsolete, Dirac, Dyad];
   Dyad[expr]
  )
 
@@ -830,7 +830,7 @@ doQuissoAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
 QuissoExpression::usage = "QuissoExpression is obsolete now. Use ExpressionFor instead."
 
 QuissoExpression[args___] := (
-  Message[Q3`Q3General::obsolete, "QuissoExpression", "ExpressionFor"];
+  Message[Q3General::obsolete, "QuissoExpression", "ExpressionFor"];
   ExpressionFor[args]
  )
 
@@ -838,7 +838,7 @@ QuissoExpression[args___] := (
 QuissoExpressionRL::usage = "QuissoExpressionRL is obsolete now. Use ExpressionFor instead."
 
 QuissoExpressionRL[args___] := (
-  Message[Q3`Q3General::obsolete, "QuissoExpressionRL", "ExpressionFor"];
+  Message[Q3General::obsolete, "QuissoExpressionRL", "ExpressionFor"];
   ExpressionFor[args]
  )
 
@@ -949,12 +949,12 @@ HoldPattern @ Matrix @ Phase[a_, S_?QubitQ, ___] :=
 
 
 Phase[q_?QubitQ, ang_, rest___] := (
-  Message[Q3`Q3General::angle, Phase];
+  Message[Q3General::angle, Phase];
   Phase[ang, q, rest]
  )
 
 Phase[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3`Q3General::angle, Phase];
+  Message[Q3General::angle, Phase];
   Phase[ang, qq, rest]
  )
 
@@ -962,7 +962,7 @@ QuissoPhase::usage = "QuissoPhase[...] is obsolete. Use Elaborate[Phase[...]] in
 
 QuissoPhase[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "QuissoPhase",
     "Elaborate[Phase[\[Ellipsis]]]"
    ];
@@ -1006,12 +1006,12 @@ HoldPattern @ Matrix[op_Rotation, rest___] := Matrix[Elaborate[op], rest]
 
 
 Rotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3`Q3General::angle, Rotation];
+  Message[Q3General::angle, Rotation];
   Rotation[ang, q, rest]
  )
 
 Rotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3`Q3General::angle, Rotation];
+  Message[Q3General::angle, Rotation];
   Rotation[ang, qq, rest]
  )
 
@@ -1020,7 +1020,7 @@ QuissoRotation::usage = "QuissoRotation is obsolete now. Use Elaborate[Rotation[
 
 QuissoRotation[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "QuissoRotation",
     "Elaborate[QuissoRotation[\[Ellipsis]]]"
    ];
@@ -1053,19 +1053,19 @@ HoldPattern @ Matrix[op_EulerRotation, rest___] := Matrix[Elaborate[op], rest]
 
 
 EulerRotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3`Q3General::angle, EulerRotation];
+  Message[Q3General::angle, EulerRotation];
   EulerRotation[ang, q, rest]
  )
 
 EulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3`Q3General::angle, EulerRotation];
+  Message[Q3General::angle, EulerRotation];
   EulerRotation[ang, qq, rest]
  )
 
 QuissoEulerRotation::usage = "QuissoEulerRotation is obsolete now. Use Elaborate[EulerRotation[\[Ellipsis]]] instead."
 
 QuissoEulerRotation[args___] := (
-  Message[Q3`Q3General::obsolete,
+  Message[Q3General::obsolete,
     "QuissoEulerRotation",
     "Elaborate[EulerRotation[\[Ellipsis]]]"
    ];
@@ -1111,7 +1111,7 @@ QuissoCNOT::usage = "QuissoCNOT is obsolete now. Use Elaborate[CNOT[\[Ellipsis]]
 
 QuissoCNOT[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "CNOT",
     "Elaborate[CNOT[\[Ellipsis]]]"
    ];
@@ -1156,7 +1156,7 @@ QuissoCZ::usage = "QuissoCZ is obsolete now. Use Elaborate[CZ[\[Ellipsis]]] inst
 
 QuissoCZ[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "CZ",
     "Elaborate[CZ[\[Ellipsis]]]"
    ];
@@ -1200,7 +1200,7 @@ QuissoSWAP::usage = "QuissoSWAP is obsolete now. Use Elaborate[SWAP[\[Ellipsis]]
 
 QuissoSWAP[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "QuissoSWAP",
     "Elaborate[SWAP[\[Ellipsis]]]"
    ];
@@ -1245,7 +1245,7 @@ QuissoToffoli::usage = "QuissoToffoli is obsolete now. Use Elaborate[Toffoli[\[E
 
 QuissoToffoli[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "Toffoli",
     "Elaborate[Toffoli[\[Ellipsis]]]"
    ];
@@ -1284,7 +1284,7 @@ QuissoFredkin::usage = "QuissoFredkin is obsolete now. Use Elaborate[Fredkin[\[E
 
 QuissoFredkin[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "Fredkin",
     "Elaborate[Fredkin[\[Ellipsis]]]"
    ];
@@ -1383,7 +1383,7 @@ QuissoControlledU::usage = "QuissoControlledU[...] is obsolete. Use Elaborate[Co
 
 QuissoControlledU[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "QuissoControlledU",
     "Elaborate[ControlledU[...]]"
    ];
@@ -1509,7 +1509,7 @@ QuissoOracle::usage = "QuissoOracle[...] is obsolete. Use Elaborate[Oracle[...]]
 
 QuissoOracle[args___] := (
   Message[
-    Q3`Q3General::obsolete,
+    Q3General::obsolete,
     "QuissoOracle",
     "Elaborate[Oracle[...]]"
    ];
@@ -1599,7 +1599,7 @@ HoldPattern @ Matrix[Dagger[op_QFT], rest___] :=
 QuantumFourierTransform::usage = "QuantumFourierTransform is obsolete now. Use QFT instead."
 
 QuantumFourierTransform[args___] := (
-  Message[Q3`Q3General::obsolete, QuantumFourierTransform, QFT];
+  Message[Q3General::obsolete, QuantumFourierTransform, QFT];
   QFT[args]
  )
 
@@ -2316,7 +2316,7 @@ TransformByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
 QuditExpression::usage = "QuditExpression is obsolete now. Use ExpressionFor instead."
 
 QuditExpression[args___] := (
-  Message[Q3`Q3General::obsolete, "QuditExpression", "ExpressionFor"];
+  Message[Q3General::obsolete, "QuditExpression", "ExpressionFor"];
   ExpressionFor[args]
  )
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.90 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-14 11:13:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.91 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 16:44:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1515,7 +1515,7 @@ MultiplyDegree[ expr_ ] := 0 /; FreeQ[expr, _?AnySpeciesQ]
 MultiplyExpand::usage = "MultiplyExpand is obsolete. Use Elaborate instead."
 
 MultiplyExpand[expr_, opts___?OptionQ] := (
-  Message[Q3`Q3General::obsolete, "MultiplyExpand", "Elaborate"];
+  Message[Q3General::obsolete, "MultiplyExpand", "Elaborate"];
   Elaborate[expr]
  )
 

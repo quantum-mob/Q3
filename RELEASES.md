@@ -3,6 +3,7 @@
 ## v2.6.7
 
 - New faster implementation of GelfandYoungPatterns.
+- More techical notes in Documentation.
 
 ## v2.6.4
 

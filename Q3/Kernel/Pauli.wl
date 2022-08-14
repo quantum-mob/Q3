@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.217 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-07 19:26:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.218 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 16:43:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -993,7 +993,7 @@ Once[
 PauliExpand::usage = "PauliExpand[expr] returns more explicit form of the expression expr."
 
 PauliExpand[expr_] := (
-  Message[Q3`Q3General::obsolete, PauliExpand, Elaborate];
+  Message[Q3General::obsolete, PauliExpand, Elaborate];
   Elaborate[expr]
  )
 
@@ -1277,7 +1277,7 @@ TheExpression[S_] := Table[
 PauliExpression::usage = "PauliExpression is obsolete now. Use ExpressionFor instead."
 
 PauliExpression[args___] := (
-  Message[Q3`Q3General::obsolete, "PauliExpression", "ExpressionFor"];
+  Message[Q3General::obsolete, "PauliExpression", "ExpressionFor"];
   ExpressionFor[args]
  )
 
@@ -1285,7 +1285,7 @@ PauliExpression[args___] := (
 PauliExpressionRL::usage = "PauliExpressionRL is obsolete now. Use ExpressionFor instead."
 
 PauliExpressionRL[args___] := (
-  Message[Q3`Q3General::obsolete, "PauliExpressionRL", "ExpressionFor"];
+  Message[Q3General::obsolete, "PauliExpressionRL", "ExpressionFor"];
   ExpressionFor[args]
  )
 
@@ -1293,12 +1293,12 @@ PauliExpressionRL[args___] := (
 PauliInner::usage = "PauliInner is obsolete. Use HilbertSchmidtProduct instead. Notice the difference in normalization -- PauliInner[m1, m2] = HilbertSchmidtProduct[m1,m2] / Length[m2] for matrices m1 and m2."
 
 PauliInner[m1_?MatrixQ, m2_?MatrixQ] := (
-  Message[Q3`Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
+  Message[Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
   HilbertSchmidtProduct[m1, m2] / Length[m2]
  )
 
 PauliInner[v1_?VectorQ, v2_?VectorQ] := (
-  Message[Q3`Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
+  Message[Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
   HilbertSchmidtProduct[v1, v2]
  )
 
@@ -2660,7 +2660,7 @@ One[{m_Integer, n_Integer}, p_Integer] :=
 PauliExtract::usage = "PauliExtract has been deprecated. Use PauliDecompose instead."
 
 PaulieExtract[m_?MatrixQ, dd_] := (
-  Message[Q3`Q3General::obsolete, "PaulieExtract", "PauliDecompose"];
+  Message[Q3General::obsolete, "PaulieExtract", "PauliDecompose"];
   PauliDecompose[m, dd]
  )
 
@@ -2668,7 +2668,7 @@ PaulieExtract[m_?MatrixQ, dd_] := (
 PauliExtractRL::usage = "PauliExtractRL has been deprecated. Use PauliDecomposeRL instead."
 
 PaulieExtractRL[m_?MatrixQ, dd_] := (
-  Message[Q3`Q3General::obsolete, "PaulieExtractRL", "PauliDecomposeRL"];
+  Message[Q3General::obsolete, "PaulieExtractRL", "PauliDecomposeRL"];
   PauliDecomposeRL[m, dd]
  )
 
@@ -3358,7 +3358,7 @@ BasisComplement[aa_List, bb_List] := Module[
 WignerFunction::usage = "WignerFunction is now obsolete; use the build-in WignerD function."
 
 WignerFunction[j_, m_, n_, z_] := (
-  Message[Q3`Q3General::obsolete, WignerFunction, WignerD];
+  Message[Q3General::obsolete, WignerFunction, WignerD];
   WignerD[{j, m, n}, z]
  )
 

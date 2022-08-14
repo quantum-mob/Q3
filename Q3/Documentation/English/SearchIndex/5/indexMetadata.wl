@@ -1,6 +1,6 @@
 <|"IndexedPaths" -> None, "Driver" -> "Lucene", 
- "CreationDate" -> DateObject[{2022, 8, 14, 13, 33, 
-    46.323585`8.418377138849745}, "Instant", "Gregorian", 9.], 
+ "CreationDate" -> DateObject[{2022, 8, 14, 19, 3, 
+    55.835308`8.499483890304376}, "Instant", "Gregorian", 9.], 
  "Version" -> 5, "Synonyms" -> None, "Method" -> "BM25", 
  "Language" -> "English", "ContentFieldOptions" -> 
   <|"Title" -> <|"Stored" -> True, "Weight" -> 2|>, 
