@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.7
+
+- New faster implementation of GelfandYoungPatterns.
+
 ## v2.6.4
 
 - An urgent bug fix concerning Q3Info[].

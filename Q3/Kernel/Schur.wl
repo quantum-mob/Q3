@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.110 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-08 13:36:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.112 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 11:27:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -118,42 +118,29 @@ GelfandYoungPatternQ[_] = False
 
 GelfandYoungPatterns::usage = "GelfandYoungPatterns[shape] gives a list of all Gelfand-Young patterns of shape.\nA Gelfand pattern is called a Gelfand-Young pattern if it corresponds to a standard Young tableau.\nThe resulting list must equal Reverse @ Map[ToGelfandPattern[n], YoungTableaux[shape]], where n = Total[shape]."
 
-GelfandYoungPatterns[shape_?YoungShapeQ] := With[
-  { n = Total @ shape },
-  Reverse @ Map[ToGelfandPattern[#, n]&, YoungTableaux @ shape]
- ]
-
-(* Method 2: This method is slower than the above one. *)
-(*
 GelfandYoungPatterns[{}] := {{{}}}
 
-GelfandYoungPatterns[{k_Integer}] := {{{k}}}
-
-GelfandYoungPatterns[p_?YoungShapeQ] := Module[
-  { n = Total @ p,
-    qq },
-  qq = Tuples @ Successive[Range[#1, #2, -1]&, p];
-  qq = Select[qq, (Total[#] == n-1)&];
-  qq = Catenate[GelfandYoungPatterns /@ qq];
-  Map[Prepend[#, p]&, qq]
- ]
- *)
-
-(* Method 3: This is also slower than the first. *)
-(*
 GelfandYoungPatterns[p_?YoungShapeQ] :=
-  makeGelfandYoung @ PadRight[p, Total @ p]
+  theGelfandYoung @ PadRight[p, Total @ p]
 
-makeGelfandYoung[{1}] = {{{1}}}
+theGelfandYoung[{1}] = {{{1}}}
 
-makeGelfandYoung[p_?YoungShapeQ] := Module[
+theGelfandYoung[p_?YoungShapeQ] := Module[
   { qq },
   qq = Tuples @ Successive[Range[#1, Max[#1-1, #2], -1]&, p];
   qq = Select[qq, Length[#] == Total[#]&];
-  qq = Catenate[makeGelfandYoung /@ qq];
-  Select[Map[Prepend[#, p]&, qq], GelfandYoungPatternQ]
+  qq = Catenate[theGelfandYoung /@ qq];
+  Map[Prepend[#, p]&, qq]
  ]
- *)
+
+(* Method 2: This is much slower than the above.
+   Currently (Young.wl,v1.94), YoungTableaux is based on the method borrowed
+   from the legacy Combinatorica package. *)
+
+oldGelfandYoungPatterns[shape_?YoungShapeQ] := With[
+  { n = Total @ shape },
+  Reverse @ Map[ToGelfandPattern[#, n]&, YoungTableaux @ shape]
+ ]
 
 (**** </GelfandYoungPatterns> ****)
 

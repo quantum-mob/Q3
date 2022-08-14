@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.81 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-24 10:16:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.84 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 10:25:40+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -13,8 +13,6 @@ BeginPackage["Q3`"]
   SuperMatrixQ, ToSuperMatrix, ToChoiMatrix };
 
 { ChoiMultiply, ChoiTopple };
-
-{ KrausProduct };
 
 { LindbladGenerator, DampingOperator };
 
@@ -24,7 +22,12 @@ BeginPackage["Q3`"]
 
 { NLindbladSolve };
 
+
+(**** Legacy, Excised, Renamed, Obsolete ****)
+
 { LindbladSolveNaive}; (* legacy *)
+
+{ KrausProduct }; (* obsolete *)
 
 
 Begin["`Private`"]
@@ -173,7 +176,7 @@ ChoiMatrix[most__, S_?SpeciesQ] := ChoiMatrix[most, FlavorNone @ {S}]
 
 ChoiMatrix[most__, ss:{__?SpeciesQ}] :=
   ChoiMatrix[most, FlavorNone @ ss] /;
-  Not @ ContainsOnly[FlavorLast @ ss, {None}]
+  Not @ FlavorNoneQ[ss]
 
 
 ChoiMatrix[ops:{__}, ss:{__?SpeciesQ}] := With[
@@ -250,18 +253,12 @@ ToChoiMatrix[assoc_Association] := Map[ToChoiMatrix, assoc] /;
 (**** </ChoiMatrix> ****)
 
 
-KrausProduct::usage = "KrausProduct[a, b] returns the trace Hermitian product (also known as the Frobenius product) of two matrices (operators) a and b."
+KrausProduct::usage = "KrausProduct is now obsolete. Use HilbertSchmidtProduct insteas."
 
-KrausProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a] . b]
-
-KrausProduct[a_, b_] := With[
-  { ss = NonCommutativeSpecies @ {a, b} },
-  KrausProduct[ Matrix[a, ss], Matrix[b, ss] ]
- ] /; NonTrue[{a, b}, CommutativeQ]
-
-KrausProduct[a_?CommutativeQ, b_] := Conjugate[a] * Tr[Matrix @ b]
-
-KrausProduct[a_, b_?CommutativeQ] := Conjugate[Tr @ Matrix @ a] * b
+KrausProduct[args___] := (
+  Message[Q3General::obsolete, "KrausProduct", "HilbertSchmidtProduct"];
+  HilbertSchmidtProduct[args]
+ )
 
 
 (**** <LindbladBasis> ****)

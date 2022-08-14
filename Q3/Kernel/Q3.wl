@@ -12,15 +12,15 @@ BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.46 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-11 09:19:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.48 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 00:59:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Q3General };
 
 { Q3Info, Q3Release, Q3RemoteRelease,
-  Q3Update, Q3CheckUpdate, Q3CheckVersion, Q3Purge };
+  Q3Update, Q3CheckUpdate, Q3Assure, Q3Purge };
 
 { Q3Clear, Q3Unprotect, Q3Protect };
 
@@ -33,9 +33,11 @@ Q3General::beta = "You are using a beta version of Q3 locally installed in `1` w
 
 Q3General::faulty = "The Q3 application has not been installed properly. Go to `` for the instruction." 
 
-Q3General::obsolete = "The symbol `` is obsolete. Use `` instead."
+Q3General::obsolete = "Symbol `` is obsolete. Use `` instead."
 
-Q3General::renamed = "The symbol `` has been renamed ``."
+Q3General::excised = "Symbol `` has been excised."
+
+Q3General::renamed = "Symbol `` has been renamed ``."
 
 Q3General::changed = "The patterns for the sequence of arguments for `1` have been changed: `2`"
 
@@ -146,9 +148,9 @@ versionNumber[ver_String] := With[
 (***** </Paclet Server> ****)
 
 
-Q3CheckVersion::usage = "Q3CheckVersion[version] checks whether the current version of Q3 is newer than version that is required for the present development of task or package."
+Q3Assure::usage = "Q3Assure[version] checks whether Q3 has the specified version or later."
 
-Q3CheckVersion[version_?StringQ] := If[
+Q3Assure[version_?StringQ] := If[
   Not @ OrderedQ @ {version, Q3Release[]},
   PrintTemporary["Q3 v" <> version <> " or later is required and Q3 is being updated."];
   If[FailureQ @ Q3Update[], $Failed, Get["Q3`"]]

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.89 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-03 23:38:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.90 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-14 11:13:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -162,13 +162,14 @@ SignatureTo[a_, b_] :=
   Signature @ PermutationList @ FindPermutation[a, b] /;
   Length[a] == Length[b]
 
+
 Successive::usage = "Successive[f, {x1,x2,x3,\[Ellipsis]}] returns {f[x1,x2], f[x2,x3], \[Ellipsis]}. Successive[f, list, n] applies f on n successive elements of list. Successive[f, list, 2] is equivalent to Successive[f,list]. Successive[f, list, 1] is equivalent to Map[f, list]."
 
 Successive[f_, a_List] := f @@@ Transpose @ {Most @ a, Rest @ a}
 
 Successive[f_, a_List, n_Integer] := f @@@ Transpose @ Table[
-  Drop[RotateLeft[a, j], 1 - n],
-  {j, 0, n - 1}
+  Drop[RotateLeft[a, j], 1-n],
+  {j, 0, n-1}
  ] /; n > 0
 
 

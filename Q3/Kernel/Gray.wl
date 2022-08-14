@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.42 $"][[2]], " (",
-  StringSplit["$Date: 2022-04-11 17:33:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.44 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-13 22:44:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,7 +14,12 @@ BeginPackage["Q3`"]
   GrayCode, GrayCodeSubsets };
 
 { GrayControlledU, GrayControlledW,
-  GrayTwoLevelU, TwoLevelU, TwoLevelDecomposition };
+  FromTwoLevelU, TwoLevelU, TwoLevelDecomposition };
+
+(**** renamed ****)
+
+{ GrayTwoLevelU };
+
 
 Begin["`Private`"]
 
@@ -147,13 +152,15 @@ GrayCode[n_Integer] := Join[
  ] /; n > 1
 
 
-GrayTwoLevelU::usage = "GrayTwoLevelU[mat, {x, y}, {q1, q2, ...}] returns a list of multi-control NOT gates and one controlled-unitary gate that compose the two-level unitary operation specified by mat."
+(**** <FromTwoLevelU> *****)
 
-GrayTwoLevelU[ TwoLevelU[mat_?MatrixQ, {x_, y_}, L_], qq:{__?QubitQ} ] :=
-  GrayTwoLevelU[mat, {x, y}, FlavorNone @ qq] /;
+FromTwoLevelU::usage = "FromTwoLevelU[mat, {x, y}, {q1, q2, ...}] returns a list containing multi-control NOT gates and one controlled-unitary gate that compose the two-level unitary operation specified by mat."
+
+FromTwoLevelU[ TwoLevelU[mat_?MatrixQ, {x_, y_}, L_], qq:{__?QubitQ} ] :=
+  FromTwoLevelU[mat, {x, y}, FlavorNone @ qq] /;
   L == Power[2, Length @ qq]
 
-GrayTwoLevelU[mat_?MatrixQ, {x_Integer, y_Integer}, qq:{__?QubitQ}] :=
+FromTwoLevelU[mat_?MatrixQ, {x_Integer, y_Integer}, qq:{__?QubitQ}] :=
   Module[
     { gray = GrayCode[Length @ qq, x-1, y-1],
       mask, expr },
@@ -189,7 +196,17 @@ grayCtrlU[g1_, g2_, mat_, qq_] := Module[
  ]
 
 
-TwoLevelU::usage = "TwoLevelU[mat, {i, j}, n] represents a two-level unitary matrix, that is, the 2 x 2 unitary matrix mat operating on the ith and jth rows and columns of an n x n matrix.\nMatrix[TwoLevelU[mat, {i, j}, n]] returns the full n x n matrix.\nSee also GrayTwoLevelU, which decomposes TwoLevelU[...] into CNOT gates and one controlled-U gate."
+GrayTwoLevelU::usage = "GrayTwoLevelU has been renamed FromTwoLevelU."
+
+GrayTwoLevelU[args___] := (
+  Message[Q3General::renamed, "GrayTwoLevelU", "FromTwoLevelU"];
+  FromTwoLevelU[args]
+ )
+
+(**** </FromTwoLevelU> *****)
+
+
+TwoLevelU::usage = "TwoLevelU[mat, {i, j}, n] represents a two-level unitary matrix, that is, the 2 x 2 unitary matrix mat operating on the ith and jth rows and columns of an n x n matrix.\nMatrix[TwoLevelU[mat, {i, j}, n]] returns the full n x n matrix.\nSee also FromTwoLevelU, which decomposes TwoLevelU[...] into CNOT gates and one controlled-U gate."
 
 TwoLevelU /:
 HoldPattern @ Matrix @ TwoLevelU[mat_?MatrixQ, {x_, y_}, n_] := Module[
