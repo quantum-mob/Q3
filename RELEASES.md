@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.6.10
+
+- New function ExpressionIn.
+- New function NormPT.
+- LogarithmicNegativity[rho, {s1, s2, ...}] is allowed now. In this case, rho is assumed to be properly normalized.
+
 ## v2.6.7
 
 - New faster implementation of GelfandYoungPatterns.
