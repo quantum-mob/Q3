@@ -4,13 +4,13 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.91 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-14 16:44:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.92 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-18 00:31:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
-{ Choices, ListPartitions, Successive };
+{ Choices, ListPartitions, Successive, FirstLast, Inbetween };
 { ShiftLeft, ShiftRight };
 { KeyGroupBy };
 { Unless, PseudoDivide };
@@ -171,6 +171,16 @@ Successive[f_, a_List, n_Integer] := f @@@ Transpose @ Table[
   Drop[RotateLeft[a, j], 1-n],
   {j, 0, n-1}
  ] /; n > 0
+
+
+FirstLast::usage = "FirstLast[expr] returns the first and last elements of expr."
+
+FirstLast[expr_] := {First[expr], Last[expr]}
+
+
+Inbetween::usage = "Inbetween[expr] returns expr with the first and last elements removed."
+
+Inbetween[expr_] := Rest @ Most @ expr
 
 
 ShiftLeft::usage = "ShiftLeft[list, n] shifts the elements in list by n positions to the left and pad n 0s on the right.\nSimilar to RotateLeft, but does not cycle the elements.\nIf n is omitted, it is assumed to be 1."

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.226 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-18 00:03:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.227 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-18 01:03:53+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -3063,6 +3063,10 @@ PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
 
 
 (**** <LogarithmicNegativity> ****)
+
+(* TODO: As of v3.226, the codes for LogarithmicNegativity and NormPT are
+   quite redundant. Theoretically, LogarithmicNegativiy is just Log[2,
+   NormPT]. However, I must check the numerical stability. *)
 
 LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the logarithmic negativity of mixed state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
 
