@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.11
+
+- A bug fix in NormPT
+
 ## v2.6.10
 
 - New function ExpressionIn.

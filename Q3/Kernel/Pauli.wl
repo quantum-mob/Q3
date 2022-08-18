@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.233 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-18 20:56:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.235 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-18 21:38:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -3178,7 +3178,9 @@ NormPT[rho_, qq:{__?SpeciesQ}] := Module[
   
   NormPT[mat, Dimension @ all, pos] / trm
  ]
-(* NOTE: rho is assumed to be properly normalized. *)
+(* NOTE: rho is assumed to be properly normalized; and hence the factor ofr
+   1/trm in the code. *)
+
 
 NormPT[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { all, pos, mat },
