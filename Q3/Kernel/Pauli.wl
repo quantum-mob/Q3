@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.227 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-18 01:03:53+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.233 $"][[2]], " (",
+  StringSplit["$Date: 2022-08-18 20:56:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -76,7 +76,7 @@ BeginPackage["Q3`"]
 
 { TraceNorm, TraceDistance, Fidelity };
 
-{ LogarithmicNegativity, NormPT };
+{ LogarithmicNegativity, Negativity, NormPT };
 
 { Purification, Snapping };
 
@@ -3062,58 +3062,72 @@ PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
 (**** </PartialTranspose> ****)
 
 
+(**** <Negativity> ****)
+
+Negativity::usage = "Negativity[rho, spec] returns the negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
+
+Negativity::norm = "`` is not properly normalized."
+
+Negativity[vec_?VectorQ, spec__] := (
+  If[ Chop[Norm @ vec] != 1,
+    Message[Negativity::norm, vec]
+   ];
+  (NormPT[vec, spec] - 1) / 2
+ )
+
+Negativity[mat_?MatrixQ, spec__] := (
+  If[ Chop[Tr @ mat] != 1,
+    Message[Negativity::norm, mat]
+   ];
+  (NormPT[mat, spec] - 1) / 2
+ )
+
+Negativity[rho_, spec_] := (NormPT[rho, spec] - 1) / 2
+
+
+Negativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
+  { all, mat, pos },
+  all = Union @ FlavorNone @ Join[aa, bb];
+  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
+
+  mat = Matrix[rho, all];
+  Negativity[mat, Dimension @ all, pos]
+ ]
+
+Negativity[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] :=
+  Negativity[rho, {S}, bb]
+
+Negativity[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] :=
+  Negativity[rho, aa, {T}]
+
+Negativity[rho_, S_?SpeciesQ, T_?SpeciesQ] :=
+  Negativity[rho, {S}, {T}]
+
+(**** </Negativity> ****)
+
+
 (**** <LogarithmicNegativity> ****)
 
-(* TODO: As of v3.226, the codes for LogarithmicNegativity and NormPT are
-   quite redundant. Theoretically, LogarithmicNegativiy is just Log[2,
-   NormPT]. However, I must check the numerical stability. *)
-
-LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the logarithmic negativity of mixed state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
+LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the logarithmic negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
 
 LogarithmicNegativity::norm = "`` is not properly normalized."
-
-LogarithmicNegativity::traceless = "`` is traceless."
 
 LogarithmicNegativity[vec_?VectorQ, spec__] := (
   If[ Chop[Norm @ vec] != 1,
     Message[LogarithmicNegativity::norm, vec]
    ];
-  Log2 @ TraceNorm @ PartialTranspose[vec, spec]
+  Log2 @ NormPT[vec, spec]
  )
 
 LogarithmicNegativity[mat_?MatrixQ, spec__] := (
   If[ Chop[Tr @ mat] != 1,
     Message[LogarithmicNegativity::norm, mat]
    ];
-  Log2 @ TraceNorm @ PartialTranspose[mat, spec]
+  Log2 @ NormPT[mat, spec]
  )
 
+LogarithmicNegativity[rho_, spec_] := Log2 @ NormPT[rho, spec]
 
-LogarithmicNegativity[rho_, jj:{__Integer}] :=
-  LogarithmicNegativity[Matrix @ rho, jj] /;
-  Or[fPauliKetQ[rho], Not @ FreeQ[expr, _Pauli]]
-
-
-LogarithmicNegativity[rho_, qq:{__?SpeciesQ}] := Module[
-  { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
-    ss = NonCommutativeSpecies[rho],
-    dd, all, pos, mat },
-  all = Union @ FlavorNone @ Join[rr, ss];
-  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ rr];
-  mat = Matrix[rho, all];
-
-  dd = Tr[mat];
-  If[ Chop[dd] == 0,
-    Message[LogarithmicNegativity::traceless, rho];
-    Return[0]
-   ];
-  
-  Quiet[
-    LogarithmicNegativity[mat, Dimension @ all, pos] - Log2[dd],
-    {LogarithmicNegativity::norm}
-   ]
- ]
-(* NOTE: In this case, rho is assumed to be properly normalized. *)
 
 LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { all, mat, pos },
@@ -3123,14 +3137,6 @@ LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   mat = Matrix[rho, all];
   LogarithmicNegativity[mat, Dimension @ all, pos]
  ]
-(* NOTE 1: For PartialTransposition, argument aa is not necessary. However, it
-   is necessary for proper normalization. For example, consider rho = I x I /
-   4. Without aa, it may be regarded as I / 4, which leads to a wrong value of
-   the logarithmic negativity. *)
-(* NOTE 2: rho may refer to a pure state; i.e., mat may be a vector. *)
-
-LogarithmicNegativity[rho_, S_?SpeciesQ] :=
-  LogarithmicNegativity[rho, {S}]
 
 LogarithmicNegativity[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] :=
   LogarithmicNegativity[rho, {S}, bb]
@@ -3146,51 +3152,55 @@ LogarithmicNegativity[rho_, S_?SpeciesQ, T_?SpeciesQ] :=
 
 (**** <NormPT> ****)
 
-NormPT::usage = "NormPT[rho, spec] returns the trace norm of the partial transpose of mixed state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
-
-NormPT::norm = "`` is not properly normalized."
+NormPT::usage = "NormPT[rho, spec] returns the trace norm of the partial transpose of rho, where the partial transposition is specified by spec (see PartialTranspose)."
 
 NormPT::traceless = "`` is traceless."
 
-NormPT[vec_?VectorQ, spec__] := (
-  If[ Chop[Norm @ vec] != 1,
-    Message[NormPT::norm, vec]
-   ];
-  TraceNorm @ PartialTranspose[vec, spec]
- )
+NormPT[vec_?VectorQ, spec__] := TraceNorm @ PartialTranspose[vec, spec]
 
-NormPT[mat_?MatrixQ, spec__] := (
-  If[ Chop[Tr @ mat] != 1,
-    Message[NormPT::norm, mat]
-   ];
-  TraceNorm @ PartialTranspose[mat, spec]
- )
+NormPT[mat_?MatrixQ, spec__] := TraceNorm @ PartialTranspose[mat, spec]
 
 
-NormPT[rho_, jj:{__Integer}] :=
-  NormPT[Matrix @ rho, jj] /;
+NormPT[rho_, jj:{__Integer}] := NormPT[Matrix @ rho, jj] /;
   Or[fPauliKetQ[rho], Not @ FreeQ[expr, _Pauli]]
 
 
 NormPT[rho_, qq:{__?SpeciesQ}] := Module[
   { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
     ss = NonCommutativeSpecies[rho],
-    dd, all, pos, mat },
+    all, pos, mat, trm },
   all = Union @ FlavorNone @ Join[rr, ss];
   pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ rr];
   mat = Matrix[rho, all];
 
-  dd = Tr[mat];
-  If[Chop[dd] == 0, Message[NormPT::traceless, rho]; Return[1]];
+  trm = If[MatrixQ[mat], Tr[mat], Norm[mat]^2];
+  If[Chop[trm] == 0, Message[NormPT::traceless, rho]; Return[1]];
   
-  Quiet[
-    NormPT[mat, Dimension @ all, pos] / dd,
-    {NormPT::norm}
-   ]
+  NormPT[mat, Dimension @ all, pos] / trm
  ]
-(* NOTE: In this case, rho is assumed to be properly normalized. *)
+(* NOTE: rho is assumed to be properly normalized. *)
+
+NormPT[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
+  { all, pos, mat },
+  all = Union @ FlavorNone @ Join[aa, bb];
+  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
+
+  mat = Matrix[rho, all];
+  NormPT[mat, Dimension @ all, pos]
+ ]
+(* NOTE 1: For PartialTransposition, argument aa is not necessary. However, it
+   is necessary for proper normalization. For example, consider rho = I x I /
+   4. Without aa, it may be regarded as I / 4, which leads to a wrong value of
+   the logarithmic negativity. *)
+(* NOTE 2: rho may refer to a pure state; i.e., mat may be a vector. *)
 
 NormPT[rho_, S_?SpeciesQ] := NormPT[rho, {S}]
+
+NormPT[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] := NormPT[rho, {S}, bb]
+
+NormPT[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] := NormPT[rho, aa, {T}]
+
+NormPT[rho_, S_?SpeciesQ, T_?SpeciesQ] := NormPT[rho, {S}, {T}]
 
 (**** </NormPT> ****)
 
