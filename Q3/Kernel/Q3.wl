@@ -233,6 +233,7 @@ Get["Q3`Dicke`"];
 Get["Q3`VonNeumann`"];
 Get["Q3`Young`"];
 Get["Q3`Schur`"];
+Get["Q3`Knuth`"];
 Get["Q3`Einstein`"]; (* should be loaded last *)
 Get["Q3`Custom`"];
 

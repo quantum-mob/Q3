@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.12
+
+- TeXForm[ ... Ket[...] ... ] gives \ket{...}.
+
 ## v2.6.11
 
 - A bug fix in NormPT
