@@ -16,6 +16,7 @@ Q3 provides a *fully automatic installation and update*. Please take a look at t
 ## Quick Start
 
 Once Q3 is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfram Language Documentation Center (Mathematica Help window) to get users' guides and tutorials on Q3; see the following screenshots.
+
 ![Screenshot 1](Images/Help1.png?raw=true)
 ![Screenshot 2](Images/Help2.png?raw=true)
 ![Screenshot 3](Images/Help3.png?raw=true)
