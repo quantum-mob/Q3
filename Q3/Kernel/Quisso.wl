@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.46 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-14 16:44:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.48 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-01 10:05:18+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1941,12 +1941,12 @@ RandomState[qq : {__?QubitQ}, n_Integer] := Module[
 
 (**** <GHZState for Qubits> ****)
 
-GHZState::usage = "GHZState[k, {s1,s2,\[Ellipsis]}] returns the kth generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nGHZState[{s1,s2,\[Ellipsis]}] returns the list of all GHZ states of species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
+GHZState::usage = "GHZState[{s1,s2,\[Ellipsis]}, k] returns the kth generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nGHZState[{s1,s2,\[Ellipsis]}] returns the list of all GHZ states of species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
 
 GHZState[ss:{__?QubitQ}] :=
-  Map[GHZState[#, ss]&, Range[0, Power[2, Length @ ss]-1]]
+  Map[GHZState[ss, #]&, Range[0, Power[2, Length @ ss] - 1]]
 
-GHZState[k_Integer, ss:{__?QubitQ}] := Module[
+GHZState[ss:{__?QubitQ}, k_Integer] := Module[
   { kk = IntegerDigits[k, 2, Length @ ss],
     nn },
   nn =  Mod[kk+1, 2];
@@ -2154,11 +2154,11 @@ KetTrim[A_?QuditQ, s_Integer] := (
 (**** <GHZState for Qudits> ****)
 
 GHZState[ss:{__?QuditQ}] := Map[
-  GHZState[#, ss]&,
+  GHZState[ss, #]&,
   Range[0, Power[Dimension @ First @ ss, Length @ ss]-1]
  ]
 
-GHZState[k_Integer, ss:{__?QuditQ}] := Module[
+GHZState[ss:{__?QuditQ}, k_Integer] := Module[
   { dim = Dimension[First @ ss],
     xx, kk, ww, vv },
   xx = Range[0, dim-1];

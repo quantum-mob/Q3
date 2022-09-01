@@ -15,13 +15,19 @@ Q3 provides a *fully automatic installation and update*. Please take a look at t
 
 ## Quick Start
 
-Once Q3 is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfram Language Documentation Center (Mathematica help window) to get detailed technical information about the application. It will give you users' guides and tutorials.
+Once Q3 is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfram Language Documentation Center (Mathematica Help window) to get users' guides and tutorials on Q3; see the following screenshots.
+![Screenshot 1](Images/Help1.png?raw=true)
+![Screenshot 2](Images/Help2.png?raw=true)
+![Screenshot 3](Images/Help3.png?raw=true)
 
-For more advanced applications, take a look at textbook ["A Quantum Computation Workbook" (Springer, March 2022)](https://link.springer.com/book/9783030912130).
+
+## Quantum Computation and Information with Q3
+
+For more advanced uses of Q3, take a look at textbook ["A Quantum Computation Workbook" (Springer, March 2022)](https://link.springer.com/book/9783030912130).
 A compilation of the Mathematica(R) Notebook files that have been used to generate the demonstrations in this textbook is available from
 the [QuantumWorkbook repository](https://github.com/quantum-mob/QuantumWorkbook).
 
-![Quantum Workbook Cover](Examples/QuantumWorkbookCover.jpg?raw=true)
+![Quantum Workbook Cover](Images/QuantumWorkbookCover.jpg?raw=true)
 
 
 ## For Beginners of Mathematica

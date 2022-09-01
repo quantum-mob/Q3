@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.16
+
+- The sequence pattern of the arguments for GHZState has been changed.
+
 ## v2.6.11
 
 - A bug fix in NormPT
