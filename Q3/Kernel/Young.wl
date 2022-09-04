@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.94 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-08 12:32:20+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.109 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-04 10:32:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -28,12 +28,19 @@ BeginPackage["Q3`"];
   CharacterScalarProduct,
   CompoundYoungCharacters, KostkaMatrix };
 
+{ InversionVector, AdjacentTranspositions };
+
+{ YoungDistance };
 
 (**** Obsolete ****)
 
 { CountYoungTableaux }; (* renamed *)
 
+
 Begin["`Private`"]
+
+Format[ Ket[tbs__?anyYoungTableauQ] ] := Ket @@ Map[YoungForm, {tbs}]
+
 
 YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nYoungDiagram[yt] displays the Young diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
 
@@ -501,55 +508,110 @@ If[ $VersionNumber < 13.1,
 
 (**** <KetPermute> ****)
 
-KetPermute::usage = "KetPermute[vec, perm] returns a new state vector where each Ket[\[Ellipsis]] in state vector vec is replaced by a new one with the logical values permuted according to permutation perm.\nKetPermute[vec, {q1, q2, ...}, perm] returns a new state vector permuting the values of the particles q1, q2, ... in each Ket[<|\[Ellipsis]|>] in state vector vec according to permutation perm.\nPermutation perm may be SymmetricGroup, PermutationGroup, AlternatingGroup, or a list of Cycles, where a list of state vectors are returned after applying all elements of the group or list."
+KetPermute::usage = "KetPermute[vec, perm] returns a new state vector where each Ket[\[Ellipsis]] in state vector vec is replaced by a new one with the logical values permuted according to permutation perm.\nKetPermute[vec, {q1, q2, ...}, perm] returns a new state vector permuting the values of the particles q1, q2, ... in each Ket[<|\[Ellipsis]|>] in state vector vec according to permutation perm.\nPermutation perm may be a group such as SymmetricGroup, PermutationGroup, AlternatingGroup, or a list of Cycles, where a list of state vectors are returned after applying all elements of the group or list."
+
+$PermutationSpec = Alternatives[_?PermutationListQ, _Cycles]
+
+$PermutationGroups = Alternatives @@ Blank /@ {
+  SymmetricGroup, AlternatingGroup, PermutationGroup, CyclicGroup
+ }
+
+anyPermutationSpecQ[spec:$PermutationSpec] := True
+
+anyPermutationSpecQ[spec:{$PermutationSpec ..}] := True
+
+anyPermutationSpecQ[spec:$PermutationGroups] := True
+
+anyPermutationSpecQ[_] = False
+
+
+(* special case *)
+
+KetPermute[expr_, {}] := expr
+
+KetPermute[expr_, Cycles[{}]] := expr
+
+KetPermute[expr_, {}, {__?SpeciesQ}] := expr
+
+KetPermute[expr_, Cycles[{}], {__?SpeciesQ}] := expr
+
+
+(* for Specht basis states *)
+(* See also Krovi (2019). *)
+
+KetPermute[Ket[yt_?YoungTableauQ], Cycles @ {{x_, y_}}] := Module[
+  { xx = FirstPosition[yt, x],
+    yy = FirstPosition[yt, y],
+    dd, tt },
+  Which[
+    First[xx] == First[yy], Ket[yt],
+    Last[xx] == Last[yy], -Ket[yt],
+    True,
+    dd = 1 / YoungDistance[x, y, yt];
+    tt = ReplaceAll[yt, {x -> y, y -> x}];
+    Ket[yt] * dd + Ket[tt] * Sqrt[1-dd^2]
+   ]
+ ] /; x+1 == y
+
+
+KetPermute[Ket[yt_?YoungTableauQ], cc_Cycles] :=
+  Garner @ Fold[KetPermute, Ket[yt], AdjacentTranspositions @ cc]
+
+KetPermute[Ket[yt_?YoungTableauQ], perm_?PermutationListQ] :=
+  Garner @ Fold[KetPermute, Ket[yt], AdjacentTranspositions @ perm]
+
 
 (* for Pauli Kets *)
 
-KetPermute[Ket[ss__], perm:(_Cycles|_?PermutationListQ)] :=
-  Ket @@ Permute[{ss}, perm]
+KetPermute[Ket[ss__], spec:$PermutationSpec] :=
+  Ket @@ Permute[{ss}, spec]
 
-KetPermute[Ket[ss__],
-  group:(_SymmetricGroup|_AlternatingGroup|_PermutationGroup)
- ] := Ket @@@ Permute[{ss}, group]
-
-KetPermute[expr_, spec:(_?PermutationListQ | _Cycles | _SymmetricGroup | _AlternatingGroup | _PermutationGroup) ] :=
-  ( expr /. { v_Ket :> KetPermute[v, spec] } ) /; Not @ FreeQ[expr, _Ket]
-
-KetPermute[expr_, pp:{__Cycles}] :=
-  Map[ KetPermute[expr, #]&, pp ]
+KetPermute[Ket[ss__], group:$PermutationGroups] :=
+  Ket @@@ Permute[{ss}, group]
 
 
-(* for general Kets *)
+(* for labelled Kets *)
 
-KetPermute[
-  v:Ket[_Association],
-  spec:(_Cycles|_?PermutationListQ),
-  qq:{__?SpeciesQ}
- ] := Module[
-   { vv = v[qq] },
-   vv = Permute[vv, spec];
-   Ket[v, qq -> vv]
-  ]
+KetPermute[v:Ket[_Association], spec:$PermutationSpec, ss:{__?SpeciesQ}] :=
+  With[
+    { vv = Permute[v @ ss, spec] },
+    Ket[v, ss -> vv]
+   ]
 
-KetPermute[
-  v:Ket[_Association],
-  group:(_SymmetricGroup|_AlternatingGroup|_PermutationGroup),
-  qq:{__?SpeciesQ}
- ] := Module[
-   { vv = v[qq] },
-   vv = Permute[vv, group];
-   Map[ Ket[v, qq -> #]&, vv ]
-  ]
+KetPermute[v:Ket[_Association], spec:{$PermutationSpec..}, ss:{__?SpeciesQ}] :=
+  Module[
+    { vv = v[ss] },
+    vv = Map[Permute[vv, #]&, spec];
+    Map[ Ket[v, ss -> #]&, vv ]
+   ]
 
-KetPermute[
-  expr_,
-  spec:(_?PermutationListQ | _Cycles | _SymmetricGroup | _AlternatingGroup |
-    _PermutationGroup),
-  qq:{__?SpeciesQ}
- ] := expr /. { v:Ket[_Association] :> KetPermute[v, spec, qq] }
+KetPermute[v:Ket[_Association], group:$PermutationGroups, ss:{__?SpeciesQ}] :=
+  With[
+    { vv = Permute[v @ ss, group] },
+    Map[ Ket[v, ss -> #]&, vv ]
+   ]
 
-KetPermute[expr_, pp:{__Cycles}, qq:{__?SpeciesQ}] :=
-  Map[ KetPermute[expr, #, qq]&, pp ]
+
+(* multiple permutations *)
+
+KetPermute[v_Ket, spec:{$PermutationSpec..}] :=
+  Map[KetPermute[v, #]&, spec]
+
+KetPermute[v:Ket[_Association], spec:{$PermutationSpec..}, ss:{__?SpeciesQ}] :=
+  Map[KetPermute[v, #, ss]&, spec]
+
+
+(* general expressions *)
+
+KetPermute[expr_, spec_?anyPermutationSpecQ] :=
+  ReplaceAll[expr, v_Ket :> KetPermute[v, spec]] /;
+  Not @ FreeQ[expr, _Ket]
+
+KetPermute[expr_, spec_?anyPermutationSpecQ, ss:{__?SpeciesQ}] :=
+  ReplaceAll[expr, v:Ket[_Association] :> KetPermute[v, spec, ss]]
+
+
+(* backward compatibility *)
 
 KetPermute[expr_, qq:{__?SpeciesQ}, spec_] := (
   Message[Q3General::changed, KetPermute, "The list of species must come last."];
@@ -664,6 +726,49 @@ KetSymmetrize[expr_, tbl_?YoungTableauQ] := Module[
  ]
 
 (**** </KetSymmetrize> ****)
+
+
+InversionVector::usage = "InversionVector[perm] returns the inversion vector corresponding to permutation perm.\nThe number of elements greater than i to the left of  i in a permutation gives the ith element of the inversion vector (Skiena 1990, p. 27).\nTotal[InversionVector[perm]] equals to the number of inversions in permtuation perm as well as to the length of perm (i.e., the smallest number of adjacent transpositions combining to perm).\nSee also Combinatorica`ToInversionVector."
+
+InversionVector[cyc_Cycles] := InversionVector[PermutationList @ cyc]
+
+InversionVector[p_?PermutationListQ] := Module[
+  {new = Take[p, #] & /@ InversePermutation[p]},
+  Most@MapThread[
+    Function[{x, y}, Count[x, _?(# > y &)]], {new, Range[Length@p]}]
+ ] /; (Length[p] > 0)
+
+
+(**** <AdjacentTranspositions> ****)
+
+AdjacentTranspositions::usage = "AdjacentTranspositions[perm] returns a list of adjacent transpositions that combine to the permtuation perm."
+
+(* TODO: Requires some optimization. *)
+
+AdjacentTranspositions[prm_?PermutationListQ] := 
+  AdjacentTranspositions @ PermutationCycles[prm]
+
+AdjacentTranspositions[Cycles[pp:{__List}]] := Module[
+  { qq = ChainBy[#, List]& /@ pp },
+  qq = Sort /@ Flatten[Reverse /@ qq, 1];
+  Cycles /@ List /@ Catenate[theAdjacent /@ qq]
+ ]
+
+theAdjacent[{x_Integer, y_Integer}] := With[
+  {cc = ChainBy[Range[x, y], List]},
+  Join[cc, Reverse @ Most @ cc]
+ ] /; x < y
+
+(**** </AdjacentTranspositions> ****)
+
+
+YoungDistance::usage = "YoungDistance[x, y, yt] returns the Manhattan distance between boxes corresponding to letters x and y.\nNote that unlike the built-in ManhattanDistance function, it may be negative."
+
+YoungDistance[x_Integer, y_Integer, yt_?YoungTableauQ] := Module[
+  { xx = FirstPosition[yt, x],
+    yy = FirstPosition[yt, y] },
+  Dot[yy - xx, {-1, 1}]
+ ]
 
 
 End[]

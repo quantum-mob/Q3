@@ -3,6 +3,8 @@
 ## v2.6.16
 
 - The sequence pattern of the arguments for GHZState has been changed.
+- KetPermute has been rewritten for performance enhancement.
+- New functions: SimplifyThrough, FullSimplifyThrough.
 
 ## v2.6.11
 

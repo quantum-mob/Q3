@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.92 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-18 00:31:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.94 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-04 10:58:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -17,6 +17,8 @@ BeginPackage["Q3`"]
 
 { Chain, ChainBy };
 { Bead, GreatCircle };
+
+{ SimplifyThrough, FullSimplifyThrough };
 
 { LeftBrace, RightBrace, OverBrace, UnderBrace };
 
@@ -254,7 +256,7 @@ Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting 
 
 Chain[a:Except[_List]] := {}
 
-Chain[a:Except[_List], b:Except[_List]] := Rule[a, b]
+Chain[a:Except[_List], b:Except[_List]] := {Rule[a, b]}
 
 Chain[m_List] := 
   Flatten[Chain /@ Transpose[m]] /; ArrayQ[m, Except[1]]
@@ -370,6 +372,34 @@ GreatCircle[
     ];
    Line[(center + mat . #)& /@ dat]
   ]
+
+
+SimplifyThrough::usage = "SimplifyThrough[expr] applies Simplify through special objects such as Association, SparseArray, etc., in expr which usually does not allow for Simplify to access internal data."
+
+SimplifyThrough[aa_Association] := Map[Simplify, aa]
+
+SimplifyThrough[aa_SparseArray] :=
+  SparseArray[Simplify @ Normal[aa, SparseArray]]
+
+SimplifyThrough[expr_] := ReplaceAll[
+  Simplify[expr],
+  { aa_Association :> SimplifyThrough[aa],
+    aa_SparseArray :> SimplifyThrough[aa] }
+ ]
+
+
+FullSimplifyThrough::usage = "FullSimplifyThrough[expr] applies FullSimplify through special objects such as Association, SparseArray, etc., in expr which usually does not allow for FullSimplify to access internal data."
+
+FullSimplifyThrough[aa_Association] := Map[Simplify, aa]
+
+FullSimplifyThrough[aa_SparseArray] :=
+  SparseArray[Simplify @ Normal[aa, SparseArray]]
+
+FullSimplifyThrough[expr_] := ReplaceAll[
+  Simplify[expr],
+  { aa_Association :> FullSimplifyThrough[aa],
+    aa_SparseArray :> FullSimplifyThrough[aa] }
+ ]
 
 
 (**** <LeftBrace> ****)
