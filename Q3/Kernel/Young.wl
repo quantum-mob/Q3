@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.124 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-04 22:41:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.128 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-05 01:04:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -37,6 +37,8 @@ BeginPackage["Q3`"];
 { PermutationForm };
 
 { PileYoungShape, BratteliDiagram };
+
+{ SpechtBasis };
 
 (**** Obsolete ****)
 
@@ -529,20 +531,6 @@ HoldPattern @ Multiply[
    post
   ] /; ContainsAll[c, FlavorNone @ qq]
 
-
-(* NOTE *)
-
-(* This method is significantly slower than the above methods.
-   It also overwrites the previous code pieces, so do not include it. *)
-
-(*
-Permutation /:
-HoldPattern @ Multiply[pre___,
-  op:Permutation[_, {__?SpeciesQ}],
-  post___] :=
-  Multiply[pre, Elaborate @ op, post]
- *)
-
 (**** </Permutation> ****)
 
 
@@ -550,12 +538,17 @@ HoldPattern @ Multiply[pre___,
 
 HoldPattern @ NonCommutativeQ[ _Cycles ] = True
 
-HoldPattern @ Multiply[pre___, op_Cycles, more__Cycles, post___] :=
+HoldPattern @
+  Multiply[pre___, op_Cycles, more__Cycles, post___] :=
   Multiply[pre, PermutationProduct @@ Reverse[{op, more}], post]
   
 HoldPattern @
-  Multiply[pre___, op_Cycles, vec:Ket[yt_?YoungTableauQ], post___] :=
+  Multiply[pre___, op_Cycles, vec:Ket[_?YoungTableauQ], post___] :=
   Multiply[pre, KetPermute[vec, op], post]
+  
+HoldPattern @
+  Multiply[pre___, op_Cycles, Ket[prm_Cycles], post___] :=
+  Multiply[pre, Ket[op**prm], post]
   
 (**** </Cycles> ****)
 
@@ -590,8 +583,10 @@ KetPermute[expr_, {}, {__?SpeciesQ}] := expr
 KetPermute[expr_, Cycles[{}], {__?SpeciesQ}] := expr
 
 
-(* for Specht basis and Young's natural representation *)
-(* See Sagan (2001, Section 2.7) and Krovi (2019). *)
+(* for Specht basis and Young's normal representation *)
+(* See Sagan (2001, Section 2.7 and Exercise 2.11) and Krovi (2019). *)
+(* NOTE: that Young's normal representation should be distinguished from
+   Young's natural or seminormal representation. *)
 
 KetPermute[Ket[yt_?YoungTableauQ], Cycles @ {{x_, y_}}] := Module[
   { xx = FirstPosition[yt, x],
@@ -862,6 +857,20 @@ PileYoungShape[shape_?YoungShapeQ] := Module[
  ]
 
 (**** </BratteliDiagram> ****)
+
+
+(**** <SpechtBasis> ****)
+
+SpechtBasis::usage = "SpechtBasis[n] constructs the bases of the Specht modules of the symmetric group of degree n.\nSpechtBasis[shape] returns the basis of the Specht module corresponding to Young shape shape." 
+
+SpechtBasis[shape_?YoungShapeQ] := Ket /@ YoungTableaux[shape]
+
+SpechtBasis[n_Integer] := With[
+  { pp = IntegerPartitions[n] },
+  AssociationThread[pp -> SpechtBasis /@ pp]
+ ]
+
+(**** </SpechtBasis> ****)
 
 End[]
 
