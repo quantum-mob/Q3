@@ -1,6 +1,6 @@
 (* -*- mode:math -*- *)
 
-(* N.B.: This package contains some symbols from Bernd Buenther's
+(* N.B.: This package contains some symbols from Bernd Guenther's
    IrrCharSymGrp.m v2.0 (posted on the Wolfram Community).  *)
 
 Get["Q3`"]
@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.7 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-31 12:25:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.9 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-04 18:14:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -51,6 +51,7 @@ Seminormal2Natural::usage="Seminormal2natural[\[Lambda]_?YoungShapeQ] The transf
 NormSquareOfTableau::usage="NormSquareOfTableau[myTableau_] computes the norm squares of the seminormal basis vectors."
 
 
+(* NOTE(2022-09-04): This representation is not unitary. *)
 YoungsNaturalRepresentation::usage="YoungsNaturalRepresentation[\[Lambda]_?YoungShapeQ] computes the matrices of Young's natural representation of the symmetric group corresponding to the integer partition \[Lambda] by transforming the seminormal representation. The function returns the images of the transpositions of immediate neighbors, listed in order of the transposed elements. The matrices are supposed to operate from the right on row vectors."
 
 

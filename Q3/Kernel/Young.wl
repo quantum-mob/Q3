@@ -1,15 +1,15 @@
 (* -*- mode: Mathematica -*- *)
 
 (* N.B. Some functions have been borrowed from the legacy Combinatorica
-   package and from Bernd Buenther's IrrCharSymGrp.m v2.0 (posted on the
+   package and from Bernd Guenther's IrrCharSymGrp.m v2.0 (posted on the
    Wolfram Community). *)
 
 BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.109 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-04 10:32:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.124 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-04 22:41:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -32,6 +32,12 @@ BeginPackage["Q3`"];
 
 { YoungDistance };
 
+{ Transposition };
+
+{ PermutationForm };
+
+{ PileYoungShape, BratteliDiagram };
+
 (**** Obsolete ****)
 
 { CountYoungTableaux }; (* renamed *)
@@ -39,7 +45,42 @@ BeginPackage["Q3`"];
 
 Begin["`Private`"]
 
+(* For the Specht module *)
 Format[ Ket[tbs__?anyYoungTableauQ] ] := Ket @@ Map[YoungForm, {tbs}]
+
+(* For the permutation module *)
+Format[ Ket[args:$PermutationSpec..] ] :=
+  Ket @@ PermutationForm[{args}] /;
+  Not @ FreeQ[{args}, _Cycles]
+
+
+PermutationForm::usage = "PermutationForm[cyc] displays permutation cycles cyc in terms of \[Pi].\nPermutationForm[perm] displays perm specified in the permutation list representation in the two-list form."
+
+PermutationForm[Cycles[{}]] := Subscript[\[Pi], 0]
+
+PermutationForm[Cycles[pp_List]] :=
+  Row @ Map[Subscript[\[Pi], Row @ #]&, pp]
+
+PermutationForm[prm_?PermutationListQ] := DisplayForm @ RowBox @ {
+  "(",
+  Grid @ {Range[Length @ prm], prm},
+  ")"
+ }
+
+PermutationForm[expr_Association] := PermutationForm /@ expr
+
+PermutationForm[expr_] := ReplaceAll[ expr,
+  { pp:$PermutationSpec :> PermutationForm[pp] }
+ ]
+
+
+Transposition::usage = "Transposition[{i, j}] returns Cycles[{{i, j}}], representing the transposition of elements i and j."
+
+Transposition[{}] := Cycles[{}]
+
+Transposition[pair:{_Integer, _Integer}] := Cycles @ {pair}
+
+Transposition[x_Integer, y_Integer] := Transposition[{x, y}]
 
 
 YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nYoungDiagram[yt] displays the Young diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
@@ -332,7 +373,7 @@ anyYoungTableauQ[tb:{__List}] := Apply[GreaterEqual, Length /@ tb]
 
 YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional form."
 
-YoungForm::notyt = "Data `` is not of the Young-tableau form."
+YoungForm::notyt = "Data `` is not a valid Young tableau."
 
 YoungForm[tb_?anyYoungTableauQ] :=
   Grid @ Map[Item[#, Frame->True]&, tb, {2}]
@@ -393,6 +434,22 @@ NextYoungTableau[tb_?YoungTableauQ] := Module[
  ]
 
 
+(**** <PermutationMatrix> ****)
+
+(* PermutationMatrix is now included in Mathematica since v13.1. *)
+If[ $VersionNumber < 13.1,
+  PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix.";
+
+  PermutationMatrix[perm_?PermutationCyclesQ] :=
+    PermutationMatrix[ perm, Max @ Cases[perm, _Integer, Infinity] ];
+
+  PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
+    Transpose @ Permute[ IdentityMatrix[n], perm ];
+ ]
+
+(**** </PermutationMatrix> ****)
+
+
 (**** <Permutation> ****)
 
 Permutation::usage = "Permutation[cyc,{s1,s2,\[Ellipsis]}] represents the permutation operator acting on species {s1,s2,\[Ellipsis]}."
@@ -413,7 +470,7 @@ HoldPattern @ Dagger @ Permutation[cyc_, ss:{__?SpeciesQ}] :=
 
 Permutation /:
 HoldPattern @ Elaborate @
-  Permutation[cyc:(_Cycles|_?PermutationListQ), ss:{__?SpeciesQ}] :=
+  Permutation[cyc:$PermutationSpec, ss:{__?SpeciesQ}] :=
   Module[
     { bs = Basis @ ss },
     If[ Not @ PermutationCyclesQ[cyc],
@@ -489,21 +546,18 @@ HoldPattern @ Multiply[pre___,
 (**** </Permutation> ****)
 
 
-(**** <PermutationMatrix> ****)
+(**** <Cycles> ****)
 
-(* PermutationMatrix is now included in Mathematica since v13.1. *)
+HoldPattern @ NonCommutativeQ[ _Cycles ] = True
 
-If[ $VersionNumber < 13.1,
-  PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix.";
-
-  PermutationMatrix[perm_?PermutationCyclesQ] :=
-    PermutationMatrix[ perm, Max @ Cases[perm, _Integer, Infinity] ];
-
-  PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
-    Transpose @ Permute[ IdentityMatrix[n], perm ];
- ]
-
-(**** </PermutationMatrix> ****)
+HoldPattern @ Multiply[pre___, op_Cycles, more__Cycles, post___] :=
+  Multiply[pre, PermutationProduct @@ Reverse[{op, more}], post]
+  
+HoldPattern @
+  Multiply[pre___, op_Cycles, vec:Ket[yt_?YoungTableauQ], post___] :=
+  Multiply[pre, KetPermute[vec, op], post]
+  
+(**** </Cycles> ****)
 
 
 (**** <KetPermute> ****)
@@ -536,8 +590,8 @@ KetPermute[expr_, {}, {__?SpeciesQ}] := expr
 KetPermute[expr_, Cycles[{}], {__?SpeciesQ}] := expr
 
 
-(* for Specht basis states *)
-(* See also Krovi (2019). *)
+(* for Specht basis and Young's natural representation *)
+(* See Sagan (2001, Section 2.7) and Krovi (2019). *)
 
 KetPermute[Ket[yt_?YoungTableauQ], Cycles @ {{x_, y_}}] := Module[
   { xx = FirstPosition[yt, x],
@@ -547,7 +601,7 @@ KetPermute[Ket[yt_?YoungTableauQ], Cycles @ {{x_, y_}}] := Module[
     First[xx] == First[yy], Ket[yt],
     Last[xx] == Last[yy], -Ket[yt],
     True,
-    dd = 1 / YoungDistance[x, y, yt];
+    dd = 1 / YoungDistance[{x, y}, yt];
     tt = ReplaceAll[yt, {x -> y, y -> x}];
     Ket[yt] * dd + Ket[tt] * Sqrt[1-dd^2]
    ]
@@ -762,14 +816,52 @@ theAdjacent[{x_Integer, y_Integer}] := With[
 (**** </AdjacentTranspositions> ****)
 
 
-YoungDistance::usage = "YoungDistance[x, y, yt] returns the Manhattan distance between boxes corresponding to letters x and y.\nNote that unlike the built-in ManhattanDistance function, it may be negative."
+(**** <YoungDistance> ****)
 
-YoungDistance[x_Integer, y_Integer, yt_?YoungTableauQ] := Module[
+YoungDistance::usage = "YoungDistance[{x, y}, yt] returns the Manhattan distance between boxes corresponding to letters x and y in standard Young tableau yt.\nNote that unlike usual 'distances', it may be negative.\nIt is also known as the axial distance (Sagan, 2001) or Manhattan distance (Krovi, 2019).\nIt is used in the construction of Young's seminormal representation of the symmetric group."
+
+YoungDistance[{x_Integer, y_Integer}, yt_?YoungTableauQ] := Module[
   { xx = FirstPosition[yt, x],
     yy = FirstPosition[yt, y] },
   Dot[yy - xx, {-1, 1}]
  ]
 
+(**** </YoungDistance> ****)
+
+
+(**** <BratteliDiagram> ****)
+
+BratteliDiagram::usage = "BratteliDiagram[n] constructs the Bratteli diagram for the symmetric group of degree n."
+
+BratteliDiagram[n_Integer, opts : OptionsPattern[Graph]] := Module[
+  { grf = Graph @ Flatten @ Rest @ NestList[brattelli, {1}, n-1],
+    vtx },
+  vtx = VertexList[grf];
+  vtx = Map[Rule[#, YoungDiagram @ #]&, vtx];
+  Graph[ grf, opts,
+    GraphLayout -> "LayeredEmbedding",
+    VertexLabels -> vtx,
+    VertexLabelStyle -> Large ]
+ ]
+
+brattelli[shape_?YoungShapeQ] := 
+  Map[UndirectedEdge[shape, #] &, PileYoungShape[shape]]
+
+brattelli[edges : {__UndirectedEdge}] := 
+  Flatten @ Map[brattelli, Union[Last /@ edges]]
+
+
+PileYoungShape::usage = "PileYoungShape[shape] returns the list of new Young shapes resulting from adding a box to shape."
+
+PileYoungShape[shape_?YoungShapeQ] := Module[
+  { new = Append[YoungTrim[shape], 0],
+    k },
+  new = Table[
+    ReplacePart[new, k -> new[[k]]+1], {k, 1, Length[new]}];
+  YoungTrim /@ Select[new, YoungShapeQ]
+ ]
+
+(**** </BratteliDiagram> ****)
 
 End[]
 

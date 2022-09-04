@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.94 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-04 10:58:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.95 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-04 12:30:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1250,7 +1250,7 @@ AddGarnerPatterns[_Multiply]
 
 
 Format[ HoldPattern @ Multiply[a__] ] :=
-  DisplayForm @ RowBox @ List @ RowBox[ DisplayForm /@ MakeBoxes /@ {a} ]
+  DisplayForm @ RowBox @ List @ RowBox @ {a}
 (* NOTE 1: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 Dagger[f]**f is formated as
    -2(f^\dag f). For more details on spurious parentheses, see
