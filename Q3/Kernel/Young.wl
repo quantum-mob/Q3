@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.128 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-05 01:04:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.130 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-07 08:47:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -46,15 +46,6 @@ BeginPackage["Q3`"];
 
 
 Begin["`Private`"]
-
-(* For the Specht module *)
-Format[ Ket[tbs__?anyYoungTableauQ] ] := Ket @@ Map[YoungForm, {tbs}]
-
-(* For the permutation module *)
-Format[ Ket[args:$PermutationSpec..] ] :=
-  Ket @@ PermutationForm[{args}] /;
-  Not @ FreeQ[{args}, _Cycles]
-
 
 PermutationForm::usage = "PermutationForm[cyc] displays permutation cycles cyc in terms of \[Pi].\nPermutationForm[perm] displays perm specified in the permutation list representation in the two-list form."
 
@@ -871,6 +862,15 @@ SpechtBasis[n_Integer] := With[
  ]
 
 (**** </SpechtBasis> ****)
+
+
+(* For the Specht module *)
+Format[ Ket[tbs__?anyYoungTableauQ] ] := Ket @@ Map[YoungForm, {tbs}]
+
+(* For the permutation module *)
+Format[ Ket[args:$PermutationSpec..] ] := Ket @@ PermutationForm[{args}]
+(* NOTE: This must come after the definition of $PermutationSpec. *)
+
 
 End[]
 
