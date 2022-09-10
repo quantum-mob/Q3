@@ -5,13 +5,15 @@ BeginPackage["Q3`"]
 
 `VonNeumann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.11 $"][[2]], " (",
-  StringSplit["$Date: 2021-09-03 20:24:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.15 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-09 23:43:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { ShannonEntropy, WeightedLog };
 { VonNeumannEntropy, QuantumLog };
+
+{ MutualInformation };
 
 
 Begin["`Private`"]
@@ -32,6 +34,9 @@ WeightedLog[_?Positive, 0] = Infinity
 WeightedLog[p_?Positive, q_?Positive] := -p * Log2[q]
 
 
+WeightedLog[z_] := -z * Log2[z]
+
+
 ShannonEntropy::usage = "ShannonEntropy[{p1, p2, \[Ellipsis]}] returns the base 2 Shannon entropy of the probability distribution {p1, p2, \[Ellipsis]}.\nShannonEntropy[{p1, p2, \[Ellipsis]}, {q1, q2, \[Ellipsis]}] returns the relative entropy between the two probability distributions {p1, p2, \[Ellipsis]} and {q1, q2, \[Ellipsis]}."
 
 ShannonEntropy::noprb = "`` does not seem to be a probability distribution."
@@ -50,7 +55,8 @@ ShannonEntropy[pp:{__}, qq:{__}] :=
 
 ShannonEntropy[pp:{__}] := Total[WeightedLog[pp]]
 
-ShannonEntropy[pp:{__}, qq:{__}] := Total[WeightedLog[pp, qq]]
+ShannonEntropy[pp:{__}, qq:{__}] :=
+  Total[WeightedLog[pp, qq]] - Total[WeightedLog[pp]]
 
 
 QuantumLog::usage = "QuantumLog[p, q] returns -Tr[p ** Log[2, q]] for the observables p and q.\nQuantumLog[p, q, {s1, s2, \[Ellipsis]}] assumes that states p and q, either density operators or ket vectors, are defined for the systems {s1, s2, \[Ellipsis]}.\nQuantumLog is a low-level mathematical function intended for the use in VonNeumannEntropy or related functions."
@@ -104,17 +110,58 @@ VonNeumannEntropy[vec_?VectorQ] = 0
 
 VonNeumannEntropy[mat_?MatrixQ] := ShannonEntropy[Eigenvalues @ mat]
 
+
+VonNeumannEntropy[rho_, S_?SpeciesQ] := VonNeumannEntropy[rho, {S}]
+
 VonNeumannEntropy[rho_, ss:{___?SpeciesQ}] :=
   VonNeumannEntropy @ Matrix[rho, ss]
 
 VonNeumannEntropy[rho_] :=
   VonNeumannEntropy[rho, NonCommutativeSpecies @ rho]
 
-VonNeumannEntropy[rho_, sig_, ss:{___?SpeciesQ}] :=
-  QuantumLog[rho, sig, ss] - VonNeumannEntropy[rho, ss]
 
-VonNeumannEntropy[rho_, sig_] :=
-  VonNeumannEntropy[rho, sig, NonCommutativeSpecies @ {rho, sig}]
+VonNeumannEntropy[rho_, sgm_, S_?SpeciesQ] :=
+  VonNeumannEntropy[rho, sgm, {S}]
+
+VonNeumannEntropy[rho_, sgm_, ss:{___?SpeciesQ}] :=
+  QuantumLog[rho, sgm, ss] - VonNeumannEntropy[rho, ss]
+
+VonNeumannEntropy[rho_, sgm_] :=
+  VonNeumannEntropy[rho, sgm, NonCommutativeSpecies @ {rho, sgm}]
+
+
+(**** <MutualInformation> ****)
+
+MutualInformation::usage = "MutualInformation[p] returns the classical information between two random variables X and Y associated with the joint probability distriubtion {p(xi,yj):i=1,2,\[Ellipsis]; j=1,2,\[Ellipsis]}.\nMutualInformation[rho, {s1,s2,\[Ellipsis]}] returns the mutual information between the system consisting of {s1,s2,\[Ellipsis]} and the rest in the state rho."
+
+MutualInformation[p_?MatrixQ] :=
+  ShannonEntropy[Total @ p] + ShannonEntropy[Total @ Transpose @ p] - 
+  ShannonEntropy[Flatten @ p]
+
+
+MutualInformation[rho_?MatrixQ, kk:{__Integer}] :=
+  MutualInformation[rho, ConstantArray[2, Log[2, Length @ rho]], kk]
+
+MutualInformation[rho_?MatrixQ, dd:{__Integer}, kk:{__Integer}] := With[
+  { cc = Supplement[Range @ Length @ dd, kk] },
+  VonNeumannEntropy[PartialTrace[rho, dd, kk]] +
+    VonNeumannEntropy[PartialTrace[rho, dd, cc]] - 
+    VonNeumannEntropy[rho]
+ ]
+
+
+MutualInformation[rho_, S_?SpeciesQ] := MututalInformation[rho, {S}]
+
+MutualInformation[rho_, ss:{__?SpeciesQ}] := Module[
+  { qq = NonCommutativeSpecies @ {rho, FlavorNone @ ss},
+    rr },
+  rr = Supplement[qq, FlavorNone @ ss];
+  VonNeumannEntropy[PartialTrace[rho, rr], ss] +
+    VonNeumannEntropy[PartialTrace[rho, ss], rr] -
+    VonNeumannEntropy[rho, qq]
+ ]
+
+(**** </MutualInformation> ****)
 
 
 End[]

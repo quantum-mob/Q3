@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.95 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-04 12:30:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.96 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-07 13:20:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1700,9 +1700,22 @@ Indefinite::usage = "Indefinite[val$1,val$2,$$] represents an indefinite value a
 
 Occupation::usage = "Occupation[{s1,s2,\[Ellipsis]},k] represents the occupation operator of species {s1,s2,\[Ellipsis]} in the level k (the logical state Ket[k]).\nOccupation is a simple application of Observation."
 
+Occupation[{}, _] = 0
+
+Occupation[ss:{__?SpeciesQ}, k_] :=
+  Occupation[FlavorNone @ ss, k] /;
+  Not[FlavorNoneQ @ ss]
+
 Occupation[ss:{__?SpeciesQ}, k_][expr_] :=
   Observation[HoldForm @ Count[ss, k]][expr] /;
   And[Equal @@ Kind[ss], Equal @@ Dimension[ss]]
+
+Occupation /:
+HoldPattern @ Dagger[ Occupation[args__] ] := Occupation[args]
+
+SyntaxInformation[Occupation] = {
+  "ArgumentsPattern" -> {_, _}
+ }
 
 
 OccupationValue::usage = "OccupationValue[{s1,s2,\[Ellipsis]},k] returns the occupation number of species {s1,s2,\[Ellipsis]} in the level k (logical state Ket[k]).\nOccupationValue is a simple application of ObservationValue."

@@ -1,0 +1,1364 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     50941,       1354]
+NotebookOptionsPosition[     43036,       1188]
+NotebookOutlinePosition[     45337,       1245]
+CellTagsIndexPosition[     45251,       1240]
+WindowTitle->GottesmanSolve
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "9b0b7e67-98c2-4efd-851d-dd12d9b87ef7"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "d4dffa80-3ea9-4e7c-8256-8f4b58681fcb"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "0edb0999-665d-4ee7-89f1-a91bc17add29"]
+         }],ExpressionUUID->"36fb6283-63c4-498c-9da3-ebc5cb78022a"],
+         StripOnInput->False], {"\<\"LinearSolve\"\>":>
+        Documentation`HelpLookup["paclet:ref/LinearSolve"], Delimiter, 
+        StyleBox["\<\"Functions\"\>", "SeeAlsoSection",
+         StripOnInput->False,
+         FontSize->14,
+         FontSlant->"Italic"]:>NotebookFind[
+         EvaluationNotebook[], "SeeAlsoSection", All, CellStyle], 
+        StyleBox["\<\"GottesmanStandard\"\>", "SeeAlsoRelated",
+         StripOnInput->False]:>Documentation`HelpLookup[
+        "paclet:Q3/ref/GottesmanStandard"], 
+        StyleBox["\<\"GottesmanVector\"\>", "SeeAlsoRelated",
+         StripOnInput->False]:>Documentation`HelpLookup[
+        "paclet:Q3/ref/GottesmanVector"], 
+        StyleBox["\<\"GottesmanSplit\"\>", "SeeAlsoRelated",
+         StripOnInput->False]:>Documentation`HelpLookup[
+        "paclet:Q3/ref/GottesmanSplit"], 
+        StyleBox["\<\"GottesmanMerge\"\>", "SeeAlsoRelated",
+         StripOnInput->False]:>Documentation`HelpLookup[
+        "paclet:Q3/ref/GottesmanMerge"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "6ee03e61-93d6-4a3c-beed-6f602641c825"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "d964a327-e557-4635-a716-795067db0a14"]
+         }],ExpressionUUID->"1a870a2e-e03c-475d-8843-a33d6a655c51"],
+         StripOnInput->False], {"\<\"The Pauli and Clifford Groups\"\>":>
+        Documentation`HelpLookup[
+        "paclet:Q3/tutorial/PauliAndCliffordGroups"], "\<\"Stabilizer \
+Formalism\"\>":>Documentation`HelpLookup[
+        "paclet:Q3/tutorial/StabilizerFormalism"], "\<\"Stabilizer Codes\"\>":>
+        Documentation`HelpLookup["paclet:Q3/tutorial/StabilizerCodes"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "88016a6c-60d3-4605-aad8-11eb2e68182c"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "d8e61295-3441-4a6a-9fd8-30c06fbea55f"]
+         }],ExpressionUUID->"0a849524-1b96-40de-bde7-06bd974aa68f"],
+         StripOnInput->False], {"\<\"Q3/ref/GottesmanSolve\"\>":>
+        None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell["Q3/ref/GottesmanSolve"]}, Visible -> False]]; 
+         SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+        Delimiter, "\<\"Copy web URL\"\>":>
+        Module[{DocumentationSearch`Private`nb$}, 
+         DocumentationSearch`Private`nb$ = NotebookPut[
+            Notebook[{
+              Cell[
+               BoxData[
+                MakeBoxes[
+                 Hyperlink[
+                 "http://reference.wolfram.com/language/Q3/ref/GottesmanSolve.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+             False]]; SelectionMove[
+          DocumentationSearch`Private`nb$, All, Notebook]; 
+         FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+         NotebookClose[DocumentationSearch`Private`nb$]; 
+         Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+          NotebookLocate[{
+            URL[If[
+               TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$35826], 
+               "http://reference.wolfram.com/system-modeler/", 
+               "http://reference.wolfram.com/language/"] <> 
+             "Q3/ref/GottesmanSolve" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "09b8401f-8f53-4312-8432-739fd85c087f"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "d10237fa-5fdb-4fed-9c21-0ab6ec522cc3"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"f74f0be4-ca2a-4b6a-8d85-4b1edbdb8efe"],
+
+Cell["Q3`", "ContextNameCell",ExpressionUUID->"3761086e-ff59-430b-a6a0-6d6f5103851d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "GottesmanSolve", "ObjectName",ExpressionUUID->
+      "9901a022-632d-4799-8e4e-2d34aec85c0d"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"9829bb0b-e3e5-462f-a653-1bda64838eed"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "79d0417f-dd89-4502-8ded-9b26e8cade46"]
+    }],ExpressionUUID->"662e37cf-f209-4dcf-8183-95f78a8717f3"], Cell[BoxData[
+     StyleBox[
+      GraphicsBox[InsetBox[
+        StyleBox["\<\"UPDATED IN 13.1\"\>",
+         StripOnInput->False,
+         FontFamily->"Source Sans Pro",
+         FontSize->17,
+         FontWeight->"Bold",
+         FontSlant->"Italic",
+         FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+        Right, Center}],
+       AxesStyle->Large,
+       FrameStyle->Large,
+       ImageSize->{125, 24},
+       PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+      StripOnInput->False]],
+     Deployed->True,
+     Magnification->1,ExpressionUUID->
+     "b092f67b-47f3-4903-83ca-5f9a824af189"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"273f5b11-ebaf-4173-8fad-eeecd63a4018"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["GottesmanSolve"]], "paclet:Q3/ref/GottesmanSolve", 
+         "Q3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{
+        StyleBox["mat", "TI"], ",", 
+        StyleBox["vec", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "7c9e103b-0cad-43b9-8e14-d4420cc60b01"],
+     "\[LineSeparator]returns a solution ",
+     Cell[BoxData[
+      StyleBox["x", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "43da8346-c7fc-4a9d-bc34-192d5d9fecc0"],
+     " to a system of binary linear equations ",
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{
+        StyleBox["mat", "TI"], "\[CenterDot]", 
+        StyleBox["x", "TI"]}], "==", 
+       StyleBox["vec", "TI"]}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "134b9fe3-4b4c-432f-9120-a0654d5f8b1d"],
+     ", where ",
+     Cell[BoxData[
+      StyleBox["mat", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "e4c1de55-828e-4721-ba08-7954cc841ea9"],
+     " is a matrix consisting of rows of Gottesman vectors and ",
+     Cell[BoxData[
+      StyleBox["vec", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "ca3dadf4-439c-4f66-b654-a285f8f7e82c"],
+     " is a vector."
+    }],ExpressionUUID->"1cd67bde-9851-4961-ab3e-d4ee99a18a6b"]}
+  }]], "Usage",
+ CellID->2141205971,ExpressionUUID->"31734639-57a8-4b51-a2f6-8b83c9d72301"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    DynamicBox[ToBoxes[
+      If[
+       MatchQ[
+        CurrentValue[
+         EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, 
+         Closed], 
+        Alternatives[Open, True]], 
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], 
+       Rotate[
+        Style[
+         Graphics[{
+           Thickness[0.18], 
+           RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+           Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+          PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+         0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+     ImageSizeCache->{14., {0.45000000000000107`, 13.549999999999999`}}]],
+    ExpressionUUID->"604317d3-2c99-46a2-a0d9-98b97c5d5d25"],
+   Cell[BoxData[
+    TemplateBox[{1},
+     "Spacer1"]],ExpressionUUID->"b37f21ec-c2cc-40ed-a50a-f6e75ef05f58"],
+   "Details and Options"
+  }], "NotesFrameText",ExpressionUUID->"9b781a83-07b9-4d29-a34c-f83bff991ed1"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->
+   "Preemptive"]],ExpressionUUID->"6176859a-d313-4249-a1fe-f30e0c6955fb"]], \
+"NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->1919088899,ExpressionUUID->"6dc9ac49-7a0d-4e4c-acbf-bcfcd448784d"],
+
+Cell[TextData[{
+ "It is based on ",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["LinearSolve"]], "paclet:ref/LinearSolve"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "[", 
+   RowBox[{"\[Ellipsis]", ",", 
+    RowBox[{
+     TemplateBox[{
+       Cell[
+        TextData["Modulus"]], "paclet:ref/Modulus"},
+      "RefLink",
+      BaseStyle->{"InlineFormula"}], "\[Rule]", "2"}]}], "]"}]], 
+  "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "9bcfb8a8-3c83-4af5-afc1-df3bbeed0612"],
+ "."
+}], "Notes",
+ CellID->1865281818,ExpressionUUID->"1e70180a-1c9f-4707-924d-c8c0841cf90c"]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "446f6b37-42fc-425e-8fdc-ab6ce096d2ab"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"6d8f5ff0-8640-409b-b1f1-178dcf2b1501"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount",ExpressionUUID->
+  "ed7457a2-0632-4e32-adf8-d08fd5221009"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1070231200,ExpressionUUID->"8001784c-7fa3-404c-a86c-d02bc2dc6112"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->1927565408,ExpressionUUID->"1b9a59d1-8ae1-4420-ab50-aeb60f3be850"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "4ded87ff-9e2b-4a21-82d9-52797c6f4263"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"aa11c078-0fb9-4664-b8e9-77051fcdf14f"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount",ExpressionUUID->
+  "04fb69fd-67c5-4501-8470-7eee753c3101"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->52751128,ExpressionUUID->"686ae45b-df75-4149-ac8a-2969da8726b5"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->468792455,ExpressionUUID->"6da22fd0-e832-48c3-a875-0ed206f72a1e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"jj", "=", 
+   RowBox[{"Range", "[", "5", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ss", "=", 
+   RowBox[{"S", "[", 
+    RowBox[{"jj", ",", "None"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"gnr", "=", 
+   RowBox[{"{", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"S", "[", 
+       RowBox[{"1", ",", "1"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"2", ",", "3"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"3", ",", "3"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"4", ",", "1"}], "]"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"S", "[", 
+       RowBox[{"2", ",", "1"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"3", ",", "3"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"4", ",", "3"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"5", ",", "1"}], "]"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"S", "[", 
+       RowBox[{"1", ",", "1"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"3", ",", "1"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"4", ",", "3"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"5", ",", "3"}], "]"}]}], ",", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"S", "[", 
+       RowBox[{"1", ",", "3"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"2", ",", "1"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"4", ",", "1"}], "]"}], "**", 
+      RowBox[{"S", "[", 
+       RowBox[{"5", ",", "3"}], "]"}]}]}], "}"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"PauliForm", "[", "gnr", "]"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->2024773989,ExpressionUUID->"55639811-a331-48f5-9b23-a69df9761ca9"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"\<\"X\"\>", "\[CircleTimes]", "\<\"Z\"\>", 
+    "\[CircleTimes]", "\<\"Z\"\>", "\[CircleTimes]", "\<\"X\"\>", 
+    "\[CircleTimes]", "\<\"I\"\>"}], ",", 
+   RowBox[{"\<\"I\"\>", "\[CircleTimes]", "\<\"X\"\>", 
+    "\[CircleTimes]", "\<\"Z\"\>", "\[CircleTimes]", "\<\"Z\"\>", 
+    "\[CircleTimes]", "\<\"X\"\>"}], ",", 
+   RowBox[{"\<\"X\"\>", "\[CircleTimes]", "\<\"I\"\>", 
+    "\[CircleTimes]", "\<\"X\"\>", "\[CircleTimes]", "\<\"Z\"\>", 
+    "\[CircleTimes]", "\<\"Z\"\>"}], ",", 
+   RowBox[{"\<\"Z\"\>", "\[CircleTimes]", "\<\"X\"\>", 
+    "\[CircleTimes]", "\<\"I\"\>", "\[CircleTimes]", "\<\"X\"\>", 
+    "\[CircleTimes]", "\<\"Z\"\>"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->663192951,ExpressionUUID->"279acaec-89eb-4885-aa9b-7b7c5895037e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"GottesmanVector", "[", 
+      RowBox[{"#", ",", "ss"}], "]"}], "&"}], "/@", "gnr"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->439313053,ExpressionUUID->"5efbdc3c-4549-456e-baa3-7d3c0374ad22"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "1", "0", "1", "1", "0", "0", "0"},
+     {"0", "0", "1", "0", "0", "1", "0", "1", "1", "0"},
+     {"1", "0", "0", "0", "1", "0", "0", "1", "0", "1"},
+     {"0", "1", "1", "0", "0", "0", "1", "0", "0", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->806367458,ExpressionUUID->"bc089584-0d8d-4d94-9bfe-531cffa5157e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"in", "=", 
+  RowBox[{"UnitVector", "[", 
+   RowBox[{"4", ",", "3"}], "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->631449448,ExpressionUUID->"afdd4aa9-bfb6-4368-80f6-7c92a8866fd5"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "1", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->2013767126,ExpressionUUID->"7f5325e7-8fc3-4b09-bf55-e45f247c7fda"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"sol", "=", 
+   RowBox[{"GottesmanSolve", "[", 
+    RowBox[{"mat", ",", "in"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Mod", "[", 
+   RowBox[{
+    RowBox[{"mat", ".", "sol"}], ",", "2"}], "]"}], "-", "in"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->1533610991,ExpressionUUID->"a4ea667a-8508-4e20-8a30-90f1991feef2"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->1096212424,ExpressionUUID->"0a8540d1-3c11-4c84-97a4-380ca3f48843"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "aca6cb58-4427-469d-84c9-47b3eb84490a"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->427961509,ExpressionUUID->"67bcb45f-3b42-4b8a-b3b5-9f077cce7cf4"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"opZ", "=", 
+   RowBox[{"Multiply", "@@", 
+    RowBox[{"S", "[", 
+     RowBox[{"jj", ",", "3"}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"PauliForm", "[", "opZ", "]"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1350562761,ExpressionUUID->"177bec8f-dc4c-4b3a-8877-b323fbbd0c8b"],
+
+Cell[BoxData[
+ RowBox[{"\<\"Z\"\>", "\[CircleTimes]", "\<\"Z\"\>", 
+  "\[CircleTimes]", "\<\"Z\"\>", "\[CircleTimes]", "\<\"Z\"\>", 
+  "\[CircleTimes]", "\<\"Z\"\>"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1410124479,ExpressionUUID->"7a067b81-b956-4361-9f12-6e40ff39ab9d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"all", "=", 
+  RowBox[{"Join", "[", 
+   RowBox[{"gnr", ",", 
+    RowBox[{"{", "opZ", "}"}]}], "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->2096801321,ExpressionUUID->"8eacd991-8b57-416a-9019-447402010470"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"3"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"4"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"]}],
+    DisplayForm], ",", 
+   TagBox[
+    RowBox[{
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"3"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"4"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"5"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"]}],
+    DisplayForm], ",", 
+   TagBox[
+    RowBox[{
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"3"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"4"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"5"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"]}],
+    DisplayForm], ",", 
+   TagBox[
+    RowBox[{
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"4"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"5"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"]}],
+    DisplayForm], ",", 
+   TagBox[
+    RowBox[{
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"3"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"4"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"], 
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"5"}, "RowDefault"], 
+       TemplateBox[{"\"z\""}, "RowDefault"]},
+      "Subsuperscript"]}],
+    DisplayForm]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->180612889,ExpressionUUID->"8de9a271-2b80-4021-928a-8524c19196b7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"GottesmanVector", "[", 
+      RowBox[{"#", ",", 
+       RowBox[{"S", "@", "jj"}]}], "]"}], "&"}], "/@", "all"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->2018654200,ExpressionUUID->"fa1a922c-af58-480d-8503-035836524607"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "1", "0", "1", "1", "0", "0", "0"},
+     {"0", "0", "1", "0", "0", "1", "0", "1", "1", "0"},
+     {"1", "0", "0", "0", "1", "0", "0", "1", "0", "1"},
+     {"0", "1", "1", "0", "0", "0", "1", "0", "0", "1"},
+     {"0", "1", "0", "1", "0", "1", "0", "1", "0", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->1961856807,ExpressionUUID->"ef6f9ff0-14d2-4e6c-a087-4f7647ebd3b1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"in", "=", 
+  RowBox[{"UnitVector", "[", 
+   RowBox[{"5", ",", "1"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"sol", "=", 
+  RowBox[{"GottesmanSolve", "[", 
+   RowBox[{"mat", ",", "in"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Mod", "[", 
+   RowBox[{
+    RowBox[{"mat", ".", "sol"}], ",", "2"}], "]"}], "-", "in"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->410936121,ExpressionUUID->"7b16fb8b-575f-497d-8f39-79fb02ef47e0"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->566182453,ExpressionUUID->"ee6748b7-e7d6-460a-a875-8cfb235c879e"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "1", ",", "0", ",", "0", ",", "0", ",", "1", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->328447714,ExpressionUUID->"6ebe99de-b3f6-4f1f-8c44-c7ee78c5fdfd"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"0", ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1187756408,ExpressionUUID->"b336f63d-1236-4c86-8539-ab0fff38144f"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "c1951981-f7f7-4c7b-850a-7e4678675666"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->160447332,ExpressionUUID->"0b4d7be5-4bfb-4013-9bdb-34ba74187eb1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"in", "=", 
+  RowBox[{"Most", "@", 
+   RowBox[{"UnitVector", "[", 
+    RowBox[{"5", ",", "1"}], "]"}]}]}], "\[IndentingNewLine]", 
+ RowBox[{"sol", "=", 
+  RowBox[{"GottesmanSolve", "[", 
+   RowBox[{"mat", ",", "in"}], "]"}]}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->682740761,ExpressionUUID->"2ef79a9b-2662-4cdc-9ced-53436372ec88"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->2069754858,ExpressionUUID->"73cfb6d2-8bc0-4acf-9a1a-3b15cf925bec"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "GottesmanSolve", "incmp", 
+   "\"Matrix \\!\\(\\*RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \
+\\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"1\\\", \
+\\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"0\\\", \\\",\\\", \
+\\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \
+\\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \
+\\\"1\\\", \\\",\\\", \\\"0\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \
+\\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \
+\\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"0\\\", \\\",\\\", \
+\\\"1\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \
+\\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \
+\\\"0\\\", \\\",\\\", \\\"1\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \
+\\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \
+\\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\"}], \
+\\\"}\\\"}]}], \\\"}\\\"}]\\) and vector \\!\\(\\*RowBox[{\\\"{\\\", RowBox[{\
+\\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \
+\\\"0\\\"}], \\\"}\\\"}]\\) are incompatible to form a system of linear \
+equations mat\[CenterDot]x==vec.\"", 2, 21, 1, 33841900277243309525, "Local", 
+   "Q3`GottesmanSolve"},
+  "MessageTemplate2"]], "Message", "MSG",
+ CellLabel->"During evaluation of In[1]:=",
+ CellID->1429784300,ExpressionUUID->"f9109b65-f669-4f4c-97e6-50729ac9c196"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->42720170,ExpressionUUID->"fe601024-7315-4d6b-b65b-2c354eaaecd4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"in", "=", 
+  RowBox[{"UnitVector", "[", 
+   RowBox[{"5", ",", "1"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"sol", "=", 
+  RowBox[{"GottesmanSolve", "[", 
+   RowBox[{
+    RowBox[{"Transpose", "@", 
+     RowBox[{"Drop", "[", 
+      RowBox[{
+       RowBox[{"Transpose", "@", "mat"}], ",", "1"}], "]"}]}], ",", "in"}], 
+   "]"}]}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->617052207,ExpressionUUID->"d9d0987d-ce14-4db3-8582-b663c609b23a"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"1", ",", "0", ",", "0", ",", "0", ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->2013757831,ExpressionUUID->"d8d46baa-16ed-4946-ba4d-a7c72cc69b80"],
+
+Cell[BoxData[
+ TemplateBox[{
+  "GottesmanSolve", "odd", 
+   "\"\\!\\(\\*RowBox[{\\\"{\\\", RowBox[{RowBox[{\\\"{\\\", \
+RowBox[{\\\"0\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \
+\\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \
+\\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\"}], \\\"}\\\"}], \\\",\\\", \
+RowBox[{\\\"{\\\", RowBox[{\\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \
+\\\"0\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \
+\\\",\\\", \\\"1\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\"}], \
+\\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"0\\\", \\\",\\\", \
+\\\"0\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \
+\\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \
+\\\"1\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", RowBox[{\\\"1\\\", \\\
+\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\
+\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"0\\\", \\\
+\",\\\", \\\"1\\\"}], \\\"}\\\"}], \\\",\\\", RowBox[{\\\"{\\\", \
+RowBox[{\\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \
+\\\"0\\\", \\\",\\\", \\\"1\\\", \\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\", \
+\\\",\\\", \\\"0\\\", \\\",\\\", \\\"1\\\"}], \\\"}\\\"}]}], \\\"}\\\"}]\\) \
+is not a valid matrix consisting of rows of Gottesman vectors.\"", 2, 23, 2, 
+   33841900277243309525, "Local", "Q3`GottesmanSolve"},
+  "MessageTemplate2"]], "Message", "MSG",
+ CellLabel->"During evaluation of In[2]:=",
+ CellID->885588897,ExpressionUUID->"56124802-3842-410b-925e-db303a1a1daf"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->2030918169,ExpressionUUID->"bd5184ef-95d0-4099-a387-ccb3b66e9eb5"]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["GottesmanStandard"]], "paclet:Q3/ref/GottesmanStandard",
+            "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "c94ef549-e402-4957-a645-f4e6de8da63d"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["GottesmanVector"]], "paclet:Q3/ref/GottesmanVector", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "b95b32d9-6e84-4ee7-9f03-e2c175d8e666"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["GottesmanSplit"]], "paclet:Q3/ref/GottesmanSplit", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "2e7017e7-1ffd-4f8d-9d6c-f0d062d74b22"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["GottesmanMerge"]], "paclet:Q3/ref/GottesmanMerge", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "07bf4673-3b99-4177-a3a4-004da1e21a44"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["LinearSolve"]], "paclet:ref/LinearSolve"},
+          "RefLink",
+          BaseStyle->{"InlineFormula"}]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "6c8fd932-0eff-4b9c-bc67-dc6d543887ea"]
+       }], "SeeAlso",ExpressionUUID->"1011318f-4917-41e4-a21e-f6f7a672f591"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"c614fe61-3a01-4f63-97dc-\
+d7812334dfbb"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TutorialsSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["The Pauli and Clifford Groups"]], 
+           "paclet:Q3/tutorial/PauliAndCliffordGroups"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "28263126-85b5-40fc-9398-a069b30f4cf9"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Stabilizer Formalism"]], 
+           "paclet:Q3/tutorial/StabilizerFormalism"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "76d0e622-970a-4b34-b415-29f4b0c0919a"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Stabilizer Codes"]], 
+           "paclet:Q3/tutorial/StabilizerCodes"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "80b8e704-b474-45a4-8f77-4ff76fa722c3"]}]}
+     }]}
+  }]], "TutorialsSection",ExpressionUUID->"60eadb6d-77ef-46cf-a298-\
+053a6cf49fcc"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "D. Gottesman, Ph.D. Thesis (California Institute of \
+Technology, 1997)"}]]]], "https://arxiv.org/abs/quant-ph/9705052"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "e573e14b-9c10-42da-b8a5-140ebb9eaf8a"]}]],ExpressionUUID->
+         "a1c8ace4-ffc6-46db-9f05-ace6a3b664bf"],
+        ", \"Stabilizer Codes and Quantum Error Correction.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "50b08d2d-0017-4a4a-8619-66f523cf4640"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "R. Cleve and D. Gottesman, Physical Review A 56 (1), 76 \
+(1997)"}]]]], "https://doi.org/10.1103/physreva.56.76"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "7a27ba23-947b-49c5-b48b-e451f41fe6b1"]}]],ExpressionUUID->
+         "d6aa9bae-0534-4c7d-ace7-da03336dec6a"],
+        ", \[OpenCurlyDoubleQuote]Efficient computations of encodings for \
+quantum error correction.\[CloseCurlyDoubleQuote]"
+       }], "RelatedLinks",ExpressionUUID->
+        "460db263-ab23-4d20-a304-4272c3028057"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang (2022)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "2ead7ce3-2b00-43db-ada2-71ff63e6a989"]}]],ExpressionUUID->
+         "e8016605-05e2-4021-854a-d630154bf480"],
+        StyleBox[
+        ", Quantum Computation and Quantum Information (Cambridge University \
+Press, 2011).",
+         FontSlant->"Plain"]
+       }], "RelatedLinks",ExpressionUUID->
+        "8a55396f-ef84-4e85-bc9b-ebb9864afc15"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "2a73e47e-3648-4d10-bf92-0844167f5e1b"]}]],ExpressionUUID->
+         "2132ad4b-8dd9-41c8-a287-ae6a0ca00bff"],
+        ", A Quantum Computation Workbook (Springer, 2022)."
+       }], "RelatedLinks",ExpressionUUID->
+        "b2ebc712-b8ac-4e29-ab19-f04294c9b70f"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"098fb3dc-4519-4541-a4a2-\
+32cbd3b0126e"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"ecd4d119-8020-4f9a-88be-48796d62b819"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"GottesmanSolve",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "HasOptions" -> True, "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "NotesSection" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "RootCaptions" -> 
+  "", "Metadata" -> {
+   "built" -> "{2022, 9, 11, 5, 21, 48.208770}", 
+    "history" -> {"13", "13.1", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"stabilizer formalism", "stabilizer codes"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "GottesmanSolve[mat, vec] returns a solution x to a system of binary \
+linear equations mat\\[CenterDot]x == vec, where mat is a matrix consisting \
+of rows of Gottesman vectors and vec is a vector.", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "GottesmanSolve", "titlemodifier" -> "", 
+    "windowtitle" -> "GottesmanSolve", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/GottesmanSolve", "WorkflowDockedCell" -> ""}, 
+  "SearchTextTranslated" -> ""},
+CellContext->"Global`",
+FrontEndVersion->"13.1 for Mac OS X ARM (64-bit) (June 16, 2022)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "13.1 for Mac OS X ARM (64-bit) (June 16, 2022)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"d52200c5-11b6-4d73-b0d5-d5788c267647"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[12738, 337, 1390, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"8001784c-7fa3-404c-a86c-d02bc2dc6112",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1070231200]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 45050, 1233}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[586, 21, 6540, 154, 57, "AnchorBarGrid",ExpressionUUID->"f74f0be4-ca2a-4b6a-8d85-4b1edbdb8efe",
+ CellID->1],
+Cell[7129, 177, 85, 0, 23, "ContextNameCell",ExpressionUUID->"3761086e-ff59-430b-a6a0-6d6f5103851d"],
+Cell[CellGroupData[{
+Cell[7239, 181, 1177, 31, 60, "ObjectNameGrid",ExpressionUUID->"273f5b11-ebaf-4173-8fad-eeecd63a4018"],
+Cell[8419, 214, 1631, 42, 136, "Usage",ExpressionUUID->"31734639-57a8-4b51-a2f6-8b83c9d72301",
+ CellID->2141205971]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10087, 261, 1899, 47, 37, "NotesSection",ExpressionUUID->"6dc9ac49-7a0d-4e4c-acbf-bcfcd448784d",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1919088899],
+Cell[11989, 310, 622, 21, 70, "Notes",ExpressionUUID->"1e70180a-1c9f-4707-924d-c8c0841cf90c",
+ CellID->1865281818]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[12738, 337, 1390, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"8001784c-7fa3-404c-a86c-d02bc2dc6112",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1070231200],
+Cell[14131, 376, 192, 3, 31, "Input",ExpressionUUID->"1b9a59d1-8ae1-4420-ab50-aeb60f3be850",
+ CellID->1927565408],
+Cell[CellGroupData[{
+Cell[14348, 383, 1366, 36, 31, "ExampleSection",ExpressionUUID->"686ae45b-df75-4149-ac8a-2969da8726b5",
+ CellID->52751128],
+Cell[15717, 421, 296, 7, 48, "Input",ExpressionUUID->"6da22fd0-e832-48c3-a875-0ed206f72a1e",
+ CellID->468792455],
+Cell[CellGroupData[{
+Cell[16038, 432, 1811, 52, 156, "Input",ExpressionUUID->"55639811-a331-48f5-9b23-a69df9761ca9",
+ CellID->2024773989],
+Cell[17852, 486, 815, 16, 37, "Output",ExpressionUUID->"279acaec-89eb-4885-aa9b-7b7c5895037e",
+ CellID->663192951]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18704, 507, 381, 11, 48, "Input",ExpressionUUID->"5efbdc3c-4549-456e-baa3-7d3c0374ad22",
+ CellID->439313053],
+Cell[19088, 520, 786, 19, 100, "Output",ExpressionUUID->"bc089584-0d8d-4d94-9bfe-531cffa5157e",
+ CellID->806367458]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19911, 544, 236, 6, 29, "Input",ExpressionUUID->"afdd4aa9-bfb6-4368-80f6-7c92a8866fd5",
+ CellID->631449448],
+Cell[20150, 552, 192, 4, 37, "Output",ExpressionUUID->"7f5325e7-8fc3-4b09-bf55-e45f247c7fda",
+ CellID->2013767126]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20379, 561, 401, 11, 48, "Input",ExpressionUUID->"a4ea667a-8508-4e20-8a30-90f1991feef2",
+ CellID->1533610991],
+Cell[20783, 574, 192, 4, 37, "Output",ExpressionUUID->"0a8540d1-3c11-4c84-97a4-380ca3f48843",
+ CellID->1096212424]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21012, 583, 242, 5, 70, "ExampleDelimiter",ExpressionUUID->"67bcb45f-3b42-4b8a-b3b5-9f077cce7cf4",
+ CellID->427961509],
+Cell[CellGroupData[{
+Cell[21279, 592, 351, 9, 70, "Input",ExpressionUUID->"177bec8f-dc4c-4b3a-8877-b323fbbd0c8b",
+ CellID->1350562761],
+Cell[21633, 603, 277, 5, 37, "Output",ExpressionUUID->"7a067b81-b956-4361-9f12-6e40ff39ab9d",
+ CellID->1410124479]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21947, 613, 261, 7, 70, "Input",ExpressionUUID->"8eacd991-8b57-416a-9019-447402010470",
+ CellID->2096801321],
+Cell[22211, 622, 4071, 124, 40, "Output",ExpressionUUID->"8de9a271-2b80-4021-928a-8524c19196b7",
+ CellID->180612889]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[26319, 751, 410, 12, 70, "Input",ExpressionUUID->"fa1a922c-af58-480d-8503-035836524607",
+ CellID->2018654200],
+Cell[26732, 765, 844, 20, 116, "Output",ExpressionUUID->"ef6f9ff0-14d2-4e6c-a087-4f7647ebd3b1",
+ CellID->1961856807]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27613, 790, 492, 13, 70, "Input",ExpressionUUID->"7b16fb8b-575f-497d-8f39-79fb02ef47e0",
+ CellID->410936121],
+Cell[28108, 805, 201, 4, 37, "Output",ExpressionUUID->"ee6748b7-e7d6-460a-a875-8cfb235c879e",
+ CellID->566182453],
+Cell[28312, 811, 258, 6, 37, "Output",ExpressionUUID->"6ebe99de-b3f6-4f1f-8c44-c7ee78c5fdfd",
+ CellID->328447714],
+Cell[28573, 819, 202, 4, 37, "Output",ExpressionUUID->"b336f63d-1236-4c86-8539-ab0fff38144f",
+ CellID->1187756408]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[28824, 829, 242, 5, 70, "ExampleDelimiter",ExpressionUUID->"0b4d7be5-4bfb-4013-9bdb-34ba74187eb1",
+ CellID->160447332],
+Cell[CellGroupData[{
+Cell[29091, 838, 386, 10, 70, "Input",ExpressionUUID->"2ef79a9b-2662-4cdc-9ced-53436372ec88",
+ CellID->682740761],
+Cell[29480, 850, 192, 4, 37, "Output",ExpressionUUID->"73cfb6d2-8bc0-4acf-9a1a-3b15cf925bec",
+ CellID->2069754858],
+Cell[29675, 856, 1916, 28, 70, "Message",ExpressionUUID->"f9109b65-f669-4f4c-97e6-50729ac9c196",
+ CellID->1429784300],
+Cell[31594, 886, 257, 6, 37, "Output",ExpressionUUID->"fe601024-7315-4d6b-b65b-2c354eaaecd4",
+ CellID->42720170]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[31888, 897, 492, 14, 70, "Input",ExpressionUUID->"d9d0987d-ce14-4db3-8582-b663c609b23a",
+ CellID->617052207],
+Cell[32383, 913, 202, 4, 37, "Output",ExpressionUUID->"d8d46baa-16ed-4946-ba4d-a7c72cc69b80",
+ CellID->2013757831],
+Cell[32588, 919, 1633, 24, 70, "Message",ExpressionUUID->"56124802-3842-410b-925e-db303a1a1daf",
+ CellID->885588897],
+Cell[34224, 945, 249, 6, 37, "Output",ExpressionUUID->"bd5184ef-95d0-4099-a387-ccb3b66e9eb5",
+ CellID->2030918169]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[34727, 961, 2854, 77, 70, "SeeAlsoSection",ExpressionUUID->"c614fe61-3a01-4f63-97dc-d7812334dfbb"],
+Cell[37584, 1040, 1449, 38, 70, "TutorialsSection",ExpressionUUID->"60eadb6d-77ef-46cf-a298-053a6cf49fcc"],
+Cell[39036, 1080, 3915, 104, 70, "RelatedLinksSection",ExpressionUUID->"098fb3dc-4519-4541-a4a2-32cbd3b0126e"],
+Cell[42954, 1186, 78, 0, 70, "FooterCell",ExpressionUUID->"ecd4d119-8020-4f9a-88be-48796d62b819"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

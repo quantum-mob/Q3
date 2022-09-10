@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.28 $"][[2]], " (",
-  StringSplit["$Date: 2022-07-07 11:29:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.31 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-11 06:13:07+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,6 +21,8 @@ BeginPackage["Q3`"]
 
 { GottesmanMatrix, FromGottesmanMatrix, GottesmanInverse,
   GottesmanMatrixQ };
+
+{ GottesmanStandard, GottesmanSolve };
 
 { Stabilizer, StabilizerStateQ };
 
@@ -856,6 +858,130 @@ GottesmanInverse[mat_] := Module[
  ]
   
 (**** </GottesmanMatrix> ****)
+
+
+(**** <GottesmanSolve> ****)
+
+GottesmanSolve::usage = "GottesmanSolve[mat, vec] returns a solution x to a system of binary linear equations mat\[CenterDot]x==vec, where mat is a matrix consisting of rows of Gottesman vectors and vec is a vector."
+
+GottesmanSolve::incmp = "Matrix `` and vector `` are incompatible to form a system of linear equations mat\[CenterDot]x==vec."
+
+GottesmanSolve::odd = "`` is not a valid matrix consisting of rows of Gottesman vectors."
+
+GottesmanSolve[mat_?MatrixQ, vec_?VectorQ] := (
+  Message[GottesmanSolve::incmp, mat, vec];
+  Return @ Normal @ Zero[Last @ Dimensions @ mat]
+ ) /; Length[mat] != Length[vec]
+
+GottesmanSolve[mat_?MatrixQ, vec_?VectorQ] := (
+  Message[GottesmanSolve::odd, mat, vec];
+  Return @ Normal @ Zero[Last @ Dimensions @ mat]
+ ) /; OddQ[Last @ Dimensions @ mat]
+
+GottesmanSolve[mat_?MatrixQ, vec_?VectorQ] :=
+  LinearSolve[mat, vec, Modulus -> 2]
+
+(**** </GottesmanSolve> ***)
+
+
+(**** <GottesmanStandard> ****)
+
+GottesmanStandard::usage = "GottesmanStandard[mat] converts mat consisting of rows of Gottesman vectors into the standard form and returns {xmat, zmat, perm}, a list of the X- and Z-part of the resulting matrix in the standard form and perm specifying the permutation of columns."
+
+GottesmanStandard::odd = "`` has an odd number of columns and is not a matrix consisting of rows of valid Gottesman vectors. A column of zeros is padded."
+
+GottesmanStandard::incmp =  "Incompatible dimenions in matrix `` and vector ``.";
+
+GottesmanStandard[mat_?MatrixQ] := (
+  Message[GottesmanStandard::odd, mat];
+  GottesmanStandard @ ArrayPad[mat, {{0, 0}, {0, 1}}]
+ ) /; OddQ[Last @ Dimensions @ mat]
+
+GottesmanStandard[mat_?MatrixQ] := Module[
+  {xx, zz, vv, cc},
+  {xx, zz, vv, cc} = GottesmanStandard[mat, Zero[Length @ mat, 1]];
+  {xx, zz, cc}
+ ]
+
+GottesmanStandard[mat_?MatrixQ, vec_?VectorQ] := (
+  Message[GottesmanStandard::incmp, mat, vec];
+  GottesmanStandard[mat, Zero[Length @ mat]]
+ ) /; Length[mat] != Length[vec]
+
+GottesmanStandard[mat_?MatrixQ, vec_?VectorQ] := Module[
+  {xx, zz, vv, cc},
+  {xx, zz, vv, cc} = GottesmanStandard[mat, Transpose @ {vec}];
+  {xx, zz, Flatten @ vv, cc}
+ ]
+
+GottesmanStandard[mat_?MatrixQ, off_?MatrixQ] := (
+  Message[GottesmanStandard::incmp, mat, off];
+  GottesmanStandard[mat, Zero[Length @ mat, 1]]
+ ) /; Length[mat] != Length[off]
+
+GottesmanStandard[mat_?MatrixQ, off_?MatrixQ] := Module[
+  { vv = off,
+    xx, zz, rx, rz,
+    prm, new, m, n },
+  {xx, zz} = GottesmanSplit[mat];
+  {m, n} = Dimensions[xx];
+
+  (* Gaussian elimitation of the X-part *)
+  
+  new = RowReduce[ArrayFlatten @ {{xx, zz, vv}}, Modulus->2];
+  xx = new[[;;, ;;n]];
+  zz = new[[;;, n+1;;2n]];
+  vv = new[[;;, 2n+1;;]];
+  
+  rx = MatrixRank[xx, Modulus->2];
+  prm = columnPivoting[new, 0, Range @ rx];
+  
+  xx = Transpose @ Permute[Transpose @ xx, prm];
+  zz = Transpose @ Permute[Transpose @ zz, prm];
+  
+  If[rx == m, Return @ {xx, zz, vv, prm}];
+
+  (* Gaussian elimitation of the Z-part *)
+  
+  new = RotateLeft[#, n+rx]& /@ ArrayFlatten @ {{xx, zz, vv}};
+  new = Join[ new[[;;rx]], RowReduce[new[[rx+1;;]], Modulus->2] ];
+  new = RotateRight[#, n+rx]& /@ new;
+  xx = new[[;;, ;;n]];
+  zz = new[[;;, n+1;;2n]];
+  vv = new[[;;, 2n+1;;]];
+
+  rz = MatrixRank[zz[[rx+1;;, rx+1;;]], Modulus->2];
+  prm = columnPivoting[new, rx, Range @ rz];
+    
+  xx = Transpose @ Permute[Transpose @ xx, prm];
+  zz = Transpose @ Permute[Transpose @ zz, prm];
+  
+  Return @ {xx, zz, vv, prm}
+ ]
+
+
+columnPivoting::usage = "columnPivoting[mat] performs the partial pivoting of columns of matrix mat which is assumed to be in the reduced row echelon form."
+
+columnPivoting::echelon = "Matrix `` is not in the reduced row echelon form."
+
+columnPivoting[mat_?MatrixQ, off_Integer, kk:{__Integer}] :=
+  PermutationProduct @@ Map[columnPivoting[mat, off, #]&, kk]
+
+columnPivoting[mat_?MatrixQ, off_Integer, k_Integer] := Module[
+  { pos = FirstPosition[mat[[off+k, off+1;;]], 1],
+    cyc = Cycles @ {{}} },
+  If[MissingQ[pos], Return @ cyc, pos = First @ pos];
+
+  Which[
+    pos < k, Message[columnPivoting::echelon, mat]; Return @ cyc,
+    pos == k, Return @ cyc
+   ];
+  
+  Cycles @ {{off + k, off + pos}}
+ ]
+
+(**** </GottesmanStandard> ****)
+
 
 End[]
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.238 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-22 17:38:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.243 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-09 10:43:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -74,7 +74,7 @@ BeginPackage["Q3`"]
 { HilbertSchmidtProduct, HilbertSchmidtNorm, HilbertSchmidtDistance,
   FrobeniusProduct, FrobeniusNorm };
 
-{ TraceNorm, TraceDistance, Fidelity };
+{ TraceNorm, TraceDistance, Fidelity, ClassicalFidelity };
 
 { LogarithmicNegativity, Negativity, NormPT };
 
@@ -3593,7 +3593,7 @@ TraceDistance[a_, b_, ss:{___?SpeciesQ}] :=
 
 (**** <Fidelity> *****)
 
-Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states \[Rho] and \[Sigma]. \[Rho] and \[Sigma] can take a vector (pure state), matrix (mixed state), ket expression (pure state), or opertor expression (mixed state)."
+Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states \[Rho] and \[Sigma]. \[Rho] and \[Sigma] can take a vector (pure state), matrix (mixed state), ket expression (pure state), or opertor expression (mixed state).\nSee also ClassicalFidelity."
 
 Fidelity[a_?MatrixQ, b_?MatrixQ] := With[
   {c = MatrixPower[a, 1/2]},
@@ -3618,6 +3618,30 @@ Fidelity[rho_, vec_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
 
 Fidelity[vec_, wec_] := Abs[Dagger[vec] ** wec] /;
   And[Not @ FreeQ[vec, _Ket], Not @ FreeQ[wec, _Ket]]
+
+
+ClassicalFidelity::usage = "ClassicalFidelity[{p1,p2,\[Ellipsis]}, {q1,q2,\[Ellipsis]}] returns the classical fidelity between two probability distributions {p1,p2,\[Ellipsis]} and {q1,q2,\[Ellipsis]}.\nSee also Fidelity."
+
+ClassicalFidelity::noprb = "`` is not a probability distribution."
+
+ClassicalFidelity::incmp = "Probability distributions `1` and `2` cannot describe the same random variable."
+
+ClassicalFidelity[p:{__?NumericQ}, q:{__?NumericQ}] := Which[
+  Not @ probabilityQ[p],
+  Message[ClassicalFidelity::noprb, p],
+  Not @ probabilityQ[q],
+  Message[ClassicalFidelity::noprb, q],
+  Not @ ArrayQ @ {p, q},
+  Message[ClassicalFidelity::incmp, p, q],
+  True, Total @ Sqrt[p * q]
+ ]
+
+ClassicalFidelity[p_List, q_List] := Total @ Sqrt[p * q] /; ArrayQ[{p, q}]
+
+
+probabilityQ[p:{__?NonNegative}] := Chop[Total @ p] == 1
+
+probabilityQ[_] = False
 
 (**** </Fidelity> *****)
 
