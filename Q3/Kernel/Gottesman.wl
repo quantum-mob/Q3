@@ -5,15 +5,16 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.31 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-11 06:13:07+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.33 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-11 15:49:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { PauliGroup, FullPauliGroup,
   PauliGroupElements, FullPauliGroupElements,
   CliffordGroup, FullCliffordGroup,
-  CliffordGroupElements, FullCliffordGroupElements };
+  CliffordGroupElements, FullCliffordGroupElements,
+  CliffordQ };
 
 { GottesmanVector, FromGottesmanVector,
   GottesmanTest, GottesmanInner, GottesmanBasis,
@@ -284,6 +285,34 @@ CliffordGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
     Elaborate @ MapThread[Multiply, {ff, sp}]
    ]
 
+
+CliffordQ::usage = "CliffordQ[mat] returns True if matrix mat represents a Clifford operator; and False otherwise.\nCliffordQ[op] applies to operator op expressed in terms of the labelled or unlabelled Pauli operators."
+
+CliffordQ::notqbt = "`` does not represent an operator acting on qubits."
+
+CliffordQ[mat_?MatrixQ] := (
+  Message[CliffordQ::notqbt, vec];
+  False
+ ) /; Not @ IntegerQ @ Log[2, Length @ mat]
+
+CliffordQ[mat_?MatrixQ] := Module[
+  { n = Log[2, Length @ mat],
+    gnr },
+  gnr = Join[
+    ThePauli @@@ NestList[RotateRight, PadRight[{1}, n], n-1],
+    ThePauli @@@ NestList[RotateRight, PadRight[{3}, n], n-1]
+   ];
+  gnr = Map[
+    Most @ ArrayRules @ PauliDecompose @ Dot[mat, #, Topple @ mat]&,
+    gnr
+   ];
+  AllTrue[gnr, Length[#]==1&]
+ ]
+
+CliffordQ[expr_] := CliffordQ[Matrix @ expr]
+
+CliffordQ[expr_, ss:{__?QubitQ}] := CliffordQ[Matrix @ expr]
+
 (**** </CliffordGroup> ****)
 
 
@@ -511,9 +540,7 @@ getStabilizer[vec_?VectorQ] := Module[
   { rho = Dyad[vec, vec],
     tsr },
   tsr = Association @ Most @ ArrayRules @ PauliDecompose[rho];
-  If[ Not[Equal @@ Abs[Values @ tsr]],
-    Return[$Failed]
-   ];
+  If[Not[Equal @@ Abs[Values @ tsr]], Return @ $Failed];
   Sign /@ KeyMap[(#-1)&, tsr]
  ]
 

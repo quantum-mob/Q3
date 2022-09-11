@@ -35,7 +35,9 @@ BeginPackage["Q3`"]
 { QFT, ModExp, ModAdd, ModMultiply };
 
 { ProductState, BellState, GHZState, SmolinState,
-  GraphState, DickeState, RandomState };
+  DickeState, RandomState };
+
+{ GraphState, GraphStateBasis };
 
 (* Qudit *)
 
@@ -2021,6 +2023,38 @@ theCZ[n_Integer][i_Integer, j_Integer] := Module[
   pp = 1 + Map[FromDigits[#, 2]&, Select[pp, Part[#, {i, j}] == {1, 1} &]];
   DiagonalMatrix @ ReplacePart[Table[1, Power[2, n]], Thread[pp -> -1]]
  ]
+
+
+GraphStateBasis::usage = "GraphStateBasis[g] returns the graph state basis for the system of qubits on the vertices of graph g."
+
+GraphStateBasis::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``."
+
+GraphStateBasis[g_Graph] := GraphStateBasis[g, FlavorNone @ VertexList @ g] /;
+  AllTrue[VertexList @ g, QubitQ]
+
+GraphStateBasis[g_Graph, ss:{__?QubitQ}] := (
+  Message[GraphStateBasis::msmtch, g, FlavorNone @ ss];
+  Ket[]
+ ) /; Length[VertexList @ g] != Length[ss]
+
+GraphStateBasis[g_Graph, ss:{__?QubitQ}] := Module[
+  { gs = GraphState[g, ss],
+    ww },
+  ww = Tuples[{0, 1}, Length @ ss];
+ ]
+
+
+GraphStateBasis[g_Graph] := GraphStateBasis[g, Length @ VertexList @ g] /;
+  AllTrue[VertexList @ g, IntegerQ]
+
+GraphStateBasis[g_Graph, n_Integer] := Module[
+  { dd = Power[2, n],
+    cz = EdgeList[g],
+    in },
+  in = Table[1, dd] / Sqrt[dd];
+  cz = Dot @@ theCZ[n] @@@ cz;
+  ExpressionFor[cz . in]
+ ] /; AllTrue[VertexList @ g, (#<=n)&]
 
 (**** </GraphState> ****)
 

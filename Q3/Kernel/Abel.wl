@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.96 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-07 13:20:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.99 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-11 16:39:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -18,7 +18,7 @@ BeginPackage["Q3`"]
 { Chain, ChainBy };
 { Bead, GreatCircle };
 
-{ SimplifyThrough, FullSimplifyThrough };
+{ ChopThrough, SimplifyThrough, FullSimplifyThrough };
 
 { LeftBrace, RightBrace, OverBrace, UnderBrace };
 
@@ -374,32 +374,34 @@ GreatCircle[
   ]
 
 
-SimplifyThrough::usage = "SimplifyThrough[expr] applies Simplify through special objects such as Association, SparseArray, etc., in expr which usually does not allow for Simplify to access internal data."
+(***** <ChopThrough ...> *****)
 
-SimplifyThrough[aa_Association] := Map[Simplify, aa]
+nameThrough::usage = "nameThrough[\"name\"] defines new function \"nameThrough\"."
 
-SimplifyThrough[aa_SparseArray] :=
-  SparseArray[Simplify @ Normal[aa, SparseArray]]
+SetAttributes[nameThrough, Listable];
 
-SimplifyThrough[expr_] := ReplaceAll[
-  Simplify[expr],
-  { aa_Association :> SimplifyThrough[aa],
-    aa_SparseArray :> SimplifyThrough[aa] }
+nameThrough[op_Symbol] := nameThrough[SymbolName@op]
+
+(* NOTE: It must be With[...]; Block nor Module works here. *)
+nameThrough[name_String] := With[
+  { full = Symbol@StringJoin["Q3`", name, "Through"],
+    func = Symbol[name]},
+  full::usage = 
+    SymbolName[full] <> "[expr] applies " <> name <> 
+    " through special objects such as Association, SparseArray, etc., in expr, which usually do not allcow for access to internal data.";
+  full[aa_Association] := Map[func, aa];
+  full[aa_SparseArray] := SparseArray[func@Normal[aa, SparseArray]];
+  full[expr_] := func @ ReplaceAll[
+    func[expr],
+    { aa_Association :> full[aa],
+      aa_SparseArray :> full[aa] }
+   ];
+  SetAttributes[full, ReadProtected]
  ]
 
+nameThrough @ {Chop, Simplify, FullSimplify};
 
-FullSimplifyThrough::usage = "FullSimplifyThrough[expr] applies FullSimplify through special objects such as Association, SparseArray, etc., in expr which usually does not allow for FullSimplify to access internal data."
-
-FullSimplifyThrough[aa_Association] := Map[Simplify, aa]
-
-FullSimplifyThrough[aa_SparseArray] :=
-  SparseArray[Simplify @ Normal[aa, SparseArray]]
-
-FullSimplifyThrough[expr_] := ReplaceAll[
-  Simplify[expr],
-  { aa_Association :> FullSimplifyThrough[aa],
-    aa_SparseArray :> FullSimplifyThrough[aa] }
- ]
+(***** </ChopThrough ...> *****)
 
 
 (**** <LeftBrace> ****)
@@ -551,11 +553,13 @@ FlavorMute[a_] := a (* Does nothing unless specified explicitly *)
 FlavorThread::usage = "FlavorThread[{s1, s2, \[Ellipsis]}, m] returns {s1[m], s2[m], \[Ellipsis]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {m1, m2, \[Ellipsis]}] returns {s1[m1], s2[m2], s3[m3]}.\n
 FlavorThread[{s1, s2, \[Ellipsis]}, {list1, list2, \[Ellipsis]}] maps over the lists."
 
+FlavorThread[ss:{__?SpeciesQ}][any_] := FlavorThread[ss, any]
+
 FlavorThread[ss:{__?SpeciesQ}, flv_?AtomQ] :=
   Through @ Construct[ss, flv]
 
 FlavorThread[ss:{__?SpeciesQ}, flv:{__List}] :=
-  Map[FlavorThread[ss, #]&, flv] /;
+  Map[FlavorThread[ss], flv] /;
   ArrayQ[flv]
 
 FlavorThread[ss:{__?SpeciesQ}, flv:{__}] :=
