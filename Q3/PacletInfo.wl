@@ -1,6 +1,6 @@
 (* Paclet Info File *)
-(* $Date: 2022-09-11 10:32:18+09 $ *)
-(* $Revision: 2.71 $ *)
+(* $Date: 2022-09-11 21:28:27+09 $ *)
+(* $Revision: 2.72 $ *)
 
 Paclet[
   "Name" -> "Q3",
@@ -15,6 +15,10 @@ Paclet[
          The list is also used by FindFile.
          The list also causes documentation links to be added to usage
          messages when documentation is present. *)
+     },
+    { "Kernel",
+      "Root" -> "YoungFourier",
+      "Context" -> { "YoungFourier`" }
      },
     { "Documentation",
       "Language" -> "English",

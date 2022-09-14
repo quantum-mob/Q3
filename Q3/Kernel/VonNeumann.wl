@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `VonNeumann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.15 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-09 23:43:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.16 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-14 10:44:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -23,6 +23,8 @@ WeightedLog::usage = "WeightedLog[z] returns -z*Log[2, z], the weighted logarith
 SetAttributes[WeightedLog, Listable]
 
 WeightedLog[0] = 0
+
+WeightedLog[z_] := 0 /; Chop[z] == 0
 
 WeightedLog[z_?Positive] := -z * Log2[z]
 
