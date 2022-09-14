@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.19
+
+- An emergecy bug fix in WeightedLog.
+
 ## v2.6.16
 
 - The sequence pattern of the arguments for GHZState has been changed.

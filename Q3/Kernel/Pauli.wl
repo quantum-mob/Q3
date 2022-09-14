@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.243 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-09 10:43:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.248 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-14 20:15:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -3218,15 +3218,15 @@ NormPT[rho_, S_?SpeciesQ, T_?SpeciesQ] := NormPT[rho, {S}, {T}]
 
 PartialTrace::usage = "PartialTrace[m, {i,j,...}] takes the partial trace over the qubits i, j, ... and returns the resulting reduced matrix.\nPartialTrace[m, {m,n,...}, {i,j,...}] assumes a system of dimensions m, n, ..., takes the partial trace over the subsystems i, j, ..., and returns the resulting reduced matrix.\nPartialTrace[v, {i,j,...}] and PartialTrace[v, {m,n,...}, {i,j,...}] are the same but operate on the column vector v. Note that the result is a square matrix, i.e., the reduced density matrix, not a pure-state column vector any longer."
 
-PartialTrace::notSubsystem = "Illegal qubit index(es) in ``."
+PartialTrace::nosubsys = "Some element of `` is not a subsystem."
 
 PartialTrace[m_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
   { M = Tensorize[m, Flatten @ Transpose @ {dd, dd}] },
   If[ !ContainsOnly[jj, Range @ Length[dd]],
-    Message[PartialTrace::notSubsystem, jj];
+    Message[PartialTrace::nosubsys, jj];
     Return[m]
    ];
-  TensorFlatten @ TensorContract[ M, Transpose @ {2jj-1,2jj} ]
+  TensorFlatten @ TensorContract[ M, Transpose @ {2jj-1, 2jj} ]
  ]
 
 PartialTrace[m_?MatrixQ, jj:{___Integer}] :=
@@ -3237,13 +3237,16 @@ PartialTrace[v_?VectorQ, dd:{__Integer}, {}] :=
 
 PartialTrace[v_?VectorQ, dd:{__Integer}, jj:{__Integer}] := Module[
   { nn = Range @ Length @ dd,
-    ii, vv },
-  If[ !ContainsOnly[jj, nn],
-    Message[PartialTrace::notSubsystem, jj];
-    Return[m] ];
+    ii },
+  If[ Not @ ContainsOnly[jj, nn],
+    Message[PartialTrace::nosubsys, jj];
+    Return @ Dyad[v, v]
+   ];
   ii = Supplement[nn, jj];
-  vv = Flatten[Tensorize[v, dd], {jj, ii}];
-  Total @ Map[ KroneckerProduct[#,Conjugate[#]]& ] @ vv
+  If[ ii == {},
+    Norm[v]^2,
+    Total @ Map[Dyad] @ Flatten[Tensorize[v, dd], {jj, ii}]
+   ]
  ]
 (* REMARK: In many cases, handling density matrix is computationally
    inefficient. In this sense, returning the list of states involved in the
@@ -3252,7 +3255,7 @@ PartialTrace[v_?VectorQ, dd:{__Integer}, jj:{__Integer}] := Module[
 PartialTrace[v_?VectorQ, {}] := KroneckerProduct[v, Conjugate[v]]
 
 PartialTrace[v_?VectorQ, jj:{__Integer}] :=
-  PartialTrace[v, ConstantArray[2,Log[2,Length[v]]], jj]
+  PartialTrace[v, ConstantArray[2, Log[2, Length @ v]], jj]
 
 
 (* For unlabelled qubits *)
@@ -3262,18 +3265,32 @@ PartialTrace[expr_, jj:{___Integer}] := Module[
  ] /; Or[fPauliKetQ @ expr, Not @ FreeQ[expr, _Pauli]]
 
 
-PartialTrace[expr_, q_?SpeciesQ] := PartialTrace[expr, {q}]
+PartialTrace[expr_, S_?SpeciesQ] := PartialTrace[expr, {S}]
 
-PartialTrace[expr_, qq:{__?SpeciesQ}] := Module[
-  { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
-    ss = NonCommutativeSpecies[expr],
-    dd, jj, mm },
-  ss = Union[ss, rr];
-  dd = Dimension[ss];
-  jj = Flatten @ Map[FirstPosition[ss, #]&, rr];
-  mm = PartialTrace[Matrix[expr, ss], dd, jj];
-  ExpressionFor[mm, Complement[ss, rr]]
+PartialTrace[expr_, ss:{__?SpeciesQ}] := With[
+  { tt = FlavorNone[ss] },
+  PartialTrace[expr, Union[NonCommutativeSpecies @ expr, tt], tt]
  ]
+
+PartialTrace[expr_, qq:{__?SpeciesQ}, S_?SpeciesQ] :=
+  PartialTrace[expr, qq, {S}]
+
+PartialTrace[expr_, qq:{__?SpeciesQ}, ss:{__?SpeciesQ}] := Module[
+  { bb = FlavorNone @ Cases[ss, _?NonCommutativeQ],
+    aa, dd, jj, mm },
+  aa = NonCommutativeSpecies @ {expr, FlavorNone @ qq};
+  If[Not @ ContainsOnly[bb, aa], Message[PartialTrace::nosubsys, bb]];
+  dd = Dimension[aa];
+  jj = Flatten @ Map[FirstPosition[aa, #]&, bb];
+  mm = PartialTrace[Matrix[expr, aa], dd, jj];
+  aa = Complement[aa, bb];
+  If[ aa == {},
+    Return[mm],
+    ExpressionFor[mm, aa]
+   ]
+ ]
+(* NOTE: This form is essential, e.g., for
+   PartialTrace[Ket[], S@{1,2}, S@{2}] *)
 
 (**** </PartialTrace> ****)
 
