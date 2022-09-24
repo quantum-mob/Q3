@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.21
+
+- Tutorial on the Choi isomorphism has been rewritten.
+
 ## v2.6.20
 
 - Another emergecy bug fix, this time, in PartialTrace.

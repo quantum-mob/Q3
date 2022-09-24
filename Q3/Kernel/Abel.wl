@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.99 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-11 16:39:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.100 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-21 21:32:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -384,13 +384,13 @@ nameThrough[op_Symbol] := nameThrough[SymbolName@op]
 
 (* NOTE: It must be With[...]; Block nor Module works here. *)
 nameThrough[name_String] := With[
-  { full = Symbol@StringJoin["Q3`", name, "Through"],
+  { full = Symbol @ StringJoin["Q3`", name, "Through"],
     func = Symbol[name]},
   full::usage = 
     SymbolName[full] <> "[expr] applies " <> name <> 
     " through special objects such as Association, SparseArray, etc., in expr, which usually do not allcow for access to internal data.";
   full[aa_Association] := Map[func, aa];
-  full[aa_SparseArray] := SparseArray[func@Normal[aa, SparseArray]];
+  full[aa_SparseArray] := SparseArray[func @ ArrayRules @ aa];
   full[expr_] := func @ ReplaceAll[
     func[expr],
     { aa_Association :> full[aa],
