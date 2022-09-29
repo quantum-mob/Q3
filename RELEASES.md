@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.22
+
+- Emergency bug fix for ChoiMatrix.
+
 ## v2.6.21
 
 - Tutorial on the Choi isomorphism has been rewritten.

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.84 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-14 10:25:40+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.85 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-29 16:44:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -168,8 +168,9 @@ ChoiMatrix[ops:{__?MatrixQ}, cc_?VectorQ] :=
   cc . Map[ChoiMatrix, ops] /;
   ArrayQ @ ops
 
-ChoiMatrix[ops:{__?MatrixQ}, cc_?MatrixQ] :=
-  Apply[Plus, cc * Outer[ChoiMatrix, ops, ops, 1]] /; ArrayQ @ ops
+ChoiMatrix[ops:{__?MatrixQ}, cc_?MatrixQ] := (
+  Plus @@ Flatten[cc * Outer[ChoiMatrix, ops, ops, 1], 1]
+ ) /; ArrayQ @ ops
 
 
 ChoiMatrix[most__, S_?SpeciesQ] := ChoiMatrix[most, FlavorNone @ {S}]
