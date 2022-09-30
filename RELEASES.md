@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.23
+
+- LindbladBasisMatrix has been significantly enhanced in speed. It also affects other functions such as LindbladConvert that are relying on it.
+
 ## v2.6.22
 
 - Emergency bug fix for ChoiMatrix.

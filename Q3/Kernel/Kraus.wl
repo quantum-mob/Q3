@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.85 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-29 16:44:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.86 $"][[2]], " (",
+  StringSplit["$Date: 2022-09-30 13:57:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -282,7 +282,10 @@ LindbladBasisMatrix[n_] := LindbladBasisMatrix @ LindbladBasis[n]
 
 LindbladBasisMatrix[lbs:{__?SquareMatrixQ}] := With[
   { n = Length @ First @ lbs },
-  SparseArray @ Transpose[ArrayReshape[lbs, {n, n, n, n}], {2, 4, 1, 3}]
+  SparseArray @ Transpose[
+    ArrayReshape[SparseArray @ lbs, {n, n, n, n}],
+    {2, 4, 1, 3}
+   ]
  ] /; ArrayQ[lbs]
 
 (**** </LindbladBasis> ****)
