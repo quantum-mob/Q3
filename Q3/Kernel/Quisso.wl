@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.48 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-01 10:05:18+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.49 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-04 13:28:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -461,6 +461,16 @@ HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,10], post___] :=
 
 HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,11], post___] :=
   Multiply[pre, (1 - x[j,3])/2, post]
+
+(* Special phase gates *)
+HoldPattern @ Multiply[pre___,
+  x_Symbol?QubitQ[j___,n_Integer?Negative], post___] :=
+  Multiply[pre, Elaborate @ x[j,n], post]
+
+(* Daggered special phase gates *)
+HoldPattern @ Multiply[pre___,
+  Dagger[x_Symbol?QubitQ[j___,n_Integer?Negative]], post___] :=
+  Multiply[pre, Dagger @ Elaborate @ x[j,n], post]
 
 
 (* General Rules *)

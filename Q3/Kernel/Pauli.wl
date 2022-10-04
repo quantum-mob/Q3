@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.248 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-14 20:15:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.253 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-04 22:34:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -206,15 +206,19 @@ ThePauli[5] = TheLower[] = TheLower[1] = SparseArray[{{2, 1} -> 1}, {2, 2}]
 ThePauli[6] = TheHadamard[] = TheHadamard[1] = {{1,1},{1,-1}}/Sqrt[2]
 
 ThePauli[7] = TheQuadrant[] = TheQuadrant[1] =
-  SparseArray[{{1, 1} -> 1, {2, 2} -> I}, {2, 2}]
+  SparseArray[{{1, 1} -> 1, {2, 2} -> +I}, {2, 2}]
 
 ThePauli[8] = TheOctant[] = TheOctant[1] =
-  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[I Pi/4]}, {2, 2}]
-
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*Pi/4]}, {2, 2}]
 
 ThePauli[10] = SparseArray[{{1,1} -> 1}, {2,2}]
 
 ThePauli[11] = SparseArray[{{2,2} -> 1}, {2,2}]
+
+
+(* special phase gates *)
+ThePauli[n_Integer?Negative] :=
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*2*Pi*Power[2,n]]}, {2, 2}]
 
 
 ThePauli[Raise] := ThePauli[4]
@@ -240,7 +244,7 @@ ThePauli[0 -> 0] := ThePauli[10]
 ThePauli[1 -> 1] := ThePauli[11]
 
 
-ThePauli[ nn:(0|1|2|3|4|5|6|7|8|_Rule).. ] :=
+ThePauli[ nn:(0|1|2|3|4|5|6|7|8|_Integer?Negative|_Rule).. ] :=
   CircleTimes @@ Map[ThePauli] @ {nn}
 
 
@@ -1017,7 +1021,7 @@ Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] repre
 SetAttributes[Pauli, {NHoldAll, ReadProtected, Listable}]
 (* The integers in Pauli[] should not be converted to real numbers by N[]. *)
 
-Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|-7|-8)..] ] := With[
+Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|_Integer?Negative|_Rule)..] ] := With[
   { aa = {a} /. theIndexRules },
   DisplayForm[ CircleTimes @@ Map[SuperscriptBox["\[Sigma]",#]&] @ aa ]
  ]
@@ -1032,7 +1036,8 @@ theMinus = Style["-", Larger, Bold];
 theIndexRules = {
   1->"x", 2->"y", 3->"z",
   4->thePlus, 5->theMinus,
-  6->"H", 7->"S", 8->"T", -7->"-S", -8->"-T" };
+  6->"H", 7->"S", 8->"T"
+ };
 
 
 Pauli /:
@@ -1054,26 +1059,29 @@ Lower[] = Lower[1] = Pauli[Lower]
 Hadamard[] = Hadamard[1] = Pauli[Hadamard]
 
 
+Pauli[n_Integer?Negative] := With[
+  { f = Exp[I*2*Pi*Power[2, n]] },
+  Pauli[0]*(1+f)/2 + Pauli[3]*(1-f)/2
+ ]
+
+Pauli[1 -> 0] := Pauli[4]
+
+Pauli[0 -> 1] := Pauli[5]
+
 Pauli[10] := (Pauli[0] + Pauli[3]) / 2
 
 Pauli[11] := (Pauli[0] - Pauli[3]) / 2
 
 Pauli[Raise] := (Pauli[1] + I Pauli[2]) / 2
-(* Pauli[4] is kept without being expanded in terms of Pauli[1] and Pauli[2] *)
 
 Pauli[Lower] := (Pauli[1] - I Pauli[2]) / 2
-(* Pauli[5] is kept without being expanded in terms of Pauli[1] and Pauli[2] *)
 
 Pauli[Hadamard] := (Pauli[1] + Pauli[3])/Sqrt[2]
-(* Pauli[6] is kept without being expanded *)
 
 Pauli[Quadrant] := Pauli[0] (1+I)/2 + Pauli[3] (1-I)/2
-(* Pauli[7] is kept without being expanded *)
-Pauli[-Quadrant] := Pauli[0] (1-I)/2 + Pauli[3] (1+I)/2
 
 Pauli[Octant] := Pauli[0] (1+Exp[I Pi/4])/2 + Pauli[3] (1-Exp[I Pi/4])/2
-(* Pauli[8] is kept without being expanded *)
-Pauli[-Octant] := Pauli[0] (1+Exp[-I Pi/4])/2 + Pauli[3] (1-Exp[-I Pi/4])/2
+
 
 Pauli[kk__] := Pauli @@ ReplaceAll[
   { kk },
@@ -1084,50 +1092,71 @@ Pauli[kk__] := Pauli @@ ReplaceAll[
 Pauli[kk__] := Garner @ Apply[CircleTimes, Pauli /@ {kk}] /;
   ContainsAny[
     { kk },
-    { 10, 11, Raise, Lower, Hadamard,
-      Quadrant, Octant, -Quadrant, -Octant }
+    { 10, 11, Raise, Lower, Hadamard, Quadrant, Octant }
    ]
 (* NOTE: Multi-spin Pauli operators are stored in Pauli[a, b, c, ...],
    NOT CircleTimes[Pauli[a], Pauli[b], Pauli[c], ...].
    Namely, Pauli[...] is not expanded into CircleTimes. *)
 
+
 Pauli[a:{(0|1)..} -> b:{(0|1)..}] := Pauli @@ Thread[a -> b]
 
-Pauli /:
-HoldPattern @ Elaborate[ Pauli[jj__] ] := Module[
-  { new },
-  new = {jj} /. {
-    HoldPattern[0 -> 0] :> 10,
-    HoldPattern[1 -> 1] :> 11,
-    HoldPattern[1 -> 0] :> Raise,
-    HoldPattern[0 -> 1] :> Lower,
-    4 -> Raise,
-    5 -> Lower,
-    6 -> Hadamard,
-    7 -> Quadrant,
-    8 -> Octant,
-    -7 -> -Quadrant,
-    -8 -> -Octant
-   };
-  Garner @ Apply[CircleTimes, Pauli /@ new]
- ]
 
-Pauli /:
-Dagger[ Pauli[a__] ] := Pauli[a] /. {4->5, 5->4, 7->-7, -7->7, 8->-8, -8->8}
+(* Elaboration rules *)
+
 (* NOTE: Multi-spin Pauli operators are stored in Pauli[a, b, c, ...],
    NOT CircleTimes[Pauli[a], Pauli[b], Pauli[c], ...].
    Namely, Pauli[...] is not expanded into CircleTimes. *)
 
+Pauli /: HoldPattern @ Elaborate[ Pauli[a_, bc__] ] :=
+  Garner @ Apply[CircleTimes, Elaborate[Pauli /@ {a, bc}]]
+
+Pauli /: HoldPattern @ Elaborate[ op:Pauli[0|1|2|3] ] := op
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[0 -> 0] ] := Pauli[10]
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[1 -> 1] ] := Pauli[11]
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[4] ] := Pauli[Raise]
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[4] ] := Pauli[Raise]
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[5] ] := Pauli[Lower]
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[6] ] := Pauli[Hadamard]
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[7] ] := Pauli[Quadrant]
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[8] ] := Pauli[Octant]
+
+Pauli /: HoldPattern @ Elaborate[ Pauli[8] ] := Pauli[Octant]
+
+
+(* Dagger and Conjugate *)
+
+(* NOTE: Multi-spin Pauli operators are stored in Pauli[a, b, c, ...],
+   NOT CircleTimes[Pauli[a], Pauli[b], Pauli[c], ...].
+   Namely, Pauli[...] is not expanded into CircleTimes. *)
+
+Pauli /: Dagger[ Pauli[m:(0|1|2|3|6)] ] := Pauli[m]
+
+Pauli /: Dagger[ Pauli[4] ] := Pauli[5]
+
+Pauli /: Dagger[ Pauli[5] ] := Pauli[4]
+
+Pauli /: Dagger[ Pauli[7] ] := Dagger @ Pauli[Quadrant]
+
+Pauli /: Dagger[ Pauli[8] ] := Dagger @ Pauli[Octant]
+
+Pauli /: HoldPattern @ Dagger[ Pauli[jj__] ] :=
+  Garner @ Apply[CircleTimes, Dagger /@ Pauli /@ {jj}]
+
 
 Pauli /: Conjugate[ Pauli[2] ] = -Pauli[2]
 
-Pauli /: Conjugate[ Pauli[7] ] = Pauli[-7]
+Pauli /: Conjugate[ Pauli[7] ] = Conjugate @ Elaborate @ Pauli[7]
 
-Pauli /: Conjugate[ Pauli[-7] ] = Pauli[7]
-
-Pauli /: Conjugate[ Pauli[8] ] = Pauli[-8]
-
-Pauli /: Conjugate[ Pauli[-8] ] = Pauli[8]
+Pauli /: Conjugate[ Pauli[8] ] = Conjugate @ Elaborate @ Pauli[8]
 
 Pauli /: Conjugate[ Pauli[m:(0|1|3|4|5|6)] ] := Pauli[m]
 
@@ -1140,12 +1169,14 @@ Pauli /:
 CircleTimes[a_Pauli, b__Pauli] := Pauli @@ Catenate[List @@@ {a, b}]
 
 
-(**** <Pauli in Multipy> ****)
+(**** <Pauli in Multiply> ****)
+
 HoldPattern @ Multiply[pre___, op__Pauli, vec:Ket[(0|1)..], post___] :=
   Multiply[pre, Dot[op, vec], post]
 
 HoldPattern @ Multiply[pre___, op_Pauli, more__Pauli, Shortest[post___]] :=
   Multiply[pre, Dot[op, more], post]
+
 (**** </Pauli in Multiply> ****)
 
 
@@ -1168,7 +1199,8 @@ Operator[ kk:{(0|1|2|3|4|5|6), _, _} .. ] := Garner[
   CircleTimes @@ Map[Operator] @ {kk}
  ]
 
-Operator[ { kk:{(0|1|2|3|4|5|6|7|8|-7|-8)..}, th:Except[_List], ph:Except[_List] } ] := 
+Operator[ { kk:{(0|1|2|3|4|5|6|7|8)..},
+    th:Except[_List], ph:Except[_List] } ] := 
   CircleTimes @@ Map[Operator] @ Tuples[{kk, {th}, {ph}}]
 (* These are first expanded because they are not elementry. *)
 
@@ -2308,25 +2340,7 @@ Pauli /:
 Dot[ Pauli[7], Pauli[7] ] := Pauli[3]
 
 Pauli /:
-Dot[ Pauli[-7], Pauli[-7] ] := Pauli[3]
-
-Pauli /:
 Dot[ Pauli[8], Pauli[8] ] := Pauli[7]
-
-Pauli /:
-Dot[ Pauli[-8], Pauli[-8] ] := Pauli[-7]
-
-Pauli /:
-Dot[ Pauli[7], Pauli[-7] ] := Pauli[0]
-
-Pauli /:
-Dot[ Pauli[-7], Pauli[7] ] := Pauli[0]
-
-Pauli /:
-Dot[ Pauli[8], Pauli[-8] ] := Pauli[0]
-
-Pauli /:
-Dot[ Pauli[-8], Pauli[8] ] := Pauli[0]
 
 Pauli /:
 Dot[ Pauli[n:(4|5)], Pauli[n:(4|5)] ] := 0
@@ -2357,12 +2371,6 @@ Dot[ Pauli[n:(4|5|6|7|8)], Pauli[k:(1|2|3|4|5|6|7|8)] ] :=
 Pauli /:
 Dot[ Pauli[k:(1|2|3|4|5|6|7|8)], Pauli[n:(4|5|6|7|8)] ] :=
   ExpandAll @ Dot[ Pauli[k /. $PauliShortCuts], Pauli[n /. $PauliShortCuts] ]
-
-Pauli /:
-Dot[ a:Pauli[(-7|-8)], b_Pauli ] := Dot[ Dagger[ a /. $PauliShortCuts ], b ]
-
-Pauli /:
-Dot[ a_Pauli, b:Pauli[(-7|-8)] ] := Dot[ a, Dagger[ b /. $PauliShortCuts ] ]
 
 $PauliShortCuts = {
   4 -> Raise,
@@ -3959,7 +3967,6 @@ chiralVertexRulesShort[ii_List, jj_List, spec:{row_, col_}] :=
 (* ***************************************************************** *)
 (*     </GraphForm>                                                  *)
 (* ***************************************************************** *)
-
 
 Protect[ Evaluate @ $symbs ]
 

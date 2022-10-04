@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.6.24
+
+- Pauli[-7] and Pauli[-8] have been removed.
+
+- Pauli[-n] introduced to represent a special class of phase gates; consistent with S[...,-n] for labelled qubits. 
+
 ## v2.6.23
 
 - LindbladBasisMatrix has been significantly enhanced in speed. It also affects other functions such as LindbladConvert that are relying on it.

@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.33 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-11 15:49:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.34 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-04 11:44:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -771,7 +771,7 @@ GottesmanMatrix[op_, ss:{__?QubitQ}] := Module[
    where this form is faster, and hence we keep this form. *)
 
 GottesmanMatrix[op_] := Module[
-  { n = Length @ First @ Cases[op, _Pauli, Infinity],
+  { n = Length @ First @ Cases[{op}, _Pauli, Infinity],
     xz },
   xz = Pauli @@@ Riffle[
     NestList[RotateRight, PadRight[{1}, n], n-1],
