@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2022-09-12 09:21:04+09 $ *)
-(* $Revision: 1.6 $ *)
+(* $Date: 2022-10-08 16:42:04+09 $ *)
+(* $Revision: 1.8 $ *)
 
 BeginPackage["YoungFourier`", {"Q3`"}]
 
@@ -12,12 +12,10 @@ ClearAll["`*"];
 { YoungFourierBasis };
 { YoungNormalRepresentation };
 
-{ toYoungForm };
-
 Begin["`Private`"]
 
 
-YoungFourierBasis::usage = "YoungFourierBasis[n] ... ."
+YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis of degree n, i.e., the Fourier transform over the symmetric group of degree n of the canonical basis of the left regular representation of the same group.\nYoungFourierBasis[shp] returns the Young-Fourier basis in the sector designated by partition shp."
 
 YoungFourierBasis[n_Integer] := Module[
   { shp = IntegerPartitions[n] },
@@ -29,7 +27,7 @@ YoungFourierBasis[shape_?YoungShapeQ] := Module[
     ops = GroupElements @ SymmetricGroup[Total @ shape],
     mat },
   mat = YoungNormalRepresentation[shape] /@ ops;
-  mat = Dot[Ket /@ ops, Topple @ mat] * Sqrt[dim] / Sqrt[Length @ ops] //
+  mat = Dot[Ket /@ ops, Topple /@ mat] * Sqrt[dim] / Sqrt[Length @ ops] //
     Garner;
   AssociationThread[ Tuples[YoungTableaux[shape], {2}] -> Flatten @ mat ]
  ]

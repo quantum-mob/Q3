@@ -1382,7 +1382,7 @@ HoldPattern @
       Multiply[ Multiply[pre, Commutator[a, b]], MultiplyExp[a], new]
    ] /; Garner[ Commutator[a, b, 2] ] === 0
 (* NOTE: Exp is pushed to the right. *)
-(* NOTE: Here notice the PatternTest AnySpeciesQ is put in order to skip
+(* NOTE: Here, notice the PatternTest AnySpeciesQ is put in order to skip
    Exp[op] or MultiplyExp[op]. Commutators involving Exp[op] or
    MultiplyExp[op] usually takes long in vain. *)
 

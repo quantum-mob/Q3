@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.130 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-07 08:47:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.136 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-09 17:18:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -35,6 +35,8 @@ BeginPackage["Q3`"];
 { Transposition };
 
 { PermutationForm };
+
+{ PermutationBasis };
 
 { PileYoungShape, BratteliDiagram };
 
@@ -861,15 +863,56 @@ SpechtBasis[n_Integer] := With[
   AssociationThread[pp -> SpechtBasis /@ pp]
  ]
 
-(**** </SpechtBasis> ****)
-
-
 (* For the Specht module *)
 Format[ Ket[tbs__?anyYoungTableauQ] ] := Ket @@ Map[YoungForm, {tbs}]
 
-(* For the permutation module *)
+(* For the regular representation of the symmetric group *)
 Format[ Ket[args:$PermutationSpec..] ] := Ket @@ PermutationForm[{args}]
 (* NOTE: This must come after the definition of $PermutationSpec. *)
+
+(**** </SpechtBasis> ****)
+
+
+(**** <PermutationBasis> ****)
+
+PermutationBasis::usage = "PermutationBasis[{s1,s2,\[Ellipsis],sn}] returns the basis of the permutation module for the symmetric group of degree n.\nPermutationBasis[{m1,m2,\[Ellipsis],md},{s1,s2,\[Ellipsis],sn}] returns the basis of the subspace corresponding to composition (also known as type or content) {m1,m2,\[Ellipsis],md} of n, where d is the number of levels of each of the species in {s1,s2,\[Ellipsis],sn}."
+
+PermutationBasis::baddim = "The dimensions of species in `` are not equal to each other."
+
+PermutationBasis[ss : {__?SpeciesQ}] := 
+  PermutationBasis[FlavorNone @ ss] /; Not[FlavorNoneQ@ss]
+
+PermutationBasis[ss : {__?SpeciesQ}] := Module[
+  { dim = Dimension[ss],
+    shp, occ, res, k },
+  If[ Apply[Equal, dim],
+    dim = First @ dim,
+    Message[PermutationBasis::baddim, ss];
+    Return[$Failed]
+   ];
+  shp = IntegerPartitions[Length@ss, dim];
+  shp = PadRight[#, dim]& /@ shp;
+  occ = Permutations /@ shp;
+  res = Association /@ Map[Rule[#, PermutationBasis[#, ss]]&, occ, {2}];
+  res = Table[KeyMap[{shp[[k]], #}&, res[[k]]], {k, Length @ shp}];
+  Merge[res, Catenate]
+ ]
+
+PermutationBasis[type:{__Integer?NonNegative}, ss : {__?SpeciesQ}] :=
+  Module[
+    { dim = Dimension[ss],
+      occ, tpl},
+    If[ Apply[Equal, dim],
+      dim = First @ dim,
+      Message[PermutationBasis::baddim, ss];
+      Return[$Failed]
+     ];
+    occ = PadRight[type, dim];
+    tpl = Permutations @ Flatten @ MapThread[Table, {Range[dim]-1, occ}];
+    Return[Ket[ss -> #]& /@ tpl]
+   ] /; Total[type] == Length[ss]
+
+(**** </PermutationBasis> ****)
 
 
 End[]

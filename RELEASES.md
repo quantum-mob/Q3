@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.6.26
+
+- PermutationBasis spanning the permuation module for the symmetric group.
+
 ## v2.6.24
 
 - Pauli[-7] and Pauli[-8] have been removed.

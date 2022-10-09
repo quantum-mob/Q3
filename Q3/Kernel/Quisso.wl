@@ -784,7 +784,7 @@ QuissoAddZ[irb_Association, irc_Association] := Module[
   Map[ReverseSort, rr]
  ]
 
-QuissoAdd::usage = "QuissoAdd[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... that are invariant under arbitrary SU(2) rotations. Here the qubits S$1, S$2, ... are regarded 1/2 spins."
+QuissoAdd::usage = "QuissoAdd[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... that are invariant under arbitrary SU(2) rotations. Here, the qubits S$1, S$2, ... are regarded 1/2 spins."
 
 QuissoAdd::duplicate = "Duplicate angular momentum operators appear."
 

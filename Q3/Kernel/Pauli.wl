@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.253 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-04 22:34:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.260 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-06 23:18:22+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -663,7 +663,7 @@ KetDrop[S_?SpeciesQ][any_] := KetDrop[any, {S}]
 KetDrop[ss:{__?SpeciesQ}][any_] := KetDrop[any, ss]
 
 
-KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if test holds true. Here test is an inequality or equality in terms of species.\nKetPurge[test] represents an operator form of KetPurge."
+KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if test holds true. Here, test is an inequality or equality in terms of species.\nKetPurge[test] represents an operator form of KetPurge."
 
 KetPurge[test_][expr_] := KetPurge[expr, test]
 
@@ -1504,7 +1504,7 @@ Basis[ expr:Except[_?SpeciesQ] ] := With[
 
 (**** <TheMatrix> ****)
 
-TheMatrix::usage = "TheMatrix[op] returns the matrix representation of op. Here op is an elementary operators.\nThis function is a low-level function intended for internal use.\nSee also TheExpression, which serves for similar purposes."
+TheMatrix::usage = "TheMatrix[op] returns the matrix representation of op. Here, op is an elementary operators.\nThis function is a low-level function intended for internal use.\nSee also TheExpression, which serves for similar purposes."
 
 HoldPattern @ TheMatrix[ Dagger[op_] ] := Topple @ TheMatrix[op]
 
@@ -1715,23 +1715,23 @@ MatrixIn[op_, bs_List] := (
 
 MatrixIn[bs:(_List|_Association)][op_] := MatrixIn[op, bs]
 
-MatrixIn[vec_, bs_List] := Multiply[Dagger[bs], vec] /;
+MatrixIn[vec_, bs_List] := SparseArray @ Multiply[Dagger[bs], vec] /;
   And[
     Not @ FreeQ[vec, Ket[_Association]],
     FreeQ[vec, _Multiply] (* Ket[...] ** Bra[...] *)
    ]
 
-MatrixIn[bra_, bs_List] := Multiply[bra, bs] /;
+MatrixIn[bra_, bs_List] := SparseArray @ Multiply[bra, bs] /;
   And[
     Not @ FreeQ[bra, Bra[_Association]],
     FreeQ[bra, _Multiply] (* Ket[...] ** Bra[...] *)
    ]
 
 MatrixIn[op_, bs_List] :=
-  Garner @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
+  SparseArray @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
 
 MatrixIn[op_, aa_List, bb_List] :=
-  Garner @ Outer[Multiply, Dagger[aa], Garner[op ** bb]]
+  SparseArray @ Outer[Multiply, Dagger[aa], Garner[op ** bb]]
 
 MatrixIn[op_, bs_Association] := Map[MatrixIn[op, #]&, bs]
 
@@ -2465,11 +2465,13 @@ CirclePlus[vv__?VectorQ] := Join[vv]
 
 (**** <Dyad> ****)
 
-Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of order 2 and rank 1) corresponding to the dyadic product of two vectors.\nDyad[v] = Dyad[v, v] for a vector v.\nDyad[a, b, qq] for two associations a and b and for a list qq of Species represents the dyadic product of Ket[a] and Ket[b], i.e., Ket[a]**Bra[b], operating on the systems in qq.\nWhen All is given for qq, the operator acts on all systems without restriction."
+Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of order 2 and rank 1) corresponding to the dyadic product of two vectors.\nDyad[a, b, qq] for two associations a and b and for a list qq of Species represents the dyadic product of Ket[a] and Ket[b], i.e., Ket[a]**Bra[b], operating on the systems in qq.\nWhen All is given for qq, the operator acts on all systems without restriction."
+
+Dyad::one = "Now, Dyad explicitly requires a pair of vectors."
 
 (* For simple column vectors *)
 
-Dyad[a_?VectorQ] := KroneckerProduct[a, Dagger @ a]
+Dyad[a_?VectorQ] := ( Message[Dyad::one]; Dyad[a, a] ) /; FreeQ[a, _?SpeciesQ]
 
 Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
 (* NOTE: Dagger -- not Conjugate -- in the above two definitions. *)
@@ -2510,6 +2512,16 @@ Dyad[_, 0, _List] = 0
 
 Dyad[a_Association, b_Association, {}|All] := Multiply[Ket[a], Bra[b]]
 (* NOTE: No particlar reason to store it as Dyad. *)
+
+
+Dyad[S_?SpeciesQ] := Dyad[FlavorNone @ {S}]
+
+Dyad[ss:{__?SpeciesQ}] := Dyad[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss]
+
+Dyad[{}|All][a, b] := Dyad[a, b, All]
+
 
 Dyad[Ket[a_Association], Ket[b_Association], {}|All] :=
   Multiply[Ket[a], Bra[b]]
@@ -3569,7 +3581,15 @@ FrobeniusProduct = HilbertSchmidtProduct
 
 HilbertSchmidtProduct::usage = "HilbertSchmidtProduct[a, b] returns the Hilbert-Schmidt (or Frobenius) inner product of two matrices a and b, that is, Tr[ConjugateTranspose[a].b].\nIf a is a vector, it is regarded as Dyad[a,a], and similary for b."
 
-HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a].b]
+HilbertSchmidtProduct::incmp = "Two matrix `1` and `2` are not compatible for the Hilbert-Schmidt inner product."
+
+HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := (
+  Message[HilbertSchmidtProduct::incmp, a, b];
+  Return[0]
+ )
+
+HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a].b] /;
+  ArrayQ[{a, b}]
 
 HilbertSchmidtProduct[a_?VectorQ, b_?MatrixQ] := Conjugate[a].b.a
 
@@ -3577,7 +3597,24 @@ HilbertSchmidtProduct[a_?MatrixQ, b_?VectorQ] := Conjugate[a].Topple[b].a
 
 HilbertSchmidtProduct[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]^2
 
-Format[ HilbertSchmidtProduct[a_, b_] ] := AngleBracket[a, b]
+
+HilbertSchmidtProduct[a_, b_] := With[
+  { ss = NonCommutativeSpecies @ {a, b} },
+  HilbertSchmidtProduct[a, b, ss]
+ ]
+
+
+HilbertSchmidtProduct[S_?SpeciesQ] :=
+  HilbertSchmidtProduct[FlavorNone @ {S}]
+
+HilbertSchmidtProduct[ss:{___?SpeciesQ}] :=
+  HilbertSchmidtProduct[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+HilbertSchmidtProduct[ss:{___?SpeciesQ}][a_, b_] :=
+  HilbertSchmidtProduct[a, b, ss]
+
+HilbertSchmidtProduct[a_, b_, ss:{___?SpeciesQ}] :=
+  HilbertSchmidtProduct[Matrix[a, ss], Matrix[b, ss]]
 
 (**** </HilbertSchmidtNorm> *****)
 
