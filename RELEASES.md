@@ -1,8 +1,9 @@
 # Select Release Notes
 
-## v2.6.26
+## v2.7.0
 
 - PermutationBasis spanning the permuation module for the symmetric group.
+- SpechtBasis spanning the Specht module for the symmetric group.
 
 ## v2.6.24
 

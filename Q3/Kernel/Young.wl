@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.136 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-09 17:18:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.0 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-10 14:29:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -38,6 +38,8 @@ BeginPackage["Q3`"];
 
 { PermutationBasis };
 
+{ DominatesQ, Dominates, DominatedBy };
+
 { PileYoungShape, BratteliDiagram };
 
 { SpechtBasis };
@@ -46,6 +48,7 @@ BeginPackage["Q3`"];
 
 { CountYoungTableaux }; (* renamed *)
 
+{ YoungDominatesQ }; (* renamed *)
 
 Begin["`Private`"]
 
@@ -875,30 +878,27 @@ Format[ Ket[args:$PermutationSpec..] ] := Ket @@ PermutationForm[{args}]
 
 (**** <PermutationBasis> ****)
 
-PermutationBasis::usage = "PermutationBasis[{s1,s2,\[Ellipsis],sn}] returns the basis of the permutation module for the symmetric group of degree n.\nPermutationBasis[{m1,m2,\[Ellipsis],md},{s1,s2,\[Ellipsis],sn}] returns the basis of the subspace corresponding to composition (also known as type or content) {m1,m2,\[Ellipsis],md} of n, where d is the number of levels of each of the species in {s1,s2,\[Ellipsis],sn}."
+PermutationBasis::usage = "PermutationBasis[{m1,m2,\[Ellipsis],md}, {s1,s2,\[Ellipsis],sn}] returns the basis of the permutation module consisting of n-tuples of d letters (or levels) with content (or type) {m1,m2,\[Ellipsis],md} for the symmetric group associated with set {s1,s2,\[Ellipsis],sn} of d-level species.\nPermutationBasis[{s1,s2,\[Ellipsis],sn}] returns an association of the bases of all possible permutation modules for the symmetric group associated with set {s1,s2,\[Ellipsis],sn} of d-level species."
 
 PermutationBasis::baddim = "The dimensions of species in `` are not equal to each other."
 
-PermutationBasis[ss : {__?SpeciesQ}] := 
+PermutationBasis[ss:{__?SpeciesQ}] := 
   PermutationBasis[FlavorNone @ ss] /; Not[FlavorNoneQ@ss]
 
-PermutationBasis[ss : {__?SpeciesQ}] := Module[
+PermutationBasis[ss:{__?SpeciesQ}] := Module[
   { dim = Dimension[ss],
-    shp, occ, res, k },
+    shp, occ },
   If[ Apply[Equal, dim],
     dim = First @ dim,
     Message[PermutationBasis::baddim, ss];
     Return[$Failed]
    ];
-  shp = IntegerPartitions[Length@ss, dim];
-  shp = PadRight[#, dim]& /@ shp;
-  occ = Permutations /@ shp;
-  res = Association /@ Map[Rule[#, PermutationBasis[#, ss]]&, occ, {2}];
-  res = Table[KeyMap[{shp[[k]], #}&, res[[k]]], {k, Length @ shp}];
-  Merge[res, Catenate]
+  shp = PadRight[#, dim]& /@ IntegerPartitions[Length @ ss, dim];
+  occ = Flatten[Permutations /@ shp, 1];
+  AssociationMap[PermutationBasis[#, ss]&, occ]
  ]
 
-PermutationBasis[type:{__Integer?NonNegative}, ss : {__?SpeciesQ}] :=
+PermutationBasis[type:{__Integer?NonNegative}, ss:{__?SpeciesQ}] :=
   Module[
     { dim = Dimension[ss],
       occ, tpl},
@@ -912,7 +912,43 @@ PermutationBasis[type:{__Integer?NonNegative}, ss : {__?SpeciesQ}] :=
     Return[Ket[ss -> #]& /@ tpl]
    ] /; Total[type] == Length[ss]
 
+
 (**** </PermutationBasis> ****)
+
+
+(**** <DominatesQ> ****)
+
+DominatesQ::usage = "DominatesQ[a,b] returns True if list a dominates list b and False otherwise."
+
+DominatesQ[a_?ListQ, b_?ListQ] := Module[
+  { n = Max[Length @ a, Length @ b],
+    aa, bb },
+  aa = Accumulate @ PadRight[a, n];
+  bb = Accumulate @ PadRight[b, n];
+  AllTrue[GreaterEqual @@@ Transpose @ {aa, bb}, TrueQ]
+ ]
+
+DominatesQ[_, _] = False
+
+
+Dominates::usage = "Dominates[b] is an operator form that yields a\[RightTriangleEqual]b when applied to an expression a."
+
+Dominates[b_?ListQ][a_?ListQ] := DominatesQ[a, b]
+
+
+DominatedBy::usage = "DominatedBy[a] is an operator form that yields b\[LeftTriangleEqual]a when applied to an expression b."
+
+DominatedBy[a_?ListQ][b_?ListQ] := DominatesQ[a, b]
+
+
+YoungDominatesQ::usage = "YoungDominatesQ has been renamed DominatesQ and extended to any lists."
+
+YoungDominatesQ[a_?YoungShapeQ, b_?YoungShapeQ] := (
+  Message[Q3General::renamed, "YoungDominatesQ", "DominatesQ"];
+  DominatesQ[a, b]
+ )
+
+(**** </DominatesQ> ****)
 
 
 End[]

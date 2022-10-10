@@ -4,12 +4,10 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.112 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-14 11:27:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.113 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-10 10:42:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-{ YoungDominatesQ, YoungContent }
 
 { GelfandPatterns, GelfandPatternQ, GelfandForm,
   ToYoungTableau, ToGelfandPattern };
@@ -17,6 +15,8 @@ BeginPackage["Q3`"];
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
 { WeylTableaux, WeylTableauCount, WeylTableauQ };
+
+{ WeylContent };
 
 { RSKMap };
 
@@ -32,19 +32,9 @@ BeginPackage["Q3`"];
 
 Begin["`Private`"]
 
-YoungDominatesQ::usage = "YoungDominatesQ[a, b] returns True if shape a dominates shape b and False otherwise."
+WeylContent::usage = "WeylContent[tb] returns the content of Weyl tableau tb.\nThe content of a Weyl tableau is the inversely sorted list of multiplicities of numbers (or letters) appearing in the tableau."
 
-YoungDominatesQ[a_?YoungShapeQ, b_?YoungShapeQ] := Module[
-  { d = Max[Length @ a, Length @ b],
-    aa, bb },
-  aa = Accumulate @ PadRight[a, d];
-  bb = Accumulate @ PadRight[b, d];
-  And @@ Thread[aa >= bb]
- ]
-
-YoungContent::usage = "YoungContent[tb] returns the content of Weyl tableau tb.\nThe content of a Weyl tableau is the inversely sorted list of multiplicities of numbers (or letters) appearing in the tableau."
-
-YoungContent[tb_?WeylTableauQ] := ReverseSort @ Values @ Counts[Flatten @ tb]
+WeylContent[tb_?WeylTableauQ] := ReverseSort @ Values @ Counts[Flatten @ tb]
 
 
 (**** <GelfandPatterns> ****)
