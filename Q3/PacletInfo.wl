@@ -1,10 +1,10 @@
 (* Paclet Info File *)
-(* $Date: 2022-10-10 09:37:13+09 $ *)
-(* $Revision: 2.80 $ *)
+(* $Date: 2022-10-12 04:41:24+09 $ *)
+(* $Revision: 2.82 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.7.0",
+  "Version" -> "2.7.1",
   "WolframVersion" -> "12.1+",
   "Updating" -> Automatic,
   "Extensions" -> {
@@ -15,10 +15,6 @@ Paclet[
          The list is also used by FindFile.
          The list also causes documentation links to be added to usage
          messages when documentation is present. *)
-     },
-    { "Kernel",
-      "Root" -> "YoungFourier",
-      "Context" -> { "YoungFourier`" }
      },
     { "Documentation",
       "Language" -> "English",

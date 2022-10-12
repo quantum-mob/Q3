@@ -12,8 +12,8 @@ BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.50 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-06 21:39:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.51 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-12 04:38:53+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -235,6 +235,7 @@ Get["Q3`Wigner`"];
 Get["Q3`Dicke`"];
 Get["Q3`VonNeumann`"];
 Get["Q3`Young`"];
+Get["Q3`YoungFourier`"];
 Get["Q3`Schur`"];
 Get["Q3`Einstein`"]; (* should be loaded last *)
 Get["Q3`Custom`"];

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.260 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-06 23:18:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.262 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-12 12:10:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -977,6 +977,9 @@ Dot[ Bra[a___], Ket[b___] ] := BraKet[{a}, {b}]
 (* Recall that Dot has Flat attribute. *)
 
 (* General evaluation rules *)
+
+(* for YoungRegularBasis, YoungFourierBasis, etc. *)
+BraKet[ {a_Cycles}, {b_Cycles} ] := KroneckerDelta[First @ a, First @ b]
 
 BraKet[ a_List, b_List ] := KroneckerDelta[a, b]
 
@@ -2467,7 +2470,7 @@ CirclePlus[vv__?VectorQ] := Join[vv]
 
 Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of order 2 and rank 1) corresponding to the dyadic product of two vectors.\nDyad[a, b, qq] for two associations a and b and for a list qq of Species represents the dyadic product of Ket[a] and Ket[b], i.e., Ket[a]**Bra[b], operating on the systems in qq.\nWhen All is given for qq, the operator acts on all systems without restriction."
 
-Dyad::one = "Now, Dyad explicitly requires a pair of vectors."
+Dyad::one = "Dyad explicitly requires a pair of vectors now."
 
 (* For simple column vectors *)
 
@@ -2553,6 +2556,7 @@ Dyad[a_, z_ b_, qq:(_List|All)] :=
 
 Dyad[a_] := Module[
   { qq = Cases[a, Ket[c_Association] :> Keys[c], Infinity] },
+  Message[Dyad::one];
   Dyad[a, a, Union @ Flatten @ qq]
  ] /; Not @ FreeQ[a, _Ket]
 

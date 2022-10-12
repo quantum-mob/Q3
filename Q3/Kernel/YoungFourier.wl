@@ -1,18 +1,23 @@
 (* -*- mode:math -*- *)
-(* Mahn-Soo Choi *)
-(* $Date: 2022-10-08 16:42:04+09 $ *)
-(* $Revision: 1.8 $ *)
+BeginPackage["Q3`"];
 
-BeginPackage["YoungFourier`", {"Q3`"}]
+`YoungFourier`$Version = StringJoin[
+  $Input, " v",
+  StringSplit["$Revision: 1.10 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-12 04:37:25+09 $"][[2]], ") ",
+  "Mahn-Soo Choi"
+ ];
 
-Unprotect["`*"];
-ClearAll["`*"];
 
-
-{ YoungFourierBasis };
+{ YoungFourierBasis, YoungRegularBasis };
 { YoungNormalRepresentation };
 
 Begin["`Private`"]
+
+
+YoungRegularBasis::usage = "YoungRegularBasis[n] returns the Young regular basis of degree n, i.e., the canonical basis of the left regular representation of the symmetric group of degree n."
+
+YoungRegularBasis[n_Integer] := Ket /@ GroupElements[SymmetricGroup @ n]
 
 
 YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis of degree n, i.e., the Fourier transform over the symmetric group of degree n of the canonical basis of the left regular representation of the same group.\nYoungFourierBasis[shp] returns the Young-Fourier basis in the sector designated by partition shp."
@@ -43,25 +48,6 @@ YoungNormalRepresentation[shape_?YoungShapeQ, op_Cycles] := Module[
   MatrixIn[op, bs]
  ]
 
-
-
-(*
- * Tools
- *)
-
-toYoungForm[shape_?YoungShapeQ] := YoungDiagram[shape]
-
-toYoungForm[yy : {_?YoungTableauQ, _?YoungTableauQ}] := YoungForm /@ yy
-
-toYoungForm[aa : Association[(_?YoungShapeQ -> _Association) ..]] := 
-  KeyMap[YoungDiagram] @ Map[toYoungForm] @ aa
-
-toYoungForm[aa : Association[({__?YoungTableauQ} -> _) ..]] := 
-  KeyMap[Map @ YoungForm] @ aa
-
-
 End[]
-
-SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
 
 EndPackage[]

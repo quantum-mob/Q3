@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.0 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-10 14:29:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.8 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-12 02:53:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -59,6 +59,8 @@ PermutationForm[Cycles[{}]] := Subscript[\[Pi], 0]
 PermutationForm[Cycles[pp_List]] :=
   Row @ Map[Subscript[\[Pi], Row @ #]&, pp]
 
+PermutationForm[{}] = {}
+
 PermutationForm[prm_?PermutationListQ] := DisplayForm @ RowBox @ {
   "(",
   Grid @ {Range[Length @ prm], prm},
@@ -72,7 +74,7 @@ PermutationForm[expr_] := ReplaceAll[ expr,
  ]
 
 
-Transposition::usage = "Transposition[{i, j}] returns Cycles[{{i, j}}], representing the transposition of elements i and j."
+Transposition::usage = "Transposition[{i, j}] returns Cycles[{{i, j}}], representing the transposition of elements i and j.\nIt is a shortcut to Cycles[{{i, j}}]."
 
 Transposition[{}] := Cycles[{}]
 
@@ -773,36 +775,42 @@ KetSymmetrize[expr_, tbl_?YoungTableauQ] := Module[
 (**** </KetSymmetrize> ****)
 
 
-InversionVector::usage = "InversionVector[perm] returns the inversion vector corresponding to permutation perm.\nThe number of elements greater than i to the left of  i in a permutation gives the ith element of the inversion vector (Skiena 1990, p. 27).\nTotal[InversionVector[perm]] equals to the number of inversions in permtuation perm as well as to the length of perm (i.e., the smallest number of adjacent transpositions combining to perm).\nSee also Combinatorica`ToInversionVector."
+InversionVector::usage = "InversionVector[perm] returns the inversion vector corresponding to permutation perm.\nThe number of elements greater than i to the left of i in a permutation gives the ith element of the inversion vector (Skiena 1990, p. 27).\nTotal[InversionVector[perm]] equals to the number of inversions in permtuation perm as well as to the length of perm (i.e., the smallest number of adjacent transpositions combining to perm).\nSee also Combinatorica`ToInversionVector."
 
 InversionVector[cyc_Cycles] := InversionVector[PermutationList @ cyc]
 
+InversionVector[{}] = {0}
+
 InversionVector[p_?PermutationListQ] := Module[
-  {new = Take[p, #] & /@ InversePermutation[p]},
-  Most@MapThread[
-    Function[{x, y}, Count[x, _?(# > y &)]], {new, Range[Length@p]}]
+  { new = Take[p, #]& /@ InversePermutation[p] },
+  Most @ MapThread[
+    Function[{x, y}, Count[x, _?(# > y &)]], {new, Range[Length @ p]}]
  ] /; (Length[p] > 0)
 
 
 (**** <AdjacentTranspositions> ****)
 
-AdjacentTranspositions::usage = "AdjacentTranspositions[perm] returns a list of adjacent transpositions that combine to the permtuation perm."
+AdjacentTranspositions::usage = "AdjacentTranspositions[perm] returns a list of adjacent transpositions that combine to the permtuation perm.\nNote that permutations are multiplied right to left like right operators, not like functions."
 
-(* TODO: Requires some optimization. *)
+AdjacentTranspositions[prm_?PermutationListQ]:= Module[
+  { idx = 1,
+    trs = {},
+    new = prm },
+  While[ idx < Length[new],
+    If[ new[[idx]] < new[[idx+1]],
+      idx++,
+      trs = Append[trs, idx];
+      new = System`Permute[new, System`Cycles[{{idx, idx+1}}]];
+      If[idx>1, idx--, idx++]
+     ]
+   ];
+  Map[Transposition[#, #+1]&, trs]
+ ];
 
-AdjacentTranspositions[prm_?PermutationListQ] := 
-  AdjacentTranspositions @ PermutationCycles[prm]
+AdjacentTranspositions[{}] = {}
 
-AdjacentTranspositions[Cycles[pp:{__List}]] := Module[
-  { qq = ChainBy[#, List]& /@ pp },
-  qq = Sort /@ Flatten[Reverse /@ qq, 1];
-  Cycles /@ List /@ Catenate[theAdjacent /@ qq]
- ]
-
-theAdjacent[{x_Integer, y_Integer}] := With[
-  {cc = ChainBy[Range[x, y], List]},
-  Join[cc, Reverse @ Most @ cc]
- ] /; x < y
+AdjacentTranspositions[cyc_Cycles] :=
+  AdjacentTranspositions[PermutationList @ cyc]
 
 (**** </AdjacentTranspositions> ****)
 

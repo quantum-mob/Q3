@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.7.1
+
+- YoungFourierBasis, YoungRegularBasis, YoungNormalRepresentation.
+- Occupation acts like an operator on expressions of state vectors.
+
 ## v2.7.0
 
 - PermutationBasis spanning the permuation module for the symmetric group.

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.100 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-21 21:32:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.0 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-12 15:09:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -18,7 +18,8 @@ BeginPackage["Q3`"]
 { Chain, ChainBy };
 { Bead, GreatCircle };
 
-{ ChopThrough, SimplifyThrough, FullSimplifyThrough };
+{ ChopThrough, SimplifyThrough, FullSimplifyThrough,
+  ReplaceAllThrough };
 
 { LeftBrace, RightBrace, OverBrace, UnderBrace };
 
@@ -56,6 +57,8 @@ BeginPackage["Q3`"]
 { PlusDagger, TimesDaggerRight, TimesDaggerLeft };
 
 { TransformBy, TransformByFourier, TransformByInverseFourier };
+
+{ Basis, Matrix, MatrixIn, TheMatrix };
 
 { Observation, ObservationValue, Indefinite };
 { Occupation, OccupationValue };
@@ -388,8 +391,8 @@ nameThrough[name_String] := With[
     func = Symbol[name]},
   full::usage = 
     SymbolName[full] <> "[expr] applies " <> name <> 
-    " through special objects such as Association, SparseArray, etc., in expr, which usually do not allcow for access to internal data.";
-  full[aa_Association] := Map[func, aa];
+    " through special objects such as Association and SparseArray in expr, which usually do not allow for access to internal data.";
+  full[aa_Association] := Map[full, aa];
   full[aa_SparseArray] := SparseArray[func @ ArrayRules @ aa];
   full[expr_] := func @ ReplaceAll[
     func[expr],
@@ -402,6 +405,22 @@ nameThrough[name_String] := With[
 nameThrough @ {Chop, Simplify, FullSimplify};
 
 (***** </ChopThrough ...> *****)
+
+
+ReplaceAllThrough::usage = "ReplaceAllThrough[expr, rules] applies ReplaceAll[ruels] through special objects such as Associatin and SparseArray in expr, which usually do not allow for access to internal data."
+
+ReplaceAllThrough[aa_Association, rules_] := ReplaceAll[rules] /@ aa
+
+ReplaceAllThrough[aa_SparseArray, rules_] :=
+  SparseArray @ ReplaceAll[ArrayRules @ aa, rules]
+
+ReplaceAllThrough[expr_, rules_] := ReplaceAll[
+  ReplaceAll[expr, rules],
+  { aa_Association :> ReplaceAllThrough[aa, rules],
+    aa_SparseArray :> ReplaceallThrough[aa, rules] }
+ ]
+
+ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]
 
 
 (**** <LeftBrace> ****)
@@ -1643,7 +1662,7 @@ HoldPattern @ Matrix[Observation[spec_], ss:{__?SpeciesQ}] := Module[
   { bs = Basis[ss],
     vv },
   vv = ObservationValue[spec][bs];
-  DiagonalMatrix[vv]
+  SparseArray @ DiagonalMatrix[vv]
  ]
 
 Observation /:
@@ -1710,12 +1729,16 @@ Occupation[ss:{__?SpeciesQ}, k_] :=
   Occupation[FlavorNone @ ss, k] /;
   Not[FlavorNoneQ @ ss]
 
-Occupation[ss:{__?SpeciesQ}, k_][expr_] :=
-  Observation[HoldForm @ Count[ss, k]][expr] /;
+Occupation[ss:{__?SpeciesQ}, k_] :=
+  Observation[HoldForm @ Count[ss, k]] /;
   And[Equal @@ Kind[ss], Equal @@ Dimension[ss]]
 
 Occupation /:
-HoldPattern @ Dagger[ Occupation[args__] ] := Occupation[args]
+HoldPattern @ Dagger[ op_Occupation ] := op
+
+Occupation /:
+HoldPattern @ NonCommutativeSpecies[Occupation[ss:{__?SpeciesQ}, _]] :=
+  NonCommutativeSpecies[ss]
 
 SyntaxInformation[Occupation] = {
   "ArgumentsPattern" -> {_, _}
