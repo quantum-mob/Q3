@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.7.2
+
+- LindbladSimulate for the quantum jump approach.
+
 ## v2.7.1
 
 - YoungFourierBasis, YoungRegularBasis, YoungNormalRepresentation.

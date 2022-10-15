@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.86 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-30 13:57:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.2 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-15 18:51:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,6 +21,8 @@ BeginPackage["Q3`"]
   LindbladStationary };
 
 { NLindbladSolve };
+
+{ LindbladSimulate };
 
 
 (**** Legacy, Excised, Renamed, Obsolete ****)
@@ -567,6 +569,123 @@ LindbladSolveNaive[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
 
 LindbladSolveNaive[ops:{_, __}, in_?MatrixQ, _] :=
   Message[LindbladSolveNaive::incmp, Normal @ Append[ops, in]] 
+
+
+(**** <LindbladSimulate> ****)
+
+LindbladSimulate::usage = "LindbladSimulate[h, {a1,a2,...}, in, {t1,t2,...}] simulates the dynamics governed by the Lindblad equation associated with the effective Hamiltonian h and the Lindblad operators a1, a2, \[Ellipsis] starting with the initial vector in and using the quantum jump approach, and returns the random trajectories of vector representation {c1,c2,\[Ellipsis],cd} in the computational basis of the Hilbert space of dimension d at each time instants t1, t2, \[Ellipsis]."
+
+LindbladSimulate::numeric = "All elements of the matrices and initial vector as well as the final time must be numeric."
+
+LindbladSimulate::incmp = "The matrices and/or the initial vector are incompatible with each other."
+
+Options[LindbladSimulate] = {
+  "Samples" -> 500,
+  "SaveData" -> True,
+  "Overwrite" -> True,
+  "Filename" -> Automatic,
+  "Prefix" -> "Carlo"
+ }
+
+LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
+  opts:OptionsPattern[]] := Module[
+    { opG = DampingOperator[opL],
+      n = OptionValue["Samples"],
+      k = 0,
+      progress = 0,
+      data, file },
+
+    If[ Not @ AllTrue[Flatten @ {opH, opL, in, tt}, NumericQ],
+      Message[LindbladSimulate::numeric];
+      Return[$Failed]
+     ];
+
+    PrintTemporary @ ProgressIndicator @ Dynamic[progress];
+    data = Transpose @ Table[
+      progress = k++ / n;
+      goMonteCarlo[opH-I*opG, opL, in, tt],
+      n
+     ];
+    
+    If[Not @ OptionValue["SaveData"], Return @ data];
+    
+    file = OptionValue["Filename"];
+    If[ file === Automatic,
+      file = FileNameJoin @ {
+        Directory[],
+        ToString[Unique @ OptionValue @ "Prefix"]
+       };
+      file = StringJoin[file, ".wlz"]
+     ];
+    
+    If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
+    
+    PutAppend[
+      Compress @ Association @ {"Times" -> tt, "Data" -> data},
+      file
+     ];
+
+    file
+   ] /; And[ArrayQ @ Join[{opH}, opL], Length[opL]==Length[in]]
+
+
+LindbladSimulate[ops:{opH_?MatrixQ, opL__?MatrixQ}, in_?VectorQ, tt_List] :=
+  LindbladSimulate[opH, {opL}, in, tt]
+
+LindbladSimulate[_?MatrixQ, {__?MatrixQ}, _?VectorQ, ___] := (
+  Message[LindbladSimulate::incmp];
+  Return[$Failed]
+ )
+
+
+LindbladSimulate[opH_, opL:{__}, in_, tt_List, opts___?OptionQ] := Module[
+  { ss = NonCommutativeSpecies @ {opH, opL, in} },
+  LindbladSimulate[Matrix[opH, ss], Matrix[opL, ss], Matrix[in, ss], tt, opts]
+ ] /; Not @ FreeQ[in, _Ket]
+
+LindbladSimulate[{opH_, opL__}, in_, tt_List] :=
+  LindbladSimulate[opH, {opL}, in, tt]
+
+LindbladSimulate[spr_LindbladGenerator, in_, tt_List, opts___?OptionQ] :=
+  LindbladSimulate[Sequence @@ spr, in, tt, opts] /;
+  Not @ FreeQ[in, _Ket]
+
+
+goMonteCarlo::usage = "goMonteCarlo[non, {a1,a2,...}, in, {t1,t2,...}] generates a quantum trajectory based on the non-Hermitian Hamiltonian non and Lindblad operators a1, a2, ..., starting from the initial state in at time instants t1, t2, ...."
+goMonteCarlo[non_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List] :=
+  Module[
+    { res = {},
+      new = in,
+      tau = tt,
+      prb, pos, out, pp, qq, t },
+
+    While[ Length[tau] > 1,
+      pp = RandomReal[];
+      qq = RandomReal[];
+      
+      tau = tau - First[tau];
+      out = PadRight[{1}, Length @ new];
+      While[ And[pp > 1-Norm[out]^2, Length[tau] > 0],
+        {{t}, tau} = TakeDrop[tau, 1];
+        out = MatrixExp[-I*t*non].new;
+        AppendTo[res, Normalize @ out]
+       ];
+      
+      If[tau == {}, Return[res]];
+
+      out = Map[(#.out)&, opL];
+
+      prb = Chop @ Accumulate[(Norm /@ out)^2];
+      prb /= Last[prb];
+
+      pos = First @ FirstPosition[prb - qq, _?NonNegative];
+      new = Normalize @ Part[out, pos];
+     ];
+    AppendTo[res, new]
+   ]
+
+(**** </LindbladSimulate> ****)
+
 
 
 End[]
