@@ -12,8 +12,8 @@ BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.51 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-12 04:38:53+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.52 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-16 08:56:07+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -156,7 +156,7 @@ Q3Assure::usage = "Q3Assure[version] checks whether Q3 has the specified version
 Q3Assure[version_?StringQ] := With[
   { vv = ToExpression @ StringSplit[version, "."],
     cc = ToExpression @ StringSplit[Q3Release[], "."] },
-  If[ Or @@ Thread[vv > cc],
+  If[ Not[OrderedQ @ {vv, cc}],
     PrintTemporary["Q3 v" <> version <> " or later is required and Q3 is being updated."];
     If[FailureQ @ Q3Update[], $Failed, Get["Q3`"]]
    ]
