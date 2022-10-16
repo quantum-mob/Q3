@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.113 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-10 10:42:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.114 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-16 09:45:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -72,8 +72,10 @@ GelfandPatternQ[tb_?anyGelfandPatternQ] := Module[
    ]
  ]
 
-anyGelfandPatternQ[tb_] :=
+anyGelfandPatternQ[tb:{{__Integer}..}] :=
   Equal[YoungShape @ tb, Reverse @ Range @ Length @ tb]
+
+anyGelfandPatternQ[_] = False
 
 (**** </GelfandPatternQ> ****)
 

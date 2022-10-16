@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.2 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-15 18:51:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.3 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-16 11:49:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -626,7 +626,7 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
      ];
 
     file
-   ] /; And[ArrayQ @ Join[{opH}, opL], Length[opL]==Length[in]]
+   ] /; And[ArrayQ @ Join[{opH}, opL], Length[opH]==Length[in]]
 
 
 LindbladSimulate[ops:{opH_?MatrixQ, opL__?MatrixQ}, in_?VectorQ, tt_List] :=

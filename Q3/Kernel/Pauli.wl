@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.262 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-12 12:10:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.264 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-16 11:27:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1537,15 +1537,16 @@ Matrix[ expr_ ] := Matrix[expr, NonCommutativeSpecies @ expr]
 Matrix[ expr_, q_?SpeciesQ ] := Matrix[expr, {q}]
 
 Matrix[ expr_Plus, qq:{___?SpeciesQ} ] :=
-  Total @ Map[ Matrix[#, qq]&, List @@ expr ]
+  TrigToExp @ ExpToTrig @ Total @ Map[ Matrix[#, qq]&, List @@ expr ]
+(* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
 
-Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ} ] := z Matrix[op, qq]
+Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ} ] := z * Matrix[op, qq]
 
-Matrix[ z_?CommutativeQ, {} ] := z One[2]
+Matrix[ z_?CommutativeQ, {} ] := z * One[2]
 
 Matrix[ z_?CommutativeQ, qq:{__?SpeciesQ} ] := With[
-  { jj = Range[ Times @@ (Dimension /@ qq) ] },
-  SparseArray @ Thread[ Transpose @ {jj, jj} -> z ]
+  { kk = Range[ Times @@ (Dimension /@ qq) ] },
+  SparseArray @ Thread[ Transpose @ {kk, kk} -> z ]
  ]
 
 

@@ -1,6 +1,10 @@
 # Select Release Notes
 
-## v2.7.2
+## v2.7.4
+
+- An emergency bug fix in LindbladSimulate.
+
+## v2.7.3
 
 - LindbladSimulate for the quantum jump approach.
 
