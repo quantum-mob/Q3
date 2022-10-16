@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.7.5
+
+- An emergency change in the output form of LindbladSimulate.
+
 ## v2.7.4
 
 - An emergency bug fix in LindbladSimulate.

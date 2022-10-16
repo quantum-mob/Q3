@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.3 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-16 11:49:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.4 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-16 12:04:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -601,7 +601,7 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
      ];
 
     PrintTemporary @ ProgressIndicator @ Dynamic[progress];
-    data = Transpose @ Table[
+    data = Table[
       progress = k++ / n;
       goMonteCarlo[opH-I*opG, opL, in, tt],
       n
