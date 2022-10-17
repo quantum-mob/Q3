@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.0 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-12 15:09:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.2 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-17 20:37:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -393,7 +393,8 @@ nameThrough[name_String] := With[
     SymbolName[full] <> "[expr] applies " <> name <> 
     " through special objects such as Association and SparseArray in expr, which usually do not allow for access to internal data.";
   full[aa_Association] := Map[full, aa];
-  full[aa_SparseArray] := SparseArray[func @ ArrayRules @ aa];
+  full[aa_SparseArray] :=
+    SparseArray[func @ ArrayRules @ aa, Dimensions @ aa];
   full[expr_] := func @ ReplaceAll[
     func[expr],
     { aa_Association :> full[aa],
