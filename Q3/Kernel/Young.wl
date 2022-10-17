@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.9 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-16 09:47:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.13 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-17 01:03:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -25,8 +25,9 @@ BeginPackage["Q3`"];
 { GroupClassSize, SymmetricGroupClassSize,
   GroupCentralizerSize, SymmetricGroupCentralizerSize,
   GroupCharacters, SymmetricGroupCharacters,
-  CharacterScalarProduct,
-  CompoundYoungCharacters, KostkaMatrix };
+  CompoundYoungCharacters,
+  YoungCharacterInner,
+  KostkaMatrix };
 
 { InversionVector, AdjacentTranspositions };
 
@@ -341,9 +342,9 @@ KostkaMatrix[n_Integer] := Dot[
  ] /; n > 0
 
 
-CharacterScalarProduct::usage = "CharacterScalarProduct[f, g, n] returns the scalar product of the class vectors f and g for a symmetric group of rank n."
+YoungCharacterInner::usage = "YoungCharacterInner[f, g, n] returns the scalar product of the class vectors f and g for a symmetric group of rank n."
 
-CharacterScalarProduct[f_List, g_List, n_Integer] := Total[
+YoungCharacterInner[f_List, g_List, n_Integer] := Total[
   f * g / (SymmetricGroupCentralizerSize /@ IntegerPartitions[n])
  ] /; And[
    n > 0,
@@ -369,7 +370,9 @@ YoungTableauQ[_] = False
 
 anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau (not necessarily semi-standard) and False otherwise."
 
-anyYoungTableauQ[tb:{{__Integer}..}] := Apply[GreaterEqual, Length /@ tb]
+anyYoungTableauQ[tb:{{(_Integer|" ")..}..}] :=
+  Apply[GreaterEqual, Length /@ tb]
+(* NOTE: " " is necessary for YoungDiagram. *)
 
 anyYoungTableauQ[_] = False
 
@@ -795,7 +798,17 @@ InversionVector[p_?PermutationListQ] := Module[
 
 AdjacentTranspositions::usage = "AdjacentTranspositions[perm] returns a list of adjacent transpositions that combine to the permtuation perm.\nNote that permutations are multiplied right to left like right operators, not like functions."
 
-AdjacentTranspositions[prm_?PermutationListQ]:= Module[
+AdjacentTranspositions[prm_?PermutationListQ]:= 
+  Map[Transposition[#, #+1]&, getAdjacentTranspositions @ prm]
+
+AdjacentTranspositions[{}] = {}
+
+AdjacentTranspositions[cyc_Cycles] :=
+  AdjacentTranspositions[PermutationList @ cyc]
+
+getAdjacentTranspositions::usage="getAdjacentTranspositions[perm] represents perm as product of transpositions of immediate neighbors. An entry value of k in the returned list denotes the transposition (k,k+1)."
+
+getAdjacentTranspositions[prm_?PermutationListQ]:= Module[
   { idx = 1,
     trs = {},
     new = prm },
@@ -803,17 +816,17 @@ AdjacentTranspositions[prm_?PermutationListQ]:= Module[
     If[ new[[idx]] < new[[idx+1]],
       idx++,
       trs = Append[trs, idx];
-      new = System`Permute[new, System`Cycles[{{idx, idx+1}}]];
+      new = Permute[new, Cycles @ {{idx, idx+1}}];
       If[idx>1, idx--, idx++]
      ]
    ];
-  Map[Transposition[#, #+1]&, trs]
- ];
+  Return[trs]
+ ]
 
-AdjacentTranspositions[{}] = {}
+putAdjacentTranspositions::usage = "putAdjacentTranspositions[trs] is the inverse operation of getAdjacentTranspositions.\nGiven here just for heuristic reasons."
 
-AdjacentTranspositions[cyc_Cycles] :=
-  AdjacentTranspositions[PermutationList @ cyc]
+putAdjacentTranspositions[ntr_List] :=
+  Apply[PermutationProduct, Cycles[{{#,#+1}}]& /@ ntr]
 
 (**** </AdjacentTranspositions> ****)
 

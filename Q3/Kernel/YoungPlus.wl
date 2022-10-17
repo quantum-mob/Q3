@@ -9,25 +9,19 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.18 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-12 04:15:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.20 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-17 00:58:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 ClearAll @@ Evaluate @ Unprotect[
-  CoxeterTest, NTranspDecomp, ExpandNTrDecom,
+  CoxeterTest,
   YoungNaturalRepresentation,
   YoungSeminormalRepresentation,
   Seminormal2Natural,
   InvariantYMetric,
   YnrCharacterTest,
   NormSquareOfTableau, WeakLeftBruhatGraph ];
-
-
-NTranspDecomp::usage="NTranspDecomp[pi_?PermutationListQ] represents pi as product of transpositions of immediate neighbors. An entry value of k in the returned list denotes the transposition (k,k+1).\[IndentingNewLine]Attention: Permutations are multiplied right to left like right operators, not like functions!\nSee also AdjacentTranspositions, which is almost the same."
-
-
-ExpandNTrDecom::usage="ExpandNTrDecom[ntr_List] is the inverse operation of NTranspDecomp."
 
 
 InvariantYMetric::usage="InvariantYMetric[\[Lambda]_?YoungShapeQ] is the scalar product invariant under Young's natural presentation corresponding to the integer partition \[Lambda]."
@@ -60,24 +54,6 @@ YoungSeminormalRepresentation::usage="YoungSeminormalRepresentation[pp_?YoungSha
 
 Begin["`Private`"]
 
-NTranspDecomp[prm_?PermutationListQ]:= Module[
-  { idx = 1,
-    trs = {},
-    new = prm },
-  While[ idx < Length[new],
-    If[ new[[idx]] < new[[idx+1]],
-      idx++,
-      trs = Append[trs, idx];
-      new = System`Permute[new, System`Cycles[{{idx, idx+1}}]];
-      If[idx>1, idx--, idx++]
-     ]
-   ];
-  trs
- ];
-
-ExpandNTrDecom[ntr_List]:=PermutationList[Apply[PermutationProduct,System`Cycles[{{#,#+1}}]&/@ntr]];
-
-
 CoxeterTest[ynr_] := And[
   Apply[And, (#.#==IdentityMatrix[Length[ynr[[1]]]])& /@ ynr],
   And @@ Table[
@@ -103,7 +79,7 @@ YoungNaturalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] :=
     IdentityMatrix[YoungTableauCount[pp]],
     Dot @@ Extract[
       YoungNaturalRepresentation[pp],
-      Partition[NTranspDecomp[pi], 1]
+      Partition[getAdjacentTranspositions[pi], 1]
      ]
  ] /; Total[pp]==Length[pi];
 
@@ -116,7 +92,7 @@ YoungSeminormalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] :=
     IdentityMatrix[YoungTableauCount[pp]],
     Dot @@ Extract[
       YoungSeminormalRepresentation[pp],
-      Partition[NTranspDecomp[pi], 1]
+      Partition[getAdjacentTranspositions[pi], 1]
      ]
    ] /; Total[pp]==Length[pi];
 

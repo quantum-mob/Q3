@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.7.6
+
+- LindbladSimulate has been significantly improved in speed.
+
 ## v2.7.5
 
 - An emergency change in the output form of LindbladSimulate.

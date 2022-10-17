@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.4 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-16 12:04:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.7 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-17 20:03:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -593,7 +593,7 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
       n = OptionValue["Samples"],
       k = 0,
       progress = 0,
-      data, file },
+      data, file, time },
 
     If[ Not @ AllTrue[Flatten @ {opH, opL, in, tt}, NumericQ],
       Message[LindbladSimulate::numeric];
@@ -601,13 +601,16 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
      ];
 
     PrintTemporary @ ProgressIndicator @ Dynamic[progress];
-    data = Table[
-      progress = k++ / n;
-      goMonteCarlo[opH-I*opG, opL, in, tt],
-      n
+    time = First @ Timing[
+      data = SparseArray @ Table[
+        progress = k++ / n;
+        SparseArray @ Chop @ goMonteCarlo[opH-I*opG, opL, in, tt],
+        n
+       ];
      ];
+    PrintTemporary["It took ", time, " seconds for the simulation."];
     
-    If[Not @ OptionValue["SaveData"], Return @ data];
+    If[Not @ OptionValue["SaveData"], Pause[3]; Return @ data];
     
     file = OptionValue["Filename"];
     If[ file === Automatic,
@@ -617,9 +620,13 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
        };
       file = StringJoin[file, ".wlz"]
      ];
+    PrintTemporary[
+      "Now, saving the data in ", file,
+      " ... \nIt may take some time."
+     ];    
     
     If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
-    
+
     PutAppend[
       Compress @ Association @ {"Times" -> tt, "Data" -> data},
       file
@@ -657,7 +664,11 @@ goMonteCarlo[non_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List] :=
     { res = {},
       new = in,
       tau = tt,
-      prb, pos, out, pp, qq, t },
+      val, mat, inv, prb, pos, out, pp, qq, t },
+
+    {val, mat} = Eigensystem[Normal @ non];
+    mat = Transpose[mat];
+    inv = Inverse[mat];
 
     While[ Length[tau] > 1,
       pp = RandomReal[];
@@ -667,7 +678,7 @@ goMonteCarlo[non_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List] :=
       out = PadRight[{1}, Length @ new];
       While[ And[pp > 1-Norm[out]^2, Length[tau] > 0],
         {{t}, tau} = TakeDrop[tau, 1];
-        out = MatrixExp[-I*t*non].new;
+        out = mat.(Exp[-I*t*val]*(inv.new));
         AppendTo[res, Normalize @ out]
        ];
       
@@ -681,7 +692,7 @@ goMonteCarlo[non_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List] :=
       pos = First @ FirstPosition[prb - qq, _?NonNegative];
       new = Normalize @ Part[out, pos];
      ];
-    AppendTo[res, new]
+    Append[res, new]
    ]
 
 (**** </LindbladSimulate> ****)
