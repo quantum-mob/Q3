@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.264 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-16 11:27:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.265 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-17 21:33:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -3270,7 +3270,7 @@ PartialTrace[v_?VectorQ, dd:{__Integer}, jj:{__Integer}] := Module[
   ii = Supplement[nn, jj];
   If[ ii == {},
     Norm[v]^2,
-    Total @ Map[Dyad] @ Flatten[Tensorize[v, dd], {jj, ii}]
+    Total @ Map[Dyad[#, #]&, Flatten[Tensorize[v, dd], {jj, ii}]]
    ]
  ]
 (* REMARK: In many cases, handling density matrix is computationally
@@ -3519,7 +3519,7 @@ BasisComplement::usage = "BasisComplement[{v1,v2,\[Ellipsis]}, {w1,w2,\[Ellipsis
 BasisComplement::north = "Non-orthonormal basis ``."
 
 BasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
-  { prj = Total[Dyad /@ Orthogonalize[bb]],
+  { prj = Total[Dyad[#, #]& /@ Orthogonalize[bb]],
     new = Transpose[aa] },
   new = Orthogonalize @ Transpose[new - prj.new];
   Select[new, (Norm[#]>0)&]
