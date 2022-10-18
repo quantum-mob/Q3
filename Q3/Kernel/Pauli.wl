@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.265 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-17 21:33:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.3 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-18 12:54:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,7 +14,9 @@ BeginPackage["Q3`"]
 { State, TheKet, TheBra, TheState };
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
-  KetFactor, KetPurge, KetOrthogonalize, KetNormalize, KetSort, KetNorm };
+  KetFactor, KetPurge, KetSort };
+
+{ KetNorm, KetNormalize, KetOrthogonalize }; 
 
 { KetPermute, KetSymmetrize };
 
@@ -638,9 +640,11 @@ KetVerify[a_, b_] := Rule[a, b]
 
 KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[ImaginaryI], from expr, where the rest is a valid Ket expression."
 
-KetChop[0. + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
+SetAttributes[KetChop, Listable]
 
-KetChop[Complex[0., 0.] + expr_] := expr /; Or[fKetQ[expr], fPauliKetQ[expr]]
+KetChop[0. + expr_] := expr /; Not @ FreeQ[expr, _Ket]
+
+KetChop[Complex[0., 0.] + expr_] := expr /; Not @ FreeQ[expr, _Ket]
 
 KetChop[expr_] := expr
 
@@ -706,17 +710,6 @@ KetUpdate[expr_, spec:{__Rule}] :=
 KetUpdate[expr_, spec__Rule] := KetUpdate[expr, {spec}]
 
 
-KetNormalize::usage = "KetNormalize[expr] returns the normalized form of a ket expression expr.\nKetNormalize[expr, f] normalizes with respect to the norm function f."
-
-KetNormalize[0] = 0
-
-KetNormalize[expr_] := Garner[expr / Sqrt[Dagger[expr]**expr]] /;
-  Not @ FreeQ[expr, _Ket]
-
-KetNormalize[expr_, f_] := Garner[expr / f[expr]] /;
-  Not @ FreeQ[expr, _Ket]
-
-
 KetSort::usage = "KetSort[expr, {s1, s2, \[Ellipsis]}] sorts the logical values of species s1, s2, \[Ellipsis] in every Ket[<|\[Ellipsis]|>] appearing in expr.\nKetSort[expr] applies to all species involved in expr. When expr involves Ket[\[Ellipsis]] for unlabelled qubits, KetSort applies Sort[Ket[\[Ellipsis]]] to every Ket[\[Ellipsis]] in expr."
 
 KetSort[vec:Ket[_Association], ss:{__?SpeciesQ}] := Module[
@@ -740,9 +733,30 @@ KetSort[expr_, ss:{__?SpeciesQ}] := expr /. {
 
 KetNorm::usage = "KetNorm[expr] returns the norm of Ket expression expr."
 
+SetAttributes[KetNorm, Listable]
+
 KetNorm[0] = 0
 
-KetNorm[v_] := Sqrt[Dagger[v] ** v] /; Not @ FreeQ[v, _Ket]
+KetNorm[z_?CommutativeQ * any_Ket] := Abs[z]
+
+KetNorm[expr_] := With[
+  { spc = NonCommutativeSpecies[expr] },
+  If[ Length[Garner @ expr] > Apply[Times, Dimension @ spc]/2 > Power[2, 3],
+    Norm @ Matrix[expr, spc],
+    Sqrt[Dagger[expr] ** expr]
+   ]
+ ] /; Not @ FreeQ[expr, _Ket]
+
+
+KetNormalize::usage = "KetNormalize[expr] returns the normalized form of a ket expression expr.\nKetNormalize[expr, f] normalizes with respect to the norm function f."
+
+KetNormalize[0] = 0
+
+KetNormalize[expr_] := Garner[expr / KetNorm[expr]] /;
+  Not @ FreeQ[expr, _Ket]
+
+KetNormalize[expr_, func_] := Garner[expr / func[expr]] /;
+  Not @ FreeQ[expr, _Ket]
 
 
 KetOrthogonalize::usage = "KetOrthogonalize[vecs] orthgonalizes the vectors in vecs."
@@ -1221,15 +1235,14 @@ ExpressionFor::incmpt = "The matrix/vector `` is not representing an operator/st
 ExpressionFor[vec_?VectorQ] := Module[
   { n = Log[2, Length @ vec],
     bits, vals },
-  If[ IntegerQ[n],
-    Null,
+  If[ Not @ IntegerQ[n],
     Message[ExpressionFor::notls, vec];
-    Return[a]
+    Return[Ket[0]]
    ];
   bits = Flatten @ Keys @ Most @ ArrayRules @ vec;
   vals = vec[[bits]];
   bits = Ket @@@ IntegerDigits[bits-1, 2, n];
-  Garner @ Dot[vals, bits]
+  KetChop @ Garner @ Dot[vals, bits]
  ]
 
 
@@ -1261,6 +1274,8 @@ ExpressionFor[mat_?MatrixQ] := Module[
   Garner @ Total @ Flatten[tt * pp]
  ]
 
+ExpressionFor[expr:(_?VectorQ|_?MatrixQ), {}] := ExpressionFor[expr]
+
 
 (* Column vector to state vector for labeled systems *)
 
@@ -1276,7 +1291,7 @@ ExpressionFor[vec_?VectorQ, ss:{__?SpeciesQ}] := Module[
     Return[0];
    ];
   
-  Garner[vec . bs]
+  KetChop @ Garner[vec . bs]
  ]
 
 (* Matrix to operator for labeled systems *)
@@ -1302,6 +1317,7 @@ ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
   ops = Garner @ Total @ Flatten[tsr * ops];
   JordanWignerTransform[ops, qq -> ff]
  ]
+
 
 TheExpression::usage = "TheExpression[spc] returns the matrix of operators required to construct the operator expresion from the matrix representation involving the species spc.\nIt is a low-level function to be used internally.\nSee also TheMatrix, which serves similar purposes."
 
@@ -1576,6 +1592,22 @@ HoldPattern @
     { ss = FlavorNone @ qq },
     Map[ Matrix[#, ss]&, expr ]
    ]
+
+HoldPattern @
+  Matrix[expr_Association, qq:{___?SpeciesQ}] := With[
+    { ss = FlavorNone @ qq },
+    Map[Matrix[#, ss]&, expr]
+   ]
+
+HoldPattern @
+  Matrix[expr_List, qq:{___?SpeciesQ}] := With[
+    { ss = FlavorNone @ qq },
+    Map[Matrix[#, ss]&, expr]
+   ]
+(* NOTE: {SparseArray[...], SparseArray[...], ...} may not take full advantage
+   of sparse array, and we may add SparseArray at the end. But I decided not
+   to do it as one usually expect {...} as the output. One should handle the
+   output as he prefers. *)
 
 
 (* For Ket/Bra of unlabelled qubits *)
@@ -3516,33 +3548,24 @@ RandomUnitary[n_Integer] := With[
 
 BasisComplement::usage = "BasisComplement[{v1,v2,\[Ellipsis]}, {w1,w2,\[Ellipsis]}] returns a new basis of the subspace W\[UpTee]\[Subset]\[ScriptCapitalV] that is orgohtonal to \[ScriptCapitalW], where \[ScriptCapitalV] is the vector space spanned by the basis {v1,v2,\[Ellipsis]}, and \[ScriptCapitalW] is a subspace of \[ScriptCapitalV] spanned by the basis {w1,w2,\[Ellipsis]}.\nBoth bases are assumed to be orthonormal."
 
-BasisComplement::north = "Non-orthonormal basis ``."
-
 BasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
-  { prj = Total[Dyad[#, #]& /@ Orthogonalize[bb]],
-    new = Transpose[aa] },
-  new = Orthogonalize @ Transpose[new - prj.new];
-  Select[new, (Norm[#]>0)&]
+  { aaa = SparseArray @ aa,
+    mat = Orthogonalize[SparseArray @ bb],
+    new },
+  new = Orthogonalize[aaa - aaa.Topple[mat].mat];
+  Select[new, Positive[Chop @ Norm @ #]&]
  ] /; ArrayQ @ Join[aa, bb]
-(* NOTE: This works for non-orthonormal bases aa and bb. *)
+(* NOTE: This works even if aa and bb are not orthonormal. *)
 
 BasisComplement[aa_List, bb_List] := Module[
-  { prj, new, mat },
-  If[ Chop @ Norm[Outer[Multiply, Dagger[aa], aa] - One[Length @ aa]] > 0,
-    Message[BasisComplement::north, aa]
-   ];
-  If[ Chop @ Norm[Outer[Multiply, Dagger[bb], bb] - One[Length @ bb]] > 0,
-    Message[BasisComplement::north, bb]
-   ];
-  prj = Total[Dyad[#, #]& /@ bb];
-  new = DeleteCases[Union[aa - prj ** aa], 0];
-  mat = Outer[Multiply, Dagger[aa], new];
-  DeleteCases[Garner[Orthogonalize[Transpose @ mat] . aa], 0]
+  { ss = NonCommutativeSpecies @ {aa, bb},
+    new },
+  new = BasisComplement[
+    SparseArray @ Matrix[aa, ss],
+    SparseArray @ Matrix[bb, ss] ];
+  ExpressionFor[#, ss]& /@ new
  ] /; NoneTrue[Join[aa, bb], FreeQ[#, _Ket]&]
-(* NOTE 1: This assumes that both aa and bb are orthonormal. *)
-(* NOTE 2: One could first convert aa and bb to matrix representations. There
-   are pros and cons. The major disadvantage is that in some cases, especially
-   when bosons are involved, the matrix representation may be huge. *)
+(* NOTE: This works even if aa and bb are not orthonormal. *)
 
 
 WignerFunction::usage = "WignerFunction is now obsolete; use the build-in WignerD function."

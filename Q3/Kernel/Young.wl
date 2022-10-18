@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.13 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-17 01:03:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.19 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-18 17:37:13+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -87,7 +87,7 @@ Transposition[x_Integer, y_Integer] := Transposition[{x, y}]
 YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nYoungDiagram[yt] displays the Young diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
 
 YoungDiagram[shape_?YoungShapeQ] :=
-  YoungForm @ Map[Table[" ", #]&, YoungTrim @ shape]
+  Grid @ Map[Table[Item[" ", Frame->True], #]&, shape]
 
 YoungDiagram[yt_?anyYoungTableauQ] := YoungDiagram[YoungShape @ yt]
 
@@ -370,9 +370,7 @@ YoungTableauQ[_] = False
 
 anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau (not necessarily semi-standard) and False otherwise."
 
-anyYoungTableauQ[tb:{{(_Integer|" ")..}..}] :=
-  Apply[GreaterEqual, Length /@ tb]
-(* NOTE: " " is necessary for YoungDiagram. *)
+anyYoungTableauQ[tb:{{__Integer}..}] := Apply[GreaterEqual, Length /@ tb]
 
 anyYoungTableauQ[_] = False
 
@@ -464,9 +462,13 @@ Permutation::cyc = "`` does not represent a valid permutation in disjoint cyclic
 
 AddElaborationPatterns[_Permutation]
 
+Permutation[prm_?PermutationListQ, ss:{__?SpeciesQ}] :=
+  Permutation[PermutationCycles @ prm, FlavorNone @ ss]
+
+
 Permutation[Cycles[{}], qq:{__?SpeciesQ}] := 1
 
-Permutation[cyc_, ss:{__?SpeciesQ}] :=
+Permutation[cyc_Cycles, ss:{__?SpeciesQ}] :=
   Permutation[cyc, FlavorNone @ ss] /;
   Not @ FlavorNoneQ[ss]
 
@@ -475,19 +477,16 @@ HoldPattern @ Dagger @ Permutation[cyc_, ss:{__?SpeciesQ}] :=
   Permutation[InversePermutation[cyc], ss]
 
 Permutation /:
-HoldPattern @ Elaborate @
-  Permutation[cyc:$PermutationSpec, ss:{__?SpeciesQ}] :=
-  Module[
+HoldPattern @ Elaborate @ Permutation[
+  cyc_?PermutationCyclesQ, ss:{__?SpeciesQ} ] := With[
     { bs = Basis @ ss },
-    If[ Not @ PermutationCyclesQ[cyc],
-      Message[Permutation::cyc, cyc];
-      Return[1]
-     ];
     Elaborate @ Total @ Map[Dyad[KetPermute[#, cyc, ss], #, ss]&, bs]
    ]
+(* NOTE: Here, _?PermutationCyclesQ cannot be replaced by
+   $PermutationSpec because of HoldPattern. *)
 
 Permutation /:
-HoldPattern @ Matrix[op_Permutation, rest___] := Matrix[Elaborate[op], rest]
+HoldPattern @ Matrix[op_Permutation, rest___] := Matrix[Elaborate @ op, rest]
 
 
 Permutation /:
@@ -561,7 +560,7 @@ HoldPattern @
 
 KetPermute::usage = "KetPermute[vec, perm] returns a new state vector where each Ket[\[Ellipsis]] in state vector vec is replaced by a new one with the logical values permuted according to permutation perm.\nKetPermute[vec, {q1, q2, ...}, perm] returns a new state vector permuting the values of the particles q1, q2, ... in each Ket[<|\[Ellipsis]|>] in state vector vec according to permutation perm.\nPermutation perm may be a group such as SymmetricGroup, PermutationGroup, AlternatingGroup, or a list of Cycles, where a list of state vectors are returned after applying all elements of the group or list."
 
-$PermutationSpec = Alternatives[_?PermutationListQ, _Cycles]
+$PermutationSpec = Alternatives[_?PermutationListQ, _?PermutationCyclesQ]
 
 $PermutationGroups = Alternatives @@ Blank /@ {
   SymmetricGroup, AlternatingGroup, PermutationGroup, CyclicGroup
