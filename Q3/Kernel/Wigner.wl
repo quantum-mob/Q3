@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.23 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-14 16:43:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.24 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-19 18:47:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -480,14 +480,14 @@ KetRule[ r:Rule[{__?SpinQ}, _] ] := FlavorNone @ Thread[r]
 
 KetTrim[S_?SpinQ, m_] := Nothing /; Spin[S] == m
 
-KetVerify::spininv = "For spin ``, the assigned value `` is not a valid directional spin quantum number."
+KetVerify::spin = "Invalid value `` for spin ``."
 
-KetVerify[op_?SpinQ, m_] := If[
-  SpinNumberQ @ {Spin[op], m},
-  Rule[op, m],
-  Message[KetVerify::spininv, op, m];
+KetVerify[op_?SpinQ, m_] := (
+  Message[KetVerify::spin, m, op];
   $Failed
- ]
+ ) /; Not[-Spin[op] <= m <= Spin[op]]
+(* NOTE: The following definition would not allow to assign a symbolic value:
+   KetVerify[_?SpinQ, m] = $Failed /; SpinNumberQ @ {Spin[op], m} *)
 
 (**** </Ket for Spins> ****)
 

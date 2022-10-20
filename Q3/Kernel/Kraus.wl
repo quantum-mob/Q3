@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.12 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-19 01:24:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.15 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-20 13:30:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,7 +14,7 @@ BeginPackage["Q3`"]
 
 { ChoiMultiply, ChoiTopple };
 
-{ LindbladGenerator, DampingOperator };
+{ LindbladSupermap, DampingOperator };
 
 { LindbladBasis, LindbladBasisMatrix,
   LindbladConvert, LindbladSolve,
@@ -31,6 +31,7 @@ BeginPackage["Q3`"]
 
 { KrausProduct }; (* obsolete *)
 
+{ LindbladGenerator }; (* renamed *)
 
 Begin["`Private`"]
 
@@ -306,58 +307,69 @@ DampingOperator[opL:{Except[_?ListQ]..}] := MultiplyDot[Dagger @ opL, opL] / 2
 DampingOperator[{}] = 0
 
 
-LindbladGenerator::usage = "LindbladGenerator[opH, opL1, opL2, \[Ellipsis]] represents a superoperator generating the Lindblad equation specified by the effective Hamiltonian opH and the Lindblad operators opL1, opL2, \[Ellipsis].\nLindbladGenerator[opH, opL1, opL2, \[Ellipsis]][rho] transforms the matrix rho."
-  
-LindbladGenerator::incmp = "The matrices `` are not compatible with each other."
+(***** <LindbladSupermap> *****)
 
-LindbladGenerator[ops:{_?MatrixQ, __?MatrixQ}] := (
-  Message[LindbladGenerator::incmp, Normal @ ops];
+LindbladSupermap::usage = "LindbladSupermap[opH, opL1, opL2, \[Ellipsis]] represents a superoperator generating the Lindblad equation specified by the effective Hamiltonian opH and the Lindblad operators opL1, opL2, \[Ellipsis].\nLindbladSupermap[opH, opL1, opL2, \[Ellipsis]][rho] transforms the matrix rho."
+  
+LindbladSupermap::incmp = "The matrices `` are not compatible with each other."
+
+LindbladSupermap[ops:{_?MatrixQ, __?MatrixQ}] := (
+  Message[LindbladSupermap::incmp, Normal @ ops];
   (Zero @ Dimensions @ #)&
  ) /; Not @ ArrayQ @ ops
 
-LindbladGenerator[opH_, {opL__}] := LindbladGenerator @ {opH, opL}
+LindbladSupermap[opH_, {opL__}] := LindbladSupermap @ {opH, opL}
 
-LindbladGenerator[opH_, None] := LindbladGenerator[{opH, None}]
+LindbladSupermap[opH_, None] := LindbladSupermap[{opH, None}]
 
-LindbladGenerator[{opH_?MatrixQ, None}] :=
-  LindbladGenerator @ {opH, Zero @ Dimensions @ opH}
+LindbladSupermap[{opH_?MatrixQ, None}] :=
+  LindbladSupermap @ {opH, Zero @ Dimensions @ opH}
 
-LindbladGenerator[{opH_, None}] := LindbladGenerator @ {opH, 0}
+LindbladSupermap[{opH_, None}] := LindbladSupermap @ {opH, 0}
 
-LindbladGenerator[{None, opL__?MatrixQ}] :=
-  LindbladGenerator @ {Zero @ Dimensions @ First @ opL, opL}
+LindbladSupermap[{None, opL__?MatrixQ}] :=
+  LindbladSupermap @ {Zero @ Dimensions @ First @ {opL}, opL}
 
-LindbladGenerator[{None, opL__}] := LindbladGenerator @ {0, opL}
+LindbladSupermap[{None, opL__}] := LindbladSupermap @ {0, opL}
 
-LindbladGenerator[{opH_?MatrixQ, opL__?MatrixQ}][rho_?MatrixQ] := Module[
-  { opG = DampingOperator[opL],
+LindbladSupermap[{opH_?MatrixQ, opL__?MatrixQ}][rho_?MatrixQ] := Module[
+  { non = -I*(opH - I*DampingOperator[opL]),
     gen },
-  opG = -I(opH . rho - rho . opH) - (opG . rho + rho . opG);
-  gen = Plus @@ Map[ (#.rho.Topple[#])&, {opL} ];
-  opG + gen
+  non = non.rho + rho.Topple[non];
+  gen = Total @ Map[ (#.rho.Topple[#])&, {opL} ];
+  non + gen
  ]
 
-LindbladGenerator[{opH_, opL__}][rho_] := Module[
-  { opG = DampingOperator[opL],
+LindbladSupermap[{opH_, opL__}][rho_] := Module[
+  { non = -I*(opH - I*DampingOperator[opL]),
     gen },
-  opG = -I*Commutator[opH, rho] - Anticommutator[opG, rho];
+  non = non**rho + rho**Dagger[non];
   gen = Total @ Multiply[{opL}, rho, Dagger @ {opL}];
-  Garner[opG + gen]
+  Garner[non + gen]
  ]
 
 
-LindbladGenerator /:
-ChoiMatrix @ LindbladGenerator @ {opH_?MatrixQ, opL__?MatrixQ} := Module[
+LindbladSupermap /:
+ChoiMatrix @ LindbladSupermap @ {opH_?MatrixQ, opL__?MatrixQ} := Module[
   { one = One @ Length @ opH,
-    opG = DampingOperator[opL] },
-  -I(ChoiMatrix[opH, one] - ChoiMatrix[one, opH]) -
-    (ChoiMatrix[opG, one] + ChoiMatrix[one, opG]) +
+    non = -I(opH - I*DampingOperator[opL]) },
+  ChoiMatrix[non, one] + ChoiMatrix[one, non] +
     ChoiMatrix @ {opL}
  ]
 
-LindbladGenerator /:
-HoldPattern @ ChoiMatrix @ LindbladGenerator[ops:{_, __}] :=
-  ChoiMatrix @ LindbladGenerator @ Matrix[ops]
+LindbladSupermap /:
+HoldPattern @ ChoiMatrix @ LindbladSupermap[ops:{_, __}] :=
+  ChoiMatrix @ LindbladSupermap @ Matrix[ops]
+
+
+LindbladGenerator::usage = "LindbladGenerator has been renamed LindbladSupermap."
+
+LindbladGenerator[args__] := (
+  Message[Q3General::renamed, "LindbladGenerator", "LindbladSupermap"];
+  LindbladSupermap[args]
+ )
+
+(***** </LindbladSupermap> *****)
 
 
 (**** <LindbladConvert> ****)
@@ -387,7 +399,7 @@ LindbladConvert[tsr_?ChoiMatrixQ] := (
 LindbladConvert[opH_, {opL__}] := LindbladConvert[{opH, opL}]
 
 LindbladConvert[{opH_?MatrixQ, opL__?MatrixQ}] :=
-  LindbladConvert[ChoiMatrix @ LindbladGenerator @ {opH, opL}] /;
+  LindbladConvert[ChoiMatrix @ LindbladSupermap @ {opH, opL}] /;
   ArrayQ @ {opH, opL}
 
 LindbladConvert[ops:{__?MatrixQ}] :=
@@ -515,7 +527,7 @@ NLindbladSolve[opH_, {opL__}, init_, rest__] :=
 
 
 NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
-  NLindbladSolve[ChoiMatrix @ LindbladGenerator @ ops, init, {t, tmin, tmax}] /;
+  NLindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, init, {t, tmin, tmax}] /;
   ArrayQ @ Join[{init}, ops]
 
 NLindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
@@ -648,7 +660,7 @@ LindbladSimulate[opH_, opL:{__}, in_, tt_List, opts___?OptionQ] := Module[
 LindbladSimulate[{opH_, opL__}, in_, tt_List] :=
   LindbladSimulate[opH, {opL}, in, tt]
 
-LindbladSimulate[spr_LindbladGenerator, in_, tt_List, opts___?OptionQ] :=
+LindbladSimulate[spr_LindbladSupermap, in_, tt_List, opts___?OptionQ] :=
   LindbladSimulate[Sequence @@ spr, in, tt, opts] /;
   Not @ FreeQ[in, _Ket]
 

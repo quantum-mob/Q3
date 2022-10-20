@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.3 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-18 12:54:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.10 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-20 14:49:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -300,6 +300,9 @@ LogicalForm[ Ket[a_Association], gg_List ] := Module[
 LogicalForm[ Bra[a_Association], gg_List ] :=
   Dagger @ LogicalForm[Ket[a], gg]
 
+LogicalForm[ OTimes[args__], ___ ] :=
+  OTimes @@ Map[LogicalForm, {args}]
+
 LogicalForm[ OSlash[Ket[a_Association], expr_], gg_List ] := With[
   { ss = FlavorNone @ gg },
   OSlash[Ket[a], LogicalForm[expr, Supplement[ss, Keys @ a]]]
@@ -331,6 +334,7 @@ $KetGroupDelimiter::usage = "The charater delimiting groups of values in a Ket."
 Once[
   $KetDelimiter = Nothing;
   $KetGroupDelimiter = ";";
+  $KetProductDelimiter = "\[CircleTimes]";
  ]
 
 SimpleForm::usage = "SimpleForm[expr] represents every Ket in expr in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {S1, ..., {S2, S3, ...}, ...}] splits each Ket into the form Ket @ Row @ {S1, ..., Ket[S2, S3, ...], ...}."
@@ -382,9 +386,9 @@ ProductForm[ expr_ ] := ProductForm[expr, NonCommutativeSpecies @ expr]
 
 ProductForm[ expr_, S_?SpeciesQ ] := SimpleForm[ expr, {S} ]
 
-ProductForm[ v:Ket[_Association], gg_List ] := Row @ Map[
-  Ket @ Row @ Riffle[#, $KetDelimiter]&,
-  Flatten /@ List /@ v /@ gg
+ProductForm[ vec:Ket[_Association], gg_List ] := Row @ Riffle[
+  Map[Ket @ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ vec /@ gg],
+  $KetProductDelimiter
  ]
 
 ProductForm[ v:Bra[a_Association], gg_List ] :=
@@ -628,7 +632,7 @@ KetVerify[ expr_ ] := expr //. { v_Ket :> KetVerify[v] }
 
 KetVerify[ Ket[a_Association] ] := With[
   { aa = KeyValueMap[KetVerify, a] },
-  If[ Or @@ Map[FailureQ, aa],
+  If[ AnyTrue[aa, FailureQ],
     $Failed,
     Ket @ Association @ aa,
     Ket @ Association @ aa
@@ -3130,18 +3134,18 @@ PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
 
 Negativity::usage = "Negativity[rho, spec] returns the negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
 
-Negativity::norm = "`` is not properly normalized."
+Negativity::norm = "`` is not properly normalized: trace = ``."
 
 Negativity[vec_?VectorQ, spec__] := (
-  If[ Chop[Norm @ vec] != 1,
-    Message[Negativity::norm, vec]
+  If[ Rationalize[Norm @ vec] != 1,
+    Message[Negativity::norm, vec, Rationalize @ Norm @ vec]
    ];
   (NormPT[vec, spec] - 1) / 2
  )
 
 Negativity[mat_?MatrixQ, spec__] := (
-  If[ Chop[Tr @ mat] != 1,
-    Message[Negativity::norm, mat]
+  If[ Rationalize[Tr @ mat] != 1,
+    Message[Negativity::norm, mat, Rationalize @ Tr @ mat]
    ];
   (NormPT[mat, spec] - 1) / 2
  )
@@ -3174,18 +3178,18 @@ Negativity[rho_, S_?SpeciesQ, T_?SpeciesQ] :=
 
 LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the logarithmic negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
 
-LogarithmicNegativity::norm = "`` is not properly normalized."
+LogarithmicNegativity::norm = "`` is not properly normalized: trace = ``."
 
 LogarithmicNegativity[vec_?VectorQ, spec__] := (
-  If[ Chop[Norm @ vec] != 1,
-    Message[LogarithmicNegativity::norm, vec]
+  If[ Rationalize[Norm @ vec] != 1,
+    Message[LogarithmicNegativity::norm, vec, Rationalize @ Norm @ vec]
    ];
   Log2 @ NormPT[vec, spec]
  )
 
 LogarithmicNegativity[mat_?MatrixQ, spec__] := (
-  If[ Chop[Tr @ mat] != 1,
-    Message[LogarithmicNegativity::norm, mat]
+  If[ Rationalize[Tr @ mat] != 1,
+    Message[LogarithmicNegativity::norm, mat, Rationalize @ Tr @ mat]
    ];
   Log2 @ NormPT[mat, spec]
  )

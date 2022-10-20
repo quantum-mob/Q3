@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.50 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-18 19:59:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.53 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-19 18:39:40+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -529,6 +529,15 @@ QuissoExpand[expr_] := (
 
 KetTrim[_?QubitQ, 0] = Nothing
 
+KetVerify::qubit = "Invalid value `` for qubit ``."
+
+KetVerify[a_?QubitQ, v_] := (
+  Message[KetVerify::qubit, v, a];
+  $Failed
+ ) /; Or[ Negative[v], v > 1 ]
+(* NOTE: The following definition would not allow to assign a symbolic value:
+   KetVerify[ _?QubitQ, Except[0|1] ] = $Failed *)
+
 (**** </Ket for Qubit> ****)
 
 
@@ -739,7 +748,8 @@ TheMatrix[ _?QubitQ[___, m_Integer?Negative] ] :=
 
 TheMatrix[ _?QubitQ[___, m_] ] := ThePauli[m]
 
-TheMatrix[ Ket[ Association[_?QubitQ -> s:(0|1)] ] ] := SparseArray @ TheKet[s]
+TheMatrix[ Ket[ Association[_?QubitQ -> s:(0|1)] ] ] :=
+  SparseArray @ TheKet[s]
 
 (**** </Matrix> ****)
 
@@ -2187,10 +2197,14 @@ FlavorMute[S_Symbol?QuditQ[j___, _] -> m_] := S[j, None] -> m
 
 KetTrim[_?QuditQ, 0] = Nothing
 
-KetTrim[A_?QuditQ, s_Integer] := (
-  Message[Qudit::range, Dimension[A], FlavorNone @ A];
-  Nothing
- ) /; s >= Dimension[A]
+KetVerify::qudit = "Invalid value `` for qudit ``."
+
+KetVerify[a_?QuditQ, v_] := (
+  Message[KetVerify::qudit, v, a];
+  $Failed
+ ) /; Not[0 <= v < Dimension[a]]
+(* NOTE: The following definition would not allow to assign a symbolic value:
+   KetVerify[ _?QuditQ, Except[0|1] ] = $Failed *)
 
 (**** </Ket for Qubits> ****)
 
