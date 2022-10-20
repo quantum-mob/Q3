@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.7.9
+
+- LindbladGenerator has been renamed LindbladSupermap.
+
 ## v2.7.8
 
 - LindbladSimulate has been further improved in speed.
