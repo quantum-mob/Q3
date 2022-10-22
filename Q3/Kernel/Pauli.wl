@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.10 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-20 14:49:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.12 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-21 19:53:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1343,6 +1343,10 @@ ExpressionIn::usage = "ExpressionIn[mat, bs] returns the operator that is repere
 
 ExpressionIn::notbs = "`` does not look like a valid basis."
 
+SyntaxInformation[ExpressionIn] = {
+  "ArgumentsPattern" -> {_, __}
+ }
+
 ExpressionIn[vec_?VectorQ, bs_List] := bs . vec
 
 ExpressionIn[mat_?MatrixQ, bs_List] := ExpressionIn[mat, bs, bs]
@@ -1742,6 +1746,10 @@ MatrixIn::nullv = "`` includes the null vector (0 or 0.)."
 
 MatrixIn::notbs = "`` does not look like a valid basis."
 
+SyntaxInformation[MatrixIn] = {
+  "ArgumentsPattern" -> {_, __}
+ }
+
 MatrixIn[op_, bs_List] := (
   Message[MatrixIn::nullv, bs];
   Garner @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
@@ -1753,7 +1761,11 @@ MatrixIn[op_, bs_List] := (
   Zero[Length @ bs, Length @ bs]
  ) /; AnyTrue[bs, FreeQ[#, _Ket]&]
 
-MatrixIn[bs:(_List|_Association)][op_] := MatrixIn[op, bs]
+MatrixIn[expr:(_List|_Association), spec:(__List|__Association)] :=
+  Map[MatrixIn[#, spec]&, expr]
+
+(* MatrixIn[bs:(_List|_Association)][op_] := MatrixIn[op, bs] *)
+(* NOTE; Dangerous? *)
 
 MatrixIn[vec_, bs_List] := SparseArray @ Multiply[Dagger[bs], vec] /;
   And[

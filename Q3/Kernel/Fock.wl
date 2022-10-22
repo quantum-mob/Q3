@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.29 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-19 18:47:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.31 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-20 23:53:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -157,7 +157,7 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
   x /: Conjugate[x] := x;
   x /: Conjugate[x[j___]] := x[j];
 
-  x[j___, None] := x[j];
+  x[j___, None, k___] := x[j,k];
   x[] := x;
 
   x[j___, a_ -> b_] := Dyad[Ket[x[j] -> b], Ket[x[j] -> a], {x[j]}];
@@ -301,7 +301,7 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
-  x[j___, None] := x[j];
+  x[j___, None, k___] := x[j, k];
   x[] := x;
   
   Spin[x] ^= spin;

@@ -6,8 +6,8 @@ BeginPackage["Q3`"]
 
 `FockPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.21 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-08 12:27:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.23 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-22 06:25:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -24,7 +24,7 @@ ClearAll @@ Evaluate @ Unprotect[
 
 Begin["`Private`"]
 
-Pairings::usage = "Pairings[list] generates all possible pairings of the elements in list.\nSee also the built-in function Groupings."
+Pairings::usage = "Pairings[list] generates all possible pairings of the elements in list.\nSee also ListPartitions and the built-in function Groupings."
 
 Pairings::odd = "There are an odd number of elements in ``."
 
@@ -46,7 +46,7 @@ Pairings[a_List] := Module[
 
 iPairings[a:{_, _}, b:{_, _}] := {{a, b}}
 
-iPairings[a:{_, _}, b_List] := Map[Join[{a}, #] &, Pairings[b]]
+iPairings[a:{_, _}, b_List] := Map[Join[{a}, #]&, Pairings[b]]
 
 
 Average::usage = "Average[expr] represents the quantum mechanical expectation value of expr."
