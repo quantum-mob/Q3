@@ -1,4 +1,4 @@
-<img align="Right" src="Images/Q3forQuantumBlackM.jpg" width="350" title="hover text">
+<img align="Right" src="Images/Q3forQuantumBlackS.jpg" width="200" title="hover text">
 
 # Q3
 
