@@ -1,3 +1,5 @@
+<img align="Right" src="Images/Q3forQuantumBlackM.jpg" width="350" title="hover text">
+
 # Q3
 
 Q3 is a Wolfram Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems. It provides various tools and utilities for symbolic and numerical calculations in these areas of quantum physics.
