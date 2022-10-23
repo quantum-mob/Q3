@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.7.11
+
+- An emergency update to handle some special cases where BasisComplement behaves unexpectedly, the issue of which is inherited from the built-in Orthogonalize function.
+
 ## v2.7.9
 
 - LindbladGenerator has been renamed LindbladSupermap.

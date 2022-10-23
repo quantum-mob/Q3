@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.12 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-21 19:53:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.21 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-23 22:30:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -28,9 +28,10 @@ BeginPackage["Q3`"]
 
 { BraKet };
 
-{ Basis, Matrix, MatrixIn, TheMatrix };
-
-{ ExpressionFor, TheExpression, ExpressionIn };
+{ Basis,
+  Matrix, TheMatrix,
+  ExpressionFor, TheExpression,
+  MatrixIn, ExpressionIn };
 
 { ProperSystem, ProperValues, ProperStates };
 
@@ -686,7 +687,8 @@ KetPurge[Ket[asso_Association], test_] := Module[
   If[cond, 0, Ket[asso], Ket[asso]]
  ]
 
-KetPurge[asso_Association, test_] := KetPurge[test] /@ asso
+KetPurge[expr:(_List|_Association), test_] :=
+  DeleteCases[KetPurge[test] /@ expr, 0|{}]
 
 KetPurge[expr_, test_] := expr /. {
   v:Ket[_Association] :> KetPurge[v, test]
@@ -1341,13 +1343,19 @@ TheExpression[S_] := Table[
 
 ExpressionIn::usage = "ExpressionIn[mat, bs] returns the operator that is reperesented by matrix mat in basis bs.\nExpressionIn[mat,aa,bb] returns the operator that is represented by matrix mat in bases aa and bb for the rows and columns, respectively.\nExpressionIn[vec,bs] is equivalent to Dot[bs,vec]."
 
-ExpressionIn::notbs = "`` does not look like a valid basis."
+ExpressionIn::vector = "Vector `` incompatible with basis ``."
+
+ExpressionIn::matrix = "Matrix `` incompatible with basis `` and/or ``."
 
 SyntaxInformation[ExpressionIn] = {
   "ArgumentsPattern" -> {_, __}
  }
 
-ExpressionIn[vec_?VectorQ, bs_List] := bs . vec
+ExpressionIn[vec_?VectorQ, bs_List] := bs . vec /; Length[bs] == Length[vec]
+
+ExpressionIn[vec_?VectorQ, bs_List] :=
+  (Message[ExpressionIn::vector, vec, bs]; First @ bs)
+
 
 ExpressionIn[mat_?MatrixQ, bs_List] := ExpressionIn[mat, bs, bs]
 
@@ -1357,6 +1365,10 @@ ExpressionIn[mat_?MatrixQ, aa_List, bb_List] := Module[
   obs = Dyad[#1, #2, spc]& @@@ Tuples[{aa, bb}];
   obs . Flatten[mat]
  ] /; And @ Thread[Dimensions[mat] == {Length @ aa, Length @ bb}]
+
+ExpressionIn[mat_?VectorQ, aa_List, bb_List] :=
+  (Message[ExpressionIn::matrix, mat, aa, bb]; 0)
+
 
 ExpressionIn[mat_Association, bs_Association] := Module[
   { kk = Keys @ mat,
@@ -3562,26 +3574,58 @@ RandomUnitary[n_Integer] := With[
  ]
 
 
-BasisComplement::usage = "BasisComplement[{v1,v2,\[Ellipsis]}, {w1,w2,\[Ellipsis]}] returns a new basis of the subspace W\[UpTee]\[Subset]\[ScriptCapitalV] that is orgohtonal to \[ScriptCapitalW], where \[ScriptCapitalV] is the vector space spanned by the basis {v1,v2,\[Ellipsis]}, and \[ScriptCapitalW] is a subspace of \[ScriptCapitalV] spanned by the basis {w1,w2,\[Ellipsis]}.\nBoth bases are assumed to be orthonormal."
+(**** <BasisComplement> *****)
 
-BasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
+svdBasisComplement::usage = "svdBasisComplement[{v1,v2,\[Ellipsis]}, {w1,w2,\[Ellipsis]}] returns a new basis of the subspace W\[UpTee]\[Subset]\[ScriptCapitalV] that is orgohtonal to \[ScriptCapitalW], where \[ScriptCapitalV] is the vector space spanned by the basis {v1,v2,\[Ellipsis]}, and \[ScriptCapitalW] is a subspace of \[ScriptCapitalV] spanned by the basis {w1,w2,\[Ellipsis]}."
+
+svdBasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
   { aaa = SparseArray @ aa,
     mat = Orthogonalize[SparseArray @ bb],
-    new },
-  new = Orthogonalize[aaa - aaa.Topple[mat].mat];
+    any, val, new },
+  new = aaa - aaa.Topple[mat].mat;
+  {any, val, new} = SingularValueDecomposition[new];
+  val = DeleteCases[Chop @ Diagonal @ val, 0];
+  Take[Topple @ new, Length @ val]
+ ] /; ArrayQ @ Join[aa, bb]
+(* NOTE: This works even if aa and bb are not orthonormal. *)
+
+
+BasisComplement::usage = "BasisComplement[{v1,v2,\[Ellipsis]}, {w1,w2,\[Ellipsis]}] returns a new basis of the subspace W\[UpTee]\[Subset]\[ScriptCapitalV] that is orgohtonal to \[ScriptCapitalW], where \[ScriptCapitalV] is the vector space spanned by the basis {v1,v2,\[Ellipsis]}, and \[ScriptCapitalW] is a subspace of \[ScriptCapitalV] spanned by the basis {w1,w2,\[Ellipsis]}."
+
+Options[BasisComplement] = { Method -> "GramSchmidt" };
+(* Possible options: "SVD" (singular value decomposition) as well as those of
+   Orthogonalize. *)
+
+BasisComplement[aa_?MatrixQ, bb_?MatrixQ, opts:OptionsPattern[]] := Module[
+  { aaa, mat, new },
+  
+  If[OptionValue[Method] == "SVD", Return @ svdBasisComplement[aa, bb]];
+  
+  aaa = SparseArray @ aa;
+  mat = Orthogonalize[SparseArray @ bb];
+  
+  new = aaa - aaa.Topple[mat].mat;
+  new = Orthogonalize @ Select[new, Positive[Chop @ Norm @ #]&, opts];
+  (* NOTE: Theoretically, the above two lines may be combined to a single line,
+       new = Orthogonalize[aaa - aaa.Topple[mat].mat];
+     However, it gives a strange result when some rows of mat are contained in
+     aaa. This issue is inherited from the built-in function Orthogonalize. *)
   Select[new, Positive[Chop @ Norm @ #]&]
  ] /; ArrayQ @ Join[aa, bb]
 (* NOTE: This works even if aa and bb are not orthonormal. *)
 
-BasisComplement[aa_List, bb_List] := Module[
+BasisComplement[aa_List, bb_List, opts:OptionsPattern[]] := Module[
   { ss = NonCommutativeSpecies @ {aa, bb},
     new },
   new = BasisComplement[
     SparseArray @ Matrix[aa, ss],
-    SparseArray @ Matrix[bb, ss] ];
+    SparseArray @ Matrix[bb, ss],
+    opts ];
   ExpressionFor[#, ss]& /@ new
  ] /; NoneTrue[Join[aa, bb], FreeQ[#, _Ket]&]
 (* NOTE: This works even if aa and bb are not orthonormal. *)
+
+(**** </BasisComplement> *****)
 
 
 WignerFunction::usage = "WignerFunction is now obsolete; use the build-in WignerD function."
