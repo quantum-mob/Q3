@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.34 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-04 11:44:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.35 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-26 17:01:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -25,7 +25,7 @@ BeginPackage["Q3`"]
 
 { GottesmanStandard, GottesmanSolve };
 
-{ CliffordDecomposition };
+{ CliffordDecompose };
 
 { Stabilizer, StabilizerStateQ };
 
@@ -1012,23 +1012,23 @@ columnPivoting[mat_?MatrixQ, off_Integer, k_Integer] := Module[
 (**** </GottesmanStandard> ****)
 
 
-(**** <CliffordDecomposition> ****)
+(**** <CliffordDecompose> ****)
 
-CliffordDecomposition::usage = "CliffordDecomposition[op] returns a list of generators of the Clifford group that combine to yield Clifford operator op. CliffordDecomposition[mat] decomposes the Clifford operator corresponding to Gottesman matrix mat."
+CliffordDecompose::usage = "CliffordDecompose[op] returns a list of generators of the Clifford group that combine to yield Clifford operator op. CliffordDecompose[mat] decomposes the Clifford operator corresponding to Gottesman matrix mat."
 
-CliffordDecomposition::badmat = "`` is not a valid binary symplectic matrix."
+CliffordDecompose::badmat = "`` is not a valid binary symplectic matrix."
 
-CliffordDecomposition[op_] := Module[
+CliffordDecompose[op_] := Module[
   { ss = Qubits @ op,
     mat },
   mat = GottesmanMatrix[op, ss];
-  CliffordDecomposition[mat, ss]
+  CliffordDecompose[mat, ss]
  ]
 
-CliffordDecomposition[mat_?GottesmanMatrixQ, ss:{_?QubitQ}] :=
+CliffordDecompose[mat_?GottesmanMatrixQ, ss:{_?QubitQ}] :=
   { FromGottesmanMatrix[mat, ss] }
 
-CliffordDecomposition[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
+CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   { n = Length @ ss,
     kk, qq, rr,
     ff, hh, aa, bb, vv,
@@ -1038,7 +1038,7 @@ CliffordDecomposition[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   kk = FirstPosition[GottesmanInner @@@ ff, 1];
   
   If[ MissingQ[kk], 
-    Message[CliffordDecomposition::badmat, MatrixForm @ mat];
+    Message[CliffordDecompose::badmat, MatrixForm @ mat];
     Return @ {1}
    ];
 
@@ -1049,7 +1049,7 @@ CliffordDecomposition[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
      ];
     new = Mod[mat . cyc, 2];
     opf = SWAP @@ Part[ss, {1, kk}];
-    Return @ Join[{opf}, CliffordDecomposition[new, ss]]
+    Return @ Join[{opf}, CliffordDecompose[new, ss]]
    ];
 
   {qq, rr} = TakeDrop[ss, 1];
@@ -1071,7 +1071,7 @@ CliffordDecomposition[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   vv = Mod[new . aa . hh . bb, 2];
   vv = vv[[3;;, 3;;]];
 
-  Join[{opf, opa, oph, opb}, CliffordDecomposition[vv, rr]] /.
+  Join[{opf, opa, oph, opb}, CliffordDecompose[vv, rr]] /.
     fGateRules
  ]
 
@@ -1083,7 +1083,7 @@ fGateRules = {
   Phase[0, ___] -> Nothing
  };
 
-(**** </CliffordDecomposition> ****)
+(**** </CliffordDecompose> ****)
 
 
 End[]
