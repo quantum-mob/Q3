@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.7.12
+
+- CliffordDecomposition is now open to the public. Previously, it was a part of another project.
+
 ## v2.7.11
 
 - An emergency update to handle some special cases where BasisComplement behaves unexpectedly, the issue of which is inherited from the built-in Orthogonalize function.

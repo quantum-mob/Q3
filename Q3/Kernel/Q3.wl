@@ -12,8 +12,8 @@ BeginPackage["Q3`"]
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.52 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-16 08:56:07+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.53 $"][[2]], " (",
+  StringSplit["$Date: 2022-10-25 10:28:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -29,9 +29,9 @@ Begin["`Private`"]
 
 Q3General::usage = "Q3General is a symbol to which general messages concerning Q3 are attached.\nIt is similar to built-in symbol General."
 
-Q3General::beta = "You are using a beta version of Q3 locally installed in `1` while v`2` is available from the server."
+Q3General::local = "You are using a beta version of Q3 locally installed in `1` while v`2` is available from the server."
 
-Q3General::faulty = "The Q3 application has not been installed properly. Go to `` for the instruction." 
+Q3General::setup = "The Q3 application has not been installed properly. Go to `` for the instruction." 
 
 Q3General::obsolete = "Symbol `` is obsolete. Use `` instead."
 
@@ -39,7 +39,7 @@ Q3General::excised = "Symbol `` has been excised."
 
 Q3General::renamed = "Symbol `` has been renamed ``."
 
-Q3General::changed = "The patterns for the sequence of arguments for `1` have been changed: `2`"
+Q3General::changed = "The patterns for the arguments sequence of `1` have been changed: `2`"
 
 Q3General::angle = "An angle should come first in the sequence of arguments for ``. Effective since Q3 v1.2.0."
 
@@ -85,7 +85,7 @@ Q3Info[] := Module[
     pkg = Symbol /@ Names["Q3`*`$Version"],
     ver },
   If[ FailureQ @ pac,
-    Message[Q3General::faulty,
+    Message[Q3General::setup,
       Hyperlink["https://github.com/quantum-mob/Q3/blob/main/INSTALL.md"]
      ];
     Return[pac]
@@ -95,7 +95,7 @@ Q3Info[] := Module[
       pac @ "Location",
       FileNameJoin @ {"Paclets", "Repository", "Q3-"}
      ],
-    Message[Q3General::beta, pac @ "Location", Q3RemoteRelease[]]
+    Message[Q3General::local, pac @ "Location", Q3RemoteRelease[]]
    ];
 
   ver = "Q3 Application v" <> pac["Version"];  

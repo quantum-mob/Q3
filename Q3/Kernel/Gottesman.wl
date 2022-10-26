@@ -25,6 +25,8 @@ BeginPackage["Q3`"]
 
 { GottesmanStandard, GottesmanSolve };
 
+{ CliffordDecomposition };
+
 { Stabilizer, StabilizerStateQ };
 
 { BinarySymplecticGroup,
@@ -1008,6 +1010,80 @@ columnPivoting[mat_?MatrixQ, off_Integer, k_Integer] := Module[
  ]
 
 (**** </GottesmanStandard> ****)
+
+
+(**** <CliffordDecomposition> ****)
+
+CliffordDecomposition::usage = "CliffordDecomposition[op] returns a list of generators of the Clifford group that combine to yield Clifford operator op. CliffordDecomposition[mat] decomposes the Clifford operator corresponding to Gottesman matrix mat."
+
+CliffordDecomposition::badmat = "`` is not a valid binary symplectic matrix."
+
+CliffordDecomposition[op_] := Module[
+  { ss = Qubits @ op,
+    mat },
+  mat = GottesmanMatrix[op, ss];
+  CliffordDecomposition[mat, ss]
+ ]
+
+CliffordDecomposition[mat_?GottesmanMatrixQ, ss:{_?QubitQ}] :=
+  { FromGottesmanMatrix[mat, ss] }
+
+CliffordDecomposition[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
+  { n = Length @ ss,
+    kk, qq, rr,
+    ff, hh, aa, bb, vv,
+    opf, oph, opa, opb, opv, cyc, new },
+
+  ff = Transpose[Partition[#, 2]& /@ Take[mat, 2]];
+  kk = FirstPosition[GottesmanInner @@@ ff, 1];
+  
+  If[ MissingQ[kk], 
+    Message[CliffordDecomposition::badmat, MatrixForm @ mat];
+    Return @ {1}
+   ];
+
+  If[ (kk = First[kk]) != 1,
+    cyc = CircleTimes[
+      PermutationMatrix[Cycles @ {{1, kk}}, n],
+      One[2]
+     ];
+    new = Mod[mat . cyc, 2];
+    opf = SWAP @@ Part[ss, {1, kk}];
+    Return @ Join[{opf}, CliffordDecomposition[new, ss]]
+   ];
+
+  {qq, rr} = TakeDrop[ss, 1];
+  
+  ff = First @ ff;
+  ff = Mod[GottesmanInverse[ff] . ThePauli[1], 2];
+
+  opf = Dagger @ FromGottesmanMatrix[ff, qq];
+
+  new = CirclePlus[ff, One[2(n-1)]];
+  new = Mod[mat . new, 2];
+
+  aa = FromGottesmanVector[new[[2, 3;;]], rr];
+  bb = FromGottesmanVector[new[[1, 3;;]], rr];
+  aa = GottesmanMatrix[opa = ControlledU[qq, aa], ss];
+  bb = GottesmanMatrix[opb = ControlledU[qq, bb], ss];
+  hh = GottesmanMatrix[oph = First[qq][6], ss];
+
+  vv = Mod[new . aa . hh . bb, 2];
+  vv = vv[[3;;, 3;;]];
+
+  Join[{opf, opa, oph, opb}, CliffordDecomposition[vv, rr]] /.
+    fGateRules
+ ]
+
+fGateRules = {
+  ControlledU[{C_?QubitQ}, T_[j___, 1]] -> CNOT[C, T[j]],
+  ControlledU[{C_?QubitQ}, T_[j___, 3]] -> CZ[C, T[j]],
+  S_[j___, 1]/Sqrt[2] + S_[j___, 3]/Sqrt[2] -> S[j,6],
+  (S_[j___, 1] + S_[j___, 3])/Sqrt[2] -> S[j,6],
+  Phase[0, ___] -> Nothing
+ };
+
+(**** </CliffordDecomposition> ****)
 
 
 End[]
