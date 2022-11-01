@@ -1445,6 +1445,9 @@ BlochVector[expr_, q_?SpeciesQ] := Module[
    ]
  ]
 
+BlochVector[expr_] := {0, 0, 0} /;
+  FreeQ[expr, _Pauli | _Ket | _?NonCommutativeQ]
+
 BlochVector[expr_] := BlochVector[expr, 1] /;
   Not @ FreeQ[expr, _Pauli | _Ket | _?NonCommutativeQ]
 
