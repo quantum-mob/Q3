@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.15 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-20 13:30:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.19 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-02 19:21:40+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -159,6 +159,7 @@ ChoiMatrix::usage = "ChoiMatrix[op1, op2, \[Ellipsis]] returns the Choi matrix c
 
 ChoiMatrix[Supermap[spec__]] := ChoiMatrix[spec]
 
+
 ChoiMatrix[a_?MatrixQ] := TensorProduct[a, Conjugate @ a]
 
 ChoiMatrix[a_?MatrixQ, b_?MatrixQ] :=
@@ -207,6 +208,17 @@ ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := With[
  ] /; FreeQ[ops, _Pauli]
 
 ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := ChoiMatrix[Matrix[ops], cc]
+
+
+ChoiMatrix @ LindbladSupermap @ {opH_?MatrixQ, opL__?MatrixQ} := Module[
+  { one = One @ Length @ opH,
+    non = -I(opH - I*DampingOperator[opL]) },
+  ChoiMatrix[non, one] + ChoiMatrix[one, non] +
+    ChoiMatrix @ {opL}
+ ]
+
+HoldPattern @ ChoiMatrix @ LindbladSupermap[ops:{_, __}] :=
+  ChoiMatrix @ LindbladSupermap @ Matrix[ops]
 
 
 ChoiMatrixQ::usage = "ChoiMatrixQ[tensor] returns True if tensor has the structure of Choi matrix, i.e., a tensor of rank four with dimensions m x n x m x n."
@@ -349,19 +361,6 @@ LindbladSupermap[{opH_, opL__}][rho_] := Module[
  ]
 
 
-LindbladSupermap /:
-ChoiMatrix @ LindbladSupermap @ {opH_?MatrixQ, opL__?MatrixQ} := Module[
-  { one = One @ Length @ opH,
-    non = -I(opH - I*DampingOperator[opL]) },
-  ChoiMatrix[non, one] + ChoiMatrix[one, non] +
-    ChoiMatrix @ {opL}
- ]
-
-LindbladSupermap /:
-HoldPattern @ ChoiMatrix @ LindbladSupermap[ops:{_, __}] :=
-  ChoiMatrix @ LindbladSupermap @ Matrix[ops]
-
-
 LindbladGenerator::usage = "LindbladGenerator has been renamed LindbladSupermap."
 
 LindbladGenerator[args__] := (
@@ -409,6 +408,9 @@ LindbladConvert[{None, opL__}] := LindbladConvert[{0, opL}]
 
 LindbladConvert[ops:{_, __}] := LindbladConvert @ Matrix[ops]
 
+
+LindbladConvert[LindbladSupermap[spec_]] := LindbladConvert[spec]
+
 (**** </LindbladConvert> ****)
 
 
@@ -451,15 +453,18 @@ LindbladSolve::usage = "LindbladSolve[{opH, opL1, opL2, ...}, init, t] returns t
 
 LindbladSolve::incmp = "The matrices `` are not compatible with each other."
 
-LindbladSolve[opH_, {opL__}, init_, rest__] :=
-  LindbladSolve[{opH, opL}, init, rest]
+LindbladSolve[opH_, {opL__}, in_, rest__] :=
+  LindbladSolve[{opH, opL}, in, rest]
 
 
-LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
-  { dim = Length[init],
+LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?VectorQ, t_] :=
+  LindbladSolve[ops, Dyad[in, in], t]
+
+LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, t_] := Module[
+  { dim = Length[in],
     lbm, bgn, gen, off, sol, var, x },
   lbm = ToSuperMatrix @ LindbladBasisMatrix[dim];
-  bgn = Rest[Topple[lbm] . Flatten[init]];
+  bgn = Rest[Topple[lbm] . Flatten[in]];
 
   {gen, off} = LindbladConvert[ops];
 
@@ -473,20 +478,23 @@ LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
   
   var = Prepend[var, 1/Sqrt[dim]];
   ArrayReshape[lbm . var, {dim, dim}] /. sol
- ] /; ArrayQ @ Join[{init}, ops]
+ ] /; ArrayQ @ Join[{in}, ops]
 
-LindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
-  Message[LindbladSolve::incmp, Normal @ Append[ops, init]] 
+LindbladSolve[ops:{_, __}, in_?MatrixQ, _] :=
+  Message[LindbladSolve::incmp, Normal @ Append[ops, in]] 
 
 
-LindbladSolve[ops:{_, __}, init_, t_] :=
-  ExpressionFor @ LindbladSolve[Matrix @ ops, Matrix @ init, t] /;
-  Not @ FreeQ[Append[ops, init], _Pauli]
+LindbladSolve[LindbladSupermap[ops_], in_, t_] :=
+  LindbladSolve[ops, in, t]
 
-LindbladSolve[ops:{_, __}, init_, t_] := Module[
-  { ss = NonCommutativeSpecies @ Append[ops, init],
+LindbladSolve[ops:{_, __}, in_, t_] :=
+  ExpressionFor @ LindbladSolve[Matrix @ ops, Matrix @ in, t] /;
+  Not @ FreeQ[Append[ops, in], _Pauli]
+
+LindbladSolve[ops:{_, __}, in_, t_] := Module[
+  { ss = NonCommutativeSpecies @ Append[ops, in],
     rho },
-  rho = LindbladSolve[Matrix[ops, ss], Matrix[init, ss], t];
+  rho = LindbladSolve[Matrix[ops, ss], Matrix[in, ss], t];
   ExpressionFor[rho, ss]
  ]
 
@@ -526,13 +534,19 @@ NLindbladSolve[opH_, {opL__}, init_, rest__] :=
   NLindbladSolve[{opH, opL}, init, rest]
 
 
-NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
-  NLindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, init, {t, tmin, tmax}] /;
-  ArrayQ @ Join[{init}, ops]
+NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?VectorQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
+  NLindbladSolve[ops, Dyad[in, in], {t, tmin, tmax}]
+
+NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
+  NLindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, in, {t, tmin, tmax}] /;
+  ArrayQ @ Join[{in}, ops]
 
 NLindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
   Message[NLindbladSolve::incmp, Normal @ Append[ops, init]] 
 
+
+NLindbladSolve[LindbladSupermap[ops_], in_, {t_, tmin_, tmax_}] :=
+  NLindbladSolve[ops, in, {t, tmin, tmax}]
 
 NLindbladSolve[ops:{_, __}, init_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
   ExpressionFor @ NLindbladSolve[
