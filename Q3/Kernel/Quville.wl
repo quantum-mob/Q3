@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.40 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-14 16:44:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.42 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-09 00:35:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -67,7 +67,7 @@ $BraceWidth := 0.125 $CircuitUnit
 Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] := Graphics[qc]
 
 
-(**** </Multiply, ExpressionFor and Matrix on QuantumCircuit> ****)
+(**** <Multiply, ExpressionFor and Matrix on QuantumCircuit> ****)
 
 QuantumCircuit /:
 NonCommutativeQ[ QuantumCircuit[__] ] = True
@@ -124,7 +124,7 @@ qCircuitOperate[pre__, op_Measurement, post___] :=
 qCircuitOperate[op_Measurement, post___] :=
   Multiply[qCircuitOperate[post], op]
 
-qCircuitOperate[ op:Except[_Measurement].. ] :=
+qCircuitOperate[op:Except[_Measurement]..] :=
   Fold[ Garner @ Multiply[#2, #1]&, 1, Elaborate @ {op} ]
 
 
@@ -173,6 +173,8 @@ QuantumCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
   Dyad[v, v, qq]
 
 QuantumCircuitTrim[ v:ProductState[_Association, ___] ] := Expand[v]
+
+QuantumCircuitTrim[ Ket[a_Association] ] := Ket[KetTrim @ a]
 
 QuantumCircuitTrim[ op_QFT ] := op
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.53 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-19 18:39:40+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.54 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-09 00:45:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1721,6 +1721,10 @@ Readout::nopauli = "`` is not a Pauli operator. Only Pauli operators (including 
 
 Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout."
 
+SyntaxInformation[Readout] = {
+  "ArgumentsPattern" -> {_}
+ }
+
 Readout[op_?fPauliOpQ] := (
   If[ Not @ KeyExistsQ[$MeasurementOut, op],
     Message[Readout::notob, op]
@@ -1736,11 +1740,6 @@ Readout[op:{__?fPauliOpQ}] := (
  )
 
 Readout[op_] := Message[Readout::nopauli, op]
-
-Readout[_, op_] := (
-  CheckArguments[Readout[1, op], 1];
-  Readout[op]
- )
 
 
 MeasurementOdds::usage = "MeasurementOdds[vec, op] returns an Association of elements of the form value->{probability, ket}, where value is one of the possible measurement results (\[PlusMinus]1), probability is the probability for value to be actually observed, and ket is the post-measurement state when value is actually observed.\nMesurementOdds[op] is an operator form of MeasurementOdds."
