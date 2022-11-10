@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.42 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-09 00:35:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.45 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-10 22:56:07+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -78,13 +78,14 @@ Kind[ QuantumCircuit[__] ] = NonCommutative
 QuantumCircuit /:
 MultiplyGenus[ QuantumCircuit[__] ] := "QuantumCircuit"
 
-HoldPattern @ Multiply[
-  Longest[pre___],
-  QuantumCircuit[elm__], Longest[v__Ket],
-  post___] := Multiply[pre, Elaborate @ QuantumCircuit[v, elm], post]
-  
-HoldPattern @ Multiply[pre___, Longest[qc__QuantumCircuit], post___] :=
-  Multiply[pre, Multiply @@ Map[Elaborate, {qc}], post]
+
+QuantumCircuit /:
+HoldPattern @ Multiply[pre___, QuantumCircuit[elm__], post___] :=
+  Multiply[pre, Elaborate @ QuantumCircuit[Reverse @ {post}, elm]]
+(* NOTE: {elm} may include Measurement. *)
+
+HoldPattern @ Multiply[pre___, Longest[cc__QuantumCircuit], post___] :=
+  Multiply[pre, Elaborate @ Apply[QuantumCircuit, Reverse @ {cc}], post]
 
 
 QuantumCircuit /:
@@ -326,7 +327,7 @@ qCircuitGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
 qCircuitGate[ HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ ] :=
   Map[ qCircuitGate[#, opts]&, {ss} ]
 
-qCircuitGate[ Measurement[ss:{__?fPauliOpQ}], opts___?OptionQ ] :=
+qCircuitGate[ Measurement[ss:{__?PauliQ}], opts___?OptionQ ] :=
   Map[ qCircuitGate[Measurement[#], opts]&, ss ]
 
 qCircuitGate[ Measurement[S_?QubitQ], opts___?OptionQ ] :=

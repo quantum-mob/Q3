@@ -5,14 +5,16 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.35 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-26 17:01:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.38 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-10 23:05:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { PauliGroup, FullPauliGroup,
   PauliGroupElements, FullPauliGroupElements,
-  CliffordGroup, FullCliffordGroup,
+  PauliQ };
+
+{ CliffordGroup, FullCliffordGroup,
   CliffordGroupElements, FullCliffordGroupElements,
   CliffordQ };
 
@@ -169,7 +171,21 @@ GroupMultiplicationTable @ PauliGroup[n_Integer] := Module[
 PauliGroup /:
 GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=
   GroupMultiplicationTable @ PauliGroup @ Length @ ss
-  
+
+
+PauliQ::usage = "PauliQ[expr] returns True if matrix or operator expression expr is an element of the full Pauli group."
+
+PauliQ[mat_?MatrixQ] := With[
+  { cmp = Most @ ArrayRules @ PauliDecompose[mat] },
+  TrueQ @ And[Length[cmp] == 1, Values[cmp]^4 == {1}]
+ ]
+
+PauliQ[expr_] := PauliQ[Matrix @ expr]
+
+PauliQ[_List] = False
+
+PauliQ[_Association] = False
+
 (**** </PauliGroup> ****)
 
 
@@ -304,11 +320,7 @@ CliffordQ[mat_?MatrixQ] := Module[
     ThePauli @@@ NestList[RotateRight, PadRight[{1}, n], n-1],
     ThePauli @@@ NestList[RotateRight, PadRight[{3}, n], n-1]
    ];
-  gnr = Map[
-    Most @ ArrayRules @ PauliDecompose @ Dot[mat, #, Topple @ mat]&,
-    gnr
-   ];
-  AllTrue[gnr, Length[#]==1&]
+  AllTrue[gnr, PauliQ]
  ]
 
 CliffordQ[expr_] := CliffordQ[Matrix @ expr]

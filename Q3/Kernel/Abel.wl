@@ -83,6 +83,8 @@ BeginPackage["Q3`"]
 
 { LevelsPlot };
 
+{ PauliQ }; (* See Gottesman.wl *)
+
 
 (* Obsolete Symbols *)
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.21 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-23 22:30:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.22 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-10 23:11:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -461,9 +461,9 @@ doAffect[ket_, op_] := Garner @ Multiply[op, ket]
 
 fPauliKetQ::usage = "fPauliKetQ[expr] returns True if expr is a valid expression for a state vector of a system of unlabelled qubits.\nPauli[\[Ellipsis]] operates consistently on such an expression.";
 
-HoldPattern @ fPauliKetQ[Ket[(0 | 1) ..]] = True
+HoldPattern @ fPauliKetQ[Ket[(0|1)..]] = True
 
-HoldPattern @ fPauliKetQ[Multiply[__, Ket[(0 | 1) ..]]] = True
+HoldPattern @ fPauliKetQ[Multiply[__, Ket[(0|1)..]]] = True
 
 HoldPattern @ fPauliKetQ[z_?CommutativeQ expr_] := fPauliKetQ[expr]
 

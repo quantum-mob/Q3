@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.54 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-09 00:45:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.57 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-11 00:07:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1674,11 +1674,10 @@ Measurement::nonum = "Probability half is assumed for a state without explicitly
 
 Measurement::novec = "The expression `` does not seem to be a valid Quisso Ket expression. Null vector is returned."
 
-Measurement[qq:{__?fPauliOpQ}][vec_] :=
-  Last @ ComposeList[Measurement /@ qq, vec] /;
-  Not @ FreeQ[Elaborate[vec], Ket[_Association]]
+Measurement[qq:{__?PauliQ}][vec_?fKetQ] :=
+  Last @ ComposeList[Measurement /@ qq, vec]
 
-Measurement[op_?fPauliOpQ][vec_] := Module[
+Measurement[op_?PauliQ][vec_?fKetQ] := Module[
   { odds = MeasurementOdds[vec, op],
     rand = RandomReal[] },
   Garner @ If[ rand < Re @ First @ odds[0],
@@ -1714,6 +1713,10 @@ Measurement /:
 Dot[Measurement[mat_?MatrixQ], vec_?VectorQ] :=
   Measurement[mat] @ vec
 
+Measurement /:
+HoldPattern @ Multiply[pre___, spr_Measurement, post___] :=
+  Multiply[pre, spr @ Multiply[post]]
+
 
 Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
 
@@ -1725,14 +1728,14 @@ SyntaxInformation[Readout] = {
   "ArgumentsPattern" -> {_}
  }
 
-Readout[op_?fPauliOpQ] := (
+Readout[op_?PauliQ] := (
   If[ Not @ KeyExistsQ[$MeasurementOut, op],
     Message[Readout::notob, op]
    ];
   $MeasurementOut[op]
  )
 
-Readout[op:{__?fPauliOpQ}] := (
+Readout[op:{__?PauliQ}] := (
   If[ Not @ AllTrue[op, KeyExistsQ[$MeasurementOut, #]&],
     Message[Readout::notob, op]
    ];
@@ -1744,29 +1747,17 @@ Readout[op_] := Message[Readout::nopauli, op]
 
 MeasurementOdds::usage = "MeasurementOdds[vec, op] returns an Association of elements of the form value->{probability, ket}, where value is one of the possible measurement results (\[PlusMinus]1), probability is the probability for value to be actually observed, and ket is the post-measurement state when value is actually observed.\nMesurementOdds[op] is an operator form of MeasurementOdds."
 
-MeasurementOdds[op_?fPauliOpQ][vec_] := MeasurementOdds[vec, op]
+MeasurementOdds[op_?PauliQ][vec_] := MeasurementOdds[vec, op]
 
-MeasurementOdds[vec_, op_?fPauliOpQ] := Module[
-  { new = op ** vec,
-    pls, mns, p0, p1 },
-  pls = (vec + new)/2;
-  mns = (vec - new)/2;
-  p0 = Dagger[pls] ** pls;
-  p1 = Dagger[mns] ** mns;
-  pls = If[TrueQ[Chop[Re @ p0] == 0], 0, pls / Sqrt[p0]];
-  mns = If[TrueQ[Chop[Re @ p1] == 0], 0, mns / Sqrt[p1]];
-  Association[
-    0 -> {p0/(p0+p1), pls},
-    1 -> {p1/(p0+p1), mns}
-   ]
+MeasurementOdds[vec_?fKetQ, op_?PauliQ] := Module[
+  { ss = Qubits[{vec, op}],
+    aa },
+  aa = MeasurementOdds[Matrix[vec, ss], Matrix[op, ss]];
+  aa[0] = {First @ aa[0], ExpressionFor[Last @ aa[0], ss]};
+  aa[1] = {First @ aa[1], ExpressionFor[Last @ aa[1], ss]};
+  Return[aa]
  ]
-(* NOTE:
-   1. vec, pls, or mns may be 0 (null vector).
-   2. The norms of pls and mns may have imaginary parts numerically.
-   3. Ganer or Simplify may significantly slow down the performance when the
-   coefficients are given by complicated exact numbers (such as from Fourier
-   transform).
-   *)
+
 
 MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] :=
   MeasurementOdds[vec, mat]
@@ -1776,29 +1767,23 @@ MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
     pls, mns, p0, p1 },
   pls = (vec + new)/2;
   mns = (vec - new)/2;
-  p0 = Norm[pls];
-  p1 = Norm[mns];
-  pls = If[TrueQ[Chop[Re @ p0] == 0], 0, pls / p0];
-  mns = If[TrueQ[Chop[Re @ p1] == 0], 0, mns / p1];
-  p0 = p0^2;
-  p1 = p1^2;
+  p0 = Simplify @ Norm[pls]^2;
+  p1 = Simplify @ Norm[mns]^2;
+  If[ AllTrue[vec, NumericQ],
+    pls = Normalize @ pls;
+    mns = Normalize @ mns
+   ];
   Association[
     0 -> {p0/(p0+p1), pls},
     1 -> {p1/(p0+p1), mns}
    ]
- ]
+ ] /; PauliQ[mat]
 (* NOTE:
    1. vec, pls, or mns may be 0 (null vector).
    2. The norms of pls and mns may have imaginary parts numerically.
+   3. When the vector compoents are symbolic,
+      the post-measurement states are NOT normalized.
    *)
-
-fPauliOpQ::uage = "fPauliOpQ[op] returns True if op is a Pauli operator, that is, either a single-qubit Pauli operator or a tensor product of single-qubit Pauli operators."
-
-fPauliOpQ[_Symbol?QubitQ[___]] = True
-
-HoldPattern @ fPauliOpQ[Multiply[__?fPauliOpQ]] = True
-
-fPauliOpQ[_] = False
 
 (**** </Measurement> ****)
 

@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.7.16
+
+- A bug fix concerning QuantumCircuit[..., Measurement[...], ...] ** state.
+
+- Measurement and MeasurementOdds have been improved.
+
 ## v2.7.12
 
 - CliffordDecomposition is now open to the public. Previously, it was a part of another project.
