@@ -5,18 +5,10 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.38 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-10 23:05:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.39 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-11 13:52:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-{ PauliGroup, FullPauliGroup,
-  PauliGroupElements, FullPauliGroupElements,
-  PauliQ };
-
-{ CliffordGroup, FullCliffordGroup,
-  CliffordGroupElements, FullCliffordGroupElements,
-  CliffordQ };
 
 { GottesmanVector, FromGottesmanVector,
   GottesmanTest, GottesmanInner, GottesmanBasis,

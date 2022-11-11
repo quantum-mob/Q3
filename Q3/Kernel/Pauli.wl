@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.22 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-10 23:11:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.27 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-11 20:11:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -90,7 +90,7 @@ BeginPackage["Q3`"]
 
 (* Now comes as a built-in function with v13.1, but with an additional
    Transpose compared to the old one.
-   Kept here form backward compatibility. *)
+   Kept here for backward compatibility. *)
 { PermutationMatrix };
 
 (* Now an experimental built-in symbol since v13.1.
@@ -2536,18 +2536,11 @@ Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of o
 
 Dyad::one = "Dyad explicitly requires a pair of vectors now."
 
-(* For simple column vectors *)
+Dyad::two = "Dyad now requires an explicit specification of the species to apply the operator on."
 
-Dyad[a_?VectorQ] := ( Message[Dyad::one]; Dyad[a, a] ) /; FreeQ[a, _?SpeciesQ]
+Dyad::extra = "Some elements in `` are not included in ``."
 
-Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
-(* NOTE: Dagger -- not Conjugate -- in the above two definitions. *)
-
-(* For Pauli Kets *)
-
-Dyad[Ket[a:(0|1)..], Ket[b:(0|1)..], All|{}] := Pauli[{b} -> {a}]
-
-(* For general Kets *)
+(* For Kets associated with species *)
 
 Format @ Dyad[a_Association, b_Association, qq:{___?SpeciesQ}] :=
   Row @ { LogicalForm[Ket[a], qq], LogicalForm[Bra[b], qq] }
@@ -2555,29 +2548,48 @@ Format @ Dyad[a_Association, b_Association, qq:{___?SpeciesQ}] :=
 Dyad /: NonCommutativeQ[ Dyad[___] ] = True
 
 Dyad /:
-Kind[ Dyad[_Association, _Association, qq_List] ] := First @ Kind @ qq
+Kind @ Dyad[_Association, _Association, qq_List] := First @ Kind @ qq
 
 Dyad /:
-MultiplyGenus[ Dyad[___] ] := "Singleton"
+MultiplyGenus @ Dyad[___] := "Singleton"
 
 Dyad /:
-HoldPattern @ Dagger[Dyad[a_Association, b_Association, c_List]] :=
+HoldPattern @ Dagger @ Dyad[a_Association, b_Association, c_List] :=
   Dyad[b, a, c]
 
 Dyad /:
-HoldPattern @ Elaborate[ Dyad[a_, b_, c_List] ] := Module[
-  { aa = Lookup[a, c],
-    bb = Lookup[b, c],
-    op },
-  op = Construct @@@ Thread @ {c, Thread[bb -> aa]};
-  Garner @ Elaborate[Multiply @@ op]
- ]
+HoldPattern @ Elaborate @ Dyad[a_Association, b_Association, c_List] :=
+  Module[
+    { aa = Lookup[a, c],
+      bb = Lookup[b, c],
+      op },
+    op = Construct @@@ Thread @ {c, Thread[bb -> aa]};
+    Garner @ Elaborate[Multiply @@ op]
+   ]
+
+
+Dyad[a_] := Module[
+  { qq = NonCommutativeSpecies[a] },
+  Message[Dyad::one];
+  Dyad[a, a, qq]
+ ] /; Not @ FreeQ[a, _Ket]
+
+Dyad[a_, b_] := Module[
+  { qq = NonCommutativeSpecies @ {a, b} },
+  Message[Dyad::two];
+  Dyad[a, b, qq]
+ ] /; Not @ Or[FreeQ[a, Ket[_Association]], FreeQ[b, Ket[_Association]]]
+
 
 Dyad[0, _, _List] = 0
 
 Dyad[_, 0, _List] = 0
 
 Dyad[a_Association, b_Association, {}|All] := Multiply[Ket[a], Bra[b]]
+(* NOTE: No particlar reason to store it as Dyad. *)
+
+Dyad[Ket[a_Association], Ket[b_Association], {}|All] :=
+  Multiply[Ket[a], Bra[b]]
 (* NOTE: No particlar reason to store it as Dyad. *)
 
 
@@ -2590,44 +2602,33 @@ Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss]
 Dyad[{}|All][a, b] := Dyad[a, b, All]
 
 
-Dyad[Ket[a_Association], Ket[b_Association], {}|All] :=
-  Multiply[Ket[a], Bra[b]]
+Dyad[a_, b_, S_?SpeciesQ] := Dyad[a, b, FlavorNone @ {S}]
+
+Dyad[a_, b_, ss:{__?SpeciesQ}] := Dyad[a, b, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
 
 Dyad[Ket[a_Association], Ket[b_Association], qq:{__?SpeciesQ}] := 
-  Dyad[a, b, FlavorNone @ qq]
+  Dyad[a, b, qq]
 
 Dyad[a_Association, b_Association, qq:{__?SpeciesQ}] := Module[
   { rr = KeySort @ GroupBy[qq, Kind] },
+  If[Not @ ContainsAll[qq, Keys @ a], Message[Dyad::extra, Keys @ a, qq]];
+  If[Not @ ContainsAll[qq, Keys @ b], Message[Dyad::extra, Keys @ b, qq]];
   Multiply @@ Map[ Dyad[KeyTake[a, #], KeyTake[b, #], #]&, Values @ rr]
- ] /; Length @ Union @ Kind[qq] > 1
+ ] /; Length[Union @ Kind @ qq] > 1
 
 
-Dyad[a_Plus, b_Plus, qq:(_List|All)] :=
-  Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @@ a, List @@ b]
+Dyad[a_Plus, b_, qq___] :=
+  Garner @ Total @ Map[Dyad[#, b, qq]&, List @@ a]
 
-Dyad[a_Plus, b_, qq:(_List|All)] :=
-  Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @@ a, List @ b]
+Dyad[a_, b_Plus, qq___] :=
+  Garner @ Total @ Map[Dyad[a, #, qq]&, List @@ b]
 
-Dyad[a_, b_Plus, qq:(_List|All)] :=
-  Garner @ Total @ Flatten @ Outer[Dyad[#1, #2, qq]&, List @ a, List @@ b]
-
-Dyad[z_ a_, b_, qq:(_List|All)] :=
+Dyad[z_ a_, b_, qq___] :=
   Garner[z Dyad[a, b, qq]] /; FreeQ[z, _Ket]
 
-Dyad[a_, z_ b_, qq:(_List|All)] :=
+Dyad[a_, z_ b_, qq___] :=
   Garner[Conjugate[z] Dyad[a, b, qq]] /; FreeQ[z, _Ket]
-
-
-Dyad[a_] := Module[
-  { qq = Cases[a, Ket[c_Association] :> Keys[c], Infinity] },
-  Message[Dyad::one];
-  Dyad[a, a, Union @ Flatten @ qq]
- ] /; Not @ FreeQ[a, _Ket]
-
-Dyad[a_, b_] := Module[
-  { qq = Cases[{a, b}, Ket[c_Association] :> Keys[c], Infinity] },
-  Dyad[a, b, Union @ Flatten @ qq]
- ] /; Not @ Or[FreeQ[a, _Ket], FreeQ[b, _Ket]]
 
 
 HoldPattern @ Multiply[
@@ -2636,6 +2637,23 @@ HoldPattern @ Multiply[
   Dyad[c_Association, d_Association, qq_List],
   post___
  ] := BraKet[b, c] * Multiply[pre, Dyad[a, d, qq], post]
+
+HoldPattern @ Multiply[
+  pre___,
+  Dyad[a_Association, b_Association, pp_List],
+  Dyad[c_Association, d_Association, qq_List],
+  post___
+ ] := Module[
+   { dp = Complement[pp, qq],
+     dq = Complement[qq, pp],
+     pq = Intersection[pp, qq] },
+   Dyad[
+     KeySort @ Join[a, KeyTake[c, dq]],
+     KeySort @ Join[KeyTake[b, dp], d],
+     Union[pp, qq]
+    ] * BraKet[KeyTake[b, pq], KeyTake[c, pq]]
+  ]
+
 
 HoldPattern @ Multiply[
   pre___,
@@ -2713,6 +2731,23 @@ HoldPattern @ Multiply[
      u = KeyTake[v, qq] },
    BraKet[b, u] Multiply[pre, Ket[a], Ket[w], post]
   ]
+
+
+(* For Pauli Kets *)
+
+Dyad[Ket[a:(0|1)..], Ket[b:(0|1)..], ___] := Pauli[{b} -> {a}]
+
+(* For general kets for unlabelled systems *)
+
+Dyad[a_Ket, b_Ket, ___] := Multiply[a, Dagger @ b]
+
+
+(* For simple column vectors *)
+
+Dyad[a_?VectorQ] := ( Message[Dyad::one]; Dyad[a, a] ) /; FreeQ[a, _?SpeciesQ]
+
+Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
+(* NOTE: Dagger -- not Conjugate -- in the above two definitions. *)
 
 (**** </Dyad> ****)
 

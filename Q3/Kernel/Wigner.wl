@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.24 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-19 18:47:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.25 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-11 15:19:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,8 +14,6 @@ BeginPackage["Q3`"]
 { Spin, SpinQ, Spins };
 
 { WignerSpinSpin };
-
-{ WignerReduced, WignerFactor };
 
 { WignerDecompose, WignerCompose,
   WignerCoefficients };
@@ -32,10 +30,14 @@ BeginPackage["Q3`"]
 { NineJSymbol, WignerEckart };
 
 
+(* The obsolete *)
+
 { WignerRotation, WignerEulerRotation }; (* obsolete *)
 
 { WignerExpression }; (* obsolete *)
 { WignerKetQ, WignerExpand }; (* obsolete *)
+
+{ WignerReduced, WignerFactor }; (* obsolete *)
 
 
 Begin["`Private`"]
@@ -502,37 +504,28 @@ Basis[ op_?SpinQ ] := With[
 (**** </Basis> ****)
 
 
-WignerFactor::usage = "WignerFactor[expr, S] or WignerFactor[expr, {S1,S2,...}] factors the Ket expression expr."
+WignerFactor::usage = "WignerFactor is OBSOLETE. Use KetFactor instead."
 
-Let[LinearMap, WignerFactor];
+WignerFactor[expr__] := (
+  Message[Q3General::obsolete, WignerFactor, KetFactor];
+  KetFactor[expr]
+ )
 
-WignerFactor[Ket[a_Association], S_?SpinQ] := WignerFactor[Ket[a], {S}]
+WignerReduced::usage = "WignerReduced is OBSOLETE. Use Reduced instead."
 
-WignerFactor[Ket[a_Association], S : {__?SpinQ}] := Module[
-  { SS = FlavorNone[S] },
-  OSlash[Ket[KeyTake[a, SS]], Ket[KeyDrop[a, SS]]]
- ]
+WignerReduced[expr__] := (
+  Message[Q3General::obsolete, WignerReduced, Reduced];
+  KetFactor[expr]
+ )
 
 
-WignerReduced::usage = "WignerReduced[v, {s1, s2, ...}] constructs the reduced density matrix corresponding to the pure state v of Spins s$1, s$2, ... ."
+WignerReduced::usage = "WignerReduced[v, {s1, s2, ...}] constructs the reduced density matrix corresponding to the pure state v of Spins s1, s2, ... ."
 
 WignerReduced[v_, S_?SpinQ] :=
-  wReduced @ WignerFactor[ Expand @ v, {S} ]
+  wReduced @ KetFactor[ Expand @ v, {S} ]
 
-WignerReduced[v_, S : {__?SpinQ}] :=
-  wReduced @ WignerFactor[ Expand @ v, S ]
-
-wReduced[ OSlash[a_Ket, b_] ] :=
-  Dyad[a, a] * (Dagger[b] ** b)
-
-wReduced[ expr_Plus ] := Module[
-  { vv = List @@ expr,
-    aa, bb },
-  { aa, bb } = Transpose[vv /. {OSlash -> List}];
-  aa = Flatten@Outer[Multiply, aa, Dagger[aa]];
-  bb = Flatten@Outer[ Multiply, Dagger[bb], bb];
-  Conjugate[bb].aa
- ]
+WignerReduced[v_, ss:{__?SpinQ}] :=
+  wReduced @ KetFactor[Expand @ v, ss]
 
 
 (**** <Matrix> ****)

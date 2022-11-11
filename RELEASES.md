@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.7.17
+
+- Dyad now requires more stringent syntax.
+
+- Performance of Dyad has been improved.
+
 ## v2.7.16
 
 - A bug fix concerning QuantumCircuit[..., Measurement[...], ...] ** state.

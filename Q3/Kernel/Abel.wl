@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.2 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-17 20:37:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.3 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-11 13:52:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -83,7 +83,16 @@ BeginPackage["Q3`"]
 
 { LevelsPlot };
 
-{ PauliQ }; (* See Gottesman.wl *)
+
+(* See Gottesman.wl *)
+
+{ PauliGroup, FullPauliGroup,
+  PauliGroupElements, FullPauliGroupElements,
+  PauliQ };
+
+{ CliffordGroup, FullCliffordGroup,
+  CliffordGroupElements, FullCliffordGroupElements,
+  CliffordQ };
 
 
 (* Obsolete Symbols *)
