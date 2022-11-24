@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.27 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-11 20:11:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.31 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-24 22:14:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -65,7 +65,8 @@ BeginPackage["Q3`"]
 
 { Parity, ParityValue, ParityEvenQ, ParityOddQ };
 
-{ TensorFlatten, Tensorize, PartialTrace, PartialTranspose };
+{ TensorFlatten, Tensorize };
+{ PartialTrace, PartialTranspose };
 { ReducedMatrix, Reduced };
 
 { PauliDecompose, PauliCompose };
@@ -284,34 +285,33 @@ DefaultForm[ expr_ ] := expr /. {
    being affected. *)
 
 
-LogicalForm::usage = "LogicalForm[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nLogicalForm[expr, {S1, S2, ...}] assumes that expr involves systems labeled by S1, S2, ....\nLogicalForm[expr, S] is quivalent to LogicalForm[expr, {S}].\nSee also DefaultForm."
+(**** <LogicalForm> ****)
 
-LogicalForm[ expr_ ] := LogicalForm[ expr, {} ]
+LogicalForm::usage = "LogicalForm[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nLogicalForm[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, ....\nLogicalForm[expr, S] is quivalent to LogicalForm[expr, {S}].\nSee also DefaultForm."
 
-LogicalForm[ expr_, S_?SpeciesQ ] := LogicalForm[ expr, {S} ]
+LogicalForm[expr_] := LogicalForm[expr, NonCommutativeSpecies @ expr] /;
+  Not @ FreeQ[expr, Ket[_Association] | Bra[_Association]]
 
-LogicalForm[ expr_, _List ] := expr /;
-  FreeQ[ expr, Ket[_Association] | Bra[_Association] ]
+LogicalForm[expr_, S_?SpeciesQ] := LogicalForm[expr, S @ {None}]
 
-LogicalForm[ Ket[a_Association], gg_List ] := Module[
-  { ss = Union[Keys @ a, FlavorNone @ gg] },
+LogicalForm[Ket[a_Association], gg:{___?SpeciesQ}] := With[
+  { ss = FlavorNone @ gg },
   Ket @ Association @ Thread[ ss -> Lookup[a, ss] ]
  ]
 
-LogicalForm[ Bra[a_Association], gg_List ] :=
+LogicalForm[Bra[a_Association], gg:{___?SpeciesQ}] :=
   Dagger @ LogicalForm[Ket[a], gg]
 
-LogicalForm[ OTimes[args__], ___ ] :=
+LogicalForm[OTimes[args__], ___] :=
   OTimes @@ Map[LogicalForm, {args}]
 
-LogicalForm[ OSlash[Ket[a_Association], expr_], gg_List ] := With[
+LogicalForm[OSlash[Ket[a_Association], expr_], gg:{__?SpeciesQ}] := With[
   { ss = FlavorNone @ gg },
   OSlash[Ket[a], LogicalForm[expr, Supplement[ss, Keys @ a]]]
  ]
 
-LogicalForm[ expr_, gg_List ] := Module[
-  { ss = NonCommutativeSpecies @ expr },
-  ss = Union[ ss, FlavorNone @ gg ];
+LogicalForm[expr_, gg:{___?SpeciesQ}] := With[
+  { ss = FlavorNone @ gg },
   expr /. {
     ot_OTimes -> ot, (* NOTE 1 *)
     os_OSlash :> LogicalForm[os, ss],
@@ -322,11 +322,12 @@ LogicalForm[ expr_, gg_List ] := Module[
  ]
 (* NOTE 1: This line is necessary to prevent the Kets and Bras in OTimes from
    being affected. *)
-(* NOTE 2: This implementation works when Missing["KeyAbsent", S] is properly
-   defined. *)
 (* NOTE 3: Association needs to be handled carefully due to HoldAllComplete
    Attribute of Association. Otherwise, the result may be different from what
    you would expect.  *)
+
+(**** </LogicalForm> ****)
+
 
 $KetDelimiter::usage = "The charater delimiting values in a Ket."
 

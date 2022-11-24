@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.7.18
+
+- LogicalForm recieves a major change; it only displays the species that are explicitly specified.
+
 ## v2.7.17
 
 - Dyad now requires more stringent syntax.

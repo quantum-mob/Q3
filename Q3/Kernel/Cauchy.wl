@@ -4,14 +4,15 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.30 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-14 16:44:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.33 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-24 20:16:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Complex, ComplexQ,
   Real, RealQ,
-  Integer, IntegerQ, HalfIntegerQ };
+  Integer, IntegerQ, HalfIntegerQ,
+  Binary, BinaryQ, Binaries };
 
 { LinearMap, LinearMapFirst }
 
@@ -91,7 +92,7 @@ End[]
 
 Begin["`Private`"] (* Complex *)
 
-$symb = Unprotect[Mod, IntegerQ, OddQ, EvenQ]
+$symb = Unprotect[Mod, Power, IntegerQ, OddQ, EvenQ]
 
 Let[Complex, {ls__Symbol}] := (
   Let[Species, {ls}];
@@ -113,7 +114,7 @@ setComplex[z_Symbol] := (
  )
 
 
-Real::usage = "In Cauchy package, Let[Real, a,b,...] declares a, b, ... as real numbers.\n" <> Real::usage
+Real::usage = "Let[Real, a,b,...] declares a, b, ... as real numbers.\n" <> Real::usage
 
 Let[Real, {ls__Symbol}] := (
   Let[Complex, {ls}];
@@ -131,7 +132,7 @@ setReal[x_Symbol] := (
   x /: Conjugate[x[j___]] := x[j];
  )
 
-Integer::usage = "In Cauchy` package, Let[Integer, a,b,...] declares a, b, ... as integer numbers.\n" <> Integer::usage
+Integer::usage = "Let[Integer, a,b,...] declares a, b, ... as integer numbers.\n" <> Integer::usage
 
 Let[Integer, {ls__Symbol}] := (
   Let[Real, {ls}];
@@ -158,6 +159,45 @@ Mod[ a_?EvenQ + b_, 2 ] := Mod[b, 2]
 Mod[ a_?OddQ + b_, 2 ]  := Mod[b+1, 2] /; a != 1
 
 Format[ Mod[nn_Plus, 2] ] := CirclePlus @@ nn
+
+
+Binary::usage = "Let[Binary, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as binary digits."
+
+Let[Binary, {ls__Symbol}] := (
+  Let[Integer, {ls}];
+  Scan[setBinary, {ls}]
+ )
+
+setBinary[n_Symbol] := (
+  Kind[n] ^= Binary;
+  Kind[n[___]] ^= Binary;
+  n /: BinaryQ[n] = True;
+  n /: BinaryQ[n[___]] = True;
+  n /: Element[n, Binaries] = True;
+  n /: Element[n[___], Binaries] = True;
+ )
+
+Mod[n_?BinaryQ, 2] := n
+
+Power[n_?BinaryQ, _Integer] := n
+
+
+BinaryQ::usage = "BinaryQ[x] returns True if x is a binary digit, and False otherwise."
+
+BinaryQ[0] = True
+
+BinaryQ[1] = True
+
+BinaryQ[Mod[_?IntegerQ, 2]] = True
+
+BinaryQ[_] = False
+
+
+Binaries::usage = "Binaries represents the domain of binary digits, as in x\[Element]Binaries."
+
+Binaries /: Element[0, Binaries] = True
+
+Binaries /: Element[1, Binaries] = True
 
 
 (*** Tests for numeric constants ***)

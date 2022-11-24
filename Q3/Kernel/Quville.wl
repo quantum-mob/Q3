@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.45 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-10 22:56:07+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.48 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-24 20:25:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -45,8 +45,8 @@ Options[QuantumCircuit] = {
   "ControlFunction" -> "Dot",
   "UnitLength" -> 36,
   "PortSize" -> 0.65,
-  "LabelSize" -> 1, 
-  "Label" -> Automatic,
+  "LabelSize" -> 1, (* RELATIVE size *)
+  "Label" -> None,
   "Visible" -> {},
   "Invisible" -> {}
  }
@@ -293,14 +293,6 @@ qCircuitGate::unknown = "Unknown quantum circuit element ``."
 
 (* NOTE: DO NOT set Listable attribute for qCircuitGate. *)
 
-Options[qCircuitGate] = {
-  "TargetFunction"  -> "Rectangle",
-  "ControlFunction" -> "Dot",
-  "LabelSize" -> 1, (* RELATIVE size *)
-  "Label" -> None
- }
-
-
 qCircuitGate[{gg__, opts___?OptionQ}] :=
   Map[qCircuitGate[#, opts]&, {gg}]
 
@@ -312,11 +304,9 @@ qCircuitGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
   
 
 qCircuitGate[ S_Symbol?QubitQ[j___, k_Integer?Negative], opts___?OptionQ ] :=
-  Gate[
-    {S[j,None]}, opts,
+  Gate[ {S[j,None]}, opts,
     "Label" -> qGateLabel[S[j,k]],
-    "LabelSize" -> 0.5
-   ]
+    "LabelSize" -> 0.5 ]
 
 qCircuitGate[ S_?QubitQ, opts___?OptionQ ] :=
   Gate[ Qubits @ S, opts, "Label" -> qGateLabel[S] ]
@@ -367,7 +357,8 @@ qCircuitGate[
 qCircuitGate[
   ControlledU[ cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ ],
   more___?OptionQ ] :=
-  Gate[ cc, Qubits @ S, opts, more, "Label" -> qGateLabel[S] ]
+  Gate[ cc, Qubits @ S, opts, more,
+    "Label" -> {None, qGateLabel[S]} ]
 
 qCircuitGate[
   ControlledU[
@@ -375,7 +366,8 @@ qCircuitGate[
     op:(Phase|Rotation|EulerRotation)[j__, opts___?OptionQ],
     more___?OptionQ ],
   rest___?OptionQ ] :=
-  Gate[ cc, Qubits @ op, opts, more, rest, "Label" -> qGateLabel[op] ]
+  Gate[ cc, Qubits @ op, opts, more, rest,
+    "Label" -> {None, qGateLabel[op]} ]
 
 qCircuitGate[
   ControlledU[
@@ -436,6 +428,20 @@ qCircuitGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
 
 
 qCircuitGate[
+  ControlledExp[cc:{__?QubitQ}, op_, opts___?OptionQ],
+  more__?OptionQ
+ ] := qCircuitGate @ ControlledExp[cc, op, opts, more]
+
+qCircuitGate @ ControlledExp[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
+  Gate[ cc, Qubits[op],
+    "Label" -> qGateLabel[ControlledExp[cc, op, opts]],
+    opts,
+    "ControlFunction" -> "Oval",
+    "TargetFunction" -> "Rectangle"
+   ]
+
+
+qCircuitGate[
   QFT[qq:{__?QubitQ}, opts___?OptionQ],
   more__?OptionQ
  ] := qCircuitGate @ QFT[qq, opts, more]
@@ -487,7 +493,7 @@ qMeasurementLabel[S_?QubitQ] :=
   FlavorLast[S] /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> None, _ -> "?"}
 
 
-qGateLabel::usage = "qGateLabel[G] returns the label of the circuit element to be displayed in the circuit diagram."
+qGateLabel::usage = "qGateLabel[G] returns the label of circuit element G to be displayed in the circuit diagram."
 
 SetAttributes[qGateLabel, Listable];
 
@@ -505,6 +511,11 @@ qGateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
   Subscript[ "U", FlavorLast[S] /. {1->"x", 2->"y", 3->"z"} ]
 
 qGateLabel[ EulerRotation[{_, _, _}, S_?QubitQ, ___] ] := Subscript["U", "E"]
+
+qGateLabel[ ControlledExp[_, _, OptionsPattern[]] ] := With[
+  { lbl = OptionValue[ControlledExp, "Label"] },
+  {First @ lbl, Superscript[Last @ lbl, First @ lbl]}
+ ]
 
 
 qDrawGateCirclePlus[ x_, yy_List, ___ ] :=
@@ -535,7 +546,7 @@ qDrawGateMeasurement[ x_, {y_}, opts___?OptionQ ] :=
 qDrawGateMeasurement[ x_, yy:{_, __}, opts___?OptionQ ] := Module[
   { cc, mm, tt, rest },
 
-  tt = "Label" /. {opts} /. Options[qCircuitGate];
+  tt = "Label" /. {opts} /. Options[QuantumCircuit];
   rest = Normal @ KeyDrop[{opts}, "Label"];
   mm = MapThread[
     qDrawGateMeasurement[x, #1, "Label" -> #2, opts]&,
@@ -639,7 +650,7 @@ qDrawGateOval[ x_, yy_List, opts___?OptionQ ] := Module[
 qGateText[ x_, y_, opts___?OptionQ ] := Module[
   { label, factor },
   { label, factor } = { "Label", "LabelSize" } /.
-    {opts} /. Options[qCircuitGate];
+    {opts} /. Options[QuantumCircuit];
   If[ label == None, Return @ Nothing ];
   Text[
     Style[ label, Italic,
@@ -656,7 +667,7 @@ qGateText[ x_, y_, opts___?OptionQ ] := Module[
 qMeasurementText[ x_, y_, opts___?OptionQ ] := Module[
   { label, factor },
   { label, factor } = { "Label", "LabelSize" } /.
-    {opts} /. Options[qCircuitGate];
+    {opts} /. Options[QuantumCircuit];
   If[ label == None, Return @ Nothing ];
   Text[
     Style[ label, Italic,
@@ -700,22 +711,24 @@ qDrawGate::uage = "Renders the gates."
 qDrawGate[ gg_List, x_, yy_Association ] := Map[ qDrawGate[#, x, yy]&, gg ]
 
 qDrawGate[
-  Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ],
+  Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts:OptionsPattern[]],
   x_, yy_Association
  ] := Module[
    { yc = Lookup[yy, cc],
      yt = Lookup[yy, tt],
+     label = OptionValue[QuantumCircuit, {opts}, "Label"],
      control, target, dots, link, pane },
 
+   If[Not @ ListQ[label], label = {label, label}];
    { control, target } = qDrawGateSymbol[
      { "ControlFunction", "TargetFunction" } /. {opts} /.
-       Options[qCircuitGate]
+       Options[QuantumCircuit]
     ];
    
    link = Line @ Join[ Thread @ {x, yc}, Thread @ {x, yt} ];
    
-   dots = control[x, yc, opts];
-   pane = target[x, yt, opts];
+   dots = control[x, yc, "Label" -> First[label], opts];
+   pane = target[x, yt, "Label" -> Last[label], opts];
    
    Join[{link}, dots, pane]
   ]
@@ -727,7 +740,7 @@ qDrawGate[ Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association ] :=
       target },
     
     target = qDrawGateSymbol[
-      "TargetFunction" /. {opts} /. Options[qCircuitGate]
+      "TargetFunction" /. {opts} /. Options[QuantumCircuit]
      ];
 
     target[x, yt, opts]

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.59 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-11 15:33:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.63 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-24 01:59:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -18,6 +18,8 @@ BeginPackage["Q3`"]
 { Rotation, EulerRotation, Phase };
 
 { ControlledU, CNOT, CX=CNOT, CZ, SWAP, Toffoli, Fredkin, Deutsch };
+
+{ ControlledExp };
 
 { Measurement, MeasurementOdds, $MeasurementOut = <||>,
   Readout };
@@ -70,7 +72,8 @@ AddElaborationPatterns[
   _ControlledU, _CZ, _CX, _CNOT, _SWAP,
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
-  _Projector, _ProductState
+  _Projector, _ProductState,
+  _ControlledExp
  ]
 
 AddElaborationPatterns[
@@ -1221,10 +1224,6 @@ ControlledU[ ss:{__?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
  )
 
 ControlledU /:
-Dagger[ ControlledU[ S_?QubitQ, expr_, opts___?OptionQ ] ] :=
-  ControlledU[ { S[None] }, Dagger[expr], opts ]
-
-ControlledU /:
 Dagger[ ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] ] :=
   ControlledU[ss, Dagger[expr], opts]
 
@@ -1256,6 +1255,66 @@ QuissoControlledU[args___] := (
  )
 
 (**** </ControlledU> ****)
+
+
+(**** <ControlledExp> ****)
+
+ControlledExp::usage = "ControlledExp[{c1, c2, ...}, op] represents a controlled exponentiation gate."
+
+Options[ControlledExp] = {
+  "Label" -> {"x", "U"}
+ }
+
+ControlledExp[S_?QubitQ, expr_, opts___?OptionQ] :=
+  ControlledExp[{S[None]}, expr, opts]
+
+ControlledExp[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
+  ControlledExp[FlavorNone @ ss, expr, opts] /;
+  Not @ FlavorNoneQ[ss]
+
+
+ControlledExp /:
+Dagger @ ControlledExp[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
+  ControlledExp[ss, Dagger[expr], opts]
+
+ControlledExp /:
+HoldPattern @ Elaborate @ ControlledExp[cc:{__?QubitQ}, op_, ___] :=
+  Module[
+    { bs = Dyad[#, #, cc]& /@ Basis[cc],
+      xx = Range[Power[2, Length @ cc]] - 1,
+      yy },
+    yy = MultiplyPower[op, #]& /@ xx;
+    Elaborate @ Total @ Multiply[bs, yy]
+   ]
+
+ControlledExp /:
+HoldPattern @ Matrix[ControlledExp[cc_, op_, ___], ss:{__?SpeciesQ}] :=
+  Module[
+    { tt = Qubits @ {cc, op},
+      mat },
+    mat = theCtrlExp[Length @ cc, Matrix[op]];
+    Matrix[ExpressionFor[mat, tt], ss]
+   ]
+
+ControlledExp /:
+HoldPattern @ Multiply[pre___, ControlledExp[cc_, op_, ___], in_Ket] :=
+  With[
+    { x = FromDigits[in[cc], 2] },
+    Multiply[pre, Elaborate[MultiplyPower[op, x] ** in]]
+   ]
+
+
+theCtrlExp::usage = "theCtrlExp[n, m] is the matrix version of ControlledExp."
+
+theCtrlExp[n_Integer, mat_?MatrixQ] := Module[
+  { bb = Tuples[{0, 1}, n], xx, mm },
+  xx = FromDigits[#, 2] & /@ bb;
+  mm = MatrixPower[mat, #] & /@ xx;
+  bb = Dyad[#, #] & /@ One@Power[2, n];
+  Total @ MapThread[CircleTimes, {bb, mm}]
+ ]
+
+(**** </ControlledExp> ****)
 
 
 (**** <Oracle> ****)
@@ -1412,6 +1471,9 @@ HoldPattern @ Elaborate[op_QFT] :=
 QFT /:
 HoldPattern @ Multiply[pre___, op_QFT, post___] :=
   Multiply[pre, Elaborate[op], post]
+
+HoldPattern @ Multiply[pre___, Dagger[op_QFT], post___] :=
+  Multiply[pre, Dagger[Elaborate @ op], post]
 
 
 QFT /:
