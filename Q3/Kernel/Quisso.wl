@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.63 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-24 01:59:20+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.65 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-27 02:30:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -648,7 +648,7 @@ TheMatrix[ _?QubitQ[___, m_Integer?Negative] ] :=
 
 TheMatrix[ _?QubitQ[___, m_] ] := ThePauli[m]
 
-TheMatrix[ Ket[ Association[_?QubitQ -> s:(0|1)] ] ] :=
+TheMatrix @ Ket @ Association[_?QubitQ -> s_] :=
   SparseArray @ TheKet[s]
 
 (**** </Matrix> ****)
@@ -1303,6 +1303,21 @@ HoldPattern @ Multiply[pre___, ControlledExp[cc_, op_, ___], in_Ket] :=
     Multiply[pre, Elaborate[MultiplyPower[op, x] ** in]]
    ]
 
+ControlledExp /:
+Expand @ ControlledExp[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
+  Module[
+    { n = Length@ss,
+      ops, txt, new },
+    ops = Table[MultiplyPower[op, Power[2, n - k]], {k, n}];
+
+    txt = OptionValue[ControlledExp, opts, "Label"];
+    If[ListQ[txt], txt = Last@txt];
+    txt = Table["Label" -> Superscript[txt, Superscript[2, n - k]], {k, n}];
+    
+    new = MapThread[ControlledU, {ss, ops, txt}];
+    new = Map[Append[#, Hold["LabelSize" -> 0.65, opts]]&, new];
+    Sequence @@ ReleaseHold[new]
+   ]
 
 theCtrlExp::usage = "theCtrlExp[n, m] is the matrix version of ControlledExp."
 

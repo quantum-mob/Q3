@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.31 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-24 22:14:20+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.32 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-25 23:00:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -140,15 +140,17 @@ TheKet[0] = TheKet[Up] = {1, 0}
 
 TheKet[1] = TheKet[Down] = {0, 1}
 
-TheKet[a:(0 | 1 | Up | Down) ..] := Module[
-  { bits = {a} /. {Up -> 0, Down -> 1},
-    j },
-  j = 1 + FromDigits[bits, 2];
-  SparseArray[ {j -> 1}, 2^Length[bits] ]
+TheKet[x_?BinaryQ] = {1-x, x}
+
+TheKet[aa:(0|1|Up|Down)..] := Module[
+  { bb = {aa} /. {Up -> 0, Down -> 1},
+    k },
+  k = 1 + FromDigits[bb, 2];
+  SparseArray[{k -> 1}, Power[2, Length @ bb]]
  ]
 
 (* TheKet[ a:(0|1|Up|Down).. ] := CircleTimes @@ Map[TheKet,{a}] *)
-(* It takes quite for bit strings longer than 10. *)
+(* It takes quite long for bit strings longer than 10. *)
 
 
 TheState::usage = "TheState[{0, theta, phi}] = TheRotation[phi, 3].TheRotation[theta, 2].TheKet[0].

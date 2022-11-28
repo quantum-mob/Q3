@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.33 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-24 20:16:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.35 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-26 22:19:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -179,7 +179,7 @@ setBinary[n_Symbol] := (
 
 Mod[n_?BinaryQ, 2] := n
 
-Power[n_?BinaryQ, _Integer] := n
+Power[n_?BinaryQ, _] := n
 
 
 BinaryQ::usage = "BinaryQ[x] returns True if x is a binary digit, and False otherwise."
@@ -189,6 +189,8 @@ BinaryQ[0] = True
 BinaryQ[1] = True
 
 BinaryQ[Mod[_?IntegerQ, 2]] = True
+
+BinaryQ[expr_Times] := AllTrue[List @@ expr, BinaryQ]
 
 BinaryQ[_] = False
 

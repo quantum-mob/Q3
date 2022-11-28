@@ -1,20 +1,25 @@
 (* Paclet Info File *)
-(* $Date: 2022-11-20 18:17:54+09 $ *)
-(* $Revision: 2.99 $ *)
+(* $Date: 2022-11-27 03:15:30+09 $ *)
+(* $Revision: 2.103 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.7.18",
+  "Version" -> "2.8.0",
   "WolframVersion" -> "12.1+",
   "Updating" -> Automatic,
+  "Loading" -> "Startup",
   "Extensions" -> {
     { "Kernel",
       "Root" -> "Kernel",
-      "Context" -> { "Q3`" }
+      "Context" -> { "Q3`" },
       (* Context specifies the package context or list of contexts.
          The list is also used by FindFile.
          The list also causes documentation links to be added to usage
          messages when documentation is present. *)
+      "Symbols" -> { "Let", "Q3Info", "Q3Update", "Q3CheckUpdate" }
+      (* Symbols supplies a set of symbols that the paclet provides. If the
+         Loading is set to Automatic , autoloading will be set up for everyone
+         of these symbols. *)
      },
     { "Documentation",
       "Language" -> "English",

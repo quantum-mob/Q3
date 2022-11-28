@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.8.0
+
+- EXPERIMENTAL: Now, the Q3 package is loaded automatically when the kernel starts.
+
 ## v2.7.18
 
 - LogicalForm recieves a major change; it only displays the species that are explicitly specified.

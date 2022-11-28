@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.48 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-24 20:25:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.49 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-27 03:40:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -43,7 +43,7 @@ AddElaborationPatterns[_QuantumCircuit]
 Options[QuantumCircuit] = {
   "TargetFunction" -> "Rectangle",
   "ControlFunction" -> "Dot",
-  "UnitLength" -> 36,
+  "UnitLength" -> 36, (* 72 is a good choice for presentation *)
   "PortSize" -> 0.65,
   "LabelSize" -> 1, (* RELATIVE size *)
   "Label" -> None,
