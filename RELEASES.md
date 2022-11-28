@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.8.1
+
+- An emergency bug fix in CliffordQ.
+
 ## v2.8.0
 
 - EXPERIMENTAL: Now, the Q3 package is loaded automatically when the kernel starts.

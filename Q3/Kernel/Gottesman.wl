@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.39 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-11 13:52:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.40 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-28 22:16:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -303,16 +303,17 @@ CliffordQ::notqbt = "`` does not represent an operator acting on qubits."
 CliffordQ[mat_?MatrixQ] := (
   Message[CliffordQ::notqbt, vec];
   False
- ) /; Not @ IntegerQ @ Log[2, Length @ mat]
+ ) /; Not @ AllTrue[Log[2, Dimensions @ mat], IntegerQ]
 
 CliffordQ[mat_?MatrixQ] := Module[
   { n = Log[2, Length @ mat],
+    spr = Supermap[mat],
     gnr },
-  gnr = Join[
-    ThePauli @@@ NestList[RotateRight, PadRight[{1}, n], n-1],
-    ThePauli @@@ NestList[RotateRight, PadRight[{3}, n], n-1]
+  gnr = ThePauli @@@ Join[
+    NestList[RotateRight, PadRight[{1}, n], n-1],
+    NestList[RotateRight, PadRight[{3}, n], n-1]
    ];
-  AllTrue[gnr, PauliQ]
+  AllTrue[spr /@ gnr, PauliQ]
  ]
 
 CliffordQ[expr_] := CliffordQ[Matrix @ expr]
