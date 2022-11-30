@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.65 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-27 02:30:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.70 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-29 02:57:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -968,8 +968,20 @@ HoldPattern @ Elaborate @ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
  ]
 
 CNOT /:
+HoldPattern @ Multiply[pre___, CNOT[cc_, tt_], in_Ket] :=
+  With[
+    { x = Times @@ in[cc],
+      op = Multiply @@ Through[tt[1]] },
+    If[x == 1,
+      Multiply[pre, op ** in],
+      Multiply[pre, in],
+      Multiply[pre, in]
+     ]
+   ]
+
 HoldPattern @ Multiply[pre___, op_CNOT, post___] :=
   Multiply[pre, Elaborate[op], post]
+(* NOTE: DO NOT put "CNOT /:". *)
 
 CNOT /:
 HoldPattern @ Matrix[op_CNOT, rest___] := Matrix[Elaborate[op], rest]
@@ -1238,9 +1250,20 @@ ControlledU /:
 HoldPattern @ Matrix[op_ControlledU, rest___] := Matrix[Elaborate[op], rest]
 
 ControlledU /:
+HoldPattern @ Multiply[pre___, ControlledU[cc_, op_, ___], in_Ket] :=
+  With[
+    { x = Times @@ in[cc] },
+    If[x == 1,
+      Multiply[pre, op ** in],
+      Multiply[pre, in],
+      Multiply[pre, in]
+     ]
+   ]
+
 HoldPattern @ Multiply[pre___, op_ControlledU, post___] :=
   Multiply[pre, Elaborate[op], post]
-(* Options are for QuantumCircuit[] and ignored in calculations. *)
+(* NOTE: DO NOT put "ControlledU /:". *)
+(* NOTE: Options are for QuantumCircuit[] and ignored in calculations. *)
 
 
 QuissoControlledU::usage = "QuissoControlledU[...] is obsolete. Use Elaborate[ControlledU[...]] instead."
@@ -1303,6 +1326,10 @@ HoldPattern @ Multiply[pre___, ControlledExp[cc_, op_, ___], in_Ket] :=
     Multiply[pre, Elaborate[MultiplyPower[op, x] ** in]]
    ]
 
+HoldPattern @ Multiply[pre___, op_ControlledExp, post___] :=
+  Multiply[pre, Elaborate @ op, post]
+(* NOTE: DO NOT put "ControlledExp /:". *)
+
 ControlledExp /:
 Expand @ ControlledExp[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
   Module[
@@ -1325,7 +1352,7 @@ theCtrlExp[n_Integer, mat_?MatrixQ] := Module[
   { bb = Tuples[{0, 1}, n], xx, mm },
   xx = FromDigits[#, 2] & /@ bb;
   mm = MatrixPower[mat, #] & /@ xx;
-  bb = Dyad[#, #] & /@ One@Power[2, n];
+  bb = Dyad[#, #] & /@ One @ Power[2, n];
   Total @ MapThread[CircleTimes, {bb, mm}]
  ]
 
@@ -1697,7 +1724,8 @@ MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
     0 -> {p0/(p0+p1), pls},
     1 -> {p1/(p0+p1), mns}
    ]
- ] /; PauliQ[mat]
+ ] (* /; PauliQ[mat] *)
+(* NOTE: Test PauliQ[mat] may take long for 8 or more qubits. *)
 (* NOTE:
    1. vec, pls, or mns may be 0 (null vector).
    2. The norms of pls and mns may have imaginary parts numerically.

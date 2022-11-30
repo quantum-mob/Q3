@@ -30,7 +30,7 @@ For more advanced uses of Q3, take a look at textbook ["A Quantum Computation Wo
 A compilation of the Mathematica(R) Notebook files that have been used to generate the demonstrations in this textbook is available from
 the [QuantumWorkbook repository](https://github.com/quantum-mob/QuantumWorkbook).
 
-![Quantum Workbook Cover](Images/QuantumWorkbookCover.jpg?raw=true)
+[![Quantum Workbook Cover](Images/QuantumWorkbookCover.jpg?raw=true)](https://link.springer.com/book/9783030912130)
 
 
 ## For Beginners of Mathematica

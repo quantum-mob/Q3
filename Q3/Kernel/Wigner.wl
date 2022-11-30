@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.25 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-11 15:19:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.26 $"][[2]], " (",
+  StringSplit["$Date: 2022-11-29 03:07:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -705,7 +705,7 @@ Rotation /:
 HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] := Module[
   { bs = Basis[S],
     Rn = MatrixExp[ -I phi TheWigner[{Spin @ S, FlavorLast @ S}] ] },
-  Inner[Dyad, bs.Rn, bs]
+  Inner[Dyad[S], bs.Rn, bs]
  ]
 
 Rotation /:
@@ -718,7 +718,7 @@ HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, v:{_,_,_}, ___] := Module[
     TheWigner[{Spin[S], 2}],
     TheWigner[{Spin[S], 3}] };
   Rn = MatrixExp[ -I phi Rn ];
-  Inner[Dyad, bs.Rn, bs]
+  Inner[Dyad[S], bs.Rn, bs]
  ]
 
 
