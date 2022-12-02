@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.40 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-28 22:16:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.42 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-02 23:05:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -164,21 +164,59 @@ PauliGroup /:
 GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=
   GroupMultiplicationTable @ PauliGroup @ Length @ ss
 
+(**** </PauliGroup> ****)
+
+
+(**** <PauliQ> ****)
 
 PauliQ::usage = "PauliQ[expr] returns True if matrix or operator expression expr is an element of the full Pauli group."
 
-PauliQ[mat_?MatrixQ] := With[
-  { cmp = Most @ ArrayRules @ PauliDecompose[mat] },
-  TrueQ @ And[Length[cmp] == 1, Values[cmp]^4 == {1}]
- ]
+(* NOTE: The previous method based on PauliDecompose is slow for a large
+   number of qubits, especially, 8 or more qubits. *)
 
-PauliQ[expr_] := PauliQ[Matrix @ expr]
+PauliQ[mat_?SquareMatrixQ] := thePauliQ[mat] /; Length[mat] == 2
+
+PauliQ[mat_?SquareMatrixQ] := Module[
+  { tsr = Tensorize[mat],
+    dim, kk, tt, n },
+  dim = Dimensions[tsr];
+  n = Length[dim]/2;
+  kk = NestList[RotateLeft[#, 2] &, Range[2 n], n - 1];
+  tt = Transpose[tsr, #] & /@ kk;
+  tt = Map[
+    Function[{x}, Flatten@Map[thePauliQ, x, {2 n - 2}]],
+    tt];
+  If[AllTrue[tt, (Length[#] == Power[2, n - 1]) &],
+    AllTrue[Flatten@tt, Identity],
+    False]
+ ] /; IntegerQ@Log[2, Length@mat] /; Length[mat] > 2
 
 PauliQ[_List] = False
 
 PauliQ[_Association] = False
 
-(**** </PauliGroup> ****)
+PauliQ[expr_] := PauliQ[Matrix @ expr]
+
+
+thePauli::usage = "thePauli[mat] returns True if 2x2 matrix mat is one of the Pauli operators."
+
+thePauliQ[mat_?SquareMatrixQ] := Module[
+  {cc},
+  cc = Chop@{
+    Tr@mat,
+    Tr@Reverse@mat,
+    Subtract @@ Diagonal@mat,
+    Subtract @@ Diagonal@Reverse@mat};
+  cc = DeleteCases[cc, 0];
+  Switch[Length[cc],
+    0, Nothing,
+    1, True,
+    _, False]
+ ] /; Length[mat] == 2
+
+thePauliQ[_] = False
+
+(**** </PauliQ> ****)
 
 
 (**** <CliffordGroup> ****)

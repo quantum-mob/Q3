@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.70 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-29 02:57:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.74 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-02 23:14:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -957,22 +957,34 @@ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
   CNOT[FlavorNone @ cc, FlavorNone @ tt] /;
   Not @ FlavorNoneQ @ Join[cc, tt]
 
+CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
+  CNOT[cc -> Table[1, Length @ cc], tt]
+
+
+CNOT[Rule[cc:{__?QubitQ}, vv_], tt:{__?QubitQ}] :=
+  CNOT[FlavorNone[cc] -> vv, FlavorNone @ tt] /;
+  Not @ FlavorNoneQ @ Join[cc, tt]
+
+
 CNOT /:
 Dagger[ op_CNOT ] := op
 
 CNOT /:
-HoldPattern @ Elaborate @ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
-  { prj = Multiply @@ Through[cc[11]],
-    not = Multiply @@ Through[tt[1]] },
-  Garner @ Elaborate[(1-prj) + prj ** not]
- ]
+HoldPattern @ Elaborate @
+  CNOT[Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}], tt:{__?QubitQ}] := Module[
+    { rr = Thread[vv -> vv],
+      not = Multiply @@ Through[tt[1]],
+      prj },
+    prj = Multiply @@ Elaborate @ MapThread[Construct, {cc, rr}];
+    Garner @ Elaborate[(1-prj) + prj ** not]
+   ]
 
 CNOT /:
-HoldPattern @ Multiply[pre___, CNOT[cc_, tt_], in_Ket] :=
+HoldPattern @ Multiply[pre___, CNOT[Rule[cc_, vv_], tt_], in_Ket] :=
   With[
-    { x = Times @@ in[cc],
+    { xx = in[cc],
       op = Multiply @@ Through[tt[1]] },
-    If[x == 1,
+    If[ xx == vv,
       Multiply[pre, op ** in],
       Multiply[pre, in],
       Multiply[pre, in]
@@ -1219,15 +1231,21 @@ ControlledU::usage = "ControlledU[{C1, C2, ...}, T[j, ..., k]] represents a mult
 
 ControlledU::nonuni = "The operator `` is not unitary."
 
-ControlledU[ S_?QubitQ, expr_, opts___?OptionQ ] :=
-  ControlledU[ { S[None] }, expr, opts ]
+ControlledU[S_?QubitQ, expr_, opts___?OptionQ] :=
+  ControlledU[S @ {None}, expr, opts]
 
-ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] :=
-  ControlledU[ FlavorNone @ ss, expr, opts ] /;
+ControlledU[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
+  ControlledU[FlavorNone @ ss, expr, opts] /;
   Not @ FlavorNoneQ[ss]
 
+ControlledU[ss:{__?QubitQ}, op_, opts___?OptionQ] :=
+  ControlledU[FlavorNone[ss] -> Table[1, Length @ ss], op, opts]
 
-ControlledU[ ss:{__?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
+ControlledU[Rule[ss:{__?QubitQ}, vv_], expr_, opts___?OptionQ] :=
+  ControlledU[FlavorNone[ss] -> vv, expr, opts] /;
+  Not @ FlavorNoneQ[ss]
+
+ControlledU[ss:{__?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
   If[ Abs[z] != 1, Message[ControlledU::nonuni, z] ];
   If[ Length[ss] > 1,
     ControlledU[Most @ ss, Phase[Arg[z], Last @ ss, opts]],
@@ -1236,24 +1254,27 @@ ControlledU[ ss:{__?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
  )
 
 ControlledU /:
-Dagger[ ControlledU[ ss:{__?QubitQ}, expr_, opts___?OptionQ ] ] :=
-  ControlledU[ss, Dagger[expr], opts]
+Dagger @ ControlledU[sv_Rule, expr_, opts___?OptionQ] :=
+  ControlledU[sv, Dagger[expr], opts]
 
 ControlledU /:
-HoldPattern @ Elaborate @ ControlledU[ss:{__?QubitQ}, expr_, ___] :=
+HoldPattern @ Elaborate @
+  ControlledU[Rule[ss:{__?QubitQ}, vv:{__?BinaryQ}], op_, ___?OptionQ] :=
   Module[
-    { P = Multiply @@ Map[ ((1-#[3])/2)&, Most /@ ss ] },
-    Garner[ P ** Elaborate[expr] + (1-P) ]
+    { rr = Thread[vv -> vv],
+      prj },
+    prj = Multiply @@ Elaborate @ MapThread[Construct, {ss, rr}];
+    Garner[prj ** Elaborate[op] + (1 - prj)]
    ]
 
 ControlledU /:
 HoldPattern @ Matrix[op_ControlledU, rest___] := Matrix[Elaborate[op], rest]
 
 ControlledU /:
-HoldPattern @ Multiply[pre___, ControlledU[cc_, op_, ___], in_Ket] :=
-  With[
-    { x = Times @@ in[cc] },
-    If[x == 1,
+HoldPattern @ Multiply[pre___,
+  ControlledU[Rule[cc_, vv_], op_, ___], in_Ket] := With[
+    { xx = in[cc] },
+    If[ xx == vv,
       Multiply[pre, op ** in],
       Multiply[pre, in],
       Multiply[pre, in]
@@ -1263,7 +1284,6 @@ HoldPattern @ Multiply[pre___, ControlledU[cc_, op_, ___], in_Ket] :=
 HoldPattern @ Multiply[pre___, op_ControlledU, post___] :=
   Multiply[pre, Elaborate[op], post]
 (* NOTE: DO NOT put "ControlledU /:". *)
-(* NOTE: Options are for QuantumCircuit[] and ignored in calculations. *)
 
 
 QuissoControlledU::usage = "QuissoControlledU[...] is obsolete. Use Elaborate[ControlledU[...]] instead."

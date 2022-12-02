@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.50 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-29 03:02:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.65 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-02 23:33:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -239,7 +239,7 @@ HoldPattern @
   Graphics[ QuantumCircuit[gg__, opts___?OptionQ], more___?OptionQ ] :=
   Module[
     { ss = Qubits @ {gg},
-      cc = qCircuitGate @ {gg},
+      cc = qcGate @ {gg},
       vv, ww, xx, yy, nodes, lines, in, out, unit },
 
     {vv, ww, unit, port} = {
@@ -263,8 +263,8 @@ HoldPattern @
     yy = Range[ Length @ ss ] $CircuitUnit;
     yy = AssociationThread[ss, -yy];
     
-    nodes = qCircuitNodes[ cc, xx, yy ];
-    lines = qCircuitLines[ cc, xx, KeyDrop[yy, ww] ];
+    nodes = qcNodes[ cc, xx, yy ];
+    lines = qcLines[ cc, xx, KeyDrop[yy, ww] ];
     
     in = FirstCase[ {gg}, QuissoIn[kk___] :> {kk} ];
     in = qCircuitInput[in, xx, yy];
@@ -287,40 +287,40 @@ qGateQ[expr_] := Not @ FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
 (* Recall that FreeQ[ Ket[<|...|>], _?QubitQ] = True . *)
 
 
-qCircuitGate::usage = "qCircuitGate[expr, opts] preprocesses various circuit elements."
+qcGate::usage = "qcGate[expr, opts] preprocesses various circuit elements."
 
-qCircuitGate::unknown = "Unknown quantum circuit element ``."
+qcGate::unknown = "Unknown quantum circuit element ``."
 
-(* NOTE: DO NOT set Listable attribute for qCircuitGate. *)
+(* NOTE: DO NOT set Listable attribute for qcGate. *)
 
-qCircuitGate[{gg__, opts___?OptionQ}] :=
-  Map[qCircuitGate[#, opts]&, {gg}]
+qcGate[{gg__, opts___?OptionQ}] :=
+  Map[qcGate[#, opts]&, {gg}]
 
-qCircuitGate[gg_List, opts___?OptionQ] :=
-  Map[qCircuitGate[#, opts]&, gg]
+qcGate[gg_List, opts___?OptionQ] :=
+  Map[qcGate[#, opts]&, gg]
 
 
-qCircuitGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
+qcGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
   
 
-qCircuitGate[ S_Symbol?QubitQ[j___, k_Integer?Negative], opts___?OptionQ ] :=
+qcGate[ S_Symbol?QubitQ[j___, k_Integer?Negative], opts___?OptionQ ] :=
   Gate[ {S[j,None]}, opts,
-    "Label" -> qGateLabel[S[j,k]],
+    "Label" -> gateLabel[S[j,k]],
     "LabelSize" -> 0.5 ]
 
-qCircuitGate[ S_?QubitQ, opts___?OptionQ ] :=
-  Gate[ Qubits @ S, opts, "Label" -> qGateLabel[S] ]
+qcGate[ S_?QubitQ, opts___?OptionQ ] :=
+  Gate[ Qubits @ S, opts, "Label" -> gateLabel[S] ]
 
-qCircuitGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
-  Gate[ Qubits @ S, opts, "Label" -> Superscript[qGateLabel[S],"\[Dagger]"] ]
+qcGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
+  Gate[ Qubits @ S, opts, "Label" -> Superscript[gateLabel[S],"\[Dagger]"] ]
 
-qCircuitGate[ HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ ] :=
-  Map[ qCircuitGate[#, opts]&, {ss} ]
+qcGate[ HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ ] :=
+  Map[ qcGate[#, opts]&, {ss} ]
 
-qCircuitGate[ Measurement[ss:{__?PauliQ}], opts___?OptionQ ] :=
-  Map[ qCircuitGate[Measurement[#], opts]&, ss ]
+qcGate[ Measurement[ss:{__?PauliQ}], opts___?OptionQ ] :=
+  Map[ qcGate[Measurement[#], opts]&, ss ]
 
-qCircuitGate[ Measurement[S_?QubitQ], opts___?OptionQ ] :=
+qcGate[ Measurement[S_?QubitQ], opts___?OptionQ ] :=
   Gate[
     {FlavorMute @ S},
     "TargetFunction" -> "Measurement",
@@ -328,7 +328,7 @@ qCircuitGate[ Measurement[S_?QubitQ], opts___?OptionQ ] :=
     "Label" -> qMeasurementLabel[S]
    ]
 
-qCircuitGate[
+qcGate[
   HoldPattern @ Measurement[Multiply[ss__?QubitQ]], opts___?OptionQ ] :=
   Gate[
     FlavorMute @ {ss},
@@ -337,116 +337,117 @@ qCircuitGate[
     "Label" -> qMeasurementLabel @ {ss}
    ]
 
-qCircuitGate[
+qcGate[
   HoldPattern @ Projector[v_, qq_, opts___?OptionQ], more___?OptionQ ] :=
   Gate[ qq, "TargetFunction" -> "Projector", "Label" -> None, opts, more ]
 
-qCircuitGate[
+qcGate[
   Phase[ ang_, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, "Label" -> qGateLabel[ Phase[ang, G] ] ]
+  Gate[ Qubits @ G, opts, more, "Label" -> gateLabel[ Phase[ang, G] ] ]
 
-qCircuitGate[
+qcGate[
   Rotation[ ang_, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, "Label" -> qGateLabel[ Rotation[ang, G] ] ]
+  Gate[ Qubits @ G, opts, more, "Label" -> gateLabel[ Rotation[ang, G] ] ]
 
-qCircuitGate[
+qcGate[
   EulerRotation[ ang:{_,_,_}, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ {G}, opts, more, "Label" -> qGateLabel[ EulerRotation[ang, G] ] ]
+  Gate[ {G}, opts, more, "Label" -> gateLabel[ EulerRotation[ang, G] ] ]
 
 
-qCircuitGate[
-  ControlledU[ cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ ],
+qcGate[
+  ControlledU[ rr_Rule, S_?QubitQ, opts___?OptionQ ],
   more___?OptionQ ] :=
-  Gate[ cc, Qubits @ S, opts, more,
-    "Label" -> {None, qGateLabel[S]} ]
+  Gate[ rr, Qubits @ S, opts, more,
+    "Label" -> {None, gateLabel[S]} ]
 
-qCircuitGate[
+qcGate[
   ControlledU[
-    cc:{__?QubitQ},
+    Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}],
     op:(Phase|Rotation|EulerRotation)[j__, opts___?OptionQ],
     more___?OptionQ ],
   rest___?OptionQ ] :=
-  Gate[ cc, Qubits @ op, opts, more, rest,
-    "Label" -> {None, qGateLabel[op]} ]
+  Gate[ cc -> vv, Qubits @ op, opts, more, rest,
+    "Label" -> {None, gateLabel[op]} ]
 
-qCircuitGate[
+qcGate[
   ControlledU[
-    cc:{__?QubitQ},
+    Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}],
     HoldPattern @ Multiply[ss__?QubitQ],
     opts___?OptionQ ],
   more___?OptionQ ] :=
-  Sequence @@ Map[qCircuitGate[ControlledU[cc, #], opts, more]&, {ss}]
+  Sequence @@ Map[qcGate[ControlledU[cc->vv, #], opts, more]&, {ss}]
 
-qCircuitGate[
-  ControlledU[ cc:{__?QubitQ}, expr_, opts___?OptionQ ],
+qcGate[
+  ControlledU[ Rule[cc:{__?QubitQ}, vv_], expr_, opts___?OptionQ ],
   more___?OptionQ ] :=
-  Gate[ cc, Qubits[expr], opts, more ] /; Not @ FreeQ[expr, _?QubitQ]
+  Gate[ cc->vv, Qubits[expr], opts, more ] /; Not @ FreeQ[expr, _?QubitQ]
 
 
-qCircuitGate[ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}], opts___?OptionQ ] :=
-  Gate[ cc, tt, "TargetFunction" -> "CirclePlus" ]
-
-qCircuitGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
-  Gate[ {a, b}, {c}, "TargetFunction" -> "CirclePlus" ]
+qcGate[ CNOT[Rule[cc:{__?QubitQ}, vv_], tt:{__?QubitQ}], opts___?OptionQ ] :=
+  Gate[ cc -> vv, tt, "TargetFunction" -> "CirclePlus" ]
 
 
-qCircuitGate[ CZ[cc:{__?QubitQ}, tt:{__?QubitQ}], opts___?OptionQ ] :=
-  Sequence @@ Map[qcgCZ[cc, #, opts]&, tt]
-
-qcgCZ[ cc:{__?QubitQ}, t_?QubitQ, opts___?OptionQ ] :=
-  Gate[ cc, {t}, "ControlFunction" -> "Dot", "TargetFunction" -> "Dot" ]
+qcGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
+  Gate[ {a, b} -> {1, 1}, {c}, "TargetFunction" -> "CirclePlus" ]
 
 
-qCircuitGate[ SWAP[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
+qcGate[ CZ[cc:{__?QubitQ}, tt:{__?QubitQ}], ___?OptionQ ] :=
+  Sequence @@ Map[
+    Gate[cc, {#}, "ControlFunction" -> "Dot", "TargetFunction" -> "Dot"]&,
+    tt
+   ]
+
+
+qcGate[ SWAP[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
   Gate[ {c}, {t},
     "ControlFunction" -> "Cross",
     "TargetFunction" -> "Cross"
    ]
 
-qCircuitGate[ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
+qcGate[ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
   Gate[ {a}, {b, c},
     "ControlFunction" -> "Dot",
     "TargetFunction" -> "Cross"
    ]
 
-qCircuitGate[
+qcGate[
   Deutsch[ph_, {a_?QubitQ, b_?QubitQ, c_?QubitQ}, opts___?OptionQ],
   more___?OptionQ ] :=
   Gate[ {a, b}, {c}, opts, more, "Label" -> "D" ]
 
 
-qCircuitGate[
+qcGate[
   Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ],
   more__?OptionQ
- ] := qCircuitGate @ Oracle[f, cc, tt, opts, more]
+ ] := qcGate @ Oracle[f, cc, tt, opts, more]
 
-qCircuitGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
+qcGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
   Gate[ cc, tt, opts,
     "ControlFunction" -> "Oval",
     "TargetFunction" -> "CirclePlus",
     "Label" -> "f" ]
 
 
-qCircuitGate[
+qcGate[
   ControlledExp[cc:{__?QubitQ}, op_, opts___?OptionQ],
   more__?OptionQ
- ] := qCircuitGate @ ControlledExp[cc, op, opts, more]
+ ] := qcGate @ ControlledExp[cc, op, opts, more]
 
-qCircuitGate @ ControlledExp[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
+qcGate @ ControlledExp[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
   Gate[ cc, Qubits[op],
-    "Label" -> qGateLabel[ControlledExp[cc, op, opts]],
+    "Label" -> gateLabel[ControlledExp[cc, op, opts]],
     opts,
     "ControlFunction" -> "Oval",
     "TargetFunction" -> "Rectangle"
    ]
 
 
-qCircuitGate[
+qcGate[
   QFT[qq:{__?QubitQ}, opts___?OptionQ],
   more__?OptionQ
- ] := qCircuitGate @ QFT[qq, opts, more]
+ ] := qcGate @ QFT[qq, opts, more]
 
-qCircuitGate[ QFT[qq:{__?QubitQ}, opts___?OptionQ] ] :=
+qcGate[ QFT[qq:{__?QubitQ}, opts___?OptionQ] ] :=
   Module[
     { more = Join[{opts}, Options @ QFT],
       lbl, ang },
@@ -454,15 +455,13 @@ qCircuitGate[ QFT[qq:{__?QubitQ}, opts___?OptionQ] ] :=
     Gate[qq, "Label" -> Rotate[lbl, ang], Sequence @@ more]
    ]
 
-qCircuitGate[
-  HoldPattern @
-    Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ],
+qcGate[
+  HoldPattern @ Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ],
   more__?OptionQ
- ] := qCircuitGate @ Dagger @ QFT[qq, opts, more]
+ ] := qcGate @ Dagger @ QFT[qq, opts, more]
 
-qCircuitGate[
-  HoldPattern @
-    Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ]
+qcGate[
+  HoldPattern @ Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ]
  ] := Module[
    { more = Join[{opts}, Options @ QFT],
      lbl, ang },
@@ -471,15 +470,15 @@ qCircuitGate[
   ]
 
 
-qCircuitGate[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
+qcGate[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
   Gate[ Qubits @ expr, opts ]
 
-qCircuitGate[ z_?NumericQ, ___?OptionQ ] := "Spacer"
+qcGate[ z_?NumericQ, ___?OptionQ ] := "Spacer"
 
-qCircuitGate[ gate:("Separator" | "Spacer"), ___?OptionQ ] := gate
+qcGate[ gate:("Separator" | "Spacer"), ___?OptionQ ] := gate
 
 
-qCircuitGate[ expr_, ___?OptionQ ] := expr /; FreeQ[expr, _?QubitQ]
+qcGate[ expr_, ___?OptionQ ] := expr /; FreeQ[expr, _?QubitQ]
 (* Graphics primitives corresponds to this case. *)
 
 
@@ -493,35 +492,35 @@ qMeasurementLabel[S_?QubitQ] :=
   FlavorLast[S] /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> None, _ -> "?"}
 
 
-qGateLabel::usage = "qGateLabel[G] returns the label of circuit element G to be displayed in the circuit diagram."
+gateLabel::usage = "gateLabel[G] returns the label of circuit element G to be displayed in the circuit diagram."
 
-SetAttributes[qGateLabel, Listable];
+SetAttributes[gateLabel, Listable];
 
-qGateLabel[ _Symbol?QubitQ[___, n_Integer?Negative] ] :=
+gateLabel[ _Symbol?QubitQ[___, n_Integer?Negative] ] :=
   DisplayForm @ FractionBox[Row @ {2, Pi}, SuperscriptBox[2, -n]] 
 
-qGateLabel[ S_?QubitQ ] := Last[S] /. {
+gateLabel[ S_?QubitQ ] := Last[S] /. {
   0 -> "I",
   1 -> "X", 2 -> "Y", 3 -> "Z",
   6 -> "H", 7 -> "S", 8 -> "T" }
 
-qGateLabel[ gate_Phase ] := "\[Phi]"
+gateLabel[ gate_Phase ] := "\[Phi]"
 
-qGateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
+gateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
   Subscript[ "U", FlavorLast[S] /. {1->"x", 2->"y", 3->"z"} ]
 
-qGateLabel[ EulerRotation[{_, _, _}, S_?QubitQ, ___] ] := Subscript["U", "E"]
+gateLabel[ EulerRotation[{_, _, _}, S_?QubitQ, ___] ] := Subscript["U", "E"]
 
-qGateLabel[ ControlledExp[_, _, OptionsPattern[]] ] := With[
+gateLabel[ ControlledExp[_, _, OptionsPattern[]] ] := With[
   { lbl = OptionValue[ControlledExp, "Label"] },
   {First @ lbl, Superscript[Last @ lbl, First @ lbl]}
  ]
 
 
-qDrawGateCirclePlus[ x_, yy_List, ___ ] :=
-  qDrawGateCirclePlus @@@ Thread @ {x, yy}
+gateShape["CirclePlus"][x_, yy_List, ___] :=
+  gateShape["CirclePlus"] @@@ Thread @ {x, yy}
 
-qDrawGateCirclePlus[ x_, y_?NumericQ, ___ ] := Module[
+gateShape["CirclePlus"][x_, y_?NumericQ, ___] := Module[
   { circ, crss },
   circ = Circle[ {x, y}, $GateSize / 3 ];
   crss = Line[ {
@@ -532,24 +531,28 @@ qDrawGateCirclePlus[ x_, y_?NumericQ, ___ ] := Module[
  ]
 
 
-qDrawGateCross[x_, yy_List, ___] := qDrawGateCross @@@ Thread @ {x, yy}
+gateShape["Cross"][x_, Rule[yy_List, _], ___] :=
+  gateShape["Cross"][x, yy]
 
-qDrawGateCross[x_, y_, ___] := List @ Line[{
+gateShape["Cross"][x_, yy_List, ___] :=
+  gateShape["Cross"] @@@ Thread @ {x, yy}
+
+gateShape["Cross"][x_, y_, ___] := List @ Line @ {
     { {x,y}+{-1,-1}$DotSize, {x,y}+{+1,+1}$DotSize },
     { {x,y}+{-1,+1}$DotSize, {x,y}+{+1,-1}$DotSize }
-   }]
+   }
 
 
-qDrawGateMeasurement[ x_, {y_}, opts___?OptionQ ] :=
-  qDrawGateMeasurement[x, y, opts]
+gateShape["Measurement"][x_, {y_}, opts___?OptionQ] :=
+  gateShape["Measurement"][x, y, opts]
 
-qDrawGateMeasurement[ x_, yy:{_, __}, opts___?OptionQ ] := Module[
-  { cc, mm, tt, rest },
+gateShape["Measurement"][x_, yy:{_, __}, opts___?OptionQ] := Module[
+  {cc, mm, tt, rest},
 
   tt = "Label" /. {opts} /. Options[QuantumCircuit];
   rest = Normal @ KeyDrop[{opts}, "Label"];
   mm = MapThread[
-    qDrawGateMeasurement[x, #1, "Label" -> #2, opts]&,
+    gateShape["Measurement"][x, #1, "Label" -> #2, opts]&,
     {yy, tt}
    ];
 
@@ -558,23 +561,23 @@ qDrawGateMeasurement[ x_, yy:{_, __}, opts___?OptionQ ] := Module[
     Line @ Thread @ {x+$DotSize/2, yy}
    };
 
-  { cc, mm }
+  {cc, mm}
  ]
 
-qDrawGateMeasurement[ x_, y_, opts___?OptionQ ] := Module[
-  { pane, text, arc, needle },
+gateShape["Measurement"][x_, y_, opts___?OptionQ] := Module[
+  {pane, text, arc, needle},
 
-  pane = qDrawGateRectangle[x, y];
+  pane = gateShape["Rectangle"][x, y];
   text = qMeasurementText[x, y, opts];
   
   arc = Circle[ {x, y - 0.25 $GateSize}, .5 $GateSize, {1,5} Pi/6 ];
   needle = Line[{ {x, y - 0.25 $GateSize}, {x,y} + .3{1,1}$GateSize }];
   
-  { pane, text, arc, needle }
+  {pane, text, arc, needle}
  ]
 
 
-qDrawGateProjector[ x_, yy_List, ___ ] := Module[
+gateShape["Projector"][x_, yy_List, ___] := Module[
   { y1 = Min @ yy,
     y2 = Max @ yy,
     pane, symb },
@@ -593,15 +596,24 @@ qDrawGateProjector[ x_, yy_List, ___ ] := Module[
  ]
 
 
-qDrawGateDot[ x_, yy_List, ___ ] := qDrawGateDot @@@ Thread @ {x, yy}
+gateShape["Dot"][x_, yy_List, ___] :=
+  gateShape["Dot"][x, yy -> Table[1, Length @ yy]]
+(* NOTE: This form may occur on target qubits such as for CZ. *)
 
-qDrawGateDot[ x_, y_?NumericQ, ___ ] := Disk[ {x, y}, $DotSize ]
+gateShape["Dot"][x_, Rule[yy_List, vv_List], ___] :=
+  gateShape["Dot"] @@@ Thread @ {x, Thread[yy->vv]}
 
-qDrawGateRectangle[ x_, yy_List, opts___?OptionQ ] := Module[
+gateShape["Dot"][x_, y_?NumericQ -> 1, ___] := Disk[{x, y}, $DotSize]
+
+gateShape["Dot"][x_, y_?NumericQ -> 0, ___] :=
+  {EdgeForm[Black], White, Disk[{x, y}, $DotSize]}
+
+
+gateShape["Rectangle"][x_, yy_List, opts___?OptionQ] := Module[
   { y1 = Min @ yy,
     y2 = Max @ yy,
     pane, line, text },
-  text = qGateText[x, Mean @ {y1, y2}, opts];
+  text = gateText[x, Mean @ {y1, y2}, opts];
   pane = Rectangle[
     {x, y1} - 0.5{1,1}$GateSize,
     {x, y2} + 0.5{1,1}$GateSize ];
@@ -615,25 +627,25 @@ qDrawGateRectangle[ x_, yy_List, opts___?OptionQ ] := Module[
   {{EdgeForm[], White, pane}, line, text}
  ]
 
-qDrawGateRectangle[ x_, y_?NumericQ, opts___?OptionQ ] :=
-  qDrawGateRectangle[x, {y}, opts]
+gateShape["Rectangle"][ x_, y_?NumericQ, opts___?OptionQ ] :=
+  gateShape["Rectangle"][x, {y}, opts]
 
 
-qDrawGateOval[ x_, y_?NumericQ, opts___?OptionQ ] := Module[
+gateShape["Oval"][ x_, y_?NumericQ, opts___?OptionQ ] := Module[
   { pane, text},
-  text = qGateText[x, y, opts];
+  text = gateText[x, y, opts];
   pane = Disk[{x, y}, $GateSize/2];
   { {EdgeForm[Black], White, pane}, text }
  ]
 
-qDrawGateOval[ x_, yy_List, opts___?OptionQ ] := Module[
+gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
   { x1 = x - $GateSize/2,
     x2 = x + $GateSize/2,
     y1 = Min @ yy,
     y2 = Max @ yy,
     y0, y3, ff, pane, text},
   
-  text = qGateText[x, Mean @ {y1, y2}, opts];
+  text = gateText[x, Mean @ {y1, y2}, opts];
 
   ff = 0.657;
   y0 = y1 - $GateSize ff;
@@ -647,7 +659,7 @@ qDrawGateOval[ x_, yy_List, opts___?OptionQ ] := Module[
  ]
 
 
-qGateText[ x_, y_, opts___?OptionQ ] := Module[
+gateText[ x_, y_, opts___?OptionQ ] := Module[
   { label, factor },
   { label, factor } = { "Label", "LabelSize" } /.
     {opts} /. Options[QuantumCircuit];
@@ -679,67 +691,49 @@ qMeasurementText[ x_, y_, opts___?OptionQ ] := Module[
  ]
 
 
-SetAttributes[qDrawGateSymbol, Listable]
+qcNodes::usage = "qcNodes[ ... ] takes circuit elements and construct them as nodes of the circuit diagram by assigning horizontal and vertical coordinates to them."
 
-qDrawGateSymbol[name_?StringQ] :=
-  Symbol["Q3`Private`" <> "qDrawGate" <> name] /;
-  MemberQ[
-    { "Dot", "CirclePlus", "Projector", "Measurement",
-      "Rectangle", "Oval", "Cross" },
-    name
-   ]
-
-qDrawGateSymbol[name_?StringQ] := (
-  Message[QuantumCircuit::nofunc, name];
-  qDrawGateSymbol["Rectangle"]
- )
+qcNodes[ gg_List, xx_List, yy_Association ] :=
+  ReleaseHold @ Thread @ Hold[drawGate][gg, xx, yy]
 
 
-qCircuitNodes::usage = "qCircuitNodes[ ... ] takes circuit elements and construct them as nodes of the circuit diagram by assigning horizontal and vertical coordinates to them."
+Gate::usage = "Gate[{c1,c2,...}, {t1,t2,...}, opts] represents a multi-control multi-target gate element in the quantum circuit."
 
-qCircuitNodes[ gg_List, xx_List, yy_Association ] := Module[
-  { ff, F },
-  
-  ff = Thread[ F[ gg, xx, yy ] ];
-  ff = ff /. { F -> qDrawGate };
+Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
+  Gate[cc -> Table[1, Length @ cc], tt, opts]
 
-  Return[ff];
- ]
 
-qDrawGate::uage = "Renders the gates."
+drawGate::usage = "Renders the gates."
 
-qDrawGate[ gg_List, x_, yy_Association ] := Map[ qDrawGate[#, x, yy]&, gg ]
+drawGate[gg_List, x_, yy_Association] := Map[drawGate[#, x, yy]&, gg]
 
-qDrawGate[
-  Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts:OptionsPattern[]],
-  x_, yy_Association
- ] := Module[
+drawGate[
+  Gate[Rule[cc:{__?QubitQ}, vv_], tt:{__?QubitQ}, opts:OptionsPattern[]],
+  x_, yy_Association ] := Module[
    { yc = Lookup[yy, cc],
      yt = Lookup[yy, tt],
      label = OptionValue[QuantumCircuit, {opts}, "Label"],
      control, target, dots, link, pane },
 
    If[Not @ ListQ[label], label = {label, label}];
-   { control, target } = qDrawGateSymbol[
-     { "ControlFunction", "TargetFunction" } /. {opts} /.
-       Options[QuantumCircuit]
-    ];
+   {control, target} = gateShape /@ {"ControlFunction", "TargetFunction"} /.
+     {opts} /. Options[QuantumCircuit];
    
-   link = Line @ Join[ Thread @ {x, yc}, Thread @ {x, yt} ];
+   link = Line @ Join[Thread @ {x, yc}, Thread @ {x, yt}];
    
-   dots = control[x, yc, "Label" -> First[label], opts];
+   dots = control[x, yc -> vv, "Label" -> First[label], opts];
    pane = target[x, yt, "Label" -> Last[label], opts];
    
    Join[{link}, dots, pane]
   ]
 
 
-qDrawGate[ Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association ] :=
+drawGate[Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association] :=
   Module[
     { yt = Lookup[yy, tt],
       target },
     
-    target = qDrawGateSymbol[
+    target = gateShape[
       "TargetFunction" /. {opts} /. Options[QuantumCircuit]
      ];
 
@@ -747,9 +741,9 @@ qDrawGate[ Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association ] :=
    ]
 
 
-qDrawGate[ "Spacer", _, _Association ] = Nothing
+drawGate["Spacer", _, _Association] = Nothing
 
-qDrawGate[ "Separator", x_, yy_Association ] := Module[
+drawGate["Separator", x_, yy_Association] := Module[
   { xy = Tuples[{{x}, MinMax @ yy }] },
   { Dotted,
     Line @ {
@@ -758,12 +752,12 @@ qDrawGate[ "Separator", x_, yy_Association ] := Module[
    }
  ]
 
-qDrawGate[ g_, x_, yy_Association ] := g
+drawGate[g_, x_, yy_Association] := g
 
 
-qCircuitLines::usage = "qCircuitLines[gg, x, y] finds when Measurement occurs in the QuantumCircuit and renders the qubit line after Measurement in dashes."
+qcLines::usage = "qcLines[gg, x, y] finds when Measurement occurs in the QuantumCircuit and renders the qubit line after Measurement in dashes."
 
-qCircuitLines[ gg_List, xx_List, yy_Association ] := Module[
+qcLines[ gg_List, xx_List, yy_Association ] := Module[
   { mm, zz, dashed, plain },
   mm = Map[
     Cases[{#}, Gate[{S_?QubitQ}, "TargetFunction" -> "Measurement", ___?OptionQ] -> S, Infinity]&,
