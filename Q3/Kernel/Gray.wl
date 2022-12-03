@@ -5,13 +5,13 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.44 $"][[2]], " (",
-  StringSplit["$Date: 2022-08-13 22:44:00+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.50 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-03 22:55:40+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { BinaryToGray, GrayToBinary,
-  GrayCode, GrayCodeSubsets };
+  GraySequence, GraySubsets };
 
 { GrayControlledU, GrayControlledW,
   FromTwoLevelU, TwoLevelU, TwoLevelDecomposition };
@@ -23,19 +23,19 @@ BeginPackage["Q3`"]
 
 Begin["`Private`"]
 
-GrayCodeSubsets::usage = "GrayCodeSubsets[set] constructs a binary-reflected Gray code on set, that is, returns the list of all subsets of set each of which differs from its predecessor by only one element."
+GraySubsets::usage = "GraySubsets[set] constructs a binary-reflected Gray code on set, that is, returns the list of all subsets of set each of which differs from its predecessor by only one element."
 
 (* NOTE: The code has just been copied from Combinatorica package. *)
 
-GrayCodeSubsets[n_Integer?Positive] := GrayCodeSubsets[Range[n]]
+GraySubsets[n_Integer?Positive] := GraySubsets @ Range[n]
 
-GrayCodeSubsets[ { } ] := { {} }
+GraySubsets[{}] := { {} }
 
-GrayCodeSubsets[l_List] := Block[
+GraySubsets[ls_List] := Block[
   { $RecursionLimit = Infinity,
-    s }, 
-  s = GrayCodeSubsets[Take[l, 1-Length[l]]];
-  Join[s,  Map[Prepend[#, First[l]]&, Reverse[s]]]
+    ss }, 
+  ss = GraySubsets @ Take[ls, 1-Length[ls]];
+  Join[ss,  Map[Prepend[#, First @ ls]&, Reverse @ ss]]
  ]
 
 
@@ -55,7 +55,7 @@ GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
   mm = MatrixPower[mm, 1/nn];
   op = ExpressionFor[mm, Qubits @ expr];
 
-  rr = Reverse /@ GrayCodeSubsets[ReverseSort @ FlavorNone @ qq];
+  rr = Reverse /@ GraySubsets[ReverseSort @ FlavorNone @ qq];
   rr = Rest[rr];
 
   nq = Length @ qq;
@@ -85,7 +85,7 @@ GrayControlledW[{q_?QubitQ}, expr_] := ControlledU[{q}, expr]
 GrayControlledW[qq:{__?QubitQ}, expr_] := Module[
   { mm = Matrix[expr],
     tt = Qubits[expr],
-    rr = Reverse /@ GrayCodeSubsets[ReverseSort @ FlavorNone @ qq],
+    rr = Reverse /@ GraySubsets[ReverseSort @ FlavorNone @ qq],
     ss, op, n, V },
   ss = Map[Length, rr];
   ss = -Power[-1, ss];
@@ -133,23 +133,28 @@ GrayToBinary[gray_List] := Module[
  ]
 
 
-GrayCode::usage = "GrayCode[n, x_, y_] returns the list of n-bit Gray codes connecting the integers x and y.\nEach Gray code is given in binary digits.\nGrayCode[n] returns the list of all n-bit Gray codes.\nGrayCode[n] is equivalent to GrayCode[n, 0, 2^n-1]."
+(**** <GraySequence> ****)
 
-GrayCode[n_Integer, x_, y_] := Module[
-  { a = FromDigits[GrayToBinary[IntegerDigits[x, 2, n]], 2],
-    b = FromDigits[GrayToBinary[IntegerDigits[y, 2, n]], 2] },
-  If[ a > b,
-    Reverse[ BinaryToGray /@ IntegerDigits[Range[b, a], 2, n] ],
-    BinaryToGray /@ IntegerDigits[Range[a, b], 2, n]
-   ]
+GraySequence::usage = "GraySequence[{x, y}, n] returns the list of n-bit Gray codes connecting the integers x and y.\nGraySequence[{x, y}] calculates n automatically.\nGraySequence[n] returns the list of all n-bit Gray codes.\nEach Gray code is given in binary digits."
+
+GraySequence[{x_Integer, y_Integer}, n_Integer?Positive] := Module[
+  {kk = IntegerDigits[BitXor[x, y], 2, n]},
+  kk = BitSet[0, n - Flatten @ Position[kk, 1]];
+  FoldList[BitXor, x, kk]
  ]
 
-GrayCode[1] = {{0}, {1}}
+GraySequence[{x_Integer, y_Integer}] :=
+  GraySequence[{x, y}, Max @ Ceiling @ Log[2, {x, y} + 1]]
 
-GrayCode[n_Integer] := Join[
-  Map[Prepend[#, 0]&, GrayCode[n - 1]],
-  Map[Prepend[#, 1]&, Reverse @ GrayCode[n - 1]]
+
+GraySequence[1] = {0, 1}
+
+GraySequence[n_Integer] := Join[
+  GraySequence[n - 1],
+  BitSet[Reverse@GraySequence[n - 1], n - 1]
  ] /; n > 1
+
+(**** </GraySequence> ****)
 
 
 (**** <FromTwoLevelU> *****)
@@ -162,37 +167,50 @@ FromTwoLevelU[ TwoLevelU[mat_?MatrixQ, {x_, y_}, L_], qq:{__?QubitQ} ] :=
 
 FromTwoLevelU[mat_?MatrixQ, {x_Integer, y_Integer}, qq:{__?QubitQ}] :=
   Module[
-    { gray = GrayCode[Length @ qq, x-1, y-1],
+    { gray = GraySequence[{x, y} - 1, Length @ qq],
       mask, expr },
-    mask = Catenate @ Successive[grayCNOT[#1, #2, qq]&, Most @ gray];
-    expr = grayCtrlU[gray[[-2]], gray[[-1]], mat, qq];
-    Join[mask, expr, Reverse @ mask]
+    mask = Successive[grayCNOT[{#1,#2}, qq]&, Most @ gray];
+    expr = grayCtrlU[Take[gray, -2], mat, qq];
+    Join[mask, {expr}, Reverse @ mask]
    ] /; OrderedQ @ {x, y}
 
-grayCNOT[g1_, g2_, qq_] := Module[
-  { xx = g1 + g2,
-    cc = Mod[g1 + g2, 2] },
-  xx = Pick[qq, xx, 0];
-  xx = Through[xx[1]];
-  cc = GroupBy[Transpose @ {cc, qq}, First, Last @* Transpose];
-  {xx, CNOT[cc[0], cc[1]], xx} /. {} -> Nothing
+
+grayCNOT::usage = "grayCNOT[{x, y}, {s1, s2, \[Ellipsis]}] construct the CNOT gate corresponding to transposition Cycles[{{x,y}}], where integers x and y are assumed to be in the Gray code; they are different in only one bit."
+
+grayCNOT[pair:{_Integer, _Integer}, ss:{__?QubitQ}] := Module[
+  { n = Length @ ss,
+    cc, tt, vv},
+  cc = IntegerDigits[BitXor @@ pair, 2, n];
+  tt = Part[ss, Flatten @ Position[cc, 1]];
+  cc = Flatten @ Position[cc, 0];
+  vv = Part[IntegerDigits[First @ pair, 2, n], cc];
+  cc = Part[ss, cc];
+  CNOT[cc -> vv, tt]
  ]
 
-grayCtrlU[g1_, g2_, mat_, qq_] := Module[
-  { xx = g1 + g2,
-    cc = Mod[g1 + g2, 2],
-    op },
-  xx = Pick[qq, xx, 0];
-  xx = Through[xx[1]];
-  cc = GroupBy[Transpose @ {cc, qq}, First, Last @* Transpose];
-  op = Elaborate @ ExpressionFor[mat, cc[1]];
-  If[ Not @ OrderedQ @ {g1, g2},
-    With[
-      { tt = First @ cc[1] },
-      op = Multiply[tt[1], op, tt[1]]
-     ]
+grayCNOT[kk:{_Integer, _Integer, __Integer}, ss:{__?QubitQ}] := With[
+  { mask = Successive[grayCNOT[{#1, #2}, ss]&, Most @ kk] },
+  Join[mask, List @ grayCNOT[Take[kk, -2], ss], Reverse @ mask]
+ ]
+
+
+grayCtrlU::usage = "grayCtrlU[{x, y}, mat, {s1, s2, \[Ellipsis]}] construct the controlled-unitary gate corresponding to the two-level unitary matrix mat with rows and columns x and y. Here, x and y are supposed to be the Gray code."
+
+grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
+  { n = Length @ ss,
+    cc, tt, vv, op },
+  cc = IntegerDigits[BitXor @@ pair, 2, n];
+
+  tt = FlavorNone @ Part[ss, Flatten @ Position[cc, 1]];
+  op = Elaborate @ ExpressionFor[mat, tt];
+  If[ Not @ OrderedQ @ pair,
+    op = With[{X = First[tt][1]}, X ** op ** X]
    ];
-  {xx, ControlledU[cc[0], op, "Label"->"U"], xx} /. {} -> Nothing
+    
+  cc = Flatten @ Position[cc, 0];
+  vv = Part[IntegerDigits[First @ pair, 2, n], cc];
+  cc = Part[ss, cc];
+  ControlledU[cc -> vv, op, "Label"->"U"]
  ]
 
 

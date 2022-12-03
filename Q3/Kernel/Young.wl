@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.19 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-18 17:37:13+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.21 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-03 23:15:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -75,13 +75,15 @@ PermutationForm[expr_] := ReplaceAll[ expr,
  ]
 
 
-Transposition::usage = "Transposition[{i, j}] returns Cycles[{{i, j}}], representing the transposition of elements i and j.\nIt is a shortcut to Cycles[{{i, j}}]."
+Transposition::usage = "Transposition[{i, j}] returns Cycles[{{i, j}}], representing the transposition of elements i and j. It is a shortcut to Cycles[{{i, j}}].\nTransposition[n] is equivalent to Transposition[{n, n+1}]."
 
 Transposition[{}] := Cycles[{}]
 
 Transposition[pair:{_Integer, _Integer}] := Cycles @ {pair}
 
-Transposition[x_Integer, y_Integer] := Transposition[{x, y}]
+Transposition[x_Integer, y_Integer] := Transposition @ {x, y}
+
+Transposition[k_Integer] := Transposition @ {k, k+1}
 
 
 YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nYoungDiagram[yt] displays the Young diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
@@ -798,16 +800,19 @@ InversionVector[p_?PermutationListQ] := Module[
 AdjacentTranspositions::usage = "AdjacentTranspositions[perm] returns a list of adjacent transpositions that combine to the permtuation perm.\nNote that permutations are multiplied right to left like right operators, not like functions."
 
 AdjacentTranspositions[prm_?PermutationListQ]:= 
-  Map[Transposition[#, #+1]&, getAdjacentTranspositions @ prm]
+  Map[Transposition, intoTranspositions @ prm]
 
 AdjacentTranspositions[{}] = {}
 
 AdjacentTranspositions[cyc_Cycles] :=
   AdjacentTranspositions[PermutationList @ cyc]
 
-getAdjacentTranspositions::usage="getAdjacentTranspositions[perm] represents perm as product of transpositions of immediate neighbors. An entry value of k in the returned list denotes the transposition (k,k+1)."
+intoTranspositions::usage="intoTranspositions[perm] represents perm as product of transpositions of immediate neighbors. An entry value of k in the returned list denotes the transposition (k,k+1)."
 
-getAdjacentTranspositions[prm_?PermutationListQ]:= Module[
+intoTranspositions[cyc_Cycles] :=
+  intoTranspositions[PermutationList @ cyc]
+
+intoTranspositions[prm_?PermutationListQ] := Module[
   { idx = 1,
     trs = {},
     new = prm },
@@ -822,9 +827,9 @@ getAdjacentTranspositions[prm_?PermutationListQ]:= Module[
   Return[trs]
  ]
 
-putAdjacentTranspositions::usage = "putAdjacentTranspositions[trs] is the inverse operation of getAdjacentTranspositions.\nGiven here just for heuristic reasons."
+fromTranspositions::usage = "fromTranspositions[trs] is the inverse operation of intoTranspositions.\nGiven here just for heuristic reasons."
 
-putAdjacentTranspositions[ntr_List] :=
+fromTranspositions[ntr_List] :=
   Apply[PermutationProduct, Cycles[{{#,#+1}}]& /@ ntr]
 
 (**** </AdjacentTranspositions> ****)

@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.20 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-17 00:58:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.21 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-03 18:14:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -79,7 +79,7 @@ YoungNaturalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] :=
     IdentityMatrix[YoungTableauCount[pp]],
     Dot @@ Extract[
       YoungNaturalRepresentation[pp],
-      Partition[getAdjacentTranspositions[pi], 1]
+      Partition[intoTranspositions[pi], 1]
      ]
  ] /; Total[pp]==Length[pi];
 
@@ -92,7 +92,7 @@ YoungSeminormalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] :=
     IdentityMatrix[YoungTableauCount[pp]],
     Dot @@ Extract[
       YoungSeminormalRepresentation[pp],
-      Partition[getAdjacentTranspositions[pi], 1]
+      Partition[intoTranspositions[pi], 1]
      ]
    ] /; Total[pp]==Length[pi];
 

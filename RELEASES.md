@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.8.2
+
+- One can now specify the values of the control register in CNOT and ControlledU.
+
 ## v2.8.1
 
 - An emergency bug fix in CliffordQ.
