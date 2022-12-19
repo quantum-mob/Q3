@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.3 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-11 13:52:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.5 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-19 09:23:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -18,7 +18,8 @@ BeginPackage["Q3`"]
 { Chain, ChainBy };
 { Bead, GreatCircle };
 
-{ ChopThrough, SimplifyThrough, FullSimplifyThrough,
+{ ApplyThrough,
+  ChopThrough, SimplifyThrough, FullSimplifyThrough,
   ReplaceAllThrough };
 
 { LeftBrace, RightBrace, OverBrace, UnderBrace };
@@ -388,13 +389,29 @@ GreatCircle[
   ]
 
 
-(***** <ChopThrough ...> *****)
+(***** <ApplyThrough> *****)
+
+ApplyThrough::usage = "ApplyThrough[f, expr] applies function f through special objects such as Association and SparseArray in expr, which usually do not work on the specifically represented form of data."
+
+ApplyThrough[func_][expr_] := ApplyThrough[func, expr]
+
+ApplyThrough[func_, aa_Association] := Map[func, aa]
+
+ApplyThrough[func_, aa_SparseArray] := 
+  SparseArray[func @ ArrayRules @ aa, Dimensions @ aa]
+
+ApplyThrough[func_, expr_] := func @ ReplaceAll[
+  func[expr],
+  { aa_Association :> ApplyThrough[func, aa],
+    aa_SparseArray :> ApplyThrough[func, aa] }
+ ]
+
 
 nameThrough::usage = "nameThrough[\"name\"] defines new function \"nameThrough\"."
 
 SetAttributes[nameThrough, Listable];
 
-nameThrough[op_Symbol] := nameThrough[SymbolName@op]
+nameThrough[op_Symbol] := nameThrough[SymbolName @ op]
 
 (* NOTE: It must be With[...]; Block nor Module works here. *)
 nameThrough[name_String] := With[
@@ -403,20 +420,14 @@ nameThrough[name_String] := With[
   full::usage = 
     SymbolName[full] <> "[expr] applies " <> name <> 
     " through special objects such as Association and SparseArray in expr, which usually do not allow for access to internal data.";
-  full[aa_Association] := Map[full, aa];
-  full[aa_SparseArray] :=
-    SparseArray[func @ ArrayRules @ aa, Dimensions @ aa];
-  full[expr_] := func @ ReplaceAll[
-    func[expr],
-    { aa_Association :> full[aa],
-      aa_SparseArray :> full[aa] }
-   ];
+  full[expr_] := ApplyThrough[func, expr];
   SetAttributes[full, ReadProtected]
  ]
 
+(* Some frequently used aliases. *)
 nameThrough @ {Chop, Simplify, FullSimplify};
 
-(***** </ChopThrough ...> *****)
+(***** </ApplyThrough> *****)
 
 
 ReplaceAllThrough::usage = "ReplaceAllThrough[expr, rules] applies ReplaceAll[ruels] through special objects such as Associatin and SparseArray in expr, which usually do not allow for access to internal data."

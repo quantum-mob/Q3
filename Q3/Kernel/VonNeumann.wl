@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `VonNeumann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.16 $"][[2]], " (",
-  StringSplit["$Date: 2022-09-14 10:44:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.17 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-18 02:16:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -43,21 +43,21 @@ ShannonEntropy::usage = "ShannonEntropy[{p1, p2, \[Ellipsis]}] returns the base 
 
 ShannonEntropy::noprb = "`` does not seem to be a probability distribution."
 
-ShannonEntropy[pp:{__}] :=
+ShannonEntropy[pp_?VectorQ] :=
   (Message[ShannonEntropy::noprb, pp]; 0) /;
   AnyTrue[pp, Negative]
 
-ShannonEntropy[pp:{__}, qq:{__}] :=
+ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   (Message[ShannonEntropy::noprb, pp]; 0) /;
   AnyTrue[pp, Negative]
 
-ShannonEntropy[pp:{__}, qq:{__}] :=
+ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   (Message[ShannonEntropy::noprb, qq]; 0) /;
   AnyTrue[qq, Negative]
 
-ShannonEntropy[pp:{__}] := Total[WeightedLog[pp]]
+ShannonEntropy[pp_?VectorQ] := Total[WeightedLog @ pp]
 
-ShannonEntropy[pp:{__}, qq:{__}] :=
+ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   Total[WeightedLog[pp, qq]] - Total[WeightedLog[pp]]
 
 

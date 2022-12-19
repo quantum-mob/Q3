@@ -4,13 +4,15 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.114 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-16 09:45:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.116 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-18 01:35:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ GelfandPatterns, GelfandPatternQ, GelfandForm,
-  ToYoungTableau, ToGelfandPattern };
+{ GelfandPatterns, GelfandPatternQ, GelfandForm };
+
+{ ToYoungTableau, ToGelfandPattern,
+  GelfandToOccupation };
 
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
@@ -22,7 +24,7 @@ BeginPackage["Q3`"];
 
 { ClebschGordanX, ReducedWigner };
 
-{ PartialHook, GZtoMatrix };
+{ PartialHook };
 
 { SchurBasisQ, SchurBasis, NextSchurLabels, NextGelfandYoungPatterns };
 
@@ -207,6 +209,19 @@ ToYoungTableau[tb_] := (
  )
 
 (**** </ToYoungTableau> ****)
+
+
+(**** <GelfandToOccupation> ****)
+
+GelfandToOccupation::usage = "GelfandToOccupation[gp] returns an association of the occupation numbers of the levels in the state described by the Gelfand pattern gp."
+
+GelfandToOccupation[gp_?GelfandPatternQ] := With[
+  { kk = Range @ Length @ gp,
+    nn = Append[Total /@ gp, 0] },
+  AssociationThread[kk -> Differences[Reverse @ nn]]
+ ]
+
+(**** </GelfandToOccupation> ****)
 
 
 (**** <ToGelfandPattern> ****)
