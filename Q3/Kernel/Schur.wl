@@ -4,21 +4,21 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.116 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-18 01:35:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.120 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-19 11:48:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { GelfandPatterns, GelfandPatternQ, GelfandForm };
 
 { ToYoungTableau, ToGelfandPattern,
-  GelfandToOccupation };
+  GelfandContents };
 
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
 { WeylTableaux, WeylTableauCount, WeylTableauQ };
 
-{ WeylContent };
+{ WeylType, WeylContents };
 
 { RSKMap };
 
@@ -34,10 +34,20 @@ BeginPackage["Q3`"];
 
 Begin["`Private`"]
 
-WeylContent::usage = "WeylContent[tb] returns the content of Weyl tableau tb.\nThe content of a Weyl tableau is the inversely sorted list of multiplicities of numbers (or letters) appearing in the tableau."
+WeylType::usage = "WeylType[tb] returns the content of Weyl tableau tb.\nThe content of a Weyl tableau is the inversely sorted list of multiplicities of numbers (or letters) appearing in the tableau.\nSimilar to WeylContents."
 
-WeylContent[tb_?WeylTableauQ] := ReverseSort @ Values @ Counts[Flatten @ tb]
+WeylType[tb_?WeylTableauQ] := ReverseSort @ Values @ Counts[Flatten @ tb]
 
+
+WeylContents::usage = "WeylContents[tb, n] returns an association of the occupation numbers of the levels in the state described by the Weyl tableau tb.\nWeylContents[tb, n, f] maps the resulting keys by function f.\nEssentially the same as WeylType."
+
+WeylContents[tb_?WeylTableauQ, n_Integer] := Join[
+  AssociationThread[Range[n] -> 0],
+  Counts[Flatten @ tb]
+ ]
+
+WeylContents[tb_?WeylTableauQ, n_Integer, func_] :=
+  KeyMap[func, WeylContents[tb, n]]
 
 (**** <GelfandPatterns> ****)
 
@@ -211,17 +221,20 @@ ToYoungTableau[tb_] := (
 (**** </ToYoungTableau> ****)
 
 
-(**** <GelfandToOccupation> ****)
+(**** <GelfandContents> ****)
 
-GelfandToOccupation::usage = "GelfandToOccupation[gp] returns an association of the occupation numbers of the levels in the state described by the Gelfand pattern gp."
+GelfandContents::usage = "GelfandContents[gp] returns an association of the occupation numbers of the levels in the state described by the Gelfand pattern gp.\nGelfandContents[gp, f] maps the resulting keys by function f."
 
-GelfandToOccupation[gp_?GelfandPatternQ] := With[
+GelfandContents[gp_?GelfandPatternQ] := With[
   { kk = Range @ Length @ gp,
     nn = Append[Total /@ gp, 0] },
   AssociationThread[kk -> Differences[Reverse @ nn]]
  ]
 
-(**** </GelfandToOccupation> ****)
+GelfandContents[gp_?GelfandPatternQ, func_] :=
+  KeyMap[func, GelfandContents @ gp]
+
+(**** </GelfandContents> ****)
 
 
 (**** <ToGelfandPattern> ****)

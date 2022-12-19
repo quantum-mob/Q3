@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.5 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-19 09:23:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.6 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-19 11:13:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -391,7 +391,7 @@ GreatCircle[
 
 (***** <ApplyThrough> *****)
 
-ApplyThrough::usage = "ApplyThrough[f, expr] applies function f through special objects such as Association and SparseArray in expr, which usually do not work on the specifically represented form of data."
+ApplyThrough::usage = "ApplyThrough[f, expr] applies function f through special objects such as Association and SparseArray in expr, which usually do not work on the specifically represented form of data.\nApplyThrough[f] is an operator form."
 
 ApplyThrough[func_][expr_] := ApplyThrough[func, expr]
 
