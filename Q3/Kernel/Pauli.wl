@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.32 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-25 23:00:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.36 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-19 23:15:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2174,8 +2174,8 @@ RotationSystem[mat_?MatrixQ] := Module[
    ];
   cc = {1, I, I, I} * PauliDecompose[mat] / Sqrt[Det @ mat];
   cc = Simplify[ExpToTrig @ cc];
-  ang = 2 ArcCos[First @ cc];
-  vec = Normalize[Rest @ cc];
+  ang = 2 * ArcCos[First @ cc];
+  vec = Chop[Normalize @ Rest @ cc];
   Which[
     vec[[3]] < 0,
     ang = -ang;
@@ -2195,7 +2195,7 @@ RotationSystem[mat_?MatrixQ] := Module[
        ]
      ]
    ];
-  {ang, vec}
+  Chop @ {ang, vec}
  ] /; Dimensions[mat] == {2, 2}
 
 
@@ -2212,7 +2212,7 @@ RotationSystem[mat_?MatrixQ] := Module[
     new[[3,1]] - new[[1,3]],
     new[[1,2]] - new[[2,1]]
    } / 2;
-  vec = Normalize[vec];
+  vec = Chop[Normalize @ vec];
   Which[
     vec[[3]] < 0,
     ang = -ang;
@@ -2232,7 +2232,7 @@ RotationSystem[mat_?MatrixQ] := Module[
        ]
      ]
    ];
-  {ang, vec}
+  Chop @ {ang, vec}
  ] /; Dimensions[mat] == {3, 3}
 
 
