@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.8.3
+
+- WeylContent has been renamed WeylType.
+- New functions: WeylContents, GelfandContents
+
 ## v2.8.2
 
 - One can now specify the values of the control register in CNOT and ControlledU.
