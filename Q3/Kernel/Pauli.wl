@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.36 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-19 23:15:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.40 $"][[2]], " (",
+  StringSplit["$Date: 2022-12-24 23:15:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2158,23 +2158,25 @@ ParityOddQ[ v_Ket, ss:{__?SpeciesQ} ] :=
 (**** </Parity> ****)
 
 
-(**** <RotationSystem> <TheEulerAngles> ****)
+(**** <RotationSystem> ****)
 
 RotationSystem::usage = "RotationSystem[mat] returns the rotation angle and axis in the form {angle, {x, y, z}} that the matrix mat represents.\nFor rotations in the three-dimensional space of real vectors, mat is a 3\[Times]3 real orthogonal matrix. In this case, the returned angle is in the range from -\[Pi] to \[Pi].\nFor rotations in the Bloch space, mat is a 2\[Times]2 unitary matrix. Angle is in the range from -2\[\Pi] to 2\[Pi].\nIn either case, the axis vector always points to the upper hemisphere."
 
-RotationSystem::notuni = "`` is not a unitary matrix."
+RotationSystem::notuni = "Matrix `` is not a unitary matrix; its determinant is ``."
 
-RotationSystem::notorth = "`` is not an orthogonal matrix."
+RotationSystem::notorth = "Matrix `` is not an orthogonal matrix; its determinant is ``."
 
 RotationSystem[mat_?MatrixQ] := Module[
   { cc, ang, vec },
   If[ Not @ UnitaryMatrixQ @ mat,
-    Message[RotationSystem::notuni, Normal @ mat];
-    Return[{0, {0, 0, 1}}]
+    Message[RotationSystem::notuni, Normal @ mat, Chop @ Det @ mat]
    ];
-  cc = {1, I, I, I} * PauliDecompose[mat] / Sqrt[Det @ mat];
-  cc = Simplify[ExpToTrig @ cc];
-  ang = 2 * ArcCos[First @ cc];
+  cc = {1, I, I, I} * PauliDecompose[mat / Sqrt[Det @ mat]];
+  cc = Simplify @ ExpToTrig @ cc;
+
+  If[Chop[Norm @ Rest @ cc] == 0, Return @ {0, {0, 0, 1}}];
+
+  ang = 2 * ArcCos[Chop @ First @ cc] // Chop;
   vec = Chop[Normalize @ Rest @ cc];
   Which[
     vec[[3]] < 0,
@@ -2247,20 +2249,22 @@ RotationAngle::usage = "RotationAngle[mat] returns the rotation angle that the m
 RotationAngle[mat_?MatrixQ] := First @ RotationSystem[mat] /;
   Dimensions[mat] == {2, 2} || Dimensions[mat] == {3, 3}
 
+(**** </RotationSystem> ****)
+
+
+(**** <TheEulerAngles> ****)
 
 TheEulerAngles::usage = "TheEulerAngles[U] gives the Euler angles {\[Alpha],\[Beta],\[Gamma]} of the SU(2) matrix U, where -\[Pi] < \[Alpha],\[Gamma] \[LessEqual] \[Pi] and 0 \[LessEqual] \[Beta] \[LessEqual] \[Pi]. TheEulerRotation[TheEulerAngles[U]] == U.\nTheEulerAngles[expr] gives the Euler angles {\[Alpha],\[Beta],\[Gamma]} of the single-qubit unitary operator given by expr in terms of Pauli operators."
 
-TheEulerAngles::notUni = "`` is not a 2x2 special unitary matrix."
+TheEulerAngles::notuni = "Matrix `` is not a 2x2 special unitary matrix; its determinant is ``."
 
 TheEulerAngles[U_?MatrixQ] := Module[
   { arg = Arg[U],
     ang = {0, 0, 0} },
   
-  If[ Chop[U.Topple[U]] != {{1,0},{0,1}},
-    Message[TheEulerAngles::notUni, U],
-    If [ Chop[Det[U]] != 1, 
-      Message[TheEulerAngles::notUni, U]
-     ];
+  If[ UnitaryMatrixQ[U],
+    If[Chop[Det @ U] != 1, Message[TheEulerAngles::notuni, U, Det @ U]],
+    Message[TheEulerAngles::notuni, U, Chop @ Det @ U]
    ];
   
   ang[[1]] = -arg[[1, 1]] + arg[[2, 1]];
@@ -2283,7 +2287,7 @@ TheEulerAngles[expr_] := Module[
   TheEulerAngles[U]
  ] /; Not @ FreeQ[expr, _Pauli]
 
-(**** </RotationSystem> </TheEulerAngles> ****)
+(**** </TheEulerAngles> ****)
 
 
 (**** <TheRotation and TheEulerRotation> ****)
@@ -2302,6 +2306,8 @@ TheRotation[a:{_, (0|1|2|3)}, b:{_, (0|1|2|3)}..] :=
 
 
 TheRotation[{ph_, v:{_, _, _}}] := TheRotation[ph, v]
+
+TheRotation[ph_, v:{_, _, _}] := One[2] /; Chop[Norm @ v] == 0
 
 TheRotation[ph_, v:{_, _, _}] := Cos[ph/2] * ThePauli[0] -
   I*Sin[ph/2] * Normalize[v] . {ThePauli[1], ThePauli[2], ThePauli[3]}
@@ -2871,10 +2877,10 @@ PauliDecompose[m_?MatrixQ, d:(0|1|2|3)] := PauliDecompose[m, {d}]
 PauliDecompose[m_?MatrixQ, idx:{ (0|1|2|3).. }] :=
   Tr @ Dot[m, CircleTimes @@ ThePauli /@ idx] / Length[m]
 
-PauliDecompose[mat_?MatrixQ] := Module[
-  { n = Log[2, Length@mat],
+PauliDecompose[mat_?SquareMatrixQ] := Module[
+  { n = Log[2, Length @ mat],
     idx },
-  If [ !IntegerQ[n],
+  If [ Not @ IntegerQ[n],
     Message[PauliDecompose::badarg];
     Return[0]
    ];
