@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.8.4
+
+- The Workbook stylesheet has been renamed Playbook.
+
 ## v2.8.3
 
 - WeylContent has been renamed WeylType.
