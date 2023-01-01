@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.28 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 15:34:18+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.29 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 15:46:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -164,8 +164,8 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   Kind[x] ^= Spin;
   Kind[x[___]] ^= Spin;
   
-  Dimension[x] ^= 2 spin + 1;
-  Dimension[x[___]] ^= 2 spin + 1;
+  Dimension[x] ^= 2*spin + 1;
+  Dimension[x[___]] ^= 2*spin + 1;
 
   LogicalValues[x] ^= Range[spin, -spin, -1];
   LogicalValues[x[___]] ^= Range[spin, -spin, -1];
