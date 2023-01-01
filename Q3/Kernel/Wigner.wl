@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.26 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-29 03:07:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.27 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 15:25:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -205,19 +205,23 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   x[j___, None, k_] := x[j,k];
   (* In particular, x[j,None,None] = x[j,None]. *)
   
-  Format[ x[j___, None] ] := SpeciesBox[x, {j}, {}];
+  Format @ x[j___, None] :=
+    Interpretation[SpeciesBox[x, {j}, {}], x[j, None]];
 
-  Format[ x[j___,0] ] := SpeciesBox[x, {j}, {0}];
-  Format[ x[j___,1] ] := SpeciesBox[x, {j}, {"x"}];
-  Format[ x[j___,2] ] := SpeciesBox[x, {j}, {"y"}];
-  Format[ x[j___,3] ] := SpeciesBox[x, {j}, {"z"}];
-  Format[ x[j___,4] ] := SpeciesBox[x, {j}, {"+"}];
-  Format[ x[j___,5] ] := SpeciesBox[x, {j}, {"-"}];
-  Format[ x[j___,6] ] := SpeciesBox[x, {j}, {"H"}];
-  Format[ x[j___, a_->b_] ] := DisplayForm @ SpeciesBox[
-    RowBox @ {"(",Ket[b],Bra[a],")"}, {x[j, None]},
-    {}
-   ];
+  Format @ x[j___,0] := Interpretation[SpeciesBox[x, {j}, {0}], x[j, 0]];
+  Format @ x[j___,1] := Interpretation[SpeciesBox[x, {j}, {"x"}], x[j, 1]];
+  Format @ x[j___,2] := Interpretation[SpeciesBox[x, {j}, {"y"}], x[j, 2]];
+  Format @ x[j___,3] := Interpretation[SpeciesBox[x, {j}, {"z"}], x[j, 3]];
+  Format @ x[j___,4] := Interpretation[SpeciesBox[x, {j}, {"+"}], x[j, 4]];
+  Format @ x[j___,5] := Interpretation[SpeciesBox[x, {j}, {"-"}], x[j, 5]];
+  Format @ x[j___,6] := Interpretation[SpeciesBox[x, {j}, {"H"}], x[j, 6]];
+  Format @ x[j___, a_->b_] := Interpretation[
+    SpeciesBox[
+      RowBox @ {"(",Ket[b],Bra[a],")"}, {x[j, None]},
+      {}
+     ],
+    x[j, a -> b]
+   ]
  )
 
 Missing["KeyAbsent", S_Symbol?SpinQ[___, None]] := Spin[S]

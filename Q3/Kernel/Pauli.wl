@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.40 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-24 23:15:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.47 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 11:39:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -511,22 +511,30 @@ SetAttributes[{Ket, Bra}, NHoldAll]
 (* The integers in Ket[] and Bra[] should not be converted to real
    numbers by N[]. *)
 
-Format[ Ket[Association[]] ] := Ket[Any]
+Format[ Ket[Association[]] ] := Interpretation[Ket[Any], Ket[<||>]]
 
-Format[Ket[a_Association], StandardForm] :=
-  Ket @ DisplayForm @ Row @ KeyValueMap[Subscript[#2,#1]&, a]
+Format[Ket[a_Association], StandardForm] := Interpretation[
+  Ket @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+  Ket[a]
+ ]
 
-Format[Ket[a_Association], TraditionalForm] :=
-  Ket @ Row @ KeyValueMap[Subscript[#2,#1]&, a]
+Format[Ket[a_Association], TraditionalForm] := Interpretation[
+  Ket @ Row @ KeyValueMap[Subscript[#2, #1]&, a],
+  Ket[a]
+ ]
 
 
-Format[ Bra[Association[]] ] := Bra[Any]
+Format[ Bra[Association[]] ] := Interpretation[Bra[Any], Bra[<||>]]
 
-Format[Bra[a_Association], StandardForm] :=
-  Bra @ DisplayForm @ Row @ KeyValueMap[Subscript[#2,#1]&, a]
+Format[Bra[a_Association], StandardForm] := Interpretation[
+  Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+  Bra[a]
+ ]
 
-Format[Bra[a_Association], TraditionalForm] :=
-  Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a]
+Format[Bra[a_Association], TraditionalForm] := Interpretation[
+  Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+  Bra[a]
+ ]
 
 
 Ket /: NonCommutativeQ[ Ket[___] ] = True
@@ -862,7 +870,8 @@ ReleaseTimes[expr_] := DefaultForm[
 OTimes::usage = "OTimes represents CircleTimes, but holds the arguments. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
 (* It is used, e.g., for KetFactor[]. *)
 
-Format[ HoldPattern @ OTimes[a__] ] := HoldForm @ CircleTimes[a]
+Format @ HoldPattern @ OTimes[a__] :=
+  Interpretation[HoldForm @ CircleTimes @ a, OTimes @ a]
 
 OTimes[a_] := a
 
@@ -877,10 +886,16 @@ HoldPattern @ Dagger[ OTimes[a__] ] := OTimes @@ Dagger[{a}]
 
 OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
 
-Format[ HoldPattern[ OSlash[a:(_Ket|_Bra), b:Times[__]] ] ] :=
-  DisplayForm @ CircleTimes[ HoldForm[a], RowBox[{"(",b,")"}] ]
+Format @ HoldPattern @ OSlash[a:(_Ket|_Bra), b:Times[__]] :=
+  Interpretation[
+    CircleTimes[HoldForm @ a, Row @ {"(",b,")"}],
+    OSlash[a, b]
+   ]
 
-Format[ OSlash[a:(_Ket|_Bra), b_] ] := CircleTimes[ HoldForm[a], HoldForm[b] ]
+Format @ OSlash[a:(_Ket|_Bra), b_] := Interpretation[
+  CircleTimes[HoldForm @ a, HoldForm @ b],
+  OSlash[a, b]
+ ]
 
 OSlash /: z_ OSlash[a_Ket, b_] := OSlash[a, z b]
 
@@ -981,32 +996,33 @@ State[ { m:{(0|1|Up|Down)..}, t:Except[_List], p:Except[_List] } ] :=
 
 BraKet::usage = "BraKet[{a}, {b}] represents the Hermitian product \[LeftAngleBracket]a|b\[RightAngleBracket] of the two states Ket[a] and Ket[b]."
 
-SetAttributes[BraKet, {NHoldAll, ReadProtected}]
+SetAttributes[BraKet, NHoldAll]
 (* The integers in BraKet[] should not be converted to real numbers by N[]. *)
 
-Format[ BraKet[{}, b_List] ] := BraKet[{Any}, b]
+Format @ BraKet[{}, b_List] :=
+  Interpretation[BraKet[{Any}, b], BraKet[{}, b]]
 
-Format[ BraKet[a_List, {}] ] := BraKet[a, {Any}]
+Format @ BraKet[a_List, {}] :=
+  Interpretation[BraKet[a, {Any}], BraKet[a, {}]]
 
-Format[
-  BraKet[ a:Except[_List|_Association], b:Except[_List|_Association] ]
- ] := BraKet[{a}, {b}]
+Format @ BraKet[a:Except[_List|_Association], b:Except[_List|_Association]] :=
+  Interpretation[BraKet[{a}, {b}], BraKet[a, b]]
 
 BraKet /: ComplexQ[ BraKet[_List, _List] ] = True
 
 BraKet /: Conjugate[ BraKet[a_List, b_List] ] := BraKet[b, a]
 
-Dot[ Bra[a___], Ket[b___] ] := BraKet[{a}, {b}]
-(* Recall that Dot has Flat attribute. *)
+Dot[Bra[a___], Ket[b___]] := BraKet[{a}, {b}]
+(* RECALL: Dot has Flat attribute. *)
 
 (* General evaluation rules *)
 
 (* for YoungRegularBasis, YoungFourierBasis, etc. *)
-BraKet[ {a_Cycles}, {b_Cycles} ] := KroneckerDelta[First @ a, First @ b]
+BraKet[{a_Cycles}, {b_Cycles}] := KroneckerDelta[First @ a, First @ b]
 
-BraKet[ a_List, b_List ] := KroneckerDelta[a, b]
+BraKet[a_List, b_List] := KroneckerDelta[a, b]
 
-BraKet[ a_Association, b_Association ] := With[
+BraKet[a_Association, b_Association] := With[
   { qq = Union[Keys @ a, Keys @ b] },
   KroneckerDelta[ Lookup[a, qq], Lookup[b, qq] ]
  ]
@@ -1045,16 +1061,15 @@ Octant::usage = "Octant is a flavor index representing the octant gate, i.e., th
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
 SetAttributes[Pauli, {NHoldAll, ReadProtected, Listable}]
-(* The integers in Pauli[] should not be converted to real numbers by N[]. *)
+(* NOTE: The integers in Pauli[] should not be converted to real numbers by
+   N[]. *)
 
-Format[ Pauli[a:(0|1|2|3|4|5|6|7|8|_Integer?Negative|_Rule)..] ] := With[
+Format @ Pauli[a:(0|1|2|3|4|5|6|7|8)..] := With[
   { aa = {a} /. theIndexRules },
-  DisplayForm[ CircleTimes @@ Map[SuperscriptBox["\[Sigma]",#]&] @ aa ]
- ]
-
-Format @ Pauli[map__Rule] := With[
-  { vv = Ket @@@ Transpose[List @@@ {map}] },
-  Row @ {First @ vv, Dagger @ Last @ vv}
+  Interpretation[
+    CircleTimes @@ Map[Superscript["\[Sigma]", #]&, aa],
+    Pauli[a]
+   ]
  ]
 
 thePlus  = Style["+", Larger, Bold];
@@ -2552,7 +2567,10 @@ Dyad::extra = "Some elements in `` are not included in ``."
 (* For Kets associated with species *)
 
 Format @ Dyad[a_Association, b_Association, qq:{___?SpeciesQ}] :=
-  Row @ { LogicalForm[Ket[a], qq], LogicalForm[Bra[b], qq] }
+  Interpretation[
+    Row @ { LogicalForm[Ket[a], qq], LogicalForm[Bra[b], qq] },
+    Dyad[a, b, qq]
+   ]
 
 Dyad /: NonCommutativeQ[ Dyad[___] ] = True
 
@@ -3691,7 +3709,8 @@ FrobeniusNorm = HilbertSchmidtNorm
 
 HilbertSchmidtNorm::usage = "HilbertSchmidtNorm[a] gives the Hilbert-Schmidt norm (i.e., Frobenius norm) of a complex matrix a.\nIf a is a vector, it is regarded as Dyad[a,a].\nSee also TraceNorm."
 
-Format[ HilbertSchmidtNorm[a_] ] := Sqrt @ AngleBracket[a, a]
+Format[ HilbertSchmidtNorm[a_] ] :=
+  Interpretation[Sqrt @ AngleBracket[a, a], HilbertSchmidtNorm @ a]
 
 HilbertSchmidtNorm[a_?VectorQ] := Norm[a]^2
 

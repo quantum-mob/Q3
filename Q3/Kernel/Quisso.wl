@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.74 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-02 23:14:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.78 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 12:25:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -160,28 +160,28 @@ setQubit[x_Symbol] := (
   x[j___, None, k_] := x[j, k];
   (* In particular, x[j,None,None] = x[j,None]. *)
   
-  Format[ x[j___, None] ] := SpeciesBox[x, {j}, {}];
+  Format @ x[j___, None] := Interpretation[SpeciesBox[x, {j}, {}], x[j, None]];
 
   Format[ x[j___, n_Integer?Negative] ] :=
     Surd[x[j,3], Superscript[2,-n-1]];
   
-  Format[ x[j___, 0] ] := SpeciesBox[x, {j}, {0}];
-  Format[ x[j___, 1] ] := SpeciesBox[x, {j}, {"x"}];
-  Format[ x[j___, 2] ] := SpeciesBox[x, {j}, {"y"}];
-  Format[ x[j___, 3] ] := SpeciesBox[x, {j}, {"z"}];
-  Format[ x[j___, 4] ] := SpeciesBox[x, {j}, {"+"}];
-  Format[ x[j___, 5] ] := SpeciesBox[x, {j}, {"-"}];
-  Format[ x[j___, 6] ] := SpeciesBox[x, {j}, {"H"}];
-  Format[ x[j___, 7] ] := SpeciesBox[x, {j}, {"S"}];
-  Format[ x[j___, 8] ] := SpeciesBox[x, {j}, {"T"}];
+  Format @ x[j___, 0] := Interpretation[SpeciesBox[x, {j}, {0}], x[j, 0]];
+  Format @ x[j___, 1] := Interpretation[SpeciesBox[x, {j}, {"x"}], x[j, 1]];
+  Format @ x[j___, 2] := Interpretation[SpeciesBox[x, {j}, {"y"}], x[j, 2]];
+  Format @ x[j___, 3] := Interpretation[SpeciesBox[x, {j}, {"z"}], x[j, 3]];
+  Format @ x[j___, 4] := Interpretation[SpeciesBox[x, {j}, {"+"}], x[j, 4]];
+  Format @ x[j___, 5] := Interpretation[SpeciesBox[x, {j}, {"-"}], x[j, 5]];
+  Format @ x[j___, 6] := Interpretation[SpeciesBox[x, {j}, {"H"}], x[j, 6]];
+  Format @ x[j___, 7] := Interpretation[SpeciesBox[x, {j}, {"S"}], x[j, 7]];
+  Format @ x[j___, 8] := Interpretation[SpeciesBox[x, {j}, {"T"}], x[j, 8]];
   
-  Format[ x[j___, 10] ] := Subscript[
-    DisplayForm @ RowBox @ {"(", Ket[0], Bra[0], ")"},
-    x[j, None]
+  Format @ x[j___, 10] := Interpretation[
+    Subscript[Row @ {"(", Ket[0], Bra[0], ")"}, x[j, None]],
+    x[j, 10]
    ];
-  Format[ x[j___, 11] ] := Subscript[
-    DisplayForm @ RowBox @ {"(", Ket[1], Bra[1], ")"},
-    x[j, None]
+  Format @ x[j___, 11] := Interpretation[
+    Subscript[Row @ {"(", Ket[1], Bra[1], ")"}, x[j, None]],
+    x[j, 11]
    ];
  )
 
@@ -191,25 +191,41 @@ Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := 0
 (* Override the default definition of Format[Dagger[...]]
    NOTE: This is potentially dangerous because Fock also overides it. *)
 
-Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] ] =. ;
+Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] =. ;
 
-Format[ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, n_Integer?Negative] ] ] :=
-  DisplayForm @ SuperscriptBox[
-    RowBox @ {"(", c[j,n], ")"},
-    "\[Dagger]"
-   ] /; $FormatSpecies
+(* Obsolete:
+   S[..., -n] now has a different meaning than before. *)
+(*
+Format @ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, n_Integer?Negative] ] :=
+  Interpretation[
+    Superscript[Row @ {"(", c[j,n], ")"}, "\[Dagger]"],
+    Dagger @ c[j, n]
+   ]
+ *)
 
-Format[ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 7] ] ] :=
-  SpeciesBox[c, {j}, {"S\[Dagger]"}] /; $FormatSpecies
+Format @ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 7] ] :=
+  Interpretation[
+    SpeciesBox[c, {j}, {"S\[Dagger]"}],
+    Dagger @ c[j, 7]
+   ]
 
-Format[ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 8] ] ] :=
-  SpeciesBox[c, {j}, {"T\[Dagger]"}] /; $FormatSpecies
+Format @ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 8] ] :=
+  Interpretation[
+    SpeciesBox[c, {j}, {"T\[Dagger]"}],
+    Dagger @ c[j, 8]
+   ]
 
-Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] ] := 
-  SpeciesBox[c, {j}, {"\[Dagger]"} ] /; $FormatSpecies
+Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] :=
+  Interpretation[
+    SpeciesBox[c, {j}, {"\[Dagger]"} ],
+    Dagger @ c[j]
+   ]
 
-Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] ] := 
-  SpeciesBox[c, {}, {"\[Dagger]"} ] /; $FormatSpecies
+Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] :=
+  Interpretation[
+    SpeciesBox[c, {}, {"\[Dagger]"} ],
+    Dagger @ c
+   ]
 
 
 QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a Qubit through Let."
@@ -1760,13 +1776,16 @@ MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
 
 ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
 
-Format[ ProductState[Association[]] ] := Ket[Any]
+Format @ ProductState[Association[]] :=
+  Interpretation[Ket[Any], ProductState @ <||>]
 
-Format[ ProductState[assoc_Association, ___] ] :=
+Format @ ProductState[assoc_Association, rest___] := Interpretation[
   CircleTimes @@ KeyValueMap[
     DisplayForm @ Subscript[RowBox @ {"(", {Ket[0], Ket[1]}.#2, ")"}, #1]&,
     assoc
-   ]
+   ],
+  ProductState[assoc, rest]
+ ]
 
 ProductState /:
 HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
@@ -2089,10 +2108,14 @@ setQudit[x_Symbol, dim_Integer] := (
     0
    ) /; Or[ a < 0, a >= Dimension[x], b < 0, b >= Dimension[x] ];
 
-  Format[ x[j___, None] ] := DisplayForm @ SpeciesBox[x, {j}, {}];  
-  Format[ x[j___, 0] ] := DisplayForm @ SpeciesBox[1, {j}, {0}];  
-  Format[ x[j___, a_->b_] ] :=
-    DisplayForm @ SpeciesBox[ RowBox @ {"(",Ket[b],Bra[a],")"}, {j}, {}];  
+  Format @ x[j___, None] :=
+    Interpretation[SpeciesBox[x, {j}, {}], x[j, None]];  
+  Format @ x[j___, 0] :=
+    Interpretation[SpeciesBox[1, {j}, {0}], x[j, 0]]; 
+  Format @ x[j___, a_ -> b_] := Interpretation[
+    SpeciesBox[ RowBox @ {"(",Ket[b],Bra[a],")"}, {j}, {}],
+    x[j, a -> b]
+   ];
  )
 
 

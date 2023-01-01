@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.6 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-19 11:13:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.10 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 15:00:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -692,7 +692,7 @@ setSpecies[x_Symbol] := (
      See Let[Bosons, \[Ellipsis]] and Let[Fermions, \[Ellipsis]]. *)
   (* NOTE: Distribute[x[j], List] will hit the recursion limit. *)
 
-  Format[ x[j___] ] := SpeciesBox[x, {j}, {}] /; $FormatSpecies;
+  Format @ x[j___] := Interpretation[SpeciesBox[x, {j}, {}], x[j]];
  )
 
 
@@ -734,14 +734,16 @@ setNonCommutative[x_Symbol] := (
  )
 
 
-Format[ Inverse[op_?NonCommutativeQ] ] :=
-  SpeciesBox[op, { }, {"-1"}] /; $FormatSpecies
+Format @ Inverse[op_?NonCommutativeQ] :=
+  Interpretation[SpeciesBox[op, { }, {"-1"}], Inverse @ op]
  
-Format[ Inverse[op_Symbol?NonCommutativeQ[j___]] ] :=
-  SpeciesBox[op, {j}, {"-1"}] /; $FormatSpecies
+Format @ Inverse[op_Symbol?NonCommutativeQ[j___]] :=
+  Interpretation[SpeciesBox[op, {j}, {"-1"}], Inverse @ op[j]]
 
-Inverse[ Power[E, expr_] ] := MultiplyExp[-expr] /;
-  Not @ CommutativeQ @ expr
+Inverse @ Inverse[op_?NonCommutativeQ] := op
+
+Inverse @ Power[E, expr_] :=
+  MultiplyExp[-expr] /; Not[CommutativeQ @ expr]
 (* NOTE: Recall that Not[CommutativeQ[expr]] is not the same as
    NonCommutativeQ[expr]. *)
 
@@ -903,11 +905,11 @@ HoldPattern @ Tee[ expr_Multiply ] := Multiply @@ Reverse @ Tee[List @@ expr]
 
 Tee /: HoldPattern[ Power[a_, Tee] ] := Tee[a]
 
-Format[ HoldPattern @ Tee[ c_Symbol?SpeciesQ[j___] ] ] := 
-  SpeciesBox[c, {j}, {"T"} ] /; $FormatSpecies
+Format @ HoldPattern @ Tee[ c_Symbol?SpeciesQ[j___] ] := 
+  Interpretation[SpeciesBox[c, {j}, {"T"}], Tee @ c[j]]
 
-Format[ HoldPattern @ Tee[ c_Symbol?SpeciesQ ] ] := 
-  SpeciesBox[c, {}, {"T"} ] /; $FormatSpecies
+Format @ HoldPattern @ Tee[ c_Symbol?SpeciesQ ] := 
+  Interpretation[SpeciesBox[c, {}, {"T"}], Tee @ c]
 
 
 Primed::usage = "Primed[a] represents another object closely related to a."
@@ -916,9 +918,10 @@ DoublePrimed::usage = "DoublePrimed[a] represents another object closely related
 
 SetAttributes[{Primed, DoublePrimed}, Listable]
 
-Format[ Primed[a_] ] := Superscript[a,"\[Prime]"]
+Format @ Primed[a_] := Interpretation[Superscript[a,"\[Prime]"], Primed @ a]
 
-Format[ DoublePrimed[a_] ] := Superscript[a,"\[DoublePrime]"]
+Format @ DoublePrimed[a_] :=
+  Interpretation[Superscript[a,"\[DoublePrime]"], DoublePrimed @ a]
 
 
 TeeTranspose::usage = "TeeTranspose[expr] = Tee[Transpose[expr]]. It is similar to the native function Transpose, but operates Tee on every element in the matrix.\nSee also Transpose[], and Topple[]."
@@ -996,13 +999,14 @@ Dagger /:
 HoldPattern[ Power[op_Dagger, n_Integer] ] := MultiplyPower[op, n]
 
 
-Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] ] :=
-  SpeciesBox[c, {j}, {"\[Dagger]"} ] /; $FormatSpecies
+Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] :=
+  Interpretation[SpeciesBox[c, {j}, {"\[Dagger]"}], Dagger @ c[j]]
 
-Format[ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] ] :=
-  SpeciesBox[c, {}, {"\[Dagger]"} ] /; $FormatSpecies
+Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] :=
+  Interpretation[SpeciesBox[c, {}, {"\[Dagger]"}], Dagger @ c]
 
-Format[ HoldPattern @ Dagger[a_] ] := Superscript[a, "\[Dagger]"]
+Format @ HoldPattern @ Dagger[a_] :=
+  Interpretation[Superscript[a, "\[Dagger]"], Dagger @ a]
 (* for the undefined *)
 
 
@@ -1295,8 +1299,10 @@ SetAttributes[Multiply, {Listable, ReadProtected}]
 AddGarnerPatterns[_Multiply]
 
 
-Format[ HoldPattern @ Multiply[a__] ] :=
-  DisplayForm @ RowBox @ List @ RowBox @ {a}
+Format @ HoldPattern @ Multiply[a__] := Interpretation[
+  Row @ List @ Row @ {a},
+  Multiply[a]
+ ]
 (* NOTE 1: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 Dagger[f]**f is formated as
    -2(f^\dag f). For more details on spurious parentheses, see
@@ -1444,7 +1450,8 @@ AddElaborationPatterns[
  ]
 
 
-Format[ HoldPattern @ MultiplyExp[expr_] ] := Power[E, expr]
+Format @ HoldPattern @ MultiplyExp[expr_] :=
+  Interpretation[Power[E, expr], MultiplyExp @ expr]
 
 
 MultiplyExp[0] = 1
@@ -1793,24 +1800,36 @@ DiscreteDelta /:
 HoldPattern[ Power[DiscreteDelta[x__],_?Positive] ] :=
   DiscreteDelta[x]
 
-Format[ KroneckerDelta[x__List], StandardForm ] :=
-  Times @@ Thread[KroneckerDelta[x]]
-
-Format[ KroneckerDelta[x__List], TraditionalForm ] :=
-  Times @@ Thread[KroneckerDelta[x]]
-(* Also for TeXForm[ ] *)
-
-Format[ KroneckerDelta[x__], StandardForm ] := Style[
-  Subscript["\[Delta]", x],
-  ScriptSizeMultipliers -> 1, 
-  ScriptBaselineShifts -> {1,1}
+Format[ KroneckerDelta[x__List], StandardForm ] := Interpretation[
+  Times @@ Thread[KroneckerDelta[x]],
+  KroneckerDelta[x]
  ]
-(* TranditionalForm is already defined in the above way. *)
 
-Format[ DiscreteDelta[j__] ] :=
-  KroneckerDelta[ {j}, ConstantArray[0, Length @ {j}] ]
+Format[ KroneckerDelta[x__List], TraditionalForm ] := Interpretation[
+  Times @@ Thread[KroneckerDelta[x]],
+  KroneckerDelta[x]
+ ]
+(* NOTE: This is also for TeXForm[ ] *)
 
-Format[ UnitStep[x_], StandardForm ] := Row[{"\[Theta]", "(", x, ")"}]
+Format[ KroneckerDelta[x__], StandardForm ] := Interpretation[
+  Style[
+    Subscript["\[Delta]", x],
+    ScriptSizeMultipliers -> 1, 
+    ScriptBaselineShifts -> {1,1}
+   ],
+  KroneckerDelta[x]
+ ]
+(* NOTE: TranditionalForm is already defined in the above way. *)
+
+Format @ DiscreteDelta[j__] := Interpretation[
+  KroneckerDelta[{j}, ConstantArray[0, Length @ {j}]],
+  DiscreteDelta[j]
+ ]
+
+Format[ UnitStep[x_], StandardForm ] := Interpretation[
+  Row @ {"\[Theta]", "(", x, ")"},
+  UnitStep[x]
+ ]
 
 SetAttributes[{DiscreteDelta, UnitStep}, {ReadProtected}]
 

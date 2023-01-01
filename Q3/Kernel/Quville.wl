@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.65 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-02 23:33:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.66 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 15:13:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -64,7 +64,8 @@ $InOutOffset := 0.1 $CircuitUnit
 $BraceWidth := 0.125 $CircuitUnit
 
 
-Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] := Graphics[qc]
+Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] :=
+  Interpretation[Graphics @ qc, qc]
 
 
 (**** <Multiply, ExpressionFor and Matrix on QuantumCircuit> ****)

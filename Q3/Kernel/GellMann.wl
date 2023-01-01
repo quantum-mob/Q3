@@ -7,8 +7,8 @@ BeginPackage["Q3`"]
 
 `GellMann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.36 $"][[2]], " (",
-  StringSplit["$Date: 2021-12-23 10:10:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.37 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 15:09:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -135,8 +135,10 @@ GellMann::usage = "GellMann[n] represents the Gell-Mann matrix."
 
 AddGarnerPatterns[_GellMann]
 
-Format[ GellMann[a:(0|1|2|3|4|5|6|7|8)..] ] :=
-  DisplayForm[ CircleTimes @@ Map[SuperscriptBox["\[Lambda]",#]&, {a}] ]
+Format @ GellMann[a:(0|1|2|3|4|5|6|7|8)..] := Interpretation[
+  CircleTimes @@ Map[SuperscriptBox["\[Lambda]",#]&, {a}],
+  GelMann @ a
+ ]
 
 GellMann[0] = Sqrt[2 / 3]
 

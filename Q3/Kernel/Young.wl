@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.21 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-03 23:15:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 15:27:26+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -895,10 +895,12 @@ SpechtBasis[n_Integer] := With[
  ]
 
 (* For the Specht module *)
-Format[ Ket[tbs__?anyYoungTableauQ] ] := Ket @@ Map[YoungForm, {tbs}]
+Format @ Ket[tbs__?anyYoungTableauQ] :=
+  Interpretation[Ket @@ Map[YoungForm, {tbs}], Ket @ tbs]
 
 (* For the regular representation of the symmetric group *)
-Format[ Ket[args:$PermutationSpec..] ] := Ket @@ PermutationForm[{args}]
+Format @ Ket[args:$PermutationSpec..] :=
+  Interpretation[Ket @@ PermutationForm @ {args}, Ket @ args]
 (* NOTE: This must come after the definition of $PermutationSpec. *)
 
 (**** </SpechtBasis> ****)

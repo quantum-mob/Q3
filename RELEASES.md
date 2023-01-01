@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.8.5
+
+- Formatted outputs may now be copied with the input form preserved.
+
 ## v2.8.4
 
 - The Workbook stylesheet has been renamed Playbook.

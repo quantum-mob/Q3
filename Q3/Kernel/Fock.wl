@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.31 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-20 23:53:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.36 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 13:11:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -177,12 +177,14 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
   If[ spin == 1/2,
     x[j___, Up] := x[j, 1/2];
     x[j___, Down] := x[j, -1/2];
-    Format[ x[j___,+1/2] ] :=
-      SpeciesBox[x , {j,"\[UpArrow]"}, {}] /;
-      $FormatSpecies;
-    Format[ x[j___,-1/2] ] :=
-      SpeciesBox[x , {j,"\[DownArrow]"}, {}] /;
-      $FormatSpecies;
+    Format @ x[j___, +1/2] := Interpretation[
+      SpeciesBox[x , {j,"\[UpArrow]"}, {}],
+      x[j, +1/2]
+     ];
+    Format @ x[j___, -1/2] := Interpretation[
+      SpeciesBox[x , {j,"\[DownArrow]"}, {}],
+      x[j, -1/2]
+     ];
    ];
  )
 
@@ -293,16 +295,11 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
   x /: Conjugate[x] := x;
   x /: Conjugate[x[j___]] := x[j];
 
-  (*
-  x /: Parity[x] := 1 - 2*Multiply[Dagger[x], x];
-  x /: Parity[x[j___]] := 1 - 2*Multiply[Dagger @ x[j], x[j]];
-   *)
-
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
   x[j___, None, k___] := x[j, k];
-  x[] := x;
+  x[] := x; (* NOTE: This affects Vacuum[f[]]. *)
   
   Spin[x] ^= spin;
   Vacuum[x] ^= vac;
@@ -325,8 +322,8 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
     spin > 0 && vac == "Sea", (
       (* the first index indicates above or below the Fermi sea *)
       (* the final index indicates the spin component *)
-      Spin[x[_,___,_]] ^= spin;
-      Vacuum[x[_,___,_]] ^= vac;
+      Spin[x[__,_]] ^= spin;
+      Vacuum[x[__,_]] ^= vac;
       x[k_,j___,All] := Flatten @ x[k, j, Range[spin,-spin,-1]];
      ),
     True, Message[Fermion::error, x]
@@ -339,12 +336,14 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
   If[ spin == 1/2,
     x[j___, Up] := x[j, 1/2];
     x[j___, Down] := x[j, -1/2];
-    Format[ x[j___,+1/2] ] :=
-      SpeciesBox[x , {j,"\[UpArrow]"}, {}] /;
-      $FormatSpecies;
-    Format[ x[j___,-1/2] ] :=
-      SpeciesBox[x , {j,"\[DownArrow]"}, {}] /;
-      $FormatSpecies;
+    Format @ x[j___, +1/2] := Interpretation[
+      SpeciesBox[x , {j,"\[UpArrow]"}, {}],
+      x[j, +1/2]
+     ];
+    Format @ x[j___, -1/2] := Interpretation[
+      SpeciesBox[x , {j,"\[DownArrow]"}, {}],
+      x[j, -1/2]
+     ];
    ];
  )
 
@@ -352,15 +351,17 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
 
 Format[
   HoldPattern @ Dagger[c_Symbol?SpeciesQ[j___, Rational[1,2]]] /;
-    Spin[c] == 1/2 ] :=
-  SpeciesBox[c , {j,"\[UpArrow]"}, {"\[Dagger]"}] /;
-  $FormatSpecies
+    Spin[c] == 1/2 ] := Interpretation[
+      SpeciesBox[c , {j,"\[UpArrow]"}, {"\[Dagger]"}],
+      Dagger @ c[j, 1/2]
+     ]
 
 Format[
   HoldPattern @ Dagger[c_Symbol?SpeciesQ[j___, Rational[-1,2]]] /;
-    Spin[c] == 1/2 ] :=
-  SpeciesBox[c , {j,"\[DownArrow]"}, {"\[Dagger]"}] /;
-  $FormatSpecies
+    Spin[c] == 1/2 ] := Interpretation[
+      SpeciesBox[c , {j,"\[DownArrow]"}, {"\[Dagger]"}],
+      Dagger @ c[j, -1/2]
+     ]
 
 
 Majorana /:
@@ -553,12 +554,12 @@ Canon /:
 Dagger[ Canon[q_?HeisenbergQ] ] := Canon[q]
 
 Canon /: 
-Format[ Canon[c_Symbol?SpeciesQ[j___]] ] :=
-  SpeciesBox[c, {j}, {"c"} ] /; $FormatSpecies
+Format @ Canon[c_Symbol?SpeciesQ[j___]] :=
+  Interpretation[SpeciesBox[c, {j}, {"c"}], c[j]]
 
-Canon /: 
-Format[ Canon[ c_Symbol?SpeciesQ ] ] := 
-    SpeciesBox[c, {}, {"c"} ] /; $FormatSpecies
+Canon /:
+Format @ Canon[c_Symbol?SpeciesQ] :=
+  Interpretation[SpeciesBox[c, {}, {"c"}], c]
 
 (* Allows op^Canon as a equivalent to Canon[op] *)
 Canon /:
@@ -1303,9 +1304,9 @@ HoldPattern @ Multiply[___, Bra[Null], ___] = Bra[Null]
 
 VacuumState::usage = "VacuumState[] returns Ket[Vacuum] which refers to the vacuum state in the Fock space. It is the state that is annihilated by any annihilation operator."
 
-Format[ Ket[Vacuum] ] := Ket[Any]
+Format @ Ket[Vacuum] := Interpretation[Ket[Any], Ket @ Vacuum]
 
-Format[ Bra[Vacuum] ] := Bra[Any]
+Format @ Bra[Vacuum] := Interpretation[Bra[Any], Bra @ Vacuum]
 
 HoldPattern @
   Multiply[ pre___, Bra[a_Association], Ket[Vacuum], post___ ] :=
@@ -1578,9 +1579,11 @@ AddGarnerPatterns[_CoherentState]
 AddElaborationPatterns[_CoherentState]
 
 
-Format[ CoherentState[a_Association] ] := Ket[a]
+Format @ CoherentState[a_Association] :=
+  Interpretation[Ket[a], CoherentState @ a]
 
-Format[ HoldPattern @ Dagger[v_CoherentState] ] := Bra @@ v
+Format @ HoldPattern @ Dagger[v_CoherentState] :=
+  Interpretation[Bra @@ v, Dagger @ v]
 
 
 CoherentState /:
@@ -2389,12 +2392,13 @@ Let[LinearMap, FockColon]
 
 FockColon[] = 1
 
-HoldPattern @ Format[ FockColon[op__] ] := DisplayForm @ RowBox @ {
-  RowBox @ {
-    Style["\[Colon]", FontColor -> Red], op, 
-    Style["\[Colon]", FontColor -> Red]
-   }
- }
+Format @ HoldPattern @ FockColon[op__] := Interpretation[
+  Row @ { Row @ {
+      Style["\[Colon]", FontColor -> Red], op, 
+      Style["\[Colon]", FontColor -> Red]
+     } },
+  FockColon[op]
+ ]
 (* NOTE: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 :f**f: is formated as
    -2(:f f:). For more details on spurious parentheses, see

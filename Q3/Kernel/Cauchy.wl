@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.35 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-26 22:19:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.36 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-01 15:06:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -63,25 +63,29 @@ Power[E, Times[z_Complex, Pi, n_]] /; OddQ[n*z/I] = -1
 
 $Star = Style["*", FontColor -> Red]
 
-Format[ HoldPattern[ Conjugate[z_Symbol] ] ] :=
-  SpeciesBox[z, {}, {$Star}] /; $FormatSpecies
+Format @ HoldPattern @ Conjugate[z_Symbol] := Interpretation[
+  SpeciesBox[z, {}, {$Star}],
+  Conjugate @ z
+ ]
  
-Format[ HoldPattern[ Conjugate[z_Symbol?SpeciesQ[j___]] ] ] :=
-  SpeciesBox[z, {j}, {$Star}] /; $FormatSpecies
+Format @ HoldPattern @ Conjugate[z_Symbol?SpeciesQ[j___]] := Interpretation[
+  SpeciesBox[z, {j}, {$Star}],
+  Conjugate @ z[j]
+ ]
 
 (* f[...] with f not declared as a Species is regarded as a normal function. *)
-Format[ HoldPattern[ Conjugate[f_Symbol[z___]] ] ] :=
+Format @ HoldPattern @ Conjugate[f_Symbol[z___]] := Interpretation[
   SpeciesBox[
     Row @ { "(", f[z], ")" },
     {},
     {$Star}
-   ] /; $FormatSpecies
-
-Format[ HoldPattern[ Abs[z_] ] ] := BracketingBar[z]
-
-AddElaborationPatterns[
-  Abs[z_] :> Sqrt[z Conjugate[z]]
+   ],
+  Conjugate @ f[z]
  ]
+
+Format @ HoldPattern @ Abs[z_] := Interpretation[BracketingBar @ z, Abs @ z]
+
+AddElaborationPatterns[ Abs[z_] :> Sqrt[z Conjugate[z]] ]
 
 (**** </Formatting> ****)
 
