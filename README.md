@@ -26,11 +26,13 @@ Once Q3 is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfr
 
 ## Quantum Computation and Information with Q3
 
+<img src="Images/QuantumWorkbookCover.jpg" align="right"
+     alg="Quantum Workbook Cover"
+     link="https://link.springer.com/book/9783030912130" />
+
 For more advanced uses of Q3, take a look at textbook ["A Quantum Computation Workbook" (Springer, March 2022)](https://link.springer.com/book/9783030912130).
 A compilation of the Mathematica(R) Notebook files that have been used to generate the demonstrations in this textbook is available from
 the [QuantumWorkbook repository](https://github.com/quantum-mob/QuantumWorkbook).
-
-[![Quantum Workbook Cover](Images/QuantumWorkbookCover.jpg?raw=true)](https://link.springer.com/book/9783030912130)
 
 
 ## For Beginners of Mathematica
