@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.10 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 15:00:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.11 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-02 21:22:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -427,8 +427,6 @@ nameThrough[name_String] := With[
 (* Some frequently used aliases. *)
 nameThrough @ {Chop, Simplify, FullSimplify};
 
-(***** </ApplyThrough> *****)
-
 
 ReplaceAllThrough::usage = "ReplaceAllThrough[expr, rules] applies ReplaceAll[ruels] through special objects such as Associatin and SparseArray in expr, which usually do not allow for access to internal data."
 
@@ -444,6 +442,8 @@ ReplaceAllThrough[expr_, rules_] := ReplaceAll[
  ]
 
 ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]
+
+(***** </ApplyThrough> *****)
 
 
 (**** <LeftBrace> ****)

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.36 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 13:11:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.37 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-02 23:07:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2222,14 +2222,17 @@ BosonBasis[bb:{__?BosonQ}, {n_Integer}] :=
   Ket /@ Counts /@ Union[ Sort /@ Tuples[bb, n] ]
 
 
+(**** <FermionBasis> ****)
+
 FermionBasis::usage = "FermionBasis[c1, c2, ...] or FermionBasis[{c1, c2, ...}] returns the many-particle basis states (in the creation operators representation) for a single site, i.e. for operators c1, c2, .... It accepts two options \"Representation\" and \"Conserved\"."
 
 FermionBasis::bigSpin = "Sorry, but for the moment, it can handle only spin-1/2 Fermion operators. These operators will be ignored: ``."
 
 Options[FermionBasis] = {
   "Representation" -> "Occupations",
+  (* "Representation" -> "Generators", *)
   "Conserved" -> {"Number", "Spin"}
- }
+ };
 
 (* Basic constructions *)
 
@@ -2247,27 +2250,27 @@ FermionBasis[cc:{__?FermionQ}, {m_Integer, n_Integer}] :=
   Flatten @ Table[ FermionBasis[cc, {k}], {k, m, n}]
 
 FermionBasis[cc:{__?FermionQ}, {n_Integer}] := 
-  Ket @@@ Map[Thread[#->1]&] @ Subsets[cc, {n}]
+  Ket @@@ Map[Thread[#->1]&, Subsets[cc, {n}]]
 
 
 (* Advanced constructions*)
 
 FermionBasis[cc__?FermionQ, opts___?OptionQ] := FermionBasis[{cc}, opts]
 
-FermionBasis[{cc__?FermionQ}, opts___?OptionQ] := Module[
-  {rep, qn, name},
-  {rep, qn} = {"Representation", "Conserved"} /. {opts} /.
-    Options[FermionBasis];
-
-  rep = rep /.
-    { "Occupations" -> "Ket",
-      "Generators" -> "Cat",
-      _ -> "Cat" };
+FermionBasis[{cc__?FermionQ}, OptionsPattern[]] := Module[
+  { rep = OptionValue["Representation"],
+    qn = OptionValue["Conserved"],
+    name },
   
-  qn = StringJoin @ If[ListQ[qn], Sort[qn], {qn}];
+  rep = rep /. {
+    "Occupations" -> "Ket",
+    "Generators" -> "Cat",
+    _ -> "Cat" };
   
-  name = StringJoin[Context[name], "basis", rep, qn];
-  If[ NameQ[name], Symbol[name][cc], {{}->{}} ]
+  qn = StringJoin @ If[ListQ @ qn, Sort @ qn, {qn}];
+  
+  name = StringJoin[Context @ name, "basis", rep, qn];
+  If[NameQ @ name, Symbol[name][cc], {{} -> {}}]
  ]
 
 
@@ -2277,7 +2280,7 @@ Options[PrintFermionBasis] = {
   Frame -> False,
   Alignment -> {{Center, {Left}}, Center},
   Dividers -> {{}, {True, {Dashed}, True}}
- }
+ };
 
 PrintFermionBasis[bs_Association] :=
   Grid[ Normal[bs] /. {Rule -> List}, Options[PrintFermionBasis] ]
@@ -2339,13 +2342,17 @@ basisKetNumberSpin::usage = "Returns the basis with well defined charge and tota
 
 basisCatNumberSpin[cc__?FermionQ] := Module[
   { irb = basisCatSpin[cc] },
-  irb = Map[GroupBy[#, (List@FockDegree@#) &] &, irb];
-  irb = KeyValueMap[KeyMap[Function[key, Flatten@{key, #1}], #2] &, 
-    irb];
-  irb = KeySort@Merge[irb, Catenate]
+  irb = Map[GroupBy[#, (List @ FockDegree @ #)&]&, irb];
+  irb = KeyValueMap[
+    KeyMap[Function[key, Flatten @ {key, #1}], #2]&, 
+    irb
+   ];
+  irb = KeySort @ Merge[irb, Catenate]
  ]
 
 basisKetNumberSpin[cc__?FermionQ] := FockKet @ basisCatNumberSpin[cc]
+
+(**** </FermionBasis> ****)
 
 
 (* ******************************************************************** *)
