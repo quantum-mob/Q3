@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.8.6
+
+- The titles and filenames of some tutorial documents have been changed.
+
 ## v2.8.5
 
 - Formatted outputs may now be copied with the input form preserved.
