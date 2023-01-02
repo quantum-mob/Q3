@@ -2,7 +2,7 @@
 
 # Q3
 
-Q3 is a Mathematica(R) application written in the Wolfram Language. Q3 is to help study `quantum information systems`, `quantum many-body systems`, and `quantum spin systems`; hence the name Q3. It provides various tools and utilities for symbolic and numerical calculations in these areas of quantum physics.
+Q3 is a Mathematica(R) application written in the Wolfram Language. Q3 is to help study *quantum information systems*, *quantum many-body systems*, and *quantum spin systems*; hence the name Q3. It provides various tools and utilities for symbolic and numerical calculations in these areas of quantum physics.
 
 
 ## Requirements
