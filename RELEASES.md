@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.8.7
+
+- Some broken cross-reference links have been fixed.
+
 ## v2.8.6
 
 - The titles and filenames of some tutorial documents have been changed.
