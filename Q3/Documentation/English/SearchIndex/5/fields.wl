@@ -408,7 +408,7 @@
 		"BulkRetrievalOptimized" -> False
 	|>,
 	<|
-		"Name" -> "LinkedSymbols",
+		"Name" -> "FunctionsSubsection",
 		"Type" -> "Text",
 		"Tokenized" -> True,
 		"Stored" -> False,
@@ -423,7 +423,7 @@
 		"BulkRetrievalOptimized" -> False
 	|>,
 	<|
-		"Name" -> "FunctionsSubsection",
+		"Name" -> "LinkedSymbols",
 		"Type" -> "Text",
 		"Tokenized" -> True,
 		"Stored" -> False,
