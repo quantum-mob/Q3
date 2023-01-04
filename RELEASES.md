@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.8.8
+
+- Emergency bug fix concerning Qudit.
+
 ## v2.8.7
 
 - Some broken cross-reference links have been fixed.
