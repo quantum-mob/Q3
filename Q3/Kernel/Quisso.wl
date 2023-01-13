@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.79 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-04 14:47:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.82 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-08 18:04:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -233,6 +233,15 @@ QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a 
 AddGarnerPatterns[_?QubitQ]
 
 QubitQ[_] = False
+
+
+anyQubitQ::usage = "anyQubitQ[S] and anyQubitQ[Dagger[S]] returns True; and false, otherwise."
+
+HoldPattern @ anyQubitQ @ Dagger[_?QubitQ] = True
+
+anyQubitQ[_?QubitQ] = True
+
+anyQubitQ[_] = False
 
 
 Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appearing in expr."
@@ -585,18 +594,35 @@ SpinForm[vec:Ket[_Association], qq:{__?QubitQ}] := Module[
 
 (**** <PauliForm> ****)
 
+thePauliForm::usage = "thePauliForm[op] or thePauliForm[Dagger[op]] rewrites op in a more conventional form, where the Pauli operators are denoted by I, X, Y, Z, H, S, and T."
+
+HoldPattern @ thePauliForm @ Dagger[op_?QubitQ] :=
+  Interpretation[
+    SpeciesBox[thePauliForm @ op, {}, {"\[Dagger]"}],
+    Dagger @ op
+   ]
+
+thePauliForm[op_?QubitQ] := Interpretation[
+  FlavorLast[op] /. {
+    0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z",
+    6 -> "H", 7 -> "S", 8 -> "T"
+   },
+  op
+ ]
+
+
 PauliForm::usage = "PauliForm[expr] rewrites expr in a more conventional form, where the Pauli operators are denoted by I, X, Y, and Z."
 
-HoldPattern @ PauliForm[Multiply[ss__?QubitQ], qq:{__?QubitQ}] :=
+HoldPattern @ PauliForm[Multiply[ss__?anyQubitQ], qq:{__?QubitQ}] :=
   PauliForm[ss, qq]
 
-PauliForm[ss__?QubitQ, qq:{__?QubitQ}] := Module[
-  { jj = Lookup[PositionIndex[FlavorNone @ qq], FlavorMute @ {ss}],
-    mm },
-  mm = FlavorLast @ {ss} /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z"};
+PauliForm[ss__?anyQubitQ, qq:{__?QubitQ}] := Module[
+  { kk, mm },
+  kk = Lookup[PositionIndex[FlavorNone @ qq], FlavorMute @ Peel @ {ss}];
+  mm = thePauliForm /@ {ss};
   CircleTimes @@ ReplacePart[
     ConstantArray["I", Length @ qq],
-    Flatten[ Thread /@ Thread[jj -> mm] ]
+    Flatten[ Thread /@ Thread[kk -> mm] ]
    ]
  ]
 
@@ -605,18 +631,10 @@ PauliForm[expr_] := PauliForm[expr, Qubits @ expr] /; FreeQ[expr, _Pauli]
 PauliForm[expr_List, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, expr]
 
 PauliForm[assc_Association, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, assc]
-(* NOTE: For some unknown reason, a special handling is required for
-   Association[...]. *)
-
-PauliForm[expr_Plus, qq:{__?QubitQ}] :=
-  Plus @@ PauliForm[List @@ expr, qq]
-
-PauliForm[z_?CommutativeQ, qq:{__?QubitQ}] :=
-  z * PauliForm[Multiply @@ Through @ qq[0], qq]
 
 PauliForm[expr_, qq:{__?QubitQ}] := expr /. {
-  HoldPattern @ Multiply[ss__?QubitQ] :> PauliForm[ss, qq],
-  op_?QubitQ :> PauliForm[op, qq]
+  HoldPattern @ Multiply[ss__?anyQubitQ] :> PauliForm[ss, qq],
+  op_?anyQubitQ :> PauliForm[op, qq]
  }
 
 
@@ -624,8 +642,6 @@ PauliForm[op_Pauli] :=
   CircleTimes @@ ReplaceAll[op, {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z"}]
 
 PauliForm[assc_Association] := Map[PauliForm, assc]
-(* NOTE: For some unknown reason, a special handling is required for
-   Association[...]. *)
 
 PauliForm[expr_] := expr /. { op_Pauli :> PauliForm[op] }
 

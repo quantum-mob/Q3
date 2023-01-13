@@ -1,10 +1,10 @@
 (* Paclet Info File *)
-(* $Date: 2023-01-04 14:49:34+09 $ *)
-(* $Revision: 2.112 $ *)
+(* $Date: 2023-01-11 11:19:52+09 $ *)
+(* $Revision: 2.115 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.8.8",
+  "Version" -> "2.9.1",
   "WolframVersion" -> "12.1+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
@@ -23,7 +23,7 @@ Paclet[
      },
     { "Documentation",
       "Language" -> "English",
-      "MainPage" -> "Guides/Q3" },
+      "MainPage" -> "Tutorials/Q3QuickStart" },
     { "FrontEnd",
       "Prepend" -> True }
     (* Enables subdirectories within the FrontEnd to be handled,
