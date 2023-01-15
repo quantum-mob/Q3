@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.88 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-15 21:29:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.87 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-15 20:59:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1829,7 +1829,9 @@ Readout[op:{__?PauliQ}] := (
 Readout[op_] := Message[Readout::nopauli, op]
 
 
-MeasurementOdds::usage = "MeasurementOdds[vec, op] returns an Association of elements of the form value->{probability, ket}, where value is one of the possible measurement results (\[PlusMinus]1), probability is the probability for value to be actually observed, and ket is the post-measurement state when value is actually observed."
+MeasurementOdds::usage = "MeasurementOdds[vec, op] returns an Association of elements of the form value->{probability, ket}, where value is one of the possible measurement results (\[PlusMinus]1), probability is the probability for value to be actually observed, and ket is the post-measurement state when value is actually observed.\nMesurementOdds[op] is an operator form of MeasurementOdds."
+
+MeasurementOdds[op_?PauliQ][vec_] := MeasurementOdds[vec, op]
 
 MeasurementOdds[vec_?fKetQ, op_?PauliQ] := Module[
   { ss = Qubits[{vec, op}],
@@ -1840,6 +1842,10 @@ MeasurementOdds[vec_?fKetQ, op_?PauliQ] := Module[
   Return[aa]
  ]
 
+
+MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] :=
+  MeasurementOdds[vec, mat]
+
 MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
   { new = mat . vec,
     pls, mns, p0, p1 },
@@ -1847,7 +1853,7 @@ MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
   mns = (vec - new)/2;
   p0 = Simplify @ Norm[pls]^2;
   p1 = Simplify @ Norm[mns]^2;
-  If[ AllTrue[vec, NumericQ],
+  If[ ATrue[vec, NumericQ],
     pls = Normalize @ pls;
     mns = Normalize @ mns
    ];

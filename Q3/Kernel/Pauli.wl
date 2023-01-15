@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.47 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 11:39:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.53 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-15 21:50:18+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -41,7 +41,7 @@ BeginPackage["Q3`"]
 
 { Affect };
 
-{ Pauli, Raise, Lower, Hadamard, Quadrant, Octant,
+{ Pauli, Raise, Lower, Hadamard, Quadrant, Octant, Hexadecant,
   ThePauli, TheRaise, TheLower, TheHadamard };
 { Operator, TheOperator };
 
@@ -198,24 +198,39 @@ ThePauli[kk__] := ThePauli @@ ReplaceAll[
 
 ThePauli[0] = SparseArray[{{1, 1} -> 1, {2, 2} -> 1}, {2, 2}]
 
-ThePauli[1] = SparseArray[{{1, 2} -> 1, {2, 1} -> 1}, {2, 2}]
+ThePauli[1] = ThePauli[-1] = SparseArray[{{1, 2} -> 1, {2, 1} -> 1}, {2, 2}]
 
-ThePauli[2] = SparseArray[{{1, 2} ->-I, {2, 1} -> I}, {2, 2}]
+ThePauli[2] = ThePauli[-2] = SparseArray[{{1, 2} ->-I, {2, 1} -> I}, {2, 2}]
 
-ThePauli[3] = SparseArray[{{1, 1} -> 1, {2, 2} ->-1}, {2, 2}]
+ThePauli[3] = ThePauli[-3] = SparseArray[{{1, 1} -> 1, {2, 2} ->-1}, {2, 2}]
 
 
-ThePauli[4] = TheRaise[] = TheRaise[1] = SparseArray[{{1, 2} -> 1}, {2, 2}]
+ThePauli[4] = ThePauli[-5] = TheRaise[] = TheRaise[1] = TheLower[-1] =
+  SparseArray[{{1, 2} -> 1}, {2, 2}]
 
-ThePauli[5] = TheLower[] = TheLower[1] = SparseArray[{{2, 1} -> 1}, {2, 2}]
+ThePauli[5] = ThePauli[-4] = TheLower[] = TheLower[1] = TheRaise[-1] =
+  SparseArray[{{2, 1} -> 1}, {2, 2}]
 
-ThePauli[6] = TheHadamard[] = TheHadamard[1] = {{1,1},{1,-1}}/Sqrt[2]
+ThePauli[6] = ThePauli[-6] = TheHadamard[] = TheHadamard[1] =
+  {{1,1},{1,-1}}/Sqrt[2]
 
 ThePauli[7] = TheQuadrant[] = TheQuadrant[1] =
   SparseArray[{{1, 1} -> 1, {2, 2} -> +I}, {2, 2}]
 
+ThePauli[-7] = TheQuadrant[-1] =
+  SparseArray[{{1, 1} -> 1, {2, 2} -> -I}, {2, 2}]
+
 ThePauli[8] = TheOctant[] = TheOctant[1] =
   SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*Pi/4]}, {2, 2}]
+
+ThePauli[-8] = TheOctant[] = TheOctant[-1] =
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[-I*Pi/4]}, {2, 2}]
+
+ThePauli[9] = TheHexadecant[] = TheHexadecant[1] =
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*Pi/8]}, {2, 2}]
+
+ThePauli[-9] = TheHexadecant[-1] =
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[-I*Pi/8]}, {2, 2}]
 
 ThePauli[10] = SparseArray[{{1,1} -> 1}, {2,2}]
 
@@ -223,7 +238,7 @@ ThePauli[11] = SparseArray[{{2,2} -> 1}, {2,2}]
 
 
 (* special phase gates *)
-ThePauli[n_Integer?Negative] :=
+ThePauli @ C[n_Integer?Negative] :=
   SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*2*Pi*Power[2,n]]}, {2, 2}]
 
 
@@ -236,6 +251,8 @@ ThePauli[Hadamard] := ThePauli[6]
 ThePauli[Quadrant] := ThePauli[7]
 
 ThePauli[Octant] := ThePauli[8]
+
+ThePauli[Hexadecant] := ThePauli[9]
 
 TheRaise[0] = TheLower[0] = TheHadamard[0] = TheQuadrant[0] = ThePauli[0]
 
@@ -250,7 +267,7 @@ ThePauli[0 -> 0] := ThePauli[10]
 ThePauli[1 -> 1] := ThePauli[11]
 
 
-ThePauli[ nn:(0|1|2|3|4|5|6|7|8|_Integer?Negative|_Rule).. ] :=
+ThePauli[ nn:(0|1|2|3|4|5|6|7|8|9|_Integer?Negative|_Rule).. ] :=
   CircleTimes @@ Map[ThePauli] @ {nn}
 
 
@@ -1051,11 +1068,29 @@ PauliExpand[expr_] := (
  )
 
 
-Hadamard::usage = "Hadamard is a flavor index representing the Hadamard gate."
+Raise::usage = "Raise represents the raising operator."
 
-Quadrant::usage = "Quadrant is a flavor index representing the quadrant gate, i.e., the relative phase gate with phase angle 2Pi/4."
+SetAttributes[Raise, Listable]
 
-Octant::usage = "Octant is a flavor index representing the octant gate, i.e., the relative phase gate with phase angle 2Pi/8."
+Lower::usage = "Lower represents the lowering operator."
+
+SetAttributes[Lower, Listable]
+
+Hadamard::usage = "Hadamard represents the Hadamard gate."
+
+SetAttributes[Hadamard, Listable]
+
+Quadrant::usage = "Quadrant represents the phase gate with phase angle 2*\[Pi]/4."
+
+SetAttributes[Quadrant, Listable]
+
+Octant::usage = "Octant represents the phase gate with phase angle 2*\[Pi]/8."
+
+SetAttributes[Octant, Listable]
+
+Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[Pi]/16."
+
+SetAttributes[Hexadecant, Listable]
 
 
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
@@ -1064,21 +1099,29 @@ SetAttributes[Pauli, {NHoldAll, ReadProtected, Listable}]
 (* NOTE: The integers in Pauli[] should not be converted to real numbers by
    N[]. *)
 
-Format @ Pauli[a:(0|1|2|3|4|5|6|7|8)..] := With[
-  { aa = {a} /. theIndexRules },
-  Interpretation[
-    CircleTimes @@ Map[Superscript["\[Sigma]", #]&, aa],
-    Pauli[a]
+SetAttributes[fmtPauli, Listable]
+
+fmtPauli @ Pauli[k_Integer?Negative] :=
+  Superscript["\[Sigma]", Row @ {fmtPauli[-n], "\[Dagger]"}]
+
+fmtPauli @ Pauli[k_Integer] := Superscript[ "\[Sigma]",
+  ReplaceAll[ k,
+    { 0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z",
+      6 -> "H", 7 -> "S", 8 -> "T", 9 -> "Q" }
    ]
  ]
 
-thePlus  = Style["+", Larger, Bold];
-theMinus = Style["-", Larger, Bold];
-theIndexRules = {
-  1->"x", 2->"y", 3->"z",
-  4->thePlus, 5->theMinus,
-  6->"H", 7->"S", 8->"T"
- };
+fmtPauli @ Pauli @ C[n_Integer] :=
+  With[{m = -n}, Superscript["\[Sigma]", +2 Pi / HoldForm[Power[2, m]]]]
+
+HoldPattern @ fmtPauli @ Pauli[-C[n_Integer]] :=
+  With[{m = -n}, Superscript["\[Sigma]", -2 Pi / HoldForm[Power[2, m]]]]
+
+
+Format @ Pauli[k__] := Interpretation[
+  CircleTimes @@ Map[fmtPauli, Pauli @ {k}],
+  Pauli[k]
+ ]
 
 
 Pauli /:
@@ -1093,17 +1136,12 @@ NonCommutativeQ[ Pauli[__] ] = True
 
 Raise[0] = Lower[0] = Hadamard[0] = Pauli[0]
 
-Raise[] = Raise[1] = Pauli[Raise]
+Raise[1] = Lower[-1] = Pauli[Raise]
 
-Lower[] = Lower[1] = Pauli[Lower]
+Lower[1] = Raise[-1] = Pauli[Lower]
 
-Hadamard[] = Hadamard[1] = Pauli[Hadamard]
+Hadamard[1] = Hadamard[-1] = Pauli[Hadamard]
 
-
-Pauli[n_Integer?Negative] := With[
-  { f = Exp[I*2*Pi*Power[2, n]] },
-  Pauli[0]*(1+f)/2 + Pauli[3]*(1-f)/2
- ]
 
 Pauli[1 -> 0] := Pauli[4]
 
@@ -1119,9 +1157,37 @@ Pauli[Lower] := (Pauli[1] - I Pauli[2]) / 2
 
 Pauli[Hadamard] := (Pauli[1] + Pauli[3])/Sqrt[2]
 
-Pauli[Quadrant] := Pauli[0] (1+I)/2 + Pauli[3] (1-I)/2
+Pauli[Quadrant] := Pauli[0] (1+I)/2 + Pauli[3]*(1-I)/2
 
-Pauli[Octant] := Pauli[0] (1+Exp[I Pi/4])/2 + Pauli[3] (1-Exp[I Pi/4])/2
+Pauli[Octant] := Pauli[0] (1+Exp[I Pi/4])/2 + Pauli[3]*(1-Exp[I Pi/4])/2
+
+Pauli[Hexadecant] := Pauli[0] (1+Exp[I Pi/8])/2 + Pauli[3]*(1-Exp[I Pi/8])/2
+
+
+Pauli[-1] = Pauli[1]
+
+Pauli[-2] = Pauli[2]
+
+Pauli[-3] = Pauli[3]
+
+Pauli[-4] = Pauli[5]
+
+Pauli[-5] = Pauli[4]
+
+Pauli[-6] = Pauli[6]
+
+
+Pauli @ C[n_Integer?NonNegative] := Pauli[0]
+
+Pauli[-C[n_Integer?NonNegative]] := Pauli[0]
+
+(* Elaborate *)
+(*
+Pauli @ C[n_Integer] := With[
+  { f = Exp[I*2*Pi*Power[2, n]] },
+  Pauli[0]*(1+f)/2 + Pauli[3]*(1-f)/2
+ ]
+ *)
 
 
 Pauli[kk__] := Pauli @@ ReplaceAll[
@@ -1130,11 +1196,14 @@ Pauli[kk__] := Pauli @@ ReplaceAll[
     Full -> {0, 1, 2, 3} }
  ] /; ContainsAny[{kk}, {All, Full}]
 
+(* Elaborate *)
+(*
 Pauli[kk__] := Garner @ Apply[CircleTimes, Pauli /@ {kk}] /;
   ContainsAny[
     { kk },
-    { 10, 11, Raise, Lower, Hadamard, Quadrant, Octant }
+    { 10, 11, Raise, Lower, Hadamard, Quadrant, Octant, Hexadecant }
    ]
+ *)
 (* NOTE: Multi-spin Pauli operators are stored in Pauli[a, b, c, ...],
    NOT CircleTimes[Pauli[a], Pauli[b], Pauli[c], ...].
    Namely, Pauli[...] is not expanded into CircleTimes. *)
@@ -1154,24 +1223,32 @@ Pauli /: HoldPattern @ Elaborate[ Pauli[a_, bc__] ] :=
 
 Pauli /: HoldPattern @ Elaborate[ op:Pauli[0|1|2|3] ] := op
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[0 -> 0] ] := Pauli[10]
+Pauli /: HoldPattern @ Elaborate @ Pauli[0 -> 0] := Pauli[10]
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[1 -> 1] ] := Pauli[11]
+Pauli /: HoldPattern @ Elaborate @ Pauli[1 -> 1] := Pauli[11]
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[4] ] := Pauli[Raise]
+Pauli /: HoldPattern @ Elaborate @ Pauli[4] := Pauli[Raise]
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[4] ] := Pauli[Raise]
+Pauli /: HoldPattern @ Elaborate @ Pauli[5] := Pauli[Lower]
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[5] ] := Pauli[Lower]
+Pauli /: HoldPattern @ Elaborate @ Pauli[6] := Pauli[Hadamard]
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[6] ] := Pauli[Hadamard]
+Pauli /: HoldPattern @ Elaborate @ Pauli[7] := Pauli[Quadrant]
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[7] ] := Pauli[Quadrant]
+Pauli /: HoldPattern @ Elaborate @ Pauli[8] := Pauli[Octant]
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[8] ] := Pauli[Octant]
+Pauli /: HoldPattern @ Elaborate @ Pauli[9] := Pauli[Hexadecant]
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[8] ] := Pauli[Octant]
+Pauli /: HoldPattern @ Elaborate @ Pauli[-7] := Dagger @ Pauli[Quadrant]
 
+Pauli /: HoldPattern @ Elaborate @ Pauli[-8] := Dagger @ Pauli[Octant]
+
+Pauli /: HoldPattern @ Elaborate @ Pauli[-9] := Dagger @ Pauli[Hexadecant]
+
+Pauli /: HoldPattern @ Elaborate @ Pauli @ C[n_Integer] := With[
+  { f = Exp[I*2*Pi*Power[2, n]] },
+  Pauli[0]*(1+f)/2 + Pauli[3]*(1-f)/2
+ ]
 
 (* Dagger and Conjugate *)
 
@@ -1185,29 +1262,49 @@ Pauli /: Dagger[ Pauli[4] ] := Pauli[5]
 
 Pauli /: Dagger[ Pauli[5] ] := Pauli[4]
 
-Pauli /: Dagger[ Pauli[7] ] := Dagger @ Pauli[Quadrant]
+Pauli /: Dagger[ Pauli[7] ] := Pauli[-7]
 
-Pauli /: Dagger[ Pauli[8] ] := Dagger @ Pauli[Octant]
+Pauli /: Dagger[ Pauli[8] ] := Pauli[-8]
 
-Pauli /: HoldPattern @ Dagger[ Pauli[jj__] ] :=
-  Garner @ Apply[CircleTimes, Dagger /@ Pauli /@ {jj}]
+Pauli /: Dagger[ Pauli[9] ] := Pauli[-9]
+
+Pauli /: Dagger[ Pauli[-7] ] := Pauli[7]
+
+Pauli /: Dagger[ Pauli[-8] ] := Pauli[8]
+
+Pauli /: Dagger[ Pauli[-9] ] := Pauli[9]
+
+Pauli /: Dagger @ Pauli @ C[n_Integer] := Pauli[-C[n]]
+
+Pauli /: Dagger @ Pauli[-C[n_Integer]] := Pauli[C @ n]
+
+Pauli /: HoldPattern @ Dagger[ Pauli[a_, bc__] ] :=
+  Garner @ Apply[CircleTimes, Dagger /@ Pauli /@ {a, bc}]
 
 
 Pauli /: Conjugate[ Pauli[2] ] = -Pauli[2]
 
-Pauli /: Conjugate[ Pauli[7] ] = Conjugate @ Elaborate @ Pauli[7]
+Pauli /: Conjugate[ Pauli[7] ] := Pauli[-7]
 
-Pauli /: Conjugate[ Pauli[8] ] = Conjugate @ Elaborate @ Pauli[8]
+Pauli /: Conjugate[ Pauli[8] ] := Pauli[-8]
+
+Pauli /: Conjugate[ Pauli[9] ] := Pauli[-9]
+
+Pauli /: Conjugate[ Pauli[-7] ] := Pauli[7]
+
+Pauli /: Conjugate[ Pauli[-8] ] := Pauli[8]
+
+Pauli /: Conjugate[ Pauli[-9] ] := Pauli[9]
 
 Pauli /: Conjugate[ Pauli[m:(0|1|3|4|5|6)] ] := Pauli[m]
 
-Pauli /: Conjugate[ Pauli[a_, b__] ] := CircleTimes @@ Map[
-  Conjugate @* Pauli, {a, b}
+Pauli /: Conjugate[ Pauli[a_, bc__] ] := CircleTimes @@ Map[
+  Conjugate @* Pauli, {a, bc}
  ]
 
   
 Pauli /:
-CircleTimes[a_Pauli, b__Pauli] := Pauli @@ Catenate[List @@@ {a, b}]
+CircleTimes[a_Pauli, bc__Pauli] := Pauli @@ Catenate[List @@@ {a, bc}]
 
 
 (**** <Pauli in Multiply> ****)
@@ -1594,8 +1691,9 @@ Matrix[ expr_ ] := Matrix[expr, NonCommutativeSpecies @ expr]
 Matrix[ expr_, q_?SpeciesQ ] := Matrix[expr, {q}]
 
 Matrix[ expr_Plus, qq:{___?SpeciesQ} ] :=
-  TrigToExp @ ExpToTrig @ Total @ Map[ Matrix[#, qq]&, List @@ expr ]
+  TrigToExp @ ExpToTrig @ Total @ Map[ Matrix[#, qq]&, List @@ KetChop[expr] ]
 (* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
+(* NOTE: KetChop is required here because "0. + Ket[...]" may happen. *)
 
 Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ} ] := z * Matrix[op, qq]
 

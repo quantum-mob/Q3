@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.66 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 15:13:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.68 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-15 19:14:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -254,7 +254,7 @@ HoldPattern @
     ww = FlavorNone @ Flatten @ ww;
     ss = Union @ Flatten @ {ss, vv, ww};
 
-    If[ cc == {}, cc = {"Spacer"} ];
+    If[cc == {}, cc = {"Spacer"}];
     (* There can be only input elements. *)
     
     xx  = Accumulate @ Boole[ qGateQ /@ cc ];
@@ -266,7 +266,7 @@ HoldPattern @
     
     nodes = qcNodes[ cc, xx, yy ];
     lines = qcLines[ cc, xx, KeyDrop[yy, ww] ];
-    
+
     in = FirstCase[ {gg}, QuissoIn[kk___] :> {kk} ];
     in = qCircuitInput[in, xx, yy];
 
@@ -304,13 +304,9 @@ qcGate[gg_List, opts___?OptionQ] :=
 qcGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
   
 
-qcGate[ S_Symbol?QubitQ[j___, k_Integer?Negative], opts___?OptionQ ] :=
-  Gate[ {S[j,None]}, opts,
-    "Label" -> gateLabel[S[j,k]],
-    "LabelSize" -> 0.5 ]
-
-qcGate[ S_?QubitQ, opts___?OptionQ ] :=
-  Gate[ Qubits @ S, opts, "Label" -> gateLabel[S] ]
+qcGate[ op_?anyQubitQ, opts___?OptionQ ] :=
+  Gate[ Qubits @ op, opts, "Label" -> HoldForm @ thePauliForm[op] ]
+(* NOTE: HoldForm is required here because later qcNodes uses HoldRelease. *)
 
 qcGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
   Gate[ Qubits @ S, opts, "Label" -> Superscript[gateLabel[S],"\[Dagger]"] ]
@@ -505,7 +501,7 @@ gateLabel[ S_?QubitQ ] := Last[S] /. {
   1 -> "X", 2 -> "Y", 3 -> "Z",
   6 -> "H", 7 -> "S", 8 -> "T" }
 
-gateLabel[ gate_Phase ] := "\[Phi]"
+gateLabel[ Phase[ang_, __] ] := Superscript["Z", ang]
 
 gateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
   Subscript[ "U", FlavorLast[S] /. {1->"x", 2->"y", 3->"z"} ]
