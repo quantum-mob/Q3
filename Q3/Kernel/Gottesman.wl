@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.42 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-02 23:05:51+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.43 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-16 11:40:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1119,8 +1119,8 @@ CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
  ]
 
 fGateRules = {
-  ControlledU[{C_?QubitQ}, T_[j___, 1]] -> CNOT[C, T[j]],
-  ControlledU[{C_?QubitQ}, T_[j___, 3]] -> CZ[C, T[j]],
+  ControlledU[cc_, T_[j___, 1]] -> CNOT[cc, T[j]],
+  ControlledU[cc_, T_[j___, 3]] -> CZ[cc, T[j]],
   S_[j___, 1]/Sqrt[2] + S_[j___, 3]/Sqrt[2] -> S[j,6],
   (S_[j___, 1] + S_[j___, 3])/Sqrt[2] -> S[j,6],
   Phase[0, ___] -> Nothing
