@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.9.2
+
+- Hexadecant phase gate.
+- Phase gates Pauli[..., C[-n], ...] and S[..., C[-n]] by angle 2*Pi/Power[2, n].
+
 ## v2.8.8
 
 - Emergency bug fix concerning Qudit.
