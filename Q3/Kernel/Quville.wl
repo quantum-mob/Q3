@@ -9,22 +9,17 @@ BeginPackage["Q3`"]
   "Mahn-Soo Choi"
  ];
 
-{ QuantumCircuit, QuissoIn, QuissoOut,
+{ QuantumCircuit,
+  QuantumCircuitIn,
+  QuantumCircuitOut,
   QuantumCircuitTrim };
 
 (* Obsolete Symbols *)
 
 { QuissoCircuit }; (* Obsolete *)
+{ QuissoCircuitIn, QuissoCircuitOut }; (* obsolete *)
 
 Begin["`Private`"]
-
-QuissoCircuit::usage = "QuissoCircuit has been renamed QuantumCircuit."
-
-QuissoCircuit[args___] := (
-  Message[Q3General::renamed, "QuissoCircuit", "QuantumCircuit"];
-  QuantumCircuit[args]
- )
-
 
 QuantumCircuit::usage = "QuantumCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nExpressionFor[ QuantumCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a Quisso expression.\nMatrix[ QuantumCircuit[...] ] returns the matrix representation of the quantum circuit model."
 
@@ -32,11 +27,11 @@ QuantumCircuit::noqubit = "No Qubit found in the expression ``. Use LogicalForm 
 
 QuantumCircuit::nofunc = "Unknown function \"``\" to draw the gate. \"Rectangle\" is assumed."
 
-QuissoIn::usage = "QuissoIn is a holder for input expression in QuantumCircuit.\nSee also QuissoOut."
+QuantumCircuitIn::usage = "QuantumCircuitIn is a holder for input expression in QuantumCircuit.\nSee also QuantumCircuitOut."
 
-QuissoOut::usage = "QuissoOut is a holder for expected output expressions in QuantumCircuit. Note that the output expressions are just expected output and may be different from the actual output. They are used only for output label and ignored by ExpressionFor and Elaborate.\nSee also QuissoIn."
+QuantumCircuitOut::usage = "QuantumCircuitOut is a holder for expected output expressions in QuantumCircuit. Note that the output expressions are just expected output and may be different from the actual output. They are used only for output label and ignored by ExpressionFor and Elaborate.\nSee also QuantumCircuitIn."
 
-SetAttributes[{QuantumCircuit, QuissoOut, QuissoIn}, Flat]
+SetAttributes[{QuantumCircuit, QuantumCircuitOut, QuantumCircuitIn}, Flat]
 
 AddElaborationPatterns[_QuantumCircuit]
 
@@ -159,10 +154,10 @@ SetAttributes[ QuantumCircuitTrim, Listable ];
 QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__] ] :=
   Flatten @ QuantumCircuitTrim @ {gg}
 
-QuantumCircuitTrim[ QuissoIn[a__] ]  := Multiply @@ QuantumCircuitTrim[ {a} ]
+QuantumCircuitTrim[ QuantumCircuitIn[a__] ]  := Multiply @@ QuantumCircuitTrim[ {a} ]
 (* NOTE: Useful to apply Matrix directly to QuantumCircuit.  *)
 
-QuantumCircuitTrim[ _QuissoOut ] = Nothing
+QuantumCircuitTrim[ _QuantumCircuitOut ] = Nothing
 
 QuantumCircuitTrim[ _?OptionQ ] = Nothing
 
@@ -194,28 +189,28 @@ QuantumCircuitTrim[ g_ ] := g
 (* NOTE: QuantumCircuit has attribute Flat. *)
 
 QuantumCircuit[rest:Except[_?qcKetQ].., Longest[vv__?qcKetQ]] :=
-  QuantumCircuit[rest, QuissoOut[vv]]
+  QuantumCircuit[rest, QuantumCircuitOut[vv]]
 
 QuantumCircuit[Longest[vv__?qcKetQ]] :=
-  QuantumCircuit @ QuissoIn[vv]
+  QuantumCircuit @ QuantumCircuitIn[vv]
 
 QuantumCircuit[Longest[opts__?OptionQ], rest:Except[_?OptionQ]..] :=
   QuantumCircuit[rest, opts]
 
-QuantumCircuit[a_QuissoOut, bb__QuissoOut] :=
-  QuantumCircuit @ QuissoOut[a, bb]
+QuantumCircuit[a_QuantumCircuitOut, bb__QuantumCircuitOut] :=
+  QuantumCircuit @ QuantumCircuitOut[a, bb]
 
-QuantumCircuit[a_QuissoIn, bb__QuissoIn] :=
-  QuantumCircuit @ QuissoIn[a, bb]
+QuantumCircuit[a_QuantumCircuitIn, bb__QuantumCircuitIn] :=
+  QuantumCircuit @ QuantumCircuitIn[a, bb]
 
-QuantumCircuit[rest__, in_QuissoIn] :=
+QuantumCircuit[rest__, in_QuantumCircuitIn] :=
   QuantumCircuit[in, rest]
 
-QuantumCircuit[out_QuissoOut, rest:Except[_?OptionQ|_QuissoOut]..] :=
+QuantumCircuit[out_QuantumCircuitOut, rest:Except[_?OptionQ|_QuantumCircuitOut]..] :=
   QuantumCircuit[rest, out]
 
 qcKetQ[expr_] := And[
-  FreeQ[expr, _QuissoIn | _QuissoOut | _Projector],
+  FreeQ[expr, _QuantumCircuitIn | _QuantumCircuitOut | _Projector],
   Not @ FreeQ[expr, _Ket | _ProductState]
  ]
 
@@ -267,10 +262,10 @@ HoldPattern @
     nodes = qcNodes[ cc, xx, yy ];
     lines = qcLines[ cc, xx, KeyDrop[yy, ww] ];
 
-    in = FirstCase[ {gg}, QuissoIn[kk___] :> {kk} ];
+    in = FirstCase[ {gg}, QuantumCircuitIn[kk___] :> {kk} ];
     in = qCircuitInput[in, xx, yy];
 
-    out = FirstCase[ {gg}, QuissoOut[kk___] :> {kk} ];
+    out = FirstCase[ {gg}, QuantumCircuitOut[kk___] :> {kk} ];
     out = qCircuitOutput[out, xx, yy];
 
     Graphics[ Join[lines, in, nodes, out],
@@ -301,7 +296,7 @@ qcGate[gg_List, opts___?OptionQ] :=
   Map[qcGate[#, opts]&, gg]
 
 
-qcGate[ _QuissoIn | _QuissoOut, opts___?OptionQ ] = Nothing
+qcGate[ _QuantumCircuitIn | _QuantumCircuitOut, opts___?OptionQ ] = Nothing
   
 
 qcGate[ op_?anyQubitQ, opts___?OptionQ ] :=
@@ -930,6 +925,28 @@ qPortBrace[-1, { a:{_, _}, b:{_, _} } ] :=
 
 qPortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
   RightBrace[a, b, "Width" -> $BraceWidth]
+
+
+QuissoCircuit::usage = "QuissoCircuit has been renamed QuantumCircuit."
+
+QuissoCircuit[args___] := (
+  Message[Q3General::renamed, "QuissoCircuit", "QuantumCircuit"];
+  QuantumCircuit[args]
+ )
+
+QuissoIn::usage = "QuissoIn has been renamed QuantumIn."
+
+QuissoIn[args___] := (
+  Message[Q3General::renamed, "QuissoIn", "QuantumIn"];
+  QuantumIn[args]
+ )
+
+QuissoOut::usage = "QuissoOut has been renamed QuantumOut."
+
+QuissoOut[args___] := (
+  Message[Q3General::renamed, "QuissoOut", "QuantumOut"];
+  QuantumOut[args]
+ )
 
 End[]
 
