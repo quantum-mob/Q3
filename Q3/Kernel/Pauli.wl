@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.53 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-15 21:50:18+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.57 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-16 21:20:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -386,7 +386,7 @@ SimpleForm[ v:Ket[_Association], gg_List ] := Ket @ Row @ Riffle[
 SimpleForm[ v:Bra[a_Association], gg_List ] :=
   Dagger @ SimpleForm[Ket[a], gg]
 
-(* For some irreducible basis, e.g., from QuissoAdd[] *)
+(* For some irreducible basis, e.g., from QubitAdd[] *)
 SimpleForm[ expr_Association, gg_List ] :=
   Map[ SimpleForm[#,gg]&, expr ]
 (* NOTE: Association needs to be handled carefully due to HoldAllComplete
@@ -415,7 +415,7 @@ ProductForm[ vec:Ket[_Association], gg_List ] := Row @ Riffle[
 ProductForm[ v:Bra[a_Association], gg_List ] :=
   Dagger @ ProductForm[Ket[a], gg]
 
-(* For some irreducible basis, e.g., from QuissoAdd[] *)
+(* For some irreducible basis, e.g., from QubitAdd[] *)
 ProductForm[ expr_Association, gg_List ] :=
   Map[ ProductForm[#,gg]&, expr ]
 (* NOTE: Association needs to be handled carefully due to HoldAllComplete
@@ -1095,34 +1095,9 @@ SetAttributes[Hexadecant, Listable]
 
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
-SetAttributes[Pauli, {NHoldAll, ReadProtected, Listable}]
-(* NOTE: The integers in Pauli[] should not be converted to real numbers by
-   N[]. *)
+SetAttributes[Pauli, {NHoldAll, Listable}]
 
-SetAttributes[fmtPauli, Listable]
-
-fmtPauli @ Pauli[k_Integer?Negative] :=
-  Superscript["\[Sigma]", Row @ {fmtPauli[-n], "\[Dagger]"}]
-
-fmtPauli @ Pauli[k_Integer] := Superscript[ "\[Sigma]",
-  ReplaceAll[ k,
-    { 0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z",
-      6 -> "H", 7 -> "S", 8 -> "T", 9 -> "Q" }
-   ]
- ]
-
-fmtPauli @ Pauli @ C[n_Integer] :=
-  With[{m = -n}, Superscript["\[Sigma]", +2 Pi / HoldForm[Power[2, m]]]]
-
-HoldPattern @ fmtPauli @ Pauli[-C[n_Integer]] :=
-  With[{m = -n}, Superscript["\[Sigma]", -2 Pi / HoldForm[Power[2, m]]]]
-
-
-Format @ Pauli[k__] := Interpretation[
-  CircleTimes @@ Map[fmtPauli, Pauli @ {k}],
-  Pauli[k]
- ]
-
+Format @ Pauli[k__] := Interpretation[thePauliForm @ Pauli[k], Pauli[k]]
 
 Pauli /:
 Kind[ Pauli[___] ] = Pauli
@@ -1143,25 +1118,25 @@ Lower[1] = Raise[-1] = Pauli[Lower]
 Hadamard[1] = Hadamard[-1] = Pauli[Hadamard]
 
 
-Pauli[1 -> 0] := Pauli[4]
+Pauli[1 -> 0] = Pauli[4]
 
-Pauli[0 -> 1] := Pauli[5]
+Pauli[0 -> 1] = Pauli[5]
 
-Pauli[10] := (Pauli[0] + Pauli[3]) / 2
+Pauli[0 -> 0] = Pauli[10]
 
-Pauli[11] := (Pauli[0] - Pauli[3]) / 2
+Pauli[1 -> 1] = Pauli[11]
 
-Pauli[Raise] := (Pauli[1] + I Pauli[2]) / 2
+Pauli[Raise] = (Pauli[1] + I Pauli[2]) / 2
 
-Pauli[Lower] := (Pauli[1] - I Pauli[2]) / 2
+Pauli[Lower] = (Pauli[1] - I Pauli[2]) / 2
 
-Pauli[Hadamard] := (Pauli[1] + Pauli[3])/Sqrt[2]
+Pauli[Hadamard] = (Pauli[1] + Pauli[3])/Sqrt[2]
 
-Pauli[Quadrant] := Pauli[0] (1+I)/2 + Pauli[3]*(1-I)/2
+Pauli[Quadrant] = Pauli[0] (1+I)/2 + Pauli[3]*(1-I)/2
 
-Pauli[Octant] := Pauli[0] (1+Exp[I Pi/4])/2 + Pauli[3]*(1-Exp[I Pi/4])/2
+Pauli[Octant] = Pauli[0] (1+Exp[I Pi/4])/2 + Pauli[3]*(1-Exp[I Pi/4])/2
 
-Pauli[Hexadecant] := Pauli[0] (1+Exp[I Pi/8])/2 + Pauli[3]*(1-Exp[I Pi/8])/2
+Pauli[Hexadecant] = Pauli[0] (1+Exp[I Pi/8])/2 + Pauli[3]*(1-Exp[I Pi/8])/2
 
 
 Pauli[-1] = Pauli[1]
@@ -1177,18 +1152,12 @@ Pauli[-5] = Pauli[4]
 Pauli[-6] = Pauli[6]
 
 
-Pauli @ C[n_Integer?NonNegative] := Pauli[0]
+Pauli @ C[n_Integer?NonNegative] = Pauli[0]
 
-Pauli[-C[n_Integer?NonNegative]] := Pauli[0]
+Pauli[-C[n_Integer?NonNegative]] = Pauli[0]
 
-(* Elaborate *)
-(*
-Pauli @ C[n_Integer] := With[
-  { f = Exp[I*2*Pi*Power[2, n]] },
-  Pauli[0]*(1+f)/2 + Pauli[3]*(1-f)/2
- ]
- *)
 
+Pauli[a:{(0|1)..} -> b:{(0|1)..}] := Pauli @@ Thread[a -> b]
 
 Pauli[kk__] := Pauli @@ ReplaceAll[
   { kk },
@@ -1196,36 +1165,22 @@ Pauli[kk__] := Pauli @@ ReplaceAll[
     Full -> {0, 1, 2, 3} }
  ] /; ContainsAny[{kk}, {All, Full}]
 
-(* Elaborate *)
-(*
 Pauli[kk__] := Garner @ Apply[CircleTimes, Pauli /@ {kk}] /;
   ContainsAny[
     { kk },
-    { 10, 11, Raise, Lower, Hadamard, Quadrant, Octant, Hexadecant }
+    { Raise, Lower, Hadamard, Quadrant, Octant, Hexadecant }
    ]
- *)
-(* NOTE: Multi-spin Pauli operators are stored in Pauli[a, b, c, ...],
-   NOT CircleTimes[Pauli[a], Pauli[b], Pauli[c], ...].
-   Namely, Pauli[...] is not expanded into CircleTimes. *)
-
-
-Pauli[a:{(0|1)..} -> b:{(0|1)..}] := Pauli @@ Thread[a -> b]
-
 
 (* Elaboration rules *)
-
-(* NOTE: Multi-spin Pauli operators are stored in Pauli[a, b, c, ...],
-   NOT CircleTimes[Pauli[a], Pauli[b], Pauli[c], ...].
-   Namely, Pauli[...] is not expanded into CircleTimes. *)
 
 Pauli /: HoldPattern @ Elaborate[ Pauli[a_, bc__] ] :=
   Garner @ Apply[CircleTimes, Elaborate[Pauli /@ {a, bc}]]
 
 Pauli /: HoldPattern @ Elaborate[ op:Pauli[0|1|2|3] ] := op
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[0 -> 0] := Pauli[10]
+Pauli /: HoldPattern @ Elaborate @ Pauli[10] := (Pauli[0] + Pauli[3]) / 2
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[1 -> 1] := Pauli[11]
+Pauli /: HoldPattern @ Elaborate @ Pauli[11] := (Pauli[0] - Pauli[3]) / 2
 
 Pauli /: HoldPattern @ Elaborate @ Pauli[4] := Pauli[Raise]
 
@@ -1250,11 +1205,7 @@ Pauli /: HoldPattern @ Elaborate @ Pauli @ C[n_Integer] := With[
   Pauli[0]*(1+f)/2 + Pauli[3]*(1-f)/2
  ]
 
-(* Dagger and Conjugate *)
-
-(* NOTE: Multi-spin Pauli operators are stored in Pauli[a, b, c, ...],
-   NOT CircleTimes[Pauli[a], Pauli[b], Pauli[c], ...].
-   Namely, Pauli[...] is not expanded into CircleTimes. *)
+(* Dagger *)
 
 Pauli /: Dagger[ Pauli[m:(0|1|2|3|6)] ] := Pauli[m]
 
@@ -1281,6 +1232,7 @@ Pauli /: Dagger @ Pauli[-C[n_Integer]] := Pauli[C @ n]
 Pauli /: HoldPattern @ Dagger[ Pauli[a_, bc__] ] :=
   Garner @ Apply[CircleTimes, Dagger /@ Pauli /@ {a, bc}]
 
+(* Conjugate *)
 
 Pauli /: Conjugate[ Pauli[2] ] = -Pauli[2]
 
@@ -2517,13 +2469,16 @@ Dot[ Bra[1|Down], Pauli[n:(1|2|3|4|5|6|7|8)] ] :=
   Dot[ ThePauli[n][[2,;;]], {Bra[0],Bra[1]} ]
 
 Pauli /:
-Dot[ Pauli[0], Pauli[n:(0|1|2|3|4|5|6|7|8)] ] := Pauli[n]
+Dot[ Pauli[0], Pauli[n_] ] := Pauli[n]
 
 Pauli /:
-Dot[ Pauli[n:(0|1|2|3|4|5|6|7|8)], Pauli[0] ] := Pauli[n]
+Dot[ Pauli[n_], Pauli[0] ] := Pauli[n]
 
 Pauli /:
 Dot[ Pauli[n:(0|1|2|3)], Pauli[n:(0|1|2|3)] ] := Pauli[0]
+
+Pauli /:
+Dot[ Pauli[m_], Pauli[n_] ] := Pauli[0] /; m == -n
 
 Pauli /:
 Dot[ Pauli[7], Pauli[7] ] := Pauli[3]
@@ -2552,27 +2507,15 @@ Dot[ Pauli[3], Pauli[2] ] := -I Pauli[1]
 Pauli /:
 Dot[ Pauli[1], Pauli[3] ] := -I Pauli[2]
 
+(* general rules *)
 
 Pauli /:
-Dot[ Pauli[n:(4|5|6|7|8)], Pauli[k:(1|2|3|4|5|6|7|8)] ] :=
-  ExpandAll @ Dot[ Pauli[n /. $PauliShortCuts], Pauli[k /. $PauliShortCuts] ]
-
-Pauli /:
-Dot[ Pauli[k:(1|2|3|4|5|6|7|8)], Pauli[n:(4|5|6|7|8)] ] :=
-  ExpandAll @ Dot[ Pauli[k /. $PauliShortCuts], Pauli[n /. $PauliShortCuts] ]
-
-$PauliShortCuts = {
-  4 -> Raise,
-  5 -> Lower,
-  6 -> Hadamard,
-  7 -> Quadrant,
-  8 -> Octant
- }
-
+Dot[ Pauli[m_], Pauli[n_] ] :=
+  Garner @ Dot[Elaborate @ Pauli @ m, Elaborate @ Pauli @ n]
 
 Pauli /:
 Dot[ Pauli[a_, b__], Pauli[c_, d__] ] :=
-  CircleTimes @@ Dot @@@ Transpose[{ Pauli /@ {a,b}, Pauli /@ {c,d} }]
+  CircleTimes @@ Dot @@@ Transpose[{ Pauli /@ {a, b}, Pauli /@ {c, d} }]
   
 Pauli /:
 Dot[ Pauli[a_, b__], Ket[c_, d__] ] := CircleTimes @@

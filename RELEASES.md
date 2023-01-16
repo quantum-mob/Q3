@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.9.3
+
+- Formatted ouput of Pauli[...].
+- QuissoAdd and QuissoAddZ have been renamed QubitAdd and QubitAddZ, respectively.
+
 ## v2.9.2
 
 - Hexadecant phase gate.

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.89 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-16 10:50:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.95 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-16 21:54:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -13,16 +13,17 @@ BeginPackage["Q3`"]
 
 { PauliForm };
 
-{ QuissoAdd, QuissoAddZ };
+{ QubitAdd, QubitAddZ };
 
 { Rotation, EulerRotation, Phase };
 
-{ ControlledU, CNOT, CX=CNOT, CZ, SWAP, Toffoli, Fredkin, Deutsch };
+{ ControlledU, CNOT, CX = CNOT, CZ, SWAP,
+  Toffoli, Fredkin, Deutsch };
 
 { ControlledExp };
 
-{ Measurement, MeasurementOdds, $MeasurementOut = <||>,
-  Readout };
+{ Measurement, MeasurementOdds, Readout,
+  $MeasurementOut = <||> };
 
 { Projector };
 
@@ -44,6 +45,8 @@ BeginPackage["Q3`"]
 { WeylHeisenbergBasis };
 
 (* Obsolete Symbols *)
+
+{ QuissoAdd, QuissoAddZ }; (* renamed *)
 
 { QuissoPhase, QuissoControlledU,
   QuissoRotation, QuissoEulerRotation,
@@ -660,12 +663,16 @@ SpinForm[vec:Ket[_Association], qq:{__?QubitQ}] := Module[
 
 thePauliForm::usage = "thePauliForm[op] or thePauliForm[Dagger[op]] rewrites op in a more conventional form, where the Pauli operators are denoted by I, X, Y, Z, H, S, and T."
 
-HoldPattern @ thePauliForm @ Dagger @ Pauli[k_Integer] :=
-  Superscript[thePauliForm @ Pauli[k], "\[Dagger]"]
+HoldPattern @ thePauliForm @ Pauli[k_Integer?Negative] :=
+  Superscript[thePauliForm @ Pauli[-k], "\[Dagger]"]
 
 thePauliForm @ Pauli[k_Integer] := ReplaceAll[ k,
   { 0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z",
-    6 -> "H", 7 -> "S", 8 -> "T", 9 -> "Q" }
+    4 -> Superscript["X", "+"],
+    5 -> Superscript["X", "-"],
+    6 -> "H", 7 -> "S", 8 -> "T", 9 -> "Q",
+    10 -> Row @ {Ket[0], Bra[0]},
+    11 -> Row @ {Ket[1], Bra[1]} }
  ]
 
 thePauliForm @ Pauli[-C[n_Integer]] :=
@@ -767,37 +774,39 @@ TheMatrix @ Ket @ Association[_?QubitQ -> s_] :=
 (**** </Matrix> ****)
 
 
-QuissoAddZ::usage = "QuissoAddZ[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... invariant under the U(1) rotation around spin z-axis, regarding the qubits S$1, S$2, ... as 1/2 spins."
+(**** <QubitAdd> ****)
 
-QuissoAddZ::duplicate = "Duplicate angular momentum operators appear."
+QubitAddZ::usage = "QubitAddZ[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... invariant under the U(1) rotation around spin z-axis, regarding the qubits S$1, S$2, ... as 1/2 spins."
+
+QubitAddZ::duplicate = "Duplicate angular momentum operators appear."
 
 
-QuissoAddZ[ ls:{(_?QubitQ|_Association)..} ] :=
-  QuissoAddZ @@ Map[QuissoAddZ] @ ls
+QubitAddZ[ ls:{(_?QubitQ|_Association)..} ] :=
+  QubitAddZ @@ Map[QubitAddZ] @ ls
 
-QuissoAddZ[] := Association[ {0} -> {Ket[]} ]
+QubitAddZ[] := Association[ {0} -> {Ket[]} ]
 
-QuissoAddZ[irb_Association] := irb
+QubitAddZ[irb_Association] := irb
 
-QuissoAddZ[a_?QubitQ] := Module[
+QubitAddZ[a_?QubitQ] := Module[
   { aa = FlavorNone @ a,
     bs = Basis @ a },
   GroupBy[bs, (1/2-#[aa])&]
  ]
 
-QuissoAddZ[a___, b_?QubitQ, c___] := QuissoAddZ[a, QuissoAddZ[b], c]
+QubitAddZ[a___, b_?QubitQ, c___] := QubitAddZ[a, QubitAddZ[b], c]
 
-QuissoAddZ[irb_Association, irc_Association, ird__Association] :=
-  QuissoAddZ[ QuissoAddZ[irb, irc], ird]
+QubitAddZ[irb_Association, irc_Association, ird__Association] :=
+  QubitAddZ[ QubitAddZ[irb, irc], ird]
 
-QuissoAddZ[irb_Association, irc_Association] := Module[
+QubitAddZ[irb_Association, irc_Association] := Module[
   { kk = Flatten @ Outer[Plus, Keys[irb], Keys[irc]],
     vv = Map[Tuples] @ Tuples[{Values[irb], Values[irc]}],
     gb = Union @ Cases[Normal @ Values @ irb, _?QubitQ, Infinity],
     gc = Union @ Cases[Normal @ Values @ irc, _?QubitQ, Infinity],
     rr },
   If[ ContainsAny[gb, gc],
-    Message[ QuissoAddZ::duplicate ];
+    Message[ QubitAddZ::duplicate ];
     Return[ irb ]
    ];
 
@@ -807,29 +816,30 @@ QuissoAddZ[irb_Association, irc_Association] := Module[
   Map[ReverseSort, rr]
  ]
 
-QuissoAdd::usage = "QuissoAdd[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... that are invariant under arbitrary SU(2) rotations. Here, the qubits S$1, S$2, ... are regarded 1/2 spins."
 
-QuissoAdd::duplicate = "Duplicate angular momentum operators appear."
+QubitAdd::usage = "QubitAdd[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... that are invariant under arbitrary SU(2) rotations. Here, the qubits S$1, S$2, ... are regarded 1/2 spins."
 
-QuissoAdd[ ls:{(_?QubitQ|_Association)..} ] :=
-  QuissoAdd @@ Map[QuissoAdd] @ ls
+QubitAdd::duplicate = "Duplicate angular momentum operators appear."
 
-QuissoAdd[] := Association[ {0,0} -> {Ket[]} ]
+QubitAdd[ ls:{(_?QubitQ|_Association)..} ] :=
+  QubitAdd @@ Map[QubitAdd] @ ls
 
-QuissoAdd[irb_Association] := irb
+QubitAdd[] := Association[ {0,0} -> {Ket[]} ]
 
-QuissoAdd[a_?QubitQ] := Module[
+QubitAdd[irb_Association] := irb
+
+QubitAdd[a_?QubitQ] := Module[
   { aa = FlavorNone @ a,
     bs = Basis @ a },
   GroupBy[bs, { 1/2, (1/2 - #[aa]) }&]
  ]
 
-QuissoAdd[a___, b_?QubitQ, c___] := QuissoAdd[a, QuissoAdd[b], c]
+QubitAdd[a___, b_?QubitQ, c___] := QubitAdd[a, QubitAdd[b], c]
 
-QuissoAdd[irb_Association, irc_Association, ird__Association] :=
-  QuissoAdd[ QuissoAdd[irb, irc], ird]
+QubitAdd[irb_Association, irc_Association, ird__Association] :=
+  QubitAdd[ QubitAdd[irb, irc], ird]
 
-QuissoAdd[irb_Association, irc_Association] := Module[
+QubitAdd[irb_Association, irc_Association] := Module[
   { S1 = Union @ Map[First] @ Keys[irb],
     S2 = Union @ Map[First] @ Keys[irc],
     SS,
@@ -837,7 +847,7 @@ QuissoAdd[irb_Association, irc_Association] := Module[
     gc = Union @ Cases[Normal @ Values @ irc, _?QubitQ, Infinity],
     new },
   If[ ContainsAny[gb, gc],
-    Message[ QuissoAdd::duplicate ];
+    Message[ QubitAdd::duplicate ];
     Return[ irb ]
    ];
   SS = Flatten[
@@ -846,11 +856,11 @@ QuissoAdd[irb_Association, irc_Association] := Module[
   SS = Flatten[
     Map[Thread[{Sequence @@ #, Range[-Last@#, Last@#]}]&] @ SS,
     1];
-  new = doQuissoAdd[irb, irc, #]& /@ SS;
+  new = theQubitAdd[irb, irc, #]& /@ SS;
   Merge[new, Catenate]
  ]
 
-doQuissoAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
+theQubitAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
   { new, min, max },
   min = Max[-S1, Sz - S2, (Sz - (S1 + S2))/2];
   max = Min[S1, Sz + S2, (Sz + (S1 + S2))/2];
@@ -860,6 +870,23 @@ doQuissoAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
     {m, Range[min, max]} ];
   Association[ {S, Sz} -> new ]
  ]
+
+
+QuissoAdd::usage = "QuissoAdd has been renamed QubitAdd."
+
+QuissoAdd[args__] := (
+  Message[Q3General::renamed, "QuissoAdd", "QubitAdd"];
+  QubitAdd[args]
+ )
+
+QuissoAddZ::usage = "QuissoAddZ has been renamed QubitAddZ."
+
+QuissoAddZ[args__] := (
+  Message[Q3General::renamed, "QuissoAddZ", "QubitAddZ"];
+  QubitAddZ[args]
+ )
+
+(**** </QubitAdd> ****)
 
 
 QuissoExpression::usage = "QuissoExpression is obsolete now. Use ExpressionFor instead."
@@ -1830,6 +1857,10 @@ Readout[op_] := Message[Readout::nopauli, op]
 
 
 MeasurementOdds::usage = "MeasurementOdds[vec, op] returns an Association of elements of the form value->{probability, ket}, where value is one of the possible measurement results (\[PlusMinus]1), probability is the probability for value to be actually observed, and ket is the post-measurement state when value is actually observed."
+
+SyntaxInformation[MeasurementOdds] = {
+  "ArgumentsPattern" -> {_, _}
+ }
 
 MeasurementOdds[vec_?fKetQ, op_?PauliQ] := Module[
   { ss = Qubits[{vec, op}],
