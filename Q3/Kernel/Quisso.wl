@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.88 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-15 21:29:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.89 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-16 10:50:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1871,8 +1871,8 @@ MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
 
 ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
 
-Format @ ProductState[Association[]] :=
-  Interpretation[Ket[Any], ProductState @ <||>]
+Format @ ProductState[assoc:Association[], rest___] :=
+  Interpretation[Ket[Any], ProductState[assoc, rest]]
 
 Format @ ProductState[assoc_Association, rest___] := Interpretation[
   CircleTimes @@ KeyValueMap[
@@ -1899,8 +1899,12 @@ HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := Garner[
  ]
 
 ProductState /:
-HoldPattern @ Matrix[ ket:ProductState[_Association, ___] ] :=
+HoldPattern @ Matrix[ ket_ProductState ] :=
   Matrix[Elaborate @ ket]
+
+ProductState /:
+HoldPattern @ Matrix[ ket_ProductState, qq:{__?QubitQ} ] :=
+  Matrix[Elaborate @ ket, qq]
 
 ProductState /:
 NonCommutativeQ[ ProductState[___] ] = True
