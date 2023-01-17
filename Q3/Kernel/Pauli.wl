@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.57 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-16 21:20:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.59 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-17 11:18:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -217,54 +217,62 @@ ThePauli[6] = ThePauli[-6] = TheHadamard[] = TheHadamard[1] =
 ThePauli[7] = TheQuadrant[] = TheQuadrant[1] =
   SparseArray[{{1, 1} -> 1, {2, 2} -> +I}, {2, 2}]
 
-ThePauli[-7] = TheQuadrant[-1] =
-  SparseArray[{{1, 1} -> 1, {2, 2} -> -I}, {2, 2}]
-
 ThePauli[8] = TheOctant[] = TheOctant[1] =
   SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*Pi/4]}, {2, 2}]
 
-ThePauli[-8] = TheOctant[] = TheOctant[-1] =
-  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[-I*Pi/4]}, {2, 2}]
-
 ThePauli[9] = TheHexadecant[] = TheHexadecant[1] =
   SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*Pi/8]}, {2, 2}]
-
-ThePauli[-9] = TheHexadecant[-1] =
-  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[-I*Pi/8]}, {2, 2}]
 
 ThePauli[10] = SparseArray[{{1,1} -> 1}, {2,2}]
 
 ThePauli[11] = SparseArray[{{2,2} -> 1}, {2,2}]
 
 
+ThePauli[-1] = ThePauli[1]
+
+ThePauli[-2] = ThePauli[2]
+
+ThePauli[-3] = ThePauli[3]
+
+ThePauli[-4] = ThePauli[5]
+
+ThePauli[-5] = ThePauli[4]
+
+ThePauli[-6] = ThePauli[6]
+
+ThePauli[k_Integer?Negative] := Topple @ ThePauli[-k]
+
+
 (* special phase gates *)
-ThePauli @ C[n_Integer?Negative] :=
-  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*2*Pi*Power[2,n]]}, {2, 2}]
+ThePauli @ C[n_Integer] :=
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[I*2*Pi*Power[2,n]]}, {2, 2}]
+
+ThePauli[-C[n_Integer]] := Topple @ ThePauli @ C[n]
 
 
-ThePauli[Raise] := ThePauli[4]
+ThePauli[Raise] = ThePauli[4]
 
-ThePauli[Lower] := ThePauli[5]
+ThePauli[Lower] = ThePauli[5]
 
-ThePauli[Hadamard] := ThePauli[6]
+ThePauli[Hadamard] = ThePauli[6]
 
-ThePauli[Quadrant] := ThePauli[7]
+ThePauli[Quadrant] = ThePauli[7]
 
-ThePauli[Octant] := ThePauli[8]
+ThePauli[Octant] = ThePauli[8]
 
-ThePauli[Hexadecant] := ThePauli[9]
+ThePauli[Hexadecant] = ThePauli[9]
 
 TheRaise[0] = TheLower[0] = TheHadamard[0] = TheQuadrant[0] = ThePauli[0]
 
 
 (* These are for Matrix[Dyad[...]]. *)
-ThePauli[1 -> 0] := ThePauli[4]
+ThePauli[1 -> 0] = ThePauli[4]
 
-ThePauli[0 -> 1] := ThePauli[5]
+ThePauli[0 -> 1] = ThePauli[5]
 
-ThePauli[0 -> 0] := ThePauli[10]
+ThePauli[0 -> 0] = ThePauli[10]
 
-ThePauli[1 -> 1] := ThePauli[11]
+ThePauli[1 -> 1] = ThePauli[11]
 
 
 ThePauli[ nn:(0|1|2|3|4|5|6|7|8|9|_Integer?Negative|_Rule).. ] :=
@@ -348,6 +356,8 @@ LogicalForm[expr_, gg:{___?SpeciesQ}] := With[
 (**** </LogicalForm> ****)
 
 
+(**** <SimpleForm> ****)
+
 $KetDelimiter::usage = "The charater delimiting values in a Ket."
 
 $KetGroupDelimiter::usage = "The charater delimiting groups of values in a Ket."
@@ -358,47 +368,56 @@ Once[
   $KetProductDelimiter = "\[CircleTimes]";
  ]
 
+
 SimpleForm::usage = "SimpleForm[expr] represents every Ket in expr in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {S1, ..., {S2, S3, ...}, ...}] splits each Ket into the form Ket @ Row @ {S1, ..., Ket[S2, S3, ...], ...}."
 
-SimpleForm[ expr_ ] := SimpleForm[ expr, {} ]
+SimpleForm[expr_] := SimpleForm[expr, {}]
 
-SimpleForm[ expr_, {} ] := Module[
+SimpleForm[expr_, {}] := Module[
   { ss },
   ss = Union @ Flatten @ Cases[
     {expr},
     (Ket|Bra)[a_Association] :> Keys[a],
     Infinity
    ];
-  SimpleForm[ expr, {ss}]
+  SimpleForm[expr, {ss}]
  ]
 
-SimpleForm[ expr_, S_?SpeciesQ ] := SimpleForm[ expr, {S} ]
+SimpleForm[expr_, S_?SpeciesQ] := SimpleForm[expr, {S}]
 
-SimpleForm[ v:Ket[_Association], gg_List ] := Ket @ Row @ Riffle[
-  v /@ gg, $KetDelimiter
- ] /; FreeQ[gg, _List, 1]
+SimpleForm[v:Ket[_Association], gg_List] :=
+  Interpretation[theSimpleForm[v, gg], v]
 
-SimpleForm[ v:Ket[_Association], gg_List ] := Ket @ Row @ Riffle[
-  Map[ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ v /@ gg ],
-  $KetGroupDelimiter
- ]
-
-SimpleForm[ v:Bra[a_Association], gg_List ] :=
-  Dagger @ SimpleForm[Ket[a], gg]
+SimpleForm[Bra[a_Association], gg_List] :=
+  Interpretation[Dagger @ theSimpleForm[Ket[a], gg], Bra @ a]
 
 (* For some irreducible basis, e.g., from QubitAdd[] *)
-SimpleForm[ expr_Association, gg_List ] :=
-  Map[ SimpleForm[#,gg]&, expr ]
+SimpleForm[expr_Association, gg_List] :=
+  Map[SimpleForm[#, gg]&, expr]
 (* NOTE: Association needs to be handled carefully due to HoldAllComplete
    Attribute of Association. Otherwise, the result may be different from what
    you would expect.  *)
 
-SimpleForm[ expr_, gg_List ] := expr /. {
+SimpleForm[expr_, gg_List] := expr /. {
   v_Ket :> SimpleForm[v, gg],
   v_Bra :> SimpleForm[v, gg],
   a_Aggociation :> SimpleForm[a, gg] (* NOTE 3 *)
  }
 (* NOTE 3: See the NOTE for LogicalForm[_Association, ...] *)
+
+
+theSimpleForm::usage = "theSimpleForm[ket, {s1, s2, ...}] converts ket into a simple form."
+
+theSimpleForm[v:Ket[_Association], gg_List] := Ket @ Row @ Riffle[
+  v /@ gg, $KetDelimiter
+ ] /; FreeQ[gg, _List, 1]
+
+theSimpleForm[v:Ket[_Association], gg_List] := Ket @ Row @ Riffle[
+  Map[ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ v /@ gg ],
+  $KetGroupDelimiter
+ ]
+
+(**** </SimpleForm> ****)
 
 
 ProductForm::usage = "ProductForm[expr] displays every Ket[...] in expr in the product form.\nProductForm[expr, {S1, ..., {S2,S3,...}, ...}] splits each Ket into the form Row[{Ket[S1], ..., Ket[S2,S3,...], ...}]."
