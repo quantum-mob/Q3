@@ -382,7 +382,7 @@ YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional 
 YoungForm::notyt = "Data `` is not a valid Young tableau."
 
 YoungForm[tb_?anyYoungTableauQ] :=
-  Grid @ Map[Item[#, Frame->True]&, tb, {2}]
+  Interpretation[Grid @ Map[Item[#, Frame->True]&, tb, {2}], tb]
 
 YoungForm[data_] := (
   Message[YoungForm::notyt, data];

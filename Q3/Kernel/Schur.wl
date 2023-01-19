@@ -4,12 +4,12 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.120 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-19 11:48:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.124 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-19 17:29:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ GelfandPatterns, GelfandPatternQ, GelfandForm };
+{ GelfandPatterns, GelfandPatternQ, GelfandForm, GelfandOrder };
 
 { ToYoungTableau, ToGelfandPattern,
   GelfandContents };
@@ -49,9 +49,10 @@ WeylContents[tb_?WeylTableauQ, n_Integer] := Join[
 WeylContents[tb_?WeylTableauQ, n_Integer, func_] :=
   KeyMap[func, WeylContents[tb, n]]
 
+
 (**** <GelfandPatterns> ****)
 
-GelfandPatterns::usage = "GelfandPatterns[shape] constructs all possible Gelfand patterns consistent with shape.\nGelfandPatterns[shape, n] constructs all possible Gelfand patterns for shape and with n letters."
+GelfandPatterns::usage = "GelfandPatterns[shape] constructs all possible Gelfand patterns consistent with shape.\nGelfandPatterns[shape, d] constructs all possible Gelfand patterns for shape with d letters."
 
 GelfandPatterns[p_?YoungShapeQ, d_Integer] :=
   GelfandPatterns @ PadRight[p, d]
@@ -98,9 +99,10 @@ GelfandForm::usage = "GelfandForm[tb] displays Gelfand pattern tb in the upper-l
 
 GelfandForm::notgp = "Data `` is not of the Gelfand-pattern form."
 
-GelfandForm[tb_?anyGelfandPatternQ] := DisplayForm @ RowBox @ {
-  "(", Grid[tb, Spacings -> {0.5, 0}], ")"
- }
+GelfandForm[tb_?anyGelfandPatternQ] := Interpretation[
+  DisplayForm @ RowBox @ { "(", Grid[tb, Spacings -> {0.5, 0}], ")" },
+  tb
+ ]
 
 GelfandForm[data_] := (
   Message[GelfandForm::notgp, data];
@@ -108,6 +110,17 @@ GelfandForm[data_] := (
  )
 
 (**** </GelfandForm> ****)
+
+
+(**** <GelfandOrder> ****)
+
+GelfandOrder[a_?GelfandPatternQ, b_?GelfandPatternQ] := 
+  Order[Rest@a, Rest@b] /; First[a] == First[b]
+
+GelfandOrder[a_?GelfandPatternQ, b_?GelfandPatternQ] :=
+  -Order[First@a, First@b]
+
+(**** </GelfandOrder> ****)
 
 
 (**** <GelfandYoungPatterns> ****)
@@ -120,7 +133,10 @@ GelfandYoungPatternQ[gp_?GelfandPatternQ] :=
 GelfandYoungPatternQ[_] = False
 
 
-GelfandYoungPatterns::usage = "GelfandYoungPatterns[shape] gives a list of all Gelfand-Young patterns of shape.\nA Gelfand pattern is called a Gelfand-Young pattern if it corresponds to a standard Young tableau.\nThe resulting list must equal Reverse @ Map[ToGelfandPattern[n], YoungTableaux[shape]], where n = Total[shape]."
+GelfandYoungPatterns::usage = "GelfandYoungPatterns[shape] gives a list of all Gelfand-Young patterns of shape.\nGelfandYoungPatterns[n] returns the list of all Standrd Young Tableaux of roder n.\nA Gelfand pattern is called a Gelfand-Young pattern if it corresponds to a standard Young tableau.\nThe resulting list must equal Reverse @ Map[ToGelfandPattern[n], YoungTableaux[shape]], where n = Total[shape]."
+
+GelfandYoungPatterns[n_Integer] :=
+  Catenate @ Map[GelfandYoungPatterns, IntegerPartitions @ n]
 
 GelfandYoungPatterns[{}] := {{{}}}
 
