@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 15:27:26+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.24 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-20 20:31:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -112,11 +112,13 @@ YoungShapeQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
 
 YoungTrim::usage="YoungTrim[shape] trims trailing zeros from shape."
 
-YoungTrim[{kk__, Longest[0...]}] := {kk} /; 
-  YoungShapeQ[{kk}]
+YoungTrim[{0..}] = {}
 
-YoungTrim[{rows__List, Longest[{}...]}] := {rows} /;
-  anyYoungTableauQ[{rows}]
+YoungTrim[{kk__, Longest[0...]}] := {kk} /; YoungShapeQ[{kk}]
+
+YoungTrim[{{}..}] = {}
+
+YoungTrim[{rows__List, Longest[{}...]}] := {rows} /; anyYoungTableauQ[{rows}]
 
 
 YoungTranspose::usage = "YoungTranspose[shape] reflects a partition 'shape' along the main diagonal.\nTransposeTableau[tb] reflects a standard Young tableau 'tb' along the main diagonal, creating a different tableau."
@@ -372,7 +374,9 @@ YoungTableauQ[_] = False
 
 anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau (not necessarily semi-standard) and False otherwise."
 
-anyYoungTableauQ[tb:{{__Integer}..}] := Apply[GreaterEqual, Length /@ tb]
+anyYoungTableauQ[tb:{{___Integer}..}] := Apply[GreaterEqual, Length /@ tb]
+(* NOTE: It must be ___Integer (not __Integer) so as to allow trailing {}s;
+   see YoungTrim. *)
 
 anyYoungTableauQ[_] = False
 

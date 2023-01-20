@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.124 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-19 17:29:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.0 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-21 02:29:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -52,17 +52,27 @@ WeylContents[tb_?WeylTableauQ, n_Integer, func_] :=
 
 (**** <GelfandPatterns> ****)
 
-GelfandPatterns::usage = "GelfandPatterns[shape] constructs all possible Gelfand patterns consistent with shape.\nGelfandPatterns[shape, d] constructs all possible Gelfand patterns for shape with d letters."
+GelfandPatterns::usage = "GelfandPatterns[shape, d] constructs all possible Gelfand patterns for shape with d letters.\nGelfandPattern[n, d] returns all Gelfand patterns of order n with d letters."
+
+SyntaxInformation[GelfandPatterns] = {"ArgumentsPattern" -> {_, _}}
+
+GelfandPatterns[shape_?YoungShapeQ] := (
+  CheckArguments[GelfandPatterns[shape], 2];
+  GelfandPatterns[shape, Length @ shape]
+ )
+
+GelfandPatterns[n_Integer, d_Integer] :=
+  Catenate @ Map[GelfandPatterns[#, d]&, IntegerPartitions @ n]
 
 GelfandPatterns[p_?YoungShapeQ, d_Integer] :=
-  GelfandPatterns @ PadRight[p, d]
+  theGelfandPatterns @ PadRight[p, d]
 
-GelfandPatterns[{k_Integer}] := {{{k}}}
+theGelfandPatterns[{k_Integer}] := {{{k}}}
 
-GelfandPatterns[p_?YoungShapeQ] := Module[
+theGelfandPatterns[p_?YoungShapeQ] := Module[
   { qq },
   qq = Tuples @ Successive[Range[#1, #2, -1]&, p];
-  qq = Catenate[GelfandPatterns /@ qq];
+  qq = Catenate[theGelfandPatterns /@ qq];
   Map[Prepend[#, p]&, qq]
  ]
 
@@ -181,10 +191,7 @@ WeylTableauQ[tb_?anyYoungTableauQ] := TrueQ[
 WeylTableauQ[_] = False
 
 
-WeylTableaux::usage = "WeylTableaux[shape, n] returns a list of all possible Weyl tableaux (semi-standard Young tableaux) of shape with entries of n letters."
-
-WeylTableaux[shape_?YoungShapeQ, d_Integer] :=
-  ToYoungTableau /@ GelfandPatterns[shape, d]
+WeylTableaux::usage = "WeylTableaux[shape, d] returns a list of all possible Weyl tableaux (semi-standard Young tableaux) of shape with entries of d letters.\nWeylTableax[n, d] returns the list of all Weyl tableaux of order n with entries of d letters."
 
 SyntaxInformation[WeylTableaux] = {"ArgumentsPattern" -> {_, _}}
 
@@ -192,6 +199,12 @@ WeylTableaux[shape_?YoungShapeQ] := (
   CheckArguments[WeylTableaux[shape], 2];
   WeylTableaux[shape, Max @ shape]
  )
+
+WeylTableaux[n_Integer, d_Integer] :=
+  Catenate @ Map[WeylTableaux[#, d]&, IntegerPartitions @ n]
+
+WeylTableaux[shape_?YoungShapeQ, d_Integer] :=
+  ToYoungTableau /@ GelfandPatterns[shape, d]
 
 
 WeylTableauCount::usage = "WeylTableauCount[shape, d] returns the number of Weyl tableaux of d letters consistent with shape."
@@ -462,11 +475,16 @@ SchurBasis[S_?SpeciesQ] := SchurBasis[S[None]] /;
 
 SchurBasis[spec_][bs_?SchurBasisQ] := SchurBasis[bs, spec]
 
-SchurBasis[bs_?SchurBasisQ, spec:(_Integer|_?SpeciesQ)] := With[
-  { node = Basis @ {spec} },
-  Join @@ KeyValueMap[nextSchurBasis[#1, #2, node]&, regroupSchurBasis @ bs]
+SchurBasis[bs_?SchurBasisQ, spec:(_Integer|_?SpeciesQ)] := KeySort[
+  Join @@ With[
+    { node = Basis @ {spec} },
+    KeyValueMap[nextSchurBasis[#1, #2, node]&, regroupSchurBasis @ bs]
+   ],
+  -Order[#1,#2]&
  ]
-  
+(* NOTE: The sorted keys are not in lexicographic order;
+   see also GelfandOrder. *)
+
 nextSchurBasis[yt_?GelfandPatternQ, bs_Association, node_List] := Module[
   { d = Length @ node,
     src, dst, mat, tsr },
