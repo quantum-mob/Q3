@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.11 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-02 21:22:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.12 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-22 17:00:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -577,10 +577,18 @@ FlavorNone[a_] := a (* Does nothing unless specified explicitly *)
 
 FlavorNoneQ::usage = "FlavorNoneQ[{s$1,s$2,$$}] returns True if the flavor index ends properly with None for every species s$j. Note that for some species, the flavor index is not required to end with None."
 
-FlavorNoneQ[ss__?SpeciesQ] := FlavorNoneQ @ {ss}
+SyntaxInformation[FlavorNoneQ] = {"ArgumentsPattern" -> {_}}
 
-FlavorNoneQ[ss:{__?SpeciesQ}] :=
-  And @@ Thread[FlavorNone[ss] === ss]
+FlavorNoneQ[a_, b__] := (
+  CheckArguments[FlavorNoneQ[a, b], 1];
+  FlavorNoneQ @ {a, b}
+ )
+
+FlavorNoneQ[s_?SpeciesQ] := FlavorNone[s] === s
+
+FlavorNoneQ[ss_List] := AllTrue[Flatten @ ss, FlavorNoneQ]
+
+FlavorNoneQ[_] = False
 
 (**** </FlavorNone> ****)
 

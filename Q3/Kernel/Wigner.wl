@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.29 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 15:46:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.30 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-22 16:14:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -253,18 +253,6 @@ Spins[expr_] :=
 Spins[expr_] := Spins[Normal @ expr]
 (* NOTE: This recursion is necessary since Association inside Association is
    not expanded by a single Normal. *)
-
-
-(* SpinForm *)
-
-SpinForm[vec:Ket[_Association], qq:{__?SpinQ}] := Module[
-  { ss },
-  ss = vec[FlavorNone @ qq] /. {
-    +1/2 -> "\[UpArrow]",
-    -1/2 -> "\[DownArrow]"
-   };
-  Ket[vec, qq -> ss]
- ] /; And @@ Thread[Spin[qq] == 1/2]
 
 
 (* Multiply *)

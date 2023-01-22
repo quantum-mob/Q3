@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.24 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-20 20:31:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.25 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-22 17:07:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -476,7 +476,7 @@ Permutation[Cycles[{}], qq:{__?SpeciesQ}] := 1
 
 Permutation[cyc_Cycles, ss:{__?SpeciesQ}] :=
   Permutation[cyc, FlavorNone @ ss] /;
-  Not @ FlavorNoneQ[ss]
+  Not[FlavorNoneQ @ ss]
 
 Permutation /:
 HoldPattern @ Dagger @ Permutation[cyc_, ss:{__?SpeciesQ}] :=
@@ -917,7 +917,7 @@ PermutationBasis::usage = "PermutationBasis[{m1,m2,\[Ellipsis],md}, {s1,s2,\[Ell
 PermutationBasis::baddim = "The dimensions of species in `` are not equal to each other."
 
 PermutationBasis[ss:{__?SpeciesQ}] := 
-  PermutationBasis[FlavorNone @ ss] /; Not[FlavorNoneQ@ss]
+  PermutationBasis[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
 PermutationBasis[ss:{__?SpeciesQ}] := Module[
   { dim = Dimension[ss],

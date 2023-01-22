@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.59 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-17 11:18:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.68 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-22 17:26:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -45,7 +45,7 @@ BeginPackage["Q3`"]
   ThePauli, TheRaise, TheLower, TheHadamard };
 { Operator, TheOperator };
 
-{ RaiseLower, $RaiseLowerRules };
+{ RaiseLower };
 
 { Rotation, EulerRotation,
   TheRotation, TheEulerRotation };
@@ -54,6 +54,8 @@ BeginPackage["Q3`"]
   TheEulerAngles }
 
 { RandomVector, RandomMatrix, RandomHermitian, RandomPositive, RandomUnitary };
+
+{ TridiagonalToeplitzMatrix };
 
 { BasisComplement };
 
@@ -316,42 +318,42 @@ DefaultForm[ expr_ ] := expr /. {
 
 LogicalForm::usage = "LogicalForm[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nLogicalForm[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, ....\nLogicalForm[expr, S] is quivalent to LogicalForm[expr, {S}].\nSee also DefaultForm."
 
-LogicalForm[expr_] := LogicalForm[expr, NonCommutativeSpecies @ expr] /;
-  Not @ FreeQ[expr, Ket[_Association] | Bra[_Association]]
+LogicalForm[expr_] := expr /;
+  FreeQ[expr, Ket[_Association] | Bra[_Association]]
+
+LogicalForm[expr_] := LogicalForm[expr, NonCommutativeSpecies @ expr]
+
+LogicalForm[expr_, gg:{__?SpeciesQ}] :=
+  LogicalForm[expr, FlavorNone @ gg] /; Not[FlavorNoneQ @ gg]
 
 LogicalForm[expr_, S_?SpeciesQ] := LogicalForm[expr, S @ {None}]
 
-LogicalForm[Ket[a_Association], gg:{___?SpeciesQ}] := With[
-  { ss = FlavorNone @ gg },
-  Ket @ Association @ Thread[ ss -> Lookup[a, ss] ]
- ]
+LogicalForm[Ket[a_Association], ss:{___?SpeciesQ}] :=
+  Ket @ AssociationThread[ss -> Lookup[a, ss]]
 
-LogicalForm[Bra[a_Association], gg:{___?SpeciesQ}] :=
-  Dagger @ LogicalForm[Ket[a], gg]
+LogicalForm[Bra[a_Association], ss:{___?SpeciesQ}] :=
+  Dagger @ LogicalForm[Ket @ a, ss]
 
 LogicalForm[OTimes[args__], ___] :=
   OTimes @@ Map[LogicalForm, {args}]
 
-LogicalForm[OSlash[Ket[a_Association], expr_], gg:{__?SpeciesQ}] := With[
-  { ss = FlavorNone @ gg },
+LogicalForm[OSlash[Ket[a_Association], expr_], ss:{__?SpeciesQ}] :=
   OSlash[Ket[a], LogicalForm[expr, Supplement[ss, Keys @ a]]]
- ]
 
-LogicalForm[expr_, gg:{___?SpeciesQ}] := With[
-  { ss = FlavorNone @ gg },
-  expr /. {
-    ot_OTimes -> ot, (* NOTE 1 *)
-    os_OSlash :> LogicalForm[os, ss],
-    v_Ket :> LogicalForm[v, ss],
-    v_Bra :> LogicalForm[v, ss],
-    a_Association :> Map[LogicalForm[#, ss]&, a] (* NOTE 3 *)
-   }
- ]
-(* NOTE 1: This line is necessary to prevent the Kets and Bras in OTimes from
-   being affected. *)
-(* NOTE 3: Association needs to be handled carefully due to HoldAllComplete
+LogicalForm[expr_Association, ss:{___?SpeciesQ}] :=
+  Map[LogicalForm[#, ss]&, expr]
+(* NOTE: Association needs to be handled carefully due to HoldAllComplete
    Attribute of Association. Otherwise, the result may be different from what
    you would expect.  *)
+
+LogicalForm[expr_, ss:{___?SpeciesQ}] := expr /. {
+  Interpretation[__, v_] :> LogicalForm[v, ss],
+  v_OTimes :> LogicalForm[v, ss],
+  v_OSlash :> LogicalForm[v, ss],
+  a_Association :> LogicalForm[a, ss],
+  v_Ket :> LogicalForm[v, ss],
+  v_Bra :> LogicalForm[v, ss]
+ }
 
 (**** </LogicalForm> ****)
 
@@ -371,6 +373,9 @@ Once[
 
 SimpleForm::usage = "SimpleForm[expr] represents every Ket in expr in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {S1, ..., {S2, S3, ...}, ...}] splits each Ket into the form Ket @ Row @ {S1, ..., Ket[S2, S3, ...], ...}."
 
+SimpleForm[expr_, ss_List] :=
+  SimpleForm[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
 SimpleForm[expr_] := SimpleForm[expr, {}]
 
 SimpleForm[expr_, {}] := Module[
@@ -383,13 +388,13 @@ SimpleForm[expr_, {}] := Module[
   SimpleForm[expr, {ss}]
  ]
 
-SimpleForm[expr_, S_?SpeciesQ] := SimpleForm[expr, {S}]
+SimpleForm[expr_, S_?SpeciesQ] := SimpleForm[expr, S @ {None}]
 
 SimpleForm[v:Ket[_Association], gg_List] :=
   Interpretation[theSimpleForm[v, gg], v]
 
 SimpleForm[Bra[a_Association], gg_List] :=
-  Interpretation[Dagger @ theSimpleForm[Ket[a], gg], Bra @ a]
+  Interpretation[Dagger @ theSimpleForm[Ket @ a, gg], Bra @ a]
 
 (* For some irreducible basis, e.g., from QubitAdd[] *)
 SimpleForm[expr_Association, gg_List] :=
@@ -399,87 +404,116 @@ SimpleForm[expr_Association, gg_List] :=
    you would expect.  *)
 
 SimpleForm[expr_, gg_List] := expr /. {
+  Interpretation[__, v_] :> SimpleForm[v, gg],
+  a_Aggociation :> SimpleForm[a, gg],
   v_Ket :> SimpleForm[v, gg],
-  v_Bra :> SimpleForm[v, gg],
-  a_Aggociation :> SimpleForm[a, gg] (* NOTE 3 *)
+  v_Bra :> SimpleForm[v, gg]
  }
-(* NOTE 3: See the NOTE for LogicalForm[_Association, ...] *)
 
 
 theSimpleForm::usage = "theSimpleForm[ket, {s1, s2, ...}] converts ket into a simple form."
 
-theSimpleForm[v:Ket[_Association], gg_List] := Ket @ Row @ Riffle[
-  v /@ gg, $KetDelimiter
- ] /; FreeQ[gg, _List, 1]
-
-theSimpleForm[v:Ket[_Association], gg_List] := Ket @ Row @ Riffle[
-  Map[ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ v /@ gg ],
-  $KetGroupDelimiter
+theSimpleForm[vec:Ket[_Association], gg_List] := With[
+  { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}] },
+  Ket @ Row @ Riffle[
+    Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vec /@ ss],
+    $KetGroupDelimiter
+   ]
  ]
 
 (**** </SimpleForm> ****)
 
 
+(**** <ProductForm> ****)
+
 ProductForm::usage = "ProductForm[expr] displays every Ket[...] in expr in the product form.\nProductForm[expr, {S1, ..., {S2,S3,...}, ...}] splits each Ket into the form Row[{Ket[S1], ..., Ket[S2,S3,...], ...}]."
 
-ProductForm[ expr_ ] := ProductForm[expr, NonCommutativeSpecies @ expr]
+ProductForm[expr_, ss_List] :=
+  ProductForm[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
-ProductForm[ expr_, S_?SpeciesQ ] := SimpleForm[ expr, {S} ]
+ProductForm[expr_] := ProductForm[expr, NonCommutativeSpecies @ expr]
 
-ProductForm[ vec:Ket[_Association], gg_List ] := Row @ Riffle[
-  Map[Ket @ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ vec /@ gg],
-  $KetProductDelimiter
- ]
+ProductForm[expr_, S_?SpeciesQ] := SimpleForm[expr, S @ {None}]
 
-ProductForm[ v:Bra[a_Association], gg_List ] :=
-  Dagger @ ProductForm[Ket[a], gg]
+ProductForm[vec:Ket[_Association], gg_List] :=
+  Interpretation[theProductForm[vec, gg], vec]
+
+ProductForm[Bra[a_Association], gg_List] :=
+  Interpretation[Dagger @ theProductForm[Ket @a, gg], Bra[a]]
 
 (* For some irreducible basis, e.g., from QubitAdd[] *)
-ProductForm[ expr_Association, gg_List ] :=
-  Map[ ProductForm[#,gg]&, expr ]
+ProductForm[expr_Association, gg_List] := Map[ProductForm[#, gg]&, expr]
 (* NOTE: Association needs to be handled carefully due to HoldAllComplete
    Attribute of Association. Otherwise, the result may be different from what
    you would expect.  *)
 
 ProductForm[ expr_, gg_List ] := expr /. {
+  Interpretation[__, v_] :> ProductForm[v, gg],
+  v_Aggociation :> ProductForm[v, gg],
   v_Ket :> ProductForm[v, gg],
-  v_Bra :> ProductForm[v, gg],
-  a_Aggociation :> ProductForm[a, gg] (* NOTE 3 *)
+  v_Bra :> ProductForm[v, gg]
  }
-(* NOTE 3: See the NOTE for LogicalForm[_Association, ...] *)
+
+
+theProductForm::usage = "theProductForm[ket, {s1, s2, \[Ellipsis]}] converts ket into a product form."
+
+theProductForm[vec:Ket[_Association], gg_List] := Row @ Riffle[
+  Map[Ket @ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ vec /@ gg],
+  $KetProductDelimiter
+ ]
+
+(**** </ProductForm> ****)
 
 
 (**** <SpinForm> ****)
 
 SpinForm::usage = "SpinForm[expr, {s1, s2, ...}] converts the values to \[UpArrow] or \[DownArrow] in every Ket[<|...|>] appearing in expr.\nIf the Species is a Qubit, SpinForm converts 0 to \[UpArrow] and 1 to \[DownArrow].\nIf the Species is a Spin, SpinForm converts 1/2 to \[UpArrow] and -1/2 to \[DownArrow]."
 
-SpinForm[Bra[spec__], rest___] := Dagger @ SpinForm[Ket[spec], rest]
+SpinForm[expr_, a_List, b_List] :=
+  SpinForm[expr, FlavorNone @ a, FlavorNone @ b] /;
+  Not[FlavorNoneQ @ {a, b}]
+
+SpinForm[expr_] := SpinForm[expr, NonCommutativeSpecies[expr], {}]
+
+SpinForm[expr_, s_?SpeciesQ, rest_] := SpinForm[expr, s @ {None}, rest]
+
+SpinForm[expr_, qq_List, s_?SpeciesQ] := SpinForm[expr, qq, s @ {None}]
+
+SpinForm[v_Ket, rest__] :=
+  Interpretation[theSpinForm[v, rest], v]
   
-SpinForm[vec:Ket[(0|1)..], ___] := vec /. {
-  0 -> "\[UpArrow]",
-  1 -> "\[DownArrow]"
+SpinForm[Bra[spec___], rest___] :=
+  Interpretation[Dagger @ theSpinForm[Ket[spec], rest], Bra[spec]]
+  
+SpinForm[expr_, qq_List] := SpinForm[ expr, FlavorNone @ qq,
+  Complement[NonCommutativeSpecies @ expr, FlavorNone @ qq]
+ ]
+
+SpinForm[expr_Association, rest__] := Map[SpinForm[#, rest]&, expr]
+  
+SpinForm[expr:Except[_Ket|_Bra], rest__] := expr /. {
+  Interpretation[__, v_] :> SpinForm[v, rest],
+  a_Association :> Spinfrom[a, rest],
+  v_Ket :> SpinForm[v, rest],
+  v_Bra :> SpinForm[v, rest]
  }
 
-SpinForm[Ket[a_Association], qq:{__?SpeciesQ}] := Module[
-  { ss = Values @ GroupBy[FlavorNone @ qq, Kind],
-    uu, vv },
-  ( uu = List @ Ket @ KeyDrop[a, FlavorNone @ qq];
-    vv = Ket /@ Map[KeyTake[a, #]&, ss];
-    vv = MapThread[SpinForm, {vv, ss}];
-    CircleTimes @@ Join[uu, vv] ) /;
-    Length[ss] > 1
- ]
-  
-SpinForm[expr_] := SpinForm[expr, NonCommutativeSpecies[expr]]
 
-SpinForm[expr_, q_?SpeciesQ] := SpinForm[expr, {q}]
+theSpinForm[vec:Ket[(0|1)..], ___] := 
+  vec /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"}
 
-SpinForm[expr:Except[_Ket|_Bra], qq:{___?SpeciesQ}] := With[
-  { ss = FlavorNone @ qq },
-  expr /. {
-    v_Ket :> SpinForm[v, ss],
-    v_Bra :> SpinForm[v, ss]
-   }
+theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
+  { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}],
+    rr = Flatten @ kk,
+    vv },
+  vv = Join[
+    (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
+    {vec @ rr} /. {{} -> Nothing}
+   ];
+  Ket @ Row @ Riffle[
+    Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vv],
+    $KetGroupDelimiter
+   ]
  ]
 
 (**** </SpinForm> ****)
@@ -1067,16 +1101,12 @@ BraKet[a_Association, b_Association] := With[
 
 RaiseLower::usage = "RaiseLower[expr] converts expr by rewriting Pauli or Spin X and Y operators in terms of the raising and lowering operators."
 
-RaiseLower[expr_] := Garner[
-   expr //. $RaiseLowerRules
- ]
+RaiseLower[expr_] := Garner[expr //. $RaiseLowerRules]
 
-Once[
-  $RaiseLowerRules = {
-    Pauli[a___, 1, b___] :> (Pauli[a, 4, b] + Pauli[a, 5, b]),
-    Pauli[a___, 2, b___] :> (Pauli[a, 4, b] - Pauli[a, 5, b]) / I
-   }
- ]
+$RaiseLowerRules = {
+  Pauli[a___, 1, b___] :> (Pauli[a, 4, b] + Pauli[a, 5, b]),
+  Pauli[a___, 2, b___] :> (Pauli[a, 4, b] - Pauli[a, 5, b]) / I
+ }
 
 
 PauliExpand::usage = "PauliExpand[expr] returns more explicit form of the expression expr."
@@ -1433,9 +1463,7 @@ ExpressionIn::vector = "Vector `` incompatible with basis ``."
 
 ExpressionIn::matrix = "Matrix `` incompatible with basis `` and/or ``."
 
-SyntaxInformation[ExpressionIn] = {
-  "ArgumentsPattern" -> {_, __}
- }
+SyntaxInformation[ExpressionIn] = {"ArgumentsPattern" -> {_, __}}
 
 ExpressionIn[vec_?VectorQ, bs_List] := bs . vec /; Length[bs] == Length[vec]
 
@@ -4218,6 +4246,40 @@ chiralVertexRulesShort[ii_List, jj_List, spec:{row_, col_}] :=
 (* ***************************************************************** *)
 (*     </GraphForm>                                                  *)
 (* ***************************************************************** *)
+
+
+(***** <TridiagonalToeplitzMatrix> ****)
+
+TridiagonalToeplitzMatrix::usage = "TridiagonalToeplitzMatrix[n, {a,b,c}] represents an n\[Times]n tridiagonal Toeplitz matrix with a, b, and c on the lower-diagonal, main-diagonal, and upper-diagonal, respectively. See also Noschese et al. (Numerical Linear Algebra with Applications, 2012) and Jocobi matrices.\nEigenvalues[TridiagonalToeplitzMatrix[n,{a,b,c}]] gives the eigenvalues.\nEigenvalues[TridiagonalToeplitzMatrix[n,{a,b,c}]] gives the normalized eigenvectors."
+
+TridiagonalToeplitzMatrix /:
+Matrix @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] := Plus[
+  DiagonalMatrix[Table[a, n-1], -1],
+  DiagonalMatrix[Table[b, n]],
+  DiagonalMatrix[Table[c, n-1], +1]
+ ]
+
+TridiagonalToeplitzMatrix /:
+Elaborate @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] :=
+  Matrix @ TridiagonalToeplitzMatrix[n, {a, b, c}]
+
+TridiagonalToeplitzMatrix /:
+Eigenvalues @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] :=
+  Table[b + 2*Sqrt[a*c] * Cos[k*Pi/(n+1)], {k, n}]
+
+(* the right eigenvectors *)
+TridiagonalToeplitzMatrix /:
+Eigenvectors @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] :=
+  Sqrt[2/(n+1)] * Table[Power[a/c, k/2] * Sin[i*k*Pi/(n+1)], {i, n}, {k, n}]
+
+TridiagonalToeplitzMatrix /:
+Eigensystem @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] := {
+  Eigenvalues @ TridiagonalToeplitzMatrix[n, {a, b, c}],
+  Eigenvectors @ TridiagonalToeplitzMatrix[n, {a, b, c}]
+ }
+
+(***** </TridiagonalToeplitzMatrix> ****)
+
 
 Protect[ Evaluate @ $symbs ]
 

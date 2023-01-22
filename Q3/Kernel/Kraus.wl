@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.19 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-02 19:21:40+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.20 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-22 17:02:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -181,7 +181,7 @@ ChoiMatrix[most__, S_?SpeciesQ] := ChoiMatrix[most, FlavorNone @ {S}]
 
 ChoiMatrix[most__, ss:{__?SpeciesQ}] :=
   ChoiMatrix[most, FlavorNone @ ss] /;
-  Not @ FlavorNoneQ[ss]
+  Not[FlavorNoneQ @ ss]
 
 
 ChoiMatrix[ops:{__}, ss:{__?SpeciesQ}] := With[
