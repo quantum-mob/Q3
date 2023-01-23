@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.30 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-22 16:14:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.0 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-23 14:30:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -430,12 +430,10 @@ AddElaborationPatterns[
   G_?SpinQ[j___,6] -> G[j, Hadamard]
  ]
 
-Once[
-  $RaiseLowerRules = Join[ $RaiseLowerRules,
-    { S_?SpinQ[j___,1] :> (S[j,4] + S[j,5]) / 2 ,
-      S_?SpinQ[j___,2] :> (S[j,4] - S[j,5]) / (2 I)
-     }
-   ]
+$RaiseLowerRules = Join[ $RaiseLowerRules,
+  { S_?SpinQ[j___,1] :> (S[j,4] + S[j,5]) / 2 ,
+    S_?SpinQ[j___,2] :> (S[j,4] - S[j,5]) / (2 I)
+   }
  ]
 
 

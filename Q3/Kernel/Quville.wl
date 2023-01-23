@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.68 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-15 19:14:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.1 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-23 18:09:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -252,7 +252,7 @@ HoldPattern @
     If[cc == {}, cc = {"Spacer"}];
     (* There can be only input elements. *)
     
-    xx  = Accumulate @ Boole[ qGateQ /@ cc ];
+    xx  = Accumulate @ Boole[ quvGateQ /@ cc ];
     xx *= $CircuitUnit;
     $CircuitSize = $CircuitUnit + Max[xx];
     
@@ -277,9 +277,9 @@ HoldPattern @
      ]
    ]
 
-qGateQ::usage = "qGateQ[expr] is True if expr is an expression of operators."
+quvGateQ::usage = "quvGateQ[expr] is True if expr is an expression of operators."
 
-qGateQ[expr_] := Not @ FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
+quvGateQ[expr_] := Not @ FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
 (* Recall that FreeQ[ Ket[<|...|>], _?QubitQ] = True . *)
 
 
@@ -299,12 +299,15 @@ qcGate[gg_List, opts___?OptionQ] :=
 qcGate[ _QuantumCircuitIn | _QuantumCircuitOut, opts___?OptionQ ] = Nothing
   
 
-qcGate[ op_?anyQubitQ, opts___?OptionQ ] :=
-  Gate[ Qubits @ op, opts, "Label" -> HoldForm @ thePauliForm[op] ]
+qcGate[ op_?QubitQ, opts___?OptionQ ] :=
+  Gate[ Qubits @ op, opts, "Label" -> HoldForm[thePauliForm @ op] ]
 (* NOTE: HoldForm is required here because later qcNodes uses HoldRelease. *)
 
+(* NOTE: This case should not occur. *)
+(*
 qcGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
-  Gate[ Qubits @ S, opts, "Label" -> Superscript[gateLabel[S],"\[Dagger]"] ]
+  Gate[ Qubits @ S, opts, "Label" -> HoldForm @ thePauliForm[Dagger @ S] ]
+ *)
 
 qcGate[ HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ ] :=
   Map[ qcGate[#, opts]&, {ss} ]
@@ -317,7 +320,7 @@ qcGate[ Measurement[S_?QubitQ], opts___?OptionQ ] :=
     {FlavorMute @ S},
     "TargetFunction" -> "Measurement",
     opts,
-    "Label" -> qMeasurementLabel[S]
+    "Label" -> measurementLabel[S]
    ]
 
 qcGate[
@@ -326,7 +329,7 @@ qcGate[
     FlavorMute @ {ss},
     "TargetFunction" -> "Measurement",
     opts,
-    "Label" -> qMeasurementLabel @ {ss}
+    "Label" -> measurementLabel @ {ss}
    ]
 
 qcGate[
@@ -334,15 +337,18 @@ qcGate[
   Gate[ qq, "TargetFunction" -> "Projector", "Label" -> None, opts, more ]
 
 qcGate[
-  Phase[ ang_, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, "Label" -> gateLabel[ Phase[ang, G] ] ]
+  op:Phase[_, _?QubitQ, opts___?OptionQ],
+  more___?OptionQ ] :=
+  Gate[ Qubits @ op, opts, more, "Label" -> HoldForm @ thePauliForm[op] ]
 
 qcGate[
-  Rotation[ ang_, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, "Label" -> gateLabel[ Rotation[ang, G] ] ]
+  Rotation[ang_, G_?QubitQ, opts___?OptionQ],
+  more___?OptionQ ] :=
+  Gate[ Qubits @ G, opts, more, "Label" -> gateLabel @ Rotation[ang, G] ]
 
 qcGate[
-  EulerRotation[ ang:{_,_,_}, G_?QubitQ, opts___?OptionQ ], more___?OptionQ ] :=
+  EulerRotation[ ang:{_,_,_}, G_?QubitQ, opts___?OptionQ ],
+  more___?OptionQ ] :=
   Gate[ {G}, opts, more, "Label" -> gateLabel[ EulerRotation[ang, G] ] ]
 
 
@@ -355,7 +361,7 @@ qcGate[
 qcGate[
   ControlledU[
     Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}],
-    op:(Phase|Rotation|EulerRotation)[j__, opts___?OptionQ],
+    op:(Phase|Rotation|EulerRotation)[__, opts___?OptionQ],
     more___?OptionQ ],
   rest___?OptionQ ] :=
   Gate[ cc -> vv, Qubits @ op, opts, more, rest,
@@ -474,13 +480,13 @@ qcGate[ expr_, ___?OptionQ ] := expr /; FreeQ[expr, _?QubitQ]
 (* Graphics primitives corresponds to this case. *)
 
 
-qMeasurementLabel::usage = "qMeasurementLabel[op] returns the default label of the measurement operator op (only Pauli operators allowed)."
+measurementLabel::usage = "measurementLabel[op] returns the default label of the measurement operator op (only Pauli operators allowed)."
 
-qMeasurementLabel[op_Multiply] := Map[qMeasurementLabel, List @@ op]
+measurementLabel[op_Multiply] := Map[measurementLabel, List @@ op]
 
-qMeasurementLabel[ss:{___?QubitQ}] := qMeasurementLabel /@ ss
+measurementLabel[ss:{___?QubitQ}] := measurementLabel /@ ss
 
-qMeasurementLabel[S_?QubitQ] :=
+measurementLabel[S_?QubitQ] :=
   FlavorLast[S] /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> None, _ -> "?"}
 
 
@@ -488,15 +494,21 @@ gateLabel::usage = "gateLabel[G] returns the label of circuit element G to be di
 
 SetAttributes[gateLabel, Listable];
 
-gateLabel[ _Symbol?QubitQ[___, n_Integer?Negative] ] :=
-  DisplayForm @ FractionBox[Row @ {2, Pi}, SuperscriptBox[2, -n]] 
+(* Not used any longer. *)
+gateLabel[_Symbol?QubitQ[___, -C[n_]]] :=
+  With[{m = -n}, Style[HoldForm[-2 Pi / HoldForm[Power[2, m]]], Small]]
+(* NOTE: HoldForm is required here because later qcNodes uses HoldRelease. *)
+  
+(* Not used any longer. *)
+gateLabel[_Symbol?QubitQ[___, C[n_]]] :=
+  With[{m = -n}, Style[HoldForm[2 Pi / HoldForm[Power[2, m]]], Small]]
+(* NOTE: HoldForm is required here because later qcNodes uses HoldRelease. *)
+  
+(* Not used any longer. *)
+gateLabel[S_?QubitQ] := thePauliForm[S]
 
-gateLabel[ S_?QubitQ ] := Last[S] /. {
-  0 -> "I",
-  1 -> "X", 2 -> "Y", 3 -> "Z",
-  6 -> "H", 7 -> "S", 8 -> "T" }
 
-gateLabel[ Phase[ang_, __] ] := Superscript["Z", ang]
+gateLabel[ op_Phase ] := thePauliForm[op]
 
 gateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
   Subscript[ "U", FlavorLast[S] /. {1->"x", 2->"y", 3->"z"} ]

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.68 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-22 17:26:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.0 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-23 14:27:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -364,11 +364,9 @@ $KetDelimiter::usage = "The charater delimiting values in a Ket."
 
 $KetGroupDelimiter::usage = "The charater delimiting groups of values in a Ket."
 
-Once[
-  $KetDelimiter = Nothing;
-  $KetGroupDelimiter = ";";
-  $KetProductDelimiter = "\[CircleTimes]";
- ]
+$KetDelimiter = Nothing;
+$KetGroupDelimiter = ";";
+$KetProductDelimiter = "\[CircleTimes]";
 
 
 SimpleForm::usage = "SimpleForm[expr] represents every Ket in expr in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {S1, ..., {S2, S3, ...}, ...}] splits each Ket into the form Ket @ Row @ {S1, ..., Ket[S2, S3, ...], ...}."
@@ -523,13 +521,13 @@ Affect::usage = "Affect[ket, op1, op2, ...] operates the operators op1, op2, ...
 
 SetAttributes[Affect, Listable]
 
-Affect[ket_, op__] := Distribute[ doAffect @@ Garner[{ket, op}] ]
+Affect[ket_, op__] := Distribute[ theAffect @@ Garner[{ket, op}] ]
 
-doAffect[ket_, a_, b__] := Fold[ doAffect, ket, {a, b} ]
+theAffect[ket_, a_, b__] := Fold[ theAffect, ket, {a, b} ]
 
-doAffect[ket_, op_Multiply] := doAffect[ket, Sequence @@ Reverse[op]]
+theAffect[ket_, op_Multiply] := theAffect[ket, Sequence @@ Reverse[op]]
 
-doAffect[ket_, op_] := Garner @ Multiply[op, ket]
+theAffect[ket_, op_] := Garner @ Multiply[op, ket]
 
 
 fPauliKetQ::usage = "fPauliKetQ[expr] returns True if expr is a valid expression for a state vector of a system of unlabelled qubits.\nPauli[\[Ellipsis]] operates consistently on such an expression.";
@@ -686,9 +684,9 @@ KetRule::usage = "KetRule[rule] is a low-level function used when constructing K
 
 SetAttributes[KetRule, Listable]
 
-KetRule[ r:Rule[_?SpeciesQ, _] ] := FlavorNone[r]
+KetRule[ r:Rule[_, _] ] := FlavorNone[r]
 
-KetRule[ r:Rule[{__?SpeciesQ}, _] ] := FlavorNone @ Thread[r]
+KetRule[ r:Rule[{__}, _] ] := FlavorNone @ Thread[r]
 
 KetRule[r_Rule] := r
 
@@ -1146,16 +1144,14 @@ Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] repre
 
 SetAttributes[Pauli, {NHoldAll, Listable}]
 
+Pauli /: Kind[ Pauli[___] ] = Pauli
+
+Pauli /: MultiplyGenus[ Pauli[___] ] = "Singleton"
+
+Pauli /: NonCommutativeQ[ Pauli[__] ] = True
+
+
 Format @ Pauli[k__] := Interpretation[thePauliForm @ Pauli[k], Pauli[k]]
-
-Pauli /:
-Kind[ Pauli[___] ] = Pauli
-
-Pauli /:
-MultiplyGenus[ Pauli[___] ] = "Singleton"
-
-Pauli /:
-NonCommutativeQ[ Pauli[__] ] = True
 
 
 Raise[0] = Lower[0] = Hadamard[0] = Pauli[0]

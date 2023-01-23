@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.96 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-22 17:06:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.3 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-23 17:55:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -89,10 +89,11 @@ AddElaborationPatterns[
   G_?QubitQ[j___, 9] -> G[j, Hexadecant],
   G_?QubitQ[j___, 10] -> (1 + G[j,3]) / 2,
   G_?QubitQ[j___, 11] -> (1 - G[j,3]) / 2,
+  G_?QubitQ[j___, n_Integer?Negative] :> Dagger[Elaborate @ G[j, -n]],
   G_?QubitQ[j___, C[n_Integer]] :>
-    Elaborate @ Phase[2*Pi*Power[2,n], G[j,None]],
+    Elaborate @ Phase[2*Pi*Power[2,n], G[j,3]],
   G_?QubitQ[j___, -C[n_Integer]] :>
-    Elaborate @ Phase[-2*Pi*Power[2,n], G[j,None]],
+    Elaborate @ Phase[-2*Pi*Power[2,n], G[j,3]],
   OTimes -> DefaultForm @* CircleTimes,
   OSlash -> DefaultForm @* CircleTimes
  ]
@@ -134,16 +135,16 @@ setQubit[x_Symbol] := (
   x/: Dagger @ x[j___, C[k_Integer]] = x[j, -C[k]];
   x/: Dagger @ x[j___, -C[k_Integer]] = x[j, C[k]];
 
-  x/: Inverse[ x[j___, k_Integer] ] := Dagger @ x[j, k];
-  x/: Inverse[ x[j___, C[k_Integer] ] ] := Dagger @ x[j, C @ k];
+  x/: Inverse[ x[j___, k_Integer] ] := x[j, -k];
+  x/: Inverse[ x[j___, C[k_Integer] ] ] := x[j, -C[k]];
 
   (* for time reversal *)
   x/: Conjugate[ x[j___, k:(0|1|3|4|5|6)] ] := x[j, k];
   x/: Conjugate[ x[j___, 2] ] := -x[j, 2];
-  x/: Conjugate[ x[j___, 7] ] := Dagger @ x[j, 7];
-  x/: Conjugate[ x[j___, 8] ] := Dagger @ x[j, 8];
-  x/: Conjugate[ x[j___, 9] ] := Dagger @ x[j, 9];
-  x/: Conjugate[ x[j___, C[k_Integer] ] ] := Dagger @ x[j, C @ k];
+  x/: Conjugate[ x[j___, 7] ] := x[j, -7];
+  x/: Conjugate[ x[j___, 8] ] := x[j, -8];
+  x/: Conjugate[ x[j___, 9] ] := x[j, -9];
+  x/: Conjugate[ x[j___, C[k_Integer] ] ] := x[j, -C[k]];
 
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
@@ -192,7 +193,7 @@ setQubit[x_Symbol] := (
     Interpretation[SpeciesBox[x, {j}, {}], x[j, None]];
 
   Format[ x[j___, n_Integer?Negative] ] :=
-    Interpretation[HoldForm @ Dagger @ x[j, -n], x[j, n]];
+    Interpretation[Superscript[x[j, -n], "\[Dagger]"], x[j, n]];
 
   Format[ x[j___, C[n_Integer?Negative]] ] := Interpretation[
     With[ {m = -n}, SpeciesBox[x, {j}, {2 Pi / HoldForm[Power[2, m]]}] ],
@@ -286,15 +287,6 @@ QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a 
 AddGarnerPatterns[_?QubitQ]
 
 QubitQ[_] = False
-
-
-anyQubitQ::usage = "anyQubitQ[S] and anyQubitQ[Dagger[S]] returns True; and false, otherwise."
-
-HoldPattern @ anyQubitQ @ Dagger[_?QubitQ] = True
-
-anyQubitQ[_?QubitQ] = True
-
-anyQubitQ[_] = False
 
 
 Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appearing in expr."
@@ -597,12 +589,10 @@ FlavorMute[S_Symbol?QubitQ[j___, _]] := S[j, None]
 FlavorMute[S_Symbol?QubitQ[j___, _] -> m_] := S[j, None] -> m
 
 
-Once[
-  $RaiseLowerRules = Join[ $RaiseLowerRules,
-    { S_?QubitQ[j___,1] :> (S[j,4] + S[j,5]),
-      S_?QubitQ[j___,2] :> (S[j,4] - S[j,5]) / I
-     }
-   ]
+$RaiseLowerRules = Join[ $RaiseLowerRules,
+  { S_?QubitQ[j___,1] :> (S[j,4] + S[j,5]),
+    S_?QubitQ[j___,2] :> (S[j,4] - S[j,5]) / I
+   }
  ]
 
 
@@ -661,6 +651,19 @@ SpinForm[vec:Ket[_Association], qq:{__?QubitQ}] := Module[
 
 (**** <PauliForm> ****)
 
+singleQubitGateQ::usage = "singleQubitGateQ[op] returns True if operator op is an 'elementary' single-qubit gate; and False, otherwise."
+
+(* SetAttributes[singleQubitGateQ, ReadProtected] *)
+
+HoldPattern @ singleQubitGateQ @ Dagger[_?QubitQ] = True
+
+singleQubitGateQ[_?QubitQ] = True
+
+singleQubitGateQ[Phase[_, _?QubitQ, ___]] = True
+
+singleQubitGateQ[_] = False
+
+
 thePauliForm::usage = "thePauliForm[op] or thePauliForm[Dagger[op]] rewrites op in a more conventional form, where the Pauli operators are denoted by I, X, Y, Z, H, S, and T."
 
 HoldPattern @ thePauliForm @ Pauli[k_Integer?Negative] :=
@@ -678,25 +681,35 @@ thePauliForm @ Pauli[k_Integer] := ReplaceAll[ k,
 thePauliForm @ Pauli[-C[n_Integer]] :=
   With[{m = -n}, Superscript["Z", -2 Pi / HoldForm[Power[2, m]]]]
 
-thePauliForm @ Pauli @ C[n_Integer] :=
+thePauliForm @ Pauli[+C[n_Integer]] :=
   With[{m = -n}, Superscript["Z", +2 Pi / HoldForm[Power[2, m]]]]
+
+thePauliForm @ Pauli[any_] = Superscript["\[Sigma]", any]
+(* NOTE: This is necessary to avoid infinite recursion Format[Paui[...]] may
+   cause. *)
 
 thePauliForm @ Pauli[a_, bc__] :=
   CircleTimes @@ Map[thePauliForm, Pauli @ {a, bc}]
 
 
+(* NOTE: This should not occur. *)
+(*
 HoldPattern @ thePauliForm @ Dagger @ S_?QubitQ[___, k_] :=
   thePauliForm @ Dagger @ Pauli[k]
+ *)
 
-thePauliForm @ S_?QubitQ[___, k_] := thePauliForm @ Pauli[k]
+thePauliForm @ _?QubitQ[___, k_] := thePauliForm @ Pauli[k]
 
-thePauliForm[ss__?anyQubitQ, qq:{__?QubitQ}] := Module[
+thePauliForm @ Phase[phi_, S_?QubitQ, ___] :=
+  Superscript[thePauliForm @ S, phi]
+
+thePauliForm[ss__?singleQubitGateQ, qq:{__?QubitQ}] := Module[
   { kk, mm },
-  kk = Lookup[PositionIndex[FlavorNone @ qq], FlavorMute @ Peel @ {ss}];
+  kk = Lookup[PositionIndex[FlavorNone @ qq], Flatten[Qubits /@ {ss}]];
   mm = FlavorLast @ {ss};
-  thePauliForm @ ReplacePart[
-    Pauli @@ ConstantArray[0, Length @ qq],
-    Flatten[ Thread /@ Thread[kk -> mm] ]
+  CircleTimes @@ ReplacePart[
+    Table["I", Length @ qq],
+    Flatten[ Thread /@ Thread[kk -> Map[thePauliForm, {ss}]] ]
    ]
  ]
 
@@ -706,10 +719,10 @@ PauliForm::usage = "PauliForm[expr] rewrites expr in a more conventional form, w
 PauliForm[z_?CommutativeQ, qq:{__?QubitQ}] :=
   Interpretation[z * CircleTimes @@ Table["I", Length @ qq], z]
 
-HoldPattern @ PauliForm[op:Multiply[ss__?anyQubitQ], qq:{__?QubitQ}] :=
+HoldPattern @ PauliForm[op:Multiply[ss__?singleQubitGateQ], qq:{__?QubitQ}] :=
   Interpretation[thePauliForm[ss, qq], op]
 
-PauliForm[op_?anyQubitQ, qq:{__?QubitQ}] :=
+PauliForm[op_?singleQubitGateQ, qq:{__?QubitQ}] :=
   Interpretation[thePauliForm[op, qq], op]
 
 PauliForm[expr_Plus, qq:{__?QubitQ}] :=
@@ -720,8 +733,8 @@ PauliForm[expr_List, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, expr]
 PauliForm[assc_Association, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, assc]
 
 PauliForm[expr_, qq:{__?QubitQ}] := expr /. {
-    HoldPattern[op:Multiply[__?anyQubitQ]] :> PauliForm[op, qq],
-    op_?anyQubitQ :> PauliForm[op, qq]
+    HoldPattern[op:Multiply[__?singleQubitGateQ]] :> PauliForm[op, qq],
+    op_?singleQubitGateQ :> PauliForm[op, qq]
    }
 
 PauliForm[expr_] := PauliForm[expr, Qubits @ expr] /; FreeQ[expr, _Pauli]
@@ -922,48 +935,48 @@ TheExpression[S_?QubitQ] := {
 
 (**** <Phase> ****)
 
-Phase::usage = "Phase[G, \[Phi]] represents the relative phase shift by \[Phi] on the qubit G."
+Phase::usage = "Phase[\[Phi], S[\[Ellipsis],n]] represents the relative phase shift by \[Phi] between the posiive and negative eigenstates of S[\[Ellipsis],n]."
 
-Options[Phase] = { "Label" -> "\[CapitalPhi]" }
+Phase::bad = "Phase gate is defined only for three axis, X (1), Y (2), and Z (3). You enterned ``."
 
-Phase[phi_, qq:{__?QubitQ}, opts___?OptionQ] :=
-  Map[Phase[phi, #, opts]&, FlavorNone @ qq]
+Format[op:Phase[phi_, S_?QubitQ, ___]] :=
+  Interpretation[TraditionalForm @ HoldForm[S[phi]], op]
 
 Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
-  Phase[phi, S[None], opts] /; Not[FlavorNoneQ @ S]
+  (Message[Phase::bad, S]; 1) /;
+  Not @ MemberQ[{1, 2, 3}, FlavorLast @ S]
+
+Phase[phi_, qq:{__?QubitQ}, opts___?OptionQ] :=
+  Map[Phase[phi, #, opts]&, qq]
 
 
 Phase /:
-Dagger[ Phase[phi_, G_?QubitQ, opts___?OptionQ] ] :=
-  Phase[-Conjugate[phi], G, opts]
+Dagger @ Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
+  Phase[-Conjugate[phi], S, opts]
   
 Phase /:
-HoldPattern @ Elaborate @ Phase[a_, S_?QubitQ, ___] :=
-  (1+Exp[I*a])/2 + S[3] (1-Exp[I*a])/2
+HoldPattern @ Elaborate @ Phase[phi_, S_?QubitQ, ___] :=
+  (1 + Exp[I*phi])/2 + S * (1 - Exp[I*phi])/2
 
+(* Automatic expansion may be delayed until necessary. *)
+(*
 Phase /:
-HoldPattern @ Multiply[pre___,
-  Phase[phi_, S_?QubitQ, ___?OptionQ],
-  post___] := Multiply[pre, Elaborate @ Phase[phi, S], post]
-(* Options are for QuantumCircuit[] and ignored in calculations. *)
+HoldPattern @ Multiply[pre___, op_Phase, post___] :=
+  Multiply[pre, Elaborate @ op, post]
+ *)
 
 Phase /:
 HoldPattern @ Matrix[op_Phase, rest__] := Matrix[Elaborate[op], rest]
 
-Phase /:
-HoldPattern @ Matrix @ Phase[a_, S_?QubitQ, ___] :=
-  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[I a]}, {2, 2}]
-(* NOTE: This is just a short-cut. *)
 
-
-Phase[q_?QubitQ, ang_, rest___] := (
+Phase[q_?QubitQ, phi_, rest___] := (
   Message[Q3General::angle, Phase];
-  Phase[ang, q, rest]
+  Phase[phi, q, rest]
  )
 
-Phase[qq:{__?QubitQ}, ang_, rest___] := (
+Phase[qq:{__?QubitQ}, phi_, rest___] := (
   Message[Q3General::angle, Phase];
-  Phase[ang, qq, rest]
+  Phase[phi, qq, rest]
  )
 
 QuissoPhase::usage = "QuissoPhase[...] is obsolete. Use Elaborate[Phase[...]] instead."
@@ -1392,8 +1405,8 @@ ControlledU[Rule[ss:{__?QubitQ}, vv_], expr_, opts___?OptionQ] :=
 ControlledU[ss:{__?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
   If[ Abs[z] != 1, Message[ControlledU::nonuni, z] ];
   If[ Length[ss] > 1,
-    ControlledU[Most @ ss, Phase[Arg[z], Last @ ss, opts]],
-    Phase[Arg[z], Last @ ss, opts]
+    ControlledU[Most @ ss, Phase[Arg[z], Last[ss][3], opts]],
+    Phase[Arg[z], Last[ss][3], opts]
    ]
  )
 

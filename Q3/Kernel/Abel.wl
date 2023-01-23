@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.12 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-22 17:00:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.0 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-23 14:26:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -800,16 +800,14 @@ NonCommutativeSpecies[expr_] := NonCommutativeSpecies[Normal @ expr]
 
 $FormatSpecies::usage = "$FormatSpecies controls the formatting of Species. If True, the ouputs of Species are formatted."
 
-Once[ $FormatSpecies = True; ]
+$FormatSpecies = True;
 
 $SuperscriptDelimiter::usage = "$SuperscriptDelimiter stores the character delimiting superscripts in SpeciesBox."
 
 $SubscriptDelimiter::usage = "$SubscriptDelimiter gives the character delimiting subscripts in SpeciesBox."
 
-Once[
-  $SuperscriptDelimiter = ",";
-  $SubscriptDelimiter = ",";
- ]
+$SuperscriptDelimiter = ",";
+$SubscriptDelimiter = ",";
 
 SpeciesBox::usage = "SpeciesBox[c,sub,sup] formats a tensor-like quantity."
 
@@ -1948,7 +1946,6 @@ makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
 (* NOTE: txt may include Graphics[...] such as from MaTeX. *)
 
 (***** </LevelsPlot> ****)
-
 
 Protect[ Evaluate @ $symb ]
 

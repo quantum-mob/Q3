@@ -5,15 +5,18 @@ If[ $VersionNumber < 12.3,
   Message[Version::old];
  ]
 
-Q3`Q3Clear["Q3`Private`"];
-Q3`Q3Clear["Q3`"];
+(* Q3`Q3Clear["Q3`Private`"]; *) (* obsolete *)
+(* Q3`Q3Clear["Q3`"]; *) (* obsolete *)
 
 BeginPackage["Q3`"]
 
+Unprotect["`*"];
+ClearAll["`*"];
+
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 2.53 $"][[2]], " (",
-  StringSplit["$Date: 2022-10-25 10:28:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.0 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-23 14:20:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -22,10 +25,15 @@ BeginPackage["Q3`"]
 { Q3Info, Q3Release, Q3RemoteRelease,
   Q3Update, Q3CheckUpdate, Q3Assure, Q3Purge };
 
-{ Q3Clear, Q3Unprotect, Q3Protect };
+
+(* OBSOLETE *)
+
+{ Q3Clear, Q3Unprotect, Q3Protect }; (* obsolete *)
 
 
 Begin["`Private`"]
+
+ClearAll["`*"];
 
 Q3General::usage = "Q3General is a symbol to which general messages concerning Q3 are attached.\nIt is similar to built-in symbol General."
 
@@ -71,9 +79,11 @@ Q3Protect[] := Q3Protect[$Context]
 
 Q3Protect[context_String] := Module[
   { vars = Names[context <> "$*"],
-    symb = Names[context <> "*"] },
+    symb = Names[context <> "*"],
+    priv = Names[context <> "Private`*"] },
   symb = Complement[symb, vars];
   SetAttributes[Evaluate @ symb, ReadProtected];
+  SetAttributes[Evaluate @ priv, ReadProtected];
   Protect[Evaluate @ symb]
  ]
 
@@ -245,12 +255,20 @@ Get["Q3`Custom`"];
 
 BeginPackage["Q3`"]
 
-(* $ElaborationRules is too messay to show the value. *)
-SetAttributes[$ElaborationPatterns, ReadProtected];
+Begin["`Private`"]
+
+SetAttributes[Evaluate @ Names["`*"], ReadProtected];
+
+End[]
+
+SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
+
+(* Users are allowed to change variables. *)
+Unprotect["`$*"];
 
 (* Too dangerous to allow users to change these. *)
 Protect[$GarnerPatterns, $ElaborationPatterns];
 
 EndPackage[]
 
-Q3`Q3Protect["Q3`"];
+(* Q3`Q3Protect["Q3`"]; *) (* obsolete *)
