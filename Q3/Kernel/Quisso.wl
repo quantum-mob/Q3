@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.3 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-23 17:55:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.4 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-24 00:57:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -955,8 +955,11 @@ Dagger @ Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
   Phase[-Conjugate[phi], S, opts]
   
 Phase /:
-HoldPattern @ Elaborate @ Phase[phi_, S_?QubitQ, ___] :=
+Elaborate @ Phase[phi_, S_?QubitQ, ___] :=
   (1 + Exp[I*phi])/2 + S * (1 - Exp[I*phi])/2
+
+Phase /:
+Elaborate[op_Phase] = op (* fallback *)
 
 (* Automatic expansion may be delayed until necessary. *)
 (*
@@ -966,7 +969,10 @@ HoldPattern @ Multiply[pre___, op_Phase, post___] :=
  *)
 
 Phase /:
-HoldPattern @ Matrix[op_Phase, rest__] := Matrix[Elaborate[op], rest]
+Matrix[op:Phase[_, _?QubitQ, ___], rest__] := Matrix[Elaborate[op], rest]
+
+Phase /:
+Matrix[op:Phase[___], __] = op
 
 
 Phase[q_?QubitQ, phi_, rest___] := (
@@ -1488,13 +1494,23 @@ HoldPattern @ Elaborate @ ControlledExp[cc:{__?QubitQ}, op_, ___] :=
    ]
 
 ControlledExp /:
-HoldPattern @ Matrix[ControlledExp[cc_, op_, ___], ss:{__?SpeciesQ}] :=
+Matrix[ControlledExp[cc_, op_, ___], ss:{__?SpeciesQ}] :=
+  Matrix[Elaborate @ ControlledExp[cc, op], ss]
+(* NOTE: This is a temporary work around. *)
+(* BUG: Because of a bug in MatrixPower of Mathematica 13.2,
+   the following code crashes the Wolfram Kernel.*)
+  (*
   Module[
     { tt = Qubits @ {cc, op},
       mat },
     mat = theCtrlExp[Length @ cc, Matrix[op]];
     Matrix[ExpressionFor[mat, tt], ss]
    ]
+   *)
+
+ControlledExp /:
+Matrix[op_ControlledExp, ss:{__?SpeciesQ}] = op (* fallback *)
+
 
 ControlledExp /:
 HoldPattern @ Multiply[pre___, ControlledExp[cc_, op_, ___], in_Ket] :=

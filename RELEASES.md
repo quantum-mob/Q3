@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.9.4
+
+- Phase[phi, S[..., k]] with k = 1, 2, 3.
+
 ## v2.9.3
 
 - Formatted ouput of Pauli[...].
