@@ -269,7 +269,9 @@ PseudoDivide[x_, y_] := x/y
 
 Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting a, b, \[Ellipsis] consecutively."
 
-Chain[a:Except[_List]] := {}
+Chain[] = {}
+
+Chain[a:Except[_List]] = {}
 
 Chain[a:Except[_List], b:Except[_List]] := {Rule[a, b]}
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.4 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-24 00:57:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.6 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-26 17:56:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -551,14 +551,18 @@ HoldPattern @ Multiply[pre___,
 HoldPattern @ Multiply[ pre___, op_?QubitQ, vec_Ket, post___] :=
   Multiply[pre, Elaborate @ op, vec, post]
 
+(* 2023-01-26 17:54 This is very dangerous: For example, S[1,3]**T[1,1] hits
+   the $IterationLimit. *)
+(*
 HoldPattern @ Multiply[ pre___,
-  x_Symbol?QubitQ[j___, a_], y_Symbol?QubitQ[j___, b_],
+  x_Symbol?QubitQ[i___, a_], y_Symbol?QubitQ[j___, b_],
   post___] :=
-  Multiply[pre, Elaborate @ x[j, a], Elaborate @ y[j, b], post]
+  Multiply[pre, Elaborate @ x[i, a], Elaborate @ y[j, b], post]
+ *)
 
-HoldPattern @ Multiply[pre___, x1_?QubitQ, x2_?QubitQ, post___] :=
-  Multiply[pre, x2, x1, post] /;
-  Not @ OrderedQ @ {x1, x2}
+HoldPattern @ Multiply[pre___, x_?QubitQ, y_?QubitQ, post___] :=
+  Multiply[pre, y, x, post] /;
+  Not @ OrderedQ @ {x, y}
 
 (**** </Multiply> ****)
 
@@ -1116,7 +1120,7 @@ CNOT[c_, t_?QubitQ] := CNOT[c, {t}]
 
 CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
   CNOT[FlavorNone @ cc, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ Join[cc, tt]]
+  Not[FlavorNoneQ @ {cc, tt}]
 
 CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
   CNOT[cc -> Table[1, Length @ cc], tt]
@@ -1131,26 +1135,24 @@ CNOT /:
 Dagger[ op_CNOT ] := op
 
 CNOT /:
-HoldPattern @ Elaborate @
+Elaborate @
   CNOT[Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}], tt:{__?QubitQ}] := Module[
-    { rr = Thread[vv -> vv],
-      not = Multiply @@ Through[tt[1]],
-      prj },
-    prj = Multiply @@ Elaborate @ MapThread[Construct, {cc, rr}];
+    { prj = Through[cc[3]],
+      not = Multiply @@ Through[tt[1]] },
+    prj = Multiply @@ Garner[(1+prj)/2 - Boole[OddQ @ vv]*prj];
     Garner @ Elaborate[(1-prj) + prj ** not]
    ]
 
 CNOT /:
-HoldPattern @ Multiply[pre___, CNOT[Rule[cc_, vv_], tt_], in_Ket] :=
-  With[
-    { xx = in[cc],
-      op = Multiply @@ Through[tt[1]] },
-    If[ xx == vv,
-      Multiply[pre, op ** in],
-      Multiply[pre, in],
-      Multiply[pre, in]
-     ]
+Multiply[pre___, CNOT[Rule[cc_, vv_], tt_], in_Ket] := With[
+  { xx = in[cc],
+    op = Multiply @@ Through[tt[1]] },
+  If[ xx == vv,
+    Multiply[pre, op ** in],
+    Multiply[pre, in],
+    Multiply[pre, in]
    ]
+ ]
 
 HoldPattern @ Multiply[pre___, op_CNOT, post___] :=
   Multiply[pre, Elaborate[op], post]

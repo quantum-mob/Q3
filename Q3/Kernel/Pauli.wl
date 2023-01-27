@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.0 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-23 14:27:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.1 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-27 00:15:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -197,6 +197,8 @@ ThePauli[kk__] := ThePauli @@ ReplaceAll[
     Full -> {0, 1, 2, 3} }
  ] /; ContainsAny[{kk}, {All, Full}]
 
+
+ThePauli[] = {{1}}
 
 ThePauli[0] = SparseArray[{{1, 1} -> 1, {2, 2} -> 1}, {2, 2}]
 

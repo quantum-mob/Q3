@@ -15,8 +15,8 @@ ClearAll["`*"];
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 3.0 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-23 14:20:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.7 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-26 14:28:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -28,7 +28,7 @@ ClearAll["`*"];
 
 (* OBSOLETE *)
 
-{ Q3Clear, Q3Unprotect, Q3Protect }; (* obsolete *)
+{ Q3Clear, Q3Unprotect, Q3Protect }; (* obsolete since Q3 v2.9.3 *)
 
 
 Begin["`Private`"]
@@ -39,7 +39,7 @@ Q3General::usage = "Q3General is a symbol to which general messages concerning Q
 
 Q3General::local = "You are using a beta version of Q3 locally installed in `1` while v`2` is available from the server."
 
-Q3General::setup = "The Q3 application has not been installed properly. Go to `` for the instruction." 
+Q3General::setup = "The Q3 application has not been installed properly. Go to `` for the installation guide." 
 
 Q3General::obsolete = "Symbol `` is obsolete. Use `` instead."
 
@@ -152,10 +152,7 @@ versionNumber[vv:{__String}] := versionNumber[First @ vv]
 
 versionNumber[ver_String] := With[
   { new = StringSplit[ver, "."] },
-  If[ AllTrue[new, DigitQ],
-    ToExpression @ new,
-    ver
-   ]
+  If[AllTrue[new, DigitQ], ToExpression @ new, ver]
  ]
 
 (***** </Paclet Server> ****)
@@ -177,15 +174,17 @@ Q3CheckUpdate::usage = "Q3CheckUpdate[] checks if there is a newer release of Q3
 
 Q3CheckUpdate[] := Module[
   { pac, new },
+  PrintTemporary["Checking for updates ..."];
+  PacletDataRebuild[];
   serverEnsure[];
   pac = PacletFind["Q3"];
-  new = PacletFindRemote["Q3", UpdatePacletSites->True];
+  new = PacletFindRemote["Q3", UpdatePacletSites -> True];
   If[ pac=={}, Return[$Failed], pac = pacletVersion[pac] ];
   If[ new=={}, Return[$Failed], new = pacletVersion[new] ];
   If[ OrderedQ @ {versionNumber @ new, versionNumber @ pac},
     Print["You are using the latest release v", pac, " of Q3."],
-    Print["Q3,v", new, " is now available -- you are using v",
-      pac, ".\nUse Q3Update to install the update."]
+    PrintTemporary["Q3,v", new, " is now available; you are using v", pac, "."];
+    Q3Update[]
    ]
  ]
 
@@ -193,8 +192,10 @@ Q3CheckUpdate[] := Module[
 Q3Update::usage = "Q3Update[] installs the latest update of Q3 from the GitHub repository.\nIt accepts all the options for PacletInstall -- ForceVersionInstall and AllowVersionUpdate in particular."
 
 Q3Update[opts___?OptionQ] := (
+  PrintTemporary["Installing an update ..."];
+  PacletDataRebuild[];
   serverEnsure[];
-  PacletInstall["Q3", opts, UpdatePacletSites->True]
+  PacletInstall["Q3", opts, UpdatePacletSites -> True]
  )
 
 
