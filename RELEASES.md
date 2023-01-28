@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.9.6
+
+- The Successive function has been enhanced.
+- Slightly improvement in Matrix[_QuantumCircuit].
+
 ## v2.9.4
 
 - Phase[phi, S[..., k]] with k = 1, 2, 3.

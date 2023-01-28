@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.0 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-23 14:26:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.2 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-28 22:01:07+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -180,14 +180,20 @@ SignatureTo[a_, b_] :=
   Length[a] == Length[b]
 
 
-Successive::usage = "Successive[f, {x1,x2,x3,\[Ellipsis]}] returns {f[x1,x2], f[x2,x3], \[Ellipsis]}. Successive[f, list, n] applies f on n successive elements of list. Successive[f, list, 2] is equivalent to Successive[f,list]. Successive[f, list, 1] is equivalent to Map[f, list]."
+Successive::usage = "Successive[f, {x1,x2,x3,\[Ellipsis]}] returns {f[x1,x2], f[x2,x3], \[Ellipsis]}.\nSuccessive[f, list, n] applies f on n successive elements of list.\nSuccessive[f, list, 2] is equivalent to Successive[f,list].\nSuccessive[f, list, 1] is equivalent to Map[f, list].\nSuccessive[f, list, n, d] applies f on n succesive elements and jumps d elements to repeat."
 
 Successive[f_, a_List] := f @@@ Transpose @ {Most @ a, Rest @ a}
 
-Successive[f_, a_List, n_Integer] := f @@@ Transpose @ Table[
-  Drop[RotateLeft[a, j], 1-n],
-  {j, 0, n-1}
- ] /; n > 0
+Successive[f_, a_List, n_Integer?Positive] := f @@@ Drop[
+  Transpose@NestList[RotateLeft, a, n-1],
+  1-n
+ ]
+
+Successive[f_, a_List, n_Integer?Positive, d_Integer?Positive] :=
+  f @@@ Part[
+    Drop[Transpose@NestList[RotateLeft, a, n-1], 1-n],
+    Span[1, All, d]
+   ]
 
 
 FirstLast::usage = "FirstLast[expr] returns the first and last elements of expr."

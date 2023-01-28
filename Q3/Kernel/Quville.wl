@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.1 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-23 18:09:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.2 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-29 04:34:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -136,11 +136,10 @@ qCircuitMatrix[pre___, Measurement[op_], post___,  qq:{__?QubitQ}] :=
     qCircuitMatrix[post, qq] . mat
    ]
 
-qCircuitMatrix[op:Except[_Measurement].., qq:{__?QubitQ}] := Module[
-  { new },
-  new = Map[Matrix[#, qq]&] @ Reverse @ {op};
-  Dot @@ new
- ]
+qCircuitMatrix[ops:Except[_Measurement].., qq:{__?QubitQ}] :=
+  Topple @ Apply[Dot, Topple /@ Matrix[{ops}, qq]]
+(* NOTE: Dot[a, b, c, ...] evaluates from the beginning. When the sequence may
+   include initial states, this way of calculation may be faster. *)
 
 (**** </Multiply, ExpressionFor and Matrix on QuantumCircuit> ****)
 
