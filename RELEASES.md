@@ -2,6 +2,10 @@
 
 ## v2.9.6
 
+- "F" for the hexadecant phase gate (instead of "Q").
+
+## v2.9.6
+
 - The Successive function has been enhanced.
 - Slightly improvement in Matrix[_QuantumCircuit].
 

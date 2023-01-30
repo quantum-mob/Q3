@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.1 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-27 00:15:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.3 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-30 21:37:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

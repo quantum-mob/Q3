@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.6 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-26 17:56:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.7 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-31 08:48:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -214,7 +214,7 @@ setQubit[x_Symbol] := (
   Format @ x[j___, 6] := Interpretation[SpeciesBox[x, {j}, {"H"}], x[j, 6]];
   Format @ x[j___, 7] := Interpretation[SpeciesBox[x, {j}, {"S"}], x[j, 7]];
   Format @ x[j___, 8] := Interpretation[SpeciesBox[x, {j}, {"T"}], x[j, 8]];
-  Format @ x[j___, 9] := Interpretation[SpeciesBox[x, {j}, {"Q"}], x[j, 9]];
+  Format @ x[j___, 9] := Interpretation[SpeciesBox[x, {j}, {"F"}], x[j, 9]];
   
   Format @ x[j___, 10] := Interpretation[
     Subscript[Row @ {"(", Ket[0], Bra[0], ")"}, x[j, None]],
@@ -677,7 +677,7 @@ thePauliForm @ Pauli[k_Integer] := ReplaceAll[ k,
   { 0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z",
     4 -> Superscript["X", "+"],
     5 -> Superscript["X", "-"],
-    6 -> "H", 7 -> "S", 8 -> "T", 9 -> "Q",
+    6 -> "H", 7 -> "S", 8 -> "T", 9 -> "F",
     10 -> Row @ {Ket[0], Bra[0]},
     11 -> Row @ {Ket[1], Bra[1]} }
  ]
