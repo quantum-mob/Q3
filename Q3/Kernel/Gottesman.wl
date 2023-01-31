@@ -787,7 +787,7 @@ solveBinaryEq[x:{_, _}] := If[First[x] == 0, {1, 0}, {0, 1}]
 
 (**** <GottesmanMatrix> ****)
 
-GottesmanMatrixQ::usage = "GottesmanMantrixQ[mat] returns True if 2n\[Times]2n matrix mat is symplectic with respect to the Gottesman inner product."
+GottesmanMatrixQ::usage = "GottesmanMatrixQ[mat] returns True if 2n\[Times]2n matrix mat is symplectic with respect to the Gottesman inner product."
 
 GottesmanMatrixQ[mat_?MatrixQ] := False /;
   OddQ @ Length[mat]

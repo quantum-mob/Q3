@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.7 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-31 08:48:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.9 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-31 14:55:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -511,39 +511,9 @@ HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,4], post___ ] :=
   Multiply[pre, 1/2 - x[j,3]/2, post]
 
-
-(* Hadamard, Quadrant, Octant, Projectors *)
-
-(*
-HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,6], post___] :=
-  Multiply[pre, x[j,Hadamard], post]
-
-HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,7], post___] :=
-  Multiply[pre, x[j,Quadrant], post]
-
-HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,8], post___] :=
-  Multiply[pre, x[j,Octant], post]
-
-HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,10], post___] :=
-  Multiply[pre, (1 + x[j,3])/2, post]
-
-HoldPattern @ Multiply[pre___, x_Symbol?QubitQ[j___,11], post___] :=
-  Multiply[pre, (1 - x[j,3])/2, post]
- *)
-
-(* Special phase gates *)
-(*
-HoldPattern @ Multiply[pre___,
-  x_Symbol?QubitQ[j___,C[n_Integer]], post___] :=
-  Multiply[pre, Elaborate @ x[j, C @ n], post]
- *)
-
-(* Daggered special phase gates *)
-(*
-HoldPattern @ Multiply[pre___,
-  Dagger[x_Symbol?QubitQ[j___, C[n_Integer]]], post___] :=
-  Multiply[pre, Dagger @ Elaborate @ x[j, C @ n], post]
- *)
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,m_], x_Symbol?QubitQ[j___,n_], post___ ] :=
+  Multiply[pre, Elaborate @ x[j,m], Elaborate @ x[j,n], post]
 
 
 (* General Rules *)

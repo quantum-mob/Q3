@@ -1,8 +1,9 @@
 # Select Release Notes
 
-## v2.9.6
+## v2.9.7
 
 - "F" for the hexadecant phase gate (instead of "Q").
+- A serious bug in Multiply involving S[..., 6].
 
 ## v2.9.6
 
