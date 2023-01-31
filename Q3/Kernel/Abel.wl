@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.2 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-28 22:01:07+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.5 $"][[2]], " (",
+  StringSplit["$Date: 2023-01-31 22:01:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -702,10 +702,10 @@ setSpecies[x_Symbol] := (
      properly. A common example is CommutativeQ. To prevent nasty errors, such
      Flavor indices are converted to String. *)
 
-  x[j___] := Flatten @ ReplaceAll[Distribute[Hold[j], List], Hold -> x] /;
-    MemberQ[{j}, _List];
-  (* NOTE: Flatten is required for All with spinful bosons and fermions.
-     See Let[Bosons, \[Ellipsis]] and Let[Fermions, \[Ellipsis]]. *)
+  x[k___] := Flatten @ ReleaseHold @ Distribute[Hold[x][k], List] /; 
+    AnyTrue[{k}, MatchQ[_List]];
+  (* NOTE: Flatten is required for c[{1,2,...}, All] for spinful boson or
+     fermion c and for S[{1,2,...}, All] for qubit S, etc. *)
   (* NOTE: Distribute[x[j], List] will hit the recursion limit. *)
 
   Format @ x[j___] := Interpretation[SpeciesBox[x, {j}, {}], x[j]];

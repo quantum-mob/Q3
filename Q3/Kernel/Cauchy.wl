@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.36 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 15:06:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.38 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-01 08:28:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -165,6 +165,8 @@ Mod[ a_?OddQ + b_, 2 ]  := Mod[b+1, 2] /; a != 1
 Format[ Mod[nn_Plus, 2] ] := CirclePlus @@ nn
 
 
+(**** <Binary> ****)
+
 Binary::usage = "Let[Binary, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as binary digits."
 
 Let[Binary, {ls__Symbol}] := (
@@ -180,10 +182,6 @@ setBinary[n_Symbol] := (
   n /: Element[n, Binaries] = True;
   n /: Element[n[___], Binaries] = True;
  )
-
-Mod[n_?BinaryQ, 2] := n
-
-Power[n_?BinaryQ, _] := n
 
 
 BinaryQ::usage = "BinaryQ[x] returns True if x is a binary digit, and False otherwise."
@@ -204,6 +202,21 @@ Binaries::usage = "Binaries represents the domain of binary digits, as in x\[Ele
 Binaries /: Element[0, Binaries] = True
 
 Binaries /: Element[1, Binaries] = True
+
+
+(* Simplification rules *)
+
+Mod[n_?BinaryQ, 2] = n
+
+Power[n_?BinaryQ, _Integer?Positive] = n
+(* NOTE: Here, the Positive test is required for the following reasons:
+   * 1 / 0 must cause Power::infy.
+   * Note that 1 / 0 is regarded different from Divide[1, 0];
+   * 1 / 0 is regarded as 1 * Power[0, -1].
+   * Power[0, 0] must cause Power::indet.
+   *)
+
+(**** </Binary> ****)
 
 
 (*** Tests for numeric constants ***)

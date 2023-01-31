@@ -1,9 +1,13 @@
 # Select Release Notes
 
+## v2.9.8
+
+- A bug fix concerning Power[_?BinaryQ, ...].
+
 ## v2.9.7
 
-- "F" for the hexadecant phase gate (instead of "Q").
 - A serious bug in Multiply involving S[..., 6].
+- "F" for the hexadecant phase gate (instead of "Q").
 
 ## v2.9.6
 
