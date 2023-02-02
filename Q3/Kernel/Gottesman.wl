@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.43 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-16 11:40:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.46 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-02 15:36:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -180,35 +180,43 @@ PauliQ[mat_?SquareMatrixQ] := Module[
   { tsr = Tensorize[mat],
     dim, kk, tt, n },
   dim = Dimensions[tsr];
-  n = Length[dim]/2;
-  kk = NestList[RotateLeft[#, 2] &, Range[2 n], n - 1];
-  tt = Transpose[tsr, #] & /@ kk;
+  n = Length[dim] / 2;
+  kk = NestList[RotateLeft[#, 2]&, Range[2*n], n-1];
+  tt = Transpose[tsr, #]& /@ kk;
   tt = Map[
     Function[{x}, Flatten@Map[thePauliQ, x, {2 n - 2}]],
-    tt];
-  If[AllTrue[tt, (Length[#] == Power[2, n - 1]) &],
-    AllTrue[Flatten@tt, Identity],
-    False]
- ] /; IntegerQ@Log[2, Length@mat] /; Length[mat] > 2
+    tt ];
+  If[ AllTrue[tt, (Length[#] == Power[2, n-1])&],
+    AllTrue[Flatten @ tt, Identity],
+    False ]
+ ] /; IntegerQ @ Log[2, Length @ mat] /; Length[mat] > 2
 
 PauliQ[_List] = False
 
 PauliQ[_Association] = False
 
+
+PauliQ[Pauli[(0|1|2|3)..]] = True
+
+
+PauliQ[_?QubitQ[___, 0|1|2|3]] = True
+
+PauliQ[HoldPattern @ Multiply[(_?QubitQ[___, 0|1|2|3])..]] = True
+
 PauliQ[expr_] := PauliQ[Matrix @ expr]
 
 
-thePauli::usage = "thePauli[mat] returns True if 2x2 matrix mat is one of the Pauli operators."
+thePauliQ::usage = "thePauliQ[mat] returns True if 2x2 matrix mat is one of the Pauli operators."
 
 thePauliQ[mat_?SquareMatrixQ] := Module[
   {cc},
-  cc = Chop@{
-    Tr@mat,
-    Tr@Reverse@mat,
-    Subtract @@ Diagonal@mat,
-    Subtract @@ Diagonal@Reverse@mat};
+  cc = Chop @ {
+    Tr @ mat,
+    Tr @ Reverse @ mat,
+    Subtract @@ Diagonal @ mat,
+    Subtract @@ Diagonal @ Reverse @ mat };
   cc = DeleteCases[cc, 0];
-  Switch[Length[cc],
+  Switch[ Length[cc],
     0, Nothing,
     1, True,
     _, False]

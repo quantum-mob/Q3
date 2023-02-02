@@ -1787,7 +1787,7 @@ Measurement::nonum = "Probability half is assumed for a state without explicitly
 Measurement::novec = "The expression `` does not seem to be a valid Quisso Ket expression. Null vector is returned."
 
 Measurement[qq:{__?PauliQ}][vec_?fKetQ] :=
-  Last @ ComposeList[Measurement /@ qq, vec]
+  Construct[Composition @@ Map[Measurement, qq], vec]
 
 Measurement[op_?PauliQ][vec_?fKetQ] := Module[
   { odds = MeasurementOdds[vec, op],
@@ -1805,7 +1805,7 @@ Measurement[op_?PauliQ][vec_?fKetQ] := Module[
 
 
 Measurement[mm:{__?MatrixQ}][vec_] :=
-  Last @ ComposeList[Measurement /@ mm, vec]
+  Construct[Composition @@ Map[Measurement, mm], vec]
 
 Measurement[mat_?MatrixQ][vec_?VectorQ] := Module[
   { odds = MeasurementOdds[vec, mat],

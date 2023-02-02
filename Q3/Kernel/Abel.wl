@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.5 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-31 22:01:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.10 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-02 09:33:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,6 +16,7 @@ BeginPackage["Q3`"]
 { Unless, PseudoDivide };
 
 { Chain, ChainBy };
+{ GraphLocalComplement, GraphPivot, GraphNeighborhoodSans };
 { Bead, GreatCircle };
 
 { ApplyThrough,
@@ -306,6 +307,43 @@ Chain[aa_List] := Chain @@ aa
 ChainBy::usage = "ChainBy[a, b, \[Ellipsis], func] constructs a chain of links connecting a, b, \[Ellipsis] consecutively with each link created by means of func."
 
 ChainBy[args___, func_] := func @@@ Chain[args]
+
+
+GraphLocalComplement::usage = "GraphLocalComplement[g, v] gives the local complement of graph g according to vertex g.\nThe local complement of a graph g according to vertex v, denoted by g*v, is a graph that has the same vertices as g, but all the neighbors of of v are connected if and only if they are not connected in g."
+
+GraphLocalComplement[g_Graph, v_, opts___?OptionQ] := Module[
+  { nbr = GraphNeighborhoodSans[g, v],
+    new },
+  new = GraphUnion[GraphDifference[g, nbr], GraphComplement @ nbr];
+  Graph[ VertexList @ new, EdgeList @ new, opts,
+    VertexCoordinates -> Thread[VertexList[g] -> GraphEmbedding[g]] ]
+ ]
+
+
+GraphNeighborhoodSans::usage = "GraphNeighborhoodSans[g, v] returns the graph neighborhood of vertex v in graph g excluding v and edges connecting it."
+
+GraphNeighborhoodSans[g_Graph, v_] := With[
+  { nbr = NeighborhoodGraph[g, v] },
+  Graph[
+    DeleteCases[VertexList @ nbr, v],
+    Complement[
+      EdgeList @ nbr,
+      EdgeList[ nbr,
+        UndirectedEdge[v, _] | DirectedEdge[v, _] | DirectedEdge[_, v] ]
+     ]
+   ]
+ ]
+
+
+GraphPivot::usage = "GraphPivot[g, {v, w}] returns the graph pivot of graph g along the edge connecting vertices v and w.\nThe graph pivot of g along the edge between v and w is the graph g*v*w*v."
+
+GraphPivot[g_, {v_, w_}, opts___?OptionQ] := Module[
+  { new = Fold[GraphLocalComplement, g, {v, w, v}],
+    cc = AssociationThread[VertexList[g] -> GraphEmbedding[g]] },
+  {cc[v], cc[w]} = {cc[w], cc[v]};
+  Graph[ VertexList @ new, EdgeList @ new, opts,
+    VertexCoordinates -> cc ]
+ ]
 
 
 Bead::usage = "Bead[pt] or Bead[{pt1, pt2, \[Ellipsis]}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01]. It has been motivated by Tube.\nBead[pt] is equvalent to Sphere[pt, Scaled[0.01]].\nBead[{p1, p2, \[Ellipsis]}] is equivalent to Sphere[{p1, p2, \[Ellipsis]}, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r]."
