@@ -2,7 +2,7 @@
 
 ## v2.9.8
 
-- A bug fix concerning Power[_?BinaryQ, ...].
+- A bug fix concerning Power[_?BinaryQ, ...], which led to 1 / 0 = 0.
 
 ## v2.9.7
 
