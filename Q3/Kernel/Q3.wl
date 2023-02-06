@@ -15,8 +15,8 @@ ClearAll["`*"];
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 3.7 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-26 14:28:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.8 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 06:34:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

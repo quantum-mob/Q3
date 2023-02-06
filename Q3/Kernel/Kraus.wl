@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.21 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-06 18:03:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 06:34:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -540,7 +540,8 @@ NLindbladSolve[opH_, {opL__}, init_, rest__] :=
   NLindbladSolve[{opH, opL}, init, rest]
 
 
-NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?VectorQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
+NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?VectorQ,
+  {t_, tmin_, tmax_}, opts___?OptionQ] :=
   NLindbladSolve[ops, Dyad[in, in], {t, tmin, tmax}]
 
 NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=

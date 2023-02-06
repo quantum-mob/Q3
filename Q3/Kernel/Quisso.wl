@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.9 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-31 14:55:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.10 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 06:31:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2272,10 +2272,10 @@ Qudits[expr_] := Qudits[Normal @ expr]
 MultiplyDegree[_?QuditQ] = 1
 
 
-Dyad[a_Association, b_Association, {A_?QuditQ}] := A[b[A] -> a[A]]
+(* NOTE: The input arguments syntax for Dyad has been changed. *)
+(* Dyad[a_Association, b_Association, {A_?QuditQ}] := A[b[A] -> a[A]] *)
 (* For a single Qudit, Dyad is meaningless. *)
 
-(* Base: See Cauchy *)
 
 Base[ S_?QuditQ[j___, _] ] := S[j]
 (* For Qudits, the final Flavor index is special. *)

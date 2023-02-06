@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.37 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-02 23:07:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.39 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 06:41:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -160,7 +160,8 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
   x[j___, None, k___] := x[j,k];
   x[] := x;
 
-  x[j___, a_ -> b_] := Dyad[Ket[x[j] -> b], Ket[x[j] -> a], {x[j]}];
+  x[j___, a_ -> b_] := Dyad[<|x[j] -> b|>, <|x[j] -> a|>];
+  (* NOTE: Required for DyadForm. *)
   
   Spin[x] ^= spin;
   If[ spin == 0,

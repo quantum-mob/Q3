@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.15 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-06 22:49:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.17 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 07:04:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2657,7 +2657,7 @@ CirclePlus[vv__?VectorQ] := Join[vv]
 
 (**** <Dyad> ****)
 
-Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of order 2 and rank 1) corresponding to the dyadic product of two vectors.\nDyad[a, b, qq] for two associations a and b and for a list qq of Species represents the dyadic product of Ket[a] and Ket[b], i.e., Ket[a]**Bra[b], operating on the systems in qq.\nWhen All is given for qq, the operator acts on all systems without restriction."
+Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of order 2 and rank 1) corresponding to the dyadic product of two vectors.\nDyad[a, b, qq] for two associations a and b and for a list qq of Species represents the dyadic product of Ket[a] and Ket[b], i.e., Ket[a]**Bra[b], operating on the systems in qq."
 
 Dyad::one = "Dyad explicitly requires a pair of vectors now."
 
@@ -2680,7 +2680,13 @@ Dyad /:
 MultiplyGenus @ Dyad[___] := "Singleton"
 
 Dyad /:
+Dagger[op_Dyad] := Conjugate[op] (* fallback *)
+
+Dyad /:
 Dagger @ Dyad[a_Association, b_Association] = Dyad[b, a]
+
+Dyad /:
+Elaborate[op_Dyad] = op (* fallback *)
 
 Dyad /:
 Elaborate @ Dyad[a_Association, b_Association] := Module[
@@ -2723,15 +2729,16 @@ Dyad[{aa___Rule, ss:{__?SpeciesQ}...}, {bb___Rule, tt:{__?SpeciesQ}...}] :=
 
 Dyad[<||>, <||>] = 1
 
-Dyad[0, _, _List] = 0
+Dyad[0, _, __List] = 0
 
-Dyad[_, 0, _List] = 0
+Dyad[_, 0, __List] = 0
 
-Dyad[a_Association, b_Association, {}|All] := Multiply[Ket[a], Bra[b]]
+(* Dyad[a_Association, b_Association, {}|All] := Multiply[Ket[a], Bra[b]] *)
 (* NOTE: No particlar reason to store it as Dyad. *)
 
+(*
 Dyad[Ket[a_Association], Ket[b_Association], {}|All] :=
-  Multiply[Ket[a], Bra[b]]
+  Multiply[Ket[a], Bra[b]] *)
 (* NOTE: No particlar reason to store it as Dyad. *)
 
 
@@ -2741,7 +2748,7 @@ Dyad[ss:{__?SpeciesQ}] := Dyad[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
 Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss]
 
-Dyad[{}|All][a_, b_] := Dyad[a, b, All]
+(* Dyad[{}|All][a_, b_] := Dyad[a, b, All] *)
 
 
 Dyad[a_, b_, ss_] := Dyad[a, b, ss, ss]
