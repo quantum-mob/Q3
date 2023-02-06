@@ -4,15 +4,15 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.10 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-02 09:33:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.11 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-05 11:32:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Choices, ListPartitions, Successive, FirstLast, Inbetween };
 { ShiftLeft, ShiftRight };
-{ KeyGroupBy };
+{ KeyGroupBy, CheckJoin };
 { Unless, PseudoDivide };
 
 { Chain, ChainBy };
@@ -229,6 +229,8 @@ ShiftRight[a_List, 0, x_:0] := a
 ShiftRight[a_List] := ShiftRight[a, 1, 0]
 
 
+(**** <KeyGroupBy> ****)
+
 KeyGroupBy::usage = "KeyGroupBy[assoc, f] gives an Association that groups key$j->value$j into different Associations associated with distinct keys f[key$j].\nKeyGroupBy[assoc, f->g] groups key$j->g[value$j] according to f[key$j].\nKeyGroupBy[assoc, f->g, post] applies function post to Associations that are generated.\nKeyGroupBy[assoc, f, post] is equivalent to KeyGroupBy[assoc, f->Indeity, post]."
 
 KeyGroupBy[assoc_Association, f_] := 
@@ -244,6 +246,20 @@ KeyGroupBy[assoc_Association, f_ -> g_, post_] := Merge[
   KeyValueMap[(f[#1] -> Rule[#1, g[#2]])&, assoc],
   post @* Association
  ]
+
+(**** </KeyGroupBy> ****)
+
+
+(**** <CheckJoin> ****)
+
+CheckJoin::usage = "CheckJoin[assc1,assc2,\[Ellipsis]] checks whether any key appears multiple times before joining associations assc1, assc2, \[Ellipsis]."
+
+CheckJoin::dupl = "Duplicate keys in ``; keeping the first value for each of the duplicate keys."
+
+CheckJoin[aa__Association] := Merge[ {aa},
+  (If[Length[#] > 1, Message[CheckJoin::dupl, {aa}]]; First[#])& ]
+
+(**** </CheckJoin> ****)
 
 
 Unless::usage = "Unless[condition, result] gives result unless condition evaluates to True, and Null otherwise."

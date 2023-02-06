@@ -226,12 +226,6 @@ EndPackage[]
 
 (**** <Packages Loading> ****)
 
-(* NOTE 2021-04-16 on v12.2.0: Just to load the package, one can put these in
-   the second argument of BeginPackage["Q3`", {...}]. In this case, however,
-   the symbols defined in those contexts are not listed/showed in the
-   "AutoPopupEable" feature.
-   *)
-
 Get["Q3`Abel`"];
 Get["Q3`Cauchy`"];
 Get["Q3`Pauli`"];
