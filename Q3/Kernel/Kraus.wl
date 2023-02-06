@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.20 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-22 17:02:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.21 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-06 18:03:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,11 +16,12 @@ BeginPackage["Q3`"]
 
 { LindbladSupermap, DampingOperator };
 
-{ LindbladBasis, LindbladBasisMatrix,
-  LindbladConvert, LindbladSolve,
-  LindbladStationary };
+{ LieBasisMatrix };
 
-{ NLindbladSolve };
+{ LindbladSolve, NLindbladSolve,
+  LindbladConvert };
+
+{ LindbladStationary };
 
 { LindbladSimulate };
 
@@ -32,6 +33,9 @@ BeginPackage["Q3`"]
 { KrausProduct }; (* obsolete *)
 
 { LindbladGenerator }; (* renamed *)
+
+{ LindbladBasis, LindbladBasisMatrix }; (* renamed *)
+
 
 Begin["`Private`"]
 
@@ -277,25 +281,13 @@ KrausProduct[args___] := (
  )
 
 
-(**** <LindbladBasis> ****)
+(**** <LieBasisMatrix> ****)
 
-LindbladBasis::usage = "LindbladBasis[n] returns a basis of the vector space \[ScriptCapitalM](n) of n\[Times]n matrices.\nThe basis is orthonormal with respect to the Hilbert-Schmidt product, and all but one elements are traceless."
+LieBasisMatrix::usage = "LieBasisMatrix[n] returns the Choi matrix of the supermap that changes the standard basis of \[ScriptCapitalL](n) to the Lindblad basis."
 
-LindbladBasis[op_?SpeciesQ] := LindbladBasis @ {op}
+LieBasisMatrix[n_] := LieBasisMatrix @ LieBasis[n]
 
-LindbladBasis[qq:{__?SpeciesQ}] := Module[
-  { lbs = LindbladBasis[Times @@ Dimension[qq]] },
-  ExpressionFor[#, qq]& /@ lbs
- ]
-
-LindbladBasis[n_Integer?Positive] := LieBasis[n]
-
-
-LindbladBasisMatrix::usage = "LindbladBasisMatrix[n] returns the Choi matrix of the supermap that changes the standard basis of \[ScriptCapitalL](n) to the Lindblad basis."
-
-LindbladBasisMatrix[n_] := LindbladBasisMatrix @ LindbladBasis[n]
-
-LindbladBasisMatrix[lbs:{__?SquareMatrixQ}] := With[
+LieBasisMatrix[lbs:{__?SquareMatrixQ}] := With[
   { n = Length @ First @ lbs },
   SparseArray @ Transpose[
     ArrayReshape[SparseArray @ lbs, {n, n, n, n}],
@@ -303,7 +295,21 @@ LindbladBasisMatrix[lbs:{__?SquareMatrixQ}] := With[
    ]
  ] /; ArrayQ[lbs]
 
-(**** </LindbladBasis> ****)
+
+LindbladBasisMatrix::usage = "LindbladBasisMatrix has been renamed LieBasisMatrix."
+LindbladBasisMatrix[args___] := (
+  Message[Q3General::renamed, "LindbladBasisMatrix", "LieBasisMatrix"];
+  LieBasisMatrix[args]
+ )
+
+
+LindbladBasis::usage = "LindbladBasis has been renamed LieBasis."
+LindbladBasis[args___] := (
+  Message[Q3General::renamed, "LindbladBasis", "LieBasis"];
+  LieBasis[args]
+ )
+
+(**** </LieBasisMatrix> ****)
 
 
 DampingOperator::usage = "DampingOperator[{b1, b2, \[Ellipsis]}] or DampingOperator[b1, b2, \[Ellipsis]]  returns the effective damping operator corresponding to the Lindblad operators b1, b2, \[Ellipsis]."
@@ -383,7 +389,7 @@ LindbladConvert[tsr_?ChoiMatrixQ] := Module[
   { dim = First @ Dimensions[tsr],
     gen = ToSuperMatrix[tsr],
     mat },
-  mat = ToSuperMatrix @ LindbladBasisMatrix[dim];
+  mat = ToSuperMatrix @ LieBasisMatrix[dim];
   gen = Topple[mat] . ToSuperMatrix[tsr] . mat;
   { gen[[2;;, 2;;]],
     gen[[2;;, 1]] / Sqrt[dim]
@@ -426,7 +432,7 @@ LindbladStationary[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
   { mat, gen } = LindbladConvert @ {opH, opL};
   rho = - Inverse[mat] . gen;
   rho = Prepend[rho, 1/Sqrt[len]];
-  lbs = LindbladBasis @ len;
+  lbs = LieBasis @ len;
   Return[rho . lbs]
  ] /; ArrayQ @ {opH, opL}
 
@@ -463,7 +469,7 @@ LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?VectorQ, t_] :=
 LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, t_] := Module[
   { dim = Length[in],
     lbm, bgn, gen, off, sol, var, x },
-  lbm = ToSuperMatrix @ LindbladBasisMatrix[dim];
+  lbm = ToSuperMatrix @ LieBasisMatrix[dim];
   bgn = Rest[Topple[lbm] . Flatten[in]];
 
   {gen, off} = LindbladConvert[ops];
@@ -511,7 +517,7 @@ NLindbladSolve[tsr_?ChoiMatrixQ, init_?SquareMatrixQ, {t_, tmin_, tmax_}, opts__
   Module[
     { dim = Length[init],
       lbm, bgn, gen, off, sol, var, x, f },
-    lbm = ToSuperMatrix @ LindbladBasisMatrix[dim];
+    lbm = ToSuperMatrix @ LieBasisMatrix[dim];
     bgn = Rest[Topple[lbm] . Flatten[init]];
 
     {gen, off} = LindbladConvert[tsr];
@@ -582,7 +588,7 @@ LindbladSolveNaive[opH_?MatrixQ, {opL__?MatrixQ}, init_?MatrixQ, t_] :=
 LindbladSolveNaive[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
   { dim = Length[init],
     lbm, bgn, gen, off, var },
-  lbm = ToSuperMatrix @ LindbladBasisMatrix[dim];
+  lbm = ToSuperMatrix @ LieBasisMatrix[dim];
   bgn = Rest[Topple[lbm] . Flatten[init]];
 
   {gen, off} = LindbladConvert[ops];

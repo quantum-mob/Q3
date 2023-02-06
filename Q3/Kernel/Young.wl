@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.25 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-22 17:07:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.27 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 00:05:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -479,12 +479,12 @@ Permutation[cyc_Cycles, ss:{__?SpeciesQ}] :=
   Not[FlavorNoneQ @ ss]
 
 Permutation /:
-HoldPattern @ Dagger @ Permutation[cyc_, ss:{__?SpeciesQ}] :=
+Dagger @ Permutation[cyc_, ss:{__?SpeciesQ}] :=
   Permutation[InversePermutation[cyc], ss]
 
 Permutation /:
-HoldPattern @ Elaborate @ Permutation[
-  cyc_?PermutationCyclesQ, ss:{__?SpeciesQ} ] := With[
+Elaborate @ Permutation[cyc_?PermutationCyclesQ, ss:{__?SpeciesQ}] :=
+  With[
     { bs = Basis @ ss },
     Elaborate @ Total @ Map[Dyad[KetPermute[#, cyc, ss], #, ss]&, bs]
    ]
@@ -492,53 +492,47 @@ HoldPattern @ Elaborate @ Permutation[
    $PermutationSpec because of HoldPattern. *)
 
 Permutation /:
-HoldPattern @ Matrix[op_Permutation, rest___] := Matrix[Elaborate @ op, rest]
+Matrix[op_Permutation, rest___] := Matrix[Elaborate @ op, rest]
 
 
 Permutation /:
-HoldPattern @ Multiply[pre___,
+Multiply[ pre___,
   ops:Repeated[Permutation[_, qq:{__?SpeciesQ}], {2, Infinity}],
-  post___] :=
-  Multiply[pre,
+  post___ ] := Multiply[ pre,
     Permutation[PermutationProduct @@ Reverse[First /@ {ops}], qq],
-    post]
+    post ]
 
 
 Permutation /:
-HoldPattern @ Multiply[pre___,
+Multiply[ pre___,
   Permutation[spec_, qq:{__?SpeciesQ}], v_Ket,
-  post___] :=
+  post___ ] :=
   Multiply[pre, KetPermute[v, spec, qq], post]
 
 Permutation /:
-HoldPattern @ Multiply[pre___,
+Multiply[ pre___,
   v_Bra, Permutation[spec_, qq:{__?SpeciesQ}],
-  post___] :=
+  post___ ] :=
   Multiply[pre, Dagger @ KetPermute[Dagger @ v, spec, qq], post]
 
 Permutation /:
-HoldPattern @ Multiply[
-  pre___,
+Multiply[ pre___,
   Permutation[spec_, qq:{__?SpeciesQ}],
-  Dyad[a_Association, b_Association, c_List],
-  post___
- ] := Multiply[
-   pre,
-   Dyad[ KetPermute[Ket[a], spec, qq], Ket[b], c ],
-   post
-  ] /; ContainsAll[c, FlavorNone @ qq]
+  Dyad[a_Association, b_Association],
+  post___ ] := Multiply[ pre,
+    Dyad[
+      Join[a, AssociationThread[Keys[a] -> Permute[Lookup[a, qq], spec]]],
+      b ],
+    post ] /; ContainsAll[Keys @ a, FlavorNone @ qq]
 
 Permutation /:
-HoldPattern @ Multiply[
-  pre___,
-  Dyad[a_Association, b_Association, c_List],
+Multiply[ pre___,
+  Dyad[a_Association, b_Association],
   Permutation[spec_, qq:{__?SpeciesQ}],
-  post___
- ] := Multiply[
-   pre,
-   Dyad[ Ket[a], KetPermute[Ket[b], spec, qq], c ],
-   post
-  ] /; ContainsAll[c, FlavorNone @ qq]
+  post___ ] := Multiply[ pre,
+    Dyad[ a,
+      Join[b, AssociationThread[Keys[b] -> Permute[Lookup[b, qq], spec]]] ],
+    post ] /; ContainsAll[Keys @ b, FlavorNone @ qq]
 
 (**** </Permutation> ****)
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.0 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-23 14:30:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.1 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 00:29:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -218,7 +218,7 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   
   Format @ x[j___, a_->b_] := Interpretation[
     SpeciesBox[
-      RowBox @ {"(",Ket[b],Bra[a],")"}, {x[j, None]},
+      Row @ {"(",Ket[b],Bra[a],")"}, {x[j, None]},
       {}
      ],
     x[j, a -> b]

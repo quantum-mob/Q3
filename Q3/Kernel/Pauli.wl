@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.4 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-06 09:48:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.15 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-06 22:49:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -61,7 +61,7 @@ BeginPackage["Q3`"]
 
 { CircleTimes, CirclePlus };
 
-{ Dyad, DyadExpression };
+{ Dyad, DyadForm };
 
 { Zero, One };
 
@@ -100,6 +100,7 @@ BeginPackage["Q3`"]
    Kept here for backward compatibility. *)
 { BlockDiagonalMatrix };
 
+{ DyadExpression }; (* renamed *)
 { WignerFunction }; (* obsolete *)
 { PauliExpression, PauliExpressionRL }; (* obsolete *)
 { PauliInner }; (* obsolete *)
@@ -1688,7 +1689,7 @@ TheMatrix[ Pauli[j__] ] := ThePauli[j]
 
 Matrix::usage = "Matrix[expr, {a1, a2, ...}] constructs the matrix representation of the expression expr on the total system consisting of a1, a2, ....\nMatrix[expr] feagures out the subsystems involved in expr."
 
-Matrix::rem = "There remain some elements, ``, that are not specified for matrix representation."
+Matrix::rmndr = "There remain some elements, ``, that are not specified for matrix representation."
 
 (* General Code for Operators *)
 
@@ -1820,39 +1821,44 @@ Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := Module[
  ] /; MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
 
 Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := (
-  Message[Matrix::rem, op];
-  op Matrix[1, qq]
+  Message[Matrix::rmndr, op];
+  op * Matrix[1, qq]
  )
 
 
 (* For Dyad[...] *)
 
-Matrix::dyad = "Some elements in `` are not included in ``."
+Matrix::dyad = "Matrix representation of Dyad of the form `` is not supported."
 
 Matrix[op_Dyad, ss:{__?SpeciesQ}] := Matrix[op, FlavorNone @ ss] /;
   Not[FlavorNoneQ @ ss]
 
-Matrix[op_Dyad, ss:{__?SpeciesQ}] := Module[
-  { rr = One /@ Dimension[ss] },
-  rr = Association @ Join[Thread[ss -> rr], splitDyad[op]];
-  CircleTimes @@ rr
- ] /; ContainsAll[ss, Last @ op]
+Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
+  With[
+    { rest = Dyad[KeyDrop[a, ss], KeyDrop[b, ss]] },
+    Message[Matrix::rmndr, rest];
+    rest * Matrix[Dyad[KeyTake[a, ss], KeyTake[b, ss]], ss]
+   ] /; Not @ ContainsAll[ss, Union[Keys @ a, Keys @ b]]
 
-Matrix[op_Dyad, ss:{__?SpeciesQ}] := (
-  Message[Matrix::dyad, Last @ op, ss];
-  Apply[CircleTimes, One /@ Dimension[ss]]
- )
+Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
+  ( Message[Matrix::dyad, InputForm @ op];
+    One[Times @@ Dimension[ss]]
+   ) /; Keys[a] != Keys[b]
 
-splitDyad[Dyad[a_Association, b_Association, ss:{__?SpeciesQ}]] := 
+Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
   Module[
-    { aa = Lookup[a, ss],
-      bb = Lookup[b, ss] },
-    Thread[ss -> Thread @ theDyad[aa, bb, ss]]
+    { rr = One /@ Dimension[ss] },
+    rr = Join[AssociationThread[ss -> rr], splitDyad[op]];
+    CircleTimes @@ rr
    ]
 
-theDyad[a_, b_, s_?SpeciesQ] := 
-  Dyad[Matrix[Ket[s -> a], s], Matrix[Ket[s -> b], s]]
-
+splitDyad @ Dyad[a_Association, b_Association] :=
+  AssociationThread[ Keys[a] ->
+      MapThread[ Dyad,
+        { TheMatrix /@ Ket /@ Association /@ Normal[a],
+          TheMatrix /@ Ket /@ Association /@ Normal[b] }
+       ]
+   ]
 
 (* For Dyad-like (but not Dyad) expression *)
 Matrix[
@@ -2661,34 +2667,31 @@ Dyad::extra = "Some elements in `` are not included in ``."
 
 (* For Kets associated with species *)
 
-Format @ Dyad[a_Association, b_Association, qq:{___?SpeciesQ}] :=
-  Interpretation[
-    Row @ { LogicalForm[Ket[a], qq], LogicalForm[Bra[b], qq] },
-    Dyad[a, b, qq]
-   ]
+Format @ Dyad[a_Association, b_Association] :=
+  Interpretation[Row @ {Ket[a], Bra[b]}, Dyad[a, b]]
 
 Dyad /: NonCommutativeQ[ Dyad[___] ] = True
 
 Dyad /:
-Kind @ Dyad[_Association, _Association, qq_List] := First @ Kind @ qq
+Kind @ Dyad[a_Association, b_Association] :=
+  First @ Kind @ Union[Keys @ a, Keys @ b]
 
 Dyad /:
 MultiplyGenus @ Dyad[___] := "Singleton"
 
 Dyad /:
-HoldPattern @ Dagger @ Dyad[a_Association, b_Association, c_List] :=
-  Dyad[b, a, c]
+Dagger @ Dyad[a_Association, b_Association] = Dyad[b, a]
 
 Dyad /:
-HoldPattern @ Elaborate @ Dyad[a_Association, b_Association, c_List] :=
-  Module[
-    { aa = Lookup[a, c],
-      bb = Lookup[b, c],
-      op },
-    op = Construct @@@ Thread @ {c, Thread[bb -> aa]};
-    Garner @ Elaborate[Multiply @@ op]
+Elaborate @ Dyad[a_Association, b_Association] := Module[
+  { ss = Intersection[Keys[a], Keys[b]],
+    op },
+  op = Construct @@@ Thread @ {ss, Thread[Lookup[b, ss] -> Lookup[a, ss]]};
+  Garner @ Multiply[
+    Elaborate[Multiply @@ op],
+    Dyad[KeyDrop[a, ss], KeyDrop[b, ss]]
    ]
-
+ ]
 
 Dyad[a_] := Module[
   { qq = NonCommutativeSpecies[a] },
@@ -2700,8 +2703,25 @@ Dyad[a_, b_] := Module[
   { qq = NonCommutativeSpecies @ {a, b} },
   Message[Dyad::two];
   Dyad[a, b, qq]
- ] /; Not @ Or[FreeQ[a, Ket[_Association]], FreeQ[b, Ket[_Association]]]
+ ] /; Not @ FreeQ[{a, b}, Ket[_Association]]
 
+
+Dyad[{aa___Rule, ss:{__?SpeciesQ}...}, {bb___Rule, tt:{__?SpeciesQ}...}] :=
+  With[
+    { sss = Union @ FlavorNone @ Join[ss],
+      ttt = Union @ FlavorNone @ Join[tt] },
+    Dyad[
+      Join[
+        AssociationThread[sss -> Lookup[<||>, sss]],
+        Association @ KetRule @ {aa} ],
+      Join[
+        AssociationThread[ttt -> Lookup[<||>, ttt]],
+        Association @ KetRule @ {bb} ]
+     ]
+   ]
+
+
+Dyad[<||>, <||>] = 1
 
 Dyad[0, _, _List] = 0
 
@@ -2721,23 +2741,32 @@ Dyad[ss:{__?SpeciesQ}] := Dyad[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
 Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss]
 
-Dyad[{}|All][a, b] := Dyad[a, b, All]
+Dyad[{}|All][a_, b_] := Dyad[a, b, All]
 
 
-Dyad[a_, b_, S_?SpeciesQ] := Dyad[a, b, FlavorNone @ {S}]
+Dyad[a_, b_, ss_] := Dyad[a, b, ss, ss]
 
-Dyad[a_, b_, ss:{__?SpeciesQ}] := Dyad[a, b, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+Dyad[a_, b_, S_?SpeciesQ, tt_] := Dyad[a, b, S @ {None}, tt]
 
-Dyad[Ket[a_Association], Ket[b_Association], qq:{__?SpeciesQ}] := 
-  Dyad[a, b, qq]
+Dyad[a_, b_, ss_, T_?SpeciesQ] := Dyad[a, b, ss, T @ {None}]
 
-Dyad[a_Association, b_Association, qq:{__?SpeciesQ}] := Module[
-  { rr = KeySort @ GroupBy[qq, Kind] },
-  If[Not @ ContainsAll[qq, Keys @ a], Message[Dyad::extra, Keys @ a, qq]];
-  If[Not @ ContainsAll[qq, Keys @ b], Message[Dyad::extra, Keys @ b, qq]];
-  Multiply @@ Map[ Dyad[KeyTake[a, #], KeyTake[b, #], #]&, Values @ rr]
- ] /; Length[Union @ Kind @ qq] > 1
+Dyad[a_, b_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+  Dyad[a, b, FlavorNone @ ss, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ {ss, tt}]
+
+Dyad[Ket[a_Association], Ket[b_Association], ss:{__?SpeciesQ}] :=
+  Dyad[Ket[a], Ket[b], ss, ss]
+
+Dyad[Ket[a_Association], Ket[b_Association],
+  ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Dyad[
+    AssociationThread[ss -> Lookup[a, ss]],
+    AssociationThread[tt -> Lookup[b, tt]]
+   ]
+
+Dyad[a_Association, b_Association] := Module[
+  { ss = GroupBy[Union[Keys @ a, Keys @ b], Kind] },
+  Multiply @@ Map[Dyad[KeyTake[a, #], KeyTake[b, #]]&, Values @ ss]
+ ] /; Length[Union @ Kind @ Flatten @ {Keys @ a, Keys @ b}] > 1
 
 
 Dyad[a_Plus, b_, qq___] :=
@@ -2746,114 +2775,96 @@ Dyad[a_Plus, b_, qq___] :=
 Dyad[a_, b_Plus, qq___] :=
   Garner @ Total @ Map[Dyad[a, #, qq]&, List @@ b]
 
-Dyad[z_ a_, b_, qq___] :=
-  Garner[z Dyad[a, b, qq]] /; FreeQ[z, _Ket]
+Dyad[z_?CommutativeQ a_, b_, qq___] := Garner[z * Dyad[a, b, qq]]
 
-Dyad[a_, z_ b_, qq___] :=
-  Garner[Conjugate[z] Dyad[a, b, qq]] /; FreeQ[z, _Ket]
+Dyad[a_, z_?CommutativeQ b_, qq___] := Garner[Conjugate[z] * Dyad[a, b, qq]]
 
 
 HoldPattern @ Multiply[
   pre___,
-  Dyad[a_Association, b_Association, qq_List],
-  Dyad[c_Association, d_Association, qq_List],
-  post___
- ] := BraKet[b, c] * Multiply[pre, Dyad[a, d, qq], post]
-
-HoldPattern @ Multiply[
-  pre___,
-  Dyad[a_Association, b_Association, pp_List],
-  Dyad[c_Association, d_Association, qq_List],
+  xx:Dyad[a_Association, b_Association],
+  yy:Dyad[c_Association, d_Association],
   post___
  ] := Module[
-   { dp = Complement[pp, qq],
-     dq = Complement[qq, pp],
-     pq = Intersection[pp, qq] },
+   { bb = Complement[Keys @ b, Keys @ c],
+     cc = Complement[Keys @ c, Keys @ b],
+     bc = Intersection[Keys @ b, Keys @ c] },
    Dyad[
-     KeySort @ Join[a, KeyTake[c, dq]],
-     KeySort @ Join[KeyTake[b, dp], d],
-     Union[pp, qq]
-    ] * BraKet[KeyTake[b, pq], KeyTake[c, pq]]
+     KeySort @ CheckJoin[a, KeyTake[c, cc]],
+     KeySort @ CheckJoin[d, KeyTake[b, bb]]
+    ] * BraKet[KeyTake[b, bc], KeyTake[c, bc]]
+  ] /; Kind[xx] == Kind[yy]
+
+HoldPattern @ Multiply[
+  pre___,
+  op_?AnySpeciesQ, Dyad[a_Association, b_Association],
+  post___
+ ] := Multiply[
+   pre,
+   Dyad[op ** Ket[a], Ket[b], Keys @ a, Keys @ b],
+   post
+  ] /; MemberQ[Keys @ a, FlavorMute @ Peel @ op]
+
+HoldPattern @ Multiply[
+  pre___,
+  Dyad[a_Association, b_Association], op_?AnySpeciesQ,
+  post___
+ ] := Multiply[
+   pre,
+   Dyad[Ket[a], Dagger[op] ** Ket[b], Keys @ a, Keys @ b],
+   post
+  ] /; MemberQ[Keys @ b, FlavorMute @ Peel @ op]
+
+
+HoldPattern @ Multiply[
+  pre___,
+  op_?AnySpeciesQ, Dyad[a_Association, b_Association],
+  post___
+ ] := Multiply[pre, Dyad[a, b], op, post] /;
+  With[
+    { sp = FlavorMute @ Peel @ op },
+    And[
+      Kind[Dyad[a, b]] == Kind[op],
+      Not @ MemberQ[Union[Keys @ a, Keys @ b], sp],
+      Not @ OrderedQ @ {sp, First @ Keys @ a}
+     ]
+   ]
+
+HoldPattern @ Multiply[
+  pre___,
+  Dyad[a_Association, b_Association], op_?AnySpeciesQ,
+  post___
+ ] := Multiply[pre, op, Dyad[a, b], post] /; With[
+   { sp = FlavorMute @ Peel @ op },
+   And[
+     Kind[Dyad[a, b]] == Kind[op],
+     Not @ MemberQ[Union[Keys @ a, Keys @ b], sp],
+     Not @ OrderedQ @ {First @ Keys @ b, sp}
+    ]
   ]
-
-
-HoldPattern @ Multiply[
-  pre___,
-  op_?AnySpeciesQ, Dyad[a_Association, b_Association, c_List],
-  post___
- ] := Multiply[
-   pre,
-   Dyad[ op ** Ket[a], Ket[b], c ],
-   post
-  ] /; MemberQ[c, FlavorMute @ Peel @ op]
-
-HoldPattern @ Multiply[
-  pre___,
-  Dyad[a_Association, b_Association, c_List], op_?AnySpeciesQ,
-  post___
- ] := Multiply[
-   pre,
-   Dyad[ Ket[a], Dagger[op] ** Ket[b], c ],
-   post
-  ] /; MemberQ[c, FlavorMute @ Peel @ op]
-
-HoldPattern @ Multiply[
-  pre___,
-  dd:Dyad[_Association, _Association, qq_List], op_?AnySpeciesQ,
-  post___
- ] := Multiply[
-   pre,
-   op, dd,
-   post
-  ] /; With[
-    { sp = FlavorMute @ Peel @ op },
-    And[
-      Kind[dd] == Kind[op],
-      Not @ MemberQ[qq, sp],
-      Not @ OrderedQ @ {First @ qq, sp}
-     ]
-   ]
-
-HoldPattern @ Multiply[
-  pre___,
-  op_?AnySpeciesQ, dd:Dyad[_Association, _Association, qq_List],
-  post___
- ] := Multiply[
-   pre,
-   dd, op,
-   post
-  ] /; With[
-    { sp = FlavorMute @ Peel @ op },
-    And[
-      Kind[dd] == Kind[op],
-      Not @ MemberQ[qq, sp],
-      Not @ OrderedQ @ {sp, First @ qq}
-     ]
-   ]
 
 
 HoldPattern @ Multiply[
   pre___,
   Bra[v_Association],
-  Dyad[a_Association, b_Association, qq_List],
+  Dyad[a_Association, b_Association],
   post___
- ] := Module[
-   { w = KeyDrop[v, qq],
-     u = KeyTake[v, qq] },
-   BraKet[u, a] Multiply[pre, Bra[w], Bra[b], post]
+ ] := With[
+   { w = KeyDrop[v, Keys @ a],
+     u = KeyTake[v, Keys @ a] },
+   BraKet[u, a] * DefaultForm[ Multiply[pre, Bra[w], Bra[b], post] ]
   ]
 
 HoldPattern @ Multiply[
   pre___,
-  Dyad[a_Association, b_Association, qq_List],
+  Dyad[a_Association, b_Association],
   Ket[v_Association],
   post___
- ] := Module[
-   { w = KeyDrop[v, qq],
-     u = KeyTake[v, qq] },
-   BraKet[b, u] Multiply[pre, Ket[a], Ket[w], post]
+ ] := With[
+   { w = KeyDrop[v, Keys @ b],
+     u = KeyTake[v, Keys @ b] },
+   BraKet[b, u] * DefaultForm[ Multiply[pre, Ket[a], Ket[w], post] ]
   ]
-
 
 (* For Pauli Kets *)
 
@@ -2874,62 +2885,67 @@ Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
 (**** </Dyad> ****)
 
 
-DyadExpression::usage = "DyadExpression[expr,{s1,s2,..}] converts the operator expression expr to the form in terms of Dyad acting on the systems s1, s2, .... If the systems are not specified, then they are extracted from expr.\nDyadExpression[mat,{s1,s2,...}] converts the matrix representation into an operator expresion in terms of Dyad acting on the systems s1, s2, ...."
+(**** <DyadForm> ****)
 
-DyadExpression[expr_] := DyadExpression[Matrix @ expr] /;
-  Not @ FreeQ[expr, _Pauli]
+DyadForm::usage = "DyadForm[expr,{s1,s2,..}] converts the operator expression expr to the form in terms of Dyad acting on the systems s1, s2, .... If the systems are not specified, then they are extracted from expr.\nDyadForm[mat,{s1,s2,...}] converts the matrix representation into an operator expresion in terms of Dyad acting on the systems s1, s2, ...."
 
-DyadExpression[expr_] := 
-  DyadExpression[expr, NonCommutativeSpecies[expr]]
+DyadForm[expr_] := RaiseLower[expr] /; Not @ FreeQ[expr, _Pauli]
+(* NOTE: DyaForm is pointless for Pauli expressions. *)
 
-DyadExpression[expr_, q_?SpeciesQ] := 
-  DyadExpression[expr, FlavorNone @ {q}]
+DyadForm[expr_] := 
+  DyadForm[expr, NonCommutativeSpecies[expr]]
 
-DyadExpression[expr_, qq:{__?SpeciesQ}] := 
-  DyadExpression[Matrix[expr, FlavorNone @ qq], FlavorNone @ qq]
+DyadForm[expr_, q_?SpeciesQ] := 
+  DyadForm[expr, FlavorNone @ {q}]
 
-DyadExpression[mat_?MatrixQ, q_?SpeciesQ] := 
-  DyadExpression[mat, FlavorNone @ {q}]
+DyadForm[expr_, qq:{__?SpeciesQ}] := 
+  DyadForm[Matrix[expr, FlavorNone @ qq], FlavorNone @ qq]
 
 
-DyadExpression[mat_?MatrixQ] := Module[
+DyadForm[mat_?MatrixQ] := Module[
   { n = Log[2, Length @ mat],
     tsr },
   tsr = ArrayReshape[mat, ConstantArray[2, 2*n]];
   tsr = Association @ Most @ ArrayRules @ tsr;
-  Garner @ Total @ KeyValueMap[theDyad[#1, n] * #2&, tsr]
+  Garner @ Total @ KeyValueMap[theDyadForm[#1, n] * #2&, tsr]
  ] /; IntegerQ[Log[2, Length @ mat]]
 
-theDyad[val:{__}, n_Integer] := Module[
+theDyadForm[val:{__}, n_Integer] := Module[
   {a, b},
   {a, b} = ArrayReshape[val-1, {2, n}];
   Thread @ Pauli[b -> a]
  ]
 
 
-DyadExpression[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
+DyadForm[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
   { dim = Dimension @ qq,
     spc = FlavorNone @ qq,
     tsr },
   tsr = ArrayReshape[mat, Join[dim, dim]];
   tsr = Association @ Most @ ArrayRules @ tsr;
-  Garner @ Total @ KeyValueMap[theDyad[#1, spc] * #2&, tsr]
+  Garner @ Total @ KeyValueMap[theDyadForm[#1, spc] * #2&, tsr]
  ]
 
-theDyad[val:{__}, spc:{__?SpeciesQ}] := Module[
+theDyadForm[val:{__}, spc:{__?SpeciesQ}] := Module[
   {a, b},
   {a, b} = ArrayReshape[val, {2, Length @ spc}];
   a = MapThread[Part, {LogicalValues @ spc, a}];
   b = MapThread[Part, {LogicalValues @ spc, b}];
-  Dyad[
-    KetTrim @ AssociationThread[spc -> a], 
-    KetTrim @ AssociationThread[spc -> b],
-    spc
-   ]
+  Dyad[AssociationThread[spc -> a], AssociationThread[spc -> b]]
  ]
 
 
-(* ********************************************************************* *)
+DyadExpression::usage = "DyadExpression has been renamed DyadForm."
+
+DyadExpression[args__] := (
+  Message[Q3General::renamed, "DyadExpression", "DyadForm"];
+  DyadForm[args]
+ )
+
+(**** </DyadForm> ****)
+
+
+(**** <Zero> ****)
 
 Zero::usage = "Zero[n] return an array of length n with all elements zero.\nZero[m, n, ...] \[Congruent] Zero[{m, n, ...}] returns an m x n x ... tensor with all elements zero."
 
@@ -2937,6 +2953,10 @@ Zero[mn__Integer] := SparseArray[{}, {mn}]
 
 Zero[{mn__Integer}] := SparseArray[{}, {mn}]
 
+(**** </Zero> ****)
+
+
+(**** <One> ****)
 
 One::usage = "One[n] \[Congruent] One[{n}] is almost the same as IdentityMatrix[n], but returns the identity matrix in a sparse array.\nOne[m, n, ...] \[Congruent] One[{m, n}, ...] returns the m \[Times] n \[Times] ... pseudo-identity tensor, i.e., the tensor where the main diagonal elements are 1 and the other elements are all zero.\nOne[{m, n}, k] returns an m \[Times] n matrix with the elements on the \*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere."
 
@@ -2956,7 +2976,8 @@ One[{n_Integer}, p_Integer] := One[{n, n}, p]
 One[{m_Integer, n_Integer}, p_Integer] := 
   SparseArray[ {i_, j_} :> 1 /; j == i + p, {m, n} ]
 
-(* ********************************************************************* *)
+(**** </One> ****)
+
 
 PauliExtract::usage = "PauliExtract has been deprecated. Use PauliDecompose instead."
 

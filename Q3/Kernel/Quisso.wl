@@ -1750,12 +1750,10 @@ Projector /:
 Dagger[ op_Projector ] := op
 
 Projector /:
-HoldPattern @ Elaborate[ Projector[v_, qq_] ] :=
-  Elaborate[Dyad[v, v, qq]]
+Elaborate[ Projector[v_, qq_] ] := Elaborate[Dyad[v, v, qq]]
 
 Projector /:
-HoldPattern @ ExpressionFor[ Projector[v_, qq_] ] :=
-  Dyad[v, v, qq]
+ExpressionFor[ Projector[v_, qq_] ] := Dyad[v, v, qq]
 
 HoldPattern @ Projector[expr_, ___] := (
   Message[Projector::noKet, expr];

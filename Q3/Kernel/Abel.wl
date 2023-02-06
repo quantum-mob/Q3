@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.11 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-05 11:32:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.13 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-06 23:35:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -39,6 +39,8 @@ BeginPackage["Q3`"]
 { Boson, Bosons, BosonQ, AnyBosonQ };
 { Fermion, Fermions, FermionQ, AnyFermionQ };
 (* NOTE: Fermion and the like are here for Matrix. *)
+
+{ Dyad };
 
 { SpeciesBox,
   $FormatSpecies,
@@ -853,9 +855,10 @@ NonCommutativeSpecies::usage = "NonCommutativeSpecies[expr] returns the list of 
 NonCommutativeSpecies[expr_] := Select[
   Union @ FlavorMute @ Cases[List @ expr, _?SpeciesQ, Infinity],
   NonCommutativeQ
- ] /; FreeQ[expr, _Association]
+ ] /; FreeQ[expr, _Association|_Dyad]
 
-NonCommutativeSpecies[expr_] := NonCommutativeSpecies[Normal @ expr]
+NonCommutativeSpecies[expr_] :=
+  NonCommutativeSpecies @ Normal[expr /. Dyad -> Hold[Dyad]]
 (* NOTE: This recursion is necessary since Association inside Association is
    not expanded by a single Normal. *)
 
@@ -1630,7 +1633,15 @@ LieExp[a_, b_] :=
 
 (**** <LieBasis> ****)
 
-LieBasis::usage = "LieBasis[n] returns the standard generating set of Lie algebra u(n).\nSee also LindbladBasis."
+LieBasis::usage = "LieBasis[n] returns a basis of the vector space \[ScriptCapitalM](n) of n\[Times]n matrices; equivalently, the standard generating set of Lie algebra u(n).\nThe basis is orthonormal with respect to the Hilbert-Schmidt product, and all but one elements are traceless."
+
+LieBasis[op_?SpeciesQ] := LieBasis @ {op}
+
+LieBasis[qq:{__?SpeciesQ}] := Module[
+  { lbs = LieBasis[Times @@ Dimension[qq]] },
+  ExpressionFor[#, qq]& /@ lbs
+ ]
+
 
 LieBasis[n_Integer?Positive] := Module[
   { bs },

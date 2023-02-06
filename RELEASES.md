@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.9.9
+
+- DyadExpression has been renamed DyadForm.
+- LindbladBasis and LindbladBasisMatrix have been renamed LieBasis and LieBasisMatrix, respectively.
+
 ## v2.9.8
 
 - A bug fix concerning Power[_?BinaryQ, ...], which led to 1 / 0 = 0.
