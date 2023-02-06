@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.3 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-30 21:37:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.4 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-06 09:48:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -649,13 +649,13 @@ Ket[ Ket[a_Association], spec__Rule ] := Module[
   If[FailureQ @ KetVerify @ vec, $Failed, vec]
  ]
 
-Ket[ spec___Rule, s_?QubitQ] := LogicalForm[Ket[spec], {s}]
+Ket[ spec___Rule, s_?SpeciesQ] := LogicalForm[Ket[spec], {s}]
 
-Ket[ spec___Rule, ss:{__?QubitQ}] := LogicalForm[Ket[spec], ss]
+Ket[ spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Ket[spec], ss]
 
-Ket[ v_Ket, spec___Rule, s_?QubitQ] := LogicalForm[Ket[v, spec], {s}]
+Ket[ v_Ket, spec___Rule, s_?SpeciesQ] := LogicalForm[Ket[v, spec], {s}]
 
-Ket[ v_Ket, spec___Rule, ss:{__?QubitQ}] := LogicalForm[Ket[v, spec], ss]
+Ket[ v_Ket, spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Ket[v, spec], ss]
 
 
 (* operator form *)
@@ -673,6 +673,15 @@ Bra[] = Bra[ Association[] ]
 Bra[spec__Rule] := Dagger @ Ket[Ket[], spec]
 
 Bra[v_Bra, spec__Rule] := Dagger @ Ket[Dagger @ v, spec]
+
+
+Bra[ spec___Rule, s_?SpeciesQ] := LogicalForm[Bra[spec], {s}]
+
+Bra[ spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Bra[spec], ss]
+
+Bra[ v_Bra, spec___Rule, s_?SpeciesQ] := LogicalForm[Bra[v, spec], {s}]
+
+Bra[ v_Bra, spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Bra[v, spec], ss]
 
 
 Bra[a_Association][spec__Rule] := Bra[ Bra[a], spec ]
