@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.10 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 06:31:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.11 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 13:57:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2428,12 +2428,12 @@ ParityOddQ[v_Ket, a_?QuditQ] := OddQ @ v @ a
 
 (**** <Matrix for Qudits> ****)
 
-TheMatrix[ S_?QuditQ[___, i_ -> j_] ] :=
-  SparseArray[ {1+j,1+i} -> 1, Dimension[S] {1, 1} ]
+TheMatrix[A_?QuditQ[___, i_ -> j_]] :=
+  SparseArray[{1+j, 1+i} -> 1, Dimension[A]*{1, 1}]
 
-TheMatrix[ Ket[ Association[ S_?QuditQ -> n_Integer] ] ] := SparseArray[
-  If[ 0 <= n < Dimension[S], n+1 -> 1, {}, {} ],
-  Dimension[S]
+TheMatrix @ Ket @ Association[A_?QuditQ -> n_Integer] := SparseArray[
+  If[0 <= n < Dimension[A], {n+1} -> 1, {}, {}],
+  Dimension[A]
  ]
 
 (**** </Matrix> *****)

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.17 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 07:04:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.19 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-07 15:23:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1678,9 +1678,15 @@ TheMatrix[ Ket[j__Integer] ] := TheKet[j]
 
 TheMatrix[ Bra[j__Integer] ] := TheKet[j]
 
+
+TheMatrix[rr:Rule[_?SpeciesQ, _]] := TheMatrix @ Ket @ Association @ rr
+
+TheMatrix @ Association[aa:Rule[_?SpeciesQ, _]..] := TheMatrix /@ {aa}
+
+
 (* For Pauli operators of unlabelled qubits *)
 
-TheMatrix[ Pauli[j__] ] := ThePauli[j]
+TheMatrix @ Pauli[j__] := ThePauli[j]
 
 (**** </TheMatrix> ****)
 
@@ -1691,14 +1697,20 @@ Matrix::usage = "Matrix[expr, {a1, a2, ...}] constructs the matrix representatio
 
 Matrix::rmndr = "There remain some elements, ``, that are not specified for matrix representation."
 
-(* General Code for Operators *)
+(* General Code *)
 
 Matrix[ expr_ ] := Matrix[expr, NonCommutativeSpecies @ expr]
 
-Matrix[ expr_, q_?SpeciesQ ] := Matrix[expr, {q}]
+Matrix[ expr_, q_?SpeciesQ ] := Matrix[expr, q @ {None}]
+
+Matrix[ expr_, ss:{__?SpeciesQ} ] := Matrix[expr, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
 
 Matrix[ expr_Plus, qq:{___?SpeciesQ} ] :=
-  TrigToExp @ ExpToTrig @ Total @ Map[ Matrix[#, qq]&, List @@ KetChop[expr] ]
+  TrigToExp @ ExpToTrig @ Total @ Map[
+    Matrix[#, qq]&,
+    List @@ KetChop[expr]
+   ]
 (* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
 (* NOTE: KetChop is required here because "0. + Ket[...]" may happen. *)
 
@@ -1765,22 +1777,18 @@ Matrix[ vec:Bra[__], {___} ] := TheMatrix[vec]
 
 (* For Ket/Bra of labelled qubits *)
 
-Matrix[ Ket[<||>], {} ] := 0
+Matrix[Ket[<||>], {}] := 0
 
-Matrix[ Ket[a_Association], qq:{__?SpeciesQ} ] := With[
-  { ss = FlavorNone @ qq },
-  CircleTimes @@ Map[
-    TheMatrix @* Ket @* Association,
-    Thread[ ss -> Lookup[a, ss] ]
-   ]
- ]
+Matrix[Ket[a_Association], ss:{__?SpeciesQ}] :=
+  CircleTimes @@ Map[TheMatrix, Thread[ss -> Lookup[a, ss]]]
 
-Matrix[ Bra[<||>], {} ] := 0
 
-Matrix[ Bra[a_Association] ] := Matrix[Bra[a], Keys @ a] /; Length[a] > 1
+Matrix[Bra[<||>], {}] := 0
 
-Matrix[ Bra[v_Association], qq:{__?SpeciesQ} ] :=
-  Conjugate[ Matrix[Ket[v], qq] ]
+Matrix[Bra[a_Association]] := Matrix[Bra[a], Keys @ a] /; Length[a] > 1
+
+Matrix[Bra[v_Association], ss:{__?SpeciesQ}] :=
+  Conjugate @ Matrix[Ket[v], ss]
 
 
 (* For Pauli[...] *)
@@ -1810,55 +1818,20 @@ fermionOne[q_] := One @ Dimension @ q
 
 (* For Species *)
 
-Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := Module[
+Matrix[op_?AnySpeciesQ, ss:{__?SpeciesQ}] := Module[
   { mm = TheMatrix @ op,
     sp = FlavorMute @ Peel @ op,
-    ss = FlavorNone @ qq,
     rr },
-  rr = One /@ Dimension[qq];
+  rr = One /@ Dimension[ss];
   rr = Association @ Join[ Thread[ss -> rr], {sp -> mm} ];
   CircleTimes @@ rr
- ] /; MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
+ ] /; MemberQ[ss, FlavorMute @ Peel @ op]
 
 Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := (
   Message[Matrix::rmndr, op];
   op * Matrix[1, qq]
  )
 
-
-(* For Dyad[...] *)
-
-Matrix::dyad = "Matrix representation of Dyad of the form `` is not supported."
-
-Matrix[op_Dyad, ss:{__?SpeciesQ}] := Matrix[op, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
-
-Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
-  With[
-    { rest = Dyad[KeyDrop[a, ss], KeyDrop[b, ss]] },
-    Message[Matrix::rmndr, rest];
-    rest * Matrix[Dyad[KeyTake[a, ss], KeyTake[b, ss]], ss]
-   ] /; Not @ ContainsAll[ss, Union[Keys @ a, Keys @ b]]
-
-Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
-  ( Message[Matrix::dyad, InputForm @ op];
-    One[Times @@ Dimension[ss]]
-   ) /; Keys[a] != Keys[b]
-
-Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
-  Module[
-    { rr = One /@ Dimension[ss] },
-    rr = Join[AssociationThread[ss -> rr], splitDyad[op]];
-    CircleTimes @@ rr
-   ]
-
-splitDyad @ Dyad[a_Association, b_Association] :=
-  AssociationThread[ Keys[a] ->
-      MapThread[ Dyad,
-        { TheMatrix /@ Ket /@ Association /@ Normal[a],
-          TheMatrix /@ Ket /@ Association /@ Normal[b] }
-       ]
-   ]
 
 (* For Dyad-like (but not Dyad) expression *)
 Matrix[
@@ -2665,6 +2638,8 @@ Dyad::two = "Dyad now requires an explicit specification of the species to apply
 
 Dyad::extra = "Some elements in `` are not included in ``."
 
+Dyad::mtrx = "Matrix representation of Dyad of the form `` is not supported."
+
 (* For Kets associated with species *)
 
 Format @ Dyad[a_Association, b_Association] :=
@@ -2699,6 +2674,71 @@ Elaborate @ Dyad[a_Association, b_Association] := Module[
    ]
  ]
 
+
+Dyad /: (* fallback *)
+Matrix[op_Dyad, ss_List, tt_List] := Zero[Length @ ss, Length @ tt]
+  
+Dyad /:
+Matrix[op_Dyad, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+  Matrix[op, FlavorNone @ ss, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ {ss, tt}]
+
+Dyad /:
+Matrix[ Dyad[a_Association, b_Association],
+  ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] := Module[
+    { sa = Complement[ss, Keys @ a],
+      tb = Complement[tt, Keys @ b],
+      aa, bb },
+    If[sa != tb,
+      Message[Dyad::mtrx, Row @ {ss, Keys @ a, Keys @ b, tt}];
+      Return @ Zero[Length @ ss, Length @ tt]
+     ];
+    aa = Map[KeyTake[#, ss]&] @ Map[Join[a, #]&] @
+      Map[AssociationThread[sa -> #]&] @ Tuples[LogicalValues @ sa];
+    bb = Map[KeyTake[#, tt]&] @ Map[Join[b, #]&] @
+      Map[AssociationThread[tb -> #]&] @ Tuples[LogicalValues @ tb];
+    Total @ MapThread[ Dyad,
+      { CircleTimes @@@ TheMatrix /@ aa, 
+        CircleTimes @@@ TheMatrix /@ bb } ]
+   ]
+
+
+Dyad /: (* fallback *)
+Matrix[op_Dyad, ss_List] := Zero[Length @ ss, Length @ ss]
+  
+Dyad /:
+Matrix[op_Dyad, ss:{__?SpeciesQ}] := Matrix[op, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+Dyad /:
+Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
+  With[
+    { rest = Dyad[KeyDrop[a, ss], KeyDrop[b, ss]] },
+    Message[Matrix::rmndr, rest];
+    rest * Matrix[Dyad[KeyTake[a, ss], KeyTake[b, ss]], ss]
+   ] /; Not @ ContainsAll[ss, Union[Keys @ a, Keys @ b]]
+
+Dyad /:
+Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
+  ( Message[Dyad::mtrx, InputForm @ op];
+    One[Times @@ Dimension[ss]]
+   ) /; Keys[a] != Keys[b]
+
+Dyad /:
+Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
+  Module[
+    { rr = One /@ Dimension[ss] },
+    rr = Join[AssociationThread[ss -> rr], splitDyad[op]];
+    CircleTimes @@ rr
+   ]
+
+Dyad /:
+splitDyad @ Dyad[a_Association, b_Association] :=
+  AssociationThread[
+    Keys[a] -> MapThread[Dyad, {TheMatrix @ a, TheMatrix @ b}]
+   ]
+
+
 Dyad[a_] := Module[
   { qq = NonCommutativeSpecies[a] },
   Message[Dyad::one];
@@ -2712,15 +2752,16 @@ Dyad[a_, b_] := Module[
  ] /; Not @ FreeQ[{a, b}, Ket[_Association]]
 
 
+(* Direct constuction of Dyad *)
 Dyad[{aa___Rule, ss:{__?SpeciesQ}...}, {bb___Rule, tt:{__?SpeciesQ}...}] :=
   With[
     { sss = Union @ FlavorNone @ Join[ss],
       ttt = Union @ FlavorNone @ Join[tt] },
     Dyad[
-      Join[
+      KeySort @ Join[
         AssociationThread[sss -> Lookup[<||>, sss]],
         Association @ KetRule @ {aa} ],
-      Join[
+      KeySort @ Join[
         AssociationThread[ttt -> Lookup[<||>, ttt]],
         Association @ KetRule @ {bb} ]
      ]

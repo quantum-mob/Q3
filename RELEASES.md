@@ -2,6 +2,8 @@
 
 ## v2.9.9
 
+- Dyad has been generalized and enhanced.
+- TheMatrix has been enhanced.
 - DyadExpression has been renamed DyadForm.
 - LindbladBasis and LindbladBasisMatrix have been renamed LieBasis and LieBasisMatrix, respectively.
 
