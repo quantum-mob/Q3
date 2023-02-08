@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.19 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 15:23:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-08 11:29:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1701,12 +1701,20 @@ Matrix::rmndr = "There remain some elements, ``, that are not specified for matr
 
 Matrix[ expr_ ] := Matrix[expr, NonCommutativeSpecies @ expr]
 
-Matrix[ expr_, q_?SpeciesQ ] := Matrix[expr, q @ {None}]
+Matrix[ expr_, S_?SpeciesQ ] := Matrix[expr, S @ {None}]
+
+Matrix[ expr_, S_?SpeciesQ, tt_ ] := Matrix[expr, S @ {None}, tt]
+
+Matrix[ expr_, ss_, T_?SpeciesQ ] := Matrix[expr, ss, T @ {None}]
 
 Matrix[ expr_, ss:{__?SpeciesQ} ] := Matrix[expr, FlavorNone @ ss] /;
   Not[FlavorNoneQ @ ss]
 
-Matrix[ expr_Plus, qq:{___?SpeciesQ} ] :=
+Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
+  Matrix[expr, FlavorNone @ ss, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ {ss, tt}]
+
+Matrix[ expr_Plus, qq:{___?SpeciesQ}.. ] :=
   TrigToExp @ ExpToTrig @ Total @ Map[
     Matrix[#, qq]&,
     List @@ KetChop[expr]
@@ -1714,15 +1722,15 @@ Matrix[ expr_Plus, qq:{___?SpeciesQ} ] :=
 (* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
 (* NOTE: KetChop is required here because "0. + Ket[...]" may happen. *)
 
-Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ} ] := z * Matrix[op, qq]
+Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ}.. ] := z * Matrix[op, qq]
 
 Matrix[ z_?CommutativeQ, {} ] := z * One[2]
 
-Matrix[ z_?CommutativeQ, qq:{__?SpeciesQ} ] := With[
-  { kk = Range[ Times @@ (Dimension /@ qq) ] },
-  SparseArray @ Thread[ Transpose @ {kk, kk} -> z ]
- ]
+Matrix[ z_?CommutativeQ, qq:{__?SpeciesQ} ] :=
+  z * One[Times @@ Dimension @ qq]
 
+Matrix[ z_?CommutativeQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
+  z * One[Times @@ Dimension @ ss, Times @@ Dimension @ tt]
 
 (* Dagger *)
 
@@ -2693,13 +2701,11 @@ Matrix[ Dyad[a_Association, b_Association],
       Message[Dyad::mtrx, Row @ {ss, Keys @ a, Keys @ b, tt}];
       Return @ Zero[Length @ ss, Length @ tt]
      ];
-    aa = Map[KeyTake[#, ss]&] @ Map[Join[a, #]&] @
+    aa = Map[TheMatrix] @ Map[KeyTake[ss]] @ Map[Join[a, #]&] @
       Map[AssociationThread[sa -> #]&] @ Tuples[LogicalValues @ sa];
-    bb = Map[KeyTake[#, tt]&] @ Map[Join[b, #]&] @
+    bb = Map[TheMatrix] @ Map[KeyTake[tt]] @ Map[Join[b, #]&] @
       Map[AssociationThread[tb -> #]&] @ Tuples[LogicalValues @ tb];
-    Total @ MapThread[ Dyad,
-      { CircleTimes @@@ TheMatrix /@ aa, 
-        CircleTimes @@@ TheMatrix /@ bb } ]
+    Total @ MapThread[ Dyad, {CircleTimes @@@ aa, CircleTimes @@@ bb}]
    ]
 
 
@@ -2774,22 +2780,12 @@ Dyad[0, _, __List] = 0
 
 Dyad[_, 0, __List] = 0
 
-(* Dyad[a_Association, b_Association, {}|All] := Multiply[Ket[a], Bra[b]] *)
-(* NOTE: No particlar reason to store it as Dyad. *)
-
-(*
-Dyad[Ket[a_Association], Ket[b_Association], {}|All] :=
-  Multiply[Ket[a], Bra[b]] *)
-(* NOTE: No particlar reason to store it as Dyad. *)
-
 
 Dyad[S_?SpeciesQ] := Dyad[FlavorNone @ {S}]
 
 Dyad[ss:{__?SpeciesQ}] := Dyad[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
 Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss]
-
-(* Dyad[{}|All][a_, b_] := Dyad[a, b, All] *)
 
 
 Dyad[a_, b_, ss_] := Dyad[a, b, ss, ss]
