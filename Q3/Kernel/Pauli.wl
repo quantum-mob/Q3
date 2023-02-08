@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-08 11:29:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.30 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-08 20:28:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -71,7 +71,7 @@ BeginPackage["Q3`"]
 { PartialTrace, PartialTranspose };
 { ReducedMatrix, Reduced };
 
-{ PauliDecompose, PauliCompose };
+{ PauliDecompose, PauliCompose, PauliVector };
 { PauliDecomposeRL, PauliComposeRL };
 { PauliEmbed, PauliApply };
 
@@ -91,6 +91,8 @@ BeginPackage["Q3`"]
 
 (**** OBSOLETE SYMBOLS ****)
 
+{ PauliDecomposeOld, PauliComposeOld }; (* to be excised *)
+
 (* Now comes as a built-in function with v13.1, but with an additional
    Transpose compared to the old one.
    Kept here for backward compatibility. *)
@@ -104,8 +106,6 @@ BeginPackage["Q3`"]
 { WignerFunction }; (* obsolete *)
 { PauliExpression, PauliExpressionRL }; (* obsolete *)
 { PauliInner }; (* obsolete *)
-{ PauliExtract, PauliExtractRL }; (* obsolete *)
-{ PauliExpand }; (* OBSOLETE *)
 
 Begin["`Private`"]
 
@@ -1119,14 +1119,6 @@ $RaiseLowerRules = {
  }
 
 
-PauliExpand::usage = "PauliExpand[expr] returns more explicit form of the expression expr."
-
-PauliExpand[expr_] := (
-  Message[Q3General::obsolete, PauliExpand, Elaborate];
-  Elaborate[expr]
- )
-
-
 Raise::usage = "Raise represents the raising operator."
 
 SetAttributes[Raise, Listable]
@@ -1542,7 +1534,7 @@ PauliInner[v1_?VectorQ, v2_?VectorQ] := (
 
 BlochVector::usage = "BlochSphere[{c0, c1}] returns the point on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
 
-BlochVector[rho_?MatrixQ] := Simplify[Rest @ PauliDecompose[rho] * 2] /;
+BlochVector[rho_?MatrixQ] := Simplify[2 * PauliVector[rho]] /;
   Dimensions[rho] == {2, 2}
 
 BlochVector[cc_?VectorQ] := Module[
@@ -2273,17 +2265,22 @@ RotationSystem::notuni = "Matrix `` is not a unitary matrix; its determinant is 
 RotationSystem::notorth = "Matrix `` is not an orthogonal matrix; its determinant is ``."
 
 RotationSystem[mat_?MatrixQ] := Module[
-  { cc, ang, vec },
+  { ang, vec },
   If[ Not @ UnitaryMatrixQ @ mat,
     Message[RotationSystem::notuni, Normal @ mat, Chop @ Det @ mat]
    ];
-  cc = {1, I, I, I} * PauliDecompose[mat / Sqrt[Det @ mat]];
-  cc = Simplify @ ExpToTrig @ cc;
+  
+  ang = Tr[mat / Sqrt[Det @ mat]] / 2;
+  ang = Simplify @ ExpToTrig @ ang;
+  ang = Chop[2 * ArcCos[Chop @ ang]];
 
-  If[Chop[Norm @ Rest @ cc] == 0, Return @ {0, {0, 0, 1}}];
-
-  ang = 2 * ArcCos[Chop @ First @ cc] // Chop;
-  vec = Chop[Normalize @ Rest @ cc];
+  vec = I * PauliVector[mat / Sqrt[Det @ mat]];
+  vec = Simplify @ ExpToTrig @ vec;
+  If[ Chop[Norm @ vec] == 0,
+    Return @ {0, {0, 0, 1}},
+    vec = Chop[Normalize @ vec]
+   ];
+  
   Which[
     vec[[3]] < 0,
     ang = -ang;
@@ -3023,53 +3020,85 @@ One[{m_Integer, n_Integer}, p_Integer] :=
 (**** </One> ****)
 
 
-PauliExtract::usage = "PauliExtract has been deprecated. Use PauliDecompose instead."
+(**** <PauliDecompose> ****)
 
-PaulieExtract[m_?MatrixQ, dd_] := (
-  Message[Q3General::obsolete, "PaulieExtract", "PauliDecompose"];
-  PauliDecompose[m, dd]
- )
+PauliDecompose::usage = "PauliDecompose[mat] gives an Association of coefficients in the Pauli decomposition of 2^n\[Times]2^n matrix mat."
 
-
-PauliExtractRL::usage = "PauliExtractRL has been deprecated. Use PauliDecomposeRL instead."
-
-PaulieExtractRL[m_?MatrixQ, dd_] := (
-  Message[Q3General::obsolete, "PaulieExtractRL", "PauliDecomposeRL"];
-  PauliDecomposeRL[m, dd]
- )
-
-
-(* ********************************************************************* *)
-
-PauliDecompose::usage = "PauliDecompose[m] gives the coefficients in the Pauli decomposition of m as a tensor of rank n, where m is a 2^n x 2^n matrix."
-
-PauliDecompose::badarg = "The argument M of PauliDecompose[M] should be a matrix of size 2^n*2^n."
-
-PauliDecompose[dd:(0|1|2|3)..][m_?MatrixQ] := PauliDecompose[m, {dd}]
-
-PauliDecompose[{dd:(0|1|2|3)..}][m_?MatrixQ] := PauliDecompose[m, {dd}]
-
-
-PauliDecompose[m_?MatrixQ, d:(0|1|2|3)] := PauliDecompose[m, {d}]
-
-PauliDecompose[m_?MatrixQ, idx:{ (0|1|2|3).. }] :=
-  Tr @ Dot[m, CircleTimes @@ ThePauli /@ idx] / Length[m]
+PauliDecompose::dim = "The dimensions `` of matrix `` is not integer powers of 2."
 
 PauliDecompose[mat_?SquareMatrixQ] := Module[
   { n = Log[2, Length @ mat],
+    trs },
+  If[ Not[IntegerQ @ n],
+    Message[PauliDecompose::dim, Dimensions @ mat, mat];
+    Return[<||>]
+   ];
+  trs = SparseArray @ {
+    {1, 0,  0,  1},
+    {0, 1,  1,  0},
+    {0, I, -I,  0},
+    {1, 0,  0, -1}
+   } / 2;
+  trs = CircleTimes @@ Table[trs, n];
+  KeyMap[(#-1)&] @ Association @ Most @ ArrayRules @
+    ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]]
+ ]
+
+PauliCompose::usage = "PauliCompose[assc] reconstructs the matrix using the Pauli decomposition coefficients given in Association assc."
+
+PauliCompose[aa_Association] :=
+  Total @ KeyValueMap[((Pauli @@ #1) * #2)&, aa]
+
+
+PauliVector::usage = "PauliVector[mat] returns the Pauli decomposition coefficients of 2\[Times]2 matrix mat."
+
+PauliVector::dim = "`` is not a 2\[Times]2 matrix."
+
+PauliVector @ {{a_, b_}, {c_, d_}} := {b+c, I*(b-c), a-d} / 2
+
+PauliVector[mat_SparseArray] := PauliVector[Normal @ mat] /;
+  Dimensions[mat] == {2, 2}
+
+PauliVector[mat_] := (
+  Message[PauliVector::dim, mat];
+  {0, 0, 0}
+ )
+
+(**** </PauliDecompose> ****)
+
+
+(**** <PauliDecomposeOld> ****)
+
+PauliDecomposeOld::usage = "PauliDecomposeOld[m] gives the coefficients in the Pauli decomposition of m as a tensor of rank n, where m is a 2^n x 2^n matrix."
+
+PauliDecomposeOld::dim = "The argument M of PauliDecomposeOld[M] should be a matrix of size 2^n*2^n."
+
+PauliDecomposeOld[dd:(0|1|2|3)..][m_?MatrixQ] := PauliDecomposeOld[m, {dd}]
+
+PauliDecomposeOld[dd:{(0|1|2|3)..}][m_?MatrixQ] := PauliDecomposeOld[m, dd]
+
+
+PauliDecomposeOld[m_?MatrixQ, d:(0|1|2|3)] := PauliDecomposeOld[m, {d}]
+
+PauliDecomposeOld[m_?MatrixQ, idx:{(0|1|2|3)..}] :=
+  Tr @ Dot[m, CircleTimes @@ ThePauli /@ idx] / Length[m]
+
+
+PauliDecomposeOld[mat_?SquareMatrixQ] := Module[
+  { n = Log[2, Length @ mat],
     idx },
   If [ Not @ IntegerQ[n],
-    Message[PauliDecompose::badarg];
+    Message[PauliDecomposeOld::dim];
     Return[0]
    ];
   idx = Tuples[{0, 1, 2, 3}, n];
-  ArrayReshape[PauliDecompose[mat, #]& /@ idx, Table[4, n]]
+  ArrayReshape[PauliDecomposeOld[mat, #]& /@ idx, Table[4, n]]
  ]
 
 
-PauliCompose::usage = "PauliCompose[coeff] constructs a 2^n x 2^n matrix using the coefficients specified in the tensor coeff.\nIt is an inverse of PauliDecompose and coeff is usually the tensor returned by it."
+PauliComposeOld::usage = "PauliComposeOld[coeff] constructs a 2^n x 2^n matrix using the coefficients specified in the tensor coeff.\nIt is an inverse of PauliDecomposeOld and coeff is usually the tensor returned by it."
 
-PauliCompose[c_?TensorQ] := Module[
+PauliComposeOld[c_?TensorQ] := Module[
   { n = TensorRank[c],
     indextable, indexlist, result = 0 },
   indextable = Table[ {{0},{1},{2},{3}}, {n} ];
@@ -3082,6 +3111,10 @@ PauliCompose[c_?TensorQ] := Module[
   Return[result]
  ]
 
+(**** </PauliDecomposeOld> ****)
+
+
+(**** </PauliDecomposeRL> ****)
 
 PauliDecomposeRL::usage = "PauliDecomposeRL[M], where M is a matrix of size 2^n*2^n, gives the coefficients of a Pauli decomposition of M as a tensor of rank n."
 
@@ -3108,7 +3141,7 @@ PauliDecomposeRL[mat_?MatrixQ] := Module[
   { n = Log[2, Length @ mat],
     idx },
   If [ !IntegerQ[n],
-    Message[PauliDecompose::badarg];
+    Message[PauliDecompose::dim];
     Return[0]
    ];
   idx = Tuples[{0, 3, 4, 5}, n];
@@ -3136,6 +3169,8 @@ PauliComposeRL[c_?TensorQ] := Module[
    ];
   result
  ]
+
+(**** </PauliDecomposeRL> ****)
 
 
 (**** <SchmidtDecomposition> ****)
@@ -3726,7 +3761,7 @@ PauliEmbed::usage = "PauliEmbed[A, qubits, n] returns the fully expanded form of
 PauliEmbed[A_?MatrixQ, bits_List, len_Integer] := Module[
   { a, b, c, d, none,
     n = Length[bits],
-    AA = PauliDecompose[A] },
+    AA = PauliDecomposeOld[A] },
   a = Table[1, {len}];
   b = Table[Range[4], {n}];
   b = Flatten @ Outer[none, Sequence @@ b];

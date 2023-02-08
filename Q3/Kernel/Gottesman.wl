@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.46 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-02 15:36:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.49 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-08 20:01:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -184,7 +184,7 @@ PauliQ[mat_?SquareMatrixQ] := Module[
   kk = NestList[RotateLeft[#, 2]&, Range[2*n], n-1];
   tt = Transpose[tsr, #]& /@ kk;
   tt = Map[
-    Function[{x}, Flatten@Map[thePauliQ, x, {2 n - 2}]],
+    Function[{x}, Flatten @ Map[thePauliQ, x, {2*(n-1)}]],
     tt ];
   If[ AllTrue[tt, (Length[#] == Power[2, n-1])&],
     AllTrue[Flatten @ tt, Identity],
@@ -198,10 +198,14 @@ PauliQ[_Association] = False
 
 PauliQ[Pauli[(0|1|2|3)..]] = True
 
+PauliQ[(-1|-I|I) * Pauli[(0|1|2|3)..]] = True
+
 
 PauliQ[_?QubitQ[___, 0|1|2|3]] = True
 
 PauliQ[HoldPattern @ Multiply[(_?QubitQ[___, 0|1|2|3])..]] = True
+
+PauliQ[(-1|-I|I) * HoldPattern @ Multiply[(_?QubitQ[___, 0|1|2|3])..]] = True
 
 PauliQ[expr_] := PauliQ[Matrix @ expr]
 
@@ -592,9 +596,9 @@ Stabilizer[expr_, ss:{__?QubitQ}] := With[
 getStabilizer[vec_?VectorQ] := Module[
   { rho = Dyad[vec, vec],
     tsr },
-  tsr = Association @ Most @ ArrayRules @ PauliDecompose[rho];
+  tsr = PauliDecompose[rho];
   If[Not[Equal @@ Abs[Values @ tsr]], Return @ $Failed];
-  Sign /@ KeyMap[(#-1)&, tsr]
+  Sign /@ tsr
  ]
 
 
@@ -621,10 +625,8 @@ StabilizerStateQ[vec_?VectorQ] := (
  ) /; Not @ IntegerQ @ Log[2, Length @ vec]
 
 StabilizerStateQ[vec_?VectorQ] := Module[
-  { rho = Dyad[vec, vec],
-    tsr },
-  tsr = Most @ ArrayRules @ PauliDecompose[rho];
-  TrueQ[Equal @@ Abs[Values @ tsr]]
+  { rho = Dyad[vec, vec] },
+  TrueQ[Equal @@ Abs[Values @ PauliDecompose @ rho]]
  ]
 
 StabilizerStateQ[expr_] := StabilizerStateQ[Matrix @ expr]

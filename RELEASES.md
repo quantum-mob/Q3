@@ -2,6 +2,7 @@
 
 ## v2.9.9
 
+- New implementation of PauliDecompose for faster performance for 8 or more qubits. BlochVector, RotationSystem, Stabilzer and StabilizerStateQ are updated accordingly.
 - Dyad has been generalized and enhanced; Matrix has been generalied and enhanced accordingly.
 - TheMatrix has been enhanced.
 - DyadExpression has been renamed DyadForm.

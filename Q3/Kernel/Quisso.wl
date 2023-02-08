@@ -983,8 +983,10 @@ Rotation[phi_, S_?QubitQ, v:{_, _, _}, opts___?OptionQ] :=
 
 Rotation[phi_, qq:{__?QubitQ}, rest___] :=
   Map[Rotation[phi, #, rest]&, qq]
-(* NOTE: NOT FlavorNone@qq because S[..., k] in qq may indicate the rotation
-   axis. *)
+
+Rotation[aa_List, qq:{__?QubitQ}, rest___] :=
+  MapThread[Rotation[#1, #2, rest]&, {aa, qq}]
+
 
 Rotation /:
 HoldPattern @ Multiply[pre___, op_Rotation, post___] :=
