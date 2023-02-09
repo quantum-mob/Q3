@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.9.10
+
+- A bug fix in Matrix[Permutation[...], ...].
+
 ## v2.9.9
 
 - New implementation of PauliDecompose for faster performance for 8 or more qubits. BlochVector, RotationSystem, Stabilzer and StabilizerStateQ are updated accordingly.

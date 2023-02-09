@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.27 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 00:05:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.28 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-08 23:24:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -478,9 +478,15 @@ Permutation[cyc_Cycles, ss:{__?SpeciesQ}] :=
   Permutation[cyc, FlavorNone @ ss] /;
   Not[FlavorNoneQ @ ss]
 
+
+Permutation /: Dagger[op_Permutation] = Conjugate[op] (* fallback *)
+
 Permutation /:
 Dagger @ Permutation[cyc_, ss:{__?SpeciesQ}] :=
   Permutation[InversePermutation[cyc], ss]
+
+
+Permutation /: Elaborate[op_Permutation] = op (* fallback *)
 
 Permutation /:
 Elaborate @ Permutation[cyc_?PermutationCyclesQ, ss:{__?SpeciesQ}] :=
@@ -491,8 +497,14 @@ Elaborate @ Permutation[cyc_?PermutationCyclesQ, ss:{__?SpeciesQ}] :=
 (* NOTE: Here, _?PermutationCyclesQ cannot be replaced by
    $PermutationSpec because of HoldPattern. *)
 
+
 Permutation /:
-Matrix[op_Permutation, rest___] := Matrix[Elaborate @ op, rest]
+Matrix[
+  op:Permutation[_?PermutationCyclesQ, {__?SpeciesQ}],
+  rest___ ] := Matrix[Elaborate @ op, rest]
+
+Permutation /: (* fallback *)
+Matrix[op_Permutation, rest___] := op * Matrix[1, rest]
 
 
 Permutation /:
