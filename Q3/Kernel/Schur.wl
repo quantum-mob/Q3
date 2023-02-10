@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.0 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-21 02:29:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.1 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-10 23:12:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -470,8 +470,7 @@ SchurBasis[{a_?SpeciesQ, rest__?SpeciesQ}] :=
     Fold[SchurBasis, SchurBasis @ {a}, FlavorNone @ {rest}]
   
 
-SchurBasis[S_?SpeciesQ] := SchurBasis[S[None]] /;
-  FlavorLast[S] =!= None
+SchurBasis[S_?SpeciesQ] := SchurBasis[S[$]] /; Not[FlavorNoneQ @ S]
 
 SchurBasis[spec_][bs_?SchurBasisQ] := SchurBasis[bs, spec]
 

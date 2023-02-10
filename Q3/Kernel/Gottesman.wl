@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.49 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-08 20:01:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.51 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-10 20:45:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -39,12 +39,12 @@ PauliGroup::todo = "Not supported yet."
 FullPauliGroup[S_?QubitQ] := FullPauliGroup @ {S}
 
 FullPauliGroup[ss:{__?QubitQ}] := FullPauliGroup[FlavorNone @ ss] /;
-  Not @ ContainsOnly[FlavorLast @ ss, {None}]
+  Not[FlavorNoneQ @ {ss}]
 
 PauliGroup[S_?QubitQ] := PauliGroup @ {S}
 
 PauliGroup[ss:{__?QubitQ}] := PauliGroup[FlavorNone @ ss] /;
-  Not @ ContainsOnly[FlavorLast @ ss, {None}]
+  Not[FlavorNoneQ @ {ss}]
 
 
 FullPauliGroup /:
@@ -246,12 +246,12 @@ CliffordGroup::todo = "Not supported yet."
 FullCliffordGroup[S_?QubitQ] := FullCliffordGroup @ {S}
 
 FullCliffordGroup[ss:{__?QubitQ}] := FullCliffordGroup[FlavorNone @ ss] /;
-  Not @ ContainsOnly[FlavorLast @ ss, {None}]
+  Not[FlavorNoneQ @ {ss}]
 
 CliffordGroup[S_?QubitQ] := CliffordGroup @ {S}
 
 CliffordGroup[ss:{__?QubitQ}] := CliffordGroup[FlavorNone @ ss] /;
-  Not @ ContainsOnly[FlavorLast @ ss, {None}]
+  Not[FlavorNoneQ @ {ss}]
 
 
 FullCliffordGroup /:
@@ -281,7 +281,7 @@ CliffordGroup /:
 GroupGenerators @ CliffordGroup[n_Integer] := Block[
   { S, ss },
   Let[Qubit, S];
-  ss = S[Range @ n, None];
+  ss = S[Range @ n, $];
   gg = GroupGenerators[CliffordGroup @ ss];
   ExpressionFor /@ Matrix[gg, ss]
  ]
@@ -608,9 +608,9 @@ Stabilizer[g_Graph, ss:{__?QubitQ}] :=
   Stabilizer[GraphState[g, FlavorNone @ ss], FlavorNone @ ss]
 
 Stabilizer[g_Graph, vtx_?QubitQ] := Module[
-  { new = If[FlavorLast[vtx] === None, Drop[vtx, -1], vtx],
+  { new = If[FlavorNoneQ[vtx], Drop[vtx, -1], vtx],
     adj },
-  adj = AdjacencyList[g, new|new[None]];
+  adj = AdjacencyList[g, new|new[$]];
   vtx[1] ** Apply[Multiply, Through[adj[3]]]
  ]
 
@@ -924,7 +924,7 @@ FromGottesmanMatrix[mat_?MatrixQ, _Integer] :=
 FromGottesmanMatrix[mat_?MatrixQ] := Block[
   { S, ss },
   Let[Qubit, S];
-  ss = S[Range[Length[mat]/2], None];
+  ss = S[Range[Length[mat]/2], $];
   op = FromGottesmanMatrix[mat, ss];
   ExpressionFor @ Matrix[op, ss]
  ]

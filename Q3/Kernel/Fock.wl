@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.39 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 06:41:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.41 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-10 23:05:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -231,7 +231,7 @@ setHeisenberg[x_Symbol, spin_?SpinNumberQ, top_Integer] := (
   Dagger[x] ^= x;
   Dagger[x[j___]] ^:= x[j];
 
-  x[j___, None] := x[j];
+  x[j___, $] := x[j];
   x[] := x;
   
   x /: Conjugate[x] := x;
@@ -381,7 +381,7 @@ setMajorana[x_Symbol] := (
   Dagger[x] ^= x;
   Dagger[x[j___]] ^:= x[j];
   
-  x[j___, None] := x[j];
+  x[j___, $] := x[j];
   x[] := x;
   
   x /: Conjugate[x] := x;
@@ -392,15 +392,18 @@ setMajorana[x_Symbol] := (
  )
 
 
-TrueSpin::usage = "TrueSpin[c[i,j,...]] returns Spin[c] if the Flavor indices i, j, ... are consistent with Spin[c]; otherwise returns 0 with a warning message. TrueSpin[c] always returns zero, wheather with or without warning message."
+TrueSpin::usage = "TrueSpin[c[i,j,\[Ellipsis]]] returns Spin[c] if the Flavor indices i, j, \[Ellipsis] are consistent with Spin[c]; otherwise returns 0 with a warning message. TrueSpin[c] always returns zero, wheather with or without warning message."
 
-TrueSpin[ HoldPattern @ Dagger[c_?ParticleQ] ] := TrueSpin[c[]]
+TrueSpin[ HoldPattern @ Dagger[c_?ParticleQ] ] := TrueSpin[c]
 
-TrueSpin[ c_Symbol?ParticleQ ] := TrueSpin[c[]]
-(* NOTICE the request through the form with extra [], instead of direct
-   inspection with the Head itself. *)
+TrueSpin[ c_Symbol?ParticleQ ] :=
+  If[ Spin[c] == 0,
+    Spin[c],
+    Message[Flavors::bad, {}, c, Spin[c], Vacuum[c]];
+    0
+   ]
 
-TrueSpin[ op:c_Symbol?ParticleQ[j___] ] :=
+TrueSpin[ op:c_Symbol?ParticleQ[j__] ] :=
   If[ Spin[op] === Spin[c],
     Spin[c],
     Message[Flavors::bad, {j}, c, Spin[c], Vacuum[c]];

@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.10.0
+
+- The flavor index referring to the species itself is now $ (rather than None).
+
 ## v2.9.10
 
 - A bug fix in Matrix[Permutation[...], ...].

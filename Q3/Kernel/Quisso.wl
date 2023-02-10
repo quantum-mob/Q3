@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.11 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 13:57:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.14 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-10 20:30:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -99,7 +99,7 @@ AddElaborationPatterns[
  ]
 
 
-Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., None] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., None].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., None] represents the qubit."
+Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
 
 Qubit /:
 Let[Qubit, {ls__Symbol}, opts___?OptionQ] := (
@@ -181,16 +181,10 @@ setQubit[x_Symbol] := (
   x[j___, 0 -> 1] = x[j, 5];
   
   x[j___, All]  := Flatten @ x[j, {1, 2, 3}];
-
   x[j___, Full] := Flatten @ x[j, {0, 1, 2, 3}];
   
-  x[j___, Null] = x[j, None];
-  
-  x[j___, None, k_] = x[j, k];
-  (* In particular, x[j,None,None] = x[j,None]. *)
-  
-  Format @ x[j___, None] :=
-    Interpretation[SpeciesBox[x, {j}, {}], x[j, None]];
+  Format @ x[j___, $] :=
+    Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];
 
   Format[ x[j___, n_Integer?Negative] ] :=
     Interpretation[Superscript[x[j, -n], "\[Dagger]"], x[j, n]];
@@ -217,16 +211,16 @@ setQubit[x_Symbol] := (
   Format @ x[j___, 9] := Interpretation[SpeciesBox[x, {j}, {"F"}], x[j, 9]];
   
   Format @ x[j___, 10] := Interpretation[
-    Subscript[Row @ {"(", Ket[0], Bra[0], ")"}, x[j, None]],
+    Subscript[Row @ {"(", Ket[0], Bra[0], ")"}, x[j, $]],
     x[j, 10]
    ];
   Format @ x[j___, 11] := Interpretation[
-    Subscript[Row @ {"(", Ket[1], Bra[1], ")"}, x[j, None]],
+    Subscript[Row @ {"(", Ket[1], Bra[1], ")"}, x[j, $]],
     x[j, 11]
    ];
  )
 
-Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := 0
+Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := 0
 
 
 Raise[S_?QubitQ] := S[4]
@@ -310,35 +304,35 @@ HoldPattern @ Multiply[a___, _?QubitQ[___, 0], b___] := Multiply[a, b]
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,4], Ket[b_Association], post___ ] :=
-  0 /; b @ a[j, None] == 0
+  0 /; b @ a[j, $] == 0
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,4], Ket[b_Association], post___ ] :=
   Multiply[
     pre,
-    Ket @ KeyDrop[b, a[j, None]],
+    Ket @ KeyDrop[b, a[j, $]],
     post
-   ] /; b @ a[j, None] == 1
+   ] /; b @ a[j, $] == 1
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,5], Ket[b_Association], post___ ] :=
-  0 /; b @ a[j, None] == 1
+  0 /; b @ a[j, $] == 1
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,5], Ket[b_Association], post___ ] :=
   Multiply[
     pre,
-    Ket[b][a[j, None] -> 1],
+    Ket[b][a[j, $] -> 1],
     post
-   ] /; b @ a[j, None] == 0
+   ] /; b @ a[j, $] == 0
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,1], Ket[b_Association], post___ ] :=
   With[
-    { m = Mod[ 1 + b[ a[j,None] ], 2 ] },
+    { m = Mod[ 1 + b[ a[j,$] ], 2 ] },
     Multiply[
       pre,
-      Ket @ KeySort @ KetTrim @ Append[ b, a[j,None]->m ],
+      Ket @ KeySort @ KetTrim @ Append[ b, a[j,$]->m ],
       post
      ]
    ]
@@ -346,17 +340,17 @@ HoldPattern @
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,2], Ket[b_Association], post___ ] :=
   With[
-    { m = Mod[ 1 + b[ a[j,None] ], 2 ] },
+    { m = Mod[ 1 + b[ a[j,$] ], 2 ] },
     (2 m - 1) I Multiply[
       pre,
-      Ket @ KeySort @ KetTrim @ Append[ b, a[j,None]->m ],
+      Ket @ KeySort @ KetTrim @ Append[ b, a[j,$]->m ],
       post
      ]
    ]
 
 HoldPattern @
   Multiply[ x___, a_?QubitQ[j___,3], Ket[b_Association], y___ ] :=
-  (1 - 2 b[a[j,None]]) *
+  (1 - 2 b[a[j,$]]) *
   Multiply[x, Ket @ KetTrim @ b, y]
 
 (*
@@ -379,19 +373,19 @@ HoldPattern @ Multiply[ x___, a_?QubitQ[j___,8], Ket[b_Association], y___ ] :=
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,10], Ket[b_Association], post___ ] :=
-  Multiply[pre, Ket[b], post] /; b @ a[j, None] == 0
+  Multiply[pre, Ket[b], post] /; b @ a[j, $] == 0
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,10], Ket[b_Association], post___ ] :=
-  0 /; b @ a[j, None] == 1
+  0 /; b @ a[j, $] == 1
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,11], Ket[b_Association], post___ ] :=
-  Multiply[pre, Ket[b], post] /; b @ a[j, None] == 1
+  Multiply[pre, Ket[b], post] /; b @ a[j, $] == 1
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,11], Ket[b_Association], post___ ] :=
-  0 /; b @ a[j, None] == 0
+  0 /; b @ a[j, $] == 0
 
 (* Gates on Bra *)
 
@@ -549,18 +543,18 @@ Base[ S_?QubitQ[j___, _] ] := S[j]
 
 (* FlavorNone: See Cauchy *)
 
-FlavorNone[S_?QubitQ] := S[None]
+FlavorNone[S_?QubitQ] := S[$]
 
-FlavorNone[S_?QubitQ -> m_] := S[None] -> m
+FlavorNone[S_?QubitQ -> m_] := S[$] -> m
 
 
 (* FlavorMute: See Cauchy *)
 
-FlavorMute[S_Symbol?QubitQ] := S[None]
+FlavorMute[S_Symbol?QubitQ] := S[$]
 
-FlavorMute[S_Symbol?QubitQ[j___, _]] := S[j, None]
+FlavorMute[S_Symbol?QubitQ[j___, _]] := S[j, $]
 
-FlavorMute[S_Symbol?QubitQ[j___, _] -> m_] := S[j, None] -> m
+FlavorMute[S_Symbol?QubitQ[j___, _] -> m_] := S[j, $] -> m
 
 
 $RaiseLowerRules = Join[ $RaiseLowerRules,
@@ -750,8 +744,11 @@ ParityOddQ[v_Ket, a_?QubitQ] := OddQ @ v @ a
 
 (**** <Matrix for Qubits> ****)
 
-TheMatrix[ _?QubitQ[___, m_Integer?Negative] ] :=
-  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[I*2*Pi*Power[2, m]]}, {2, 2}]
+TheMatrix[ _?QubitQ[___, +C[m_Integer?Negative]] ] :=
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*2*Pi*Power[2, m]]}, {2, 2}]
+
+TheMatrix[ _?QubitQ[___, -C[m_Integer?Negative]] ] :=
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[-I*2*Pi*Power[2, m]]}, {2, 2}]
 
 TheMatrix[ _?QubitQ[___, m_] ] := ThePauli[m]
 
@@ -978,7 +975,7 @@ QuissoPhase[args___] := (
 Options[Rotation] = { "Label" -> Automatic }
 
 Rotation[phi_, S_?QubitQ, v:{_, _, _}, opts___?OptionQ] :=
-  Rotation[phi, S[None], v, opts] /;
+  Rotation[phi, S[$], v, opts] /;
   Not[FlavorNoneQ @ S]
 
 Rotation[phi_, qq:{__?QubitQ}, rest___] :=
@@ -1037,7 +1034,7 @@ EulerRotation[aa:{_, _, _}, qq:{__?QubitQ}, rest___] :=
   Map[ EulerRotation[aa, #, rest]&, FlavorNone @ qq ]
 
 EulerRotation[aa:{_, _, _}, G_?QubitQ, opts___?OptionQ] :=
-  EulerRotation[ aa, G[None], opts ] /; Not[FlavorNoneQ @ G]
+  EulerRotation[ aa, G[$], opts ] /; Not[FlavorNoneQ @ G]
 
 EulerRotation /:
 HoldPattern @ Multiply[pre___, op_EulerRotation, post___ ] :=
@@ -1362,14 +1359,14 @@ HoldPattern @ Matrix[Dagger[op_Deutsch], rest___] :=
 
 (**** <ControlledU> ****)
 
-ControlledU::usage = "ControlledU[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., None] controlled by the qubits C1, C2.\nControlledU[C, T] is equivalent to ControlledU[{C}, T].\nControlledU[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it."
+ControlledU::usage = "ControlledU[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., $] controlled by the qubits C1, C2.\nControlledU[C, T] is equivalent to ControlledU[{C}, T].\nControlledU[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it."
 
 ControlledU::nonuni = "The operator `` is not unitary."
 
 SetAttributes[ControlledU, NHoldFirst]
 
 ControlledU[S_?QubitQ, expr_, opts___?OptionQ] :=
-  ControlledU[S @ {None}, expr, opts]
+  ControlledU[S @ {$}, expr, opts]
 
 ControlledU[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
   ControlledU[FlavorNone @ ss, expr, opts] /;
@@ -1446,7 +1443,7 @@ Options[ControlledExp] = {
  }
 
 ControlledExp[S_?QubitQ, expr_, opts___?OptionQ] :=
-  ControlledExp[{S[None]}, expr, opts]
+  ControlledExp[{S[$]}, expr, opts]
 
 ControlledExp[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
   ControlledExp[FlavorNone @ ss, expr, opts] /;
@@ -1920,7 +1917,7 @@ HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
     { ss = Union[Keys @ a, FlavorNone @ gg] },
     Block[
       { Missing },
-      Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := {1, 0};
+      Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := {1, 0};
       ProductState @ Association @ Thread[ ss -> Lookup[a, ss] ]
      ]
    ]
@@ -2001,7 +1998,7 @@ ProductState[a_Association, otps___][v__Rule] :=
 ProductState[a_Association, opts___][qq:(_?QubitQ | {__?QubitQ})] :=
   Block[
     { Missing },
-    Missing["KeyAbsent", _Symbol?QubitQ[___, None]] := {1, 0};
+    Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := {1, 0};
     Lookup[a, FlavorNone @ qq]
    ]
 
@@ -2227,20 +2224,15 @@ setQudit[x_Symbol, dim_Integer] := (
   
   x[j___, All] := x[j, Rule @@@ Tuples[Range[0, dim-1], 2]];
   
-  x[j___, Null] := x[j, None];
-  
-  x[j___, None, k_] := x[j, k];
-  (* In particular, x[j, None, None] = x[j, None]. *)
-
   x /: Dagger[ x[j___, Rule[a_Integer, b_Integer]] ] := x[j, Rule[b,a]];
 
   x[j___, Rule[a_Integer, b_Integer]] := (
-    Message[Qudit::range, dim, x[j,None]];
+    Message[Qudit::range, dim, x[j,$]];
     0
    ) /; Or[ a < 0, a >= Dimension[x], b < 0, b >= Dimension[x] ];
 
-  Format @ x[j___, None] :=
-    Interpretation[SpeciesBox[x, {j}, {}], x[j, None]];  
+  Format @ x[j___, $] :=
+    Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];  
   Format @ x[j___, 0] :=
     Interpretation[SpeciesBox[1, {j}, {0}], x[j, 0]]; 
   Format @ x[j___, a_ -> b_] := Interpretation[
@@ -2256,7 +2248,7 @@ AddGarnerPatterns[_?QuditQ]
 
 QuditQ[_] = False
 
-Missing["KeyAbsent", _Symbol?QuditQ[___, None]] := 0
+Missing["KeyAbsent", _Symbol?QuditQ[___, $]] := 0
 
 
 Qudits::usage = "Qudits[expr] gives the list of all qudits appearing in expr."
@@ -2279,24 +2271,24 @@ MultiplyDegree[_?QuditQ] = 1
 (* For a single Qudit, Dyad is meaningless. *)
 
 
-Base[ S_?QuditQ[j___, _] ] := S[j]
+Base[ S_?QuditQ[k___, _] ] := S[k]
 (* For Qudits, the final Flavor index is special. *)
 
 
 (* FlavorNone: See Cauchy *)
 
-FlavorNone[S_?QuditQ] := S[None]
+FlavorNone[S_?QuditQ] := S[$]
 
-FlavorNone[S_?QuditQ -> m_] := S[None] -> m
+FlavorNone[S_?QuditQ -> m_] := S[$] -> m
 
 
 (* FlavorMute: See Cauchy *)
 
-FlavorMute[S_Symbol?QuditQ] := S[None]
+FlavorMute[S_Symbol?QuditQ] := S[$]
 
-FlavorMute[S_Symbol?QuditQ[j___, _]] := S[j, None]
+FlavorMute[S_Symbol?QuditQ[k___, _]] := S[k, $]
 
-FlavorMute[S_Symbol?QuditQ[j___, _] -> m_] := S[j, None] -> m
+FlavorMute[S_Symbol?QuditQ[k___, _] -> m_] := S[k, $] -> m
 
 
 (**** <Ket for Qudits> ****)
@@ -2356,13 +2348,15 @@ WeylHeisenbergBasis[d_Integer] := Module[
 (* Qudit on Ket *)
 
 HoldPattern @
-  Multiply[a___, S_?QuditQ[j___, Rule[x_,y_]], v:Ket[_Association], b___] :=
-  Multiply[a, v[S[j,None] -> y], b] /; v[S[j,None]] == x
+  Multiply[ pre___,
+    S_?QuditQ[k___, Rule[x_,y_]], v:Ket[_Association],
+    post___ ] :=
+  Multiply[pre, v[S[k,$] -> y], post] /; v[S[k,$]] == x
 (* TODO: handle symbolic flavors x*)
 
 HoldPattern @
   Multiply[a___, S_?QuditQ[j___, Rule[x_,y_]], v:Ket[_Association], b___] :=
-  0 /; v[S[j,None]] != x
+  0 /; v[S[j,$]] != x
 (* TODO: handle symbolic flavors x*)
 
 

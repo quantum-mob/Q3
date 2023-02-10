@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.1 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 00:29:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.4 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-10 19:39:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -200,13 +200,8 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   
   x[j___, All] := Flatten @ x[j, {1,2,3}];
 
-  x[j___, Null] := x[j,None];
-
-  x[j___, None, k_] := x[j,k];
-  (* In particular, x[j,None,None] = x[j,None]. *)
-  
-  Format @ x[j___, None] :=
-    Interpretation[SpeciesBox[x, {j}, {}], x[j, None]];
+  Format @ x[j___, $] :=
+    Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];
 
   Format @ x[j___,0] := Interpretation[SpeciesBox[x, {j}, {0}], x[j, 0]];
   Format @ x[j___,1] := Interpretation[SpeciesBox[x, {j}, {"x"}], x[j, 1]];
@@ -218,14 +213,14 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   
   Format @ x[j___, a_->b_] := Interpretation[
     SpeciesBox[
-      Row @ {"(",Ket[b],Bra[a],")"}, {x[j, None]},
+      Row @ {"(",Ket[b],Bra[a],")"}, {x[j, $]},
       {}
      ],
     x[j, a -> b]
    ]
  )
 
-Missing["KeyAbsent", S_Symbol?SpinQ[___, None]] := Spin[S]
+Missing["KeyAbsent", S_Symbol?SpinQ[___, $]] := Spin[S]
 
 
 SpinQ::usage = "SpinQ[J] or SpinQ[J[...]] returns True if J is declared as a Spin operator."
@@ -374,53 +369,53 @@ HoldPattern @ Multiply[ x___, a_?SpinQ[j___,0], Ket[b_Association], y___ ] :=
   Multiply[ x, Ket[b], y ]
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,4], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], M = b[a[j,None]], v },
-  v = Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,None]]->M+1] ];
+  { J = Spin[a], M = b[a[j,$]], v },
+  v = Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M+1] ];
   Multiply[ x, v, y ]
- ] /; KeyExistsQ[b, a[j,None]]
+ ] /; KeyExistsQ[b, a[j,$]]
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,4], Ket[b_Association], y___ ] := 0
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,5], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], M = b[a[j,None]], v },
-  v = Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,None]]->M-1] ];
+  { J = Spin[a], M = b[a[j,$]], v },
+  v = Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M-1] ];
   Multiply[ x, v, y ]
- ] /; KeyExistsQ[b, a[j,None]]
+ ] /; KeyExistsQ[b, a[j,$]]
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,5], Ket[b_Association], y___ ] := Module[
   { J = Spin[a], v },
-  v = Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,None]->J-1]];
+  v = Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,$]->J-1]];
   Multiply[ x, v, y ]
  ]
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,1], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], M = b[a[j,None]], v },
-  v = 1/2 Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,None]]->M-1] ] +
-      1/2 Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,None]]->M+1] ];
+  { J = Spin[a], M = b[a[j,$]], v },
+  v = 1/2 Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M-1] ] +
+      1/2 Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M+1] ];
   Multiply[ x, v, y ]
- ] /; KeyExistsQ[b, a[j,None]]
+ ] /; KeyExistsQ[b, a[j,$]]
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,1], Ket[b_Association], y___ ] := Module[
   { J = Spin[a], v },
-  v = 1/2 Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,None]->J-1]];
+  v = 1/2 Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,$]->J-1]];
   Multiply[ x, v, y ]
  ]
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,2], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], M = b[a[j,None]], v },
-  v = I/2 Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,None]]->M-1] ] -
-      I/2 Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,None]]->M+1] ];
+  { J = Spin[a], M = b[a[j,$]], v },
+  v = I/2 Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M-1] ] -
+      I/2 Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M+1] ];
   Multiply[ x, v, y ]
- ] /; KeyExistsQ[b, a[j,None]]
+ ] /; KeyExistsQ[b, a[j,$]]
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,2], Ket[b_Association], y___ ] := Module[
   { J = Spin[a], v },
-  v = I/2 Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,None]->J-1] ];
+  v = I/2 Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,$]->J-1] ];
   Multiply[ x, v, y ]
  ]
 
 HoldPattern @ Multiply[ x___, a_?SpinQ[j___,3], Ket[b_Association], y___ ] :=
-  b[a[j,None]] Multiply[x, KetTrim @ Ket[b], y]
+  b[a[j,$]] Multiply[x, KetTrim @ Ket[b], y]
 
 
 AddElaborationPatterns[
@@ -449,27 +444,21 @@ Base[ S_?SpinQ[j___, _] ] := S[j]
 
 (* FlavorNone: See Cauchy package *)
 
-FlavorNone[S_?SpinQ] := S[None]
+FlavorNone[S_?SpinQ] := S[$]
 
-FlavorNone[S_?SpinQ -> m_] := S[None] -> m
+FlavorNone[S_?SpinQ -> m_] := S[$] -> m
 
 
 (* FlavorMute: See Cauchy *)
 
-FlavorMute[S_Symbol?SpinQ] := S[None]
+FlavorMute[S_Symbol?SpinQ] := S[$]
 
-FlavorMute[S_Symbol?SpinQ[j___, _]] := S[j, None]
+FlavorMute[S_Symbol?SpinQ[j___, _]] := S[j, $]
 
-FlavorMute[S_Symbol?SpinQ[j___, _] -> m_] := S[j, None] -> m
+FlavorMute[S_Symbol?SpinQ[j___, _] -> m_] := S[j, $] -> m
 
 
 (**** <Ket for Spins> ****)
-
-(*
-KetRule[ r:Rule[_?SpinQ, _] ] := FlavorNone[r]
-
-KetRule[ r:Rule[{__?SpinQ}, _] ] := FlavorNone @ Thread[r]
- *)
 
 KetTrim[S_?SpinQ, m_] := Nothing /; Spin[S] == m
 
@@ -673,8 +662,7 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
 (**** <Rotation and EulerRotation> ****)
 
 Rotation[phi_, S_?SpinQ, v:{_, _, _}, opts___?OptionQ] :=
-  Rotation[phi, S[None], v, opts] /;
-  FlavorLast[S] =!= None
+  Rotation[phi, S[$], v, opts] /; Not[FlavorNoneQ @ S]
 
 Rotation[phi_, qq:{__?SpinQ}, rest___] :=
   Map[Rotation[phi, #, rest]&, qq]
@@ -714,7 +702,7 @@ HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, v:{_,_,_}, ___] := Module[
 
 
 EulerRotation[aa:{_, _, _}, S_?SpinQ, opts___?OptionQ] :=
-  EulerRotation[ aa, S[None], opts ] /; FlavorLast[S] =!= None
+  EulerRotation[ aa, S[$], opts ] /; Not[FlavorNoneQ @ S]
 
 
 EulerRotation /:
@@ -727,6 +715,7 @@ HoldPattern @ Elaborate @ EulerRotation[{a_, b_, c_}, S_?SpinQ, ___] :=
 
 
 WignerRotation::usage = "WignerRotation is obsolete now. Use Rotation instead."
+
 WignerRotation[args__] := (
   Message[Q3`Q3`General::obsolete, "WignerRotation", "Rotation"];
   Rotation[args]
@@ -734,6 +723,7 @@ WignerRotation[args__] := (
 
 
 WignerEulerRotation::usage = "WignerEulerRotation is obsolete now. Use EulerRotation instead."
+
 WignerEulerRotation[args__] := (
   Message[Q3`Q3`General::obsolete, "WignerEulerRotation", "EulerRotation"];
   EulerRotation[args]
@@ -831,7 +821,7 @@ WignerCoefficients[op_, {n_Integer}] := Module[
     kk, cc },
   ss = Subsets[ss, {n}];
   kk = Map[ (#[{1,2,3}])&, ss, {2} ];
-  ss = Map[ (#[None])&, ss, {2} ];
+  ss = Map[ (#[$])&, ss, {2} ];
   cc = Map[ CoefficientTensor[op, Sequence @@ #]&, kk ];
   cc /= Power[2, n];
   Association[ Thread[ss->cc] ]

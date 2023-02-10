@@ -4,10 +4,12 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.13 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-06 23:35:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.16 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-10 19:18:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
+
+$::usage = "$ is a flavor index referring to the species itself."
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Choices, ListPartitions, Successive, FirstLast, Inbetween };
@@ -633,13 +635,13 @@ FlavorLast[ _?SpeciesQ ] = Missing["NoFlavor"]
 
 (**** <FlavorNone> ****)
 
-FlavorNone::usage = "FlavorNone[S[i, j, \[Ellipsis]]] for some Species S gives S[i, j, \[Ellipsis], None]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorNone is Listable."
+FlavorNone::usage = "FlavorNone[S[i, j, \[Ellipsis]]] for some Species S gives S[i, j, \[Ellipsis], $]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorNone is Listable."
   
 SetAttributes[FlavorNone, Listable]
 
 FlavorNone[a_] := a (* Does nothing unless specified explicitly *)
 
-FlavorNoneQ::usage = "FlavorNoneQ[{s$1,s$2,$$}] returns True if the flavor index ends properly with None for every species s$j. Note that for some species, the flavor index is not required to end with None."
+FlavorNoneQ::usage = "FlavorNoneQ[{s$1,s$2,\[Ellipsis]}] returns True if the flavor index ends properly with None for every species s$j. Note that for some species, the flavor index is not required to end with None."
 
 SyntaxInformation[FlavorNoneQ] = {"ArgumentsPattern" -> {_}}
 
@@ -657,7 +659,7 @@ FlavorNoneQ[_] = False
 (**** </FlavorNone> ****)
 
 
-FlavorMute::usage = "FlavorMute[S[i, j, \[Ellipsis], k]] for some Species S gives S[i, j, \[Ellipsis], None], i.e., with the last Flavor replaced with None. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorMute is Listable."
+FlavorMute::usage = "FlavorMute[S[i, j, \[Ellipsis], k]] for some Species S gives S[i, j, \[Ellipsis], $], i.e., with the last Flavor replaced with None. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorMute is Listable."
   
 SetAttributes[FlavorMute, Listable]
 
@@ -715,7 +717,7 @@ SetAttributes[LogicalValues, Listable]
 
 Let::usage = "Let[Symbol, a, b, \[Ellipsis]] defines the symbols a, b, \[Ellipsis] to be Symbol, which can be Species, Complex, Real, Integer, etc."
 
-Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, \[Ellipsis]] declares the symbols a, b, \[Ellipsis] to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, \[Ellipsis]] does not take a specific structure, but only regarded seemingly so."
+Let::unknown = "Unknown species ``."
 
 SetAttributes[Let, {HoldAll, ReadProtected}]
 
@@ -724,6 +726,11 @@ SyntaxInformation[Let] = {
  }
 
 Let[name_Symbol, ls__Symbol, opts___?OptionQ] := Let[name, {ls}, opts]
+
+Let[name_Symbol, ___] := (Message[Let::unknown, name]; $Failed)
+
+
+Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, \[Ellipsis]] declares the symbols a, b, \[Ellipsis] to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, \[Ellipsis]] does not take a specific structure, but only regarded seemingly so."
 
 Let[Species, {ls__Symbol}] := (
   Clear[ls]; (* NOTE: This must come before Scan. *)
@@ -750,10 +757,14 @@ setSpecies[x_Symbol] := (
   LogicalValues[x] ^= {0};
   LogicalValues[x[___]] ^= {0};
 
-  x[i___][j___] := x[i, j];
-  
-  x[j__] := x @@ ReplaceAll[{j}, s_?SpeciesQ :> ToString[s, InputForm]] /;
-    AnyTrue[{j}, SpeciesQ];
+  x[i___, None] = x[i, $];
+  x[i___, Null] = x[i, $];
+  x[i___][j___] = x[i, j];
+  x[i___, $, j_] = x[i, j];
+  (* In particular, x[j,$,$] = x[j,$]. *)
+
+  x[k__] := x @@ ReplaceAll[{k}, s_?SpeciesQ :> ToString[s, InputForm]] /;
+    AnyTrue[{k}, SpeciesQ];
   (* NOTE: If a Flavor index itself is a species, many tests fail to work
      properly. A common example is CommutativeQ. To prevent nasty errors, such
      Flavor indices are converted to String. *)
@@ -764,7 +775,7 @@ setSpecies[x_Symbol] := (
      fermion c and for S[{1,2,...}, All] for qubit S, etc. *)
   (* NOTE: Distribute[x[j], List] will hit the recursion limit. *)
 
-  Format @ x[j___] := Interpretation[SpeciesBox[x, {j}, {}], x[j]];
+  Format @ x[k___] := Interpretation[SpeciesBox[x, {k}, {}], x[k]];
  )
 
 
@@ -1263,7 +1274,7 @@ Garner[expr_] := Module[
  ]
 
 
-AddGarnerPatterns::usage = "AddGarnerPatterns[pattern$1,pattern$2,$$] adds patterns to be handled by Garner."
+AddGarnerPatterns::usage = "AddGarnerPatterns[pattern$1,pattern$2,\[Ellipsis]] adds patterns to be handled by Garner."
 
 AddGarnerPatterns[spec:(_Blank|_PatternTest)..] := Module[
   { heads = Cases[{spec}, _Blank],
@@ -1303,7 +1314,7 @@ Elaborate[expr_] := Module[
  ] /; Not @ MemberQ[Identity @@@ $ElaborationPatterns[Heads], Head[expr]]
 
 
-AddElaborationPatterns::usage = "AddElaborationPatterns[spec$1,spec$2,$$] adds patterns to be handled by Elaborate.\nThe spec$j may be _head or replacement rules."
+AddElaborationPatterns::usage = "AddElaborationPatterns[spec$1,spec$2,\[Ellipsis]] adds patterns to be handled by Elaborate.\nThe spec$j may be _head or replacement rules."
 
 AddElaborationPatterns[spec:(_Blank|_Rule|_RuleDelayed)..] := Module[
   { heads = Cases[{spec}, _Blank],
@@ -1815,14 +1826,14 @@ ObservationValue[expr_Plus, spec_] := With[
 
 ObservationValue[Ket[a_Association], spec_] := ReleaseHold[
   spec /. {
-    S_?SpeciesQ[j___] :> Lookup[a, S[j,None]],
-    S_Symbol?SpeciesQ :> Lookup[a, S[None]]
+    S_?SpeciesQ[j___] :> Lookup[a, S[j,$]],
+    S_Symbol?SpeciesQ :> Lookup[a, S[$]]
    }
  ]
 (* NOTE: Remember that the spec may involve Hold or HoldForm. *)
 
 
-Indefinite::usage = "Indefinite[val$1,val$2,$$] represents an indefinite value among the possible values {val$1,val$2,$$}."
+Indefinite::usage = "Indefinite[val$1,val$2,\[Ellipsis]] represents an indefinite value among the possible values {val$1,val$2,\[Ellipsis]}."
 
 (**** </Observation> ****)
 

@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.9 $"][[2]], " (",
-  StringSplit["$Date: 2022-11-11 15:33:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.10 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-10 19:25:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -57,7 +57,7 @@ QuissoCoefficientTensor[expr_, {n_Integer}] := Module[
     kk, cc },
   ss = Subsets[ss, {n}];
   kk = Map[ (#[{1,2,3}])&, ss, {2} ];
-  ss = Map[ (#[None])&, ss, {2} ];
+  ss = Map[ (#[$])&, ss, {2} ];
   cc = Map[ CoefficientTensor[op, Sequence @@ #]&, kk ];
   Association[ Thread[ss->cc] ]
  ]

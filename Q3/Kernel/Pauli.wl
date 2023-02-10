@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.30 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-08 20:28:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.31 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-10 19:18:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -771,8 +771,8 @@ KetPurge[Ket[asso_Association], test_] := Module[
   { cond },
   cond = ReleaseHold[
     test /. {
-      S_?SpeciesQ[j___] :> Lookup[asso, S[j,None]],
-      S_Symbol?SpeciesQ :> Lookup[asso, S[None]]
+      S_?SpeciesQ[j___] :> Lookup[asso, S[j,$]],
+      S_Symbol?SpeciesQ :> Lookup[asso, S[$]]
      }
    ];
   If[cond, 0, Ket[asso], Ket[asso]]
@@ -791,8 +791,8 @@ KetUpdate[Ket[asso_Association], spec:{__Rule}] := Module[
   { new, kk, vv, qq },
   new = Map[
     ReleaseHold @ ReplaceAll[ #,
-      { S_?SpeciesQ[j___] :> Lookup[asso, S[j,None]],
-        S_Symbol?SpeciesQ :> Lookup[asso, S[None]] }
+      { S_?SpeciesQ[j___] :> Lookup[asso, S[j,$]],
+        S_Symbol?SpeciesQ :> Lookup[asso, S[$]] }
      ]&,
     Association @ spec
    ];
@@ -1431,7 +1431,7 @@ ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
    ];
 
   Let[Qubit, S];
-  qq = S[Range @ Length @ ff, None];
+  qq = S[Range @ Length @ ff, $];
   rr = ss /. Thread[ff -> qq];
   
   tsr = Tensorize[mat, Flatten @ Transpose @ {dd, dd}];
@@ -2437,7 +2437,7 @@ TheEulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
 
 (**** <Rotation and EulerRotation> ****)
 
-Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, ...] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] ...\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], S[j, ..., k]] represents the rotation by angle \[Phi] around the axis k on the qubit S[j, ..., None]."
+Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, ...] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] ...\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], S[j, ..., k]] represents the rotation by angle \[Phi] around the axis k on the qubit S[j, ..., $]."
 
 Rotation[_, 0] := Pauli[0]
 
@@ -4069,7 +4069,7 @@ VertexLabelFunction::usage = "VertexLabelFunction is an option for GraphForm and
 
 EdgeLabelFunction::usage = "EdgeLabelFunction is an option for GraphForm and ChiralGraphForm that speicifes the function to generate primities for redering each edge label.\nSee also EdgeLabels."
 
-defaultEdgeLabelFunction[ Rule[edge_, None] ] := Nothing
+defaultEdgeLabelFunction[ Rule[edge_, $] ] := Nothing
 
 defaultEdgeLabelFunction[ Rule[edge_, lbl_] ] := Rule[
   edge,
@@ -4217,7 +4217,7 @@ HoldPattern @ survey[ Multiply[a_, b_, cc__] -> val_ ] := Module[
     edges, vtx },
   vtx = Vertex @@ nodes;
   edges = Thread @ UndirectedEdge[vtx, nodes, "Interaction"];
-  Join[ {vtx -> val}, Thread[edges -> None] ]
+  Join[ {vtx -> val}, Thread[edges -> $] ]
  ]
 
 
