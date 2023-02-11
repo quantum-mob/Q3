@@ -2,7 +2,8 @@
 
 ## v2.10.0
 
-- The flavor index referring to the species itself is now $ (rather than None).
+- The flavor index referring to the species itself is now $.
+- You can use S[..., $] instead of S[..., None] (still valid).
 
 ## v2.9.10
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 20:30:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.15 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-11 09:46:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1095,6 +1095,8 @@ CNOT[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
   CNOT[cc -> Table[1, Length @ cc], tt]
 
 
+CNOT[Rule[c_?QubitQ, v_], tt:{__?QubitQ}] := CNOT[{c} -> {v}, tt]
+
 CNOT[Rule[cc:{__?QubitQ}, vv_], tt:{__?QubitQ}] :=
   CNOT[FlavorNone[cc] -> vv, FlavorNone @ tt] /;
   Not[FlavorNoneQ @ Join[cc, tt]]
@@ -1375,6 +1377,9 @@ ControlledU[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
 ControlledU[ss:{__?QubitQ}, op_, opts___?OptionQ] :=
   ControlledU[FlavorNone[ss] -> Table[1, Length @ ss], op, opts]
 
+ControlledU[Rule[c_?QubitQ, v_], expr_, opts___?OptionQ] :=
+  ControlledU[{c} -> {v}, expr, opts]
+
 ControlledU[Rule[ss:{__?QubitQ}, vv_], expr_, opts___?OptionQ] :=
   ControlledU[FlavorNone[ss] -> vv, expr, opts] /;
   Not[FlavorNoneQ @ ss]
@@ -1454,8 +1459,12 @@ ControlledExp /:
 Dagger @ ControlledExp[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
   ControlledExp[ss, Dagger[expr], opts]
 
+
 ControlledExp /:
-HoldPattern @ Elaborate @ ControlledExp[cc:{__?QubitQ}, op_, ___] :=
+Elaborate[op_ControlledExp] = op (* fallback *)
+
+ControlledExp /:
+Elaborate @ ControlledExp[cc:{__?QubitQ}, op_, ___] :=
   Module[
     { bs = Dyad[#, #, cc]& /@ Basis[cc],
       xx = Range[Power[2, Length @ cc]] - 1,
@@ -1464,27 +1473,32 @@ HoldPattern @ Elaborate @ ControlledExp[cc:{__?QubitQ}, op_, ___] :=
     Elaborate @ Total @ Multiply[bs, yy]
    ]
 
-ControlledExp /:
-Matrix[ControlledExp[cc_, op_, ___], ss:{__?SpeciesQ}] :=
-  Matrix[Elaborate @ ControlledExp[cc, op], ss]
-(* NOTE: This is a temporary work around. *)
-(* BUG: Because of a bug in MatrixPower of Mathematica 13.2,
-   the following code crashes the Wolfram Kernel.*)
-  (*
-  Module[
-    { tt = Qubits @ {cc, op},
-      mat },
-    mat = theCtrlExp[Length @ cc, Matrix[op]];
-    Matrix[ExpressionFor[mat, tt], ss]
-   ]
-   *)
+
+ControlledExp /: (* fallback *)
+Matrix[op_ControlledExp, ss:{__?SpeciesQ}] :=
+  op * One[Times @@ Dimension @ ss]
+
+If[ And[$VersionNumber == 13.2, $ReleaseNumber == 0],
+  (* NOTE: Because of a BUG in MatrixPower of Mathematica 13.2,
+     which crashes the kernel, this is a temporary work around. *)
+  (* for v13.2.0 *)
+  ControlledExp /:
+  Matrix[ControlledExp[cc_, op_, ___], ss:{__?SpeciesQ}] :=
+    Matrix[Elaborate @ ControlledExp[cc, op], ss],
+  (* for other versions of Mathematica *)
+  ControlledExp /:
+  Matrix[ControlledExp[cc_, op_, ___], ss:{__?SpeciesQ}] :=
+    Module[
+      { tt = Qubits @ {cc, op},
+        mat },
+      mat = theCtrlExp[Length @ cc, Matrix[op]];
+      Matrix[ExpressionFor[mat, tt], ss]
+     ]
+ ]
+
 
 ControlledExp /:
-Matrix[op_ControlledExp, ss:{__?SpeciesQ}] = op (* fallback *)
-
-
-ControlledExp /:
-HoldPattern @ Multiply[pre___, ControlledExp[cc_, op_, ___], in_Ket] :=
+Multiply[pre___, ControlledExp[cc_, op_, ___], in_Ket] :=
   With[
     { x = FromDigits[in[cc], 2] },
     Multiply[pre, Elaborate[MultiplyPower[op, x] ** in]]
