@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.32 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-11 13:24:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.34 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-12 14:24:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -25,6 +25,8 @@ BeginPackage["Q3`"]
 { OTimes, OSlash, ReleaseTimes };
 
 { DefaultForm, LogicalForm, ProductForm, SimpleForm, SpinForm };
+
+{ XBasisForm, YBasisForm };
 
 { BraKet };
 
@@ -518,6 +520,72 @@ theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
  ]
 
 (**** </SpinForm> ****)
+
+
+(**** <XBasisForm> ****)
+
+XBasisForm::usage = "XBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum state in expression expr in the eigenbasis of the Pauli X operator for qubits q1, q2, \[Ellipsis]."
+
+XBasisForm[expr_, q_?QubitQ] := XBasisForm[expr, q @ {$}] 
+
+XBasisForm[expr_, qq : {__?QubitQ}] := 
+  XBasisForm[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
+
+XBasisForm[expr_, qq : {__?QubitQ}] := With[
+  { op = Multiply @@ Through[qq[6]] },
+  Interpretation[theXBasisForm[LogicalForm[op ** expr], qq], expr]
+ ]
+
+theXBasisForm[Bra[v_], qq : {__?QubitQ}] := 
+  Dagger @ theXBasisForm[Ket[v], qq]
+
+theXBasisForm[Ket[v_], qq : {__?QubitQ}] := 
+  Ket @ Join[ v,
+    AssociationThread[
+      qq -> ReplaceAll[Lookup[v, qq], {0 -> "+", 1 -> "-"}]
+     ]
+   ]
+
+theXBasisForm[expr_, qq : {__?QubitQ}] :=
+  ReplaceAll[ expr,
+    { v_Ket :> theXBasisForm[v, qq], 
+      v_Bra :> theXBasisForm[v, qq] }
+   ]
+
+(**** </XBasisForm> ****)
+
+
+(**** <YBasisForm> ****)
+
+YBasisForm::usage = "YBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum state in expression expr in the eigenbasis of the Pauli Y operator for qubits q1, q2, \[Ellipsis]."
+
+YBasisForm[expr_, q_?QubitQ] := YBasisForm[expr, q @ {$}] 
+
+YBasisForm[expr_, qq : {__?QubitQ}] := 
+  YBasisForm[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
+
+YBasisForm[expr_, qq : {__?QubitQ}] := With[
+  { op = Multiply @@ Join[Through[qq[6]], Through[qq[7]]] },
+  Interpretation[theYBasisForm[LogicalForm[op ** expr], qq], expr]
+ ]
+
+theYBasisForm[Bra[v_], qq : {__?QubitQ}] :=
+  Dagger @ theYBasisForm[Ket[v], qq]
+
+theYBasisForm[Ket[v_], qq : {__?QubitQ}] :=
+  Ket @ Join[ v,
+    AssociationThread[
+      qq -> ReplaceAll[Lookup[v, qq], {0 -> "R", 1 -> "L"}]
+     ]
+   ]
+
+theYBasisForm[expr_, qq : {__?QubitQ}] :=
+  ReplaceAll[ expr,
+    { v_Ket :> theYBasisForm[v, qq], 
+      v_Bra :> theYBasisForm[v, qq] }
+   ]
+
+(**** </YBasisForm> ****)
 
 
 Affect::usage = "Affect[ket, op1, op2, ...] operates the operators op1, op2, ... (earlier operators first) on ket. Notice the order of the arguments. The result should be equivalent to Multiply[..., op2, op1, ket], but it is much faster than the counterpart for deep (the numer of operators is much bigger than the number of particles) expression. First first argument does not need to be a Ket, but otherwise Affect is not an advantage over Multiply."
