@@ -6,7 +6,7 @@
 - Improved QFT, including Expand[QFT[...]].
 - Improved ExpressionFor[QuantumCircuit[...]].
 - Improved Matrix[QuantumCircuit[...]].
-- New function MeasurementFunction.
+- New functions: MeasurementFunction, Measurements, XBasisForm, YBasisForm.
 
 ## v2.9.10
 
