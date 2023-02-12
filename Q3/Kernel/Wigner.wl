@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.4 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 19:39:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.5 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-11 17:24:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -241,13 +241,7 @@ SpinHalfQ[_] = False
 
 Spins::usage = "Spins[expr] gives the list of all Spins appearing in expr."
 
-Spins[expr_] :=
-  Union @ FlavorMute @ Cases[List @ expr, _?SpinQ, Infinity] /;
-  FreeQ[expr, _Association]
-
-Spins[expr_] := Spins[Normal @ expr]
-(* NOTE: This recursion is necessary since Association inside Association is
-   not expanded by a single Normal. *)
+Spins[expr_] := Select[NonCommutativeSpecies[expr], SpinQ]
 
 
 (* Multiply *)

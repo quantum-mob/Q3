@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.15 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-11 09:46:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.30 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-12 12:31:39+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -22,8 +22,8 @@ BeginPackage["Q3`"]
 
 { ControlledExp };
 
-{ Measurement, MeasurementOdds, Readout,
-  $MeasurementOut = <||> };
+{ Measurement, Measurements, MeasurementFunction,
+  MeasurementOdds, Readout, $MeasurementOut = <||> };
 
 { Projector };
 
@@ -154,8 +154,8 @@ setQubit[x_Symbol] := (
   
   x[j___, Hadamard] = (x[j,1] + x[j,3]) / Sqrt[2];
   x[j___, Quadrant] = (1+I)/2 + x[j,3]*(1-I)/2;
-  x[j___, Octant]   = (1+Exp[I Pi/4])/2 + x[j,3]*(1-Exp[I Pi/4])/2;
-  x[j___, Hexadecant] = (1+Exp[I Pi/8])/2 + x[j,3]*(1-Exp[I Pi/8])/2;
+  x[j___, Octant]   = (1+Exp[I*Pi/4])/2 + x[j,3]*(1-Exp[I*Pi/4])/2;
+  x[j___, Hexadecant] = (1+Exp[I*Pi/8])/2 + x[j,3]*(1-Exp[I*Pi/8])/2;
 
   x[j___, -1] = x[j, 1];
   x[j___, -2] = x[j, 2];
@@ -285,13 +285,7 @@ QubitQ[_] = False
 
 Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appearing in expr."
 
-Qubits[expr_] :=
-  Union @ FlavorMute @ Cases[List @ expr, _?QubitQ, Infinity] /;
-  FreeQ[expr, _Association]
-
-Qubits[expr_] := Qubits @ Normal[expr, Association]
-(* NOTE: This recursion is necessary since Association inside Association is
-   not expanded by a single Normal. *)
+Qubits[expr_] := Select[NonCommutativeSpecies[expr], QubitQ]
 
 
 (**** <Multiply> ****)
@@ -913,6 +907,8 @@ Phase::bad = "Phase gate is defined only for three axis, X (1), Y (2), and Z (3)
 Format[op:Phase[phi_, S_?QubitQ, ___]] :=
   Interpretation[TraditionalForm @ HoldForm[S[phi]], op]
 
+Phase[0, __] = 1
+
 Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
   (Message[Phase::bad, S]; 1) /;
   Not @ MemberQ[{1, 2, 3}, FlavorLast @ S]
@@ -927,10 +923,14 @@ Dagger @ Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
   
 Phase /:
 Elaborate @ Phase[phi_, S_?QubitQ, ___] :=
-  (1 + Exp[I*phi])/2 + S * (1 - Exp[I*phi])/2
+  Garner[ (1 + Exp[I*phi])/2 + S * (1 - Exp[I*phi])/2 ]
 
 Phase /:
 Elaborate[op_Phase] = op (* fallback *)
+
+Phase /:
+HoldPattern @ Multiply[pre___, op_Phase, in_Ket] :=
+  Multiply[pre, Multiply[Elaborate @ op, in]]
 
 (* Automatic expansion may be delayed until necessary. *)
 (*
@@ -1384,20 +1384,27 @@ ControlledU[Rule[ss:{__?QubitQ}, vv_], expr_, opts___?OptionQ] :=
   ControlledU[FlavorNone[ss] -> vv, expr, opts] /;
   Not[FlavorNoneQ @ ss]
 
-ControlledU[ss:{__?QubitQ}, z_?CommutativeQ, opts___?OptionQ] := (
-  If[ Abs[z] != 1, Message[ControlledU::nonuni, z] ];
-  If[ Length[ss] > 1,
-    ControlledU[Most @ ss, Phase[Arg[z], Last[ss][3], opts]],
-    Phase[Arg[z], Last[ss][3], opts]
+ControlledU[Rule[ss:{__?QubitQ}, vv_], z_?CommutativeQ, opts___?OptionQ] :=
+  With[
+    { ff = If[Last[vv] == 0, -1, 1, 1] },
+    If[ Abs[z] != 1, Message[ControlledU::nonuni, z] ];
+    If[ Length[ss] > 1,
+      ControlledU[ Rule[Most @ ss, Most @ vv],
+        Phase[ff*Arg[z], Last[ss][3], opts] ],
+      Phase[ff*Arg[z], Last[ss][3], opts]
+     ]
    ]
- )
 
 ControlledU /:
 Dagger @ ControlledU[sv_Rule, expr_, opts___?OptionQ] :=
   ControlledU[sv, Dagger[expr], opts]
 
+
 ControlledU /:
-HoldPattern @ Elaborate @
+Elaborate[op_ControlledU] = op (* fallback *)
+
+ControlledU /:
+Elaborate @
   ControlledU[Rule[ss:{__?QubitQ}, vv:{__?BinaryQ}], op_, ___?OptionQ] :=
   Module[
     { rr = Thread[vv -> vv],
@@ -1406,12 +1413,20 @@ HoldPattern @ Elaborate @
     Garner[prj ** Elaborate[op] + (1 - prj)]
    ]
 
-ControlledU /:
-HoldPattern @ Matrix[op_ControlledU, rest___] := Matrix[Elaborate[op], rest]
 
 ControlledU /:
-HoldPattern @ Multiply[pre___,
-  ControlledU[Rule[cc_, vv_], op_, ___], in_Ket] := With[
+Matrix[
+  op:ControlledU[Rule[{__?QubitQ}, {__?BinaryQ}], _, ___?OptionQ],
+  rest___ ] := Matrix[Elaborate[op], rest]
+
+ControlledU /:
+Matrix[op_ControlledU, ss:{__?SpeciesQ}] := op * One[Times @@ Dimension @ ss]
+
+
+ControlledU /:
+Multiply[ pre___,
+  ControlledU[Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}], op_, ___?OptionQ],
+  in_Ket ] := With[
     { xx = in[cc] },
     If[ xx == vv,
       Multiply[pre, op ** in],
@@ -1420,9 +1435,12 @@ HoldPattern @ Multiply[pre___,
      ]
    ]
 
-HoldPattern @ Multiply[pre___, op_ControlledU, post___] :=
+Multiply[ pre___,
+  op:ControlledU[Rule[{__?QubitQ}, {__?BinaryQ}], _, ___?OptionQ],
+  post___ ] :=
   Multiply[pre, Elaborate[op], post]
-(* NOTE: DO NOT put "ControlledU /:". *)
+(* NOTE: DO NOT put "ControlledU /:". Otherwise, the above rule with
+   ControlledU[...]**Ket[] is overridden. *)
 
 
 QuissoControlledU::usage = "QuissoControlledU[...] is obsolete. Use Elaborate[ControlledU[...]] instead."
@@ -1675,6 +1693,17 @@ Options[QFT] = {
   N -> False
  }
 
+QFT /: NonCommutativeQ[ QFT[___] ] = True
+
+QFT /:
+Kind @ QFT[ss:{__?QubitQ}] := Qubit
+
+QFT /:
+MultiplyGenus @ QFT[___] := "Singleton"
+
+
+QFT[{}] = 1
+
 QFT[S_?QubitQ, ___?OptionQ] := S[6]
 
 QFT[{S_?QubitQ}, ___?OptionQ] := S[6]
@@ -1684,63 +1713,81 @@ QFT[qq:{__?QubitQ}, opts___?OptionQ] :=
   Not[FlavorNoneQ @ qq]
 
 
-QFT /:
-HoldPattern @ Elaborate[op_QFT] :=
-    ExpressionFor[Matrix[op], Qubits @ op]
+QFT /: Elaborate[op_QFT] = op (* fallback *)
 
 QFT /:
-HoldPattern @ Multiply[pre___, op_QFT, post___] :=
+Elaborate[op:QFT[{__?QubitQ}, ___?OptionQ]] :=
+  Elaborate @ ExpressionFor[Matrix[op], Qubits @ op]
+
+QFT /:
+Multiply[pre___, op:QFT[{__?QubitQ}, ___?OptionQ], post___] :=
   Multiply[pre, Elaborate[op], post]
 
-HoldPattern @ Multiply[pre___, Dagger[op_QFT], post___] :=
+HoldPattern @
+  Multiply[pre___, Dagger[op:QFT[{__?QubitQ}, ___?OptionQ]], post___] :=
   Multiply[pre, Dagger[Elaborate @ op], post]
 
 
 QFT /:
-HoldPattern @ Matrix[
-  QFT[qq:{__?QubitQ}, opts___?OptionQ]
- ] := With[
-   { mat = FourierMatrix @ Power[2, Length @ qq] },
-   If[ TrueQ[N /. {opts} /. Options[QFT]],
-     N @ mat,
-     mat ]
-  ]
+Matrix @ QFT[qq:{__?QubitQ}, opts___?OptionQ] := With[
+  { mat = FourierMatrix @ Power[2, Length @ qq] },
+  If[TrueQ[N /. {opts} /. Options[QFT]], N @ mat, mat]
+ ]
 
 QFT /:
-HoldPattern @ Matrix[
-  QFT[qq:{__?QubitQ}, opts___?OptionQ],
-  ss:{__?QubitQ}
- ] := Matrix @ QFT[qq, opts] /;
+Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] :=
+  Matrix @ QFT[qq, opts] /;
   FlavorNone[qq] == FlavorNone[ss]
 
 QFT /:
-HoldPattern @ Matrix[
-  QFT[qq:{__?QubitQ}, opts___?OptionQ],
-  ss:{__?QubitQ}
- ] := Module[
-   { mat = FourierMatrix @ Power[2, Length @ qq],
-     qqs, jdx },
-   mat = CircleTimes[mat, One @ Power[2, Length[ss]-Length[qq]]];
-   qqs = Join[qq, Complement[FlavorNone @ ss, FlavorNone @ qq]];
-   jdx = PermutationList @ FindPermutation[qqs, FlavorNone @ ss];
-   TensorFlatten @ Transpose[
-     Normal @ Tensorize[mat],
-     Riffle[2*jdx - 1, 2*jdx]
-    ]
-  ] /; ContainsAll[FlavorNone @ ss, FlavorNone @ qq]
+Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] :=
+  Module[
+    { mat = FourierMatrix @ Power[2, Length @ qq],
+      qqs, jdx },
+    mat = CircleTimes[mat, One @ Power[2, Length[ss]-Length[qq]]];
+    qqs = Join[qq, Complement[FlavorNone @ ss, FlavorNone @ qq]];
+    jdx = PermutationList @ FindPermutation[qqs, FlavorNone @ ss];
+    TensorFlatten @ Transpose[
+      Normal @ Tensorize[mat],
+      Riffle[2*jdx - 1, 2*jdx]
+     ]
+   ] /; ContainsAll[FlavorNone @ ss, FlavorNone @ qq]
 
 QFT /:
-HoldPattern @ Matrix[
-  QFT[qq:{__?QubitQ}, opts___?OptionQ],
-  ss:{__?QubitQ}
- ] := (
-   Message[QFT::badmat,
-     FlavorNone @ qq, FlavorNone @ ss ];
-   One @ Length[ss]
-  )
+Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] := (
+  Message[QFT::badmat,
+    FlavorNone @ qq, FlavorNone @ ss ];
+  One @ Length[ss]
+ )
 
 HoldPattern @ Matrix[Dagger[op_QFT], rest___] :=
   Topple @ Matrix[op, rest]
+
+
+QFT /:
+Expand[op_QFT] = op (* fallback *)
+
+QFT /:
+Expand @ QFT[ss:{__?QubitQ}, ___] := Sequence @@ Join[
+  qftCtrlPhase[ss][All],
+  With[{n = Length[ss]}, Table[SWAP[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
+ ]
+
+qftCtrlPhase[ss:{__?QubitQ}] := 
+  qftCtrlPhase[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+qftCtrlPhase[ss:{__?QubitQ}][All] :=
+  Map[qftCtrlPhase[ss], Range @ Length @ ss]
+
+qftCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
+  { T = ss[[k]] },
+  Append[
+    Table[
+      ControlledU[ ss[[{j}]] -> {1}, T[C[j-k-1]], 
+        "Label" -> Subscript["T", k-j] ],
+      {j, k-1} ],
+    T[6]]
+ ]
 
 
 QuantumFourierTransform::usage = "QuantumFourierTransform is obsolete now. Use QFT instead."
@@ -1757,39 +1804,41 @@ QuantumFourierTransform[args___] := (
 
 Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection operator on the qubits {q1, q2, ...} into state, which is given in the Ket expression.\nProjector[expr] automatically extracts the list of qubits from expr."
 
-Projector::noKet = "No Ket expression found for projection in the provided expression ``. Identity operator is returned."
+Projector::noket = "No Ket expression found for projection in the provided expression ``. Identity operator is returned."
 
 Projector /:
-Dagger[ op_Projector ] := op
+Dagger[ op_Projector ] = op
 
 Projector /:
-Elaborate[ Projector[v_, qq_] ] := Elaborate[Dyad[v, v, qq]]
+Expand[ Projector[v_, qq_List] ] := Dyad[v, v, qq]
 
 Projector /:
-ExpressionFor[ Projector[v_, qq_] ] := Dyad[v, v, qq]
+DyadForm[ Projector[v_, qq_List] ] := Dyad[v, v, qq]
 
-HoldPattern @ Projector[expr_, ___] := (
-  Message[Projector::noKet, expr];
-  1
- ) /; FreeQ[expr, _Ket]
+Projector /:
+Elaborate[ op:Projector[_, _List] ] := Elaborate[Expand @ op]
 
-HoldPattern @ Projector[expr_] := Projector[expr, Qubits @ expr]
+Projector /:
+Matrix[ op:Projector[_, _List], qq:{__?SpeciesQ}] :=
+  Matrix[Elaborate[op], qq]
 
-HoldPattern @ Projector[expr_, {}] := 1
 
-HoldPattern @ Projector[expr_, q_?QubitQ] := Projector[expr, FlavorNone @ {q}]
+Projector[expr_, {}] = 1
 
-HoldPattern @
-  Projector[expr_, qq:{__?QubitQ}] := Projector[expr, FlavorNone @ qq] /;
-  Not[FlavorNoneQ @ qq]
+Projector[expr_] := Projector[expr, Qubits @ expr]
+
+Projector[expr_, q_?QubitQ] := Projector[expr, q @ {$}]
+
+Projector[expr_, qq:{__?QubitQ}] :=
+  Projector[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
+
+Projector[expr_, qq:{__?QubitQ}] :=
+  (Message[Projector::noket, expr]; 1) /; FreeQ[expr, _Ket]
 
 (**** </Projector> ****)
 
 
 (***** <Measurement> ****)
-
-$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j."
-
 
 Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis]."
 
@@ -1822,12 +1871,12 @@ Measurement[mat_?MatrixQ][vec_?VectorQ] := Module[
   { odds = MeasurementOdds[vec, mat],
     rand = RandomReal[] },
   Garner @ If[ rand < Re @ First @ odds[0],
-    $MeasurementOut[op] = 0; Last @ odds[0],
-    $MeasurementOut[op] = 1; Last @ odds[1],
+    $MeasurementOut[mat] = 0; Last @ odds[0],
+    $MeasurementOut[mat] = 1; Last @ odds[1],
     Message[Measurement::nonum];
     If[ rand < 1/2,
-      $MeasurementOut[op] = 0; Last @ odds[0],
-      $MeasurementOut[op] = 1; Last @ odds[1]
+      $MeasurementOut[mat] = 0; Last @ odds[0],
+      $MeasurementOut[mat] = 1; Last @ odds[1]
      ]
    ]
  ]
@@ -1837,8 +1886,19 @@ Dot[Measurement[mat_?MatrixQ], vec_?VectorQ] :=
   Measurement[mat] @ vec
 
 Measurement /:
-HoldPattern @ Multiply[pre___, spr_Measurement, post___] :=
-  Multiply[pre, spr @ Multiply[post]]
+Dot[Measurement[mm:{__?MatrixQ}], vec_?VectorQ] :=
+  Measurement[mm] @ vec
+
+Measurement /:
+Multiply[pre___, spr_Measurement, expr_] :=
+  Multiply[pre, spr @ expr] /; Not @ FreeQ[expr, _Ket]
+
+Measurement /:
+Matrix[Measurement[op_], ss:{__?QubitQ}] :=
+  Measurement[Matrix[op, ss]]
+
+
+$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j."
 
 
 Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
@@ -1907,7 +1967,48 @@ MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
       the post-measurement states are NOT normalized.
    *)
 
+Measurements::usage = "Measurments[expr] returns a list of Pauli operators (including the tensor products of single-qubit Pauli operators) measured during the process of expression expr."
+
+Measurements[expr_] := Union @ Flatten @
+  Cases[{expr}, Measurement[m_] -> m, Infinity, Heads -> False]
+
 (**** </Measurement> ****)
+
+
+(**** <MeasurementFunction> ****)
+
+MeasurementFunction::usage = "MeasurementFunction[{m1,m2,\[Ellipsis]}] represents a sequence of operations or measurements m1, m2, \[Ellipsis]."
+
+Format[fun:MeasurementFunction[gg:{(_Measurement|_?MatrixQ)..}]] := With[
+  { dim = Riffle[Dimensions @ FirstCase[gg, _?MatrixQ], "\[Times]"] },
+  Interpretation[
+    StringForm["MeasurementFunction[{``\[Ellipsis]}]", ToString @ Row @ dim],
+    fun ]
+ ]
+
+Format[fun:MeasurementFunction[gg:{__}]] := 
+  Interpretation[
+    StringForm["MeasurementFunction[``]", Qubits @ gg],
+    fun
+   ]
+
+MeasurementFunction[gg:{(_Measurement|_?MatrixQ)..}][v_?VectorQ] :=
+  Fold[Dot[#2, #1]&, v, gg]
+
+MeasurementFunction[gg:{__}][expr_] :=
+  Fold[Garner[Multiply[#2, #1]]&, expr, gg] /;
+  Not @ FreeQ[expr, Ket[_Association]|_ProductState]
+
+
+MeasurementFunction /:
+Dot[MeasurementFunction[mm:{(_Measurement|_?MatrixQ)..}], vec_?VectorQ] :=
+  MeasurementFunction[mm][vec]
+
+MeasurementFunction /:
+Multiply[pre___, spr_MeasurementFunction, expr_] :=
+  Multiply[pre, spr @ expr] /; Not @ FreeQ[expr, _Ket|_ProductoState]
+
+(**** </MeasurementFunction> ****)
 
 
 (**** <ProductState> ****)
@@ -1964,8 +2065,11 @@ HoldPattern @
 
 (* input specifications *)
 
+(* Removed to be consistent with Ket. *)
+(*
 ProductState[spec___Rule, s_?QubitQ] :=
   LogicalForm[ProductState[spec], {s}]
+ *)
 
 ProductState[spec___Rule, ss:{__?QubitQ}] :=
   LogicalForm[ProductState[spec], ss]
@@ -1979,7 +2083,7 @@ ProductState[spec__Rule] :=
 ProductState[v:ProductState[_Association, ___], spec_Rule, more__Rule] :=
   Fold[ ProductState, v, {spec} ]
 
-ProductState[ v:ProductState[_Association, ___], rule:(_String -> _) ] :=
+ProductState[v:ProductState[_Association, ___], rule:(_String -> _)] :=
   Append[v, rule]
 
 ProductState[ ProductState[a_Association, opts___],
@@ -2267,13 +2371,7 @@ Missing["KeyAbsent", _Symbol?QuditQ[___, $]] := 0
 
 Qudits::usage = "Qudits[expr] gives the list of all qudits appearing in expr."
 
-Qudits[expr_] :=
-  Union @ FlavorMute @ Cases[List @ expr, _?QuditQ, Infinity] /;
-  FreeQ[expr, _Association]
-
-Qudits[expr_] := Qudits[Normal @ expr]
-(* NOTE: This recursion is necessary since Association inside Association is
-   not expanded by a single Normal. *)
+Qudits[expr_] := Select[NonCommutativeSpecies[expr], QuditQ]
 
 
 (* MultiplyDegree for operators *)

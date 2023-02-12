@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.41 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 23:05:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.43 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-11 17:29:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -637,28 +637,20 @@ CreatorQ[_?AnyFermionQ] := False
 
 Bosons::usage = "Bosons[expr] gives the list of all Bosons appearing in expr."
 
-Bosons[ expr_ ] :=
-  Union @ Cases[ { Normal[expr, Association] }, _?BosonQ, Infinity ]
-(* NOTE 1: The outermost { } is necessary around expr; otherwise,
-   Bosons[S[1,2]] does not give the trivial result. *)
-(* NOTE 2: Normal[{expr}, Association] is not enough as nested Association[]s
-   are not converted properly. This is due to the HoldAllComplete Attribute of
-   Association. *)
+Bosons[expr_] := Select[NonCommutativeSpecies[expr], BosonQ]
+
 
 Fermions::usage = "Fermions[expr] gives the list of all Fermions appearing in expr."
 
-Fermions[ expr_ ] :=
-  Union @ Cases[ { Normal[expr, Association] }, _?FermionQ, Infinity ]
+Fermions[expr_] := Select[NonCommutativeSpecies[expr], FermionQ]
 
 Heisenbergs::usage = "Heisenbergs[expr] gives the list of all Heisenbergs appearing in expr."
 
-Heisenbergs[ expr_ ] :=
-  Union @ Cases[ { Normal[expr, Association] }, _?HeisenbergQ, Infinity ]
+Heisenbergs[expr_] := Select[NonCommutativeSpecies[expr], HeisenbergQ]
 
 Majoranas::usage = "Majoranas[expr] gives the list of all Majoranas appearing in expr."
 
-Majoranas[ expr_ ] :=
-  Union @ Cases[ { Normal[expr, Association] }, _?MajoranaQ, Infinity ]
+Majoranas[expr_] := Select[NonCommutativeSpecies[expr], MajoranaQ]
 
 
 FockFourier::usage = "FockFourier is now obsolete. Use TransformByFourier instead."

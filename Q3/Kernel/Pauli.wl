@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.31 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 19:18:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.32 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-11 13:24:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -650,13 +650,23 @@ Ket[ Ket[a_Association], spec__Rule ] := Module[
   If[FailureQ @ KetVerify @ vec, $Failed, vec]
  ]
 
-Ket[ spec___Rule, s_?SpeciesQ] := LogicalForm[Ket[spec], {s}]
 
 Ket[ spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Ket[spec], ss]
 
-Ket[ v_Ket, spec___Rule, s_?SpeciesQ] := LogicalForm[Ket[v, spec], {s}]
-
 Ket[ v_Ket, spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Ket[v, spec], ss]
+
+
+(* Dangers! *)
+Ket[spec__Rule, s_?SpeciesQ] := (
+  Message[Ket::spec, s];
+  Ket[spec, {s}]
+ )
+
+(* Dangers! *)
+Ket[v_Ket, spec__Rule, s_?SpecieQ] := (
+  Message[Ket::spec, s];
+  Ket[v, spec, {s}]
+ )
 
 
 (* operator form *)
@@ -2933,14 +2943,14 @@ DyadForm::usage = "DyadForm[expr,{s1,s2,..}] converts the operator expression ex
 DyadForm[expr_] := RaiseLower[expr] /; Not @ FreeQ[expr, _Pauli]
 (* NOTE: DyaForm is pointless for Pauli expressions. *)
 
-DyadForm[expr_] := 
-  DyadForm[expr, NonCommutativeSpecies[expr]]
+DyadForm[expr_] := DyadForm[expr, NonCommutativeSpecies[expr]]
 
-DyadForm[expr_, q_?SpeciesQ] := 
-  DyadForm[expr, FlavorNone @ {q}]
+DyadForm[expr_, q_?SpeciesQ] := DyadForm[expr, q @ {$}]
 
-DyadForm[expr_, qq:{__?SpeciesQ}] := 
-  DyadForm[Matrix[expr, FlavorNone @ qq], FlavorNone @ qq]
+DyadForm[expr_, qq:{__?SpeciesQ}] := DyadForm[Matrix[expr, qq], qq]
+
+DyadForm[expr_, qq:{__?SpeciesQ}] := DyadForm[expr, FlavorNone @ qq] /;
+  Not[FlavorNoneQ @ qq]
 
 
 DyadForm[mat_?MatrixQ] := Module[

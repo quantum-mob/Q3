@@ -2,8 +2,11 @@
 
 ## v2.10.0
 
-- The flavor index referring to the species itself is now $.
-- You can use S[..., $] instead of S[..., None] (still valid).
+- The flavor index referring to the species itself is now $; You can use S[..., $] instead of S[..., None] (still valid).
+- Improved QFT, including Expand[QFT[...]].
+- Improved ExpressionFor[QuantumCircuit[...]].
+- Improved Matrix[QuantumCircuit[...]].
+- New function MeasurementFunction.
 
 ## v2.9.10
 

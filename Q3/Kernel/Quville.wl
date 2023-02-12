@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.2 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-29 04:34:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.11 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-12 11:08:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -26,6 +26,8 @@ QuantumCircuit::usage = "QuantumCircuit[a, b, ...] represents the quantum circui
 QuantumCircuit::noqubit = "No Qubit found in the expression ``. Use LogicalForm to specify the Qubits explicitly."
 
 QuantumCircuit::nofunc = "Unknown function \"``\" to draw the gate. \"Rectangle\" is assumed."
+
+QuantumCircuit::ket = "`` is not a proper ket of the form Ket[<|...|>] or ProductState[<|...|>]."
 
 QuantumCircuitIn::usage = "QuantumCircuitIn is a holder for input expression in QuantumCircuit.\nSee also QuantumCircuitOut."
 
@@ -63,7 +65,18 @@ Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] :=
   Interpretation[Graphics @ qc, qc]
 
 
-(**** <Multiply, ExpressionFor and Matrix on QuantumCircuit> ****)
+QuantumCircuit /:
+Qubits @ QuantumCircuit[gg__, ___?OptionQ] := Union[
+  Qubits @ {gg},
+  FlavorNone @ OptionValue[QuantumCircuit, "Visible"]
+ ]
+
+QuantumCircuit /:
+Measurements[qc:QuantumCircuit[__, ___?OptionQ]] :=
+  Measurements[QuantumCircuitTrim @ qc]
+
+
+(**** <Multiply> ****)
 
 QuantumCircuit /:
 NonCommutativeQ[ QuantumCircuit[__] ] = True
@@ -76,41 +89,30 @@ MultiplyGenus[ QuantumCircuit[__] ] := "QuantumCircuit"
 
 
 QuantumCircuit /:
-HoldPattern @ Multiply[pre___, QuantumCircuit[elm__], post___] :=
+Multiply[pre___, QuantumCircuit[elm__], post___] :=
   Multiply[pre, Elaborate @ QuantumCircuit[Reverse @ {post}, elm]]
 (* NOTE: {elm} may include Measurement. *)
 
-HoldPattern @ Multiply[pre___, Longest[cc__QuantumCircuit], post___] :=
+QuantumCircuit /:
+Multiply[pre___, Longest[cc__QuantumCircuit], post___] :=
   Multiply[pre, Elaborate @ Apply[QuantumCircuit, Reverse @ {cc}], post]
 
+(**** </Multiply> ****)
+
+
+(**** <ExpressionFor> ****)
 
 QuantumCircuit /:
 ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
 
 QuantumCircuit /:
-HoldPattern @ Elaborate[ QuantumCircuit[gg__, ___?OptionQ] ] := Module[
+Elaborate @ QuantumCircuit[gg__, ___?OptionQ] := Module[
   { expr = Flatten @ QuantumCircuitTrim @ {gg} },
   Garner[ qCircuitOperate @@ expr ]
  ]
 (* NOTE: This makes the evaluation much faster, especially, when the initial
    state is specified in the circuit. *)
 
-QuantumCircuit /:
-HoldPattern @ Qubits[ QuantumCircuit[gg__, opts___?OptionQ] ] := Union[
-  Qubits @ {gg},
-  FlavorNone @ Flatten[
-    {"Visible"} /. {opts} /. Options[QuantumCircuit]
-   ]
- ]
-
-QuantumCircuit /:
-HoldPattern @ Matrix[ qc:QuantumCircuit[gg__, ___?OptionQ] ] := Module[
-  { expr = Flatten @ QuantumCircuitTrim @ {gg} },
-  qCircuitMatrix[ Sequence @@ expr, Qubits @ qc ]
- ]
-
-
-qCircuitOperate::usage = "Converts gates to operators ..."
 
 qCircuitOperate[] = 1
 
@@ -122,26 +124,44 @@ qCircuitOperate[op_Measurement, post___] :=
   Multiply[qCircuitOperate[post], op]
 
 qCircuitOperate[op:Except[_Measurement]..] :=
-  Elaborate @ Fold[ Garner @ Multiply[#2, #1]&, 1,  {op} ]
+  Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1,  {op} ]
+(* NOtE: This is another method:
+   Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate @ {op} ]
+   However, this cannot take the advantange of op ** Ket[...]. *)
+
+qCircuitOperate[gg__] := MeasurementFunction[{gg}]
+
+(**** </ExpressionFor> ****)
 
 
-qCircuitMatrix::usage = "Based on Matrix[] ..."
 
-qCircuitMatrix[qq:{__?QubitQ}] := Matrix[1, qq]
+(**** <Matrix> ****)
 
-qCircuitMatrix[pre___, Measurement[op_], post___,  qq:{__?QubitQ}] :=
-  Module[
-    { mat = Matrix[op, qq] },
-    mat = Measurement[mat] @ qCircuitMatrix[pre, qq];
-    qCircuitMatrix[post, qq] . mat
-   ]
+QuantumCircuit /:
+Matrix[ qc:QuantumCircuit[gg__, ___?OptionQ] ] := Module[
+  { ff },
+  ff = SplitBy[
+    Flatten @ QuantumCircuitTrim @ {gg},
+    MatchQ[_Measurement]
+   ];
+  Apply[qCircuitMatrix, MapApply[Dot, Reverse /@ Matrix[ff, Qubits @ qc]]]
+ ]
 
-qCircuitMatrix[ops:Except[_Measurement].., qq:{__?QubitQ}] :=
-  Topple @ Apply[Dot, Topple /@ Matrix[{ops}, qq]]
-(* NOTE: Dot[a, b, c, ...] evaluates from the beginning. When the sequence may
-   include initial states, this way of calculation may be faster. *)
+qCircuitMatrix[v_?VectorQ] = v
 
-(**** </Multiply, ExpressionFor and Matrix on QuantumCircuit> ****)
+qCircuitMatrix[m_?MatrixQ] = m
+
+qCircuitMatrix[m_Measurement] = m
+
+qCircuitMatrix[v_?VectorQ, M_Measurement, rest___] :=
+  qCircuitMatrix[M[v], rest]
+
+qCircuitMatrix[v_?VectorQ, m_?MatrixQ, rest___] :=
+  qCircuitMatrix[m.v, rest]
+
+qCircuitMatrix[gg__] := MeasurementFunction[{gg}]
+
+(**** </Matrix> ****)
 
 
 (**** <QuantumCircuitTrim> ****)
@@ -150,10 +170,11 @@ QuantumCircuitTrim::usage = "QuantumCircuitTrim[expr] removes visualization opti
 
 SetAttributes[ QuantumCircuitTrim, Listable ];
 
-QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__] ] :=
+QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__, ___?OptionQ] ] :=
   Flatten @ QuantumCircuitTrim @ {gg}
 
-QuantumCircuitTrim[ QuantumCircuitIn[a__] ]  := Multiply @@ QuantumCircuitTrim[ {a} ]
+QuantumCircuitTrim[ QuantumCircuitIn[a__] ] :=
+    Multiply @@ QuantumCircuitTrim[ {a} ]
 (* NOTE: Useful to apply Matrix directly to QuantumCircuit.  *)
 
 QuantumCircuitTrim[ _QuantumCircuitOut ] = Nothing
@@ -377,7 +398,8 @@ qcGate[
 qcGate[
   ControlledU[ Rule[cc:{__?QubitQ}, vv_], expr_, opts___?OptionQ ],
   more___?OptionQ ] :=
-  Gate[ cc->vv, Qubits[expr], opts, more ] /; Not @ FreeQ[expr, _?QubitQ]
+  Gate[ cc->vv, Qubits[expr], opts, more ] /;
+  Not @ FreeQ[expr, _Dyad|_?QubitQ]
 
 
 qcGate[ CNOT[Rule[cc:{__?QubitQ}, vv_], tt:{__?QubitQ}], opts___?OptionQ ] :=
@@ -802,7 +824,7 @@ qCircuitInput[ Missing["NotFound"], xx_List, yy_Association ] = {}
 qCircuitInput[ gg:{___}, xx_List, yy_Association ] := Module[
   { xy = Map[{-$InOutOffset, #}&, yy],
     ff },
-  
+
   ff = Join[gg, {"Pivot" -> {1, 0}, "Type" -> -1} ];
   ff = List @ qCircuitPort @ ff;
 
@@ -819,9 +841,17 @@ Options[ qCircuitPort ] = {
   "Type"  -> 1 (* 1: input, -1: output *)
  }
 
-qCircuitPort[ v_Ket, opts___?OptionQ ] := Port[v, opts]
+qcCircuitPort[v:Ket[_Association], opts___?OptionQ] := Port[v, opts]
 
-qCircuitPort[ v_ProductState, opts___?OptionQ ] := Port[v, opts]
+qCircuitPort[v:Ket[Except[_Association]], ___] :=
+  (Message[QuantumCircuit::ket, v]; Nothing)
+(* NOTE: Somehow v_Ket does not work properly. *)
+
+qCircuitPort[v:ProductState[_Association, ___?OptionQ], more___?OptionQ] :=
+  Port[v, more]
+
+qCircuitPort[v:ProductState[Except[_Association]], ___] :=
+  (Message[QuantumCircuit::ket, v]; Nothing)
 
 qCircuitPort[ expr:Except[_List], opts___?OptionQ ] :=
   Port[expr, opts] /; Not @ FreeQ[expr, _Ket]
