@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.10.1
+
+- Improved CNOT.
+
 ## v2.10.0
 
 - The flavor index referring to the species itself is now $; You can use S[..., $] instead of S[..., None] (still valid).

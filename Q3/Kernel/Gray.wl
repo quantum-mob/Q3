@@ -5,15 +5,15 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.51 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 06:34:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.52 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-15 19:50:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { BinaryToGray, GrayToBinary,
   GraySequence, GraySubsets };
 
-{ GrayControlledU, GrayControlledW,
+{ GrayControlledGate, GrayControlledW,
   FromTwoLevelU, TwoLevelU, TwoLevelDecomposition };
 
 (**** renamed ****)
@@ -39,15 +39,15 @@ GraySubsets[ls_List] := Block[
  ]
 
 
-GrayControlledU::usage = "GrayControlledU[qq, expr] decomposes the n-bit controlled expr into elementary gates, where qq is the list of control qubits and expr is supposed to be a unitary operator."
+GrayControlledGate::usage = "GrayControlledGate[qq, expr] decomposes the n-bit controlled expr into elementary gates, where qq is the list of control qubits and expr is supposed to be a unitary operator."
 
 (* See Barenco et al. PRB (1995). *)
 
-GrayControlledU[q_?QubitQ, expr_] := GrayControlledU[{q}, expr]
+GrayControlledGate[q_?QubitQ, expr_] := GrayControlledGate[{q}, expr]
 
-GrayControlledU[{q_?QubitQ}, expr_] := ControlledU[{q}, expr]
+GrayControlledGate[{q_?QubitQ}, expr_] := ControlledGate[{q}, expr]
 
-GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
+GrayControlledGate[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
   { mm = Matrix[expr],
     nn = Power[2, Length[qq]-1], 
     op, rr, cc, dd, vv, ll, cV, cn },
@@ -65,7 +65,7 @@ GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
     ConstantArray["Label" -> "V", nn], 
     "Label" -> Superscript["V", "\[Dagger]"]
    ];
-  cV = ControlledU @@@ Transpose[{cc, vv, ll}];
+  cV = ControlledGate @@@ Transpose[{cc, vv, ll}];
 
   dd = Flatten @ Successive[MutualComplement, Most /@ rr];
   cn = CNOT @@@ Transpose[{dd, Rest @ cc}];
@@ -76,11 +76,11 @@ GrayControlledU[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
 MutualComplement[a_, b_] := Union[Complement[a, b], Complement[b, a]]
 
 
-GrayControlledW::usage = "GrayControlledW[qq, expr] decomposes the n-bit controlled expr into elementary gates, expr is supposed to be a unitary operator.\nThis version is merely for heuristic purposes. Use GrayControlledU instead."
+GrayControlledW::usage = "GrayControlledW[qq, expr] decomposes the n-bit controlled expr into elementary gates, expr is supposed to be a unitary operator.\nThis version is merely for heuristic purposes. Use GrayControlledGate instead."
 
-GrayControlledW[q_?QubitQ, expr_] := ControlledU[{q}, expr]
+GrayControlledW[q_?QubitQ, expr_] := ControlledGate[{q}, expr]
 
-GrayControlledW[{q_?QubitQ}, expr_] := ControlledU[{q}, expr]
+GrayControlledW[{q_?QubitQ}, expr_] := ControlledGate[{q}, expr]
 
 GrayControlledW[qq:{__?QubitQ}, expr_] := Module[
   { mm = Matrix[expr],
@@ -106,11 +106,11 @@ grayCtrl[qq_, op_, -1] :=
 
 grayCtrl[{ }, op_, lbl_] := {}
 
-grayCtrl[{q_?QubitQ}, op_, lbl_] := ControlledU[{q}, op, "Label"->lbl]
+grayCtrl[{q_?QubitQ}, op_, lbl_] := ControlledGate[{q}, op, "Label"->lbl]
 
 grayCtrl[{aa__?QubitQ, b_?QubitQ}, op_, lbl_] := With[
   { cn = Map[CNOT[#, b]&, {aa}] },
-  Flatten @ { cn, ControlledU[{b}, op, "Label"->lbl], cn }
+  Flatten @ { cn, ControlledGate[{b}, op, "Label"->lbl], cn }
  ]
 
 
@@ -210,7 +210,7 @@ grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
   cc = Flatten @ Position[cc, 0];
   vv = Part[IntegerDigits[First @ pair, 2, n], cc];
   cc = Part[ss, cc];
-  ControlledU[cc -> vv, op, "Label"->"U"]
+  ControlledGate[cc -> vv, op, "Label"->"U"]
  ]
 
 

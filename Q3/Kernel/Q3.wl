@@ -15,8 +15,8 @@ ClearAll["`*"];
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 3.9 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-11 15:08:53+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.12 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-15 19:39:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -222,12 +222,17 @@ Q3Purge[] := Module[
  ]
 
 
-Q3InsertDelimiter::usage = "Q3InsertDelimiter[nb] inserts the horizontal delimiter cell in notebook nb.\nQ3InsertDelimiter[] inserts it in the selected notebook."
+(**** <Q3InsertDelimiter> ****)
+
+Q3InsertDelimiter::usage = "Q3InsertDelimiter[nb] replaces the current cell of the current notebook with the horizontal delimiter cell."
 
 Q3InsertDelimiter[] := Q3InsertDelimiter @ SelectedNotebook[]
 
-Q3InsertDelimiter[nb_NotebookObject] :=
-  NotebookWrite[nb, $DelimiterCell]
+Q3InsertDelimiter[] := With[
+  { nb = SelectedNotebook[] },
+  SelectionMove[nb, Previous, Cell];
+  NotebookWrite[First @ Cells @ NotebookSelection @ nb, $DelimiterCell]
+ ]
 
 $DelimiterCell::usage = "A horizontal delimiter cell like the one in the Wolfram documentation.\nCellPrint[$DelimiterCell] put it in the evaluation notebook."
 
@@ -238,6 +243,8 @@ $DelimiterCell = Cell[ "\t", "Text",
   TabSpacings -> Scaled[1],
   FontColor -> GrayLevel[.9]
  ]
+
+(**** </Q3InsertDelimiter> ****)
 
 End[]
 

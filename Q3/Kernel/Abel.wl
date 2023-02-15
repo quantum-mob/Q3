@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.16 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 19:18:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.18 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-15 23:11:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -368,8 +368,12 @@ GraphPivot[g_, {v_, w_}, opts___?OptionQ] := Module[
 
 Bead::usage = "Bead[pt] or Bead[{pt1, pt2, \[Ellipsis]}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01]. It has been motivated by Tube.\nBead[pt] is equvalent to Sphere[pt, Scaled[0.01]].\nBead[{p1, p2, \[Ellipsis]}] is equivalent to Sphere[{p1, p2, \[Ellipsis]}, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r]."
 
+Bead[pnt:{_, _, _}, r_:Scaled[0.01]] := Sphere[pnt, r]
+
+(*
 Bead[pnt:{_?NumericQ, _?NumericQ, _?NumericQ}, r_:Scaled[0.01]] :=
   Sphere[pnt, r]
+ *)
 
 Bead[pnt:{{_?NumericQ, _?NumericQ, _?NumericQ}..}, r_:Scaled[0.01]] :=
   Sphere[pnt, r]
@@ -1425,9 +1429,8 @@ HoldPattern @
 (* NOTE: This can easily hit the recursion limit, hence the same effect is
    implemented differently. *)
 
-HoldPattern @ Multiply[ args__ ] := Garner @ Block[
-  { F },
-  Distribute[ F[args] ] /. { F -> Multiply }
+HoldPattern @ Multiply[ args__ ] := Garner[
+  ReleaseHold @ Distribute[ Hold[Multiply][args] ]
  ] /; DistributableQ[args]
 
 HoldPattern @ Multiply[ pre___, z_?CommutativeQ, post___] :=

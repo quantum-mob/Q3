@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.39 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 19:20:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.41 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-15 19:07:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -132,8 +132,10 @@ setReal[x_Symbol] := (
   x /: RealQ[x[___]] = True;
   x /: Element[x, Reals] = True;
   x /: Element[x[___], Reals] = True;
-  x /: Conjugate[x] := x;
-  x /: Conjugate[x[j___]] := x[j];
+  x /: Re[x] = x;
+  x /: Im[x] = 0;
+  x /: Conjugate[x] = x;
+  x /: Conjugate[x[j___]] = x[j];
  )
 
 Integer::usage = "Let[Integer, a,b,...] declares a, b, ... as integer numbers.\n" <> Integer::usage
@@ -185,6 +187,8 @@ setBinary[n_Symbol] := (
 
 
 BinaryQ::usage = "BinaryQ[x] returns True if x is a binary digit, and False otherwise."
+
+SetAttributes[BinaryQ, Listable]
 
 BinaryQ[0] = True
 

@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.51 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 20:45:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.52 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-15 19:50:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -892,8 +892,8 @@ FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
 
   aa = FromGottesmanVector[new[[2, 3;;]], rr];
   bb = FromGottesmanVector[new[[1, 3;;]], rr];
-  aa = GottesmanMatrix[opa = ControlledU[qq, aa], ss];
-  bb = GottesmanMatrix[opb = ControlledU[qq, bb], ss];
+  aa = GottesmanMatrix[opa = ControlledGate[qq, aa], ss];
+  bb = GottesmanMatrix[opb = ControlledGate[qq, bb], ss];
   hh = GottesmanMatrix[oph = First[qq][6], ss];
 
   vv = Mod[new . aa . hh . bb, 2];
@@ -1117,8 +1117,8 @@ CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
 
   aa = FromGottesmanVector[new[[2, 3;;]], rr];
   bb = FromGottesmanVector[new[[1, 3;;]], rr];
-  aa = GottesmanMatrix[opa = ControlledU[qq, aa], ss];
-  bb = GottesmanMatrix[opb = ControlledU[qq, bb], ss];
+  aa = GottesmanMatrix[opa = ControlledGate[qq, aa], ss];
+  bb = GottesmanMatrix[opb = ControlledGate[qq, bb], ss];
   hh = GottesmanMatrix[oph = First[qq][6], ss];
 
   vv = Mod[new . aa . hh . bb, 2];
@@ -1129,8 +1129,8 @@ CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
  ]
 
 fGateRules = {
-  ControlledU[cc_, T_[j___, 1]] -> CNOT[cc, T[j]],
-  ControlledU[cc_, T_[j___, 3]] -> CZ[cc, T[j]],
+  ControlledGate[cc_, T_[j___, 1]] -> CNOT[cc, T[j]],
+  ControlledGate[cc_, T_[j___, 3]] -> CZ[cc, T[j]],
   S_[j___, 1]/Sqrt[2] + S_[j___, 3]/Sqrt[2] -> S[j,6],
   (S_[j___, 1] + S_[j___, 3])/Sqrt[2] -> S[j,6],
   Phase[0, ___] -> Nothing

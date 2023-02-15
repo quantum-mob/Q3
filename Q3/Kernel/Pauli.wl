@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.34 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-12 14:24:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.38 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-15 23:27:24+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -326,12 +326,20 @@ LogicalForm::usage = "LogicalForm[expr] converts every Ket[...] and Bra[...] in 
 LogicalForm[expr_] := expr /;
   FreeQ[expr, Ket[_Association] | Bra[_Association]]
 
+
 LogicalForm[expr_] := LogicalForm[expr, NonCommutativeSpecies @ expr]
+
+LogicalForm[expr_, S_?SpeciesQ] := LogicalForm[expr, S @ {$}]
 
 LogicalForm[expr_, gg:{__?SpeciesQ}] :=
   LogicalForm[expr, FlavorNone @ gg] /; Not[FlavorNoneQ @ gg]
 
-LogicalForm[expr_, S_?SpeciesQ] := LogicalForm[expr, S @ {None}]
+LogicalForm[expr_, ss:{__?SpeciesQ}] := With[
+  { tt = NonCommutativeSpecies[expr] },
+  LogicalForm[expr, Union[ss, tt]] /;
+    Not @ ContainsAll[ss, tt]
+ ]
+
 
 LogicalForm[Ket[a_Association], ss:{___?SpeciesQ}] :=
   Ket @ AssociationThread[ss -> Lookup[a, ss]]
@@ -391,7 +399,7 @@ SimpleForm[expr_, {}] := Module[
   SimpleForm[expr, {ss}]
  ]
 
-SimpleForm[expr_, S_?SpeciesQ] := SimpleForm[expr, S @ {None}]
+SimpleForm[expr_, S_?SpeciesQ] := SimpleForm[expr, S @ {$}]
 
 SimpleForm[v:Ket[_Association], gg_List] :=
   Interpretation[theSimpleForm[v, gg], v]
@@ -436,7 +444,7 @@ ProductForm[expr_, ss_List] :=
 
 ProductForm[expr_] := ProductForm[expr, NonCommutativeSpecies @ expr]
 
-ProductForm[expr_, S_?SpeciesQ] := SimpleForm[expr, S @ {None}]
+ProductForm[expr_, S_?SpeciesQ] := SimpleForm[expr, S @ {$}]
 
 ProductForm[vec:Ket[_Association], gg_List] :=
   Interpretation[theProductForm[vec, gg], vec]
@@ -478,9 +486,9 @@ SpinForm[expr_, a_List, b_List] :=
 
 SpinForm[expr_] := SpinForm[expr, NonCommutativeSpecies[expr], {}]
 
-SpinForm[expr_, s_?SpeciesQ, rest_] := SpinForm[expr, s @ {None}, rest]
+SpinForm[expr_, s_?SpeciesQ, rest_] := SpinForm[expr, s @ {$}, rest]
 
-SpinForm[expr_, qq_List, s_?SpeciesQ] := SpinForm[expr, qq, s @ {None}]
+SpinForm[expr_, qq_List, s_?SpeciesQ] := SpinForm[expr, qq, s @ {$}]
 
 SpinForm[v_Ket, rest__] :=
   Interpretation[theSpinForm[v, rest], v]
@@ -580,7 +588,7 @@ theYBasisForm[Ket[v_], qq : {__?QubitQ}] :=
    ]
 
 theYBasisForm[expr_, qq : {__?QubitQ}] :=
-  ReplaceAll[ expr,
+  ReplaceAll[ Garner @ expr,
     { v_Ket :> theYBasisForm[v, qq], 
       v_Bra :> theYBasisForm[v, qq] }
    ]
@@ -783,9 +791,11 @@ KetRule[r_Rule] := r
 
 KetTrim::usage = "KetTrim[Ket[assoc]] removes from assoc the elements that are either irrelevant or associated with the default value.\nKetTrim[assoc] is the same but returns the resulting Association."
 
-KetTrim[Ket[a_Association]] := Ket @ KetTrim[a]
+KetTrim[any_] = any
 
-KetTrim[a_Association] := Association @ KeyValueMap[KetTrim, a]
+(* KetTrim[Ket[a_Association]] := Ket @ KetTrim[a] *)
+
+(* KetTrim[a_Association] := Association @ KeyValueMap[KetTrim, a] *)
 
 KetTrim[a_, b_] := Rule[a, b]
 
@@ -1771,11 +1781,11 @@ Matrix::rmndr = "There remain some elements, ``, that are not specified for matr
 
 Matrix[ expr_ ] := Matrix[expr, NonCommutativeSpecies @ expr]
 
-Matrix[ expr_, S_?SpeciesQ ] := Matrix[expr, S @ {None}]
+Matrix[ expr_, S_?SpeciesQ ] := Matrix[expr, S @ {$}]
 
-Matrix[ expr_, S_?SpeciesQ, tt_ ] := Matrix[expr, S @ {None}, tt]
+Matrix[ expr_, S_?SpeciesQ, tt_ ] := Matrix[expr, S @ {$}, tt]
 
-Matrix[ expr_, ss_, T_?SpeciesQ ] := Matrix[expr, ss, T @ {None}]
+Matrix[ expr_, ss_, T_?SpeciesQ ] := Matrix[expr, ss, T @ {$}]
 
 Matrix[ expr_, ss:{__?SpeciesQ} ] := Matrix[expr, FlavorNone @ ss] /;
   Not[FlavorNoneQ @ ss]
@@ -2865,9 +2875,9 @@ Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss]
 
 Dyad[a_, b_, ss_] := Dyad[a, b, ss, ss]
 
-Dyad[a_, b_, S_?SpeciesQ, tt_] := Dyad[a, b, S @ {None}, tt]
+Dyad[a_, b_, S_?SpeciesQ, tt_] := Dyad[a, b, S @ {$}, tt]
 
-Dyad[a_, b_, ss_, T_?SpeciesQ] := Dyad[a, b, ss, T @ {None}]
+Dyad[a_, b_, ss_, T_?SpeciesQ] := Dyad[a, b, ss, T @ {$}]
 
 Dyad[a_, b_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
   Dyad[a, b, FlavorNone @ ss, FlavorNone @ tt] /;

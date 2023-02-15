@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.11 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-12 11:08:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.12 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-15 19:47:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,12 +16,9 @@ BeginPackage["Q3`"]
 
 (* Obsolete Symbols *)
 
-{ QuissoCircuit }; (* Obsolete *)
-{ QuissoCircuitIn, QuissoCircuitOut }; (* obsolete *)
-
 Begin["`Private`"]
 
-QuantumCircuit::usage = "QuantumCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nExpressionFor[ QuantumCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a Quisso expression.\nMatrix[ QuantumCircuit[...] ] returns the matrix representation of the quantum circuit model."
+QuantumCircuit::usage = "QuantumCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nExpressionFor[ QuantumCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a operator or vector expression.\nMatrix[ QuantumCircuit[...] ] returns the matrix representation of the quantum circuit model."
 
 QuantumCircuit::noqubit = "No Qubit found in the expression ``. Use LogicalForm to specify the Qubits explicitly."
 
@@ -373,13 +370,13 @@ qcGate[
 
 
 qcGate[
-  ControlledU[ rr_Rule, S_?QubitQ, opts___?OptionQ ],
+  ControlledGate[ rr_Rule, S_?QubitQ, opts___?OptionQ ],
   more___?OptionQ ] :=
   Gate[ rr, Qubits @ S, opts, more,
     "Label" -> {None, gateLabel[S]} ]
 
 qcGate[
-  ControlledU[
+  ControlledGate[
     Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}],
     op:(Phase|Rotation|EulerRotation)[__, opts___?OptionQ],
     more___?OptionQ ],
@@ -388,15 +385,15 @@ qcGate[
     "Label" -> {None, gateLabel[op]} ]
 
 qcGate[
-  ControlledU[
+  ControlledGate[
     Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}],
     HoldPattern @ Multiply[ss__?QubitQ],
     opts___?OptionQ ],
   more___?OptionQ ] :=
-  Sequence @@ Map[qcGate[ControlledU[cc->vv, #], opts, more]&, {ss}]
+  Sequence @@ Map[qcGate[ControlledGate[cc->vv, #], opts, more]&, {ss}]
 
 qcGate[
-  ControlledU[ Rule[cc:{__?QubitQ}, vv_], expr_, opts___?OptionQ ],
+  ControlledGate[ Rule[cc:{__?QubitQ}, vv_], expr_, opts___?OptionQ ],
   more___?OptionQ ] :=
   Gate[ cc->vv, Qubits[expr], opts, more ] /;
   Not @ FreeQ[expr, _Dyad|_?QubitQ]
@@ -966,28 +963,6 @@ qPortBrace[-1, { a:{_, _}, b:{_, _} } ] :=
 
 qPortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
   RightBrace[a, b, "Width" -> $BraceWidth]
-
-
-QuissoCircuit::usage = "QuissoCircuit has been renamed QuantumCircuit."
-
-QuissoCircuit[args___] := (
-  Message[Q3General::renamed, "QuissoCircuit", "QuantumCircuit"];
-  QuantumCircuit[args]
- )
-
-QuissoIn::usage = "QuissoIn has been renamed QuantumIn."
-
-QuissoIn[args___] := (
-  Message[Q3General::renamed, "QuissoIn", "QuantumIn"];
-  QuantumIn[args]
- )
-
-QuissoOut::usage = "QuissoOut has been renamed QuantumOut."
-
-QuissoOut[args___] := (
-  Message[Q3General::renamed, "QuissoOut", "QuantumOut"];
-  QuantumOut[args]
- )
 
 End[]
 
