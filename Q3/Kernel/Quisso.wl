@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.41 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-15 21:43:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.54 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 18:54:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -80,6 +80,7 @@ AddElaborationPatterns[
     Elaborate @ Phase[2*Pi*Power[2,n], G[j,3]],
   G_?QubitQ[j___, -C[n_Integer]] :>
     Elaborate @ Phase[-2*Pi*Power[2,n], G[j,3]],
+  G_?QuditQ[j___, 0 -> 0] :> 1 - Total @ Rest @ G[j, Diagonal],
   OTimes -> DefaultForm @* CircleTimes,
   OSlash -> DefaultForm @* CircleTimes
  ]
@@ -309,10 +310,10 @@ HoldPattern @
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,1], Ket[b_Association], post___ ] :=
   With[
-    { m = Mod[ 1 + b[ a[j,$] ], 2 ] },
+    { m = Mod[1 + b[a[j,$]], 2] },
     Multiply[
       pre,
-      Ket @ KeySort @ KetTrim @ Append[ b, a[j,$]->m ],
+      Ket @ KeySort @ Append[b, a[j,$]->m],
       post
      ]
    ]
@@ -320,18 +321,17 @@ HoldPattern @
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,2], Ket[b_Association], post___ ] :=
   With[
-    { m = Mod[ 1 + b[ a[j,$] ], 2 ] },
+    { m = Mod[1 + b[a[j,$]], 2] },
     (2 m - 1) I Multiply[
       pre,
-      Ket @ KeySort @ KetTrim @ Append[ b, a[j,$]->m ],
+      Ket @ KeySort @ Append[b, a[j,$]->m],
       post
      ]
    ]
 
 HoldPattern @
-  Multiply[ x___, a_?QubitQ[j___,3], Ket[b_Association], y___ ] :=
-  (1 - 2 b[a[j,$]]) *
-  Multiply[x, Ket @ KetTrim @ b, y]
+  Multiply[pre___, a_?QubitQ[j___,3], Ket[b_Association], post___] :=
+  (1 - 2*b[a[j,$]]) * Multiply[pre, Ket @ b, post]
 
 (*
 HoldPattern @ Multiply[ x___, a_?QubitQ[j___,4], Ket[b_Association], y___ ] :=
@@ -546,7 +546,7 @@ $RaiseLowerRules = Join[ $RaiseLowerRules,
 
 (**** <Ket for Qubit> ****)
 
-KetTrim[_?QubitQ, 0] = Nothing
+theKetTrim[Rule[_?QubitQ, 0]] = Nothing
 
 KetVerify::qubit = "Invalid value `` for qubit ``."
 
@@ -812,10 +812,11 @@ theQubitAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
   { new, min, max },
   min = Max[-S1, Sz - S2, (Sz - (S1 + S2))/2];
   max = Min[S1, Sz + S2, (Sz + (S1 + S2))/2];
-  new = Simplify @ Sum[
+  new = Garner @ Sum[
     CircleTimes @@@ Tuples[{irb[{S1, m}], irc[{S2, Sz - m}]}]*
       ClebschGordan[{S1, m}, {S2, Sz - m}, {S, Sz}],
-    {m, Range[min, max]} ];
+    {m, Range[min, max]}
+   ];
   Association[ {S, Sz} -> new ]
  ]
 
@@ -1005,6 +1006,16 @@ CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, wh
 CNOT::incmp = "Control register `` and value set `` have unequal lengths."
 
 SetAttributes[CNOT, NHoldFirst]
+
+SyntaxInformation[CNOT] = {
+  "ArgumentsPattern" -> {_, _}
+ }
+
+CNOT[cc:(_?QubitQ|{__?QubitQ})] := (
+  CheckArguments[CNOT[cc], 2];
+  CNOT[cc, 1]
+ )
+
 
 CNOT[c_?QubitQ, t_] := CNOT[c @ {$} -> {1}, t]
 
@@ -1242,6 +1253,15 @@ ControlledGate::incmp =  "Control register `` and value set `` have unequal leng
 
 SetAttributes[ControlledGate, NHoldFirst]
 
+SyntaxInformation[ControlledGate] = {
+  "ArgumentsPattern" -> {_, __}
+ }
+
+ControlledGate[cc:(_?QubitQ|{__?QubitQ})] := (
+  CheckArguments[ControlledGate[cc], 2];
+  ControlledGate[cc, 1]
+ )
+
 ControlledGate[S_?QubitQ, rest__] :=
   ControlledGate[S @ {$} -> {1}, rest]
 
@@ -1276,6 +1296,53 @@ ControlledGate[Rule[ss:{__?QubitQ}, vv_], z_?CommutativeQ, opts___?OptionQ] :=
       Phase[ff*Arg[z], Last[ss][3], opts]
      ]
    ]
+
+
+theControlledGate[cc_Rule, op_] := Module[
+  { tt = First[Qubits @ op],
+    mm = Matrix[op],
+    ff },
+  Which[
+    CommutativeQ[ff = Elaborate[op / tt[1]]],
+    Return @ {CNOT[cc, tt], ControlledGate[cc, ff]},
+    CommutativeQ[ff = Elaborate[op / tt[2]]],
+    Return @ {tt[-7], CNOT[cc, tt], tt[7], ControlledGate[cc, ff]},
+    CommutativeQ[ff = Elaborate[op / tt[3]]],
+    Return @ {tt[6], CNOT[cc, tt], tt[6], ControlledGate[cc, ff]}
+   ];
+  If[ Chop[Tr @ mm] == 0,
+    Module[
+      {val, vec},
+      {val, vec} = Eigensystem[mm];
+      vec = Transpose[Normalize /@ vec] . ThePauli[1] . ThePauli[6];
+      vec = Elaborate @ ExpressionFor[vec, tt];
+      Return @ {
+        {vec, "Label" ->"A"},
+        CNOT[cc, tt],
+        {Dagger[vec], "Label" -> Superscript["A","\[Dagger]"]}
+       }
+     ]
+   ];
+  ff = Sqrt[Det @ mm];
+  Module[
+    {a, b, c},
+    {a, b, c} = TheEulerAngles[mm / ff];
+    { Rotation[-(a-c)/2, tt[3], "Label" -> "C"],
+      CNOT[cc, tt],
+      { Rotation[-b/2, tt[2]] ** Rotation[-(a+c)/2, tt[3]],
+        "Label" -> "B" },
+      CNOT[cc, tt],
+      { Rotation[a, tt[3]] ** Rotation[b/2, tt[2]],
+        "Label" -> "A" },
+      ControlledGate[cc, ff]
+     }
+   ]
+ ]
+
+ControlledGate /:
+Expand @ ControlledGate[cc_Rule, op_, ___?OptionQ] :=
+  Sequence @@ theControlledGate[cc, op] /; Length[Qubits @ op] == 1
+
 
 ControlledGate /:
 Dagger @ ControlledGate[sv_Rule, expr_, opts___?OptionQ] :=
@@ -1412,18 +1479,22 @@ HoldPattern @ Multiply[pre___, op_ControlledExp, post___] :=
 ControlledExp /:
 Expand @ ControlledExp[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
   Module[
-    { n = Length@ss,
-      ops, txt, new },
-    ops = Table[MultiplyPower[op, Power[2, n - k]], {k, n}];
+    { n = Length @ ss,
+      tt = Qubits[op],
+      pwr, txt, new },
+    pwr = Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
 
     txt = OptionValue[ControlledExp, opts, "Label"];
-    If[ListQ[txt], txt = Last@txt];
-    txt = Table["Label" -> Superscript[txt, Superscript[2, n - k]], {k, n}];
+    If[ListQ[txt], txt = Last @ txt];
+    txt = Table["Label" -> Superscript[txt, Superscript[2, n-k]], {k, n}];
     
-    new = MapThread[ControlledGate, {ss, ops, txt}];
-    new = Map[Append[#, Hold["LabelSize" -> 0.65, opts]]&, new];
-    Sequence @@ ReleaseHold[new]
+    new = ReplaceAll[
+      MapThread[ControlledGate, {ss, pwr, txt}],
+      ControlledGate[args__] -> ControlledGate[args, "LabelSize" -> 0.65, opts]
+     ];
+    Sequence @@ new
    ]
+(* NOTE: Some elements in pwr may be 1.*)
 
 theCtrlExp::usage = "theCtrlExp[n, m] is the matrix version of ControlledExp."
 
@@ -1878,6 +1949,8 @@ Multiply[pre___, spr_MeasurementFunction, expr_] :=
 
 ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
 
+Options[ProductState] = {"Label" -> None}
+
 Format @ ProductState[assoc:Association[], rest___] :=
   Interpretation[Ket[Any], ProductState[assoc, rest]]
 
@@ -1890,7 +1963,7 @@ Format @ ProductState[assoc_Association, rest___] := Interpretation[
  ]
 
 ProductState /:
-HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
+LogicalForm[ProductState[a_Association], gg_List] :=
   Module[
     { ss = Union[Keys @ a, FlavorNone @ gg] },
     Block[
@@ -1901,16 +1974,16 @@ HoldPattern @ LogicalForm[ ProductState[a_Association], gg_List ] :=
    ]
 
 ProductState /:
-HoldPattern @ Elaborate[ ProductState[a_Association, ___] ] := Garner[
+Elaborate[ ProductState[a_Association, ___] ] := Garner[
   CircleTimes @@ KeyValueMap[ExpressionFor[#2, #1]&, a]
  ]
 
 ProductState /:
-HoldPattern @ Matrix[ ket_ProductState ] :=
+Matrix[ ket_ProductState ] :=
   Matrix[Elaborate @ ket]
 
 ProductState /:
-HoldPattern @ Matrix[ ket_ProductState, qq:{__?QubitQ} ] :=
+Matrix[ ket_ProductState, qq:{__?QubitQ} ] :=
   Matrix[Elaborate @ ket, qq]
 
 ProductState /:
@@ -1926,32 +1999,30 @@ HoldPattern @
   Multiply[ pre___, vec:ProductState[_Association, ___], post___ ] :=
   Garner @ Multiply[pre, Elaborate[vec], post]
 
-(* input specifications *)
 
-(* Removed to be consistent with Ket. *)
-(*
-ProductState[spec___Rule, s_?QubitQ] :=
-  LogicalForm[ProductState[spec], {s}]
- *)
+(* input specifications *)
 
 ProductState[spec___Rule, ss:{__?QubitQ}] :=
   LogicalForm[ProductState[spec], ss]
+
+ProductState[v:ProductState[_Association, ___], spec___Rule, ss:{__?QubitQ}] :=
+  LogicalForm[ProductState[v, spec], ss]
 
 
 ProductState[] = ProductState[Association[]]
 
 ProductState[spec__Rule] :=
-  Fold[ ProductState, ProductState[<||>], {spec} ]
+  Fold[ProductState, ProductState[<||>], {spec}]
 
 ProductState[v:ProductState[_Association, ___], spec_Rule, more__Rule] :=
-  Fold[ ProductState, v, {spec} ]
+  Fold[ProductState, v, {spec, more}]
 
-ProductState[v:ProductState[_Association, ___], rule:(_String -> _)] :=
-  Append[v, rule]
+ProductState[v:ProductState[_Association, ___], spec:Rule[_String, _]] :=
+  Append[v, spec] /; KeyExistsQ[Options[ProductState], First @ spec]
 
 ProductState[ ProductState[a_Association, opts___],
   rule:(_?QubitQ -> {_, _}) ] :=
-  ProductState[ KeySort @ Append[a, FlavorNone @ rule], opts ]
+  ProductState[KeySort @ Append[a, FlavorNone @ rule], opts]
 
 ProductState[
   ProductState[a_Association, opts___],
@@ -2204,6 +2275,7 @@ setQudit[x_Symbol, dim_Integer] := (
   x[j___, ij:Rule[_, _List]] := x[j, Thread @ ij];
   
   x[j___, All] := x[j, Rule @@@ Tuples[Range[0, dim-1], 2]];
+  x[j___, Diagonal] := x[j, Thread @ Rule[Range[0, dim-1], Range[0, dim-1]]];
   
   x /: Dagger[ x[j___, Rule[a_Integer, b_Integer]] ] := x[j, Rule[b,a]];
 
@@ -2268,7 +2340,7 @@ FlavorMute[S_Symbol?QuditQ[k___, _] -> m_] := S[k, $] -> m
 
 (**** <Ket for Qudits> ****)
 
-KetTrim[_?QuditQ, 0] = Nothing
+theKetTrim[Rule[_?QuditQ, 0]] = Nothing
 
 KetVerify::qudit = "Invalid value `` for qudit ``."
 

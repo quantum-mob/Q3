@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.10.2
+
+- New function KetKeys.
+
 ## v2.10.1
 
 - Improved CNOT.

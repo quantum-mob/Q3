@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.41 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-15 19:07:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.42 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-16 22:07:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -13,8 +13,6 @@ BeginPackage["Q3`"]
   Real, RealQ,
   Integer, IntegerQ, HalfIntegerQ,
   Binary, BinaryQ, Binaries };
-
-{ LinearMap, LinearMapFirst }
 
 { CauchySimplify, CauchyFullSimplify };
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.5 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-11 17:24:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.9 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 19:29:40+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -248,9 +248,13 @@ Spins[expr_] := Select[NonCommutativeSpecies[expr], SpinQ]
 
 (* Speical Rules: Involving identity *)
 
-HoldPattern @ Multiply[a___, x_?SpinQ[j___,0], x_?SpinQ[j___,n_], b___] := Multiply[a, x[j,n], b]
+HoldPattern @
+  Multiply[pre___, x_?SpinQ[j___,0], x_?SpinQ[j___,n_], post___] :=
+  Multiply[pre, x[j,n], post]
 
-HoldPattern @ Multiply[a___, x_?SpinQ[j___,n_], x_?SpinQ[j___,0], b___] := Multiply[a, x[j,n], b]
+HoldPattern @
+  Multiply[pre___, x_?SpinQ[j___,n_], x_?SpinQ[j___,0], post___] :=
+  Multiply[pre, x[j,n], post]
 (* Conceptually this one is not required as it can be deduced from the
    commutation relations below. But this makes the evaluation faster when
    Multiply involves many Spin operators. *)
@@ -359,57 +363,39 @@ HoldPattern @ Multiply[a___, x1_?SpinQ, x2_?SpinQ, b___] :=
 
 (* Wigner on Ket *)
 
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,0], Ket[b_Association], y___ ] :=
+HoldPattern @
+  Multiply[ x___, a_?SpinQ[j___,0], Ket[b_Association], y___ ] :=
   Multiply[ x, Ket[b], y ]
 
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,4], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], M = b[a[j,$]], v },
-  v = Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M+1] ];
-  Multiply[ x, v, y ]
- ] /; KeyExistsQ[b, a[j,$]]
+HoldPattern @
+  Multiply[ x___, a_?SpinQ[j___,4], Ket[b_Association], y___ ] := Module[
+    { J = Spin[a],
+      M = b[a[j,$]],
+      v },
+    v = Sqrt[J(J+1)-M(M+1)] * Ket[KeySort @ Append[b, a[j,$]->M+1]];
+    Multiply[x, v, y]
+   ]
 
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,4], Ket[b_Association], y___ ] := 0
+HoldPattern @
+  Multiply[ x___, a_?SpinQ[j___,5], Ket[b_Association], y___ ] := Module[
+    { J = Spin[a],
+      M = b[a[j,$]],
+      v },
+    v = Sqrt[J(J+1)-M(M-1)] Ket[KeySort @ Append[b, a[j,$]->M-1]];
+    Multiply[x, v, y]
+   ]
 
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,5], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], M = b[a[j,$]], v },
-  v = Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M-1] ];
-  Multiply[ x, v, y ]
- ] /; KeyExistsQ[b, a[j,$]]
+HoldPattern @
+  Multiply[pre___, a_?SpinQ[j___,1], b:Ket[_Association], post___] :=
+  Multiply[pre, (a[j,4]**b + a[j,5]**b)/2, post]
 
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,5], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], v },
-  v = Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,$]->J-1]];
-  Multiply[ x, v, y ]
- ]
+HoldPattern @
+  Multiply[pre___, a_?SpinQ[j___,2], b:Ket[_Association], post___] :=
+  Multiply[pre, (a[j,4]**b - a[j,5]**b)/(2*I), post]
 
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,1], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], M = b[a[j,$]], v },
-  v = 1/2 Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M-1] ] +
-      1/2 Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M+1] ];
-  Multiply[ x, v, y ]
- ] /; KeyExistsQ[b, a[j,$]]
-
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,1], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], v },
-  v = 1/2 Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,$]->J-1]];
-  Multiply[ x, v, y ]
- ]
-
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,2], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], M = b[a[j,$]], v },
-  v = I/2 Sqrt[J(J+1)-M(M-1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M-1] ] -
-      I/2 Sqrt[J(J+1)-M(M+1)] Ket[ KetTrim @ ReplacePart[b, Key[a[j,$]]->M+1] ];
-  Multiply[ x, v, y ]
- ] /; KeyExistsQ[b, a[j,$]]
-
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,2], Ket[b_Association], y___ ] := Module[
-  { J = Spin[a], v },
-  v = I/2 Sqrt[J(J+1)-J(J-1)] Ket[ KeySort @ Append[b, a[j,$]->J-1] ];
-  Multiply[ x, v, y ]
- ]
-
-HoldPattern @ Multiply[ x___, a_?SpinQ[j___,3], Ket[b_Association], y___ ] :=
-  b[a[j,$]] Multiply[x, KetTrim @ Ket[b], y]
+HoldPattern @
+  Multiply[pre___, a_?SpinQ[j___,3], Ket[b_Association], post___] :=
+  b[a[j,$]] * Multiply[pre, Ket[b], post]
 
 
 AddElaborationPatterns[
@@ -452,9 +438,9 @@ FlavorMute[S_Symbol?SpinQ[j___, _]] := S[j, $]
 FlavorMute[S_Symbol?SpinQ[j___, _] -> m_] := S[j, $] -> m
 
 
-(**** <Ket for Spins> ****)
+(**** <Ket> ****)
 
-KetTrim[S_?SpinQ, m_] := Nothing /; Spin[S] == m
+theKetTrim[Rule[S_?SpinQ, m_]] := Nothing /; Spin[S] == m
 
 KetVerify::spin = "Invalid value `` for spin ``."
 
@@ -465,14 +451,14 @@ KetVerify[op_?SpinQ, m_] := (
 (* NOTE: The following definition would not allow to assign a symbolic value:
    KetVerify[_?SpinQ, m] = $Failed /; SpinNumberQ @ {Spin[op], m} *)
 
-(**** </Ket for Spins> ****)
+(**** </Ket> ****)
 
 
 (**** <Basis> ****)
 
 Basis[ op_?SpinQ ] := With[
   { J = Spin[op] },
-  Ket /@ Thread[ FlavorNone[op] -> Range[J, -J, -1] ]
+  Ket /@ Thread[FlavorNone[op] -> Range[J, -J, -1]]
  ]
 
 (**** </Basis> ****)

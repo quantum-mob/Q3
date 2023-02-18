@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.18 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-15 23:11:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 22:07:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -35,6 +35,8 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { Any, Base, Flavors, FlavorMost, FlavorLast,
   FlavorNone, FlavorNoneQ, FlavorMute, FlavorThread };
+
+{ LinearMap, LinearMapFirst };
 
 { Qubit, Qubits, QubitQ };
 { Qudit, Qudits, QuditQ };
@@ -71,7 +73,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { JordanWignerTransform };
 
-{ Garner, AddGarnerPatterns, $GarnerPatterns };
+{ Garner, FullGarner, AddGarnerPatterns, $GarnerPatterns };
 
 { Elaborate, AddElaborationPatterns, $ElaborationPatterns };
 
@@ -658,7 +660,7 @@ FlavorNoneQ[s_?SpeciesQ] := FlavorNone[s] === s
 
 FlavorNoneQ[ss_List] := AllTrue[Flatten @ ss, FlavorNoneQ]
 
-FlavorNoneQ[_] = False
+FlavorNoneQ[_] = True
 
 (**** </FlavorNone> ****)
 
@@ -1263,19 +1265,25 @@ MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
 
 (**** <Garner> ****)
 
-Garner::usage = "Garner[expr] collects together terms involving the same Species objects (operators, Kets, Bras, etc.)."
+Garner::usage = "Garner[expr] collects together terms involving the same species objects (operators, Kets, Bras, etc.) and simplifies the coefficients by using Simplify.\nGarner[expr, function] uses function instead of Simplify."
+
+FullGarner::usage = "FullGarner[expr] collects together terms involving the same species objects (operators, Kets, Bras, etc.) and simplifies the coefficients by using FullSimplify."
 
 SetAttributes[Garner, Listable]
 
-Garner[expr_] := Module[
+SetAttributes[FullGarner, Listable]
+
+Garner[expr_, tool_:Simplify] := Module[
   { bb = $GarnerPatterns["Heads"],
     tt = $GarnerPatterns["Tests"],
     qq },
   bb = Union @ Cases[expr, bb, Infinity];
   qq = expr /. {_Multiply -> 0};
   qq = Union @ Cases[qq, tt, Infinity];
-  Collect[expr, Join[qq, bb], Simplify]
+  Collect[LogicalForm @ expr, Join[qq, bb], tool]
  ]
+
+FullGarner[expr_] := Garner[expr, FullSimplify]
 
 
 AddGarnerPatterns::usage = "AddGarnerPatterns[pattern$1,pattern$2,\[Ellipsis]] adds patterns to be handled by Garner."

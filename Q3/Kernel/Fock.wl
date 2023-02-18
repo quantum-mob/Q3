@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.43 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-11 17:29:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.49 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 21:12:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -68,7 +68,7 @@ Begin["`Private`"]
 $symbs = Unprotect[Missing]
 
 
-FlavorNone[a_?AnyParticleQ] := a
+FlavorNone[a_?AnyParticleQ] = a
 
 
 Heisenberg::usage = "Heisenberg represents the operators obeying the canonical commutation relations.\nLet[Heisenberg, a, b, ...] or Let[Heisenberg, {a,b,...}] declares a, b, ... to be Heisenberg canonical operators. Heisenberg cannonical variables are essentially Bosonic. Indeed, a complex Weyl algebra is generated either by Bosonic creators and annihilators or by Heisenberg caonical operators."
@@ -157,7 +157,7 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
   x /: Conjugate[x] := x;
   x /: Conjugate[x[j___]] := x[j];
 
-  x[j___, None, k___] := x[j,k];
+  x[j___, $, k___] := x[j,k];
   x[] := x;
 
   x[j___, a_ -> b_] := Dyad[<|x[j] -> b|>, <|x[j] -> a|>];
@@ -299,7 +299,7 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
-  x[j___, None, k___] := x[j, k];
+  x[j___, $, k___] := x[j, k];
   x[] := x; (* NOTE: This affects Vacuum[f[]]. *)
   
   Spin[x] ^= spin;
@@ -418,9 +418,9 @@ spinfulQ::usage = "spinfulQ[c[j...]] returns True if the operator c has finite s
 (* NOTE: Not[spinlessQ] != spinfulQ.  There are undetermined cases, which
    result in False for both. *)
 
-spinlessQ[ op_?AnyParticleQ ] := If[ TrueSpin[op] == 0, True, False, True ]
+spinlessQ[op_?AnyParticleQ] := If[TrueSpin[op] == 0, True, False, True]
 
-spinfulQ[ op_?AnyParticleQ ] := TrueQ[ TrueSpin[op] > 0 ]
+spinfulQ[op_?AnyParticleQ] := TrueQ[TrueSpin[op] > 0]
 
 
 seaQ::usage = "seaQ[c[i,j,...]] returns True if Vacuum[c] is \"Sea\" and the Flavor indices i, j, ... are consistent. Note that seaQ[c] returns always False wheather with or withour warning message."
@@ -793,7 +793,8 @@ Dagger /:
 HoldPattern @ Conjugate @ Dagger[q_?FockOperatorQ] := Dagger[q]
 
 Multiply /:
-HoldPattern @ Conjugate[ Multiply[a_?AnyFockOperatorQ, b__?AnyFockOperatorQ] ] :=
+HoldPattern @
+  Conjugate[ Multiply[a_?AnyFockOperatorQ, b__?AnyFockOperatorQ] ] :=
   Multiply[ a, b ]
 (* NOTE: Do not generalize it too much. For example, <a|op|b> is a complex
    number and under Dagger switches to complex conjugation. If the above is
@@ -1369,28 +1370,32 @@ HoldPattern @ Multiply[ Bra[Vacuum], Dagger[_?BosonQ].., Ket[Vacuum] ] = 0
 
 (* (1-n_k) |0> *)
 HoldPattern @
-  Multiply[Bra[Vacuum], a___, op:c_[k_,j___], Dagger[op:c_[k_,j___]], Ket[Vacuum]] := 
-  UnitStep[k] VacuumExpectation[Multiply[a]] /;
+  Multiply[Bra[Vacuum], more___,
+    op:c_[k_,j___], Dagger[op:c_[k_,j___]], Ket[Vacuum]] := 
+  UnitStep[k] VacuumExpectation[Multiply[more]] /;
   FermionQ[c] && seaQ[op]
 (* 2016-09-01 Can this case occur with Dagger[c] always pushed to the left? *)
 
 (* <0| (1-n_k) *)
 HoldPattern @
-  Multiply[Bra[Vacuum], op:c_[k_,j___], Dagger[op:c_[k_,j___]], b___, Ket[Vacuum]] :=
-  UnitStep[k] VacuumExpectation[Multiply[b]] /;
+  Multiply[Bra[Vacuum], op:c_[k_,j___], Dagger[op:c_[k_,j___]],
+    more___, Ket[Vacuum]] :=
+  UnitStep[k] VacuumExpectation[Multiply[more]] /;
   FermionQ[c] && seaQ[op]
 (* 2016-09-01 Can this case occur with Dagger[c] always pushed to the left? *)
 
 (* n_k |0> *)
 HoldPattern @
-  Multiply[Bra[Vacuum], a___, Dagger[op:c_[k_,j___]], op:c_[k_,j___], Ket[Vacuum]] :=
-  UnitStep[-k] VacuumExpectation[Multiply[a]] /;
+  Multiply[Bra[Vacuum], more___,
+    Dagger[op:c_[k_,j___]], op:c_[k_,j___], Ket[Vacuum]] :=
+  UnitStep[-k] VacuumExpectation[Multiply[more]] /;
 j  FermionQ[c] && seaQ[op]
 
 (* <0| n_k *)
 HoldPattern @
-  Multiply[Bra[Vacuum], Dagger[op:c_[k_,j___]], op:c_[k_,j___], b___, Ket[Vacuum]] :=
-  UnitStep[-k] VacuumExpectation[Multiply[b]]  /;
+  Multiply[Bra[Vacuum], Dagger[op:c_[k_,j___]], op:c_[k_,j___],
+    more___, Ket[Vacuum]] :=
+  UnitStep[-k] VacuumExpectation[Multiply[more]]  /;
   FermionQ[c] && seaQ[op]
 
 (* Special rule for Spin = 1/2 and Vacuum == "Sea".
@@ -1615,7 +1620,7 @@ CoherentState[ op:$coherentSpec.. ] :=
 
 CoherentState[ CoherentState[a_Association], op:$coherentSpec.. ] := Module[
   { rules = Flatten @ KetRule @ {op} },
-  CoherentState @ KeySort @ KetTrim @ Join[a, Association @ rules]
+  CoherentState @ KeySort @ Join[a, Association @ rules]
  ]
 
 
@@ -1855,7 +1860,7 @@ KetRule[ r:Rule[_?ParticleQ, _] ] := r
 KetRule[ r:Rule[{__?ParticleQ}, _] ] := Thread[r]
  *)
 
-KetTrim[_?ParticleQ, 0] = Nothing
+theKetTrim[Rule[_?ParticleQ, 0]] = Nothing
 
 KetVerify::boson = "Invalid value `` for boson ``."
 
@@ -1877,24 +1882,20 @@ KetVerify[c_?FermionQ, v_] := (
 
 (* Operations on Ket[] *)
 
-HoldPattern @ Multiply[x___, op_?BosonQ, Ket[v_Association], y___] := Module[
-  { vv = v },
-  vv[op] = v[op] - 1;
-  Multiply[x, Sqrt[v[op]] * Ket[KetTrim @ vv], y]
- ] /; KeyExistsQ[v, op]
+HoldPattern @
+  Multiply[x___, op_?BosonQ, Ket[v_Association], y___] := Module[
+    { vv = v },
+    If[v[op] == 0, Return[0]];
+    vv[op] = v[op] - 1;
+    Multiply[x, Sqrt[v[op]] * Ket[vv], y]
+   ]
 
-HoldPattern @ Multiply[x___, op_?BosonQ, Ket[v_Association], y___] := 0
-
-HoldPattern @ Multiply[x___, Dagger[op_?BosonQ], Ket[v_Association], y___] := Module[
-  { vv = v },
-  vv[op] = v[op]+1;
-  Multiply[x, Sqrt[v[op]+1] * Ket[vv], y]
- ] /; KeyExistsQ[v, op]
-
-HoldPattern @ Multiply[x___, Dagger[op_?BosonQ], Ket[v_Association], y___] := Module[
-  { vv = v },
-  Multiply[x, Ket[ KeySort @ AssociateTo[vv, op->1] ], y]
- ]
+HoldPattern @
+  Multiply[x___, Dagger[op_?BosonQ], Ket[v_Association], y___] := Module[
+    { vv = v },
+    vv[op] = v[op]+1;
+    Multiply[x, Sqrt[v[op]+1] * Ket[vv], y]
+   ]
 
 HoldPattern @
   Multiply[pre___, op_?HeisenbergQ, Ket[v_Association], post___] :=
@@ -1905,7 +1906,7 @@ HoldPattern @
     ww[op] = v[op] + 1;
     Multiply[
       pre,
-      Sqrt[v[op]] * Ket[KetTrim @ vv] + Sqrt[v[op]+1] * Ket[ww]
+      Sqrt[v[op]] * Ket[vv] + Sqrt[v[op]+1] * Ket[ww]
       post
      ] / Sqrt[2] // Garner
    ]
@@ -1919,45 +1920,32 @@ HoldPattern @
     ww[op] = v[op] + 1;
     Multiply[
       pre,
-      Sqrt[v[op]] * Ket[KetTrim @ vv] - Sqrt[v[op]+1] * Ket[ww]
+      Sqrt[v[op]] * Ket[vv] - Sqrt[v[op]+1] * Ket[ww]
       post
      ] / (I*Sqrt[2]) // Garner
    ]
 
-HoldPattern @ Multiply[x___, op_?FermionQ, Ket[v_Association], y___] := Module[
-  { sign },
-  If[ v[op] == 0, Return[0] ];
-  (* TODO: This doesn't respect fermions with Sea vacuum. *)
-  sign = keySignature[v, op];
-  Multiply[x, sign * Ket @ KeyDrop[v, op], y]
- ] /; KeyExistsQ[v, op]
 
-HoldPattern @ Multiply[x___, op_?FermionQ, Ket[v_Association], y___] := 0
+HoldPattern @
+  Multiply[x___, op_?FermionQ, Ket[v_Association], y___] := Module[
+    { vv = v, sign },
+    If[v[op] == 0, Return[0]];
+    (* TODO: This doesn't respect fermions with Sea vacuum. *)
+    vv[op] = 0;
+    sign = keySignature[v, op];
+    Multiply[x, sign * Ket[vv], y]
+   ]
 
-HoldPattern @ Multiply[x___, Dagger[op_?FermionQ], Ket[v_Association], y___] := Module[
-  { vv = v, sign },
-  If[ v[op] == 1, Return[0] ];
-  (* TODO: This doesn't respect fermions with Sea vacuum. *)
-  vv[op] = 1;
-  sign = keySignature[v, op];
-  Multiply[x, sign * Ket[vv], y]
- ] /; KeyExistsQ[v, op]
+HoldPattern @
+  Multiply[x___, Dagger[op_?FermionQ], Ket[v_Association], y___] := Module[
+    { vv = v, sign },
+    If[v[op] == 1, Return[0]];
+    (* TODO: This doesn't respect fermions with Sea vacuum. *)
+    vv[op] = 1;
+    sign = keySignature[v, op];
+    Multiply[x, sign * Ket[vv], y]
+   ]
 
-HoldPattern @ Multiply[x___, Dagger[op_?FermionQ], Ket[v_Association], y___] := Module[
-  { vv = v,
-    sign = keySignature[v, op] },
-  If[ v[op] == 1, Return[0] ];
-  (* TODO: This doesn't respect fermions with Sea vacuum. *)
-  vv[op] = 1;
-  Multiply[x, sign * Ket[vv], y]
- ] /; KeyExistsQ[v, op]
-
-HoldPattern @ Multiply[x___, Dagger[op_?FermionQ], Ket[v_Association], y___] := Module[
-  { vv = v, sign },
-  vv = KeySort @ AssociateTo[vv, op->1];
-  sign = keySignature[vv, op];
-  Multiply[x, sign * Ket[vv], y]
- ]
 
 HoldPattern @
   Multiply[pre___, Bra[v_Association], op_?AnyParticleQ, post___] :=
@@ -1970,7 +1958,7 @@ HoldPattern @
 keySignature::usage = "Returns the signature for adding to or removing from the Ket a FERMION at the position j."
 
 keySignature[v_Association, op_] := Module[
-  { vv = KetTrim @ KeyDrop[ KeySelect[v, FermionQ], op ] },
+  { vv = KetTrim @ KeyDrop[KeySelect[v, FermionQ], op] },
   Signature[Join[{op}, Keys @ vv]]
  ]
 
@@ -2152,7 +2140,11 @@ TheMatrix[ Ket[ Association[a_?BosonQ -> n_Integer] ] ] := SparseArray[
 (**** <Parity> ****)
 
 Parity /:
-HoldPattern @ Elaborate[ Parity[c_?FermionQ] ] :=
+Elaborate[ op:Parity[_?BosonQ] ] = op
+(* NOTE: There is no simple way to express the parity for bosons. *)
+
+Parity /:
+Elaborate[ Parity[c_?FermionQ] ] :=
   1 - 2 * Multiply[Dagger[c], c]
 
 Parity /:

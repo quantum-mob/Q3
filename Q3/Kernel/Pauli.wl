@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.38 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-15 23:27:24+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.49 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 21:51:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,7 +14,8 @@ BeginPackage["Q3`"]
 { State, TheKet, TheBra, TheState };
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
-  KetFactor, KetPurge, KetSort };
+  KetFactor, KetPurge, KetSort,
+  KetSpecies };
 
 { KetNorm, KetNormalize, KetOrthogonalize }; 
 
@@ -327,22 +328,22 @@ LogicalForm[expr_] := expr /;
   FreeQ[expr, Ket[_Association] | Bra[_Association]]
 
 
-LogicalForm[expr_] := LogicalForm[expr, NonCommutativeSpecies @ expr]
+LogicalForm[expr_] := LogicalForm[expr, KetSpecies @ expr]
 
 LogicalForm[expr_, S_?SpeciesQ] := LogicalForm[expr, S @ {$}]
 
-LogicalForm[expr_, gg:{__?SpeciesQ}] :=
-  LogicalForm[expr, FlavorNone @ gg] /; Not[FlavorNoneQ @ gg]
+LogicalForm[expr_, ss:{__?SpeciesQ}] :=
+  LogicalForm[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
 LogicalForm[expr_, ss:{__?SpeciesQ}] := With[
-  { tt = NonCommutativeSpecies[expr] },
+  { tt = KetSpecies[expr] },
   LogicalForm[expr, Union[ss, tt]] /;
     Not @ ContainsAll[ss, tt]
  ]
 
 
 LogicalForm[Ket[a_Association], ss:{___?SpeciesQ}] :=
-  Ket @ AssociationThread[ss -> Lookup[a, ss]]
+  Ket @ KeySort @ Join[a, AssociationThread[ss -> Lookup[a, ss]]]
 
 LogicalForm[Bra[a_Association], ss:{___?SpeciesQ}] :=
   Dagger @ LogicalForm[Ket @ a, ss]
@@ -722,7 +723,7 @@ Ket[ spec__Rule ] := Ket[ Ket[], spec ]
 Ket[ Ket[a_Association], spec__Rule ] := Module[
   { rules = Flatten @ KetRule @ {spec},
     vec },
-  vec = Ket @ KeySort @ KetTrim @ Join[a, Association @ rules];
+  vec = Ket @ KeySort @ Join[a, Association @ rules];
   If[FailureQ @ KetVerify @ vec, $Failed, vec]
  ]
 
@@ -791,17 +792,17 @@ KetRule[r_Rule] := r
 
 KetTrim::usage = "KetTrim[Ket[assoc]] removes from assoc the elements that are either irrelevant or associated with the default value.\nKetTrim[assoc] is the same but returns the resulting Association."
 
-KetTrim[any_] = any
+KetTrim[Ket[a_Association]] := Ket @ KetTrim[a]
 
-(* KetTrim[Ket[a_Association]] := Ket @ KetTrim[a] *)
+KetTrim[a_Association] := AssociationMap[theKetTrim, a]
 
-(* KetTrim[a_Association] := Association @ KeyValueMap[KetTrim, a] *)
 
-KetTrim[a_, b_] := Rule[a, b]
+theKetTrim[any_Rule] = any
 
-KetTrim[{}, _] := Nothing (* a fallback *)
+theKetTrim[{} -> _] = Nothing (* a fallback *)
 
-KetTrim[_String, _] := Nothing (* an actual option *)
+(* theKetTrim[Rule[_String, _]] = Nothing *)
+(* an actual option *)
 
 
 KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[a, b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
@@ -820,6 +821,16 @@ KetVerify[ Ket[a_Association] ] := With[
  ]
 
 KetVerify[a_, b_] := Rule[a, b]
+
+
+KetSpecies::usage = "KetSpecies[expr] returns the list of all species of Ket-like objects in expression expr."
+
+KetSpecies[expr_] := Select[
+  Union @ Catenate[
+    Keys /@ Cases[{expr}, (Ket|Bra|ProductState)[a_Association] -> a, Infinity]
+   ],
+  NonCommutativeQ
+ ]
 
 
 KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[ImaginaryI], from expr, where the rest is a valid Ket expression."
@@ -1834,22 +1845,10 @@ HoldPattern @
    ] /; And[Not @ FreeQ[expr, _Pauli], MemberQ[expr, 0]]
 
 HoldPattern @
-  Matrix[expr:(_List|_Association), qq:{___?SpeciesQ}] := With[
-    { ss = FlavorNone @ qq },
-    Map[ Matrix[#, ss]&, expr ]
-   ]
+  Matrix[expr_Association, ss:{___?SpeciesQ}..] := Map[Matrix[#, ss]&, expr]
 
 HoldPattern @
-  Matrix[expr_Association, qq:{___?SpeciesQ}] := With[
-    { ss = FlavorNone @ qq },
-    Map[Matrix[#, ss]&, expr]
-   ]
-
-HoldPattern @
-  Matrix[expr_List, qq:{___?SpeciesQ}] := With[
-    { ss = FlavorNone @ qq },
-    Map[Matrix[#, ss]&, expr]
-   ]
+  Matrix[expr_List, ss:{___?SpeciesQ}..] := Map[Matrix[#, ss]&, expr]
 (* NOTE: {SparseArray[...], SparseArray[...], ...} may not take full advantage
    of sparse array, and we may add SparseArray at the end. But I decided not
    to do it as one usually expect {...} as the output. One should handle the
@@ -1899,9 +1898,9 @@ Matrix[op_?AnyFermionQ, qq:{__?SpeciesQ}] := Module[
   CircleTimes @@ Join[rr, {mm}, ss]
  ] /; MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
 
-fermionOne[q_?FermionQ] := ThePauli[3]
+fermionOne[f_?FermionQ] := ThePauli[3]
 
-fermionOne[q_] := One @ Dimension @ q
+fermionOne[s_] := One[Dimension @ s]
 
 
 (* For Species *)
@@ -2240,7 +2239,7 @@ Parity /:
 NonCommutativeQ[ Parity[a_] ] := NonCommutativeQ[a] (* for Multiply[] *)
 
 Parity /:
-HoldPattern @ Dagger[op:Parity[___]] := op
+Dagger[op:Parity[___]] := op
 
 Parity[a_?SpeciesQ, b__?SpeciesQ] := Multiply @@ Parity /@ {a, b}
 
@@ -2447,15 +2446,15 @@ RotationAngle[mat_?MatrixQ] := First @ RotationSystem[mat] /;
 
 TheEulerAngles::usage = "TheEulerAngles[U] gives the Euler angles {\[Alpha],\[Beta],\[Gamma]} of the SU(2) matrix U, where -\[Pi] < \[Alpha],\[Gamma] \[LessEqual] \[Pi] and 0 \[LessEqual] \[Beta] \[LessEqual] \[Pi]. TheEulerRotation[TheEulerAngles[U]] == U.\nTheEulerAngles[expr] gives the Euler angles {\[Alpha],\[Beta],\[Gamma]} of the single-qubit unitary operator given by expr in terms of Pauli operators."
 
-TheEulerAngles::notuni = "Matrix `` is not a 2x2 special unitary matrix; its determinant is ``."
+TheEulerAngles::su = "Matrix `` is not a 2x2 special unitary matrix; its determinant is ``."
 
 TheEulerAngles[U_?MatrixQ] := Module[
   { arg = Arg[U],
     ang = {0, 0, 0} },
   
   If[ UnitaryMatrixQ[U],
-    If[Chop[Det @ U] != 1, Message[TheEulerAngles::notuni, U, Det @ U]],
-    Message[TheEulerAngles::notuni, U, Chop @ Det @ U]
+    If[Chop[Det @ U] != 1, Message[TheEulerAngles::su, U, Det @ U]],
+    Message[TheEulerAngles::su, U, Chop @ Det @ U]
    ];
   
   ang[[1]] = -arg[[1, 1]] + arg[[2, 1]];
@@ -3135,7 +3134,7 @@ PauliDecompose[mat_?SquareMatrixQ] := Module[
 PauliCompose::usage = "PauliCompose[assc] reconstructs the matrix using the Pauli decomposition coefficients given in Association assc."
 
 PauliCompose[aa_Association] :=
-  Total @ KeyValueMap[((Pauli @@ #1) * #2)&, aa]
+  Total @ KeyValueMap[((ThePauli @@ #1) * #2)&, aa]
 
 
 PauliVector::usage = "PauliVector[mat] returns the Pauli decomposition coefficients of 2\[Times]2 matrix mat."

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.12 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-15 19:47:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.13 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 18:33:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -188,7 +188,7 @@ QuantumCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
 
 QuantumCircuitTrim[ v:ProductState[_Association, ___] ] := Expand[v]
 
-QuantumCircuitTrim[ Ket[a_Association] ] := Ket[KetTrim @ a]
+QuantumCircuitTrim[ v:Ket[_Association] ] = v
 
 QuantumCircuitTrim[ op_QFT ] := op
 
