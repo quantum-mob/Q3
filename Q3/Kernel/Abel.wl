@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 22:07:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.23 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 23:19:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -43,6 +43,8 @@ $::usage = "$ is a flavor index referring to the species itself."
 { Boson, Bosons, BosonQ, AnyBosonQ };
 { Fermion, Fermions, FermionQ, AnyFermionQ };
 (* NOTE: Fermion and the like are here for Matrix. *)
+
+{ KetRegulate };
 
 { Dyad };
 
@@ -1280,7 +1282,7 @@ Garner[expr_, tool_:Simplify] := Module[
   bb = Union @ Cases[expr, bb, Infinity];
   qq = expr /. {_Multiply -> 0};
   qq = Union @ Cases[qq, tt, Infinity];
-  Collect[LogicalForm @ expr, Join[qq, bb], tool]
+  Collect[KetRegulate @ expr, Join[qq, bb], tool]
  ]
 
 FullGarner[expr_] := Garner[expr, FullSimplify]

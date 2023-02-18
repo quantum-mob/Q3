@@ -2,7 +2,8 @@
 
 ## v2.10.2
 
-- New function KetKeys.
+- New function KetSpecies.
+- Kets are not trimmed by default any longer. LogicalForm is not necessary in most cases.
 
 ## v2.10.1
 

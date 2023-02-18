@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.13 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 18:33:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.14 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 23:19:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -20,7 +20,7 @@ Begin["`Private`"]
 
 QuantumCircuit::usage = "QuantumCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nExpressionFor[ QuantumCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a operator or vector expression.\nMatrix[ QuantumCircuit[...] ] returns the matrix representation of the quantum circuit model."
 
-QuantumCircuit::noqubit = "No Qubit found in the expression ``. Use LogicalForm to specify the Qubits explicitly."
+QuantumCircuit::noqubit = "No Qubit found in the expression ``. Use KetRegulate to specify the Qubits explicitly."
 
 QuantumCircuit::nofunc = "Unknown function \"``\" to draw the gate. \"Rectangle\" is assumed."
 

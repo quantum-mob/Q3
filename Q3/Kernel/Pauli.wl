@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.49 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 21:51:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.50 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 23:19:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -15,7 +15,7 @@ BeginPackage["Q3`"]
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
   KetFactor, KetPurge, KetSort,
-  KetSpecies };
+  KetSpecies, KetRegulate };
 
 { KetNorm, KetNormalize, KetOrthogonalize }; 
 
@@ -25,7 +25,7 @@ BeginPackage["Q3`"]
 
 { OTimes, OSlash, ReleaseTimes };
 
-{ DefaultForm, LogicalForm, ProductForm, SimpleForm, SpinForm };
+{ ProductForm, SimpleForm, SpinForm };
 
 { XBasisForm, YBasisForm };
 
@@ -93,6 +93,8 @@ BeginPackage["Q3`"]
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
 (**** OBSOLETE SYMBOLS ****)
+
+{ LogicalForm = KetRegulate, DefaultForm }; (* obsolete since 2023-02-18 *)
 
 { PauliDecomposeOld, PauliComposeOld }; (* to be excised *)
 
@@ -303,73 +305,57 @@ TheOperator[ { n:{(0|1|2|3|4|5|6|Raise|Lower|Hadamard)..},
   CircleTimes @@ Map[TheOperator] @ Tuples[{n, {th}, {ph}}]
 
 
-(* ************************************************************************** *)
 
-DefaultForm::usage = "DefaultForm[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.\nTo be compared with LogicalForm."
+(**** <KetRegulate> ****)
 
-DefaultForm[ expr_ ] := expr /;
-  FreeQ[ expr, _Ket | _Bra ]
+KetRegulate::usage = "KetRegulate[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nKetRegulate[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, ....\nKetRegulate[expr, S] is quivalent to KetRegulate[expr, {S}].\nSee also KetTrim."
 
-DefaultForm[ expr_ ] := expr /. {
-  a_OTimes -> a, (* NOTE *)
-  OSlash[v_Ket, new_] :> OSlash[v, DefaultForm @ new],
-  Ket[a_Association] :> Ket @ KetTrim @ a,
-  Bra[a_Association] :> Bra @ KetTrim @ a
- }
-(* NOTE: This line is necessary to prevent the Kets and Bras in OTimes from
-   being affected. *)
-
-
-(**** <LogicalForm> ****)
-
-LogicalForm::usage = "LogicalForm[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nLogicalForm[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, ....\nLogicalForm[expr, S] is quivalent to LogicalForm[expr, {S}].\nSee also DefaultForm."
-
-LogicalForm[expr_] := expr /;
+KetRegulate[expr_] := expr /;
   FreeQ[expr, Ket[_Association] | Bra[_Association]]
 
 
-LogicalForm[expr_] := LogicalForm[expr, KetSpecies @ expr]
+KetRegulate[expr_] := KetRegulate[expr, KetSpecies @ expr]
 
-LogicalForm[expr_, S_?SpeciesQ] := LogicalForm[expr, S @ {$}]
+KetRegulate[expr_, S_?SpeciesQ] := KetRegulate[expr, S @ {$}]
 
-LogicalForm[expr_, ss:{__?SpeciesQ}] :=
-  LogicalForm[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+KetRegulate[expr_, ss:{__?SpeciesQ}] :=
+  KetRegulate[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
-LogicalForm[expr_, ss:{__?SpeciesQ}] := With[
+KetRegulate[expr_, ss:{__?SpeciesQ}] := With[
   { tt = KetSpecies[expr] },
-  LogicalForm[expr, Union[ss, tt]] /;
+  KetRegulate[expr, Union[ss, tt]] /;
     Not @ ContainsAll[ss, tt]
  ]
 
 
-LogicalForm[Ket[a_Association], ss:{___?SpeciesQ}] :=
+KetRegulate[Ket[a_Association], ss:{___?SpeciesQ}] :=
   Ket @ KeySort @ Join[a, AssociationThread[ss -> Lookup[a, ss]]]
 
-LogicalForm[Bra[a_Association], ss:{___?SpeciesQ}] :=
-  Dagger @ LogicalForm[Ket @ a, ss]
+KetRegulate[Bra[a_Association], ss:{___?SpeciesQ}] :=
+  Dagger @ KetRegulate[Ket @ a, ss]
 
-LogicalForm[OTimes[args__], ___] :=
-  OTimes @@ Map[LogicalForm, {args}]
+KetRegulate[OTimes[args__], ___] :=
+  OTimes @@ Map[KetRegulate, {args}]
 
-LogicalForm[OSlash[Ket[a_Association], expr_], ss:{__?SpeciesQ}] :=
-  OSlash[Ket[a], LogicalForm[expr, Supplement[ss, Keys @ a]]]
+KetRegulate[OSlash[Ket[a_Association], expr_], ss:{__?SpeciesQ}] :=
+  OSlash[Ket[a], KetRegulate[expr, Supplement[ss, Keys @ a]]]
 
-LogicalForm[expr_Association, ss:{___?SpeciesQ}] :=
-  Map[LogicalForm[#, ss]&, expr]
+KetRegulate[expr_Association, ss:{___?SpeciesQ}] :=
+  Map[KetRegulate[#, ss]&, expr]
 (* NOTE: Association needs to be handled carefully due to HoldAllComplete
    Attribute of Association. Otherwise, the result may be different from what
    you would expect.  *)
 
-LogicalForm[expr_, ss:{___?SpeciesQ}] := expr /. {
-  Interpretation[__, v_] :> LogicalForm[v, ss],
-  v_OTimes :> LogicalForm[v, ss],
-  v_OSlash :> LogicalForm[v, ss],
-  a_Association :> LogicalForm[a, ss],
-  v_Ket :> LogicalForm[v, ss],
-  v_Bra :> LogicalForm[v, ss]
+KetRegulate[expr_, ss:{___?SpeciesQ}] := expr /. {
+  Interpretation[__, v_] :> KetRegulate[v, ss],
+  v_OTimes :> KetRegulate[v, ss],
+  v_OSlash :> KetRegulate[v, ss],
+  a_Association :> KetRegulate[a, ss],
+  v_Ket :> KetRegulate[v, ss],
+  v_Bra :> KetRegulate[v, ss]
  }
 
-(**** </LogicalForm> ****)
+(**** </KetRegulate> ****)
 
 
 (**** <SimpleForm> ****)
@@ -542,7 +528,7 @@ XBasisForm[expr_, qq : {__?QubitQ}] :=
 
 XBasisForm[expr_, qq : {__?QubitQ}] := With[
   { op = Multiply @@ Through[qq[6]] },
-  Interpretation[theXBasisForm[LogicalForm[op ** expr], qq], expr]
+  Interpretation[theXBasisForm[KetRegulate[op ** expr], qq], expr]
  ]
 
 theXBasisForm[Bra[v_], qq : {__?QubitQ}] := 
@@ -575,7 +561,7 @@ YBasisForm[expr_, qq : {__?QubitQ}] :=
 
 YBasisForm[expr_, qq : {__?QubitQ}] := With[
   { op = Multiply @@ Join[Through[qq[6]], Through[qq[7]]] },
-  Interpretation[theYBasisForm[LogicalForm[op ** expr], qq], expr]
+  Interpretation[theYBasisForm[KetRegulate[op ** expr], qq], expr]
  ]
 
 theYBasisForm[Bra[v_], qq : {__?QubitQ}] :=
@@ -728,9 +714,9 @@ Ket[ Ket[a_Association], spec__Rule ] := Module[
  ]
 
 
-Ket[ spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Ket[spec], ss]
+Ket[ spec___Rule, ss:{__?SpeciesQ}] := KetRegulate[Ket[spec], ss]
 
-Ket[ v_Ket, spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Ket[v, spec], ss]
+Ket[ v_Ket, spec___Rule, ss:{__?SpeciesQ}] := KetRegulate[Ket[v, spec], ss]
 
 
 (* Dangers! *)
@@ -763,13 +749,13 @@ Bra[spec__Rule] := Dagger @ Ket[Ket[], spec]
 Bra[v_Bra, spec__Rule] := Dagger @ Ket[Dagger @ v, spec]
 
 
-Bra[ spec___Rule, s_?SpeciesQ] := LogicalForm[Bra[spec], {s}]
+Bra[ spec___Rule, s_?SpeciesQ] := KetRegulate[Bra[spec], {s}]
 
-Bra[ spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Bra[spec], ss]
+Bra[ spec___Rule, ss:{__?SpeciesQ}] := KetRegulate[Bra[spec], ss]
 
-Bra[ v_Bra, spec___Rule, s_?SpeciesQ] := LogicalForm[Bra[v, spec], {s}]
+Bra[ v_Bra, spec___Rule, s_?SpeciesQ] := KetRegulate[Bra[v, spec], {s}]
 
-Bra[ v_Bra, spec___Rule, ss:{__?SpeciesQ}] := LogicalForm[Bra[v, spec], ss]
+Bra[ v_Bra, spec___Rule, ss:{__?SpeciesQ}] := KetRegulate[Bra[v, spec], ss]
 
 
 Bra[a_Association][spec__Rule] := Bra[ Bra[a], spec ]
@@ -790,21 +776,6 @@ KetRule[ r:Rule[{__}, _] ] := FlavorNone @ Thread[r]
 KetRule[r_Rule] := r
 
 
-KetTrim::usage = "KetTrim[Ket[assoc]] removes from assoc the elements that are either irrelevant or associated with the default value.\nKetTrim[assoc] is the same but returns the resulting Association."
-
-KetTrim[Ket[a_Association]] := Ket @ KetTrim[a]
-
-KetTrim[a_Association] := AssociationMap[theKetTrim, a]
-
-
-theKetTrim[any_Rule] = any
-
-theKetTrim[{} -> _] = Nothing (* a fallback *)
-
-(* theKetTrim[Rule[_String, _]] = Nothing *)
-(* an actual option *)
-
-
 KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[a, b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
 
 SetAttributes[KetVerify, Listable]
@@ -821,6 +792,43 @@ KetVerify[ Ket[a_Association] ] := With[
  ]
 
 KetVerify[a_, b_] := Rule[a, b]
+
+
+(**** <KetTrim> ****)
+
+theKetTrim::usage = "KetTrim[assoc] removes from assoc the elements that are either irrelevant or associated with the default value."
+
+theKetTrim[a_Association] := AssociationMap[theKetTrim, a]
+
+theKetTrim[any_Rule] = any
+
+theKetTrim[{} -> _] = Nothing (* a fallback *)
+
+(* theKetTrim[Rule[_String, _]] = Nothing *)
+(* an actual option *)
+
+
+KetTrim::usage = "KetTrim[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.\nTo be compared with KetRegulate."
+
+KetTrim[Ket[a_Association]] := Ket @ theKetTrim[a]
+
+KetTrim[expr_] := expr /; FreeQ[expr, _Ket | _Bra]
+
+KetTrim[expr_] := expr /. {
+  a_OTimes -> a, (* NOTE *)
+  OSlash[v_Ket, new_] :> OSlash[v, KetTrim @ new],
+  Ket[a_Association] :> Ket @ theKetTrim @ a,
+  Bra[a_Association] :> Bra @ theKetTrim @ a
+ }
+(* NOTE: This line is necessary to prevent the Kets and Bras in OTimes from
+   being affected. *)
+
+DefaultForm[args__] := (
+  Message[Q3General::obsolete, "DefaultForm", "KetTrim"];
+  KetTrim[args]
+ )
+
+(**** </KetTrim> ****)
 
 
 KetSpecies::usage = "KetSpecies[expr] returns the list of all species of Ket-like objects in expression expr."
@@ -988,7 +996,7 @@ KetFactor[in_List, qq:{__?SpeciesQ}] :=
 
 KetFactor[Ket[a_Association], qq:{__?SpeciesQ}] := Module[
   { ss = FlavorNone[qq] },
-  OSlash[ LogicalForm[Ket[KeyTake[a, ss]], ss], Ket[KeyDrop[a, ss]] ]
+  OSlash[ KetRegulate[Ket[KeyTake[a, ss]], ss], Ket[KeyDrop[a, ss]] ]
  ]
 
 KetFactor[z_?CommutativeQ expr_ , qq:{__?SpeciesQ}] :=
@@ -1001,8 +1009,8 @@ KetFactor[expr_Plus, qq:{__?SpeciesQ}] :=
 
 KetFactor[expr_Plus, qq:{__?SpeciesQ}] := Module[
   { new },
-  new = Factor[ketSplit @ LogicalForm[expr, qq]];
-  DefaultForm @ ReplaceAll[new, Times -> OTimes]
+  new = Factor[ketSplit @ KetRegulate[expr, qq]];
+  ReplaceAll[new, Times -> OTimes]
  ] /; ContainsAll[FlavorNone @ qq, NonCommutativeSpecies @ expr]
 
 
@@ -1017,7 +1025,7 @@ KetFactor[expr_List] := Map[KetFactor, expr]
 KetFactor[expr_] := Module[
   { new },
   new = Factor[ketSplit @ expr];
-  DefaultForm @ ReplaceAll[new, Times -> OTimes]
+  ReplaceAll[new, Times -> OTimes]
  ]
 
 
@@ -1033,7 +1041,7 @@ ketSplit[ Bra[a_Association] ] :=
   Times @@ Map[ Bra @* Association, Normal @ a ] /;
   Length[a] > 0
 
-ketSplit[expr_] := LogicalForm[expr] /. {
+ketSplit[expr_] := KetRegulate[expr] /. {
   v_Ket :> ketSplit[v],
   v_Bra :> ketSplit[v]
  }
@@ -1041,7 +1049,7 @@ ketSplit[expr_] := LogicalForm[expr] /. {
 
 ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression."
 
-ReleaseTimes[expr_] := DefaultForm[
+ReleaseTimes[expr_] := KetRegulate[
   expr /. {OTimes -> CircleTimes, OSlash -> CircleTimes}
  ]
 
@@ -2977,10 +2985,10 @@ HoldPattern @ Multiply[
   Bra[v_Association],
   Dyad[a_Association, b_Association],
   post___
- ] := With[
+ ] := Garner @ With[
    { w = KeyDrop[v, Keys @ a],
      u = KeyTake[v, Keys @ a] },
-   BraKet[u, a] * DefaultForm[ Multiply[pre, Bra[w], Bra[b], post] ]
+   BraKet[u, a] * Multiply[pre, Bra[w], Bra[b], post]
   ]
 
 HoldPattern @ Multiply[
@@ -2988,10 +2996,10 @@ HoldPattern @ Multiply[
   Dyad[a_Association, b_Association],
   Ket[v_Association],
   post___
- ] := With[
+ ] := Garner @ With[
    { w = KeyDrop[v, Keys @ b],
      u = KeyTake[v, Keys @ b] },
-   BraKet[b, u] * DefaultForm[ Multiply[pre, Ket[a], Ket[w], post] ]
+   BraKet[b, u] * Multiply[pre, Ket[a], Ket[w], post]
   ]
 
 (* For Pauli Kets *)
@@ -3394,7 +3402,7 @@ SchmidtForm[expr_, aa:{__?SpeciesQ}, b_?SpeciesQ] :=
 SchmidtForm[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { ww, uu, vv },
   { ww, uu, vv } = SchmidtDecomposition[expr, aa, bb];
-  ww . MapThread[ OTimes, {LogicalForm[uu, aa], LogicalForm[vv, bb]} ]
+  ww . MapThread[ OTimes, {KetRegulate[uu, aa], KetRegulate[vv, bb]} ]
  ] /; fKetQ[expr]
 
 (**** </SchmidtDecomposition> ****)

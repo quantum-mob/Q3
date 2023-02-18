@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.54 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 18:54:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.56 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-18 23:38:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -81,8 +81,8 @@ AddElaborationPatterns[
   G_?QubitQ[j___, -C[n_Integer]] :>
     Elaborate @ Phase[-2*Pi*Power[2,n], G[j,3]],
   G_?QuditQ[j___, 0 -> 0] :> 1 - Total @ Rest @ G[j, Diagonal],
-  OTimes -> DefaultForm @* CircleTimes,
-  OSlash -> DefaultForm @* CircleTimes
+  OTimes -> CircleTimes,
+  OSlash -> CircleTimes
  ]
 
 
@@ -1963,7 +1963,7 @@ Format @ ProductState[assoc_Association, rest___] := Interpretation[
  ]
 
 ProductState /:
-LogicalForm[ProductState[a_Association], gg_List] :=
+KetRegulate[ProductState[a_Association], gg_List] :=
   Module[
     { ss = Union[Keys @ a, FlavorNone @ gg] },
     Block[
@@ -2003,10 +2003,10 @@ HoldPattern @
 (* input specifications *)
 
 ProductState[spec___Rule, ss:{__?QubitQ}] :=
-  LogicalForm[ProductState[spec], ss]
+  KetRegulate[ProductState[spec], ss]
 
 ProductState[v:ProductState[_Association, ___], spec___Rule, ss:{__?QubitQ}] :=
-  LogicalForm[ProductState[v, spec], ss]
+  KetRegulate[ProductState[v, spec], ss]
 
 
 ProductState[] = ProductState[Association[]]

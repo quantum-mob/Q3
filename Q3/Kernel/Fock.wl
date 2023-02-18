@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.49 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 21:12:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.53 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-19 00:18:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1819,13 +1819,13 @@ toCatForm[ Ket[v_Association] ] := Module[
 
 FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall that FockCat[] gives a Fock state with VacuumState[] is multiplied at the rightmost."
 
-FockKet::badExpr = "`1` does not seem to represent a state vector in the Fock space, which in the creation-operator representation, takes the form of Dagger[c1]**Dagger[c2]**...**VacuumState[]."
+FockKet::bad = "`1` does not seem to represent a state vector in the Fock space, which in the creation-operator representation, takes the form of Dagger[c1]**Dagger[c2]**...**VacuumState[]."
 
-FockKet[expr_] := toKetForm[ expr ] /;
+FockKet[expr_] := KetRegulate[toKetForm @ expr] /;
   Not @ FreeQ[expr, Ket[Vacuum] | Ket[_Association]]
 
 FockKet[expr__] := (
-  Message[FockKet::badExpr, {expr}];
+  Message[FockKet::bad, {expr}];
   expr
  )
 
@@ -1932,7 +1932,7 @@ HoldPattern @
     If[v[op] == 0, Return[0]];
     (* TODO: This doesn't respect fermions with Sea vacuum. *)
     vv[op] = 0;
-    sign = keySignature[v, op];
+    sign = theFermiSignature[v, op];
     Multiply[x, sign * Ket[vv], y]
    ]
 
@@ -1942,7 +1942,7 @@ HoldPattern @
     If[v[op] == 1, Return[0]];
     (* TODO: This doesn't respect fermions with Sea vacuum. *)
     vv[op] = 1;
-    sign = keySignature[v, op];
+    sign = theFermiSignature[v, op];
     Multiply[x, sign * Ket[vv], y]
    ]
 
@@ -1955,11 +1955,13 @@ HoldPattern @
   Multiply[pre___, Bra[v_Association], op_?AnyHeisenbergQ, post___] :=
   Multiply[pre, Dagger @ Multiply[ Dagger[op], Ket[v] ], post]
 
-keySignature::usage = "Returns the signature for adding to or removing from the Ket a FERMION at the position j."
 
-keySignature[v_Association, op_] := Module[
-  { vv = KetTrim @ KeyDrop[KeySelect[v, FermionQ], op] },
-  Signature[Join[{op}, Keys @ vv]]
+theFermiSignature::usage = "Returns the signature for adding to or removing from the Ket a FERMION at the position j."
+
+theFermiSignature[v_Association, c_?FermionQ] := Module[
+  { ff = SequenceSplit[Keys[v], {c, ___}] },
+  If[Length[ff] == 0, Return[1]];
+  1 - 2*Mod[Total @ Lookup[v, First @ ff], 2]
  ]
 
 
@@ -2206,8 +2208,10 @@ BosonBasis[bb:{__?BosonQ}, n_Integer] :=
 BosonBasis[bb:{__?BosonQ}, {m_Integer, n_Integer}] :=
   Flatten @ Table[ BosonBasis[bb, {k}], {k, m, n}]
 
-BosonBasis[bb:{__?BosonQ}, {n_Integer}] := 
-  Ket /@ Counts /@ Union[ Sort /@ Tuples[bb, n] ]
+BosonBasis[bb:{__?BosonQ}, {n_Integer}] :=
+  KetRegulate[
+    Ket /@ Counts /@ Union[ Sort /@ Tuples[bb, n] ],
+    bb ]
 
 
 (**** <FermionBasis> ****)
@@ -2232,13 +2236,17 @@ FermionBasis[cc__?FermionQ, {m_Integer, n_Integer}] :=
 FermionBasis[cc__?FermionQ, {n_Integer}] := FermionBasis[{cc}, {n}]
 
 FermionBasis[cc:{__?FermionQ}, n_Integer] :=
-  Ket @@@ Map[Thread[#->1]&] @ Subsets[cc, n]
+  KetRegulate[
+    Ket @@@ Map[Thread[#->1]&] @ Subsets[cc, n],
+    cc ]
 
 FermionBasis[cc:{__?FermionQ}, {m_Integer, n_Integer}] :=
   Flatten @ Table[ FermionBasis[cc, {k}], {k, m, n}]
 
-FermionBasis[cc:{__?FermionQ}, {n_Integer}] := 
-  Ket @@@ Map[Thread[#->1]&, Subsets[cc, {n}]]
+FermionBasis[cc:{__?FermionQ}, {n_Integer}] :=
+  KetRegulate[
+    Ket @@@ Map[Thread[#->1]&, Subsets[cc, {n}]],
+    cc ]
 
 
 (* Advanced constructions*)
@@ -2260,18 +2268,6 @@ FermionBasis[{cc__?FermionQ}, OptionsPattern[]] := Module[
   name = StringJoin[Context @ name, "basis", rep, qn];
   If[NameQ @ name, Symbol[name][cc], {{} -> {}}]
  ]
-
-
-PrintFermionBasis::usage = "PrintFermionBasis[bs] prints the Fermion basis bs in table form. Note that a Fermion basis is an association of particular structure.\nSee also FermionBasis."
-
-Options[PrintFermionBasis] = {
-  Frame -> False,
-  Alignment -> {{Center, {Left}}, Center},
-  Dividers -> {{}, {True, {Dashed}, True}}
- };
-
-PrintFermionBasis[bs_Association] :=
-  Grid[ Normal[bs] /. {Rule -> List}, Options[PrintFermionBasis] ]
 
 
 basisKetNone::usage = "Make basis with no symmetries, i.e. no good quantum numbers.  Similar to FermionBasis[...] for a single site, but conforms to the proper basis format."
@@ -2339,6 +2335,18 @@ basisCatNumberSpin[cc__?FermionQ] := Module[
  ]
 
 basisKetNumberSpin[cc__?FermionQ] := FockKet @ basisCatNumberSpin[cc]
+
+
+PrintFermionBasis::usage = "PrintFermionBasis[bs] prints the Fermion basis bs in table form. Note that a Fermion basis is an association of particular structure.\nSee also FermionBasis."
+
+Options[PrintFermionBasis] = {
+  Frame -> False,
+  Alignment -> {{Center, {Left}}, Center},
+  Dividers -> {{}, {True, {Dashed}, True}}
+ };
+
+PrintFermionBasis[bs_Association] :=
+  Grid[ Normal[bs] /. {Rule -> List}, Options[PrintFermionBasis] ]
 
 (**** </FermionBasis> ****)
 
