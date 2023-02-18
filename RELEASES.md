@@ -8,6 +8,7 @@
 ## v2.10.1
 
 - Improved CNOT.
+- ControlledU is renamed ControlledGate.
 
 ## v2.10.0
 
