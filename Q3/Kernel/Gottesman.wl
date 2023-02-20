@@ -169,7 +169,7 @@ GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=
 
 (**** <PauliQ> ****)
 
-PauliQ::usage = "PauliQ[expr] returns True if matrix or operator expression expr is an element of the full Pauli group."
+PauliQ::usage = "PauliQ[op] returns True if operator op is an element of the full Pauli group."
 
 (* NOTE: The previous method based on PauliDecompose is slow for a large
    number of qubits, especially, 8 or more qubits. *)

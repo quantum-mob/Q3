@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.23 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 23:19:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.24 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-19 12:12:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2043,6 +2043,24 @@ makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
 (* NOTE: txt may include Graphics[...] such as from MaTeX. *)
 
 (***** </LevelsPlot> ****)
+
+
+(**** <Tools> ****)
+
+q3AssureList[None] = {}
+
+q3AsureList[a_?ListQ] = a
+
+q3AssureList[a_] = List[a]
+
+
+q3AssureList[None, _Integer] = {}
+
+q3AssureList[a_List, _Integer] = a
+
+q3AssureList[a_, n_Integer] := Table[a, n]
+
+(**** </Tools> ****)
 
 Protect[ Evaluate @ $symb ]
 

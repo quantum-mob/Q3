@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.10.3
+
+- LogicalForm has been renamed KetRegulate.
+- A bug fix in MeasurementOdds.
+- The usage of MeasurementOdds is changed so that it is consistent with that of Measurement and Readout.
+
 ## v2.10.2
 
 - New function KetSpecies.

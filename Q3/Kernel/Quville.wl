@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 23:19:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.16 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-19 12:13:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -41,8 +41,8 @@ Options[QuantumCircuit] = {
   "PortSize" -> 0.65,
   "LabelSize" -> 1, (* RELATIVE size *)
   "Label" -> None,
-  "Visible" -> {},
-  "Invisible" -> {}
+  "Visible" -> None,
+  "Invisible" -> None
  }
 
 $CircuitSize = 1
@@ -63,9 +63,9 @@ Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] :=
 
 
 QuantumCircuit /:
-Qubits @ QuantumCircuit[gg__, ___?OptionQ] := Union[
+Qubits @ QuantumCircuit[gg__, OptionsPattern[]] := Union[
   Qubits @ {gg},
-  FlavorNone @ OptionValue[QuantumCircuit, "Visible"]
+  FlavorNone @ q3AssureList @ OptionValue[QuantumCircuit, "Visible"]
  ]
 
 QuantumCircuit /:
@@ -256,14 +256,14 @@ HoldPattern @
       vv, ww, xx, yy, nodes, lines, in, out, unit },
 
     {vv, ww, unit, port} = {
-      {"Visible"}, {"Invisible"},
+      "Visible", "Invisible",
       "UnitLength", "PortSize"
      } /. {opts} /. Options[QuantumCircuit];
 
-    If[ ListQ[port], Null, port = {port, port} ];
+    port = q3AssureList[port, 2];
 
-    vv = FlavorNone @ Flatten @ vv;
-    ww = FlavorNone @ Flatten @ ww;
+    vv = FlavorNone @ Flatten @ q3AssureList @ vv;
+    ww = FlavorNone @ Flatten @ q3AssureList @ ww;
     ss = Union @ Flatten @ {ss, vv, ww};
 
     If[cc == {}, cc = {"Spacer"}];

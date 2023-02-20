@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.56 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 23:38:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.61 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-21 01:51:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1774,17 +1774,21 @@ Projector[expr_, qq:{__?QubitQ}] :=
 
 (***** <Measurement> ****)
 
-Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis]."
+Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis] in the reverse order."
 
 Measurement::nonum = "Probability half is assumed for a state without explicitly numeric coefficients."
 
 Measurement::novec = "The expression `` does not seem to be a valid Ket expression. Null vector is returned."
 
-Measurement[qq:{__?PauliQ}][vec_?fKetQ] :=
-  Construct[Composition @@ Map[Measurement, qq], vec]
+SyntaxInformation[Measurement] = {
+  "ArgumentsPattern" -> {_}
+ }
 
-Measurement[op_?PauliQ][vec_?fKetQ] := Module[
-  { odds = MeasurementOdds[vec, op],
+Measurement[op_List][vec_] :=
+  Construct[Composition @@ Map[Measurement, op], vec]
+
+Measurement[op_][vec_] := Module[
+  { odds = MeasurementOdds[op][vec],
     rand = RandomReal[] },
   Garner @ If[ rand < Re @ First @ odds[0],
     $MeasurementOut[op] = 0; Last @ odds[0],
@@ -1797,23 +1801,6 @@ Measurement[op_?PauliQ][vec_?fKetQ] := Module[
    ]
  ]
 
-
-Measurement[mm:{__?MatrixQ}][vec_] :=
-  Construct[Composition @@ Map[Measurement, mm], vec]
-
-Measurement[mat_?MatrixQ][vec_?VectorQ] := Module[
-  { odds = MeasurementOdds[vec, mat],
-    rand = RandomReal[] },
-  Garner @ If[ rand < Re @ First @ odds[0],
-    $MeasurementOut[mat] = 0; Last @ odds[0],
-    $MeasurementOut[mat] = 1; Last @ odds[1],
-    Message[Measurement::nonum];
-    If[ rand < 1/2,
-      $MeasurementOut[mat] = 0; Last @ odds[0],
-      $MeasurementOut[mat] = 1; Last @ odds[1]
-     ]
-   ]
- ]
 
 Measurement /:
 Dot[Measurement[mat_?MatrixQ], vec_?VectorQ] :=
@@ -1845,39 +1832,48 @@ SyntaxInformation[Readout] = {
   "ArgumentsPattern" -> {_}
  }
 
-Readout[op_?PauliQ] := (
+Readout[Measurement[op_]] := Readout[op]
+
+Readout[op_] := (
   If[ Not @ KeyExistsQ[$MeasurementOut, op],
     Message[Readout::notob, op]
    ];
   $MeasurementOut[op]
  )
+(* NOTE: op may be a matrix or an operator expression. *)
 
-Readout[op:{__?PauliQ}] := (
+Readout[op_List] := (
   If[ Not @ AllTrue[op, KeyExistsQ[$MeasurementOut, #]&],
     Message[Readout::notob, op]
    ];
   Lookup[$MeasurementOut, op]
  )
+(* NOTE: op may be a list of matrices or operator expressions. *)
 
-Readout[op_] := Message[Readout::nopauli, op]
 
+MeasurementOdds::usage = "MeasurementOdds[op][vec] theoretically analyzes the process of meauring operator op on state vec and returns an association of elements of the form value->{probability, state}, where value is one of the possible measurement outcomes 0 and 1 (which correspond to eitemvalues +1 and -1, respectively, of op), probability is the probability for value to be actually observed, and state is the post-measurement state when value is actually observed."
 
-MeasurementOdds::usage = "MeasurementOdds[vec, op] returns an Association of elements of the form value->{probability, ket}, where value is one of the possible measurement results (\[PlusMinus]1), probability is the probability for value to be actually observed, and ket is the post-measurement state when value is actually observed."
+MeasurementOdds::pauli = "`` is not an observable Pauli operator."
 
 SyntaxInformation[MeasurementOdds] = {
-  "ArgumentsPattern" -> {_, _}
+  "ArgumentsPattern" -> {_}
  }
 
-MeasurementOdds[vec_?fKetQ, op_?PauliQ] := Module[
+(* NOTE: DO NOT use op_?PauliQ; it will inerfere with mat_?MatrixQ below. *)
+MeasurementOdds[op_][vec_?fKetQ] := Module[
   { ss = Qubits[{vec, op}],
     aa },
-  aa = MeasurementOdds[Matrix[vec, ss], Matrix[op, ss]];
+  If[ Not[obsPauliQ @ op],
+    Message[MeasurementOdds::pauli, op];
+    Return[<|0 -> {1, Ket[]}, 1 -> {0, 0}|>]
+   ];
+  aa = MeasurementOdds[Matrix[op, ss]][Matrix[vec, ss]];
   aa[0] = {First @ aa[0], ExpressionFor[Last @ aa[0], ss]};
   aa[1] = {First @ aa[1], ExpressionFor[Last @ aa[1], ss]};
   Return[aa]
  ]
 
-MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
+MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] := Module[
   { new = mat . vec,
     pls, mns, p0, p1 },
   pls = (vec + new)/2;
@@ -1893,13 +1889,29 @@ MeasurementOdds[vec_?VectorQ, mat_?MatrixQ] := Module[
     1 -> {p1/(p0+p1), mns}
    ]
  ] (* /; PauliQ[mat] *)
+
 (* NOTE: Test PauliQ[mat] may take long for 8 or more qubits. *)
 (* NOTE:
    1. vec, pls, or mns may be 0 (null vector).
    2. The norms of pls and mns may have imaginary parts numerically.
-   3. When the vector compoents are symbolic,
+   3. When the vector components are symbolic,
       the post-measurement states are NOT normalized.
    *)
+
+
+obsPauliQ::usage = "obsPauliQ[op] returns True if op is either a single-qubit Pauli operator or a tensor product of single-qubit Pauli operators (without any factor of \[PlusMinus]I); and False, otherwise.\nSuch an 'observable' Pauli operator has eigenvalue \[PlusMinus]1; hence 'observable'."
+
+obsPauliQ[Pauli[(0|1|2|3)..]] = True
+
+obsPauliQ[_?QubitQ[___, 0|1|2|3]] = True
+
+obsPauliQ[HoldPattern @ Multiply[(_?QubitQ[___, 0|1|2|3])..]] = True
+
+obsPauliQ[expr_] := obsPauliQ[Elaborate @ expr] /;
+  Not @ FreeQ[expr, _?QubitQ[___, 4|5|6|7|8|9|10|11]]
+
+obsPauliQ[_] = False
+
 
 Measurements::usage = "Measurments[expr] returns a list of Pauli operators (including the tensor products of single-qubit Pauli operators) measured during the process of expression expr."
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.50 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 23:19:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.51 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-21 02:25:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -961,6 +961,8 @@ KetNormalize[expr_] := Garner[expr / KetNorm[expr]] /;
 
 KetNormalize[expr_, func_] := Garner[expr / func[expr]] /;
   Not @ FreeQ[expr, _Ket]
+
+KetNormalize[expr_, ___] = expr
 
 
 KetOrthogonalize::usage = "KetOrthogonalize[vecs] orthgonalizes the vectors in vecs."
