@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.52 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-15 19:50:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.55 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-21 13:31:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1124,17 +1124,25 @@ CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   vv = Mod[new . aa . hh . bb, 2];
   vv = vv[[3;;, 3;;]];
 
-  Join[{opf, opa, oph, opb}, CliffordDecompose[vv, rr]] /.
-    fGateRules
+  simplifyGate @ Join[{opf, opa, oph, opb}, CliffordDecompose[vv, rr]]
  ]
 
-fGateRules = {
-  ControlledGate[cc_, T_[j___, 1]] -> CNOT[cc, T[j]],
-  ControlledGate[cc_, T_[j___, 3]] -> CZ[cc, T[j]],
-  S_[j___, 1]/Sqrt[2] + S_[j___, 3]/Sqrt[2] -> S[j,6],
-  (S_[j___, 1] + S_[j___, 3])/Sqrt[2] -> S[j,6],
-  Phase[0, ___] -> Nothing
- };
+
+simplifyGate::usage = "simplifyGate[expr] translates expr to a simpler elementary gate."
+
+SetAttributes[simplifyGate, Listable]
+
+simplifyGate[1] = Nothing
+
+simplifyGate[any_] = any
+
+simplifyGate @ ControlledGate[cc_, T_[j___, 1]] := CNOT[cc, T[j, $]]
+
+simplifyGate @ ControlledGate[Rule[cc_, vv_], T_[j___, 3]] := CZ[cc, T[j, $]]
+
+simplifyGate[S_[j___, 1]/Sqrt[2] + S_[j___, 3]/Sqrt[2]] := S[j, 6]
+
+simplifyGate[(S_[j___, 1] + S_[j___, 3])/Sqrt[2]] := S[j, 6]
 
 (**** </CliffordDecompose> ****)
 

@@ -1,10 +1,10 @@
 (* Paclet Info File *)
-(* $Date: 2023-02-19 03:01:27+09 $ *)
-(* $Revision: 2.128 $ *)
+(* $Date: 2023-02-21 14:40:03+09 $ *)
+(* $Revision: 2.129 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.10.3", (* draft *)
+  "Version" -> "2.10.3",
   "WolframVersion" -> "12.1+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
@@ -18,7 +18,7 @@ Paclet[
          messages when documentation is present. *)
       "Symbols" -> { "Let", "Q3Info", "Q3Update", "Q3CheckUpdate" }
       (* Symbols supplies a set of symbols that the paclet provides. If the
-         Loading is set to Automatic , autoloading will be set up for everyone
+         Loading is set to Automatic, autoloading will be set up for everyone
          of these symbols. *)
      },
     { "Documentation",

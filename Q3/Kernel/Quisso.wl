@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.61 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-21 01:51:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.62 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-21 09:55:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1003,7 +1003,7 @@ CX::usage = "CX is an alias to CNOT."
 
 CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. Note that it does not expand until necessary (e.g., multiplied to a Ket); use Elaborate in order to expand it."
 
-CNOT::incmp = "Control register `` and value set `` have unequal lengths."
+CNOT::incmp = "Control register `` and control values set `` have unequal lengths."
 
 SetAttributes[CNOT, NHoldFirst]
 

@@ -4,6 +4,7 @@
 
 - LogicalForm has been renamed KetRegulate.
 - A bug fix in MeasurementOdds.
+- Improved CliffordDecompose.
 - The usage of MeasurementOdds is changed so that it is consistent with that of Measurement and Readout.
 
 ## v2.10.2
