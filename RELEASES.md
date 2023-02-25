@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.10.4
+
+- Maintenance update of help documents to minimize the use of KetRegulate (previously, LogicalForm).
+
 ## v2.10.3
 
 - LogicalForm has been renamed KetRegulate.
