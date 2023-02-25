@@ -3,6 +3,7 @@
 ## v2.10.4
 
 - Maintenance update of help documents to minimize the use of KetRegulate (previously, LogicalForm).
+- The keys of SpechtBasis is arranged so as to be consistent with SchurBasis.
 
 ## v2.10.3
 

@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.28 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-08 23:24:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.30 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-25 11:26:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,6 +21,11 @@ BeginPackage["Q3`"];
 { YoungTableauQ, YoungTableaux, YoungTableauCount, YoungForm, 
   NextYoungTableau, LastYoungTableau, FirstYoungTableau,
   YoungTranspose };
+
+{ ToYoungTableau, ToGelfandPattern,
+  GelfandContents };
+
+{ GelfandYoungPatterns, GelfandYoungPatternQ };
 
 { GroupClassSize, SymmetricGroupClassSize,
   GroupCentralizerSize, SymmetricGroupCentralizerSize,
@@ -558,7 +563,7 @@ HoldPattern @
   Multiply[pre, PermutationProduct @@ Reverse[{op, more}], post]
   
 HoldPattern @
-  Multiply[pre___, op_Cycles, vec:Ket[_?YoungTableauQ], post___] :=
+  Multiply[pre___, op_Cycles, vec:Ket[__?YoungTableauQ], post___] :=
   Multiply[pre, KetPermute[vec, op], post]
   
 HoldPattern @
@@ -598,7 +603,7 @@ KetPermute[expr_, {}, {__?SpeciesQ}] := expr
 KetPermute[expr_, Cycles[{}], {__?SpeciesQ}] := expr
 
 
-(* for Specht basis and Young's normal representation *)
+(* For Specht basis and Young's normal representation *)
 (* See Sagan (2001, Section 2.7 and Exercise 2.11) and Krovi (2019). *)
 (* NOTE: that Young's normal representation should be distinguished from
    Young's natural or seminormal representation. *)
@@ -624,6 +629,8 @@ KetPermute[Ket[yt_?YoungTableauQ], cc_Cycles] :=
 KetPermute[Ket[yt_?YoungTableauQ], perm_?PermutationListQ] :=
   Garner @ Fold[KetPermute, Ket[yt], AdjacentTranspositions @ perm]
 
+KetPermute[v:Ket[_?YoungTableauQ, __?YoungTableauQ], cc_] :=
+  CircleTimes @@ Map[KetPermute[#, cc]&, Ket /@ v]
 
 (* for Pauli Kets *)
 
@@ -897,7 +904,12 @@ PileYoungShape[shape_?YoungShapeQ] := Module[
 
 SpechtBasis::usage = "SpechtBasis[n] constructs the bases of the Specht modules of the symmetric group of degree n.\nSpechtBasis[shape] returns the basis of the Specht module corresponding to Young shape shape." 
 
-SpechtBasis[shape_?YoungShapeQ] := Ket /@ YoungTableaux[shape]
+SpechtBasis[shape_?YoungShapeQ] :=
+  Ket /@ ToYoungTableau /@ GelfandYoungPatterns[shape]
+(* NOTE: To be consistent with the Schur basis, we use the above method
+   instead of the following:
+   SpechtBasis[shape_?YoungShapeQ] := Ket /@ YoungTableaux[shape]
+   *)
 
 SpechtBasis[n_Integer] := With[
   { pp = IntegerPartitions[n] },
