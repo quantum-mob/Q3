@@ -1,14 +1,14 @@
 (* -*- mode: math; -*- *)
 (* SU(3) Algebra *)
 
-Needs["Q3`"]
+Get["Q3`"]
 
 BeginPackage["Q3`"]
 
 `GellMann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.37 $"][[2]], " (",
-  StringSplit["$Date: 2023-01-01 15:09:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.38 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-25 08:55:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -20,6 +20,8 @@ ClearAll @@ Evaluate @ Unprotect[
 
 
 Begin["`Private`"]
+
+ClearAll["`*"];
 
 $symbs = Unprotect[Dot]
 
@@ -292,6 +294,25 @@ Protect[ Evaluate @ $symbs ]
 
 End[]
 
-Q3Protect[];
+EndPackage[]
+
+
+BeginPackage["Q3`"]
+
+Begin["`Private`"]
+
+SetAttributes[Evaluate @ Names["`*"], ReadProtected];
+
+End[]
+
+SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
+
+(* Users are allowed to change variables. *)
+Unprotect["`$*"];
+
+(* Too dangerous to allow users to change these. *)
+Protect[$GarnerPatterns, $ElaborationPatterns];
 
 EndPackage[]
+
+

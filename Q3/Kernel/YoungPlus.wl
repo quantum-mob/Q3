@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.21 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-03 18:14:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.23 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-25 08:56:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -53,6 +53,8 @@ YoungSeminormalRepresentation::usage="YoungSeminormalRepresentation[pp_?YoungSha
 
 
 Begin["`Private`"]
+
+ClearAll["`*"];
 
 CoxeterTest[ynr_] := And[
   Apply[And, (#.#==IdentityMatrix[Length[ynr[[1]]]])& /@ ynr],
@@ -284,7 +286,24 @@ youngAuxiliary[\[Lambda]_, modus_] := With[
 
 End[]
 
-Q3Protect[];
-
 EndPackage[]
 
+
+
+BeginPackage["Q3`"]
+
+Begin["`Private`"]
+
+SetAttributes[Evaluate @ Names["`*"], ReadProtected];
+
+End[]
+
+SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
+
+(* Users are allowed to change variables. *)
+Unprotect["`$*"];
+
+(* Too dangerous to allow users to change these. *)
+Protect[$GarnerPatterns, $ElaborationPatterns];
+
+EndPackage[]

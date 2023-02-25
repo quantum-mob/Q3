@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.10 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 19:25:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.11 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-25 08:55:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -25,6 +25,7 @@ ClearAll @@ Evaluate @ Unprotect[
 
 Begin["`Private`"]
 
+ClearAll["`*"];
 
 (**** <QuissoCoefficientTensor> ****)
 
@@ -272,6 +273,23 @@ QuissoCorrelationMatrix[T_] := Module[
 
 End[]
 
-Q3Protect[];
+EndPackage[]
+
+
+BeginPackage["Q3`"]
+
+Begin["`Private`"]
+
+SetAttributes[Evaluate @ Names["`*"], ReadProtected];
+
+End[]
+
+SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
+
+(* Users are allowed to change variables. *)
+Unprotect["`$*"];
+
+(* Too dangerous to allow users to change these. *)
+Protect[$GarnerPatterns, $ElaborationPatterns];
 
 EndPackage[]

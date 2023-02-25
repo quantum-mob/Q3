@@ -5,9 +5,6 @@ If[ $VersionNumber < 12.3,
   Message[Version::old];
  ]
 
-(* Q3`Q3Clear["Q3`Private`"]; *) (* obsolete *)
-(* Q3`Q3Clear["Q3`"]; *) (* obsolete *)
-
 BeginPackage["Q3`"]
 
 Unprotect["`*"];
@@ -15,8 +12,8 @@ ClearAll["`*"];
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 3.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-19 12:44:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.15 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-25 08:46:53+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -26,11 +23,6 @@ ClearAll["`*"];
   Q3Update, Q3CheckUpdate, Q3Assure, Q3Purge };
 
 { Q3Delimiter };
-
-
-(* OBSOLETE *)
-
-{ Q3Clear, Q3Unprotect, Q3Protect }; (* obsolete since Q3 v2.9.3 *)
 
 
 Begin["`Private`"]
@@ -52,42 +44,6 @@ Q3General::renamed = "Symbol `` has been renamed ``."
 Q3General::changed = "The patterns for the arguments sequence of `1` have been changed: `2`"
 
 Q3General::angle = "An angle should come first in the sequence of arguments for ``. Effective since Q3 v1.2.0."
-
-
-Q3Clear::usage = "Q3Clear[context] first unprotects all symbols defined in the context of context, and then CleaAll all non-variable symbols -- those the name of which does not start with '$'.\nQ3Clear is for internal use."
-
-Q3Clear[] := Q3Clear[$Context]
-
-Q3Clear[context_String] := Module[
-  { vars = Names[context <> "$*"],
-    symb = Names[context <> "*"] },
-  Unprotect[Evaluate @ symb];
-  symb = Complement[symb, vars];
-  ClearAll @@ Evaluate[symb]
- ]
-
-
-Q3Unprotect::usage = "Q3Unprotect[context] unprotects all symbols in the specified context.\nQ3Unprotect is for internal use."
-
-Q3Unprotect[] := Q3Unprotect[$Context]
-
-Q3Unprotect[context_String] :=
-  Unprotect @ Evaluate @ Names[context <> "$*"]
-
-
-Q3Protect::usage = "Q3Protect[context] protects all symbols in the specified context. In addition, it sets the ReadProtected attribute to all non-variable symbols -- those the name of which does not start with the character '$'.\nQ3Protect is for internal use."
-
-Q3Protect[] := Q3Protect[$Context]
-
-Q3Protect[context_String] := Module[
-  { vars = Names[context <> "$*"],
-    symb = Names[context <> "*"],
-    priv = Names[context <> "Private`*"] },
-  symb = Complement[symb, vars];
-  SetAttributes[Evaluate @ symb, ReadProtected];
-  SetAttributes[Evaluate @ priv, ReadProtected];
-  Protect[Evaluate @ symb]
- ]
 
 
 Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versions of packages included in it."
@@ -294,5 +250,3 @@ Unprotect["`$*"];
 Protect[$GarnerPatterns, $ElaborationPatterns];
 
 EndPackage[]
-
-(* Q3`Q3Protect["Q3`"]; *) (* obsolete *)
