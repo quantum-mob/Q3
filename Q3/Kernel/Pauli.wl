@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.51 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-21 02:25:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.54 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-01 06:52:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -25,7 +25,7 @@ BeginPackage["Q3`"]
 
 { OTimes, OSlash, ReleaseTimes };
 
-{ ProductForm, SimpleForm, SpinForm };
+{ ProductForm, SimpleForm, SpinForm, NormalForm };
 
 { XBasisForm, YBasisForm };
 
@@ -517,6 +517,22 @@ theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
 (**** </SpinForm> ****)
 
 
+(**** <NormalForm> ****)
+
+NormalForm::usage = "NormalForm[expr] returns the normal form of ket expression expr."
+
+SetAttributes[NormalForm, Listable]
+
+NormalForm[expr_] := With[
+  { v = Last @ Union @ KetRegulate @ Cases[expr, _Ket, Infinity] },
+  Garner[expr / (Dagger[v] ** expr)]
+ ] /; Not@FreeQ[expr, _Ket]
+
+NormalForm[any_] = any
+
+(**** <NormalForm> ****)
+
+
 (**** <XBasisForm> ****)
 
 XBasisForm::usage = "XBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum state in expression expr in the eigenbasis of the Pauli X operator for qubits q1, q2, \[Ellipsis]."
@@ -771,7 +787,7 @@ SetAttributes[KetRule, Listable]
 
 KetRule[ r:Rule[_, _] ] := FlavorNone[r]
 
-KetRule[ r:Rule[{__}, _] ] := FlavorNone @ Thread[r]
+KetRule[ r:Rule[_List, _] ] := FlavorNone @ Thread[r]
 
 KetRule[r_Rule] := r
 

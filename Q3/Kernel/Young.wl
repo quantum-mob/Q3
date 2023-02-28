@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.30 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-25 11:26:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.31 $"][[2]], " (",
+  StringSplit["$Date: 2023-02-26 12:04:13+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -48,7 +48,7 @@ BeginPackage["Q3`"];
 
 { PileYoungShape, BratteliDiagram };
 
-{ SpechtBasis };
+{ SpechtBasis, YoungInvariantBasis };
 
 (**** Obsolete ****)
 
@@ -898,6 +898,20 @@ PileYoungShape[shape_?YoungShapeQ] := Module[
  ]
 
 (**** </BratteliDiagram> ****)
+
+
+(**** <YoungInvariantBasis> ****)
+
+YoungInvariantBasis::usage = "YoungInvariantBasis[{v1,v2,\[Ellipsis]}] returns the list of all vectors that are invariant under the symmetric group in the space spanned by computational basis {v1,v2,\[Ellipsis]}."
+
+YoungInvariantBasis[bs:{Ket[__?YoungTableauQ] ..}] := Module[
+  { n = Total @ YoungShape @ First @ First @ bs,
+    op },
+  op = Total @ GroupElements @ SymmetricGroup[n];
+  DeleteCases[Union@NormalForm[op ** bs], 0]
+ ]
+
+(**** </YoungInvariantBasis> ****)
 
 
 (**** <SpechtBasis> ****)

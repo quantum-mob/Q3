@@ -1,5 +1,11 @@
 # Select Release Notes
 
+## v2.10.5
+
+- New function NormalForm.
+- An emergency bug fix in KetRule; the bug hit MaZX package.
+
+
 ## v2.10.4
 
 - Maintenance update of help documents to minimize the use of KetRegulate (previously, LogicalForm).
