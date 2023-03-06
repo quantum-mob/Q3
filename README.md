@@ -17,11 +17,11 @@ Q3 requires *Mathematica v12.2 or later*.
 Q3 provides a *fully automatic installation and update*. Please take a look at the [Installation Guide](./INSTALL.md) for the instructions.
 
 
-## YouTube Videos of Tutorials
+## YouTube Video Tutorials
 
-[YouTube vidoes](https://www.youtube.com/@QuantumWorkforceCenter/videos) of Q3 tutorials are available from [here](https://www.youtube.com/@QuantumWorkforceCenter/videos).
+[YouTube video tutorials](https://www.youtube.com/@QuantumWorkforceCenter/videos) of Q3 are available from [here](https://www.youtube.com/@QuantumWorkforceCenter/videos).
 
-<a href="http://www.youtube.com/watch?feature=player_embedded&v=k2icqSdb0FA" target="_blank">
+<a href="https://www.youtube.com/@QuantumWorkforceCenter/videos" target="_blank">
 <img src="http://img.youtube.com/vi/k2icqSdb0FA/mqdefault.jpg" alt="Watch the video" width="240" height="180" border="10" />
 </a>
 
