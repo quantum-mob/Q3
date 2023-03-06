@@ -17,6 +17,10 @@ Q3 requires *Mathematica v12.2 or later*.
 Q3 provides a *fully automatic installation and update*. Please take a look at the [Installation Guide](./INSTALL.md) for the instructions.
 
 
+## YouTube Videos of Tutorials
+
+[YouTube vidoes](https://www.youtube.com/@QuantumWorkforceCenter/videos) of Q3 tutorials are available from [here](https://www.youtube.com/@QuantumWorkforceCenter/videos).
+
 ## Quick Start
 
 Once Q3 is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfram Language Documentation Center (Mathematica Help window) to get users' guides and tutorials on Q3; see the following screenshots.

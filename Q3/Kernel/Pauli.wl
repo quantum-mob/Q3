@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.54 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-01 06:52:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.55 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-06 13:37:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -539,25 +539,25 @@ XBasisForm::usage = "XBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum 
 
 XBasisForm[expr_, q_?QubitQ] := XBasisForm[expr, q @ {$}] 
 
-XBasisForm[expr_, qq : {__?QubitQ}] := 
+XBasisForm[expr_, qq:{__?QubitQ}] := 
   XBasisForm[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
 
-XBasisForm[expr_, qq : {__?QubitQ}] := With[
+XBasisForm[expr_, qq:{__?QubitQ}] := With[
   { op = Multiply @@ Through[qq[6]] },
   Interpretation[theXBasisForm[KetRegulate[op ** expr], qq], expr]
  ]
 
-theXBasisForm[Bra[v_], qq : {__?QubitQ}] := 
+theXBasisForm[Bra[v_], qq:{__?QubitQ}] := 
   Dagger @ theXBasisForm[Ket[v], qq]
 
-theXBasisForm[Ket[v_], qq : {__?QubitQ}] := 
+theXBasisForm[Ket[v_], qq:{__?QubitQ}] := 
   Ket @ Join[ v,
     AssociationThread[
       qq -> ReplaceAll[Lookup[v, qq], {0 -> "+", 1 -> "-"}]
      ]
    ]
 
-theXBasisForm[expr_, qq : {__?QubitQ}] :=
+theXBasisForm[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr,
     { v_Ket :> theXBasisForm[v, qq], 
       v_Bra :> theXBasisForm[v, qq] }
