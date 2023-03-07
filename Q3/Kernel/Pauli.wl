@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.55 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-06 13:37:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.57 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-07 11:14:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -542,20 +542,16 @@ XBasisForm[expr_, q_?QubitQ] := XBasisForm[expr, q @ {$}]
 XBasisForm[expr_, qq:{__?QubitQ}] := 
   XBasisForm[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
 
-XBasisForm[expr_, qq:{__?QubitQ}] := With[
+XBasisForm[expr_, qq:{__?QubitQ}] :=
+  Interpretation[Garner @ theXBasisForm[expr, qq], expr]
+
+theXBasisForm[v_Ket, qq:{__?QubitQ}] := With[
   { op = Multiply @@ Through[qq[6]] },
-  Interpretation[theXBasisForm[KetRegulate[op ** expr], qq], expr]
+  theXBasisLabel[op ** v, qq]
  ]
 
-theXBasisForm[Bra[v_], qq:{__?QubitQ}] := 
+theXBasisForm[Bra[v_], qq:{__?QubitQ}] :=
   Dagger @ theXBasisForm[Ket[v], qq]
-
-theXBasisForm[Ket[v_], qq:{__?QubitQ}] := 
-  Ket @ Join[ v,
-    AssociationThread[
-      qq -> ReplaceAll[Lookup[v, qq], {0 -> "+", 1 -> "-"}]
-     ]
-   ]
 
 theXBasisForm[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr,
@@ -563,12 +559,57 @@ theXBasisForm[expr_, qq:{__?QubitQ}] :=
       v_Bra :> theXBasisForm[v, qq] }
    ]
 
+theXBasisLabel[Ket[v_], qq:{__?QubitQ}] := 
+  Ket @ Join[ v,
+    AssociationThread[
+      qq -> ReplaceAll[Lookup[v, qq], {0 -> "+", 1 -> "-"}]
+     ]
+   ]
+
+theXBasisLabel[expr_, qq:{__?QubitQ}] :=
+  ReplaceAll[ expr, v_Ket :> theXBasisLabel[v, qq] ]
+
 (**** </XBasisForm> ****)
 
 
 (**** <YBasisForm> ****)
 
 YBasisForm::usage = "YBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum state in expression expr in the eigenbasis of the Pauli Y operator for qubits q1, q2, \[Ellipsis]."
+
+YBasisForm[expr_, q_?QubitQ] := YBasisForm[expr, q @ {$}] 
+
+YBasisForm[expr_, qq:{__?QubitQ}] := 
+  YBasisForm[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
+
+YBasisForm[expr_, qq:{__?QubitQ}] :=
+  Interpretation[Garner @ theYBasisForm[expr, qq], expr]
+
+theYBasisForm[v_Ket, qq:{__?QubitQ}] := With[
+  { op = Multiply @@ Join[Through[qq[6]], Through[qq[7]]] },
+  theYBasisLabel[op ** v, qq]
+ ]
+
+theYBasisForm[Bra[v_], qq:{__?QubitQ}] :=
+  Dagger @ theYBasisForm[Ket[v], qq]
+
+theYBasisForm[expr_, qq:{__?QubitQ}] :=
+  ReplaceAll[ expr,
+    { v_Ket :> theYBasisForm[v, qq], 
+      v_Bra :> theYBasisForm[v, qq] }
+   ]
+
+theYBasisLabel[Ket[v_], qq:{__?QubitQ}] := 
+  Ket @ Join[ v,
+    AssociationThread[
+      qq -> ReplaceAll[Lookup[v, qq], {0 -> "R", 1 -> "L"}]
+     ]
+   ]
+
+theYBasisLabel[expr_, qq:{__?QubitQ}] :=
+  ReplaceAll[ expr, v_Ket :> theYBasisLabel[v, qq] ]
+
+
+(*
 
 YBasisForm[expr_, q_?QubitQ] := YBasisForm[expr, q @ {$}] 
 
@@ -595,6 +636,7 @@ theYBasisForm[expr_, qq : {__?QubitQ}] :=
     { v_Ket :> theYBasisForm[v, qq], 
       v_Bra :> theYBasisForm[v, qq] }
    ]
+*)
 
 (**** </YBasisForm> ****)
 

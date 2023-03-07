@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.10.6
+
+- Bug fixes in XBasisForm and YBasisForm.
+
 ## v2.10.5
 
 - New function NormalForm.
