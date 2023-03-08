@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.10.7
+
+- Bug fixes in package extentions.
+
 ## v2.10.6
 
 - Bug fixes in XBasisForm and YBasisForm.

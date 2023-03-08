@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.23 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-25 08:56:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.24 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-08 18:12:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -53,8 +53,6 @@ YoungSeminormalRepresentation::usage="YoungSeminormalRepresentation[pp_?YoungSha
 
 
 Begin["`Private`"]
-
-ClearAll["`*"];
 
 CoxeterTest[ynr_] := And[
   Apply[And, (#.#==IdentityMatrix[Length[ynr[[1]]]])& /@ ynr],

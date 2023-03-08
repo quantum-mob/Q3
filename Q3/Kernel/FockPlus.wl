@@ -6,8 +6,8 @@ BeginPackage["Q3`"]
 
 `FockPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.24 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-25 08:52:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.25 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-08 18:26:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -23,8 +23,6 @@ ClearAll @@ Evaluate @ Unprotect[
 
 
 Begin["`Private`"]
-
-ClearAll["`*"];
 
 Pairings::usage = "Pairings[list] generates all possible pairings of the elements in list.\nSee also ListPartitions and the built-in function Groupings."
 
