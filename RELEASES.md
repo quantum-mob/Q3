@@ -2,6 +2,7 @@
 
 ## v2.10.7
 
+- New function GroupCharacters, SymmetricGroupCharacters.
 - Bug fixes in package extentions.
 
 ## v2.10.6

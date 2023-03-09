@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.32 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-03 12:45:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.35 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-09 12:09:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -30,6 +30,7 @@ BeginPackage["Q3`"];
 { GroupClassSize, SymmetricGroupClassSize,
   GroupCentralizerSize, SymmetricGroupCentralizerSize,
   GroupCharacters, SymmetricGroupCharacters,
+  GroupClasses, SymmetricGroupClasses,
   CompoundYoungCharacters,
   YoungCharacterInner,
   KostkaMatrix };
@@ -173,7 +174,9 @@ CountYoungTableaux[args__] := (
  )
 
 
-GroupCharacters::usage = "GroupCharaters[group] returns the table of characters of the irreducible representations of 'group'. The characters of each irreducible representation is stored in a row vector.\nGroupCharacters[group, irr] gives a list of the characters of the irreducible representation 'irr'.\nGroupCharacters[group, irr, class] returns the character of the irreducible representation 'irr' of 'group' evaluated at the conjugacy class 'class'.\nFor a symmetric group, both irreducible representation and class are specified by integer partitions."
+(**** <GroupCharacters> ****)
+
+GroupCharacters::usage = "GroupCharacters[group] returns the table of characters of the irreducible representations of 'group'. The characters of each irreducible representation is stored in a row vector.\nGroupCharacters[group, irr] gives a list of the characters of the irreducible representation 'irr'.\nGroupCharacters[group, irr, class] returns the character of the irreducible representation 'irr' of 'group' evaluated at the conjugacy class 'class'.\nFor a symmetric group, both irreducible representation and class are specified by integer partitions."
 
 GroupCharacters[SymmetricGroup[n_Integer]] :=
   SymmetricGroupCharacters[n] /; n > 0
@@ -242,6 +245,34 @@ characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
      Length[class] >= 1,
      First[class] > 1
     ]
+
+(**** </GroupCharacters> ****)
+
+
+(**** <GroupClasses> ****)
+
+GroupClasses::usage = "GroupClasses[group] returns the list of conjugacy classes of group."
+
+GroupClasses[SymmetricGroup[n_Integer]] :=
+  SymmetricGroupClasses[n] /; n > 0
+
+GroupClasses[SymmetricGroup[n_Integer], irr_?YoungShapeQ] :=
+  SymmetricGroupClasses[irr] /; Total[irr] == n
+
+
+SymmetricGroupClasses::uasge = "SymmetricGroupClasses[n] returns an association of conjugacy classes of the symmetric group of degree n.\nEach key of the returned association refers to the cycle decomposition type of the permutations in the class, which in turn uniquelty corresponds to a partition of integer n."
+
+SymmetricGroupClasses[n_Integer] := With[
+  { elm = GroupElements[SymmetricGroup @ n] },
+  Reverse @ KeySort[GroupBy[elm, theIrreducibleLabel[n]], LexicographicOrder]
+ ]
+  
+theIrreducibleLabel[n_Integer][Cycles[spec_List]] := With[
+  { body = ReverseSort[Length /@ spec] },
+  Join[body, Table[1, n-Total[body]]]
+ ]
+
+(**** </GroupClasses> ****)
 
 
 GroupClassSize::usage = "GroupGlassSize[group, class] returns the number of elements in the conjugacy class 'class'."
@@ -328,7 +359,7 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
 nextPartition[pp_?YoungShapeQ] := Module[
   { i = First @ Last @ Position[pp, x_/;x>1],
     k = Length[pp],
-    j, qr},
+    j, qr },
   j = Part[pp, i];
   qr = QuotientRemainder[j+k-i, j-1];
   Join[
@@ -339,7 +370,7 @@ nextPartition[pp_?YoungShapeQ] := Module[
  ] /; AnyTrue[pp, #>1&]
 
 nextPartition[pp_?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
-(* Convention: at the last partition we cycle back to the first one. *)
+(* Convention: at the last partition, we cycle back to the first one. *)
 
 
 KostkaMatrix::usage = "KostkaMatrix[n] returns the matrix of Kostka numbers of rank n."
@@ -916,7 +947,7 @@ YoungInvariantBasis[bs:{Ket[__?YoungTableauQ] ..}] := Module[
 
 (**** <SpechtBasis> ****)
 
-SpechtBasis::usage = "SpechtBasis[n] constructs the bases of the Specht modules of the symmetric group of degree n.\nSpechtBasis[shape] returns the basis of the Specht module corresponding to Young shape shape." 
+SpechtBasis::usage = "SpechtBasis[n] or SpechtBasis[SymmetricGroup[n]] constructs the bases of the Specht modules of the symmetric group of degree n.\nSpechtBasis[shape] returns the basis of the Specht module corresponding to Young shape shape." 
 
 SpechtBasis[shape_?YoungShapeQ] :=
   Ket /@ ToYoungTableau /@ GelfandYoungPatterns[shape]
@@ -924,6 +955,8 @@ SpechtBasis[shape_?YoungShapeQ] :=
    instead of the following:
    SpechtBasis[shape_?YoungShapeQ] := Ket /@ YoungTableaux[shape]
    *)
+
+SpechtBasis[SymmetricGroup[n_Integer]] := SpechtBasis[n]
 
 SpechtBasis[n_Integer] := With[
   { pp = IntegerPartitions[n] },
