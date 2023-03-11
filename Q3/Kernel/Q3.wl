@@ -12,8 +12,8 @@ ClearAll["`*"];
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 3.15 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-25 08:46:53+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.26 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-11 21:44:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -22,7 +22,7 @@ ClearAll["`*"];
 { Q3Info, Q3Release, Q3RemoteRelease,
   Q3Update, Q3CheckUpdate, Q3Assure, Q3Purge };
 
-{ Q3Delimiter };
+{ Q3InsertParagraphDelimiter };
 
 
 Begin["`Private`"]
@@ -180,27 +180,27 @@ Q3Purge[] := Module[
 
 (**** <Q3Delimiter> ****)
 
-Q3Delimiter::usage = "Q3Delimiter[nb] replaces the current cell of the current notebook with the horizontal delimiter cell."
+Q3InsertParagraphDelimiter::usage = "Q3InsertParagraphDelimiter[] either replaces the current cell of the Paragraph style with the delimiter cell or insert the delimiter cell at the current position."
 
-Q3Delimiter[] := Q3Delimiter @ SelectedNotebook[]
-
-Q3Delimiter[] := With[
-  { nb = SelectedNotebook[] },
-  SelectionMove[nb, Previous, Cell];
-  NotebookWrite[First @ Cells @ NotebookSelection @ nb, $DelimiterCell]
+Q3InsertParagraphDelimiter[] := With[
+  { obj = EvaluationCell[] },
+  If[ FailureQ[obj],
+    NotebookWrite[EvaluationNotebook[], $DelimiterCell],
+    If[ First @ CurrentValue[obj, "CellStyle"] == "ParagraphDelimiter",
+      Return[],
+      NotebookWrite[EvaluationNotebook[], "\t"]
+     ]
+   ]
  ]
+(* NOTE: This must be consistent with the Playbook style sheet *)
+
 
 $DelimiterCell::usage = "A horizontal delimiter cell like the one in the Wolfram documentation.\nCellPrint[$DelimiterCell] put it in the evaluation notebook."
 
-$DelimiterCell = Cell[ "\t", "Text",
-  ShowCellBracket -> Automatic,
-  Editable -> False,
-  Evaluatable -> False,
-  CellAutoOverwrite -> False,
-  TabFilling -> "\[LongDash]\[NegativeThickSpace]", 
-  TabSpacings -> Scaled[1],
-  FontColor -> GrayLevel[.9]
- ]
+$DelimiterCell = Cell[ "\t", "ParagraphDelimiter",
+  TabFilling -> "\[LongDash]\[NegativeThickSpace]",
+  TabSpacings -> Scaled[1]
+];
 
 (**** </Q3Delimiter> ****)
 

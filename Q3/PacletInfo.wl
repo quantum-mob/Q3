@@ -1,10 +1,10 @@
 (* Paclet Info File *)
-(* $Date: 2023-03-09 12:21:55+09 $ *)
-(* $Revision: 2.134 $ *)
+(* $Date: 2023-03-11 22:07:29+09 $ *)
+(* $Revision: 2.136 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.10.7",
+  "Version" -> "2.10.8", (* draft *)
   "WolframVersion" -> "12.1+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
@@ -16,7 +16,7 @@ Paclet[
          The list is also used by FindFile.
          The list also causes documentation links to be added to usage
          messages when documentation is present. *)
-      "Symbols" -> { "Let", "Q3Info", "Q3Update", "Q3CheckUpdate" }
+      "Symbols" -> { "Let", "Q3Info", "Q3CheckUpdate", "Q3Update" }
       (* Symbols supplies a set of symbols that the paclet provides. If the
          Loading is set to Automatic, autoloading will be set up for everyone
          of these symbols. *)

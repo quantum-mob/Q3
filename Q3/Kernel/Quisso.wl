@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.62 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-21 09:55:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.64 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-10 19:16:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -914,7 +914,7 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 (**** </Phase> ****)
 
 
-(**** <Rotation and EulerRotation> ****)
+(**** <RotationEulerRotation> ****)
 
 Options[Rotation] = { "Label" -> Automatic }
 
@@ -930,23 +930,23 @@ Rotation[aa_List, qq:{__?QubitQ}, rest___] :=
 
 
 Rotation /:
-HoldPattern @ Multiply[pre___, op_Rotation, post___] :=
-  Multiply[ pre, Elaborate[op], post ]
+Multiply[pre___, op_Rotation, post___] :=
+  Multiply[pre, Elaborate[op], post]
 
 Rotation /:
 Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
   Rotation[-Conjugate[ang], S, rest]
 
 Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, S_?QubitQ, v:{_, _, _}, ___] :=
+Elaborate @ Rotation[phi_, S_?QubitQ, v:{_, _, _}, ___] :=
   Garner[ Cos[phi/2] - I Sin[phi/2] Dot[S @ All, Normalize @ v] ]
 
 Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, S_?QubitQ, ___?OptionQ] :=
-  Cos[phi/2] - I Sin[phi/2]*S
+Elaborate @ Rotation[phi_, S_?QubitQ, ___?OptionQ] :=
+  Cos[phi/2] - I*Sin[phi/2]*S
 
 Rotation /:
-HoldPattern @ Matrix[op_Rotation, rest___] := Matrix[Elaborate[op], rest]
+Matrix[op_Rotation, rest___] := Matrix[Elaborate[op], rest]
 
 
 Rotation[q_?QubitQ, ang_, rest___] := (
@@ -959,6 +959,10 @@ Rotation[qq:{__?QubitQ}, ang_, rest___] := (
   Rotation[ang, qq, rest]
  )
 
+(**** </Rotation> ****)
+
+
+(**** <Rotation> ****)
 
 Options[EulerRotation] = { "Label" -> Automatic }
 
@@ -969,11 +973,19 @@ EulerRotation[aa:{_, _, _}, G_?QubitQ, opts___?OptionQ] :=
   EulerRotation[ aa, G[$], opts ] /; Not[FlavorNoneQ @ G]
 
 EulerRotation /:
-HoldPattern @ Multiply[pre___, op_EulerRotation, post___ ] :=
+Expand @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
+  Sequence[
+    Rotation[c, S[3], opts],
+    Rotation[b, S[2], opts],
+    Rotation[a, S[3], opts]
+   ]
+
+EulerRotation /:
+Multiply[pre___, op_EulerRotation, post___ ] :=
   Multiply[pre, Elaborate[op], post]
 
 EulerRotation /:
-HoldPattern @ Elaborate @ EulerRotation[{a_, b_, c_}, S_?QubitQ, ___] :=
+Elaborate @ EulerRotation[{a_, b_, c_}, S_?QubitQ, ___] :=
   Garner @ Multiply[
     Elaborate @ Rotation[a, S[3]],
     Elaborate @ Rotation[b, S[2]],
@@ -994,7 +1006,7 @@ EulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
   EulerRotation[ang, qq, rest]
  )
 
-(**** </Rotation and EulerRotation> ****)
+(**** </EulerRotation> ****)
 
 
 (**** <CNOT> ****)

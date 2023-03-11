@@ -2,7 +2,7 @@
 
 ## v2.10.7
 
-- New function GroupCharacters, SymmetricGroupCharacters.
+- New function GroupClasses, SymmetricGroupClasses.
 - Bug fixes in package extentions.
 
 ## v2.10.6
