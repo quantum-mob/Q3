@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-03-15 21:36:14+09 $ *)
-(* $Revision: 1.9 $ *)
+(* $Date: 2023-03-15 21:57:07+09 $ *)
+(* $Revision: 1.10 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -72,47 +72,16 @@ $PlaybookStyle::usage =  "$PlaybookStyle returns the style definition of a playb
 
 $PlaybookStyle = Notebook[
   Join[
-    List @ Cell @ StyleData[StyleDefinitions -> "Default.nb"],
+    List @ Cell @ StyleData[StyleDefinitions -> "Playbook.nb"],
     Uneditable @ {
       "Title", "Subtitle", "Chapter",
       "Section", "Subsection", "Subsubsection",
       "Text", "Code", "Item", "Subitem", "Subsubitem",
-      "DisplayFormula" },
-    { Cell[
-        StyleData["ParagraphDelimiter", StyleDefinitions -> StyleData["Text"]],
-        CounterAssignments -> {
-          {"Item", 0},
-          {"Subitem", 0},
-          {"Subsubitem", 0},
-          {"ItemNumbered", 0},
-          {"SubitemNumbered", 0},
-          {"SubsubitemNumbered", 0} },
-        Editable -> False,
-        Evaluatable -> False ],
-      Cell[ StyleData["Picture"],
-        CellMargins -> {{80, 10}, {7, 7}},
-        Editable -> False,
-        PageWidth -> Infinity,
-        PageBreakBelow -> False,
-        CellGroupingRules -> "GraphicsGrouping",
-        CellHorizontalScrolling -> True,
-        GraphicsBoxOptions -> {ImageSize -> Medium},
-        Graphics3DBoxOptions -> {ImageSize -> Medium} ],
-      Cell[ StyleData["Picture", "Printout"],
-        PageWidth -> PaperWidth,
-        CellMargins -> {{73, Inherited}, {Inherited, 5}},
-        Magnification -> 0.65 ],
-      Cell[ StyleData["Caption"],
-        CellMargins -> {{66, 10}, {7, 3}},
-        Editable -> False,
-        CellGroupingRules -> "GraphicsGrouping",
-        PageBreakAbove -> False,
-        FontFamily -> "Verdana",
-        FontSize -> 11 ]
-     }
+      "DisplayFormula", "Picture", "Caption",
+      "OutlineSection", "Outline1", "Outline2", "Outline3", "Outline4" }
    ],
   Visible -> False,
-  StyleDefinitions -> "Default.nb"
+  StyleDefinitions -> "Playbook.nb"
  ];
 
 
@@ -283,6 +252,9 @@ End[]
 
 
 SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
+
+(* Users are allowed to change variables. *)
+Unprotect["`$*"];
 
 (* Too dangerous to allow users to change these. *)
 Protect[$ParagraphDelimiter];
