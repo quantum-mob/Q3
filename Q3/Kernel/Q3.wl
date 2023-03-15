@@ -12,8 +12,8 @@ ClearAll["`*"];
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 3.26 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-11 21:44:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.29 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-13 21:27:07+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,9 +21,6 @@ ClearAll["`*"];
 
 { Q3Info, Q3Release, Q3RemoteRelease,
   Q3Update, Q3CheckUpdate, Q3Assure, Q3Purge };
-
-{ Q3InsertParagraphDelimiter };
-
 
 Begin["`Private`"]
 
@@ -176,33 +173,6 @@ Q3Purge[] := Module[
    ];
   PacletUninstall @ Rest @ pacs
  ]
-
-
-(**** <Q3Delimiter> ****)
-
-Q3InsertParagraphDelimiter::usage = "Q3InsertParagraphDelimiter[] either replaces the current cell of the Paragraph style with the delimiter cell or insert the delimiter cell at the current position."
-
-Q3InsertParagraphDelimiter[] := With[
-  { obj = EvaluationCell[] },
-  If[ FailureQ[obj],
-    NotebookWrite[EvaluationNotebook[], $DelimiterCell],
-    If[ First @ CurrentValue[obj, "CellStyle"] == "ParagraphDelimiter",
-      Return[],
-      NotebookWrite[EvaluationNotebook[], "\t"]
-     ]
-   ]
- ]
-(* NOTE: This must be consistent with the Playbook style sheet *)
-
-
-$DelimiterCell::usage = "A horizontal delimiter cell like the one in the Wolfram documentation.\nCellPrint[$DelimiterCell] put it in the evaluation notebook."
-
-$DelimiterCell = Cell[ "\t", "ParagraphDelimiter",
-  TabFilling -> "\[LongDash]\[NegativeThickSpace]",
-  TabSpacings -> Scaled[1]
-];
-
-(**** </Q3Delimiter> ****)
 
 End[]
 

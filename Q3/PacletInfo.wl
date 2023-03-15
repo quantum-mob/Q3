@@ -1,10 +1,10 @@
 (* Paclet Info File *)
-(* $Date: 2023-03-11 22:07:29+09 $ *)
-(* $Revision: 2.136 $ *)
+(* $Date: 2023-03-15 21:48:10+09 $ *)
+(* $Revision: 2.138 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.10.8", (* draft *)
+  "Version" -> "2.10.9",
   "WolframVersion" -> "12.1+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
@@ -17,6 +17,18 @@ Paclet[
          The list also causes documentation links to be added to usage
          messages when documentation is present. *)
       "Symbols" -> { "Let", "Q3Info", "Q3CheckUpdate", "Q3Update" }
+      (* Symbols supplies a set of symbols that the paclet provides. If the
+         Loading is set to Automatic, autoloading will be set up for everyone
+         of these symbols. *)
+     },
+    { "Kernel",
+      "Root" -> "PlaybookTools/Kernel",
+      "Context" -> { "PlaybookTools`" },
+      (* Context specifies the package context or list of contexts.
+         The list is also used by FindFile.
+         The list also causes documentation links to be added to usage
+         messages when documentation is present. *)
+      "Symbols" -> { "ParagraphDelimiterPut", "$ParagraphDelimiter" }
       (* Symbols supplies a set of symbols that the paclet provides. If the
          Loading is set to Automatic, autoloading will be set up for everyone
          of these symbols. *)
