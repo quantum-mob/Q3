@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.10.9
+
+- PlaybookTools are included.
+
 ## v2.10.7
 
 - New function GroupClasses, SymmetricGroupClasses.
