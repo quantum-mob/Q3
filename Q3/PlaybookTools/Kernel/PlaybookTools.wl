@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-03-15 21:57:07+09 $ *)
-(* $Revision: 1.10 $ *)
+(* $Date: 2023-03-19 13:44:42+09 $ *)
+(* $Revision: 1.13 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -182,13 +182,20 @@ PlaybookContentsLine::noid = "The cell has no ID. Turn on the CreateID option of
 SetAttributes[PlaybookContentsLine, Listable];
 
 PlaybookContentsLine[obj_CellObject] := Cell[
-  TextData @ ButtonBox[
-    First @ NotebookRead[obj],
+  TextData @ ButtonBox[ theCellContents[obj],
     BaseStyle -> "Link",
     ButtonFunction -> (NotebookFind[SelectedNotebook[], #, All, CellID]&),
     ButtonData -> ToString@CurrentValue[obj, CellID] ],
   First[CurrentValue[obj, CellStyle]] /. theStyleMapping
  ]
+
+theCellContents[obj_CellObject] := theCellContents[NotebookRead @ obj]
+
+theCellContents[cell_Cell] := theCellContents[First @ cell]
+
+theCellContents[in_TextData] := First[in]
+
+theCellContents[in_] := in
 
 theStyleMapping = {
   "Section" -> "Outline1",

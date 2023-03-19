@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.10.10
+
+- PlaybookTools improved.
+
 ## v2.10.9
 
 - PlaybookTools are included.
