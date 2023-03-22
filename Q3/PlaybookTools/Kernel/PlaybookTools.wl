@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-03-19 13:44:42+09 $ *)
-(* $Revision: 1.13 $ *)
+(* $Date: 2023-03-20 13:48:56+09 $ *)
+(* $Revision: 1.15 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -97,12 +97,13 @@ Options[PlaybookDeploy] = {
   "Destination" -> FileNameJoin @
     {$HomeDirectory, "Math/Apples/QuantumPlaybook/Chapters"},
   "DeleteOutput" -> False,
+  "PrintHandout" -> False,
   "CollapseGroup" -> False
  }
 
 PlaybookDeploy[file_String, OptionsPattern[]] := Module[
   { dst = OptionValue["Destination"],
-    new, nb },
+    new, pdf, nb },
   new = FileNameJoin @ {dst, FileNameTake[file]};
 
   Print["Copying ", file, " to ", dst, "/ ..."];
@@ -119,10 +120,17 @@ PlaybookDeploy[file_String, OptionsPattern[]] := Module[
 
   SetBanner[nb, $PlaybookBanner];
   If[OptionValue["DeleteOutput"], CleanNotebook[nb]];
-  If[OptionValue["CollapseGroup"],
-    CollapseGroup[nb, {"Subsubsection", "Subsection", "Section"}]];
+  If[ OptionValue["CollapseGroup"],
+    CollapseGroup[nb, {"Subsubsection", "Subsection", "Section"}] ];
   SetOptions[nb, Saveable -> False, StyleDefinitions -> $PlaybookStyle];
   NotebookSave[nb, new];
+  If[ OptionValue["PrintHandout"],
+    SelectionMove[nb, All, Notebook];
+    FrontEndTokenExecute[nb, "SelectionOpenAllGroups"];
+    pdf = StringJoin @ {FileNameJoin @ {dst, FileBaseName @ new}, ".pdf"};
+    Print["Exporting ", file, " to ", pdf, " ..."];
+    Export[pdf, nb]
+   ];
   NotebookClose[nb];
  ]
 

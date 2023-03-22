@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.64 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-10 19:16:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.66 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-22 09:16:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1973,6 +1973,8 @@ Multiply[pre___, spr_MeasurementFunction, expr_] :=
 
 ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
 
+ProductState::pair = "The value must be a pair of complex numbers or a list of such pairs instead of ``."
+
 Options[ProductState] = {"Label" -> None}
 
 Format @ ProductState[assoc:Association[], rest___] :=
@@ -2033,10 +2035,9 @@ ProductState[v:ProductState[_Association, ___], spec___Rule, ss:{__?QubitQ}] :=
   KetRegulate[ProductState[v, spec], ss]
 
 
-ProductState[] = ProductState[Association[]]
+ProductState[] = ProductState[<||>]
 
-ProductState[spec__Rule] :=
-  Fold[ProductState, ProductState[<||>], {spec}]
+ProductState[spec__Rule] := ProductState[ProductState[], spec]
 
 ProductState[v:ProductState[_Association, ___], spec_Rule, more__Rule] :=
   Fold[ProductState, v, {spec, more}]
@@ -2044,25 +2045,36 @@ ProductState[v:ProductState[_Association, ___], spec_Rule, more__Rule] :=
 ProductState[v:ProductState[_Association, ___], spec:Rule[_String, _]] :=
   Append[v, spec] /; KeyExistsQ[Options[ProductState], First @ spec]
 
+
 ProductState[ ProductState[a_Association, opts___],
-  rule:(_?QubitQ -> {_, _}) ] :=
+  rule:Rule[_?QubitQ, {_, _}] ] :=
   ProductState[KeySort @ Append[a, FlavorNone @ rule], opts]
 
 ProductState[
   ProductState[a_Association, opts___],
-  rule:({__?QubitQ} -> {{_, _}..})
+  rule:Rule[{__?QubitQ}, {{_, _}..}]
  ] := ProductState[
-   KeySort @ Append[ a, FlavorNone @ Thread[rule] ],
+   KeySort @ Join[a, AssociationThread[FlavorNone /@ rule]],
    opts
   ]
 
 ProductState[
   ProductState[a_Association, opts___],
-  gg:{__?QubitQ} -> v:{_, _}
- ] := Module[
-   { rr = Map[Rule[#, v]&, gg] },
-   ProductState[ KeySort @ Append[a, FlavorNone @ rr], opts ]
+  Rule[gg:{__?QubitQ}, v:{_, _}]
+ ] := With[
+   { b = AssociationMap[(v)&, FlavorNone @ gg] },
+   ProductState[ KeySort @ Join[a, b], opts ]
   ]
+
+
+ProductState[ a:ProductState[_Association, ___], Rule[_?QubitQ, v_] ] :=
+  (Message[ProductState::pair, v]; a)
+
+ProductState[ a:ProductState[_Association, ___], Rule[{__?QubitQ}, v_List]] :=
+  (Message[ProductState::pair, v]; a)
+
+ProductState[ a:ProductState[_Association, ___], Rule[{__?QubitQ}, v_]] :=
+  (Message[ProductState::pair, v]; a)
 
 (* Resetting the qubit values *)
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.57 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-07 11:14:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.59 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-21 15:20:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1445,7 +1445,7 @@ Pauli /: Dagger @ Pauli @ C[n_Integer] := Pauli[-C[n]]
 
 Pauli /: Dagger @ Pauli[-C[n_Integer]] := Pauli[C @ n]
 
-Pauli /: HoldPattern @ Dagger[ Pauli[a_, bc__] ] :=
+Pauli /: Dagger @ Pauli[a_, bc__] :=
   Garner @ Apply[CircleTimes, Dagger /@ Pauli /@ {a, bc}]
 
 (* Conjugate *)
@@ -2660,6 +2660,12 @@ Dot[ Bra[0|Up], Pauli[n:(1|2|3|4|5|6|7|8)] ] :=
 Pauli /:
 Dot[ Bra[1|Down], Pauli[n:(1|2|3|4|5|6|7|8)] ] :=
   Dot[ ThePauli[n][[2,;;]], {Bra[0],Bra[1]} ]
+
+Pauli /:
+Dot[ z_?CommutativeQ, op_Pauli ] := z * op
+
+Pauli /:
+Dot[ op_Pauli, z_?CommutativeQ ] := z * op
 
 Pauli /:
 Dot[ Pauli[0], Pauli[n_] ] := Pauli[n]
