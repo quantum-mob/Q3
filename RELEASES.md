@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.10.11
+
+- New function KetMutate.
+- The key binding for Playbook style sheet has been changed.
+
 ## v2.10.10
 
 - PlaybookTools improved.

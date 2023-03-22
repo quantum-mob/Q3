@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.59 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-21 15:20:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.62 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-23 06:42:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -15,7 +15,7 @@ BeginPackage["Q3`"]
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
   KetFactor, KetPurge, KetSort,
-  KetSpecies, KetRegulate };
+  KetSpecies, KetRegulate, KetMutate };
 
 { KetNorm, KetNormalize, KetOrthogonalize }; 
 
@@ -356,6 +356,41 @@ KetRegulate[expr_, ss:{___?SpeciesQ}] := expr /. {
  }
 
 (**** </KetRegulate> ****)
+
+
+(**** <KetMutate> ****)
+
+KetMutate::usage = "KetMutate[expr, {s1, s2, \[Ellipsis]}] changes every Ket[v1,v2,\[Ellipsis]] to Ket[<|s1->v1, s2->v2, \[Ellipsis]|>] and vice versa in expr."
+
+KetMutate[any_, ss:{__?SpeciesQ}] :=
+  KetMutate[any, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+KetMutate[any_Association, ss:{__?QubitQ}] := Map[KetMutate[#, ss]&, any]
+(* NOTE: Recall that Association has attribute HoldAllComplete. *)
+
+KetMutate[Ket[v__], ss:{__?SpeciesQ}] := Ket[ss -> PadRight[{v}, Length @ ss]]
+
+KetMutate[Bra[v__], ss:{__?SpeciesQ}] := Bra[ss -> PadRight[{v}, Length @ ss]]
+
+KetMutate[Ket[a_Association], ss:{__?SpeciesQ}] := Ket @@ Lookup[a, ss]
+
+KetMutate[Bra[a_Association], ss:{__?SpeciesQ}] := Bra @@ Lookup[a, ss]
+
+KetMutate[Pauli[v__], ss:{__?SpeciesQ}] := With[
+  { qq = Select[ss, QubitQ] },
+  Multiply @@ MapThread[
+    Construct,
+    {qq, PadRight[{v}, Length @ qq]}
+   ]
+ ]
+
+KetMutate[expr_, ss:{__?SpeciesQ}] := ReplaceAll[ expr,
+  { v_Association :> KetMutate[v, ss],
+    v:(_Ket|_Bra_) :> KetMutate[v, ss],
+    v_Pauli :> KetMutate[v, ss] }
+ ]
+
+(**** </KetMutate> ****)
 
 
 (**** <SimpleForm> ****)

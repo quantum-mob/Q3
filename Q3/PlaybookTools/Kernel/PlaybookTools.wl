@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-03-20 13:48:56+09 $ *)
-(* $Revision: 1.15 $ *)
+(* $Date: 2023-03-23 07:05:01+09 $ *)
+(* $Revision: 1.16 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -37,7 +37,7 @@ ParagraphDelimiterPut[] := With[
     NotebookWrite[EvaluationNotebook[], $ParagraphDelimiter],
     If[ MemberQ[CurrentValue[obj, "CellStyle"], "ParagraphDelimiter"],
       Return[],
-      NotebookWrite[EvaluationNotebook[], "\t"]
+      NotebookWrite[EvaluationNotebook[], "`"]
      ]
    ]
  ]
