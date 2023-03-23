@@ -1,8 +1,10 @@
 # Select Release Notes
 
-## v2.10.11
+## v2.11.0
 
+- EXPERIMENTAL: Ket[...]**Bra[...] is automatically converted to Dyad[...].
 - New function KetMutate.
+- CircleTimes enhanced.
 - The key binding for Playbook style sheet has been changed.
 
 ## v2.10.10

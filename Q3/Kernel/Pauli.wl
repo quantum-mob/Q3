@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.62 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-23 06:42:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.68 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-23 13:43:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -644,35 +644,6 @@ theYBasisLabel[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr, v_Ket :> theYBasisLabel[v, qq] ]
 
 
-(*
-
-YBasisForm[expr_, q_?QubitQ] := YBasisForm[expr, q @ {$}] 
-
-YBasisForm[expr_, qq : {__?QubitQ}] := 
-  YBasisForm[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
-
-YBasisForm[expr_, qq : {__?QubitQ}] := With[
-  { op = Multiply @@ Join[Through[qq[6]], Through[qq[7]]] },
-  Interpretation[theYBasisForm[KetRegulate[op ** expr], qq], expr]
- ]
-
-theYBasisForm[Bra[v_], qq : {__?QubitQ}] :=
-  Dagger @ theYBasisForm[Ket[v], qq]
-
-theYBasisForm[Ket[v_], qq : {__?QubitQ}] :=
-  Ket @ Join[ v,
-    AssociationThread[
-      qq -> ReplaceAll[Lookup[v, qq], {0 -> "R", 1 -> "L"}]
-     ]
-   ]
-
-theYBasisForm[expr_, qq : {__?QubitQ}] :=
-  ReplaceAll[ Garner @ expr,
-    { v_Ket :> theYBasisForm[v, qq], 
-      v_Bra :> theYBasisForm[v, qq] }
-   ]
-*)
-
 (**** </YBasisForm> ****)
 
 
@@ -1203,23 +1174,28 @@ AddElaborationPatterns[_Pauli, _Dyad]
 
 (**** <Multiply> ****)
 
-(* Ket[] ** Ket[] = Ket[] x Ket[] *)
-HoldPattern @
-  Multiply[ pre___, a:Ket[_Association], b:Ket[_Association], post___ ] :=
-  Multiply[pre, CircleTimes[a, b], post]
+HoldPattern @ Multiply[ pre___,
+  a:Ket[_Association], bb:Ket[_Association]..,
+  Shortest[post___] ] :=
+  Multiply[pre, CircleTimes[a, bb], post]
 
-(* Bra[] ** Bra[] = Bra[] x Bra[] *)
-HoldPattern @
-  Multiply[ pre___, a:Bra[_Association], b:Bra[_Association], post___ ] :=
-  Multiply[pre, CircleTimes[a, b], post]
+HoldPattern @ Multiply[ pre___,
+  a:Bra[_Association], bb:Bra[_Association]..,
+  Shortest[post___] ] :=
+  Multiply[pre, CircleTimes[a, bb], post]
+
+HoldPattern @ Multiply[ pre___,
+  Ket[a_Association], Bra[b_Association], post___] :=
+  Multiply[pre, Dyad[a, b], post]
+(* EXPERIMENTAL since v5.66 *)
 
 HoldPattern @
   Multiply[ pre___, Bra[a_Association], Ket[b_Association], post___ ] :=
-  BraKet[a, b] Multiply[pre, post]
+  BraKet[a, b] * Multiply[pre, post]
 
 HoldPattern @
   Multiply[ pre___, Bra[a___], Ket[b___], post___ ] :=
-  BraKet[{a}, {b}] Multiply[pre, post]
+  BraKet[{a}, {b}] * Multiply[pre, post]
 (* Recall that Multiply has no Flat attribute. *)
 
 HoldPattern @
@@ -1244,6 +1220,8 @@ HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
 (**** </Multiply> ****)
 
 
+(**** <MultiplyPower> ****)
+
 HoldPattern @ MultiplyPower[expr_, n_] :=
   ExpressionFor @ MatrixPower[Matrix @ expr, n] /;
   NonCommutativeSpecies[expr] == {} /;
@@ -1255,6 +1233,8 @@ HoldPattern @ MultiplyPower[op_, n_] := Module[
   mat = MatrixPower[Matrix[op, ss], n]; 
   ExpressionFor[mat, ss]
  ]
+
+(**** </MultiplyPower> ****)
 
 
 State::usage = "State[{0, \[Theta], \[Phi]}] and Ket[{1, \[Theta], \[Phi]}] returns the eigenvectors of Pauli[3] in the (\[Theta], \[Phi])-rotated frame.\nState[{s$1, \[Theta]$1, \[Phi]$1}, {s$2, \[Theta]$2, \[Phi]$2}, ...] returns the tensor product State[{s$1, \[Theta]$1, \[Phi]$1}]\[CircleTimes] State[{s$2, \[Theta]$2, \[Phi]$2}, ...]\[CircleTimes]....\nState[{{s$1, s$2, ...}, \[Theta], \[Phi]}] = State[{s$1, \[Theta], \[Phi]}, {s$2, \[Theta], \[Phi]}, ...].\nSee also Ket, TheKet, TheState, Pauli, ThePauli, Operator, TheOperator."
@@ -2777,16 +2757,22 @@ CircleTimes[a_] := a (* See also Times[]. *)
 (* NOTE: DO NOT set the Flat and OneIdentity attributes for
    Cirlcetimes. Otherwise, the following definitions cause infinite loops. *)
 
-HoldPattern @ CircleTimes[args__] := Garner @ Block[
-  { F },
-  Distribute @ F[args] /. {F -> CircleTimes}
+HoldPattern @ CircleTimes[args__] := ReleaseHold @ Garner[
+  Distribute @ Hold[CircleTimes][args]
  ] /; DistributableQ[args]
 
 CircleTimes[pre___, z_?CommutativeQ op_, post___] :=
-  z CircleTimes[pre, op, post]
+  z * CircleTimes[pre, op, post]
 
 CircleTimes[___, 0, ___] = 0
 (* This happens when some vectors or operators are null. *)
+
+HoldPattern @ CircleTimes[ pre___,
+  op:Multiply[Ket[__], Bra[__]],
+  more:(Multiply[Ket[__], Bra[__]]..),
+  Shortest[post___] ] := CircleTimes[ pre,
+    Apply[Multiply, CircleTimes @@@ Transpose[List @@@ {op, more}]],
+    post ]
 
 (* On matrices, it operates the same as KroneckerProduct[]. *)
 CircleTimes[mats__?MatrixQ] := KroneckerProduct[mats]
