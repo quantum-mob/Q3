@@ -657,8 +657,7 @@ HoldPattern @ PauliForm[op:Multiply[ss__?singleQubitGateQ], qq:{__?QubitQ}] :=
 PauliForm[op_?singleQubitGateQ, qq:{__?QubitQ}] :=
   Interpretation[thePauliForm[op, qq], op]
 
-PauliForm[expr_Plus, qq:{__?QubitQ}] :=
-  Total @ Map[PauliForm[#, qq]&, List @@ expr]
+PauliForm[expr_Plus, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, expr]
 
 PauliForm[expr_List, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, expr]
 

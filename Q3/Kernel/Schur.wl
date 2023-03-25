@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.1 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-10 23:12:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.3 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-26 00:46:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -124,11 +124,16 @@ GelfandForm[data_] := (
 
 (**** <GelfandOrder> ****)
 
+GelfandOrder::usage = "GelfandOrder[a, b] returns 1 if the Young tableaux corresponding to Gelfand patterns a and b are in the standard lexicographic order for Young tableaux."
+
+(* NOTE: The lexicographic order of Young tableaux is different from the
+   lexicographic order for normal lists. *)
+
 GelfandOrder[a_?GelfandPatternQ, b_?GelfandPatternQ] := 
-  Order[Rest@a, Rest@b] /; First[a] == First[b]
+  Order[Rest @ a, Rest @ b] /; First[a] == First[b]
 
 GelfandOrder[a_?GelfandPatternQ, b_?GelfandPatternQ] :=
-  -Order[First@a, First@b]
+  -Order[First @ a, First @ b]
 
 (**** </GelfandOrder> ****)
 
@@ -479,7 +484,7 @@ SchurBasis[bs_?SchurBasisQ, spec:(_Integer|_?SpeciesQ)] := KeySort[
     { node = Basis @ {spec} },
     KeyValueMap[nextSchurBasis[#1, #2, node]&, regroupSchurBasis @ bs]
    ],
-  -Order[#1,#2]&
+  -Order[#1, #2]&
  ]
 (* NOTE: The sorted keys are not in lexicographic order;
    see also GelfandOrder. *)

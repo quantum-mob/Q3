@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.35 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-09 12:09:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.1 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-25 23:30:22+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -19,8 +19,9 @@ BeginPackage["Q3`"];
 { YoungTranspose, YoungTrim };
 
 { YoungTableauQ, YoungTableaux, YoungTableauCount, YoungForm, 
-  NextYoungTableau, LastYoungTableau, FirstYoungTableau,
   YoungTranspose };
+
+{ LegacyYoungTableaux };
 
 { ToYoungTableau, ToGelfandPattern,
   GelfandContents };
@@ -430,37 +431,59 @@ YoungForm[data_] := (
  )
 
 
-YoungTableaux::usage = "YoungTableaux[shape] constructs all standard Young tableaux of 'shape' specified by an integer partition.\nYoungTableaux[n] constructs all standard Young tableaux of rank 'n'."
+(**** <YoungTableaux> ****)
 
-YoungTableaux[s_?YoungShapeQ] :=
-  NestList[NextYoungTableau, FirstYoungTableau[s], YoungTableauCount[s]-1]
+YoungTableaux::usage = "YoungTableaux[shape] constructs all standard Young tableaux of 'shape'.\nYoungTableaux[n] constructs all standard Young tableaux of rank n."
 
-YoungTableaux[n_Integer?Positive] :=
-  Catenate @ Map[YoungTableaux, IntegerPartitions @ n]
+Options[YoungTableaux] = {"LexicographicOrder" -> False}
+
+YoungTableaux[shape_?YoungShapeQ, OptionsPattern[]] := With[
+  { result = ToYoungTableau /@ GelfandYoungPatterns[shape] },
+  If[OptionValue["LexicographicOrder"], Reverse @ result, result, result]
+ ]
+(* NOTE: Since v3.0, based on GelfandYoungPatterns.
+   Now, the resulting list is not in lexicographic order and consistent with
+   SchurBasis. *)
+
+YoungTableaux[n_Integer?Positive, opts___?OptionQ] :=
+  Catenate @ Map[YoungTableaux[#, opts]&, IntegerPartitions @ n]
+
+(**** </YoungTableaux> ****)
 
 
-FirstYoungTableau::usage = "FirstYoungTableau[p] constructs the first standard Young tableau with shape described by partition p."
+(**** <LegacyYoungTableaux> ****)
 
-FirstYoungTableau[shape_?YoungShapeQ] :=
-  YoungTranspose @ LastYoungTableau @ YoungTranspose[shape]
+LegacyYoungTableaux::usage = "LegacyYoungTableaux[shape] constructs all standard Young tableaux of 'shape' specified by an integer partition using the method in the legacy Combinatorica package.\nLegacyYoungTableaux[n] constructs all standard Young tableaux of rank n."
+
+LegacyYoungTableaux[s_?YoungShapeQ] :=
+  NestList[nextYoungTableau, firstYoungTableau[s], YoungTableauCount[s]-1]
+
+LegacyYoungTableaux[n_Integer?Positive] :=
+  Catenate @ Map[LegacyYoungTableaux, IntegerPartitions @ n]
 
 
-LastYoungTableau::usage = "LastYoungTableau[p] constructs the last Young tableau with shape described by partition p."
+firstYoungTableau::usage = "firstYoungTableau[p] constructs the first standard Young tableau with shape described by partition p."
 
-LastYoungTableau[shape_?YoungShapeQ] :=
+firstYoungTableau[shape_?YoungShapeQ] :=
+  YoungTranspose @ lastYoungTableau @ YoungTranspose[shape]
+
+
+lastYoungTableau::usage = "lastYoungTableau[p] constructs the last Young tableau with shape described by partition p."
+
+lastYoungTableau[shape_?YoungShapeQ] :=
   TakeList[Range @ Total @ shape, shape]
 
 
-NextYoungTableau::usage = "NextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in lexicographic order."
+nextYoungTableau::usage = "nextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in lexicographic order."
 
 (* NOTE 2021-10-27: It seems that the standard Young tableaux are ordered
    according to the "last letter sequence". See Pauncz (1995a, Section 3.2). *)
 
-NextYoungTableau[tb_?YoungTableauQ] := Module[
+nextYoungTableau[tb_?YoungTableauQ] := Module[
   { yy, shp, row, val, new },
 
   yy = Values @ KeySort @ Flatten @ MapIndexed[(#1->First[#2])&, tb, {2}];
-  If[LessEqual @@ yy, Return @ FirstYoungTableau[Length /@ tb]];
+  If[LessEqual @@ yy, Return @ firstYoungTableau[Length /@ tb]];
 
   val = 1 + Length[First @ Split[yy, LessEqual]];
   row = First @ FirstPosition[tb, val];
@@ -469,7 +492,7 @@ NextYoungTableau[tb_?YoungTableauQ] := Module[
   row = First @ Last @ Position[shp, shp[[row+1]]];
   shp[[row]]--;
   
-  new = FirstYoungTableau[shp];
+  new = firstYoungTableau[shp];
   If[ Length[new] < row,
     new = Append[new, {val}],
     new[[row]] = Append[new[[row]], val]
@@ -478,6 +501,8 @@ NextYoungTableau[tb_?YoungTableauQ] := Module[
   new = Flatten @ MapIndexed[(#2->#1)&, new, {2}];
   ReplacePart[tb, new]
  ]
+
+(**** </LegacyYoungTableaux> ****)
 
 
 (**** <PermutationMatrix> ****)
@@ -949,10 +974,12 @@ YoungInvariantBasis[bs:{Ket[__?YoungTableauQ] ..}] := Module[
 
 SpechtBasis::usage = "SpechtBasis[n] or SpechtBasis[SymmetricGroup[n]] constructs the bases of the Specht modules of the symmetric group of degree n.\nSpechtBasis[shape] returns the basis of the Specht module corresponding to Young shape shape." 
 
-SpechtBasis[shape_?YoungShapeQ] :=
-  Ket /@ ToYoungTableau /@ GelfandYoungPatterns[shape]
-(* NOTE: To be consistent with the Schur basis, we use the above method
-   instead of the following:
+SpechtBasis[shape_?YoungShapeQ] := Ket /@ YoungTableaux[shape]
+(* NOTE: Since v3.0, YoungTableaux is now based on GelfandYoungPatterns and
+   is already consistent with SchurBasis. *)
+(* Ket /@ ToYoungTableau /@ GelfandYoungPatterns[shape] *)
+(* OBSOLETE NOTE: To be consistent with the Schur basis,
+   we use the above method instead of the following:
    SpechtBasis[shape_?YoungShapeQ] := Ket /@ YoungTableaux[shape]
    *)
 

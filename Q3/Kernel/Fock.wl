@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.53 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-19 00:18:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.54 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-25 05:00:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1802,8 +1802,7 @@ toCatForm::usage = "Returns a multiplication of generators (creation operators g
 
 SetAttributes[toCatForm, Listable]
 
-toCatForm[expr_Plus] := Garner @ Total @
-  Map[toCatForm, List @@ expr]
+toCatForm[expr_Plus] := Garner @ Map[toCatForm, expr]
 
 toCatForm[z_?CommutativeQ expr_] := z toCatForm[expr]
 
@@ -1833,8 +1832,7 @@ toKetForm::usage = "Returns a Fock state in the occupation representation (Ket[<
 
 SetAttributes[toKetForm, Listable]
 
-toKetForm[expr_Plus] := Garner @ Total @
-  Map[toKetForm, List @@ expr]
+toKetForm[expr_Plus] := Garner @ Map[toKetForm, expr]
 
 toKetForm[z_?CommutativeQ expr_] := z toKetForm[expr]
 

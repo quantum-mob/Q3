@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.68 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-23 13:43:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.72 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-26 00:33:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1889,10 +1889,7 @@ Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
   Not[FlavorNoneQ @ {ss, tt}]
 
 Matrix[ expr_Plus, qq:{___?SpeciesQ}.. ] :=
-  TrigToExp @ ExpToTrig @ Total @ Map[
-    Matrix[#, qq]&,
-    List @@ KetChop[expr]
-   ]
+  TrigToExp @ ExpToTrig @ Map[Matrix[#, qq]&, KetChop @ expr]
 (* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
 (* NOTE: KetChop is required here because "0. + Ket[...]" may happen. *)
 
@@ -2757,7 +2754,7 @@ CircleTimes[a_] := a (* See also Times[]. *)
 (* NOTE: DO NOT set the Flat and OneIdentity attributes for
    Cirlcetimes. Otherwise, the following definitions cause infinite loops. *)
 
-HoldPattern @ CircleTimes[args__] := ReleaseHold @ Garner[
+HoldPattern @ CircleTimes[args__] := Garner @ ReleaseHold[
   Distribute @ Hold[CircleTimes][args]
  ] /; DistributableQ[args]
 
@@ -2779,6 +2776,12 @@ CircleTimes[mats__?MatrixQ] := KroneckerProduct[mats]
 
 (* For vectors, our CircleTimes[] is different from KroneckerProduct[]. *)
 CircleTimes[vecs__?VectorQ] := Flatten @ TensorProduct[vecs]
+
+(*
+CircleTimes /:
+Multiply[pre___, HoldPattern @ CircleTimes[aa__], Ket[bb__], post___] :=
+  Multiply[pre, CircleTimes @@ Multiply[{aa}, Ket /@ {bb}], post]
+ *)
 
 (**** </CircleTimes> ****)
 
@@ -2992,11 +2995,9 @@ Dyad[a_Association, b_Association] := Module[
  ] /; Length[Union @ Kind @ Flatten @ {Keys @ a, Keys @ b}] > 1
 
 
-Dyad[a_Plus, b_, qq___] :=
-  Garner @ Total @ Map[Dyad[#, b, qq]&, List @@ a]
+Dyad[a_Plus, b_, qq___] := Garner @ Map[Dyad[#, b, qq]&, a]
 
-Dyad[a_, b_Plus, qq___] :=
-  Garner @ Total @ Map[Dyad[a, #, qq]&, List @@ b]
+Dyad[a_, b_Plus, qq___] := Garner @ Map[Dyad[a, #, qq]&, b]
 
 Dyad[z_?CommutativeQ a_, b_, qq___] := Garner[z * Dyad[a, b, qq]]
 

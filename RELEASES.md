@@ -2,6 +2,8 @@
 
 ## v2.11.0
 
+- New function YoungFourierMatrix and YoungFourier.
+- New implementation of YoungFourierBasis based on YoungFourierMatrix. 
 - EXPERIMENTAL: Ket[...]**Bra[...] is automatically converted to Dyad[...].
 - New function KetMutate.
 - CircleTimes enhanced.
