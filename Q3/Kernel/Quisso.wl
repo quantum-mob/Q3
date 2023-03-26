@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.66 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-22 09:16:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.67 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-26 10:40:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -187,9 +187,9 @@ setQubit[x_Symbol] := (
    ];
   
   Format @ x[j___, 0] := Interpretation[SpeciesBox[x, {j}, {0}], x[j, 0]];
-  Format @ x[j___, 1] := Interpretation[SpeciesBox[x, {j}, {"x"}], x[j, 1]];
-  Format @ x[j___, 2] := Interpretation[SpeciesBox[x, {j}, {"y"}], x[j, 2]];
-  Format @ x[j___, 3] := Interpretation[SpeciesBox[x, {j}, {"z"}], x[j, 3]];
+  Format @ x[j___, 1] := Interpretation[SpeciesBox[x, {j}, {"X"}], x[j, 1]];
+  Format @ x[j___, 2] := Interpretation[SpeciesBox[x, {j}, {"Y"}], x[j, 2]];
+  Format @ x[j___, 3] := Interpretation[SpeciesBox[x, {j}, {"Z"}], x[j, 3]];
   Format @ x[j___, 4] := Interpretation[SpeciesBox[x, {j}, {"+"}], x[j, 4]];
   Format @ x[j___, 5] := Interpretation[SpeciesBox[x, {j}, {"-"}], x[j, 5]];
   Format @ x[j___, 6] := Interpretation[SpeciesBox[x, {j}, {"H"}], x[j, 6]];
@@ -1338,7 +1338,8 @@ theControlledGate[cc_Rule, op_] := Module[
   Module[
     {a, b, c},
     {a, b, c} = TheEulerAngles[mm / ff];
-    { Rotation[-(a-c)/2, tt[3], "Label" -> "C"],
+    Garner @ {
+      Rotation[-(a-c)/2, tt[3], "Label" -> "C"],
       CNOT[cc, tt],
       { Rotation[-b/2, tt[2]] ** Rotation[-(a+c)/2, tt[3]],
         "Label" -> "B" },
