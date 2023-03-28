@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.74 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-26 21:45:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.77 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-28 22:17:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1145,7 +1145,7 @@ OTimes[pre___, vv:Repeated[_Ket, {2, Infinity}], post___] :=
   OTimes[pre, CircleTimes[vv], post]
 
 OTimes /:
-HoldPattern @ Dagger[ OTimes[a__] ] := OTimes @@ Dagger[{a}]
+Dagger[expr_OTimes] := Map[Dagger, expr]
 
 
 OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
@@ -1161,13 +1161,18 @@ Format @ OSlash[a:(_Ket|_Bra), b_] := Interpretation[
   OSlash[a, b]
  ]
 
-OSlash /: z_ OSlash[a_Ket, b_] := OSlash[a, z b]
+OSlash /: Times[z_, OSlash[a_Ket, b_]] := OSlash[a, Garner[z*b]]
 
-OSlash /: OSlash[a_Ket, b_] + OSlash[a_Ket, c_] := 
+OSlash /: OSlash[a_Ket, b_] + OSlash[a_Ket, c_] :=
   OSlash[a, b + c]
 
-OSlash /:
-HoldPattern @ Dagger[ OSlash[a__] ] := OSlash @@ Dagger @ {a}
+OSlash /: Dagger[expr_OSlash] := Map[Dagger, expr]
+
+OSlash[any_] = any
+
+OSlash[z_?CommutativeQ, rest__] := z * OSlash[rest]
+
+OSlash[v_Ket, z_?CommutativeQ] := z * v
 
 HoldPattern @ OSlash[vec_, OTimes[ff__]] := OTimes[vec, ff]
 
