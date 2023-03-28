@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.67 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-26 10:40:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.69 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-28 09:00:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1341,13 +1341,10 @@ theControlledGate[cc_Rule, op_] := Module[
     Garner @ {
       Rotation[-(a-c)/2, tt[3], "Label" -> "C"],
       CNOT[cc, tt],
-      { Rotation[-b/2, tt[2]] ** Rotation[-(a+c)/2, tt[3]],
-        "Label" -> "B" },
+      EulerRotation[{0, -b/2, -(a+c)/2}, tt, "Label" -> "B"],
       CNOT[cc, tt],
-      { Rotation[a, tt[3]] ** Rotation[b/2, tt[2]],
-        "Label" -> "A" },
-      ControlledGate[cc, ff]
-     }
+      EulerRotation[{a, b/2, 0}, tt, "Label" -> "A"],
+      ControlledGate[cc, ff] }
    ]
  ]
 

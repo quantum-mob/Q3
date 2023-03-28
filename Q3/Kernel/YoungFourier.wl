@@ -3,8 +3,8 @@ BeginPackage["Q3`"];
 
 `YoungFourier`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-25 17:03:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.18 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-27 21:55:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -14,11 +14,6 @@ BeginPackage["Q3`"];
 { YoungNormalRepresentation };
 
 Begin["`Private`"]
-
-YoungRegularBasis::usage = "YoungRegularBasis[n] returns the Young regular basis of degree n, i.e., the canonical basis of the left regular representation of the symmetric group of degree n."
-
-YoungRegularBasis[n_Integer] := Ket /@ GroupElements[SymmetricGroup @ n]
-
 
 YoungFourierMatrix::usage = "YoungFourieMatrix[n] returns the matrix describing the Fourier transform over the symmetric group of degree n."
 
@@ -38,11 +33,25 @@ YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis
 
 YoungFourierBasis[n_Integer] := Module[
   { mat = YoungFourierMatrix[n],
-    key },
-  key = Flatten[
+    key, val },
+  key = Ket @@@ Flatten[
     Map[Tuples[YoungTableaux @ #, 2]&, IntegerPartitions @ n],
     1 ];
-  AssociationThread[key -> YoungRegularBasis[n] . mat]
+  val = Ket /@ GroupElements[SymmetricGroup @ n];
+  AssociationThread[key -> val . mat]
+ ]
+
+
+YoungRegularBasis::usage = "YoungRegularBasis[n] returns the Young regular basis of degree n, i.e., the canonical basis of the left regular representation of the symmetric group of degree n."
+
+YoungRegularBasis[n_Integer] := Module[
+  { mat = YoungFourierMatrix[n],
+    key, val },
+  key = Ket /@ GroupElements[SymmetricGroup @ n];
+  val = Ket @@@ Flatten[
+    Map[Tuples[YoungTableaux @ #, 2]&, IntegerPartitions @ n],
+    1 ];
+  AssociationThread[key -> val . Topple[mat]]
  ]
 
 
@@ -108,8 +117,11 @@ YoungFourier[n_Integer][Ket[{ya_?YoungTableauQ, yb_?YoungTableauQ}]] :=
    ]
 
 
-Format[vec:Ket[{_?YoungTableauQ, _?YoungTableauQ}..]] :=
-  Map[YoungForm, vec, {2}]
+theKetFormatQ[{_?YoungTableauQ, _?YoungTableauQ}] = True
+
+theKetFormat[yy:{_?YoungTableauQ, _?anhYoungTableauQ}] := Map[YoungForm, yy]
+(* NOTE: Do not use test anyYoungTableauQ since it also passes Gelfand
+   patterns. *)
 
 (**** </YoungFourier> ****)
 

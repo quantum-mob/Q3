@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.1 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-25 23:30:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.7 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-28 06:42:30+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -35,6 +35,8 @@ BeginPackage["Q3`"];
   CompoundYoungCharacters,
   YoungCharacterInner,
   KostkaMatrix };
+
+{ GroupRegularRepresentation };
 
 { InversionVector, AdjacentTranspositions };
 
@@ -173,6 +175,34 @@ CountYoungTableaux[args__] := (
   Message[Q3General::renamed, "CountYoungTableaux", "YoungTableauCount"];
   YoungTableauCount[args]
  )
+
+
+(**** <GroupRegularRepresentation> ****)
+
+GroupRegularRepresentation::usage = "GroupRegularRepresentation[grp, elm] returns the matrix of group element elm in the left regular representation of group grp."
+
+GroupRegularRepresentation::elm = "`2` is not an element of group `1`."
+
+GroupRegularRepresentation[grp_, elm_] :=
+  Transpose @ Thread @ UnitVector[
+    GroupOrder @ grp,
+    Part[
+      Transpose @ GroupMultiplicationTable[grp], 
+      GroupElementPosition[grp, elm]
+     ]
+   ] /; GroupElementQ[grp, elm]
+
+GroupRegularRepresentation[grp_, elm_] := (
+  Message[GroupRegularRepresentation::elm, grp, elm];
+  One[GroupOrder @ grp]
+ )
+
+(* For the regular representation of the symmetric group *)
+theKetFormatQ[_Cycles] = True
+
+theKetFormat[cyc_Cycles] := PermutationForm[cyc]
+
+(**** </GroupRegularRepresentation> ****)
 
 
 (**** <GroupCharacters> ****)
@@ -621,10 +651,22 @@ HoldPattern @
 HoldPattern @
   Multiply[pre___, op_Cycles, vec:Ket[__?YoungTableauQ], post___] :=
   Multiply[pre, KetPermute[vec, op], post]
+(* NOTE: Notice '__' in vec, with op acting on all SYTs in vec. *)
+  
+HoldPattern @ Multiply[ pre___,
+  CircleTimes[ops__Cycles], Ket[vec__?YoungTableauQ], post___ ] :=
+  Multiply[ pre,
+    CircleTimes @@ MapThread[KetPermute, {Ket /@ {vec}, {ops}}],
+    post ]
   
 HoldPattern @
-  Multiply[pre___, op_Cycles, Ket[prm_Cycles], post___] :=
-  Multiply[pre, Ket[op**prm], post]
+  Multiply[pre___, op_Cycles, Ket[prm__Cycles], post___] :=
+  Multiply[pre, Ket @@ Multiply[op, {prm}], post]
+(* NOTE: Notice '__' in prm, with op acting on all Cycles in prm. *)
+  
+HoldPattern @ Multiply[ pre___,
+  CircleTimes[ops__Cycles], Ket[vec__Cycles], post___ ] :=
+  Multiply[pre, Ket @@ Multiply[{ops}, {vec}], post]
   
 (**** </Cycles> ****)
 
@@ -991,13 +1033,11 @@ SpechtBasis[n_Integer] := With[
  ]
 
 (* For the Specht module *)
-Format @ Ket[tbs__?anyYoungTableauQ] :=
-  Interpretation[Ket @@ Map[YoungForm, {tbs}], Ket @ tbs]
+theKetFormatQ[_?YoungTableauQ] = True
 
-(* For the regular representation of the symmetric group *)
-Format @ Ket[args:$PermutationSpec..] :=
-  Interpretation[Ket @@ PermutationForm @ {args}, Ket @ args]
-(* NOTE: This must come after the definition of $PermutationSpec. *)
+theKetFormat[tbl_?YoungTableauQ] := YoungForm[tbl]
+(* NOTE: Do not use test anyYoungTableauQ since it also passes Gelfand
+   patterns. *)
 
 (**** </SpechtBasis> ****)
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.3 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-26 00:46:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.5 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-26 21:27:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -529,6 +529,12 @@ NextGelfandYoungPatterns[gy_?GelfandPatternQ, d_Integer] := Module[
   new = Table[new + UnitVector[L, j], {j, 1, Min @ {d, L}}];
   Map[Prepend[gy, #]&, Select[new, YoungShapeQ]]
  ]
+
+(* For the Schur basis *)
+theKetFormatQ[_?GelfandPatternQ] = True
+
+theKetFormat[gp_?GelfandPatternQ] := YoungForm[ToYoungTableau @ gp]
+(* NOTE: Standard Young tableaux and Gelfand patterns can be distinguished. *)
 
 (**** </SchurBasis> ****)
 

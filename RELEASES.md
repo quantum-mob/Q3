@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.11.2
+
+- Expand[ControlledGate[...]] improved (still EXPERIMENTAL).
+- Several other improvements concerning the Specht and Young-Fourier bases.
+
 ## v2.11.0
 
 - New function YoungFourierMatrix and YoungFourier.

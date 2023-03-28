@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.72 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-26 00:33:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.74 $"][[2]], " (",
+  StringSplit["$Date: 2023-03-26 21:45:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -733,6 +733,17 @@ Format[Bra[a_Association], TraditionalForm] := Interpretation[
   Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
   Bra[a]
  ]
+
+
+Format[v:Ket[__]] := Interpretation[Map[theKetFormat, v], v] /;
+  AnyTrue[v, theKetFormatQ]
+
+Format[v:Bra[__]] := Interpretation[Map[theKetFormat, v], v] /;
+  AnyTrue[v, theKetFormatQ]
+
+theKetFormatQ[_] = False
+
+theKetFormat[v_] = v
 
 
 Ket /: NonCommutativeQ[ Ket[___] ] = True
