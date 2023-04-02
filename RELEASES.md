@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.11.3
+
+- Bug fixes for ProductState.
+
 ## v2.11.2
 
 - Expand[ControlledGate[...]] improved (still EXPERIMENTAL).

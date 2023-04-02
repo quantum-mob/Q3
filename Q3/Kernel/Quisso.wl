@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.69 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-28 09:00:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.70 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-02 19:04:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1986,13 +1986,13 @@ Format @ ProductState[assoc_Association, rest___] := Interpretation[
  ]
 
 ProductState /:
-KetRegulate[ProductState[a_Association], gg_List] :=
+KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
   Module[
     { ss = Union[Keys @ a, FlavorNone @ gg] },
     Block[
       { Missing },
       Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := {1, 0};
-      ProductState @ Association @ Thread[ ss -> Lookup[a, ss] ]
+      ProductState[AssociationThread[ss -> Lookup[a, ss]], opts]
      ]
    ]
 
@@ -2025,14 +2025,14 @@ HoldPattern @
 
 (* input specifications *)
 
-ProductState[spec___Rule, ss:{__?QubitQ}] :=
-  KetRegulate[ProductState[spec], ss]
+ProductState[spec___Rule, ss:{__?QubitQ}, opts___?OptionQ] :=
+  KetRegulate[ProductState[spec, opts], ss]
 
 ProductState[v:ProductState[_Association, ___], spec___Rule, ss:{__?QubitQ}] :=
   KetRegulate[ProductState[v, spec], ss]
 
 
-ProductState[] = ProductState[<||>]
+ProductState[opts___?OptionQ] = ProductState[<||>, opts]
 
 ProductState[spec__Rule] := ProductState[ProductState[], spec]
 
