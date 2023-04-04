@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.7 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-28 06:42:30+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.8 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-04 09:20:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1006,7 +1006,7 @@ YoungInvariantBasis[bs:{Ket[__?YoungTableauQ] ..}] := Module[
   { n = Total @ YoungShape @ First @ First @ bs,
     op },
   op = Total @ GroupElements @ SymmetricGroup[n];
-  DeleteCases[Union @ NormalForm[op ** bs], 0]
+  DeleteCases[Union @ KetCanonical[op ** bs], 0]
  ]
 
 (**** </YoungInvariantBasis> ****)

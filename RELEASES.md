@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.11.4
+
+- NormalForm has been renamed KetCanonical.
+
 ## v2.11.3
 
 - Bug fixes for ProductState.

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.77 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-28 22:17:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.80 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-04 09:24:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -15,7 +15,8 @@ BeginPackage["Q3`"]
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
   KetFactor, KetPurge, KetSort,
-  KetSpecies, KetRegulate, KetMutate };
+  KetSpecies, KetRegulate, KetMutate,
+  KetCanonical };
 
 { KetNorm, KetNormalize, KetOrthogonalize }; 
 
@@ -25,7 +26,7 @@ BeginPackage["Q3`"]
 
 { OTimes, OSlash, ReleaseTimes };
 
-{ ProductForm, SimpleForm, SpinForm, NormalForm };
+{ ProductForm, SimpleForm, SpinForm };
 
 { XBasisForm, YBasisForm };
 
@@ -93,6 +94,8 @@ BeginPackage["Q3`"]
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
 (**** OBSOLETE SYMBOLS ****)
+
+{ NormalForm }; (* renamed *)
 
 { LogicalForm = KetRegulate, DefaultForm }; (* obsolete since 2023-02-18 *)
 
@@ -552,20 +555,28 @@ theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
 (**** </SpinForm> ****)
 
 
-(**** <NormalForm> ****)
+(**** <KetCanonical> ****)
 
-NormalForm::usage = "NormalForm[expr] returns the normal form of ket expression expr."
+KetCanonical::usage = "KetCanonical[expr] returns the canonical form of ket expression expr."
 
-SetAttributes[NormalForm, Listable]
+SetAttributes[KetCanonical, Listable]
 
-NormalForm[expr_] := With[
-  { v = Last @ Union @ KetRegulate @ Cases[expr, _Ket, Infinity] },
+KetCanonical[expr_] := With[
+  { v = First @ Union @ KetRegulate @ Cases[expr, _Ket, Infinity] },
   Garner[expr / (Dagger[v] ** expr)]
- ] /; Not@FreeQ[expr, _Ket]
+ ] /; Not @ FreeQ[expr, _Ket]
 
-NormalForm[any_] = any
+KetCanonical[any_] = any
 
-(**** <NormalForm> ****)
+
+NormalForm::usage = "NormalForm has been renamed KetCanonical."
+
+NormalForm[args___] := (
+  Message[Q3General::renamed, "NormalForm", "KetCanonical"];
+  KetCanonical[args]
+ )
+
+(**** </KetCanonical> ****)
 
 
 (**** <XBasisForm> ****)
