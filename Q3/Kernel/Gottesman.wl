@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.55 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-21 13:31:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.56 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-06 07:36:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -624,10 +624,8 @@ StabilizerStateQ[vec_?VectorQ] := (
   False
  ) /; Not @ IntegerQ @ Log[2, Length @ vec]
 
-StabilizerStateQ[vec_?VectorQ] := Module[
-  { rho = Dyad[vec, vec] },
-  TrueQ[Equal @@ Chop[Abs @ Values @ PauliDecompose @ rho]]
- ]
+StabilizerStateQ[vec_?VectorQ] :=
+  TrueQ[Equal @@ Abs[Values @ PauliDecompose @ Dyad[vec, vec]]]
 
 StabilizerStateQ[expr_] := StabilizerStateQ[Matrix @ expr]
 

@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.12 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-08 18:26:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.13 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-06 07:30:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -31,7 +31,9 @@ QuissoCoefficientTensor::usage = "QuissoCoefficientTensor[expr] gives the Pauli 
 
 
 (* Method 1: One can use a similar method as in PauliDecompose[]. But it
-   becomse very slow as the number of qubits increases. *)
+   becomse very slow as the number of qubits increases.
+   Note Added: PauliDecompose[] is now faster than the previous version.
+   This new implementation of PauliDecompose has not been tested yet.*)
 
 (* Method 2: This results in "Recursion depth of 1024 exceeded
    during evaluation of ..." error when the state vector includes many terms

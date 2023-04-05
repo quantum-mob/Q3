@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.80 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-04 09:24:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.81 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-06 07:33:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -3250,7 +3250,7 @@ PauliDecompose[mat_?SquareMatrixQ] := Module[
     {1, 0,  0, -1}
    } / 2;
   trs = CircleTimes @@ Table[trs, n];
-  KeyMap[(#-1)&] @ Association @ Most @ ArrayRules @
+  KeyMap[(#-1)&] @ Association @ Most @ ArrayRules @ Chop @
     ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]]
  ]
 
