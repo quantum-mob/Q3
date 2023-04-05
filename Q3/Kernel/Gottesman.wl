@@ -626,7 +626,7 @@ StabilizerStateQ[vec_?VectorQ] := (
 
 StabilizerStateQ[vec_?VectorQ] := Module[
   { rho = Dyad[vec, vec] },
-  TrueQ[Equal @@ Abs[Values @ PauliDecompose @ rho]]
+  TrueQ[Equal @@ Chop[Abs @ Values @ PauliDecompose @ rho]]
  ]
 
 StabilizerStateQ[expr_] := StabilizerStateQ[Matrix @ expr]

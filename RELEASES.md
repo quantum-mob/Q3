@@ -3,6 +3,7 @@
 ## v2.11.4
 
 - NormalForm has been renamed KetCanonical.
+- StabilizerStatesQ is more reliable (or generous) for numerical states.
 
 ## v2.11.3
 
