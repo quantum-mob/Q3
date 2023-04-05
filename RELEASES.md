@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.11.5
+
+- PauliDecompose receives a small change to handle numerical matrices better.
+- StabilizerStateQ is changed back to the previous version.
+
 ## v2.11.4
 
 - NormalForm has been renamed KetCanonical.
