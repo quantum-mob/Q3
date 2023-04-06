@@ -2032,16 +2032,16 @@ ProductState[v:ProductState[_Association, ___], spec___Rule, ss:{__?QubitQ}] :=
   KetRegulate[ProductState[v, spec], ss]
 
 
-ProductState[opts___?OptionQ] = ProductState[<||>, opts]
+ProductState[] = ProductState[<||>]
 
-ProductState[spec__Rule] := ProductState[ProductState[], spec]
+ProductState[spec___Rule] := ProductState[ProductState[<||>], spec]
 
 ProductState[v:ProductState[_Association, ___], spec_Rule, more__Rule] :=
   Fold[ProductState, v, {spec, more}]
 
+
 ProductState[v:ProductState[_Association, ___], spec:Rule[_String, _]] :=
   Append[v, spec] /; KeyExistsQ[Options[ProductState], First @ spec]
-
 
 ProductState[ ProductState[a_Association, opts___],
   rule:Rule[_?QubitQ, {_, _}] ] :=

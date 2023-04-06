@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-03-23 08:41:41+09 $ *)
-(* $Revision: 1.17 $ *)
+(* $Date: 2023-04-06 14:15:33+09 $ *)
+(* $Revision: 1.20 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -91,22 +91,26 @@ PlaybookDeploy::nocopy = "Could not copy file `` to ``."
 
 PlaybookDeploy::noopen = "Could not open file ``."
 
-PlaybookDeploy::nosty = "Could not find a style sheet of ``."
-
 Options[PlaybookDeploy] = {
-  "Destination" -> FileNameJoin @
-    {$HomeDirectory, "Math/Apples/QuantumPlaybook/Chapters"},
+  "Destination" -> "Demos",
   "DeleteOutput" -> False,
   "PrintHandout" -> False,
   "CollapseGroup" -> False
  }
 
-PlaybookDeploy[file_String, OptionsPattern[]] := Module[
-  { dst = OptionValue["Destination"],
-    new, pdf, nb },
-  new = FileNameJoin @ {dst, FileNameTake[file]};
+PlaybookDeploy[file_String, opts:OptionsPattern[]] :=
+  PlaybookDeploy[ file,
+    FileNameJoin @ {OptionValue @ "Destination", FileNameTake @ file},
+    opts ]
 
-  Print["Copying ", file, " to ", dst, "/ ..."];
+PlaybookDeploy[file_String, dst_String, OptionsPattern[]] := Module[
+  { new, pdf, nb },
+  new = If[ DirectoryQ[dst],
+    FileNameJoin @ {dst, FileNameTake[file]},
+    dst
+   ];
+  new = ExpandFileName[new];
+  Print[file, " --> ", new];
 
   If[ FailureQ @ CopyFile[file, new, OverwriteTarget -> True],
     Message[PlaybookDeploy::nocopy, file, new];
@@ -119,7 +123,8 @@ PlaybookDeploy[file_String, OptionsPattern[]] := Module[
    ];
 
   SetBanner[nb, $PlaybookBanner];
-  If[OptionValue["DeleteOutput"], CleanNotebook[nb]];
+  If[ OptionValue["DeleteOutput"],
+    CleanNotebook[nb] ];
   If[ OptionValue["CollapseGroup"],
     CollapseGroup[nb, {"Subsubsection", "Subsection", "Section"}] ];
   SetOptions[nb, Saveable -> False, StyleDefinitions -> $PlaybookStyle];
@@ -127,8 +132,11 @@ PlaybookDeploy[file_String, OptionsPattern[]] := Module[
   If[ OptionValue["PrintHandout"],
     SelectionMove[nb, All, Notebook];
     FrontEndTokenExecute[nb, "SelectionOpenAllGroups"];
-    pdf = StringJoin @ {FileNameJoin @ {dst, FileBaseName @ new}, ".pdf"};
-    Print["Exporting ", file, " to ", pdf, " ..."];
+    pdf = StringJoin @ {
+      FileNameJoin @ {DirectoryName @ new, FileBaseName @ new},
+      ".pdf"
+     };
+    Print[file, " --> ", pdf];
     Export[pdf, nb]
    ];
   NotebookClose[nb];
