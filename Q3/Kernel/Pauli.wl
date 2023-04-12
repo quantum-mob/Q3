@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.81 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-06 07:33:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.83 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-11 20:21:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1758,7 +1758,7 @@ BlochVector[cc_?VectorQ] := Module[
 
 BlochVector[Ket[]] := BlochVector @ {1, 0}
 
-BlochVector[z_?CommutativeQ Ket[]] := BlochVector @ {1, 0}
+BlochVector[_?CommutativeQ Ket[]] := BlochVector @ {1, 0}
 
 BlochVector[expr_, q_?SpeciesQ] := Module[
   { ss = NonCommutativeSpecies[expr] },
@@ -1875,9 +1875,9 @@ HoldPattern @ TheMatrix[ Dagger[op_] ] := Topple @ TheMatrix[op]
 
 (* For Ket/Bra of unlabelled qubits *)
 
-TheMatrix[ Ket[j__Integer] ] := TheKet[j]
+TheMatrix @ Ket[args__] := TheKet[args]
 
-TheMatrix[ Bra[j__Integer] ] := TheKet[j]
+TheMatrix @ Bra[args__] := TheKet[args]
 
 
 TheMatrix[rr:Rule[_?SpeciesQ, _]] := TheMatrix @ Ket @ Association @ rr
@@ -1887,7 +1887,7 @@ TheMatrix @ Association[aa:Rule[_?SpeciesQ, _]..] := TheMatrix /@ {aa}
 
 (* For Pauli operators of unlabelled qubits *)
 
-TheMatrix @ Pauli[j__] := ThePauli[j]
+TheMatrix @ Pauli[args__] := ThePauli[args]
 
 (**** </TheMatrix> ****)
 
