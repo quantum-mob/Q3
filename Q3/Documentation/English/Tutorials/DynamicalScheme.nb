@@ -1,0 +1,369 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     13766,        359]
+NotebookOptionsPosition[     10436,        286]
+NotebookOutlinePosition[     12709,        343]
+CellTagsIndexPosition[     12666,        340]
+WindowTitle->Dynamical Quantum Computation
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "d2cfb382-38f3-4e6d-82cd-425db98c7103"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "84bb1520-955c-498c-a6bc-3be9943e7e83"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "5d654d4a-dccd-476b-8bf9-bd3e146dc413"]
+        }],ExpressionUUID->"e4ce817e-9ec7-46f0-819f-1b8068a2b64b"],
+        StripOnInput->False], {"\<\"Q3/tutorial/DynamicalScheme\"\>":>
+       None, "\<\"Copy Wolfram Documentation Center URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell["Q3/tutorial/DynamicalScheme"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+       Delimiter, "\<\"Copy web URL\"\>":>
+       Module[{DocumentationSearch`Private`nb$}, 
+        DocumentationSearch`Private`nb$ = NotebookPut[
+           Notebook[{
+             Cell[
+              BoxData[
+               MakeBoxes[
+                Hyperlink[
+                "http://reference.wolfram.com/language/Q3/tutorial/\
+DynamicalScheme.html"], StandardForm]], "Input", TextClipboardType -> 
+              "PlainText"]}, Visible -> False]]; 
+        SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+        FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+        NotebookClose[DocumentationSearch`Private`nb$]; 
+        Null], "\<\"Go to web URL\"\>":>FrontEndExecute[{
+         NotebookLocate[{
+           URL[If[
+              TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$27548], 
+              "http://reference.wolfram.com/system-modeler/", 
+              "http://reference.wolfram.com/language/"] <> 
+            "Q3/tutorial/DynamicalScheme" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "7a5e3676-ba5f-497b-b80b-a1fc80a641c8"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "bbf9fd77-e2a5-4d8f-9f19-9c0bfe8d9ee0"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"543efb88-36ac-4856-afc8-c1950cf2c338"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Dynamical Quantum Computation", "TechNoteTitle",ExpressionUUID->
+      "14465d73-3af9-4597-ad59-c958383549fc"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"08012123-0abc-4106-b15e-ef0c5e077c04"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "7af2408d-de65-4b4b-b1cf-8b9b5234d53d"]
+    }],ExpressionUUID->"4cbf8801-b8e7-4f13-8bc0-ffbe691f43ce"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13.2\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13.2",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "745a11dd-a4cd-45ce-bb9d-93d6459087d3"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"1f9195dd-6d1c-4072-a176-c6078524ca10"],
+
+Cell["Sorry, still under construction.", "TechNoteText",
+ FontWeight->"Bold",
+ CellID->555636132,ExpressionUUID->"f995ee37-8923-49e4-8572-1b6e63dd9ff5"],
+
+Cell["XXXX.", "TechNoteCaption",
+ CellID->1751711759,ExpressionUUID->"2d42119a-1495-45c4-bdf0-cb3fee3aa6d5"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData["XXXX"], "Input",
+ CellLabel->"In[1]:=",
+ CellID->522343361,ExpressionUUID->"a6d97112-dd65-48c5-9be8-367d03e4e962"],
+
+Cell[BoxData["XXXX"], "Output",
+ CellLabel->"Out[1]=",
+ CellID->111719391,ExpressionUUID->"731a0152-0af4-458e-b7a8-4a6f1e32f2d8"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/guide/QuantumInformationSystems"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "91e7e408-7440-4a97-9eb7-74d7e305aa5a"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"cf489391-6b19-4d87-84e2-\
+4a4cdf024145"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tech", " ", "Notes"}], 
+        "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation: Models",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumComputationModels"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "ebd2c149-f80f-4f66-b811-ee3de7c9c38d"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems with Q3",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumInformationSystems"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "25bc54a1-3b94-4a48-ad3c-86da0b2c5e31"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quick Quantum Computing with Q3",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuickQuantumComputingWithQ3"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "158b1a52-2458-4440-bfd9-6edd347a99da"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"5c584db1-fa25-4cd8-ae9e-\
+2a1325a8759a"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang (2022)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "70caf261-e160-434d-ae97-e5abaf734914"]}]],ExpressionUUID->
+         "e1f6e23b-6e2c-48f8-9d10-0be97adff8ba"],
+        StyleBox[
+        ", Quantum Computation and Quantum Information (Cambridge University \
+Press, 2011).",
+         FontSlant->"Plain"]
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "a6c3fa09-9ec9-4e3b-80bb-140041291912"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "a397680f-0d12-4b96-9431-43cca42af0f4"]}]],ExpressionUUID->
+         "fb65dd19-e4b4-4cc4-9f23-6750e2b7f9fb"],
+        ", A Quantum Computation Workbook (Springer, 2022)."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "789c68c3-d138-4bff-a354-c49e2dde03d6"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"4a978ab6-7b6a-4b62-8835-\
+68450400ddf8"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"e9b8f84b-58fc-4c12-ab66-b3994a84103d"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Dynamical Quantum Computation",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2022", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2023, 4, 17, 10, 12, 10.999457}", 
+    "history" -> {"13.2", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {
+     "quantum computation schemes", "quantum computation models", 
+      "dynamical quantum computation"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", "status" -> "None", 
+    "summary" -> "Sorry, still under construction.", "synonyms" -> {}, 
+    "tabletags" -> DocumentationBuild`Make`Private`tabletaggingrules$27509, 
+    "title" -> "Dynamical Quantum Computation", "titlemodifier" -> "", 
+    "metadescription" -> "", "windowtitle" -> "Dynamical Quantum Computation",
+     "type" -> "Tech Note", "uri" -> "Q3/tutorial/DynamicalScheme"}},
+FrontEndVersion->"13.2 for Mac OS X ARM (64-bit) (January 30, 2023)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.2 for Mac OS X ARM (64-bit) (January 30, 2023)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"e60bde1f-383d-4c2d-9ad1-61e69d3cda92"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[601, 21, 3454, 80, 57, "AnchorBarGrid",ExpressionUUID->"543efb88-36ac-4856-afc8-c1950cf2c338",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4080, 105, 1408, 38, 61, "ObjectNameGrid",ExpressionUUID->"1f9195dd-6d1c-4072-a176-c6078524ca10"],
+Cell[5491, 145, 152, 2, 36, "TechNoteText",ExpressionUUID->"f995ee37-8923-49e4-8572-1b6e63dd9ff5",
+ CellID->555636132],
+Cell[5646, 149, 108, 1, 31, "TechNoteCaption",ExpressionUUID->"2d42119a-1495-45c4-bdf0-cb3fee3aa6d5",
+ CellID->1751711759],
+Cell[CellGroupData[{
+Cell[5779, 154, 128, 2, 29, "Input",ExpressionUUID->"a6d97112-dd65-48c5-9be8-367d03e4e962",
+ CellID->522343361],
+Cell[5910, 158, 129, 2, 37, "Output",ExpressionUUID->"731a0152-0af4-458e-b7a8-4a6f1e32f2d8",
+ CellID->111719391]
+}, Open  ]]
+}, Open  ]],
+Cell[6066, 164, 714, 18, 114, "TutorialMoreAboutSection",ExpressionUUID->"cf489391-6b19-4d87-84e2-4a4cdf024145"],
+Cell[6783, 184, 1401, 36, 142, "RelatedTutorialsSection",ExpressionUUID->"5c584db1-fa25-4cd8-ae9e-2a1325a8759a"],
+Cell[8187, 222, 2164, 60, 130, "TutorialRelatedLinksSection",ExpressionUUID->"4a978ab6-7b6a-4b62-8835-68450400ddf8"],
+Cell[10354, 284, 78, 0, 24, "FooterCell",ExpressionUUID->"e9b8f84b-58fc-4c12-ab66-b3994a84103d"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

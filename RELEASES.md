@@ -3,6 +3,7 @@
 ## v2.11.6
 
 - A bug fix for ProductState.
+- Techical Notes on measurement-based quantum computation.
 
 ## v2.11.5
 
