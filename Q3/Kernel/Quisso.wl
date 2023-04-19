@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.70 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-02 19:04:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.72 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-19 11:07:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -20,7 +20,7 @@ BeginPackage["Q3`"]
 { ControlledGate, CNOT, CX = CNOT, CZ, SWAP,
   Toffoli, Fredkin, Deutsch };
 
-{ ControlledExp };
+{ ControlledExp, OperatorOn };
 
 { Measurement, Measurements, MeasurementFunction,
   MeasurementOdds, Readout, $MeasurementOut = <||> };
@@ -1491,7 +1491,8 @@ Expand @ ControlledExp[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     { n = Length @ ss,
       tt = Qubits[op],
       pwr, txt, new },
-    pwr = Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
+    pwr = OperatorOn[tt] /@ Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
+    (* NOTE: Without OperatorOn, some elements in pwr may be 1. *)
 
     txt = OptionValue[ControlledExp, opts, "Label"];
     If[ListQ[txt], txt = Last @ txt];
@@ -1503,7 +1504,6 @@ Expand @ ControlledExp[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
      ];
     Sequence @@ new
    ]
-(* NOTE: Some elements in pwr may be 1.*)
 
 theCtrlExp::usage = "theCtrlExp[n, m] is the matrix version of ControlledExp."
 
@@ -1514,6 +1514,26 @@ theCtrlExp[n_Integer, mat_?MatrixQ] := Module[
   bb = Dyad[#, #] & /@ One @ Power[2, n];
   Total @ MapThread[CircleTimes, {bb, mm}]
  ]
+
+
+OperatorOn::usage = "OperatorOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting on the system of species {s1, s2, \[Ellipsis]}.\nOperatorOn is a low-level function intended for internal use."
+
+OperatorOn[ss:{___?SpeciesQ}] :=
+  OperatorOn[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+OperatorOn[ss:{___?SpeciesQ}][op_] := OperatorOn[op, ss]
+
+OperatorOn[op_, ss:{___?SpeciesQ}] := Module[
+  { tt = NonCommutativeSpeciesQ[op] },
+  Union[ss, tt] /; Not @ ContainsAll[ss, tt]
+ ]
+
+OperatorOn[op_, ss:{___?SpeciesQ}] :=
+  OperatorOn[op, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+OperatorOn /:
+Multiply[pre___, OperatorOn[op_, {___?SpeciesQ}], post___] :=
+  Multiply[pre, op, post]
 
 (**** </ControlledExp> ****)
 

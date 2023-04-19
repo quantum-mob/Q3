@@ -318,7 +318,7 @@ qcGate[ _QuantumCircuitIn | _QuantumCircuitOut, opts___?OptionQ ] = Nothing
 
 qcGate[ op_?QubitQ, opts___?OptionQ ] :=
   Gate[ Qubits @ op, opts, "Label" -> HoldForm[thePauliForm @ op] ]
-(* NOTE: HoldForm is required here because later qcNodes uses HoldRelease. *)
+(* NOTE: HoldForm is required here because later qcNodes uses ReleaseHold. *)
 
 (* NOTE: This case should not occur. *)
 (*
@@ -515,12 +515,12 @@ SetAttributes[gateLabel, Listable];
 (* Not used any longer. *)
 gateLabel[_Symbol?QubitQ[___, -C[n_]]] :=
   With[{m = -n}, Style[HoldForm[-2 Pi / HoldForm[Power[2, m]]], Small]]
-(* NOTE: HoldForm is required here because later qcNodes uses HoldRelease. *)
+(* NOTE: HoldForm is required here because later qcNodes uses ReleaseHold. *)
   
 (* Not used any longer. *)
 gateLabel[_Symbol?QubitQ[___, C[n_]]] :=
   With[{m = -n}, Style[HoldForm[2 Pi / HoldForm[Power[2, m]]], Small]]
-(* NOTE: HoldForm is required here because later qcNodes uses HoldRelease. *)
+(* NOTE: HoldForm is required here because later qcNodes uses ReleaseHold. *)
   
 (* Not used any longer. *)
 gateLabel[S_?QubitQ] := thePauliForm[S]

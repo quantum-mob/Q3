@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.11.7
+
+- New low-level function OperatorOn.
+- A few tutorial documents have been polished or created.
+
 ## v2.11.6
 
 - A bug fix for ProductState.
