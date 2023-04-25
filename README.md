@@ -49,7 +49,7 @@ the [QuantumPlaybook repository](https://github.com/quantum-mob/QuantumPlaybook)
 
 ## Quantum Playbook
 
-The [QuantumPlaybook repository](https://github.com/quantum-mob/QuantumPlaybook) provides demonstrations of more subjects that could not be included in the [Quantum Workbook](https://link.springer.com/book/9783030912130).
+The [QuantumPlaybook repository](https://github.com/quantum-mob/QuantumPlaybook) provides more demonstrations of various subjects that could not be included in the [Quantum Workbook](https://link.springer.com/book/9783030912130).
 
 
 ## For Beginners of Mathematica
