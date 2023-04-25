@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.16 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-19 12:13:33+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.17 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-26 02:14:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
