@@ -1760,6 +1760,33 @@ qftCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
     T[6]]
  ]
 
+
+Dagger /:
+Expand[HoldPattern @ Dagger[op_QFT]] = Dagger[op] (* fallback *)
+
+Dagger /:
+HoldPattern @ Expand @ Dagger @ QFT[ss:{__?QubitQ}, ___] :=
+  Sequence @@ Join[
+    invCtrlPhase[ss][All],
+    With[{n = Length[ss]}, Table[SWAP[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
+   ]
+
+invCtrlPhase[ss:{__?QubitQ}] := 
+  invCtrlPhase[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+invCtrlPhase[ss:{__?QubitQ}][All] :=
+  Map[invCtrlPhase[ss], Range @ Length @ ss]
+
+invCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
+  { T = ss[[k]] },
+  Append[
+    Table[
+      ControlledGate[ ss[[{j}]] -> {1}, Dagger @ T[C[j-k-1]], 
+        "Label" -> Subsuperscript["T", k-j, "\[Dagger]"] ],
+      {j, k-1} ],
+    T[6]]
+ ]
+
 (**** </QFT> ****)
 
 
