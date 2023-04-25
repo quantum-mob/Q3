@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.42 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-16 22:07:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.43 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-24 12:22:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -96,6 +96,7 @@ Begin["`Private`"] (* Complex *)
 
 $symb = Unprotect[Mod, Power, IntegerQ, OddQ, EvenQ]
 
+
 Let[Complex, {ls__Symbol}] := (
   Let[Species, {ls}];
   Scan[setComplex, {ls}];
@@ -116,8 +117,6 @@ setComplex[z_Symbol] := (
  )
 
 
-Real::usage = "Let[Real, a,b,...] declares a, b, ... as real numbers.\n" <> Real::usage
-
 Let[Real, {ls__Symbol}] := (
   Let[Complex, {ls}];
   Scan[setReal, {ls}]
@@ -136,7 +135,6 @@ setReal[x_Symbol] := (
   x /: Conjugate[x[j___]] = x[j];
  )
 
-Integer::usage = "Let[Integer, a,b,...] declares a, b, ... as integer numbers.\n" <> Integer::usage
 
 Let[Integer, {ls__Symbol}] := (
   Let[Real, {ls}];
@@ -167,7 +165,7 @@ Format[ Mod[nn_Plus, 2] ] := CirclePlus @@ nn
 
 (**** <Binary> ****)
 
-Binary::usage = "Let[Binary, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as binary digits."
+Binary::usage = "Binary represents a binary digit.\nLet[Binary, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as binary digits."
 
 Let[Binary, {ls__Symbol}] := (
   Let[Integer, {ls}];
