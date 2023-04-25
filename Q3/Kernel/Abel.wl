@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.24 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-19 12:12:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.25 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-25 22:25:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -108,10 +108,6 @@ $::usage = "$ is a flavor index referring to the species itself."
 (* Obsolete Symbols *)
 
 { MultiplyExpand }; (* obsolete *)
-
-{ $GarnerHeads, $GarnerTests }; (* obsolete *)
-
-{ $ElaborationHeads, $ElaborationRules }; (* obsolete *)
 
 
 Begin["`Private`"]
@@ -1308,11 +1304,6 @@ $GarnerPatterns = Association[
   "Tests" -> Alternatives[]
  ]
 
-
-$GarnerHeads::usage = "$GarnerHeads is obsolete now. Use $GarnerPatterns instead."
-
-$GarnerTests::usage = "$GarnerTests is obsolete now. Use $GarnerPatterns instead."
-
 (**** </Garner> ****)
 
 
@@ -1347,11 +1338,6 @@ $ElaborationPatterns = Association[
   "Heads" -> Alternatives[],
   "Rules" -> {}
  ]
-
-
-$ElaborationHeads::usage = "$ElaborationHeads is obsolete now. Use $ElaborationPatterns instead."
-
-$ElaborationRules::usage = "$ElaborationRules is obsolete now. Use $ElaborationPatterns instead."
 
 (**** <Elaborate> ****)
 
@@ -1444,11 +1430,10 @@ HoldPattern @ Multiply[ args__ ] := Garner[
  ] /; DistributableQ[args]
 
 HoldPattern @ Multiply[ pre___, z_?CommutativeQ, post___] :=
-  Garner[ z Multiply[pre, post] ]
+  Garner[ z Multiply[pre, post] ];
 
 HoldPattern @ Multiply[ pre___, z_?CommutativeQ op_, post___] :=
   Garner[ z Multiply[pre, op, post] ]
-
 
 HoldPattern @ Multiply[ pre___, Power[E, expr_], post___] :=
   Multiply[pre, MultiplyExp[expr], post]

@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.11.8
+
+- A bug fix in KetRegulate.
+
 ## v2.11.7
 
 - New low-level function OperatorOn.

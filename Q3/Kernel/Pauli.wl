@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.83 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-11 20:21:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.84 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-26 00:16:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -330,6 +330,8 @@ KetRegulate[expr_, ss:{__?SpeciesQ}] := With[
     Not @ ContainsAll[ss, tt]
  ]
 
+
+KetRegulate[v:(_Ket|_Bra), ss:{___?SpeciesQ}] = v
 
 KetRegulate[Ket[a_Association], ss:{___?SpeciesQ}] :=
   Ket @ KeySort @ Join[a, AssociationThread[ss -> Lookup[a, ss]]]

@@ -1994,6 +1994,8 @@ ProductState::pair = "The value must be a pair of complex numbers or a list of s
 
 Options[ProductState] = {"Label" -> None}
 
+AddGarnerPatterns[_ProductState]
+
 Format @ ProductState[assoc:Association[], rest___] :=
   Interpretation[Ket[Any], ProductState[assoc, rest]]
 
@@ -2039,7 +2041,7 @@ ProductState /:
 MultiplyGenus[ ProductState[___] ] = "Ket"
 
 HoldPattern @
-  Multiply[ pre___, vec:ProductState[_Association, ___], post___ ] :=
+  Multiply[pre___, vec:ProductState[_Association, ___], post___] :=
   Garner @ Multiply[pre, Elaborate[vec], post]
 
 

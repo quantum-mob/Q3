@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Grassmann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.17 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.18 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-25 23:27:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -107,9 +107,10 @@ GD[a_?GrassmannQ, b_+c_] := GD[a,b] + GD[a,c]
 
 GD[a_?GrassmannQ, b_?fieldQ c_] := b GD[a,c]
 
-GD[a_?GrassmannQ, b_?GrassmannQ**c_?GrassmannQ] := GD[a,b]**c - b**GD[a,c]
+HoldPattern @ GD[a_?GrassmannQ, b_?GrassmannQ**c_?GrassmannQ] :=
+  GD[a,b]**c - b**GD[a,c]
 
-GD[a_?GrassmannQ, b_?GrassmannQ**c_?GrassmannQ**expr__] :=
+HoldPattern @ GD[a_?GrassmannQ, b_?GrassmannQ**c_?GrassmannQ**expr__] :=
   GD[a,b]**c**expr - b**GD[a,c**expr]
 (* Note that the above two CANNOT be combined by GD[a_,b_**c_**expr___] *)
 
@@ -131,7 +132,7 @@ GrassmannGrade[a_+b_] := Max[GrassmannGrade[a],GrassmannGrade[b]]
 
 GrassmannGrade[a_ b_] := GrassmannGrade[a]+GrassmannGrade[b]
 
-GrassmannGrade[a_**b_] := GrassmannGrade[a]+GrassmannGrade[b]
+GrassmannGrade[HoldPattern[a_ ** b_]] := GrassmannGrade[a] + GrassmannGrade[b]
 
 GrassmannGrade[Derivative[__][f_][x__]] := GrassmannGrade[f[x]]
 
