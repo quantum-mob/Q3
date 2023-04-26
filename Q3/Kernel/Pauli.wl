@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.84 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-26 00:16:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.85 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-26 08:55:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -97,7 +97,7 @@ BeginPackage["Q3`"]
 
 { NormalForm }; (* renamed *)
 
-{ LogicalForm = KetRegulate, DefaultForm }; (* obsolete since 2023-02-18 *)
+{ LogicalForm, DefaultForm }; (* obsolete since 2023-02-18 *)
 
 { PauliDecomposeOld, PauliComposeOld }; (* to be excised *)
 
@@ -359,6 +359,14 @@ KetRegulate[expr_, ss:{___?SpeciesQ}] := expr /. {
   v_Ket :> KetRegulate[v, ss],
   v_Bra :> KetRegulate[v, ss]
  }
+
+
+LogicalForm::usage = "LogicalForm has been renamed KetRegulate since v2.11.8."
+
+LogicalForm[args__] := (
+  Message[Q3General::renamed, "LogicalForm", "KetRegulate"];
+  KetRegulate[args]
+ )
 
 (**** </KetRegulate> ****)
 

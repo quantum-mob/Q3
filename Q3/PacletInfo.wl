@@ -4,7 +4,7 @@
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.11.8",
+  "Version" -> "2.11.9", (* draft *)
   "WolframVersion" -> "12.1+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
@@ -43,7 +43,7 @@ Paclet[
        FrontEnd/TextResources. These items will be recognized by the Front
        End, e.g. palettes will show up in the Palettes menu. *)
    },
-  "Description" -> "Mathematica application to help study quantum information processing, quantum many-body systems, and quantum spin systems",
+  "Description" -> "Mathematica application to help study quantum information systems, quantum many-body systems, and quantum spin systems. It was first released to the public in 2020.",
   "Creator" -> "Mahn-Soo Choi (Korea University)",
   "URL" -> "https://github.com/quantum-mob/Q3",
   "Category" -> { "Physics", "Quantum Physics" },
