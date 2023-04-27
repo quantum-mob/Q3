@@ -1,8 +1,12 @@
 # Select Release Notes
 
+## v2.11.9
+
+- An emergency bug fix for Multiply[..., a_Ket, b_Bra, ...].
+
 ## v2.11.8
 
-- A bug fix in KetRegulate.
+- A bug fix for KetRegulate.
 
 ## v2.11.7
 

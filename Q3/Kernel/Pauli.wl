@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.85 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-26 08:55:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.86 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-27 12:56:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1221,10 +1221,15 @@ HoldPattern @ Multiply[ pre___,
   Shortest[post___] ] :=
   Multiply[pre, CircleTimes[a, bb], post]
 
+(*
 HoldPattern @ Multiply[ pre___,
   Ket[a_Association], Bra[b_Association], post___] :=
   Multiply[pre, Dyad[a, b], post]
+ *)
 (* EXPERIMENTAL since v5.66 *)
+(* NOTE (v5.85): This must come at the final stage and is moved to
+   Einstein.wl. Otherwise, for example, Dagger[a[1]] ** Ket[] ** Bra[] ** a[1]
+   results in Dagger[a[1]] ** Dyad[<||>,<|a[1]->1|>]. *)
 
 HoldPattern @
   Multiply[ pre___, Bra[a_Association], Ket[b_Association], post___ ] :=
