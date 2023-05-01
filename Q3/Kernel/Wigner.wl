@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.9 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-18 19:29:40+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.10 $"][[2]], " (",
+  StringSplit["$Date: 2023-04-30 21:50:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -204,9 +204,9 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
     Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];
 
   Format @ x[j___,0] := Interpretation[SpeciesBox[x, {j}, {0}], x[j, 0]];
-  Format @ x[j___,1] := Interpretation[SpeciesBox[x, {j}, {"x"}], x[j, 1]];
-  Format @ x[j___,2] := Interpretation[SpeciesBox[x, {j}, {"y"}], x[j, 2]];
-  Format @ x[j___,3] := Interpretation[SpeciesBox[x, {j}, {"z"}], x[j, 3]];
+  Format @ x[j___,1] := Interpretation[SpeciesBox[x, {j}, {"X"}], x[j, 1]];
+  Format @ x[j___,2] := Interpretation[SpeciesBox[x, {j}, {"Y"}], x[j, 2]];
+  Format @ x[j___,3] := Interpretation[SpeciesBox[x, {j}, {"Z"}], x[j, 3]];
   Format @ x[j___,4] := Interpretation[SpeciesBox[x, {j}, {"+"}], x[j, 4]];
   Format @ x[j___,5] := Interpretation[SpeciesBox[x, {j}, {"-"}], x[j, 5]];
   Format @ x[j___,6] := Interpretation[SpeciesBox[x, {j}, {"H"}], x[j, 6]];

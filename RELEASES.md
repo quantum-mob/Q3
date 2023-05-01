@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.11.10
+
+- Maintenance updates.
+
 ## v2.11.9
 
 - An emergency bug fix for Multiply[..., a_Ket, b_Bra, ...].
