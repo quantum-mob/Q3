@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.11.11
+
+- New function ModMultiply.
+
 ## v2.11.10
 
 - Maintenance updates.

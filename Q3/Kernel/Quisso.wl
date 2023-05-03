@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.73 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-26 02:14:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.75 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-03 11:16:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2311,6 +2311,61 @@ GraphStateBasis[g_Graph, n_Integer] := Module[
 
 (**** </GraphState> ****)
 
+
+(**** <ModMultiply> ****)
+
+ModMultiply::usage = "ModMultiply[n, {c1,c2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] represents the modular multiplication between two quantum registers {c1,c2,\[Ellipsis]} and {t1,t2,\[Ellipsis]}."
+
+ModMultiply /: NonCommutativeQ[ ModMultiply[___] ] = True
+
+ModMultiply /:
+Kind @ ModMultiply[ss:{__?QubitQ}] := Qubit
+
+ModMultiply /:
+MultiplyGenus @ ModMultiply[___] := "Singleton"
+
+
+ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}] :=
+  ModMultiply[n, FlavorNone @ cc, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ Join[cc, tt]]
+
+ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}][Ket[aa_Association]] :=
+  Ket[ Ket @ aa,
+    tt -> IntegerDigits[
+      Mod[
+        Times[
+          FromDigits[Lookup[aa, cc], 2], 
+          FromDigits[Lookup[aa, tt], 2] ],
+        n ],
+      2, Length @ tt ]
+   ]
+
+
+ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ}] :=
+  ModMultiply[n, x, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ tt]
+
+ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ}][Ket[aa_Association]] :=
+  Ket[ Ket @ aa,
+    tt -> IntegerDigits[
+      Mod[x * FromDigits[Lookup[aa, tt], 2], n],
+      2, Length @ tt ]
+   ]
+
+
+ModMultiply /:
+Multiply[pre___,
+  op:ModMultiply[_Integer, {__?QubitQ}, {__?QubitQ}],
+  v:Ket[_Association], post___] :=
+  Multiply[pre, op[v], post]
+
+ModMultiply /:
+Multiply[pre___,
+  op:ModMultiply[_Integer, _?IntegerQ, {__?QubitQ}],
+  v:Ket[_Association], post___] :=
+  Multiply[pre, op[v], post]
+
+(**** </ModMultiply> ****)
 
 Protect[Evaluate @ $symb]
 
