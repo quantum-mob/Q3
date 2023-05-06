@@ -1658,11 +1658,7 @@ QFT::usage = "QFT[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transfor
 
 QFT::badmat = "Some elements of `` does not appear in `` for Matrix[QFT[\[Ellipsis]]]."
 
-Options[QFT] = {
-  "Label" -> "QFT",
-  "LabelRotation" -> Pi/2,
-  N -> False
- }
+Options[QFT] = {N -> False}
 
 QFT /: NonCommutativeQ[ QFT[___] ] = True
 

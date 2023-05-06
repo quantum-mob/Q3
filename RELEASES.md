@@ -1,5 +1,12 @@
 # Select Release Notes
 
+## v2.12.0
+
+- New option "LabelAngle" and "LabelStyle" for quantum circuit elements.
+- New functions ParseGate, ParsePort, Gate, Port.
+- New quantum circuit element ModMultiply.
+- Several internal changes in rendering quantum circuit elements.
+
 ## v2.11.11
 
 - New function ModMultiply.
