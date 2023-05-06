@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.75 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-03 11:16:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.78 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-06 21:57:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1708,22 +1708,12 @@ Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] :=
 
 QFT /:
 Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] :=
-  Module[
-    { mat = FourierMatrix @ Power[2, Length @ qq],
-      qqs, jdx },
-    mat = CircleTimes[mat, One @ Power[2, Length[ss]-Length[qq]]];
-    qqs = Join[qq, Complement[FlavorNone @ ss, FlavorNone @ qq]];
-    jdx = PermutationList @ FindPermutation[qqs, FlavorNone @ ss];
-    TensorFlatten @ Transpose[
-      Normal @ Tensorize[mat],
-      Riffle[2*jdx - 1, 2*jdx]
-     ]
-   ] /; ContainsAll[FlavorNone @ ss, FlavorNone @ qq]
+  MatrixEmbed[FourierMatrix @ Power[2, Length @ qq], qq, ss] /;
+  ContainsAll[FlavorNone @ ss, FlavorNone @ qq]
 
 QFT /:
 Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] := (
-  Message[QFT::badmat,
-    FlavorNone @ qq, FlavorNone @ ss ];
+  Message[QFT::badmat, FlavorNone @ qq, FlavorNone @ ss];
   One @ Length[ss]
  )
 

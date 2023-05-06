@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.86 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-27 12:56:23+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.90 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-06 21:37:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -77,7 +77,8 @@ BeginPackage["Q3`"]
 
 { PauliDecompose, PauliCompose, PauliVector };
 { PauliDecomposeRL, PauliComposeRL };
-{ PauliEmbed, PauliApply };
+
+{ MatrixEmbed };
 
 { SchmidtDecomposition, SchmidtForm };
 
@@ -93,7 +94,10 @@ BeginPackage["Q3`"]
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
+
 (**** OBSOLETE SYMBOLS ****)
+
+{ PauliEmbed, PauliApply }; (* obsolete and excised *)
 
 { NormalForm }; (* renamed *)
 
@@ -3981,28 +3985,57 @@ Snapping[m_?MatrixQ] := Module[
  ]
 
 
-PauliEmbed::usage = "PauliEmbed[A, qubits, n] returns the fully expanded form of A operating on the whole tensor product space. Here A is a linear operator on the Hilbert space of qubits={i, j, k, ...} among total n qubits."
+(**** <MatrixEmbed> ****)
 
-PauliEmbed[A_?MatrixQ, bits_List, len_Integer] := Module[
-  { a, b, c, d, none,
-    n = Length[bits],
-    AA = PauliDecomposeOld[A] },
-  a = Table[1, {len}];
-  b = Table[Range[4], {n}];
-  b = Flatten @ Outer[none, Sequence @@ b];
-  b = Apply[List, b, 1];
-  c = ReplacePart[a, #, List /@ bits, List /@ Range[n]]& /@ b;
-  d = Table[ 0, Evaluate[ Sequence @@ Table[{4}, {len}] ] ];
-  PauliCompose @ ReplacePart[d, AA, c, b]
- ]
+MatrixEmbed::usage = "MatrixEmbed[mat, {s1,s2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] returns the fully-expanded form of matrix mat that acts on the entire tensor-product space of species {t1,t2,\[Ellipsis]}, where mat represents a linear operator on the Hilbert space of species {s1,s2,\[Ellipsis]}\[Subset]{t1,t2,\[Ellipsis]}."
 
-PauliApply::usage = "PauliApply[A, qubits, v] applies the linear operator A on
-  qubits of the state vector v."
+MatrixEmbed::rmdr = "`` is not entirely contained in ``."
 
-PauliApply[A_?MatrixQ, bits_List, v_?VectorQ] := With[
-  { n = Log[2, Length[v]] },
-  PauliEmbed[A, bits, n] . v
- ]
+MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+  MatrixEmbed[mat, FlavorNone @ ss, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ Join[ss, tt]]
+
+MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
+  { rmd = Complement[tt, ss],
+    new, jdx },
+  new = CircleTimes[mat, One[Times @@ Dimension @ rmd]];
+  jdx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
+  TensorFlatten @ Transpose[
+    Tensorize[new, Riffle @@ Table[Dimension @ Join[ss, rmd], 2]],
+    Riffle[2*jdx - 1, 2*jdx]
+   ]
+ ] /; ContainsAll[tt, ss]
+
+MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+  Message[MatrixEmbed::rmdr, ss, tt]
+
+
+MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, n_Integer] :=
+  MatrixEmbed[mat, kk, Table[2, n]]
+
+MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
+  { all = Range @ Length @ dd,
+    rmd, new, jdx },
+  rmd = Complement[all, kk];
+  new = CircleTimes[mat, One[Times @@ Part[dd, rmd]]];
+  jdx = PermutationList @ FindPermutation[Join[kk, rmd], all];
+  TensorFlatten @ Transpose[
+    Tensorize[new, Riffle @@ Table[Part[dd, Join[kk, rmd]], 2]],
+    Riffle[2*jdx - 1, 2*jdx]
+   ]
+ ] /; And @@ Thread[kk <= Length[dd]]
+
+
+PauliEmbed::usage = "PauliEmbed is obsolete; instead, use MatrixEmbed."
+
+PauliEmbed[args___] := (
+  Message[Q3General::obsolete, "PauliEmbed", "MatrixEmbed"];
+  MatrixEmbed[args]
+ )
+
+PauliApply[args___] := Message[Q3General::excised, "PauliApply"]
+  
+(**** </MatrixEmbed> ****)
 
 
 RandomVector::usage = "RandomVector is a shortcut to RandomComplex.\nRandomVector[] gives a two-dimensional random vector.\nRanbdomVector[n] gives an n-dimensional random vector.\nRandomVector[range, n] \[Congruent] RandomComplex[range, n]."
