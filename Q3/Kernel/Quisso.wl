@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.78 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-06 21:57:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.83 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-06 23:06:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2302,20 +2302,28 @@ GraphStateBasis[g_Graph, n_Integer] := Module[
 
 ModMultiply::usage = "ModMultiply[n, {c1,c2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] represents the modular multiplication between two quantum registers {c1,c2,\[Ellipsis]} and {t1,t2,\[Ellipsis]}."
 
-ModMultiply /: NonCommutativeQ[ ModMultiply[___] ] = True
+ModMultiply::order = "`` cannot be larger than ``."
 
-ModMultiply /:
-Kind @ ModMultiply[ss:{__?QubitQ}] := Qubit
+AddElaborationPatterns[_ModMultily];
 
-ModMultiply /:
-MultiplyGenus @ ModMultiply[___] := "Singleton"
+ModMultiply /: NonCommutativeQ[_ModMultiply] = True
 
+ModMultiply /: Kind[_ModMultiply] = Qubit
 
-ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}] :=
-  ModMultiply[n, FlavorNone @ cc, FlavorNone @ tt] /;
+ModMultiply /: MultiplyGenus[_ModMultiply] = "Singleton"
+
+ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] := (
+  Message[ModMultiply::order, n, Power[2, Length @ tt]];
+  ModMultiply[Power[2, Length @ tt], cc, tt, opts]
+ ) /; n > Power[2, Length @ tt]
+
+ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
+  ModMultiply[n, FlavorNone @ cc, FlavorNone @ tt, opts] /;
   Not[FlavorNoneQ @ Join[cc, tt]]
 
-ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}][Ket[aa_Association]] :=
+
+ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ},
+  ___?OptionQ][Ket[aa_Association]] :=
   Ket[ Ket @ aa,
     tt -> IntegerDigits[
       Mod[
@@ -2327,11 +2335,12 @@ ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}][Ket[aa_Association]] :=
    ]
 
 
-ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ}] :=
-  ModMultiply[n, x, FlavorNone @ tt] /;
+ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ}, opts___?OptionQ] :=
+  ModMultiply[n, x, FlavorNone @ tt, opts] /;
   Not[FlavorNoneQ @ tt]
 
-ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ}][Ket[aa_Association]] :=
+ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ},
+  ___?OptionQ][Ket[aa_Association]] :=
   Ket[ Ket @ aa,
     tt -> IntegerDigits[
       Mod[x * FromDigits[Lookup[aa, tt], 2], n],
@@ -2341,16 +2350,67 @@ ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ}][Ket[aa_Association]] :=
 
 ModMultiply /:
 Multiply[pre___,
-  op:ModMultiply[_Integer, {__?QubitQ}, {__?QubitQ}],
+  op:ModMultiply[_Integer, {__?QubitQ}, {__?QubitQ}, ___?OptionQ],
   v:Ket[_Association], post___] :=
   Multiply[pre, op[v], post]
 
 ModMultiply /:
 Multiply[pre___,
-  op:ModMultiply[_Integer, _?IntegerQ, {__?QubitQ}],
+  op:ModMultiply[_Integer, _?IntegerQ, {__?QubitQ}, ___?OptionQ],
   v:Ket[_Association], post___] :=
   Multiply[pre, op[v], post]
 
+
+ModMultiply /:
+Elaborate[
+  op:ModMultiply[_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, ___?OptionQ]
+ ] := Elaborate @ ExpressionFor[Matrix @ op, Join[cc, tt]]
+
+ModMultiply /:
+Elaborate[
+  op:ModMultiply[_Integer, _IntegerQ, tt:{__?QubitQ}, ___?OptionQ]
+ ] := Elaborate @ ExpressionFor[Matrix @ op, tt]
+
+
+ModMultiply /:
+Matrix @ ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, ___?OptionQ] :=
+  Module[
+    { xy, xz },
+    xy = Tuples @ {
+      Range[0, Power[2, Length @ cc]-1],
+      Range[0, Power[2, Length @ tt]-1]
+     };
+    xz = Transpose @ {First /@ xy, Mod[Times @@@ xy, n]};
+    SparseArray[
+      MapIndexed[Rule[Flatten[{#1, #2}], 1]&, Map[FirstPosition[xy, #]&, xz]],
+      Table[Length @ xy, 2]
+     ]
+   ]
+
+ModMultiply /:
+Matrix @ ModMultiply[n_Integer, x_Integer, tt:{__?QubitQ}, ___?OptionQ] :=
+  Module[
+    { yy, zz },
+    yy = Range[0, Power[2, Length @ tt]-1];
+    zz = Mod[x ** yy, n];
+    SparseArray[
+      MapIndexed[Rule[Flatten[{#1, #2}], 1]&, Map[FirstPosition[yy, #]&, zz]],
+      Table[Length @ yy, 2]
+     ]
+   ]
+
+ModMultiply /:
+Matrix[
+  op:ModMultiply[_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, ___?OptionQ],
+  qq:{__?SpeciesQ} ]:=
+  MatrixEmbed[Matrix @ op, Join[cc, tt], qq]
+  
+ModMultiply /:
+Matrix[
+  op:ModMultiply[_Integer, _Integer, tt:{__?QubitQ}, ___?OptionQ],
+  qq:{__?SpeciesQ} ]:=
+  MatrixEmbed[Matrix @ op, tt, qq]
+  
 (**** </ModMultiply> ****)
 
 Protect[Evaluate @ $symb]

@@ -5,6 +5,7 @@
 - New option "LabelAngle" and "LabelStyle" for quantum circuit elements.
 - New functions ParseGate, ParsePort, Gate, Port.
 - New quantum circuit element ModMultiply.
+- Matrix and Elaborate supports for ModMultiply.
 - Several internal changes in rendering quantum circuit elements.
 
 ## v2.11.11
