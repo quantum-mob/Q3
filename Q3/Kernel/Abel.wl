@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.26 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-26 02:14:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.29 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-08 18:07:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -20,6 +20,8 @@ $::usage = "$ is a flavor index referring to the species itself."
 { Chain, ChainBy };
 { GraphLocalComplement, GraphPivot, GraphNeighborhoodSans };
 { Bead, GreatCircle };
+
+{ MapThrough };
 
 { ApplyThrough,
   ChopThrough, SimplifyThrough, FullSimplifyThrough,
@@ -457,6 +459,16 @@ GreatCircle[
     ];
    Line[(center + mat . #)& /@ dat]
   ]
+
+
+(**** <MapThrough> ****)
+
+MapThrough::usage = "MapThrough[{f,g,\[Ellipsis]}, {x,y,\[Ellipsis]}] gives {f[x],g[y],\[Ellipsis]}.\nMapThrough[functions, expr, levelspec] operates at the level of expr indicated by spec.\nThe level specificiation is the same as in Map.\nSee also Through, Thread, Apply, Map, MapThread, and MapApply."
+
+MapThrough[ff_List, expr_, spec___] :=
+  First @ Map[MapThread[Construct, {ff, #}]&, {expr}, spec]
+
+(**** </MapThrough> ****)
 
 
 (***** <ApplyThrough> *****)

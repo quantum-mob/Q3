@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.12.1
+
+- New utility function MapThrough.
+
 ## v2.12.0
 
 - New option "LabelAngle" and "LabelStyle" for quantum circuit elements.

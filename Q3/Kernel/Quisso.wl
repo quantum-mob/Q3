@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.83 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-06 23:06:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.84 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-08 13:14:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1538,6 +1538,42 @@ Multiply[pre___, OperatorOn[op_, {___?SpeciesQ}], post___] :=
 (**** </ControlledExp> ****)
 
 
+(**** <Oracle/Classical> ****)
+Oracle::range = 
+  "Input value `` is out of the domain of function `` from ``-bit \
+string to ``-bit string; Mod[`1`,Power[2,`3`]] is used.";
+
+Oracle::undef = 
+  "Function `` from ``-bit string to ``-bit string is ill-defined at \
+``.";
+
+Oracle[f_, m_Integer, n_Integer][x_Integer] :=
+  Oracle[f, m, n][IntegerDigits[x, 2, m]] /;
+  0 <= x < Power[2, m]
+
+Oracle[f_, m_Integer, n_Integer][x_Integer] := (
+  Message[Oracle::range, x, f, m, n];
+  Oracle[f, m, n][IntegerDigits[x, 2, m]]
+ )
+
+Oracle[f_, m_Integer, n_Integer][x : {(0 | 1) ..}] := With[
+  {y = f[x]},
+  Switch[y,
+    {Repeated[0 | 1, {n}]}, y,
+    _Integer, IntegerDigits[y, 2, n],
+    _, (
+      y = f[FromDigits[x, 2]];
+      Switch[y,
+        {Repeated[0 | 1, {n}]}, y,
+        _Integer, IntegerDigits[y, 2, n],
+        _, Message[Oracle::undef, f, m, n, x]; 0]
+     )
+   ]
+ ]
+
+(**** </Oracle/Classical> ****)
+
+
 (**** <Oracle> ****)
 
 Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
@@ -1566,7 +1602,7 @@ HoldPattern @ Multiply[pre___, op_Oracle, post___] :=
   Multiply[pre, Elaborate[op], post]
 
 Oracle /:
-HoldPattern @ Elaborate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+Elaborate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
   { cn = Length @ cc,
     cN, bb, ff },
 
