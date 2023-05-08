@@ -1,10 +1,10 @@
 (* Paclet Info File *)
-(* $Date: 2023-05-07 18:14:52+09 $ *)
-(* $Revision: 2.152 $ *)
+(* $Date: 2023-05-08 23:33:59+09 $ *)
+(* $Revision: 2.153 $ *)
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.12.1", (* draft *)
+  "Version" -> "2.12.1",
   "WolframVersion" -> "12.3+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",

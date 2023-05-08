@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.29 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-08 18:07:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.30 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-08 18:28:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -682,8 +682,9 @@ SetAttributes[FlavorMute, Listable]
 FlavorMute[a_] := a (* Does nothing unless specified explicitly *)
 
 
-FlavorThread::usage = "FlavorThread[{s1, s2, \[Ellipsis]}, m] returns {s1[m], s2[m], \[Ellipsis]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {m1, m2, \[Ellipsis]}] returns {s1[m1], s2[m2], s3[m3]}.\n
-FlavorThread[{s1, s2, \[Ellipsis]}, {list1, list2, \[Ellipsis]}] maps over the lists."
+(**** <FlavorThread> ****)
+
+FlavorThread::usage = "FlavorThread[{s1, s2, \[Ellipsis]}, m] returns {s1[m], s2[m], \[Ellipsis]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {m1, m2, \[Ellipsis]}] returns {s1[m1], s2[m2], s3[m3]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {list1, list2, \[Ellipsis]}] maps over the lists."
 
 FlavorThread[ss:{__?SpeciesQ}][any_] := FlavorThread[ss, any]
 
@@ -696,6 +697,8 @@ FlavorThread[ss:{__?SpeciesQ}, flv:{__List}] :=
 
 FlavorThread[ss:{__?SpeciesQ}, flv:{__}] :=
   MapThread[Construct, {ss, flv}]
+
+(**** </FlavorThread> ****)
 
 
 Any::usage = "Any represents a dummy Flavor index."

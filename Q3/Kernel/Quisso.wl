@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.84 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-08 13:14:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.90 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-08 22:26:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -27,7 +27,7 @@ BeginPackage["Q3`"]
 
 { Projector };
 
-{ Oracle, VerifyOracle };
+{ Oracle };
 
 { QFT, ModExp, ModAdd, ModMultiply };
 
@@ -45,6 +45,8 @@ BeginPackage["Q3`"]
 { WeylHeisenbergBasis };
 
 (* Obsolete Symbols *)
+
+{ VerifyOracle }; (* excised *)
 
 { ControlledU }; (* renamed *)
 { QuissoAdd, QuissoAddZ }; (* renamed *)
@@ -1539,13 +1541,10 @@ Multiply[pre___, OperatorOn[op_, {___?SpeciesQ}], post___] :=
 
 
 (**** <Oracle/Classical> ****)
-Oracle::range = 
-  "Input value `` is out of the domain of function `` from ``-bit \
-string to ``-bit string; Mod[`1`,Power[2,`3`]] is used.";
 
-Oracle::undef = 
-  "Function `` from ``-bit string to ``-bit string is ill-defined at \
-``.";
+Oracle::range = "Input value `` is out of the domain of function `` from ``-bit string to ``-bit string; Mod[`1`,Power[2,`3`]] is used.";
+
+Oracle::undef = "Function `` from ``-bit string to ``-bit string is ill-defined at ``.";
 
 Oracle[f_, m_Integer, n_Integer][x_Integer] :=
   Oracle[f, m, n][IntegerDigits[x, 2, m]] /;
@@ -1556,15 +1555,15 @@ Oracle[f_, m_Integer, n_Integer][x_Integer] := (
   Oracle[f, m, n][IntegerDigits[x, 2, m]]
  )
 
-Oracle[f_, m_Integer, n_Integer][x : {(0 | 1) ..}] := With[
-  {y = f[x]},
+Oracle[f_, m_Integer, n_Integer][x:{(0|1) ..}] := Module[
+  { y = f[x] },
   Switch[y,
-    {Repeated[0 | 1, {n}]}, y,
+    {Repeated[0|1, {n}]}, y,
     _Integer, IntegerDigits[y, 2, n],
     _, (
       y = f[FromDigits[x, 2]];
       Switch[y,
-        {Repeated[0 | 1, {n}]}, y,
+        {Repeated[0|1, {n}]}, y,
         _Integer, IntegerDigits[y, 2, n],
         _, Message[Oracle::undef, f, m, n, x]; 0]
      )
@@ -1601,89 +1600,42 @@ Oracle /:
 HoldPattern @ Multiply[pre___, op_Oracle, post___] :=
   Multiply[pre, Elaborate[op], post]
 
-Oracle /:
-Elaborate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
-  { cn = Length @ cc,
-    cN, bb, ff },
-
-  If[ FailureQ @ VerifyOracle[f, cc, tt],
-    Return @ One @ Power[2, Length[cc] + Length[tt]]
-   ];
-  
-  ff[x_List] := Flatten @ List[f @@ x];
-
-  cN = Power[2, cn];
-  bb = GroupBy[ IntegerDigits[Range[0, cN - 1], 2, cn], ff ];
-  bb = ReplaceAll[bb, {0 -> 10, 1 -> 11}];
-  Elaborate @ Total @ KeyValueMap[qtmOracle[cc, tt], bb]
- ]
-
-qtmOracle[cc_, tt_][key_, val_] := Module[
-  { onC = Multiply @@@ FlavorThread[cc, val],
-    onT = Multiply @@ FlavorThread[tt, key] },
-  Elaborate[Total @ onC] ** onT
- ]
 
 Oracle /:
-HoldPattern @ Matrix[op_Oracle, rest__] := Matrix[Elaborate[op], rest]
+Elaborate @ Oracle[f_, cc : {__?QubitQ}, tt : {__?QubitQ}] := Module[
+  { bb = Range[Power[2, Length @ cc]] },
+  bb = GroupBy[
+    IntegerDigits[bb-1, 2, Length @ cc],
+    Oracle[f, Length @ cc, Length @ tt]
+   ] /. {0 -> 10, 1 -> 11};
+  bb = Total /@ Map[Apply[Multiply], Map[FlavorThread[cc], bb], {2}];
+  bb = KeyMap[Apply[Multiply] @* FlavorThread[tt], bb];
+  Elaborate @ Total @ KeyValueMap[Multiply, bb]
+ ]
+
 
 Oracle /:
-HoldPattern @ Matrix[Oracle[args__]] := matOracle[args]
+Matrix[op:Oracle[_, cc:{__?QubitQ}, tt:{__?QubitQ}], qq:{__?QubitQ}] :=
+  MatrixEmbed[Matrix @ op, Join[cc, tt], qq]
 
-matOracle[f_, c_?QubitQ, t_?QubitQ] := matOracle[f, {c}, {t}]
-
-matOracle[f_, c_?QubitQ, tt:{__?QubitQ}] := matOracle[f, {c}, tt]
-
-matOracle[f_, cc:{__?QubitQ}, t_?QubitQ] := matOracle[f, cc, {t}]
-
-matOracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
-  { cn = Length @ cc,
-    cN, bb, ff },
-
-  If[ FailureQ @ VerifyOracle[f, cc, tt],
-    Return @ One @ Power[2, Length[cc] + Length[tt]]
+Oracle /:
+Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+  { bb = Range[Power[2, Length @ cc]] }, 
+  bb = GroupBy[
+    IntegerDigits[bb-1, 2, Length @ cc], 
+    Oracle[f, Length @ cc, Length @ tt]
+   ] /. {0 -> 10, 1 -> 11};
+  bb = KeyMap[
+    Apply[ThePauli],
+    Total /@ Map[Apply[ThePauli], bb, {2}]
    ];
-  
-  ff[x_List] := Flatten @ List[f @@ x];
-
-  cN = Power[2, cn];
-  bb = GroupBy[ IntegerDigits[Range[0, cN - 1], 2, cn], ff ];
-  Total @ KeyValueMap[ matOracle[#1, #2, cN]&, bb ]
- ]
-
-matOracle[key:{(0|1)..}, val_List, n_Integer] := Module[
-  { jj, matC, matT },
-  jj = 1 + Map[FromDigits[#, 2]&, val];
-  matC = SparseArray[Thread[Transpose@{jj, jj} -> 1], {n, n}];
-  matT = ThePauli @@ key;
-  CircleTimes[matC, matT]
+  Total @ KeyValueMap[CircleTimes[#2, #1]&, bb]
  ]
 
 
-VerifyOracle::usage = "VerifyOracle[f, {c1, c2, ...}, {t1, t2, ...}] checks if the classical oracle f is properly defined consistently with the control qubits {c1, c2, ...} and the target qubits {t1, t2, ...}.\nVerifyOracle[f, m, n] checks if the classical oracle f is a properly defined mapping consistent with m control qubits and n target qubits."
+VerifyOracle::usage = "VerifyOracle has been excises since Q3 v2.12.1."
 
-VerifyOracle::undef = "Either undefined or improperly defined values: ``"
-
-VerifyOracle::range = "Expected is a mapping ``:{0,1\!\(\*SuperscriptBox[\(}\),``]\)\[RightArrow]{0,1\!\(\*SuperscriptBox[\(}\),``]\). Check the classical oracle again."
-
-VerifyOracle[f_, cc : {__?QubitQ}, tt : {__?QubitQ}] :=  
-  VerifyOracle[f, Length@cc, Length@tt]
-
-VerifyOracle[f_, m_Integer, n_Integer] := Module[
-  { in = IntegerDigits[Range[0, 2^m - 1], 2, m],
-    ff, out, pos },
-  ff[x_List] := Flatten@List[f @@ x];
-  out = ff /@ in;
-  pos = Position[out, Except[0 | 1], {2}, Heads -> False];
-  If[ pos != {},
-    Message[VerifyOracle::undef, Extract[out, pos]];
-    Return[$Failed]
-   ];
-  If[ Not[ MatrixQ[out] && Dimensions[out] == {2^m, n} ],
-    Message[VerifyOracle::range, f, m, n];
-    Return[$Failed]
-   ];
- ]
+VerifyOracle[args___] := Message[Q3General::excised, "VerifyOracle"]
 
 (**** </Oracle> ****)
 

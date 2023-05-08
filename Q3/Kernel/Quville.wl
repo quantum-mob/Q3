@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.1 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-06 15:50:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.2 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-08 22:33:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -312,7 +312,8 @@ Options[Gate] = {
   "LabelSize" -> 1, (* RELATIVE size *)
   "LabelStyle" -> {},
   (* A list of options to Style; e.g., "LabelStyle" -> {FontSland -> Plain} *)
-  "LabelAngle" -> 0
+  "LabelAngle" -> 0,
+  N -> False (* only for QFT *)
  }
 
 Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=

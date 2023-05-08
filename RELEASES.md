@@ -2,6 +2,9 @@
 
 ## v2.12.1
 
+- Classical oracle Oracle[f, m, n].
+- Quantum oracle Oracle[f, {c1,c2,...}, {t1,t2,...}].
+- New implementations of Matrix[Oracle[...]] and Elaborate[Oracle[...]] based on Oracle[f, m, n].
 - New utility function MapThrough.
 
 ## v2.12.0

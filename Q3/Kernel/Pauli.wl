@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.90 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-06 21:37:20+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.91 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-08 19:20:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -292,7 +292,7 @@ ThePauli[0 -> 0] = ThePauli[10]
 ThePauli[1 -> 1] = ThePauli[11]
 
 
-ThePauli[ nn:(0|1|2|3|4|5|6|7|8|9|_Integer?Negative|_Rule).. ] :=
+ThePauli[ nn:(0|1|2|3|4|5|6|7|8|9|10|11|_Integer?Negative|_Rule).. ] :=
   CircleTimes @@ Map[ThePauli] @ {nn}
 
 
