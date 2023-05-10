@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.12.2
+
+- A demonstration is added to the tech note on the order-finding algorithm.
+
 ## v2.12.1
 
 - Classical oracle Oracle[f, m, n].
