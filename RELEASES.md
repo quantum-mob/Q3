@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.12.3
+
+- ControlledExp is renamed ControlledPower; yet remains as an alias.
+
 ## v2.12.2
 
 - A demonstration is added to the tech note on the order-finding algorithm.
