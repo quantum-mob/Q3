@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.2 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-08 22:33:17+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.3 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-23 08:33:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -460,13 +460,13 @@ ParseGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
 
 
 ParseGate[
-  ControlledExp[cc:{__?QubitQ}, op_, opts___?OptionQ],
+  ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ],
   more__?OptionQ
- ] := ParseGate @ ControlledExp[cc, op, opts, more]
+ ] := ParseGate @ ControlledPower[cc, op, opts, more]
 
-ParseGate @ ControlledExp[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
+ParseGate @ ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
   Gate[ cc, Qubits[op],
-    "Label" -> gateLabel[ControlledExp[cc, op, opts]],
+    "Label" -> gateLabel[ControlledPower[cc, op, opts]],
     opts,
     "ControlFunction" -> "Oval",
     "TargetFunction" -> "Rectangle"
@@ -551,8 +551,8 @@ gateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
 
 gateLabel[ EulerRotation[{_, _, _}, S_?QubitQ, ___] ] := Subscript["U", "E"]
 
-gateLabel[ ControlledExp[_, _, OptionsPattern[]] ] := With[
-  { lbl = OptionValue[ControlledExp, "Label"] },
+gateLabel[ ControlledPower[_, _, OptionsPattern[]] ] := With[
+  { lbl = OptionValue[ControlledPower, "Label"] },
   {First @ lbl, Superscript[Last @ lbl, First @ lbl]}
  ]
 

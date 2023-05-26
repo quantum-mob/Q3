@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.90 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-08 22:26:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.92 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-23 09:11:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -20,7 +20,7 @@ BeginPackage["Q3`"]
 { ControlledGate, CNOT, CX = CNOT, CZ, SWAP,
   Toffoli, Fredkin, Deutsch };
 
-{ ControlledExp, OperatorOn };
+{ ControlledExp = ControlledPower, OperatorOn };
 
 { Measurement, Measurements, MeasurementFunction,
   MeasurementOdds, Readout, $MeasurementOut = <||> };
@@ -64,7 +64,7 @@ AddElaborationPatterns[
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
   _Projector, _ProductState,
-  _ControlledExp
+  _ControlledPower
  ]
 
 AddElaborationPatterns[
@@ -1418,32 +1418,35 @@ ControlledU[args___] := (
 (**** </ControlledGate> ****)
 
 
-(**** <ControlledExp> ****)
+(**** <ControlledPower> ****)
 
-ControlledExp::usage = "ControlledExp[{c1, c2, ...}, op] represents a controlled exponentiation gate."
+ControlledExp::usage = "ControlledExp is an alias of ControlledPower."
 
-Options[ControlledExp] = {
+ControlledPower::usage = "ControlledPower[{c1, c2, ...}, op] represents a controlled exponentiation gate."
+
+
+Options[ControlledPower] = {
   "Label" -> {"x", "U"}
  }
 
-ControlledExp[S_?QubitQ, expr_, opts___?OptionQ] :=
-  ControlledExp[{S[$]}, expr, opts]
+ControlledPower[S_?QubitQ, expr_, opts___?OptionQ] :=
+  ControlledPower[{S[$]}, expr, opts]
 
-ControlledExp[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
-  ControlledExp[FlavorNone @ ss, expr, opts] /;
+ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
+  ControlledPower[FlavorNone @ ss, expr, opts] /;
   Not[FlavorNoneQ @ ss]
 
 
-ControlledExp /:
-Dagger @ ControlledExp[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
-  ControlledExp[ss, Dagger[expr], opts]
+ControlledPower /:
+Dagger @ ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
+  ControlledPower[ss, Dagger[expr], opts]
 
 
-ControlledExp /:
-Elaborate[op_ControlledExp] = op (* fallback *)
+ControlledPower /:
+Elaborate[op_ControlledPower] = op (* fallback *)
 
-ControlledExp /:
-Elaborate @ ControlledExp[cc:{__?QubitQ}, op_, ___] :=
+ControlledPower /:
+Elaborate @ ControlledPower[cc:{__?QubitQ}, op_, ___] :=
   Module[
     { bs = Dyad[#, #, cc]& /@ Basis[cc],
       xx = Range[Power[2, Length @ cc]] - 1,
@@ -1453,20 +1456,20 @@ Elaborate @ ControlledExp[cc:{__?QubitQ}, op_, ___] :=
    ]
 
 
-ControlledExp /: (* fallback *)
-Matrix[op_ControlledExp, ss:{__?SpeciesQ}] :=
+ControlledPower /: (* fallback *)
+Matrix[op_ControlledPower, ss:{__?SpeciesQ}] :=
   op * One[Times @@ Dimension @ ss]
 
 If[ And[$VersionNumber == 13.2, $ReleaseNumber == 0],
   (* NOTE: Because of a BUG in MatrixPower of Mathematica 13.2,
      which crashes the kernel, this is a temporary work around. *)
   (* for v13.2.0 *)
-  ControlledExp /:
-  Matrix[ControlledExp[cc_, op_, ___], ss:{__?SpeciesQ}] :=
-    Matrix[Elaborate @ ControlledExp[cc, op], ss],
+  ControlledPower /:
+  Matrix[ControlledPower[cc_, op_, ___], ss:{__?SpeciesQ}] :=
+    Matrix[Elaborate @ ControlledPower[cc, op], ss],
   (* for other versions of Mathematica *)
-  ControlledExp /:
-  Matrix[ControlledExp[cc_, op_, ___], ss:{__?SpeciesQ}] :=
+  ControlledPower /:
+  Matrix[ControlledPower[cc_, op_, ___], ss:{__?SpeciesQ}] :=
     Module[
       { tt = Qubits @ {cc, op},
         mat },
@@ -1476,19 +1479,19 @@ If[ And[$VersionNumber == 13.2, $ReleaseNumber == 0],
  ]
 
 
-ControlledExp /:
-Multiply[pre___, ControlledExp[cc_, op_, ___], in_Ket] :=
+ControlledPower /:
+Multiply[pre___, ControlledPower[cc_, op_, ___], in_Ket] :=
   With[
     { x = FromDigits[in[cc], 2] },
     Multiply[pre, Elaborate[MultiplyPower[op, x] ** in]]
    ]
 
-HoldPattern @ Multiply[pre___, op_ControlledExp, post___] :=
+HoldPattern @ Multiply[pre___, op_ControlledPower, post___] :=
   Multiply[pre, Elaborate @ op, post]
-(* NOTE: DO NOT put "ControlledExp /:". *)
+(* NOTE: DO NOT put "ControlledPower /:". *)
 
-ControlledExp /:
-Expand @ ControlledExp[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
+ControlledPower /:
+Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
   Module[
     { n = Length @ ss,
       tt = Qubits[op],
@@ -1496,7 +1499,7 @@ Expand @ ControlledExp[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     pwr = OperatorOn[tt] /@ Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
     (* NOTE: Without OperatorOn, some elements in pwr may be 1. *)
 
-    txt = OptionValue[ControlledExp, opts, "Label"];
+    txt = OptionValue[ControlledPower, opts, "Label"];
     If[ListQ[txt], txt = Last @ txt];
     txt = Table["Label" -> Superscript[txt, Superscript[2, n-k]], {k, n}];
     
@@ -1507,7 +1510,7 @@ Expand @ ControlledExp[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     Sequence @@ new
    ]
 
-theCtrlExp::usage = "theCtrlExp[n, m] is the matrix version of ControlledExp."
+theCtrlExp::usage = "theCtrlExp[n, m] is the matrix version of ControlledPower."
 
 theCtrlExp[n_Integer, mat_?MatrixQ] := Module[
   { bb = Tuples[{0, 1}, n], xx, mm },
@@ -1537,7 +1540,7 @@ OperatorOn /:
 Multiply[pre___, OperatorOn[op_, {___?SpeciesQ}], post___] :=
   Multiply[pre, op, post]
 
-(**** </ControlledExp> ****)
+(**** </ControlledPower> ****)
 
 
 (**** <Oracle/Classical> ****)
