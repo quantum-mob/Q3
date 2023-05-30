@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-07 06:34:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.40 $"][[2]], " (",
+  StringSplit["$Date: 2023-05-27 16:53:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -39,11 +39,34 @@ BeginPackage["Q3`"]
 
 Begin["`Private`"]
 
-Supermap::usage = "Supermap[op1, op2, \[Ellipsis]] represents a superoperator (or super-mapping, in general) specified by the Kraus elements op1, op2, \[Ellipsis], which may be matrices or operators."
-  
+(**** <Supermap> ****)
+
+Supermap::usage = "Supermap[{op1, op2, \[Ellipsis]}] represents a completely positive supermap specified by the Kraus elements op1, op2, \[Ellipsis], which may be matrices or operators."
+
 Supermap::incmp = "The operators/matrices `` are not compatible with each other."
 
 Supermap::wrong = "`` trying to operate on a wrong object ``."
+
+(* In terms of Choi matrix *)
+
+Supermap /:
+Dagger @ Supermap[tsr_?ChoiMatrixQ] :=
+  Supermap[ChoiTopple @ tsr]
+
+Supermap[tsr_?ChoiMatrixQ] := Supermap[SparseArray @ tsr] /;
+  Head[tsr] =!= SparseArray
+
+Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] :=
+  ChoiMultiply[tsr, rho] /;
+  Part[Dimensions @ tsr, {2, 4}] == Dimensions[rho]
+
+Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] := (
+  Message[Supermap::wrong, Supermap[tsr], rho];
+  rho
+ )
+
+
+(* In terms of matrices *)
 
 Supermap[a_?MatrixQ, b_?MatrixQ] := (
   Message[Supermap::incmp, Normal @ {a, b}];
@@ -69,59 +92,72 @@ Supermap[ops:{__?MatrixQ}] :=  (
  ) /; Not @ ArrayQ @ {ops}
 
 
-Supermap[a_?MatrixQ][rho_?SquareMatrixQ] :=
-  Dot[a, rho, Topple @ a]
+Supermap[a_?MatrixQ] := Supermap @ ChoiMatrix[a]
 
-Supermap[a_?MatrixQ, b_?MatrixQ][rho_?SquareMatrixQ] :=
-  Dot[a, rho, Topple @ b]
+Supermap[a_?MatrixQ, b_?MatrixQ] := Supermap @ ChoiMatrix[a, b]
 
-Supermap[ops:{__?MatrixQ}, cc_?VectorQ][rho_?SquareMatrixQ] :=
-  cc . Map[Dot[#, rho, Topple @ #]&, ops]
+Supermap[ops:{__?MatrixQ}] :=
+  Supermap @ ChoiMatrix[ops]
 
-Supermap[ops:{__?MatrixQ}, cc_?MatrixQ][rho_?SquareMatrixQ] :=
-  Total @ Total[
-    cc * Outer[Dot[#1, rho, Topple @ #2]&, ops, ops, 1]
-   ]
+Supermap[ops:{__?MatrixQ}, cc_?VectorQ] :=
+  Supermap @ ChoiMatrix[ops, cc]
 
-(* completely positive supermap *)
-Supermap[ops:{__?MatrixQ}][rho_?SquareMatrixQ] :=
-  Plus @@ Map[Dot[#, rho, Topple @ #]&, ops]
+Supermap[ops:{__?MatrixQ}, cc_?MatrixQ] :=
+  Supermap @ ChoiMatrix[ops, cc]
 
 
-Supermap /:
-HoldPattern @ Dagger @ Supermap[tsr_?ChoiMatrixQ] :=
-  Supermap[ChoiTopple @ tsr]
+(* In terms of operator expressions *)
 
-Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] :=
-  ChoiMultiply[tsr, rho] /;
-  Part[Dimensions[tsr], {2, 4}] == Dimensions[rho]
+Supermap[a_] := Supermap[{a}] /; Not @ Or[ListQ @ a, ChoiMatrixQ @ a]
 
-Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] := (
-  Message[Supermap::wrong, Supermap[tsr], rho];
-  rho
- )
+Supermap[a_, b_] := Supermap[{a, b}, ThePauli[4]] /; Not[ListQ @ a]
 
-(*
-Supermap[tsr_?ChoiMatrixQ][rho_] := (
-  Message[Supermap::wrong, Supermap[tsr], rho];
-  rho
- )
- *)
-
-
-Supermap[a_][rho_] := a ** rho ** Dagger[a]
-
-Supermap[a_, b_][rho_] := a ** rho ** Dagger[b]
-
-Supermap[ops:{__}][rho_] :=
+HoldPattern @ Supermap[ops:{__}][rho_] :=
   Garner @ Total @ Multiply[ops, rho, Dagger @ ops]
 
-Supermap[ops:{__}, cc_?VectorQ][rho_] :=
+HoldPattern @ Supermap[ops:{__}, cc_?VectorQ][rho_] :=
   Garner[ cc . Multiply[ops, rho, Dagger @ ops] ]
 
-Supermap[ops:{__}, cc_][rho_] := Garner @ Total @ Total[
+HoldPattern @ Supermap[ops:{__}, cc_?MatrixQ][rho_] := Garner @ Total @ Total[
   cc * Outer[Multiply, ops, rho ** Dagger[ops]]
  ]
+
+
+(* Formatting *)
+
+Supermap /:
+MakeBoxes[spr:Supermap[ops:{__}], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    Supermap, spr, None,
+    { BoxForm`SummaryItem @ {"Type: ", "completely positive"},
+      BoxForm`SummaryItem @ {"Kraus elements: ", Length @ ops} },
+    { BoxForm`SummaryItem @ {"Kraus elements: ", ops} },
+    fmt, "Interpretable" -> Automatic ] /;
+  Not[ChoiMatrixQ @ ops]
+
+Supermap /:
+MakeBoxes[spr:Supermap[ops:{__}, cc_?VectorQ], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    Supermap, spr, None,
+    { BoxForm`SummaryItem @ {"Operators: ", Length @ ops},
+      BoxForm`SummaryItem @ {"Factors: ", Length @ cc} },
+    { BoxForm`SummaryItem @ {"Kraus elements: ", cc * ops} },
+    fmt, "Interpretable" -> Automatic ]
+
+Supermap /:
+MakeBoxes[spr:Supermap[ops:{__}, cc_?MatrixQ], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    Supermap, spr, None,
+    { BoxForm`SummaryItem @ {"Operators: ", Length @ ops},
+      BoxForm`SummaryItem @ {"Factors: ",
+        StringForm[
+          "``\[ThinSpace]\[Times]\[ThinSpace]``",
+          Sequence @@ Dimensions @ cc ] } },
+    { BoxForm`SummaryItem @ {"Operators: ", ops},
+      BoxForm`SummaryItem @ {"Factors: ", MatrixForm @ cc} },
+    fmt, "Interpretable" -> Automatic ]
+
+(**** </Supermap> ****)
 
 
 (**** <ChoiMultiply> ****)
@@ -139,7 +175,7 @@ ChoiMultiply[a_?ChoiMatrixQ, b_?ChoiMatrixQ] :=
  *)
 
 ChoiMultiply[tsr_?ChoiMatrixQ, rho_?SquareMatrixQ] :=
-  ArrayReshape[ToSuperMatrix[tsr] . Flatten[rho], Dimensions@rho]
+  ArrayReshape[ToSuperMatrix[tsr] . Flatten[rho], Dimensions @ rho]
 
 (* 2022-07-23: This is also slower. *)
 (*
@@ -161,6 +197,8 @@ ChoiTopple[tsr_?ChoiMatrixQ] := Transpose[Conjugate @ tsr, {2, 1, 4, 3}]
 
 ChoiMatrix::usage = "ChoiMatrix[op1, op2, \[Ellipsis]] returns the Choi matrix corresponding to the superoperator represented by the Kraus elements op1, op2, \[Ellipsis]."
 
+ChoiMatrix[Supermap[tsr_?ChoiMatrixQ]] := tsr
+
 ChoiMatrix[Supermap[spec__]] := ChoiMatrix[spec]
 
 
@@ -169,16 +207,18 @@ ChoiMatrix[a_?MatrixQ] := TensorProduct[a, Conjugate @ a]
 ChoiMatrix[a_?MatrixQ, b_?MatrixQ] :=
   TensorProduct[a, Conjugate @ b] /; ArrayQ @ {a, b}
 
-ChoiMatrix[ops:{__?MatrixQ}] :=
-  Total @ Map[ChoiMatrix, ops] /; ArrayQ @ {ops}
+ChoiMatrix[ops:{__?MatrixQ}] := With[
+  { tsr = SparseArray[ops] },
+  Dot[Transpose[tsr, {3, 1, 2}], Conjugate @ tsr]
+ ] /; ArrayQ[ops]
 
 ChoiMatrix[ops:{__?MatrixQ}, cc_?VectorQ] :=
-  cc . Map[ChoiMatrix, ops] /;
-  ArrayQ @ ops
+  ChoiMatrix[ops, DiagonalMatrix @ cc] /; ArrayQ[ops]
 
-ChoiMatrix[ops:{__?MatrixQ}, cc_?MatrixQ] := (
-  Plus @@ Flatten[cc * Outer[ChoiMatrix, ops, ops, 1], 1]
- ) /; ArrayQ @ ops
+ChoiMatrix[ops:{__?MatrixQ}, cc_?MatrixQ] := With[
+  { tsr = SparseArray[ops] },
+  Dot[Transpose[tsr, {3, 1, 2}], SparseArray @ cc, Conjugate @ tsr]
+ ] /; ArrayQ[ops]
 
 
 ChoiMatrix[most__, S_?SpeciesQ] := ChoiMatrix[most, FlavorNone @ {S}]
@@ -213,13 +253,6 @@ ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := With[
 
 ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := ChoiMatrix[Matrix[ops], cc]
 
-
-ChoiMatrix @ LindbladSupermap @ {opH_?MatrixQ, opL__?MatrixQ} := Module[
-  { one = One @ Length @ opH,
-    non = -I(opH - I*DampingOperator[opL]) },
-  ChoiMatrix[non, one] + ChoiMatrix[one, non] +
-    ChoiMatrix @ {opL}
- ]
 
 HoldPattern @ ChoiMatrix @ LindbladSupermap[ops:{_, __}] :=
   ChoiMatrix @ LindbladSupermap @ Matrix[ops]
@@ -316,11 +349,12 @@ DampingOperator::usage = "DampingOperator[{b1, b2, \[Ellipsis]}] or DampingOpera
 
 DampingOperator[opL__] := DampingOperator @ {opL}
 
-DampingOperator[opL:{__?MatrixQ}] :=
-  Plus @@ MapThread[Dot, {Topple /@ opL, opL}] / 2 /;
-  ArrayQ @ opL
+DampingOperator[opL:{__?MatrixQ}] := SparseArray[
+  Plus @@ MapThread[Dot, {Topple /@ opL, opL}] / 2
+ ] /; ArrayQ[opL]
 
-DampingOperator[opL:{Except[_?ListQ]..}] := MultiplyDot[Dagger @ opL, opL] / 2
+DampingOperator[opL:{Except[_?ListQ]..}] :=
+  Garner[ MultiplyDot[Dagger @ opL, opL] / 2 ]
 
 DampingOperator[{}] = 0
 
@@ -350,13 +384,12 @@ LindbladSupermap[{None, opL__?MatrixQ}] :=
 
 LindbladSupermap[{None, opL__}] := LindbladSupermap @ {0, opL}
 
-LindbladSupermap[{opH_?MatrixQ, opL__?MatrixQ}][rho_?MatrixQ] := Module[
-  { non = -I*(opH - I*DampingOperator[opL]),
-    gen },
-  non = non.rho + rho.Topple[non];
-  gen = Total @ Map[ (#.rho.Topple[#])&, {opL} ];
-  non + gen
- ]
+LindbladSupermap[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
+  { one = One @ Length @ opH,
+    non = -I*(opH - I*DampingOperator[opL]) },
+  Supermap[ChoiMatrix[non, one] + ChoiMatrix[one, non] + ChoiMatrix[{opL}]]
+ ] /; ArrayQ @ {opH, opL}
+
 
 LindbladSupermap[{opH_, opL__}][rho_] := Module[
   { non = -I*(opH - I*DampingOperator[opL]),
@@ -365,6 +398,16 @@ LindbladSupermap[{opH_, opL__}][rho_] := Module[
   gen = Total @ Multiply[{opL}, rho, Dagger @ {opL}];
   Garner[non + gen]
  ]
+
+LindbladSupermap /:
+MakeBoxes[spr:LindbladSupermap[{opH_, opL__}], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    LindbladSupermap, spr, None,
+    { BoxForm`SummaryItem @ {"Hamiltonian: ", opH},
+      BoxForm`SummaryItem @ {"Jump operators: ", Length @ {opL}} },
+    { BoxForm`SummaryItem @ {"Damping operator: ", DampingOperator @ {opL}},
+      BoxForm`SummaryItem @ {"Jump operators: ", {opL}} },
+    fmt, "Interpretable" -> Automatic ]
 
 
 LindbladGenerator::usage = "LindbladGenerator has been renamed LindbladSupermap."
@@ -415,6 +458,8 @@ LindbladConvert[{None, opL__}] := LindbladConvert[{0, opL}]
 LindbladConvert[ops:{_, __}] := LindbladConvert @ Matrix[ops]
 
 
+LindbladConvert[Supermap[tsr_?ChoiMatrixQ]] := LindbladConvert[tsr]
+
 LindbladConvert[LindbladSupermap[spec_]] := LindbladConvert[spec]
 
 (**** </LindbladConvert> ****)
@@ -464,15 +509,20 @@ LindbladSolve[opH_, {opL__}, in_, rest__] :=
 
 
 LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?VectorQ, t_] :=
-  LindbladSolve[ops, Dyad[in, in], t]
+  LindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, Dyad[in, in], t] /;
+  ArrayQ[ops]
 
-LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, t_] := Module[
+LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, t_] :=
+  LindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, in, t] /;
+  ArrayQ @ Join[{in}, ops]
+
+LindbladSolve[tsr_?ChoiMatrixQ, in_?MatrixQ, t_] := Module[
   { dim = Length[in],
     lbm, bgn, gen, off, sol, var, x },
   lbm = ToSuperMatrix @ LieBasisMatrix[dim];
   bgn = Rest[Topple[lbm] . Flatten[in]];
 
-  {gen, off} = LindbladConvert[ops];
+  {gen, off} = LindbladConvert[tsr];
 
   var = Through[ Array[x, dim*dim-1][t] ];
   eqn = Join[
@@ -484,7 +534,7 @@ LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, t_] := Module[
   
   var = Prepend[var, 1/Sqrt[dim]];
   ArrayReshape[lbm . var, {dim, dim}] /. sol
- ] /; ArrayQ @ Join[{in}, ops]
+ ] /; Part[Dimensions @ tsr, {2, 4}] == Dimensions[in]
 
 LindbladSolve[ops:{_, __}, in_?MatrixQ, _] :=
   Message[LindbladSolve::incmp, Normal @ Append[ops, in]] 
@@ -619,6 +669,12 @@ Options[LindbladSimulate] = {
   "Filename" -> Automatic,
   "Prefix" -> "Carlo"
  }
+
+(* TODO: 2023-05-27 *)
+(* LindbladSimulate[tsr_?ChoiMatrixQ, in_?VectorQ, tt_List,
+   opts:OptionsPattern[]] *)
+(* Note that since v2.39, LindbladSupermap[{__?MatrixQ}, ...] generates
+   Supermap[_?ChoiMatrixQ]. *)
 
 LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
   opts:OptionsPattern[]] := Module[

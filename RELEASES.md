@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.12.4
+
+- Reimplementation of Supermap based on ChoiMatrix.
+
 ## v2.12.3
 
 - ControlledExp is renamed ControlledPower; yet remains as an alias.
