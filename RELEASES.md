@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.12.5
+
+- Some tutorial documents have been revised for better presetnation.
+
 ## v2.12.4
 
 - Reimplementation of Supermap based on ChoiMatrix.
