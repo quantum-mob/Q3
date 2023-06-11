@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.3 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-23 08:33:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.5 $"][[2]], " (",
+  StringSplit["$Date: 2023-06-10 19:32:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -316,9 +316,18 @@ Options[Gate] = {
   N -> False (* only for QFT *)
  }
 
+Gate[ss:{__?QubitQ}, opts:OptionsPattern[]] :=
+  Gate[FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
+
 Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
   Gate[cc -> Table[1, Length @ cc], tt, opts]
 
+Gate[Rule[cc:{__?QubitQ}, v_], tt:{__?QubitQ}, opts:OptionsPattern[]] :=
+  Gate[cc -> Table[v, Length @ cc], tt, opts] /; Not[ListQ @ v]
+
+Gate[cc:Rule[{__?QubitQ}, _List], tt:{__?QubitQ}, opts:OptionsPattern[]] :=
+  Gate[FlavorNone @ cc, FlavorNone @ tt, opts] /;
+  Not @ FlavorNoneQ @ Join[First @ cc, tt]
 
 ParseGate::usage = "ParseGate[expr, opts] is a low-level function to preprocess quantum circuit element expr."
 
@@ -331,9 +340,10 @@ ParseGate[gg_List, opts___?OptionQ] := Map[ParseGate[#, opts]&, gg]
 
 
 (* These elements are handled separately. *)
-ParseGate[_QuantumCircuitIn | _QuantumCircuitOut | _Mark,
-  opts___?OptionQ] = Nothing
+ParseGate[_QuantumCircuitIn|_QuantumCircuitOut|_Mark, opts___?OptionQ] = Nothing
   
+
+ParseGate[Gate[some__], more___?OptionQ] := Gate[some, more]
 
 ParseGate[op_?QubitQ, opts___?OptionQ] :=
   Gate[ Qubits @ op, opts, "Label" -> HoldForm[thePauliForm @ op] ]

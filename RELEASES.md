@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.12.6
+
+- Improved FlavorNone.
+- Improved Gate.
+
 ## v2.12.5
 
 - Some tutorial documents have been revised for better presetnation.

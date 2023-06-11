@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.10 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-30 21:50:54+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.11 $"][[2]], " (",
+  StringSplit["$Date: 2023-06-10 19:19:22+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -425,8 +425,6 @@ Base[ S_?SpinQ[j___, _] ] := S[j]
 (* FlavorNone: See Cauchy package *)
 
 FlavorNone[S_?SpinQ] := S[$]
-
-FlavorNone[S_?SpinQ -> m_] := S[$] -> m
 
 
 (* FlavorMute: See Cauchy *)

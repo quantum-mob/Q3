@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.92 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-23 09:11:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.93 $"][[2]], " (",
+  StringSplit["$Date: 2023-06-10 19:19:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -517,18 +517,14 @@ HoldPattern @ Multiply[pre___, x_?QubitQ, y_?QubitQ, post___] :=
 MultiplyDegree[_?QubitQ] = 1
 
 
-(* Base: See Cauchy *)
+(* Base: See Abel *)
 
 Base[ S_?QubitQ[j___, _] ] := S[j]
 (* For Qubits, the final Flavor index is special. *)
 
-
-(* FlavorNone: See Cauchy *)
+(* FlavorNone: See Abel *)
 
 FlavorNone[S_?QubitQ] := S[$]
-
-FlavorNone[S_?QubitQ -> m_] := S[$] -> m
-
 
 (* FlavorMute: See Cauchy *)
 
@@ -2499,8 +2495,6 @@ Base[ S_?QuditQ[k___, _] ] := S[k]
 (* FlavorNone: See Cauchy *)
 
 FlavorNone[S_?QuditQ] := S[$]
-
-FlavorNone[S_?QuditQ -> m_] := S[$] -> m
 
 
 (* FlavorMute: See Cauchy *)
