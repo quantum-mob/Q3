@@ -2,6 +2,10 @@
 
 ## v2.12.6
 
+- Improved PlaybookTools.
+
+## v2.12.6
+
 - Improved FlavorNone.
 - Improved Gate.
 
