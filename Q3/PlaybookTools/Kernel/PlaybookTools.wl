@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-06-18 22:14:04+09 $ *)
-(* $Revision: 1.23 $ *)
+(* $Date: 2023-06-20 11:47:08+09 $ *)
+(* $Revision: 1.24 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -175,11 +175,15 @@ CollapseGroup[nb_NotebookObject, styles:{__String}] :=
 
 DeleteEpilogue::usage = "DeleteEpilogue[nb] deletes cells and cell groups with CellTags PlaybookEpilogue.\nDeleteEpilogue[nb, cell] deletes the particular cell or cell group."
 
-DeleteEpilogue[nb_NotebookObject] :=
+DeleteEpilogue[nb_NotebookObject] := (
+  Echo[NotebookFileName @ nb];
   If[ FailureQ @ NotebookFind[nb, "PlaybookEpilogue", All, CellTags],
+    Echo["No epilogue to delete!"];
     Return[],
+    Echo[SelectedCells @ nb, "Checking"];
     Scan[DeleteEpilogue[nb, #]&, SelectedCells @ nb]
    ]
+ )
 
 DeleteEpilogue[nb_NotebookObject, cell_CellObject] := With[
   { cc = (SelectionMove[cell, All, CellGroup]; SelectedCells[nb]) },

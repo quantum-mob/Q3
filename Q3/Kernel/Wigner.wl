@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.11 $"][[2]], " (",
-  StringSplit["$Date: 2023-06-10 19:19:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.12 $"][[2]], " (",
+  StringSplit["$Date: 2023-06-20 14:18:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -198,7 +198,8 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   (* NOTE: For Spin-1/2, this is enough to reduce it to (X+Z)/Sqrt[2].
      See Cauchy.m for Exp[ (Clifford- or Grassmann-like elements) ] .*)
   
-  x[j___, All] := Flatten @ x[j, {1,2,3}];
+  x[j___, All]  := Flatten @ x[j, {1,2,3}];
+  x[j___, Full] := Flatten @ x[j, {0, 1, 2, 3}];
 
   Format @ x[j___, $] :=
     Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];
