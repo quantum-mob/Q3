@@ -1,6 +1,6 @@
 # Select Release Notes
 
-## v2.12.6
+## v2.12.7
 
 - Improved PlaybookTools.
 
