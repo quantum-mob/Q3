@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-06-21 14:15:54+09 $ *)
-(* $Revision: 1.28 $ *)
+(* $Date: 2023-06-18 22:14:04+09 $ *)
+(* $Revision: 1.23 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -87,79 +87,68 @@ $PlaybookStyle = Notebook[
 
 PlaybookDeploy::usage = "PlaybookDeploy[filename] saves the notebook specified by the filename in the playbooks folder with proper options."
 
-PlaybookDeploy::folder = "`` must be a valid folder."
+PlaybookDeploy::baddst = "Unrecognized destinatoin ``."
 
 PlaybookDeploy::nocopy = "Could not copy file `` to ``."
 
 PlaybookDeploy::noopen = "Could not open file ``."
 
 Options[PlaybookDeploy] = {
+  "Destination" -> Automatic,
   "DeleteOutput" -> False,
   "PrintHandout" -> False,
   "CollapseGroup" -> False
  }
 
-PlaybookDeploy[opts:OptionsPattern[]] := With[
-  { file = NotebookFileName[] },
-  fileDeploy[file, playbookFileName @ file, opts]
- ]
+PlaybookDeploy[opts:OptionsPattern[]] :=
+  PlaybookDeploy[NotebookFileName[], OptionValue @ "Destination", opts]
 
 PlaybookDeploy[file_String, opts:OptionsPattern[]] :=
-  fileDeploy[file, playbookFileName @ file, opts]
+  PlaybookDeploy[file, OptionValue @ "Destination", opts]
 
-PlaybookDeploy[file_String, dir_String, opts:OptionsPattern[]] :=
-  fileDeploy[file, playbookFileName[file, dir], opts]
+PlaybookDeploy[file_String, dst_, OptionsPattern[]] := Module[
+  { new, pdf, nb },
+  new = ExpandFileName @ Which[
+    dst === Automatic,
+    FileNameJoin @ DeleteCases[
+      { DirectoryName[file],
+        StringJoin @ {FileBaseName[file], ".Playbook.nb"} },
+      "" ],
+    DirectoryQ[dst],
+    FileNameJoin @ {dst, FileNameTake @ file},
+    StringQ[dst], dst,
+    True, Message[Playbook::baddst, dst]; Return[$Failed]
+   ];
+  Print[file, " --> ", new];
 
-
-playbookFileName::usage = "playbookFileName[file] returns the file name of the deployed version of file."
-
-playbookFileName[file_String] := Module[
-  { dir, new },
-  dir = DirectoryName[file];
-  new = StringJoin @ {FileBaseName @ file, ".Playbook.", FileExtension @ file};
-  ExpandFileName @ If[dir == "", new, FileNameJoin @ {dir, new}]
- ]
-
-playbookFileName[file_String, dir_String] := If[ DirectoryQ[dir],
-  playbookFileName @ FileNameJoin @ {dir, FileNameTake @ file},
-  Message[PlaybookDeploy::folder, dir];
-  playbookFileName[file]
- ]
-
-
-fileDeploy::usage = "fileDepoly[src, dst] does the actual job of deploying src to dst."
-
-fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
-  { pdf, nb },
-
-  Print[src, " --> ", dst];
-  If[ FailureQ @ CopyFile[src, dst, OverwriteTarget -> True],
-    Message[PlaybookDeploy::nocopy, src, dst];
+  If[ FailureQ @ CopyFile[file, new, OverwriteTarget -> True],
+    Message[PlaybookDeploy::nocopy, file, new];
     Return[$Failed]
    ];
 
-  If[ FailureQ[nb = NotebookOpen @ dst],
-    Message[PlaybookDeploy::noopen, dst];
+  If[ FailureQ[nb = NotebookOpen @ new],
+    Message[PlaybookDeploy::noopen, new];
     Return[$Failed]
    ];
 
   SetBanner[nb, $PlaybookBanner];
   DeleteEpilogue[nb];
-
-  If[ OptionValue["PrintHandout"],
-    pdf = StringJoin @
-      {FileNameJoin @ {DirectoryName @ dst, FileBaseName @ dst}, ".pdf"};
-    Print[src, " --> ", pdf];
-    Export[pdf, nb]
-   ];
-  
-  If[ OptionValue["DeleteOutput"], CleanNotebook[nb] ];
-
+  If[ OptionValue["DeleteOutput"],
+    CleanNotebook[nb] ];
   If[ OptionValue["CollapseGroup"],
     CollapseGroup[nb, {"Subsubsection", "Subsection", "Section"}] ];
-  
   SetOptions[nb, Saveable -> False, StyleDefinitions -> $PlaybookStyle];
-  NotebookSave[nb, dst];
+  NotebookSave[nb, new];
+  If[ OptionValue["PrintHandout"],
+    SelectionMove[nb, All, Notebook];
+    FrontEndTokenExecute[nb, "SelectionOpenAllGroups"];
+    pdf = StringJoin @ {
+      FileNameJoin @ {DirectoryName @ new, FileBaseName @ new},
+      ".pdf"
+     };
+    Print[file, " --> ", pdf];
+    Export[pdf, nb]
+   ];
   NotebookClose[nb];
  ]
 
@@ -186,24 +175,18 @@ CollapseGroup[nb_NotebookObject, styles:{__String}] :=
 
 DeleteEpilogue::usage = "DeleteEpilogue[nb] deletes cells and cell groups with CellTags PlaybookEpilogue.\nDeleteEpilogue[nb, cell] deletes the particular cell or cell group."
 
-DeleteEpilogue[nb_NotebookObject] := (
-  Print["Examinig ", NotebookFileName @ nb];
-  (* For some unknown reason, the above line or similar is
-     necessary. Otherwise, NotebookFind below does not work properly. *)
+DeleteEpilogue[nb_NotebookObject] :=
   If[ FailureQ @ NotebookFind[nb, "PlaybookEpilogue", All, CellTags],
-    Print["No epilogue to delete!"];
     Return[],
-    Print["Examining ", SelectedCells @ nb];
     Scan[DeleteEpilogue[nb, #]&, SelectedCells @ nb]
    ]
- )
 
 DeleteEpilogue[nb_NotebookObject, cell_CellObject] := With[
   { cc = (SelectionMove[cell, All, CellGroup]; SelectedCells[nb]) },
   If[ First[CurrentValue[First @ cc, "CellStyle"]] == "Section",
-    Print["Deleting ", cc];
+    Echo[cc, "Being deleted"];
     NotebookDelete[cc],
-    Print["Deleting ", cell];
+    Echo[cell, "Being deleted"];
     NotebookDelete[cell]
    ]
  ]
