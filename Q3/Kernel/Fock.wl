@@ -1591,7 +1591,11 @@ CoherentState /:
 NonCommutativeQ[ CoherentState[_Association] ] = True
 
 CoherentState /:
+Kind[ CoherentState[_Association] ] = Ket
+
+CoherentState /:
 MultiplyGenus[ CoherentState[_Association] ] = "Ket"
+
 
 CoherentState /:
 HoldPattern @ Elaborate[ CoherentState[vec_Association] ] := Module[
