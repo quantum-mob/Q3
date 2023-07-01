@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.8 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-04 09:20:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.9 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 13:55:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -440,6 +440,8 @@ YoungTableauQ[_] = False
 
 
 anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau (not necessarily semi-standard) and False otherwise."
+
+anyYoungTableauQ[{}] = True
 
 anyYoungTableauQ[tb:{{___Integer}..}] := Apply[GreaterEqual, Length /@ tb]
 (* NOTE: It must be ___Integer (not __Integer) so as to allow trailing {}s;

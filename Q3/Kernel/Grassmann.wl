@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Grassmann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.18 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-25 23:27:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.19 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 16:25:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -27,8 +27,8 @@ Let[Grassmann, {ls__Symbol}] := (
  )
 
 setGrassmann[x_Symbol] := (
-  Kind[x] ^= Grassmann;
-  Kind[x[___]] ^= Grassmann;
+  MultiplyKind[x] ^= Grassmann;
+  MultiplyKind[x[___]] ^= Grassmann;
   
   GrassmannQ[x] ^= True;
   GrassmannQ[x[___]] ^= True;

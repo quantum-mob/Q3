@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.55 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-26 02:14:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.57 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 16:21:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -136,8 +136,11 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
   BosonQ[x] ^= True;
   BosonQ[x[___]] ^= True;
 
-  Kind[x] ^= Boson;
-  Kind[x[___]] ^= Boson;
+  AgentQ[x] ^= True;
+  AgentQ[x[___]] ^= True;
+
+  MultiplyKind[x] ^= Boson;
+  MultiplyKind[x[___]] ^= Boson;
   
   Bottom[x] ^= bottom;
   Bottom[x[___]] ^= bottom;
@@ -216,8 +219,11 @@ setHeisenberg[x_Symbol, spin_?SpinNumberQ, top_Integer] := (
   HeisenbergQ[x] ^= True;
   HeisenbergQ[x[___]] ^= True;
 
-  Kind[x] ^= Heisenberg;
-  Kind[x[___]] ^= Heisenberg;
+  AgentQ[x] ^= True;
+  AgentQ[x[___]] ^= True;
+
+  MultiplyKind[x] ^= Heisenberg;
+  MultiplyKind[x[___]] ^= Heisenberg;
   
   Top[x] ^= top;
   Top[x[___]] ^= top;
@@ -284,8 +290,11 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
   FermionQ[x] ^= True;
   FermionQ[x[___]] ^= True;
 
-  Kind[x] ^= Fermion;
-  Kind[x[___]] ^= Fermion;
+  AgentQ[x] ^= True;
+  AgentQ[x[___]] ^= True;
+
+  MultiplyKind[x] ^= Fermion;
+  MultiplyKind[x[___]] ^= Fermion;
   
   Dimension[x] ^= 2;
   Dimension[x[___]] ^= 2;
@@ -372,8 +381,8 @@ Let[Majorana, {ls__Symbol}] := (
  )
 
 setMajorana[x_Symbol] := (
-  Kind[x] ^= Majorana;
-  Kind[x[___]] ^= Majorana;
+  MultiplyKind[x] ^= Majorana;
+  MultiplyKind[x[___]] ^= Majorana;
   
   MajoranaQ[x] ^= True;
   MajoranaQ[x[___]] ^= True;
@@ -549,7 +558,7 @@ SetAttributes[Canon, Listable]
 Canon[ Canon[q_?HeisenbergQ] ] := q
 
 Canon /:
-Kind[ Canon[q_] ] := Kind[q]
+MultiplyKind[ Canon[q_] ] := MultiplyKind[q]
 
 Canon /:
 MultiplyGenus[ Canon[q_] ] := MultiplyGenus[q]
@@ -1519,7 +1528,7 @@ Displacement /:
 Peel[ Displacement[_, a_] ] := a (* for Matrix[] *)
 
 Displacement /:
-Kind[ Displacement[_, a_] ] := Kind[a] (* for Multiply[] *)
+MultiplyKind[ Displacement[_, a_] ] := MultiplyKind[a] (* for Multiply[] *)
 
 Displacement /:
 MultiplyGenus[ Displacement[_, a_] ] := "Singleon" (* for Multiply[] *)
@@ -1591,7 +1600,7 @@ CoherentState /:
 NonCommutativeQ[ CoherentState[_Association] ] = True
 
 CoherentState /:
-Kind[ CoherentState[_Association] ] = Ket
+MultiplyKind[ CoherentState[_Association] ] = Ket
 
 CoherentState /:
 MultiplyGenus[ CoherentState[_Association] ] = "Ket"

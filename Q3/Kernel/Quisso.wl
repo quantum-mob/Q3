@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.93 $"][[2]], " (",
-  StringSplit["$Date: 2023-06-10 19:19:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.94 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 15:59:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -97,8 +97,8 @@ Let[Qubit, {ls__Symbol}, opts___?OptionQ] := (
  )
 
 setQubit[x_Symbol] := (
-  Kind[x] ^= Qubit;
-  Kind[x[___]] ^= Qubit;
+  MultiplyKind[x] ^= Qubit;
+  MultiplyKind[x[___]] ^= Qubit;
   
   Dimension[x] ^= 2;
   Dimension[x[___]] ^= 2;
@@ -108,6 +108,9 @@ setQubit[x_Symbol] := (
 
   QubitQ[x] ^= True;
   QubitQ[x[___]] ^= True;
+
+  AgentQ[x] ^= True;
+  AgentQ[x[___]] ^= True;
 
   x/: Dagger @ x[j___, k:(0|1|2|3|6|10|11)] = x[j, k];
   
@@ -1650,7 +1653,7 @@ Options[QFT] = {N -> False}
 QFT /: NonCommutativeQ[ QFT[___] ] = True
 
 QFT /:
-Kind @ QFT[ss:{__?QubitQ}] := Qubit
+MultiplyKind @ QFT[ss:{__?QubitQ}] := Qubit
 
 QFT /:
 MultiplyGenus @ QFT[___] := "Singleton"
@@ -2035,7 +2038,7 @@ ProductState /:
 NonCommutativeQ[ ProductState[___] ] = True
 
 ProductState /:
-Kind[ ProductState[___] ] = Ket
+MultiplyKind[ ProductState[___] ] = Ket
 
 ProductState /:
 MultiplyGenus[ ProductState[___] ] = "Ket"
@@ -2295,7 +2298,7 @@ AddElaborationPatterns[_ModMultily];
 
 ModMultiply /: NonCommutativeQ[_ModMultiply] = True
 
-ModMultiply /: Kind[_ModMultiply] = Qubit
+ModMultiply /: MultiplyKind[_ModMultiply] = Qubit
 
 ModMultiply /: MultiplyGenus[_ModMultiply] = "Singleton"
 
@@ -2429,8 +2432,11 @@ setQudit[x_Symbol, dim_Integer] := (
   QuditQ[x] ^= True;
   QuditQ[x[___]] ^= True;
 
-  Kind[x] ^= Qudit;
-  Kind[x[___]] ^= Qudit;
+  AgentQ[x] ^= True;
+  AgentQ[x[___]] ^= True;
+
+  MultiplyKind[x] ^= Qudit;
+  MultiplyKind[x[___]] ^= Qudit;
   
   Dimension[x] ^= dim;
   Dimension[x[___]] ^= dim;

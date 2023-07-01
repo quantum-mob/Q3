@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.5 $"][[2]], " (",
-  StringSplit["$Date: 2023-06-10 19:32:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.7 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 16:33:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -79,10 +79,14 @@ QuantumCircuit /:
 NonCommutativeQ[ QuantumCircuit[__] ] = True
 
 QuantumCircuit /:
-Kind[ QuantumCircuit[__] ] = NonCommutative
+MultiplyKind[ QuantumCircuit[__] ] = NonCommutative
 
 QuantumCircuit /:
 MultiplyGenus[ QuantumCircuit[__] ] := "QuantumCircuit"
+
+
+QuantumCircuit /:
+Dagger[qc_QuantumCircuit] := Dagger[Elaborate @ qc]
 
 
 QuantumCircuit /:

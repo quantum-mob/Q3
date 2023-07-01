@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.31 $"][[2]], " (",
-  StringSplit["$Date: 2023-06-10 19:19:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.34 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 16:17:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -33,7 +33,9 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { Species, SpeciesQ, AnySpeciesQ };
 
-{ Kind, Dimension, LogicalValues };
+{ Agents, AgentQ, AnyAgentQ };
+
+{ Dimension, LogicalValues };
 
 { Any, Base, Flavors, FlavorMost, FlavorLast,
   FlavorNone, FlavorNoneQ, FlavorMute, FlavorThread };
@@ -83,7 +85,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { Commutator, Anticommutator };
 
-{ Multiply, MultiplyGenus, MultiplyDegree,
+{ Multiply, MultiplyGenus, MultiplyKind, MultiplyDegree,
   MultiplyExp, MultiplyPower, MultiplyDot,
   DistributableQ };
 
@@ -713,20 +715,20 @@ SetAttributes[Any, ReadProtected]
 Format[Any] = "\[SpaceIndicator]"
 
 
-Kind::usage = "Kind[op] returns the type of op, which may be a Species or related function.\nKind is the lowest category class of Species and functions for Multiply. It affects how Multiply rearranges the non-commutative elements.\nIt is intended for internal use."
+MultiplyKind::usage = "MultiplyKind[op] returns the type of op, which may be a Species or related function.\nMultiplyKind is the lowest category class of Species and functions for Multiply. It affects how Multiply rearranges the non-commutative elements.\nIt is intended for internal use.\nSee also MultiplyGenus."
 
-SetAttributes[Kind, Listable]
+SetAttributes[MultiplyKind, Listable]
 
 (* NOTE: HoldPattern is necessary here to prevent $IterationLimit::itlim error
    when the package is loaded again. *)
 
-HoldPattern @ Kind[ Inverse[x_] ] := Kind[x]
+HoldPattern @ MultiplyKind[ Inverse[x_] ] := MultiplyKind[x]
 
-HoldPattern @ Kind[ Conjugate[x_] ] := Kind[x]
+HoldPattern @ MultiplyKind[ Conjugate[x_] ] := MultiplyKind[x]
 
-HoldPattern @ Kind[ Dagger[x_] ] := Kind[x]
+HoldPattern @ MultiplyKind[ Dagger[x_] ] := MultiplyKind[x]
 
-HoldPattern @ Kind[ Tee[x_] ] := Kind[x]
+HoldPattern @ MultiplyKind[ Tee[x_] ] := MultiplyKind[x]
 
 
 Dimension::usage = "Dimension[A] gives the Hilbert space dimension associated with the system A."
@@ -738,6 +740,8 @@ LogicalValues::usage = "LogicalValues[spc] gives the list of logical values labe
 
 SetAttributes[LogicalValues, Listable]
 
+
+(***** <Let> ****)
 
 Let::usage = "Let[Symbol, a, b, \[Ellipsis]] defines the symbols a, b, \[Ellipsis] to be Symbol, which can be Species, Complex, Real, Integer, etc."
 
@@ -753,6 +757,10 @@ Let[name_Symbol, ls__Symbol, opts___?OptionQ] := Let[name, {ls}, opts]
 
 Let[name_Symbol, ___] := (Message[Let::unknown, name]; $Failed)
 
+(***** </Let> ****)
+
+
+(**** <Species> ****)
 
 Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, \[Ellipsis]] declares the symbols a, b, \[Ellipsis] to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, \[Ellipsis]] does not take a specific structure, but only regarded seemingly so."
 
@@ -772,8 +780,8 @@ setSpecies[x_Symbol] := (
   SpeciesQ[x] ^= True;
   SpeciesQ[x[___]] ^= True;
 
-  Kind[x] ^= Species;
-  Kind[x[___]] ^= Species;
+  MultiplyKind[x] ^= Species;
+  MultiplyKind[x[___]] ^= Species;
   
   Dimension[x] ^= 1;
   Dimension[x[___]] ^= 1;
@@ -822,6 +830,45 @@ AnySpeciesQ[ Tee[_?SpeciesQ] ] = True
 
 AnySpeciesQ[ _ ] = False
 
+(**** </Species> ****)
+
+
+(**** <Agents> ****)
+
+Agents::usage = "Agents[expr] returns the list of all Agents appearing in EXPR."
+
+Agents[expr_] := Select[
+  Union @ FlavorMute @ Cases[{expr}, _?SpeciesQ, Infinity],
+  AgentQ
+ ] /; FreeQ[expr, _Association|_Dyad]
+
+Agents[expr_] :=
+  Agents @ Normal[expr /. Dyad -> Hold[Dyad]]
+(* NOTE: This recursion is necessary since Association inside Association is
+   not expanded by a single Normal. *)
+
+
+AgentQ::usage = "AgentQ[a] returns True if a is a Agent."
+
+AgentQ[_] = False
+
+
+AnyAgentQ::usaage = "AnyAgentQ[z] returns True if z itself is an Agent or a modified form z = Conjugate[x], Dagger[x], Tee[x] of another Agent x."
+
+AnyAgentQ[ _?AgentQ ] = True
+
+AnyAgentQ[ Inverse[_?AgentQ] ] = True
+
+AnyAgentQ[ Conjugate[_?AgentQ] ] = True
+
+AnyAgentQ[ Dagger[_?AgentQ] ] = True
+
+AnyAgentQ[ Tee[_?AgentQ] ] = True
+
+AnyAgentQ[ _ ] = False
+
+(**** </Agents> ****)
+
 
 NonCommutative::usage = "NonCommutative represents a non-commutative element.\nLet[NonCommutative, a, b, \[Ellipsis]] declares a[\[Ellipsis]], b[\[Ellipsis]], \[Ellipsis] to be NonCommutative."
 
@@ -834,8 +881,8 @@ setNonCommutative[x_Symbol] := (
   NonCommutativeQ[x] ^= True;
   NonCommutativeQ[x[___]] ^= True;
 
-  Kind[x] ^= NonCommutative;
-  Kind[x[___]] ^= NonCommutative;
+  MultiplyKind[x] ^= NonCommutative;
+  MultiplyKind[x[___]] ^= NonCommutative;
   MultiplyGenus[x] ^= "Singleton";
   MultiplyGenus[x[___]] ^= "Singleton";
  )
@@ -1371,7 +1418,7 @@ DistributableQ::usage = "DistributableQ[x, y, \[Ellipsis]] returns True if any o
 DistributableQ[args__] := Not @ MissingQ @ FirstCase[ {args}, _Plus ]
 
 
-MultiplyGenus::usage = "MultiplyGenus[op] returns the Genus of op, which may be a Species or related function.\nGenus is a category class of Species and functions for Multiply that ranks above Kind. It affects how Multiply rearranges the non-commutative elements.\nMultiplyGenus is intended for internal use."
+MultiplyGenus::usage = "MultiplyGenus[op] returns the Genus of op, which may be a Species or related function.\nGenus is a category class of Species and functions for Multiply that ranks above MultiplyKind. It affects how Multiply rearranges the non-commutative elements.\nMultiplyGenus is intended for internal use."
 
 SetAttributes[MultiplyGenus, Listable]
 
@@ -1462,7 +1509,7 @@ HoldPattern @ Multiply[ pre___, Power[E, expr_], post___] :=
 (* General rules *)
 
 (* No operator is moved across Ket or Bra. *)
-(* Operators of different kinds (see Kind) are regarded either mutually
+(* Operators of different kinds (see MultiplyKind) are regarded either mutually
    commutative or mutually anticommuative. *)
 (* Unless specified explicitly, any symbol or function is regarded commutative
    (i.e., commutes with any other symbol or function). *)
@@ -1473,11 +1520,11 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
   bb = Multiply @@@ aa;
   Multiply @@ bb
  ] /;
-  Not @ OrderedKindsQ @ {ops} /;
+  Not @ KindsOrderedQ @ {ops} /;
   Length[Union @ MultiplyGenus @ {ops}] > 1
 
 HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
-  { aa = Values @ KeySort @ GroupBy[{ops}, Kind],
+  { aa = Values @ KeySort @ GroupBy[{ops}, MultiplyKind],
     bb },
   bb = Multiply @@@ aa;
   bb = Multiply @@ bb;
@@ -1485,10 +1532,10 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
     Cases[ {ops}, _?AnticommutativeQ ],
     Cases[ Flatten @ aa, _?AnticommutativeQ ]
    ]  
- ] /; Not @ OrderedKindsQ @ {ops}
+ ] /; Not @ KindsOrderedQ @ {ops}
 
-OrderedKindsQ[ops_List] := Module[
-  { qq = Kind @ SplitBy[ops, MultiplyGenus] },
+KindsOrderedQ[ops_List] := Module[
+  { qq = MultiplyKind @ SplitBy[ops, MultiplyGenus] },
   AllTrue[qq, OrderedQ]
  ]
 
@@ -1580,7 +1627,7 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
   mm = Matrix[expr, ss];
   Elaborate @ ExpressionFor[MatrixExp[mm], ss]
  ] /; ContainsOnly[
-   Kind @ NonCommutativeSpecies[expr],
+   MultiplyKind @ NonCommutativeSpecies[expr],
    {Qubit, Qudit, Spin}
   ]
 (* NOTE: In principle, it can handle fermions as well. But fermions have been
@@ -1775,7 +1822,7 @@ Observation::usage = "Observation[spec] represents an operator that has the spec
 (* Observation /: Peel[ Observation[a_] ] := a *)
 (* for Matrix[] *)
 
-(* Observation /: Kind[ Observation[a_] ] := Kind[a] *)
+(* Observation /: MultiplyKind[ Observation[a_] ] := MultiplyKind[a] *)
 (* for Multiply[] *)
 
 (* Observation /: MultiplyGenus[ Observation[_] ] := "Singleton" *)
@@ -1869,7 +1916,7 @@ Occupation[ss:{__?SpeciesQ}, k_] :=
 
 Occupation[ss:{__?SpeciesQ}, k_] :=
   Observation[HoldForm @ Count[ss, k]] /;
-  And[Equal @@ Kind[ss], Equal @@ Dimension[ss]]
+  And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]]
 
 Occupation /:
 HoldPattern @ Dagger[ op_Occupation ] := op
@@ -1887,11 +1934,11 @@ OccupationValue::usage = "OccupationValue[{s1,s2,\[Ellipsis]},k] returns the occ
 
 OccupationValue[ss:{__?SpeciesQ}, val_][expr_] :=
   OccupationValue[expr, ss, val] /;
-  And[Equal @@ Kind[ss], Equal @@ Dimension[ss]]
+  And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]]
 
 OccupationValue[expr_, ss:{__?SpeciesQ}, val_] :=
   ObservationValue[expr, HoldForm @ Count[ss, val]] /;
-  And[Equal @@ Kind[ss], Equal @@ Dimension[ss]]
+  And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]]
 
 (**** </Occupation> ****)
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.12 $"][[2]], " (",
-  StringSplit["$Date: 2023-06-20 14:18:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.14 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 16:21:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -161,14 +161,17 @@ Let[Spin, {ls__Symbol}, opts___?OptionQ] := Module[
  ]
 
 setSpin[x_Symbol, spin_?SpinNumberQ] := (
-  Kind[x] ^= Spin;
-  Kind[x[___]] ^= Spin;
+  MultiplyKind[x] ^= Spin;
+  MultiplyKind[x[___]] ^= Spin;
   
   Dimension[x] ^= 2*spin + 1;
   Dimension[x[___]] ^= 2*spin + 1;
 
   LogicalValues[x] ^= Range[spin, -spin, -1];
   LogicalValues[x[___]] ^= Range[spin, -spin, -1];
+
+  AgentQ[x] ^= True;
+  AgentQ[x[___]] ^= True;
 
   SpinQ[x] ^= True;
   SpinQ[x[___]] ^= True;
@@ -474,17 +477,8 @@ WignerReduced::usage = "WignerReduced is OBSOLETE. Use Reduced instead."
 
 WignerReduced[expr__] := (
   Message[Q3General::obsolete, WignerReduced, Reduced];
-  KetFactor[expr]
+  Reduced[expr]
  )
-
-
-WignerReduced::usage = "WignerReduced[v, {s1, s2, ...}] constructs the reduced density matrix corresponding to the pure state v of Spins s1, s2, ... ."
-
-WignerReduced[v_, S_?SpinQ] :=
-  wReduced @ KetFactor[ Expand @ v, {S} ]
-
-WignerReduced[v_, ss:{__?SpinQ}] :=
-  wReduced @ KetFactor[Expand @ v, ss]
 
 
 (**** <Matrix> ****)

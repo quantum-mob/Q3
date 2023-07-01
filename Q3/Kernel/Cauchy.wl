@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.43 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-24 12:22:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.44 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 16:24:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -106,8 +106,8 @@ setComplex[z_Symbol] := (
   ComplexQ[z] ^= True;
   ComplexQ[z[___]] ^= True;
 
-  Kind[z] ^= Complex;
-  Kind[z[___]] ^= Complex;
+  MultiplyKind[z] ^= Complex;
+  MultiplyKind[z[___]] ^= Complex;
 
   z /: Element[z, Complexes] = True;
   z /: Element[z[___],Complexes] = True;
@@ -123,8 +123,8 @@ Let[Real, {ls__Symbol}] := (
  )
 
 setReal[x_Symbol] := (
-  Kind[x] ^= Real;
-  Kind[x[___]] ^= Real;
+  MultiplyKind[x] ^= Real;
+  MultiplyKind[x[___]] ^= Real;
   x /: RealQ[x] = True;
   x /: RealQ[x[___]] = True;
   x /: Element[x, Reals] = True;
@@ -142,8 +142,8 @@ Let[Integer, {ls__Symbol}] := (
  )
 
 setInteger[n_Symbol] := (
-  Kind[n] ^= Integer;
-  Kind[n[___]] ^= Integer;
+  MultiplyKind[n] ^= Integer;
+  MultiplyKind[n[___]] ^= Integer;
   n /: IntegerQ[n] = True;
   n /: IntegerQ[n[___]] = True;
   n /: Element[n, Integers] = True;
@@ -173,8 +173,8 @@ Let[Binary, {ls__Symbol}] := (
  )
 
 setBinary[n_Symbol] := (
-  Kind[n] ^= Binary;
-  Kind[n[___]] ^= Binary;
+  MultiplyKind[n] ^= Binary;
+  MultiplyKind[n[___]] ^= Binary;
   n /: BinaryQ[n] = True;
   n /: BinaryQ[n[___]] = True;
   n /: Element[n, Binaries] = True;

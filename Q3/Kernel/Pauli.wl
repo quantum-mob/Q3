@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.91 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-08 19:20:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.96 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-01 15:59:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -734,37 +734,65 @@ SetAttributes[{Ket, Bra}, NHoldAll]
 (* The integers in Ket[] and Bra[] should not be converted to real
    numbers by N[]. *)
 
-Format[ Ket[Association[]] ] := Interpretation[Ket[Any], Ket[<||>]]
 
-Format[Ket[a_Association], StandardForm] := Interpretation[
-  Ket @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-  Ket[a]
+If[ $VersionNumber < 13.3,
+  Format[ Ket[Association[]] ] := Interpretation[Ket[Any], Ket[<||>]];
+  Format[Ket[a_Association], StandardForm] := Interpretation[
+    Ket @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+    Ket[a]
+   ];
+  Format[Ket[a_Association], TraditionalForm] := Interpretation[
+    Ket @ Row @ KeyValueMap[Subscript[#2, #1]&, a],
+    Ket[a]
+   ];
+  Format[ Bra[Association[]] ] := Interpretation[Bra[Any], Bra[<||>]];
+  Format[Bra[a_Association], StandardForm] := Interpretation[
+    Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+    Bra[a]
+   ];
+  Format[Bra[a_Association], TraditionalForm] := Interpretation[
+    Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+    Bra[a]
+   ],
+  (* else *)
+  SyntaxInformation[Ket] = {"ArgumentsPattern" -> {___}};
+  SyntaxInformation[Bra] = {"ArgumentsPattern" -> {___}};
+  Format[Ket[bb__?BinaryQ]] := Interpretation[Ket @ {bb}, Ket @ bb];
+  Format[Ket[{}]] := Interpretation[Ket @ {Any}, Ket @ {}];
+  Format[Ket[Association[]]] := Interpretation[Ket @ {Any}, Ket[<||>]];
+  Format[Ket[a_Association], StandardForm] := Interpretation[
+    Ket @ List @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+    Ket[a]
+   ];
+  Format[Ket[a_Association], TraditionalForm] := Interpretation[
+    Ket @ List @ Row @ KeyValueMap[Subscript[#2, #1]&, a],
+    Ket[a]
+   ];
+  Format[Bra[bb__?BinaryQ]] := Interpretation[Bra @ {bb}, Bra @ bb];
+  Format[Bra[{}]] := Interpretation[Bra @ {Any}, Bra @ {}];
+  Format[Bra[Association[]]] := Interpretation[Bra @ {Any}, Bra[<||>]];
+  Format[Bra[a_Association], StandardForm] := Interpretation[
+    Bra @ List @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+    Bra[a]
+   ];
+  Format[Bra[a_Association], TraditionalForm] := Interpretation[
+    Bra @ List @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
+    Bra[a]
+   ]
  ]
 
-Format[Ket[a_Association], TraditionalForm] := Interpretation[
-  Ket @ Row @ KeyValueMap[Subscript[#2, #1]&, a],
-  Ket[a]
+
+If[ $VersionNumber < 13.3,
+  Format[v:Ket[__]] := Interpretation[Map[theKetFormat, v], v] /;
+    AnyTrue[v, theKetFormatQ];
+  Format[v:Bra[__]] := Interpretation[Map[theKetFormat, v], v] /;
+    AnyTrue[v, theKetFormatQ],
+  (* else *)
+  Format[v:Ket[__]] := Interpretation[Ket @ Map[theKetFormat, List @@ v], v] /;
+    AnyTrue[v, theKetFormatQ];
+  Format[v:Bra[__]] := Interpretation[Ket @ Map[theKetFormat, List @@ v], v] /;
+    AnyTrue[v, theKetFormatQ]
  ]
-
-
-Format[ Bra[Association[]] ] := Interpretation[Bra[Any], Bra[<||>]]
-
-Format[Bra[a_Association], StandardForm] := Interpretation[
-  Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-  Bra[a]
- ]
-
-Format[Bra[a_Association], TraditionalForm] := Interpretation[
-  Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-  Bra[a]
- ]
-
-
-Format[v:Ket[__]] := Interpretation[Map[theKetFormat, v], v] /;
-  AnyTrue[v, theKetFormatQ]
-
-Format[v:Bra[__]] := Interpretation[Map[theKetFormat, v], v] /;
-  AnyTrue[v, theKetFormatQ]
 
 theKetFormatQ[_] = False
 
@@ -775,9 +803,9 @@ Ket /: NonCommutativeQ[ Ket[___] ] = True
 
 Bra /: NonCommutativeQ[ Bra[___] ] = True
 
-Ket /: Kind[ Ket[___] ] = Ket
+Ket /: MultiplyKind[ Ket[___] ] = Ket
 
-Bra /: Kind[ Bra[___] ] = Bra
+Bra /: MultiplyKind[ Bra[___] ] = Bra
 
 Ket /: MultiplyGenus[ Ket[___] ] = "Ket"
 
@@ -814,22 +842,9 @@ Ket[ Ket[a_Association], spec__Rule ] := Module[
  ]
 
 
-Ket[ spec___Rule, ss:{__?SpeciesQ}] := KetRegulate[Ket[spec], ss]
+Ket[ spec___Rule, ss:{__?AgentQ}] := KetRegulate[Ket[spec], ss]
 
-Ket[ v_Ket, spec___Rule, ss:{__?SpeciesQ}] := KetRegulate[Ket[v, spec], ss]
-
-
-(* Dangers! *)
-Ket[spec__Rule, s_?SpeciesQ] := (
-  Message[Ket::spec, s];
-  Ket[spec, {s}]
- )
-
-(* Dangers! *)
-Ket[v_Ket, spec__Rule, s_?SpecieQ] := (
-  Message[Ket::spec, s];
-  Ket[v, spec, {s}]
- )
+Ket[ v_Ket, spec___Rule, ss:{__?AgentQ}] := KetRegulate[Ket[v, spec], ss]
 
 
 (* operator form *)
@@ -848,8 +863,6 @@ Bra[spec__Rule] := Dagger @ Ket[Ket[], spec]
 
 Bra[v_Bra, spec__Rule] := Dagger @ Ket[Dagger @ v, spec]
 
-
-Bra[ spec___Rule, s_?SpeciesQ] := KetRegulate[Bra[spec], {s}]
 
 Bra[ spec___Rule, ss:{__?SpeciesQ}] := KetRegulate[Bra[spec], ss]
 
@@ -1376,7 +1389,7 @@ Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] repre
 
 SetAttributes[Pauli, {NHoldAll, Listable}]
 
-Pauli /: Kind[ Pauli[___] ] = Pauli
+Pauli /: MultiplyKind[ Pauli[___] ] = Pauli
 
 Pauli /: MultiplyGenus[ Pauli[___] ] = "Singleton"
 
@@ -2355,7 +2368,7 @@ AddElaborationPatterns[_Parity]
 
 Parity /: Peel[ Parity[a_] ] := a (* for Matrix[] *)
 
-Parity /: Kind[ Parity[a_] ] := Kind[a] (* for Multiply[] *)
+Parity /: MultiplyKind[ Parity[a_] ] := MultiplyKind[a] (* for Multiply[] *)
 
 Parity /: MultiplyGenus[ Parity[_] ] := "Singleton" (* for Multiply *)
 
@@ -2884,8 +2897,8 @@ Format @ Dyad[a_Association, b_Association] :=
 Dyad /: NonCommutativeQ[ Dyad[___] ] = True
 
 Dyad /:
-Kind @ Dyad[a_Association, b_Association] :=
-  First @ Kind @ Union[Keys @ a, Keys @ b]
+MultiplyKind @ Dyad[a_Association, b_Association] :=
+  First @ MultiplyKind @ Union[Keys @ a, Keys @ b]
 
 Dyad /:
 MultiplyGenus @ Dyad[___] := "Singleton"
@@ -3036,9 +3049,9 @@ Dyad[Ket[a_Association], Ket[b_Association],
    ]
 
 Dyad[a_Association, b_Association] := Module[
-  { ss = GroupBy[Union[Keys @ a, Keys @ b], Kind] },
+  { ss = GroupBy[Union[Keys @ a, Keys @ b], MultiplyKind] },
   Multiply @@ Map[Dyad[KeyTake[a, #], KeyTake[b, #]]&, Values @ ss]
- ] /; Length[Union @ Kind @ Flatten @ {Keys @ a, Keys @ b}] > 1
+ ] /; Length[Union @ MultiplyKind @ Flatten @ {Keys @ a, Keys @ b}] > 1
 
 
 Dyad[a_Plus, b_, qq___] := Garner @ Map[Dyad[#, b, qq]&, a]
@@ -3063,7 +3076,7 @@ HoldPattern @ Multiply[
      KeySort @ CheckJoin[a, KeyTake[c, cc]],
      KeySort @ CheckJoin[d, KeyTake[b, bb]]
     ] * BraKet[KeyTake[b, bc], KeyTake[c, bc]]
-  ] /; Kind[xx] == Kind[yy]
+  ] /; MultiplyKind[xx] == MultiplyKind[yy]
 
 HoldPattern @ Multiply[
   pre___,
@@ -3094,7 +3107,7 @@ HoldPattern @ Multiply[
   With[
     { sp = FlavorMute @ Peel @ op },
     And[
-      Kind[Dyad[a, b]] == Kind[op],
+      MultiplyKind[Dyad[a, b]] == MultiplyKind[op],
       Not @ MemberQ[Union[Keys @ a, Keys @ b], sp],
       Not @ OrderedQ @ {sp, First @ Keys @ a}
      ]
@@ -3107,7 +3120,7 @@ HoldPattern @ Multiply[
  ] := Multiply[pre, op, Dyad[a, b], post] /; With[
    { sp = FlavorMute @ Peel @ op },
    And[
-     Kind[Dyad[a, b]] == Kind[op],
+     MultiplyKind[Dyad[a, b]] == MultiplyKind[op],
      Not @ MemberQ[Union[Keys @ a, Keys @ b], sp],
      Not @ OrderedQ @ {First @ Keys @ b, sp}
     ]
