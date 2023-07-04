@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-06-21 14:15:54+09 $ *)
-(* $Revision: 1.28 $ *)
+(* $Date: 2023-07-04 09:25:46+09 $ *)
+(* $Revision: 1.33 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -131,8 +131,9 @@ fileDeploy::usage = "fileDepoly[src, dst] does the actual job of deploying src t
 
 fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   { pdf, nb },
-
-  Print[src, " --> ", dst];
+  Print["Deploying ", src];
+  
+  Print["Copying to ", dst];
   If[ FailureQ @ CopyFile[src, dst, OverwriteTarget -> True],
     Message[PlaybookDeploy::nocopy, src, dst];
     Return[$Failed]
@@ -147,17 +148,28 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   DeleteEpilogue[nb];
 
   If[ OptionValue["PrintHandout"],
-    pdf = StringJoin @
-      {FileNameJoin @ {DirectoryName @ dst, FileBaseName @ dst}, ".pdf"};
-    Print[src, " --> ", pdf];
-    Export[pdf, nb]
+    pdf = StringJoin @ {
+      FileNameJoin @ {DirectoryName @ dst, FileBaseName @ dst},
+      ".pdf" };
+    Print["Printing to ", pdf];
+    NotebookPrint[nb, pdf];
+    (* For some unknown reason, the following three lines are required in
+       Mathematica 13.3.0; otherwise, CollapseGroup below stalls. *)
+    NotebookSave[nb, dst];
+    NotebookClose[nb];
+    If[ FailureQ[nb = NotebookOpen @ dst],
+      Message[PlaybookDeploy::noopen, dst];
+      Return[$Failed]
+     ]
    ];
   
   If[ OptionValue["DeleteOutput"], CleanNotebook[nb] ];
 
   If[ OptionValue["CollapseGroup"],
-    CollapseGroup[nb, {"Subsubsection", "Subsection", "Section"}] ];
-  
+    CollapseGroup[nb, {"Subsubsection", "Subsection", "Section"}]
+   ];
+
+  Print["Saving ", dst];
   SetOptions[nb, Saveable -> False, StyleDefinitions -> $PlaybookStyle];
   NotebookSave[nb, dst];
   NotebookClose[nb];
@@ -167,7 +179,8 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
 CleanNotebook::usage = "CleanNotebook[nb, styles] delete all cells of styles in notebook nb."
 
 CleanNotebook[nb_NotebookObject, style_String:"Output"] :=
-  ( NotebookFind[nb, style, All, CellStyle];
+  ( Print["Deleting Cells of style ", style];
+    NotebookFind[nb, style, All, CellStyle];
     NotebookDelete[nb] )
 
 CleanNotebook[nb_NotebookObject, styles:{__String}] :=
@@ -177,7 +190,8 @@ CleanNotebook[nb_NotebookObject, styles:{__String}] :=
 CollapseGroup::usage = "CollapseGroup[nb, styles] collapse all cell groups of styles in notebook nb."
 
 CollapseGroup[nb_NotebookObject, style_String:"Section"] :=
-  ( NotebookFind[nb, style, All, CellStyle];
+  ( Print["Collapsing Cells of style ", style];
+    NotebookFind[nb, style, All, CellStyle];
     FrontEndTokenExecute[nb, "OpenCloseGroup"] )
 
 CollapseGroup[nb_NotebookObject, styles:{__String}] :=

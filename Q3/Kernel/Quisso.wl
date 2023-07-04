@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.94 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 15:59:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.95 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-04 11:57:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2463,10 +2463,16 @@ setQudit[x_Symbol, dim_Integer] := (
   Format @ x[j___, $] :=
     Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];  
   Format @ x[j___, 0] :=
-    Interpretation[SpeciesBox[1, {j}, {0}], x[j, 0]]; 
-  Format @ x[j___, a_ -> b_] := Interpretation[
-    SpeciesBox[ Row @ {"(", Ket[b], Bra[a], ")"}, {j}, {}],
-    x[j, a -> b]
+    Interpretation[SpeciesBox[1, {j}, {0}], x[j, 0]];
+  If[ $VersionNumber < 13.3,
+    Format @ x[j___, a_ -> b_] := Interpretation[
+      SpeciesBox[ Row @ {"(", Ket[b], Bra[a], ")"}, {j}, {}],
+      x[j, a -> b]
+     ],
+    Format @ x[j___, a_ -> b_] := Interpretation[
+      SpeciesBox[ Row @ {"(", Ket @ {b}, Bra @ {a}, ")"}, {j}, {}],
+      x[j, a -> b]
+     ]
    ];
  )
 

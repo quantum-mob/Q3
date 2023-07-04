@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.7 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 16:33:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.8 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-03 11:01:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -841,7 +841,7 @@ qCircuitOutput[ Missing["NotFound"], xx_List, yy_Association ] = {}
 qCircuitOutput[ gg:{___}, xx_List, yy_Association ] := Module[
   { xy = Map[{$CircuitSize + $InOutOffset, #}&, yy],
     ff = List @ ParsePort @ gg },
-  Map[qDrawPort[#, xy]&, ff]
+  Map[qcDrawPort[#, xy]&, ff]
  ]
 
 
@@ -856,7 +856,7 @@ qCircuitInput[ gg:{___}, xx_List, yy_Association ] := Module[
   ff = Join[gg, {"Pivot" -> {1, 0}, "Type" -> -1} ];
   ff = List @ ParsePort @ ff;
 
-  Map[qDrawPort[#, xy]&, ff]
+  Map[qcDrawPort[#, xy]&, ff]
  ]
 
 
@@ -907,11 +907,11 @@ ParsePort[a_, b__, opts___?OptionQ] := Map[ParsePort[#, opts]&, {a, b}]
 (**** </ParsePort> ****)
 
 
-qDrawPort::usage = "qDrawPort renders the input/output ports."
+qcDrawPort::usage = "qcDrawPort renders the input/output ports."
 
-qDrawPort[ gg_List, xy_Association ] := Map[ qDrawPort[#, xy]&, gg ]
+qcDrawPort[ gg_List, xy_Association ] := Map[qcDrawPort[#, xy]&, gg]
 
-qDrawPort[ Port[ Ket[v_], opts___?OptionQ ], xy_Association ] := Module[
+qcDrawPort[ Port[ Ket[v_], opts___?OptionQ ], xy_Association ] := Module[
   { vv = Ket /@ v,
     tt, label, pivot },
   { label, pivot } = {"Label", "Pivot"} /. {opts} /. Options[Port];
@@ -936,7 +936,7 @@ qDrawPort[ Port[ Ket[v_], opts___?OptionQ ], xy_Association ] := Module[
    ]
  ]
 
-qDrawPort[
+qcDrawPort[
   Port[ ProductState[v_Association, opts___], more___?OptionQ ],
   xy_Association
  ] := Module[
@@ -962,33 +962,33 @@ qDrawPort[
     ]
   ]
 
-qDrawPort[ Port[ expr_, opts___?OptionQ ], xy_Association ] := (
+qcDrawPort[ Port[ expr_, opts___?OptionQ ], xy_Association ] := (
   Message[QuantumCircuit::noqubit, expr];
   Return @ {};
  ) /; Qubits[expr] == {}
 
-qDrawPort[ Port[ expr_, opts___?OptionQ ], xy_Association ] := Module[
+qcDrawPort[ Port[ expr_, opts___?OptionQ ], xy_Association ] := Module[
   { qq = Qubits @ expr,
     label, pivot, dir, brace, text, zz },
 
   { label, pivot, dir } = { "Label", "Pivot", "Type" } /.
     {opts} /. Options[Port];
 
-  If[ label === None, Return @ {} ];
+  If[label === None, Return @ {}];
   
   text = If[label === Automatic, SimpleForm[expr, qq], label];
   
   zz = Transpose[ MinMax /@ Transpose @ Lookup[xy, qq] ];
 
   If[ Length[qq] > 1,
-    brace = qPortBrace[dir, zz];
+    brace = qcPortBrace[dir, zz];
     zz = Mean @ zz + ($InOutOffset + $BraceWidth) {dir, 0};
     { brace, qcPortText[text, zz, pivot, opts] },
     qcPortText[text, Mean @ zz, pivot, opts]
    ]
  ]
 
-qDrawPort[ g_, xy_Association ] := g
+qcDrawPort[ g_, xy_Association ] := g
 
 
 qcPortText[text_, pt:{_, _}, pivot:{_, _}, opts___?OptionQ] := Module[
@@ -1007,10 +1007,10 @@ qcPortText[text_, pt:{_, _}, pivot:{_, _}, opts___?OptionQ] := Module[
    ]
  ]
 
-qPortBrace[-1, { a:{_, _}, b:{_, _} } ] :=
+qcPortBrace[-1, { a:{_, _}, b:{_, _} } ] :=
   LeftBrace[a, b, "Width" -> $BraceWidth]
 
-qPortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
+qcPortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
   RightBrace[a, b, "Width" -> $BraceWidth]
 
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.96 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 15:59:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.103 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-05 00:01:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -463,11 +463,21 @@ SimpleForm[expr_, gg_List] := expr /. {
 
 theSimpleForm::usage = "theSimpleForm[ket, {s1, s2, ...}] converts ket into a simple form."
 
-theSimpleForm[vec:Ket[_Association], gg_List] := With[
-  { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}] },
-  Ket @ Row @ Riffle[
-    Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vec /@ ss],
-    $KetGroupDelimiter
+If[ $VersionNumber < 13.3,
+  theSimpleForm[vec:Ket[_Association], gg_List] := With[
+    { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}] },
+    Ket @ Row @ Riffle[
+      Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vec /@ ss],
+      $KetGroupDelimiter
+     ]
+   ],
+  (* else *)
+  theSimpleForm[vec:Ket[_Association], gg_List] := With[
+    { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}] },
+    Ket @ List @ Row @ Riffle[
+      Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vec /@ ss],
+      $KetGroupDelimiter
+     ]
    ]
  ]
 
@@ -507,9 +517,18 @@ ProductForm[ expr_, gg_List ] := expr /. {
 
 theProductForm::usage = "theProductForm[ket, {s1, s2, \[Ellipsis]}] converts ket into a product form."
 
-theProductForm[vec:Ket[_Association], gg_List] := Row @ Riffle[
-  Map[Ket @ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ vec /@ gg],
-  $KetProductDelimiter
+If[ $VersionNumber < 13.3,
+  theProductForm[vec:Ket[_Association], gg_List] := Row @ Riffle[
+    Map[Ket @ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ vec /@ gg],
+    $KetProductDelimiter
+   ],
+  theProductForm[vec:Ket[_Association], gg_List] := Row @ Riffle[
+    Map[
+      Ket @ List @ Row @ Riffle[#, $KetDelimiter]&,
+      Flatten /@ List /@ vec /@ gg
+     ],
+    $KetProductDelimiter
+   ]
  ]
 
 (**** </ProductForm> ****)
@@ -549,20 +568,37 @@ SpinForm[expr:Except[_Ket|_Bra], rest__] := expr /. {
  }
 
 
-theSpinForm[vec:Ket[(0|1)..], ___] := 
-  vec /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"}
-
-theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
-  { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}],
-    rr = Flatten @ kk,
-    vv },
-  vv = Join[
-    (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
-    {vec @ rr} /. {{} -> Nothing}
-   ];
-  Ket @ Row @ Riffle[
-    Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vv],
-    $KetGroupDelimiter
+If[ $VersionNumber < 13.3,
+  theSpinForm[vec:Ket[(0|1)..], ___] := 
+    vec /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"};
+  theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
+    { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}],
+      rr = Flatten @ kk,
+      vv },
+    vv = Join[
+      (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
+      {vec @ rr} /. {{} -> Nothing}
+     ];
+    Ket @ Row @ Riffle[
+      Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vv],
+      $KetGroupDelimiter
+     ]
+   ],
+  (* else *)
+  theSpinForm[Ket[vv:(0|1)..], ___] := 
+    Ket @ List @ Row[{vv} /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"}];
+  theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
+    { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}],
+      rr = Flatten @ kk,
+      vv },
+    vv = Join[
+      (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
+      {vec @ rr} /. {{} -> Nothing}
+     ];
+    Ket @ List @ Row @ Riffle[
+      Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vv],
+      $KetGroupDelimiter
+     ]
    ]
  ]
 
@@ -736,7 +772,7 @@ SetAttributes[{Ket, Bra}, NHoldAll]
 
 
 If[ $VersionNumber < 13.3,
-  Format[ Ket[Association[]] ] := Interpretation[Ket[Any], Ket[<||>]];
+  Format[Ket[Association[]]] := Interpretation[Ket[Any], Ket[<||>]];
   Format[Ket[a_Association], StandardForm] := Interpretation[
     Ket @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
     Ket[a]
@@ -757,7 +793,10 @@ If[ $VersionNumber < 13.3,
   (* else *)
   SyntaxInformation[Ket] = {"ArgumentsPattern" -> {___}};
   SyntaxInformation[Bra] = {"ArgumentsPattern" -> {___}};
-  Format[Ket[bb__?BinaryQ]] := Interpretation[Ket @ {bb}, Ket @ bb];
+  Format[Ket[a:Except[_List|_Association]]] :=
+    Interpretation[Ket @ {a}, Ket @ a];
+  Format[Ket[a_, bb__]] := Interpretation[Ket @ {a, bb}, Ket[a, bb]];
+  (* - *)
   Format[Ket[{}]] := Interpretation[Ket @ {Any}, Ket @ {}];
   Format[Ket[Association[]]] := Interpretation[Ket @ {Any}, Ket[<||>]];
   Format[Ket[a_Association], StandardForm] := Interpretation[
@@ -768,7 +807,11 @@ If[ $VersionNumber < 13.3,
     Ket @ List @ Row @ KeyValueMap[Subscript[#2, #1]&, a],
     Ket[a]
    ];
-  Format[Bra[bb__?BinaryQ]] := Interpretation[Bra @ {bb}, Bra @ bb];
+  (* - *)
+  Format[Bra[a:Except[_List|_Association]]] :=
+    Interpretation[Bra @ {a}, Bra @ a];
+  Format[Bra[a_, bb__]] := Interpretation[Bra @ {a, bb}, Bra[a, bb]];
+  (* - *)
   Format[Bra[{}]] := Interpretation[Bra @ {Any}, Bra @ {}];
   Format[Bra[Association[]]] := Interpretation[Bra @ {Any}, Bra[<||>]];
   Format[Bra[a_Association], StandardForm] := Interpretation[
@@ -780,7 +823,6 @@ If[ $VersionNumber < 13.3,
     Bra[a]
    ]
  ]
-
 
 If[ $VersionNumber < 13.3,
   Format[v:Ket[__]] := Interpretation[Map[theKetFormat, v], v] /;
@@ -923,15 +965,15 @@ theKetTrim[{} -> _] = Nothing (* a fallback *)
 
 KetTrim::usage = "KetTrim[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.\nTo be compared with KetRegulate."
 
-KetTrim[Ket[a_Association]] := Ket @ theKetTrim[a]
+KetTrim[Ket[a_Association]] := Ket[theKetTrim @ a]
 
 KetTrim[expr_] := expr /; FreeQ[expr, _Ket | _Bra]
 
 KetTrim[expr_] := expr /. {
   a_OTimes -> a, (* NOTE *)
-  OSlash[v_Ket, new_] :> OSlash[v, KetTrim @ new],
-  Ket[a_Association] :> Ket @ theKetTrim @ a,
-  Bra[a_Association] :> Bra @ theKetTrim @ a
+  HoldPattern[OSlash[v_Ket, new_]] :> OSlash[v, KetTrim @ new],
+  Ket[a_Association] :> Ket[theKetTrim @ a],
+  Bra[a_Association] :> Bra[theKetTrim @ a]
  }
 (* NOTE: This line is necessary to prevent the Kets and Bras in OTimes from
    being affected. *)
