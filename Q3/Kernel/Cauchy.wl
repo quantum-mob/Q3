@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.44 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 16:24:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.45 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-06 11:56:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -105,6 +105,8 @@ Let[Complex, {ls__Symbol}] := (
 setComplex[z_Symbol] := (
   ComplexQ[z] ^= True;
   ComplexQ[z[___]] ^= True;
+
+  AtomQ[z[___]] ^= True; (* EXPERIMENTAL *)
 
   MultiplyKind[z] ^= Complex;
   MultiplyKind[z[___]] ^= Complex;

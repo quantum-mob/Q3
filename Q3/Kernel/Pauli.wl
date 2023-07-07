@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.103 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-05 00:01:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.111 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-07 07:00:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -416,7 +416,7 @@ $KetDelimiter::usage = "The charater delimiting values in a Ket."
 
 $KetGroupDelimiter::usage = "The charater delimiting groups of values in a Ket."
 
-$KetDelimiter = Nothing;
+$KetDelimiter = "";
 $KetGroupDelimiter = ";";
 $KetProductDelimiter = "\[CircleTimes]";
 
@@ -463,21 +463,11 @@ SimpleForm[expr_, gg_List] := expr /. {
 
 theSimpleForm::usage = "theSimpleForm[ket, {s1, s2, ...}] converts ket into a simple form."
 
-If[ $VersionNumber < 13.3,
-  theSimpleForm[vec:Ket[_Association], gg_List] := With[
-    { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}] },
-    Ket @ Row @ Riffle[
-      Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vec /@ ss],
-      $KetGroupDelimiter
-     ]
-   ],
-  (* else *)
-  theSimpleForm[vec:Ket[_Association], gg_List] := With[
-    { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}] },
-    Ket @ List @ Row @ Riffle[
-      Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vec /@ ss],
-      $KetGroupDelimiter
-     ]
+theSimpleForm[vec:Ket[_Association], gg_List] := With[
+  { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}] },
+  Ket @ List @ Row[
+    Map[Row[#, $KetDelimiter]&, Flatten /@ vec /@ ss],
+    $KetGroupDelimiter
    ]
  ]
 
@@ -517,18 +507,12 @@ ProductForm[ expr_, gg_List ] := expr /. {
 
 theProductForm::usage = "theProductForm[ket, {s1, s2, \[Ellipsis]}] converts ket into a product form."
 
-If[ $VersionNumber < 13.3,
-  theProductForm[vec:Ket[_Association], gg_List] := Row @ Riffle[
-    Map[Ket @ Row @ Riffle[#, $KetDelimiter]&, Flatten /@ List /@ vec /@ gg],
-    $KetProductDelimiter
+theProductForm[vec:Ket[_Association], gg_List] := Row[
+  Map[
+    Ket @ List @ Row[#, $KetDelimiter]&,
+    Flatten /@ List /@ vec /@ gg
    ],
-  theProductForm[vec:Ket[_Association], gg_List] := Row @ Riffle[
-    Map[
-      Ket @ List @ Row @ Riffle[#, $KetDelimiter]&,
-      Flatten /@ List /@ vec /@ gg
-     ],
-    $KetProductDelimiter
-   ]
+  $KetProductDelimiter
  ]
 
 (**** </ProductForm> ****)
@@ -568,37 +552,20 @@ SpinForm[expr:Except[_Ket|_Bra], rest__] := expr /. {
  }
 
 
-If[ $VersionNumber < 13.3,
-  theSpinForm[vec:Ket[(0|1)..], ___] := 
-    vec /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"};
-  theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
-    { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}],
-      rr = Flatten @ kk,
-      vv },
-    vv = Join[
-      (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
-      {vec @ rr} /. {{} -> Nothing}
-     ];
-    Ket @ Row @ Riffle[
-      Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vv],
-      $KetGroupDelimiter
-     ]
-   ],
-  (* else *)
-  theSpinForm[Ket[vv:(0|1)..], ___] := 
-    Ket @ List @ Row[{vv} /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"}];
-  theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
-    { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}],
-      rr = Flatten @ kk,
-      vv },
-    vv = Join[
-      (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
-      {vec @ rr} /. {{} -> Nothing}
-     ];
-    Ket @ List @ Row @ Riffle[
-      Map[Row @ Riffle[#, $KetDelimiter]&, Flatten /@ vv],
-      $KetGroupDelimiter
-     ]
+theSpinForm[Ket[vv:(0|1)..], ___] := 
+  Ket @ List @ Row[{vv} /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"}]
+
+theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
+  { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}],
+    rr = Flatten @ kk,
+    vv },
+  vv = Join[
+    (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
+    {vec @ rr} /. {{} -> Nothing}
+   ];
+  Ket @ List @ Row[
+    Map[Row[#, $KetDelimiter]&, Flatten /@ vv],
+    $KetGroupDelimiter
    ]
  ]
 
@@ -760,6 +727,48 @@ HoldPattern @ fKetQ[expr_Times] := fKetQ @ Expand[expr]
 HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
 
 
+(**** <KetFormat> <BraFormat>****)
+
+KetFormat::usage = "..."
+
+KetFormat[a_List] := DisplayForm @ RowBox @ {
+  "\[LeftBracketingBar]",
+  Row[theKetFormat /@ a, ","],
+  "\[RightAngleBracket]"
+ } /; Not @ theKetFormatQ[a]
+
+BraFormat[a_List] := DisplayForm @ RowBox @ {
+  "\[LeftAngleBracket]",
+  Row[theKetFormat /@ a, ","],
+  "\[RightBracketingBar]"
+ } /; Not @ theKetFormatQ[a]
+
+
+KetFormat[a_] := DisplayForm @ RowBox @ {
+  "\[LeftBracketingBar]",
+  theKetFormat[a],
+  "\[RightAngleBracket]"
+ }
+
+BraFormat[a_] := DisplayForm @ RowBox @ {
+  "\[LeftAngleBracket]",
+  theKetFormat[a],
+  "\[RightBracketingBar]"
+ }
+
+
+theKetFormat[Association[]] := Any
+
+theKetFormat[a_Association] := Row @ KeyValueMap[Subscript[#2,#1]&, a]
+
+
+theKetFormatQ[_] = False
+
+theKetFormat[v_] = v
+
+(**** </KetFormat> </BraFormat> ****)
+
+
 (**** <Ket & Bra> ****)
 
 Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3]. Ket[s$1, s$2, ...] represents the tensor product Ket[s$1] \[CircleTimes] Ket[s$2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, TheState, Pauli, ThePauli, Operator, TheOperator."
@@ -770,75 +779,18 @@ SetAttributes[{Ket, Bra}, NHoldAll]
 (* The integers in Ket[] and Bra[] should not be converted to real
    numbers by N[]. *)
 
-
-If[ $VersionNumber < 13.3,
-  Format[Ket[Association[]]] := Interpretation[Ket[Any], Ket[<||>]];
-  Format[Ket[a_Association], StandardForm] := Interpretation[
-    Ket @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-    Ket[a]
-   ];
-  Format[Ket[a_Association], TraditionalForm] := Interpretation[
-    Ket @ Row @ KeyValueMap[Subscript[#2, #1]&, a],
-    Ket[a]
-   ];
-  Format[ Bra[Association[]] ] := Interpretation[Bra[Any], Bra[<||>]];
-  Format[Bra[a_Association], StandardForm] := Interpretation[
-    Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-    Bra[a]
-   ];
-  Format[Bra[a_Association], TraditionalForm] := Interpretation[
-    Bra @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-    Bra[a]
-   ],
-  (* else *)
+If[ $VersionNumber > 13.2,
   SyntaxInformation[Ket] = {"ArgumentsPattern" -> {___}};
   SyntaxInformation[Bra] = {"ArgumentsPattern" -> {___}};
-  Format[Ket[a:Except[_List|_Association]]] :=
-    Interpretation[Ket @ {a}, Ket @ a];
-  Format[Ket[a_, bb__]] := Interpretation[Ket @ {a, bb}, Ket[a, bb]];
-  (* - *)
-  Format[Ket[{}]] := Interpretation[Ket @ {Any}, Ket @ {}];
-  Format[Ket[Association[]]] := Interpretation[Ket @ {Any}, Ket[<||>]];
-  Format[Ket[a_Association], StandardForm] := Interpretation[
-    Ket @ List @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-    Ket[a]
-   ];
-  Format[Ket[a_Association], TraditionalForm] := Interpretation[
-    Ket @ List @ Row @ KeyValueMap[Subscript[#2, #1]&, a],
-    Ket[a]
-   ];
-  (* - *)
-  Format[Bra[a:Except[_List|_Association]]] :=
-    Interpretation[Bra @ {a}, Bra @ a];
-  Format[Bra[a_, bb__]] := Interpretation[Bra @ {a, bb}, Bra[a, bb]];
-  (* - *)
-  Format[Bra[{}]] := Interpretation[Bra @ {Any}, Bra @ {}];
-  Format[Bra[Association[]]] := Interpretation[Bra @ {Any}, Bra[<||>]];
-  Format[Bra[a_Association], StandardForm] := Interpretation[
-    Bra @ List @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-    Bra[a]
-   ];
-  Format[Bra[a_Association], TraditionalForm] := Interpretation[
-    Bra @ List @ Row @ KeyValueMap[Subscript[#2,#1]&, a],
-    Bra[a]
-   ]
  ]
 
-If[ $VersionNumber < 13.3,
-  Format[v:Ket[__]] := Interpretation[Map[theKetFormat, v], v] /;
-    AnyTrue[v, theKetFormatQ];
-  Format[v:Bra[__]] := Interpretation[Map[theKetFormat, v], v] /;
-    AnyTrue[v, theKetFormatQ],
-  (* else *)
-  Format[v:Ket[__]] := Interpretation[Ket @ Map[theKetFormat, List @@ v], v] /;
-    AnyTrue[v, theKetFormatQ];
-  Format[v:Bra[__]] := Interpretation[Ket @ Map[theKetFormat, List @@ v], v] /;
-    AnyTrue[v, theKetFormatQ]
- ]
+Format[Ket[v_]] := Interpretation[KetFormat[v], Ket[v]]
 
-theKetFormatQ[_] = False
+Format[Ket[a_, b__]] := Interpretation[KetFormat @ {a, b}, Ket[a, b]]
 
-theKetFormat[v_] = v
+Format[Bra[v_]] := Interpretation[BraFormat[v], Bra[v]]
+
+Format[Bra[a_, b__]] := Interpretation[BraFormat @ {a, b}, Bra[a, b]]
 
 
 Ket /: NonCommutativeQ[ Ket[___] ] = True
