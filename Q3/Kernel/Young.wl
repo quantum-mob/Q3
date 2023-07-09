@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.9 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 13:55:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.10 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 15:49:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -808,7 +808,7 @@ KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
  ] /; NoneTrue[bs, FreeQ[#, Ket[_Association]]&]
 
 KetSymmetrize[expr_] := With[
-  { ss = NonCommutativeSpecies[expr] },
+  { ss = Agents[expr] },
   KetSymmetrize[expr, ss, {Range[Length @ ss]}]
  ] /; Not @ FreeQ[expr, Ket[_Association]]
 

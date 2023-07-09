@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.40 $"][[2]], " (",
-  StringSplit["$Date: 2023-05-27 16:53:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.41 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -229,12 +229,12 @@ ChoiMatrix[most__, ss:{__?SpeciesQ}] :=
 
 
 ChoiMatrix[ops:{__}, ss:{__?SpeciesQ}] := With[
-  { qq = NonCommutativeSpecies @ Join[ops, ss] },
+  { qq = Agents @ Join[ops, ss] },
   ChoiMatrix @ Matrix[ops, qq]
  ]
 
 ChoiMatrix[ops:{__}] := With[
-  { qq = NonCommutativeSpecies[ops] },
+  { qq = Agents[ops] },
   ChoiMatrix @ Matrix[ops, qq]
  ] /; FreeQ[ops, _Pauli]
 
@@ -242,12 +242,12 @@ ChoiMatrix[ops:{__}] := ChoiMatrix @ Matrix[ops]
 
 
 ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ), ss:{__?SpeciesQ}] := With[
-  { qq = NonCommutativeSpecies @ Join[ops, ss] },
+  { qq = Agents @ Join[ops, ss] },
   ChoiMatrix[Matrix[ops, qq], cc]
  ]
 
 ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := With[
-  { qq = NonCommutativeSpecies[ops] },
+  { qq = Agents[ops] },
   ChoiMatrix[Matrix[ops, qq], cc]
  ] /; FreeQ[ops, _Pauli]
 
@@ -491,7 +491,7 @@ LindbladStationary[ops:{_, __}] :=
   Not @ FreeQ[ops, _Pauli]
 
 LindbladStationary[ops:{_, __}] := Module[
-  { ss = NonCommutativeSpecies @ ops,
+  { ss = Agents @ ops,
     rho },
   rho = LindbladStationary @ Matrix[ops, ss];
   ExpressionFor[rho, ss]
@@ -548,7 +548,7 @@ LindbladSolve[ops:{_, __}, in_, t_] :=
   Not @ FreeQ[Append[ops, in], _Pauli]
 
 LindbladSolve[ops:{_, __}, in_, t_] := Module[
-  { ss = NonCommutativeSpecies @ Append[ops, in],
+  { ss = Agents @ Append[ops, in],
     rho },
   rho = LindbladSolve[Matrix[ops, ss], Matrix[in, ss], t];
   ExpressionFor[rho, ss]
@@ -615,7 +615,7 @@ NLindbladSolve[ops:{_, __}, init_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
 
 NLindbladSolve[ops:{_, __}, init_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
   Module[
-    { ss = NonCommutativeSpecies @ Append[ops, init],
+    { ss = Agents @ Append[ops, init],
       rho },
     rho = NLindbladSolve[
       Matrix[ops, ss],
@@ -730,7 +730,7 @@ LindbladSimulate[ops:{opH_?MatrixQ, opL__?MatrixQ}, in_?VectorQ, tt_List] :=
   LindbladSimulate[opH, {opL}, in, tt]
 
 LindbladSimulate[opH_, opL:{__}, in_, tt_List, opts___?OptionQ] := Module[
-  { ss = NonCommutativeSpecies @ {opH, opL, in} },
+  { ss = Agents @ {opH, opL, in} },
   LindbladSimulate[Matrix[opH, ss], Matrix[opL, ss], Matrix[in, ss], tt, opts]
  ] /; Not @ FreeQ[in, _Ket]
 

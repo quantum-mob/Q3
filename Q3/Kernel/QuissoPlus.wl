@@ -9,8 +9,8 @@ BeginPackage["Q3`"]
 
 `QuissoPlus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.13 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-06 07:30:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.14 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -142,13 +142,13 @@ QuissoReduced[v_, ss:{__?QubitQ}] :=
   wReduced @ KetFactor[Garner @ v, ss]
 
 wReduced[ OSlash[a_Ket, b_] ] :=
-  Dyad[a, a, NonCommutativeSpecies @ a] * (Dagger[b] ** b)
+  Dyad[a, a, Agents @ a] * (Dagger[b] ** b)
 
 wReduced[ expr_Plus ] := Module[
   { vv = List @@ expr,
     aa, bb, qq },
   { aa, bb } = Transpose[vv /. {OSlash -> List}];
-  qq = NonCommutativeSpecies[aa];
+  qq = Agents[aa];
   aa = Outer[Dyad[#1, #2, qq]&, aa, aa];
   bb = Outer[Multiply, Dagger[bb], bb];
   Total @ Flatten[Conjugate[bb] * aa]

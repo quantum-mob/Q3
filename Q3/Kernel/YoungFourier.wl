@@ -3,8 +3,8 @@ BeginPackage["Q3`"];
 
 `YoungFourier`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.23 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-07 04:34:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.24 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 17:17:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -119,13 +119,6 @@ YoungFourier[n_Integer][Ket[{ya_?YoungTableauQ, yb_?YoungTableauQ}]] :=
         Sqrt[GroupOrder @ SymmetricGroup @ n]
      ]
    ]
-
-
-(* theKetFormatQ[{_?YoungTableauQ, _?YoungTableauQ}] = True *)
-
-(* theKetFormat[yy:{_?YoungTableauQ, _?YoungTableauQ}] := Map[YoungForm, yy] *)
-(* NOTE: Do not use test anyYoungTableauQ since it also passes Gelfand
-   patterns. *)
 
 (**** </YoungFourier> ****)
 

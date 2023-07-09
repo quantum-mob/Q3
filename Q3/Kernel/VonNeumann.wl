@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `VonNeumann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.17 $"][[2]], " (",
-  StringSplit["$Date: 2022-12-18 02:16:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.18 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -103,7 +103,7 @@ QuantumLog[a_?MatrixQ, b_?MatrixQ] := Module[
 QuantumLog[a_, b_, ss:{___?SpeciesQ}] :=
   QuantumLog[Matrix[a, ss], Matrix[b, ss]]
 
-QuantumLog[a_, b_] := QuantumLog[a, b, NonCommutativeSpecies @ {a, b}]
+QuantumLog[a_, b_] := QuantumLog[a, b, Agents @ {a, b}]
 
 
 VonNeumannEntropy::usage = "VonNeumannEntropy[mat|vec] returns the base 2 VonNeumann entropy of the quantum state described by the density matrix 'mat' or vector 'vec'.\nVonNeumannEntropy[mat1, mat2] returns the quantum relative entropy of the mixed state mat1 with respect to mat2."
@@ -119,7 +119,7 @@ VonNeumannEntropy[rho_, ss:{___?SpeciesQ}] :=
   VonNeumannEntropy @ Matrix[rho, ss]
 
 VonNeumannEntropy[rho_] :=
-  VonNeumannEntropy[rho, NonCommutativeSpecies @ rho]
+  VonNeumannEntropy[rho, Agents @ rho]
 
 
 VonNeumannEntropy[rho_, sgm_, S_?SpeciesQ] :=
@@ -129,7 +129,7 @@ VonNeumannEntropy[rho_, sgm_, ss:{___?SpeciesQ}] :=
   QuantumLog[rho, sgm, ss] - VonNeumannEntropy[rho, ss]
 
 VonNeumannEntropy[rho_, sgm_] :=
-  VonNeumannEntropy[rho, sgm, NonCommutativeSpecies @ {rho, sgm}]
+  VonNeumannEntropy[rho, sgm, Agents @ {rho, sgm}]
 
 
 (**** <MutualInformation> ****)
@@ -155,7 +155,7 @@ MutualInformation[rho_?MatrixQ, dd:{__Integer}, kk:{__Integer}] := With[
 MutualInformation[rho_, S_?SpeciesQ] := MututalInformation[rho, {S}]
 
 MutualInformation[rho_, ss:{__?SpeciesQ}] := Module[
-  { qq = NonCommutativeSpecies @ {rho, FlavorNone @ ss},
+  { qq = Agents @ {rho, FlavorNone @ ss},
     rr },
   rr = Supplement[qq, FlavorNone @ ss];
   VonNeumannEntropy[PartialTrace[rho, rr], ss] +

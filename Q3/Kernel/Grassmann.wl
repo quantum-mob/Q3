@@ -5,15 +5,18 @@ BeginPackage["Q3`"]
 
 `Grassmann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 16:25:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.21 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Let, Grassmann, GrassmannQ, AnyGrassmannQ };
 { GD, GIntegrate };
-{ GrassmannExpand, GrassmannCollect };
 { GrassmannGrade }
+
+(**** OBSOLETE SYMBOLS ****)
+
+(* { GrassmannExpand, GrassmannCollect }; *)
 
 
 Begin["`Private`"]
@@ -57,6 +60,9 @@ HoldPattern @ Multiply[___, op_, op_, ___] := 0 /; GrassmannQ[op]
 HoldPattern @ Multiply[pre___, op___?GrassmannQ, post___] :=
   Multiply[pre, Sequence @@ Sort @ {op}, post] Signature @ {op} /;
   Not @ OrderedQ @ {op}
+
+HoldPattern @ Multiply[pre___, op_?GrassmannQ, v_Ket, post___] :=
+  Multiply[pre, v, op, post]
 
 
 fieldQ::usage = "Grassmann`Private`fieldQ[z] returns True if z is a complex field over which the Grassmann algebra is defined."

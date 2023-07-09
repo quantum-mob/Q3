@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.95 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-04 11:57:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.96 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 15:48:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -277,7 +277,7 @@ QubitQ[_] = False
 
 Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appearing in expr."
 
-Qubits[expr_] := Select[NonCommutativeSpecies[expr], QubitQ]
+Qubits[expr_] := Select[Agents @ expr, QubitQ]
 
 
 (**** <Multiply> ****)
@@ -1528,7 +1528,7 @@ OperatorOn[ss:{___?SpeciesQ}] :=
 OperatorOn[ss:{___?SpeciesQ}][op_] := OperatorOn[op, ss]
 
 OperatorOn[op_, ss:{___?SpeciesQ}] := Module[
-  { tt = NonCommutativeSpeciesQ[op] },
+  { tt = Agents[op] },
   Union[ss, tt] /; Not @ ContainsAll[ss, tt]
  ]
 
@@ -2488,7 +2488,7 @@ Missing["KeyAbsent", _Symbol?QuditQ[___, $]] := 0
 
 Qudits::usage = "Qudits[expr] gives the list of all qudits appearing in expr."
 
-Qudits[expr_] := Select[NonCommutativeSpecies[expr], QuditQ]
+Qudits[expr_] := Select[Agents @ expr, QuditQ]
 
 
 (* MultiplyDegree for operators *)

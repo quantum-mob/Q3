@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.111 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-07 07:00:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.118 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 17:09:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -31,6 +31,8 @@ BeginPackage["Q3`"]
 { XBasisForm, YBasisForm };
 
 { BraKet };
+
+{ Vacuum };
 
 { Basis,
   Matrix, TheMatrix,
@@ -416,7 +418,7 @@ $KetDelimiter::usage = "The charater delimiting values in a Ket."
 
 $KetGroupDelimiter::usage = "The charater delimiting groups of values in a Ket."
 
-$KetDelimiter = "";
+$KetDelimiter = "\[VeryThinSpace]";
 $KetGroupDelimiter = ";";
 $KetProductDelimiter = "\[CircleTimes]";
 
@@ -481,7 +483,7 @@ ProductForm::usage = "ProductForm[expr] displays every Ket[...] in expr in the p
 ProductForm[expr_, ss_List] :=
   ProductForm[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
-ProductForm[expr_] := ProductForm[expr, NonCommutativeSpecies @ expr]
+ProductForm[expr_] := ProductForm[expr, Agents @ expr]
 
 ProductForm[expr_, S_?SpeciesQ] := SimpleForm[expr, S @ {$}]
 
@@ -526,7 +528,7 @@ SpinForm[expr_, a_List, b_List] :=
   SpinForm[expr, FlavorNone @ a, FlavorNone @ b] /;
   Not[FlavorNoneQ @ {a, b}]
 
-SpinForm[expr_] := SpinForm[expr, NonCommutativeSpecies[expr], {}]
+SpinForm[expr_] := SpinForm[expr, Agents @ expr, {}]
 
 SpinForm[expr_, s_?SpeciesQ, rest_] := SpinForm[expr, s @ {$}, rest]
 
@@ -539,7 +541,7 @@ SpinForm[Bra[spec___], rest___] :=
   Interpretation[Dagger @ theSpinForm[Ket[spec], rest], Bra[spec]]
   
 SpinForm[expr_, qq_List] := SpinForm[ expr, FlavorNone @ qq,
-  Complement[NonCommutativeSpecies @ expr, FlavorNone @ qq]
+  Complement[Agents @ expr, FlavorNone @ qq]
  ]
 
 SpinForm[expr_Association, rest__] := Map[SpinForm[#, rest]&, expr]
@@ -729,37 +731,26 @@ HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
 
 (**** <KetFormat> <BraFormat>****)
 
-KetFormat::usage = "..."
+KetFormat::usage = "KetFormat[\[Ellipsis]] is a low-level function to display Ket[\[Ellipsis]]."
 
-KetFormat[a_List] := DisplayForm @ RowBox @ {
-  "\[LeftBracketingBar]",
-  Row[theKetFormat /@ a, ","],
-  "\[RightAngleBracket]"
- } /; Not @ theKetFormatQ[a]
+KetFormat[a_List] :=
+  DisplayForm @ TemplateBox[List @ Row[theKetFormat /@ a, ","], "Ket"]
 
-BraFormat[a_List] := DisplayForm @ RowBox @ {
-  "\[LeftAngleBracket]",
-  Row[theKetFormat /@ a, ","],
-  "\[RightBracketingBar]"
- } /; Not @ theKetFormatQ[a]
+KetFormat[a_] :=
+  DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Ket"]
 
+BraFormat[a_List] :=
+  DisplayForm @ TemplateBox[List @ Row[theKetFormat /@ a, ","], "Bra"]
 
-KetFormat[a_] := DisplayForm @ RowBox @ {
-  "\[LeftBracketingBar]",
-  theKetFormat[a],
-  "\[RightAngleBracket]"
- }
-
-BraFormat[a_] := DisplayForm @ RowBox @ {
-  "\[LeftAngleBracket]",
-  theKetFormat[a],
-  "\[RightBracketingBar]"
- }
+BraFormat[a_] :=
+  DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Bra"]
 
 
-theKetFormat[Association[]] := Any
+theKetFormat[Vacuum] = Any
 
-theKetFormat[a_Association] := Row @ KeyValueMap[Subscript[#2,#1]&, a]
+theKetFormat[Association[]] = Any
+
+theKetFormat[a_Association] := KeyValueMap[SpeciesBox[#2, {#1}, {}]&, a]
 
 
 theKetFormatQ[_] = False
@@ -784,11 +775,17 @@ If[ $VersionNumber > 13.2,
   SyntaxInformation[Bra] = {"ArgumentsPattern" -> {___}};
  ]
 
-Format[Ket[v_]] := Interpretation[KetFormat[v], Ket[v]]
+
+Format[Ket[v:(_List|_Association)]] := Interpretation[KetFormat[v], Ket[v]]
+
+Format[Ket[v_]] := Interpretation[KetFormat @ {v}, Ket[v]]
 
 Format[Ket[a_, b__]] := Interpretation[KetFormat @ {a, b}, Ket[a, b]]
 
-Format[Bra[v_]] := Interpretation[BraFormat[v], Bra[v]]
+
+Format[Bra[v:(_List|_Association)]] := Interpretation[BraFormat[v], Bra[v]]
+
+Format[Bra[v_]] := Interpretation[BraFormat @ {v}, Bra[v]]
 
 Format[Bra[a_, b__]] := Interpretation[BraFormat @ {a, b}, Bra[a, b]]
 
@@ -942,7 +939,8 @@ KetSpecies::usage = "KetSpecies[expr] returns the list of all species of Ket-lik
 
 KetSpecies[expr_] := Select[
   Union @ Catenate[
-    Keys /@ Cases[{expr}, (Ket|Bra|ProductState)[a_Association] -> a, Infinity]
+    Keys /@ Cases[{expr},
+      (Ket|Bra|ProductState|CoherentState)[a_Association] -> a, Infinity]
    ],
   NonCommutativeQ
  ]
@@ -1030,7 +1028,7 @@ KetSort[vec:Ket[_Association], ss:{__?SpeciesQ}] := Module[
 
 KetSort[vec:Ket[Except[_Association], ___]] := Sort[vec] (* Pauli Ket *)
 
-KetSort[expr_] := KetSort[expr, NonCommutativeSpecies[expr]] /;
+KetSort[expr_] := KetSort[expr, Agents @ expr] /;
   Not @ FreeQ[expr, Ket[_Association]]
 
 KetSort[expr_] := expr /. { v:Ket[__] :> KetSort[v] }
@@ -1051,7 +1049,7 @@ KetNorm[0] = 0
 KetNorm[z_?CommutativeQ * any_Ket] := Abs[z]
 
 KetNorm[expr_] := With[
-  { spc = NonCommutativeSpecies[expr] },
+  { spc = Agents[expr] },
   If[ Length[Garner @ expr] > Apply[Times, Dimension @ spc]/2 > Power[2, 3],
     Norm @ Matrix[expr, spc],
     Sqrt[Dagger[expr] ** expr]
@@ -1077,7 +1075,7 @@ KetOrthogonalize::usage = "KetOrthogonalize[vecs] orthgonalizes the vectors in v
 KetOrthogonalize[{}] := {}
 
 KetOrthogonalize[vv:{__}] := Module[
-  { ss = NonCommutativeSpecies[vv],
+  { ss = Agents[vv],
     bs, mm },
   bs = Basis[ss];
   mm = Matrix[vv, ss];
@@ -1120,7 +1118,7 @@ KetFactor[expr_Plus, qq:{__?SpeciesQ}] := Module[
   { new },
   new = Factor[ketSplit @ KetRegulate[expr, qq]];
   ReplaceAll[new, Times -> OTimes]
- ] /; ContainsAll[FlavorNone @ qq, NonCommutativeSpecies @ expr]
+ ] /; ContainsAll[FlavorNone @ qq, Agents @ expr]
 
 
 KetFactor[v_Ket] := v
@@ -1277,11 +1275,11 @@ HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
 
 HoldPattern @ MultiplyPower[expr_, n_] :=
   ExpressionFor @ MatrixPower[Matrix @ expr, n] /;
-  NonCommutativeSpecies[expr] == {} /;
+  Agents[expr] == {} /;
   Not @ FreeQ[expr, _Pauli]
 
 HoldPattern @ MultiplyPower[op_, n_] := Module[
-  { ss = NonCommutativeSpecies[op],
+  { ss = Agents[op],
     mat },
   mat = MatrixPower[Matrix[op, ss], n]; 
   ExpressionFor[mat, ss]
@@ -1709,7 +1707,7 @@ ExpressionIn[vec_?VectorQ, bs_List] :=
 ExpressionIn[mat_?MatrixQ, bs_List] := ExpressionIn[mat, bs, bs]
 
 ExpressionIn[mat_?MatrixQ, aa_List, bb_List] := Module[
-  { spc = NonCommutativeSpecies @ Join[aa, bb],
+  { spc = Agents @ Join[aa, bb],
     obs },
   obs = Dyad[#1, #2, spc]& @@@ Tuples[{aa, bb}];
   obs . Flatten[mat]
@@ -1787,7 +1785,7 @@ BlochVector[Ket[]] := BlochVector @ {1, 0}
 BlochVector[_?CommutativeQ Ket[]] := BlochVector @ {1, 0}
 
 BlochVector[expr_, q_?SpeciesQ] := Module[
-  { ss = NonCommutativeSpecies[expr] },
+  { ss = Agents[expr] },
   If[ Length[ss] > 1,
     BlochVector @ ReducedMatrix[expr, FlavorNone @ {q}],
     BlochVector @ Matrix[expr, FlavorNone @ {q}]
@@ -1882,7 +1880,7 @@ Basis[
   Basis @ Flatten @ {a, b}
 
 
-Basis[ expr:Except[_?SpeciesQ] ] := Basis @@ NonCommutativeSpecies[expr] /;
+Basis[ expr:Except[_?SpeciesQ] ] := Basis @@ Agents[expr] /;
   FreeQ[ expr, _Pauli | Ket[(0|1)..] | Bra[(0|1)..] ]
 
 Basis[ expr:Except[_?SpeciesQ] ] := With[
@@ -1926,7 +1924,7 @@ Matrix::rmndr = "There remain some elements, ``, that are not specified for matr
 
 (* General Code *)
 
-Matrix[ expr_ ] := Matrix[expr, NonCommutativeSpecies @ expr]
+Matrix[ expr_ ] := Matrix[expr, Agents @ expr]
 
 Matrix[ expr_, S_?SpeciesQ ] := Matrix[expr, S @ {$}]
 
@@ -2002,6 +2000,7 @@ Matrix[Ket[<||>], {}] := 0
 Matrix[Ket[a_Association], ss:{__?SpeciesQ}] :=
   CircleTimes @@ Map[TheMatrix, Thread[ss -> Lookup[a, ss]]]
 
+Matrix[Ket[Vacuum], ss:{__?SpeciesQ}] := Matrix[Ket[<||>], ss]
 
 Matrix[Bra[<||>], {}] := 0
 
@@ -2010,6 +2009,7 @@ Matrix[Bra[a_Association]] := Matrix[Bra[a], Keys @ a] /; Length[a] > 1
 Matrix[Bra[v_Association], ss:{__?SpeciesQ}] :=
   Conjugate @ Matrix[Ket[v], ss]
 
+Matrix[Bra[Vacuum], ss:{__?SpeciesQ}] := Matrix[Bra[<||>], ss]
 
 (* For Pauli[...] *)
 
@@ -2142,7 +2142,7 @@ ProperSystem::incon = "Inconsistent Pauli operators in ``."
 ProperSystem::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
 
 ProperSystem[expr_] := Module[
-  { ss = NonCommutativeSpecies[expr],
+  { ss = Agents[expr],
     pp = Cases[{expr}, _Pauli, Infinity],
     nn, mat, res, val, vec },
 
@@ -2174,7 +2174,7 @@ ProperSystem[expr_] := Module[
 ProperSystem[expr_] := ProperSystem[expr, {}] /; FreeQ[expr, _Pauli]
 
 ProperSystem[expr_, qq:{___?SpeciesQ}] := Module[
-  { ss = NonCommutativeSpecies[expr],
+  { ss = Agents[expr],
     rr, mat, res, val, vec },
 
   mat = Matrix[expr, ss];
@@ -2204,7 +2204,7 @@ ProperStates::incon = "Inconsistent Pauli operators in ``."
 ProperStates::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
 
 ProperStates[expr_] := Module[
-  { ss = NonCommutativeSpecies[expr],
+  { ss = Agents[expr],
     pp = Cases[{expr}, _Pauli, Infinity],
     nn, mat, vec },
 
@@ -2233,7 +2233,7 @@ ProperStates[expr_] := Module[
 ProperStates[expr_] := ProperStates[expr, {}] /; FreeQ[expr, _Pauli]
 
 ProperStates[expr_, qq:{___?SpeciesQ}] := Module[
-  { ss = NonCommutativeSpecies[expr],
+  { ss = Agents[expr],
     rr, mat, vec },
   
   mat = Matrix[expr, ss];
@@ -2261,7 +2261,7 @@ ProperValues::incon = "Inconsistent Pauli operators in ``."
 ProperValues::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
 
 ProperValues[expr_] := Module[
-  { ss = NonCommutativeSpecies[expr],
+  { ss = Agents[expr],
     pp = Cases[{expr}, _Pauli, Infinity],
     nn, mat, val },
 
@@ -2290,7 +2290,7 @@ ProperValues[expr_] := Module[
 ProperValues[expr_] := ProperValues[expr, {}] /; FreeQ[expr, _Pauli]
 
 ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
-  { ss = NonCommutativeSpecies[expr],
+  { ss = Agents[expr],
     rr, mat, val },
   
   mat = Matrix[expr, ss];
@@ -2981,13 +2981,13 @@ splitDyad @ Dyad[a_Association, b_Association] :=
 
 
 Dyad[a_] := Module[
-  { qq = NonCommutativeSpecies[a] },
+  { qq = Agents[a] },
   Message[Dyad::one];
   Dyad[a, a, qq]
  ] /; Not @ FreeQ[a, _Ket]
 
 Dyad[a_, b_] := Module[
-  { qq = NonCommutativeSpecies @ {a, b} },
+  { qq = Agents @ {a, b} },
   Message[Dyad::two];
   Dyad[a, b, qq]
  ] /; Not @ FreeQ[{a, b}, Ket[_Association]]
@@ -3169,7 +3169,7 @@ DyadForm::usage = "DyadForm[expr,{s1,s2,..}] converts the operator expression ex
 DyadForm[expr_] := RaiseLower[expr] /; Not @ FreeQ[expr, _Pauli]
 (* NOTE: DyaForm is pointless for Pauli expressions. *)
 
-DyadForm[expr_] := DyadForm[expr, NonCommutativeSpecies[expr]]
+DyadForm[expr_] := DyadForm[expr, Agents @ expr]
 
 DyadForm[expr_, q_?SpeciesQ] := DyadForm[expr, q @ {$}]
 
@@ -3638,7 +3638,7 @@ PartialTranspose[expr_, S_?SpeciesQ] := PartialTranspose[expr, {S}]
 
 PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
   { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
-    ss = NonCommutativeSpecies[expr],
+    ss = Agents[expr],
     dd, jj, mm },
   ss = Union[ss, rr];
   dd = Dimension[ss];
@@ -3755,7 +3755,7 @@ NormPT[rho_, jj:{__Integer}] := NormPT[Matrix @ rho, jj] /;
 
 NormPT[rho_, qq:{__?SpeciesQ}] := Module[
   { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
-    ss = NonCommutativeSpecies[rho],
+    ss = Agents[rho],
     all, pos, mat, trm },
   all = Union @ FlavorNone @ Join[rr, ss];
   pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ rr];
@@ -3850,7 +3850,7 @@ PartialTrace[expr_, S_?SpeciesQ] := PartialTrace[expr, {S}]
 
 PartialTrace[expr_, ss:{__?SpeciesQ}] := With[
   { tt = FlavorNone[ss] },
-  PartialTrace[expr, Union[NonCommutativeSpecies @ expr, tt], tt]
+  PartialTrace[expr, Union[Agents @ expr, tt], tt]
  ]
 
 PartialTrace[expr_, qq:{__?SpeciesQ}, S_?SpeciesQ] :=
@@ -3859,7 +3859,7 @@ PartialTrace[expr_, qq:{__?SpeciesQ}, S_?SpeciesQ] :=
 PartialTrace[expr_, qq:{__?SpeciesQ}, ss:{__?SpeciesQ}] := Module[
   { bb = FlavorNone @ Cases[ss, _?NonCommutativeQ],
     aa, dd, jj, mm },
-  aa = NonCommutativeSpecies @ {expr, FlavorNone @ qq};
+  aa = Agents @ {expr, FlavorNone @ qq};
   If[Not @ ContainsOnly[bb, aa], Message[PartialTrace::nosubsys, bb]];
   dd = Dimension[aa];
   jj = Flatten @ Map[FirstPosition[aa, #]&, bb];
@@ -3897,7 +3897,7 @@ ReducedMatrix[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] :=
 ReducedMatrix[expr_, S_?SpeciesQ] := ReducedMatrix[expr, {S}]
 
 ReducedMatrix[expr_, ss:{__?SpeciesQ}] := Module[
-  { qq = NonCommutativeSpecies[expr],
+  { qq = Agents[expr],
     rr = FlavorNone @ Select[ss, NonCommutativeQ],
     jj },
   qq = Union[qq, rr];
@@ -3968,7 +3968,7 @@ Purification[rho_, ss:{__?SpeciesQ}] := Purification @ Matrix[rho, ss]
 Purification[rho_, S_?SpeciesQ] := Purification[rho, FlavorNone @ {S}]
 
 Purification[rho_] := With[
-  { ss = NonCommutativeSpecies[rho] },
+  { ss = Agents[rho] },
   Purification[rho, ss]
  ] /; FreeQ[rho, _Pauli]
 
@@ -4140,7 +4140,7 @@ BasisComplement[aa_?MatrixQ, bb_?MatrixQ, opts:OptionsPattern[]] := Module[
 (* NOTE: This works even if aa and bb are not orthonormal. *)
 
 BasisComplement[aa_List, bb_List, opts:OptionsPattern[]] := Module[
-  { ss = NonCommutativeSpecies @ {aa, bb},
+  { ss = Agents @ {aa, bb},
     new },
   new = BasisComplement[
     SparseArray @ Matrix[aa, ss],
@@ -4213,7 +4213,7 @@ HilbertSchmidtProduct[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]^2
 
 
 HilbertSchmidtProduct[a_, b_] := With[
-  { ss = NonCommutativeSpecies @ {a, b} },
+  { ss = Agents @ {a, b} },
   HilbertSchmidtProduct[a, b, ss]
  ]
 
@@ -4259,7 +4259,7 @@ TraceDistance[a_?MatrixQ, b_?VectorQ] := TraceNorm[a - Dyad[b, b]]
 
 TraceDistance[a_?VectorQ, b_?VectorQ] := TraceNorm[Dyad[a, a] - Dyad[b, b]]
 
-TraceDistance[a_, b_] := TraceDistance[a, b, NonCommutativeSpecies @ {a, b}]
+TraceDistance[a_, b_] := TraceDistance[a, b, Agents @ {a, b}]
 
 TraceDistance[a_, b_, ss:{___?SpeciesQ}] :=
   TraceDistance[Matrix[a, ss], Matrix[b, ss]]

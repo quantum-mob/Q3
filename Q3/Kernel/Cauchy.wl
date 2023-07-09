@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.45 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-06 11:56:56+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.47 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 14:33:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -61,31 +61,17 @@ Power[E, Times[z_Complex, Pi, n_]] /; OddQ[n*z/I] = -1
 
 $Star = Style["*", FontColor -> Red]
 
-Format @ HoldPattern @ Conjugate[z_Symbol] := Interpretation[
-  SpeciesBox[z, {}, {$Star}],
+Format @ HoldPattern @ Conjugate[expr_] := Interpretation[
+  SpeciesBox[expr, {}, {$Star}],
   Conjugate @ z
- ]
- 
-Format @ HoldPattern @ Conjugate[z_Symbol?SpeciesQ[j___]] := Interpretation[
-  SpeciesBox[z, {j}, {$Star}],
-  Conjugate @ z[j]
- ]
-
-(* f[...] with f not declared as a Species is regarded as a normal function. *)
-Format @ HoldPattern @ Conjugate[f_Symbol[z___]] := Interpretation[
-  SpeciesBox[
-    Row @ { "(", f[z], ")" },
-    {},
-    {$Star}
-   ],
-  Conjugate @ f[z]
  ]
 
 Format @ HoldPattern @ Abs[z_] := Interpretation[BracketingBar @ z, Abs @ z]
 
-AddElaborationPatterns[ Abs[z_] :> Sqrt[z Conjugate[z]] ]
-
 (**** </Formatting> ****)
+
+
+AddElaborationPatterns[ Abs[z_] :> Sqrt[z Conjugate[z]] ]
 
 Protect[ Evaluate @ $symb ]
 
@@ -372,7 +358,7 @@ rulesCauchySimplify = {
 (**** </Simplifications> ****)
 
 
-CauchyExpand::usage = "CauchyExpand[expr] expands out functions of complex variables."
+CauchyExpand::usage = "CauchyExpand[expr] is obsolete now; use Elaborate instead."
 
 CauchyExpand[expr_] := (
   Message[Q3General::obsolete, CauchyExpand, Elaborate];

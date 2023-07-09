@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.34 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 16:17:51+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.37 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 16:03:57+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -958,25 +958,32 @@ $SubscriptDelimiter = ",";
 
 SpeciesBox::usage = "SpeciesBox[c,sub,sup] formats a tensor-like quantity."
 
+(* SpeciesBox[c_?AtomQ] = c *)
+
+SpeciesBox[c_Symbol] = c
+
+SpeciesBox[c_Symbol?SpeciesQ[a___]] = c[a]
+
+SpeciesBox[c_Symbol[a___]] := DisplayForm @ RowBox @ {"(", c[a], ")"}
+
+SpeciesBox[c_?Negative] := DisplayForm @ RowBox @ {"(", c, ")"}
+
+SpeciesBox[c_?AtomQ] = c
+
+
 SpeciesBox[c_, {}, {}] := c
 
 SpeciesBox[c_, {}, sup:{__}, delimiter_String:"\[ThinSpace]"] :=
-  Superscript[
-    Row @ {c},
-    Row @ Riffle[sup, delimiter]
-   ]
+  Superscript[SpeciesBox @ c, Row[sup, delimiter]]
 
 SpeciesBox[c_, sub:{__}, {}] :=
-  Subscript[
-    Row @ {c},
-    Row @ Riffle[FlavorForm @ sub, $SubscriptDelimiter]
-   ]
+  Subscript[SpeciesBox @ c, Row[FlavorForm @ sub, $SubscriptDelimiter]]
 
-SpeciesBox[ c_, sub:{__}, sup:{__} ] :=
+SpeciesBox[c_, sub:{__}, sup:{__}] :=
   Subsuperscript[
-    Row @ {c},
-    Row @ Riffle[FlavorForm @ sub, $SubscriptDelimiter],
-    Row @ Riffle[sup, $SuperscriptDelimiter]
+    SpeciesBox @ c,
+    Row[FlavorForm @ sub, $SubscriptDelimiter],
+    Row[sup, $SuperscriptDelimiter]
    ]
 (* NOTE(2020-10-14): Superscript[] instead of SuperscriptBox[], etc.
    This is for Complex Species with NonCommutative elements as index
@@ -1449,7 +1456,7 @@ AddGarnerPatterns[_Multiply]
 
 
 Format @ HoldPattern @ Multiply[a__] := Interpretation[
-  Row @ List @ Row @ {a},
+  Row @ List @ Row[{a}, "\[VeryThinSpace]"],
   Multiply[a]
  ]
 (* NOTE 1: The outer RowBox is to avoid spurious parentheses around the Multiply
@@ -1617,17 +1624,17 @@ HoldPattern @ Power[ MultiplyExp[op_], z_?CommutativeQ ] :=
 MultiplyExp /:
 HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
   Elaborate @ ExpressionFor @ MatrixExp @ Matrix @ expr /;
-  NonCommutativeSpecies[expr] == {} /;
+  Agents[expr] == {} /;
   Not @ FreeQ[expr, _Pauli]
 
 MultiplyExp /:
 HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
-  { ss = NonCommutativeSpecies[expr],
+  { ss = Agents[expr],
     mm },
   mm = Matrix[expr, ss];
   Elaborate @ ExpressionFor[MatrixExp[mm], ss]
  ] /; ContainsOnly[
-   MultiplyKind @ NonCommutativeSpecies[expr],
+   MultiplyKind @ Agents[expr],
    {Qubit, Qudit, Spin}
   ]
 (* NOTE: In principle, it can handle fermions as well. But fermions have been
@@ -1851,6 +1858,15 @@ HoldPattern @ Matrix[Observation[spec_], ss:{__?SpeciesQ}] := Module[
  ]
 
 Observation /:
+HoldPattern @ Agents[Observation[spec_]] := Select[
+  Union @ FlavorNone @ Flatten @
+    Cases[{spec}, _Symbol?SpeciesQ | _?SpeciesQ[___], Infinity],
+  AgentQ
+ ]
+(* NOTE: Since spec may include Hold[...] or HoldForm[...], usual
+   Agents would not work. *)
+
+Observation /:
 HoldPattern @ NonCommutativeSpecies[Observation[spec_]] :=
   Union @ FlavorNone @ Flatten @
   Cases[{spec}, _Symbol?SpeciesQ | _?SpeciesQ[___], Infinity]
@@ -1920,6 +1936,9 @@ Occupation[ss:{__?SpeciesQ}, k_] :=
 
 Occupation /:
 HoldPattern @ Dagger[ op_Occupation ] := op
+
+Occupation /:
+HoldPattern @ Agents[Occupation[ss:{__?SpeciesQ}, _]] := Agents[ss]
 
 Occupation /:
 HoldPattern @ NonCommutativeSpecies[Occupation[ss:{__?SpeciesQ}, _]] :=

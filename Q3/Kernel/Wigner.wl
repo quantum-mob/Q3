@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 16:21:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.16 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -245,7 +245,7 @@ SpinHalfQ[_] = False
 
 Spins::usage = "Spins[expr] gives the list of all Spins appearing in expr."
 
-Spins[expr_] := Select[NonCommutativeSpecies[expr], SpinQ]
+Spins[expr_] := Select[Agents @ expr, SpinQ]
 
 
 (* Multiply *)
@@ -766,7 +766,7 @@ WignerExpression[args___] := (
  )
 
 
-WignerExpand::usage = "WignerExpand[expr] expands the expression expr revealing the explicit forms of various operator or state-vector expressions."
+WignerExpand::usage = "WignerExpand[expr] is obsolete now; use Elaborate instead."
 
 WignerExpand[expr_] := (
   Message[Q3General::obsolete, WignerExpand, Elaborate];

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.57 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-01 16:21:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.62 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-09 15:45:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -646,20 +646,20 @@ CreatorQ[_?AnyFermionQ] := False
 
 Bosons::usage = "Bosons[expr] gives the list of all Bosons appearing in expr."
 
-Bosons[expr_] := Select[NonCommutativeSpecies[expr], BosonQ]
+Bosons[expr_] := Select[Agents @ expr, BosonQ]
 
 
 Fermions::usage = "Fermions[expr] gives the list of all Fermions appearing in expr."
 
-Fermions[expr_] := Select[NonCommutativeSpecies[expr], FermionQ]
+Fermions[expr_] := Select[Agents @ expr, FermionQ]
 
 Heisenbergs::usage = "Heisenbergs[expr] gives the list of all Heisenbergs appearing in expr."
 
-Heisenbergs[expr_] := Select[NonCommutativeSpecies[expr], HeisenbergQ]
+Heisenbergs[expr_] := Select[Agents @ expr, HeisenbergQ]
 
 Majoranas::usage = "Majoranas[expr] gives the list of all Majoranas appearing in expr."
 
-Majoranas[expr_] := Select[NonCommutativeSpecies[expr], MajoranaQ]
+Majoranas[expr_] := Select[NonCommutativeSpecies @ expr, MajoranaQ]
 
 
 FockFourier::usage = "FockFourier is now obsolete. Use TransformByFourier instead."
@@ -1310,10 +1310,6 @@ HoldPattern @ Multiply[___, Bra[Null], ___] = Bra[Null]
 
 VacuumState::usage = "VacuumState[] returns Ket[Vacuum] which refers to the vacuum state in the Fock space. It is the state that is annihilated by any annihilation operator."
 
-Format @ Ket[Vacuum] := Interpretation[Ket[Any], Ket @ Vacuum]
-
-Format @ Bra[Vacuum] := Interpretation[Bra[Any], Bra @ Vacuum]
-
 HoldPattern @
   Multiply[ pre___, Bra[a_Association], Ket[Vacuum], post___ ] :=
   BraKet[a, Association[]] Multiply[pre, post]
@@ -1520,7 +1516,7 @@ rulesParticleHoleInverse[f_] := {
 HoldPattern @ Multiply[Bra[Vacuum], FockColon[_], Ket[Vacuum]] = 0
 
 
-(* ********************************************************************** *)
+(**** <Displacement> ****)
 
 Displacement::usage = "Displacement[z, a] represents the displacement operator of the Bosonic mode a, where z is a complex number.\nDisplacement[\[Xi], c] for Fermion c, \[Xi] is a Grassmann number."
 
@@ -1531,20 +1527,22 @@ Displacement /:
 MultiplyKind[ Displacement[_, a_] ] := MultiplyKind[a] (* for Multiply[] *)
 
 Displacement /:
-MultiplyGenus[ Displacement[_, a_] ] := "Singleon" (* for Multiply[] *)
+MultiplyGenus[ Displacement[_, a_] ] := "Singleton" (* for Multiply[] *)
 
 Displacement /:
 AnySpeciesQ[ Displacement[_, a_] ] := AnySpeciesQ[a] (* for Multiply[] *)
 
-HoldPattern @ Dagger[ Displacement[z_?CommutativeQ, a_?BosonQ] ] :=
+Displacement /:
+Dagger @ Displacement[z_?CommutativeQ, a_?BosonQ] :=
   Displacement[-z, a]
 
 Displacement[0, _?BosonQ] = 1
 
 Displacement[z_, op:{__?BosonQ}] :=
-  Multiply @@ Displacement @@@ Thread[{z, op}]
+  Displacement @@@ Thread[{z, op}]
 
-Displacement[zz_List, a_?BosonQ] := Displacement[#, a]& /@ zz
+Displacement[zz_List, a_?BosonQ] := Displacement @@@ Thread[{zz,a}]
+
 
 HoldPattern @ Multiply[pre___,
   Displacement[z_?CommutativeQ, a_?BosonQ], a_?BosonQ,
@@ -1571,6 +1569,13 @@ HoldPattern @ Multiply[pre___,
   post___] := Multiply[pre, y, x, post] /; Not @ OrderedQ @ {a, b}
 
 
+HoldPattern @ Multiply[pre___,
+  Displacement[z_, a_?BosonQ],
+  CoherentState[vv_Association],
+  post___] :=
+  Multiply[pre, CoherentState[CoherentState @ vv, a -> vv[a]+z], post]
+
+
 (* For Fermion,
    D(z) := Exp[ -z ** Dagger[c] + c ** Conjugate[z] ] *)
 
@@ -1580,9 +1585,14 @@ Displacement[z_?GrassmannQ, c_?FermionQ] := Multiply[
   1 + z ** Conjugate[z] / 2
  ]
 
-(* ********************************************************************** *)
+(**** </Displacement> ****)
+
+
+(**** <CoherentState> ****)
 
 CoherentState::usage = "CoherentState[c[k]->z] = Ket[c[k]->z] gives the coherent state of the operator c[k].  CoherentState is normalized to 1.  It is actually a place holder, but using Elaborate, you can represent it explicitly in terms of the creation and annihilation operator."
+
+CoherentState::boson = "The resulting expression may have been truncated. Recall that coherent states of bosons involves infinitely many Fock states."
 
 AddGarnerPatterns[_CoherentState]
 
@@ -1607,13 +1617,38 @@ MultiplyGenus[ CoherentState[_Association] ] = "Ket"
 
 
 CoherentState /:
-HoldPattern @ Elaborate[ CoherentState[vec_Association] ] := Module[
-  { expr },
-  expr = Multiply @@ KeyValueMap[
-    MultiplyExp[-(#2 ** #2)/2 + (Dagger[#1] ** #2)]&,
-    vec
-   ];
-  expr ** Ket[Vacuum]
+HoldPattern @ toCatForm @ CoherentState[aa_Association] := Module[
+  { bb = KeySelect[aa, BosonQ],
+    ff = KeySelect[aa, FermionQ] },
+  bb = Exp @ Total[-Abs[Values @ bb]^2/2] * 
+    Apply[Multiply, KeyValueMap[MultiplyExp[#2*Dagger[#1]]&, bb]];
+  ff = Multiply @@ KeyValueMap[Displacement[#2, #1]&, ff];
+  ff ** bb ** Ket[Vacuum]
+ ]
+
+
+CoherentState /:
+HoldPattern @ Elaborate @ CoherentState[aa_Association] := Module[
+  { bb = KeySelect[aa, BosonQ],
+    ff = KeySelect[aa, FermionQ] },
+  If[Length[bb] > 1, Message[CoherentState::boson]];
+  bb = Multiply @@ AssociationMap[theCoherentState, bb];
+  ff = Multiply @@ KeyValueMap[Displacement[#2, #1]&, ff];
+  bb ** ff ** Ket[<||>]
+ ]
+
+theCoherentState[a_?BosonQ -> z_] := Exp[-Abs[z]^2 / 2] * With[
+  { nn = Range[Bottom @ a, Top @ a] },
+  Basis[a] . ( Power[z, nn] / Sqrt[Factorial @ nn] )
+ ]
+
+
+Matrix[CoherentState[a_Association], ss:{__?SpeciesQ}] :=
+  CircleTimes @@ Map[theCoherentStateVector, Thread[ss -> Lookup[a, ss]]]
+
+theCoherentStateVector[a_?BosonQ -> z_] := Exp[-Abs[z]^2 / 2] * With[
+  { nn = Range[Bottom @ a, Top @ a] },
+  Dot[Power[z, nn] / Sqrt[Factorial @ nn], One @ Dimension @ a]
  ]
 
 
@@ -1692,8 +1727,8 @@ HoldPattern @ Multiply[
  *)
 (* This is not particularly helpful. *)
 
+(**** </CoherentState> ****)
 
-(* ********************************************************************** *)
 
 FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of the total angular momentum S[c1] + S[c2] + ....\nFockAddSpin[] returns the trivial basis including only VacuumState[]."
 
@@ -1806,7 +1841,7 @@ FockCat[rr:(_?AnyParticleQ -> _Integer?NonNegative) ...] :=
 FockCat[rr:({__?AnyParticleQ} -> {__Integer?NonNegative})] :=
   toCatForm @ Ket[rr]
 
-FockCat[expr_] := toCatForm[expr] /; Not @ FreeQ[expr, Ket]
+FockCat[expr_] := toCatForm[expr] /; Not @ FreeQ[expr, _Ket|_CoherentState]
 
 FockCat[0] = 0
 
@@ -1831,37 +1866,9 @@ toCatForm[ Ket[v_Association] ] := Module[
 
 FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall that FockCat[] gives a Fock state with VacuumState[] is multiplied at the rightmost."
 
-FockKet::bad = "`1` does not seem to represent a state vector in the Fock space, which in the creation-operator representation, takes the form of Dagger[c1]**Dagger[c2]**...**VacuumState[]."
-
-FockKet[expr_] := KetRegulate[toKetForm @ expr] /;
-  Not @ FreeQ[expr, Ket[Vacuum] | Ket[_Association]]
-
-FockKet[expr__] := (
-  Message[FockKet::bad, {expr}];
-  expr
- )
-
-toKetForm::usage = "Returns a Fock state in the occupation representation (Ket[<|c1->n1,c2->n2,...|>]) equivalent to expr, which is a multiplication of generators."
-
-SetAttributes[toKetForm, Listable]
-
-toKetForm[expr_Plus] := Garner @ Map[toKetForm, expr]
-
-toKetForm[z_?CommutativeQ expr_] := z toKetForm[expr]
-
-toKetForm[ Ket[Vacuum] ] := Ket[]
-
-toFockKet[ Ket[Null] ] = Ket[Null]
-
-toKetForm[ v:Ket[_Association] ] := v
-
-toKetForm[ HoldPattern @ Multiply[expr__, Ket[Vacuum]] ] := Module[
-  {ops, val},
-  {ops, val} = Transpose @ Tally @ {expr};
-  ops = ops /. {Dagger -> Identity};
-  (Times @@ Sqrt[val!]) * Ket[ops -> val]
- ]
-
+FockKet[expr_] := KetRegulate[expr /. Ket[Vacuum] -> Ket[<||>]]
+(* TODO: This does not properly handle Fermion state with the Fermi sea as the
+   vacuum. *)
 
 (**** <Ket for Fock> ****)
 
@@ -2143,7 +2150,7 @@ TheMatrix[ Parity[a_?BosonQ] ] := Module[
  ]
 
 TheMatrix[ Ket[ Association[a_?BosonQ -> n_Integer] ] ] := SparseArray[
-  If[ Bottom[a] <= n <= Top[a], (1+n-Bottom[a])->1, {}, {} ],
+  If[Bottom[a] <= n <= Top[a], (1+n-Bottom[a])->1, {}, {}],
   Dimension[a]
  ]
 
