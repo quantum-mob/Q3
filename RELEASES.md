@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.13.1
+
+- CoherentState and Displacement have been enhanced.
+
 ## v2.13.0
 
 - Support for Mathematica 13.3; in particular, changes concerning new built-in functions Kind and Bra.
