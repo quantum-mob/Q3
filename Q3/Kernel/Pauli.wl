@@ -748,7 +748,7 @@ BraFormat[a_] :=
 
 theKetFormat[Vacuum] = Any
 
-theKetFormat[Association[]] = Any
+theKetFormat[Association[]] = {Any}
 
 theKetFormat[a_Association] := KeyValueMap[SpeciesBox[#2, {#1}, {}]&, a]
 

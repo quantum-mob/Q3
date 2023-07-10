@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.13.2
+
+- An emergency bug fix affecting Ket formatting.
+
 ## v2.13.1
 
 - CoherentState and Displacement have been enhanced.
