@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.118 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 17:09:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.119 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-10 10:58:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1857,9 +1857,7 @@ theBlochSphere[opts___?OptionQ] := Module[
  ]
 
 
-(* *********************************************************************** *)
-(*     <Basis>                                                             *)
-(* *********************************************************************** *)
+(**** <Basis> ****)
 
 Basis::usage = "Basis[n] constructs the standard tensor-product basis of a system of n unlabelled qubits.\nBasis[{dim1, dim2, ..., dimn}] constructs the standard tensor-product basis of a total of n unlabelled systems with the Hilbert space dimensions dim1, dim2, ..., respectively.\nBasis[q1, q2, ...] constructs the tensor product basis for the system consising of Species q1, q2, ...\nBasis[q1, {q2, q3}, ...] is equivalent to Basis[q1, q2, q3, ...].\nBasis[expr] finds the relevant systems from the expression expr and constructs the basis."
 
@@ -1881,7 +1879,7 @@ Basis[
 
 
 Basis[ expr:Except[_?SpeciesQ] ] := Basis @@ Agents[expr] /;
-  FreeQ[ expr, _Pauli | Ket[(0|1)..] | Bra[(0|1)..] ]
+  FreeQ[expr, _Pauli | Ket[(0|1)..] | Bra[(0|1)..] ]
 
 Basis[ expr:Except[_?SpeciesQ] ] := With[
   { pp = Length /@ Cases[{expr}, _Pauli|Ket[(0|1)..]|Bra[(0|1)..], Infinity] },

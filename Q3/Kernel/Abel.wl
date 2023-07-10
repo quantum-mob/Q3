@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.37 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 16:03:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.38 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-10 10:54:41+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -848,12 +848,12 @@ Agents[expr_] :=
    not expanded by a single Normal. *)
 
 
-AgentQ::usage = "AgentQ[a] returns True if a is a Agent."
+AgentQ::usage = "AgentQ[a] returns True if a is an Agent."
 
 AgentQ[_] = False
 
 
-AnyAgentQ::usaage = "AnyAgentQ[z] returns True if z itself is an Agent or a modified form z = Conjugate[x], Dagger[x], Tee[x] of another Agent x."
+AnyAgentQ::usaage = "AnyAgentQ[z] returns True if z itself is an Agent or a modified form Conjugate[x], Dagger[x], or Tee[x] of another Agent x."
 
 AnyAgentQ[ _?AgentQ ] = True
 
