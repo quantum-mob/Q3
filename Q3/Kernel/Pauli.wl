@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.119 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-10 10:58:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.120 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-11 20:44:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1814,10 +1814,13 @@ BlochSphere::usage = "BlochSphere[primitives, options] returns Graphics3D contai
 Options[BlochSphere] = {
   "Opacity" -> 0.8,
   "PointSize" -> 0.03,
+  SphericalRegion -> True,
+  PlotRange -> 1.3,
+  PlotRegion -> {{-0.5, 1.5}, {-0.5, 1.5}},
+  ViewVertical -> {0, 0, 1},
+  ImageSize -> 400,
   Ticks -> None,
   Axes -> False,
-  (* AxesOrigin -> {0, 0, 0}, *)
-  (* AxesStyle -> Thick, *)
   Boxed -> False
  }
 

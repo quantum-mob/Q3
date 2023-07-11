@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.8 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-03 11:01:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.9 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-11 21:43:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -139,13 +139,16 @@ qCircuitOperate[gg__] := MeasurementFunction[{gg}]
 (**** <Matrix> ****)
 
 QuantumCircuit /:
-Matrix[ qc:QuantumCircuit[gg__, ___?OptionQ] ] := Module[
+Matrix[qc_QuantumCircuit] := Matrix[qc, Qubits @ qc]
+
+QuantumCircuit /:
+Matrix[qc:QuantumCircuit[gg__, ___?OptionQ], ss:{___?QubitQ}] := Module[
   { ff },
   ff = SplitBy[
     Flatten @ QuantumCircuitTrim @ {gg},
     MatchQ[_Measurement]
    ];
-  Apply[qCircuitMatrix, MapApply[Dot, Reverse /@ Matrix[ff, Qubits @ qc]]]
+  Apply[qCircuitMatrix, MapApply[Dot, Reverse /@ Matrix[ff, ss]]]
  ]
 
 qCircuitMatrix[v_?VectorQ] = v
