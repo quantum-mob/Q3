@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.16 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.18 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 01:14:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -108,7 +108,7 @@ TheWignerKet[jm:{_, _}, more:{_, _}..] :=
   AllTrue[{jm, more}, SpinNumberQ]
 
 
-(**** <TheRotation and TheEulerRotation> ****)
+(**** <TheRotation> ****)
 
 TheRotation[_, {_?SpinNumberQ, 0}] := IdentityMatrix[2*J+1]
 
@@ -123,6 +123,10 @@ TheRotation[
   b:{_, {_?SpinNumberQ, (0|1|2|3)}}.. ] :=
   CircleTimes @@ Map[TheRotation, {a, b}]
 
+(**** <TheRotation> ****)
+
+
+(**** <TheEulerRotation> ****)
 
 TheEulerRotation[ {phi_, theta_, chi_}, J_?SpinNumberQ ] :=
   TheRotation[phi, {J, 3}] . TheRotation[theta, {J, 2}] .
@@ -136,7 +140,7 @@ TheEulerRotation[
   b:{{_, _, _}, _?SpinNumberQ}.. ] :=
   CircleTimes @@ Map[TheEulerRotation, {a, b}]
 
-(**** </TheRotation and TheEulerRotation> ****)
+(**** </TheEulerRotation> ****)
 
 
 Spin::wrongS = "Wrong spin value ``. Spin should be a non-negative integer or half-integer. Spin 1/2 is assumed."
@@ -632,26 +636,31 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
  ]
 
 
-(**** <Rotation and EulerRotation> ****)
+(**** <Rotation> ****)
 
-Rotation[phi_, S_?SpinQ, v:{_, _, _}, opts___?OptionQ] :=
-  Rotation[phi, S[$], v, opts] /; Not[FlavorNoneQ @ S]
+Rotation[phi_, v:{_, _, _}, S_?SpinQ, opts___?OptionQ] :=
+  Rotation[phi, v, S[$], opts] /; Not[FlavorNoneQ @ S]
+
+Rotation[phi_, v:{_, _, _}, ss:{__?SpinQ}, opts___?OptionQ] :=
+  Map[Rotation[phi, v, #, opts]&, ss]
 
 Rotation[phi_, qq:{__?SpinQ}, rest___] :=
   Map[Rotation[phi, #, rest]&, qq]
 
+Rotation[aa_List, qq:{__?SpinQ}, rest___] :=
+  MapThread[Rotation[#1, #2, rest]&, {aa, qq}]
 
 Rotation /:
 Dagger[ Rotation[ang_, S_?SpinQ, rest___] ] :=
   Rotation[-Conjugate[ang], S, rest]
 
 Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] :=
-  Cos[phi/2] - I Sin[phi/2]*S
+Dagger[ Rotation[ang_, v:{_, _, _}, S_?SpinQ, rest___] ] :=
+  Rotation[-Conjugate[ang], v, S, rest]
 
 Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, v:{_, _, _}, ___] :=
-  Garner[ Cos[phi/2] - I Sin[phi/2] Dot[S @ All, Normalize @ v] ]
+HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] :=
+  Cos[phi/2] - I Sin[phi/2]*S
 
 Rotation /:
 HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] := Module[
@@ -661,7 +670,7 @@ HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] := Module[
  ]
 
 Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, v:{_,_,_}, ___] := Module[
+HoldPattern @ Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
   { bs = Basis[S],
     vn = v / Norm[v],
     Rn },
@@ -673,6 +682,10 @@ HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, v:{_,_,_}, ___] := Module[
   Inner[Dyad[S], bs.Rn, bs]
  ]
 
+(**** </Rotation> ****)
+
+
+(**** <EulerRotation> ****)
 
 EulerRotation[aa:{_, _, _}, S_?SpinQ, opts___?OptionQ] :=
   EulerRotation[ aa, S[$], opts ] /; Not[FlavorNoneQ @ S]
@@ -685,6 +698,8 @@ HoldPattern @ Elaborate @ EulerRotation[{a_, b_, c_}, S_?SpinQ, ___] :=
     Elaborate @ Rotation[b, S[2]],
     Elaborate @ Rotation[c, S[3]]
    ]
+
+(**** </EulerRotation> ****)
 
 
 WignerRotation::usage = "WignerRotation is obsolete now. Use Rotation instead."
@@ -702,7 +717,6 @@ WignerEulerRotation[args__] := (
   EulerRotation[args]
  )
 
-(**** </Rotation and EulerRotation> ****)
 
 
 (* ***************

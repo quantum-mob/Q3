@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.120 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-11 20:44:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.121 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 00:33:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2614,7 +2614,7 @@ TheEulerAngles[expr_] := Module[
 (**** </TheEulerAngles> ****)
 
 
-(**** <TheRotation and TheEulerRotation> ****)
+(**** <TheRotation> ****)
 
 TheRotation::usage = "TheRotation[\[Phi], 1], TheRotation[\[Phi], 2], TheRotation[\[Phi], 3] give the 2x2 matrix representing the rotation by angle \[Phi] around the x, y, and z axis, respective in the two-dimensional Hilbert  space.\nTheRotation[{x1, n1,}, {x2, n2,}, \[Ellipsis]] = TheRotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] \[Ellipsis].\nTheRotation[\[Phi], {J, 1}], TheRotation[\[Phi], {J, 2}], TheRotation[\[Phi], {J, 3}] give the rotation matrices by angle \[Phi] around the x, y, and z axis, respective, for Spin = J."
 
@@ -2639,9 +2639,12 @@ TheRotation[ph_, v:{_, _, _}] := Cos[ph/2] * ThePauli[0] -
 TheRotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
   Apply[CircleTimes, TheRotation @@@ {a, b}]
 
+(**** </TheRotation> ****)
+
+
+(**** <TheEulerRotation> ****)
 
 TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[a,3].TheRotation[b,2].TheRotation[c,3] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space.\nTheEulerRotation[{a, b, c}, J] gives the Euler rotation matrix in the angular momentum J representation."
-
 
 TheEulerRotation[ {phi_, theta_, chi_} ] := {
   {Cos[theta/2]*Exp[-I*(phi+chi)/2], -Sin[theta/2]*Exp[-I*(phi-chi)/2]},
@@ -2653,10 +2656,10 @@ TheEulerRotation[ {phi_,theta_} ] := TheEulerRotation[ {phi, theta, 0} ]
 TheEulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
   CircleTimes @@ Map[TheEulerRotation, {a, b}]
 
-(**** </TheRotation and TheEulerRotation> ****)
+(**** </TheEulerRotation> ****)
 
 
-(**** <Rotation and EulerRotation> ****)
+(**** <Rotation> ****)
 
 Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, ...] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] ...\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], S[j, ..., k]] represents the rotation by angle \[Phi] around the axis k on the qubit S[j, ..., $]."
 
@@ -2679,6 +2682,10 @@ Rotation[ph_, v:{Repeated[Except[_?QubitQ|_?SpinQ], {3}]}] :=
 Rotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
   Apply[CircleTimes, Rotation @@@ {a, b}]
 
+(**** </Rotation> ****)
+
+
+(**** <EulerRotation> ****)
 
 EulerRotation::usage = "EulerRotation[{a, b, c}] = Rotation[a, 3].Rotation[b, 2].Rotation[c, 3] represent the Euler rotation by angles a, b, c in a two-dimensional Hilbert space."
 
@@ -2688,7 +2695,7 @@ EulerRotation[ {a_, b_, c_} ] :=
 EulerRotation[ a:{_, _, _}, b:{_, _, _}.. ] :=
   CircleTimes @@ Map[EulerRotation, {a, b}]
 
-(**** </Rotation and EulerRotation> ****)
+(**** </EulerRotation> ****)
 
 
 (* *********************************************************************** *)

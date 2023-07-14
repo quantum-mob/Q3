@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.96 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 15:48:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.99 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 01:11:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -914,13 +914,16 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 (**** </Phase> ****)
 
 
-(**** <RotationEulerRotation> ****)
+(**** <Rotation> ****)
 
 Options[Rotation] = { "Label" -> Automatic }
 
-Rotation[phi_, S_?QubitQ, v:{_, _, _}, opts___?OptionQ] :=
-  Rotation[phi, S[$], v, opts] /;
+Rotation[phi_, v:{_, _, _}, S_?QubitQ, opts___?OptionQ] :=
+  Rotation[phi, v, S[$], opts] /;
   Not[FlavorNoneQ @ S]
+
+Rotation[phi_, v:{_, _, _}, ss:{__?QubitQ}, opts___?OptionQ] :=
+  Map[Rotation[phi, v, #, opts]&, ss]
 
 Rotation[phi_, qq:{__?QubitQ}, rest___] :=
   Map[Rotation[phi, #, rest]&, qq]
@@ -938,7 +941,11 @@ Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
   Rotation[-Conjugate[ang], S, rest]
 
 Rotation /:
-Elaborate @ Rotation[phi_, S_?QubitQ, v:{_, _, _}, ___] :=
+Dagger[ Rotation[ang_, v:{_, _, _}, S_?QubitQ, rest___] ] :=
+  Rotation[-Conjugate[ang], v, S, rest]
+
+Rotation /:
+Elaborate @ Rotation[phi_, v:{_, _, _}, S_?QubitQ, ___] :=
   Garner[ Cos[phi/2] - I Sin[phi/2] Dot[S @ All, Normalize @ v] ]
 
 Rotation /:
@@ -946,8 +953,14 @@ Elaborate @ Rotation[phi_, S_?QubitQ, ___?OptionQ] :=
   Cos[phi/2] - I*Sin[phi/2]*S
 
 Rotation /:
-Matrix[op_Rotation, rest___] := Matrix[Elaborate[op], rest]
+Matrix[op_Rotation, rest___] := Matrix[Elaborate @ op, rest]
 
+
+Rotation[phi_, S:(_?QubitQ|_?SpinQ), v:{_, _, _}, opts___?OptionQ] := (
+  Message[Q3General::changed, Rotation,
+    "The vector must come before species specification."];
+  Rotation[phi, v, S, opts]
+ )
 
 Rotation[q_?QubitQ, ang_, rest___] := (
   Message[Q3General::angle, Rotation];
@@ -962,7 +975,7 @@ Rotation[qq:{__?QubitQ}, ang_, rest___] := (
 (**** </Rotation> ****)
 
 
-(**** <Rotation> ****)
+(**** <EulerRotation> ****)
 
 Options[EulerRotation] = { "Label" -> Automatic }
 
@@ -1274,18 +1287,21 @@ ControlledGate[cc:(_?QubitQ|{__?QubitQ})] := (
   ControlledGate[cc, 1]
  )
 
+
 ControlledGate[S_?QubitQ, rest__] :=
   ControlledGate[S @ {$} -> {1}, rest]
 
-ControlledGate[ss:{__?QubitQ}, rest__] :=
+ControlledGate[ss:{___?QubitQ}, rest__] :=
   ControlledGate[FlavorNone[ss] -> Table[1, Length @ ss], rest]
+(* NOTE: ___ not __; see fallback below. *)
 
 
 ControlledGate[Rule[c_?QubitQ, v_], rest__] :=
   ControlledGate[{c} -> {v}, rest]
 
-ControlledGate[Rule[cc:{__?QubitQ}, v_], rest__] :=
+ControlledGate[Rule[cc:{___?QubitQ}, v_], rest__] :=
   ControlledGate[cc -> Table[v, Length @ cc], rest] /; Not[ListQ @ v]
+(* NOTE: ___ not __; see fallback below. *)
 
 ControlledGate[Rule[cc:{__?QubitQ}, vv_List], rest__] := (
   Message[ControlledGate::incmp, cc, vv];
@@ -1296,6 +1312,9 @@ ControlledGate[Rule[cc:{__?QubitQ}, vv_List], rest__] := (
 ControlledGate[Rule[cc:{__?QubitQ}, vv_], rest__] :=
   ControlledGate[FlavorNone[cc] -> vv, rest] /;
   Not[FlavorNoneQ @ cc]
+
+
+ControlledGate[{} -> {}, op_] := op (* fallback *)
 
 
 ControlledGate[Rule[ss:{__?QubitQ}, vv_], z_?CommutativeQ, opts___?OptionQ] :=

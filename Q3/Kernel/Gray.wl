@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.52 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-15 19:50:51+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.55 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 00:00:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -41,7 +41,7 @@ GraySubsets[ls_List] := Block[
 
 GrayControlledGate::usage = "GrayControlledGate[qq, expr] decomposes the n-bit controlled expr into elementary gates, where qq is the list of control qubits and expr is supposed to be a unitary operator."
 
-(* See Barenco et al. PRB (1995). *)
+(* See Barenco et al. (1995) and Vartiainen et al. (2004). *)
 
 GrayControlledGate[q_?QubitQ, expr_] := GrayControlledGate[{q}, expr]
 
@@ -114,23 +114,28 @@ grayCtrl[{aa__?QubitQ, b_?QubitQ}, op_, lbl_] := With[
  ]
 
 
+(**** <BinaryToGray> ****)
+
 BinaryToGray::usage = "BinaryToGray[bits] converts the binary number bits to a bit-reflected Gray code (BRGC)."
 
 (* https://en.wikipedia.org/wiki/Gray_code *)
-BinaryToGray[bits_List] := Mod[bits + ShiftRight[bits], 2]
+BinaryToGray[bits_?VectorQ] := Mod[bits + ShiftRight[bits], 2]
 
 GrayToBinary::usage = "GrayToBinary[gray] converts the bit-reflected Gray code gray to a binary number."
 
 (* https://en.wikipedia.org/wiki/Gray_code *)
-GrayToBinary[gg : {0 ..}] := gg
+GrayToBinary[gg:{0..}] := gg
 
 (* https://en.wikipedia.org/wiki/Gray_code *)
-GrayToBinary[gray_List] := Module[
-  { j = First @ FirstPosition[gray, 1],
+GrayToBinary[gray_?VectorQ] := Module[
+  { n = Length[gray],
+    k = First @ FirstPosition[gray, 1],
     mask },
-  mask = Total @ Table[ShiftRight[gray, n], {n, 1, Length[gray] - j}];
+  mask = Total @ Table[ShiftRight[gray, i], {i, 1, n-k}];
   Mod[gray + mask, 2]
  ]
+
+(**** </BinaryToGray> ****)
 
 
 (**** <GraySequence> ****)
@@ -150,8 +155,8 @@ GraySequence[{x_Integer, y_Integer}] :=
 GraySequence[1] = {0, 1}
 
 GraySequence[n_Integer] := Join[
-  GraySequence[n - 1],
-  BitSet[Reverse@GraySequence[n - 1], n - 1]
+  GraySequence[n-1],
+  BitSet[Reverse @ GraySequence[n-1], n-1]
  ] /; n > 1
 
 (**** </GraySequence> ****)

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.9 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-11 21:43:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.12 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 01:28:13+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -63,9 +63,9 @@ Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] :=
 
 
 QuantumCircuit /:
-Qubits @ QuantumCircuit[gg__, OptionsPattern[]] := Union[
+Qubits @ QuantumCircuit[gg__, opts_?OptionsQ] := Union[
   Qubits @ {gg},
-  FlavorNone @ q3AssureList @ OptionValue[QuantumCircuit, "Visible"]
+  FlavorNone @ q3AssureList @ OptionValue[QuantumCircuit, opts, "Visible"]
  ]
 
 QuantumCircuit /:
@@ -390,14 +390,19 @@ ParseGate[
   Gate[ Qubits @ op, opts, more, "Label" -> HoldForm @ thePauliForm[op] ]
 
 ParseGate[
-  Rotation[ang_, G_?QubitQ, opts___?OptionQ],
+  op:Rotation[_, G_?QubitQ, opts___?OptionQ],
   more___?OptionQ ] :=
-  Gate[ Qubits @ G, opts, more, "Label" -> gateLabel @ Rotation[ang, G] ]
+  Gate[Qubits @ G, opts, more, "Label" -> gateLabel @ op]
 
 ParseGate[
-  EulerRotation[ ang:{_,_,_}, G_?QubitQ, opts___?OptionQ ],
+  op:Rotation[_, {_, _, _}, G_?QubitQ, opts___?OptionQ],
   more___?OptionQ ] :=
-  Gate[ {G}, opts, more, "Label" -> gateLabel[ EulerRotation[ang, G] ] ]
+  Gate[Qubits @ G, opts, more, "Label" -> gateLabel @ op]
+
+ParseGate[
+  op:EulerRotation[{_,_,_}, G_?QubitQ, opts___?OptionQ ],
+  more___?OptionQ ] :=
+  Gate[{G}, opts, more, "Label" -> gateLabel @ op]
 
 
 ParseGate[
@@ -566,6 +571,9 @@ gateLabel[ op_Phase ] := thePauliForm[op]
 gateLabel[ Rotation[_, S_?QubitQ, ___] ] :=
   Subscript[ "U", FlavorLast[S] /. {1->"x", 2->"y", 3->"z"} ]
 
+gateLabel[ Rotation[_, {_, _, _}, _?QubitQ, ___] ] :=
+  Subscript[ "U", Style["n", Bold] ]
+
 gateLabel[ EulerRotation[{_, _, _}, S_?QubitQ, ___] ] := Subscript["U", "E"]
 
 gateLabel[ ControlledPower[_, _, OptionsPattern[]] ] := With[
@@ -659,15 +667,25 @@ gateShape["Projector"][x_, yy_List, ___] := Module[
 
 gateShape["Dot"][x_, yy_List, ___] :=
   gateShape["Dot"][x, yy -> Table[1, Length @ yy]]
-(* NOTE: This form may occur on target qubits such as for CZ. *)
+(* NOTE: This form may occur on TARGET (NOT control) qubits such as for CZ. *)
 
-gateShape["Dot"][x_, Rule[yy_List, vv_List], ___] :=
-  gateShape["Dot"] @@@ Thread @ {x, Thread[yy->vv]}
+gateShape["Dot"][x_, rr:Rule[_List, _List], ___] :=
+  gateShape["Dot"] @@@ Thread @ {x, Thread @ rr}
 
-gateShape["Dot"][x_, y_?NumericQ -> 1, ___] := Disk[{x, y}, $DotSize]
+gateShape["Dot"][x_, y_?NumericQ -> 1, ___] :=
+  Disk[{x, y}, $DotSize]
 
 gateShape["Dot"][x_, y_?NumericQ -> 0, ___] :=
   {EdgeForm[Black], White, Disk[{x, y}, $DotSize]}
+
+
+gateShape["MixedDot"][x_, rr:Rule[_List, _List], ___] :=
+  gateShape["MixedDot"] @@@ Thread @ {x, Thread @ rr}
+
+gateShape["MixedDot"][x_, y_?NumericQ -> _, ___] :=
+  { EdgeForm[Black],
+    White, Disk[{x, y}, $DotSize, {1, 5}*Pi/4],
+    Black, Disk[{x, y}, $DotSize, {-3, 1}*Pi/4] }
 
 
 gateShape["Rectangle"][x_, yy_List, opts___?OptionQ] := Module[
@@ -777,7 +795,7 @@ qcDrawGate[
       control = gateShape @ OptionValue[Gate, {opts}, "ControlFunction"],
       target = gateShape @ OptionValue[Gate, {opts}, "TargetFunction"],
       dots, link, pane },
-    
+
     If[Not @ ListQ[label], label = {label, label}];
     
     link = Line @ Join[Thread @ {x, yc}, Thread @ {x, yt}];
