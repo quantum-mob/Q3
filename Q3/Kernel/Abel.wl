@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.38 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-10 10:54:41+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.39 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 10:15:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -294,6 +294,8 @@ SetAttributes[PseudoDivide, Listable]
 PseudoDivide[x_, 0] = 0
 
 PseudoDivide[x_, 0.] = 0.
+
+PseudoDivide[x_, 0. + 0. I] = 0. + 0. I
 
 PseudoDivide[x_, y_] := x/y
 

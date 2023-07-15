@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.18 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-15 01:14:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 11:50:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -638,39 +638,13 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
 
 (**** <Rotation> ****)
 
-Rotation[phi_, v:{_, _, _}, S_?SpinQ, opts___?OptionQ] :=
-  Rotation[phi, v, S[$], opts] /; Not[FlavorNoneQ @ S]
-
-Rotation[phi_, v:{_, _, _}, ss:{__?SpinQ}, opts___?OptionQ] :=
-  Map[Rotation[phi, v, #, opts]&, ss]
-
-Rotation[phi_, qq:{__?SpinQ}, rest___] :=
-  Map[Rotation[phi, #, rest]&, qq]
-
-Rotation[aa_List, qq:{__?SpinQ}, rest___] :=
-  MapThread[Rotation[#1, #2, rest]&, {aa, qq}]
+Rotation /:
+Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] :=
+  Cos[phi/2] - I*Sin[phi/2]*Dot[2*S[All], Normalize @ v] /;
+  Spin[S] == 1/2
 
 Rotation /:
-Dagger[ Rotation[ang_, S_?SpinQ, rest___] ] :=
-  Rotation[-Conjugate[ang], S, rest]
-
-Rotation /:
-Dagger[ Rotation[ang_, v:{_, _, _}, S_?SpinQ, rest___] ] :=
-  Rotation[-Conjugate[ang], v, S, rest]
-
-Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] :=
-  Cos[phi/2] - I Sin[phi/2]*S
-
-Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, S_?SpinQ, ___?OptionQ] := Module[
-  { bs = Basis[S],
-    Rn = MatrixExp[ -I phi TheWigner[{Spin @ S, FlavorLast @ S}] ] },
-  Inner[Dyad[S], bs.Rn, bs]
- ]
-
-Rotation /:
-HoldPattern @ Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
+Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
   { bs = Basis[S],
     vn = v / Norm[v],
     Rn },
@@ -683,23 +657,6 @@ HoldPattern @ Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
  ]
 
 (**** </Rotation> ****)
-
-
-(**** <EulerRotation> ****)
-
-EulerRotation[aa:{_, _, _}, S_?SpinQ, opts___?OptionQ] :=
-  EulerRotation[ aa, S[$], opts ] /; Not[FlavorNoneQ @ S]
-
-
-EulerRotation /:
-HoldPattern @ Elaborate @ EulerRotation[{a_, b_, c_}, S_?SpinQ, ___] :=
-  Multiply[
-    Elaborate @ Rotation[a, S[3]],
-    Elaborate @ Rotation[b, S[2]],
-    Elaborate @ Rotation[c, S[3]]
-   ]
-
-(**** </EulerRotation> ****)
 
 
 WignerRotation::usage = "WignerRotation is obsolete now. Use Rotation instead."

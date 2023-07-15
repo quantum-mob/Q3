@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.99 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-15 01:11:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.5 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 11:53:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -868,8 +868,14 @@ Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
   (Message[Phase::bad, S]; 1) /;
   Not @ MemberQ[{1, 2, 3}, FlavorLast @ S]
 
+Phase[aa_List, S_?QubitQ, opts___?OptionQ] :=
+  Map[Phase[#, S, opts]&, aa]
+
 Phase[phi_, qq:{__?QubitQ}, opts___?OptionQ] :=
   Map[Phase[phi, #, opts]&, qq]
+
+Phase[aa_List, ss:{__?QubitQ}, opts___?OptionQ] :=
+  MapThread[Phase[#1, #2, opts]&, {aa, ss}]
 
 
 Phase /:
@@ -916,74 +922,14 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 (**** <Rotation> ****)
 
-Options[Rotation] = { "Label" -> Automatic }
-
-Rotation[phi_, v:{_, _, _}, S_?QubitQ, opts___?OptionQ] :=
-  Rotation[phi, v, S[$], opts] /;
-  Not[FlavorNoneQ @ S]
-
-Rotation[phi_, v:{_, _, _}, ss:{__?QubitQ}, opts___?OptionQ] :=
-  Map[Rotation[phi, v, #, opts]&, ss]
-
-Rotation[phi_, qq:{__?QubitQ}, rest___] :=
-  Map[Rotation[phi, #, rest]&, qq]
-
-Rotation[aa_List, qq:{__?QubitQ}, rest___] :=
-  MapThread[Rotation[#1, #2, rest]&, {aa, qq}]
-
-
-Rotation /:
-Multiply[pre___, op_Rotation, post___] :=
-  Multiply[pre, Elaborate[op], post]
-
-Rotation /:
-Dagger[ Rotation[ang_, S_?QubitQ, rest___] ] :=
-  Rotation[-Conjugate[ang], S, rest]
-
-Rotation /:
-Dagger[ Rotation[ang_, v:{_, _, _}, S_?QubitQ, rest___] ] :=
-  Rotation[-Conjugate[ang], v, S, rest]
-
 Rotation /:
 Elaborate @ Rotation[phi_, v:{_, _, _}, S_?QubitQ, ___] :=
-  Garner[ Cos[phi/2] - I Sin[phi/2] Dot[S @ All, Normalize @ v] ]
-
-Rotation /:
-Elaborate @ Rotation[phi_, S_?QubitQ, ___?OptionQ] :=
-  Cos[phi/2] - I*Sin[phi/2]*S
-
-Rotation /:
-Matrix[op_Rotation, rest___] := Matrix[Elaborate @ op, rest]
-
-
-Rotation[phi_, S:(_?QubitQ|_?SpinQ), v:{_, _, _}, opts___?OptionQ] := (
-  Message[Q3General::changed, Rotation,
-    "The vector must come before species specification."];
-  Rotation[phi, v, S, opts]
- )
-
-Rotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3General::angle, Rotation];
-  Rotation[ang, q, rest]
- )
-
-Rotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3General::angle, Rotation];
-  Rotation[ang, qq, rest]
- )
+  Garner[ Cos[phi/2] - I*Sin[phi/2]*Dot[S @ All, Normalize @ v] ]
 
 (**** </Rotation> ****)
 
 
 (**** <EulerRotation> ****)
-
-Options[EulerRotation] = { "Label" -> Automatic }
-
-EulerRotation[aa:{_, _, _}, qq:{__?QubitQ}, rest___] :=
-  Map[ EulerRotation[aa, #, rest]&, FlavorNone @ qq ]
-
-EulerRotation[aa:{_, _, _}, G_?QubitQ, opts___?OptionQ] :=
-  EulerRotation[ aa, G[$], opts ] /; Not[FlavorNoneQ @ G]
 
 EulerRotation /:
 Expand @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
@@ -992,32 +938,6 @@ Expand @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
     Rotation[b, S[2], opts],
     Rotation[a, S[3], opts]
    ]
-
-EulerRotation /:
-Multiply[pre___, op_EulerRotation, post___ ] :=
-  Multiply[pre, Elaborate[op], post]
-
-EulerRotation /:
-Elaborate @ EulerRotation[{a_, b_, c_}, S_?QubitQ, ___] :=
-  Garner @ Multiply[
-    Elaborate @ Rotation[a, S[3]],
-    Elaborate @ Rotation[b, S[2]],
-    Elaborate @ Rotation[c, S[3]]
-   ]
-
-EulerRotation /:
-Matrix[op_EulerRotation, rest___] := Matrix[Elaborate[op], rest]
-
-
-EulerRotation[q_?QubitQ, ang_, rest___] := (
-  Message[Q3General::angle, EulerRotation];
-  EulerRotation[ang, q, rest]
- )
-
-EulerRotation[qq:{__?QubitQ}, ang_, rest___] := (
-  Message[Q3General::angle, EulerRotation];
-  EulerRotation[ang, qq, rest]
- )
 
 (**** </EulerRotation> ****)
 

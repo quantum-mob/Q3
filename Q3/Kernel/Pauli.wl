@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.121 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-15 00:33:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 5.126 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-15 12:12:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2485,6 +2485,8 @@ RotationSystem::notuni = "Matrix `` is not a unitary matrix; its determinant is 
 
 RotationSystem::notorth = "Matrix `` is not an orthogonal matrix; its determinant is ``."
 
+RotationSystem[Rotation[a_, v:{_, _, _}, (_?SpinQ|_?QubitQ), ___]] := {a, v}
+
 RotationSystem[mat_?MatrixQ] := Module[
   { ang, vec },
   If[ Not @ UnitaryMatrixQ @ mat,
@@ -2564,11 +2566,15 @@ RotationSystem[mat_?MatrixQ] := Module[
 
 RotationAxis::usage = "RotationAxis[mat] returns the vector pointing along the rotation axis that the matrix mat represents. The axis vector always points to the upper hemisphere."
 
+RotationAxis[Rotation[_, v:{_, _, _}, (_?SpinQ|_?QubitQ), ___]] = v
+
 RotationAxis[mat_?MatrixQ] := Last @ RotationSystem[mat] /;
   Dimensions[mat] == {2, 2} || Dimensions[mat] == {3, 3}
 
 
 RotationAngle::usage = "RotationAngle[mat] returns the rotation angle that the matrix mat describes. The angle is in the range from -2\[Pi] to 2\[Pi] for a 2\[Times]2 unitary matrix mat, and in the range from -\[Pi] to \[Pi] for a 3\[Times]3 orthogonal matrix mat."
+
+RotationAngle[Rotation[a_, {_, _, _}, (_?SpinQ|_?QubitQ), ___]] = a
 
 RotationAngle[mat_?MatrixQ] := First @ RotationSystem[mat] /;
   Dimensions[mat] == {2, 2} || Dimensions[mat] == {3, 3}
@@ -2682,6 +2688,75 @@ Rotation[ph_, v:{Repeated[Except[_?QubitQ|_?SpinQ], {3}]}] :=
 Rotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
   Apply[CircleTimes, Rotation @@@ {a, b}]
 
+
+(* Rotation on Qubit and Spin *)
+
+Rotation::axis = "The axis in `` is not proper."
+
+Options[Rotation] = { "Label" -> Automatic }
+
+Rotation[phi_, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] := (
+  Message[Rotation::axis, S];
+  Rotation[0, {0, 0, 1}, S[$], opts]
+ ) /; Not @ MemberQ[{1, 2, 3}, FlavorLast @ S]
+
+Rotation[aa_List, qq:{(_?SpinQ|_?QubitQ)..}, rest___] :=
+  MapThread[Rotation[#1, #2, rest]&, {aa, qq}]
+
+Rotation[aa_List, S:(_?SpinQ|_?QubitQ), rest___] :=
+  Map[Rotation[#, S, rest]&, aa]
+
+Rotation[phi_, qq:{(_?SpinQ|_?QubitQ)..}, rest___] :=
+  Map[Rotation[phi, #, rest]&, qq]
+
+Rotation[phi_, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] :=
+  Rotation[phi, UnitVector[3, FlavorLast @ S], FlavorMute @ S, opts]
+
+
+Rotation::real = "The vector `` must be real to specify a rotation axis."
+
+Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] := (
+  Message[Rotation::real, v];
+  Rotation[phi, Re @ v, S, rest]
+ ) /; Not @ AllTrue[v, RealQ]
+
+Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] :=
+  Rotation[phi, v, S[$], rest] /;
+  Not[FlavorNoneQ @ S]
+
+Rotation[phi_, v:{_, _, _}, ss:{(_?SpinQ|_?QubitQ)..}, rest___] :=
+  Map[Rotation[phi, v, #, rest]&, ss]
+
+
+Rotation /:
+Multiply[pre___, op_Rotation, post___] :=
+  Multiply[pre, Elaborate[op], post]
+
+Rotation /:
+Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] ] :=
+  Rotation[-Conjugate[ang], v, S, rest]
+
+
+Rotation /:
+Matrix[op_Rotation, rest___] := Matrix[Elaborate @ op, rest]
+
+
+Rotation[phi_, S:(_?QubitQ|_?SpinQ), v:{_, _, _}, opts___?OptionQ] := (
+  Message[Q3General::changed, Rotation,
+    "The vector must come before species specification."];
+  Rotation[phi, v, S, opts]
+ )
+
+Rotation[S:(_?QubitQ|_?SpinQ), ang_, rest___] := (
+  Message[Q3General::angle, Rotation];
+  Rotation[ang, S, rest]
+ )
+
+Rotation[qq:{(_?QubitQ|_?SpinQ)..}, ang_, rest___] := (
+  Message[Q3General::angle, Rotation];
+  Rotation[ang, qq, rest]
+ )
+
 (**** </Rotation> ****)
 
 
@@ -2692,8 +2767,49 @@ EulerRotation::usage = "EulerRotation[{a, b, c}] = Rotation[a, 3].Rotation[b, 2]
 EulerRotation[ {a_, b_, c_} ] :=
   Rotation[a, 3].Rotation[b, 2].Rotation[c, 3]
 
-EulerRotation[ a:{_, _, _}, b:{_, _, _}.. ] :=
+EulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
   CircleTimes @@ Map[EulerRotation, {a, b}]
+
+
+(* Rotation on Qubit and Spin *)
+
+Options[EulerRotation] = { "Label" -> Automatic }
+
+
+EulerRotation[aa:{_, _, _}, ss:{(_?SpinQ|_?QubitQ)..}, rest___] :=
+  Map[EulerRotation[aa, #, rest]&, FlavorNone @ ss]
+
+EulerRotation[aa:{_, _, _}, G:(_?SpinQ|_?QubitQ), rest___] :=
+  EulerRotation[aa, G[$], rest] /; Not[FlavorNoneQ @ G]
+
+
+EulerRotation /:
+Multiply[pre___, op_EulerRotation, post___ ] :=
+  Multiply[pre, Elaborate @ op, post]
+
+
+EulerRotation /:
+Matrix[op_EulerRotation, rest___] := Matrix[Elaborate @ op, rest]
+
+
+EulerRotation /:
+Elaborate @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
+  Garner @ Multiply[
+    Elaborate @ Rotation[a, S[3]],
+    Elaborate @ Rotation[b, S[2]],
+    Elaborate @ Rotation[c, S[3]]
+   ]
+
+
+EulerRotation[S:(_?SpinQ|_?QubitQ), ang_, rest___] := (
+  Message[Q3General::angle, EulerRotation];
+  EulerRotation[ang, S, rest]
+ )
+
+EulerRotation[ss:{(_?SpinQ|_?QubitQ)..}, ang_, rest___] := (
+  Message[Q3General::angle, EulerRotation];
+  EulerRotation[ang, ss, rest]
+ )
 
 (**** </EulerRotation> ****)
 
