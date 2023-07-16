@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.6 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-16 22:33:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.9 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-17 04:30:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -22,7 +22,7 @@ BeginPackage["Q3`"]
 
 { ControlledExp = ControlledPower, OperatorOn };
 
-{ UniformlyControlled };
+{ UniformlyControlledRotation };
 
 { Measurement, Measurements, MeasurementFunction,
   MeasurementOdds, Readout, $MeasurementOut = <||> };
@@ -1483,92 +1483,105 @@ Multiply[pre___, OperatorOn[op_, {___?SpeciesQ}], post___] :=
 (**** </ControlledPower> ****)
 
 
-(**** <UniformlyControlled> ****)
+(**** <UniformlyControlledRotation> ****)
 
 (* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
 
-UniformlyControlled::usage = "UniformlyControlled[{c1,c2,\[Ellipsis],cn}, {op1,op2,\[Ellipsis],op2n}] represents the uniformly controlled gate that acts op1, op2, \[Ellipsis],op2n  depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis]."
+UniformlyControlledRotation::usage = "UniformlyControlledRotation[{c1,c2,\[Ellipsis],cn}, {a1,a2,\[Ellipsis],a2n}, s[\[Ellipsis],k]] represents the uniformly controlled rotation on qubit s[\[Ellipsis],$] around the k-axis by andles a1, a2, \[Ellipsis], a2n  depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis], cn."
 
-UniformlyControlled::list = "The length of `` is not an integer power of 2."
+UniformlyControlledRotation::list = "The length of `` is not an integer power of 2."
 
-AddElaborationPatterns[_UniformlyControlled]
+SyntaxInformation[UniformlyControlledRotation] = {
+  "ArgumentsPattern" -> {_, _, _, __}
+ }
 
-
-UniformlyControlled[{}, op_] = op
-
-UniformlyControlled[{}, {op_}] = op
-
-UniformlyControlled[{}, op:{_, __}] := Multiply @@ op
+AddElaborationPatterns[_UniformlyControlledRotation]
 
 
-UniformlyControlled[cc:{__?QubitQ}, op_] :=
-  UniformlyControlled[FlavorNone @ cc, op] /;
-  Not[FlavorNoneQ @ cc]
-
-UniformlyControlled[cc:{__?QubitQ}, op_List] := (
-  Message[UniformlyControlled::list, op];
-  UniformlyControlled[cc, PadRight[op, Power[2, Length @ cc], 1]]
- ) /; Power[2, Length @ cc] != Length[op]
+UniformlyControlledRotation[{}, {}, {_, _, _}, S_?QubitQ] := Rotation[0, S]
 
 
-UniformlyControlled /:
-Dagger @ UniformlyControlled[cc:{__?QubitQ}, op_] :=
-  UniformlyControlled[cc, Dagger @ op]
+UniformlyControlledRotation[{}, {a_}, v:{_, _, _}, S_?QubitQ] :=
+  Rotation[a, v, S]
 
-UniformlyControlled /:
-Expand @ UniformlyControlled[cc:{__?QubitQ}, op_] :=
+
+UniformlyControlledRotation[
+  cc:{___?QubitQ}, aa_?VectorQ, S_?QubitQ,
+  opts___?OptionQ ] :=
+  UniformlyControlledRotation[ cc, aa,
+    UnitVector[3, FlavorLast @ S], FlavorMute @ S,
+    opts ]
+
+UniformlyControlledRotation[
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___?OptionQ ] := (
+    Message[UniformlyControlledRotation::list, aa];
+    UniformlyControlledRotation[cc, PadRight[aa, Power[2, Length @ cc]], vv, S]
+   ) /; Power[2, Length @ cc] != Length[aa]
+
+
+UniformlyControlledRotation /:
+Dagger @ UniformlyControlledRotation[
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___?OptionQ ] :=
+  UniformlyControlledRotation[cc, -aa, vv, S]
+
+UniformlyControlledRotation /:
+Expand @ UniformlyControlledRotation[
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___?OptionQ ] :=
   Sequence @@ Thread @ ReleaseHold @
-  ControlledGate[Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]], op]
+  ControlledGate[
+    Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
+    Rotation[aa, vv, S]
+   ]
+
+UniformlyControlledRotation /:
+Matrix[
+  op:UniformlyControlledRotation[
+    {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ ],
+  rest___ ] := Dot @@ Matrix[{Expand @ op}, rest]
 
 
-UniformlyControlled /:
-Matrix[UniformlyControlled[cc:{__?QubitQ}, op_], rest___] :=
-  Dot @@ Matrix[{Expand @ UniformlyControlled[cc, op]}, rest]
+UniformlyControlledRotation /:
+Elaborate @
+  op:UniformlyControlledRotation[
+    {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ ] :=
+  With[ {qq = Qubits @ op}, Elaborate @ ExpressionFor[Matrix[op, qq], qq] ]
 
 
-UniformlyControlled /:
-Elaborate @ UniformlyControlled[cc:{__?QubitQ}, op_] := With[
-  { qq = Qubits @ {cc, op} },
-  Elaborate @ ExpressionFor[Matrix[UniformlyControlled[cc, op], qq], qq]
- ]
-
-
-UniformlyControlled /:
+UniformlyControlledRotation /:
 Multiply[ pre___,
-  op:UniformlyControlled[{__?QubitQ}, _, ___?OptionQ],
+  op:UniformlyControlledRotation[
+    {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ],
   in_Ket ] := With[
     { gg = {Expand @ op} },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
    ]
 
 Multiply[ pre___,
-  op:UniformlyControlled[{__?QubitQ}, _, ___?OptionQ],
+  op:UniformlyControlledRotation[
+    {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ],
   post___ ] :=
   Multiply[pre, Elaborate[op], post]
-(* NOTE: DO NOT put "UniformlyControlled /:". Otherwise, the above rule with
-   UniformlyControlled[...]**Ket[] is overridden. *)
+(* NOTE: DO NOT put "UniformlyControlledRotation /:". Otherwise, the above
+   rule with UniformlyControlledRotation[...]**Ket[] is overridden. *)
 
-(**** </UniformlyControlled> ****)
+(**** </UniformlyControlledRotation> ****)
 
 
 (**** <GateFactor> ****)
 
-UniformlyControlled /:
-GateFactor @ UniformlyControlled[cc:{__?QubitQ}, op:Except[_List]] := op
-
-UniformlyControlled /:
-GateFactor @ UniformlyControlled[cc:{__?QubitQ}, ops_List] := Module[
-  { n = Length[cc],
-    T = First @ Qubits[ops],
-    aa = RotationAngle /@ ops,
-    bb, gg, mm, tt },
-  bb = Tuples[{0, 1}, n];
-  gg = BinaryToGray /@ bb;
-  mm = Power[2, -n] * Power[-1, Outer[Dot, gg, bb, 1]];
-  tt = Rotation[mm.aa, T[2]];
-  gg = ReleaseHold @ Thread[Hold[CNOT][sequenceCNOT @ cc, T]];
-  Sequence @@ Riffle[tt, gg]
- ] /; And[Equal @@ Map[RotationAxis, ops], Length[Qubits @ ops] == 1]
+UniformlyControlledRotation /:
+GateFactor @ UniformlyControlledRotation[
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ,
+  opts___?OptionQ ] := Module[
+    { n = Length[cc],
+      bb, gg, mm, tt },
+    bb = Tuples[{0, 1}, n];
+    gg = BinaryToGray /@ bb;
+    mm = Power[2, -n] * Power[-1, Outer[Dot, gg, bb, 1]];
+    tt = Rotation[mm.aa, vv, S];
+    gg = ReleaseHold @ Thread[Hold[CNOT][sequenceCNOT @ cc, S]];
+    Sequence @@ Riffle[tt, gg]
+   ] /; Chop[First @ vv] == 0
 
 
 sequenceCNOT::usage = "Returns a list of control qubits of CNOT gates to be used to efficiently factorize a uniformly-controlled gate."

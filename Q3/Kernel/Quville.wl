@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.17 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-16 22:33:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.18 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-17 04:00:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -490,30 +490,12 @@ ParseGate @ ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
 
 
 ParseGate[
-  UniformlyControlled[cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ],
+  UniformlyControlledRotation[
+    cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ],
   more___?OptionQ ] :=
-  Gate[ cc, Qubits @ S, opts, more,
+  Gate[ cc, {S}, opts, more,
     "ControlFunction" -> "MixedDot",
-    "Label" -> {None, Q3`Private`gateLabel[S]} ]
-
-ParseGate[
-  UniformlyControlled[
-    cc:{__?QubitQ},
-    op:(Phase|Rotation|EulerRotation)[__, opts___?OptionQ],
-    more___?OptionQ ],
-  rest___?OptionQ ] :=
-  Gate[ cc, Qubits @ op, opts, more, rest,
-    "ControlFunction" -> "MixedDot",
-    "Label" -> {None, Q3`Private`gateLabel[op]} ]
-
-ParseGate[
-  UniformlyControlled[cc:{__?QubitQ}, expr_, opts___?OptionQ],
-  more___?OptionQ ] :=
-  Gate[
-    cc, Qubits[expr], opts, more,
-    "ControlFunction" -> "MixedDot",
-    "Label" -> { None,
-      If[ListQ[expr], Q3`Private`gateLabel[First @ expr], "U"] }
+    "Label" -> {None, gateLabel @ Rotation[0, vv, S]}
    ]
 
 

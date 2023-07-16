@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.1 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-16 22:31:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.2 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-17 04:19:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2734,8 +2734,11 @@ Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] :=
   Rotation[phi, v, S[$], rest] /;
   Not[FlavorNoneQ @ S]
 
-Rotation[phi_, v:{_, _, _}, ss:{(_?SpinQ|_?QubitQ)..}, rest___] :=
-  Map[Rotation[phi, v, #, rest]&, ss]
+Rotation[aa_List, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] :=
+  Map[Rotation[#, v, S, rest]&, aa]
+
+Rotation[any_, v:{_, _, _}, ss:{(_?SpinQ|_?QubitQ)..}, rest___] :=
+  Map[Rotation[any, v, #, rest]&, ss]
 
 
 Rotation /:

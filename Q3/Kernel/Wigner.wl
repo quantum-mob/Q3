@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-15 11:50:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.23 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-17 05:11:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

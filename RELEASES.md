@@ -1,12 +1,12 @@
 # Select Release Notes
 
-## v2.13.6
+## v2.13.5
 
-- New functions AmplitudeEmbedding, AmmplitudeEmbeddingGate, BasisEmbedding.
+- New functions AmplitudeEmbedding, AmmplitudeEmbeddingGate, BasisEmbedding, BasisEmbeddingGate.
 
 ## v2.13.4
 
-- New function UniformlyControlled.
+- New function UniformlyControlledRotation.
 - New function GateFactor.
 
 ## v2.13.2

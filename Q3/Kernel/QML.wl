@@ -4,12 +4,13 @@ BeginPackage["Q3`"]
 
 `QML`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 1.2 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-16 23:20:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.4 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-17 04:56:22+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ BasisEmbedding };
+{ BasisEmbedding,
+  BasisEmbeddingGate };
 
 { AmplitudeEmbedding,
   AmplitudeEmbeddingGate };
@@ -26,6 +27,23 @@ BasisEmbedding[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
 BasisEmbedding[ss:{__?QubitQ}][vv:{__?BinaryQ}] := 
   BasisEmbedding[vv, ss]
 
+
+BasisEmbeddingGate::usage = "BasisEmbeddingGate[data, {s1,s2,\[Ellipsis]}] represents the gate sequence implementing the basis embedding of data."
+
+BasisEmbeddingGate::len = "The lengths of `` and `` must be the same."
+
+BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
+  BasisEmbeddingGate[vv, FlavorNone @ ss] /;
+  Not[FlavorNone @ ss]
+
+BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] := (
+  Message[BasisEmbeddingGate::len, vv, ss];
+  BasisEmbeddingGate[PadRight[vv, Length @ ss], ss]
+ ) /; Length[vv] != Length[ss]
+
+BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
+  Multiply @@ MapThrough[ss, vv]
+    
 (**** </BasisEmbedding> ****)
 
 
@@ -75,9 +93,10 @@ Expand @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := Module[
   { yy = theAmplitudeEmbeddingY[in, Length @ ss],
     op, cc },
   cc = Table[Drop[ss, -k], {k, Length @ ss}];
-  yy = MapIndexed[Rotation[#1, ss[[-First @ #2]][2]]&, yy, {2}];
-  Sequence @@ Reverse @ Flatten @
-    MapThread[UniformlyControlled, {cc, yy}]
+  Sequence @@ Reverse @ Flatten @ MapThread[
+    UniformlyControlledRotation,
+    { cc, yy, Through[Reverse[ss][2]] }
+   ]
  ] /; AllTrue[in, NonNegative]
 
 AmplitudeEmbeddingGate /:
@@ -86,11 +105,9 @@ Expand @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := Module[
     zz = theAmplitudeEmbeddingZ[in, Length @ ss],
     op, cc },
   cc = Table[Drop[ss, -k], {k, Length @ ss}];
-  yy = MapIndexed[Rotation[#1, ss[[-First @ #2]][2]]&, yy, {2}];
-  zz = MapIndexed[Rotation[#1, ss[[-First @ #2]][3]]&, zz, {2}];
   Sequence @@ Reverse @ Flatten @ {
-    MapThread[UniformlyControlled, {cc, zz}],
-    MapThread[UniformlyControlled, {cc, yy}]
+    MapThread[UniformlyControlledRotation, {cc, zz, Through[Reverse[ss][3]]}],
+    MapThread[UniformlyControlledRotation, {cc, yy, Through[Reverse[ss][2]]}]
    }
  ]
 
