@@ -5,13 +5,10 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.55 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-15 00:00:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.56 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-16 22:58:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
-
-{ BinaryToGray, GrayToBinary,
-  GraySequence, GraySubsets };
 
 { GrayControlledGate, GrayControlledW,
   FromTwoLevelU, TwoLevelU, TwoLevelDecomposition };

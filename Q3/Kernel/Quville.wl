@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-15 12:05:39+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.17 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-16 22:33:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -17,8 +17,6 @@ BeginPackage["Q3`"]
 { ParseGate, Gate, Mark };
 
 { ParsePort, Port };
-
-(* Obsolete Symbols *)
 
 Begin["`Private`"]
 
@@ -488,6 +486,34 @@ ParseGate @ ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
     opts,
     "ControlFunction" -> "Oval",
     "TargetFunction" -> "Rectangle"
+   ]
+
+
+ParseGate[
+  UniformlyControlledGate[cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ],
+  more___?OptionQ ] :=
+  Gate[ cc, Qubits @ S, opts, more,
+    "ControlFunction" -> "MixedDot",
+    "Label" -> {None, Q3`Private`gateLabel[S]} ]
+
+ParseGate[
+  UniformlyControlledGate[
+    cc:{__?QubitQ},
+    op:(Phase|Rotation|EulerRotation)[__, opts___?OptionQ],
+    more___?OptionQ ],
+  rest___?OptionQ ] :=
+  Gate[ cc, Qubits @ op, opts, more, rest,
+    "ControlFunction" -> "MixedDot",
+    "Label" -> {None, Q3`Private`gateLabel[op]} ]
+
+ParseGate[
+  UniformlyControlledGate[cc:{__?QubitQ}, expr_, opts___?OptionQ],
+  more___?OptionQ ] :=
+  Gate[
+    cc, Qubits[expr], opts, more,
+    "ControlFunction" -> "MixedDot",
+    "Label" -> { None,
+      If[ListQ[expr], Q3`Private`gateLabel[First @ expr], "U"] }
    ]
 
 
@@ -1067,6 +1093,16 @@ qcMark @ Mark[text_, {x_, y_}, {a_, b_}, opts___?OptionQ] := Module[
  ]
 
 (**** </Mark> ****)
+
+
+(**** <GateFactor> ****)
+
+GateFactor::usage = "GateFactor[gate] factorizes a high-level gate GATE into an efficient sequence of elementary gates."
+
+GateFactor[expr_] = expr
+
+(**** </GateFactor> ****)
+
 
 End[]
 

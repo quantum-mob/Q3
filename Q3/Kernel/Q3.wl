@@ -12,8 +12,8 @@ ClearAll["`*"];
 
 `Q3`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 3.29 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-13 21:27:07+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.30 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-16 23:27:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -197,6 +197,7 @@ Get["Q3`VonNeumann`"];
 Get["Q3`Young`"];
 Get["Q3`YoungFourier`"];
 Get["Q3`Schur`"];
+Get["Q3`QML`"];
 Get["Q3`Einstein`"]; (* should be loaded last *)
 Get["Q3`Custom`"];
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 5.126 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-15 12:12:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.1 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-16 22:31:19+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,6 +21,8 @@ BeginPackage["Q3`"]
 { KetNorm, KetNormalize, KetOrthogonalize }; 
 
 { KetPermute, KetSymmetrize };
+
+{ GateFactor };
 
 { Permutation };
 
@@ -1153,6 +1155,8 @@ ketSplit[expr_] := KetRegulate[expr] /. {
   v_Bra :> ketSplit[v]
  }
 
+(**** </KetFactor> ****)
+
 
 ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression."
 
@@ -1160,6 +1164,8 @@ ReleaseTimes[expr_] := KetRegulate[
   expr /. {OTimes -> CircleTimes, OSlash -> CircleTimes}
  ]
 
+
+(**** <OTimes> ****)
 
 OTimes::usage = "OTimes represents CircleTimes, but holds the arguments. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
 (* It is used, e.g., for KetFactor[]. *)
@@ -1177,6 +1183,10 @@ OTimes[pre___, vv:Repeated[_Ket, {2, Infinity}], post___] :=
 OTimes /:
 Dagger[expr_OTimes] := Map[Dagger, expr]
 
+(**** </OTimes> ****)
+
+
+(**** <OSlash> ****)
 
 OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
 
@@ -1210,12 +1220,12 @@ HoldPattern @ OSlash[vec_, z_?CommutativeQ OTimes[ff__]] :=
   z OTimes @@ Sort @ {vec, ff}
 (* NOTE: This form occurs in KetFactor. *)
 
-(**** </KetFactor> ****)
-
 
 AddGarnerPatterns[_Pauli, _Dyad, _Ket, _Bra, _OTimes, _OSlash]
 
 AddElaborationPatterns[_Pauli, _Dyad]
+
+(**** </OSlash> ****)
 
 
 (**** <Multiply> ****)

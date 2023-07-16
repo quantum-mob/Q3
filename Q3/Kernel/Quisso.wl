@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.5 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-15 11:53:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.6 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-16 22:33:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,6 +21,8 @@ BeginPackage["Q3`"]
   Toffoli, Fredkin, Deutsch };
 
 { ControlledExp = ControlledPower, OperatorOn };
+
+{ UniformlyControlledGate };
 
 { Measurement, Measurements, MeasurementFunction,
   MeasurementOdds, Readout, $MeasurementOut = <||> };
@@ -1479,6 +1481,106 @@ Multiply[pre___, OperatorOn[op_, {___?SpeciesQ}], post___] :=
   Multiply[pre, op, post]
 
 (**** </ControlledPower> ****)
+
+
+(**** <UniformlyControlledGate> ****)
+
+(* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
+
+UniformlyControlledGate::usage = "UniformlyControlledGate[{c1,c2,\[Ellipsis],cn}, {op1,op2,\[Ellipsis],op2n}] represents the uniformly controlled gate that acts op1, op2, \[Ellipsis],op2n  depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis]."
+
+UniformlyControlledGate::list = "The length of `` is not an integer power of 2."
+
+AddElaborationPatterns[_UniformlyControlledGate]
+
+
+UniformlyControlledGate[{}, op_] = op
+
+UniformlyControlledGate[{}, {op_}] = op
+
+UniformlyControlledGate[{}, op:{_, __}] := Multiply @@ op
+
+
+UniformlyControlledGate[cc:{__?QubitQ}, op_] :=
+  UniformlyControlledGate[FlavorNone @ cc, op] /;
+  Not[FlavorNoneQ @ cc]
+
+UniformlyControlledGate[cc:{__?QubitQ}, op_List] := (
+  Message[UniformlyControlledGate::list, op];
+  UniformlyControlledGate[cc, PadRight[op, Power[2, Length @ cc], 1]]
+ ) /; Power[2, Length @ cc] != Length[op]
+
+
+UniformlyControlledGate /:
+Dagger @ UniformlyControlledGate[cc:{__?QubitQ}, op_] :=
+  UniformlyControlledGate[cc, Dagger @ op]
+
+UniformlyControlledGate /:
+Expand @ UniformlyControlledGate[cc:{__?QubitQ}, op_] :=
+  Sequence @@ Thread @ ReleaseHold @
+  ControlledGate[Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]], op]
+
+
+UniformlyControlledGate /:
+Matrix[UniformlyControlledGate[cc:{__?QubitQ}, op_], rest___] :=
+  Dot @@ Matrix[{Expand @ UniformlyControlledGate[cc, op]}, rest]
+
+
+UniformlyControlledGate /:
+Elaborate @ UniformlyControlledGate[cc:{__?QubitQ}, op_] := With[
+  { qq = Qubits @ {cc, op} },
+  Elaborate @ ExpressionFor[Matrix[UniformlyControlledGate[cc, op], qq], qq]
+ ]
+
+
+UniformlyControlledGate /:
+Multiply[ pre___,
+  op:UniformlyControlledGate[{__?QubitQ}, _, ___?OptionQ],
+  in_Ket ] := With[
+    { gg = {Expand @ op} },
+    Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
+   ]
+
+Multiply[ pre___,
+  op:UniformlyControlledGate[{__?QubitQ}, _, ___?OptionQ],
+  post___ ] :=
+  Multiply[pre, Elaborate[op], post]
+(* NOTE: DO NOT put "UniformlyControlledGate /:". Otherwise, the above rule with
+   UniformlyControlledGate[...]**Ket[] is overridden. *)
+
+(**** </UniformlyControlledGate> ****)
+
+
+(**** <GateFactor> ****)
+
+UniformlyControlledGate /:
+GateFactor @ UniformlyControlledGate[cc:{__?QubitQ}, op:Except[_List]] := op
+
+UniformlyControlledGate /:
+GateFactor @ UniformlyControlledGate[cc:{__?QubitQ}, ops_List] := Module[
+  { n = Length[cc],
+    T = First @ Qubits[ops],
+    aa = RotationAngle /@ ops,
+    bb, gg, mm, tt },
+  bb = Tuples[{0, 1}, n];
+  gg = BinaryToGray /@ bb;
+  mm = Power[2, -n] * Power[-1, Outer[Dot, gg, bb, 1]];
+  tt = Rotation[mm.aa, T[2]];
+  gg = ReleaseHold @ Thread[Hold[CNOT][sequenceCNOT @ cc, T]];
+  Sequence @@ Riffle[tt, gg]
+ ] /; And[Equal @@ Map[RotationAxis, ops], Length[Qubits @ ops] == 1]
+
+
+sequenceCNOT::usage = "Returns a list of control qubits of CNOT gates to be used to efficiently factorize a uniformly-controlled gate."
+
+sequenceCNOT[{c_}] := {c, c}
+
+sequenceCNOT[cc:{_, __}] := With[
+  { new = ReplacePart[sequenceCNOT[Rest@cc], -1 -> First[cc]] },
+  Join[new, new]
+ ]
+
+(**** </GateFactor> ****)
 
 
 (**** <Oracle/Classical> ****)

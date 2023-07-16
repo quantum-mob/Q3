@@ -1,5 +1,14 @@
 # Select Release Notes
 
+## v2.13.5
+
+- New functions AmplitudeEmbedding, AmmplitudeEmbeddingGate, BasisEmbedding.
+
+## v2.13.4
+
+- New function UniformlyControlledGate.
+- New function GateFactor.
+
 ## v2.13.2
 
 - An emergency bug fix affecting Ket formatting.
