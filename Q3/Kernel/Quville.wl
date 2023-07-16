@@ -490,14 +490,14 @@ ParseGate @ ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
 
 
 ParseGate[
-  UniformlyControlledGate[cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ],
+  UniformlyControlled[cc:{__?QubitQ}, S_?QubitQ, opts___?OptionQ],
   more___?OptionQ ] :=
   Gate[ cc, Qubits @ S, opts, more,
     "ControlFunction" -> "MixedDot",
     "Label" -> {None, Q3`Private`gateLabel[S]} ]
 
 ParseGate[
-  UniformlyControlledGate[
+  UniformlyControlled[
     cc:{__?QubitQ},
     op:(Phase|Rotation|EulerRotation)[__, opts___?OptionQ],
     more___?OptionQ ],
@@ -507,7 +507,7 @@ ParseGate[
     "Label" -> {None, Q3`Private`gateLabel[op]} ]
 
 ParseGate[
-  UniformlyControlledGate[cc:{__?QubitQ}, expr_, opts___?OptionQ],
+  UniformlyControlled[cc:{__?QubitQ}, expr_, opts___?OptionQ],
   more___?OptionQ ] :=
   Gate[
     cc, Qubits[expr], opts, more,

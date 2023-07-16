@@ -6,7 +6,7 @@
 
 ## v2.13.4
 
-- New function UniformlyControlledGate.
+- New function UniformlyControlled.
 - New function GateFactor.
 
 ## v2.13.2

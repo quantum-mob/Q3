@@ -77,7 +77,7 @@ Expand @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := Module[
   cc = Table[Drop[ss, -k], {k, Length @ ss}];
   yy = MapIndexed[Rotation[#1, ss[[-First @ #2]][2]]&, yy, {2}];
   Sequence @@ Reverse @ Flatten @
-    MapThread[UniformlyControlledGate, {cc, yy}]
+    MapThread[UniformlyControlled, {cc, yy}]
  ] /; AllTrue[in, NonNegative]
 
 AmplitudeEmbeddingGate /:
@@ -89,8 +89,8 @@ Expand @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := Module[
   yy = MapIndexed[Rotation[#1, ss[[-First @ #2]][2]]&, yy, {2}];
   zz = MapIndexed[Rotation[#1, ss[[-First @ #2]][3]]&, zz, {2}];
   Sequence @@ Reverse @ Flatten @ {
-    MapThread[UniformlyControlledGate, {cc, zz}],
-    MapThread[UniformlyControlledGate, {cc, yy}]
+    MapThread[UniformlyControlled, {cc, zz}],
+    MapThread[UniformlyControlled, {cc, yy}]
    }
  ]
 

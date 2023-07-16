@@ -22,7 +22,7 @@ BeginPackage["Q3`"]
 
 { ControlledExp = ControlledPower, OperatorOn };
 
-{ UniformlyControlledGate };
+{ UniformlyControlled };
 
 { Measurement, Measurements, MeasurementFunction,
   MeasurementOdds, Readout, $MeasurementOut = <||> };
@@ -1483,81 +1483,81 @@ Multiply[pre___, OperatorOn[op_, {___?SpeciesQ}], post___] :=
 (**** </ControlledPower> ****)
 
 
-(**** <UniformlyControlledGate> ****)
+(**** <UniformlyControlled> ****)
 
 (* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
 
-UniformlyControlledGate::usage = "UniformlyControlledGate[{c1,c2,\[Ellipsis],cn}, {op1,op2,\[Ellipsis],op2n}] represents the uniformly controlled gate that acts op1, op2, \[Ellipsis],op2n  depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis]."
+UniformlyControlled::usage = "UniformlyControlled[{c1,c2,\[Ellipsis],cn}, {op1,op2,\[Ellipsis],op2n}] represents the uniformly controlled gate that acts op1, op2, \[Ellipsis],op2n  depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis]."
 
-UniformlyControlledGate::list = "The length of `` is not an integer power of 2."
+UniformlyControlled::list = "The length of `` is not an integer power of 2."
 
-AddElaborationPatterns[_UniformlyControlledGate]
-
-
-UniformlyControlledGate[{}, op_] = op
-
-UniformlyControlledGate[{}, {op_}] = op
-
-UniformlyControlledGate[{}, op:{_, __}] := Multiply @@ op
+AddElaborationPatterns[_UniformlyControlled]
 
 
-UniformlyControlledGate[cc:{__?QubitQ}, op_] :=
-  UniformlyControlledGate[FlavorNone @ cc, op] /;
+UniformlyControlled[{}, op_] = op
+
+UniformlyControlled[{}, {op_}] = op
+
+UniformlyControlled[{}, op:{_, __}] := Multiply @@ op
+
+
+UniformlyControlled[cc:{__?QubitQ}, op_] :=
+  UniformlyControlled[FlavorNone @ cc, op] /;
   Not[FlavorNoneQ @ cc]
 
-UniformlyControlledGate[cc:{__?QubitQ}, op_List] := (
-  Message[UniformlyControlledGate::list, op];
-  UniformlyControlledGate[cc, PadRight[op, Power[2, Length @ cc], 1]]
+UniformlyControlled[cc:{__?QubitQ}, op_List] := (
+  Message[UniformlyControlled::list, op];
+  UniformlyControlled[cc, PadRight[op, Power[2, Length @ cc], 1]]
  ) /; Power[2, Length @ cc] != Length[op]
 
 
-UniformlyControlledGate /:
-Dagger @ UniformlyControlledGate[cc:{__?QubitQ}, op_] :=
-  UniformlyControlledGate[cc, Dagger @ op]
+UniformlyControlled /:
+Dagger @ UniformlyControlled[cc:{__?QubitQ}, op_] :=
+  UniformlyControlled[cc, Dagger @ op]
 
-UniformlyControlledGate /:
-Expand @ UniformlyControlledGate[cc:{__?QubitQ}, op_] :=
+UniformlyControlled /:
+Expand @ UniformlyControlled[cc:{__?QubitQ}, op_] :=
   Sequence @@ Thread @ ReleaseHold @
   ControlledGate[Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]], op]
 
 
-UniformlyControlledGate /:
-Matrix[UniformlyControlledGate[cc:{__?QubitQ}, op_], rest___] :=
-  Dot @@ Matrix[{Expand @ UniformlyControlledGate[cc, op]}, rest]
+UniformlyControlled /:
+Matrix[UniformlyControlled[cc:{__?QubitQ}, op_], rest___] :=
+  Dot @@ Matrix[{Expand @ UniformlyControlled[cc, op]}, rest]
 
 
-UniformlyControlledGate /:
-Elaborate @ UniformlyControlledGate[cc:{__?QubitQ}, op_] := With[
+UniformlyControlled /:
+Elaborate @ UniformlyControlled[cc:{__?QubitQ}, op_] := With[
   { qq = Qubits @ {cc, op} },
-  Elaborate @ ExpressionFor[Matrix[UniformlyControlledGate[cc, op], qq], qq]
+  Elaborate @ ExpressionFor[Matrix[UniformlyControlled[cc, op], qq], qq]
  ]
 
 
-UniformlyControlledGate /:
+UniformlyControlled /:
 Multiply[ pre___,
-  op:UniformlyControlledGate[{__?QubitQ}, _, ___?OptionQ],
+  op:UniformlyControlled[{__?QubitQ}, _, ___?OptionQ],
   in_Ket ] := With[
     { gg = {Expand @ op} },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
    ]
 
 Multiply[ pre___,
-  op:UniformlyControlledGate[{__?QubitQ}, _, ___?OptionQ],
+  op:UniformlyControlled[{__?QubitQ}, _, ___?OptionQ],
   post___ ] :=
   Multiply[pre, Elaborate[op], post]
-(* NOTE: DO NOT put "UniformlyControlledGate /:". Otherwise, the above rule with
-   UniformlyControlledGate[...]**Ket[] is overridden. *)
+(* NOTE: DO NOT put "UniformlyControlled /:". Otherwise, the above rule with
+   UniformlyControlled[...]**Ket[] is overridden. *)
 
-(**** </UniformlyControlledGate> ****)
+(**** </UniformlyControlled> ****)
 
 
 (**** <GateFactor> ****)
 
-UniformlyControlledGate /:
-GateFactor @ UniformlyControlledGate[cc:{__?QubitQ}, op:Except[_List]] := op
+UniformlyControlled /:
+GateFactor @ UniformlyControlled[cc:{__?QubitQ}, op:Except[_List]] := op
 
-UniformlyControlledGate /:
-GateFactor @ UniformlyControlledGate[cc:{__?QubitQ}, ops_List] := Module[
+UniformlyControlled /:
+GateFactor @ UniformlyControlled[cc:{__?QubitQ}, ops_List] := Module[
   { n = Length[cc],
     T = First @ Qubits[ops],
     aa = RotationAngle /@ ops,
