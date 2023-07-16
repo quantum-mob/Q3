@@ -1,6 +1,6 @@
 # Select Release Notes
 
-## v2.13.5
+## v2.13.6
 
 - New functions AmplitudeEmbedding, AmmplitudeEmbeddingGate, BasisEmbedding.
 
