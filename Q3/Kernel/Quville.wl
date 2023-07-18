@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.18 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-17 04:00:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.21 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-18 23:12:34+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -27,6 +27,9 @@ QuantumCircuit::noqubit = "No Qubit found in the expression ``. Use KetRegulate 
 QuantumCircuit::nofunc = "Unknown function \"``\" to draw the gate. \"Rectangle\" is assumed."
 
 QuantumCircuit::ket = "`` is not a proper ket of the form Ket[<|...|>] or ProductState[<|...|>]."
+
+QuantumCircuit::elm = "`` is not a quantum circuit element."
+
 
 QuantumCircuitIn::usage = "QuantumCircuitIn is a holder for input expression in QuantumCircuit.\nSee also QuantumCircuitOut."
 
@@ -74,17 +77,18 @@ Measurements[qc:QuantumCircuit[__, ___?OptionQ]] :=
 (**** <Multiply> ****)
 
 QuantumCircuit /:
-NonCommutativeQ[ QuantumCircuit[__] ] = True
+NonCommutativeQ[_QuantumCircuit] = True
 
 QuantumCircuit /:
-MultiplyKind[ QuantumCircuit[__] ] = NonCommutative
+MultiplyKind[_QuantumCircuit] = Qubit
 
 QuantumCircuit /:
-MultiplyGenus[ QuantumCircuit[__] ] := "QuantumCircuit"
+MultiplyGenus[_QuantumCircuit] := "Singleton"
 
 
 QuantumCircuit /:
-Dagger[qc_QuantumCircuit] := Dagger[Elaborate @ qc]
+Dagger @ QuantumCircuit[gg__, opts___?OptionQ] :=
+  QuantumCircuit[Sequence @@ Map[Dagger, Reverse @ {gg}], opts]
 
 
 QuantumCircuit /:
@@ -107,28 +111,28 @@ ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
 QuantumCircuit /:
 Elaborate @ QuantumCircuit[gg__, ___?OptionQ] := Module[
   { expr = Flatten @ QuantumCircuitTrim @ {gg} },
-  Garner[ qCircuitOperate @@ expr ]
+  Garner[ qvCircuitOperate @@ expr ]
  ]
 (* NOTE: This makes the evaluation much faster, especially, when the initial
    state is specified in the circuit. *)
 
 
-qCircuitOperate[] = 1
+qvCircuitOperate[] = 1
 
-qCircuitOperate[pre__, op_Measurement, post___] := 
-  qCircuitOperate[op @ qCircuitOperate[pre], post] /;
+qvCircuitOperate[pre__, op_Measurement, post___] := 
+  qvCircuitOperate[op @ qvCircuitOperate[pre], post] /;
   Not @ FreeQ[Elaborate @ {pre}, Ket[_Association]]
 
-qCircuitOperate[op_Measurement, post___] :=
-  Multiply[qCircuitOperate[post], op]
+qvCircuitOperate[op_Measurement, post___] :=
+  Multiply[qvCircuitOperate[post], op]
 
-qCircuitOperate[op:Except[_Measurement]..] :=
+qvCircuitOperate[op:Except[_Measurement]..] :=
   Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1,  {op} ]
 (* NOtE: This is another method:
    Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate @ {op} ]
    However, this cannot take the advantange of op ** Ket[...]. *)
 
-qCircuitOperate[gg__] := MeasurementFunction[{gg}]
+qvCircuitOperate[gg__] := MeasurementFunction[{gg}]
 
 (**** </ExpressionFor> ****)
 
@@ -186,7 +190,7 @@ QuantumCircuitTrim[ _?OptionQ ] = Nothing
 QuantumCircuitTrim[ g_?ComplexQ ] = g (* NOT _?CommutativeQ *)
 
 QuantumCircuitTrim[ g_ ] := Nothing /;
-  FreeQ[g, _?QubitQ | _Ket | _ProductState]
+  FreeQ[g, _?QubitQ | _Dyad | _Ket | _ProductState]
 
 QuantumCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
   Dyad[v, v, qq]
@@ -531,13 +535,18 @@ ParseGate[HoldPattern @ Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ]] :=
 ParseGate[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
   Gate[ Qubits @ expr, opts ]
 
-ParseGate[ z_?NumericQ, ___?OptionQ ] := "Spacer"
+ParseGate[_?NumericQ, ___?OptionQ] = "Spacer"
 
-ParseGate[ gate:("Separator" | "Spacer"), ___?OptionQ ] := gate
+ParseGate[gate:("Separator" | "Spacer"), ___?OptionQ] = gate
 
 
-ParseGate[ expr_, ___?OptionQ ] := expr /; FreeQ[expr, _?QubitQ]
-(* Graphics primitives corresponds to this case. *)
+ParseGate[any_?StringQ, ___?OptionQ] := (
+  Message[QuantumCircuit::elm, any];
+  "Spacer"
+ )
+
+ParseGate[expr_, ___?OptionQ] := expr /; FreeQ[expr, _?QubitQ]
+(* Graphics primitives and directivescorrespond to this case. *)
 
 (**** </ParseGate> *****)
 

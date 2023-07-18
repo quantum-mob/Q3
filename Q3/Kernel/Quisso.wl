@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.9 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-17 04:30:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.11 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-18 23:13:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1498,13 +1498,6 @@ SyntaxInformation[UniformlyControlledRotation] = {
 AddElaborationPatterns[_UniformlyControlledRotation]
 
 
-UniformlyControlledRotation[{}, {}, {_, _, _}, S_?QubitQ] := Rotation[0, S]
-
-
-UniformlyControlledRotation[{}, {a_}, v:{_, _, _}, S_?QubitQ] :=
-  Rotation[a, v, S]
-
-
 UniformlyControlledRotation[
   cc:{___?QubitQ}, aa_?VectorQ, S_?QubitQ,
   opts___?OptionQ ] :=
@@ -1517,6 +1510,9 @@ UniformlyControlledRotation[
     Message[UniformlyControlledRotation::list, aa];
     UniformlyControlledRotation[cc, PadRight[aa, Power[2, Length @ cc]], vv, S]
    ) /; Power[2, Length @ cc] != Length[aa]
+
+UniformlyControlledRotation[{}, {a_}, v:{_, _, _}, S_?QubitQ] :=
+  Rotation[a, v, S]
 
 
 UniformlyControlledRotation /:
@@ -1707,7 +1703,7 @@ Options[QFT] = {N -> False}
 QFT /: NonCommutativeQ[ QFT[___] ] = True
 
 QFT /:
-MultiplyKind @ QFT[ss:{__?QubitQ}] := Qubit
+MultiplyKind @ QFT[{__?QubitQ}] = Qubit
 
 QFT /:
 MultiplyGenus @ QFT[___] := "Singleton"

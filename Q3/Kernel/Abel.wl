@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.40 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-16 22:54:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.42 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-18 23:13:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1418,19 +1418,17 @@ $ElaborationPatterns = Association[
   "Rules" -> {}
  ]
 
-(**** <Elaborate> ****)
+(**** </Elaborate> ****)
 
 
-(* ****************************************************************** *)
-(*     <Multiply>                                                     *)
-(* ****************************************************************** *)
+(**** <Multiply> ****)
 
 DistributableQ::usage = "DistributableQ[x, y, \[Ellipsis]] returns True if any of the arguments x, y, \[Ellipsis] has head of Plus."
 
 DistributableQ[args__] := Not @ MissingQ @ FirstCase[ {args}, _Plus ]
 
 
-MultiplyGenus::usage = "MultiplyGenus[op] returns the Genus of op, which may be a Species or related function.\nGenus is a category class of Species and functions for Multiply that ranks above MultiplyKind. It affects how Multiply rearranges the non-commutative elements.\nMultiplyGenus is intended for internal use."
+MultiplyGenus::usage = "MultiplyGenus[op] returns the Genus of op, which may be a Species or related function.\nMultiplyGenus is a category class of Species and functions for Multiply that ranks above MultiplyKind. It affects how Multiply rearranges the non-commutative elements.\nMultiplyGenus is intended for internal use."
 
 SetAttributes[MultiplyGenus, Listable]
 
@@ -1551,9 +1549,7 @@ KindsOrderedQ[ops_List] := Module[
   AllTrue[qq, OrderedQ]
  ]
 
-(* ****************************************************************** *)
-(*     </Multiply>                                                    *)
-(* ****************************************************************** *)
+(**** </Multiply> ****)
 
 
 (* ****************************************************************** *)

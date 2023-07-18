@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.13.6
+
+- A bug fix concerning QuantumCircuitTrim.
+
 ## v2.13.5
 
 - New functions AmplitudeEmbedding, AmmplitudeEmbeddingGate, BasisEmbedding, BasisEmbeddingGate.
