@@ -2,10 +2,10 @@
 
 BeginPackage["Q3`"]
 
-`Quville`$Version = StringJoin[
+`QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-19 23:52:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.23 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-20 00:21:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
