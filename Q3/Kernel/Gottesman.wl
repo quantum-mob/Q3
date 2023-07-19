@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.56 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-06 07:36:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.57 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-19 23:48:01+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1136,7 +1136,8 @@ simplifyGate[any_] = any
 
 simplifyGate @ ControlledGate[cc_, T_[j___, 1]] := CNOT[cc, T[j, $]]
 
-simplifyGate @ ControlledGate[Rule[cc_, vv_], T_[j___, 3]] := CZ[cc, T[j, $]]
+simplifyGate @ ControlledGate[cc_, T_[j___, 3]] :=
+  CZ[Keys @ cc, T[j, $]] /; ContainsOnly[Values[cc], {1}]
 
 simplifyGate[S_[j___, 1]/Sqrt[2] + S_[j___, 3]/Sqrt[2]] := S[j, 6]
 

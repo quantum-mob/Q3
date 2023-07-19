@@ -3,8 +3,8 @@ BeginPackage["Q3`"];
 
 `YoungFourier`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.24 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 17:17:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.25 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-19 23:46:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -172,8 +172,8 @@ HarrowClebschGordanTransform[Ket[a_?YoungTableauQ, b_?YoungTableauQ]] :=
       vec, out },
     vec = CircleTimes[Ket[a], Total[Ket[#, #] & /@ YoungTableaux[shp]], 
       Ket[b]];
-    vec /= Sqrt[YoungTableauCount@shp];
-    vec = iQFTG@ControlledGamma@QFTG[vec];
+    vec /= Sqrt[YoungTableauCount @ shp];
+    vec = iQFTG @ ControlledGamma @ QFTG[vec];
     out = Cases[vec, Ket[p_, q_, rr__] -> Ket[q], Infinity];
     out = Collect[
       ReplaceAll[vec, Ket[p_, q_, rr__] -> Ket[q]*Ket[p, rr]],

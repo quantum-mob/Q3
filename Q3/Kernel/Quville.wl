@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quville`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.21 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-18 23:12:34+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-19 23:52:22+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -329,14 +329,14 @@ Gate[ss:{__?QubitQ}, opts:OptionsPattern[]] :=
   Gate[FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
 
 Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
-  Gate[cc -> Table[1, Length @ cc], tt, opts]
+  Gate[Thread[cc -> 1], tt, opts]
 
 Gate[Rule[cc:{__?QubitQ}, v_], tt:{__?QubitQ}, opts:OptionsPattern[]] :=
-  Gate[cc -> Table[v, Length @ cc], tt, opts] /; Not[ListQ @ v]
+  Gate[Thread[cc -> v], tt, opts]
 
-Gate[cc:Rule[{__?QubitQ}, _List], tt:{__?QubitQ}, opts:OptionsPattern[]] :=
+Gate[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
   Gate[FlavorNone @ cc, FlavorNone @ tt, opts] /;
-  Not @ FlavorNoneQ @ Join[First @ cc, tt]
+  Not @ FlavorNoneQ @ Join[Keys @ cc, tt]
 
 ParseGate::usage = "ParseGate[expr, opts] is a low-level function to preprocess quantum circuit element expr."
 
@@ -404,41 +404,41 @@ ParseGate[
 
 
 ParseGate[
-  ControlledGate[rr_Rule, S_?QubitQ, opts___?OptionQ],
+  ControlledGate[rr:{__Rule}, S_?QubitQ, opts___?OptionQ],
   more___?OptionQ ] :=
   Gate[ rr, Qubits @ S, opts, more,
     "Label" -> {None, gateLabel[S]} ]
 
 ParseGate[
   ControlledGate[
-    Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}],
+    cc:{Rule[_?QubitQ, _?BinaryQ]..},
     op:(Phase|Rotation|EulerRotation)[__, opts___?OptionQ],
     more___?OptionQ ],
   rest___?OptionQ ] :=
-  Gate[ cc -> vv, Qubits @ op, opts, more, rest,
+  Gate[ cc, Qubits @ op, opts, more, rest,
     "Label" -> {None, gateLabel[op]} ]
 
 ParseGate[
   ControlledGate[
-    Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}],
+    cc:{Rule[_?QubitQ, _?BinaryQ]..},
     HoldPattern @ Multiply[ss__?QubitQ],
     opts___?OptionQ ],
   more___?OptionQ ] :=
-  Sequence @@ Map[ParseGate[ControlledGate[cc->vv, #], opts, more]&, {ss}]
+  Sequence @@ Map[ParseGate[ControlledGate[cc, #], opts, more]&, {ss}]
 
 ParseGate[
-  ControlledGate[ Rule[cc:{__?QubitQ}, vv_], expr_, opts___?OptionQ ],
+  ControlledGate[ cc:{Rule[_?QubitQ, _]..}, expr_, opts___?OptionQ ],
   more___?OptionQ ] :=
-  Gate[ cc->vv, Qubits[expr], opts, more ] /;
+  Gate[ cc, Qubits[expr], opts, more ] /;
   Not @ FreeQ[expr, _Dyad|_?QubitQ]
 
 
-ParseGate[ CNOT[Rule[cc:{__?QubitQ}, vv_], tt:{__?QubitQ}], opts___?OptionQ ] :=
-  Gate[ cc -> vv, tt, "TargetFunction" -> "CirclePlus" ]
+ParseGate[ CNOT[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}], opts___?OptionQ ] :=
+  Gate[cc, tt, "TargetFunction" -> "CirclePlus"]
 
 
 ParseGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
-  Gate[ {a, b} -> {1, 1}, {c}, "TargetFunction" -> "CirclePlus" ]
+  Gate[Thread[{a, b} -> {1, 1}], {c}, "TargetFunction" -> "CirclePlus"]
 
 
 ParseGate[ CZ[cc:{__?QubitQ}, tt:{__?QubitQ}], ___?OptionQ ] :=
@@ -810,9 +810,9 @@ qcDrawGate::usage = "Renders the gates."
 qcDrawGate[gg_List, x_, yy_Association] := Map[qcDrawGate[#, x, yy]&, gg]
 
 qcDrawGate[
-  Gate[Rule[cc:{__?QubitQ}, vv_], tt:{__?QubitQ}, opts:OptionsPattern[]],
+  Gate[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, opts:OptionsPattern[]],
   x_, yy_Association ] := Module[
-    { yc = Lookup[yy, cc],
+    { yc = Lookup[yy, Keys @ cc],
       yt = Lookup[yy, tt],
       label = OptionValue[Gate, {opts}, "Label"],
       control = gateShape @ OptionValue[Gate, {opts}, "ControlFunction"],
@@ -823,7 +823,7 @@ qcDrawGate[
     
     link = Line @ Join[Thread @ {x, yc}, Thread @ {x, yt}];
     
-    dots = control[x, yc -> vv, "Label" -> First[label], opts];
+    dots = control[x, yc -> Values[cc], "Label" -> First[label], opts];
     pane = target[x, yt, "Label" -> Last[label], opts];
     
     Join[{link}, dots, pane]

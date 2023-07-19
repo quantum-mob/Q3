@@ -4,6 +4,7 @@
 
 - A bug fix concerning QuantumCircuitTrim.
 - New functions GrayCodeBasis, GrayTransform, TheGrayTransform.
+- New canonical forms for CNOT, ControlledGate, Gate.
 
 ## v2.13.5
 

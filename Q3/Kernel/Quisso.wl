@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.11 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-18 23:13:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.12 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-19 23:52:15+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -964,18 +964,18 @@ CNOT[cc:(_?QubitQ|{__?QubitQ})] := (
  )
 
 
-CNOT[c_?QubitQ, t_] := CNOT[c @ {$} -> {1}, t]
+CNOT[c_?QubitQ, t_] := CNOT[{c[$] -> 1}, t]
 
 CNOT[c_, t_?QubitQ] := CNOT[c, t @ {$}]
 
 CNOT[cc:{__?QubitQ}, tt_] :=
-  CNOT[cc -> Table[1, Length @ cc], tt]
+  CNOT[Thread[cc -> 1], tt]
 
 
-CNOT[Rule[c_?QubitQ, v_], tt_] := CNOT[{c} -> {v}, tt]
+CNOT[Rule[c_?QubitQ, v_], tt_] := CNOT[{c -> v}, tt]
 
 CNOT[Rule[cc:{__?QubitQ}, v_], tt_] :=
-  CNOT[cc -> Table[v, Length @ cc], tt] /; Not[ListQ @ v]
+  CNOT[Thread[cc -> v], tt]
 
 
 CNOT[Rule[cc:{__?QubitQ}, vv_List], tt_] := (
@@ -984,9 +984,9 @@ CNOT[Rule[cc:{__?QubitQ}, vv_List], tt_] := (
  ) /; Length[cc] != Length[vv]
 
 
-CNOT[Rule[cc:{__?QubitQ}, vv_], tt:{__?QubitQ}] :=
-  CNOT[FlavorNone[cc] -> vv, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ Join[cc, tt]]
+CNOT[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}] :=
+  CNOT[FlavorNone @ cc, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ Join[Keys @ cc, tt]]
 
 
 CNOT /: Dagger[ op_CNOT ] = op
@@ -996,21 +996,21 @@ Elaborate[op_CNOT] = op (* fallback *)
 
 CNOT /:
 Elaborate @
-  CNOT[Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}], tt:{__?QubitQ}] := Module[
-    { prj = Through[cc[3]],
+  CNOT[cc:{Rule[_?QubitQ, _?BinaryQ]..}, tt:{__?QubitQ}] := Module[
+    { prj = Through[Keys[cc][3]],
       not = Multiply @@ Through[tt[1]] },
-    prj = Multiply @@ Garner[(1+prj)/2 - Boole[OddQ @ vv]*prj];
+    prj = Multiply @@ Garner[(1+prj)/2 - Values[cc]*prj];
     Garner @ Elaborate[(1-prj) + prj ** not]
    ]
 
 CNOT /:
-Multiply[pre___, CNOT[Rule[cc_, vv_], tt_], in_Ket] := Module[
+Multiply[pre___, CNOT[cc:{__Rule}, tt_], in_Ket] := Module[
   { op = Multiply @@ Through[tt[1]],
     xx },
-  If[ in[cc] == vv,
+  If[ in[Keys @ cc] == Values[cc],
     Multiply[pre, op ** in],
     Multiply[pre, in],
-    xx = Mod[in[tt] + Apply[Times, Mod[in[cc]+vv+1, 2]], 2];
+    xx = Mod[in[tt] + Apply[Times, Mod[in[Keys @ cc]+vv+1, 2]], 2];
     Multiply[pre, in[tt -> xx]]
    ]
  ]
@@ -1020,7 +1020,7 @@ HoldPattern @ Multiply[pre___, op_CNOT, post___] :=
 (* NOTE: DO NOT put "CNOT /:". *)
 
 CNOT /:
-Matrix[op:CNOT[Rule[{__?QubitQ}, _List], {__?QubitQ}], rest___] :=
+Matrix[op:CNOT[{Rule[_?QubitQ, _]..}, {__?QubitQ}], rest___] :=
   Matrix[Elaborate @ op, rest]
 
 CNOT /: (* fallback *)
@@ -1204,25 +1204,25 @@ SyntaxInformation[ControlledGate] = {
   "ArgumentsPattern" -> {_, __}
  }
 
-ControlledGate[cc:(_?QubitQ|{__?QubitQ})] := (
+ControlledGate[cc_] := (
   CheckArguments[ControlledGate[cc], 2];
   ControlledGate[cc, 1]
  )
 
 
 ControlledGate[S_?QubitQ, rest__] :=
-  ControlledGate[S @ {$} -> {1}, rest]
+  ControlledGate[{S[$]->1}, rest]
 
 ControlledGate[ss:{___?QubitQ}, rest__] :=
-  ControlledGate[FlavorNone[ss] -> Table[1, Length @ ss], rest]
+  ControlledGate[Thread[FlavorNone[ss] -> 1], rest]
 (* NOTE: ___ not __; see fallback below. *)
 
 
 ControlledGate[Rule[c_?QubitQ, v_], rest__] :=
-  ControlledGate[{c} -> {v}, rest]
+  ControlledGate[{c -> v}, rest]
 
 ControlledGate[Rule[cc:{___?QubitQ}, v_], rest__] :=
-  ControlledGate[cc -> Table[v, Length @ cc], rest] /; Not[ListQ @ v]
+  ControlledGate[Thread[cc -> v], rest]
 (* NOTE: ___ not __; see fallback below. *)
 
 ControlledGate[Rule[cc:{__?QubitQ}, vv_List], rest__] := (
@@ -1231,27 +1231,25 @@ ControlledGate[Rule[cc:{__?QubitQ}, vv_List], rest__] := (
  ) /; Length[cc] != Length[vv]
 
 
-ControlledGate[Rule[cc:{__?QubitQ}, vv_], rest__] :=
-  ControlledGate[FlavorNone[cc] -> vv, rest] /;
-  Not[FlavorNoneQ @ cc]
+ControlledGate[cc:{Rule[_?QubitQ, _]..}, rest__] :=
+  ControlledGate[FlavorNone @ cc, rest] /;
+  Not[FlavorNoneQ @ Keys @ cc]
 
 
-ControlledGate[{} -> {}, op_] := op (* fallback *)
+ControlledGate[{}, op_] = op (* fallback *)
 
 
-ControlledGate[Rule[ss:{__?QubitQ}, vv_], z_?CommutativeQ, opts___?OptionQ] :=
-  With[
-    { ff = If[Last[vv] == 0, -1, 1, 1] },
-    If[ Abs[z] != 1, Message[ControlledGate::nonuni, z] ];
-    If[ Length[ss] > 1,
-      ControlledGate[ Rule[Most @ ss, Most @ vv],
-        Phase[ff*Arg[z], Last[ss][3], opts] ],
-      Phase[ff*Arg[z], Last[ss][3], opts]
-     ]
+ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=
+  Module[
+    { ff, op },
+    ff = If[Last[Values @ cc] == 0, -1, 1, 1];
+    op = Phase[ff*Arg[z], Last[Keys @ cc][3], opts];
+    If[Abs[z] != 1, Message[ControlledGate::nonuni, z]];
+    If[Length[cc] > 1, ControlledGate[Most @ cc, op], op]
    ]
 
 
-theControlledGate[cc_Rule, op_] := Module[
+theControlledGate[cc:{__Rule}, op_] := Module[
   { tt = First[Qubits @ op],
     mm = Matrix[op],
     ff },
@@ -1291,7 +1289,7 @@ theControlledGate[cc_Rule, op_] := Module[
  ]
 
 ControlledGate /:
-Expand @ ControlledGate[cc_Rule, op_, ___?OptionQ] :=
+Expand @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] :=
   Sequence @@ theControlledGate[cc, op] /; Length[Qubits @ op] == 1
 
 
@@ -1305,18 +1303,18 @@ Elaborate[op_ControlledGate] = op (* fallback *)
 
 ControlledGate /:
 Elaborate @
-  ControlledGate[Rule[ss:{__?QubitQ}, vv:{__?BinaryQ}], op_, ___?OptionQ] :=
+  ControlledGate[cc:{Rule[_?QubitQ, _?BinaryQ]..}, op_, ___?OptionQ] :=
   Module[
-    { rr = Thread[vv -> vv],
+    { rr = Thread[Values[cc] -> Values[cc]],
       prj },
-    prj = Multiply @@ Elaborate @ MapThread[Construct, {ss, rr}];
+    prj = Multiply @@ Elaborate @ MapThread[Construct, {Keys @ cc, rr}];
     Garner[prj ** Elaborate[op] + (1 - prj)]
    ]
 
 
 ControlledGate /:
 Matrix[
-  op:ControlledGate[Rule[{__?QubitQ}, {__?BinaryQ}], _, ___?OptionQ],
+  op:ControlledGate[{Rule[_?QubitQ, _?BinaryQ]..}, _, ___?OptionQ],
   rest___ ] := Matrix[Elaborate[op], rest]
 
 ControlledGate /:
@@ -1326,18 +1324,16 @@ Matrix[op_ControlledGate, ss:{__?SpeciesQ}] :=
 
 ControlledGate /:
 Multiply[ pre___,
-  ControlledGate[Rule[cc:{__?QubitQ}, vv:{__?BinaryQ}], op_, ___?OptionQ],
-  in_Ket ] := With[
-    { xx = in[cc] },
-    If[ xx == vv,
-      Multiply[pre, op ** in],
-      Multiply[pre, in],
-      Multiply[pre, in]
-     ]
+  ControlledGate[cc:{Rule[_?QubitQ, _?BinaryQ]..}, op_, ___?OptionQ],
+  in_Ket ] :=
+  If[ in[Keys @ cc] == Values[cc],
+    Multiply[pre, op ** in],
+    Multiply[pre, in],
+    Multiply[pre, in]
    ]
 
 Multiply[ pre___,
-  op:ControlledGate[Rule[{__?QubitQ}, {__?BinaryQ}], _, ___?OptionQ],
+  op:ControlledGate[{Rule[_?QubitQ, _?BinaryQ]..}, _, ___?OptionQ],
   post___ ] :=
   Multiply[pre, Elaborate[op], post]
 (* NOTE: DO NOT put "ControlledGate /:". Otherwise, the above rule with
@@ -1523,7 +1519,7 @@ Dagger @ UniformlyControlledRotation[
 UniformlyControlledRotation /:
 Expand @ UniformlyControlledRotation[
   cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___?OptionQ ] :=
-  Sequence @@ Thread @ ReleaseHold @
+  Sequence @@ ReleaseHold @ Thread @
   ControlledGate[
     Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
     Rotation[aa, vv, S]

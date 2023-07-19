@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.62 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-19 11:05:18+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.63 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-19 14:13:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -311,7 +311,7 @@ TwoLevelDecomposition[mat_?MatrixQ] := twoLevelDCMP[mat, 1]
 twoLevelDCMP[mat_?MatrixQ, k_Integer] := Module[
   { mm = Rest @ mat,
     UU, vv },
-  {vv, UU} = twoLevelDCMP[First @ mat, k];
+  {vv, UU} = twoLevelDCMP[First @ mat, k] /. {Identity -> Nothing};
   If[k == Length[First @ mat], Return @ UU];
   If[mm == {}, Return @ UU];
   mm = Dot[ mm, Sequence @@ Reverse[Topple /@ Matrix /@ UU] ];
@@ -334,16 +334,16 @@ twoLevelDCMP[vec_?VectorQ, k_Integer] := Module[
 twoLevelDCMP[vec_?VectorQ, {k_Integer}] := Module[
   { new = Take[vec, {k, k+1}],
     nrm, U },
+  If[Chop @ Norm[new-{1,0}] == 0, Return @ {vec, Identity}];
+
   nrm = Norm[new];
-  If[ Chop[nrm] == 0,
-    U = IdentityMatrix[2];
-    new = vec,
-    U = {
-      new,
-      {-1, 1} Reverse[Conjugate @ new]
-     } / nrm;
-    new = ReplacePart[vec, {k -> nrm, k+1 -> 0}]
-   ];
+  If[Chop[nrm] == 0, Return @ {vec, Identity}];
+  
+  U = {
+    new,
+    {-1, 1} Reverse[Conjugate @ new]
+   } / nrm;
+  new = ReplacePart[vec, {k -> nrm, k+1 -> 0}];
   {new, TwoLevelU[U, {k, k+1}, Length @ vec]}
  ] /; 1 <= k < Length[vec]
 
