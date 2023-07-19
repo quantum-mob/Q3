@@ -5,10 +5,12 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.56 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-16 22:58:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.62 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-19 11:05:18+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
+
+{ GrayCodeBasis, GrayTransform, TheGrayTransform };
 
 { GrayControlledGate, GrayControlledW,
   FromTwoLevelU, TwoLevelU, TwoLevelDecomposition };
@@ -34,6 +36,69 @@ GraySubsets[ls_List] := Block[
   ss = GraySubsets @ Take[ls, 1-Length[ls]];
   Join[ss,  Map[Prepend[#, First @ ls]&, Reverse @ ss]]
  ]
+
+
+(**** <GrayTransform> ****)
+
+GrayCodeBasis::usage = "GrayCodeBasis[{s1,s2,\[Ellipsis]}] returns the computational basis of qubits or spins s1, s2, \[Ellipsis] arranged in the Gray code (i.e., reflected binary code) sequence.\nGrayCodeBasis[n] returns the computational basis of n (unlabelled) qubits arranged in the Gray code."
+
+GrayCodeBasis[n_Integer] := Basis[n] . TheGrayTransform[n]
+
+GrayCodeBasis[ss:{__?QubitQ}] := Basis[ss] . TheGrayTransform[Length @ ss]
+
+GrayCodeBasis[ss:{__?SpinQ}] := 
+  Basis[ss] . TheGrayTransform[Length @ ss] /;
+  AllTrue[Spin[ss], # == 1/2&]
+
+
+GrayTransform::usage = "GrayTransform[{s1,s2,\[Ellipsis]}] represents the unitary transformation from the computational basis of qubits or spins s1, s2, \[Ellipsis] to the Gray code basis.\nGrayTransform[n] is for n unlabelled qubits."
+
+GrayTransform[ss:{__?QubitQ}] := GrayTransform[FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+
+GrayTransform /:
+Matrix @ GrayTransform[ss:{__?QubitQ}] := TheGrayTransform[Length @ ss]
+
+GrayTransform /:
+Matrix @ GrayTransform[n_Integer] := TheGrayTransform[n]
+
+
+GrayTransform /:
+Elaborate[op_GrayTransform] = op (* fallback *)
+
+GrayTransform /:
+Elaborate @ GrayTransform[ss:{__?QubitQ}] :=
+  Elaborate @ ExpressionFor[TheGrayTransform[Length @ ss], ss]
+
+GrayTransform /:
+Elaborate @ GrayTransform[n_Integer] := TheGrayTransform[n]
+  Elaborate @ ExpressionFor[TheGrayTransform[n]]
+
+
+GrayTransform /:
+Multiply[pre___, GrayTransform[ss:{__?QubitQ}], Ket[aa_Association]] :=
+  Ket[ss -> BinaryToGray[Lookup[aa, ss]]]
+
+GrayTransform /:
+Multiply[pre___, op:GrayTransform[{__?QubitQ}], post___] :=
+  Multiply[pre, Elaborate @ op, post]
+
+GrayTransform /:
+Multiply[pre___, GrayTransform[n_Integer], Ket[bb__?BinaryQ]] :=
+  Ket @@ BinaryToGray[{bb}]
+
+
+TheGrayTransform::usage = "TheGrayTransform[n] returns the matrix transforming the computational basis of n qubits to the Gray code basis."
+
+TheGrayTransform[n_] := Module[
+  {gg, mm},
+  gg = Map[FromDigits[#, 2] &, BinaryToGray /@ Tuples[{0, 1}, n]];
+  mm = PadRight[{1}, Power[2, n]];
+  Transpose[RotateRight[mm, #]& /@ gg]
+ ]
+
+(**** </GrayTransform> ****)
 
 
 GrayControlledGate::usage = "GrayControlledGate[qq, expr] decomposes the n-bit controlled expr into elementary gates, where qq is the list of control qubits and expr is supposed to be a unitary operator."
@@ -228,6 +293,8 @@ GrayTwoLevelU[args___] := (
 
 TwoLevelU::usage = "TwoLevelU[mat, {i, j}, n] represents a two-level unitary matrix, that is, the 2 x 2 unitary matrix mat operating on the ith and jth rows and columns of an n x n matrix.\nMatrix[TwoLevelU[mat, {i, j}, n]] returns the full n x n matrix.\nSee also FromTwoLevelU, which decomposes TwoLevelU[...] into CNOT gates and one controlled-U gate."
 
+Format[op_TwoLevelU] := Interpretation[MatrixForm @ Matrix @ Chop @ op, op]
+
 TwoLevelU /:
 HoldPattern @ Matrix @ TwoLevelU[mat_?MatrixQ, {x_, y_}, n_] := Module[
   { new = One[n],
@@ -241,14 +308,14 @@ TwoLevelDecomposition::usage = "TwoLevelDecomposition[mat] returns a list of two
 
 TwoLevelDecomposition[mat_?MatrixQ] := twoLevelDCMP[mat, 1]
 
-twoLevelDCMP[mat_?MatrixQ, j_Integer] := Module[
+twoLevelDCMP[mat_?MatrixQ, k_Integer] := Module[
   { mm = Rest @ mat,
     UU, vv },
-  {vv, UU} = twoLevelDCMP[First @ mat, j];
-  If[ j == Length[First @ mat], Return @ UU ];
-  If[ mm == {}, Return @ UU ];
-  mm = Dot[ mm, Sequence @@ Reverse[ Topple /@ Matrix /@ UU ] ];
-  Join[ twoLevelDCMP[mm, j+1], UU ]
+  {vv, UU} = twoLevelDCMP[First @ mat, k];
+  If[k == Length[First @ mat], Return @ UU];
+  If[mm == {}, Return @ UU];
+  mm = Dot[ mm, Sequence @@ Reverse[Topple /@ Matrix /@ UU] ];
+  Join[twoLevelDCMP[mm, k+1], UU]
  ]
 
 twoLevelDCMP[vec_?VectorQ, k_Integer] := Module[
@@ -266,15 +333,18 @@ twoLevelDCMP[vec_?VectorQ, k_Integer] := Module[
 
 twoLevelDCMP[vec_?VectorQ, {k_Integer}] := Module[
   { new = Take[vec, {k, k+1}],
-    L = Length[vec],
-    U },
-  U = {
-    new,
-    {-1, 1} Reverse[Conjugate @ new]
-   } / Norm[new];
-  
-  new = ReplacePart[vec, {k -> Norm[new], k+1 -> 0}];
-  { new, TwoLevelU[U, {k, k+1}, L] }
+    nrm, U },
+  nrm = Norm[new];
+  If[ Chop[nrm] == 0,
+    U = IdentityMatrix[2];
+    new = vec,
+    U = {
+      new,
+      {-1, 1} Reverse[Conjugate @ new]
+     } / nrm;
+    new = ReplacePart[vec, {k -> nrm, k+1 -> 0}]
+   ];
+  {new, TwoLevelU[U, {k, k+1}, Length @ vec]}
  ] /; 1 <= k < Length[vec]
 
 twoLevelDCMP[vec_?VectorQ, {k_Integer}] := With[

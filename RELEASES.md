@@ -3,6 +3,7 @@
 ## v2.13.6
 
 - A bug fix concerning QuantumCircuitTrim.
+- New functions GrayCodeBasis, GrayTransform, TheGrayTransform.
 
 ## v2.13.5
 
