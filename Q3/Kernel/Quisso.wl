@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.12 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-19 23:52:15+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.14 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-20 21:04:04+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1210,6 +1210,8 @@ ControlledGate[cc_] := (
  )
 
 
+ControlledGate[{}, op_, ___] = op (* fallback *)
+
 ControlledGate[S_?QubitQ, rest__] :=
   ControlledGate[{S[$]->1}, rest]
 
@@ -1234,9 +1236,6 @@ ControlledGate[Rule[cc:{__?QubitQ}, vv_List], rest__] := (
 ControlledGate[cc:{Rule[_?QubitQ, _]..}, rest__] :=
   ControlledGate[FlavorNone @ cc, rest] /;
   Not[FlavorNoneQ @ Keys @ cc]
-
-
-ControlledGate[{}, op_] = op (* fallback *)
 
 
 ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=

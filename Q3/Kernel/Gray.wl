@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.63 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-19 14:13:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.65 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-20 09:38:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -190,12 +190,29 @@ GrayToBinary[gg:{0..}] := gg
 
 (* https://en.wikipedia.org/wiki/Gray_code *)
 GrayToBinary[gray_?VectorQ] := Module[
-  { n = Length[gray],
-    k = First @ FirstPosition[gray, 1],
-    mask },
-  mask = Total @ Table[ShiftRight[gray, i], {i, 1, n-k}];
+  { i, k, mask },
+  k = Length[gray] - First[FirstPosition[gray, 1]];
+  mask = Total @ Table[ShiftRight[gray, i], {i, 1, k}];
   Mod[gray + mask, 2]
  ]
+
+
+GrayToInteger::usage = "GrayToInteger[gray] converts the Gray code gray to a decimal number."
+
+GrayToInteger[gray_?VectorQ] := FromDigits[GrayToBinary @ gray, 2]
+
+
+IntegerToGray::usage = "IntegerToGray[n] gives the Gray code (i.e., reflected binary code) corresponding to the sequence of binary digits of the integer n.\nIntegerToGray[n, len] pads the list on the left with zeros to give a list of length len."
+
+IntegerToGray[n_Integer] := BinaryToGray @ IntegerDigits[n, 2]
+
+IntegerToGray[nn:{___Integer}] := BinaryToGray /@ IntegerDigits[nn, 2]
+
+IntegerToGray[n_Integer, len_Integer] :=
+  BinaryToGray @ IntegerDigits[n, 2, len]
+
+IntegerToGray[nn:{___Integer}, len_Integer] :=
+  BinaryToGray /@ IntegerDigits[nn, 2, len]
 
 (**** </BinaryToGray> ****)
 
