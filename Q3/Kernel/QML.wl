@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QML`$Version = StringJoin[
   "Q3/", $Input, " v",
-  StringSplit["$Revision: 1.4 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-17 04:56:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.8 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-22 21:28:17+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -34,7 +34,7 @@ BasisEmbeddingGate::len = "The lengths of `` and `` must be the same."
 
 BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
   BasisEmbeddingGate[vv, FlavorNone @ ss] /;
-  Not[FlavorNone @ ss]
+  Not[FlavorNoneQ @ ss]
 
 BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] := (
   Message[BasisEmbeddingGate::len, vv, ss];
@@ -61,16 +61,9 @@ AmplitudeEmbeddingGate::usage = "AmplitudeEmbedding[data, {s1,s2,\[Ellipsis]}] r
 
 AmplitudeEmbeddingGate::negative = "Some elements of `` is not real non-negative."
 
-(*
-AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := (
-  Message[AmplitudeEmbeddingGate::negative, in];
-  AmplitudeEmbeddingGate[Re @ in, ss]
- ) /; Not @ AllTrue[in, NonNegative]
- *)
-
 AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] :=
   AmplitudeEmbeddingGate[in, FlavorNone @ ss] /;
-  Not[FlavorNone @ ss]
+  Not[FlavorNoneQ @ ss]
 
 
 AmplitudeEmbeddingGate /:
@@ -85,7 +78,7 @@ Elaborate @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] :=
 
 AmplitudeEmbeddingGate /:
 ExpandAll @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] :=
-  Apply[Sequence, Expand /@ {Expand @ AmplitudeEmbeddingGate[in, ss]}]
+  Apply[QuantumCircuit, Expand @ Expand @ AmplitudeEmbeddingGate[in, ss]]
 
 
 AmplitudeEmbeddingGate /:
@@ -93,7 +86,7 @@ Expand @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := Module[
   { yy = theAmplitudeEmbeddingY[in, Length @ ss],
     op, cc },
   cc = Table[Drop[ss, -k], {k, Length @ ss}];
-  Sequence @@ Reverse @ Flatten @ MapThread[
+  QuantumCircuit @@ Reverse @ Flatten @ MapThread[
     UniformlyControlledRotation,
     { cc, yy, Through[Reverse[ss][2]] }
    ]
@@ -105,7 +98,7 @@ Expand @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := Module[
     zz = theAmplitudeEmbeddingZ[in, Length @ ss],
     op, cc },
   cc = Table[Drop[ss, -k], {k, Length @ ss}];
-  Sequence @@ Reverse @ Flatten @ {
+  QuantumCircuit @@ Reverse @ Flatten @ {
     MapThread[UniformlyControlledRotation, {cc, zz, Through[Reverse[ss][3]]}],
     MapThread[UniformlyControlledRotation, {cc, yy, Through[Reverse[ss][2]]}]
    }
@@ -148,9 +141,9 @@ Multiply[ pre___,
 
 AmplitudeEmbeddingGate /:
 ParseGate[
-  op:AmplitudeEmbeddingGate[_?VectorQ, {__?QubitQ}, opts___?OptionQ],
+  AmplitudeEmbeddingGate[_?VectorQ, ss:{__?QubitQ}, opts___?OptionQ],
   more___?OptionQ ] :=
-  Sequence @@ Map[ParseGate[#, opts, more]&, {Expand @ op}]
+  Gate[ss, "TargetShape" -> "CircleDot", opts, more]
 
 
 (**** </AmplitudeEmbedding> ****)

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.63 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-11 22:54:53+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.64 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-22 19:35:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -57,8 +57,6 @@ BeginPackage["Q3`"]
 
 
 { FockCoefficientTensor }; (* Obsolete *)
-
-{ FockExpand, $FockExpandMethods }; (* Obsolete *)
 
 { FockFourier, FockInverseFourier }; (* Obsolete *)
 
@@ -676,11 +674,6 @@ FockInverseFourier[args__] := (
   InverseFourierMap[args]
  )
 
-FockCoefficientTensor[args__] := (
-  Message[Q3General::obsolete, "FockCoefficientTensor", "CoefficientTensor"];
-  CoefficientTensor[args]
- )
-
 
 (*** Transformations between Dirac and Majorana Fermions ***)
 
@@ -1283,16 +1276,6 @@ AddElaborationPatterns[
  ]
 
 (* ********************************************************************** *)
-
-
-FockExpand::usage = "FockExpand is obsolete now. Use Elaborate instead."
-
-$FockExpandMethods::usage = "$FockExpandMethods is obsolete and not used any longer."
-
-FockExpand[expr_, opts___?OptionQ] := (
-  Message[Q3General::obsolete, "FockExpand", "Elaborate"];
-  Elaborate[expr]
- )
 
 
 (* ********************************************************************** *)

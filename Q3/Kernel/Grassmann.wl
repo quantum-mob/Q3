@@ -5,18 +5,14 @@ BeginPackage["Q3`"]
 
 `Grassmann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.21 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-22 19:36:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Let, Grassmann, GrassmannQ, AnyGrassmannQ };
 { GD, GIntegrate };
 { GrassmannGrade }
-
-(**** OBSOLETE SYMBOLS ****)
-
-(* { GrassmannExpand, GrassmannCollect }; *)
 
 
 Begin["`Private`"]

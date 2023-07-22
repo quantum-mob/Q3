@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-20 21:04:04+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.21 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-22 22:49:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -935,7 +935,7 @@ Elaborate @ Rotation[phi_, v:{_, _, _}, S_?QubitQ, ___] :=
 
 EulerRotation /:
 Expand @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
-  Sequence[
+  QuantumCircuit[
     Rotation[c, S[3], opts],
     Rotation[b, S[2], opts],
     Rotation[a, S[3], opts]
@@ -1289,12 +1289,12 @@ theControlledGate[cc:{__Rule}, op_] := Module[
 
 ControlledGate /:
 Expand @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] :=
-  Sequence @@ theControlledGate[cc, op] /; Length[Qubits @ op] == 1
+  QuantumCircuit @@ theControlledGate[cc, op] /; Length[Qubits @ op] == 1
 
 
 ControlledGate /:
-Dagger @ ControlledGate[sv_Rule, expr_, opts___?OptionQ] :=
-  ControlledGate[sv, Dagger[expr], opts]
+Dagger @ ControlledGate[cc:{__Rule}, expr_, opts___?OptionQ] :=
+  ControlledGate[cc, Dagger @ expr, opts]
 
 
 ControlledGate /:
@@ -1440,9 +1440,10 @@ Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     
     new = ReplaceAll[
       MapThread[ControlledGate, {ss, pwr, txt}],
-      ControlledGate[args__] -> ControlledGate[args, "LabelSize" -> 0.65, opts]
+      HoldPattern @ ControlledGate[args__] ->
+        ControlledGate[args, "LabelSize" -> 0.65, opts]
      ];
-    Sequence @@ new
+    QuantumCircuit @@ new
    ]
 
 theCtrlExp::usage = "theCtrlExp[n, m] is the matrix version of ControlledPower."
@@ -1518,7 +1519,7 @@ Dagger @ UniformlyControlledRotation[
 UniformlyControlledRotation /:
 Expand @ UniformlyControlledRotation[
   cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___?OptionQ ] :=
-  Sequence @@ ReleaseHold @ Thread @
+  QuantumCircuit @@ ReleaseHold @ Thread @
   ControlledGate[
     Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
     Rotation[aa, vv, S]
@@ -1528,7 +1529,7 @@ UniformlyControlledRotation /:
 Matrix[
   op:UniformlyControlledRotation[
     {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ ],
-  rest___ ] := Dot @@ Matrix[{Expand @ op}, rest]
+  rest___ ] := Matrix[Expand @ op, rest]
 
 
 UniformlyControlledRotation /:
@@ -1543,7 +1544,7 @@ Multiply[ pre___,
   op:UniformlyControlledRotation[
     {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ],
   in_Ket ] := With[
-    { gg = {Expand @ op} },
+    { gg = List @@ Expand @ op },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
    ]
 
@@ -1571,7 +1572,7 @@ GateFactor @ UniformlyControlledRotation[
     mm = Power[2, -n] * Power[-1, Outer[Dot, gg, bb, 1]];
     tt = Rotation[mm.aa, vv, S];
     gg = ReleaseHold @ Thread[Hold[CNOT][sequenceCNOT @ cc, S]];
-    Sequence @@ Riffle[tt, gg]
+    QuantumCircuit @@ Riffle[tt, gg]
    ] /; Chop[First @ vv] == 0
 
 
@@ -1760,7 +1761,7 @@ QFT /:
 Expand[op_QFT] = op (* fallback *)
 
 QFT /:
-Expand @ QFT[ss:{__?QubitQ}, ___] := Sequence @@ Join[
+Expand @ QFT[ss:{__?QubitQ}, ___] := QuantumCircuit @@ Join[
   qftCtrlPhase[ss][All],
   With[{n = Length[ss]}, Table[SWAP[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
  ]
@@ -1783,11 +1784,11 @@ qftCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
 
 
 Dagger /:
-Expand[HoldPattern @ Dagger[op_QFT]] = Dagger[op] (* fallback *)
+HoldPattern @ Expand @ Dagger[op_QFT] = Dagger[op] (* fallback *)
 
 Dagger /:
 HoldPattern @ Expand @ Dagger @ QFT[ss:{__?QubitQ}, ___] :=
-  Sequence @@ Join[
+  QuantumCircuit @@ Join[
     invCtrlPhase[ss][All],
     With[{n = Length[ss]}, Table[SWAP[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
    ]

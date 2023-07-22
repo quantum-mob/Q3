@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.3 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-18 23:13:19+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.4 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-22 19:37:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -705,7 +705,7 @@ HoldPattern @ fPauliKetQ[Plus[terms__]] := TrueQ[
  ]
 (* NOTE: 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
 
-HoldPattern @ fPauliKetQ[expr_Times] := fPauliKetQ@Expand[expr]
+HoldPattern @ fPauliKetQ[expr_Times] := fPauliKetQ[Expand @ expr]
 
 HoldPattern @ fPauliKetQ[expr_] := False /; FreeQ[expr, Ket[(0 | 1) ..]]
 
@@ -726,7 +726,7 @@ HoldPattern @ fKetQ[Plus[terms__]] := TrueQ[
  ]
 (* NOTE: 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
 
-HoldPattern @ fKetQ[expr_Times] := fKetQ @ Expand[expr]
+HoldPattern @ fKetQ[expr_Times] := fKetQ[Expand @ expr]
 
 HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
 

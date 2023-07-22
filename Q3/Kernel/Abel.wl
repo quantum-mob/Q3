@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.43 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-20 09:38:40+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.45 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-22 21:24:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -47,6 +47,8 @@ $::usage = "$ is a flavor index referring to the species itself."
 { Boson, Bosons, BosonQ, AnyBosonQ };
 { Fermion, Fermions, FermionQ, AnyFermionQ };
 (* NOTE: Fermion and the like are here for Matrix. *)
+
+{ QuantumCircuit };
 
 { BinaryToGray, GrayToBinary,
   GrayToInteger, IntegerToGray,
@@ -111,11 +113,6 @@ $::usage = "$ is a flavor index referring to the species itself."
 { CliffordGroup, FullCliffordGroup,
   CliffordGroupElements, FullCliffordGroupElements,
   CliffordQ };
-
-
-(* Obsolete Symbols *)
-
-{ MultiplyExpand }; (* obsolete *)
 
 
 Begin["`Private`"]
@@ -1769,14 +1766,6 @@ MultiplyDegree[ MultiplyExp[expr_] ] := Infinity /; MultiplyDegree[expr] > 0
 MultiplyDegree[ expr_ ] := 0 /; FreeQ[expr, _?AnySpeciesQ]
 
 
-MultiplyExpand::usage = "MultiplyExpand is obsolete. Use Elaborate instead."
-
-MultiplyExpand[expr_, opts___?OptionQ] := (
-  Message[Q3General::obsolete, "MultiplyExpand", "Elaborate"];
-  Elaborate[expr]
- )
-
-
 TransformBy::usage = "TransformBy[old \[RightArrow] new, M] construct a list of Rules to be used in ReplaceAll by applying the linear transformation associated with the matrix M on new. That is, the Rules old$i \[RightArrow] \[CapitalSigma]$j M$ij new$j. If new is a higher dimensional tensor, the transform acts on its first index.\nTransformBy[expr, old \[RightArrow] new] applies ReplaceAll on expr with the resulting Rules."
 
 TransformBy[old_List -> new_List, M_?MatrixQ] :=
@@ -2135,7 +2124,51 @@ q3AssureList[a_, n_Integer] := Table[a, n]
 
 (**** </Tools> ****)
 
+
 Protect[ Evaluate @ $symb ]
+
+End[]
+
+
+(**** Obsolete Symbols ****)
+
+{ MultiplyExpand }; (* obsolete *)
+{ CauchyExpand }; (* OBSOLETE *)
+{ FockExpand, $FockExpandMethods }; (* Obsolete *)
+
+
+Begin["`Obsolete`"]
+
+MultiplyExpand::usage = "MultiplyExpand is obsolete. Use Elaborate instead."
+
+MultiplyExpand[expr_, opts___?OptionQ] := (
+  Message[Q3General::obsolete, "MultiplyExpand", "Elaborate"];
+  Elaborate[expr]
+ )
+
+CauchyExpand::usage = "CauchyExpand[expr] is obsolete now; use Elaborate instead."
+
+CauchyExpand[expr_] := (
+  Message[Q3General::obsolete, CauchyExpand, Elaborate];
+  Elaborate[expr]
+ )
+
+
+$FockExpandMethods::usage = "$FockExpandMethods is obsolete and not used any longer."
+
+FockExpand::usage = "FockExpand is obsolete now. Use Elaborate instead."
+
+FockExpand[expr_, opts___?OptionQ] := (
+  Message[Q3General::obsolete, "FockExpand", "Elaborate"];
+  Elaborate[expr]
+ )
+
+FockCoefficientTensor::usage = "FockCoefficientTensor is obsolete. Use CoefficientTensor instead."
+
+FockCoefficientTensor[args__] := (
+  Message[Q3General::obsolete, "FockCoefficientTensor", "CoefficientTensor"];
+  CoefficientTensor[args]
+ )
 
 End[]
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Cauchy`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.47 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 14:33:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.48 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-22 19:30:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,7 +16,6 @@ BeginPackage["Q3`"]
 
 { CauchySimplify, CauchyFullSimplify };
 
-{ CauchyExpand }; (* OBSOLETE *)
 
 
 Begin["`Private`"]
@@ -357,13 +356,6 @@ rulesCauchySimplify = {
 
 (**** </Simplifications> ****)
 
-
-CauchyExpand::usage = "CauchyExpand[expr] is obsolete now; use Elaborate instead."
-
-CauchyExpand[expr_] := (
-  Message[Q3General::obsolete, CauchyExpand, Elaborate];
-  Elaborate[expr]
- )
 
 Protect[ Evaluate @ $symb ]
 

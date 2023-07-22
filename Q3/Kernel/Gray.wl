@@ -5,20 +5,27 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.65 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-20 09:38:58+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.85 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-23 02:27:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
-{ GrayCodeBasis, GrayTransform, TheGrayTransform };
+{ GrayBasis, GrayTransform, TheGrayTransform, GrayCycles };
 
-{ GrayControlledGate, GrayControlledW,
-  FromTwoLevelU, TwoLevelU, TwoLevelDecomposition };
+{ GrayGivensFactor };
 
-(**** renamed ****)
+{ GivensFactor, GivensRotation };
 
-{ GrayTwoLevelU };
+{ GrayControlledGate };
 
+
+(**** Obsolete or renamed symbols ****)
+
+{ TwoLevelU, GrayTwoLevelU, TwoLevelDecomposition }; (* renamed *)
+
+{ FromTwoLevelU }; (* obsolete *)
+
+{ GrayControlledW }; (* obsolete *)
 
 Begin["`Private`"]
 
@@ -40,13 +47,13 @@ GraySubsets[ls_List] := Block[
 
 (**** <GrayTransform> ****)
 
-GrayCodeBasis::usage = "GrayCodeBasis[{s1,s2,\[Ellipsis]}] returns the computational basis of qubits or spins s1, s2, \[Ellipsis] arranged in the Gray code (i.e., reflected binary code) sequence.\nGrayCodeBasis[n] returns the computational basis of n (unlabelled) qubits arranged in the Gray code."
+GrayBasis::usage = "GrayBasis[{s1,s2,\[Ellipsis]}] returns the computational basis of qubits or spins s1, s2, \[Ellipsis] arranged in the Gray code (i.e., reflected binary code) sequence.\nGrayBasis[n] returns the computational basis of n (unlabelled) qubits arranged in the Gray code."
 
-GrayCodeBasis[n_Integer] := Basis[n] . TheGrayTransform[n]
+GrayBasis[n_Integer] := Basis[n] . TheGrayTransform[n]
 
-GrayCodeBasis[ss:{__?QubitQ}] := Basis[ss] . TheGrayTransform[Length @ ss]
+GrayBasis[ss:{__?QubitQ}] := Basis[ss] . TheGrayTransform[Length @ ss]
 
-GrayCodeBasis[ss:{__?SpinQ}] := 
+GrayBasis[ss:{__?SpinQ}] := 
   Basis[ss] . TheGrayTransform[Length @ ss] /;
   AllTrue[Spin[ss], # == 1/2&]
 
@@ -91,15 +98,25 @@ Multiply[pre___, GrayTransform[n_Integer], Ket[bb__?BinaryQ]] :=
 
 TheGrayTransform::usage = "TheGrayTransform[n] returns the matrix transforming the computational basis of n qubits to the Gray code basis."
 
-TheGrayTransform[n_] := Module[
+TheGrayTransform[n_Integer] := Module[
   {gg, mm},
   gg = Map[FromDigits[#, 2] &, BinaryToGray /@ Tuples[{0, 1}, n]];
   mm = PadRight[{1}, Power[2, n]];
   Transpose[RotateRight[mm, #]& /@ gg]
  ]
 
+
+GrayCycles::usage = "GrayCycles[n] returns the cycles representation of the Gray transform."
+
+GrayCycles[n_Integer] := InversePermutation @
+  PermutationCycles[
+    1 + FromDigits[#, 2]& /@ IntegerToGray[Range[Power[2, n]] - 1, n]
+   ]
+
 (**** </GrayTransform> ****)
 
+
+(**** <GrayControlledGate> ****)
 
 GrayControlledGate::usage = "GrayControlledGate[qq, expr] decomposes the n-bit controlled expr into elementary gates, where qq is the list of control qubits and expr is supposed to be a unitary operator."
 
@@ -137,43 +154,7 @@ GrayControlledGate[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
 
 MutualComplement[a_, b_] := Union[Complement[a, b], Complement[b, a]]
 
-
-GrayControlledW::usage = "GrayControlledW[qq, expr] decomposes the n-bit controlled expr into elementary gates, expr is supposed to be a unitary operator.\nThis version is merely for heuristic purposes. Use GrayControlledGate instead."
-
-GrayControlledW[q_?QubitQ, expr_] := ControlledGate[{q}, expr]
-
-GrayControlledW[{q_?QubitQ}, expr_] := ControlledGate[{q}, expr]
-
-GrayControlledW[qq:{__?QubitQ}, expr_] := Module[
-  { mm = Matrix[expr],
-    tt = Qubits[expr],
-    rr = Reverse /@ GraySubsets[ReverseSort @ FlavorNone @ qq],
-    ss, op, n, V },
-  ss = Map[Length, rr];
-  ss = -Power[-1, ss];
-  
-  n = Length @ qq;
-  V = FunctionExpand @ MatrixPower[mm, Power[2, 1-n]];
-  op = ExpressionFor[V, tt];
-
-  Flatten @ MapThread[grayCtrl[#1, op, #2]&, {rr, ss}]
- ]
-
-
-grayCtrl[qq_, op_,  1] := grayCtrl[qq, op, "V"]
-
-grayCtrl[qq_, op_, -1] :=
-  grayCtrl[qq, Dagger @ op, Superscript["V","\[Dagger]"]]
-
-
-grayCtrl[{ }, op_, lbl_] := {}
-
-grayCtrl[{q_?QubitQ}, op_, lbl_] := ControlledGate[{q}, op, "Label"->lbl]
-
-grayCtrl[{aa__?QubitQ, b_?QubitQ}, op_, lbl_] := With[
-  { cn = Map[CNOT[#, b]&, {aa}] },
-  Flatten @ { cn, ControlledGate[{b}, op, "Label"->lbl], cn }
- ]
+(**** </GrayControlledGate> ****)
 
 
 (**** <BinaryToGray> ****)
@@ -241,86 +222,6 @@ GraySequence[n_Integer] := Join[
 (**** </GraySequence> ****)
 
 
-(**** <FromTwoLevelU> *****)
-
-FromTwoLevelU::usage = "FromTwoLevelU[mat, {x, y}, {q1, q2, ...}] returns a list containing multi-control NOT gates and one controlled-unitary gate that compose the two-level unitary operation specified by mat."
-
-FromTwoLevelU[ TwoLevelU[mat_?MatrixQ, {x_, y_}, L_], qq:{__?QubitQ} ] :=
-  FromTwoLevelU[mat, {x, y}, FlavorNone @ qq] /;
-  L == Power[2, Length @ qq]
-
-FromTwoLevelU[mat_?MatrixQ, {x_Integer, y_Integer}, qq:{__?QubitQ}] :=
-  Module[
-    { gray = GraySequence[{x, y} - 1, Length @ qq],
-      mask, expr },
-    mask = Successive[grayCNOT[{#1,#2}, qq]&, Most @ gray];
-    expr = grayCtrlU[Take[gray, -2], mat, qq];
-    Join[mask, {expr}, Reverse @ mask]
-   ] /; OrderedQ @ {x, y}
-
-
-grayCNOT::usage = "grayCNOT[{x, y}, {s1, s2, \[Ellipsis]}] construct the CNOT gate corresponding to transposition Cycles[{{x,y}}], where integers x and y are assumed to be in the Gray code; they are different in only one bit."
-
-grayCNOT[pair:{_Integer, _Integer}, ss:{__?QubitQ}] := Module[
-  { n = Length @ ss,
-    cc, tt, vv},
-  cc = IntegerDigits[BitXor @@ pair, 2, n];
-  tt = Part[ss, Flatten @ Position[cc, 1]];
-  cc = Flatten @ Position[cc, 0];
-  vv = Part[IntegerDigits[First @ pair, 2, n], cc];
-  cc = Part[ss, cc];
-  CNOT[cc -> vv, tt]
- ]
-
-grayCNOT[kk:{_Integer, _Integer, __Integer}, ss:{__?QubitQ}] := With[
-  { mask = Successive[grayCNOT[{#1, #2}, ss]&, Most @ kk] },
-  Join[mask, List @ grayCNOT[Take[kk, -2], ss], Reverse @ mask]
- ]
-
-
-grayCtrlU::usage = "grayCtrlU[{x, y}, mat, {s1, s2, \[Ellipsis]}] construct the controlled-unitary gate corresponding to the two-level unitary matrix mat with rows and columns x and y. Here, x and y are supposed to be the Gray code."
-
-grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
-  { n = Length @ ss,
-    cc, tt, vv, op },
-  cc = IntegerDigits[BitXor @@ pair, 2, n];
-
-  tt = FlavorNone @ Part[ss, Flatten @ Position[cc, 1]];
-  op = Elaborate @ ExpressionFor[mat, tt];
-  If[ Not @ OrderedQ @ pair,
-    op = With[{X = First[tt][1]}, X ** op ** X]
-   ];
-    
-  cc = Flatten @ Position[cc, 0];
-  vv = Part[IntegerDigits[First @ pair, 2, n], cc];
-  cc = Part[ss, cc];
-  ControlledGate[cc -> vv, op, "Label"->"U"]
- ]
-
-
-GrayTwoLevelU::usage = "GrayTwoLevelU has been renamed FromTwoLevelU."
-
-GrayTwoLevelU[args___] := (
-  Message[Q3General::renamed, "GrayTwoLevelU", "FromTwoLevelU"];
-  FromTwoLevelU[args]
- )
-
-(**** </FromTwoLevelU> *****)
-
-
-TwoLevelU::usage = "TwoLevelU[mat, {i, j}, n] represents a two-level unitary matrix, that is, the 2 x 2 unitary matrix mat operating on the ith and jth rows and columns of an n x n matrix.\nMatrix[TwoLevelU[mat, {i, j}, n]] returns the full n x n matrix.\nSee also FromTwoLevelU, which decomposes TwoLevelU[...] into CNOT gates and one controlled-U gate."
-
-Format[op_TwoLevelU] := Interpretation[MatrixForm @ Matrix @ Chop @ op, op]
-
-TwoLevelU /:
-HoldPattern @ Matrix @ TwoLevelU[mat_?MatrixQ, {x_, y_}, n_] := Module[
-  { new = One[n],
-    val = Flatten @ mat,
-    idx = Tuples[{x, y}, 2] },
-  ReplacePart[new, Thread[idx -> val]]
- ]
-
-
 TwoLevelDecomposition::usage = "TwoLevelDecomposition[mat] returns a list of two-level unitary matrices U1, U2, ... in terms of TwoLevelU, where Dot[U1, U2, ...] is formally equivalent to mat."
 
 TwoLevelDecomposition[mat_?MatrixQ] := twoLevelDCMP[mat, 1]
@@ -370,6 +271,365 @@ twoLevelDCMP[vec_?VectorQ, {k_Integer}] := With[
     TwoLevelU[DiagonalMatrix @ {1, z/Abs[z]}, {k-1, k}, k] }
  ] /; k == Length[vec]
 
+
+
+(**** <GivensRotation> *****)
+
+GivensRotation::usage = "GivensRotation[mat, {i, j}, n] represents the Givens foration in the plane spanned by the two coordinate axes i and j in an n-dimensional space.\nGivensRotation[mat, {i, j}, {s1, s2, \[Ellipsis]}] represents the Givens rotatation operator acting on qubits s1, s2, \[Ellipsis]."
+
+GivensRotation::two = "The first argument of GivensRotation must be a 2\[Times]2 matrix."
+
+GivensRotation::range = "Either or both of `` is out of [1, ``]."
+
+GivensRotation /: NonCommutativeQ[ GivensRotation[___] ] = True
+
+GivensRotation /:
+MultiplyGenus @ GivensRotation[___] := "Singleton"
+
+GivensRotation /:
+MultiplyKind @ GivensRotation[_?MatrixQ, _, {__?QubitQ}] = Qubit
+
+
+GivensRotation /:
+MakeBoxes[op:GivensRotation[mat_?MatrixQ, ij:{_, _}, n_Integer], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    GivensRotation, op, None,
+    { BoxForm`SummaryItem @ {"Dimensions: ", {n, n}},
+      BoxForm`SummaryItem @ {"Affected columns and rows: ", ij} },
+    { BoxForm`SummaryItem @ {"Matrix: ", mat} },
+    fmt, "Interpretable" -> Automatic ]
+
+GivensRotation /:
+MakeBoxes[op:GivensRotation[mat_?MatrixQ, ij:{_, _}, ss:{__?QubitQ}], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    GivensRotation, op, None,
+    { BoxForm`SummaryItem @ {"Acting on: ", ss},
+      BoxForm`SummaryItem @ {"Affected columns and rows: ", ij} },
+    { BoxForm`SummaryItem @ {"Matrix: ", mat} },
+    fmt, "Interpretable" -> Automatic ]
+
+
+GivensRotation[mat_?MatrixQ, rest___] := (
+  Message[GivensRotation::two, mat];
+  GivensRotation[One[2], rest]
+ ) /; Dimensions[mat] != {2, 2}
+
+GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, n_Integer] := (
+  Message[GivensRotation::range, ij, n];
+  GivensRotation[mat, {1, 2}, n]
+ ) /; Not[And @@ Thread[1 <= ij <= n]]
+
+
+GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}] :=
+  GivensRotation[mat, ij, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+
+GivensRotation /:
+Dagger[op_GivensRotation] = op (* fallback *)
+
+GivensRotation /:
+Dagger @ GivensRotation[mat_?MatrixQ, rest__] :=
+  GivensRotation[Topple @ mat, rest]
+
+
+GivensRotation /:
+ExpressionFor[
+  GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, n_Integer],
+  ss:{__?QubitQ} ] := GivensRotation[mat, ij, ss]
+
+
+GivensRotation /:
+MatrixForm[op:GivensRotation[_?MatrixQ, {_, _}, n_Integer]] :=
+  MatrixForm @ Matrix @ op
+
+GivensRotation /:
+Matrix @ GivensRotation[mat_?MatrixQ, {x_Integer, y_Integer}, n_Integer] :=
+  Module[
+    { new = One[n],
+      val = Flatten @ mat,
+      idx = Tuples[{x, y}, 2] },
+    ReplacePart[new, Thread[idx -> val]]
+   ]
+
+GivensRotation /:
+Matrix @ GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}] :=
+  Matrix[GivensRotation[mat, ij, ss], ss]
+
+GivensRotation /:
+Matrix[GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}], rest__] :=
+  SparseArray @ Matrix[
+    ExpressionFor[Matrix @ GivensRotation[mat, ij, Power[2, Length @ ss]], ss],
+    rest
+   ]
+
+(**** </GivensRotation> *****)
+
+
+(**** <GivensRotation/:Expand> *****)
+
+GivensRotation /:
+Expand @
+  GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, ss:{__?QubitQ}] :=
+  Module[
+    { gray = GraySequence[ij-1, Length @ ss],
+      mask, expr },
+    mask = Successive[grayCNOT[{#1, #2}, ss]&, Most @ gray];
+    expr = grayCtrlU[Take[gray, -2], mat, ss];
+    QuantumCircuit @@ Join[mask, {expr}, Reverse @ mask]
+   ] /; OrderedQ[ij]
+
+
+grayCNOT::usage = "grayCNOT[{x, y}, {s1, s2, \[Ellipsis]}] construct the CNOT gate corresponding to transposition Cycles[{{x,y}}], where integers x and y are assumed to be in the Gray code; they are different in only one bit."
+
+grayCNOT[pair:{_Integer, _Integer}, ss:{__?QubitQ}] := Module[
+  { n = Length @ ss,
+    cc, tt, vv},
+  cc = IntegerDigits[BitXor @@ pair, 2, n];
+  tt = Part[ss, Flatten @ Position[cc, 1]];
+  cc = Flatten @ Position[cc, 0];
+  vv = Part[IntegerDigits[First @ pair, 2, n], cc];
+  cc = Part[ss, cc];
+  CNOT[cc -> vv, tt]
+ ]
+
+grayCNOT[kk:{_Integer, _Integer, __Integer}, ss:{__?QubitQ}] := With[
+  { mask = Successive[grayCNOT[{#1, #2}, ss]&, Most @ kk] },
+  Join[mask, List @ grayCNOT[Take[kk, -2], ss], Reverse @ mask]
+ ]
+
+
+grayCtrlU::usage = "grayCtrlU[{x, y}, mat, {s1, s2, \[Ellipsis]}] construct the controlled-unitary gate corresponding to the two-level unitary matrix mat with rows and columns x and y. Here, x and y are supposed to be the Gray code."
+
+grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
+  { n = Length @ ss,
+    cc, tt, vv, op },
+  cc = IntegerDigits[BitXor @@ pair, 2, n];
+
+  tt = FlavorNone @ Part[ss, Flatten @ Position[cc, 1]];
+  op = Elaborate @ ExpressionFor[mat, tt];
+  If[ Not @ OrderedQ @ pair,
+    op = With[{X = First[tt][1]}, X ** op ** X]
+   ];
+    
+  cc = Flatten @ Position[cc, 0];
+  vv = Part[IntegerDigits[First @ pair, 2, n], cc];
+  cc = Part[ss, cc];
+  ControlledGate[cc -> vv, op, "Label"->"U"]
+ ]
+
+(**** </GivensRotation/:Expand> *****)
+
+
+(**** <GivensFactor> ****)
+
+GivensFactor::usage = "GivensFactor[mat] returns a list of Givens matrices that compose the unitary matrix mat.\nGivensFactor[op]
+returns a list of controlled-unitary and single-qubit gates that compose the unitary operator op.\nGivensFactor[mat,{Subscript[s, 1],Subscript[s, 2],\[Ellipsis]}] regards the matrix mat as the matrix representation of a unitary operator acting on qubits Subscript[s, 1],Subscript[s, 2],\[Ellipsis]."
+
+GivensFactor::dim = "The dimensions of matrix `` are not compatible with qubits ``."
+
+GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] :=
+  GivensFactor[mat, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := (
+  Message[GivensFactor::dim, mat, ss];
+  { OperatorOn[1, ss] }
+ ) /; Length[mat] != Power[2, Length @ ss]
+
+
+GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := With[
+  { gg = GivensFactor[mat] },
+  Flatten @ Join[ {First @ gg}, Map[ExpressionFor[#, ss]&, Rest @ gg] ]
+ ]
+
+GivensFactor[mat_?SquareMatrixQ] := Module[
+  { len = Length @ mat,
+    det, new, pos },
+  det = Conjugate[Power[Det @ mat, 1/len]];
+  pos = Flatten[Table[{i, j}, {i, len-1}, {j, Reverse @ Range[i+1, len]}], 1];
+  Dagger @ Reverse @ Append[
+    FoldPairList[theGivens, det * mat, pos] /. {Identity -> Nothing},
+    det
+   ]
+ ]
+
+GivensFactor[op_] := With[
+  { ss = Qubits @ op },
+  GivensFactor[Matrix[op, ss], ss]
+ ]
+
+
+theGivens::usage = "theGivens[...] represents each step of the Givens decomposition procedure in the Gray code basis, nullifying the jth column element of the ith row of mat using the (j-1)th column element."
+
+theGivens[mat_?MatrixQ, {i_Integer, j_Integer}] :=
+  Module[
+    { vec = Normalize @ mat[[i, {j-1, j}]],
+      new, two },
+    If[ Or[Chop[vec] == {1, 0}, Chop[Norm @ vec] == 0],
+      Return @ {Identity, mat}
+     ];
+    new = Transpose @ {Conjugate @ vec, {-1, 1} * Reverse[vec]};
+    (* In order to properly handle the determinant,
+       it must be {-1,1}; not {1,-1}. *)
+    two = GivensRotation[new, {j-1, j}, Length @ mat];
+    (* Basis change to the Gray code basis. *)
+    new = Matrix[two];
+    {two, mat.new}
+   ]
+
+(**** </GivensFactor> ****)
+
+
+(**** <GrayGivensFactor> ****)
+
+(* See: Vartiainen et al. (2004). *)
+
+GrayGivensFactor::usage = "GrayGivensFactor[op]
+returns a list of controlled-unitary and single-qubit gates that compose the unitary operator op.\nGrayGivensFactor[mat,{Subscript[s, 1],Subscript[s, 2],\[Ellipsis]}] regards the matrix mat as the matrix representation of a unitary operator acting on qubits Subscript[s, 1],Subscript[s, 2],\[Ellipsis]."
+
+GrayGivensFactor::dim = "The dimensions of matrix `` are not compatible with qubits ``."
+
+GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] :=
+  GrayGivensFactor[mat, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := (
+  Message[GrayGivensFactor::dim, mat, ss];
+  { OperatorOn[1, ss] }
+ ) /; Length[mat] != Power[2, Length @ ss]
+
+GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := Module[
+  { len = Length[mat],
+    gry = GrayCycles[Length @ ss],
+    det, new, pos },
+  det = Conjugate[Power[Det @ mat, 1/len]];
+  pos = Flatten[Table[{i, j}, {i, len-1}, {j, Reverse @ Range[i+1, len]}], 1];
+  (* Basis change to the Gray code basis. *)
+  new = det * Transpose @ Permute[Transpose @ Permute[mat, gry], gry];
+  Dagger @ Reverse @ Append[
+    FoldPairList[grayGivens[gry, ss], new, pos],
+    If[Rationalize[det] == 1, Nothing, det]
+   ]
+ ]
+
+GrayGivensFactor[op_] := With[
+  { ss = Qubits @ op },
+  GrayGivensFactor[Matrix[op, ss], ss]
+ ]
+
+
+grayGivens::usage = "grayGivens[...][...] represents each step of the Givens decomposition procedure in the Gray code basis, nullifying the jth column element of the ith row of mat using the (j-1)th column element."
+
+grayGivens[gry_Cycles, ss:{__?QubitQ}][mat_?MatrixQ, {i_Integer, j_Integer}] :=
+  Module[
+    { vec = Normalize @ mat[[i, {j-1, j}]],
+      ctr = grayTakens[{i, j}, ss],
+      new, cop },
+    If[Or[Chop[vec] == {1, 0}, Chop[Norm@vec] == 0], Return @ {1, mat}];
+    new = Transpose @ {Conjugate @ vec, {-1, 1} * Reverse[vec]};
+    (* In order to properly handle the determinant,
+       it must be {-1,1}; not {1,-1}. *)
+    If[Not @ ctr["Ordered"], new = Reverse[Reverse /@ new]];
+    cop = ControlledGate[
+      ctr["Control"], 
+      Elaborate @ ExpressionFor[new, ctr["Target"]]
+     ];
+    (* Basis change to the Gray code basis. *)
+    new = Transpose @ Permute[Transpose @ Permute[Matrix[cop, ss], gry], gry];
+    {cop, mat.new}
+   ]
+
+
+grayTakens::usage = "Finds the minimal set of control qubits when nullifying the jth column element of the ith row using the (j-1)th column element."
+
+grayTakens[{i_Integer, j_Integer}, ss:{__?QubitQ}] := Module[
+  { n = Length[ss],
+    kk, jj, p, ff, cc, an },
+  kk = IntegerToGray[j-2, n];
+  jj = IntegerToGray[j-1, n];
+  cc = findControls[{i, j}, Range @ n];
+  p = First @ FirstPosition[Mod[kk + jj, 2], 1];
+  cc = Join[cc, Range[p+1, n]];
+  Association[
+    "Control" -> Thread[ss[[cc]] -> kk[[cc]]],
+    "Target" -> ss[[p]],
+    "Ordered" -> OrderedQ @ {kk[[p]], jj[[p]]}
+   ]
+ ]
+
+
+findControls::usage = "The workhorce of grayTakens."
+
+findControls[{i_Integer, j_Integer}, ss_List] := Join[ {},
+  findControls[{i, j}, Rest @ ss]
+ ] /; j <= Power[2, Length[ss]-1]
+
+findControls[{i_Integer, j_Integer}, ss_List] := Join[ {First @ ss},
+  findControls[{i, j} - Power[2, Length[ss]-1], Rest @ ss]
+ ] /; i > Power[2, Length[ss]-1]
+
+findControls[{i_Integer, j_Integer}, ss_List] := Module[
+  { n = Length @ ss,
+    kk, jj, p },
+  kk = IntegerToGray[j-2, n];
+  jj = IntegerToGray[j-1, n];
+  p = First @ FirstPosition[Mod[kk + jj, 2], 1];
+  ff = Range[p-1];
+  If[i >= Power[2, n-p] + 1,
+    Part[ss, FirstPosition[kk[[ff]], 1]],
+    {}
+   ]
+ ]
+
+(**** </GrayGivensFactor> ****)
+
+
+
+(**** The renamed ****)
+
+TwoLevelU::usage = "TwoLevelU has been renamed GivensRotation."
+
+TwoLevelU[args___] := (
+  Message[Q3General::renamed, TwoLevelU, GivensRotation];
+  GivensRotation[args]
+ )
+
+
+GrayTwoLevelU::usage = "GrayTwoLevelU has been renamed FromTwoLevelU."
+
+GrayTwoLevelU[args___] := (
+  Message[Q3General::renamed, "GrayTwoLevelU", "FromTwoLevelU"];
+  FromTwoLevelU[args]
+ )
+
+
+FromTwoLevelU::usage = "FromTwoLevelU is obsolte now. Use Expand instead."
+
+FromTwoLevelU[mat_?MatrixQ, rest__] := (
+  Message[Q3General::obsolete, FromTwoLevelU, Expand];
+  Expand @ GivensRotation[mat, rest]
+ )
+
+FromTwoLevelU[GivensRotation[mat_?MatrixQ, ij_, _Integer], ss:{__?QubitQ}] :=
+  ( Message[Q3General::obsolete, FromTwoLevelU, Expand];
+    List @@ Expand @ GivensRotation[mat, ij, ss] )
+
+
+TwoLevelDecomposition::usage = "TwoLevelDecomposition is obsolte now. Use GivensFactor or GrayGivensFactor instead."
+
+TwoLevelDecomposition[args__] := (
+  Message[Q3General::obsolete, FromTwoLevelU, GivensFactor|GrayGivensFactor];
+  Expand @ GivensFactor[mat, rest]
+ )
+
+
+GrayControlledW::usage = "GrayControlledW is obsolete now. Use GrayControlledGate instead."
+
+GrayControlledW[args___] := (
+  Message[Q3General::obsolete, GrayControlledW, GrayControlledGate];
+  GrayControlledGate[args]
+ )
 
 End[]
 
