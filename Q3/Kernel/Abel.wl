@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.45 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-22 21:24:51+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.46 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-23 11:17:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -52,6 +52,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { BinaryToGray, GrayToBinary,
   GrayToInteger, IntegerToGray,
+  BitReflect,
   GraySequence, GraySubsets };
 
 { KetRegulate };

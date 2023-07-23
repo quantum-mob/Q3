@@ -2,6 +2,10 @@
 
 ## v2.13.6
 
+- New function BitReflect.
+
+## v2.13.6
+
 - A bug fix concerning QuantumCircuitTrim.
 - New functions GrayBasis, GrayTransform, TheGrayTransform, GrayToInteger, IntegerToGray, GrayCycles, GrayGivensFactor, GivensRotation, GivensFactor.
 - New canonical forms for CNOT, ControlledGate, Gate.

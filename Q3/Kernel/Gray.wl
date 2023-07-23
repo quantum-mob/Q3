@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.85 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-23 02:27:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.86 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-23 11:49:29+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -100,7 +100,7 @@ TheGrayTransform::usage = "TheGrayTransform[n] returns the matrix transforming t
 
 TheGrayTransform[n_Integer] := Module[
   {gg, mm},
-  gg = Map[FromDigits[#, 2] &, BinaryToGray /@ Tuples[{0, 1}, n]];
+  gg = BitReflect[Range[Power[2, n]]-1];
   mm = PadRight[{1}, Power[2, n]];
   Transpose[RotateRight[mm, #]& /@ gg]
  ]
@@ -194,6 +194,11 @@ IntegerToGray[n_Integer, len_Integer] :=
 
 IntegerToGray[nn:{___Integer}, len_Integer] :=
   BinaryToGray /@ IntegerDigits[nn, 2, len]
+
+
+BitReflect::usage = "BitReflect[n] returns an integer the binary digits of which are the Gray code (reflected binary code) of integer n."
+
+BitReflect[n_] := BitXor[n, BitShiftRight[n]]
 
 (**** </BinaryToGray> ****)
 
