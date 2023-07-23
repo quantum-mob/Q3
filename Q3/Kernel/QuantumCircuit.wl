@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.28 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-22 22:57:57+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.33 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-23 22:58:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -333,6 +333,7 @@ Options[Gate] = {
   "LabelStyle" -> {},
   (* A list of options to Style; e.g., "LabelStyle" -> {FontSland -> Plain} *)
   "LabelAngle" -> 0,
+  "LabelOffset" -> {0, 0}, (* See Text for details. *)
   N -> False (* only for QFT *)
  }
 
@@ -671,7 +672,7 @@ gateShape["Measurement"][x_, y_, opts___?OptionQ] := Module[
   {pane, text, arc, needle},
 
   pane = gateShape["Rectangle"][x, y];
-  text = qMeasurementText[x, y, opts];
+  text = measurementText[{x, y}, opts];
   
   arc = Circle[ {x, y - 0.25 $GateSize}, .5 $GateSize, {1,5} Pi/6 ];
   needle = Line[{ {x, y - 0.25 $GateSize}, {x,y} + .3{1,1}$GateSize }];
@@ -737,7 +738,7 @@ gateShape["Rectangle"][x_, yy_List, opts___?OptionQ] := Module[
   { y1 = Min @ yy,
     y2 = Max @ yy,
     pane, line, text },
-  text = qcGateText[x, Mean @ {y1, y2}, opts];
+  text = gateText[{x, Mean @ {y1, y2}}, opts];
   pane = Rectangle[
     {x, y1} - 0.5{1,1}$GateSize,
     {x, y2} + 0.5{1,1}$GateSize ];
@@ -757,7 +758,7 @@ gateShape["Rectangle"][ x_, y_?NumericQ, opts___?OptionQ ] :=
 
 gateShape["Oval"][ x_, y_?NumericQ, opts___?OptionQ ] := Module[
   { pane, text},
-  text = qcGateText[x, y, opts];
+  text = gateText[{x, y}, opts];
   pane = Disk[{x, y}, $GateSize/2];
   { {EdgeForm[Black], White, pane}, text }
  ]
@@ -769,7 +770,7 @@ gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
     y2 = Max @ yy,
     y0, y3, ff, pane, text},
   
-  text = qcGateText[x, Mean @ {y1, y2}, opts];
+  text = gateText[{x, Mean @ {y1, y2}}, opts];
 
   ff = 0.657;
   y0 = y1 - $GateSize ff;
@@ -782,12 +783,35 @@ gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
   { {EdgeForm[Black], White, pane}, text }
  ]
 
+
+gateShape["DotWiggly"][x_, yy_List, opts___?OptionQ] := {
+  Successive[
+    gateText[(#1+#2)/2, opts, "LabelOffset" -> {-2, 0}]&,
+    Thread @ {x, yy}
+   ],
+  Successive[wigglyCurve, Thread @ {x, yy}],
+  Disk[Thread @ {x, yy}, $DotSize]
+ }
+
+wigglyCurve::usage = "wigglyCurve[a, b] returns a list of points wiggling around the straight line connecting the two points a and b."
+
+wigglyCurve[a:{_, _}, b:{_, _}, n_Integer:8, amplitude_:1.5] := Module[
+  {s = amplitude},
+  pp = Subdivide[a, b, n];
+  pp = FoldPairList[
+    ( s *= -1;
+      {(#2 + #1)/2 + s*{{0, -1}, {1, 0}} . (#2 - #1), #2} ) &,
+    a, Rest @ pp];
+  BSplineCurve @ Join[{a}, pp, {b}]
+ ]
+
 (**** </gateShape> ****)
 
 
-qcGateText[ x_, y_, opts___?OptionQ ] := Module[
+gateText[{x_, y_}, opts___?OptionQ] := Module[
   { label = OptionValue[Gate, {opts}, "Label"],
     angle = OptionValue[Gate, {opts}, "LabelAngle"],
+    offset = OptionValue[Gate, {opts}, "LabelOffset"],
     factor = OptionValue[Gate, {opts}, "LabelSize"] },
   If[label == None, Return @ Nothing];
   If[angle != 0, label = Rotate[label, angle]];
@@ -798,14 +822,14 @@ qcGateText[ x_, y_, opts___?OptionQ ] := Module[
       FontWeight -> "Light",
       FontSize   -> Scaled[(0.5 $GateSize / $CircuitSize) factor] ],
     {x, y},
-    {0, 0}
+    offset
     (* Notice the y-offset:
        Before v12.2, y-offset=0 shifted a bit upward.
        It seems different in v12.2. *)
    ]
  ]
 
-qMeasurementText[ x_, y_, opts___?OptionQ ] := Module[
+measurementText[{x_, y_}, opts___?OptionQ] := Module[
   { label = OptionValue[Gate, {opts}, "Label"],
     factor = OptionValue[Gate, {opts}, "LabelSize"] },
   If[label == None, Return @ Nothing];

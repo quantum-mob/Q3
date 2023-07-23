@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.86 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-23 11:49:29+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.88 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-23 12:10:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -109,9 +109,7 @@ TheGrayTransform[n_Integer] := Module[
 GrayCycles::usage = "GrayCycles[n] returns the cycles representation of the Gray transform."
 
 GrayCycles[n_Integer] := InversePermutation @
-  PermutationCycles[
-    1 + FromDigits[#, 2]& /@ IntegerToGray[Range[Power[2, n]] - 1, n]
-   ]
+  PermutationCycles[1 + BitReflect[Range[Power[2, n]] - 1]]
 
 (**** </GrayTransform> ****)
 
@@ -185,15 +183,12 @@ GrayToInteger[gray_?VectorQ] := FromDigits[GrayToBinary @ gray, 2]
 
 IntegerToGray::usage = "IntegerToGray[n] gives the Gray code (i.e., reflected binary code) corresponding to the sequence of binary digits of the integer n.\nIntegerToGray[n, len] pads the list on the left with zeros to give a list of length len."
 
-IntegerToGray[n_Integer] := BinaryToGray @ IntegerDigits[n, 2]
+SetAttributes[IntegerToGray, Listable]
 
-IntegerToGray[nn:{___Integer}] := BinaryToGray /@ IntegerDigits[nn, 2]
+IntegerToGray[n_Integer] := IntegerDigits[BitReflect[n], 2]
 
 IntegerToGray[n_Integer, len_Integer] :=
-  BinaryToGray @ IntegerDigits[n, 2, len]
-
-IntegerToGray[nn:{___Integer}, len_Integer] :=
-  BinaryToGray /@ IntegerDigits[nn, 2, len]
+  IntegerDigits[BitReflect[n], 2, len]
 
 
 BitReflect::usage = "BitReflect[n] returns an integer the binary digits of which are the Gray code (reflected binary code) of integer n."
