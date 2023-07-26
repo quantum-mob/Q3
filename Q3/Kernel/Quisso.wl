@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.21 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-22 22:49:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.23 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-25 21:23:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1623,7 +1623,7 @@ Oracle[f_, m_Integer, n_Integer][x:{(0|1) ..}] := Module[
 
 (**** <Oracle> ****)
 
-Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits."
+Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits.\nOracle[f, m, n] represents the classical oracle f:{0,1}^m \[RightArrow] {0,1}^n that provides the flexibility for input form while keeping the consistency of output form."
 
 Oracle /:
 NonCommutativeQ[ Oracle[___] ] = True
@@ -2112,7 +2112,7 @@ ProductState[v:ProductState[_Association, ___], spec_Rule, more__Rule] :=
 
 
 ProductState[v:ProductState[_Association, ___], spec:Rule[_String, _]] :=
-  Append[v, spec] /; KeyExistsQ[Options[ProductState], First @ spec]
+  Append[v, spec] /; Not[AgentQ @ First @ spec]
 
 ProductState[ ProductState[a_Association, opts___],
   rule:Rule[_?QubitQ, {_, _}] ] :=

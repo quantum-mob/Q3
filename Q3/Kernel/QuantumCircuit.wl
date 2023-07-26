@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.33 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-23 22:58:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.34 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-24 11:09:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -573,6 +573,8 @@ measurementLabel[S_?QubitQ] :=
   FlavorLast[S] /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> None, _ -> "?"}
 
 
+(**** <gateLabel> *****)
+
 gateLabel::usage = "gateLabel[G] returns the label of circuit element G to be displayed in the circuit diagram."
 
 SetAttributes[gateLabel, Listable];
@@ -611,10 +613,12 @@ gateLabel @ EulerRotation[{_, _, _}, S_?QubitQ, ___] :=
   Subscript["U", "E"]
 
 
-gateLabel[ ControlledPower[_, _, OptionsPattern[]] ] := With[
+gateLabel @ ControlledPower[_, _, OptionsPattern[]] := With[
   { lbl = OptionValue[ControlledPower, "Label"] },
   {First @ lbl, Superscript[Last @ lbl, First @ lbl]}
  ]
+
+(**** </gateLabel> *****)
 
 
 (**** <gateShape> ****)

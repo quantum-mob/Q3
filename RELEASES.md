@@ -1,8 +1,13 @@
 # Select Release Notes
 
+## v2.13.8
+
+- Emergcy correction of the help documentation of Oraccle.
+
 ## v2.13.6
 
 - New function BitReflect.
+- More gate shapes.
 
 ## v2.13.6
 

@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-07-04 09:25:46+09 $ *)
-(* $Revision: 1.33 $ *)
+(* $Date: 2023-07-24 21:50:11+09 $ *)
+(* $Revision: 1.34 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -120,11 +120,11 @@ playbookFileName[file_String] := Module[
   ExpandFileName @ If[dir == "", new, FileNameJoin @ {dir, new}]
  ]
 
-playbookFileName[file_String, dir_String] := If[ DirectoryQ[dir],
-  playbookFileName @ FileNameJoin @ {dir, FileNameTake @ file},
-  Message[PlaybookDeploy::folder, dir];
-  playbookFileName[file]
- ]
+playbookFileName[file_String, dst_String] :=
+  If[ DirectoryQ[dst],
+    playbookFileName @ FileNameJoin @ {dst, FileNameTake @ file},
+    ExpandFileName[dst]
+   ]
 
 
 fileDeploy::usage = "fileDepoly[src, dst] does the actual job of deploying src to dst."
