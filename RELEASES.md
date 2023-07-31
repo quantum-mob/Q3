@@ -1,5 +1,12 @@
 # Select Release Notes
 
+## v2.13.9
+
+- New function StabilizerStateCount.
+- Improved Garner.
+- Bug fixes for GottesmanStandard and GottesmanBasis.
+- The meaning of CZ has changed slightly.
+
 ## v2.13.8
 
 - Emergcy correction of the help documentation of Oraccle.

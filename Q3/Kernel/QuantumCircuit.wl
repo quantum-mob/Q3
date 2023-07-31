@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.34 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-24 11:09:10+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.38 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-30 10:48:09+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -276,8 +276,10 @@ HoldPattern @
       vv, ww, xx, yy, in, out, unit, port, nodes, marks, lines },
 
     {vv, ww, unit, port} =
-      {"Visible", "Invisible", "UnitLength", "PortSize"} /. {opts} /.
-      Options[QuantumCircuit];
+      {"Visible", "Invisible", "UnitLength", "PortSize"} /.
+      Flatten[{opts}] /. Options[QuantumCircuit];
+    (* NOTE: Here, Flatten is required since OptionQ[{}] returns True and in
+       such a case, {...} /. {} /. {...} returns {{...}} instead of {...}. *)
 
     port = q3AssureList[port, 2];
 
@@ -377,7 +379,7 @@ ParseGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
  *)
 
 ParseGate[HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ] :=
-  Map[ParseGate[#, opts]&, {ss}]
+  Map[ParseGate[#, opts]&, Reverse @ {ss}]
 
 ParseGate[Measurement[ss:{__?PauliQ}], opts___?OptionQ] :=
   Map[ParseGate[Measurement[#], opts]&, ss]
@@ -435,8 +437,10 @@ ParseGate[
     cc:{Rule[_?QubitQ, _?BinaryQ]..},
     HoldPattern @ Multiply[ss__?QubitQ],
     opts___?OptionQ ],
-  more___?OptionQ ] :=
-  Sequence @@ Map[ParseGate[ControlledGate[cc, #], opts, more]&, {ss}]
+  more___?OptionQ ] := Sequence @@ Map[
+    ParseGate[ControlledGate[cc, #], opts, more]&,
+    Reverse @ {ss}
+   ]
 
 ParseGate[
   ControlledGate[ cc:{Rule[_?QubitQ, _]..}, expr_, opts___?OptionQ ],
@@ -453,11 +457,8 @@ ParseGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
   Gate[Thread[{a, b} -> {1, 1}], {c}, "TargetShape" -> "CirclePlus"]
 
 
-ParseGate[ CZ[cc:{__?QubitQ}, tt:{__?QubitQ}], ___?OptionQ ] :=
-  Sequence @@ Map[
-    Gate[cc, {#}, "ControlShape" -> "Dot", "TargetShape" -> "Dot"]&,
-    tt
-   ]
+ParseGate[ CZ[c_?QubitQ, t_?QubitQ], ___?OptionQ ] :=
+  Gate[{c}, {t}, "ControlShape" -> "Dot", "TargetShape" -> "Dot"]
 
 
 ParseGate[ SWAP[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
@@ -518,7 +519,7 @@ ParseGate[
 ParseGate[
   ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ],
   more__?OptionQ
- ] := ParseGate @ ModMultiply[n, cc, tt, opts, more]
+ ] := ParseGate @ ModMultiply[n, cc, tt, more, opts]
 
 ParseGate @
   ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
@@ -528,9 +529,21 @@ ParseGate @
     "Label" -> {"x", StringForm["x\[ThinSpace]y % ``", n]},
     "LabelAngle" -> Pi/2 ]
 
+ParseGate[
+  ModMultiply[n_Integer, a_Integer, tt:{__?QubitQ}, opts___?OptionQ],
+  more__?OptionQ
+ ] := ParseGate @ ModMultiply[n, a, tt, more, opts]
+
+ParseGate @
+  ModMultiply[n_Integer, a_Integer, tt:{__?QubitQ}, opts___?OptionQ] :=
+  Gate[ tt,
+    "TargetShape" -> "Rectangle", opts,
+    "Label" -> StringForm["``\[ThinSpace]x % ``", a, n],
+    "LabelAngle" -> Pi/2 ]
+
 
 ParseGate[QFT[qq:{__?QubitQ}, opts___?OptionQ], more__?OptionQ] :=
-  ParseGate @ QFT[qq, opts, more]
+  ParseGate @ QFT[qq, more, opts]
 
 ParseGate[QFT[qq:{__?QubitQ}, opts___?OptionQ]] :=
   Gate[qq, opts, "Label" -> "QFT", "LabelAngle" -> Pi/2]

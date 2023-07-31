@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.88 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-23 12:10:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.89 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-28 00:03:42+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -79,7 +79,7 @@ Elaborate @ GrayTransform[ss:{__?QubitQ}] :=
   Elaborate @ ExpressionFor[TheGrayTransform[Length @ ss], ss]
 
 GrayTransform /:
-Elaborate @ GrayTransform[n_Integer] := TheGrayTransform[n]
+Elaborate @ GrayTransform[n_Integer] :=
   Elaborate @ ExpressionFor[TheGrayTransform[n]]
 
 

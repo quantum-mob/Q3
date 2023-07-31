@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-07-24 21:50:11+09 $ *)
-(* $Revision: 1.34 $ *)
+(* $Date: 2023-07-30 15:04:42+09 $ *)
+(* $Revision: 1.36 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -96,7 +96,7 @@ PlaybookDeploy::noopen = "Could not open file ``."
 Options[PlaybookDeploy] = {
   "DeleteOutput" -> False,
   "PrintHandout" -> False,
-  "CollapseGroup" -> False
+  "CloseGroups" -> False
  }
 
 PlaybookDeploy[opts:OptionsPattern[]] := With[
@@ -139,7 +139,7 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
     Return[$Failed]
    ];
 
-  If[ FailureQ[nb = NotebookOpen @ dst],
+  If[ FailureQ[nb = NotebookOpen[dst, Visible -> False]],
     Message[PlaybookDeploy::noopen, dst];
     Return[$Failed]
    ];
@@ -154,10 +154,10 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
     Print["Printing to ", pdf];
     NotebookPrint[nb, pdf];
     (* For some unknown reason, the following three lines are required in
-       Mathematica 13.3.0; otherwise, CollapseGroup below stalls. *)
+       Mathematica 13.3.0; otherwise, CloseGroups below stalls. *)
     NotebookSave[nb, dst];
     NotebookClose[nb];
-    If[ FailureQ[nb = NotebookOpen @ dst],
+    If[ FailureQ[nb = NotebookOpen[dst, Visible -> False]],
       Message[PlaybookDeploy::noopen, dst];
       Return[$Failed]
      ]
@@ -165,12 +165,15 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   
   If[ OptionValue["DeleteOutput"], CleanNotebook[nb] ];
 
-  If[ OptionValue["CollapseGroup"],
-    CollapseGroup[nb, {"Subsubsection", "Subsection", "Section"}]
+  If[ OptionValue["CloseGroups"],
+    CloseGroups[nb, {"Subsubsection", "Subsection", "Section"}]
    ];
 
   Print["Saving ", dst];
-  SetOptions[nb, Saveable -> False, StyleDefinitions -> $PlaybookStyle];
+  SetOptions[ nb,
+    Visible -> True,
+    Saveable -> False,
+    StyleDefinitions -> $PlaybookStyle ];
   NotebookSave[nb, dst];
   NotebookClose[nb];
  ]
@@ -180,40 +183,45 @@ CleanNotebook::usage = "CleanNotebook[nb, styles] delete all cells of styles in 
 
 CleanNotebook[nb_NotebookObject, style_String:"Output"] :=
   ( Print["Deleting Cells of style ", style];
-    NotebookFind[nb, style, All, CellStyle];
+    NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
     NotebookDelete[nb] )
 
 CleanNotebook[nb_NotebookObject, styles:{__String}] :=
   Scan[CleanNotebook[nb, #]&, styles]
 
 
-CollapseGroup::usage = "CollapseGroup[nb, styles] collapse all cell groups of styles in notebook nb."
+CloseGroups::usage = "CloseGroups[nb, styles] collapse all cell groups of styles in notebook nb."
 
-CollapseGroup[nb_NotebookObject, style_String:"Section"] :=
-  ( Print["Collapsing Cells of style ", style];
-    NotebookFind[nb, style, All, CellStyle];
-    FrontEndTokenExecute[nb, "OpenCloseGroup"] )
+CloseGroups[nb_NotebookObject, style_String:"Section"] := (
+  Print["Closing Cells of style ", style];
+  NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
+  FrontEndTokenExecute[nb, "SelectionCloseAllGroups"]
+ )
 
-CollapseGroup[nb_NotebookObject, styles:{__String}] :=
-  Scan[CollapseGroup[nb, #]&, styles]
+CloseGroups[nb_NotebookObject, styles:{__String}] :=
+  Scan[CloseGroups[nb, #]&, styles]
 
 
 DeleteEpilogue::usage = "DeleteEpilogue[nb] deletes cells and cell groups with CellTags PlaybookEpilogue.\nDeleteEpilogue[nb, cell] deletes the particular cell or cell group."
 
 DeleteEpilogue[nb_NotebookObject] := (
-  Print["Examinig ", NotebookFileName @ nb];
+  SelectionMove[nb, Before, Notebook, AutoScroll -> False];
+  (* Print["Examinig ", NotebookFileName @ nb]; *)
   (* For some unknown reason, the above line or similar is
      necessary. Otherwise, NotebookFind below does not work properly. *)
-  If[ FailureQ @ NotebookFind[nb, "PlaybookEpilogue", All, CellTags],
+  If[ FailureQ @
+      NotebookFind[nb, "PlaybookEpilogue", All, CellTags, AutoScroll -> False],
     Print["No epilogue to delete!"];
     Return[],
-    Print["Examining ", SelectedCells @ nb];
+    Print["Examining ", SelectedCells @ nb, " for deletion."];
     Scan[DeleteEpilogue[nb, #]&, SelectedCells @ nb]
    ]
  )
 
 DeleteEpilogue[nb_NotebookObject, cell_CellObject] := With[
-  { cc = (SelectionMove[cell, All, CellGroup]; SelectedCells[nb]) },
+  { cc = (
+      SelectionMove[cell, All, CellGroup, AutoScroll -> False];
+      SelectedCells[nb] ) },
   If[ First[CurrentValue[First @ cc, "CellStyle"]] == "Section",
     Print["Deleting ", cc];
     NotebookDelete[cc],

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.46 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-23 11:17:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.53 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-28 22:30:12+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1341,25 +1341,33 @@ MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
 
 (**** <Garner> ****)
 
-Garner::usage = "Garner[expr] collects together terms involving the same species objects (operators, Kets, Bras, etc.) and simplifies the coefficients by using Simplify.\nGarner[expr, function] uses function instead of Simplify."
-
 FullGarner::usage = "FullGarner[expr] collects together terms involving the same species objects (operators, Kets, Bras, etc.) and simplifies the coefficients by using FullSimplify."
-
-SetAttributes[Garner, Listable]
 
 SetAttributes[FullGarner, Listable]
 
+FullGarner[expr_] := Garner[expr, FullSimplify]
+
+
+Garner::usage = "Garner[expr] collects together terms involving the same species objects (operators, Kets, Bras, etc.) and simplifies the coefficients by using Simplify.\nGarner[expr, function] uses function instead of Simplify."
+
+SetAttributes[Garner, Listable]
+
 Garner[expr_, tool_:Simplify] := Module[
-  { bb = $GarnerPatterns["Heads"],
-    tt = $GarnerPatterns["Tests"],
-    qq },
-  bb = Union @ Cases[expr, bb, Infinity];
-  qq = expr /. {_Multiply -> 0};
-  qq = Union @ Cases[qq, tt, Infinity];
-  Collect[KetRegulate @ expr, Join[qq, bb], tool]
+  { pp = Alternatives @@ Values[$GarnerPatterns],
+    gg = expr /. {op:$GarnerPatterns["Heads"]->Hold[op]} },
+  gg = theGarner[Expand @ gg];
+  gg = Union @ Cases[ReleaseHold @ gg, pp];
+  Collect[KetRegulate @ expr, gg, tool]
  ]
 
-FullGarner[expr_] := Garner[expr, FullSimplify]
+
+theGarner::usage = "Breaks into elementary parts."
+
+theGarner[expr_Plus] := Flatten @ Map[theGarner, List @@ expr]
+
+theGarner[expr_Times] := List @@ expr
+
+theGarner[any_] := {any}
 
 
 AddGarnerPatterns::usage = "AddGarnerPatterns[pattern$1,pattern$2,\[Ellipsis]] adds patterns to be handled by Garner."
@@ -1424,7 +1432,7 @@ $ElaborationPatterns = Association[
 
 DistributableQ::usage = "DistributableQ[x, y, \[Ellipsis]] returns True if any of the arguments x, y, \[Ellipsis] has head of Plus."
 
-DistributableQ[args__] := Not @ MissingQ @ FirstCase[ {args}, _Plus ]
+DistributableQ[args__] := Not @ MissingQ @ FirstCase[{args}, _Plus]
 
 
 MultiplyGenus::usage = "MultiplyGenus[op] returns the Genus of op, which may be a Species or related function.\nMultiplyGenus is a category class of Species and functions for Multiply that ranks above MultiplyKind. It affects how Multiply rearranges the non-commutative elements.\nMultiplyGenus is intended for internal use."
@@ -1475,7 +1483,7 @@ NonCommutativeMultiply[a___] := Multiply[a]
 
 Multiply[] = 1 (* See also Times[]. *)
 
-Multiply[c_] := c
+Multiply[c_] = c
 
 (* Associativity *)
 

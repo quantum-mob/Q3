@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.57 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-19 23:48:01+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.70 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-28 07:28:00+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -21,7 +21,7 @@ BeginPackage["Q3`"]
 
 { CliffordDecompose };
 
-{ Stabilizer, StabilizerStateQ };
+{ Stabilizer, StabilizerStateQ, StabilizerStateCount };
 
 { BinarySymplecticGroup,
   BinarySymplecticGroupElements };
@@ -481,29 +481,34 @@ GottesmanInner[v_?VectorQ, w_?VectorQ] := (
   Message[GottesmanInner::incon, v, w];
   0 ) /; Not @ ArrayQ @ {v, w}
 
+
 GottesmanBasis::usage = "GottesmanBasis[{v1, v2, \[Ellipsis]}] returns a symplectic basis of the vector space spanned by {v1, v2, \[Ellipsis]}.\nGottesmanBasis[v] returns a symplectic basis {v, \[Ellipsis]} spanning the Gottesman vector space containing v.\nGottesmanBasis[n] returns the standard basis of the n-qubit (2n-dimensional) Gottesman vector space, which happens to be a symplectic basis with respect to GottesmanInner."
 
-GottesmanBasis[bs:{__?VectorQ}] := Module[
+(* See: Koenig and Smolin (2021) *)
+
+GottesmanBasis[{}] = {} (* fallback *)
+
+GottesmanBasis[bs_?MatrixQ] := Module[
   { v = First @ bs,
     w, new },
+  If[ContainsOnly[v, {0}], Return @ GottesmanBasis @ Rest @ bs];
+  
   w = Select[bs, GottesmanInner[v, #]==1&];
-  If[ Length[w] == 0,
-    Return[bs],
-    w = First[w]
-   ];
+  If[Length[w] == 0, Return[bs], w = First[w]];
+  
   new = Map[
     Mod[# + w * GottesmanInner[v, #] + v * GottesmanInner[w, #], 2]&,
     DeleteCases[Rest @ bs, w]
    ];
-  Join[{v, w}, new]
- ] /; ArrayQ @ bs
+  Join[{v, w}, GottesmanBasis @ DeleteCases[new, Table[0, Length @ v]]]
+ ]
 
-GottesmanBasis[v_?VectorQ] := One[Length @ v] /;
+GottesmanBasis[v_?VectorQ] := IdentityMatrix[Length @ v] /;
   v == UnitVector[Length @ v, 1]
 
 GottesmanBasis[v_?VectorQ] := With[
   { id = IdentityMatrix[Length @ v] },
-  GottesmanBasis @ Join[{v}, Rest @ id]
+  GottesmanBasis @ Join[{v}, id]
  ]
 
 GottesmanBasis[n_Integer] := One[2*n] /; n > 0
@@ -630,6 +635,16 @@ StabilizerStateQ[vec_?VectorQ] :=
 StabilizerStateQ[expr_] := StabilizerStateQ[Matrix @ expr]
 
 StabilizerStateQ[expr_, ss:{__?QubitQ}] := StabilizerStateQ[Matrix @ expr]
+
+
+StabilizerStateCount::usage = "StabilizerStateCount[n] returns the number of stabilizer states on an n-qubit system.\nStabilizerStateCount[{s1,s2,\[Ellipsis],sn}] is equivalent to StabilizerStateCount[n] for qubits s1, s2, \[Ellipsis], sn."
+(* See: Aaronson and Gottesman (2004). *)
+
+StabilizerStateCount[n_Integer] :=
+  Power[2, n] * Product[Power[2, k] + 1, {k, n}]
+
+StabilizerStateCount[ss:{___?QubitQ}] :=
+  StabilizerStateCount[Length @ ss]
 
 (**** </Stabilizer> ****)
 
@@ -810,7 +825,7 @@ GottesmanMatrixQ[mat_?MatrixQ] := Module[
 
 GottesmanMatrix::usage = "GottesmanMatrix[mat] returns the binary symplectic matrix corresponding to the Clifford operator represented with matrix representation mat.\nGottesmanMatrix[op, {s$1,s$2,$$}] returns the binary symplectic matrix corresponding to Clifford operator op."
 
-GottesmanMatrix::dimen = "`` has wrong dimensions and is not a valid matrix representation of a Clifford operator."
+GottesmanMatrix::dim = "`` has wrong dimensions and is not a valid matrix representation of a Clifford operator."
 
 GottesmanMatrix[op_, S_?QubitQ] := GottesmanMatrix[op, {FlavorNone @ S}]
 
@@ -839,7 +854,7 @@ GottesmanMatrix[mat_?MatrixQ] := Module[
   { n = Log[2, First @ Dimensions @ mat],
     xz },
   If[ Not @ IntegerQ[n],
-    Message[GottesmanMatrix::dimen, MatrixForm @ mat];
+    Message[GottesmanMatrix::dim, MatrixForm @ mat];
     Return[{{}}]
    ];
   xz = ThePauli @@@ Riffle[
@@ -852,7 +867,7 @@ GottesmanMatrix[mat_?MatrixQ] := Module[
 
 FromGottesmanMatrix::usage = "FromGottesmanMatrix[mat, {s$1,s$2,$$}] returns the Clifford operator corresponding to binary symplectic matrix mat."
 
-FromGottesmanMatrix::badmat = "`` is not a valid binary symplectic matrix."
+FromGottesmanMatrix::spmat = "`` is not a valid binary symplectic matrix."
 
 FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   { n = Length @ ss,
@@ -863,12 +878,13 @@ FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   ff = Transpose[Partition[#, 2]& /@ Take[mat, 2]];
   kk = FirstPosition[GottesmanInner @@@ ff, 1];
   
-  If[ MissingQ[kk], 
-    Message[FromGottesmanMatrix::badmat, MatrixForm @ mat];
-    Return[1]
+  If[ MissingQ[kk],
+    Message[FromGottesmanMatrix::spmat, MatrixForm @ mat];
+    Return[1],
+    kk = First[kk]
    ];
 
-  If[ (kk = First[kk]) != 1,
+  If[ kk != 1,
     cyc = CircleTimes[
       PermutationMatrix[Cycles @ {{1, kk}}, n],
       One[2]
@@ -1002,27 +1018,27 @@ GottesmanStandard[mat_?MatrixQ, off_?MatrixQ] := (
 GottesmanStandard[mat_?MatrixQ, off_?MatrixQ] := Module[
   { vv = off,
     xx, zz, rx, rz,
-    prm, new, m, n },
+    cx, cz, new, m, n },
   {xx, zz} = GottesmanSplit[mat];
   {m, n} = Dimensions[xx];
 
   (* Gaussian elimitation of the X-part *)
-  
+
   new = RowReduce[ArrayFlatten @ {{xx, zz, vv}}, Modulus->2];
   xx = new[[;;, ;;n]];
   zz = new[[;;, n+1;;2n]];
   vv = new[[;;, 2n+1;;]];
   
   rx = MatrixRank[xx, Modulus->2];
-  prm = columnPivoting[new, 0, Range @ rx];
+  cx = columnPivoting[xx, 0, Range @ rx];
   
-  xx = Transpose @ Permute[Transpose @ xx, prm];
-  zz = Transpose @ Permute[Transpose @ zz, prm];
+  xx = Transpose @ Permute[Transpose @ xx, cx];
+  zz = Transpose @ Permute[Transpose @ zz, cx];
   
-  If[rx == m, Return @ {xx, zz, vv, prm}];
+  If[rx == m, Return @ {xx, zz, vv, cx}];
 
   (* Gaussian elimitation of the Z-part *)
-  
+
   new = RotateLeft[#, n+rx]& /@ ArrayFlatten @ {{xx, zz, vv}};
   new = Join[ new[[;;rx]], RowReduce[new[[rx+1;;]], Modulus->2] ];
   new = RotateRight[#, n+rx]& /@ new;
@@ -1031,12 +1047,12 @@ GottesmanStandard[mat_?MatrixQ, off_?MatrixQ] := Module[
   vv = new[[;;, 2n+1;;]];
 
   rz = MatrixRank[zz[[rx+1;;, rx+1;;]], Modulus->2];
-  prm = columnPivoting[new, rx, Range @ rz];
+  cz = columnPivoting[zz, rx, Range @ rz];
     
-  xx = Transpose @ Permute[Transpose @ xx, prm];
-  zz = Transpose @ Permute[Transpose @ zz, prm];
+  xx = Transpose @ Permute[Transpose @ xx, cz];
+  zz = Transpose @ Permute[Transpose @ zz, cz];
   
-  Return @ {xx, zz, vv, prm}
+  Return @ {xx, zz, vv, PermutationProduct[cx, cz]}
  ]
 
 

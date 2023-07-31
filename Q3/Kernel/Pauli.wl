@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.4 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-22 19:37:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.5 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-30 10:41:31+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2702,6 +2702,14 @@ Rotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
 (* Rotation on Qubit and Spin *)
 
 Rotation::axis = "The axis in `` is not proper."
+
+Format[ op:Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] ] :=
+  Interpretation[
+    DisplayForm @ RowBox @ { Exp,
+      RowBox @ {"(", -I * (phi/2) * Dot[S @ All, Normalize @ v], ")"}
+     },
+    op ]
+
 
 Options[Rotation] = { "Label" -> Automatic }
 

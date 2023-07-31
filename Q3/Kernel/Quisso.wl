@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.23 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-25 21:23:51+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.28 $"][[2]], " (",
+  StringSplit["$Date: 2023-07-28 23:07:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1031,32 +1031,27 @@ Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Times @@ Dimension @ ss]
 
 (**** <CZ> ****)
 
-CZ::usage = "CZ[C, T] represents the controlled-Z gate on the two qubits associated with C and T. C and T are the control and target qubits, respectively; in fact, contol and target qubits are symmetric for this gate.\nC[{c1,c2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] represents the multi-control Z gate."
+CZ::usage = "CZ[C, T] represents the controlled-Z gate on the two qubits associated with C and T. C and T are the control and target qubits, respectively; in fact, contol and target qubits are symmetric for this gate."
 
-CZ[c_?QubitQ, t_] := CZ[{c}, t]
+SetAttributes[CZ, Listable]
 
-CZ[c_, t_?QubitQ] := CZ[c, {t}]
-
-CZ[cc:{__?QubitQ}, tt:{__?QubitQ}] :=
-  CZ[FlavorNone @ cc, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ Join[cc, tt]]
+CZ[c_?QubitQ, t_?QubitQ] := CZ[FlavorNone @ c, FlavorNone @ t] /;
+  Not[FlavorNoneQ @ {c, t}]
 
 CZ /:
 Dagger[ op_CZ ] := op
 
 CZ /:
-HoldPattern @ Elaborate @ CZ[cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
-  { prj = Multiply @@ Through[cc[11]],
-    opz = Multiply @@ Through[tt[3]] },
-  Garner @ Elaborate[(1-prj) + prj ** opz]
+Elaborate @ CZ[c_?QubitQ, t_?QubitQ] := Elaborate[
+  c[10] + c[11] ** t[3]
  ]
 
 CZ /:
-HoldPattern @ Multiply[pre___, op_CZ, post___] :=
+Multiply[pre___, op_CZ, post___] :=
   Multiply[pre, Elaborate[op], post]
 
 CZ /:
-HoldPattern @ Matrix[op_CZ, rest___] := Matrix[Elaborate[op], rest]
+Matrix[op_CZ, rest___] := Matrix[Elaborate[op], rest]
 
 (**** </CZ> ****)
 
@@ -1194,7 +1189,7 @@ HoldPattern @ Matrix[Dagger[op_Deutsch], rest___] :=
 
 ControlledGate::usage = "ControlledGate[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., $] controlled by the qubits C1, C2.\nControlledGate[C, T] is equivalent to ControlledGate[{C}, T].\nControlledGate[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it."
 
-ControlledGate::nonuni = "The operator `` is not unitary."
+ControlledGate::unitary = "The operator `` is not unitary."
 
 ControlledGate::incmp =  "Control register `` and value set `` have unequal lengths."
 
@@ -1203,6 +1198,9 @@ SetAttributes[ControlledGate, NHoldFirst]
 SyntaxInformation[ControlledGate] = {
   "ArgumentsPattern" -> {_, __}
  }
+
+AddGarnerPatterns[_ControlledGate]
+
 
 ControlledGate[cc_] := (
   CheckArguments[ControlledGate[cc], 2];
@@ -1243,7 +1241,7 @@ ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=
     { ff, op },
     ff = If[Last[Values @ cc] == 0, -1, 1, 1];
     op = Phase[ff*Arg[z], Last[Keys @ cc][3], opts];
-    If[Abs[z] != 1, Message[ControlledGate::nonuni, z]];
+    If[Abs[z] != 1, Message[ControlledGate::unitary, z]];
     If[Length[cc] > 1, ControlledGate[Most @ cc, op], op]
    ]
 
@@ -1313,12 +1311,17 @@ Elaborate @
 
 ControlledGate /:
 Matrix[
-  op:ControlledGate[{Rule[_?QubitQ, _?BinaryQ]..}, _, ___?OptionQ],
-  rest___ ] := Matrix[Elaborate[op], rest]
+  ControlledGate[cc:{Rule[_?QubitQ, _?BinaryQ]..}, op_, ___?OptionQ],
+  ss:{__?SpeciesQ} ]:= Module[
+    { rr = Thread[Values[cc] -> Values[cc]],
+      prj },
+    prj = Dot @@ Matrix[MapThread[Construct, {Keys @ cc, rr}], ss];
+    Dot[prj, Matrix[op, ss]] + (One[Times @@ Dimension @ ss] - prj)
+   ]
 
 ControlledGate /:
 Matrix[op_ControlledGate, ss:{__?SpeciesQ}] :=
-  op * One[Times @@ Dimension @ ss]
+  op * One[Times @@ Dimension @ ss] (* fallback *)
 
 
 ControlledGate /:
