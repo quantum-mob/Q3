@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.53 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-28 22:30:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.54 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-01 10:51:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -512,7 +512,7 @@ nameThrough[name_String] := With[
   SetAttributes[full, ReadProtected]
  ]
 
-(* Some frequently used aliases. *)
+(* Aliases for some frequently used functions. *)
 nameThrough @ {Chop, Simplify, FullSimplify};
 
 
@@ -1113,7 +1113,7 @@ TeeTranspose[a_] := Tee[a]
 (* HoldPattern @ Tee[ Conjugate[x_] ] := Dagger[x] *)
 
 
-DaggerTranspose::usage = "DaggerTranspose is an alias to Topple."
+DaggerTranspose::usage = "DaggerTranspose is an alias for Topple."
 
 Topple::usage = "Topple \[Congruent] Dagger @* Transpose; i.e., applies Transpose and then Dagger.\nNot to be confused with Dagger or ConjugateTranspose.\nIt is similar to ConjugateTranspose, but applies Dagger instead of Conjugate. Therefore it acts also on a tensor of operators (not just numbers)."
 
@@ -1124,7 +1124,7 @@ Topple[m_?TensorQ, spec___] := Dagger @ Transpose[m, spec]
 Topple[a_] := Dagger[a]
 
 
-HermitianConjugate::usage = "HermitianConjugate is an alias to Dagger."
+HermitianConjugate::usage = "HermitianConjugate is an alias for Dagger."
 
 Dagger::usage = "Dagger[expr] returns the Hermitian conjugate the expression expr.\nWARNING: Dagger has the attribute Listable, meaning that the common expectation Dagger[m] == Tranpose[Conjugate[m]] for a matrix m of c-numbers does NOT hold any longer. For such purposes use Topple[] instead.\nSee also Conjugate[], Topple[], and TeeTranspose[]."
 

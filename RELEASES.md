@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.13.10
+
+- Emergency bug fix concerning formatting of Ket and Bra.
+
 ## v2.13.9
 
 - New function StabilizerStateCount.

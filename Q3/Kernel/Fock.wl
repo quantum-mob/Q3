@@ -948,7 +948,10 @@ HoldPattern @ Multiply[pre___, op__?MajoranaQ, post___] :=
 (* ******************************************************************** *)
 
 
-Q::usage = "Q[c] is an alias to FockNumber[c], which is one of the most frequently used operator. Because the symbol N is reserved by the Mathematica system, we instead use Q."
+Q::usage = "Q is an alias for " <> ToString[
+  Hyperlink["FockNumber", "paclet:Q3/ref/FockNumber"],
+  StandardForm ] <>
+  ", which is one of the most frequently used operator. Because the symbol N is reserved by the Mathematica system, we instead use Q."
 
 Q = FockNumber
 
@@ -959,7 +962,9 @@ FockNumber[ op_?ParticleQ ] := Multiply[ Dagger[op], op ]
 FockNumber[x:({__?ParticleQ}|_?ParticleQ)..] := Total @ Map[FockNumber] @ Flatten @ {x}
 
 
-Hop::usage = "Hop[a,b,...] is an alias to FockHopping[a,b,...]."
+Hop::usage = "Hop is an alias for " <> ToString[
+  Hyperlink["FockHopping", "paclet:Q3/ref/FockHopping"],
+  StandardForm ]
 
 Hop = FockHopping
 
@@ -1004,7 +1009,7 @@ FockHopping[a_, b_, c__] := FockHopping[a,b] + FockHopping[b,c]
 FockHopping[x_List] := FockHopping[ Sequence @@ x ]
 
 
-Pair::usage = "Pair[a,b,...] is an alias to FockPairing[a,b,...]."
+Pair::usage = "Pair is an alias for FockPairing."
 
 Pair = FockPairing
 
@@ -1070,7 +1075,7 @@ theWigner[{J_?SpinNumberQ, 5}] := With[
 
 
 
-(* SS::usage = "SS[dir][a,b,...] is an alias to FockSpinSpin[a,b,..., dir]." *)
+(* SS::usage = "SS[dir][a,b,...] is an alias for FockSpinSpin[a,b,..., dir]." *)
 
 FockSpinSpin::usage = "FockSpinSpin[a, b] gives the operator expression for the spin-spin coupling between two spins associated with a and b. FockSpinSpin[a, b, dir] describes the coupling in the particular direction dir."
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.5 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-30 10:41:31+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.8 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-01 15:25:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -41,7 +41,7 @@ BeginPackage["Q3`"]
   ExpressionFor, TheExpression,
   MatrixIn, ExpressionIn };
 
-{ ProperSystem, ProperValues, ProperStates };
+{ ProperSystem, ProperValues, ProperVectors = ProperStates };
 
 { CommonEigensystem, CommonEigenvectors, CommonEigenvalues };
 
@@ -735,17 +735,25 @@ HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
 
 KetFormat::usage = "KetFormat[\[Ellipsis]] is a low-level function to display Ket[\[Ellipsis]]."
 
-KetFormat[a_List] :=
-  DisplayForm @ TemplateBox[List @ Row[theKetFormat /@ a, ","], "Ket"]
-
 KetFormat[a_] :=
   DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Ket"]
 
-BraFormat[a_List] :=
-  DisplayForm @ TemplateBox[List @ Row[theKetFormat /@ a, ","], "Bra"]
+KetFormat[a_?theKetFormatQ] :=
+  DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Ket"]
+(* NOTE: This is necessary to handle special formats such as YoungTableau. *)
+
+KetFormat[a_List] :=
+  DisplayForm @ TemplateBox[List @ Row[theKetFormat /@ a, ","], "Ket"]
 
 BraFormat[a_] :=
   DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Bra"]
+
+BraFormat[a_?theKetFormatQ] :=
+  DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Bra"]
+(* NOTE: This is necessary to handle special formats such as YoungTableau. *)
+
+BraFormat[a_List] :=
+  DisplayForm @ TemplateBox[List @ Row[theKetFormat /@ a, ","], "Bra"]
 
 
 theKetFormat[Vacuum] = Any
@@ -2144,6 +2152,8 @@ MatrixIn[op_, aa_Association, bb_Association] := Module[
 (**** </MatrixIn> ****)
 
 
+(**** <ProperSystem> ****)
+
 ProperSystem::usage = "ProperSystem[expr] returns a list of {values, vectors} of the eigenvalues and eigenstates of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
 
 ProperSystem::mixed = "The operator `` contains the Pauli operators of unlabelled qubits as well as other labelled operators for Species."
@@ -2205,6 +2215,12 @@ ProperSystem[expr_, qq:{___?SpeciesQ}] := Module[
   {val, vec}
  ]
 
+
+ProperVectors::usage = "ProperVectors is an alias for " <>
+  ToString[
+    Hyperlink["ProperStates", "paclet:Q3/ref/ProperStates"],
+    StandardForm
+   ]
 
 ProperStates::usage = "ProperStates[expr] returns a list of the eigenstates of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
 
@@ -2317,6 +2333,8 @@ ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
     Return @ Flatten @ Transpose @ ConstantArray[val, Times @@ Dimension[rr]]
    ];
  ]
+
+(**** </ProperSystem> ****)
 
 
 (**** <CommonEigensystem> ****)
@@ -4310,7 +4328,7 @@ WignerFunction[j_, m_, n_, z_] := (
 
 (**** <HilbertSchmidtNorm> *****)
 
-FrobeniusNorm::usage = "FrobeniusNorm is an alias to HilbertSchmidtNorm."
+FrobeniusNorm::usage = "FrobeniusNorm is an alias for HilbertSchmidtNorm."
 
 FrobeniusNorm = HilbertSchmidtNorm
 
@@ -4336,7 +4354,7 @@ HilbertSchmidtDistance::usage = "HilbertSchmidtDistance[a, b] returns the Hilber
 HilbertSchmidtDistance[a_, b_] := HilbertSchmidtNorm[a - b]
 
 
-FrobeniusProduct::usage = "FrobeniusProduct is an alias to HilbertSchmidtProduct."
+FrobeniusProduct::usage = "FrobeniusProduct is an alias for HilbertSchmidtProduct."
 
 FrobeniusProduct = HilbertSchmidtProduct
 

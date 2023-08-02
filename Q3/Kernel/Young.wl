@@ -1037,7 +1037,7 @@ SpechtBasis[n_Integer] := With[
 (* For the Specht module *)
 theKetFormatQ[_?YoungTableauQ] = True
 
-theKetFormat[tbl_?YoungTableauQ] := YoungForm[tbl]
+theKetFormat[tbl_?YoungTableauQ] := {YoungForm[tbl]}
 (* NOTE: Do not use test anyYoungTableauQ since it also passes Gelfand
    patterns. *)
 

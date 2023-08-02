@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.28 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-28 23:07:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.29 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-01 11:04:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -946,7 +946,7 @@ Expand @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
 
 (**** <CNOT> ****)
 
-CX::usage = "CX is an alias to CNOT."
+CX::usage = "CX is an alias for CNOT."
 
 CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. Note that it does not expand until necessary (e.g., multiplied to a Ket); use Elaborate in order to expand it."
 
@@ -1358,7 +1358,7 @@ ControlledU[args___] := (
 
 (**** <ControlledPower> ****)
 
-ControlledExp::usage = "ControlledExp is an alias of ControlledPower."
+ControlledExp::usage = "ControlledExp is an alias for ControlledPower."
 
 ControlledPower::usage = "ControlledPower[{c1, c2, ...}, op] represents a controlled exponentiation gate."
 
