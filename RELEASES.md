@@ -4,6 +4,7 @@
 
 - Improved BosonBasis.
 - New function UniformlyControlledGate.
+- SWAP is renamed Swap.
 
 ## v2.13.10
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.39 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-06 10:20:59+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.40 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-06 10:35:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -461,7 +461,7 @@ ParseGate[ CZ[c_?QubitQ, t_?QubitQ], ___?OptionQ ] :=
   Gate[{c}, {t}, "ControlShape" -> "Dot", "TargetShape" -> "Dot"]
 
 
-ParseGate[ SWAP[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
+ParseGate[ Swap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
   Gate[ {c}, {t},
     "ControlShape" -> "Cross",
     "TargetShape" -> "Cross"
@@ -619,20 +619,20 @@ gateLabel[ op_Phase ] := thePauliForm[op]
 
 
 gateLabel @ Rotation[_, {any_, 0|0., 0|0.}, _?QubitQ, ___] :=
-  Subscript["U", "x"] /; And[any != 0, any != 0.]
+  Subscript["R", "x"] /; And[any != 0, any != 0.]
 
 gateLabel @ Rotation[_, {0|0., any_, 0|0.}, _?QubitQ, ___] :=
-  Subscript["U", "y"] /; And[any != 0, any != 0.]
+  Subscript["R", "y"] /; And[any != 0, any != 0.]
 
 gateLabel @ Rotation[_, {0|0., 0|0., any_}, _?QubitQ, ___] :=
-  Subscript["U", "z"] /; And[any != 0, any != 0.]
+  Subscript["R", "z"] /; And[any != 0, any != 0.]
 
 gateLabel[ Rotation[_, {_, _, _}, _?QubitQ, ___] ] :=
-  Subscript[ "U", Style["n", Bold] ]
+  Subscript[ "R", Style["n", Bold] ]
 
 
 gateLabel @ EulerRotation[{_, _, _}, S_?QubitQ, ___] :=
-  Subscript["U", "E"]
+  Subscript["R", "E"]
 
 
 gateLabel @ ControlledPower[_, _, OptionsPattern[]] := With[

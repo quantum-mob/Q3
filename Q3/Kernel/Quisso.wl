@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.34 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-06 10:17:08+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.35 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-07 08:31:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -17,7 +17,7 @@ BeginPackage["Q3`"]
 
 { Rotation, EulerRotation, Phase };
 
-{ ControlledGate, CNOT, CX = CNOT, CZ, SWAP,
+{ ControlledGate, CNOT, CX = CNOT, CZ, Swap,
   Toffoli, Fredkin, Deutsch };
 
 { ControlledExp = ControlledPower, ActOn };
@@ -63,7 +63,7 @@ $symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
 
 AddElaborationPatterns[
   _QFT,
-  _ControlledGate, _CZ, _CX, _CNOT, _SWAP,
+  _ControlledGate, _CZ, _CX, _CNOT, _Swap,
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
   _Projector, _ProductState,
@@ -1057,36 +1057,55 @@ Matrix[op_CZ, rest___] := Matrix[Elaborate[op], rest]
 (**** </CZ> ****)
 
 
-(**** <SWAP> ****)
+(**** <Swap> ****)
 
-SWAP::usage = "SWAP[A, B] operates the SWAP gate on the two qubits A and B."
+Swap::usage = "Swap[A, B] operates the Swap gate on the two qubits A and B."
 
-SetAttributes[SWAP, Listable]
+SetAttributes[Swap, Listable]
 
-SWAP[a_?QubitQ, b_?QubitQ] := SWAP @@ FlavorNone @ {a, b} /;
+Swap[a_?QubitQ, b_?QubitQ] := Swap @@ FlavorNone @ {a, b} /;
   Not[FlavorNoneQ @ {a, b}]
 
-SWAP[a_?QubitQ, b_?QubitQ] := SWAP[b, a] /;
+Swap[a_?QubitQ, b_?QubitQ] := Swap[b, a] /;
   Not @ OrderedQ @ FlavorNone @ {a, b}
 
-SWAP /:
-Dagger[ op_SWAP ] := op
+Swap /:
+Dagger[ op_Swap ] = op
 
-SWAP /:
-HoldPattern @ Elaborate @ SWAP[x_?QubitQ, y_?QubitQ] := Module[
+Swap /:
+Matrix[op_Swap, rest___] := Matrix[Elaborate[op], rest]
+
+Swap /:
+Elaborate @ Swap[x_?QubitQ, y_?QubitQ] := Module[
   { a = Most @ x,
     b = Most @ y },
   Garner[ (1 + a[1]**b[1] + a[2]**b[2] + a[3]**b[3]) / 2 ]
  ]
 
-SWAP /:
-HoldPattern @ Multiply[pre___, op_SWAP, post___] :=
+Swap /:
+Multiply[pre___, Swap[s_?QubitQ, t_?QubitQ], Ket[a_Association]] :=
+  Multiply[pre, Ket[{s, t} -> Reverse[Lookup[a, {s, t}]]]]
+
+Swap /:
+Expand @ Swap[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+  CNOT[s, t], CNOT[t, s], CNOT[s, t]
+ ]
+
+(*
+Swap /:
+Multiply[pre___, op_Swap, post___] :=
   Multiply[pre, Elaborate[op], post]
+ *)
 
-SWAP /:
-HoldPattern @ Matrix[op_SWAP, rest___] := Matrix[Elaborate[op], rest]
 
-(**** </SWAP> ****)
+SWAP::usage = "SWAP has been renamed Swap."
+
+SWAP[args__] := (
+  Message[Q3General::renamed, SWAP, Swap];
+  Swap[args]
+ )
+
+(**** </Swap> ****)
 
 
 (**** <Toffoli> ****)
@@ -1122,7 +1141,7 @@ HoldPattern @ Matrix[op_Toffoli, rest___] := Matrix[Elaborate[op], rest]
 
 (**** <Fredkin> ****)
 
-Fredkin::usage = "Fredkin[a, b, c] represents the Fredkin gate, i.e., the SWAP gate on b and c controlled by a."
+Fredkin::usage = "Fredkin[a, b, c] represents the Fredkin gate, i.e., the Swap gate on b and c controlled by a."
 
 SetAttributes[Fredkin, Listable]
 
@@ -1135,7 +1154,7 @@ Dagger[ op_Fredkin ] := op
 
 Fredkin /:
 HoldPattern @ Elaborate @ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ] :=
-  Garner @ Elaborate[ a[10] + a[11] ** SWAP[b, c] ]
+  Garner @ Elaborate[ a[10] + a[11] ** Swap[b, c] ]
 
 Fredkin /:
 HoldPattern @ Multiply[pre___, op_Fredkin, post___] :=
@@ -1846,7 +1865,7 @@ Expand[op_QFT] = op (* fallback *)
 QFT /:
 Expand @ QFT[ss:{__?QubitQ}, ___] := QuantumCircuit @@ Join[
   qftCtrlPhase[ss][All],
-  With[{n = Length[ss]}, Table[SWAP[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
+  With[{n = Length[ss]}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
  ]
 
 qftCtrlPhase[ss:{__?QubitQ}] := 
@@ -1873,7 +1892,7 @@ Dagger /:
 HoldPattern @ Expand @ Dagger @ QFT[ss:{__?QubitQ}, ___] :=
   QuantumCircuit @@ Join[
     invCtrlPhase[ss][All],
-    With[{n = Length[ss]}, Table[SWAP[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
+    With[{n = Length[ss]}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
    ]
 
 invCtrlPhase[ss:{__?QubitQ}] := 
