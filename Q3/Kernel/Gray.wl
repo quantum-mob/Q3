@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.89 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-28 00:03:42+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.90 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-06 09:20:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -434,7 +434,7 @@ GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] :=
 
 GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := (
   Message[GivensFactor::dim, mat, ss];
-  { OperatorOn[1, ss] }
+  { ActOn[1, ss] }
  ) /; Length[mat] != Power[2, Length @ ss]
 
 
@@ -496,7 +496,7 @@ GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] :=
 
 GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := (
   Message[GrayGivensFactor::dim, mat, ss];
-  { OperatorOn[1, ss] }
+  { ActOn[1, ss] }
  ) /; Length[mat] != Power[2, Length @ ss]
 
 GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := Module[

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.38 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-30 10:48:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.39 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-06 10:20:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -513,6 +513,15 @@ ParseGate[
   Gate[ cc, {S}, opts, more,
     "ControlShape" -> "MixedDot",
     "Label" -> {None, gateLabel @ Rotation[0, vv, S]}
+   ]
+
+
+ParseGate[
+  UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ],
+  more___?OptionQ ] :=
+  Gate[ cc, Qubits @ tt, more, opts,
+    "ControlShape" -> "MixedDot",
+    "Label" -> {None, "U"}
    ]
 
 

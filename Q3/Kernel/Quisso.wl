@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.29 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-01 11:04:35+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.34 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-06 10:17:08+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -20,9 +20,10 @@ BeginPackage["Q3`"]
 { ControlledGate, CNOT, CX = CNOT, CZ, SWAP,
   Toffoli, Fredkin, Deutsch };
 
-{ ControlledExp = ControlledPower, OperatorOn };
+{ ControlledExp = ControlledPower, ActOn };
 
-{ UniformlyControlledRotation };
+{ UniformlyControlledRotation,
+  UniformlyControlledGate };
 
 { Measurement, Measurements, MeasurementFunction,
   MeasurementOdds, Readout, $MeasurementOut = <||> };
@@ -1434,8 +1435,8 @@ Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     { n = Length @ ss,
       tt = Qubits[op],
       pwr, txt, new },
-    pwr = OperatorOn[tt] /@ Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
-    (* NOTE: Without OperatorOn, some elements in pwr may be 1. *)
+    pwr = ActOn[tt] /@ Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
+    (* NOTE: Without ActOn, some elements in pwr may be 1. *)
 
     txt = OptionValue[ControlledPower, opts, "Label"];
     If[ListQ[txt], txt = Last @ txt];
@@ -1460,23 +1461,23 @@ theCtrlExp[n_Integer, mat_?MatrixQ] := Module[
  ]
 
 
-OperatorOn::usage = "OperatorOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting on the system of species {s1, s2, \[Ellipsis]}.\nOperatorOn is a low-level function intended for internal use."
+ActOn::usage = "ActOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting on the system of species {s1, s2, \[Ellipsis]}.\nActOn is a low-level function intended for internal use."
 
-OperatorOn[ss:{___?SpeciesQ}] :=
-  OperatorOn[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+ActOn[ss:{___?SpeciesQ}] :=
+  ActOn[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
-OperatorOn[ss:{___?SpeciesQ}][op_] := OperatorOn[op, ss]
+ActOn[ss:{___?SpeciesQ}][op_] := ActOn[op, ss]
 
-OperatorOn[op_, ss:{___?SpeciesQ}] := Module[
+ActOn[op_, ss:{___?SpeciesQ}] := Module[
   { tt = Agents[op] },
   Union[ss, tt] /; Not @ ContainsAll[ss, tt]
  ]
 
-OperatorOn[op_, ss:{___?SpeciesQ}] :=
-  OperatorOn[op, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+ActOn[op_, ss:{___?SpeciesQ}] :=
+  ActOn[op, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
-OperatorOn /:
-Multiply[pre___, OperatorOn[op_, {___?SpeciesQ}], post___] :=
+ActOn /:
+Multiply[pre___, ActOn[op_, {___?SpeciesQ}], post___] :=
   Multiply[pre, op, post]
 
 (**** </ControlledPower> ****)
@@ -1491,7 +1492,7 @@ UniformlyControlledRotation::usage = "UniformlyControlledRotation[{c1,c2,\[Ellip
 UniformlyControlledRotation::list = "The length of `` is not an integer power of 2."
 
 SyntaxInformation[UniformlyControlledRotation] = {
-  "ArgumentsPattern" -> {_, _, _, __}
+  "ArgumentsPattern" -> {_, _, _, ___}
  }
 
 AddElaborationPatterns[_UniformlyControlledRotation]
@@ -1505,23 +1506,30 @@ UniformlyControlledRotation[
     opts ]
 
 UniformlyControlledRotation[
-  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___?OptionQ ] := (
+  cc:{___?QubitQ}, aa_List, vv_List, S_?QubitQ, opts___?OptionQ ] :=
+  UniformlyControlledRotation[FlavorNone @ cc, aa, vv, FlavorNone @ S, opts] /;
+  Not[FlavorNoneQ @ Append[cc, S]]
+
+UniformlyControlledRotation[
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ] := (
     Message[UniformlyControlledRotation::list, aa];
-    UniformlyControlledRotation[cc, PadRight[aa, Power[2, Length @ cc]], vv, S]
+    UniformlyControlledRotation[ cc,
+      PadRight[aa, Power[2, Length @ cc]], vv, S, opts ]
    ) /; Power[2, Length @ cc] != Length[aa]
 
-UniformlyControlledRotation[{}, {a_}, v:{_, _, _}, S_?QubitQ] :=
-  Rotation[a, v, S]
+UniformlyControlledRotation[
+  {}, {a_}, v:{_, _, _}, S_?QubitQ, opts___?OptionQ] :=
+  Rotation[a, v, S, opts]
 
 
 UniformlyControlledRotation /:
 Dagger @ UniformlyControlledRotation[
-  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___?OptionQ ] :=
-  UniformlyControlledRotation[cc, -aa, vv, S]
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ] :=
+  UniformlyControlledRotation[cc, -aa, vv, S, opts]
 
 UniformlyControlledRotation /:
 Expand @ UniformlyControlledRotation[
-  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___?OptionQ ] :=
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___ ] :=
   QuantumCircuit @@ ReleaseHold @ Thread @
   ControlledGate[
     Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
@@ -1551,15 +1559,87 @@ Multiply[ pre___,
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
    ]
 
+(*
 Multiply[ pre___,
   op:UniformlyControlledRotation[
     {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ],
   post___ ] :=
   Multiply[pre, Elaborate[op], post]
+ *)
 (* NOTE: DO NOT put "UniformlyControlledRotation /:". Otherwise, the above
    rule with UniformlyControlledRotation[...]**Ket[] is overridden. *)
 
 (**** </UniformlyControlledRotation> ****)
+
+
+(**** <UniformlyControlledGate> ****)
+
+UniformlyControlledGate::usage = "UniformlyControlledGate[{c1,c2,\[Ellipsis],cn}, {op1,op2,\[Ellipsis],op2n}] represents the uniformly-controlled unitary gate operating op1, op2, \[Ellipsis], op2n depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis], cn."
+
+UniformlyControlledGate::list = "The length of `` is not an integer power of 2."
+
+SyntaxInformation[UniformlyControlledGate] = {
+  "ArgumentsPattern" -> {_, _, ___}
+ }
+
+AddElaborationPatterns[_UniformlyControlledGate]
+
+
+UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ] :=
+  UniformlyControlledGate[FlavorNone @ cc, tt, opts] /;
+  Not[FlavorNoneQ @ cc]
+
+UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ] := (
+  Message[UniformlyControlledGate::list, tt];
+  UniformlyControlledGate[cc, PadRight[tt, Power[2, Length @ cc], 1], opts]
+ ) /; Power[2, Length @ cc] != Length[tt]
+
+UniformlyControlledGate[{}, {op_}] = op
+
+
+UniformlyControlledGate /:
+Dagger @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] :=
+  UniformlyControlledGate[cc, Dagger[Reverse @ tt], opts]
+
+UniformlyControlledGate /:
+Expand @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] :=
+  QuantumCircuit @@ ReleaseHold @ Thread @
+  ControlledGate[
+    Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
+    tt, opts,
+    Thread["Label" -> Thread@Subscript["U", Range[Power[2, Length @ cc]]-1]]
+   ]
+
+UniformlyControlledGate /:
+Matrix[
+  op:UniformlyControlledGate[{__?QubitQ}, _List, ___],
+  rest___ ] := Matrix[Expand @ op, rest]
+
+
+UniformlyControlledGate /:
+Elaborate @
+  op:UniformlyControlledGate[{__?QubitQ}, _List, ___?OptionQ] :=
+  With[{qq = Qubits @ op}, Elaborate @ ExpressionFor[Matrix[op, qq], qq]]
+
+
+UniformlyControlledGate /:
+Multiply[ pre___,
+  op:UniformlyControlledGate[{__?QubitQ}, _List, ___?OptionQ],
+  in_Ket ] := With[
+    { gg = List @@ Expand @ op },
+    Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
+   ]
+
+(*
+Multiply[ pre___,
+  op:UniformlyControlledGate[{__?QubitQ}, _List, ___?OptionQ],
+  post___ ] :=
+  Multiply[pre, Elaborate[op], post]
+ *)
+(* NOTE: DO NOT put "UniformlyControlledGate /:". Otherwise, the above
+   rule with UniformlyControlledGate[...]**Ket[] is overridden. *)
+
+(**** </UniformlyControlledGate> ****)
 
 
 (**** <GateFactor> ****)

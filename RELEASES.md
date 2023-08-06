@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.13.11
+
+- Improved BosonBasis.
+- New function UniformlyControlledGate.
+
 ## v2.13.10
 
 - Emergency bug fix concerning formatting of Ket and Bra.

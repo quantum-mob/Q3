@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.64 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-22 19:35:09+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.67 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-05 02:11:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2214,10 +2214,13 @@ BosonBasis[bb:{__?BosonQ}, n_Integer] :=
 BosonBasis[bb:{__?BosonQ}, {m_Integer, n_Integer}] :=
   Flatten @ Table[ BosonBasis[bb, {k}], {k, m, n}]
 
-BosonBasis[bb:{__?BosonQ}, {n_Integer}] :=
-  KetRegulate[
-    Ket /@ Counts /@ Union[ Sort /@ Tuples[bb, n] ],
-    bb ]
+BosonBasis[ss:{__?BosonQ}, {n_Integer}] := With[
+  { len = Length @ ss },
+  Map[
+    Ket[ss -> #]&,
+    Flatten[Permutations /@ (PadRight[#, len]&) /@ IntegerPartitions[n, len], 1]
+   ]
+ ]
 
 
 (**** <FermionBasis> ****)
