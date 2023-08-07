@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.35 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-07 08:31:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.41 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-07 22:35:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -899,8 +899,7 @@ HoldPattern @ Multiply[pre___, op_Phase, in_Ket] :=
 (* Automatic expansion may be delayed until necessary. *)
 (*
 Phase /:
-HoldPattern @ Multiply[pre___, op_Phase, post___] :=
-  Multiply[pre, Elaborate @ op, post]
+Multiply[pre___, op_Phase, post___] := Multiply[pre, Elaborate @ op, post]
  *)
 
 Phase /:
@@ -1084,7 +1083,9 @@ Elaborate @ Swap[x_?QubitQ, y_?QubitQ] := Module[
 
 Swap /:
 Multiply[pre___, Swap[s_?QubitQ, t_?QubitQ], Ket[a_Association]] :=
-  Multiply[pre, Ket[{s, t} -> Reverse[Lookup[a, {s, t}]]]]
+  Multiply[ pre,
+    Ket @ KeySort @ Join[a, AssociationThread[{s, t} -> Lookup[a, {t, s}]]]
+   ]
 
 Swap /:
 Expand @ Swap[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
@@ -1141,27 +1142,38 @@ HoldPattern @ Matrix[op_Toffoli, rest___] := Matrix[Elaborate[op], rest]
 
 (**** <Fredkin> ****)
 
-Fredkin::usage = "Fredkin[a, b, c] represents the Fredkin gate, i.e., the Swap gate on b and c controlled by a."
+Fredkin::usage = "Fredkin[a, {b, c}] represents the Fredkin gate, i.e., the Swap gate on b and c controlled by a."
 
-SetAttributes[Fredkin, Listable]
+SyntaxInformation[Fredkin] = {
+  "ArgumentsPattern" -> {_, _}
+ }
 
-Fredkin[ a_?QubitQ, b_?QubitQ, c_?QubitQ ] :=
-  Fredkin @@ FlavorNone @ {a,b,c} /;
+Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}] :=
+  Fredkin[FlavorNone @ a, FlavorNone @ {b, c}] /;
   Not[FlavorNoneQ @ {a, b, c}]
 
 Fredkin /:
 Dagger[ op_Fredkin ] := op
 
 Fredkin /:
-HoldPattern @ Elaborate @ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ] :=
+Elaborate @ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}] :=
   Garner @ Elaborate[ a[10] + a[11] ** Swap[b, c] ]
 
+(*
 Fredkin /:
 HoldPattern @ Multiply[pre___, op_Fredkin, post___] :=
   Multiply[pre, Elaborate[op], post]
+ *)
 
 Fredkin /:
-HoldPattern @ Matrix[op_Fredkin, rest___] := Matrix[Elaborate[op], rest]
+Matrix[op_Fredkin, rest___] := Matrix[Elaborate[op], rest]
+
+
+(* Change in input format *)
+Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ] := (
+  CheckArguments[Fredkin[a, b, c], 2];
+  Fredkin[a, {b, c}]
+ )
 
 (**** </Fredkin> ****)
 

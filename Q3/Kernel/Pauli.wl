@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.8 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-01 15:25:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.9 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-07 22:35:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2767,9 +2767,10 @@ Rotation[any_, v:{_, _, _}, ss:{(_?SpinQ|_?QubitQ)..}, rest___] :=
   Map[Rotation[any, v, #, rest]&, ss]
 
 
+(*
 Rotation /:
-Multiply[pre___, op_Rotation, post___] :=
-  Multiply[pre, Elaborate[op], post]
+Multiply[pre___, op_Rotation, post___] := Multiply[pre, Elaborate[op], post]
+ *)
 
 Rotation /:
 Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] ] :=
@@ -2822,9 +2823,11 @@ EulerRotation[aa:{_, _, _}, G:(_?SpinQ|_?QubitQ), rest___] :=
   EulerRotation[aa, G[$], rest] /; Not[FlavorNoneQ @ G]
 
 
+(*
 EulerRotation /:
 Multiply[pre___, op_EulerRotation, post___ ] :=
   Multiply[pre, Elaborate @ op, post]
+ *)
 
 
 EulerRotation /:
@@ -2833,11 +2836,12 @@ Matrix[op_EulerRotation, rest___] := Matrix[Elaborate @ op, rest]
 
 EulerRotation /:
 Elaborate @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
-  Garner @ Multiply[
-    Elaborate @ Rotation[a, S[3]],
-    Elaborate @ Rotation[b, S[2]],
-    Elaborate @ Rotation[c, S[3]]
-   ]
+  Garner @ Elaborate @
+  Multiply[ Rotation[a, S[3]], Rotation[b, S[2]], Rotation[c, S[3]] ]
+
+EulerRotation /:
+Expand @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
+  QuantumCircuit[ Rotation[a, S[3]], Rotation[b, S[2]], Rotation[c, S[3]] ]
 
 
 EulerRotation[S:(_?SpinQ|_?QubitQ), ang_, rest___] := (

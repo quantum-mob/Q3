@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.40 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-06 10:35:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.41 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-07 22:35:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -467,7 +467,7 @@ ParseGate[ Swap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
     "TargetShape" -> "Cross"
    ]
 
-ParseGate[ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
+ParseGate[ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}], opts___?OptionQ ] :=
   Gate[ {a}, {b, c},
     "ControlShape" -> "Dot",
     "TargetShape" -> "Cross"
