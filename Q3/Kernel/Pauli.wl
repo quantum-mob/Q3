@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.9 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-07 22:35:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.10 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-08 21:21:05+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -3870,14 +3870,14 @@ LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the log
 LogarithmicNegativity::norm = "`` is not properly normalized: trace = ``."
 
 LogarithmicNegativity[vec_?VectorQ, spec__] := (
-  If[ Rationalize[Norm @ vec] != 1,
+  If[ Chop[Norm[vec] - 1] != 0,
     Message[LogarithmicNegativity::norm, vec, Rationalize @ Norm @ vec]
    ];
   Log2 @ NormPT[vec, spec]
  )
 
 LogarithmicNegativity[mat_?MatrixQ, spec__] := (
-  If[ Rationalize[Tr @ mat] != 1,
+  If[ Chop[Tr[mat] - 1] != 0,
     Message[LogarithmicNegativity::norm, mat, Rationalize @ Tr @ mat]
    ];
   Log2 @ NormPT[mat, spec]

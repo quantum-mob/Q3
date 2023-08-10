@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.54 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-01 10:51:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.55 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-08 19:09:38+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -15,7 +15,9 @@ $::usage = "$ is a flavor index referring to the species itself."
 { Choices, ListPartitions, Successive, FirstLast, Inbetween };
 { ShiftLeft, ShiftRight };
 { KeyGroupBy, CheckJoin };
-{ Unless, PseudoDivide };
+{ PseudoDivide, ZeroQ };
+
+{ Unless };
 
 { Chain, ChainBy };
 { GraphLocalComplement, GraphPivot, GraphNeighborhoodSans };
@@ -300,6 +302,20 @@ PseudoDivide[x_, 0.] = 0.
 PseudoDivide[x_, 0. + 0. I] = 0. + 0. I
 
 PseudoDivide[x_, y_] := x/y
+
+
+ZeroQ::usage = "ZeroQ[x] returns True if x approximately equals to zero.\nZeroQ[x, \[Delta]] returns True if |x| \[LessEqual] \[Delta]."
+
+ZeroQ::tolnn = "Tolerence specification `` must be a non-negative number."
+
+ZeroQ[x_] := TrueQ[Chop[x] == 0]
+
+ZeroQ[x_, del_?NonNegative] := TrueQ[Chop[x, del] == 0]
+
+ZeroQ[x_, del_] := (
+  Message[ZeroQ::tolnn, del];
+  ZeroQ[x, Abs @ del]
+ )
 
 
 Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting a, b, \[Ellipsis] consecutively."

@@ -8,15 +8,17 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.11 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-07 22:35:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.21 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-10 22:54:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { YoungDiagram, FerrersDiagram,
-  YoungShape, YoungShapeQ };
+  YoungShape, YoungShapes, YoungShapeQ };
 
 { YoungTranspose, YoungTrim };
+
+{ YoungTableau };
 
 { YoungTableauQ, YoungTableaux, YoungTableauCount, YoungForm, 
   YoungTranspose };
@@ -97,18 +99,26 @@ Transposition[k_Integer] := Transposition @ {k, k+1}
 
 YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nYoungDiagram[yt] displays the Young diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
 
-YoungDiagram[shape_?YoungShapeQ] :=
+YoungDiagram[sh_YoungShape] = sh
+
+YoungDiagram[shape:{___Integer}] :=
   Grid @ Map[Table[Item[" ", Frame->True], #]&, shape]
 
-YoungDiagram[yt_?anyYoungTableauQ] := YoungDiagram[YoungShape @ yt]
+YoungDiagram[yt:{{___Integer}..}] := YoungDiagram[Length /@ yt]
+
+YoungDiagram[yt_YoungTableau] := YoungShape[yt]
 
 
 FerrersDiagram::usage = "FerrersDiagram[shape] displays shape in a Ferrers diagram.\nYoungDiagram[yt] displays the Ferrers diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
 
-FerrersDiagram[shape_?YoungShapeQ] :=
+FerrersDiagram[YoungShape[data_List]] := FerrersDiagram[data]
+
+FerrersDiagram[shape:{___Integer}] :=
   Grid @ Map[Table["\[FilledCircle]", #]&, shape]
 
-FerrersDiagram[yt_?anyYoungTableauQ] := FerrersDiagram[YoungShape @ yt]
+FerrersDiagram[yt:{{___Integer}..}] := FerrersDiagram[YoungShape @ yt]
+
+FerrersDiagram[yt_YoungTableau] := FerrersDiagram[YoungShape @ yt]
 
 
 YoungShapeQ::usage="YoungShapeQ[shape] returns True if and only if shape is an integer partition, arranged in non-increasing order.\nA Young shape defines a Young diagram."
@@ -132,7 +142,9 @@ YoungTrim[{rows__List, Longest[{}...]}] := {rows} /; anyYoungTableauQ[{rows}]
 
 YoungTranspose::usage = "YoungTranspose[shape] reflects a partition 'shape' along the main diagonal.\nTransposeTableau[tb] reflects a standard Young tableau 'tb' along the main diagonal, creating a different tableau."
 
-YoungTranspose[shape_?YoungShapeQ] := Module[
+YoungTranspose[YoungShape[data_]] := YoungShape @ YoungTranspose[data]
+
+YoungTranspose[shape:{__Integer}] := Module[
   { y },
   Table[
     First @ Last @ Position[shape, x_/;x>=y],
@@ -140,7 +152,10 @@ YoungTranspose[shape_?YoungShapeQ] := Module[
    ]
  ]
 
-YoungTranspose[tb_?anyYoungTableauQ] := Module[
+
+YoungTranspose[YoungTableau[data_]] := YoungTableau[YoungTranspose @ data]
+
+YoungTranspose[tb:{{___Integer}..}] := Module[
   { new = YoungTranspose[Length /@ tb],
     i, j },
   Table[Part[tb, j, i], {i, Length[new]}, {j, Part[new,i]}]
@@ -149,12 +164,28 @@ YoungTranspose[tb_?anyYoungTableauQ] := Module[
    tableau is allowed. This is useful in Schur transform. *)
 
 
+(**** <YoungShape> ****)
+
 YoungShape::usage = "YoungShape[tb] returns the shape, i.e., the integer partition of Young tableau tb."
 
-YoungShape[tb_?anyYoungTableauQ] := Length /@ tb
+Format[ys:YoungShape[data:{___}]] :=
+  Interpretation[YoungDiagram @ data, ys]
+
+YoungShape[YoungTableau[tb_]] := YoungShape[tb]
+
+YoungShape[tb:{__List}] := YoungShape[Length /@ tb]
+
+
+YoungShapes::usage = "YoungShapes[n] returns the list of all possible Young shapes for integern n."
+
+YoungShapes[n_Integer] := YoungShape /@ IntegerPartitions[n]
+
+(**** </YoungShape> ****)
 
 
 YoungTableauCount::usage = "YoungTableauCount[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nYoungTableauCount[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
+
+YoungTableauCount[YoungShape[pp_]] := YoungTableauCount[pp]
 
 YoungTableauCount[pp_?YoungShapeQ] := Module[
   { qq = YoungTranspose[pp],
@@ -450,17 +481,28 @@ anyYoungTableauQ[tb:{{___Integer}..}] := Apply[GreaterEqual, Length /@ tb]
 anyYoungTableauQ[_] = False
 
 
+(**** <YoungForm> ****)
+
+YoungTableau::usage = "YoungPattern[data] represents a Young tableau specified by data."
+
+Format[tbl:YoungTableau[data:{{___}..}]] :=
+  Interpretation[YoungForm @ data, tbl]
+
+
 YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional form."
 
-YoungForm::notyt = "Data `` is not a valid Young tableau."
+YoungForm::notyt = "`` is not a Young tableau."
 
-YoungForm[tb_?anyYoungTableauQ] :=
-  Interpretation[Grid @ Map[Item[#, Frame->True]&, tb, {2}], tb]
+YoungForm[yt_YoungTableau] = yt
+
+YoungForm[tb:{{___}..}] :=
+  Grid @ Map[Item[#, Frame->True]&, tb, {2}]
 
 YoungForm[data_] := (
   Message[YoungForm::notyt, data];
   data
  )
+(**** </YoungForm> ****)
 
 
 (**** <YoungTableaux> ****)
@@ -469,8 +511,11 @@ YoungTableaux::usage = "YoungTableaux[shape] constructs all standard Young table
 
 Options[YoungTableaux] = {"LexicographicOrder" -> False}
 
-YoungTableaux[shape_?YoungShapeQ, OptionsPattern[]] := With[
-  { result = ToYoungTableau /@ GelfandYoungPatterns[shape] },
+YoungTableaux[shape:{___Integer}, opts___?OptionQ] :=
+  YoungTableaux[YoungShape @ shape, opts]
+
+YoungTableaux[shape_YoungShape, OptionsPattern[]] := With[
+  { result = YoungTableau /@ GelfandYoungPatterns[shape] },
   If[OptionValue["LexicographicOrder"], Reverse @ result, result, result]
  ]
 (* NOTE: Since v3.0, based on GelfandYoungPatterns.
@@ -487,23 +532,26 @@ YoungTableaux[n_Integer?Positive, opts___?OptionQ] :=
 
 LegacyYoungTableaux::usage = "LegacyYoungTableaux[shape] constructs all standard Young tableaux of 'shape' specified by an integer partition using the method in the legacy Combinatorica package.\nLegacyYoungTableaux[n] constructs all standard Young tableaux of rank n."
 
-LegacyYoungTableaux[s_?YoungShapeQ] :=
+LegacyYoungTableaux[sh:{___Integer}] :=
+  LegacyYoungTableaux[YoungShape @ sh]
+
+LegacyYoungTableaux[s_YoungShape] :=
   NestList[nextYoungTableau, firstYoungTableau[s], YoungTableauCount[s]-1]
 
 LegacyYoungTableaux[n_Integer?Positive] :=
-  Catenate @ Map[LegacyYoungTableaux, IntegerPartitions @ n]
+  Catenate @ Map[LegacyYoungTableaux, YoungShapes @ n]
 
 
 firstYoungTableau::usage = "firstYoungTableau[p] constructs the first standard Young tableau with shape described by partition p."
 
-firstYoungTableau[shape_?YoungShapeQ] :=
+firstYoungTableau[shape_YoungShape] :=
   YoungTranspose @ lastYoungTableau @ YoungTranspose[shape]
 
 
 lastYoungTableau::usage = "lastYoungTableau[p] constructs the last Young tableau with shape described by partition p."
 
-lastYoungTableau[shape_?YoungShapeQ] :=
-  TakeList[Range @ Total @ shape, shape]
+lastYoungTableau[YoungShape[shape_]] :=
+  YoungTableau @ TakeList[Range @ Total @ shape, shape]
 
 
 nextYoungTableau::usage = "nextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in lexicographic order."
@@ -511,11 +559,11 @@ nextYoungTableau::usage = "nextYoungTableau[tb] gives the standard Young tableau
 (* NOTE 2021-10-27: It seems that the standard Young tableaux are ordered
    according to the "last letter sequence". See Pauncz (1995a, Section 3.2). *)
 
-nextYoungTableau[tb_?YoungTableauQ] := Module[
+nextYoungTableau[YoungTableau[tb_]] := Module[
   { yy, shp, row, val, new },
 
   yy = Values @ KeySort @ Flatten @ MapIndexed[(#1->First[#2])&, tb, {2}];
-  If[LessEqual @@ yy, Return @ firstYoungTableau[Length /@ tb]];
+  If[LessEqual @@ yy, Return @ firstYoungTableau @ YoungShape[tb]];
 
   val = 1 + Length[First @ Split[yy, LessEqual]];
   row = First @ FirstPosition[tb, val];
@@ -523,15 +571,15 @@ nextYoungTableau[tb_?YoungTableauQ] := Module[
   shp = Length /@ DeleteCases[tb, k_/;k>val, {2}];
   row = First @ Last @ Position[shp, shp[[row+1]]];
   shp[[row]]--;
-  
-  new = firstYoungTableau[shp];
+
+  new = First @ firstYoungTableau[YoungShape @ shp];
   If[ Length[new] < row,
     new = Append[new, {val}],
     new[[row]] = Append[new[[row]], val]
    ];
 
   new = Flatten @ MapIndexed[(#2->#1)&, new, {2}];
-  ReplacePart[tb, new]
+  YoungTableau @ ReplacePart[tb, new]
  ]
 
 (**** </LegacyYoungTableaux> ****)

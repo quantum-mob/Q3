@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Wigner`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 4.23 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-17 05:11:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 4.24 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-08 18:49:54+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -28,16 +28,6 @@ BeginPackage["Q3`"]
 { ClebschGordanTable, PrintTable };
 
 { NineJSymbol, WignerEckart };
-
-
-(* The obsolete *)
-
-{ WignerRotation, WignerEulerRotation }; (* obsolete *)
-
-{ WignerExpression }; (* obsolete *)
-{ WignerKetQ, WignerExpand }; (* obsolete *)
-
-{ WignerReduced, WignerFactor }; (* obsolete *)
 
 
 Begin["`Private`"]
@@ -470,21 +460,6 @@ Basis[ op_?SpinQ ] := With[
 (**** </Basis> ****)
 
 
-WignerFactor::usage = "WignerFactor is OBSOLETE. Use KetFactor instead."
-
-WignerFactor[expr__] := (
-  Message[Q3General::obsolete, WignerFactor, KetFactor];
-  KetFactor[expr]
- )
-
-WignerReduced::usage = "WignerReduced is OBSOLETE. Use Reduced instead."
-
-WignerReduced[expr__] := (
-  Message[Q3General::obsolete, WignerReduced, Reduced];
-  Reduced[expr]
- )
-
-
 (**** <Matrix> ****)
 
 TheMatrix[S_?SpinQ[___,j_]] := TheWigner @ {Spin[S], j}
@@ -508,18 +483,6 @@ TheExpression[S_?SpinQ] := {
 
 (**** </ExpressionFor> ****)
 
-
-WignerKetQ::usage = "WignerKetQ is obsolete. Use KetVerify instead."
-
-WignerKetQ[ Ket[a_Association] ] := Module[
-  { chk },
-  Message[Q3General::obsolete, WignerKetQ, KetVerify];
-  chk = KeyValueMap[KetVerify, a];
-  If[ Or @@ chk,
-    False,
-    True
-   ]
- ]
 
 (* ****************************************************************** *)
 
@@ -659,22 +622,6 @@ Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
 (**** </Rotation> ****)
 
 
-WignerRotation::usage = "WignerRotation is obsolete now. Use Rotation instead."
-
-WignerRotation[args__] := (
-  Message[Q3`Q3`General::obsolete, "WignerRotation", "Rotation"];
-  Rotation[args]
- )
-
-
-WignerEulerRotation::usage = "WignerEulerRotation is obsolete now. Use EulerRotation instead."
-
-WignerEulerRotation[args__] := (
-  Message[Q3`Q3`General::obsolete, "WignerEulerRotation", "EulerRotation"];
-  EulerRotation[args]
- )
-
-
 
 (* ***************
    Special Topics
@@ -728,21 +675,6 @@ WignerCompose[ ss:{__?SpinQ}, m_List ] := Module[
   Total @ Flatten[vv]
  ]
 
-
-WignerExpression::usage = "WignerExpression is obsolete now. Use ExpressionFor instead."
-
-WignerExpression[args___] := (
-  Message[Q3General::obsolete, "WignerExpression", "ExpressionFor"];
-  ExpressionFor[args]
- )
-
-
-WignerExpand::usage = "WignerExpand[expr] is obsolete now; use Elaborate instead."
-
-WignerExpand[expr_] := (
-  Message[Q3General::obsolete, WignerExpand, Elaborate];
-  Elaborate[expr]
- )
 
 
 WignerCoefficients::usage = "WignerCoefficients[expr] gives the Pauli decomposition of the density matrix by finding the coefficients to the operators."

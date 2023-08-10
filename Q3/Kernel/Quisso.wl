@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.41 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-07 22:35:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.48 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-10 22:43:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -44,8 +44,6 @@ BeginPackage["Q3`"]
 { Qudit, QuditQ, Qudits };
 
 { TheQuditKet };
-
-{ WeylHeisenbergBasis };
 
 (* Obsolete Symbols *)
 
@@ -2634,6 +2632,13 @@ setQudit[x_Symbol, dim_Integer] := (
       x[j, a -> b]
      ]
    ];
+
+  (* See Gross (2006) and Singal et al. (2023) *)
+  Format[x[j___, $[m_Integer, n_Integer]]] := Row @ Thread @ Subsuperscript[
+    {"X", "Z"},
+    {Row @ Riffle[{j}, ","], Row @ Riffle[{j}, ","]},
+    {m, n}
+   ];
  )
 
 
@@ -2714,24 +2719,6 @@ GHZState[ss:{__?QuditQ}, k_Integer] := Module[
 (**** </GHZState> ****)
 
 
-(**** <WeylHeisenbergBasis> ****)
-
-WeylHeisenbergBasis::usage = "WeylHeisenbergBasis[n] returns a generating set of matrices in GL(n).\nSee also Lie basis."
-
-WeylHeisenbergBasis[d_Integer] := Module[
-  { dd = Range[0, d-1],
-    ww, ij },
-  Z = SparseArray @ DiagonalMatrix @ Exp[I 2 Pi*dd/d];
-  X = RotateRight @ One[d];
-  MapApply[
-    (MatrixPower[Z, #1] . MatrixPower[X, #2]) &,
-    Tuples[dd, 2]
-   ]
- ]
-
-(**** </WeylHeisenbergBasis> ****)
-
-
 (* Qudit on Ket *)
 
 HoldPattern @
@@ -2759,6 +2746,17 @@ HoldPattern @ Multiply[pre___,
 HoldPattern @ Multiply[pre___,
   A_Symbol?QuditQ[j___, z_->w_], A_Symbol?QuditQ[j___, x_->y_],
   post___] := Multiply[pre, A[j, x->w], post] KroneckerDelta[y, z]
+
+
+(* See Gross (2006) and Singal et al. (2023) *)
+HoldPattern @ Multiply[pre___,
+  A_Symbol?QuditQ[j___, $[a_, b_]],
+  A_Symbol?QuditQ[j___, $[c_, d_]],
+  post___] := Multiply[ pre,
+    A[j, $[Mod[a+c, Dimension @ A], Mod[b+d, Dimension @ A]]],
+    post ] *
+  Exp[2*Pi*I * b*c / Dimension[A]]
+
 
 HoldPattern @ Multiply[pre___, A_?QuditQ, B_?QuditQ, post___] :=
   Multiply[pre, B, A, post] /; Not @ OrderedQ @ {A, B}
@@ -2818,6 +2816,9 @@ TheMatrix @ Ket @ Association[A_?QuditQ -> n_Integer] := SparseArray[
   If[0 <= n < Dimension[A], {n+1} -> 1, {}, {}],
   Dimension[A]
  ]
+
+TheMatrix[A_?QuditQ[___, $[x_Integer, z_Integer]]] :=
+  TheWeyl[{x, z, Dimension @ A}]
 
 (**** </Matrix> *****)
 

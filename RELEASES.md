@@ -1,10 +1,13 @@
 # Select Release Notes
 
-## v2.13.11
+## v2.14.0
 
 - Improved BosonBasis.
 - New function UniformlyControlledGate.
 - SWAP is renamed Swap.
+- NextGelfandPatterns is renamed GelfandAttach.
+- New functions YoungTableau, GelfandPattern.
+- SchurBasis looks much more user-friendly.
 
 ## v2.13.10
 

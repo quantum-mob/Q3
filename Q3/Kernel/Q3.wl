@@ -184,6 +184,7 @@ EndPackage[]
 Get["Q3`Abel`"];
 Get["Q3`Cauchy`"];
 Get["Q3`Pauli`"];
+Get["Q3`Weyl`"];
 Get["Q3`Quisso`"];
 Get["Q3`QuantumCircuit`"];
 Get["Q3`Kraus`"];
