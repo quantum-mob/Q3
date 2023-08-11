@@ -8,6 +8,7 @@
 - NextGelfandPatterns is renamed GelfandAttach.
 - New functions YoungTableau, GelfandPattern.
 - SchurBasis looks much more user-friendly.
+- WeylHeisenbergBasis is renamed WeylBasis.
 
 ## v2.13.10
 

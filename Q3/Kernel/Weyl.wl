@@ -5,14 +5,14 @@ BeginPackage["Q3`"]
 
 `Weyl`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.2 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-10 12:59:43+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.4 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-11 14:53:36+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { Weyl, TheWeyl };
 
-{ WeylHeisenbergBasis };
+{ WeylBasis };
 
 
 Begin["`Private`"]
@@ -76,22 +76,14 @@ TheWeyl[kk:{{_, _, _}..}] := Apply[CircleTimes, TheWeyl /@ kk]
 (**** </TheWeyl> ****)
 
 
-(**** <WeylHeisenbergBasis> ****)
+(**** <WeylBasis> ****)
 
-WeylHeisenbergBasis::usage = "WeylHeisenbergBasis[n] returns a generating set of matrices in GL(n).\nSee also Lie basis."
+WeylBasis::usage = "WeylBasis[n] returns a generating set of matrices in GL(n).\nSee also Lie basis."
 
-WeylHeisenbergBasis[d_Integer] := Module[
-  { dd = Range[0, d-1],
-    ww, ij },
-  Z = SparseArray @ DiagonalMatrix @ Exp[I 2 Pi*dd/d];
-  X = RotateRight @ One[d];
-  MapApply[
-    (MatrixPower[Z, #1] . MatrixPower[X, #2]) &,
-    Tuples[dd, 2]
-   ]
- ]
+WeylBasis[d_Integer] :=
+  TheWeyl /@ PadRight[Tuples[Range[0, d-1], 2], {d*d, 3}, d];
 
-(**** </WeylHeisenbergBasis> ****)
+(**** </WeylBasis> ****)
 
 
 End[]
