@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.21 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-10 22:54:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.25 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-11 08:38:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -129,36 +129,31 @@ YoungShapeQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
 (* NOTE: Must allow 0 since some functions uses 0 in shape specification. *)
 
 
-YoungTrim::usage="YoungTrim[shape] trims trailing zeros from shape."
+YoungTrim::usage="YoungTrim[shape] trims trailing zeros from shape.\nYoungTrim[tbl] trims trailing {}s from Young tableau tbl."
 
-YoungTrim[{0..}] = {}
+YoungTrim[YoungTableau[data_]] := YoungTableau[YoungTrim @ data]
 
-YoungTrim[{kk__, Longest[0...]}] := {kk} /; YoungShapeQ[{kk}]
+YoungTrim[{any___List, {}...}] := {any}
 
-YoungTrim[{{}..}] = {}
 
-YoungTrim[{rows__List, Longest[{}...]}] := {rows} /; anyYoungTableauQ[{rows}]
+YoungTrim[YoungShape[data_]] := YoungShape[YoungTrim @ data]
+
+YoungTrim[{any___, 0...}] := {any}
 
 
 YoungTranspose::usage = "YoungTranspose[shape] reflects a partition 'shape' along the main diagonal.\nTransposeTableau[tb] reflects a standard Young tableau 'tb' along the main diagonal, creating a different tableau."
 
 YoungTranspose[YoungShape[data_]] := YoungShape @ YoungTranspose[data]
 
-YoungTranspose[shape:{__Integer}] := Module[
-  { y },
-  Table[
-    First @ Last @ Position[shape, x_/;x>=y],
-    {y, First @ shape}
-   ]
- ]
+YoungTranspose[shape:{__Integer}] :=
+ Table[LengthWhile[shape, # >= k &], {k, First @ shape}]
 
 
 YoungTranspose[YoungTableau[data_]] := YoungTableau[YoungTranspose @ data]
 
-YoungTranspose[tb:{{___Integer}..}] := Module[
-  { new = YoungTranspose[Length /@ tb],
-    i, j },
-  Table[Part[tb, j, i], {i, Length[new]}, {j, Part[new,i]}]
+YoungTranspose[tb:{{___Integer}..}] := With[
+  { new = YoungTranspose[Length /@ tb] },
+  Table[tb[[j, i]], {i, Length @ new}, {j, new[[i]]}]
  ]
 (* NOTE: tb does not need to be a semi-standard Young tableau. Any Young-like
    tableau is allowed. This is useful in Schur transform. *)
