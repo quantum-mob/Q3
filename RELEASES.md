@@ -9,6 +9,8 @@
 - New functions YoungTableau, GelfandPattern.
 - SchurBasis looks much more user-friendly.
 - WeylHeisenbergBasis is renamed WeylBasis.
+- New function LieBasisSupermap.
+- LieBasisMatrix now returns supermatrix (not Choi matrix).
 
 ## v2.13.10
 

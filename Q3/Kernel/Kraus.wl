@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Kraus`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.41 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.45 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-11 21:32:52+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,7 +16,7 @@ BeginPackage["Q3`"]
 
 { LindbladSupermap, DampingOperator };
 
-{ LieBasisMatrix };
+{ LieBasisSupermap, LieBasisMatrix };
 
 { LindbladSolve, NLindbladSolve,
   LindbladConvert };
@@ -314,19 +314,32 @@ KrausProduct[args___] := (
  )
 
 
-(**** <LieBasisMatrix> ****)
+(**** <LieBasisSupermap> ****)
 
-LieBasisMatrix::usage = "LieBasisMatrix[n] returns the Choi matrix of the supermap that changes the standard basis of \[ScriptCapitalL](n) to the Lindblad basis."
+LieBasisSupermap::usage = "LieBasisSupermap[n] returns the supermap that changes the standard basis of \[ScriptCapitalL](n) to the Lie basis.\n LieBasisSupermap[{m1,m2,\[Ellipsis]}] returns the supermap that changes the standard basis of \[ScriptCapitalL](n) to the given basis {m1, m2, \[Ellipsis]}, which is supposed to be complete in \[ScriptCapitalL](n)."
 
-LieBasisMatrix[n_] := LieBasisMatrix @ LieBasis[n]
+LieBasisSupermap[n_] := LieBasisSupermap @ LieBasis[n]
 
-LieBasisMatrix[lbs:{__?SquareMatrixQ}] := With[
-  { n = Length @ First @ lbs },
-  SparseArray @ Transpose[
-    ArrayReshape[SparseArray @ lbs, {n, n, n, n}],
+LieBasisSupermap[lbs:{__?SquareMatrixQ}] := With[
+  { d = Length @ First @ lbs },
+  Supermap @ SparseArray @ Transpose[
+    ArrayReshape[SparseArray @ lbs, {d, d, d, d}],
     {2, 4, 1, 3}
    ]
  ] /; ArrayQ[lbs]
+(* NOTE: lbs is supposed to be complete. *)
+
+(**** </LieBasisSupermap> ****)
+
+
+(**** <LieBasisMatrix> ****)
+
+LieBasisMatrix::usage = "LieBasisMatrix[n] returns the supermatrix that changes the standard basis of \[ScriptCapitalL](n) to the Lie basis.\n LieBasisMatrix[{m1,m2,\[Ellipsis]}] returns the supermatrix that changes the standard basis of \[ScriptCapitalL](n) to the given basis {m1, m2, \[Ellipsis]}."
+
+LieBasisMatrix[n_] := LieBasisMatrix @ LieBasis[n]
+
+LieBasisMatrix[lbs:{__?SquareMatrixQ}] :=
+  Transpose[Flatten /@ lbs] /; ArrayQ[lbs]
 
 
 LindbladBasisMatrix::usage = "LindbladBasisMatrix has been renamed LieBasisMatrix."
@@ -432,7 +445,7 @@ LindbladConvert[tsr_?ChoiMatrixQ] := Module[
   { dim = First @ Dimensions[tsr],
     gen = ToSuperMatrix[tsr],
     mat },
-  mat = ToSuperMatrix @ LieBasisMatrix[dim];
+  mat = LieBasisMatrix[dim];
   gen = Topple[mat] . ToSuperMatrix[tsr] . mat;
   { gen[[2;;, 2;;]],
     gen[[2;;, 1]] / Sqrt[dim]
@@ -519,7 +532,7 @@ LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, t_] :=
 LindbladSolve[tsr_?ChoiMatrixQ, in_?MatrixQ, t_] := Module[
   { dim = Length[in],
     lbm, bgn, gen, off, sol, var, x },
-  lbm = ToSuperMatrix @ LieBasisMatrix[dim];
+  lbm = LieBasisMatrix[dim];
   bgn = Rest[Topple[lbm] . Flatten[in]];
 
   {gen, off} = LindbladConvert[tsr];
@@ -567,7 +580,7 @@ NLindbladSolve[tsr_?ChoiMatrixQ, init_?SquareMatrixQ, {t_, tmin_, tmax_}, opts__
   Module[
     { dim = Length[init],
       lbm, bgn, gen, off, sol, var, x, f },
-    lbm = ToSuperMatrix @ LieBasisMatrix[dim];
+    lbm = LieBasisMatrix[dim];
     bgn = Rest[Topple[lbm] . Flatten[init]];
 
     {gen, off} = LindbladConvert[tsr];
@@ -639,7 +652,7 @@ LindbladSolveNaive[opH_?MatrixQ, {opL__?MatrixQ}, init_?MatrixQ, t_] :=
 LindbladSolveNaive[ops:{_?MatrixQ, __?MatrixQ}, init_?MatrixQ, t_] := Module[
   { dim = Length[init],
     lbm, bgn, gen, off, var },
-  lbm = ToSuperMatrix @ LieBasisMatrix[dim];
+  lbm = LieBasisMatrix[dim];
   bgn = Rest[Topple[lbm] . Flatten[init]];
 
   {gen, off} = LindbladConvert[ops];

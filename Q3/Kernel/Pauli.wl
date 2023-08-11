@@ -1395,6 +1395,8 @@ Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[P
 SetAttributes[Hexadecant, Listable]
 
 
+(**** <Puali> ****)
+
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
 SetAttributes[Pauli, {NHoldAll, Listable}]
@@ -1559,15 +1561,13 @@ Pauli /:
 CircleTimes[a_Pauli, bc__Pauli] := Pauli @@ Catenate[List @@@ {a, bc}]
 
 
-(**** <Pauli in Multiply> ****)
-
 HoldPattern @ Multiply[pre___, op__Pauli, vec:Ket[(0|1)..], post___] :=
   Multiply[pre, Dot[op, vec], post]
 
 HoldPattern @ Multiply[pre___, op_Pauli, more__Pauli, Shortest[post___]] :=
   Multiply[pre, Dot[op, more], post]
 
-(**** </Pauli in Multiply> ****)
+(**** </Puali> ****)
 
 
 Operator::usage = "Operator[{k, th, ph}] returns the Pauli matrix in the rotated frame.\nOperator[{{k1,k2,...}, th, ph}] = Operator[{k1, th, ph}, {k2, th, ph}, ...]."

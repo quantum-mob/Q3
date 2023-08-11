@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.48 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-10 22:43:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.50 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-11 17:28:18+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2634,7 +2634,7 @@ setQudit[x_Symbol, dim_Integer] := (
    ];
 
   (* See Gross (2006) and Singal et al. (2023) *)
-  Format[x[j___, $[m_Integer, n_Integer]]] := Row @ Thread @ Subsuperscript[
+  Format[x[j___, $[{m_Integer, n_Integer}]]] := Row @ Thread @ Subsuperscript[
     {"X", "Z"},
     {Row @ Riffle[{j}, ","], Row @ Riffle[{j}, ","]},
     {m, n}
@@ -2750,13 +2750,21 @@ HoldPattern @ Multiply[pre___,
 
 (* See Gross (2006) and Singal et al. (2023) *)
 HoldPattern @ Multiply[pre___,
-  A_Symbol?QuditQ[j___, $[a_, b_]],
-  A_Symbol?QuditQ[j___, $[c_, d_]],
+  A_Symbol?QuditQ[j___, $ @ {a_, b_}],
+  A_Symbol?QuditQ[j___, $ @ {c_, d_}],
   post___] := Multiply[ pre,
-    A[j, $[Mod[a+c, Dimension @ A], Mod[b+d, Dimension @ A]]],
+    A[j, $ @ {Mod[a+c, Dimension @ A], Mod[b+d, Dimension @ A]}],
     post ] *
   Exp[2*Pi*I * b*c / Dimension[A]]
 
+HoldPattern @ Multiply[pre___,
+  A_Symbol?QuditQ[j___, $ @ {x_, z_}],
+  v:Ket[a_Association] ] := With[
+    { s = a[A[j, $]] },
+    Multiply[ pre,
+      Ket[v, A[j, $] -> Mod[s+x, Dimension @ A]] ] *
+      Exp[2*Pi*I * z*s / Dimension[A]]
+   ]
 
 HoldPattern @ Multiply[pre___, A_?QuditQ, B_?QuditQ, post___] :=
   Multiply[pre, B, A, post] /; Not @ OrderedQ @ {A, B}
@@ -2817,7 +2825,7 @@ TheMatrix @ Ket @ Association[A_?QuditQ -> n_Integer] := SparseArray[
   Dimension[A]
  ]
 
-TheMatrix[A_?QuditQ[___, $[x_Integer, z_Integer]]] :=
+TheMatrix[A_?QuditQ[___, $ @ {x_Integer, z_Integer}]] :=
   TheWeyl[{x, z, Dimension @ A}]
 
 (**** </Matrix> *****)

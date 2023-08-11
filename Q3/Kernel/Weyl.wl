@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Weyl`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.4 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-11 14:53:36+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.5 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-11 17:57:23+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -19,6 +19,10 @@ Begin["`Private`"]
 
 
 (**** <Weyl> ****)
+
+Weyl::usage = "Weyl[{m, n, d}] represents the generalized Pauli operator X^mZ^n on a d-dimensional Hilbert space.\nWeyl[{{m1,n1,d1},{m2,n2,d2},...}] represents (X^m1Z^n1)\[CircleTimes](X^m2Z^n2)\[CircleTimes]\[Ellipsis]."
+
+SyntaxInformation[Weyl] = {"ArgumentsPattern" -> {_}}
 
 Format[op:Weyl[{x:Except[_List], z:Except[_List], d:Except[_List]}]] :=
   Interpretation[DisplayForm @ theWeylFormat[{x, z, d}], op]
@@ -35,6 +39,9 @@ theWeylFormat[{0, z_, _}] := Superscript["Z", z]
 theWeylFormat[{x_, z_, _}] :=
   RowBox @ {"(", Superscript["X", x], Superscript["Z", z], ")"}
 
+
+Weyl /:
+Matrix[Weyl[any_], ___] := TheWeyl[any]
 
 Weyl /:
 NonCommutativeQ[_Weyl] = True
@@ -65,6 +72,10 @@ Multiply[pre___, op:Weyl[{{_, _, _}..}], Ket[ss__]] :=
 
 
 (**** <TheWeyl> ****)
+
+TheWeyl::usage = "TheWeyl[{m, n, d}] returns the matrix representation of the generalized Pauli operator X^mZ^n on a d-dimensional Hilbert space.\n TheWeyl[{{m1,n1,d1},{m2,n2,d2},...}] returns the matrix representaiton of (X^m1Z^n1)\[CircleTimes](X^m2Z^n2)\[CircleTimes]\[Ellipsis]."
+
+SyntaxInformation[TheWeyl] = {"ArgumentsPattern" -> {_}}
 
 TheWeyl[{x_, z_, d_}] := SparseArray @ Dot[
   RotateRight[One @ d, x],
