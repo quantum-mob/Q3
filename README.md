@@ -4,7 +4,7 @@
 
 # Q3: Symbolic Quantum Simulation
 
-Q3 is a symbolic quantum simulation package written in the Wolfram Language to help study *quantum information systems*, *quantum many-body systems*, and *quantum spin systems*; hence the name Q3. It provides various tools and utilities for symbolic and numerical calculations in these areas of quantum physics.
+Q3 is a symbolic quantum simulation framework written in the Wolfram Language to help study *quantum information systems*, *quantum many-body systems*, and *quantum spin systems*; hence the name Q3. It provides various tools and utilities for symbolic and numerical calculations in these areas of quantum physics.
 
 
 ## Requirements
