@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.14.1
+
+- Quick corrections to a few documentation notebooks.
+
 ## v2.14.0
 
 - Improved BosonBasis.
