@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.55 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-08 19:09:38+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.59 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-21 16:14:45+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1369,12 +1369,14 @@ Garner::usage = "Garner[expr] collects together terms involving the same species
 SetAttributes[Garner, Listable]
 
 Garner[expr_, tool_:Simplify] := Module[
-  { pp = Alternatives @@ Values[$GarnerPatterns],
-    gg = expr /. {op:$GarnerPatterns["Heads"]->Hold[op]} },
-  gg = theGarner[Expand @ gg];
-  gg = Union @ Cases[ReleaseHold @ gg, pp];
-  Collect[KetRegulate @ expr, gg, tool]
+  { new = KetRegulate[Expand @ expr],
+    var, pat },
+  pat = Flatten[Alternatives @@ $GarnerPatterns];
+  var = theGarner[ new /. {op:$GarnerPatterns["Heads"] -> Hold[op]} ];
+  var = Union @ Cases[ReleaseHold @ var, pat];
+  Collect[new, var, tool]
  ]
+(* NOTE: Cases[{expr}, ..., Infinity] may pick up spurious variables. *)
 
 
 theGarner::usage = "Breaks into elementary parts."

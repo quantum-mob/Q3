@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.41 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-07 22:35:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.43 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-18 23:42:22+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -328,6 +328,7 @@ quvGateQ[expr_] := Not @ FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
 Gate::usage = "Gate[{s1,s2,\[Ellipsis]}, opts] represents a low-level quantum circuit element operating on qubits {s1,s2,\[Ellipsis]}.\nGate[{c1,c2,\[Ellipsis]}\[RightArrow]{v1,v2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}, opts] represents a low-level quantum circuit element operating on target qubits {t1,t2,\[Ellipsis]} conditioned on control qubits {c1,c2,\[Ellipsis]} having values {v1,v2,\[Ellipsis]}."
 
 Options[Gate] = {
+  "LinkShape" -> "Default",
   "TargetShape" -> "Rectangle",
   "ControlShape" -> "Dot",
   "Label" -> None,
@@ -460,12 +461,26 @@ ParseGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
 ParseGate[ CZ[c_?QubitQ, t_?QubitQ], ___?OptionQ ] :=
   Gate[{c}, {t}, "ControlShape" -> "Dot", "TargetShape" -> "Dot"]
 
-
 ParseGate[ Swap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
   Gate[ {c}, {t},
     "ControlShape" -> "Cross",
     "TargetShape" -> "Cross"
    ]
+
+
+ParseGate[ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
+  Gate[ {a, b}, "TargetShape" -> "DotWiggly", "Label" -> "XY" ]
+
+ParseGate[ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
+  Gate[ {a, b}, "TargetShape" -> "DotWiggly" ]
+(*
+ParseGate[ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
+  Gate[ {c}, {t},
+    "ControlShape" -> "Dot",
+    "TargetShape" -> "Dot",
+    "LinkShape" -> "Wiggly" ]
+ *)
+
 
 ParseGate[ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}], opts___?OptionQ ] :=
   Gate[ {a}, {b, c},
@@ -819,6 +834,20 @@ gateShape["DotWiggly"][x_, yy_List, opts___?OptionQ] := {
   Disk[Thread @ {x, yy}, $DotSize]
  }
 
+(**** </gateShape> ****)
+
+
+(**** <linkShape> ****)
+
+linkShape["Wiggly"][x_, yy_List, opts___?OptionQ] := {
+  Successive[
+    gateText[(#1+#2)/2, opts, "LabelOffset" -> {-2, 0}]&,
+    Thread @ {x, yy}
+   ],
+  Successive[wigglyCurve, Thread @ {x, yy}]
+ }
+
+
 wigglyCurve::usage = "wigglyCurve[a, b] returns a list of points wiggling around the straight line connecting the two points a and b."
 
 wigglyCurve[a:{_, _}, b:{_, _}, n_Integer:8, amplitude_:1.5] := Module[
@@ -831,7 +860,7 @@ wigglyCurve[a:{_, _}, b:{_, _}, n_Integer:8, amplitude_:1.5] := Module[
   BSplineCurve @ Join[{a}, pp, {b}]
  ]
 
-(**** </gateShape> ****)
+(**** </linkShape> ****)
 
 
 gateText[{x_, y_}, opts___?OptionQ] := Module[

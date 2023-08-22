@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.10 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-08 21:21:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.14 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-22 05:41:46+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -960,9 +960,9 @@ KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[Ima
 
 SetAttributes[KetChop, Listable]
 
-KetChop[0. + expr_] := expr /; Not @ FreeQ[expr, _Ket]
+KetChop[0. + expr_] := expr /; Not @ FreeQ[expr, _Ket|_Bra]
 
-KetChop[Complex[0., 0.] + expr_] := expr /; Not @ FreeQ[expr, _Ket]
+KetChop[Complex[0., 0.] + expr_] := expr /; Not @ FreeQ[expr, _Ket|_Bra]
 
 KetChop[expr_] := expr
 
@@ -1959,7 +1959,10 @@ Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
   Not[FlavorNoneQ @ {ss, tt}]
 
 Matrix[ expr_Plus, qq:{___?SpeciesQ}.. ] :=
-  TrigToExp @ ExpToTrig @ Map[Matrix[#, qq]&, KetChop @ expr]
+  TrigToExp @ ExpToTrig @ With[
+    { new = KetChop @ expr },
+    If[Head[new] === Plus, Map[Matrix[#, qq]&, new], Matrix[new, qq]]
+   ]
 (* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
 (* NOTE: KetChop is required here because "0. + Ket[...]" may happen. *)
 

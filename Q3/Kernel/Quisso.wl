@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.50 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-11 17:28:18+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.52 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-18 23:36:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -33,6 +33,8 @@ BeginPackage["Q3`"]
 { Oracle };
 
 { QFT, ModExp, ModAdd, ModMultiply };
+
+{ InteractionZZ, InteractionXY };
 
 { ProductState, BellState, GHZState, SmolinState,
   DickeState, RandomState };
@@ -2560,6 +2562,57 @@ Matrix[
   MatrixEmbed[Matrix @ op, tt, qq]
   
 (**** </ModMultiply> ****)
+
+
+(**** <InteractionZZ> ****)
+
+InteractionZZ::usage = "InteractionZZ[phi, {s, t}] represents the unitary interaction via the the ZZ interaction Hamiltonian for dimensionless time phi."
+
+InteractionZZ[phi_, ss:{_?QubitQ, _?QubitQ}] :=
+  InteractionZZ[phi, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+InteractionZZ /:
+Expand @ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}] :=
+  QuantumCircuit[CNOT[a, b], Rotation[phi, b[3]], CNOT[a, b]]
+
+InteractionZZ /:
+Elaborate @ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}] :=
+  Cos[phi/2] - I * Sin[phi/2] * (a[3] ** b[3])
+
+InteractionZZ /:
+Matrix[op:InteractionZZ[_, {_?QubitQ, _?QubitQ}], rest___] :=
+  Matrix[Elaborate @ op, rest]
+
+(**** </InteractionZZ> ****)
+
+
+(**** <InteractionXY> ****)
+
+InteractionXY::usage = "InteractionXY[phi, {s, t}] represents the unitary interaction via the the XY interaction Hamiltonian for dimensionless time phi."
+
+InteractionXY[phi_, ss:{_?QubitQ, _?QubitQ}] :=
+  InteractionXY[phi, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+InteractionXY /:
+Expand @ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}] := QuantumCircuit[
+  CNOT[a, b],
+  ControlledGate[b, Rotation[phi, a[1]]],
+  CNOT[a, b]
+ ]
+
+InteractionXY /:
+Elaborate @ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}] :=
+  Cos[phi/4]^2 + Sin[phi/4]^2 * (a[3]**b[3]) -
+  I * Sin[phi/2] * Total[a[{1, 2}]**b[{1, 2}]] / 2
+
+InteractionXY /:
+Matrix[op:InteractionXY[_, {_?QubitQ, _?QubitQ}], rest___] :=
+  Matrix[Elaborate @ op, rest]
+
+(**** </InteractionZZ> ****)
+
 
 Protect[Evaluate @ $symb]
 
