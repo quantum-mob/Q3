@@ -1,5 +1,10 @@
 # Select Release Notes
 
+## v2.14.2
+
+- New functions InteractionZZ, InteractionXY.
+- Improved QuantumCircuit.
+
 ## v2.14.1
 
 - Quick corrections to a few documentation notebooks.

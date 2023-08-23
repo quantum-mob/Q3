@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.43 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-18 23:42:22+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.46 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-23 21:04:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -161,22 +161,22 @@ Matrix[qc:QuantumCircuit[gg__, ___?OptionQ], ss:{___?QubitQ}] := Module[
     Flatten @ QuantumCircuitTrim @ {gg},
     MatchQ[_Measurement]
    ];
-  Apply[qCircuitMatrix, MapApply[Dot, Reverse /@ Matrix[ff, ss]]]
+  Apply[qcMatrix, MapApply[Dot, Reverse /@ Matrix[ff, ss]]]
  ]
 
-qCircuitMatrix[v_?VectorQ] = v
+qcMatrix[v_?VectorQ] = v
 
-qCircuitMatrix[m_?MatrixQ] = m
+qcMatrix[m_?MatrixQ] = m
 
-qCircuitMatrix[m_Measurement] = m
+qcMatrix[m_Measurement] = m
 
-qCircuitMatrix[v_?VectorQ, M_Measurement, rest___] :=
-  qCircuitMatrix[M[v], rest]
+qcMatrix[v_?VectorQ, msr_Measurement, rest___] :=
+  qcMatrix[msr @ v, rest]
 
-qCircuitMatrix[v_?VectorQ, m_?MatrixQ, rest___] :=
-  qCircuitMatrix[m.v, rest]
+qcMatrix[v_?VectorQ, mat_?MatrixQ, rest___] :=
+  qcMatrix[mat.v, rest]
 
-qCircuitMatrix[gg__] := MeasurementFunction[{gg}]
+qcMatrix[gg__] := MeasurementFunction[{gg}]
 
 (**** </Matrix> ****)
 
@@ -290,15 +290,15 @@ HoldPattern @
     If[cc == {}, cc = {"Spacer"}];
     (* There can be only input elements. *)
     
-    xx  = Accumulate @ Boole[ quvGateQ /@ cc ];
+    xx  = 1 + Accumulate[Prepend[Map[qcDepth, cc], 0]];
     xx *= $CircuitUnit;
-    $CircuitSize = $CircuitUnit + Max[xx];
+    $CircuitSize = Last[xx];
     
-    yy = Range[ Length @ ss ] $CircuitUnit;
+    yy = Range[Length @ ss] $CircuitUnit;
     yy = AssociationThread[ss, -yy];
 
-    nodes = qcNodes[ cc, xx, yy ];
-    lines = qcLines[ cc, xx, KeyDrop[yy, ww] ];
+    nodes = qcNodes[cc, Most @ xx, yy];
+    lines = qcLines[cc, xx, KeyDrop[yy, ww]];
 
     marks = qcMark @ Cases[{gg}, _Mark, Infinity];
 
@@ -317,10 +317,14 @@ HoldPattern @
      ]
    ]
 
-quvGateQ::usage = "quvGateQ[expr] is True if expr is an expression of operators."
 
-quvGateQ[expr_] := Not @ FreeQ[expr, _?QubitQ | "Separator" | "Spacer" ]
-(* Recall that FreeQ[Ket[<|...|>], _?QubitQ] = True . *)
+qcDepth::usage = "qcDepth[expr] returns the depth of quantum circuit element expr."
+
+qcDepth[qc_QuantumCircuit] := Total @ Map[qcDepth, List @@ qc]
+
+qcDepth[gg_List] := Max @ Map[qcDepth, gg]
+
+qcDepth[any_] := Boole @ Not @ FreeQ[any, _?QubitQ | "Separator" | "Spacer" ]
 
 
 (**** <ParseGate> *****)
@@ -365,6 +369,9 @@ ParseGate[gg_List, opts___?OptionQ] := Map[ParseGate[#, opts]&, gg]
 
 (* These elements are handled separately. *)
 ParseGate[_QuantumCircuitIn|_QuantumCircuitOut|_Mark, opts___?OptionQ] = Nothing
+
+
+ParseGate[qc_QuantumCircuit] := Map[ParseGate, qc]
   
 
 ParseGate[Gate[some__], more___?OptionQ] := Gate[some, more]
@@ -469,7 +476,10 @@ ParseGate[ Swap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
 
 
 ParseGate[ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
-  Gate[ {a, b}, "TargetShape" -> "DotWiggly", "Label" -> "XY" ]
+  Gate[ {a, b},
+    "ControlShape" -> "Cross",
+    "TargetShape" -> "CrossWiggly"
+   ]
 
 ParseGate[ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
   Gate[ {a, b}, "TargetShape" -> "DotWiggly" ]
@@ -683,8 +693,8 @@ gateShape["Cross"][x_, yy_List, ___] :=
   gateShape["Cross"] @@@ Thread @ {x, yy}
 
 gateShape["Cross"][x_, y_, ___] := List @ Line @ {
-    { {x,y}+{-1,-1}$DotSize, {x,y}+{+1,+1}$DotSize },
-    { {x,y}+{-1,+1}$DotSize, {x,y}+{+1,-1}$DotSize }
+    { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
+    { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
    }
 
 
@@ -834,6 +844,15 @@ gateShape["DotWiggly"][x_, yy_List, opts___?OptionQ] := {
   Disk[Thread @ {x, yy}, $DotSize]
  }
 
+gateShape["CrossWiggly"][x_, yy_List, opts___?OptionQ] := {
+  Successive[
+    gateText[(#1+#2)/2, opts, "LabelOffset" -> {-2, 0}]&,
+    Thread @ {x, yy}
+   ],
+  Successive[wigglyCurve, Thread @ {x, yy}],
+  gateShape["Cross"][x, yy]
+ }
+
 (**** </gateShape> ****)
 
 
@@ -902,7 +921,7 @@ measurementText[{x_, y_}, opts___?OptionQ] := Module[
 
 qcNodes::usage = "qcNodes[ ... ] takes circuit elements and construct them as nodes of the circuit diagram by assigning horizontal and vertical coordinates to them."
 
-qcNodes[ gg_List, xx_List, yy_Association ] :=
+qcNodes[gg_List, xx_List, yy_Association] :=
   ReleaseHold @ Thread @ Hold[qcDrawGate][gg, xx, yy]
 
 
@@ -939,6 +958,12 @@ qcDrawGate[Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association] :=
    ]
 
 
+qcDrawGate[qc_QuantumCircuit, x_, yy_Association] := With[
+  { xx = Range[x, qcDepth[qc] + x - 1] },
+  ReleaseHold @ Thread[Hold[qcDrawGate][List @@ qc, xx, yy]]
+ ]
+
+
 qcDrawGate["Spacer", _, _Association] = Nothing
 
 qcDrawGate["Separator", x_, yy_Association] := Module[
@@ -962,15 +987,15 @@ qcLines[ gg_List, xx_List, yy_Association ] := Module[
         "TargetShape" -> "Measurement", ___?OptionQ] -> S, Infinity ]&,
     gg
    ];
-  mm = Flatten[ Thread /@ Thread[mm -> xx] ];
+  mm = Flatten[ Thread /@ Thread[mm -> Mos[xx]] ];
   mm = KeySort @ KeyTake[Association @ mm, Keys @ yy];
   
   zz = Lookup[yy, Keys @ mm];
   dashed = Line @ Transpose @ {
     Thread[ {Values @ mm, zz} ],
-    Thread[ {1+Max[xx], zz} ] };
+    Thread[ {Last @ xx, zz} ] };
 
-  plain = Association @ Thread[ Keys[yy] -> 1+Max[xx] ];
+  plain = Association @ Thread[ Keys[yy] -> Last[xx] ];
   plain = Join[ plain, mm ];
   plain = Line @ Transpose @ {
     Thread[{0, Values @ yy}],
@@ -985,7 +1010,7 @@ qCircuitOutput::usage = "It draws the output states behind the scene."
 qCircuitOutput[ Missing["NotFound"], xx_List, yy_Association ] = {}
 
 qCircuitOutput[ gg:{___}, xx_List, yy_Association ] := Module[
-  { xy = Map[{$CircuitSize + $InOutOffset, #}&, yy],
+  { xy = Map[{Last[xx] + $InOutOffset, #}&, yy],
     ff = List @ ParsePort @ gg },
   Map[qcDrawPort[#, xy]&, ff]
  ]

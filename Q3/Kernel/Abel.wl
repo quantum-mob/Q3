@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.59 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-21 16:14:45+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.60 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-23 10:23:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2098,10 +2098,11 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
         {Dashed, links},
         texts },
       FilterRules[{opts}, Options @ Graphics],
+      Frame -> {{True, False}, {True, False}},
+      FrameStyle -> {{Directive[Black,Large], None}, {White, None}},
       FrameTicks -> {{Automatic, None}, {ticks, None}},
       FrameTicksStyle -> Directive[Large, Black],
-      FrameStyle -> {{Directive[Black,Large], None}, {White, None}},
-      Frame -> {{True, False}, {True, False}}
+      ImageSize -> Medium
      ]
    ]
 
