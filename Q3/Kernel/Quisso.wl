@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.52 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-18 23:36:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.55 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-24 15:59:37+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -34,7 +34,7 @@ BeginPackage["Q3`"]
 
 { QFT, ModExp, ModAdd, ModMultiply };
 
-{ InteractionZZ, InteractionXY };
+{ UnitaryInteraction, InteractionZZ, InteractionXY };
 
 { ProductState, BellState, GHZState, SmolinState,
   DickeState, RandomState };
@@ -67,7 +67,8 @@ AddElaborationPatterns[
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
   _Projector, _ProductState,
-  _ControlledPower
+  _ControlledPower,
+  _UnitaryInteraction
  ]
 
 AddElaborationPatterns[
@@ -2562,6 +2563,112 @@ Matrix[
   MatrixEmbed[Matrix @ op, tt, qq]
   
 (**** </ModMultiply> ****)
+
+
+(**** <UnitaryInteraction> ****)
+
+UnitaryInteraction::usage = "UnitaryInteraction[{gx, gy, gz}, {s1, s2, \[Ellipsis]}] represents the unitary interaction among qubits s1, s2, \[Ellipsis]."
+
+Format[ op:UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}, rest___] ] :=
+  With[
+    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+    Interpretation[
+      DisplayForm @ RowBox @ { Exp,
+        RowBox @ {"(", -I * Dot[vec, ops], ")"}
+       },
+      op ]
+   ]
+
+Format[ op:UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}, rest___] ] :=
+  With[
+    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+    Interpretation[
+      DisplayForm @ RowBox @ { Exp,
+        RowBox @ {"(", -I * Inner[Multiply, ops, mat . ops], ")"}
+       },
+      op ]
+   ]
+
+
+UnitaryInteraction /:
+MultiplyKind[_UnitaryInteraction] = Qubit
+
+UnitaryInteraction /:
+MultiplyGenus[_UnitaryInteraction] = "Singleton"
+
+UnitaryInteraction /:
+NonCommutativeQ[_UnitaryInteraction] = True
+
+
+UnitaryInteraction[any_, ss:{__?QubitQ}, opts___?OptionQ] :=
+  UnitaryInteraction[any, FlavorNone @ ss, opts] /;
+  Not[FlavorNoneQ @ ss]
+
+UnitaryInteraction[phi:Except[_?ListQ], rest__] :=
+  UnitaryInteraction[{0, 0, phi}, rest]
+
+
+UnitaryInteraction /:
+Expand @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] := With[
+  { cn = ReleaseHold @ Thread[Hold[CNOT][Most @ ss, Last @ ss]] },
+  QuantumCircuit[
+    Sequence @@ cn,
+    Rotation[2 * phi, Last[ss][3]],
+    Sequence @@ Reverse[cn]
+   ]
+ ]
+
+UnitaryInteraction /:
+Expand @ UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}] :=
+  QuantumCircuit[
+    CNOT[a, b],
+    ControlledGate[b, Rotation[4*phi, a[1]]],
+    CNOT[a, b]
+   ]
+
+
+UnitaryInteraction /:
+Elaborate @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] :=
+  Cos[phi] - I * Sin[phi] * Apply[Multiply, Through[ss[3]]]
+
+UnitaryInteraction /:
+Elaborate @ UnitaryInteraction[{phi_, phi_, 0}, ss:{__?QubitQ}] := (
+  Cos[phi]^2 -
+    Power[-1, Length[ss]/2] * Sin[phi]^2 * Apply[Multiply, Through[ss[3]]] -
+    I * Cos[phi] * Sin[phi] * (
+      Apply[Multiply, Through[ss[1]]] + Apply[Multiply, Through[ss[2]]] )
+ ) /; EvenQ[Length @ ss]
+
+UnitaryInteraction /:
+Elaborate @ UnitaryInteraction[{phi_, phi_, 0}, ss:{__?QubitQ}] := (
+  Cos[phi*Sqrt[2]] -
+    I * (
+      Apply[Multiply, Through[ss[1]]] + Apply[Multiply, Through[ss[2]]]
+     ) * Sin[phi*Sqrt[2]] / Sqrt[2]
+ )
+
+
+UnitaryInteraction /:
+Matrix[op:UnitaryInteraction[{phi_, phi_, 0}, {__?QubitQ}], rest___] :=
+  Matrix[Elaborate @ op, rest]
+
+UnitaryInteraction /:
+Matrix[op:UnitaryInteraction[{0, 0, phi_}, {__?QubitQ}], rest___] :=
+  Matrix[Elaborate @ op, rest]
+
+UnitaryInteraction /:
+Matrix[UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}], rest___] :=
+  MatrixExp[ -I *
+      Matrix[Dot[vec, Multiply @@@ Transpose @ Through[ss[All]]], rest]
+   ]
+
+UnitaryInteraction /:
+Matrix[UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}], rest___] := With[
+  { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+  MatrixExp[ -I * Matrix[Inner[Multiply, ops, mat . ops], rest] ]
+ ]
+
+(**** </UnitaryInteraction> ****)
 
 
 (**** <InteractionZZ> ****)

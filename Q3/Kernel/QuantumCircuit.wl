@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.46 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-23 21:04:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.53 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-24 16:28:11+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -333,6 +333,7 @@ Gate::usage = "Gate[{s1,s2,\[Ellipsis]}, opts] represents a low-level quantum ci
 
 Options[Gate] = {
   "LinkShape" -> "Default",
+  "LinkLabel" -> None,
   "TargetShape" -> "Rectangle",
   "ControlShape" -> "Dot",
   "Label" -> None,
@@ -476,20 +477,33 @@ ParseGate[ Swap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
 
 
 ParseGate[ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
-  Gate[ {a, b},
+  Gate[ {a}, {b},
     "ControlShape" -> "Cross",
-    "TargetShape" -> "CrossWiggly"
+    "TargetShape" -> "Cross",
+    "LinkShape" -> "Wiggly"
    ]
 
 ParseGate[ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
-  Gate[ {a, b}, "TargetShape" -> "DotWiggly" ]
-(*
-ParseGate[ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
-  Gate[ {c}, {t},
+  Gate[ {a}, {b},
     "ControlShape" -> "Dot",
     "TargetShape" -> "Dot",
     "LinkShape" -> "Wiggly" ]
- *)
+
+
+ParseGate[
+  UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}, opts___?OptionQ], ___ ] :=
+  Gate[ Most @ ss, {Last @ ss}, opts,
+    "ControlShape" -> "Dot",
+    "TargetShape" -> "Dot",
+    "LinkShape" -> "Wiggly" ]
+
+ParseGate[
+  HoldPattern @ UnitaryInteraction[_?VectorQ | _?MatrixQ, ss:{__?QubitQ},
+    opts___?OptionQ], ___] :=
+  Gate[ Most @ ss, {Last @ ss}, opts,
+    "ControlShape" -> "Cross",
+    "TargetShape" -> "Cross",
+    "LinkShape" -> "Wiggly" ]
 
 
 ParseGate[ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}], opts___?OptionQ ] :=
@@ -675,15 +689,13 @@ gateShape::usage = "gateShape[name][x, y, args] renders the shape of the quantum
 gateShape["CirclePlus"][x_, yy_List, ___] :=
   gateShape["CirclePlus"] @@@ Thread @ {x, yy}
 
-gateShape["CirclePlus"][x_, y_?NumericQ, ___] := Module[
-  { circ, crss },
-  circ = Circle[ {x, y}, $GateSize / 3 ];
-  crss = Line[ {
-      { {x-$GateSize/3,y}, {x+$GateSize/3,y} },
-      { {x,y-$GateSize/3}, {x,y+$GateSize/3} }
-     } ];
-  { circ, crss }
- ]
+gateShape["CirclePlus"][x_, y_?NumericQ, ___] := {
+  Circle[{x, y}, $GateSize / 3],
+  Line @ {
+    { {x-$GateSize/3,y}, {x+$GateSize/3,y} },
+    { {x,y-$GateSize/3}, {x,y+$GateSize/3} }
+   }
+ }
 
 
 gateShape["Cross"][x_, Rule[yy_List, _], ___] :=
@@ -834,49 +846,44 @@ gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
   { {EdgeForm[Black], White, pane}, text }
  ]
 
-
-gateShape["DotWiggly"][x_, yy_List, opts___?OptionQ] := {
-  Successive[
-    gateText[(#1+#2)/2, opts, "LabelOffset" -> {-2, 0}]&,
-    Thread @ {x, yy}
-   ],
-  Successive[wigglyCurve, Thread @ {x, yy}],
-  Disk[Thread @ {x, yy}, $DotSize]
- }
-
-gateShape["CrossWiggly"][x_, yy_List, opts___?OptionQ] := {
-  Successive[
-    gateText[(#1+#2)/2, opts, "LabelOffset" -> {-2, 0}]&,
-    Thread @ {x, yy}
-   ],
-  Successive[wigglyCurve, Thread @ {x, yy}],
-  gateShape["Cross"][x, yy]
- }
-
 (**** </gateShape> ****)
 
 
 (**** <linkShape> ****)
+
+linkShape["Default"][x_, yy_List, ___?OptionQ] :=
+  Line[Thread @ {x, yy}]
 
 linkShape["Wiggly"][x_, yy_List, opts___?OptionQ] := {
   Successive[
     gateText[(#1+#2)/2, opts, "LabelOffset" -> {-2, 0}]&,
     Thread @ {x, yy}
    ],
-  Successive[wigglyCurve, Thread @ {x, yy}]
+  theWiggly[Thread @ {x, yy}]
  }
 
 
-wigglyCurve::usage = "wigglyCurve[a, b] returns a list of points wiggling around the straight line connecting the two points a and b."
+theWiggly::usage = "theWiggly[a, b] returns a list of points wiggling around the straight line connecting the two points a and b."
 
-wigglyCurve[a:{_, _}, b:{_, _}, n_Integer:8, amplitude_:1.5] := Module[
-  {s = amplitude},
-  pp = Subdivide[a, b, n];
-  pp = FoldPairList[
-    ( s *= -1;
-      {(#2 + #1)/2 + s*{{0, -1}, {1, 0}} . (#2 - #1), #2} ) &,
-    a, Rest @ pp];
-  BSplineCurve @ Join[{a}, pp, {b}]
+theWiggly[args__] := BezierCurve @ theSawtooth[args]
+
+
+theSawtooth::usage = "theSawtooth[a, b, n, scale] returns a list of points corresponding to the sawtooth shape around the straight line connecting the two points a and b."
+
+theSawtooth[pp:{{_, _}..}] := Successive[theSawtooth, pp]
+
+theSawtooth[a:{_, _}, b:{_, _}] :=
+  theSawtooth[a, b, Round[Norm[a-b]*4/$CircuitUnit], 1.5]
+
+theSawtooth[a:{_, _}, b:{_, _}, n_Integer, scale_] := Module[
+  { pp = Subdivide[a, b, n] },
+  Prepend[
+    Catenate @ Successive[
+      { (#2+#1)/2 + scale*Reverse[{1, -1} * (#2-#1)],
+        (#2+#1)/2 - scale*Reverse[{1, -1} * (#2-#1)],
+        #2 }&,
+      pp ],
+    a ]
  ]
 
 (**** </linkShape> ****)
@@ -937,16 +944,16 @@ qcDrawGate[
       label = OptionValue[Gate, {opts}, "Label"],
       control = gateShape @ OptionValue[Gate, {opts}, "ControlShape"],
       target = gateShape @ OptionValue[Gate, {opts}, "TargetShape"],
-      dots, link, pane },
+      link = linkShape @ OptionValue[Gate, {opts}, "LinkShape"],
+      dots, legs, pane },
 
     If[Not @ ListQ[label], label = {label, label}];
     
-    link = Line @ Join[Thread @ {x, yc}, Thread @ {x, yt}];
-    
     dots = control[x, yc -> Values[cc], "Label" -> First[label], opts];
     pane = target[x, yt, "Label" -> Last[label], opts];
+    legs = link[x, Lookup[yy, Join[Keys @ cc, tt]], opts];
     
-    Join[{link}, dots, pane]
+    Join[{legs}, dots, pane]
    ]
 
 
