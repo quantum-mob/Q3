@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.14.4
+
+- Emergency bug fix for UnitaryInteraction.
+
 ## v2.14.3
 
 - New function UnitaryInteraction.

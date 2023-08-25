@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-22 05:41:46+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.15 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-25 22:42:53+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2619,13 +2619,15 @@ TheEulerAngles::usage = "TheEulerAngles[U] gives the Euler angles {\[Alpha],\[Be
 
 TheEulerAngles::su = "Matrix `` is not a 2x2 special unitary matrix; its determinant is ``."
 
+TheEulerAngles::u = "Matrix `` is not a 2x2 unitary matrix; its determinant is ``."
+
 TheEulerAngles[U_?MatrixQ] := Module[
   { arg = Arg[U],
     ang = {0, 0, 0} },
   
   If[ UnitaryMatrixQ[U],
     If[Chop[Det @ U] != 1, Message[TheEulerAngles::su, U, Det @ U]],
-    Message[TheEulerAngles::su, U, Chop @ Det @ U]
+    Message[TheEulerAngles::u, U, Chop @ Det @ U]
    ];
   
   ang[[1]] = -arg[[1, 1]] + arg[[2, 1]];

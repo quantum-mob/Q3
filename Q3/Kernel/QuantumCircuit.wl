@@ -115,7 +115,7 @@ Multiply[pre___, Longest[cc__QuantumCircuit], post___] :=
 (**** </Multiply> ****)
 
 
-(**** <ExpressionFor> ****)
+(**** <Elaborate> ****)
 
 QuantumCircuit /:
 ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
@@ -139,14 +139,14 @@ qvCircuitOperate[op_Measurement, post___] :=
   Multiply[qvCircuitOperate[post], op]
 
 qvCircuitOperate[op:Except[_Measurement]..] :=
-  Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1,  {op} ]
+  Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1, {op} ]
 (* NOtE: This is another method:
    Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate @ {op} ]
    However, this cannot take the advantange of op ** Ket[...]. *)
 
 qvCircuitOperate[gg__] := MeasurementFunction[{gg}]
 
-(**** </ExpressionFor> ****)
+(**** </Elaborate> ****)
 
 
 (**** <Matrix> ****)

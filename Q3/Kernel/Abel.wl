@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.60 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-23 10:23:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.61 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-25 20:45:25+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1369,8 +1369,8 @@ Garner::usage = "Garner[expr] collects together terms involving the same species
 SetAttributes[Garner, Listable]
 
 Garner[expr_, tool_:Simplify] := Module[
-  { new = KetRegulate[Expand @ expr],
-    var, pat },
+  { new, var, pat },
+  new = KetRegulate @ Expand[expr, _ControlledGate|_QuantumCircuit];
   pat = Flatten[Alternatives @@ $GarnerPatterns];
   var = theGarner[ new /. {op:$GarnerPatterns["Heads"] -> Hold[op]} ];
   var = Union @ Cases[ReleaseHold @ var, pat];

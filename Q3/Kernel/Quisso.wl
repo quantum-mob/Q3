@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.55 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-24 15:59:37+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.64 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-25 22:31:20+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -34,7 +34,7 @@ BeginPackage["Q3`"]
 
 { QFT, ModExp, ModAdd, ModMultiply };
 
-{ UnitaryInteraction, InteractionZZ, InteractionXY };
+{ UnitaryInteraction };
 
 { ProductState, BellState, GHZState, SmolinState,
   DickeState, RandomState };
@@ -1279,6 +1279,15 @@ ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=
    ]
 
 
+ControlledGate /:
+Expand @ ControlledGate[cc:{__Rule},
+  ActOn[z_?CommutativeQ, {___}], ___?OptionQ] :=
+  ControlledGate[cc, z]
+
+ControlledGate /:
+Expand @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] :=
+  QuantumCircuit @@ theControlledGate[cc, op] /; Length[Qubits @ op] == 1
+
 theControlledGate[cc:{__Rule}, op_] := Module[
   { tt = First[Qubits @ op],
     mm = Matrix[op],
@@ -1317,10 +1326,6 @@ theControlledGate[cc:{__Rule}, op_] := Module[
       ControlledGate[cc, ff] }
    ]
  ]
-
-ControlledGate /:
-Expand @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] :=
-  QuantumCircuit @@ theControlledGate[cc, op] /; Length[Qubits @ op] == 1
 
 
 ControlledGate /:
@@ -1492,8 +1497,15 @@ theCtrlExp[n_Integer, mat_?MatrixQ] := Module[
   Total @ MapThread[CircleTimes, {bb, mm}]
  ]
 
+(**** </ControlledPower> ****)
+
+
+(**** <ActOn> ****)
 
 ActOn::usage = "ActOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting on the system of species {s1, s2, \[Ellipsis]}.\nActOn is a low-level function intended for internal use."
+
+AddElaborationPatterns[_ActOn]
+
 
 ActOn[ss:{___?SpeciesQ}] :=
   ActOn[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
@@ -1508,11 +1520,19 @@ ActOn[op_, ss:{___?SpeciesQ}] := Module[
 ActOn[op_, ss:{___?SpeciesQ}] :=
   ActOn[op, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
+
+ActOn /:
+Elaborate @ ActOn[op_, ss:{___?SpeciesQ}] = op
+
+ActOn /:
+Matrix[ActOn[op_, ss:{___?SpeciesQ}], rest___] :=
+  Matrix[op, rest]
+
 ActOn /:
 Multiply[pre___, ActOn[op_, {___?SpeciesQ}], post___] :=
   Multiply[pre, op, post]
 
-(**** </ControlledPower> ****)
+(**** </ActOn> ****)
 
 
 (**** <UniformlyControlledRotation> ****)
@@ -2626,6 +2646,15 @@ Expand @ UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}] :=
     CNOT[a, b]
    ]
 
+UnitaryInteraction /:
+Expand @ UnitaryInteraction[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}] :=
+  QuantumCircuit[
+    CNOT[a, b],
+    ControlledGate[b, Rotation[4*phi, a[1]]],
+    Rotation[2*phi, b[3]],
+    CNOT[a, b]
+   ]
+
 
 UnitaryInteraction /:
 Elaborate @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] :=
@@ -2647,6 +2676,10 @@ Elaborate @ UnitaryInteraction[{phi_, phi_, 0}, ss:{__?QubitQ}] := (
      ) * Sin[phi*Sqrt[2]] / Sqrt[2]
  )
 
+UnitaryInteraction /:
+Elaborate @ HoldPattern[op:UnitaryInteraction[_, ss:{__?QubitQ}]] :=
+  ExpressionFor[Matrix[op], ss]
+
 
 UnitaryInteraction /:
 Matrix[op:UnitaryInteraction[{phi_, phi_, 0}, {__?QubitQ}], rest___] :=
@@ -2657,68 +2690,22 @@ Matrix[op:UnitaryInteraction[{0, 0, phi_}, {__?QubitQ}], rest___] :=
   Matrix[Elaborate @ op, rest]
 
 UnitaryInteraction /:
-Matrix[UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}], rest___] :=
+Matrix[
+  HoldPattern @ UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}],
+  rest___] :=
   MatrixExp[ -I *
       Matrix[Dot[vec, Multiply @@@ Transpose @ Through[ss[All]]], rest]
    ]
 
 UnitaryInteraction /:
-Matrix[UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}], rest___] := With[
-  { ops = Multiply @@@ Transpose @ Through[ss[All]] },
-  MatrixExp[ -I * Matrix[Inner[Multiply, ops, mat . ops], rest] ]
- ]
+Matrix[
+  HoldPattern @ UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}],
+  rest___ ] := With[
+    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+    MatrixExp[ -I * Matrix[Inner[Multiply, ops, mat . ops], rest] ]
+   ]
 
 (**** </UnitaryInteraction> ****)
-
-
-(**** <InteractionZZ> ****)
-
-InteractionZZ::usage = "InteractionZZ[phi, {s, t}] represents the unitary interaction via the the ZZ interaction Hamiltonian for dimensionless time phi."
-
-InteractionZZ[phi_, ss:{_?QubitQ, _?QubitQ}] :=
-  InteractionZZ[phi, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
-
-InteractionZZ /:
-Expand @ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}] :=
-  QuantumCircuit[CNOT[a, b], Rotation[phi, b[3]], CNOT[a, b]]
-
-InteractionZZ /:
-Elaborate @ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}] :=
-  Cos[phi/2] - I * Sin[phi/2] * (a[3] ** b[3])
-
-InteractionZZ /:
-Matrix[op:InteractionZZ[_, {_?QubitQ, _?QubitQ}], rest___] :=
-  Matrix[Elaborate @ op, rest]
-
-(**** </InteractionZZ> ****)
-
-
-(**** <InteractionXY> ****)
-
-InteractionXY::usage = "InteractionXY[phi, {s, t}] represents the unitary interaction via the the XY interaction Hamiltonian for dimensionless time phi."
-
-InteractionXY[phi_, ss:{_?QubitQ, _?QubitQ}] :=
-  InteractionXY[phi, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
-
-InteractionXY /:
-Expand @ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}] := QuantumCircuit[
-  CNOT[a, b],
-  ControlledGate[b, Rotation[phi, a[1]]],
-  CNOT[a, b]
- ]
-
-InteractionXY /:
-Elaborate @ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}] :=
-  Cos[phi/4]^2 + Sin[phi/4]^2 * (a[3]**b[3]) -
-  I * Sin[phi/2] * Total[a[{1, 2}]**b[{1, 2}]] / 2
-
-InteractionXY /:
-Matrix[op:InteractionXY[_, {_?QubitQ, _?QubitQ}], rest___] :=
-  Matrix[Elaborate @ op, rest]
-
-(**** </InteractionZZ> ****)
 
 
 Protect[Evaluate @ $symb]
