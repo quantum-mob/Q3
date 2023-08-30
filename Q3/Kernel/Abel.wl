@@ -1370,7 +1370,7 @@ SetAttributes[Garner, Listable]
 
 Garner[expr_, tool_:Simplify] := Module[
   { new, var, pat },
-  new = KetRegulate @ Expand[expr, _ControlledGate|_QuantumCircuit];
+  new = KetRegulate @ Expand[expr, Except[_ControlledGate|_QuantumCircuit]];
   pat = Flatten[Alternatives @@ $GarnerPatterns];
   var = theGarner[ new /. {op:$GarnerPatterns["Heads"] -> Hold[op]} ];
   var = Union @ Cases[ReleaseHold @ var, pat];

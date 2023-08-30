@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.64 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-25 22:31:20+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.65 $"][[2]], " (",
+  StringSplit["$Date: 2023-08-30 08:39:21+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -294,27 +294,21 @@ HoldPattern @ Multiply[a___, _?QubitQ[___, 0], b___] := Multiply[a, b]
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,4], Ket[b_Association], post___ ] :=
-  0 /; b @ a[j, $] == 0
-
-HoldPattern @
-  Multiply[ pre___, a_?QubitQ[j___,4], Ket[b_Association], post___ ] :=
-  Multiply[
-    pre,
-    Ket @ KeyDrop[b, a[j, $]],
-    post
-   ] /; b @ a[j, $] == 1
+  Switch[ b @ a[j, $],
+    0, 0,
+    1, Ket @ KeySort @ Append[b, a[j,$] -> 0],
+    _?BinaryQ, Garner[(a[j, 1] + I*a[j, 2]) ** Ket[b] / 2],
+    _, Ket[b]
+   ]
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,5], Ket[b_Association], post___ ] :=
-  0 /; b @ a[j, $] == 1
-
-HoldPattern @
-  Multiply[ pre___, a_?QubitQ[j___,5], Ket[b_Association], post___ ] :=
-  Multiply[
-    pre,
-    Ket[b][a[j, $] -> 1],
-    post
-   ] /; b @ a[j, $] == 0
+  Switch[ b @ a[j, $],
+    1, 0,
+    0, Ket @ KeySort @ Append[b, a[j,$] -> 1],
+    _?BinaryQ, Garner[(a[j, 1] - I*a[j, 2]) ** Ket[b] / 2],
+    _, Ket[b]
+   ]
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,1], Ket[b_Association], post___ ] :=
