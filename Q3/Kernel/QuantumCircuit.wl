@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.53 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-24 16:28:11+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.54 $"][[2]], " (",
+  StringSplit["$Date: 2023-09-13 16:03:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -994,7 +994,7 @@ qcLines[ gg_List, xx_List, yy_Association ] := Module[
         "TargetShape" -> "Measurement", ___?OptionQ] -> S, Infinity ]&,
     gg
    ];
-  mm = Flatten[ Thread /@ Thread[mm -> Mos[xx]] ];
+  mm = Flatten[ Thread /@ Thread[mm -> Most[xx]] ];
   mm = KeySort @ KeyTake[Association @ mm, Keys @ yy];
   
   zz = Lookup[yy, Keys @ mm];

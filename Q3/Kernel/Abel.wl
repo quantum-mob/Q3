@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.61 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-25 20:45:25+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.62 $"][[2]], " (",
+  StringSplit["$Date: 2023-09-01 16:03:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -812,7 +812,7 @@ setSpecies[x_Symbol] := (
   x[i___, None] = x[i, $];
   x[i___, Null] = x[i, $];
   x[i___][j___] = x[i, j];
-  x[i___, $, j_] = x[i, j];
+  x[i___, $, j__] = x[i, j];
   (* In particular, x[j,$,$] = x[j,$]. *)
 
   x[k__] := x @@ ReplaceAll[{k}, s_?SpeciesQ :> ToString[s, InputForm]] /;

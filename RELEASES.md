@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.14.6
+
+- Emergency bug fix for QuantumCircuit.
+
 ## v2.14.5
 
 - Emergency bug fix concerning S[..., 4] and S[..., 5] acting on Ket[...] for Qubits S[..., $].

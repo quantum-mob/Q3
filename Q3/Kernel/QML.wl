@@ -15,6 +15,8 @@ BeginPackage["Q3`"]
 { AmplitudeEmbedding,
   AmplitudeEmbeddingGate };
 
+{ VertexEmbedding };
+
 Begin["`Private`"]
 
 (**** <BasisEmbedding> ****)
@@ -145,8 +147,26 @@ ParseGate[
   more___?OptionQ ] :=
   Gate[ss, "TargetShape" -> "CircleDot", opts, more]
 
-
 (**** </AmplitudeEmbedding> ****)
+
+(**** <VertexEmbedding> ****)
+
+VertexEmbedding::usage = ""
+
+VertexEmbedding[g_Graph, s_?QubitQ] :=
+ VertexEmbedding[g, FlavorNone @ s] /; Not[FlavorNoneQ @ s]
+
+VertexEmbedding[g_Graph, s_?QubitQ] :=
+  VertexEmbedding[g, s[Range @ Length @ VertexList @ g, $]]
+
+VertexEmbedding[g_Graph, ss:{__?QubitQ}] :=
+  VertexEmbedding[g, FlavorNone @ ss] /;
+  Not[FlavorNoneQ @ ss]
+
+VertexEmbedding[g_Graph, ss:{__?QubitQ}] :=
+  VertexReplace[g, Thread[VertexList[g] -> ss]]
+
+(**** </VertexEmbedding> ****)
 
 
 End[]
