@@ -1,5 +1,9 @@
 # Select Release Notes
 
+## v2.14.7
+
+- Small improvements in graphically rendering QuantumCircuit.
+
 ## v2.14.6
 
 - Emergency bug fix for QuantumCircuit.
