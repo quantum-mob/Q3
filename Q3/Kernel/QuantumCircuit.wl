@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.54 $"][[2]], " (",
-  StringSplit["$Date: 2023-09-13 16:03:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.56 $"][[2]], " (",
+  StringSplit["$Date: 2023-09-17 21:10:16+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -759,7 +759,7 @@ gateShape["Projector"][x_, yy_List, ___] := Module[
       {x, y2} + $GateSize {-1,+1}/2,
       {x, y1} + $GateSize {+1,-1}/2 }];
   { {EdgeForm[], White, pane},
-    {EdgeForm[Black], White, symb} }
+    {EdgeForm[Opacity[1]], White, symb} }
  ]
 
 
@@ -774,14 +774,14 @@ gateShape["Dot"][x_, y_?NumericQ -> 1, ___] :=
   Disk[{x, y}, $DotSize]
 
 gateShape["Dot"][x_, y_?NumericQ -> 0, ___] :=
-  {EdgeForm[Black], White, Disk[{x, y}, $DotSize]}
+  {EdgeForm[Opacity[1]], White, Disk[{x, y}, $DotSize]}
 
 
 gateShape["MixedDot"][x_, rr:Rule[_List, _List], ___] :=
   gateShape["MixedDot"] @@@ Thread @ {x, Thread @ rr}
 
 gateShape["MixedDot"][x_, y_?NumericQ -> _, ___] :=
-  { EdgeForm[Black],
+  { EdgeForm[Opacity[1]],
     White, Disk[{x, y}, $DotSize, {1, 5}*Pi/4],
     Black, Disk[{x, y}, $DotSize, {-3, 1}*Pi/4] }
 
@@ -792,7 +792,7 @@ gateShape["CircleDot"][x_, yy_List, ___] := {
  }
 
 gateShape["CircleDot"][x_, y_, ___] :=
-  { EdgeForm[Black],
+  { EdgeForm[Opacity[1]],
     White, Disk[{x, y}, 2*$DotSize],
     Black, Disk[{x, y}, 0.75*$DotSize] }
 
@@ -805,14 +805,7 @@ gateShape["Rectangle"][x_, yy_List, opts___?OptionQ] := Module[
   pane = Rectangle[
     {x, y1} - 0.5{1,1}$GateSize,
     {x, y2} + 0.5{1,1}$GateSize ];
-  line = Line @ {
-    {x, y1} + {-1, -1}*$GateSize/2,
-    {x, y1} + {+1, -1}*$GateSize/2,
-    {x, y2} + {+1, +1}*$GateSize/2,
-    {x, y2} + {-1, +1}*$GateSize/2,
-    {x, y1} + {-1, -1}*$GateSize/2
-   };
-  {{EdgeForm[], White, pane}, line, text}
+  {{EdgeForm[Opacity[1]], White, pane}, text}
  ]
 
 gateShape["Rectangle"][ x_, y_?NumericQ, opts___?OptionQ ] :=
@@ -823,7 +816,7 @@ gateShape["Oval"][ x_, y_?NumericQ, opts___?OptionQ ] := Module[
   { pane, text},
   text = gateText[{x, y}, opts];
   pane = Disk[{x, y}, $GateSize/2];
-  { {EdgeForm[Black], White, pane}, text }
+  { {EdgeForm[Opacity[1]], White, pane}, text }
  ]
 
 gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
@@ -831,19 +824,14 @@ gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
     x2 = x + $GateSize/2,
     y1 = Min @ yy,
     y2 = Max @ yy,
-    y0, y3, ff, pane, text},
+    y0, y3, pane, text},
   
   text = gateText[{x, Mean @ {y1, y2}}, opts];
 
-  ff = 0.657;
-  y0 = y1 - $GateSize ff;
-  y3 = y2 + $GateSize ff;
-  pane = FilledCurve @ {
-    BezierCurve @ {{x2, y2}, {x2, y3}, {x1, y3}, {x1, y2}}, 
-    Line @ {{x1, y2}, {x1, y1}}, 
-    BezierCurve @ {{x1, y0}, {x2, y0}, {x2, y1}}
-   };
-  { {EdgeForm[Black], White, pane}, text }
+  y0 = y1 - $GateSize/2;
+  y3 = y2 + $GateSize/2;
+  pane = Rectangle[{x1, y0}, {x2, y3}, RoundingRadius -> $GateSize/2];
+  { {EdgeForm[Opacity[1]], White, pane}, text }
  ]
 
 (**** </gateShape> ****)
