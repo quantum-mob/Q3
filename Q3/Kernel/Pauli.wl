@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.15 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-25 22:42:53+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.17 $"][[2]], " (",
+  StringSplit["$Date: 2023-09-21 11:33:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -4263,14 +4263,21 @@ RandomPositive[range_, n_Integer] := With[
   Topple[m].m
  ]
 
-RandomUnitary::usage = "RandomUnitary[n] gives a randomly generated n x n Unitary matrix. The range specifies the range (see RandomComplex) of the elements."
+RandomUnitary::usage = "RandomUnitary[n] generates a uniformly distributed random unitary matrix of dimension n. Here, the uniform distribution is in the sense of the Haar measure."
 
 RandomUnitary[] := RandomUnitary[2]
 
-RandomUnitary[n_Integer] := With[
-  { H = RandomHermitian[(1+I){-1,1}, n] (2 Pi / Sqrt[2]) },
-  MatrixExp[-I H]
- ]
+RandomUnitary[n_Integer] := Module[
+  { mat, qq, rr },
+  mat = Table[
+    RandomReal[NormalDistribution[0, 1]] +
+      I * RandomReal[NormalDistribution[0, 1]],
+    {n}, {n} ];
+  {qq, rr} = QRDecomposition[mat];
+  rr = Diagonal[rr];
+  rr = DiagonalMatrix[ rr / Abs[rr] ];
+  qq . rr
+]
 
 
 (**** <BasisComplement> *****)

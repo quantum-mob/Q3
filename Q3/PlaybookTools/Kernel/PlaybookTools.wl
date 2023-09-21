@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-07-30 15:04:42+09 $ *)
-(* $Revision: 1.36 $ *)
+(* $Date: 2023-09-19 09:34:30+09 $ *)
+(* $Revision: 1.44 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -80,7 +80,6 @@ $PlaybookStyle = Notebook[
       "DisplayFormula", "Picture", "Caption",
       "OutlineSection", "Outline1", "Outline2", "Outline3", "Outline4" }
    ],
-  Visible -> False,
   StyleDefinitions -> "Playbook.nb"
  ];
 
@@ -96,7 +95,7 @@ PlaybookDeploy::noopen = "Could not open file ``."
 Options[PlaybookDeploy] = {
   "DeleteOutput" -> False,
   "PrintHandout" -> False,
-  "CloseGroups" -> False
+  "FoldSections" -> False
  }
 
 PlaybookDeploy[opts:OptionsPattern[]] := With[
@@ -145,28 +144,14 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
    ];
 
   SetBanner[nb, $PlaybookBanner];
-  DeleteEpilogue[nb];
+  PlaybookEpilogue[nb];
 
-  If[ OptionValue["PrintHandout"],
-    pdf = StringJoin @ {
-      FileNameJoin @ {DirectoryName @ dst, FileBaseName @ dst},
-      ".pdf" };
-    Print["Printing to ", pdf];
-    NotebookPrint[nb, pdf];
-    (* For some unknown reason, the following three lines are required in
-       Mathematica 13.3.0; otherwise, CloseGroups below stalls. *)
-    NotebookSave[nb, dst];
-    NotebookClose[nb];
-    If[ FailureQ[nb = NotebookOpen[dst, Visible -> False]],
-      Message[PlaybookDeploy::noopen, dst];
-      Return[$Failed]
-     ]
-   ];
+  If[ OptionValue["PrintHandout"], PlaybookPrint[nb] ];
   
-  If[ OptionValue["DeleteOutput"], CleanNotebook[nb] ];
+  If[ OptionValue["DeleteOutput"], PlaybookClean[nb] ];
 
-  If[ OptionValue["CloseGroups"],
-    CloseGroups[nb, {"Subsubsection", "Subsection", "Section"}]
+  If[ OptionValue["FoldSections"],
+    PlaybookFold[nb, {"Subsubsection", "Subsection", "Section"}]
    ];
 
   Print["Saving ", dst];
@@ -174,37 +159,64 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
     Visible -> True,
     Saveable -> False,
     StyleDefinitions -> $PlaybookStyle ];
-  NotebookSave[nb, dst];
+  NotebookSave[nb];
   NotebookClose[nb];
  ]
 
 
-CleanNotebook::usage = "CleanNotebook[nb, styles] delete all cells of styles in notebook nb."
+PlaybookPrint::usage = "PlaybookPrint[nb] prints notebook nb to a PDF file."
 
-CleanNotebook[nb_NotebookObject, style_String:"Output"] :=
+PlaybookPrint[nb_NotebookObject] :=
+  PlaybookPrint[nb, NotebookFileName @ nb]
+
+PlaybookPrint[nb_NotebookObject, dst_String] := Module[
+  { pdf },
+  pdf = FileNameJoin @ {
+    DirectoryName @ dst,
+    StringJoin @ {FileBaseName @ dst, ".pdf"}
+   };
+  Print["Printing to ", pdf, "..."];
+  (* For some unknown reason, the following two lines are required;
+     otherwise, NotebookPrint misses some images and typographic math
+     expressions. *)
+  SetOptions[nb, Visible -> True, StyleDefinitions -> $PlaybookStyle];
+  NotebookSave[nb];
+  (* For some unknown reason, TaskWait is required; otherwise, NotebookPrint
+     misses some images and typographic math expressions. *)
+  TaskWait @ SessionSubmit @ NotebookPrint[nb, pdf];
+  Print["\t... done!"];
+ ]
+
+
+PlaybookClean::usage = "PlaybookClean[nb, styles] delete all cells of styles in notebook nb."
+
+PlaybookClean[nb_NotebookObject, style_String:"Output"] :=
   ( Print["Deleting Cells of style ", style];
     NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
     NotebookDelete[nb] )
 
-CleanNotebook[nb_NotebookObject, styles:{__String}] :=
-  Scan[CleanNotebook[nb, #]&, styles]
+PlaybookClean[nb_NotebookObject, styles:{__String}] :=
+  Scan[PlaybookClean[nb, #]&, styles]
 
 
-CloseGroups::usage = "CloseGroups[nb, styles] collapse all cell groups of styles in notebook nb."
+PlaybookFold::usage = "PlaybookFold[nb, styles] collapse all cell groups of styles in notebook nb."
 
-CloseGroups[nb_NotebookObject, style_String:"Section"] := (
-  Print["Closing Cells of style ", style];
-  NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
-  FrontEndTokenExecute[nb, "SelectionCloseAllGroups"]
- )
+PlaybookFold[nb_NotebookObject, style_String] := NotebookPut[
+  ReplaceAll[
+    NotebookGet[nb],
+    CellGroupData[cc:{Cell[_, style, ___], ___Cell}, ___] :> 
+      CellGroupData[cc, Closed]
+   ],
+  nb
+ ]
 
-CloseGroups[nb_NotebookObject, styles:{__String}] :=
-  Scan[CloseGroups[nb, #]&, styles]
+PlaybookFold[nb_NotebookObject, styles:{__String}] :=
+  Scan[PlaybookFold[nb, #]&, styles]
 
 
-DeleteEpilogue::usage = "DeleteEpilogue[nb] deletes cells and cell groups with CellTags PlaybookEpilogue.\nDeleteEpilogue[nb, cell] deletes the particular cell or cell group."
+PlaybookEpilogue::usage = "PlaybookEpilogue[nb] deletes cells and cell groups with CellTags PlaybookEpilogue.\nPlaybookEpilogue[nb, cell] deletes the particular cell or cell group."
 
-DeleteEpilogue[nb_NotebookObject] := (
+PlaybookEpilogue[nb_NotebookObject] := (
   SelectionMove[nb, Before, Notebook, AutoScroll -> False];
   (* Print["Examinig ", NotebookFileName @ nb]; *)
   (* For some unknown reason, the above line or similar is
@@ -214,11 +226,11 @@ DeleteEpilogue[nb_NotebookObject] := (
     Print["No epilogue to delete!"];
     Return[],
     Print["Examining ", SelectedCells @ nb, " for deletion."];
-    Scan[DeleteEpilogue[nb, #]&, SelectedCells @ nb]
+    Scan[PlaybookEpilogue[nb, #]&, SelectedCells @ nb]
    ]
  )
 
-DeleteEpilogue[nb_NotebookObject, cell_CellObject] := With[
+PlaybookEpilogue[nb_NotebookObject, cell_CellObject] := With[
   { cc = (
       SelectionMove[cell, All, CellGroup, AutoScroll -> False];
       SelectedCells[nb] ) },

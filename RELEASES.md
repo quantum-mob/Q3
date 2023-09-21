@@ -3,6 +3,8 @@
 ## v2.14.7
 
 - Small improvements in graphically rendering QuantumCircuit.
+- RandomUnitary now generates random unitary matrices distributed uniformly in the sense of the Haar measure.
+- Improvements in PlaybookTools`.
 
 ## v2.14.6
 
