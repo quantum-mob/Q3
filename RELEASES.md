@@ -1,4 +1,8 @@
-# Select Release Notes
+# Release Notes
+
+## v2.14.8
+
+- Improved help documentation for GottesmanMatrix, FromGottesmanMatrix, BinarySymplecticGroup, BinarySymplecticGroupElements.
 
 ## v2.14.7
 
