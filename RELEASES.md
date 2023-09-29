@@ -4,6 +4,8 @@
 
 - Improved help documentation for GottesmanMatrix, FromGottesmanMatrix, BinarySymplecticGroup, BinarySymplecticGroupElements.
 
+- New function RenyiEntropy.
+
 ## v2.14.7
 
 - Small improvements in graphically rendering QuantumCircuit.

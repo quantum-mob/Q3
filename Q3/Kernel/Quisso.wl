@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.65 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-30 08:39:21+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.66 $"][[2]], " (",
+  StringSplit["$Date: 2023-09-27 15:44:32+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -1500,6 +1500,7 @@ ActOn::usage = "ActOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting o
 
 AddElaborationPatterns[_ActOn]
 
+ActOn[S_?SpeciesQ] := ActOn[{S[$]}]
 
 ActOn[ss:{___?SpeciesQ}] :=
   ActOn[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
@@ -1510,6 +1511,8 @@ ActOn[op_, ss:{___?SpeciesQ}] := Module[
   { tt = Agents[op] },
   Union[ss, tt] /; Not @ ContainsAll[ss, tt]
  ]
+
+ActOn[op_, S_?SpeciesQ] := ActOn[op, {S[$]}]
 
 ActOn[op_, ss:{___?SpeciesQ}] :=
   ActOn[op, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]

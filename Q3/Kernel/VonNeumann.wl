@@ -5,13 +5,14 @@ BeginPackage["Q3`"]
 
 `VonNeumann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.18 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.19 $"][[2]], " (",
+  StringSplit["$Date: 2023-09-29 22:05:02+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { ShannonEntropy, WeightedLog };
 { VonNeumannEntropy, QuantumLog };
+{ RenyiEntropy };
 
 { MutualInformation };
 
@@ -165,6 +166,21 @@ MutualInformation[rho_, ss:{__?SpeciesQ}] := Module[
 
 (**** </MutualInformation> ****)
 
+
+(**** <RenyiEntropy> ****)
+
+RenyiEntropy::usage = "RenyiEntropy[\[Alpha], {p1,p2,\[Ellipsis]}] returns the Renyi entropy of order \[Alpha] for a random variable with associated probability distribution {p1,p2,\[Ellipsis]}.\nRenyiEntropy[\[Alpha],\[Rho]] returns the quantum Renyie entropy of order \[Alpha] for density matrix \[Rho]."
+
+RenyiEntropy[1, pp_?VectorQ] := ShannonEntropy[pp]
+
+RenyiEntropy[a_?Positive, pp_?VectorQ] := a/(1-a) * Log2[Norm[pp, a]]
+
+RenyiEntropy[1, rho_?MatrixQ] := VonNeumannEntropy[rho]
+
+RenyiEntropy[a_?Positive, rho_?MatrixQ] :=
+  Log2[Tr @ MatrixPower[rho, a]] / (1 - a)
+
+(**** </RenyiEntropy> ****)
 
 End[]
 

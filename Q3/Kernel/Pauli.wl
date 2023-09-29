@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.17 $"][[2]], " (",
-  StringSplit["$Date: 2023-09-21 11:33:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.18 $"][[2]], " (",
+  StringSplit["$Date: 2023-09-27 16:41:44+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -4172,9 +4172,16 @@ MatrixEmbed::usage = "MatrixEmbed[mat, {s1,s2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}]
 
 MatrixEmbed::rmdr = "`` is not entirely contained in ``."
 
+MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+  MatrixEmbed[FlavorNone @ ss, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ Join[ss, tt]]
+
 MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
   MatrixEmbed[mat, FlavorNone @ ss, FlavorNone @ tt] /;
   Not[FlavorNoneQ @ Join[ss, tt]]
+
+MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}][mat_?MatrixQ] :=
+  MatrixEmbed[mat, ss, tt]
 
 MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
@@ -4190,9 +4197,14 @@ MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
 MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
   Message[MatrixEmbed::rmdr, ss, tt]
 
+MatrixEmbed[kk:{__Integer}, n_Integer] :=
+  MatrixEmbed[kk, Table[2, n]]
 
 MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, n_Integer] :=
   MatrixEmbed[mat, kk, Table[2, n]]
+
+MatrixEmbed[kk:{__Integer}, dd:{__Integer}][mat_?MatrixQ] :=
+  MatrixEmbed[mat, kk, dd]
 
 MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
