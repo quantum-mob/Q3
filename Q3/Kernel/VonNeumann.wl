@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `VonNeumann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.19 $"][[2]], " (",
-  StringSplit["$Date: 2023-09-29 22:05:02+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-10-01 11:18:47+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -169,16 +169,53 @@ MutualInformation[rho_, ss:{__?SpeciesQ}] := Module[
 
 (**** <RenyiEntropy> ****)
 
-RenyiEntropy::usage = "RenyiEntropy[\[Alpha], {p1,p2,\[Ellipsis]}] returns the Renyi entropy of order \[Alpha] for a random variable with associated probability distribution {p1,p2,\[Ellipsis]}.\nRenyiEntropy[\[Alpha],\[Rho]] returns the quantum Renyie entropy of order \[Alpha] for density matrix \[Rho]."
+RenyiEntropy::usage = "RenyiEntropy[\[Alpha], {p1,p2,\[Ellipsis]}] returns the Renyi entropy of order \[Alpha] for a random variable with associated probability distribution {p1,p2,\[Ellipsis]}.\nRenyiEntropy[\[Alpha],\[Rho]] returns the quantum Renyie entropy of order \[Alpha] for density matrix \[Rho].\nRenyiEntropy[\[Alpha],\[Rho],\[Sigma]] returns the relative Renyi entropy of density matrix \[Rho] with respect to another density matrix \[Sigma].\nRenyiEntropy[\[Alpha], \[Rho], {s1,s2,\[Ellipsis]}] or RenyiEntropy[\[Alpha], \[Rho], \[Sigma]] allows to specify otherwise unclear systems by {s1,s2,\[Ellipsis]}."
 
 RenyiEntropy[1, pp_?VectorQ] := ShannonEntropy[pp]
 
-RenyiEntropy[a_?Positive, pp_?VectorQ] := a/(1-a) * Log2[Norm[pp, a]]
+RenyiEntropy[a_?Positive, pp_?VectorQ] := Log2[Norm[pp, a]] * a / (1 - a)
+
 
 RenyiEntropy[1, rho_?MatrixQ] := VonNeumannEntropy[rho]
 
 RenyiEntropy[a_?Positive, rho_?MatrixQ] :=
   Log2[Tr @ MatrixPower[rho, a]] / (1 - a)
+
+
+RenyiEntropy[1, pp_?VectorQ, qq_?VectorQ] := ShannonEntropy[pp, qq]
+
+RenyiEntropy[a_?Positive, pp_?VectorQ, qq_?VectorQ] := With[
+  { n = Max[Length @ pp, Length @ qq] },
+  Log2[ Norm[PadRight[pp, n] * Power[PadRight[qq, n], (1-a)/a], a] ] *
+    a / (a - 1)
+ ]
+
+RenyiEntropy[1, rho_?MatrixQ, sgm_?MatrixQ] := VonNeumannEntropy[rho, sgm]
+
+RenyiEntropy[a_?Positive, rho_?MatrixQ, sgm_?MatrixQ] :=
+  Log2[ Tr @ MatrixPower[
+      Dot[
+        MatrixPower[sgm, (1-a)/(2*a)], rho,
+        MatrixPower[sgm, (1-a)/(2*a)]
+       ], a ] ] / (a - 1)
+
+
+RenyiEntropy[a_, rho_] := RenyiEntropy[a, rho, Agents @ rho]
+
+RenyiEntropy[a_, rho_, S_?SpeciesQ] := RenyiEntropy[a, rho, {S}]
+
+RenyiEntropy[a_, rho_, ss:{___?SpeciesQ}] :=
+  RenyiEntropy[a, Matrix[rho, ss]]
+
+
+RenyiEntropy[a_, rho_, sgm_, S_?SpeciesQ] :=
+  RenyiEntropy[a, rho, sgm, {S}]
+
+RenyiEntropy[a_, rho_, sgm_] :=
+  RenyiEntropy[a, rho, sgm, Agents @ {rho, sgm}]
+
+RenyiEntropy[a_, rho_, ss:{___?SpeciesQ}] :=
+  RenyiEntropy[a, Matrix[rho, ss], Matrix[sgm, ss]]
 
 (**** </RenyiEntropy> ****)
 
