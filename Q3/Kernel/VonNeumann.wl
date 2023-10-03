@@ -5,14 +5,16 @@ BeginPackage["Q3`"]
 
 `VonNeumann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-10-01 11:18:47+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.25 $"][[2]], " (",
+  StringSplit["$Date: 2023-10-03 17:51:58+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
 { ShannonEntropy, WeightedLog };
 { VonNeumannEntropy, QuantumLog };
 { RenyiEntropy };
+
+{ EntanglementEntropy };
 
 { MutualInformation };
 
@@ -46,15 +48,15 @@ ShannonEntropy::noprb = "`` does not seem to be a probability distribution."
 
 ShannonEntropy[pp_?VectorQ] :=
   (Message[ShannonEntropy::noprb, pp]; 0) /;
-  AnyTrue[pp, Negative]
+  Not @ AllTrue[Chop @ pp, NonNegative]
 
 ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   (Message[ShannonEntropy::noprb, pp]; 0) /;
-  AnyTrue[pp, Negative]
+  Not @ AllTrue[Chop @ pp, NonNegative]
 
 ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   (Message[ShannonEntropy::noprb, qq]; 0) /;
-  AnyTrue[qq, Negative]
+  Not @ AllTrue[Chop @ qq, NonNegative]
 
 ShannonEntropy[pp_?VectorQ] := Total[WeightedLog @ pp]
 
@@ -218,6 +220,50 @@ RenyiEntropy[a_, rho_, ss:{___?SpeciesQ}] :=
   RenyiEntropy[a, Matrix[rho, ss], Matrix[sgm, ss]]
 
 (**** </RenyiEntropy> ****)
+
+
+(**** <EntanglementEntropy> ****)
+
+EntanglementEntropy::usage = "EntanglementEntropy[vec, {d1, d2, \[Ellipsis]}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in pure state 'vec' between subsystem k1, k2, \[Ellipsis] and the rest. The subsystems are assumed to be associated with the Hilbert spaces with dimensions d1, d2, \[Ellipsis].\nEntanglementEntropy[vec, {k1, k2, \[Ellipsis]}] assumes that the subsystems are qubits.\nEntanglementEntropy[expr, {k1, k2, \[Ellipsis]}] assumes that 'expr' is a ket expression for unlabelled qubits k1, k2, \[Ellipsis].\nEntanglementEntropy[expr, {s1, s2, \[Ellipsis]}] assumes subsystems specified by species {s1, s2, \[Ellipsis]}."
+
+EntanglementEntropy::qubit = "`` does not seem to be a vector or matrix for qubits."
+
+EntanglementEntropy[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] := (
+  Message[EntanglementEntropy::qubit, rho];
+  rho
+ ) /; Not @ IntegerQ @ Log[2, Length @ rho]
+
+EntanglementEntropy[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] :=
+  EntanglementEntropy[rho, ConstantArray[2, Log[2, Length @ rho]], jj]
+
+EntanglementEntropy[rho:(_?VectorQ|_?MatrixQ),
+  dd:{__Integer}, jj:{__Integer}] :=
+  VonNeumannEntropy @ PartialTrace[rho, dd, Complement[Range[Length @ dd], jj]]
+
+
+EntanglementEntropy[expr_, S_?SpeciesQ] := EntanglementEntropy[expr, {S}]
+
+EntanglementEntropy[expr_, ss:{__?SpeciesQ}] := Module[
+  { qq = Agents[expr],
+    rr = Agents[FlavorNone @ ss],
+    jj },
+  qq = Union[qq, rr];
+  jj = Flatten @ Map[FirstPosition[qq, #]&, Complement[qq, rr]];
+  VonNeumannEntropy @ PartialTrace[Matrix[expr, qq], Dimension[qq], jj]
+ ]
+
+
+EntanglementEntropy[expr_, jj:{__Integer}] := Module[
+  { nn = Length @ FirstCase[expr, _Ket, Infinity] },
+  VonNeumannEntropy @ PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
+ ] /; fPauliKetQ[expr]
+
+EntanglementEntropy[expr_, jj:{__Integer}] := Module[
+  { nn = Length @ FirstCase[expr, _Pauli, Infinity] },
+  VonNeumannEntropy @ PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
+ ] /; Not @ FreeQ[expr, _Pauli]
+
+(**** </EntanglementEntropy> ****)
 
 End[]
 

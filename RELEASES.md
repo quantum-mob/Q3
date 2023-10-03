@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.14.9
+
+- New function EntanglementEntropy.
+
 ## v2.14.8
 
 - Improved help documentation for GottesmanMatrix, FromGottesmanMatrix, BinarySymplecticGroup, BinarySymplecticGroupElements.

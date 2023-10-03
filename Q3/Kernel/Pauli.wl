@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.18 $"][[2]], " (",
-  StringSplit["$Date: 2023-09-27 16:41:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.19 $"][[2]], " (",
+  StringSplit["$Date: 2023-10-03 17:44:28+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -4072,7 +4072,7 @@ ReducedMatrix[expr_, S_?SpeciesQ] := ReducedMatrix[expr, {S}]
 
 ReducedMatrix[expr_, ss:{__?SpeciesQ}] := Module[
   { qq = Agents[expr],
-    rr = FlavorNone @ Select[ss, NonCommutativeQ],
+    rr = Agents[FlavorNone @ ss],
     jj },
   qq = Union[qq, rr];
   jj = Flatten @ Map[FirstPosition[qq, #]&, Complement[qq, rr]];
