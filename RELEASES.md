@@ -3,6 +3,7 @@
 ## v2.14.9
 
 - New function EntanglementEntropy.
+- A few minor improvements in ShannonEntropy and VonNeumannEntropy. 
 
 ## v2.14.8
 
