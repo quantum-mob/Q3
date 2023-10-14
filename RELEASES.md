@@ -14,7 +14,6 @@
 ## v2.14.8
 
 - Improved help documentation for GottesmanMatrix, FromGottesmanMatrix, BinarySymplecticGroup, BinarySymplecticGroupElements.
-
 - New function RenyiEntropy.
 
 ## v2.14.7
