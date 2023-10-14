@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.62 $"][[2]], " (",
-  StringSplit["$Date: 2023-09-01 16:03:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.63 $"][[2]], " (",
+  StringSplit["$Date: 2023-10-14 20:19:14+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -16,6 +16,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 { ShiftLeft, ShiftRight };
 { KeyGroupBy, CheckJoin };
 { PseudoDivide, ZeroQ };
+{ CountsFor };
 
 { Unless };
 
@@ -316,6 +317,18 @@ ZeroQ[x_, del_] := (
   Message[ZeroQ::tolnn, del];
   ZeroQ[x, Abs @ del]
  )
+
+
+(**** <CountsFor> ****)
+
+CountsFor::usage = "CountsFor[list, {v1,v2,\[Ellipsis]}] gives an association whose keys are v1, v2, \[Ellipsis], and whose values are the number of times those keys appear in list.\nCountsFor[{v1,v2,\[Ellipsis]}] represents the operator form of CountsFor that can be applied to a list."
+
+CountsFor[var_List][obj_List] := CountsFor[obj, var]
+
+CountsFor[obj_List, var_List] := 
+ Join[AssociationThread[var -> 0], Counts @ obj]
+
+(**** </CountsFor> ****)
 
 
 Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting a, b, \[Ellipsis] consecutively."

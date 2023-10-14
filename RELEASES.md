@@ -2,6 +2,8 @@
 
 ## v2.14.10
 
+- The arrange order of elements in the basis resulting from BosonBasis has been changed.
+- New function CountsFor.
 - Updates in the help documentaion on ShiftLeft and ShiftRight.
 
 ## v2.14.9

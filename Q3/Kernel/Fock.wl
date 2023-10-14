@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Fock`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.67 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-05 02:11:44+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.68 $"][[2]], " (",
+  StringSplit["$Date: 2023-10-14 19:02:40+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2195,6 +2195,8 @@ Basis[b_?BosonQ] := Ket /@ Thread[ b->Range[Bottom@b, Top@b] ]
 (**** </Basis> ****)
 
 
+(**** <BosonBasis> ****)
+
 BosonBasis::usage = "BosonBasis[{b1, b2, ...}, n] returns the Fock-state basis for Bosons b1, b2, ... with total number of particles up to n.\nBosonBasis[{b1, b2, ...}, {n}] gives the basis with exactly n particles.\nBosonBasis[{b1, b2, ...}, {m, n}] gives the basis with m to n particles.\nNote that if either m or n or both are specified the corresponding value of Bottom and/or Top of the Bosons are ignore."
 
 BosonBasis[bb__?BosonQ] := BosonBasis @ {bb}
@@ -2218,9 +2220,13 @@ BosonBasis[ss:{__?BosonQ}, {n_Integer}] := With[
   { len = Length @ ss },
   Map[
     Ket[ss -> #]&,
-    Flatten[Permutations /@ (PadRight[#, len]&) /@ IntegerPartitions[n, len], 1]
+    ReverseSort @ Flatten[
+      Permutations /@ (PadRight[#, len]&) /@ IntegerPartitions[n, len],
+      1 ]
    ]
  ]
+
+(**** </BosonBasis> ****)
 
 
 (**** <FermionBasis> ****)
