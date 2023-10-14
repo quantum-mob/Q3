@@ -4,7 +4,7 @@
 
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "2.14.9",
+  "Version" -> "2.14.10", (* draft *)
   "WolframVersion" -> "12.3+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
