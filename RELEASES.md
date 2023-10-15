@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.14.11
+
+- A bug fix concerning Multiply involving Dyad.
+
 ## v2.14.10
 
 - The arrange order of elements in the basis resulting from BosonBasis has been changed.

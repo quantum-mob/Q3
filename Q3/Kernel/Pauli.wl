@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.19 $"][[2]], " (",
-  StringSplit["$Date: 2023-10-03 17:44:28+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.20 $"][[2]], " (",
+  StringSplit["$Date: 2023-10-16 05:56:55+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -3240,10 +3240,12 @@ HoldPattern @ Multiply[
    { bb = Complement[Keys @ b, Keys @ c],
      cc = Complement[Keys @ c, Keys @ b],
      bc = Intersection[Keys @ b, Keys @ c] },
-   Dyad[
-     KeySort @ CheckJoin[a, KeyTake[c, cc]],
-     KeySort @ CheckJoin[d, KeyTake[b, bb]]
-    ] * BraKet[KeyTake[b, bc], KeyTake[c, bc]]
+   Multiply[ pre,
+     Dyad[
+       KeySort @ CheckJoin[a, KeyTake[c, cc]],
+       KeySort @ CheckJoin[d, KeyTake[b, bb]]
+      ] * BraKet[KeyTake[b, bc], KeyTake[c, bc]],
+     post ]
   ] /; MultiplyKind[xx] == MultiplyKind[yy]
 
 HoldPattern @ Multiply[

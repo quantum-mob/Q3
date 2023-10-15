@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.63 $"][[2]], " (",
-  StringSplit["$Date: 2023-10-14 20:19:14+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.64 $"][[2]], " (",
+  StringSplit["$Date: 2023-10-15 10:40:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -321,7 +321,7 @@ ZeroQ[x_, del_] := (
 
 (**** <CountsFor> ****)
 
-CountsFor::usage = "CountsFor[list, {v1,v2,\[Ellipsis]}] gives an association whose keys are v1, v2, \[Ellipsis], and whose values are the number of times those keys appear in list.\nCountsFor[{v1,v2,\[Ellipsis]}] represents the operator form of CountsFor that can be applied to a list."
+CountsFor::usage = "CountsFor[list, {k1,k2,\[Ellipsis]}] gives an association whose keys are k1, k2, \[Ellipsis], and whose values are the number of times those keys appear in list.\nCountsFor[{k1,k2,\[Ellipsis]}] represents the operator form of CountsFor that can be applied to a list.\nCounts is almost the same as Counts, but keys are specified explicitly."
 
 CountsFor[var_List][obj_List] := CountsFor[obj, var]
 
