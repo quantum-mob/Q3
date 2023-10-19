@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.71 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-07 22:35:52+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.72 $"][[2]], " (",
+  StringSplit["$Date: 2023-10-19 14:23:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -23,8 +23,8 @@ BeginPackage["Q3`"]
 
 { Stabilizer, StabilizerStateQ, StabilizerStateCount };
 
-{ BinarySymplecticGroup,
-  BinarySymplecticGroupElements };
+{ GottesmanGroup = BinarySymplecticGroup,
+  GottesmanGroupElements = BinarySymplecticGroupElements };
 
 Begin["`Private`"]
 
@@ -647,6 +647,15 @@ StabilizerStateCount[ss:{___?QubitQ}] :=
   StabilizerStateCount[Length @ ss]
 
 (**** </Stabilizer> ****)
+
+
+(**** <GottesmanGroup> ****)
+
+GottesmanGroup::usage = "GottesmanGroup is an alias for BinarySymplecticGroup."
+
+GottesmanGroupElements::usage = "GottesmanGroupElements is an alias for BinarySymplecticGroupElements."
+
+(**** </GottesmanGroup> ****)
 
 
 (**** <BinarySymplecticGroup> ****)
