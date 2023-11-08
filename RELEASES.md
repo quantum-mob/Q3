@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.14.13
+
+- PlaybookTools improved.
+
 ## v2.14.12
 
 - New aliases GottesmanGroup and GottesmanGroupElements for BinarySymplecticGroup and BinarySymplecticGroupElements, respectively.

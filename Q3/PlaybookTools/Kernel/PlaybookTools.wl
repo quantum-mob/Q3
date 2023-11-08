@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-09-19 09:34:30+09 $ *)
-(* $Revision: 1.44 $ *)
+(* $Date: 2023-11-08 21:03:24+09 $ *)
+(* $Revision: 1.46 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -180,6 +180,11 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
      otherwise, NotebookPrint misses some images and typographic math
      expressions. *)
   SetOptions[nb, Visible -> True, StyleDefinitions -> $PlaybookStyle];
+
+  (* Open all cell groups *)
+  SelectionMove[nb, All, Notebook];
+  FrontEndTokenExecute[nb, "SelectionOpenAllGroups"];
+
   NotebookSave[nb];
   (* For some unknown reason, TaskWait is required; otherwise, NotebookPrint
      misses some images and typographic math expressions. *)
@@ -190,10 +195,11 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
 
 PlaybookClean::usage = "PlaybookClean[nb, styles] delete all cells of styles in notebook nb."
 
-PlaybookClean[nb_NotebookObject, style_String:"Output"] :=
-  ( Print["Deleting Cells of style ", style];
-    NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
-    NotebookDelete[nb] )
+PlaybookClean[nb_NotebookObject, style_String:"Output"] := (
+  Print["Deleting Cells of style ", style];
+  NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
+  If[Length[SelectedCells @ nb] > 0, NotebookDelete[nb]]
+ )
 
 PlaybookClean[nb_NotebookObject, styles:{__String}] :=
   Scan[PlaybookClean[nb, #]&, styles]
