@@ -1,0 +1,857 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 13.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     32080,        847]
+NotebookOptionsPosition[     26368,        731]
+NotebookOutlinePosition[     28655,        788]
+CellTagsIndexPosition[     28612,        785]
+WindowTitle->Hadamard Test
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "8c48000b-52bb-4251-8ce2-25cd3a9dfc81"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "a6054415-1412-4ec8-ae3f-c8ec46037c6f"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[Cell[BoxData[
+     TagBox[
+      ActionMenuBox[
+       FrameBox[Cell[TextData[{
+         "URL",
+         " ",
+         Cell[BoxData[
+          GraphicsBox[
+           {GrayLevel[0.66667], Thickness[0.13], 
+            LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+           AspectRatio->1,
+           AxesStyle->Large,
+           FrameStyle->Large,
+           ImageSize->20,
+           PlotRange->{{-3, 4}, {-1, 1}},
+           PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+          "4a8a4c10-1126-40a3-a246-9d59c838f8f7"]
+        }],ExpressionUUID->"b4d28554-76b0-49e0-9764-7c8aece90625"],
+        StripOnInput->False],{
+       "\"Q3/tutorial/HadamardTest\"" :> None, 
+        "\"Copy Wolfram Documentation Center URL\"" :> 
+        Module[{DocumentationSearch`Private`nb$}, 
+          DocumentationSearch`Private`nb$ = 
+           NotebookPut[
+            Notebook[{Cell["Q3/tutorial/HadamardTest"]}, Visible -> False]]; 
+          SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+          FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+          NotebookClose[DocumentationSearch`Private`nb$]; Null], Delimiter, 
+        "\"Copy web URL\"" :> 
+        Module[{DocumentationSearch`Private`nb$}, 
+          DocumentationSearch`Private`nb$ = 
+           NotebookPut[
+            Notebook[{
+              Cell[BoxData[
+                MakeBoxes[
+                 Hyperlink[
+                  "http://reference.wolfram.com/language/Q3/tutorial/\
+HadamardTest.html"], StandardForm]], "Input", TextClipboardType -> 
+                "PlainText"]}, Visible -> False]]; 
+          SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+          FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+          NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+        "\"Go to web URL\"" :> 
+        FrontEndExecute[{
+          NotebookLocate[{
+            URL[If[TrueQ[DocumentationBuild`Make`Private`wsmlinkQ$23533], 
+                "http://reference.wolfram.com/system-modeler/", 
+                "http://reference.wolfram.com/language/"] <> 
+              "Q3/tutorial/HadamardTest" <> ".html"], None}]}]},
+       Appearance->None,
+       MenuAppearance->Automatic,
+       MenuStyle->"URLMenu"],
+      MouseAppearanceTag["LinkHand"]]],
+     LineSpacing->{1.4, 0},ExpressionUUID->
+     "6474d9c1-2d84-4bee-9de7-4ed373e78ae3"]], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "024c7142-4a3d-4e4f-b0bb-caad564ed393"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"58d598f8-cfc6-4805-b266-3368deeed403"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Hadamard Test", "TechNoteTitle",ExpressionUUID->
+      "0722512f-e580-42bb-be8b-8b64717b8a91"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"a313fe79-463e-49e7-b833-1efc442efa4b"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "ba3b690c-fb91-475d-be9f-a6545cc20064"]
+    }],ExpressionUUID->"ca0fb4a5-78a8-42e8-90c1-1d81b6b36fbf"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 13.3\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 13.2",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "126da479-90fe-442a-8654-225c889778b2"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"d262a04f-499c-4282-8318-b552eec61d59"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Estimation of the Real Part"], 
+      "paclet:Q3/tutorial/HadamardTest#1760709842", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Estimation of the Imaginary Part"], 
+      "paclet:Q3/tutorial/HadamardTest#1624459610", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, AxesStyle -> Large, 
+        FrameStyle -> Large, ImageSize -> Large, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]}
+  }]], "TechNoteJumpBox",ExpressionUUID->"ab11928b-f6ec-4a3a-93b1-\
+56a7a80041d0"],
+
+Cell[TextData[{
+ StyleBox["N.B.",
+  FontWeight->"Bold"],
+ " This document is still rough. To be elaborated later."
+}], "TechNoteText",
+ CellID->1593706288,ExpressionUUID->"41424b53-ad67-4510-bac9-9182437433cc"],
+
+Cell["\<\
+The Hadamard test is a method to estimate the expectation value of a unitary \
+operator.\
+\>", "TechNoteText",
+ CellID->1430807222,ExpressionUUID->"d3a9575c-b2f3-4704-9e42-ac44498c9a6c"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Hadamard"]], "paclet:Q3/ref/Hadamard", "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The Hadamard gate", "TechNoteTableText",ExpressionUUID->
+     "8e6f4449-9cb7-4d2e-be71-c12c257f8a90"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["ControlledGate"]], "paclet:Q3/ref/ControlledGate", 
+      "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The controlled-unitary gate", "TechNoteTableText",ExpressionUUID->
+     "f2d23d08-80e3-4c19-84f6-ea99323715f2"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Measurement"]], "paclet:Q3/ref/Measurement", 
+      "Q3 Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The measurement on qubits", "TechNoteTableText",ExpressionUUID->
+     "adaf644a-2cdd-4f05-80a6-856a402f0a59"]}
+  }]], "DefinitionBox",
+ CellID->55101048,ExpressionUUID->"461fa25b-4dc3-4b93-ae5a-7b5b3e3e0622"],
+
+Cell["Quantum circuit elements used in the Hadamard test.", "TechNoteCaption",
+ CellID->517861879,ExpressionUUID->"3f24d280-1ce9-4f8b-b4b8-2b250711150b"],
+
+Cell[TextData[{
+ "Make sure that the ",
+ ButtonBox["Q3",
+  BaseStyle->"Link",
+  ButtonData->"paclet:Q3/guide/Q3"],
+ " package is loaded to use the demonstrations in this documentation."
+}], "TechNoteMathCaption",
+ CellID->1428640008,ExpressionUUID->"1606d0cb-c922-4e1d-b455-1f2b857c8d5b"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[71]:=",
+ CellID->853967906,ExpressionUUID->"0b577eba-8293-40ce-a3c4-cd749630be83"],
+
+Cell[TextData[{
+ "Throughout this document, symbol ",
+ StyleBox["S", "Input"],
+ " will be used to denote qubits and Pauli operators on them. Similarly, \
+symbol c will be used to denote complex-valued coefficients."
+}], "TechNoteMathCaption",
+ CellID->1937193009,ExpressionUUID->"e0718f4f-ce50-4d6a-9759-c140ab3b0055"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}]}], "Input",
+ CellLabel->"In[117]:=",
+ CellID->403330096,ExpressionUUID->"fa4d7a27-fbc8-4a77-b9ff-ba347a775099"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Estimation of the Real Part", "TechNoteSection",
+ CellID->1760709842,ExpressionUUID->"d4dc427a-687c-40de-9097-154404a20b32"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[107]:=",
+ CellID->1376081571,ExpressionUUID->"32240897-be91-4b8c-9d7f-fdee8f10dcbc"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}]}], "Input",
+ CellLabel->"In[119]:=",
+ CellID->361752053,ExpressionUUID->"91fecb12-eb2b-42fb-8cb1-218c3783864c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QuantumCircuit", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Ket", "[", 
+    RowBox[{"S", "@", 
+     RowBox[{"{", "1", "}"}]}], "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"ProductState", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], "->", 
+      RowBox[{"c", "@", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}]}], ",", 
+     RowBox[{"\"\<Label\>\"", "->", 
+      RowBox[{"Ket", "[", "\"\<\[Psi]\>\"", "]"}]}]}], "]"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"S", "[", 
+    RowBox[{"1", ",", "6"}], "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"ControlledGate", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "1", "]"}], ",", 
+     RowBox[{"Rotation", "[", 
+      RowBox[{"\[Phi]", ",", 
+       RowBox[{"S", "[", 
+        RowBox[{"2", ",", "2"}], "]"}]}], "]"}], ",", 
+     RowBox[{"\"\<Label\>\"", "->", "\"\<U\>\""}]}], "]"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"S", "[", 
+    RowBox[{"1", ",", "6"}], "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"Measurement", "[", 
+    RowBox[{"S", "[", 
+     RowBox[{"1", ",", "3"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+  "]"}]], "Input",
+ CellLabel->"In[130]:=",
+ CellID->359520514,ExpressionUUID->"27321c08-ac70-4636-b3da-c6c2b854638f"],
+
+Cell[BoxData[
+ InterpretationBox[
+  GraphicsBox[{
+    {Dashing[{Small, Small}], LineBox[{{{4, -1}, {5, -1}}}]}, 
+    LineBox[{{{0, -1}, {4, -1}}, {{0, -2}, {5, -2}}}], {InsetBox[
+      StyleBox[
+       FormBox[
+        InterpretationBox[
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{",", "\",\"", "0"}, "RowWithSeparators"]},
+           "Ket"],
+          DisplayForm],
+         Ket[0]],
+        TraditionalForm],
+       StripOnInput->False,
+       FontSize->Scaled[0.06400000000000002],
+       FontWeight->"Light"], {-0.1, -1}, NCache[
+      ImageScaled[{1, Rational[1, 2]}], ImageScaled[{1, 0.5}]]], InsetBox[
+      StyleBox[
+       FormBox[
+        InterpretationBox[
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{",", "\",\"", "\"\[Psi]\""}, "RowWithSeparators"]},
+           "Ket"],
+          DisplayForm],
+         Ket["\[Psi]"]],
+        TraditionalForm],
+       StripOnInput->False,
+       FontSize->Scaled[0.06400000000000002],
+       FontWeight->"Light"], {-0.1, -2}, NCache[
+      ImageScaled[{1, Rational[1, 2]}], ImageScaled[{1, 0.5}]]]}, {
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{0.6, -1.4}, {1.4, -0.6}]}, InsetBox[
+      StyleBox["\<\"H\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.08000000000000002],
+       FontWeight->"Light",
+       FontSlant->Italic], {1, -1}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{2, -1}, {2, -2}}], 
+     DiskBox[{2, -1}, 0.09], 
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{1.6, -2.4}, {2.4, -1.6}]}, InsetBox[
+      StyleBox["\<\"U\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.08000000000000002],
+       FontWeight->"Light",
+       FontSlant->Italic], {2, -2}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{2.6, -1.4}, {3.4, -0.6}]}, InsetBox[
+      StyleBox["\<\"H\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.08000000000000002],
+       FontWeight->"Light",
+       FontSlant->Italic], {3, -1}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{3.6, -1.4}, {4.4, -0.6}]}, 
+     CircleBox[{4, -1.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{4, -1.2}, {4.24, -0.76}}]}},
+   AxesStyle->Large,
+   FrameStyle->Large,
+   ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {1, 1}},
+   ImageSize->226.79999999999998`,
+   PlotRange->NCache[{Full, {
+       Rational[-5, 2], 
+       Rational[-1, 2]}}, {Full, {-2.5, -0.5}}],
+   PlotRangePadding->Scaled[0.025]],
+  Q3`QuantumCircuit[
+   Q3`QuantumCircuitIn[
+    Ket[<|$CellContext`S[1, Q3`$] -> 0|>], 
+    Q3`ProductState[<|$CellContext`S[2, Q3`$] -> {
+        $CellContext`c[0], 
+        $CellContext`c[1]}|>, "Label" -> Ket["\[Psi]"]]], 
+   $CellContext`S[1, 6], 
+   Q3`ControlledGate[{$CellContext`S[1, Q3`$] -> 1}, 
+    Q3`Rotation[$CellContext`\[Phi], {0, 1, 0}, 
+     $CellContext`S[2, Q3`$]], "Label" -> "U"], 
+   $CellContext`S[1, 6], 
+   Q3`Measurement[
+    $CellContext`S[1, 3]]]]], "Output",
+ CellLabel->"Out[130]=",
+ CellID->1978976157,ExpressionUUID->"9bb09666-a60a-486a-98df-36e0b6f84fac"]
+}, Open  ]],
+
+Cell["The probability to get 0 from the measurement is given by", \
+"TechNoteText",
+ CellID->1883754708,ExpressionUUID->"833f595a-9ae7-4a57-a4cc-6e64c0e50b39"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["P", "0"], "=", 
+    RowBox[{
+     FractionBox["1", "2"], "+", 
+     RowBox[{
+      FractionBox["1", "2"], 
+      RowBox[{"Re", "[", 
+       RowBox[{
+        TemplateBox[{"\[Psi]"},
+         "Bra"], "U", 
+        TemplateBox[{"\[Psi]"},
+         "Ket"]}], "]"}]}]}]}], TraditionalForm]],ExpressionUUID->
+  "3406fcf4-dc8a-4946-b0dd-2c5b31270925"]
+}], "TechNoteText",
+ CellID->141849876,ExpressionUUID->"cad68f65-f950-4dbc-9438-016a323d84e6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Estimation of the Imaginary Part", "TechNoteSection",
+ CellID->1624459610,ExpressionUUID->"d17195d8-0ffe-4748-94de-cd75195c9b8b"],
+
+Cell[BoxData[
+ RowBox[{"<<", "Q3`"}]], "Input",
+ CellLabel->"In[125]:=",
+ CellID->117950755,ExpressionUUID->"af8dd2a7-d80a-428a-be73-a35b99bb8166"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}]}], "Input",
+ CellLabel->"In[126]:=",
+ CellID->270933104,ExpressionUUID->"580285db-f27a-4836-9f78-3130fa6af440"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"QuantumCircuit", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"Ket", "[", 
+    RowBox[{"S", "@", 
+     RowBox[{"{", "1", "}"}]}], "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"ProductState", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"S", "[", "2", "]"}], "->", 
+      RowBox[{"c", "@", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}]}], ",", 
+     RowBox[{"\"\<Label\>\"", "->", 
+      RowBox[{"Ket", "[", "\"\<\[Psi]\>\"", "]"}]}]}], "]"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"S", "[", 
+    RowBox[{"1", ",", "6"}], "]"}], ",", 
+   RowBox[{"S", "[", 
+    RowBox[{"1", ",", 
+     RowBox[{"-", "7"}]}], "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"ControlledGate", "[", 
+    RowBox[{
+     RowBox[{"S", "[", "1", "]"}], ",", 
+     RowBox[{"Rotation", "[", 
+      RowBox[{"\[Phi]", ",", 
+       RowBox[{"S", "[", 
+        RowBox[{"2", ",", "2"}], "]"}]}], "]"}], ",", 
+     RowBox[{"\"\<Label\>\"", "->", "\"\<U\>\""}]}], "]"}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"S", "[", 
+    RowBox[{"1", ",", "6"}], "]"}], ",", "\[IndentingNewLine]", 
+   RowBox[{"Measurement", "[", 
+    RowBox[{"S", "[", 
+     RowBox[{"1", ",", "3"}], "]"}], "]"}]}], "\[IndentingNewLine]", 
+  "]"}]], "Input",
+ CellLabel->"In[131]:=",
+ CellID->907347288,ExpressionUUID->"c52f0d2f-9091-4585-a45e-7f233fbe196a"],
+
+Cell[BoxData[
+ InterpretationBox[
+  GraphicsBox[{
+    {Dashing[{Small, Small}], LineBox[{{{5, -1}, {6, -1}}}]}, 
+    LineBox[{{{0, -1}, {5, -1}}, {{0, -2}, {6, -2}}}], {InsetBox[
+      StyleBox[
+       FormBox[
+        InterpretationBox[
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{",", "\",\"", "0"}, "RowWithSeparators"]},
+           "Ket"],
+          DisplayForm],
+         Ket[0]],
+        TraditionalForm],
+       StripOnInput->False,
+       FontSize->Scaled[0.05333333333333334],
+       FontWeight->"Light"], {-0.1, -1}, NCache[
+      ImageScaled[{1, Rational[1, 2]}], ImageScaled[{1, 0.5}]]], InsetBox[
+      StyleBox[
+       FormBox[
+        InterpretationBox[
+         TagBox[
+          TemplateBox[{
+            TemplateBox[{",", "\",\"", "\"\[Psi]\""}, "RowWithSeparators"]},
+           "Ket"],
+          DisplayForm],
+         Ket["\[Psi]"]],
+        TraditionalForm],
+       StripOnInput->False,
+       FontSize->Scaled[0.05333333333333334],
+       FontWeight->"Light"], {-0.1, -2}, NCache[
+      ImageScaled[{1, Rational[1, 2]}], ImageScaled[{1, 0.5}]]]}, {
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{0.6, -1.4}, {1.4, -0.6}]}, InsetBox[
+      StyleBox["\<\"H\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.06666666666666667],
+       FontWeight->"Light",
+       FontSlant->Italic], {1, -1}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{1.6, -1.4}, {2.4, -0.6}]}, InsetBox[
+      StyleBox[
+       TemplateBox[{"\"S\"", "\"\[Dagger]\""},
+        "Superscript"],
+       StripOnInput->False,
+       FontSize->Scaled[0.06666666666666667],
+       FontWeight->"Light",
+       FontSlant->Italic], {2, -1}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{3, -1}, {3, -2}}], 
+     DiskBox[{3, -1}, 0.09], 
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{2.6, -2.4}, {3.4, -1.6}]}, InsetBox[
+      StyleBox["\<\"U\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.06666666666666667],
+       FontWeight->"Light",
+       FontSlant->Italic], {3, -2}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{3.6, -1.4}, {4.4, -0.6}]}, InsetBox[
+      StyleBox["\<\"H\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.06666666666666667],
+       FontWeight->"Light",
+       FontSlant->Italic], {4, -1}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {
+     {GrayLevel[1], EdgeForm[Opacity[1]], 
+      RectangleBox[{4.6, -1.4}, {5.4, -0.6}]}, 
+     CircleBox[{5, -1.2}, 0.4, 
+      NCache[{Rational[1, 6] Pi, Rational[5, 6] Pi}, {0.5235987755982988, 
+       2.6179938779914944`}]], LineBox[{{5, -1.2}, {5.24, -0.76}}]}},
+   AxesStyle->Large,
+   FrameStyle->Large,
+   ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {1, 1}},
+   ImageSize->262.8,
+   PlotRange->NCache[{Full, {
+       Rational[-5, 2], 
+       Rational[-1, 2]}}, {Full, {-2.5, -0.5}}],
+   PlotRangePadding->Scaled[0.025]],
+  Q3`QuantumCircuit[
+   Q3`QuantumCircuitIn[
+    Ket[<|$CellContext`S[1, Q3`$] -> 0|>], 
+    Q3`ProductState[<|$CellContext`S[2, Q3`$] -> {
+        $CellContext`c[0], 
+        $CellContext`c[1]}|>, "Label" -> Ket["\[Psi]"]]], 
+   $CellContext`S[1, 6], 
+   $CellContext`S[1, -7], 
+   Q3`ControlledGate[{$CellContext`S[1, Q3`$] -> 1}, 
+    Q3`Rotation[$CellContext`\[Phi], {0, 1, 0}, 
+     $CellContext`S[2, Q3`$]], "Label" -> "U"], 
+   $CellContext`S[1, 6], 
+   Q3`Measurement[
+    $CellContext`S[1, 3]]]]], "Output",
+ CellLabel->"Out[131]=",
+ CellID->1630954183,ExpressionUUID->"e4c775cd-eaad-474c-9759-cdb391705c47"]
+}, Open  ]],
+
+Cell["\<\
+In this case, the probability to get 0 from the measurement is given by\
+\>", "TechNoteText",
+ CellID->897155788,ExpressionUUID->"b767452f-6316-4c44-9dec-e30ff7a56bd3"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["P", "0"], "=", 
+    RowBox[{
+     FractionBox["1", "2"], "+", 
+     RowBox[{
+      FractionBox["1", "2"], 
+      RowBox[{"Im", "[", 
+       RowBox[{
+        TemplateBox[{"\[Psi]"},
+         "Bra"], "U", 
+        TemplateBox[{"\[Psi]"},
+         "Ket"]}], "]"}]}]}]}], TraditionalForm]],ExpressionUUID->
+  "bb691931-3a18-4eaa-b435-a060791fdfd6"]
+}], "TechNoteText",
+ CellID->459478136,ExpressionUUID->"e7863f5f-ccd9-40a2-8334-3643db6e72eb"]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/guide/QuantumInformationSystems"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "c122979c-e1de-483f-bcb3-875f71063105"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"911b3250-98eb-4426-af18-\
+64a828bc0695"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tech", " ", "Notes"}], 
+        "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Computation: Overview",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumComputationOverview"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "955d8efb-b532-4bb1-b911-b0d68d487932"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems with Q3",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumInformationSystems"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "cff88370-5a10-4d13-aa66-94e4526b1e2b"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Demo: Commutation Relations for Qubits",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/DemoCommutationRelationsForQubits"]],
+          "RelatedTutorials",ExpressionUUID->
+         "a5fbd7ad-bd62-4d9a-b3ea-ae24176d74bc"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"5774df18-1b3d-48ce-a155-\
+d95b6ca0c2a3"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "bb4390fb-bdd9-41a6-9b69-78bbe26290a5"]}]],ExpressionUUID->
+         "b65b9fcd-2eee-4aa5-9acf-0fd2b72138a3"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "3efa93f6-843e-41d5-af80-6322fc659761"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"ff585bed-9486-4fb2-8e72-\
+3a2fbac49585"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"430b2765-e50a-41c4-ac21-46ae0d9ea89a"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Hadamard Test",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2023", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", 
+  "Metadata" -> {
+   "built" -> "{2023, 11, 11, 17, 59, 41.661966}", 
+    "history" -> {"13.3", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Tech Note", "language" -> "en", "paclet" -> "Q3", 
+    "status" -> "None", "summary" -> 
+    "N.B. This document is still rough. To be elaborated later. The Hadamard \
+test is a method to estimate the expectation value of a unitary operator. The \
+probability to get 0 from the measurement is given by", "synonyms" -> {}, 
+    "tabletags" -> DocumentationBuild`Make`Private`tabletaggingrules$23486, 
+    "title" -> "Hadamard Test", "titlemodifier" -> "", "metadescription" -> 
+    "", "windowtitle" -> "Hadamard Test", "type" -> "Tech Note", "uri" -> 
+    "Q3/tutorial/HadamardTest"}},
+FrontEndVersion->"13.3 for Mac OS X ARM (64-bit) (July 24, 2023)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "13.3 for Mac OS X ARM (64-bit) (July 24, 2023)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"3f779d09-42a3-4c78-bd6c-15060c924af0"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[585, 21, 3467, 81, 57, "AnchorBarGrid",ExpressionUUID->"58d598f8-cfc6-4805-b266-3368deeed403",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[4077, 106, 1392, 38, 61, "ObjectNameGrid",ExpressionUUID->"d262a04f-499c-4282-8318-b552eec61d59"],
+Cell[5472, 146, 2272, 49, 65, "TechNoteJumpBox",ExpressionUUID->"ab11928b-f6ec-4a3a-93b1-56a7a80041d0"],
+Cell[7747, 197, 210, 5, 36, "TechNoteText",ExpressionUUID->"41424b53-ad67-4510-bac9-9182437433cc",
+ CellID->1593706288],
+Cell[7960, 204, 196, 4, 36, "TechNoteText",ExpressionUUID->"d3a9575c-b2f3-4704-9e42-ac44498c9a6c",
+ CellID->1430807222],
+Cell[8159, 210, 1069, 28, 123, "DefinitionBox",ExpressionUUID->"461fa25b-4dc3-4b93-ae5a-7b5b3e3e0622",
+ CellID->55101048],
+Cell[9231, 240, 153, 1, 31, "TechNoteCaption",ExpressionUUID->"3f24d280-1ce9-4f8b-b4b8-2b250711150b",
+ CellID->517861879],
+Cell[9387, 243, 288, 7, 36, "TechNoteMathCaption",ExpressionUUID->"1606d0cb-c922-4e1d-b455-1f2b857c8d5b",
+ CellID->1428640008],
+Cell[9678, 252, 146, 3, 29, "Input",ExpressionUUID->"0b577eba-8293-40ce-a3c4-cd749630be83",
+ CellID->853967906],
+Cell[9827, 257, 318, 6, 57, "TechNoteMathCaption",ExpressionUUID->"e0718f4f-ce50-4d6a-9759-c140ab3b0055",
+ CellID->1937193009],
+Cell[10148, 265, 271, 6, 48, "Input",ExpressionUUID->"fa4d7a27-fbc8-4a77-b9ff-ba347a775099",
+ CellID->403330096]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10456, 276, 130, 1, 81, "TechNoteSection",ExpressionUUID->"d4dc427a-687c-40de-9097-154404a20b32",
+ CellID->1760709842],
+Cell[10589, 279, 148, 3, 29, "Input",ExpressionUUID->"32240897-be91-4b8c-9d7f-fdee8f10dcbc",
+ CellID->1376081571],
+Cell[10740, 284, 271, 6, 48, "Input",ExpressionUUID->"91fecb12-eb2b-42fb-8cb1-218c3783864c",
+ CellID->361752053],
+Cell[CellGroupData[{
+Cell[11036, 294, 1268, 34, 156, "Input",ExpressionUUID->"27321c08-ac70-4636-b3da-c6c2b854638f",
+ CellID->359520514],
+Cell[12307, 330, 3396, 88, 94, "Output",ExpressionUUID->"9bb09666-a60a-486a-98df-36e0b6f84fac",
+ CellID->1978976157]
+}, Open  ]],
+Cell[15718, 421, 159, 2, 70, "TechNoteText",ExpressionUUID->"833f595a-9ae7-4a57-a4cc-6e64c0e50b39",
+ CellID->1883754708],
+Cell[15880, 425, 518, 18, 70, "TechNoteText",ExpressionUUID->"cad68f65-f950-4dbc-9438-016a323d84e6",
+ CellID->141849876]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16435, 448, 135, 1, 70, "TechNoteSection",ExpressionUUID->"d17195d8-0ffe-4748-94de-cd75195c9b8b",
+ CellID->1624459610],
+Cell[16573, 451, 147, 3, 70, "Input",ExpressionUUID->"af8dd2a7-d80a-428a-be73-a35b99bb8166",
+ CellID->117950755],
+Cell[16723, 456, 271, 6, 70, "Input",ExpressionUUID->"580285db-f27a-4836-9f78-3130fa6af440",
+ CellID->270933104],
+Cell[CellGroupData[{
+Cell[17019, 466, 1353, 37, 70, "Input",ExpressionUUID->"c52f0d2f-9091-4585-a45e-7f233fbe196a",
+ CellID->907347288],
+Cell[18375, 505, 3833, 100, 94, "Output",ExpressionUUID->"e4c775cd-eaad-474c-9759-cdb391705c47",
+ CellID->1630954183]
+}, Open  ]],
+Cell[22223, 608, 178, 3, 70, "TechNoteText",ExpressionUUID->"b767452f-6316-4c44-9dec-e30ff7a56bd3",
+ CellID->897155788],
+Cell[22404, 613, 518, 18, 70, "TechNoteText",ExpressionUUID->"e7863f5f-ccd9-40a2-8334-3643db6e72eb",
+ CellID->459478136]
+}, Open  ]],
+Cell[22937, 634, 714, 18, 70, "TutorialMoreAboutSection",ExpressionUUID->"911b3250-98eb-4426-af18-64a828bc0695"],
+Cell[23654, 654, 1418, 36, 70, "RelatedTutorialsSection",ExpressionUUID->"5774df18-1b3d-48ce-a155-d95b6ca0c2a3"],
+Cell[25075, 692, 1208, 35, 70, "TutorialRelatedLinksSection",ExpressionUUID->"ff585bed-9486-4fb2-8e72-3a2fbac49585"],
+Cell[26286, 729, 78, 0, 70, "FooterCell",ExpressionUUID->"430b2765-e50a-41c4-ac21-46ae0d9ea89a"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

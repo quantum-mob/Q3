@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.14.14
+
+- More tutorial docomentations.
+
 ## v2.14.13
 
 - PlaybookTools improved.
