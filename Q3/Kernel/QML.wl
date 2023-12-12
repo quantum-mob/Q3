@@ -3,9 +3,9 @@
 BeginPackage["Q3`"]
 
 `QML`$Version = StringJoin[
-  "Q3/", $Input, " v",
-  StringSplit["$Revision: 1.8 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-22 21:28:17+09 $"][[2]], ") ",
+  $Input, " v",
+  StringSplit["$Revision: 1.9 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-10 19:59:50+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 

@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2022-07-23 00:53:51+09 $ *)
-(* $Revision: 1.7 $ *)
+(* $Date: 2023-12-10 21:03:24+09 $ *)
+(* $Revision: 1.8 $ *)
 
 BeginPackage["Q3`"]
 
@@ -33,9 +33,11 @@ Customize[ss:{__Symbol}, opts___?OptionQ] := Scan[
  ]
   
 Customize[symb_Symbol, opts___?OptionQ] := Module[
-  { less = Normal @ KeyDrop[$Customizations, Keys @ {opts}],
-    more },
-  more = FilterRules[Join[{opts}, less], Options[symb]];
+  { more },
+  more = FilterRules[
+    Normal @ Association @ Join[$Customizations, {opts}],
+    Options[symb]
+   ];
   SetOptions[symb, more]
  ]
 

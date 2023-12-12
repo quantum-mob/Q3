@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.66 $"][[2]], " (",
-  StringSplit["$Date: 2023-09-27 15:44:32+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.70 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-12 16:35:40+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -597,41 +597,34 @@ singleQubitGateQ[_] = False
 
 thePauliForm::usage = "thePauliForm[op] or thePauliForm[Dagger[op]] rewrites op in a more conventional form, where the Pauli operators are denoted by I, X, Y, Z, H, S, and T."
 
-HoldPattern @ thePauliForm @ Pauli[k_Integer?Negative] :=
-  Superscript[thePauliForm @ Pauli[-k], "\[Dagger]"]
+HoldPattern @ thePauliForm @ Pauli[{k_Integer?Negative}] :=
+  Superscript[thePauliForm @ Pauli[{-k}], "\[Dagger]"]
 
-thePauliForm @ Pauli[k_Integer] := ReplaceAll[ k,
+thePauliForm @ Pauli[{k_Integer}] := ReplaceAll[ k,
   { 0 -> "I", 1 -> "X", 2 -> "Y", 3 -> "Z",
     4 -> Superscript["X", "+"],
     5 -> Superscript["X", "-"],
     6 -> "H", 7 -> "S", 8 -> "T", 9 -> "F",
-    10 -> Row @ {Ket[0], Bra[0]},
-    11 -> Row @ {Ket[1], Bra[1]} }
+    10 -> Row @ {Ket @ {0}, Bra @ {0}},
+    11 -> Row @ {Ket @ {1}, Bra @ {1}} }
  ]
 
-thePauliForm @ Pauli[-C[n_Integer]] :=
+thePauliForm @ Pauli[{-C[n_Integer]}] :=
   With[{m = -n}, Superscript["Z", -2 Pi / HoldForm[Power[2, m]]]]
 
-thePauliForm @ Pauli[+C[n_Integer]] :=
+thePauliForm @ Pauli[{+C[n_Integer]}] :=
   With[{m = -n}, Superscript["Z", +2 Pi / HoldForm[Power[2, m]]]]
 
-thePauliForm @ Pauli[any_] = Superscript["\[Sigma]", any]
+thePauliForm @ Pauli[{any_}] = Superscript["\[Sigma]", any]
 (* NOTE: This is necessary to avoid infinite recursion Format[Paui[...]] may
    cause. *)
 
-thePauliForm @ Pauli[a_, bc__] :=
-  CircleTimes @@ Map[thePauliForm, Pauli @ {a, bc}]
+thePauliForm @ Pauli[kk_List] :=
+  CircleTimes @@ Map[thePauliForm, Pauli /@ kk]
 
+thePauliForm[_?QubitQ[___, k_]] := thePauliForm @ Pauli[{k}]
 
-(* NOTE: This should not occur. *)
-(*
-HoldPattern @ thePauliForm @ Dagger @ S_?QubitQ[___, k_] :=
-  thePauliForm @ Dagger @ Pauli[k]
- *)
-
-thePauliForm @ _?QubitQ[___, k_] := thePauliForm @ Pauli[k]
-
-thePauliForm @ Phase[phi_, S_?QubitQ, ___] :=
+thePauliForm[Phase[phi_, S_?QubitQ, ___]] :=
   Superscript[thePauliForm @ S, phi]
 
 thePauliForm[ss__?singleQubitGateQ, qq:{__?QubitQ}] := Module[
@@ -1806,8 +1799,8 @@ Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
     Oracle[f, Length @ cc, Length @ tt]
    ] /. {0 -> 10, 1 -> 11};
   bb = KeyMap[
-    Apply[ThePauli],
-    Total /@ Map[Apply[ThePauli], bb, {2}]
+    ThePauli,
+    Total /@ Map[ThePauli, bb, {2}]
    ];
   Total @ KeyValueMap[CircleTimes[#2, #1]&, bb]
  ]

@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.15.0
+
+- The syntax of Pauli, ThePauli, Ket, and TheKet has changed significantly.
+
 ## v2.14.16
 
 - More tutorial docomentations.

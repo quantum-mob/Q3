@@ -8,8 +8,8 @@ BeginPackage["Q3`"];
 
 `Young`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.25 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-11 08:38:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.27 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-11 04:20:56+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -483,6 +483,9 @@ YoungTableau::usage = "YoungPattern[data] represents a Young tableau specified b
 Format[tbl:YoungTableau[data:{{___}..}]] :=
   Interpretation[YoungForm @ data, tbl]
 
+YoungTableau /:
+Equal[YoungTableau[a_], YoungTableau[b_]] := Equal[a, b]
+
 
 YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional form."
 
@@ -694,24 +697,24 @@ HoldPattern @
   Multiply[pre, PermutationProduct @@ Reverse[{op, more}], post]
   
 HoldPattern @
-  Multiply[pre___, op_Cycles, vec:Ket[__?YoungTableauQ], post___] :=
-  Multiply[pre, KetPermute[vec, op], post]
-(* NOTE: Notice '__' in vec, with op acting on all SYTs in vec. *)
+  Multiply[pre___, op_Cycles, Ket[ytx:{__YoungTableau}], post___] :=
+  Multiply[pre, KetPermute[Ket[ytx], op], post]
+(* NOTE: Notice '__' in ytx, with op acting on all SYTs in ytx. *)
   
 HoldPattern @ Multiply[ pre___,
-  CircleTimes[ops__Cycles], Ket[vec__?YoungTableauQ], post___ ] :=
+  CircleTimes[ops__Cycles], Ket[ytx:{__?YoungTableauQ}], post___ ] :=
   Multiply[ pre,
-    CircleTimes @@ MapThread[KetPermute, {Ket /@ {vec}, {ops}}],
+    CircleTimes @@ MapThread[KetPermute, {Ket /@ List /@ ytx, {ops}}],
     post ]
   
 HoldPattern @
-  Multiply[pre___, op_Cycles, Ket[prm__Cycles], post___] :=
-  Multiply[pre, Ket @@ Multiply[op, {prm}], post]
-(* NOTE: Notice '__' in prm, with op acting on all Cycles in prm. *)
+  Multiply[pre___, op_Cycles, Ket[cc:{__Cycles}], post___] :=
+  Multiply[pre, Ket @ Multiply[op, cc], post]
+(* NOTE: Notice '__' in cc, with op acting on all Cycles in cc. *)
   
 HoldPattern @ Multiply[ pre___,
-  CircleTimes[ops__Cycles], Ket[vec__Cycles], post___ ] :=
-  Multiply[pre, Ket @@ Multiply[{ops}, {vec}], post]
+  CircleTimes[ops__Cycles], Ket[cc:{__Cycles}], post___ ] :=
+  Multiply[pre, Ket @ Multiply[{ops}, cc], post]
   
 (**** </Cycles> ****)
 
@@ -751,29 +754,29 @@ KetPermute[expr_, Cycles[{}], {__?SpeciesQ}] := expr
 (* NOTE: that Young's normal representation should be distinguished from
    Young's natural or seminormal representation. *)
 
-KetPermute[Ket[yt_?YoungTableauQ], Cycles @ {{x_, y_}}] := Module[
-  { xx = FirstPosition[yt, x],
-    yy = FirstPosition[yt, y],
+KetPermute[Ket[{yt_YoungTableau}], Cycles @ {{x_, y_}}] := Module[
+  { xx = FirstPosition[First @ yt, x],
+    yy = FirstPosition[First @ yt, y],
     dd, tt },
   Which[
-    First[xx] == First[yy], Ket[yt],
-    Last[xx] == Last[yy], -Ket[yt],
+    First[xx] == First[yy], Ket[{yt}],
+    Last[xx] == Last[yy], -Ket[{yt}],
     True,
     dd = 1 / YoungDistance[{x, y}, yt];
     tt = ReplaceAll[yt, {x -> y, y -> x}];
-    Ket[yt] * dd + Ket[tt] * Sqrt[1-dd^2]
+    Ket[{yt}] * dd + Ket[{tt}] * Sqrt[1-dd^2]
    ]
  ] /; x+1 == y
 
 
-KetPermute[Ket[yt_?YoungTableauQ], cc_Cycles] :=
-  Garner @ Fold[KetPermute, Ket[yt], AdjacentTranspositions @ cc]
+KetPermute[Ket[{yt_YoungTableau}], cc_Cycles] :=
+  Garner @ Fold[KetPermute, Ket @ {yt}, AdjacentTranspositions @ cc]
 
-KetPermute[Ket[yt_?YoungTableauQ], perm_?PermutationListQ] :=
-  Garner @ Fold[KetPermute, Ket[yt], AdjacentTranspositions @ perm]
+KetPermute[Ket[{yt_YoungTableau}], perm_?PermutationListQ] :=
+  Garner @ Fold[KetPermute, Ket @ {yt}, AdjacentTranspositions @ perm]
 
-KetPermute[v:Ket[_?YoungTableauQ, __?YoungTableauQ], cc_] :=
-  CircleTimes @@ Map[KetPermute[#, cc]&, Ket /@ v]
+KetPermute[Ket[yy:{_YoungTableau, __?YoungTableau}], cc_] :=
+  CircleTimes @@ Map[KetPermute[#, cc]&, Ket /@ List /@ yy]
 
 (* for Pauli Kets *)
 
@@ -999,9 +1002,12 @@ fromTranspositions[ntr_List] :=
 
 YoungDistance::usage = "YoungDistance[{x, y}, yt] returns the Manhattan distance between boxes corresponding to letters x and y in standard Young tableau yt.\nNote that unlike usual 'distances', it may be negative.\nIt is also known as the axial distance (Sagan, 2001) or Manhattan distance (Krovi, 2019).\nIt is used in the construction of Young's seminormal representation of the symmetric group."
 
-YoungDistance[{x_Integer, y_Integer}, yt_?YoungTableauQ] := Module[
-  { xx = FirstPosition[yt, x],
-    yy = FirstPosition[yt, y] },
+YoungDistance[{x_Integer, y_Integer}, yt_YoungTableau] :=
+  YoungDistance[{x, y}, First @ yt]
+
+YoungDistance[{x_Integer, y_Integer}, data_?YoungTableauQ] := Module[
+  { xx = FirstPosition[data, x],
+    yy = FirstPosition[data, y] },
   Dot[yy - xx, {-1, 1}]
  ]
 
@@ -1061,7 +1067,7 @@ YoungInvariantBasis[bs:{Ket[__?YoungTableauQ] ..}] := Module[
 
 SpechtBasis::usage = "SpechtBasis[n] or SpechtBasis[SymmetricGroup[n]] constructs the bases of the Specht modules of the symmetric group of degree n.\nSpechtBasis[shape] returns the basis of the Specht module corresponding to Young shape shape." 
 
-SpechtBasis[shape_?YoungShapeQ] := Ket /@ YoungTableaux[shape]
+SpechtBasis[shape_?YoungShapeQ] := Ket /@ List /@ YoungTableaux[shape]
 (* NOTE: Since v3.0, YoungTableaux is now based on GelfandYoungPatterns and
    is already consistent with SchurBasis. *)
 (* Ket /@ ToYoungTableau /@ GelfandYoungPatterns[shape] *)

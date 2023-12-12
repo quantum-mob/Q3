@@ -3,8 +3,8 @@ BeginPackage["Q3`"];
 
 `YoungFourier`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.25 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-19 23:46:12+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.26 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-11 03:06:51+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -38,10 +38,10 @@ YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis
 YoungFourierBasis[n_Integer] := Module[
   { mat = YoungFourierMatrix[n],
     key, val },
-  key = Ket @@@ Flatten[
+  key = Ket /@ Flatten[
     Map[Tuples[YoungTableaux @ #, 2]&, IntegerPartitions @ n],
     1 ];
-  val = Ket /@ GroupElements[SymmetricGroup @ n];
+  val = Ket /@ List /@ GroupElements[SymmetricGroup @ n];
   AssociationThread[key -> val . mat]
  ]
 
@@ -51,8 +51,8 @@ YoungRegularBasis::usage = "YoungRegularBasis[n] returns the Young regular basis
 YoungRegularBasis[n_Integer] := Module[
   { mat = YoungFourierMatrix[n],
     key, val },
-  key = Ket /@ GroupElements[SymmetricGroup @ n];
-  val = Ket @@@ Flatten[
+  key = Ket /@ List /@ GroupElements[SymmetricGroup @ n];
+  val = Ket /@ Flatten[
     Map[Tuples[YoungTableaux @ #, 2]&, IntegerPartitions @ n],
     1 ];
   AssociationThread[key -> val . Topple[mat]]
@@ -65,7 +65,7 @@ YoungNormalRepresentation[shape_?YoungShapeQ][op_Cycles] :=
   YoungNormalRepresentation[shape, op]
 
 YoungNormalRepresentation[shape_?YoungShapeQ, op_Cycles] := Module[
-  { bs = Ket /@ YoungTableaux[shape] },
+  { bs = Ket /@ List /@ YoungTableaux[shape] },
   MatrixIn[op, bs]
  ]
 

@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.20 $"][[2]], " (",
-  StringSplit["$Date: 2023-10-16 05:56:55+09 $"][[2]], ") ",
+  StringSplit["$Revision: 7.21 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-12 15:21:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -125,7 +125,7 @@ BeginPackage["Q3`"]
 
 Begin["`Private`"]
 
-$symbs = Unprotect[CircleTimes, CirclePlus, Dot, Ket, Bra]
+$symb = Unprotect[CircleTimes, CirclePlus, Ket, Bra]
 
 Spin::usage = "Spin is an option of several Species.\nSpin[c] returns the Spin quantum number of the Species c.\nLet[Spin, s] declares that s is the Spin species."
 
@@ -197,6 +197,8 @@ TheState[ { m:{(0|1|Up|Down)..}, t:Except[_List], p:Except[_List] } ] :=
   CircleTimes @@ Map[TheState] @ Tuples[{m, {t}, {p}}]
 
 
+(**** <ThePauli> ****)
+
 ThePauli::usage = "ThePauli[n] (n=1,2,3) returns a Pauli matrix.
   ThePauli[4]=TheRaise[] is the Raising operator, ThePauli[5]=TheLower[] is the Lowering operator, ThePauli[6]=TheHadamard[] is the Hadamard operator, and ThePauli[0] returns the 2x2 identity matrix.\nThePauli[n1,n2,n3,...]=ThePauli[n1] \[CircleTimes] ThePauli[n2] \[CircleTimes] ThePauli[n3]\[CircleTimes] ...."
 
@@ -206,16 +208,34 @@ TheLower::usage = "TheLower[]=(ThePauli[1]-I*ThePauli[2])/2={{0,0},{1,0}}.\nTheL
 
 TheHadamard::usage = "TheHadamard[0]=IdentityMatrix[2]. TheHadamard[1]={{1,1},{1,-1}}/Sqrt[2] is the matrix corresponding to TheRotation[Pi/2,2].ThePauli[3].\nTheHadamard[{J,1}] returns TheRotation[Pi/2, {J,2}].TheWigner[{J,3}] for angular momentum J.\nTheHadamard[{J,0}] returns the identity matrix."
 
-SetAttributes[ThePauli, {NHoldAll, ReadProtected, Listable}]
+SetAttributes[ThePauli, {NHoldAll, ReadProtected}]
 
-ThePauli[kk__] := ThePauli @@ ReplaceAll[
-  { kk },
+SyntaxInformation[ThePauli] = {"ArgumentsPattern" -> {_}};
+
+ThePauli[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "ThePauli",
+    "The directions must be given in a list like ThePauli[{k1,k2,...}]"];
+  ThePauli @ {a, bc}
+ )
+
+
+ThePauli[kk:{___, _List, ___}] := ThePauli /@ Thread[kk]
+(* Note: similar to the Listable attribute. *)
+
+ThePauli[kk_List] := ThePauli @ ReplaceAll[ kk,
   { All -> {1, 2, 3},
     Full -> {0, 1, 2, 3} }
- ] /; ContainsAny[{kk}, {All, Full}]
+ ] /; ContainsAny[kk, {All, Full}]
 
+ThePauli[All] := ThePauli /@ {1, 2, 3}
+
+ThePauli[Full] := ThePauli /@ {0, 1, 2, 3}
 
 ThePauli[] = {{1}}
+
+
+ThePauli[kk:{(_Integer|_Rule)..}] := CircleTimes @@ Map[ThePauli, kk]
+
 
 ThePauli[0] = SparseArray[{{1, 1} -> 1, {2, 2} -> 1}, {2, 2}]
 
@@ -295,9 +315,7 @@ ThePauli[0 -> 0] = ThePauli[10]
 
 ThePauli[1 -> 1] = ThePauli[11]
 
-
-ThePauli[ nn:(0|1|2|3|4|5|6|7|8|9|10|11|_Integer?Negative|_Rule).. ] :=
-  CircleTimes @@ Map[ThePauli] @ {nn}
+(**** </ThePauli> ****)
 
 
 TheOperator::usage = "TheOperator[{n,\[Theta],\[Phi]}] gives a Pauli matrix in the nth direction in the (\[Theta],\[Phi])-rotated frame.
@@ -314,7 +332,6 @@ TheOperator[ nn:{(0|1|2|3|4|5|6|Raise|Lower|Hadamard), _, _}.. ] :=
 TheOperator[ { n:{(0|1|2|3|4|5|6|Raise|Lower|Hadamard)..},
     th:Except[_List], ph:Except[_List] } ] :=
   CircleTimes @@ Map[TheOperator] @ Tuples[{n, {th}, {ph}}]
-
 
 
 (**** <KetRegulate> ****)
@@ -762,59 +779,78 @@ theKetFormat[Association[]] = {Any}
 
 theKetFormat[a_Association] := KeyValueMap[SpeciesBox[#2, {#1}, {}]&, a]
 
+theKetFormat[v_] = v
+
 
 theKetFormatQ[_] = False
-
-theKetFormat[v_] = v
 
 (**** </KetFormat> </BraFormat> ****)
 
 
 (**** <Ket & Bra> ****)
 
-Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3]. Ket[s$1, s$2, ...] represents the tensor product Ket[s$1] \[CircleTimes] Ket[s$2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, TheState, Pauli, ThePauli, Operator, TheOperator."
+Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[s1, s2, \[Ellipsis]] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, TheState, Pauli, ThePauli, Operator, TheOperator."
 
-Bra::usage = "Bra[expr] = Dagger[ Ket[expr] ].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
+Bra::usage = "Bra[expr] := Dagger[Ket[expr]].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
+
 
 SetAttributes[{Ket, Bra}, NHoldAll]
-(* The integers in Ket[] and Bra[] should not be converted to real
+(* The integers in Ket[...] and Bra[...] should not be converted to real
    numbers by N[]. *)
+
+SetAttributes[{Ket, Bra}, ReadProtected]
+(* Prevent values associated with Ket and Bra from being seen. *)
+(* Recall that Ket adn Bra has the System` context. *)
 
 If[ $VersionNumber > 13.2,
   SyntaxInformation[Ket] = {"ArgumentsPattern" -> {___}};
   SyntaxInformation[Bra] = {"ArgumentsPattern" -> {___}};
  ]
 
+Ket /:
+MakeBoxes[expr:Ket[v_Association], StandardForm|TraditionalForm] := With[
+  { box = ToBoxes @ Ket @ List @ Row[theKetFormat @ v, $KetDelimiter] },
+  InterpretationBox[box, expr]
+ ]
 
-Format[Ket[v:(_List|_Association)]] := Interpretation[KetFormat[v], Ket[v]]
+Format[Ket[Vacuum]] := Interpretation[Ket @ {Any}, Ket[Vacuum]]
 
-Format[Ket[v_]] := Interpretation[KetFormat @ {v}, Ket[v]]
+Format[Ket[{}]] := Interpretation[Ket @ {Any}, Ket[{}]]
 
-Format[Ket[a_, b__]] := Interpretation[KetFormat @ {a, b}, Ket[a, b]]
-
-
-Format[Bra[v:(_List|_Association)]] := Interpretation[BraFormat[v], Bra[v]]
-
-Format[Bra[v_]] := Interpretation[BraFormat @ {v}, Bra[v]]
-
-Format[Bra[a_, b__]] := Interpretation[BraFormat @ {a, b}, Bra[a, b]]
+Format[Ket[v_List]] := Interpretation[Ket[theKetFormat /@ v], Ket[v]] /;
+  AnyTrue[v, theKetFormatQ]
 
 
-Ket /: NonCommutativeQ[ Ket[___] ] = True
+Bra /:
+MakeBoxes[expr:Bra[v_Association], StandardForm|TraditionalForm] := With[
+  { box = ToBoxes @ Bra @ List @ Row[theKetFormat @ v, $KetDelimiter] },
+  InterpretationBox[box, expr]
+ ]
 
-Bra /: NonCommutativeQ[ Bra[___] ] = True
+Format[Bra[Vacuum]] := Interpretation[Bra @ {Any}, Bra[Vacuum]]
 
-Ket /: MultiplyKind[ Ket[___] ] = Ket
+Format[Bra[{}]] := Interpretation[Bra @ {Any}, Bra[{}]]
 
-Bra /: MultiplyKind[ Bra[___] ] = Bra
+Format[Bra[v_List]] := Interpretation[Bra[theKetFormat /@ v], Bra[v]] /;
+  AnyTrue[v, theKetFormatQ]
 
-Ket /: MultiplyGenus[ Ket[___] ] = "Ket"
-
-Bra /: MultiplyGenus[ Bra[___] ] = "Bra"
 
 Ket /: Dagger[Ket[a___]] := Bra[a]
 
 Bra /: Dagger[Bra[a___]] := Ket[a]
+
+
+Ket /: NonCommutativeQ[ _Ket ] = True
+
+Bra /: NonCommutativeQ[ _Bra ] = True
+
+Ket /: MultiplyKind[ _Ket ] = Ket
+
+Bra /: MultiplyKind[ _Bra ] = Bra
+
+Ket /: MultiplyGenus[ _Ket ] = "Ket"
+
+Bra /: MultiplyGenus[ _Bra ] = "Bra"
 
 Ket /:
 CircleTimes[a:Ket[_Association], b:Ket[_Association]..] :=
@@ -824,14 +860,37 @@ Bra /:
 CircleTimes[a:Bra[_Association], b:Bra[_Association]..] :=
   KeySort /@ Join[a, b, 2]
 
+Ket /:
+CircleTimes[a:Ket[_List], b:Ket[_List]..] := Join[a, b, 2]
+
+Bra /:
+CircleTimes[a:Bra[_List], b:Bra[_List]..] := Join[a, b, 2]
+
+(*
 Ket /: CircleTimes[a_Ket, b__Ket] := Ket @@ Catenate[List @@@ {a, b}]
 
 Bra /: CircleTimes[a_Bra, b__Bra] := Bra @@ Catenate[List @@@ {a, b}]
+ *)
 
+Ket[s_Integer] := Ket @ {s}
+
+Bra[s_Integer] := Bra @ {s}
+
+Ket[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "Ket",
+    "The values must be given in a list like Ket[{b1,b2,...}]"];
+  Ket @ {a, bc}
+ )
+
+Bra[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "Bra",
+    "The values must be given in a list like Bra[{b1,b2,...}]"];
+  Bra @ {a, bc}
+ )
 
 (* Ket[<|...|>] *)
 
-Ket[] = Ket[ Association[] ]
+Ket[] := Ket[ Association[] ]
 
 Ket[ spec__Rule ] := Ket[ Ket[], spec ]
 
@@ -845,17 +904,20 @@ Ket[ Ket[a_Association], spec__Rule ] := Module[
 
 Ket[ spec___Rule, ss:{__?AgentQ}] := KetRegulate[Ket[spec], ss]
 
-Ket[ v_Ket, spec___Rule, ss:{__?AgentQ}] := KetRegulate[Ket[v, spec], ss]
+Ket[ v_Ket, spec___Rule, ss:{__?AgentQ} ] := KetRegulate[Ket[v, spec], ss]
 
 
 (* operator form *)
-Ket[a_Association][spec__Rule] := Ket[ Ket[a], spec ]
+Ket[a_Association][spec__Rule] := Ket[Ket[a], spec]
 
 (* extracting the values *)
 Ket[a_Association][ss_List] := Lookup[a, FlavorNone @ ss]
 
 (* extracting a value *)
 Ket[a_Association][s_] := a[FlavorNone @ s]
+
+(* otherwise *)
+(* Ket[a:Except[_List|_Association|_Rule]..] := Ket @ {a} *)
 
 
 Bra[] = Bra[ Association[] ]
@@ -1263,6 +1325,10 @@ HoldPattern @
   BraKet[a, b] * Multiply[pre, post]
 
 HoldPattern @
+  Multiply[ pre___, Bra[a_List], Ket[b_List], post___ ] :=
+  BraKet[a, b] * Multiply[pre, post]
+
+HoldPattern @
   Multiply[ pre___, Bra[a___], Ket[b___], post___ ] :=
   BraKet[{a}, {b}] * Multiply[pre, post]
 (* Recall that Multiply has no Flat attribute. *)
@@ -1336,22 +1402,19 @@ Format @ BraKet[{}, b_List] :=
 Format @ BraKet[a_List, {}] :=
   Interpretation[BraKet[a, {Any}], BraKet[a, {}]]
 
-Format @ BraKet[a:Except[_List|_Association], b:Except[_List|_Association]] :=
-  Interpretation[BraKet[{a}, {b}], BraKet[a, b]]
+BraKet /: ComplexQ[ BraKet[a_, b_] ] = True
 
-BraKet /: ComplexQ[ BraKet[_List, _List] ] = True
-
-BraKet /: Conjugate[ BraKet[a_List, b_List] ] := BraKet[b, a]
-
-Dot[Bra[a___], Ket[b___]] := BraKet[{a}, {b}]
-(* RECALL: Dot has Flat attribute. *)
+BraKet /: Conjugate[ BraKet[a_, b_] ] := BraKet[b, a]
 
 (* General evaluation rules *)
 
-(* for YoungRegularBasis, YoungFourierBasis, etc. *)
-BraKet[{a_Cycles}, {b_Cycles}] := KroneckerDelta[First @ a, First @ b]
+BraKet[a_List, b_List] := KroneckerDelta[a, b] /;
+  AllTrue[Flatten @ {a, b}, NumericQ]
 
-BraKet[a_List, b_List] := KroneckerDelta[a, b]
+BraKet[a_List, b_List] := 0 /; Length[a] != Length[b]
+
+BraKet[a_List, b_List] := Times @@ Thread[KroneckerDelta[a, b]]
+
 
 BraKet[a_Association, b_Association] := With[
   { qq = Union[Keys @ a, Keys @ b] },
@@ -1395,20 +1458,48 @@ Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[P
 SetAttributes[Hexadecant, Listable]
 
 
-(**** <Puali> ****)
+(**** <Pauli> ****)
 
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
-SetAttributes[Pauli, {NHoldAll, Listable}]
+SetAttributes[Pauli, NHoldAll]
 
-Pauli /: MultiplyKind[ Pauli[___] ] = Pauli
+SyntaxInformation[Pauli] = {"ArgumentsPattern" -> {_}};
 
-Pauli /: MultiplyGenus[ Pauli[___] ] = "Singleton"
+Pauli[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "Pauli",
+    "The directions must be given in a list like Pauli[{k1,k2,...}]"];
+  Pauli @ {a, bc}
+ )
 
-Pauli /: NonCommutativeQ[ Pauli[__] ] = True
+Pauli[kk:{___, _List, ___}] := Pauli /@ Thread[kk]
+(* Note: similar to the Listable attribute. *)
+
+Pauli[kk_List] := Pauli @ ReplaceAll[ kk,
+  { All -> {1, 2, 3},
+    Full -> {0, 1, 2, 3} }
+ ] /; ContainsAny[kk, {All, Full}]
+
+Pauli[All] := Pauli /@ {1, 2, 3}
+
+Pauli[Full] := Pauli /@ {0, 1, 2, 3}
+
+Pauli[k_Integer] := Pauli @ {k}
+
+(*
+Format[op:Pauli[_Integer]] :=
+  Interpretation[thePauliForm @ op, op]
+ *)
+
+Format @ Pauli[kk_List] :=
+  Interpretation[thePauliForm @ Pauli @ kk, Pauli @ kk]
 
 
-Format @ Pauli[k__] := Interpretation[thePauliForm @ Pauli[k], Pauli[k]]
+Pauli /: MultiplyKind[ Pauli[_] ] = Pauli
+
+Pauli /: MultiplyGenus[ Pauli[_] ] = "Singleton"
+
+Pauli /: NonCommutativeQ[ Pauli[_] ] = True
 
 
 Raise[0] = Lower[0] = Hadamard[0] = Pauli[0]
@@ -1420,154 +1511,156 @@ Lower[1] = Raise[-1] = Pauli[Lower]
 Hadamard[1] = Hadamard[-1] = Pauli[Hadamard]
 
 
-Pauli[1 -> 0] = Pauli[4]
+Pauli[1 -> 0] = Pauli[{4}]
 
-Pauli[0 -> 1] = Pauli[5]
+Pauli[0 -> 1] = Pauli[{5}]
 
-Pauli[0 -> 0] = Pauli[10]
+Pauli[0 -> 0] = Pauli[{10}]
 
-Pauli[1 -> 1] = Pauli[11]
+Pauli[1 -> 1] = Pauli[{11}]
 
-Pauli[Raise] = (Pauli[1] + I Pauli[2]) / 2
+Pauli[Raise] = (Pauli[{1}] + I Pauli[{2}]) / 2
 
-Pauli[Lower] = (Pauli[1] - I Pauli[2]) / 2
+Pauli[Lower] = (Pauli[{1}] - I Pauli[{2}]) / 2
 
-Pauli[Hadamard] = (Pauli[1] + Pauli[3])/Sqrt[2]
+Pauli[Hadamard] = (Pauli[{1}] + Pauli[{3}])/Sqrt[2]
 
-Pauli[Quadrant] = Pauli[0] (1+I)/2 + Pauli[3]*(1-I)/2
+Pauli[Quadrant] = Pauli[{0}] (1+I)/2 + Pauli[{3}]*(1-I)/2
 
-Pauli[Octant] = Pauli[0] (1+Exp[I Pi/4])/2 + Pauli[3]*(1-Exp[I Pi/4])/2
+Pauli[Octant] = Pauli[{0}] (1+Exp[I Pi/4])/2 + Pauli[{3}]*(1-Exp[I Pi/4])/2
 
-Pauli[Hexadecant] = Pauli[0] (1+Exp[I Pi/8])/2 + Pauli[3]*(1-Exp[I Pi/8])/2
-
-
-Pauli[-1] = Pauli[1]
-
-Pauli[-2] = Pauli[2]
-
-Pauli[-3] = Pauli[3]
-
-Pauli[-4] = Pauli[5]
-
-Pauli[-5] = Pauli[4]
-
-Pauli[-6] = Pauli[6]
+Pauli[Hexadecant] = Pauli[{0}] (1+Exp[I Pi/8])/2 + Pauli[{3}]*(1-Exp[I Pi/8])/2
 
 
-Pauli @ C[n_Integer?NonNegative] = Pauli[0]
+Pauli[{-1}] = Pauli[{1}]
 
-Pauli[-C[n_Integer?NonNegative]] = Pauli[0]
+Pauli[{-2}] = Pauli[{2}]
+
+Pauli[{-3}] = Pauli[{3}]
+
+Pauli[{-4}] = Pauli[{5}]
+
+Pauli[{-5}] = Pauli[{4}]
+
+Pauli[{-6}] = Pauli[{6}]
+
+
+Pauli @ C[n_Integer?NonNegative] = Pauli[{0}]
+
+Pauli[-C[n_Integer?NonNegative]] = Pauli[{0}]
 
 
 Pauli[a:{(0|1)..} -> b:{(0|1)..}] := Pauli @@ Thread[a -> b]
 
-Pauli[kk__] := Pauli @@ ReplaceAll[
-  { kk },
-  { All -> {1, 2, 3},
-    Full -> {0, 1, 2, 3} }
- ] /; ContainsAny[{kk}, {All, Full}]
-
-Pauli[kk__] := Garner @ Apply[CircleTimes, Pauli /@ {kk}] /;
+Pauli[kk_List] := Garner @ Apply[CircleTimes, Pauli /@ kk] /;
   ContainsAny[
-    { kk },
+    kk,
     { Raise, Lower, Hadamard, Quadrant, Octant, Hexadecant }
    ]
 
 (* Elaboration rules *)
 
-Pauli /: HoldPattern @ Elaborate[ Pauli[a_, bc__] ] :=
-  Garner @ Apply[CircleTimes, Elaborate[Pauli /@ {a, bc}]]
+Pauli /: Elaborate[ Pauli[kk_List] ] :=
+  Garner @ Apply[CircleTimes, Elaborate[Pauli /@ kk]]
 
-Pauli /: HoldPattern @ Elaborate[ op:Pauli[0|1|2|3] ] := op
+Pauli /: Elaborate[ op:Pauli[{0|1|2|3}] ] := op
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[10] := (Pauli[0] + Pauli[3]) / 2
+Pauli /: Elaborate @ Pauli[{10}] := (Pauli[{0}] + Pauli[{3}]) / 2
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[11] := (Pauli[0] - Pauli[3]) / 2
+Pauli /: Elaborate @ Pauli[{11}] := (Pauli[{0}] - Pauli[{3}]) / 2
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[4] := Pauli[Raise]
+Pauli /: Elaborate @ Pauli[{4}] := Pauli[Raise]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[5] := Pauli[Lower]
+Pauli /: Elaborate @ Pauli[{5}] := Pauli[Lower]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[6] := Pauli[Hadamard]
+Pauli /: Elaborate @ Pauli[{6}] := Pauli[Hadamard]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[7] := Pauli[Quadrant]
+Pauli /: Elaborate @ Pauli[{7}] := Pauli[Quadrant]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[8] := Pauli[Octant]
+Pauli /: Elaborate @ Pauli[{8}] := Pauli[Octant]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[9] := Pauli[Hexadecant]
+Pauli /: Elaborate @ Pauli[{9}] := Pauli[Hexadecant]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[-7] := Dagger @ Pauli[Quadrant]
+Pauli /: Elaborate @ Pauli[{-7}] := Dagger @ Pauli[Quadrant]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[-8] := Dagger @ Pauli[Octant]
+Pauli /: Elaborate @ Pauli[{-8}] := Dagger @ Pauli[Octant]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli[-9] := Dagger @ Pauli[Hexadecant]
+Pauli /: Elaborate @ Pauli[{-9}] := Dagger @ Pauli[Hexadecant]
 
-Pauli /: HoldPattern @ Elaborate @ Pauli @ C[n_Integer] := With[
+Pauli /: Elaborate @ Pauli @ {C[n_Integer]} := With[
   { f = Exp[I*2*Pi*Power[2, n]] },
-  Pauli[0]*(1+f)/2 + Pauli[3]*(1-f)/2
+  Pauli[{0}]*(1+f)/2 + Pauli[{3}]*(1-f)/2
  ]
 
 (* Dagger *)
 
-Pauli /: Dagger[ Pauli[m:(0|1|2|3|6)] ] := Pauli[m]
+Pauli /: Dagger[ Pauli[{m:(0|1|2|3|6)}] ] := Pauli[{m}]
 
-Pauli /: Dagger[ Pauli[4] ] := Pauli[5]
+Pauli /: Dagger[ Pauli[{4}] ] := Pauli[{5}]
 
-Pauli /: Dagger[ Pauli[5] ] := Pauli[4]
+Pauli /: Dagger[ Pauli[{5}] ] := Pauli[{4}]
 
-Pauli /: Dagger[ Pauli[7] ] := Pauli[-7]
+Pauli /: Dagger[ Pauli[{7}] ] := Pauli[{-7}]
 
-Pauli /: Dagger[ Pauli[8] ] := Pauli[-8]
+Pauli /: Dagger[ Pauli[{8}] ] := Pauli[{-8}]
 
-Pauli /: Dagger[ Pauli[9] ] := Pauli[-9]
+Pauli /: Dagger[ Pauli[{9}] ] := Pauli[{-9}]
 
-Pauli /: Dagger[ Pauli[-7] ] := Pauli[7]
+Pauli /: Dagger[ Pauli[{-7}] ] := Pauli[{7}]
 
-Pauli /: Dagger[ Pauli[-8] ] := Pauli[8]
+Pauli /: Dagger[ Pauli[{-8}] ] := Pauli[{8}]
 
-Pauli /: Dagger[ Pauli[-9] ] := Pauli[9]
+Pauli /: Dagger[ Pauli[{-9}] ] := Pauli[{9}]
 
-Pauli /: Dagger @ Pauli @ C[n_Integer] := Pauli[-C[n]]
+Pauli /: Dagger @ Pauli @ {C[n_Integer]} := Pauli[{-C[n]}]
 
-Pauli /: Dagger @ Pauli[-C[n_Integer]] := Pauli[C @ n]
+Pauli /: Dagger @ Pauli @ {-C[n_Integer]} := Pauli[{C @ n}]
 
-Pauli /: Dagger @ Pauli[a_, bc__] :=
-  Garner @ Apply[CircleTimes, Dagger /@ Pauli /@ {a, bc}]
+Pauli /: Dagger @ Pauli[kk_List] :=
+  Garner @ Apply[CircleTimes, Dagger /@ Pauli /@ kk]
 
 (* Conjugate *)
 
-Pauli /: Conjugate[ Pauli[2] ] = -Pauli[2]
+Pauli /: Conjugate[ Pauli[{2}] ] = -Pauli[{2}]
 
-Pauli /: Conjugate[ Pauli[7] ] := Pauli[-7]
+Pauli /: Conjugate[ Pauli[{7}] ] := Pauli[{-7}]
 
-Pauli /: Conjugate[ Pauli[8] ] := Pauli[-8]
+Pauli /: Conjugate[ Pauli[{8}] ] := Pauli[{-8}]
 
-Pauli /: Conjugate[ Pauli[9] ] := Pauli[-9]
+Pauli /: Conjugate[ Pauli[{9}] ] := Pauli[{-9}]
 
-Pauli /: Conjugate[ Pauli[-7] ] := Pauli[7]
+Pauli /: Conjugate[ Pauli[{-7}] ] := Pauli[{7}]
 
-Pauli /: Conjugate[ Pauli[-8] ] := Pauli[8]
+Pauli /: Conjugate[ Pauli[{-8}] ] := Pauli[{8}]
 
-Pauli /: Conjugate[ Pauli[-9] ] := Pauli[9]
+Pauli /: Conjugate[ Pauli[{-9}] ] := Pauli[{9}]
 
-Pauli /: Conjugate[ Pauli[m:(0|1|3|4|5|6)] ] := Pauli[m]
+Pauli /: Conjugate[ Pauli[{m:(0|1|3|4|5|6)}] ] := Pauli[{m}]
 
-Pauli /: Conjugate[ Pauli[a_, bc__] ] := CircleTimes @@ Map[
-  Conjugate @* Pauli, {a, bc}
- ]
+Pauli /: Conjugate[ Pauli[kk_List] ] :=
+  CircleTimes @@ Conjugate[Pauli /@ kk]
 
   
 Pauli /:
-CircleTimes[a_Pauli, bc__Pauli] := Pauli @@ Catenate[List @@@ {a, bc}]
+CircleTimes[a:Pauli[_List], bc:Pauli[_List]..] := Join[a, bc, 2]
+
+(*
+Pauli /:
+CircleTimes[a:Pauli[_Integer], bc:Pauli[_Integer]..] :=
+  Pauli @ Catenate[List @@@ {a, bc}]
+ *)
 
 
-HoldPattern @ Multiply[pre___, op__Pauli, vec:Ket[(0|1)..], post___] :=
-  Multiply[pre, Dot[op, vec], post]
+HoldPattern @ Multiply[pre___, vec_Bra, op__Pauli, post___] :=
+  Multiply[pre, PauliDot[vec, op], post]
+
+HoldPattern @ Multiply[pre___, op__Pauli, vec_Ket, post___] :=
+  Multiply[pre, PauliDot[op, vec], post]
 
 HoldPattern @ Multiply[pre___, op_Pauli, more__Pauli, Shortest[post___]] :=
-  Multiply[pre, Dot[op, more], post]
+  Multiply[pre, PauliDot[op, more], post]
 
-(**** </Puali> ****)
+(**** </Pauli> ****)
 
 
 Operator::usage = "Operator[{k, th, ph}] returns the Pauli matrix in the rotated frame.\nOperator[{{k1,k2,...}, th, ph}] = Operator[{k1, th, ph}, {k2, th, ph}, ...]."
@@ -1614,7 +1707,7 @@ ExpressionFor[vec_?VectorQ] := Module[
    ];
   bits = Flatten @ Keys @ Most @ ArrayRules @ vec;
   vals = vec[[bits]];
-  bits = Ket @@@ IntegerDigits[bits-1, 2, n];
+  bits = Ket /@ IntegerDigits[bits-1, 2, n];
   KetChop @ Garner @ Dot[vals, bits]
  ]
 
@@ -1882,9 +1975,9 @@ theBlochSphere[opts___?OptionQ] := Module[
 
 Basis::usage = "Basis[n] constructs the standard tensor-product basis of a system of n unlabelled qubits.\nBasis[{dim1, dim2, ..., dimn}] constructs the standard tensor-product basis of a total of n unlabelled systems with the Hilbert space dimensions dim1, dim2, ..., respectively.\nBasis[q1, q2, ...] constructs the tensor product basis for the system consising of Species q1, q2, ...\nBasis[q1, {q2, q3}, ...] is equivalent to Basis[q1, q2, q3, ...].\nBasis[expr] finds the relevant systems from the expression expr and constructs the basis."
 
-Basis[n_Integer] := Ket @@@ Tuples[{0, 1}, n]
+Basis[n_Integer] := Ket /@ Tuples[{0, 1}, n]
 
-Basis[dim:{__Integer}] := Ket @@@ Tuples[Range[0,#-1]& /@ dim]
+Basis[dim:{__Integer}] := Ket /@ Tuples[Range[0,#-1]& /@ dim]
 
 
 Basis[] := { Ket @ Association[] } (* fallback *)
@@ -1918,9 +2011,9 @@ HoldPattern @ TheMatrix[ Dagger[op_] ] := Topple @ TheMatrix[op]
 
 (* For Ket/Bra of unlabelled qubits *)
 
-TheMatrix @ Ket[args__] := TheKet[args]
+TheMatrix @ Ket[ss_List] := TheKet @@ ss
 
-TheMatrix @ Bra[args__] := TheKet[args]
+TheMatrix @ Bra[ss_List] := TheKet @@ ss
 
 
 TheMatrix[rr:Rule[_?SpeciesQ, _]] := TheMatrix @ Ket @ Association @ rr
@@ -1930,7 +2023,7 @@ TheMatrix @ Association[aa:Rule[_?SpeciesQ, _]..] := TheMatrix /@ {aa}
 
 (* For Pauli operators of unlabelled qubits *)
 
-TheMatrix @ Pauli[args__] := ThePauli[args]
+TheMatrix @ Pauli[nn_List] := ThePauli @ nn
 
 (**** </TheMatrix> ****)
 
@@ -2010,9 +2103,9 @@ HoldPattern @
 
 (* For Ket/Bra of unlabelled qubits *)
 
-Matrix[ vec:Ket[__], {___} ] := TheMatrix[vec]
+Matrix[ vec:Ket[_List], {___} ] := TheMatrix[vec]
 
-Matrix[ vec:Bra[__], {___} ] := TheMatrix[vec]
+Matrix[ vec:Bra[_List], {___} ] := TheMatrix[vec]
 
 
 (* For Ket/Bra of labelled qubits *)
@@ -2035,7 +2128,7 @@ Matrix[Bra[Vacuum], ss:{__?SpeciesQ}] := Matrix[Bra[<||>], ss]
 
 (* For Pauli[...] *)
 
-Matrix[ op:Pauli[__], {___} ] := TheMatrix[op]
+Matrix[ op:Pauli[_List], {___} ] := TheMatrix[op]
 
 
 (* For Fermions *)
@@ -2862,108 +2955,91 @@ EulerRotation[ss:{(_?SpinQ|_?QubitQ)..}, ang_, rest___] := (
 (**** </EulerRotation> ****)
 
 
-(* *********************************************************************** *)
-(*     <Dot for Pauli and Bra/Ket>                                         *)
-(* *********************************************************************** *)
+(**** <PauliDot> ****)
 
-(* Recall that Dot has attributes Flat and OneIdentity. *)
-Dot[a_ + b_, c_] := Dot[a, c] + Dot[b, c]
+PauliDot::usage = "PauliDot[a, b, \[Ellipsis]] represents the non-commutative multiplication between Pauli operators a, b, \[Ellipsis]."
 
-Dot[c_, a_ + b_] := Dot[c, a] + Dot[c, b]
+SetAttributes[PauliDot, {Flat, OneIdentity}];
 
-Dot[ a_ b_, c_] := a Dot[b, c] /; FreeQ[a, _Dot|_Pauli|_Ket|_Bra]
+PauliDot[expr_Plus, a_] := Map[PauliDot[#, a]&, expr]
 
-Dot[ a_, b_ c_] := b Dot[a, c] /; FreeQ[b, _Dot|_Pauli|_Ket|_Bra]
+PauliDot[a_, expr_Plus] := Map[PauliDot[a, #]&, expr]
+
+PauliDot[ a_ b_, c_] :=
+  a PauliDot[b, c] /; FreeQ[a, _PauliDot|_Pauli|_Ket|_Bra]
+
+PauliDot[ a_, b_ c_] :=
+  b PauliDot[a, c] /; FreeQ[b, _PauliDot|_Pauli|_Ket|_Bra]
+
+
+PauliDot[Bra[a_List], Ket[b_List]] := BraKet[a, b]
 
 
 (* Pauli operating on Ket and Bra *)
 
-Pauli /: Dot[ Pauli[0], a_Ket ] := a
+PauliDot[ Pauli[{0}], a_Ket ] := a
 
-Pauli /: Dot[ a_Bra, Pauli[0] ] := a
+PauliDot[ a_Bra, Pauli[{0}] ] := a
 
-Pauli /:
-Dot[ Pauli[n:(1|2|3|4|5|6|7|8)], Ket[0|Up] ] :=
-  Dot[ {Ket[0],Ket[1]}, ThePauli[n][[;;,1]] ]
+PauliDot[ Pauli[{n:(1|2|3|4|5|6|7|8)}], Ket[{0|Up}] ] :=
+  Dot[ {Ket[0], Ket[1]}, ThePauli[n][[;;, 1]] ]
 
-Pauli /:
-Dot[ Pauli[n:(1|2|3|4|5|6|7|8)], Ket[1|Down] ] :=
-  Dot[ {Ket[0],Ket[1]}, ThePauli[n][[;;,2]] ]
+PauliDot[ Pauli[{n:(1|2|3|4|5|6|7|8)}], Ket[{1|Down}] ] :=
+  Dot[ {Ket[0], Ket[1]}, ThePauli[n][[;;, 2]] ]
 
-Pauli /:
-Dot[ Bra[0|Up], Pauli[n:(1|2|3|4|5|6|7|8)] ] :=
-  Dot[ ThePauli[n][[1,;;]], {Bra[0],Bra[1]} ]
+PauliDot[ Bra[{0|Up}], Pauli[{n:(1|2|3|4|5|6|7|8)}] ] :=
+  Dot[ ThePauli[n][[1, ;;]], {Bra[0], Bra[1]} ]
 
-Pauli /:
-Dot[ Bra[1|Down], Pauli[n:(1|2|3|4|5|6|7|8)] ] :=
-  Dot[ ThePauli[n][[2,;;]], {Bra[0],Bra[1]} ]
+PauliDot[ Bra[{1|Down}], Pauli[{n:(1|2|3|4|5|6|7|8)}] ] :=
+  Dot[ ThePauli[n][[2, ;;]], {Bra[0], Bra[1]} ]
 
-Pauli /:
-Dot[ z_?CommutativeQ, op_Pauli ] := z * op
+PauliDot[ z_?CommutativeQ, op_Pauli ] := z * op
 
-Pauli /:
-Dot[ op_Pauli, z_?CommutativeQ ] := z * op
+PauliDot[ op_Pauli, z_?CommutativeQ ] := z * op
 
-Pauli /:
-Dot[ Pauli[0], Pauli[n_] ] := Pauli[n]
+PauliDot[ Pauli[{0}], Pauli[{n_}] ] := Pauli[{n}]
 
-Pauli /:
-Dot[ Pauli[n_], Pauli[0] ] := Pauli[n]
+PauliDot[ Pauli[{n_}], Pauli[{0}] ] := Pauli[{n}]
 
-Pauli /:
-Dot[ Pauli[n:(0|1|2|3)], Pauli[n:(0|1|2|3)] ] := Pauli[0]
+PauliDot[ Pauli[{n:(0|1|2|3)}], Pauli[{n_}] ] := Pauli[0]
 
-Pauli /:
-Dot[ Pauli[m_], Pauli[n_] ] := Pauli[0] /; m == -n
+PauliDot[ Pauli[{m_}], Pauli[{n_}] ] := Pauli[{0}] /; m == -n
 
-Pauli /:
-Dot[ Pauli[7], Pauli[7] ] := Pauli[3]
+PauliDot[ Pauli[{7}], Pauli[{7}] ] := Pauli[{3}]
 
-Pauli /:
-Dot[ Pauli[8], Pauli[8] ] := Pauli[7]
+PauliDot[ Pauli[{8}], Pauli[{8}] ] := Pauli[{7}]
 
-Pauli /:
-Dot[ Pauli[n:(4|5)], Pauli[n:(4|5)] ] := 0
+PauliDot[ Pauli[{n:(4|5)}], Pauli[{n_}] ] := 0
 
-Pauli /:
-Dot[ Pauli[1], Pauli[2] ] := I Pauli[3]
+PauliDot[ Pauli[{1}], Pauli[{2}] ] := I Pauli[{3}]
 
-Pauli /:
-Dot[ Pauli[2], Pauli[3] ] := I Pauli[1]
+PauliDot[ Pauli[{2}], Pauli[{3}] ] := I Pauli[{1}]
 
-Pauli /:
-Dot[ Pauli[3], Pauli[1] ] := I Pauli[2]
+PauliDot[ Pauli[{3}], Pauli[{1}] ] := I Pauli[{2}]
 
-Pauli /:
-Dot[ Pauli[2], Pauli[1] ] := -I Pauli[3]
+PauliDot[ Pauli[{2}], Pauli[{1}] ] := -I Pauli[{3}]
 
-Pauli /:
-Dot[ Pauli[3], Pauli[2] ] := -I Pauli[1]
+PauliDot[ Pauli[{3}], Pauli[{2}] ] := -I Pauli[{1}]
 
-Pauli /:
-Dot[ Pauli[1], Pauli[3] ] := -I Pauli[2]
+PauliDot[ Pauli[{1}], Pauli[{3}] ] := -I Pauli[{2}]
 
 (* general rules *)
 
-Pauli /:
-Dot[ Pauli[m_], Pauli[n_] ] :=
-  Garner @ Dot[Elaborate @ Pauli @ m, Elaborate @ Pauli @ n]
+(*
+PauliDot[ Pauli[m_], Pauli[n_] ] :=
+  Garner @ PauliDot[Elaborate @ Pauli @ m, Elaborate @ Pauli @ n]
+ *)
 
-Pauli /:
-Dot[ Pauli[a_, b__], Pauli[c_, d__] ] :=
-  CircleTimes @@ Dot @@@ Transpose[{ Pauli /@ {a, b}, Pauli /@ {c, d} }]
+PauliDot[ Pauli[aa_List], Pauli[bb_List] ] := CircleTimes @@
+  PauliDot @@@ Transpose[Elaborate @ {Pauli /@ aa, Pauli /@ bb}]
   
-Pauli /:
-Dot[ Pauli[a_, b__], Ket[c_, d__] ] := CircleTimes @@
-  Dot @@@ Transpose[{ Pauli /@ {a,b}, Ket /@ {c,d} }]
+PauliDot[ Pauli[aa_List], Ket[bb_List] ] := CircleTimes @@
+  PauliDot @@@ Transpose[{Pauli /@ aa, Ket /@ bb}]
 
-Pauli /:
-Dot[ Bra[c_, d__], Pauli[a_, b__] ] := CircleTimes @@
-  Dot @@@ Transpose[{ Bra /@ {c,d}, Pauli /@ {a,b} }]
+PauliDot[ Bra[aa_List], Pauli[bb_List] ] := CircleTimes @@
+  PauliDot @@@ Transpose[{Bra /@ aa, Pauli /@ bb}]
 
-(* *********************************************************************** *)
-(*     </Dot for Pauli and Bra/Ket>                                        *)
-(* *********************************************************************** *)
+(**** </PauliDot> ****)
 
 
 (**** <CircleTimes> ****)
@@ -3459,7 +3535,7 @@ PauliDecompose[mat_?SquareMatrixQ] := Module[
 PauliCompose::usage = "PauliCompose[assc] reconstructs the matrix using the Pauli decomposition coefficients given in Association assc."
 
 PauliCompose[aa_Association] :=
-  Total @ KeyValueMap[((ThePauli @@ #1) * #2)&, aa]
+  Total @ KeyValueMap[(ThePauli[#1] * #2)&, aa]
 
 
 PauliVector::usage = "PauliVector[mat] returns the Pauli decomposition coefficients of 2\[Times]2 matrix mat."
@@ -4848,7 +4924,7 @@ Eigensystem @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] := {
 (***** </TridiagonalToeplitzMatrix> ****)
 
 
-Protect[ Evaluate @ $symbs ]
+Protect[ Evaluate @ $symb ]
 
 End[]
 

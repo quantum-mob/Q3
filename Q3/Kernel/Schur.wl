@@ -4,8 +4,8 @@ BeginPackage["Q3`"];
 
 `Schur`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.19 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-10 22:55:05+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.20 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-12 11:14:43+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -38,7 +38,9 @@ Begin["`Private`"]
 
 WeylType::usage = "WeylType[tb] returns the content of Weyl tableau tb.\nThe content of a Weyl tableau is the inversely sorted list of multiplicities of numbers (or letters) appearing in the tableau.\nSimilar to WeylContents."
 
-WeylType[tb_?WeylTableauQ] := ReverseSort @ Values @ Counts[Flatten @ tb]
+WeylType[yt_YoungTableau] := WeylType[First @ yt]
+
+WeylType[data_?WeylTableauQ] := ReverseSort @ Values @ Counts[Flatten @ data]
 
 
 WeylContents::usage = "WeylContents[tb, n] returns an association of the occupation numbers of the levels in the state described by the Weyl tableau tb.\nWeylContents[tb, n, f] maps the resulting keys by function f.\nEssentially the same as WeylType."

@@ -5,8 +5,8 @@ BeginPackage["Q3`"]
 
 `Gottesman`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 2.72 $"][[2]], " (",
-  StringSplit["$Date: 2023-10-19 14:23:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 2.74 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-12 16:24:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -77,7 +77,7 @@ GroupGenerators @ PauliGroup[qq:{__?QubitQ}] :=
 
 PauliGroup /:
 GroupGenerators @ PauliGroup[n_Integer] := Module[
-  { op = Pauli @@ ConstantArray[0, n],
+  { op = Pauli @ ConstantArray[0, n],
     kk = Range[n] },
   kk = Flatten[ Thread /@ {kk -> 1, kk -> 2, kk ->3 } ];
   Sort @ Map[ReplacePart[op, #]&, kk]
@@ -196,9 +196,9 @@ PauliQ[_List] = False
 PauliQ[_Association] = False
 
 
-PauliQ[Pauli[(0|1|2|3)..]] = True
+PauliQ[Pauli[{(0|1|2|3)..}]] = True
 
-PauliQ[(-1|-I|I) * Pauli[(0|1|2|3)..]] = True
+PauliQ[(-1|-I|I) * Pauli[{(0|1|2|3)..}]] = True
 
 
 PauliQ[_?QubitQ[___, 0|1|2|3]] = True
@@ -359,7 +359,7 @@ CliffordQ[mat_?MatrixQ] := Module[
   { n = Log[2, Length @ mat],
     spr = Supermap[mat],
     gnr },
-  gnr = ThePauli @@@ Join[
+  gnr = ThePauli /@ Join[
     NestList[RotateRight, PadRight[{1}, n], n-1],
     NestList[RotateRight, PadRight[{3}, n], n-1]
    ];
@@ -391,15 +391,14 @@ GottesmanVector[op_Pauli] := Flatten @ ReplaceAll[
 GottesmanVector[_?CommutativeQ op_] := GottesmanVector[op]
 
 GottesmanVector[_?CommutativeQ, ss:{__?QubitQ}] :=
-  GottesmanVector[Pauli @@ ConstantArray[0, Length @ ss]]
+  GottesmanVector[Pauli @ ConstantArray[0, Length @ ss]]
 
 GottesmanVector[_?CommutativeQ op_, ss:{__?QubitQ}] :=
   GottesmanVector[op, ss]
 
 GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := With[
   { qq = FlavorNone[ss] },
-  GottesmanVector @ Apply[
-    Pauli,
+  GottesmanVector @ Pauli[
     qq /. {FlavorMute[op] -> FlavorLast[op]} /. Thread[qq -> 0]
    ]
  ]
@@ -407,8 +406,7 @@ GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := With[
 HoldPattern @
   GottesmanVector[Multiply[op__?QubitQ], ss:{__?QubitQ}] := With[
     { qq = FlavorNone[ss] },
-    GottesmanVector @ Apply[
-      Pauli,
+    GottesmanVector @ Pauli[
       qq /. Thread[FlavorMute @ {op} -> FlavorLast @ {op}] /. Thread[qq -> 0]
      ]
    ]
@@ -425,7 +423,7 @@ FromGottesmanVector[vec:{(0|1)..}] :=
   Message[FromGottesmanVector::wrong, vec] /;
   OddQ[Length @ vec]
 
-FromGottesmanVector[vec:{(0|1)..}] := Pauli @@ ReplaceAll[
+FromGottesmanVector[vec:{(0|1)..}] := Pauli @ ReplaceAll[
   Partition[vec, 2],
   { {0, 0} -> 0,
     {1, 0} -> 1,
@@ -572,7 +570,7 @@ Stabilizer[vec_?VectorQ] := With[
     Message[Stabilizer::notss, expr];
     Return[{}]
    ];
-  (ThePauli @@@ Keys[mm]) * Values[mm]
+  (ThePauli @ Keys[mm]) * Values[mm]
  ] /; IntegerQ @ Log[2, Length @ vec]
 
 
@@ -848,9 +846,9 @@ GottesmanMatrix[op_, ss:{__?QubitQ}] := Module[
    where this form is faster, and hence we keep this form. *)
 
 GottesmanMatrix[op_] := Module[
-  { n = Length @ First @ Cases[{op}, _Pauli, Infinity],
-    xz },
-  xz = Pauli @@@ Riffle[
+  { n, xz },
+  n  = FirstCase[{op}, Pauli[k_] :> Length[k], Missing[], Infinity];
+  xz = Pauli /@ Riffle[
     NestList[RotateRight, PadRight[{1}, n], n-1],
     NestList[RotateRight, PadRight[{3}, n], n-1]
    ];
@@ -866,7 +864,7 @@ GottesmanMatrix[mat_?MatrixQ] := Module[
     Message[GottesmanMatrix::dim, MatrixForm @ mat];
     Return[{{}}]
    ];
-  xz = ThePauli @@@ Riffle[
+  xz = ThePauli /@ Riffle[
     NestList[RotateRight, PadRight[{1}, n], n-1],
     NestList[RotateRight, PadRight[{3}, n], n-1]
    ];

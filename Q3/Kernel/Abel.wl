@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Abel`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.64 $"][[2]], " (",
-  StringSplit["$Date: 2023-10-15 10:40:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.67 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-11 04:56:59+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -106,6 +106,8 @@ $::usage = "$ is a flavor index referring to the species itself."
 { CoefficientTensor };
 
 { LevelsPlot };
+
+{ Ket, Bra };
 
 
 (* See Gottesman.wl *)
@@ -1998,12 +2000,8 @@ OccupationValue[expr_, ss:{__?SpeciesQ}, val_] :=
 SetAttributes[{KroneckerDelta, UnitStep}, NumericFunction]
 
 KroneckerDelta /:
-HoldPattern[ Power[KroneckerDelta[x__],_?Positive] ] :=
+HoldPattern[ Power[KroneckerDelta[x__], _?Positive] ] :=
   KroneckerDelta[x]
-
-DiscreteDelta /:
-HoldPattern[ Power[DiscreteDelta[x__],_?Positive] ] :=
-  DiscreteDelta[x]
 
 Format[ KroneckerDelta[x__List], StandardForm ] := Interpretation[
   Times @@ Thread[KroneckerDelta[x]],
@@ -2016,20 +2014,17 @@ Format[ KroneckerDelta[x__List], TraditionalForm ] := Interpretation[
  ]
 (* NOTE: This is also for TeXForm[ ] *)
 
-Format[ KroneckerDelta[x__], StandardForm ] := Interpretation[
-  Style[
-    Subscript["\[Delta]", x],
-    ScriptSizeMultipliers -> 1, 
-    ScriptBaselineShifts -> {1,1}
-   ],
-  KroneckerDelta[x]
- ]
-(* NOTE: TranditionalForm is already defined in the above way. *)
 
+DiscreteDelta /:
+HoldPattern[ Power[DiscreteDelta[x__], _?Positive] ] :=
+  DiscreteDelta[x]
+
+(*
 Format @ DiscreteDelta[j__] := Interpretation[
   KroneckerDelta[{j}, ConstantArray[0, Length @ {j}]],
   DiscreteDelta[j]
  ]
+ *)
 
 Format[ UnitStep[x_], StandardForm ] := Interpretation[
   Row @ {"\[Theta]", "(", x, ")"},
@@ -2167,49 +2162,6 @@ q3AssureList[a_, n_Integer] := Table[a, n]
 
 
 Protect[ Evaluate @ $symb ]
-
-End[]
-
-
-(**** Obsolete Symbols ****)
-
-{ MultiplyExpand }; (* obsolete *)
-{ CauchyExpand }; (* OBSOLETE *)
-{ FockExpand, $FockExpandMethods }; (* Obsolete *)
-
-
-Begin["`Obsolete`"]
-
-MultiplyExpand::usage = "MultiplyExpand is obsolete. Use Elaborate instead."
-
-MultiplyExpand[expr_, opts___?OptionQ] := (
-  Message[Q3General::obsolete, "MultiplyExpand", "Elaborate"];
-  Elaborate[expr]
- )
-
-CauchyExpand::usage = "CauchyExpand[expr] is obsolete now; use Elaborate instead."
-
-CauchyExpand[expr_] := (
-  Message[Q3General::obsolete, CauchyExpand, Elaborate];
-  Elaborate[expr]
- )
-
-
-$FockExpandMethods::usage = "$FockExpandMethods is obsolete and not used any longer."
-
-FockExpand::usage = "FockExpand is obsolete now. Use Elaborate instead."
-
-FockExpand[expr_, opts___?OptionQ] := (
-  Message[Q3General::obsolete, "FockExpand", "Elaborate"];
-  Elaborate[expr]
- )
-
-FockCoefficientTensor::usage = "FockCoefficientTensor is obsolete. Use CoefficientTensor instead."
-
-FockCoefficientTensor[args__] := (
-  Message[Q3General::obsolete, "FockCoefficientTensor", "CoefficientTensor"];
-  CoefficientTensor[args]
- )
 
 End[]
 
