@@ -3,6 +3,7 @@
 ## v2.15.0
 
 - The syntax of Pauli, ThePauli, Ket, and TheKet has changed significantly.
+- New quantum circuit element iSwap.
 
 ## v2.14.16
 

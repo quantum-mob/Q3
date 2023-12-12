@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.56 $"][[2]], " (",
-  StringSplit["$Date: 2023-09-17 21:10:16+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.58 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-12 22:08:06+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -476,6 +476,13 @@ ParseGate[ Swap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
    ]
 
 
+ParseGate[ iSwap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
+  Gate[ {c}, {t},
+    "ControlShape" -> "CircleCross",
+    "TargetShape" -> "CircleCross"
+   ]
+
+
 ParseGate[ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
   Gate[ {a}, {b},
     "ControlShape" -> "Cross",
@@ -694,6 +701,21 @@ gateShape["CirclePlus"][x_, y_?NumericQ, ___] := {
   Line @ {
     { {x-$GateSize/3,y}, {x+$GateSize/3,y} },
     { {x,y-$GateSize/3}, {x,y+$GateSize/3} }
+   }
+ }
+
+
+gateShape["CircleCross"][x_, Rule[yy_List, _], ___] :=
+  gateShape["CircleCross"][x, yy]
+
+gateShape["CircleCross"][x_, yy_List, ___] :=
+  gateShape["CircleCross"] @@@ Thread @ {x, yy}
+
+gateShape["CircleCross"][x_, y_?NumericQ, ___] := {
+  {EdgeForm[Black], White, Disk[{x, y}, $GateSize / 3]},
+  Line @ {
+    { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
+    { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
    }
  }
 

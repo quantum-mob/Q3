@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.70 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-12 16:35:40+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.72 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-12 22:03:48+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -17,7 +17,7 @@ BeginPackage["Q3`"]
 
 { Rotation, EulerRotation, Phase };
 
-{ ControlledGate, CNOT, CX = CNOT, CZ, Swap,
+{ ControlledGate, CNOT, CX = CNOT, CZ, Swap, iSwap,
   Toffoli, Fredkin, Deutsch };
 
 { ControlledExp = ControlledPower, ActOn };
@@ -63,7 +63,7 @@ $symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
 
 AddElaborationPatterns[
   _QFT,
-  _ControlledGate, _CZ, _CX, _CNOT, _Swap,
+  _ControlledGate, _CZ, _CX, _CNOT, _Swap, _iSwap,
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
   _Projector, _ProductState,
@@ -1095,6 +1095,42 @@ SWAP[args__] := (
  )
 
 (**** </Swap> ****)
+
+
+(**** <iSwap> ****)
+
+iSwap::usage = "iSwap[A, B] operates the iSwap gate on the two qubits A and B."
+
+SetAttributes[iSwap, Listable]
+
+iSwap[a_?QubitQ, b_?QubitQ] := iSwap @@ FlavorNone @ {a, b} /;
+  Not[FlavorNoneQ @ {a, b}]
+
+iSwap[a_?QubitQ, b_?QubitQ] := iSwap[b, a] /;
+  Not @ OrderedQ @ FlavorNone @ {a, b}
+
+iSwap /:
+Matrix[op_iSwap, rest___] := Matrix[Elaborate[op], rest]
+
+iSwap /:
+Elaborate @ iSwap[a_?QubitQ, b_?QubitQ] :=
+  Garner[ (1 + I*a[1]**b[1] + I*a[2]**b[2] + a[3]**b[3]) / 2 ]
+
+iSwap /:
+Multiply[pre___, iSwap[s_?QubitQ, t_?QubitQ], Ket[a_Association]] := With[
+  { ts = Lookup[a, {t, s}] },
+  If[OddQ[Total @ ts], I, 1] *
+  Multiply[ pre,
+    Ket @ KeySort @ Join[a, AssociationThread[{s, t} -> ts]]
+   ]
+  ]
+
+iSwap /:
+Expand @ iSwap[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+  {s[7], t[7]}, s[6], CNOT[s, t], CNOT[t, s], t[6]
+ ]
+
+(**** </iSwap> ****)
 
 
 (**** <Toffoli> ****)
