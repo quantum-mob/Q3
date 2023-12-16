@@ -1,5 +1,14 @@
 # Release Notes
 
+## v2.15.2
+
+- Quantum circuit model of UnitaryInteraction is changed.
+
+## v2.15.1
+
+- Improved documentation for iSwap and Swap.
+- Measurement[{}] is allowed; giving no effect, though.
+
 ## v2.15.0
 
 - The syntax of Pauli, ThePauli, Ket, and TheKet has changed significantly.

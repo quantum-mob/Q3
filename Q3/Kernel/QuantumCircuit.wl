@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.58 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-12 22:08:06+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.61 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-16 22:19:49+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -287,8 +287,8 @@ HoldPattern @
     ww = FlavorNone @ Flatten @ q3AssureList @ ww;
     ss = Union @ Flatten @ {ss, vv, ww};
 
-    If[cc == {}, cc = {"Spacer"}];
-    (* There can be only input elements. *)
+    cc = DeleteCases[cc, {}]; (* E.g., Measurement[{}] *)
+    If[cc == {}, cc = {"Spacer"}]; (* E.g., only input elements *)
     
     xx  = 1 + Accumulate[Prepend[Map[qcDepth, cc], 0]];
     xx *= $CircuitUnit;
@@ -390,7 +390,7 @@ ParseGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
 ParseGate[HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ] :=
   Map[ParseGate[#, opts]&, Reverse @ {ss}]
 
-ParseGate[Measurement[ss:{__?PauliQ}], opts___?OptionQ] :=
+ParseGate[Measurement[ss:{___?PauliQ}], opts___?OptionQ] :=
   Map[ParseGate[Measurement[#], opts]&, ss]
 
 ParseGate[Measurement[S_?QubitQ], opts___?OptionQ] := Gate[
@@ -483,20 +483,6 @@ ParseGate[ iSwap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
    ]
 
 
-ParseGate[ InteractionXY[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
-  Gate[ {a}, {b},
-    "ControlShape" -> "Cross",
-    "TargetShape" -> "Cross",
-    "LinkShape" -> "Wiggly"
-   ]
-
-ParseGate[ InteractionZZ[phi_, {a_?QubitQ, b_?QubitQ}], ___?OptionQ ] :=
-  Gate[ {a}, {b},
-    "ControlShape" -> "Dot",
-    "TargetShape" -> "Dot",
-    "LinkShape" -> "Wiggly" ]
-
-
 ParseGate[
   UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}, opts___?OptionQ], ___ ] :=
   Gate[ Most @ ss, {Last @ ss}, opts,
@@ -508,8 +494,8 @@ ParseGate[
   HoldPattern @ UnitaryInteraction[_?VectorQ | _?MatrixQ, ss:{__?QubitQ},
     opts___?OptionQ], ___] :=
   Gate[ Most @ ss, {Last @ ss}, opts,
-    "ControlShape" -> "Cross",
-    "TargetShape" -> "Cross",
+    "ControlShape" -> "Dot",
+    "TargetShape" -> "Dot",
     "LinkShape" -> "Wiggly" ]
 
 

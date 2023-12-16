@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.72 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-12 22:03:48+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.73 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-16 22:41:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -2704,7 +2704,7 @@ Elaborate @ UnitaryInteraction[{phi_, phi_, 0}, ss:{__?QubitQ}] := (
 
 UnitaryInteraction /:
 Elaborate @ HoldPattern[op:UnitaryInteraction[_, ss:{__?QubitQ}]] :=
-  ExpressionFor[Matrix[op], ss]
+  Elaborate @ ExpressionFor[Matrix[op], ss]
 
 
 UnitaryInteraction /:

@@ -7,8 +7,8 @@ BeginPackage["Q3`"]
 
 `GellMann`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 1.38 $"][[2]], " (",
-  StringSplit["$Date: 2023-02-25 08:55:50+09 $"][[2]], ") ",
+  StringSplit["$Revision: 1.39 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-12 22:53:35+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -247,8 +247,8 @@ TheKet["b"] := {0, 1, 0}
 
 TheKet["g"] := {0, 0, 1}
 
-TheKet[a:("r" | "b" | "g")..] := Module[
-  { bits = {a} /. {"r" -> 0, "b" -> 1, "g" -> 2},
+TheKet[aa:{("r" | "b" | "g")..}] := Module[
+  { bits = aa /. {"r" -> 0, "b" -> 1, "g" -> 2},
     j },
   j = 1 + FromDigits[bits, 3];
   SparseArray[ {j -> 1}, 3^Length[bits] ]

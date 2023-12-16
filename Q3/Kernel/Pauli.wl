@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Pauli`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 7.21 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-12 15:21:03+09 $"][[2]], ") ",
+  StringSplit["$Revision: 7.22 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-12 22:52:03+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -147,13 +147,16 @@ SpinNumberQ[{j_, m_}] := SpinNumberQ[j, m]
 SpinNumberQ[__] = False
 
 
+(**** <TheKet> ****)
+
 TheBra::usage = "TheBra[...] is formally different from but equalt to TheKet[...]."
 
 TheBra[args__] := TheKet[args]
 
-
 TheKet::usage = "TheKet[0]={1,0}, TheKet[1]={0,1}.
   TheKet[s1,s2,...] = TheKet[s1]\[CircleTimes]TheKet[s2]\[CircleTimes]...."
+
+SyntaxInformation[TheKet] = {"ArgumentsPattern" -> {_}};
 
 TheKet[0] = TheKet[Up] = {1, 0}
 
@@ -161,15 +164,20 @@ TheKet[1] = TheKet[Down] = {0, 1}
 
 TheKet[x_?BinaryQ] = {1-x, x}
 
-TheKet[aa:(0|1|Up|Down)..] := Module[
-  { bb = {aa} /. {Up -> 0, Down -> 1},
+TheKet[aa:{(0|1|Up|Down)..}] := Module[
+  { bb = aa /. {Up -> 0, Down -> 1},
     k },
   k = 1 + FromDigits[bb, 2];
   SparseArray[{k -> 1}, Power[2, Length @ bb]]
  ]
 
-(* TheKet[ a:(0|1|Up|Down).. ] := CircleTimes @@ Map[TheKet,{a}] *)
-(* It takes quite long for bit strings longer than 10. *)
+TheKet[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "TheKet",
+    "The directions must be given in a list like TheKet[{k1,k2,...}]"];
+  TheKet @ {a, bc}
+ )
+
+(**** </TheKet> ****)
 
 
 TheState::usage = "TheState[{0, theta, phi}] = TheRotation[phi, 3].TheRotation[theta, 2].TheKet[0].
@@ -2011,9 +2019,9 @@ HoldPattern @ TheMatrix[ Dagger[op_] ] := Topple @ TheMatrix[op]
 
 (* For Ket/Bra of unlabelled qubits *)
 
-TheMatrix @ Ket[ss_List] := TheKet @@ ss
+TheMatrix @ Ket[ss_List] := TheKet @ ss
 
-TheMatrix @ Bra[ss_List] := TheKet @@ ss
+TheMatrix @ Bra[ss_List] := TheKet @ ss
 
 
 TheMatrix[rr:Rule[_?SpeciesQ, _]] := TheMatrix @ Ket @ Association @ rr
