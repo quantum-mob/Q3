@@ -3,6 +3,7 @@
 ## v2.15.3
 
 - A bug fix for Qubits[QuantumCircuit[...]].
+- New function PlaybookEpilog.
 
 ## v2.15.2
 
