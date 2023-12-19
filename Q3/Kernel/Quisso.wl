@@ -2795,13 +2795,15 @@ setQudit[x_Symbol, dim_Integer] := (
     Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];  
   Format @ x[j___, 0] :=
     Interpretation[SpeciesBox[1, {j}, {0}], x[j, 0]];
-  If[ $VersionNumber < 13.3,
+  Which[
+    $VersionNumber < 13.3,
     Format @ x[j___, a_ -> b_] := Interpretation[
       SpeciesBox[ Row @ {"(", Ket[b], Bra[a], ")"}, {j}, {}],
       x[j, a -> b]
      ],
+    True,
     Format @ x[j___, a_ -> b_] := Interpretation[
-      SpeciesBox[ Row @ {"(", Ket @ {b}, Bra @ {a}, ")"}, {j}, {}],
+      SpeciesBox[ Row @ {Ket @ {b}, Bra @ {a}}, {j}, {}],
       x[j, a -> b]
      ]
    ];

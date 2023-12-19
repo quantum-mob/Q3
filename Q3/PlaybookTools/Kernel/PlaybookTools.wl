@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-11-08 21:03:24+09 $ *)
-(* $Revision: 1.46 $ *)
+(* $Date: 2023-12-18 19:37:08+09 $ *)
+(* $Revision: 1.48 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -18,6 +18,8 @@ ClearAll["`*"];
 { PlaybookContents,
   PlaybookContentsLine,
   $PlaybookContentsName = "Table of Contents" };
+
+{ PlaybookEpilog };
 
 { ToggleBanner, SetBanner, UnsetBanner };
 
@@ -144,7 +146,7 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
    ];
 
   SetBanner[nb, $PlaybookBanner];
-  PlaybookEpilogue[nb];
+  DeleteEpilog[nb];
 
   If[ OptionValue["PrintHandout"], PlaybookPrint[nb] ];
   
@@ -220,23 +222,23 @@ PlaybookFold[nb_NotebookObject, styles:{__String}] :=
   Scan[PlaybookFold[nb, #]&, styles]
 
 
-PlaybookEpilogue::usage = "PlaybookEpilogue[nb] deletes cells and cell groups with CellTags PlaybookEpilogue.\nPlaybookEpilogue[nb, cell] deletes the particular cell or cell group."
+DeleteEpilog::usage = "DeleteEpilog[nb] deletes cells and cell groups with CellTags DeleteEpilog.\nDeleteEpilog[nb, cell] deletes the particular cell or cell group."
 
-PlaybookEpilogue[nb_NotebookObject] := (
+DeleteEpilog[nb_NotebookObject] := (
   SelectionMove[nb, Before, Notebook, AutoScroll -> False];
   (* Print["Examinig ", NotebookFileName @ nb]; *)
   (* For some unknown reason, the above line or similar is
      necessary. Otherwise, NotebookFind below does not work properly. *)
   If[ FailureQ @
-      NotebookFind[nb, "PlaybookEpilogue", All, CellTags, AutoScroll -> False],
+      NotebookFind[nb, "PlaybookEpilog", All, CellTags, AutoScroll -> False],
     Print["No epilogue to delete!"];
     Return[],
     Print["Examining ", SelectedCells @ nb, " for deletion."];
-    Scan[PlaybookEpilogue[nb, #]&, SelectedCells @ nb]
+    Scan[DeleteEpilog[nb, #]&, SelectedCells @ nb]
    ]
  )
 
-PlaybookEpilogue[nb_NotebookObject, cell_CellObject] := With[
+DeleteEpilog[nb_NotebookObject, cell_CellObject] := With[
   { cc = (
       SelectionMove[cell, All, CellGroup, AutoScroll -> False];
       SelectedCells[nb] ) },
@@ -249,6 +251,31 @@ PlaybookEpilogue[nb_NotebookObject, cell_CellObject] := With[
  ]
 
 (**** </PlaybookDeploy> ****)
+
+
+(**** <PlaybookEpilog> ****)
+
+PlaybookEpilog::usage = "PlaybookEpilog[nb] puts the Epilog section with CellTag \"PlaybookEpilog\" in notebook nb.\nPlaybookEpilog[] puts it in the selected notebook."
+
+PlaybookEpilog[] := PlaybookEpilog @ SelectedNotebook[]
+
+PlaybookEpilog[nb_NotebookObject] := Module[
+  { cc },
+  cc = Cell @ CellGroupData @ {
+    Cell["Epilog", "Section", CellTags -> {"PlaybookEpilog"}],
+    Cell[BoxData @ RowBox @ {"WorkHere", "[", "]"}, "Input"],
+    Cell[BoxData @ RowBox @ {"PlaybookDeploy", "[", 
+        RowBox @ {
+          RowBox[{"\"\<PrintHandout\>\"", "->", "True"}], ",", " ", 
+          RowBox[{"\"\<DeleteOutput\>\"", "->", "True"}], ",", " ", 
+          RowBox[{"\"\<FoldSections\>\"", "->", "True"}]}, "]"}, "Input"],
+    Cell[BoxData @ RowBox @ {"SystemOpen", "[", 
+        RowBox[{"NotebookFolder", "[", "]"}], "]"}, "Input"]
+   };
+  NotebookWrite[nb, cc];
+ ]
+
+(**** </PlaybookEpilogy> ***)
 
 
 (**** <PlaybookContents> ****)

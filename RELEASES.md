@@ -1,5 +1,9 @@
 # Release Notes
 
+## v2.15.3
+
+- A bug fix for Qubits[QuantumCircuit[...]].
+
 ## v2.15.2
 
 - Quantum circuit model of UnitaryInteraction is changed.

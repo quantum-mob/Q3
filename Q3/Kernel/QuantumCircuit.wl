@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `QuantumCircuit`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 3.61 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-16 22:19:49+09 $"][[2]], ") ",
+  StringSplit["$Revision: 3.62 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-19 20:37:33+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -64,7 +64,7 @@ Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] :=
 
 
 QuantumCircuit /:
-Qubits @ QuantumCircuit[gg__, opts_?OptionsQ] := Union[
+Qubits @ QuantumCircuit[gg__, opts___?OptionQ] := Union[
   Qubits @ {gg},
   FlavorNone @ q3AssureList @ OptionValue[QuantumCircuit, opts, "Visible"]
  ]
