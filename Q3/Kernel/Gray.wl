@@ -281,7 +281,10 @@ GivensRotation::two = "The first argument of GivensRotation must be a 2\[Times]2
 
 GivensRotation::range = "Either or both of `` is out of [1, ``]."
 
-GivensRotation /: NonCommutativeQ[ GivensRotation[___] ] = True
+AddElaborationPatterns[ _GivensRotation ]
+
+GivensRotation /:
+NonCommutativeQ[ GivensRotation[___] ] = True
 
 GivensRotation /:
 MultiplyGenus @ GivensRotation[___] := "Singleton"
@@ -331,6 +334,11 @@ Dagger[op_GivensRotation] = op (* fallback *)
 GivensRotation /:
 Dagger @ GivensRotation[mat_?MatrixQ, rest__] :=
   GivensRotation[Topple @ mat, rest]
+
+
+GivensRotation /:
+Elaborate[op:GivensRotation[_, _, ss:{__?QubitQ}, ___]] :=
+  Elaborate @ ExpressionFor[Matrix[op], ss]
 
 
 GivensRotation /:

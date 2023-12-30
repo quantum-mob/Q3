@@ -1,5 +1,14 @@
 # Release Notes
 
+## v3.0.0
+
+- Starts to use Git for version control.
+
+## v2.15.4
+
+- New function Matchgate.
+- Elaborate[GivensRotation[...]]
+
 ## v2.15.3
 
 - A bug fix for Qubits[QuantumCircuit[...]].

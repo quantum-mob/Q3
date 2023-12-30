@@ -1,7 +1,7 @@
 (* -*- mode:math -*- *)
 (* Mahn-Soo Choi *)
-(* $Date: 2023-12-18 19:37:08+09 $ *)
-(* $Revision: 1.48 $ *)
+(* $Date: 2023-12-21 23:22:22+09 $ *)
+(* $Revision: 1.49 $ *)
 
 BeginPackage["PlaybookTools`"]
 
@@ -269,6 +269,7 @@ PlaybookEpilog[nb_NotebookObject] := Module[
           RowBox[{"\"\<PrintHandout\>\"", "->", "True"}], ",", " ", 
           RowBox[{"\"\<DeleteOutput\>\"", "->", "True"}], ",", " ", 
           RowBox[{"\"\<FoldSections\>\"", "->", "True"}]}, "]"}, "Input"],
+    $ParagraphDelimiter,
     Cell[BoxData @ RowBox @ {"SystemOpen", "[", 
         RowBox[{"NotebookFolder", "[", "]"}], "]"}, "Input"]
    };

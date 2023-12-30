@@ -1,3 +1,5 @@
+(* ::Package:: *)
+
 (* -*- mode: math; -*- *)
 
 BeginPackage["Q3`"]
@@ -122,6 +124,7 @@ BeginPackage["Q3`"]
 { WignerFunction }; (* obsolete *)
 { PauliExpression, PauliExpressionRL }; (* obsolete *)
 { PauliInner }; (* obsolete *)
+
 
 Begin["`Private`"]
 
@@ -432,7 +435,7 @@ KetMutate[Pauli[v__], ss:{__?SpeciesQ}] := With[
 
 KetMutate[expr_, ss:{__?SpeciesQ}] := ReplaceAll[ expr,
   { v_Association :> KetMutate[v, ss],
-    v:(_Ket|_Bra_) :> KetMutate[v, ss],
+    v:(_Ket|_Bra _) :> KetMutate[v, ss],
     v_Pauli :> KetMutate[v, ss] }
  ]
 
@@ -2476,7 +2479,7 @@ blockEigensystem[bs:{__?MatrixQ}, mat_?MatrixQ] := Module[
 
 blockEigensystem[bs_?MatrixQ, mat_?MatrixQ] := Module[
   { sys, val, vec },
-  sys = Transpose @ Eigensystem[Conjugate[bs].mat.Transpose[bs]];
+  sys = Transpose @ Eigensystem[Conjugate[bs] . mat . Transpose[bs]];
   {val, vec} = Transpose[GatherBy[sys, First], {2, 3, 1}];
   vec = Map[Normalize, vec, {2}] . bs;
   {val, vec}
@@ -2911,7 +2914,7 @@ Rotation[qq:{(_?QubitQ|_?SpinQ)..}, ang_, rest___] := (
 EulerRotation::usage = "EulerRotation[{a, b, c}] = Rotation[a, 3].Rotation[b, 2].Rotation[c, 3] represent the Euler rotation by angles a, b, c in a two-dimensional Hilbert space."
 
 EulerRotation[ {a_, b_, c_} ] :=
-  Rotation[a, 3].Rotation[b, 2].Rotation[c, 3]
+  Rotation[a, 3] . Rotation[b, 2] . Rotation[c, 3]
 
 EulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
   CircleTimes @@ Map[EulerRotation, {a, b}]
@@ -4358,7 +4361,7 @@ RandomPositive[n_Integer] := RandomPositive[(1+I){-1, 1}, n]
 
 RandomPositive[range_, n_Integer] := With[
   { m = RandomMatrix[range, {n, n}] },
-  Topple[m].m
+  Topple[m] . m
  ]
 
 RandomUnitary::usage = "RandomUnitary[n] generates a uniformly distributed random unitary matrix of dimension n. Here, the uniform distribution is in the sense of the Haar measure."
@@ -4386,7 +4389,7 @@ svdBasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
   { aaa = SparseArray @ aa,
     mat = Orthogonalize[SparseArray @ bb],
     any, val, new },
-  new = aaa - aaa.Topple[mat].mat;
+  new = aaa - aaa . Topple[mat] . mat;
   {any, val, new} = SingularValueDecomposition[new];
   val = DeleteCases[Chop @ Diagonal @ val, 0];
   Take[Topple @ new, Length @ val]
@@ -4408,7 +4411,7 @@ BasisComplement[aa_?MatrixQ, bb_?MatrixQ, opts:OptionsPattern[]] := Module[
   aaa = SparseArray @ aa;
   mat = Orthogonalize[SparseArray @ bb];
   
-  new = aaa - aaa.Topple[mat].mat;
+  new = aaa - aaa . Topple[mat] . mat;
   new = Orthogonalize @ Select[new, Positive[Chop @ Norm @ #]&, opts];
   (* NOTE: Theoretically, the above two lines may be combined to a single line,
        new = Orthogonalize[aaa - aaa.Topple[mat].mat];
@@ -4481,14 +4484,14 @@ HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := (
   Return[0]
  )
 
-HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a].b] /;
+HilbertSchmidtProduct[a_?MatrixQ, b_?MatrixQ] := Tr[Topple[a] . b] /;
   ArrayQ[{a, b}]
 
-HilbertSchmidtProduct[a_?VectorQ, b_?MatrixQ] := Conjugate[a].b.a
+HilbertSchmidtProduct[a_?VectorQ, b_?MatrixQ] := Conjugate[a] . b . a
 
-HilbertSchmidtProduct[a_?MatrixQ, b_?VectorQ] := Conjugate[a].Topple[b].a
+HilbertSchmidtProduct[a_?MatrixQ, b_?VectorQ] := Conjugate[a] . Topple[b] . a
 
-HilbertSchmidtProduct[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]^2
+HilbertSchmidtProduct[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a] . b]^2
 
 
 HilbertSchmidtProduct[a_, b_] := With[
@@ -4552,14 +4555,14 @@ Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states 
 
 Fidelity[a_?MatrixQ, b_?MatrixQ] := With[
   {c = MatrixPower[a, 1/2]},
-  Tr @ MatrixPower[c.b.c, 1/2]
+  Tr @ MatrixPower[c . b . c, 1/2]
  ]
 
-Fidelity[v_?VectorQ, m_?MatrixQ] := Chop @ Sqrt[Conjugate[v].m.v]
+Fidelity[v_?VectorQ, m_?MatrixQ] := Chop @ Sqrt[Conjugate[v] . m . v]
 
 Fidelity[m_?MatrixQ, v_?VectorQ] := Fidelity[v, m]
 
-Fidelity[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a].b]
+Fidelity[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a] . b]
 
 
 Fidelity[rho_, sgm_] := Fidelity @@ Matrix @ {rho, sgm} /;

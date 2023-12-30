@@ -4,8 +4,8 @@ BeginPackage["Q3`"]
 
 `Quisso`$Version = StringJoin[
   $Input, " v",
-  StringSplit["$Revision: 6.73 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-16 22:41:27+09 $"][[2]], ") ",
+  StringSplit["$Revision: 6.74 $"][[2]], " (",
+  StringSplit["$Date: 2023-12-20 22:43:10+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
  ];
 
@@ -34,7 +34,8 @@ BeginPackage["Q3`"]
 
 { QFT, ModExp, ModAdd, ModMultiply };
 
-{ UnitaryInteraction };
+{ UnitaryInteraction,
+  Matchgate };
 
 { ProductState, BellState, GHZState, SmolinState,
   DickeState, RandomState };
@@ -68,7 +69,8 @@ AddElaborationPatterns[
   _Phase, _Rotation, _EulerRotation,
   _Projector, _ProductState,
   _ControlledPower,
-  _UnitaryInteraction
+  _UnitaryInteraction,
+  _Matchgate
  ]
 
 AddElaborationPatterns[
@@ -2734,9 +2736,31 @@ Matrix[
 (**** </UnitaryInteraction> ****)
 
 
+(**** <Matchgate> ****)
+
+Matchgate::usage = "Matchgate[{a1,b1,c1}, {a2,b2,c2}] ... "
+
+Matchgate[aa_, bb_, ss:{__?QubitQ}] :=
+  Matchgate[aa, bb, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+Matchgate /:
+Elaborate @ Matchgate[aa:{_, _, _}, bb:{_, _, _}, ss:{_?QubitQ, _?QubitQ}] :=
+  Elaborate[
+    GivensRotation[TheEulerRotation[aa], {1, 4}, ss] **
+      GivensRotation[TheEulerRotation[bb], {2, 3}, ss] ]
+
+
+Matchgate[aa:{_, _, _}, bb:{_, _, _}] := Dot[
+  Matrix @ GivensRotation[TheEulerRotation[aa], {1, 4}, 4],
+  Matrix @ GivensRotation[TheEulerRotation[bb], {2, 3}, 4]
+ ]
+
+(**** </Matchgate> ****)
+
 Protect[Evaluate @ $symb]
 
 End[] (* Qubits *)
+
 
 
 Begin["`Private`"]
