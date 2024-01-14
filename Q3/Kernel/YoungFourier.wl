@@ -1,14 +1,6 @@
 (* -*- mode:math -*- *)
 BeginPackage["Q3`"];
 
-`YoungFourier`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.26 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-11 03:06:51+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
-
 { YoungFourierMatrix, YoungFourier };
 { YoungFourierBasis, YoungRegularBasis };
 { YoungNormalRepresentation };

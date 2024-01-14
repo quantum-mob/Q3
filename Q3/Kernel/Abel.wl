@@ -1,13 +1,5 @@
 (* -*- mode:math -*- *)
-
 BeginPackage["Q3`"]
-
-`Abel`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 3.67 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-11 04:56:59+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
 
 $::usage = "$ is a flavor index referring to the species itself."
 

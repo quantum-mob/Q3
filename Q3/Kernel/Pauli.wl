@@ -1,15 +1,5 @@
-(* ::Package:: *)
-
 (* -*- mode: math; -*- *)
-
 BeginPackage["Q3`"]
-
-`Pauli`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 7.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-12 22:52:03+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
 
 { Spin, SpinNumberQ };
 
@@ -51,11 +41,11 @@ BeginPackage["Q3`"]
 
 { Affect };
 
-{ Pauli, Raise, Lower, Hadamard, Quadrant, Octant, Hexadecant,
-  ThePauli, TheRaise, TheLower, TheHadamard };
+{ Pauli, Raising, Lowering, Hadamard, Quadrant, Octant, Hexadecant,
+  ThePauli, TheRaising, TheLowering, TheHadamard };
 { Operator, TheOperator };
 
-{ RaiseLower };
+{ RaisingLoweringForm };
 
 { Rotation, EulerRotation,
   TheRotation, TheEulerRotation };
@@ -102,6 +92,8 @@ BeginPackage["Q3`"]
 
 
 (**** OBSOLETE SYMBOLS ****)
+
+{ TheLower, TheRaise, RaiseLower }; (* renamed *)
 
 { PauliEmbed, PauliApply }; (* obsolete and excised *)
 
@@ -211,11 +203,11 @@ TheState[ { m:{(0|1|Up|Down)..}, t:Except[_List], p:Except[_List] } ] :=
 (**** <ThePauli> ****)
 
 ThePauli::usage = "ThePauli[n] (n=1,2,3) returns a Pauli matrix.
-  ThePauli[4]=TheRaise[] is the Raising operator, ThePauli[5]=TheLower[] is the Lowering operator, ThePauli[6]=TheHadamard[] is the Hadamard operator, and ThePauli[0] returns the 2x2 identity matrix.\nThePauli[n1,n2,n3,...]=ThePauli[n1] \[CircleTimes] ThePauli[n2] \[CircleTimes] ThePauli[n3]\[CircleTimes] ...."
+  ThePauli[4]=TheRaising[] is the Raising operator, ThePauli[5]=TheLowering[] is the lowering operator, ThePauli[6]=TheHadamard[] is the Hadamard operator, and ThePauli[0] returns the 2x2 identity matrix.\nThePauli[n1,n2,n3,...]=ThePauli[n1] \[CircleTimes] ThePauli[n2] \[CircleTimes] ThePauli[n3]\[CircleTimes] ...."
 
-TheRaise::usage = "TheRaise[]=(ThePauli[1]+I*ThePauli[2])/2={{0,1},{0,0}}.\nTheRaise[{J,1}] returns the raising operator for angular momentum J.\nTheRaise[{J,0}] returns the identity operator."
+TheRaising::usage = "TheRaising[]=(ThePauli[1]+I*ThePauli[2])/2={{0,1},{0,0}}.\nTheRaising[{J,1}] returns the raising operator for angular momentum J.\nTheRaising[{J,0}] returns the identity operator."
 
-TheLower::usage = "TheLower[]=(ThePauli[1]-I*ThePauli[2])/2={{0,0},{1,0}}.\nTheLower[{J,1}] returns the raising operator for angular momentum J.\nTheLower[{J,0}] returns the identity matrix."
+TheLowering::usage = "TheLowering[]=(ThePauli[1]-I*ThePauli[2])/2={{0,0},{1,0}}.\nTheLowering[{J,1}] returns the raising operator for angular momentum J.\nTheLowering[{J,0}] returns the identity matrix."
 
 TheHadamard::usage = "TheHadamard[0]=IdentityMatrix[2]. TheHadamard[1]={{1,1},{1,-1}}/Sqrt[2] is the matrix corresponding to TheRotation[Pi/2,2].ThePauli[3].\nTheHadamard[{J,1}] returns TheRotation[Pi/2, {J,2}].TheWigner[{J,3}] for angular momentum J.\nTheHadamard[{J,0}] returns the identity matrix."
 
@@ -257,10 +249,10 @@ ThePauli[2] = ThePauli[-2] = SparseArray[{{1, 2} ->-I, {2, 1} -> I}, {2, 2}]
 ThePauli[3] = ThePauli[-3] = SparseArray[{{1, 1} -> 1, {2, 2} ->-1}, {2, 2}]
 
 
-ThePauli[4] = ThePauli[-5] = TheRaise[] = TheRaise[1] = TheLower[-1] =
+ThePauli[4] = ThePauli[-5] = TheRaising[] = TheRaising[1] = TheLowering[-1] =
   SparseArray[{{1, 2} -> 1}, {2, 2}]
 
-ThePauli[5] = ThePauli[-4] = TheLower[] = TheLower[1] = TheRaise[-1] =
+ThePauli[5] = ThePauli[-4] = TheLowering[] = TheLowering[1] = TheRaising[-1] =
   SparseArray[{{2, 1} -> 1}, {2, 2}]
 
 ThePauli[6] = ThePauli[-6] = TheHadamard[] = TheHadamard[1] =
@@ -302,9 +294,9 @@ ThePauli @ C[n_Integer] :=
 ThePauli[-C[n_Integer]] := Topple @ ThePauli @ C[n]
 
 
-ThePauli[Raise] = ThePauli[4]
+ThePauli[Raising] = ThePauli[4]
 
-ThePauli[Lower] = ThePauli[5]
+ThePauli[Lowering] = ThePauli[5]
 
 ThePauli[Hadamard] = ThePauli[6]
 
@@ -314,7 +306,7 @@ ThePauli[Octant] = ThePauli[8]
 
 ThePauli[Hexadecant] = ThePauli[9]
 
-TheRaise[0] = TheLower[0] = TheHadamard[0] = TheQuadrant[0] = ThePauli[0]
+TheRaising[0] = TheLowering[0] = TheHadamard[0] = TheQuadrant[0] = ThePauli[0]
 
 
 (* These are for Matrix[Dyad[...]]. *)
@@ -329,6 +321,24 @@ ThePauli[1 -> 1] = ThePauli[11]
 (**** </ThePauli> ****)
 
 
+TheRaise[args___] := (
+  Message[Q3General::renamed, "TheRaise", "TheRaising"];
+  TheRaising[args]
+)
+
+TheLower[args___] := (
+  Message[Q3General::renamed, "TheLower", "TheLowering"];
+  TheLowering[args]
+)
+
+RaiseLower[args___] := (
+  Message[Q3General::renamed, "RaiseLower", "RaisingLoweringForm"];
+  RaisingLoweringForm[args]
+)
+
+
+(**** <TheOperator> ****)
+
 TheOperator::usage = "TheOperator[{n,\[Theta],\[Phi]}] gives a Pauli matrix in the nth direction in the (\[Theta],\[Phi])-rotated frame.
   TheOperator[{n1,t1,p1},{n2,t2,p2},...] = TheOperator[{n1,t1,p1}] \[CircleTimes] TheOperator[{n2,t2,p2}] \[CircleTimes] ... .
   TheOperator[{{n1,n2,...}, th, ph}] = TheOperator[{n1,th,ph}, {n2,th,ph}, ...]."
@@ -337,12 +347,14 @@ TheOperator[{0, theta_,phi_}] = ThePauli[0]
 
 TheOperator[{n:(1|2|3), theta_, phi_}] := Matrix @ Operator[{n,theta,phi}]
 
-TheOperator[ nn:{(0|1|2|3|4|5|6|Raise|Lower|Hadamard), _, _}.. ] :=
+TheOperator[ nn:{(0|1|2|3|4|5|6|Raising|Lowering|Hadamard), _, _}.. ] :=
   CircleTimes @@ Map[TheOperator] @ {nn}
 
-TheOperator[ { n:{(0|1|2|3|4|5|6|Raise|Lower|Hadamard)..},
+TheOperator[ { n:{(0|1|2|3|4|5|6|Raising|Lowering|Hadamard)..},
     th:Except[_List], ph:Except[_List] } ] :=
   CircleTimes @@ Map[TheOperator] @ Tuples[{n, {th}, {ph}}]
+
+(**** </TheOperator> ****)
 
 
 (**** <KetRegulate> ****)
@@ -1434,23 +1446,23 @@ BraKet[a_Association, b_Association] := With[
 
 (**** </BraKet> ****)
 
-RaiseLower::usage = "RaiseLower[expr] converts expr by rewriting Pauli or Spin X and Y operators in terms of the raising and lowering operators."
+RaisingLoweringForm::usage = "RaisingLoweringForm[expr] converts expr by rewriting Pauli or Spin X and Y operators in terms of the raising and lowering operators."
 
-RaiseLower[expr_] := Garner[expr //. $RaiseLowerRules]
+RaisingLoweringForm[expr_] := Garner[expr //. $RaisingLoweringRules]
 
-$RaiseLowerRules = {
+$RaisingLoweringRules = {
   Pauli[a___, 1, b___] :> (Pauli[a, 4, b] + Pauli[a, 5, b]),
   Pauli[a___, 2, b___] :> (Pauli[a, 4, b] - Pauli[a, 5, b]) / I
  }
 
 
-Raise::usage = "Raise represents the raising operator."
+Raising::usage = "Raising represents the raising operator."
 
-SetAttributes[Raise, Listable]
+SetAttributes[Raising, Listable]
 
-Lower::usage = "Lower represents the lowering operator."
+Lowering::usage = "Lowering represents the lowering operator."
 
-SetAttributes[Lower, Listable]
+SetAttributes[Lowering, Listable]
 
 Hadamard::usage = "Hadamard represents the Hadamard gate."
 
@@ -1513,11 +1525,11 @@ Pauli /: MultiplyGenus[ Pauli[_] ] = "Singleton"
 Pauli /: NonCommutativeQ[ Pauli[_] ] = True
 
 
-Raise[0] = Lower[0] = Hadamard[0] = Pauli[0]
+Raising[0] = Lowering[0] = Hadamard[0] = Pauli[0]
 
-Raise[1] = Lower[-1] = Pauli[Raise]
+Raising[1] = Lowering[-1] = Pauli[Raising]
 
-Lower[1] = Raise[-1] = Pauli[Lower]
+Lowering[1] = Raising[-1] = Pauli[Lowering]
 
 Hadamard[1] = Hadamard[-1] = Pauli[Hadamard]
 
@@ -1530,9 +1542,9 @@ Pauli[0 -> 0] = Pauli[{10}]
 
 Pauli[1 -> 1] = Pauli[{11}]
 
-Pauli[Raise] = (Pauli[{1}] + I Pauli[{2}]) / 2
+Pauli[Raising] = (Pauli[{1}] + I Pauli[{2}]) / 2
 
-Pauli[Lower] = (Pauli[{1}] - I Pauli[{2}]) / 2
+Pauli[Lowering] = (Pauli[{1}] - I Pauli[{2}]) / 2
 
 Pauli[Hadamard] = (Pauli[{1}] + Pauli[{3}])/Sqrt[2]
 
@@ -1564,10 +1576,7 @@ Pauli[-C[n_Integer?NonNegative]] = Pauli[{0}]
 Pauli[a:{(0|1)..} -> b:{(0|1)..}] := Pauli @@ Thread[a -> b]
 
 Pauli[kk_List] := Garner @ Apply[CircleTimes, Pauli /@ kk] /;
-  ContainsAny[
-    kk,
-    { Raise, Lower, Hadamard, Quadrant, Octant, Hexadecant }
-   ]
+  ContainsAny[kk, {Raising, Lowering, Hadamard, Quadrant, Octant, Hexadecant}]
 
 (* Elaboration rules *)
 
@@ -1580,9 +1589,9 @@ Pauli /: Elaborate @ Pauli[{10}] := (Pauli[{0}] + Pauli[{3}]) / 2
 
 Pauli /: Elaborate @ Pauli[{11}] := (Pauli[{0}] - Pauli[{3}]) / 2
 
-Pauli /: Elaborate @ Pauli[{4}] := Pauli[Raise]
+Pauli /: Elaborate @ Pauli[{4}] := Pauli[Raising]
 
-Pauli /: Elaborate @ Pauli[{5}] := Pauli[Lower]
+Pauli /: Elaborate @ Pauli[{5}] := Pauli[Lowering]
 
 Pauli /: Elaborate @ Pauli[{6}] := Pauli[Hadamard]
 
@@ -1681,9 +1690,9 @@ Operator[{0, theta_, phi_}] := Pauli[0]
 Operator[{n:(1|2|3), theta_, phi_}] := Garner @
   { Pauli[1], Pauli[2], Pauli[3] } . EulerMatrix[{phi,theta,0}][[;;,n]]
 
-Operator[{4|Raise, th_, ph_}] := ( Operator[{1,th,ph}] + I Operator[{2,th,ph}] ) / 2
+Operator[{4|Raising, th_, ph_}] := ( Operator[{1,th,ph}] + I Operator[{2,th,ph}] ) / 2
 
-Operator[{5|Lower, th_, ph_}] := ( Operator[{1,th,ph}] - I Operator[{2,th,ph}] ) / 2
+Operator[{5|Lowering, th_, ph_}] := ( Operator[{1,th,ph}] - I Operator[{2,th,ph}] ) / 2
 
 Operator[{6|Hadamard, th_, ph_}] := ( Operator[{1,th,ph}] + Operator[{3,th,ph}] ) / Sqrt[2]
 
@@ -2913,8 +2922,8 @@ Rotation[qq:{(_?QubitQ|_?SpinQ)..}, ang_, rest___] := (
 
 EulerRotation::usage = "EulerRotation[{a, b, c}] = Rotation[a, 3].Rotation[b, 2].Rotation[c, 3] represent the Euler rotation by angles a, b, c in a two-dimensional Hilbert space."
 
-EulerRotation[ {a_, b_, c_} ] :=
-  Rotation[a, 3] . Rotation[b, 2] . Rotation[c, 3]
+EulerRotation[{a_, b_, c_}] :=
+  Multiply[Rotation[a, 3], Rotation[b, 2], Rotation[c, 3]]
 
 EulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
   CircleTimes @@ Map[EulerRotation, {a, b}]
@@ -3429,7 +3438,7 @@ Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
 
 DyadForm::usage = "DyadForm[expr,{s1,s2,..}] converts the operator expression expr to the form in terms of Dyad acting on the systems s1, s2, .... If the systems are not specified, then they are extracted from expr.\nDyadForm[mat,{s1,s2,...}] converts the matrix representation into an operator expresion in terms of Dyad acting on the systems s1, s2, ...."
 
-DyadForm[expr_] := RaiseLower[expr] /; Not @ FreeQ[expr, _Pauli]
+DyadForm[expr_] := RaisingLoweringForm[expr] /; Not @ FreeQ[expr, _Pauli]
 (* NOTE: DyaForm is pointless for Pauli expressions. *)
 
 DyadForm[expr_] := DyadForm[expr, Agents @ expr]

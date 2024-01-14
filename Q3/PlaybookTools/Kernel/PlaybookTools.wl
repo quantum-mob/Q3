@@ -1,8 +1,4 @@
 (* -*- mode:math -*- *)
-(* Mahn-Soo Choi *)
-(* $Date: 2023-12-21 23:22:22+09 $ *)
-(* $Revision: 1.49 $ *)
-
 BeginPackage["PlaybookTools`"]
 
 Unprotect["`*"];
@@ -86,7 +82,7 @@ $PlaybookStyle = Notebook[
  ];
 
 
-PlaybookDeploy::usage = "PlaybookDeploy[filename] saves the notebook specified by the filename in the playbooks folder with proper options."
+PlaybookDeploy::usage = "PlaybookDeploy[\"filename.nb\"] generates a public-release version \"source.Playbook.nb\" of source notebook \"source.nb\".\nPlaybookDeploy[\"source.nb\", \"destination.nb\"] generates \"destination.nb\" for the public use.\nPlaybookDeploy[\"source.nb\", dir] generates dir/\"source.Playbook.nb\" for the public use."
 
 PlaybookDeploy::folder = "`` must be a valid folder."
 
@@ -177,7 +173,7 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
     DirectoryName @ dst,
     StringJoin @ {FileBaseName @ dst, ".pdf"}
    };
-  Print["Printing to ", pdf, "..."];
+  Print["Preparing ", NotebookFileName @ nb, " for printing ..."];
   (* For some unknown reason, the following two lines are required;
      otherwise, NotebookPrint misses some images and typographic math
      expressions. *)
@@ -188,9 +184,14 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
   FrontEndTokenExecute[nb, "SelectionOpenAllGroups"];
 
   NotebookSave[nb];
+
+  Print["Printing to ", pdf, " ..."];
+  (* 2024-01-13 This line causes the FrontEndObject::notavail error when
+     PlaybookDeploy is invoked from shell command line. *)
   (* For some unknown reason, TaskWait is required; otherwise, NotebookPrint
      misses some images and typographic math expressions. *)
-  TaskWait @ SessionSubmit @ NotebookPrint[nb, pdf];
+  (* TaskWait @ SessionSubmit @ NotebookPrint[nb, pdf]; *)
+  NotebookPrint[nb, pdf];
   Print["\t... done!"];
  ]
 

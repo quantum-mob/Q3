@@ -6,13 +6,6 @@
 
 BeginPackage["Q3`"];
 
-`Young`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 3.27 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-11 04:20:56+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 { YoungDiagram, FerrersDiagram,
   YoungShape, YoungShapes, YoungShapeQ };
 

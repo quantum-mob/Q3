@@ -1,13 +1,5 @@
 (* -*- mode: math; -*- *)
-
 BeginPackage["Q3`"]
-
-`Fock`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 3.68 $"][[2]], " (",
-  StringSplit["$Date: 2023-10-14 19:02:40+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
 
 { Heisenberg, Boson, Fermion, Majorana };
 { Bosons, Heisenbergs, Fermions, Majoranas };

@@ -1,14 +1,6 @@
 (* -*- mode:math -*- *)
-(* Package for stabilizer formalism *)
-
+(* stabilizer formalism *)
 BeginPackage["Q3`"]
-
-`Gottesman`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 2.74 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-12 16:24:10+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
 
 { GottesmanVector, FromGottesmanVector,
   GottesmanTest, GottesmanInner, GottesmanBasis,

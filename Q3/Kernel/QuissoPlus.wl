@@ -7,13 +7,6 @@ Get["Q3`"]
 
 BeginPackage["Q3`"]
 
-`QuissoPlus`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.14 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-09 15:50:28+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 ClearAll @@ Evaluate @ Unprotect[
   QuissoCorrelationTensor, QuissoCorrelationMatrix,
   QuissoCoefficientTensor, QuissoAssemble,

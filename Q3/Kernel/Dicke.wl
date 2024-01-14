@@ -1,13 +1,5 @@
 (* -*- mode:math -*- *)
-
 BeginPackage["Q3`"]
-
-`Dicke`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.22 $"][[2]], " (",
-  StringSplit["$Date: 2021-06-05 20:53:17+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
 
 { DickeBasis };
 

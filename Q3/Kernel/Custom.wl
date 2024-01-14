@@ -1,8 +1,4 @@
 (* -*- mode:math -*- *)
-(* Mahn-Soo Choi *)
-(* $Date: 2023-12-10 21:03:24+09 $ *)
-(* $Revision: 1.8 $ *)
-
 BeginPackage["Q3`"]
 
 $Customizations::usage = "Custom options for various frequently used functions."

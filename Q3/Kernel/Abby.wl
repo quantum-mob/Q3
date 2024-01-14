@@ -1,14 +1,12 @@
 (* -*- mode:math -*- *)
-(* Mahn-Soo Choi *)
-(* $Date: 2023-12-10 21:16:43+09 $ *)
-(* $Revision: 1.1 $ *)
-
 BeginPackage["Q3`"]
 
 { Q3General };
 
 { Q3Info, Q3Release, Q3RemoteRelease,
   Q3Update, Q3CheckUpdate, Q3Assure, Q3Purge };
+
+$Q3Info = "A Wolfram Language framework for quantum symbolic simulations on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.";
 
 Begin["`Private`"]
 
@@ -32,9 +30,7 @@ Q3General::angle = "An angle should come first in the sequence of arguments for 
 Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versions of packages included in it."
 
 Q3Info[] := Module[
-  { pac = PacletObject @ "Q3",
-    pkg = Symbol /@ Names["Q3`*`$Version"],
-    ver },
+  { pac = PacletObject @ "Q3" },
   If[ FailureQ @ pac,
     Message[Q3General::setup,
       Hyperlink["https://github.com/quantum-mob/Q3/blob/main/INSTALL.md"]
@@ -49,9 +45,7 @@ Q3Info[] := Module[
     Message[Q3General::local, pac @ "Location", Q3RemoteRelease[]]
    ];
 
-  ver = "Q3 Framework v" <> pac["Version"];  
-  pkg = Join[{ver}, pkg];
-  Echo @ StringJoin @ Riffle[pkg, "\n"];
+  Print["Q3 v" <> pac["Version"] <> " " <> $Q3Info];
  ]
 
 Q3Release::usage = "Q3Release[] returns a string containing the release version of Q3. If it fails to find and open the paclet of Q3, then it returns Failure."
@@ -73,7 +67,7 @@ Q3RemoteRelease[] := Module[
 
 (***** <Paclet Server> ****)
 
-$serverURL = "https://github.com/quantum-mob/PacletServer/raw/main"
+$serverURL = "https://github.com/quantum-mob/PacletRepository/raw/main"
 
 serverRegisteredQ[url_:$serverURL] := Module[
   { ps = PacletSites[] },

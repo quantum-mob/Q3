@@ -4,13 +4,6 @@ Get["Q3`"]
 
 BeginPackage["Q3`"]
 
-`FockPlus`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.25 $"][[2]], " (",
-  StringSplit["$Date: 2023-03-08 18:26:06+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 ClearAll @@ Evaluate @ Unprotect[
   Pairings, Wick, Average,
   (* *** *)

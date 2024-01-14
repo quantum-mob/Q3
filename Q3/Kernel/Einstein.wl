@@ -1,13 +1,6 @@
 (* -*- mode:math -*- *)
 BeginPackage["Q3`"]
 
-`Einstein`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.16 $"][[2]], " (",
-  StringSplit["$Date: 2023-04-27 12:55:51+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 Begin["`Private`"]
 
 HoldPattern @ Multiply[ pre___,

@@ -3,13 +3,6 @@
 
 BeginPackage["Q3`"]
 
-`Weyl`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.6 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-10 23:04:45+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 { Weyl, TheWeyl };
 
 { WeylBasis };

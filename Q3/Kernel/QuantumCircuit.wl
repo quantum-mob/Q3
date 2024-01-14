@@ -2,13 +2,6 @@
 
 BeginPackage["Q3`"]
 
-`QuantumCircuit`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 3.62 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-19 20:37:33+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 { QuantumCircuit,
   QuantumCircuitIn,
   QuantumCircuitOut,

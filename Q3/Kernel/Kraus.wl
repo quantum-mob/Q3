@@ -1,13 +1,5 @@
 (* -*- mode:math -*- *)
-
 BeginPackage["Q3`"]
-
-`Kraus`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 2.45 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-11 21:32:52+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
 
 { Supermap, ChoiMatrix, ChoiMatrixQ,
   SuperMatrixQ, ToSuperMatrix, ToChoiMatrix };

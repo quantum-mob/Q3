@@ -1,6 +1,5 @@
 (* -*- mode:math -*- *)
 (* To simulate the universal quantum computation based on the Gray code. *)
-
 BeginPackage["Q3`"]
 
 `Gray`$Version = StringJoin[

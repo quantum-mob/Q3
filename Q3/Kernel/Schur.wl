@@ -2,13 +2,6 @@
 
 BeginPackage["Q3`"];
 
-`Schur`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 2.20 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-12 11:14:43+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 { GelfandPattern };
 
 { GelfandPatterns, GelfandPatternQ, GelfandForm, GelfandOrder };

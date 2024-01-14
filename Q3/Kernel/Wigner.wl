@@ -2,13 +2,6 @@
 
 BeginPackage["Q3`"]
 
-`Wigner`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 4.24 $"][[2]], " (",
-  StringSplit["$Date: 2023-08-08 18:49:54+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 { TheWigner, TheWignerKet };
 
 { Spin, SpinQ, Spins };
@@ -55,9 +48,9 @@ TheWigner[{J_?SpinNumberQ, 5}] := SparseArray @ With[
   RotateRight[ DiagonalMatrix[v] ]
  ]
 
-TheWigner[{J_?SpinNumberQ, Raise}] := TheWigner[{J,4}]
+TheWigner[{J_?SpinNumberQ, Raising}] := TheWigner[{J,4}]
 
-TheWigner[{J_?SpinNumberQ, Lower}] := TheWigner[{J,5}]
+TheWigner[{J_?SpinNumberQ, Lowering}] := TheWigner[{J,5}]
 
 TheWigner[{J_?SpinNumberQ, s_ -> t_}] := SparseArray[
   {J+1 - t, J+1 - s} -> 1,
@@ -71,13 +64,13 @@ TheWigner[{J_?SpinNumberQ, n:(1|2|3), theta_, phi_}] := With[
   TheWigner[{J, 1}]*R[[1, n]] + TheWigner[{J, 2}]*R[[2, n]] + TheWigner[{J, 3}]*R[[3, n]]
  ]
 
-TheWigner[ nn:{_?SpinNumberQ, (0|1|2|3|4|5|6|Raise|Lower)}.. ] :=
+TheWigner[ nn:{_?SpinNumberQ, (0|1|2|3|4|5|6|Raising|Lowering)}.. ] :=
   CircleTimes @@ Map[TheWigner] @ {nn}
 
-TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raise|Lower)..} } ] :=
+TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raising|Lowering)..} } ] :=
   CircleTimes @@ Map[TheWigner] @ Tuples[{{j}, n}]
 
-TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raise|Lower)..},
+TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raising|Lowering)..},
     th:Except[_List], ph:Except[_List] } ] :=
   CircleTimes @@ Map[TheWigner] @ Tuples[{{j}, n, {th}, {ph}}]
 
@@ -188,8 +181,8 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
-  x[j___, Raise] := x[j,1] + I x[j,2];
-  x[j___, Lower] := x[j,1] - I x[j,2];
+  x[j___, Raising] := x[j,1] + I x[j,2];
+  x[j___, Lowering] := x[j,1] - I x[j,2];
   
   x[j___, Hadamard] := MultiplyExp[-I (Pi/2) x[j,2]] ** x[j,3] / spin;
   (* NOTE: For Spin-1/2, this is enough to reduce it to (X+Z)/Sqrt[2].
@@ -398,12 +391,12 @@ HoldPattern @
 
 AddElaborationPatterns[
   G_?SpinQ[j___,0] -> 1,
-  G_?SpinQ[j___,4] -> G[j, Raise],
-  G_?SpinQ[j___,5] -> G[j, Lower],
+  G_?SpinQ[j___,4] -> G[j, Raising],
+  G_?SpinQ[j___,5] -> G[j, Lowering],
   G_?SpinQ[j___,6] -> G[j, Hadamard]
  ]
 
-$RaiseLowerRules = Join[ $RaiseLowerRules,
+$RaisingLoweringRules = Join[ $RaisingLoweringRules,
   { S_?SpinQ[j___,1] :> (S[j,4] + S[j,5]) / 2 ,
     S_?SpinQ[j___,2] :> (S[j,4] - S[j,5]) / (2 I)
    }

@@ -1,14 +1,6 @@
 (* -*- mode: math; -*- *)
-(* Adopted from a package by M. Headrick (April 2003) *)
-
+(* Many features in this file were adopted from a package by M. Headrick (April 2003). *)
 BeginPackage["Q3`"]
-
-`Grassmann`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.22 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-22 19:36:16+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
 
 { Let, Grassmann, GrassmannQ, AnyGrassmannQ };
 { GD, GIntegrate };

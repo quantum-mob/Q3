@@ -5,13 +5,6 @@ Get["Q3`"]
 
 BeginPackage["Q3`"]
 
-`GellMann`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.39 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-12 22:53:35+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 ClearAll @@ Evaluate @ Unprotect[
   GellMann, TheGellMann,
   GellMannInner,

@@ -3,13 +3,6 @@
 
 BeginPackage["Q3`"]
 
-`VonNeumann`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 1.25 $"][[2]], " (",
-  StringSplit["$Date: 2023-10-03 17:51:58+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 { ShannonEntropy, WeightedLog };
 { VonNeumannEntropy, QuantumLog };
 { RenyiEntropy };

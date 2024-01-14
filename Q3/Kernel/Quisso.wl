@@ -2,13 +2,6 @@
 
 BeginPackage["Q3`"]
 
-`Quisso`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 6.74 $"][[2]], " (",
-  StringSplit["$Date: 2023-12-20 22:43:10+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
-
 { Qubit, QubitQ, Qubits };
 
 { PauliForm };
@@ -75,8 +68,8 @@ AddElaborationPatterns[
 
 AddElaborationPatterns[
   G_?QubitQ[j___, 0] -> 1,
-  G_?QubitQ[j___, 4] -> G[j, Raise],
-  G_?QubitQ[j___, 5] -> G[j, Lower],
+  G_?QubitQ[j___, 4] -> G[j, Raising],
+  G_?QubitQ[j___, 5] -> G[j, Lowering],
   G_?QubitQ[j___, 6] -> G[j, Hadamard],
   G_?QubitQ[j___, 7] -> G[j, Quadrant],
   G_?QubitQ[j___, 8] -> G[j, Octant],
@@ -94,7 +87,7 @@ AddElaborationPatterns[
  ]
 
 
-Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raise|Lower|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
+Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raising|Lowering|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
 
 Qubit /:
 Let[Qubit, {ls__Symbol}, opts___?OptionQ] := (
@@ -147,8 +140,8 @@ setQubit[x_Symbol] := (
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
-  x[j___, Raise] = (x[j,1] + I x[j,2]) / 2;
-  x[j___, Lower] = (x[j,1] - I x[j,2]) / 2;
+  x[j___, Raising] = (x[j,1] + I x[j,2]) / 2;
+  x[j___, Lowering] = (x[j,1] - I x[j,2]) / 2;
   
   x[j___, Hadamard] = (x[j,1] + x[j,3]) / Sqrt[2];
   x[j___, Quadrant] = (1+I)/2 + x[j,3]*(1-I)/2;
@@ -221,9 +214,9 @@ setQubit[x_Symbol] := (
 Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := 0
 
 
-Raise[S_?QubitQ] := S[4]
+Raising[S_?QubitQ] := S[4]
 
-Lower[S_?QubitQ] := S[5]
+Lowering[S_?QubitQ] := S[5]
 
 Hadamard[S_?QubitQ] := S[6]
 
@@ -340,10 +333,10 @@ HoldPattern @
 
 (*
 HoldPattern @ Multiply[ x___, a_?QubitQ[j___,4], Ket[b_Association], y___ ] :=
-  Multiply[x, a[j,Raise], Ket[b], y]
+  Multiply[x, a[j,Raising], Ket[b], y]
 
 HoldPattern @ Multiply[ x___, a_?QubitQ[j___,5], Ket[b_Association], y___ ] :=
-  Multiply[x, a[j,Lower], Ket[b], y]
+  Multiply[x, a[j,Lowering], Ket[b], y]
  *)
 
 HoldPattern @ Multiply[ x___, a_?QubitQ[j___,6], Ket[b_Association], y___ ] :=
@@ -538,7 +531,7 @@ FlavorMute[S_Symbol?QubitQ[j___, _]] := S[j, $]
 FlavorMute[S_Symbol?QubitQ[j___, _] -> m_] := S[j, $] -> m
 
 
-$RaiseLowerRules = Join[ $RaiseLowerRules,
+$RaisingLoweringRules = Join[ $RaisingLoweringRules,
   { S_?QubitQ[j___,1] :> (S[j,4] + S[j,5]),
     S_?QubitQ[j___,2] :> (S[j,4] - S[j,5]) / I
    }

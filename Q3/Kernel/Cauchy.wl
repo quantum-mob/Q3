@@ -1,13 +1,5 @@
 (* -*- mode:math -*- *)
-
 BeginPackage["Q3`"]
-
-`Cauchy`$Version = StringJoin[
-  $Input, " v",
-  StringSplit["$Revision: 2.48 $"][[2]], " (",
-  StringSplit["$Date: 2023-07-22 19:30:59+09 $"][[2]], ") ",
-  "Mahn-Soo Choi"
- ];
 
 { Complex, ComplexQ,
   Real, RealQ,
