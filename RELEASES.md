@@ -3,6 +3,8 @@
 ## v3.0.0
 
 - Starts to use Git for version control.
+- Raise, Lower, TheRaise, TheLower, RaiseLower are renamed Raising, Lowering, TheRaising, TheLowering, RaisingLoweringForm, respectively, because of a conflict with Mathematica 14.
+- PlaybookTools improved.
 
 ## v2.15.4
 
