@@ -3416,11 +3416,9 @@ HoldPattern @ Multiply[
   ]
 
 (* For Pauli Kets *)
-
-Dyad[Ket[a:(0|1)..], Ket[b:(0|1)..], ___] := Pauli[{b} -> {a}]
+Dyad[Ket[a:{(0|1)..}], Ket[b:{(0|1)..}], ___] := Pauli @ Thread[b -> a]
 
 (* For general kets for unlabelled systems *)
-
 Dyad[a_Ket, b_Ket, ___] := Multiply[a, Dagger @ b]
 
 
