@@ -1,5 +1,11 @@
 # Release Notes
 
+## v3.0.1
+
+- Bug fix concerning Dyad
+- Bug fix concerning GroupGenerators[PauliGroup[n]]
+- Bug fix concerning Basis[expr], DyadForm[mat], Pauli[a -> b], fPauliKetQ, Stabilizer, Qubits[QuantumCircuit[...]], ProperSystem, ProperStates, ReducedMatrix
+
 ## v3.0.0
 
 - Starts to use Git for version control.

@@ -734,23 +734,21 @@ theAffect[ket_, op_] := Garner @ Multiply[op, ket]
 
 fPauliKetQ::usage = "fPauliKetQ[expr] returns True if expr is a valid expression for a state vector of a system of unlabelled qubits.\nPauli[\[Ellipsis]] operates consistently on such an expression.";
 
-HoldPattern @ fPauliKetQ[Ket[(0|1)..]] = True
+HoldPattern @ fPauliKetQ[Ket[{(0|1)..}]] = True
 
-HoldPattern @ fPauliKetQ[Multiply[__, Ket[(0|1)..]]] = True
+HoldPattern @ fPauliKetQ[Multiply[__, Ket[{(0|1)..}]]] = True
 
 HoldPattern @ fPauliKetQ[z_?CommutativeQ expr_] := fPauliKetQ[expr]
 
-HoldPattern @ fPauliKetQ[Plus[terms__]] := TrueQ[
-  And @@ fPauliKetQ /@ DeleteCases[ {terms}, (Complex[0., 0.] | 0.) ]
- ]
-(* NOTE: 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
+HoldPattern @ fPauliKetQ[Plus[terms__]] := AllTrue[KetChop @ {terms}, fPauliKetQ]
+(* NOTE: KetChop is required since 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
 
 HoldPattern @ fPauliKetQ[expr_Times] := fPauliKetQ[Expand @ expr]
 
 HoldPattern @ fPauliKetQ[expr_] := False /; FreeQ[expr, Ket[(0 | 1) ..]]
 
 HoldPattern @ fPauliKetQ[expr_] := False /;
-  Not[Equal @@ Length /@ Cases[{expr}, _Ket, Infinity]]
+  Not[Equal @@ Length /@ Cases[{expr}, Ket[kk_List] :> kk, Infinity]]
 
 
 fKetQ::usage = "fKetQ[expr] returns True if expr is a valid expression for a state vector of a system of labelled qubits.";
@@ -1509,10 +1507,6 @@ Pauli[Full] := Pauli /@ {0, 1, 2, 3}
 
 Pauli[k_Integer] := Pauli @ {k}
 
-(*
-Format[op:Pauli[_Integer]] :=
-  Interpretation[thePauliForm @ op, op]
- *)
 
 Format @ Pauli[kk_List] :=
   Interpretation[thePauliForm @ Pauli @ kk, Pauli @ kk]
@@ -1534,13 +1528,16 @@ Lowering[1] = Raising[-1] = Pauli[Lowering]
 Hadamard[1] = Hadamard[-1] = Pauli[Hadamard]
 
 
-Pauli[1 -> 0] = Pauli[{4}]
+Pauli[k:Rule[_Integer,_Integer]] := Pauli @ {k}
 
-Pauli[0 -> 1] = Pauli[{5}]
+Pauli[{1 -> 0}] = Pauli[{4}]
 
-Pauli[0 -> 0] = Pauli[{10}]
+Pauli[{0 -> 1}] = Pauli[{5}]
 
-Pauli[1 -> 1] = Pauli[{11}]
+Pauli[{0 -> 0}] = Pauli[{10}]
+
+Pauli[{1 -> 1}] = Pauli[{11}]
+
 
 Pauli[Raising] = (Pauli[{1}] + I Pauli[{2}]) / 2
 
@@ -1995,6 +1992,8 @@ theBlochSphere[opts___?OptionQ] := Module[
 
 Basis::usage = "Basis[n] constructs the standard tensor-product basis of a system of n unlabelled qubits.\nBasis[{dim1, dim2, ..., dimn}] constructs the standard tensor-product basis of a total of n unlabelled systems with the Hilbert space dimensions dim1, dim2, ..., respectively.\nBasis[q1, q2, ...] constructs the tensor product basis for the system consising of Species q1, q2, ...\nBasis[q1, {q2, q3}, ...] is equivalent to Basis[q1, q2, q3, ...].\nBasis[expr] finds the relevant systems from the expression expr and constructs the basis."
 
+Basis::incon = "Inconsistent Ket, Bra, or Pauli in ``."
+
 Basis[n_Integer] := Ket /@ Tuples[{0, 1}, n]
 
 Basis[dim:{__Integer}] := Ket /@ Tuples[Range[0,#-1]& /@ dim]
@@ -2013,11 +2012,18 @@ Basis[
 
 
 Basis[ expr:Except[_?SpeciesQ] ] := Basis @@ Agents[expr] /;
-  FreeQ[expr, _Pauli | Ket[(0|1)..] | Bra[(0|1)..] ]
+  FreeQ[expr, _Pauli | Ket[_List] | Bra[_List] ]
 
-Basis[ expr:Except[_?SpeciesQ] ] := With[
-  { pp = Length /@ Cases[{expr}, _Pauli|Ket[(0|1)..]|Bra[(0|1)..], Infinity] },
-  Basis @ First[pp] /; Equal @@ pp
+Basis[ expr:Except[_?SpeciesQ] ] := Module[
+  { pp },
+  pp = Length /@ Cases[ {expr}, 
+    Pauli[a_List] | Ket[a:{(0|1)..}] | Bra[a:{(0|1)..}] :> a,
+    Infinity ];
+  If[ Equal @@ pp,
+    Basis[First @ pp],
+    Message[Basis::incon, Cases[{expr}, _Pauli|_Ket|_Bra, Infinity]];
+    Return[{Ket[{}]}]
+  ]
  ]
 
 (**** </Basis> ****)
@@ -2280,7 +2286,7 @@ ProperSystem::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
 
 ProperSystem[expr_] := Module[
   { ss = Agents[expr],
-    pp = Cases[{expr}, _Pauli, Infinity],
+    pp = Cases[{expr}, Pauli[kk_List] :> kk, Infinity],
     nn, mat, res, val, vec },
 
   If[ ss == {}, Null,
@@ -2348,7 +2354,7 @@ ProperStates::eigsysno = "Could not get the eigenvalues and eigenvectors of ``."
 
 ProperStates[expr_] := Module[
   { ss = Agents[expr],
-    pp = Cases[{expr}, _Pauli, Infinity],
+    pp = Cases[{expr}, Pauli[kk_List] :> kk, Infinity],
     nn, mat, vec },
 
   If[ ss == {}, Null,
@@ -3460,7 +3466,7 @@ DyadForm[mat_?MatrixQ] := Module[
 theDyadForm[val:{__}, n_Integer] := Module[
   {a, b},
   {a, b} = ArrayReshape[val-1, {2, n}];
-  Thread @ Pauli[b -> a]
+  Pauli @ Thread[b -> a]
  ]
 
 
@@ -4177,12 +4183,12 @@ ReducedMatrix[expr_, ss:{__?SpeciesQ}] := Module[
 
 
 ReducedMatrix[expr_, jj:{__Integer}] := Module[
-  { nn = Length @ FirstCase[expr, _Ket, Infinity] },
+  { nn = Length @ FirstCase[expr, Ket[ss_List] :> ss, Infinity] },
   PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
  ] /; fPauliKetQ[expr]
 
 ReducedMatrix[expr_, jj:{__Integer}] := Module[
-  { nn = Length @ FirstCase[expr, _Pauli, Infinity] },
+  { nn = Length @ FirstCase[expr, Pauli[kk_List] :> kk, Infinity] },
   PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
  ] /; Not @ FreeQ[expr, _Pauli]
 

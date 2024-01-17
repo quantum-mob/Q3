@@ -59,7 +59,7 @@ Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] :=
 QuantumCircuit /:
 Qubits @ QuantumCircuit[gg__, opts___?OptionQ] := Union[
   Qubits @ {gg},
-  FlavorNone @ q3AssureList @ OptionValue[QuantumCircuit, opts, "Visible"]
+  FlavorNone @ q3AssureList["Visible" /. {opts} /. Options[QuantumCircuit]]
  ]
 
 QuantumCircuit /:
@@ -178,7 +178,7 @@ qcMatrix[gg__] := MeasurementFunction[{gg}]
 
 QuantumCircuitTrim::usage = "QuantumCircuitTrim[expr] removes visualization options and Graphics Directives that are not evaluable expressions. Useful to convert QuantumCircuit to an evaluation-ready expression."
 
-SetAttributes[ QuantumCircuitTrim, Listable ];
+SetAttributes[QuantumCircuitTrim, Listable];
 
 QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__, ___?OptionQ] ] :=
   Flatten @ QuantumCircuitTrim @ {gg}

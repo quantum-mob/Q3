@@ -69,10 +69,10 @@ GroupGenerators @ PauliGroup[qq:{__?QubitQ}] :=
 
 PauliGroup /:
 GroupGenerators @ PauliGroup[n_Integer] := Module[
-  { op = Pauli @ ConstantArray[0, n],
-    kk = Range[n] },
-  kk = Flatten[ Thread /@ {kk -> 1, kk -> 2, kk ->3 } ];
-  Sort @ Map[ReplacePart[op, #]&, kk]
+  { kk = {1,2,3} },
+  kk = ArrayPad[{kk}, {{0, n - 1}, {0, 0}}];
+  kk = Transpose /@ NestList[RotateRight, kk, n - 1];
+  Pauli /@ Flatten[kk, 1]
  ] /; n > 0
 
 
@@ -562,7 +562,7 @@ Stabilizer[vec_?VectorQ] := With[
     Message[Stabilizer::notss, expr];
     Return[{}]
    ];
-  (ThePauli @ Keys[mm]) * Values[mm]
+  Map[ThePauli, Keys @ mm] * Values[mm]
  ] /; IntegerQ @ Log[2, Length @ vec]
 
 
@@ -572,7 +572,7 @@ Stabilizer[expr_] := With[
     Message[Stabilizer::notss, expr];
     Return[{}]
    ];
-  (Pauli @@@ Keys[mm]) * Values[mm]
+  Map[Pauli, Keys @ mm] * Values[mm]
  ] /; fPauliKetQ[expr]
 
 
