@@ -19,7 +19,7 @@ Q3 provides a *fully automatic installation and update*. Please take a look at t
 
 ## YouTube Video Tutorials
 
-[YouTube video tutorials](https://www.youtube.com/@QuantumWorkforceCenter/videos) of Q3 are available from [here](https://www.youtube.com/@QuantumWorkforceCenter/videos).
+[YouTube video tutorials](https://youtube.com/playlist?list=PLO3EQ7RIEy-eW2hPiaPQ24VuVOZytyS5m&feature=shared) of Q3 are available from [here](https://youtube.com/playlist?list=PLO3EQ7RIEy-eW2hPiaPQ24VuVOZytyS5m&feature=shared).
 
 <a href="https://www.youtube.com/@QuantumWorkforceCenter/videos" target="_blank">
 <img src="http://img.youtube.com/vi/k2icqSdb0FA/mqdefault.jpg" alt="Watch the videos" width="360" border="10" />

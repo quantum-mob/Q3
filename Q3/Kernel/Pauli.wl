@@ -893,9 +893,9 @@ Ket /: CircleTimes[a_Ket, b__Ket] := Ket @@ Catenate[List @@@ {a, b}]
 Bra /: CircleTimes[a_Bra, b__Bra] := Bra @@ Catenate[List @@@ {a, b}]
  *)
 
-Ket[s_Integer] := Ket @ {s}
+Ket[s_?IntegerQ] := Ket @ {s}
 
-Bra[s_Integer] := Bra @ {s}
+Bra[s_?IntegerQ] := Bra @ {s}
 
 Ket[a_Integer, bc__Integer] := (
   Message[Q3General::changed, "Ket",
