@@ -890,7 +890,7 @@ FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
      ];
     new = Mod[mat . cyc, 2];
     opf = Swap @@ Part[ss, {1, kk}];
-    Return[opf ** FromGottesmanMatrix[new, ss]]
+    Return @ Elaborate[opf ** FromGottesmanMatrix[new, ss]]
    ];
 
   {qq, rr} = TakeDrop[ss, 1];

@@ -47,9 +47,9 @@ $GateSize := 0.8 $CircuitUnit
 
 $DotSize := 0.09 $CircuitUnit
 
-$InOutOffset := 0.1 $CircuitUnit
+$InOutOffset := 0.2 $CircuitUnit
 
-$BraceWidth := 0.125 $CircuitUnit
+$BraceWidth := 0.4 $CircuitUnit
 
 
 Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] :=
@@ -1149,7 +1149,7 @@ qcDrawPort[ Port[ expr_, opts___?OptionQ ], xy_Association ] := Module[
 
   If[ Length[qq] > 1,
     brace = qcPortBrace[dir, zz];
-    zz = Mean @ zz + ($InOutOffset + $BraceWidth) {dir, 0};
+    zz = Mean[zz] + ($InOutOffset + $BraceWidth)*{dir, 0};
     { brace, qcPortText[text, zz, pivot, opts] },
     qcPortText[text, Mean @ zz, pivot, opts]
    ]

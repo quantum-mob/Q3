@@ -1,5 +1,14 @@
 # Release Notes
 
+## v3.0.2
+
+- More flexibility issues for Ket[] and Bra[]
+- Readjusted $InOutOffset, $BraceWidth
+- Improved documentation: LindbladSimulate, Purification, LindbladSimulate, HadamardTest, QuantumAlgorithms, SwapTest, FullGarner
+- New documentation: QuantumCircuitTrim
+- Removed documentation: QuissoCircuitTrim
+- A bug fix in FromGottesmanmatrix
+
 ## v3.0.1
 
 - Bug fix concerning Dyad, GroupGenerators[PauliGroup[n]], Basis[expr], DyadForm[mat], Pauli[a -> b], fPauliKetQ, Stabilizer, Qubits[QuantumCircuit[...]], ProperSystem, ProperStates, ReducedMatrix
