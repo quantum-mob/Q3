@@ -662,7 +662,10 @@ gateLabel @ EulerRotation[{_, _, _}, S_?QubitQ, ___] :=
 
 gateLabel @ ControlledPower[_, _, OptionsPattern[]] := With[
   { lbl = OptionValue[ControlledPower, "Label"] },
-  {First @ lbl, Superscript[Last @ lbl, First @ lbl]}
+  If[ Head[Last @ lbl] === Subscript,
+    {First @ lbl, Subsuperscript[First @ Last @ lbl, Last @ Last @ lbl, First @ lbl]},
+    {First @ lbl, Superscript[Last @ lbl, First @ lbl]}
+   ]
  ]
 
 (**** </gateLabel> *****)

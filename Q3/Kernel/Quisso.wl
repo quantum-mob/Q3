@@ -25,7 +25,9 @@ BeginPackage["Q3`"]
 
 { Oracle };
 
-{ QFT, ModExp, ModAdd, ModMultiply };
+{ QFT };
+
+{ ModMultiply, ModAdd, ModExp = ModPower };
 
 { UnitaryInteraction,
   Matchgate };
@@ -1414,7 +1416,7 @@ ControlledU[args___] := (
 
 (**** <ControlledPower> ****)
 
-ControlledExp::usage = "ControlledExp is an alias for ControlledPower."
+ControlledExp::usage = "ControlledExp is an alias of ControlledPower."
 
 ControlledPower::usage = "ControlledPower[{c1, c2, ...}, op] represents a controlled exponentiation gate."
 
@@ -1465,10 +1467,10 @@ If[ And[$VersionNumber == 13.2, $ReleaseNumber == 0],
   ControlledPower /:
   Matrix[ControlledPower[cc_, op_, ___], ss:{__?SpeciesQ}] :=
     Module[
-      { tt = Qubits @ {cc, op},
+      { tt = Qubits @ op,
         mat },
-      mat = theCtrlExp[Length @ cc, Matrix[op]];
-      Matrix[ExpressionFor[mat, tt], ss]
+      mat = theCtrlPower[Length @ cc, Matrix @ op];
+      Matrix[ExpressionFor[mat, Join[cc, tt]], ss]
      ]
  ]
 
@@ -1495,8 +1497,10 @@ Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
 
     txt = OptionValue[ControlledPower, opts, "Label"];
     If[ListQ[txt], txt = Last @ txt];
-    txt = Table["Label" -> Superscript[txt, Superscript[2, n-k]], {k, n}];
-    
+    txt = If[ Head[txt] === Subscript,
+      Table["Label" -> Subsuperscript[First @ txt, Last @ txt, Superscript[2, n-k]], {k, n}],
+      Table["Label" -> Superscript[txt, Superscript[2, n-k]], {k, n}]
+     ];
     new = ReplaceAll[
       MapThread[ControlledGate, {ss, pwr, txt}],
       HoldPattern @ ControlledGate[args__] ->
@@ -1505,13 +1509,14 @@ Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     QuantumCircuit @@ new
    ]
 
-theCtrlExp::usage = "theCtrlExp[n, m] is the matrix version of ControlledPower."
+theCtrlPower::usage = "theCtrlPower[n, mat] is the matrix version of ControlledPower."
 
-theCtrlExp[n_Integer, mat_?MatrixQ] := Module[
-  { bb = Tuples[{0, 1}, n], xx, mm },
-  xx = FromDigits[#, 2] & /@ bb;
-  mm = MatrixPower[mat, #] & /@ xx;
-  bb = Dyad[#, #] & /@ One @ Power[2, n];
+theCtrlPower[n_Integer, mat_?MatrixQ] := Module[
+  { bb = Tuples[{0, 1}, n],
+    xx, mm },
+  xx = FromDigits[#, 2]& /@ bb;
+  mm = MatrixPower[mat, #]& /@ xx;
+  bb = Dyad[#, #]& /@ One @ Power[2, n];
   Total @ MapThread[CircleTimes, {bb, mm}]
  ]
 
@@ -1918,8 +1923,33 @@ Expand[op_QFT] = op (* fallback *)
 
 QFT /:
 Expand @ QFT[ss:{__?QubitQ}, ___] := QuantumCircuit @@ Join[
+  qftCtrlPower[ss][All],
+  With[{n = Length @ ss}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
+ ]
+
+qftCtrlPower[ss:{__?QubitQ}] := 
+  qftCtrlPower[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+qftCtrlPower[ss:{__?QubitQ}][All] := Flatten @
+  Map[qftCtrlPower[ss], Range @ Length @ ss]
+
+qftCtrlPower[ss:{__?QubitQ}][1] := { First[ss][6] }
+
+qftCtrlPower[ss:{__?QubitQ}][k_Integer] := With[
+  { T = ss[[k]] },
+  { ControlledPower[ Reverse @ Take[ss, k-1], T[C[-k]],
+      "Label" -> {"x",Subscript["Z",k]} ],
+    T[6] }
+]
+
+
+QFT /:
+ExpandAll[op_QFT] = op (* fallback *)
+
+QFT /:
+ExpandAll @ QFT[ss:{__?QubitQ}, ___] := QuantumCircuit @@ Join[
   qftCtrlPhase[ss][All],
-  With[{n = Length[ss]}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
+  With[{n = Length @ ss}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
  ]
 
 qftCtrlPhase[ss:{__?QubitQ}] := 
@@ -1943,7 +1973,10 @@ Dagger /:
 HoldPattern @ Expand @ Dagger[op_QFT] = Dagger[op] (* fallback *)
 
 Dagger /:
-HoldPattern @ Expand @ Dagger @ QFT[ss:{__?QubitQ}, ___] :=
+HoldPattern @ ExpandAll @ Dagger[op_QFT] = Dagger[op] (* fallback *)
+
+Dagger /:
+HoldPattern @ ExpandAll @ Dagger @ QFT[ss:{__?QubitQ}, ___] :=
   QuantumCircuit @@ Join[
     invCtrlPhase[ss][All],
     With[{n = Length[ss]}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
@@ -2604,6 +2637,15 @@ Matrix[
   MatrixEmbed[Matrix @ op, tt, qq]
   
 (**** </ModMultiply> ****)
+
+
+(**** <ModPower> ****)
+
+ModExp::usage = "ModExp is an alias of ModPower and refers to the modular exponentiation."
+
+ModPower::usage = "ModPower represents the modular power or modular exponentiation."
+
+(**** </ModPower> ****)
 
 
 (**** <UnitaryInteraction> ****)
