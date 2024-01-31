@@ -1,10 +1,23 @@
 # Release Notes
 
-## v3.0.2
+## v3.0.3
+
+- Improved CliffordFactor::usage
+- CliffordDecompose is renamed CliffordFactor; CliffordDecompose is an alias of CliffordFactor.
+- NineQubitCode is updated for better demonstration codes.
+- Corrections in MakeBoxes for Supermap and LindbladSupermap.
+- Emergency code for Expand[Dagger @ QFT] in Quisso.wl
+- Further elaboration of Dagger[ControlledPower[...]]
+- Expand[QFT] is renamed ExpandAll[QFT]; Expand[QFT] is redefined.
+- Bug fix: Matrix[ControlledPower[cc, op]] when cc is not in the canonical order; Expand[Dagger @ QFT]
+- Improved documentation: ControlledGate, ControlledPower, QFT, QuantumFourierTransform, Von Neumann Entropy
+
+## v3.0.2- 
+- 
 
 - More flexibility issues for Ket[] and Bra[]
 - Readjusted $InOutOffset, $BraceWidth
-- Improved documentation: LindbladSimulate, Purification, LindbladSimulate, HadamardTest, QuantumAlgorithms, SwapTest, FullGarner
+- Improved documentation: LindbladSimulate, Purification, LindbladSimulate, HadamardTest, QuantumAlgorithms, SwapTest, FullGarner, CliffordFactor
 - New documentation: QuantumCircuitTrim
 - Removed documentation: QuissoCircuitTrim
 - A bug fix in FromGottesmanmatrix

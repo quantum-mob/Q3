@@ -1,0 +1,5176 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 14.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[    194031,       5166]
+NotebookOptionsPosition[    182262,       4925]
+NotebookOutlinePosition[    184927,       4990]
+CellTagsIndexPosition[    184803,       4984]
+WindowTitle->CliffordFactor
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "a2e4db22-565a-44f3-b5e5-f01af46fcb3b"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "3fab6c3e-8001-43ad-beec-596cd6bf20db"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "cdabe9fa-7b2d-4fb6-b9fb-78b4e87b989d"]
+         }],ExpressionUUID->"375afa54-d663-489b-a02e-eed3eb002a23"],
+         StripOnInput->False],{
+        "\"CliffordQ\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/CliffordQ"], 
+         "\"GottesmanMatrix\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/GottesmanMatrix"], 
+         "\"FromGottesmanMatrix\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/FromGottesmanMatrix"], 
+         "\"CliffordGroup\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/CliffordGroup"], 
+         "\"PauliGroup\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/PauliGroup"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "0cc99cfc-9434-4004-97ef-6b8f3195b9f4"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "cd64134b-be8a-4fcb-86f7-1efabbb5e601"]
+         }],ExpressionUUID->"b066e6ac-3567-4c6d-982f-9876344e1e9c"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/guide/QuantumInformationSystems"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "b1e6fb0c-b8cd-4ccb-9c0b-22e99b732248"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "2cad57a4-aa21-41cc-9725-61c3e6226791"]
+         }],ExpressionUUID->"f57887cb-641c-4d9d-8e4f-d576dfcea540"],
+         StripOnInput->False],{
+        "\"Clifford Decomposition\"" :> 
+         Documentation`HelpLookup["paclet:Q3/tutorial/CliffordDecomposition"],
+          "\"The Pauli and Clifford Groups\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/PauliAndCliffordGroups"], 
+         "\"Stabilizer Formalism\"" :> 
+         Documentation`HelpLookup["paclet:Q3/tutorial/StabilizerFormalism"], 
+         "\"Stabilizer Codes\"" :> 
+         Documentation`HelpLookup["paclet:Q3/tutorial/StabilizerCodes"], 
+         "\"Quantum Error-Correction Codes\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumErrorCorrectionCodes"], 
+         "\"Universal Quantum Computation\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/UniversalQuantumComputation"], 
+         "\"Quantum Information Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumInformationSystems"], 
+         "\"Quantum Computation and Quantum Information with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "278de55d-6803-4d50-b7ce-ed69c24b467c"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "ad0152f3-59a6-4afd-bb3d-9be9d65aa5e1"]
+         }],ExpressionUUID->"5c63d917-069c-42a8-ab59-42591bedd6bc"],
+         StripOnInput->False],{
+        "\"Q3/ref/CliffordFactor\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{Cell["Q3/ref/CliffordFactor"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/Q3/ref/\
+CliffordFactor.html"], StandardForm]], "Input", TextClipboardType -> 
+                 "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "Q3/ref/CliffordFactor" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "0601f329-7565-476f-b841-abfd94b0a364"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "b54a5a76-05a3-441e-b978-c65d70f8c3ec"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"6b2808d7-790a-494f-a2e6-b33804894094"],
+
+Cell["Q3`", "ContextNameCell",ExpressionUUID->"948dc2ae-ad68-4ce3-807d-f84cea50e488"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "CliffordFactor", "ObjectName",ExpressionUUID->
+      "06918d8f-bcc8-4c44-97ae-b02d7dae2e37"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"bb08c987-e31e-41ba-a4fd-94807e2e626b"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "65d55817-6c8b-411d-8402-b34705bd06e3"]
+    }],ExpressionUUID->"8e2b0aa7-bf3c-4369-9355-d35af0223a5c"], Cell[BoxData[
+     StyleBox[
+      GraphicsBox[InsetBox[
+        StyleBox["\<\"UPDATED IN 14.0\"\>",
+         StripOnInput->False,
+         FontFamily->"Source Sans Pro",
+         FontSize->17,
+         FontWeight->"Bold",
+         FontSlant->"Italic",
+         FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+        Right, Center}],
+       AxesStyle->Large,
+       FrameStyle->Large,
+       ImageSize->{125, 24},
+       PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+      StripOnInput->False]],
+     Deployed->True,
+     Magnification->1,ExpressionUUID->
+     "c37a78f8-fc65-4400-b4d4-7dc28f0e8b2c"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"949f689b-6370-4534-a6b7-85ad4133044d"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["CliffordFactor"]], "paclet:Q3/ref/CliffordFactor", 
+         "Q3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       StyleBox["op", "TI"], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "9244625b-4a53-43bd-97f3-a727053abdd1"],
+     "\[LineSeparator]returns a list of generators of the Clifford group that \
+combine to yield Clifford operator ",
+     Cell[BoxData[
+      StyleBox["op", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "6ad8de72-9ad6-4db9-be3d-64a7abc740af"],
+     ". "
+    }],ExpressionUUID->"5f573353-87a1-490f-805a-fbef34a82826"]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["CliffordFactor"]], "paclet:Q3/ref/CliffordFactor", 
+         "Q3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{
+        StyleBox["mat", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["s", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "ab2cf305-3fbe-4382-b9a6-5bd932cae22a"],
+     "\[LineSeparator]decomposes the Clifford operator corresponding to \
+Gottesman matrix ",
+     Cell[BoxData[
+      StyleBox["mat", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "eaace11d-bca8-4016-8718-91ca83debd48"],
+     " and acting on qubits ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["s", "TI"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["s", "TI"], 
+         StyleBox["2", "TR"]], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "}"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "d6e7694a-94ba-4b40-bbc7-148e314b07af"],
+     "."
+    }],ExpressionUUID->"47f5d77f-9dff-4791-b61a-e758b3b01e54"]}
+  }]], "Usage",
+ CellID->212278340,ExpressionUUID->"8118ec52-a228-4fd0-98d8-71ed26daae9d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "11e5d33f-3438-47bd-b22c-e8fd4b77c4e7"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"31b28a2b-71ed-4851-927d-303bf9e041fe"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(4)", "ExampleCount",ExpressionUUID->
+  "0e63de9e-d639-4862-a245-cee9c090c4b8"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->863599075,ExpressionUUID->"0a7fd03d-9cf5-493c-9598-89cef883961d"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->1927565408,ExpressionUUID->"bba508bc-d5c6-467b-bab7-766f8dc3f164"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "7f62436d-f803-4376-a28c-12b4511b0769"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"756d4eec-b4f4-41e5-b436-6d30438532f6"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(3)", "ExampleCount",ExpressionUUID->
+  "ce10ae2f-e2f1-4f89-b2ce-5114735b2561"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->1815167099,ExpressionUUID->"12d85f56-8033-41cf-a4be-4441d4da434e"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->859214698,ExpressionUUID->"b4ec02a6-44c3-4cb6-95dc-5d402345c6c6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$n", "=", "3"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ss", "=", 
+  RowBox[{"S", "[", 
+   RowBox[{
+    RowBox[{"Range", "@", "$n"}], ",", "$"}], "]"}]}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->452630563,ExpressionUUID->"08a82f7b-c3db-444a-b712-05fdb82e4f0c"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    SubscriptBox["S", 
+     TemplateBox[{",", "\",\"", "1"},
+      "RowWithSeparators"]],
+    $CellContext`S[1, Q3`$]], ",", 
+   InterpretationBox[
+    SubscriptBox["S", 
+     TemplateBox[{",", "\",\"", "2"},
+      "RowWithSeparators"]],
+    $CellContext`S[2, Q3`$]], ",", 
+   InterpretationBox[
+    SubscriptBox["S", 
+     TemplateBox[{",", "\",\"", "3"},
+      "RowWithSeparators"]],
+    $CellContext`S[3, Q3`$]]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->2044966061,ExpressionUUID->"fc1f1297-967e-4954-a10a-c71aae36e1aa"]
+}, Open  ]],
+
+Cell["Consider a Gottesman matrix.", "ExampleText",
+ CellID->669790911,ExpressionUUID->"948d0e47-a4f5-415d-93de-ae111b450a3b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"First", "@", 
+    RowBox[{"BinarySymplecticGroupElements", "[", 
+     RowBox[{"ss", ",", 
+      RowBox[{"{", "2", "}"}]}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1964987402,ExpressionUUID->"b3156732-ed13-405f-bb63-c16af3f97254"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", "0", "0", "1", "0"},
+     {"1", "0", "0", "0", "0", "1"},
+     {"0", "1", "0", "0", "1", "0"},
+     {"1", "0", "1", "0", "0", "0"},
+     {"0", "0", "1", "0", "0", "0"},
+     {"0", "1", "0", "1", "1", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->633838838,ExpressionUUID->"ff01c1a3-b7c4-472e-9a1e-895d585b58dd"]
+}, Open  ]],
+
+Cell["\<\
+Take a look at the corresponding Clifford operator and its matrix \
+representation in the standard computational basis.\
+\>", "ExampleText",
+ CellID->432560268,ExpressionUUID->"d0ce7eef-a785-4bdf-8c2a-2bc2e3f99ee1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"op", "=", 
+  RowBox[{"FromGottesmanMatrix", "[", 
+   RowBox[{"mat", ",", "ss"}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"Matrix", "[", 
+   RowBox[{"op", ",", "ss"}], "]"}], "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->5310392,ExpressionUUID->"75dd6b39-ba96-4d24-952c-7e07dbf00743"],
+
+Cell[BoxData[
+ GraphicsBox[
+  TagBox[RasterBox[CompressedData["
+1:eJzt3QtslNX+7/9eaKncahEKgUAxyEVQoJKgFAQPAhEvILdSEPQHgiAqf4S/
+nkgMoBuiwUJEgVLAgIgkAqKCKEEMIXhBFFsLCuUWCXKrbAoWrWAvZx2ew6RC
+WczM8zxr1lrzfiV7px2m833m81lrTXd3L7eO+f8GPRUXExMzNUn816DR//t/
+TZky+qXBN4t3hk6a+vT4SePG9pv0/48bP27KPWPixY1nxX+aJ8TE/N+3KwEA
+AAAAgO0qKir+qU5ZWVmkLw1whbVtK5pVibTlyEdOTT60ALjHPpLjNDPdI488
+EhMT8/XXXwduWb16tbhl2rRpHk5ZtWpVTHUeeOABD6foT0HaO3bsEA84ZsyY
+q27PyMhISko6deqUV4M0pywHQ9e2mnyMXo1qmlVzAutPQdqsxhsydzWqycfQ
+095zfCYjwWvrDXGayXGama6goCA+Pv6+++5z3i0rK2vTpk3Dhg3Pnz/v4ZRD
+hw5l/1vr1q1Fg/Pnz/dwiv7UpN2zZ8+EhIRff/01cMv27dtF2lOnTvVwiv7U
+5GDu2laTj7mrUU2zas4E/alJm9UoZ+5qVJOPuae9t/hMRo7XVjlOMzlOMwuM
+Hz9ehPnFF1+It999913x9qJFi3yduGvXrho1avTq1auiosLXQRpSkPZXX30l
+HnbChAmBW/r161enTp2ioiJvB2kuIjkYtLbV5GPNavSvWfUnsP58SpvVeEN2
+rEY157BBp73n+ExGgtfWkHCayXGamUhsw3r16t11110XL15s2bJlu3btfP02
++9LS0rZt2yYnJx89etS/KdpSk7Y4YGvWrPnbb7+Jt/Py8sR58vLLL3s+RX+K
+czBubavJx4LV6Guzik9g/fmaNqtRzoLVqOYcNu609xafycjx2hokTjM5TjNz
+zZkzR2zJ3r17i//+7LPPfJ01efJkMWXFihW+TtGZgrR/+OEH8eDPPPOMeHvA
+gAEpKSnFxcV+DNKc4hyMW9tq8rFgNfrdrMoTWH++ps1qvCHTV6Oac9i4095z
+fCYjwWtrkDjN5DjN9PTXX38VFBSIFXXw4MHr/b/8Fy9eTEtLc5aff1OEbdu2
+xcbGDhw4MLwpPiktLf3jjz88eSh90h40aFDNmjU/+ugjMWj27NnhDfKD4rTd
+52Du2tYnHz1Xo5pm1ZwJPlG8WyuVpM1qNHE16pOP+yk+4TMZZXhtldNnt3Ka
+GXqaaevMmTPPPfdcYmJi4He+JScnZ2Zmnjhx4qp7FhUV3Xzz//3z2V27dg31
+e+yDnyLO/BYtWqSmpur2YyB9+/YVl338+HE3D6Jb2nv37o2Li4uPjxeBX7hw
+wc1T85bitN3kYO7a1i0f3VajmmbVnAm+Urxb1aTNajRrNeqWj26nfQCfySjA
+a6ucbruV08zQ00xPpaWlnTt3diJNSEjo2LFjSkqK8654Y+vWrVXvPHbsWLEx
+n3jiCfGvy5cv92nKk08+KW7/+OOPPXmCHurTp4+4MOdnVcKjYdrC8OHDxT/N
+nTs37OflB8VpV4abg7lrW8N8wp7iBzXNqjkT/KZ4t6pJu5LVaM5q1DAfrU77
+qvhMxm+8tsppuFs5zQw9zfTk/HBBYmLiqlWrSkpKnBvz8/MzMjIaNWp07Nix
+wD2///77uLi4MWPGiDqaN2+empp67tw5z6ds3LhR3HP06NEePT8vTZ48+Z57
+7jlz5kzYj6Bb2lXv/+WXX4b9vPygMu2q9w81B3PXtm75uJniBzXNqjkT/KZy
+t6pJu+r9WY36r0bd8tHttK+Kz2T8xmurnG67ldPM3NNMTw8//LBILCsr66rb
+y8vLq34/QEVFhTiKa9Wq5XwHkfOH1CdNmuTtFHHUN27cOC0tTf8/JBcerdIO
+0Oe89ZaaHMxd21rl43KKH9Q0q+ZM0J9WaQewGqudouFq1CofDU97b/GZjByv
+rXJa7VZOM1+nRKd+/fqJbHv27Cm/24oVK8TdZsyY4bzrLMX4+PiCggIPp2Rm
+Zoq7iTv/59+WLl0azBT9aZV2gD7nrbfU5GDu2tYqH5dT/KCmWTVngv60SjuA
+1VgtDVejVvloeNp7i89k5HhtldNqt3Ka+TolOs2aNSvmsgkTJlzv+x9KS0sb
+N27cpEmTqr/34Ntvv42Njb3//vu9miLUr18/pjrp6emhPi+viOfeqVOnjlV0
+79497EfTKu2AN954Q9x527ZtwT0JH6lPu6rwcjB3bWuVj8spflDTrJozwQ8R
+2a0K0q6K1XgtPVejPvm4n+IHPpNRiddWOX12K6eZiaeZ/v7888927do5QdWt
+W3fSpEkHDx40dIofysvLN2/e/Pnnnz90WXZ2dp06dcJ+NNKWI22VyEeOfOTY
+rSqRjxz5yLFbVSIfOfKRIx8LFBcXjxw5Mi4uzkk4Nja2f//+O3fuNHGKf567
+TFywm9ejStIODmmrQT5y5BMMdqsa5CNHPsFgt6pBPnLkI0c+digsLJw4cWLt
+2rVjrpgyZUp5ebmJU/zg1euRg7TlSFsl8pEjHzl2q0rkI0c+cuxWlchHjnzk
+yMcOxcXFr7/+eoMGDZx458+fb+4Ub3n7euQg7eshbfXIR458rofdqh75yJHP
+9bBb1SMfOfKRIx87nDlzpn379iLbtm3bVr1dJP/+++8PGzYsJyfHpym7d+8W
+x37nzp3btWsnBuXn57sf5Ak/Xo8cEUz7xx9/fPrpp7t06dKqVat+/fqtWbPG
+/SBPWJm2tmu7KlajHOvnWuzWSGG3ypHPtRTvVs/3kVlpV0U+cuQjRz4WyM3N
+FdnGx8cHviXgtddei42Ndb6aMW7cOD+miHcTExPr16+fmZkplor4p4SEBNGp
+J7Nc8u/1qDJCaS9evFi8fcsttwwePHjAgAG1atUS/zp79mxPZrlkX9o6r+2r
+sBrlWD9XYbdGELtVjnyuonK3+rSPDEr7KuQjRz5y5GOK7OzstWvXXnv7q6++
+KtJr0aJF4BZxFOfk5Dh/ES/U16Mgp0yfPr1Hjx5nz5513l2/fr3416FDh4Y0
+yyeevB5plfaBAweGDx/++++/O+8eOnQoLi6uadOmIc3yiX1pa7i2tcpHw9Wo
+VT4arp8AdqsCWuXDbpVP0TCfAJW71eU+Mjdt8pEjHznyMdqaNWucr9yOGjWq
+oKDA+QLFiRMnli1b5nxd4qmnnrrqQ4qKikJ9PQppSllZWeBtcc/U1NT27du7
+epIecf96pGHaV0lPTxfPrmoFkWJl2lqtbQ3zuUpkV6OG+Wi1fqpit/pNw3yu
+wm7VOZ+qFO/WsPeRuWmTjxz5yJGP6c6cOZOVlRVzRd26dVu1ahV4V7x9/vz5
+qz4kjNejMKY4Ll68WLt27QcffDD8Z+jauXPnTlz2P5dt2LAhKSnpxBUhPZTm
+aX/wwQc1atSYOHFiSE/KW9GTdsTXtub5RHw1ap5PxNdPJbtVIc3zYbdqnk9l
+pHerI6R9ZG7a5CNHPnLkY4d169Z17969Tp06gVRvuummqVOnBr7HoKowXo/C
+mOJYsGCBuFtubm6oszz00EMPxVyfSCPUB9Qt7U2bNomdeOutt4rNMnny5OLi
+4lBnecj6tAN0WNuV+uWj1Wqs1C+fAB3WD7tVMd3yYbcalE9kd6sjjH1kaNqV
+5HMj5CNHPnYoLy/fv3//N998c+TIEckfMgv79SikKUJ+fn5SUlJGRoaVf1VN
+n7TXr1/frVu3Zs2aiUE9evTQ81fguqRP2g7d1rY++ei5GvXJx6Hb+vEWacvp
+kw+71cR8vKVmH5mbNvnIkY8c+UQJl69HQdqzZ09qaqoo8ejRo74O0pyatB1i
+W4nA69evf/LkSQXjNMTalmM1yrF+VCJtOXarHPmopHIfmZg2+ciRjxz5mE7B
+61F+fn7Dhg0bNWpUWFjo3xQjqHz1F5YtWybGrVy5Us043bC25ViNcqwflUhb
+jt0qRz7KqN9HZqVNPnLkI0c+FvD79Wjr1q316tVLS0sz8ZMZz/ma9oYNG/bs
+2VP1lpdeekmME7f7MU5/rG05VqMc60cl0pZjt8qRjxoK9pHRaZOPHPnIkY/R
+Dhw4MP+yV155RUTatWtX591t27Z5OGX16tWJiYni8Z9//vlZs2b954rt27d7
+OEV/CtK+dOmS2Iwi7fHjx69cufLTTz999tln4+LiWrZsWVJS4tUUI7C25ViN
+cqwflUhbjt0qRz4qKdhHRqdNPnLkI0c+plu7dm1MdcaOHevhlLvvvrvaKTNm
+zPBwiv7UpF1UVPT44483atTIefDY2Nj+/fsfPnzYwxFGYG3LsRrlWD8qkbYc
+u1WOfFRSs4/MTZt85MhHjnwAbR0/frygoIAvQEEHrEbAFOxWOfJRibTlyEeO
+fOTIBwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQnQ4fPrx169ZIXwXgPda2HPnI
+kY9KpC1HPtAHq1GOfOTIR458TJebm9utW7dIXwXgPda2HPnIkY9KpC1HPtAH
+q1GOfOTIR458TEeDsBVrW4585MhHJdKWIx/og9UoRz5y5CNHPqajQdiKtS1H
+PnLkoxJpy5EP9MFqlCMfOfKRIx8TVVRUlF+Rk5OTkZFRXkWkr842VdO+VqSv
+zjasbTnykSMflUhbjnzkeG1VidUoRz5y5CMXDfm89957fQwkLjuYZyfuGXN9
+R44cCfJBolyQa6kPaXtBWdrsffJht7oUTEqepM1qJB92q0vBpORJ2qxG8iEf
+//LR33//+98DBhKXHcyzO3HiROBDZs6c2alTp6oPEuSXR5Q/Oe0EuZaqpn0t
+0g5SGGmHt7bZ++Tj4GwMWzApeZI2q5F8rofdGqRgUqpkNZLPdZCPnMrPPaAJ
+vp8ftmJty5GPHPmoRNpy5AN9sBrlyEeOfOTIx3Q0CFuxtuXIR458VCJtOfKB
+PliNcuQjRz5y5GM6GoStWNty5CNHPiqRthz5QB+sRjnykSMfOfIx3e7du5ct
+WxbpqwC8x9qWIx858lGJtOXIB/pgNcqRjxz5yJEPAAAAAAAAAAAAAAAAAAAA
+AAAVFRXNmzfvHCL+0llVZKgSaXuFJOXIxz0y9ApJypGPe2ToFZKUIx858jFd
+QUHBiBEjIn0VZiNDlUjbKyQpRz7ukaFXSFKOfNwjQ6+QpBz5yJGP6d5+++0l
+S5ZE+irMRoYqkbZXSFKOfNwjQ6+QpBz5uEeGXiFJOfKRIx/TDR48uLCwMNJX
+YTYyVIm0vUKScuTjHhl6hSTlyMc9MvQKScqRjxz5mK5Dhw6RvgTjkaFKpO0V
+kpQjH/fI0CskKUc+7pGhV0hSjnzkyMdoe/fuzcrKivRVmI0MVSJtr5CkHPm4
+R4ZeIUk58nGPDL1CknLkI0c+plu4cOHixYsjfRVmI0OVSNsrJClHPu6RoVdI
+Uo583CNDr5CkHPnIkY8Cc+bMmTBhwsyZM/148KFDh+7bt6/qLceOHRO1jhw5
+sm3btl27dh09evTOnTv9GK2eT0lem6HD4iSDQdrusfflyMcr7Fb3WI1y5OMV
+dqt7rEY58pEjH6MtXrw45jKRpx+Pf9U382/YsCElJSXm32JjY6dNm+bHdJX8
+S7LaH4iwOMlgkLZ77H058vEKu9U9VqMc+XiF3eoeq1GOfOTIx2jfffddYmKi
+fw3+8ssvmZmZgXfXr18vyhKzxI2iytOnT+fn52dlZTkXsGXLFs8vQBn/krwq
+Q4fFSQaDtN1j78uRj1fYre6xGuXIxyvsVvdYjXLkI0c+RisqKmrWrJmIbuDA
+gT41mJOTs2jRosC7ly5dGjFixLXf3t+zZ09xAWPGjPH8AtTwNcmrMnTYmmQw
+SNs99r4c+XiF3eoeq1GOfLzCbnWP1ShHPnLkY7SysrJevXqJ3Hr37r1p0yaf
+Ghw2bNjPP/98w7vNmzdPXECXLl08vwAF/E4yyAwdRicZDNJ2j70vRz5eYbe6
+x2qUIx+vsFvdYzXKkY8c+ZjuxRdfFKE1bdr01KlTn3zyiU8NBvkX06ZMmSIu
+YMCAAZ5fgAJ+JxnSX50zOslgkLZ77H058vEKu9U9VqMc+XiF3eoeq1GOfOTI
+x2jr1q0TiSUmJjq//M2nBvfv3z9kyJAb3q2iouL2228XF5Cdne3tBSjgd5JB
+ZugwOslgkLZ77H058vEKu9U9VqMc+XiF3eoeq1GOfOTIx2j79u2rW7euSGzJ
+kiXOLeE1WF5evmLFChH+yZMnq71Dbm7uggULbvg4c+fOFdOTk5OPHz8e0gVE
+nPskvcrQYW6SwSBt99j7cuTjFXare6xGOfLxCrvVPVajHPnIkY/RSkpKnC9E
+jBs3LnBjGA1u3LjxjjvuuPfee4cNGzZ+/Phq7zN8+PA9e/bIHycvL8/5JXii
+7uCn68B9kl5l6DA3yWCQtnvsfTny8Qq71T1Woxz5eIXd6h6rUY585MjHdEOG
+DBFx3XbbbceOHTt9xfLly50bxdtFRUXBPM6kSZNEieKNs2fPNmzY8Kq/Oe7o
+0KFDRUWF5EEOHDjQpEkT5zv55ffUkPskPcnQYXSSwSBt99j7cuTjFXare6xG
+OfLxCrvVPVajHPnIkY/R8vLyYoLgfJN/8LKzs6/9IXfRzqBBgyQfdejQoaZN
+m4pxPXr0KC0tDfnJRJTnSYaXocPoJINB2u6x9+XIxyvsVvdYjXLk4xV2q3us
+RjnykSMf0+3bt69rddq0aSOSTEpKct7du3dvSA/7999/p6Wl7dixo+qNS5cu
+feutt673IYWFhc6fbEtPTz937lyYzydyPE8yjAwdpicZDNJ2j70vRz5eYbe6
+x2qUIx+vsFvdYzXKkY8c+djK/e+ge++990T1VW957LHHfvrpp2rvvGvXrgYN
+GoiJ4kOKi4vDHqohN0mGlKHD4iSDQdrusfflyMcr7Fb3WI1y5OMVdqt7rEY5
+8pEjH9O5b7CioiI9Pf3DDz8M3HK9b+bfvHlz7dq1xbg+ffpcuHAh7Il6cpNk
+8Bk67E4yGKTtHntfjny8wm51j9UoRz5eYbe6x2qUIx858jGdJ383bcuWLa1b
+t/7nn38qL3+v/qOPPnrtfbZv356QkOD81EBKSoqoUrxbo4qsrCw31xBxLpMM
+JkOH9UkGg7TdY+/LkY9X2K3usRrlyMcr7Fb3WI1y5CNHPqZzGrzzzjtdPk7f
+vn0XLlwo3njnnXfefPPNa+/g/LI7iaFDh7q8hshyn+QNM3RYn2QwSNs99r4c
++XiF3eoeq1GOfLzCbnWP1ShHPnLkA0d+fn7jxo1LSkpGjRqVl5cX6csxEhmq
+RNpeIUk58nGPDL1CknLk4x4ZeoUk5chHjnwsILqbPn16x44dy8vLI30tpiJD
+lUjbKyQpRz7ukaFXSFKOfNwjQ6+QpBz5yJGP6Y4ePZqcnNy/f/9IX4jByFAl
+0vYKScqRj3tk6BWSlCMf98jQKyQpRz5y5GOBF154Yd68eZG+CrORoUqk7RWS
+lCMf98jQKyQpRz7ukaFXSFKOfOTIx3Rnz57dv39/pK/CbGSoEml7hSTlyMc9
+MvQKScqRj3tk6BWSlCMfOfIBAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABRqKKi
+4p/qlJWVRfrSAPw/7FOVSBuAg9MAcNi6Fx555JGYmJivv/46cMvq1avFLdOm
+TWOKMjbls2rVqpjqPPDAAx5O0Z+CtHfs2CEecMyYMVfdnpGRkZSUdOrUKa8G
+mbuzvGVTp+xThzWnorKVoznLTkXO3krrOjX07FXTgmVde86yFgzdCzdUUFAQ
+Hx9/3333Oe+WlZW1adOmYcOG58+fZ4oyNuVz6NCh7H9r3bq12Cnz58/3cIr+
+1KTds2fPhISEX3/9NXDL9u3bRdpTp071cIq5O8tbNnXKPnXYdCqqWTn6s+lU
+5Ox12NSpuWevmhZs6toPNrVg7l64ofHjx4sn8sUXX4i33333XfH2okWLmKKY
+rfns2rWrRo0avXr1qqio8HWQhhSk/dVXX4mHnTBhQuCWfv361alTp6ioyNtB
+5u4sb9nUaVXsUwtOxYisHA1Zdipy9lZa12lVBp29alqwuGtPWNZCVQbthRsS
+QdWrV++uu+66ePFiy5Yt27Vr58e3uNs0xQ9W5lNaWtq2bdvk5OSjR4/6N0Vb
+atIWx13NmjV/++038XZeXp44DF9++WXPp5i7s7xlU6cB7FNrTkXFK0dbNp2K
+nL0OmzoNMO7sVdOClV17yKYWAozbCzc0Z84cEVrv3r3Ff3/22WdMiQj78pk8
+ebKYsmLFCl+n6ExB2j/88IN48GeeeUa8PWDAgJSUlOLiYj8GmbuzvGVTpw72
+qTWnouKVoy3LTkXO3krrOnUYd/aqacHKrj1kWQsOs/bCX3/9VVBQINbMwYMH
+r/f/sF+8eDEtLc1ZYEzxg035BDNF2LZtW2xs7MCBA8Ob4pPS0tI//vjDk4fS
+J+1BgwbVrFnzo48+EoNmz57t0xQ9d1YlnbqYUsk+vcyUU1HNyvGJ4k5NORU5
+ex3R1mmllmevPi2Y0rUf9Mknyj8PqdaZM2eee+65xMTEwO9bS05OzszMPHHi
+xFX3LCoquvnmm8UdunbtGur3t9s0xQ825RP8FPFq26JFi9TUVN1+xK9v377i
+so8fP+7mQXRLe+/evXFxcfHx8SLwCxcuaPhcfEWnYU9hnzr0PxXVrBxfKe5U
+/1ORs9cRnZ3qdvbq1oL+XftBt3yi/POQa5WWlnbu3Nl5OgkJCR07dkxJSXHe
+FW9s3bq16p3Hjh0ronviiSfEvy5fvjw6p/jBpnxCmvLkk0+K2z/++OPgH1+N
+Pn36iAtzfnIkPBqmLQwfPlz809y5czV8Ln6j07CnsE8dmp+KalaO3xR3Wqn3
+qcjZ64jaTrU6ezVsQc0UrXaWhvmomaLVXpBzfnwgMTFx1apVJSUlzo35+fkZ
+GRmNGjU6duxY4J7ff/99XFzcmDFjRBTNmzdPTU09d+5cFE7xg035BD9l48aN
+4p6jR48O8pFVmjx58j333HPmzJmwH0G3tKve/8svv9TwufiNTsObwj516H8q
+qlk5flPZadX763kqcvY6orNT3c5e3VpQM0W3naVbPmqm6LYX5B5++GFxtVlZ
+WVfdXl5eXvX/i6+oqBAHY61atZzv53H+VPqkSZOicIofbMonyCniRbZx48Zp
+aWn6/1nA8GiVdkB4p5+5O8tbUdgp+9RhxKmoZuXoT6sdZMSrtv6isFMNz16t
+WlAzRcOdpVU+aqZouBfk+vXrJ55Xz5495XdbsWKFuNuMGTOcd53FFh8fX1BQ
+EG1T/GBTPkFOyczMFHcTd/7Pvy1dujSYKfrTKu2A8E4/c3eWt6KwU/apw4hT
+Uc3K0Z9WO8iIV239RWGnGp69WrWgZoqGO0urfNRM0XAvyM2aNSvmsgkTJlzv
+OxxKS0sbN27cpEmTqj+Z/u2338bGxt5///3RNsUPNuUTzBShfv36MdVJT08P
+ZoofxHPv1KlTxyq6d+8e9qNplXbAG2+8Ie68bdu24J5ECFP03Fl06nIK+7TS
+nFNRzcrxg/pOq9L5VOTsdURbp5Vanr36tKBmip47S598lE3RcC/I/fnnn+3a
+tXMusm7dupMmTTp48CBTFLMpH3NbKC8v37x58+eff/7QZdnZ2XXq1An70WxK
+m04dNqVNpw6b0qZTh01p06nDprTN7dSmfGgheqZERHFx8ciRI+Pi4pxnFxsb
+279//507dzJFJZvyMbcFx3OXiQt285lApV1p06nDprTp1GFT2nTqsCltOnXY
+lLa5ndqUDy1Ez5RIKSwsnDhxYu3atWOumDJlSnl5OVNUsikfc1vw6jMBh01p
+06nDprTp1GFT2nTqsCltOnXYlLa5ndqUDy1Ez5RIKS4ufv311xs0aOA8tfnz
+5zNFPZvyMbEFbz8TcNiUNp06bEqbTh02pU2nDpvSplOHTWmb2KnDpnxoIXqm
+RMqZM2fat28vnlfbtm2r3i6e9fvvvz9s2LCcnByfpuzevVscwp07d27Xrp0Y
+lJ+f78eUH3/88emnn+7SpUurVq369eu3Zs0al1P8QAuR4sdnAg46jRQ6DXsK
+nQbQqd/oNOwpdBpApyrRgg5owQi5ubniecXHxwf+7/jXXnstNjbW+UrCuHHj
+/Jgi3k1MTKxfv35mZqaoSfxTQkKCyNPbKYsXLxZv33LLLYMHDx4wYECtWrXE
+v86ePduD5+M1WogI/z4TqKTTCKHT8KbQKZ2qRKfhTaFTOo0gWtABLegjOzt7
+7dq1197+6quviitv0aJF4BZxMObk5Dh/syzUjoKcMn369B49epw9e9Z5d/36
+9eJfhw4d6u2UAwcODB8+/Pfff3fePXToUFxcXNOmTUN6Rt6iBR1aCPDkMwE6
+pVM69RWdhjeFTgO30KkCdBreFA07pQVaoIUbWrNmjfPVjFGjRhUUFDhfHDhx
+4sSyZcucrwk89dRTV31IUVFRqB2FNKWsrCzwtrhnampq+/btfXouAenp6eLM
+rzpaJVpwRLaFqtx/JkCnDjqlU//QqcvnEkCndOofOnX5XAL4TJUWaMGhz/l2
+rTNnzmRlZcVcUbdu3VatWgXeFW+fP3/+qg8Jo6MwpjguXrxYu3btBx980Ncp
+H3zwQY0aNSZOnBj8M/IWLVRq0IJw7ty5E5f9z2UbNmxISko6cUVID0WnlXRK
+p/6gU2+n0Cmd+oFOvZ0S8U5poZIWaCFo69at6969u/if/4FndNNNN02dOjXw
+/+9XFUZHYUxxLFiwQNwtNzfXjymbNm0S7d96662ioMmTJxcXF4f6jLxFCxFv
+4aGHHoq5PpF5qA9Ip3RKp56jU0+m0GkAnfqBTj2ZolWnlbRAC7QQivLy8v37
+93/zzTdHjhyR/BGxsDsKaYqQn5+flJSUkZERxl80C2bK+vXru3Xr1qxZM/F0
+evTo4f7X2XmCFkKdoj86DXWK/ug01Cn6o9NQp+iPTkOdoj86DXWKH2gh1Cl+
+oIVQp2jLZUdB2rNnT2pqqgjw6NGjvg4SRJViUP369U+ePOn3LK/Qgn3o1D50
+ah86tQ+d2odOdUALOqAF/SnoKD8/v2HDho0aNSosLPRvSlXLli0TT2rlypVq
+xrlHC/ahU/vQqX3o1D50ah861QEt6IAW9Od3R1u3bq1Xr15aWpp/BW3YsGHP
+nj1Vb3nppZfEkxK3+zTRc7RgHzq1D53ah07tQ6f2oVMd0IIOaEFbBw4cmH/Z
+K6+8Ip5O165dnXe3bdvm4ZTVq1cnJiaKx3/++ednzZr1nyu2b9/u1YhLly6J
+BSCmjB8/fuXKlZ9++umzzz4bFxfXsmXLkpISr6b4hBbsQ6f2oVP70Kl96NQ+
+dKoDWtABLehv7dq1MdUZO3ash1PuvvvuaqfMmDHDwylFRUWPP/54o0aNnAeP
+jY3t37//4cOHPRzhE1qwD53ah07tQ6f2oVP70KkOaEEHtICIOH78eEFBgelf
+9DAdLdiHTu1Dp/ahU/vQqX3oVAe0oANaAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+AADY7fDhw1u3bo30VQC2YWcB+mOfAgBMwWuW/nJzc7t16xbpqwBsw84C9Mc+
+BQCYgtcs/dER4Ad2FqA/9ikAwBS8ZumPjgA/sLMA/bFPAQCm4DVLTxUVFeVX
+5OTkZGRklFcR6auLFlVbuFakrw7hYGfZh31qH/apfdin9qFTHdCCDvx+zXrz
+zTf7oDqbNm0KMkNx55jrO3LkCC2EjRbsQ6f2oVP70Kl96NQ+dKoDWtCByhbk
+Tp8+fQDVOX/+fJAZnjhxIvBRM2fO7NSpU9XHCeYLILRwPeG1cC1a0Ac7yz7s
+U/uwT+3DPrUPneqAFnSg8jULKvEd+4Af2FmA/tinAABT8JqlPzoC/MDOAvTH
+PgUAmILXLP3REeAHdhagP/YpAMAUvGbpb/fu3cuWLYv0VQC2YWcB+mOfAgBM
+wWsWAAAAAAAAAAAAAAAAAAAAAMAsFRUVzZs37xwi/iqZt2jBLPRlHzq1D53a
+h07tQ6emoCkd0IL+CgoKRowYEemriHa0YBb6sg+d2odO7UOn9qFTU9CUDmhB
+f2+//faSJUsifRXRjhbMQl/2oVP70Kl96NQ+dGoKmtIBLehv8ODBhYWFkb6K
+aEcLZqEv+9CpfejUPnRqHzo1BU3pgBb016FDh0hfAmjBMPRlHzq1D53ah07t
+Q6emoCkd0ILm9u7dm5WVFemriHa0YBb6sg+d2odO7UOn9qFTU9CUDmhBfwsX
+Lly8eHGkryLa0YJZ6Ms+dGofOrUPndqHTk1BUzqgBU/MmTNnwoQJM2fO9OPB
+hw4dum/fvmtvP3bsmKhv5MiRbdu27dq16+jRo3fu3OnHBZiCFsyiuC+aUoBO
+7UOn9qFT+9CpKfhMVQe0oLnFixfHXCay8uPxq/12/Q0bNqSkpMT8W2xs7LRp
+0/y4Bv3RglkU90VTCtCpfejUPnRqHzo1BZ+p6oAWNPfdd98lJib619Evv/yS
+mZl51Y3r168XdYiJ4p9EWadPn87Pz8/KynIuY8uWLZ5fhuZowSyK+6IpBejU
+PnRqHzq1D52ags9UdUALmisqKmrWrJmIZeDAgT51lJOTs2jRoqtuvHTp0ogR
+I679Nv6ePXuKyxgzZoznl6EzWjCL+r5oym90ah86tQ+d2odOTcFnqjqgBc2V
+lZX16tVLZNK7d+9Nmzb51NGwYcN+/vnnIO88b948cRldunTx/DK0RQtm0aov
+mvIEndqHTu1Dp/ahU1No1ZQjCvuiBf29+OKLIpCmTZueOnXqk08+8amjkP4m
+2pQpU8RlDBgwwPPL0BYtmEWrvmjKE3RqHzq1D53ah05NoVVTjijsixY0t27d
+OpFGYmKi84vdfOpo//79Q4YMCfLOFRUVt99+u7iM7Oxsby9DW7RgFq36oilP
+0Kl96NQ+dGofOjWFVk05orAvWtDcvn376tatK9JYsmSJc0t4HZWXl69YsUIE
+e/LkyWrvkJubu2DBgiAfbe7cueIakpOTjx8/HtJlGIoWzKJbXzTlHp3ah07t
+Q6f2oVNT6NaUI9r6ogXNlZSUOF9kGDduXODGMDrauHHjHXfcce+99w4bNmz8
++PHV3mf48OF79uwJ5tHy8vKcX3Ynag3+GsxFC2bRrS+aco9O7UOn9qFT+9Cp
+KXRryhFtfdGC/oYMGSKiuO22244dO3b6iuXLlzs3ireLioqCeZxJkyaJmsQb
+Z8+ebdiwYbV/VbxDhw4VFRU3fKgDBw40adLE+V79YO5vAVowi1Z90ZQn6NQ+
+dGofOrUPnZpCq6YcUdgXLWguLy8vJgjOt/EHLzs7+9ofYBfJDxo06IYfe+jQ
+oaZNm4qhPXr0KC0tDWmuoWjBLFr1RVOeoFP70Kl96NQ+dGoKrZpyRGFftKC/
+ffv2da1OmzZtREpJSUnOu3v37g3pYf/++++0tLQdO3ZUvXHp0qVvvfWW/AML
+CwudP82Wnp5+7ty5kJ+PmWjBLPr0RVNeoVP70Kl96NQ+dGoKfZpyRGdftGAu
+979l7r333hPlVr3lscce++mnnyQfsmvXrgYNGoi54gOLi4vDHm0NWjCL4r5o
+SgE6tQ+d2odO7UOnpuAzVR3Qgv7cd1RRUZGenv7hhx8GbpF/u/7mzZtr164t
+hvbp0+fChQthz7UJLZhFZV80pQad2odO7UOn9qFTU/CZqg5oQX+e/GW0LVu2
+tG7d+p9//qm8/H34jz766PXuuX379oSEBOenA1JSUkRZ4t0aVWRlZbm5EkPR
+glmU9UVTytCpfejUPnRqHzo1BZ+p6oAW9Od0dOedd7p8nL59+y5cuFC88c47
+77z55pvXu5vzS+0khg4d6vJKTEQLZlHWF00pQ6f2oVP70Kl96NQUfKaqA1qI
+Hvn5+Y0bNy4pKRk1alReXl6kLydK0YJZ6Ms+dGofOrUPndqHTk1BUzqgBSOI
+dqZPn96xY8fy8vJIX0v0ogWz0Jd96NQ+dGofOrUPnZqCpnRAC/o7evRocnJy
+//79I30hUY0WzEJf9qFT+9CpfejUPnRqCprSAS0Y4YUXXpg3b16kryLa0YJZ
+6Ms+dGofOrUPndqHTk1BUzqgBf2dPXt2//79kb6KaEcLZqEv+9CpfejUPnRq
+Hzo1BU3pgBYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFqpqKj4pzplZWWRvjQL
+kbYOaEEHalqgazmbWqBrAIAOeD3S0I4dO2JiYsaMGXPV7RkZGUlJSadOnfJq
+0KpVq2Kq88ADD3g1Qtlz0Z+CtIVHHnlEPObXX38duGX16tXilmnTpnk1wuhO
+rVnztKDJFAU7zic2taBmij7MXXWaMPr8dI/14xLrh/UjEW2vR6bo2bNnQkLC
+r7/+Grhl+/btopepU6d6OOXQoUPZ/9a6dWsxZf78+R5OUfNc9Kcm7YKCgvj4
++Pvuu895t6ysrE2bNg0bNjx//ryHU8zt1KY1Tws6TFGz4/xgUwtqpujD3FWn
+D3PPT/dYP+6xflg/1xNtr0em+Oqrr0QLEyZMCNzSr1+/OnXqFBUV+Td0165d
+NWrU6NWrV0VFhYcPG5Hnoj+f0hbGjx8vAv/iiy/E2++++654e9GiRd6OsKZT
+o9c8LWgyRcGOU8D0FtRPiSw7Vl0EWXN+hof14xLrh/UTpGh4PTKF2KQ1a9b8
+7bffxNt5eXli3b788sv+jSstLW3btm1ycvLRo0c9f3DFz0V/vqYtDvZ69erd
+ddddFy9ebNmyZbt27fz44Q4LOrVgzdOCDlPU7DhfWdCC4ikRZ8GqizgLzs+w
+sX7cY/2wfm4oSl6PTPHDDz+IffrMM8+ItwcMGJCSklJcXOzfuMmTJ4txK1as
+8OPBFT8X/fmatjBnzhzx+L179xb//dlnn/kxwoJOLVjztKDJFAU7zld2tKBy
+ig5MX3URZ8H56QbrxyXWD+vnhqLn9UgHf/31V0FBgViNBw8evN53CAwaNKhm
+zZofffSR6GX27Nk+TRG2bdsWGxs7cODAMEYEOcX9c/FJaWnpH3/84clD6ZP2
+xYsX09LSnEPPvyl6dqpPC2r2Ly3oMMX9jvODPvmYMkUf5q46lxS/Iut5frrH
++nGP9ROF6ydI0fZ6pL8zZ84899xziYmJgd8Xl5ycnJmZeeLEiavuuXfv3ri4
+uPj4+NTU1AsXLvg0RZxCLVq0ECPC+PEQNc/FV3379hWXffz4cTcPolva4sFv
+vvlmcYeuXbuG+pMd5naqWwtq9i8t6DDFzY7zg2756D9FH+auOk8ofkXW7fx0
+j/XD+nEjytfPDUXb65ERSktLO3fu7NSRkJDQsWPHlJQU513xxtatW6+6//Dh
+w8U/zZ07178pTz75pLj9448/1vO5+K1Pnz7iqpyflAmPhmmPHTtWHPVPPPGE
++Nfly5f7NKVSp041bKFSyf4Ne4ofNGxB8x3nBw3z0XyKPsxddV5R/IpcqdP5
+6R7rh/XjButHLtpej0zh/GBCYmLiqlWrSkpKnBvz8/MzMjIaNWp07Nixau//
+5Zdf+jRl48aN4p6jR4/W9rn4bfLkyffcc8+ZM2fCfgTd0v7+++/j4uLGjBkj
+DoHmzZunpqaeO3fO8ylV769Dp7q1UPX+/u1fN1P8oFsL+u84P+iWj/5T9GHu
+qvOKylfkqvfX4fx0j/XD+nGD9SMXba9Hpnj44YdF2llZWVfdXl5efu33ElSG
+u2eDnCIOn8aNG6elpYX3R+jUPBf9aZV2RUWFeFmpVauW891Qq1evFh81adIk
+b6cE6NOpVi0E+Lp/XU7xg1YtGLHj/KBVPkZM0Ye5q04f5p6f7rF+3GP9sH6u
+J9pej0zRr18/0UvPnj2DvH94ezbIKZmZmeJu4s7/+belS5d6OCXApvOnKq3S
+XrFihbjbjBkznHedAzA+Pr6goMDDKQH6dKpVCwG+7l+XU/ygVQtG7Dg/aJWP
+EVP0Ye6q04e556d7rB/3WD+sn+uJttcjU8yaNcv5nvwJEyYE870Tb7zxhrjz
+tm3b/JhSv379mOqkp6d7OCUgvOfih9LS0k6dOnWsonv37mE/mj5pi+fVuHHj
+Jk2aVP1NGt9++21sbOz999/v4XMJ0KdTfVqoytf963KKH7RqwYgd5wd98jFl
+ij7MXXVuROQVOUCf89M91g/rx43oXD/Bi7bXI1P8+eef7dq1c0KuW7fupEmT
+Dh48yBTFysvLN2/e/Pnnnz90WXZ2dp06dcJ+NJvSNrdTm/KhheiZ4geb8jG3
+hfBE2/N1mPiKrKfofO6sH69E83MPBvloq7i4eOTIkXFxcU47sbGx/fv337lz
+J1PUe+4yccFuzuFKu9I2t1Ob8qGF6JniB5vyMbeF8ETb863KrFdkPUXzc2f9
+uBfNzz0Y5KOzwsLCiRMn1q5dO+aKKVOmlJeXM0Ulr85hh01pm9upTfnQQvRM
+8YNN+ZjbQnii7fk6THxF1lN0PnfWj1ei+bkHg3x0Vlxc/Prrrzdo0MCpZv78
++UxRydtz2GFT2iZ26rApH1qInil+sCkfc1sIT7Q9X3NfkfUUbc+d9eOtaH7u
+wSAfnZ05c6Z9+/ail7Zt21a9XbT2/vvvDxs2LCcnx6cpu3fvFgdR586d27Vr
+Jwbl5+f7MeXHH398+umnu3Tp0qpVq379+q1Zs8blFK/4cQ476FQHtKADWtAB
+LZhLTXc6MP0VWU9qdqUOFK8fKzO8VrSdt6EiH23l5uaKXuLj4wPfTvDaa6/F
+xsY6XwkZN26cH1PEu4mJifXr18/MzBSHg/inhIQEsR68nbJ48WLx9i233DJ4
+8OABAwbUqlVL/Ovs2bM9eD6u+XcOV9KpHmhBB7SgA1owl5ruIs6CV2Q9qdmV
+Eady/diaYbWi7bwNFflEVnZ29tq1a6+9/dVXXxXJt2jRInCLOBxycnKcv5QX
+6pkf5JTp06f36NHj7Nmzzrvr168X/zp06FBvpxw4cGD48OG///678+6hQ4fi
+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
+VY585MhHjnzkyEeOfAAAAAAAgBr/B7tpz7A=
+    "], {{0, 119.}, {655., 0}}, {0, 255},
+    ColorFunction->RGBColor,
+    ImageResolution->{144., 144.},
+    RasterInterpolation->"High"],
+   BoxForm`ImageTag["Byte", ColorSpace -> "RGB", Interleaving -> True],
+   Selectable->False],
+  DefaultBaseStyle->"ImageGraphics",
+  ImageSize->Automatic,
+  ImageSizeRaw->{655., 119.},
+  PlotRange->{{0, 655.}, {0, 119.}}]], "Output",
+ CellTags->"RasterizedOutput",
+ CellLabel->"Out[4]=",
+ CellID->360743611,ExpressionUUID->"f7eac6d3-714d-431b-9a60-9f2d9d30fe3a"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]]},
+     {
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}]},
+     {
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {8, 8}, 0, {
+     1, {{0, 8, 16, 24, 32, 40, 48, 56, 64}, {{1}, {2}, {3}, {4}, {5}, {6}, {
+       7}, {8}, {2}, {1}, {4}, {3}, {6}, {5}, {8}, {7}, {3}, {4}, {1}, {2}, {
+       7}, {8}, {5}, {6}, {4}, {3}, {2}, {1}, {8}, {7}, {6}, {5}, {5}, {6}, {
+       7}, {8}, {1}, {2}, {3}, {4}, {6}, {5}, {8}, {7}, {2}, {1}, {4}, {3}, {
+       7}, {8}, {5}, {6}, {3}, {4}, {1}, {2}, {8}, {7}, {6}, {5}, {4}, {3}, {
+       2}, {1}}}, {
+      Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 
+       2^Rational[-1, 2]}}]]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->1524129227,ExpressionUUID->"e7097427-87be-4e74-a14f-a67b078899cc"]
+}, Open  ]],
+
+Cell["\<\
+Get the elementary Clifford gates combining to the Clifford operator.\
+\>", "ExampleText",
+ CellID->1962709845,ExpressionUUID->"86bee4d8-ab93-4db8-b11c-f4f44aa1998a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"gates", "=", 
+  RowBox[{"CliffordFactor", "[", 
+   RowBox[{"mat", ",", "ss"}], "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->333323559,ExpressionUUID->"f32b946b-b1d8-4099-84f9-1f8132b7c56c"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"Swap", "[", 
+    RowBox[{
+     InterpretationBox[
+      SubscriptBox[
+       TemplateBox[{"S"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]],
+      $CellContext`S[1, Q3`$]], ",", 
+     InterpretationBox[
+      SubscriptBox[
+       TemplateBox[{"S"},
+        "RowDefault"], 
+       TemplateBox[{"3"},
+        "RowDefault"]],
+      $CellContext`S[3, Q3`$]]}], "]"}], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"H\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[1, 6]], ",", 
+   RowBox[{"CNOT", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       InterpretationBox[
+        SubscriptBox[
+         TemplateBox[{"S"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        $CellContext`S[1, Q3`$]], "}"}], "\[Rule]", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"{", 
+      InterpretationBox[
+       SubscriptBox[
+        TemplateBox[{"S"},
+         "RowDefault"], 
+        TemplateBox[{"3"},
+         "RowDefault"]],
+       $CellContext`S[3, Q3`$]], "}"}]}], "]"}], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"H\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[1, 6]], ",", 
+   RowBox[{"Swap", "[", 
+    RowBox[{
+     InterpretationBox[
+      SubscriptBox[
+       TemplateBox[{"S"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      $CellContext`S[2, Q3`$]], ",", 
+     InterpretationBox[
+      SubscriptBox[
+       TemplateBox[{"S"},
+        "RowDefault"], 
+       TemplateBox[{"3"},
+        "RowDefault"]],
+      $CellContext`S[3, Q3`$]]}], "]"}], ",", "1", ",", 
+   RowBox[{"CNOT", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       InterpretationBox[
+        SubscriptBox[
+         TemplateBox[{"S"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        $CellContext`S[2, Q3`$]], "}"}], "\[Rule]", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"{", 
+      InterpretationBox[
+       SubscriptBox[
+        TemplateBox[{"S"},
+         "RowDefault"], 
+        TemplateBox[{"3"},
+         "RowDefault"]],
+       $CellContext`S[3, Q3`$]], "}"}]}], "]"}], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"2"}, "RowDefault"], 
+      TemplateBox[{"\"H\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[2, 6]], ",", "1"}], "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->354427660,ExpressionUUID->"6f86b90b-8583-4463-9d58-b397c7bc339b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "[", 
+   RowBox[{"Sequence", "@@", 
+    RowBox[{"Reverse", "@", "gates"}]}], "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[6]:=",
+ CellID->240824828,ExpressionUUID->"4922433f-d69b-4748-a2be-1a29786624f0"],
+
+Cell[BoxData[
+ InterpretationBox[
+  GraphicsBox[{
+    {Dashing[{Small, Small}], LineBox[{}]}, 
+    LineBox[{{{0, -1}, {10, -1}}, {{0, -2}, {10, -2}}, {{0, -3}, {10, -3}}}], {
+     {GrayLevel[1], EdgeForm[None], RectangleBox[{1.6, -2.4}, {2.4, -1.6}]}, 
+     LineBox[{{1.6, -2.4}, {2.4, -2.4}, {2.4, -1.6}, {1.6, -1.6}, {
+      1.6, -2.4}}], InsetBox[
+      StyleBox["\<\"H\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.04000000000000001],
+       FontWeight->"Light",
+       FontSlant->Italic], {2, -2}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{3, -2}, {3, -3}}], 
+     DiskBox[{3, -2}, 0.09], {CircleBox[{3, -3}, 0.26666666666666666], 
+      LineBox[{{{2.7333333333333334`, -3}, {3.2666666666666666`, -3}}, {{
+         3, -3.2666666666666666`}, {3, -2.7333333333333334`}}}]}}, {
+     LineBox[{{5, -2}, {5, -3}}], 
+     LineBox[{{{4.91, -2.09}, {5.09, -1.91}}, {{4.91, -1.91}, {
+      5.09, -2.09}}}], 
+     LineBox[{{{4.91, -3.09}, {5.09, -2.91}}, {{4.91, -2.91}, {
+      5.09, -3.09}}}]}, {
+     {GrayLevel[1], EdgeForm[None], RectangleBox[{5.6, -1.4}, {6.4, -0.6}]}, 
+     LineBox[{{5.6, -1.4}, {6.4, -1.4}, {6.4, -0.6}, {5.6, -0.6}, {
+      5.6, -1.4}}], InsetBox[
+      StyleBox["\<\"H\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.04000000000000001],
+       FontWeight->"Light",
+       FontSlant->Italic], {6, -1}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{7, -1}, {7, -3}}], 
+     DiskBox[{7, -1}, 0.09], {CircleBox[{7, -3}, 0.26666666666666666], 
+      LineBox[{{{6.733333333333333, -3}, {7.266666666666667, -3}}, {{
+         7, -3.2666666666666666`}, {7, -2.7333333333333334`}}}]}}, {
+     {GrayLevel[1], EdgeForm[None], RectangleBox[{7.6, -1.4}, {8.4, -0.6}]}, 
+     LineBox[{{7.6, -1.4}, {8.4, -1.4}, {8.4, -0.6}, {7.6, -0.6}, {
+      7.6, -1.4}}], InsetBox[
+      StyleBox["\<\"H\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.04000000000000001],
+       FontWeight->"Light",
+       FontSlant->Italic], {8, -1}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{9, -1}, {9, -3}}], 
+     LineBox[{{{8.91, -1.09}, {9.09, -0.91}}, {{8.91, -0.91}, {
+      9.09, -1.09}}}], 
+     LineBox[{{{8.91, -3.09}, {9.09, -2.91}}, {{8.91, -2.91}, {
+      9.09, -3.09}}}]}},
+   AxesStyle->Large,
+   FrameStyle->Large,
+   ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {1, 1}},
+   ImageSize->406.8,
+   PlotRange->NCache[{Full, {
+       Rational[-7, 2], 
+       Rational[-1, 2]}}, {Full, {-3.5, -0.5}}],
+   PlotRangePadding->Scaled[0.025]],
+  Q3`QuantumCircuit[1, 
+   $CellContext`S[2, 6], 
+   Q3`CNOT[{
+      $CellContext`S[2, Q3`$]} -> {1}, {
+     $CellContext`S[3, Q3`$]}], 1, 
+   Q3`Swap[
+    $CellContext`S[2, Q3`$], 
+    $CellContext`S[3, Q3`$]], 
+   $CellContext`S[1, 6], 
+   Q3`CNOT[{
+      $CellContext`S[1, Q3`$]} -> {1}, {
+     $CellContext`S[3, Q3`$]}], 
+   $CellContext`S[1, 6], 
+   Q3`Swap[
+    $CellContext`S[1, Q3`$], 
+    $CellContext`S[3, Q3`$]]]]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->602711885,ExpressionUUID->"94d7a0ac-c284-4449-aea4-15bf8141c4e3"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "9bd92fe9-ead9-4a36-8413-cf3c76bb5bd5"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->120551408,ExpressionUUID->"9870dcc7-0d73-447e-b7cc-d8b5dbd4b26f"],
+
+Cell["\<\
+From the above quantum circuit, recover the Clifford operator corresponding \
+to the Gottesman matrix.\
+\>", "ExampleText",
+ CellID->1575658530,ExpressionUUID->"bf85dbb8-6783-415d-b763-329174652485"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"new", "=", 
+  RowBox[{"Multiply", "@@", "gates"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1120189552,ExpressionUUID->"a200847d-7a7e-44fa-aaab-6b30a6708985"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"-", 
+   FractionBox[
+    RowBox[{"3", " ", 
+     InterpretationBox[
+      TemplateBox[{
+        TemplateBox[{
+          InterpretationBox[
+           TemplateBox[{
+             TemplateBox[{"S"}, "RowDefault"], 
+             TemplateBox[{"1"}, "RowDefault"], 
+             TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+            SyntaxForm -> SubsuperscriptBox], 
+           $CellContext`S[1, 1]], 
+          InterpretationBox[
+           TemplateBox[{
+             TemplateBox[{"S"}, "RowDefault"], 
+             TemplateBox[{"2"}, "RowDefault"], 
+             TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+            SyntaxForm -> SubsuperscriptBox], 
+           $CellContext`S[2, 1]]}, "RowDefault"]},
+       "RowDefault"],
+      Q3`Multiply[
+       $CellContext`S[1, 1], 
+       $CellContext`S[2, 1]]]}], 
+    RowBox[{"32", " ", 
+     SqrtBox["2"]}]]}], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 1], 
+      $CellContext`S[2, 2]]]}], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"3", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 1], 
+      $CellContext`S[2, 3]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "-", 
+  RowBox[{
+   FractionBox["1", "32"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[2, 6]]]}], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[3, 1]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 1], 
+      $CellContext`S[3, 2]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[3, 3]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 2], 
+      $CellContext`S[2, 1]]]}], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 2], 
+      $CellContext`S[2, 3]]]}], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  RowBox[{
+   FractionBox["1", "8"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 2], 
+     $CellContext`S[2, 6]]]}], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 2], 
+     $CellContext`S[3, 2]]], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"5", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 1]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 2]]]}], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"5", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 3]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "-", 
+  RowBox[{
+   FractionBox["1", "32"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 3], 
+     $CellContext`S[2, 6]]]}], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 3], 
+     $CellContext`S[3, 1]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"3", " ", "\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[3, 2]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 3], 
+     $CellContext`S[3, 3]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  RowBox[{
+   FractionBox["1", "32"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 1]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "8"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 2]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "32"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 3]]]}], "+", 
+  FractionBox[
+   RowBox[{"5", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 6]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 6]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 6], 
+      $CellContext`S[2, 6]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[3, 1]]]}], "+", 
+  RowBox[{
+   FractionBox["3", "16"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[3, 2]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[3, 3]]]}], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[2, 1], 
+     $CellContext`S[3, 1]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[2, 1], 
+      $CellContext`S[3, 2]]]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[2, 1], 
+     $CellContext`S[3, 3]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[2, 2], 
+     $CellContext`S[3, 2]]], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[2, 3], 
+     $CellContext`S[3, 1]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[2, 3], 
+     $CellContext`S[3, 3]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 1]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 3]]]}], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[2, 1], 
+     $CellContext`S[3, 1]]], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 1], 
+      $CellContext`S[2, 1], 
+      $CellContext`S[3, 2]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"5", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 1], 
+      $CellContext`S[2, 1], 
+      $CellContext`S[3, 3]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 1]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 1], 
+      $CellContext`S[2, 2], 
+      $CellContext`S[3, 1]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[2, 2], 
+     $CellContext`S[3, 2]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"3", " ", "\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 1], 
+      $CellContext`S[2, 2], 
+      $CellContext`S[3, 3]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 1], 
+      $CellContext`S[2, 3], 
+      $CellContext`S[3, 2]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[2, 3], 
+     $CellContext`S[3, 3]]], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "+", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 1]]]}], "-", 
+  RowBox[{
+   FractionBox["5", "32"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 2]]]}], "-", 
+  RowBox[{
+   FractionBox["3", "32"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 1], 
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 3]]]}], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 1]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 2], 
+      $CellContext`S[2, 1], 
+      $CellContext`S[3, 1]]]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 2], 
+     $CellContext`S[2, 1], 
+     $CellContext`S[3, 2]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 2], 
+      $CellContext`S[2, 1], 
+      $CellContext`S[3, 3]]]}], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 2], 
+     $CellContext`S[2, 2], 
+     $CellContext`S[3, 1]]], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 2], 
+     $CellContext`S[2, 2], 
+     $CellContext`S[3, 3]]], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 2], 
+     $CellContext`S[2, 3], 
+     $CellContext`S[3, 2]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 2], 
+      $CellContext`S[2, 3], 
+      $CellContext`S[3, 3]]]}], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 2], 
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 2]]]}], "-", 
+  RowBox[{
+   FractionBox["1", "8"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 2], 
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 3]]]}], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 3], 
+     $CellContext`S[2, 1], 
+     $CellContext`S[3, 1]]], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 1], 
+      $CellContext`S[3, 2]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"7", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 1]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 1], 
+      $CellContext`S[3, 3]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"3", " ", "\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 1]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 2], 
+      $CellContext`S[3, 1]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 3], 
+     $CellContext`S[2, 2], 
+     $CellContext`S[3, 2]]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 2]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 2], 
+      $CellContext`S[3, 3]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 3], 
+      $CellContext`S[3, 2]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"3", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 3]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 3], 
+      $CellContext`S[2, 3], 
+      $CellContext`S[3, 3]]]}], 
+   RowBox[{"32", " ", 
+    SqrtBox["2"]}]], "-", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 3], 
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 1]]]}], "+", 
+  RowBox[{
+   FractionBox["3", "32"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 3], 
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 2]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "32"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 3], 
+     $CellContext`S[2, 6], 
+     $CellContext`S[3, 3]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "16"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 1], 
+     $CellContext`S[3, 1]]]}], "+", 
+  RowBox[{
+   FractionBox["3", "32"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 1], 
+     $CellContext`S[3, 2]]]}], "+", 
+  RowBox[{
+   FractionBox["3", "32"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 1]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 1], 
+     $CellContext`S[3, 3]]]}], "-", 
+  RowBox[{
+   FractionBox["3", "16"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 2], 
+     $CellContext`S[3, 1]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 2], 
+     $CellContext`S[3, 2]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "16"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 2]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 2], 
+     $CellContext`S[3, 3]]]}], "-", 
+  RowBox[{
+   FractionBox["1", "8"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"x\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 1]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 3], 
+     $CellContext`S[3, 1]]]}], "-", 
+  RowBox[{
+   FractionBox["3", "32"], " ", "\[ImaginaryI]", " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 2]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 3], 
+     $CellContext`S[3, 2]]]}], "+", 
+  RowBox[{
+   FractionBox["1", "32"], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"1"}, "RowDefault"], 
+           TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[1, 6]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"2"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[2, 3]], 
+        InterpretationBox[
+         TemplateBox[{
+           TemplateBox[{"S"}, "RowDefault"], 
+           TemplateBox[{"3"}, "RowDefault"], 
+           TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+          SyntaxForm -> SubsuperscriptBox], 
+         $CellContext`S[3, 3]]}, "RowDefault"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`S[1, 6], 
+     $CellContext`S[2, 3], 
+     $CellContext`S[3, 3]]]}], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 6]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 6]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"y\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 2]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 6], 
+      $CellContext`S[2, 6], 
+      $CellContext`S[3, 2]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"3", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"1"}, "RowDefault"], 
+            TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[1, 6]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"2"}, "RowDefault"], 
+            TemplateBox[{"\"H\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[2, 6]], 
+         InterpretationBox[
+          TemplateBox[{
+            TemplateBox[{"S"}, "RowDefault"], 
+            TemplateBox[{"3"}, "RowDefault"], 
+            TemplateBox[{"\"z\""}, "RowDefault"]}, "Subsuperscript", 
+           SyntaxForm -> SubsuperscriptBox], 
+          $CellContext`S[3, 3]]}, "RowDefault"]},
+      "RowDefault"],
+     Q3`Multiply[
+      $CellContext`S[1, 6], 
+      $CellContext`S[2, 6], 
+      $CellContext`S[3, 3]]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"3", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"x\""}, "RowDefault"]},
+      "Subsuperscript"],
+     $CellContext`S[1, 1]]}], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"1"}, "RowDefault"], 
+       TemplateBox[{"\"y\""}, "RowDefault"]},
+      "Subsuperscript"],
+     $CellContext`S[1, 2]]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[1, 3]], 
+   RowBox[{"16", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"H\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[1, 6]], "16"], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"2"}, "RowDefault"], 
+      TemplateBox[{"\"x\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[2, 1]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   RowBox[{"\[ImaginaryI]", " ", 
+    InterpretationBox[
+     TemplateBox[{
+       TemplateBox[{"S"}, "RowDefault"], 
+       TemplateBox[{"2"}, "RowDefault"], 
+       TemplateBox[{"\"y\""}, "RowDefault"]},
+      "Subsuperscript"],
+     $CellContext`S[2, 2]]}], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"2"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[2, 3]], 
+   RowBox[{"8", " ", 
+    SqrtBox["2"]}]], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"2"}, "RowDefault"], 
+      TemplateBox[{"\"H\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[2, 6]], "8"], "+", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"3"}, "RowDefault"], 
+      TemplateBox[{"\"x\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[3, 1]], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]], "-", 
+  FractionBox[
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"3"}, "RowDefault"], 
+      TemplateBox[{"\"z\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[3, 3]], 
+   RowBox[{"4", " ", 
+    SqrtBox["2"]}]]}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->268566990,ExpressionUUID->"0cc5bd43-5b8e-490e-a85a-589e4b2f64b8"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"op", "-", "new"}], "//", "Elaborate"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->511516458,ExpressionUUID->"ccd25074-0c60-40f3-b2e5-d8a121c54acc"],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1132475673,ExpressionUUID->"dc2761f0-bc02-4fcd-87a7-a7c2e6dd63c1"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "02983c7e-b9dd-4048-bf86-1f675266e1c0"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->63442201,ExpressionUUID->"b71cf88b-22e9-4f82-9bb6-509d3cb60656"],
+
+Cell[TextData[{
+ "Here is an equivalent way to get the same list. Consider the Clifford  \
+operator ",
+ StyleBox["op", "Input"],
+ " corresponding to the above matrix ",
+ StyleBox["mat", "Input"],
+ "."
+}], "ExampleText",
+ CellID->470316976,ExpressionUUID->"4359f92b-a410-40f2-92f2-b4100b7126da"],
+
+Cell["\<\
+The Gottesman matrix is obtained internally and it takes a bit longer.\
+\>", "ExampleText",
+ CellID->1369780248,ExpressionUUID->"f8b0a766-695c-4701-9a80-14d51f409ee8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"elms", "=", 
+  RowBox[{"CliffordFactor", "[", "op", "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1255046522,ExpressionUUID->"af656bbc-2d91-4b21-bc51-5b1547712fa4"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"Swap", "[", 
+    RowBox[{
+     InterpretationBox[
+      SubscriptBox[
+       TemplateBox[{"S"},
+        "RowDefault"], 
+       TemplateBox[{"1"},
+        "RowDefault"]],
+      $CellContext`S[1, Q3`$]], ",", 
+     InterpretationBox[
+      SubscriptBox[
+       TemplateBox[{"S"},
+        "RowDefault"], 
+       TemplateBox[{"3"},
+        "RowDefault"]],
+      $CellContext`S[3, Q3`$]]}], "]"}], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"H\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[1, 6]], ",", 
+   RowBox[{"CNOT", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       InterpretationBox[
+        SubscriptBox[
+         TemplateBox[{"S"},
+          "RowDefault"], 
+         TemplateBox[{"1"},
+          "RowDefault"]],
+        $CellContext`S[1, Q3`$]], "}"}], "\[Rule]", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"{", 
+      InterpretationBox[
+       SubscriptBox[
+        TemplateBox[{"S"},
+         "RowDefault"], 
+        TemplateBox[{"3"},
+         "RowDefault"]],
+       $CellContext`S[3, Q3`$]], "}"}]}], "]"}], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"1"}, "RowDefault"], 
+      TemplateBox[{"\"H\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[1, 6]], ",", 
+   RowBox[{"Swap", "[", 
+    RowBox[{
+     InterpretationBox[
+      SubscriptBox[
+       TemplateBox[{"S"},
+        "RowDefault"], 
+       TemplateBox[{"2"},
+        "RowDefault"]],
+      $CellContext`S[2, Q3`$]], ",", 
+     InterpretationBox[
+      SubscriptBox[
+       TemplateBox[{"S"},
+        "RowDefault"], 
+       TemplateBox[{"3"},
+        "RowDefault"]],
+      $CellContext`S[3, Q3`$]]}], "]"}], ",", "1", ",", 
+   RowBox[{"CNOT", "[", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"{", 
+       InterpretationBox[
+        SubscriptBox[
+         TemplateBox[{"S"},
+          "RowDefault"], 
+         TemplateBox[{"2"},
+          "RowDefault"]],
+        $CellContext`S[2, Q3`$]], "}"}], "\[Rule]", 
+      RowBox[{"{", "1", "}"}]}], ",", 
+     RowBox[{"{", 
+      InterpretationBox[
+       SubscriptBox[
+        TemplateBox[{"S"},
+         "RowDefault"], 
+        TemplateBox[{"3"},
+         "RowDefault"]],
+       $CellContext`S[3, Q3`$]], "}"}]}], "]"}], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"S"}, "RowDefault"], 
+      TemplateBox[{"2"}, "RowDefault"], 
+      TemplateBox[{"\"H\""}, "RowDefault"]},
+     "Subsuperscript"],
+    $CellContext`S[2, 6]], ",", "1"}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->2044579059,ExpressionUUID->"13440972-dadc-461a-af44-ae5740d74cb1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"gates", "-", "elms"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->315272225,ExpressionUUID->"e7b22786-ee0a-4d33-9208-ab3ba3b2c5b7"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", ",", "0", 
+   ",", "0"}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->6289954,ExpressionUUID->"1bae19bf-90ed-4679-a32d-4522f31dab5f"]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "1"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {0.45000000000000107`, 13.549999999999999`}}]],
+  ExpressionUUID->"fee75c0e-4fda-42df-9628-d886c02967d8"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"c5bb4576-f98f-44e2-bff6-51fa90cb745d"],
+ "Scope",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "2d133d08-9d8c-4474-b43d-1ccde745378d"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->500505510,ExpressionUUID->"665d3ca8-4a45-4932-8ea8-9cf692a24450"],
+
+Cell["\<\
+Clifford decomposition is far more efficient than brute-force decomposition \
+based on Gray code. This example illustrates the fact.\
+\>", "ExampleText",
+ CellID->951227422,ExpressionUUID->"689fc968-e104-462b-b004-ad45d1c212db"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1393031983,ExpressionUUID->"92d8c6f7-4e82-4bdc-bd68-be228ef17d7a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$n", "=", "3"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ss", "=", 
+  RowBox[{"S", "[", 
+   RowBox[{
+    RowBox[{"Range", "@", "$n"}], ",", "$"}], "]"}]}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->794204736,ExpressionUUID->"46c59414-f449-4f62-a36a-46f8cbd605f1"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    SubscriptBox["S", 
+     TemplateBox[{",", "\",\"", "1"},
+      "RowWithSeparators"]],
+    $CellContext`S[1, Q3`$]], ",", 
+   InterpretationBox[
+    SubscriptBox["S", 
+     TemplateBox[{",", "\",\"", "2"},
+      "RowWithSeparators"]],
+    $CellContext`S[2, Q3`$]], ",", 
+   InterpretationBox[
+    SubscriptBox["S", 
+     TemplateBox[{",", "\",\"", "3"},
+      "RowWithSeparators"]],
+    $CellContext`S[3, Q3`$]]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->417626458,ExpressionUUID->"bab0da2d-a737-4f2d-9ad0-6d631cddaabf"]
+}, Open  ]],
+
+Cell["Consider again the Gottesman matrix in the above example.", \
+"ExampleText",
+ CellID->1839338552,ExpressionUUID->"14f02e60-3c4b-44e8-8c74-cfdeb4f3a699"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"matG", "=", 
+   RowBox[{"First", "@", 
+    RowBox[{"BinarySymplecticGroupElements", "[", 
+     RowBox[{"ss", ",", 
+      RowBox[{"{", "2", "}"}]}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matG", "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->735944899,ExpressionUUID->"350d6e6e-f8dc-4389-9891-c16c9a0f280b"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", "0", "0", "1", "0"},
+     {"1", "0", "0", "0", "0", "1"},
+     {"0", "1", "0", "0", "1", "0"},
+     {"1", "0", "1", "0", "0", "0"},
+     {"0", "0", "1", "0", "0", "0"},
+     {"0", "1", "0", "1", "1", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->1936332037,ExpressionUUID->"f1fea505-f386-4545-800e-98b79718b022"]
+}, Open  ]],
+
+Cell["\<\
+Get the Clifford operator corresponding to the Gottesman matrix.\
+\>", "ExampleText",
+ CellID->795570202,ExpressionUUID->"bedbe71c-11fa-4e8c-a20b-d43d53d017be"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"opU", "=", 
+   RowBox[{"FromGottesmanMatrix", "[", 
+    RowBox[{"matG", ",", "ss"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"matU", "=", 
+   RowBox[{"Matrix", "[", 
+    RowBox[{"opU", ",", "ss"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"matU", "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->102739640,ExpressionUUID->"2ca29bd0-d8d4-4a02-aece-cf99e119e4c7"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]]},
+     {
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}]},
+     {
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}]},
+     {
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["2"]}]]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {8, 8}, 0, {
+     1, {{0, 8, 16, 24, 32, 40, 48, 56, 64}, {{1}, {2}, {3}, {4}, {5}, {6}, {
+       7}, {8}, {2}, {1}, {4}, {3}, {6}, {5}, {8}, {7}, {3}, {4}, {1}, {2}, {
+       7}, {8}, {5}, {6}, {4}, {3}, {2}, {1}, {8}, {7}, {6}, {5}, {5}, {6}, {
+       7}, {8}, {1}, {2}, {3}, {4}, {6}, {5}, {8}, {7}, {2}, {1}, {4}, {3}, {
+       7}, {8}, {5}, {6}, {3}, {4}, {1}, {2}, {8}, {7}, {6}, {5}, {4}, {3}, {
+       2}, {1}}}, {
+      Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[1, 2] 2^Rational[-1, 2], Rational[1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[-1, 2] 2^Rational[-1, 2], 
+       Rational[-1, 2] 2^Rational[-1, 2], Rational[1, 2] 
+       2^Rational[-1, 2]}}]]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->516224880,ExpressionUUID->"dfdbe473-651f-4e55-b7df-a17edde7514a"]
+}, Open  ]],
+
+Cell["\<\
+Decompose the unitary matrix into two-level matrices. Here we convert the \
+matrix into numerically approximate form to avoid unnecessary complexity to \
+deal with exact numbers. Note that the number of required two-level matrices \
+is already over 25.\
+\>", "ExampleText",
+ CellID->1729192821,ExpressionUUID->"dfeb956d-9474-4653-8f65-f2940127f237"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"tld", "=", 
+   RowBox[{"GivensFactor", "[", 
+    RowBox[{
+     RowBox[{"N", "@", "matU"}], ",", "ss"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Length", "[", "tld", "]"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->1563598043,ExpressionUUID->"28a67f1c-547f-4c88-b73b-0d530e02256f"],
+
+Cell[BoxData["29"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->652380608,ExpressionUUID->"b11171c3-e0a1-442e-b2bb-49699880a410"]
+}, Open  ]],
+
+Cell["Check some of the elements.", "ExampleText",
+ CellID->154086825,ExpressionUUID->"99f16a94-a80d-4519-b8a3-101af1b4344e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"Matrix", "@", 
+   RowBox[{"tld", "[", 
+    RowBox[{"[", 
+     RowBox[{";;", "5"}], "]"}], "]"}]}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[6]:=",
+ CellID->38851052,ExpressionUUID->"ab39a046-a3b0-40e5-b106-e9ee60fd53c7"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"0.9999999999999999`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`", 
+        "0.`"},
+       {"0.`", "0.9999999999999999`", "0.`", "0.`", "0.`", "0.`", "0.`", 
+        "0.`"},
+       {"0.`", "0.`", "0.9999999999999999`", "0.`", "0.`", "0.`", "0.`", 
+        "0.`"},
+       {"0.`", "0.`", "0.`", "0.9999999999999999`", "0.`", "0.`", "0.`", 
+        "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.9999999999999999`", "0.`", "0.`", 
+        "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.9999999999999999`", "0.`", 
+        "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.9999999999999999`", 
+        "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.9999999999999999`"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {8, 8}, 0., {
+       1, {{0, 1, 2, 3, 4, 5, 6, 7, 8}, {{1}, {2}, {3}, {4}, {5}, {6}, {7}, {
+         8}}}, {0.9999999999999999, 0.9999999999999999, 0.9999999999999999, 
+        0.9999999999999999, 0.9999999999999999, 0.9999999999999999, 
+        0.9999999999999999, 0.9999999999999999}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "1.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "1.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "1.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "1.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "1.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.7071067811865477`", 
+        RowBox[{"-", "0.7071067811865474`"}]},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.7071067811865474`", 
+        "0.7071067811865477`"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {8, 8}, 0., {
+       1, {{0, 1, 2, 3, 4, 5, 6, 8, 10}, {{1}, {2}, {3}, {4}, {5}, {6}, {7}, {
+         8}, {7}, {8}}}, {1., 1., 1., 1., 1., 1., 
+        0.7071067811865477, -0.7071067811865474, 0.7071067811865474, 
+        0.7071067811865477}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "1.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "1.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "1.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "1.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.5773502691896258`", 
+        "0.8164965809277261`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", 
+        RowBox[{"-", "0.8164965809277261`"}], "0.5773502691896258`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "1.`"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {8, 8}, 0., {
+       1, {{0, 1, 2, 3, 4, 5, 7, 9, 10}, {{1}, {2}, {3}, {4}, {5}, {6}, {7}, {
+         6}, {7}, {8}}}, {1., 1., 1., 1., 1., 0.5773502691896258, 
+        0.8164965809277261, -0.8164965809277261, 0.5773502691896258, 1.}}]]]],
+    ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "1.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "1.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "1.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "1.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "1.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", 
+        RowBox[{"-", "0.5`"}], 
+        RowBox[{"-", "0.8660254037844387`"}]},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.8660254037844387`", 
+        RowBox[{"-", "0.5`"}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {8, 8}, 0., {
+       1, {{0, 1, 2, 3, 4, 5, 6, 8, 10}, {{1}, {2}, {3}, {4}, {5}, {6}, {7}, {
+         8}, {7}, {8}}}, {1., 1., 1., 1., 1., 1., -0.5, -0.8660254037844387, 
+        0.8660254037844387, -0.5}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "1.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "1.`", "0.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "1.`", "0.`", "0.`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.5`", "0.8660254037844387`", "0.`", 
+        "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", 
+        RowBox[{"-", "0.8660254037844387`"}], "0.5`", "0.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "1.`", "0.`"},
+       {"0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "0.`", "1.`"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {8, 8}, 0., {
+       1, {{0, 1, 2, 3, 4, 6, 8, 9, 10}, {{1}, {2}, {3}, {4}, {5}, {6}, {5}, {
+         6}, {7}, {8}}}, {1., 1., 1., 1., 0.5, 
+        0.8660254037844387, -0.8660254037844387, 0.5, 1., 1.}}]]]]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->632138212,ExpressionUUID->"89ddad05-1731-46fe-aa32-21687d4ab299"]
+}, Open  ]],
+
+Cell["\<\
+Convert the two-level unitary matrices to quantum circuit elements consists \
+of controlled-unitary and CNOT gates.\
+\>", "ExampleText",
+ CellID->111251633,ExpressionUUID->"d53c3d85-b6a7-4ae7-911c-250de2c09560"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"elm", "=", 
+   RowBox[{"Flatten", "[", 
+    RowBox[{
+     RowBox[{"Expand", "/@", "tld"}], ",", "1", ",", "QuantumCircuit"}], 
+    "]"}]}], ";"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[7]:=",
+ CellID->1067270155,ExpressionUUID->"5b0e456a-8c8a-4860-84f2-15ee93b77f4b"],
+
+Cell["\<\
+Note that there are about 150 quantum circuit elements. This is in stark \
+contrast with the Clifford decomposition shown in the above example, which \
+had only 7 elementary gates.\
+\>", "ExampleText",
+ CellID->1630323727,ExpressionUUID->"180742d8-1468-4e81-a60a-5022a9637c7f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Length", "[", "elm", "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[8]:=",
+ CellID->37501207,ExpressionUUID->"9821e291-dd7b-43f0-94cf-2940fd749095"],
+
+Cell[BoxData["61"], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1357498033,ExpressionUUID->"251e1ad6-d284-4ce7-b51b-080236b945a0"]
+}, Open  ]],
+
+Cell["Take a look at the first several elements.", "ExampleText",
+ CellID->214602882,ExpressionUUID->"852b2dd9-7875-46ae-88af-cc59ca1dee71"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"qc", "=", 
+  RowBox[{"QuantumCircuit", "@@", 
+   RowBox[{"Take", "[", 
+    RowBox[{
+     RowBox[{"Reverse", "@", "elm"}], ",", "12"}], "]"}]}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[9]:=",
+ CellID->1432186175,ExpressionUUID->"23d2a5f4-690c-4f42-9977-e6d99026bc5e"],
+
+Cell[BoxData[
+ InterpretationBox[
+  GraphicsBox[{
+    {Dashing[{Small, Small}], LineBox[{}]}, 
+    LineBox[{{{0, -1}, {13, -1}}, {{0, -2}, {13, -2}}, {{0, -3}, {
+     13, -3}}}], {LineBox[{{1, -1}, {1, -2}, {1, -3}}], 
+     DiskBox[{1, -1}, 0.09], DiskBox[{1, -2}, 0.09], 
+     {GrayLevel[1], EdgeForm[None], RectangleBox[{0.6, -3.4}, {1.4, -2.6}]}, 
+     LineBox[{{0.6, -3.4}, {1.4, -3.4}, {1.4, -2.6}, {0.6, -2.6}, {
+      0.6, -3.4}}], InsetBox[
+      StyleBox["\<\"U\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.03076923076923077],
+       FontWeight->"Light",
+       FontSlant->Italic], {1, -3}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{2, -1}, {2, -3}, {2, -2}}], 
+     DiskBox[{2, -1}, 0.09], 
+     DiskBox[{2, -3}, 0.09], {CircleBox[{2, -2}, 0.26666666666666666], 
+      LineBox[{{{1.7333333333333334`, -2}, {2.2666666666666666`, -2}}, {{
+         2, -2.2666666666666666`}, {2, -1.7333333333333334`}}}]}}, {
+     LineBox[{{3, -1}, {3, -2}, {3, -3}}], DiskBox[{3, -1}, 0.09], 
+     DiskBox[{3, -2}, 0.09], 
+     {GrayLevel[1], EdgeForm[None], RectangleBox[{2.6, -3.4}, {3.4, -2.6}]}, 
+     LineBox[{{2.6, -3.4}, {3.4, -3.4}, {3.4, -2.6}, {2.6, -2.6}, {
+      2.6, -3.4}}], InsetBox[
+      StyleBox["\<\"U\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.03076923076923077],
+       FontWeight->"Light",
+       FontSlant->Italic], {3, -3}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{4, -1}, {4, -3}, {4, -2}}], 
+     DiskBox[{4, -1}, 0.09], 
+     DiskBox[{4, -3}, 0.09], {CircleBox[{4, -2}, 0.26666666666666666], 
+      LineBox[{{{3.7333333333333334`, -2}, {4.266666666666667, -2}}, {{
+         4, -2.2666666666666666`}, {4, -1.7333333333333334`}}}]}}, {
+     LineBox[{{5, -1}, {5, -2}, {5, -3}}], DiskBox[{5, -1}, 0.09], 
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], DiskBox[{5, -2}, 0.09]}, 
+     {GrayLevel[1], EdgeForm[None], RectangleBox[{4.6, -3.4}, {5.4, -2.6}]}, 
+     LineBox[{{4.6, -3.4}, {5.4, -3.4}, {5.4, -2.6}, {4.6, -2.6}, {
+      4.6, -3.4}}], InsetBox[
+      StyleBox["\<\"U\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.03076923076923077],
+       FontWeight->"Light",
+       FontSlant->Italic], {5, -3}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{6, -2}, {6, -3}, {6, -1}}], 
+     DiskBox[{6, -2}, 0.09], 
+     DiskBox[{6, -3}, 0.09], {CircleBox[{6, -1}, 0.26666666666666666], 
+      LineBox[{{{5.733333333333333, -1}, {6.266666666666667, -1}}, {{
+         6, -1.2666666666666666`}, {6, -0.7333333333333334}}}]}}, {
+     LineBox[{{7, -1}, {7, -3}, {7, -2}}], DiskBox[{7, -1}, 0.09], 
+     DiskBox[{7, -3}, 0.09], {CircleBox[{7, -2}, 0.26666666666666666], 
+      LineBox[{{{6.733333333333333, -2}, {7.266666666666667, -2}}, {{
+         7, -2.2666666666666666`}, {7, -1.7333333333333334`}}}]}}, {
+     LineBox[{{8, -1}, {8, -2}, {8, -3}}], DiskBox[{8, -1}, 0.09], 
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], DiskBox[{8, -2}, 0.09]}, 
+     {GrayLevel[1], EdgeForm[None], RectangleBox[{7.6, -3.4}, {8.4, -2.6}]}, 
+     LineBox[{{7.6, -3.4}, {8.4, -3.4}, {8.4, -2.6}, {7.6, -2.6}, {
+      7.6, -3.4}}], InsetBox[
+      StyleBox["\<\"U\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.03076923076923077],
+       FontWeight->"Light",
+       FontSlant->Italic], {8, -3}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{9, -1}, {9, -3}, {9, -2}}], 
+     DiskBox[{9, -1}, 0.09], 
+     DiskBox[{9, -3}, 0.09], {CircleBox[{9, -2}, 0.26666666666666666], 
+      LineBox[{{{8.733333333333333, -2}, {9.266666666666667, -2}}, {{
+         9, -2.2666666666666666`}, {9, -1.7333333333333334`}}}]}}, {
+     LineBox[{{10, -2}, {10, -3}, {10, -1}}], DiskBox[{10, -2}, 0.09], 
+     DiskBox[{10, -3}, 0.09], {CircleBox[{10, -1}, 0.26666666666666666], 
+      LineBox[{{{9.733333333333333, -1}, {10.266666666666667`, -1}}, {{
+         10, -1.2666666666666666`}, {10, -0.7333333333333334}}}]}}, {
+     LineBox[{{11, -1}, {11, -2}, {11, -3}}], 
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], DiskBox[{11, -1}, 0.09]}, 
+     DiskBox[{11, -2}, 0.09], 
+     {GrayLevel[1], EdgeForm[None], RectangleBox[{10.6, -3.4}, {11.4, -2.6}]},
+      LineBox[{{10.6, -3.4}, {11.4, -3.4}, {11.4, -2.6}, {10.6, -2.6}, {
+      10.6, -3.4}}], InsetBox[
+      StyleBox["\<\"U\"\>",
+       StripOnInput->False,
+       FontSize->Scaled[0.03076923076923077],
+       FontWeight->"Light",
+       FontSlant->Italic], {11, -3}, NCache[
+      ImageScaled[{Rational[1, 2], Rational[1, 2]}], 
+       ImageScaled[{0.5, 0.5}]]]}, {LineBox[{{12, -1}, {12, -3}, {12, -2}}], 
+     {GrayLevel[1], EdgeForm[GrayLevel[0]], DiskBox[{12, -1}, 0.09]}, 
+     DiskBox[{12, -3}, 0.09], {CircleBox[{12, -2}, 0.26666666666666666], 
+      LineBox[{{{11.733333333333333`, -2}, {12.266666666666667`, -2}}, {{
+         12, -2.2666666666666666`}, {12, -1.7333333333333334`}}}]}}},
+   AxesStyle->Large,
+   FrameStyle->Large,
+   ImagePadding->{{23.400000000000002`, 23.400000000000002`}, {1, 1}},
+   ImageSize->514.8000000000001,
+   PlotRange->NCache[{Full, {
+       Rational[-7, 2], 
+       Rational[-1, 2]}}, {Full, {-3.5, -0.5}}],
+   PlotRangePadding->Scaled[0.025]],
+  Q3`QuantumCircuit[
+   Q3`ControlledGate[{$CellContext`S[1, Q3`$] -> 1, $CellContext`S[2, Q3`$] -> 
+     1}, 0.7071067811865475 + 
+    Complex[0., 0.7071067811865475] $CellContext`S[3, 2], "Label" -> "U"], 
+   Q3`CNOT[{$CellContext`S[1, Q3`$] -> 1, $CellContext`S[3, Q3`$] -> 1}, {
+     $CellContext`S[2, Q3`$]}], 
+   Q3`ControlledGate[{$CellContext`S[1, Q3`$] -> 1, $CellContext`S[2, Q3`$] -> 
+     1}, -0.5773502691896258 + 
+    Complex[0., -0.8164965809277261] $CellContext`S[3, 2], "Label" -> "U"], 
+   Q3`CNOT[{$CellContext`S[1, Q3`$] -> 1, $CellContext`S[3, Q3`$] -> 1}, {
+     $CellContext`S[2, Q3`$]}], 
+   Q3`ControlledGate[{$CellContext`S[1, Q3`$] -> 1, $CellContext`S[2, Q3`$] -> 
+     0}, 0.4999999999999999 + 
+    Complex[0., 0.8660254037844386] $CellContext`S[3, 2], "Label" -> "U"], 
+   Q3`CNOT[{$CellContext`S[2, Q3`$] -> 1, $CellContext`S[3, Q3`$] -> 1}, {
+     $CellContext`S[1, Q3`$]}], 
+   Q3`CNOT[{$CellContext`S[1, Q3`$] -> 1, $CellContext`S[3, Q3`$] -> 1}, {
+     $CellContext`S[2, Q3`$]}], 
+   Q3`ControlledGate[{$CellContext`S[1, Q3`$] -> 1, $CellContext`S[2, Q3`$] -> 
+     0}, -0.4472135954999578 + 
+    Complex[0., -0.8944271909999159] $CellContext`S[3, 2], "Label" -> "U"], 
+   Q3`CNOT[{$CellContext`S[1, Q3`$] -> 1, $CellContext`S[3, Q3`$] -> 1}, {
+     $CellContext`S[2, Q3`$]}], 
+   Q3`CNOT[{$CellContext`S[2, Q3`$] -> 1, $CellContext`S[3, Q3`$] -> 1}, {
+     $CellContext`S[1, Q3`$]}], 
+   Q3`ControlledGate[{$CellContext`S[1, Q3`$] -> 0, $CellContext`S[2, Q3`$] -> 
+     1}, 0.4082482904638631 + 
+    Complex[0., 0.9128709291752769] $CellContext`S[3, 2], "Label" -> "U"], 
+   Q3`CNOT[{$CellContext`S[1, Q3`$] -> 0, $CellContext`S[3, Q3`$] -> 1}, {
+     $CellContext`S[2, Q3`$]}]]]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->1604536961,ExpressionUUID->"774a48d5-b3e1-4376-9bdc-1b6ff0202e34"]
+}, Open  ]],
+
+Cell["Check if the decomposition is valid.", "ExampleText",
+ CellID->1296359667,ExpressionUUID->"9a810667-5f92-4318-af44-fc224996cca7"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"newU", "=", 
+   RowBox[{"Dot", "@@", 
+    RowBox[{"Matrix", "[", 
+     RowBox[{"elm", ",", "ss"}], "]"}]}]}], ";"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[10]:=",
+ CellID->408490516,ExpressionUUID->"97f20e3c-74ba-4884-b596-511bc2d27d4a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"newU", "-", "matU"}], "//", "Chop"}], "//", 
+  "MatrixForm"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[11]:=",
+ CellID->81354979,ExpressionUUID->"328117ac-2bd9-4d98-a8af-a7f9a07cf09c"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {8, 8}, 0, {
+     1, {{0, 0, 0, 0, 0, 0, 0, 0, 0}, {}}, {}}]]]]], "Output",
+ CellLabel->"Out[11]//MatrixForm=",
+ CellID->345936199,ExpressionUUID->"3a52f10b-2078-4036-94f5-a96c3fc3f4bf"]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "1"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["CliffordQ"]], "paclet:Q3/ref/CliffordQ", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "06af3585-bb6a-4b3f-ad24-43eb42b9e86d"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["GottesmanMatrix"]], "paclet:Q3/ref/GottesmanMatrix", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "dcdfff10-6c46-403a-9268-fe9a7f9371b6"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["FromGottesmanMatrix"]], 
+           "paclet:Q3/ref/FromGottesmanMatrix", "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "f576dbb2-e748-460a-9f8f-9571c3e55acb"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["CliffordGroup"]], "paclet:Q3/ref/CliffordGroup", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "66327426-04bb-45ad-9bd1-2fda763aa6a3"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["PauliGroup"]], "paclet:Q3/ref/PauliGroup", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "56cd9c87-0f33-46b0-8431-35bc7e98a20a"]
+       }], "SeeAlso",ExpressionUUID->"a6d69adc-be75-401d-bda8-5fa36764d7b7"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"9c4b66f3-6f4b-495d-8a5e-\
+d141271ab66d"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TutorialsSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Clifford Decomposition"]], 
+           "paclet:Q3/tutorial/CliffordDecomposition"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "7d39f28b-bdbe-4e19-b810-17ec490bf37d"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["The Pauli and Clifford Groups"]], 
+           "paclet:Q3/tutorial/PauliAndCliffordGroups"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "af049670-4307-4e20-a4d4-f4676898ae14"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Stabilizer Formalism"]], 
+           "paclet:Q3/tutorial/StabilizerFormalism"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "639d20ee-1b6b-4246-ba45-464fd19f6cee"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Stabilizer Codes"]], 
+           "paclet:Q3/tutorial/StabilizerCodes"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "4a1a46c4-e6f4-4845-a65a-f4e287e5507a"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Error-Correction Codes",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumErrorCorrectionCodes"]], 
+         "TechNotes",ExpressionUUID->
+         "3037e90e-7402-4c93-887b-5e6efd330f3c"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Universal Quantum Computation"]], 
+           "paclet:Q3/tutorial/UniversalQuantumComputation"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "a212288c-74ed-401d-8319-44fb303abf7d"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems with Q3",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumInformationSystems"]], 
+         "TechNotes",ExpressionUUID->
+         "fa743c6e-0edc-48f5-ba41-44ed99aee01e"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Computation and Quantum Information with Q3"]], 
+           "paclet:Q3/tutorial/QuantumComputationAndQuantumInformation"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "725c58ff-3835-4d79-b498-6b6779a2bec3"]}]}
+     }]}
+  }]], "TutorialsSection",ExpressionUUID->"5c54751d-1290-472c-b843-\
+415c8d662b06"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Information Systems"]], 
+           "paclet:Q3/guide/QuantumInformationSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "de86bca2-07ca-4482-976b-36e1d0d6ec95"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"2806a149-00f0-43b1-bf16-\
+830f5e8c40f5"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang (2022)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "3b80e06a-7b1f-419a-aaac-2d0068a4148d"]}]],ExpressionUUID->
+         "89890481-654a-4b22-8a8e-df9076b2c4ec"],
+        StyleBox[
+        ", Quantum Computation and Quantum Information (Cambridge University \
+Press).",
+         FontSlant->"Plain"]
+       }], "RelatedLinks",ExpressionUUID->
+        "68bff54c-a81b-4034-8f9f-3a7f8f499707"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "f3ccee3a-2ac9-4996-998e-78a4f2774056"]}]],ExpressionUUID->
+         "01388eb9-289a-4151-b947-9fb2e37669cf"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "RelatedLinks",ExpressionUUID->
+        "984f9b82-598e-4b85-8acc-ba19de22a65d"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"4e16c478-c111-4c6e-912b-\
+6e6f41f38bd8"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"ad53521d-dbd4-4229-bf0e-a6b7df2e7c3d"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"CliffordFactor",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, 
+    "ExampleSection" -> {"0" -> Open, "1" -> Closed}, "AllOptsTable" -> 
+    Closed}, "NewStyles" -> True, "CitationPopupData" -> $Failed, 
+  "ShowCitation" -> False, "HasOptions" -> True, "RootCaptions" -> "", 
+  "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2024, 1, 31, 20, 40, 13.864531}", 
+    "history" -> {"13", "14.0", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {
+     "Clifford decomposition", "Clifford group", "stabilizer circuits", 
+      "Gottesman-Knill theorem"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "CliffordFactor[op] returns a list of generators of the Clifford group \
+that combine to yield Clifford operator op. CliffordFactor[mat, {s1, s2, \
+...}] decomposes the Clifford operator corresponding to Gottesman matrix mat \
+and acting on qubits {s1, s2, ...}.", "synonyms" -> {}, "tabletags" -> {}, 
+    "title" -> "CliffordFactor", "titlemodifier" -> "", "metadescription" -> 
+    "", "windowtitle" -> "CliffordFactor", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/CliffordFactor"}},
+CellContext->"Global`",
+FrontEndVersion->"14.0 for Mac OS X ARM (64-bit) (December 12, 2023)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "14.0 for Mac OS X ARM (64-bit) (December 12, 2023)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"7d6f5d74-0735-4f72-8b7b-fb9af054ebb9"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[12242, 323, 1389, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"0a7fd03d-9cf5-493c-9598-89cef883961d",
+   CellTags->"PrimaryExamplesSection",
+   CellID->863599075]},
+ "RasterizedOutput"->{
+  Cell[18365, 509, 21895, 365, 140, "Output",ExpressionUUID->"f7eac6d3-714d-431b-9a60-9f2d9d30fe3a",
+   CellTags->"RasterizedOutput",
+   CellID->360743611]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 184422, 4973},
+ {"RasterizedOutput", 184622, 4977}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[586, 21, 7948, 193, 57, "AnchorBarGrid",ExpressionUUID->"6b2808d7-790a-494f-a2e6-b33804894094",
+ CellID->1],
+Cell[8537, 216, 85, 0, 23, "ContextNameCell",ExpressionUUID->"948dc2ae-ad68-4ce3-807d-f84cea50e488"],
+Cell[CellGroupData[{
+Cell[8647, 220, 1177, 31, 60, "ObjectNameGrid",ExpressionUUID->"949f689b-6370-4534-a6b7-85ad4133044d"],
+Cell[9827, 253, 2378, 65, 192, "Usage",ExpressionUUID->"8118ec52-a228-4fd0-98d8-71ed26daae9d",
+ CellID->212278340]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[12242, 323, 1389, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"0a7fd03d-9cf5-493c-9598-89cef883961d",
+ CellTags->"PrimaryExamplesSection",
+ CellID->863599075],
+Cell[13634, 362, 192, 3, 31, "Input",ExpressionUUID->"bba508bc-d5c6-467b-bab7-766f8dc3f164",
+ CellID->1927565408],
+Cell[CellGroupData[{
+Cell[13851, 369, 1368, 36, 31, "ExampleSection",ExpressionUUID->"12d85f56-8033-41cf-a4be-4441d4da434e",
+ CellID->1815167099],
+Cell[15222, 407, 208, 5, 29, "Input",ExpressionUUID->"b4ec02a6-44c3-4cb6-95dc-5d402345c6c6",
+ CellID->859214698],
+Cell[CellGroupData[{
+Cell[15455, 416, 328, 9, 48, "Input",ExpressionUUID->"08a82f7b-c3db-444a-b712-05fdb82e4f0c",
+ CellID->452630563],
+Cell[15786, 427, 596, 19, 37, "Output",ExpressionUUID->"fc1f1297-967e-4954-a10a-c71aae36e1aa",
+ CellID->2044966061]
+}, Open  ]],
+Cell[16397, 449, 126, 1, 38, "ExampleText",ExpressionUUID->"948d0e47-a4f5-415d-93de-ae111b450a3b",
+ CellID->669790911],
+Cell[CellGroupData[{
+Cell[16548, 454, 399, 10, 48, "Input",ExpressionUUID->"b3156732-ed13-405f-bb63-c16af3f97254",
+ CellID->1964987402],
+Cell[16950, 466, 780, 21, 134, "Output",ExpressionUUID->"ff01c1a3-b7c4-472e-9a1e-895d585b58dd",
+ CellID->633838838]
+}, Open  ]],
+Cell[17745, 490, 225, 4, 38, "ExampleText",ExpressionUUID->"d0ce7eef-a785-4bdf-8c2a-2bc2e3f99ee1",
+ CellID->432560268],
+Cell[CellGroupData[{
+Cell[17995, 498, 367, 9, 48, "Input",ExpressionUUID->"75dd6b39-ba96-4d24-952c-7e07dbf00743",
+ CellID->5310392],
+Cell[18365, 509, 21895, 365, 140, "Output",ExpressionUUID->"f7eac6d3-714d-431b-9a60-9f2d9d30fe3a",
+ CellTags->"RasterizedOutput",
+ CellID->360743611],
+Cell[40263, 876, 8987, 280, 248, "Output",ExpressionUUID->"e7097427-87be-4e74-a14f-a67b078899cc",
+ CellID->1524129227]
+}, Open  ]],
+Cell[49265, 1159, 176, 3, 70, "ExampleText",ExpressionUUID->"86bee4d8-ab93-4db8-b11c-f4f44aa1998a",
+ CellID->1962709845],
+Cell[CellGroupData[{
+Cell[49466, 1166, 246, 6, 70, "Input",ExpressionUUID->"f32b946b-b1d8-4099-84f9-1f8132b7c56c",
+ CellID->333323559],
+Cell[49715, 1174, 2753, 97, 40, "Output",ExpressionUUID->"6f86b90b-8583-4463-9d58-b397c7bc339b",
+ CellID->354427660]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[52505, 1276, 283, 7, 70, "Input",ExpressionUUID->"4922433f-d69b-4748-a2be-1a29786624f0",
+ CellID->240824828],
+Cell[52791, 1285, 3211, 75, 131, "Output",ExpressionUUID->"94d7a0ac-c284-4449-aea4-15bf8141c4e3",
+ CellID->602711885]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[56039, 1365, 242, 5, 70, "ExampleDelimiter",ExpressionUUID->"9870dcc7-0d73-447e-b7cc-d8b5dbd4b26f",
+ CellID->120551408],
+Cell[56284, 1372, 209, 4, 70, "ExampleText",ExpressionUUID->"bf85dbb8-6783-415d-b763-329174652485",
+ CellID->1575658530],
+Cell[CellGroupData[{
+Cell[56518, 1380, 212, 5, 70, "Input",ExpressionUUID->"a200847d-7a7e-44fa-aaab-6b30a6708985",
+ CellID->1120189552],
+Cell[56733, 1387, 78847, 2239, 372, "Output",ExpressionUUID->"0cc5bd43-5b8e-490e-a85a-589e4b2f64b8",
+ CellID->268566990]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[135617, 3631, 209, 5, 70, "Input",ExpressionUUID->"ccd25074-0c60-40f3-b2e5-d8a121c54acc",
+ CellID->511516458],
+Cell[135829, 3638, 127, 2, 37, "Output",ExpressionUUID->"dc2761f0-bc02-4fcd-87a7-a7c2e6dd63c1",
+ CellID->1132475673]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[136005, 3646, 241, 5, 70, "ExampleDelimiter",ExpressionUUID->"b71cf88b-22e9-4f82-9bb6-509d3cb60656",
+ CellID->63442201],
+Cell[136249, 3653, 294, 8, 70, "ExampleText",ExpressionUUID->"4359f92b-a410-40f2-92f2-b4100b7126da",
+ CellID->470316976],
+Cell[136546, 3663, 177, 3, 70, "ExampleText",ExpressionUUID->"f8b0a766-695c-4701-9a80-14d51f409ee8",
+ CellID->1369780248],
+Cell[CellGroupData[{
+Cell[136748, 3670, 220, 5, 70, "Input",ExpressionUUID->"af656bbc-2d91-4b21-bc51-5b1547712fa4",
+ CellID->1255046522],
+Cell[136971, 3677, 2754, 97, 40, "Output",ExpressionUUID->"13440972-dadc-461a-af44-ae5740d74cb1",
+ CellID->2044579059]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[139762, 3779, 181, 4, 70, "Input",ExpressionUUID->"e7b22786-ee0a-4d33-9208-ab3ba3b2c5b7",
+ CellID->315272225],
+Cell[139946, 3785, 246, 6, 37, "Output",ExpressionUUID->"1bae19bf-90ed-4679-a32d-4522f31dab5f",
+ CellID->6289954]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[140353, 3800, 1393, 36, 70, "ExampleSection",ExpressionUUID->"665d3ca8-4a45-4932-8ea8-9cf692a24450",
+ CellID->500505510],
+Cell[141749, 3838, 238, 4, 70, "ExampleText",ExpressionUUID->"689fc968-e104-462b-b004-ad45d1c212db",
+ CellID->951227422],
+Cell[141990, 3844, 209, 5, 70, "Input",ExpressionUUID->"92d8c6f7-4e82-4bdc-bd68-be228ef17d7a",
+ CellID->1393031983],
+Cell[CellGroupData[{
+Cell[142224, 3853, 328, 9, 70, "Input",ExpressionUUID->"46c59414-f449-4f62-a36a-46f8cbd605f1",
+ CellID->794204736],
+Cell[142555, 3864, 595, 19, 37, "Output",ExpressionUUID->"bab0da2d-a737-4f2d-9ad0-6d631cddaabf",
+ CellID->417626458]
+}, Open  ]],
+Cell[143165, 3886, 158, 2, 70, "ExampleText",ExpressionUUID->"14f02e60-3c4b-44e8-8c74-cfdeb4f3a699",
+ CellID->1839338552],
+Cell[CellGroupData[{
+Cell[143348, 3892, 400, 10, 70, "Input",ExpressionUUID->"350d6e6e-f8dc-4389-9891-c16c9a0f280b",
+ CellID->735944899],
+Cell[143751, 3904, 781, 21, 134, "Output",ExpressionUUID->"f1fea505-f386-4545-800e-98b79718b022",
+ CellID->1936332037]
+}, Open  ]],
+Cell[144547, 3928, 170, 3, 70, "ExampleText",ExpressionUUID->"bedbe71c-11fa-4e8c-a20b-d43d53d017be",
+ CellID->795570202],
+Cell[CellGroupData[{
+Cell[144742, 3935, 468, 12, 70, "Input",ExpressionUUID->"2ca29bd0-d8d4-4a02-aece-cf99e119e4c7",
+ CellID->102739640],
+Cell[145213, 3949, 8986, 280, 248, "Output",ExpressionUUID->"dfdbe473-651f-4e55-b7df-a17edde7514a",
+ CellID->516224880]
+}, Open  ]],
+Cell[154214, 4232, 359, 6, 70, "ExampleText",ExpressionUUID->"dfeb956d-9474-4653-8f65-f2940127f237",
+ CellID->1729192821],
+Cell[CellGroupData[{
+Cell[154598, 4242, 357, 10, 70, "Input",ExpressionUUID->"28a67f1c-547f-4c88-b73b-0d530e02256f",
+ CellID->1563598043],
+Cell[154958, 4254, 127, 2, 37, "Output",ExpressionUUID->"b11171c3-e0a1-442e-b2bb-49699880a410",
+ CellID->652380608]
+}, Open  ]],
+Cell[155100, 4259, 125, 1, 70, "ExampleText",ExpressionUUID->"99f16a94-a80d-4519-b8a3-101af1b4344e",
+ CellID->154086825],
+Cell[CellGroupData[{
+Cell[155250, 4264, 289, 8, 70, "Input",ExpressionUUID->"ab39a046-a3b0-40e5-b106-e9ee60fd53c7",
+ CellID->38851052],
+Cell[155542, 4274, 6900, 154, 439, "Output",ExpressionUUID->"89ddad05-1731-46fe-aa32-21687d4ab299",
+ CellID->632138212]
+}, Open  ]],
+Cell[162457, 4431, 221, 4, 70, "ExampleText",ExpressionUUID->"d53c3d85-b6a7-4ae7-911c-250de2c09560",
+ CellID->111251633],
+Cell[162681, 4437, 317, 9, 70, "Input",ExpressionUUID->"5b0e456a-8c8a-4860-84f2-15ee93b77f4b",
+ CellID->1067270155],
+Cell[163001, 4448, 287, 5, 70, "ExampleText",ExpressionUUID->"180742d8-1468-4e81-a60a-5022a9637c7f",
+ CellID->1630323727],
+Cell[CellGroupData[{
+Cell[163313, 4457, 185, 4, 70, "Input",ExpressionUUID->"9821e291-dd7b-43f0-94cf-2940fd749095",
+ CellID->37501207],
+Cell[163501, 4463, 128, 2, 37, "Output",ExpressionUUID->"251e1ad6-d284-4ce7-b51b-080236b945a0",
+ CellID->1357498033]
+}, Open  ]],
+Cell[163644, 4468, 140, 1, 70, "ExampleText",ExpressionUUID->"852b2dd9-7875-46ae-88af-cc59ca1dee71",
+ CellID->214602882],
+Cell[CellGroupData[{
+Cell[163809, 4473, 305, 8, 70, "Input",ExpressionUUID->"23d2a5f4-690c-4f42-9977-e6d99026bc5e",
+ CellID->1432186175],
+Cell[164117, 4483, 7141, 133, 131, "Output",ExpressionUUID->"774a48d5-b3e1-4376-9bdc-1b6ff0202e34",
+ CellID->1604536961]
+}, Open  ]],
+Cell[171273, 4619, 135, 1, 70, "ExampleText",ExpressionUUID->"9a810667-5f92-4318-af44-fc224996cca7",
+ CellID->1296359667],
+Cell[171411, 4622, 287, 8, 70, "Input",ExpressionUUID->"97f20e3c-74ba-4884-b596-511bc2d27d4a",
+ CellID->408490516],
+Cell[CellGroupData[{
+Cell[171723, 4634, 244, 7, 70, "Input",ExpressionUUID->"328117ac-2bd9-4d98-a8af-a7f9a07cf09c",
+ CellID->81354979],
+Cell[171970, 4643, 1017, 26, 168, "Output",ExpressionUUID->"3a52f10b-2078-4036-94f5-a96c3fc3f4bf",
+ CellID->345936199]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "1"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[173229, 4678, 2882, 78, 70, "SeeAlsoSection",ExpressionUUID->"9c4b66f3-6f4b-495d-8a5e-d141271ab66d"],
+Cell[176114, 4758, 3221, 81, 70, "TutorialsSection",ExpressionUUID->"5c54751d-1290-472c-b843-415c8d662b06"],
+Cell[179338, 4841, 742, 19, 70, "MoreAboutSection",ExpressionUUID->"2806a149-00f0-43b1-bf16-830f5e8c40f5"],
+Cell[180083, 4862, 2094, 59, 70, "RelatedLinksSection",ExpressionUUID->"4e16c478-c111-4c6e-912b-6e6f41f38bd8"],
+Cell[182180, 4923, 78, 0, 70, "FooterCell",ExpressionUUID->"ad53521d-dbd4-4229-bf0e-a6b7df2e7c3d"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

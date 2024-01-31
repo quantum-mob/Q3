@@ -148,7 +148,7 @@ MutualInformation[rho_?MatrixQ, dd:{__Integer}, kk:{__Integer}] := With[
  ]
 
 
-MutualInformation[rho_, S_?SpeciesQ] := MututalInformation[rho, {S}]
+MutualInformation[rho_, S_?SpeciesQ] := MutualInformation[rho, {S}]
 
 MutualInformation[rho_, ss:{__?SpeciesQ}] := Module[
   { qq = Agents @ {rho, FlavorNone @ ss},

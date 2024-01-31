@@ -1,4 +1,4 @@
-(* -*- mode:math -*- *)
+0(* -*- mode:math -*- *)
 (* stabilizer formalism *)
 BeginPackage["Q3`"]
 
@@ -11,7 +11,7 @@ BeginPackage["Q3`"]
 
 { GottesmanStandard, GottesmanSolve };
 
-{ CliffordDecompose };
+{ CliffordDecompose = CliffordFactor };
 
 { Stabilizer, StabilizerStateQ, StabilizerStateCount };
 
@@ -1078,23 +1078,25 @@ columnPivoting[mat_?MatrixQ, off_Integer, k_Integer] := Module[
 (**** </GottesmanStandard> ****)
 
 
-(**** <CliffordDecompose> ****)
+(**** <CliffordFactor> ****)
 
-CliffordDecompose::usage = "CliffordDecompose[op] returns a list of generators of the Clifford group that combine to yield Clifford operator op. CliffordDecompose[mat] decomposes the Clifford operator corresponding to Gottesman matrix mat."
+CliffordDecompose::usage = "CliffordDecompose is an alias of CliffordFactor."
 
-CliffordDecompose::badmat = "`` is not a valid binary symplectic matrix."
+CliffordFactor::usage = "CliffordFactor[op] returns a list of generators of the Clifford group that combine to yield Clifford operator op.\nCliffordFactor[mat,{s1,s2,\[Ellipsis]}] decomposes the Clifford operator corresponding to Gottesman matrix mat."
 
-CliffordDecompose[op_] := Module[
+CliffordFactor::badmat = "`` is not a valid binary symplectic matrix."
+
+CliffordFactor[op_] := Module[
   { ss = Qubits @ op,
     mat },
   mat = GottesmanMatrix[op, ss];
-  CliffordDecompose[mat, ss]
+  CliffordFactor[mat, ss]
  ]
 
-CliffordDecompose[mat_?GottesmanMatrixQ, ss:{_?QubitQ}] :=
+CliffordFactor[mat_?GottesmanMatrixQ, ss:{_?QubitQ}] :=
   { FromGottesmanMatrix[mat, ss] }
 
-CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
+CliffordFactor[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   { n = Length @ ss,
     kk, qq, rr,
     ff, hh, aa, bb, vv,
@@ -1104,7 +1106,7 @@ CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   kk = FirstPosition[GottesmanInner @@@ ff, 1];
   
   If[ MissingQ[kk], 
-    Message[CliffordDecompose::badmat, MatrixForm @ mat];
+    Message[CliffordFactor::badmat, MatrixForm @ mat];
     Return @ {1}
    ];
 
@@ -1115,7 +1117,7 @@ CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
      ];
     new = Mod[mat . cyc, 2];
     opf = Swap @@ Part[ss, {1, kk}];
-    Return @ Join[{opf}, CliffordDecompose[new, ss]]
+    Return @ Join[{opf}, CliffordFactor[new, ss]]
    ];
 
   {qq, rr} = TakeDrop[ss, 1];
@@ -1137,7 +1139,7 @@ CliffordDecompose[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   vv = Mod[new . aa . hh . bb, 2];
   vv = vv[[3;;, 3;;]];
 
-  simplifyGate @ Join[{opf, opa, oph, opb}, CliffordDecompose[vv, rr]]
+  simplifyGate @ Join[{opf, opa, oph, opb}, CliffordFactor[vv, rr]]
  ]
 
 
@@ -1158,7 +1160,7 @@ simplifyGate[S_[j___, 1]/Sqrt[2] + S_[j___, 3]/Sqrt[2]] := S[j, 6]
 
 simplifyGate[(S_[j___, 1] + S_[j___, 3])/Sqrt[2]] := S[j, 6]
 
-(**** </CliffordDecompose> ****)
+(**** </CliffordFactor> ****)
 
 
 End[]
