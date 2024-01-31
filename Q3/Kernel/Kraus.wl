@@ -133,7 +133,8 @@ MakeBoxes[spr:Supermap[ops:{__}, cc_?VectorQ], fmt_] :=
     Supermap, spr, None,
     { BoxForm`SummaryItem @ {"Operators: ", Length @ ops},
       BoxForm`SummaryItem @ {"Factors: ", Length @ cc} },
-    { BoxForm`SummaryItem @ {"Kraus elements: ", cc * ops} },
+    { BoxForm`SummaryItem @ {"Operators: ", ops},
+      BoxForm`SummaryItem @ {"Factors: ", cc} },
     fmt, "Interpretable" -> Automatic ]
 
 Supermap /:
@@ -408,10 +409,11 @@ LindbladSupermap /:
 MakeBoxes[spr:LindbladSupermap[{opH_, opL__}], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     LindbladSupermap, spr, None,
+    { BoxForm`SummaryItem @ {"Lindblad supermap"},
+      BoxForm`SummaryItem @ {"Lindblad operators: ", Length @ {opL}} },
     { BoxForm`SummaryItem @ {"Hamiltonian: ", opH},
-      BoxForm`SummaryItem @ {"Jump operators: ", Length @ {opL}} },
-    { BoxForm`SummaryItem @ {"Damping operator: ", DampingOperator @ {opL}},
-      BoxForm`SummaryItem @ {"Jump operators: ", {opL}} },
+      BoxForm`SummaryItem @ {"Damping operator: ", DampingOperator @ {opL}},
+      BoxForm`SummaryItem @ {"Lindblad operators: ", {opL}} },
     fmt, "Interpretable" -> Automatic ]
 
 

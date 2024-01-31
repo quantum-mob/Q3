@@ -1423,7 +1423,7 @@ ControlledPower::usage = "ControlledPower[{c1, c2, ...}, op] represents a contro
 
 Options[ControlledPower] = {
   "Label" -> {"x", "U"}
- }
+}
 
 ControlledPower[S_?QubitQ, expr_, opts___?OptionQ] :=
   ControlledPower[{S[$]}, expr, opts]
@@ -1435,7 +1435,15 @@ ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
 
 ControlledPower /:
 Dagger @ ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
-  ControlledPower[ss, Dagger[expr], opts]
+  If[ MemberQ[Keys @ {opts}, "Label"],
+    With[
+      { opt = OptionValue[ControlledPower, {opts}, "Label"] },
+      ControlledPower[ ss, Dagger[expr], 
+        "Label" -> {First @ opt, Superscript[Last @ opt, "\[Dagger]"]},
+        Sequence @@ FilterRules[{opts}, Except @ "Label"] ]
+    ],
+    ControlledPower[ss, Dagger[expr], opts]
+  ]
 
 
 ControlledPower /:
@@ -1970,7 +1978,9 @@ qftCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
 
 
 Dagger /:
-HoldPattern @ Expand @ Dagger[op_QFT] = Dagger[op] (* fallback *)
+HoldPattern @ Expand @ Dagger[op_QFT] := ExpandAll[Dagger @ op]
+(* TODO: More sophisticated implementation is required so that the SWAP gates come at the last part of the quantum circuit.. *)
+
 
 Dagger /:
 HoldPattern @ ExpandAll @ Dagger[op_QFT] = Dagger[op] (* fallback *)
