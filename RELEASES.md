@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.1.0
+
+- S[..., C[n]], instead of S[..., C[-n]], is equivalent to Phase[2*Pi/2^n, S[..., 3]] for Qubit S.
+
 ## v3.0.3
 
 - Improved CliffordFactor::usage

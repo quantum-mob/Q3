@@ -80,9 +80,9 @@ AddElaborationPatterns[
   G_?QubitQ[j___, 11] -> (1 - G[j,3]) / 2,
   G_?QubitQ[j___, n_Integer?Negative] :> Dagger[Elaborate @ G[j, -n]],
   G_?QubitQ[j___, C[n_Integer]] :>
-    Elaborate @ Phase[2*Pi*Power[2,n], G[j,3]],
+    Elaborate @ Phase[2*Pi*Power[2,-n], G[j,3]],
   G_?QubitQ[j___, -C[n_Integer]] :>
-    Elaborate @ Phase[-2*Pi*Power[2,n], G[j,3]],
+    Elaborate @ Phase[-2*Pi*Power[2,-n], G[j,3]],
   G_?QuditQ[j___, 0 -> 0] :> 1 - Total @ Rest @ G[j, Diagonal],
   OTimes -> CircleTimes,
   OSlash -> CircleTimes
@@ -125,8 +125,8 @@ setQubit[x_Symbol] := (
   x/: Dagger @ x[j___, -8] = x[j, 8];
   x/: Dagger @ x[j___, -9] = x[j, 9];
   
-  x/: Dagger @ x[j___, C[k_Integer]] = x[j, -C[k]];
-  x/: Dagger @ x[j___, -C[k_Integer]] = x[j, C[k]];
+  x/: Dagger @ x[j___,  C[k_Integer]] = x[j, -C[k]];
+  x/: Dagger @ x[j___, -C[k_Integer]] = x[j,  C[k]];
 
   x/: Inverse[ x[j___, k_Integer] ] := x[j, -k];
   x/: Inverse[ x[j___, C[k_Integer] ] ] := x[j, -C[k]];
@@ -157,12 +157,12 @@ setQubit[x_Symbol] := (
   x[j___, -5] = x[j, 4];
   x[j___, -6] = x[j, 6];
 
-  x[j___, C[n_Integer?NonNegative]] = x[j, 0];
+  x[j___, C[n_Integer?NonPositive]] = x[j, 0];
   
-  x[j___, C[-1]] = x[j, 3];
-  x[j___, C[-2]] = x[j, 7];
-  x[j___, C[-3]] = x[j, 8];
-  x[j___, C[-4]] = x[j, 9];
+  x[j___, C[1]] = x[j, 3];
+  x[j___, C[2]] = x[j, 7];
+  x[j___, C[3]] = x[j, 8];
+  x[j___, C[4]] = x[j, 9];
 
   (* x[j___, 10] := (1 + x[j,3]) / 2; *)
   (* x[j___, 11] := (1 - x[j,3]) / 2; *)
@@ -182,14 +182,14 @@ setQubit[x_Symbol] := (
   Format[ x[j___, n_Integer?Negative] ] :=
     Interpretation[Superscript[x[j, -n], "\[Dagger]"], x[j, n]];
 
-  Format[ x[j___, C[n_Integer?Negative]] ] := Interpretation[
-    With[ {m = -n}, SpeciesBox[x, {j}, {2 Pi / HoldForm[Power[2, m]]}] ],
-    x[j, C @ n]
+  Format[ x[j___, C[n_Integer?Positive]] ] := Interpretation[
+    SpeciesBox[x, {j}, {2 Pi / HoldForm[Power[2, n]]}],
+    x[j, C[n]]
    ];
   
-  Format[ x[j___, -C[n_Integer?Negative]] ] := Interpretation[
-    With[ {m = -n}, SpeciesBox[x, {j}, {-2 Pi / HoldForm[Power[2, m]]}] ],
-    x[j, C @ n]
+  Format[ x[j___, -C[n_Integer?Positive]] ] := Interpretation[
+    SpeciesBox[x, {j}, {-2 Pi / HoldForm[Power[2, n]]}],
+    x[j, -C[n]]
    ];
   
   Format @ x[j___, 0] := Interpretation[SpeciesBox[x, {j}, {0}], x[j, 0]];
@@ -233,16 +233,6 @@ Hexadecant[S_?QubitQ] := S[9]
    NOTE: This is potentially dangerous because Fock also overides it. *)
 
 Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] =. ;
-
-(* Obsolete:
-   S[..., -n] now has a different meaning than before. *)
-(*
-Format @ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, n_Integer?Negative] ] :=
-  Interpretation[
-    Superscript[Row @ {"(", c[j,n], ")"}, "\[Dagger]"],
-    Dagger @ c[j, n]
-   ]
- *)
 
 Format @ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 7] ] :=
   Interpretation[
@@ -607,10 +597,10 @@ thePauliForm @ Pauli[{k_Integer}] := ReplaceAll[ k,
  ]
 
 thePauliForm @ Pauli[{-C[n_Integer]}] :=
-  With[{m = -n}, Superscript["Z", -2 Pi / HoldForm[Power[2, m]]]]
+  Superscript["Z", -2*Pi / HoldForm[Power[2, n]]]
 
 thePauliForm @ Pauli[{+C[n_Integer]}] :=
-  With[{m = -n}, Superscript["Z", +2 Pi / HoldForm[Power[2, m]]]]
+  Superscript["Z", +2*Pi / HoldForm[Power[2, n]]]
 
 thePauliForm @ Pauli[{any_}] = Superscript["\[Sigma]", any]
 (* NOTE: This is necessary to avoid infinite recursion Format[Paui[...]] may
@@ -696,11 +686,11 @@ ParityOddQ[v_Ket, a_?QubitQ] := OddQ @ v @ a
 
 (**** <Matrix for Qubits> ****)
 
-TheMatrix[ _?QubitQ[___, +C[m_Integer?Negative]] ] :=
-  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*2*Pi*Power[2, m]]}, {2, 2}]
+TheMatrix[ _?QubitQ[___, +C[m_Integer?Positive]] ] :=
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*2*Pi*Power[2, -m]]}, {2, 2}]
 
-TheMatrix[ _?QubitQ[___, -C[m_Integer?Negative]] ] :=
-  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[-I*2*Pi*Power[2, m]]}, {2, 2}]
+TheMatrix[ _?QubitQ[___, -C[m_Integer?Positive]] ] :=
+  SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[-I*2*Pi*Power[2, -m]]}, {2, 2}]
 
 TheMatrix[ _?QubitQ[___, m_] ] := ThePauli[m]
 
@@ -1945,7 +1935,7 @@ qftCtrlPower[ss:{__?QubitQ}][1] := { First[ss][6] }
 
 qftCtrlPower[ss:{__?QubitQ}][k_Integer] := With[
   { T = ss[[k]] },
-  { ControlledPower[ Reverse @ Take[ss, k-1], T[C[-k]],
+  { ControlledPower[ Reverse @ Take[ss, k-1], T[C[k]],
       "Label" -> {"x",Subscript["Z",k]} ],
     T[6] }
 ]
@@ -1970,7 +1960,7 @@ qftCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
   { T = ss[[k]] },
   Append[
     Table[
-      ControlledGate[ ss[[{j}]] -> {1}, T[C[j-k-1]], 
+      ControlledGate[ ss[[{j}]] -> {1}, T[C[k-j+1]], 
         "Label" -> Subscript["T", k-j] ],
       {j, k-1} ],
     T[6]]
@@ -2002,7 +1992,7 @@ invCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
   { T = ss[[k]] },
   Append[
     Table[
-      ControlledGate[ ss[[{j}]] -> {1}, Dagger @ T[C[j-k-1]], 
+      ControlledGate[ ss[[{j}]] -> {1}, Dagger @ T[C[k-j+1]], 
         "Label" -> Subsuperscript["T", k-j, "\[Dagger]"] ],
       {j, k-1} ],
     T[6]]

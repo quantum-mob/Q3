@@ -626,19 +626,6 @@ gateLabel::usage = "gateLabel[G] returns the label of circuit element G to be di
 
 SetAttributes[gateLabel, Listable];
 
-(* Not used any longer. *)
-gateLabel[_Symbol?QubitQ[___, -C[n_]]] :=
-  With[{m = -n}, Style[HoldForm[-2 Pi / HoldForm[Power[2, m]]], Small]]
-(* NOTE: HoldForm is required here because later qcNodes uses ReleaseHold. *)
-  
-(* Not used any longer. *)
-gateLabel[_Symbol?QubitQ[___, C[n_]]] :=
-  With[{m = -n}, Style[HoldForm[2 Pi / HoldForm[Power[2, m]]], Small]]
-(* NOTE: HoldForm is required here because later qcNodes uses ReleaseHold. *)
-  
-(* Not used any longer. *)
-gateLabel[S_?QubitQ] := thePauliForm[S]
-
 
 gateLabel[ op_Phase ] := thePauliForm[op]
 
