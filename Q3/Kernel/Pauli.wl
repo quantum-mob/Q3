@@ -359,6 +359,15 @@ TheOperator[ { n:{(0|1|2|3|4|5|6|Raising|Lowering|Hadamard)..},
 
 (**** <KetRegulate> ****)
 
+theKetRegulate::usage = "theKetRegulate[assoc, {s1, s2, ...}] returns a new association with all default values assigned.\nSee also theKetTrim."
+
+theKetRegulate[a_Association, ss:{___?SpeciesQ}] := With[
+  { tt = Union[Keys @ a, FlavorNone @ ss] },
+  KeySort @ AssociationThread[tt -> Lookup[a, tt]]
+]
+(* NOTE: Does not drop any key from a. *)
+
+
 KetRegulate::usage = "KetRegulate[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nKetRegulate[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, ....\nKetRegulate[expr, S] is quivalent to KetRegulate[expr, {S}].\nSee also KetTrim."
 
 KetRegulate[expr_] := expr /;
@@ -381,8 +390,7 @@ KetRegulate[expr_, ss:{__?SpeciesQ}] := With[
 
 KetRegulate[v:(_Ket|_Bra), ss:{___?SpeciesQ}] = v
 
-KetRegulate[Ket[a_Association], ss:{___?SpeciesQ}] :=
-  Ket @ KeySort @ Join[a, AssociationThread[ss -> Lookup[a, ss]]]
+KetRegulate[Ket[a_Association], ss:{___?SpeciesQ}] := Ket @ theKetRegulate[a, ss]
 
 KetRegulate[Bra[a_Association], ss:{___?SpeciesQ}] :=
   Dagger @ KetRegulate[Ket @ a, ss]
@@ -961,6 +969,8 @@ Bra[a_Association][ss_List] := Lookup[a, FlavorNone @ ss]
 
 Bra[a_Association][s_] := a[FlavorNone @ s]
 
+(**** </Ket & Bra> ****)
+
 
 KetRule::usage = "KetRule[rule] is a low-level function used when constructing Ket[<|\[Ellipsis]|>] to generate proper elementary rules from the compound rule specified in rule."
 
@@ -1000,9 +1010,6 @@ theKetTrim[a_Association] := AssociationMap[theKetTrim, a]
 theKetTrim[any_Rule] = any
 
 theKetTrim[{} -> _] = Nothing (* a fallback *)
-
-(* theKetTrim[Rule[_String, _]] = Nothing *)
-(* an actual option *)
 
 
 KetTrim::usage = "KetTrim[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.\nTo be compared with KetRegulate."
@@ -1119,7 +1126,7 @@ KetSort[vec:Ket[_Association], ss:{__?SpeciesQ}] := Module[
   vec[ss -> val]
  ]
 
-KetSort[vec:Ket[Except[_Association], ___]] := Sort[vec] (* Pauli Ket *)
+KetSort[Ket[vv_List]] := Ket @ Sort[vv] (* Pauli Ket *)
 
 KetSort[expr_] := KetSort[expr, Agents @ expr] /;
   Not @ FreeQ[expr, Ket[_Association]]
@@ -1129,8 +1136,6 @@ KetSort[expr_] := expr /. { v:Ket[__] :> KetSort[v] }
 KetSort[expr_, ss:{__?SpeciesQ}] := expr /. {
   v:Ket[_Association] :> KetSort[v, ss]
  }
-
-(**** </Ket & Bra> ****)
 
 
 KetNorm::usage = "KetNorm[expr] returns the norm of Ket expression expr."
@@ -2127,30 +2132,24 @@ HoldPattern @
    output as he prefers. *)
 
 
-(* For Ket/Bra of unlabelled qubits *)
+(*  For Bra *)
+Matrix[Bra[any_], rest___] := Conjugate @ Matrix[Ket[any], rest]
+
+
+(* For Ket of unlabelled qubits *)
 
 Matrix[ vec:Ket[_List], {___} ] := TheMatrix[vec]
 
-Matrix[ vec:Bra[_List], {___} ] := TheMatrix[vec]
 
-
-(* For Ket/Bra of labelled qubits *)
+(* For Ket of labelled qubits *)
 
 Matrix[Ket[<||>], {}] := 0
+
+Matrix[Ket[Vacuum], ss:{__?SpeciesQ}] := Matrix[Ket[<||>], ss]
 
 Matrix[Ket[a_Association], ss:{__?SpeciesQ}] :=
   CircleTimes @@ Map[TheMatrix, Thread[ss -> Lookup[a, ss]]]
 
-Matrix[Ket[Vacuum], ss:{__?SpeciesQ}] := Matrix[Ket[<||>], ss]
-
-Matrix[Bra[<||>], {}] := 0
-
-Matrix[Bra[a_Association]] := Matrix[Bra[a], Keys @ a] /; Length[a] > 1
-
-Matrix[Bra[v_Association], ss:{__?SpeciesQ}] :=
-  Conjugate @ Matrix[Ket[v], ss]
-
-Matrix[Bra[Vacuum], ss:{__?SpeciesQ}] := Matrix[Bra[<||>], ss]
 
 (* For Pauli[...] *)
 
@@ -2159,18 +2158,20 @@ Matrix[ op:Pauli[_List], {___} ] := TheMatrix[op]
 
 (* For Fermions *)
 
-(* NOTE: Matrix and MatrixIn must be consistent, which is not so trivial since
-   the Keys are always sorte in Ket. *)
-
 Matrix[op_?FermionQ, qq:{__?SpeciesQ}] := 
-  CircleTimes @@ Map[fermionMatrix[op], qq] /; 
+  CircleTimes @@ Map[fermionMatrix[op], qq] /;
   MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
+
+(* NOTE: Matrix and MatrixIn must be consistent, recalling that
+   Basis always sorts the Keys in Ket. *)
 
 fermionMatrix[a_?FermionQ][a_?FermionQ] := TheMatrix[a]
 
 fermionMatrix[a_?FermionQ][b_?FermionQ] := ThePauli[0] /; OrderedQ[{a, b}]
 
 fermionMatrix[a_?FermionQ][b_?FermionQ] := ThePauli[3]
+
+fermionMatrix[a_?FermionQ][any_] := One[Dimension @ any]
 
 
 (* For Species *)

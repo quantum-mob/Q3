@@ -841,12 +841,12 @@ CMT[_?AnyBosonQ, _?AnyBosonQ] = 0
 
 SetAttributes[ACMT, Orderless]
 
-HoldPattern @ ACMT[ op_, Dagger[op_] ] := 1 /; FermionQ[op]
+HoldPattern @ ACMT[ op_?FermionQ, Dagger[op_?FermionQ] ] = 1
 
-HoldPattern @ ACMT[ Dagger[op_], op_ ] := 1 /; FermionQ[op]
+HoldPattern @ ACMT[ Dagger[op_?FermionQ], op_?FermionQ ] = 1
 
-HoldPattern @ ACMT[ op_[i___], Dagger[op_[j___]] ] :=
-  KroneckerDelta[{i}, {j}] /; FermionQ[op]
+HoldPattern @ ACMT[ op_?FermionQ[i___], Dagger[op_?FermionQ[j___]] ] :=
+  KroneckerDelta[{i}, {j}]
 
 ACMT[_?AnyFermionQ, _?AnyFermionQ] = 0
 (* NOTE: Operators with different Heads are regarded different regardless of
@@ -854,9 +854,7 @@ ACMT[_?AnyFermionQ, _?AnyFermionQ] = 0
    behavior, Multiply[] should also be modified accordingly. *)
 
 
-(* ******************************************************************** *)
-(*     <Multiply>                                                       *)
-(* ******************************************************************** *)
+(**** <Multiply> ****)
 
 (** Heisenbergs **)
 
@@ -894,9 +892,9 @@ HoldPattern @
 
 (* Pauli exclusion principle *)
 
-HoldPattern @ Multiply[___, op_, op_, ___] := 0 /; FermionQ[op]
+HoldPattern @ Multiply[___, op_?FermionQ, op_?FermionQ, ___] = 0
 
-HoldPattern @ Multiply[___, Dagger[op_], Dagger[op_], ___] := 0 /; FermionQ[op]
+HoldPattern @ Multiply[___, Dagger[op_?FermionQ], Dagger[op_?FermionQ], ___] = 0
 
 (* Dagger[f] of a fermion operator is not necessarily a creation
    operator. Nevertheless, daggered operators (seemingly creation operators)
@@ -922,11 +920,10 @@ HoldPattern @
   Multiply[pre___, op_, op_, post___] := 1/2 Multiply[pre, post] /;
   MajoranaQ[op]
 
-HoldPattern @ Multiply[pre___, op_[i___], op_[j___], post___] :=
+HoldPattern @ Multiply[pre___, op_?MajoranaQ[i___], op_?MajoranaQ[j___], post___] :=
   Multiply[pre, post] KroneckerDelta[{i},{j}] -
   Multiply[pre, op[j], op[i], post] /;
-  Not @ OrderedQ @ {op[i], op[j]} /;
-  MajoranaQ[op]
+  Not @ OrderedQ @ {op[i], op[j]}
 (* NOTE: Operators with different Heads are regarded different regardless of
    their Flavor indices. This is conventional. If you want to change this
    behavior, Multiply[] should also be modified accordingly. *)
@@ -935,9 +932,7 @@ HoldPattern @ Multiply[pre___, op__?MajoranaQ, post___] :=
   Multiply[pre, Sequence @@ Sort @ {op}, post] Signature @ {op} /;
   Not @ OrderedQ @ {op}
 
-(* ******************************************************************** *)
-(*     </Multiply>                                                      *)
-(* ******************************************************************** *)
+(**** </Multiply> ****)
 
 
 Q::usage = "Q is an alias for " <> ToString[
@@ -1872,7 +1867,7 @@ KetVerify::fermion = "Invalid value `` for fermion ``."
 KetVerify[c_?FermionQ, v_] := (
   Message[KetVerify::fermion, v, c];
   $Failed
- ) /; Or[ Negative[v], v > 1 ]
+ ) /; Not[BinaryQ @ v]
 (* NOTE: The following definition would not allow to assign a symbolic value:
    KetVerify[ _?FermionQ, Except[0|1] ] = $Failed *)
 
@@ -1881,19 +1876,17 @@ KetVerify[c_?FermionQ, v_] := (
 (* Operations on Ket[] *)
 
 HoldPattern @
-  Multiply[x___, op_?BosonQ, Ket[v_Association], y___] := Module[
-    { vv = v },
-    If[v[op] == 0, Return[0]];
-    vv[op] = v[op] - 1;
-    Multiply[x, Sqrt[v[op]] * Ket[vv], y]
-   ]
+  Multiply[pre___, op_?BosonQ, Ket[v_Association], post___] :=
+    If[ v[op] == 0,
+      Return[0],
+      Sqrt[v[op]] * Multiply[pre, Ket[Ket @ v, op -> v[op]-1], post]
+    ]
+(* NOTE: The Keys are sorted in the result. *)
 
 HoldPattern @
-  Multiply[x___, Dagger[op_?BosonQ], Ket[v_Association], y___] := Module[
-    { vv = v },
-    vv[op] = v[op]+1;
-    Multiply[x, Sqrt[v[op]+1] * Ket[vv], y]
-   ]
+  Multiply[pre___, Dagger[op_?BosonQ], Ket[v_Association], post___] :=
+    Sqrt[v[op]+1] * Multiply[pre, Ket[Ket @ v, op -> v[op]+1], post]
+(* NOTE: The Keys are sorted in the result. *)
 
 HoldPattern @
   Multiply[pre___, op_?HeisenbergQ, Ket[v_Association], post___] :=
@@ -1925,24 +1918,24 @@ HoldPattern @
 
 
 HoldPattern @
-  Multiply[x___, op_?FermionQ, Ket[v_Association], y___] := Module[
-    { vv = v, sign },
-    If[v[op] == 0, Return[0]];
-    (* TODO: This doesn't respect fermions with Sea vacuum. *)
-    vv[op] = 0;
-    sign = theFermiSignature[v, op];
-    Multiply[x, sign * Ket[vv], y]
-   ]
+  Multiply[pre___, op_?FermionQ, Ket[v_Association], post___] :=
+    If[ v[op] == 0,
+      Return[0],
+      (* TODO: This doesn't respect fermions with Sea vacuum. *)
+      Signature[Prepend[Keys @ KeyDrop[theKetTrim @ v, op], op]] *
+        Multiply[pre, Ket[Ket @ v, op -> 0], post]
+    ]
+(* NOTE: The Keys of v are assumed to be sorted. *)
 
 HoldPattern @
-  Multiply[x___, Dagger[op_?FermionQ], Ket[v_Association], y___] := Module[
-    { vv = v, sign },
-    If[v[op] == 1, Return[0]];
-    (* TODO: This doesn't respect fermions with Sea vacuum. *)
-    vv[op] = 1;
-    sign = theFermiSignature[v, op];
-    Multiply[x, sign * Ket[vv], y]
-   ]
+  Multiply[pre___, Dagger[op_?FermionQ], Ket[v_Association], post___] := 
+    If[ v[op] == 1,
+      Return[0],
+      (* TODO: This doesn't respect fermions with Sea vacuum. *)
+      Signature[Prepend[Keys @ theKetTrim @ v, op]] *
+        Multiply[pre, Ket[Ket @ v, op -> 1], post]
+    ]
+(* NOTE: The Keys are sorted in the result. *)
 
 
 HoldPattern @

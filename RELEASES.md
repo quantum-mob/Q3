@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.2.0
+
+- A bug fix in KetSort.
+
 ## 3.1.1
 
 - A serious bug has been fixed concerning Matrix[fermion, ...] and Matrix[Dagger[fermion], ...].
