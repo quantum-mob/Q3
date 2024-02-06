@@ -2,7 +2,9 @@
 
 ## 3.2.0
 
-- A bug fix in KetSort.
+- Bug fixes: KetSort, Matrix[fermion, ...], Matrix[Ket[fermion], ...]
+- Revised implementation of KetRegulate using new theKetRegulate
+- More consistent implementation of fermion ** Ket[...] and Dagger[fermion] ** Ket[...]
 
 ## 3.1.1
 
