@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.1.1
+
+- A serious bug has been fixed concerning Matrix[fermion, ...] and Matrix[Dagger[fermion], ...].
+
 ## 3.1.0
 
 - S[..., C[n]], instead of S[..., C[-n]], is equivalent to Phase[2*Pi/2^n, S[..., 3]] for Qubit S.
