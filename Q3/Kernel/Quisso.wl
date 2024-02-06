@@ -1936,7 +1936,7 @@ qftCtrlPower[ss:{__?QubitQ}][1] := { First[ss][6] }
 qftCtrlPower[ss:{__?QubitQ}][k_Integer] := With[
   { T = ss[[k]] },
   { ControlledPower[ Reverse @ Take[ss, k-1], T[C[k]],
-      "Label" -> {"x",Subscript["Z",k]} ],
+      "Label" -> {"\!\(\*OverscriptBox[\(x\), \(~\)]\)", Subscript["Z",k]} ],
     T[6] }
 ]
 
@@ -1961,7 +1961,7 @@ qftCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
   Append[
     Table[
       ControlledGate[ ss[[{j}]] -> {1}, T[C[k-j+1]], 
-        "Label" -> Subscript["T", k-j] ],
+        "Label" -> Subscript["Z", k-j+1] ],
       {j, k-1} ],
     T[6]]
  ]
@@ -1993,7 +1993,7 @@ invCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
   Append[
     Table[
       ControlledGate[ ss[[{j}]] -> {1}, Dagger @ T[C[k-j+1]], 
-        "Label" -> Subsuperscript["T", k-j, "\[Dagger]"] ],
+        "Label" -> Subsuperscript["Z", k-j+1, "\[Dagger]"] ],
       {j, k-1} ],
     T[6]]
  ]

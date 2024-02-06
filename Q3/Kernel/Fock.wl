@@ -2104,10 +2104,10 @@ matrixHeaders[qnn:{{___}..}, cnt:{___Integer}] := Module[
 TheMatrix[ _?FermionQ ] := SparseArray[{1,2} -> 1, {2, 2}]
 
 TheMatrix[ Parity[a_?FermionQ] ] :=
-  SparseArray[ { {1,1} -> 1, {2,2} -> -1 }, {2, 2} ]
+  SparseArray[{{1,1} -> 1, {2,2} -> -1}, {2, 2}]
 
-TheMatrix[ Ket[ Association[_?FermionQ -> n:(0|1)] ] ] :=
-  SparseArray[ n+1 -> 1, 2 ]
+TheMatrix[ Ket @ Association[_?FermionQ -> n:(0|1)] ] :=
+  SparseArray[n+1 -> 1, 2]
 
 
 (* Matrix for Bosons *)

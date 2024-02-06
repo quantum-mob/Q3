@@ -423,7 +423,7 @@ ParseGate[
   ControlledGate[rr:{__Rule}, S_?QubitQ, opts___?OptionQ],
   more___?OptionQ ] :=
   Gate[ rr, Qubits @ S, opts, more,
-    "Label" -> {None, gateLabel[S]} ]
+    "Label" -> {None, thePauliForm[S]} ]
 
 ParseGate[
   ControlledGate[

@@ -2097,7 +2097,7 @@ Matrix[ z_?CommutativeQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
 
 (* Dagger *)
 
-HoldPattern @ Matrix[ Dagger[a_?NonCommutativeQ] ] := Topple @ Matrix[a]
+HoldPattern @ Matrix[Dagger[op_?AgentQ], rest___] := Topple @ Matrix[op, rest]
 (* NOTE: Matrix[a] may still include some operators; and hence Topple instead
    of ConjugateTranspose. *)
 
@@ -2159,22 +2159,18 @@ Matrix[ op:Pauli[_List], {___} ] := TheMatrix[op]
 
 (* For Fermions *)
 
-Matrix[op_?AnyFermionQ, qq:{__?SpeciesQ}] := Module[
-  { mm = TheMatrix @ op,
-    sp = FlavorMute @ Peel @ op,
-    id, rr, ss },
-  id = First @ FirstPosition[qq, sp];
-  rr = qq[[ ;; id - 1]];
-  ss = qq[[id + 1 ;; ]];
+(* NOTE: Matrix and MatrixIn must be consistent, which is not so trivial since
+   the Keys are always sorte in Ket. *)
 
-  rr = fermionOne /@ rr;
-  ss = One /@ Dimension[ss];
-  CircleTimes @@ Join[rr, {mm}, ss]
- ] /; MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
+Matrix[op_?FermionQ, qq:{__?SpeciesQ}] := 
+  CircleTimes @@ Map[fermionMatrix[op], qq] /; 
+  MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
 
-fermionOne[f_?FermionQ] := ThePauli[3]
+fermionMatrix[a_?FermionQ][a_?FermionQ] := TheMatrix[a]
 
-fermionOne[s_] := One[Dimension @ s]
+fermionMatrix[a_?FermionQ][b_?FermionQ] := ThePauli[0] /; OrderedQ[{a, b}]
+
+fermionMatrix[a_?FermionQ][b_?FermionQ] := ThePauli[3]
 
 
 (* For Species *)
