@@ -81,7 +81,7 @@ Vacuum::usage = "Vacuum is an option to Let[Fermion, ...]. Its value should be e
 
 Vacuum::unknown = "Unknown vacuum type ``. \"Void\" is used instead."
 
-Vacuum::invIdx = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as \"Void\"."
+Vacuum::flavor = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as \"Void\"."
 
 Options[Heisenberg] = {Spin -> 0, Bottom -> 0, Top -> 5}
 
@@ -393,7 +393,8 @@ setMajorana[x_Symbol] := (
 
 TrueSpin::usage = "TrueSpin[c[i,j,\[Ellipsis]]] returns Spin[c] if the Flavor indices i, j, \[Ellipsis] are consistent with Spin[c]; otherwise returns 0 with a warning message. TrueSpin[c] always returns zero, wheather with or without warning message."
 
-TrueSpin[ HoldPattern @ Dagger[c_?ParticleQ] ] := TrueSpin[c]
+HoldPattern @ 
+  TrueSpin[ Dagger[c_?ParticleQ] ] := TrueSpin[c]
 
 TrueSpin[ c_Symbol?ParticleQ ] :=
   If[ Spin[c] == 0,
@@ -422,7 +423,7 @@ spinlessQ[op_?AnyParticleQ] := If[TrueSpin[op] == 0, True, False, True]
 spinfulQ[op_?AnyParticleQ] := TrueQ[TrueSpin[op] > 0]
 
 
-seaQ::usage = "seaQ[c[i,j,...]] returns True if Vacuum[c] is \"Sea\" and the Flavor indices i, j, ... are consistent. Note that seaQ[c] returns always False wheather with or withour warning message."
+seaQ::usage = "seaQ[c[i,j,...]] returns True if Vacuum[c] is \"Sea\" and the Flavor indices i, j, ... are consistent.\nNote that seaQ[c] always returns False wheather with or withour warning message."
 
 (* For a spinless (Spin = 0) Fermion to have the Sea vacuum, at least one
    Flavor index is required for the expected answer. Otherwise, in effect the
@@ -435,15 +436,18 @@ seaQ::usage = "seaQ[c[i,j,...]] returns True if Vacuum[c] is \"Sea\" and the Fla
    regarded to be Void.
    See also: CreatorQ[], AnnihilatorQ[] *)
 
-seaQ[ HoldPattern @ Dagger[op_?FermionQ] ] := seaQ[op[]]
+seaQ[ HoldPattern @ Dagger[op_?FermionQ] ] := seaQ[op]
 
-seaQ[ c_Symbol?FermionQ ] := seaQ[c[]]
-(* NOTICE the test through the form with extra [], instead of direct test with
-   the Head itself. *)
+seaQ[ c_Symbol?FermionQ ] := (
+  Message[Vacuum::flavor, {}, c, Spin[c], Vacuum[c]];
+  Return[False]
+)
+(* NOTE: For any species c, c[] is automatically converted to c. *)
 
 seaQ[ op:c_Symbol?FermionQ[j___] ] := (
   If[ Vacuum[op] =!= Vacuum[c],
-    Message[Vacuum::invIdx, {j}, c, Spin[c], Vacuum[c]] ];
+    Message[Vacuum::flavor, {j}, c, Spin[c], Vacuum[c]]
+  ];
   Vacuum[op] == Vacuum[c] == "Sea"
  )
 
@@ -569,7 +573,7 @@ Canon /:
 HoldPattern[ Power[expr_, Canon] ] := Canon[expr]
 
 
-(*** CreatorQ[], AnnihilatorQ[] ***)
+(**** <CreatorQ> <AnnihilatorQ> ****)
 
 AnnihilatorQ::usage = "AnnihilatorQ[op[j]] returns 1 if op[j] is an annihilation operator and 0 otherwise."
 
@@ -585,13 +589,13 @@ CreatorQ[HoldPattern @ Dagger[_?BosonQ]] = True
 CreatorQ[_?BosonQ] = False
 
 (* Fermions with Void vacuum *)
-AnnihilatorQ[HoldPattern @ Dagger[op:_?FermionQ]] /; !seaQ[op] = False
+AnnihilatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; !seaQ[op] = False
 
-AnnihilatorQ[op:_?FermionQ] /; !seaQ[op]  = True
+AnnihilatorQ[op_?FermionQ] /; !seaQ[op]  = True
 
-CreatorQ[HoldPattern @ Dagger[op:_?FermionQ]] /; !seaQ[op] = True
+CreatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; !seaQ[op] = True
 
-CreatorQ[op:_?FermionQ] /; !seaQ[op] = False
+CreatorQ[op_?FermionQ] /; !seaQ[op] = False
 
 (* Fermions with Sea vacuum.
    In this case, the Flavor indices should also be consistent with its Spin as
@@ -632,6 +636,7 @@ HoldPattern @
 
 CreatorQ[_?AnyFermionQ] := False
 
+(**** </CreatorQ> </AnnihilatorQ> ****)
 
 
 Bosons::usage = "Bosons[expr] gives the list of all Bosons appearing in expr."
@@ -1681,29 +1686,10 @@ HoldPattern @ Multiply[ pre___,
   Dagger[CoherentState[v_Association]], Dagger[op_?ParticleQ],
   post___ ] := Multiply[pre, Dagger[op ** CoherentState[v]], post]
 
-(*
-HoldPattern @ Multiply[ pre___,
-  Dagger[op_?ParticleQ], CoherentState[v_Association],
-  post___ ] :=
-  Multiply[pre, Multiply[Dagger[op], Ket[]], CoherentState[v], post] /;
-  Not @ KeyExistsQ[v, op]
- *)
-(* This is not particularly helpful. *)
-(* NOTE 1: Default value for unspecified particles is 0. *)
-(* NOTE 2: The reuslt of op ** Ket[] is a Fock state. *)
-
-(*
-HoldPattern @ Multiply[
-  pre___,
-  Dagger[CoherentState[v_Association]], op_?ParticleQ,
-  post___ ] :=
-  Multiply[pre, Dagger[Dagger[op] ** CoherentState[v]], post] /;
-  Not @ KeyExistsQ[v, op]
- *)
-(* This is not particularly helpful. *)
-
 (**** </CoherentState> ****)
 
+
+(**** <FockAddSpin> ****)
 
 FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of the total angular momentum S[c1] + S[c2] + ....\nFockAddSpin[] returns the trivial basis including only VacuumState[]."
 
@@ -1715,7 +1701,8 @@ FockAddSpin[] := Association[ {0,0} -> {Ket[Vacuum]} ]
 FockAddSpin[irb_Association] := irb
 
 FockAddSpin[c_?ParticleQ] := Module[
-  { cc = FockSpinor[c], irb },
+  { cc = FockSpinor[c],
+   irb },
   irb = Multiply[Dagger[#], Ket[Vacuum]]& /@ GroupBy[cc, {TrueSpin[#], SpinZ[#]}&];
   (* NOTICE TrueSpin[#], not Spin[#]. This is a fallback for
      inconsistent Flavor indices, in which case SpinZ vanishes. *)
@@ -1770,6 +1757,8 @@ trimIrreducibleBasis[irb_Association] := Module[
   irc = Map[ DeleteDuplicates[#, Simplify @ Or[#1==#2, #1==-#2]&]& ] @ irc;
   irc
  ]
+
+(**** </FockAddSpin> ****)
 
 
 FockAddSpinZ::usage = "FockAddSpinZ[c1, c2, ...] returns the irreducible basis of the total directional angular momentum Sz[c1] + Sz[c2] + ....\nFockAddSpinZ[] returns the trivial basis including only VacuumState[]."
@@ -1839,11 +1828,16 @@ toCatForm[ Ket[v_Association] ] := Module[
  ]
 
 
+(**** <FockKet> ****)
+
 FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall that FockCat[] gives a Fock state with VacuumState[] is multiplied at the rightmost."
 
 FockKet[expr_] := KetRegulate[expr /. Ket[Vacuum] -> Ket[<||>]]
 (* TODO: This does not properly handle Fermion state with the Fermi sea as the
    vacuum. *)
+
+(**** </FockKet> ****)
+
 
 (**** <Ket for Fock> ****)
 
@@ -1984,19 +1978,19 @@ FockMatrix[op_, basis_Association, opts___?OptionQ] := Module[
  ]
 
 FockMatrix[op_, vv1:{___?catQ}, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ toKetForm @ vv1, toKetForm @ vv2 ]
+  Outer[ Multiply[#1, op, #2]&, Dagger @ FockKet @ vv1, FockKet @ vv2 ]
 (* FockKet[] is much faster to evalculate *)
 
 FockMatrix[op_, vv1_List?VectorQ, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, toKetForm @ vv2 ]
+  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, FockKet @ vv2 ]
 (* FockKet[] is much faster to evalculate *)
 
 FockMatrix[op_, vv1_List?VectorQ, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, toKetForm @ vv2 ]
+  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, FockKet @ vv2 ]
 (* FockKet[] is much faster to evalculate *)
 
 FockMatrix[op_, vv1:{___?catQ}, vv2_List?VectorQ] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ toKetForm @ vv1, vv2 ]
+  Outer[ Multiply[#1, op, #2]&, Dagger @ FockKet @ vv1, vv2 ]
 (* FockKet[] is much faster to evalculate *)
 
 FockMatrix[op_, vv1_List?VectorQ, vv2_List?VectorQ] :=

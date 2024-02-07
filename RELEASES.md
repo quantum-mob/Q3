@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.2.1
+
+- A bug fix in seaQ that affects AnnihilatorQ, CreatorQ, FockAddSpin, FermionBasis, etc.
+- A bug fix in FockMatrix due to toKetForm still lingering, and now being replaced with FockKet.
+- A bug fix in KetSpecies, affecting KetRegulate.
+
 ## 3.2.0
 
 - Bug fixes: KetSort, Matrix[fermion, ...], Matrix[Ket[fermion], ...]

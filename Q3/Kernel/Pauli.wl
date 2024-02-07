@@ -1039,7 +1039,7 @@ KetSpecies::usage = "KetSpecies[expr] returns the list of all species of Ket-lik
 
 KetSpecies[expr_] := Select[
   Union @ Catenate[
-    Keys /@ Cases[{expr},
+    Keys /@ Cases[{Normal[expr, Association]},
       (Ket|Bra|ProductState|CoherentState)[a_Association] -> a, Infinity]
    ],
   NonCommutativeQ

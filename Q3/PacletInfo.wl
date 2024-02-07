@@ -1,6 +1,6 @@
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "3.2.0",
+  "Version" -> "3.2.1",
   "WolframVersion" -> "12.3+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
