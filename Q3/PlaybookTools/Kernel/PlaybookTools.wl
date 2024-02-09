@@ -117,8 +117,10 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
     Return[$Failed]
    ];
 
+  SetOptions[nb, StyleDefinitions -> "PlaybookX.nb"]; (* for printing *)
   SetBanner[nb, $PlaybookBanner];
   PlaybookTrim[nb];
+  NotebookSave[nb];
 
   If[ OptionValue["PrintHandout"], PlaybookPrint[nb] ];
   
@@ -129,10 +131,7 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
    ];
 
   Print["Saving ", dst];
-  SetOptions[ nb,
-    Visible -> True,
-    Saveable -> False,
-    StyleDefinitions -> "PlaybookX.nb" ];
+  SetOptions[nb, Visible -> True, Saveable -> False];
   NotebookSave[nb];
   NotebookClose[nb];
  ]
