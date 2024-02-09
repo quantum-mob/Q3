@@ -58,31 +58,7 @@ $ParagraphDelimiter = Cell[ "\t", "Text", "ParagraphDelimiter",
 
 (**** <PlaybookDeploy> ****)
 
-Uneditable::usage = "Uneditable[style] makes cells of style uneditable.";
-
-SetAttributes[Uneditable, Listable]
-
-Uneditable[style_String, more___?OptionQ] := 
-  Cell[StyleData[style], Editable -> False, more]
-
-
-$PlaybookStyle::usage =  "$PlaybookStyle returns the style definition of a playbook to be deployed.";
-
-$PlaybookStyle = Notebook[
-  Join[
-    List @ Cell @ StyleData[StyleDefinitions -> "Playbook.nb"],
-    Uneditable @ {
-      "Title", "Subtitle", "Chapter",
-      "Section", "Subsection", "Subsubsection",
-      "Text", "Code", "Item", "Subitem", "Subsubitem",
-      "DisplayFormula", "Picture", "Caption",
-      "OutlineSection", "Outline1", "Outline2", "Outline3", "Outline4" }
-   ],
-  StyleDefinitions -> "Playbook.nb"
- ];
-
-
-PlaybookDeploy::usage = "PlaybookDeploy[\"filename.nb\"] generates a public-release version \"source.Playbook.nb\" of source notebook \"source.nb\".\nPlaybookDeploy[\"source.nb\", \"destination.nb\"] generates \"destination.nb\" for the public use.\nPlaybookDeploy[\"source.nb\", dir] generates dir/\"source.Playbook.nb\" for the public use."
+PlaybookDeploy::usage = "PlaybookDeploy[\"filename.nb\"] generates a public-release version \"filename.Playbook.nb\" of source notebook \"filename.nb\".\nPlaybookDeploy[\"source.nb\", \"destination.nb\"] generates \"destination.nb\" for the public use.\nPlaybookDeploy[\"source.nb\", dir] generates dir/\"source.Playbook.nb\" for the public use."
 
 PlaybookDeploy::folder = "`` must be a valid folder."
 
@@ -142,7 +118,7 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
    ];
 
   SetBanner[nb, $PlaybookBanner];
-  DeleteEpilog[nb];
+  PlaybookTrim[nb];
 
   If[ OptionValue["PrintHandout"], PlaybookPrint[nb] ];
   
@@ -156,11 +132,15 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   SetOptions[ nb,
     Visible -> True,
     Saveable -> False,
-    StyleDefinitions -> $PlaybookStyle ];
+    StyleDefinitions -> "PlaybookX.nb" ];
   NotebookSave[nb];
   NotebookClose[nb];
  ]
 
+(**** </PlaybookDeploy> ****)
+
+
+(**** <PlaybookPrint> ****)
 
 PlaybookPrint::usage = "PlaybookPrint[nb] prints notebook nb to a PDF file."
 
@@ -174,15 +154,11 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
     StringJoin @ {FileBaseName @ dst, ".pdf"}
    };
   Print["Preparing ", NotebookFileName @ nb, " for printing ..."];
-  (* For some unknown reason, the following two lines are required;
-     otherwise, NotebookPrint misses some images and typographic math
-     expressions. *)
-  SetOptions[nb, Visible -> True, StyleDefinitions -> $PlaybookStyle];
 
   (* Open all cell groups *)
   SelectionMove[nb, All, Notebook];
   FrontEndTokenExecute[nb, "SelectionOpenAllGroups"];
-
+  SelectionMove[nb, Before, Notebook];
   NotebookSave[nb];
 
   Print["Printing to ", pdf, " ..."];
@@ -195,18 +171,10 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
   Print["\t... done!"];
  ]
 
+(**** </PlaybookPrint> ****)
 
-PlaybookClean::usage = "PlaybookClean[nb, styles] delete all cells of styles in notebook nb."
 
-PlaybookClean[nb_NotebookObject, style_String:"Output"] := (
-  Print["Deleting Cells of style ", style];
-  NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
-  If[Length[SelectedCells @ nb] > 0, NotebookDelete[nb]]
- )
-
-PlaybookClean[nb_NotebookObject, styles:{__String}] :=
-  Scan[PlaybookClean[nb, #]&, styles]
-
+(**** <PlaybookFold> ****)
 
 PlaybookFold::usage = "PlaybookFold[nb, styles] collapse all cell groups of styles in notebook nb."
 
@@ -222,10 +190,30 @@ PlaybookFold[nb_NotebookObject, style_String] := NotebookPut[
 PlaybookFold[nb_NotebookObject, styles:{__String}] :=
   Scan[PlaybookFold[nb, #]&, styles]
 
+(**** </PlaybookFold> ****)
 
-DeleteEpilog::usage = "DeleteEpilog[nb] deletes cells and cell groups with CellTags DeleteEpilog.\nDeleteEpilog[nb, cell] deletes the particular cell or cell group."
 
-DeleteEpilog[nb_NotebookObject] := (
+(**** <PlaybookClean> ****)
+
+PlaybookClean::usage = "PlaybookClean[nb, styles] delete all cells of styles in notebook nb."
+
+PlaybookClean[nb_NotebookObject, style_String:"Output"] := (
+  Print["Deleting Cells of style ", style];
+  NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
+  If[Length[SelectedCells @ nb] > 0, NotebookDelete[nb]]
+ )
+
+PlaybookClean[nb_NotebookObject, styles:{__String}] :=
+  Scan[PlaybookClean[nb, #]&, styles]
+
+(**** </PlaybookClean> ****)
+
+
+(**** <PlaybookTrim> ****)
+
+PlaybookTrim::usage = "PlaybookTrim[nb] deletes cells and cell groups with CellTags PlaybookTrim.\nPlaybookTrim[nb, cell] deletes the particular cell or cell group."
+
+PlaybookTrim[nb_NotebookObject] := (
   SelectionMove[nb, Before, Notebook, AutoScroll -> False];
   (* Print["Examinig ", NotebookFileName @ nb]; *)
   (* For some unknown reason, the above line or similar is
@@ -235,11 +223,11 @@ DeleteEpilog[nb_NotebookObject] := (
     Print["No epilogue to delete!"];
     Return[],
     Print["Examining ", SelectedCells @ nb, " for deletion."];
-    Scan[DeleteEpilog[nb, #]&, SelectedCells @ nb]
+    Scan[PlaybookTrim[nb, #]&, SelectedCells @ nb]
    ]
  )
 
-DeleteEpilog[nb_NotebookObject, cell_CellObject] := With[
+PlaybookTrim[nb_NotebookObject, cell_CellObject] := With[
   { cc = (
       SelectionMove[cell, All, CellGroup, AutoScroll -> False];
       SelectedCells[nb] ) },
@@ -251,7 +239,7 @@ DeleteEpilog[nb_NotebookObject, cell_CellObject] := With[
    ]
  ]
 
-(**** </PlaybookDeploy> ****)
+(**** </PlaybookTrim> ****)
 
 
 (**** <PlaybookEpilog> ****)

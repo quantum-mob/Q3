@@ -72,6 +72,8 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { PlusDagger, TimesDaggerRight, TimesDaggerLeft };
 
+{ PlusTopple };
+
 { TransformBy, TransformByFourier, TransformByInverseFourier };
 
 { Basis, Matrix, MatrixIn, TheMatrix };
@@ -1205,9 +1207,14 @@ TimesDaggerLeft::usage = "TimesDaggerLeft[expr] returns Dagger[expr]**expr."
 
 PlusDagger[expr_] := expr + Dagger[expr]
 
-TimesDaggerRight[expr_] := Multiply[expr, Dagger @@ expr]
+TimesDaggerRight[expr_] := Multiply[expr, Dagger @ expr]
 
-TimesDaggerLeft[expr_]  := Multiply[Dagger @@ expr, expr]
+TimesDaggerLeft[expr_]  := Multiply[Dagger @ expr, expr]
+
+
+PlusTopple::usage = "PlusTopple[expr] returns mat + Topple[mat]."
+
+PlusTopple[mat_] := mat + Topple[mat]
 
 
 System`Hermitian::usage = "In Q3, Hermitian represents Hermitian operators.\nLet[Hermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Hermitian operators.\nSince Mathematica v12.1, Hermitian is a built-in symbol, and is extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."

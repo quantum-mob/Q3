@@ -2,6 +2,10 @@
 
 ## 3.2.1
 
+- Bug fixes in PlaybookTools; an alert of dynamic content in .Playbook.nb; incomplete printing.
+- New stylesheet PlaybookX.nb
+- New function PlusTopple
+- Bug fixes in TimesDaggerLeft, TimesDaggerRight.
 - A bug fix in seaQ that affects AnnihilatorQ, CreatorQ, FockAddSpin, FermionBasis, etc.
 - A bug fix in FockMatrix due to toKetForm still lingering, and now being replaced with FockKet.
 - A bug fix in KetSpecies, affecting KetRegulate.
