@@ -2784,6 +2784,16 @@ Elaborate @ Matchgate[aa:{_, _, _}, bb:{_, _, _}, ss:{_?QubitQ, _?QubitQ}] :=
     GivensRotation[TheEulerRotation[aa], {1, 4}, ss] **
       GivensRotation[TheEulerRotation[bb], {2, 3}, ss] ]
 
+Matrix /:
+Matrix[
+  Matchgate[aa:{_, _, _}, bb:{_, _, _}, ss:{_?QubitQ, _?QubitQ}],
+  rest___ ] :=
+  Matrix[
+    GivensRotation[TheEulerRotation[aa], {1, 4}, ss] **
+      GivensRotation[TheEulerRotation[bb], {2, 3}, ss],
+    rest
+  ]
+
 
 Matchgate[aa:{_, _, _}, bb:{_, _, _}] := Dot[
   Matrix @ GivensRotation[TheEulerRotation[aa], {1, 4}, 4],

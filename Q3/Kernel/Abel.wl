@@ -1633,6 +1633,8 @@ HoldPattern @
 (* ****************************************************************** *)
 
 
+(**** <MultiplyExp> ****)
+
 MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[]."
 
 SetAttributes[MultiplyExp, Listable]
@@ -1662,6 +1664,10 @@ HoldPattern @ Power[ MultiplyExp[op_], z_?CommutativeQ ] :=
   MultiplyExp[z * op]
 
 MultiplyExp /:
+HoldPattern @ Matrix[ MultiplyExp[op_], rest___ ] := 
+  MatrixExp @ Matrix[op, rest]
+
+MultiplyExp /:
 HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
   Elaborate @ ExpressionFor @ MatrixExp @ Matrix @ expr /;
   Agents[expr] == {} /;
@@ -1683,6 +1689,8 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
    Jordan-Wigner transformation. MultiplyExp usually appears in the
    Baker-Hausdorff form, and the latter can be treated more efficiently using
    LieExp or related methods. *)
+
+(**** </MultiplyExp> ****)
 
 
 (**** <Lie> ****)

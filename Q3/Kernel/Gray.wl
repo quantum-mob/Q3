@@ -13,8 +13,6 @@ BeginPackage["Q3`"]
 
 { GrayGivensFactor };
 
-{ GivensFactor, GivensRotation };
-
 { GrayControlledGate };
 
 

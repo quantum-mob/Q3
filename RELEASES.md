@@ -1,5 +1,15 @@
 # Release Notes
 
+## 3.3.0
+
+- Bug fixes: Matrix[MultiplyExp[...], KetSpecies, PlaybookTools.
+- Matrix[expr, ...] with expr involving fermions have been changed back to the convention before 3.1.1.
+- Basis sorts the Keys, but for fermions, put additional signature factor.
+- fermionMatrix to properly handle Matrix for fermions
+- New fallback for ThePauli[{}]
+- GivensFactor and GivensRotation are declared in Pauli.wl, before Matchgate in Quisso.wl uses GivensRotation; Matrix[Matchgate[...], ...]
+- "FoldSections" is set True by default in PlaybookTools.
+
 ## 3.2.1
 
 - Bug fixes in PlaybookTools; an alert of dynamic content in .Playbook.nb; incomplete printing.
@@ -36,8 +46,7 @@
 - Bug fix: Matrix[ControlledPower[cc, op]] when cc is not in the canonical order; Expand[Dagger @ QFT]
 - Improved documentation: ControlledGate, ControlledPower, QFT, QuantumFourierTransform, Von Neumann Entropy
 
-## v3.0.2- 
-- 
+## v3.0.2 
 
 - More flexibility issues for Ket[] and Bra[]
 - Readjusted $InOutOffset, $BraceWidth

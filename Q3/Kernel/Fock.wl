@@ -1916,7 +1916,7 @@ HoldPattern @
     If[ v[op] == 0,
       Return[0],
       (* TODO: This doesn't respect fermions with Sea vacuum. *)
-      Signature[Prepend[Keys @ KeyDrop[theKetTrim @ v, op], op]] *
+      Signature[Prepend[Fermions @ Keys @ KeyDrop[theKetTrim @ v, op], op]] *
         Multiply[pre, Ket[Ket @ v, op -> 0], post]
     ]
 (* NOTE: The Keys of v are assumed to be sorted. *)
@@ -1926,7 +1926,7 @@ HoldPattern @
     If[ v[op] == 1,
       Return[0],
       (* TODO: This doesn't respect fermions with Sea vacuum. *)
-      Signature[Prepend[Keys @ theKetTrim @ v, op]] *
+      Signature[Prepend[Fermions @ Keys @ theKetTrim @ v, op]] *
         Multiply[pre, Ket[Ket @ v, op -> 1], post]
     ]
 (* NOTE: The Keys are sorted in the result. *)

@@ -69,7 +69,7 @@ PlaybookDeploy::noopen = "Could not open file ``."
 Options[PlaybookDeploy] = {
   "DeleteOutput" -> False,
   "PrintHandout" -> False,
-  "FoldSections" -> False
+  "FoldSections" -> True
  }
 
 PlaybookDeploy[opts:OptionsPattern[]] := With[

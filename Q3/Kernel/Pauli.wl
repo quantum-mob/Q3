@@ -50,6 +50,8 @@ BeginPackage["Q3`"]
 { Rotation, EulerRotation,
   TheRotation, TheEulerRotation };
 
+{ GivensFactor, GivensRotation };
+
 { RotationAngle, RotationAxis, RotationSystem,
   TheEulerAngles }
 
@@ -234,7 +236,7 @@ ThePauli[All] := ThePauli /@ {1, 2, 3}
 
 ThePauli[Full] := ThePauli /@ {0, 1, 2, 3}
 
-ThePauli[] = {{1}}
+ThePauli[] = ThePauli[{}] = {{1}} (* fallback *)
 
 
 ThePauli[kk:{(_Integer|_Rule)..}] := CircleTimes @@ Map[ThePauli, kk]
@@ -883,11 +885,11 @@ Bra /: MultiplyGenus[ _Bra ] = "Bra"
 
 Ket /:
 CircleTimes[a:Ket[_Association], b:Ket[_Association]..] :=
-  KeySort /@ Join[a, b, 2]
+  fermionKeySort @ Join[a, b, 2]
 
 Bra /:
 CircleTimes[a:Bra[_Association], b:Bra[_Association]..] :=
-  KeySort /@ Join[a, b, 2]
+  fermionKeySort @ Join[a, b, 2]
 
 Ket /:
 CircleTimes[a:Ket[_List], b:Ket[_List]..] := Join[a, b, 2]
@@ -895,11 +897,12 @@ CircleTimes[a:Ket[_List], b:Ket[_List]..] := Join[a, b, 2]
 Bra /:
 CircleTimes[a:Bra[_List], b:Bra[_List]..] := Join[a, b, 2]
 
-(*
-Ket /: CircleTimes[a_Ket, b__Ket] := Ket @@ Catenate[List @@@ {a, b}]
 
-Bra /: CircleTimes[a_Bra, b__Bra] := Bra @@ Catenate[List @@@ {a, b}]
- *)
+fermionKeySort::usage = "fermionKeySort[Ket[assoc]] sorts the Keys of assoc and multiply a factor of the signature of fermion Keys."
+
+fermionKeySort[(head:(Ket|Bra))[a_Association]] := 
+  Signature[Select[Keys @ theKetTrim @ a, FermionQ]] * head[KeySort @ a]
+
 
 Ket[s_?IntegerQ] := Ket @ {s}
 
@@ -1038,10 +1041,7 @@ DefaultForm[args__] := (
 KetSpecies::usage = "KetSpecies[expr] returns the list of all species of Ket-like objects in expression expr."
 
 KetSpecies[expr_] := Select[
-  Union @ Catenate[
-    Keys /@ Cases[{Normal[expr, Association]},
-      (Ket|Bra|ProductState|CoherentState)[a_Association] -> a, Infinity]
-   ],
+  Union @ Flatten @ Cases[{expr}, (Ket|Bra|ProductState|CoherentState)[a_Association] :> Keys[a], Infinity],
   NonCommutativeQ
  ]
 
@@ -2021,8 +2021,8 @@ Basis[ expr:Except[_?SpeciesQ] ] := Basis @@ Agents[expr] /;
 
 Basis[ expr:Except[_?SpeciesQ] ] := Module[
   { pp },
-  pp = Length /@ Cases[ {expr}, 
-    Pauli[a_List] | Ket[a:{(0|1)..}] | Bra[a:{(0|1)..}] :> a,
+  pp = Cases[ {expr}, 
+    Pauli[a_List] | Ket[a:{(0|1)..}] | Bra[a:{(0|1)..}] :> Length[a],
     Infinity ];
   If[ Equal @@ pp,
     Basis[First @ pp],
@@ -2064,6 +2064,9 @@ TheMatrix @ Pauli[nn_List] := ThePauli @ nn
 Matrix::usage = "Matrix[expr, {a1, a2, ...}] constructs the matrix representation of the expression expr on the total system consisting of a1, a2, ....\nMatrix[expr] feagures out the subsystems involved in expr."
 
 Matrix::rmndr = "There remain some elements, ``, that are not specified for matrix representation."
+
+Matrix::fermion = "Operator `` does not appear in the species list ``."
+
 
 (* General Code *)
 
@@ -2158,23 +2161,33 @@ Matrix[ op:Pauli[_List], {___} ] := TheMatrix[op]
 
 (* For Fermions *)
 
-Matrix[op_?FermionQ, qq:{__?SpeciesQ}] := 
-  CircleTimes @@ Map[fermionMatrix[op], qq] /;
+Matrix[op_?FermionQ, qq:{__?SpeciesQ}] := fermionMatrix[op, qq] /;
   MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
 
 (* NOTE: Matrix and MatrixIn must be consistent, recalling that
-   Basis always sorts the Keys in Ket. *)
+   Basis always sorts the Keys in Ket. This function also depends on Basis. *)
 
-fermionMatrix[a_?FermionQ][a_?FermionQ] := TheMatrix[a]
+fermionMatrix[op_, ff:{___?SpeciesQ}] := Module[
+  { mm },
+  mm = SequenceCases[ ff,
+    {pre___, op, post___} :> {
+      fermionOne /@ {pre},
+      {TheMatrix[op]},
+      One /@ Dimension /@ {post} }
+  ];
+  If[ mm == {},
+    Message[Matrix::fermion, op, ff];
+    Return[TheMatirx @ op],
+    Return[CircleTimes @@ Join @@ First[mm]]
+  ]
+]
 
-fermionMatrix[a_?FermionQ][b_?FermionQ] := ThePauli[0] /; OrderedQ[{a, b}]
+fermionOne[f_?FermionQ] := ThePauli[3]
 
-fermionMatrix[a_?FermionQ][b_?FermionQ] := ThePauli[3]
-
-fermionMatrix[a_?FermionQ][any_] := One[Dimension @ any]
+fermionOne[any_] := One[Dimension @ any]
 
 
-(* For Species *)
+(* For other Species *)
 
 Matrix[op_?AnySpeciesQ, ss:{__?SpeciesQ}] := Module[
   { mm = TheMatrix @ op,
@@ -2200,10 +2213,6 @@ Matrix[
    Dagger @ Matrix[bra ** post, qq]
   ]
 (* NOTE: Dagger (not Conjugate) here. *)
-
-(* For MultiplyExp *)
-HoldPattern @ Matrix[ MultiplyExp[op_], qq:{__?SpeciesQ} ] :=
-  MatrixExp @ Matrix @ op
 
 (* For Multiply[...] *)
 Matrix[HoldPattern @ Multiply[ops__], qq:{___?SpeciesQ}] :=
@@ -3100,12 +3109,6 @@ CircleTimes[mats__?MatrixQ] := KroneckerProduct[mats]
 
 (* For vectors, our CircleTimes[] is different from KroneckerProduct[]. *)
 CircleTimes[vecs__?VectorQ] := Flatten @ TensorProduct[vecs]
-
-(*
-CircleTimes /:
-Multiply[pre___, HoldPattern @ CircleTimes[aa__], Ket[bb__], post___] :=
-  Multiply[pre, CircleTimes @@ Multiply[{aa}, Ket /@ {bb}], post]
- *)
 
 (**** </CircleTimes> ****)
 
