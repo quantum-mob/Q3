@@ -103,9 +103,6 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { Ket, Bra };
 
-
-(* See Gottesman.wl *)
-
 { PauliGroup, FullPauliGroup,
   PauliGroupElements, FullPauliGroupElements,
   PauliQ };
@@ -113,6 +110,20 @@ $::usage = "$ is a flavor index referring to the species itself."
 { CliffordGroup, FullCliffordGroup,
   CliffordGroupElements, FullCliffordGroupElements,
   CliffordQ };
+
+
+(**** <compatibiliy> ****)
+
+(* Now comes as a built-in function with v13.1, but with an additional
+   Transpose compared to the old one.
+   Kept here for backward compatibility. *)
+{ PermutationMatrix };
+
+(* Now an experimental built-in symbol since v13.1.
+   Kept here for backward compatibility. *)
+{ BlockDiagonalMatrix };
+
+(**** </compatibiliy> ****)
 
 
 Begin["`Private`"]

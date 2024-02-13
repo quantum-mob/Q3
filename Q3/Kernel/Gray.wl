@@ -16,14 +16,6 @@ BeginPackage["Q3`"]
 { GrayControlledGate };
 
 
-(**** Obsolete or renamed symbols ****)
-
-{ TwoLevelU, GrayTwoLevelU, TwoLevelDecomposition }; (* renamed *)
-
-{ FromTwoLevelU }; (* obsolete *)
-
-{ GrayControlledW }; (* obsolete *)
-
 Begin["`Private`"]
 
 GraySubsets::usage = "GraySubsets[set] constructs a binary-reflected Gray code on set, that is, returns the list of all subsets of set each of which differs from its predecessor by only one element."
@@ -589,52 +581,6 @@ findControls[{i_Integer, j_Integer}, ss_List] := Module[
 
 (**** </GrayGivensFactor> ****)
 
-
-
-(**** The renamed ****)
-
-TwoLevelU::usage = "TwoLevelU has been renamed GivensRotation."
-
-TwoLevelU[args___] := (
-  Message[Q3General::renamed, TwoLevelU, GivensRotation];
-  GivensRotation[args]
- )
-
-
-GrayTwoLevelU::usage = "GrayTwoLevelU has been renamed FromTwoLevelU."
-
-GrayTwoLevelU[args___] := (
-  Message[Q3General::renamed, "GrayTwoLevelU", "FromTwoLevelU"];
-  FromTwoLevelU[args]
- )
-
-
-FromTwoLevelU::usage = "FromTwoLevelU is obsolte now. Use Expand instead."
-
-FromTwoLevelU[mat_?MatrixQ, rest__] := (
-  Message[Q3General::obsolete, FromTwoLevelU, Expand];
-  Expand @ GivensRotation[mat, rest]
- )
-
-FromTwoLevelU[GivensRotation[mat_?MatrixQ, ij_, _Integer], ss:{__?QubitQ}] :=
-  ( Message[Q3General::obsolete, FromTwoLevelU, Expand];
-    List @@ Expand @ GivensRotation[mat, ij, ss] )
-
-
-TwoLevelDecomposition::usage = "TwoLevelDecomposition is obsolte now. Use GivensFactor or GrayGivensFactor instead."
-
-TwoLevelDecomposition[args__] := (
-  Message[Q3General::obsolete, FromTwoLevelU, GivensFactor|GrayGivensFactor];
-  Expand @ GivensFactor[mat, rest]
- )
-
-
-GrayControlledW::usage = "GrayControlledW is obsolete now. Use GrayControlledGate instead."
-
-GrayControlledW[args___] := (
-  Message[Q3General::obsolete, GrayControlledW, GrayControlledGate];
-  GrayControlledGate[args]
- )
 
 End[]
 

@@ -4,9 +4,10 @@ BeginPackage["PlaybookTools`"]
 Unprotect["`*"];
 ClearAll["`*"];
 
-{ PlaybookDeploy,
-  $PlaybookBanner = "Q3: Symbolic Quantum Simulation" };
+$PlaybookBanner = "Q3: Symbolic Quantum Simulation";
 
+{ PlaybookDeploy };
+  
 { ParagraphDelimiterPut,
   $ParagraphDelimiter };
 
@@ -106,19 +107,23 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   { pdf, nb },
   Print["Deploying ", src];
   
-  Print["Copying to ", dst];
+  Print["\tCopying to ", dst, " ..."];
   If[ FailureQ @ CopyFile[src, dst, OverwriteTarget -> True],
     Message[PlaybookDeploy::nocopy, src, dst];
     Return[$Failed]
-   ];
+  ];
 
   If[ FailureQ[nb = NotebookOpen[dst, Visible -> False]],
     Message[PlaybookDeploy::noopen, dst];
     Return[$Failed]
-   ];
+  ];
 
-  SetOptions[nb, StyleDefinitions -> "PlaybookX.nb"]; (* for printing *)
-  SetBanner[nb, $PlaybookBanner];
+  Print["\tSetting the stylesheet to \"PlaybookX.nb\" for printing (if at all) ..."];
+  SetOptions[nb, StyleDefinitions -> "PlaybookX.nb"]; (* for printing if at all *)
+  
+  Print["\tSetting the banner as \"", $PlaybookBanner, "\" for printing (if at all) ..."];
+  SetBanner[nb, $PlaybookBanner]; (* for printing if at all *)
+  
   PlaybookTrim[nb];
   NotebookSave[nb];
 
@@ -128,13 +133,14 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
 
   If[ OptionValue["FoldSections"],
     PlaybookFold[nb, {"Subsubsection", "Subsection", "Section"}]
-   ];
+  ];
 
-  Print["Saving ", dst];
+  Print["\tSaving ", dst];
   SetOptions[nb, Visible -> True, Saveable -> False];
   NotebookSave[nb];
   NotebookClose[nb];
- ]
+  Return[dst]
+]
 
 (**** </PlaybookDeploy> ****)
 
@@ -152,22 +158,19 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
     DirectoryName @ dst,
     StringJoin @ {FileBaseName @ dst, ".pdf"}
    };
-  Print["Preparing ", NotebookFileName @ nb, " for printing ..."];
 
+  Print["\tPreparing ", NotebookFileName @ nb, " for printing ..."];
   (* Open all cell groups *)
   SelectionMove[nb, All, Notebook];
   FrontEndTokenExecute[nb, "SelectionOpenAllGroups"];
   SelectionMove[nb, Before, Notebook];
   NotebookSave[nb];
 
-  Print["Printing to ", pdf, " ..."];
-  (* 2024-01-13 This line causes the FrontEndObject::notavail error when
-     PlaybookDeploy is invoked from shell command line. *)
-  (* For some unknown reason, TaskWait is required; otherwise, NotebookPrint
-     misses some images and typographic math expressions. *)
-  (* TaskWait @ SessionSubmit @ NotebookPrint[nb, pdf]; *)
+  Print["\tPrinting to ", pdf, " ..."];
   NotebookPrint[nb, pdf];
-  Print["\t... done!"];
+
+  Print["\t\t... done!"];
+  Return[pdf]
  ]
 
 (**** </PlaybookPrint> ****)
@@ -197,7 +200,7 @@ PlaybookFold[nb_NotebookObject, styles:{__String}] :=
 PlaybookClean::usage = "PlaybookClean[nb, styles] delete all cells of styles in notebook nb."
 
 PlaybookClean[nb_NotebookObject, style_String:"Output"] := (
-  Print["Deleting Cells of style ", style];
+  Print["\tDeleting Cells of style ", style, " ..."];
   NotebookFind[nb, style, All, CellStyle, AutoScroll -> False];
   If[Length[SelectedCells @ nb] > 0, NotebookDelete[nb]]
  )
@@ -214,14 +217,11 @@ PlaybookTrim::usage = "PlaybookTrim[nb] deletes cells and cell groups with CellT
 
 PlaybookTrim[nb_NotebookObject] := (
   SelectionMove[nb, Before, Notebook, AutoScroll -> False];
-  (* Print["Examinig ", NotebookFileName @ nb]; *)
-  (* For some unknown reason, the above line or similar is
-     necessary. Otherwise, NotebookFind below does not work properly. *)
   If[ FailureQ @
       NotebookFind[nb, "PlaybookEpilog", All, CellTags, AutoScroll -> False],
-    Print["No epilogue to delete!"];
+    Print["\tNo epilogue to delete!"];
     Return[],
-    Print["Examining ", SelectedCells @ nb, " for deletion."];
+    Print["\tExamining ", Length @ SelectedCells @ nb, " cell(s) in Epilog ..."];
     Scan[PlaybookTrim[nb, #]&, SelectedCells @ nb]
    ]
  )
@@ -231,9 +231,9 @@ PlaybookTrim[nb_NotebookObject, cell_CellObject] := With[
       SelectionMove[cell, All, CellGroup, AutoScroll -> False];
       SelectedCells[nb] ) },
   If[ First[CurrentValue[First @ cc, "CellStyle"]] == "Section",
-    Print["Deleting ", cc];
+    Print["\tDeleting ", Length @ cc, " cell(s) in Epilog ..."];
     NotebookDelete[cc],
-    Print["Deleting ", cell];
+    Print["\tDeleting the Epilog section head ..."];
     NotebookDelete[cell]
    ]
  ]
@@ -261,7 +261,7 @@ PlaybookEpilog[nb_NotebookObject] := Module[
     Cell[BoxData @ RowBox @ {"SystemOpen", "[", 
         RowBox[{"NotebookFolder", "[", "]"}], "]"}, "Input"]
    };
-  NotebookWrite[nb, cc];
+  NotebookWrite[nb, cc]
  ]
 
 (**** </PlaybookEpilogy> ***)

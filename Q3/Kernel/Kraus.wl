@@ -18,17 +18,6 @@ BeginPackage["Q3`"]
 { LindbladSimulate };
 
 
-(**** Legacy, Excised, Renamed, Obsolete ****)
-
-{ LindbladSolveNaive}; (* legacy *)
-
-{ KrausProduct }; (* obsolete *)
-
-{ LindbladGenerator }; (* renamed *)
-
-{ LindbladBasis, LindbladBasisMatrix }; (* renamed *)
-
-
 Begin["`Private`"]
 
 (**** <Supermap> ****)
@@ -299,14 +288,6 @@ ToChoiMatrix[assoc_Association] := Map[ToChoiMatrix, assoc] /;
 (**** </ChoiMatrix> ****)
 
 
-KrausProduct::usage = "KrausProduct is now obsolete. Use HilbertSchmidtProduct insteas."
-
-KrausProduct[args___] := (
-  Message[Q3General::obsolete, "KrausProduct", "HilbertSchmidtProduct"];
-  HilbertSchmidtProduct[args]
- )
-
-
 (**** <LieBasisSupermap> ****)
 
 LieBasisSupermap::usage = "LieBasisSupermap[n] returns the supermap that changes the standard basis of \[ScriptCapitalL](n) to the Lie basis.\n LieBasisSupermap[{m1,m2,\[Ellipsis]}] returns the supermap that changes the standard basis of \[ScriptCapitalL](n) to the given basis {m1, m2, \[Ellipsis]}, which is supposed to be complete in \[ScriptCapitalL](n)."
@@ -333,20 +314,6 @@ LieBasisMatrix[n_] := LieBasisMatrix @ LieBasis[n]
 
 LieBasisMatrix[lbs:{__?SquareMatrixQ}] :=
   Transpose[Flatten /@ lbs] /; ArrayQ[lbs]
-
-
-LindbladBasisMatrix::usage = "LindbladBasisMatrix has been renamed LieBasisMatrix."
-LindbladBasisMatrix[args___] := (
-  Message[Q3General::renamed, "LindbladBasisMatrix", "LieBasisMatrix"];
-  LieBasisMatrix[args]
- )
-
-
-LindbladBasis::usage = "LindbladBasis has been renamed LieBasis."
-LindbladBasis[args___] := (
-  Message[Q3General::renamed, "LindbladBasis", "LieBasis"];
-  LieBasis[args]
- )
 
 (**** </LieBasisMatrix> ****)
 
@@ -416,13 +383,6 @@ MakeBoxes[spr:LindbladSupermap[{opH_, opL__}], fmt_] :=
       BoxForm`SummaryItem @ {"Lindblad operators: ", {opL}} },
     fmt, "Interpretable" -> Automatic ]
 
-
-LindbladGenerator::usage = "LindbladGenerator has been renamed LindbladSupermap."
-
-LindbladGenerator[args__] := (
-  Message[Q3General::renamed, "LindbladGenerator", "LindbladSupermap"];
-  LindbladSupermap[args]
- )
 
 (***** </LindbladSupermap> *****)
 

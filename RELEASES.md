@@ -1,5 +1,13 @@
 # Release Notes
 
+## 3.3.1
+
+- More information about the process in PlaybookTools.
+- Experimental built-in functions BlockDiagonalMatrix and PermtuationMatrix are kept in Abel.
+- All renamed, obsolete, excised symbols are moved to Einstein.
+- Improved FockKet and FermionBasis.
+
+
 ## 3.3.0
 
 - Bug fixes: Matrix[MultiplyExp[...], KetSpecies, PlaybookTools.

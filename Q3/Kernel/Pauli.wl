@@ -93,33 +93,6 @@ BeginPackage["Q3`"]
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
 
-(**** OBSOLETE SYMBOLS ****)
-
-{ TheLower, TheRaise, RaiseLower }; (* renamed *)
-
-{ PauliEmbed, PauliApply }; (* obsolete and excised *)
-
-{ NormalForm }; (* renamed *)
-
-{ LogicalForm, DefaultForm }; (* obsolete since 2023-02-18 *)
-
-{ PauliDecomposeOld, PauliComposeOld }; (* to be excised *)
-
-(* Now comes as a built-in function with v13.1, but with an additional
-   Transpose compared to the old one.
-   Kept here for backward compatibility. *)
-{ PermutationMatrix };
-
-(* Now an experimental built-in symbol since v13.1.
-   Kept here for backward compatibility. *)
-{ BlockDiagonalMatrix };
-
-{ DyadExpression }; (* renamed *)
-{ WignerFunction }; (* obsolete *)
-{ PauliExpression, PauliExpressionRL }; (* obsolete *)
-{ PauliInner }; (* obsolete *)
-
-
 Begin["`Private`"]
 
 $symb = Unprotect[CircleTimes, CirclePlus, Ket, Bra]
@@ -323,22 +296,6 @@ ThePauli[1 -> 1] = ThePauli[11]
 (**** </ThePauli> ****)
 
 
-TheRaise[args___] := (
-  Message[Q3General::renamed, "TheRaise", "TheRaising"];
-  TheRaising[args]
-)
-
-TheLower[args___] := (
-  Message[Q3General::renamed, "TheLower", "TheLowering"];
-  TheLowering[args]
-)
-
-RaiseLower[args___] := (
-  Message[Q3General::renamed, "RaiseLower", "RaisingLoweringForm"];
-  RaisingLoweringForm[args]
-)
-
-
 (**** <TheOperator> ****)
 
 TheOperator::usage = "TheOperator[{n,\[Theta],\[Phi]}] gives a Pauli matrix in the nth direction in the (\[Theta],\[Phi])-rotated frame.
@@ -367,14 +324,15 @@ theKetRegulate[a_Association, ss:{___?SpeciesQ}] := With[
   { tt = Union[Keys @ a, FlavorNone @ ss] },
   KeySort @ AssociationThread[tt -> Lookup[a, tt]]
 ]
-(* NOTE: Does not drop any key from a. *)
+(* NOTE:
+   1. Does not drop any key from a.
+   2. It does not affect the fermion-permutation signature. *)
 
 
 KetRegulate::usage = "KetRegulate[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nKetRegulate[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, ....\nKetRegulate[expr, S] is quivalent to KetRegulate[expr, {S}].\nSee also KetTrim."
 
 KetRegulate[expr_] := expr /;
   FreeQ[expr, Ket[_Association] | Bra[_Association]]
-
 
 KetRegulate[expr_] := KetRegulate[expr, KetSpecies @ expr]
 
@@ -417,14 +375,6 @@ KetRegulate[expr_, ss:{___?SpeciesQ}] := expr /. {
   v_Ket :> KetRegulate[v, ss],
   v_Bra :> KetRegulate[v, ss]
  }
-
-
-LogicalForm::usage = "LogicalForm has been renamed KetRegulate since v2.11.8."
-
-LogicalForm[args__] := (
-  Message[Q3General::renamed, "LogicalForm", "KetRegulate"];
-  KetRegulate[args]
- )
 
 (**** </KetRegulate> ****)
 
@@ -638,14 +588,6 @@ KetCanonical[expr_] := With[
  ] /; Not @ FreeQ[expr, _Ket]
 
 KetCanonical[any_] = any
-
-
-NormalForm::usage = "NormalForm has been renamed KetCanonical."
-
-NormalForm[args___] := (
-  Message[Q3General::renamed, "NormalForm", "KetCanonical"];
-  KetCanonical[args]
- )
 
 (**** </KetCanonical> ****)
 
@@ -1029,11 +971,6 @@ KetTrim[expr_] := expr /. {
  }
 (* NOTE: This line is necessary to prevent the Kets and Bras in OTimes from
    being affected. *)
-
-DefaultForm[args__] := (
-  Message[Q3General::obsolete, "DefaultForm", "KetTrim"];
-  KetTrim[args]
- )
 
 (**** </KetTrim> ****)
 
@@ -1867,35 +1804,6 @@ ExpressionIn[mat:Association[(_->_?MatrixQ)..],
     ]
 
 (**** </ExpressionIn> ****)
-
-
-PauliExpression::usage = "PauliExpression is obsolete now. Use ExpressionFor instead."
-
-PauliExpression[args___] := (
-  Message[Q3General::obsolete, "PauliExpression", "ExpressionFor"];
-  ExpressionFor[args]
- )
-
-
-PauliExpressionRL::usage = "PauliExpressionRL is obsolete now. Use ExpressionFor instead."
-
-PauliExpressionRL[args___] := (
-  Message[Q3General::obsolete, "PauliExpressionRL", "ExpressionFor"];
-  ExpressionFor[args]
- )
-
-
-PauliInner::usage = "PauliInner is obsolete. Use HilbertSchmidtProduct instead. Notice the difference in normalization -- PauliInner[m1, m2] = HilbertSchmidtProduct[m1,m2] / Length[m2] for matrices m1 and m2."
-
-PauliInner[m1_?MatrixQ, m2_?MatrixQ] := (
-  Message[Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
-  HilbertSchmidtProduct[m1, m2] / Length[m2]
- )
-
-PauliInner[v1_?VectorQ, v2_?VectorQ] := (
-  Message[Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
-  HilbertSchmidtProduct[v1, v2]
- )
 
 
 BlochVector::usage = "BlochSphere[{c0, c1}] returns the point on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
@@ -3487,14 +3395,6 @@ theDyadForm[val:{__}, spc:{__?SpeciesQ}] := Module[
   Dyad[AssociationThread[spc -> a], AssociationThread[spc -> b]]
  ]
 
-
-DyadExpression::usage = "DyadExpression has been renamed DyadForm."
-
-DyadExpression[args__] := (
-  Message[Q3General::renamed, "DyadExpression", "DyadForm"];
-  DyadForm[args]
- )
-
 (**** </DyadForm> ****)
 
 
@@ -4320,16 +4220,6 @@ MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
    ]
  ] /; And @@ Thread[kk <= Length[dd]]
 
-
-PauliEmbed::usage = "PauliEmbed is obsolete; instead, use MatrixEmbed."
-
-PauliEmbed[args___] := (
-  Message[Q3General::obsolete, "PauliEmbed", "MatrixEmbed"];
-  MatrixEmbed[args]
- )
-
-PauliApply[args___] := Message[Q3General::excised, "PauliApply"]
-  
 (**** </MatrixEmbed> ****)
 
 
@@ -4446,14 +4336,6 @@ BasisComplement[aa_List, bb_List, opts:OptionsPattern[]] := Module[
 (* NOTE: This works even if aa and bb are not orthonormal. *)
 
 (**** </BasisComplement> *****)
-
-
-WignerFunction::usage = "WignerFunction is now obsolete; use the build-in WignerD function."
-
-WignerFunction[j_, m_, n_, z_] := (
-  Message[Q3General::obsolete, WignerFunction, WignerD];
-  WignerD[{j, m, n}, z]
- )
 
 
 (**** <HilbertSchmidtNorm> *****)

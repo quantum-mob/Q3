@@ -49,11 +49,6 @@ BeginPackage["Q3`"];
 
 { SpechtBasis, YoungInvariantBasis };
 
-(**** Obsolete ****)
-
-{ CountYoungTableaux }; (* renamed *)
-
-{ YoungDominatesQ }; (* renamed *)
 
 Begin["`Private`"]
 
@@ -188,12 +183,6 @@ YoungTableauCount[pp_?YoungShapeQ] := Module[
 
 YoungTableauCount[n_Integer] :=
   Total @ Map[YoungTableauCount, IntegerPartitions @ n]
-
-
-CountYoungTableaux[args__] := (
-  Message[Q3General::renamed, "CountYoungTableaux", "YoungTableauCount"];
-  YoungTableauCount[args]
- )
 
 
 (**** <GroupRegularRepresentation> ****)
@@ -1149,14 +1138,6 @@ Dominates[b_?ListQ][a_?ListQ] := DominatesQ[a, b]
 DominatedBy::usage = "DominatedBy[a] is an operator form that yields b\[LeftTriangleEqual]a when applied to an expression b."
 
 DominatedBy[a_?ListQ][b_?ListQ] := DominatesQ[a, b]
-
-
-YoungDominatesQ::usage = "YoungDominatesQ has been renamed DominatesQ and extended to any lists."
-
-YoungDominatesQ[a_?YoungShapeQ, b_?YoungShapeQ] := (
-  Message[Q3General::renamed, "YoungDominatesQ", "DominatesQ"];
-  DominatesQ[a, b]
- )
 
 (**** </DominatesQ> ****)
 

@@ -41,16 +41,10 @@ BeginPackage["Q3`"]
 { FockKet, FockCat, FockPad };
 { FockNorm, FockAvg };
 { BosonBasis, FermionBasis, PrintFermionBasis };
-{ FockMatrix, FockMatrixForm };
 
 { FockDecompose, FockOrthogonalize };
 
 { FockAddSpin, FockAddSpinZ };
-
-
-{ FockCoefficientTensor }; (* Obsolete *)
-
-{ FockFourier, FockInverseFourier }; (* Obsolete *)
 
 
 Begin["`Private`"]
@@ -655,21 +649,6 @@ Heisenbergs[expr_] := Select[Agents @ expr, HeisenbergQ]
 Majoranas::usage = "Majoranas[expr] gives the list of all Majoranas appearing in expr."
 
 Majoranas[expr_] := Select[NonCommutativeSpecies @ expr, MajoranaQ]
-
-
-FockFourier::usage = "FockFourier is now obsolete. Use TransformByFourier instead."
-
-FockInverseFourier::usage = "FockInverseFourier is now obsolete. Use TransformByFourierInverse instead."
-
-FockFourier[args__] := (
-  Message[Q3General::obsolete, "FockFourier", "TransformByFourier"];
-  FourierMap[args]
- )
-
-FockInverseFourier[args__] := (
-  Message[Q3General::obsolete, "FockInverseFourier", "TransformByFourierInvere"];
-  InverseFourierMap[args]
- )
 
 
 (*** Transformations between Dirac and Majorana Fermions ***)
@@ -1832,7 +1811,12 @@ toCatForm[ Ket[v_Association] ] := Module[
 
 FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall that FockCat[] gives a Fock state with VacuumState[] is multiplied at the rightmost."
 
-FockKet[expr_] := KetRegulate[expr /. Ket[Vacuum] -> Ket[<||>]]
+FockKet[expr_] := KetRegulate[theFockKet @ expr]
+(* NOTE: Two layers are required to handle Association properly. *)
+
+theFockKet[expr_Association] := Map[theFockKet, expr]
+
+theFockKet[expr_] := (expr /. Ket[Vacuum] -> Ket[<||>])
 (* TODO: This does not properly handle Fermion state with the Fermi sea as the
    vacuum. *)
 
@@ -1840,12 +1824,6 @@ FockKet[expr_] := KetRegulate[expr /. Ket[Vacuum] -> Ket[<||>]]
 
 
 (**** <Ket for Fock> ****)
-
-(*
-KetRule[ r:Rule[_?ParticleQ, _] ] := r
-
-KetRule[ r:Rule[{__?ParticleQ}, _] ] := Thread[r]
- *)
 
 theKetTrim[Rule[_?ParticleQ, 0]] = Nothing
 
@@ -1866,6 +1844,9 @@ KetVerify[c_?FermionQ, v_] := (
    KetVerify[ _?FermionQ, Except[0|1] ] = $Failed *)
 
 (**** </Ket for Fock> ****)
+
+
+(**** <Multiply> ****)
 
 (* Operations on Ket[] *)
 
@@ -1949,6 +1930,8 @@ theFermiSignature[v_Association, c_?FermionQ] := Module[
   1 - 2*Mod[Total @ Lookup[v, First @ ff], 2]
  ]
 
+(**** </Multiply> ****)
+
 
 FockNorm::usage = "FockNorm[v] returns the norm of the state v, which is either in the occupation number representation or in the creation-operator representation."
 
@@ -1963,130 +1946,9 @@ SetAttributes[FockAvg, Listable]
 FockAvg[op_, a_] := Multiply[Dagger @ a, op, a]
 
 
-FockMatrix::usage = "FockMatrix[op, vlist] computes the matrix elements of the operator op between the vectors in the list vlist. Vecotrs in vlist can be either in the Ket or Cat form (the latter is slightly more efficient. FockMatrix[op, vlist1, vlist2] calculates the matrix elements between two vectors, one from vlist1 and the other from vlist2. FockMatrix[op, basis] calculates the matrix elements between vectors in the basis 'basis'. The basis is a list with particular structure and can be constructed by FermionBasis."
-
-Options[FockMatrix] = {"DiagonalOnly" -> True}
-
-FockMatrix[op_, vv_List?VectorQ] := FockMatrix[op, vv, vv]
-
-FockMatrix[op_, basis_Association, opts___?OptionQ] := Module[
-  { only = "DiagonalOnly" /. {opts} /. Options[FockMatrix] },
-  If[ only,
-    diagonalBlocks[op, basis],
-    allBlocks[op, basis]
-   ]
- ]
-
-FockMatrix[op_, vv1:{___?catQ}, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ FockKet @ vv1, FockKet @ vv2 ]
-(* FockKet[] is much faster to evalculate *)
-
-FockMatrix[op_, vv1_List?VectorQ, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, FockKet @ vv2 ]
-(* FockKet[] is much faster to evalculate *)
-
-FockMatrix[op_, vv1_List?VectorQ, vv2:{___?catQ}] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, FockKet @ vv2 ]
-(* FockKet[] is much faster to evalculate *)
-
-FockMatrix[op_, vv1:{___?catQ}, vv2_List?VectorQ] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ FockKet @ vv1, vv2 ]
-(* FockKet[] is much faster to evalculate *)
-
-FockMatrix[op_, vv1_List?VectorQ, vv2_List?VectorQ] :=
-  Outer[ Multiply[#1, op, #2]&, Dagger @ vv1, vv2 ]
-
-
-diagonalBlocks[op_, basis_Association] :=
-  Map[ (Simplify @ FockMatrix[op, #, #])&, basis ]
-
-allBlocks[op_, basis_Association] := Module[
-  { qnn, mat },
-  qnn = Tuples[Keys @ basis, 2];
-  mat = Values @ basis;
-  mat = Flatten[ Outer[FockMatrix[op, #1, #2]&, mat, mat, 1], 1 ];
-  Association @ Thread[ qnn -> mat ]
- ]
-
-
-FockMatrixForm::usage = "FockMatrixForm[m] displays in a human-friendly form the 'matrix' m, which is usually produced by FockMatrix and has a special data structure."
-
-Format @ FockMatrixForm[
-  mat:Association[({{___},{___}}->_?MatrixQ)..],
-  title_String:"",
-  opts___?OptionQ
- ] := Module[
-   { row, col, bdy, cnt },
-   row = DeleteDuplicates[ First /@ Keys @ mat ];
-   bdy = Partition[ Values @ mat, Length @ row ];
-   cnt = Map[Length] @ Catenate @ First @ bdy;
-   {row, col} = matrixHeaders[row, cnt];
-   
-   bdy = ArrayFlatten @ bdy;
-   bdy = ArrayFlatten[{
-       { {{title}}, row },
-       { col, bdy }
-      }];
-
-   (* Dividers *)
-   cnt = 2 + Accumulate @ cnt;
-   cnt = Thread[Rule[Most@cnt, Dashed]];
-   
-   Grid[
-     bdy,
-     opts,
-     Frame -> True,
-     Alignment -> Center,
-     Dividers -> {
-       {2 -> True, Sequence @@ cnt},
-       {2 -> True, Sequence @@ cnt}
-      }
-    ]
-  ]
-
-Format @ FockMatrixForm[
-  mat:Association[({___} -> _?MatrixQ)..],
-  title_String:"",
-  opts___?OptionQ
- ] := Module[
-   { bdy = Values @ mat,
-     cnt = Length /@ Values @ mat,
-     row, col },
-   {row, col} = matrixHeaders[ Keys @ mat, cnt ];
-
-   bdy = CirclePlus @@ bdy;
-   bdy = ArrayFlatten @ {{{{title}}, row}, {col, bdy}};
-   
-   (* Dividers *)
-   cnt = 2 + Accumulate @ cnt;
-   cnt = Thread[Rule[Most@cnt, Dashed]];
-
-   Grid[
-     bdy,
-     opts,
-     Frame -> True,
-     Alignment -> Center,
-     Dividers -> {
-       {2 -> True, Sequence @@ cnt},
-       {2 -> True, Sequence @@ cnt}
-      }
-    ]
-  ]
-
-matrixHeaders[qnn:{{___}..}, cnt:{___Integer}] := Module[
-  {row, col},
-  row = List @ Catenate @ MapThread[
-    PadRight[{#1}, #2, SpanFromLeft]&,
-    {qnn, cnt}
-   ];
-  col = Transpose @ (row /. SpanFromLeft -> SpanFromAbove);
-  {row, col}
- ]
-
-
 (**** <Matrix> ****)
 
-(* Matrix for Fermions *)
+(* for Fermions *)
 
 TheMatrix[ _?FermionQ ] := SparseArray[{1,2} -> 1, {2, 2}]
 
@@ -2097,7 +1959,7 @@ TheMatrix[ Ket @ Association[_?FermionQ -> n:(0|1)] ] :=
   SparseArray[n+1 -> 1, 2]
 
 
-(* Matrix for Bosons *)
+(* for Bosons *)
 
 TheMatrix[ a_?BosonQ ] := Module[
   { nn, ii, jj, rr },
@@ -2260,7 +2122,7 @@ FermionBasis[{cc__?FermionQ}, OptionsPattern[]] := Module[
   qn = StringJoin @ If[ListQ @ qn, Sort @ qn, {qn}];
   
   name = StringJoin[Context @ name, "basis", rep, qn];
-  If[NameQ @ name, Symbol[name][cc], {{} -> {}}]
+  If[NameQ @ name, Symbol[name][cc], Association[{} -> {}]]
  ]
 
 

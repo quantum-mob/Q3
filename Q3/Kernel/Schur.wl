@@ -23,10 +23,6 @@ BeginPackage["Q3`"];
 
 { SchurBasisQ, SchurBasis, NextSchurLabels, GelfandAttach };
 
-(**** Obsoletes ****)
-
-{ CountWeylTableaux }; (* renamed *)
-
 Begin["`Private`"]
 
 WeylType::usage = "WeylType[tb] returns the content of Weyl tableau tb.\nThe content of a Weyl tableau is the inversely sorted list of multiplicities of numbers (or letters) appearing in the tableau.\nSimilar to WeylContents."
@@ -238,11 +234,6 @@ WeylTableauCount[shape_?YoungShapeQ, d_Integer] := Module[
     (Flatten @ Table[j - i, {i, 1, d}, {j, i+1, d}]);
   vv / mm
  ]
-
-CountWeylTableaux[args__] := (
-  Message[Q3General::renamed, "CountWeylTableaux", "WeylTableauCount"];
-  WeylTableauCount[args]
- )
 
 (**** </WeylTableaux> ****)
 

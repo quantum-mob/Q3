@@ -43,15 +43,6 @@ BeginPackage["Q3`"]
 
 { TheQuditKet };
 
-(* Obsolete Symbols *)
-
-{ VerifyOracle }; (* excised *)
-
-{ ControlledU }; (* renamed *)
-{ QuissoAdd, QuissoAddZ }; (* renamed *)
-
-{ Dirac }; (* OBSOLETE *)
-
 
 Begin["`Private`"]
 
@@ -659,18 +650,6 @@ PauliForm[expr_] := expr /. { op_Pauli :> PauliForm[op] }
 (**** </PauliForm> ****)
 
 
-(**** <Dirac> ****)
-
-Dirac::usage = "Dirac is OBSOLETE. Instead, use Dyad."
-
-Dirac[expr__] := (
-  Message[Q3General::obsolete, Dirac, Dyad];
-  Dyad[expr]
- )
-
-(**** </Dirac> ****)
-
-
 (**** <Parity for Qubits> ****)
 
 Parity[S_?QubitQ] := S[3]
@@ -797,21 +776,6 @@ theQubitAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
    ];
   Association[ {S, Sz} -> new ]
  ]
-
-
-QuissoAdd::usage = "QuissoAdd has been renamed QubitAdd."
-
-QuissoAdd[args__] := (
-  Message[Q3General::renamed, "QuissoAdd", "QubitAdd"];
-  QubitAdd[args]
- )
-
-QuissoAddZ::usage = "QuissoAddZ has been renamed QubitAddZ."
-
-QuissoAddZ[args__] := (
-  Message[Q3General::renamed, "QuissoAddZ", "QubitAddZ"];
-  QubitAddZ[args]
- )
 
 (**** </QubitAdd> ****)
 
@@ -1066,20 +1030,6 @@ Swap /:
 Expand @ Swap[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
   CNOT[s, t], CNOT[t, s], CNOT[s, t]
  ]
-
-(*
-Swap /:
-Multiply[pre___, op_Swap, post___] :=
-  Multiply[pre, Elaborate[op], post]
- *)
-
-
-SWAP::usage = "SWAP has been renamed Swap."
-
-SWAP[args__] := (
-  Message[Q3General::renamed, SWAP, Swap];
-  Swap[args]
- )
 
 (**** </Swap> ****)
 
@@ -1388,18 +1338,6 @@ Multiply[ pre___,
   Multiply[pre, Elaborate[op], post]
 (* NOTE: DO NOT put "ControlledGate /:". Otherwise, the above rule with
    ControlledGate[...]**Ket[] is overridden. *)
-
-
-ControlledU::usage = "ControlledU[...] is obsolete. Use Elaborate[ControlledGate[...]] instead."
-
-ControlledU[args___] := (
-  Message[
-    Q3General::obsolete,
-    "ControlledU",
-    "Elaborate[ControlledGate[...]]"
-   ];
-  Elaborate @ ControlledGate[args]
- )
 
 (**** </ControlledGate> ****)
 
@@ -1838,11 +1776,6 @@ Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
    ];
   Total @ KeyValueMap[CircleTimes[#2, #1]&, bb]
  ]
-
-
-VerifyOracle::usage = "VerifyOracle has been excises since Q3 v2.12.1."
-
-VerifyOracle[args___] := Message[Q3General::excised, "VerifyOracle"]
 
 (**** </Oracle> ****)
 
