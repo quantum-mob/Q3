@@ -133,7 +133,7 @@ qvCircuitOperate[op_Measurement, post___] :=
 
 qvCircuitOperate[op:Except[_Measurement]..] :=
   Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1, {op} ]
-(* NOtE: This is another method:
+(* NOtE: One can use Elaborate @ {op} as follows:
    Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate @ {op} ]
    However, this cannot take the advantange of op ** Ket[...]. *)
 
@@ -459,8 +459,8 @@ ParseGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
   Gate[Thread[{a, b} -> {1, 1}], {c}, "TargetShape" -> "CirclePlus"]
 
 
-ParseGate[ CZ[c_?QubitQ, t_?QubitQ], ___?OptionQ ] :=
-  Gate[{c}, {t}, "ControlShape" -> "Dot", "TargetShape" -> "Dot"]
+ParseGate[ CZ[ss:{__?QubitQ}], ___?OptionQ ] :=
+  Gate[Most @ ss, {Last @ ss}, "ControlShape" -> "Dot", "TargetShape" -> "Dot"]
 
 ParseGate[ Swap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
   Gate[ {c}, {t},

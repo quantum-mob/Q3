@@ -2,6 +2,8 @@
 
 ## 3.3.1
 
+- Performance enhancement for CNOT, CZ and Swap when acting on Ket, Bra, and Dyad.
+- The usage of CZ has been changed.
 - More information about the process in PlaybookTools.
 - Experimental built-in functions BlockDiagonalMatrix and PermtuationMatrix are kept in Abel.
 - All renamed, obsolete, excised symbols are moved to Einstein.

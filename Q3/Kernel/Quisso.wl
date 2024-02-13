@@ -10,7 +10,7 @@ BeginPackage["Q3`"]
 
 { Rotation, EulerRotation, Phase };
 
-{ ControlledGate, CNOT, CX = CNOT, CZ, Swap, iSwap,
+{ ControlledGate, CNOT, CX = CNOT, CZ, CY, Swap, iSwap,
   Toffoli, Fredkin, Deutsch };
 
 { ControlledExp = ControlledPower, ActOn };
@@ -954,8 +954,22 @@ Multiply[pre___, CNOT[cc:{__Rule}, tt_], in_Ket] := Module[
    ]
  ]
 
+CNOT /:
+Multiply[in_Bra, op_CNOT, post___] :=
+  Multiply[ Dagger[op ** Dagger[in]], post ]
+
+CNOT /:
+Multiply[pre___, op:CNOT[cc_List, tt_List], Dyad[a_Association, b_Association], post___] :=
+  Multiply[pre, op ** Ket[a], Bra[b], post] /; ContainsAll[Keys @ a, Join[Keys @ cc, tt]]
+
+CNOT /:
+Multiply[pre___, Dyad[a_Association, b_Association], op:CNOT[cc_List, tt_List], post___] :=
+  Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, Join[Keys @ cc, tt]]
+
+(*
 HoldPattern @ Multiply[pre___, op_CNOT, post___] :=
   Multiply[pre, Elaborate[op], post]
+  *)
 (* NOTE: DO NOT put "CNOT /:". *)
 
 CNOT /:
@@ -970,9 +984,9 @@ Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Times @@ Dimension @ ss]
 
 (**** <CZ> ****)
 
-CZ::usage = "CZ[C, T] represents the controlled-Z gate on the two qubits associated with C and T. C and T are the control and target qubits, respectively; in fact, contol and target qubits are symmetric for this gate."
+CZ::usage = "CZ[{c1, c2, \[Ellipsis]}, t] represents the single-target controlled-Z gate with multiple control qubits {c1, c2, \[Ellipsis]} and a single target qubit t.\noCZ[{s1,s2,\[Ellipsis],sn}] is equivalent to CZ[{s1, s2, \[Ellipsis]}, sn]."
 
-SetAttributes[CZ, Listable]
+CZ::few = "CZ gate requires two or more qubits; `` is returned."
 
 CZ[c_?QubitQ, t_?QubitQ] := CZ[FlavorNone @ c, FlavorNone @ t] /;
   Not[FlavorNoneQ @ {c, t}]
@@ -980,17 +994,49 @@ CZ[c_?QubitQ, t_?QubitQ] := CZ[FlavorNone @ c, FlavorNone @ t] /;
 CZ /:
 Dagger[ op_CZ ] := op
 
-CZ /:
-Elaborate @ CZ[c_?QubitQ, t_?QubitQ] := Elaborate[
-  c[10] + c[11] ** t[3]
- ]
+CZ[a_?QubitQ, bb_?QubitQ] := CZ @ FlavorNone @ {a, bb}
+
+CZ[cc:{__?QubitQ}, t_?QubitQ] := CZ @ FlavorNone @ Append[cc, t]
+
+CZ[ss:{__?QubitQ}] := CZ[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+
+CZ[ss:{S_?QubitQ}] := ( Message[CZ::few, S[3]]; S[3] )
 
 CZ /:
-Multiply[pre___, op_CZ, post___] :=
-  Multiply[pre, Elaborate[op], post]
+Elaborate @ CZ[any___] := 1 (* fallback *)
+
+CZ /:
+Elaborate @ CZ[ss:{_?QubitQ, __?QubitQ}] := Garner @ With[
+  { n = Power[2, Length[ss]-1],
+    sub = Rest @ Subsets[Through[ss[3]]] },
+    (Multiply @@@ sub) . (2 * Mod[Length /@ sub, 2] - 1) / n + (n-1)/n
+]
 
 CZ /:
 Matrix[op_CZ, rest___] := Matrix[Elaborate[op], rest]
+
+
+(* NOTE: Multiply[..., CZ, ...] does NOT Elaborate CZ automatically because
+   Elaborate[CZ] cannot take advantage of the simplicity of CZ[...] ** Ket
+   [...]. *)
+CZ /:
+Multiply[pre___, CZ[ss:{__?QubitQ}], Ket[a_Association]] := (* performance booster *)
+  Switch[ Times @@ Lookup[a, ss],
+    1, -Ket[a],
+    _,  Ket[a]
+  ]
+
+CZ /:
+Multiply[in_Bra, op_CZ, post___] :=
+  Multiply[ Dagger[op ** Dagger[in]], post ]
+
+CZ /:
+Multiply[pre___, op:CZ[ss_List], Dyad[a_Association, b_Association], post___] :=
+  Multiply[pre, op ** Ket[a], Bra[b], post] /; ContainsAll[Keys @ a, ss]
+
+CZ /:
+Multiply[pre___, Dyad[a_Association, b_Association], op:CZ[ss_List], post___] :=
+  Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, ss]
 
 (**** </CZ> ****)
 
@@ -1018,18 +1064,31 @@ Elaborate @ Swap[x_?QubitQ, y_?QubitQ] := Module[
   { a = Most @ x,
     b = Most @ y },
   Garner[ (1 + a[1]**b[1] + a[2]**b[2] + a[3]**b[3]) / 2 ]
- ]
+]
+
+Swap /:
+Expand @ Swap[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+  CNOT[s, t], CNOT[t, s], CNOT[s, t]
+]
+
 
 Swap /:
 Multiply[pre___, Swap[s_?QubitQ, t_?QubitQ], Ket[a_Association]] :=
   Multiply[ pre,
     Ket @ KeySort @ Join[a, AssociationThread[{s, t} -> Lookup[a, {t, s}]]]
-   ]
+  ]
 
 Swap /:
-Expand @ Swap[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
-  CNOT[s, t], CNOT[t, s], CNOT[s, t]
- ]
+Multiply[in_Bra, op_Swap, post___] :=
+  Multiply[ Dagger[op ** Dagger[in]], post ]
+
+Swap /:
+Multiply[pre___, op:Swap[s_, t_], Dyad[a_Association, b_Association], post___] :=
+  Multiply[pre, op ** Ket[a], Bra[b], post] /; ContainsAll[Keys @ a, {s, t}]
+
+Swap /:
+Multiply[pre___, Dyad[a_Association, b_Association], op:Swap[s_, t_], post___] :=
+  Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, {s, t}]
 
 (**** </Swap> ****)
 
