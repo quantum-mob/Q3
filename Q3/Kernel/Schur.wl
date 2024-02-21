@@ -195,6 +195,8 @@ oldGelfandYoungPatterns[shape_?YoungShapeQ] := With[
 
 WeylTableauQ::usage = "WeylTableauQ[tb] yields True if tb represents a Weyl tableau (i.e., a semi-standard Young tableau) and False otherwise.\nSee also YoungTableauQ."
 
+WeylTableauQ[YoungTableau[data_List]] := WeylTableauQ[data]
+
 WeylTableauQ[{}] = True
 
 WeylTableauQ[tb_?anyYoungTableauQ] := TrueQ[
@@ -295,20 +297,23 @@ ToGelfandPattern[{}, 1] := { {0} }
 
 ToGelfandPattern[tb_?WeylTableauQ, 1] := { Length /@ tb }
 
-ToGelfandPattern[tb_?WeylTableauQ, n_Integer] := Prepend[
+ToGelfandPattern[tb_YoungTableau, n_Integer] :=
+  GelfandPattern @ ToGelfandPattern[First @ tb, n]
+
+ToGelfandPattern[tb_List?WeylTableauQ, n_Integer] := Prepend[
   ToGelfandPattern[YoungTrim @ DeleteCases[tb, n, {2}], n-1],
   PadRight[Length /@ tb, n]
- ]
+]
 
 ToGelfandPattern[tb_, _Integer] := (
   Message[ToGelfandPattern::notwt, tb];
   { {0} }
- )
+)
 
 ToGelfandPattern[tb_?WeylTableauQ] := (
   CheckArguments[ToGelfandPattern[tb], 2];
   ToGelfandPattern[tb, Max @ tb]
- )
+)
 
 (**** </ToGelfandPattern> ****)
 

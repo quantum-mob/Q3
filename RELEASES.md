@@ -2,7 +2,9 @@
 
 ## 3.3.1
 
-- Performance enhancement for CNOT, CZ and Swap when acting on Ket, Bra, and Dyad.
+- Several bug fixes concerning YoungShape, YoungTableau, GelfandPattern in YoungFourier, YoungNormalRepresentation, YoungFourierBasis, YoungRegularBasis, SpechtBasis, etc.
+- Performance enhancement for CNOT, CZ, Swap and QFT when acting on Ket, Bra, and Dyad.
+- Dagger[QFT[...]] is now handled by the new option "Parameter".
 - The usage of CZ has been changed.
 - More information about the process in PlaybookTools.
 - Experimental built-in functions BlockDiagonalMatrix and PermtuationMatrix are kept in Abel.

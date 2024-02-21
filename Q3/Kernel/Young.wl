@@ -111,11 +111,15 @@ FerrersDiagram[yt_YoungTableau] := FerrersDiagram[YoungShape @ yt]
 
 YoungShapeQ::usage="YoungShapeQ[shape] returns True if and only if shape is an integer partition, arranged in non-increasing order.\nA Young shape defines a Young diagram."
 
+YoungShapeQ[YoungShape[data_List]] := YoungShapeQ[data]
+
 YoungShapeQ[_] = False
 
 YoungShapeQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
 (* NOTE: Must allow 0 since some functions uses 0 in shape specification. *)
 
+
+(**** <YoungTrim> ****)
 
 YoungTrim::usage="YoungTrim[shape] trims trailing zeros from shape.\nYoungTrim[tbl] trims trailing {}s from Young tableau tbl."
 
@@ -127,6 +131,8 @@ YoungTrim[{any___List, {}...}] := {any}
 YoungTrim[YoungShape[data_]] := YoungShape[YoungTrim @ data]
 
 YoungTrim[{any___, 0...}] := {any}
+
+(**** </YoungTrim> ****)
 
 
 YoungTranspose::usage = "YoungTranspose[shape] reflects a partition 'shape' along the main diagonal.\nTransposeTableau[tb] reflects a standard Young tableau 'tb' along the main diagonal, creating a different tableau."
@@ -757,7 +763,7 @@ KetPermute[Ket[{yt_YoungTableau}], cc_Cycles] :=
 KetPermute[Ket[{yt_YoungTableau}], perm_?PermutationListQ] :=
   Garner @ Fold[KetPermute, Ket @ {yt}, AdjacentTranspositions @ perm]
 
-KetPermute[Ket[yy:{_YoungTableau, __?YoungTableau}], cc_] :=
+KetPermute[Ket[yy:{_YoungTableau, __YoungTableau}], cc_] :=
   CircleTimes @@ Map[KetPermute[#, cc]&, Ket /@ List /@ yy]
 
 (* for Pauli Kets *)
@@ -1049,7 +1055,7 @@ YoungInvariantBasis[bs:{Ket[__?YoungTableauQ] ..}] := Module[
 
 SpechtBasis::usage = "SpechtBasis[n] or SpechtBasis[SymmetricGroup[n]] constructs the bases of the Specht modules of the symmetric group of degree n.\nSpechtBasis[shape] returns the basis of the Specht module corresponding to Young shape shape." 
 
-SpechtBasis[shape_?YoungShapeQ] := Ket /@ List /@ YoungTableaux[shape]
+SpechtBasis[shape_YoungShape] := Ket /@ List /@ YoungTableaux[shape]
 (* NOTE: Since v3.0, YoungTableaux is now based on GelfandYoungPatterns and
    is already consistent with SchurBasis. *)
 (* Ket /@ ToYoungTableau /@ GelfandYoungPatterns[shape] *)
@@ -1061,7 +1067,7 @@ SpechtBasis[shape_?YoungShapeQ] := Ket /@ List /@ YoungTableaux[shape]
 SpechtBasis[SymmetricGroup[n_Integer]] := SpechtBasis[n]
 
 SpechtBasis[n_Integer] := With[
-  { pp = IntegerPartitions[n] },
+  { pp = YoungShapes[n] },
   AssociationThread[pp -> SpechtBasis /@ pp]
  ]
 

@@ -1969,7 +1969,7 @@ TheMatrix @ Pauli[nn_List] := ThePauli @ nn
 
 (**** <Matrix> ****)
 
-Matrix::usage = "Matrix[expr, {a1, a2, ...}] constructs the matrix representation of the expression expr on the total system consisting of a1, a2, ....\nMatrix[expr] feagures out the subsystems involved in expr."
+Matrix::usage = "Matrix[expr, {a1, a2, ...}] constructs the matrix representation of the expression expr on the total system consisting of a1, a2, ....\nMatrix[expr] feagures out the subsystems involved in expr.\nMatrix[dyadic, {a1, a2, \[Ellipsis]}, {b1, b2, \[Ellipsis]}] is for the dyadic expression acting on {a1, a2, ...} from the right and on {b1, b2, ...} from the left."
 
 Matrix::rmndr = "There remain some elements, ``, that are not specified for matrix representation."
 

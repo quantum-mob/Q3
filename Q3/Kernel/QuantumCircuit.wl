@@ -579,16 +579,11 @@ ParseGate @
 ParseGate[QFT[qq:{__?QubitQ}, opts___?OptionQ], more__?OptionQ] :=
   ParseGate @ QFT[qq, more, opts]
 
-ParseGate[QFT[qq:{__?QubitQ}, opts___?OptionQ]] :=
-  Gate[qq, opts, "Label" -> "QFT", "LabelAngle" -> Pi/2]
-
-ParseGate[
-  HoldPattern @ Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ],
-  more__?OptionQ
- ] := ParseGate @ Dagger @ QFT[qq, opts, more]
-
-ParseGate[HoldPattern @ Dagger @ QFT[qq:{__?QubitQ}, opts___?OptionQ]] :=
-  Gate[qq, opts, "Label" -> SuperDagger["QFT"], "LabelAngle" -> Pi/2]
+ParseGate[op:QFT[qq:{__?QubitQ}, opts___?OptionQ]] := Gate[ qq, 
+  "Label" -> gateLabel[op],
+  Sequence @@ FilterRules[{opts}, Options @ Gate],
+  "LabelAngle" -> Pi/2
+]
 
 
 ParseGate[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
@@ -654,6 +649,14 @@ gateLabel @ ControlledPower[_, _, OptionsPattern[]] := With[
     {First @ lbl, Superscript[Last @ lbl, First @ lbl]}
    ]
  ]
+
+
+gateLabel @ QFT[ss_List, opts___?OptionQ] := 
+  Switch[ OptionValue[{QFT, Gate}, opts, "Parameter"],
+    -1, SuperDagger["QFT"],
+    1, "QFT",
+    _, "DFT"
+  ]
 
 (**** </gateLabel> *****)
 
