@@ -433,12 +433,12 @@ seaQ::usage = "seaQ[c[i,j,...]] returns True if Vacuum[c] is \"Sea\" and the Fla
 seaQ[ HoldPattern @ Dagger[op_?FermionQ] ] := seaQ[op]
 
 seaQ[ c_Symbol?FermionQ ] := (
-  Message[Vacuum::flavor, {}, c, Spin[c], Vacuum[c]];
+  If[ Spin[c] > 0, Message[Vacuum::flavor, {}, c, Spin[c], Vacuum[c]] ];
   Return[False]
 )
 (* NOTE: For any species c, c[] is automatically converted to c. *)
 
-seaQ[ op:c_Symbol?FermionQ[j___] ] := (
+seaQ[ op:c_Symbol?FermionQ[j__] ] := (
   If[ Vacuum[op] =!= Vacuum[c],
     Message[Vacuum::flavor, {j}, c, Spin[c], Vacuum[c]]
   ];
@@ -1491,12 +1491,16 @@ Displacement /:
 Dagger @ Displacement[z_?CommutativeQ, a_?BosonQ] :=
   Displacement[-z, a]
 
+
+Displacement[a_?ParticleQ -> z_] := Displacement[z, a]
+
+
 Displacement[0, _?BosonQ] = 1
 
 Displacement[z_, op:{__?BosonQ}] :=
   Displacement @@@ Thread[{z, op}]
 
-Displacement[zz_List, a_?BosonQ] := Displacement @@@ Thread[{zz,a}]
+Displacement[zz_List, a_?BosonQ] := Displacement @@@ Thread[{zz, a}]
 
 
 HoldPattern @ Multiply[pre___,
@@ -1531,13 +1535,12 @@ HoldPattern @ Multiply[pre___,
   Multiply[pre, CoherentState[CoherentState @ vv, a -> vv[a]+z], post]
 
 
-(* For Fermion,
-   D(z) := Exp[ -z ** Dagger[c] + c ** Conjugate[z] ] *)
-
+(* For Fermion *)
+(* D(z) := Exp[ -z ** Dagger[c] + c ** Conjugate[z] ] *)
 Displacement[z_?AnyGrassmannQ, c_?FermionQ] := Multiply[
   1 - z ** Dagger[c],
   1 + c ** Conjugate[z],
-  1 + z ** Conjugate[z] / 2
+  1 - Conjugate[z] ** z / 2
  ]
 
 (**** </Displacement> ****)
@@ -1545,16 +1548,18 @@ Displacement[z_?AnyGrassmannQ, c_?FermionQ] := Multiply[
 
 (**** <CoherentState> ****)
 
-CoherentState::usage = "CoherentState[c[k]->z] = Ket[c[k]->z] gives the coherent state of the operator c[k].  CoherentState is normalized to 1.  It is actually a place holder, but using Elaborate, you can represent it explicitly in terms of the creation and annihilation operator."
+CoherentState::usage = "CoherentState[c->z] represents the coherent state of the bosonic/fermionic mode c.\nCoherentState is normalized to 1.\nIt is actually a place holder, but using Elaborate, you can represent it explicitly in terms of the creation and annihilation operator."
 
 CoherentState::boson = "The resulting expression may have been truncated. Recall that coherent states of bosons involves infinitely many Fock states."
+
+Options[CoherentState] = {"Normalized" -> True}
 
 AddGarnerPatterns[_CoherentState]
 
 AddElaborationPatterns[_CoherentState]
 
 
-Format @ CoherentState[a_Association] :=
+Format @ CoherentState[a_Association, ___] :=
   Interpretation[Ket[a], CoherentState @ a]
 
 Format @ HoldPattern @ Dagger[v_CoherentState] :=
@@ -1562,69 +1567,82 @@ Format @ HoldPattern @ Dagger[v_CoherentState] :=
 
 
 CoherentState /:
-NonCommutativeQ[ CoherentState[_Association] ] = True
+NonCommutativeQ[ CoherentState[_Association, ___] ] = True
 
 CoherentState /:
-MultiplyKind[ CoherentState[_Association] ] = Ket
+MultiplyKind[ CoherentState[_Association, ___] ] = Ket
 
 CoherentState /:
-MultiplyGenus[ CoherentState[_Association] ] = "Ket"
-
-
-CoherentState /:
-HoldPattern @ toCatForm @ CoherentState[aa_Association] := Module[
-  { bb = KeySelect[aa, BosonQ],
-    ff = KeySelect[aa, FermionQ] },
-  bb = Exp @ Total[-Abs[Values @ bb]^2/2] * 
-    Apply[Multiply, KeyValueMap[MultiplyExp[#2*Dagger[#1]]&, bb]];
-  ff = Multiply @@ KeyValueMap[Displacement[#2, #1]&, ff];
-  ff ** bb ** Ket[Vacuum]
- ]
-
-
-CoherentState /:
-HoldPattern @ Elaborate @ CoherentState[aa_Association] := Module[
-  { bb = KeySelect[aa, BosonQ],
-    ff = KeySelect[aa, FermionQ] },
-  If[Length[bb] > 1, Message[CoherentState::boson]];
-  bb = Multiply @@ AssociationMap[theCoherentState, bb];
-  ff = Multiply @@ KeyValueMap[Displacement[#2, #1]&, ff];
-  bb ** ff ** Ket[<||>]
- ]
-
-theCoherentState[a_?BosonQ -> z_] := Exp[-Abs[z]^2 / 2] * With[
-  { nn = Range[Bottom @ a, Top @ a] },
-  Basis[a] . ( Power[z, nn] / Sqrt[Factorial @ nn] )
- ]
-
-
-Matrix[CoherentState[a_Association], ss:{__?SpeciesQ}] :=
-  CircleTimes @@ Map[theCoherentStateVector, Thread[ss -> Lookup[a, ss]]]
-
-theCoherentStateVector[a_?BosonQ -> z_] := Exp[-Abs[z]^2 / 2] * With[
-  { nn = Range[Bottom @ a, Top @ a] },
-  Dot[Power[z, nn] / Sqrt[Factorial @ nn], One @ Dimension @ a]
- ]
+MultiplyGenus[ CoherentState[_Association, ___] ] = "Ket"
 
 
 (*  Constructing CoherentState *)
 
 $coherentSpec = Alternatives[
-  _?BosonQ -> _?CommutativeQ,
-  _?FermionQ -> _?AnyGrassmannQ,
-  {__?BosonQ} -> _?CommutativeQ,
-  {__?BosonQ} -> {__?CommutativeQ},
-  {__?FermionQ} -> __?AnyGrassmannQ,
-  {__?FermionQ} -> {__?AnyGrassmannQ}
+  _?ParticleQ -> _,
+  {__?ParticleQ} -> _
+]
+
+CoherentState[spec:$coherentSpec.., Shortest[opts___?OptionQ]] :=
+  CoherentState[CoherentState[<||>], spec, opts]
+
+CoherentState[
+  CoherentState[aa_Association, more___],
+  spec:$coherentSpec..,
+  Shortest[opts___?OptionQ] 
+] := 
+  CoherentState[
+    KeySort @ Join[aa, Association @ Flatten @ KetRule @ {spec}],
+    opts, more
+  ]
+
+
+(* FockCat *)
+CoherentState /:
+toCatForm @ CoherentState[aa_Association, OptionsPattern[]] := Module[
+  { bb = KeySelect[aa, BosonQ],
+    ff = KeySelect[aa, FermionQ],
+    nn = 1 },
+  If[ OptionValue[CoherentState, "Normalized"],
+    nn = Values[ff];
+    nn = Apply[Multiply, 1 - Conjugate[nn] ** nn / 2];
+    nn *= Exp @ Total[ -Abs[Values @ bb]^2 / 2 ]
+  ]; 
+  bb = Multiply @@ KeyValueMap[MultiplyExp[#2*Dagger[#1]]&, bb];
+  ff = Multiply @@ KeyValueMap[(1 + Dagger[#1] ** #2)&, ff];
+  nn ** ff ** bb ** Ket[Vacuum]
  ]
 
-CoherentState[ op:$coherentSpec.. ] :=
-  CoherentState[ CoherentState[<||>], op ]
 
-CoherentState[ CoherentState[a_Association], op:$coherentSpec.. ] := Module[
-  { rules = Flatten @ KetRule @ {op} },
-  CoherentState @ KeySort @ Join[a, Association @ rules]
- ]
+CoherentState /:
+Elaborate[any_CoherentState] := any (* fallback *)
+
+CoherentState /:
+Elaborate[v:CoherentState[_Association, ___?OptionQ]] :=
+  Elaborate[FockKet @ FockCat @ v]
+
+
+CoherentState /:
+Matrix[CoherentState[aa_Association, OptionsPattern[]], ss:{__?SpeciesQ}] := 
+  Module[
+    { nn = 1 },
+    If[ OptionValue[CoherentState, "Normalized"],
+      nn = Values @ KeySelect[aa, FermionQ];
+      nn = Apply[Multiply, 1 - Conjugate[nn] ** nn / 2];
+      nn *= Exp @ Total[ -Abs[Values @ KeySelect[aa, BosonQ]]^2 / 2 ]
+    ]; 
+    nn ** MatrixEmbed[
+      CircleTimes @@ AssociationMap[csVector, aa],
+      Keys[aa], ss
+    ]  
+  ]
+
+csVector[c_?FermionQ -> g_] := {1, g}
+
+csVector[a_?BosonQ -> z_] := With[
+  { kk = Range[Bottom @ a, Top @ a] },
+  Power[z, kk] / Sqrt[Factorial @ kk]
+]
 
 
 (* Hermitian product between CoherentStates *)

@@ -1370,20 +1370,29 @@ CoefficientTensor[expr_, ops:{__?AnySpeciesQ}.., Times] := Module[
  ]
 
 
+(**** <MultiplyPower> ****)
+
 MultiplyPower::usage = "MultiplyPower[expr, i] raises an expression to the i-th
 power using the non-commutative multiplication Multiply."
 
 SetAttributes[MultiplyPower, {Listable, ReadProtected}];
 
+(* Put this definition earlier than the general rule. *)
+MultiplyPower[Sqrt[op_], n_Integer?EvenQ] := MultiplyPower[op, n / 2]
+
+
 MultiplyPower[op_, 0] = 1
 
-MultiplyPower[op_, 1] := op
+MultiplyPower[op_, 1] = op
 
 MultiplyPower[op_, n_Integer] := Multiply[MultiplyPower[op, n-1], op] /; n > 1
-(* NOTE: Recursive calculation as it makes better use of Mathematica's caching
+(* NOTE: Recursive calculation makes better use of Mathematica's caching
    capabilities! *)
 
+(* Put this definition at the last. *)
 MultiplyPower[z_?CommutativeQ, n_] := Power[z, n]
+
+(**** </MultiplyPower> ****)
 
 
 MultiplyDot::usage = "MultiplyDot[a, b, \[Ellipsis]] returns the products of vectors, matrices, and tensors of Species.\nMultiplyDot is a non-commutative equivalent to the native Dot with Times replaced with Multiply"
@@ -1706,11 +1715,9 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
   { ss = Agents[expr],
     mm },
   mm = Matrix[expr, ss];
-  Elaborate @ ExpressionFor[MatrixExp[mm], ss]
- ] /; ContainsOnly[
-   MultiplyKind @ Agents[expr],
-   {Qubit, Qudit, Spin}
-  ]
+  Elaborate @ ExpressionFor[MatrixExp[mm], ss] /;
+    ContainsOnly[MultiplyKind @ ss, {Qubit, Qudit, Spin}]
+]
 (* NOTE: In principle, it can handle fermions as well. But fermions have been
    excluded here because the method of converting first to matrix and back to
    operator expression is slow for fermions due to the requirement of the

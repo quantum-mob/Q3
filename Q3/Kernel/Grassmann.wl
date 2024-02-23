@@ -2,7 +2,7 @@
 (* Many features in this file were adopted from a package by M. Headrick (April 2003). *)
 BeginPackage["Q3`"]
 
-{ Let, Grassmann, GrassmannQ, AnyGrassmannQ };
+{ Grassmann, GrassmannQ, AnyGrassmannQ };
 { GD, GIntegrate };
 { GrassmannGrade }
 
@@ -60,7 +60,7 @@ Multiply /:
 HoldPattern @ Conjugate[ Multiply[ops__?AnyGrassmannQ] ] :=
   Multiply @@ Reverse[Conjugate @ {ops}]
 
-Dagger[ z_?GrassmannQ ] := Conjugate[z]
+Dagger[ z_?AnyGrassmannQ ] := Conjugate[z]
 
 Tee[ z_?GrassmannQ ] := z
 

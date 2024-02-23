@@ -786,7 +786,7 @@ MakeBoxes[expr:Ket[v_Association], StandardForm|TraditionalForm] := With[
   InterpretationBox[box, expr]
  ]
 
-Format[Ket[Vacuum]] := Interpretation[Ket @ {Any}, Ket[Vacuum]]
+Format[Ket[Vacuum]] := Interpretation[Ket @ {"\[CupCap]"}, Ket[Vacuum]]
 
 Format[Ket[{}]] := Interpretation[Ket @ {Any}, Ket[{}]]
 
@@ -2485,7 +2485,9 @@ ParityValue[v_Bra, spec:(_?SpeciesQ|{___?SpeciesQ})] :=
 ParityValue[v_Ket, ss:{__?SpeciesQ}] :=
   Multiply @@ Map[ParityValue[v, #]&, ss]
 
-ParityValue[Ket[<||>], {}] := 1
+ParityValue[Ket[<||>], {}] = 1
+
+ParityValue[Ket[Vacuum], {}] = 1
 
 
 ParityEvenQ::usage = "ParityEvenQ[state_, {a, b, ...}] returns True if state (in a Ket expression) has a definite Even parity with respect to the systems a, b, .... Otherwise, False is returned.\nParityEvenQ[state] first finds all systems involved and tests the parity."
@@ -4188,47 +4190,75 @@ MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
   MatrixEmbed[FlavorNone @ ss, FlavorNone @ tt] /;
   Not[FlavorNoneQ @ Join[ss, tt]]
 
-MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
-  MatrixEmbed[mat, FlavorNone @ ss, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ Join[ss, tt]]
+MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}][any_] :=
+  MatrixEmbed[any, ss, tt]
 
-MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}][mat_?MatrixQ] :=
-  MatrixEmbed[mat, ss, tt]
+MatrixEmbed[any_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+  MatrixEmbed[any, FlavorNone @ ss, FlavorNone @ tt] /;
+  Not[FlavorNoneQ @ Join[ss, tt]]
 
 MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
-    new, jdx },
+    new, idx },
   new = CircleTimes[mat, One[Times @@ Dimension @ rmd]];
-  jdx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
+  idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
   TensorFlatten @ Transpose[
     Tensorize[new, Riffle @@ Table[Dimension @ Join[ss, rmd], 2]],
-    Riffle[2*jdx - 1, 2*jdx]
-   ]
- ] /; ContainsAll[tt, ss]
+    Riffle[2*idx - 1, 2*idx]
+  ]
+] /; ContainsAll[tt, ss]
 
-MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+MatrixEmbed[vec_?VectorQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
+  { rmd = Complement[tt, ss],
+    new, idx },
+  new = CircleTimes[vec, UnitVector[Times @@ Dimension @ rmd, 1]];
+  idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
+  Flatten @ Transpose[
+    ArrayReshape[new, Dimension @ Join[ss, rmd]],
+    idx
+  ]
+] /; ContainsAll[tt, ss]
+
+MatrixEmbed[_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
   Message[MatrixEmbed::rmdr, ss, tt]
+
 
 MatrixEmbed[kk:{__Integer}, n_Integer] :=
   MatrixEmbed[kk, Table[2, n]]
 
-MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, n_Integer] :=
-  MatrixEmbed[mat, kk, Table[2, n]]
+MatrixEmbed[kk:{__Integer}, dd:{__Integer}][any_] :=
+  MatrixEmbed[any, kk, dd]
 
-MatrixEmbed[kk:{__Integer}, dd:{__Integer}][mat_?MatrixQ] :=
-  MatrixEmbed[mat, kk, dd]
+
+MatrixEmbed[any_, kk:{__Integer}, n_Integer] :=
+  MatrixEmbed[any, kk, Table[2, n]]
 
 MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
-    rmd, new, jdx },
+    rmd, new, idx },
   rmd = Complement[all, kk];
   new = CircleTimes[mat, One[Times @@ Part[dd, rmd]]];
-  jdx = PermutationList @ FindPermutation[Join[kk, rmd], all];
+  idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
   TensorFlatten @ Transpose[
     Tensorize[new, Riffle @@ Table[Part[dd, Join[kk, rmd]], 2]],
-    Riffle[2*jdx - 1, 2*jdx]
-   ]
- ] /; And @@ Thread[kk <= Length[dd]]
+    Riffle[2*idx - 1, 2*idx]
+  ]
+] /; And @@ Thread[kk <= Length[dd]]
+
+MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
+  { all = Range @ Length @ dd,
+    rmd, new, idx },
+  rmd = Complement[all, kk];
+  new = CircleTimes[vec, UnitVector[Times @@ Part[dd, rmd], 1]];
+  idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
+  Flatten @ Transpose[
+    ArrayReshape[new, Part[dd, Join[kk, rmd]]],
+    idx
+  ]
+] /; And @@ Thread[kk <= Length[dd]]
+
+MatrixEmbed[_, kk:{__Integer}, dd:{__Integer}] :=
+  Message[MatrixEmbed::rmdr, kk, Range @ Length @ tt]
 
 (**** </MatrixEmbed> ****)
 
