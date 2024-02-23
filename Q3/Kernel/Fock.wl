@@ -1563,7 +1563,7 @@ Format @ CoherentState[a_Association, ___] :=
   Interpretation[Ket[a], CoherentState @ a]
 
 Format @ HoldPattern @ Dagger[v_CoherentState] :=
-  Interpretation[Bra @@ v, Dagger @ v]
+  Interpretation[Bra[First @ v], Dagger @ v]
 
 
 CoherentState /:
@@ -1576,7 +1576,7 @@ CoherentState /:
 MultiplyGenus[ CoherentState[_Association, ___] ] = "Ket"
 
 
-(*  Constructing CoherentState *)
+(* Constructing CoherentState *)
 
 $coherentSpec = Alternatives[
   _?ParticleQ -> _,
@@ -1597,22 +1597,47 @@ CoherentState[
   ]
 
 
+(* The norm *)
+CoherentState /:
+KetNorm @ CoherentState[aa_Association, OptionsPattern[]] :=
+  If[ OptionValue[CoherentState, "Normalized"], 1,
+    Module[
+      { nn },
+      nn = Values @ KeySelect[aa, FermionQ];
+      nn = Apply[Multiply, 1 + Conjugate[nn] ** nn / 2];
+      nn *= Exp @ Total[ Abs[Values @ KeySelect[aa, BosonQ]]^2 / 2 ]
+    ]
+  ]
+
+(* The normalization factor *)
+(* NOTE: Because of the fermion part, it is not possible to use the norm in the above. *)
+csNormFactor @ CoherentState[aa_Association, OptionsPattern[]] :=
+  If[ OptionValue[CoherentState, "Normalized"],
+    Module[
+      { nn },
+      nn = Values @ KeySelect[aa, FermionQ];
+      nn = Apply[Multiply, 1 - Conjugate[nn] ** nn / 2];
+      nn *= Exp @ Total[ -Abs[Values @ KeySelect[aa, BosonQ]]^2 / 2 ]
+    ],
+    1
+  ]
+
+csNormFactor[aa_Association, opts___?OptionQ] := 
+  csNormFactor @ CoherentState[aa, opts]
+
+
 (* FockCat *)
 CoherentState /:
-toCatForm @ CoherentState[aa_Association, OptionsPattern[]] := Module[
+toCatForm @ CoherentState[aa_Association, opts:OptionsPattern[]] := Module[
   { bb = KeySelect[aa, BosonQ],
     ff = KeySelect[aa, FermionQ],
-    nn = 1 },
-  If[ OptionValue[CoherentState, "Normalized"],
-    nn = Values[ff];
-    nn = Apply[Multiply, 1 - Conjugate[nn] ** nn / 2];
-    nn *= Exp @ Total[ -Abs[Values @ bb]^2 / 2 ]
-  ]; 
+    nn = csNormFactor[aa, opts] },
   bb = Multiply @@ KeyValueMap[MultiplyExp[#2*Dagger[#1]]&, bb];
   ff = Multiply @@ KeyValueMap[(1 + Dagger[#1] ** #2)&, ff];
   nn ** ff ** bb ** Ket[Vacuum]
  ]
 
+(* Elaborate *)
 
 CoherentState /:
 Elaborate[any_CoherentState] := any (* fallback *)
@@ -1622,20 +1647,13 @@ Elaborate[v:CoherentState[_Association, ___?OptionQ]] :=
   Elaborate[FockKet @ FockCat @ v]
 
 
+(* Matrix *)
+
 CoherentState /:
-Matrix[CoherentState[aa_Association, OptionsPattern[]], ss:{__?SpeciesQ}] := 
-  Module[
-    { nn = 1 },
-    If[ OptionValue[CoherentState, "Normalized"],
-      nn = Values @ KeySelect[aa, FermionQ];
-      nn = Apply[Multiply, 1 - Conjugate[nn] ** nn / 2];
-      nn *= Exp @ Total[ -Abs[Values @ KeySelect[aa, BosonQ]]^2 / 2 ]
-    ]; 
-    nn ** MatrixEmbed[
-      CircleTimes @@ AssociationMap[csVector, aa],
-      Keys[aa], ss
-    ]  
-  ]
+Matrix[ cs:CoherentState[aa_Association, ___], ss:{__?SpeciesQ} ] := 
+  MatrixEmbed[
+    CircleTimes @@ AssociationMap[csVector, aa],
+    Keys[aa], ss ] ** csNormFactor[cs]
 
 csVector[c_?FermionQ -> g_] := {1, g}
 
@@ -1647,19 +1665,26 @@ csVector[a_?BosonQ -> z_] := With[
 
 (* Hermitian product between CoherentStates *)
 
-CoherentState[ a:_Association, a ] := 1
+csBraKet[a_CoherentState, a_CoherentState] := MultiplyPower[KetNorm[a], 2]
 
-CoherentState[ a_Association, b_Association ] := Module[
-  { op = Union[ Keys @ a, Keys @ b ],
-    za, zb },
-  za = Lookup[a, op];
-  zb = Lookup[b, op];
-  Times @@ Exp[-Dagger[za]**za/2-Dagger[zb]**zb/2 + Dagger[za]**zb]
- ]
+csBraKet[a_CoherentState, b_CoherentState] := Module[
+  { ss = Union[Keys @ First @ a, Keys @ First @ b],
+    aa, bb },
+  aa = Lookup[First @ a, ss];
+  bb = Lookup[First @ b, ss];
+  Multiply[
+    csNormFactor @ a,
+    MultiplyDot[Dagger[aa], bb],
+    csNormFactor @ b
+  ]
+]
 
-HoldPattern @ Multiply[ x___,
-  Dagger[CoherentState[a_Association]], CoherentState[b_Association],
-  y___ ] := CoherentState[ a, b ] * Multiply[x, y]
+HoldPattern @ Multiply[
+  pre___,
+  Dagger[a_CoherentState], b_CoherentState,
+  post___ 
+] := 
+  csBraKet[a, b] * Multiply[pre, post]
 
 
 (* Op ** CoherentState[...] *)
