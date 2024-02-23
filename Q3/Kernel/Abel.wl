@@ -9,6 +9,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 { KeyGroupBy, CheckJoin };
 { PseudoDivide, ZeroQ };
 { CountsFor };
+{ IntegerParity };
 
 { Unless };
 
@@ -338,6 +339,19 @@ CountsFor[obj_List, var_List] :=
 (**** </CountsFor> ****)
 
 
+(**** <IntegerParity> ****)
+
+IntegerParity::usage = "IntegerParity[n] returns 1 if n is even and -1 if n is odd."
+
+SetAttributes[IntegerParity, Listable]
+
+IntegerParity[n_Integer] := 1 - 2*Mod[n, 2]
+
+(**** </IntegerParity> ****)
+
+
+(**** <Chain> ****)
+
 Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting a, b, \[Ellipsis] consecutively."
 
 Chain[] = {}
@@ -371,6 +385,8 @@ Chain[aa_List] := Chain @@ aa
 ChainBy::usage = "ChainBy[a, b, \[Ellipsis], func] constructs a chain of links connecting a, b, \[Ellipsis] consecutively with each link created by means of func."
 
 ChainBy[args___, func_] := func @@@ Chain[args]
+
+(**** </Chain> ****)
 
 
 GraphLocalComplement::usage = "GraphLocalComplement[g, v] gives the local complement of graph g according to vertex g.\nThe local complement of a graph g according to vertex v, denoted by g*v, is a graph that has the same vertices as g, but all the neighbors of of v are connected if and only if they are not connected in g."
@@ -888,7 +904,7 @@ Agents[expr_] :=
    not expanded by a single Normal. *)
 
 
-AgentQ::usage = "AgentQ[a] returns True if a is an Agent."
+AgentQ::usage = "AgentQ[a] returns True if a is an Agent.\nAngents include Qubit, Qudit, Fermioin, Boson, Heisenberg, and Spin."
 
 AgentQ[_] = False
 
@@ -1471,12 +1487,7 @@ $ElaborationPatterns = Association[
 (**** </Elaborate> ****)
 
 
-(**** <Multiply> ****)
-
-DistributableQ::usage = "DistributableQ[x, y, \[Ellipsis]] returns True if any of the arguments x, y, \[Ellipsis] has head of Plus."
-
-DistributableQ[args__] := Not @ MissingQ @ FirstCase[{args}, _Plus]
-
+(**** <MultiplyGenus> ****)
 
 MultiplyGenus::usage = "MultiplyGenus[op] returns the Genus of op, which may be a Species or related function.\nMultiplyGenus is a category class of Species and functions for Multiply that ranks above MultiplyKind. It affects how Multiply rearranges the non-commutative elements.\nMultiplyGenus is intended for internal use."
 
@@ -1500,6 +1511,15 @@ HoldPattern @ MultiplyGenus[ Dagger[any_] ] := "Bra" /;
 HoldPattern @ MultiplyGenus[ Dagger[any_] ] := "Ket" /;
   MultiplyGenus[any] == "Bra"
 
+(**** </MultiplyGenus> ****)
+
+
+DistributableQ::usage = "DistributableQ[x, y, \[Ellipsis]] returns True if any of the arguments x, y, \[Ellipsis] has head of Plus."
+
+DistributableQ[args__] := Not @ MissingQ @ FirstCase[{args}, _Plus]
+
+
+(**** <Multiply> ****)
 
 Multiply::usage = "Multiply[a, b, \[Ellipsis]] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[\[Ellipsis]], it does not have the attributes Flat and OneIdentity."
 
@@ -1557,10 +1577,10 @@ HoldPattern @ Multiply[ args__ ] := Garner[
  ] /; DistributableQ[args]
 
 HoldPattern @ Multiply[ pre___, z_?CommutativeQ, post___] :=
-  Garner[ z Multiply[pre, post] ];
+  Garner[ z * Multiply[pre, post] ];
 
 HoldPattern @ Multiply[ pre___, z_?CommutativeQ op_, post___] :=
-  Garner[ z Multiply[pre, op, post] ]
+  Garner[ z * Multiply[pre, op, post] ]
 
 HoldPattern @ Multiply[ pre___, Power[E, expr_], post___] :=
   Multiply[pre, MultiplyExp[expr], post]
@@ -1579,7 +1599,7 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
     bb },
   bb = Multiply @@@ aa;
   Multiply @@ bb
- ] /;
+] /;
   Not @ KindsOrderedQ @ {ops} /;
   Length[Union @ MultiplyGenus @ {ops}] > 1
 
@@ -1591,20 +1611,19 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
   bb * SignatureTo[
     Cases[ {ops}, _?AnticommutativeQ ],
     Cases[ Flatten @ aa, _?AnticommutativeQ ]
-   ]  
- ] /; Not @ KindsOrderedQ @ {ops}
+  ]  
+] /; Not @ KindsOrderedQ @ {ops}
+
 
 KindsOrderedQ[ops_List] := Module[
   { qq = MultiplyKind @ SplitBy[ops, MultiplyGenus] },
   AllTrue[qq, OrderedQ]
- ]
+]
 
 (**** </Multiply> ****)
 
 
-(* ****************************************************************** *)
-(* <Baker-Hausdorff Lemma: Simple Cases>                              *)
-(* ****************************************************************** *)
+(**** <Baker-Hausdorff Lemma: Simple Cases> ****)
 
 HoldPattern @
   Multiply[ pre___, MultiplyExp[a_], MultiplyExp[b_], post___ ] :=
@@ -1639,9 +1658,7 @@ HoldPattern @
    Exp[op] or MultiplyExp[op]. Commutators involving Exp[op] or
    MultiplyExp[op] usually takes long in vain. *)
 
-(* ****************************************************************** *)
-(* </Baker-Hausdorff Lemma>                                           *)
-(* ****************************************************************** *)
+(**** </Baker-Hausdorff Lemma: Simple Cases> ****)
 
 
 (**** <MultiplyExp> ****)
@@ -1865,7 +1882,8 @@ Protect[ Evaluate @ $symb ]
 End[]
 
 
-(* Section 2. Motifications to some built-in functions *)
+(**** Section 2. Motifications to some built-in functions ****)
+
 Begin["`Private`"]
 
 $symb = Unprotect[

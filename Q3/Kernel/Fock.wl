@@ -487,7 +487,7 @@ FermionQ[_] = False
 MajoranaQ[_] = False
 
 
-AnticommutativeQ[_?AnyFermionQ | _?MajoranaQ | _?GrassmannQ] = True
+AnticommutativeQ[_?AnyFermionQ | _?MajoranaQ | _?AnyGrassmannQ] = True
 
 AnticommutativeQ[_] = False
 
@@ -763,9 +763,7 @@ rulesBosonToHeisenberg[rr:({__?BosonQ} -> {__?HeisenbergQ})] :=
   Apply[ rulesBosonToHeisenberg, Thread[rr] ]
 
 
-(* **************************************************************** *)
-(*   <Conjugate>                                                    *)
-(* **************************************************************** *)
+(**** <Conjugate> ****)
 
 Dagger /:
 HoldPattern @ Conjugate @ Dagger[q_?FockOperatorQ] := Dagger[q]
@@ -779,9 +777,7 @@ HoldPattern @
    generalized too much, then it may results in, i.e., Conjugate[Ket[]]
    instead of <b|Dagger[op]|a>. *)
 
-(* **************************************************************** *)
-(*   </Conjugate>                                                    *)
-(* **************************************************************** *)
+(**** </Conjugate> ****)
 
 
 (*** DECLARE canonical commutation and anti-commutation relations ***)
@@ -1538,7 +1534,7 @@ HoldPattern @ Multiply[pre___,
 (* For Fermion,
    D(z) := Exp[ -z ** Dagger[c] + c ** Conjugate[z] ] *)
 
-Displacement[z_?GrassmannQ, c_?FermionQ] := Multiply[
+Displacement[z_?AnyGrassmannQ, c_?FermionQ] := Multiply[
   1 - z ** Dagger[c],
   1 + c ** Conjugate[z],
   1 + z ** Conjugate[z] / 2
@@ -1615,11 +1611,11 @@ theCoherentStateVector[a_?BosonQ -> z_] := Exp[-Abs[z]^2 / 2] * With[
 
 $coherentSpec = Alternatives[
   _?BosonQ -> _?CommutativeQ,
-  _?FermionQ -> _?GrassmannQ,
+  _?FermionQ -> _?AnyGrassmannQ,
   {__?BosonQ} -> _?CommutativeQ,
   {__?BosonQ} -> {__?CommutativeQ},
-  {__?FermionQ} -> __?GrassmannQ,
-  {__?FermionQ} -> {__?GrassmannQ}
+  {__?FermionQ} -> __?AnyGrassmannQ,
+  {__?FermionQ} -> {__?AnyGrassmannQ}
  ]
 
 CoherentState[ op:$coherentSpec.. ] :=
@@ -1921,15 +1917,6 @@ HoldPattern @
   Multiply[pre___, Bra[v_Association], op_?AnyHeisenbergQ, post___] :=
   Multiply[pre, Dagger @ Multiply[ Dagger[op], Ket[v] ], post]
 
-
-theFermiSignature::usage = "Returns the signature for adding to or removing from the Ket a FERMION at the position j."
-
-theFermiSignature[v_Association, c_?FermionQ] := Module[
-  { ff = SequenceSplit[Keys[v], {c, ___}] },
-  If[Length[ff] == 0, Return[1]];
-  1 - 2*Mod[Total @ Lookup[v, First @ ff], 2]
- ]
-
 (**** </Multiply> ****)
 
 
@@ -2018,7 +2005,7 @@ HoldPattern @
   Commutator[a, b] == 0
 
 
-ParityValue[v_Ket, a_?ParticleQ] := 1 - 2*Mod[v[a], 2]
+ParityValue[v_Ket, a_?ParticleQ] := IntegerParity[v[a]]
 
 ParityEvenQ[v_Ket, a_?ParticleQ] := EvenQ @ v @ a
 

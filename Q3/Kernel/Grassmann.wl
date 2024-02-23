@@ -11,6 +11,11 @@ Begin["`Private`"]
 
 $symbs = Unprotect[Power]
 
+
+(**** <Grassmann> ****)
+
+Grassmann::usage = "Grassmann refers to the generators of a Grassmann algebra."
+
 Grassmann /:
 Let[Grassmann, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
@@ -28,6 +33,10 @@ setGrassmann[x_Symbol] := (
   GrassmannGrade[x[___]] ^= 1;
  )
 
+(**** </Grassmann> ****)
+
+
+(**** <GrassmannQ> ****)
 
 GrassmannQ::usage = "GrassmannQ[z] returns True if z is a *generator* (but not a generic element) of the Grassmann algebra over complex numbers."
 
@@ -42,79 +51,102 @@ AnyGrassmannQ[ Conjugate[_?GrassmannQ] ] = True
 
 AnyGrassmannQ[_] = False
 
-
-HoldPattern @ Multiply[___, op_, op_, ___] := 0 /; GrassmannQ[op]
-
-HoldPattern @ Multiply[pre___, op___?GrassmannQ, post___] :=
-  Multiply[pre, Sequence @@ Sort @ {op}, post] Signature @ {op} /;
-  Not @ OrderedQ @ {op}
-
-HoldPattern @ Multiply[pre___, op_?GrassmannQ, v_Ket, post___] :=
-  Multiply[pre, v, op, post]
+(**** </GrassmannQ> ****)
 
 
-fieldQ::usage = "Grassmann`Private`fieldQ[z] returns True if z is a complex field over which the Grassmann algebra is defined."
-
-fieldQ[_?NumberQ] = True
-
-fieldQ[_?NumericQ] = True
-
-fieldQ[_?ComplexQ] = True
-
-
-Power[a_?GrassmannQ, n_Integer?NonNegative] := MultiplyPower[a, n]
-
-
-(*** Conjugate ***)
-
-(* By default, if z is a Grassmann generator, so is Conjugate[z]. *)
-GrassmannQ[ Conjugate[_?GrassmannQ] ] = True
+(**** <Conjugate> ****)
 
 Multiply /:
-HoldPattern @ Conjugate[ Multiply[a_?GrassmannQ, b__?GrassmannQ] ] :=
-  Multiply[ Conjugate[Multiply[b]], Conjugate[a] ]
-(* NOTE: Do not generalize it too much. For example, <a|op|b> is a complex
-   number and under Dagger switches to complex conjugation. If the above is
-   generalized too much, then it may results in, i.e., Conjugate[Ket[]]
-   instead of <b|Dagger[op]|a>. *)
+HoldPattern @ Conjugate[ Multiply[ops__?AnyGrassmannQ] ] :=
+  Multiply @@ Reverse[Conjugate @ {ops}]
 
 Dagger[ z_?GrassmannQ ] := Conjugate[z]
 
 Tee[ z_?GrassmannQ ] := z
 
+(**** </Conjugate> ****)
 
-(*** Differentiation and Integration ***)
 
-GD::usage="GD[z1, z2, ..., expr] for Grassmann variables z1, z2, ... is like D[expr, z1, z2, ...] for real variables z1, z2, .... Notice that the variable list comes before the integrand expression."
+Power[a_?GrassmannQ, n_Integer?NonNegative] := MultiplyPower[a, n]
 
-SetAttributes[GD, Listable]
 
-GD[a__?GrassmannQ, b_?GrassmannQ, expr_] := GD[a, GD[b,expr]]
+(**** <Multiply> ****)
 
-GD[a_, a_] /; GrassmannQ[a] = 1
+HoldPattern @ Multiply[___, op_?AnyGrassmannQ, op_?AnyGrassmannQ, ___] = 0
 
-GD[a_?GrassmannQ, expr_] /; FreeQ[expr,a] = 0
+HoldPattern @ 
+Multiply[pre___, a_?GrassmannQ, b:Conjugate[_?GrassmannQ], post___] :=
+  -Multiply[pre, b, a, post]
 
-GD[a_?GrassmannQ, expr_] /; GrassmannGrade[expr]==0  = 0
+HoldPattern @ Multiply[pre___, ops__?GrassmannQ, post___] :=
+  Multiply[pre, Sequence @@ ReverseSort @ {ops}, post] * Signature[Reverse @ {ops}] /;
+  Not @ OrderedQ @ Reverse @ {ops}
 
-GD[a_?GrassmannQ, b_+c_] := GD[a,b] + GD[a,c]
+HoldPattern @ Multiply[pre___, ops:Conjugate[_?GrassmannQ].., post___] :=
+  Multiply[pre, Sequence @@ Sort @ {ops}, post] * Signature[{ops}] /;
+  Not @ OrderedQ @ {ops}
 
-GD[a_?GrassmannQ, b_?fieldQ c_] := b GD[a,c]
 
-HoldPattern @ GD[a_?GrassmannQ, b_?GrassmannQ**c_?GrassmannQ] :=
-  GD[a,b]**c - b**GD[a,c]
+HoldPattern @ 
+  Multiply[pre___, op_?AnyGrassmannQ, v_Ket, post___] :=
+    ParityValue[v, Fermions @ v] * Multiply[pre, v, op, post]
 
-HoldPattern @ GD[a_?GrassmannQ, b_?GrassmannQ**c_?GrassmannQ**expr__] :=
-  GD[a,b]**c**expr - b**GD[a,c**expr]
-(* Note that the above two CANNOT be combined by GD[a_,b_**c_**expr___] *)
+HoldPattern @ 
+  Multiply[pre___, v_Bra, op_?AnyGrassmannQ, post___] :=
+    ParityValue[v, Fermions @ v] * Multiply[pre, op, v, post]
 
-(* GIntegrate -- the Grassmann integration *)
+(**** </Multiply> ****)
 
-GIntegrate::usage="GIntegrate[z1, z2, ..., expr] for Grassmann variables z1, z2, ... is like Integrate[expr, z1, z2, ...] for real variables z1, z2, .... Notice that the variable list comes before the integrand expression."
 
-GIntegrate[a_,b__] = GD[a,b]
+(**** <GD> ****)
 
-(*** GrassmannGrade ***)
+GD::usage="GD[expr, g] returns the Grassmann derivative of expr with respect to the Grassmann variable g.\nGD[expr, {g1, g2, \[Ellipsis]}] returns the derivative with respect to multiple Grassmann variables g1, g2, \[Ellipsis].\nGD[g] or GD[{g1, g2, \[Ellipsis]}] represents the operator form of GD acting on an expression."
+
+GD[gg_][expr_] := GD[expr, gg]
+
+
+GD[z_?CommutativeQ * expr_, gg_] := z * GD[expr, gg]
+
+GD[expr_Plus, gg_] := Map[GD[gg], expr]
+
+
+GD[expr_, gg:{__?AnyGrassmannQ}] /; 
+  AnyTrue[gg, FreeQ[expr, #, Heads -> False]&] = 0
+
+
+HoldPattern @ 
+GD[Multiply[ff__?AnyGrassmannQ], gg:{__?AnyGrassmannQ}] := With[
+  { ss = Supplement[{ff}, gg] },
+  SignatureTo[{ff}, Join[Reverse @ gg, ss]] * Apply[Multiply, ss]
+]
+
+GD[expr_, gg:{__?AnyGrassmannQ}] := Fold[GD, expr, Reverse @ gg]
+
+
+(* NOTE:  In general, GD[..., g] != GD[..., {g}]. *)
+HoldPattern @ 
+GD[op:Multiply[__?AnyGrassmannQ], g_?AnyGrassmannQ] := GD[op, {g}]
+
+GD[g_?AnyGrassmannQ, g_?AnyGrassmannQ] = 1
+
+GD[expr_, g_?AnyGrassmannQ] /; FreeQ[expr, g] = 0
+
+GD[a_?AnyGrassmannQ ** expr_, g_?AnyGrassmannQ] :=
+  GD[a, g] ** expr - a ** GD[expr, g]
+
+(**** </GD> ****)
+
+
+(**** <GIntegrate> ****)
+
+GIntegrate::usage="GIntegrate[expr, g] returns the Grassmann integration of expr with respect to the Grassmann variable g.\nGIntegrate[expr, {g1, g2, \[Ellipsis]}] returns the integration with respect to multiple Grassmann variables g1, g2, \[Ellipsis].\nGIntegrate[g] or GIntegrate[{g1, g2, \[Ellipsis]}] represents the operator form of GIntegrate acting on an expression."
+
+GIntegrate = GD
+
+(**** </GIntegrate> ****)
+
+
+(**** <GrassmannGrade> ****)
 
 GrassmannGrade::usage="GrassmannGrade[expr] returns a non-negative integer: 0, if expr is a pure boson, which can be multiplied using Times; positive and odd, if expr has fermionic statistics; or positive and even, if expr has bosonic statistics but involves Grassmann variables. Values of the function GrassmannGrade may also be defined explicitly; for example,
 
@@ -122,17 +154,22 @@ GrassmannGrade::usage="GrassmannGrade[expr] returns a non-negative integer: 0, i
 
 defines the function f to have the same grading as its argument. Any variable whose grading is not explicitly declared is assumed to be purely bosonic."
 
-GrassmannGrade[a_+b_] := Max[GrassmannGrade[a],GrassmannGrade[b]]
+GrassmannGrade[_?AnyGrassmannQ] = 1
 
-GrassmannGrade[a_ b_] := GrassmannGrade[a]+GrassmannGrade[b]
+GrassmannGrade[expr_Times] :=
+  GrassmannGrade[DeleteCases[expr, _?CommutativeQ]]
 
-GrassmannGrade[HoldPattern[a_ ** b_]] := GrassmannGrade[a] + GrassmannGrade[b]
+GrassmannGrade[expr_Plus] := 
+  Max @ Map[GrassmannGrade, List @@ expr]
 
-GrassmannGrade[Derivative[__][f_][x__]] := GrassmannGrade[f[x]]
+HoldPattern @ GrassmannGrade[Multiply[ops__]] := 
+  Total @ Map[GrassmannGrade, {ops}]
 
-GrassmannGrade[GD[a_,_]] := GrassmannGrade[a]+1
+GrassmannGrade[GD[a_, _]] := GrassmannGrade[a] + 1
 
 GrassmannGrade[_] = 0
+
+(**** </GrassmannGrade> ****)
 
 
 Protect[ Evaluate @ $symbs ]

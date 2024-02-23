@@ -1277,7 +1277,7 @@ HoldPattern @ Multiply[ pre___,
 HoldPattern @ Multiply[ pre___,
   Ket[a_Association], Bra[b_Association], post___] :=
   Multiply[pre, Dyad[a, b], post]
- *)
+*)
 (* EXPERIMENTAL since v5.66 *)
 (* NOTE (v5.85): This must come at the final stage and is moved to
    Einstein.wl. Otherwise, for example, Dagger[a[1]] ** Ket[] ** Bra[] ** a[1]
@@ -1298,11 +1298,11 @@ HoldPattern @
 
 HoldPattern @
   Multiply[Bra[u___], op__, Ket[v___], post__] :=
-  Multiply[Bra[u], op, Ket[v]] Multiply[post]
+  Multiply[Bra[u], op, Ket[v]] * Multiply[post]
 
 HoldPattern @
   Multiply[pre__, Bra[u___], op__, Ket[v___], post___] :=
-  Multiply[Bra[u], op, Ket[v]] Multiply[pre, post]
+  Multiply[Bra[u], op, Ket[v]] * Multiply[pre, post]
 (* NOTE: Do not try to combine the above two definitions into one by using
    pre___ and post___. It will result in infinite loop. *)
 
@@ -2097,7 +2097,7 @@ fermionOne[any_] := One[Dimension @ any]
 
 (* For other Species *)
 
-Matrix[op_?AnySpeciesQ, ss:{__?SpeciesQ}] := Module[
+Matrix[op_?AnyAgentQ, ss:{__?SpeciesQ}] := Module[
   { mm = TheMatrix @ op,
     sp = FlavorMute @ Peel @ op,
     rr },
@@ -2106,7 +2106,7 @@ Matrix[op_?AnySpeciesQ, ss:{__?SpeciesQ}] := Module[
   CircleTimes @@ rr
  ] /; MemberQ[ss, FlavorMute @ Peel @ op]
 
-Matrix[op_?AnySpeciesQ, qq:{__?SpeciesQ}] := (
+Matrix[op_?AnyAgentQ, qq:{__?SpeciesQ}] := (
   Message[Matrix::rmndr, op];
   op * Matrix[1, qq]
  )
@@ -2452,31 +2452,40 @@ HoldPattern @ Multiply[pre___, a_Parity, b_Parity, post___] :=
 
 ParityValue::usage = "ParityValue[state, {a, b, ...}] returns the parity eigenvalue \[PlusMinus]1 if state is a parity eigenstate of species {a,b,\[Ellipsis]} and 0 otherwise.\nParityValue[{a,b,\[Ellipsis]}] represents the operator form of ParityValue."
 
-ParityValue[ S_?SpeciesQ ][ expr_ ] := ParityValue[expr, {S}]
+ParityValue[spec:(_?SpeciesQ|{___?SpeciesQ})] := 
+  ParityValue[FlavorNone @ spec] /; Not[FlavorNoneQ @ spec]
 
-ParityValue[ ss:{__?SpeciesQ} ][ expr_ ] := ParityValue[expr, ss]
+ParityValue[spec:(_?SpeciesQ|{___?SpeciesQ})][expr_] := 
+  ParityValue[expr, spec]
 
 
-ParityValue[ expr_Association, ss:{__?SpeciesQ} ] :=
-  Map[ ParityValue[ss], expr ]
+ParityValue[expr_, spec:(_?SpeciesQ|{___?SpeciesQ})] := 
+  ParityValue[expr, FlavorNone @ spec] /; Not[FlavorNoneQ @ spec]
 
-ParityValue[ expr_List, ss:{__?SpeciesQ} ] :=
-  Map[ ParityValue[ss], expr ] /;
-  Not @ FreeQ[expr, _Ket]
 
-ParityValue[ z_?CommutativeQ expr_, ss:{__?SpeciesQ} ] :=
-  ParityValue[expr, ss] /;
-  Not @ FreeQ[expr, _Ket]
+ParityValue[expr_Association, spec:(_?SpeciesQ|{___?SpeciesQ})] :=
+  Map[ParityValue[spec], expr]
 
-ParityValue[ expr_Plus, ss:{__?SpeciesQ} ] := With[
-  { vv = ParityValue[Cases[expr, _Ket, Infinity], ss] },
-  If[Equal @@ vv, First @ vv, 0]
+ParityValue[expr_List, spec:(_?SpeciesQ|{___?SpeciesQ})] :=
+  Map[ParityValue[spec], expr]
+
+
+ParityValue[z_?CommutativeQ expr_, spec:(_?SpeciesQ|{___?SpeciesQ})] :=
+  ParityValue[expr, spec] /; Not @ FreeQ[expr, _Ket]
+
+ParityValue[expr_Plus, spec:(_?SpeciesQ|{___?SpeciesQ})] := With[
+  { vv = ParityValue[Union @ Cases[expr, _Ket, Infinity], spec] },
+  If[Equal @@ vv, First @ vv, Indeterminate]
  ] /; Not @ FreeQ[expr, _Ket]
 
-ParityValue[ v_Ket, ss:{__?SpeciesQ} ] :=
-  Multiply @@ Map[ParityValue[v, #]&, FlavorNone @ ss]
 
-ParityValue[ Ket[<||>], {} ] := True
+ParityValue[v_Bra, spec:(_?SpeciesQ|{___?SpeciesQ})] :=
+  ParityValue[Dagger @ v, spec]
+
+ParityValue[v_Ket, ss:{__?SpeciesQ}] :=
+  Multiply @@ Map[ParityValue[v, #]&, ss]
+
+ParityValue[Ket[<||>], {}] := 1
 
 
 ParityEvenQ::usage = "ParityEvenQ[state_, {a, b, ...}] returns True if state (in a Ket expression) has a definite Even parity with respect to the systems a, b, .... Otherwise, False is returned.\nParityEvenQ[state] first finds all systems involved and tests the parity."
@@ -3100,6 +3109,7 @@ Elaborate @ Dyad[a_Association, b_Association] := Module[
     Dyad[KeyDrop[a, ss], KeyDrop[b, ss]]
    ]
  ]
+(* KNOWN ISSUE:: 2024-02-21: This is errorneous for fermions. *)
 
 
 Dyad /: (* fallback *)

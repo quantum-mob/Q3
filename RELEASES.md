@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.3.2 
+
+- New function IntegerParity.
+- Grassmann is rewritten almost from the scractch.
+- Typo correction in the documentation on CoherentState.
+
 ## 3.3.1
 
 - Several bug fixes concerning YoungShape, YoungTableau, GelfandPattern in YoungFourier, YoungNormalRepresentation, YoungFourierBasis, YoungRegularBasis, SpechtBasis, etc.
@@ -10,7 +16,6 @@
 - Experimental built-in functions BlockDiagonalMatrix and PermtuationMatrix are kept in Abel.
 - All renamed, obsolete, excised symbols are moved to Einstein.
 - Improved FockKet and FermionBasis.
-
 
 ## 3.3.0
 

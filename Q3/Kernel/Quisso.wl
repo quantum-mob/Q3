@@ -3064,9 +3064,9 @@ Parity[A_?QuditQ] := Module[
     op },
   op = A /@ Thread[jj->jj];
   Power[-1, jj] . op
- ]
+]
 
-ParityValue[v_Ket, a_?QuditQ] := 1 - 2*Mod[v[a], 2]
+ParityValue[v_Ket, a_?QuditQ] := IntegerParity[v[a]]
 
 ParityEvenQ[v_Ket, a_?QuditQ] := EvenQ @ v @ a
 

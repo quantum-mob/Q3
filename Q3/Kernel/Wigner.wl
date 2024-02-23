@@ -929,7 +929,7 @@ NineJSymbol[
       Max[Abs[j1-j], Abs[j2-j34], Abs[j3-j24]], 
       Min[j1+j, j2+j34, j3+j24],
       1-Mod[2*(j1+j),2]/2 }
-   ]
+  ]
 (* QUESTION::2016-02-22: Mathematica says that SixJSymbol[] givs the Racah 6-j
    symbol. Is it the same as the Wigner 6-j symbol? Messiah says that they are
    different in sign. *)
