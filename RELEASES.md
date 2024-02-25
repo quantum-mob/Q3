@@ -2,6 +2,7 @@
 
 ## 3.3.2 
 
+- New option "Normalized" for CoherentState.
 - New function IntegerParity.
 - Grassmann is rewritten almost from the scractch.
 - Typo correction in the documentation on CoherentState.

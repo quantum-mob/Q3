@@ -6,7 +6,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Choices, ListPartitions, Successive, FirstLast, Inbetween };
 { ShiftLeft, ShiftRight };
-{ KeyGroupBy, CheckJoin };
+{ KeyGroupBy, KeyReplace, CheckJoin };
 { PseudoDivide, ZeroQ };
 { CountsFor };
 { IntegerParity };
@@ -91,8 +91,9 @@ $::usage = "$ is a flavor index referring to the species itself."
 { Commutator, Anticommutator };
 
 { Multiply, MultiplyGenus, MultiplyKind, MultiplyDegree,
-  MultiplyExp, MultiplyPower, MultiplyDot,
-  DistributableQ };
+  MultiplyExp, MultiplyPower, MultiplyDot };
+
+{ DistributableQ };
 
 { Matrix, ExpressionFor };
 
@@ -101,6 +102,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 { CoefficientTensor };
 
 { LevelsPlot };
+{ PanedText };
 
 { Ket, Bra };
 
@@ -269,6 +271,19 @@ KeyGroupBy[assoc_Association, f_ -> g_, post_] := Merge[
  ]
 
 (**** </KeyGroupBy> ****)
+
+
+(**** <KeyReplace> ****)
+
+KeyReplace::usage = "KeyReplace[assoc, {key1 -> new1, key2 -> new2, ...}] replace key1 with new1, key2 with new2, ... in association assoc.\nKeyReplace[{key1 -> val1, key2 -> val2, ...}, {key1 -> new1, key2 -> new2, ...}] is similar but returns a list rather than an association."
+
+KeyReplace[aa_Association, kk:{___Rule}] :=
+  AssociationThread[Keys[aa] /. kk, Values @ aa]
+
+KeyReplace[aa:{___Rule}, kk:{___Rule}] :=
+  Thread @ Rule[Keys[aa] /. kk, Values @ aa]
+
+(**** </KeyReplace> ****)
 
 
 (**** <CheckJoin> ****)
@@ -1448,15 +1463,15 @@ AddGarnerPatterns[spec:(_Blank|_PatternTest)..] := Module[
   $GarnerPatterns["Tests"] =
     Union[$GarnerPatterns["Tests"], Alternatives @@ tests];
   $GarnerPatterns
- ]
+]
 
 
-$GarnerPatterns::Usage = "$GarnerPatterns gives the list of patterns to be handled by Garner."
+$GarnerPatterns::usage = "$GarnerPatterns gives the list of patterns to be handled by Garner."
 
 $GarnerPatterns = Association[
   "Heads" -> Alternatives[],
   "Tests" -> Alternatives[]
- ]
+]
 
 (**** </Garner> ****)
 
@@ -1467,10 +1482,10 @@ Elaborate::usage = "Elaborate[expr] transforms expr into a more explicit form."
 
 Elaborate[expr_] := Module[
   { pttn = $ElaborationPatterns["Heads"],
-    noon },
-  noon = expr /. { v:pttn :> Elaborate[v] };
-  Garner[ noon //. $ElaborationPatterns["Rules"] ]
- ] /; Not @ MemberQ[Identity @@@ $ElaborationPatterns[Heads], Head[expr]]
+    mint },
+  mint = expr /. { v:pttn :> Elaborate[v] };
+  Garner[ mint //. $ElaborationPatterns["Rules"] ]
+] /; Not @ MemberQ[Identity @@@ $ElaborationPatterns["Heads"], Head[expr]]
 
 
 AddElaborationPatterns::usage = "AddElaborationPatterns[spec$1,spec$2,\[Ellipsis]] adds patterns to be handled by Elaborate.\nThe spec$j may be _head or replacement rules."
@@ -1483,15 +1498,15 @@ AddElaborationPatterns[spec:(_Blank|_Rule|_RuleDelayed)..] := Module[
   $ElaborationPatterns["Rules"] =
     Union[$ElaborationPatterns["Rules"], rules];
   $ElaborationPatterns
- ]
+]
 
 
-$ElaborationPatterns::Usage = "$ElaborationPatterns gives the list of patterns or replacement rules to be handled by Elaborate."
+$ElaborationPatterns::usage = "$ElaborationPatterns gives the list of patterns or replacement rules to be handled by Elaborate."
 
 $ElaborationPatterns = Association[
   "Heads" -> Alternatives[],
   "Rules" -> {}
- ]
+]
 
 (**** </Elaborate> ****)
 
@@ -1523,9 +1538,13 @@ HoldPattern @ MultiplyGenus[ Dagger[any_] ] := "Ket" /;
 (**** </MultiplyGenus> ****)
 
 
-DistributableQ::usage = "DistributableQ[x, y, \[Ellipsis]] returns True if any of the arguments x, y, \[Ellipsis] has head of Plus."
+(**** <DistributableQ> ****)
 
-DistributableQ[args__] := Not @ MissingQ @ FirstCase[{args}, _Plus]
+DistributableQ::usage = "DistributableQ[{expr1, expr2, \[Ellipsis]}] returns True if any of the expressions expr1, expr2, \[Ellipsis] has Head Plus."
+
+DistributableQ[ops_List] := Not @ MissingQ @ FirstCase[ops, _Plus]
+
+(**** </DistributableQ> ****)
 
 
 (**** <Multiply> ****)
@@ -1557,6 +1576,7 @@ Multiply[] = 1 (* See also Times[]. *)
 
 Multiply[c_] = c
 
+
 (* Associativity *)
 
 HoldPattern @
@@ -1577,22 +1597,18 @@ HoldPattern @
 
 (* Linearity *)
 
-(* Let[LinearMap, Multiply] *)
-(* NOTE: This can easily hit the recursion limit, hence the same effect is
-   implemented differently. *)
-
-HoldPattern @ Multiply[ args__ ] := Garner[
+HoldPattern @ Multiply[args__] := Garner[
   ReleaseHold @ Distribute[ Hold[Multiply][args] ]
- ] /; DistributableQ[args]
+] /; DistributableQ[{args}]
 
-HoldPattern @ Multiply[ pre___, z_?CommutativeQ, post___] :=
+HoldPattern @ Multiply[pre___, z_?CommutativeQ, post___] :=
   Garner[ z * Multiply[pre, post] ];
 
-HoldPattern @ Multiply[ pre___, z_?CommutativeQ op_, post___] :=
+HoldPattern @ Multiply[pre___, z_?CommutativeQ op_, post___] :=
   Garner[ z * Multiply[pre, op, post] ]
 
-HoldPattern @ Multiply[ pre___, Power[E, expr_], post___] :=
-  Multiply[pre, MultiplyExp[expr], post]
+HoldPattern @ Multiply[pre___, Power[E, op_], post___] :=
+  Multiply[pre, MultiplyExp[op], post]
 
 
 (* General rules *)
@@ -1624,12 +1640,82 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
 ] /; Not @ KindsOrderedQ @ {ops}
 
 
+KindsOrderedQ::usage = "KindsOrderedQ[list] returns True if all iterms in list are ordered within each section, where items are split into sections by MultiplyGenus."
+
 KindsOrderedQ[ops_List] := Module[
   { qq = MultiplyKind @ SplitBy[ops, MultiplyGenus] },
   AllTrue[qq, OrderedQ]
 ]
 
 (**** </Multiply> ****)
+
+
+(**** <MultiplyExp> ****)
+
+MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[]."
+
+SetAttributes[MultiplyExp, Listable]
+
+AddElaborationPatterns[_MultiplyExp];
+
+AddElaborationPatterns[
+  Exp[a_] :> MultiplyExp[a] /; Not[FreeQ[a, _?NonCommutativeQ]]
+ ]
+
+
+Format @ HoldPattern @ MultiplyExp[expr_] :=
+  Interpretation[Power[E, expr], MultiplyExp @ expr]
+
+
+MultiplyExp[0] = 1
+
+
+MultiplyExp /:
+HoldPattern @ Dagger[ MultiplyExp[expr_] ] := MultiplyExp[ Dagger[expr] ]
+
+MultiplyExp /:
+HoldPattern @ Inverse[ MultiplyExp[op_] ] := MultiplyExp[-op]
+
+MultiplyExp /:
+HoldPattern @ Power[ MultiplyExp[op_], z_?CommutativeQ ] :=
+  MultiplyExp[z * op]
+
+MultiplyExp /:
+MultiplyPower[ MultiplyExp[op_], z_?CommutativeQ ] :=
+  MultiplyExp[z * op]
+
+MultiplyExp /:
+Multiply[pre___, MultiplyExp[op_], MultiplyExp[op_], post___] :=
+  Multiply[pre, MultiplyExp[2 * op], post]
+
+
+MultiplyExp /:
+HoldPattern @ Matrix[ MultiplyExp[op_], rest___ ] := 
+  MatrixExp @ Matrix[op, rest]
+
+
+MultiplyExp /:
+HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
+  Elaborate @ ExpressionFor @ MatrixExp @ Matrix @ expr /;
+  Agents[expr] == {} /;
+  Not @ FreeQ[expr, _Pauli]
+
+MultiplyExp /:
+HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
+  { ss = Agents[expr],
+    mm },
+  mm = Matrix[expr, ss];
+  Elaborate @ ExpressionFor[MatrixExp[mm], ss] /;
+    ContainsOnly[MultiplyKind @ ss, {Qubit, Qudit, Spin}]
+]
+(* NOTE: In principle, it can handle fermions as well. But fermions have been
+   excluded here because the method of converting first to matrix and back to
+   operator expression is slow for fermions due to the requirement of the
+   Jordan-Wigner transformation. MultiplyExp usually appears in the
+   Baker-Hausdorff form, and the latter can be treated more efficiently using
+   LieExp or related methods. *)
+
+(**** </MultiplyExp> ****)
 
 
 (**** <Baker-Hausdorff Lemma: Simple Cases> ****)
@@ -1668,64 +1754,6 @@ HoldPattern @
    MultiplyExp[op] usually takes long in vain. *)
 
 (**** </Baker-Hausdorff Lemma: Simple Cases> ****)
-
-
-(**** <MultiplyExp> ****)
-
-MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[]."
-
-SetAttributes[MultiplyExp, Listable]
-
-AddElaborationPatterns[_MultiplyExp];
-
-AddElaborationPatterns[
-  Exp[a_] :> MultiplyExp[a] /; Not[FreeQ[a, _?NonCommutativeQ]]
- ]
-
-
-Format @ HoldPattern @ MultiplyExp[expr_] :=
-  Interpretation[Power[E, expr], MultiplyExp @ expr]
-
-
-MultiplyExp[0] = 1
-
-
-MultiplyExp /:
-HoldPattern @ Dagger[ MultiplyExp[expr_] ] := MultiplyExp[ Dagger[expr] ]
-
-MultiplyExp /:
-HoldPattern @ Inverse[ MultiplyExp[op_] ] := MultiplyExp[-op]
-
-MultiplyExp /:
-HoldPattern @ Power[ MultiplyExp[op_], z_?CommutativeQ ] :=
-  MultiplyExp[z * op]
-
-MultiplyExp /:
-HoldPattern @ Matrix[ MultiplyExp[op_], rest___ ] := 
-  MatrixExp @ Matrix[op, rest]
-
-MultiplyExp /:
-HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
-  Elaborate @ ExpressionFor @ MatrixExp @ Matrix @ expr /;
-  Agents[expr] == {} /;
-  Not @ FreeQ[expr, _Pauli]
-
-MultiplyExp /:
-HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
-  { ss = Agents[expr],
-    mm },
-  mm = Matrix[expr, ss];
-  Elaborate @ ExpressionFor[MatrixExp[mm], ss] /;
-    ContainsOnly[MultiplyKind @ ss, {Qubit, Qudit, Spin}]
-]
-(* NOTE: In principle, it can handle fermions as well. But fermions have been
-   excluded here because the method of converting first to matrix and back to
-   operator expression is slow for fermions due to the requirement of the
-   Jordan-Wigner transformation. MultiplyExp usually appears in the
-   Baker-Hausdorff form, and the latter can be treated more efficiently using
-   LieExp or related methods. *)
-
-(**** </MultiplyExp> ****)
 
 
 (**** <Lie> ****)
@@ -2186,22 +2214,75 @@ makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
 (***** </LevelsPlot> ****)
 
 
-(**** <Tools> ****)
+(**** <PanedText> ****)
 
-q3AssureList[None] = {}
+PanedText::usage = "PanedText[expr] displays with expr in a paned area. See also Text."
 
-q3AsureList[a_?ListQ] = a
+Options[PanedText] = {
+  "Style" -> {},
+  "Angle" -> 0,
+  "Alignment" -> {0, 0}, (*Center*)
+  "PaneSize" -> {2, 1},
+  "PanePosition" -> {0, 0},
+  "PaneAlignment" -> {0, 0}, (*Center*)
+  "Paned" -> False
+};
 
-q3AssureList[a_] = List[a]
+PanedText[expr_, opts:OptionsPattern[]] := Module[
+  { sty, ang, adj, pos, size, off, txt },
+  {sty, ang, adj, pos, size, off} = OptionValue[Automatic, #] & /@ 
+    { "Style", "Angle", "Alignment",
+      "PanePosition", "PaneSize", "PaneAlignment" };
+  txt = Text[Style[expr, sty], pos + 0.5*size*(adj-off), adj, {Cos @ ang, Sin @ ang}];
+  If[ OptionValue["Paned"],
+    Module[
+      { frm, dsk },
+      frm = { EdgeForm[Gray], Opacity[0], 
+        Rectangle[pos - 0.5*size*(1 + off), pos + 0.5*size*(1 - off)] };
+      dsk = {Gray, Disk[pos, 0.1]};
+      {frm, dsk, txt}
+    ],
+    txt
+  ]
+]
+
+(**** </PanedText> ****)
 
 
-q3AssureList[None, _Integer] = {}
+(**** <doAssureList> ****)
 
-q3AssureList[a_List, _Integer] = a
+doAssureList::usage = "doAssureList[] ..."
 
-q3AssureList[a_, n_Integer] := Table[a, n]
+doAssureList[None] = {} (* cf. doForceList *)
 
-(**** </Tools> ****)
+doAssureList[a_?ListQ] = a
+
+doAssureList[a_] = List[a]
+
+
+doAssureList[None, _Integer] = {} (* cf. doForceList *)
+
+doAssureList[a_?ListQ, n_Integer] := PadRight[a, n, a]
+
+doAssureList[a_, n_Integer] := Table[a, n]
+
+(**** </doAssureList> ****)
+
+
+(**** <doForceList> ****)
+
+doForceList::usage = "doForceList[] ..."
+
+doForceList[a_?ListQ] = a
+
+doForceList[a_] = List[a]
+
+
+doForceList[a_?ListQ, n_Integer] := PadRight[a, n, a]
+
+doForceList[a_, n_Integer] := Table[a, n]
+
+(**** </doForceList> ****)
 
 
 Protect[ Evaluate @ $symb ]

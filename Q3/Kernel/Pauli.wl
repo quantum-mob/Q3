@@ -2816,10 +2816,25 @@ Rotation[any_, v:{_, _, _}, ss:{(_?SpinQ|_?QubitQ)..}, rest___] :=
   Map[Rotation[any, v, #, rest]&, ss]
 
 
+(* NOTE: The following code makes many calculations significantly slow. It is far better to use the high-level feature as those given below for MultiplyPower and Multiply. *)
 (*
 Rotation /:
 Multiply[pre___, op_Rotation, post___] := Multiply[pre, Elaborate[op], post]
  *)
+
+Rotation /:
+MultiplyPower[Rotation[phi_, rest__], n_Integer] :=
+  Rotation[n * phi, rest]
+
+Rotation /:
+Multiply[
+  pre___, 
+  Rotation[a_, axis_, ss_, opts___?OptoinQ],
+  Rotation[b_, axis_, ss_, more___?OptoinQ],
+  post___
+] :=
+  Multiply[pre, Rotation[a+b, axis, ss, more, opts], post]
+
 
 Rotation /:
 Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] ] :=
@@ -3008,7 +3023,7 @@ CircleTimes[a_] := a (* See also Times[]. *)
 
 HoldPattern @ CircleTimes[args__] := Garner @ ReleaseHold[
   Distribute @ Hold[CircleTimes][args]
- ] /; DistributableQ[args]
+] /; DistributableQ[args]
 
 CircleTimes[pre___, z_?CommutativeQ op_, post___] :=
   z * CircleTimes[pre, op, post]

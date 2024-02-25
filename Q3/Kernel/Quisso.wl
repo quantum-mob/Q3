@@ -25,7 +25,7 @@ BeginPackage["Q3`"]
 
 { Oracle };
 
-{ QFT };
+{ QFT, QBR };
 
 { ModMultiply, ModAdd, ModExp = ModPower };
 
@@ -49,7 +49,7 @@ Begin["`Private`"]
 $symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
 
 AddElaborationPatterns[
-  _QFT,
+  _QFT, _QBR,
   _ControlledGate, _CZ, _CX, _CNOT, _Swap, _iSwap,
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
@@ -308,45 +308,64 @@ HoldPattern @
       Ket @ KeySort @ Append[b, a[j,$]->m],
       post
      ]
-   ]
+  ]
 
 HoldPattern @
   Multiply[pre___, a_?QubitQ[j___,3], Ket[b_Association], post___] :=
-  (1 - 2*b[a[j,$]]) * Multiply[pre, Ket @ b, post]
+    (1 - 2*b[a[j,$]]) * Multiply[pre, Ket @ b, post]
 
-(*
-HoldPattern @ Multiply[ x___, a_?QubitQ[j___,4], Ket[b_Association], y___ ] :=
-  Multiply[x, a[j,Raising], Ket[b], y]
 
-HoldPattern @ Multiply[ x___, a_?QubitQ[j___,5], Ket[b_Association], y___ ] :=
-  Multiply[x, a[j,Lowering], Ket[b], y]
- *)
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,6], Ket[b_Association], post___ ] :=
+  Multiply[pre, a[j,Hadamard], Ket[b], post]
 
-HoldPattern @ Multiply[ x___, a_?QubitQ[j___,6], Ket[b_Association], y___ ] :=
-  Multiply[x, a[j,Hadamard], Ket[b], y]
 
-HoldPattern @ Multiply[ x___, a_?QubitQ[j___,7], Ket[b_Association], y___ ] :=
-  Multiply[x, a[j,Quadrant], Ket[b], y]
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,7], b:Ket[_Association], post___ ] :=
+  Multiply[pre, b, post] * Exp[ I * (Pi/2) * b[a[j,$]] ] (* Quadrant *)
 
-HoldPattern @ Multiply[ x___, a_?QubitQ[j___,8], Ket[b_Association], y___ ] :=
-  Multiply[x, a[j,Octant], Ket[b], y]
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,8], b:Ket[_Association], post___ ] :=
+  Multiply[pre, b, post] * Exp[ I * (Pi/4) * b[a[j,$]] ] (* Octant *)
+
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,9], b:Ket[_Association], post___ ] :=
+  Multiply[pre, b, post] * Exp[ I * (Pi/8) * b[a[j,$]] ] (* Hexadecant *)
+
+
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,-7], b:Ket[_Association], post___ ] :=
+  Multiply[pre, b, post] * Exp[ -I * (Pi/2) * b[a[j,$]] ] (* Quadrant *)
+
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,-8], b:Ket[_Association], post___ ] :=
+  Multiply[pre, b, post] * Exp[ -I * (Pi/4) * b[a[j,$]] ] (* Octant *)
+
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,-9], b:Ket[_Association], post___ ] :=
+  Multiply[pre, b, post] * Exp[ -I * (Pi/8) * b[a[j,$]] ] (* Hexadecant *)
+
+
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,C[n_Integer]], b:Ket[_Association], post___ ] :=
+  Multiply[pre, b, post] * Exp[ I * 2*Pi*Power[2, -n] * b[a[j,$]] ]
+
+HoldPattern @ Multiply[ pre___, a_?QubitQ[j___,-C[n_Integer]], b:Ket[_Association], post___ ] :=
+  Multiply[pre, b, post] * Exp[ -I * 2*Pi*Power[2, -n] * b[a[j,$]] ]
 
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,10], Ket[b_Association], post___ ] :=
-  Multiply[pre, Ket[b], post] /; b @ a[j, $] == 0
+    Multiply[pre, Ket[b], post] /; b @ a[j, $] == 0
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,10], Ket[b_Association], post___ ] :=
-  0 /; b @ a[j, $] == 1
+    0 /; b @ a[j, $] == 1
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,11], Ket[b_Association], post___ ] :=
-  Multiply[pre, Ket[b], post] /; b @ a[j, $] == 1
+    Multiply[pre, Ket[b], post] /; b @ a[j, $] == 1
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,11], Ket[b_Association], post___ ] :=
-  0 /; b @ a[j, $] == 0
+    0 /; b @ a[j, $] == 0
+
+
+HoldPattern @ Multiply[ pre___, op_?QubitQ, vec_Ket, post___] :=
+  Multiply[pre, Elaborate @ op, vec, post]
+
 
 (* Gates on Bra *)
 
@@ -357,7 +376,7 @@ HoldPattern @ Multiply[ x___, Bra[v_Association, s_List], G_?QubitQ, y___ ] :=
   Multiply[ x, Dagger[Dagger[G]**Ket[v,s]], y ]
 
 
-(* Special rules for Pauli matrices *)
+(* Special rules for Pauli operators *)
  
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,k:(1|2|3|6)], x_Symbol?QubitQ[j___,k:(1|2|3|6)],
@@ -375,30 +394,56 @@ HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,8], x_Symbol?QubitQ[j___,8], post___ ] :=
   Multiply[pre, x[j,7], post]
 
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,9], x_Symbol?QubitQ[j___,9], post___ ] :=
+    Multiply[pre, x[j,8], post]
+
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,-7], x_Symbol?QubitQ[j___,-7], post___ ] :=
+  Multiply[pre, x[j,3], post]
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,-8], x_Symbol?QubitQ[j___,-8], post___ ] :=
+  Multiply[pre, x[j,-7], post]
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,-9], x_Symbol?QubitQ[j___,-9], post___ ] :=
+    Multiply[pre, x[j,-8], post]
+
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,C[n_Integer]], x_Symbol?QubitQ[j___,C[n_Integer]], post___ ] :=
+    Multiply[pre, x[j,C[n-1]], post]
+
+HoldPattern @ Multiply[ pre___,
+  x_Symbol?QubitQ[j___,-C[n_Integer]], x_Symbol?QubitQ[j___,-C[n_Integer]], post___ ] :=
+    Multiply[pre, x[j,-C[n-1]], post]
+
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,2], post___ ] :=
-  Multiply[pre, I x[j,3], post]
+    Multiply[pre, I x[j,3], post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,3], post___ ] :=
-  Multiply[pre, I x[j,1], post]
+    Multiply[pre, I x[j,1], post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,1], post___ ] :=
-  Multiply[pre, I x[j,2], post]
+    Multiply[pre, I x[j,2], post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,1], post___ ] :=
-  Multiply[pre, -I x[j,3], post]
+    Multiply[pre, -I x[j,3], post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,2], post___ ] :=
-  Multiply[pre, -I x[j,1], post]
+    Multiply[pre, -I x[j,1], post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,3], post___ ] :=
-  Multiply[pre, -I x[j,2], post]
+    Multiply[pre, -I x[j,2], post]
 (* Again, the last three definitions can be deduced from the commutation
    relations below, but explicit definition makes the evaluation much
    faster. *)
@@ -406,75 +451,82 @@ HoldPattern @ Multiply[ pre___,
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,4], post___ ] :=
-  Multiply[pre, 1/2 - x[j,3]/2, post]
+    Multiply[pre, 1/2 - x[j,3]/2, post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,1], post___ ] :=
-  Multiply[pre, 1/2 + x[j,3]/2, post]
+    Multiply[pre, 1/2 + x[j,3]/2, post]
 
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,1], x_Symbol?QubitQ[j___,5], post___ ] :=
-  Multiply[pre, 1/2 + x[j,3]/2, post]
+    Multiply[pre, 1/2 + x[j,3]/2, post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,1], post___ ] :=
-  Multiply[pre, 1/2 - x[j,3]/2, post]
+    Multiply[pre, 1/2 - x[j,3]/2, post]
 
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,4], post___ ] :=
-  Multiply[pre, I/2 - x[j,3]*I/2, post]
+    Multiply[pre, I/2 - x[j,3]*I/2, post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,2], post___ ] :=
-  Multiply[pre, I/2 + x[j,3]*I/2, post]
+    Multiply[pre, I/2 + x[j,3]*I/2, post]
 
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,2], x_Symbol?QubitQ[j___,5], post___ ] :=
-  Multiply[pre, -I/2 - x[j,3]*I/2, post]
+    Multiply[pre, -I/2 - x[j,3]*I/2, post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,2], post___ ] :=
-  Multiply[pre, -I/2 + x[j,3]*I/2, post]
+    Multiply[pre, -I/2 + x[j,3]*I/2, post]
 
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,4], post___ ] :=
-  Multiply[pre, +x[j,4], post]
+    Multiply[pre, +x[j,4], post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,3], post___ ] :=
-  Multiply[pre, -x[j,4], post]
+    Multiply[pre, -x[j,4], post]
 
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,3], x_Symbol?QubitQ[j___,5], post___ ] :=
-  Multiply[pre, -x[j,5], post]
+    Multiply[pre, -x[j,5], post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,3], post___ ] :=
-  Multiply[pre, +x[j,5], post]
+    Multiply[pre, +x[j,5], post]
 
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,4], x_Symbol?QubitQ[j___,5], post___ ] :=
-  Multiply[pre, 1/2 + x[j,3]/2, post]
+    Multiply[pre, 1/2 + x[j,3]/2, post]
 
 HoldPattern @ Multiply[ pre___,
   x_Symbol?QubitQ[j___,5], x_Symbol?QubitQ[j___,4], post___ ] :=
-  Multiply[pre, 1/2 - x[j,3]/2, post]
-
-HoldPattern @ Multiply[ pre___,
-  x_Symbol?QubitQ[j___,m_], x_Symbol?QubitQ[j___,n_], post___ ] :=
-  Multiply[pre, Elaborate @ x[j,m], Elaborate @ x[j,n], post]
+    Multiply[pre, 1/2 - x[j,3]/2, post]
 
 
 (* General Rules *)
 
-HoldPattern @ Multiply[ pre___, op_?QubitQ, vec_Ket, post___] :=
-  Multiply[pre, Elaborate @ op, vec, post]
+HoldPattern @ Multiply[ 
+  pre___,
+  x_Symbol?QubitQ[j___,m_], x_Symbol?QubitQ[j___,n_], 
+  post___ 
+] :=
+  Multiply[pre, post] /; m + n == 0
+
+HoldPattern @ Multiply[ 
+  pre___,
+  x_Symbol?QubitQ[j___,m_], x_Symbol?QubitQ[j___,n_], 
+  post___ 
+] :=
+  Multiply[pre, Elaborate @ x[j,m], Elaborate @ x[j,n], post]
 
 (* 2023-01-26 17:54 This is very dangerous: For example, S[1,3]**T[1,1] hits
    the $IterationLimit. *)
@@ -587,11 +639,11 @@ thePauliForm @ Pauli[{k_Integer}] := ReplaceAll[ k,
     11 -> Row @ {Ket @ {1}, Bra @ {1}} }
  ]
 
-thePauliForm @ Pauli[{-C[n_Integer]}] :=
-  Superscript["Z", -2*Pi / HoldForm[Power[2, n]]]
+thePauliForm @ Pauli[{-C[n_Integer]}] := Subsuperscript["Z", n, "\[Dagger]"]
+  (* Superscript["Z", -2*Pi / HoldForm[Power[2, n]]] *)
 
-thePauliForm @ Pauli[{+C[n_Integer]}] :=
-  Superscript["Z", +2*Pi / HoldForm[Power[2, n]]]
+thePauliForm @ Pauli[{+C[n_Integer]}] := Subscript["Z", n]
+  (* Superscript["Z", +2*Pi / HoldForm[Power[2, n]]] *)
 
 thePauliForm @ Pauli[{any_}] = Superscript["\[Sigma]", any]
 (* NOTE: This is necessary to avoid infinite recursion Format[Paui[...]] may
@@ -806,7 +858,7 @@ Format[op:Phase[phi_, S_?QubitQ, ___]] :=
 
 Phase[0, __] = 1
 
-Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
+Phase[phi_, S_?QubitQ, ___] :=
   (Message[Phase::bad, S]; 1) /;
   Not @ MemberQ[{1, 2, 3}, FlavorLast @ S]
 
@@ -835,11 +887,26 @@ Phase /:
 HoldPattern @ Multiply[pre___, op_Phase, in_Ket] :=
   Multiply[pre, Multiply[Elaborate @ op, in]]
 
-(* Automatic expansion may be delayed until necessary. *)
+
+(* NOTE: The following code makes many calculations significantly slow. It is far better to use the high-level feature as those given below for MultiplyPower and Multiply. *)
 (*
 Phase /:
 Multiply[pre___, op_Phase, post___] := Multiply[pre, Elaborate @ op, post]
  *)
+
+Phase /:
+MultiplyPower[Phase[phi_, rest__], n_Integer] :=
+  Phase[n * phi, rest]
+
+Phase /:
+Multiply[
+  pre___, 
+  Phase[a_, ss_, opts___?OptoinQ],
+  Phase[b_, ss_, more___?OptoinQ],
+  post___
+] :=
+  Multiply[pre, Phase[a+b, ss, more, opts], post]
+
 
 Phase /:
 Matrix[op:Phase[_, _?QubitQ, ___], rest__] := Matrix[Elaborate[op], rest]
@@ -1304,7 +1371,7 @@ ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=
 
 ControlledGate /:
 Expand @ ControlledGate[cc:{__Rule},
-  ActOn[z_?CommutativeQ, {___}], ___?OptionQ] :=
+  ActOn[z_?CommutativeQ, ___], ___?OptionQ] :=
   ControlledGate[cc, z]
 
 ControlledGate /:
@@ -1395,12 +1462,15 @@ Multiply[ pre___,
     Multiply[pre, in]
    ]
 
+(* NOTE: The following code makes many calculations significantly slow. It is far better to use high-level features instead. *)
+(* NOTE: DO NOT put "ControlledGate /:". Otherwise, the above rule with
+   ControlledGate[...]**Ket[] is overridden. *)
+(* 
 Multiply[ pre___,
   op:ControlledGate[{Rule[_?QubitQ, _?BinaryQ]..}, _, ___?OptionQ],
   post___ ] :=
   Multiply[pre, Elaborate[op], post]
-(* NOTE: DO NOT put "ControlledGate /:". Otherwise, the above rule with
-   ControlledGate[...]**Ket[] is overridden. *)
+ *)
 
 (**** </ControlledGate> ****)
 
@@ -1443,47 +1513,43 @@ Elaborate[op_ControlledPower] = op (* fallback *)
 ControlledPower /:
 Elaborate @ ControlledPower[cc:{__?QubitQ}, op_, ___] :=
   Module[
-    { bs = Dyad[#, #, cc]& /@ Basis[cc],
-      xx = Range[Power[2, Length @ cc]] - 1,
-      yy },
-    yy = MultiplyPower[op, #]& /@ xx;
-    Elaborate @ Total @ Multiply[bs, yy]
-   ]
+    { xx, mm },
+    xx = Dyad[#, #, cc]& /@ Basis[cc];
+    mm = NestList[Multiply[op, #]&, 1, Power[2, Length @ cc]-1];
+    Elaborate @ Total @ Multiply[xx, mm]
+  ]
 
 
 ControlledPower /: (* fallback *)
 Matrix[op_ControlledPower, ss:{__?SpeciesQ}] :=
   op * One[Times @@ Dimension @ ss]
 
-If[ And[$VersionNumber == 13.2, $ReleaseNumber == 0],
-  (* NOTE: Because of a BUG in MatrixPower of Mathematica 13.2,
-     which crashes the kernel, this is a temporary work around. *)
-  (* for v13.2.0 *)
-  ControlledPower /:
-  Matrix[ControlledPower[cc_, op_, ___], ss:{__?SpeciesQ}] :=
-    Matrix[Elaborate @ ControlledPower[cc, op], ss],
-  (* for other versions of Mathematica *)
-  ControlledPower /:
-  Matrix[ControlledPower[cc_, op_, ___], ss:{__?SpeciesQ}] :=
-    Module[
-      { tt = Qubits @ op,
-        mat },
-      mat = theCtrlPower[Length @ cc, Matrix @ op];
-      Matrix[ExpressionFor[mat, Join[cc, tt]], ss]
-     ]
- ]
+ControlledPower /:
+Matrix[ControlledPower[cc_, op_, ___], ss:{__?SpeciesQ}] :=
+  Module[
+    { L = Power[2, Length @ cc],
+      tt = Qubits[op],
+      mm },
+    mm = Matrix[op, tt];
+    mm = CirclePlus @@ NestList[Dot[mm, #]&, One @ Power[2, Length @ tt], L-1];
+    MatrixEmbed[mm, Join[cc, tt], ss]
+  ]
 
 
 ControlledPower /:
-Multiply[pre___, ControlledPower[cc_, op_, ___], in_Ket] :=
-  With[
-    { x = FromDigits[in[cc], 2] },
-    Multiply[pre, Elaborate[MultiplyPower[op, x] ** in]]
-   ]
+Multiply[pre___, ControlledPower[cc_, op_, ___], in_Ket] := With[
+  { x = FromDigits[in[cc], 2] },
+  (* Multiply[pre, Nest[Multiply[op, #]&, in, x]] *)
+  (* NOTE: The following method is faster than the above. It is probably because MultiplyPower calculates recursively and makes better use of the caching capabilities. *)
+  Multiply[pre, Elaborate[MultiplyPower[op, x] ** in]]
+]
 
+(* NOTE: The following code makes many calculations significantly slow. It is far better to use high-level features instead. *)
+(* NOTE: DO NOT put "ControlledPower /:". *)
+(*
 HoldPattern @ Multiply[pre___, op_ControlledPower, post___] :=
   Multiply[pre, Elaborate @ op, post]
-(* NOTE: DO NOT put "ControlledPower /:". *)
+*)
 
 ControlledPower /:
 Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
@@ -1508,54 +1574,47 @@ Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     QuantumCircuit @@ new
    ]
 
-theCtrlPower::usage = "theCtrlPower[n, mat] is the matrix version of ControlledPower."
-
-theCtrlPower[n_Integer, mat_?MatrixQ] := Module[
-  { bb = Tuples[{0, 1}, n],
-    xx, mm },
-  xx = FromDigits[#, 2]& /@ bb;
-  mm = MatrixPower[mat, #]& /@ xx;
-  bb = Dyad[#, #]& /@ One @ Power[2, n];
-  Total @ MapThread[CircleTimes, {bb, mm}]
- ]
-
 (**** </ControlledPower> ****)
 
 
 (**** <ActOn> ****)
 
-ActOn::usage = "ActOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting on the system of species {s1, s2, \[Ellipsis]}.\nActOn is a low-level function intended for internal use."
+ActOn::usage = "ActOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting on the system of species {s1, s2, \[Ellipsis]}.\nActOn[{s1, s2, \[Ellipsis]}] represents the operator form of ActOn.\nActOn is a low-level function intended for internal use."
 
 AddElaborationPatterns[_ActOn]
 
-ActOn[S_?SpeciesQ] := ActOn[{S[$]}]
+ActOn[S_?SpeciesQ, opts___] := 
+  ActOn[{S[$]}, opts]
 
-ActOn[ss:{___?SpeciesQ}] :=
-  ActOn[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+ActOn[ss:{___?SpeciesQ}, opts___] :=
+  ActOn[FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
 
-ActOn[ss:{___?SpeciesQ}][op_] := ActOn[op, ss]
+ActOn[ss:{___?SpeciesQ}, opts___][op_] := 
+  ActOn[op, ss, opts]
 
-ActOn[op_, ss:{___?SpeciesQ}] := Module[
+ActOn[op_, ss:{___?SpeciesQ}, opts___] := Module[
   { tt = Agents[op] },
-  Union[ss, tt] /; Not @ ContainsAll[ss, tt]
- ]
+  ActOn[op, Union[ss, tt], opts] /; Not @ ContainsAll[ss, tt]
+]
 
-ActOn[op_, S_?SpeciesQ] := ActOn[op, {S[$]}]
+ActOn[op_, S_?SpeciesQ, opts___] := ActOn[op, {S[$]}, opts]
 
-ActOn[op_, ss:{___?SpeciesQ}] :=
-  ActOn[op, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+ActOn[op_, ss:{___?SpeciesQ}, opts___] :=
+  ActOn[op, FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
 
-
-ActOn /:
-Elaborate @ ActOn[op_, ss:{___?SpeciesQ}] = op
 
 ActOn /:
-Matrix[ActOn[op_, ss:{___?SpeciesQ}], rest___] :=
+Elaborate @ ActOn[op_, ss:{___?SpeciesQ}, ___] = op
+
+ActOn /:
+Matrix[ActOn[op_, ss:{___?SpeciesQ}, ___], rest___] :=
   Matrix[op, rest]
 
+(* 
 ActOn /:
-Multiply[pre___, ActOn[op_, {___?SpeciesQ}], post___] :=
+Multiply[pre___, ActOn[op_, {___?SpeciesQ}, ___], post___] :=
   Multiply[pre, op, post]
+ *)
 
 (**** </ActOn> ****)
 
@@ -1865,8 +1924,9 @@ MultiplyGenus @ QFT[___] := "Singleton"
 
 QFT /:
 Dagger[ op:QFT[ss_List, opts___?OptionQ] ] := With[
-  { new = DeleteCases[op, "Parameter" -> _] },
-  Switch[ "Parameter" /. {opts} /. Options[QFT],
+  { new = DeleteCases[op, "Parameter" -> _],
+    few = FilterRules[Flatten @ {opts}, Options @ QFT] },
+  Switch[ OptionValue[QFT, few, "Parameter"],
     1, Append[new, "Parameter" -> -1],
     _, new
   ]
@@ -1893,23 +1953,21 @@ Elaborate[op:QFT[{__?QubitQ}, ___?OptionQ]] :=
 
 QFT /:
 Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] := Module[
-  { mat },
+  { new = FilterRules[Flatten @ {opts}, Options @ QFT],
+    mat },
   mat = FourierMatrix[
     Power[2, Length @ qq],
-    FourierParameters -> {0, OptionValue[{QFT, Gate}, opts, "Parameter"]}
+    FourierParameters -> {0, OptionValue[QFT, new, "Parameter"]}
   ];
-  If[OptionValue[{QFT, Gate}, opts, N], mat = N[mat]];
+  If[OptionValue[QFT, new, N], mat = N[mat]];
   MatrixEmbed[mat, qq, ss]
 ] /; ContainsAll[ss, qq]
 
 QFT /:
-Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] := (
+Matrix[QFT[qq:{__?QubitQ}, ___], ss:{__?QubitQ}] := (
   Message[QFT::badmat, FlavorNone @ qq, FlavorNone @ ss];
-  One @ Length[ss]
- )
-
-HoldPattern @ Matrix[Dagger[op_QFT], rest___] :=
-  Topple @ Matrix[op, rest]
+  One @ Power[2, Length @ ss]
+)
 
 
 QFT /:
@@ -1926,35 +1984,38 @@ Multiply[in_Bra, op_QFT, post___] :=
 
 QFT /:
 Multiply[pre___, op:QFT[ss_List, ___], Dyad[a_Association, b_Association], post___] :=
-  Multiply[pre, op ** Ket[a], Bra[b], post] /; ContainsAll[Keys @ a, ss]
+  Multiply[pre, Multiply[op ** Ket[a], Bra[b]], post] /; ContainsAll[Keys @ a, ss]
 
 QFT /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:QFT[ss_List, ___], post___] :=
-  Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, ss]
+  Multiply[pre, Multiply[Ket[a], Bra[b] ** op], post] /; ContainsAll[Keys @ b, ss]
 
 
 QFT /:
 Expand[op_QFT] = op (* fallback *)
 
 QFT /:
-Expand @ QFT[ss:{__?QubitQ}, opts___?OptionQ] := QuantumCircuit @@ Join[
-  qftCtrlPower[ss][All],
-  With[{n = Length @ ss}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
- ] /; OptionValue[{QFT, Gate}, opts, "Parameter"] == 1
+Expand @ QFT[ss:{__?QubitQ}, opts___?OptionQ] := 
+  QuantumCircuit @@ Append[qftCtrlPower[ss, opts][All], QBR[ss]] /; 
+    OptionValue[{QFT, Gate}, {opts}, "Parameter"] == 1
 
-qftCtrlPower[ss:{__?QubitQ}] := 
-  qftCtrlPower[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+qftCtrlPower[ss:{__?QubitQ}, opts___][All] := Flatten @
+  Map[qftCtrlPower[ss, opts], Range @ Length @ ss]
 
-qftCtrlPower[ss:{__?QubitQ}][All] := Flatten @
-  Map[qftCtrlPower[ss], Range @ Length @ ss]
+qftCtrlPower[ss:{__?QubitQ}, opts___][1] := { First[ss][6] }
 
-qftCtrlPower[ss:{__?QubitQ}][1] := { First[ss][6] }
-
-qftCtrlPower[ss:{__?QubitQ}][k_Integer] := With[
+qftCtrlPower[ss:{__?QubitQ}, opts___][k_Integer] := With[
   { T = ss[[k]] },
-  { ControlledPower[ Reverse @ Take[ss, k-1], T[C[k]],
-      "Label" -> {"\!\(\*OverscriptBox[\(x\), \(~\)]\)", Subscript["Z",k]} ],
-    T[6] }
+  { ControlledPower[
+      Reverse @ Take[ss, k-1], 
+      If[ OptionValue[{QFT, Gate}, {opts}, N],
+        Phase[2.*Pi*Power[2., -k], T[3]],
+        T[C[k]]
+      ],
+      "Label" -> {"\!\(\*OverscriptBox[\(x\), \(~\)]\)", Subscript["Z",k]} 
+    ],
+    T[6]
+  }
 ]
 
 
@@ -1962,26 +2023,31 @@ QFT /:
 ExpandAll[op_QFT] = op (* fallback *)
 
 QFT /:
-ExpandAll @ QFT[ss:{__?QubitQ}, opts___?OptionQ] := QuantumCircuit @@ Join[
-  qftCtrlPhase[ss][All],
-  With[{n = Length @ ss}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
- ] /; OptionValue[{QFT, Gate}, opts, "Parameter"] == 1
+ExpandAll @ QFT[ss:{__?QubitQ}, opts___?OptionQ] := 
+  QuantumCircuit @@ Append[
+    qftCtrlPhase[ss, opts][All],
+    QBR[ss]
+  ] /; OptionValue[{QFT, Gate}, opts, "Parameter"] == 1
 
-qftCtrlPhase[ss:{__?QubitQ}] := 
-  qftCtrlPhase[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+qftCtrlPhase[ss:{__?QubitQ}, opts___][All] :=
+  Map[qftCtrlPhase[ss, opts], Range @ Length @ ss]
 
-qftCtrlPhase[ss:{__?QubitQ}][All] :=
-  Map[qftCtrlPhase[ss], Range @ Length @ ss]
-
-qftCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
-  { T = ss[[k]] },
-  Append[
-    Table[
-      ControlledGate[ ss[[{j}]] -> {1}, T[C[k-j+1]], 
-        "Label" -> Subscript["Z", k-j+1] ],
-      {j, k-1} ],
-    T[6]]
- ]
+qftCtrlPhase[ss:{__?QubitQ}, opts___][k_Integer] := 
+  Sequence @@ Module[
+    { T = ss[[k]] },
+    Append[
+      Table[
+        ControlledGate[
+          ss[[{j}]] -> {1},
+          If[ OptionValue[{QFT, Gate}, {opts}, N],
+            Phase[N[2*Pi*Power[2, j-k-1]], T[3]],
+            T[C[k-j+1]]
+          ],
+          "Label" -> Subscript["Z", k-j+1] ],
+        {j, k-1} ],
+      T[6]
+    ]
+  ]
 
 
 QFT /:
@@ -1992,9 +2058,9 @@ Expand[op_QFT] := ExpandAll[op] /;
 
 QFT /:
 ExpandAll @ QFT[ss:{__?QubitQ}, opts___?OptionQ] :=
-  QuantumCircuit @@ Join[
+  QuantumCircuit @@ Append[
     invCtrlPhase[ss][All],
-    With[{n = Length[ss]}, Table[Swap[ss[[j]],ss[[n-j+1]]], {j, n/2}]]
+    QBR[ss]
   ] /; OptionValue[{QFT, Gate}, opts, "Parameter"] == -1
 
 
@@ -2015,6 +2081,95 @@ invCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
  ]
 
 (**** </QFT> ****)
+
+
+(**** <QBR> ****)
+
+QBR::usage = "QBR[{s1, s2, \[Ellipsis]}] represents the quantum bit-reversal transform on the qubits s1, s2, \[Ellipsis].\nQBR is a generalization of the SWAP gate for more than two qubits."
+
+QBR /: 
+NonCommutativeQ[ QBR[___] ] = True
+
+QBR /:
+MultiplyKind @ QBR[{__?QubitQ}] = Qubit
+
+QBR /:
+MultiplyGenus @ QBR[___] := "Singleton"
+
+
+QBR /:
+Dagger[ op_QBR ] := op
+
+
+QBR[{}] = 1
+
+QBR[S_?QubitQ, ___] = 1
+
+QBR[{S_?QubitQ}, ___] = 1
+
+QBR[qq:{__?QubitQ}, opts___] :=
+  QBR[FlavorNone @ qq, opts] /;
+  Not[FlavorNoneQ @ qq]
+
+
+QBR /: 
+Elaborate[op_QBR] = op (* fallback *)
+
+QBR /:
+Elaborate[op:QBR[{__?QubitQ}, ___]] :=
+  Elaborate @ ExpressionFor[Matrix[op], Qubits @ op]
+
+
+QBR /:
+Matrix[QBR[ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := Module[
+  { L = Power[2, Length @ ss],
+    ii, jj, mm },
+  ii = Range[L] - 1;
+  jj = FromDigits[#, 2]& /@ Reverse /@ IntegerDigits[ii, 2, Length @ ss];
+  mm = SparseArray[Thread @ Rule[Transpose @ {ii+1, jj+1}, 1], {L, L}];
+  MatrixEmbed[mm, ss, tt]
+] /; ContainsAll[tt, ss]
+
+QBR /:
+Matrix[QBR[qq:{__?QubitQ}, ___], ss:{__?QubitQ}] := (
+  Message[QBR::badmat, FlavorNone @ qq, FlavorNone @ ss];
+  One @ Power[2, Length @ ss]
+)
+
+
+QBR /:
+Multiply[pre___, op:QBR[ss:{__?QubitQ}, ___], in:Ket[aa_Association]] :=
+  Multiply[ pre, Ket[in, ss -> Reverse[Lookup[aa, ss]]] ]
+
+QBR /:
+Multiply[in_Bra, op_QBR, post___] :=
+  Multiply[ Dagger[op ** Dagger[in]], post ]
+
+QBR /:
+Multiply[pre___, op:QBR[ss_List, ___], Dyad[a_Association, b_Association], post___] :=
+  Multiply[pre, Multiply[op ** Ket[a], Bra[b]], post] /; ContainsAll[Keys @ a, ss]
+
+QBR /:
+Multiply[pre___, Dyad[a_Association, b_Association], op:QBR[ss_List, ___], post___] :=
+  Multiply[pre, Ket[a], Multiply[Bra[b] ** op], post] /; ContainsAll[Keys @ b, ss]
+
+
+QBR /:
+Expand[op_QBR] = op (* fallback *)
+
+QBR /:
+Expand @ QBR[ss:{__?QubitQ}, ___] :=
+  QuantumCircuit @@ Table[ Swap[ss[[k]], ss[[-k]]], {k, Length[ss]/2} ]
+
+
+QBR /:
+ExpandAll[op_QBR] = op (* fallback *)
+
+QBR /:
+ExpandAll[ op:QBR[ss:{__?QubitQ}, ___] ] := 
+  Expand[Expand @ op]
+
+(**** </QBR> ****)
 
 
 (**** <Projector> ****)
@@ -2545,7 +2700,7 @@ ModMultiply::usage = "ModMultiply[n, {c1,c2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] r
 
 ModMultiply::order = "`` cannot be larger than ``."
 
-AddElaborationPatterns[_ModMultily];
+AddElaborationPatterns[_ModMultiply];
 
 ModMultiply /: NonCommutativeQ[_ModMultiply] = True
 
