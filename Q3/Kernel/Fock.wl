@@ -2277,7 +2277,9 @@ NormalOrder[expr_] := expr - VacuumExpectation[expr]
 
 FockColon::usage = "FockColon[expr] denotes the normal ordering of the operators in expr.\nThis is merely a placeholder, although its output is displayed with double dots surrounding expr. To explicitly evaluate the normal ordered expression, use NormalOrder function."
 
-Let[LinearMap, FockColon]
+FockColon[pre___, expr_Plus, post___] := FockColon[pre, #, post]& /@ expr
+
+FockColon[pre___, z_?CommutativeQ expr_, post] := z * FockColon[pre, expr, post]
 
 FockColon[] = 1
 
@@ -2287,7 +2289,7 @@ Format @ HoldPattern @ FockColon[op__] := Interpretation[
       Style["\[Colon]", FontColor -> Red]
      } },
   FockColon[op]
- ]
+]
 (* NOTE: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 :f**f: is formated as
    -2(:f f:). For more details on spurious parentheses, see

@@ -531,12 +531,12 @@ ParseGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
 ParseGate[
   ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ],
   more__?OptionQ
- ] := ParseGate @ ControlledPower[cc, op, more, opts]
+] := ParseGate @ ControlledPower[cc, op, more, opts]
 
-ParseGate @ ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ] :=
+ParseGate[ elm:ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ] ]:=
   Gate[ cc, Qubits[op],
-    "Label" -> gateLabel[ControlledPower[cc, op, opts]],
-    opts,
+    "Label" -> gateLabel[elm], 
+    opts, (* NOTE: In this case, opts MUST come later. *)
     "ControlShape" -> "Oval",
     "TargetShape" -> "Rectangle"
   ]
@@ -587,14 +587,15 @@ ParseGate @
     "LabelAngle" -> Pi/2 ]
 
 
-ParseGate[QFT[qq:{__?QubitQ}, opts___?OptionQ], more__?OptionQ] :=
-  ParseGate @ QFT[qq, more, opts]
+ParseGate[QFT[type_, qq_List, flag_, opts___?OptionQ], more__?OptionQ] :=
+  ParseGate @ QFT[type, qq, flag, more, opts]
 
-ParseGate[op:QFT[qq:{__?QubitQ}, opts___?OptionQ]] := Gate[ qq, 
-  FilterRules[{opts}, Options @ Gate],
-  "Label" -> gateLabel[op],
-  "LabelAngle" -> Pi/2
-]
+ParseGate[op:QFT[_, qq:{__?QubitQ}, _, opts___?OptionQ]] := 
+  Gate[ qq, 
+    FilterRules[{opts}, Options @ Gate],
+    "Label" -> gateLabel[op],
+    "LabelAngle" -> Pi/2
+  ]
 
 
 ParseGate[QBR[qq:{__?QubitQ}, opts___?OptionQ], more__?OptionQ] :=
@@ -604,6 +605,17 @@ ParseGate[op:QBR[qq:{__?QubitQ}, opts___?OptionQ]] :=
   Gate[ qq, 
     FilterRules[{opts}, Options @ Gate],
     "Label" -> "QBR",
+    "LabelAngle" -> Pi/2
+  ]
+
+
+ParseGate[QCR[qq:{__?QubitQ}, opts___?OptionQ], more__?OptionQ] :=
+  ParseGate @ QCR[qq, more, opts]
+
+ParseGate[op:QCR[qq:{__?QubitQ}, opts___?OptionQ]] :=
+  Gate[ qq, 
+    FilterRules[{opts}, Options @ Gate],
+    "Label" -> "QCR",
     "LabelAngle" -> Pi/2
   ]
 
@@ -680,21 +692,16 @@ gateLabel @ EulerRotation[{_, _, _}, S_?QubitQ, ___] :=
 
 gateLabel @ ControlledPower[_, _, OptionsPattern[]] := With[
   { lbl = OptionValue[ControlledPower, "Label"] },
-  If[ Head[Last @ lbl] === Subscript,
-    {First @ lbl, Subsuperscript[First @ Last @ lbl, Last @ Last @ lbl, First @ lbl]},
-    {First @ lbl, Superscript[Last @ lbl, First @ lbl]}
-   ]
- ]
+  {First @ lbl, mySuperscript[Last @ lbl, First @ lbl]}
+]
 
 
-gateLabel @ QFT[ss_List, opts___?OptionQ] := With[
-  { new = FilterRules[Flatten @ {opts}, Options @ QFT] },
-  Switch[ OptionValue[QFT, new, "Parameter"],
+gateLabel @ QFT[type_, _List, _?BooleanQ, ___] :=
+  Switch[ type,
     -1, SuperDagger["QFT"],
-    1, "QFT",
+    +1, "QFT",
     _, "DFT"
   ]
-]
 
 (**** </gateLabel> *****)
 

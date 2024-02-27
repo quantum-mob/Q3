@@ -3,6 +3,8 @@ BeginPackage["Q3`"]
 
 (**** <obsolete> ****)
 
+{ LinearMap, LinearMapFirst }; (* deprecated *)
+
 { TheLower, TheRaise, RaiseLower }; (* renamed *)
 { PauliEmbed, PauliApply }; (* obsolete and excised *)
 { NormalForm }; (* renamed *)
@@ -55,6 +57,39 @@ MultiplyExp /:
 HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := MultiplyExp[expr]
 
 (**** </fallbacks> ****)
+
+
+(**** <deprecated> *****)
+
+LinearMap::usage = "LinearMap represents linear maps.\nLet[LinearMap, f, g, \[Ellipsis]] defines f, g, \[Ellipsis] to be linear maps."
+
+Let[LinearMap, {ls__Symbol}] := (
+  Message[Q3General::deprecated, "LinearMap"];
+  Scan[setLinearMap, {ls}]
+)
+
+setLinearMap[op_Symbol] := (
+  op[a___, b1_ + b2_, c___] := op[a, b1, c] + op[a, b2, c];
+  op[a___, z_?CommutativeQ, b___] := z op[a, b];
+  op[a___, z_?CommutativeQ b_, c___] := z op[a, b, c];
+ )
+
+
+LinearMapFirst::usage = "LinearMapFirst represents functions that are linear for the first argument.\nLet[LinearMapFirst, f, g, \[Ellipsis]] defines f, g, \[Ellipsis] to be linear maps for their first argument."
+
+Let[LinearMapFirst, {ls__Symbol}] := (
+  Message[Q3General::deprecated, "LinearMapFirst"];
+  Scan[setLinearMapFirst, {ls}]
+)
+
+setLinearMapFirst[op_Symbol] := (
+  op[z_?CommutativeQ] := z;
+  op[z_?CommutativeQ, b__] := z op[b];
+  op[z_?CommutativeQ b_, c___] := z op[b, c]; (* NOTE: b_, not b__ ! *)
+  op[b1_ + b2_, c___] := op[b1, c] + op[b2, c];
+ )
+
+(**** </deprecated> *****)
 
 
 (**** <obsolete> ****)

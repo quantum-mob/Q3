@@ -25,7 +25,7 @@ BeginPackage["Q3`"]
 
 { Oracle };
 
-{ QFT, QBR };
+{ QFT, QBR, QCR };
 
 { ModMultiply, ModAdd, ModExp = ModPower };
 
@@ -83,10 +83,10 @@ AddElaborationPatterns[
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raising|Lowering|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
 
 Qubit /:
-Let[Qubit, {ls__Symbol}, opts___?OptionQ] := (
+Let[Qubit, {ls__Symbol}, ___?OptionQ] := (
   Let[NonCommutative, {ls}];
   Scan[setQubit, {ls}];
- )
+)
 
 setQubit[x_Symbol] := (
   MultiplyKind[x] ^= Qubit;
@@ -150,14 +150,14 @@ setQubit[x_Symbol] := (
 
   x[j___, C[n_Integer?NonPositive]] = x[j, 0];
   
-  x[j___, C[1]] = x[j, 3];
-  x[j___, C[2]] = x[j, 7];
-  x[j___, C[3]] = x[j, 8];
-  x[j___, C[4]] = x[j, 9];
+  (* x[j___, C[1]] = x[j, 3]; *)
+  (* x[j___, C[2]] = x[j, 7]; *)
+  (* x[j___, C[3]] = x[j, 8]; *)
+  (* x[j___, C[4]] = x[j, 9]; *)
 
   (* x[j___, 10] := (1 + x[j,3]) / 2; *)
   (* x[j___, 11] := (1 - x[j,3]) / 2; *)
-  (* NOTE: It interferes, say, with Ket[] encountered with short-cut inputs *)
+  (* NOTE: It interferes, say, with Ket[] encountered with short-cut inputs. *)
 
   x[j___, 0 -> 0] = x[j, 10];
   x[j___, 1 -> 1] = x[j, 11];
@@ -267,6 +267,7 @@ Qubits[expr_] := Select[Agents @ expr, QubitQ]
 (* Speical Rules: Involving identity *)
 
 HoldPattern @ Multiply[a___, _?QubitQ[___, 0], b___] := Multiply[a, b]
+
 
 (* Multiply operators on Ket[] *)
 
@@ -847,6 +848,24 @@ TheExpression[S_?QubitQ] := {
 (**** </ExpressionFor> ****)
 
 
+(**** <mySuperscript> <***)
+
+mySuperscript::usage = "mySuperscript[expr, x] is like Superscript, but handles subscript or superscript better."
+
+mySuperscript[Subscript[a_, b_], x_] := Subsuperscript[a, b, x]
+
+mySuperscript[Subsuperscript[a_, b_, c_], x_] := Subsuperscript[a, b, Row @ {c, "\[ThinSpace]", x}]
+
+mySuperscript[a_, x_] := Superscript[a, x]
+
+
+mySuperDagger::usage = "mySuperDagger[expr] is like SuperDagger, but handles subscript or superscript better."
+
+mySuperDagger[a_] := mySuperscript[a, "\[Dagger]"]
+
+(**** </mySuperscript> ****)
+
+
 (**** <Phase> ****)
 
 Phase::usage = "Phase[\[Phi], S[\[Ellipsis],n]] represents the relative phase shift by \[Phi] between the posiive and negative eigenstates of S[\[Ellipsis],n]."
@@ -874,8 +893,9 @@ Phase[aa_List, ss:{__?QubitQ}, opts___?OptionQ] :=
 
 Phase /:
 Dagger @ Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
-  Phase[-Conjugate[phi], S, opts]
+  Phase[-Conjugate[phi], S, ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]]
   
+
 Phase /:
 Elaborate @ Phase[phi_, S_?QubitQ, ___] :=
   Garner[ (1 + Exp[I*phi])/2 + S * (1 - Exp[I*phi])/2 ]
@@ -1420,7 +1440,7 @@ theControlledGate[cc:{__Rule}, op_] := Module[
 
 ControlledGate /:
 Dagger @ ControlledGate[cc:{__Rule}, expr_, opts___?OptionQ] :=
-  ControlledGate[cc, Dagger @ expr, opts]
+  ControlledGate[cc, Dagger @ expr, ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]]
 
 
 ControlledGate /:
@@ -1496,14 +1516,9 @@ ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
 
 ControlledPower /:
 Dagger @ ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
-  If[ MemberQ[Keys @ {opts}, "Label"],
-    With[
-      { opt = OptionValue[ControlledPower, {opts}, "Label"] },
-      ControlledPower[ ss, Dagger[expr], 
-        "Label" -> {First @ opt, Superscript[Last @ opt, "\[Dagger]"]},
-        Sequence @@ FilterRules[{opts}, Except @ "Label"] ]
-    ],
-    ControlledPower[ss, Dagger[expr], opts]
+  ControlledPower[ ss,
+    Dagger[expr],
+    ReplaceRulesBy[{opts}, "Label" -> ({First[#], mySuperDagger @ Last[#]}&)]
   ]
 
 
@@ -1560,12 +1575,9 @@ Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     pwr = ActOn[tt] /@ Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
     (* NOTE: Without ActOn, some elements in pwr may be 1. *)
 
-    txt = OptionValue[ControlledPower, opts, "Label"];
+    txt = OptionValue[ControlledPower, {opts}, "Label"];
     If[ListQ[txt], txt = Last @ txt];
-    txt = If[ Head[txt] === Subscript,
-      Table["Label" -> Subsuperscript[First @ txt, Last @ txt, Superscript[2, n-k]], {k, n}],
-      Table["Label" -> Superscript[txt, Superscript[2, n-k]], {k, n}]
-     ];
+    txt = Table["Label" -> mySuperscript[txt, Superscript[2, n-k]], {k, n}];
     new = ReplaceAll[
       MapThread[ControlledGate, {ss, pwr, txt}],
       HoldPattern @ ControlledGate[args__] ->
@@ -1906,76 +1918,100 @@ Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
 
 QFT::usage = "QFT[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transform on the qubits S1, S2, \[Ellipsis].\nDagger[QFT[\[Ellipsis]]] represents the inverse quantum Fourier transform.\nElaborate[QFT[\[Ellipsis]]] returns the explicit expression of the operator in terms of the Pauli operators."
 
-QFT::badmat = "Some elements of `` does not appear in `` for Matrix[QFT[\[Ellipsis]]]."
+QFT::mat = "Some elements of `` do not appear in `` for Matrix[QFT[\[Ellipsis]]]."
 
-Options[QFT] = {
-  "Parameter" -> 1,
-  N -> False
-}
+SetAttributes[QFT, NHoldAll];
 
-QFT /: NonCommutativeQ[ QFT[___] ] = True
+N[ QFT[type_, ss_, False, opts___?OptionQ] ] := 
+  QFT[type, ss, True, opts]
+
+
+QFT /:
+NonCommutativeQ[ QFT[___] ] = True
 
 QFT /:
 MultiplyKind @ QFT[{__?QubitQ}] = Qubit
 
-QFT /:
+(* WARNING: Do NOT set this. *)
+(* QFT /:
 MultiplyGenus @ QFT[___] := "Singleton"
+ *)
+
+QFT /:
+Dagger[ op:QFT[type:-1|1, rest___] ] := QFT[-type, rest]
+
+
+QFT[type_, ss_, opts___?OptionQ] := QFT[type, ss, False, opts]
+
+QFT[S_?QubitQ, rest___] := QFT[1, {S}, rest]
+
+QFT[type_, S_?QubitQ, rest___] := QFT[type, S @ {$}, rest]
+
+QFT[ss:{___?QubitQ}, rest___] := QFT[1, FlavorNone @ ss, rest]
+
+QFT[type_, ss:{__?QubitQ}, rest___] :=
+  QFT[type, FlavorNone @ ss, rest] /; Not[FlavorNoneQ @ ss]
+
+
+QFT[-1|1, {}, ___] = 1
+
+
+QFT /: 
+Elaborate[op_QFT] = op (* fallback *)
+
+QFT /:
+Elaborate[op:QFT[_, ss:{__?QubitQ}, ___]] :=
+  Elaborate @ ExpressionFor[Matrix[op, ss], ss]
 
 
 QFT /:
-Dagger[ op:QFT[ss_List, opts___?OptionQ] ] := With[
-  { new = DeleteCases[op, "Parameter" -> _],
-    few = FilterRules[Flatten @ {opts}, Options @ QFT] },
-  Switch[ OptionValue[QFT, few, "Parameter"],
-    1, Append[new, "Parameter" -> -1],
-    _, new
-  ]
-]
-
-
-QFT[{}] = 1
-
-QFT[S_?QubitQ, ___?OptionQ] := S[6]
-
-QFT[{S_?QubitQ}, ___?OptionQ] := S[6]
-
-QFT[qq:{__?QubitQ}, opts___?OptionQ] :=
-  QFT[FlavorNone @ qq, opts] /;
-  Not[FlavorNoneQ @ qq]
-
-
-QFT /: Elaborate[op_QFT] = op (* fallback *)
+Matrix[op_QFT, tt:{___?QubitQ}] := 
+  op * One @ Power[2, Length @ tt] (* fallback *)
 
 QFT /:
-Elaborate[op:QFT[{__?QubitQ}, ___?OptionQ]] :=
-  Elaborate @ ExpressionFor[Matrix[op], Qubits @ op]
-
-
-QFT /:
-Matrix[QFT[qq:{__?QubitQ}, opts___?OptionQ], ss:{__?QubitQ}] := Module[
-  { new = FilterRules[Flatten @ {opts}, Options @ QFT],
-    mat },
-  mat = FourierMatrix[
-    Power[2, Length @ qq],
-    FourierParameters -> {0, OptionValue[QFT, new, "Parameter"]}
-  ];
-  If[OptionValue[QFT, new, N], mat = N[mat]];
-  MatrixEmbed[mat, qq, ss]
-] /; ContainsAll[ss, qq]
+Matrix[QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, opts___?OptionQ], tt:{__?QubitQ}] := 
+  Module[
+    { new = FilterRules[Flatten @ {opts}, Options @ QFT],
+      mat },
+    mat = FourierMatrix[
+      Power[2, Length @ ss],
+      FourierParameters -> {0, type}
+    ];
+    If[flag, mat = N[mat]];
+    MatrixEmbed[mat, ss, FlavorNone @ tt]
+  ] /; ContainsAll[FlavorNone @ tt, ss]
 
 QFT /:
-Matrix[QFT[qq:{__?QubitQ}, ___], ss:{__?QubitQ}] := (
-  Message[QFT::badmat, FlavorNone @ qq, FlavorNone @ ss];
-  One @ Power[2, Length @ ss]
+Matrix[QFT[_, ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := (
+  Message[QFT::mat, ss, FlavorNone @ tt];
+  One @ Power[2, Length @ tt]
 )
 
 
 QFT /:
-Multiply[pre___, op:QFT[ss:{__?QubitQ}, opts___?OptionQ], in_Ket] :=
-  Garner @ With[
+Multiply[pre___, QFT[type_, ss_List, _, ___], QFT[type_, ss_List, _, ___], post___] :=
+  Multiply[pre, QCR[ss], post]
+
+QFT /:
+HoldPattern @ Multiply[pre___, a:QCR[ss_List, ___], b:QFT[1, ss_List, _, ___], post___] :=
+  Multiply[pre, b, a, post]
+(* NOTE: QFT commute with QCR. *)
+
+QFT /:
+HoldPattern @ Multiply[pre___, a:QFT[-1, ss_List, _, ___], b:QCR[ss_List, ___], post___] :=
+  Multiply[pre, b, a, post]
+(* NOTE: QFT commute with QCR. *)
+
+
+QFT /:
+Multiply[pre___, op:QFT[type_, ss:{__?QubitQ}, flag_?BooleanQ, opts___?OptionQ], in_Ket] :=
+  Garner @ Module[
     { k = FromDigits[in[ss], 2],
-      L = Power[2, Length @ ss] },
-    Basis[ss] . Exp[2*Pi*I * Range[0, L-1] * k / L] / Sqrt[L]
+      L = Power[2, Length @ ss],
+      v },
+    v = Exp[type * (2*Pi*I) * Range[0, L-1] * k / L] / Sqrt[L];
+    If[flag, v = N[v]];
+    Dot[Basis[ss], v] 
   ]
 
 QFT /:
@@ -1983,36 +2019,40 @@ Multiply[in_Bra, op_QFT, post___] :=
   Multiply[ Dagger[Dagger[op] ** Dagger[in]], post ]
 
 QFT /:
-Multiply[pre___, op:QFT[ss_List, ___], Dyad[a_Association, b_Association], post___] :=
+Multiply[pre___, op:QFT[_, ss_List, ___], Dyad[a_Association, b_Association], post___] :=
   Multiply[pre, Multiply[op ** Ket[a], Bra[b]], post] /; ContainsAll[Keys @ a, ss]
 
 QFT /:
-Multiply[pre___, Dyad[a_Association, b_Association], op:QFT[ss_List, ___], post___] :=
+Multiply[pre___, Dyad[a_Association, b_Association], op:QFT[_, ss_List, ___], post___] :=
   Multiply[pre, Multiply[Ket[a], Bra[b] ** op], post] /; ContainsAll[Keys @ b, ss]
+
+
+QFT /:
+Multiply[pre___, QFT[m:(-1|1), ss_, ___], QFT[n:(-1|1), ss_, ___], post___] :=
+  Multiply[pre, post] /; m + n == 0
 
 
 QFT /:
 Expand[op_QFT] = op (* fallback *)
 
 QFT /:
-Expand @ QFT[ss:{__?QubitQ}, opts___?OptionQ] := 
-  QuantumCircuit @@ Append[qftCtrlPower[ss, opts][All], QBR[ss]] /; 
-    OptionValue[{QFT, Gate}, {opts}, "Parameter"] == 1
+Expand @ QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___] := 
+  QuantumCircuit @@ Append[qftCtrlPower[type, ss, flag][All], QBR[ss]]
 
-qftCtrlPower[ss:{__?QubitQ}, opts___][All] := Flatten @
-  Map[qftCtrlPower[ss, opts], Range @ Length @ ss]
+qftCtrlPower[type_, ss:{__?QubitQ}, flag_][All] := Flatten @
+  Map[qftCtrlPower[type, ss, flag], Range @ Length @ ss]
 
-qftCtrlPower[ss:{__?QubitQ}, opts___][1] := { First[ss][6] }
+qftCtrlPower[type_, ss:{__?QubitQ}, flag_][1] := { First[ss][6] }
 
-qftCtrlPower[ss:{__?QubitQ}, opts___][k_Integer] := With[
+qftCtrlPower[-1, ss:{__?QubitQ}, flag_][k_Integer] :=
+  Dagger[ qftCtrlPower[1, ss, flag][k] ]
+
+qftCtrlPower[1, ss:{__?QubitQ}, flag_][k_Integer] := With[
   { T = ss[[k]] },
   { ControlledPower[
-      Reverse @ Take[ss, k-1], 
-      If[ OptionValue[{QFT, Gate}, {opts}, N],
-        Phase[2.*Pi*Power[2., -k], T[3]],
-        T[C[k]]
-      ],
-      "Label" -> {"\!\(\*OverscriptBox[\(x\), \(~\)]\)", Subscript["Z",k]} 
+      Reverse @ Take[ss, k-1],
+      If[ flag, Phase[N[2*Pi*Power[2, -k]], T[3]], T[C[k]] ],
+      "Label" -> {"\!\(\*OverscriptBox[\(x\), \(~\)]\)", thePauliForm @ T[C[k]]} 
     ],
     T[6]
   }
@@ -2023,62 +2063,31 @@ QFT /:
 ExpandAll[op_QFT] = op (* fallback *)
 
 QFT /:
-ExpandAll @ QFT[ss:{__?QubitQ}, opts___?OptionQ] := 
-  QuantumCircuit @@ Append[
-    qftCtrlPhase[ss, opts][All],
-    QBR[ss]
-  ] /; OptionValue[{QFT, Gate}, opts, "Parameter"] == 1
+ExpandAll @ QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___] := 
+  QuantumCircuit @@ Append[qftCtrlPhase[type, ss, flag][All], Expand @ QBR[ss]]
 
-qftCtrlPhase[ss:{__?QubitQ}, opts___][All] :=
-  Map[qftCtrlPhase[ss, opts], Range @ Length @ ss]
+qftCtrlPhase[type_, ss:{__?QubitQ}, flag_][All] := Flatten @
+  Map[qftCtrlPhase[type, ss, flag], Range @ Length @ ss]
 
-qftCtrlPhase[ss:{__?QubitQ}, opts___][k_Integer] := 
-  Sequence @@ Module[
+qftCtrlPhase[-1, ss:{__?QubitQ}, flag_][k_Integer] :=
+  Dagger[ qftCtrlPhase[1, ss, flag][k] ]
+
+qftCtrlPhase[1, ss:{__?QubitQ}, flag_][k_Integer] :=
+  Module[
     { T = ss[[k]] },
     Append[
       Table[
         ControlledGate[
           ss[[{j}]] -> {1},
-          If[ OptionValue[{QFT, Gate}, {opts}, N],
-            Phase[N[2*Pi*Power[2, j-k-1]], T[3]],
+          If[ flag, 
+            Phase[ N[2*Pi*Power[2, j-k-1]], T[3], "Label" -> thePauliForm @ T[C[k-j+1]] ], 
             T[C[k-j+1]]
-          ],
-          "Label" -> Subscript["Z", k-j+1] ],
+          ]
+        ],
         {j, k-1} ],
       T[6]
     ]
   ]
-
-
-QFT /:
-Expand[op_QFT] := ExpandAll[op] /; 
-  OptionValue[{QFT, Gate}, List @@ Rest[op], "Parameter"] == -1
-(* TODO: More sophisticated implementation is required so that the SWAP gates come at the last part of the quantum circuit.. *)
-
-
-QFT /:
-ExpandAll @ QFT[ss:{__?QubitQ}, opts___?OptionQ] :=
-  QuantumCircuit @@ Append[
-    invCtrlPhase[ss][All],
-    QBR[ss]
-  ] /; OptionValue[{QFT, Gate}, opts, "Parameter"] == -1
-
-
-invCtrlPhase[ss:{__?QubitQ}] := 
-  invCtrlPhase[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
-
-invCtrlPhase[ss:{__?QubitQ}][All] :=
-  Map[invCtrlPhase[ss], Range @ Length @ ss]
-
-invCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
-  { T = ss[[k]] },
-  Append[
-    Table[
-      ControlledGate[ ss[[{j}]] -> {1}, Dagger @ T[C[k-j+1]], 
-        "Label" -> Subsuperscript["Z", k-j+1, "\[Dagger]"] ],
-      {j, k-1} ],
-    T[6]]
- ]
 
 (**** </QFT> ****)
 
@@ -2087,15 +2096,18 @@ invCtrlPhase[ss:{__?QubitQ}][k_Integer] := Sequence @@ With[
 
 QBR::usage = "QBR[{s1, s2, \[Ellipsis]}] represents the quantum bit-reversal transform on the qubits s1, s2, \[Ellipsis].\nQBR is a generalization of the SWAP gate for more than two qubits."
 
+QBR::mat = "Some elements of `` do not appear in `` for Matrix[QBR[\[Ellipsis]]]."
+
 QBR /: 
 NonCommutativeQ[ QBR[___] ] = True
 
 QBR /:
 MultiplyKind @ QBR[{__?QubitQ}] = Qubit
 
-QBR /:
+(* WARNING: Do NOT set this. *)
+(* QBR /:
 MultiplyGenus @ QBR[___] := "Singleton"
-
+ *)
 
 QBR /:
 Dagger[ op_QBR ] := op
@@ -2132,9 +2144,14 @@ Matrix[QBR[ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := Module[
 
 QBR /:
 Matrix[QBR[qq:{__?QubitQ}, ___], ss:{__?QubitQ}] := (
-  Message[QBR::badmat, FlavorNone @ qq, FlavorNone @ ss];
+  Message[QBR::mat, FlavorNone @ qq, FlavorNone @ ss];
   One @ Power[2, Length @ ss]
 )
+
+
+QBR /:
+Multiply[pre___, QBR[ss_List, ___], QBR[ss_List, ___], post___] :=
+  Multiply[pre, post]
 
 
 QBR /:
@@ -2170,6 +2187,106 @@ ExpandAll[ op:QBR[ss:{__?QubitQ}, ___] ] :=
   Expand[Expand @ op]
 
 (**** </QBR> ****)
+
+
+(**** <QCR> ****)
+
+QCR::usage = "QCR[{s1, s2, \[Ellipsis]}] represents the quantum circle reflection on the qubits s1, s2, \[Ellipsis]."
+
+QCR::mat = "Some elements of `` do not appear in `` for Matrix[QCR[\[Ellipsis]]]."
+
+QCR /: 
+NonCommutativeQ[ QCR[___] ] = True
+
+QCR /:
+MultiplyKind @ QCR[{__?QubitQ}] = Qubit
+
+(* WARNING: Do NOT set this. *)
+(* QCR /:
+MultiplyGenus @ QCR[___] := "Singleton"
+ *)
+
+QCR /:
+Dagger[ op_QCR ] := op
+
+
+QCR[{}] = 1
+
+QCR[S_?QubitQ, ___] = 1
+
+QCR[{S_?QubitQ}, ___] = 1
+
+QCR[qq:{__?QubitQ}, opts___] :=
+  QCR[FlavorNone @ qq, opts] /;
+  Not[FlavorNoneQ @ qq]
+
+
+QCR /: 
+Elaborate[op_QCR] = op (* fallback *)
+
+QCR /:
+Elaborate[op:QCR[{__?QubitQ}, ___]] :=
+  Elaborate @ ExpressionFor[Matrix[op], Qubits @ op]
+
+
+QCR /:
+Matrix[QCR[ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := Module[
+  { L = Power[2, Length @ ss],
+    ii, jj, mm },
+  ii = Range[L];
+  jj = Prepend[Reverse @ Rest @ ii, 1];
+  mm = SparseArray[Thread @ Rule[Transpose @ {ii, jj}, 1], {L, L}];
+  MatrixEmbed[mm, ss, tt]
+] /; ContainsAll[tt, ss]
+
+QCR /:
+Matrix[QCR[qq:{__?QubitQ}, ___], ss:{__?QubitQ}] := (
+  Message[QCR::mat, FlavorNone @ qq, FlavorNone @ ss];
+  One @ Power[2, Length @ ss]
+)
+
+
+QCR /:
+Multiply[pre___, QCR[ss_List, ___], QCR[ss_List, ___], post___] :=
+  Multiply[pre, post]
+
+
+QCR /:
+Multiply[pre___, op:QCR[ss:{__?QubitQ}, ___], in:Ket[aa_Association]] :=
+  With[
+    { vv = Power[2, Length @ ss] - FromDigits[Lookup[aa, ss], 2] },
+    Multiply[ pre, Ket[in, ss -> IntegerDigits[vv, 2, Length @ ss]] ]
+  ]
+
+QCR /:
+Multiply[in_Bra, op_QCR, post___] :=
+  Multiply[ Dagger[op ** Dagger[in]], post ]
+
+QCR /:
+Multiply[pre___, op:QCR[ss_List, ___], Dyad[a_Association, b_Association], post___] :=
+  Multiply[pre, Multiply[op ** Ket[a], Bra[b]], post] /; ContainsAll[Keys @ a, ss]
+
+QCR /:
+Multiply[pre___, Dyad[a_Association, b_Association], op:QCR[ss_List, ___], post___] :=
+  Multiply[pre, Ket[a], Multiply[Bra[b] ** op], post] /; ContainsAll[Keys @ b, ss]
+
+
+QCR /:
+Expand[op_QCR] = op (* fallback *)
+
+QCR /:
+Expand @ QCR[ss:{__?QubitQ}, ___] :=
+  QuantumCircuit[QFT[ss], QFT[ss]]
+
+
+QCR /:
+ExpandAll[op_QCR] = op (* fallback *)
+
+QCR /:
+ExpandAll[ op:QCR[ss:{__?QubitQ}, ___] ] := 
+  ExpandAll[Expand @ op]
+
+(**** </QCR> ****)
 
 
 (**** <Projector> ****)

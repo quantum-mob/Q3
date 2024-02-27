@@ -1986,8 +1986,8 @@ Matrix[ expr_, S_?SpeciesQ, tt_ ] := Matrix[expr, S @ {$}, tt]
 
 Matrix[ expr_, ss_, T_?SpeciesQ ] := Matrix[expr, ss, T @ {$}]
 
-Matrix[ expr_, ss:{__?SpeciesQ} ] := Matrix[expr, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+Matrix[ expr_, ss:{__?SpeciesQ} ] := 
+  Matrix[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
 
 Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
   Matrix[expr, FlavorNone @ ss, FlavorNone @ tt] /;
@@ -2837,8 +2837,8 @@ Multiply[
 
 
 Rotation /:
-Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] ] :=
-  Rotation[-Conjugate[ang], v, S, rest]
+Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] ] :=
+  Rotation[-Conjugate[ang], v, S, ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]]
 
 
 Rotation /:
@@ -2887,11 +2887,16 @@ EulerRotation[aa:{_, _, _}, G:(_?SpinQ|_?QubitQ), rest___] :=
   EulerRotation[aa, G[$], rest] /; Not[FlavorNoneQ @ G]
 
 
+(* NOTE: The following code makes many calculations significantly slow. It is far better to use the high-level feature as those given below for MultiplyPower and Multiply. *)
 (*
 EulerRotation /:
 Multiply[pre___, op_EulerRotation, post___ ] :=
   Multiply[pre, Elaborate @ op, post]
  *)
+
+EulerRotation /:
+Dagger @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] :=
+  EulerRotation[{-c, -b, -a}, S, ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]]
 
 
 EulerRotation /:

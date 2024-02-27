@@ -21,6 +21,7 @@ EndPackage[]
 
 (**** <Packages Loading> ****)
 
+Get["Q3`Abba`"];
 Get["Q3`Abby`"];
 Get["Q3`Abel`"];
 Get["Q3`Cauchy`"];
