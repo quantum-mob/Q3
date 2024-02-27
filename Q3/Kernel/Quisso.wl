@@ -1989,18 +1989,26 @@ Matrix[QFT[_, ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := (
 
 
 QFT /:
+MultiplyPower[op:QFT[_, ss_List, _, ___], n_Integer] :=
+  Switch[ Mod[n, 4],
+    0, 1,
+    1, op,
+    2, QCR[ss],
+    3, Dagger[op]
+  ]
+
+
+QFT /:
 Multiply[pre___, QFT[type_, ss_List, _, ___], QFT[type_, ss_List, _, ___], post___] :=
   Multiply[pre, QCR[ss], post]
 
 QFT /:
-HoldPattern @ Multiply[pre___, a:QCR[ss_List, ___], b:QFT[1, ss_List, _, ___], post___] :=
-  Multiply[pre, b, a, post]
-(* NOTE: QFT commute with QCR. *)
+HoldPattern @ Multiply[pre___, QCR[ss_List, ___], op:QFT[_, ss_List, _, ___], post___] :=
+  Multiply[pre, Dagger @ op, post]
 
 QFT /:
-HoldPattern @ Multiply[pre___, a:QFT[-1, ss_List, _, ___], b:QCR[ss_List, ___], post___] :=
-  Multiply[pre, b, a, post]
-(* NOTE: QFT commute with QCR. *)
+HoldPattern @ Multiply[pre___, op:QFT[_, ss_List, _, ___], QCR[ss_List, ___], post___] :=
+  Multiply[pre, Dagger @ op, post]
 
 
 QFT /:

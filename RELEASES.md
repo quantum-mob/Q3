@@ -2,8 +2,11 @@
 
 ## 3.3.3
 
+- New functions QCR and QBR, and their relation to QFT.
+- QFT enhanced and improved.
+- New syntax pattern for QFT.
 - Utility tools are separated from Abel. LinearMap and LinearMapFirst are deprecated. New message Q3General::deprecated. New functions ReplaceRules and ReplaceRulesBy.
-- Port labels now can be aligned left or right.
+- Port labels now can be aligned left or right in QuantumCircuit.
 
 ## 3.3.2 
 
