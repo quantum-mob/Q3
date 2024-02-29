@@ -3,7 +3,9 @@ BeginPackage["Q3`"]
 
 { Spin, SpinNumberQ };
 
-{ State, TheKet, TheBra, TheState };
+{ TheKet, TheBra };
+
+{ State, Operator };
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
   KetFactor, KetPurge, KetSort,
@@ -43,7 +45,6 @@ BeginPackage["Q3`"]
 
 { Pauli, Raising, Lowering, Hadamard, Quadrant, Octant, Hexadecant,
   ThePauli, TheRaising, TheLowering, TheHadamard };
-{ Operator, TheOperator };
 
 { RaisingLoweringForm };
 
@@ -148,31 +149,6 @@ TheKet[a_Integer, bc__Integer] := (
  )
 
 (**** </TheKet> ****)
-
-
-TheState::usage = "TheState[{0, theta, phi}] = TheRotation[phi, 3].TheRotation[theta, 2].TheKet[0].
-TheState[{1, theta, phi}] = TheRotation[phi,3].TheRotation[theta,2].TheKet[1].
-TheState[{s1,t1,p1}, {s2,t2,p2}, ...] = TheState[{s1,t1,p1}] \[CircleTimes]
-TheState[s2,t2,p2]\[CircleTimes]....  TheState[{{s1,s2,...}, th, ph}] =
-TheState[{s1,th,ph}, {s2,th,ph}, ...]."
-(* Ket is used so often that it is better to simplify its definition as much
-   as possible. Hence State[] and its counterpart TheState[]. *)
-
-TheState[ {(0|Up), theta:Except[_List], phi:Except[_List]} ] := {
-  Exp[-I*phi/2]Cos[theta/2],
-  Exp[+I*phi/2]Sin[theta/2]
- }
-
-TheState[ {(1|Down), theta:Except[_List], phi:Except[_List]} ] := {
-  -Exp[-I*phi/2]Sin[theta/2],
-  +Exp[+I*phi/2]Cos[theta/2]
- }
-
-TheState[ a:{(0|1|Up|Down), Except[_List], Except[_List]}.. ] :=
-  CircleTimes @@ Map[TheState,{a}]
-
-TheState[ { m:{(0|1|Up|Down)..}, t:Except[_List], p:Except[_List] } ] :=
-  CircleTimes @@ Map[TheState] @ Tuples[{m, {t}, {p}}]
 
 
 (**** <ThePauli> ****)
@@ -294,26 +270,6 @@ ThePauli[0 -> 0] = ThePauli[10]
 ThePauli[1 -> 1] = ThePauli[11]
 
 (**** </ThePauli> ****)
-
-
-(**** <TheOperator> ****)
-
-TheOperator::usage = "TheOperator[{n,\[Theta],\[Phi]}] gives a Pauli matrix in the nth direction in the (\[Theta],\[Phi])-rotated frame.
-  TheOperator[{n1,t1,p1},{n2,t2,p2},...] = TheOperator[{n1,t1,p1}] \[CircleTimes] TheOperator[{n2,t2,p2}] \[CircleTimes] ... .
-  TheOperator[{{n1,n2,...}, th, ph}] = TheOperator[{n1,th,ph}, {n2,th,ph}, ...]."
-
-TheOperator[{0, theta_,phi_}] = ThePauli[0]
-
-TheOperator[{n:(1|2|3), theta_, phi_}] := Matrix @ Operator[{n,theta,phi}]
-
-TheOperator[ nn:{(0|1|2|3|4|5|6|Raising|Lowering|Hadamard), _, _}.. ] :=
-  CircleTimes @@ Map[TheOperator] @ {nn}
-
-TheOperator[ { n:{(0|1|2|3|4|5|6|Raising|Lowering|Hadamard)..},
-    th:Except[_List], ph:Except[_List] } ] :=
-  CircleTimes @@ Map[TheOperator] @ Tuples[{n, {th}, {ph}}]
-
-(**** </TheOperator> ****)
 
 
 (**** <KetRegulate> ****)
@@ -762,7 +718,7 @@ theKetFormatQ[_] = False
 
 (**** <Ket & Bra> ****)
 
-Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[s1, s2, \[Ellipsis]] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, TheState, Pauli, ThePauli, Operator, TheOperator."
+Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[s1, s2, \[Ellipsis]] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, Pauli, ThePauli, Operator."
 
 Bra::usage = "Bra[expr] := Dagger[Ket[expr]].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
 
@@ -1320,36 +1276,20 @@ HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
 
 (**** <MultiplyPower> ****)
 
-HoldPattern @ MultiplyPower[expr_, n_] :=
+HoldPattern @ MultiplyPower[expr_, n_Integer] :=
   ExpressionFor @ MatrixPower[Matrix @ expr, n] /;
   Agents[expr] == {} /;
   Not @ FreeQ[expr, _Pauli]
 
-HoldPattern @ MultiplyPower[op_, n_] := Module[
+(* NOTE: For n > 1, this is shadowed by a simmilar definition in Abel. *)
+HoldPattern @ MultiplyPower[op_, n_Integer] := Module[
   { ss = Agents[op],
     mat },
   mat = MatrixPower[Matrix[op, ss], n]; 
   ExpressionFor[mat, ss]
- ]
+]
 
 (**** </MultiplyPower> ****)
-
-
-State::usage = "State[{0, \[Theta], \[Phi]}] and Ket[{1, \[Theta], \[Phi]}] returns the eigenvectors of Pauli[3] in the (\[Theta], \[Phi])-rotated frame.\nState[{s$1, \[Theta]$1, \[Phi]$1}, {s$2, \[Theta]$2, \[Phi]$2}, ...] returns the tensor product State[{s$1, \[Theta]$1, \[Phi]$1}]\[CircleTimes] State[{s$2, \[Theta]$2, \[Phi]$2}, ...]\[CircleTimes]....\nState[{{s$1, s$2, ...}, \[Theta], \[Phi]}] = State[{s$1, \[Theta], \[Phi]}, {s$2, \[Theta], \[Phi]}, ...].\nSee also Ket, TheKet, TheState, Pauli, ThePauli, Operator, TheOperator."
-
-State[ { (0|Up), theta:Except[_List], phi:Except[_List] } ] :=
-  Exp[-I*phi/2]Cos[theta/2] * Ket[0] +
-  Exp[+I*phi/2]Sin[theta/2] * Ket[1]
-
-State[ { (1|Down), theta:Except[_List], phi:Except[_List] } ] :=
-  -Exp[-I*phi/2]Sin[theta/2] * Ket[0] +
-  +Exp[+I*phi/2]Cos[theta/2] * Ket[1]
-
-State[ a:{ (0|1|Up|Down), Except[_List], Except[_List] }.. ] :=
-  CircleTimes @@ Map[State,{a}]
-
-State[ { m:{(0|1|Up|Down)..}, t:Except[_List], p:Except[_List] } ] :=
-  CircleTimes @@ Map[State] @ Tuples[{m,{t},{p}}]
 
 
 (**** <BraKet> ****)
@@ -1386,6 +1326,126 @@ BraKet[a_Association, b_Association] := With[
 
 (**** </BraKet> ****)
 
+
+(**** <State> ****)
+
+State::usage = "State[vec, {s1,s2,\[Ellipsis]}] represents the state of the systems {s1, s2, \[Ellipsis]} with the vector representation vec."
+
+SyntaxInformation[State] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
+
+AddElaborationPatterns[_State]
+
+State /:
+MakeBoxes[vv:State[vec_?VectorQ, ss:{__?QubitQ}, opts___?OptionQ], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    State, vv, None,
+    { BoxForm`SummaryItem @ {"Species: ", ss},
+      BoxForm`SummaryItem @ {"Dimension: ", Length @ vec} },
+    { BoxForm`SummaryItem @ {"Vector (up to 5): ", Normal@vec[[;;UpTo[5]]]},
+      BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
+    fmt, "Interpretable" -> Automatic ]
+
+
+State[vec_?VectorQ, S_?SpeciesQ, opts___?OptionQ] := 
+  State[vec, S @ {$}, opts]
+
+State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
+  State[vec, FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
+
+
+State /:
+Matrix[ State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{___?QubitQ} ] :=
+  MatrixEmbed[vec, ss, tt]
+
+State /:
+Elaborate[ State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ] ] :=
+  ExpressionFor[vec, ss]
+
+
+State /:
+Multiply[pre___, op_, State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], post___] :=
+  With[
+    { tt = Agents @ {op, ss} },
+    Multiply[
+      pre,
+      State[ Matrix[op, ss] . MatrixEmbed[vec, ss, tt], tt],
+      post
+    ]
+  ]
+
+(**** </State> ****)
+
+
+(**** <Operator> ****)
+
+Operator::usage = "Operator[mat, {s1,s2,\[Ellipsis]}] represents the operator acting on systems {s1, s2, \[Ellipsis]} with the matrix representation mat."
+
+SyntaxInformation[Operator] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
+
+AddElaborationPatterns[_Operator]
+
+Operator /:
+MakeBoxes[op:Operator[mat_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    Operator, op, None,
+    { BoxForm`SummaryItem @ {"Species: ", ss},
+      BoxForm`SummaryItem @ {"Dimension: ", Dimensions @ mat} },
+    { BoxForm`SummaryItem @ {"Matrix (5\[Times]5): ", MatrixForm@mat[[;;UpTo[5], ;;UpTo[5]]]},
+      BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
+    fmt, "Interpretable" -> Automatic ]
+
+
+Operator[mat_?MatrixQ, S_?SpeciesQ, opts___?OptionQ] := 
+  Operator[mat, S @ {$}, opts]
+
+Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
+  Operator[mat, FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
+
+
+Operator /:
+Matrix[ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{__?QubitQ} ] :=
+  MatrixEmbed[mat, ss, tt]
+
+Operator /:
+Elaborate[ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ] ] :=
+  Elaborate @ ExpressionFor[mat, ss]
+
+
+Operator /:
+Multiply[
+  pre___,
+  Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ],
+  Ket[aa_Association], 
+  post___
+] :=
+  Multiply[
+    pre,
+    ExpressionFor[mat . Matrix[Ket @ KeyTake[aa, ss], ss], ss],
+    Ket @ KeyDrop[aa, ss]
+    post
+  ]
+
+Operator /:
+Multiply[
+  pre___, 
+  Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ], 
+  State[vec_?VectorQ, tt:{__?SpeciesQ}, ___?OptionQ],
+  post___
+] :=
+  With[
+    { qq = Union[ss, tt] },
+    Multiply[
+    pre,
+    State[ MatrixEmbed[mat, ss, qq] . MatrixEmbed[vec, tt, qq], qq ]
+    post
+    ]
+  ]
+
+(**** </Operator> ****)
+
+
+(**** <RaisingLoweringForm> ****)
+
 RaisingLoweringForm::usage = "RaisingLoweringForm[expr] converts expr by rewriting Pauli or Spin X and Y operators in terms of the raising and lowering operators."
 
 RaisingLoweringForm[expr_] := Garner[expr //. $RaisingLoweringRules]
@@ -1419,6 +1479,8 @@ SetAttributes[Octant, Listable]
 Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[Pi]/16."
 
 SetAttributes[Hexadecant, Listable]
+
+(**** </RaisingLoweringForm> ****)
 
 
 (**** <Pauli> ****)
@@ -1620,31 +1682,6 @@ HoldPattern @ Multiply[pre___, op_Pauli, more__Pauli, Shortest[post___]] :=
   Multiply[pre, PauliDot[op, more], post]
 
 (**** </Pauli> ****)
-
-
-Operator::usage = "Operator[{k, th, ph}] returns the Pauli matrix in the rotated frame.\nOperator[{{k1,k2,...}, th, ph}] = Operator[{k1, th, ph}, {k2, th, ph}, ...]."
-
-Operator[{0, theta_, phi_}] := Pauli[0]
-
-Operator[{n:(1|2|3), theta_, phi_}] := Garner @
-  { Pauli[1], Pauli[2], Pauli[3] } . EulerMatrix[{phi,theta,0}][[;;,n]]
-
-Operator[{4|Raising, th_, ph_}] := ( Operator[{1,th,ph}] + I Operator[{2,th,ph}] ) / 2
-
-Operator[{5|Lowering, th_, ph_}] := ( Operator[{1,th,ph}] - I Operator[{2,th,ph}] ) / 2
-
-Operator[{6|Hadamard, th_, ph_}] := ( Operator[{1,th,ph}] + Operator[{3,th,ph}] ) / Sqrt[2]
-
-(* Short-hand interface for multi-spin system *)
-
-Operator[ kk:{(0|1|2|3|4|5|6), _, _} .. ] := Garner[
-  CircleTimes @@ Map[Operator] @ {kk}
- ]
-
-Operator[ { kk:{(0|1|2|3|4|5|6|7|8)..},
-    th:Except[_List], ph:Except[_List] } ] := 
-  CircleTimes @@ Map[Operator] @ Tuples[{kk, {th}, {ph}}]
-(* These are first expanded because they are not elementry. *)
 
 
 (**** <ExpressionFor> ****)

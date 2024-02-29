@@ -204,7 +204,7 @@ setQubit[x_Symbol] := (
    ];
  )
 
-Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := 0
+Missing["KeyAbsent", _Symbol?QubitQ[___, $]] = 0
 
 
 Raising[S_?QubitQ] := S[4]
@@ -266,8 +266,8 @@ Qubits[expr_] := Select[Agents @ expr, QubitQ]
 
 (* Speical Rules: Involving identity *)
 
-HoldPattern @ Multiply[a___, _?QubitQ[___, 0], b___] := Multiply[a, b]
-
+HoldPattern @ Multiply[pre___, _?QubitQ[___, 0], post___] := 
+  Multiply[pre, post]
 
 (* Multiply operators on Ket[] *)
 
@@ -543,6 +543,15 @@ HoldPattern @ Multiply[pre___, x_?QubitQ, y_?QubitQ, post___] :=
   Not @ OrderedQ @ {x, y}
 
 (**** </Multiply> ****)
+
+
+(**** <MultiplyPower> ****)
+
+HoldPattern @ MultiplyPower[S_Symbol?QubitQ[j___, C[n_Integer]], L_Integer] :=
+  S[j, C[n-Log[2, L]]] /; IntegerQ @ Log[2, L]
+
+(**** </MultiplyPower> ****)
+
 
 
 (* MultiplyDegree for operators *)
@@ -1386,13 +1395,22 @@ ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=
     op = Phase[ff*Arg[z], Last[Keys @ cc][3], opts];
     If[Abs[z] != 1, Message[ControlledGate::unitary, z]];
     If[Length[cc] > 1, ControlledGate[Most @ cc, op], op]
-   ]
+  ]
 
 
 ControlledGate /:
 Expand @ ControlledGate[cc:{__Rule},
   ActOn[z_?CommutativeQ, ___], ___?OptionQ] :=
   ControlledGate[cc, z]
+
+ControlledGate /:
+Expand @ ControlledGate[ cc:{__Rule},
+  HoldPattern @ Multiply[ss__?QubitQ],
+  opts___?OptionQ 
+] := With[
+  { new = Normal @ KeyDrop[Flatten @ {opts}, "Label"] },
+  QuantumCircuit @@ Map[ControlledGate[cc, #, new]&, {ss}]
+]
 
 ControlledGate /:
 Expand @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] :=
@@ -1575,16 +1593,16 @@ Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     pwr = ActOn[tt] /@ Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
     (* NOTE: Without ActOn, some elements in pwr may be 1. *)
 
-    txt = OptionValue[ControlledPower, {opts}, "Label"];
+    txt = OptionValue[ControlledPower, {opts, Options @ op}, "Label"];
     If[ListQ[txt], txt = Last @ txt];
     txt = Table["Label" -> mySuperscript[txt, Superscript[2, n-k]], {k, n}];
     new = ReplaceAll[
       MapThread[ControlledGate, {ss, pwr, txt}],
       HoldPattern @ ControlledGate[args__] ->
         ControlledGate[args, "LabelSize" -> 0.65, opts]
-     ];
+    ];
     QuantumCircuit @@ new
-   ]
+  ]
 
 (**** </ControlledPower> ****)
 
@@ -1595,13 +1613,13 @@ ActOn::usage = "ActOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting o
 
 AddElaborationPatterns[_ActOn]
 
-ActOn[S_?SpeciesQ, opts___] := 
+ActOn[S_?SpeciesQ, opts___?OptionQ] := 
   ActOn[{S[$]}, opts]
 
-ActOn[ss:{___?SpeciesQ}, opts___] :=
+ActOn[ss:{___?SpeciesQ}, opts___?OptionQ] :=
   ActOn[FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
 
-ActOn[ss:{___?SpeciesQ}, opts___][op_] := 
+ActOn[ss:{___?SpeciesQ}, opts___?OptionQ][op_] := 
   ActOn[op, ss, opts]
 
 ActOn[op_, ss:{___?SpeciesQ}, opts___] := Module[
@@ -2283,16 +2301,20 @@ QCR /:
 Expand[op_QCR] = op (* fallback *)
 
 QCR /:
-Expand @ QCR[ss:{__?QubitQ}, ___] :=
-  QuantumCircuit[QFT[ss], QFT[ss]]
+Expand[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
+  { qft = Drop[Expand[QFT @ ss], -2] },
+  QuantumCircuit[qft,Reverse @ qft]
+]
 
 
 QCR /:
 ExpandAll[op_QCR] = op (* fallback *)
 
 QCR /:
-ExpandAll[ op:QCR[ss:{__?QubitQ}, ___] ] := 
-  ExpandAll[Expand @ op]
+ExpandAll[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
+  { qft = Drop[ExpandAll[QFT @ ss], -Floor[Length[ss]/2]-1] },
+  QuantumCircuit[qft,Reverse @ qft]
+]
 
 (**** </QCR> ****)
 

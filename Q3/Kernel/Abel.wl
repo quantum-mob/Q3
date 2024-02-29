@@ -798,14 +798,15 @@ SetAttributes[MultiplyPower, {Listable, ReadProtected}];
 (* Put this definition earlier than the general rule. *)
 MultiplyPower[Sqrt[op_], n_Integer?EvenQ] := MultiplyPower[op, n / 2]
 
-
 MultiplyPower[op_, 0] = 1
 
 MultiplyPower[op_, 1] = op
 
-MultiplyPower[op_, n_Integer] := Multiply[MultiplyPower[op, n-1], op] /; n > 1
-(* NOTE: Recursive calculation makes better use of Mathematica's caching
+MultiplyPower[op_, n_Integer] := 
+  Multiply[MultiplyPower[op, n-1], op] /; n > 1
+(* NOTE 1: Recursive calculation makes better use of Mathematica's caching
    capabilities! *)
+(* NOTE 2: For n > 1, this shadows a similar definition in Pauli because of the additional condition n > 1. *)
 
 (* Put this definition at the last. *)
 MultiplyPower[z_?CommutativeQ, n_] := Power[z, n]

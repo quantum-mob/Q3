@@ -7,6 +7,7 @@ BeginPackage["Q3`"]
 
 { TheLower, TheRaise, RaiseLower }; (* renamed *)
 { PauliEmbed, PauliApply }; (* obsolete and excised *)
+{ TheState, TheOperator }; (* obsolete and excised *)
 { NormalForm }; (* renamed *)
 { LogicalForm, DefaultForm }; (* obsolete since 2023-02-18 *)
 { PauliDecomposeOld, PauliComposeOld }; (* to be excised *)
@@ -94,8 +95,17 @@ setLinearMapFirst[op_Symbol] := (
 
 (**** <obsolete> ****)
 
+TheState::usage = "TheState has been excised since 28 Feb 2024 (Q3 v3.3.3)."
+
+TheState[___] := Message[Q3General::excised, "TheState"]
+
+TheOperator::usage = "TheOperator has been excised since 28 Feb 2024 (Q3 v3.3.3)."
+
+TheOperator[___] := Message[Q3General::excised, "TheOperator"]
+
+
 PauliApply[args___] := Message[Q3General::excised, "PauliApply"]
-  
+
 DefaultForm[args__] := (
   Message[Q3General::obsolete, "DefaultForm", "KetTrim"];
   KetTrim[args]

@@ -1,5 +1,4 @@
 (* -*- mode: math; -*- *)
-
 BeginPackage["Q3`"]
 
 { QuantumCircuit,
@@ -55,19 +54,20 @@ QuantumCircuit[rest__, in_QuantumCircuitIn] :=
 QuantumCircuit[out_QuantumCircuitOut, rest:Except[_?OptionQ|_QuantumCircuitOut]..] :=
   QuantumCircuit[rest, out]
 
-qcKetQ[expr_] := And[
-  FreeQ[expr, _QuantumCircuitIn | _QuantumCircuitOut | _Projector],
-  Not @ FreeQ[expr, _Ket | _ProductState]
- ]
+
+qcKetQ[_QuantumCircuitIn | _QuantumCircuitOut | _Projector] = False
+
+qcKetQ[expr_] := Not @ FreeQ[expr, _Ket | _ProductState | _State]
+
 
 (* See also GraphState[] *)
-QuantumCircuit[g_Graph] := Module[
+QuantumCircuit[pre___, g_Graph, post___] := Module[
   { qubits = VertexList[g],
     links  = EdgeList[g] },
   links = links /. { UndirectedEdge -> CZ, DirectedEdge -> CZ };
-  QuantumCircuit[Through[qubits[6]], Sequence @@ links]
-  /; AllTrue[ qubits, QubitQ ]
- ]
+  QuantumCircuit[pre, Through[qubits[6]], Sequence @@ links, post]
+  /; AllTrue[qubits, QubitQ]
+]
 
 (**** </User Interface> ****)
 
@@ -76,7 +76,7 @@ QuantumCircuit[g_Graph] := Module[
 
 QuantumCircuit /:
 Qubits @ QuantumCircuit[gg__, opts___?OptionQ] := Union[
-  Qubits @ {gg},
+  Qubits@{gg},
   FlavorNone @ doAssureList["Visible" /. {opts} /. Options[QuantumCircuit]]
 ]
 
@@ -113,17 +113,17 @@ MultiplyGenus[_QuantumCircuit] := "Singleton"
 
 QuantumCircuit /:
 Dagger @ QuantumCircuit[gg__, opts___?OptionQ] :=
-  QuantumCircuit[Sequence @@ Map[Dagger, Reverse @ {gg}], opts]
+  QuantumCircuit[Sequence @@ Map[Dagger, Reverse@{gg}], opts]
 
 
 QuantumCircuit /:
 Multiply[pre___, QuantumCircuit[elm__], post___] :=
-  Multiply[pre, Elaborate @ QuantumCircuit[Reverse @ {post}, elm]]
+  Multiply[pre, Elaborate @ QuantumCircuit[Reverse@{post}, elm]]
 (* NOTE: {elm} may include Measurement. *)
 
 QuantumCircuit /:
 Multiply[pre___, Longest[cc__QuantumCircuit], post___] :=
-  Multiply[pre, Elaborate @ Apply[QuantumCircuit, Reverse @ {cc}], post]
+  Multiply[pre, Elaborate @ Apply[QuantumCircuit, Reverse@{cc}], post]
 
 (**** </Multiply> ****)
 
@@ -137,7 +137,7 @@ ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
 
 QuantumCircuit /:
 Elaborate @ QuantumCircuit[gg__, ___?OptionQ] := Module[
-  { expr = Flatten @ QuantumCircuitTrim @ {gg} },
+  { expr = Flatten @ QuantumCircuitTrim@{gg} },
   Garner[ qvCircuitOperate @@ expr ]
 ]
 (* NOTE: This makes the evaluation much faster, especially, when the initial
@@ -147,15 +147,15 @@ qvCircuitOperate[] = 1
 
 qvCircuitOperate[pre__, op_Measurement, post___] := 
   qvCircuitOperate[op @ qvCircuitOperate[pre], post] /;
-  Not @ FreeQ[Elaborate @ {pre}, Ket[_Association]]
+  Not @ FreeQ[Elaborate@{pre}, Ket[_Association]]
 
 qvCircuitOperate[op_Measurement, post___] :=
   Multiply[qvCircuitOperate[post], op]
 
 qvCircuitOperate[op:Except[_Measurement]..] :=
   Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1, {op} ]
-(* NOtE: One can use Elaborate @ {op} as follows:
-   Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate @ {op} ]
+(* NOtE: One can use Elaborate@{op} as follows:
+   Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate@{op} ]
    However, this cannot take the advantange of op ** Ket[...]. *)
 
 qvCircuitOperate[gg__] := MeasurementFunction[{gg}]
@@ -172,7 +172,7 @@ QuantumCircuit /:
 Matrix[qc:QuantumCircuit[gg__, ___?OptionQ], ss:{___?QubitQ}] := Module[
   { ff },
   ff = SplitBy[
-    Flatten @ QuantumCircuitTrim @ {gg},
+    Flatten @ QuantumCircuitTrim@{gg},
     MatchQ[_Measurement]
    ];
   Apply[qcMatrix, MapApply[Dot, Reverse /@ Matrix[ff, ss]]]
@@ -202,7 +202,7 @@ QuantumCircuitTrim::usage = "QuantumCircuitTrim[expr] removes visualization opti
 SetAttributes[QuantumCircuitTrim, Listable];
 
 QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__, ___?OptionQ] ] :=
-  Flatten @ QuantumCircuitTrim @ {gg}
+  Flatten @ QuantumCircuitTrim@{gg}
 
 QuantumCircuitTrim[ QuantumCircuitIn[a__] ] :=
     Multiply @@ QuantumCircuitTrim[ {a} ]
@@ -265,8 +265,8 @@ QuantumCircuit /:
 HoldPattern @
   Graphics[ QuantumCircuit[gg__, opts___?OptionQ], more___?OptionQ ] :=
   Module[
-    { ss = Qubits @ {gg},
-      cc = ParseGate @ {gg},
+    { ss = Qubits@{gg},
+      cc = ParseGate@{gg},
       vv, ww, xx, yy, in, out, unit, nodes, marks, lines },
 
     {vv, ww, unit, $PortSize} =
@@ -279,7 +279,7 @@ HoldPattern @
 
     vv = FlavorNone @ Flatten @ doAssureList @ vv;
     ww = FlavorNone @ Flatten @ doAssureList @ ww;
-    ss = Union @ Flatten @ {ss, vv, ww};
+    ss = Union @ Flatten@{ss, vv, ww};
 
     cc = DeleteCases[cc, {}]; (* E.g., Measurement[{}] *)
     If[cc == {}, cc = {"Spacer"}]; (* E.g., only input elements *)
@@ -330,13 +330,22 @@ Gate::usage = "Gate[{s1,s2,\[Ellipsis]}, opts] represents a low-level quantum ci
 Options[Gate] = {
   "LinkShape" -> "Default",
   "LinkLabel" -> None,
-  "TargetShape" -> "Rectangle",
+  "LinkLabelSize" -> 1, (* RELATIVE size *)
+  "LinkLabelStyle" -> {}, (* Example: "LabelStyle" -> {FontSland -> Plain} *)
+  "LinkLabelAngle" -> 0,
+  "LabelAlignment" -> {0, 0}, (* See PanedText for details. *)
   "ControlShape" -> "Dot",
+  "ControlLabel" -> None,
+  "ControlLabelSize" -> 1, (* RELATIVE size *)
+  "ControlLabelStyle" -> {}, (* Example: "LabelStyle" -> {FontSland -> Plain} *)
+  "ControlLabelAngle" -> 0,
+  "ControlLabelAlignment" -> {0, 0}, (* See PanedText for details. *)
+  "Shape" -> "Rectangle", (* for controlled gates, this is intended fro the target qubits. *)
   "Label" -> None,
   "LabelSize" -> 1, (* RELATIVE size *)
   "LabelStyle" -> {}, (* Example: "LabelStyle" -> {FontSland -> Plain} *)
   "LabelAngle" -> 0,
-  "LabelAlignment" -> {0, 0} (* See Text for details. *)
+  "LabelAlignment" -> {0, 0} (* See PanedText for details. *)
 }
 
 Gate[ss:{__?QubitQ}, opts:OptionsPattern[]] :=
@@ -366,229 +375,192 @@ ParseGate[{gg__, opts___?OptionQ}] := Map[ParseGate[#, opts]&, {gg}]
 
 ParseGate[gg_List, opts___?OptionQ] := Map[ParseGate[#, opts]&, gg]
 
+ParseGate[qc_QuantumCircuit] := Map[ParseGate, qc]
 
 (* These elements are handled separately. *)
 ParseGate[_QuantumCircuitIn|_QuantumCircuitOut|_Mark, opts___?OptionQ] = Nothing
 
 
-ParseGate[qc_QuantumCircuit] := Map[ParseGate, qc]
-  
+ParseGate[_?NumericQ, ___?OptionQ] = "Spacer"
 
-ParseGate[Gate[some__], more___?OptionQ] := Gate[some, more]
+ParseGate[gate:("Separator" | "Spacer"), ___?OptionQ] = gate
+
+ParseGate[any_?StringQ, ___?OptionQ] := (
+  Message[QuantumCircuit::elm, any];
+  "Spacer"
+)
+
+ParseGate[expr_, ___?OptionQ] := expr /; FreeQ[expr, _?QubitQ]
+(* Graphics primitives and directivescorrespond to this case. *)
+
+
+(* Single-qubit gates *)  
 
 ParseGate[op_?QubitQ, opts___?OptionQ] :=
   Gate[ Qubits @ op, opts, "Label" -> HoldForm[thePauliForm @ op] ]
-(* NOTE: HoldForm is required here because later qcNodes uses ReleaseHold. *)
+(* NOTE: HoldForm is required here because later qcNodes uses ReleaseHold.
+   Recall that thePauliForm uses HoldForm. *)
 
-(* NOTE: This case should never occur. *)
-(*
-ParseGate[ HoldPattern @ Dagger[S_?QubitQ], opts___?OptionQ ] :=
-  Gate[ Qubits @ S, opts, "Label" -> HoldForm @ thePauliForm[Dagger @ S] ]
- *)
 
-ParseGate[HoldPattern @ Multiply[ss__?QubitQ], opts___?OptionQ] :=
-  Map[ParseGate[#, opts]&, Reverse @ {ss}]
+ParseGate[
+  HoldPattern @ Multiply[ss__?QubitQ], 
+  opts___?OptionQ
+] :=
+  Map[ParseGate[#, opts]&, Reverse@{ss}]
 
-ParseGate[Measurement[ss:{___?PauliQ}], opts___?OptionQ] :=
+
+ParseGate @ Measurement[ss:{___?PauliQ}, opts___?OptionQ] :=
   Map[ParseGate[Measurement[#], opts]&, ss]
 
-ParseGate[Measurement[S_?QubitQ], opts___?OptionQ] := Gate[
-  {FlavorMute @ S},
-  "TargetShape" -> "Measurement", opts,
-  "Label" -> measurementLabel[S]
- ]
+ParseGate @ Measurement[S_?QubitQ, opts___?OptionQ] := 
+  Gate[ {FlavorMute @ S},
+    "Shape" -> "Measurement", opts,
+    "Label" -> measurementLabel[S] ]
 
-ParseGate[
-  HoldPattern @ Measurement[Multiply[ss__?QubitQ]], opts___?OptionQ ] :=
-  Gate[ FlavorMute @ {ss},
-    "TargetShape" -> "Measurement", opts,
-    "Label" -> measurementLabel @ {ss} ]
+ParseGate @ HoldPattern@
+  Measurement[Multiply[ss__?QubitQ], opts___?OptionQ] :=
+    Gate[ FlavorMute@{ss},
+      "Shape" -> "Measurement", opts,
+      "Label" -> measurementLabel@{ss} ]
 
-HoldPattern @ 
-  ParseGate[
-    Projector[v_, qq_, opts___?OptionQ],
-    more___?OptionQ ] :=
-    Gate[ qq, "TargetShape" -> "Projector", "Label" -> None, more, opts ]
-
-ParseGate[
-  op:Phase[_, _?QubitQ, opts___?OptionQ],
-  more___?OptionQ ] :=
-  Gate[ Qubits @ op, more, opts, "Label" -> HoldForm @ thePauliForm[op] ]
+ParseGate @ HoldPattern @ Projector[v_, qq_, ___?OptionQ] :=
+  Gate[qq, "Shape" -> "Projector", "Label" -> None]
 
 
-ParseGate[
-  op:Rotation[_, {_, _, _}, G_?QubitQ, opts___?OptionQ],
-  more___?OptionQ ] :=
-  Gate[Qubits @ G, more, opts, "Label" -> gateLabel @ op]
+ParseGate[ op:Phase[_, _?QubitQ, opts___?OptionQ] ] :=
+  Gate[ Qubits @ op, opts, "Label" -> HoldForm @ thePauliForm[op] ]
 
-ParseGate[
-  op:EulerRotation[{_,_,_}, G_?QubitQ, opts___?OptionQ ],
-  more___?OptionQ ] :=
-  Gate[{G}, more, opts, "Label" -> gateLabel @ op]
+ParseGate[ op:Rotation[_, {_, _, _}, G_?QubitQ, opts___?OptionQ] ] :=
+  Gate[Qubits @ G, opts, "Label" -> gateLabel @ op]
+
+ParseGate[ op:EulerRotation[{_, _, _}, G_?QubitQ, opts___?OptionQ] ] :=
+  Gate[{G}, opts, "Label" -> gateLabel @ op]
 
 
-ParseGate[
-  ControlledGate[rr:{__Rule}, S_?QubitQ, opts___?OptionQ],
-  more___?OptionQ ] :=
-  Gate[ rr, Qubits @ S, more, opts,
+(* Multi-qubit gates *)
+
+ParseGate @
+  ControlledGate[rr:{__Rule}, S_?QubitQ, opts___?OptionQ] :=
+  Gate[ rr, Qubits @ S, opts,
     "Label" -> {None, thePauliForm[S]} ]
 
-ParseGate[
+ParseGate @
   ControlledGate[
     cc:{Rule[_?QubitQ, _?BinaryQ]..},
-    op:(Phase|Rotation|EulerRotation)[__, opts___?OptionQ],
-    more___?OptionQ ],
-  rest___?OptionQ
-] :=
-  Gate[ cc, Qubits @ op, rest, more, opts, 
-    "Label" -> {None, gateLabel[op]} ]
+    op:(_Phase|_Rotation|_EulerRotation),
+    opts___?OptionQ
+  ] :=
+    Gate[ cc, Qubits @ op, opts, Options[op],
+      "Label" -> {None, gateLabel[op]} ]
 
-ParseGate[
-  ControlledGate[
-    cc:{Rule[_?QubitQ, _?BinaryQ]..},
-    HoldPattern @ Multiply[ss__?QubitQ],
-    opts___?OptionQ ],
-  more___?OptionQ
-] := 
-  Sequence @@ Map[
-    ParseGate[ControlledGate[cc, #], more, opts]&,
-    Reverse @ {ss}
-  ]
-
-ParseGate[
-  ControlledGate[ cc:{Rule[_?QubitQ, _]..}, expr_, opts___?OptionQ ],
-  more___?OptionQ ] :=
-  Gate[ cc, Qubits[expr], more, opts ] /;
+ParseGate @
+  ControlledGate[cc:{Rule[_?QubitQ, _]..}, expr_, opts___?OptionQ] :=
+  Gate[cc, Qubits @ expr, opts] /;
   Not @ FreeQ[expr, _Dyad|_?QubitQ]
 
 
-ParseGate[ CNOT[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}], opts___?OptionQ ] :=
-  Gate[cc, tt, "TargetShape" -> "CirclePlus"]
+ParseGate @ CNOT[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, ___?OptionQ ] :=
+  Gate[cc, tt, "Shape" -> "CirclePlus"]
 
 
-ParseGate[ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ], opts___?OptionQ ] :=
-  Gate[Thread[{a, b} -> {1, 1}], {c}, "TargetShape" -> "CirclePlus"]
+ParseGate @ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ, ___?OptionQ] :=
+  Gate[ Thread[{a, b} -> {1, 1}], {c},
+    "Shape" -> "CirclePlus" ]
 
 
-ParseGate[ CZ[ss:{__?QubitQ}], ___?OptionQ ] :=
-  Gate[Most @ ss, {Last @ ss}, "ControlShape" -> "Dot", "TargetShape" -> "Dot"]
+ParseGate @ CZ[ss:{__?QubitQ}, ___?OptionQ] :=
+  Gate[ Most @ ss, {Last @ ss},
+    "ControlShape" -> "Dot",
+    "Shape" -> "Dot" ]
 
-ParseGate[ Swap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
+ParseGate @ Swap[c_?QubitQ, t_?QubitQ, ___?OptionQ] :=
   Gate[ {c}, {t},
     "ControlShape" -> "Cross",
-    "TargetShape" -> "Cross"
+    "Shape" -> "Cross"
    ]
 
 
-ParseGate[ iSwap[c_?QubitQ, t_?QubitQ], opts___?OptionQ ] :=
+ParseGate @ iSwap[c_?QubitQ, t_?QubitQ, ___?OptionQ] :=
   Gate[ {c}, {t},
     "ControlShape" -> "CircleCross",
-    "TargetShape" -> "CircleCross"
-   ]
+    "Shape" -> "CircleCross"
+  ]
 
 
-ParseGate[
-  UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}, opts___?OptionQ], ___ ] :=
-  Gate[ Most @ ss, {Last @ ss}, opts,
-    "ControlShape" -> "Dot",
-    "TargetShape" -> "Dot",
-    "LinkShape" -> "Wiggly" ]
+ParseGate @
+  UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}, opts___?OptionQ] :=
+    Gate[ Most @ ss, {Last @ ss}, opts,
+      "Shape" -> "Dot",
+      "ControlShape" -> "Dot",
+      "LinkShape" -> "Wiggly" ]
 
-ParseGate[
-  HoldPattern @ UnitaryInteraction[_?VectorQ | _?MatrixQ, ss:{__?QubitQ},
-    opts___?OptionQ], ___] :=
-  Gate[ Most @ ss, {Last @ ss}, opts,
-    "ControlShape" -> "Dot",
-    "TargetShape" -> "Dot",
-    "LinkShape" -> "Wiggly" ]
+ParseGate @ HoldPattern@
+  UnitaryInteraction[_?VectorQ|_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ] :=
+    Gate[ Most @ ss, {Last @ ss}, opts,
+      "Shape" -> "Dot",
+      "ControlShape" -> "Dot",
+      "LinkShape" -> "Wiggly" ]
 
 
-ParseGate[ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}], opts___?OptionQ ] :=
+ParseGate @ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}, ___?OptionQ] :=
   Gate[ {a}, {b, c},
     "ControlShape" -> "Dot",
-    "TargetShape" -> "Cross"
+    "Shape" -> "Cross"
    ]
 
-ParseGate[
-  Deutsch[ph_, {a_?QubitQ, b_?QubitQ, c_?QubitQ}, opts___?OptionQ],
-  more___?OptionQ ] :=
+ParseGate @ Deutsch[ph_, {a_?QubitQ, b_?QubitQ, c_?QubitQ}, opts___?OptionQ] :=
   Gate[ {a, b}, {c}, more, opts, "Label" -> "D" ]
 
-
-ParseGate[
-  Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ],
-  more__?OptionQ
- ] := ParseGate @ Oracle[f, cc, tt, more, opts]
 
 ParseGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
   Gate[ cc, tt, opts,
     "ControlShape" -> "Oval",
-    "TargetShape" -> "CirclePlus",
+    "Shape" -> "CirclePlus",
     "Label" -> "f(x)",
     "LabelSize" -> 0.9 ]
 
 
-ParseGate[
-  ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ],
-  more__?OptionQ
-] := ParseGate @ ControlledPower[cc, op, more, opts]
-
 ParseGate[ elm:ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ] ]:=
   Gate[ cc, Qubits[op],
     "Label" -> gateLabel[elm], 
-    opts, (* NOTE: In this case, opts MUST come later. *)
+    opts, (* NOTE: In this case, opts MUST come later than above "Label" --> ... statement. *)
     "ControlShape" -> "Oval",
-    "TargetShape" -> "Rectangle"
+    "Shape" -> "Rectangle"
   ]
 
 
-ParseGate[
+ParseGate @
   UniformlyControlledRotation[
-    cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ],
-  more___?OptionQ ] :=
-  Gate[ cc, {S}, more, opts,
+    cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ] :=
+  Gate[ cc, {S}, opts,
     "ControlShape" -> "MixedDot",
     "Label" -> {None, gateLabel @ Rotation[0, vv, S]}
   ]
 
 
-ParseGate[
-  UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ],
-  more___?OptionQ ] :=
-  Gate[ cc, Qubits @ tt, more, opts,
-    "ControlShape" -> "MixedDot",
-    "Label" -> {None, "U"}
-  ]
+ParseGate @
+  UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ] :=
+    Gate[ cc, Qubits @ tt, opts,
+      "ControlShape" -> "MixedDot",
+      "Label" -> {None, "U"}
+    ]
 
-
-ParseGate[
-  ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ],
-  more__?OptionQ
-] := ParseGate @ ModMultiply[n, cc, tt, more, opts]
 
 ParseGate @
   ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
   Gate[ cc, tt,
     "ControlShape" -> "Oval",
-    "TargetShape" -> "Rectangle", opts,
+    "Shape" -> "Rectangle", opts,
     "Label" -> {"x", StringForm["x\[ThinSpace]y % ``", n]},
     "LabelAngle" -> Pi/2 ]
-
-ParseGate[
-  ModMultiply[n_Integer, a_Integer, tt:{__?QubitQ}, opts___?OptionQ],
-  more__?OptionQ
- ] := ParseGate @ ModMultiply[n, a, tt, more, opts]
 
 ParseGate @
   ModMultiply[n_Integer, a_Integer, tt:{__?QubitQ}, opts___?OptionQ] :=
   Gate[ tt,
-    "TargetShape" -> "Rectangle", opts,
+    "Shape" -> "Rectangle", opts,
     "Label" -> StringForm["``\[ThinSpace]x % ``", a, n],
     "LabelAngle" -> Pi/2 ]
 
-
-ParseGate[QFT[type_, qq_List, flag_, opts___?OptionQ], more__?OptionQ] :=
-  ParseGate @ QFT[type, qq, flag, more, opts]
 
 ParseGate[op:QFT[_, qq:{__?QubitQ}, _, opts___?OptionQ]] := 
   Gate[ qq, 
@@ -598,19 +570,12 @@ ParseGate[op:QFT[_, qq:{__?QubitQ}, _, opts___?OptionQ]] :=
   ]
 
 
-ParseGate[QBR[qq:{__?QubitQ}, opts___?OptionQ], more__?OptionQ] :=
-  ParseGate @ QBR[qq, more, opts]
-
 ParseGate[op:QBR[qq:{__?QubitQ}, opts___?OptionQ]] :=
   Gate[ qq, 
     FilterRules[{opts}, Options @ Gate],
     "Label" -> "QBR",
     "LabelAngle" -> Pi/2
   ]
-
-
-ParseGate[QCR[qq:{__?QubitQ}, opts___?OptionQ], more__?OptionQ] :=
-  ParseGate @ QCR[qq, more, opts]
 
 ParseGate[op:QCR[qq:{__?QubitQ}, opts___?OptionQ]] :=
   Gate[ qq, 
@@ -620,31 +585,13 @@ ParseGate[op:QCR[qq:{__?QubitQ}, opts___?OptionQ]] :=
   ]
 
 
-(* other functions *)
+(* fallback *)
+
 ParseGate[op_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
   ParseGate @ op[any, more, opts]
 
-ParseGate[op_Symbol[any__, opts___?OptionQ]] :=
-  Gate[ Qubits @ {any}, FilterRules[{opts}, Options @ Gate] ]
-
-
-(* other expressions *)
-ParseGate[ expr:Except[_List|_?(FreeQ[#,_?QubitQ]&)], opts___?OptionQ ] :=
-  Gate[ Qubits @ expr, opts ]
-
-
-ParseGate[_?NumericQ, ___?OptionQ] = "Spacer"
-
-ParseGate[gate:("Separator" | "Spacer"), ___?OptionQ] = gate
-
-
-ParseGate[any_?StringQ, ___?OptionQ] := (
-  Message[QuantumCircuit::elm, any];
-  "Spacer"
- )
-
-ParseGate[expr_, ___?OptionQ] := expr /; FreeQ[expr, _?QubitQ]
-(* Graphics primitives and directivescorrespond to this case. *)
+ParseGate[expr:Except[_List], opts___?OptionQ] :=
+  Gate[Qubits @ expr, FilterRules[{opts, Options @ expr}, Options @ Gate]]
 
 (**** </ParseGate> *****)
 
@@ -686,7 +633,7 @@ gateLabel[ Rotation[_, {_, _, _}, _?QubitQ, ___] ] :=
   Subscript[ "R", Style["n", Bold] ]
 
 
-gateLabel @ EulerRotation[{_, _, _}, S_?QubitQ, ___] :=
+gateLabel @ EulerRotation[{_, _, _}, _?QubitQ, ___?OptionQ] :=
   Subscript["R", "E"]
 
 
@@ -711,11 +658,11 @@ gateLabel @ QFT[type_, _List, _?BooleanQ, ___] :=
 gateShape::usage = "gateShape[name][x, y, args] renders the shape of the quantum circuit element named name."
 
 gateShape["CirclePlus"][x_, yy_List, ___] :=
-  gateShape["CirclePlus"] @@@ Thread @ {x, yy}
+  gateShape["CirclePlus"] @@@ Thread@{x, yy}
 
 gateShape["CirclePlus"][x_, y_?NumericQ, ___] := {
   Circle[{x, y}, $GateSize / 3],
-  Line @ {
+  Line@{
     { {x-$GateSize/3,y}, {x+$GateSize/3,y} },
     { {x,y-$GateSize/3}, {x,y+$GateSize/3} }
    }
@@ -726,11 +673,11 @@ gateShape["CircleCross"][x_, Rule[yy_List, _], ___] :=
   gateShape["CircleCross"][x, yy]
 
 gateShape["CircleCross"][x_, yy_List, ___] :=
-  gateShape["CircleCross"] @@@ Thread @ {x, yy}
+  gateShape["CircleCross"] @@@ Thread@{x, yy}
 
 gateShape["CircleCross"][x_, y_?NumericQ, ___] := {
   {EdgeForm[Black], White, Disk[{x, y}, $GateSize / 3]},
-  Line @ {
+  Line@{
     { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
     { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
    }
@@ -741,9 +688,9 @@ gateShape["Cross"][x_, Rule[yy_List, _], ___] :=
   gateShape["Cross"][x, yy]
 
 gateShape["Cross"][x_, yy_List, ___] :=
-  gateShape["Cross"] @@@ Thread @ {x, yy}
+  gateShape["Cross"] @@@ Thread@{x, yy}
 
-gateShape["Cross"][x_, y_, ___] := List @ Line @ {
+gateShape["Cross"][x_, y_, ___] := List @ Line@{
     { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
     { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
    }
@@ -763,8 +710,8 @@ gateShape["Measurement"][x_, yy:{_, __}, opts___?OptionQ] := Module[
    ];
 
   cc = {
-    Line @ Thread @ {x-$DotSize/2, yy},
-    Line @ Thread @ {x+$DotSize/2, yy}
+    Line @ Thread@{x-$DotSize/2, yy},
+    Line @ Thread@{x+$DotSize/2, yy}
    };
 
   {cc, mm}
@@ -807,7 +754,7 @@ gateShape["Dot"][x_, yy_List, ___] :=
 (* NOTE: This form may occur on TARGET (NOT control) qubits such as for CZ. *)
 
 gateShape["Dot"][x_, rr:Rule[_List, _List], ___] :=
-  gateShape["Dot"] @@@ Thread @ {x, Thread @ rr}
+  gateShape["Dot"] @@@ Thread@{x, Thread @ rr}
 
 gateShape["Dot"][x_, y_?NumericQ -> 1, ___] :=
   Disk[{x, y}, $DotSize]
@@ -817,7 +764,7 @@ gateShape["Dot"][x_, y_?NumericQ -> 0, ___] :=
 
 
 gateShape["MixedDot"][x_, rr:Rule[_List, _List], ___] :=
-  gateShape["MixedDot"] @@@ Thread @ {x, Thread @ rr}
+  gateShape["MixedDot"] @@@ Thread@{x, Thread @ rr}
 
 gateShape["MixedDot"][x_, y_?NumericQ -> _, ___] :=
   { EdgeForm[Opacity[1]],
@@ -826,8 +773,8 @@ gateShape["MixedDot"][x_, y_?NumericQ -> _, ___] :=
 
 
 gateShape["CircleDot"][x_, yy_List, ___] := {
-  Line[Thread @ {x, yy}],
-  gateShape["CircleDot"] @@@ Thread @ {x, yy}
+  Line[Thread@{x, yy}],
+  gateShape["CircleDot"] @@@ Thread@{x, yy}
  }
 
 gateShape["CircleDot"][x_, y_, ___] :=
@@ -840,7 +787,7 @@ gateShape["Rectangle"][x_, yy_List, opts___?OptionQ] := Module[
   { y1 = Min @ yy,
     y2 = Max @ yy,
     pane, line, text },
-  text = theGateLabel[{x, Mean @ {y1, y2}}, opts];
+  text = theGateLabel[{x, Mean@{y1, y2}}, opts];
   pane = Rectangle[
     {x, y1} - 0.5{1,1}$GateSize,
     {x, y2} + 0.5{1,1}$GateSize ];
@@ -865,7 +812,7 @@ gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
     y2 = Max @ yy,
     y0, y3, pane, text},
   
-  text = theGateLabel[{x, Mean @ {y1, y2}}, opts];
+  text = theGateLabel[{x, Mean@{y1, y2}}, opts];
 
   y0 = y1 - $GateSize/2;
   y3 = y2 + $GateSize/2;
@@ -879,14 +826,14 @@ gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
 (**** <linkShape> ****)
 
 linkShape["Default"][x_, yy_List, ___?OptionQ] :=
-  Line[Thread @ {x, yy}]
+  Line[Thread@{x, yy}]
 
 linkShape["Wiggly"][x_, yy_List, opts___?OptionQ] := {
   Successive[
     theGateLabel[(#1+#2)/2, opts, "LabelAlignment" -> {-2, 0}]&,
-    Thread @ {x, yy}
+    Thread@{x, yy}
    ],
-  theWiggly[Thread @ {x, yy}]
+  theWiggly[Thread@{x, yy}]
  }
 
 
@@ -921,7 +868,7 @@ theSawtooth[a:{_, _}, b:{_, _}, n_Integer, scale_] := Module[
 theGateLabel::usage = "theGateLabel[{x, y}] renders the gate label at position {x, y}."
 
 theGateLabel[{x_, y_}, opts___?OptionQ] := Module[
-  { new = FilterRules[Flatten @ {opts}, Options @ Gate],
+  { new = FilterRules[Flatten@{opts}, Options @ Gate],
     sty, txt },
   txt = OptionValue[Gate, new, "Label"];
 
@@ -988,11 +935,11 @@ qcDrawGate[
   Module[
     { yc = Lookup[yy, Keys @ cc],
       yt = Lookup[yy, tt],
-      new = FilterRules[Flatten @ {opts}, Options @ Gate],
+      new = FilterRules[Flatten@{opts}, Options @ Gate],
       label, control, target, link, dots, legs, pane },
     label = doForceList @ OptionValue[Gate, new, "Label"];
     control = gateShape @ OptionValue[Gate, new, "ControlShape"];
-    target = gateShape @ OptionValue[Gate, new, "TargetShape"];
+    target = gateShape @ OptionValue[Gate, new, "Shape"];
     link = linkShape @ OptionValue[Gate, new, "LinkShape"];
 
     dots = control[x, yc -> Values[cc], "Label" -> First[label], new];
@@ -1006,8 +953,8 @@ qcDrawGate[
 qcDrawGate[Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association] :=
   Module[
     { yt = Lookup[yy, tt],
-      new = FilterRules[Flatten @ {opts}, Options @ Gate] },
-    target = gateShape @ OptionValue[Gate, new, "TargetShape"];
+      new = FilterRules[Flatten@{opts}, Options @ Gate] },
+    target = gateShape @ OptionValue[Gate, new, "Shape"];
     target[x, yt, opts]
   ]
 
@@ -1023,7 +970,7 @@ qcDrawGate["Spacer", _, _Association] = Nothing
 qcDrawGate["Separator", x_, yy_Association] := Module[
   { xy = Tuples[{{x}, MinMax @ yy }] },
   { Dotted,
-    Line @ {
+    Line@{
       {0,-$CircuitUnit/2} + First @ xy,
       {0,+$CircuitUnit/2} + Last @ xy }
    }
@@ -1040,22 +987,22 @@ qcLines[ gg_List, xx_List, yy_Association ] := Module[
   { mm, zz, dashed, plain },
   mm = Map[
     Cases[ {#}, Gate[{S_?QubitQ},
-        "TargetShape" -> "Measurement", ___?OptionQ] -> S, Infinity ]&,
+        "Shape" -> "Measurement", ___?OptionQ] -> S, Infinity ]&,
     gg
    ];
   mm = Flatten[ Thread /@ Thread[mm -> Most[xx]] ];
   mm = KeySort @ KeyTake[Association @ mm, Keys @ yy];
   
   zz = Lookup[yy, Keys @ mm];
-  dashed = Line @ Transpose @ {
+  dashed = Line @ Transpose@{
     Thread[ {Values @ mm, zz} ],
     Thread[ {Last @ xx, zz} ] };
 
   plain = Association @ Thread[ Keys[yy] -> Last[xx] ];
   plain = Join[ plain, mm ];
-  plain = Line @ Transpose @ {
+  plain = Line @ Transpose@{
     Thread[{0, Values @ yy}],
-    Transpose @ {Values @ plain, Values @ yy} };
+    Transpose@{Values @ plain, Values @ yy} };
 
   {{Dashed, dashed}, plain}
  ]
@@ -1068,10 +1015,7 @@ qCircuitOutput[ Missing["NotFound"], xx_List, yy_Association ] = {}
 qCircuitOutput[ gg:{___}, xx_List, yy_Association ] := Module[
   { xy = Map[{Last[xx] + $PortGap, #}&, yy],
     ff },
-
-  ff = Join[gg, {"LabelAlignment" -> {-1, 0}, "Type" -> +1} ];
-  ff = List @ ParsePort @ ff;
-
+  ff = List @ ParsePort[gg, "LabelAlignment" -> {-1, 0}, "Type" -> +1];
   Map[qcDrawPort[#, xy]&, ff]
 ]
 
@@ -1083,10 +1027,7 @@ qCircuitInput[ Missing["NotFound"], xx_List, yy_Association ] = {}
 qCircuitInput[ gg:{___}, xx_List, yy_Association ] := Module[
   { xy = Map[{-$PortGap, #}&, yy],
     ff },
-
-  ff = Join[gg, {"LabelAlignment" -> {1, 0}, "Type" -> -1} ];
-  ff = List @ ParsePort @ ff;
-
+  ff = List @ ParsePort[gg, "LabelAlignment" -> {1, 0}, "Type" -> -1];
   Map[qcDrawPort[#, xy]&, ff]
 ]
 
@@ -1111,27 +1052,40 @@ Options[Port] = {
 
 ParsePort::usage = "ParsePorts preprocesses various input and output forms of QuantumCircuit."
 
-ParsePort[v:Ket[_Association], opts___?OptionQ] := Port[v, opts]
+ParsePort[a_List, opts___?OptionQ] := 
+  Map[ParsePort[#, opts]&, a]
+
+ParsePort[g_, opts___?OptionQ] := 
+  g /; FreeQ[g, _Ket | _ProductState | _State]
+
+
+ParsePort[v:Ket[_Association], opts___?OptionQ] := 
+  Port[v, opts]
 
 ParsePort[v:Ket[Except[_Association]], ___] :=
   (Message[QuantumCircuit::ket, v]; Nothing)
 (* NOTE: Somehow v_Ket does not work properly. *)
 
-ParsePort[v:ProductState[_Association, ___?OptionQ], more___?OptionQ] :=
-  Port[v, more]
 
-ParsePort[v:ProductState[Except[_Association]], ___] :=
+ParsePort[v:ProductState[_Association, opts___?OptionQ], more___?OptionQ] :=
+  Port[v, more, opts]
+
+ParsePort[v:ProductState[Except[_Association], ___], ___] :=
   (Message[QuantumCircuit::ket, v]; Nothing)
 (* NOTE: Somehow v_ProductState does not work properly. *)
 
+
+(* fallback *)
+
 ParsePort[expr:Except[_List], opts___?OptionQ] :=
-  Port[expr, opts] /; Not @ FreeQ[expr, _Ket]
+  Port[expr, FilterRules[{opts}, Options @ Port]] /;
+    Not @ FreeQ[expr, _Ket|_State]
 
-ParsePort[a_List, opts___?OptionQ] := ParsePort @@ Join[a, {opts}]
-
-ParsePort[g_, opts___?OptionQ] := g /; FreeQ[g, _Ket | _ProductState]
-
-ParsePort[a_, b__, opts___?OptionQ] := Map[ParsePort[#, opts]&, {a, b}]
+(* NOTE: This is dangerous because Plus and Times can happen. *)
+(* 
+ParsePort[vv_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
+  ParsePort[ vv[any, more, opts] ]
+ *)
 
 (**** </ParsePort> ****)
 
@@ -1143,10 +1097,10 @@ qcDrawPort::usage = "qcDrawPort renders the input/output ports."
 qcDrawPort[gg_List, xy_Association] := Map[qcDrawPort[#, xy]&, gg]
 
 qcDrawPort[ Port[Ket[v_], opts___?OptionQ], xy_Association ] := Module[
-  { new = FilterRules[Flatten @ {opts}, Options @ Port],
+  { new = FilterRules[Flatten@{opts}, Options @ Port],
     txt, tt, label },
   txt = OptionValue[Port, new, "Label"];
-  If[txt === None, Return @ {}];
+  If[txt === None, Return@{}];
 
   If[ txt === Automatic,
     txt = Ket /@ List /@ v,
@@ -1162,7 +1116,7 @@ qcDrawPort[ Port[Ket[v_], opts___?OptionQ], xy_Association ] := Module[
   
   Values @ MapThread[
     thePortLabel[#1, #2, new]&,
-    KeyIntersection @ {txt, xy}
+    KeyIntersection@{txt, xy}
   ]
 ]
 
@@ -1171,10 +1125,10 @@ qcDrawPort[
   xy_Association
 ] := 
   Module[
-    { new = FilterRules[Flatten @ {more, opts}, Options @ Port],
+    { new = FilterRules[Flatten@{more, opts}, Options @ Port],
       txt },
     txt = OptionValue[Port, new, "Label"];
-    If[txt === None, Return @ {}];
+    If[txt === None, Return@{}];
 
     If[ txt === Automatic,
       txt = Map[ Simplify @ Dot[Ket /@ {{0}, {1}}, #]&, v ],
@@ -1191,24 +1145,24 @@ qcDrawPort[
      
     Values @ MapThread[
       thePortLabel[#1, #2, new]&,
-      KeyIntersection @ {txt, xy}
+      KeyIntersection@{txt, xy}
     ]
   ]
 
 qcDrawPort[ Port[expr_, ___], _Association ] := (
   Message[QuantumCircuit::noqubit, expr];
-  Return @ {};
+  Return@{};
 ) /; Qubits[expr] == {}
 
 qcDrawPort[ Port[expr_, opts___?OptionQ], xy_Association ] := Module[
   { qq = Qubits @ expr,
-    new = FilterRules[Flatten @ {opts}, Options @ Port],
+    new = FilterRules[Flatten@{opts, Options @ expr}, Options @ Port],
     txt, dir, brace, pos },
 
   txt = OptionValue[Port, new, "Label"];
   dir = OptionValue[Port, new, "Type"];
 
-  If[txt === None, Return @ {}];
+  If[txt === None, Return@{}];
   
   If[txt === Automatic, txt = SimpleForm[expr, qq], txt];
   
@@ -1232,7 +1186,7 @@ qcDrawPort[g_, _Association] := g
 thePortLabel::usage = "thePortLabel[expr, {x, y}, {offsetx, offsety}] renders the port label expr at position {x, y} with port-pane alignment {offsetx, offsety}."
 
 thePortLabel[text_, pos:{_, _}, opts___?OptionQ] := Module[
-  { new = FilterRules[Flatten @ {opts}, Options @ Port],
+  { new = FilterRules[Flatten@{opts}, Options @ Port],
     fit, pvt },
   fit = OptionValue[Port, new, "LabelSize"];
   pvt = OptionValue[Port, new, "Type"];
@@ -1246,7 +1200,7 @@ thePortLabel[text_, pos:{_, _}, opts___?OptionQ] := Module[
   PanedText[ text,
     FilterRules[new, Options @ PanedText],
     (* "Paned" -> True, *)
-    "PaneSize" -> {Switch[pvt, -1, First @ $PortSize, 1, Last @ $PortSize], $CircuitUnit},
+    "PaneSize" -> {Switch[pvt, -1, First@$PortSize, 1, Last@$PortSize], $CircuitUnit},
     "PanePosition" -> pos,
     "PaneAlignment" -> {-pvt, 0},
     "Style" -> {

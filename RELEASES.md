@@ -2,6 +2,9 @@
 
 ## 3.3.3
 
+- Redefined functions State and Operator.
+- The usage of State and Operator has been changed.
+- TheState and TheOperator have been excised.
 - New functions QCR and QBR, and their relation to QFT.
 - QFT enhanced and improved.
 - New syntax pattern for QFT.
@@ -28,7 +31,7 @@
 
 ## 3.3.0
 
-- Bug fixes: Matrix[MultiplyExp[...], KetSpecies, PlaybookTools.
+- Bug fixes: Matrix[MultiplyExp[...]], KetSpecies, PlaybookTools.
 - Matrix[expr, ...] with expr involving fermions have been changed back to the convention before 3.1.1.
 - Basis sorts the Keys, but for fermions, put additional signature factor.
 - fermionMatrix to properly handle Matrix for fermions
