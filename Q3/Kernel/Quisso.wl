@@ -963,6 +963,10 @@ Rotation /:
 Elaborate @ Rotation[phi_, v:{_, _, _}, S_?QubitQ, ___] :=
   Garner[ Cos[phi/2] - I*Sin[phi/2]*Dot[S @ All, Normalize @ v] ]
 
+Rotation /:
+ Multiply[pre___, op:Rotation[_, {_, _, _}, S_?QubitQ, ___], in_Ket, post___] :=
+  Garner @ Multiply[pre, Garner @ Multiply[Elaborate @ op, in], post]
+
 (**** </Rotation> ****)
 
 
@@ -1519,11 +1523,6 @@ ControlledExp::usage = "ControlledExp is an alias of ControlledPower."
 
 ControlledPower::usage = "ControlledPower[{c1, c2, ...}, op] represents a controlled exponentiation gate."
 
-
-Options[ControlledPower] = {
-  "Label" -> {"x", "U"}
-}
-
 ControlledPower[S_?QubitQ, expr_, opts___?OptionQ] :=
   ControlledPower[{S[$]}, expr, opts]
 
@@ -1536,7 +1535,7 @@ ControlledPower /:
 Dagger @ ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
   ControlledPower[ ss,
     Dagger[expr],
-    ReplaceRulesBy[{opts}, "Label" -> ({First[#], mySuperDagger @ Last[#]}&)]
+    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
   ]
 
 
@@ -1593,8 +1592,7 @@ Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
     pwr = ActOn[tt] /@ Table[MultiplyPower[op, Power[2, n-k]], {k, n}];
     (* NOTE: Without ActOn, some elements in pwr may be 1. *)
 
-    txt = OptionValue[ControlledPower, {opts, Options @ op}, "Label"];
-    If[ListQ[txt], txt = Last @ txt];
+    txt = OptionValue[Gate, {opts, Options @ op, "Label" -> gateLabel @ op}, "Label"];
     txt = Table["Label" -> mySuperscript[txt, Superscript[2, n-k]], {k, n}];
     new = ReplaceAll[
       MapThread[ControlledGate, {ss, pwr, txt}],
@@ -1691,16 +1689,10 @@ UniformlyControlledRotation[
 UniformlyControlledRotation /:
 Dagger @ UniformlyControlledRotation[
   cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ] :=
-  UniformlyControlledRotation[cc, -aa, vv, S, opts]
+  UniformlyControlledRotation[ cc, -aa, vv, S,
+    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
+  ]
 
-UniformlyControlledRotation /:
-Expand @ UniformlyControlledRotation[
-  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, ___ ] :=
-  QuantumCircuit @@ ReleaseHold @ Thread @
-  ControlledGate[
-    Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
-    Rotation[aa, vv, S]
-   ]
 
 UniformlyControlledRotation /:
 Matrix[
@@ -1720,10 +1712,12 @@ UniformlyControlledRotation /:
 Multiply[ pre___,
   op:UniformlyControlledRotation[
     {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ],
-  in_Ket ] := With[
+  in_Ket
+] := 
+  With[
     { gg = List @@ Expand @ op },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
-   ]
+  ]
 
 (*
 Multiply[ pre___,
@@ -1734,6 +1728,46 @@ Multiply[ pre___,
  *)
 (* NOTE: DO NOT put "UniformlyControlledRotation /:". Otherwise, the above
    rule with UniformlyControlledRotation[...]**Ket[] is overridden. *)
+
+
+UniformlyControlledRotation /:
+Expand @ UniformlyControlledRotation[
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ
+] := 
+  QuantumCircuit @@ ReleaseHold @ Thread @
+    ControlledGate[
+      Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
+      Rotation[aa, vv, S],
+      Sequence @@ Flatten @ {opts}
+    ]
+
+
+(* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
+UniformlyControlledRotation /:
+ExpandAll @ UniformlyControlledRotation[
+  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ,
+  opts___?OptionQ
+] := 
+  Module[
+    { n = Length[cc],
+      bb, gg, mm, tt },
+    bb = Tuples[{0, 1}, n];
+    gg = BinaryToGray /@ bb;
+    mm = Power[2, -n] * Power[-1, Outer[Dot, gg, bb, 1]];
+    tt = Rotation[mm.aa, vv, S, opts];
+    gg = ReleaseHold @ Thread[Hold[CNOT][sequenceCNOT @ cc, S]];
+    QuantumCircuit @@ Riffle[tt, gg]
+  ] /; Chop[First @ vv] == 0
+
+
+sequenceCNOT::usage = "Returns a list of control qubits of CNOT gates to be used to efficiently factorize a uniformly-controlled gate."
+
+sequenceCNOT[{c_}] := {c, c}
+
+sequenceCNOT[cc:{_, __}] := With[
+  { new = ReplacePart[sequenceCNOT[Rest@cc], -1 -> First[cc]] },
+  Join[new, new]
+]
 
 (**** </UniformlyControlledRotation> ****)
 
@@ -1773,7 +1807,7 @@ Expand @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] :=
   ControlledGate[
     Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
     tt, opts,
-    Thread["Label" -> Thread@Subscript["U", Range[Power[2, Length @ cc]]-1]]
+    Thread["Label" -> Thread @ Subscript["U", Range[Power[2, Length @ cc]]-1]]
    ]
 
 UniformlyControlledGate /:
@@ -1806,35 +1840,6 @@ Multiply[ pre___,
    rule with UniformlyControlledGate[...]**Ket[] is overridden. *)
 
 (**** </UniformlyControlledGate> ****)
-
-
-(**** <GateFactor> ****)
-
-UniformlyControlledRotation /:
-GateFactor @ UniformlyControlledRotation[
-  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ,
-  opts___?OptionQ ] := Module[
-    { n = Length[cc],
-      bb, gg, mm, tt },
-    bb = Tuples[{0, 1}, n];
-    gg = BinaryToGray /@ bb;
-    mm = Power[2, -n] * Power[-1, Outer[Dot, gg, bb, 1]];
-    tt = Rotation[mm.aa, vv, S];
-    gg = ReleaseHold @ Thread[Hold[CNOT][sequenceCNOT @ cc, S]];
-    QuantumCircuit @@ Riffle[tt, gg]
-   ] /; Chop[First @ vv] == 0
-
-
-sequenceCNOT::usage = "Returns a list of control qubits of CNOT gates to be used to efficiently factorize a uniformly-controlled gate."
-
-sequenceCNOT[{c_}] := {c, c}
-
-sequenceCNOT[cc:{_, __}] := With[
-  { new = ReplacePart[sequenceCNOT[Rest@cc], -1 -> First[cc]] },
-  Join[new, new]
- ]
-
-(**** </GateFactor> ****)
 
 
 (**** <Oracle/Classical> ****)
@@ -2078,7 +2083,8 @@ qftCtrlPower[1, ss:{__?QubitQ}, flag_][k_Integer] := With[
   { ControlledPower[
       Reverse @ Take[ss, k-1],
       If[ flag, Phase[N[2*Pi*Power[2, -k]], T[3]], T[C[k]] ],
-      "Label" -> {"\!\(\*OverscriptBox[\(x\), \(~\)]\)", thePauliForm @ T[C[k]]} 
+      "ControlLabel" -> "\!\(\*OverscriptBox[\(x\), \(~\)]\)",
+      "Label" -> thePauliForm @ T[C[k]]
     ],
     T[6]
   }
@@ -2195,6 +2201,17 @@ Multiply[pre___, op:QBR[ss_List, ___], Dyad[a_Association, b_Association], post_
 QBR /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:QBR[ss_List, ___], post___] :=
   Multiply[pre, Ket[a], Multiply[Bra[b] ** op], post] /; ContainsAll[Keys @ b, ss]
+
+
+QBR /:
+Multiply[pre___, QBR[ss_List, ___], aa__, QBR[ss_List, ___], post___] :=
+  Multiply[pre, Multiply @@ Map[QBR[ss], {aa}], post]
+
+QBR[ss:{___?QubitQ}, ___][expr_] := Module[
+  { rr },
+  rr = Thread[ Through[ss[k_]] -> Reverse @ Through[ss[k]] ];
+  expr /. rr
+]
 
 
 QBR /:

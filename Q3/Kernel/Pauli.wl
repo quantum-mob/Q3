@@ -659,6 +659,8 @@ HoldPattern @ fPauliKetQ[expr_] := False /;
   Not[Equal @@ Length /@ Cases[{expr}, Ket[kk_List] :> kk, Infinity]]
 
 
+(**** <fKetQ> ****)
+
 fKetQ::usage = "fKetQ[expr] returns True if expr is a valid expression for a state vector of a system of labelled qubits.";
 
 HoldPattern @ fKetQ[Ket[_Association]] = True
@@ -669,12 +671,12 @@ HoldPattern @ fKetQ[z_?CommutativeQ expr_] := fKetQ[expr]
 
 HoldPattern @ fKetQ[Plus[terms__]] := TrueQ[
   And @@ fKetQ /@ DeleteCases[ {terms}, (Complex[0., 0.] | 0.) ]
- ]
+]
 (* NOTE: 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
 
-HoldPattern @ fKetQ[expr_Times] := fKetQ[Expand @ expr]
-
 HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
+
+(**** </fKetQ> ****)
 
 
 (**** <KetFormat> <BraFormat>****)
@@ -3733,7 +3735,7 @@ SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
     { Times @@ Dimension[aa], Times @@ Dimension[bb] }
    ];
   { ww, uu . Basis[aa], vv . Basis[bb] }
- ] /; fKetQ[expr]
+] /; fKetQ[expr]
 
 
 SchmidtForm::usage = "SchmidtForm[\[Ellipsis]] is formally equivalent to SchmidtDecomposition[\[Ellipsis]], but returns the result in the form s1 Ket[u1]\[CircleTimes]Ket[v1] + s2 Ket[u2]\[CircleTimes]Ket[v2] + \[Ellipsis] keeping \[CircleTimes] unevaluated.\nSchmidtForm is for a quick overview of the Schmidt decomposition of the vector in question. For a more thorough analysis of the result, use SchmidtDecomposition."
@@ -3789,7 +3791,7 @@ SchmidtForm[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { ww, uu, vv },
   { ww, uu, vv } = SchmidtDecomposition[expr, aa, bb];
   ww . MapThread[ OTimes, {KetRegulate[uu, aa], KetRegulate[vv, bb]} ]
- ] /; fKetQ[expr]
+] /; fKetQ[expr]
 
 (**** </SchmidtDecomposition> ****)
 

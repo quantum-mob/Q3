@@ -200,10 +200,10 @@ ReplaceRules[opts_List?OptionQ, key_ -> val_] :=
 ReplaceRulesBy::usage = "ReplaceRulesBy[{key1 -> val1, key2 -> val2, \[Ellipsis]}, key -> func] replaces the value corresponding to key by func[val]."
 
 ReplaceRulesBy[opts_List?OptionQ, key_ -> fun_] := With[
-  { new = Association@Flatten@opts },
+  { new = Association @ Flatten @ opts },
   Normal @ ReplacePart[
     Association @ Flatten @ opts, 
-    Key[key] :> fun@Lookup[new, key]
+    Key[key] :> fun @ Lookup[new, key]
   ]
 ]
 

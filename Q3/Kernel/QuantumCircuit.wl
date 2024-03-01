@@ -2,13 +2,12 @@
 BeginPackage["Q3`"]
 
 { QuantumCircuit,
-  QuantumCircuitIn,
-  QuantumCircuitOut,
   QuantumCircuitTrim };
 
 { ParseGate, Gate, Mark };
 
 { ParsePort, Port };
+{ PortIn, PortOut };
 
 
 Begin["`Private`"]
@@ -24,38 +23,38 @@ QuantumCircuit::ket = "`` is not a proper ket of the form Ket[<|...|>] or Produc
 QuantumCircuit::elm = "`` is not a quantum circuit element."
 
 
-QuantumCircuitIn::usage = "QuantumCircuitIn is a holder for input expression in QuantumCircuit.\nSee also QuantumCircuitOut."
+PortIn::usage = "PortIn is a holder for input expression in QuantumCircuit.\nSee also PortOut."
 
-QuantumCircuitOut::usage = "QuantumCircuitOut is a holder for expected output expressions in QuantumCircuit. Note that the output expressions are just expected output and may be different from the actual output. They are used only for output label and ignored by ExpressionFor and Elaborate.\nSee also QuantumCircuitIn."
+PortOut::usage = "PortOut is a holder for expected output expressions in QuantumCircuit. Note that the output expressions are just expected output and may be different from the actual output. They are used only for output label and ignored by ExpressionFor and Elaborate.\nSee also PortIn."
 
 
 (**** <User Interface> ****)
 
-SetAttributes[{QuantumCircuit, QuantumCircuitOut, QuantumCircuitIn}, Flat]
+SetAttributes[{QuantumCircuit, PortOut, PortIn}, Flat]
 
 QuantumCircuit[rest:Except[_?qcKetQ].., Longest[vv__?qcKetQ]] :=
-  QuantumCircuit[rest, QuantumCircuitOut[vv]]
+  QuantumCircuit[rest, PortOut[vv]]
 
 QuantumCircuit[Longest[vv__?qcKetQ]] :=
-  QuantumCircuit @ QuantumCircuitIn[vv]
+  QuantumCircuit @ PortIn[vv]
 
 QuantumCircuit[Longest[opts__?OptionQ], rest:Except[_?OptionQ]..] :=
   QuantumCircuit[rest, opts]
 
-QuantumCircuit[a_QuantumCircuitOut, bb__QuantumCircuitOut] :=
-  QuantumCircuit @ QuantumCircuitOut[a, bb]
+QuantumCircuit[a_PortOut, bb__PortOut] :=
+  QuantumCircuit @ PortOut[a, bb]
 
-QuantumCircuit[a_QuantumCircuitIn, bb__QuantumCircuitIn] :=
-  QuantumCircuit @ QuantumCircuitIn[a, bb]
+QuantumCircuit[a_PortIn, bb__PortIn] :=
+  QuantumCircuit @ PortIn[a, bb]
 
-QuantumCircuit[rest__, in_QuantumCircuitIn] :=
+QuantumCircuit[rest__, in_PortIn] :=
   QuantumCircuit[in, rest]
 
-QuantumCircuit[out_QuantumCircuitOut, rest:Except[_?OptionQ|_QuantumCircuitOut]..] :=
+QuantumCircuit[out_PortOut, rest:Except[_?OptionQ|_PortOut]..] :=
   QuantumCircuit[rest, out]
 
 
-qcKetQ[_QuantumCircuitIn | _QuantumCircuitOut | _Projector] = False
+qcKetQ[_PortIn | _PortOut | _Projector] = False
 
 qcKetQ[expr_] := Not @ FreeQ[expr, _Ket | _ProductState | _State]
 
@@ -204,11 +203,11 @@ SetAttributes[QuantumCircuitTrim, Listable];
 QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__, ___?OptionQ] ] :=
   Flatten @ QuantumCircuitTrim@{gg}
 
-QuantumCircuitTrim[ QuantumCircuitIn[a__] ] :=
+QuantumCircuitTrim[ PortIn[a__] ] :=
     Multiply @@ QuantumCircuitTrim[ {a} ]
 (* NOTE: Useful to apply Matrix directly to QuantumCircuit.  *)
 
-QuantumCircuitTrim[ _QuantumCircuitOut ] = Nothing
+QuantumCircuitTrim[ _PortOut ] = Nothing
 
 QuantumCircuitTrim[ _?OptionQ ] = Nothing
 
@@ -296,10 +295,10 @@ HoldPattern @
 
     marks = qcMark @ Cases[{gg}, _Mark, Infinity];
 
-    in = FirstCase[ {gg}, QuantumCircuitIn[kk___] :> {kk} ];
+    in = FirstCase[ {gg}, PortIn[kk___] :> {kk} ];
     in = qCircuitInput[in, xx, yy];
 
-    out = FirstCase[ {gg}, QuantumCircuitOut[kk___] :> {kk} ];
+    out = FirstCase[ {gg}, PortOut[kk___] :> {kk} ];
     out = qCircuitOutput[out, xx, yy];
 
     Graphics[ Join[lines, in, nodes, marks, out],
@@ -364,21 +363,79 @@ Gate[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
 (**** </Gate> *****)
 
 
+(**** <Port> ****)
+
+Port::usage = "Port[expr] is a low-level object representing an input port which is fed value expr or an output port producing value expr in a quantum circuit."
+
+Options[Port] = {
+  "Label" -> Automatic,
+  "LabelSize" -> 1, (* RELATIVE *)
+  "LabelAngle" -> 0,
+  "LabelStyle" -> {}, (* Example: "LabelStyle" -> {FontSland -> Plain} *)
+  "LabelAlignment" -> {-1, 0}, (* Usually, {11, 0} for input, and {-1, 0} for output  *)
+  "Type"  -> 1 (* -1: input, 1: output *)
+}
+
+(**** </Port> ****)
+
+
+(**** <ParsePort> ****)
+
+ParsePort::usage = "ParsePorts preprocesses various input and output forms of QuantumCircuit."
+
+ParsePort[g_, opts___?OptionQ] := 
+  g /; FreeQ[g, _Ket | _ProductState | _State]
+
+
+ParsePort[ {gg:Except[_?OptionQ].., opts___?OptionQ}, more___?OptionQ ] := 
+  Map[ParsePort[#, more, opts]&, {gg}]
+
+
+ParsePort[v:Ket[_Association], opts___?OptionQ] := 
+  Port[v, opts]
+
+ParsePort[v:Ket[Except[_Association]], ___] :=
+  (Message[QuantumCircuit::ket, v]; Nothing)
+(* NOTE: Somehow v_Ket does not work properly. *)
+
+
+ParsePort[v:ProductState[_Association, opts___?OptionQ], more___?OptionQ] :=
+  Port[v, more, opts]
+
+ParsePort[v:ProductState[Except[_Association], ___], ___] :=
+  (Message[QuantumCircuit::ket, v]; Nothing)
+(* NOTE: Somehow v_ProductState does not work properly. *)
+
+
+(* fallback *)
+
+(* NOTE: This is dangerous because Plus and Times can happen. *)
+(* 
+ParsePort[vv_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
+  ParsePort[ vv[any, more, opts] ]
+ *)
+
+ParsePort[expr:Except[_List], opts___?OptionQ] :=
+  Port[expr, FilterRules[{opts}, Options @ Port]] /;
+    Not @ FreeQ[expr, _Ket|_State]
+
+(**** </ParsePort> ****)
+
+
 (**** <ParseGate> *****)
 
 ParseGate::usage = "ParseGate[expr, opts] is a low-level function to preprocess quantum circuit element expr."
 
 ParseGate::unknown = "Unknown quantum circuit element ``."
 
-(* NOTE: NEVER set Listable attribute for ParseGate. *)
-ParseGate[{gg__, opts___?OptionQ}] := Map[ParseGate[#, opts]&, {gg}]
+ParseGate[ {gg:Except[_?OptionQ].., opts___?OptionQ}, more___?OptionQ ] := 
+  Map[ParseGate[#, more, opts]&, {gg}]
 
-ParseGate[gg_List, opts___?OptionQ] := Map[ParseGate[#, opts]&, gg]
 
 ParseGate[qc_QuantumCircuit] := Map[ParseGate, qc]
 
 (* These elements are handled separately. *)
-ParseGate[_QuantumCircuitIn|_QuantumCircuitOut|_Mark, opts___?OptionQ] = Nothing
+ParseGate[_PortIn|_PortOut|_Mark, opts___?OptionQ] = Nothing
 
 
 ParseGate[_?NumericQ, ___?OptionQ] = "Spacer"
@@ -409,149 +466,200 @@ ParseGate[
   Map[ParseGate[#, opts]&, Reverse@{ss}]
 
 
-ParseGate @ Measurement[ss:{___?PauliQ}, opts___?OptionQ] :=
-  Map[ParseGate[Measurement[#], opts]&, ss]
+ParseGate[Measurement[ss:{___?PauliQ}, opts___?OptionQ], more___?OptionQ] :=
+  Map[ParseGate[Measurement[#], more, opts]&, ss]
 
-ParseGate @ Measurement[S_?QubitQ, opts___?OptionQ] := 
+ParseGate[Measurement[S_?QubitQ, opts___?OptionQ], more___?OptionQ] := 
   Gate[ {FlavorMute @ S},
-    "Shape" -> "Measurement", opts,
-    "Label" -> measurementLabel[S] ]
+    "Shape" -> "Measurement", more, opts,
+    "Label" -> measurementLabel[S]
+  ]
 
-ParseGate @ HoldPattern@
-  Measurement[Multiply[ss__?QubitQ], opts___?OptionQ] :=
-    Gate[ FlavorMute@{ss},
-      "Shape" -> "Measurement", opts,
-      "Label" -> measurementLabel@{ss} ]
+HoldPattern @ ParseGate[
+  Measurement[Multiply[ss__?QubitQ], opts___?OptionQ],
+  more___?OptionQ
+] :=
+  Gate[ FlavorMute @ {ss},
+    "Shape" -> "Measurement", more, opts,
+    "Label" -> measurementLabel@{ss}
+  ]
 
-ParseGate @ HoldPattern @ Projector[v_, qq_, ___?OptionQ] :=
+HoldPattern @ ParseGate[Projector[v_, qq_, ___?OptionQ], ___?OptionQ] :=
   Gate[qq, "Shape" -> "Projector", "Label" -> None]
 
 
-ParseGate[ op:Phase[_, _?QubitQ, opts___?OptionQ] ] :=
-  Gate[ Qubits @ op, opts, "Label" -> HoldForm @ thePauliForm[op] ]
+ParseGate[ op:Phase[_, _?QubitQ, opts___?OptionQ], more___?OptionQ ] :=
+  Gate[ Qubits @ op, more, opts, "Label" -> HoldForm @ thePauliForm[op] ]
 
-ParseGate[ op:Rotation[_, {_, _, _}, G_?QubitQ, opts___?OptionQ] ] :=
-  Gate[Qubits @ G, opts, "Label" -> gateLabel @ op]
+ParseGate[ op:Rotation[_, {_, _, _}, G_?QubitQ, opts___?OptionQ], more___?OptionQ ] :=
+  Gate[Qubits @ G, more, opts, "Label" -> gateLabel @ op]
 
-ParseGate[ op:EulerRotation[{_, _, _}, G_?QubitQ, opts___?OptionQ] ] :=
-  Gate[{G}, opts, "Label" -> gateLabel @ op]
+ParseGate[ op:EulerRotation[{_, _, _}, G_?QubitQ, opts___?OptionQ], more___?OptionQ ] :=
+  Gate[{G}, more, opts, "Label" -> gateLabel @ op]
 
 
 (* Multi-qubit gates *)
 
-ParseGate @
-  ControlledGate[rr:{__Rule}, S_?QubitQ, opts___?OptionQ] :=
-  Gate[ rr, Qubits @ S, opts,
-    "Label" -> {None, thePauliForm[S]} ]
+ParseGate[
+  ControlledGate[rr:{__Rule}, S_?QubitQ, opts___?OptionQ],
+  more___?OptionQ
+] :=
+  Gate[ rr, Qubits @ S, more, opts,
+    "Label" -> thePauliForm[S]
+  ]
 
-ParseGate @
+ParseGate[
   ControlledGate[
     cc:{Rule[_?QubitQ, _?BinaryQ]..},
     op:(_Phase|_Rotation|_EulerRotation),
     opts___?OptionQ
-  ] :=
-    Gate[ cc, Qubits @ op, opts, Options[op],
-      "Label" -> {None, gateLabel[op]} ]
+  ],
+  more___?OptionQ 
+] :=
+  Gate[ cc, Qubits @ op, 
+    more, opts, Options[op],
+    "Label" -> gateLabel[op]
+  ]
 
-ParseGate @
-  ControlledGate[cc:{Rule[_?QubitQ, _]..}, expr_, opts___?OptionQ] :=
-  Gate[cc, Qubits @ expr, opts] /;
+ParseGate[
+  ControlledGate[cc:{Rule[_?QubitQ, _]..}, expr_, opts___?OptionQ],
+  more___?OptionQ
+] :=
+  Gate[cc, Qubits @ expr, more, opts] /;
   Not @ FreeQ[expr, _Dyad|_?QubitQ]
 
 
-ParseGate @ CNOT[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, ___?OptionQ ] :=
+ParseGate[CNOT[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, ___?OptionQ], ___?OptionQ] :=
   Gate[cc, tt, "Shape" -> "CirclePlus"]
 
 
-ParseGate @ Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ, ___?OptionQ] :=
+ParseGate[Toffoli[a_?QubitQ, b__?QubitQ, c_?QubitQ, ___?OptionQ], ___?OptionQ] :=
   Gate[ Thread[{a, b} -> {1, 1}], {c},
-    "Shape" -> "CirclePlus" ]
+    "Shape" -> "CirclePlus" 
+  ]
 
 
-ParseGate @ CZ[ss:{__?QubitQ}, ___?OptionQ] :=
+ParseGate[CZ[ss:{__?QubitQ}, ___?OptionQ], ___?OptionQ] :=
   Gate[ Most @ ss, {Last @ ss},
     "ControlShape" -> "Dot",
-    "Shape" -> "Dot" ]
+    "Shape" -> "Dot" 
+  ]
 
-ParseGate @ Swap[c_?QubitQ, t_?QubitQ, ___?OptionQ] :=
+ParseGate[Swap[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?OptionQ] :=
   Gate[ {c}, {t},
     "ControlShape" -> "Cross",
     "Shape" -> "Cross"
-   ]
+  ]
 
 
-ParseGate @ iSwap[c_?QubitQ, t_?QubitQ, ___?OptionQ] :=
+ParseGate[iSwap[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?OptionQ] :=
   Gate[ {c}, {t},
     "ControlShape" -> "CircleCross",
     "Shape" -> "CircleCross"
   ]
 
 
-ParseGate @
-  UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}, opts___?OptionQ] :=
-    Gate[ Most @ ss, {Last @ ss}, opts,
-      "Shape" -> "Dot",
-      "ControlShape" -> "Dot",
-      "LinkShape" -> "Wiggly" ]
+ParseGate[
+  UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}, opts___?OptionQ],
+  more___?OptionQ
+] :=
+  Gate[ Most @ ss, {Last @ ss}, more, opts,
+    "Shape" -> "Dot",
+    "ControlShape" -> "Dot",
+    "LinkShape" -> "Wiggly"
+  ]
 
-ParseGate @ HoldPattern@
-  UnitaryInteraction[_?VectorQ|_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ] :=
-    Gate[ Most @ ss, {Last @ ss}, opts,
-      "Shape" -> "Dot",
-      "ControlShape" -> "Dot",
-      "LinkShape" -> "Wiggly" ]
+HoldPattern @ ParseGate[ 
+  UnitaryInteraction[_?VectorQ|_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ],
+  more___?OptionQ
+] :=
+  Gate[ Most @ ss, {Last @ ss}, more, opts,
+    "Shape" -> "Dot",
+    "ControlShape" -> "Dot",
+    "LinkShape" -> "Wiggly"
+  ]
 
 
-ParseGate @ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}, ___?OptionQ] :=
+ParseGate[
+  Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}, ___?OptionQ],
+  ___?OptionQ
+] :=
   Gate[ {a}, {b, c},
     "ControlShape" -> "Dot",
     "Shape" -> "Cross"
-   ]
+  ]
 
-ParseGate @ Deutsch[ph_, {a_?QubitQ, b_?QubitQ, c_?QubitQ}, opts___?OptionQ] :=
+ParseGate[
+  Deutsch[ph_, {a_?QubitQ, b_?QubitQ, c_?QubitQ}, opts___?OptionQ],
+  more___?OptionQ
+] :=
   Gate[ {a, b}, {c}, more, opts, "Label" -> "D" ]
 
 
-ParseGate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
-  Gate[ cc, tt, opts,
+ParseGate[ 
+  Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ],
+  more___?OptionQ
+] :=
+  Gate[ cc, tt, more, opts,
     "ControlShape" -> "Oval",
     "Shape" -> "CirclePlus",
     "Label" -> "f(x)",
     "LabelSize" -> 0.9 ]
 
 
-ParseGate[ elm:ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ] ]:=
-  Gate[ cc, Qubits[op],
-    "Label" -> gateLabel[elm], 
-    opts, (* NOTE: In this case, opts MUST come later than above "Label" --> ... statement. *)
-    "ControlShape" -> "Oval",
-    "Shape" -> "Rectangle"
+ParseGate[ 
+  elm:ControlledPower[cc:{__?QubitQ}, op_, opts___?OptionQ], 
+  more___?OptionQ
+] := 
+  Module[
+    { new },
+    new = FilterRules[
+      { more, opts, Options @ op,
+        "ControlShape" -> "Oval",
+        "ControlLabel" -> "x",
+        "Label" -> gateLabel[op]
+      },
+      Options @ Gate
+    ];
+    Gate[ cc, Qubits @ op,
+      "Label" -> mySuperscript[
+        OptionValue[Gate, new, "Label"], 
+        OptionValue[Gate, new, "ControlLabel"]
+      ], 
+      new ]
   ]
 
 
-ParseGate @
+ParseGate[
   UniformlyControlledRotation[
-    cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ] :=
+    cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ],
+  more___?OptionQ
+] :=
   Gate[ cc, {S}, opts,
     "ControlShape" -> "MixedDot",
-    "Label" -> {None, gateLabel @ Rotation[0, vv, S]}
+    "Label" -> gateLabel @ Rotation[0, vv, S]
   ]
 
 
-ParseGate @
-  UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ] :=
-    Gate[ cc, Qubits @ tt, opts,
-      "ControlShape" -> "MixedDot",
-      "Label" -> {None, "U"}
-    ]
+ParseGate[
+  UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ],
+  more___?OptionQ
+] :=
+  Gate[ cc, Qubits @ tt, more, opts,
+    "ControlShape" -> "MixedDot",
+    "Label" -> "U"
+  ]
 
 
-ParseGate @
-  ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
-  Gate[ cc, tt,
+ParseGate[
+  ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ], 
+  more___?OptionQ
+] :=
+  Gate[ cc, tt, more, opts,
     "ControlShape" -> "Oval",
-    "Shape" -> "Rectangle", opts,
-    "Label" -> {"x", StringForm["x\[ThinSpace]y % ``", n]},
+    "ControlLabel" -> "x",
+    "Shape" -> "Rectangle",
+    "Label" -> StringForm["x\[ThinSpace]y % ``", n],
     "LabelAngle" -> Pi/2 ]
 
 ParseGate @
@@ -562,24 +670,24 @@ ParseGate @
     "LabelAngle" -> Pi/2 ]
 
 
-ParseGate[op:QFT[_, qq:{__?QubitQ}, _, opts___?OptionQ]] := 
+ParseGate[op:QFT[_, qq:{__?QubitQ}, _, opts___?OptionQ], more___?OptionQ] := 
   Gate[ qq, 
-    FilterRules[{opts}, Options @ Gate],
+    FilterRules[{more, opts}, Options @ Gate],
     "Label" -> gateLabel[op],
     "LabelAngle" -> Pi/2
   ]
 
 
-ParseGate[op:QBR[qq:{__?QubitQ}, opts___?OptionQ]] :=
+ParseGate[op:QBR[qq:{__?QubitQ}, opts___?OptionQ], more___?OptionQ] :=
   Gate[ qq, 
-    FilterRules[{opts}, Options @ Gate],
+    FilterRules[{more, opts}, Options @ Gate],
     "Label" -> "QBR",
     "LabelAngle" -> Pi/2
   ]
 
-ParseGate[op:QCR[qq:{__?QubitQ}, opts___?OptionQ]] :=
+ParseGate[op:QCR[qq:{__?QubitQ}, opts___?OptionQ], more___?OptionQ] :=
   Gate[ qq, 
-    FilterRules[{opts}, Options @ Gate],
+    FilterRules[{more, opts}, Options @ Gate],
     "Label" -> "QCR",
     "LabelAngle" -> Pi/2
   ]
@@ -587,8 +695,11 @@ ParseGate[op:QCR[qq:{__?QubitQ}, opts___?OptionQ]] :=
 
 (* fallback *)
 
+(* NOTE: This is dangerous because Plus and Times can happen. *)
+(* 
 ParseGate[op_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
   ParseGate @ op[any, more, opts]
+ *)
 
 ParseGate[expr:Except[_List], opts___?OptionQ] :=
   Gate[Qubits @ expr, FilterRules[{opts, Options @ expr}, Options @ Gate]]
@@ -617,6 +728,9 @@ gateLabel::usage = "gateLabel[G] returns the label of circuit element G to be di
 SetAttributes[gateLabel, Listable];
 
 
+gateLabel[ S_?QubitQ ] := thePauliForm[S]
+
+
 gateLabel[ op_Phase ] := thePauliForm[op]
 
 
@@ -636,12 +750,12 @@ gateLabel[ Rotation[_, {_, _, _}, _?QubitQ, ___] ] :=
 gateLabel @ EulerRotation[{_, _, _}, _?QubitQ, ___?OptionQ] :=
   Subscript["R", "E"]
 
-
+(* 
 gateLabel @ ControlledPower[_, _, OptionsPattern[]] := With[
   { lbl = OptionValue[ControlledPower, "Label"] },
   {First @ lbl, mySuperscript[Last @ lbl, First @ lbl]}
 ]
-
+ *)
 
 gateLabel @ QFT[type_, _List, _?BooleanQ, ___] :=
   Switch[ type,
@@ -649,6 +763,8 @@ gateLabel @ QFT[type_, _List, _?BooleanQ, ___] :=
     +1, "QFT",
     _, "DFT"
   ]
+
+gateLabel[expr_] := "U"
 
 (**** </gateLabel> *****)
 
@@ -937,13 +1053,14 @@ qcDrawGate[
       yt = Lookup[yy, tt],
       new = FilterRules[Flatten@{opts}, Options @ Gate],
       label, control, target, link, dots, legs, pane },
-    label = doForceList @ OptionValue[Gate, new, "Label"];
+    clbl = OptionValue[Gate, new, "ControlLabel"];
+    tlbl = OptionValue[Gate, new, "Label"];
     control = gateShape @ OptionValue[Gate, new, "ControlShape"];
     target = gateShape @ OptionValue[Gate, new, "Shape"];
     link = linkShape @ OptionValue[Gate, new, "LinkShape"];
 
-    dots = control[x, yc -> Values[cc], "Label" -> First[label], new];
-    pane = target[x, yt, "Label" -> Last[label], new];
+    dots = control[x, yc -> Values[cc], "Label" -> clbl, new];
+    pane = target[x, yt, "Label" -> tlbl, new];
     legs = link[x, Join[yc, yt], new];
     
     Join[{legs}, dots, pane]
@@ -1015,7 +1132,7 @@ qCircuitOutput[ Missing["NotFound"], xx_List, yy_Association ] = {}
 qCircuitOutput[ gg:{___}, xx_List, yy_Association ] := Module[
   { xy = Map[{Last[xx] + $PortGap, #}&, yy],
     ff },
-  ff = List @ ParsePort[gg, "LabelAlignment" -> {-1, 0}, "Type" -> +1];
+  ff = List @ ParsePort @ Join[gg, {"LabelAlignment" -> {-1, 0}, "Type" -> +1}];
   Map[qcDrawPort[#, xy]&, ff]
 ]
 
@@ -1027,67 +1144,9 @@ qCircuitInput[ Missing["NotFound"], xx_List, yy_Association ] = {}
 qCircuitInput[ gg:{___}, xx_List, yy_Association ] := Module[
   { xy = Map[{-$PortGap, #}&, yy],
     ff },
-  ff = List @ ParsePort[gg, "LabelAlignment" -> {1, 0}, "Type" -> -1];
+  ff = List @ ParsePort @ Join[gg, {"LabelAlignment" -> {1, 0}, "Type" -> -1}];
   Map[qcDrawPort[#, xy]&, ff]
 ]
-
-
-(**** <Port> ****)
-
-Port::usage = "Port[expr] is a low-level object representing an input port which is fed value expr or an output port producing value expr in a quantum circuit."
-
-Options[Port] = {
-  "Label" -> Automatic,
-  "LabelSize" -> 1, (* RELATIVE *)
-  "LabelAngle" -> 0,
-  "LabelStyle" -> {}, (* Example: "LabelStyle" -> {FontSland -> Plain} *)
-  "LabelAlignment" -> {-1, 0}, (* Usually, {11, 0} for input, and {-1, 0} for output  *)
-  "Type"  -> 1 (* -1: input, 1: output *)
-}
-
-(**** </Port> ****)
-
-
-(**** <ParsePort> ****)
-
-ParsePort::usage = "ParsePorts preprocesses various input and output forms of QuantumCircuit."
-
-ParsePort[a_List, opts___?OptionQ] := 
-  Map[ParsePort[#, opts]&, a]
-
-ParsePort[g_, opts___?OptionQ] := 
-  g /; FreeQ[g, _Ket | _ProductState | _State]
-
-
-ParsePort[v:Ket[_Association], opts___?OptionQ] := 
-  Port[v, opts]
-
-ParsePort[v:Ket[Except[_Association]], ___] :=
-  (Message[QuantumCircuit::ket, v]; Nothing)
-(* NOTE: Somehow v_Ket does not work properly. *)
-
-
-ParsePort[v:ProductState[_Association, opts___?OptionQ], more___?OptionQ] :=
-  Port[v, more, opts]
-
-ParsePort[v:ProductState[Except[_Association], ___], ___] :=
-  (Message[QuantumCircuit::ket, v]; Nothing)
-(* NOTE: Somehow v_ProductState does not work properly. *)
-
-
-(* fallback *)
-
-ParsePort[expr:Except[_List], opts___?OptionQ] :=
-  Port[expr, FilterRules[{opts}, Options @ Port]] /;
-    Not @ FreeQ[expr, _Ket|_State]
-
-(* NOTE: This is dangerous because Plus and Times can happen. *)
-(* 
-ParsePort[vv_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
-  ParsePort[ vv[any, more, opts] ]
- *)
-
-(**** </ParsePort> ****)
 
 
 (**** <qcDrawPort> ****)
