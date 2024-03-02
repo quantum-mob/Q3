@@ -1375,6 +1375,16 @@ Multiply[pre___, op_, State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], post__
     ]
   ]
 
+
+StateForm::usage = "StateForm[expr] converts the Ket expression expr to State[mat, {s1, s2, \[Ellipsis]}."
+
+StateForm[expr_?fKetQ] := With[
+  { ss = Qubits @ expr },
+  State[Matrix[expr, ss], ss]
+]
+
+StateForm[vec_ProductState] := Expand[vec]
+
 (**** </State> ****)
 
 

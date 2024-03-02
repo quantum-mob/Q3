@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.3.4
+
+- Several bug fixes concerning QuantumCircuit.
+- Performance boost for Elaborate[QuantumCircuit[...]]
+
 ## 3.3.3
 
 - Redefined functions State and Operator.

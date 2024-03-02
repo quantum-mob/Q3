@@ -136,28 +136,32 @@ ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
 
 QuantumCircuit /:
 Elaborate @ QuantumCircuit[gg__, ___?OptionQ] := Module[
-  { expr = Flatten @ QuantumCircuitTrim@{gg} },
-  Garner[ qvCircuitOperate @@ expr ]
+  { expr = Flatten @ QuantumCircuitTrim @ {gg} },
+  Garner[ QCAct @@ expr ]
 ]
 (* NOTE: This makes the evaluation much faster, especially, when the initial
    state is specified in the circuit. *)
 
-qvCircuitOperate[] = 1
+QCAct::usage = "QCAct[elm1, elm2, \[Ellipsis]] is a version of Multiply for QuantumCircuit elements elm1, elm2, \[Ellipsis]."
 
-qvCircuitOperate[pre__, op_Measurement, post___] := 
-  qvCircuitOperate[op @ qvCircuitOperate[pre], post] /;
-  Not @ FreeQ[Elaborate@{pre}, Ket[_Association]]
+QCAct[] = 1
 
-qvCircuitOperate[op_Measurement, post___] :=
-  Multiply[qvCircuitOperate[post], op]
+QCAct[any_] := Elaborate[any]
 
-qvCircuitOperate[op:Except[_Measurement]..] :=
+QCAct[pre__, op_Measurement, post___] := 
+  QCAct[op @ QCAct[pre], post] /;
+  Not @ FreeQ[{pre}, _Ket|_State]
+
+QCAct[op_Measurement, post___] :=
+  Multiply[QCAct[post], op]
+
+QCAct[op:Except[_Measurement]..] :=
   Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1, {op} ]
 (* NOtE: One can use Elaborate@{op} as follows:
    Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate@{op} ]
    However, this cannot take the advantange of op ** Ket[...]. *)
 
-qvCircuitOperate[gg__] := MeasurementFunction[{gg}]
+QCAct[gg__] := MeasurementFunction[{gg}]
 
 (**** </Elaborate> ****)
 
@@ -201,7 +205,7 @@ QuantumCircuitTrim::usage = "QuantumCircuitTrim[expr] removes visualization opti
 SetAttributes[QuantumCircuitTrim, Listable];
 
 QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__, ___?OptionQ] ] :=
-  Flatten @ QuantumCircuitTrim@{gg}
+  Flatten @ QuantumCircuitTrim @ {gg}
 
 QuantumCircuitTrim[ PortIn[a__] ] :=
     Multiply @@ QuantumCircuitTrim[ {a} ]
@@ -602,9 +606,10 @@ ParseGate[
 ] :=
   Gate[ cc, tt, more, opts,
     "ControlShape" -> "Oval",
-    "Shape" -> "CirclePlus",
-    "Label" -> "f(x)",
-    "LabelSize" -> 0.9 ]
+    "ControlLabel" -> "f(x)",
+    "ControlLabelSize" -> 0.9,
+    "Shape" -> "CirclePlus"
+  ]
 
 
 ParseGate[ 
@@ -660,14 +665,14 @@ ParseGate[
     "ControlLabel" -> "x",
     "Shape" -> "Rectangle",
     "Label" -> StringForm["x\[ThinSpace]y % ``", n],
-    "LabelAngle" -> Pi/2 ]
+    "LabelAngle" -> -Pi/2 ]
 
 ParseGate @
   ModMultiply[n_Integer, a_Integer, tt:{__?QubitQ}, opts___?OptionQ] :=
   Gate[ tt,
     "Shape" -> "Rectangle", opts,
     "Label" -> StringForm["``\[ThinSpace]x % ``", a, n],
-    "LabelAngle" -> Pi/2 ]
+    "LabelAngle" -> -Pi/2 ]
 
 
 ParseGate[op:QFT[_, qq:{__?QubitQ}, _, opts___?OptionQ], more___?OptionQ] := 
@@ -1052,15 +1057,21 @@ qcDrawGate[
     { yc = Lookup[yy, Keys @ cc],
       yt = Lookup[yy, tt],
       new = FilterRules[Flatten@{opts}, Options @ Gate],
-      label, control, target, link, dots, legs, pane },
-    clbl = OptionValue[Gate, new, "ControlLabel"];
-    tlbl = OptionValue[Gate, new, "Label"];
+      alt, label, control, target, link, dots, legs, pane },
     control = gateShape @ OptionValue[Gate, new, "ControlShape"];
     target = gateShape @ OptionValue[Gate, new, "Shape"];
     link = linkShape @ OptionValue[Gate, new, "LinkShape"];
-
-    dots = control[x, yc -> Values[cc], "Label" -> clbl, new];
-    pane = target[x, yt, "Label" -> tlbl, new];
+    alt = Normal @ KeyReplace[
+      KeyDrop[new, {"Label", "LabelSize", "LabelStyle", "LabelAngle", "LabelAlignment"}],
+      { "ControlLabel" -> "Label",
+        "ControlLabelSize" -> "LabelSize",
+        "ControlLabelStyle" -> "LabelStyle",
+        "ControlLabelAngle" -> "LabelAngle",
+        "ControlLabelAllignment" -> "LabelAlignment"
+      }
+    ];
+    dots = control[ x, yc -> Values[cc], alt];
+    pane = target[x, yt, new];
     legs = link[x, Join[yc, yt], new];
     
     Join[{legs}, dots, pane]

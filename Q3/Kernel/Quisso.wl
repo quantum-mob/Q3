@@ -43,13 +43,19 @@ BeginPackage["Q3`"]
 
 { TheQuditKet };
 
+(**** <preload> ****)
+
+{ Gate }; (* QuantumCircuit *)
+
+(**** </preload> ****)
+
 
 Begin["`Private`"]
 
 $symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
 
 AddElaborationPatterns[
-  _QFT, _QBR,
+  _QFT, _QBR, _Oracle,
   _ControlledGate, _CZ, _CX, _CNOT, _Swap, _iSwap,
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
@@ -57,7 +63,7 @@ AddElaborationPatterns[
   _ControlledPower,
   _UnitaryInteraction,
   _Matchgate
- ]
+]
 
 AddElaborationPatterns[
   G_?QubitQ[j___, 0] -> 1,
@@ -77,7 +83,7 @@ AddElaborationPatterns[
   G_?QuditQ[j___, 0 -> 0] :> 1 - Total @ Rest @ G[j, Diagonal],
   OTimes -> CircleTimes,
   OSlash -> CircleTimes
- ]
+]
 
 
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raising|Lowering|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
@@ -912,9 +918,18 @@ Elaborate @ Phase[phi_, S_?QubitQ, ___] :=
 Phase /:
 Elaborate[op_Phase] = op (* fallback *)
 
+
 Phase /:
-HoldPattern @ Multiply[pre___, op_Phase, in_Ket] :=
-  Multiply[pre, Multiply[Elaborate @ op, in]]
+Matrix[op:Phase[_, _?QubitQ, ___], rest__] := 
+  Matrix[Elaborate @ op, rest]
+
+Phase /:
+Matrix[op:Phase[___], __] = op (* fallback *)
+
+
+Phase /:
+HoldPattern @ Multiply[pre___, op_Phase, in_Ket, post___] :=
+  Multiply[pre, Multiply[Elaborate @ op, in], post]
 
 
 (* NOTE: The following code makes many calculations significantly slow. It is far better to use the high-level feature as those given below for MultiplyPower and Multiply. *)
@@ -935,13 +950,6 @@ Multiply[
   post___
 ] :=
   Multiply[pre, Phase[a+b, ss, more, opts], post]
-
-
-Phase /:
-Matrix[op:Phase[_, _?QubitQ, ___], rest__] := Matrix[Elaborate[op], rest]
-
-Phase /:
-Matrix[op:Phase[___], __] = op
 
 
 Phase[q_?QubitQ, phi_, rest___] := (
@@ -1904,12 +1912,12 @@ HoldPattern @ Multiply[pre___, op_Oracle, post___] :=
 
 
 Oracle /:
-Elaborate @ Oracle[f_, cc : {__?QubitQ}, tt : {__?QubitQ}] := Module[
+Elaborate @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, ___] := Module[
   { bb = Range[Power[2, Length @ cc]] },
   bb = GroupBy[
     IntegerDigits[bb-1, 2, Length @ cc],
     Oracle[f, Length @ cc, Length @ tt]
-   ] /. {0 -> 10, 1 -> 11};
+  ] /. {0 -> 10, 1 -> 11};
   bb = Total /@ Map[Apply[Multiply], Map[FlavorThread[cc], bb], {2}];
   bb = KeyMap[Apply[Multiply] @* FlavorThread[tt], bb];
   Elaborate @ Total @ KeyValueMap[Multiply, bb]
@@ -1921,18 +1929,18 @@ Matrix[op:Oracle[_, cc:{__?QubitQ}, tt:{__?QubitQ}], qq:{__?QubitQ}] :=
   MatrixEmbed[Matrix @ op, Join[cc, tt], qq]
 
 Oracle /:
-Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}] := Module[
+Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, ___] := Module[
   { bb = Range[Power[2, Length @ cc]] }, 
   bb = GroupBy[
     IntegerDigits[bb-1, 2, Length @ cc], 
     Oracle[f, Length @ cc, Length @ tt]
-   ] /. {0 -> 10, 1 -> 11};
+  ] /. {0 -> 10, 1 -> 11};
   bb = KeyMap[
     ThePauli,
     Total /@ Map[ThePauli, bb, {2}]
-   ];
+  ];
   Total @ KeyValueMap[CircleTimes[#2, #1]&, bb]
- ]
+]
 
 (**** </Oracle> ****)
 
@@ -2064,7 +2072,14 @@ Multiply[pre___, QFT[m:(-1|1), ss_, ___], QFT[n:(-1|1), ss_, ___], post___] :=
 
 
 QFT /:
-Expand[op_QFT] = op (* fallback *)
+Expand[op_QFT, ___] = op (* fallback *)
+
+QFT /:
+Expand[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Conventional"] :=
+  QuantumCircuit[
+    QBR[ss] @ Reverse @ Most[Expand[op] /. OverTilde -> Identity],
+    QBR[ss]
+  ]
 
 QFT /:
 Expand @ QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___] := 
@@ -2082,9 +2097,11 @@ qftCtrlPower[1, ss:{__?QubitQ}, flag_][k_Integer] := With[
   { T = ss[[k]] },
   { ControlledPower[
       Reverse @ Take[ss, k-1],
-      If[ flag, Phase[N[2*Pi*Power[2, -k]], T[3]], T[C[k]] ],
-      "ControlLabel" -> "\!\(\*OverscriptBox[\(x\), \(~\)]\)",
-      "Label" -> thePauliForm @ T[C[k]]
+      If[ flag, 
+        Phase[ N[2*Pi*Power[2, -k]], T[3], "Label" -> thePauliForm @ T[C[k]] ], 
+        T[C[k]] 
+      ],
+      "ControlLabel" -> OverTilde["x"]
     ],
     T[6]
   }
@@ -2092,11 +2109,18 @@ qftCtrlPower[1, ss:{__?QubitQ}, flag_][k_Integer] := With[
 
 
 QFT /:
-ExpandAll[op_QFT] = op (* fallback *)
+ExpandAll[op_QFT, ___] = op (* fallback *)
+
+QFT /:
+ExpandAll[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Conventional"] := 
+  QuantumCircuit[
+    QBR[ss] @ Reverse @ Most @ ExpandAll[op],
+    QBR[ss]
+  ]
 
 QFT /:
 ExpandAll @ QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___] := 
-  QuantumCircuit @@ Append[qftCtrlPhase[type, ss, flag][All], Expand @ QBR[ss]]
+  QuantumCircuit @@ Append[qftCtrlPhase[type, ss, flag][All], QBR[ss]]
 
 qftCtrlPhase[type_, ss:{__?QubitQ}, flag_][All] := Flatten @
   Map[qftCtrlPhase[type, ss, flag], Range @ Length @ ss]
@@ -2206,6 +2230,9 @@ Multiply[pre___, Dyad[a_Association, b_Association], op:QBR[ss_List, ___], post_
 QBR /:
 Multiply[pre___, QBR[ss_List, ___], aa__, QBR[ss_List, ___], post___] :=
   Multiply[pre, Multiply @@ Map[QBR[ss], {aa}], post]
+
+QBR[ss:{___?QubitQ}, ___][qc_QuantumCircuit] :=
+  Map[QBR[ss], qc]
 
 QBR[ss:{___?QubitQ}, ___][expr_] := Module[
   { rr },
@@ -2382,9 +2409,7 @@ Measurement::nonum = "Probability half is assumed for a state without explicitly
 
 Measurement::novec = "The expression `` does not seem to be a valid Ket expression. Null vector is returned."
 
-SyntaxInformation[Measurement] = {
-  "ArgumentsPattern" -> {_}
- }
+SyntaxInformation[Measurement] = { "ArgumentsPattern" -> {_} }
 
 Measurement[op_List][vec_] :=
   Construct[Composition @@ Map[Measurement, op], vec]
@@ -2399,9 +2424,9 @@ Measurement[op_][vec_] := Module[
     If[ rand < 1/2,
       $MeasurementOut[op] = 0; Last @ odds[0],
       $MeasurementOut[op] = 1; Last @ odds[1]
-     ]
-   ]
- ]
+    ]
+  ]
+]
 
 
 Measurement /:
@@ -2430,16 +2455,14 @@ Readout::nopauli = "`` is not a Pauli operator. Only Pauli operators (including 
 
 Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout."
 
-SyntaxInformation[Readout] = {
-  "ArgumentsPattern" -> {_}
- }
+SyntaxInformation[Readout] = { "ArgumentsPattern" -> {_} }
 
 Readout[Measurement[op_]] := Readout[op]
 
 Readout[op_] := (
   If[ Not @ KeyExistsQ[$MeasurementOut, op],
     Message[Readout::notob, op]
-   ];
+  ];
   $MeasurementOut[op]
  )
 (* NOTE: op may be a matrix or an operator expression. *)
@@ -2447,9 +2470,9 @@ Readout[op_] := (
 Readout[op_List] := (
   If[ Not @ AllTrue[op, KeyExistsQ[$MeasurementOut, #]&],
     Message[Readout::notob, op]
-   ];
+  ];
   Lookup[$MeasurementOut, op]
- )
+)
 (* NOTE: op may be a list of matrices or operator expressions. *)
 
 
@@ -2457,23 +2480,22 @@ MeasurementOdds::usage = "MeasurementOdds[op][vec] theoretically analyzes the pr
 
 MeasurementOdds::pauli = "`` is not an observable Pauli operator."
 
-SyntaxInformation[MeasurementOdds] = {
-  "ArgumentsPattern" -> {_}
- }
+SyntaxInformation[MeasurementOdds] = { "ArgumentsPattern" -> {_} }
 
 (* NOTE: DO NOT use op_?PauliQ; it will inerfere with mat_?MatrixQ below. *)
-MeasurementOdds[op_][vec_?fKetQ] := Module[
+MeasurementOdds[op_][vec:(_State|_?fKetQ)] := Module[
   { ss = Qubits[{vec, op}],
-    aa },
+    aa, ff },
   If[ Not[obsPauliQ @ op],
     Message[MeasurementOdds::pauli, op];
     Return[<|0 -> {1, Ket[]}, 1 -> {0, 0}|>]
-   ];
+  ];
   aa = MeasurementOdds[Matrix[op, ss]][Matrix[vec, ss]];
-  aa[0] = {First @ aa[0], ExpressionFor[Last @ aa[0], ss]};
-  aa[1] = {First @ aa[1], ExpressionFor[Last @ aa[1], ss]};
+  ff = If[Head[vec] === State, State, ExpressionFor];
+  aa[0] = {First @ aa[0], ff[Last @ aa[0], ss]};
+  aa[1] = {First @ aa[1], ff[Last @ aa[1], ss]};
   Return[aa]
- ]
+]
 
 MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] := Module[
   { new = mat . vec,
@@ -2485,13 +2507,12 @@ MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] := Module[
   If[ AllTrue[vec, NumericQ],
     pls = Normalize @ pls;
     mns = Normalize @ mns
-   ];
+  ];
   Association[
     0 -> {p0/(p0+p1), pls},
     1 -> {p1/(p0+p1), mns}
-   ]
- ] (* /; PauliQ[mat] *)
-
+  ]
+] (* /; PauliQ[mat] *)
 (* NOTE: Test PauliQ[mat] may take long for 8 or more qubits. *)
 (* NOTE:
    1. vec, pls, or mns may be 0 (null vector).
@@ -2591,18 +2612,19 @@ KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
      ]
    ]
 
-ProductState /:
-Elaborate[ ProductState[a_Association, ___] ] := Garner[
-  CircleTimes @@ KeyValueMap[ExpressionFor[#2, #1]&, a]
- ]
 
 ProductState /:
-Matrix[ ket_ProductState ] :=
-  Matrix[Elaborate @ ket]
+Expand[ ProductState[aa_Association, ___] ] :=
+  State[CircleTimes @@ Values[aa], Keys[aa]]
 
 ProductState /:
-Matrix[ ket_ProductState, qq:{__?QubitQ} ] :=
-  Matrix[Elaborate @ ket, qq]
+Elaborate[ vec:ProductState[_Association, ___] ] :=
+  Elaborate[Expand @ vec]
+
+ProductState /:
+Matrix[ ket_ProductState, rest___ ] :=
+  Matrix[Expand @ ket, rest]
+
 
 ProductState /:
 NonCommutativeQ[ ProductState[___] ] = True
@@ -2613,9 +2635,62 @@ MultiplyKind[ ProductState[___] ] = Ket
 ProductState /:
 MultiplyGenus[ ProductState[___] ] = "Ket"
 
+
+ProductState /:
+Multiply[pre___, ps:ProductState[aa_Association, ___], Ket[bb_Association], post___] :=
+  Multiply[ pre,
+    ProductState[ps, Sequence @@ Normal @ Map[TheKet, bb]],
+    post ]
+
+ProductState /:
+Multiply[pre___, Ket[bb_Association], ps:ProductState[aa_Association, ___], post___] :=
+  Multiply[ pre,
+    ProductState[ps, Sequence @@ Normal @ Map[TheKet, bb]],
+    post ]
+
+ProductState /:
+Multiply[pre___, S_?QubitQ, in:ProductState[aa_Association, ___], post___] :=
+  Multiply[ pre, 
+    ProductState[in, FlavorMute[S] -> TheMatrix[S] . Lookup[aa, FlavorMute @ S]],
+    post ]
+
+ProductState /:
+Multiply[ pre___, 
+  op:Rotation[_, _List, S_?QubitQ, ___],
+  in:ProductState[aa_Association, ___], 
+  post___
+] :=
+  Multiply[ 
+    pre, 
+    ProductState[in, S -> Matrix[op] . Lookup[aa, S]],
+    post 
+  ]
+
+ProductState /:
+Multiply[ pre___,
+  op:Phase[_, S_?QubitQ, ___],
+  in:ProductState[aa_Association, ___], 
+  post___
+] :=
+  Multiply[ 
+    pre,
+    ProductState[in, FlavorMute[S] -> Matrix[op] . Lookup[aa, FlavorMute @ S]],
+    post 
+  ]
+
+ProductState /:
+Multiply[pre___, op_Measurement, in_ProductState, post___] :=
+  Multiply[pre, op[Expand @ in], post]
+
+ProductState /:
+Multiply[pre___, op_, in_ProductState, post___] :=
+  Multiply[pre, Multiply[op, Expand @ in], post]
+
+(* 
 HoldPattern @
   Multiply[pre___, vec:ProductState[_Association, ___], post___] :=
   Garner @ Multiply[pre, Elaborate[vec], post]
+ *)
 
 
 (* input specifications *)

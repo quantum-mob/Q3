@@ -70,7 +70,9 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { Lie, LiePower, LieSeries, LieExp, LieBasis };
 
-{ Ket, Bra };
+{ Ket, Bra, State, ProductState };
+
+{ Operator };
 
 { PauliGroup, FullPauliGroup,
   PauliGroupElements, FullPauliGroupElements,
