@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.5
+
+- Emerngency bug fix for ReleaseTimes.
+
 ## 3.3.4
 
 - Several bug fixes concerning QuantumCircuit.

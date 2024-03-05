@@ -3077,7 +3077,7 @@ CircleTimes[a_] := a (* See also Times[]. *)
 
 HoldPattern @ CircleTimes[args__] := Garner @ ReleaseHold[
   Distribute @ Hold[CircleTimes][args]
-] /; DistributableQ[args]
+] /; DistributableQ[{args}]
 
 CircleTimes[pre___, z_?CommutativeQ op_, post___] :=
   z * CircleTimes[pre, op, post]

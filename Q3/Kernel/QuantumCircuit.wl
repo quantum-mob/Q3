@@ -875,7 +875,7 @@ gateShape["Dot"][x_, yy_List, ___] :=
 (* NOTE: This form may occur on TARGET (NOT control) qubits such as for CZ. *)
 
 gateShape["Dot"][x_, rr:Rule[_List, _List], ___] :=
-  gateShape["Dot"] @@@ Thread@{x, Thread @ rr}
+  gateShape["Dot"] @@@ Thread @ {x, Thread @ rr}
 
 gateShape["Dot"][x_, y_?NumericQ -> 1, ___] :=
   Disk[{x, y}, $DotSize]
@@ -885,12 +885,13 @@ gateShape["Dot"][x_, y_?NumericQ -> 0, ___] :=
 
 
 gateShape["MixedDot"][x_, rr:Rule[_List, _List], ___] :=
-  gateShape["MixedDot"] @@@ Thread@{x, Thread @ rr}
+  gateShape["MixedDot"] @@@ Thread @ {x, Thread @ rr}
 
 gateShape["MixedDot"][x_, y_?NumericQ -> _, ___] :=
   { EdgeForm[Opacity[1]],
     White, Disk[{x, y}, $DotSize, {1, 5}*Pi/4],
-    Black, Disk[{x, y}, $DotSize, {-3, 1}*Pi/4] }
+    Black, Disk[{x, y}, $DotSize, {-3, 1}*Pi/4]
+  }
 
 
 gateShape["CircleDot"][x_, yy_List, ___] := {
@@ -900,18 +901,19 @@ gateShape["CircleDot"][x_, yy_List, ___] := {
 
 gateShape["CircleDot"][x_, y_, ___] :=
   { EdgeForm[Opacity[1]],
-    White, Disk[{x, y}, 2*$DotSize],
-    Black, Disk[{x, y}, 0.75*$DotSize] }
+    White, Disk[{x, y}, 2.00*$DotSize],
+    Black, Disk[{x, y}, 0.75*$DotSize]
+  }
 
 
 gateShape["Rectangle"][x_, yy_List, opts___?OptionQ] := Module[
   { y1 = Min @ yy,
     y2 = Max @ yy,
     pane, line, text },
-  text = theGateLabel[{x, Mean@{y1, y2}}, opts];
+  text = theGateLabel[{x, Mean @ {y1, y2}}, opts];
   pane = Rectangle[
-    {x, y1} - 0.5{1,1}$GateSize,
-    {x, y2} + 0.5{1,1}$GateSize ];
+    {x, y1} - 0.5*{1,1}*$GateSize,
+    {x, y2} + 0.5*{1,1}*$GateSize ];
   {{EdgeForm[Opacity[1]], White, pane}, text}
  ]
 
@@ -954,7 +956,7 @@ linkShape["Wiggly"][x_, yy_List, opts___?OptionQ] := {
     theGateLabel[(#1+#2)/2, opts, "LabelAlignment" -> {-2, 0}]&,
     Thread@{x, yy}
    ],
-  theWiggly[Thread@{x, yy}]
+  theWiggly[Thread @ {x, yy}]
  }
 
 
@@ -989,7 +991,7 @@ theSawtooth[a:{_, _}, b:{_, _}, n_Integer, scale_] := Module[
 theGateLabel::usage = "theGateLabel[{x, y}] renders the gate label at position {x, y}."
 
 theGateLabel[{x_, y_}, opts___?OptionQ] := Module[
-  { new = FilterRules[Flatten@{opts}, Options @ Gate],
+  { new = FilterRules[Flatten @ {opts}, Options @ Gate],
     sty, txt },
   txt = OptionValue[Gate, new, "Label"];
 
@@ -1056,7 +1058,7 @@ qcDrawGate[
   Module[
     { yc = Lookup[yy, Keys @ cc],
       yt = Lookup[yy, tt],
-      new = FilterRules[Flatten@{opts}, Options @ Gate],
+      new = FilterRules[Flatten @ {opts}, Options @ Gate],
       alt, label, control, target, link, dots, legs, pane },
     control = gateShape @ OptionValue[Gate, new, "ControlShape"];
     target = gateShape @ OptionValue[Gate, new, "Shape"];
