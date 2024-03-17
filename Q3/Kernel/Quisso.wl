@@ -1056,10 +1056,10 @@ Multiply[pre___, CNOT[cc:{__Rule}, tt_], in_Ket] := Module[
   If[ in[Keys @ cc] == Values[cc],
     Multiply[pre, op ** in],
     Multiply[pre, in],
-    xx = Mod[in[tt] + Apply[Times, Mod[in[Keys @ cc]+vv+1, 2]], 2];
+    xx = Mod[in[tt] + Apply[Times, Mod[in[Keys @ cc]+Values[cc]+1, 2]], 2];
     Multiply[pre, in[tt -> xx]]
-   ]
- ]
+  ]
+]
 
 CNOT /:
 Multiply[in_Bra, op_CNOT, post___] :=
@@ -1504,12 +1504,13 @@ Matrix[op_ControlledGate, ss:{__?SpeciesQ}] :=
 ControlledGate /:
 Multiply[ pre___,
   ControlledGate[cc:{Rule[_?QubitQ, _?BinaryQ]..}, op_, ___?OptionQ],
-  in_Ket ] :=
+  in_Ket
+] :=
   If[ in[Keys @ cc] == Values[cc],
     Multiply[pre, op ** in],
     Multiply[pre, in],
     Multiply[pre, in]
-   ]
+  ]
 
 (* NOTE: The following code makes many calculations significantly slow. It is far better to use high-level features instead. *)
 (* NOTE: DO NOT put "ControlledGate /:". Otherwise, the above rule with
