@@ -106,9 +106,6 @@ NonCommutativeQ[_QuantumCircuit] = True
 QuantumCircuit /:
 MultiplyKind[_QuantumCircuit] = Qubit
 
-QuantumCircuit /:
-MultiplyGenus[_QuantumCircuit] := "Singleton"
-
 
 QuantumCircuit /:
 Dagger @ QuantumCircuit[gg__, opts___?OptionQ] :=

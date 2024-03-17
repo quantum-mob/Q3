@@ -742,7 +742,7 @@ Ket /:
 MakeBoxes[expr:Ket[v_Association], StandardForm|TraditionalForm] := With[
   { box = ToBoxes @ Ket @ List @ Row[theKetFormat @ v, $KetDelimiter] },
   InterpretationBox[box, expr]
- ]
+]
 
 Format[Ket[Vacuum]] := Interpretation[Ket @ {"\[CupCap]"}, Ket[Vacuum]]
 
@@ -756,9 +756,9 @@ Bra /:
 MakeBoxes[expr:Bra[v_Association], StandardForm|TraditionalForm] := With[
   { box = ToBoxes @ Bra @ List @ Row[theKetFormat @ v, $KetDelimiter] },
   InterpretationBox[box, expr]
- ]
+]
 
-Format[Bra[Vacuum]] := Interpretation[Bra @ {Any}, Bra[Vacuum]]
+Format[Bra[Vacuum]] := Interpretation[Bra @ {"\[CupCap]"}, Bra[Vacuum]]
 
 Format[Bra[{}]] := Interpretation[Bra @ {Any}, Bra[{}]]
 
@@ -2852,7 +2852,7 @@ Rotation::real = "The vector `` must be real to specify a rotation axis."
 Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] := (
   Message[Rotation::real, v];
   Rotation[phi, Re @ v, S, rest]
- ) /; Not @ AllTrue[v, RealQ]
+ ) /; Not @ AllTrue[v, RealQ] /; AllTrue[v, NumericQ]
 
 Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] :=
   Rotation[phi, v, S[$], rest] /;
@@ -4937,7 +4937,6 @@ Eigensystem @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] := {
  }
 
 (***** </TridiagonalToeplitzMatrix> ****)
-
 
 Protect[ Evaluate @ $symb ]
 

@@ -198,7 +198,7 @@ Power[n_?BinaryQ, _Integer?Positive] = n
 (**** </Binary> ****)
 
 
-(*** Tests for numeric constants ***)
+(**** <ComplexQ> ****)
 
 ComplexQ::usage = "ComplexQ[z] returns True if z is complex numbers."
 
@@ -208,7 +208,7 @@ ComplexQ[_?NumberQ] = True
 
 ComplexQ[_?NumericQ] = True
 
-ComplexQ[ _KroneckerDelta ] = True
+ComplexQ[_KroneckerDelta] = True
 
 ComplexQ[
   fun : Alternatives @@ Blank /@ {Plus, Times, Power, Log}
@@ -226,14 +226,18 @@ ComplexQ[
   
 ComplexQ[_] = False
 
+(**** </ComplexQ> ****)
+
+
+(**** <RealQ> ****)
 
 RealQ::usage = "RealQ[z] returns True if z is a real quantity, and False otherwise."
 
+SetAttributes[RealQ, Listable]
+
 RealQ[I] = False
 
-RealQ[Pi] = True
-
-RealQ[Infinity] = True
+RealQ[ Pi | E | EulerGamma | Infinity ] = True
 
 RealQ[_Real] = True
 
@@ -270,10 +274,12 @@ RealQ[Times[_?RealQ, a__]] := RealQ[Times[a]]
 
 RealQ[Plus[_?RealQ, a__]] := RealQ[Plus[a]]
 
-RealQ[_] := False
+RealQ[_] = False
 (* Like IntegerQ, EvenQ, OddQ, etc., it returns False unless expr passes
    definitely the corresponding test. Namely, they return False if expr is
    undetermined. *)
+
+(**** </RealQ> ****)
 
 
 (* IntegerQ, EvenQ, OddQ *)
@@ -287,6 +293,7 @@ RealQ[_] := False
 IntegerQ[Times[a_?IntegerQ, b_?IntegerQ]] = True
 
 IntegerQ[Plus[a_?IntegerQ, b_?IntegerQ]] = True
+
 
 EvenQ[Times[m_?EvenQ, n_?IntegerQ]] = True
 

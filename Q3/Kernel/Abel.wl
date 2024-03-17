@@ -74,6 +74,8 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { Operator };
 
+{ Pfaffian };
+
 { PauliGroup, FullPauliGroup,
   PauliGroupElements, FullPauliGroupElements,
   PauliQ };
@@ -315,7 +317,7 @@ setSpecies[x_Symbol] := (
   (* NOTE: Distribute[x[j], List] will hit the recursion limit. *)
 
   Format @ x[k___] := Interpretation[SpeciesBox[x, {k}, {}], x[k]];
- )
+)
 
 
 SpeciesQ::usage = "SpeciesQ[a] returns True if a is a Species."
@@ -392,7 +394,7 @@ setNonCommutative[x_Symbol] := (
   MultiplyKind[x[___]] ^= NonCommutative;
   MultiplyGenus[x] ^= "Singleton";
   MultiplyGenus[x[___]] ^= "Singleton";
- )
+)
 
 
 Format @ Inverse[op_?NonCommutativeQ] :=
@@ -1073,6 +1075,8 @@ Format @ HoldPattern @ MultiplyExp[expr_] :=
   Interpretation[Power[E, expr], MultiplyExp @ expr]
 
 
+MultiplyExp[] = 1
+
 MultiplyExp[0] = 1
 
 
@@ -1128,32 +1132,32 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
 
 HoldPattern @
   Multiply[ pre___, MultiplyExp[a_], MultiplyExp[b_], post___ ] :=
-  Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
-  Garner[ Commutator[a, b] ] === 0
+    Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
+      Garner[ Commutator[a, b] ] === 0
 
 HoldPattern @
   Multiply[pre___, MultiplyExp[a_], MultiplyExp[b_], post___] :=
-  Multiply[
-    Multiply[pre],
-    MultiplyExp[ a + b + Commutator[a, b]/2 ],
-    Multiply[post]
-   ] /;
-  Garner[ Commutator[a, b, 2] ] === 0 /;
-  Garner[ Commutator[b, a, 2] ] === 0
+    Multiply[
+      Multiply[pre],
+      MultiplyExp[ a + b + Commutator[a, b]/2 ],
+      Multiply[post]
+    ] /;
+      Garner[ Commutator[a, b, 2] ] === 0 /;
+      Garner[ Commutator[b, a, 2] ] === 0
 
 HoldPattern @
   Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
-  Multiply[ Multiply[pre, b], MultiplyExp[a], Multiply[post] ] /;
-  Garner[ Commutator[a, b] ] === 0
+    Multiply[ Multiply[pre, b], MultiplyExp[a], Multiply[post] ] /;
+      Garner[ Commutator[a, b] ] === 0
 (* Exp is pushed to the right if possible *)
 
 HoldPattern @
   Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
-  With[
-    { new = Multiply[post] },
-    Multiply[ Multiply[pre, b], MultiplyExp[a], new] +
-      Multiply[ Multiply[pre, Commutator[a, b]], MultiplyExp[a], new]
-   ] /; Garner[ Commutator[a, b, 2] ] === 0
+    With[
+      { new = Multiply[post] },
+      Multiply[ Multiply[pre, b], MultiplyExp[a], new] +
+        Multiply[ Multiply[pre, Commutator[a, b]], MultiplyExp[a], new]
+    ] /; Garner[ Commutator[a, b, 2] ] === 0
 (* NOTE: Exp is pushed to the right. *)
 (* NOTE: Here, notice the PatternTest AnySpeciesQ is put in order to skip
    Exp[op] or MultiplyExp[op]. Commutators involving Exp[op] or
@@ -1458,7 +1462,8 @@ OccupationValue[expr_, ss:{__?SpeciesQ}, val_] :=
 (**** </Occupation> ****)
 
 
-(* KroneckerDelta[] & UnitStep[] *)
+(**** <KroneckerDelta> ****)
+(**** <UnitStep> ****)
 
 SetAttributes[{KroneckerDelta, UnitStep}, NumericFunction]
 
@@ -1495,6 +1500,9 @@ Format[ UnitStep[x_], StandardForm ] := Interpretation[
  ]
 
 SetAttributes[{DiscreteDelta, UnitStep}, {ReadProtected}]
+
+(**** </UnitStep> ****)
+(**** </KroneckerDelta> ****)
 
 
 Protect[ Evaluate @ $symb ]

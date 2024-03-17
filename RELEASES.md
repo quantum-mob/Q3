@@ -1,5 +1,19 @@
 # Release Notes
 
+## 3.3.7
+
+- New function Pfaffian and SkewTridiagonalize.
+- The value of option "Normalized" of CoherentState is now False by default.
+- The normalization convention for Majoranas have been changed; a^2 = 1, instead of a^2 = 1/2.
+- GD and GIntegrate have been enhanced.
+
+## 3.3.6
+
+- Enhanced support for CoherentState.
+- ControlledExp is removed.
+- Documentation on some excised symbols are removed.
+- Refinements: RealQ, ComplexQ, Rotation
+
 ## 3.3.5
 
 - Emerngency bug fix for ReleaseTimes.
@@ -20,7 +34,7 @@
 - Utility tools are separated from Abel. LinearMap and LinearMapFirst are deprecated. New message Q3General::deprecated. New functions ReplaceRules and ReplaceRulesBy.
 - Port labels now can be aligned left or right in QuantumCircuit.
 
-## 3.3.2 
+## 3.3.2
 
 - New option "Normalized" for CoherentState.
 - New function IntegerParity.
@@ -84,7 +98,7 @@
 - Bug fix: Matrix[ControlledPower[cc, op]] when cc is not in the canonical order; Expand[Dagger @ QFT]
 - Improved documentation: ControlledGate, ControlledPower, QFT, QuantumFourierTransform, Von Neumann Entropy
 
-## v3.0.2 
+## v3.0.2
 
 - More flexibility issues for Ket[] and Bra[]
 - Readjusted $InOutOffset, $BraceWidth

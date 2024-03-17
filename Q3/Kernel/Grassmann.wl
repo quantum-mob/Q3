@@ -20,7 +20,7 @@ Grassmann /:
 Let[Grassmann, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
   Scan[setGrassmann, {ls}];
- )
+)
 
 setGrassmann[x_Symbol] := (
   MultiplyKind[x] ^= Grassmann;
@@ -31,7 +31,7 @@ setGrassmann[x_Symbol] := (
   
   GrassmannGrade[x] ^= 1;
   GrassmannGrade[x[___]] ^= 1;
- )
+)
 
 (**** </Grassmann> ****)
 
@@ -80,11 +80,11 @@ Multiply[pre___, a_?GrassmannQ, b:Conjugate[_?GrassmannQ], post___] :=
 
 HoldPattern @ Multiply[pre___, ops__?GrassmannQ, post___] :=
   Multiply[pre, Sequence @@ ReverseSort @ {ops}, post] * Signature[Reverse @ {ops}] /;
-  Not @ OrderedQ @ Reverse @ {ops}
+    Not @ OrderedQ @ Reverse @ {ops}
 
 HoldPattern @ Multiply[pre___, ops:Conjugate[_?GrassmannQ].., post___] :=
   Multiply[pre, Sequence @@ Sort @ {ops}, post] * Signature[{ops}] /;
-  Not @ OrderedQ @ {ops}
+    Not @ OrderedQ @ {ops}
 
 
 HoldPattern @ 
@@ -104,35 +104,61 @@ GD::usage="GD[expr, g] returns the Grassmann derivative of expr with respect to 
 
 GD[gg_][expr_] := GD[expr, gg]
 
+GD[expr_, g_?AnyGrassmannQ] := GD[expr, {g}]
 
 GD[z_?CommutativeQ * expr_, gg_] := z * GD[expr, gg]
 
 GD[expr_Plus, gg_] := Map[GD[gg], expr]
 
 
-GD[expr_, gg:{__?AnyGrassmannQ}] /; 
-  AnyTrue[gg, FreeQ[expr, #, Heads -> False]&] = 0
-
-
-HoldPattern @ 
-GD[Multiply[ff__?AnyGrassmannQ], gg:{__?AnyGrassmannQ}] := With[
-  { ss = Supplement[{ff}, gg] },
-  SignatureTo[{ff}, Join[Reverse @ gg, ss]] * Apply[Multiply, ss]
+grsFreeQ[expr_, gg:{__?AnyGrassmannQ}] := Module[
+  { gnr, new },
+  gnr = Cases[gg, _Conjugate];
+  If[AnyTrue[gnr, FreeQ[expr, #, Heads -> False]&], Return @ True];
+  gnr = DeleteCases[gg, _Conjugate];
+  new = DeleteCases[{expr}, Alternatives @@ Conjugate @ gnr, Infinity];
+  AnyTrue[gnr, FreeQ[new, #, Heads -> False]&]
 ]
 
-GD[expr_, gg:{__?AnyGrassmannQ}] := Fold[GD, expr, Reverse @ gg]
+GD[expr_, gg:{__?AnyGrassmannQ}] := 0 /; 
+  grsFreeQ[expr, gg]
 
 
-(* NOTE:  In general, GD[..., g] != GD[..., {g}]. *)
-HoldPattern @ 
-GD[op:Multiply[__?AnyGrassmannQ], g_?AnyGrassmannQ] := GD[op, {g}]
+GD[g_?AnyGrassmannQ, {g_?AnyGrassmannQ}] = 1
 
-GD[g_?AnyGrassmannQ, g_?AnyGrassmannQ] = 1
 
-GD[expr_, g_?AnyGrassmannQ] /; FreeQ[expr, g] = 0
+GD[CoherentState[aa_Association], gg:{__?AnyGrassmannQ}] :=
+  Module[
+    { bb = Select[aa, Not @ FreeQ[#, Alternatives @@ gg]&] },
+    ReplaceAll[GD[FockCat[CoherentState @ bb], gg], Ket[Vacuum] -> 1] **
+      CoherentState[KeyDrop[aa, Keys @ bb]]
+  ]
 
-GD[a_?AnyGrassmannQ ** expr_, g_?AnyGrassmannQ] :=
-  GD[a, g] ** expr - a ** GD[expr, g]
+HoldPattern @
+  GD[Multiply[ff__?AnyGrassmannQ], gg:{__?AnyGrassmannQ}] := 
+    With[
+      { ss = Supplement[{ff}, gg] },
+      SignatureTo[{ff}, Join[Reverse @ gg, ss]] * Apply[Multiply, ss]
+    ]
+
+
+HoldPattern @
+  GD[Multiply[op:Longest[ff__?AnyGrassmannQ], post__], gg:{__?AnyGrassmannQ}] := 
+    GD[Multiply[op], gg] ** Multiply[post] + 
+        IntegerParity[Length[{ff}] * Length[gg]] * op ** GD[Multiply[post], gg]
+
+HoldPattern @
+  GD[Multiply[v_CoherentState, post___], gg:{__?AnyGrassmannQ}] :=
+    GD[v, gg] ** Multiply[post] + v ** GD[Multiply[post], gg]
+
+HoldPattern @
+  GD[Multiply[v_Ket, post___], gg:{__?AnyGrassmannQ}] :=
+    Power[ParityValue[v, Fermions @ v], Length @ gg] * 
+      Multiply[v, GD[Multiply[post], gg]]
+
+HoldPattern @
+  GD[Multiply[ff__?AnyFermionQ, post___], gg:{__?AnyGrassmannQ}] :=
+    IntegerParity[Length[{ff}] * Length[gg]] * Multiply[ff, GD[Multiply[post], gg]]
 
 (**** </GD> ****)
 

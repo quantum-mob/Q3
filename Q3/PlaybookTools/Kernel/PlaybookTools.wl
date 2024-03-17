@@ -59,7 +59,7 @@ $ParagraphDelimiter = Cell[ "\t", "Text", "ParagraphDelimiter",
 
 (**** <PlaybookDeploy> ****)
 
-PlaybookDeploy::usage = "PlaybookDeploy[\"filename.nb\"] generates a public-release version \"filename.Playbook.nb\" of source notebook \"filename.nb\".\nPlaybookDeploy[\"source.nb\", \"destination.nb\"] generates \"destination.nb\" for the public use.\nPlaybookDeploy[\"source.nb\", dir] generates dir/\"source.Playbook.nb\" for the public use."
+PlaybookDeploy::usage = "PlaybookDeploy[\"filename.nb\"] generates a public-release version \"filename.playbook.nb\" of source notebook \"filename.nb\".\nPlaybookDeploy[\"source.nb\", \"destination.nb\"] generates \"destination.nb\" for the public use.\nPlaybookDeploy[\"source.nb\", dir] generates dir/\"source.playbook.nb\" for the public use."
 
 PlaybookDeploy::folder = "`` must be a valid folder."
 
@@ -90,7 +90,7 @@ playbookFileName::usage = "playbookFileName[file] returns the file name of the d
 playbookFileName[file_String] := Module[
   { dir, new },
   dir = DirectoryName[file];
-  new = StringJoin @ {FileBaseName @ file, ".Playbook.", FileExtension @ file};
+  new = StringJoin @ {FileBaseName @ file, ".playbook.", FileExtension @ file};
   ExpandFileName @ If[dir == "", new, FileNameJoin @ {dir, new}]
  ]
 

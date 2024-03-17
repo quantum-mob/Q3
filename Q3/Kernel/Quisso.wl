@@ -1,5 +1,4 @@
 (* -*- mode: math; -*- *)
-
 BeginPackage["Q3`"]
 
 { Qubit, QubitQ, Qubits };
@@ -13,7 +12,7 @@ BeginPackage["Q3`"]
 { ControlledGate, CNOT, CX = CNOT, CZ, CY, Swap, iSwap,
   Toffoli, Fredkin, Deutsch };
 
-{ ControlledExp = ControlledPower, ActOn };
+{ ControlledPower, ActOn };
 
 { UniformlyControlledRotation,
   UniformlyControlledGate };
@@ -1527,8 +1526,6 @@ Multiply[ pre___,
 
 (**** <ControlledPower> ****)
 
-ControlledExp::usage = "ControlledExp is an alias of ControlledPower."
-
 ControlledPower::usage = "ControlledPower[{c1, c2, ...}, op] represents a controlled exponentiation gate."
 
 ControlledPower[S_?QubitQ, expr_, opts___?OptionQ] :=
@@ -1963,10 +1960,6 @@ NonCommutativeQ[ QFT[___] ] = True
 QFT /:
 MultiplyKind @ QFT[{__?QubitQ}] = Qubit
 
-(* WARNING: Do NOT set this. *)
-(* QFT /:
-MultiplyGenus @ QFT[___] := "Singleton"
- *)
 
 QFT /:
 Dagger[ op:QFT[type:-1|1, rest___] ] := QFT[-type, rest]
@@ -2160,10 +2153,6 @@ NonCommutativeQ[ QBR[___] ] = True
 QBR /:
 MultiplyKind @ QBR[{__?QubitQ}] = Qubit
 
-(* WARNING: Do NOT set this. *)
-(* QBR /:
-MultiplyGenus @ QBR[___] := "Singleton"
- *)
 
 QBR /:
 Dagger[ op_QBR ] := op
@@ -2271,10 +2260,6 @@ NonCommutativeQ[ QCR[___] ] = True
 QCR /:
 MultiplyKind @ QCR[{__?QubitQ}] = Qubit
 
-(* WARNING: Do NOT set this. *)
-(* QCR /:
-MultiplyGenus @ QCR[___] := "Singleton"
- *)
 
 QCR /:
 Dagger[ op_QCR ] := op
@@ -2945,7 +2930,6 @@ ModMultiply /: NonCommutativeQ[_ModMultiply] = True
 
 ModMultiply /: MultiplyKind[_ModMultiply] = Qubit
 
-ModMultiply /: MultiplyGenus[_ModMultiply] = "Singleton"
 
 ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] := (
   Message[ModMultiply::order, n, Power[2, Length @ tt]];
@@ -3085,9 +3069,6 @@ Format[ op:UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}, rest___] ] :=
 
 UnitaryInteraction /:
 MultiplyKind[_UnitaryInteraction] = Qubit
-
-UnitaryInteraction /:
-MultiplyGenus[_UnitaryInteraction] = "Singleton"
 
 UnitaryInteraction /:
 NonCommutativeQ[_UnitaryInteraction] = True

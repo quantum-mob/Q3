@@ -276,9 +276,6 @@ GivensRotation /:
 NonCommutativeQ[ GivensRotation[___] ] = True
 
 GivensRotation /:
-MultiplyGenus @ GivensRotation[___] := "Singleton"
-
-GivensRotation /:
 MultiplyKind @ GivensRotation[_?MatrixQ, _, {__?QubitQ}] = Qubit
 
 
