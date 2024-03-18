@@ -750,9 +750,9 @@ Options[PanedText] = {
   "Paned" -> False
 };
 
-PanedText[expr_, opts:OptionsPattern[]] := Module[
+PanedText[expr_, OptionsPattern[]] := Module[
   { sty, ang, adj, pos, size, off, txt },
-  {sty, ang, adj, pos, size, off} = OptionValue[Automatic, #] & /@ 
+  { sty, ang, adj, pos, size, off } = OptionValue[Automatic, #]& /@ 
     { "Style", "Angle", "Alignment",
       "PanePosition", "PaneSize", "PaneAlignment" };
   txt = Text[Style[expr, sty], pos + 0.5*size*(adj-off), adj, {Cos @ ang, Sin @ ang}];

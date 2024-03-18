@@ -294,19 +294,19 @@ HoldPattern @
     nodes = qcNodes[cc, Most @ xx, yy];
     lines = qcLines[cc, xx, KeyDrop[yy, ww]];
 
-    marks = qcMark @ Cases[{gg}, _Mark, Infinity];
+    marks = qcMarks @ Cases[{gg}, _Mark, Infinity];
 
     in = FirstCase[ {gg}, PortIn[kk___] :> {kk} ];
-    in = qCircuitInput[in, xx, yy];
+    in = qcPorts[-1, in, xx, yy];
 
     out = FirstCase[ {gg}, PortOut[kk___] :> {kk} ];
-    out = qCircuitOutput[out, xx, yy];
+    out = qcPorts[+1, out, xx, yy];
 
     Graphics[ Join[lines, in, nodes, marks, out],
       FilterRules[{opts}, Options @ Graphics],
       more,
       PlotRange -> { {0, Max @ xx}, MinMax[yy] + 0.5*$CircuitUnit*{-1, 1} },
-      ImagePadding -> unit * { $PortSize, 0.2*$CircuitUnit*{1, 1} },
+      ImagePadding -> unit * { $PortSize + 0.3*$PortGap, 0.2*$CircuitUnit*{1, 1} },
       ImageSize -> unit * ( $CircuitDepth + Total[$PortSize] )
     ]
   ]
@@ -373,8 +373,8 @@ Options[Port] = {
   "LabelSize" -> 1, (* RELATIVE *)
   "LabelAngle" -> 0,
   "LabelStyle" -> {}, (* Example: "LabelStyle" -> {FontSland -> Plain} *)
-  "LabelAlignment" -> {-1, 0}, (* Usually, {11, 0} for input, and {-1, 0} for output  *)
-  "Type"  -> 1 (* -1: input, 1: output *)
+  "LabelAlignment" -> Automatic (* Usually, {11, 0} for input, and {-1, 0} for output  *)
+  (* "Type"  -> 1 (* -1: input, 1: output *) *)
 }
 
 (**** </Port> ****)
@@ -382,28 +382,28 @@ Options[Port] = {
 
 (**** <ParsePort> ****)
 
-ParsePort::usage = "ParsePorts preprocesses various input and output forms of QuantumCircuit."
+ParsePort::usage = "ParsePort[type][ports] preprocesses ports of type (type = -1 for input and type = 1 for output) in QuantumCircuit."
 
-ParsePort[g_, opts___?OptionQ] := 
-  g /; FreeQ[g, _Ket | _ProductState | _State]
-
-
-ParsePort[ {gg:Except[_?OptionQ].., opts___?OptionQ}, more___?OptionQ ] := 
-  Map[ParsePort[#, more, opts]&, {gg}]
+ParsePort[type_][g_, opts___?OptionQ] := g /; 
+  FreeQ[g, _Ket | _ProductState | _State]
 
 
-ParsePort[v:Ket[_Association], opts___?OptionQ] := 
-  Port[v, opts]
+ParsePort[type_][ {gg:Except[_?OptionQ].., opts___?OptionQ}, more___?OptionQ ] := 
+  Map[ParsePort[type][#, more, opts]&, {gg}]
 
-ParsePort[v:Ket[Except[_Association]], ___] :=
+
+ParsePort[type_][v:Ket[_Association], opts___?OptionQ] := 
+  Port[type, v, opts]
+
+ParsePort[type_][v:Ket[Except[_Association]], ___] :=
   (Message[QuantumCircuit::ket, v]; Nothing)
 (* NOTE: Somehow v_Ket does not work properly. *)
 
 
-ParsePort[v:ProductState[_Association, opts___?OptionQ], more___?OptionQ] :=
-  Port[v, more, opts]
+ParsePort[type_][v:ProductState[_Association, opts___?OptionQ], more___?OptionQ] :=
+  Port[type, v, more, opts]
 
-ParsePort[v:ProductState[Except[_Association], ___], ___] :=
+ParsePort[type_][v:ProductState[Except[_Association], ___], ___] :=
   (Message[QuantumCircuit::ket, v]; Nothing)
 (* NOTE: Somehow v_ProductState does not work properly. *)
 
@@ -412,12 +412,12 @@ ParsePort[v:ProductState[Except[_Association], ___], ___] :=
 
 (* NOTE: This is dangerous because Plus and Times can happen. *)
 (* 
-ParsePort[vv_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
-  ParsePort[ vv[any, more, opts] ]
+ParsePort[type_][vv_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
+  ParsePort[type][ vv[any, more, opts] ]
  *)
 
-ParsePort[expr:Except[_List], opts___?OptionQ] :=
-  Port[expr, FilterRules[{opts}, Options @ Port]] /;
+ParsePort[type_][expr:Except[_List], opts___?OptionQ] :=
+  Port[type, expr, FilterRules[{opts}, Options @ Port]] /;
     Not @ FreeQ[expr, _Ket|_State]
 
 (**** </ParsePort> ****)
@@ -464,7 +464,7 @@ ParseGate[
   HoldPattern @ Multiply[ss__?QubitQ], 
   opts___?OptionQ
 ] :=
-  Map[ParseGate[#, opts]&, Reverse@{ss}]
+  Map[ParseGate[#, opts]&, Reverse @ {ss}]
 
 
 ParseGate[Measurement[ss:{___?PauliQ}, opts___?OptionQ], more___?OptionQ] :=
@@ -979,6 +979,21 @@ theSawtooth[a:{_, _}, b:{_, _}, n_Integer, scale_] := Module[
 (**** </linkShape> ****)
 
 
+(**** <Mark> ****)
+
+Mark::usage = "Mark[text, {x, y}] is similar to Text[text, {x, -y}] but the coordinates {x, -y} are scaled by unit scale of QuantumCircuit and is supposed to be used only inside QuantumCircuit."
+
+
+qcMarks::usage = "qcMarks[Mark[...]] renders Mark[...]."
+
+SetAttributes[qcMarks, Listable];
+
+qcMarks @ Mark[text_, {x_, y_}, opts___?OptionQ] := 
+  theGateLabel[{x, -y}, "Label" -> text, opts, "LabelStyle" -> {FontSlant -> Plain}]
+
+(**** </Mark> ****)
+
+
 (**** <theGateLabel> ****)
 
 theGateLabel::usage = "theGateLabel[{x, y}] renders the gate label at position {x, y}."
@@ -1164,31 +1179,30 @@ qcLines[ gg_List, xx_List, yy_Association ] := Module[
     Transpose@{Values @ plain, Values @ yy} };
 
   {{Dashed, dashed}, plain}
- ]
-
-
-qCircuitOutput::usage = "It draws the output states behind the scene."
-
-qCircuitOutput[ Missing["NotFound"], xx_List, yy_Association ] = {}
-
-qCircuitOutput[ gg:{___}, xx_List, yy_Association ] := Module[
-  { xy = Map[{Last[xx] + $PortGap, #}&, yy],
-    ff },
-  ff = List @ ParsePort @ Join[gg, {"LabelAlignment" -> {-1, 0}, "Type" -> +1}];
-  Map[qcDrawPort[#, xy]&, ff]
 ]
 
 
-qCircuitInput::usage = "It draws the input states behind the scene."
+(**** <qcPorts> ****)
 
-qCircuitInput[ Missing["NotFound"], xx_List, yy_Association ] = {}
+qcPorts::usage = "qcPorts[type, expr] handles input (type = -1) or output (type = 1) states expr."
 
-qCircuitInput[ gg:{___}, xx_List, yy_Association ] := Module[
-  { xy = Map[{-$PortGap, #}&, yy],
-    ff },
-  ff = List @ ParsePort @ Join[gg, {"LabelAlignment" -> {1, 0}, "Type" -> -1}];
+qcPorts[-1|1, Missing["NotFound"], xx_List, yy_Association ] = {}
+
+qcPorts[-1, gg:{___}, xx_List, yy_Association ] := Module[
+  { xy, ff },
+  xy = Map[{-$PortGap, #}&, yy];
+  ff = ParsePort[-1] @ gg;
   Map[qcDrawPort[#, xy]&, ff]
 ]
+
+qcPorts[+1, gg:{___}, xx_List, yy_Association ] := Module[
+  { xy, ff },
+  xy = Map[{Last[xx] + $PortGap, #}&, yy];
+  ff = ParsePort[+1] @ gg;
+  Map[qcDrawPort[#, xy]&, ff]
+]
+
+(**** </qcPorts> ****)
 
 
 (**** <qcDrawPort> ****)
@@ -1197,11 +1211,11 @@ qcDrawPort::usage = "qcDrawPort renders the input/output ports."
 
 qcDrawPort[gg_List, xy_Association] := Map[qcDrawPort[#, xy]&, gg]
 
-qcDrawPort[ Port[Ket[v_], opts___?OptionQ], xy_Association ] := Module[
-  { new = FilterRules[Flatten@{opts}, Options @ Port],
+qcDrawPort[ Port[type_, Ket[v_], opts___?OptionQ], xy_Association ] := Module[
+  { new = FilterRules[Flatten @ {opts}, Options @ Port],
     txt, tt, label },
   txt = OptionValue[Port, new, "Label"];
-  If[txt === None, Return@{}];
+  If[txt === None, Return @ {}];
 
   If[ txt === Automatic,
     txt = Ket /@ List /@ v,
@@ -1216,20 +1230,20 @@ qcDrawPort[ Port[Ket[v_], opts___?OptionQ], xy_Association ] := Module[
     txt ];
   
   Values @ MapThread[
-    thePortLabel[#1, #2, new]&,
-    KeyIntersection@{txt, xy}
+    thePortLabel[type, #1, #2, new]&,
+    KeyIntersection @ {txt, xy}
   ]
 ]
 
 qcDrawPort[
-  Port[ProductState[v_Association, opts___], more___?OptionQ],
+  Port[type_, ProductState[v_Association, opts___], more___?OptionQ],
   xy_Association
 ] := 
   Module[
-    { new = FilterRules[Flatten@{more, opts}, Options @ Port],
+    { new = FilterRules[Flatten @ {more, opts}, Options @ Port],
       txt },
     txt = OptionValue[Port, new, "Label"];
-    If[txt === None, Return@{}];
+    If[txt === None, Return @ {}];
 
     If[ txt === Automatic,
       txt = Map[ Simplify @ Dot[Ket /@ {{0}, {1}}, #]&, v ],
@@ -1245,35 +1259,34 @@ qcDrawPort[
     ];
      
     Values @ MapThread[
-      thePortLabel[#1, #2, new]&,
-      KeyIntersection@{txt, xy}
+      thePortLabel[type, #1, #2, new]&,
+      KeyIntersection @ {txt, xy}
     ]
   ]
 
-qcDrawPort[ Port[expr_, ___], _Association ] := (
+qcDrawPort[ Port[type_, expr_, ___], _Association ] := (
   Message[QuantumCircuit::noqubit, expr];
-  Return@{};
+  Return @ {};
 ) /; Qubits[expr] == {}
 
-qcDrawPort[ Port[expr_, opts___?OptionQ], xy_Association ] := Module[
+qcDrawPort[ Port[type_, expr_, opts___?OptionQ], xy_Association ] := Module[
   { qq = Qubits @ expr,
-    new = FilterRules[Flatten@{opts, Options @ expr}, Options @ Port],
-    txt, dir, brace, pos },
+    new = FilterRules[Flatten @ {opts, Options @ expr}, Options @ Port],
+    txt, brace, pos },
 
   txt = OptionValue[Port, new, "Label"];
-  dir = OptionValue[Port, new, "Type"];
 
-  If[txt === None, Return@{}];
+  If[txt === None, Return @ {}];
   
-  If[txt === Automatic, txt = SimpleForm[expr, qq], txt];
+  If[txt === Automatic, txt = SimpleForm[expr, qq]];
   
   pos = Transpose[ MinMax /@ Transpose @ Lookup[xy, qq] ];
 
   If[ Length[qq] > 1,
-    brace = thePortBrace[dir, pos];
-    pos = Mean[pos] + ($PortGap + $BraceWidth)*{dir, 0};
-    { brace, thePortLabel[txt, pos, new] },
-    thePortLabel[txt, Mean @ pos, new]
+    brace = thePortBrace[type, pos];
+    pos = Mean[pos] + ($PortGap + $BraceWidth) * {type, 0};
+    { brace, thePortLabel[type, txt, pos, new] },
+    thePortLabel[type, txt, Mean @ pos, new]
   ]
 ]
 
@@ -1284,26 +1297,26 @@ qcDrawPort[g_, _Association] := g
 
 (**** <thePortLabel> ****)
 
-thePortLabel::usage = "thePortLabel[expr, {x, y}, {offsetx, offsety}] renders the port label expr at position {x, y} with port-pane alignment {offsetx, offsety}."
+thePortLabel::usage = "thePortLabel[type, expr, {x, y}] renders the port label expr at position {x, y} with type = -1 for input and type = 1 for output."
 
-thePortLabel[text_, pos:{_, _}, opts___?OptionQ] := Module[
-  { new = FilterRules[Flatten@{opts}, Options @ Port],
-    fit, pvt },
-  fit = OptionValue[Port, new, "LabelSize"];
-  pvt = OptionValue[Port, new, "Type"];
-  
-  new = KeyReplace[ 
-    Join[new, Options @ Port],
+thePortLabel[type:(-1|1), text_, pos:{_, _}, opts___?OptionQ] := Module[
+  { new, fit },
+  new = KeyReplace[
+    FilterRules[Flatten @ Join[{opts}, Options @ Port], Options @ Port],
     { "LabelStyle" -> "Style",
       "LabelAngle" -> "Angle",
       "LabelAlignment" -> "Alignment" }
   ];
+  If[ Lookup[new, "Alignment"] === Automatic,
+    new = ReplaceRules[new, "Alignment" -> {-type, 0}]
+  ]; 
+  fit = Lookup[new, "LabelSize"];  
   PanedText[ text,
     FilterRules[new, Options @ PanedText],
     (* "Paned" -> True, *)
-    "PaneSize" -> {Switch[pvt, -1, First @ $PortSize, 1, Last @ $PortSize], $CircuitUnit},
+    "PaneSize" -> {Switch[type, -1, First @ $PortSize, 1, Last @ $PortSize], $CircuitUnit},
     "PanePosition" -> pos,
-    "PaneAlignment" -> {-pvt, 0},
+    "PaneAlignment" -> {-type, 0},
     "Style" -> {
       FontWeight -> "Light",
       FontSize -> Scaled[0.4 * fit * $GateSize / $CircuitDepth] 
@@ -1323,34 +1336,6 @@ thePortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
   RightBrace[a, b, "Width" -> $BraceWidth]
 
 (**** </thePortBrace> ****)
-
-
-(**** <Mark> ****)
-
-SetAttributes[qcMark, Listable];
-
-Mark::usage = "Mark[text, {x, y}] is similar to Text[text, {x, -y}] but the coordinates {x, -y} are scaled by unit scale of QuantumCircuit and is supposed to be used only inside QuantumCircuit."
-
-qcMark @ Mark[text_, {x_, y_}, opts___?OptionQ] :=
-  qcMark @ Mark[text, {x, y}, {0, 0}, opts]
-
-qcMark @ Mark[text_, {x_, y_}, {a_, b_}, opts___?OptionQ] := Module[
-  { label = text,
-    angle = OptionValue[Gate, {opts}, "LabelAngle"],
-    factor = OptionValue[Gate, {opts}, "LabelSize"] },
-  If[angle != 0, label = Rotate[label, angle]];
-  Text[
-    Style[ label,
-      doAssureList @ OptionValue[Gate, {opts}, "LabelStyle"],
-      FontSlant -> Plain,
-      FontWeight -> "Light",
-      FontSize   -> Scaled[(0.5 $GateSize / $CircuitDepth) factor] ],
-    {x, -y} * $CircuitUnit,
-    {a, b}
-   ]
- ]
-
-(**** </Mark> ****)
 
 
 (**** <GateFactor> ****)
