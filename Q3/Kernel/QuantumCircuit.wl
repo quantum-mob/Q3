@@ -333,7 +333,7 @@ Options[Gate] = {
   "LinkLabelSize" -> 1, (* RELATIVE size *)
   "LinkLabelStyle" -> {}, (* Example: "LabelStyle" -> {FontSland -> Plain} *)
   "LinkLabelAngle" -> 0,
-  "LabelAlignment" -> {0, 0}, (* See PanedText for details. *)
+  "LinkLabelAlignment" -> {-0.25, 0}, (* See PanedText for details. *)
   "ControlShape" -> "Dot",
   "ControlLabel" -> None,
   "ControlLabelSize" -> 1, (* RELATIVE size *)
@@ -694,6 +694,8 @@ ParseGate[op:QCR[qq:{__?QubitQ}, opts___?OptionQ], more___?OptionQ] :=
     "LabelAngle" -> Pi/2
   ]
 
+ParseGate[Gate[args__, opts___?OptionQ], more___?OptionQ] := 
+  Gate[args, more, opts]
 
 (* fallback *)
 
@@ -752,12 +754,6 @@ gateLabel[ Rotation[_, {_, _, _}, _?QubitQ, ___] ] :=
 gateLabel @ EulerRotation[{_, _, _}, _?QubitQ, ___?OptionQ] :=
   Subscript["R", "E"]
 
-(* 
-gateLabel @ ControlledPower[_, _, OptionsPattern[]] := With[
-  { lbl = OptionValue[ControlledPower, "Label"] },
-  {First @ lbl, mySuperscript[Last @ lbl, First @ lbl]}
-]
- *)
 
 gateLabel @ QFT[type_, _List, _?BooleanQ, ___] :=
   Switch[ type,
@@ -938,7 +934,7 @@ gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
   y3 = y2 + $GateSize/2;
   pane = Rectangle[{x1, y0}, {x2, y3}, RoundingRadius -> $GateSize/2];
   { {EdgeForm[Opacity[1]], White, pane}, text }
- ]
+]
 
 (**** </gateShape> ****)
 
@@ -946,15 +942,15 @@ gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
 (**** <linkShape> ****)
 
 linkShape["Default"][x_, yy_List, ___?OptionQ] :=
-  Line[Thread@{x, yy}]
+  Line[Thread @ {x, yy}]
 
 linkShape["Wiggly"][x_, yy_List, opts___?OptionQ] := {
   Successive[
-    theGateLabel[(#1+#2)/2, opts, "LabelAlignment" -> {-2, 0}]&,
-    Thread@{x, yy}
-   ],
+    theLinkLabel[(#1+#2)/2, opts, "LabelAlignment" -> {-2, 0}]&,
+    Thread @ {x, yy}
+  ],
   theWiggly[Thread @ {x, yy}]
- }
+}
 
 
 theWiggly::usage = "theWiggly[a, b] returns a list of points wiggling around the straight line connecting the two points a and b."
@@ -991,7 +987,6 @@ theGateLabel[{x_, y_}, opts___?OptionQ] := Module[
   { new = FilterRules[Flatten @ {opts}, Options @ Gate],
     sty, txt },
   txt = OptionValue[Gate, new, "Label"];
-
   If[txt === None, Return @ Nothing];
 
   fit = OptionValue[Gate, new, "LabelSize"];
@@ -1004,6 +999,7 @@ theGateLabel[{x_, y_}, opts___?OptionQ] := Module[
 
   PanedText[ txt,
     FilterRules[new, Options @ PanedText],
+    "PaneSize" -> $CircuitUnit * {1, 1},
     "PanePosition" -> {x, y},
     "Style" -> Join[ doAssureList @ sty,
       { FontSlant -> Italic,
@@ -1014,6 +1010,40 @@ theGateLabel[{x_, y_}, opts___?OptionQ] := Module[
 ]
 
 (**** </theGateLabel> ****)
+
+
+(**** <theLinkLabel> ****)
+
+theLinkLabel::usage = "theLinkLabel[{x, y}] renders the link label at position {x, y}."
+
+theLinkLabel[{x_, y_}, opts___?OptionQ] := Module[
+  { new = FilterRules[Flatten @ {opts}, Options @ Gate],
+    sty, txt },
+  txt = OptionValue[Gate, new, "LinkLabel"];
+  If[txt === None, Return @ Nothing];
+
+  fit = OptionValue[Gate, new, "LinkLabelSize"];
+  sty = OptionValue[Gate, new, "LinkLabelStyle"];
+  new = KeyReplace[
+    Join[new, Options @ Gate],
+    { "LinkLabelAngle" -> "Angle",
+      "LinkLabelAlignment" -> "Alignment" }
+  ];
+
+  PanedText[ txt,
+    FilterRules[new, Options @ PanedText],
+    "PaneSize" -> $CircuitUnit * {1, 1},
+    "PanePosition" -> {x, y},
+    "PaneAlignment" -> {-1, 0},
+    "Style" -> Join[ doAssureList @ sty,
+      { FontSlant -> Italic,
+        FontWeight -> "Light",
+        FontSize   -> Scaled[0.5 * fit * $GateSize / $CircuitDepth] }
+    ]
+  ]
+]
+
+(**** </theLinkLabel> ****)
 
 
 (**** <theMeasurementLabel> ****)
@@ -1030,8 +1060,8 @@ theMeasurementLabel[{x_, y_}, opts___?OptionQ] := Module[
       FontSize   -> Scaled[(0.5 $GateSize / $CircuitDepth) factor] ],
     {x + 0.65 $GateSize, y},
     {-1, -1}
-   ]
- ]
+  ]
+]
 
 (**** </theMeasurementLabel> ****)
 
@@ -1060,17 +1090,19 @@ qcDrawGate[
     control = gateShape @ OptionValue[Gate, new, "ControlShape"];
     target = gateShape @ OptionValue[Gate, new, "Shape"];
     link = linkShape @ OptionValue[Gate, new, "LinkShape"];
-    alt = Normal @ KeyReplace[
-      KeyDrop[new, {"Label", "LabelSize", "LabelStyle", "LabelAngle", "LabelAlignment"}],
+    
+    pane = target[x, yt, new];
+    
+    alt = Reverse @ Normal @ KeyReplace[
+      KeyDrop[Reverse @ new, {"Label", "LabelSize", "LabelStyle", "LabelAngle", "LabelAlignment"}],
       { "ControlLabel" -> "Label",
         "ControlLabelSize" -> "LabelSize",
         "ControlLabelStyle" -> "LabelStyle",
         "ControlLabelAngle" -> "LabelAngle",
-        "ControlLabelAllignment" -> "LabelAlignment"
-      }
+        "ControlLabelAlignment" -> "LabelAlignment" }
     ];
     dots = control[ x, yc -> Values[cc], alt];
-    pane = target[x, yt, new];
+
     legs = link[x, Join[yc, yt], new];
     
     Join[{legs}, dots, pane]
@@ -1269,7 +1301,7 @@ thePortLabel[text_, pos:{_, _}, opts___?OptionQ] := Module[
   PanedText[ text,
     FilterRules[new, Options @ PanedText],
     (* "Paned" -> True, *)
-    "PaneSize" -> {Switch[pvt, -1, First@$PortSize, 1, Last@$PortSize], $CircuitUnit},
+    "PaneSize" -> {Switch[pvt, -1, First @ $PortSize, 1, Last @ $PortSize], $CircuitUnit},
     "PanePosition" -> pos,
     "PaneAlignment" -> {-pvt, 0},
     "Style" -> {

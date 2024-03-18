@@ -172,7 +172,7 @@ KeyGroupBy[assoc_Association, f_, post_] :=
 KeyGroupBy[assoc_Association, f_ -> g_, post_] := Merge[
   KeyValueMap[(f[#1] -> Rule[#1, g[#2]])&, assoc],
   post @* Association
- ]
+]
 
 (**** </KeyGroupBy> ****)
 
@@ -189,23 +189,42 @@ KeyReplace[aa:{___Rule}, kk:{___Rule}] :=
 
 (**** </KeyReplace> ****)
 
+
 (**** <ReplaceRules> ****)
 
-ReplaceRules::usage = "ReplaceRules[{key1 -> val1, key2 -> val2, \[Ellipsis]}, key -> val] replaces the value corresponding to key by val."
+ReplaceRules::usage = "ReplaceRules[{key1 -> val1, key2 -> val2, \[Ellipsis]}, key -> val] replaces the value corresponding to key by val.\nSee also FilterRules."
 
 ReplaceRules[opts_List?OptionQ, key_ -> val_] :=
- Normal @ ReplacePart[Association @ Flatten @ opts, Key[key] -> val]
+ Reverse @ Normal @ ReplacePart[Association @ Reverse @ Flatten @ opts, Key[key] -> val]
+
+ReplaceRules[head_[args___, opts___?OptionQ], key_ -> val_] :=
+  With[
+    { new = ReplaceRules[{opts}, key -> val] },
+    If[ new == {},
+      head[args, opts],
+      head[args, new, opts]
+    ]
+  ]
 
 
-ReplaceRulesBy::usage = "ReplaceRulesBy[{key1 -> val1, key2 -> val2, \[Ellipsis]}, key -> func] replaces the value corresponding to key by func[val]."
+ReplaceRulesBy::usage = "ReplaceRulesBy[{key1 -> val1, key2 -> val2, \[Ellipsis]}, key -> func] replaces the value corresponding to key by func[val].\nSee also FilterRules."
 
 ReplaceRulesBy[opts_List?OptionQ, key_ -> fun_] := With[
   { new = Association @ Flatten @ opts },
-  Normal @ ReplacePart[
-    Association @ Flatten @ opts, 
+  Reverse @ Normal @ ReplacePart[
+    Association @ Reverse @ Flatten @ opts, 
     Key[key] :> fun @ Lookup[new, key]
   ]
 ]
+
+ReplaceRulesBy[head_[args___, opts___?OptionQ], key_ -> fun_] :=
+  With[
+    { new = ReplaceRulesBy[{opts}, key -> fun] },
+    If[ new == {},
+      head[args, opts],
+      head[args, new, opts]
+    ]
+  ]
 
 (**** </ReplaceRules> ****)
 
@@ -362,7 +381,7 @@ GraphPivot[g_, {v_, w_}, opts___?OptionQ] := Module[
   {cc[v], cc[w]} = {cc[w], cc[v]};
   Graph[ VertexList @ new, EdgeList @ new, opts,
     VertexCoordinates -> cc ]
- ]
+]
 
 
 Bead::usage = "Bead[pt] or Bead[{pt1, pt2, \[Ellipsis]}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01]. It has been motivated by Tube.\nBead[pt] is equvalent to Sphere[pt, Scaled[0.01]].\nBead[{p1, p2, \[Ellipsis]}] is equivalent to Sphere[{p1, p2, \[Ellipsis]}, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r]."

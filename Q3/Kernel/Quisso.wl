@@ -2069,9 +2069,12 @@ QFT /:
 Expand[op_QFT, ___] = op (* fallback *)
 
 QFT /:
-Expand[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Conventional"] :=
+Expand[op_QFT, "Conventional"] := Expand[op]
+
+QFT /:
+Expand[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Reversed"] :=
   QuantumCircuit[
-    QBR[ss] @ Reverse @ Most[Expand[op] /. OverTilde -> Identity],
+    QBR[ss] @ Reverse @ Most[Expand[op] /. cp_ControlledPower :> ReplaceRulesBy[cp, "ControlLabel" -> OverTilde]],
     QBR[ss]
   ]
 
@@ -2079,25 +2082,28 @@ QFT /:
 Expand @ QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___] := 
   QuantumCircuit @@ Append[qftCtrlPower[type, ss, flag][All], QBR[ss]]
 
+
 qftCtrlPower[type_, ss:{__?QubitQ}, flag_][All] := Flatten @
   Map[qftCtrlPower[type, ss, flag], Range @ Length @ ss]
 
-qftCtrlPower[type_, ss:{__?QubitQ}, flag_][1] := { First[ss][6] }
+qftCtrlPower[type_, ss:{__?QubitQ}, flag_][k_Integer] := 
+  { Last[ss][6] } /; Length[ss] == k
 
 qftCtrlPower[-1, ss:{__?QubitQ}, flag_][k_Integer] :=
   Dagger[ qftCtrlPower[1, ss, flag][k] ]
 
-qftCtrlPower[1, ss:{__?QubitQ}, flag_][k_Integer] := With[
-  { T = ss[[k]] },
-  { ControlledPower[
-      Reverse @ Take[ss, k-1],
+qftCtrlPower[+1, ss:{__?QubitQ}, flag_][k_Integer] := With[
+  { n = Length @ ss,
+    T = ss[[k]] },
+  { T[6],
+    ControlledPower[
+      Drop[ss, k],
       If[ flag, 
-        Phase[ N[2*Pi*Power[2, -k]], T[3], "Label" -> thePauliForm @ T[C[k]] ], 
-        T[C[k]] 
+        Phase[ N[2*Pi*Power[2, k-n-1]], T[3], "Label" -> thePauliForm @ T[C[n-k+1]] ], 
+        T[C[n-k+1]] 
       ],
-      "ControlLabel" -> OverTilde["x"]
-    ],
-    T[6]
+      "ControlLabel" -> "x"
+    ]
   }
 ]
 
@@ -2106,7 +2112,10 @@ QFT /:
 ExpandAll[op_QFT, ___] = op (* fallback *)
 
 QFT /:
-ExpandAll[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Conventional"] := 
+ExpandAll[op_QFT, "Conventional"] := ExpandAll[op]
+
+QFT /:
+ExpandAll[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Reversed"] := 
   QuantumCircuit[
     QBR[ss] @ Reverse @ Most @ ExpandAll[op],
     QBR[ss]
@@ -2116,25 +2125,27 @@ QFT /:
 ExpandAll @ QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___] := 
   QuantumCircuit @@ Append[qftCtrlPhase[type, ss, flag][All], QBR[ss]]
 
+
 qftCtrlPhase[type_, ss:{__?QubitQ}, flag_][All] := Flatten @
   Map[qftCtrlPhase[type, ss, flag], Range @ Length @ ss]
 
 qftCtrlPhase[-1, ss:{__?QubitQ}, flag_][k_Integer] :=
   Dagger[ qftCtrlPhase[1, ss, flag][k] ]
 
-qftCtrlPhase[1, ss:{__?QubitQ}, flag_][k_Integer] :=
+qftCtrlPhase[+1, ss:{__?QubitQ}, flag_][k_Integer] :=
   Module[
-    { T = ss[[k]] },
-    Append[
+    { n = Length @ ss,
+      T = ss[[k]] },
+    Prepend[
       Table[
         ControlledGate[
           ss[[{j}]] -> {1},
           If[ flag, 
-            Phase[ N[2*Pi*Power[2, j-k-1]], T[3], "Label" -> thePauliForm @ T[C[k-j+1]] ], 
-            T[C[k-j+1]]
+            Phase[ N[2*Pi*Power[2, k-j-1]], T[3], "Label" -> thePauliForm @ T[C[j-k+1]] ], 
+            T[C[j-k+1]]
           ]
         ],
-        {j, k-1} ],
+        {j, k+1, n} ],
       T[6]
     ]
   ]
@@ -2333,7 +2344,7 @@ Expand[op_QCR] = op (* fallback *)
 QCR /:
 Expand[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
   { qft = Drop[Expand[QFT @ ss], -2] },
-  QuantumCircuit[qft,Reverse @ qft]
+  QuantumCircuit[qft, Reverse @ qft]
 ]
 
 
@@ -2342,8 +2353,8 @@ ExpandAll[op_QCR] = op (* fallback *)
 
 QCR /:
 ExpandAll[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
-  { qft = Drop[ExpandAll[QFT @ ss], -Floor[Length[ss]/2]-1] },
-  QuantumCircuit[qft,Reverse @ qft]
+  { qft = Drop[ExpandAll[QFT @ ss], -2] },
+  QuantumCircuit[qft, Reverse @ qft]
 ]
 
 (**** </QCR> ****)
