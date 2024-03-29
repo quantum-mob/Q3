@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.9
+
+- Elaborate supports Dyad involving Fermions.
+
 ## 3.3.7
 
 - New function Pfaffian and SkewTridiagonalize.

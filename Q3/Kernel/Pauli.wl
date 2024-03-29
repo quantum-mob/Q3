@@ -3172,15 +3172,29 @@ Elaborate[op_Dyad] = op (* fallback *)
 
 Dyad /:
 Elaborate @ Dyad[a_Association, b_Association] := Module[
+  { cc = Keys @ a,
+    na = Values @ a,
+    nb = Values @ b,
+    nn },
+  nn = (1 - na)*(1 - nb);
+  Multiply[
+    Multiply @@ Power[Dagger @ cc, na],
+    Multiply @@ Power[1 - Dagger[cc] ** cc, nn],
+    Multiply @@ Power[Reverse @ cc, Reverse @ nb]
+  ]
+] /; AllTrue[Keys @ a, FermionQ] && Keys[a] == Keys[b]
+(* NOTE: This assumes that the keys in Ket are sorted. *)
+
+Dyad /:
+Elaborate @ Dyad[a_Association, b_Association] := Module[
   { ss = Intersection[Keys[a], Keys[b]],
     op },
   op = Construct @@@ Thread @ {ss, Thread[Lookup[b, ss] -> Lookup[a, ss]]};
   Garner @ Multiply[
     Elaborate[Multiply @@ op],
     Dyad[KeyDrop[a, ss], KeyDrop[b, ss]]
-   ]
- ]
-(* KNOWN ISSUE:: 2024-02-21: This is errorneous for fermions. *)
+  ]
+]
 
 
 Dyad /: (* fallback *)

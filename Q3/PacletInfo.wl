@@ -1,6 +1,6 @@
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "3.3.8",
+  "Version" -> "3.3.9",
   "WolframVersion" -> "12.3+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
@@ -21,7 +21,7 @@ Paclet[
       "Root" -> "PlaybookTools/Kernel",
       "Context" -> { "PlaybookTools`" },
       (* Context specifies the package context or list of contexts.
-         The list is also used by FindFile.
+         The list is also used by FindFile.u
          The list also causes documentation links to be added to usage
          messages when documentation is present. *)
       "Symbols" -> { "ParagraphDelimiterPut", "$ParagraphDelimiter" }
