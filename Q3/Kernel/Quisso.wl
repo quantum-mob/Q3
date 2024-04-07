@@ -2611,7 +2611,7 @@ KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
 
 
 ProductState /:
-Expand[ ProductState[aa_Association, ___] ] :=
+Expand[ ProductState[aa_Association, opts___?OptionQ] ] :=
   State[CircleTimes @@ Values[aa], Keys[aa]]
 
 ProductState /:

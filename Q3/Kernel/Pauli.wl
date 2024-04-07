@@ -1283,7 +1283,7 @@ HoldPattern @ MultiplyPower[expr_, n_Integer] :=
   Agents[expr] == {} /;
   Not @ FreeQ[expr, _Pauli]
 
-(* NOTE: For n > 1, this is shadowed by a simmilar definition in Abel. *)
+(* NOTE: For n > 1, this is shadowed by a similar definition in Abel. *)
 HoldPattern @ MultiplyPower[op_, n_Integer] := Module[
   { ss = Agents[op],
     mat },
@@ -1354,6 +1354,20 @@ State[vec_?VectorQ, S_?SpeciesQ, opts___?OptionQ] :=
 State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
   State[vec, FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
 
+State[vec_?VectorQ, ss:{__?SpeciesQ}, {}] :=
+  State[vec, ss]
+
+State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ] := With[
+  { tt = Sort @ ss},
+  State[MatrixEmbed[vec, ss, tt], tt, opts]
+] /; Not[OrderedQ @ ss]
+(* TODO: To support fermions *)
+
+
+State /:
+CircleTimes[vv__State] :=
+  State[CircleTimes @@ Map[First, {vv}], Flatten @ Map[Part[#, 2]&, {vv}], Flatten[Options /@ {vv}]]
+(* TODO: To support fermions *)
 
 State /:
 Matrix[ State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{___?QubitQ} ] :=
@@ -1363,6 +1377,17 @@ State /:
 Elaborate[ State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ] ] :=
   ExpressionFor[vec, ss]
 
+State /:
+Multiply[ pre___, v_State, ww__State, Shortest[post___] ] :=
+  Multiply[pre, CircleTimes[v, ww], post]
+
+State /:
+Multiply[ pre___, v_Ket, w_State, Shortest[post___] ] :=
+  Multiply[pre, CircleTimes[StateForm @ v, ww], post]
+
+State /:
+Multiply[ pre___, v_State, w_Ket, Shortest[post___] ] :=
+  Multiply[pre, CircleTimes[v, StateForm @ w], post]
 
 State /:
 Multiply[pre___, op_, State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], post___] :=
@@ -1376,7 +1401,7 @@ Multiply[pre___, op_, State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], post__
   ]
 
 
-StateForm::usage = "StateForm[expr] converts the Ket expression expr to State[mat, {s1, s2, \[Ellipsis]}."
+StateForm::usage = "StateForm[expr] converts the Ket expression expr to State[vec, {s1, s2, \[Ellipsis]}."
 
 StateForm[expr_?fKetQ] := With[
   { ss = Qubits @ expr },

@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.10
+
+- An emergency bug fix concerning QuantumCircuit including both ProductState and Ket.
+
 ## 3.3.9
 
 - Elaborate supports Dyad involving Fermions.
