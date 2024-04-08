@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.11
+
+- Another emergency bug fix, this time, concerning Multiply[..., Ket[...], State[...], ...].
+
 ## 3.3.10
 
 - An emergency bug fix concerning QuantumCircuit including both ProductState and Ket.

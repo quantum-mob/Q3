@@ -1383,7 +1383,7 @@ Multiply[ pre___, v_State, ww__State, Shortest[post___] ] :=
 
 State /:
 Multiply[ pre___, v_Ket, w_State, Shortest[post___] ] :=
-  Multiply[pre, CircleTimes[StateForm @ v, ww], post]
+  Multiply[pre, CircleTimes[StateForm @ v, w], post]
 
 State /:
 Multiply[ pre___, v_State, w_Ket, Shortest[post___] ] :=
