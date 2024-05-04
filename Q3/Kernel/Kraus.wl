@@ -657,7 +657,7 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
       Return[$Failed]
      ];
     
-    {val, mat} = Eigensystem @ Normal[opH -I*opG];
+    {val, mat} = Eigensystem @ Normal[opH - I*opG];
     mat = Transpose[mat];
     inv = Inverse[mat];
 
@@ -709,7 +709,7 @@ LindbladSimulate[spr_LindbladSupermap, in_, tt_List, opts___?OptionQ] :=
   Not @ FreeQ[in, _Ket]
 
 
-goMonteCarlo::usage = "goMonteCarlo[non, {a1,a2,...}, in, {t1,t2,...}] generates a quantum trajectory based on the non-Hermitian Hamiltonian non and Lindblad operators a1, a2, ..., starting from the initial state in at time instants t1, t2, ...."
+goMonteCarlo::usage = "goMonteCarlo[non, {a1,a2,...}, in, {t1,t2,...}] generates a quantum trajectory based on the non-Hermitian Hamiltonian non (see below) and Lindblad operators a1, a2, ..., starting from the initial state in at time instants t1, t2, ....\nIn fact, the non-Hermitian Hamiltonian is provided in the form {mat, val, inv}, where non = mat.DiagonalMatrix[val].inv."
 
 goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
   in_?VectorQ, tt_List] := Module[
@@ -731,8 +731,8 @@ goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
           AppendTo[res, Normalize @ out];
           tau = Rest[tau],
           Break[]
-         ]
-       ];
+        ]
+      ];
       
       If[tau == {}, Return @ res];
 
@@ -744,9 +744,9 @@ goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
       pos = First @ FirstPosition[prb - qq, _?NonNegative];
       new = Normalize @ Part[out, pos];
       AppendTo[res, new];
-     ];
+    ];
     Return[res];
-   ]
+  ]
 
 (**** </LindbladSimulate> ****)
 

@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.12
+
+- New symbols Pairings, Unpaired.
+
 ## 3.3.11
 
 - Another emergency bug fix, this time, concerning Multiply[..., Ket[...], State[...], ...].

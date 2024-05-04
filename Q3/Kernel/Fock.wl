@@ -996,7 +996,7 @@ FockHopping[x_List] := FockHopping[ Sequence @@ x ]
 (**** </FockHopping> ****)
 
 
-Pair::usage = "Pair is an alias for FockPairing."
+Pair::usage = "Pair is an alias of FockPairing."
 
 Pair = FockPairing
 
@@ -1004,6 +1004,8 @@ FockPairing::usage = "FockPairing[a, b, c, ...] returns a**b + b**c + ..., descr
 
 FockPairing[x__] := FockHopping[x] /. {Dagger -> Identity}
 
+
+(**** <FockSpin> ****)
 
 FockSpin::usage = "FockSpin[c] returns the list of the spin operators in all three directions. FockSpin[c,dir] returns the spin operator in the dir direction (dir = 1 for X, 2 for Y, 3 for Z). The spin raising and lowering operator is returned by dir = 4 and 5, respectively. FockSpin[c1, c2, ...] returns the total spin associated with the operators c1, c2, .... FockSpin[c1, c2, ..., dir] returns the total spin in the particular direction dir."
 
@@ -1015,7 +1017,7 @@ FockSpin[ c_?ParticleQ, dd:{ Repeated[1|2|3,3] } ] :=
 FockSpin[ c_?ParticleQ, dir:(1|2|3|4|5) ] := With[
   { cc = c[All] },
   MultiplyDot[ Dagger @ cc, theWigner[{Spin[c[Any]], dir}], cc]
- ] /; spinfulQ[ c[Any] ]
+] /; spinfulQ[ c[Any] ]
 (* dir = 4 for Raising,
    dir = 5 for Lowering *)
 
@@ -1053,16 +1055,17 @@ theWigner[{J_?SpinNumberQ, 3}] := DiagonalMatrix @ Range[J,-J,-1]
 theWigner[{J_?SpinNumberQ, 4}] := With[
   { v = Table[Sqrt[J(J+1)-M(M+1)], {M, J, -J, -1}] },
   RotateLeft[ DiagonalMatrix[v] ]
- ]
+]
 
 theWigner[{J_?SpinNumberQ, 5}] := With[
   { v = Table[Sqrt[J(J+1)-M(M-1)], {M, J, -J, -1}] },
   RotateRight[ DiagonalMatrix[v] ]
- ]
+]
+
+(**** </FockSpin> ****)
 
 
-
-(* SS::usage = "SS[dir][a,b,...] is an alias for FockSpinSpin[a,b,..., dir]." *)
+(* SS::usage = "SS[dir][a,b,...] is an alias of FockSpinSpin[a,b,..., dir]." *)
 
 FockSpinSpin::usage = "FockSpinSpin[a, b] gives the operator expression for the spin-spin coupling between two spins associated with a and b. FockSpinSpin[a, b, dir] describes the coupling in the particular direction dir."
 

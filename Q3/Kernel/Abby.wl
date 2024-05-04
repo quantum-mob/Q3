@@ -2,6 +2,7 @@
 BeginPackage["Q3`"]
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
+{ Pairings, Unpaired };
 { Choices, ListPartitions, Successive, FirstLast, Inbetween };
 { ShiftLeft, ShiftRight };
 { KeyGroupBy, KeyReplace, CheckJoin };
@@ -37,6 +38,42 @@ BeginPackage["Q3`"]
 
 Begin["`Private`"]
 
+(**** <Pairings> ****)
+
+Unpaired::usage = "Unpaired[a] represents an unpaired element a."
+
+Pairings::usage = "Pairings[list] generates all possible pairings of the elements in list.\nSee also ListPartitions and the built-in function Groupings."
+
+Pairings::odd = "There are an odd number of elements in ``."
+
+Pairings[a_List] := (
+  Message[Pairings::odd, a]; 
+  Pairings[Append[a, "__None__"]] /. 
+    {{any_, "__None__"} -> Unpaired[any]} /.
+    {{pre___, any_Unpaired, post___} -> {pre, post, any}}
+) /; OddQ @ Length[a]
+
+Pairings[a:{_, _}] := {a}
+
+Pairings[a_List] := Module[
+  { pp = Thread[{First @ a, Rest @ a}] },
+  Catenate @ Map[pushPair[#, Supplement[a, #]]&, pp]
+] /; DuplicateFreeQ[a]
+
+Pairings[a_List] := Module[
+  { jj = Range @ Length @ a,
+    pp },
+  pp = Pairings[jj];
+  Map[Part[a, #]&, pp, {3}]
+] /; Not @ DuplicateFreeQ[a]
+
+pushPair[a:{_, _}, b:{_, _}] := {{a, b}}
+
+pushPair[a:{_, _}, b_List] := Map[Join[{a}, #]&, Pairings[b]]
+
+(**** </Pairings> ****)
+
+
 Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
 Choices[a_List] := Choices[a, {0, Length @ a}]
@@ -55,7 +92,7 @@ ListPartitions[data_List, spec___] := Module[
   { parts = IntegerPartitions[Length @ data, spec] },
   parts = Flatten[Permutations /@ parts, 1];
   TakeList[data, #]& /@ parts
- ]
+]
 (* NOTE: Permutations /@ parts is necessary to find all possible
    decompositions of the integer Length[list]. *)
 
