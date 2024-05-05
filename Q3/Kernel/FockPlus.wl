@@ -19,6 +19,7 @@ Begin["`Private`"]
 
 Average::usage = "Average[expr] represents the quantum mechanical expectation value of expr."
 
+(**** <Wick> ****)
 
 Wick::usage = "Wick[a, b, ...] applies the Wick theorem."
 
@@ -31,11 +32,13 @@ Wick[a_?AnyBosonQ, b_?AnyBosonQ] := Average[a**b]
 Wick[a_?AnyBosonQ, b_?AnyBosonQ, op__?AnyBosonQ] := Module[
   { pp = Pairings@{a, b, op} },
   Total[ Times @@@ Apply[ Composition[Average, Multiply], pp, {2} ] ]
- ] /; EvenQ[Length@{a, b, op}]
+] /; EvenQ[Length@{a, b, op}]
 
 Wick[expr_] := expr /. {
   HoldPattern[ Multiply[op__?AnyBosonQ] ] :> Wick[op]
- }
+}
+
+(**** </Wick> ****)
 
 
 FockSeries::usage = "FockSeries[f, arg, n] expands function f into a series of order n around 0. The argument of the expansion is arg and its powers are computed using FockPower.  The result is returned in terms of powers of arg."

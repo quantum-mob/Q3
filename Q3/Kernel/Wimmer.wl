@@ -11,6 +11,8 @@ Begin["`Private`"]
 
 Pfaffian::usage = "Pfaffian[mat] returns the Pfaffian of an anti-symmetric matrix mat."
 
+Pfaffian::number = "Pfaffian can be computed efficiently only for a numerical matrix. If the matrix is small enough, try option Method -> \"Heuristic\"."
+
 Pfaffian::method = "Unrecognized option `1`; must be either \"ParlettReid\", \"Householder\", \"Hessenberg\" or \"Heuristic\".";
 
 Pfaffian::Hessenberg = "Pfaffian computation with Hessenberg decomposition only works for real matrices; instead, using Householder method.";
@@ -66,9 +68,9 @@ SkewLTL[Mat_] := Module[
   L = IdentityMatrix[N];
   Pv = Range[N];
   For[ i = 1, i < N - 1, i++,
-    (*find out the maximum entry in the column i, starting from row i+1*)
-    ip = i + Position[Abs[A[[i + 1 ;;, i]]], Max[Abs[A[[i + 1 ;;, i]]]]][[1, 1]];
-    (*if the maximum entry is not at i+1, permute the matrix so that it is*)
+    (* Find the maximum entry in column i, starting from row i+1. *)
+    ip = i + First @ PositionLargest[Abs @ A[[i+1;;, i]]];
+    (* if the maximum entry is not at i+1, permute the matrix so that it is. *)
     If[i + 1 != ip, 
       (*Interchange rows and columns in A*)
       A[[{i + 1, ip}, ;;]] = A[[{ip, i + 1}, ;;]]; 
@@ -100,9 +102,9 @@ PfaffianLTL[mat_] := Module[
   If[OddQ[dim], Return[0]];
   val = 1;
   For[i = 1, i < dim-1, i += 2,
-    (* find out the maximum entry in the column i, starting from row i+1. *)
-    ip = i + Position[Abs[new[[i+1;;, i]]], Max[Abs[new[[i+1;;, i]]]]][[1, 1]];
-    (* if the maximum entry is not at i+1, permute the matrix so that it is. *)
+    (* Find the maximum entry in column i, starting from row i+1. *)
+    ip = i + First @ PositionLargest[Abs @ new[[i+1;;, i]]];
+    (* If the maximum entry is not at i+1, permute the matrix so that it is. *)
     If[ i+1 != ip, 
       (* Interchange rows and columns in new. *)
       new[[{i+1, ip}, ;;]] = new[[{ip, i+1}, ;;]]; 
@@ -110,7 +112,7 @@ PfaffianLTL[mat_] := Module[
       (* interchange contributes det(P)=-1. *)
       val = -val;
     ];
-    (*Multiply with every other entry on the diagonal*)
+    (* Multiply with every other entry on the diagonal. *)
     val = val * new[[i, i+1]];
     (*Build the Gauss vector*)
     new[[i+2;;, i]] = new[[i+2;;, i]] / new[[i+1, i]];
@@ -120,7 +122,12 @@ PfaffianLTL[mat_] := Module[
     (* The above is much faster than this construct for me: Transpose[{new[[i+2;;,i]]}].{new[[i+2;;,i+1]]}-Transpose[{new[[i+2;;, i+1]]}].{new[[i+2;;,i]]}; *)
   ];
   Return[val * new[[dim-1, dim]]]
-]
+] /; MatrixQ[mat, NumericQ]
+
+PfaffianLTL[mat_] := (
+  Message[Pfaffian::number];
+  Return[Indeterminate]
+)
 
 (**** </Method: Parlett-Reid tridiagonalization> ****)
 
@@ -212,10 +219,10 @@ SkewHouseholderComplex[Mat_] := Module[
 
 PfaffianHouseholder::usage = "PfaffianHouseholder[mat] calculates the Pfaffian of skew-symmetric matrix mat by using the Householder tridiagonalization."
 
-PfaffianHouseholder[Mat_] := If[
-  MatrixQ[Mat, NumberQ[#] && !MatchQ[#, _Complex] &], 
-  PfaffianHouseholderReal[Mat], 
-  PfaffianHouseholderComplex[Mat]
+PfaffianHouseholder[mat_] := If[
+  MatrixQ[mat, NumberQ[#] && !MatchQ[#, _Complex] &], 
+  PfaffianHouseholderReal[mat], 
+  PfaffianHouseholderComplex[mat]
 ]
 
 PfaffianHouseholderReal[Mat_] := Module[{N, A, v, beta, alpha, pfaff},
@@ -266,28 +273,29 @@ PfaffianHessenberg::usage = "PfaffianHessenberg[mat] calculates the Pfaffian of 
 
 PfaffianHessenberg[mat_] := Module[
   {H, Q},
-  {Q, H} = HessenbergDecomposition[mat]; 
+  {Q, H} = HessenbergDecomposition[N @ mat];
   Det[Q] * Apply[Times, Diagonal[H, 1][[1;;;;2]]]
-]
+] /; MatrixQ[mat, NumericQ[#] && !MatchQ[#, _Complex]&]
+(* NOTE: HessenbergDecomposition only receives a finite-preciesion matrix. *)
 
 PfaffianHessenberg[mat_] := (
   Message[Pfaffian::Hessenberg];
   PfaffianHouseholderComplex[mat]
-) /; Not @ MatrixQ[mat, NumberQ[#] && !MatchQ[#, _Complex]&]
+) (* otherwise *)
 
 
 SkewHessenberg::usage = "SkewHessenberg[mat] tridiagonalize the real skew-symmetric matrix mat by using the Hessenberg decomposition.\nIt is an alias of HessenbergDecomposition."
 
 SkewHessenberg[mat_] := Module[
   {H, Q},
-  {Q, H} = HessenbergDecomposition[mat]; 
+  {Q, H} = HessenbergDecomposition[N @ mat]; 
   {H, Q, One[Length @ mat]}
-]
+] /; MatrixQ[mat, NumericQ[#] && !MatchQ[#, _Complex]&]
 
 SkewHessenberg[mat_] := (
   Message[SkewTridiagonalize::Hessenberg];
   SkewHouseholderComplex[mat]
-) /; Not @ MatrixQ[mat, NumberQ[#] && !MatchQ[#, _Complex]&]
+) (* otherwise *)
 
 (**** </Method: Hessenberg decomposition> ****)
 
@@ -304,7 +312,10 @@ PfaffianHeuristic[mat_?SquareMatrixQ] := Total @ Times[
   Table[PfaffianHeuristic[colDelete[mat, k]], {k, 2, Length @ mat}]
 ]
 
-colDelete[mat_, k_] := Delete[Transpose @ Delete[Transpose @ mat, {{1}, {k}}], {{1}, {k}}]
+colDelete[mat_, k_] := Delete[
+  Transpose @ Delete[Transpose @ mat, {{1}, {k}}],
+  {{1}, {k}}
+]
 
 (**** </Method: Heuristic recursion> ****)
 

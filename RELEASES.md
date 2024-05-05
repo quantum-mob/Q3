@@ -3,6 +3,7 @@
 ## 3.3.12
 
 - New symbols Pairings, Unpaired.
+- Bug fixes in Pfaffian and SkewTridiagonalize.
 
 ## 3.3.11
 
