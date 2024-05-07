@@ -783,6 +783,7 @@ Ket /: MultiplyGenus[ _Ket ] = "Ket"
 
 Bra /: MultiplyGenus[ _Bra ] = "Bra"
 
+
 Ket /:
 CircleTimes[a:Ket[_Association], b:Ket[_Association]..] :=
   fermionKeySort @ Join[a, b, 2]
@@ -801,7 +802,7 @@ CircleTimes[a:Bra[_List], b:Bra[_List]..] := Join[a, b, 2]
 fermionKeySort::usage = "fermionKeySort[Ket[assoc]] sorts the Keys of assoc and multiply a factor of the signature of fermion Keys."
 
 fermionKeySort[(head:(Ket|Bra))[a_Association]] := 
-  Signature[Select[Keys @ theKetTrim @ a, FermionQ]] * head[KeySort @ a]
+  Signature[Keys @ theKetTrim @ KeySelect[a, FermionQ]] * head[KeySort @ a]
 
 
 Ket[s_?IntegerQ] := Ket @ {s}
@@ -818,7 +819,7 @@ Bra[a_Integer, bc__Integer] := (
   Message[Q3General::changed, "Bra",
     "The values must be given in a list like Bra[{b1,b2,...}]"];
   Bra @ {a, bc}
- )
+)
 
 (* Ket[<|...|>] *)
 
@@ -829,9 +830,9 @@ Ket[ spec__Rule ] := Ket[ Ket[], spec ]
 Ket[ Ket[a_Association], spec__Rule ] := Module[
   { rules = Flatten @ KetRule @ {spec},
     vec },
-  vec = Ket @ KeySort @ Join[a, Association @ rules];
-  If[FailureQ @ KetVerify @ vec, $Failed, vec]
- ]
+  vec = KetVerify @ Join[a, Association @ rules];
+  If[FailureQ @ vec, $Failed, fermionKeySort @ Ket @ vec]
+]
 
 
 Ket[ spec___Rule, ss:{__?AgentQ}] := KetRegulate[Ket[spec], ss]
@@ -886,22 +887,32 @@ KetRule[ r:Rule[_List, _] ] := FlavorNone @ Thread[r]
 KetRule[r_Rule] := r
 
 
-KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[a, b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
+(**** <KetVerify> ****)
 
-SetAttributes[KetVerify, Listable]
+KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[assoc] returns assoc if assoc is an Association of valid Key-Value pairs; $Failed otherwise.\nKetVerify[a, b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
 
-KetVerify[ expr_ ] := expr //. { v_Ket :> KetVerify[v] }
+(* SetAttributes[KetVerify, Listable] *)
+
+KetVerify[ expr:Except[_Ket|_Association] ] := 
+  expr /. { v_Ket :> KetVerify[v] }
 
 KetVerify[ Ket[a_Association] ] := With[
+  { aa = KetVerify @ a },
+  If[FailureQ[aa], aa, Ket @ aa, Ket @ aa]
+]
+
+KetVerify[ a_Association ] := With[
   { aa = KeyValueMap[KetVerify, a] },
   If[ AnyTrue[aa, FailureQ],
     $Failed,
-    Ket @ Association @ aa,
-    Ket @ Association @ aa
-   ]
- ]
+    Association @ aa,
+    Association @ aa
+  ]
+]
 
 KetVerify[a_, b_] := Rule[a, b]
+
+(**** </KetVerify> ****)
 
 
 (**** <KetTrim> ****)
@@ -2011,7 +2022,7 @@ Basis[ expr:Except[_?SpeciesQ] ] := Module[
     Message[Basis::incon, Cases[{expr}, _Pauli|_Ket|_Bra, Infinity]];
     Return[{Ket[{}]}]
   ]
- ]
+]
 
 (**** </Basis> ****)
 

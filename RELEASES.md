@@ -4,6 +4,8 @@
 
 - New symbols Pairings, Unpaired.
 - Bug fixes in Pfaffian and SkewTridiagonalize.
+- Enhaced KetVerify.
+- Sorting Keys for fermions in Ket[<|...|>] now respects the sign of the required permutation even at the stage of the Ket construction.
 
 ## 3.3.11
 

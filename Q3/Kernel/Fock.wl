@@ -253,7 +253,7 @@ Let[Fermion, {ls__Symbol}, opts___?OptionQ] := Module[
   If[ vac != "Void" && vac!= "Sea",
     Message[Vacuum::unknown, vac];
     vac = "Void"
-   ];
+  ];
 
   If[ spin != 0 && !And[OddQ[2*spin], Positive[spin]],
     Message[Spin::badS, spin];
@@ -262,10 +262,10 @@ Let[Fermion, {ls__Symbol}, opts___?OptionQ] := Module[
        spins, for example, in Schwinger fermion representation of the spin. Of
        course, in such caes, the "spin" does not refer to real spins but to
        pseudo-spins. *)
-   ];
+  ];
   
   Scan[setFermion[#, spin, vac]&, {ls}];
- ]
+]
 
 setFermion[x_Symbol] := setFermion[x, 1/2];
 (* By default, Spin 1/2 for fermions. *)
@@ -302,26 +302,26 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
       Spin[x[___]] ^= spin;
       Vacuum[x[___]] ^= vac;
       x[j___,All] := x[j];
-     ),
+    ),
     spin == 0 && vac == "Sea", (
       Spin[x[__]] ^= spin;
       Vacuum[x[__]] ^= vac;
       x[j___,All] := x[j];
-     ),
+    ),
     spin > 0 && vac == "Void", (
       Spin[x[__]] ^= spin;
       Vacuum[x[__]] ^= vac;
       x[j___,All] := Flatten @ x[j, Range[spin,-spin,-1]];
-     ),
+    ),
     spin > 0 && vac == "Sea", (
       (* the first index indicates above or below the Fermi sea *)
       (* the final index indicates the spin component *)
       Spin[x[__,_]] ^= spin;
       Vacuum[x[__,_]] ^= vac;
       x[k_,j___,All] := Flatten @ x[k, j, Range[spin,-spin,-1]];
-     ),
+    ),
     True, Message[Fermion::error, x]
-   ];
+  ];
   (* The value of spin index s is assumed to be consistent with Spin. Stricter
      checking is complicated and may cause slow performance.
      See also spinfulQ[]. *)
@@ -333,13 +333,13 @@ setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
     Format @ x[j___, +1/2] := Interpretation[
       SpeciesBox[x , {j,"\[UpArrow]"}, {}],
       x[j, +1/2]
-     ];
+    ];
     Format @ x[j___, -1/2] := Interpretation[
       SpeciesBox[x , {j,"\[DownArrow]"}, {}],
       x[j, -1/2]
-     ];
-   ];
- )
+    ];
+  ];
+)
 
 (* Override the default definition of Format[Dagger[...]] *)
 
