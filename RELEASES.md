@@ -2,6 +2,7 @@
 
 ## 3.3.12
 
+- MajoranaToDirac, DiracToMajorana, BosonToHeisenberg, HeisenbergToBoson are renamed ToDirac, ToMajroana, ToHeisenberg, ToBoson, respectively, with enhancement.
 - New symbols Pairings, Unpaired.
 - Bug fixes in Pfaffian and SkewTridiagonalize.
 - Enhaced KetVerify.

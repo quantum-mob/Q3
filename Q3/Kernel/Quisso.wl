@@ -594,10 +594,10 @@ theKetTrim[Rule[_?QubitQ, 0]] = Nothing
 
 KetVerify::qubit = "Invalid value `` for qubit ``."
 
-KetVerify[a_?QubitQ, v_] := (
+theKetVerify[Rule[a_?QubitQ, v_]] := (
   Message[KetVerify::qubit, v, a];
   $Failed
- ) /; Or[ Negative[v], v > 1 ]
+) /; Not[BinaryQ @ v]
 (* NOTE: The following definition would not allow to assign a symbolic value:
    KetVerify[ _?QubitQ, Except[0|1] ] = $Failed *)
 
@@ -3336,12 +3336,12 @@ theKetTrim[Rule[_?QuditQ, 0]] = Nothing
 
 KetVerify::qudit = "Invalid value `` for qudit ``."
 
-KetVerify[a_?QuditQ, v_] := (
+theKetVerify[Rule[a_?QuditQ, v_]] := (
   Message[KetVerify::qudit, v, a];
   $Failed
- ) /; Not[0 <= v < Dimension[a]]
+) /; Not[0 <= v < Dimension[a]]
 (* NOTE: The following definition would not allow to assign a symbolic value:
-   KetVerify[ _?QuditQ, Except[0|1] ] = $Failed *)
+   theKetVerify[Rule[_?QuditQ, Except[0|1]]] = $Failed *)
 
 (**** </Ket for Qubits> ****)
 

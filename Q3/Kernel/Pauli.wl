@@ -830,7 +830,7 @@ Ket[ spec__Rule ] := Ket[ Ket[], spec ]
 Ket[ Ket[a_Association], spec__Rule ] := Module[
   { rules = Flatten @ KetRule @ {spec},
     vec },
-  vec = KetVerify @ Join[a, Association @ rules];
+  vec = theKetVerify @ Join[a, Association @ rules];
   If[FailureQ @ vec, $Failed, fermionKeySort @ Ket @ vec]
 ]
 
@@ -889,20 +889,10 @@ KetRule[r_Rule] := r
 
 (**** <KetVerify> ****)
 
-KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[assoc] returns assoc if assoc is an Association of valid Key-Value pairs; $Failed otherwise.\nKetVerify[a, b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
+theKetVerify::usage = "theKetVerify[assoc] returns assoc if assoc is an Association of valid Key-Value pairs; $Failed otherwise.\ntheKetVerify[a->b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise."
 
-(* SetAttributes[KetVerify, Listable] *)
-
-KetVerify[ expr:Except[_Ket|_Association] ] := 
-  expr /. { v_Ket :> KetVerify[v] }
-
-KetVerify[ Ket[a_Association] ] := With[
-  { aa = KetVerify @ a },
-  If[FailureQ[aa], aa, Ket @ aa, Ket @ aa]
-]
-
-KetVerify[ a_Association ] := With[
-  { aa = KeyValueMap[KetVerify, a] },
+theKetVerify[a_Association] := With[
+  { aa = AssociationMap[theKetVerify, a] },
   If[ AnyTrue[aa, FailureQ],
     $Failed,
     Association @ aa,
@@ -910,34 +900,42 @@ KetVerify[ a_Association ] := With[
   ]
 ]
 
-KetVerify[a_, b_] := Rule[a, b]
+theKetVerify[any_Rule] = any
+
+
+KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
+
+KetVerify[Ket[a_Association]] := With[
+  { aa = theKetVerify[a] },
+  If[FailureQ[aa], $Failed, Ket @ aa, Ket @ aa]
+]
+
+KetVerify[expr_] := expr /. { v_Ket :> KetVerify[v] }
 
 (**** </KetVerify> ****)
 
 
 (**** <KetTrim> ****)
 
-theKetTrim::usage = "KetTrim[assoc] removes from assoc the elements that are either irrelevant or associated with the default value."
+theKetTrim::usage = "theKetTrim[assoc] removes from assoc the elements that are either irrelevant or associated with the default value."
 
 theKetTrim[a_Association] := AssociationMap[theKetTrim, a]
 
 theKetTrim[any_Rule] = any
 
-theKetTrim[{} -> _] = Nothing (* a fallback *)
+theKetTrim[{} -> _] = Nothing (* fallback *)
 
 
 KetTrim::usage = "KetTrim[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.\nTo be compared with KetRegulate."
 
 KetTrim[Ket[a_Association]] := Ket[theKetTrim @ a]
 
-KetTrim[expr_] := expr /; FreeQ[expr, _Ket | _Bra]
-
 KetTrim[expr_] := expr /. {
   a_OTimes -> a, (* NOTE *)
   HoldPattern[OSlash[v_Ket, new_]] :> OSlash[v, KetTrim @ new],
   Ket[a_Association] :> Ket[theKetTrim @ a],
   Bra[a_Association] :> Bra[theKetTrim @ a]
- }
+}
 (* NOTE: This line is necessary to prevent the Kets and Bras in OTimes from
    being affected. *)
 

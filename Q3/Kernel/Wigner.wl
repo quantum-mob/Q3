@@ -433,12 +433,12 @@ theKetTrim[Rule[S_?SpinQ, m_]] := Nothing /; Spin[S] == m
 
 KetVerify::spin = "Invalid value `` for spin ``."
 
-KetVerify[op_?SpinQ, m_] := (
+theKetVerify[Rule[op_?SpinQ, m_]] := (
   Message[KetVerify::spin, m, op];
   $Failed
- ) /; Not[-Spin[op] <= m <= Spin[op]]
+) /; Not[-Spin[op] <= m <= Spin[op]]
 (* NOTE: The following definition would not allow to assign a symbolic value:
-   KetVerify[_?SpinQ, m] = $Failed /; SpinNumberQ @ {Spin[op], m} *)
+   theKetVerify[Rule[_?SpinQ, m]] = $Failed /; SpinNumberQ @ {Spin[op], m} *)
 
 (**** </Ket> ****)
 
