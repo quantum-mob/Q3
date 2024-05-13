@@ -705,25 +705,17 @@ ToDirac[expr:Except[_Rule],
 ] := Garner[ expr /. ToDirac[rr] ]
 
 
-ToDirac[
-  HoldPattern[
-    {h1_?MajoranaQ, h2_?MajoranaQ} -> c_?FermionQ
-  ]
-] := Module[
-    { d = c /. { Dagger -> Identity } },
-    { h1 -> (d + Dagger[d]),
-      h2 -> (d - Dagger[d])/I }
-  ]
+ToDirac[{h1_?MajoranaQ, h2_?MajoranaQ} -> c_?FermionQ] := Module[
+  { d = Peel[c] },
+  { h1 -> (d + Dagger[d]),
+    h2 -> (d - Dagger[d])/I }
+]
 
 ToDirac[
   rr:HoldPattern[{_?MajoranaQ, _?MajoranaQ} -> _?FermionQ]..
 ] := Flatten[ToDirac /@ {rr}, 1]
 
-ToDirac[
-  HoldPattern[
-    hh:{PatternSequence[_?MajoranaQ, _?MajoranaQ]..} -> cc:{__?FermionQ}
-  ]
-] := 
+ToDirac[hh:{PatternSequence[_?MajoranaQ, _?MajoranaQ]..} -> cc:{__?FermionQ}] := 
   Apply[ToDirac, Thread[Rule[Partition[hh, 2], cc]]] /;
     2 Length[cc] == Length[hh]
 

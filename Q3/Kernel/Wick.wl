@@ -7,23 +7,47 @@ BeginPackage["Q3`"]
 Begin["`Private`"]
 
 
+(**** <WickState> ****)
+
+WickState::usage = "WickState[mat, <|c1->v1, c2->v2, \[Ellipsis], cn->vn|>] represents a many-body state occupying the dressed fermion modes dj related to the bare fermion modes ci by the unitary matrix mat."
+
+
+WickState /:
+MakeBoxes[vec:WickState[mat_?MatrixQ, aa_Association], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickState, vec, None,
+    { BoxForm`SummaryItem @ {"Bare modes: ", Keys @ aa},
+      BoxForm`SummaryItem @ {"Occupation: ", Values @ aa}
+    },
+    { BoxForm`SummaryItem @ { "Transformation: ", 
+        MatrixForm[mat[[;;UpTo[8]]], mat[[;;UpTo[8]]]] } 
+    },
+    fmt, "Interpretable" -> Automatic ]
+
+WickState[m_, Ket[a_Association]] := WickState[m, a]
+
+(**** </WickState> ****)
+
+
 (**** <WickExpectation> ****)
 
-WickExpectation::usage = "WickExpectation[expr, mat, ket] calculates the expectation value of operator expr with respect to WickState[mat, ket] efficiently based on the Wick theorem."
+WickExpectation::usage = "WickExpectation[expr, mat, assoc] calculates the expectation value of operator expr with respect to WickState[mat, assoc] efficiently based on the Wick theorem."
 
-WickExpectation[_?AnyFermionQ, mat_?MatrixQ, vec_Ket] = 0
+WickExpectation[c_, mat_, Ket[a_Association]] := WickExpectation[c, mat, a]
 
-WickExpectation[z_?CommutativeQ, mat_?MatrixQ, vec_Ket] = z
+WickExpectation[_?AnyFermionQ, mat_?MatrixQ, _Association] = 0
 
-WickExpectation[z_?CommutativeQ op_, mat_, vec_] := 
+WickExpectation[z_?CommutativeQ, mat_?MatrixQ, _Association] = z
+
+WickExpectation[z_?CommutativeQ op_, mat_, vec_] :=
   z * WickExpectation[op, mat, vec]
 
 WickExpectation[expr_Plus, mat_, vec_] := 
   WickExpectation[#, mat, vec]& /@ expr
 
 HoldPattern @
-WickExpectation[op:Multiply[__?AnyFermionQ], mat_?MatrixQ, Ket[vv_Association]] :=
-  theWickFermi[List @@ op, mat, Ket @ vv]
+WickExpectation[op:Multiply[__?AnyFermionQ], mat_?MatrixQ, vv_Association] :=
+  theWickFermi[List @@ op, mat, vv]
 
 (**** </WickExpectation> ****)
 
@@ -32,7 +56,7 @@ WickExpectation[op:Multiply[__?AnyFermionQ], mat_?MatrixQ, Ket[vv_Association]] 
 
 theWickFermi::usage = "WickFermi[...] ... "
 
-theWickFermi[aa:{__?AnyFermionQ}, mat_?MatrixQ, Ket[vv_Association]] :=
+theWickFermi[aa:{__?AnyFermionQ}, mat_?MatrixQ, vv_Association] :=
   Module[
     { rr = Thread[Keys[vv] -> Range[Length @ vv]],
       bb, cc, ff, nn, mm },

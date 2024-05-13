@@ -3480,6 +3480,9 @@ TheMatrix[A_?QuditQ[___, $ @ {x_Integer, z_Integer}]] :=
 
 (**** <TransformByFourier for Qudits> ****)
 
+TransformBy[a__?QuditQ, mat_?MatrixQ] :=
+  TransformBy[Sequence @@ Thread[{a} -> {a}], mat]
+
 TransformBy[old_?QuditQ -> new_?QuditQ, mat_?MatrixQ] := Module[
   { ij = Range[0, Dimension[old]-1],
     aa, bb },  
@@ -3487,7 +3490,7 @@ TransformBy[old_?QuditQ -> new_?QuditQ, mat_?MatrixQ] := Module[
   bb = Outer[new[#1 -> #2]&, ij, ij];
   bb = Flatten[ Topple[mat] . bb . mat ];
   Thread[aa -> bb]
- ]
+]
 
 TransformBy[
   a:Rule[_?QuditQ, _?QuditQ],
@@ -3498,10 +3501,13 @@ TransformBy[expr_, old_?QuditQ -> new_?QuditQ, mat_?MatrixQ] :=
   Garner[ expr /. TransformBy[old -> new, mat] ]
 
 
+TransformByFourier[a__?QuditQ, mat_?MatrixQ] :=
+  TransformByFourier[Sequence @@ Thread[{a} -> {a}], mat]
+
 TransformByFourier[old_?QuditQ -> new_?QuditQ, opts___?OptionQ] := With[
   { mat = FourierMatrix[Dimension @ old, opts] },
   TransformBy[old -> new, mat]
- ]
+]
 
 TransformByFourier[
   a:Rule[_?QuditQ, _?QuditQ],

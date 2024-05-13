@@ -1288,17 +1288,23 @@ MultiplyDegree[ MultiplyExp[expr_] ] := Infinity /; MultiplyDegree[expr] > 0
 MultiplyDegree[ expr_ ] := 0 /; FreeQ[expr, _?AnySpeciesQ]
 
 
-TransformBy::usage = "TransformBy[old \[RightArrow] new, M] construct a list of Rules to be used in ReplaceAll by applying the linear transformation associated with the matrix M on new. That is, the Rules old$i \[RightArrow] \[CapitalSigma]$j M$ij new$j. If new is a higher dimensional tensor, the transform acts on its first index.\nTransformBy[expr, old \[RightArrow] new] applies ReplaceAll on expr with the resulting Rules."
+(**** <TransformBy> ****)
 
-TransformBy[old_List -> new_List, M_?MatrixQ] :=
-  Thread[ Flatten @ old -> Flatten[M . new] ]
+TransformBy::usage = "TransformBy[old \[RightArrow] new, mat] construct a list of Rules to be used in ReplaceAll by applying the linear transformation associated with matrix mat on new. That is, the Rules old$i \[RightArrow] \[CapitalSigma]$j mat$ij new$j. If new is a higher dimensional tensor, the transform acts on its first index.\nTransformBy[expr, old \[RightArrow] new] applies ReplaceAll on expr with the resulting Rules."
 
-TransformBy[a:Rule[_List, _List], bb:Rule[_List, _List].., M_?MatrixQ] :=
-  TransformBy[ Transpose /@ Thread[{a, bb}, Rule], M ]
+TransformBy[old_List -> new_List, mat_?MatrixQ] :=
+  Thread[ Flatten @ old -> Flatten[mat . new] ]
+
+TransformBy[a:Rule[_List, _List], bb:Rule[_List, _List].., mat_?MatrixQ] :=
+  TransformBy[ Transpose /@ Thread[{a, bb}, Rule], mat ]
 
 TransformBy[expr_, rr:Rule[_List, _List].., M_?MatrixQ] :=
   Garner[ expr /. TransformBy[rr, M] ]
 
+(**** </TransformBy> ****)
+
+
+(**** <TransformByFourier> ****)
 
 TransformByFourier::usage = "TransformByFourier[v] is formally equivalent to Fourier[v] but v can be a list of non-numeric symbols. If v is a higher dimensional tensor the transform is on the last index.\nTransformByFourier[old \[RightArrow] new] returns a list of Rules that make the discrete Fourier transform.\nTransformByFourier[expr, old \[RightArrow] new] applies the discrete Fourier transformation on expr, which is expressed originally in the operators in the list old, to the expression in terms of operators in the list new."
 
@@ -1320,6 +1326,8 @@ TransformByInverseFourier::usage = "TransformByInverseFourier[old -> new] \[Cong
 
 TransformByInverseFourier[args__, opts___?OptionQ] :=
   TransformByFourier[args, opts, FourierParameters -> {0,-1}]
+
+(**** </TransformByFourier> ****)
 
 
 (**** <Observation> ****)
