@@ -1,4 +1,4 @@
-(* -*- mode: math; -*- *)
+e(* -*- mode: math; -*- *)
 BeginPackage["Q3`"]
 
 { Heisenberg, Boson, Fermion, Majorana };
@@ -1999,9 +1999,9 @@ HoldPattern @
   Multiply[pre___, op_?FermionQ, Ket[v_Association], post___] :=
     If[ v[op] == 0,
       Return[0],
-      (* TODO: This doesn't respect fermions with Sea vacuum. *)
+      (* TODO: This doesn't respect the Sea vacuum. *)
       Signature[Prepend[Fermions @ Keys @ KeyDrop[theKetTrim @ v, op], op]] *
-        Multiply[pre, Ket[Ket @ v, op -> 0], post]
+        Multiply[pre, Ket @ KeySort @ Prepend[v, op -> 0], post]
     ]
 (* NOTE: The Keys of v are assumed to be sorted. *)
 
@@ -2009,9 +2009,8 @@ HoldPattern @
   Multiply[pre___, Dagger[op_?FermionQ], Ket[v_Association], post___] := 
     If[ v[op] == 1,
       Return[0],
-      (* TODO: This doesn't respect fermions with Sea vacuum. *)
-      Signature[Prepend[Fermions @ Keys @ theKetTrim @ v, op]] *
-        Multiply[pre, Ket[Ket @ v, op -> 1], post]
+      (* TODO: This doesn't respect the Sea vacuum. *)
+      Multiply[pre, fermionKeySort @ Ket @ Prepend[v, op -> 1], post]
     ]
 (* NOTE: The Keys are sorted in the result. *)
 
