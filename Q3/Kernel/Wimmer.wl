@@ -95,6 +95,9 @@ SkewLTL[Mat_] := Module[
 
 PfaffianLTL::usage = "PfaffianLTL[mat] computes the Pfaffian of the skew-symmetric matirx mat using the L T L^T decomposition."
 
+PfaffianLTL[mat_SymmetrizedArray] := PfaffianLTL[SparseArray @ mat]
+(* NOTE: PfaffianLTL involves interchange of certain pairs of rows and columns, which breaks the symmetry in mat and causes error. *)
+
 PfaffianLTL[mat_] := Module[
   { new = mat,
     dim = Length @ mat,
@@ -143,10 +146,10 @@ HouseholderVector[vec_] := If[
 ]
 
 HouseholderVectorReal[x_] := Module[
-  {new, fac, nrm},
-  nrm = Norm[x];
+  { nrm = Norm[x],
+    new, fac },
   If[ nrm == 0, 
-    Return[{UnitVector[Dimensions[x][[1]], 1], 0, 0}],
+    Return[{UnitVector[Lenth @ x, 1], 0, 0}],
     fac = If[x[[1]] > 0, nrm, -nrm];
     new = x;
     new[[1]] += fac;
@@ -155,11 +158,11 @@ HouseholderVectorReal[x_] := Module[
 ]
 
 HouseholderVectorComplex[x_] := Module[
-  {new, fac, nrm},
-  nrm = Norm[x];
-  If[ nrm == 0, 
-    Return[{UnitVector[Dimensions[x][[1]], 1], 0, 0}],
-    fac = E^(I Arg[x[[1]]]) Norm[x]; 
+  { nrm = Norm[x],
+    new, fac },
+  If[ nrm == 0,
+    Return[{UnitVector[Lenth @ x, 1], 0, 0}],
+    fac = nrm * Exp[I * Arg[First @ x]]; 
     new = x;
     new[[1]] += fac;
     Return[{Normalize[new], 2, -fac} ]
@@ -188,7 +191,7 @@ SkewHouseholderReal[Mat_] := Module[
    (*eliminate the entries in row and column i*) 
    A[[i + 1, i]] = alpha; A[[i, i + 1]] = -alpha; A[[i + 2 ;;, i]] = 0; 
    A[[i, i + 2 ;;]] = 0;
-   (*update the matrix*)
+   (* update the matrix *)
    w = beta* A[[i + 1 ;; , i + 1 ;;]] . v; 
    A[[i + 1 ;; , i + 1 ;; ]] += Transpose[{v}] . {w} - Transpose[{w}] . { v};
    (*accumulate the Householder reflections into the full transformation*)
@@ -225,39 +228,40 @@ PfaffianHouseholder[mat_] := If[
   PfaffianHouseholderComplex[mat]
 ]
 
-PfaffianHouseholderReal[Mat_] := Module[{N, A, v, beta, alpha, pfaff},
-  A = Mat;
-  pfaff = 1;
-  N = Dimensions[A][[1]];
-  If[OddQ[N], Return[0]];
-  For[i = 1, i < N - 1, i += 2,
-    (*Compute the Householder vector*) 
-    {v, beta, alpha} = HouseholderVectorReal[A[[i + 1 ;; , i]]];
-    (*multiply with off-diagonal entry and determinant of Householder reflection*) 
-    pfaff *= If[beta == 0, 1, -1]*(-alpha);
-    (*update the matrix*)
-    w = beta* A[[i + 1 ;; , i + 1 ;;]] . v; 
-    A[[i + 1 ;; , i + 1 ;; ]] += Transpose[{v}] . {w} - Transpose[{w}] . {v}
+PfaffianHouseholderReal[mat_] := Module[
+  { new = mat,
+    dim = Length @ mat,
+    val, v, w, beta, alpha },
+  If[OddQ[dim], Return[0]];
+  val = 1;
+  For[i = 1, i < dim-1, i += 2,
+    (* Compute the Householder vector *) 
+    {v, beta, alpha} = HouseholderVectorReal[new[[i+1 ;; , i]]];
+    (* multiply with off-diagonal entry and determinant of Householder reflection *) 
+    val *= If[beta == 0, 1, -1]*(-alpha);
+    (* update the matrix *)
+    w = beta * new[[i+1 ;; , i+1 ;;]] . v; 
+    new[[i+1 ;; , i+1 ;; ]] += Transpose[{v}] . {w} - Transpose[{w}] . {v}
   ]; 
-  Return[pfaff*A[[N - 1, N]]]
+  Return[ val * new[[dim-1, dim]] ]
 ]
 
-PfaffianHouseholderComplex[Mat_] := Module[
-  {N, A, v, beta, alpha, pfaff},
-  A = Mat;
-  pfaff = 1;
-  N = Dimensions[A][[1]];
-  If[OddQ[N], Return[0]];
-  For[i = 1, i < N - 1, i += 2, 
+PfaffianHouseholderComplex[mat_] := Module[
+  { new = mat,
+    dim = Length @ mat,
+    val, v, w, beta, alpha },
+  val = 1;
+  If[OddQ[dim], Return[0]];
+  For[i = 1, i < dim-1, i += 2, 
     (*Compute the Householder vector*) 
-    {v, beta, alpha} = HouseholderVectorComplex[A[[i + 1 ;; , i]]]; 
-    (*multiply with off-diagonal entry and determinant of Householder reflection*) 
-    pfaff *= If[beta == 0, 1, -1]*(-alpha);
+    {v, beta, alpha} = HouseholderVectorComplex[new[[i+1 ;; , i]]]; 
+    (* multiply with off-diagonal entry and determinant of Householder reflection *) 
+    val *= If[beta == 0, 1, -1]*(-alpha);
     (*update the matrix*)
-    w = beta* A[[i + 1 ;; , i + 1 ;;]] . Conjugate[v]; 
-    A[[i + 1 ;; , i + 1 ;; ]] += Transpose[{v}] . {w} - Transpose[{w}] . {v}
+    w = beta * new[[i+1 ;; , i+1 ;;]] . Conjugate[v]; 
+    new[[i+1 ;; , i+1 ;; ]] += Transpose[{v}] . {w} - Transpose[{w}] . {v}
   ]; 
-  Return[pfaff*A[[N - 1, N]]]
+  Return[ val * new[[dim-1, dim]] ]
 ]
 
 (**** </Method: Householder tridiagonalization> ****)

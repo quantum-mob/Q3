@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.14
+
+- WickState and WickExpectation support fermion pairing.
+
 ## 3.3.13
 
 - An emergency bug fix for Dagger[c]**Ket[...], where c is a fermion.
