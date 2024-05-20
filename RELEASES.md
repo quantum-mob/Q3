@@ -3,6 +3,7 @@
 ## 3.3.14
 
 - WickState and WickExpectation support fermion pairing.
+- A bug fix concerning State.
 
 ## 3.3.13
 

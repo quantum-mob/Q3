@@ -2594,9 +2594,9 @@ Format @ ProductState[assoc_Association, rest___] := Interpretation[
   CircleTimes @@ KeyValueMap[
     DisplayForm @ Subscript[RowBox @ {"(", {Ket[0], Ket[1]}.#2, ")"}, #1]&,
     assoc
-   ],
+  ],
   ProductState[assoc, rest]
- ]
+]
 
 ProductState /:
 KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
@@ -2606,8 +2606,8 @@ KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
       { Missing },
       Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := {1, 0};
       ProductState[AssociationThread[ss -> Lookup[a, ss]], opts]
-     ]
-   ]
+    ]
+  ]
 
 
 ProductState /:

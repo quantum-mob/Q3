@@ -1374,6 +1374,15 @@ State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ] := With[
 
 
 State /:
+Times[z_, State[v_, ss_, opts___?OptionQ]] :=
+  State[z * v, ss, opts]
+
+State /:
+Plus[State[a_, ss_, opts___?OptoinQ], State[b_, ss_, more___?OptionQ]] :=
+  State[a + b, ss, opts, more]
+
+
+State /:
 CircleTimes[vv__State] :=
   State[CircleTimes @@ Map[First, {vv}], Flatten @ Map[Part[#, 2]&, {vv}], Flatten[Options /@ {vv}]]
 (* TODO: To support fermions *)
@@ -1399,7 +1408,7 @@ Multiply[ pre___, v_State, w_Ket, Shortest[post___] ] :=
   Multiply[pre, CircleTimes[v, StateForm @ w], post]
 
 State /:
-Multiply[pre___, op_, State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], post___] :=
+Multiply[pre___, op:Except[_Plus|_Times], State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], post___] :=
   With[
     { tt = Agents @ {op, ss} },
     Multiply[
