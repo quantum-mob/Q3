@@ -2044,7 +2044,7 @@ Multiply[pre___, op:QFT[type_, ss:{__?QubitQ}, flag_?BooleanQ, opts___?OptionQ],
       v },
     v = Exp[type * (2*Pi*I) * Range[0, L-1] * k / L] / Sqrt[L];
     If[flag, v = N[v]];
-    Dot[Basis[ss], v] 
+    Dot[Basis[ss], v] ** Ket[KeyDrop[First @ in, ss]]
   ]
 
 QFT /:

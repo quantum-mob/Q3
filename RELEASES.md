@@ -4,6 +4,7 @@
 
 - WickState and WickExpectation support fermion pairing.
 - A bug fix concerning State.
+- A bug fix concerning QFT[..] ** Ket[...]
 
 ## 3.3.13
 
