@@ -46,6 +46,8 @@ BeginPackage["Q3`"]
 
 { FockAddSpin, FockAddSpinZ };
 
+{ FermionTranspose,
+  FermionTimeReversal };
 
 Begin["`Private`"]
 
@@ -1322,6 +1324,8 @@ SurviveVacuum::usage = "SurviveVacuum[expr] drops vacuum-annihilating parts of e
 SurviveVacuum[expr_] := Multiply[expr, Ket[Vacuum]] /. {Ket[Vacuum] -> 1}
 
 
+(**** <VacuumExpectation> ****)
+
 VacuumExpectation::usage = "VacuumExpectation[expr] returns the vacuum expectation value of an operator expression.
   The option Method specifies the evaluation method: With
 \"Algebra\" it uses the standard algebraic method and with \"Occupations\" using the Fock states Ket[<|...|>]."
@@ -1339,6 +1343,8 @@ fVacuumExpectation["Algebra"][expr_] :=
   Multiply[ Bra[Vacuum], expr, Ket[Vacuum] ]
 
 fVacuumExpectation["Occupations"][expr_] := Multiply[ Bra[<||>], expr, Ket[<||>] ]
+
+(**** </VacuumExpectation> ****)
 
 
 (* Odd number of operators *)
@@ -2401,6 +2407,91 @@ JordanWignerTransform[ff:{__?FermionQ} -> qq:{__?QubitQ}] := Module[
 
 
 (**** </JordanWignerTransform> ****)
+
+
+(**** <FermionTranspose> ****)
+
+(* See also: Shapourian and Ryu (2017, 2019) *)
+
+FermionTranspose::usage = "FermionTranspose[expr, {c1,c2,\[Ellipsis]}] performs on expr the fermionic partial transposition with respect to fermion modes {c1, c2, \[Ellipsis]}."
+
+FermionTranspose[expr_Plus, rest_] :=
+  Map[FermionTranspose[#, rest] &, expr]
+
+FermionTranspose[z_ , rest_] := 
+  z /; FreeQ[z, Alternatives @@ rest]
+
+FermionTranspose[z_?CommutativeQ expr_, rest_] :=
+  z * FermionTranspose[expr, rest]
+
+FermionTranspose[expr_, op:(_?FermionQ|_?MajoranaQ)] :=
+  FermionTranspose[expr, {op}]
+
+
+HoldPattern @
+  FermionTranspose[
+    op : (_?MajoranaQ | Multiply[pre___, Longest[mm__?MajoranaQ], post___]), 
+    ss : {__?MajoranaQ}
+] :=
+  Power[I, Length @ Intersection[{mm}, ss]] * op
+
+
+HoldPattern @
+  FermionTranspose[
+    op : (_?AnyFermionQ | Multiply[pre___, Longest[__?AnyFermionQ], post___]),
+    ff : {__?FermionQ}
+] := Module[
+  { a, aa },
+  Let[Majorana, a];
+  aa = a @ Range[2 * Length[ff]];
+  ToDirac[FermionTranspose[ToMajorana[op, ff -> aa], aa], aa -> ff]
+]
+
+(**** </FermionTranspose> ****)
+
+
+(**** <FermionTimeReversal> ****)
+
+(* See also: Shapourian and Ryu (2017, 2019) *)
+
+FermionTimeReversal::usage = "FermionTimeReversal[expr, {c1,c2,\[Ellipsis]}] performs on expr the fermionic partial time-reversal transform with respect to fermion modes {c1, c2, \[Ellipsis]}."
+
+FermionTimeReversal[expr_Plus, rest_] :=
+  Map[FermionTimeReversal[#, rest] &, expr]
+
+FermionTimeReversal[z_ , rest_] := 
+  z /; FreeQ[z, Alternatives @@ rest]
+
+FermionTimeReversal[z_?CommutativeQ expr_, rest_] :=
+  z * FermionTimeReversal[expr, rest]
+
+FermionTimeReversal[expr_, op:(_?FermionQ|_?MajoranaQ)] :=
+  FermionTimeReversal[expr, {op}]
+
+
+HoldPattern @
+  FermionTimeReversal[
+    op : (_?MajoranaQ | Multiply[pre___, Longest[mm__?MajoranaQ], post___]), 
+    ss : {__?MajoranaQ}
+] := With[
+  { uu = Multiply @@ ss[[1;;;;2]] },
+  Power[I, Length @ Intersection[{mm}, ss]] * Multiply[uu, op, Dagger @ uu]
+]
+(* NOTE: Works only for spinless fermions. *)
+
+HoldPattern @
+  FermionTimeReversal[
+    op : (_?AnyFermionQ | Multiply[pre___, Longest[__?AnyFermionQ], post___]), 
+    ff : {__?FermionQ}
+] := Module[
+  { a, aa, uu },
+  Let[Majorana, a];
+  aa = a @ Range[2 * Length[ff]];
+  ToDirac[FermionTimeReversal[ToMajorana[op, ff -> aa], aa], aa -> ff]
+]
+(* NOTE: Works only for spinless fermions. *)
+
+(**** </FermionTimeReversal> ****)
 
 
 Protect[ Evaluate @ $symbs ]

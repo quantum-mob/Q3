@@ -4,6 +4,8 @@ BeginPackage["Q3`"]
 
 { WickExpectation };
 
+{ WickLogarithmicNegativity, WickTimeReversalMoment };
+
 Begin["`Private`"]
 
 
@@ -47,25 +49,37 @@ WickState[any_, Ket[a_Association]] := WickState[any, a]
 
 WickExpectation::usage = "WickExpectation[expr, mat, assoc] calculates the expectation value of a polynomial of fermion creation and annihilation operators with respect to WickState[mat, assoc] efficiently based on the Wick theorem.\nWickExpectation[expr, {u, v}, assoc] calculates the expectation value of a polynomial expr of fermionic creation and annihilation operators with respect to WickState[{u, v}, assoc] efficiently based on the Wick theorem."
 
-WickExpectation[c_, any_, Ket[a_Association]] := WickExpectation[c, any, a]
+WickExpectation[c_, any__, Ket[a_Association]] := WickExpectation[c, any, a]
 
-WickExpectation[_?AnyFermionQ, mm:(_?MatrixQ|{_?MatrixQ, _?MatrixQ}), _Association] = 0
+WickExpectation[_?AnyFermionQ, any__, _Association] = 0
 
-WickExpectation[z_?CommutativeQ, mm:(_?MatrixQ|{_?MatrixQ, _?MatrixQ}), _Association] = z
 
-WickExpectation[z_?CommutativeQ op_, mat_, vec_] :=
-  z * WickExpectation[op, mat, vec]
+(* linearity *)
 
-WickExpectation[expr_Plus, mat_, vec_] := 
-  WickExpectation[#, mat, vec]& /@ expr
+WickExpectation[z_?CommutativeQ, any__, _Association] = z
 
-HoldPattern @
-WickExpectation[op:Multiply[__?AnyFermionQ], mat:{_?MatrixQ, _?MatrixQ}, vv_Association] :=
-  theWickNambu[List @@ op, mat, vv]
+WickExpectation[z_?CommutativeQ op_, any__, vec_] :=
+  z * WickExpectation[op, any, vec]
 
-HoldPattern @
-WickExpectation[op:Multiply[__?AnyFermionQ], mat_?MatrixQ, vv_Association] :=
-  theWickFermi[List @@ op, mat, vv]
+WickExpectation[expr_Plus, any__, vec_] := 
+  WickExpectation[#, any, vec]& /@ expr
+
+
+WickExpectation[
+  spec:PatternSequence[HoldPattern @ Multiply[__?AnyFermionQ], {_?MatrixQ, _?MatrixQ}].., 
+  vv_Association
+] :=
+  theWickNambu[{spec} /. Multiply -> List, vv]
+
+WickExpectation[spec:PatternSequence[{__?AnyFermionQ}, {_?MatrixQ, _?MatrixQ}].., vv_Association] :=
+  theWickNambu[{spec}, vv]
+
+
+WickExpectation[spec:PatternSequence[HoldPattern @ Multiply[__?AnyFermionQ], _?MatrixQ].., vv_Association] :=
+  theWickFermi[{spec} /. Multiply -> List, vv]
+
+WickExpectation[spec:PatternSequence[{__?AnyFermionQ}, _?MatrixQ].., vv_Association] :=
+  theWickFermi[{spec}, vv]
 
 (**** </WickExpectation> ****)
 
@@ -74,65 +88,47 @@ WickExpectation[op:Multiply[__?AnyFermionQ], mat_?MatrixQ, vv_Association] :=
 
 theWickNambu::usage = "WickNambu[...] ... "
 
-theWickNambu[aa:{__?AnyFermionQ}, mat:{_?MatrixQ, _?MatrixQ}, vv_Association] :=
+theWickNambu[ss:{PatternSequence[{__?AnyFermionQ}, {_?MatrixQ, _?MatrixQ}]..}, vv_Association] :=
   Module[
     { rr = Thread[Keys[vv] -> Range[Length @ vv]],
+      id = One[Length @ vv],
+      zr = Zero[Length @ vv, Length @ vv],
       bb, cc, ff, nn, mm },
-    cc = Keys[theKetTrim @ vv];
-    cc = ReplaceAll[cc, rr];
-    (* {pos, bare/dressed, sheer/dagger} *)
-    bb = Switch[#, _Dagger, {Peel[#], 1, 1}, _, {#, 1, 0}]& /@ aa;
-    bb = ReplaceAll[bb, rr];
-    ff = Join[
-      Thread[{Reverse @ cc, 0, 0}],
-      bb,
-      Thread[{cc, 0, 1}]
-    ];
+    mm = FoldList[theNambuDot, {id, zr}, Reverse @ ss[[2;; ;;2]]];
+    (* {species, level, sheer/dagger} *)
+    cc = Append[ss[[1;; ;;2]], Dagger @ Keys[theKetTrim @ vv]];
+    dd = Dagger @ Reverse @ Map[Reverse, Rest @ cc];
+    cc = Catenate @ Reverse @ MapIndexed[theFermionCode, Reverse @ cc];
+    dd = Catenate @ MapIndexed[theFermionCode, dd];
+    ff = Join[dd, cc] /. rr;
     nn = Length[ff];
     ff = Table[
-      {i, j} -> theNambuM[mat][ff[[i]], ff[[j]]],
+      {i, j} -> theNambuM[mm][ff[[i]], ff[[j]]],
       {i, nn},
       {j, i+1, nn}
     ];
-    mm = SymmetrizedArray[Flatten[ff, 1], {nn, nn}, Antisymmetric[{1, 2}]];
-    Pfaffian[mm]
+    Pfaffian @ SymmetrizedArray[Flatten[ff, 1], {nn, nn}, Antisymmetric[{1, 2}]]
   ]
 
 
-theNambuM::usage = "theNambuM[{u, v}][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
+theNambuDot::usage = "theNambuDot[{u1,v1}, {u2,v2}] ..."
 
-(* input form: {pos, bare/dressed, sheer/dagger} *)
-
-theNambuM[{u_, v_}][{_, 0, 1}, {_, 0, _}] = 0
-
-theNambuM[{u_, v_}][{_, 0, 0}, {_, 0, 0}] = 0
-
-theNambuM[{u_, v_}][{a_, 0, 0}, {a_, 0, 1}] = 1
-
-theNambuM[{u_, v_}][{a_, 0, 0}, {b_, 0, 1}] = 0
+theNambuDot[{u1_, v1_}, {u2_, v2_}] :=
+  {u1.u2 + Conjugate[v1].v2, v1.u2 + Conjugate[u1].v2}
 
 
-theNambuM[{u_, v_}][{a_, 0, 0}, {b_, 1, 0}] := Conjugate[v[[b, a]]]
+theNambuM::usage = "theNambuM[mm][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
-theNambuM[{u_, v_}][{a_, 0, 0}, {b_, 1, 1}] := Conjugate[u[[b, a]]]
+(* input form: {species, level, sheer/dagger} *)
+(* mm:{{_?MatrixQ, _?MatrixQ}..} *)
 
-theNambuM[{u_, v_}][{a_, 0, 1}, {b_, 1, _}] = 0
+theNambuM[mm_][{a_, i_, 0}, {b_, j_, 0}] := Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]]
 
+theNambuM[mm_][{a_, i_, 0}, {b_, j_, 1}] := Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]]
 
-theNambuM[{u_, v_}][{a_, 1, _}, {b_, 0, 0}] = 0
+theNambuM[mm_][{a_, i_, 1}, {b_, j_, 0}] := Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]]
 
-theNambuM[{u_, v_}][{a_, 1, 0}, {b_, 0, 1}] := u[[a, b]]
-
-theNambuM[{u_, v_}][{a_, 1, 1}, {b_, 0, 1}] := v[[a, b]]
-
-
-theNambuM[{u_, v_}][{a_, 1, 0}, {b_, 1, 0}] := Dot[u, Topple @ v][[a, b]]
-
-theNambuM[{u_, v_}][{a_, 1, 0}, {b_, 1, 1}] := Dot[u, Topple @ u][[a, b]]
-
-theNambuM[{u_, v_}][{a_, 1, 1}, {b_, 1, 0}] := Dot[v, Topple @ v][[a, b]]
-
-theNambuM[{u_, v_}][{a_, 1, 1}, {b_, 1, 1}] := Dot[v, Topple @ u][[a, b]]
+theNambuM[mm_][{a_, i_, 1}, {b_, j_, 1}] := Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]]
 
 (**** </theWickNambu> ****)
 
@@ -141,51 +137,129 @@ theNambuM[{u_, v_}][{a_, 1, 1}, {b_, 1, 1}] := Dot[v, Topple @ u][[a, b]]
 
 theWickFermi::usage = "WickFermi[...] ... "
 
-theWickFermi[aa:{__?AnyFermionQ}, mat_?MatrixQ, vv_Association] :=
+theWickFermi[ss:{PatternSequence[{__?AnyFermionQ}, _?MatrixQ]..}, vv_Association] :=
   Module[
     { rr = Thread[Keys[vv] -> Range[Length @ vv]],
+      id = One[Length @ vv],
       bb, cc, ff, nn, mm },
-    cc = Keys[theKetTrim @ vv];
-    cc = ReplaceAll[cc, rr];
-    (* {pos, bare/dressed, sheer/dagger} *)
-    bb = Switch[#, _Dagger, {Peel[#], 1, 1}, _, {#, 1, 0}]& /@ aa;
-    bb = ReplaceAll[bb, rr];
-    ff = Join[
-      Thread[{Reverse @ cc, 0, 0}],
-      bb,
-      Thread[{cc, 0, 1}]
-    ];
+    mm = FoldList[Dot, id, Reverse @ ss[[2;; ;;2]]];
+    (* {species, level, sheer/dagger} *)
+    cc = Append[ss[[1;; ;;2]], Dagger @ Keys[theKetTrim @ vv]];
+    dd = Dagger @ Reverse @ Map[Reverse, Rest @ cc];
+    cc = Catenate @ Reverse @ MapIndexed[theFermionCode, Reverse @ cc];
+    dd = Catenate @ MapIndexed[theFermionCode, dd];
+    ff = Join[dd, cc] /. rr;
     nn = Length[ff];
     ff = Table[
-      {i, j} -> theFermiM[mat][ff[[i]], ff[[j]]],
+      {i, j} -> theFermiM[mm][ff[[i]], ff[[j]]],
       {i, nn},
       {j, i+1, nn}
     ];
-    mm = SymmetrizedArray[Flatten[ff, 1], {nn, nn}, Antisymmetric[{1, 2}]];
-    Pfaffian[mm]
+    Pfaffian @ SymmetrizedArray[Flatten[ff, 1], {nn, nn}, Antisymmetric[{1, 2}]]
   ]
+
+
+theFermionCode::usage = "theFermionCode[...] ..."
+
+theFermionCode[cc:{__?AnyFermionQ}, {k_Integer}] :=
+  theFermionCode[#, k]& /@ cc
+
+theFermionCode[c_?FermionQ, k_Integer] := {c, k, 0}
+
+theFermionCode[HoldPattern @ Dagger[c_?FermionQ], k_Integer] := {c, k, 1}
 
 
 theFermiM::usage = "theFermiM[mat][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
-(* input form: {pos, bare/dressed, sheer/dagger} *)
-theFermiM[mat_?MatrixQ][{_, _, 1}, {_, _, _}] = 0
+(* input: {species, level, sheer/dagger} *)
+theFermiM[mm_][{_, _, 1}, {_, _, _}] = 0
 
-theFermiM[mat_?MatrixQ][{_, _, 0}, {_, _, 0}] = 0
+theFermiM[mm_][{_, _, 0}, {_, _, 0}] = 0
 
-theFermiM[mat_?MatrixQ][{a_, 0, 0}, {a_, 0, 1}] = 1
-
-theFermiM[mat_?MatrixQ][{a_, 0, 0}, {b_, 0, 1}] = 0
-
-theFermiM[mat_?MatrixQ][{a_, 0, 0}, {b_, 1, 1}] := Conjugate[mat[[b, a]]]
-
-theFermiM[mat_?MatrixQ][{a_, 1, 0}, {b_, 0, 1}] := mat[[a, b]]
-
-theFermiM[mat_?MatrixQ][{a_, 1, 0}, {a_, 1, 1}] = 1
-
-theFermiM[mat_?MatrixQ][{a_, 1, 0}, {b_, 1, 1}] = 0
+theFermiM[mm:{__?MatrixQ}][{a_, i_, 0}, {b_, j_, 1}] := Dot[mm[[i]], Topple @ mm[[j]]][[a, b]]
 
 (**** </theWickFermi> ****)
+
+
+(**** <WickLogarithmicNegtivity> ****)
+
+(* See also: Shapourian and Ryu (2017, 2019) *)
+
+WickLogarithmicNegativity::usage = "WickLogarithmicNegativity[{grn,anm}, {k1,k2,\[Ellipsis]}] returns the fermionic negativity over modes k1, k2, \[Ellipsis] of the fermionic Gaussian states characterized by the Green's function grn (in an L\[Times]L matrix for L fermion modes) and anomalous Green's function anm (also in an L\[Times]L matrix).\nWickLogarithmicNegativity[grn, {k1,k2,\[Ellipsis]}] is equivalent to WickLogarithmicNegativity[{grn,0}, {k1,k2,\[Ellipsis]}]."
+
+WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}] :=
+  WickTimeReversalMoment[1/2, grn, kk]
+
+WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := 
+  WickTimeReversalMoment[1/2, {grn, anm}, kk]
+
+(**** </WickLogarithmicNegtivity> ****)
+
+
+(**** <WickTimeReversalMoment> ****)
+
+(* See also: Shapourian and Ryu (2017, 2019) *)
+
+WickTimeReversalMoment::usage = "WickTimeReversalMoment[\[Alpha], {grn,anm}, {k1,k2,\[Ellipsis]}] returns the \[Alpha]th moment of partial time reversal over the fermion modes (species) k1, k2, \[Ellipsis] for the fermionic Gaussian state characterized by the Green's funciton grn (in an L\[Times]L matrix for L fermion modes) and anomalous Green's function anm (also in an L\[Times]L matrix).\nWickTimeReversalMoment[\[Alpha], grn, {k1,k2,\[Ellipsis]}] is equivalent to WickTimeReversalMoment[\[Alpha], {grn,0}, {k1,k2,\[Ellipsis]}]."
+
+WickTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}] :=
+  WickTimeReversalMoment[alpha, {grn, Zero[Dimensions @ grn]}, kk]
+
+WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := Module[
+  { dd = Length[grn],
+    gg, zr, id, xx, zz, uu, ww, pf, dgn, off
+  },
+  zr = Zero[dd, dd];
+  id = One[dd];
+  xx = CircleTimes[ThePauli[1], id];
+  zz = CircleTimes[ThePauli[3], id];
+  
+   (* \Gamma *)
+   gg = ArrayFlatten @ {
+    {id - grn, anm},
+    {Topple @ anm, Transpose[grn] - id}
+  };
+  pf = Power[Pfaffian[Inverse[gg.xx]], 2];
+
+  (* \Omega of the density operator \rho *)
+  ww = Inverse[gg] - zz;
+
+  uu = SparseArray[
+    Flatten @ {
+      Thread[Transpose@{kk, dd + kk} ->  I],
+      Thread[Transpose@{dd + kk, kk} -> -I],
+      Thread[Transpose@{kk, kk} -> 0],
+      Thread[Transpose@{dd + kk, dd + kk} -> 0],
+      {i_, i_} -> 1,
+      {_, _} -> 0
+    },
+    {2*dd, 2*dd}
+  ];
+  (* \Omega of partial TR *)
+  ww = Topple[uu] . ww . uu;
+
+  dgn = CirclePlus[ww[[;;dd, ;;dd]], ww[[dd+1;;, dd+1;;]]];
+  off = ArrayFlatten @ {
+    {zr, ww[[;;dd, dd+1;;]]},
+    {ww[[dd+1;;, ;;dd]], zr}
+  };
+  pf = Pfaffian[(off - zz).xx] / pf;
+
+  (* effective \Omega of \Xi *)
+  ww = off + dgn . Inverse[zz - off] . dgn;
+  pf = pf * Pfaffian[xx.(ww + zz)];
+
+  (* effective \Gamma *)
+  gg = Inverse[ww + zz];
+  (* effective Green's function Gij *)
+  gg = CircleTimes[ThePauli[10], id] - gg;
+
+  (* Recall the particle-hole symmetry. *)
+  gg = Take[Eigenvalues @ gg, dd];
+  Total[Log[2, Power[gg, alpha] + Power[1-gg, alpha]]] + Log[2, Power[pf, alpha]]
+]
+
+(**** </WickTimeReversalMoment> ****)
 
 
 End[]

@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.15
+
+- New functions FermionTranspose, FermionTimeReversal, WickTimeReversalMoment, WickLogarithmicNegativity.
+
 ## 3.3.14
 
 - WickState and WickExpectation support fermion pairing.
