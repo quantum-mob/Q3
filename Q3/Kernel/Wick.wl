@@ -11,43 +11,44 @@ Begin["`Private`"]
 
 (**** <WickState> ****)
 
-WickState::usage = "WickState[mat, <|c1->v1, c2->v2, \[Ellipsis], cn->vn|>] represents a many-body state occupying the dressed fermion modes dj related to the bare fermion modes ci by the unitary matrix mat.\nWickState[{u, v}, <|c1->v1, c2->v2, \[Ellipsis], cn->vn|>] represents a many-body state with occupation v1, \[Ellipsis], vn of fermion modes c1, \[Ellipsis], cn that evolves in accordance with the 2l\[Times]2l unitary matrix which comprises blocks u, v, v* and u*."
-
+WickState::usage = "WickState[spec, <|c1->n1, c2->n2, \[Ellipsis], cm->nm|>] represents a many-body state of a system of m fermionic modes c1, c2, \[Ellipsis], cm that initially occupy the modes with occupation number n1, n2, \[Ellipsis], nm.\nFor details of spec, see the Help documentation."
 
 WickState /:
-MakeBoxes[vec:WickState[mat_?MatrixQ, aa_Association], fmt_] :=
+MakeBoxes[vec:WickState[spec:PatternSequence[PatternSequence[_?MatrixQ, {__?AnyFermionQ}]..., _?MatrixQ],aa_Association], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     WickState, vec, None,
     { BoxForm`SummaryItem @ {"Bare modes: ", Keys @ aa},
-      BoxForm`SummaryItem @ {"Occupation: ", Values @ aa}
+      BoxForm`SummaryItem @ {"Occupation: ", Values @ aa},
+      BoxForm`SummaryItem @ {"Stages: ", (Length[{spec}]+1)/2}
     },
-    { BoxForm`SummaryItem @ { "Transformation: ",
-        MatrixForm[mat[[;;UpTo[8], ;;UpTo[8]]]] }
+    { BoxForm`SummaryItem @ { "Transformations: ",
+        Map[MatrixForm[#[[;;UpTo[4], ;;UpTo[4]]]]&, {spec}[[1;; ;;2]]] }
     },
     fmt, "Interpretable" -> Automatic ]
 
 WickState /:
-MakeBoxes[vec:WickState[{uu_?MatrixQ, vv_?MatrixQ}, aa_Association], fmt_] :=
+MakeBoxes[vec:WickState[spec:PatternSequence[PatternSequence[{_?MatrixQ, _?MatrixQ}, {__?AnyFermionQ}]..., {_?MatrixQ, _?MatrixQ}],aa_Association], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     WickState, vec, None,
     { BoxForm`SummaryItem @ {"Bare modes: ", Keys @ aa},
-      BoxForm`SummaryItem @ {"Occupation: ", Values @ aa}
+      BoxForm`SummaryItem @ {"Occupation: ", Values @ aa},
+      BoxForm`SummaryItem @ {"Stages: ", (Length[{spec}]+1)/2}
     },
-    { BoxForm`SummaryItem @ { "Transformation (U part): ",
-        MatrixForm[uu[[;;UpTo[8], ;;UpTo[8]]]] },
-      BoxForm`SummaryItem @ { "Transformation (V part): ",
-        MatrixForm[vv[[;;UpTo[8], ;;UpTo[8]]]] }
+    { BoxForm`SummaryItem @ { "Transformations: ",
+        Map[MatrixForm[#[[;;UpTo[4], ;;UpTo[4]]]]&, {spec}[[1;; ;;2]], {2}] }
     },
     fmt, "Interpretable" -> Automatic ]
 
-WickState[any_, Ket[a_Association]] := WickState[any, a]
+WickState[any__, Ket[a_Association]] := WickState[any, a]
+
+WickState[pre___, op_Multiply, post___] := WickState[pre, List @@ op, post]
 
 (**** </WickState> ****)
 
 
 (**** <WickExpectation> ****)
 
-WickExpectation::usage = "WickExpectation[expr, mat, assoc] calculates the expectation value of a polynomial of fermion creation and annihilation operators with respect to WickState[mat, assoc] efficiently based on the Wick theorem.\nWickExpectation[expr, {u, v}, assoc] calculates the expectation value of a polynomial expr of fermionic creation and annihilation operators with respect to WickState[{u, v}, assoc] efficiently based on the Wick theorem."
+WickExpectation::usage = "WickExpectation[expr, spec] calculates the expectation value of a polynomial of fermion creation and annihilation operators with respect to WickState[spec] efficiently based on the Wick theorem.\nFor details of spec, see WickState."
 
 WickExpectation[c_, any__, Ket[a_Association]] := WickExpectation[c, any, a]
 
@@ -95,7 +96,7 @@ theWickNambu[ss:{PatternSequence[{__?AnyFermionQ}, {_?MatrixQ, _?MatrixQ}]..}, v
       zr = Zero[Length @ vv, Length @ vv],
       bb, cc, ff, nn, mm },
     mm = FoldList[theNambuDot, {id, zr}, Reverse @ ss[[2;; ;;2]]];
-    (* {species, level, sheer/dagger} *)
+    (* {level, species, sheer/dagger} *)
     cc = Append[ss[[1;; ;;2]], Dagger @ Keys[theKetTrim @ vv]];
     dd = Dagger @ Reverse @ Map[Reverse, Rest @ cc];
     cc = Catenate @ Reverse @ MapIndexed[theFermionCode, Reverse @ cc];
@@ -119,16 +120,16 @@ theNambuDot[{u1_, v1_}, {u2_, v2_}] :=
 
 theNambuM::usage = "theNambuM[mm][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
-(* input form: {species, level, sheer/dagger} *)
+(* input form: {level, species, sheer/dagger} *)
 (* mm:{{_?MatrixQ, _?MatrixQ}..} *)
 
-theNambuM[mm_][{a_, i_, 0}, {b_, j_, 0}] := Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]]
+theNambuM[mm_][{i_, a_, 0}, {j_, b_, 0}] := Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]]
 
-theNambuM[mm_][{a_, i_, 0}, {b_, j_, 1}] := Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]]
+theNambuM[mm_][{i_, a_, 0}, {j_, b_, 1}] := Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]]
 
-theNambuM[mm_][{a_, i_, 1}, {b_, j_, 0}] := Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]]
+theNambuM[mm_][{i_, a_, 1}, {j_, b_, 0}] := Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]]
 
-theNambuM[mm_][{a_, i_, 1}, {b_, j_, 1}] := Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]]
+theNambuM[mm_][{i_, a_, 1}, {j_, b_, 1}] := Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]]
 
 (**** </theWickNambu> ****)
 
@@ -143,7 +144,7 @@ theWickFermi[ss:{PatternSequence[{__?AnyFermionQ}, _?MatrixQ]..}, vv_Association
       id = One[Length @ vv],
       bb, cc, ff, nn, mm },
     mm = FoldList[Dot, id, Reverse @ ss[[2;; ;;2]]];
-    (* {species, level, sheer/dagger} *)
+    (* {level, species, sheer/dagger} *)
     cc = Append[ss[[1;; ;;2]], Dagger @ Keys[theKetTrim @ vv]];
     dd = Dagger @ Reverse @ Map[Reverse, Rest @ cc];
     cc = Catenate @ Reverse @ MapIndexed[theFermionCode, Reverse @ cc];
@@ -164,19 +165,19 @@ theFermionCode::usage = "theFermionCode[...] ..."
 theFermionCode[cc:{__?AnyFermionQ}, {k_Integer}] :=
   theFermionCode[#, k]& /@ cc
 
-theFermionCode[c_?FermionQ, k_Integer] := {c, k, 0}
+theFermionCode[c_?FermionQ, k_Integer] := {k, c, 0}
 
-theFermionCode[HoldPattern @ Dagger[c_?FermionQ], k_Integer] := {c, k, 1}
+theFermionCode[HoldPattern @ Dagger[c_?FermionQ], k_Integer] := {k, c, 1}
 
 
 theFermiM::usage = "theFermiM[mat][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
-(* input: {species, level, sheer/dagger} *)
+(* input: {level, species, sheer/dagger} *)
 theFermiM[mm_][{_, _, 1}, {_, _, _}] = 0
 
 theFermiM[mm_][{_, _, 0}, {_, _, 0}] = 0
 
-theFermiM[mm:{__?MatrixQ}][{a_, i_, 0}, {b_, j_, 1}] := Dot[mm[[i]], Topple @ mm[[j]]][[a, b]]
+theFermiM[mm:{__?MatrixQ}][{i_, a_, 0}, {j_, b_, 1}] := Dot[mm[[i]], Topple @ mm[[j]]][[a, b]]
 
 (**** </theWickFermi> ****)
 

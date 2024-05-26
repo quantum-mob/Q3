@@ -3,6 +3,7 @@
 ## 3.3.15
 
 - New functions FermionTranspose, FermionTimeReversal, WickTimeReversalMoment, WickLogarithmicNegativity.
+- Enhanced WickState and WickExpectaion.
 
 ## 3.3.14
 
