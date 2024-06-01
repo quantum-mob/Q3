@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.17
+
+- New function BlockEncoding
+
 ## 3.3.15
 
 - New functions FermionTranspose, FermionTimeReversal, WickTimeReversalMoment, WickLogarithmicNegativity.

@@ -59,10 +59,10 @@ End[]
 
 SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
 
-(* Users are allowed to change variables. *)
+(* Users are allowed to change global variables. *)
 Unprotect["`$*"];
 
-(* Too dangerous to allow users to change these. *)
+(* Too dangerous to change these global variables. *)
 Protect[$GarnerPatterns, $ElaborationPatterns];
 
 EndPackage[]

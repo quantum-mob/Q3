@@ -10,6 +10,8 @@ BeginPackage["Q3`"]
 
 { VertexEmbedding };
 
+{ BlockEncoding };
+
 Begin["`Private`"]
 
 (**** <BasisEmbedding> ****)
@@ -161,6 +163,97 @@ VertexEmbedding[g_Graph, ss:{__?QubitQ}] :=
 
 (**** </VertexEmbedding> ****)
 
+
+(**** <BlockEncoding> ****)
+
+BlockEncoding::usage = "BlockEncoding[mat, {s1,s2,\[Ellipsis]}, {a1,a2,\[Ellipsis]}] represents the block encoding of matrix mat, which representing an operator on the system register {s1,s2,\[Ellipsis]}, using ancilla register {a1,a2,\[Ellipsis]}."
+
+BlockEncoding /:
+MakeBoxes[op:BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    BlockEncoding, vec, None,
+    { BoxForm`SummaryItem @ {"System Register: ", ss},
+      BoxForm`SummaryItem @ {"Ancilla Register: ", aa}
+    },
+    { BoxForm`SummaryItem @ {"Matrix: ", MatrixForm @ mat[[;;UpTo[4], ;;UpTo[4]]]}
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+
+BlockEncoding[mat_, ss:{__?QubitQ}, a_?QubitQ, opts___?OptionQ] :=
+  BlockEncoding[mat, ss, a @ {$}, opts]
+
+BlockEncoding[mat_, s_?QubitQ, aa:{__?QubitQ}, opts___?OptionQ] :=
+  BlockEncoding[mat, s @ {$}, aa, opts]
+
+BlockEncoding[mat_, s_?QubitQ, a_?QubitQ, opts___?OptionQ] :=
+  BlockEncoding[mat, s @ {$}, a @ {$}, opts]
+
+BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, opts___?OptionQ] :=
+  BlockEncoding[mat, FlavorNone @ ss, FlavorNone @ aa, opts] /;
+  Not @ FlavorNoneQ @ Join[ss, aa]
+
+
+BlockEncoding /:
+Expand @ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ] := Module[
+  { uu, dd, vv, mm },
+  {uu, dd, vv} = SingularValueDecomposition[mat];
+  dd = Diagonal[dd];
+  dd = dd * (Last[aa][3]) + Sqrt[1-dd^2] * (Last[aa][1]);
+  uu = ExpressionFor[uu, ss];
+  vv = ExpressionFor[Topple @ vv, ss];
+  QuantumCircuit[
+    {vv, "Label" -> Superscript["W", "\[Dagger]"]},
+    UniformlyControlledGate[ss, dd, "Label" -> "\[CapitalOmega]"],
+    {uu, "Label" -> "V"}
+  ]
+]
+
+
+BlockEncoding /:
+Matrix @ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ] := Module[
+  { uu, dd, vv, mm },
+  {uu, dd, vv} = SingularValueDecomposition[mat];
+  mm = DiagonalMatrix @ Sqrt[1 - Diagonal[dd]^2];
+  dd = ArrayFlatten @ {
+    {dd,  mm},
+    {mm, -dd}
+  };
+  mm = CirclePlus[uu, uu] . dd . CirclePlus[Topple @ vv, Topple @ vv];
+  CircleTimes[One[Power[2, Length[aa]-1]], mm]
+]
+
+BlockEncoding /:
+Matrix[op:BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ], tt:{__?SpeciesQ}] :=
+  MatrixEmbed[Matrix[op], Join[aa, ss], tt]
+
+BlockEncoding /:
+Elaborate[op:BlockEncoding[_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ]] :=
+  ExpressionFor[Matrix[op], Join[aa, ss]]
+
+
+BlockEncoding /:
+ParseGate[ 
+  BlockEncoding[_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, opts___?OptionQ], 
+  more___?OptionQ
+] := 
+  Module[
+    { new },
+    new = FilterRules[
+      { more, opts,
+        "ControlShape" -> "Oval",
+        "ControlLabel" -> "enc",
+        "ControlLabelAngle" -> Pi/2,
+        "Label" -> "M"
+      },
+      Options @ Gate
+    ];
+    Gate[aa, ss, new]
+  ]
+
+(**** </BlockEncoding> ****)
 
 End[]
 

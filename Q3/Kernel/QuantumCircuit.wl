@@ -646,11 +646,20 @@ ParseGate[
 ParseGate[
   UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ],
   more___?OptionQ
-] :=
-  Gate[ cc, Qubits @ tt, more, opts,
-    "ControlShape" -> "MixedDot",
-    "Label" -> "U"
+] := Module[
+  { lbl = Lookup[Flatten @ {more, opts}, "Label"] },
+  lbl = Switch[ lbl,
+    _List, Switch[First @ lbl, _Subscript, First @ First @ lbl, _, First @ lbl],
+    _?MissingQ, "U",
+    Automatic, "U",
+    _, lbl
+  ];
+  Gate[ cc, Qubits @ tt,
+    "Label" -> Subscript[lbl, "\[Ellipsis]"],
+    more, opts,
+    "ControlShape" -> "MixedDot"
   ]
+]
 
 
 ParseGate[

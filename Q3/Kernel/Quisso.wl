@@ -1808,13 +1808,24 @@ Dagger @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] :=
   UniformlyControlledGate[cc, Dagger[Reverse @ tt], opts]
 
 UniformlyControlledGate /:
-Expand @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] :=
+Expand @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] := Module[
+  { nn = Power[2, Length @ cc],
+    mint = Lookup[Flatten @ {opts}, "Label"] },
+  mint = Switch[ mint,
+    None, Table[None, nn],
+    _?MissingQ, {},
+    _List, PadRight[mint, nn, mint],
+    Automatic, Thread @ Subscript["U", Range[nn]-1],
+    _, Thread @ Subscript[mint, Range[nn]-1]
+  ];
   QuantumCircuit @@ ReleaseHold @ Thread @
   ControlledGate[
     Thread[Hold[cc] -> Tuples[{0, 1}, Length @ cc]],
-    tt, opts,
-    Thread["Label" -> Thread @ Subscript["U", Range[Power[2, Length @ cc]]-1]]
-   ]
+    tt,
+    If[mint == {}, Hold[], Thread["Label" -> mint]],
+    Hold[opts]
+  ]
+]
 
 UniformlyControlledGate /:
 Matrix[
