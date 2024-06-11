@@ -1,8 +1,20 @@
 # Release Notes
 
+## 3.3.19
+
+- Further backward compatibility issue concerning PositionLargest.
+- Bug fixes for WickExpectation.
+
+## 3.3.18
+
+- New symbol ArrayPermute.
+- Backward compatibity issue concerning PositionLargest used in Pfaffian.
+
 ## 3.3.17
 
-- New function BlockEncoding
+- New function BlockEncoding and StateForm
+- Enhanced KetCanonical
+- Bug fixes concerning State and ProductState.
 
 ## 3.3.15
 

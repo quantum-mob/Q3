@@ -207,7 +207,8 @@ Expand @ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ
   QuantumCircuit[
     {vv, "Label" -> Superscript["W", "\[Dagger]"]},
     UniformlyControlledGate[ss, dd, "Label" -> "\[CapitalOmega]"],
-    {uu, "Label" -> "V"}
+    {uu, "Label" -> "V"},
+    "Visible" -> aa
   ]
 ]
 

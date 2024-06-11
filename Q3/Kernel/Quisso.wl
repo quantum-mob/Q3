@@ -2657,9 +2657,9 @@ Multiply[pre___, Ket[bb_Association], ps:ProductState[aa_Association, ___], post
     post ]
 
 ProductState /:
-Multiply[pre___, S_?QubitQ, in:ProductState[aa_Association, ___], post___] :=
+Multiply[pre___, S_?QubitQ, in:ProductState[_Association, ___], post___] :=
   Multiply[ pre, 
-    ProductState[in, FlavorMute[S] -> TheMatrix[S] . Lookup[aa, FlavorMute @ S]],
+    ProductState[in, FlavorMute[S] -> TheMatrix[S] . in[FlavorMute @ S]],
     post ]
 
 ProductState /:
@@ -3272,7 +3272,7 @@ setQudit[x_Symbol, dim_Integer] := (
   x[j___, Rule[a_Integer, b_Integer]] := (
     Message[Qudit::range, dim, x[j,$]];
     0
-   ) /; Or[ a < 0, a >= Dimension[x], b < 0, b >= Dimension[x] ];
+  ) /; Or[ a < 0, a >= Dimension[x], b < 0, b >= Dimension[x] ];
 
   Format @ x[j___, $] :=
     Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];  
@@ -3283,21 +3283,21 @@ setQudit[x_Symbol, dim_Integer] := (
     Format @ x[j___, a_ -> b_] := Interpretation[
       SpeciesBox[ Row @ {"(", Ket[b], Bra[a], ")"}, {j}, {}],
       x[j, a -> b]
-     ],
+    ],
     True,
     Format @ x[j___, a_ -> b_] := Interpretation[
       SpeciesBox[ Row @ {Ket @ {b}, Bra @ {a}}, {j}, {}],
       x[j, a -> b]
-     ]
-   ];
+    ]
+  ];
 
   (* See Gross (2006) and Singal et al. (2023) *)
   Format[x[j___, $[{m_Integer, n_Integer}]]] := Row @ Thread @ Subsuperscript[
     {"X", "Z"},
     {Row @ Riffle[{j}, ","], Row @ Riffle[{j}, ","]},
     {m, n}
-   ];
- )
+  ];
+)
 
 
 QuditQ::usage = "QuditQ[op] returns True if op is a species representing a qudit and False otherwise."

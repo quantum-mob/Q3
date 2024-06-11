@@ -39,6 +39,17 @@ MakeBoxes[vec:WickState[spec:PatternSequence[PatternSequence[{_?MatrixQ, _?Matri
     },
     fmt, "Interpretable" -> Automatic ]
 
+
+WickState[pre___, aa:{__?AnyFermionQ}, bb:{__?AnyFermionQ}, post___] :=
+  WickState[pre, Join[aa, bb], post]
+
+WickState[pre___, {u_?MatrixQ, v_?MatrixQ}, {u_?MatrixQ, v_?MatrixQ}, post___] :=
+  WickState[pre, theNambuDot[{u, v}, {x, y}], post]
+
+WickState[pre___, u_?MatrixQ, v_?MatrixQ, post___] :=
+  WickState[pre, Dot[u, v], post]
+
+
 WickState[any__, Ket[a_Association]] := WickState[any, a]
 
 WickState[pre___, op_Multiply, post___] := WickState[pre, List @@ op, post]
@@ -65,19 +76,25 @@ WickExpectation[z_?CommutativeQ op_, any__, vec_] :=
 WickExpectation[expr_Plus, any__, vec_] := 
   WickExpectation[#, any, vec]& /@ expr
 
-
-WickExpectation[
-  spec:PatternSequence[HoldPattern @ Multiply[__?AnyFermionQ], {_?MatrixQ, _?MatrixQ}].., 
-  vv_Association
-] :=
-  theWickNambu[{spec} /. Multiply -> List, vv]
-
-WickExpectation[spec:PatternSequence[{__?AnyFermionQ}, {_?MatrixQ, _?MatrixQ}].., vv_Association] :=
-  theWickNambu[{spec}, vv]
+WickExpectation[pre___, op_Multiply, post___] :=
+  WickExpectation[pre, List @@ op, post]
 
 
-WickExpectation[spec:PatternSequence[HoldPattern @ Multiply[__?AnyFermionQ], _?MatrixQ].., vv_Association] :=
-  theWickFermi[{spec} /. Multiply -> List, vv]
+WickExpectation[aa:{__?AnyFermionQ}, bb:{__?AnyFermionQ}.., Shortest[post___]] :=
+  WickExpectation[Join[Dagger @ Reverse @ Join[bb], aa, Join[bb]], post]
+
+WickExpectation[pre__, aa:{__?AnyFermionQ}, bb:{__?AnyFermionQ}.., Shortest[post___]] :=
+  WickExpectation[pre, Join[aa, bb], post]
+
+WickExpectation[pre___, {u_?MatrixQ, v_?MatrixQ}, {u_?MatrixQ, v_?MatrixQ}, post___] :=
+  WickExpectation[pre, theNambuDot[{u, v}, {x, y}], post]
+
+WickExpectation[pre___, u_?MatrixQ, v_?MatrixQ, post___] :=
+  WickExpectation[pre, Dot[u, v], post]
+
+
+WickExpectation[spec:({__?AnyFermionQ} | {_?MatrixQ, _?MatrixQ}).., vv_Association] :=
+  theWickNambu[Keys @ vv][spec, Dagger @ Keys[theKetTrim @ vv]]
 
 WickExpectation[spec:PatternSequence[{__?AnyFermionQ}, _?MatrixQ].., vv_Association] :=
   theWickFermi[{spec}, vv]
@@ -89,22 +106,22 @@ WickExpectation[spec:PatternSequence[{__?AnyFermionQ}, _?MatrixQ].., vv_Associat
 
 theWickNambu::usage = "WickNambu[...] ... "
 
-theWickNambu[ss:{PatternSequence[{__?AnyFermionQ}, {_?MatrixQ, _?MatrixQ}]..}, vv_Association] :=
+theWickNambu[cc:{__?FermionQ}][obs:{__?AnyFermionQ}, spec:({__?AnyFermionQ} | {_?MatrixQ, _?MatrixQ})..] :=
   Module[
-    { rr = Thread[Keys[vv] -> Range[Length @ vv]],
-      id = One[Length @ vv],
-      zr = Zero[Length @ vv, Length @ vv],
-      bb, cc, ff, nn, mm },
-    mm = FoldList[theNambuDot, {id, zr}, Reverse @ ss[[2;; ;;2]]];
-    (* {level, species, sheer/dagger} *)
-    cc = Append[ss[[1;; ;;2]], Dagger @ Keys[theKetTrim @ vv]];
-    dd = Dagger @ Reverse @ Map[Reverse, Rest @ cc];
-    cc = Catenate @ Reverse @ MapIndexed[theFermionCode, Reverse @ cc];
-    dd = Catenate @ MapIndexed[theFermionCode, dd];
-    ff = Join[dd, cc] /. rr;
+    { rr = Thread[cc -> Range[Length @ cc]],
+      id = One[Length @ cc],
+      zr = Zero[Length @ cc, Length @ cc],
+      mm = Cases[{spec}, {_?MatrixQ, _?MatrixQ}],
+      ss = SequenceSplit[{spec}, {{_?MatrixQ, _?MatrixQ}}],
+      tt, ff, nn },
+    mm = FoldList[theNambuDot[#2, #1]&, {id, zr}, Reverse @ mm];
+    ss = Flatten[Reverse @ MapIndexed[theWickCode, Reverse @ ss], 2];
+    tt = dagWickCode[ss];
+    ff = Join[tt, theWickCode[obs, {Length @ mm}], ss];
+    ff = Join[tt, theWickCode[obs, {Length @ mm}], ss] /. rr;
     nn = Length[ff];
     ff = Table[
-      {i, j} -> theNambuM[mm][ff[[i]], ff[[j]]],
+      {i, j} -> nambuContract[mm][ff[[i]], ff[[j]]],
       {i, nn},
       {j, i+1, nn}
     ];
@@ -112,26 +129,46 @@ theWickNambu[ss:{PatternSequence[{__?AnyFermionQ}, {_?MatrixQ, _?MatrixQ}]..}, v
   ]
 
 
-theNambuDot::usage = "theNambuDot[{u1,v1}, {u2,v2}] ..."
-
-theNambuDot[{u1_, v1_}, {u2_, v2_}] :=
-  {u1.u2 + Conjugate[v1].v2, v1.u2 + Conjugate[u1].v2}
-
-
-theNambuM::usage = "theNambuM[mm][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
+nambuContract::usage = "nambuContract[mm][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
 (* input form: {level, species, sheer/dagger} *)
 (* mm:{{_?MatrixQ, _?MatrixQ}..} *)
 
-theNambuM[mm_][{i_, a_, 0}, {j_, b_, 0}] := Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]]
+nambuContract[mm_][{i_, a_, 0}, {j_, b_, 0}] := Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]]
 
-theNambuM[mm_][{i_, a_, 0}, {j_, b_, 1}] := Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]]
+nambuContract[mm_][{i_, a_, 0}, {j_, b_, 1}] := Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]]
 
-theNambuM[mm_][{i_, a_, 1}, {j_, b_, 0}] := Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]]
+nambuContract[mm_][{i_, a_, 1}, {j_, b_, 0}] := Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]]
 
-theNambuM[mm_][{i_, a_, 1}, {j_, b_, 1}] := Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]]
+nambuContract[mm_][{i_, a_, 1}, {j_, b_, 1}] := Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]]
 
 (**** </theWickNambu> ****)
+
+
+dagWickCode::usage = "dagWickCodes[...] ..."
+
+dagWickCode[cc:{{_, _, _}..}] := Reverse @ Map[dagWickCode, cc]
+
+dagWickCode[cc:{k_, c_, d_}] := {k, c, Mod[d+1, 2]}
+
+
+theWickCode::usage = "theWickCode[...] ..."
+
+theWickCode[cc:{__?AnyFermionQ}, {t_Integer}] :=
+  Map[theWickCode[#, t]&, cc]
+
+theWickCode[cc:{{__?AnyFermionQ}..}, {t_Integer}] :=
+  Map[theWickCode[#, t]&, cc, {2}]
+
+theWickCode[c_?FermionQ, t_Integer] := {t, c, 0}
+
+theWickCode[HoldPattern @ Dagger[c_?FermionQ], t_Integer] := {t, c, 1}
+
+
+theNambuDot::usage = "theNambuDot[{u1,v1}, {u2,v2}] ..."
+
+theNambuDot[{u1_, v1_}, {u2_, v2_}] :=
+  {u1.u2 + Conjugate[v1].v2, v1.u2 + Conjugate[u1].v2}
 
 
 (**** <theWickFermi> ****)
@@ -143,16 +180,16 @@ theWickFermi[ss:{PatternSequence[{__?AnyFermionQ}, _?MatrixQ]..}, vv_Association
     { rr = Thread[Keys[vv] -> Range[Length @ vv]],
       id = One[Length @ vv],
       bb, cc, ff, nn, mm },
-    mm = FoldList[Dot, id, Reverse @ ss[[2;; ;;2]]];
+    mm = FoldList[Dot[#2, #1]&, id, Reverse @ ss[[2;; ;;2]]];
     (* {level, species, sheer/dagger} *)
     cc = Append[ss[[1;; ;;2]], Dagger @ Keys[theKetTrim @ vv]];
     dd = Dagger @ Reverse @ Map[Reverse, Rest @ cc];
-    cc = Catenate @ Reverse @ MapIndexed[theFermionCode, Reverse @ cc];
-    dd = Catenate @ MapIndexed[theFermionCode, dd];
+    cc = Catenate @ Reverse @ MapIndexed[theWickCode, Reverse @ cc];
+    dd = Catenate @ MapIndexed[theWickCode, dd];
     ff = Join[dd, cc] /. rr;
     nn = Length[ff];
     ff = Table[
-      {i, j} -> theFermiM[mm][ff[[i]], ff[[j]]],
+      {i, j} -> fermiContract[mm][ff[[i]], ff[[j]]],
       {i, nn},
       {j, i+1, nn}
     ];
@@ -160,24 +197,14 @@ theWickFermi[ss:{PatternSequence[{__?AnyFermionQ}, _?MatrixQ]..}, vv_Association
   ]
 
 
-theFermionCode::usage = "theFermionCode[...] ..."
-
-theFermionCode[cc:{__?AnyFermionQ}, {k_Integer}] :=
-  theFermionCode[#, k]& /@ cc
-
-theFermionCode[c_?FermionQ, k_Integer] := {k, c, 0}
-
-theFermionCode[HoldPattern @ Dagger[c_?FermionQ], k_Integer] := {k, c, 1}
-
-
-theFermiM::usage = "theFermiM[mat][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
+fermiContract::usage = "fermiContract[mat][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
 (* input: {level, species, sheer/dagger} *)
-theFermiM[mm_][{_, _, 1}, {_, _, _}] = 0
+fermiContract[mm_][{_, _, 1}, {_, _, _}] = 0
 
-theFermiM[mm_][{_, _, 0}, {_, _, 0}] = 0
+fermiContract[mm_][{_, _, 0}, {_, _, 0}] = 0
 
-theFermiM[mm:{__?MatrixQ}][{i_, a_, 0}, {j_, b_, 1}] := Dot[mm[[i]], Topple @ mm[[j]]][[a, b]]
+fermiContract[mm:{__?MatrixQ}][{i_, a_, 0}, {j_, b_, 1}] := Dot[mm[[i]], Topple @ mm[[j]]][[a, b]]
 
 (**** </theWickFermi> ****)
 

@@ -5,7 +5,8 @@ BeginPackage["Q3`"]
 
 { TheKet, TheBra };
 
-{ State, Operator };
+{ State, StateForm,
+  Operator };
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
   KetFactor, KetPurge, KetSort,
@@ -71,6 +72,9 @@ BeginPackage["Q3`"]
 { Parity, ParityValue, ParityEvenQ, ParityOddQ };
 
 { TensorFlatten, Tensorize };
+
+{ ArrayPermute };
+
 { PartialTrace, PartialTranspose };
 { ReducedMatrix, Reduced };
 
@@ -92,6 +96,11 @@ BeginPackage["Q3`"]
 
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
+
+
+If[ $VersionNumber < 13.1,
+  { BlockDiagonalMatrix };
+];
 
 
 Begin["`Private`"]
@@ -538,12 +547,32 @@ KetCanonical::usage = "KetCanonical[expr] returns the canonical form of ket expr
 
 SetAttributes[KetCanonical, Listable]
 
-KetCanonical[expr_] := With[
-  { v = First @ Union @ KetRegulate @ Cases[expr, _Ket, Infinity] },
-  Garner[expr / (Dagger[v] ** expr)]
- ] /; Not @ FreeQ[expr, _Ket]
+KetCanonical[State[v_?VectorQ, rest__]] :=
+  State[theCanonicalForm @ v, rest]
+
+KetCanonical[expr_?fKetQ] := Elaborate[
+  KetCanonical[StateForm @ expr]
+]
+
+KetCanonical[expr_?fPauliKetQ] := ExpressionFor[
+  theCanonicalForm[Matrix @ expr]
+]
 
 KetCanonical[any_] = any
+
+
+theCanonicalForm::usage = "theCanonicalForm[list] returns the same list with the first non-zero element normalized to 1."
+
+(* For some unknown reason, SelectFirst does not work as expected for SparseArray. *)
+theCanonicalForm[in_SparseArray?VectorQ] := With[
+  { val = SelectFirst[Values @ Most @ ArrayRules @ in, Not @* ZeroQ] },
+  If[MissingQ[val], in, in / val]
+]
+
+theCanonicalForm[in_?VectorQ] := With[
+  { val = SelectFirst[in, Not @* ZeroQ] },
+  If[MissingQ[val], in, in / val]
+]
 
 (**** </KetCanonical> ****)
 
@@ -640,6 +669,8 @@ theAffect[ket_, op_Multiply] := theAffect[ket, Sequence @@ Reverse[op]]
 theAffect[ket_, op_] := Garner @ Multiply[op, ket]
 
 
+(**** <fPauliKetQ> ****)
+
 fPauliKetQ::usage = "fPauliKetQ[expr] returns True if expr is a valid expression for a state vector of a system of unlabelled qubits.\nPauli[\[Ellipsis]] operates consistently on such an expression.";
 
 HoldPattern @ fPauliKetQ[Ket[{(0|1)..}]] = True
@@ -658,10 +689,12 @@ HoldPattern @ fPauliKetQ[expr_] := False /; FreeQ[expr, Ket[(0 | 1) ..]]
 HoldPattern @ fPauliKetQ[expr_] := False /;
   Not[Equal @@ Length /@ Cases[{expr}, Ket[kk_List] :> kk, Infinity]]
 
+(**** </fPauliKetQ> ****)
+
 
 (**** <fKetQ> ****)
 
-fKetQ::usage = "fKetQ[expr] returns True if expr is a valid expression for a state vector of a system of labelled qubits.";
+fKetQ::usage = "fKetQ[expr] returns True if expr is a valid expression for a state vector of labelled qubits.";
 
 HoldPattern @ fKetQ[Ket[_Association]] = True
 
@@ -736,7 +769,7 @@ SetAttributes[{Ket, Bra}, ReadProtected]
 If[ $VersionNumber > 13.2,
   SyntaxInformation[Ket] = {"ArgumentsPattern" -> {___}};
   SyntaxInformation[Bra] = {"ArgumentsPattern" -> {___}};
- ]
+]
 
 Ket /:
 MakeBoxes[expr:Ket[v_Association], StandardForm|TraditionalForm] := With[
@@ -1374,20 +1407,6 @@ State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ] := With[
 
 
 State /:
-Times[z_, State[v_, ss_, opts___?OptionQ]] :=
-  State[z * v, ss, opts]
-
-State /:
-Plus[State[a_, ss_, opts___?OptoinQ], State[b_, ss_, more___?OptionQ]] :=
-  State[a + b, ss, opts, more]
-
-
-State /:
-CircleTimes[vv__State] :=
-  State[CircleTimes @@ Map[First, {vv}], Flatten @ Map[Part[#, 2]&, {vv}], Flatten[Options /@ {vv}]]
-(* TODO: To support fermions *)
-
-State /:
 Matrix[ State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{___?QubitQ} ] :=
   MatrixEmbed[vec, ss, tt]
 
@@ -1395,17 +1414,52 @@ State /:
 Elaborate[ State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ] ] :=
   ExpressionFor[vec, ss]
 
+
+State /:
+Times[z_, State[v_, ss_, opts___?OptionQ]] :=
+  State[z * v, ss, opts]
+
+State /:
+Plus[State[a_, ss_, opts___?OptoinQ], State[b_, ss_, more___?OptionQ]] :=
+  State[a + b, ss, opts, more]
+
+State /:
+Plus[State[a_, ss:{__?SpeciesQ}, opts___?OptoinQ], State[b_, tt:{__?SpeciesQ}, more___?OptionQ]] :=
+  With[
+    { all = Union[ss, tt] },
+    State[MatrixEmbed[a, ss, all] + MatrixEmbed[b, tt, all], opts, more]
+  ]
+
+
+State::dupe = "Species `` appear in multiple states to be multiplied or tensor-producted."
+
+State /:
+CircleTimes[vv__State] := Module[
+  { rr = Flatten[Options /@ {vv}],
+    ss = Map[Part[#, 2]&, {vv}],
+    dd },
+  dd = Intersection @@ ss;
+  If[ Length[dd] > 0,
+    Message[State::dupe, dd];
+    ss = Union @@ ss;
+    Return @ State[Zero[Times @@ Dimension[ss]], ss, rr]
+  ];
+  State[CircleTimes @@ Map[First, {vv}], Flatten @ ss, rr]
+]
+(* TODO: To support fermions *)
+
 State /:
 Multiply[ pre___, v_State, ww__State, Shortest[post___] ] :=
   Multiply[pre, CircleTimes[v, ww], post]
 
 State /:
-Multiply[ pre___, v_Ket, w_State, Shortest[post___] ] :=
-  Multiply[pre, CircleTimes[StateForm @ v, w], post]
+Multiply[ pre___, w_Ket, v_State, Shortest[post___] ] :=
+  Multiply[pre, CircleTimes[StateForm @ w, v], post]
 
 State /:
 Multiply[ pre___, v_State, w_Ket, Shortest[post___] ] :=
   Multiply[pre, CircleTimes[v, StateForm @ w], post]
+
 
 State /:
 Multiply[pre___, op:Except[_Plus|_Times], State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], post___] :=
@@ -1413,22 +1467,27 @@ Multiply[pre___, op:Except[_Plus|_Times], State[vec_?VectorQ, ss:{__?SpeciesQ}, 
     { tt = Agents @ {op, ss} },
     Multiply[
       pre,
-      State[ Matrix[op, ss] . MatrixEmbed[vec, ss, tt], tt],
+      State[Matrix[op, tt] . MatrixEmbed[vec, ss, tt], tt],
       post
     ]
   ]
 
 
+(**** </State> ****)
+
+
+(**** <StateForm> ****)
+
 StateForm::usage = "StateForm[expr] converts the Ket expression expr to State[vec, {s1, s2, \[Ellipsis]}."
 
 StateForm[expr_?fKetQ] := With[
-  { ss = Qubits @ expr },
+  { ss = Agents @ expr },
   State[Matrix[expr, ss], ss]
 ]
 
 StateForm[vec_ProductState] := Expand[vec]
 
-(**** </State> ****)
+(**** </StateForm> ****)
 
 
 (**** <Operator> ****)
@@ -3162,7 +3221,7 @@ If[ $VersionNumber < 13.1,
     x = Catenate @ Map[Tuples] @ Transpose @ {x, y};
     SparseArray @ Thread[x -> Flatten @ new]
    ];
- ]
+];
 
 CirclePlus::usage = "a \[CirclePlus] b \[CirclePlus] c or CirclePlus[a,b,c]
 returns the direct sum of the matrices a, b, and c."
@@ -3861,6 +3920,78 @@ SchmidtForm[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
 ] /; fKetQ[expr]
 
 (**** </SchmidtDecomposition> ****)
+
+
+(**** <ArrayPermute> ****)
+
+ArrayPermute::usage = "ArrayPermute[array, perm, n] permutes the elements of array by perm at level n.\nArrayPermute[array, perm, {n1, n2, \]Ellipsis]}] performs the permutation perm at levels n1, n2, \[Ellipsis].\nArrayPermute[array, perm] or ArrayPermute[array, perm, All] is equivalent to ArrayPermute[array, perm, Range[ArrayDepth @ array]].\nThe argument perm may be specified by using TwoWayRules, Cycles or a permutation list (see PermutationList)."
+
+SyntaxInformation[ArrayPermute] = {"ArgumentsPattern" -> {_, _, _.}}
+
+ArrayPermute[obj_?ArrayQ, spec:(_TwoWayRule|_Cycles|_?PermutationListQ)] :=
+  ArrayPermute[obj, spec, Range @ ArrayDepth @ obj]
+
+ArrayPermute[obj_?ArrayQ, spec_, All] :=
+  ArrayPermute[obj, spec, Range @ ArrayDepth @ obj]
+
+ArrayPermute[obj_, spec_, n_Integer] :=
+  ArrayPermute[obj, spec, {n}]
+
+ArrayPermute[obj_, a_Integer <-> b_Integer, rest___] :=
+  ArrayPermute[obj, Cycles @ {{a, b}}, rest]
+
+ArrayPermute[obj_, perm_?PermutationListQ, rest___] :=
+  ArrayPermute[obj, PermutationCycles @ perm, rest]
+
+
+ArrayPermute[obj_, ss:{(_TwoWayRule|_Cycles|_?PermutationListQ)..}] :=
+  ArrayPermute[obj, Transpose @ {ss, Range @ Length @ ss}]
+
+ArrayPermute[obj_, ss:{{(_TwoWayRule|_Cycles|_?PermutationListQ), _Integer}..}] :=
+  Fold[ArrayPermute[#1, First @ #2, Last @ #2]&, obj, ss]
+
+
+(* structured array: symmetry preserved *)
+
+ArrayPermute[obj_SymmetrizedArray, cc_Cycles, nn:{__Integer}] :=
+  Module[
+    { dd = Most[ArrayRules @ obj] },
+    dd = Thread[xchPositions[Keys @ dd, cc, nn] -> Values[dd]];
+    SymmetrizedArray[dd, Dimensions @ obj, obj["Symmetry"]]
+  ] /; ContainsAll[nn, First[obj @ "Symmetry"]]
+
+
+(* structured array: symmetry not preserved *)
+
+ArrayPermute[obj:(_SymmetrizedArray|_SparseArray), cc_Cycles, nn:{__Integer}] := 
+  Module[
+    { dd = Most[ArrayRules @ obj] },
+    dd = Thread[xchPositions[Keys @ dd, cc, nn] -> Values[dd]];
+    SparseArray[dd, Dimensions @ obj]
+  ]
+
+
+(* dense array *)
+
+ArrayPermute[obj_List?ArrayQ, spec_, All] :=
+  ArrayPermute[obj, spec, Range[ArrayDepth @ obj]]
+
+ArrayPermute[obj_List?ArrayQ, cc_Cycles, nn:{__Integer}] :=
+  Module[
+    { rr = Thread[1 <-> nn] },
+    Fold[Transpose[Permute[Transpose[#1, #2], cc], #2]&, obj, rr]
+  ]
+
+
+(* tool *)
+
+xchPositions[pp:{{__}..}, cc_Cycles, nn:{__Integer}] := Module[
+  { rr = PermutationList[cc] },
+  rr = DeleteCases[Thread[Sort[rr] -> rr], i_ -> i_];
+  Transpose @ MapAt[ReplaceAll[rr], Transpose @ pp, List /@ nn]
+]
+
+(**** </ArrayPermute> ****)
 
 
 (**** <Tensorize> ****)

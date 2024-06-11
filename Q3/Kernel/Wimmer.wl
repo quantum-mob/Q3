@@ -5,6 +5,7 @@ BeginPackage["Q3`"]
 
 { Pfaffian, SkewTridiagonalize };
 
+
 Begin["`Private`"]
 
 (**** <Pfafian> ****)
@@ -56,6 +57,19 @@ SkewTridiagonalize[mat_?SquareMatrixQ, OptionsPattern[]] :=
 (**** </SkewTridiagonalize> ****)
 
 
+(**** <PositionLargest> ****)
+
+(* PosiitionLargest used in PfaffianLTL and SkewLTL was introduced Mathematica v13.2. *)
+
+If[ $VersionNumber < 13.2,
+  PositionLargest[list_?VectorQ] :=
+    Flatten @ Position[Normal @ list, Max @ list]
+    (* NOTE: Normal is required here for older version of Mathematica. *)
+];
+
+(**** </PositionLargest> ****)
+
+
 (**** <Method: Parlett-Reid tridiagonalization> ****)
 
 SkewLTL::usage = "SkeyLTL[mat] computes the L T L^T decomposition of skew-symmetric matrix mat using the Parlett-Reid algorithm, and returns T, L and P, where T is a tridiagonal matrix, L a unit lower triangular matrix and P a permutation matrix such that P A P^T=L T L^T."
@@ -72,7 +86,7 @@ SkewLTL[Mat_] := Module[
     ip = i + First @ PositionLargest[Abs @ A[[i+1;;, i]]];
     (* if the maximum entry is not at i+1, permute the matrix so that it is. *)
     If[i + 1 != ip, 
-      (*Interchange rows and columns in A*)
+      (* Interchange rows and columns in A *)
       A[[{i + 1, ip}, ;;]] = A[[{ip, i + 1}, ;;]]; 
       A[[;; , {i + 1, ip}]] = A[[;; , {ip, i + 1}]];
       (*interchange rows in L; this amounts to accumulating the product of individual Gauss eliminations and permutations*)
@@ -80,7 +94,7 @@ SkewLTL[Mat_] := Module[
       (*Accumulate the total permutation matrix*)
       Pv[[{i + 1, ip}]] = Pv[[{ip, i + 1}]];
     ];
-    (*Build the Gauss vector*)
+    (* Build the Gauss vector *)
     L[[i + 2 ;;, i + 1]] = A[[i + 2 ;;, i]]/A[[i + 1, i]];
     (*Row and column i are eliminated*)
     A[[i + 2 ;;, i]] = 0; A[[i, i + 2 ;;]] = 0;

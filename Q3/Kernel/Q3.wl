@@ -3,7 +3,7 @@
 If[ $VersionNumber < 12.3,
   Version::old = "Q3 requires Mathematica 12.3 or later.";
   Message[Version::old];
-]
+];
 
 BeginPackage["Q3`"]
 

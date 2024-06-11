@@ -50,6 +50,11 @@ BeginPackage["Q3`"];
 { SpechtBasis, YoungInvariantBasis };
 
 
+If[ $VersionNumber < 13.1,
+  { PermutationMatrix };
+];
+
+
 Begin["`Private`"]
 
 PermutationForm::usage = "PermutationForm[cyc] displays permutation cycles cyc in terms of \[Pi].\nPermutationForm[perm] displays perm specified in the permutation list representation in the two-list form."
@@ -582,7 +587,7 @@ If[ $VersionNumber < 13.1,
 
   PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
     Transpose @ Permute[ IdentityMatrix[n], perm ];
- ]
+];
 
 (**** </PermutationMatrix> ****)
 

@@ -230,7 +230,7 @@ QuantumCircuitTrim[ Gate[expr_, ___?OptionQ] ] = expr
 
 QuantumCircuitTrim[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
 
-QuantumCircuitTrim[ g_ ] := g
+QuantumCircuitTrim[ g_ ] = g
 
 (**** </QuantumCircuitTrim> ****)
 
