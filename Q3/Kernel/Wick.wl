@@ -108,17 +108,15 @@ theWickNambu::usage = "WickNambu[...] ... "
 
 theWickNambu[cc:{__?FermionQ}][obs:{__?AnyFermionQ}, spec:({__?AnyFermionQ} | {_?MatrixQ, _?MatrixQ})..] :=
   Module[
-    { rr = Thread[cc -> Range[Length @ cc]],
-      id = One[Length @ cc],
+    { id = One[Length @ cc],
       zr = Zero[Length @ cc, Length @ cc],
       mm = Cases[{spec}, {_?MatrixQ, _?MatrixQ}],
       ss = SequenceSplit[{spec}, {{_?MatrixQ, _?MatrixQ}}],
       tt, ff, nn },
     mm = FoldList[theNambuDot[#2, #1]&, {id, zr}, Reverse @ mm];
-    ss = Flatten[Reverse @ MapIndexed[theWickCode, Reverse @ ss], 2];
+    ss = Flatten[Reverse @ MapIndexed[theWickCode[cc], Reverse @ ss], 2];
     tt = dagWickCode[ss];
-    ff = Join[tt, theWickCode[obs, {Length @ mm}], ss];
-    ff = Join[tt, theWickCode[obs, {Length @ mm}], ss] /. rr;
+    ff = Join[tt, theWickCode[cc][obs, {Length @ mm}], ss];
     nn = Length[ff];
     ff = Table[
       {i, j} -> nambuContract[mm][ff[[i]], ff[[j]]],
@@ -131,44 +129,68 @@ theWickNambu[cc:{__?FermionQ}][obs:{__?AnyFermionQ}, spec:({__?AnyFermionQ} | {_
 
 nambuContract::usage = "nambuContract[mm][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
-(* input form: {level, species, sheer/dagger} *)
+(* input: {level, species, sheer/dagger} *)
 (* mm:{{_?MatrixQ, _?MatrixQ}..} *)
 
-nambuContract[mm_][{i_, a_, 0}, {j_, b_, 0}] := Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]]
+nambuContract[mm_][f_[i_, a_, 0], f_[j_, b_, 0]] :=
+  Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 2, b]]]
+  (* Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]] *)
 
-nambuContract[mm_][{i_, a_, 0}, {j_, b_, 1}] := Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]]
+nambuContract[mm_][f_[i_, a_, 0], f_[j_, b_, 1]] :=
+  Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 1, b]]]
+  (* Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]] *)
 
-nambuContract[mm_][{i_, a_, 1}, {j_, b_, 0}] := Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]]
+nambuContract[mm_][f_[i_, a_, 1], f_[j_, b_, 0]] :=
+  Dot[mm[[i, 2, a]], Conjugate @ mm[[j, 2, b]]]
+  (* Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]] *)
 
-nambuContract[mm_][{i_, a_, 1}, {j_, b_, 1}] := Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]]
+nambuContract[mm_][f_[i_, a_, 1], f_[j_, b_, 1]] :=
+  Dot[mm[[i, 2, a]], Conjugate @ mm[[j, 1, b]]]
+  (* Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]] *)
 
 (**** </theWickNambu> ****)
 
 
-dagWickCode::usage = "dagWickCodes[...] ..."
+(**** <theWickCode> ****)
 
-dagWickCode[cc:{{_, _, _}..}] := Reverse @ Map[dagWickCode, cc]
+theWickCode::usage = "theWickCode[rules][{c1, c2, ...}, {time}] converts each fermion operator c[k] to {time, k, 0} and Dagger[c[k]] to {time, k, 1}.\nIntended to be used with MapIndexed."
 
-dagWickCode[cc:{k_, c_, d_}] := {k, c, Mod[d+1, 2]}
+(* output: {time, species, sheer/dagger} *)
+
+theWickCode[ff:{__?FermionQ}, t_Integer] := 
+ theWickCode[Thread[cc -> Range[Length @ ff]], t]
+
+theWickCode[rr_, t_Integer][c_?FermionQ] :=
+  Append[Prepend[ReplaceAll[c, rr], t], 0]
+
+theWickCode[rr_, t_Integer][HoldPattern @ Dagger[c_?FermionQ]] :=
+  Append[Prepend[ReplaceAll[c, rr], t], 1]
 
 
-theWickCode::usage = "theWickCode[...] ..."
+theWickCode[rr_][cc:{__?AnyFermionQ}, {t_Integer}] :=
+  Map[theWickCode[rr, t], cc]
 
-theWickCode[cc:{__?AnyFermionQ}, {t_Integer}] :=
-  Map[theWickCode[#, t]&, cc]
+theWickCode[rr_][cc:{{__?AnyFermionQ}..}, {t_Integer}] :=
+  Map[theWickCode[rr, t], cc, {2}]
 
-theWickCode[cc:{{__?AnyFermionQ}..}, {t_Integer}] :=
-  Map[theWickCode[#, t]&, cc, {2}]
 
-theWickCode[c_?FermionQ, t_Integer] := {t, c, 0}
+dagWickCode::usage = "dagWickCode[...] ..."
 
-theWickCode[HoldPattern @ Dagger[c_?FermionQ], t_Integer] := {t, c, 1}
+dagWickCode[cc:{f_[_, _, _]..}] := Reverse @ Map[dagWickCode, cc]
 
+dagWickCode[f_[t_, k_, d_]] := f[t, k, Mod[d+1, 2]]
+
+(**** </theWickCode> ****)
+
+
+(**** <theNambuDot> ****)
 
 theNambuDot::usage = "theNambuDot[{u1,v1}, {u2,v2}] ..."
 
 theNambuDot[{u1_, v1_}, {u2_, v2_}] :=
   {u1.u2 + Conjugate[v1].v2, v1.u2 + Conjugate[u1].v2}
+
+(**** </theNambuDot> ****)
 
 
 (**** <theWickFermi> ****)
@@ -184,9 +206,9 @@ theWickFermi[ss:{PatternSequence[{__?AnyFermionQ}, _?MatrixQ]..}, vv_Association
     (* {level, species, sheer/dagger} *)
     cc = Append[ss[[1;; ;;2]], Dagger @ Keys[theKetTrim @ vv]];
     dd = Dagger @ Reverse @ Map[Reverse, Rest @ cc];
-    cc = Catenate @ Reverse @ MapIndexed[theWickCode, Reverse @ cc];
-    dd = Catenate @ MapIndexed[theWickCode, dd];
-    ff = Join[dd, cc] /. rr;
+    cc = Catenate @ Reverse @ MapIndexed[theWickCode[Keys @ vv], Reverse @ cc];
+    dd = Catenate @ MapIndexed[theWickCode[Keys @ vv], dd];
+    ff = Join[dd, cc];
     nn = Length[ff];
     ff = Table[
       {i, j} -> fermiContract[mm][ff[[i]], ff[[j]]],
@@ -199,12 +221,15 @@ theWickFermi[ss:{PatternSequence[{__?AnyFermionQ}, _?MatrixQ]..}, vv_Association
 
 fermiContract::usage = "fermiContract[mat][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
-(* input: {level, species, sheer/dagger} *)
-fermiContract[mm_][{_, _, 1}, {_, _, _}] = 0
+(* input: {time, species, sheer/dagger} *)
 
-fermiContract[mm_][{_, _, 0}, {_, _, 0}] = 0
+fermiContract[mm_][f_[_, _, 1], f_[_, _, _]] = 0
 
-fermiContract[mm:{__?MatrixQ}][{i_, a_, 0}, {j_, b_, 1}] := Dot[mm[[i]], Topple @ mm[[j]]][[a, b]]
+fermiContract[mm_][f_[_, _, 0], f_[_, _, 0]] = 0
+
+fermiContract[mm:{__?MatrixQ}][f_[i_, a_, 0], f_[j_, b_, 1]] :=
+  Dot[mm[[i, a]], Conjugate @ mm[[j, b]]]
+  (* Dot[mm[[i]], Topple @ mm[[j]]][[a, b]] *)
 
 (**** </theWickFermi> ****)
 
