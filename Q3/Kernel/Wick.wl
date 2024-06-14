@@ -1,6 +1,6 @@
 BeginPackage["Q3`"]
 
-{ WickState };
+{ WickState, WickOperate };
 
 { WickExpectation };
 
@@ -8,53 +8,150 @@ BeginPackage["Q3`"]
 
 Begin["`Private`"]
 
+transformsObject /:
+MakeBoxes[transformsObject[trs:{{_?MatrixQ, _?MatrixQ}..}], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    "transformsObject", trs, None,
+    { BoxForm`SummaryItem @ { "Number of Transformations: ", Length @ trs },
+      BoxForm`SummaryItem @ { "Dimensions of each: ", Dimensions @ trs[[1, 1]] }
+    },
+    { BoxForm`SummaryItem @ { "Transformations: ", Map[MatrixObject, trs, {2}] }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ] /; ArrayQ[trs]
+
 
 (**** <WickState> ****)
 
-WickState::usage = "WickState[spec, <|c1->n1, c2->n2, \[Ellipsis], cm->nm|>] represents a many-body state of a system of m fermionic modes c1, c2, \[Ellipsis], cm that initially occupy the modes with occupation number n1, n2, \[Ellipsis], nm.\nFor details of spec, see the Help documentation."
+WickState::usage = "WickState[enc, trs, mat, {c1, c2, \[Ellipsis], cm}] represents a many-body state of m fermionic modes c1, c2, \[Ellipsis], cm in a structed data form."
+
+WickState::trs = "Inconsistent transformations ``; each transformation must be specified either {mat, mat} or mat form."
 
 WickState /:
-MakeBoxes[vec:WickState[spec:PatternSequence[PatternSequence[_?MatrixQ, {__?AnyFermionQ}]..., _?MatrixQ],aa_Association], fmt_] :=
+MakeBoxes[vec:WickState[pp:{___?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...}, ff_?MatrixQ, cc:{__?FermionQ}], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     WickState, vec, None,
-    { BoxForm`SummaryItem @ {"Bare modes: ", Keys @ aa},
-      BoxForm`SummaryItem @ {"Occupation: ", Values @ aa},
-      BoxForm`SummaryItem @ {"Stages: ", (Length[{spec}]+1)/2}
+    { BoxForm`SummaryItem @ { "Bare modes: ", cc },
+      BoxForm`SummaryItem @ { "Initial occupation: ", vec["Initial occupation"] }
     },
-    { BoxForm`SummaryItem @ { "Transformations: ",
-        Map[MatrixForm[#[[;;UpTo[4], ;;UpTo[4]]]]&, {spec}[[1;; ;;2]]] }
+    { BoxForm`SummaryItem @ { "Encoded modes: ", pp },
+      BoxForm`SummaryItem @ { "Transformations: ", transformsObject @ mm },
+      BoxForm`SummaryItem @ { "Wick matrix: ", ff }
     },
-    fmt, "Interpretable" -> Automatic ]
+    fmt,
+    "Interpretable" -> Automatic
+  ]
 
-WickState /:
-MakeBoxes[vec:WickState[spec:PatternSequence[PatternSequence[{_?MatrixQ, _?MatrixQ}, {__?AnyFermionQ}]..., {_?MatrixQ, _?MatrixQ}],aa_Association], fmt_] :=
-  BoxForm`ArrangeSummaryBox[
-    WickState, vec, None,
-    { BoxForm`SummaryItem @ {"Bare modes: ", Keys @ aa},
-      BoxForm`SummaryItem @ {"Occupation: ", Values @ aa},
-      BoxForm`SummaryItem @ {"Stages: ", (Length[{spec}]+1)/2}
-    },
-    { BoxForm`SummaryItem @ { "Transformations: ",
-        Map[MatrixForm[#[[;;UpTo[4], ;;UpTo[4]]]]&, {spec}[[1;; ;;2]], {2}] }
-    },
-    fmt, "Interpretable" -> Automatic ]
+WickState[pp_, mm_, ff_, cc_]["Encoded modes"] = pp
 
+WickState[pp_, mm_, ff_, cc_]["Bare modes"] = cc
 
-WickState[pre___, aa:{__?AnyFermionQ}, bb:{__?AnyFermionQ}, post___] :=
-  WickState[pre, Join[aa, bb], post]
+WickState[pp_, mm_, ff_, cc_]["Transformations"] = mm
 
-WickState[pre___, {u_?MatrixQ, v_?MatrixQ}, {u_?MatrixQ, v_?MatrixQ}, post___] :=
-  WickState[pre, theNambuDot[{u, v}, {x, y}], post]
+WickState[pp_, mm_, ff_, cc_]["Wick matrix"] = ff
 
-WickState[pre___, u_?MatrixQ, v_?MatrixQ, post___] :=
-  WickState[pre, Dot[u, v], post]
+WickState[pp_, mm_, ff_, cc_]["Stages"] := Length[mm]
+
+WickState[pp_, mm_, ff_, cc_]["Initial occupation"] :=
+  ReplacePart[Table[0, Length @ cc], Thread[Cases[pp, _[1, k_, 1] -> k] -> 1]]
 
 
-WickState[any__, Ket[a_Association]] := WickState[any, a]
+WickState[any___, Ket[a_Association]] := WickState[any, a]
 
 WickState[pre___, op_Multiply, post___] := WickState[pre, List @@ op, post]
 
+
+WickState[spec:({__?AnyFermionQ} | {_?MatrixQ, _?MatrixQ} | _?MatrixQ)..., aa_Association] :=
+  Module[
+    { cc = Keys[aa],
+      enc, trs, mat },
+    {enc, trs, mat} = getWickMatrix[cc][spec, Dagger @ Keys @ theKetTrim @ aa];
+    WickState[enc, trs, mat, cc]
+  ]
+
+WickState[aa_Association] :=
+  WickState[{}, {theNambuOne @ Length @ Keys @ aa}, {{}}, Keys @ aa] /; 
+  Total[Values @ aa] == 0
+
+WickState /:
+Norm[ws_WickState] := Sqrt[Pfaffian[ws @ "Wick matrix"]]
+
 (**** </WickState> ****)
+
+
+(**** <WickOperate> ****)
+
+WickOperate::usage = "WickOperate[...] ..."
+
+WickOperate[any_][ws_WickState] := WickOperate[any, ws]
+
+WickOperate[msr_Measurement, ws_WickState] := msr[ws]
+
+WickOperate[op:{__?AnyFermionQ}, WickState[{}, uu_, {{}}, cc:{__?FermionQ}]] :=
+  Module[
+    {enc, trs, mat},
+    {enc, trs, mat} = getWickMatrix[cc][op, First @ uu];
+    WickState[enc, trs, mat, cc]
+  ]
+
+WickOperate[op:{__?AnyFermionQ}, ws_WickState] :=
+  Module[
+    {enc, trs, mat},
+    {enc, trs, mat} = getWickMatrix[cc][op, First @ uu];
+    Echo["Here"];
+    WickState[enc, trs, mat, cc]
+  ]
+
+WickOperate[trs:{_?MatrixQ, _?MatrixQ}, ws_WickState] :=
+  Module[
+    { pp = ws["Encoded modes"],
+      uu = ws["Transformations"],
+      vv },
+    vv = theNambuDot[trs, Last @ uu];
+    If[ Length[uu] > Max[First /@ pp],
+      uu[[-1]] = vv,
+      AppendTo[uu, vv]
+    ];
+    ReplacePart[ws, 2 -> uu]
+  ]
+
+(**** </WickOperate> ****)
+
+
+(**** <Measurement> ****)
+
+Measurement[c_?FermionQ][ws_WickState] := Module[
+  { tt = ws["Stages"],
+    cc = ws["Bare modes"],
+    pp = ws["Encoded modes"],
+    mm = ws["Transformations"],
+    ff = ws["Wick matrix"],
+    gg, dd, nn },
+
+  nn = Length[pp] / 2;
+  dd = theWickCode[cc][{c, Dagger @ c}, {tt}]; (* op := c ** Dagger[c] *)
+
+  (* For the expectation value of c ** Dagger[c] *)
+  {pp, mm, gg} = jamWickMatrix[dd, pp, mm, ff, nn];
+
+  (* Simulate the measurement process. *)
+  (* NOTE: WickState is unnormalized. *)
+  If[ RandomReal[] < Chop[Pfaffian @ gg / Pfaffian @ ff],
+    $MeasurementOut[c] = 0,
+    $MeasurementOut[c] = 1;
+    dd = Reverse @ dd;
+    pp = ArrayPermute[pp, nn+1 <-> nn+2];
+    gg = ArrayPermute[gg, nn+1 <-> nn+2];
+    gg += SymmetrizedArray[{{nn+1, nn+2}->1}, Dimensions @ gg, Antisymmetric[{1,2}]]
+  ];
+  
+  (* Construct the post-measurment state. *)
+  {pp, mm, gg} = jamWickMatrix[dd, pp, mm, gg, nn];
+  WickState[pp, mm, gg, cc]
+]
+
+(**** </Measurement> ****)
 
 
 (**** <WickExpectation> ****)
@@ -68,87 +165,177 @@ WickExpectation[_?AnyFermionQ, any__, _Association] = 0
 
 (* linearity *)
 
-WickExpectation[z_?CommutativeQ, any__, _Association] = z
+WickExpectation[expr_][spec___, Ket[a_Association]] :=
+  WickExpectation[expr][WickState[spec, a]]
 
-WickExpectation[z_?CommutativeQ op_, any__, vec_] :=
-  z * WickExpectation[op, any, vec]
-
-WickExpectation[expr_Plus, any__, vec_] := 
-  WickExpectation[#, any, vec]& /@ expr
-
-WickExpectation[pre___, op_Multiply, post___] :=
-  WickExpectation[pre, List @@ op, post]
+WickExpectation[expr_][spec___, a_Association] :=
+  WickExpectation[expr][WickState[spec, a]]
 
 
-WickExpectation[aa:{__?AnyFermionQ}, bb:{__?AnyFermionQ}.., Shortest[post___]] :=
-  WickExpectation[Join[Dagger @ Reverse @ Join[bb], aa, Join[bb]], post]
+WickExpectation[z_?CommutativeQ][ws_WickState] :=
+  z * Power[Norm[ws], 2]
 
-WickExpectation[pre__, aa:{__?AnyFermionQ}, bb:{__?AnyFermionQ}.., Shortest[post___]] :=
-  WickExpectation[pre, Join[aa, bb], post]
+WickExpectation[z_?CommutativeQ op_][ws_WickState] :=
+  z * WickExpectation[op][ws]
 
-WickExpectation[pre___, {u_?MatrixQ, v_?MatrixQ}, {u_?MatrixQ, v_?MatrixQ}, post___] :=
-  WickExpectation[pre, theNambuDot[{u, v}, {x, y}], post]
-
-WickExpectation[pre___, u_?MatrixQ, v_?MatrixQ, post___] :=
-  WickExpectation[pre, Dot[u, v], post]
+WickExpectation[expr_Plus][ws_WickState] := 
+  WickExpectation[#][ws]& /@ expr
 
 
-WickExpectation[spec:({__?AnyFermionQ} | {_?MatrixQ, _?MatrixQ}).., vv_Association] :=
-  theWickNambu[Keys @ vv][spec, Dagger @ Keys[theKetTrim @ vv]]
-
-WickExpectation[spec:PatternSequence[{__?AnyFermionQ}, _?MatrixQ].., vv_Association] :=
-  theWickFermi[{spec}, vv]
+WickExpectation[HoldPattern @ Multiply[ops__?AnyFermionQ]][ws_WickState] := Module[
+  { tt = ws["Stages"],
+    cc = ws["Bare modes"],
+    dd, pp, mm, ff, gg },
+  dd = theWickCode[cc][{ops}, {tt}];
+  {pp, mm, ff} = List @@ Most[ws];
+  gg = Last @ jamWickMatrix[dd, pp, mm, ff, Length[pp]/2];
+  Pfaffian[gg] / Pfaffian[ff]
+]
 
 (**** </WickExpectation> ****)
 
 
-(**** <theWickNambu> ****)
+(**** <getWickMatrix> ****)
 
-theWickNambu::usage = "WickNambu[...] ... "
+getWickMatrix::usage = "getWickMatrix[{c1,c2,...}][spec] parse spec and create the Wick matrix."
 
-theWickNambu[cc:{__?FermionQ}][obs:{__?AnyFermionQ}, spec:({__?AnyFermionQ} | {_?MatrixQ, _?MatrixQ})..] :=
+getWickMatrix[cc_][pre___, aa:{_?MatrixQ, _?MatrixQ}, bb:{_?MatrixQ, v_?MatrixQ}.., Shortest[post___]] :=
+  getWickMatrix[cc][pre, theNambuDot[aa, bb], post]
+
+getWickMatrix[cc_][pre___, aa_?MatrixQ, bb__?MatrixQ, Shortest[post___]] :=
+  getWickMatrix[cc][pre, Dot[aa, bb], post]
+
+getWickMatrix[cc_][pre___, aa_?MatrixQ, post___] :=
+  getWickMatrix[cc][pre, toNambuForm @ aa, post]
+
+(* OUTPUT: {enc, trs, mat}
+  enc: the list of encoded modes
+  trs: the transformations of the encoded modes
+  mat: the Wick matrix
+  *)
+getWickMatrix[cc:{__?FermionQ}][spec:({___?AnyFermionQ} | {_?MatrixQ, _?MatrixQ})...] :=
   Module[
-    { id = One[Length @ cc],
-      zr = Zero[Length @ cc, Length @ cc],
-      mm = Cases[{spec}, {_?MatrixQ, _?MatrixQ}],
-      ss = SequenceSplit[{spec}, {{_?MatrixQ, _?MatrixQ}}],
-      tt, ff, nn },
-    mm = FoldList[theNambuDot[#2, #1]&, {id, zr}, Reverse @ mm];
-    ss = Flatten[Reverse @ MapIndexed[theWickCode[cc], Reverse @ ss], 2];
-    tt = dagWickCode[ss];
-    ff = Join[tt, theWickCode[cc][obs, {Length @ mm}], ss];
-    nn = Length[ff];
-    ff = Table[
-      {i, j} -> nambuContract[mm][ff[[i]], ff[[j]]],
-      {i, nn},
-      {j, i+1, nn}
+    { trs = Cases[{spec}, {_?MatrixQ, _?MatrixQ}, {1}],
+      enc = Flatten /@ SequenceSplit[{spec, {}}, {{_?MatrixQ, _?MatrixQ}}],
+      mat, n },
+    n = Length[cc];
+
+    (* transformations *)
+    If[ Length[Last @ enc] == 0,
+      enc = Most[enc];
+      trs = FoldList[theNambuDot[#2, #1]&, Reverse @ trs],
+      trs = FoldList[theNambuDot[#2, #1]&, theNambuOne @ n, Reverse @ trs]
     ];
-    Pfaffian @ SymmetrizedArray[Flatten[ff, 1], {nn, nn}, Antisymmetric[{1, 2}]]
+
+    (* encoded fermion modes *)
+    enc = Flatten @ Reverse @ MapIndexed[theWickCode[cc], Reverse @ enc];
+    enc = Join[dagWickCode @ enc, enc];
+
+    n = Length[enc];
+    mat = Flatten @ Table[
+      {i, j} -> theWickContract[trs][enc[[i]], enc[[j]]],
+      {i, n},
+      {j, i+1, n}
+    ];
+    mat = SymmetrizedArray[mat, {n, n}, Antisymmetric[{1, 2}]];
+    {enc, trs, mat}
   ]
 
 
-nambuContract::usage = "nambuContract[mm][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
+theNambuOne::usage = "theNambuOne[n] returns the pair {One[n], Zero[n,n]}."
+
+theNambuOne[n_Integer] := {One @ n, Zero @ {n, n}}
+
+
+toNambuForm::usage = "toNambuForm[mat] ..."
+
+toNambuForm[m_?MatrixQ] := {m, Zero @ Dimensions @ m}
+
+(**** </getWickMatrix> ****)
+
+
+
+(**** <jamWickMatrix> ****)
+
+jamWickMatrix::usage = "jamWickMatrix[dd, pp, mm, mat, n] cleaves the Wick matrix mat at row and column n and add additional blocks with rows and columns corresponding to the new fermion modes dd."
+
+(* INPUT
+  dd : the list of new fermion modes to wedge into the Wick matrix mat.
+  pp : the list of encoded fermion modes labeling the rows and columns of the Wick matrix mat
+  mm : the list of transformations of fermion modes
+  mat: the Wick matrix to updated
+  n  : the row and column where the new modes to be wedged.
+*)
+(* NOTE: Both dd and pp are given in the form of encoded modes. *)
+jamWickMatrix[ dd:{__?FermionQ}, (* encoded modes *)
+  pp:{__?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...},
+  ff_SymmetrizedArray, n_Integer] := Module[
+  { m = Length[dd],
+    p1, p2, rr, ss },
+
+  {p1, p2} = TakeDrop[pp, n];
+
+  (* crack open the matrix. *)
+  rr = Most[SymmetrizedArrayRules @ ff] /. {
+      {i_, j_} /; i > n && j > n -> {i + m, j + m},
+      {i_, j_} /; i > n -> {i + m, j},
+      {i_, j_} /; j > n -> {i, j + m}
+  };
+
+  (* wedge additional blocks into the crack. *)
+  ss = Flatten @ Table[
+    {i, j+n} -> theWickContract[mm][p1[[i]], dd[[j]]],
+    {i, n},
+    {j, m}
+  ];
+  rr = Join[rr, ss];
+  ss = Flatten @ Table[
+    {i+n, j+n} -> theWickContract[mm][dd[[i]], dd[[j]]],
+    {i, m},
+    {j, i+1, m}
+  ];
+  rr = Join[rr, ss];
+  ss = Flatten @ Table[
+    {i+n, j+n+m} -> theWickContract[mm][dd[[i]], p2[[j]]],
+    {i, m},
+    {j, Length[pp] - n}
+  ];
+  rr = Join[rr, ss];
+
+  (* Reconstruct the Wick matrix. *)
+  { Join[p1, dd, p2], 
+    mm,
+    SymmetrizedArray[rr, Dimensions[ff] + {m, m}, Antisymmetric[{1, 2}]]
+  }
+]
+
+(**** </jamWickMatrix> ****)
+
+
+(**** <theWickContract> ****)
+
+theWickContract::usage = "theWickContract[mm][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
 
 (* input: {level, species, sheer/dagger} *)
 (* mm:{{_?MatrixQ, _?MatrixQ}..} *)
 
-nambuContract[mm_][f_[i_, a_, 0], f_[j_, b_, 0]] :=
-  Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 2, b]]]
+theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 0], f_[j_, b_, 0]] :=
+  Chop @ Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 2, b]]]
   (* Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]] *)
 
-nambuContract[mm_][f_[i_, a_, 0], f_[j_, b_, 1]] :=
-  Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 1, b]]]
+theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 0], f_[j_, b_, 1]] :=
+  Chop @ Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 1, b]]]
   (* Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]] *)
 
-nambuContract[mm_][f_[i_, a_, 1], f_[j_, b_, 0]] :=
-  Dot[mm[[i, 2, a]], Conjugate @ mm[[j, 2, b]]]
+theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 1], f_[j_, b_, 0]] :=
+  Chop @ Dot[mm[[i, 2, a]], Conjugate @ mm[[j, 2, b]]]
   (* Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]] *)
 
-nambuContract[mm_][f_[i_, a_, 1], f_[j_, b_, 1]] :=
-  Dot[mm[[i, 2, a]], Conjugate @ mm[[j, 1, b]]]
+theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 1], f_[j_, b_, 1]] :=
+  Chop @ Dot[mm[[i, 2, a]], Conjugate @ mm[[j, 1, b]]]
   (* Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]] *)
 
-(**** </theWickNambu> ****)
+(**** </theWickContract> ****)
 
 
 (**** <theWickCode> ****)
@@ -157,26 +344,23 @@ theWickCode::usage = "theWickCode[rules][{c1, c2, ...}, {time}] converts each fe
 
 (* output: {time, species, sheer/dagger} *)
 
-theWickCode[ff:{__?FermionQ}, t_Integer] := 
- theWickCode[Thread[cc -> Range[Length @ ff]], t]
-
 theWickCode[rr_, t_Integer][c_?FermionQ] :=
-  Append[Prepend[ReplaceAll[c, rr], t], 0]
+  Head[c][t, ReplaceAll[c, rr], 0]
 
 theWickCode[rr_, t_Integer][HoldPattern @ Dagger[c_?FermionQ]] :=
-  Append[Prepend[ReplaceAll[c, rr], t], 1]
+  Head[c][t, ReplaceAll[c, rr], 1]
 
 
-theWickCode[rr_][cc:{__?AnyFermionQ}, {t_Integer}] :=
+theWickCode[ff:{___?FermionQ}] := 
+ theWickCode[Thread[ff -> Range[Length @ ff]]]
+
+theWickCode[rr_][cc:{___?AnyFermionQ}, {t_Integer}] :=
   Map[theWickCode[rr, t], cc]
-
-theWickCode[rr_][cc:{{__?AnyFermionQ}..}, {t_Integer}] :=
-  Map[theWickCode[rr, t], cc, {2}]
 
 
 dagWickCode::usage = "dagWickCode[...] ..."
 
-dagWickCode[cc:{f_[_, _, _]..}] := Reverse @ Map[dagWickCode, cc]
+dagWickCode[ff:{f_[_, _, _]...}] := Reverse @ Map[dagWickCode, ff]
 
 dagWickCode[f_[t_, k_, d_]] := f[t, k, Mod[d+1, 2]]
 
@@ -187,51 +371,14 @@ dagWickCode[f_[t_, k_, d_]] := f[t, k, Mod[d+1, 2]]
 
 theNambuDot::usage = "theNambuDot[{u1,v1}, {u2,v2}] ..."
 
-theNambuDot[{u1_, v1_}, {u2_, v2_}] :=
+SetAttributes[theNambuDot, Flat]
+
+theNambuDot[u_?MatrixQ, v_?MatrixQ] := Dot[u, v]
+
+theNambuDot[{u1_?MatrixQ, v1_?MatrixQ}, {u2_?MatrixQ, v2_?MatrixQ}] :=
   {u1.u2 + Conjugate[v1].v2, v1.u2 + Conjugate[u1].v2}
 
 (**** </theNambuDot> ****)
-
-
-(**** <theWickFermi> ****)
-
-theWickFermi::usage = "WickFermi[...] ... "
-
-theWickFermi[ss:{PatternSequence[{__?AnyFermionQ}, _?MatrixQ]..}, vv_Association] :=
-  Module[
-    { rr = Thread[Keys[vv] -> Range[Length @ vv]],
-      id = One[Length @ vv],
-      bb, cc, ff, nn, mm },
-    mm = FoldList[Dot[#2, #1]&, id, Reverse @ ss[[2;; ;;2]]];
-    (* {level, species, sheer/dagger} *)
-    cc = Append[ss[[1;; ;;2]], Dagger @ Keys[theKetTrim @ vv]];
-    dd = Dagger @ Reverse @ Map[Reverse, Rest @ cc];
-    cc = Catenate @ Reverse @ MapIndexed[theWickCode[Keys @ vv], Reverse @ cc];
-    dd = Catenate @ MapIndexed[theWickCode[Keys @ vv], dd];
-    ff = Join[dd, cc];
-    nn = Length[ff];
-    ff = Table[
-      {i, j} -> fermiContract[mm][ff[[i]], ff[[j]]],
-      {i, nn},
-      {j, i+1, nn}
-    ];
-    Pfaffian @ SymmetrizedArray[Flatten[ff, 1], {nn, nn}, Antisymmetric[{1, 2}]]
-  ]
-
-
-fermiContract::usage = "fermiContract[mat][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
-
-(* input: {time, species, sheer/dagger} *)
-
-fermiContract[mm_][f_[_, _, 1], f_[_, _, _]] = 0
-
-fermiContract[mm_][f_[_, _, 0], f_[_, _, 0]] = 0
-
-fermiContract[mm:{__?MatrixQ}][f_[i_, a_, 0], f_[j_, b_, 1]] :=
-  Dot[mm[[i, a]], Conjugate @ mm[[j, b]]]
-  (* Dot[mm[[i]], Topple @ mm[[j]]][[a, b]] *)
-
-(**** </theWickFermi> ****)
 
 
 (**** <WickLogarithmicNegtivity> ****)

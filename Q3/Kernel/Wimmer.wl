@@ -12,7 +12,7 @@ Begin["`Private`"]
 
 Pfaffian::usage = "Pfaffian[mat] returns the Pfaffian of an anti-symmetric matrix mat."
 
-Pfaffian::number = "Pfaffian can be computed efficiently only for a numerical matrix. If the matrix is small enough, try option Method -> \"Heuristic\"."
+Pfaffian::number = "Non-numerical matrix `` is given; Pfaffian can be computed efficiently only for a numerical matrix. If the matrix is small enough, try option Method -> \"Heuristic\"."
 
 Pfaffian::method = "Unrecognized option `1`; must be either \"ParlettReid\", \"Householder\", \"Hessenberg\" or \"Heuristic\".";
 
@@ -30,7 +30,10 @@ Pfaffian[mat_?SquareMatrixQ, OptionsPattern[]] :=
     "Hessenberg", PfaffianHessenberg[mat],
     "Heuristic", PfaffianHeuristic[mat],
     _, Message[Pfaffian::method, OptionValue @ Method]; 0
-  ]
+  ] /; MatrixQ[mat, NumberQ]
+
+Pfaffian[mat_?SquareMatrixQ, OptionsPattern[]] :=
+  (Message[Pfaffian::number, mat]; Indeterminate)
 
 (**** </Pfaffian> ****)
 
@@ -142,7 +145,7 @@ PfaffianLTL[mat_] := Module[
 ] /; MatrixQ[mat, NumericQ]
 
 PfaffianLTL[mat_] := (
-  Message[Pfaffian::number];
+  Message[Pfaffian::number, mat];
   Return[Indeterminate]
 )
 

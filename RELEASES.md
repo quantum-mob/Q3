@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.3.20
+
+- New symbol MatrixObject.
+
 ## 3.3.19
 
 - Further backward compatibility issue concerning PositionLargest.

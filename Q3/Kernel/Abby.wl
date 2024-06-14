@@ -32,6 +32,8 @@ BeginPackage["Q3`"]
 
 { Primed, DoublePrimed };
 
+{ MatrixObject };
+
 { LevelsPlot };
 { PanedText };
 
@@ -771,6 +773,30 @@ makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
 (* NOTE: txt may include Graphics[...] such as from MaTeX. *)
 
 (***** </LevelsPlot> ****)
+
+
+(**** <MatrixObject> ****)
+
+MatrixObject::usage = "MatrixObject[{{m11,m12,\[Ellipsis]}, {m21,m22,\[Ellipsis]}, \[Ellipsis]}] represents a dense matrix.\nIt may be useful to display a dense matrix in a compact form."
+
+MatrixObject /:
+MakeBoxes[MatrixObject[mat_List?MatrixQ], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    MatrixObject, mat, None,
+    { BoxForm`SummaryItem @ { "Type: ", "Dense" },
+      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions[mat] }
+    },
+    { BoxForm`SummaryItem @ { "Elements: ", MatrixForm @ Chop @ mat[[;;UpTo[4], ;;UpTo[4]]] }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+MatrixObject[mat_SparseArray?MatrixQ] = mat
+
+MatrixObject[mat_SymmetrizedArray?MatrixQ] = mat
+
+(**** </MatrixObject> ****)
 
 
 (**** <PanedText> ****)
