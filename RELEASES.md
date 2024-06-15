@@ -2,7 +2,10 @@
 
 ## 3.3.20
 
-- New symbol MatrixObject.
+- New functions MatrixObject, WickOperate, WickGreensFunction.
+- Syntax arguments of WickExpectation has been changed.
+- Changes in the convention for the compact form of unitary matrix in the Nambu space.
+- WickLogarithmicNegativity supports WickState.
 
 ## 3.3.19
 

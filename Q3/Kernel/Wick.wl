@@ -1,12 +1,104 @@
 BeginPackage["Q3`"]
 
-{ WickState, WickOperate };
-
-{ WickExpectation };
-
 { WickLogarithmicNegativity, WickTimeReversalMoment };
 
+{ WickState, WickOperate,
+  WickExpectation, WickGreensFunction };
+
+
 Begin["`Private`"]
+
+(**** <WickLogarithmicNegtivity> ****)
+
+(* See also: Shapourian and Ryu (2017, 2019) *)
+
+WickLogarithmicNegativity::usage = "WickLogarithmicNegativity[{grn,anm}, {k1,k2,\[Ellipsis]}] returns the fermionic negativity over modes k1, k2, \[Ellipsis] of the fermionic Gaussian states characterized by the Green's function grn (in an L\[Times]L matrix for L fermion modes) and anomalous Green's function anm (also in an L\[Times]L matrix).\nWickLogarithmicNegativity[grn, {k1,k2,\[Ellipsis]}] is equivalent to WickLogarithmicNegativity[{grn,0}, {k1,k2,\[Ellipsis]}]."
+
+WickLogarithmicNegativity[kk:{__Integer}][any_] :=
+  WickLogarithmicNegativity[any, kk]
+
+WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}] :=
+  WickTimeReversalMoment[1/2, grn, kk]
+
+WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := 
+  WickTimeReversalMoment[1/2, {grn, anm}, kk]
+
+(**** </WickLogarithmicNegtivity> ****)
+
+
+(**** <WickTimeReversalMoment> ****)
+
+(* See also: Shapourian and Ryu (2017, 2019) *)
+
+WickTimeReversalMoment::usage = "WickTimeReversalMoment[\[Alpha], {grn,anm}, {k1,k2,\[Ellipsis]}] returns the \[Alpha]th moment of partial time reversal over the fermion modes (species) k1, k2, \[Ellipsis] for the fermionic Gaussian state characterized by the Green's funciton grn (in an L\[Times]L matrix for L fermion modes) and anomalous Green's function anm (also in an L\[Times]L matrix).\nWickTimeReversalMoment[\[Alpha], grn, {k1,k2,\[Ellipsis]}] is equivalent to WickTimeReversalMoment[\[Alpha], {grn,0}, {k1,k2,\[Ellipsis]}]."
+
+WickTimeReversalMoment::sing = "Matrix `` is singular; PseudoInverse is used instead of Inverse."
+
+
+WickTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}] :=
+  WickTimeReversalMoment[alpha, {grn, Zero[Dimensions @ grn]}, kk]
+
+WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := Module[
+  { dd = Length[grn],
+    gg, zr, id, xx, zz, uu, ww, pf, dgn, off
+  },
+  zr = Zero[dd, dd];
+  id = One[dd];
+  xx = CircleTimes[ThePauli[1], id];
+  zz = CircleTimes[ThePauli[3], id];
+  
+  (* \Gamma *)
+  gg = ArrayFlatten @ {
+    {id - grn, anm},
+    {Topple @ anm, Transpose[grn] - id}
+  };
+  pf = Power[Pfaffian[Inverse[gg.xx]], 2];
+
+  (* \Omega of the density operator \rho *)
+  ww = If[ ZeroQ[Det @ gg],
+    Inverse[gg] - zz,
+    PseudoInverse[gg] - zz
+  ];
+
+  uu = SparseArray[
+    Flatten @ {
+      Thread[Transpose@{kk, dd + kk} ->  I],
+      Thread[Transpose@{dd + kk, kk} -> -I],
+      Thread[Transpose@{kk, kk} -> 0],
+      Thread[Transpose@{dd + kk, dd + kk} -> 0],
+      {i_, i_} -> 1,
+      {_, _} -> 0
+    },
+    {2*dd, 2*dd}
+  ];
+  (* \Omega of partial TR *)
+  ww = Topple[uu] . ww . uu;
+
+  dgn = CirclePlus[ww[[;;dd, ;;dd]], ww[[dd+1;;, dd+1;;]]];
+  off = ArrayFlatten @ {
+    {zr, ww[[;;dd, dd+1;;]]},
+    {ww[[dd+1;;, ;;dd]], zr}
+  };
+  pf = Pfaffian[(off - zz).xx] / pf;
+
+  (* effective \Omega of \Xi *)
+  ww = off + dgn . Inverse[zz - off] . dgn;
+  pf = pf * Pfaffian[xx.(ww + zz)];
+
+  (* effective \Gamma *)
+  gg = Inverse[ww + zz];
+  (* effective Green's function Gij *)
+  gg = CircleTimes[ThePauli[10], id] - gg;
+
+  (* Recall the particle-hole symmetry. *)
+  gg = Take[Eigenvalues @ gg, dd];
+  Total[Log[2, Power[gg, alpha] + Power[1-gg, alpha]]] + Log[2, Power[pf, alpha]]
+]
+
+(**** </WickTimeReversalMoment> ****)
+
+
+(**** <transformsObject> ****)
 
 transformsObject /:
 MakeBoxes[transformsObject[trs:{{_?MatrixQ, _?MatrixQ}..}], fmt_] :=
@@ -20,6 +112,8 @@ MakeBoxes[transformsObject[trs:{{_?MatrixQ, _?MatrixQ}..}], fmt_] :=
     fmt,
     "Interpretable" -> Automatic
   ] /; ArrayQ[trs]
+
+(**** </transformsObject> ****)
 
 
 (**** <WickState> ****)
@@ -82,7 +176,7 @@ Norm[ws_WickState] := Sqrt[Pfaffian[ws @ "Wick matrix"]]
 
 (**** <WickOperate> ****)
 
-WickOperate::usage = "WickOperate[...] ..."
+WickOperate::usage = "WickOperate[{c1,c2,...,ck}, ws] returns the output state in the form of WickState upon applying c1**c2**...**ck on WickState ws.\nWickOperate[{u, v}, ws] returns the output state when applying the unitary operator specified by matrices {u, v}."
 
 WickOperate[any_][ws_WickState] := WickOperate[any, ws]
 
@@ -156,7 +250,7 @@ Measurement[c_?FermionQ][ws_WickState] := Module[
 
 (**** <WickExpectation> ****)
 
-WickExpectation::usage = "WickExpectation[expr, spec] calculates the expectation value of a polynomial of fermion creation and annihilation operators with respect to WickState[spec] efficiently based on the Wick theorem.\nFor details of spec, see WickState."
+WickExpectation::usage = "WickExpectation[ws] represents an expectation value with respect to the Wick state ws.\nWickState[ws][{c1, c2, \[Ellipsis], cn}] returns the expectation value of c1 ** c2 ** \[Ellipsis] ** cn.\nWickState[ws][expr] returns the expectation value of a polynomial expr of fermion creation and annihilation operators.\nWickExpecation[spec] automatically converts spec to WickState; see WickState for details of spec."
 
 WickExpectation[c_, any__, Ket[a_Association]] := WickExpectation[c, any, a]
 
@@ -165,34 +259,89 @@ WickExpectation[_?AnyFermionQ, any__, _Association] = 0
 
 (* linearity *)
 
-WickExpectation[expr_][spec___, Ket[a_Association]] :=
-  WickExpectation[expr][WickState[spec, a]]
+WickExpectation[spec___, Ket[a_Association]] :=
+  WickExpectation[WickState[spec, a]]
 
-WickExpectation[expr_][spec___, a_Association] :=
-  WickExpectation[expr][WickState[spec, a]]
-
-
-WickExpectation[z_?CommutativeQ][ws_WickState] :=
-  z * Power[Norm[ws], 2]
-
-WickExpectation[z_?CommutativeQ op_][ws_WickState] :=
-  z * WickExpectation[op][ws]
-
-WickExpectation[expr_Plus][ws_WickState] := 
-  WickExpectation[#][ws]& /@ expr
+WickExpectation[spec___, a_Association] :=
+  WickExpectation[WickState[spec, a]]
 
 
-WickExpectation[HoldPattern @ Multiply[ops__?AnyFermionQ]][ws_WickState] := Module[
+WickExpectation[ws_WickState][z_?CommutativeQ] := z
+
+WickExpectation[ws_WickState][z_?CommutativeQ op_] :=
+  z * WickExpectation[ws][op]
+
+WickExpectation[ws_WickState][expr_Plus] := 
+  WickExpectation[ws] /@ expr
+
+
+WickExpectation[ws_WickState][HoldPattern @ Multiply[ops__?AnyFermionQ]] :=
+  WickExpectation[ws][{ops}]
+
+WickExpectation[ws_WickState][ops:{__?AnyFermionQ}] := Module[
   { tt = ws["Stages"],
     cc = ws["Bare modes"],
-    dd, pp, mm, ff, gg },
-  dd = theWickCode[cc][{ops}, {tt}];
-  {pp, mm, ff} = List @@ Most[ws];
-  gg = Last @ jamWickMatrix[dd, pp, mm, ff, Length[pp]/2];
-  Pfaffian[gg] / Pfaffian[ff]
+    dd, pp, uv, mm, gg },
+  dd = theWickCode[cc][ops, {tt}];
+  {pp, uv, mm} = List @@ Most[ws];
+  gg = Last @ jamWickMatrix[dd, pp, uv, mm, Length[pp]/2];
+  Pfaffian[gg] / Pfaffian[mm]
 ]
 
 (**** </WickExpectation> ****)
+
+
+(**** <WickGreensFunction> ****)
+
+WickGreensFunction::usage = "WickGreensFunction[ws] returns the pair {G, F} of normal Green's function G and anomalous Green's function F with respect to the Wick state ws."
+
+WickGreensFunction[ws_WickState] := Module[
+  { tt = ws["Stages"],
+    cc = ws["Bare modes"],
+    dd, pp, uv, mm, ff, gg, L, n, i, j },
+  {pp, uv, mm} = List @@ Most[ws];
+
+  n = Length[cc];
+  L = Length[pp] / 2;
+
+  (* Green's function *)
+  gg = Flatten @ Table[
+    dd = theWickCode[cc][{cc[[i]], Dagger @ cc[[j]]}, {tt}];
+    {i, j} -> Pfaffian @ Last @ jamWickMatrix[dd, pp, uv, mm, L],
+    {i, 1, n},
+    {j, i, n}
+  ];
+  gg = SymmetrizedArray[gg, {n, n}, Hermitian @ {1, 2}];
+
+  (* anomalous Green's function *)
+  ff = Flatten @ Table[
+    dd = theWickCode[cc][{cc[[i]], cc[[j]]}, {tt}];
+    {i, j} -> Pfaffian @ Last @ jamWickMatrix[dd, pp, uv, mm, L],
+    {i, 1, n},
+    {j, i+1, n}
+  ];
+  ff = SymmetrizedArray[ff, {n, n}, Antisymmetric @ {1, 2}];
+
+  Normal @ {gg, ff} / Pfaffian[mm]
+]
+
+(**** </WickGreensFunction> ****)
+
+
+(**** <WickLogarithmicNegtivity> ****)
+
+WickLogarithmicNegativity[dd:{__?FermionQ}][ws_WickState] :=
+  WickLogarithmicNegativity[ws, dd]
+
+WickLogarithmicNegativity[ws_WickState, dd:{__?FermionQ}] := Module[
+  { gg = WickGreensFunction[ws],
+    cc = Last[ws],
+    kk },
+  kk = dd /. Thread[cc -> Range[Length @ cc]];
+  WickTimeReversalMoment[1/2, gg, kk]
+]
+
+(**** </WickLogarithmicNegtivity> ****)
 
 
 (**** <getWickMatrix> ****)
@@ -217,7 +366,7 @@ getWickMatrix[cc:{__?FermionQ}][spec:({___?AnyFermionQ} | {_?MatrixQ, _?MatrixQ}
   Module[
     { trs = Cases[{spec}, {_?MatrixQ, _?MatrixQ}, {1}],
       enc = Flatten /@ SequenceSplit[{spec, {}}, {{_?MatrixQ, _?MatrixQ}}],
-      mat, n },
+      mat, n, i, j },
     n = Length[cc];
 
     (* transformations *)
@@ -241,18 +390,7 @@ getWickMatrix[cc:{__?FermionQ}][spec:({___?AnyFermionQ} | {_?MatrixQ, _?MatrixQ}
     {enc, trs, mat}
   ]
 
-
-theNambuOne::usage = "theNambuOne[n] returns the pair {One[n], Zero[n,n]}."
-
-theNambuOne[n_Integer] := {One @ n, Zero @ {n, n}}
-
-
-toNambuForm::usage = "toNambuForm[mat] ..."
-
-toNambuForm[m_?MatrixQ] := {m, Zero @ Dimensions @ m}
-
 (**** </getWickMatrix> ****)
-
 
 
 (**** <jamWickMatrix> ****)
@@ -271,7 +409,7 @@ jamWickMatrix[ dd:{__?FermionQ}, (* encoded modes *)
   pp:{__?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...},
   ff_SymmetrizedArray, n_Integer] := Module[
   { m = Length[dd],
-    p1, p2, rr, ss },
+    p1, p2, rr, ss, i, j },
 
   {p1, p2} = TakeDrop[pp, n];
 
@@ -318,22 +456,19 @@ theWickContract::usage = "theWickContract[mm][{a, i, j}, {b, p, q}] calcualtes t
 
 (* input: {level, species, sheer/dagger} *)
 (* mm:{{_?MatrixQ, _?MatrixQ}..} *)
+(* Convention: barc_i --> barU_{ij}barc_j with barU := {{U, V}, Conjugate @ {V, U}} *)
 
 theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 0], f_[j_, b_, 0]] :=
-  Chop @ Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 2, b]]]
-  (* Dot[mm[[i, 1]], Topple @ mm[[j, 2]]][[a, b]] *)
+  Chop @ Dot[mm[[i, 1, a]], mm[[j, 2, b]]]
 
 theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 0], f_[j_, b_, 1]] :=
   Chop @ Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 1, b]]]
-  (* Dot[mm[[i, 1]], Topple @ mm[[j, 1]]][[a, b]] *)
 
 theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 1], f_[j_, b_, 0]] :=
-  Chop @ Dot[mm[[i, 2, a]], Conjugate @ mm[[j, 2, b]]]
-  (* Dot[mm[[i, 2]], Topple @ mm[[j, 2]]][[a, b]] *)
+  Chop @ Dot[Conjugate @ mm[[i, 2, a]], mm[[j, 2, b]]]
 
 theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 1], f_[j_, b_, 1]] :=
-  Chop @ Dot[mm[[i, 2, a]], Conjugate @ mm[[j, 1, b]]]
-  (* Dot[mm[[i, 2]], Topple @ mm[[j, 1]]][[a, b]] *)
+  Chop @ Dot[Conjugate @ mm[[i, 2, a]], Conjugate @ mm[[j, 1, b]]]
 
 (**** </theWickContract> ****)
 
@@ -376,91 +511,20 @@ SetAttributes[theNambuDot, Flat]
 theNambuDot[u_?MatrixQ, v_?MatrixQ] := Dot[u, v]
 
 theNambuDot[{u1_?MatrixQ, v1_?MatrixQ}, {u2_?MatrixQ, v2_?MatrixQ}] :=
-  {u1.u2 + Conjugate[v1].v2, v1.u2 + Conjugate[u1].v2}
+  {u1.u2 + v1.Conjugate[v2], u1.v2 + v1.Conjugate[u2]}
+(* Convention: barc_i --> barU_{ij}barc_j with barU := {{U, V}, Conjugate @ {V, U}} *)
+
+
+theNambuOne::usage = "theNambuOne[n] returns the pair {One[n], Zero[n,n]}."
+
+theNambuOne[n_Integer] := {One @ n, Zero @ {n, n}}
+
+
+toNambuForm::usage = "toNambuForm[mat] ..."
+
+toNambuForm[m_?MatrixQ] := {m, Zero @ Dimensions @ m}
 
 (**** </theNambuDot> ****)
-
-
-(**** <WickLogarithmicNegtivity> ****)
-
-(* See also: Shapourian and Ryu (2017, 2019) *)
-
-WickLogarithmicNegativity::usage = "WickLogarithmicNegativity[{grn,anm}, {k1,k2,\[Ellipsis]}] returns the fermionic negativity over modes k1, k2, \[Ellipsis] of the fermionic Gaussian states characterized by the Green's function grn (in an L\[Times]L matrix for L fermion modes) and anomalous Green's function anm (also in an L\[Times]L matrix).\nWickLogarithmicNegativity[grn, {k1,k2,\[Ellipsis]}] is equivalent to WickLogarithmicNegativity[{grn,0}, {k1,k2,\[Ellipsis]}]."
-
-WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}] :=
-  WickTimeReversalMoment[1/2, grn, kk]
-
-WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := 
-  WickTimeReversalMoment[1/2, {grn, anm}, kk]
-
-(**** </WickLogarithmicNegtivity> ****)
-
-
-(**** <WickTimeReversalMoment> ****)
-
-(* See also: Shapourian and Ryu (2017, 2019) *)
-
-WickTimeReversalMoment::usage = "WickTimeReversalMoment[\[Alpha], {grn,anm}, {k1,k2,\[Ellipsis]}] returns the \[Alpha]th moment of partial time reversal over the fermion modes (species) k1, k2, \[Ellipsis] for the fermionic Gaussian state characterized by the Green's funciton grn (in an L\[Times]L matrix for L fermion modes) and anomalous Green's function anm (also in an L\[Times]L matrix).\nWickTimeReversalMoment[\[Alpha], grn, {k1,k2,\[Ellipsis]}] is equivalent to WickTimeReversalMoment[\[Alpha], {grn,0}, {k1,k2,\[Ellipsis]}]."
-
-WickTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}] :=
-  WickTimeReversalMoment[alpha, {grn, Zero[Dimensions @ grn]}, kk]
-
-WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := Module[
-  { dd = Length[grn],
-    gg, zr, id, xx, zz, uu, ww, pf, dgn, off
-  },
-  zr = Zero[dd, dd];
-  id = One[dd];
-  xx = CircleTimes[ThePauli[1], id];
-  zz = CircleTimes[ThePauli[3], id];
-  
-   (* \Gamma *)
-   gg = ArrayFlatten @ {
-    {id - grn, anm},
-    {Topple @ anm, Transpose[grn] - id}
-  };
-  pf = Power[Pfaffian[Inverse[gg.xx]], 2];
-
-  (* \Omega of the density operator \rho *)
-  ww = Inverse[gg] - zz;
-
-  uu = SparseArray[
-    Flatten @ {
-      Thread[Transpose@{kk, dd + kk} ->  I],
-      Thread[Transpose@{dd + kk, kk} -> -I],
-      Thread[Transpose@{kk, kk} -> 0],
-      Thread[Transpose@{dd + kk, dd + kk} -> 0],
-      {i_, i_} -> 1,
-      {_, _} -> 0
-    },
-    {2*dd, 2*dd}
-  ];
-  (* \Omega of partial TR *)
-  ww = Topple[uu] . ww . uu;
-
-  dgn = CirclePlus[ww[[;;dd, ;;dd]], ww[[dd+1;;, dd+1;;]]];
-  off = ArrayFlatten @ {
-    {zr, ww[[;;dd, dd+1;;]]},
-    {ww[[dd+1;;, ;;dd]], zr}
-  };
-  pf = Pfaffian[(off - zz).xx] / pf;
-
-  (* effective \Omega of \Xi *)
-  ww = off + dgn . Inverse[zz - off] . dgn;
-  pf = pf * Pfaffian[xx.(ww + zz)];
-
-  (* effective \Gamma *)
-  gg = Inverse[ww + zz];
-  (* effective Green's function Gij *)
-  gg = CircleTimes[ThePauli[10], id] - gg;
-
-  (* Recall the particle-hole symmetry. *)
-  gg = Take[Eigenvalues @ gg, dd];
-  Total[Log[2, Power[gg, alpha] + Power[1-gg, alpha]]] + Log[2, Power[pf, alpha]]
-]
-
-(**** </WickTimeReversalMoment> ****)
-
 
 End[]
 

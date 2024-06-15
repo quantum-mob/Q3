@@ -19,12 +19,23 @@ Pfaffian::method = "Unrecognized option `1`; must be either \"ParlettReid\", \"H
 Pfaffian::Hessenberg = "Pfaffian computation with Hessenberg decomposition only works for real matrices; instead, using Householder method.";
 
 
-Options[Pfaffian] = {Method -> "ParlettReid"}
+Options[Pfaffian] = {Method -> Automatic}
 
 Pfaffian[mat_?SquareMatrixQ] := 0 /; OddQ[Length @ mat]
 
 Pfaffian[mat_?SquareMatrixQ, OptionsPattern[]] :=
   Switch[ OptionValue[Method],
+    Automatic,
+      Which[
+        (* real and finite precision *)
+        MatrixQ[mat, NumericQ[#] && Not[MatchQ[#, _Complex]] &],
+        PfaffianHessenberg[mat],
+        (* real but possibly infinite precision *)
+        MatrixQ[mat, NumerQ[#] && Not[MatchQ[#, _Complex]] &],
+        PfaffianHouseholderReal[mat],
+        True,
+        PfaffianHouseholderComplex[mat]
+      ],
     "ParlettReid", PfaffianLTL[mat],
     "Householder", PfaffianHouseholder[mat], 
     "Hessenberg", PfaffianHessenberg[mat],
