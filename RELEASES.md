@@ -16,7 +16,7 @@
 ## 3.3.18
 
 - New symbol ArrayPermute.
-- Backward compatibity issue concerning PositionLargest used in Pfaffian.
+- Backward compatibility issue concerning PositionLargest used in Pfaffian.
 
 ## 3.3.17
 
