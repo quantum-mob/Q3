@@ -2,9 +2,10 @@ BeginPackage["Q3`"]
 
 { WickLogarithmicNegativity, WickTimeReversalMoment };
 
-{ WickState, WickOperate, WickUnitary,
+{ WickState, WickHistory, WickOperate, WickUnitary,
   WickExpectation, WickGreensFunction };
 
+{ WickRandomCircuit };
 
 Begin["`Private`"]
 
@@ -52,15 +53,11 @@ WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := 
     {id - grn, anm},
     {Topple @ anm, Transpose[grn] - id}
   };
-  pf = Power[Pfaffian[Inverse[gg.xx]], 2];
+  pf = Check[Inverse[gg.xx], PseudoInverse[gg.xx]];
+  pf = Power[Pfaffian[pf], 2];
 
   (* \Omega of the density operator \rho *)
-  (* ww = Inverse[gg] - zz *)
-  ww = If[ ZeroQ[Det @ gg],
-    Message[WickTimeReversalMoment::sing, Chop @ gg];
-    PseudoInverse[gg] - zz,
-    Inverse[gg] - zz
-  ];
+  ww = Check[Inverse[gg] - zz, PseudoInverse[gg] - zz];
 
   uu = SparseArray[
     Flatten @ {
@@ -84,16 +81,13 @@ WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := 
   pf = Pfaffian[(off - zz).xx] / pf;
 
   (* effective \Omega of \Xi *)
-  ww = off + dgn . Inverse[zz - off] . dgn;
+  ww = Check[Inverse[zz - off], PseudoInverse[zz - off]];
+  ww = off + dgn . ww . dgn;
   pf = pf * Pfaffian[xx.(ww + zz)];
 
   (* effective \Gamma *)
   (* gg = Inverse[ww + zz]; *)
-  gg = If[ ZeroQ[Det[ww + zz]],
-    Message[WickTimeReversalMoment::sing, Chop[ww + zz]];
-    PseudoInverse[ww + zz],
-    Inverse[ww + zz]
-  ];
+  gg = Check[Inverse[ww + zz], PseudoInverse[ww + zz]];
   (* effective Green's function Gij *)
   gg = CircleTimes[ThePauli[10], id] - gg;
 
@@ -129,8 +123,10 @@ WickState::usage = "WickState[enc, trs, mat, {c1, c2, \[Ellipsis], cm}] represen
 
 WickState::trs = "Inconsistent transformations ``; each transformation must be specified either {mat, mat} or mat form."
 
+WickState::frm = "No fermion modes in ``."
+
 WickState /:
-MakeBoxes[vec:WickState[pp:{___?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...}, ff_?MatrixQ, cc:{__?FermionQ}], fmt_] :=
+MakeBoxes[vec:WickState[pp:{___?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...}, ff_?MatrixQ, cc:{___?FermionQ}], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     WickState, vec, None,
     { BoxForm`SummaryItem @ { "Bare modes: ", cc },
@@ -163,6 +159,12 @@ WickState[any___, Ket[a_Association]] := WickState[any, a]
 WickState[pre___, op_Multiply, post___] := WickState[pre, List @@ op, post]
 
 
+WickState[spec___, aa_Association] := (
+  Message[WickState::frm, aa];
+  WickState[{}, {{{{0}}, {{0}}}}, {{}}, {}] 
+) /; Fermions[aa] == {}
+
+
 WickState[spec:({__?AnyFermionQ} | {_?MatrixQ, _?MatrixQ} | _?MatrixQ)..., aa_Association] :=
   Module[
     { cc = Keys[aa],
@@ -175,10 +177,31 @@ WickState[aa_Association] :=
   WickState[{}, {theNambuOne @ Length @ Keys @ aa}, {{}}, Keys @ aa] /; 
   Total[Values @ aa] == 0
 
+
 WickState /:
 Norm[ws_WickState] := Sqrt[Pfaffian[ws @ "Wick matrix"]]
 
 (**** </WickState> ****)
+
+
+(**** <WickHistory> ****)
+
+WickHistory::usage = "WickHistory[ws, t] returns the past Wick state at stage t of the current Wick state ws.\nWickHistory[ws] returns all past states of the current Wick state ws."
+
+WickHistory[ws_WickState] := Block[
+  { t },
+  Table[WickHistory[ws, t], {t, ws["Stages"]}]
+]
+
+WickHistory[ws_WickState, t_Integer] := Module[
+  { dd, uu, mm, cc, rr, ss },
+  {dd, uu, mm, cc} = List @@ ws;
+  dd = Select[dd, First[#] <= t &];
+  mm = cutWickMatrix[mm, Length[dd]/2];
+  WickState[dd, Take[uu, UpTo[t]], mm, cc]
+]
+
+(**** </WickHistory> ****)
 
 
 (**** <WickOperate> ****)
@@ -459,9 +482,9 @@ jamWickMatrix[ dd:{__?FermionQ}, (* encoded modes *)
 
   (* crack open the matrix. *)
   rr = Most[SymmetrizedArrayRules @ mm] /. {
-      {i_, j_} /; i > n && j > n -> {i + m, j + m},
-      {i_, j_} /; i > n -> {i + m, j},
-      {i_, j_} /; j > n -> {i, j + m}
+    {i_, j_} /; i > n && j > n -> {i + m, j + m},
+    {i_, j_} /; i > n -> {i + m, j},
+    {i_, j_} /; j > n -> {i, j + m}
   };
 
   (* wedge additional blocks into the crack. *)
@@ -494,6 +517,29 @@ jamWickMatrix[ dd:{__?FermionQ}, (* encoded modes *)
 (**** </jamWickMatrix> ****)
 
 
+(**** <cutWickMatrix> ****)
+
+cutWickMatrix::usage = "cutWickMatrix[mat,k] takes the first and last k rows and columns of matrix mat."
+
+cutWickMatrix[mat_SymmetrizedArray, k_Integer] := Module[
+  { n = First[Dimensions@mat],
+    rr },
+  rr = Most@SymmetrizedArrayRules[mat];
+  rr = Join[
+    Normal @ KeySelect[rr, First[#] <= k && Last[#] <= k &],
+    Normal @ KeySelect[rr, First[#] <= k && Last[#] > n-k &],
+    Normal @ KeySelect[rr, First[#] > n-k && Last[#] > n-k &]
+  ];
+  rr = KeyReplace[ rr,
+    { {i_, j_} /; i > n-k && j > n-k -> {i - n + 2*k, j - n + 2*k},
+      {i_, j_} /; j > n-k -> {i, j - n + 2*k} }
+  ];
+  SymmetrizedArray[rr, {2 k, 2 k}, Antisymmetric@{1, 2}]
+]
+
+(**** </cutWickMatrix> ****)
+
+
 (**** <theWickContract> ****)
 
 theWickContract::usage = "theWickContract[mm][{a, i, j}, {b, p, q}] calcualtes the elements of matrix M."
@@ -503,16 +549,16 @@ theWickContract::usage = "theWickContract[mm][{a, i, j}, {b, p, q}] calcualtes t
 (* Convention: barc_i --> barU_{ij}barc_j with barU := {{U, V}, Conjugate @ {V, U}} *)
 
 theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 0], f_[j_, b_, 0]] :=
-  Chop @ Dot[mm[[i, 1, a]], mm[[j, 2, b]]]
+  Dot[mm[[i, 1, a]], mm[[j, 2, b]]]
 
 theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 0], f_[j_, b_, 1]] :=
-  Chop @ Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 1, b]]]
+  Dot[mm[[i, 1, a]], Conjugate @ mm[[j, 1, b]]]
 
 theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 1], f_[j_, b_, 0]] :=
-  Chop @ Dot[Conjugate @ mm[[i, 2, a]], mm[[j, 2, b]]]
+  Dot[Conjugate @ mm[[i, 2, a]], mm[[j, 2, b]]]
 
 theWickContract[mm:{{_?MatrixQ, _?MatrixQ}..}][f_[i_, a_, 1], f_[j_, b_, 1]] :=
-  Chop @ Dot[Conjugate @ mm[[i, 2, a]], Conjugate @ mm[[j, 1, b]]]
+  Dot[Conjugate @ mm[[i, 2, a]], Conjugate @ mm[[j, 1, b]]]
 
 (**** </theWickContract> ****)
 
@@ -569,6 +615,69 @@ toNambuForm::usage = "toNambuForm[mat] ..."
 toNambuForm[m_?MatrixQ] := {m, Zero @ Dimensions @ m}
 
 (**** </theNambuDot> ****)
+
+
+(**** <WickRandomCircuit> ****)
+
+WickRandomCircuit::usage = "WickRandomCircuit[{c1, c2, \[Ellipsis]}, wu, p, t] simulates a random quantum circuit of depth t, where layers of Wick unitary wu alternate with layers of measurements on fermion modes selected randomly from {c1, c2, \[Ellipsis]} with probability p."
+
+Options[WickRandomCircuit] = {
+  "Samples" -> 50,
+  "SaveData" -> False,
+  "Overwrite" -> True,
+  "Filename" -> Automatic,
+  "Prefix" -> "WRC"
+}
+
+WickRandomCircuit[cc_, uv:{_?MatrixQ, _?MatrixQ}, rest___] :=
+  WickRandomCircuit[cc, WickUnitary @ uv, rest]
+
+WickRandomCircuit[
+  cc:{__?FermionQ},
+  wu:WickUnitary[{_?MatrixQ, _?MatrixQ}], 
+  p_?NumericQ, t_Integer, OptionsPattern[]] :=
+Module[
+  { k = 0,
+    progress = 0,
+    in, qc, data, n },
+  PrintTemporary @ ProgressIndicator @ Dynamic[progress];
+
+  (* initial state with half-filling *)
+  n = Length[cc];
+  in = PadRight[Riffle[Table[1, Floor[n/2]], Table[0, Floor[n/2]]], n];
+  in = wu[WickState @ Ket[cc -> in]];
+
+  (* quantum circuit with randomly selected measurements *)
+
+  n = OptionValue["Samples"];
+  data = Table[
+    progress = ++k / n;
+    qc = Riffle[Measurement /@ RandomPick[cc, p, t], wu];
+    Fold[Construct[#2, #1]&, in, qc],
+    n
+  ];
+
+  If[Not @ OptionValue["SaveData"], Return @ data];
+
+  PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 
+  PrintTemporary["It may take some time."];
+    
+  file = OptionValue["Filename"];
+  If[ file === Automatic,
+    file = FileNameJoin @ {
+      Directory[],
+      ToString[Unique @ OptionValue @ "Prefix"]
+    };
+    file = StringJoin[file, ".mx"]
+  ];
+
+  If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
+
+  Export[file, Association @ {"Times" -> tt, "Data" -> data}]
+]
+
+(**** </WickRandomCircuit> ****)
+
 
 End[]
 

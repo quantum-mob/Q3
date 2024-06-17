@@ -1,8 +1,9 @@
 # Release Notes
 
-## 3.3.20
+## 3.4.0
 
-- New functions MatrixObject, WickOperate, WickGreensFunction, RandomPick.
+- New functions for fermionic quantum computation: WickHistory, WickRandomCircuit, WickOperate, WickGreensFunction.
+- Other new function: MatrixObject, RandomPick.
 - Syntax arguments of WickExpectation has been changed.
 - Changes in the convention for the compact form of unitary matrix in the Nambu space.
 - WickLogarithmicNegativity supports WickState.

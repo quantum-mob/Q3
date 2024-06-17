@@ -221,10 +221,13 @@ KeyGroupBy[assoc_Association, f_ -> g_, post_] := Merge[
 
 KeyReplace::usage = "KeyReplace[assoc, {key1 -> new1, key2 -> new2, ...}] replace key1 with new1, key2 with new2, ... in association assoc.\nKeyReplace[{key1 -> val1, key2 -> val2, ...}, {key1 -> new1, key2 -> new2, ...}] is similar but returns a list rather than an association."
 
-KeyReplace[aa_Association, kk:{___Rule}] :=
+KeyReplace[any_, rr:(_Rule|_RuleDelayed)] :=
+  KeyReplace[any, {rr}]
+
+KeyReplace[aa_Association, kk:{(_Rule|_RuleDelayed)...}] :=
   AssociationThread[Keys[aa] /. kk, Values @ aa]
 
-KeyReplace[aa:{___Rule}, kk:{___Rule}] :=
+KeyReplace[aa:{___Rule}, kk:{(_Rule|_RuleDelayed)...}] :=
   Thread @ Rule[Keys[aa] /. kk, Values @ aa]
 
 (**** </KeyReplace> ****)
