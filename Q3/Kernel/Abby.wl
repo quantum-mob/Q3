@@ -10,6 +10,7 @@ BeginPackage["Q3`"]
 { PseudoDivide, ZeroQ };
 { CountsFor };
 { IntegerParity };
+{ RandomPick };
 
 { Unless };
 
@@ -345,6 +346,19 @@ SetAttributes[IntegerParity, Listable]
 IntegerParity[n_Integer] := 1 - 2*Mod[n, 2]
 
 (**** </IntegerParity> ****)
+
+
+(**** <RandomPick> ****)
+
+RandomPick::usage = "RandomPick[{e1, e2, \[Ellipsis]}, p] picks each element ek with probability p and returns the list of picked elements.\nRandomPick[{e1, e2, \[Ellipsis]}, p, n] repeats n times and returns the collected elements."
+
+RandomPick[list_List, p_?NumericQ, n_Integer] :=
+  Table[RandomPick[list, p], n]
+
+RandomPick[list_List, p_?NumericQ] :=
+  Pick[list, Thread[RandomReal[{0, 1}, Length @ list] < p]]
+
+(**** </RandomPick> ****)
 
 
 (**** <Chain> ****)

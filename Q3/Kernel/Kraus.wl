@@ -635,7 +635,7 @@ Options[LindbladSimulate] = {
   "Overwrite" -> True,
   "Filename" -> Automatic,
   "Prefix" -> "Carlo"
- }
+}
 
 (* TODO: 2023-05-27 *)
 (* LindbladSimulate[tsr_?ChoiMatrixQ, in_?VectorQ, tt_List,
@@ -655,7 +655,7 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
     If[ Not @ AllTrue[Flatten @ {opH, opL, in, tt}, NumericQ],
       Message[LindbladSimulate::numeric];
       Return[$Failed]
-     ];
+    ];
     
     {val, mat} = Eigensystem @ Normal[opH - I*opG];
     mat = Transpose[mat];
@@ -666,7 +666,7 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
       progress = ++k / n;
       SparseArray @ Chop @ goMonteCarlo[{mat, val, inv}, opL, in, tt],
       n
-     ];
+    ];
     
     If[Not @ OptionValue["SaveData"], Return @ data];
 
@@ -680,18 +680,18 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
         ToString[Unique @ OptionValue @ "Prefix"]
        };
       file = StringJoin[file, ".mx"]
-     ];
+    ];
 
     If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
 
     Export[file, Association @ {"Times" -> tt, "Data" -> data}]
-   ] /; And[ArrayQ @ Join[{opH}, opL], Length[opH] == Length[in]]
+  ] /; And[ArrayQ @ Join[{opH}, opL], Length[opH] == Length[in]]
 
 
 LindbladSimulate[_?MatrixQ, {__?MatrixQ}, _?VectorQ, ___] := (
   Message[LindbladSimulate::incmp];
   Return[$Failed]
- )
+)
 
 LindbladSimulate[ops:{opH_?MatrixQ, opL__?MatrixQ}, in_?VectorQ, tt_List] :=
   LindbladSimulate[opH, {opL}, in, tt]
@@ -699,7 +699,7 @@ LindbladSimulate[ops:{opH_?MatrixQ, opL__?MatrixQ}, in_?VectorQ, tt_List] :=
 LindbladSimulate[opH_, opL:{__}, in_, tt_List, opts___?OptionQ] := Module[
   { ss = Agents @ {opH, opL, in} },
   LindbladSimulate[Matrix[opH, ss], Matrix[opL, ss], Matrix[in, ss], tt, opts]
- ] /; Not @ FreeQ[in, _Ket]
+] /; Not @ FreeQ[in, _Ket]
 
 LindbladSimulate[{opH_, opL__}, in_, tt_List] :=
   LindbladSimulate[opH, {opL}, in, tt]
@@ -746,7 +746,7 @@ goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
       AppendTo[res, new];
     ];
     Return[res];
-  ]
+]
 
 (**** </LindbladSimulate> ****)
 

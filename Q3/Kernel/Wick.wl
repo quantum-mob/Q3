@@ -2,7 +2,7 @@ BeginPackage["Q3`"]
 
 { WickLogarithmicNegativity, WickTimeReversalMoment };
 
-{ WickState, WickOperate,
+{ WickState, WickOperate, WickUnitary,
   WickExpectation, WickGreensFunction };
 
 
@@ -55,9 +55,11 @@ WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := 
   pf = Power[Pfaffian[Inverse[gg.xx]], 2];
 
   (* \Omega of the density operator \rho *)
+  (* ww = Inverse[gg] - zz *)
   ww = If[ ZeroQ[Det @ gg],
-    Inverse[gg] - zz,
-    PseudoInverse[gg] - zz
+    Message[WickTimeReversalMoment::sing, Chop @ gg];
+    PseudoInverse[gg] - zz,
+    Inverse[gg] - zz
   ];
 
   uu = SparseArray[
@@ -86,7 +88,12 @@ WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := 
   pf = pf * Pfaffian[xx.(ww + zz)];
 
   (* effective \Gamma *)
-  gg = Inverse[ww + zz];
+  (* gg = Inverse[ww + zz]; *)
+  gg = If[ ZeroQ[Det[ww + zz]],
+    Message[WickTimeReversalMoment::sing, Chop[ww + zz]];
+    PseudoInverse[ww + zz],
+    Inverse[ww + zz]
+  ];
   (* effective Green's function Gij *)
   gg = CircleTimes[ThePauli[10], id] - gg;
 
@@ -98,12 +105,12 @@ WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := 
 (**** </WickTimeReversalMoment> ****)
 
 
-(**** <transformsObject> ****)
+(**** <NambuTransforms> ****)
 
-transformsObject /:
-MakeBoxes[transformsObject[trs:{{_?MatrixQ, _?MatrixQ}..}], fmt_] :=
+NambuTransforms /:
+MakeBoxes[NambuTransforms[trs:{{_?MatrixQ, _?MatrixQ}..}], fmt_] :=
   BoxForm`ArrangeSummaryBox[
-    "transformsObject", trs, None,
+    "NambuTransforms", trs, None,
     { BoxForm`SummaryItem @ { "Number of Transformations: ", Length @ trs },
       BoxForm`SummaryItem @ { "Dimensions of each: ", Dimensions @ trs[[1, 1]] }
     },
@@ -113,7 +120,7 @@ MakeBoxes[transformsObject[trs:{{_?MatrixQ, _?MatrixQ}..}], fmt_] :=
     "Interpretable" -> Automatic
   ] /; ArrayQ[trs]
 
-(**** </transformsObject> ****)
+(**** </NambuTransforms> ****)
 
 
 (**** <WickState> ****)
@@ -130,7 +137,7 @@ MakeBoxes[vec:WickState[pp:{___?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...}, ff_?M
       BoxForm`SummaryItem @ { "Initial occupation: ", vec["Initial occupation"] }
     },
     { BoxForm`SummaryItem @ { "Encoded modes: ", pp },
-      BoxForm`SummaryItem @ { "Transformations: ", transformsObject @ mm },
+      BoxForm`SummaryItem @ { "Transformations: ", NambuTransforms @ mm },
       BoxForm`SummaryItem @ { "Wick matrix: ", ff }
     },
     fmt,
@@ -178,26 +185,61 @@ Norm[ws_WickState] := Sqrt[Pfaffian[ws @ "Wick matrix"]]
 
 WickOperate::usage = "WickOperate[{c1,c2,...,ck}, ws] returns the output state in the form of WickState upon applying c1**c2**...**ck on WickState ws.\nWickOperate[{u, v}, ws] returns the output state when applying the unitary operator specified by matrices {u, v}."
 
+Format[WickOperate[trs:{_?MatrixQ, _?MatrixQ}]] :=
+  WickOperate[NambuTransforms @ trs]
+
+
 WickOperate[any_][ws_WickState] := WickOperate[any, ws]
+
 
 WickOperate[msr_Measurement, ws_WickState] := msr[ws]
 
-WickOperate[op:{__?AnyFermionQ}, WickState[{}, uu_, {{}}, cc:{__?FermionQ}]] :=
+WickOperate[trs_WickUnitary, ws_WickState] := trs[ws]
+
+WickOperate[trs:{_?MatrixQ, _?MatrixQ}, ws_WickState] :=
+  WickUnitary[trs][ws]
+
+
+(* For the vacuum state *)
+WickOperate[op:{__?AnyFermionQ}, WickState[{}, {uv_}, {{}}, cc:{__?FermionQ}]] :=
   Module[
     {enc, trs, mat},
-    {enc, trs, mat} = getWickMatrix[cc][op, First @ uu];
+    {enc, trs, mat} = getWickMatrix[cc][op, uv];
     WickState[enc, trs, mat, cc]
   ]
 
 WickOperate[op:{__?AnyFermionQ}, ws_WickState] :=
   Module[
-    {enc, trs, mat},
-    {enc, trs, mat} = getWickMatrix[cc][op, First @ uu];
-    Echo["Here"];
-    WickState[enc, trs, mat, cc]
+    { enc, trs, mat, dd },
+    {enc, trs, mat} = List @@ Most[ws];
+    dd = Join[Dagger @ Reverse @ op, op];
+    dd = theWickCode[Last @ ws][dd, {Length @ trs}];
+    {enc, trs, mat} = jamWickMatrix[dd, enc, trs, mat, Length[enc]/2];
+    WickState[enc, trs, mat, Last @ ws]
   ]
 
-WickOperate[trs:{_?MatrixQ, _?MatrixQ}, ws_WickState] :=
+(**** </WickOperate> ****)
+
+
+(**** </WickUnitary> ****)
+
+WickUnitary::usage = "WickUnitary[{u, v}] represents the unitary matrix ArrayFlatten[{{u, v}, Conjugate @ {v, u}}] in the Nambu space."
+
+WickUnitary /:
+MakeBoxes[op:WickUnitary[trs:{_?MatrixQ, _?MatrixQ}], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickUnitary, op, None,
+    { BoxForm`SummaryItem @ { "Type: ", "Nambu" },
+      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ trs }
+    },
+    { BoxForm`SummaryItem @ { "Blocks: ", Map[MatrixObject, trs] }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ] /; ArrayQ[trs]
+
+
+WickUnitary[trs:{_?MatrixQ, _?MatrixQ}][ws_WickState] :=
   Module[
     { pp = ws["Encoded modes"],
       uu = ws["Transformations"],
@@ -210,7 +252,7 @@ WickOperate[trs:{_?MatrixQ, _?MatrixQ}, ws_WickState] :=
     ReplacePart[ws, 2 -> uu]
   ]
 
-(**** </WickOperate> ****)
+(**** </WickUnitary> ****)
 
 
 (**** <Measurement> ****)
@@ -218,31 +260,31 @@ WickOperate[trs:{_?MatrixQ, _?MatrixQ}, ws_WickState] :=
 Measurement[c_?FermionQ][ws_WickState] := Module[
   { tt = ws["Stages"],
     cc = ws["Bare modes"],
-    pp = ws["Encoded modes"],
-    mm = ws["Transformations"],
-    ff = ws["Wick matrix"],
-    gg, dd, nn },
-
-  nn = Length[pp] / 2;
-  dd = theWickCode[cc][{c, Dagger @ c}, {tt}]; (* op := c ** Dagger[c] *)
+    aa = ws["Encoded modes"],
+    uu = ws["Transformations"],
+    mm = ws["Wick matrix"],
+    bb, vv, nn,
+    op, kk },
+  kk = Length[aa] / 2;
+  op = theWickCode[cc][{c, Dagger @ c}, {tt}]; (* op := c ** Dagger[c] *)
 
   (* For the expectation value of c ** Dagger[c] *)
-  {pp, mm, gg} = jamWickMatrix[dd, pp, mm, ff, nn];
+  {bb, vv, nn} = jamWickMatrix[op, aa, uu, mm, kk];
 
   (* Simulate the measurement process. *)
   (* NOTE: WickState is unnormalized. *)
-  If[ RandomReal[] < Chop[Pfaffian @ gg / Pfaffian @ ff],
+  If[ RandomReal[] < Chop[Pfaffian @ nn / Pfaffian @ mm],
     $MeasurementOut[c] = 0,
     $MeasurementOut[c] = 1;
-    dd = Reverse @ dd;
-    pp = ArrayPermute[pp, nn+1 <-> nn+2];
-    gg = ArrayPermute[gg, nn+1 <-> nn+2];
-    gg += SymmetrizedArray[{{nn+1, nn+2}->1}, Dimensions @ gg, Antisymmetric[{1,2}]]
+    op = Reverse @ op;  (* op := Dagger[c] ** c *)
+    {bb, vv, nn} = jamWickMatrix[op, aa, uu, mm, kk]
   ];
+
+  (* PrintTemporary["Measurement outcome on mode ", c, ": ", $MeasurementOut[c]]; *)
   
   (* Construct the post-measurment state. *)
-  {pp, mm, gg} = jamWickMatrix[dd, pp, mm, gg, nn];
-  WickState[pp, mm, gg, cc]
+  {bb, vv, nn} = jamWickMatrix[op, bb, vv, nn, kk];
+  WickState[bb, vv, nn, cc]
 ]
 
 (**** </Measurement> ****)
@@ -298,16 +340,19 @@ WickGreensFunction::usage = "WickGreensFunction[ws] returns the pair {G, F} of n
 WickGreensFunction[ws_WickState] := Module[
   { tt = ws["Stages"],
     cc = ws["Bare modes"],
-    dd, pp, uv, mm, ff, gg, L, n, i, j },
+    aa, bb, pp, uv, mm, ff, gg, L, n, i, j },
   {pp, uv, mm} = List @@ Most[ws];
 
   n = Length[cc];
   L = Length[pp] / 2;
 
+  (* encoded modes *)
+  aa = theWickCode[cc][cc, {tt}];
+  bb = dagWickCode /@ aa;
+
   (* Green's function *)
   gg = Flatten @ Table[
-    dd = theWickCode[cc][{cc[[i]], Dagger @ cc[[j]]}, {tt}];
-    {i, j} -> Pfaffian @ Last @ jamWickMatrix[dd, pp, uv, mm, L],
+    {i, j} -> Pfaffian @ Last @ jamWickMatrix[{aa[[i]], bb[[j]]}, pp, uv, mm, L],
     {i, 1, n},
     {j, i, n}
   ];
@@ -315,8 +360,7 @@ WickGreensFunction[ws_WickState] := Module[
 
   (* anomalous Green's function *)
   ff = Flatten @ Table[
-    dd = theWickCode[cc][{cc[[i]], cc[[j]]}, {tt}];
-    {i, j} -> Pfaffian @ Last @ jamWickMatrix[dd, pp, uv, mm, L],
+    {i, j} -> Pfaffian @ Last @ jamWickMatrix[{aa[[i]], aa[[j]]}, pp, uv, mm, L],
     {i, 1, n},
     {j, i+1, n}
   ];
@@ -406,15 +450,15 @@ jamWickMatrix::usage = "jamWickMatrix[dd, pp, mm, mat, n] cleaves the Wick matri
 *)
 (* NOTE: Both dd and pp are given in the form of encoded modes. *)
 jamWickMatrix[ dd:{__?FermionQ}, (* encoded modes *)
-  pp:{__?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...},
-  ff_SymmetrizedArray, n_Integer] := Module[
+  pp:{__?FermionQ}, uv:{{_?MatrixQ, _?MatrixQ}...}, mm_SymmetrizedArray,
+  n_Integer] := Module[
   { m = Length[dd],
     p1, p2, rr, ss, i, j },
 
   {p1, p2} = TakeDrop[pp, n];
 
   (* crack open the matrix. *)
-  rr = Most[SymmetrizedArrayRules @ ff] /. {
+  rr = Most[SymmetrizedArrayRules @ mm] /. {
       {i_, j_} /; i > n && j > n -> {i + m, j + m},
       {i_, j_} /; i > n -> {i + m, j},
       {i_, j_} /; j > n -> {i, j + m}
@@ -422,19 +466,19 @@ jamWickMatrix[ dd:{__?FermionQ}, (* encoded modes *)
 
   (* wedge additional blocks into the crack. *)
   ss = Flatten @ Table[
-    {i, j+n} -> theWickContract[mm][p1[[i]], dd[[j]]],
+    {i, j+n} -> theWickContract[uv][p1[[i]], dd[[j]]],
     {i, n},
     {j, m}
   ];
   rr = Join[rr, ss];
   ss = Flatten @ Table[
-    {i+n, j+n} -> theWickContract[mm][dd[[i]], dd[[j]]],
+    {i+n, j+n} -> theWickContract[uv][dd[[i]], dd[[j]]],
     {i, m},
     {j, i+1, m}
   ];
   rr = Join[rr, ss];
   ss = Flatten @ Table[
-    {i+n, j+n+m} -> theWickContract[mm][dd[[i]], p2[[j]]],
+    {i+n, j+n+m} -> theWickContract[uv][dd[[i]], p2[[j]]],
     {i, m},
     {j, Length[pp] - n}
   ];
@@ -442,8 +486,8 @@ jamWickMatrix[ dd:{__?FermionQ}, (* encoded modes *)
 
   (* Reconstruct the Wick matrix. *)
   { Join[p1, dd, p2], 
-    mm,
-    SymmetrizedArray[rr, Dimensions[ff] + {m, m}, Antisymmetric[{1, 2}]]
+    uv,
+    SymmetrizedArray[rr, Dimensions[mm] + {m, m}, Antisymmetric[{1, 2}]]
   }
 ]
 

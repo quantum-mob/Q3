@@ -2,7 +2,7 @@
 
 ## 3.3.20
 
-- New functions MatrixObject, WickOperate, WickGreensFunction.
+- New functions MatrixObject, WickOperate, WickGreensFunction, RandomPick.
 - Syntax arguments of WickExpectation has been changed.
 - Changes in the convention for the compact form of unitary matrix in the Nambu space.
 - WickLogarithmicNegativity supports WickState.
