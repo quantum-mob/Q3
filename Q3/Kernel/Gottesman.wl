@@ -1,4 +1,3 @@
-0(* -*- mode:math -*- *)
 (* stabilizer formalism *)
 BeginPackage["Q3`"]
 
@@ -13,7 +12,9 @@ BeginPackage["Q3`"]
 
 { CliffordDecompose = CliffordFactor };
 
-{ Stabilizer, StabilizerStateQ, StabilizerStateCount };
+{ Stabilizer, StabilizerGenerators };
+
+{ StabilizerStateQ, StabilizerStateCount };
 
 { GottesmanGroup = BinarySymplecticGroup,
   GottesmanGroupElements = BinarySymplecticGroupElements };
@@ -552,40 +553,31 @@ GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := MapThread[Riffle, {xx, zz}]
 
 (**** <Stabilizer> ****)
 
-Stabilizer::usage = "Stabilzier[state] returns the stabilizer subgroup of the Pauli group that stabilizes state, which may be a column vecotr or expressed in terms of Ket[\[Ellipsis]] or Ket[<|\[Ellipsis]|>].\nStabilizer[state, {s1,s2,\[Ellipsis]}] assumes that state belongs to the Hilbert space associated with qubits {s1,s2,\[Ellipsis]}.\nStabilizer[graph] returns the stabilizer subgroup of the Pauli group that stabilizes the graph state associated with  graph.\nStabilizer[graph, vtx] gives the operator associated with the vertex vtx that stabilize the graph state associated with graph."
+Stabilizer::usage = "Stabilzier[state] returns the stabilizer subgroup of the Pauli group that stabilizes state, which may be a column vecotr or expressed in terms of Ket[\[Ellipsis]] or Ket[<|\[Ellipsis]|>].\nStabilizer[state, {s1,s2,\[Ellipsis]}] assumes that state belongs to the Hilbert space associated with qubits {s1,s2,\[Ellipsis]}.\nStabilizer[graph] returns the stabilizer subgroup of the Pauli group that stabilizes the graph state associated with graph.\nStabilizer[graph, vtx] returns the operator associated with vertex vtx (the so-called correlation operator on vtx) that stabilizes the graph state associated with graph."
 
 Stabilizer::notss = "`` is not a stabilizer state."
 
 Stabilizer[vec_?VectorQ] := With[
   { mm = getStabilizer[vec] },
-  If[ FailureQ[mm],
-    Message[Stabilizer::notss, expr];
-    Return[{}]
-   ];
+  If[FailureQ[mm], Message[Stabilizer::notss, expr]; Return @ {}];
   Map[ThePauli, Keys @ mm] * Values[mm]
- ] /; IntegerQ @ Log[2, Length @ vec]
+] /; IntegerQ @ Log[2, Length @ vec]
 
 
 Stabilizer[expr_] := With[
   { mm = getStabilizer @ Matrix[expr] },
-  If[ FailureQ[mm],
-    Message[Stabilizer::notss, expr];
-    Return[{}]
-   ];
+  If[FailureQ[mm], Message[Stabilizer::notss, expr]; Return @ {}];
   Map[Pauli, Keys @ mm] * Values[mm]
- ] /; fPauliKetQ[expr]
+] /; fPauliKetQ[expr]
 
 
 Stabilizer[expr_] := Stabilizer[expr, Qubits @ expr]
 
 Stabilizer[expr_, ss:{__?QubitQ}] := With[
   { mm = getStabilizer @ Matrix[expr, ss] },
-  If[ FailureQ[mm],
-    Message[Stabilizer::notss, expr];
-    Return[{}]
-   ];
+  If[FailureQ[mm], Message[Stabilizer::notss, expr]; Return @ {}];
   Elaborate[ (Multiply @@@ FlavorThread[ss, Keys @ mm]) * Values[mm] ]
- ]
+]
 
 
 getStabilizer[vec_?VectorQ] := Module[
@@ -594,7 +586,7 @@ getStabilizer[vec_?VectorQ] := Module[
   tsr = PauliDecompose[rho];
   If[Not[Equal @@ Abs[Values @ tsr]], Return @ $Failed];
   Sign /@ tsr
- ]
+]
 
 
 Stabilizer[g_Graph] := Stabilizer @ GraphState[g]
@@ -607,8 +599,31 @@ Stabilizer[g_Graph, vtx_?QubitQ] := Module[
     adj },
   adj = AdjacencyList[g, new|new[$]];
   vtx[1] ** Apply[Multiply, Through[adj[3]]]
- ]
+]
 
+(**** </Stabilizer> ****)
+
+
+(**** <StabilizerGenerators> ****)
+
+StabilizerGenerators::usage = "StabilizerGenerators[{g1, g2, \[Ellipsis]}] returns a list of independent generators of stabilizer subgroup {g1, g2, \[Ellipsis]} of the Pauli group."
+
+StabilizerGenerators[grp_List] := Module[
+  { ss = Qubits[grp],
+    gg, cc
+  },
+  gg = GottesmanVector[#, ss]& /@ grp;
+  gg = Orthogonalize[gg, Mod[Dot[#1, #2], 2]&];
+  gg = DeleteCases[gg, {0..}];
+  gg = FromGottesmanVector[#, ss]& /@ gg;
+  cc = FirstCase[Coefficient[grp, #], Except[0]] & /@ gg;
+  cc * gg
+]
+
+(**** </StabilizerGenerators> ****)
+
+
+(**** <StabilizerState> ****)
 
 StabilizerStateQ::usage = "StabilizerStateQ[state] returns True if state is a stabilizer state, a state that can be stabilized by a non-trivial subgroup of the Pauli group; and False otherwise. The state may be a column vector or expressed in terms of Ket[\[Ellipsis]] or Ket[<|\[Ellipsis]|>]."
 
@@ -617,7 +632,7 @@ StabilizerStateQ::notqbt = "`` is not a state vector for qubits."
 StabilizerStateQ[vec_?VectorQ] := (
   Message[StabilizerStateQ::notqbt, vec];
   False
- ) /; Not @ IntegerQ @ Log[2, Length @ vec]
+) /; Not @ IntegerQ @ Log[2, Length @ vec]
 
 StabilizerStateQ[vec_?VectorQ] :=
   TrueQ[Equal @@ Abs[Values @ PauliDecompose @ Dyad[vec, vec]]]
@@ -636,7 +651,7 @@ StabilizerStateCount[n_Integer] :=
 StabilizerStateCount[ss:{___?QubitQ}] :=
   StabilizerStateCount[Length @ ss]
 
-(**** </Stabilizer> ****)
+(**** </StabilizerState> ****)
 
 
 (**** <GottesmanGroup> ****)

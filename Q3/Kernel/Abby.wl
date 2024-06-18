@@ -314,6 +314,8 @@ PseudoDivide[x_, 0. + 0. I] = 0. + 0. I
 PseudoDivide[x_, y_] := x/y
 
 
+(**** <ZeroQ> ****)
+
 ZeroQ::usage = "ZeroQ[x] returns True if x approximately equals to zero.\nZeroQ[x, \[Delta]] returns True if |x| \[LessEqual] \[Delta]."
 
 ZeroQ::tolnn = "Tolerence specification `` must be a non-negative number."
@@ -325,7 +327,9 @@ ZeroQ[x_, del_?NonNegative] := TrueQ[Chop[x, del] == 0]
 ZeroQ[x_, del_] := (
   Message[ZeroQ::tolnn, del];
   ZeroQ[x, Abs @ del]
- )
+)
+
+(**** </ZeroQ> ****)
 
 
 (**** <CountsFor> ****)

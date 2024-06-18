@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.4.1
+
+- New function StabilizerGenerators.
+- EntanglementEntropy now supports WickState.
+
 ## 3.4.0
 
 - New functions for fermionic quantum computation: WickHistory, WickRandomCircuit, WickOperate, WickGreensFunction.

@@ -84,7 +84,6 @@ $::usage = "$ is a flavor index referring to the species itself."
   CliffordGroupElements, FullCliffordGroupElements,
   CliffordQ };
 
-
 (**** <compatibiliy> ****)
 
 (* Now comes as a built-in function with v13.1, but with an additional
