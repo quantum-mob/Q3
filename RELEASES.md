@@ -1,5 +1,12 @@
 # Release Notes
 
+## 3.4.2
+
+- New function: CrossEntropy
+- Enhancement: WeightLog, QuantumLog, EntanglementEntropy, WickGreensFunction, WickHistory
+- The output form of WickRandomCircuit has been changed.
+- WickOperate has been renamed WickOperator.
+
 ## 3.4.1
 
 - New function StabilizerGenerators.

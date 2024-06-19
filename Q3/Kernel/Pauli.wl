@@ -4746,11 +4746,11 @@ TraceDistance[a_, b_, ss:{___?SpeciesQ}] :=
 Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states \[Rho] and \[Sigma]. \[Rho] and \[Sigma] can take a vector (pure state), matrix (mixed state), ket expression (pure state), or opertor expression (mixed state).\nSee also ClassicalFidelity."
 
 Fidelity[a_?MatrixQ, b_?MatrixQ] := With[
-  {c = MatrixPower[a, 1/2]},
+  { c = MatrixPower[a, 1/2] },
   Tr @ MatrixPower[c . b . c, 1/2]
- ]
+]
 
-Fidelity[v_?VectorQ, m_?MatrixQ] := Chop @ Sqrt[Conjugate[v] . m . v]
+Fidelity[v_?VectorQ, m_?MatrixQ] := Sqrt[Conjugate[v] . m . v]
 
 Fidelity[m_?MatrixQ, v_?VectorQ] := Fidelity[v, m]
 
@@ -4796,9 +4796,7 @@ probabilityQ[_] = False
 (**** </Fidelity> *****)
 
 
-(* ***************************************************************** *)
-(*     <GraphForm>                                                   *)
-(* ***************************************************************** *)
+(**** <GraphForm> ****)
 
 Vertex::usage = "Vertex[a, b, ...] represents an interaction vertex.\nNot to be confused with Vertices in Graph or related functions."
 
@@ -5089,9 +5087,7 @@ chiralVertexRulesShort[ii_List, jj_List, spec:{__Rule}] := spec
 chiralVertexRulesShort[ii_List, jj_List, spec:{row_, col_}] :=
   Join[ vertexRulesShort[ii, row], vertexRulesShort[jj, col] ]
 
-(* ***************************************************************** *)
-(*     </GraphForm>                                                  *)
-(* ***************************************************************** *)
+(**** </GraphForm> ****)
 
 
 (***** <TridiagonalToeplitzMatrix> ****)

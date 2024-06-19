@@ -7,12 +7,14 @@ BeginPackage["Q3`"]
 { VonNeumannEntropy, QuantumLog };
 { RenyiEntropy };
 
-{ EntanglementEntropy };
+{ EntanglementEntropy, CrossEntropy };
 
 { MutualInformation };
 
 
 Begin["`Private`"]
+
+(**** <WeightedLog> ****)
 
 WeightedLog::usage = "WeightedLog[z] returns -z*Log[2, z], the weighted logarithm to base 2.\nWeightedLog[0] = 0.\nWeightedLog[p, q] returns -p*Log[2, q].\nWeightedLog[0, q] = 0.\nWeightedLog[p>0, 0] = \[Infinity]."
 
@@ -20,20 +22,74 @@ SetAttributes[WeightedLog, Listable]
 
 WeightedLog[0] = 0
 
-WeightedLog[z_] := 0 /; Chop[z] == 0
+WeightedLog[_?ZeroQ] = 0
 
-WeightedLog[z_?Positive] := -z * Log2[z]
+WeightedLog[z_] := -z * Log2[z]
 
 
 WeightedLog[0, _] = 0
 
-WeightedLog[_?Positive, 0] = Infinity
+WeightedLog[_?ZeroQ, _] = 0
 
-WeightedLog[p_?Positive, q_?Positive] := -p * Log2[q]
+WeightedLog[_?Positive, _?ZeroQ] = Infinity
+
+WeightedLog[_, _?ZeroQ] = ComplexInfinity
+
+WeightedLog[p_, q_] := -p * Log2[q]
+
+(**** </WeightedLog> ****)
 
 
-WeightedLog[z_] := -z * Log2[z]
+(**** <QuantumLog> ****)
 
+QuantumLog::usage = "QuantumLog[p, q] returns -Tr[p ** Log[2, q]] for the density operators p and q.\nQuantumLog[p, q, {s1, s2, \[Ellipsis]}] assumes that states p and q, either density operators or ket vectors, are defined for the systems {s1, s2, \[Ellipsis]}.\nQuantumLog is a low-level mathematical function intended for the use in VonNeumannEntropy or related functions."
+
+QuantumLog[a_?VectorQ, b_?VectorQ] :=
+  If[Fidelity[a, b] == 1, 0, Infinity]
+
+QuantumLog[a_?MatrixQ, b_?VectorQ] := Module[
+  {val, vec},
+  {val, vec} = Transpose @ Select[Transpose @ Eigensystem[a], First[#] > 0&];
+  If[ Length[val] > 1, Return[Infinity] ];
+
+  vec = Flatten[vec];
+  If[ AllTrue[vec, NumericQ], vec = Normalize[vec] ];
+  If[ Fidelity[vec, b] == 1, 0, Infinity ]
+]
+
+QuantumLog[a_?VectorQ, b_?MatrixQ] := Module[
+  {val, vec},
+  {val, vec} = Eigensystem[b];
+  If[ AllTrue[Flatten @ vec, NumericQ] && Not[UnitaryMatrixQ @ vec],
+    vec = Orthogonalize[vec]
+   ];
+  Total @ WeightedLog[Abs[Conjugate[a] . Transpose[vec]]^2, val]
+]
+
+QuantumLog[a_?MatrixQ, b_?MatrixQ] := Module[
+  { aval, avec,
+    bval, bvec },
+  {aval, avec} = Eigensystem[a];  
+  If[ AllTrue[Flatten @ avec, NumericQ] && Not[UnitaryMatrixQ @ avec],
+    avec = Orthogonalize[avec]
+  ];
+  {bval, bvec} = Eigensystem[b];
+  If[ AllTrue[Flatten @ bvec, NumericQ] && Not[UnitaryMatrixQ @ bvec],
+    bvec = Orthogonalize[bvec]
+  ];
+  Total @ WeightedLog[aval . Abs[Conjugate[avec] . Transpose[bvec]]^2, bval]
+]
+
+
+QuantumLog[a_, b_, ss:{___?SpeciesQ}] :=
+  QuantumLog[Matrix[a, ss], Matrix[b, ss]]
+
+QuantumLog[a_, b_] := QuantumLog[a, b, Agents @ {a, b}]
+
+(**** </QuantumLog> ****)
+
+
+(**** <ShannonEntropy> ****)
 
 ShannonEntropy::usage = "ShannonEntropy[{p1, p2, \[Ellipsis]}] returns the base 2 Shannon entropy of the probability distribution {p1, p2, \[Ellipsis]}.\nShannonEntropy[{p1, p2, \[Ellipsis]}, {q1, q2, \[Ellipsis]}] returns the relative entropy between the two probability distributions {p1, p2, \[Ellipsis]} and {q1, q2, \[Ellipsis]}."
 
@@ -56,51 +112,10 @@ ShannonEntropy[pp_?VectorQ] := Total[WeightedLog @ pp]
 ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   Total[WeightedLog[pp, qq]] - Total[WeightedLog[pp]]
 
-
-QuantumLog::usage = "QuantumLog[p, q] returns -Tr[p ** Log[2, q]] for the observables p and q.\nQuantumLog[p, q, {s1, s2, \[Ellipsis]}] assumes that states p and q, either density operators or ket vectors, are defined for the systems {s1, s2, \[Ellipsis]}.\nQuantumLog is a low-level mathematical function intended for the use in VonNeumannEntropy or related functions."
-
-QuantumLog[a_?VectorQ, b_?VectorQ] :=
-  If[Fidelity[a, b] == 1, 0, Infinity]
-
-QuantumLog[a_?MatrixQ, b_?VectorQ] := Module[
-  {val, vec},
-  {val, vec} = Transpose @ Select[Transpose @ Eigensystem[a], First[#] > 0&];
-  If[ Length[val] > 1, Return[Infinity] ];
-
-  vec = Flatten[vec];
-  If[ AllTrue[vec, NumericQ], vec = Normalize[vec] ];
-  If[ Fidelity[vec, b] == 1, 0, Infinity ]
- ]
-
-QuantumLog[a_?VectorQ, b_?MatrixQ] := Module[
-  {val, vec},
-  {val, vec} = Eigensystem[b];
-  If[ AllTrue[Flatten @ vec, NumericQ] && Not[UnitaryMatrixQ @ vec],
-    vec = Orthogonalize[vec]
-   ];
-  Total @ WeightedLog[Abs[Conjugate[a] . Transpose[vec]]^2, val]
- ]
-
-QuantumLog[a_?MatrixQ, b_?MatrixQ] := Module[
-  { aval, avec,
-    bval, bvec },
-  {aval, avec} = Eigensystem[a];  
-  If[ AllTrue[Flatten @ avec, NumericQ] && Not[UnitaryMatrixQ @ avec],
-    avec = Orthogonalize[avec]
-   ];
-  {bval, bvec} = Eigensystem[b];
-  If[ AllTrue[Flatten @ bvec, NumericQ] && Not[UnitaryMatrixQ @ bvec],
-    bvec = Orthogonalize[bvec]
-   ];
-  Total @ WeightedLog[aval . Abs[Conjugate[avec] . Transpose[bvec]]^2, bval]
- ]
+(**** </ShannonEntropy> ****)
 
 
-QuantumLog[a_, b_, ss:{___?SpeciesQ}] :=
-  QuantumLog[Matrix[a, ss], Matrix[b, ss]]
-
-QuantumLog[a_, b_] := QuantumLog[a, b, Agents @ {a, b}]
-
+(**** <VonNeumannEntropy> ****)
 
 VonNeumannEntropy::usage = "VonNeumannEntropy[mat|vec] returns the base 2 VonNeumann entropy of the quantum state described by the density matrix 'mat' or vector 'vec'.\nVonNeumannEntropy[mat1, mat2] returns the quantum relative entropy of the mixed state mat1 with respect to mat2."
 
@@ -126,6 +141,8 @@ VonNeumannEntropy[rho_, sgm_, ss:{___?SpeciesQ}] :=
 
 VonNeumannEntropy[rho_, sgm_] :=
   VonNeumannEntropy[rho, sgm, Agents @ {rho, sgm}]
+
+(**** </VonNeumannEntropy> ****)
 
 
 (**** <MutualInformation> ****)
@@ -192,7 +209,8 @@ RenyiEntropy[a_?Positive, rho_?MatrixQ, sgm_?MatrixQ] :=
       Dot[
         MatrixPower[sgm, (1-a)/(2*a)], rho,
         MatrixPower[sgm, (1-a)/(2*a)]
-       ], a ] ] / (a - 1)
+       ], a ] 
+  ] / (a - 1)
 
 
 RenyiEntropy[a_, rho_] := RenyiEntropy[a, rho, Agents @ rho]
@@ -224,7 +242,7 @@ EntanglementEntropy::qubit = "`` does not seem to be a vector or matrix for qubi
 EntanglementEntropy[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] := (
   Message[EntanglementEntropy::qubit, rho];
   rho
- ) /; Not @ IntegerQ @ Log[2, Length @ rho]
+) /; Not @ IntegerQ @ Log[2, Length @ rho]
 
 EntanglementEntropy[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] :=
   EntanglementEntropy[rho, ConstantArray[2, Log[2, Length @ rho]], jj]
@@ -243,20 +261,36 @@ EntanglementEntropy[expr_, ss:{__?SpeciesQ}] := Module[
   qq = Union[qq, rr];
   jj = Flatten @ Map[FirstPosition[qq, #]&, Complement[qq, rr]];
   VonNeumannEntropy @ PartialTrace[Matrix[expr, qq], Dimension[qq], jj]
- ]
+]
 
 
 EntanglementEntropy[expr_, jj:{__Integer}] := Module[
   { nn = Length @ FirstCase[expr, _Ket, Infinity] },
   VonNeumannEntropy @ PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
- ] /; fPauliKetQ[expr]
+] /; fPauliKetQ[expr]
 
 EntanglementEntropy[expr_, jj:{__Integer}] := Module[
   { nn = Length @ FirstCase[expr, _Pauli, Infinity] },
   VonNeumannEntropy @ PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
- ] /; Not @ FreeQ[expr, _Pauli]
+] /; Not @ FreeQ[expr, _Pauli]
 
 (**** </EntanglementEntropy> ****)
+
+
+(**** <CrossEntropy> ****)
+
+CrossEntropy::usage = "CrossEntropy[{p1, p2, \[Ellipsis]}, {q1, q2, \[Ellipsis]}] returns the classical cross-entropy between two probability distributions {p1, p2, \[Ellipsis]} and {q1, q2, \[Ellipsis]}.\nCrossEntropy[rho, sgm] returns the quantum cross-entropy between two density matrices rho and sgm."
+
+CrossEntropy[pp_?VectorQ, qq_?VectorQ] := Total @ WeightedLog[pp, pp]
+
+CrossEntropy[rho_?MatrixQ, sgm_?MatrixQ] := QuantumLog[rho, sgm]
+
+CrossEntropy[rho_, sgm_] := With[
+  { ss = Agents @ {rho, sgm} },
+  QuantumLog[Matrix[rho, ss], Matrix[sgm, ss]]
+]
+
+(**** </CrossEntropy> ****)
 
 End[]
 
