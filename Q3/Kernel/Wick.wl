@@ -7,7 +7,8 @@ BeginPackage["Q3`"]
 
 { WickCircuit, WickRandomCircuit };
 
-{ EntanglementEntropy, VonNeumannEntropy }; (* mainly in vonNeumann.wl *)
+{ WickEntanglementEntropy };
+{ QuantumLog }; (* mainly in vonNeumann.wl *)
 
 Begin["`Private`"]
 
@@ -404,10 +405,9 @@ WickExpectation[ws_WickState][HoldPattern @ Multiply[ops__?AnyFermionQ]] :=
 
 WickExpectation[ws_WickState][ops:{__?AnyFermionQ}] := Module[
   { tt = ws["Stages"],
-    cc = ws["Bare modes"],
-    dd, pp, uv, mm, gg },
+    cc, dd, pp, uv, mm, gg },
+  {pp, uv, mm, cc} = List @@ ws;
   dd = theWickCode[cc][ops, {tt}];
-  {pp, uv, mm} = List @@ Most[ws];
   gg = Last @ wmWedge[dd, pp, uv, mm, Length[pp]/2];
   Pfaffian[gg] / Pfaffian[mm]
 ]
@@ -424,9 +424,8 @@ WickGreensFunction[ws_WickState] :=
 
 WickGreensFunction[ws_WickState, dd:{___?FermionQ}] := Module[
   { tt = ws["Stages"],
-    cc = ws["Bare modes"],
     aa, bb, pp, uv, mm, ff, gg, L, n, i, j },
-  {pp, uv, mm} = List @@ Most[ws];
+  {pp, uv, mm, cc} = List @@ ws;
 
   n = Length[dd];
   L = Length[pp] / 2;
@@ -481,18 +480,28 @@ WickLogarithmicNegativity[ws_WickState, dd:{__?FermionQ}, opts:OptionsPattern[]]
 
 (**** <EntanglementEntropy> ****)
 
-(* See, e.g., Peschel (2003). *)
-EntanglementEntropy[ws_WickState, dd:{__?FermionQ}] := Module[
+(* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
+
+WickEntanglementEntropy::usage = "WickEntanglementEntropy[ws, {d1, d2, \[Ellipsis]}] returns the entanglement entropy in the Wick state ws between the subsystem {d1, d2, \[Ellipsis]} \[Subset] {c1, c2, \[Ellipsis], cn} and the rest.\nWickEntanglementEntropy[{grn, anm}, {k1, k2, \[Ellipsis]}] calculates the entanglement entropy from the normal (grn) and anomalous (anm) Green's functions. The index set {k1, k2, \[Ellipsis]} specifies the subsystem."
+
+WickEntanglementEntropy[ws_WickState, dd:{__?FermionQ}] := Module[
   { gg = WickGreensFunction[ws, dd],
-    ee = 1.25*^-5,
     id, ff },
-  id = One[Dimensions @ First @ gg];
-  gg = ArrayFlatten @ { gg,
-    {Topple[Last @ gg], id - Transpose[First @ gg]}
-  };
+  gg = theNambuGreen[gg];
   id = One[Dimensions @ gg];
-  (VonNeumannEntropy[gg] + VonNeumannEntropy[id - gg]) / 2
+  (QuantumLog[gg] + QuantumLog[id - gg]) / 2
 ]
+
+WickEntanglementEntropy[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := Module[
+  { gg = Normal[grn][[kk, kk]],
+    ff = Normal[anm][[kk, kk]],
+    id },
+  gg = theNambuGreen[{gg, ff}];
+  (* gg = SymmetrizedArray[gg, Dimensions @ gg, Hermitian @ {1,2}]; *)
+  id = One[Dimensions @ gg];
+  (QuantumLog[gg] + QuantumLog[id - gg]) / 2
+]
+(* NOTE: It seems that Part does not support properly SymmetrizedArray, hence Normal is required in the above. *)
 
 (**** </EntanglementEntropy> ****)
 
@@ -693,6 +702,8 @@ theNambuDot[{u1_?MatrixQ, v1_?MatrixQ}, {u2_?MatrixQ, v2_?MatrixQ}] :=
 theNambuDot[a_WickUnitary, b_WickUnitary] :=
   WickUnitary @ theNambuDot[First @ a, First @ b]
 
+(**** </theNambuDot> ****)
+
 
 theNambuOne::usage = "theNambuOne[n] returns the pair {One[n], Zero[n,n]}."
 
@@ -703,12 +714,20 @@ toNambuForm::usage = "toNambuForm[mat] ..."
 
 toNambuForm[m_?MatrixQ] := {m, Zero @ Dimensions @ m}
 
-(**** </theNambuDot> ****)
+
+theNambuGreen::usage = "theNambuGreen[{g, f}] ..."
+
+theNambuGreen[{g_?MatrixQ, f_?MatrixQ}] := ArrayFlatten @ {
+  {g, f},
+  {Topple[f], One[Dimensions @ g] - Transpose[g]}
+}
 
 
 (**** <WickRandomCircuit> ****)
 
 WickRandomCircuit::usage = "WickRandomCircuit[{c1, c2, \[Ellipsis]}, wu, p, t] simulates a random quantum circuit of depth t, where layers of Wick unitary wu alternate with layers of measurements on fermion modes selected randomly from {c1, c2, \[Ellipsis]} with probability p."
+
+WickRandomCircuit::data = "Unknown data form ``."
 
 Options[WickRandomCircuit] = {
   "InitialOccupation" -> Automatic,
@@ -716,6 +735,7 @@ Options[WickRandomCircuit] = {
   "SaveData" -> False,
   "Overwrite" -> True,
   "Filename" -> Automatic,
+  "Data" -> "States",
   "Prefix" -> "WRC"
 }
 
@@ -729,28 +749,50 @@ WickRandomCircuit[
 Module[
   { k = 0,
     progress = 0,
-    in, qc, data, n, m },
+    program, data,
+    in, qc, n, m },
   PrintTemporary @ ProgressIndicator @ Dynamic[progress];
 
-  (* initial state with half-filling *)
+  (* initial state *)
   n = Length[cc];
   in = OptionValue["InitialOccupation"];
-  If[ in === Automatic, in = Riffle[Table[1, Floor[n/2]], Table[0, Floor[n/2]]] ];
-  in = WickState @ Ket[cc -> PadRight[in, n]];
+  If[ in === Automatic,
+    in = PadRight[{1, 0}, n, {1, 0}] (* half-filling *)
+  ];
+  in = WickState @ Ket[cc -> PadRight[in, n, in]];
 
-  (* quantum circuit with randomly selected measurements *)
+  (* simulation *)
   {n, m} = doAssureList[OptionValue["Samples"], 2];
+  program := {
+    WickCircuit[qc, cc],
+      Table[
+      progress = ++k / (n*m);
+      Fold[Construct[#2, #1]&, in, qc],
+      m 
+    ]
+  };
+  Switch[ OptionValue["Data"],
+    "States",
+    Null,
+    "Correlations",
+    program := Table[
+      progress = ++k / (n*m);
+      FoldPairList[{WickGreensFunction[#1], Construct[#2, #1]}&, in, qc],
+      m
+    ],
+    _, Message[WickRandomCircuit::data, OptionValue["Data"]]
+  ];
   data = Table[
-    qc = Riffle[
-      Table[wu, t],
-      Measurement /@ RandomPick[cc, p, t]
-    ];
-    { WickCircuit[qc, cc],
-      Table[progress = ++k/(n*m); Fold[Construct[#2, #1]&, in, qc], m]
-    },
+    (* quantum circuit with randomly selected measurements *)
+    qc = Riffle[ Table[wu, t], Measurement /@ RandomPick[cc, p, t] ];
+    program,
     n
   ];
+  Switch[ OptionValue["Data"],
+    "Correlations", data = Flatten[data, 1]
+  ];
 
+  (* save data *)
   If[Not @ OptionValue["SaveData"], Return @ data];
 
   PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 

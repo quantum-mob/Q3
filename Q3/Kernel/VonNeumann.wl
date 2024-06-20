@@ -42,7 +42,10 @@ WeightedLog[p_, q_] := -p * Log2[q]
 
 (**** <QuantumLog> ****)
 
-QuantumLog::usage = "QuantumLog[p, q] returns -Tr[p ** Log[2, q]] for the density operators p and q.\nQuantumLog[p, q, {s1, s2, \[Ellipsis]}] assumes that states p and q, either density operators or ket vectors, are defined for the systems {s1, s2, \[Ellipsis]}.\nQuantumLog is a low-level mathematical function intended for the use in VonNeumannEntropy or related functions."
+QuantumLog::usage = "QuantumLog[rho] retruns -Tr[rho ** Log[2, rho]].\nQuantumLog[p, q] returns -Tr[p ** Log[2, q]] for the density operators p and q.\nQuantumLog[p, q, {s1, s2, \[Ellipsis]}] assumes that states p and q, either density operators or ket vectors, are defined for the systems {s1, s2, \[Ellipsis]}.\nQuantumLog is a low-level mathematical function intended for the use in VonNeumannEntropy or related functions."
+
+QuantumLog[mat_?MatrixQ] := Total[WeightedLog @ Eigenvalues @ mat]
+
 
 QuantumLog[a_?VectorQ, b_?VectorQ] :=
   If[Fidelity[a, b] == 1, 0, Infinity]
@@ -99,6 +102,9 @@ ShannonEntropy[pp_?VectorQ] :=
   (Message[ShannonEntropy::noprb, pp]; 0) /;
   Not @ AllTrue[Chop @ pp, NonNegative]
 
+ShannonEntropy[pp_?VectorQ] := Total[WeightedLog @ pp]
+
+
 ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   (Message[ShannonEntropy::noprb, pp]; 0) /;
   Not @ AllTrue[Chop @ pp, NonNegative]
@@ -106,8 +112,6 @@ ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
 ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   (Message[ShannonEntropy::noprb, qq]; 0) /;
   Not @ AllTrue[Chop @ qq, NonNegative]
-
-ShannonEntropy[pp_?VectorQ] := Total[WeightedLog @ pp]
 
 ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   Total[WeightedLog[pp, qq]] - Total[WeightedLog[pp]]

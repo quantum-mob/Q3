@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.4.3
+
+- New function WickEntanglementEntropy (cf. EntanglementEntroy) is dedicated to the context of Wick state.
+- New option "Data" for WickRandomCircuit.
+
 ## 3.4.2
 
 - New function: CrossEntropy

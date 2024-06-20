@@ -557,34 +557,43 @@ Stabilizer::usage = "Stabilzier[state] returns the stabilizer subgroup of the Pa
 
 Stabilizer::notss = "`` is not a stabilizer state."
 
-Stabilizer[vec_?VectorQ] := With[
-  { mm = getStabilizer[vec] },
-  If[FailureQ[mm], Message[Stabilizer::notss, expr]; Return @ {}];
+Stabilizer[state:(_?VectorQ|_?SquareMatrixQ)] := With[
+  { mm = getStabilizer[state] },
+  If[ FailureQ[mm], 
+    Message[Stabilizer::notss, state];
+    Return @ List @ One[Length @ state]
+  ];
   Map[ThePauli, Keys @ mm] * Values[mm]
-] /; IntegerQ @ Log[2, Length @ vec]
+] /; IntegerQ @ Log[2, Length @ state]
 
 
-Stabilizer[expr_] := With[
-  { mm = getStabilizer @ Matrix[expr] },
-  If[FailureQ[mm], Message[Stabilizer::notss, expr]; Return @ {}];
+Stabilizer[expr_] := Module[
+  { mm = getStabilizer[Matrix @ expr] },
+  If[ FailureQ[mm],
+    Message[Stabilizer::notss, expr];
+    mm = FirstCase[expr, _Pauli | _Ket, Ket[{}], Infinity];
+    Return @ List @ Pauli @ Table[0, Length @ mm]
+  ];
   Map[Pauli, Keys @ mm] * Values[mm]
-] /; fPauliKetQ[expr]
+] /; Not @ FreeQ[expr, _Pauli | Ket[_List]]
 
 
 Stabilizer[expr_] := Stabilizer[expr, Qubits @ expr]
 
 Stabilizer[expr_, ss:{__?QubitQ}] := With[
   { mm = getStabilizer @ Matrix[expr, ss] },
-  If[FailureQ[mm], Message[Stabilizer::notss, expr]; Return @ {}];
+  If[FailureQ[mm], Message[Stabilizer::notss, expr]; Return @ {1}];
   Elaborate[ (Multiply @@@ FlavorThread[ss, Keys @ mm]) * Values[mm] ]
 ]
 
 
-getStabilizer[vec_?VectorQ] := Module[
-  { rho = Dyad[vec, vec],
-    tsr },
+getStabilizer[vec_?VectorQ] :=
+  getStabilizer @ Dyad[vec, vec]
+
+getStabilizer[rho_?SquareMatrixQ] := Module[
+  { tsr },
   tsr = PauliDecompose[rho];
-  If[Not[Equal @@ Abs[Values @ tsr]], Return @ $Failed];
+  If[Not[theSSQ @ Values @ tsr], Return @ $Failed];
   Sign /@ tsr
 ]
 
@@ -625,24 +634,33 @@ StabilizerGenerators[grp_List] := Module[
 
 (**** <StabilizerState> ****)
 
-StabilizerStateQ::usage = "StabilizerStateQ[state] returns True if state is a stabilizer state, a state that can be stabilized by a non-trivial subgroup of the Pauli group; and False otherwise. The state may be a column vector or expressed in terms of Ket[\[Ellipsis]] or Ket[<|\[Ellipsis]|>]."
+StabilizerStateQ::usage = "StabilizerStateQ[state] returns True if state is a (pure or mixed) stabilizer state, a state that can be stabilized by a non-trivial subgroup of the Pauli group; and False otherwise. The state may be a column vector, square matrix, or expressed in terms of Ket[\[Ellipsis]], Ket[<|\[Ellipsis]|>], Pauli[{\[Ellipsis]}], or (labelled) qubit operators."
 
 StabilizerStateQ::notqbt = "`` is not a state vector for qubits."
 
-StabilizerStateQ[vec_?VectorQ] := (
-  Message[StabilizerStateQ::notqbt, vec];
+StabilizerStateQ[any:(_?VectorQ|_?SquareMatrixQ)] := (
+  Message[StabilizerStateQ::notqbt, any];
   False
-) /; Not @ IntegerQ @ Log[2, Length @ vec]
+) /; Not @ IntegerQ @ Log[2, Length @ any]
 
 StabilizerStateQ[vec_?VectorQ] :=
-  TrueQ[Equal @@ Abs[Values @ PauliDecompose @ Dyad[vec, vec]]]
+  StabilizerStateQ @ Dyad[vec, vec]
+
+StabilizerStateQ[mat_?SquareMatrixQ] :=
+  theSSQ[Values @ PauliDecompose @ mat]
+
+theSSQ[val_?VectorQ] := TrueQ @ And[
+  NoneTrue[val, MatchQ[#, _Complex]&],
+  Equal @@ Abs[val]
+]
+
 
 StabilizerStateQ[expr_] := StabilizerStateQ[Matrix @ expr]
 
 StabilizerStateQ[expr_, ss:{__?QubitQ}] := StabilizerStateQ[Matrix @ expr]
 
 
-StabilizerStateCount::usage = "StabilizerStateCount[n] returns the number of stabilizer states on an n-qubit system.\nStabilizerStateCount[{s1,s2,\[Ellipsis],sn}] is equivalent to StabilizerStateCount[n] for qubits s1, s2, \[Ellipsis], sn."
+StabilizerStateCount::usage = "StabilizerStateCount[n] returns the number of (pure) stabilizer states on an n-qubit system.\nStabilizerStateCount[{s1,s2,\[Ellipsis],sn}] is equivalent to StabilizerStateCount[n] for qubits s1, s2, \[Ellipsis], sn."
 (* See: Aaronson and Gottesman (2004). *)
 
 StabilizerStateCount[n_Integer] :=

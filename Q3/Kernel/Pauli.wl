@@ -3641,17 +3641,17 @@ PauliDecompose[mat_?SquareMatrixQ] := Module[
   If[ Not[IntegerQ @ n],
     Message[PauliDecompose::dim, Dimensions @ mat, mat];
     Return[<||>]
-   ];
+  ];
   trs = SparseArray @ {
     {1, 0,  0,  1},
     {0, 1,  1,  0},
     {0, I, -I,  0},
     {1, 0,  0, -1}
-   } / 2;
+  } / 2;
   trs = CircleTimes @@ Table[trs, n];
   KeyMap[(#-1)&] @ Association @ Most @ ArrayRules @ Chop @
     ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]]
- ]
+]
 
 PauliCompose::usage = "PauliCompose[assc] reconstructs the matrix using the Pauli decomposition coefficients given in Association assc."
 
