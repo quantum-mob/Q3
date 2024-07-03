@@ -118,8 +118,8 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
     Return[$Failed]
   ];
 
-  Print["\tSetting the stylesheet to \"PlaybookX.nb\" for printing (if at all) ..."];
-  SetOptions[nb, StyleDefinitions -> "PlaybookX.nb"]; (* for printing if at all *)
+  Print["\tSetting the stylesheet to \"PlaybookNub.nb\" for printing (if at all) ..."];
+  SetOptions[nb, StyleDefinitions -> "PlaybookNub.nb"]; (* for printing if at all *)
   
   Print["\tSetting the banner as \"", $PlaybookBanner, "\" for printing (if at all) ..."];
   SetBanner[nb, $PlaybookBanner]; (* for printing if at all *)

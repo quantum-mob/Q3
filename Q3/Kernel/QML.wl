@@ -197,17 +197,34 @@ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, opts___?OptionQ] :=
 
 
 BlockEncoding /:
-Expand @ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ] := Module[
-  { uu, dd, vv, mm },
+ExpandAll[enc:BlockEncoding[_?MatrixQ, {__?QubitQ}, {__?QubitQ}, ___?OptionQ]] :=
+  Expand[Expand @ enc]
+
+BlockEncoding /:
+Expand @ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, opts___?OptionQ] := Module[
+  { mint = {"V", "\[CapitalOmega]", "W"},
+    text, uu, dd, vv },
   {uu, dd, vv} = SingularValueDecomposition[mat];
   dd = Diagonal[dd];
   dd = dd * (Last[aa][3]) + Sqrt[1-dd^2] * (Last[aa][1]);
   uu = ExpressionFor[uu, ss];
   vv = ExpressionFor[Topple @ vv, ss];
+
+  (* Handle the "Label" option. *)
+  text = OptionValue[ Gate,
+    Append[{opts}, "Label" -> {"M", mint}],
+    "Label"
+  ];
+  If[ ListQ[text], 
+    If[Length[text] > 1, text = Last[text], text = mint],
+    text = mint
+  ];
+  If[Not[ListQ[text] && Length[text] >= 3], text = mint];
+
   QuantumCircuit[
-    {vv, "Label" -> Superscript["W", "\[Dagger]"]},
-    UniformlyControlledGate[ss, dd, "Label" -> "\[CapitalOmega]"],
-    {uu, "Label" -> "V"},
+    {vv, "Label" -> Superscript[text[[3]], "\[Dagger]"]},
+    UniformlyControlledGate[ss, dd, "Label" -> text[[2]], opts],
+    {uu, "Label" -> text[[1]]},
     "Visible" -> aa
   ]
 ]
@@ -223,7 +240,7 @@ Matrix @ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ
     {mm, -dd}
   };
   mm = CirclePlus[uu, uu] . dd . CirclePlus[Topple @ vv, Topple @ vv];
-  CircleTimes[One[Power[2, Length[aa]-1]], mm]
+  CircleTimes[One @ Power[2, Length[aa]-1], mm]
 ]
 
 BlockEncoding /:
@@ -241,13 +258,15 @@ ParseGate[
   more___?OptionQ
 ] := 
   Module[
-    { new },
+    { txt, new },
+    txt = OptionValue[Gate, Append[{opts}, "Label" -> "M"], "Label"];
+    If[ListQ[txt], txt = First[txt]];
     new = FilterRules[
-      { more, opts,
+      { "Label" -> txt,
+        more, opts,
         "ControlShape" -> "Oval",
         "ControlLabel" -> "enc",
-        "ControlLabelAngle" -> Pi/2,
-        "Label" -> "M"
+        "ControlLabelAngle" -> Pi/2
       },
       Options @ Gate
     ];

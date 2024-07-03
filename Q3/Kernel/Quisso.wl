@@ -2413,26 +2413,32 @@ Projector[expr_, qq:{__?QubitQ}] :=
 
 Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis] in the reverse order."
 
-Measurement::nonum = "Probability half is assumed for a state without explicitly numeric coefficients."
-
-Measurement::novec = "The expression `` does not seem to be a valid Ket expression. Null vector is returned."
+Measurement::num = "Probability half is assumed for a state without explicitly numeric coefficients."
 
 SyntaxInformation[Measurement] = { "ArgumentsPattern" -> {_} }
 
-Measurement[op_List][vec_] :=
-  Construct[Composition @@ Map[Measurement, op], vec]
+Measurement[op_?MatrixQ][in_?VectorQ] := theMeasurement[in, op]
 
-Measurement[op_][vec_] := Module[
-  { odds = MeasurementOdds[op][vec],
-    rand = RandomReal[] },
-  Garner @ If[ rand < Re @ First @ odds[0],
+Measurement[op_List][in_] := Fold[theMeasurement, in , Reverse @ op]
+(* NOTE: Here, Reverse is for backward compatibility. *)
+
+Measurement[op_][in_] := theMeasurement[in, op]
+
+
+theMeasurement::usage = "The actual workhorse."
+
+theMeasurement[in_, op_] := Module[
+  { odds = MeasurementOdds[op][in],
+    rand = RandomReal[],
+    prob },
+  prob = If[ NumericQ[First @ odds[0]],
+    Re[First @ odds[0]],
+    Message[Measurement::num];
+    0.5
+  ];
+  Garner @ If[ rand < prob,
     $MeasurementOut[op] = 0; Last @ odds[0],
-    $MeasurementOut[op] = 1; Last @ odds[1],
-    Message[Measurement::nonum];
-    If[ rand < 1/2,
-      $MeasurementOut[op] = 0; Last @ odds[0],
-      $MeasurementOut[op] = 1; Last @ odds[1]
-    ]
+    $MeasurementOut[op] = 1; Last @ odds[1]
   ]
 ]
 
@@ -2450,7 +2456,7 @@ Multiply[pre___, spr_Measurement, expr_] :=
   Multiply[pre, spr @ expr] /; Not @ FreeQ[expr, _Ket]
 
 Measurement /:
-Matrix[Measurement[op_], ss:{__?QubitQ}] :=
+Matrix[Measurement[op_], ss:{___?SpeciesQ}] :=
   Measurement[Matrix[op, ss]]
 
 
@@ -2459,29 +2465,24 @@ $MeasurementOut::usage = "$MeasurementOut gives the measurement results in an As
 
 Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
 
-Readout::nopauli = "`` is not a Pauli operator. Only Pauli operators (including tensor products of single-qubit Pauli operators) can be measured and readout."
-
 Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout."
 
 SyntaxInformation[Readout] = { "ArgumentsPattern" -> {_} }
 
 Readout[Measurement[op_]] := Readout[op]
 
-Readout[op_] := (
-  If[ Not @ KeyExistsQ[$MeasurementOut, op],
-    Message[Readout::notob, op]
-  ];
-  $MeasurementOut[op]
- )
-(* NOTE: op may be a matrix or an operator expression. *)
+Readout[op_?MatrixQ] := $MeasurementOut[op] /; KeyExistsQ[$MeasurementOut, op]
 
-Readout[op_List] := (
-  If[ Not @ AllTrue[op, KeyExistsQ[$MeasurementOut, #]&],
-    Message[Readout::notob, op]
-  ];
-  Lookup[$MeasurementOut, op]
+Readout[op_List] := Lookup[$MeasurementOut, op] /; ContainsAll[Keys @ $MeasurementOut, op]
+(* NOTE: op may be a list of matrices or operators. *)
+
+Readout[op_] := $MeasurementOut[op] /; KeyExistsQ[$MeasurementOut, op]
+
+
+Readout[op_] := (
+  Message[Readout::notob, op];
+  $Failed
 )
-(* NOTE: op may be a list of matrices or operator expressions. *)
 
 
 MeasurementOdds::usage = "MeasurementOdds[op][vec] theoretically analyzes the process of meauring operator op on state vec and returns an association of elements of the form value->{probability, state}, where value is one of the possible measurement outcomes 0 and 1 (which correspond to eitemvalues +1 and -1, respectively, of op), probability is the probability for value to be actually observed, and state is the post-measurement state when value is actually observed."
@@ -2490,7 +2491,8 @@ MeasurementOdds::pauli = "`` is not an observable Pauli operator."
 
 SyntaxInformation[MeasurementOdds] = { "ArgumentsPattern" -> {_} }
 
-(* NOTE: DO NOT use op_?PauliQ; it will inerfere with mat_?MatrixQ below. *)
+(* NOTE: DO NOT use op_?PauliQ; it will inerfere with mat_?MatrixQ below.
+   NOTE ADDED: Maybe not any longer (v3.4.4) because PauliQ and PauliMatrixQ are now separate. *)
 MeasurementOdds[op_][vec:(_State|_?fKetQ)] := Module[
   { ss = Qubits[{vec, op}],
     aa, ff },
@@ -2520,8 +2522,8 @@ MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] := Module[
     0 -> {p0/(p0+p1), pls},
     1 -> {p1/(p0+p1), mns}
   ]
-] (* /; PauliQ[mat] *)
-(* NOTE: Test PauliQ[mat] may take long for 8 or more qubits. *)
+] (* /; PauliMatrixQ[mat] *)
+(* NOTE: Test PauliMatrixQ[mat] may take long for 8 or more qubits. *)
 (* NOTE:
    1. vec, pls, or mns may be 0 (null vector).
    2. The norms of pls and mns may have imaginary parts numerically.

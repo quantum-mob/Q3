@@ -78,11 +78,11 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { PauliGroup, FullPauliGroup,
   PauliGroupElements, FullPauliGroupElements,
-  PauliQ };
+  PauliQ, PauliMatrixQ };
 
 { CliffordGroup, FullCliffordGroup,
   CliffordGroupElements, FullCliffordGroupElements,
-  CliffordQ };
+  CliffordQ, CliffordMatrixQ };
 
 (**** <compatibiliy> ****)
 
@@ -1067,7 +1067,7 @@ AddElaborationPatterns[_MultiplyExp];
 
 AddElaborationPatterns[
   Exp[a_] :> MultiplyExp[a] /; Not[FreeQ[a, _?NonCommutativeQ]]
- ]
+]
 
 
 Format @ HoldPattern @ MultiplyExp[expr_] :=

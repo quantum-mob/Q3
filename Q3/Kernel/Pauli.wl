@@ -2144,13 +2144,16 @@ Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
   Matrix[expr, FlavorNone @ ss, FlavorNone @ tt] /;
   Not[FlavorNoneQ @ {ss, tt}]
 
+
+(* linearity *)
+
 Matrix[ expr_Plus, qq:{___?SpeciesQ}.. ] :=
   TrigToExp @ ExpToTrig @ With[
     { new = KetChop @ expr },
     If[Head[new] === Plus, Map[Matrix[#, qq]&, new], Matrix[new, qq]]
-   ]
+  ]
 (* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
-(* NOTE: KetChop is required here because "0. + Ket[...]" may happen. *)
+(* NOTE: KetChop is required here because "0. + Ket[...] + ..." may happen. *)
 
 Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ}.. ] := z * Matrix[op, qq]
 
@@ -2160,12 +2163,13 @@ Matrix[ z_?CommutativeQ, qq:{__?SpeciesQ} ] :=
   z * One[Times @@ Dimension @ qq]
 
 Matrix[ z_?CommutativeQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
-  z * One[Times @@ Dimension @ ss, Times @@ Dimension @ tt]
+  z * One[{Times @@ Dimension @ ss, Times @@ Dimension @ tt}]
+
 
 (* Dagger *)
 
 HoldPattern @ Matrix[Dagger[op_?AgentQ], rest___] := Topple @ Matrix[op, rest]
-(* NOTE: Matrix[a] may still include some operators; and hence Topple instead
+(* NOTE: Matrix[a] may still include some operators; hence, Topple instead
    of ConjugateTranspose. *)
 
 
@@ -2180,8 +2184,8 @@ HoldPattern @
       expr,
       {0 -> mat, else_ :> Matrix[else]},
       {1}
-     ]
-   ] /; And[Not @ FreeQ[expr, _Pauli], MemberQ[expr, 0]]
+    ]
+  ] /; And[Not @ FreeQ[expr, _Pauli], MemberQ[expr, 0]]
 
 HoldPattern @
   Matrix[expr_Association, ss:{___?SpeciesQ}..] := Map[Matrix[#, ss]&, expr]
@@ -2199,7 +2203,6 @@ Matrix[Bra[any_], rest___] := Conjugate @ Matrix[Ket[any], rest]
 
 
 (* For Ket of unlabelled qubits *)
-
 Matrix[ vec:Ket[_List], {___} ] := TheMatrix[vec]
 
 
@@ -2220,13 +2223,12 @@ Matrix[ op:Pauli[_List], {___} ] := TheMatrix[op]
 
 (* For Fermions *)
 
-Matrix[op_?FermionQ, qq:{__?SpeciesQ}] := fermionMatrix[op, qq] /;
-  MemberQ[FlavorNone @ qq, FlavorMute @ Peel @ op]
+Matrix[op_?FermionQ, qq:{__?SpeciesQ}] := fermionMatrix[op, qq]
+(* NOTE: Dagger[fermion] is handled by Matrix[Dagger[...], ...] above. *)
 
 (* NOTE: Matrix and MatrixIn must be consistent, recalling that
    Basis always sorts the Keys in Ket. This function also depends on Basis. *)
-
-fermionMatrix[op_, ff:{___?SpeciesQ}] := Module[
+fermionMatrix[op_?FermionQ, ff:{___?SpeciesQ}] := Module[
   { mm },
   mm = SequenceCases[ ff,
     {pre___, op, post___} :> {
@@ -2236,14 +2238,14 @@ fermionMatrix[op_, ff:{___?SpeciesQ}] := Module[
   ];
   If[ mm == {},
     Message[Matrix::fermion, op, ff];
-    Return[TheMatirx @ op],
-    Return[CircleTimes @@ Join @@ First[mm]]
+    op * Matrix[1, ff],
+    CircleTimes @@ Join @@ First[mm]
   ]
 ]
 
 fermionOne[f_?FermionQ] := ThePauli[3]
 
-fermionOne[any_] := One[Dimension @ any]
+fermionOne[any_?SpeciesQ] := One[Dimension @ any]
 
 
 (* For other Species *)
@@ -2255,22 +2257,23 @@ Matrix[op_?AnyAgentQ, ss:{__?SpeciesQ}] := Module[
   rr = One /@ Dimension[ss];
   rr = Association @ Join[ Thread[ss -> rr], {sp -> mm} ];
   CircleTimes @@ rr
- ] /; MemberQ[ss, FlavorMute @ Peel @ op]
+] /; MemberQ[ss, FlavorMute @ Peel @ op]
+(* NOTE: Dagger[op] is handled by Matrix[Dagger[...], ...] above, but other modifiers such as Canon may happen. *)
 
 Matrix[op_?AnyAgentQ, qq:{__?SpeciesQ}] := (
   Message[Matrix::rmndr, op];
   op * Matrix[1, qq]
- )
+)
 
 
 (* For Dyad-like (but not Dyad) expression *)
 Matrix[
   HoldPattern @ Multiply[pre___, ket_Ket, bra_Bra, post___],
   qq:{___?SpeciesQ}
- ] := Dyad[
+] := Dyad[
    Matrix[pre ** ket, qq],
    Dagger @ Matrix[bra ** post, qq]
-  ]
+]
 (* NOTE: Dagger (not Conjugate) here. *)
 
 (* For Multiply[...] *)
@@ -3365,13 +3368,13 @@ Dyad[a_] := Module[
   { qq = Agents[a] },
   Message[Dyad::one];
   Dyad[a, a, qq]
- ] /; Not @ FreeQ[a, _Ket]
+] /; Not @ FreeQ[a, _Ket]
 
 Dyad[a_, b_] := Module[
   { qq = Agents @ {a, b} },
   Message[Dyad::two];
   Dyad[a, b, qq]
- ] /; Not @ FreeQ[{a, b}, Ket[_Association]]
+] /; Not @ FreeQ[{a, b}, Ket[_Association]]
 
 
 (* Direct constuction of Dyad *)
@@ -3597,34 +3600,47 @@ theDyadForm[val:{__}, spc:{__?SpeciesQ}] := Module[
 
 (**** <Zero> ****)
 
-Zero::usage = "Zero[n] return an array of length n with all elements zero.\nZero[m, n, ...] \[Congruent] Zero[{m, n, ...}] returns an m x n x ... tensor with all elements zero."
+Zero::usage = "Zero[n] return an one-diemnsional array of lenth n with all elements zero.\nZero[{m, n, ...}] returns an m\[Times]n\[Times]\[Ellipsis] tensor with all elements zero."
 
-Zero[mn__Integer] := SparseArray[{}, {mn}]
+Zero[n_Integer] := Zero[{n}]
 
-Zero[{mn__Integer}] := SparseArray[{}, {mn}]
+Zero[mn:{__Integer}] := SparseArray[{}, mn]
+
+Zero[m_Integer, n__Integer] := (
+  Message[Q3General::changed, Zero, "Use the form Zero[{n1, n2, \[Ellipsis]}]."];
+  Zero[{m, n}]
+)
 
 (**** </Zero> ****)
 
 
 (**** <One> ****)
 
-One::usage = "One[n] \[Congruent] One[{n}] is almost the same as IdentityMatrix[n], but returns the identity matrix in a sparse array.\nOne[m, n, ...] \[Congruent] One[{m, n}, ...] returns the m \[Times] n \[Times] ... pseudo-identity tensor, i.e., the tensor where the main diagonal elements are 1 and the other elements are all zero.\nOne[{m, n}, k] returns an m \[Times] n matrix with the elements on the \*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere."
-
-One[] := One @ {2, 2}
+One::usage = "One[n] or One[{n}] returns the n\[Times]n identiy matrix in a sparse array; cf. IdentityMatrix[n].\nOne[{m, n}, ...] returns the m\[Times]n\[Times]\[Ellipsis] pseudo-identity tensor, i.e., the tensor where the main diagonal elements are 1 and the other elements are all zero.\nOne[{m, n}, k] returns an m\[Times]n matrix with the elements on the \*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere."
 
 One[n_Integer] := One @ {n, n}
-
-One[m_Integer, n__Integer] := One @ {m, n}
 
 One[{n_Integer}] := One @ {n, n}
 
 One[{m_Integer, n__Integer}] :=
-  SparseArray[ ConstantArray[j_, Length @ {m, n}] -> 1, {m, n} ]
+  SparseArray[ConstantArray[j_, Length @ {m, n}] -> 1, {m, n}]
+
 
 One[{n_Integer}, p_Integer] := One[{n, n}, p]
 
-One[{m_Integer, n_Integer}, p_Integer] := 
-  SparseArray[ {i_, j_} :> 1 /; j == i + p, {m, n} ]
+One[{m_Integer, n_Integer}, k_Integer] := 
+  SparseArray[{i_, j_} :> 1 /; j == i+k, {m, n}]
+
+
+One[] := (
+  Message[Q3General::changed, One, "Use One[2] or One[{2, 2}]."];
+  One @ {2, 2}
+)
+
+One[m_Integer, n__Integer] := (
+  Message[Q3General::changed, One, "Use the form One[{n1, n2, \[Ellipsis]}]."];
+  One @ {m, n}
+)
 
 (**** </One> ****)
 
@@ -4420,7 +4436,7 @@ Purification[rho_] := With[
 Purification[rho_] := ExpressionFor @ Purification @ Matrix[rho] /;
   Not @ FreeQ[rho, _Pauli]
 
-Purification[z_?CommutativeQ] := ExpressionFor @ Purification[z*One[2]]
+Purification[z_?CommutativeQ] := ExpressionFor @ Purification[z * One[2]]
 (* NOTE: Single qubit is assumed. *)
 
 (**** </Purification> ****)
@@ -4542,16 +4558,19 @@ RandomMatrix[range_, n_Integer] := RandomComplex[range, {n, n}]
 RandomMatrix[range_, mn:{_Integer, _Integer}] := RandomComplex[range, mn]
 
 
+(**** <RandomHermitian> ****)
+
 RandomHermitian::usage = "RandomHermitian[n] gives a randomly generated n\[Times]n Hermitian matrix with each element in the range between -(1+I) and (1+I).\nRandomHermitian[] assumes n=2.\nRandomHermitian[range, n] gives a randomly generated n\[Times]n Hermitian matrix. The range specifies the range (see RandomComplex) of the elements."
 
 RandomHermitian[] := RandomHermitian[(1+I){-1, 1}, 2]
 
 RandomHermitian[n_Integer] := RandomHermitian[(1+I){-1, 1}, n]
 
-RandomHermitian[range_, n_Integer] := With[
-  { m = RandomComplex[range, {n, n}] },
-  ( m + ConjugateTranspose[m] ) / 2
- ]
+RandomHermitian[range_, n_Integer] := 
+  Symmetrize[RandomComplex[range, {n, n}], Hermitian @ {1, 2}]
+
+(**** </RandomHermitian> ****)
+
 
 RandomPositive::usage = "RandomPositive[n] gives a randomly generated n\[Times]n positive matrix with each element in the range between -(1+I) and (1+I).\nRandomPositive[] assumes n=2.\nRandomPositive[range, n] gives a random  positive matrix with each element in the specified 'range' (see RandomComplex for the details of the specification of range)."
 
@@ -4562,7 +4581,12 @@ RandomPositive[n_Integer] := RandomPositive[(1+I){-1, 1}, n]
 RandomPositive[range_, n_Integer] := With[
   { m = RandomMatrix[range, {n, n}] },
   Topple[m] . m
- ]
+]
+
+
+(**** <RandomUnitary> ****)
+
+(* See Mezzadri (2007) *)
 
 RandomUnitary::usage = "RandomUnitary[n] generates a uniformly distributed random unitary matrix of dimension n. Here, the uniform distribution is in the sense of the Haar measure."
 
@@ -4579,6 +4603,8 @@ RandomUnitary[n_Integer] := Module[
   rr = DiagonalMatrix[ rr / Abs[rr] ];
   qq . rr
 ]
+
+(**** <RandomUnitary> ****)
 
 
 (**** <BasisComplement> *****)

@@ -1,0 +1,1430 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 14.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       158,          7]
+NotebookDataLength[     51565,       1420]
+NotebookOptionsPosition[     45645,       1299]
+NotebookOutlinePosition[     47952,       1356]
+CellTagsIndexPosition[     47866,       1351]
+WindowTitle->CliffordMatrixQ
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "f8433cca-ed05-4081-901b-45e5faaf0083"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "0b67f142-87a9-4cc3-a9dd-53e447bae025"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "bf5e488d-3d11-4e8e-8a28-c5c6696f7dec"]
+         }],ExpressionUUID->"848a2569-7959-42df-abee-e2f29967ba62"],
+         StripOnInput->False],{
+        "\"CliffordQ\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/CliffordQ"], "\"PauliQ\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/PauliQ"], "\"PauliMatrixQ\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/PauliMatrixQ"], 
+         "\"CliffordGroup\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/CliffordGroup"], 
+         "\"FullCliffordGroup\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/FullCliffordGroup"], 
+         "\"PauliGroup\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/PauliGroup"], 
+         "\"FullPauliGroup\"" :> 
+         Documentation`HelpLookup["paclet:Q3/ref/FullPauliGroup"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "4845e7e3-419c-4223-b49a-eea0d4073a45"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "2d96ac10-05be-4f91-b1f2-18043bd58832"]
+         }],ExpressionUUID->"ead2d6c5-1326-44a1-b1a3-5f08df5808b8"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/guide/QuantumInformationSystems"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "a8bcc2ec-c66d-4cda-a1b2-3b34f0d50eb9"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "285dc871-e01e-4fa1-ae82-ee2fd593387c"]
+         }],ExpressionUUID->"c3ef12cc-777c-4c88-add8-c2e8951f5732"],
+         StripOnInput->False],{
+        "\"The Pauli and Clifford Groups\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/PauliAndCliffordGroups"], 
+         "\"Stabilizer Formalism\"" :> 
+         Documentation`HelpLookup["paclet:Q3/tutorial/StabilizerFormalism"], 
+         "\"Stabilizer Codes\"" :> 
+         Documentation`HelpLookup["paclet:Q3/tutorial/StabilizerCodes"], 
+         "\"Quantum Error-Correction Codes\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumErrorCorrectionCodes"], 
+         "\"Quantum Information Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumInformationSystems"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "079a880d-2ebd-493c-a19d-d0c74574c8cd"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "75ac9b9a-e337-4fb6-abaf-799ee692bcb1"]
+         }],ExpressionUUID->"cf7cfbb7-3430-43ec-8235-947ca87ceed4"],
+         StripOnInput->False],{
+        "\"Q3/ref/CliffordMatrixQ\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{Cell["Q3/ref/CliffordMatrixQ"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/Q3/ref/\
+CliffordMatrixQ.html"], StandardForm]], "Input", TextClipboardType -> 
+                 "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "Q3/ref/CliffordMatrixQ" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "5edbcd3d-8d14-45af-aedd-34aa1b7eb8f3"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "8a1919b0-f426-47e0-9cee-f0781dbc0e81"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"f3ac7882-8e80-41de-80da-748e220304bc"],
+
+Cell["Q3`", "ContextNameCell",ExpressionUUID->"633b9edb-1201-4d28-8591-242ca405b265"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "CliffordMatrixQ", "ObjectName",ExpressionUUID->
+      "d69133f3-1a8f-4b0f-abca-191c25ace4a4"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"886e5b91-6352-4041-9258-742adfb7ed6f"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "25b6c21d-442d-4bac-a082-874782af0269"]
+    }],ExpressionUUID->"c783618c-1597-4abb-a588-9d3889d03ebf"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 14.0\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 14",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "e180234a-ca60-420f-b1c2-b97c7504c8cc"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"c63c951e-9928-48d6-bad6-8e61ddda9d0a"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["CliffordMatrixQ"]], "paclet:Q3/ref/CliffordMatrixQ", 
+         "Q3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       StyleBox["mat", "TI"], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "7fe31c62-0744-4917-99d6-4e9a5d2c071f"],
+     "\[LineSeparator]returns ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["True"]], "paclet:ref/True"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "f51b72b7-ba92-421d-bbde-9712c14c158f"],
+     " if matrix mat represents a Clifford operator, and ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["False"]], "paclet:ref/False"},
+       "RefLink",
+       BaseStyle->{"InlineFormula"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "01b1cdb9-72c2-4f5f-b7d5-80aaeac0c8ec"],
+     " otherwise."
+    }],ExpressionUUID->"ad739a2f-3004-4282-a6ef-11c9a7f8a7fb"]}
+  }]], "Usage",
+ CellID->100309082,ExpressionUUID->"b5c8bf94-5c09-41a7-9884-bf97a7b8c9b3"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    DynamicBox[ToBoxes[
+      If[
+       MatchQ[
+        CurrentValue[
+         EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, 
+         Closed], 
+        Alternatives[Open, True]], 
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], 
+       Rotate[
+        Style[
+         Graphics[{
+           Thickness[0.18], 
+           RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+           Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+          PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+         0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+     ImageSizeCache->{14., {0.45000000000000107`, 13.549999999999999`}}]],
+    ExpressionUUID->"90a58eab-fe0d-4926-adb1-069a9eb252b9"],
+   Cell[BoxData[
+    TemplateBox[{1},
+     "Spacer1"]],ExpressionUUID->"e0ef3729-7191-47b5-a1bf-5265aa6558b1"],
+   "Details and Options"
+  }], "NotesFrameText",ExpressionUUID->"825238f3-1340-4a11-a9e5-628482929079"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->
+   "Preemptive"]],ExpressionUUID->"1ae46a7f-de10-4b4a-a55a-7df72e9a4085"]], \
+"NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->706543680,ExpressionUUID->"9cc51688-48f4-4ed1-aa22-62ee7e0184f2"],
+
+Cell[TextData[{
+ "A Clifford operator ",
+ Cell[BoxData[
+  FormBox["U", TraditionalForm]],ExpressionUUID->
+  "e935aef1-c3c7-4a2d-9153-62b4691be21a"],
+ " is completely specified (up to a global phase factor ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["e", 
+    RowBox[{"\[ImaginaryI]", " ", "m", " ", 
+     RowBox[{"\[Pi]", " ", "/", "4"}]}]], TraditionalForm]],ExpressionUUID->
+  "9e34d417-fa6c-4de8-9459-56b56fb9867f"],
+ ") by the transformation of Pauli operators under conjugation by ",
+ Cell[BoxData[
+  FormBox["U", TraditionalForm]],ExpressionUUID->
+  "98d000aa-9606-4e73-945a-ad2de187086b"],
+ ":\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"U", " ", 
+     SubscriptBox["X", "j"], " ", 
+     SuperscriptBox["U", "\[Dagger]"]}], "=", 
+    RowBox[{
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"-", "1"}], ")"}], 
+      SubscriptBox["p", "j"]], 
+     UnderoverscriptBox["\[CapitalPi]", 
+      RowBox[{" ", 
+       RowBox[{"i", "=", "1"}]}], 
+      RowBox[{" ", "n"}]], 
+     RowBox[{
+      SubsuperscriptBox["X", "i", 
+       SubscriptBox["a", 
+        StyleBox["ij",
+         FontSlant->"Italic"]]], 
+      SubsuperscriptBox["Z", "i", 
+       SubscriptBox["b", 
+        StyleBox["ij",
+         FontSlant->"Italic"]]]}]}]}], TraditionalForm]],ExpressionUUID->
+  "4205affe-8d4c-42a5-bcf1-cb6eba5109f6"],
+ "\nand\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"U", " ", 
+     SubscriptBox["Z", "j"], " ", 
+     SuperscriptBox["U", "\[Dagger]"]}], "=", 
+    RowBox[{
+     SuperscriptBox[
+      RowBox[{"(", 
+       RowBox[{"-", "1"}], ")"}], 
+      SubscriptBox["q", "j"]], 
+     UnderoverscriptBox["\[CapitalPi]", 
+      RowBox[{" ", 
+       RowBox[{"i", "=", "1"}]}], 
+      RowBox[{" ", "n"}]], 
+     RowBox[{
+      SubsuperscriptBox["X", "i", 
+       SubscriptBox["c", 
+        StyleBox["ij",
+         FontSlant->"Italic"]]], 
+      SubsuperscriptBox["Z", "i", 
+       SubscriptBox["d", 
+        StyleBox["ij",
+         FontSlant->"Italic"]]]}]}]}], TraditionalForm]],ExpressionUUID->
+  "0aaecaa7-580f-4ad7-a4d0-f8d5af6c53b1"],
+ "."
+}], "Notes",
+ CellID->1417856937,ExpressionUUID->"f9a0fd19-cfd7-4d3c-81c5-9802701a05a7"],
+
+Cell[TextData[{
+ "The Gottesman matrix of ",
+ Cell[BoxData[
+  FormBox["U", TraditionalForm]],ExpressionUUID->
+  "4a0810ee-7da9-4e2f-abdb-bb945b5e3452"],
+ " is defined by\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"S", "(", "U", ")"}], ":=", 
+    RowBox[{"(", GridBox[{
+       {
+        SubscriptBox["a", "11"], 
+        SubscriptBox["c", "11"], 
+        SubscriptBox["a", "12"], 
+        SubscriptBox["c", "12"], "\[Ellipsis]", "\[Ellipsis]"},
+       {
+        SubscriptBox["b", "11"], 
+        SubscriptBox["d", "11"], 
+        SubscriptBox["b", "12"], 
+        SubscriptBox["d", "12"], "\[Ellipsis]", "\[Ellipsis]"},
+       {
+        SubscriptBox["a", "21"], 
+        SubscriptBox["c", "21"], 
+        SubscriptBox["a", "22"], 
+        SubscriptBox["c", "22"], "\[Ellipsis]", "\[Ellipsis]"},
+       {
+        SubscriptBox["b", "12"], 
+        SubscriptBox["d", "21"], 
+        SubscriptBox["b", "22"], 
+        SubscriptBox["d", "22"], "\[Ellipsis]", "\[Ellipsis]"},
+       {"\[VerticalEllipsis]", "\[VerticalEllipsis]", "\[VerticalEllipsis]", 
+        "\[VerticalEllipsis]", "\[DescendingEllipsis]", 
+        "\[DescendingEllipsis]"},
+       {"\[VerticalEllipsis]", "\[VerticalEllipsis]", "\[VerticalEllipsis]", 
+        "\[VerticalEllipsis]", "\[DescendingEllipsis]", 
+        "\[DescendingEllipsis]"}
+      }], ")"}]}], TraditionalForm]],ExpressionUUID->
+  "d0dfbf64-277f-49e3-91d8-8717c0572026"]
+}], "Notes",
+ CellID->2083430531,ExpressionUUID->"d7b78722-cd53-48f6-95b1-90bf455241cb"],
+
+Cell[TextData[{
+ "Recall that a Pauli operator\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"P", "=", 
+    RowBox[{
+     RowBox[{
+      UnderoverscriptBox["\[CapitalPi]", 
+       RowBox[{" ", 
+        RowBox[{"j", "=", "1"}]}], 
+       RowBox[{" ", "n"}]], 
+      RowBox[{
+       SubsuperscriptBox["X", "j", 
+        SubscriptBox["x", "j"]], 
+       SubsuperscriptBox["Z", "j", 
+        SubscriptBox["z", "j"]]}]}], "\[Element]", 
+     RowBox[{"\[ScriptCapitalP]", "(", "n", ")"}]}]}], TraditionalForm]],
+  ExpressionUUID->"c66d8c39-c6ce-47ab-8c97-4aff3702fc0d"],
+ "\[LineSeparator]is completely specified by the corresponding Gottesman \
+vector,\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"v", "(", "P", ")"}], ":=", 
+    SuperscriptBox[
+     RowBox[{"(", 
+      RowBox[{
+       SubscriptBox["x", "1"], ",", 
+       SubscriptBox["z", "1"], ",", 
+       SubscriptBox["x", "2"], ",", 
+       SubscriptBox["z", "2"], ",", "\[Ellipsis]", ",", 
+       SubscriptBox["x", "n"], ",", 
+       SubscriptBox["z", "n"]}], ")"}], "T"]}], TraditionalForm]],
+  ExpressionUUID->"26307f87-4dfc-44d4-80d1-56b8c1bc6839"],
+ "."
+}], "Notes",
+ CellID->1441760612,ExpressionUUID->"a97e9e0e-8cc9-4978-8e96-ddd760c75774"],
+
+Cell[TextData[{
+ StyleBox["NOTE",
+  FontWeight->"Bold"],
+ ": Since Q3 v3.4.4, ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CliffordQ"]], "paclet:Q3/ref/CliffordQ", "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "a3a2d63c-37b2-4f24-876e-2989f17dbaaa"],
+ " and ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["CliffordMatrixQ"]], "paclet:Q3/ref/CliffordMatrixQ", 
+    "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "6871e875-d8aa-455a-9897-6cf2eea199a4"],
+ " have been separated."
+}], "Notes",
+ CellID->518872311,ExpressionUUID->"dad8e15f-1d25-4f83-b700-ab35e27d973d"]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "de8342da-16f6-4c5d-b301-171945734767"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"8f9300e9-ad8c-41d6-a33b-cf4b5cf19c74"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "cad82a5e-25e0-4e9e-a5a2-562a45bc9587"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1442545497,ExpressionUUID->"82f8cdf1-1cfa-4d74-aeba-12b6982c393e"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->726065653,ExpressionUUID->"d8ead0c8-d6b5-404a-b925-367cfb5f0374"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{14., {5., 9.}}]],ExpressionUUID->
+  "b6d41f02-c6d2-4918-bce6-49bd7bb76769"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"d9d4082d-2d05-4fce-9297-b30d88882f54"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "4988466a-e6cb-4dbf-844e-80304c5c557e"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->1919277096,ExpressionUUID->"77e9da7d-b2be-4ea6-9a5a-7dfb73e9e87c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"grp", "=", 
+  RowBox[{"FullCliffordGroup", "[", "2", "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->724928028,ExpressionUUID->"5620b9ac-971d-46fc-a643-064c727b87fd"],
+
+Cell[BoxData[
+ RowBox[{"FullCliffordGroup", "[", "2", "]"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1291632055,ExpressionUUID->"033c6ad4-ab14-47d8-8542-b410624107a5"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"EchoTiming", "[", 
+  RowBox[{
+   RowBox[{"elm", "=", 
+    RowBox[{"Matrix", "@", 
+     RowBox[{"GroupElements", "[", 
+      RowBox[{"grp", ",", 
+       RowBox[{"Range", "[", 
+        RowBox[{"25", ",", "50"}], "]"}]}], "]"}]}]}], ";"}], "]"}]], "Input",\
+
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->955622528,ExpressionUUID->"5b7e3a1a-2f14-4e31-bf77-0ec71c3f51d2"],
+
+Cell[BoxData["3.448963`"], "EchoTiming",
+ CellID->1710109903,ExpressionUUID->"def1c80b-c277-4f29-881f-b4755974da49"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "/@", 
+  RowBox[{"elm", "[", 
+   RowBox[{"[", 
+    RowBox[{";;", 
+     RowBox[{"UpTo", "[", "5", "]"}]}], "]"}], "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1175433907,ExpressionUUID->"2d4ce5f9-89f1-498e-a2d2-4eb603c09019"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "-", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "+", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}]},
+       {
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]]},
+       {
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]]},
+       {
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "-", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "+", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 4, 8, 12, 16}, {{1}, {2}, {3}, {4}, {2}, {1}, {4}, {3}, {3}, {
+         4}, {1}, {2}, {4}, {3}, {2}, {1}}}, {
+        Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[1, 2]] 2^Rational[-1, 2]}}]]]], 
+   ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        FractionBox["1", 
+         SqrtBox["2"]], "0", "0", 
+        RowBox[{"-", 
+         FractionBox["1", 
+          SqrtBox["2"]]}]},
+       {"0", 
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]], 
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]], "0"},
+       {
+        FractionBox["1", 
+         SqrtBox["2"]], "0", "0", 
+        FractionBox["1", 
+         SqrtBox["2"]]},
+       {"0", 
+        RowBox[{"-", 
+         FractionBox["\[ImaginaryI]", 
+          SqrtBox["2"]]}], 
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]], "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 4, 8, 12, 16}, {{1}, {2}, {3}, {4}, {2}, {1}, {4}, {3}, {3}, {
+         4}, {1}, {2}, {4}, {3}, {2}, {1}}}, {
+        2^Rational[-1, 2], 0, 0, -2^Rational[-1, 2], Complex[0, 1] 
+         2^Rational[-1, 2], 0, 0, Complex[0, 1] 2^Rational[-1, 2], 0, 2^
+         Rational[-1, 2], 2^Rational[-1, 2], 0, 0, Complex[0, 1] 
+         2^Rational[-1, 2], Complex[0, -1] 2^Rational[-1, 2], 0}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        FractionBox["1", 
+         SqrtBox["2"]], 
+        FractionBox["1", 
+         SqrtBox["2"]], "0", "0"},
+       {"0", "0", 
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]], 
+        RowBox[{"-", 
+         FractionBox["\[ImaginaryI]", 
+          SqrtBox["2"]]}]},
+       {"0", "0", 
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]], 
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]]},
+       {
+        RowBox[{"-", 
+         FractionBox["1", 
+          SqrtBox["2"]]}], 
+        FractionBox["1", 
+         SqrtBox["2"]], "0", "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 4, 8, 12, 16}, {{1}, {2}, {3}, {4}, {2}, {1}, {4}, {3}, {3}, {
+         4}, {1}, {2}, {4}, {3}, {2}, {1}}}, {
+        2^Rational[-1, 2], 2^Rational[-1, 2], 0, 0, 0, 0, Complex[0, -1] 
+         2^Rational[-1, 2], Complex[0, 1] 2^Rational[-1, 2], Complex[0, 1] 
+         2^Rational[-1, 2], Complex[0, 1] 2^Rational[-1, 2], 0, 0, 0, 0, 2^
+         Rational[-1, 2], -2^Rational[-1, 2]}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        FractionBox["1", 
+         SqrtBox["2"]], 
+        FractionBox["1", 
+         SqrtBox["2"]], "0", "0"},
+       {"0", "0", 
+        RowBox[{"-", 
+         FractionBox["1", 
+          SqrtBox["2"]]}], 
+        FractionBox["1", 
+         SqrtBox["2"]]},
+       {"0", "0", 
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]], 
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]]},
+       {
+        FractionBox["\[ImaginaryI]", 
+         SqrtBox["2"]], 
+        RowBox[{"-", 
+         FractionBox["\[ImaginaryI]", 
+          SqrtBox["2"]]}], "0", "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 4, 8, 12, 16}, {{1}, {2}, {3}, {4}, {2}, {1}, {4}, {3}, {3}, {
+         4}, {1}, {2}, {4}, {3}, {2}, {1}}}, {
+        2^Rational[-1, 2], 2^Rational[-1, 2], 0, 0, 0, 0, 2^
+         Rational[-1, 2], -2^Rational[-1, 2], Complex[0, 1] 2^Rational[-1, 2],
+          Complex[0, 1] 2^Rational[-1, 2], 0, 0, 0, 0, Complex[0, -1] 
+         2^Rational[-1, 2], Complex[0, 1] 2^Rational[-1, 2]}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "-", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}]},
+       {
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "+", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]]},
+       {
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "-", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "-", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "-", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "-", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}]},
+       {
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        RowBox[{"-", 
+         FractionBox[
+          RowBox[{
+           FractionBox["1", "2"], "+", 
+           FractionBox["\[ImaginaryI]", "2"]}], 
+          SqrtBox["2"]]}], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]], 
+        FractionBox[
+         RowBox[{
+          FractionBox["1", "2"], "+", 
+          FractionBox["\[ImaginaryI]", "2"]}], 
+         SqrtBox["2"]]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {4, 4}, 0, {
+       1, {{0, 4, 8, 12, 16}, {{1}, {2}, {3}, {4}, {2}, {1}, {4}, {3}, {3}, {
+         4}, {1}, {2}, {4}, {3}, {2}, {1}}}, {
+        Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[-1, 2], Rational[-1, 2]] 2^Rational[-1, 2], 
+         Complex[Rational[1, 2], Rational[1, 2]] 2^Rational[-1, 2]}}]]]]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->689632573,ExpressionUUID->"606b61c8-d9a5-489a-ab79-9fa80154e511"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"CliffordMatrixQ", "/@", "elm"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->609671956,ExpressionUUID->"e5256e34-8719-445c-93cd-9858a5d8c210"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", 
+   ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", 
+   "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", 
+   ",", "True", ",", "True", ",", "True", ",", "True", ",", "True", ",", 
+   "True", ",", "True", ",", "True", ",", "True"}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->512818079,ExpressionUUID->"77dd0969-e58b-4e8f-b79a-9ff9418527dc"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"AllTrue", "[", 
+  RowBox[{"elm", ",", "CliffordMatrixQ"}], "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->1785605786,ExpressionUUID->"ef317f1b-7ef7-4e05-9fea-e33668e35d0b"],
+
+Cell[BoxData["True"], "Output",
+ CellLabel->"Out[5]=",
+ CellID->572846205,ExpressionUUID->"e6870eea-7c63-4b70-ad10-e938e0c0c3ef"]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["CliffordQ"]], "paclet:Q3/ref/CliffordQ", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "492ec85f-66f7-4c37-9990-d67bcb868d11"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["PauliQ"]], "paclet:Q3/ref/PauliQ", "Q3 Package Symbol"},
+          
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "76a8b808-fdd8-4ef7-93c1-9ed25c94f0f2"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["PauliMatrixQ"]], "paclet:Q3/ref/PauliMatrixQ", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "231f5b7b-0411-4399-aae0-bf90061e7aa5"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["CliffordGroup"]], "paclet:Q3/ref/CliffordGroup", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "69479a6c-a4c7-4afe-886b-7674543c3649"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["FullCliffordGroup"]], "paclet:Q3/ref/FullCliffordGroup",
+            "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "ae784e45-4880-4b25-a267-bf00b80a72ee"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["PauliGroup"]], "paclet:Q3/ref/PauliGroup", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "ac877f36-3663-48ce-b683-f11393f6985a"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["FullPauliGroup"]], "paclet:Q3/ref/FullPauliGroup", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "2430b605-ee94-44fb-9575-34d0c01b8d1f"]
+       }], "SeeAlso",ExpressionUUID->"beacc7c4-06ed-4a30-b6ef-111402441f60"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"44849b23-776a-4945-946a-\
+5dadf4084a79"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTechNote.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TechNotesSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["The Pauli and Clifford Groups"]], 
+           "paclet:Q3/tutorial/PauliAndCliffordGroups"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "57f45400-c579-4219-b7d8-827fd7169dc1"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Stabilizer Formalism"]], 
+           "paclet:Q3/tutorial/StabilizerFormalism"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "55df6f2b-b4fd-4964-9653-7b35908b288c"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Stabilizer Codes"]], 
+           "paclet:Q3/tutorial/StabilizerCodes"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "cc47a24f-52c8-4c9f-ac5e-4ae7f05c836d"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Error-Correction Codes",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumErrorCorrectionCodes"]], 
+         "TechNotes",ExpressionUUID->
+         "18435068-b429-4c41-baf8-56bd0eaaf73f"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems with Q3",
+         BaseStyle->"Link",
+         ButtonData->"paclet:Q3/tutorial/QuantumInformationSystems"]], 
+         "TechNotes",ExpressionUUID->"0ccb59b3-5dd9-4c56-b017-8fca8c31dd87"]}]}
+     }]}
+  }]], "TechNotesSection",ExpressionUUID->"e949de67-65bd-4c03-9ee7-\
+fcdda4fbbcab"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {27., 33.}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Information Systems"]], 
+           "paclet:Q3/guide/QuantumInformationSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "f41561fb-5685-4690-b394-3e46ffc364e5"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"8f76d7c2-5ea3-486f-bdb4-\
+899753bac981"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "36ffec61-a2ea-4863-8cd6-3e9047db67c9"]}]],ExpressionUUID->
+         "90c63fc3-05ac-4d23-8b3d-9bce20bc3313"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "RelatedLinks",ExpressionUUID->
+        "569e495b-5676-43cd-91fc-4040e801a327"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"8dbe0173-d6e9-4928-82a7-\
+e598a06955f1"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"401e2342-56aa-4b76-a420-7f7e796a7b15"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"CliffordMatrixQ",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed, "NotesSection" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2024, 6, 24, 11, 28, 16.667438}", 
+    "history" -> {"14.0", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {
+     "Clifford group", "Clifford operator", "Clifford circuit", 
+      "stabilizer formalism", "stabilizer circuit"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> "Q3 Symbol", 
+    "language" -> "en", "paclet" -> "Q3", "status" -> "None", "summary" -> 
+    "CliffordMatrixQ[mat] returns True if matrix mat represents a Clifford \
+operator, and False otherwise.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "CliffordMatrixQ", "titlemodifier" -> "", "metadescription" -> "", 
+    "windowtitle" -> "CliffordMatrixQ", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/CliffordMatrixQ"}},
+CellContext->"Global`",
+FrontEndVersion->"14.0 for Mac OS X ARM (64-bit) (December 12, 2023)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "14.0 for Mac OS X ARM (64-bit) (December 12, 2023)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"ef657dee-cdf4-4bf3-8c06-d7b128c6133d"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[18765, 524, 1390, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"82f8cdf1-1cfa-4d74-aeba-12b6982c393e",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1442545497]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 47665, 1344}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[587, 21, 7662, 187, 57, "AnchorBarGrid",ExpressionUUID->"f3ac7882-8e80-41de-80da-748e220304bc",
+ CellID->1],
+Cell[8252, 210, 85, 0, 23, "ContextNameCell",ExpressionUUID->"633b9edb-1201-4d28-8591-242ca405b265"],
+Cell[CellGroupData[{
+Cell[8362, 214, 1389, 38, 60, "ObjectNameGrid",ExpressionUUID->"c63c951e-9928-48d6-bad6-8e61ddda9d0a"],
+Cell[9754, 254, 1261, 34, 116, "Usage",ExpressionUUID->"b5c8bf94-5c09-41a7-9884-bf97a7b8c9b3",
+ CellID->100309082]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11052, 293, 1898, 47, 37, "NotesSection",ExpressionUUID->"9cc51688-48f4-4ed1-aa22-62ee7e0184f2",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->706543680],
+Cell[12953, 342, 2159, 70, 70, "Notes",ExpressionUUID->"f9a0fd19-cfd7-4d3c-81c5-9802701a05a7",
+ CellID->1417856937],
+Cell[15115, 414, 1503, 40, 70, "Notes",ExpressionUUID->"d7b78722-cd53-48f6-95b1-90bf455241cb",
+ CellID->2083430531],
+Cell[16621, 456, 1236, 36, 70, "Notes",ExpressionUUID->"a97e9e0e-8cc9-4978-8e96-ddd760c75774",
+ CellID->1441760612],
+Cell[17860, 494, 778, 24, 70, "Notes",ExpressionUUID->"dad8e15f-1d25-4f83-b700-ab35e27d973d",
+ CellID->518872311]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[18765, 524, 1390, 37, 36, "PrimaryExamplesSection",ExpressionUUID->"82f8cdf1-1cfa-4d74-aeba-12b6982c393e",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1442545497],
+Cell[20158, 563, 191, 3, 31, "Input",ExpressionUUID->"d8ead0c8-d6b5-404a-b925-367cfb5f0374",
+ CellID->726065653],
+Cell[CellGroupData[{
+Cell[20374, 570, 1368, 36, 31, "ExampleSection",ExpressionUUID->"77e9da7d-b2be-4ea6-9a5a-7dfb73e9e87c",
+ CellID->1919277096],
+Cell[CellGroupData[{
+Cell[21767, 610, 220, 5, 29, "Input",ExpressionUUID->"5620b9ac-971d-46fc-a643-064c727b87fd",
+ CellID->724928028],
+Cell[21990, 617, 170, 3, 37, "Output",ExpressionUUID->"033c6ad4-ab14-47d8-8542-b410624107a5",
+ CellID->1291632055]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22197, 625, 404, 12, 29, "Input",ExpressionUUID->"5b7e3a1a-2f14-4e31-bf77-0ec71c3f51d2",
+ CellID->955622528],
+Cell[22604, 639, 116, 1, 24, "EchoTiming",ExpressionUUID->"def1c80b-c277-4f29-881f-b4755974da49",
+ CellID->1710109903]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22757, 645, 294, 8, 29, "Input",ExpressionUUID->"2d4ce5f9-89f1-498e-a2d2-4eb603c09019",
+ CellID->1175433907],
+Cell[23054, 655, 13253, 379, 322, "Output",ExpressionUUID->"606b61c8-d9a5-489a-ab79-9fa80154e511",
+ CellID->689632573]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[36344, 1039, 191, 4, 29, "Input",ExpressionUUID->"e5256e34-8719-445c-93cd-9858a5d8c210",
+ CellID->609671956],
+Cell[36538, 1045, 508, 9, 55, "Output",ExpressionUUID->"77dd0969-e58b-4e8f-b79a-9ff9418527dc",
+ CellID->512818079]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[37083, 1059, 225, 5, 70, "Input",ExpressionUUID->"ef317f1b-7ef7-4e05-9fea-e33668e35d0b",
+ CellID->1785605786],
+Cell[37311, 1066, 129, 2, 37, "Output",ExpressionUUID->"e6870eea-7c63-4b70-ad10-e938e0c0c3ef",
+ CellID->572846205]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[37682, 1077, 3881, 106, 70, "SeeAlsoSection",ExpressionUUID->"44849b23-776a-4945-946a-5dadf4084a79"],
+Cell[41566, 1185, 2080, 53, 70, "TechNotesSection",ExpressionUUID->"e949de67-65bd-4c03-9ee7-fcdda4fbbcab"],
+Cell[43649, 1240, 742, 19, 70, "MoreAboutSection",ExpressionUUID->"8f76d7c2-5ea3-486f-bdb4-899753bac981"],
+Cell[44394, 1261, 1166, 34, 70, "RelatedLinksSection",ExpressionUUID->"8dbe0173-d6e9-4928-82a7-e598a06955f1"],
+Cell[45563, 1297, 78, 0, 70, "FooterCell",ExpressionUUID->"401e2342-56aa-4b76-a420-7f7e796a7b15"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

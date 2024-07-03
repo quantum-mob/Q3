@@ -160,16 +160,16 @@ GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=
 (**** </PauliGroup> ****)
 
 
-(**** <PauliQ> ****)
+(**** <PauliMatrixQ> ****)
 
-PauliQ::usage = "PauliQ[op] returns True if operator op is an element of the full Pauli group."
+PauliMatrixQ::usage = "PauliMatrixQ[mat] returns True if matrix mat is an element of the full Pauli group, and False otherwise."
 
 (* NOTE: The previous method based on PauliDecompose is slow for a large
    number of qubits, especially, 8 or more qubits. *)
 
-PauliQ[mat_?SquareMatrixQ] := thePauliQ[mat] /; Length[mat] == 2
+PauliMatrixQ[mat_?SquareMatrixQ] := thePauliMatrixQ[mat] /; Length[mat] == 2
 
-PauliQ[mat_?SquareMatrixQ] := Module[
+PauliMatrixQ[mat_?SquareMatrixQ] := Module[
   { tsr = Tensorize[mat],
     dim, kk, tt, n },
   dim = Dimensions[tsr];
@@ -177,49 +177,72 @@ PauliQ[mat_?SquareMatrixQ] := Module[
   kk = NestList[RotateLeft[#, 2]&, Range[2*n], n-1];
   tt = Transpose[tsr, #]& /@ kk;
   tt = Map[
-    Function[{x}, Flatten @ Map[thePauliQ, x, {2*(n-1)}]],
-    tt ];
+    Function[{x}, Flatten @ Map[thePauliMatrixQ, x, {2*(n-1)}]],
+    tt
+  ];
   If[ AllTrue[tt, (Length[#] == Power[2, n-1])&],
     AllTrue[Flatten @ tt, Identity],
-    False ]
- ] /; IntegerQ @ Log[2, Length @ mat] /; Length[mat] > 2
+    False
+  ]
+] /; IntegerQ @ Log[2, Length @ mat] /; Length[mat] > 2
 
-PauliQ[_List] = False
+PauliMatrixQ[_List] = False
 
-PauliQ[_Association] = False
-
-
-PauliQ[Pauli[{(0|1|2|3)..}]] = True
-
-PauliQ[(-1|-I|I) * Pauli[{(0|1|2|3)..}]] = True
+PauliMatrixQ[_Association] = False
 
 
-PauliQ[_?QubitQ[___, 0|1|2|3]] = True
+thePauliMatrixQ::usage = "thePauliMatrixQ[mat] returns True if 2x2 matrix mat is one of the Pauli operators."
 
-PauliQ[HoldPattern @ Multiply[(_?QubitQ[___, 0|1|2|3])..]] = True
-
-PauliQ[(-1|-I|I) * HoldPattern @ Multiply[(_?QubitQ[___, 0|1|2|3])..]] = True
-
-PauliQ[expr_] := PauliQ[Matrix @ expr]
-
-
-thePauliQ::usage = "thePauliQ[mat] returns True if 2x2 matrix mat is one of the Pauli operators."
-
-thePauliQ[mat_?SquareMatrixQ] := Module[
-  {cc},
+thePauliMatrixQ[mat_?SquareMatrixQ] := Module[
+  { cc },
   cc = Chop @ {
     Tr @ mat,
     Tr @ Reverse @ mat,
     Subtract @@ Diagonal @ mat,
-    Subtract @@ Diagonal @ Reverse @ mat };
+    Subtract @@ Diagonal @ Reverse @ mat
+  };
   cc = DeleteCases[cc, 0];
   Switch[ Length[cc],
     0, Nothing,
     1, True,
-    _, False]
- ] /; Length[mat] == 2
+    _, False
+  ]
+] /; Length[mat] == 2
 
-thePauliQ[_] = False
+thePauliMatrixQ[_] = False
+
+(**** </PauliMatrixQ> ****)
+
+
+(**** <PauliQ> ****)
+
+(* NOTE: PauliQ and PauliMatrixQ may be combined to a single function. However, we keep them separate because PauliMatrixQ requires rather a large computational cost for large matrices. *)
+
+PauliQ::usage = "PauliQ[op] returns True if operator op is an element of the full Pauli group, and False otherwise."
+
+SetAttributes[PauliQ, Listable]
+
+
+PauliQ[Pauli[{(0|1|2|3)..}]] = True
+
+
+PauliQ[-1 | 1 | -I | I] = True
+
+PauliQ[_?QubitQ[___, 0|1|2|3]] = True
+
+PauliQ[HoldPattern @ Multiply[__?QubitQ]] = True
+
+
+PauliQ[(-1|-I|I) * _?PauliQ] = True
+
+
+PauliQ[expr_Plus] := PauliQ[Elaborate @ expr] /; 
+  Not[FreeQ[expr, _?QubitQ[___, (4|5|6|7|8|9|10|11)] | _Pauli[___, (4|5|6|7|8|9|10|11), ____]]]
+
+PauliQ[expr:HoldPattern[Times[__, _Plus]]] := PauliQ[Elaborate @ expr] /; 
+
+
+PauliQ[_] = False
 
 (**** </PauliQ> ****)
 
@@ -339,31 +362,49 @@ CliffordGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
    ]
 
 
-CliffordQ::usage = "CliffordQ[mat] returns True if matrix mat represents a Clifford operator; and False otherwise.\nCliffordQ[op] applies to operator op expressed in terms of the labelled or unlabelled Pauli operators."
+(**** </CliffordGroup> ****)
 
-CliffordQ::notqbt = "`` does not represent an operator acting on qubits."
 
-CliffordQ[mat_?MatrixQ] := (
-  Message[CliffordQ::notqbt, vec];
+(**** <CliffordMatrixQ> ****)
+
+CliffordMatrixQ::usage = "CliffordMatrixQ[mat] returns True if matrix mat represents a Clifford operator, and False otherwise."
+
+CliffordMatrixQ::notqbt = "Matrix `` does not represent an operator acting on qubits."
+
+
+CliffordMatrixQ[mat_?MatrixQ] := (
+  Message[CliffordMatrixQ::notqbt, vec];
   False
- ) /; Not @ AllTrue[Log[2, Dimensions @ mat], IntegerQ]
+) /; Not @ AllTrue[Log[2, Dimensions @ mat], IntegerQ]
 
-CliffordQ[mat_?MatrixQ] := Module[
+CliffordMatrixQ[mat_?MatrixQ] := Module[
   { n = Log[2, Length @ mat],
     spr = Supermap[mat],
     gnr },
   gnr = ThePauli /@ Join[
     NestList[RotateRight, PadRight[{1}, n], n-1],
     NestList[RotateRight, PadRight[{3}, n], n-1]
-   ];
-  AllTrue[spr /@ gnr, PauliQ]
- ]
+  ];
+  AllTrue[spr /@ gnr, PauliMatrixQ]
+]
 
-CliffordQ[expr_] := CliffordQ[Matrix @ expr]
+(**** </CliffordMatrixQ> ****)
 
-CliffordQ[expr_, ss:{__?QubitQ}] := CliffordQ[Matrix @ expr]
 
-(**** </CliffordGroup> ****)
+(**** <CliffordQ> ****)
+
+(* NOTE: CliffordQ and CliffordMatrixQ may be combined to a single function. We separate them in consistency with PauliQ and PauliMatrixQ. *)
+
+CliffordQ::usage = "CliffordQ[op] returns True if operator op is an element of the full Clifford group, and False otherwise."
+
+SetAttributes[CliffordQ, Listable]
+
+
+CliffordQ[expr_] := CliffordMatrixQ[Matrix @ expr]
+
+CliffordQ[expr_, ss:{__?QubitQ}] := CliffordMatrixQ[Matrix @ expr]
+
+(**** </CliffordQ> ****)
 
 
 (**** <GottesmanVector> ****)
@@ -933,7 +974,7 @@ FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   
   opf = FromGottesmanMatrix[ff, qq];
 
-  new = CirclePlus[ff, One[2(n-1)]];
+  new = CirclePlus[ff, One[2*(n-1)]];
   new = Mod[mat . new, 2];
 
   aa = FromGottesmanVector[new[[2, 3;;]], rr];
@@ -1160,7 +1201,7 @@ CliffordFactor[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
 
   opf = Dagger @ FromGottesmanMatrix[ff, qq];
 
-  new = CirclePlus[ff, One[2(n-1)]];
+  new = CirclePlus[ff, One[2*(n-1)]];
   new = Mod[mat . new, 2];
 
   aa = FromGottesmanVector[new[[2, 3;;]], rr];

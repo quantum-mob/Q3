@@ -154,7 +154,7 @@ QCAct[op_Measurement, post___] :=
 
 QCAct[op:Except[_Measurement]..] :=
   Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1, {op} ]
-(* NOtE: One can use Elaborate@{op} as follows:
+(* NOtE: One can use Elaborate @ {op} as follows:
    Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate@{op} ]
    However, this cannot take the advantange of op ** Ket[...]. *)
 
@@ -265,8 +265,8 @@ QuantumCircuit /:
 HoldPattern @
   Graphics[ QuantumCircuit[gg__, opts___?OptionQ], more___?OptionQ ] :=
   Module[
-    { ss = Qubits@{gg},
-      cc = ParseGate@{gg},
+    { ss = Agents @ {gg},
+      cc = ParseGate @ {gg},
       vv, ww, xx, yy, in, out, unit, nodes, marks, lines },
 
     {vv, ww, unit, $PortSize} =
@@ -279,7 +279,7 @@ HoldPattern @
 
     vv = FlavorNone @ Flatten @ doAssureList @ vv;
     ww = FlavorNone @ Flatten @ doAssureList @ ww;
-    ss = Union @ Flatten@{ss, vv, ww};
+    ss = Union @ Flatten @ {ss, vv, ww};
 
     cc = DeleteCases[cc, {}]; (* E.g., Measurement[{}] *)
     If[cc == {}, cc = {"Spacer"}]; (* E.g., only input elements *)
@@ -296,10 +296,10 @@ HoldPattern @
 
     marks = qcMarks @ Cases[{gg}, _Mark, Infinity];
 
-    in = FirstCase[ {gg}, PortIn[kk___] :> {kk} ];
+    in = FirstCase[{gg}, PortIn[kk___] :> {kk}];
     in = qcPorts[-1, in, xx, yy];
 
-    out = FirstCase[ {gg}, PortOut[kk___] :> {kk} ];
+    out = FirstCase[{gg}, PortOut[kk___] :> {kk}];
     out = qcPorts[+1, out, xx, yy];
 
     Graphics[ Join[lines, in, nodes, marks, out],
@@ -311,6 +311,10 @@ HoldPattern @
     ]
   ]
 
+(**** </Graphics> ****)
+
+
+(**** <qcDepth> *****)
 
 qcDepth::usage = "qcDepth[expr] returns the depth of quantum circuit element expr."
 
@@ -318,9 +322,9 @@ qcDepth[qc_QuantumCircuit] := Total @ Map[qcDepth, List @@ qc]
 
 qcDepth[gg_List] := Max @ Map[qcDepth, gg]
 
-qcDepth[any_] := Boole @ Not @ FreeQ[any, _?QubitQ | "Separator" | "Spacer" ]
+qcDepth[any_] := Boole @ Not @ FreeQ[any, _?QubitQ | _?FermionQ | "Separator" | "Spacer" ]
 
-(**** </Graphics> ****)
+(**** </qcDepth> *****)
 
 
 (**** <Gate> *****)
@@ -448,9 +452,6 @@ ParseGate[any_?StringQ, ___?OptionQ] := (
   "Spacer"
 )
 
-ParseGate[expr_, ___?OptionQ] := expr /; FreeQ[expr, _?QubitQ]
-(* Graphics primitives and directivescorrespond to this case. *)
-
 
 (* Single-qubit gates *)  
 
@@ -467,7 +468,9 @@ ParseGate[
   Map[ParseGate[#, opts]&, Reverse @ {ss}]
 
 
-ParseGate[Measurement[ss:{___?PauliQ}, opts___?OptionQ], more___?OptionQ] :=
+ParseGate[Measurement[{}, ___?OptionQ], ___?OptionQ] = "Spacer"
+
+ParseGate[Measurement[ss:{__?SpeciesQ}, opts___?OptionQ], more___?OptionQ] :=
   Map[ParseGate[Measurement[#], more, opts]&, ss]
 
 ParseGate[Measurement[S_?QubitQ, opts___?OptionQ], more___?OptionQ] := 
@@ -476,14 +479,18 @@ ParseGate[Measurement[S_?QubitQ, opts___?OptionQ], more___?OptionQ] :=
     "Label" -> measurementLabel[S]
   ]
 
+ParseGate[Measurement[c_?FermionQ, opts___?OptionQ], more___?OptionQ] := 
+  Gate[{c}, "Shape" -> "Measurement", more, opts]
+
 HoldPattern @ ParseGate[
   Measurement[Multiply[ss__?QubitQ], opts___?OptionQ],
   more___?OptionQ
 ] :=
   Gate[ FlavorMute @ {ss},
     "Shape" -> "Measurement", more, opts,
-    "Label" -> measurementLabel@{ss}
+    "Label" -> measurementLabel @ {ss}
   ]
+
 
 HoldPattern @ ParseGate[Projector[v_, qq_, ___?OptionQ], ___?OptionQ] :=
   Gate[qq, "Shape" -> "Projector", "Label" -> None]
@@ -707,6 +714,9 @@ ParseGate[Gate[args__, opts___?OptionQ], more___?OptionQ] :=
   Gate[args, more, opts]
 
 (* fallback *)
+
+ParseGate[expr_, ___?OptionQ] := expr /; FreeQ[expr, _?QubitQ | _?FermionQ]
+(* Graphics primitives and directivescorrespond to this case. *)
 
 (* NOTE: This is dangerous because Plus and Times can happen. *)
 (* 
@@ -1103,7 +1113,7 @@ qcDrawGate::usage = "Renders the gates."
 qcDrawGate[gg_List, x_, yy_Association] := Map[qcDrawGate[#, x, yy]&, gg]
 
 qcDrawGate[
-  Gate[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, opts___?OptionQ],
+  Gate[cc:{Rule[_?SpeciesQ, _]..}, tt:{__?SpeciesQ}, opts___?OptionQ],
   x_, yy_Association
 ] := 
   Module[
@@ -1133,7 +1143,7 @@ qcDrawGate[
   ]
 
 
-qcDrawGate[Gate[tt:{__?QubitQ}, opts___?OptionQ], x_, yy_Association] :=
+qcDrawGate[Gate[tt:{__?SpeciesQ}, opts___?OptionQ], x_, yy_Association] :=
   Module[
     { yt = Lookup[yy, tt],
       new = FilterRules[Flatten@{opts}, Options @ Gate] },
@@ -1172,7 +1182,7 @@ qcLines[ gg_List, xx_List, yy_Association ] := Module[
     Cases[ {#}, Gate[{S_?QubitQ},
         "Shape" -> "Measurement", ___?OptionQ] -> S, Infinity ]&,
     gg
-   ];
+  ];
   mm = Flatten[ Thread /@ Thread[mm -> Most[xx]] ];
   mm = KeySort @ KeyTake[Association @ mm, Keys @ yy];
   

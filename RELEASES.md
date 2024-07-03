@@ -1,5 +1,22 @@
 # Release Notes
 
+## 3.4.6
+
+- Further performance improvement for fermionic quantum computing
+- Style sheet PlaybookX has been renamed PlaybookNub.
+
+## 3.4.5
+
+- Pfaffian has greatly improved; almost 10 times faster. This also improves the performance of WickState, WickUnitary, WickExpectation, WickGreensFunction, WickLogarithmicNegativity, WickEntanglementEntropy, etc.
+- New functions: ChebyshevApproximation, ChebyshevCoefficients
+- Matrix and Elaborate support WickState, WickUnitary, WickOperator, Measurement[_?FermionQ].
+
+## 3.4.4
+
+- New functions: NambuMatrix, NambuRandomMatrix, PauliMatrixQ, CliffordMatrixQ.
+- Improved: Pfaffian, SkewTridiagonalize, DickeBasis, PauliQ.
+- QuantumCircuit supports WickUnitary, WickOperator, Measurement[fermions] and some other fermionic quantum computing elements.
+
 ## 3.4.3
 
 - New function WickEntanglementEntropy (cf. EntanglementEntroy) is dedicated to the context of Wick state.

@@ -70,13 +70,13 @@ PermutationForm[prm_?PermutationListQ] := DisplayForm @ RowBox @ {
   "(",
   Grid @ {Range[Length @ prm], prm},
   ")"
- }
+}
 
 PermutationForm[expr_Association] := PermutationForm /@ expr
 
 PermutationForm[expr_] := ReplaceAll[ expr,
   { pp:$PermutationSpec :> PermutationForm[pp] }
- ]
+]
 
 
 Transposition::usage = "Transposition[{i, j}] returns Cycles[{{i, j}}], representing the transposition of elements i and j. It is a shortcut to Cycles[{{i, j}}].\nTransposition[n] is equivalent to Transposition[{n, n+1}]."
@@ -114,6 +114,8 @@ FerrersDiagram[yt:{{___Integer}..}] := FerrersDiagram[YoungShape @ yt]
 FerrersDiagram[yt_YoungTableau] := FerrersDiagram[YoungShape @ yt]
 
 
+(**** <YoungShape> ****)
+
 YoungShapeQ::usage="YoungShapeQ[shape] returns True if and only if shape is an integer partition, arranged in non-increasing order.\nA Young shape defines a Young diagram."
 
 YoungShapeQ[YoungShape[data_List]] := YoungShapeQ[data]
@@ -122,6 +124,23 @@ YoungShapeQ[_] = False
 
 YoungShapeQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
 (* NOTE: Must allow 0 since some functions uses 0 in shape specification. *)
+
+
+YoungShape::usage = "YoungShape[tb] returns the shape, i.e., the integer partition of Young tableau tb."
+
+Format[ys:YoungShape[data:{___}]] :=
+  Interpretation[YoungDiagram @ data, ys]
+
+YoungShape[YoungTableau[tb_]] := YoungShape[tb]
+
+YoungShape[tb:{__List}] := YoungShape[Length /@ tb]
+
+
+YoungShapes::usage = "YoungShapes[n] returns the list of all possible Young shapes for integern n."
+
+YoungShapes[n_Integer] := YoungShape /@ IntegerPartitions[n]
+
+(**** </YoungShape> ****)
 
 
 (**** <YoungTrim> ****)
@@ -153,28 +172,9 @@ YoungTranspose[YoungTableau[data_]] := YoungTableau[YoungTranspose @ data]
 YoungTranspose[tb:{{___Integer}..}] := With[
   { new = YoungTranspose[Length /@ tb] },
   Table[tb[[j, i]], {i, Length @ new}, {j, new[[i]]}]
- ]
+]
 (* NOTE: tb does not need to be a semi-standard Young tableau. Any Young-like
    tableau is allowed. This is useful in Schur transform. *)
-
-
-(**** <YoungShape> ****)
-
-YoungShape::usage = "YoungShape[tb] returns the shape, i.e., the integer partition of Young tableau tb."
-
-Format[ys:YoungShape[data:{___}]] :=
-  Interpretation[YoungDiagram @ data, ys]
-
-YoungShape[YoungTableau[tb_]] := YoungShape[tb]
-
-YoungShape[tb:{__List}] := YoungShape[Length /@ tb]
-
-
-YoungShapes::usage = "YoungShapes[n] returns the list of all possible Young shapes for integern n."
-
-YoungShapes[n_Integer] := YoungShape /@ IntegerPartitions[n]
-
-(**** </YoungShape> ****)
 
 
 YoungTableauCount::usage = "YoungTableauCount[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nYoungTableauCount[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
@@ -189,8 +189,8 @@ YoungTableauCount[pp_?YoungShapeQ] := Module[
       pp[[j]] + qq[[k]] - j - k + 1,
       {j, Length[pp]},
       {k, pp[[j]]}
-     ]
- ]
+    ]
+]
 
 YoungTableauCount[n_Integer] :=
   Total @ Map[YoungTableauCount, IntegerPartitions @ n]
@@ -209,12 +209,12 @@ GroupRegularRepresentation[grp_, elm_] :=
       Transpose @ GroupMultiplicationTable[grp], 
       GroupElementPosition[grp, elm]
      ]
-   ] /; GroupElementQ[grp, elm]
+  ] /; GroupElementQ[grp, elm]
 
 GroupRegularRepresentation[grp_, elm_] := (
   Message[GroupRegularRepresentation::elm, grp, elm];
   One[GroupOrder @ grp]
- )
+)
 
 (* For the regular representation of the symmetric group *)
 theKetFormatQ[_Cycles] = True
@@ -290,11 +290,11 @@ characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
       {j, 1, Length[shape]},
       {i, 1, shape[[j]]}
      ]
-   ] /; And[
-     Total[shape] == Total[class],
-     Length[class] >= 1,
-     First[class] > 1
-    ]
+  ] /; And[
+    Total[shape] == Total[class],
+    Length[class] >= 1,
+    First[class] > 1
+  ]
 
 (**** </GroupCharacters> ****)
 
@@ -315,12 +315,12 @@ SymmetricGroupClasses::uasge = "SymmetricGroupClasses[n] returns an association 
 SymmetricGroupClasses[n_Integer] := With[
   { elm = GroupElements[SymmetricGroup @ n] },
   Reverse @ KeySort[GroupBy[elm, theIrreducibleLabel[n]], LexicographicOrder]
- ]
+]
   
 theIrreducibleLabel[n_Integer][Cycles[spec_List]] := With[
   { body = ReverseSort[Length /@ spec] },
   Join[body, Table[1, n-Total[body]]]
- ]
+]
 
 (**** </GroupClasses> ****)
 
@@ -933,7 +933,7 @@ KetSymmetrize[expr_, tbl_?YoungTableauQ] := Module[
    } /. {
      w_Ket :> Total[Permute[w[[tt]], #]& /@ aa]
     }
- ]
+]
 
 (**** </KetSymmetrize> ****)
 
@@ -948,7 +948,7 @@ InversionVector[p_?PermutationListQ] := Module[
   { new = Take[p, #]& /@ InversePermutation[p] },
   Most @ MapThread[
     Function[{x, y}, Count[x, _?(# > y &)]], {new, Range[Length @ p]}]
- ] /; (Length[p] > 0)
+] /; (Length[p] > 0)
 
 
 (**** <AdjacentTranspositions> ****)
@@ -962,6 +962,7 @@ AdjacentTranspositions[{}] = {}
 
 AdjacentTranspositions[cyc_Cycles] :=
   AdjacentTranspositions[PermutationList @ cyc]
+
 
 intoTranspositions::usage="intoTranspositions[perm] represents perm as product of transpositions of immediate neighbors. An entry value of k in the returned list denotes the transposition (k,k+1)."
 
@@ -981,7 +982,7 @@ intoTranspositions[prm_?PermutationListQ] := Module[
      ]
    ];
   Return[trs]
- ]
+]
 
 fromTranspositions::usage = "fromTranspositions[trs] is the inverse operation of intoTranspositions.\nGiven here just for heuristic reasons."
 
@@ -1002,7 +1003,7 @@ YoungDistance[{x_Integer, y_Integer}, data_?YoungTableauQ] := Module[
   { xx = FirstPosition[data, x],
     yy = FirstPosition[data, y] },
   Dot[yy - xx, {-1, 1}]
- ]
+]
 
 (**** </YoungDistance> ****)
 
@@ -1020,7 +1021,7 @@ BratteliDiagram[n_Integer, opts : OptionsPattern[Graph]] := Module[
     GraphLayout -> "LayeredEmbedding",
     VertexLabels -> vtx,
     VertexLabelStyle -> Large ]
- ]
+]
 
 brattelli[shape_?YoungShapeQ] := 
   Map[UndirectedEdge[shape, #] &, PileYoungShape[shape]]
@@ -1035,9 +1036,11 @@ PileYoungShape[shape_?YoungShapeQ] := Module[
   { new = Append[YoungTrim[shape], 0],
     k },
   new = Table[
-    ReplacePart[new, k -> new[[k]]+1], {k, 1, Length[new]}];
+    ReplacePart[new, k -> new[[k]]+1],
+    {k, 1, Length[new]}
+  ];
   YoungTrim /@ Select[new, YoungShapeQ]
- ]
+]
 
 (**** </BratteliDiagram> ****)
 
@@ -1051,7 +1054,7 @@ YoungInvariantBasis[bs:{Ket[__?YoungTableauQ] ..}] := Module[
     op },
   op = Total @ GroupElements @ SymmetricGroup[n];
   DeleteCases[Union @ KetCanonical[op ** bs], 0]
- ]
+]
 
 (**** </YoungInvariantBasis> ****)
 

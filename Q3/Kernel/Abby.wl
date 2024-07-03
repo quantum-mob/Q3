@@ -26,6 +26,8 @@ BeginPackage["Q3`"]
 
 { LeftBrace, RightBrace, OverBrace, UnderBrace };
 
+{ ChebyshevCoefficients, ChebyshevSeries };
+
 { BinaryToGray, GrayToBinary,
   GrayToInteger, IntegerToGray,
   BitReflect,
@@ -346,7 +348,7 @@ CountsFor[obj_List, var_List] :=
 
 (**** <IntegerParity> ****)
 
-IntegerParity::usage = "IntegerParity[n] returns 1 if n is even and -1 if n is odd."
+IntegerParity::usage = "IntegerParity[n] returns 1 if n is an even integer and -1 if n is odd."
 
 SetAttributes[IntegerParity, Listable]
 
@@ -602,6 +604,76 @@ ReplaceAllThrough[expr_, rules_] := ReplaceAll[
 ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]
 
 (***** </ApplyThrough> *****)
+
+
+(**** <ChebyshevCoefficients> ****)
+
+ChebyshevCoefficients::usage = "ChebyshevCoefficients[func, n] returns Chebyshev coefficients c0, c1, c2, \[Ellipsis], cn that approximates function func with a polynomlial of degree n-1."
+
+ChebyshevCoefficients[fun_, d_Integer?NonNegative] := Module[
+  { cc = Range[d + 1] - 1/2 },
+  cc = Cos[cc*Pi/(d + 1)];
+  cc = Map[fun, cc];
+  cc = FourierDCT[cc, 2] * 2/Sqrt[d + 1];
+  cc[[1]] /= 2;
+  cc
+]
+
+(**** </ChebyshevCoefficients> ****)
+
+
+(**** <ChebyshevSeries> ****)
+
+ChebyshevSeries::usage = "ChebyshevSeries[{c0, c2, c4, \[Ellipsis]}, 1] represents the series in Chebysehv polynomlials of even parity with coefficients {c0, c2, c4, \[Ellipsis]}.\nChebyshevSeries[{c1, c3, c5, \[Ellipsis]}, -1] represents the series in Chebysehv polynomlials of odd parity with coefficients {c1, c3, c5, \[Ellipsis]}.\nCChebyshevSeries[{c0, c1, c2, \[Ellipsis]}, 0] represents the series in Chebysehv polynomlials with coefficients {c0, c1, c2, \[Ellipsis]}.\nChebyshevSeries[{c0, c1, c2, \[Ellipsis]}] is automatically converted to ChebyshevSeries[coeff, parity] according to the parity indicated in {c0, c1, c2, \[Ellipsis]}."
+
+ChebyshevSeries /:
+MakeBoxes[func:ChebyshevSeries[cc_?VectorQ, parity:(-1|0|1)], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    ChebyshevSeries, func, None,
+    { BoxForm`SummaryItem @ { "Degree: ", func["Degree"] },
+      BoxForm`SummaryItem @ { "Parity: ", Switch[parity, 1, "Even", -1, "Odd", _, "Indefinite"] }
+    },
+    { BoxForm`SummaryItem @ { "Coefficients: ", cc[[;;UpTo[20]]] }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+ChebyshevSeries[cc_?VectorQ, parity:(-1|1|0)]["Degree"] :=
+  Switch[ parity,
+    +1, 2 * Length[cc] - 2,
+    -1, 2 * Length[cc] - 1,
+    -0, Length[cc] - 1
+  ]
+
+
+ChebyshevSeries[spec__][xx_List] :=
+  Map[ChebyshevSeries[spec], xx]
+
+
+ChebyshevSeries[cc_?VectorQ,  0][x_] :=
+  Dot[cc, ChebyshevT[Range[Length @ cc] - 1, x]]
+
+ChebyshevSeries[cc_?VectorQ,  1][x_] := 
+  Dot[cc, ChebyshevT[2*Range[Length @ cc] - 2, x]]
+
+ChebyshevSeries[cc_?VectorQ, -1][x_] := 
+  Dot[cc, ChebyshevT[2*Range[Length @ cc] - 1, x]]
+
+
+ChebyshevSeries[{c_}] := ChebyshevSeries[{c}, 1]
+
+ChebyshevSeries[cc_?VectorQ] := With[
+  { aa = cc[[1;; ;;2]],
+    bb = cc[[2;; ;;2]] },
+  Which[
+    ZeroQ @ Norm[N @ aa, 1], ChebyshevSeries[bb, -1],
+    ZeroQ @ Norm[N @ bb, 1], ChebyshevSeries[aa, +1],
+    True, ChebyshevSeries[cc, 0]
+  ]
+]
+
+(**** </ChebyshevSeries> ****)
 
 
 (**** <LeftBrace> ****)
