@@ -3,6 +3,8 @@
 ## 3.4.6
 
 - Further performance improvement for fermionic quantum computing
+- ChebyshevCoefficients is based on FourierDCT and is much faster.
+- ChebyshevApproximation is renamed ChebyshevSeries.
 - Style sheet PlaybookX has been renamed PlaybookNub.
 
 ## 3.4.5
