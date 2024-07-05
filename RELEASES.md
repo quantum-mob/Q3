@@ -2,7 +2,7 @@
 
 ## 3.4.7
 
-- Bug fix: some pieces of code, the old syntax argument form of Zero was used.
+- Bug fix: Insome pieces of code, the old syntax argument form of Zero was used.
 - New symbols: WickMutualInformation, NambuOne, NambuZero, $EmptyPlotMarkers.
 - Part, Dot and Topple support NambuMatrix.
 - NambuMatrix[{mat, 0}, ...] to easily embed matrix mat into the Nambu space in a block diagonal form with the anomalous part vanishing.
