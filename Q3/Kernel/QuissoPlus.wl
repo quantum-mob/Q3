@@ -247,7 +247,6 @@ QuissoCorrelationMatrix[a_Association] := Module[
   { aa },
   aa = DeleteCases[ QuissoCorrelationMatrix /@ a, Nothing ];
   aa = Merge[ KeyValueMap[Thread[#1 -> #2]&, aa], Join ];
-  (* DeleteCases[ aa, (ZeroMatrix[3] | IdentityMatrix[3]), 2 ] *)
   Return[aa];
  ]
 

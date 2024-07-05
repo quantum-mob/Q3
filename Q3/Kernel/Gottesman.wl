@@ -837,7 +837,7 @@ FindGottesmanShears::usage = "FindGottesmanShears[v, w] returns a list of two ve
 
 FindGottesmanShears[m_?MatrixQ] := FindGottesmanShears[m[[1]], m[[2]]]
 
-FindGottesmanShears[x_?VectorQ, y_?VectorQ] := Zero[2, Length @ x] /; x == y
+FindGottesmanShears[x_?VectorQ, y_?VectorQ] := Zero[{2, Length @ x}] /; x == y
 
 FindGottesmanShears[x_?VectorQ, y_?VectorQ] := {
   Mod[x + y, 2],
@@ -1068,7 +1068,7 @@ GottesmanStandard[mat_?MatrixQ] := (
 
 GottesmanStandard[mat_?MatrixQ] := Module[
   {xx, zz, vv, cc},
-  {xx, zz, vv, cc} = GottesmanStandard[mat, Zero[Length @ mat, 1]];
+  {xx, zz, vv, cc} = GottesmanStandard[mat, Zero[{Length @ mat, 1}]];
   {xx, zz, cc}
  ]
 
@@ -1085,7 +1085,7 @@ GottesmanStandard[mat_?MatrixQ, vec_?VectorQ] := Module[
 
 GottesmanStandard[mat_?MatrixQ, off_?MatrixQ] := (
   Message[GottesmanStandard::incmp, mat, off];
-  GottesmanStandard[mat, Zero[Length @ mat, 1]]
+  GottesmanStandard[mat, Zero[{Length @ mat, 1}]]
  ) /; Length[mat] != Length[off]
 
 GottesmanStandard[mat_?MatrixQ, off_?MatrixQ] := Module[

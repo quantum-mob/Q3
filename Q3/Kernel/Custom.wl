@@ -1,12 +1,14 @@
 (* -*- mode:math -*- *)
 BeginPackage["Q3`"]
 
-$Customizations::usage = "Custom options for various frequently used functions."
+{ Customize, $Customizations };
 
-Customize::usage = "Customize[symb, options] sets the options for symb with the specified options and $Customizations."
+{ $EmptyPlotMarkers };
 
 
 Begin["`Private`"]
+
+$Customizations::usage = "Custom options for various frequently used functions."
 
 $Customizations = {
   (* Graphics *)
@@ -20,22 +22,29 @@ $Customizations = {
   PlotStyle -> Thick,
   AxesStyle -> Large,
   ImageSize -> Large
- };
+};
 
 
-Customize[ss:{__Symbol}, opts___?OptionQ] := Scan[
-  Customize[#, opts]&,
-  ss
- ]
-  
+(**** <Customize> ****)
+
+Customize::usage = "Customize[symb, options] sets the options for symb with the specified options and $Customizations."
+
+Customize[ss:{__Symbol}, opts___?OptionQ] :=
+  Scan[Customize[opts], ss]
+
 Customize[symb_Symbol, opts___?OptionQ] := Module[
-  { more },
-  more = FilterRules[
+  { mint },
+  mint = FilterRules[
     Normal @ Association @ Join[$Customizations, {opts}],
     Options[symb]
-   ];
-  SetOptions[symb, more]
- ]
+  ];
+  SetOptions[symb, mint]
+]
+
+Customize[opts___?OptionQ][symb_Symbol] :=
+  Customize[symb, opts]
+  
+(**** </Customize> ****)
 
 
 (* Graphics *)
@@ -49,7 +58,7 @@ Customize @ {
   Plot, ParametricPlot, LogPlot, LogLinearPlot, LogLogPlot,
   ListPlot, ListLinePlot, ListLogPlot, ListLogLinearPlot, ListLogLogPlot,
   ReImPlot, AbsArgPlot
- };
+};
 
 (* 2022-07-23 (v13.1): For some unknown reason, AxesStyle->Large causes a
    problem with ComplexListPlot. *)
@@ -64,7 +73,19 @@ Customize[
     ParametricPlot3D
    },
   Axes -> True
- ]
+]
+
+
+$EmptyPlotMarkers::usage = "$EmptyPlotMarkers gives a list of predefined empty markers."
+
+$EmptyPlotMarkers = {
+  "\[EmptyCircle]",
+  "\[EmptyUpTriangle]",
+  "\[EmptyDiamond]",
+  "\[EmptySquare]",
+  "\[EmptyDownTriangle]"
+};
+
 
 End[]
 

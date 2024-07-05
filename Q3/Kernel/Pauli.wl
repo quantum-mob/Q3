@@ -2303,7 +2303,7 @@ MatrixIn[op_, bs_List] := (
 
 MatrixIn[op_, bs_List] := (
   Message[MatrixIn::notbs, bs];
-  Zero[Length @ bs, Length @ bs]
+  Zero[{Length @ bs, Length @ bs}]
  ) /; AnyTrue[bs, FreeQ[#, _Ket]&]
 
 MatrixIn[expr:(_List|_Association), spec:(__List|__Association)] :=
@@ -3303,7 +3303,7 @@ Elaborate @ Dyad[a_Association, b_Association] := Module[
 
 
 Dyad /: (* fallback *)
-Matrix[op_Dyad, ss_List, tt_List] := Zero[Length @ ss, Length @ tt]
+Matrix[op_Dyad, ss_List, tt_List] := Zero[{Length @ ss, Length @ tt}]
   
 Dyad /:
 Matrix[op_Dyad, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
@@ -3318,7 +3318,7 @@ Matrix[ Dyad[a_Association, b_Association],
       aa, bb },
     If[sa != tb,
       Message[Dyad::mtrx, Row @ {ss, Keys @ a, Keys @ b, tt}];
-      Return @ Zero[Length @ ss, Length @ tt]
+      Return[Zero @ {Length @ ss, Length @ tt}]
      ];
     aa = Map[TheMatrix] @ Map[KeyTake[ss]] @ Map[Join[a, #]&] @
       Map[AssociationThread[sa -> #]&] @ Tuples[LogicalValues @ sa];
@@ -3329,7 +3329,7 @@ Matrix[ Dyad[a_Association, b_Association],
 
 
 Dyad /: (* fallback *)
-Matrix[op_Dyad, ss_List] := Zero[Length @ ss, Length @ ss]
+Matrix[op_Dyad, ss_List] := Zero[{Length @ ss, Length @ ss}]
   
 Dyad /:
 Matrix[op_Dyad, ss:{__?SpeciesQ}] := Matrix[op, FlavorNone @ ss] /;
