@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.4.8
+
+- New functions: ChebyshevPoints, ChebyshevApproximation, TrimLeft, TrimRight, IntervalSize.
+- WeightedLog is renamed ShannonLog.
+- ShannonLog and QuantumLog require the base of Log function to be specified explicitly.
+
 ## 3.4.7
 
 - Bug fix: Insome pieces of code, the old syntax argument form of Zero was used.

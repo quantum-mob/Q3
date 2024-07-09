@@ -739,7 +739,8 @@ theMeasurement[ws_WickState, c_?FermionQ] := Module[
   (* Simulate the measurement process. *)
   (* NOTE: WickState is unnormalized. *)
   (* NOTE: Both nn and mm have a positive Pfaffian. *)
-  If[ RandomReal[] < Chop[Sqrt[Det @ nn / Det @ mm]],
+  (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc]. The warning message does not seem to be serious in most cases. *)
+  If[ RandomReal[] < Quiet[Chop[Sqrt[Det @ nn / Det @ mm]], Det::luc],
     $MeasurementOut[c] = 0,
     $MeasurementOut[c] = 1;
     op = Reverse @ op;  (* op := Dagger[c] ** c *)
@@ -830,8 +831,9 @@ WickGreensFunction[ws_WickState, dd:{___?FermionQ}] := Module[
   (* normal Green's function *)
   gg = Zero[{n, n}];
   Table[
-    gg[[i, i]] = Re @ Sqrt @ Det @ Last @ wmWedge[{aa[[i]], bb[[i]]}, pp, uv, mm, k],
+    gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ Last @ wmWedge[{aa[[i]], bb[[i]]}, pp, uv, mm, k], Det::luc],
     (* NOTE: The Pfaffians here are supposed to be real positive. *)
+    (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc]. The warning message does not seem to be serious in most cases. *)
     {i, 1, n}
   ];
   Table[
@@ -890,7 +892,7 @@ WickEntanglementEntropy[grn_?MatrixQ, kk:{__Integer}] :=
 theWickEntropy::usage = "theWickEntropy[grn] returns the entropy of the fermionic Gaussian state characterized by the matrix grn of Green's function."
 
 theWickEntropy[grn_?MatrixQ] :=
-  ( QuantumLog[grn] + QuantumLog[One[Dimensions @ grn] - grn] ) / 2
+  ( QuantumLog[2, grn] + QuantumLog[2, One[Dimensions @ grn] - grn] ) / 2
 
 (**** </WickEntanglementEntropy> ****)
 
