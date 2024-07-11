@@ -78,8 +78,7 @@ BeginPackage["Q3`"]
 { PartialTrace, PartialTranspose };
 { ReducedMatrix, Reduced };
 
-{ PauliDecompose, PauliCompose, PauliVector };
-{ PauliDecomposeRL, PauliComposeRL };
+{ PauliCoefficients, PauliSeries, PauliVector };
 
 { MatrixEmbed };
 
@@ -1814,12 +1813,12 @@ ExpressionFor[vec_?VectorQ] := Module[
   If[ Not @ IntegerQ[n],
     Message[ExpressionFor::notls, vec];
     Return[Ket[0]]
-   ];
+  ];
   bits = Flatten @ Keys @ Most @ ArrayRules @ vec;
   vals = vec[[bits]];
   bits = Ket /@ IntegerDigits[bits-1, 2, n];
   KetChop @ Garner @ Dot[vals, bits]
- ]
+]
 
 
 (* Matrix to operator for unlabeled qubits *)
@@ -1827,17 +1826,16 @@ ExpressionFor[vec_?VectorQ] := Module[
 ExpressionFor[mat_?MatrixQ] := Module[
   { n = Log[2, Length @ mat],
     tt, pp },
-  n = Log[2, Length @ mat];
-  If[ IntegerQ[n], Null,
+  If[ Not @ IntegerQ[n],
     Message[ExpressionFor::notls, mat];
-    Return[0];
-   ];
+    Return[0]
+  ];
   
   pp = Table[
     { {Pauli[0]/2 + Pauli[3]/2, Pauli[4]},
       {Pauli[5], Pauli[0]/2 - Pauli[3]/2} },
     { n }
-   ];
+  ];
   (* NOTE: This makes ExpressionFor to generate an operator expression in
      terms of the Pauli raising and lowering operators instead of the Pauli X
      and Y operators. Many evaluations are faster with the raising and
@@ -1848,7 +1846,7 @@ ExpressionFor[mat_?MatrixQ] := Module[
 
   tt = Tensorize[mat]; (* It must be Tensorize, not ArrayReshape. *)
   Garner @ Total @ Flatten[tt * pp]
- ]
+]
 
 ExpressionFor[expr:(_?VectorQ|_?MatrixQ), {}] := ExpressionFor[expr]
 
@@ -1865,10 +1863,10 @@ ExpressionFor[vec_?VectorQ, ss:{__?SpeciesQ}] := Module[
   If[ nL == Length[vec], Null,
     Message[ExpressionFor::incmpt, vec, FlavorNone @ ss];
     Return[0];
-   ];
+  ];
   
   KetChop @ Garner[vec . bs]
- ]
+]
 
 (* Matrix to operator for labeled systems *)
 
@@ -1882,7 +1880,7 @@ ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
   If[ Times @@ dd == Length[mat], Null,
     Message[ExpressionFor::incmpt, mat, FlavorNone @ ss];
     Return[0]
-   ];
+  ];
 
   Let[Qubit, S];
   qq = S[Range @ Length @ ff, $];
@@ -1892,7 +1890,7 @@ ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
   ops = Outer[Multiply, Sequence @@ TheExpression /@ rr];
   ops = Garner @ Total @ Flatten[tsr * ops];
   JordanWignerTransform[ops, qq -> ff]
- ]
+]
 
 
 TheExpression::usage = "TheExpression[spc] returns the matrix of operators required to construct the operator expresion from the matrix representation involving the species spc.\nIt is a low-level function to be used internally.\nSee also TheMatrix, which serves similar purposes."
@@ -1901,7 +1899,7 @@ TheExpression[S_] := Table[
   S[j -> i],
   {i, LogicalValues @ S},
   {j, LogicalValues @ S}
- ]
+]
 (* NOTE: This method is also used for Elaborate[Dyad[...]]. However, to
    optimize ExpressionFor independently of Dyad, TheExpression can be
    redefined for specific Species S. *)
@@ -1957,19 +1955,45 @@ ExpressionIn[mat:Association[(_->_?MatrixQ)..],
 (**** </ExpressionIn> ****)
 
 
+(**** <BlochVector> ****)
+
 BlochVector::usage = "BlochSphere[{c0, c1}] returns the point on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
 
-BlochVector[rho_?MatrixQ] := Simplify[2 * PauliVector[rho]] /;
-  Dimensions[rho] == {2, 2}
+BlochVector::traceless = "Matrix `` is traceless."
 
-BlochVector[cc_?VectorQ] := Module[
-  { dd = Normalize[cc] },
+BlochVector::qubit = "`` does not represent a quantum state of qubits."
+
+BlochVector[vec_?VectorQ] := Module[
+  { new },
+  new = If[AllTrue[vec, NumericQ], Normalize[vec], vec];
   Simplify @ {
-    Conjugate[dd] . ThePauli[1] . dd,
-    Conjugate[dd] . ThePauli[2] . dd,
-    Conjugate[dd] . ThePauli[3] . dd
-   }
- ] /; Length[cc] == 2
+    Conjugate[new] . ThePauli[1] . new,
+    Conjugate[new] . ThePauli[2] . new,
+    Conjugate[new] . ThePauli[3] . new
+  }
+] /; Length[vec] == 2
+
+BlochVector[rho_?SquareMatrixQ] := Module[
+  { nrm = Tr[rho],
+    new },
+  If[ ZeroQ[nrm],
+    Message[BlochVector::traceless, rho];
+    Return[{0, 0, 0}]
+  ];  
+  new = If[AllTrue[Flatten @ rho, NumericQ], rho/Tr[rho], rho];
+  Simplify[2 * PauliVector[new]]
+] /; Length[rho] == 2
+
+
+BlochVector[rho:(_?VectorQ|_?SquareMatrixQ)] := BlochVector[rho, 1]
+
+BlochVector[rho:(_?VectorQ|_?SquareMatrixQ), k_Integer] :=
+  BlochVector[ReducedMatrix[rho, {k}]] /; IntegerPowerQ[2, Length @ rho]
+
+BlockVector[rho:(_?VectorQ|_?SquareMatrixQ), ___] := (
+  Message[BlockVector::qubit, rho];
+  {0, 0, 0}
+)
 
 
 BlochVector[Ket[]] := BlochVector @ {1, 0}
@@ -1981,8 +2005,9 @@ BlochVector[expr_, q_?SpeciesQ] := Module[
   If[ Length[ss] > 1,
     BlochVector @ ReducedMatrix[expr, FlavorNone @ {q}],
     BlochVector @ Matrix[expr, FlavorNone @ {q}]
-   ]
- ]
+  ]
+]
+
 
 BlochVector[expr_] := {0, 0, 0} /;
   FreeQ[expr, _Pauli | _Ket | _?NonCommutativeQ]
@@ -1997,9 +2022,13 @@ BlochVector[expr_, j_Integer] := Module[
   If[ n > 1,
     BlochVector @ ReducedMatrix[mat, {j}],
     BlochVector @ mat
-   ]
- ] /; Not @ FreeQ[expr, _Pauli | _Ket | _?NonCommutativeQ]
+  ]
+] /; Not @ FreeQ[expr, _Pauli | _Ket | _?NonCommutativeQ]
 
+(**** </BlochVector> ****)
+
+
+(**** <BlochSphere> ****)
 
 BlochSphere::usage = "BlochSphere[primitives, options] returns Graphics3D containing the Bloch sphere as well as primitives.\nIt accepts all Graphics3D primitives and, in addition, BlochPoint.\nBlochSphere[options] just displays the Bloch sphere."
 
@@ -2050,6 +2079,8 @@ theBlochSphere[opts___?OptionQ] := Module[
      }
    }
  ]
+
+(**** </BlochSphere> ****)
 
 
 (**** <Basis> ****)
@@ -3569,13 +3600,13 @@ DyadForm[mat_?MatrixQ] := Module[
   tsr = ArrayReshape[mat, ConstantArray[2, 2*n]];
   tsr = Association @ Most @ ArrayRules @ tsr;
   Garner @ Total @ KeyValueMap[theDyadForm[#1, n] * #2&, tsr]
- ] /; IntegerQ[Log[2, Length @ mat]]
+] /; IntegerPowerQ[2, Length @ mat]
 
 theDyadForm[val:{__}, n_Integer] := Module[
   {a, b},
   {a, b} = ArrayReshape[val-1, {2, n}];
   Pauli @ Thread[b -> a]
- ]
+]
 
 
 DyadForm[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
@@ -3585,7 +3616,7 @@ DyadForm[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
   tsr = ArrayReshape[mat, Join[dim, dim]];
   tsr = Association @ Most @ ArrayRules @ tsr;
   Garner @ Total @ KeyValueMap[theDyadForm[#1, spc] * #2&, tsr]
- ]
+]
 
 theDyadForm[val:{__}, spc:{__?SpeciesQ}] := Module[
   {a, b},
@@ -3593,7 +3624,7 @@ theDyadForm[val:{__}, spc:{__?SpeciesQ}] := Module[
   a = MapThread[Part, {LogicalValues @ spc, a}];
   b = MapThread[Part, {LogicalValues @ spc, b}];
   Dyad[AssociationThread[spc -> a], AssociationThread[spc -> b]]
- ]
+]
 
 (**** </DyadForm> ****)
 
@@ -3645,19 +3676,49 @@ One[m_Integer, n__Integer] := (
 (**** </One> ****)
 
 
-(**** <PauliDecompose> ****)
+(**** <PauliVector> ****)
 
-PauliDecompose::usage = "PauliDecompose[mat] gives an Association of coefficients in the Pauli decomposition of 2^n\[Times]2^n matrix mat."
+PauliVector::usage = "PauliVector[mat] returns the Pauli expansion coefficients of the traceless part of 2\[Times]2 matrix mat."
 
-PauliDecompose::dim = "The dimensions `` of matrix `` is not integer powers of 2."
+PauliVector::dim = "`` is not a 2\[Times]2 matrix."
 
-PauliDecompose[mat_?SquareMatrixQ] := Module[
-  { n = Log[2, Length @ mat],
-    trs },
+PauliVector @ {{a_, b_}, {c_, d_}} := {b+c, I*(b-c), a-d} / 2
+
+PauliVector[mat_?MatrixQ] := PauliVector[Normal @ mat] /;
+  Dimensions[mat] == {2, 2}
+
+PauliVector[mat_] := (
+  Message[PauliVector::dim, mat];
+  {0, 0, 0}
+)
+
+(**** </PauliVector> ****)
+
+
+(**** <PauliCoefficients> ****)
+
+PauliCoefficients::usage = "PauliCoefficients[mat] gives an Association of coefficients in the expansion of 2^n\[Times]2^n matrix mat in the Pauli matrices."
+
+PauliCoefficients::dim = "The dimensions `` of matrix `` are not integer powers of 2."
+
+Options[PauliCoefficients] = {
+  "RaisingLowering" -> False
+};
+
+PauliCoefficients[mat_?SquareMatrixQ, OptionsPattern[]] := Module[
+  { n = Log[2, Length @ mat] },
   If[ Not[IntegerQ @ n],
-    Message[PauliDecompose::dim, Dimensions @ mat, mat];
+    Message[PauliCoefficients::dim, Dimensions @ mat, mat];
     Return[<||>]
   ];
+  If[ OptionValue["RaisingLowering"],
+    thePauliCoeffsRL[mat, n],
+    thePauliCoeffsXY[mat, n]
+  ]
+]
+
+thePauliCoeffsXY[mat_?SquareMatrixQ, n_Integer] := Module[
+  { trs },
   trs = SparseArray @ {
     {1, 0,  0,  1},
     {0, 1,  1,  0},
@@ -3669,133 +3730,31 @@ PauliDecompose[mat_?SquareMatrixQ] := Module[
     ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]]
 ]
 
-PauliCompose::usage = "PauliCompose[assc] reconstructs the matrix using the Pauli decomposition coefficients given in Association assc."
+thePauliCoeffsRL[mat_?SquareMatrixQ, n_Integer] := Module[
+  { trs },
+  trs = SparseArray @ {
+    {1, 0, 0, 1}/2,
+    {0, 1, 0, 0},
+    {0, 0, 1, 0},
+    {1, 0, 0,-1}/2
+  };
+  trs = CircleTimes @@ Table[trs, n];
+  trs = Association @ Most @ ArrayRules @ Chop @
+    ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]];
+  KeySort @ KeyReplace[trs, {1 -> 0, 2 -> 4, 3 -> 5, 4 -> 3}]
+]
 
-PauliCompose[aa_Association] :=
+(**** </PauliCoefficients> ****)
+
+
+(**** <PauliSeries> ****)
+
+PauliSeries::usage = "PauliSeries[assc] reconstructs the matrix using the Pauli expansion coefficients given in Association assc."
+
+PauliSeries[aa_Association] :=
   Total @ KeyValueMap[(ThePauli[#1] * #2)&, aa]
 
-
-PauliVector::usage = "PauliVector[mat] returns the Pauli decomposition coefficients of 2\[Times]2 matrix mat."
-
-PauliVector::dim = "`` is not a 2\[Times]2 matrix."
-
-PauliVector @ {{a_, b_}, {c_, d_}} := {b+c, I*(b-c), a-d} / 2
-
-PauliVector[mat_SparseArray] := PauliVector[Normal @ mat] /;
-  Dimensions[mat] == {2, 2}
-
-PauliVector[mat_] := (
-  Message[PauliVector::dim, mat];
-  {0, 0, 0}
- )
-
-(**** </PauliDecompose> ****)
-
-
-(**** <PauliDecomposeOld> ****)
-
-PauliDecomposeOld::usage = "PauliDecomposeOld[m] gives the coefficients in the Pauli decomposition of m as a tensor of rank n, where m is a 2^n x 2^n matrix."
-
-PauliDecomposeOld::dim = "The argument M of PauliDecomposeOld[M] should be a matrix of size 2^n*2^n."
-
-PauliDecomposeOld[dd:(0|1|2|3)..][m_?MatrixQ] := PauliDecomposeOld[m, {dd}]
-
-PauliDecomposeOld[dd:{(0|1|2|3)..}][m_?MatrixQ] := PauliDecomposeOld[m, dd]
-
-
-PauliDecomposeOld[m_?MatrixQ, d:(0|1|2|3)] := PauliDecomposeOld[m, {d}]
-
-PauliDecomposeOld[m_?MatrixQ, idx:{(0|1|2|3)..}] :=
-  Tr @ Dot[m, CircleTimes @@ ThePauli /@ idx] / Length[m]
-
-
-PauliDecomposeOld[mat_?SquareMatrixQ] := Module[
-  { n = Log[2, Length @ mat],
-    idx },
-  If [ Not @ IntegerQ[n],
-    Message[PauliDecomposeOld::dim];
-    Return[0]
-   ];
-  idx = Tuples[{0, 1, 2, 3}, n];
-  ArrayReshape[PauliDecomposeOld[mat, #]& /@ idx, Table[4, n]]
- ]
-
-
-PauliComposeOld::usage = "PauliComposeOld[coeff] constructs a 2^n x 2^n matrix using the coefficients specified in the tensor coeff.\nIt is an inverse of PauliDecomposeOld and coeff is usually the tensor returned by it."
-
-PauliComposeOld[c_?TensorQ] := Module[
-  { n = TensorRank[c],
-    indextable, indexlist, result = 0 },
-  indextable = Table[ {{0},{1},{2},{3}}, {n} ];
-  indexlist = Outer[ Join, Sequence @@ indextable, 1 ];
-  indexlist = Flatten[ indexlist, TensorRank[indexlist]-2 ];
-  For[ i=1, i<=Length[indexlist], i++,
-    result += c[[ Sequence @@ (indexlist[[i]]+1) ]] *
-      CircleTimes @@ ThePauli /@ indexlist[[i]]
-   ];
-  Return[result]
- ]
-
-(**** </PauliDecomposeOld> ****)
-
-
-(**** </PauliDecomposeRL> ****)
-
-PauliDecomposeRL::usage = "PauliDecomposeRL[M], where M is a matrix of size 2^n*2^n, gives the coefficients of a Pauli decomposition of M as a tensor of rank n."
-
-PauliDecomposeRL::badarg = "The argument M of PauliDecomposeRL[M] should be a matrix of size 2^n*2^n."
-
-PauliDecomposeRL[dd:(0|3|4|5)..][m_?MatrixQ] := PauliDecomposeRL[m, {dd}]
-
-PauliDecomposeRL[{dd:(0|3|4|5)..}][m_?MatrixQ] := PauliDecomposeRL[m, {dd}]
-
-
-PauliDecomposeRL[M_?MatrixQ, n:(0|3|4|5)] := PauliDecomposeRL[M, {n}]
-
-PauliDecomposeRL[M_?MatrixQ, idx:{(0|3|4|5)..}] := Module[
-  { T },
-  T[0] = ThePauli[0];
-  T[3] = ThePauli[3];
-  T[4] = ThePauli[5] * 2;
-  T[5] = ThePauli[4] * 2;
-  Tr @ Dot[ M, CircleTimes @@ T /@ idx ] / Length[M]
- ]
-
-
-PauliDecomposeRL[mat_?MatrixQ] := Module[
-  { n = Log[2, Length @ mat],
-    idx },
-  If [ !IntegerQ[n],
-    Message[PauliDecompose::dim];
-    Return[0]
-   ];
-  idx = Tuples[{0, 3, 4, 5}, n];
-  ArrayReshape[PauliDecomposeRL[mat, #]& /@ idx, Table[4, n]]
- ]
-
-
-PauliComposeRL::usage = "PauliComposeRL[coeff], where coeff is a tensor of rank n, gives a Pauli composed matrix of size 2^n*2^n with coefficients coeff."
-
-PauliComposeRL[c_?TensorQ] := Module[
-  { tiefe = TensorRank[c],
-    indextable, indexlist, result = 0, T },
-  indextable = Table[{{0}, {1}, {2}, {3}}, {tiefe}];
-  indexlist = Outer[Join,Sequence@@indextable,1];
-  indexlist = Flatten[indexlist,TensorRank[indexlist]-2];
-  
-  T[0] = ThePauli[0];
-  T[1] = ThePauli[3];
-  T[2] = ThePauli[4];
-  T[3] = ThePauli[5];
-  
-  For[ i=1, i<=Length[indexlist], i++,
-    result += c[[Sequence @@ (indexlist[[i]]+1)]] *
-      CircleTimes @@ T /@ indexlist[[i]]
-   ];
-  result
- ]
-
-(**** </PauliDecomposeRL> ****)
+(**** </PauliSeries> ****)
 
 
 (**** <SchmidtDecomposition> ****)
@@ -4349,7 +4308,7 @@ ReducedMatrix[rho:(_?VectorQ|_?MatrixQ), dd:{__Integer}, jj:{__Integer}] :=
 ReducedMatrix[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] := (
   Message[ReducedMatrix::noqubit, rho];
   rho
- ) /; Not @ IntegerQ @ Log[2, Length @ rho]
+) /; Not @ IntegerPowerQ[2, Length @ rho]
 
 ReducedMatrix[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] :=
   ReducedMatrix[rho, ConstantArray[2, Log[2, Length @ rho]], jj]
@@ -4364,7 +4323,7 @@ ReducedMatrix[expr_, ss:{__?SpeciesQ}] := Module[
   qq = Union[qq, rr];
   jj = Flatten @ Map[FirstPosition[qq, #]&, Complement[qq, rr]];
   PartialTrace[Matrix[expr, qq], Dimension[qq], jj]
- ]
+]
 
 
 ReducedMatrix[expr_, jj:{__Integer}] := Module[

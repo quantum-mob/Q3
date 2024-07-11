@@ -24,6 +24,7 @@ EndPackage[]
 Get["Q3`Abba`"];
 Get["Q3`Abby`"];
 Get["Q3`Abel`"];
+Get["Q3`Chebyshev`"];
 Get["Q3`Wimmer`"];
 Get["Q3`Cauchy`"];
 Get["Q3`Pauli`"];
@@ -42,6 +43,7 @@ Get["Q3`VonNeumann`"];
 Get["Q3`Young`"];
 Get["Q3`YoungFourier`"];
 Get["Q3`Schur`"];
+Get["Q3`QSP`"];
 Get["Q3`QML`"];
 Get["Q3`Einstein`"]; (* should be loaded last *)
 Get["Q3`Custom`"];

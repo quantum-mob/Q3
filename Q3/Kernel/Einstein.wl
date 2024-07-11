@@ -5,12 +5,13 @@ BeginPackage["Q3`"]
 
 { WeightedLog }; (* renamed *)
 
+{ PauliDecompose, PauliDecomposeRL, PauliCompose, PauliCompseRL }; (* renamed *)
+
 { TheLower, TheRaise, RaiseLower }; (* renamed *)
 { PauliEmbed, PauliApply }; (* obsolete and excised *)
 { TheState, TheOperator }; (* obsolete and excised *)
 { NormalForm }; (* renamed *)
 { LogicalForm, DefaultForm }; (* obsolete since 2023-02-18 *)
-{ PauliDecomposeOld, PauliComposeOld }; (* to be excised *)
 { DyadExpression }; (* renamed *)
 { WignerFunction }; (* obsolete *)
 { PauliExpression, PauliExpressionRL }; (* obsolete *)
@@ -69,6 +70,27 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := MultiplyExp[expr]
 WeightedLog[args__] := (
   Message[Q3General::renamed, "WeightedLog", "ShannonLog"];
   ShannonLog[2, args]
+)
+
+
+PauliDecompose[args__] := (
+  Message[Q3General::renamed, "PauliDecompose", "PauliCoefficients"];
+  PauliCoefficients[args]
+)
+
+PauliDecomposeRL[args__] := (
+  Message[Q3General::renamed, "PauliDecomposeRL", "PauliCoefficients"];
+  PauliCoefficients[args, "RaisingLowering" -> True]
+)
+
+PauliCompose[args__] := (
+  Message[Q3General::renamed, "PauliCompose", "PauliSeries"];
+  PauliSeries[args]
+)
+
+PauliComposeRL[args__] := (
+  Message[Q3General::renamed, "PauliComposeRL", "PauliSeries"];
+  PauliSeries[args]
 )
 
 

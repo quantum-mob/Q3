@@ -154,16 +154,16 @@ GellMannExpression::usage = "GellMannExpression[m] returns an expression for the
 GellMannExpression[a_SparseArray?VectorQ] := Module[
   { n = Log[3, Length[a]],
     bits, vals },
-  If[ !IntegerQ[n],
+  If[ Not @ IntegerQ[n],
     Message[Ket::badLen];
     Return[a]
-   ];
+  ];
   bits = Cases[ Flatten @ Keys @ Association @ ArrayRules @ a, _Integer ];
   vals = a[[bits]];
   bits = IntegerDigits[bits-1, 3, n] /. {0 -> "r", 1 -> "b", 2 -> "g"};
   bits = Apply[Ket, bits, {1}];
   Garner @ Dot[vals, bits]
- ]
+]
 
 GellMannExpression[a_?VectorQ] :=
   GellMannExpression @ SparseArray[ ArrayRules[a], {Length @ a} ]

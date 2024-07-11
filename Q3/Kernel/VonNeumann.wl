@@ -250,7 +250,7 @@ EntanglementEntropy::qubit = "`` does not seem to be a vector or matrix for qubi
 EntanglementEntropy[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] := (
   Message[EntanglementEntropy::qubit, rho];
   rho
-) /; Not @ IntegerQ @ Log[2, Length @ rho]
+) /; Not @ IntegerPowerQ[2, Length @ rho]
 
 EntanglementEntropy[rho:(_?VectorQ|_?MatrixQ), jj:{__Integer}] :=
   EntanglementEntropy[rho, ConstantArray[2, Log[2, Length @ rho]], jj]

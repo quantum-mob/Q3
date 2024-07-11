@@ -23,10 +23,10 @@ Begin["`Private`"]
 QuissoCoefficientTensor::usage = "QuissoCoefficientTensor[expr] gives the Pauli decomposition of the Quisso expression expr, by finding the coefficients to operators."
 
 
-(* Method 1: One can use a similar method as in PauliDecompose[]. But it
+(* Method 1: One can use a similar method as in PauliCoefficients[]. But it
    becomse very slow as the number of qubits increases.
-   Note Added: PauliDecompose[] is now faster than the previous version.
-   This new implementation of PauliDecompose has not been tested yet.*)
+   Note Added: PauliCoefficients[] is now faster than the previous version.
+   This new implementation of PauliCoefficients has not been tested yet.*)
 
 (* Method 2: This results in "Recursion depth of 1024 exceeded
    during evaluation of ..." error when the state vector includes many terms

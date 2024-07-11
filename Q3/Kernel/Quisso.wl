@@ -550,14 +550,6 @@ HoldPattern @ Multiply[pre___, x_?QubitQ, y_?QubitQ, post___] :=
 (**** </Multiply> ****)
 
 
-(**** <MultiplyPower> ****)
-
-HoldPattern @ MultiplyPower[S_Symbol?QubitQ[j___, C[n_Integer]], L_Integer] :=
-  S[j, C[n-Log[2, L]]] /; IntegerQ @ Log[2, L]
-
-(**** </MultiplyPower> ****)
-
-
 
 (* MultiplyDegree for operators *)
 MultiplyDegree[_?QubitQ] = 1
@@ -2989,7 +2981,7 @@ ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ},
     tt -> IntegerDigits[
       Mod[x * FromDigits[Lookup[aa, tt], 2], n],
       2, Length @ tt ]
-   ]
+  ]
 
 
 ModMultiply /:
@@ -3012,8 +3004,8 @@ Elaborate[
 
 ModMultiply /:
 Elaborate[
-  op:ModMultiply[_Integer, _IntegerQ, tt:{__?QubitQ}, ___?OptionQ]
- ] := Elaborate @ ExpressionFor[Matrix @ op, tt]
+  op:ModMultiply[_Integer, _?IntegerQ, tt:{__?QubitQ}, ___?OptionQ]
+] := Elaborate @ ExpressionFor[Matrix @ op, tt]
 
 
 ModMultiply /:

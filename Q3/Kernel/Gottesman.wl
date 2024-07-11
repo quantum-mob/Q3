@@ -164,7 +164,7 @@ GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=
 
 PauliMatrixQ::usage = "PauliMatrixQ[mat] returns True if matrix mat is an element of the full Pauli group, and False otherwise."
 
-(* NOTE: The previous method based on PauliDecompose is slow for a large
+(* NOTE: The previous method based on PauliCoefficients is slow for a large
    number of qubits, especially, 8 or more qubits. *)
 
 PauliMatrixQ[mat_?SquareMatrixQ] := thePauliMatrixQ[mat] /; Length[mat] == 2
@@ -184,7 +184,7 @@ PauliMatrixQ[mat_?SquareMatrixQ] := Module[
     AllTrue[Flatten @ tt, Identity],
     False
   ]
-] /; IntegerQ @ Log[2, Length @ mat] /; Length[mat] > 2
+] /; IntegerPowerQ[2, Length @ mat] /; Length[mat] > 2
 
 PauliMatrixQ[_List] = False
 
@@ -605,7 +605,7 @@ Stabilizer[state:(_?VectorQ|_?SquareMatrixQ)] := With[
     Return @ List @ One[Length @ state]
   ];
   Map[ThePauli, Keys @ mm] * Values[mm]
-] /; IntegerQ @ Log[2, Length @ state]
+] /; IntegerPowerQ[2, Length @ state]
 
 
 Stabilizer[expr_] := Module[
@@ -633,7 +633,7 @@ getStabilizer[vec_?VectorQ] :=
 
 getStabilizer[rho_?SquareMatrixQ] := Module[
   { tsr },
-  tsr = PauliDecompose[rho];
+  tsr = PauliCoefficients[rho];
   If[Not[theSSQ @ Values @ tsr], Return @ $Failed];
   Sign /@ tsr
 ]
@@ -682,13 +682,13 @@ StabilizerStateQ::notqbt = "`` is not a state vector for qubits."
 StabilizerStateQ[any:(_?VectorQ|_?SquareMatrixQ)] := (
   Message[StabilizerStateQ::notqbt, any];
   False
-) /; Not @ IntegerQ @ Log[2, Length @ any]
+) /; Not @ IntegerPowerQ[2, Length @ any]
 
 StabilizerStateQ[vec_?VectorQ] :=
   StabilizerStateQ @ Dyad[vec, vec]
 
 StabilizerStateQ[mat_?SquareMatrixQ] :=
-  theSSQ[Values @ PauliDecompose @ mat]
+  theSSQ[Values @ PauliCoefficients @ mat]
 
 theSSQ[val_?VectorQ] := TrueQ @ And[
   NoneTrue[val, MatchQ[#, _Complex]&],
@@ -929,13 +929,13 @@ GottesmanMatrix[mat_?MatrixQ] := Module[
   If[ Not @ IntegerQ[n],
     Message[GottesmanMatrix::dim, MatrixForm @ mat];
     Return[{{}}]
-   ];
+  ];
   xz = ThePauli /@ Riffle[
     NestList[RotateRight, PadRight[{1}, n], n-1],
     NestList[RotateRight, PadRight[{3}, n], n-1]
-   ];
+  ];
   GottesmanVector /@ Supermap[mat] /@ xz
- ]
+]
 
 
 FromGottesmanMatrix::usage = "FromGottesmanMatrix[mat, {s$1,s$2,$$}] returns the Clifford operator corresponding to binary symplectic matrix mat."

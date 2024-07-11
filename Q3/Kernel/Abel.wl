@@ -798,8 +798,17 @@ power using the non-commutative multiplication Multiply."
 
 SetAttributes[MultiplyPower, {Listable, ReadProtected}];
 
-(* Put this definition earlier than the general rule. *)
+(* Put these definitions earlier than the general rule. *)
+
 MultiplyPower[Sqrt[op_], n_Integer?EvenQ] := MultiplyPower[op, n / 2]
+
+MultiplyPower[S_Symbol?QubitQ[j___, C[n_Integer]], M_Integer] := With[
+  { m = Log[2, M] },
+  S[j, C[n-m]] /; IntegerQ[m]
+]
+
+
+(* general rule *)
 
 MultiplyPower[op_, 0] = 1
 

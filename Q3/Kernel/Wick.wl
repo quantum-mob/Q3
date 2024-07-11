@@ -368,7 +368,7 @@ WickState[pre___, op_Multiply, post___] := WickState[pre, List @@ op, post]
 
 WickState[spec___, aa_Association] := (
   Message[WickState::frm, aa];
-  WickState[{}, {{{{0}}, {{0}}}}, {{}}, {}] 
+  WickState[]
 ) /; Fermions[aa] == {}
 
 
@@ -386,7 +386,7 @@ WickState[aa_Association] :=
 
 
 WickState /:
-Norm[ws_WickState] := Power[Det[ws @ "Wick matrix"], 1/4]
+Norm[ws_WickState] := Quiet[Power[Det[ws[[3]]], 1/4], Det::luc]
 (* NOTE: The pfaffian of this Wick matrix must be positive. *)
 
 
@@ -523,6 +523,9 @@ WickUnitary[1, cc:{___?FermionQ}, rest___] := (* identity in the Nambu space *)
 
 WickUnitary[NambuMatrix[{u_?MatrixQ, v_?MatrixQ}, "Unitary"], rest___] :=
   WickUnitary[{u, v}, rest]
+
+WickUnitary[{mat_?SquareMatrixQ, 0}, rest___] :=
+  WickUnitary[NambuMatrix[{mat, 0}], rest]
 
 WickUnitary[mat_?SquareMatrixQ, rest___] :=
   WickUnitary[NambuMatrix @ mat, rest]
@@ -974,9 +977,9 @@ wmBuild[cc:{__?FermionQ}][spec:({___?AnyFermionQ} | {_?MatrixQ, _?MatrixQ})...] 
       {i, n},
       {j, i+1, n}
     ];
-    (* mat = SymmetrizedArray[mat, {n, n}, Antisymmetric[{1, 2}]]; *)
-    (* NOTE: Too dense and pointless for most purposes. *)
-    {enc, trs, Normal @ mat}
+    If[mat["Density"] > 0.2, mat = Normal @ mat];
+    (* NOTE: If too dense, practically no useful. *)
+    {enc, trs, mat}
   ]
 
 (**** </wmBuild> ****)
@@ -1029,9 +1032,11 @@ wmWedge[ dd:{__?FermionQ}, (* encoded modes *)
     {i, n},
     {j, Length[pp] - k}
   ];
-
+  If[new["Density"] > 0.2, new = Normal @ new];
+  (* NOTE: If too dense, practically no useful. *)
+  
   (* Reconstruct the Wick matrix. *)
-  { Join[p1, dd, p2], uv, Normal @ new }
+  { Join[p1, dd, p2], uv, new }
 ]
 
 (**** </wmWedge> ****)
