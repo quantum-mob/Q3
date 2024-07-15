@@ -2,9 +2,11 @@
 
 ## 3.5.0
 
-- New functions: IntegerPowerQ, QSP, QSPFind, QSPConvert.
 - QSP tools for quantum signal processing have been added.
-- PauliDecompose, PauliDcomposeRL, PauliCompose, PauliComposeRL are renamed PauliCoefficients, PauliCoefficientsRL, PauliSeries, PauliSeriesRL, respectively.
+- New functions: IntegerPowerQ, QSP, QSPFind, QSPConvert.
+- The meaning of input argument n in ChebyshevPoints and ChebyshevSeries has been slightly changed.
+- ChebyshevApproximation[fun, {n, parity}, ...] is allowed.
+- PauliDecompose, PauliCompose are renamed PauliCoefficients, PauliSeries, respectively.
 
 ## 3.4.8
 

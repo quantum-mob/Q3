@@ -8,17 +8,27 @@ Begin["`Private`"]
 
 (**** <ChebyshevPoints> ****)
 
-ChebyshevPoints::usage = "ChebyshevPoints[n] returns a list of n+1 Chebyshev points of the first kind.\nChebyschevPoints[n, k] returns the Chebyshev points of kind k (1 for the first kind or 2 for the second kind).\nChebyshevPoints[n, k, {a, b}] returns the Chebyshev points over Interval[{a, b}]."
+ChebyshevPoints::usage = "ChebyshevPoints[n] returns a list of n Chebyshev points of the first kind that is required to uniquely determine the Chebyshev expansion coefficients of degree n-1.\nChebyshevPoints[{n, parity}] returns a list of n Chebyshev points required to uniquely determine the non-zero Chebyshev coefficients of a polynomial of degree d = (2*n-1) - (1+parity)/2 and parity (\[PlusMinus]1 for even and odd parity, respectively).\nChebyschevPoints[spec, k] returns the Chebyshev points of the kth kind (1 for the first kind or 2 for the second kind).\nChebyshevPoints[n, k, {a, b}] returns the Chebyshev points over Interval[{a, b}]."
 
-ChebyshevPoints[n_Integer, kind : (1|2) : 1] := 
- Cos[(Range[n+1] - 1/2)*Pi/(n+1)]
+ChebyshevPoints[spec_] := ChebyshevPoints[spec, 1]
 
-ChebyshevPoints[n_Integer, 2] := Cos[Range[0, n]*Pi/n]
+ChebyshevPoints[n_Integer?Positive, 1] :=
+ Cos[(Range[n] - 1/2) * Pi/n]
 
-ChebyshevPoints[n_Integer, kind:(1|2), Interval @ {a_, b_}] :=
+ChebyshevPoints[n_Integer?Positive, 2] :=
+  Cos[Range[0, n-1] * Pi/(n-1)]
+
+
+ChebyshevPoints[{n_Integer?Positive, parity:(-1|1)}, 1] := With[
+  { nn = 2*n - (1+parity)/2 },
+  Cos[(Range[n] - 1/2) * Pi/nn]
+]
+
+
+ChebyshevPoints[n_Integer?Positive, kind:(1|2), Interval @ {a_, b_}] :=
   ChebyshevPoints[n, kind, {a, b}]
 
-ChebyshevPoints[n_Integer, kind : (1 | 2), int : {a_, b_}] := With[
+ChebyshevPoints[n_Integer?Positive, kind:(1|2), int:{a_, b_}] := With[
   { xx = ChebyshevPoints[n, kind] },
   a*(1 - xx)/2 + b*(1 + xx)/2
 ]
@@ -28,24 +38,48 @@ ChebyshevPoints[n_Integer, kind : (1 | 2), int : {a_, b_}] := With[
 
 (**** <ChebyshevCoefficients> ****)
 
-ChebyshevCoefficients::usage = "ChebyshevCoefficients[func, d] returns the Chebyshev expansion coefficients c0, c1, c2, \[Ellipsis], cd assuming that function func is a polynomial of degree d or less.\nChebyshevCoefficients[func, {n, parity}] returns the n non-zero Chebyshev expansion coefficients {c0, c2, \[Ellipsis], c2(n-1)} or {c1, c2,\[Ellipsis], c2n-1} of an even (parity = 1) or odd (parity = -1) polynomial, respectively, by evaluating func only on the positive side of the domain. It does not check the actual parity of func, but simply assumes the given parity."
+ChebyshevCoefficients::usage = "ChebyshevCoefficients[func, n] returns a list {c0, c1, c2, \[Ellipsis], c(n-1)} of n Chebyshev expansion coefficients assuming that function func is a polynomial of degree n+1 or less.\nChebyshevCoefficients[func, {n, parity}] returns the n non-zero Chebyshev expansion coefficients {c0, c2, \[Ellipsis], c2(n-1)} or {c1, c2,\[Ellipsis], c2n-1} of an even (parity = 1) or odd (parity = -1) polynomial, respectively, by evaluating func only on the positive side of the domain. It does not check the actual parity of func, but simply assumes the given parity."
 
-ChebyshevCoefficients[fun_, d_Integer?NonNegative] := Module[
-  { cc = ChebyshevPoints[d] },
-  cc = Map[fun, cc];
-  cc = FourierDCT[cc, 2] * 2/Sqrt[d+1];
-  cc[[1]] /= 2;
-  cc
+ChebyshevCoefficients[fun_, n_Integer?Positive] := Module[
+  { xx = ChebyshevPoints[n] },
+  theChebyshevFourier @ Map[fun, xx]
 ]
 
 ChebyshevCoefficients[fun_, {n_Integer?Positive, parity:(-1|1)}] := Module[
-  { cc = ChebyshevPoints[(2*n-1) - (1+parity)/2] },
-  cc = Take[cc, n];
-  cc = Map[fun, cc];
-  cc = Join[cc, parity*Reverse[If[parity == 1, Most @ cc, cc]]];
-  cc = FourierDCT[cc, 2] * 2/Sqrt[Length @ cc];
+  { xx = ChebyshevPoints[{n, parity}] },
+  theChebyshevFourier @ {Map[fun, xx], parity}
+]
+
+
+theChebyshevFourier::usage = "theChebyshevFourier[{y0, y1, ..., yn}] returns the Chebyshev expansion coefficients of the polynomial, which gives {y0, y1, ..., yn} at the Chebyshev points {x0, x1, ..., xn} of the first kind. Note that yk itself could be a vector as the polynomial may be a vector-valued function."
+
+theChebyshevFourier[yy_/;MatrixQ[yy, NumericQ]] :=
+  Transpose @ Map[theChebyshevFourier, Transpose @ yy]
+(* NOTE: the Fourier transform for each COLUMN. *)
+(* NOTE: FourierDCT[mat] performs a multi-dimensional Fourier transform, and cannot be directly used here. *)
+
+theChebyshevFourier[yy_/;VectorQ[yy, NumericQ]] := Module[
+  { cc = FourierDCT[yy, 2] * 2/Sqrt[Length @ yy] },
   cc[[1]] /= 2;
+  Return[cc]
+]
+
+theChebyshevFourier[{yy:(_?VectorQ|_?MatrixQ), parity:(-1|1)}] := Module[
+  { cc = If[parity == 1, Most @ yy, yy] },
+  cc = Join[yy, parity*Reverse[cc]];
+  cc = theChebyshevFourier[cc];
   cc[[1+(1-parity)/2;; ;;2]]
+]
+
+
+(* For non-numeric input *)
+theChebyshevFourier[yy:(_?VectorQ|_?MatrixQ)] := Module[
+  { n = Length[yy],
+    cc },
+  cc = Dot[Cos[Dyad[Range[n]-1, Range[n]-1/2] * Pi/n], yy] * 2/n;
+  (* NOTE: the Fourier transform for each COLUMN. *)
+  cc[[1]] /= 2;
+  Return[cc]
 ]
 
 (**** </ChebyshevCoefficients> ****)
@@ -114,7 +148,7 @@ ChebyshevSeries[cc_?VectorQ] := With[
 
 (**** <ChebyshevApproximation> ****)
 
-ChebyshevApproximation::usage = "ChebyshevApproximation[func, d] returns a ChebyshevSeries of degree d or less that approximates function func. It finds the polynomial approximation based on the convex optimization.\nChebyshevApproximation[func, d, interveal] restricts the domain of func to interval \[SubsetEqual] [-1, 1]."
+ChebyshevApproximation::usage = "ChebyshevApproximation[func, d] returns a ChebyshevSeries of degree d or less that approximates function func.\nChebyshevApproximation[func, {n, parity}] returns a ChebyshevSeries of degree 2n+(1-parity)/2 and parity, by evaluating the function only on the positive side of the domain.\nChebyshevApproximation[func, spec, interveal] restricts the domain of func to interval \[SubsetEqual] [-1, 1].\nChebyshevApproximation finds the polynomial approximation based on the convex optimization, more specifically, using the built-in global minimizer NMinimize."
 
 Options[ChebyshevApproximation] = {
   "Points" -> 16,
@@ -122,38 +156,21 @@ Options[ChebyshevApproximation] = {
   "Parity" -> False
 }
 
-ChebyshevApproximation[fun_, d_Integer, opts:OptionsPattern[{ChebyshevApproximation, NMinimize}]] :=
- ChebyshevApproximation[fun, d, Interval @ {-1, 1}, opts]
+ChebyshevApproximation[fun_, spec_, opts:OptionsPattern[{ChebyshevApproximation, NMinimize}]] :=
+ ChebyshevApproximation[fun, spec, Interval @ {-1, 1}, opts]
 
-ChebyshevApproximation[fun_, d_Integer, int:{_?NumericQ, _?NumericQ},
+ChebyshevApproximation[fun_, spec_, int:{_?NumericQ, _?NumericQ},
   opts:OptionsPattern[{ChebyshevApproximation, NMinimize}]
-] := ChebyshevApproximation[fun, d, Interval @ int, opts]
+] := ChebyshevApproximation[fun, spec, Interval @ int, opts]
 
-ChebyshevApproximation[fun_, d_Integer, int:{{_?NumericQ, _?NumericQ}..},
+ChebyshevApproximation[fun_, spec_, int:{{_?NumericQ, _?NumericQ}..},
   opts:OptionsPattern[{ChebyshevApproximation, NMinimize}]
-] := ChebyshevApproximation[fun, d, Interval @@ int, opts]
-
-ChebyshevApproximation[fun_, d_Integer, int_Interval, opts:OptionsPattern[{ChebyshevApproximation, NMinimize}]] := 
-  If[ OptionValue["Parity"],
-    theChebyApprox1[fun, d, int, opts],
-    theChebyApprox0[fun, d, int, opts]
-  ]
+] := ChebyshevApproximation[fun, spec, Interval @@ int, opts]
 
 
-theChebyApprox1[fun_, d_Integer, int_Interval, opts:OptionsPattern[{ChebyshevApproximation, NMinimize}]] := Module[
-  { new = IntervalIntersection[int, Interval @ {0, 1}],
-    pp, xx, yy, zz, cc, c },
-  xx = ChebyshevPoints[Round[2/IntervalSize[new]] * OptionValue["Points"]];
-  xx = Select[xx, Between @ new];
-  yy = fun /@ xx;
-  cc = Array[c, (d + Mod[d, 2, 1])/2, Mod[d, 2]];
-  pp = 1 - 2*Mod[d, 2];
-  zz = ChebyshevSeries[cc, pp] @ xx;
-  cc = NMinimize[Norm[zz - yy, OptionValue["NormType"]], cc, FilterRules[{opts}, Options[NMinimize]]];
-  ChebyshevSeries[Values[Last @ cc], pp]
-]
-
-theChebyApprox0[fun_, d_Integer, int_Interval, opts:OptionsPattern[{ChebyshevApproximation, NMinimize}]] := Module[
+ChebyshevApproximation[ fun_, d_Integer?NonNegative, int_Interval,
+  opts:OptionsPattern[{ChebyshevApproximation, NMinimize}] ] :=
+Module[
   { new = IntervalIntersection[int, Interval @ {-1, 1}], (* just in case *)
     xx, yy, zz, cc, c },
   xx = ChebyshevPoints[Round[2/IntervalSize[new]] * OptionValue["Points"]];
@@ -163,6 +180,20 @@ theChebyApprox0[fun_, d_Integer, int_Interval, opts:OptionsPattern[{ChebyshevApp
   zz = ChebyshevSeries[cc, 0] @ xx;
   cc = NMinimize[Norm[zz - yy, OptionValue["NormType"]], cc, FilterRules[{opts}, Options[NMinimize]]];
   ChebyshevSeries[Values[Last @ cc]]
+]
+
+ChebyshevApproximation[ fun_, {n_Integer?NonNegative, parity:(-1|1)}, int_Interval,
+  opts:OptionsPattern[{ChebyshevApproximation, NMinimize}] ] :=
+Module[
+  { new = IntervalIntersection[int, Interval @ {0, 1}],
+    xx, yy, zz, cc, c },
+  xx = ChebyshevPoints[Round[2/IntervalSize[new]] * OptionValue["Points"]];
+  xx = Select[xx, Between @ new];
+  yy = fun /@ xx;
+  cc = Array[c, n+1, (1-parity)/2];
+  zz = ChebyshevSeries[cc, parity] @ xx;
+  cc = NMinimize[Norm[zz - yy, OptionValue["NormType"]], cc, FilterRules[{opts}, Options[NMinimize]]];
+  ChebyshevSeries[Values[Last @ cc], parity]
 ]
 
 (**** </ChebyshevApproximation> ****)
