@@ -1,8 +1,6 @@
 (* -*- mode: math; -*- *)
 BeginPackage["Q3`"]
 
-{ Spin, SpinNumberQ };
-
 { TheKet, TheBra };
 
 { State, StateForm,
@@ -106,25 +104,6 @@ Begin["`Private`"]
 
 $symb = Unprotect[CircleTimes, CirclePlus, Ket, Bra]
 
-Spin::usage = "Spin is an option of several Species.\nSpin[c] returns the Spin quantum number of the Species c.\nLet[Spin, s] declares that s is the Spin species."
-
-SpinNumberQ::usage = "SpinNumberQ[J] returns True if J is a valid angular momentum quantum number (non-negative integer or half-integer).\nSpinNumberQ[J,M] returns True if J is a valid angular momentum quantum number and M is a valid magnetic quantum number (-j<=m<=j)."
-(* To be defined further in other packages; e.g., Wigner. *)
-
-SetAttributes[SpinNumberQ, {NHoldAll, ReadProtected}]
-
-SpinNumberQ[_Integer?NonNegative] = True
-
-SpinNumberQ[Rational[_,2]?Positive] = True
-
-SpinNumberQ[j_Integer?NonNegative, m_Integer] := And[ -j <= m <= j ]
-
-SpinNumberQ[j:Rational[_,2]?Positive, m:Rational[_,2]] := And[ -j <= m <= j ]
-
-SpinNumberQ[{j_, m_}] := SpinNumberQ[j, m]
-
-SpinNumberQ[__] = False
-
 
 (**** <TheKet> ****)
 
@@ -150,12 +129,6 @@ TheKet[aa:{(0|1|Up|Down)..}] := Module[
   SparseArray[{k -> 1}, Power[2, Length @ bb]]
  ]
 
-TheKet[a_Integer, bc__Integer] := (
-  Message[Q3General::changed, "TheKet",
-    "The directions must be given in a list like TheKet[{k1,k2,...}]"];
-  TheKet @ {a, bc}
- )
-
 (**** </TheKet> ****)
 
 
@@ -173,12 +146,6 @@ TheHadamard::usage = "TheHadamard[0]=IdentityMatrix[2]. TheHadamard[1]={{1,1},{1
 SetAttributes[ThePauli, {NHoldAll, ReadProtected}]
 
 SyntaxInformation[ThePauli] = {"ArgumentsPattern" -> {_}};
-
-ThePauli[a_Integer, bc__Integer] := (
-  Message[Q3General::changed, "ThePauli",
-    "The directions must be given in a list like ThePauli[{k1,k2,...}]"];
-  ThePauli @ {a, bc}
- )
 
 
 ThePauli[kk:{___, _List, ___}] := ThePauli /@ Thread[kk]
@@ -530,12 +497,12 @@ theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
   vv = Join[
     (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
     {vec @ rr} /. {{} -> Nothing}
-   ];
+  ];
   Ket @ List @ Row[
     Map[Row[#, $KetDelimiter]&, Flatten /@ vv],
     $KetGroupDelimiter
-   ]
- ]
+  ]
+]
 
 (**** </SpinForm> ****)
 
@@ -840,18 +807,6 @@ fermionKeySort[(head:(Ket|Bra))[a_Association]] :=
 Ket[s_?IntegerQ] := Ket @ {s}
 
 Bra[s_?IntegerQ] := Bra @ {s}
-
-Ket[a_Integer, bc__Integer] := (
-  Message[Q3General::changed, "Ket",
-    "The values must be given in a list like Ket[{b1,b2,...}]"];
-  Ket @ {a, bc}
- )
-
-Bra[a_Integer, bc__Integer] := (
-  Message[Q3General::changed, "Bra",
-    "The values must be given in a list like Bra[{b1,b2,...}]"];
-  Bra @ {a, bc}
-)
 
 (* Ket[<|...|>] *)
 
@@ -1603,12 +1558,6 @@ Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] repre
 SetAttributes[Pauli, NHoldAll]
 
 SyntaxInformation[Pauli] = {"ArgumentsPattern" -> {_}};
-
-Pauli[a_Integer, bc__Integer] := (
-  Message[Q3General::changed, "Pauli",
-    "The directions must be given in a list like Pauli[{k1,k2,...}]"];
-  Pauli @ {a, bc}
- )
 
 Pauli[kk:{___, _List, ___}] := Pauli /@ Thread[kk]
 (* Note: similar to the Listable attribute. *)
@@ -3029,23 +2978,6 @@ Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] ] :=
 Rotation /:
 Matrix[op_Rotation, rest___] := Matrix[Elaborate @ op, rest]
 
-
-Rotation[phi_, S:(_?QubitQ|_?SpinQ), v:{_, _, _}, opts___?OptionQ] := (
-  Message[Q3General::changed, Rotation,
-    "The vector must come before species specification."];
-  Rotation[phi, v, S, opts]
- )
-
-Rotation[S:(_?QubitQ|_?SpinQ), ang_, rest___] := (
-  Message[Q3General::angle, Rotation];
-  Rotation[ang, S, rest]
- )
-
-Rotation[qq:{(_?QubitQ|_?SpinQ)..}, ang_, rest___] := (
-  Message[Q3General::angle, Rotation];
-  Rotation[ang, qq, rest]
- )
-
 (**** </Rotation> ****)
 
 
@@ -3096,17 +3028,6 @@ Elaborate @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
 EulerRotation /:
 Expand @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
   QuantumCircuit[ Rotation[a, S[3]], Rotation[b, S[2]], Rotation[c, S[3]] ]
-
-
-EulerRotation[S:(_?SpinQ|_?QubitQ), ang_, rest___] := (
-  Message[Q3General::angle, EulerRotation];
-  EulerRotation[ang, S, rest]
- )
-
-EulerRotation[ss:{(_?SpinQ|_?QubitQ)..}, ang_, rest___] := (
-  Message[Q3General::angle, EulerRotation];
-  EulerRotation[ang, ss, rest]
- )
 
 (**** </EulerRotation> ****)
 
@@ -3637,11 +3558,6 @@ Zero[n_Integer] := Zero[{n}]
 
 Zero[mn:{__Integer}] := SparseArray[{}, mn]
 
-Zero[m_Integer, n__Integer] := (
-  Message[Q3General::changed, Zero, "Use the form Zero[{n1, n2, \[Ellipsis]}]."];
-  Zero[{m, n}]
-)
-
 (**** </Zero> ****)
 
 
@@ -3661,17 +3577,6 @@ One[{n_Integer}, p_Integer] := One[{n, n}, p]
 
 One[{m_Integer, n_Integer}, k_Integer] := 
   SparseArray[{i_, j_} :> 1 /; j == i+k, {m, n}]
-
-
-One[] := (
-  Message[Q3General::changed, One, "Use One[2] or One[{2, 2}]."];
-  One @ {2, 2}
-)
-
-One[m_Integer, n__Integer] := (
-  Message[Q3General::changed, One, "Use the form One[{n1, n2, \[Ellipsis]}]."];
-  One @ {m, n}
-)
 
 (**** </One> ****)
 
@@ -4121,20 +4026,20 @@ LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the log
 LogarithmicNegativity::norm = "`` is not properly normalized: trace = ``."
 
 LogarithmicNegativity[vec_?VectorQ, spec__] := (
-  If[ Chop[Norm[vec] - 1] != 0,
+  If[ Not @ ZeroQ[Norm[vec] - 1],
     Message[LogarithmicNegativity::norm, vec, Rationalize @ Norm @ vec]
-   ];
-  Log2 @ NormPT[vec, spec]
- )
+  ];
+  Log[2, NormPT[vec, spec]]
+)
 
 LogarithmicNegativity[mat_?MatrixQ, spec__] := (
-  If[ Chop[Tr[mat] - 1] != 0,
+  If[ Not @ ZeroQ[Tr[mat] - 1],
     Message[LogarithmicNegativity::norm, mat, Rationalize @ Tr @ mat]
-   ];
-  Log2 @ NormPT[mat, spec]
- )
+  ];
+  Log[2, NormPT[mat, spec]]
+)
 
-LogarithmicNegativity[rho_, spec_] := Log2 @ NormPT[rho, spec]
+LogarithmicNegativity[rho_, spec_] := Log[2, NormPT[rho, spec]]
 
 
 LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
@@ -4144,7 +4049,7 @@ LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
 
   mat = Matrix[rho, all];
   LogarithmicNegativity[mat, Dimension @ all, pos]
- ]
+]
 
 LogarithmicNegativity[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] :=
   LogarithmicNegativity[rho, {S}, bb]
@@ -4185,7 +4090,7 @@ NormPT[rho_, qq:{__?SpeciesQ}] := Module[
   If[Chop[trm] == 0, Message[NormPT::traceless, rho]; Return[1]];
   
   NormPT[mat, Dimension @ all, pos] / trm
- ]
+]
 (* NOTE: rho is assumed to be properly normalized; and hence the factor ofr
    1/trm in the code. *)
 
@@ -4696,9 +4601,9 @@ HilbertSchmidtProduct[a_, b_, ss:{___?SpeciesQ}] :=
 
 TraceNorm::usage = "TraceNorm[m] returns the trace norm of the matrix m, that is, Tr @ Sqrt[Dagger[m] ** m].\nTraceNorm[v] gives TraceNorm[v.Transepose[v]].\nTraceNorma[expr, {s1, s2, \[Ellipsis]}] returns the trace norm of operator expression expr acting on species s1, s2, \[Ellipsis]."
 
-TraceNorm[m_?MatrixQ] := Total @ SingularValueList[m]
+TraceNorm[m_/;MatrixQ[m, NumericQ]] := Total @ SingularValueList[m]
 
-TraceNorm[v_?VectorQ] := Norm[v]^2
+TraceNorm[v_/;VectorQ[v, NumericQ]] := Norm[v]^2
 
 
 TraceNorm[rho_] := TraceNorm @ Matrix[rho]

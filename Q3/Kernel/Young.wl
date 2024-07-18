@@ -136,9 +136,9 @@ YoungShape[YoungTableau[tb_]] := YoungShape[tb]
 YoungShape[tb:{__List}] := YoungShape[Length /@ tb]
 
 
-YoungShapes::usage = "YoungShapes[n] returns the list of all possible Young shapes for integern n."
+YoungShapes::usage = "YoungShapes[n] returns the list of all possible Young shapes for integer n.\nYoungShapes[n, d] returns the list of Young shapes at most d rows.\nYoungShapes[spec] with the same spec for IntegerPartitions[spec] is allowed."
 
-YoungShapes[n_Integer] := YoungShape /@ IntegerPartitions[n]
+YoungShapes[spec__] := YoungShape /@ IntegerPartitions[spec]
 
 (**** </YoungShape> ****)
 
@@ -819,14 +819,6 @@ KetPermute[expr_, spec_?anyPermutationSpecQ] :=
 
 KetPermute[expr_, spec_?anyPermutationSpecQ, ss:{__?SpeciesQ}] :=
   ReplaceAll[expr, v:Ket[_Association] :> KetPermute[v, spec, ss]]
-
-
-(* backward compatibility *)
-
-KetPermute[expr_, qq:{__?SpeciesQ}, spec_] := (
-  Message[Q3General::changed, KetPermute, "The list of species must come last."];
-  KetPermute[expr, spec, qq]
- )
 
 (**** </KetPermute> ****)
 

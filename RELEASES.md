@@ -3,11 +3,12 @@
 ## 3.5.0
 
 - Tools for the quantum signal processing (QSP) have been added.
-- New functions: IntegerPowerQ, QSP, QSPFind, QSPConvert.
+- New functions: QSP, QSPFind, QSPConvert, QuantumEntropy, IntegerPowerQ, ChoiceCount, SpinNumbers.
 - The meaning of input argument n in ChebyshevPoints and ChebyshevSeries has been slightly changed.
 - ChebyshevApproximation[func, {n, parity}, ...] is supported.
 - PauliDecompose and PauliCompose are renamed PauliCoefficients and PauliSeries, respectively.
 - PauliDecomposeRL and PauliseComposeRL are excised as they are implemented by PauliCoefficients and PauliSeries, respectively.
+- The definition of relative Renyi entropy (aka Renyi divergence) has been changed in the quantum case.
 
 ## 3.4.8
 

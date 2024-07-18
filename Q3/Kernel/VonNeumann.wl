@@ -3,8 +3,8 @@
 
 BeginPackage["Q3`"]
 
-{ ShannonEntropy, ShannonLog };
-{ VonNeumannEntropy, QuantumLog };
+{ ShannonLog, ShannonEntropy };
+{ QuantumLog, QuantumEntropy = VonNeumannEntropy };
 { RenyiEntropy };
 
 { EntanglementEntropy, CrossEntropy };
@@ -21,22 +21,22 @@ ShannonLog::usage = "ShannonLog[b,z] returns -z*Log[b, z] for z\[NotEqual]0 and 
 SetAttributes[ShannonLog, Listable]
 
 
-ShannonLog[_, 0] = 0
+ShannonLog[_?Positive, 0] = 0
 
-ShannonLog[_, _?ZeroQ] = 0
+ShannonLog[_?Positive, _?ZeroQ] = 0
 
-ShannonLog[base_, z_] := -z * Log[base, z]
+ShannonLog[base_?Positive, z_] := -z * Log[base, z]
 
 
-ShannonLog[_, 0, _] = 0
+ShannonLog[_?Positive, 0, _] = 0
 
-ShannonLog[_, _?ZeroQ, _] = 0
+ShannonLog[_?Positive, _?ZeroQ, _] = 0
 
 ShannonLog[_?Positive, _?Positive, _?ZeroQ] = Infinity
 
-ShannonLog[_, _, _?ZeroQ] = ComplexInfinity
+ShannonLog[_?Positive, _, _?ZeroQ] = ComplexInfinity
 
-ShannonLog[base_, p_, q_] := -p * Log[base, q]
+ShannonLog[base_?Positive, p_, q_] := -p * Log[base, q]
 
 (**** </ShannonLog> ****)
 
@@ -45,53 +45,42 @@ ShannonLog[base_, p_, q_] := -p * Log[base, q]
 
 QuantumLog::usage = "QuantumLog[b, rho] retruns -Tr[rho ** Log[b, rho]].\nQuantumLog[b, rho, sgm] returns -Tr[rho ** Log[b, sgm]] for density operators rho and sgm.\nQuantumLog[b, rho, {s1, s2, \[Ellipsis]}] or QuantumLog[b, rho, sgm, {s1, s2, \[Ellipsis]}] assumes that states rho and sgm, either density operators or ket vectors, are defined for systems {s1, s2, \[Ellipsis]}.\nQuantumLog is a low-level mathematical function intended for the use in VonNeumannEntropy or related functions."
 
-QuantumLog[base_, mat_?MatrixQ] := Total @ ShannonLog[base, Eigenvalues @ mat]
+QuantumLog[base_?Positive, mat_?MatrixQ] := Total @ ShannonLog[base, Eigenvalues @ mat]
 
 
 QuantumLog[_?Positive, a_?VectorQ, b_?VectorQ] :=
-  If[Fidelity[a, b] == 1, 0, Infinity]
+  If[ZeroQ[Fidelity[a, b] - 1], 0, Infinity]
 
 QuantumLog[_?Positive, a_?MatrixQ, b_?VectorQ] := Module[
   {val, vec},
-  {val, vec} = Transpose @ Select[Transpose @ Eigensystem[a], First[#] > 0&];
-  If[ Length[val] > 1, Return[Infinity] ];
+  {val, vec} = Eigensystem[N @ a];
+  vec = Pick[vec, ZeroQ[val], False];
+  If[Length[val] > 1, Return[Infinity]];
+  If[ZeroQ[Fidelity[vec, b] - 1], 0, Infinity]
+] /; MatrixQ[a, NumericQ]
 
-  vec = Flatten[vec];
-  If[ AllTrue[vec, NumericQ], vec = Normalize[vec] ];
-  If[ Fidelity[vec, b] == 1, 0, Infinity ]
-]
-
-QuantumLog[base_, a_?VectorQ, b_?MatrixQ] := Module[
+QuantumLog[base_?Positive, a_?VectorQ, b_?MatrixQ] := Module[
   {val, vec},
-  {val, vec} = Eigensystem[b];
-  If[ MatrixQ[vec, NumericQ] && Not[UnitaryMatrixQ @ vec],
-    vec = Orthogonalize[vec]
-  ];
+  {val, vec} = Eigensystem[N @ b];
   Total @ ShannonLog[base, Abs[Conjugate[a] . Transpose[vec]]^2, val]
-]
+] /; MatrixQ[b, NumericQ]
 
-QuantumLog[base_, a_?MatrixQ, b_?MatrixQ] := Module[
+QuantumLog[base_?Positive, a_?MatrixQ, b_?MatrixQ] := Module[
   { aval, avec,
     bval, bvec },
-  {aval, avec} = Eigensystem[a];  
-  If[ MatrixQ[avec, NumericQ] && Not[UnitaryMatrixQ @ avec],
-    avec = Orthogonalize[avec]
-  ];
-  {bval, bvec} = Eigensystem[b];
-  If[ MatrixQ[bvec, NumericQ] && Not[UnitaryMatrixQ @ bvec],
-    bvec = Orthogonalize[bvec]
-  ];
+  {aval, avec} = Eigensystem[N @ a];  
+  {bval, bvec} = Eigensystem[N @ b];
   Total @ ShannonLog[base, aval . Abs[Conjugate[avec] . Transpose[bvec]]^2, bval]
-]
+] /; MatrixQ[a, NumericQ] && MatrixQ[b, NumericQ]
 
 
-QuantumLog[base_, rho_, ss:{___?SpeciesQ}] :=
+QuantumLog[base_?Positive, rho_, ss:{___?SpeciesQ}] :=
   QuantumLog[base, Matrix[rho, ss]]
 
-QuantumLog[base_, a_, b_, ss:{___?SpeciesQ}] :=
+QuantumLog[base_?Positive, a_, b_, ss:{___?SpeciesQ}] :=
   QuantumLog[base, Matrix[a, ss], Matrix[b, ss]]
 
-QuantumLog[base_, a_, b_] := QuantumLog[base, a, b, Agents @ {a, b}]
+QuantumLog[base_?Positive, a_, b_] := QuantumLog[base, a, b, Agents @ {a, b}]
 
 (**** </QuantumLog> ****)
 
@@ -124,6 +113,8 @@ ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
 
 
 (**** <VonNeumannEntropy> ****)
+
+QuantumEntropy::usage = "QuantumEntropy is an alias of VonNeumannEntropy."
 
 VonNeumannEntropy::usage = "VonNeumannEntropy[mat|vec] returns the base 2 VonNeumann entropy of the quantum state described by the density matrix 'mat' or vector 'vec'.\nVonNeumannEntropy[mat1, mat2] returns the quantum relative entropy of the mixed state mat1 with respect to mat2."
 
@@ -170,7 +161,7 @@ MutualInformation[rho_?MatrixQ, dd:{__Integer}, kk:{__Integer}] := With[
   VonNeumannEntropy[PartialTrace[rho, dd, kk]] +
     VonNeumannEntropy[PartialTrace[rho, dd, cc]] - 
     VonNeumannEntropy[rho]
- ]
+]
 
 
 MutualInformation[rho_, S_?SpeciesQ] := MutualInformation[rho, {S}]
@@ -182,50 +173,46 @@ MutualInformation[rho_, ss:{__?SpeciesQ}] := Module[
   VonNeumannEntropy[PartialTrace[rho, rr], ss] +
     VonNeumannEntropy[PartialTrace[rho, ss], rr] -
     VonNeumannEntropy[rho, qq]
- ]
+]
 
 (**** </MutualInformation> ****)
 
 
 (**** <RenyiEntropy> ****)
 
-RenyiEntropy::usage = "RenyiEntropy[\[Alpha], {p1,p2,\[Ellipsis]}] returns the Renyi entropy of order \[Alpha] for a random variable with associated probability distribution {p1,p2,\[Ellipsis]}.\nRenyiEntropy[\[Alpha],\[Rho]] returns the quantum Renyie entropy of order \[Alpha] for density matrix \[Rho].\nRenyiEntropy[\[Alpha],\[Rho],\[Sigma]] returns the relative Renyi entropy of density matrix \[Rho] with respect to another density matrix \[Sigma].\nRenyiEntropy[\[Alpha], \[Rho], {s1,s2,\[Ellipsis]}] or RenyiEntropy[\[Alpha], \[Rho], \[Sigma]] allows to specify otherwise unclear systems by {s1,s2,\[Ellipsis]}."
+RenyiEntropy::usage = "RenyiEntropy[\[Alpha], {p1,p2,\[Ellipsis]}] returns the Renyi entropy of order \[Alpha] for a random variable associated with probability distribution {p1,p2,\[Ellipsis]}.\nRenyiEntropy[\[Alpha],\[Rho]] returns the quantum Renyie entropy of order \[Alpha] for density matrix \[Rho].\nRenyiEntropy[\[Alpha],\[Rho],\[Sigma]] returns the relative Renyi entropy of density matrix \[Rho] with respect to another density matrix \[Sigma].\nRenyiEntropy[\[Alpha], \[Rho], {s1,s2,\[Ellipsis]}] or RenyiEntropy[\[Alpha], \[Rho], \[Sigma]] allows to specify otherwise unclear systems by {s1,s2,\[Ellipsis]}."
 
 RenyiEntropy[1, pp_?VectorQ] := ShannonEntropy[pp]
 
-RenyiEntropy[a_?Positive, pp_?VectorQ] := Log2[Norm[pp, a]] * a / (1 - a)
+RenyiEntropy[a_?NonNegative, pp_?VectorQ] :=
+  Log[2, Total @ Power[pp, a]] / (1 - a)
 
 
 RenyiEntropy[1, rho_?MatrixQ] := VonNeumannEntropy[rho]
 
-RenyiEntropy[a_?Positive, rho_?MatrixQ] :=
-  Log2[Tr @ MatrixPower[rho, a]] / (1 - a)
+RenyiEntropy[a_?NonNegative, rho_?MatrixQ] :=
+  Log[2, Tr @ MatrixPower[rho, a]] / (1 - a)
 
 
 RenyiEntropy[1, pp_?VectorQ, qq_?VectorQ] := ShannonEntropy[pp, qq]
 
-RenyiEntropy[a_?Positive, pp_?VectorQ, qq_?VectorQ] := With[
+RenyiEntropy[a_?NonNegative, pp_?VectorQ, qq_?VectorQ] := With[
   { n = Max[Length @ pp, Length @ qq] },
-  Log2[ Norm[PadRight[pp, n] * Power[PadRight[qq, n], (1-a)/a], a] ] *
-    a / (a - 1)
- ]
+  Log[2, Dot[Power[PadRight[pp, n], a], Power[PadRight[qq, n], 1-a]]] / (a - 1)
+]
 
 RenyiEntropy[1, rho_?MatrixQ, sgm_?MatrixQ] := VonNeumannEntropy[rho, sgm]
 
-RenyiEntropy[a_?Positive, rho_?MatrixQ, sgm_?MatrixQ] :=
-  Log2[ Tr @ MatrixPower[
-      Dot[
-        MatrixPower[sgm, (1-a)/(2*a)], rho,
-        MatrixPower[sgm, (1-a)/(2*a)]
-       ], a ] 
-  ] / (a - 1)
+RenyiEntropy[a_?NonNegative, rho_?MatrixQ, sgm_?MatrixQ] :=
+  Log[2, Tr @ Dot[MatrixPower[rho, a], MatrixPower[sgm, 1-a]] ] / (a - 1)
+(* NOTE: More specifically, this definition is known as Ptez-Renyi divergence. See Tomamichel (2016, Section 4.4) *)
 
 
 RenyiEntropy[a_, rho_] := RenyiEntropy[a, rho, Agents @ rho]
 
 RenyiEntropy[a_, rho_, S_?SpeciesQ] := RenyiEntropy[a, rho, {S}]
 
-RenyiEntropy[a_, rho_, ss:{___?SpeciesQ}] :=
+RenyiEntropy[a_?NonNegative, rho_, ss:{___?SpeciesQ}] :=
   RenyiEntropy[a, Matrix[rho, ss]]
 
 
@@ -235,7 +222,7 @@ RenyiEntropy[a_, rho_, sgm_, S_?SpeciesQ] :=
 RenyiEntropy[a_, rho_, sgm_] :=
   RenyiEntropy[a, rho, sgm, Agents @ {rho, sgm}]
 
-RenyiEntropy[a_, rho_, ss:{___?SpeciesQ}] :=
+RenyiEntropy[a_?NonNegative, rho_, sgm_, ss:{___?SpeciesQ}] :=
   RenyiEntropy[a, Matrix[rho, ss], Matrix[sgm, ss]]
 
 (**** </RenyiEntropy> ****)

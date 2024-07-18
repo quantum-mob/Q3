@@ -6,6 +6,8 @@ BeginPackage["Q3`"]
 
 { Spin, SpinQ, Spins };
 
+{ SpinNumbers, SpinNumberQ };
+
 { WignerSpinSpin };
 
 { WignerDecompose, WignerCompose,
@@ -18,7 +20,7 @@ BeginPackage["Q3`"]
 { WignerDistributionW,
   WignerDistributionC };
 
-{ ClebschGordanTable, PrintTable };
+{ ClebschGordanTable };
 
 { NineJSymbol, WignerEckart };
 
@@ -126,28 +128,61 @@ TheEulerRotation[
 (**** </TheEulerRotation> ****)
 
 
-Spin::wrongS = "Wrong spin value ``. Spin should be a non-negative integer or half-integer. Spin 1/2 is assumed."
+(**** <SpinQuantumNumberQ> ****)
 
-Options[Spin] = {Spin->1/2}
+SpinNumbers::usage = "SpinNumbers[s] returns a list of spin quantum numbers {{s, s}, {s, s-1}, \[Ellipsis], {s, -s}}."
+
+SpinNumbers[j_?SpinNumberQ] := Thread[{j, Range[j,-j,-1]}]
+
+
+SpinNumberQ::usage = "SpinNumberQ[J] returns True if J is a valid angular momentum quantum number (non-negative integer or half-integer).\nSpinNumberQ[J,M] returns True if J is a valid angular momentum quantum number and M is a valid magnetic quantum number (-j<=m<=j)."
+(* To be defined further in other packages; e.g., Wigner. *)
+
+SetAttributes[SpinNumberQ, {NHoldAll, ReadProtected}]
+
+SpinNumberQ[_Integer?NonNegative] = True
+
+SpinNumberQ[Rational[_, 2]?Positive] = True
+
+SpinNumberQ[j_Integer?NonNegative, m_Integer] := And[ -j <= m <= j ]
+
+SpinNumberQ[j:Rational[_, 2]?Positive, m:Rational[_, 2]] := And[ -j <= m <= j ]
+
+SpinNumberQ[{j_, m_}] := SpinNumberQ[j, m]
+
+SpinNumberQ[__] = False
+
+(**** </SpinQuantumNumberQ> ****)
+
+
+(**** <Spin> ****)
+
+Spin::usage = "Spin refers to either the Spin species or an option for the Boson, Fermion or Spin species.\nSpin[c] returns the Spin quantum number of Species c."
+
+Spin::bad = "Bad spin value ``: Spin should be a non-negative integer or half-integer for Spin species, integer for Fermions, and half-integer for Fermions. Being reset to 1/2 for a Spin species."
 
 SetAttributes[Spin, Listable]
 
-Spin /:
-Let[Spin, {ls__Symbol}, opts___?OptionQ] := Module[
-  { spin },
-  spin = Spin /. {opts} /. Options[Spin];
-  
-  If[ !SpinNumberQ[spin],
-    Message[Spin::wrongS, spin];
-    spin = 1/2;
-   ];
-  
-  Let[NonCommutative, {ls}];
-    
-  Scan[setSpin[#,spin]&, {ls}];
- ]
+Spin[ HoldPattern @ Dagger[c_?ParticleQ] ] := Spin[c]
 
-setSpin[x_Symbol, spin_?SpinNumberQ] := (
+Spin[_] = 0 (* by default every thing is spinless *)
+
+
+Options[Spin] = {Spin->1/2}
+
+Spin /:
+Let[Spin, ss:{__Symbol}, OptionsPattern[Spin]] := Module[
+  { spin = OptionValue[Spin] },  
+  If[ Not[SpinNumberQ @ spin],
+    Message[Spin::bad, spin];
+    spin = 1/2
+  ];
+  
+  Let[NonCommutative, ss];    
+  Scan[setSpin[spin], ss];
+]
+
+setSpin[spin_][x_Symbol] := (
   MultiplyKind[x] ^= Spin;
   MultiplyKind[x[___]] ^= Spin;
   
@@ -172,11 +207,11 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
     x[j___, -1/2 -> -1/2] := 1/2 - x[j,3];
     x[j___, -1/2 ->  1/2] := x[j, 4];
     x[j___,  1/2 -> -1/2] := x[j, 5]
-   ];
+  ];
 
-  x/: Dagger[ x[j___, k:(0|1|2|3|6)] ] := x[j, k];
-  x/: Dagger[ x[j___, 4] ] := x[j, 5];
-  x/: Dagger[ x[j___, 5] ] := x[j, 4];
+  x /: Dagger[ x[j___, k:(0|1|2|3|6)] ] := x[j, k];
+  x /: Dagger[ x[j___, 4] ] := x[j, 5];
+  x /: Dagger[ x[j___, 5] ] := x[j, 4];
 
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
@@ -206,12 +241,14 @@ setSpin[x_Symbol, spin_?SpinNumberQ] := (
     SpeciesBox[
       Row @ {"(",Ket[b],Bra[a],")"}, {x[j, $]},
       {}
-     ],
+    ],
     x[j, a -> b]
-   ]
- )
+  ]
+)
 
 Missing["KeyAbsent", S_Symbol?SpinQ[___, $]] := Spin[S]
+
+(**** <Spin> ****)
 
 
 SpinQ::usage = "SpinQ[J] or SpinQ[J[...]] returns True if J is declared as a Spin operator."
@@ -221,6 +258,11 @@ AddGarnerPatterns[_?SpinQ];
 SpinQ[_] = False
 
 
+Spins::usage = "Spins[expr] gives the list of all Spins appearing in expr."
+
+Spins[expr_] := Select[Agents @ expr, SpinQ]
+
+
 SpinHalfQ::usage = "SpinHalfQ[J] or SpinHalfQ[J[...]] returns True if J is a Spin operator and its Spin is 1/2."
 
 SpinHalfQ[J_Symbol?SpinQ] := Spin[J]==1/2
@@ -228,11 +270,6 @@ SpinHalfQ[J_Symbol?SpinQ] := Spin[J]==1/2
 SpinHalfQ[J_Symbol?SpinQ[k___]] := Spin[J[k]]==1/2
 
 SpinHalfQ[_] = False
-
-
-Spins::usage = "Spins[expr] gives the list of all Spins appearing in expr."
-
-Spins[expr_] := Select[Agents @ expr, SpinQ]
 
 
 (* Multiply *)
@@ -477,7 +514,7 @@ TheExpression[S_?SpinQ] := {
 (**** </ExpressionFor> ****)
 
 
-(* ****************************************************************** *)
+(**** <WignerSpinSpin> ****)
 
 WignerSpinSpin::usage = "WignerSpinSpin[dir][S1, S2, ...] returns the sum of exchange couplings between Spins S1, S2, ... for components specified by dir."
 
@@ -494,8 +531,10 @@ wSpinSpin[dir:(1|2|3)][a_ -> b_] := a[dir] ** b[dir]
 
 wSpinSpin[dir:{(1|2|3)..}][a_ -> b_] := MultiplyDot[a[dir], b[dir]]
 
+(**** </WignerSpinSpin> ****)
 
-(* ****************************************************************** *)
+
+(**** <WignerAddZ> ****)
 
 WignerAddZ::usage = "WignerAddZ[J1, J2, ...] returns in an Association the irreducible basis of the total angular momentum J1 + J2 + ... invariant under the U(1) rotation around spin z-axis."
 
@@ -536,6 +575,11 @@ WignerAddZ[irb_Association, irc_Association] := Module[
   rr = Merge[rr, Catenate];
   Map[ReverseSort, rr]
  ]
+
+(**** </WignerAddZ> ****)
+
+
+(**** <WignerAdd> ****)
 
 WignerAdd::usage = "WignerAdd[J1, J2, ...] returns in an Association the irreducible basis of the total angular momentum J1 + J2 + ...."
 
@@ -590,6 +634,8 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
     {m, Range[min, max]}];
   Association[ {S, Sz} -> new ]
  ]
+
+(**** </WignerAddZ> ****)
 
 
 (**** <Rotation> ****)
@@ -717,10 +763,9 @@ SpinCoherentState[S_?SpinQ, th_, ph_] := Module[
  ]
 
 
-(*
- * Wigner distribution function W
- * See Pezze et al (2018a, Section II.D.2).
- *)
+(**** <WignerDistributionW> ****)
+(* Wigner distribution function W; See Pezze et al (2018a, Section II.D.2) *)
+
 WignerDistributionW::usage = "WignerDistributionW[th, ph,v] returns the Wigner distribution function W."
 
 WignerDistributionW[th_, ph_, v_List] := Module[
@@ -738,13 +783,15 @@ WignerDistributionW[th_, ph_, v_List] := Module[
   CG = Flatten[CG, {{1}, {2}, {3, 4}}];
   rho = TensorContract[ TensorProduct[ Conjugate[v], v, CG ], {{1,3}, {2,4}} ];
   On[ClebschGordan::phy];
-  Return[ rho . YY ];
- ]
+  Return[rho . YY]
+]
 
-(*
- * Wigner distribution function W
- * See Pezze et al (2018a, Section II.C.3).
- *)
+(**** </WignerDistributionW> ****)
+
+
+(**** <WignerDistributionC> ****)
+(* Wigner distribution function C; See Pezze et al (2018a, Section II.C.3) *)
+
 WignerDistributionC::usage = "WignerDistributionC[th, ph] gives the distribution function C(\[Theta],\[Phi]) = \[LeftAngleBracket]\[Theta],\[Phi]|\[Psi]\[RightAngleBracket], where \[VerticalSeparator]\[Theta],\[Phi]\[RightAngleBracket] is the coherent spin state."
 
 WignerDistributionC[th_, ph_, v_List] := Module[
@@ -757,38 +804,36 @@ WignerDistributionC[th_, ph_, v_List] := Module[
     Power[cos, J+m] Power[sin, J-m],
     {m, J, -J, -1} ];
   Abs[ YY . v ]^2
- ]
+]
+
+(**** </WignerDistributionC> ****)
 
 
-(* ********************************************************************** *)
+(**** <ClebschGordanTable> ****)
 
 ClebschGordanTable::usage = "ClebschGordanTable[j1,j2] returns the matrix of the Clebsch-Gordan coefficients."
 
-PrintTable::usage = "PrintTable is an option of ClebschGordanTable. If True, the table is printed."
+Options[ClebschGordanTable] = { "PrintTable" -> True }
 
-Options[ClebschGordanTable] = { PrintTable -> True }
+ClebschGordanTable[j1_?SpinNumberQ, j2_?SpinNumberQ, OptionsPattern[]] := Module[
+  { JJ = Range[j1+j2, Abs[j1-j2], -1],
+    JM, printQ },
 
-ClebschGordanTable[ j1_?SpinNumberQ, j2_?SpinNumberQ,
-  opts___?OptionQ
- ] := Module[
-   { JJ = Range[j1+j2, Abs[j1-j2], -1],
-     JM, printQ },
-
-   printQ = PrintTable /. {opts} /. Options[ClebschGordanTable];
-
-   JM = Catenate @ Map[momentumStates] @ JJ;
-   cg = Quiet[
+  JM = Catenate @ Map[SpinNumbers] @ JJ;
+  cg = Quiet[
      Outer[ ClebschGordan,
-       momentumStates[j1], momentumStates[j2], JM,
+       SpinNumbers[j1], SpinNumbers[j2], JM,
        1 ],
      ClebschGordan::phy
-    ];
-   cg = Flatten[cg, 1];
+  ];
+  cg = Flatten[cg, 1];
    
-   If[ printQ, printCG[j1, j2, cg] ];
-   
-   Return[ cg ]
-  ]
+  If[OptionValue["PrintTable"], printCG[j1, j2, cg]];
+  Return[cg]
+]
+
+
+printCG::usage = "Displays the Clebsch-Gordan table."
 
 printCG[j1_, j2_, cg_] := Module[
   { JJ = Range[j1+j2, Abs[j1-j2], -1], JM,
@@ -797,18 +842,18 @@ printCG[j1_, j2_, cg_] := Module[
     jj, mm, table },
 
   (* Header row *)
-  JM = Catenate @ Map[momentumStates] @ JJ;
-  JM = { Apply[Ket, JM, {1}] }; (* 1 x N matrix *)
+  JM = Catenate @ Map[SpinNumbers] @ JJ;
+  JM = {Ket /@ JM}; (* 1 x N matrix *)
   
   (* Header column *)
   m1m2 = Tuples @ {m1, m2};
-  m1m2 = Transpose @ { Apply[Bra, m1m2, {1}] }; (* N x 1 matrix *)
+  m1m2 = Transpose @ {Bra /@ m1m2}; (* N x 1 matrix *)
   
   (* The whole table *)
-  table = ArrayFlatten[{
-      { {{""}}, JM },
-      { m1m2, cg }
-     }];
+  table = ArrayFlatten @ {
+    { {{""}}, JM },
+    { m1m2, cg }
+  };
   
   (* Dividers *)
   jj = 2 + Accumulate @ Map[2*#+1&] @ Most @ JJ;
@@ -822,12 +867,14 @@ printCG[j1_, j2_, cg_] := Module[
     Dividers -> {
       Catenate @ { {2->True}, jj },
       Catenate @ { {2->True}, mm }
-     }
-   ];
- ]
+    }
+  ];
+]
 
-momentumStates[J_?SpinNumberQ] := Thread[{J, Range[J,-J,-1]}]
+(**** </ClebschGordanTable> ****)
 
+
+(**** <NineJSymbol> ****)
 
 NineJSymbol::usage = "NineJSymbol[{j1,j2,j3}, {j4,j5,j6},{j7,j8,j9}] gives the Wigner 9j-symbol."
 
@@ -934,11 +981,18 @@ NineJSymbol[
    symbol. Is it the same as the Wigner 6-j symbol? Messiah says that they are
    different in sign. *)
 
+(**** </NineJSymbol> ****)
+
+
+(**** <WignerEckart> ****)
+
 WignerEckart::usage = "WignerEckart[{i1,i2,ii}, {k1,k2,kk}, {j1,j2,jj}] returns the Wigner-Eckart coefficient."
 
 WignerEckart[{i1_,i2_,ii_}, {k1_,k2_,kk_}, {j1_,j2_,jj_}] :=
   Sqrt[(2*i1+1)(2*i2+1)(2*kk+1)(2*jj+1)] *
   NineJSymbol[{j1,j2,jj}, {k1,k2,kk}, {i1,i2,ii}]
+
+(**** </WignerEckart> ****)
 
 
 Protect[Evaluate @ $symb]

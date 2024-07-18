@@ -16,10 +16,13 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { CoefficientTensor };
 
+{ Spin, Spins, SpinQ, SpinNumberQ };
 { Qubit, Qubits, QubitQ };
 { Qudit, Qudits, QuditQ };
 { Boson, Bosons, BosonQ, AnyBosonQ };
+{ Heisenberg, Heisenbergs, HeisenbergQ, AnyHeisenbergQ };
 { Fermion, Fermions, FermionQ, AnyFermionQ };
+{ Majorana, Majoranas, MajoranaQ };
 (* NOTE: Fermion and the like are here for Matrix. *)
 
 { QuantumCircuit };
@@ -115,6 +118,8 @@ Base[z_] := z
 
 
 Flavors::usage = "Flavors[c[j]] returns the list of Flavor indices {j} of the generator c[j]."
+
+Flavors::bad = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as Spin 0."
 
 SetAttributes[Flavors, Listable]
 
@@ -272,10 +277,10 @@ Let[name_Symbol, ___] := (Message[Let::unknown, name]; $Failed)
 
 Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, \[Ellipsis]] declares the symbols a, b, \[Ellipsis] to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, \[Ellipsis]] does not take a specific structure, but only regarded seemingly so."
 
-Let[Species, {ls__Symbol}] := (
-  Clear[ls]; (* NOTE: This must come before Scan. *)
-  Scan[setSpecies, {ls}]
- )
+Let[Species, ss:{__Symbol}] := (
+  Clear[ss]; (* NOTE: This must come before Scan. *)
+  Scan[setSpecies, ss]
+)
 
 setSpecies[x_Symbol] := (
   ClearAttributes[x, Attributes[x]];
@@ -378,6 +383,8 @@ AnyAgentQ[ _ ] = False
 (**** </Agents> ****)
 
 
+(**** <NonCommutative> ****)
+
 NonCommutative::usage = "NonCommutative represents a non-commutative element.\nLet[NonCommutative, a, b, \[Ellipsis]] declares a[\[Ellipsis]], b[\[Ellipsis]], \[Ellipsis] to be NonCommutative."
 
 Let[NonCommutative, {ls__Symbol}] := (
@@ -452,6 +459,10 @@ NonCommutativeSpecies[expr_] :=
 (* NOTE: This recursion is necessary since Association inside Association is
    not expanded by a single Normal. *)
 
+(**** </NonCommutative> ****)
+
+
+(**** <SpeciesBox> ****)
 
 $FormatSpecies::usage = "$FormatSpecies controls the formatting of Species. If True, the ouputs of Species are formatted."
 
@@ -492,7 +503,7 @@ SpeciesBox[c_, sub:{__}, sup:{__}] :=
     SpeciesBox @ c,
     Row[FlavorForm @ sub, $SubscriptDelimiter],
     Row[sup, $SuperscriptDelimiter]
-   ]
+  ]
 (* NOTE(2020-10-14): Superscript[] instead of SuperscriptBox[], etc.
    This is for Complex Species with NonCommutative elements as index
    (see Let[Complex, \[Ellipsis]]), but I am not sure if this is a right choice.
@@ -502,6 +513,8 @@ SpeciesBox[c_, sub:{__}, sup:{__}] :=
    when $SubscriptDelimiter=Nothing (or similar). *)
 (* NOTE: ToBoxes have been removed; with it, TeXForm generates spurious
    \text{\[Ellipsis]} *)
+
+(**** </SpeciesBox> ****)
 
 
 FlavorForm::usage = "FlavorForm[j] converts the flavor index j into a more intuitively appealing form."

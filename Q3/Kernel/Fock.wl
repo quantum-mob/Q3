@@ -53,72 +53,26 @@ Begin["`Private`"]
 
 $symbs = Unprotect[Missing]
 
-
-FlavorNone[a_?AnyParticleQ] = a
-
-
-Heisenberg::usage = "Heisenberg represents the operators obeying the canonical commutation relations.\nLet[Heisenberg, a, b, ...] or Let[Heisenberg, {a,b,...}] declares a, b, ... to be Heisenberg canonical operators. Heisenberg cannonical variables are essentially Bosonic. Indeed, a complex Weyl algebra is generated either by Bosonic creators and annihilators or by Heisenberg caonical operators."
+(**** <Boson> ****)
 
 Boson::usage = "Boson represents Bosonic annihilation operators.\nLet[Boson, a, b, ...] or Let[Boson, {a,b,...}] declares a, b, ... to be bosonic operators. They obey canonical commutation relations."
 
-Fermion::usage = "Fermion represents Fermionic annihilation operators.\nLet[Fermion, a, b, ...] or Let[Fermion, {a,b,...}] declares a, b, ... to be Dirac fermion operators. They obey canonical anti-commutation relations."
-
-Fermion::error = "Something wrong has happened when declaring a fermion operator ``."
-
-Majorana::usage = "Majorana represents Majorana Fermion operators.\nLet[Majorana, a, b, ...] or Let[Majorana, {a,b,...}] declares a, b, ... to be real (Majorana) fermionic operators."
-
-Spin::badS = "Bad spin value ``. Spin should be non-negative integer (half-integer) for bosons (fermions)."
-
-Flavors::badSz = "Bad spin index in `` for the operator `` with Spin `` and Vacuum ``. Regarded as Spin 0."
-
-Flavors::bad = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as Spin 0."
-
-Vacuum::usage = "Vacuum is an option to Let[Fermion, ...]. Its value should be either \"Void\" or \"Sea\". \"Void\" (\"Sea\") declares that the vacuum state for the fermion operator is the completely empty state (Fermi sea with all levels below the Fermi level filled up). The vacuum state determines how the fermionic operators are reordered. Vacuum is alos a function: Vacuum[c] gives the vacuum state for the fermion operator c."
-
-Vacuum::unknown = "Unknown vacuum type ``. \"Void\" is used instead."
-
-Vacuum::flavor = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as \"Void\"."
-
-Options[Heisenberg] = {Spin -> 0, Bottom -> 0, Top -> 5}
-
-Options[Boson] = {Spin -> 0, Bottom -> 0, Top -> 5}
-
-Options[Fermion] = {Spin -> 1/2, Vacuum -> "Void"}
-
-
-Spin[ HoldPattern @ Dagger[c_?ParticleQ] ] := Spin[c]
-
-Spin[_] = 0 (* by default every thing is spinless *)
-
-
-Vacuum[ HoldPattern @ Dagger[c_?ParticleQ] ] := Vacuum[c]
-
-Vacuum[_] = "Void" (* by default every thing has Void vacuum. *)
-
+Options[Boson] = {Spin -> 0, Bottom -> 0, Top -> 5};
 
 Boson /:
-Let[Boson, {ls__Symbol}, opts___?OptionQ] := Module[
-  { spin, bottom, top },
-  { spin, bottom, top } = { Spin, Bottom, Top } /. {opts} /. Options[Boson];
+Let[Boson, ss:{__Symbol}, OptionsPattern[Boson]] := Module[
+  { spin = OptionValue[Spin] },
+  If[Not[IntegerQ[spin] && NonNegative[spin]], Message[Spin::bad, spin]];
+    (** NOTE: In NON-RELATIVISTIC theory, there is no constraint between spin
+      and statistics. Sometimes, it is useful to allow bosons to have
+      half-integer spins; for example, consider the Schwinger boson
+      representation of the spin. Of course, in such caes, the "spin" does not
+      refer to real spins but to pseudo-spins. **)
+  Let[NonCommutative, ss];  
+  Scan[ setBoson[spin, OptionValue[Bottom], OptionValue[Top]], ss ];
+]
 
-  Let[NonCommutative, {ls}];
-  
-  If[ !And[IntegerQ[spin], NonNegative[spin]],
-    Message[Spin::badS, spin];
-    (* spin = 0 *)
-    (* NOTE that in NON-RELATIVISTIC theory, there is no constraint between
-       spin and statistics. It is useful to allow bosons to have half-integer
-       spins, for example, in Schwinger boson representation of the spin. Of
-       course, in such caes, the "spin" does not refer to real spins but to
-       pseudo-spins. *)
-   ];
-  Scan[ setBoson[#, spin, bottom, top]&, {ls} ];
- ]
-
-setBoson[x_Symbol] := setBoson[x, 0, 5]
-(* By default, Spin 0 bosons. *)
-
-setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
+setBoson[spin_, bottom_Integer, top_Integer][x_Symbol] := (
   BosonQ[x] ^= True;
   BosonQ[x[___]] ^= True;
 
@@ -161,8 +115,8 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
     (* The value of spin index s is assumed to be consistent with Spin.
        Stricter checking is complicated and may cause slow performance.
        See also spinfulQ[]. *)
-    x[j___,All] := Flatten @ x[j, Range[spin,-spin,-1]];
-   ];
+    x[j___,All] := Flatten @ x[j, Range[spin,-spin,-1]]
+  ];
   (* Special formatting for Spin 1/2 Boson operators. *)
   If[ spin == 1/2,
     x[j___, Up] := x[j, 1/2];
@@ -174,10 +128,18 @@ setBoson[x_Symbol, spin_?SpinNumberQ, bottom_Integer, top_Integer] := (
     Format @ x[j___, -1/2] := Interpretation[
       SpeciesBox[x , {j,"\[DownArrow]"}, {}],
       x[j, -1/2]
-     ];
-   ];
- )
+     ]
+  ];
+)
 
+(**** </Boson> ****)
+
+
+(**** <Heisenberg> ****)
+
+Heisenberg::usage = "Heisenberg represents the operators obeying the canonical commutation relations.\nLet[Heisenberg, a, b, ...] or Let[Heisenberg, {a,b,...}] declares a, b, ... to be Heisenberg canonical operators. Heisenberg cannonical variables are essentially Bosonic. Indeed, a complex Weyl algebra is generated either by Bosonic creators and annihilators or by Heisenberg caonical operators."
+
+Options[Heisenberg] = {Spin -> 0, Bottom -> 0, Top -> 5};
 
 Heisenberg /:
 Let[Heisenberg, {ls__Symbol}, opts___?OptionQ] := Module[
@@ -187,16 +149,16 @@ Let[Heisenberg, {ls__Symbol}, opts___?OptionQ] := Module[
   Let[NonCommutative, {ls}];
     
   If[ !And[IntegerQ[spin], NonNegative[spin]],
-    Message[Spin::badS, spin];
+    Message[Spin::bad, spin];
     (* spin = 0 *)
     (* NOTE that in NON-RELATIVISTIC theory, there is no constraint between
        spin and statistics. It is useful to allow Bosons to have half-integer
        spins, for example, in Schwinger heisenberg representation of the
        spin. Of course, in such caes, the "spin" does not refer to real spins
        but to pseudo-spins. *)
-   ];
+  ];
   Scan[setHeisenberg[#, spin, top]&, {ls}];
- ]
+]
 
 setHeisenberg[x_Symbol] := setHeisenberg[x, 0]
 (* By default, Spin 0 Heisenberg. *)
@@ -241,38 +203,55 @@ setHeisenberg[x_Symbol, spin_?SpinNumberQ, top_Integer] := (
        Stricter checking is complicated and may cause slow performance.
        See also spinfulQ[]. *)
     x[j___,All] := Flatten @ x[j, Range[spin,-spin,-1]];
-   ];
- )
+  ];
+)
 
+(**** </Heisenberg> ****)
+
+
+(**** <Vacuum> ****)
+
+Vacuum::usage = "Vacuum is an option to Let[Fermion, ...]. Its value should be either \"Void\" or \"Sea\". \"Void\" (\"Sea\") declares that the vacuum state for the fermion operator is the completely empty state (Fermi sea with all levels below the Fermi level filled up). The vacuum state determines how the fermionic operators are reordered. Vacuum is alos a function: Vacuum[c] gives the vacuum state for the fermion operator c."
+
+Vacuum::type = "Unknown vacuum type ``. \"Void\" is used instead."
+
+Vacuum::flavor = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as \"Void\"."
+
+Vacuum[ HoldPattern @ Dagger[c_?ParticleQ] ] := Vacuum[c]
+
+Vacuum[_] = "Void" (* by default every thing has Void vacuum. *)
+
+(**** </Vacuum> ****)
+
+
+(**** <Fermion> ****)
+
+Fermion::usage = "Fermion represents Fermionic annihilation operators.\nLet[Fermion, a, b, ...] or Let[Fermion, {a,b,...}] declares a, b, ... to be Dirac fermion operators. They obey canonical anti-commutation relations."
+
+Fermion::error = "Something wrong has happened when declaring a fermion operator ``."
+
+Options[Fermion] = {Spin -> 1/2, Vacuum -> "Void"};
 
 Fermion /:
-Let[Fermion, {ls__Symbol}, opts___?OptionQ] := Module[
-  {spin, vac},
-  {spin, vac} = {Spin, Vacuum} /. {opts} /. Options[Fermion];
-  
-  Let[NonCommutative, {ls}];
-    
-  If[ vac != "Void" && vac!= "Sea",
-    Message[Vacuum::unknown, vac];
+Let[Fermion, ss:{__Symbol}, OptionsPattern[Fermion]] := Module[
+  { spin = OptionValue[Spin],
+    vac  = OptionValue[Vacuum] },
+  If[ Not[vac == "Void" || vac == "Sea"],
+    Message[Vacuum::type, vac];
     vac = "Void"
   ];
-
-  If[ spin != 0 && !And[OddQ[2*spin], Positive[spin]],
-    Message[Spin::badS, spin];
-    (* NOTE that in NON-RELATIVISTIC theory, there is no constraint between
-       spin and statistics. It is useful to allow fermions to have integer
-       spins, for example, in Schwinger fermion representation of the spin. Of
-       course, in such caes, the "spin" does not refer to real spins but to
-       pseudo-spins. *)
-  ];
+  If[spin != 0 && Not[OddQ[2*spin] && Positive[spin]], Message[Spin::bad, spin]];
+  (** NOTE that in NON-RELATIVISTIC theory, there is no constraint between
+    spin and statistics. Sometimes, it is useful to allow fermions to have
+    integer spins; for example, consider the Schwinger fermion representation
+    of the spin. Of course, in such caes, the "spin" does not refer to real
+    spins but to pseudo-spins. **)
   
-  Scan[setFermion[#, spin, vac]&, {ls}];
+  Let[NonCommutative, ss];    
+  Scan[setFermion[spin, vac], ss];
 ]
 
-setFermion[x_Symbol] := setFermion[x, 1/2];
-(* By default, Spin 1/2 for fermions. *)
-
-setFermion[x_Symbol, spin_?SpinNumberQ, vac:("Void"|"Sea")] := (
+setFermion[spin_, vac:("Void"|"Sea")][x_Symbol] := (
   FermionQ[x] ^= True;
   FermionQ[x[___]] ^= True;
 
@@ -350,20 +329,26 @@ Format[
     Spin[c] == 1/2 ] := Interpretation[
       SpeciesBox[c , {j,"\[UpArrow]"}, {"\[Dagger]"}],
       Dagger @ c[j, 1/2]
-     ]
+    ]
 
 Format[
   HoldPattern @ Dagger[c_Symbol?SpeciesQ[j___, Rational[-1,2]]] /;
     Spin[c] == 1/2 ] := Interpretation[
       SpeciesBox[c , {j,"\[DownArrow]"}, {"\[Dagger]"}],
       Dagger @ c[j, -1/2]
-     ]
+    ]
 
+(**** </Fermion> ****)
+
+
+(**** <Majorana> ****)
+
+Majorana::usage = "Majorana represents Majorana Fermion operators.\nLet[Majorana, a, b, ...] or Let[Majorana, {a,b,...}] declares a, b, ... to be real (Majorana) fermionic operators."
 
 Majorana /:
-Let[Majorana, {ls__Symbol}] := (
-  Let[NonCommutative, {ls}];
-  Scan[setMajorana, {ls}]
+Let[Majorana, ss:{__Symbol}] := (
+  Let[NonCommutative, ss];
+  Scan[setMajorana, ss]
 )
 
 setMajorana[x_Symbol] := (
@@ -386,25 +371,31 @@ setMajorana[x_Symbol] := (
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 )
 
+(**** </Majorana> ****)
+
+
+(**** <TrueSpin> ****)
 
 TrueSpin::usage = "TrueSpin[c[i,j,\[Ellipsis]]] returns Spin[c] if the Flavor indices i, j, \[Ellipsis] are consistent with Spin[c]; otherwise returns 0 with a warning message. TrueSpin[c] always returns zero, wheather with or without warning message."
 
-HoldPattern @ 
-  TrueSpin[ Dagger[c_?ParticleQ] ] := TrueSpin[c]
+
+TrueSpin[ HoldPattern @ Dagger[c_?ParticleQ] ] := TrueSpin[c]
 
 TrueSpin[ c_Symbol?ParticleQ ] :=
   If[ Spin[c] == 0,
     Spin[c],
     Message[Flavors::bad, {}, c, Spin[c], Vacuum[c]];
     0
-   ]
+  ]
 
 TrueSpin[ op:c_Symbol?ParticleQ[j__] ] :=
   If[ Spin[op] === Spin[c],
     Spin[c],
     Message[Flavors::bad, {j}, c, Spin[c], Vacuum[c]];
     0
-   ]
+  ]
+
+(**** </TrueSpin> ****)
 
 
 spinlessQ::usage = "spinlessQ[c[j,...]] returns True if the operator itself is spinless or if the Flavor indices are inconsistent although the operator itself is spinful."
@@ -514,11 +505,14 @@ Scan[
     anyQ[_] = False;
    ] &,
   {FockOperatorQ, ParticleQ, HeisenbergQ, BosonQ, FermionQ}
- ]
+]
 
 AnySpeciesQ[ Canon[_?HeisenbergQ] ] = True
 (* Heisenberg's canonical conjugate is not very common, and was not defined in
    the Q3 package. *)
+
+
+FlavorNone[a_?AnyParticleQ] = a
 
 
 Base[ op:c_Symbol?ParticleQ[j___,s_] ] := c[j] /; spinfulQ[op]
@@ -526,15 +520,19 @@ Base[ op:c_Symbol?ParticleQ[j___,s_] ] := c[j] /; spinfulQ[op]
 Base[ op_?FockOperatorQ ] := op
 
 
+(**** <SpinZ> ****)
+
 SpinZ::usage = "SpinZ[c[j,s]] returns the Spin Z quantum number s (i.e., the final spin index) of the operator c[j,s]."
 
 SetAttributes[SpinZ, Listable]
 
 SpinZ[ HoldPattern @ Dagger[c_?ParticleQ] ] := SpinZ[c]
 
-SpinZ[ op:_Symbol?ParticleQ[___,s_] ] /; spinfulQ[op] = s 
+SpinZ[ op:_Symbol?ParticleQ[___, s_] ] /; spinfulQ[op] = s 
 
-SpinZ[ op_ ] = 0
+SpinZ[ _?AnyParticleQ ] = 0
+
+(**** </SpinZ> ****)
 
 
 (*** Canonical Conjugate ***)
@@ -1030,7 +1028,7 @@ FockSpin[dir:(PatternSequence[]|1|2|3|4|5|{Repeated[1|2|3,3]})][op__] := FockSpi
 FockSpin[dir:Repeated[1|2|3,3]][op__] := FockSpin[op, {dir}]
 
 
-theWigner::usage = "theWigner[{J,k}] returns the matrix representation of the angular momentum operator of magnitude J in the k'th direction."
+theWigner::usage = "theWigner[{J, k}] returns the matrix representation of the angular momentum operator of magnitude J in the k'th direction."
 
 theWigner[{J_?SpinNumberQ, 0}] := IdentityMatrix[2J+1]
 
@@ -1102,16 +1100,20 @@ FockSpinSpin[dir:(PatternSequence[]|1|2|3|4|5|{Repeated[1|2|3,3]})][op__] := Foc
 FockSpinSpin[dir:Repeated[1|2|3,3]][op__] := FockSpinSpin[op, {dir}]
 
 
+(**** <FockSpinor> ****)
+
 FockSpinor::usage = "FockSpinor[c] returns a list that is practically equal to c[All]. Dagger[FockSpinor[c]] forms a spherical irreducible tensor, whose order is Spin[c[Any]].\nFockSpinor[{c1, c2, ...}] or FockSpinor[c1, c2, ...] returns the join list of the results from FockSpinor applied to each of c1, c2, ...."
 
-FockSpinor[ cc_List ] := Flatten[FockSpinor /@ cc]
+FockSpinor[cc:{__?ParticleQ}] := Flatten[FockSpinor /@ cc]
 
-FockSpinor[ a_, b__ ] := FockSpinor @ {a, b}
+FockSpinor[c_?ParticleQ] := c[All] /; spinfulQ[c[Any]]
 
-FockSpinor[ c_?ParticleQ ] := c[All] /; spinfulQ[c[Any]]
+FockSpinor[c_?ParticleQ] := { c } (* spinless case *)
 
-FockSpinor[ c_ ] := { c } (* spinless case *)
+(**** </FockSpinor> ****)
 
+
+(**** <FockIsospinor> ****)
 
 FockIsospinor::usage = "FockIsospinor[c] returns the (2S+1)-component spinor in the Nambu (i.e., particle-hole) space associate with the fermionic operator c. Unlike FockSpinor, FockIsospinor is defined only for operators with half-integer spins."
 
@@ -1122,19 +1124,20 @@ FockIsospinor[c_?FermionQ] :=
   HalfIntegerQ[ TrueSpin[c[Any]] ]
 (* Recall that integer spins are allowed for Fermions. *)
 
+(**** </FockIsospinor> ****)
 
-FockIsospin::usage = "FockIsospin[c] returns the isospin operator corresponding to the fermionic operator c. The phase factor is either 1 or -1. The default value of factor is 1."
+
+FockIsospin::usage = "FockIsospin[c] returns the isospin operator corresponding to fermion c."
 
 SetAttributes[FockIsospin, Listable]
 
-FockIsospin[op_?FermionQ, dir_] := With[
+FockIsospin[op_?FermionQ, dir:(1|2|3)] := With[
   { cc = FockIsospinor[op] },
-  Garner @ MultiplyDot[Dagger @ cc, theWigner[{Spin[op[Any]], dir}], cc]
- ] /; HalfIntegerQ[ TrueSpin[op[Any]] ]
+  Garner @ MultiplyDot[Dagger @ cc, theWigner[{Spin[op[Any]], dir}] . cc]
+] /; HalfIntegerQ[ TrueSpin[op[Any]] ]
 
-FockIsospin[op_Symbol, dir_] := FockIsospin[op[], dir]
+FockIsospin[op_] := FockIsospin[op, {1, 2, 3}]
 
-FockIsospin[op_] := FockIsospin[op, {1,2,3}]
 
 
 FockDegree::usage = "FockDegree[expr] returns the highest degree of the terms in Fock expression expr. The degree of a term is the sum of the exponents of the Fock operators that appear in the term. The concept is like the degree of a polynomial. FockDegree[expr] is 0, if expr is free of Fock operators. Note that Grassmann variables are regarded as special numbers and do NOT count for the Fock degree. See also GrassmannGrade[expr]."
@@ -1851,7 +1854,7 @@ FockAddSpinZ[ops:{__?FermionQ}] := Module[
   nn = Tuples[{0, 1}, Length @ cc];
   nn = GroupBy[nn, (zz.#)&];
   FockCat @ KeySort @ Map[Ket[cc->#]&, nn, {2}]
- ]
+]
 
 FockAddSpinZ[] := Association[ 0 -> Ket[Vacuum] ]
 
@@ -2137,58 +2140,77 @@ Basis[b_?BosonQ] := Ket /@ Thread[ b->Range[Bottom@b, Top@b] ]
 
 (**** <BosonBasis> ****)
 
-BosonBasis::usage = "BosonBasis[{b1, b2, ...}, n] returns the Fock-state basis for Bosons b1, b2, ... with total number of particles up to n.\nBosonBasis[{b1, b2, ...}, {n}] gives the basis with exactly n particles.\nBosonBasis[{b1, b2, ...}, {m, n}] gives the basis with m to n particles.\nNote that if either m or n or both are specified the corresponding value of Bottom and/or Top of the Bosons are ignore."
+BosonBasis::usage = "BosonBasis[{b1, b2, ...}, n] returns the Fock-state basis for Bosons b1, b2, ... with total number of particles up to n.\nBosonBasis[{b1, b2, ...}, {n}] gives the basis with exactly n particles.\nBosonBasis[{b1, b2, ...}, {m, n}] gives the basis with m to n particles.\nNote that if either or both of m or n are specified the corresponding value of Bottom and/or Top of the Bosons are ignore unless \"Restricted\"->True."
 
-BosonBasis[bb__?BosonQ] := BosonBasis @ {bb}
+Options[BosonBasis] = { "Restricted" -> False };
 
-BosonBasis[bb__?BosonQ, n_Integer] := BosonBasis[{bb}, n]
 
-BosonBasis[bb__?BosonQ, {m_Integer, n_Integer}] := BosonBasis[{bb}, {m, n}]
+BosonBasis[b_?BosonQ, rest___] := BosonBasis[{b}, rest]
 
-BosonBasis[bb__?BosonQ, {n_Integer}] := BosonBasis[{bb}, {n}]
 
-BosonBasis[bb:{__?BosonQ}] :=
-  BosonBasis[ bb, {Min[Bottom /@ bb], Total[Top /@ bb]} ]
+BosonBasis[bb:{__?BosonQ}, opts:OptionsPattern[]] :=
+  BosonBasis[ bb, {Min[Bottom /@ bb], Total[Top /@ bb]}, opts ]
 
-BosonBasis[bb:{__?BosonQ}, n_Integer] :=
-  BosonBasis[bb, {Min[Bottom /@ bb], n}]
+BosonBasis[bb:{__?BosonQ}, n_Integer, opts:OptionsPattern[]] :=
+  BosonBasis[bb, {Min[Bottom /@ bb], n}, opts]
 
-BosonBasis[bb:{__?BosonQ}, {m_Integer, n_Integer}] :=
-  Flatten @ Table[ BosonBasis[bb, {k}], {k, m, n}]
+BosonBasis[bb:{__?BosonQ}, {m_Integer, n_Integer}, opts:OptionsPattern[]] :=
+  Flatten @ Table[ BosonBasis[bb, {k}], {k, m, n}, opts]
 
-BosonBasis[ss:{__?BosonQ}, {n_Integer}] := With[
+BosonBasis[ss:{__?BosonQ}, {n_Integer}, OptionsPattern[]] := If[
+  OptionValue["Restricted"],
+  hardBosonBasis[ss, n],
+  freeBosonBasis[ss, n]
+]
+
+freeBosonBasis[ss:{__?BosonQ}, n_Integer] := With[
   { len = Length @ ss },
   Map[
     Ket[ss -> #]&,
     ReverseSort @ Flatten[
       Permutations /@ (PadRight[#, len]&) /@ IntegerPartitions[n, len],
-      1 ]
-   ]
- ]
+      1
+    ]
+  ]
+]
+
+hardBosonBasis[ss:{__?BosonQ}, n_Integer] := With[
+  { ns = Length @ ss,
+    bb = Bottom /@ ss,
+    tt = Top /@ ss },
+  If[ (Equal @@ bb) && (Equal @@ tt),
+    (* then: Mostly, his is the case. *)
+    pp = PadRight[#, ns]& /@ IntegerPartitions[n, ns];
+    pp = Select[pp, And @@ Thread[bb <= # <= tt] &];
+    pp = Catenate[Permutations /@ pp],
+    (* else *)
+    pp = Catenate[Permutations /@ (PadRight[#, ns]&) /@ IntegerPartitions[n, ns]];
+    pp = Select[pp, And @@ Thread[bb <= # <= tt] &]
+  ];
+  Map[Ket[ss -> #]&, ReverseSort @ pp]
+]
 
 (**** </BosonBasis> ****)
 
 
 (**** <FermionBasis> ****)
 
-FermionBasis::usage = "FermionBasis[c1, c2, ...] or FermionBasis[{c1, c2, ...}] returns the many-particle basis states (in the creation operators representation) for a single site, i.e. for operators c1, c2, .... It accepts two options \"Representation\" and \"Conserved\"."
+FermionBasis::usage = "FermionBasis[{c1, c2, ...}] returns the many-particle basis states (in the creation operators representation) for a single site, i.e. for operators c1, c2, .... It accepts two options \"Representation\" and \"Conserved\"."
 
-FermionBasis::bigSpin = "Sorry, but for the moment, it can handle only spin-1/2 Fermion operators. These operators will be ignored: ``."
+FermionBasis::spin = "Fermions with spin bigger than 1/2 are not supported yet; `` are ignored."
 
 Options[FermionBasis] = {
   "Representation" -> "Occupations",
-  (* "Representation" -> "Generators", *)
+  (* "Occupation" or "Generators" *)
   "Conserved" -> {"Number", "Spin"}
- };
+  (* None or any combination of "Spin", "SpinZ" and "Number" *)
+};
+
+FermionBasis[c_?FermionQ, rest___] :=
+  FermionBasis[{c}, rest]
+
 
 (* Basic constructions *)
-
-FermionBasis[cc__?FermionQ, n_Integer] := FermionBasis[{cc}, n]
-
-FermionBasis[cc__?FermionQ, {m_Integer, n_Integer}] :=
-  FermionBasis[{cc}, {m, n}]
-
-FermionBasis[cc__?FermionQ, {n_Integer}] := FermionBasis[{cc}, {n}]
 
 FermionBasis[cc:{__?FermionQ}, n_Integer] :=
   KetRegulate[
@@ -2206,9 +2228,7 @@ FermionBasis[cc:{__?FermionQ}, {n_Integer}] :=
 
 (* Advanced constructions*)
 
-FermionBasis[cc__?FermionQ, opts___?OptionQ] := FermionBasis[{cc}, opts]
-
-FermionBasis[{cc__?FermionQ}, OptionsPattern[]] := Module[
+FermionBasis[cc:{__?FermionQ}, OptionsPattern[]] := Module[
   { rep = OptionValue["Representation"],
     qn = OptionValue["Conserved"],
     name },
@@ -2221,65 +2241,65 @@ FermionBasis[{cc__?FermionQ}, OptionsPattern[]] := Module[
   qn = StringJoin @ If[ListQ @ qn, Sort @ qn, {qn}];
   
   name = StringJoin[Context @ name, "basis", rep, qn];
-  If[NameQ @ name, Symbol[name][cc], Association[{} -> {}]]
- ]
+  If[NameQ @ name, Symbol[name] @ cc, Association[{} -> {}]]
+]
 
 
 basisKetNone::usage = "Make basis with no symmetries, i.e. no good quantum numbers.  Similar to FermionBasis[...] for a single site, but conforms to the proper basis format."
 
-basisKetNone[ops__?FermionQ] := Module[
+basisKetNone[ops:{__?FermionQ}] := Module[
   { cc = FockSpinor[ops] },
   Association[ {} -> Map[ Ket[cc->#]&, Tuples[{0, 1}, Length @ cc] ] ]
- ]
+]
 
-basisCatNone[ops__?FermionQ] := Map[toCatForm] @ basisKetNone[ops];
+basisCatNone[ops:{__?FermionQ}] := Map[toCatForm] @ basisKetNone[ops];
 
 
 basisKetNumber::usage = "Make a basis with good quantum number N."
 
-basisKetNumber[ops__?FermionQ] := Module[
+basisKetNumber[ops:{__?FermionQ}] := Module[
   { cc = FockSpinor[ops], nn },
   nn = Tuples[{0, 1}, Length @ cc];
   nn = GroupBy[nn, {Total@#}&];
   KeySort @ Map[Ket[cc->#]&, nn, {2}]
- ]
+]
 
-basisCatNumber[ops__?FermionQ] := Map[toCatForm] @ basisKetNumber[ops]
+basisCatNumber[ops:{__?FermionQ}] := Map[toCatForm] @ basisKetNumber[ops]
 
 
 basisKetNumberSpinZ::usage = "basisKetNumberSpinZ[{ops}] returns the basis with well defined charge and spin projection quantum numbers (Q, Sz) in occupation number representation."
 
-basisKetNumberSpinZ[ops__?FermionQ] := Module[
+basisKetNumberSpinZ[ops:{__?FermionQ}] := Module[
   { cc = FockSpinor[ops], nn, z },
   z = SpinZ[cc];
   nn = Tuples[{0, 1}, Length @ cc];
   nn = GroupBy[nn, {Total@#, z.#}&];
   KeySort @ Map[Ket[cc->#]&, nn, {2}]
- ]
+]
 
 basisCatNumberSpinZ::usage = "basisCatNumberSpinZ[{ops}] returns the basis with well defined charge and spin projection quantum numbers (Q,S_z) in creation operator representation."
 
-basisCatNumberSpinZ[ops__?FermionQ] := Map[toCatForm] @ basisKetNumberSpinZ[ops];
+basisCatNumberSpinZ[ops:{__?FermionQ}] := Map[toCatForm] @ basisKetNumberSpinZ[ops];
 
 
 basisCatSpin::usage = "Generates the irreducible basis in the Generator representation when Spin is conserved, i.e., in the presence of SU(2) symmetry."
 
 basisKetSpin::usage = "Generates the irreducible basis when Spin is conserved, i.e., in the presence of SU(2) symmetry, in the occupation-number representation."
 
-basisCatSpin[cc__?FermionQ] := Module[
+basisCatSpin[cc:{__?FermionQ}] := Module[
   { irb = FockAddSpin @@ Base @ FockSpinor[cc] },
   irb = KeySelect[irb, (Equal @@ #) &];
   KeyMap[Take[#, 1]&, irb]
- ]
+]
 
-basisKetSpin[ops__?FermionQ] := FockKet @ basisCatSpin[ops]
+basisKetSpin[ops:{__?FermionQ}] := FockKet @ basisCatSpin[ops]
 
 
 basisCatNumberSpin::usage = "basisCatNumberSpin[{ops}] returns the basis with well defined charge and total spin quantum numbers (Q,S) in creation operator representation."
 
 basisKetNumberSpin::usage = "Returns the basis with well defined charge and total spin quantum numbers (Q,S) in occupation number representation."
 
-basisCatNumberSpin[cc__?FermionQ] := Module[
+basisCatNumberSpin[cc:{__?FermionQ}] := Module[
   { irb = basisCatSpin[cc] },
   irb = Map[GroupBy[#, (List @ FockDegree @ #)&]&, irb];
   irb = KeyValueMap[
@@ -2289,7 +2309,7 @@ basisCatNumberSpin[cc__?FermionQ] := Module[
   irb = KeySort @ Merge[irb, Catenate]
  ]
 
-basisKetNumberSpin[cc__?FermionQ] := FockKet @ basisCatNumberSpin[cc]
+basisKetNumberSpin[cc:{__?FermionQ}] := FockKet @ basisCatNumberSpin[cc]
 
 
 PrintFermionBasis::usage = "PrintFermionBasis[bs] prints the Fermion basis bs in table form. Note that a Fermion basis is an association of particular structure.\nSee also FermionBasis."
@@ -2298,7 +2318,7 @@ Options[PrintFermionBasis] = {
   Frame -> False,
   Alignment -> {{Center, {Left}}, Center},
   Dividers -> {{}, {True, {Dashed}, True}}
- };
+};
 
 PrintFermionBasis[bs_Association] :=
   Grid[ Normal[bs] /. {Rule -> List}, Options[PrintFermionBasis] ]
@@ -2333,7 +2353,7 @@ FockOrthogonalize[vecs_?VectorQ, basis_?VectorQ] := Module[
   l = FockOrthogonalize[m];
   l = Select[l, Norm[#] != 0 &]; (* Drop zero vectors *)
   Expand @ Map[(# . basis)&, l]
- ]
+]
 (* TODO: Any other more efficient way? *)
 
 

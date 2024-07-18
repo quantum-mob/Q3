@@ -3,7 +3,8 @@ BeginPackage["Q3`"]
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Pairings, Unpaired };
-{ Choices, ListPartitions, Successive, FirstLast, Inbetween };
+{ Choices, ChoiceCount };
+{ ListPartitions, Successive, FirstLast, Inbetween };
 { ShiftLeft, ShiftRight,
   TrimLeft, TrimRight };
 { KeyGroupBy, KeyReplace, CheckJoin };
@@ -79,16 +80,57 @@ pushPair[a:{_, _}, b_List] := Map[Join[{a}, #]&, Pairings[b]]
 (**** </Pairings> ****)
 
 
-Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
+(**** <Choices> ****)
 
-Choices[a_List] := Choices[a, {0, Length @ a}]
+Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nChoices[p,spec] chooses from {1, 2, \[Ellipsis]}.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
-Choices[a_List, n_Integer] := Choices[a, {0, n}]
+Choices[p_Integer?Positive] := Choices[p, {0, p}]
 
-Choices[a_List, {m_Integer, n_Integer}] :=
-  Catenate @ Table[Choices[a, {j}], {j, m, n}]
+Choices[p_Integer?Positive, n_Integer] := Choices[p, {0, n}]
 
-Choices[a_List, {n_Integer}] := Union[Sort /@ Tuples[a, n]]
+Choices[p_Integer?Positive, {m_Integer, n_Integer}] :=
+  Catenate @ Map[Choices[p, {#}]&, Range[m, n]]
+
+Choices[p_Integer?Positive, {0}] := { {} }
+
+Choices[p_Integer?Positive, {n_Integer?Positive}] := Nest[
+  Catenate @ MapApply[Table[{##, k}, {k, Last @ {##}, p}] &, #] &,
+  List /@ Range[p],
+  n - 1
+]
+(* NOTE: Choices deals with a special case of WeylTableaux, and Choices[p, {n}] is effectively equivalent to WeylTableaux[YoungShape @ {n}, p]. Of course, Choices[p, {n}] is faster than WeylTableaux[YoungShape @ {n}, p]. *)
+
+Choices[aa_List] := Choices[aa, {0, Length @ aa}]
+
+Choices[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer})] :=
+  aa[[#]] & /@ Choices[Length@aa, spec]
+
+
+ChoiceCount::usage = "ChoiceCount[spec] returns the number of choices for spec, i.e., Length[Choices[spec]]."
+
+ChoiceCount[p_Integer?Positive] := ChoiceCount[p, {0, p}]
+
+ChoiceCount[p_Integer?Positive, n_Integer] := ChoiceCount[p, {0, n}]
+
+ChoiceCount[p_Integer?Positive, {m_Integer, n_Integer}] :=
+  Total @ Map[ChoiceCount[p, {#}]&, Range[m, n]]
+
+ChoiceCount[p_Integer?Positive, {0}] = 1
+
+ChoiceCount[p_Integer?Positive, {n_Integer?Positive}] := With[
+  { pp = PadRight[{n}, p] },
+  Product[pp[[i]] + j - i, {i, 1, p}, {j, i + 1, p}] /
+   Product[j - i, {i, 1, p}, {j, i + 1, p}]
+]
+(* NOTE: Equivalent to WeylTableauCount[YoungShape @ {n}, p] *)
+
+
+ChoiceCount[aa_List] := ChoiceCount[Length @ aa, {0, Length @ aa}]
+
+ChoiceCount[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer})] :=
+  ChoiceCount[Length @ aa, spec]
+
+(**** </Choices> ****)
 
 
 ListPartitions::usage = "ListPartitions[list] gives a list of all possible ways to partition 'list' into smaller lists.\nListPartitions[list, spec] gives partitions corresponding to the specification spec. For spec, see IntegerPartitions."
@@ -338,14 +380,16 @@ PseudoDivide[x_, y_] := x/y
 
 ZeroQ::usage = "ZeroQ[x] returns True if x approximately equals to zero.\nZeroQ[x, \[Delta]] returns True if |x| \[LessEqual] \[Delta]."
 
-ZeroQ::tolnn = "Tolerence specification `` must be a non-negative number."
+ZeroQ::tol = "Tolerence specification `` must be a non-negative number."
+
+SetAttributes[ZeroQ, Listable]
 
 ZeroQ[x_] := TrueQ[Chop[x] == 0]
 
 ZeroQ[x_, del_?NonNegative] := TrueQ[Chop[x, del] == 0]
 
 ZeroQ[x_, del_] := (
-  Message[ZeroQ::tolnn, del];
+  Message[ZeroQ::tol, del];
   ZeroQ[x, Abs @ del]
 )
 

@@ -127,20 +127,24 @@ QSP /:
 Hessian[QSP[{phi_?VectorQ, parity:(-1|1)}], x_?NumericQ] := Module[
   { mat, new, bra, ket, val, hss, i, j },
   mat = theQSP[{phi, parity}, x];
+  bra = {1, 0};
+  ket = Dot @@ Join[{bra}, mat];
+
   new = If[parity == 1, mat, Most @ mat];
   hss = Table[
     Insert[new, ThePauli[3], {{2*i}, {2*j}}],
     {i, Length @ phi},
     {j, Length @ phi}
   ];
-  bra = {1, 0};
-  ket = Dot @@ Join[{bra}, mat];
   hss = -(
     Map[Dot @@ Join[{bra}, #, {ket}]&, hss, {2}] +
     Map[Dot @@ Join[{ket}, #, {bra}]&, Map[Reverse, hss, {2}], {2}]
   );
+
   new = Table[Insert[new, ThePauli[3], 2*i], {i, Length @ phi}];
-  new = -Outer[Dot @@ Join[{bra}, #1, #2, {bra}]&, new, Reverse /@ new, 1];
+  bra = Map[Dot @@ Join[{bra}, #]&, new];
+  new = -Outer[Dot, bra, bra, 1];
+
   hss += new + Transpose[new];
   val = If[parity == 1, ket . ket, ket . Topple[Last @ mat] . ket];
   {val, hss}

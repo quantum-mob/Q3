@@ -227,15 +227,18 @@ WeylTableaux[shape_?YoungShapeQ, d_Integer] :=
 
 WeylTableauCount::usage = "WeylTableauCount[shape, d] returns the number of Weyl tableaux of d letters consistent with shape."
 
-WeylTableauCount[shape_?YoungShapeQ, d_Integer] := Module[
-  { pp = PadRight[shape, d],
-    mm, vv },
-  vv = Times @@
-    (Flatten @ Table[pp[[i]] - pp[[j]] + j - i, {i, 1, d}, {j, i+1, d}]);
-  mm = Times @@
-    (Flatten @ Table[j - i, {i, 1, d}, {j, i+1, d}]);
-  vv / mm
- ]
+WeylTableauCount[n_Integer, d_Integer] :=
+  Total @ Map[WeylTableauCount[#, d]&, YoungShapes[n, d]]
+
+WeylTableauCount[shape_YoungShape, d_Integer] :=
+  WeylTableauCount[First @ shape, d]
+
+WeylTableauCount[shape_List?YoungShapeQ, d_Integer] := With[
+  { pp = PadRight[shape, d] },
+  Product[pp[[i]] - pp[[j]] + j - i, {i, 1, d}, {j, i + 1, d}] /
+   Product[j - i, {i, 1, d}, {j, i + 1, d}]
+]
+(* cf. ChoiceCount *)
 
 (**** </WeylTableaux> ****)
 

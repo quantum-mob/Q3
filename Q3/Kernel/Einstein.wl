@@ -65,6 +65,107 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := MultiplyExp[expr]
 (**** </deprecated> *****)
 
 
+(**** <changed> ****)
+
+TheKet[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "TheKet",
+    "The directions must be given in a list like TheKet[{k1,k2,...}]"];
+  TheKet @ {a, bc}
+)
+
+ThePauli[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "ThePauli",
+    "The directions must be given in a list like ThePauli[{k1,k2,...}]"];
+  ThePauli @ {a, bc}
+ )
+
+Ket[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "Ket",
+    "The values must be given in a list like Ket[{b1,b2,...}]"];
+  Ket @ {a, bc}
+ )
+
+Bra[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "Bra",
+    "The values must be given in a list like Bra[{b1,b2,...}]"];
+  Bra @ {a, bc}
+)
+
+Pauli[a_Integer, bc__Integer] := (
+  Message[Q3General::changed, "Pauli",
+    "The directions must be given in a list like Pauli[{k1,k2,...}]"];
+  Pauli @ {a, bc}
+ )
+
+Rotation[phi_, S:(_?QubitQ|_?SpinQ), v:{_, _, _}, opts___?OptionQ] := (
+  Message[Q3General::changed, Rotation,
+    "The vector must come before species specification."];
+  Rotation[phi, v, S, opts]
+)
+
+Zero[m_Integer, n__Integer] := (
+  Message[Q3General::changed, Zero, "Use the form Zero[{n1, n2, \[Ellipsis]}]."];
+  Zero[{m, n}]
+)
+
+One[] := (
+  Message[Q3General::changed, One, "Use One[2] or One[{2, 2}]."];
+  One @ {2, 2}
+)
+
+One[m_Integer, n__Integer] := (
+  Message[Q3General::changed, One, "Use the form One[{n1, n2, \[Ellipsis]}]."];
+  One @ {m, n}
+)
+
+KetPermute[expr_, qq:{__?SpeciesQ}, spec_] := (
+  Message[Q3General::changed, KetPermute, "The list of species must come last."];
+  KetPermute[expr, spec, qq]
+)
+
+FermionBasis[c_?FermionQ, cc__?FermionQ, rest___] := (
+  Message[Q3General::changed, FermionBasis, "Fermions need to be wrapped in a list."];
+  FermionBasis[{c, cc}, rest]
+)
+
+BosonBasis[c_?BosonQ, cc__?BosonQ, rest___] := (
+  Message[Q3General::changed, BosonBasis, "Bosons need to be wrapped in a list."];
+  BosonBasis[{c, cc}, rest]
+)
+
+Rotation[S:(_?QubitQ|_?SpinQ), ang_, rest___] := (
+  Message[Q3General::angle, Rotation];
+  Rotation[ang, S, rest]
+)
+
+Rotation[qq:{(_?QubitQ|_?SpinQ)..}, ang_, rest___] := (
+  Message[Q3General::angle, Rotation];
+  Rotation[ang, qq, rest]
+)
+
+EulerRotation[S:(_?SpinQ|_?QubitQ), ang_, rest___] := (
+  Message[Q3General::angle, EulerRotation];
+  EulerRotation[ang, S, rest]
+)
+
+EulerRotation[ss:{(_?SpinQ|_?QubitQ)..}, ang_, rest___] := (
+  Message[Q3General::angle, EulerRotation];
+  EulerRotation[ang, ss, rest]
+)
+
+Phase[q_?QubitQ, phi_, rest___] := (
+  Message[Q3General::angle, Phase];
+  Phase[phi, q, rest]
+)
+
+Phase[qq:{__?QubitQ}, phi_, rest___] := (
+  Message[Q3General::angle, Phase];
+  Phase[phi, qq, rest]
+)
+
+(**** </changed> ****)
+
+
 (**** <obsolete> ****)
 
 WeightedLog[args__] := (

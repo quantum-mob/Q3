@@ -942,17 +942,6 @@ Multiply[
 ] :=
   Multiply[pre, Phase[a+b, ss, more, opts], post]
 
-
-Phase[q_?QubitQ, phi_, rest___] := (
-  Message[Q3General::angle, Phase];
-  Phase[phi, q, rest]
- )
-
-Phase[qq:{__?QubitQ}, phi_, rest___] := (
-  Message[Q3General::angle, Phase];
-  Phase[phi, qq, rest]
- )
-
 (**** </Phase> ****)
 
 
