@@ -2,7 +2,7 @@
 
 ## 3.5.0
 
-The main update in this release is the tools for quantum signal processing (QSP): QSP, QSPFind, QSPConvert.
+The main update in this release is the tools for quantum signal processing (QSP): QSP, QSPFind, QSPConvert. These tools are in line with the previously provided Chebyshev tools: ChebyshevSeries, ChebyshevCoefficients, ChebyshevPoints and ChebyshevApproximation.
 
 Other changes are as follows:
 
