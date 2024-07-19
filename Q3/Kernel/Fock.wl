@@ -2140,7 +2140,7 @@ Basis[b_?BosonQ] := Ket /@ Thread[ b->Range[Bottom@b, Top@b] ]
 
 (**** <BosonBasis> ****)
 
-BosonBasis::usage = "BosonBasis[{b1, b2, ...}, n] returns the Fock-state basis for Bosons b1, b2, ... with total number of particles up to n.\nBosonBasis[{b1, b2, ...}, {n}] gives the basis with exactly n particles.\nBosonBasis[{b1, b2, ...}, {m, n}] gives the basis with m to n particles.\nNote that if either or both of m or n are specified the corresponding value of Bottom and/or Top of the Bosons are ignore unless \"Restricted\"->True."
+BosonBasis::usage = "BosonBasis[{b1, b2, ...}, n] returns the Fock-state basis for Bosons b1, b2, ... with total number of particles up to n.\nBosonBasis[{b1, b2, ...}, {n}] gives the basis with exactly n particles.\nBosonBasis[{b1, b2, ...}, {m, n}] gives the basis with m to n particles.\nBosonBasis[{b1, b2, \[Ellipsis]}, nspec, {k1, k2, \[Ellipsis]}] allows only k1, k2, \[Ellipsis] as the occupation number of each bosonic mode."
 
 Options[BosonBasis] = { "Restricted" -> False };
 
@@ -2148,46 +2148,29 @@ Options[BosonBasis] = { "Restricted" -> False };
 BosonBasis[b_?BosonQ, rest___] := BosonBasis[{b}, rest]
 
 
-BosonBasis[bb:{__?BosonQ}, opts:OptionsPattern[]] :=
-  BosonBasis[ bb, {Min[Bottom /@ bb], Total[Top /@ bb]}, opts ]
+BosonBasis[bb:{__?BosonQ}] :=
+  BosonBasis[bb, {Min[Bottom /@ bb], Total[Top /@ bb]}]
 
-BosonBasis[bb:{__?BosonQ}, n_Integer, opts:OptionsPattern[]] :=
-  BosonBasis[bb, {Min[Bottom /@ bb], n}, opts]
+BosonBasis[bb:{__?BosonQ}, n_Integer, rest___] :=
+  BosonBasis[bb, {Min[Bottom /@ bb], n}, rest]
 
-BosonBasis[bb:{__?BosonQ}, {m_Integer, n_Integer}, opts:OptionsPattern[]] :=
-  Flatten @ Table[ BosonBasis[bb, {k}], {k, m, n}, opts]
+BosonBasis[bb:{__?BosonQ}, {m_Integer, n_Integer}, rest___] :=
+  Flatten @ Table[BosonBasis[bb, {k}], {k, m, n}, rest]
 
-BosonBasis[ss:{__?BosonQ}, {n_Integer}, OptionsPattern[]] := If[
-  OptionValue["Restricted"],
-  hardBosonBasis[ss, n],
-  freeBosonBasis[ss, n]
-]
 
-freeBosonBasis[ss:{__?BosonQ}, n_Integer] := With[
-  { len = Length @ ss },
-  Map[
-    Ket[ss -> #]&,
-    ReverseSort @ Flatten[
-      Permutations /@ (PadRight[#, len]&) /@ IntegerPartitions[n, len],
-      1
-    ]
-  ]
-]
+BosonBasis[ss:{__?BosonQ}, {n_Integer}] := 
+  theBosonBasis[ss, IntegerPartitions[n, Length @ ss]]
 
-hardBosonBasis[ss:{__?BosonQ}, n_Integer] := With[
-  { ns = Length @ ss,
-    bb = Bottom /@ ss,
-    tt = Top /@ ss },
-  If[ (Equal @@ bb) && (Equal @@ tt),
-    (* then: Mostly, his is the case. *)
-    pp = PadRight[#, ns]& /@ IntegerPartitions[n, ns];
-    pp = Select[pp, And @@ Thread[bb <= # <= tt] &];
-    pp = Catenate[Permutations /@ pp],
-    (* else *)
-    pp = Catenate[Permutations /@ (PadRight[#, ns]&) /@ IntegerPartitions[n, ns]];
-    pp = Select[pp, And @@ Thread[bb <= # <= tt] &]
-  ];
-  Map[Ket[ss -> #]&, ReverseSort @ pp]
+BosonBasis[ss:{__?BosonQ}, {n_Integer}, kk:{___Integer}] := 
+  theBosonBasis[ss, IntegerPartitions[n, Length @ ss, DeleteCases[kk, 0]]]
+(* NOTE: DeteteCases is necessary here; otherwise, the result has many duplicates. *)
+
+
+theBosonBasis[ss:{__?BosonQ}, pp_List] := Module[
+  { data },
+  data = Catenate[Permutations /@ (PadRight[#, Length @ ss]&) /@ pp];
+  Ket /@ Map[AssociationThread[ss -> #]&, ReverseSort @ data]
+  (* NOTE: ReveseSort[data] is important for consistentcy; see the exxample in the help page of BosonBasis. *)
 ]
 
 (**** </BosonBasis> ****)

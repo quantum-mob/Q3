@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.5.1
+
+- Big performance improvement of BosonBasis.
+
 ## 3.5.0
 
 The main update in this release is the tools for quantum signal processing (QSP): QSP, QSPFind, QSPConvert. These tools are in line with the previously provided Chebyshev tools: ChebyshevSeries, ChebyshevCoefficients, ChebyshevPoints and ChebyshevApproximation.
@@ -11,7 +15,7 @@ Other changes are as follows:
 - ChebyshevApproximation[func, {n, parity}, ...] is supported.
 - PauliDecompose and PauliCompose are renamed PauliCoefficients and PauliSeries, respectively.
 - PauliDecomposeRL and PauliseComposeRL are excised as they are implemented by PauliCoefficients and PauliSeries, respectively.
-- The definition of relative Renyi entropy (aka Renyi divergence) has been changed in the quantum case.
+- The definition of relative Rényi entropy (aka Rényi divergence) has been changed in the quantum case.
 
 ## 3.4.8
 
@@ -21,7 +25,7 @@ Other changes are as follows:
 
 ## 3.4.7
 
-- Bug fix: Insome pieces of code, the old syntax argument form of Zero was used.
+- Bug fix: In some pieces of code, the old syntax argument form of Zero was used.
 - New symbols: WickMutualInformation, NambuOne, NambuZero, $EmptyPlotMarkers.
 - Part, Dot and Topple support NambuMatrix.
 - NambuMatrix[{mat, 0}, ...] to easily embed matrix mat into the Nambu space in a block diagonal form with the anomalous part vanishing.
@@ -137,7 +141,7 @@ Other changes are as follows:
 
 ## 3.3.5
 
-- Emerngency bug fix for ReleaseTimes.
+- Emergency bug fix for ReleaseTimes.
 
 ## 3.3.4
 
@@ -159,7 +163,7 @@ Other changes are as follows:
 
 - New option "Normalized" for CoherentState.
 - New function IntegerParity.
-- Grassmann is rewritten almost from the scractch.
+- Grassmann is rewritten almost from the scratch.
 - Typo correction in the documentation on CoherentState.
 
 ## 3.3.1
@@ -264,7 +268,7 @@ Other changes are as follows:
 
 ## v2.14.16
 
-- More tutorial docomentations.
+- More tutorial documentations.
 
 ## v2.14.13
 
@@ -346,7 +350,7 @@ Other changes are as follows:
 
 ## v2.13.8
 
-- Emergcy correction of the help documentation of Oraccle.
+- Emergcy correction of the help documentation of Oracle.
 
 ## v2.13.6
 
@@ -391,7 +395,7 @@ Other changes are as follows:
 
 ## v2.12.5
 
-- Some tutorial documents have been revised for better presetnation.
+- Some tutorial documents have been revised for better presentation.
 
 ## v2.12.4
 
@@ -484,7 +488,7 @@ Other changes are as follows:
 ## v2.10.7
 
 - New function GroupClasses, SymmetricGroupClasses.
-- Bug fixes in package extentions.
+- Bug fixes in package extensions.
 
 ## v2.10.6
 
@@ -533,7 +537,7 @@ Other changes are as follows:
 ## v2.9.9
 
 - New implementation of PauliDecompose for faster performance for 8 or more qubits. BlochVector, RotationSystem, Stabilzer and StabilizerStateQ are updated accordingly.
-- Dyad has been generalized and enhanced; Matrix has been generalied and enhanced accordingly.
+- Dyad has been generalized and enhanced; Matrix has been generalized and enhanced accordingly.
 - TheMatrix has been enhanced.
 - DyadExpression has been renamed DyadForm.
 - LindbladBasis and LindbladBasisMatrix have been renamed LieBasis and LieBasisMatrix, respectively.
@@ -605,7 +609,7 @@ Other changes are as follows:
 
 ## v2.7.18
 
-- LogicalForm recieves a major change; it only displays the species that are explicitly specified.
+- LogicalForm receives a major change; it only displays the species that are explicitly specified.
 
 ## v2.7.17
 
@@ -658,7 +662,7 @@ Other changes are as follows:
 
 ## v2.7.0
 
-- PermutationBasis spanning the permuation module for the symmetric group.
+- PermutationBasis spanning the permutation module for the symmetric group.
 - SpechtBasis spanning the Specht module for the symmetric group.
 
 ## v2.6.24
@@ -681,11 +685,11 @@ Other changes are as follows:
 
 ## v2.6.20
 
-- Another emergecy bug fix, this time, in PartialTrace.
+- Another emergency bug fix, this time, in PartialTrace.
 
 ## v2.6.19
 
-- An emergecy bug fix in WeightedLog.
+- An emergency bug fix in WeightedLog.
 
 ## v2.6.16
 
@@ -706,7 +710,7 @@ Other changes are as follows:
 ## v2.6.7
 
 - New faster implementation of GelfandYoungPatterns.
-- More techical notes in Documentation.
+- More technical notes in Documentation.
 
 ## v2.6.4
 
@@ -756,7 +760,7 @@ Other changes are as follows:
 
 - Heisenberg canonical operators now act directly on Ket[<|...|>].
 
-- WignerFunction is superceded by the WignerD built-in function.
+- WignerFunction is superseded by the WignerD built-in function.
 
 - Several refinements in reference and tutorial documents.
 
@@ -770,7 +774,7 @@ Other changes are as follows:
 
 ## v2.3.14
 
-- Qubit speices takes a negative value for the final flavor index.
+- Qubit species takes a negative value for the final flavor index.
 
 ## v2.3.7
 
@@ -820,9 +824,9 @@ Other changes are as follows:
 
 ## v2.2.0
 
-- Measurement and Readout have been improved and support more arbitray Pauli operators (including tensor products of single-qubit Pauli operators).
+- Measurement and Readout have been improved and support more arbitrary Pauli operators (including tensor products of single-qubit Pauli operators).
 - New function MeasurementOdds.
-- Improved QuantumFourierTransform (it has a new optin N which indicates numerically approximate quantum Fourier transform).
+- Improved QuantumFourierTransform (it has a new option N which indicates numerically approximate quantum Fourier transform).
 
 ## v2.1.5
 
@@ -928,7 +932,7 @@ Other changes are as follows:
 
 - QuissoXXX, where XXX is for Phase, Rotation, EulerRotation, CZ, CNOT, SWAP, ControlledU, Toffoli, Fredkin, Oracle, is now obsolete. Use Elaborate[XXX[...]] instead.
 
-- WignerRotation and WignerEulerRotation have been superceded by Rotation and EulerRotation, respectively.
+- WignerRotation and WignerEulerRotation have been superseded by Rotation and EulerRotation, respectively.
 
 ## v1.9.0
 
@@ -974,11 +978,11 @@ Other changes are as follows:
 
 ## v1.7.5
 
-- Imroved Elaborate on QuissoCircuit.
+- Improved Elaborate on QuissoCircuit.
 
 ## v1.7.4
 
-- Imroved LogicalForm on OSlash, which affects QuissoFactor.
+- Improved LogicalForm on OSlash, which affects QuissoFactor.
 
 ## v1.7.1
 
@@ -995,7 +999,7 @@ Other changes are as follows:
 
 - New function SchmidtForm.
 - SchmidtDecomposition has been generalized and enhanced.
-- SchmidtDecomposition recieves a small change in its usage. 
+- SchmidtDecomposition receives a small change in its usage. 
 
 ## v1.6.3
 

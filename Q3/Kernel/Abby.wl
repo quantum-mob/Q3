@@ -82,14 +82,17 @@ pushPair[a:{_, _}, b_List] := Map[Join[{a}, #]&, Pairings[b]]
 
 (**** <Choices> ****)
 
-Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nChoices[p,spec] chooses from {1, 2, \[Ellipsis]}.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
+Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nChoices[p,spec] chooses from {1, 2, \[Ellipsis]}.\nChoices[p, nspec, {k1, k2, \[Ellipsis]}] allows only k1, k2, \[Ellipsis] copies of any integer.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
 Choices[p_Integer?Positive] := Choices[p, {0, p}]
 
-Choices[p_Integer?Positive, n_Integer] := Choices[p, {0, n}]
 
-Choices[p_Integer?Positive, {m_Integer, n_Integer}] :=
-  Catenate @ Map[Choices[p, {#}]&, Range[m, n]]
+Choices[p_Integer?Positive, n_Integer, rest___] :=
+  Choices[p, {0, n}, rest]
+
+Choices[p_Integer?Positive, {m_Integer, n_Integer}, rest___] :=
+  Catenate @ Map[Choices[p, {#}, rest]&, Range[m, n]]
+
 
 Choices[p_Integer?Positive, {0}] := { {} }
 
@@ -100,20 +103,35 @@ Choices[p_Integer?Positive, {n_Integer?Positive}] := Nest[
 ]
 (* NOTE: Choices deals with a special case of WeylTableaux, and Choices[p, {n}] is effectively equivalent to WeylTableaux[YoungShape @ {n}, p]. Of course, Choices[p, {n}] is faster than WeylTableaux[YoungShape @ {n}, p]. *)
 
+Choices[p_Integer?Positive, {n_Integer}, kk:{___Integer}] := Module[
+  { data },
+  data = IntegerPartitions[n, p, DeleteCases[kk, 0]];
+  data = Catenate[Permutations /@ (PadRight[#, p]&) /@ data];
+  Map[Catenate @ MapThread[Table,{Range[p], #}]&, ReverseSort @ data]
+]
+(* NOTE: Chocies[p, {n}, {1, 2, ..., n}] is equivalent to Choices[p, {n}], but is much slower. *)
+
+
 Choices[aa_List] := Choices[aa, {0, Length @ aa}]
 
 Choices[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer})] :=
-  aa[[#]] & /@ Choices[Length@aa, spec]
+  Map[aa[[#]]&, Choices[Length @ aa, spec]]
+
+Choices[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer}), kk:{___Integer}] :=
+  Map[aa[[#]]&, Choices[Length @ aa, spec, kk]]
 
 
 ChoiceCount::usage = "ChoiceCount[spec] returns the number of choices for spec, i.e., Length[Choices[spec]]."
 
 ChoiceCount[p_Integer?Positive] := ChoiceCount[p, {0, p}]
 
-ChoiceCount[p_Integer?Positive, n_Integer] := ChoiceCount[p, {0, n}]
 
-ChoiceCount[p_Integer?Positive, {m_Integer, n_Integer}] :=
-  Total @ Map[ChoiceCount[p, {#}]&, Range[m, n]]
+ChoiceCount[p_Integer?Positive, n_Integer, rest___] :=
+  ChoiceCount[p, {0, n}, rest]
+
+ChoiceCount[p_Integer?Positive, {m_Integer, n_Integer}, rest___] :=
+  Total @ Map[ChoiceCount[p, {#}, rest]&, Range[m, n]]
+
 
 ChoiceCount[p_Integer?Positive, {0}] = 1
 
@@ -123,6 +141,14 @@ ChoiceCount[p_Integer?Positive, {n_Integer?Positive}] := With[
    Product[j - i, {i, 1, p}, {j, i + 1, p}]
 ]
 (* NOTE: Equivalent to WeylTableauCount[YoungShape @ {n}, p] *)
+
+ChoiceCount[p_Integer?Positive, {n_Integer}, kk:{___Integer}] := Module[
+  { data },
+  data = IntegerPartitions[n, p, DeleteCases[kk, 0]];
+  data = Catenate[Permutations /@ (PadRight[#, p]&) /@ data];
+  Length[data]
+]
+(* NOTE: ChoiceCoutn[p, {n}, {1, 2, ..., n}] is equivalent to ChoiceCount[p, {n}], but is much slower. *)
 
 
 ChoiceCount[aa_List] := ChoiceCount[Length @ aa, {0, Length @ aa}]
