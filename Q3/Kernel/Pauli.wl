@@ -55,7 +55,9 @@ BeginPackage["Q3`"]
 { RotationAngle, RotationAxis, RotationSystem,
   TheEulerAngles }
 
-{ RandomVector, RandomMatrix, RandomHermitian, RandomPositive, RandomUnitary };
+{ RandomVector, RandomMatrix,
+  RandomHermitian, RandomPositive,
+  RandomUnitary, RandomOrthogonal };
 
 { TridiagonalToeplitzMatrix };
 
@@ -4451,7 +4453,6 @@ RandomPositive[range_, n_Integer] := With[
 (**** <RandomUnitary> ****)
 
 (* See Mezzadri (2007) *)
-
 RandomUnitary::usage = "RandomUnitary[n] generates a uniformly distributed random unitary matrix of dimension n. Here, the uniform distribution is in the sense of the Haar measure."
 
 RandomUnitary[] := RandomUnitary[2]
@@ -4459,9 +4460,30 @@ RandomUnitary[] := RandomUnitary[2]
 RandomUnitary[n_Integer] := Module[
   { mat, qq, rr },
   mat = Table[
-    RandomReal[NormalDistribution[0, 1]] +
-      I * RandomReal[NormalDistribution[0, 1]],
-    {n}, {n} ];
+    Complex[
+      RandomReal @ NormalDistribution[0, 1],
+      RandomReal @ NormalDistribution[0, 1]
+    ],
+    {n}, {n}
+  ];
+  {qq, rr} = QRDecomposition[mat];
+  rr = Diagonal[rr];
+  rr = DiagonalMatrix[ rr / Abs[rr] ];
+  qq . rr
+]
+
+
+(* See Mezzadri (2007) *)
+RandomOrthogonal::usage = "RandomOrthogonal[n] generates a uniformly distributed random real orthogonal matrix of dimension n."
+
+RandomOrthogonal[] := RandomOrthogonal[3]
+
+RandomOrthogonal[n_Integer] := Module[
+  { mat, qq, rr },
+  mat = Table[
+    RandomReal @ NormalDistribution[0, 1],
+    {n}, {n}
+  ];
   {qq, rr} = QRDecomposition[mat];
   rr = Diagonal[rr];
   rr = DiagonalMatrix[ rr / Abs[rr] ];

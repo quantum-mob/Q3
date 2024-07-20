@@ -3,7 +3,8 @@ BeginPackage["Q3`"]
 
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Pairings, Unpaired };
-{ Choices, ChoiceCount };
+{ Choices, ChoiceCount,
+  OrderedPartitions };
 { ListPartitions, Successive, FirstLast, Inbetween };
 { ShiftLeft, ShiftRight,
   TrimLeft, TrimRight };
@@ -80,9 +81,37 @@ pushPair[a:{_, _}, b_List] := Map[Join[{a}, #]&, Pairings[b]]
 (**** </Pairings> ****)
 
 
+(**** <OrderedPartitions> ****)
+
+OrderedPartitions::usage = "OrderedPartitions[n, spec] returns a inversely sorted list of ordered partitions of integer n, with the same spec as for IntegerPartitions."
+
+OrderedPartitions[n_Integer] := 
+ theOrderedPartitions @ PadRight @ IntegerPartitions[n]
+
+OrderedPartitions[n_Integer, k_Integer] := 
+ theOrderedPartitions @ Map[PadRight[#, k]&, IntegerPartitions[n, k]]
+
+OrderedPartitions[n_Integer, kk:{_Integer, _Integer}] := 
+ theOrderedPartitions @ Map[PadRight[#, Max @ kk]&, IntegerPartitions[n, kk]]
+
+OrderedPartitions[n_Integer, k_Integer, ss:{___Integer}] := 
+ theOrderedPartitions @ Map[PadRight[#, k]&, IntegerPartitions[n, k, DeleteCases[ss, 0]]]
+(* NOTE: DeleteCases[ss, 0] is necessary; otherwise, there are duplicates in the result. *)
+
+OrderedPartitions[n_Integer, kk:{_Integer, _Integer}, ss:{___Integer}] := 
+ theOrderedPartitions @ Map[PadRight[#, Max @ kk]&, IntegerPartitions[n, k, DeleteCases[ss, 0]]]
+(* NOTE: DeleteCases[ss, 0] is necessary; otherwise, there are duplicates in the result. *)
+
+theOrderedPartitions[pp:{__List}] :=
+  ReverseSort @ Catenate[Permutations /@ pp]
+(* NOTE: ReverseSort is necessary for consistency with BosonBasis and BosonTransform. *)
+
+(**** <OrderedPartitions> ****)
+
+
 (**** <Choices> ****)
 
-Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nChoices[p,spec] chooses from {1, 2, \[Ellipsis]}.\nChoices[p, nspec, {k1, k2, \[Ellipsis]}] allows only k1, k2, \[Ellipsis] copies of any integer.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
+Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nChoices[p,spec] chooses from {1, 2, \[Ellipsis]}.\nChoices[p, nspec, {r1, r2, \[Ellipsis], rs}] allows any element to appear only r1, r2, \[Ellipsis], or rs times in each choice.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
 Choices[p_Integer?Positive] := Choices[p, {0, p}]
 
@@ -103,13 +132,9 @@ Choices[p_Integer?Positive, {n_Integer?Positive}] := Nest[
 ]
 (* NOTE: Choices deals with a special case of WeylTableaux, and Choices[p, {n}] is effectively equivalent to WeylTableaux[YoungShape @ {n}, p]. Of course, Choices[p, {n}] is faster than WeylTableaux[YoungShape @ {n}, p]. *)
 
-Choices[p_Integer?Positive, {n_Integer}, kk:{___Integer}] := Module[
-  { data },
-  data = IntegerPartitions[n, p, DeleteCases[kk, 0]];
-  data = Catenate[Permutations /@ (PadRight[#, p]&) /@ data];
-  Map[Catenate @ MapThread[Table,{Range[p], #}]&, ReverseSort @ data]
-]
-(* NOTE: Chocies[p, {n}, {1, 2, ..., n}] is equivalent to Choices[p, {n}], but is much slower. *)
+Choices[p_Integer?Positive, {n_Integer}, rr:{___Integer?NonNegative}] :=
+  Map[Catenate @ MapThread[ConstantArray,{Range[p], #}]&, OrderedPartitions[n, p, rr]]
+(* NOTE: Chocies[p, {n}, {1, 2, ..., n}] gives the same result as Choices[p, {n}], but is much slower. *)
 
 
 Choices[aa_List] := Choices[aa, {0, Length @ aa}]
@@ -120,6 +145,10 @@ Choices[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer})] :=
 Choices[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer}), kk:{___Integer}] :=
   Map[aa[[#]]&, Choices[Length @ aa, spec, kk]]
 
+(**** </Choices> ****)
+
+
+(**** <ChoiceCount> ****)
 
 ChoiceCount::usage = "ChoiceCount[spec] returns the number of choices for spec, i.e., Length[Choices[spec]]."
 
@@ -142,12 +171,11 @@ ChoiceCount[p_Integer?Positive, {n_Integer?Positive}] := With[
 ]
 (* NOTE: Equivalent to WeylTableauCount[YoungShape @ {n}, p] *)
 
-ChoiceCount[p_Integer?Positive, {n_Integer}, kk:{___Integer}] := Module[
-  { data },
-  data = IntegerPartitions[n, p, DeleteCases[kk, 0]];
-  data = Catenate[Permutations /@ (PadRight[#, p]&) /@ data];
-  Length[data]
-]
+ChoiceCount[p_Integer?Positive, {n_Integer}, kk:{___Integer}] :=
+  Length @ Catenate[
+    Permutations /@ (PadRight[#, p]&) /@ IntegerPartitions[n, p, DeleteCases[kk, 0]]
+  ]
+(* NOTE: DO NOT use OrderedPartitions; slower due to additional ReverseSort therein. *)
 (* NOTE: ChoiceCoutn[p, {n}, {1, 2, ..., n}] is equivalent to ChoiceCount[p, {n}], but is much slower. *)
 
 
@@ -156,7 +184,7 @@ ChoiceCount[aa_List] := ChoiceCount[Length @ aa, {0, Length @ aa}]
 ChoiceCount[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer})] :=
   ChoiceCount[Length @ aa, spec]
 
-(**** </Choices> ****)
+(**** </ChoiceCount> ****)
 
 
 ListPartitions::usage = "ListPartitions[list] gives a list of all possible ways to partition 'list' into smaller lists.\nListPartitions[list, spec] gives partitions corresponding to the specification spec. For spec, see IntegerPartitions."

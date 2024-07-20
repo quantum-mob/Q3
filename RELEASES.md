@@ -2,7 +2,8 @@
 
 ## 3.5.1
 
-- Big performance improvement of BosonBasis.
+- Big performance improvement of BosonBasis and FermionBasis.
+- New symbols: RandomOrthogonal, BosonTransform, OrderedPartitions.
 
 ## 3.5.0
 

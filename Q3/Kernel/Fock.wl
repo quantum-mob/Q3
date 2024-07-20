@@ -40,7 +40,8 @@ BeginPackage["Q3`"]
 
 { FockKet, FockCat, FockPad };
 { FockNorm, FockAvg };
-{ BosonBasis, FermionBasis, PrintFermionBasis };
+{ BosonBasis, BosonTransform,
+  FermionBasis, PrintFermionBasis };
 
 { FockDecompose, FockOrthogonalize };
 
@@ -2155,25 +2156,54 @@ BosonBasis[bb:{__?BosonQ}, n_Integer, rest___] :=
   BosonBasis[bb, {Min[Bottom /@ bb], n}, rest]
 
 BosonBasis[bb:{__?BosonQ}, {m_Integer, n_Integer}, rest___] :=
-  Flatten @ Table[BosonBasis[bb, {k}], {k, m, n}, rest]
+  Flatten @ Table[BosonBasis[bb, {k}, rest], {k, m, n}]
 
 
 BosonBasis[ss:{__?BosonQ}, {n_Integer}] := 
-  theBosonBasis[ss, IntegerPartitions[n, Length @ ss]]
+  Ket /@ Map[AssociationThread[ss -> #]&, OrderedPartitions[n, Length @ ss]]
 
-BosonBasis[ss:{__?BosonQ}, {n_Integer}, kk:{___Integer}] := 
-  theBosonBasis[ss, IntegerPartitions[n, Length @ ss, DeleteCases[kk, 0]]]
-(* NOTE: DeteteCases is necessary here; otherwise, the result has many duplicates. *)
-
-
-theBosonBasis[ss:{__?BosonQ}, pp_List] := Module[
-  { data },
-  data = Catenate[Permutations /@ (PadRight[#, Length @ ss]&) /@ pp];
-  Ket /@ Map[AssociationThread[ss -> #]&, ReverseSort @ data]
-  (* NOTE: ReveseSort[data] is important for consistentcy; see the exxample in the help page of BosonBasis. *)
-]
+BosonBasis[ss:{__?BosonQ}, {n_Integer}, kk:{___Integer?NonNegative}] := 
+  Ket /@ Map[AssociationThread[ss -> #]&, OrderedPartitions[n, Length @ ss, kk]]
 
 (**** </BosonBasis> ****)
+
+
+(**** <BosonTransform> ****)
+
+BosonTransform::usage = "BosonTransform[mat, {n}] returns the unitary matrix describing the change of n-particle basis between two modes related by the canonical transformation matrix mat."
+
+BosonTransform[mat_?MatrixQ, n_Integer] :=
+  BosonTransform[mat, {0, n}]
+
+BosonTransform[mat_?MatrixQ, {m_Integer, n_Integer}] :=
+  Association @ Table[k -> BosonTransform[mat, {k}], {k, m, n}]
+
+BosonTransform[mat_?MatrixQ, {n_Integer}] := Module[
+  { nm = Length[mat],
+    pp },
+  pp = OrderedPartitions[n, nm];
+  Outer[theBosonTransform[mat], pp, pp, 1]
+]
+
+BosonTransform[mat_?MatrixQ, {n_Integer}, rr:{___Integer}] := Module[
+  { nm = Length[mat],
+    pp },
+  pp = OrderedPartitions[n, nm, rr];
+  Outer[theBosonTransform[mat], pp, pp, 1]
+]
+
+
+theBosonTransform[mat_?MatrixQ][pp_List, qq_List] := Module[
+  { ii, jj, ij, ff },
+  ii = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], pp}];
+  jj = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], qq}];
+  (* Dddress the factors from bosonic algebra. *)
+  ff = Sqrt[Times @@ Factorial @ qq] / Sqrt[Times @@ Factorial @ pp];
+  ij = Map[Transpose @ {ii, #} &, Permutations @ jj];
+  Total[Times @@@ Apply[mat[[##]]&, ij, {2}]] * ff
+]
+
+(**** </BosonTransform> ****)
 
 
 (**** <FermionBasis> ****)
@@ -2195,19 +2225,11 @@ FermionBasis[c_?FermionQ, rest___] :=
 
 (* Basic constructions *)
 
-FermionBasis[cc:{__?FermionQ}, n_Integer] :=
+FermionBasis[cc:{__?FermionQ}, spec:(_Integer|{_Integer}|{_Integer, _Integer})] :=
   KetRegulate[
-    Ket @@@ Map[Thread[#->1]&] @ Subsets[cc, n],
-    cc ]
-
-FermionBasis[cc:{__?FermionQ}, {m_Integer, n_Integer}] :=
-  Flatten @ Table[ FermionBasis[cc, {k}], {k, m, n}]
-
-FermionBasis[cc:{__?FermionQ}, {n_Integer}] :=
-  KetRegulate[
-    Ket @@@ Map[Thread[#->1]&, Subsets[cc, {n}]],
-    cc ]
-
+    Ket /@ (AssociationThread[#->1]&) /@ Subsets[cc, spec],
+    cc
+  ]
 
 (* Advanced constructions*)
 
