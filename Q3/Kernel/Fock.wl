@@ -2172,6 +2172,11 @@ BosonBasis[ss:{__?BosonQ}, {n_Integer}, kk:{___Integer?NonNegative}] :=
 
 BosonTransform::usage = "BosonTransform[mat, {n}] returns the unitary matrix describing the change of n-particle basis between two modes related by the canonical transformation matrix mat."
 
+BosonTransform::dim = "The dimension of the canonical transformation matrix `` is not the same as the lengths of the occupation-number lists in `` or in ``."
+
+BosonTransform::num = "The total numbers of particles of the occupation-number lists in `` and/or in `` are not equal."
+
+
 BosonTransform[mat_?MatrixQ, n_Integer] :=
   BosonTransform[mat, {0, n}]
 
@@ -2193,7 +2198,30 @@ BosonTransform[mat_?MatrixQ, {n_Integer}, rr:{___Integer}] := Module[
 ]
 
 
-theBosonTransform[mat_?MatrixQ][pp_List, qq_List] := Module[
+BosonTransform[mat_?MatrixQ, bs:{__Ket}] :=
+  BosonTransform[mat, Apply[Values, bs, {1}]]
+
+BosonTransform[mat_?MatrixQ, bs:{{__Ket}, {__Ket}}] :=
+  BosonTransform[mat, Apply[Values, bs, {2}]]
+
+
+BosonTransform[mat_?MatrixQ, pp_?MatrixQ] := BosonTransform[mat, {pp, pp}]
+
+BosonTransform[mat_?MatrixQ, {pp_?MatrixQ, qq_?MatrixQ}] := With[
+  { nn = Join[Total /@ pp, Total /@ qq] },
+  Which[
+    Not[Last[Dimensions @ mat] == Last[Dimensions @ pp] == Last[Dimensions @ qq]],
+    Message[BosonTransform::dim, mat, pp, qq];
+    Return[$Failed],
+    Not[Equal @@ nn],
+    Message[BosonTransform::num, pp, qq];
+    Return[$Failed]
+  ];
+  Outer[theBosonTransform[mat], pp, qq, 1]
+]
+
+
+theBosonTransform[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
   { ii, jj, ij, ff },
   ii = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], pp}];
   jj = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], qq}];
