@@ -4,6 +4,7 @@
 
 - Big performance improvement of BosonBasis and FermionBasis.
 - New symbols: RandomOrthogonal, BosonTransform, OrderedPartitions.
+- PlaybookTools updated.
 
 ## 3.5.0
 

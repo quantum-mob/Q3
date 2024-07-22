@@ -6,9 +6,6 @@ ClearAll["`*"];
 
 { PlaybookDeploy };
   
-{ ParagraphDelimiterPut,
-  $ParagraphDelimiter };
-
 (* See also MakeContents from AuthorTools`. *)
 { PlaybookContents,
   PlaybookContentsLine,
@@ -19,6 +16,8 @@ ClearAll["`*"];
 { PlaybookBanner, $PlaybookBannerTitle,
   ToggleBanner, SetBanner, UnsetBanner };
 
+{ $ParagraphDelimiter };
+
 
 Begin["`Private`"]
 
@@ -26,6 +25,8 @@ ClearAll["`*"];
 
 
 (**** <ParagraphDelimiterPut> ****)
+
+(* NOTE: This function is not used anylonger; it used to be used by the Playbook stylesheet. *)
 
 ParagraphDelimiterPut::usage = "ParagraphDelimiterPut[] either replaces the current cell of the Paragraph style with the delimiter cell or insert the delimiter cell at the current position."
 
@@ -41,6 +42,8 @@ ParagraphDelimiterPut[] := With[
 ]
 (* NOTE: This must be consistent with the Playbook style sheet *)
 
+(**** </ParagraphDelimiterPut> ****)
+
 
 $ParagraphDelimiter::usage = "A horizontal delimiter cell like the one in the Wolfram documentation.\nCellPrint[$ParagraphDelimiter] put it in the evaluation notebook."
 
@@ -52,8 +55,6 @@ $ParagraphDelimiter = Cell[ "\t", "Text", "ParagraphDelimiter",
   CellGroupingRules -> {"SectionGrouping", 70},
   FontColor -> GrayLevel[0.85]
 ];
-
-(**** </ParagraphDelimiterPut> ****)
 
 
 (**** <PlaybookDeploy> ****)
@@ -121,7 +122,8 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   SetOptions[nb, StyleDefinitions -> "PlaybookNub.nb"]; (* for printing if at all *)
   
   Print["\tSetting the banner as \"", $PlaybookBannerTitle, "\" for printing (if at all) ..."];
-  SetBanner[nb, $PlaybookBannerTitle]; (* for printing if at all *)
+  SetBanner[nb, $PlaybookBannerTitle, "Deployed" -> True];
+  (* NOTE: Even if the PlabybookNub stylesheet sets the banner, this line is still necessary because the user may want to set $PlaybookBannerTitle to a custom value. *)
   
   PlaybookTrim[nb];
   NotebookSave[nb];
