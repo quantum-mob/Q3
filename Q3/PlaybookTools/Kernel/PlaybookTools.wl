@@ -4,8 +4,6 @@ BeginPackage["PlaybookTools`"]
 Unprotect["`*"];
 ClearAll["`*"];
 
-$PlaybookBanner = "Q3: Symbolic Quantum Simulation";
-
 { PlaybookDeploy };
   
 { ParagraphDelimiterPut,
@@ -18,7 +16,8 @@ $PlaybookBanner = "Q3: Symbolic Quantum Simulation";
 
 { PlaybookEpilog };
 
-{ ToggleBanner, SetBanner, UnsetBanner };
+{ PlaybookBanner, $PlaybookBannerTitle,
+  ToggleBanner, SetBanner, UnsetBanner };
 
 
 Begin["`Private`"]
@@ -37,9 +36,9 @@ ParagraphDelimiterPut[] := With[
     If[ MemberQ[CurrentValue[obj, "CellStyle"], "ParagraphDelimiter"],
       Return[],
       NotebookWrite[EvaluationNotebook[], "~"]
-     ]
-   ]
- ]
+    ]
+  ]
+]
 (* NOTE: This must be consistent with the Playbook style sheet *)
 
 
@@ -52,7 +51,7 @@ $ParagraphDelimiter = Cell[ "\t", "Text", "ParagraphDelimiter",
   ShowCellBracket -> Automatic,
   CellGroupingRules -> {"SectionGrouping", 70},
   FontColor -> GrayLevel[0.85]
- ];
+];
 
 (**** </ParagraphDelimiterPut> ****)
 
@@ -71,7 +70,7 @@ Options[PlaybookDeploy] = {
   "DeleteOutput" -> False,
   "PrintHandout" -> False,
   "FoldSections" -> True
- }
+}
 
 PlaybookDeploy[opts:OptionsPattern[]] := With[
   { file = NotebookFileName[] },
@@ -98,7 +97,7 @@ playbookFileName[file_String, dst_String] :=
   If[ DirectoryQ[dst],
     playbookFileName @ FileNameJoin @ {dst, FileNameTake @ file},
     ExpandFileName[dst]
-   ]
+  ]
 
 
 fileDeploy::usage = "fileDepoly[src, dst] does the actual job of deploying src to dst."
@@ -121,8 +120,8 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   Print["\tSetting the stylesheet to \"PlaybookNub.nb\" for printing (if at all) ..."];
   SetOptions[nb, StyleDefinitions -> "PlaybookNub.nb"]; (* for printing if at all *)
   
-  Print["\tSetting the banner as \"", $PlaybookBanner, "\" for printing (if at all) ..."];
-  SetBanner[nb, $PlaybookBanner]; (* for printing if at all *)
+  Print["\tSetting the banner as \"", $PlaybookBannerTitle, "\" for printing (if at all) ..."];
+  SetBanner[nb, $PlaybookBannerTitle]; (* for printing if at all *)
   
   PlaybookTrim[nb];
   NotebookSave[nb];
@@ -157,7 +156,7 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
   pdf = FileNameJoin @ {
     DirectoryName @ dst,
     StringJoin @ {FileBaseName @ dst, ".pdf"}
-   };
+  };
 
   Print["\tPreparing ", NotebookFileName @ nb, " for printing ..."];
   (* Open all cell groups *)
@@ -171,7 +170,7 @@ PlaybookPrint[nb_NotebookObject, dst_String] := Module[
 
   Print["\t\t... done!"];
   Return[pdf]
- ]
+]
 
 (**** </PlaybookPrint> ****)
 
@@ -324,9 +323,9 @@ theStyleMapping = {
 (**** </PlaybookContents> ****)
 
 
-ToggleBanner::usage = "ToggleBanner[nb, title] toggles on or off the banner of notebook nb.\nToggleBanner[] applies to SelectedNoteboook[] with default banner $PlaybookBanner."
+ToggleBanner::usage = "ToggleBanner[nb, title] toggles on or off the banner of notebook nb.\nToggleBanner[] applies to SelectedNoteboook[] with default banner $PlaybookBannerTitle."
 
-ToggleBanner[title_String:$PlaybookBanner, opts___?OptionQ] := Module[
+ToggleBanner[title_String:$PlaybookBannerTitle, opts___?OptionQ] := Module[
   { nb = SelectedNotebook[],
     banner },
   banner = DockedCells /. Options[nb, DockedCells];
@@ -337,29 +336,69 @@ ToggleBanner[title_String:$PlaybookBanner, opts___?OptionQ] := Module[
  ]
 
 
+
+(**** <PlaybookBanner> ****)
+
+$PlaybookBannerTitle::usage = "$PlaybookBannerTitle returns the title of the plaaybook banner."
+
+$PlaybookBannerTitle = "Q3: Symbolic Quantum Simulation";
+
+
+PlaybookBanner::usage = "PlaybookBanner[title] returns a cell to be used as the playbook banner."
+
+Options[PlaybookBanner] = { "Deployed" -> False }
+
+PlaybookBanner[title_String:$PlaybookBannerTitle, opts:OptionsPattern[{PlaybookBanner, Cell}]] := 
+  If[ OptionValue["Deployed"],
+    (* for readers *)
+    Module[
+      { logo, grid },
+      logo = Thumbnail[
+        Import[PacletObject["Q3"]["AssetLocation", "Q3 Emblem Medium"]],
+        36
+      ];
+      grid = Grid @ {{title, Pane[logo, Full, Alignment -> Right]}};
+      Cell[
+        BoxData[ToBoxes @ grid], "DockedCell",
+        FilterRules[{opts}, Options[Cell]],
+        CellFrameMargins -> {{22, 0}, {0, 0}},
+        Background -> GrayLevel[0.9],
+        FontSize -> 12
+      ]
+    ],
+    (* for authors *)
+    Cell[
+      title, "DockedCell",
+      FilterRules[{opts}, Options[Cell]],
+      CellFrameMargins -> {{22, 8}, {8, 8}},
+      Background -> GrayLevel[0.9],
+      FontSize -> 12
+    ]
+  ]
+
+(**** </PlaybookBanner> ****)
+
+
+(**** <SetBanner> ****)
+
 SetBanner::usage = "SetBanner[\"title\"] adds a banner of \"title\" to the top of the current notebook by setting the DockedCells option.\nSetBanner has the same options as Cell."
 
 SetBanner[file_String, title_String, opts___?OptionQ] :=
   SetBanner[NotebookOpen[file], title, opts]
 
-SetBanner[title_String:$PlaybookBanner, opts___?OptionQ] :=
+SetBanner[title_String:$PlaybookBannerTitle, opts___?OptionQ] :=
   SetBanner[EvaluationNotebook[], title, opts]
 
-SetBanner[nb_NotebookObject, title_String:$PlaybookBanner, opts___?OptionQ] :=
+SetBanner[nb_NotebookObject, title_String:$PlaybookBannerTitle, opts___?OptionQ] :=
   SetOptions[
     nb, 
-    DockedCells -> Cell[
-      title, "Text", opts,
-      Background -> GrayLevel[0.9],
-      FontSize -> 12,
-      CellFrameMargins -> {{22, 8}, {8, 8}}
-     ],
+    DockedCells -> PlaybookBanner[title, opts],
     PageFooters -> {
-      { Cell[$PlaybookBanner, "Footer", CellMargins -> 4], None, None },
-      { None, None, Cell[$PlaybookBanner, "Footer", CellMargins -> 4] }
-     },
+      { Cell[$PlaybookBannerTitle, "Footer", CellMargins -> 4], None, None },
+      { None, None, Cell[$PlaybookBannerTitle, "Footer", CellMargins -> 4] }
+    },
     PageFooterLines -> {True, True}
-   ]
+  ]
 
 
 UnsetBanner::usage = "UnsetBanner[] removes the banner of the current notebook."
@@ -369,6 +408,8 @@ UnsetBanner[] := UnsetBanner @ EvaluationNotebook[]
 UnsetBanner[file_String] := UnsetBanner @ NotebookOpen[file]
 
 UnsetBanner[nb_NotebookObject] := SetOptions[nb, DockedCells -> {}]
+
+(**** </SetBanner> ****)
 
 
 SetAttributes[Evaluate @ Names["`*"], ReadProtected];

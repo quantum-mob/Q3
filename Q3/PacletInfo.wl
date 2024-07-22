@@ -33,7 +33,7 @@ Paclet[
       "Language" -> "English",
       "MainPage" -> "Tutorials/Q3QuickStart" },
     { "FrontEnd",
-      "Prepend" -> True }
+      "Prepend" -> True },
     (* Enables subdirectories within the FrontEnd to be handled,
        e.g. FrontEnd/Palettes, FrontEnd/StyleSheets, FrontEnd/SystemResources,
        FrontEnd/TextResources. These items will be recognized by the Front
@@ -49,7 +49,7 @@ Paclet[
         {"Q3 Emblem Black Medium", "EmblemQ3BlackM.jpg"},
         {"Q3 Emblem Black Small",  "EmblemQ3BlackS.jpg"}
       }
-    },
+    }
   },
   "Description" -> "A Wolfram Language framework for quantum symbolic simulations on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.",
   "Creator" -> "Mahn-Soo Choi (Korea University)",
