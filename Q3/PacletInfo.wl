@@ -38,6 +38,18 @@ Paclet[
        e.g. FrontEnd/Palettes, FrontEnd/StyleSheets, FrontEnd/SystemResources,
        FrontEnd/TextResources. These items will be recognized by the Front
        End, e.g. palettes will show up in the Palettes menu. *)
+    { "Asset",
+      (* Similar to the old-style Resource extension. *)
+      (* The documented way to extract the named asset from Asset extensions
+         is pacletObj["AssetLocation", "assetname"]. *)
+      "Root" -> "Assets/Images",
+      "Assets" -> {
+        {"Q3 Emblem Medium", "EmblemQ3M.png"},
+        {"Q3 Emblem Small",  "EmblemQ3S.png"},
+        {"Q3 Emblem Black Medium", "EmblemQ3BlackM.jpg"},
+        {"Q3 Emblem Black Small",  "EmblemQ3BlackS.jpg"}
+      }
+    },
   },
   "Description" -> "A Wolfram Language framework for quantum symbolic simulations on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.",
   "Creator" -> "Mahn-Soo Choi (Korea University)",

@@ -102,7 +102,7 @@ OrderedPartitions[n_Integer, kk:{_Integer, _Integer}, ss:{___Integer}] :=
  theOrderedPartitions @ Map[PadRight[#, Max @ kk]&, IntegerPartitions[n, k, DeleteCases[ss, 0]]]
 (* NOTE: DeleteCases[ss, 0] is necessary; otherwise, there are duplicates in the result. *)
 
-theOrderedPartitions[pp:{__List}] :=
+theOrderedPartitions[pp:{___List}] :=
   ReverseSort @ Catenate[Permutations /@ pp]
 (* NOTE: ReverseSort is necessary for consistency with BosonBasis and BosonTransform. *)
 
