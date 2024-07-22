@@ -1,5 +1,5 @@
 <a href="https://github.com/quantum-mob/Q3">
-<img align="Right" src="Images/EmblemQ3S.png" width="30%"/>
+<img align="Right" src="Assets/Images/EmblemQ3S.png" width="30%"/>
 </a>
 
 # Q3: Symbolic Quantum Simulation
@@ -38,7 +38,7 @@ Once Q3 is installed, put `Q3` or `Q3/guide/Q3` in the search field of the Wolfr
 ## Quantum Computation and Information with Q3
 
 <a href="https://link.springer.com/book/9783030912130">
-<img src="Images/QuantumWorkbookCover.jpg" align="right"
+<img src="Assets/Images/QuantumWorkbookCover.jpg" align="right"
      alg="Quantum Workbook Cover"/>
 </a>
 
