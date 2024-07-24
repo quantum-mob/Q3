@@ -1,4 +1,4 @@
-e(* -*- mode: math; -*- *)
+(* -*- mode: math; -*- *)
 BeginPackage["Q3`"]
 
 { Heisenberg, Boson, Fermion, Majorana };
@@ -40,7 +40,7 @@ BeginPackage["Q3`"]
 
 { FockKet, FockCat, FockPad };
 { FockNorm, FockAvg };
-{ BosonBasis, BosonTransform,
+{ BosonBasis, BosonBasisChange,
   FermionBasis, PrintFermionBasis };
 
 { FockDecompose, FockOrthogonalize };
@@ -2156,7 +2156,7 @@ BosonBasis[bb:{__?BosonQ}, n_Integer, rest___] :=
   BosonBasis[bb, {Min[Bottom /@ bb], n}, rest]
 
 BosonBasis[bb:{__?BosonQ}, {m_Integer, n_Integer}, rest___] :=
-  Flatten @ Table[BosonBasis[bb, {k}, rest], {k, m, n}]
+  Association @ Table[k -> BosonBasis[bb, {k}, rest], {k, m, n}]
 
 
 BosonBasis[ss:{__?BosonQ}, {n_Integer}] := 
@@ -2168,60 +2168,60 @@ BosonBasis[ss:{__?BosonQ}, {n_Integer}, kk:{___Integer?NonNegative}] :=
 (**** </BosonBasis> ****)
 
 
-(**** <BosonTransform> ****)
+(**** <BosonBasisChange> ****)
 
-BosonTransform::usage = "BosonTransform[mat, {n}] returns the unitary matrix describing the change of n-particle basis between two modes related by the canonical transformation matrix mat."
+BosonBasisChange::usage = "BosonBasisChange[mat, {n}] returns the unitary matrix describing the change of n-particle basis between two modes related by the canonical transformation matrix mat."
 
-BosonTransform::dim = "The dimension of the canonical transformation matrix `` is not the same as the lengths of the occupation-number lists in `` or in ``."
+BosonBasisChange::dim = "The dimension of the canonical transformation matrix `` is not the same as the lengths of the occupation-number lists in `` or in ``."
 
-BosonTransform::num = "The total numbers of particles of the occupation-number lists in `` and/or in `` are not equal."
+BosonBasisChange::num = "The total numbers of particles of the occupation-number lists in `` and/or in `` are not equal."
 
 
-BosonTransform[mat_?MatrixQ, n_Integer] :=
-  BosonTransform[mat, {0, n}]
+BosonBasisChange[mat_?MatrixQ, n_Integer] :=
+  BosonBasisChange[mat, {0, n}]
 
-BosonTransform[mat_?MatrixQ, {m_Integer, n_Integer}] :=
-  Association @ Table[k -> BosonTransform[mat, {k}], {k, m, n}]
+BosonBasisChange[mat_?MatrixQ, {m_Integer, n_Integer}] :=
+  Association @ Table[k -> BosonBasisChange[mat, {k}], {k, m, n}]
 
-BosonTransform[mat_?MatrixQ, {n_Integer}] := Module[
+BosonBasisChange[mat_?MatrixQ, {n_Integer}] := Module[
   { nm = Length[mat],
     pp },
   pp = OrderedPartitions[n, nm];
-  Outer[theBosonTransform[mat], pp, pp, 1]
+  Outer[theBosonBasisChange[mat], pp, pp, 1]
 ]
 
-BosonTransform[mat_?MatrixQ, {n_Integer}, rr:{___Integer}] := Module[
+BosonBasisChange[mat_?MatrixQ, {n_Integer}, rr:{___Integer}] := Module[
   { nm = Length[mat],
     pp },
   pp = OrderedPartitions[n, nm, rr];
-  Outer[theBosonTransform[mat], pp, pp, 1]
+  Outer[theBosonBasisChange[mat], pp, pp, 1]
 ]
 
 
-BosonTransform[mat_?MatrixQ, bs:{__Ket}] :=
-  BosonTransform[mat, Apply[Values, bs, {1}]]
+BosonBasisChange[mat_?MatrixQ, bs:{__Ket}] :=
+  BosonBasisChange[mat, Apply[Values, bs, {1}]]
 
-BosonTransform[mat_?MatrixQ, bs:{{__Ket}, {__Ket}}] :=
-  BosonTransform[mat, Apply[Values, bs, {2}]]
+BosonBasisChange[mat_?MatrixQ, bs:{{__Ket}, {__Ket}}] :=
+  BosonBasisChange[mat, Apply[Values, bs, {2}]]
 
 
-BosonTransform[mat_?MatrixQ, pp_?MatrixQ] := BosonTransform[mat, {pp, pp}]
+BosonBasisChange[mat_?MatrixQ, pp_?MatrixQ] := BosonBasisChange[mat, {pp, pp}]
 
-BosonTransform[mat_?MatrixQ, {pp_?MatrixQ, qq_?MatrixQ}] := With[
+BosonBasisChange[mat_?MatrixQ, {pp_?MatrixQ, qq_?MatrixQ}] := With[
   { nn = Join[Total /@ pp, Total /@ qq] },
   Which[
     Not[Last[Dimensions @ mat] == Last[Dimensions @ pp] == Last[Dimensions @ qq]],
-    Message[BosonTransform::dim, mat, pp, qq];
+    Message[BosonBasisChange::dim, mat, pp, qq];
     Return[$Failed],
     Not[Equal @@ nn],
-    Message[BosonTransform::num, pp, qq];
+    Message[BosonBasisChange::num, pp, qq];
     Return[$Failed]
   ];
-  Outer[theBosonTransform[mat], pp, qq, 1]
+  Outer[theBosonBasisChange[mat], pp, qq, 1]
 ]
 
 
-theBosonTransform[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
+theBosonBasisChange[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
   { ii, jj, ij, ff },
   ii = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], pp}];
   jj = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], qq}];
@@ -2231,7 +2231,7 @@ theBosonTransform[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
   Total[Times @@@ Apply[mat[[##]]&, ij, {2}]] * ff
 ]
 
-(**** </BosonTransform> ****)
+(**** </BosonBasisChange> ****)
 
 
 (**** <FermionBasis> ****)
@@ -2253,11 +2253,16 @@ FermionBasis[c_?FermionQ, rest___] :=
 
 (* Basic constructions *)
 
-FermionBasis[cc:{__?FermionQ}, spec:(_Integer|{_Integer}|{_Integer, _Integer})] :=
-  KetRegulate[
-    Ket /@ (AssociationThread[#->1]&) /@ Subsets[cc, spec],
-    cc
-  ]
+FermionBasis[cc:{__?FermionQ}] := FermionBasis[cc, {0, Length @ cc}]
+
+FermionBasis[cc:{__?FermionQ}, n_Integer] := FermionBasis[cc, {0, n}]
+
+FermionBasis[cc:{__?FermionQ}, {m_Integer, n_Integer}] :=
+  Association @ Table[k -> FermionBasis[cc, {k}], {k, m, n}]
+
+FermionBasis[cc:{__?FermionQ}, {n_Integer}] :=
+  KetRegulate[Ket /@ (AssociationThread[#->1]&) /@ Subsets[cc, {n}], cc]
+
 
 (* Advanced constructions*)
 

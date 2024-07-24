@@ -456,9 +456,7 @@ ParseGate[any_?StringQ, ___?OptionQ] := (
 (* Single-qubit gates *)  
 
 ParseGate[op_?QubitQ, opts___?OptionQ] :=
-  Gate[ Qubits @ op, opts, "Label" -> HoldForm[thePauliForm @ op] ]
-(* NOTE: HoldForm is required here because later qcNodes uses ReleaseHold.
-   Recall that thePauliForm uses HoldForm. *)
+  Gate[ Qubits @ op, opts, "Label" -> thePauliForm @ op ]
 
 
 ParseGate[
@@ -497,7 +495,7 @@ HoldPattern @ ParseGate[Projector[v_, qq_, ___?OptionQ], ___?OptionQ] :=
 
 
 ParseGate[ op:Phase[_, _?QubitQ, opts___?OptionQ], more___?OptionQ ] :=
-  Gate[ Qubits @ op, more, opts, "Label" -> HoldForm @ thePauliForm[op] ]
+  Gate[ Qubits @ op, more, opts, "Label" -> thePauliForm[op] ]
 
 ParseGate[ op:Rotation[_, {_, _, _}, G_?QubitQ, opts___?OptionQ], more___?OptionQ ] :=
   Gate[Qubits @ G, more, opts, "Label" -> gateLabel @ op]
@@ -553,14 +551,14 @@ ParseGate[CZ[ss:{__?QubitQ}, ___?OptionQ], ___?OptionQ] :=
     "Shape" -> "Dot" 
   ]
 
-ParseGate[Swap[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?OptionQ] :=
+ParseGate[SWAP[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?OptionQ] :=
   Gate[ {c}, {t},
     "ControlShape" -> "Cross",
     "Shape" -> "Cross"
   ]
 
 
-ParseGate[iSwap[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?OptionQ] :=
+ParseGate[iSWAP[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?OptionQ] :=
   Gate[ {c}, {t},
     "ControlShape" -> "CircleCross",
     "Shape" -> "CircleCross"
@@ -1104,6 +1102,7 @@ qcNodes::usage = "qcNodes[ ... ] takes circuit elements and construct them as no
 
 qcNodes[gg_List, xx_List, yy_Association] :=
   ReleaseHold @ Thread @ Hold[qcDrawGate][gg, xx, yy]
+(* NOTE: The Inactive-Activate pair may also be used, but is slower. *)
 
 
 (**** <qcDrawGate> ****)
@@ -1155,7 +1154,8 @@ qcDrawGate[Gate[tt:{__?SpeciesQ}, opts___?OptionQ], x_, yy_Association] :=
 qcDrawGate[qc_QuantumCircuit, x_, yy_Association] := With[
   { xx = Range[x, qcDepth[qc] + x - 1] },
   ReleaseHold @ Thread[Hold[qcDrawGate][List @@ qc, xx, yy]]
- ]
+]
+(* NOTE: The Inactive-Activate pair may also be used, but is slower. *)
 
 
 qcDrawGate["Spacer", _, _Association] = Nothing

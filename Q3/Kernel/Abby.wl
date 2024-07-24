@@ -104,7 +104,7 @@ OrderedPartitions[n_Integer, kk:{_Integer, _Integer}, ss:{___Integer}] :=
 
 theOrderedPartitions[pp:{___List}] :=
   ReverseSort @ Catenate[Permutations /@ pp]
-(* NOTE: ReverseSort is necessary for consistency with BosonBasis and BosonTransform. *)
+(* NOTE: ReverseSort is necessary for consistency with BosonBasis and BosonBasisChange. *)
 
 (**** <OrderedPartitions> ****)
 

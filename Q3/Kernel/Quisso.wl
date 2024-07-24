@@ -9,7 +9,7 @@ BeginPackage["Q3`"]
 
 { Rotation, EulerRotation, Phase };
 
-{ ControlledGate, CNOT, CX = CNOT, CZ, CY, Swap, iSwap,
+{ ControlledGate, CNOT, CX = CNOT, CZ, CY, SWAP, iSWAP,
   Toffoli, Fredkin, Deutsch };
 
 { ControlledPower, ActOn };
@@ -55,7 +55,7 @@ $symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
 
 AddElaborationPatterns[
   _QFT, _QBR, _Oracle,
-  _ControlledGate, _CZ, _CX, _CNOT, _Swap, _iSwap,
+  _ControlledGate, _CZ, _CX, _CNOT, _SWAP, _iSWAP,
   _Toffoli, _Fredkin, _Deutsch, _Oracle,
   _Phase, _Rotation, _EulerRotation,
   _Projector, _ProductState,
@@ -88,9 +88,9 @@ AddElaborationPatterns[
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raising|Lowering|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
 
 Qubit /:
-Let[Qubit, {ls__Symbol}, ___?OptionQ] := (
-  Let[NonCommutative, {ls}];
-  Scan[setQubit, {ls}];
+Let[Qubit, ss:{__Symbol}, ___?OptionQ] := (
+  Let[NonCommutative, ss];
+  Scan[setQubit, ss];
 )
 
 setQubit[x_Symbol] := (
@@ -181,12 +181,12 @@ setQubit[x_Symbol] := (
   Format[ x[j___, C[n_Integer?Positive]] ] := Interpretation[
     SpeciesBox[x, {j}, {2 Pi / HoldForm[Power[2, n]]}],
     x[j, C[n]]
-   ];
+  ];
   
   Format[ x[j___, -C[n_Integer?Positive]] ] := Interpretation[
     SpeciesBox[x, {j}, {-2 Pi / HoldForm[Power[2, n]]}],
     x[j, -C[n]]
-   ];
+  ];
   
   Format @ x[j___, 0] := Interpretation[SpeciesBox[x, {j}, {0}], x[j, 0]];
   Format @ x[j___, 1] := Interpretation[SpeciesBox[x, {j}, {"X"}], x[j, 1]];
@@ -206,8 +206,8 @@ setQubit[x_Symbol] := (
   Format @ x[j___, 11] := Interpretation[
     Subscript[Row @ {"(", Ket[1], Bra[1], ")"}, x[j, $]],
     x[j, 11]
-   ];
- )
+  ];
+)
 
 Missing["KeyAbsent", _Symbol?QubitQ[___, $]] = 0
 
@@ -671,8 +671,8 @@ thePauliForm[ss__?singleQubitGateQ, qq:{__?QubitQ}] := Module[
   CircleTimes @@ ReplacePart[
     Table["I", Length @ qq],
     Flatten[ Thread /@ Thread[kk -> Map[thePauliForm, {ss}]] ]
-   ]
- ]
+  ]
+]
 
 
 PauliForm::usage = "PauliForm[expr] rewrites expr in a more conventional form, where the Pauli operators are denoted by I, X, Y, and Z."
@@ -1133,79 +1133,79 @@ Multiply[pre___, Dyad[a_Association, b_Association], op:CZ[ss_List], post___] :=
 (**** </CZ> ****)
 
 
-(**** <Swap> ****)
+(**** <SWAP> ****)
 
-Swap::usage = "Swap[A, B] operates the Swap gate on the two qubits A and B."
+SWAP::usage = "SWAP[A, B] operates the SWAP gate on the two qubits A and B."
 
-SetAttributes[Swap, Listable]
+SetAttributes[SWAP, Listable]
 
-Swap[a_?QubitQ, b_?QubitQ] := Swap @@ FlavorNone @ {a, b} /;
+SWAP[a_?QubitQ, b_?QubitQ] := SWAP @@ FlavorNone @ {a, b} /;
   Not[FlavorNoneQ @ {a, b}]
 
-Swap[a_?QubitQ, b_?QubitQ] := Swap[b, a] /;
+SWAP[a_?QubitQ, b_?QubitQ] := SWAP[b, a] /;
   Not @ OrderedQ @ FlavorNone @ {a, b}
 
-Swap /:
-Dagger[ op_Swap ] = op
+SWAP /:
+Dagger[ op_SWAP ] = op
 
-Swap /:
-Matrix[op_Swap, rest___] := Matrix[Elaborate[op], rest]
+SWAP /:
+Matrix[op_SWAP, rest___] := Matrix[Elaborate[op], rest]
 
-Swap /:
-Elaborate @ Swap[x_?QubitQ, y_?QubitQ] := Module[
+SWAP /:
+Elaborate @ SWAP[x_?QubitQ, y_?QubitQ] := Module[
   { a = Most @ x,
     b = Most @ y },
   Garner[ (1 + a[1]**b[1] + a[2]**b[2] + a[3]**b[3]) / 2 ]
 ]
 
-Swap /:
-Expand @ Swap[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+SWAP /:
+Expand @ SWAP[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
   CNOT[s, t], CNOT[t, s], CNOT[s, t]
 ]
 
 
-Swap /:
-Multiply[pre___, Swap[s_?QubitQ, t_?QubitQ], Ket[a_Association]] :=
+SWAP /:
+Multiply[pre___, SWAP[s_?QubitQ, t_?QubitQ], Ket[a_Association]] :=
   Multiply[ pre,
     Ket @ KeySort @ Join[a, AssociationThread[{s, t} -> Lookup[a, {t, s}]]]
   ]
 
-Swap /:
-Multiply[in_Bra, op_Swap, post___] :=
+SWAP /:
+Multiply[in_Bra, op_SWAP, post___] :=
   Multiply[ Dagger[op ** Dagger[in]], post ]
 
-Swap /:
-Multiply[pre___, op:Swap[s_, t_], Dyad[a_Association, b_Association], post___] :=
+SWAP /:
+Multiply[pre___, op:SWAP[s_, t_], Dyad[a_Association, b_Association], post___] :=
   Multiply[pre, op ** Ket[a], Bra[b], post] /; ContainsAll[Keys @ a, {s, t}]
 
-Swap /:
-Multiply[pre___, Dyad[a_Association, b_Association], op:Swap[s_, t_], post___] :=
+SWAP /:
+Multiply[pre___, Dyad[a_Association, b_Association], op:SWAP[s_, t_], post___] :=
   Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, {s, t}]
 
-(**** </Swap> ****)
+(**** </SWAP> ****)
 
 
-(**** <iSwap> ****)
+(**** <iSWAP> ****)
 
-iSwap::usage = "iSwap[A, B] operates the iSwap gate on the two qubits A and B."
+iSWAP::usage = "iSWAP[A, B] operates the iSWAP gate on the two qubits A and B."
 
-SetAttributes[iSwap, Listable]
+SetAttributes[iSWAP, Listable]
 
-iSwap[a_?QubitQ, b_?QubitQ] := iSwap @@ FlavorNone @ {a, b} /;
+iSWAP[a_?QubitQ, b_?QubitQ] := iSWAP @@ FlavorNone @ {a, b} /;
   Not[FlavorNoneQ @ {a, b}]
 
-iSwap[a_?QubitQ, b_?QubitQ] := iSwap[b, a] /;
+iSWAP[a_?QubitQ, b_?QubitQ] := iSWAP[b, a] /;
   Not @ OrderedQ @ FlavorNone @ {a, b}
 
-iSwap /:
-Matrix[op_iSwap, rest___] := Matrix[Elaborate[op], rest]
+iSWAP /:
+Matrix[op_iSWAP, rest___] := Matrix[Elaborate[op], rest]
 
-iSwap /:
-Elaborate @ iSwap[a_?QubitQ, b_?QubitQ] :=
+iSWAP /:
+Elaborate @ iSWAP[a_?QubitQ, b_?QubitQ] :=
   Garner[ (1 + I*a[1]**b[1] + I*a[2]**b[2] + a[3]**b[3]) / 2 ]
 
-iSwap /:
-Multiply[pre___, iSwap[s_?QubitQ, t_?QubitQ], Ket[a_Association]] := With[
+iSWAP /:
+Multiply[pre___, iSWAP[s_?QubitQ, t_?QubitQ], Ket[a_Association]] := With[
   { ts = Lookup[a, {t, s}] },
   If[OddQ[Total @ ts], I, 1] *
   Multiply[ pre,
@@ -1213,12 +1213,12 @@ Multiply[pre___, iSwap[s_?QubitQ, t_?QubitQ], Ket[a_Association]] := With[
    ]
   ]
 
-iSwap /:
-Expand @ iSwap[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+iSWAP /:
+Expand @ iSWAP[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
   {s[7], t[7]}, s[6], CNOT[s, t], CNOT[t, s], t[6]
  ]
 
-(**** </iSwap> ****)
+(**** </iSWAP> ****)
 
 
 (**** <Toffoli> ****)
@@ -1254,7 +1254,7 @@ HoldPattern @ Matrix[op_Toffoli, rest___] := Matrix[Elaborate[op], rest]
 
 (**** <Fredkin> ****)
 
-Fredkin::usage = "Fredkin[a, {b, c}] represents the Fredkin gate, i.e., the Swap gate on b and c controlled by a."
+Fredkin::usage = "Fredkin[a, {b, c}] represents the Fredkin gate, i.e., the SWAP gate on b and c controlled by a."
 
 SyntaxInformation[Fredkin] = {
   "ArgumentsPattern" -> {_, _}
@@ -1269,7 +1269,7 @@ Dagger[ op_Fredkin ] := op
 
 Fredkin /:
 Elaborate @ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}] :=
-  Garner @ Elaborate[ a[10] + a[11] ** Swap[b, c] ]
+  Garner @ Elaborate[ a[10] + a[11] ** SWAP[b, c] ]
 
 (*
 Fredkin /:
@@ -2239,7 +2239,7 @@ Expand[op_QBR] = op (* fallback *)
 
 QBR /:
 Expand @ QBR[ss:{__?QubitQ}, ___] :=
-  QuantumCircuit @@ Table[ Swap[ss[[k]], ss[[-k]]], {k, Length[ss]/2} ]
+  QuantumCircuit @@ Table[ SWAP[ss[[k]], ss[[-k]]], {k, Length[ss]/2} ]
 
 
 QBR /:

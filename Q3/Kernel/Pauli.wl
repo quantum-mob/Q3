@@ -75,8 +75,7 @@ BeginPackage["Q3`"]
 
 { ArrayPermute };
 
-{ PartialTrace, PartialTranspose };
-{ ReducedMatrix, Reduced };
+{ PartialTrace, ReducedMatrix, Reduced };
 
 { PauliCoefficients, PauliSeries, PauliVector };
 
@@ -88,8 +87,8 @@ BeginPackage["Q3`"]
   FrobeniusProduct, FrobeniusNorm };
 
 { TraceNorm, TraceDistance, Fidelity, ClassicalFidelity };
-
-{ LogarithmicNegativity, Negativity, NormPT };
+{ PartialTranspose, PartialTransposeNorm,
+  Negativity, LogarithmicNegativity };
 
 { Purification, Snapping };
 
@@ -1039,13 +1038,7 @@ KetNorm[0] = 0
 
 KetNorm[z_?CommutativeQ * any_Ket] := Abs[z]
 
-KetNorm[expr_] := With[
-  { spc = Agents[expr] },
-  If[ Length[Garner @ expr] > Apply[Times, Dimension @ spc]/2 > Power[2, 3],
-    Norm @ Matrix[expr, spc],
-    Sqrt[Dagger[expr] ** expr]
-   ]
- ] /; Not @ FreeQ[expr, _Ket]
+KetNorm[expr_] := Norm[Matrix @ expr] /; Not @ FreeQ[expr, _Ket]
 
 
 KetNormalize::usage = "KetNormalize[expr] returns the normalized form of a ket expression expr.\nKetNormalize[expr, f] normalizes with respect to the norm function f."
@@ -3137,6 +3130,7 @@ CircleTimes[a_] := a (* See also Times[]. *)
 HoldPattern @ CircleTimes[args__] := Garner @ ReleaseHold[
   Distribute @ Hold[CircleTimes][args]
 ] /; DistributableQ[{args}]
+(* NOTE: The Inactive-Activate pair may also be used, but is slower. *)
 
 CircleTimes[pre___, z_?CommutativeQ op_, post___] :=
   z * CircleTimes[pre, op, post]
@@ -3972,7 +3966,7 @@ PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
   jj = Flatten @ Map[FirstPosition[ss, #]&, rr];
   mm = PartialTranspose[Matrix[expr, ss], dd, jj];
   ExpressionFor[mm, ss]
- ]
+]
 
 (**** </PartialTranspose> ****)
 
@@ -3984,20 +3978,20 @@ Negativity::usage = "Negativity[rho, spec] returns the negativity of quantum sta
 Negativity::norm = "`` is not properly normalized: trace = ``."
 
 Negativity[vec_?VectorQ, spec__] := (
-  If[ Rationalize[Norm @ vec] != 1,
+  If[ Not @ ZeroQ[Norm[vec] - 1],
     Message[Negativity::norm, vec, Rationalize @ Norm @ vec]
-   ];
-  (NormPT[vec, spec] - 1) / 2
- )
+  ];
+  (PartialTransposeNorm[vec, spec] - 1) / 2
+)
 
 Negativity[mat_?MatrixQ, spec__] := (
-  If[ Rationalize[Tr @ mat] != 1,
+  If[ Not @ ZeroQ[Tr[mat] - 1],
     Message[Negativity::norm, mat, Rationalize @ Tr @ mat]
-   ];
-  (NormPT[mat, spec] - 1) / 2
- )
+  ];
+  (PartialTransposeNorm[mat, spec] - 1) / 2
+)
 
-Negativity[rho_, spec_] := (NormPT[rho, spec] - 1) / 2
+Negativity[rho_, spec_] := (PartialTransposeNorm[rho, spec] - 1) / 2
 
 
 Negativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
@@ -4027,21 +4021,35 @@ LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the log
 
 LogarithmicNegativity::norm = "`` is not properly normalized: trace = ``."
 
-LogarithmicNegativity[vec_?VectorQ, spec__] := (
+LogarithmicNegativity[vec_/;VectorQ[vec, NumericQ], spec__] := (
   If[ Not @ ZeroQ[Norm[vec] - 1],
-    Message[LogarithmicNegativity::norm, vec, Rationalize @ Norm @ vec]
+    Message[LogarithmicNegativity::norm, vec, Norm @ vec]
   ];
-  Log[2, NormPT[vec, spec]]
+  Log[2, PartialTransposeNorm[vec, spec]]
 )
 
-LogarithmicNegativity[mat_?MatrixQ, spec__] := (
+LogarithmicNegativity[mat_/;MatrixQ[mat, NumericQ], spec__] := (
   If[ Not @ ZeroQ[Tr[mat] - 1],
-    Message[LogarithmicNegativity::norm, mat, Rationalize @ Tr @ mat]
+    Message[LogarithmicNegativity::norm, mat,  Tr @ mat]
   ];
-  Log[2, NormPT[mat, spec]]
+  Log[2, PartialTransposeNorm[mat, spec]]
 )
 
-LogarithmicNegativity[rho_, spec_] := Log[2, NormPT[rho, spec]]
+(* LogarithmicNegativity[rho_, spec_] := Log[2, PartialTransposeNorm[rho, spec]] *)
+(* NOTE: Too dangerous! *)
+
+
+LogarithmicNegativity[rho_, b_?SpeciesQ] :=
+  LogarithmicNegativity[rho, b @ {$}]
+
+LogarithmicNegativity[rho_, bb:{__?SpeciesQ}] := Module[
+  { all = Agents @ {rho, FlavorNone @ bb},
+    mat, pos },
+  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
+
+  mat = Matrix[rho, all];
+  LogarithmicNegativity[mat, Dimension @ all, pos]
+]
 
 
 LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
@@ -4065,22 +4073,22 @@ LogarithmicNegativity[rho_, S_?SpeciesQ, T_?SpeciesQ] :=
 (**** </LogarithmicNegativity> ****)
 
 
-(**** <NormPT> ****)
+(**** <PartialTransposeNorm> ****)
 
-NormPT::usage = "NormPT[rho, spec] returns the trace norm of the partial transpose of rho, where the partial transposition is specified by spec (see PartialTranspose)."
+PartialTransposeNorm::usage = "PartialTransposeNorm[rho, spec] returns the trace norm of the partial transpose of rho, where the partial transposition is specified by spec (see PartialTranspose)."
 
-NormPT::traceless = "`` is traceless."
+PartialTransposeNorm::traceless = "`` is traceless."
 
-NormPT[vec_?VectorQ, spec__] := TraceNorm @ PartialTranspose[vec, spec]
+PartialTransposeNorm[vec_?VectorQ, spec__] := TraceNorm @ PartialTranspose[vec, spec]
 
-NormPT[mat_?MatrixQ, spec__] := TraceNorm @ PartialTranspose[mat, spec]
+PartialTransposeNorm[mat_?MatrixQ, spec__] := TraceNorm @ PartialTranspose[mat, spec]
 
 
-NormPT[rho_, jj:{__Integer}] := NormPT[Matrix @ rho, jj] /;
+PartialTransposeNorm[rho_, jj:{__Integer}] := PartialTransposeNorm[Matrix @ rho, jj] /;
   Or[fPauliKetQ[rho], Not @ FreeQ[expr, _Pauli]]
 
-
-NormPT[rho_, qq:{__?SpeciesQ}] := Module[
+(* 
+PartialTransposeNorm[rho_, qq:{__?SpeciesQ}] := Module[
   { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
     ss = Agents[rho],
     all, pos, mat, trm },
@@ -4089,37 +4097,39 @@ NormPT[rho_, qq:{__?SpeciesQ}] := Module[
   mat = Matrix[rho, all];
 
   trm = If[MatrixQ[mat], Tr[mat], Norm[mat]^2];
-  If[Chop[trm] == 0, Message[NormPT::traceless, rho]; Return[1]];
+  If[Chop[trm] == 0, Message[PartialTransposeNorm::traceless, rho]; Return[1]];
   
-  NormPT[mat, Dimension @ all, pos] / trm
-]
+  PartialTransposeNorm[mat, Dimension @ all, pos] / trm
+] 
+ *)
+(* NOTE: Too dangerous, and removed. *)
 (* NOTE: rho is assumed to be properly normalized; and hence the factor ofr
    1/trm in the code. *)
 
 
-NormPT[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
+PartialTransposeNorm[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { all, pos, mat },
   all = Union @ FlavorNone @ Join[aa, bb];
   pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
 
   mat = Matrix[rho, all];
-  NormPT[mat, Dimension @ all, pos]
- ]
-(* NOTE 1: For PartialTransposition, argument aa is not necessary. However, it
+  PartialTransposeNorm[mat, Dimension @ all, pos]
+]
+(* NOTE 1: For PartialTranspose, argument aa is not necessary. However, it
    is necessary for proper normalization. For example, consider rho = I x I /
    4. Without aa, it may be regarded as I / 4, which leads to a wrong value of
    the logarithmic negativity. *)
 (* NOTE 2: rho may refer to a pure state; i.e., mat may be a vector. *)
 
-NormPT[rho_, S_?SpeciesQ] := NormPT[rho, {S}]
+PartialTransposeNorm[rho_, S_?SpeciesQ] := PartialTransposeNorm[rho, {S}]
 
-NormPT[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] := NormPT[rho, {S}, bb]
+PartialTransposeNorm[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] := PartialTransposeNorm[rho, {S}, bb]
 
-NormPT[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] := NormPT[rho, aa, {T}]
+PartialTransposeNorm[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] := PartialTransposeNorm[rho, aa, {T}]
 
-NormPT[rho_, S_?SpeciesQ, T_?SpeciesQ] := NormPT[rho, {S}, {T}]
+PartialTransposeNorm[rho_, S_?SpeciesQ, T_?SpeciesQ] := PartialTransposeNorm[rho, {S}, {T}]
 
-(**** </NormPT> ****)
+(**** </PartialTransposeNorm> ****)
 
 
 (**** <PartialTrace> ****)
@@ -4628,11 +4638,10 @@ TraceNorm[m_/;MatrixQ[m, NumericQ]] := Total @ SingularValueList[m]
 TraceNorm[v_/;VectorQ[v, NumericQ]] := Norm[v]^2
 
 
-TraceNorm[rho_] := TraceNorm @ Matrix[rho]
+(* TraceNorm[rho:Except[_?MatrixQ | _?VectorQ]] := TraceNorm @ Matrix[rho] *)
+(* NOTE: Still too dangerous! *)
 
-TraceNorm[rho_, q_?SpeciesQ] := TraceNorm[rho, {q}]
-
-TraceNorm[rho_, qq:{__?SpeciesQ}] := TraceNorm @ Matrix[rho, qq]
+TraceNorm[rho_, spec:(_?SpeciesQ | {__?SpeciesQ})] := TraceNorm @ Matrix[rho, spec]
 
 
 TraceDistance::usage = "TraceDistance[a, b] returns the trace distance of the two square matrices a and b, which equals to TraceNorm[a - b]."
@@ -4645,9 +4654,10 @@ TraceDistance[a_?MatrixQ, b_?VectorQ] := TraceNorm[a - Dyad[b, b]]
 
 TraceDistance[a_?VectorQ, b_?VectorQ] := TraceNorm[Dyad[a, a] - Dyad[b, b]]
 
-TraceDistance[a_, b_] := TraceDistance[a, b, Agents @ {a, b}]
+(* TraceDistance[a_, b_] := TraceDistance[a, b, Agents @ {a, b}] *)
+(* NOTE: Too dangerous! *)
 
-TraceDistance[a_, b_, ss:{___?SpeciesQ}] :=
+TraceDistance[a_, b_, ss:(_?SpeciesQ | {___?SpeciesQ})] :=
   TraceDistance[Matrix[a, ss], Matrix[b, ss]]
 
 (**** </TraceNorm> *****)
@@ -4657,7 +4667,7 @@ TraceDistance[a_, b_, ss:{___?SpeciesQ}] :=
 
 Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states \[Rho] and \[Sigma]. \[Rho] and \[Sigma] can take a vector (pure state), matrix (mixed state), ket expression (pure state), or opertor expression (mixed state).\nSee also ClassicalFidelity."
 
-Fidelity[a_?MatrixQ, b_?MatrixQ] := With[
+Fidelity[a_/;MatrixQ[a, NumericQ], b_/;MatrixQ[b, NumericQ]] := With[
   { c = MatrixPower[a, 1/2] },
   Tr @ MatrixPower[c . b . c, 1/2]
 ]
@@ -4669,9 +4679,17 @@ Fidelity[m_?MatrixQ, v_?VectorQ] := Fidelity[v, m]
 Fidelity[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a] . b]
 
 
+Fidelity[rho_, sgm_, ss:(_?SpeciesQ|{___?SpeciesQ})] :=
+  Fidelity[Matrix[rho, ss], Matrix[sgm, ss]]
+
+
+(* 
 Fidelity[rho_, sgm_] := Fidelity @@ Matrix @ {rho, sgm} /;
   And[FreeQ[rho, _Ket], FreeQ[sgm, _Ket]]
+ *)
+(* NOTE: Too dangerous! *)
 
+(*  
 Fidelity[vec_, rho_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
   And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
 
@@ -4680,6 +4698,8 @@ Fidelity[rho_, vec_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
 
 Fidelity[vec_, wec_] := Abs[Dagger[vec] ** wec] /;
   And[Not @ FreeQ[vec, _Ket], Not @ FreeQ[wec, _Ket]]
+*)
+(* NOTE: Not big benefits. *)
 
 
 ClassicalFidelity::usage = "ClassicalFidelity[{p1,p2,\[Ellipsis]}, {q1,q2,\[Ellipsis]}] returns the classical fidelity between two probability distributions {p1,p2,\[Ellipsis]} and {q1,q2,\[Ellipsis]}.\nSee also Fidelity."

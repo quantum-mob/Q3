@@ -5,6 +5,7 @@ Unprotect["`*"];
 ClearAll["`*"];
 
 { PlaybookDeploy };
+{ PlaybookCheckIn, PlaybookCheckOut };
   
 (* See also MakeContents from AuthorTools`. *)
 { PlaybookContents,
@@ -119,7 +120,7 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   ];
 
   Print["\tSetting the stylesheet to \"PlaybookNub.nb\" for printing (if at all) ..."];
-  SetOptions[nb, StyleDefinitions -> "PlaybookNub.nb"]; (* for printing if at all *)
+  SetOptions[nb, StyleDefinitions -> "PlaybookNub.nb"];
   
   Print["\tSetting the banner as \"", $PlaybookBannerTitle, "\" for printing (if at all) ..."];
   SetBanner[nb, $PlaybookBannerTitle, "Deployed" -> True];
@@ -144,6 +145,30 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
 ]
 
 (**** </PlaybookDeploy> ****)
+
+
+(**** <PlaybookCheckIn> ****)
+
+PlaybookCheckIn::usage = "PlaybookCheckIn[] swiches the current notebook to the editting mode."
+
+PlaybookCheckIn[] := With[
+  { nb = EvaluationNotebook[] },
+  NotebookDelete[EvaluationCell[]];
+  SetOptions[nb, StyleDefinitions -> "Playbook.nb", Saveable -> True];
+]
+
+
+PlaybookCheckOut::usage = "PlaybookCheckOut[] swiches the current notebook to the deployed mode."
+
+PlaybookCheckOut[] := With[
+  { nb = EvaluationNotebook[] },
+  NotebookDelete[EvaluationCell[]];
+  SetOptions[nb, StyleDefinitions -> "PlaybookNub.nb", Saveable -> False];
+  NotebookSave[nb];
+]
+
+(**** </PlaybookCheckIn> ****)
+
 
 
 (**** <PlaybookPrint> ****)
@@ -230,14 +255,16 @@ PlaybookTrim[nb_NotebookObject] := (
 PlaybookTrim[nb_NotebookObject, cell_CellObject] := With[
   { cc = (
       SelectionMove[cell, All, CellGroup, AutoScroll -> False];
-      SelectedCells[nb] ) },
+      SelectedCells[nb]
+    ) 
+  },
   If[ First[CurrentValue[First @ cc, "CellStyle"]] == "Section",
     Print["\tDeleting ", Length @ cc, " cell(s) in Epilog ..."];
     NotebookDelete[cc],
     Print["\tDeleting the Epilog section head ..."];
     NotebookDelete[cell]
-   ]
- ]
+  ]
+]
 
 (**** </PlaybookTrim> ****)
 
@@ -354,27 +381,27 @@ PlaybookBanner[title_String:$PlaybookBannerTitle, opts:OptionsPattern[{PlaybookB
   If[ OptionValue["Deployed"],
     (* for readers *)
     Module[
-      { logo, grid },
+      { logo, data },
       logo = Thumbnail[
         Import[PacletObject["Q3"]["AssetLocation", "Q3 Emblem Medium"]],
-        36
+        Medium
       ];
-      grid = Grid @ {{title, Pane[logo, Full, Alignment -> Right]}};
-      Cell[
-        BoxData[ToBoxes @ grid], "DockedCell",
+      data = RowBox @ {ToBoxes @ logo, "|", "  ", title};
+      Cell[ BoxData[data], "DockedCell",
         FilterRules[{opts}, Options[Cell]],
         CellFrameMargins -> {{22, 0}, {0, 0}},
         Background -> GrayLevel[0.9],
-        FontSize -> 12
+        FontVariations -> {"CapsType" -> "SmallCaps"},
+        FontSize -> 14
       ]
     ],
     (* for authors *)
-    Cell[
-      title, "DockedCell",
+    Cell[ title, "DockedCell",
       FilterRules[{opts}, Options[Cell]],
-      CellFrameMargins -> {{22, 8}, {8, 8}},
+      CellFrameMargins -> {{22, 8}, {12, 12}},
       Background -> GrayLevel[0.9],
-      FontSize -> 12
+      FontVariations -> {"CapsType" -> "SmallCaps"},
+      FontSize -> 14
     ]
   ]
 

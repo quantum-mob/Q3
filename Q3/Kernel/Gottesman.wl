@@ -963,7 +963,7 @@ FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
       One[2]
      ];
     new = Mod[mat . cyc, 2];
-    opf = Swap @@ Part[ss, {1, kk}];
+    opf = SWAP @@ Part[ss, {1, kk}];
     Return @ Elaborate[opf ** FromGottesmanMatrix[new, ss]]
    ];
 
@@ -1190,7 +1190,7 @@ CliffordFactor[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
       One[2]
      ];
     new = Mod[mat . cyc, 2];
-    opf = Swap @@ Part[ss, {1, kk}];
+    opf = SWAP @@ Part[ss, {1, kk}];
     Return @ Join[{opf}, CliffordFactor[new, ss]]
    ];
 

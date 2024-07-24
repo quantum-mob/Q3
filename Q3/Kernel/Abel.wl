@@ -316,6 +316,7 @@ setSpecies[x_Symbol] := (
 
   x[k___] := Flatten @ ReleaseHold @ Distribute[Hold[x][k], List] /; 
     AnyTrue[{k}, MatchQ[_List]];
+  (* NOTE: Flavor indices in {k} cannot have Hold or HoldForm; for the, use the Inactive-Activate pair, instead. Hold-ReleaseHold pair is faster than Inactive-Activate pair. *)
   (* NOTE: Flatten is required for c[{1,2,...}, All] for spinful boson or
      fermion c and for S[{1,2,...}, All] for qubit S, etc. *)
   (* NOTE: Distribute[x[j], List] will hit the recursion limit. *)
@@ -862,14 +863,14 @@ Garner::usage = "Garner[expr] collects together terms involving the same species
 
 SetAttributes[Garner, Listable]
 
-Garner[expr_, tool_:Simplify] := Module[
+Garner[expr_, post_:Simplify] := Module[
   { new, var, pat },
   new = KetRegulate @ Expand[expr, Except[_ControlledGate|_QuantumCircuit]];
   pat = Flatten[Alternatives @@ $GarnerPatterns];
   var = theGarner[ new /. {op:$GarnerPatterns["Heads"] -> Hold[op]} ];
   var = Union @ Cases[ReleaseHold @ var, pat];
-  Collect[new, var, tool]
- ]
+  Collect[new, var, post]
+]
 (* NOTE: Cases[{expr}, ..., Infinity] may pick up spurious variables. *)
 
 
@@ -1029,6 +1030,14 @@ HoldPattern @
 HoldPattern @ Multiply[args__] := Garner[
   ReleaseHold @ Distribute[ Hold[Multiply][args] ]
 ] /; DistributableQ[{args}]
+(*  NOTE: If some operators in {args} such as Observation (previous version) themselves involve Hold or HoldForm, ReleaseHold disturb these operators. However, I keep this method because this is faaster than, e.g., the Inactive-Activate pair method or manual wrapper method. *)
+
+(*
+HoldPattern @ Multiply[args__] := Garner[
+  Activate @ Distribute[ Inactive[Multiply][args] ]
+] /; DistributableQ[{args}]
+ *)
+(*  NOTE: This method is slower than the Hold and RealseHold pair mehtod. *)
 
 HoldPattern @ Multiply[pre___, z_?CommutativeQ, post___] :=
   Garner[ z * Multiply[pre, post] ];
@@ -1372,26 +1381,26 @@ NonCommutativeQ[ Observation[spec_] ] := Positive @ Length @
   Cases[{spec}, _Symbol?SpeciesQ[___] | _Symbol?SpeciesQ, Infinity]
 
 Observation /:
-HoldPattern @ Dagger[op_Observation] := op
+Dagger[op_Observation] := op
 
 Observation /:
-HoldPattern @ Multiply[pre___, op_Observation, v_Ket, post___] :=
+Multiply[pre___, op_Observation, v_Ket, post___] :=
   Multiply[pre, op[v], post]
 
 Observation /:
-HoldPattern @ Matrix[Observation[spec_], ss:{__?SpeciesQ}] := Module[
+Matrix[Observation[spec_], ss:{__?SpeciesQ}] := Module[
   { bs = Basis[ss],
     vv },
   vv = ObservationValue[spec][bs];
   SparseArray @ DiagonalMatrix[vv]
- ]
+]
 
 Observation /:
-HoldPattern @ Agents[Observation[spec_]] := Select[
+Agents[Observation[spec_]] := Select[
   Union @ FlavorNone @ Flatten @
     Cases[{spec}, _Symbol?SpeciesQ | _?SpeciesQ[___], Infinity],
   AgentQ
- ]
+]
 (* NOTE: Since spec may include Hold[...] or HoldForm[...], usual
    Agents would not work. *)
 
@@ -1432,14 +1441,14 @@ ObservationValue[z_?CommutativeQ expr_, spec_] :=
 ObservationValue[expr_Plus, spec_] := With[
   { vv = ObservationValue[Cases[expr, _Ket, Infinity], spec] },
   If[Equal @@ vv, First @ vv, Indefinite @@ Union[vv]]
- ] /; Not @ FreeQ[expr, _Ket]
+] /; Not @ FreeQ[expr, _Ket]
 
-ObservationValue[Ket[a_Association], spec_] := ReleaseHold[
+ObservationValue[Ket[a_Association], spec_] := Activate[
   spec /. {
     S_?SpeciesQ[j___] :> Lookup[a, S[j,$]],
     S_Symbol?SpeciesQ :> Lookup[a, S[$]]
-   }
- ]
+  }
+]
 (* NOTE: Remember that the spec may involve Hold or HoldForm. *)
 
 
@@ -1451,7 +1460,11 @@ Indefinite::usage = "Indefinite[val$1,val$2,\[Ellipsis]] represents an indefinit
 (**** <Occupation> ****)
 (* It is a simple application of Observation. *)
 
-Occupation::usage = "Occupation[{s1,s2,\[Ellipsis]},k] represents the occupation operator of species {s1,s2,\[Ellipsis]} in the level k (the logical state Ket[k]).\nOccupation is a simple application of Observation."
+Occupation::usage = "Occupation[{s1,s2,\[Ellipsis]},k] represents the occupation operator of species {s1,s2,\[Ellipsis]} in the computational basis state \[LeftBracketingBar]k\[RightAngleBracket].\nOccupation is a simple application of Observation."
+
+SyntaxInformation[Occupation] = {
+  "ArgumentsPattern" -> {_, _}
+ }
 
 Occupation[{}, _] = 0
 
@@ -1460,7 +1473,7 @@ Occupation[ss:{__?SpeciesQ}, k_] :=
   Not[FlavorNoneQ @ ss]
 
 Occupation[ss:{__?SpeciesQ}, k_] :=
-  Observation[HoldForm @ Count[ss, k]] /;
+  Observation[Inactive[Count][ss, k]] /;
   And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]]
 
 Occupation /:
@@ -1473,10 +1486,6 @@ Occupation /:
 HoldPattern @ NonCommutativeSpecies[Occupation[ss:{__?SpeciesQ}, _]] :=
   NonCommutativeSpecies[ss]
 
-SyntaxInformation[Occupation] = {
-  "ArgumentsPattern" -> {_, _}
- }
-
 
 OccupationValue::usage = "OccupationValue[{s1,s2,\[Ellipsis]},k] returns the occupation number of species {s1,s2,\[Ellipsis]} in the level k (logical state Ket[k]).\nOccupationValue is a simple application of ObservationValue."
 
@@ -1485,7 +1494,7 @@ OccupationValue[ss:{__?SpeciesQ}, val_][expr_] :=
   And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]]
 
 OccupationValue[expr_, ss:{__?SpeciesQ}, val_] :=
-  ObservationValue[expr, HoldForm @ Count[ss, val]] /;
+  ObservationValue[expr, Inactive[Count][ss, val]] /;
   And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]]
 
 (**** </Occupation> ****)

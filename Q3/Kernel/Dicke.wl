@@ -15,7 +15,7 @@ DickeBasis[ss:(_?QubitQ | _?QuditQ | _?BosonQ | {(_?QubitQ | _?QuditQ | _?BosonQ
       m, n },
     m = Max[Bottom /@ bb];
     n = Min[Top /@ bb];
-    Flatten @ Outer[CircleTimes, Basis @ Supplement[Flatten @ {ss}, bb], BosonBasis[bb, {m, n}]]
+    Flatten @ Outer[CircleTimes, Basis @ Supplement[Flatten @ {ss}, bb], Catenate @ BosonBasis[bb, {m, n}]]
   ]
 
 DickeBasis[ss:(_?QubitQ | _?QuditQ | _?BosonQ | {(_?QubitQ | _?QuditQ | _?BosonQ)..}).., n_Integer] :=
@@ -23,13 +23,13 @@ DickeBasis[ss:(_?QubitQ | _?QuditQ | _?BosonQ | {(_?QubitQ | _?QuditQ | _?BosonQ
     { bb = Cases[Flatten @ {ss}, _?BosonQ],
       m },
     m = Max[Bottom /@ bb];
-    Flatten @ Outer[CircleTimes, Basis @ Supplement[Flatten @ {ss}, bb], BosonBasis[bb, {m, n}]]
+    Flatten @ Outer[CircleTimes, Basis @ Supplement[Flatten @ {ss}, bb], Catenate @ BosonBasis[bb, {m, n}]]
   ]
 
 DickeBasis[ss:(_?QubitQ | _?QuditQ | _?BosonQ | {(_?QubitQ | _?QuditQ | _?BosonQ)..}).., {m_Integer, n_Integer}] :=
   With[
     { bb = Cases[Flatten @ {ss}, _?BosonQ] },
-    Flatten @ Outer[CircleTimes, Basis @ Supplement[Flatten @ {ss}, bb], BosonBasis[bb, {m, n}]]
+    Flatten @ Outer[CircleTimes, Basis @ Supplement[Flatten @ {ss}, bb], Catenate @ BosonBasis[bb, {m, n}]]
   ]
 
 (**** </DickeBasis> ****)

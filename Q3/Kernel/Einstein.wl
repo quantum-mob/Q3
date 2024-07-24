@@ -343,11 +343,11 @@ QuissoAddZ[args__] := (
   QubitAddZ[args]
 )
 
-SWAP::usage = "SWAP has been renamed Swap."
+Swap::usage = "Swap has been renamed SWAP."
 
-SWAP[args__] := (
-  Message[Q3General::renamed, SWAP, Swap];
-  Swap[args]
+Swap[args__] := (
+  Message[Q3General::renamed, Swap, SWAP];
+  SWAP[args]
 )
 
 FockFourier::usage = "FockFourier is now obsolete. Use TransformByFourier instead."

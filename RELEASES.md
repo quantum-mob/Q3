@@ -3,8 +3,11 @@
 ## 3.5.1
 
 - Big performance improvement of BosonBasis and FermionBasis.
-- New symbols: RandomOrthogonal, BosonTransform, OrderedPartitions.
+- New symbols: RandomOrthogonal, BosonBasisChange, OrderedPartitions.
+- FermionBasis and BosonBasis return an association (instead of a simple list).
 - PlaybookTools updated.
+- The syntax of input arguments of TraceNorm, TraceDistance, Fidelity has been slighly changed, and requires more strict forms.
+- Swap is renamed SWAP back at the request of many users.
 
 ## 3.5.0
 
