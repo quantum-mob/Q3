@@ -84,7 +84,7 @@ BeginPackage["Q3`"]
 { SchmidtDecomposition, SchmidtForm };
 
 { HilbertSchmidtProduct, HilbertSchmidtNorm, HilbertSchmidtDistance,
-  FrobeniusProduct, FrobeniusNorm };
+  FrobeniusProduct, FrobeniusNorm, FrobeniusDistance };
 
 { TraceNorm, TraceDistance, Fidelity, ClassicalFidelity };
 { PartialTranspose, PartialTransposeNorm,
@@ -2002,9 +2002,9 @@ BlochSphere[primitives_, opts___?OptionQ] := Block[ (* Block NOT Module *)
     Sequence @@ FilterRules[
       Join[{opts}, Options @ BlochSphere],
       Options @ Graphics3D
-     ]
-   ]
- ]
+    ]
+  ]
+]
 
 theBlochSphere[opts___?OptionQ] := Module[
   { dd },
@@ -2015,14 +2015,15 @@ theBlochSphere[opts___?OptionQ] := Module[
         1.1 {{-1,0,0}, {1,0,0}},
         1.1 {{0,-1,0}, {0,1,0}},
         1.1 {{0,0,-1}, {0,0,1}}
-       },
+      },
       Line @ {
         Table[{0, Cos[t Pi], Sin[t Pi]}, {t, 0, 2, 0.01}],
         Table[{Cos[t Pi], 0, Sin[t Pi]}, {t, 0, 2, 0.01}],
-        Table[{Cos[t Pi], Sin[t Pi], 0}, {t, 0, 2, 0.01}] }
-     }
-   }
- ]
+        Table[{Cos[t Pi], Sin[t Pi], 0}, {t, 0, 2, 0.01}]
+      }
+    }
+  }
+]
 
 (**** </BlochSphere> ****)
 
@@ -2903,8 +2904,9 @@ Format[ op:Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] ] :=
   Interpretation[
     DisplayForm @ RowBox @ { Exp,
       RowBox @ {"(", -I * (phi/2) * Dot[S @ All, Normalize @ v], ")"}
-     },
-    op ]
+    },
+    op 
+  ]
 
 
 Options[Rotation] = { "Label" -> Automatic }
@@ -2912,7 +2914,7 @@ Options[Rotation] = { "Label" -> Automatic }
 Rotation[phi_, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] := (
   Message[Rotation::axis, S];
   Rotation[0, {0, 0, 1}, S[$], opts]
- ) /; Not @ MemberQ[{1, 2, 3}, FlavorLast @ S]
+) /; Not @ MemberQ[{1, 2, 3}, FlavorLast @ S]
 
 Rotation[aa_List, qq:{(_?SpinQ|_?QubitQ)..}, rest___] :=
   MapThread[Rotation[#1, #2, rest]&, {aa, qq}]
@@ -3971,120 +3973,17 @@ PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
 (**** </PartialTranspose> ****)
 
 
-(**** <Negativity> ****)
-
-Negativity::usage = "Negativity[rho, spec] returns the negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
-
-Negativity::norm = "`` is not properly normalized: trace = ``."
-
-Negativity[vec_?VectorQ, spec__] := (
-  If[ Not @ ZeroQ[Norm[vec] - 1],
-    Message[Negativity::norm, vec, Rationalize @ Norm @ vec]
-  ];
-  (PartialTransposeNorm[vec, spec] - 1) / 2
-)
-
-Negativity[mat_?MatrixQ, spec__] := (
-  If[ Not @ ZeroQ[Tr[mat] - 1],
-    Message[Negativity::norm, mat, Rationalize @ Tr @ mat]
-  ];
-  (PartialTransposeNorm[mat, spec] - 1) / 2
-)
-
-Negativity[rho_, spec_] := (PartialTransposeNorm[rho, spec] - 1) / 2
-
-
-Negativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
-  { all, mat, pos },
-  all = Union @ FlavorNone @ Join[aa, bb];
-  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
-
-  mat = Matrix[rho, all];
-  Negativity[mat, Dimension @ all, pos]
- ]
-
-Negativity[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] :=
-  Negativity[rho, {S}, bb]
-
-Negativity[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] :=
-  Negativity[rho, aa, {T}]
-
-Negativity[rho_, S_?SpeciesQ, T_?SpeciesQ] :=
-  Negativity[rho, {S}, {T}]
-
-(**** </Negativity> ****)
-
-
-(**** <LogarithmicNegativity> ****)
-
-LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the logarithmic negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
-
-LogarithmicNegativity::norm = "`` is not properly normalized: trace = ``."
-
-LogarithmicNegativity[vec_/;VectorQ[vec, NumericQ], spec__] := (
-  If[ Not @ ZeroQ[Norm[vec] - 1],
-    Message[LogarithmicNegativity::norm, vec, Norm @ vec]
-  ];
-  Log[2, PartialTransposeNorm[vec, spec]]
-)
-
-LogarithmicNegativity[mat_/;MatrixQ[mat, NumericQ], spec__] := (
-  If[ Not @ ZeroQ[Tr[mat] - 1],
-    Message[LogarithmicNegativity::norm, mat,  Tr @ mat]
-  ];
-  Log[2, PartialTransposeNorm[mat, spec]]
-)
-
-(* LogarithmicNegativity[rho_, spec_] := Log[2, PartialTransposeNorm[rho, spec]] *)
-(* NOTE: Too dangerous! *)
-
-
-LogarithmicNegativity[rho_, b_?SpeciesQ] :=
-  LogarithmicNegativity[rho, b @ {$}]
-
-LogarithmicNegativity[rho_, bb:{__?SpeciesQ}] := Module[
-  { all = Agents @ {rho, FlavorNone @ bb},
-    mat, pos },
-  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
-
-  mat = Matrix[rho, all];
-  LogarithmicNegativity[mat, Dimension @ all, pos]
-]
-
-
-LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
-  { all, mat, pos },
-  all = Union @ FlavorNone @ Join[aa, bb];
-  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
-
-  mat = Matrix[rho, all];
-  LogarithmicNegativity[mat, Dimension @ all, pos]
-]
-
-LogarithmicNegativity[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] :=
-  LogarithmicNegativity[rho, {S}, bb]
-
-LogarithmicNegativity[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] :=
-  LogarithmicNegativity[rho, aa, {T}]
-
-LogarithmicNegativity[rho_, S_?SpeciesQ, T_?SpeciesQ] :=
-  LogarithmicNegativity[rho, {S}, {T}]
-
-(**** </LogarithmicNegativity> ****)
-
-
 (**** <PartialTransposeNorm> ****)
 
 PartialTransposeNorm::usage = "PartialTransposeNorm[rho, spec] returns the trace norm of the partial transpose of rho, where the partial transposition is specified by spec (see PartialTranspose)."
-
-PartialTransposeNorm::traceless = "`` is traceless."
 
 PartialTransposeNorm[vec_?VectorQ, spec__] := TraceNorm @ PartialTranspose[vec, spec]
 
 PartialTransposeNorm[mat_?MatrixQ, spec__] := TraceNorm @ PartialTranspose[mat, spec]
 
 
-PartialTransposeNorm[rho_, jj:{__Integer}] := PartialTransposeNorm[Matrix @ rho, jj] /;
+PartialTransposeNorm[rho_, jj:{__Integer}] :=
+  PartialTransposeNorm[Matrix @ rho, jj] /;
   Or[fPauliKetQ[rho], Not @ FreeQ[expr, _Pauli]]
 
 (* 
@@ -4111,7 +4010,6 @@ PartialTransposeNorm[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { all, pos, mat },
   all = Union @ FlavorNone @ Join[aa, bb];
   pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
-
   mat = Matrix[rho, all];
   PartialTransposeNorm[mat, Dimension @ all, pos]
 ]
@@ -4121,13 +4019,24 @@ PartialTransposeNorm[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
    the logarithmic negativity. *)
 (* NOTE 2: rho may refer to a pure state; i.e., mat may be a vector. *)
 
-PartialTransposeNorm[rho_, S_?SpeciesQ] := PartialTransposeNorm[rho, {S}]
-
 PartialTransposeNorm[rho_, S_?SpeciesQ, bb:{__?SpeciesQ}] := PartialTransposeNorm[rho, {S}, bb]
 
 PartialTransposeNorm[rho_, aa:{__?SpeciesQ}, T_?SpeciesQ] := PartialTransposeNorm[rho, aa, {T}]
 
 PartialTransposeNorm[rho_, S_?SpeciesQ, T_?SpeciesQ] := PartialTransposeNorm[rho, {S}, {T}]
+
+(* PartialTransposeNorm[rho_, S_?SpeciesQ] := PartialTransposeNorm[rho, {S}] *)
+(* NOTE: Too dangerous! *)
+
+
+Negativity::usage = "Negativity[rho, spec] returns the negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
+
+Negativity[spec__] := (PartialTransposeNorm[spec] - 1) / 2
+
+
+LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the logarithmic negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
+
+LogarithmicNegativity[spec__] := Log[2, PartialTransposeNorm[spec]]
 
 (**** </PartialTransposeNorm> ****)
 
@@ -4565,20 +4474,20 @@ FrobeniusNorm = HilbertSchmidtNorm
 
 HilbertSchmidtNorm::usage = "HilbertSchmidtNorm[a] gives the Hilbert-Schmidt norm (i.e., Frobenius norm) of a complex matrix a.\nIf a is a vector, it is regarded as Dyad[a,a].\nSee also TraceNorm."
 
-Format[ HilbertSchmidtNorm[a_] ] :=
-  Interpretation[Sqrt @ AngleBracket[a, a], HilbertSchmidtNorm @ a]
+HilbertSchmidtNorm[v_?VectorQ] := Norm[v]^2
 
-HilbertSchmidtNorm[a_?VectorQ] := Norm[a]^2
+HilbertSchmidtNorm[m_?MatrixQ] := Norm[m, "Frobenius"]
 
-HilbertSchmidtNorm[a_?MatrixQ] := Norm[a, "Frobenius"]
+(* HilbertSchmidtNorm[rho_] := HilbertSchmidtNorm @ Matrix[rho] *)
+(* NOTE: Too dangerous! *)
 
-HilbertSchmidtNorm[rho_] := HilbertSchmidtNorm @ Matrix[rho]
-
-HilbertSchmidtNorm[rho_, q_?SpeciesQ] := HilbertSchmidtNorm[rho, {q}]
-
-HilbertSchmidtNorm[rho_, qq:{__?SpeciesQ}] :=
+HilbertSchmidtNorm[rho_, qq:(_?SpeciesQ|{__?SpeciesQ})] :=
   HilbertSchmidtNorm @ Matrix[rho, qq]
 
+
+FrobeniusDistance::usage = "FrobeniusDistance is an alias for HilbertSchmidtDistance."
+
+FrobeniusDistance = HilbertSchmidtDistance
 
 HilbertSchmidtDistance::usage = "HilbertSchmidtDistance[a, b] returns the Hilbert-Schmidt distance of two (pure or mixed) states a and b. It is equivalent to HilbertSchmidtNorm[a-b]."
 
@@ -4611,7 +4520,7 @@ HilbertSchmidtProduct[a_?VectorQ, b_?VectorQ] := Abs[Conjugate[a] . b]^2
 HilbertSchmidtProduct[a_, b_] := With[
   { ss = Agents @ {a, b} },
   HilbertSchmidtProduct[a, b, ss]
- ]
+]
 
 
 HilbertSchmidtProduct[S_?SpeciesQ] :=
@@ -4631,11 +4540,11 @@ HilbertSchmidtProduct[a_, b_, ss:{___?SpeciesQ}] :=
 
 (**** <TraceNorm> *****)
 
-TraceNorm::usage = "TraceNorm[m] returns the trace norm of the matrix m, that is, Tr @ Sqrt[Dagger[m] ** m].\nTraceNorm[v] gives TraceNorm[v.Transepose[v]].\nTraceNorma[expr, {s1, s2, \[Ellipsis]}] returns the trace norm of operator expression expr acting on species s1, s2, \[Ellipsis]."
+TraceNorm::usage = "TraceNorm[mat] returns the trace norm of matrix mat.\nTraceNorm[vec] is equivalent to TraceNorm[Dyad[vec, vec]] and Norm[vec]^2.\nTraceNorma[op, {s1, s2, \[Ellipsis]}] returns the trace norm of operator op acting on a system of species s1, s2, \[Ellipsis]."
 
-TraceNorm[m_/;MatrixQ[m, NumericQ]] := Total @ SingularValueList[m]
+TraceNorm[m_?MatrixQ] := Total @ SingularValueList[m]
 
-TraceNorm[v_/;VectorQ[v, NumericQ]] := Norm[v]^2
+TraceNorm[v_?VectorQ] := Norm[v]^2
 
 
 (* TraceNorm[rho:Except[_?MatrixQ | _?VectorQ]] := TraceNorm @ Matrix[rho] *)
@@ -4653,6 +4562,7 @@ TraceDistance[a_?VectorQ, b_?MatrixQ] := TraceNorm[Dyad[a, a] - b]
 TraceDistance[a_?MatrixQ, b_?VectorQ] := TraceNorm[a - Dyad[b, b]]
 
 TraceDistance[a_?VectorQ, b_?VectorQ] := TraceNorm[Dyad[a, a] - Dyad[b, b]]
+(* NOTE: This is NOT equal to TraceNorm[a - b]. *)
 
 (* TraceDistance[a_, b_] := TraceDistance[a, b, Agents @ {a, b}] *)
 (* NOTE: Too dangerous! *)
@@ -4667,10 +4577,17 @@ TraceDistance[a_, b_, ss:(_?SpeciesQ | {___?SpeciesQ})] :=
 
 Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states \[Rho] and \[Sigma]. \[Rho] and \[Sigma] can take a vector (pure state), matrix (mixed state), ket expression (pure state), or opertor expression (mixed state).\nSee also ClassicalFidelity."
 
-Fidelity[a_/;MatrixQ[a, NumericQ], b_/;MatrixQ[b, NumericQ]] := With[
+Fidelity::num = "For efficiency, Fidelity supports only numerical matrices. For symbolic matrices, resort to the definition."
+
+Fidelity[a_?MatrixQ, b_?MatrixQ] := With[
   { c = MatrixPower[a, 1/2] },
   Tr @ MatrixPower[c . b . c, 1/2]
-]
+] /; If[ MatrixQ[a, NumericQ] && MatrixQ[b, NumericQ],
+    True,
+    Message[Fidelity::num];
+    False
+  ]
+
 
 Fidelity[v_?VectorQ, m_?MatrixQ] := Sqrt[Conjugate[v] . m . v]
 

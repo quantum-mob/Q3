@@ -204,11 +204,14 @@ RenyiEntropy[a_?NonNegative, pp_?VectorQ, qq_?VectorQ] := With[
 RenyiEntropy[1, rho_?MatrixQ, sgm_?MatrixQ] := VonNeumannEntropy[rho, sgm]
 
 RenyiEntropy[a_?NonNegative, rho_?MatrixQ, sgm_?MatrixQ] :=
-  Log[2, Tr @ Dot[MatrixPower[rho, a], MatrixPower[sgm, 1-a]] ] / (a - 1)
+  Log[2, Tr @ Dot[MatrixPower[rho, a], MatrixPower[sgm, 1-a]] ] / (a - 1) - 
+  Log[2, Tr @ rho] / (a - 1)
 (* NOTE: More specifically, this definition is known as Ptez-Renyi divergence. See Tomamichel (2016, Section 4.4) *)
+(* NOTE: the second term handles un-normalized density matrices. *)
 
 
-RenyiEntropy[a_, rho_] := RenyiEntropy[a, rho, Agents @ rho]
+(* RenyiEntropy[a_, rho_] := RenyiEntropy[a, rho, Agents @ rho] *)
+(* NOTE: Too dangerous! *)
 
 RenyiEntropy[a_, rho_, S_?SpeciesQ] := RenyiEntropy[a, rho, {S}]
 
@@ -216,11 +219,11 @@ RenyiEntropy[a_?NonNegative, rho_, ss:{___?SpeciesQ}] :=
   RenyiEntropy[a, Matrix[rho, ss]]
 
 
+(* RenyiEntropy[a_, rho_, sgm_] := RenyiEntropy[a, rho, sgm, Agents @ {rho, sgm}] *)
+(* NOTE: Too dangerous! *)
+
 RenyiEntropy[a_, rho_, sgm_, S_?SpeciesQ] :=
   RenyiEntropy[a, rho, sgm, {S}]
-
-RenyiEntropy[a_, rho_, sgm_] :=
-  RenyiEntropy[a, rho, sgm, Agents @ {rho, sgm}]
 
 RenyiEntropy[a_?NonNegative, rho_, sgm_, ss:{___?SpeciesQ}] :=
   RenyiEntropy[a, Matrix[rho, ss], Matrix[sgm, ss]]

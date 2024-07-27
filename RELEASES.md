@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.5.2
+
+- BosonBasisChange has been dramatically improved.
+
 ## 3.5.1
 
 - Big performance improvement of BosonBasis and FermionBasis.

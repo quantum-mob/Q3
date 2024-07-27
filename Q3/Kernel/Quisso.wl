@@ -919,7 +919,7 @@ Matrix[op:Phase[___], __] = op (* fallback *)
 
 
 Phase /:
-HoldPattern @ Multiply[pre___, op_Phase, in_Ket, post___] :=
+Multiply[pre___, op_Phase, in_Ket, post___] :=
   Multiply[pre, Multiply[Elaborate @ op, in], post]
 
 
@@ -952,7 +952,7 @@ Elaborate @ Rotation[phi_, v:{_, _, _}, S_?QubitQ, ___] :=
   Garner[ Cos[phi/2] - I*Sin[phi/2]*Dot[S @ All, Normalize @ v] ]
 
 Rotation /:
- Multiply[pre___, op:Rotation[_, {_, _, _}, S_?QubitQ, ___], in_Ket, post___] :=
+Multiply[pre___, op:Rotation[_, {_, _, _}, S_?QubitQ, ___], in_Ket, post___] :=
   Garner @ Multiply[pre, Garner @ Multiply[Elaborate @ op, in], post]
 
 (**** </Rotation> ****)
@@ -966,7 +966,11 @@ Expand @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
     Rotation[c, S[3], opts],
     Rotation[b, S[2], opts],
     Rotation[a, S[3], opts]
-   ]
+  ]
+
+EulerRotation /:
+Multiply[pre___, op:EulerRotation[{_, _, _}, S_?QubitQ, ___], in_Ket, post___] :=
+  Garner @ Multiply[pre, Garner @ Multiply[Elaborate @ op, in], post]
 
 (**** </EulerRotation> ****)
 

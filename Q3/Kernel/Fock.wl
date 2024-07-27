@@ -2225,10 +2225,7 @@ theBosonBasisChange[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
   { ii, jj, ij, ff },
   ii = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], pp}];
   jj = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], qq}];
-  (* Dddress the factors from bosonic algebra. *)
-  ff = Sqrt[Times @@ Factorial @ qq] / Sqrt[Times @@ Factorial @ pp];
-  ij = Map[Transpose @ {ii, #} &, Permutations @ jj];
-  Total[Times @@@ Apply[mat[[##]]&, ij, {2}]] * ff
+  Permanent[mat[[ii, jj]]]  / Sqrt[Times @@ Factorial @ pp] / Sqrt[Times @@ Factorial @ qq]
 ]
 
 (**** </BosonBasisChange> ****)
