@@ -14,6 +14,7 @@ BeginPackage["Q3`"]
 { CountsFor };
 { IntegerParity, IntegerPowerQ };
 { RandomPick };
+{ Ranking };
 { IntervalSize };
 
 { Unless };
@@ -400,6 +401,34 @@ CheckJoin[aa__Association] := Merge[ {aa},
 (**** </CheckJoin> ****)
 
 
+(**** <Ranking> ****)
+
+(* Ordering vs Ranking in terms of MATLAB
+ 
+   idx = Ordering[A], then A[idx] == sort(A)
+   jdx = Ranking [A], A = B(jdx), where B = sort (A)
+ 
+   In other words, the ranking index jdx indicates at what position a given
+   elemetn of a will appear if the elements are sorted.
+
+   Of course, Ordering() is redundant in MATLAB since the same idx can be
+   obtained from [B, idx] = sort(A).
+
+   See also:
+   Mason/Mathey/Ranking()
+   Mason/Mathey/Ordering()
+   
+   *)
+
+Ranking::usage="Ranking[LIST] returns a list whose entries are the ranks of the corresponding elements in LIST when put in order.\nRanking[LIST, TEST] determines the ordering with the test function TEST.\nOrdering vs Ranking: see the Mathematica built-in function Ordering."
+
+Ranking[list_] := Ordering[Ordering[list]]
+
+Ranking[list_, f_] := Ordering[Ordering[list, All, f]]
+
+(**** </Ranking> ****)
+
+
 Unless::usage = "Unless[condition, result] gives result unless condition evaluates to True, and Null otherwise."
 
 Unless::retrn = "`` includes Return, which may not function as you expect. See the help documentation on Unless."
@@ -587,23 +616,22 @@ GraphPivot[g_, {v_, w_}, opts___?OptionQ] := Module[
 ]
 
 
-Bead::usage = "Bead[pt] or Bead[{pt1, pt2, \[Ellipsis]}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01]. It has been motivated by Tube.\nBead[pt] is equvalent to Sphere[pt, Scaled[0.01]].\nBead[{p1, p2, \[Ellipsis]}] is equivalent to Sphere[{p1, p2, \[Ellipsis]}, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r]."
+(**** <Bead> ****)
+
+Bead::usage = "Bead[pt] or Bead[{pt1, pt2, \[Ellipsis]}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01].\nBead[spec] is equvalent to Sphere[spec, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r].\nBead has been motivated by Tube."
 
 Bead[pnt:{_, _, _}, r_:Scaled[0.01]] := Sphere[pnt, r]
 
-(*
-Bead[pnt:{_?NumericQ, _?NumericQ, _?NumericQ}, r_:Scaled[0.01]] :=
-  Sphere[pnt, r]
- *)
+Bead[pts:{{_?NumericQ, _?NumericQ, _?NumericQ}..}, r_:Scaled[0.01]] :=
+  Sphere[pts, r]
 
-Bead[pnt:{{_?NumericQ, _?NumericQ, _?NumericQ}..}, r_:Scaled[0.01]] :=
-  Sphere[pnt, r]
-
-Bead[Point[spec_?MatrixQ], r_:Scaled[0.01]] := Bead[spec, r]
+Bead[Point[spec:(_?VectorQ|_?MatrixQ)], r_:Scaled[0.01]] := Bead[spec, r]
 
 Bead[Line[spec_?MatrixQ], r_:Scaled[0.01]] := Bead[spec, r]
 
-Bead[Line[spec:{__?MatrixQ}], r_:Scaled[0.01]] := Bead[#,r]& /@ spec
+Bead[Line[spec:{__?MatrixQ}], r_:Scaled[0.01]] := Map[Bead[#, r]&, spec]
+
+(**** </Bead> ****)
 
 
 GreatCircle::usage = "GreateCircle[center, apex, radius, {a1, a2, da}] returns Line corresponding to the great arc centered at center in the plane normal to apex - center from angle a1 to a2 in steps of da.\nGreatCircle[center, {u, v}, radius, {a1, a2, da}] corresponds to a great arc of radius centered at center in the plane containing center, u and v from angle a1 to a2 in step of da.\nGreatCircle[center, {u, v}] assumes raidus given by Norm[u-center] and angle by Vector[u-center,v-center]."

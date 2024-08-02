@@ -404,16 +404,18 @@ setNonCommutative[x_Symbol] := (
 )
 
 
+(* DEPRECATED *)
+(* 
 Format @ Inverse[op_?NonCommutativeQ] :=
   Interpretation[SpeciesBox[op, { }, {"-1"}], Inverse @ op]
- 
+ *) 
+(* DEPRECATED *)
+(* 
 Format @ Inverse[op_Symbol?NonCommutativeQ[j___]] :=
   Interpretation[SpeciesBox[op, {j}, {"-1"}], Inverse @ op[j]]
-
-Inverse @ Inverse[op_?NonCommutativeQ] := op
-
-Inverse @ Power[E, expr_] :=
-  MultiplyExp[-expr] /; Not[CommutativeQ @ expr]
+ *)
+(* DEPRECATED *)
+(* Inverse @ Power[E, expr_] := MultiplyExp[-expr] /; Not[CommutativeQ @ expr] *)
 (* NOTE: Recall that Not[CommutativeQ[expr]] is not the same as
    NonCommutativeQ[expr]. *)
 
@@ -805,51 +807,6 @@ CoefficientTensor[expr_, ops:{__?AnySpeciesQ}.., Times] := Module[
 (**** <CoefficientTensor> ****)
 
 
-(**** <MultiplyPower> ****)
-
-MultiplyPower::usage = "MultiplyPower[expr, i] raises an expression to the i-th
-power using the non-commutative multiplication Multiply."
-
-SetAttributes[MultiplyPower, {Listable, ReadProtected}];
-
-(* Put these definitions earlier than the general rule. *)
-
-MultiplyPower[Sqrt[op_], n_Integer?EvenQ] := MultiplyPower[op, n / 2]
-
-MultiplyPower[S_Symbol?QubitQ[j___, C[n_Integer]], M_Integer] := With[
-  { m = Log[2, M] },
-  S[j, C[n-m]] /; IntegerQ[m]
-]
-
-
-(* general rule *)
-
-MultiplyPower[op_, 0] = 1
-
-MultiplyPower[op_, 1] = op
-
-MultiplyPower[op_, n_Integer] := 
-  Multiply[MultiplyPower[op, n-1], op] /; n > 1
-(* NOTE 1: Recursive calculation makes better use of Mathematica's caching
-   capabilities! *)
-(* NOTE 2: For n > 1, this shadows a similar definition in Pauli because of the additional condition n > 1. *)
-
-(* Put this definition at the last. *)
-MultiplyPower[z_?CommutativeQ, n_] := Power[z, n]
-
-(**** </MultiplyPower> ****)
-
-
-MultiplyDot::usage = "MultiplyDot[a, b, \[Ellipsis]] returns the products of vectors, matrices, and tensors of Species.\nMultiplyDot is a non-commutative equivalent to the native Dot with Times replaced with Multiply"
-
-(* Makes MultiplyDot associative for the case
-   MultiplyDot[vector, matrix, matrix, \[Ellipsis]] *)
-SetAttributes[MultiplyDot, {Flat, OneIdentity, ReadProtected}]
-
-MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
-(* TODO: Special algorithm is required for SparseArray *)
-
-
 (**** <Garner> ****)
 
 FullGarner::usage = "FullGarner[expr] collects together terms involving the same species objects (operators, Kets, Bras, etc.) and simplifies the coefficients by using FullSimplify."
@@ -869,7 +826,9 @@ Garner[expr_, post_:Simplify] := Module[
   pat = Flatten[Alternatives @@ $GarnerPatterns];
   var = theGarner[ new /. {op:$GarnerPatterns["Heads"] -> Hold[op]} ];
   var = Union @ Cases[ReleaseHold @ var, pat];
-  Collect[new, var, post]
+  Collect[new, var, post] //. {
+    HoldPattern @ MultiplyExp[any_] :> MultiplyExp[Garner @ any]
+  }
 ]
 (* NOTE: Cases[{expr}, ..., Infinity] may pick up spurious variables. *)
 
@@ -883,7 +842,7 @@ theGarner[expr_Times] := List @@ expr
 theGarner[any_] := {any}
 
 
-AddGarnerPatterns::usage = "AddGarnerPatterns[pattern$1,pattern$2,\[Ellipsis]] adds patterns to be handled by Garner."
+AddGarnerPatterns::usage = "AddGarnerPatterns[pattern$1, pattern$2, \[Ellipsis]] adds patterns to be handled by Garner."
 
 AddGarnerPatterns[spec:(_Blank|_PatternTest)..] := Module[
   { heads = Cases[{spec}, _Blank],
@@ -1088,6 +1047,63 @@ KindsOrderedQ[ops_List] := Module[
 (**** </Multiply> ****)
 
 
+MultiplyDot::usage = "MultiplyDot[a, b, \[Ellipsis]] returns the products of vectors, matrices, and tensors of Species.\nMultiplyDot is a non-commutative equivalent to the native Dot with Times replaced with Multiply"
+
+(* Makes MultiplyDot associative for the case
+   MultiplyDot[vector, matrix, matrix, \[Ellipsis]] *)
+SetAttributes[MultiplyDot, {Flat, OneIdentity, ReadProtected}]
+
+MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
+(* TODO: Special algorithm is required for SparseArray *)
+
+
+(**** <MultiplyPower> ****)
+
+MultiplyPower::usage = "MultiplyPower[expr, i] raises an expression to the i-th
+power using the non-commutative multiplication Multiply."
+
+SetAttributes[MultiplyPower, {Listable, ReadProtected}];
+
+MultiplyPower[op_, 0] = 1
+
+MultiplyPower[op_, 1] = op
+
+MultiplyPower[op_?AnyAgentQ, n_Integer?Positive] := 
+  Multiply @@ Table[op, n]
+
+
+MultiplyPower[Sqrt[expr_], n_Integer?EvenQ] := MultiplyPower[expr, n / 2]
+
+MultiplyPower[S_Symbol?QubitQ[i___, C[n_Integer]], m_Integer] := With[
+  { k = Log[2, m] },
+  S[i, C[n-k]] /; IntegerQ[k]
+]
+
+(* NOTE: For n > 1, this is shadowed by a similar definition in Abel. *)
+MultiplyPower[expr_, n:(_Integer|_Rational)] := With[
+  { ss = Agents[expr] },
+  ExpressionFor[MatrixPower[Matrix[expr, ss], n], ss]
+] /; Not @ FreeQ[expr, _?AgentQ] && FreeQ[expr, _?BosonQ]
+
+MultiplyPower[expr_, n:(_Integer|_Rational)] :=
+  ExpressionFor @ MatrixPower[Matrix @ expr, n] /;
+  Not @ FreeQ[expr, _Pauli]
+
+MultiplyPower[expr_, n_Integer?Positive] := 
+  Multiply[MultiplyPower[expr, n-1], expr]
+(* NOTE: Recursive calculation seems faster than Fold because it uses Mathematica's caching capabilities. *)
+
+
+MultiplyPower[0, _] = 0
+
+MultiplyPower[1, _] = 1
+
+MultiplyPower[E, expr_] := MultiplyExp[expr]
+
+(* NOTE: fallback in Einstein *)
+(**** </MultiplyPower> ****)
+
+
 (**** <MultiplyExp> ****)
 
 MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[]."
@@ -1111,13 +1127,13 @@ MultiplyExp[0] = 1
 
 
 MultiplyExp /:
-HoldPattern @ Dagger[ MultiplyExp[expr_] ] := MultiplyExp[ Dagger[expr] ]
+Dagger[ MultiplyExp[expr_] ] := MultiplyExp[ Dagger[expr] ]
 
 MultiplyExp /:
-HoldPattern @ Inverse[ MultiplyExp[op_] ] := MultiplyExp[-op]
+Inverse[ MultiplyExp[op_] ] := MultiplyExp[-op]
 
 MultiplyExp /:
-HoldPattern @ Power[ MultiplyExp[op_], z_?CommutativeQ ] :=
+Power[ MultiplyExp[op_], z_?CommutativeQ ] :=
   MultiplyExp[z * op]
 
 MultiplyExp /:
@@ -1130,24 +1146,18 @@ Multiply[pre___, MultiplyExp[op_], MultiplyExp[op_], post___] :=
 
 
 MultiplyExp /:
-HoldPattern @ Matrix[ MultiplyExp[op_], rest___ ] := 
+Matrix[ MultiplyExp[op_], rest___ ] := 
   MatrixExp @ Matrix[op, rest]
 
 
 MultiplyExp /:
-HoldPattern @ Elaborate[ MultiplyExp[expr_] ] :=
-  Elaborate @ ExpressionFor @ MatrixExp @ Matrix @ expr /;
-  Agents[expr] == {} /;
-  Not @ FreeQ[expr, _Pauli]
-
-MultiplyExp /:
-HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
+Elaborate[ MultiplyExp[expr_] ] := Module[
   { ss = Agents[expr],
     mm },
   mm = Matrix[expr, ss];
   Elaborate @ ExpressionFor[MatrixExp[mm], ss] /;
     ContainsOnly[MultiplyKind @ ss, {Qubit, Qudit, Spin}]
-]
+] /; Not @ FreeQ[expr, _?AnyAgentQ]
 (* NOTE: In principle, it can handle fermions as well. But fermions have been
    excluded here because the method of converting first to matrix and back to
    operator expression is slow for fermions due to the requirement of the
@@ -1155,6 +1165,12 @@ HoldPattern @ Elaborate[ MultiplyExp[expr_] ] := Module[
    Baker-Hausdorff form, and the latter can be treated more efficiently using
    LieExp or related methods. *)
 
+MultiplyExp /:
+Elaborate[ MultiplyExp[expr_] ] :=
+  Elaborate @ ExpressionFor @ MatrixExp @ Matrix @ expr /;
+  Not @ FreeQ[expr, _Pauli]
+
+(* NOTE: fallback in Einstein *)
 (**** </MultiplyExp> ****)
 
 

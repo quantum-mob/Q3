@@ -873,7 +873,7 @@ KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
      w:Ket[_Association] :> 
        Total[Ket[ss -> Permute[w[qq], #]]& /@ aa]
     }
- ] /; Not @ FreeQ[expr, Ket[_Association]]
+] /; Not @ FreeQ[expr, Ket[_Association]]
 
 
 yngSignatureTo::usage = "yngSignatureTo[a,b] compares the rows of (not necessarily stadnard) Young Tableaux a and b. Useful to construct polytabloid."
@@ -886,7 +886,7 @@ anyTableauQ::uage = "anyTableauQ[tb] returns True if tb is a legitimate (not nec
 anyTableauQ[tb : {__List}] := And[
   Apply[GreaterEqual, Length /@ tb], 
   Apply[GreaterEqual, Length /@ YoungTranspose[tb]]
- ]
+]
 
 
 (* total symmetrization for Pauli Kets *)
@@ -906,7 +906,7 @@ KetSymmetrize[v_Ket, -1] := Module[
   ff = Signature /@ vv;
 
   ff . vv
- ]
+]
 
 KetSymmetrize[expr_, -1] :=
   ReplaceAll[ expr, v_Ket :> KetSymmetrize[v, -1] ]
@@ -922,9 +922,9 @@ KetSymmetrize[expr_, tbl_?YoungTableauQ] := Module[
   bb = Flatten /@ YoungTranspose /@ bb;
   expr /. {
     v_Ket :> Dot[Permute[v[[tt]], #]& /@ bb, cc]
-   } /. {
-     w_Ket :> Total[Permute[w[[tt]], #]& /@ aa]
-    }
+  } /. {
+    w_Ket :> Total[Permute[w[[tt]], #]& /@ aa]
+  }
 ]
 
 (**** </KetSymmetrize> ****)

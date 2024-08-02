@@ -279,7 +279,7 @@ PlaybookEpilog[nb_NotebookObject] := Module[
   { cc },
   cc = Cell @ CellGroupData @ {
     Cell["Epilog", "Section", CellTags -> {"PlaybookEpilog"}],
-    Cell[BoxData @ RowBox @ {"WorkHere", "[", "]"}, "Input"],
+    Cell[BoxData @ RowBox @ {"SetFolder", "[", "]"}, "Input"],
     Cell[BoxData @ RowBox @ {"PlaybookDeploy", "[", 
         RowBox @ {
           RowBox[{"\"\<PrintHandout\>\"", "->", "True"}], ",", " ", 
@@ -288,9 +288,10 @@ PlaybookEpilog[nb_NotebookObject] := Module[
     $ParagraphDelimiter,
     Cell[BoxData @ RowBox @ {"SystemOpen", "[", 
         RowBox[{"NotebookFolder", "[", "]"}], "]"}, "Input"]
-   };
+  };
+  NotebookDelete[EvaluationCell[]];
   NotebookWrite[nb, cc]
- ]
+]
 
 (**** </PlaybookEpilogy> ***)
 

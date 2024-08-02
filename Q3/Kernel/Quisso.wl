@@ -629,6 +629,8 @@ singleQubitGateQ[_?QubitQ] = True
 
 singleQubitGateQ[Phase[_, _?QubitQ, ___]] = True
 
+singleQubitGateQ[Rotation[_, {_, _, _}, _?QubitQ, ___]] = True
+
 singleQubitGateQ[_] = False
 
 
@@ -664,14 +666,18 @@ thePauliForm[_?QubitQ[___, k_]] := thePauliForm @ Pauli[{k}]
 thePauliForm[Phase[phi_, S_?QubitQ, ___]] :=
   Superscript[thePauliForm @ S, phi]
 
-thePauliForm[ss__?singleQubitGateQ, qq:{__?QubitQ}] := Module[
-  { kk, mm },
-  kk = Lookup[PositionIndex[FlavorNone @ qq], Flatten[Qubits /@ {ss}]];
-  mm = FlavorLast @ {ss};
-  CircleTimes @@ ReplacePart[
-    Table["I", Length @ qq],
-    Flatten[ Thread /@ Thread[kk -> Map[thePauliForm, {ss}]] ]
-  ]
+thePauliForm[Rotation[phi_, v:{_, _, _}, S_?QubitQ, rest___]] :=
+  DisplayForm @ RowBox @ { Exp,
+    RowBox @ {"(", -I * (phi/2) * Dot[thePauliForm /@ S @ All, Normalize @ v], ")"}
+  }
+
+thePauliForm[op_?singleQubitGateQ, qq:{__?QubitQ}] := thePauliForm[{op}, qq]
+
+thePauliForm[gg:{__?singleQubitGateQ}, qq:{__?QubitQ}] := Module[
+  { kk },
+  kk = GroupBy[gg, First @* Qubits, Row @* Map[thePauliForm]];
+  kk = KeyReplace[kk, Normal @ PositionIndex @ FlavorNone @ qq];
+  CircleTimes @@ ReplacePart[Table["I", Length @ qq], Normal @ kk]
 ]
 
 
@@ -681,7 +687,7 @@ PauliForm[z_?CommutativeQ, qq:{__?QubitQ}] :=
   Interpretation[z * CircleTimes @@ Table["I", Length @ qq], z]
 
 HoldPattern @ PauliForm[op:Multiply[ss__?singleQubitGateQ], qq:{__?QubitQ}] :=
-  Interpretation[thePauliForm[ss, qq], op]
+  Interpretation[thePauliForm[{ss}, qq], op]
 
 PauliForm[op_?singleQubitGateQ, qq:{__?QubitQ}] :=
   Interpretation[thePauliForm[op, qq], op]
@@ -694,8 +700,10 @@ PauliForm[assc_Association, qq:{__?QubitQ}] := Map[PauliForm[#, qq]&, assc]
 
 PauliForm[expr_, qq:{__?QubitQ}] := expr /. {
     HoldPattern[op:Multiply[__?singleQubitGateQ]] :> PauliForm[op, qq],
+    HoldPattern[Multiply[op__]] :> Row[thePauliForm /@ {op}],
+    op_Rotation :> thePauliForm[op],
     op_?singleQubitGateQ :> PauliForm[op, qq]
-   }
+  }
 
 PauliForm[expr_] := PauliForm[expr, Qubits @ expr] /; FreeQ[expr, _Pauli]
 
@@ -2784,30 +2792,6 @@ DickeState[ss:{__?QubitQ}, n_] := Module[
  ]
 
 DickeState[ss:{__?QubitQ}] := Table[DickeState[ss, n], {n, 0, Length @ ss}]
-
-
-RandomState::usage = "RandomState[{S1,S2,...}] gives a normalized random state for the system of multiple qubits {S1,S2,...}.
-  RandomState[{S1,S2,...}, n] gives n mutually orthogonal normalized random states."
-
-RandomState[S_?QubitQ] := RandomState[{S}]
-
-RandomState[S_?QubitQ, n_Integer] := RandomState[{S}, n]
-
-RandomState[qq : {__?QubitQ}] := Module[
-  { cc = RandomComplex[{-1 - I, 1 + I}, Power[2, Length[qq]]] },
-  cc = Normalize[cc];
-  cc.Basis[qq]
- ]
-
-RandomState[qq : {__?QubitQ}, n_Integer] := Module[
-  { bb = Basis[qq],
-    dd = Power[2, Length[qq]],
-    cc },
-  cc = RandomComplex[{-1 - I, 1 + I}, n * dd];
-  cc = Partition[cc, dd];
-  cc = Orthogonalize[cc];
-  Map[ (#.bb)&, cc ]
- ]
 
 
 (**** <GHZState for Qubits> ****)

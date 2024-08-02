@@ -57,7 +57,9 @@ BeginPackage["Q3`"]
 
 { RandomVector, RandomMatrix,
   RandomHermitian, RandomPositive,
-  RandomUnitary, RandomOrthogonal };
+  RandomSymmetric, RandomSymplectic,
+  RandomIsometric, RandomUnitary, RandomOrthogonal,
+  RandomUnitarySymplectic };
 
 { TridiagonalToeplitzMatrix };
 
@@ -623,7 +625,7 @@ theYBasisLabel[expr_, qq:{__?QubitQ}] :=
 (**** </YBasisForm> ****)
 
 
-Affect::usage = "Affect[ket, op1, op2, ...] operates the operators op1, op2, ... (earlier operators first) on ket. Notice the order of the arguments. The result should be equivalent to Multiply[..., op2, op1, ket], but it is much faster than the counterpart for deep (the numer of operators is much bigger than the number of particles) expression. First first argument does not need to be a Ket, but otherwise Affect is not an advantage over Multiply."
+Affect::usage = "Affect[ket, op1, op2, ...] operates the operators op1, op2, ... (earlier operators first) on ket. Notice the order of the arguments. The result should be equivalent to Multiply[..., op2, op1, ket], but it is much faster than the counterpart for deep (the numer of operators is much bigger than the number of particles) expression. The first argument does not need to be a Ket, but otherwise Affect is not an advantage over Multiply."
 
 SetAttributes[Affect, Listable]
 
@@ -1267,24 +1269,6 @@ HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
 (**** </Multiply> ****)
 
 
-(**** <MultiplyPower> ****)
-
-HoldPattern @ MultiplyPower[expr_, n_Integer] :=
-  ExpressionFor @ MatrixPower[Matrix @ expr, n] /;
-  Agents[expr] == {} /;
-  Not @ FreeQ[expr, _Pauli]
-
-(* NOTE: For n > 1, this is shadowed by a similar definition in Abel. *)
-HoldPattern @ MultiplyPower[op_, n_Integer] := Module[
-  { ss = Agents[op],
-    mat },
-  mat = MatrixPower[Matrix[op, ss], n]; 
-  ExpressionFor[mat, ss]
-]
-
-(**** </MultiplyPower> ****)
-
-
 (**** <BraKet> ****)
 
 BraKet::usage = "BraKet[{a}, {b}] represents the Hermitian product \[LeftAngleBracket]a|b\[RightAngleBracket] of the two states Ket[a] and Ket[b]."
@@ -1668,7 +1652,7 @@ Pauli /: Elaborate @ Pauli[{-9}] := Dagger @ Pauli[Hexadecant]
 Pauli /: Elaborate @ Pauli @ {C[n_Integer]} := With[
   { f = Exp[I*2*Pi*Power[2, n]] },
   Pauli[{0}]*(1+f)/2 + Pauli[{3}]*(1-f)/2
- ]
+]
 
 (* Dagger *)
 
@@ -1901,7 +1885,7 @@ ExpressionIn[mat:Association[(_->_?MatrixQ)..],
 
 (**** <BlochVector> ****)
 
-BlochVector::usage = "BlochSphere[{c0, c1}] returns the point on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
+BlochVector::usage = "BlochVector[{c0, c1}] returns the three-dimensional coordinates {x, y, z} on the Bloch sphere corresponding to the pure state Ket[0]*c0 + Ket[1]*c1.\nBlochVector[\[Rho]] returns the point in the Bloch sphere corresponding to the mixed state \[Rho]."
 
 BlochVector::traceless = "Matrix `` is traceless."
 
@@ -1909,7 +1893,7 @@ BlochVector::qubit = "`` does not represent a quantum state of qubits."
 
 BlochVector[vec_?VectorQ] := Module[
   { new },
-  new = If[AllTrue[vec, NumericQ], Normalize[vec], vec];
+  new = If[VectorQ[vec, NumericQ], Normalize[vec], vec];
   Simplify @ {
     Conjugate[new] . ThePauli[1] . new,
     Conjugate[new] . ThePauli[2] . new,
@@ -1924,7 +1908,7 @@ BlochVector[rho_?SquareMatrixQ] := Module[
     Message[BlochVector::traceless, rho];
     Return[{0, 0, 0}]
   ];  
-  new = If[AllTrue[Flatten @ rho, NumericQ], rho/Tr[rho], rho];
+  new = If[MatrixQ[rho, NumericQ], rho/nrm, rho];
   Simplify[2 * PauliVector[new]]
 ] /; Length[rho] == 2
 
@@ -1932,12 +1916,11 @@ BlochVector[rho_?SquareMatrixQ] := Module[
 BlochVector[rho:(_?VectorQ|_?SquareMatrixQ)] := BlochVector[rho, 1]
 
 BlochVector[rho:(_?VectorQ|_?SquareMatrixQ), k_Integer] :=
-  BlochVector[ReducedMatrix[rho, {k}]] /; IntegerPowerQ[2, Length @ rho]
-
-BlockVector[rho:(_?VectorQ|_?SquareMatrixQ), ___] := (
-  Message[BlockVector::qubit, rho];
-  {0, 0, 0}
-)
+  BlochVector[ReducedMatrix[rho, {k}]] /; 
+    If[ IntegerPowerQ[2, Length @ rho], True,
+      Message[BlochVector::qubit, rho];
+      False
+    ] 
 
 
 BlochVector[Ket[]] := BlochVector @ {1, 0}
@@ -1977,8 +1960,7 @@ BlochVector[expr_, j_Integer] := Module[
 BlochSphere::usage = "BlochSphere[primitives, options] returns Graphics3D containing the Bloch sphere as well as primitives.\nIt accepts all Graphics3D primitives and, in addition, BlochPoint.\nBlochSphere[options] just displays the Bloch sphere."
 
 Options[BlochSphere] = {
-  "Opacity" -> 0.8,
-  "PointSize" -> 0.03,
+  "SphereStyle" -> {Opacity[0.8], Cyan},
   SphericalRegion -> True,
   PlotRange -> 1.3,
   PlotRegion -> {{-0.5, 1.5}, {-0.5, 1.5}},
@@ -1987,43 +1969,34 @@ Options[BlochSphere] = {
   Ticks -> None,
   Axes -> False,
   Boxed -> False
- }
+}
 
 BlochSphere[opts___?OptionQ] := BlochSphere[Nothing, opts]
   
-BlochSphere[primitives_, opts___?OptionQ] := Block[ (* Block NOT Module *)
-  { BlochPoint, rr },
-  rr = "PointSize" /. {opts} /. Options[BlochSphere];
-  
-  BlochPoint[pnt_, r_:rr] := Sphere[pnt, r];
-  
+BlochSphere[primitives_, opts:OptionsPattern[{BlochSphere, Graphics3D}]] :=
   Graphics3D[
     { theBlochSphere[opts], primitives },
-    Sequence @@ FilterRules[
+    FilterRules[
       Join[{opts}, Options @ BlochSphere],
       Options @ Graphics3D
     ]
   ]
-]
 
-theBlochSphere[opts___?OptionQ] := Module[
-  { dd },
-  dd = "Opacity" /. {opts} /. Options[BlochSphere];
-  { { Opacity[dd], Cyan, Sphere[] },
-    { Thick, GrayLevel[0.4],
-      Line @ {
-        1.1 {{-1,0,0}, {1,0,0}},
-        1.1 {{0,-1,0}, {0,1,0}},
-        1.1 {{0,0,-1}, {0,0,1}}
-      },
-      Line @ {
-        Table[{0, Cos[t Pi], Sin[t Pi]}, {t, 0, 2, 0.01}],
-        Table[{Cos[t Pi], 0, Sin[t Pi]}, {t, 0, 2, 0.01}],
-        Table[{Cos[t Pi], Sin[t Pi], 0}, {t, 0, 2, 0.01}]
-      }
+theBlochSphere[OptionsPattern[{BlochSphere, Graphics3D}]] := { 
+  Flatten @ {Opacity[0.8], Cyan, OptionValue["SphereStyle"], Sphere[]},
+  { Thick, GrayLevel[0.4],
+    Line @ {
+      1.1 {{-1,0,0}, {1,0,0}},
+      1.1 {{0,-1,0}, {0,1,0}},
+      1.1 {{0,0,-1}, {0,0,1}}
+    },
+    Line @ {
+      Table[{0, Cos[t Pi], Sin[t Pi]}, {t, 0, 2, 0.01}],
+      Table[{Cos[t Pi], 0, Sin[t Pi]}, {t, 0, 2, 0.01}],
+      Table[{Cos[t Pi], Sin[t Pi], 0}, {t, 0, 2, 0.01}]
     }
   }
-]
+}
 
 (**** </BlochSphere> ****)
 
@@ -2874,7 +2847,7 @@ TheEulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
 
 (**** <Rotation> ****)
 
-Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respective, in a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, ...] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] ...\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], S[j, ..., k]] represents the rotation by angle \[Phi] around the axis k on the qubit S[j, ..., $]."
+Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respectively, on a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, ...] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] ...\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], {x, y, z}, S] represents the rotation by angle \[Phi] around the axis {x, y, z} on qubit or spin S.\nRotation[\[Phi], S[i,\[Ellipsis],1]] is equivalent to Rotation[\[Phi], {1, 0, 0}, S[i,\[Ellipsis],$]].\nRotation[\[Phi], S[i,\[Ellipsis],2]] is equivalent to Rotation[\[Phi], {0, 1, 0}, S[i,\[Ellipsis],$]].\nRotation[\[Phi], S[i,\[Ellipsis],3]] is equivalent to Rotation[\[Phi], {0, 0, 1}, S[i,\[Ellipsis],$]]."
 
 Rotation[_, 0] := Pauli[0]
 
@@ -4321,95 +4294,145 @@ MatrixEmbed[_, kk:{__Integer}, dd:{__Integer}] :=
 (**** </MatrixEmbed> ****)
 
 
-RandomVector::usage = "RandomVector is a shortcut to RandomComplex.\nRandomVector[] gives a two-dimensional random vector.\nRanbdomVector[n] gives an n-dimensional random vector.\nRandomVector[range, n] \[Congruent] RandomComplex[range, n]."
+(**** <RandomState> ****)
 
-RandomVector[] := RandomComplex[(1+I){-1, 1}, 2]
+RandomState::usage = "RandomState[{s1, s2, \[Ellipsis]}] returns a random normalized state vector in the Hilbert space of species {s1, s2, \[Ellipsis]} distributed uniformly in terms of the Haar measure."
 
-RandomVector[n_Integer] := RandomComplex[(1+I){-1, 1}, n]
+RandomState[S_?SpeciesQ, spec___] := RandomState[S @ {$}, spec]
 
-RandomVector[range_, n_Integer] := RandomComplex[range, n]
+RandomState[ss:{__?SpeciesQ}, spec___] := RandomState[FlavorNone @ ss, spec]
 
+RandomState[ss:{__?SpeciesQ}] := First @ RandomState[ss, 1]
 
-RandomMatrix::usage = "RandomMatrix is a shortcut to RandomComplex.\nRandomMatrix[] returns a randomly generated 2\[Times]2 matrix.\nRanbdomMatrix[n] returns an n\[Times]n random matrix.\nRandomMatrix[range, n] \[Congruent] RandomComplex[range, {n, n}].\nRandomMatrix[range, {m, n}] \[Congruent] RandomComplex[range, {m, n}]."
+RandomState[ss:{__?SpeciesQ}, n_Integer] := 
+  Basis[ss] . RandomIsometric[{Times @@ Dimension @ ss, n}]
 
-RandomMatrix[] := RandomComplex[(1+I){-1, 1}, {2, 2}]
-
-RandomMatrix[n_Integer] := RandomComplex[(1+I){-1, 1}, {n, n}]
-
-RandomMatrix[mn:{_Integer, _Integer}] := RandomComplex[(1+I){-1, 1}, mn]
-
-RandomMatrix[range_, n_Integer] := RandomComplex[range, {n, n}]
-
-RandomMatrix[range_, mn:{_Integer, _Integer}] := RandomComplex[range, mn]
+(**** </RandomState> ****)
 
 
-(**** <RandomHermitian> ****)
+(**** <RandomVector> ****)
 
-RandomHermitian::usage = "RandomHermitian[n] gives a randomly generated n\[Times]n Hermitian matrix with each element in the range between -(1+I) and (1+I).\nRandomHermitian[] assumes n=2.\nRandomHermitian[range, n] gives a randomly generated n\[Times]n Hermitian matrix. The range specifies the range (see RandomComplex) of the elements."
+RandomVector::usage = "RandomVector[n] generates an n-dimensional random normalized complex vector distributed uniformly in terms of the Haar measure.\nRandomVector[] is equivalent to RandomVector[2]."
 
-RandomHermitian[] := RandomHermitian[(1+I){-1, 1}, 2]
+RandomVector[] := RandomVector[2]
 
-RandomHermitian[n_Integer] := RandomHermitian[(1+I){-1, 1}, n]
+RandomVector[n_Integer?Positive] := Flatten[RandomIsometric @ {n, 1}]
 
-RandomHermitian[range_, n_Integer] := 
-  Symmetrize[RandomComplex[range, {n, n}], Hermitian @ {1, 2}]
-
-(**** </RandomHermitian> ****)
+(**** </RandomVector> ****)
 
 
-RandomPositive::usage = "RandomPositive[n] gives a randomly generated n\[Times]n positive matrix with each element in the range between -(1+I) and (1+I).\nRandomPositive[] assumes n=2.\nRandomPositive[range, n] gives a random  positive matrix with each element in the specified 'range' (see RandomComplex for the details of the specification of range)."
+(**** <RandomIsometric> ****)
 
-RandomPositive[] := RandomPositive[(1+I){-1, 1}, 2]
+(* See Mezzadri (2007) *)
+RandomIsometric::usage = "RandomIsometric[{m, n}] generates an m\[Times]n random isometric matrix uniformly distributed in the terms of the Haar measure."
 
-RandomPositive[n_Integer] := RandomPositive[(1+I){-1, 1}, n]
+RandomIsometric::dim = "The first dimenion of an isometric matrix cannot be smaller than the second dimension."
 
-RandomPositive[range_, n_Integer] := With[
-  { m = RandomMatrix[range, {n, n}] },
-  Topple[m] . m
+RandomIsometric[n_Integer?Positive] := RandomUnitary[n]
+
+RandomIsometric[{n_Integer?Positive, n_Integer?Positive}] := RandomUnitary[n]
+(* NOTE: RandomUnitary is faster since it is based on the built-in function CircularUnitaryMatrixDistribution. *)
+
+RandomIsometric[{m_Integer?Positive, n_Integer?Positive}] := Module[
+  { mat = RandomMatrix[1, {m, n}],
+    qq, rr },
+  {qq, rr} = QRDecomposition[mat];
+  rr = DiagonalMatrix[Sign @ Diagonal @ rr]; (* NOTE: Sign[z] = z / Abs[z] for complex z. *)
+  Topple[qq] . rr
+] /; If[TrueQ[m > n], True, Message[RandomIsometric::dim]; False]
+(* NOTE: For m ~ n, RandomUnitary[m][[;;, ;;n]] is faster since RandomUnitary is based on the built-in function CircularUnitaryMatrixDistribution. *)
+
+(**** </RandomIsometric> ****)
+
+
+(**** <RandomMatrix> ****)
+
+RandomMatrix::usage = "RandomMatrix[\[Sigma], {m, n}] returns an m\[Times]n random complex matrix with independent identically distributed real and imaginary matrix elements that follow NormalDistribution[0,\[Sigma]].\nRandomMatrix[\[Sigma], n] is equivalent to RandomMatrix[\[Sigma], {n, n}].\nRandomMatrix[nspec] is equivalent to RandomMatrix[1, nspec].\nRandomMatrix[] is equivalent to RandomMatrix[1, {2, 2}]."
+
+RandomMatrix[] := RandomMatrix[1, {2, 2}]
+
+RandomMatrix[mn_] := RandomMatrix[1, mn]
+
+RandomMatrix[sgm_?Positive, n_Integer?Positive] := RandomMatrix[sgm, {n, n}]
+
+RandomMatrix[sgm_?Positive, {m_Integer?Positive, n_Integer?Positive}] := 
+  Table[
+    Complex[
+      RandomReal @ NormalDistribution[0, sgm],
+      RandomReal @ NormalDistribution[0, sgm]
+    ],
+    m, n
+  ]
+
+
+RandomSymplectic::usage = "RandomSymplectic[\[Sigma], n] returns an 2n\[Times]2n randomly generated complex symplectic matrix (m+Dagger[m] - J.Transpose[m+Dagger[m]].J)/4, where m is a square matrix with independent identically distributed real and imaginary matrix elements that follow NormalDistribution[0,\[Sigma]], and where J is the skew-symmetric matrix KroneckerProduct[{{0,-1},{1,0}}, IdentityMatrix[n]].\nRandomSymplectic[] is equivalent to RandomSymplectic[1].\nRandomSymplectic[n] is equivalent to RandomSymplectic[1, n]."
+
+RandomSymplectic[] := RandomSymplectic[1, 1]
+
+RandomSymplectic[n_Integer?Positive] := RandomSymplectic[1, n]
+
+RandomSymplectic[sgm_?Positive, n_Integer?Positive] := 
+  RandomVariate @ GaussianSymplecticMatrixDistribution[sgm, n]
+
+
+RandomSymmetric::usage = "RandomSymmetric[\[Sigma], n] returns an n\[Times]n randomly generated real symmetric matrix (m+Transpose[m])/2, where m is a square matrix with independent identically distributed matrix elements that follow NormalDistribution[0,\[Sigma]].\nRandomSymmetric[] is equivalent to RandomSymmetric[3].\nRandomSymmetric[n] is equivalent to RandomSymmetric[1, n]."
+
+RandomSymmetric[] := RandomSymmetric[1, 3]
+
+RandomSymmetric[n_Integer?Positive] := RandomSymmetric[1, n]
+
+RandomSymmetric[sgm_?Positive, n_Integer?Positive] := 
+  RandomVariate @ GaussianOrthogonalMatrixDistribution[sgm, n]
+
+
+RandomHermitian::usage = "RandomHermitian[\[Sigma], n] returns an n\[Times]n random Hermitian matrix (m+Dagger[m])/2, where m is a complex square matrix with independent identically distributed real and imaginary matrix elements that follow NormalDistribution[0,\[Sigma]].\nRandomHermitian[n] is equivalent to RandomHermitian[1, n].\nRandomHermitian[] is equivalent to RandomHermitian[1, 2]."
+
+RandomHermitian[] := RandomHermitian[1, 2]
+
+RandomHermitian[n_Integer?Positive] := RandomHermitian[1, n]
+
+RandomHermitian[sgm_?Positive, n_Integer?Positive] := 
+  RandomVariate @ GaussianUnitaryMatrixDistribution[sgm, n]
+
+
+RandomPositive::usage = "RandomPositive[\[Sigma], n] returns an n\[Times]n random positive matrix Dagger[m]m, where m is a complex square matrix with independent identically distributed real and imaginary matrix elements that follow NormalDistribution[0, \[Sigma]].\nRandomPositive[n] is equivalent to RandomPositive[1, n].\nRandomPositive[] is equivalent to RandomPositive[1, 2]."
+
+RandomPositive[] := RandomPositive[1, 2]
+
+RandomPositive[n_Integer?Positive] := RandomPositive[1, n]
+
+RandomPositive[sgm_?Positive, n_Integer?Positive] := With[
+  { mat = RandomMatrix[sgm, n] },
+  Topple[mat] . mat
 ]
 
 
-(**** <RandomUnitary> ****)
-
 (* See Mezzadri (2007) *)
-RandomUnitary::usage = "RandomUnitary[n] generates a uniformly distributed random unitary matrix of dimension n. Here, the uniform distribution is in the sense of the Haar measure."
+RandomUnitary::usage = "RandomUnitary[n] generates an n\[Times]n uniformly distributed random unitary matrix in the terms of the Haar measure."
 
 RandomUnitary[] := RandomUnitary[2]
 
-RandomUnitary[n_Integer] := Module[
-  { mat, qq, rr },
-  mat = Table[
-    Complex[
-      RandomReal @ NormalDistribution[0, 1],
-      RandomReal @ NormalDistribution[0, 1]
-    ],
-    {n}, {n}
-  ];
-  {qq, rr} = QRDecomposition[mat];
-  rr = Diagonal[rr];
-  rr = DiagonalMatrix[ rr / Abs[rr] ];
-  qq . rr
-]
+RandomUnitary[n_Integer?Positive] := 
+RandomVariate[CircularUnitaryMatrixDistribution @ n]
 
 
 (* See Mezzadri (2007) *)
-RandomOrthogonal::usage = "RandomOrthogonal[n] generates a uniformly distributed random real orthogonal matrix of dimension n."
+RandomOrthogonal::usage = "RandomOrthogonal[n] generates an n\[Times]n random real orthogonal matrix uniformly distributed in terms of the Haar measure."
 
 RandomOrthogonal[] := RandomOrthogonal[3]
 
-RandomOrthogonal[n_Integer] := Module[
-  { mat, qq, rr },
-  mat = Table[
-    RandomReal @ NormalDistribution[0, 1],
-    {n}, {n}
-  ];
-  {qq, rr} = QRDecomposition[mat];
-  rr = Diagonal[rr];
-  rr = DiagonalMatrix[ rr / Abs[rr] ];
-  qq . rr
-]
+RandomOrthogonal[n_Integer?Positive] :=
+  RandomVariate[CircularRealMatrixDistribution @ n]
 
-(**** <RandomUnitary> ****)
+
+RandomUnitarySymplectic::usage = "RandomUnitarySymplectic[n] returns a 2n\[Times]2n random unitary symplectic matrix uniformly distributed in terms of the Haar measure on the unitary symplectic group USp(2n)."
+
+RandomUnitarySymplectic[] := RandomUnitarySymplectic[1]
+
+RandomUnitarySymplectic[n_Integer?Positive] :=
+  RandomVariate[CircularQuaternionMatrixDistribution @ n]
+
+(**** </RandomMatrix> ****)
 
 
 (**** <BasisComplement> *****)
