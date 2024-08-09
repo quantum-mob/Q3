@@ -49,7 +49,7 @@ Pfaffian::number = "Non-numerical matrix `` is given; Pfaffian can be computed e
 
 Pfaffian::Hessenberg = "Pfaffian computation with Hessenberg decomposition only works for real matrices of finite precision; using the Parlett-Reid method instead.";
 
-Pfaffian::sparse = "Too density for a sparse array; converted to a normal form."
+Pfaffian::sparse = "Too dense for a sparse array; converted to a normal form."
 
 Options[Pfaffian] = {Method -> Automatic}
 
@@ -61,7 +61,7 @@ Pfaffian[mat_SymmetrizedArray, opts:OptionsPattern[]] :=
 Pfaffian[mat_SparseArray, opts:OptionsPattern[]] :=
   ( Message[Pfaffian::sparse];
     Pfaffian[Normal @ mat, opts] 
-  ) /; mat["Density"] > 0.2
+  ) /; mat["Density"] > 0.5
 
 
 Pfaffian[mat_?SquareMatrixQ, OptionsPattern[]] := 0 /; OddQ[Length @ mat]

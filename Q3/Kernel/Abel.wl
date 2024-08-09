@@ -12,7 +12,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 { Dimension, LogicalValues };
 
 { Any, Base, Flavors, FlavorMost, FlavorLast,
-  FlavorNone, FlavorNoneQ, FlavorMute, FlavorThread };
+  FlavorCap, FlavorCapQ, FlavorMute, FlavorThread };
 
 { CoefficientTensor };
 
@@ -40,14 +40,15 @@ $::usage = "$ is a flavor index referring to the species itself."
   System`Hermitian, HermitianQ,
   System`Antihermitian, AntihermitianQ };
 
+{ Peel, Hood };
 { Dagger, System`HermitianConjugate = Dagger,
   Topple, DaggerTranspose = Topple,
-  Tee, TeeTranspose,
-  Peel };
+  Canon, Tee, TeeTranspose };
 
-{ PlusDagger, TimesDaggerRight, TimesDaggerLeft };
+{ NormSquare };
+{ AbsSquare = AbsSquareRight, AbsSquareLeft };
 
-{ PlusTopple };
+{ PlusDagger, PlusTopple };
 
 { TransformBy, TransformByFourier, TransformByInverseFourier };
 
@@ -106,7 +107,7 @@ Begin["`Private`"]
 $symb = Unprotect[
   NonCommutativeMultiply, 
   Conjugate, Inverse,
-  KroneckerDelta, DiscreteDelta, UnitStep
+  DiscreteDelta, UnitStep
 ]
 
 
@@ -164,35 +165,35 @@ FlavorLast[ _Symbol?SpeciesQ[___,j_] ] := j
 FlavorLast[ _?SpeciesQ ] = Missing["NoFlavor"]
 
 
-(**** <FlavorNone> ****)
+(**** <FlavorCap> ****)
 
-FlavorNone::usage = "FlavorNone[S[i, j, \[Ellipsis]]] for some Species S gives S[i, j, \[Ellipsis], $]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorNone is Listable."
+FlavorCap::usage = "FlavorCap[S[i, j, \[Ellipsis]]] for some Species S gives S[i, j, \[Ellipsis], $]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorCap is Listable."
   
-SetAttributes[FlavorNone, Listable]
+SetAttributes[FlavorCap, Listable]
 
-FlavorNone[a_] := a (* Does nothing unless specified explicitly *)
+FlavorCap[a_] := a (* Does nothing unless specified explicitly *)
 
-FlavorNone[S_?SpeciesQ -> v_] := FlavorNone[S] -> v
+FlavorCap[S_?SpeciesQ -> v_] := FlavorCap[S] -> v
 
-FlavorNone[ss:{__?SpeciesQ} -> vv:{__}] := FlavorNone[ss] -> vv
+FlavorCap[ss:{__?SpeciesQ} -> vv:{__}] := FlavorCap[ss] -> vv
 
 
-FlavorNoneQ::usage = "FlavorNoneQ[{s$1,s$2,\[Ellipsis]}] returns True if the flavor index ends properly with None for every species s$j. Note that for some species, the flavor index is not required to end with None."
+FlavorCapQ::usage = "FlavorCapQ[{s$1,s$2,\[Ellipsis]}] returns True if the flavor index ends properly with None for every species s$j. Note that for some species, the flavor index is not required to end with None."
 
-SyntaxInformation[FlavorNoneQ] = {"ArgumentsPattern" -> {_}}
+SyntaxInformation[FlavorCapQ] = {"ArgumentsPattern" -> {_}}
 
-FlavorNoneQ[a_, b__] := (
-  CheckArguments[FlavorNoneQ[a, b], 1];
-  FlavorNoneQ @ {a, b}
+FlavorCapQ[a_, b__] := (
+  CheckArguments[FlavorCapQ[a, b], 1];
+  FlavorCapQ @ {a, b}
  )
 
-FlavorNoneQ[s_?SpeciesQ] := FlavorNone[s] === s
+FlavorCapQ[s_?SpeciesQ] := FlavorCap[s] === s
 
-FlavorNoneQ[ss_List] := AllTrue[Flatten @ ss, FlavorNoneQ]
+FlavorCapQ[ss_List] := AllTrue[Flatten @ ss, FlavorCapQ]
 
-FlavorNoneQ[_] = True
+FlavorCapQ[_] = True
 
-(**** </FlavorNone> ****)
+(**** </FlavorCap> ****)
 
 
 FlavorMute::usage = "FlavorMute[S[i, j, \[Ellipsis], k]] for some Species S gives S[i, j, \[Ellipsis], $], i.e., with the last Flavor replaced with None. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorMute is Listable."
@@ -531,17 +532,28 @@ FlavorForm[Down] := "\[DownArrow]"
 FlavorForm[j_] := j
 
 
+Hood::usage = "Hood[func[s]] retruns func for species s.\nHood[s] returns Identity for a species s."
+
+SetAttributes[Hood, Listable]
+
+Hood[_?SpeciesQ] = Identity
+
+Hood[fun_Symbol[_?SpeciesQ]] = fun
+
+
 Peel::usage = "Peel[op] removes any conjugation (such as Dagger and Conjugate) from op."
 
 SetAttributes[Peel, Listable]
 
+Peel[ HoldPattern @ Tee[a_] ] = a
+
+Peel[ HoldPattern @ Dagger[a_] ] = a
+
+Peel[ HoldPattern @ Canon[a_] ] = a
+
+Peel[ Conjugate[a_] ] = a
+
 Peel[ a_ ] := a
-
-Peel[ HoldPattern @ Tee[a_] ] := a
-
-Peel[ Dagger[a_] ] := a
-
-Peel[ Conjugate[a_] ] := a
 
 
 Tee::usage = "Tee[expr] or equivalanetly Tee[expr] represents the Algebraic transpose of the expression expr. It is distinguished from the native Transpose[] as it respects symbols.\nSee also Transpose, TeeTranspose, Conjugate, Dagger, Topple."
@@ -609,6 +621,8 @@ Topple[m_?TensorQ, spec___] := Dagger @ Transpose[m, spec]
 Topple[a_] := Dagger[a]
 
 
+(**** <Dagger> ****)
+
 HermitianConjugate::usage = "HermitianConjugate is an alias for Dagger."
 
 Dagger::usage = "Dagger[expr] returns the Hermitian conjugate the expression expr.\nWARNING: Dagger has the attribute Listable, meaning that the common expectation Dagger[m] == Tranpose[Conjugate[m]] for a matrix m of c-numbers does NOT hold any longer. For such purposes use Topple[] instead.\nSee also Conjugate[], Topple[], and TeeTranspose[]."
@@ -659,23 +673,45 @@ Format @ HoldPattern @ Dagger[a_] :=
 (* for the undefined *)
 
 
+NormSquare::usage = "NormSquare[vec] returns the norm square of quantum state vector vec."
+
+NormSquare[obj:(_?VectorQ|_?MatrixQ), spec___] := Norm[obj, spec]^2
+
+(**** </Dagger> ****)
+
+
+(**** <AbsSquare> ****)
+
+AbsSquare::usage = "AbsSquare[expr] returns the absolute square of expr, i.e., Dagger[expr]**expr."
+
+AbsSquare[mat_?MatrixQ] := Topple[mat] . mat
+
+AbsSquare[expr_] := Multiply[Dagger @ expr, expr]
+
+
+AbsSquareRight::usage = "AbsSquareRight[expr] is equivalent to AbsSquare[expr]."
+
+
+AbsSquareLeft::usage = "AbsSquareLeft[expr] returns the left-absolute square of expr, i.e., expr**Dagger[expr], regarding expr to operate on the left from the right."
+
+AbsSquareLeft[mat_?MatrixQ] := mat . Topple[mat]
+
+AbsSquareLeft[expr_] := Multiply[expr, Dagger @ expr]
+
+(**** </AbsSquare> ****)
+
+
 PlusDagger::usage = "PlusDagger[expr] returns expr + Dagger[expr]."
 
-TimesDaggerRight::usage = "TimesDaggerRight[expr] returns expr**Dagger[expr]."
-
-TimesDaggerLeft::usage = "TimesDaggerLeft[expr] returns Dagger[expr]**expr."
-
 PlusDagger[expr_] := expr + Dagger[expr]
-
-TimesDaggerRight[expr_] := Multiply[expr, Dagger @ expr]
-
-TimesDaggerLeft[expr_]  := Multiply[Dagger @ expr, expr]
 
 
 PlusTopple::usage = "PlusTopple[expr] returns mat + Topple[mat]."
 
 PlusTopple[mat_] := mat + Topple[mat]
 
+
+(**** <Hermitian> ****)
 
 System`Hermitian::usage = "In Q3, Hermitian represents Hermitian operators.\nLet[Hermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Hermitian operators.\nSince Mathematica v12.1, Hermitian is a built-in symbol, and is extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/Hermitian\", \"paclet:Q3/ref/Hermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 (* NOTE: Since Mathematica 12.2, System`Hermitian is a built-in symbol. *)
@@ -699,6 +735,10 @@ HermitianQ[ HoldPattern @ Tee[a_?HermitianQ] ] = True;
 
 HermitianQ[ Conjugate[a_?HermitianQ] ] = True;
 
+(**** </Hermitian> ****)
+
+
+(**** <Antihermitian> ****)
 
 System`Antihermitian::usage = "In Q3, Antihermitian represents Antihermitian operators.\nLet[Antihermitian, a, b, \[Ellipsis]] declares a, b, \[Ellipsis] as Antihermitian operators.\nSee \!\(\*TemplateBox[{\"Q3/ref/Antihermitian\", \"paclet:Q3/ref/Antihermitian\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
@@ -723,8 +763,10 @@ AntihermitianQ[ HoldPattern @ Tee[a_?AntihermitianQ] ] = True;
 
 AntihermitianQ[ Conjugate[a_?AntihermitianQ] ] = True;
 
+(**** </Antihermitian> ****)
 
-(*** Commutation and Anticommutation Relations ***)
+
+(**** <Commutator> ***)
 
 Commutator::usage = "Commutator[a,b] = Multiply[a,b] - Multiply[b,a].\nCommutator[a, b, n] = [a, [a, \[Ellipsis] [a, b]]],
 this is order-n nested commutator."
@@ -751,6 +793,8 @@ Anticommutator[a_, b_, 1] :=  Anticommutator[a, b]
 
 Anticommutator[a_, b_, n_Integer] := 
   Anticommutator[a, Anticommutator[a, b, n-1] ] /; n > 1
+
+(**** </Commutator> ***)
 
 
 (**** <CoefficientTensor> ****)
@@ -1288,9 +1332,9 @@ LieBasis::usage = "LieBasis[n] returns a basis of the vector space \[ScriptCapit
 LieBasis[op_?SpeciesQ] := LieBasis @ {op}
 
 LieBasis[qq:{__?SpeciesQ}] := Module[
-  { lbs = LieBasis[Times @@ Dimension[qq]] },
+  { lbs = LieBasis[Upshot @ Dimension @ qq] },
   ExpressionFor[#, qq]& /@ lbs
- ]
+]
 
 
 LieBasis[n_Integer?Positive] := Module[
@@ -1413,7 +1457,7 @@ Matrix[Observation[spec_], ss:{__?SpeciesQ}] := Module[
 
 Observation /:
 Agents[Observation[spec_]] := Select[
-  Union @ FlavorNone @ Flatten @
+  Union @ FlavorCap @ Flatten @
     Cases[{spec}, _Symbol?SpeciesQ | _?SpeciesQ[___], Infinity],
   AgentQ
 ]
@@ -1422,7 +1466,7 @@ Agents[Observation[spec_]] := Select[
 
 Observation /:
 HoldPattern @ NonCommutativeSpecies[Observation[spec_]] :=
-  Union @ FlavorNone @ Flatten @
+  Union @ FlavorCap @ Flatten @
   Cases[{spec}, _Symbol?SpeciesQ | _?SpeciesQ[___], Infinity]
 (* NOTE: Since spec may include Hold[...] or HoldForm[...], usual
    NonCommutativeSpecies would not work. *)
@@ -1485,8 +1529,8 @@ SyntaxInformation[Occupation] = {
 Occupation[{}, _] = 0
 
 Occupation[ss:{__?SpeciesQ}, k_] :=
-  Occupation[FlavorNone @ ss, k] /;
-  Not[FlavorNoneQ @ ss]
+  Occupation[FlavorCap @ ss, k] /;
+  Not[FlavorCapQ @ ss]
 
 Occupation[ss:{__?SpeciesQ}, k_] :=
   Observation[Inactive[Count][ss, k]] /;
@@ -1516,47 +1560,15 @@ OccupationValue[expr_, ss:{__?SpeciesQ}, val_] :=
 (**** </Occupation> ****)
 
 
-(**** <KroneckerDelta> ****)
-(**** <UnitStep> ****)
-
-SetAttributes[{KroneckerDelta, UnitStep}, NumericFunction]
-
-KroneckerDelta /:
-HoldPattern[ Power[KroneckerDelta[x__], _?Positive] ] :=
-  KroneckerDelta[x]
-
-Format[ KroneckerDelta[x__List], StandardForm ] := Interpretation[
-  Times @@ Thread[KroneckerDelta[x]],
-  KroneckerDelta[x]
- ]
-
-Format[ KroneckerDelta[x__List], TraditionalForm ] := Interpretation[
-  Times @@ Thread[KroneckerDelta[x]],
-  KroneckerDelta[x]
- ]
-(* NOTE: This is also for TeXForm[ ] *)
-
-
 DiscreteDelta /:
 HoldPattern[ Power[DiscreteDelta[x__], _?Positive] ] :=
   DiscreteDelta[x]
 
-(*
-Format @ DiscreteDelta[j__] := Interpretation[
-  KroneckerDelta[{j}, ConstantArray[0, Length @ {j}]],
-  DiscreteDelta[j]
- ]
- *)
 
 Format[ UnitStep[x_], StandardForm ] := Interpretation[
-  Row @ {"\[Theta]", "(", x, ")"},
+  DisplayForm @ RowBox @ {"\[Theta]", "(", x, ")"},
   UnitStep[x]
- ]
-
-SetAttributes[{DiscreteDelta, UnitStep}, {ReadProtected}]
-
-(**** </UnitStep> ****)
-(**** </KroneckerDelta> ****)
+]
 
 
 Protect[ Evaluate @ $symb ]

@@ -394,23 +394,23 @@ ReducedWigner[d_Integer,
     bb = PadRight[b, d-1] + (d-1) - Range[d-1];
 
     If[ k == 0,
-      x1 = Times @@ (aa[[j]] - bb);
-      y1 = Times @@ Delete[aa[[j]] - aa, j];
+      x1 = Upshot[aa[[j]] - bb];
+      y1 = Upshot @ Delete[aa[[j]] - aa, j];
       x2 = y2 = 1;
       ff = newSign[d-j],
       (* Else *)
-      x1 = Times @@ Delete[aa[[j]] - bb, k];
-      x2 = Times @@ Delete[bb[[k]] - aa + 1, j];
-      y1 = Times @@ Delete[aa[[j]] - aa, j];
-      y2 = Times @@ Delete[bb[[k]] - bb + 1, k];
+      x1 = Upshot @ Delete[aa[[j]] - bb, k];
+      x2 = Upshot @ Delete[bb[[k]] - aa + 1, j];
+      y1 = Upshot @ Delete[aa[[j]] - aa, j];
+      y2 = Upshot @ Delete[bb[[k]] - bb + 1, k];
       ff = newSign[k-j]
-     ];
+    ];
 
     ff * Sqrt[(x1 * x2) / (y1 * y2)]
-   ] /; And[
-     Length[YoungTrim @ a] <= d, 
-     Length[YoungTrim @ b] < d
-    ]
+  ] /; And[
+    Length[YoungTrim @ a] <= d, 
+    Length[YoungTrim @ b] < d
+  ]
 
 newSign[0] = 1;
 newSign[x_] := Sign[x]
@@ -493,10 +493,10 @@ SchurBasis[{S_?SpeciesQ}] := AssociationThread @ Rule[
  ]
 
 SchurBasis[{a_?SpeciesQ, rest__?SpeciesQ}] :=
-    Fold[SchurBasis, SchurBasis @ {a}, FlavorNone @ {rest}]
+    Fold[SchurBasis, SchurBasis @ {a}, FlavorCap @ {rest}]
   
 
-SchurBasis[S_?SpeciesQ] := SchurBasis[S[$]] /; Not[FlavorNoneQ @ S]
+SchurBasis[S_?SpeciesQ] := SchurBasis[S[$]] /; Not[FlavorCapQ @ S]
 
 SchurBasis[spec_][bs_?SchurBasisQ] := SchurBasis[bs, spec]
 

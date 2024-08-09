@@ -450,9 +450,9 @@ Base[ S_?SpinQ[j___, _] ] := S[j]
 (* For Spins, the final Flavor index is special. *)
 
 
-(* FlavorNone: See Cauchy package *)
+(* FlavorCap: See Cauchy package *)
 
-FlavorNone[S_?SpinQ] := S[$]
+FlavorCap[S_?SpinQ] := S[$]
 
 
 (* FlavorMute: See Cauchy *)
@@ -484,7 +484,7 @@ theKetVerify[Rule[op_?SpinQ, m_]] := (
 
 Basis[ op_?SpinQ ] := With[
   { J = Spin[op] },
-  Ket /@ Thread[FlavorNone[op] -> Range[J, -J, -1]]
+  Ket /@ Thread[FlavorCap[op] -> Range[J, -J, -1]]
  ]
 
 (**** </Basis> ****)
@@ -521,7 +521,7 @@ WignerSpinSpin::usage = "WignerSpinSpin[dir][S1, S2, ...] returns the sum of exc
 WignerSpinSpin[All][ss__] := WignerSpinSpin[{1,2,3}][ss]
 
 WignerSpinSpin[dir:(1|2|3|{(1|2|3)..})][ss__] := Module[
-  { tt = FlavorNone @ {ss},
+  { tt = FlavorCap @ {ss},
     links },
   links = Chain @@ tt;
   Total[ wSpinSpin[dir] /@ links ]
@@ -549,7 +549,7 @@ WignerAddZ[] := Association[ {0} -> {Ket[]} ]
 WignerAddZ[irb_Association] := irb
 
 WignerAddZ[a_?SpinQ] := Module[
-  { aa = FlavorNone @ a,
+  { aa = FlavorCap @ a,
     bs = Basis @ a },
   GroupBy[bs, #[aa]&]
  ]
@@ -593,7 +593,7 @@ WignerAdd[] := Association[ {0,0} -> {Ket[]} ]
 WignerAdd[irb_Association] := irb
 
 WignerAdd[a_?SpinQ] := Module[
-  { aa = FlavorNone @ a,
+  { aa = FlavorCap @ a,
     bs = Basis @ a },
   GroupBy[bs, {Spin[aa], #[aa]}&]
  ]
@@ -885,8 +885,8 @@ NineJSymbol[
   {j3_,  j4_,  j34_},
   {j13_, j24_,  0 }
  ] :=
-  KroneckerDelta[j12,j34] *
-  KroneckerDelta[j13,j24] *
+  KroneckerDelta[j12, j34] *
+  KroneckerDelta[j13, j24] *
   Power[-1, j2+j3+j12+j13] / Sqrt[(2*j12+1)(2*j13+1)] *
   SixJSymbol[{j1,j2,j12}, {j4,j3,j13}]
 

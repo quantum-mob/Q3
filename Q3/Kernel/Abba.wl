@@ -79,7 +79,7 @@ serverRegisteredQ[url_:$serverURL] := Module[
 serverRegister[url_:$serverURL] :=
   PacletSiteUpdate @ PacletSiteRegister[url, "Quantum Mob Paclet Server"]
 
-serverEnsure[] := If[serverRegisteredQ[], Null, serverRegister[]]
+serverAssure[] := If[serverRegisteredQ[], Null, serverRegister[]]
 
 pacletVersion[pp:{__PacletObject}] := pacletVersion[First @ pp]
 
@@ -113,7 +113,7 @@ Q3CheckUpdate[] := Module[
   { pac, new },
   PrintTemporary["Checking for updates ..."];
   PacletDataRebuild[];
-  serverEnsure[];
+  serverAssure[];
   pac = PacletFind["Q3"];
   new = PacletFindRemote["Q3", UpdatePacletSites -> True];
   If[ pac=={}, Return[$Failed], pac = pacletVersion[pac] ];
@@ -131,7 +131,7 @@ Q3Update::usage = "Q3Update[] installs the latest update of Q3 from the GitHub r
 Q3Update[opts___?OptionQ] := (
   PrintTemporary["Installing an update ..."];
   PacletDataRebuild[];
-  serverEnsure[];
+  serverAssure[];
   PacletInstall["Q3", opts, UpdatePacletSites -> True]
  )
 

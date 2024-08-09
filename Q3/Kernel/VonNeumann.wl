@@ -167,9 +167,9 @@ MutualInformation[rho_?MatrixQ, dd:{__Integer}, kk:{__Integer}] := With[
 MutualInformation[rho_, S_?SpeciesQ] := MutualInformation[rho, {S}]
 
 MutualInformation[rho_, ss:{__?SpeciesQ}] := Module[
-  { qq = Agents @ {rho, FlavorNone @ ss},
+  { qq = Agents @ {rho, FlavorCap @ ss},
     rr },
-  rr = Supplement[qq, FlavorNone @ ss];
+  rr = Supplement[qq, FlavorCap @ ss];
   VonNeumannEntropy[PartialTrace[rho, rr], ss] +
     VonNeumannEntropy[PartialTrace[rho, ss], rr] -
     VonNeumannEntropy[rho, qq]
@@ -254,7 +254,7 @@ EntanglementEntropy[expr_, S_?SpeciesQ] := EntanglementEntropy[expr, {S}]
 
 EntanglementEntropy[expr_, ss:{__?SpeciesQ}] := Module[
   { qq = Agents[expr],
-    rr = Agents[FlavorNone @ ss],
+    rr = Agents[FlavorCap @ ss],
     jj },
   qq = Union[qq, rr];
   jj = Flatten @ Map[FirstPosition[qq, #]&, Complement[qq, rr]];

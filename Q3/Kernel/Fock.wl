@@ -437,7 +437,7 @@ seaQ[ op:c_Symbol?FermionQ[j__] ] := (
     Message[Vacuum::flavor, {j}, c, Spin[c], Vacuum[c]]
   ];
   Vacuum[op] == Vacuum[c] == "Sea"
- )
+)
 
 seaQ[_] = False
 
@@ -513,7 +513,7 @@ AnySpeciesQ[ Canon[_?HeisenbergQ] ] = True
    the Q3 package. *)
 
 
-FlavorNone[a_?AnyParticleQ] = a
+FlavorCap[a_?AnyParticleQ] = a
 
 
 Base[ op:c_Symbol?ParticleQ[j___,s_] ] := c[j] /; spinfulQ[op]
@@ -791,10 +791,10 @@ CMT[op_, Canon[op_]] := +I /; HeisenbergQ[op]
 
 CMT[Canon[op_], op_] := -I /; HeisenbergQ[op]
 
-CMT[op_[j1___], Canon[op_[j2___]]] := +I * KroneckerDelta[{j1},{j2}] /;
+CMT[op_[j1___], Canon[op_[j2___]]] := +I * TheDelta[{j1}, {j2}] /;
   HeisenbergQ[op]
 
-CMT[Canon[op_[j2___]], op_[j1___]] := -I * KroneckerDelta[{j1},{j2}] /;
+CMT[Canon[op_[j2___]], op_[j1___]] := -I * TheDelta[{j1}, {j2}] /;
   HeisenbergQ[op]
 
 CMT[_?AnyHeisenbergQ, _?AnyHeisenbergQ] = 0
@@ -809,31 +809,36 @@ HoldPattern @ CMT[ op_, Dagger[op_] ] := +1 /; BosonQ[op]
 HoldPattern @ CMT[ Dagger[op_], op_ ] := -1 /; BosonQ[op]
 
 HoldPattern @ CMT[ op_[j1___], Dagger[op_[j2___]] ] :=
-  +KroneckerDelta[{j1},{j2}] /; BosonQ[op]
+  +TheDelta[{j1}, {j2}] /; BosonQ[op]
 
 HoldPattern @ CMT[ Dagger[op_[j2___]], op_[j1___] ] :=
-  -KroneckerDelta[{j1},{j2}] /; BosonQ[op]
+  -TheDelta[{j1}, {j2}] /; BosonQ[op]
 
 CMT[_?AnyBosonQ, _?AnyBosonQ] = 0
 (* NOTE: Operators with different Heads are regarded different regardless of
    their Flavor indices. This is conventional. If you want to change this
    behavior, Multiply[] should also be modified accordingly. *)
 
-(* For Fermionic operators *)
+
+(**** <ACMT> ****)
+
+ACMT::usage = "ACMT[a, b] returns the anti-commutation between two fermion operators a and b."
 
 SetAttributes[ACMT, Orderless]
 
-HoldPattern @ ACMT[ op_?FermionQ, Dagger[op_?FermionQ] ] = 1
+ACMT[ op_?FermionQ, HoldPattern @ Dagger[op_?FermionQ] ] = 1
 
-HoldPattern @ ACMT[ Dagger[op_?FermionQ], op_?FermionQ ] = 1
+ACMT[ HoldPattern @ Dagger[op_?FermionQ], op_?FermionQ ] = 1
 
-HoldPattern @ ACMT[ op_?FermionQ[i___], Dagger[op_?FermionQ[j___]] ] :=
-  KroneckerDelta[{i}, {j}]
+ACMT[ op_?FermionQ[i___], HoldPattern @ Dagger[op_?FermionQ[j___]] ] :=
+  TheDelta[{i}, {j}]
 
 ACMT[_?AnyFermionQ, _?AnyFermionQ] = 0
 (* NOTE: Operators with different Heads are regarded different regardless of
    their Flavor indices. This is conventional. If you want to change this
    behavior, Multiply[] should also be modified accordingly. *)
+
+(**** <ACMT> ****)
 
 
 (**** <Multiply> ****)
@@ -904,7 +909,7 @@ HoldPattern @
 
 HoldPattern @ 
   Multiply[pre___, op_?MajoranaQ[i___], op_?MajoranaQ[j___], post___] :=
-    Multiply[pre, post] * 2 * KroneckerDelta[{i},{j}] -
+    Multiply[pre, post] * 2 * TheDelta[{i}, {j}] -
       Multiply[pre, op[j], op[i], post] /;
         Not @ OrderedQ @ {op[i], op[j]}
 (* NOTE: Operators with different Heads are regarded different regardless of
@@ -918,25 +923,27 @@ HoldPattern @ Multiply[pre___, Longest[op__?MajoranaQ], post___] :=
 (**** </Multiply> ****)
 
 
-Q::usage = "Q is an alias for " <> ToString[
-  Hyperlink["FockNumber", "paclet:Q3/ref/FockNumber"],
-  StandardForm ] <>
+Q::usage = "Q is an alias of " <>
+  ToString[Hyperlink["FockNumber", "paclet:Q3/ref/FockNumber"], StandardForm] <>
   ", which is one of the most frequently used operator. Because the symbol N is reserved by the Mathematica system, we instead use Q."
 
 Q = FockNumber
 
-FockNumber::usage = "FockNumber[c] returns the number operator corresponding to the operator c. FockNumber[c1, c2, ...] returns the sumb of all FockNumber operators corresponding to operators c1, c2, ...."
+FockNumber::usage = "FockNumber[c] returns the number operator corresponding to operator c.\nFockNumber[c1, c2, \[Ellipsis]] returns the sum of all number operators corresponding to operators c1, c2, \[Ellipsis]."
 
-FockNumber[ op_?ParticleQ ] := Multiply[ Dagger[op], op ]
+FockNumber[expr:(_List|_Association)] := Total @ Map[FockNumber, expr]
 
-FockNumber[x:({__?ParticleQ}|_?ParticleQ)..] := Total @ Map[FockNumber] @ Flatten @ {x}
+FockNumber[expr_] := Dagger[expr] ** expr
+
+FockNumber[expr_, rest__] := FockNumber @ {expr, rest}
 
 
 (**** <FockHopping> ****)
 
-Hop::usage = "Hop is an alias for " <> ToString[
+Hop::usage = "Hop is an alias of " <> ToString[
   Hyperlink["FockHopping", "paclet:Q3/ref/FockHopping"],
-  StandardForm ]
+  StandardForm
+]
 
 Hop = FockHopping
 
@@ -1308,9 +1315,9 @@ HoldPattern @
   BraKet[{}, {}] Multiply[pre, post]
 
 
-HoldPattern @ Multiply[a___, op_?AnnihilatorQ, Ket[Vacuum], b___] = 0 
+HoldPattern @ Multiply[___, op_?AnnihilatorQ, Ket[Vacuum], ___] = 0 
 
-HoldPattern @ Multiply[a___, Bra[Vacuum], op_?CreatorQ, b___] = 0
+HoldPattern @ Multiply[___, Bra[Vacuum], op_?CreatorQ, ___] = 0
 
 HoldPattern @ Multiply[___, op_?BosonQ, more__, Ket[Vacuum], ___] := 0 /;
   FreeQ[{more}, Dagger[_?BosonQ]]
@@ -1466,7 +1473,7 @@ HoldPattern @ Multiply[
   Bra[Vacuum],
   Dagger[x:a_Symbol?FermionQ[k1_,j1___]], y:a_[k2_,j2___],
   Ket[Vacuum]
- ] := KroneckerDelta[k1,k2] * KroneckerDelta[{j1},{j2}] * UnitStep[-k1] /;
+] := TheDelta[k1, k2] * TheDelta[{j1}, {j2}] * UnitStep[-k1] /;
   seaQ[x] && seaQ[y]
 (* NOTE: Operators with different Heads are assumed to be different
    operators. *)
@@ -1482,7 +1489,7 @@ HoldPattern @ Multiply[Bra[Vacuum], ops__?AnyFockOperatorQ, Ket[Vacuum]] := Modu
   new = VacuumExpectation[
     Multiply @@ ({ops} /. rulesParticleHole[Zz])];
   new /. rulesParticleHoleInverse[Zz]
- ] /; And @@ Map[NumericQ] @ Flatten @ Flavors @ {ops}
+] /; And @@ Map[NumericQ] @ Flatten @ Flavors @ {ops}
 
 rulesParticleHole[f_] := {
   HoldPattern @ Dagger[c_Symbol?FermionQ[k_?Negative, j___?NumericQ]] :>
@@ -1491,14 +1498,14 @@ rulesParticleHole[f_] := {
     Dagger[f[c, k, j]] /; seaQ[c],
   HoldPattern @ Dagger[c_Symbol?FermionQ] :> Dagger[f[c]] /; seaQ[c],
   c_Symbol?FermionQ :> f[c] /; seaQ[c]
- }
+}
 
 rulesParticleHoleInverse[f_] := {
   HoldPattern @ Dagger[f[c_, k__]] :> c[k],
   f[c_, k__] :> Dagger[c[k]],
   HoldPattern @ Dagger[f[c]] :> Dagger[c],
   f[c] :> c
- }
+}
 
 (* By definition, the vacuum expectation value of a normal ordered
    expression is zero! *)
@@ -2225,7 +2232,7 @@ theBosonBasisChange[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
   { ii, jj, ij, ff },
   ii = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], pp}];
   jj = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], qq}];
-  Permanent[mat[[ii, jj]]]  / Sqrt[Times @@ Factorial @ pp] / Sqrt[Times @@ Factorial @ qq]
+  Permanent[mat[[ii, jj]]]  / Sqrt[Upshot @ Factorial @ pp] / Sqrt[Upshot @ Factorial @ qq]
 ]
 
 (**** </BosonBasisChange> ****)
@@ -2403,15 +2410,15 @@ FockColon::usage = "FockColon[expr] denotes the normal ordering of the operators
 
 FockColon[pre___, expr_Plus, post___] := FockColon[pre, #, post]& /@ expr
 
-FockColon[pre___, z_?CommutativeQ expr_, post] := z * FockColon[pre, expr, post]
+FockColon[pre___, z_?CommutativeQ expr_, post___] := z * FockColon[pre, expr, post]
 
 FockColon[] = 1
 
 Format @ HoldPattern @ FockColon[op__] := Interpretation[
-  Row @ { Row @ {
-      Style["\[Colon]", FontColor -> Red], op, 
-      Style["\[Colon]", FontColor -> Red]
-     } },
+  DisplayForm @ Row @ List @ Row @ {
+      StyleBox["\[Colon]", FontColor -> Red], op, 
+      StyleBox["\[Colon]", FontColor -> Red]
+  },
   FockColon[op]
 ]
 (* NOTE: The outer RowBox is to avoid spurious parentheses around the Multiply

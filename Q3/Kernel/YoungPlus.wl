@@ -128,10 +128,11 @@ YnrCharacterTest[ynr_,\[Lambda]_]:=(
  );
 
 
-InvariantYMetric[\[Lambda]_?YoungShapeQ]:=
-With[{wlbg1=WeakLeftBruhatGraph[\[Lambda]],
-transform=Seminormal2Natural[\[Lambda]]},
-Times@@Factorial/@YoungTranspose[\[Lambda]]transform.DiagonalMatrix[NormSquareOfTableau/@First/@wlbg1].Transpose[transform]];
+InvariantYMetric[\[Lambda]_?YoungShapeQ] := With[
+  { wlbg1 = WeakLeftBruhatGraph[\[Lambda]],
+    transform = Seminormal2Natural[\[Lambda]] },
+  Times @@ Factorial /@ YoungTranspose[\[Lambda]] transform . DiagonalMatrix[NormSquareOfTableau /@ First /@wlbg1] . Transpose[transform]
+];
 
 
 predPermutations1[invPList_,curPos_,sourcePos_]:=MapIndexed[{System`Permute[invPList,First[#1]],{curPos,sourcePos,Last[#1]}}&,{System`Cycles[{{#,#+1}}],#}&/@Flatten[Position[Differences[invPList],x_/;x<0]]];

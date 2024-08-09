@@ -560,9 +560,9 @@ MultiplyDegree[_?QubitQ] = 1
 Base[ S_?QubitQ[j___, _] ] := S[j]
 (* For Qubits, the final Flavor index is special. *)
 
-(* FlavorNone: See Abel *)
+(* FlavorCap: See Abel *)
 
-FlavorNone[S_?QubitQ] := S[$]
+FlavorCap[S_?QubitQ] := S[$]
 
 (* FlavorMute: See Cauchy *)
 
@@ -598,7 +598,7 @@ theKetVerify[Rule[a_?QubitQ, v_]] := (
 
 (**** <Basis for Qubit> ****)
 
-Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorNone[S] -> {0, 1}]
+Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorCap[S] -> {0, 1}]
 
 (**** </Basis for Qubit> ****)
 
@@ -607,7 +607,7 @@ Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorNone[S] -> {0, 1}]
 
 SpinForm[vec:Ket[_Association], qq:{__?QubitQ}] := Module[
   { ss },
-  ss = vec[FlavorNone @ qq] /. {
+  ss = vec[FlavorCap @ qq] /. {
     0 -> "\[UpArrow]",
     1 -> "\[DownArrow]"
    };
@@ -676,7 +676,7 @@ thePauliForm[op_?singleQubitGateQ, qq:{__?QubitQ}] := thePauliForm[{op}, qq]
 thePauliForm[gg:{__?singleQubitGateQ}, qq:{__?QubitQ}] := Module[
   { kk },
   kk = GroupBy[gg, First @* Qubits, Row @* Map[thePauliForm]];
-  kk = KeyReplace[kk, Normal @ PositionIndex @ FlavorNone @ qq];
+  kk = KeyReplace[kk, Normal @ PositionIndex @ FlavorCap @ qq];
   CircleTimes @@ ReplacePart[Table["I", Length @ qq], Normal @ kk]
 ]
 
@@ -761,7 +761,7 @@ QubitAddZ[] := Association[ {0} -> {Ket[]} ]
 QubitAddZ[irb_Association] := irb
 
 QubitAddZ[a_?QubitQ] := Module[
-  { aa = FlavorNone @ a,
+  { aa = FlavorCap @ a,
     bs = Basis @ a },
   GroupBy[bs, (1/2-#[aa])&]
  ]
@@ -801,7 +801,7 @@ QubitAdd[] := Association[ {0,0} -> {Ket[]} ]
 QubitAdd[irb_Association] := irb
 
 QubitAdd[a_?QubitQ] := Module[
-  { aa = FlavorNone @ a,
+  { aa = FlavorCap @ a,
     bs = Basis @ a },
   GroupBy[bs, { 1/2, (1/2 - #[aa]) }&]
  ]
@@ -1024,8 +1024,8 @@ CNOT[Rule[cc:{__?QubitQ}, vv_List], tt_] := (
 
 
 CNOT[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}] :=
-  CNOT[FlavorNone @ cc, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ Join[Keys @ cc, tt]]
+  CNOT[FlavorCap @ cc, FlavorCap @ tt] /;
+  Not[FlavorCapQ @ Join[Keys @ cc, tt]]
 
 
 CNOT /: Dagger[ op_CNOT ] = op
@@ -1077,7 +1077,7 @@ Matrix[op:CNOT[{Rule[_?QubitQ, _]..}, {__?QubitQ}], rest___] :=
   Matrix[Elaborate @ op, rest]
 
 CNOT /: (* fallback *)
-Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Times @@ Dimension @ ss]
+Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Upshot @ Dimension @ ss]
 
 (**** </CNOT> ****)
 
@@ -1088,17 +1088,17 @@ CZ::usage = "CZ[{c1, c2, \[Ellipsis]}, t] represents the single-target controlle
 
 CZ::few = "CZ gate requires two or more qubits; `` is returned."
 
-CZ[c_?QubitQ, t_?QubitQ] := CZ[FlavorNone @ c, FlavorNone @ t] /;
-  Not[FlavorNoneQ @ {c, t}]
+CZ[c_?QubitQ, t_?QubitQ] := CZ[FlavorCap @ c, FlavorCap @ t] /;
+  Not[FlavorCapQ @ {c, t}]
 
 CZ /:
 Dagger[ op_CZ ] := op
 
-CZ[a_?QubitQ, bb_?QubitQ] := CZ @ FlavorNone @ {a, bb}
+CZ[a_?QubitQ, bb_?QubitQ] := CZ @ FlavorCap @ {a, bb}
 
-CZ[cc:{__?QubitQ}, t_?QubitQ] := CZ @ FlavorNone @ Append[cc, t]
+CZ[cc:{__?QubitQ}, t_?QubitQ] := CZ @ FlavorCap @ Append[cc, t]
 
-CZ[ss:{__?QubitQ}] := CZ[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+CZ[ss:{__?QubitQ}] := CZ[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 CZ[ss:{S_?QubitQ}] := ( Message[CZ::few, S[3]]; S[3] )
 
@@ -1125,7 +1125,7 @@ Matrix[CZ[ss:{__?QubitQ}], tt:{___?SpeciesQ}] := With[
    [...]. *)
 CZ /:
 Multiply[pre___, CZ[ss:{__?QubitQ}], Ket[a_Association]] := (* performance booster *)
-  Switch[ Times @@ Lookup[a, ss],
+  Switch[ Upshot @ Lookup[a, ss],
     1, -Ket[a],
     _,  Ket[a]
   ]
@@ -1151,11 +1151,11 @@ SWAP::usage = "SWAP[A, B] operates the SWAP gate on the two qubits A and B."
 
 SetAttributes[SWAP, Listable]
 
-SWAP[a_?QubitQ, b_?QubitQ] := SWAP @@ FlavorNone @ {a, b} /;
-  Not[FlavorNoneQ @ {a, b}]
+SWAP[a_?QubitQ, b_?QubitQ] := SWAP @@ FlavorCap @ {a, b} /;
+  Not[FlavorCapQ @ {a, b}]
 
 SWAP[a_?QubitQ, b_?QubitQ] := SWAP[b, a] /;
-  Not @ OrderedQ @ FlavorNone @ {a, b}
+  Not @ OrderedQ @ FlavorCap @ {a, b}
 
 SWAP /:
 Dagger[ op_SWAP ] = op
@@ -1203,11 +1203,11 @@ iSWAP::usage = "iSWAP[A, B] operates the iSWAP gate on the two qubits A and B."
 
 SetAttributes[iSWAP, Listable]
 
-iSWAP[a_?QubitQ, b_?QubitQ] := iSWAP @@ FlavorNone @ {a, b} /;
-  Not[FlavorNoneQ @ {a, b}]
+iSWAP[a_?QubitQ, b_?QubitQ] := iSWAP @@ FlavorCap @ {a, b} /;
+  Not[FlavorCapQ @ {a, b}]
 
 iSWAP[a_?QubitQ, b_?QubitQ] := iSWAP[b, a] /;
-  Not @ OrderedQ @ FlavorNone @ {a, b}
+  Not @ OrderedQ @ FlavorCap @ {a, b}
 
 iSWAP /:
 Matrix[op_iSWAP, rest___] := Matrix[Elaborate[op], rest]
@@ -1240,8 +1240,8 @@ Toffoli::usage = "Toffoli[A, B, C] operates the Toffoli gate, i.e., the three-qu
 SetAttributes[Toffoli, Listable]
 
 Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ] :=
-  Toffoli @@ FlavorNone @ {a, b, c} /;
-  Not[FlavorNoneQ @ {a, b, c}]
+  Toffoli @@ FlavorCap @ {a, b, c} /;
+  Not[FlavorCapQ @ {a, b, c}]
 
 Toffoli /:
 Dagger[ op_Toffoli ] := op
@@ -1273,8 +1273,8 @@ SyntaxInformation[Fredkin] = {
  }
 
 Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}] :=
-  Fredkin[FlavorNone @ a, FlavorNone @ {b, c}] /;
-  Not[FlavorNoneQ @ {a, b, c}]
+  Fredkin[FlavorCap @ a, FlavorCap @ {b, c}] /;
+  Not[FlavorCapQ @ {a, b, c}]
 
 Fredkin /:
 Dagger[ op_Fredkin ] := op
@@ -1307,8 +1307,8 @@ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ] := (
 Deutsch::usage = "Deutsch[angle, {a, b, c}] represents the Deutsch gate, i.e., \[ImaginaryI] times the rotation by angle around the x-axis on qubit c controlled by two qubits a and b."
 
 Deutsch[ph_, qq:{__?QubitQ}, opts___?OptionQ] :=
-  Deutsch[ph, FlavorNone @ qq, opts] /;
-  Not[FlavorNoneQ @ qq]
+  Deutsch[ph, FlavorCap @ qq, opts] /;
+  Not[FlavorCapQ @ qq]
 
 (*
 Deutsch /:
@@ -1370,7 +1370,7 @@ ControlledGate[S_?QubitQ, rest__] :=
   ControlledGate[{S[$]->1}, rest]
 
 ControlledGate[ss:{___?QubitQ}, rest__] :=
-  ControlledGate[Thread[FlavorNone[ss] -> 1], rest]
+  ControlledGate[Thread[FlavorCap[ss] -> 1], rest]
 (* NOTE: ___ not __; see fallback below. *)
 
 
@@ -1388,8 +1388,8 @@ ControlledGate[Rule[cc:{__?QubitQ}, vv_List], rest__] := (
 
 
 ControlledGate[cc:{Rule[_?QubitQ, _]..}, rest__] :=
-  ControlledGate[FlavorNone @ cc, rest] /;
-  Not[FlavorNoneQ @ Keys @ cc]
+  ControlledGate[FlavorCap @ cc, rest] /;
+  Not[FlavorCapQ @ Keys @ cc]
 
 
 ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=
@@ -1486,12 +1486,12 @@ Matrix[
     { rr = Thread[Values[cc] -> Values[cc]],
       prj },
     prj = Dot @@ Matrix[MapThread[Construct, {Keys @ cc, rr}], ss];
-    Dot[prj, Matrix[op, ss]] + (One[Times @@ Dimension @ ss] - prj)
+    Dot[prj, Matrix[op, ss]] + (One[Upshot @ Dimension @ ss] - prj)
    ]
 
 ControlledGate /:
 Matrix[op_ControlledGate, ss:{__?SpeciesQ}] :=
-  op * One[Times @@ Dimension @ ss] (* fallback *)
+  op * One[Upshot @ Dimension @ ss] (* fallback *)
 
 
 ControlledGate /:
@@ -1526,8 +1526,8 @@ ControlledPower[S_?QubitQ, expr_, opts___?OptionQ] :=
   ControlledPower[{S[$]}, expr, opts]
 
 ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
-  ControlledPower[FlavorNone @ ss, expr, opts] /;
-  Not[FlavorNoneQ @ ss]
+  ControlledPower[FlavorCap @ ss, expr, opts] /;
+  Not[FlavorCapQ @ ss]
 
 
 ControlledPower /:
@@ -1553,7 +1553,7 @@ Elaborate @ ControlledPower[cc:{__?QubitQ}, op_, ___] :=
 
 ControlledPower /: (* fallback *)
 Matrix[op_ControlledPower, ss:{__?SpeciesQ}] :=
-  op * One[Times @@ Dimension @ ss]
+  op * One[Upshot @ Dimension @ ss]
 
 ControlledPower /:
 Matrix[ControlledPower[cc_, op_, ___], ss:{__?SpeciesQ}] :=
@@ -1583,7 +1583,7 @@ HoldPattern @ Multiply[pre___, op_ControlledPower, post___] :=
 *)
 
 ControlledPower /:
-Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[]] :=
+Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[Gate]] :=
   Module[
     { n = Length @ ss,
       tt = Qubits[op],
@@ -1614,7 +1614,7 @@ ActOn[S_?SpeciesQ, opts___?OptionQ] :=
   ActOn[{S[$]}, opts]
 
 ActOn[ss:{___?SpeciesQ}, opts___?OptionQ] :=
-  ActOn[FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
+  ActOn[FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
 
 ActOn[ss:{___?SpeciesQ}, opts___?OptionQ][op_] := 
   ActOn[op, ss, opts]
@@ -1627,7 +1627,7 @@ ActOn[op_, ss:{___?SpeciesQ}, opts___] := Module[
 ActOn[op_, S_?SpeciesQ, opts___] := ActOn[op, {S[$]}, opts]
 
 ActOn[op_, ss:{___?SpeciesQ}, opts___] :=
-  ActOn[op, FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
+  ActOn[op, FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
 
 
 ActOn /:
@@ -1670,8 +1670,8 @@ UniformlyControlledRotation[
 
 UniformlyControlledRotation[
   cc:{___?QubitQ}, aa_List, vv_List, S_?QubitQ, opts___?OptionQ ] :=
-  UniformlyControlledRotation[FlavorNone @ cc, aa, vv, FlavorNone @ S, opts] /;
-  Not[FlavorNoneQ @ Append[cc, S]]
+  UniformlyControlledRotation[FlavorCap @ cc, aa, vv, FlavorCap @ S, opts] /;
+  Not[FlavorCapQ @ Append[cc, S]]
 
 UniformlyControlledRotation[
   cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ] := (
@@ -1785,8 +1785,8 @@ AddElaborationPatterns[_UniformlyControlledGate]
 
 
 UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ] :=
-  UniformlyControlledGate[FlavorNone @ cc, tt, opts] /;
-  Not[FlavorNoneQ @ cc]
+  UniformlyControlledGate[FlavorCap @ cc, tt, opts] /;
+  Not[FlavorCapQ @ cc]
 
 UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ] := (
   Message[UniformlyControlledGate::list, tt];
@@ -1902,8 +1902,8 @@ Oracle[f_, cc:{__?QubitQ}, t_?QubitQ, opts___?OptionQ] :=
   Oracle[f, cc, {t}, opts]
 
 Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
-  Oracle[f, FlavorNone @ cc, FlavorNone @ tt, opts] /;
-  Not[FlavorNoneQ @ Join[cc, tt]]
+  Oracle[f, FlavorCap @ cc, FlavorCap @ tt, opts] /;
+  Not[FlavorCapQ @ Join[cc, tt]]
 
 Oracle /:
 Dagger[op_Oracle] := op
@@ -1976,10 +1976,10 @@ QFT[S_?QubitQ, rest___] := QFT[1, {S}, rest]
 
 QFT[type_, S_?QubitQ, rest___] := QFT[type, S @ {$}, rest]
 
-QFT[ss:{___?QubitQ}, rest___] := QFT[1, FlavorNone @ ss, rest]
+QFT[ss:{___?QubitQ}, rest___] := QFT[1, FlavorCap @ ss, rest]
 
 QFT[type_, ss:{__?QubitQ}, rest___] :=
-  QFT[type, FlavorNone @ ss, rest] /; Not[FlavorNoneQ @ ss]
+  QFT[type, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
 
 
 QFT[-1|1, {}, ___] = 1
@@ -2007,12 +2007,12 @@ Matrix[QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, opts___?OptionQ], tt:{__
       FourierParameters -> {0, type}
     ];
     If[flag, mat = N[mat]];
-    MatrixEmbed[mat, ss, FlavorNone @ tt]
-  ] /; ContainsAll[FlavorNone @ tt, ss]
+    MatrixEmbed[mat, ss, FlavorCap @ tt]
+  ] /; ContainsAll[FlavorCap @ tt, ss]
 
 QFT /:
 Matrix[QFT[_, ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := (
-  Message[QFT::mat, ss, FlavorNone @ tt];
+  Message[QFT::mat, ss, FlavorCap @ tt];
   One @ Power[2, Length @ tt]
 )
 
@@ -2078,7 +2078,9 @@ Expand[op_QFT, "Conventional"] := Expand[op]
 QFT /:
 Expand[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Reversed"] :=
   QuantumCircuit[
-    QBR[ss] @ Reverse @ Most[Expand[op] /. cp_ControlledPower :> ReplaceRulesBy[cp, "ControlLabel" -> OverTilde]],
+    QBR[ss] @ Reverse @ Most[
+      Expand[op] /. cp_ControlledPower :> ReplaceRulesBy[cp, "ControlLabel" -> OverTilde]
+    ],
     QBR[ss]
   ]
 
@@ -2181,8 +2183,8 @@ QBR[S_?QubitQ, ___] = 1
 QBR[{S_?QubitQ}, ___] = 1
 
 QBR[qq:{__?QubitQ}, opts___] :=
-  QBR[FlavorNone @ qq, opts] /;
-  Not[FlavorNoneQ @ qq]
+  QBR[FlavorCap @ qq, opts] /;
+  Not[FlavorCapQ @ qq]
 
 
 QBR /: 
@@ -2205,7 +2207,7 @@ Matrix[QBR[ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := Module[
 
 QBR /:
 Matrix[QBR[qq:{__?QubitQ}, ___], ss:{__?QubitQ}] := (
-  Message[QBR::mat, FlavorNone @ qq, FlavorNone @ ss];
+  Message[QBR::mat, FlavorCap @ qq, FlavorCap @ ss];
   One @ Power[2, Length @ ss]
 )
 
@@ -2288,8 +2290,8 @@ QCR[S_?QubitQ, ___] = 1
 QCR[{S_?QubitQ}, ___] = 1
 
 QCR[qq:{__?QubitQ}, opts___] :=
-  QCR[FlavorNone @ qq, opts] /;
-  Not[FlavorNoneQ @ qq]
+  QCR[FlavorCap @ qq, opts] /;
+  Not[FlavorCapQ @ qq]
 
 
 QCR /: 
@@ -2312,7 +2314,7 @@ Matrix[QCR[ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := Module[
 
 QCR /:
 Matrix[QCR[qq:{__?QubitQ}, ___], ss:{__?QubitQ}] := (
-  Message[QCR::mat, FlavorNone @ qq, FlavorNone @ ss];
+  Message[QCR::mat, FlavorCap @ qq, FlavorCap @ ss];
   One @ Power[2, Length @ ss]
 )
 
@@ -2394,7 +2396,7 @@ Projector[expr_] := Projector[expr, Qubits @ expr]
 Projector[expr_, q_?QubitQ] := Projector[expr, q @ {$}]
 
 Projector[expr_, qq:{__?QubitQ}] :=
-  Projector[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
+  Projector[expr, FlavorCap @ qq] /; Not[FlavorCapQ @ qq]
 
 Projector[expr_, qq:{__?QubitQ}] :=
   (Message[Projector::noket, expr]; 1) /; FreeQ[expr, _Ket]
@@ -2607,7 +2609,7 @@ Format @ ProductState[assoc_Association, rest___] := Interpretation[
 ProductState /:
 KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
   Module[
-    { ss = Union[Keys @ a, FlavorNone @ gg] },
+    { ss = Union[Keys @ a, FlavorCap @ gg] },
     Block[
       { Missing },
       Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := {1, 0};
@@ -2718,13 +2720,13 @@ ProductState[v:ProductState[_Association, ___], spec:Rule[_String, _]] :=
 
 ProductState[ ProductState[a_Association, opts___],
   rule:Rule[_?QubitQ, {_, _}] ] :=
-  ProductState[KeySort @ Append[a, FlavorNone @ rule], opts]
+  ProductState[KeySort @ Append[a, FlavorCap @ rule], opts]
 
 ProductState[
   ProductState[a_Association, opts___],
   rule:Rule[{__?QubitQ}, {{_, _}..}]
  ] := ProductState[
-   KeySort @ Join[a, AssociationThread[FlavorNone /@ rule]],
+   KeySort @ Join[a, AssociationThread[FlavorCap /@ rule]],
    opts
   ]
 
@@ -2732,7 +2734,7 @@ ProductState[
   ProductState[a_Association, opts___],
   Rule[gg:{__?QubitQ}, v:{_, _}]
  ] := With[
-   { b = AssociationMap[(v)&, FlavorNone @ gg] },
+   { b = AssociationMap[(v)&, FlavorCap @ gg] },
    ProductState[ KeySort @ Join[a, b], opts ]
   ]
 
@@ -2757,7 +2759,7 @@ ProductState[a_Association, opts___][qq:(_?QubitQ | {__?QubitQ})] :=
   Block[
     { Missing },
     Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := {1, 0};
-    Lookup[a, FlavorNone @ qq]
+    Lookup[a, FlavorCap @ qq]
    ]
 
 (**** </ProductState> ****)
@@ -2818,7 +2820,7 @@ SmolinState::usage = "SmolinState[{s1,s2,\[Ellipsis]}] returns the generalized S
 SmolinState::badsys = "A generalized Smolin state is defined only for an even number of qubits: `` has an odd number of qubits. Returning the generalized Smolin state for the qubits excluding the last."
 
 SmolinState[ss:{__?QubitQ}] := (
-  Message[SmolinState::badsys, FlavorNone @ ss];
+  Message[SmolinState::badsys, FlavorCap @ ss];
   SmolinState[Most @ ss]
  ) /; OddQ[Length @ ss]
 
@@ -2836,11 +2838,11 @@ GraphState::usage = "GraphState[g] gives the graph state correponding to the gra
 
 GraphState::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``."
 
-GraphState[g_Graph] := GraphState[g, FlavorNone @ VertexList @ g] /;
+GraphState[g_Graph] := GraphState[g, FlavorCap @ VertexList @ g] /;
   AllTrue[VertexList @ g, QubitQ]
 
 GraphState[g_Graph, ss:{__?QubitQ}] := (
-  Message[GraphState::msmtch, g, FlavorNone @ ss];
+  Message[GraphState::msmtch, g, FlavorCap @ ss];
   Ket[]
  ) /; Length[VertexList @ g] != Length[ss]
 
@@ -2849,7 +2851,7 @@ GraphState[g_Graph, ss:{__?QubitQ}] := Module[
     vv = VertexList[g],
     cz = EdgeList[g],
     in, rr },
-  rr = Thread[vv -> FlavorNone[ss]];
+  rr = Thread[vv -> FlavorCap[ss]];
   vv = vv /. rr;
   cz = cz /. rr;
   in = Table[1, dd] / Sqrt[dd];
@@ -2882,11 +2884,11 @@ GraphStateBasis::usage = "GraphStateBasis[g] returns the graph state basis for t
 
 GraphStateBasis::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``."
 
-GraphStateBasis[g_Graph] := GraphStateBasis[g, FlavorNone @ VertexList @ g] /;
+GraphStateBasis[g_Graph] := GraphStateBasis[g, FlavorCap @ VertexList @ g] /;
   AllTrue[VertexList @ g, QubitQ]
 
 GraphStateBasis[g_Graph, ss:{__?QubitQ}] := (
-  Message[GraphStateBasis::msmtch, g, FlavorNone @ ss];
+  Message[GraphStateBasis::msmtch, g, FlavorCap @ ss];
   Ket[]
  ) /; Length[VertexList @ g] != Length[ss]
 
@@ -2931,8 +2933,8 @@ ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] := (
  ) /; n > Power[2, Length @ tt]
 
 ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] :=
-  ModMultiply[n, FlavorNone @ cc, FlavorNone @ tt, opts] /;
-  Not[FlavorNoneQ @ Join[cc, tt]]
+  ModMultiply[n, FlavorCap @ cc, FlavorCap @ tt, opts] /;
+  Not[FlavorCapQ @ Join[cc, tt]]
 
 
 ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ},
@@ -2949,8 +2951,8 @@ ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ},
 
 
 ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ}, opts___?OptionQ] :=
-  ModMultiply[n, x, FlavorNone @ tt, opts] /;
-  Not[FlavorNoneQ @ tt]
+  ModMultiply[n, x, FlavorCap @ tt, opts] /;
+  Not[FlavorCapQ @ tt]
 
 ModMultiply[n_Integer, x_?IntegerQ, tt:{__?QubitQ},
   ___?OptionQ][Ket[aa_Association]] :=
@@ -3069,8 +3071,8 @@ NonCommutativeQ[_UnitaryInteraction] = True
 
 
 UnitaryInteraction[any_, ss:{__?QubitQ}, opts___?OptionQ] :=
-  UnitaryInteraction[any, FlavorNone @ ss, opts] /;
-  Not[FlavorNoneQ @ ss]
+  UnitaryInteraction[any, FlavorCap @ ss, opts] /;
+  Not[FlavorCapQ @ ss]
 
 UnitaryInteraction[phi:Except[_?ListQ], rest__] :=
   UnitaryInteraction[{0, 0, phi}, rest]
@@ -3161,7 +3163,7 @@ Matrix[
 Matchgate::usage = "Matchgate[{a1,b1,c1}, {a2,b2,c2}] ... "
 
 Matchgate[aa_, bb_, ss:{__?QubitQ}] :=
-  Matchgate[aa, bb, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+  Matchgate[aa, bb, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 Matchgate /:
 Elaborate @ Matchgate[aa:{_, _, _}, bb:{_, _, _}, ss:{_?QubitQ, _?QubitQ}] :=
@@ -3298,9 +3300,9 @@ Base[ S_?QuditQ[k___, _] ] := S[k]
 (* For Qudits, the final Flavor index is special. *)
 
 
-(* FlavorNone: See Cauchy *)
+(* FlavorCap: See Cauchy *)
 
-FlavorNone[S_?QuditQ] := S[$]
+FlavorCap[S_?QuditQ] := S[$]
 
 
 (* FlavorMute: See Cauchy *)
@@ -3372,9 +3374,11 @@ HoldPattern @ Multiply[pre___,
   A_Symbol?QuditQ[j___, y_->z_], A_Symbol?QuditQ[j___, x_->y_],
   post___] := Multiply[pre, A[j, x->z], post]
 
-HoldPattern @ Multiply[pre___,
+HoldPattern @ Multiply[
+  pre___,
   A_Symbol?QuditQ[j___, z_->w_], A_Symbol?QuditQ[j___, x_->y_],
-  post___] := Multiply[pre, A[j, x->w], post] KroneckerDelta[y, z]
+  post___
+] := Multiply[pre, A[j, x->w], post] * KroneckerDelta[y, z]
 
 
 (* See Gross (2006) and Singal et al. (2023) *)
@@ -3402,7 +3406,7 @@ HoldPattern @ Multiply[pre___, A_?QuditQ, B_?QuditQ, post___] :=
 (**** <Basis> ****)
 
 Basis[ S_?QuditQ ] :=
-  Ket /@ Thread[FlavorNone[S] -> Range[0, Dimension[S]-1]]
+  Ket /@ Thread[FlavorCap[S] -> Range[0, Dimension[S]-1]]
 
 (**** </Basis> ****)
 
@@ -3422,8 +3426,8 @@ TheQuditKet[ cc:{_Integer, _Integer}.. ] := Module[
   pwrs = Reverse @ FoldList[ Times, 1, Reverse @ Rest @ dd ];
   bits = Last @ aa;
   p = 1 + bits.pwrs;
-  SparseArray[ {p -> 1}, Times @@ dd ]
- ]
+  SparseArray[{p -> 1}, Upshot @ dd]
+]
 
 
 (**** <Parity> ****)

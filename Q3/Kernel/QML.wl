@@ -30,8 +30,8 @@ BasisEmbeddingGate::usage = "BasisEmbeddingGate[data, {s1,s2,\[Ellipsis]}] repre
 BasisEmbeddingGate::len = "The lengths of `` and `` must be the same."
 
 BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
-  BasisEmbeddingGate[vv, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+  BasisEmbeddingGate[vv, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] := (
   Message[BasisEmbeddingGate::len, vv, ss];
@@ -59,8 +59,8 @@ AmplitudeEmbeddingGate::usage = "AmplitudeEmbedding[data, {s1,s2,\[Ellipsis]}] r
 AmplitudeEmbeddingGate::negative = "Some elements of `` is not real non-negative."
 
 AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] :=
-  AmplitudeEmbeddingGate[in, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+  AmplitudeEmbeddingGate[in, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 
 AmplitudeEmbeddingGate /:
@@ -149,14 +149,14 @@ ParseGate[
 VertexEmbedding::usage = ""
 
 VertexEmbedding[g_Graph, s_?QubitQ] :=
- VertexEmbedding[g, FlavorNone @ s] /; Not[FlavorNoneQ @ s]
+ VertexEmbedding[g, FlavorCap @ s] /; Not[FlavorCapQ @ s]
 
 VertexEmbedding[g_Graph, s_?QubitQ] :=
   VertexEmbedding[g, s[Range @ Length @ VertexList @ g, $]]
 
 VertexEmbedding[g_Graph, ss:{__?QubitQ}] :=
-  VertexEmbedding[g, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+  VertexEmbedding[g, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 VertexEmbedding[g_Graph, ss:{__?QubitQ}] :=
   VertexReplace[g, Thread[VertexList[g] -> ss]]
@@ -192,8 +192,8 @@ BlockEncoding[mat_, s_?QubitQ, a_?QubitQ, opts___?OptionQ] :=
   BlockEncoding[mat, s @ {$}, a @ {$}, opts]
 
 BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, opts___?OptionQ] :=
-  BlockEncoding[mat, FlavorNone @ ss, FlavorNone @ aa, opts] /;
-  Not @ FlavorNoneQ @ Join[ss, aa]
+  BlockEncoding[mat, FlavorCap @ ss, FlavorCap @ aa, opts] /;
+  Not @ FlavorCapQ @ Join[ss, aa]
 
 
 BlockEncoding /:

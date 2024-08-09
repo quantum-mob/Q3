@@ -1,6 +1,6 @@
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "3.5.3",
+  "Version" -> "3.5.4",
   "WolframVersion" -> "12.3+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
@@ -12,7 +12,7 @@ Paclet[
          The list is also used by FindFile.
          The list also causes documentation links to be added to usage
          messages when documentation is present. *)
-      "Symbols" -> { "Let", "Q3Info", "Q3CheckUpdate", "Q3Update" }
+      "Symbols" -> { "Let", "Q3Info", "Q3CheckUpdate", "Q3Update", "Q3Assure" }
       (* Symbols supplies a set of symbols that the paclet provides. If the
          Loading is set to Automatic, autoloading will be set up for everyone
          of these symbols. *)

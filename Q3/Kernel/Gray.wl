@@ -49,8 +49,8 @@ GrayBasis[ss:{__?SpinQ}] :=
 
 GrayTransform::usage = "GrayTransform[{s1,s2,\[Ellipsis]}] represents the unitary transformation from the computational basis of qubits or spins s1, s2, \[Ellipsis] to the Gray code basis.\nGrayTransform[n] is for n unlabelled qubits."
 
-GrayTransform[ss:{__?QubitQ}] := GrayTransform[FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+GrayTransform[ss:{__?QubitQ}] := GrayTransform[FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 
 GrayTransform /:
@@ -121,7 +121,7 @@ GrayControlledGate[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
   mm = MatrixPower[mm, 1/nn];
   op = ExpressionFor[mm, Qubits @ expr];
 
-  rr = Reverse /@ GraySubsets[ReverseSort @ FlavorNone @ qq];
+  rr = Reverse /@ GraySubsets[ReverseSort @ FlavorCap @ qq];
   rr = Rest[rr];
 
   nq = Length @ qq;
@@ -310,8 +310,8 @@ GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, n_Integer] := (
 
 
 GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}] :=
-  GivensRotation[mat, ij, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+  GivensRotation[mat, ij, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 
 GivensRotation /:
@@ -400,7 +400,7 @@ grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
     cc, tt, vv, op },
   cc = IntegerDigits[BitXor @@ pair, 2, n];
 
-  tt = FlavorNone @ Part[ss, Flatten @ Position[cc, 1]];
+  tt = FlavorCap @ Part[ss, Flatten @ Position[cc, 1]];
   op = Elaborate @ ExpressionFor[mat, tt];
   If[ Not @ OrderedQ @ pair,
     op = With[{X = First[tt][1]}, X ** op ** X]
@@ -423,8 +423,8 @@ returns a list of controlled-unitary and single-qubit gates that compose the uni
 GivensFactor::dim = "The dimensions of matrix `` are not compatible with qubits ``."
 
 GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] :=
-  GivensFactor[mat, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+  GivensFactor[mat, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := (
   Message[GivensFactor::dim, mat, ss];
@@ -485,8 +485,8 @@ returns a list of controlled-unitary and single-qubit gates that compose the uni
 GrayGivensFactor::dim = "The dimensions of matrix `` are not compatible with qubits ``."
 
 GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] :=
-  GrayGivensFactor[mat, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+  GrayGivensFactor[mat, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := (
   Message[GrayGivensFactor::dim, mat, ss];

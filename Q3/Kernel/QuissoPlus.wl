@@ -231,7 +231,7 @@ QuissoCorrelationTensor[v_, {n_Integer}] := Module[
   { qq = Qubits @ v,
     nn, op, jj, cc },
   nn = Length @ qq;
-  qq = FlavorNone @ Subsets[qq, {n}];
+  qq = FlavorCap @ Subsets[qq, {n}];
   jj = Map[(#[All]) &, qq, {2}];
   op = Map[Outer[Multiply, Sequence @@ #, 1] &, jj];
   cc = Dagger[v] ** op ** v;

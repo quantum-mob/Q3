@@ -17,6 +17,8 @@ BeginPackage["Q3`"]
 { Ranking };
 { IntervalSize };
 
+{ Upshot, TheDelta};
+
 { Unless };
 
 { Chain, ChainBy };
@@ -38,7 +40,7 @@ BeginPackage["Q3`"]
 
 { Primed, DoublePrimed };
 
-{ MatrixObject };
+{ MatrixShort, MatrixObject };
 
 { LevelsPlot };
 { PanedText };
@@ -727,7 +729,7 @@ ApplyThrough[func_][expr_] := ApplyThrough[func, expr]
 ApplyThrough[func_, aa_Association] := Map[func, aa]
 
 ApplyThrough[func_, aa_SparseArray] := 
-  SparseArray[func @ ArrayRules @ aa, Dimensions @ aa]
+  SparseArray[Normal[func /@ Association @ ArrayRules @ aa], Dimensions @ aa]
 
 ApplyThrough[func_, expr_] := func @ ReplaceAll[
   func[expr],
@@ -761,18 +763,52 @@ ReplaceAllThrough::usage = "ReplaceAllThrough[expr, rules] applies ReplaceAll[ru
 
 ReplaceAllThrough[aa_Association, rules_] := ReplaceAll[rules] /@ aa
 
-ReplaceAllThrough[aa_SparseArray, rules_] :=
-  SparseArray @ ReplaceAll[ArrayRules @ aa, rules]
+ReplaceAllThrough[aa_SparseArray, rules_] := With[
+  { data = ArrayRules @ aa },
+  SparseArray[
+    Block[
+      { Nothing },
+      Thread @ Rule[Keys @ data, ReplaceAll[Values @ data, rules]]
+    ],
+    Dimensions @ aa
+  ]
+]
 
 ReplaceAllThrough[expr_, rules_] := ReplaceAll[
   ReplaceAll[expr, rules],
   { aa_Association :> ReplaceAllThrough[aa, rules],
-    aa_SparseArray :> ReplaceallThrough[aa, rules] }
- ]
+    aa_SparseArray :> ReplaceAllThrough[aa, rules] }
+]
 
 ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]
 
 (***** </ApplyThrough> *****)
+
+
+(**** <TheDelta> ****)
+
+Upshot::usage = "Upshot[list] returns the multiplication of the elements in list.\nUpshot[list, n] multiplies all elements down to level n.\nUpshot[list, {n}] multiplies elements at level n.\nUpshot[list, {n1, n2}] multiplies elements at levels n1 through n2."
+
+Upshot[data:(_List|_Association)] := Apply[Times, data]
+
+Upshot[data:(_List|_Association), spec_] := Apply[Times, data, spec]
+
+
+TheDelta::usage = "TheDelta[a, b, \[Ellipsis]] is almost equivalent to KroneckerDelta[a, b, \[Ellipsis]] but threads through lists."
+
+SetAttributes[TheDelta, Orderless];
+
+TheDelta[x_List, y__List] := With[
+  { val = KroneckerDelta[x, y] },
+  Switch[ val,
+    _KroneckerDelta, Upshot[Thread @ val],
+    _, val
+  ]
+]
+
+TheDelta[x__] := KroneckerDelta[x]
+
+(**** </TheDelta> ****)
 
 
 (**** <LeftBrace> ****)
@@ -978,15 +1014,34 @@ MakeBoxes[MatrixObject[mat_List?MatrixQ], fmt_] :=
     { BoxForm`SummaryItem @ { "Type: ", "Dense" },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions[mat] }
     },
-    { BoxForm`SummaryItem @ { "Elements: ", MatrixForm @ Chop @ mat[[;;UpTo[4], ;;UpTo[4]]] }
+    { BoxForm`SummaryItem @ { "Elements: ", MatrixShort[mat] }
     },
     fmt,
     "Interpretable" -> Automatic
   ]
 
+MatrixObject[{}] = {}
+
 MatrixObject[mat_SparseArray?MatrixQ] = mat
 
 MatrixObject[mat_SymmetrizedArray?MatrixQ] = mat
+
+
+MatrixShort::usage = "MatrixShort[mat] displays matrix mat in a short form."
+
+Options[MatrixShort] = {
+  "Size" -> UpTo[4],
+  "Accuracy" -> 3
+}
+
+MatrixShort[mat_?MatrixQ, opts:OptionsPattern[{MatrixShort, MatrixForm}]] := With[
+  { dim = OptionValue["Size"],
+    acc = OptionValue["Accuracy"] },
+  MatrixForm[
+    Chop @ mat[[;;dim, ;;dim]], 
+    FilterRules[{opts}, Options[MatrixForm]]
+  ]
+]
 
 (**** </MatrixObject> ****)
 

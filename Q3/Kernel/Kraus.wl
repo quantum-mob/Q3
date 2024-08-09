@@ -44,7 +44,7 @@ Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] :=
 Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] := (
   Message[Supermap::wrong, Supermap[tsr], rho];
   rho
- )
+)
 
 
 (* In terms of matrices *)
@@ -52,25 +52,25 @@ Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] := (
 Supermap[a_?MatrixQ, b_?MatrixQ] := (
   Message[Supermap::incmp, Normal @ {a, b}];
   Identity
- ) /; Not @ ArrayQ @ {a, b}
+) /; Not @ ArrayQ @ {a, b}
 
 Supermap[ops:{__?MatrixQ}, cc_?VectorQ] := (
   Message[Supermap::incmp, Normal @ {ops}];
   Identity
- ) /; Not @ And[ArrayQ @ ops, Length[ops] == Length[cc]]
+) /; Not @ And[ArrayQ @ ops, Length[ops] == Length[cc]]
 
 Supermap[ops:{__?MatrixQ}, cc_?MatrixQ] :=  (
   Message[Supermap::incmp, Normal @ {ops, cc}];
   Identity
- ) /; Not @ And[
-   ArrayQ @ ops,
-   Equal @@ Flatten @ {Length @ ops, Dimensions @ cc}
+) /; Not @ And[
+    ArrayQ @ ops,
+    Equal @@ Flatten @ {Length @ ops, Dimensions @ cc}
   ]
 
 Supermap[ops:{__?MatrixQ}] :=  (
   Message[Supermap::incmp, Normal @ {ops}];
   Identity
- ) /; Not @ ArrayQ @ {ops}
+) /; Not @ ArrayQ @ {ops}
 
 
 Supermap[a_?MatrixQ] := Supermap @ ChoiMatrix[a]
@@ -101,7 +101,7 @@ HoldPattern @ Supermap[ops:{__}, cc_?VectorQ][rho_] :=
 
 HoldPattern @ Supermap[ops:{__}, cc_?MatrixQ][rho_] := Garner @ Total @ Total[
   cc * Outer[Multiply, ops, rho ** Dagger[ops]]
- ]
+]
 
 
 (* Formatting *)
@@ -203,11 +203,11 @@ ChoiMatrix[ops:{__?MatrixQ}, cc_?MatrixQ] := With[
  ] /; ArrayQ[ops]
 
 
-ChoiMatrix[most__, S_?SpeciesQ] := ChoiMatrix[most, FlavorNone @ {S}]
+ChoiMatrix[most__, S_?SpeciesQ] := ChoiMatrix[most, FlavorCap @ {S}]
 
 ChoiMatrix[most__, ss:{__?SpeciesQ}] :=
-  ChoiMatrix[most, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+  ChoiMatrix[most, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 
 ChoiMatrix[ops:{__}, ss:{__?SpeciesQ}] := With[
@@ -746,7 +746,7 @@ goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
       AppendTo[res, new];
     ];
     Return[res];
-]
+  ]
 
 (**** </LindbladSimulate> ****)
 

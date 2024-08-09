@@ -4,7 +4,10 @@ BeginPackage["Q3`"]
 { WickEntanglementEntropy, WickMutualInformation };
 { QuantumLog }; (* mainly in vonNeumann.wl *)
 
-{ WickState, WickHistory, WickOperator, WickUnitary };
+{ WickMatrix };
+
+{ WickState, WickHistory, WickUnitary };
+{ WickOperator, WickOperatorFor };
 { WickExpectation, WickGreensFunction };
 
 { WickCircuit, WickRandomCircuit };
@@ -332,6 +335,23 @@ WickState::trs = "Inconsistent transformations ``; each transformation must be s
 
 WickState::frm = "No fermion modes in ``."
 
+
+(* EXPERIMENTAL *)
+WickState /:
+MakeBoxes[ws:WickState[trs_?MatrixQ, mm_?MatrixQ, cc:{___?FermionQ}], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickState, ws, None,
+    { BoxForm`SummaryItem @ { "Bare modes: ", cc },
+      BoxForm`SummaryItem @ { "Number of particles: ", Length @ mm }
+    },
+    { BoxForm`SummaryItem @ { "Overall unitary: ", MatrixShort @ trs },
+      BoxForm`SummaryItem @ { "Mode transform: ", MatrixShort @ mm }    
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+
 WickState /:
 MakeBoxes[vec:WickState[pp:{___?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...}, ff_?MatrixQ, cc:{___?FermionQ}], fmt_] :=
   BoxForm`ArrangeSummaryBox[
@@ -341,11 +361,18 @@ MakeBoxes[vec:WickState[pp:{___?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...}, ff_?M
     },
     { BoxForm`SummaryItem @ { "Encoded modes: ", pp },
       BoxForm`SummaryItem @ { "Transformations: ", BogoliubovTransforms @ mm },
-      BoxForm`SummaryItem @ { "Wick matrix: ", MatrixObject @ ff }
+      BoxForm`SummaryItem @ { "Wick matrix: ", MatrixShort @ ff }
     },
     fmt,
     "Interpretable" -> Automatic
   ]
+
+
+(* EXPERIMENTAL *)
+WickState[trs_?MatrixQ, cc:{__?FermionQ}] :=
+  WickState[One @ Length @ cc, trs, cc]
+
+
 
 WickState[pp_, mm_, ff_, cc_]["Encoded modes"] = pp
 
@@ -386,6 +413,10 @@ WickState[aa_Association] :=
 
 
 WickState /:
+NormSquare[ws_WickState] := Quiet[Power[Det[ws[[3]]], 1/2], Det::luc]
+(* NOTE: The pfaffian of this Wick matrix must be positive. *)
+
+WickState /:
 Norm[ws_WickState] := Quiet[Power[Det[ws[[3]]], 1/4], Det::luc]
 (* NOTE: The pfaffian of this Wick matrix must be positive. *)
 
@@ -395,6 +426,19 @@ Matrix[ws_WickState, rest___] := ws * Matrix[Ket[], rest]
 
 WickState /:
 Matrix[ws:WickState[enc_List, trs:{{_?MatrixQ, _?MatrixQ}..}, mat_?MatrixQ, cc:{__?FermionQ}]] := Matrix[ws, cc]
+
+
+(* EXPERIMENTAL *)
+WickState /:
+Matrix[ws:WickState[trs_?MatrixQ, mm_?MatrixQ, cc:{__?FermionQ}]] := Matrix[ws, cc]
+
+(* EXPERIMENTAL *)
+WickState /:
+Matrix[WickState[trs_?MatrixQ, mm_?MatrixQ, cc:{__?FermionQ}], ss:{__?SpeciesQ}] := Module[
+  { dd = Dagger[cc] . trs . Topple[mm] },
+  Dot @@ Append[Matrix[dd, ss], Matrix[Ket[cc], ss]]
+]
+
 
 WickState /:
 Matrix[ws:WickState[enc_List, trs:{{_?MatrixQ, _?MatrixQ}..}, mat_?MatrixQ, cc:{__?FermionQ}], ss:{__?SpeciesQ}] :=
@@ -413,6 +457,11 @@ Matrix[ws:WickState[enc_List, trs:{{_?MatrixQ, _?MatrixQ}..}, mat_?MatrixQ, cc:{
 WickState /:
 Expand[ws:WickState[enc_List, trs:{{_?MatrixQ, _?MatrixQ}..}, mat_?MatrixQ, cc:{__?FermionQ}]] :=
   State[Matrix[ws, cc], cc]
+
+(* EXPERIMENTAL *)
+WickState /:
+Elaborate[ws:WickState[trs_?MatrixQ, mm_?MatrixQ, cc:{__?FermionQ}]] :=
+  ExpressionFor[Matrix[ws, cc], cc]
 
 WickState /:
 Elaborate[ws:WickState[enc_List, trs:{{_?MatrixQ, _?MatrixQ}..}, mat_?MatrixQ, cc:{__?FermionQ}]] :=
@@ -494,7 +543,7 @@ MakeBoxes[op:WickUnitary[trs:{_?MatrixQ, _?MatrixQ}, ___?OptionQ], fmt_] :=
     { BoxForm`SummaryItem @ { "Target: ", "Unspecified" },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ trs }
     },
-    { BoxForm`SummaryItem @ { "Blocks: ", Map[MatrixObject, trs] }
+    { BoxForm`SummaryItem @ { "Blocks: ", Short @ Map[MatrixShort, trs] }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -507,7 +556,7 @@ MakeBoxes[op:WickUnitary[trs:{_?MatrixQ, _?MatrixQ}, cc:{___?FermionQ}, ___?Opti
     { BoxForm`SummaryItem @ { "Target: ", cc },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ trs }
     },
-    { BoxForm`SummaryItem @ { "Blocks: ", Map[MatrixObject, trs] }
+    { BoxForm`SummaryItem @ { "Blocks: ", Short @ Map[MatrixShort, trs] }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -653,6 +702,23 @@ ParseGate[WickUnitary[trs_, ff:{___?FermionQ}, opts___?OptionQ], more___?OptionQ
 
 WickOperator::usage = "WickOperator[{c1,c2,...,ck}] represents an operator equivalent to c1**c2**...**ck, but is to be applied to a Wick state. on WickState ws.\nWickOperator[Measurement[c]] or WickOperator[Measurement[{c1, c2, \[Ellipsis]}]] is equivalent to Measurement[\[Ellipsis]].\nWickOperator[{u, v}] is equivalent to WickUnitary[{u, v}]."
 
+WickOperator /:
+MakeBoxes[WickOperator[ops:{Rule[_, _?VectorQ]...}], fmt_] := Module[
+  { mat = Values[ops],
+    m, n },
+  {m, n} = Dimensions[mat];
+  BoxForm`ArrangeSummaryBox[
+    WickOperator, mat, None,
+    { BoxForm`SummaryItem @ { "Modes: ", n },
+      BoxForm`SummaryItem @ { "Operators: ", m }
+    },
+    { BoxForm`SummaryItem @ { "Transforms: ", MatrixShort[mat] }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+]
+
 WickOperator[msr_Measurement] = msr
 
 WickOperator[trs_WickUnitary] = trs
@@ -664,7 +730,56 @@ WickOperator[trs:{_?MatrixQ, _?MatrixQ}] :=
 WickOperator[op:{___?AnyFermionQ}][fs_Ket] :=
   WickOperator[op][WickState @ fs]
 
-WickOperator[{}][ws_WickState] = ws
+WickOperator[{}][any_] = any
+
+
+(* EXPERIMENTAL *)
+(* For non-unitary dynamics  *)
+WickOperator[rule_Rule] := WickOperator[{rule}]
+
+(* EXPERIMENTAL *)
+(* For non-unitary dynamics  *)
+WickOperator[ops:{__Rule}] :=
+  WickOperator @ Thread[Map[Hood, Keys @ ops] -> Values[ops]] /;
+  AnyTrue[Keys @ ops, AnyFermionQ]
+
+
+(* EXPERIMENTAL *)
+WickOperator[spec_, rr:Rule[_?FermionQ, _?VectorQ]] :=
+  WickOperator[spec, Association @ rr]
+
+(* EXPERIMENTAL *)
+WickOperator[spec_, rr:Rule[{__?FermionQ}, _?MatrixQ]] :=
+  WickOperator[spec, AssociationThread @ rr]
+
+(* EXPERIMENTAL *)
+WickOperator[ops:{__?AnyFermionQ}, aa_Association][ws_WickState] :=
+  Apply[Composition, Thread @ WickOperator[ops, Lookup[aa, Peel @ ops]]][ws]
+
+(* EXPERIMENTAL *)
+WickOperator[ops:{__?AnyFermionQ}, mm_?MatrixQ][ws_WickState] :=
+  Apply[Composition, Thread @ WickOperator[ops, mm]][ws]
+
+
+(* EXPERIMENTAL *)
+WickOperator[_?FermionQ, v_?VectorQ][WickState[trs_?MatrixQ, mm_?MatrixQ, cc:{__?FermionQ}]] := Module[
+  { ww = mm . Conjugate[v . trs],
+    ss = IntegerParity[Range[Length @ mm]-1],
+    new },
+  new = Table[Delete[mm, k], {k, Length @ mm}];
+  WickState[trs, Total[new * ww * ss], cc]
+]
+
+(* EXPERIMENTAL *)
+WickOperator[HoldPattern @ Dagger[_?FermionQ], v_?VectorQ][
+  WickState[trs_?MatrixQ, mm_?MatrixQ, cc:{__?FermionQ}]
+] /; Length[mm] >= Length[cc] = 0
+
+(* EXPERIMENTAL *)
+WickOperator[HoldPattern @ Dagger[_?FermionQ], v_?VectorQ][
+  WickState[trs_?MatrixQ, mm_?MatrixQ, cc:{__?FermionQ}]
+] := WickState[trs, Append[mm, v . trs], cc]
+
 
 
 (* For the vacuum state *)
@@ -719,6 +834,38 @@ ParseGate[WickOperator[op:{___?AnyFermionQ}, opts___?OptionQ], more___?OptionQ] 
   Gate[Fermions @ op, more, opts]
 
 (**** </WickOperator> ****)
+
+
+(**** <WickOperatorFor> ****)
+
+WickOperatorFor::usage = "WickOperatorFor[expr_, {c1, c2, \[Ellipsis]}] constructs WickOperator from linear combination (or a list of linear combinations) expr of fermion operators of fermion modes {c1, c2, \[Ellipsis]}."
+
+WickOperatorFor[cc : {__?FermionQ}][spec_] :=
+  WickOperatorFor[spec, cc]
+
+WickOperatorFor[expr_List, cc : {__?FermionQ}] :=
+  WickOperator[theWickRuleFor[cc] /@ expr]
+
+WickOperatorFor[expr_, cc : {__?FermionQ}] :=
+  WickOperator @ {theWickRuleFor[expr, cc]}
+
+
+theWickRuleFor[cc : {__?FermionQ}][expr_] :=
+ theWickRuleFor[expr, cc]
+
+theWickRuleFor[expr_, cc : {__?FermionQ}] := Module[
+  { aa = Coefficient[expr, cc],
+    bb = Coefficient[expr, Dagger @ cc]},
+  Which[
+    ZeroQ @ Norm[aa, Infinity],
+    Dagger -> bb,
+    ZeroQ @ Norm[bb, Infinity],
+    Identity -> aa,
+    True, Join[aa, bb]
+  ]
+]
+
+(**** </WickOperatorFor> *****)
 
 
 (**** <Measurement> ****)
@@ -855,7 +1002,7 @@ WickGreensFunction[ws_WickState, dd:{___?FermionQ}] := Module[
     {j, i+1, n}
   ];
 
-  NambuMatrix[{gg, ff} / Re[Sqrt @ Det @ mm], "Green's"]
+  NambuMatrix[{gg, ff} / Quiet[Re[Sqrt @ Det @ mm], "Green's"], Det::luc]
   (* NOTE: The Pfaffian of mm is supposed to be real positive. *)
 ]
 
@@ -931,6 +1078,45 @@ WickMutualInformation[grn_?MatrixQ, kk:{__Integer}] :=
   WickMutualInformation[NambuMatrix[{grn, 0}, "Green's"], kk]
 
 (**** </WickMutualInformation> ****)
+
+
+(**** <WickMatrix> ****)
+
+WickMatrix::usage= "EXPERIMENTAL\nWickMatrix[...] ..."
+
+(* EXPERIMENTAL *)
+WickMatrix[ops : {__?AnyFermionQ} -> cff_?MatrixQ] := Module[
+  { cc = Peel@ops,
+    ff = MatchQ[#, _Dagger] & /@ ops,
+    ij = Subsets[Range@Length@ops, {2}],
+    mat },
+  ff = Replace[
+    ff[[#]] & /@ ij, {{False, True} -> True, _ -> False}, {1}];
+  ij = Pick[ij, ff];
+  mat = AssociationMap[cff[[First@#]] . Conjugate[cff[[Last@#]]] &, ij];
+  mat = Join[Normal@mat, KeyValueMap[Reverse@#1 -> -#2 &, mat]];
+  SparseArray[mat, Length[ops]*{1, 1}]
+]
+
+(* EXPERIMENTAL *)
+(* INPUT: ass is an assotion of (Identity|Dagger) -> {v1, v2, \[Ellipsis]}.
+   For non-unitary transformation. *)
+WickMatrix[ass : {Rule[(Identity|Dagger), _?VectorQ]...}] := Module[
+  { ops = Keys[ass],
+    trs = Values[ass],
+    ff, ij, rr },
+  ij = Subsets[Range @ Length @ ops, {2}];
+  ff = Replace[ops[[#]]& /@ ij, {{Identity, Dagger} -> True, _ -> False}, {1}];
+  ij = Pick[ij, ff];
+  rr = MapApply[trs[[#1]] . trs[[#2]] &, ij];
+  rr = Join[
+    Thread[ij -> rr],
+    Thread[Reverse /@ ij -> -rr]
+  ];
+  SparseArray[rr, Length[ops]*{1, 1}]
+]
+
+(**** </WickMatrix> ****)
 
 
 (**** <wmBuild> ****)

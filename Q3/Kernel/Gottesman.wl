@@ -31,13 +31,13 @@ PauliGroup::todo = "Not supported yet."
 
 FullPauliGroup[S_?QubitQ] := FullPauliGroup @ {S}
 
-FullPauliGroup[ss:{__?QubitQ}] := FullPauliGroup[FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ {ss}]
+FullPauliGroup[ss:{__?QubitQ}] := FullPauliGroup[FlavorCap @ ss] /;
+  Not[FlavorCapQ @ {ss}]
 
 PauliGroup[S_?QubitQ] := PauliGroup @ {S}
 
-PauliGroup[ss:{__?QubitQ}] := PauliGroup[FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ {ss}]
+PauliGroup[ss:{__?QubitQ}] := PauliGroup[FlavorCap @ ss] /;
+  Not[FlavorCapQ @ {ss}]
 
 
 FullPauliGroup /:
@@ -261,13 +261,13 @@ CliffordGroup::todo = "Not supported yet."
 
 FullCliffordGroup[S_?QubitQ] := FullCliffordGroup @ {S}
 
-FullCliffordGroup[ss:{__?QubitQ}] := FullCliffordGroup[FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ {ss}]
+FullCliffordGroup[ss:{__?QubitQ}] := FullCliffordGroup[FlavorCap @ ss] /;
+  Not[FlavorCapQ @ {ss}]
 
 CliffordGroup[S_?QubitQ] := CliffordGroup @ {S}
 
-CliffordGroup[ss:{__?QubitQ}] := CliffordGroup[FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ {ss}]
+CliffordGroup[ss:{__?QubitQ}] := CliffordGroup[FlavorCap @ ss] /;
+  Not[FlavorCapQ @ {ss}]
 
 
 FullCliffordGroup /:
@@ -305,7 +305,7 @@ GroupGenerators @ CliffordGroup[n_Integer] := Block[
 CliffordGroup /:
 GroupGenerators @ CliffordGroup[qq:{__?QubitQ}] := Module[
   { ss = Through[qq @ {6, 7}],
-    cn = CZ @@@ Subsets[FlavorNone @ qq, {2}] },
+    cn = CZ @@@ Subsets[FlavorCap @ qq, {2}] },
   Flatten @ {ss, cn}
  ]
 
@@ -431,7 +431,7 @@ GottesmanVector[_?CommutativeQ op_, ss:{__?QubitQ}] :=
   GottesmanVector[op, ss]
 
 GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := With[
-  { qq = FlavorNone[ss] },
+  { qq = FlavorCap[ss] },
   GottesmanVector @ Pauli[
     qq /. {FlavorMute[op] -> FlavorLast[op]} /. Thread[qq -> 0]
    ]
@@ -439,7 +439,7 @@ GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := With[
 
 HoldPattern @
   GottesmanVector[Multiply[op__?QubitQ], ss:{__?QubitQ}] := With[
-    { qq = FlavorNone[ss] },
+    { qq = FlavorCap[ss] },
     GottesmanVector @ Pauli[
       qq /. Thread[FlavorMute @ {op} -> FlavorLast @ {op}] /. Thread[qq -> 0]
      ]
@@ -642,10 +642,10 @@ getStabilizer[rho_?SquareMatrixQ] := Module[
 Stabilizer[g_Graph] := Stabilizer @ GraphState[g]
 
 Stabilizer[g_Graph, ss:{__?QubitQ}] :=
-  Stabilizer[GraphState[g, FlavorNone @ ss], FlavorNone @ ss]
+  Stabilizer[GraphState[g, FlavorCap @ ss], FlavorCap @ ss]
 
 Stabilizer[g_Graph, vtx_?QubitQ] := Module[
-  { new = If[FlavorNoneQ[vtx], Drop[vtx, -1], vtx],
+  { new = If[FlavorCapQ[vtx], Drop[vtx, -1], vtx],
     adj },
   adj = AdjacencyList[g, new|new[$]];
   vtx[1] ** Apply[Multiply, Through[adj[3]]]
@@ -900,7 +900,7 @@ GottesmanMatrix::usage = "GottesmanMatrix[mat] returns the binary symplectic mat
 
 GottesmanMatrix::dim = "`` has wrong dimensions and is not a valid matrix representation of a Clifford operator."
 
-GottesmanMatrix[op_, S_?QubitQ] := GottesmanMatrix[op, {FlavorNone @ S}]
+GottesmanMatrix[op_, S_?QubitQ] := GottesmanMatrix[op, {FlavorCap @ S}]
 
 GottesmanMatrix[op_, ss:{__?QubitQ}] := Module[
   { n = Length @ ss,
@@ -992,7 +992,7 @@ FromGottesmanMatrix[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
  ]
 
 FromGottesmanMatrix[mat_?MatrixQ, S_?QubitQ] :=
-  FromGottesmanMatrix[mat, {FlavorNone @ S}]
+  FromGottesmanMatrix[mat, {FlavorCap @ S}]
 
 FromGottesmanMatrix[mat_?MatrixQ, {S_?QubitQ}] :=
   Elaborate @ Which[

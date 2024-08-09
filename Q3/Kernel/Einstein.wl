@@ -7,6 +7,8 @@ BeginPackage["Q3`"]
 
 { PauliDecompose, PauliDecomposeRL, PauliCompose, PauliCompseRL }; (* renamed *)
 
+{ FlavorNone, FlavorNoneQ }; (* renamed *)
+{ TimesDaggerLeft, TimesLeftRight }; (* renamed *)
 { TheLower, TheRaise, RaiseLower }; (* renamed *)
 { PauliEmbed, PauliApply }; (* obsolete and excised *)
 { TheState, TheOperator }; (* obsolete and excised *)
@@ -174,6 +176,26 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 
 (**** <obsolete> ****)
+
+FlavorNone[spec_] := (
+  Message[Q3General::renamed, "FlavorNone", "FlavorCap"];
+  FlavorCap[spec]
+)
+
+FlavorNoneQ[spec_] := (
+  Message[Q3General::renamed, "FlavorNoneQ", "FlavorCapQ"];
+  FlavorCapQ[spec]
+)
+
+WeightedLog[args__] := (
+  Message[Q3General::renamed, "TimesDaggerLeft", "AbsSquare"];
+  AbsSquare[args]
+)
+
+WeightedLog[args__] := (
+  Message[Q3General::renamed, "TimesDaggerRight", "AbsSquareLeft"];
+  AbsSquareLeft[args]
+)
 
 WeightedLog[args__] := (
   Message[Q3General::renamed, "WeightedLog", "ShannonLog"];

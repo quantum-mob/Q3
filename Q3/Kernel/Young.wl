@@ -374,8 +374,8 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
      },
 
     While[ True,
-      columnIdx = Part[hashPosList, Times @@ hashPositionTupel];
-      chrVect[[columnIdx]] += Times @@ Apply[
+      columnIdx = Part[hashPosList, Upshot @ hashPositionTupel];
+      chrVect[[columnIdx]] += Upshot @ Apply[
         Multinomial,
         Map[
           Part[#, 2]&,
@@ -396,7 +396,7 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
        ];
       hashPositionTupel = Join[
         Take[hashPositionTupel, r-1],
-        {Times @@ Prime[supPartitionTupel[[r]]]},
+        {Upshot @ Prime[supPartitionTupel[[r]]]},
         Prime @ Drop[pp,r]
        ]
      ]
@@ -601,14 +601,14 @@ Permutation::cyc = "`` does not represent a valid permutation in disjoint cyclic
 AddElaborationPatterns[_Permutation]
 
 Permutation[prm_?PermutationListQ, ss:{__?SpeciesQ}] :=
-  Permutation[PermutationCycles @ prm, FlavorNone @ ss]
+  Permutation[PermutationCycles @ prm, FlavorCap @ ss]
 
 
 Permutation[Cycles[{}], qq:{__?SpeciesQ}] := 1
 
 Permutation[cyc_Cycles, ss:{__?SpeciesQ}] :=
-  Permutation[cyc, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+  Permutation[cyc, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 
 Permutation /: Dagger[op_Permutation] = Conjugate[op] (* fallback *)
@@ -667,7 +667,7 @@ Multiply[ pre___,
     Dyad[
       Join[a, AssociationThread[Keys[a] -> Permute[Lookup[a, qq], spec]]],
       b ],
-    post ] /; ContainsAll[Keys @ a, FlavorNone @ qq]
+    post ] /; ContainsAll[Keys @ a, FlavorCap @ qq]
 
 Permutation /:
 Multiply[ pre___,
@@ -676,7 +676,7 @@ Multiply[ pre___,
   post___ ] := Multiply[ pre,
     Dyad[ a,
       Join[b, AssociationThread[Keys[b] -> Permute[Lookup[b, qq], spec]]] ],
-    post ] /; ContainsAll[Keys @ b, FlavorNone @ qq]
+    post ] /; ContainsAll[Keys @ b, FlavorCap @ qq]
 
 (**** </Permutation> ****)
 
@@ -827,6 +827,9 @@ KetPermute[expr_, spec_?anyPermutationSpecQ, ss:{__?SpeciesQ}] :=
 
 KetSymmetrize::usage = "KetSymmetrize[expr, {s1, s2, \[Ellipsis]}, tbl] symmetrizes every kets appearing in expr according to polytabloid specified by standard Young tableau tbl.\n"
 
+KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_YoungTableau] :=
+  KetSymmetrize[bs, ss, First @ tbl]
+
 KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
   { ts = YoungTranspose[tbl],
     qq, bb },
@@ -835,8 +838,8 @@ KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
   DeleteCases[
     Garner @ Union @ Map[KetSymmetrize[#, ss, tbl]&, bb],
     0
-   ]
- ] /; NoneTrue[bs, FreeQ[#, Ket[_Association]]&]
+  ]
+] /; NoneTrue[bs, FreeQ[#, Ket[_Association]]&]
 
 KetSymmetrize[expr_] := With[
   { ss = Agents[expr] },
@@ -858,6 +861,10 @@ KetSymmetrize[expr_, ss:{__?SpeciesQ}, -1] :=
   KetSymmetrize[expr, ss, Transpose @ {Range[Length @ ss]}] /;
   Not @ FreeQ[expr, Ket[_Association]]
 
+
+KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_YoungTableau] :=
+  KetSymmetrize[expr, ss, First @ tbl]
+
 KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
   { qq = ss[[Flatten @ tbl]],
     aa, bb, cc, new },
@@ -869,17 +876,17 @@ KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
   expr /. {
     v:Ket[_Association] :> 
       Dot[Ket[ss -> Permute[v[qq], #]]& /@ bb, cc]
-   } /. {
+  } /. {
      w:Ket[_Association] :> 
        Total[Ket[ss -> Permute[w[qq], #]]& /@ aa]
-    }
+  }
 ] /; Not @ FreeQ[expr, Ket[_Association]]
 
 
 yngSignatureTo::usage = "yngSignatureTo[a,b] compares the rows of (not necessarily stadnard) Young Tableaux a and b. Useful to construct polytabloid."
 
 yngSignatureTo[a_?anyTableauQ, b_?anyTableauQ] := 
- Times @@ MapThread[SignatureTo, {a, b}]
+ Upshot @ MapThread[SignatureTo, {a, b}]
 
 anyTableauQ::uage = "anyTableauQ[tb] returns True if tb is a legitimate (not necessarily standard) Young tableau."
 
@@ -1088,7 +1095,7 @@ PermutationBasis::usage = "PermutationBasis[{m1,m2,\[Ellipsis],md}, {s1,s2,\[Ell
 PermutationBasis::baddim = "The dimensions of species in `` are not equal to each other."
 
 PermutationBasis[ss:{__?SpeciesQ}] := 
-  PermutationBasis[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+  PermutationBasis[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 PermutationBasis[ss:{__?SpeciesQ}] := Module[
   { dim = Dimension[ss],

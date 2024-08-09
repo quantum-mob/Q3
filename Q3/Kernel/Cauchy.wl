@@ -18,9 +18,9 @@ $symb = Unprotect[Conjugate, Abs, Power, NonNegative]
 
 SetAttributes[{Conjugate, Power}, {ReadProtected}]
 
-Conjugate[ HoldPattern[ Plus[expr__] ] ] := Plus @@ Conjugate @ {expr}
+Conjugate[expr_Plus] := Map[Conjugate, expr]
 
-Conjugate[ HoldPattern[ Times[expr__] ] ] := Times @@ Conjugate @ {expr}
+Conjugate[expr_Times] := Map[Conjugate, expr]
 
 Conjugate[ Power[b_,-1] ] := 1 / Conjugate[b]
 
@@ -54,8 +54,8 @@ $Star = Style["*", FontColor -> Red]
 
 Format @ HoldPattern @ Conjugate[expr_] := Interpretation[
   SpeciesBox[expr, {}, {$Star}],
-  Conjugate @ z
- ]
+  Conjugate[expr]
+]
 
 Format @ HoldPattern @ Abs[z_] := Interpretation[BracketingBar @ z, Abs @ z]
 

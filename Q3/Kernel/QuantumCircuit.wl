@@ -76,7 +76,7 @@ QuantumCircuit[pre___, g_Graph, post___] := Module[
 QuantumCircuit /:
 Qubits @ QuantumCircuit[gg__, opts___?OptionQ] := Union[
   Qubits@{gg},
-  FlavorNone @ doAssureList["Visible" /. {opts} /. Options[QuantumCircuit]]
+  FlavorCap @ doAssureList["Visible" /. {opts} /. Options[QuantumCircuit]]
 ]
 
 QuantumCircuit /:
@@ -277,8 +277,8 @@ HoldPattern @
 
     $PortSize = doAssureList[$PortSize, 2] * $CircuitUnit;
 
-    vv = FlavorNone @ Flatten @ doAssureList @ vv;
-    ww = FlavorNone @ Flatten @ doAssureList @ ww;
+    vv = FlavorCap @ Flatten @ doAssureList @ vv;
+    ww = FlavorCap @ Flatten @ doAssureList @ ww;
     ss = Union @ Flatten @ {ss, vv, ww};
 
     cc = DeleteCases[cc, {}]; (* E.g., Measurement[{}] *)
@@ -353,7 +353,7 @@ Options[Gate] = {
 }
 
 Gate[ss:{__?QubitQ}, opts:OptionsPattern[]] :=
-  Gate[FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
+  Gate[FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
 
 Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
   Gate[Thread[cc -> 1], tt, opts]
@@ -362,8 +362,8 @@ Gate[Rule[cc:{__?QubitQ}, v_], tt:{__?QubitQ}, opts:OptionsPattern[]] :=
   Gate[Thread[cc -> v], tt, opts]
 
 Gate[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
-  Gate[FlavorNone @ cc, FlavorNone @ tt, opts] /;
-  Not @ FlavorNoneQ @ Join[Keys @ cc, tt]
+  Gate[FlavorCap @ cc, FlavorCap @ tt, opts] /;
+  Not @ FlavorCapQ @ Join[Keys @ cc, tt]
 
 (**** </Gate> *****)
 
@@ -633,7 +633,8 @@ ParseGate[
         OptionValue[Gate, new, "Label"], 
         OptionValue[Gate, new, "ControlLabel"]
       ], 
-      new ]
+      new
+    ]
   ]
 
 

@@ -255,7 +255,7 @@ ThePauli[1 -> 1] = ThePauli[11]
 theKetRegulate::usage = "theKetRegulate[assoc, {s1, s2, ...}] returns a new association with all default values assigned.\nSee also theKetTrim."
 
 theKetRegulate[a_Association, ss:{___?SpeciesQ}] := With[
-  { tt = Union[Keys @ a, FlavorNone @ ss] },
+  { tt = Union[Keys @ a, FlavorCap @ ss] },
   KeySort @ AssociationThread[tt -> Lookup[a, tt]]
 ]
 (* NOTE:
@@ -273,7 +273,7 @@ KetRegulate[expr_] := KetRegulate[expr, KetSpecies @ expr]
 KetRegulate[expr_, S_?SpeciesQ] := KetRegulate[expr, S @ {$}]
 
 KetRegulate[expr_, ss:{__?SpeciesQ}] :=
-  KetRegulate[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+  KetRegulate[expr, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 KetRegulate[expr_, ss:{__?SpeciesQ}] := With[
   { tt = KetSpecies[expr] },
@@ -318,7 +318,7 @@ KetRegulate[expr_, ss:{___?SpeciesQ}] := expr /. {
 KetMutate::usage = "KetMutate[expr, {s1, s2, \[Ellipsis]}] changes every Ket[v1,v2,\[Ellipsis]] to Ket[<|s1->v1, s2->v2, \[Ellipsis]|>] and vice versa in expr."
 
 KetMutate[any_, ss:{__?SpeciesQ}] :=
-  KetMutate[any, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+  KetMutate[any, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 KetMutate[any_Association, ss:{__?QubitQ}] := Map[KetMutate[#, ss]&, any]
 (* NOTE: Recall that Association has attribute HoldAllComplete. *)
@@ -362,7 +362,7 @@ $KetProductDelimiter = "\[CircleTimes]";
 SimpleForm::usage = "SimpleForm[expr] represents every Ket in expr in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {S1, ..., {S2, S3, ...}, ...}] splits each Ket into the form Ket @ Row @ {S1, ..., Ket[S2, S3, ...], ...}."
 
 SimpleForm[expr_, ss_List] :=
-  SimpleForm[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+  SimpleForm[expr, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 SimpleForm[expr_] := SimpleForm[expr, {}]
 
@@ -417,7 +417,7 @@ theSimpleForm[vec:Ket[_Association], gg_List] := With[
 ProductForm::usage = "ProductForm[expr] displays every Ket[...] in expr in the product form.\nProductForm[expr, {S1, ..., {S2,S3,...}, ...}] splits each Ket into the form Row[{Ket[S1], ..., Ket[S2,S3,...], ...}]."
 
 ProductForm[expr_, ss_List] :=
-  ProductForm[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+  ProductForm[expr, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 ProductForm[expr_] := ProductForm[expr, Agents @ expr]
 
@@ -461,8 +461,8 @@ theProductForm[vec:Ket[_Association], gg_List] := Row[
 SpinForm::usage = "SpinForm[expr, {s1, s2, ...}] converts the values to \[UpArrow] or \[DownArrow] in every Ket[<|...|>] appearing in expr.\nIf the Species is a Qubit, SpinForm converts 0 to \[UpArrow] and 1 to \[DownArrow].\nIf the Species is a Spin, SpinForm converts 1/2 to \[UpArrow] and -1/2 to \[DownArrow]."
 
 SpinForm[expr_, a_List, b_List] :=
-  SpinForm[expr, FlavorNone @ a, FlavorNone @ b] /;
-  Not[FlavorNoneQ @ {a, b}]
+  SpinForm[expr, FlavorCap @ a, FlavorCap @ b] /;
+  Not[FlavorCapQ @ {a, b}]
 
 SpinForm[expr_] := SpinForm[expr, Agents @ expr, {}]
 
@@ -476,8 +476,8 @@ SpinForm[v_Ket, rest__] :=
 SpinForm[Bra[spec___], rest___] :=
   Interpretation[Dagger @ theSpinForm[Ket[spec], rest], Bra[spec]]
   
-SpinForm[expr_, qq_List] := SpinForm[ expr, FlavorNone @ qq,
-  Complement[Agents @ expr, FlavorNone @ qq]
+SpinForm[expr_, qq_List] := SpinForm[ expr, FlavorCap @ qq,
+  Complement[Agents @ expr, FlavorCap @ qq]
  ]
 
 SpinForm[expr_Association, rest__] := Map[SpinForm[#, rest]&, expr]
@@ -553,7 +553,7 @@ XBasisForm::usage = "XBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum 
 XBasisForm[expr_, q_?QubitQ] := XBasisForm[expr, q @ {$}] 
 
 XBasisForm[expr_, qq:{__?QubitQ}] := 
-  XBasisForm[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
+  XBasisForm[expr, FlavorCap @ qq] /; Not[FlavorCapQ @ qq]
 
 XBasisForm[expr_, qq:{__?QubitQ}] :=
   Interpretation[Garner @ theXBasisForm[expr, qq], expr]
@@ -592,7 +592,7 @@ YBasisForm::usage = "YBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum 
 YBasisForm[expr_, q_?QubitQ] := YBasisForm[expr, q @ {$}] 
 
 YBasisForm[expr_, qq:{__?QubitQ}] := 
-  YBasisForm[expr, FlavorNone @ qq] /; Not[FlavorNoneQ @ qq]
+  YBasisForm[expr, FlavorCap @ qq] /; Not[FlavorCapQ @ qq]
 
 YBasisForm[expr_, qq:{__?QubitQ}] :=
   Interpretation[Garner @ theYBasisForm[expr, qq], expr]
@@ -834,10 +834,10 @@ Ket[ v_Ket, spec___Rule, ss:{__?AgentQ} ] := KetRegulate[Ket[v, spec], ss]
 Ket[a_Association][spec__Rule] := Ket[Ket[a], spec]
 
 (* extracting the values *)
-Ket[a_Association][ss_List] := Lookup[a, FlavorNone @ ss]
+Ket[a_Association][ss_List] := Lookup[a, FlavorCap @ ss]
 
 (* extracting a value *)
-Ket[a_Association][s_] := a[FlavorNone @ s]
+Ket[a_Association][s_] := a[FlavorCap @ s]
 
 (* otherwise *)
 (* Ket[a:Except[_List|_Association|_Rule]..] := Ket @ {a} *)
@@ -859,9 +859,9 @@ Bra[ v_Bra, spec___Rule, ss:{__?SpeciesQ}] := KetRegulate[Bra[v, spec], ss]
 
 Bra[a_Association][spec__Rule] := Bra[ Bra[a], spec ]
 
-Bra[a_Association][ss_List] := Lookup[a, FlavorNone @ ss]
+Bra[a_Association][ss_List] := Lookup[a, FlavorCap @ ss]
 
-Bra[a_Association][s_] := a[FlavorNone @ s]
+Bra[a_Association][s_] := a[FlavorCap @ s]
 
 (**** </Ket & Bra> ****)
 
@@ -870,9 +870,9 @@ KetRule::usage = "KetRule[rule] is a low-level function used when constructing K
 
 SetAttributes[KetRule, Listable]
 
-KetRule[ r:Rule[_, _] ] := FlavorNone[r]
+KetRule[ r:Rule[_, _] ] := FlavorCap[r]
 
-KetRule[ r:Rule[_List, _] ] := FlavorNone @ Thread[r]
+KetRule[ r:Rule[_List, _] ] := FlavorCap @ Thread[r]
 
 KetRule[r_Rule] := r
 
@@ -954,7 +954,7 @@ KetChop[expr_] := expr
 KetDrop::usage = "KetDrop[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetDrop[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr.\nKetDrop[{s1,s2,\[Ellipsis]}] is an operator form of KetDrop."
 
 KetDrop[Ket[a_Association], ss:{__?SpeciesQ}] :=
-  Ket @ KeyDrop[a, FlavorNone @ ss]
+  Ket @ KeyDrop[a, FlavorCap @ ss]
 
 KetDrop[assoc_Association, ss:{__?SpeciesQ}] := Map[KetDrop[ss], assoc]
 
@@ -1088,7 +1088,7 @@ KetFactor[in_List, qq:{__?SpeciesQ}] :=
   Map[KetFactor[#, qq]&, in]
 
 KetFactor[Ket[a_Association], qq:{__?SpeciesQ}] := Module[
-  { ss = FlavorNone[qq] },
+  { ss = FlavorCap[qq] },
   OSlash[ KetRegulate[Ket[KeyTake[a, ss]], ss], Ket[KeyDrop[a, ss]] ]
  ]
 
@@ -1104,7 +1104,7 @@ KetFactor[expr_Plus, qq:{__?SpeciesQ}] := Module[
   { new },
   new = Factor[ketSplit @ KetRegulate[expr, qq]];
   ReplaceAll[new, Times -> OTimes]
- ] /; ContainsAll[FlavorNone @ qq, Agents @ expr]
+ ] /; ContainsAll[FlavorCap @ qq, Agents @ expr]
 
 
 KetFactor[v_Ket] := v
@@ -1125,13 +1125,13 @@ KetFactor[expr_] := Module[
 ketSplit[ Ket[] ] := Ket[]
 
 ketSplit[ Ket[a_Association] ] := 
-  Times @@ Map[ Ket @* Association, Normal @ a ] /;
+  Upshot @ Map[ Ket @* Association, Normal @ a ] /;
   Length[a] > 0
 
 ketSplit[ Bra[] ] := Bra[]
 
 ketSplit[ Bra[a_Association] ] := 
-  Times @@ Map[ Bra @* Association, Normal @ a ] /;
+  Upshot @ Map[ Bra @* Association, Normal @ a ] /;
   Length[a] > 0
 
 ketSplit[expr_] := KetRegulate[expr] /. {
@@ -1288,18 +1288,18 @@ BraKet /: Conjugate[ BraKet[a_, b_] ] := BraKet[b, a]
 
 (* General evaluation rules *)
 
-BraKet[a_List, b_List] := KroneckerDelta[a, b] /;
+BraKet[a_List, b_List] := TheDelta[a, b] /;
   AllTrue[Flatten @ {a, b}, NumericQ]
 
 BraKet[a_List, b_List] := 0 /; Length[a] != Length[b]
 
-BraKet[a_List, b_List] := Times @@ Thread[KroneckerDelta[a, b]]
+BraKet[a_List, b_List] := TheDelta[a, b]
 
 
 BraKet[a_Association, b_Association] := With[
   { qq = Union[Keys @ a, Keys @ b] },
-  KroneckerDelta[ Lookup[a, qq], Lookup[b, qq] ]
- ]
+  TheDelta[Lookup[a, qq], Lookup[b, qq]]
+]
 
 (**** </BraKet> ****)
 
@@ -1327,7 +1327,7 @@ State[vec_?VectorQ, S_?SpeciesQ, opts___?OptionQ] :=
   State[vec, S @ {$}, opts]
 
 State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
-  State[vec, FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
+  State[vec, FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
 
 State[vec_?VectorQ, ss:{__?SpeciesQ}, {}] :=
   State[vec, ss]
@@ -1375,7 +1375,7 @@ CircleTimes[vv__State] := Module[
   If[ Length[dd] > 0,
     Message[State::dupe, dd];
     ss = Union @@ ss;
-    Return @ State[Zero[Times @@ Dimension[ss]], ss, rr]
+    Return @ State[Zero[Upshot @ Dimension @ ss], ss, rr]
   ];
   State[CircleTimes @@ Map[First, {vv}], Flatten @ ss, rr]
 ]
@@ -1446,7 +1446,7 @@ Operator[mat_?MatrixQ, S_?SpeciesQ, opts___?OptionQ] :=
   Operator[mat, S @ {$}, opts]
 
 Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
-  Operator[mat, FlavorNone @ ss, opts] /; Not[FlavorNoneQ @ ss]
+  Operator[mat, FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
 
 
 Operator /:
@@ -1785,11 +1785,11 @@ ExpressionFor[vec_?VectorQ, S_?SpeciesQ] :=
   ExpressionFor[vec, {S}]
 
 ExpressionFor[vec_?VectorQ, ss:{__?SpeciesQ}] := Module[
-  { nL = Times @@ Dimension @ ss,
+  { nL = Upshot @ Dimension @ ss,
     bs = Basis @ ss },
   
   If[ nL == Length[vec], Null,
-    Message[ExpressionFor::incmpt, vec, FlavorNone @ ss];
+    Message[ExpressionFor::incmpt, vec, FlavorCap @ ss];
     Return[0];
   ];
   
@@ -1805,8 +1805,8 @@ ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
   { dd = Dimension @ ss,
     ff = Fermions @ ss,
     rr, qq, S, tsr, ops },
-  If[ Times @@ dd == Length[mat], Null,
-    Message[ExpressionFor::incmpt, mat, FlavorNone @ ss];
+  If[ Upshot[dd] == Length[mat], Null,
+    Message[ExpressionFor::incmpt, mat, FlavorCap @ ss];
     Return[0]
   ];
 
@@ -1930,8 +1930,8 @@ BlochVector[_?CommutativeQ Ket[]] := BlochVector @ {1, 0}
 BlochVector[expr_, q_?SpeciesQ] := Module[
   { ss = Agents[expr] },
   If[ Length[ss] > 1,
-    BlochVector @ ReducedMatrix[expr, FlavorNone @ {q}],
-    BlochVector @ Matrix[expr, FlavorNone @ {q}]
+    BlochVector @ ReducedMatrix[expr, FlavorCap @ {q}],
+    BlochVector @ Matrix[expr, FlavorCap @ {q}]
   ]
 ]
 
@@ -2087,11 +2087,11 @@ Matrix[ expr_, S_?SpeciesQ, tt_ ] := Matrix[expr, S @ {$}, tt]
 Matrix[ expr_, ss_, T_?SpeciesQ ] := Matrix[expr, ss, T @ {$}]
 
 Matrix[ expr_, ss:{__?SpeciesQ} ] := 
-  Matrix[expr, FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+  Matrix[expr, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
-  Matrix[expr, FlavorNone @ ss, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ {ss, tt}]
+  Matrix[expr, FlavorCap @ ss, FlavorCap @ tt] /;
+  Not[FlavorCapQ @ {ss, tt}]
 
 
 (* linearity *)
@@ -2109,10 +2109,10 @@ Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ}.. ] := z * Matrix[op, qq]
 Matrix[ z_?CommutativeQ, {} ] := z * One[2]
 
 Matrix[ z_?CommutativeQ, qq:{__?SpeciesQ} ] :=
-  z * One[Times @@ Dimension @ qq]
+  z * One[Upshot @ Dimension @ qq]
 
 Matrix[ z_?CommutativeQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
-  z * One[{Times @@ Dimension @ ss, Times @@ Dimension @ tt}]
+  z * One[{Upshot @ Dimension @ ss, Upshot @ Dimension @ tt}]
 
 
 (* Dagger *)
@@ -2271,7 +2271,7 @@ MatrixIn[bra_, bs_List] := SparseArray @ Multiply[bra, bs] /;
   And[
     Not @ FreeQ[bra, Bra[_Association]],
     FreeQ[bra, _Multiply] (* Ket[...] ** Bra[...] *)
-   ]
+  ]
 
 MatrixIn[op_, bs_List] :=
   SparseArray @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
@@ -2285,8 +2285,8 @@ MatrixIn[op_, aa_Association, bb_Association] := Module[
   { kk = Tuples @ {Keys @ aa, Keys @ bb},
     mat },
   mat = Outer[MatrixIn[op, #1, #2]&, Values @ aa, Values @ bb, 1];
-  AssociationThread[kk -> Flatten[mat,1] ]
- ]
+  AssociationThread[kk -> Flatten[mat, 1] ]
+]
 
 (**** </MatrixIn> ****)
 
@@ -2346,10 +2346,10 @@ ProperSystem[expr_, qq:{___?SpeciesQ}] := Module[
     Return[$Failed]
    ];
   
-  rr = Complement[FlavorNone @ qq, ss];
+  rr = Complement[FlavorCap @ qq, ss];
   If[ rr == {}, Null,
-    val = Flatten @ Transpose @ ConstantArray[val, Times @@ Dimension[rr]];
-    vec = Flatten @ Outer[CircleTimes, vec, Basis[rr]]
+    val = Flatten @ Transpose @ ConstantArray[val, Upshot @ Dimension @ rr];
+    vec = Flatten @ Outer[CircleTimes, vec, Basis @ rr]
    ];
   {val, vec}
  ]
@@ -2410,7 +2410,7 @@ ProperStates[expr_, qq:{___?SpeciesQ}] := Module[
     Return[$Failed]
    ];
   
-  rr = Complement[FlavorNone @ qq, ss];
+  rr = Complement[FlavorCap @ qq, ss];
   If[ rr == {},
     Return @ vec,
     Return @ Flatten @ Outer[CircleTimes, vec, Basis[rr]]
@@ -2466,12 +2466,12 @@ ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
     Return[$Failed]
    ];
   
-  rr = Complement[FlavorNone @ qq, ss];
+  rr = Complement[FlavorCap @ qq, ss];
   If[ rr == {},
     Return[val],
-    Return @ Flatten @ Transpose @ ConstantArray[val, Times @@ Dimension[rr]]
-   ];
- ]
+    Return @ Flatten @ Transpose @ ConstantArray[val, Upshot @ Dimension @ rr]
+  ]
+]
 
 (**** </ProperSystem> ****)
 
@@ -2556,14 +2556,14 @@ HoldPattern @ Multiply[pre___, a_Parity, b_Parity, post___] :=
 ParityValue::usage = "ParityValue[state, {a, b, ...}] returns the parity eigenvalue \[PlusMinus]1 if state is a parity eigenstate of species {a,b,\[Ellipsis]} and 0 otherwise.\nParityValue[{a,b,\[Ellipsis]}] represents the operator form of ParityValue."
 
 ParityValue[spec:(_?SpeciesQ|{___?SpeciesQ})] := 
-  ParityValue[FlavorNone @ spec] /; Not[FlavorNoneQ @ spec]
+  ParityValue[FlavorCap @ spec] /; Not[FlavorCapQ @ spec]
 
 ParityValue[spec:(_?SpeciesQ|{___?SpeciesQ})][expr_] := 
   ParityValue[expr, spec]
 
 
 ParityValue[expr_, spec:(_?SpeciesQ|{___?SpeciesQ})] := 
-  ParityValue[expr, FlavorNone @ spec] /; Not[FlavorNoneQ @ spec]
+  ParityValue[expr, FlavorCap @ spec] /; Not[FlavorCapQ @ spec]
 
 
 ParityValue[expr_Association, spec:(_?SpeciesQ|{___?SpeciesQ})] :=
@@ -2647,10 +2647,10 @@ ParityOddQ[ Ket[<||>], {} ] := False
 
 
 ParityEvenQ[ v_Ket, ss:{__?SpeciesQ} ] :=
-  Not[ Xor @@ Map[ParityOddQ[v,#]&, FlavorNone @ ss] ]
+  Not[ Xor @@ Map[ParityOddQ[v,#]&, FlavorCap @ ss] ]
 
 ParityOddQ[ v_Ket, ss:{__?SpeciesQ} ] :=
-  Xor @@ Map[ParityOddQ[v,#]&, FlavorNone @ ss]
+  Xor @@ Map[ParityOddQ[v,#]&, FlavorCap @ ss]
 
 (**** </Parity> ****)
 
@@ -2911,7 +2911,7 @@ Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] := (
 
 Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] :=
   Rotation[phi, v, S[$], rest] /;
-  Not[FlavorNoneQ @ S]
+  Not[FlavorCapQ @ S]
 
 Rotation[aa_List, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] :=
   Map[Rotation[#, v, S, rest]&, aa]
@@ -2968,10 +2968,10 @@ Options[EulerRotation] = { "Label" -> Automatic }
 
 
 EulerRotation[aa:{_, _, _}, ss:{(_?SpinQ|_?QubitQ)..}, rest___] :=
-  Map[EulerRotation[aa, #, rest]&, FlavorNone @ ss]
+  Map[EulerRotation[aa, #, rest]&, FlavorCap @ ss]
 
 EulerRotation[aa:{_, _, _}, G:(_?SpinQ|_?QubitQ), rest___] :=
-  EulerRotation[aa, G[$], rest] /; Not[FlavorNoneQ @ G]
+  EulerRotation[aa, G[$], rest] /; Not[FlavorCapQ @ G]
 
 
 (* NOTE: The following code makes many calculations significantly slow. It is far better to use the high-level feature as those given below for MultiplyPower and Multiply. *)
@@ -3230,8 +3230,8 @@ Matrix[op_Dyad, ss_List, tt_List] := Zero[{Length @ ss, Length @ tt}]
   
 Dyad /:
 Matrix[op_Dyad, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
-  Matrix[op, FlavorNone @ ss, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ {ss, tt}]
+  Matrix[op, FlavorCap @ ss, FlavorCap @ tt] /;
+  Not[FlavorCapQ @ {ss, tt}]
 
 Dyad /:
 Matrix[ Dyad[a_Association, b_Association],
@@ -3255,8 +3255,8 @@ Dyad /: (* fallback *)
 Matrix[op_Dyad, ss_List] := Zero[{Length @ ss, Length @ ss}]
   
 Dyad /:
-Matrix[op_Dyad, ss:{__?SpeciesQ}] := Matrix[op, FlavorNone @ ss] /;
-  Not[FlavorNoneQ @ ss]
+Matrix[op_Dyad, ss:{__?SpeciesQ}] := Matrix[op, FlavorCap @ ss] /;
+  Not[FlavorCapQ @ ss]
 
 Dyad /:
 Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
@@ -3269,7 +3269,7 @@ Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
 Dyad /:
 Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
   ( Message[Dyad::mtrx, InputForm @ op];
-    One[Times @@ Dimension[ss]]
+    One[Upshot @ Dimension @ ss]
    ) /; Keys[a] != Keys[b]
 
 Dyad /:
@@ -3303,8 +3303,8 @@ Dyad[a_, b_] := Module[
 (* Direct constuction of Dyad *)
 Dyad[{aa___Rule, ss:{__?SpeciesQ}...}, {bb___Rule, tt:{__?SpeciesQ}...}] :=
   With[
-    { sss = Union @ FlavorNone @ Join[ss],
-      ttt = Union @ FlavorNone @ Join[tt] },
+    { sss = Union @ FlavorCap @ Join[ss],
+      ttt = Union @ FlavorCap @ Join[tt] },
     Dyad[
       KeySort @ Join[
         AssociationThread[sss -> Lookup[<||>, sss]],
@@ -3323,9 +3323,9 @@ Dyad[0, _, __List] = 0
 Dyad[_, 0, __List] = 0
 
 
-Dyad[S_?SpeciesQ] := Dyad[FlavorNone @ {S}]
+Dyad[S_?SpeciesQ] := Dyad[FlavorCap @ {S}]
 
-Dyad[ss:{__?SpeciesQ}] := Dyad[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+Dyad[ss:{__?SpeciesQ}] := Dyad[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss]
 
@@ -3337,8 +3337,8 @@ Dyad[a_, b_, S_?SpeciesQ, tt_] := Dyad[a, b, S @ {$}, tt]
 Dyad[a_, b_, ss_, T_?SpeciesQ] := Dyad[a, b, ss, T @ {$}]
 
 Dyad[a_, b_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
-  Dyad[a, b, FlavorNone @ ss, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ {ss, tt}]
+  Dyad[a, b, FlavorCap @ ss, FlavorCap @ tt] /;
+  Not[FlavorCapQ @ {ss, tt}]
 
 Dyad[Ket[a_Association], Ket[b_Association], ss:{__?SpeciesQ}] :=
   Dyad[Ket[a], Ket[b], ss, ss]
@@ -3482,8 +3482,8 @@ DyadForm[expr_, q_?SpeciesQ] := DyadForm[expr, q @ {$}]
 
 DyadForm[expr_, qq:{__?SpeciesQ}] := DyadForm[Matrix[expr, qq], qq]
 
-DyadForm[expr_, qq:{__?SpeciesQ}] := DyadForm[expr, FlavorNone @ qq] /;
-  Not[FlavorNoneQ @ qq]
+DyadForm[expr_, qq:{__?SpeciesQ}] := DyadForm[expr, FlavorCap @ qq] /;
+  Not[FlavorCapQ @ qq]
 
 
 DyadForm[mat_?MatrixQ] := Module[
@@ -3503,7 +3503,7 @@ theDyadForm[val:{__}, n_Integer] := Module[
 
 DyadForm[mat_?MatrixQ, qq:{__?SpeciesQ}] := Module[
   { dim = Dimension @ qq,
-    spc = FlavorNone @ qq,
+    spc = FlavorCap @ qq,
     tsr },
   tsr = ArrayReshape[mat, Join[dim, dim]];
   tsr = Association @ Most @ ArrayRules @ tsr;
@@ -3670,12 +3670,12 @@ SchmidtDecomposition[v_?VectorQ, ii:{__Integer}, jj:{__Integer}] :=
 
 SchmidtDecomposition[
   v_?VectorQ, dd:{__Integer}, ii:{__Integer}, jj:{__Integer}
- ] := Module[
-   { mat = Tensorize[v, dd],
-     tsr },
-   tsr = Flatten @ Transpose[mat, Ordering @ Join[ii, jj]];
-   SchmidtDecomposition[ tsr, Times @@@ { Part[dd, ii], Part[dd, jj] } ]
-  ]
+] := Module[
+  { mat = Tensorize[v, dd],
+    tsr },
+  tsr = Flatten @ Transpose[mat, Ordering @ Join[ii, jj]];
+  SchmidtDecomposition[ tsr, Times @@@ { Part[dd, ii], Part[dd, jj] } ]
+]
 
 
 SchmidtDecomposition[expr_, aa:{__Integer}, bb:{__Integer}] := Module[
@@ -3705,12 +3705,12 @@ SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, b_?SpeciesQ] :=
   SchmidtDecomposition[expr, aa, {b}]
 
 SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
-  { ab = FlavorNone @ Join[aa, bb],
+  { ab = FlavorCap @ Join[aa, bb],
     ww, uu, vv },
   { ww, uu, vv } = SchmidtDecomposition[
     Matrix[expr, ab],
-    { Times @@ Dimension[aa], Times @@ Dimension[bb] }
-   ];
+    {Upshot @ Dimension @ aa, Upshot @ Dimension @ bb}
+  ];
   { ww, uu . Basis[aa], vv . Basis[bb] }
 ] /; fKetQ[expr]
 
@@ -3867,14 +3867,15 @@ Tensorize[m_?MatrixQ, dim:{__Integer}] := Module[
   { r = Length[dim],
     oo = dim[[1;; ;;2]],
     ee = dim[[2;; ;;2]],
-    ll = Dimensions[m], ii },
-  If[ ll != {Times @@ oo, Times @@ ee},
+    ll = Dimensions[m],
+    ii },
+  If[ ll != {Upshot @ oo, Upshot @ ee},
     Message[Tensorize::badShape, ll, dim];
     Return[m]
-   ];
+  ];
   ii = Join[ Range[1, r, 2], Range[2, r, 2] ];
   Transpose[ ArrayReshape[m, Join[oo, ee]], ii ]
- ]
+]
 
 Tensorize[m_?MatrixQ] := Module[
   { n = Log[2, Length[m]],
@@ -3889,12 +3890,12 @@ Tensorize[m_?MatrixQ] := Module[
 
 Tensorize[v_?VectorQ, dim:{__Integer}] := Module[
   { l = Length[v] },
-  If[ l != Times @@ dim,
+  If[ l != Upshot[dim],
     Message[Tensorize::badShape, l, dim];
     Return[v]
-   ];
+  ];
   ArrayReshape[v, dim]
- ]
+]
 
 Tensorize[v_?VectorQ] := Module[
   { n = Log[2, Length[v]] },
@@ -3933,7 +3934,7 @@ PartialTranspose[expr_, jj:{__Integer}] :=
 PartialTranspose[expr_, S_?SpeciesQ] := PartialTranspose[expr, {S}]
 
 PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
-  { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
+  { rr = FlavorCap @ Cases[qq, _?NonCommutativeQ],
     ss = Agents[expr],
     dd, jj, mm },
   ss = Union[ss, rr];
@@ -3961,11 +3962,11 @@ PartialTransposeNorm[rho_, jj:{__Integer}] :=
 
 (* 
 PartialTransposeNorm[rho_, qq:{__?SpeciesQ}] := Module[
-  { rr = FlavorNone @ Cases[qq, _?NonCommutativeQ],
+  { rr = FlavorCap @ Cases[qq, _?NonCommutativeQ],
     ss = Agents[rho],
     all, pos, mat, trm },
-  all = Union @ FlavorNone @ Join[rr, ss];
-  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ rr];
+  all = Union @ FlavorCap @ Join[rr, ss];
+  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorCap @ rr];
   mat = Matrix[rho, all];
 
   trm = If[MatrixQ[mat], Tr[mat], Norm[mat]^2];
@@ -3981,8 +3982,8 @@ PartialTransposeNorm[rho_, qq:{__?SpeciesQ}] := Module[
 
 PartialTransposeNorm[rho_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { all, pos, mat },
-  all = Union @ FlavorNone @ Join[aa, bb];
-  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorNone @ bb];
+  all = Union @ FlavorCap @ Join[aa, bb];
+  pos = Flatten @ Map[FirstPosition[all, #]&, FlavorCap @ bb];
   mat = Matrix[rho, all];
   PartialTransposeNorm[mat, Dimension @ all, pos]
 ]
@@ -4068,7 +4069,7 @@ PartialTrace[expr_, jj:{___Integer}] := Module[
 PartialTrace[expr_, S_?SpeciesQ] := PartialTrace[expr, {S}]
 
 PartialTrace[expr_, ss:{__?SpeciesQ}] := With[
-  { tt = FlavorNone[ss] },
+  { tt = FlavorCap[ss] },
   PartialTrace[expr, Union[Agents @ expr, tt], tt]
  ]
 
@@ -4076,9 +4077,9 @@ PartialTrace[expr_, qq:{__?SpeciesQ}, S_?SpeciesQ] :=
   PartialTrace[expr, qq, {S}]
 
 PartialTrace[expr_, qq:{__?SpeciesQ}, ss:{__?SpeciesQ}] := Module[
-  { bb = FlavorNone @ Cases[ss, _?NonCommutativeQ],
+  { bb = FlavorCap @ Cases[ss, _?NonCommutativeQ],
     aa, dd, jj, mm },
-  aa = Agents @ {expr, FlavorNone @ qq};
+  aa = Agents @ {expr, FlavorCap @ qq};
   If[Not @ ContainsOnly[bb, aa], Message[PartialTrace::nosubsys, bb]];
   dd = Dimension[aa];
   jj = Flatten @ Map[FirstPosition[aa, #]&, bb];
@@ -4117,7 +4118,7 @@ ReducedMatrix[expr_, S_?SpeciesQ] := ReducedMatrix[expr, {S}]
 
 ReducedMatrix[expr_, ss:{__?SpeciesQ}] := Module[
   { qq = Agents[expr],
-    rr = Agents[FlavorNone @ ss],
+    rr = Agents[FlavorCap @ ss],
     jj },
   qq = Union[qq, rr];
   jj = Flatten @ Map[FirstPosition[qq, #]&, Complement[qq, rr]];
@@ -4184,7 +4185,7 @@ Purification[rho_, S_?SpeciesQ, R_?SpeciesQ] :=
 
 Purification[rho_, ss:{__?SpeciesQ}] := Purification @ Matrix[rho, ss]
 
-Purification[rho_, S_?SpeciesQ] := Purification[rho, FlavorNone @ {S}]
+Purification[rho_, S_?SpeciesQ] := Purification[rho, FlavorCap @ {S}]
 
 Purification[rho_] := With[
   { ss = Agents[rho] },
@@ -4218,20 +4219,20 @@ MatrixEmbed::usage = "MatrixEmbed[mat, {s1,s2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}]
 MatrixEmbed::rmdr = "`` is not entirely contained in ``."
 
 MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
-  MatrixEmbed[FlavorNone @ ss, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ Join[ss, tt]]
+  MatrixEmbed[FlavorCap @ ss, FlavorCap @ tt] /;
+  Not[FlavorCapQ @ Join[ss, tt]]
 
 MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}][any_] :=
   MatrixEmbed[any, ss, tt]
 
 MatrixEmbed[any_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
-  MatrixEmbed[any, FlavorNone @ ss, FlavorNone @ tt] /;
-  Not[FlavorNoneQ @ Join[ss, tt]]
+  MatrixEmbed[any, FlavorCap @ ss, FlavorCap @ tt] /;
+  Not[FlavorCapQ @ Join[ss, tt]]
 
 MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
     new, idx },
-  new = CircleTimes[mat, One[Times @@ Dimension @ rmd]];
+  new = CircleTimes[mat, One[Upshot @ Dimension @ rmd]];
   idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
   TensorFlatten @ Transpose[
     Tensorize[new, Riffle @@ Table[Dimension @ Join[ss, rmd], 2]],
@@ -4242,7 +4243,7 @@ MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
 MatrixEmbed[vec_?VectorQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
     new, idx },
-  new = CircleTimes[vec, UnitVector[Times @@ Dimension @ rmd, 1]];
+  new = CircleTimes[vec, UnitVector[Upshot @ Dimension @ rmd, 1]];
   idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
   Flatten @ Transpose[
     ArrayReshape[new, Dimension @ Join[ss, rmd]],
@@ -4268,7 +4269,7 @@ MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
     rmd, new, idx },
   rmd = Complement[all, kk];
-  new = CircleTimes[mat, One[Times @@ Part[dd, rmd]]];
+  new = CircleTimes[mat, One[Upshot @ Part[dd, rmd]]];
   idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
   TensorFlatten @ Transpose[
     Tensorize[new, Riffle @@ Table[Part[dd, Join[kk, rmd]], 2]],
@@ -4280,7 +4281,7 @@ MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
     rmd, new, idx },
   rmd = Complement[all, kk];
-  new = CircleTimes[vec, UnitVector[Times @@ Part[dd, rmd], 1]];
+  new = CircleTimes[vec, UnitVector[Upshot @ Part[dd, rmd], 1]];
   idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
   Flatten @ Transpose[
     ArrayReshape[new, Part[dd, Join[kk, rmd]]],
@@ -4300,12 +4301,12 @@ RandomState::usage = "RandomState[{s1, s2, \[Ellipsis]}] returns a random normal
 
 RandomState[S_?SpeciesQ, spec___] := RandomState[S @ {$}, spec]
 
-RandomState[ss:{__?SpeciesQ}, spec___] := RandomState[FlavorNone @ ss, spec]
+RandomState[ss:{__?SpeciesQ}, spec___] := RandomState[FlavorCap @ ss, spec]
 
 RandomState[ss:{__?SpeciesQ}] := First @ RandomState[ss, 1]
 
 RandomState[ss:{__?SpeciesQ}, n_Integer] := 
-  Basis[ss] . RandomIsometric[{Times @@ Dimension @ ss, n}]
+  Basis[ss] . RandomIsometric[{Upshot @ Dimension @ ss, n}]
 
 (**** </RandomState> ****)
 
@@ -4547,10 +4548,10 @@ HilbertSchmidtProduct[a_, b_] := With[
 
 
 HilbertSchmidtProduct[S_?SpeciesQ] :=
-  HilbertSchmidtProduct[FlavorNone @ {S}]
+  HilbertSchmidtProduct[FlavorCap @ {S}]
 
 HilbertSchmidtProduct[ss:{___?SpeciesQ}] :=
-  HilbertSchmidtProduct[FlavorNone @ ss] /; Not[FlavorNoneQ @ ss]
+  HilbertSchmidtProduct[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 HilbertSchmidtProduct[ss:{___?SpeciesQ}][a_, b_] :=
   HilbertSchmidtProduct[a, b, ss]
