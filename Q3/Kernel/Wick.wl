@@ -344,8 +344,8 @@ MakeBoxes[ws:WickState[trs_?MatrixQ, mm_?MatrixQ, cc:{___?FermionQ}], fmt_] :=
     { BoxForm`SummaryItem @ { "Bare modes: ", cc },
       BoxForm`SummaryItem @ { "Number of particles: ", Length @ mm }
     },
-    { BoxForm`SummaryItem @ { "Overall unitary: ", MatrixShort @ trs },
-      BoxForm`SummaryItem @ { "Mode transform: ", MatrixShort @ mm }    
+    { BoxForm`SummaryItem @ { "Overall unitary: ", ArrayShort @ trs },
+      BoxForm`SummaryItem @ { "Mode transform: ", ArrayShort @ mm }    
     },
     fmt,
     "Interpretable" -> Automatic
@@ -361,7 +361,7 @@ MakeBoxes[vec:WickState[pp:{___?FermionQ}, mm:{{_?MatrixQ, _?MatrixQ}...}, ff_?M
     },
     { BoxForm`SummaryItem @ { "Encoded modes: ", pp },
       BoxForm`SummaryItem @ { "Transformations: ", BogoliubovTransforms @ mm },
-      BoxForm`SummaryItem @ { "Wick matrix: ", MatrixShort @ ff }
+      BoxForm`SummaryItem @ { "Wick matrix: ", ArrayShort @ ff }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -543,7 +543,7 @@ MakeBoxes[op:WickUnitary[trs:{_?MatrixQ, _?MatrixQ}, ___?OptionQ], fmt_] :=
     { BoxForm`SummaryItem @ { "Target: ", "Unspecified" },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ trs }
     },
-    { BoxForm`SummaryItem @ { "Blocks: ", Short @ Map[MatrixShort, trs] }
+    { BoxForm`SummaryItem @ { "Blocks: ", Short @ Map[ArrayShort, trs] }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -556,7 +556,7 @@ MakeBoxes[op:WickUnitary[trs:{_?MatrixQ, _?MatrixQ}, cc:{___?FermionQ}, ___?Opti
     { BoxForm`SummaryItem @ { "Target: ", cc },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ trs }
     },
-    { BoxForm`SummaryItem @ { "Blocks: ", Short @ Map[MatrixShort, trs] }
+    { BoxForm`SummaryItem @ { "Blocks: ", Short @ Map[ArrayShort, trs] }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -712,7 +712,7 @@ MakeBoxes[WickOperator[ops:{Rule[_, _?VectorQ]...}], fmt_] := Module[
     { BoxForm`SummaryItem @ { "Modes: ", n },
       BoxForm`SummaryItem @ { "Operators: ", m }
     },
-    { BoxForm`SummaryItem @ { "Transforms: ", MatrixShort[mat] }
+    { BoxForm`SummaryItem @ { "Transforms: ", ArrayShort[mat] }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -827,6 +827,11 @@ Elaborate[op:WickOperator[{__?AnyFermionQ}, ___]] :=
 
 WickOperator /: (* fallback *)
 Elaborate[op_WickOperator] = op 
+
+
+WickOperator /:
+VacuumExpectation[WickOperator[jmp:{___Rule}]] :=
+  Pfaffian @ WickMatrix[jmp]
 
 
 WickOperator /:
@@ -1082,10 +1087,28 @@ WickMutualInformation[grn_?MatrixQ, kk:{__Integer}] :=
 
 (**** <WickMatrix> ****)
 
-WickMatrix::usage= "EXPERIMENTAL\nWickMatrix[...] ..."
+WickMatrix::usage= "WickMatrix[spec] constructs the so-called Wick matrix, an anti-symmetric matrix with elements of Wick contractions between two fermion operators."
 
 (* EXPERIMENTAL *)
-WickMatrix[ops : {__?AnyFermionQ} -> cff_?MatrixQ] := Module[
+(* INPUT: ass is an assotion of (Identity|Dagger) -> {v1, v2, \[Ellipsis]}.
+   For non-unitary transformation. *)
+WickMatrix[ass:{Rule[Identity|Dagger, _?VectorQ]...}] := Module[
+  { tag = Keys[ass],
+    trs = Values[ass],
+    ff, ij, rr },
+  ij = Subsets[Range @ Length @ tag, {2}];
+  ff = Replace[tag[[#]]& /@ ij, {{Identity, Dagger} -> True, _ -> False}, {1}];
+  ij = Pick[ij, ff];
+  rr = MapApply[trs[[#1]] . trs[[#2]] &, ij];
+  rr = Join[
+    Thread[ij -> rr],
+    Thread[Reverse /@ ij -> -rr]
+  ];
+  SparseArray[rr, Length[tag]*{1, 1}]
+]
+
+(* EXPERIMENTAL *)
+WickMatrix[ops:{__?AnyFermionQ} -> cff_?MatrixQ] := Module[
   { cc = Peel@ops,
     ff = MatchQ[#, _Dagger] & /@ ops,
     ij = Subsets[Range@Length@ops, {2}],
@@ -1096,24 +1119,6 @@ WickMatrix[ops : {__?AnyFermionQ} -> cff_?MatrixQ] := Module[
   mat = AssociationMap[cff[[First@#]] . Conjugate[cff[[Last@#]]] &, ij];
   mat = Join[Normal@mat, KeyValueMap[Reverse@#1 -> -#2 &, mat]];
   SparseArray[mat, Length[ops]*{1, 1}]
-]
-
-(* EXPERIMENTAL *)
-(* INPUT: ass is an assotion of (Identity|Dagger) -> {v1, v2, \[Ellipsis]}.
-   For non-unitary transformation. *)
-WickMatrix[ass : {Rule[(Identity|Dagger), _?VectorQ]...}] := Module[
-  { ops = Keys[ass],
-    trs = Values[ass],
-    ff, ij, rr },
-  ij = Subsets[Range @ Length @ ops, {2}];
-  ff = Replace[ops[[#]]& /@ ij, {{Identity, Dagger} -> True, _ -> False}, {1}];
-  ij = Pick[ij, ff];
-  rr = MapApply[trs[[#1]] . trs[[#2]] &, ij];
-  rr = Join[
-    Thread[ij -> rr],
-    Thread[Reverse /@ ij -> -rr]
-  ];
-  SparseArray[rr, Length[ops]*{1, 1}]
 ]
 
 (**** </WickMatrix> ****)

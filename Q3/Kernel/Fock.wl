@@ -1345,15 +1345,21 @@ SetAttributes[VacuumExpectation, Listable]
 
 Options[VacuumExpectation] = { Method -> "Algebra" }
 
-BraKet[{},{}] = 1 (* Bra[].Ket[] = 1 *)
+VacuumExpectation[expr_Plus, rest___] :=
+  Map[VacuumExpectation[#, rest]&, expr]
+(* NOTE: This can be handled by Multiply, but there are some compound operators op such that may not support op ** Ket[...]. There are also some operators which provide a shortcut for the vacuum expectation value. *)
+
+VacuumExpectation[z_?CommutativeQ expr_, rest___] :=
+  z * VacuumExpectation[expr, rest]
+(* NOTE: This can be handled by Multiply, but there are some compound operators op such that may not support op ** Ket[...]. There are also some operators which provide a shortcut for the vacuum expectation value. *)
 
 VacuumExpectation[expr_, OptionsPattern[]] :=
   fVacuumExpectation[OptionValue[Method]][expr]
 
 fVacuumExpectation["Algebra"][expr_] :=
-  Multiply[ Bra[Vacuum], expr, Ket[Vacuum] ]
+  Multiply[Bra[Vacuum], expr, Ket[Vacuum]]
 
-fVacuumExpectation["Occupations"][expr_] := Multiply[ Bra[<||>], expr, Ket[<||>] ]
+fVacuumExpectation["Occupations"][expr_] := Multiply[Bra[<||>], expr, Ket[<||>]]
 
 (**** </VacuumExpectation> ****)
 

@@ -40,7 +40,7 @@ BeginPackage["Q3`"]
 
 { Primed, DoublePrimed };
 
-{ MatrixShort, MatrixObject };
+{ ArrayShort, MatrixObject };
 
 { LevelsPlot };
 { PanedText };
@@ -1014,7 +1014,7 @@ MakeBoxes[MatrixObject[mat_List?MatrixQ], fmt_] :=
     { BoxForm`SummaryItem @ { "Type: ", "Dense" },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions[mat] }
     },
-    { BoxForm`SummaryItem @ { "Elements: ", MatrixShort[mat] }
+    { BoxForm`SummaryItem @ { "Elements: ", ArrayShort[mat] }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -1027,18 +1027,20 @@ MatrixObject[mat_SparseArray?MatrixQ] = mat
 MatrixObject[mat_SymmetrizedArray?MatrixQ] = mat
 
 
-MatrixShort::usage = "MatrixShort[mat] displays matrix mat in a short form."
+ArrayShort::usage = "ArrayShort[mat] displays matrix mat in a short form."
 
-Options[MatrixShort] = {
+Options[ArrayShort] = {
   "Size" -> UpTo[4],
   "Accuracy" -> 3
 }
 
-MatrixShort[mat_?MatrixQ, opts:OptionsPattern[{MatrixShort, MatrixForm}]] := With[
+ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
   { dim = OptionValue["Size"],
-    acc = OptionValue["Accuracy"] },
+    acc = OptionValue["Accuracy"],
+    spec },
+  spec = ConstantArray[1;;dim, ArrayDepth @ mat];
   MatrixForm[
-    Chop @ mat[[;;dim, ;;dim]], 
+    Chop @ mat[[Sequence @@ spec]], 
     FilterRules[{opts}, Options[MatrixForm]]
   ]
 ]

@@ -25,7 +25,7 @@ MakeBoxes[ws:NoisyWickState[ops:{___Rule}, cc:{___?FermionQ}], fmt_] :=
     { BoxForm`SummaryItem @ { "Modes: ", cc },
       BoxForm`SummaryItem @ { "Particles: ", Count[Keys @ ops, Dagger] - Count[Keys @ ops, Identity] }
     },
-    { BoxForm`SummaryItem @ { "Operator transforms: ", MatrixShort @ Values @ ops }    
+    { BoxForm`SummaryItem @ { "Operator transforms: ", ArrayShort @ Values @ ops }    
     },
     fmt,
     "Interpretable" -> Automatic
@@ -212,7 +212,7 @@ WickOperator[ops:{__?AnyFermionQ}, ___][in_NoisyWickState] := Module[
 
 (**** <WickGaussian> ****)
 
-WickGaussian::usage = "WickGaussian[]..."
+WickGaussian::usage = "WickGaussian[{mat, inv}] represents a non-unitary operator of the Gaussian form that is specified by the pair {mat, inv} of mutually inverse matrices."
 
 WickGaussian::num = "Matrix `` needs to be numeric."
 
@@ -223,7 +223,7 @@ MakeBoxes[WickGaussian[{mat_?MatrixQ, inv_?MatrixQ}], fmt_] :=
     { BoxForm`SummaryItem @ { "Modes: ", Length @ mat },
       BoxForm`SummaryItem @ { "Type: ", "Non-unitary" }
     },
-    { BoxForm`SummaryItem @ { "Transform: ", MatrixShort /@ {mat, inv} }
+    { BoxForm`SummaryItem @ { "Transform: ", ArrayShort /@ {mat, inv} }
     },
     fmt,
     "Interpretable" -> Automatic

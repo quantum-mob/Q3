@@ -5,7 +5,7 @@
 - Support for noisy fermionic quantum computation with the following new functions: NoisyWickState, NoisyWickSimulate, WickGaussian, WickElements, etc.
 - TimesDaggerLeft and TimesDaggerRight are renamed AbsSquare (AbsSquareRight) and AbsSquareLeft.
 - FlavorNone and FlavorNoneQ are renamed FlavorCap and FlavorCapQ, respectively.
-- New functions: Hood, MatrixShort, WickMatrix (experimental)
+- New functions: Hood, ArrayShort, WickMatrix (experimental)
 
 ## 3.5.3
 
