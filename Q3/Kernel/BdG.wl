@@ -1,6 +1,6 @@
 BeginPackage["Q3`"]
 
-{ BdGState, BdGOperator, BdGUnitary };
+{ BdGState, BdGUnitary, BdGOperator, BdGOperatorFrom };
 
 Begin["`Private`"]
 
@@ -39,7 +39,7 @@ BdGState[Ket[aa_Association]] := Module[
     dd = Select[Keys @ theKetTrim @ aa, FermionQ] },
   BdGState[
     NambuOne[Length @ cc],
-    First @ BdGOperator[Dagger @ dd, cc],
+    First @ BdGOperatorFrom[Dagger @ dd, cc],
     cc
   ]
 ]
@@ -113,19 +113,6 @@ BdGState /:
 MultiplyKind[_BdGState] = Fermion
 
 (**** </BdGState> ****)
-
-
-(**** <WickElements> ****)
-
-BdGState /:
-WickElements[BdGState[uv_?NambuMatrixQ, ops_?MatrixQ, cc:{__?FermionQ}], ___] :=
-  WickElements[ops, cc]
-
-BdGOperator /:
-WickElements[BdGOperator[trs_?MatrixQ, cc:{__?FermionQ}], ___] :=
-  WickElements[trs, cc]
-
-(**** </WickElements> ****)
 
 
 (**** <BdGUnitary> ****)
@@ -288,11 +275,7 @@ BdGOperator[trs_BdGUnitary] = trs
 
 (* canonicalization *)
 BdGOperator[ops:{___?AnyFermionQ}, cc:{__?FermionQ}, rest___] :=
-  BdGOperator[
-    Coefficient[#, Join[cc, Dagger @ cc]] & /@ ops,
-    cc, 
-    rest
-  ]
+  BdGOperatorFrom[ops, cc, rest]
 
 
 BdGOperator[{}, ___][any_] = any
@@ -342,6 +325,23 @@ ParseGate[BdGOperator[trs_, cc:{__?FermionQ}, opts___?OptionQ], more___?OptionQ]
   Gate[cc, more, opts]
 
 (**** </BdGOperator> ****)
+
+
+(**** <BdGOperatorFrom> ****)
+
+BdGOperatorFrom::usage = "BdGOperatorFrom[expr, {c1,c2,\[Ellipsis]}] constructs BdGOperator from expr, which is supposed to be a linear combination or a list of linear combinations in the creation and annihilation operators of fermion modes {c1, c2, \[Ellipsis]}."
+
+BdGOperatorFrom[expr_List, cc:{__?FermionQ}, rest___] :=
+  BdGOperator[theBdGOperator[expr, cc], cc, rest]
+
+
+theBdGOperator[expr_List, cc:{__?FermionQ}] :=
+    Map[Coefficient[#, Join[cc, Dagger @ cc]] &, expr]
+
+theBdGOperator[expr_, cc:{__?FermionQ}] :=
+    { Coefficient[expr, Join[cc, Dagger @ cc]] }
+
+(**** </BdGOperatorFrom> ****)
 
 
 (**** <Measurement> ****)

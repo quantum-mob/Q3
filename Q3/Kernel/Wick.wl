@@ -7,12 +7,12 @@ BeginPackage["Q3`"]
 { WickMatrix, WickElements };
 
 { WickState, WickGaussian, WickUnitary };
-{ WickOperator, WickOperatorFor };
+{ WickOperator, WickOperatorFrom };
 { WickExpectation, WickGreensFunction };
 
 { WickCircuit, WickRandomCircuit };
 
-{ BdGState, BdGUnitary }; 
+{ BdGState, BdGOperator, BdGUnitary }; 
 
 Begin["`Private`"]
 
@@ -483,28 +483,32 @@ theConjugateReverse[ops_?MatrixQ] := With[
 WickElements::usage = "WickElements[spec, {c1, c2, \[Ellipsis]}] returns a list of linear combinations of bare fermion operators corresponding to specification spec."
 
 (* fot normal models *)
+
 WickElements[ops:{___Rule}, cc:{__?FermionQ}] :=
   MapApply[#2 . #1[cc] &, ops]
 
-(* for the BdG models *)
-WickElements[ops_?MatrixQ, cc:{__?FermionQ}] :=
-  ops . Join[cc, Dagger @ cc]
-
-(* fot normal models *)
 WickElements[WickState[ops:{___Rule}, cc:{__?FermionQ}], ___] :=
   WickElements[ops, cc]
 
-(* fot normal models *)
 WickElements[WickOperator[ops:{___Rule}, ___?OptionQ], cc:{__?FermionQ}] :=
   WickElements[ops, cc]
 
-(* fot normal models *)
 WickElements[WickOperator[ops:{___Rule}, cc:{__?FermionQ}, ___], ___] :=
   WickElements[ops, cc]
 
-(* for BdG models *)
-WickElements[WickOperator[ops_?MatrixQ, ___], cc:{__?FermionQ}] :=
+(* for the BdG models *)
+
+WickElements[ops_?MatrixQ, cc:{__?FermionQ}] :=
+  ops . Join[cc, Dagger @ cc]
+
+WickElements[BdGState[uv_?NambuMatrixQ, ops_?MatrixQ, cc:{__?FermionQ}], ___] :=
   WickElements[ops, cc]
+
+WickElements[BdGOperator[trs_?MatrixQ, ___?OptionQ], cc:{__?FermionQ}] :=
+  WickElements[trs, cc]
+
+WickElements[BdGOperator[trs_?MatrixQ, cc:{__?FermionQ}], ___] :=
+  WickElements[trs, cc]
 
 (**** </WickElements> ****)
 
@@ -604,28 +608,27 @@ ParseGate[WickOperator[op:{___?AnyFermionQ}, opts___?OptionQ], more___?OptionQ] 
 (**** </WickOperator> ****)
 
 
-(**** <WickOperatorFor> ****)
+(**** <WickOperatorFrom> ****)
 
-WickOperatorFor::usage = "WickOperatorFor[expr_, {c1, c2, \[Ellipsis]}] constructs WickOperator from linear combination (or a list of linear combinations) expr of fermion operators of fermion modes {c1, c2, \[Ellipsis]}."
+WickOperatorFrom::usage = "WickOperatorFrom[expr_, {c1, c2, \[Ellipsis]}] constructs WickOperator from linear combination (or a list of linear combinations) expr of fermion operators of fermion modes {c1, c2, \[Ellipsis]}."
 
-WickOperatorFor::mixed = "Mixed linear combination `` of creation and annihilation operators."
+WickOperatorFrom::mixed = "Mixed linear combination `` of creation and annihilation operators."
 
-WickOperatorFor[cc : {__?FermionQ}][spec_] :=
-  WickOperatorFor[spec, cc]
+WickOperatorFrom[cc : {__?FermionQ}][spec_] :=
+  WickOperatorFrom[spec, cc]
 
-WickOperatorFor[expr_List, cc:{__?FermionQ}] :=
+WickOperatorFrom[expr_List, cc:{__?FermionQ}] :=
   WickOperator[theWickOperator[cc] /@ expr, cc]
 
-WickOperatorFor[expr_, cc:{__?FermionQ}] :=
+WickOperatorFrom[expr_, cc:{__?FermionQ}] :=
   WickOperator[{theWickOperator[expr, cc]}, cc]
 
 
 theWickOperator::usage = "theWickOperator[expr, {c1, c2, \[Ellipsis]}] returns the coefficient list of expr in either creation or annihilation operators of fermion modes {c1, c2, \[Ellipsis]}. theWickOperator[expr, {c1, c2, \[Ellipsis], Dagger[c1], Dagger[c2], \[Ellipsis]}] returns the coefficients list of expr in {c1, c2, \[Ellipsis], Dagger[c1], Dagger[c2], \[Ellipsis]}."
 
-theWickOperator[expr_List, spec_List] := theWickOperator[spec] /@ expr
+theWickOperator[cc:{__?FermionQ}][any_] := theWickOperator[any, cc]
 
-theWickOperator[spec_List][expr_] := theWickOperator[expr, spec]
-
+theWickOperator[expr_List, cc:{__?FermionQ}] := theWickOperator[cc] /@ expr
 
 theWickOperator[expr_, cc:{__?FermionQ}] := Module[
   { aa = Coefficient[expr, cc],
@@ -639,7 +642,7 @@ theWickOperator[expr_, cc:{__?FermionQ}] := Module[
   ]
 ]
 
-(**** </WickOperatorFor> ****)
+(**** </WickOperatorFrom> ****)
 
 
 (**** <Measurement> ****)
