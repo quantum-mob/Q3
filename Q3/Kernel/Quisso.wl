@@ -1125,9 +1125,11 @@ Matrix[CZ[ss:{__?QubitQ}], tt:{___?SpeciesQ}] := With[
    [...]. *)
 CZ /:
 Multiply[pre___, CZ[ss:{__?QubitQ}], Ket[a_Association]] := (* performance booster *)
-  Switch[ Upshot @ Lookup[a, ss],
-    1, -Ket[a],
-    _,  Ket[a]
+  Multiply[pre,
+    Switch[ Upshot @ Lookup[a, ss],
+      1, -Ket[a],
+      _,  Ket[a]
+    ]    
   ]
 
 CZ /:

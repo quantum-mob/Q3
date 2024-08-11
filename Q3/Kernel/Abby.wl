@@ -6,6 +6,7 @@ BeginPackage["Q3`"]
 { Choices, ChoiceCount,
   OrderedPartitions };
 { ListPartitions, Successive, FirstLast, Inbetween };
+{ PartitionInto };
 { ShiftLeft, ShiftRight,
   TrimLeft, TrimRight };
 { KeyGroupBy, KeyReplace, CheckJoin };
@@ -47,6 +48,28 @@ BeginPackage["Q3`"]
 
 
 Begin["`Private`"]
+
+
+(**** <PartitionInto> ****)
+
+PartitionInto::usage = "PartitionInto[list, k] partitions list into k non-overlapping sublists of equal length.\nPartitionInto[list, {k1, k2, \[Ellipsis]}] partitions a nested list into k1\[Times]k2\[Times]\[Ellipsis] blocks of equal size.\nPartitionInto[list, kspec, rest] is like Partition[list, nspec, rest] with the nspec determined by kspec so that nspec species the lengths of sublists whereas kspec specifies the number of sublists."
+
+PartitionInto::depth = Partition::pdep
+
+PartitionInto[list_, n_Integer, rest___] :=
+ PartitionInto[list, {n}, rest]
+
+PartitionInto[list_, kk:{__Integer}, rest___] := Module[
+  { nn = Take[Dimensions @ list, Length @ kk] },
+  nn = Floor[nn/kk];
+  Partition[list, nn, rest]
+] /; If[ ArrayDepth[list] >= Length[kk], True,
+    Message[PartitionInto::depth, Length @ kk, Dimensions @ list];
+    False
+  ]
+
+(**** <PartitionInto> ****)
+
 
 (**** <Pairings> ****)
 
@@ -1003,6 +1026,35 @@ makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
 (***** </LevelsPlot> ****)
 
 
+(**** <ArrayShort> ****)
+
+ArrayShort::usage = "ArrayShort[mat] displays matrix mat in a short form."
+
+Options[ArrayShort] = {
+  "Size" -> 4
+}
+
+ArrayShort[mat_SymmetrizedArray, rest___] := ArrayShort[Normal @ mat, rest]
+(* NOTE: SymmetrizedArray does not support Span properly. *)
+
+ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] :=
+  ArrayShort[{vec}, opts]
+
+ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
+  { dim = Flatten @ { OptionValue["Size"] },
+    spc },
+  dim = PadRight[dim, ArrayDepth @ mat, dim];
+  spc = Thread @ {0, Boole @ Thread[Dimensions[mat] > dim]};
+  dim = Thread[1 ;; UpTo /@ dim];
+  MatrixForm[
+    ArrayPad[Chop @ mat[[Sequence @@ dim]], spc, "\[Ellipsis]"],
+    FilterRules[{opts}, Options[MatrixForm]]
+  ]
+]
+
+(**** </ArrayShort> ****)
+
+
 (**** <MatrixObject> ****)
 
 MatrixObject::usage = "MatrixObject[{{m11,m12,\[Ellipsis]}, {m21,m22,\[Ellipsis]}, \[Ellipsis]}] represents a dense matrix.\nIt may be useful to display a dense matrix in a compact form."
@@ -1025,25 +1077,6 @@ MatrixObject[{}] = {}
 MatrixObject[mat_SparseArray?MatrixQ] = mat
 
 MatrixObject[mat_SymmetrizedArray?MatrixQ] = mat
-
-
-ArrayShort::usage = "ArrayShort[mat] displays matrix mat in a short form."
-
-Options[ArrayShort] = {
-  "Size" -> UpTo[4],
-  "Accuracy" -> 3
-}
-
-ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
-  { dim = OptionValue["Size"],
-    acc = OptionValue["Accuracy"],
-    spec },
-  spec = ConstantArray[1;;dim, ArrayDepth @ mat];
-  MatrixForm[
-    Chop @ mat[[Sequence @@ spec]], 
-    FilterRules[{opts}, Options[MatrixForm]]
-  ]
-]
 
 (**** </MatrixObject> ****)
 

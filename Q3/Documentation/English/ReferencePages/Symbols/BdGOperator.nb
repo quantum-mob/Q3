@@ -1,0 +1,2961 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[    119435,       2951]
+NotebookOptionsPosition[    111922,       2796]
+NotebookOutlinePosition[    114236,       2853]
+CellTagsIndexPosition[    114149,       2848]
+WindowTitle->BdGOperator
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "68eea874-5e10-4ec2-b87d-5ad3dbf097ad"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "50044cfd-e3bd-4fc1-b4fd-21670329fd13"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "73ebcfec-3a64-4af9-af3a-56237bae9f05"]
+         }],ExpressionUUID->"acb584e9-c6a3-42ed-8950-6d68b65ecdc5"],
+         StripOnInput->False],{
+        StyleBox["\"BdGState\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/BdGState"], 
+         StyleBox["\"BdGUnitary\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/BdGUnitary"], 
+         StyleBox["\"WickState\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/WickState"], 
+         StyleBox[
+          "\"WickGaussian\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/WickGaussian"], 
+         StyleBox["\"WickUnitary\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/WickUnitary"], 
+         StyleBox[
+          "\"WickOperator\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/WickOperator"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "db4e7524-209e-48f5-8724-7287a3efce24"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "7e404aaf-b2ef-4efa-9ee5-0aa8456478fa"]
+         }],ExpressionUUID->"88403d0c-5897-4bb7-b1b6-9294a33a4c0d"],
+         StripOnInput->False],{
+        "\"Quantum Many-Body Systems\"" :> 
+         Documentation`HelpLookup["paclet:Q3/guide/QuantumManyBodySystems"], 
+         "\"Q3\"" :> Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "e933ddf5-6c55-4e83-bf1c-e29df0fcfd65"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "4fcb5fdd-2b73-42c8-8b3e-8742121e3f8b"]
+         }],ExpressionUUID->"efd046d3-76a6-4c06-8f2f-3cc84763b94e"],
+         StripOnInput->False],{
+        "\"Quantum Many-Body Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumManyBodySystems"], "\"Q3: Quick Start\"" :> 
+         Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "118fc27c-f853-4505-9f16-b5d508317a14"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "425a6aae-9f30-4069-8cd1-d000d9359295"]
+         }],ExpressionUUID->"be9942c8-a128-466d-ad76-a1556d14c1ce"],
+         StripOnInput->False],{
+        "\"Q3/ref/BdGOperator\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{Cell["Q3/ref/BdGOperator"]}, Visible -> 
+               DocumentationBuild`Make`Private`visible$27076]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/Q3/ref/BdGOperator.\
+html"], StandardForm]], "Input", TextClipboardType -> "PlainText"]}, Visible -> 
+               DocumentationBuild`Make`Private`visible$27076]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "Q3/ref/BdGOperator" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "c028a5f2-5e84-4100-8aba-91b97cd94e35"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "06428285-0cdd-4258-b3d6-4039150a3703"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"cc6421fe-ec61-4f84-9297-42b226065bf0"],
+
+Cell["Q3`", "ContextNameCell",ExpressionUUID->"42c73b83-fe09-4c15-b1ff-c1dc1fdb9c93"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "BdGOperator", "ObjectName",ExpressionUUID->
+      "f7ce5a1f-4cc9-4fb8-aaf4-25d69a5c7b9b"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"b0b12691-8d01-4b0d-a2ce-49e2402dbae8"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "7b2c162d-a89a-426f-91b9-2dd4ea1afdc4"]
+    }],ExpressionUUID->"69a2cf1d-0678-4382-9085-03db2e53bc62"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 14.1\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 14",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "5cd49c8a-16a6-4fd7-b1b1-c52d5335ed2e"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"d4098e78-3cfd-4f30-84fd-f0c4f1987c02"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["BdGOperator"]], "paclet:Q3/ref/BdGOperator", 
+         "Q3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{
+        StyleBox["m", "TI"], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["c", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["c", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"]}], "}"}]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "ebd81a19-df91-42c3-bd63-fbf33099a8f0"],
+     "\[LineSeparator]represents a sequence of quantum operations that are \
+described linear combinations in the creation and annihilation operators of \
+the fermion modes ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["c", "TI"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["c", "TI"], 
+         StyleBox["2", "TR"]], ",", 
+        StyleBox["\[Ellipsis]", "TR"]}], "}"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "2db39fcb-910b-4dd5-aa62-c7dc87e4c13f"],
+     " with coefficients given by the elements of matrix ",
+     Cell[BoxData[
+      StyleBox["m", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "c2a33282-6204-49fd-84a7-ee14b2dc5723"],
+     "."
+    }],ExpressionUUID->"3783f767-421e-46a7-a1f1-1c6b3d8db84c"]}
+  }]], "Usage",
+ CellID->1708437074,ExpressionUUID->"734e9aa3-f09d-4857-ba06-45239c79ce72"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    DynamicBox[ToBoxes[
+      If[
+       MatchQ[
+        CurrentValue[
+         EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, 
+         Closed], 
+        Alternatives[Open, True]], 
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], 
+       Rotate[
+        Style[
+         Graphics[{
+           Thickness[0.18], 
+           RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+           Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+          PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+         0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+     ImageSizeCache->{
+      13.600000000000003`, {-0.1685058593749993, 13.768505859375}}]],
+    ExpressionUUID->"76ac1d3d-a0a8-47ae-87ea-b3af01db3592"],
+   Cell[BoxData[
+    TemplateBox[{1},
+     "Spacer1"]],ExpressionUUID->"c2737a7f-79af-485d-b2d7-67a035813598"],
+   "Details and Options"
+  }], "NotesFrameText",ExpressionUUID->"2205eced-71c2-4fd3-9ebc-f40ab792c0f6"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->
+   "Preemptive"]],ExpressionUUID->"473b4ca0-20e4-4da7-9b4e-524040a8ded5"]], \
+"NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->111846131,ExpressionUUID->"79b68ccb-053f-4ea2-b6cc-7f792d184419"],
+
+Cell[TextData[{
+ "The ",
+ Cell[BoxData[
+  StyleBox["i", "TI"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "92c5e5a1-4167-457e-ad38-75d4fa8f9f89"],
+ "th quantum operation is given by ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubsuperscriptBox["\[Sum]", 
+     RowBox[{"j", "=", "1"}], "n"], 
+    RowBox[{"(", 
+     RowBox[{
+      RowBox[{
+       SubscriptBox["m", 
+        RowBox[{"i", ",", "j"}]], 
+       SubscriptBox["c", "j"]}], "+", 
+      RowBox[{
+       SubscriptBox["m", 
+        RowBox[{"i", ",", 
+         RowBox[{"n", "+", "j"}]}]], 
+       SubsuperscriptBox["c", "j", "\[Dagger]"]}]}], ")"}]}], 
+   TraditionalForm]],ExpressionUUID->"56241a34-662d-41a7-b535-f65dc4687af8"],
+ "."
+}], "Notes",
+ CellID->1845542328,ExpressionUUID->"38db473d-5e73-435d-aef8-85e83d07821d"]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.251494140625001, 9.348505859375003}}]],
+  ExpressionUUID->"a4ecb314-f7f7-4877-9747-d1bfb3f4992b"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"e1926a08-2426-4fa7-b8d3-91548a9b1ef6"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "7c688ee4-8999-4d75-b5c1-3c36c9dd99c8"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->749732592,ExpressionUUID->"df234740-6fec-4801-a382-93a2c430ace9"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->299996511,ExpressionUUID->"ac8abd61-6792-47c4-adf4-5f04dc336b8f"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.551318359375001, 9.048681640625002}}]],
+  ExpressionUUID->"9707b2fc-b847-4e13-845d-c113b921396d"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"1e7bf0ca-eea1-4247-8d31-be34ee6dd44e"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "15dee1e7-43e9-48e5-bfa9-a854ed230fa6"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->1469116795,ExpressionUUID->"0387fbbb-9e48-4038-a04e-506751977c75"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1881736593,ExpressionUUID->"6d3440e8-588a-4cc5-8407-bd04cf44b2d8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"$n", "=", "4"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{"the", " ", "number", " ", "of", " ", "bare", " ", "modes"}], 
+   "*)"}]}], "\[IndentingNewLine]", 
+ RowBox[{"cc", "=", 
+  RowBox[{"c", "[", 
+   RowBox[{"Range", "@", "$n"}], "]"}]}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->5844819,ExpressionUUID->"a50ec163-1f29-43a1-82d8-563f3aab4acb"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    SubscriptBox["c", 
+     TemplateBox[{",", "\",\"", "1"},
+      "RowWithSeparators"]],
+    $CellContext`c[1]], ",", 
+   InterpretationBox[
+    SubscriptBox["c", 
+     TemplateBox[{",", "\",\"", "2"},
+      "RowWithSeparators"]],
+    $CellContext`c[2]], ",", 
+   InterpretationBox[
+    SubscriptBox["c", 
+     TemplateBox[{",", "\",\"", "3"},
+      "RowWithSeparators"]],
+    $CellContext`c[3]], ",", 
+   InterpretationBox[
+    SubscriptBox["c", 
+     TemplateBox[{",", "\",\"", "4"},
+      "RowWithSeparators"]],
+    $CellContext`c[4]]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->126886280,ExpressionUUID->"7706c544-d914-4431-85db-aaa91fc070e4"]
+}, Open  ]],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SeedRandom", "[", "354", "]"}], ";"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->723930026,ExpressionUUID->"2b7f668e-83e7-4bde-9681-f526eef29e3d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"$N", "=", "2"}], ";"}], 
+  RowBox[{"(*", 
+   RowBox[{
+   "the", " ", "number", " ", "of", " ", "operators", " ", "to", " ", 
+    "apply"}], "*)"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->1209800273,ExpressionUUID->"5481cae4-94ed-49ea-9166-5824829049b4"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mm", "=", 
+   RowBox[{"RandomMatrix", "[", 
+    RowBox[{"{", 
+     RowBox[{"$N", ",", 
+      RowBox[{"2", "$n"}]}], "}"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mm", "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->139418925,ExpressionUUID->"80f0cc52-f15a-4736-bfe0-86edfd79a32a"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"0.9220598331487244`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.41205333420139795`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.36264326320702983`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.2231282931553616`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.5706302288651728`"}], "-", 
+       RowBox[{"0.6711520522568806`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.5499731345396559`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.21533277407296794`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"1.8704144763757768`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.019473479977009555`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.3314217422277011`"}], "-", 
+       RowBox[{"3.2287865268925016`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.25530973608827184`", "\[VeryThinSpace]", "-", 
+       RowBox[{"1.745903502560284`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.6695626871511192`", "\[VeryThinSpace]", "+", 
+       RowBox[{"1.319108547663239`", " ", "\[ImaginaryI]"}]}]},
+     {
+      RowBox[{
+       RowBox[{"-", "0.41360843797007524`"}], "-", 
+       RowBox[{"0.7418792188525567`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "1.4180883863841414`"}], "+", 
+       RowBox[{"0.6625346580564927`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.7988674506500303`"}], "-", 
+       RowBox[{"0.15380654882551445`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"2.1321655134573634`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.42935740369356246`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.6506772077593967`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.8964407623631303`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.6546810793972276`"}], "-", 
+       RowBox[{"0.11434705860123225`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.5894638308833926`", "\[VeryThinSpace]", "+", 
+       RowBox[{"1.3333338503482626`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.8260707741318762`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.9923487006885248`", " ", "\[ImaginaryI]"}]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->1239335413,ExpressionUUID->"8cff7480-bb19-4655-bfe8-dd29a62442f4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op", "=", 
+  RowBox[{"BdGOperator", "[", 
+   RowBox[{"mm", ",", "cc"}], "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[6]:=",
+ CellID->475242963,ExpressionUUID->"4a714595-ba74-4c47-8cf1-327a357c7b8a"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["BdGOperator",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    
+    TemplateBox[{
+      PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]], 
+              ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Target: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operators: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["2", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}], True -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
+              ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Target: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operators: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["2", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Transforms: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    GridBox[{{
+                    RowBox[{
+                    RowBox[{"0.9220598331487244`", "\[VeryThinSpace]"}], "+", 
+                    
+                    RowBox[{"0.41205333420139795`", " ", "\[ImaginaryI]"}]}], 
+                    
+                    RowBox[{
+                    RowBox[{"0.36264326320702983`", "\[VeryThinSpace]"}], "+", 
+                    RowBox[{"0.2231282931553616`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "0.5706302288651728`"}], "-", 
+                    RowBox[{"0.6711520522568806`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"0.5499731345396559`", "\[VeryThinSpace]"}], "+", 
+                    
+                    
+                    RowBox[{"0.21533277407296794`", " ", 
+                    "\[ImaginaryI]"}]}]}, {
+                    RowBox[{
+                    RowBox[{"-", "0.41360843797007524`"}], "-", 
+                    RowBox[{"0.7418792188525567`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "1.4180883863841414`"}], "+", 
+                    RowBox[{"0.6625346580564927`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "0.7988674506500303`"}], "-", 
+                    RowBox[{"0.15380654882551445`", " ", "\[ImaginaryI]"}]}], 
+                    
+                    RowBox[{
+                    RowBox[{"2.1321655134573634`", "\[VeryThinSpace]"}], "-", 
+                    
+                    
+                    RowBox[{"0.42935740369356246`", " ", 
+                    "\[ImaginaryI]"}]}]}}, RowSpacings -> 1, ColumnSpacings -> 
+                    1, RowAlignments -> Baseline, ColumnAlignments -> Center],
+                     "\[NoBreak]", ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]], ",", 
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    GridBox[{{
+                    RowBox[{
+                    RowBox[{"1.8704144763757768`", "\[VeryThinSpace]"}], "-", 
+                    
+                    RowBox[{"0.019473479977009555`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "0.3314217422277011`"}], "-", 
+                    RowBox[{"3.2287865268925016`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"0.25530973608827184`", "\[VeryThinSpace]"}], "-", 
+                    RowBox[{"1.745903502560284`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"0.6695626871511192`", "\[VeryThinSpace]"}], "+", 
+                    
+                    RowBox[{"1.319108547663239`", " ", "\[ImaginaryI]"}]}]}, {
+                    
+                    RowBox[{
+                    RowBox[{"0.6506772077593967`", "\[VeryThinSpace]"}], "+", 
+                    
+                    RowBox[{"0.8964407623631303`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "0.6546810793972276`"}], "-", 
+                    RowBox[{"0.11434705860123225`", " ", "\[ImaginaryI]"}]}], 
+                    
+                    RowBox[{
+                    RowBox[{"0.5894638308833926`", "\[VeryThinSpace]"}], "+", 
+                    
+                    RowBox[{"1.3333338503482626`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"0.8260707741318762`", "\[VeryThinSpace]"}], "-", 
+                    
+                    RowBox[{"0.9923487006885248`", " ", "\[ImaginaryI]"}]}]}},
+                     RowSpacings -> 1, ColumnSpacings -> 1, RowAlignments -> 
+                    Baseline, ColumnAlignments -> Center], "\[NoBreak]", 
+                    ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]]}], "}"}], "SummaryItem"]}]}},
+              GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel"],
+    DynamicModuleValues:>{}], "]"}],
+  Q3`Private`mat,
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->453290402,ExpressionUUID->"f6baea47-3da1-400b-8681-13d59ea75645"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"in", "=", 
+  RowBox[{"Ket", "[", 
+   RowBox[{"cc", "->", 
+    RowBox[{"PadRight", "[", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}], ",", "$n", ",", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "0"}], "}"}]}], "]"}]}], 
+   "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{"in", "=", 
+  RowBox[{"BdGState", "[", "in", "]"}]}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[7]:=",
+ CellID->926734856,ExpressionUUID->"424ef7a1-2d39-4f9e-b607-ab4ebb796c53"],
+
+Cell[BoxData[
+ InterpretationBox[
+  TemplateBox[{
+    TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+      SubscriptBox["1", 
+       TemplateBox[{",", "\",\"", 
+         InterpretationBox[
+          SubscriptBox["c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+          $CellContext`c[1]]}, "RowWithSeparators"]], 
+      SubscriptBox["0", 
+       TemplateBox[{",", "\",\"", 
+         InterpretationBox[
+          SubscriptBox["c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+          $CellContext`c[2]]}, "RowWithSeparators"]], 
+      SubscriptBox["1", 
+       TemplateBox[{",", "\",\"", 
+         InterpretationBox[
+          SubscriptBox["c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+          $CellContext`c[3]]}, "RowWithSeparators"]], 
+      SubscriptBox["0", 
+       TemplateBox[{",", "\",\"", 
+         InterpretationBox[
+          SubscriptBox["c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+          $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+   "Ket"],
+  Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+    1, $CellContext`c[4] -> 0|>]]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->470280935,ExpressionUUID->"9652c0f6-09be-42fe-9307-1fc69d52d1c1"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["BdGState",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    
+    TemplateBox[{
+      PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]], 
+              ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Modes: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operators: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["2", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}], True -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
+              ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Modes: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operators: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["2", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Overall unitary: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    
+                    GridBox[{{"1", "0", "0", "0"}, {"0", "1", "0", "0"}, {
+                    "0", "0", "1", "0"}, {"0", "0", "0", "1"}}, RowSpacings -> 
+                    1, ColumnSpacings -> 1, RowAlignments -> Baseline, 
+                    ColumnAlignments -> Center], "\[NoBreak]", ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[
+                    SparseArray[
+                    Automatic, {4, 4}, 0, {
+                    1, {{0, 1, 2, 3, 4}, {{1}, {2}, {3}, {4}}}, {1, 1, 1, 
+                    1}}], {}]]], ",", 
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    
+                    GridBox[{{"0", "0", "0", "0"}, {"0", "0", "0", "0"}, {
+                    "0", "0", "0", "0"}, {"0", "0", "0", "0"}}, RowSpacings -> 
+                    1, ColumnSpacings -> 1, RowAlignments -> Baseline, 
+                    ColumnAlignments -> Center], "\[NoBreak]", ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[
+                    SparseArray[
+                    Automatic, {4, 4}, 0, {
+                    1, {{0, 0, 0, 0, 0}, {}}, {}}], {}]]]}], "}"}], 
+                  "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operator transforms: \"", "SummaryItemAnnotation"],
+                  "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    
+                    GridBox[{{"0", "0", "0", "0"}, {"0", "0", "0", "0"}}, 
+                    RowSpacings -> 1, ColumnSpacings -> 1, RowAlignments -> 
+                    Baseline, ColumnAlignments -> Center], "\[NoBreak]", 
+                    ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]], ",", 
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    
+                    GridBox[{{"1", "0", "0", "0"}, {"0", "0", "1", "0"}}, 
+                    RowSpacings -> 1, ColumnSpacings -> 1, RowAlignments -> 
+                    Baseline, ColumnAlignments -> Center], "\[NoBreak]", 
+                    ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]]}], "}"}], "SummaryItem"]}]}},
+              GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel"],
+    DynamicModuleValues:>{}], "]"}],
+  Q3`BdGState[{
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 1, 2, 3, 4}, {{1}, {2}, {3}, {4}}}, {1, 1, 1, 1}}], SparseArray[
+    Automatic, {4, 4}, 0, {1, {{0, 0, 0, 0, 0}, {}}, {}}]}, {{0, 0, 0, 0, 1, 
+   0, 0, 0}, {0, 0, 0, 0, 0, 0, 1, 0}}, {
+    $CellContext`c[1], 
+    $CellContext`c[2], 
+    $CellContext`c[3], 
+    $CellContext`c[4]}],
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1271853585,ExpressionUUID->"ba40e3c7-9a23-4a8e-b746-deca8106fff8"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"out", "=", 
+  RowBox[{"op", "**", "in"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[8]:=",
+ CellID->442556749,ExpressionUUID->"99bca356-e2c0-4ee0-9dc4-c746e7944ec9"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["BdGState",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    
+    TemplateBox[{
+      PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]], 
+              ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Modes: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operators: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["4", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}], True -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
+              ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Modes: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operators: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["4", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Overall unitary: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    
+                    GridBox[{{"1", "0", "0", "0"}, {"0", "1", "0", "0"}, {
+                    "0", "0", "1", "0"}, {"0", "0", "0", "1"}}, RowSpacings -> 
+                    1, ColumnSpacings -> 1, RowAlignments -> Baseline, 
+                    ColumnAlignments -> Center], "\[NoBreak]", ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[
+                    SparseArray[
+                    Automatic, {4, 4}, 0, {
+                    1, {{0, 1, 2, 3, 4}, {{1}, {2}, {3}, {4}}}, {1, 1, 1, 
+                    1}}], {}]]], ",", 
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    
+                    GridBox[{{"0", "0", "0", "0"}, {"0", "0", "0", "0"}, {
+                    "0", "0", "0", "0"}, {"0", "0", "0", "0"}}, RowSpacings -> 
+                    1, ColumnSpacings -> 1, RowAlignments -> Baseline, 
+                    ColumnAlignments -> Center], "\[NoBreak]", ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[
+                    SparseArray[
+                    Automatic, {4, 4}, 0, {
+                    1, {{0, 0, 0, 0, 0}, {}}, {}}], {}]]]}], "}"}], 
+                  "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operator transforms: \"", "SummaryItemAnnotation"],
+                  "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    GridBox[{{
+                    RowBox[{
+                    RowBox[{"0.9220598331487244`", "\[VeryThinSpace]"}], "+", 
+                    
+                    RowBox[{"0.41205333420139795`", " ", "\[ImaginaryI]"}]}], 
+                    
+                    RowBox[{
+                    RowBox[{"0.36264326320702983`", "\[VeryThinSpace]"}], "+", 
+                    RowBox[{"0.2231282931553616`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "0.5706302288651728`"}], "-", 
+                    RowBox[{"0.6711520522568806`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"0.5499731345396559`", "\[VeryThinSpace]"}], "+", 
+                    
+                    
+                    RowBox[{"0.21533277407296794`", " ", 
+                    "\[ImaginaryI]"}]}]}, {
+                    RowBox[{
+                    RowBox[{"-", "0.41360843797007524`"}], "-", 
+                    RowBox[{"0.7418792188525567`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "1.4180883863841414`"}], "+", 
+                    RowBox[{"0.6625346580564927`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "0.7988674506500303`"}], "-", 
+                    RowBox[{"0.15380654882551445`", " ", "\[ImaginaryI]"}]}], 
+                    
+                    RowBox[{
+                    RowBox[{"2.1321655134573634`", "\[VeryThinSpace]"}], "-", 
+                    
+                    
+                    RowBox[{"0.42935740369356246`", " ", 
+                    "\[ImaginaryI]"}]}]}, {"0", "0", "0", "0"}, {
+                    "0", "0", "0", "0"}}, RowSpacings -> 1, ColumnSpacings -> 
+                    1, RowAlignments -> Baseline, ColumnAlignments -> Center],
+                     "\[NoBreak]", ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]], ",", 
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    GridBox[{{
+                    RowBox[{
+                    RowBox[{"1.8704144763757768`", "\[VeryThinSpace]"}], "-", 
+                    
+                    RowBox[{"0.019473479977009555`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "0.3314217422277011`"}], "-", 
+                    RowBox[{"3.2287865268925016`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"0.25530973608827184`", "\[VeryThinSpace]"}], "-", 
+                    RowBox[{"1.745903502560284`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"0.6695626871511192`", "\[VeryThinSpace]"}], "+", 
+                    
+                    RowBox[{"1.319108547663239`", " ", "\[ImaginaryI]"}]}]}, {
+                    
+                    RowBox[{
+                    RowBox[{"0.6506772077593967`", "\[VeryThinSpace]"}], "+", 
+                    
+                    RowBox[{"0.8964407623631303`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", "0.6546810793972276`"}], "-", 
+                    RowBox[{"0.11434705860123225`", " ", "\[ImaginaryI]"}]}], 
+                    
+                    RowBox[{
+                    RowBox[{"0.5894638308833926`", "\[VeryThinSpace]"}], "+", 
+                    
+                    RowBox[{"1.3333338503482626`", " ", "\[ImaginaryI]"}]}], 
+                    RowBox[{
+                    RowBox[{"0.8260707741318762`", "\[VeryThinSpace]"}], "-", 
+                    
+                    
+                    RowBox[{"0.9923487006885248`", " ", 
+                    "\[ImaginaryI]"}]}]}, {"1", "0", "0", "0"}, {
+                    "0", "0", "1", "0"}}, RowSpacings -> 1, ColumnSpacings -> 
+                    1, RowAlignments -> Baseline, ColumnAlignments -> Center],
+                     "\[NoBreak]", ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]]}], "}"}], "SummaryItem"]}]}},
+              GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel"],
+    DynamicModuleValues:>{}], "]"}],
+  Q3`BdGState[{
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 1, 2, 3, 4}, {{1}, {2}, {3}, {4}}}, {1, 1, 1, 1}}], SparseArray[
+    Automatic, {4, 4}, 0, {1, {{0, 0, 0, 0, 0}, {}}, {}}]}, {{Complex[
+    0.9220598331487244, 0.41205333420139795`], Complex[0.36264326320702983`, 
+    0.2231282931553616], Complex[-0.5706302288651728, -0.6711520522568806], 
+    Complex[0.5499731345396559, 0.21533277407296794`], Complex[
+    1.8704144763757768`, -0.019473479977009555`], 
+    Complex[-0.3314217422277011, -3.2287865268925016`], Complex[
+    0.25530973608827184`, -1.745903502560284], Complex[0.6695626871511192, 
+    1.319108547663239]}, {Complex[-0.41360843797007524`, -0.7418792188525567],
+     Complex[-1.4180883863841414`, 0.6625346580564927], 
+    Complex[-0.7988674506500303, -0.15380654882551445`], Complex[
+    2.1321655134573634`, -0.42935740369356246`], Complex[0.6506772077593967, 
+    0.8964407623631303], Complex[-0.6546810793972276, -0.11434705860123225`], 
+    Complex[0.5894638308833926, 1.3333338503482626`], Complex[
+    0.8260707741318762, -0.9923487006885248]}, {0, 0, 0, 0, 1, 0, 0, 0}, {0, 
+    0, 0, 0, 0, 0, 1, 0}}, {
+    $CellContext`c[1], 
+    $CellContext`c[2], 
+    $CellContext`c[3], 
+    $CellContext`c[4]}],
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->1875211810,ExpressionUUID->"096797ad-cc76-48fc-9faf-02e0b07b3eb8"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Elaborate", "[", "out", "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[9]:=",
+ CellID->713179887,ExpressionUUID->"de8d6cab-3afb-41d1-afaf-dec219e5b52d"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.4113308043485561`", "\[VeryThinSpace]", "+", 
+     RowBox[{"1.1719276977910795`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 0, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+      0, $CellContext`c[4] -> 0|>]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.4689048292076935`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.4677094086136129`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 0, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+      1, $CellContext`c[4] -> 1|>]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.701752757218674`", "\[VeryThinSpace]", "-", 
+     RowBox[{"1.9565266065405695`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 0, $CellContext`c[2] -> 1, $CellContext`c[3] -> 
+      1, $CellContext`c[4] -> 0|>]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.8053935182307763`", "\[VeryThinSpace]", "-", 
+     RowBox[{"1.1686210795553578`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+      0, $CellContext`c[4] -> 1|>]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.8044558977618395`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.5795201406229313`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+      1, $CellContext`c[4] -> 0|>]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.5286830214126033`", "\[VeryThinSpace]", "-", 
+     RowBox[{"2.125706857578681`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 1, $CellContext`c[3] -> 
+      0, $CellContext`c[4] -> 0|>]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"3.190346089581393`", "\[VeryThinSpace]", "+", 
+     RowBox[{"1.3981623188459285`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 1, $CellContext`c[3] -> 
+      1, $CellContext`c[4] -> 1|>]]}]}]], "Output",
+ CellLabel->"Out[9]=",
+ CellID->1237752795,ExpressionUUID->"d03ca68a-4aa7-4575-854e-d2da41ab9b58"]
+}, Open  ]],
+
+Cell["\<\
+Now, let us verify the above results by a conventional method.\
+\>", "ExampleText",
+ CellID->41272196,ExpressionUUID->"68d8caad-3859-42b2-8f3a-f7ad6fbe99d0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"in2", "=", 
+  RowBox[{"Elaborate", "[", "in", "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[10]:=",
+ CellID->1163804199,ExpressionUUID->"8f522c1d-9736-4302-bc39-fcea395062df"],
+
+Cell[BoxData[
+ InterpretationBox[
+  TemplateBox[{
+    TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+      SubscriptBox["1", 
+       TemplateBox[{",", "\",\"", 
+         InterpretationBox[
+          SubscriptBox["c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+          $CellContext`c[1]]}, "RowWithSeparators"]], 
+      SubscriptBox["0", 
+       TemplateBox[{",", "\",\"", 
+         InterpretationBox[
+          SubscriptBox["c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+          $CellContext`c[2]]}, "RowWithSeparators"]], 
+      SubscriptBox["1", 
+       TemplateBox[{",", "\",\"", 
+         InterpretationBox[
+          SubscriptBox["c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+          $CellContext`c[3]]}, "RowWithSeparators"]], 
+      SubscriptBox["0", 
+       TemplateBox[{",", "\",\"", 
+         InterpretationBox[
+          SubscriptBox["c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+          $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+   "Ket"],
+  Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+    1, $CellContext`c[4] -> 0|>]]], "Output",
+ CellLabel->"Out[10]=",
+ CellID->2056690257,ExpressionUUID->"d25cb24b-87b8-4526-8df1-78f03f712cbd"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"op2", "=", 
+  RowBox[{"Apply", "[", 
+   RowBox[{"Multiply", ",", 
+    RowBox[{"mm", ".", 
+     RowBox[{"Join", "[", 
+      RowBox[{"cc", ",", 
+       RowBox[{"Dagger", "@", "cc"}]}], "]"}]}]}], "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[11]:=",
+ CellID->260456572,ExpressionUUID->"e5ed3848-236b-426d-9aeb-d558233b8d89"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"(", 
+   RowBox[{"1.2451860944430009`", "\[VeryThinSpace]", "-", 
+    RowBox[{"0.6172048036640156`", " ", "\[ImaginaryI]"}]}], ")"}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.5961038860102394`", "\[VeryThinSpace]", "-", 
+     RowBox[{"0.38789379409004265`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+         $CellContext`c[2]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+         $CellContext`c[1]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`c[2], 
+     $CellContext`c[1]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.4113308043485561`", "\[VeryThinSpace]", "+", 
+     RowBox[{"1.1719276977910795`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+         $CellContext`c[3]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+         $CellContext`c[1]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`c[3], 
+     $CellContext`c[1]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.509250902377406`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.8077174667350915`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+         $CellContext`c[3]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+         $CellContext`c[2]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`c[3], 
+     $CellContext`c[2]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"2.210624946219794`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.9797497846487419`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+         $CellContext`c[4]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+         $CellContext`c[1]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`c[4], 
+     $CellContext`c[1]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.7915931848901914`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.2610275252732027`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+         $CellContext`c[4]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+         $CellContext`c[2]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`c[4], 
+     $CellContext`c[2]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.0986061524767108`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.9293911325382753`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+         $CellContext`c[4]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+         $CellContext`c[3]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     $CellContext`c[4], 
+     $CellContext`c[3]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.0186480926186223`", "\[VeryThinSpace]", "+", 
+     RowBox[{"2.4742529677474208`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[1]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+         $CellContext`c[1]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[1]], 
+     $CellContext`c[1]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"2.675453599970856`", "\[VeryThinSpace]", "-", 
+     RowBox[{"0.7965568332298067`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[1]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+         $CellContext`c[2]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[1]], 
+     $CellContext`c[2]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.727560366555756`", "\[VeryThinSpace]", "-", 
+     RowBox[{"0.6761142745557169`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[1]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+         $CellContext`c[3]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[1]], 
+     $CellContext`c[3]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"3.8148502522228296`", "\[VeryThinSpace]", "-", 
+     RowBox[{"1.4777274500203932`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[1]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+         $CellContext`c[4]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[1]], 
+     $CellContext`c[4]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"3.9055189853218373`", "\[VeryThinSpace]", "-", 
+     RowBox[{"2.1968702861881253`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[1]]], 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[2]]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[1]], 
+     Q3`Dagger[
+      $CellContext`c[2]]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.6027169604176594`", "\[VeryThinSpace]", "-", 
+     RowBox[{"3.389557585030942`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[1]]], 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[3]]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[1]], 
+     Q3`Dagger[
+      $CellContext`c[3]]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"2.2726037443057234`", "\[VeryThinSpace]", "-", 
+     RowBox[{"3.3307270003048846`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[1]]], 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[4]]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[1]], 
+     Q3`Dagger[
+      $CellContext`c[4]]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.701752757218674`", "\[VeryThinSpace]", "-", 
+     RowBox[{"1.9565266065405695`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[2]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+         $CellContext`c[1]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[2]], 
+     $CellContext`c[1]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"2.8210699201599176`", "\[VeryThinSpace]", "+", 
+     RowBox[{"4.546671347516816`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[2]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+         $CellContext`c[2]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[2]], 
+     $CellContext`c[2]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.5286830214126033`", "\[VeryThinSpace]", "-", 
+     RowBox[{"2.125706857578681`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[2]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+         $CellContext`c[3]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[2]], 
+     $CellContext`c[3]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.7575150734309684`", "\[VeryThinSpace]", "+", 
+     RowBox[{"6.538146800981486`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[2]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+         $CellContext`c[4]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[2]], 
+     $CellContext`c[4]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"4.4764746257648325`", "\[VeryThinSpace]", "-", 
+     RowBox[{"3.4589647751259447`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[2]]], 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[3]]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[2]], 
+     Q3`Dagger[
+      $CellContext`c[3]]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"3.190346089581393`", "\[VeryThinSpace]", "+", 
+     RowBox[{"1.3981623188459285`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[2]]], 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[4]]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[2]], 
+     Q3`Dagger[
+      $CellContext`c[4]]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.394964050725348`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.9395926915244736`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[3]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+         $CellContext`c[1]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[3]], 
+     $CellContext`c[1]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.8784092274512363`", "\[VeryThinSpace]", "+", 
+     RowBox[{"2.029946432529351`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[3]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+         $CellContext`c[2]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[3]], 
+     $CellContext`c[2]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.030993899586218`", "\[VeryThinSpace]", "-", 
+     RowBox[{"2.5119376307885055`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[3]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+         $CellContext`c[3]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[3]], 
+     $CellContext`c[3]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.2423327744292767`", "\[VeryThinSpace]", "+", 
+     RowBox[{"4.6924030423916685`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[3]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+         $CellContext`c[4]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[3]], 
+     $CellContext`c[4]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.1575120686609448`", "\[VeryThinSpace]", "+", 
+     RowBox[{"3.365913516365187`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[3]]], 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[4]]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[3]], 
+     Q3`Dagger[
+      $CellContext`c[4]]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.4689048292076935`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.4677094086136129`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[4]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+         $CellContext`c[1]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[4]], 
+     $CellContext`c[1]]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"2.344444274141333`", "\[VeryThinSpace]", "+", 
+     RowBox[{"1.2514552166428685`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[4]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+         $CellContext`c[2]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[4]], 
+     $CellContext`c[2]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.8053935182307763`", "\[VeryThinSpace]", "-", 
+     RowBox[{"1.1686210795553578`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[4]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+         $CellContext`c[3]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[4]], 
+     $CellContext`c[3]]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.3259855602882586`", "\[VeryThinSpace]", "+", 
+     RowBox[{"2.892961070968699`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        InterpretationBox[
+         TemplateBox[{"c", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"], 
+           TemplateBox[{",", "\",\"", "\"\[Dagger]\""}, "RowWithSeparators"]},
+           "Subsuperscript", SyntaxForm -> SubsuperscriptBox], 
+         Q3`Dagger[
+          $CellContext`c[4]]], 
+        InterpretationBox[
+         SubscriptBox["c", 
+          TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+         $CellContext`c[4]]}, "RowWithSeparators"]},
+     "RowDefault"],
+    Q3`Multiply[
+     Q3`Dagger[
+      $CellContext`c[4]], 
+     $CellContext`c[4]]]}]}]], "Output",
+ CellLabel->"Out[11]=",
+ CellID->1920406734,ExpressionUUID->"07ba374c-fb6f-45e0-8a8a-ae9325639121"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"out2", "=", 
+  RowBox[{
+   RowBox[{"op2", "**", "in2"}], "//", "KetChop"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[12]:=",
+ CellID->514743932,ExpressionUUID->"96965bc5-d944-4069-9327-809b9236abf3"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.4113308043485561`", "\[VeryThinSpace]", "+", 
+     RowBox[{"1.1719276977910795`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 0, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+      0, $CellContext`c[4] -> 0|>]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.4689048292076935`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.4677094086136129`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 0, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+      1, $CellContext`c[4] -> 1|>]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"1.701752757218674`", "\[VeryThinSpace]", "-", 
+     RowBox[{"1.9565266065405695`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 0, $CellContext`c[2] -> 1, $CellContext`c[3] -> 
+      1, $CellContext`c[4] -> 0|>]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.8053935182307763`", "\[VeryThinSpace]", "-", 
+     RowBox[{"1.1686210795553578`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+      0, $CellContext`c[4] -> 1|>]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.8044558977618395`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.5795201406229309`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 0, $CellContext`c[3] -> 
+      1, $CellContext`c[4] -> 0|>]]}], "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.5286830214126033`", "\[VeryThinSpace]", "-", 
+     RowBox[{"2.125706857578681`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 1, $CellContext`c[3] -> 
+      0, $CellContext`c[4] -> 0|>]]}], "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"3.190346089581393`", "\[VeryThinSpace]", "+", 
+     RowBox[{"1.3981623188459285`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`c[1]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`c[2]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+            $CellContext`c[3]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["c", 
+             TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+            $CellContext`c[4]]}, "RowWithSeparators"]]}, "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`c[1] -> 1, $CellContext`c[2] -> 1, $CellContext`c[3] -> 
+      1, $CellContext`c[4] -> 1|>]]}]}]], "Output",
+ CellLabel->"Out[12]=",
+ CellID->1639486049,ExpressionUUID->"98ef3041-35ca-4e41-89fb-00a0b48f2c1c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"out", "-", "out2"}], "//", "Elaborate"}], "//", "Chop"}]], "Input",\
+
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[13]:=",
+ CellID->1599156439,ExpressionUUID->"78021a60-fe48-4ce8-adb5-2e204e198660"],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[13]=",
+ CellID->218017479,ExpressionUUID->"6959946b-9a57-4d68-9750-70f6ac4c59c1"]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["BdGState"]], "paclet:Q3/ref/BdGState", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "38165285-38ff-4a73-94fe-7682890ba437"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["BdGUnitary"]], "paclet:Q3/ref/BdGUnitary", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "dcd1bad9-8cc1-4ba8-9a15-280bda39445c"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["WickState"]], "paclet:Q3/ref/WickState", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "6d234598-ce6f-41bb-a8ed-04267ed15d79"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["WickGaussian"]], "paclet:Q3/ref/WickGaussian", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "a4442c1d-543b-443f-9cd3-077e6cc675f8"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["WickUnitary"]], "paclet:Q3/ref/WickUnitary", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "a9f8da07-a998-4610-8820-058a66dc7c3e"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["WickOperator"]], "paclet:Q3/ref/WickOperator", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "48ce0ca5-7bc8-4902-a5b2-2425b7301309"]
+       }], "SeeAlso",ExpressionUUID->"707ddfce-1240-4e16-bee0-8d3d1b630711"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"9bb3e8cb-959a-4afa-b5b5-\
+457b287d3edc"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTechNote.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TechNotesSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Many-Body Systems with Q3"]], 
+           "paclet:Q3/tutorial/QuantumManyBodySystems"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "10d21299-a178-420b-bba6-e38fcadf912c"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "84289306-bfcb-4562-8525-b27b3666830c"]}]}
+     }]}
+  }]], "TechNotesSection",ExpressionUUID->"d8ee24db-6bd3-4539-811b-\
+2cf52869084d"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Many-Body Systems"]], 
+           "paclet:Q3/guide/QuantumManyBodySystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "d8949957-b6ea-4432-8ee6-7b63e0c4ad62"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3"]], "paclet:Q3/guide/Q3"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "3c95daa8-a3ce-413b-b2bd-b1ce485678b6"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"4e0539d1-4bd4-4384-b12c-\
+2a2a84ff2aae"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "B. M. Terhal and D. P. DiVincenzo (2002)"}]]]], 
+             "https://doi.org/10.1103/PhysRevA.65.032325"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "9a6b5997-6fad-416a-ab8f-dd6f7b3fd519"]}]],ExpressionUUID->
+         "05d27805-4f11-4bd2-86ea-9c9864dfaf1a"],
+        ", Physical Review A 65, 032325, \"Classical simulation of \
+noninteracting-fermion quantum circuits.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "925967b2-6513-4761-9ee1-a2953deefa27"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "db6c5fab-136d-4e13-ace3-3921313bda67"]}]],ExpressionUUID->
+         "6f47e6dc-08bd-463f-8bf3-c92d2d3e8c70"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "RelatedLinks",ExpressionUUID->
+        "7eeca55b-2a97-42ff-a78b-4fb86ebde427"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"0666083f-c7f0-4bcc-b0d8-\
+c5e49dd2f9f6"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"43060cc6-5b75-481b-b895-d8fbcbe042b7"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"BdGOperator",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed, "NotesSection" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2024, 8, 11, 23, 55, 26.990858}", 
+    "history" -> {"14.1", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "BdGOperator[m, {c1, c2, ...}] represents a sequence of quantum \
+operations that are described linear combinations in the creation and \
+annihilation operators of the fermion modes {c1, c2, ...} with coefficients \
+given by the elements of matrix m.", "synonyms" -> {}, "tabletags" -> {}, 
+    "title" -> "BdGOperator", "titlemodifier" -> "", "metadescription" -> "", 
+    "windowtitle" -> "BdGOperator", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/BdGOperator"}},
+CellContext->"Global`",
+FrontEndVersion->"14.1 for Mac OS X ARM (64-bit) (July 16, 2024)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "14.1 for Mac OS X ARM (64-bit) (July 16, 2024)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"a4e690eb-5da1-46b8-ac2c-2ee0c6f926cf"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[14279, 381, 1440, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"df234740-6fec-4801-a382-93a2c430ace9",
+   CellTags->"PrimaryExamplesSection",
+   CellID->749732592]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 113949, 2841}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[579, 21, 7605, 181, 50, "AnchorBarGrid",ExpressionUUID->"cc6421fe-ec61-4f84-9297-42b226065bf0",
+ CellID->1],
+Cell[8187, 204, 85, 0, 22, "ContextNameCell",ExpressionUUID->"42c73b83-fe09-4c15-b1ff-c1dc1fdb9c93"],
+Cell[CellGroupData[{
+Cell[8297, 208, 1385, 38, 57, "ObjectNameGrid",ExpressionUUID->"d4098e78-3cfd-4f30-84fd-f0c4f1987c02"],
+Cell[9685, 248, 1705, 46, 127, "Usage",ExpressionUUID->"734e9aa3-f09d-4857-ba06-45239c79ce72",
+ CellID->1708437074]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11427, 299, 1916, 48, 34, "NotesSection",ExpressionUUID->"79b68ccb-053f-4ea2-b6cc-7f792d184419",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->111846131],
+Cell[13346, 349, 806, 26, 70, "Notes",ExpressionUUID->"38db473d-5e73-435d-aef8-85e83d07821d",
+ CellID->1845542328]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[14279, 381, 1440, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"df234740-6fec-4801-a382-93a2c430ace9",
+ CellTags->"PrimaryExamplesSection",
+ CellID->749732592],
+Cell[15722, 421, 191, 3, 29, "Input",ExpressionUUID->"ac8abd61-6792-47c4-adf4-5f04dc336b8f",
+ CellID->299996511],
+Cell[CellGroupData[{
+Cell[15938, 428, 1419, 37, 29, "ExampleSection",ExpressionUUID->"0387fbbb-9e48-4038-a04e-506751977c75",
+ CellID->1469116795],
+Cell[17360, 467, 211, 5, 28, "Input",ExpressionUUID->"6d3440e8-588a-4cc5-8407-bd04cf44b2d8",
+ CellID->1881736593],
+Cell[CellGroupData[{
+Cell[17596, 476, 418, 12, 45, "Input",ExpressionUUID->"a50ec163-1f29-43a1-82d8-563f3aab4acb",
+ CellID->5844819],
+Cell[18017, 490, 719, 24, 36, "Output",ExpressionUUID->"7706c544-d914-4431-85db-aaa91fc070e4",
+ CellID->126886280]
+}, Open  ]],
+Cell[18751, 517, 208, 5, 28, "Input",ExpressionUUID->"2b7f668e-83e7-4bde-9681-f526eef29e3d",
+ CellID->723930026],
+Cell[18962, 524, 332, 10, 28, "Input",ExpressionUUID->"5481cae4-94ed-49ea-9166-5824829049b4",
+ CellID->1209800273],
+Cell[CellGroupData[{
+Cell[19319, 538, 371, 10, 45, "Input",ExpressionUUID->"80f0cc52-f15a-4736-bfe0-86edfd79a32a",
+ CellID->139418925],
+Cell[19693, 550, 2647, 55, 59, "Output",ExpressionUUID->"8cff7480-bb19-4655-bfe8-dd29a62442f4",
+ CellID->1239335413]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22377, 610, 239, 6, 28, "Input",ExpressionUUID->"4a714595-ba74-4c47-8cf1-327a357c7b8a",
+ CellID->475242963],
+Cell[22619, 618, 9780, 204, 60, "Output",ExpressionUUID->"f6baea47-3da1-400b-8681-13d59ea75645",
+ CellID->453290402]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[32436, 827, 508, 15, 45, "Input",ExpressionUUID->"424ef7a1-2d39-4f9e-b607-ab4ebb796c53",
+ CellID->926734856],
+Cell[32947, 844, 1327, 32, 38, "Output",ExpressionUUID->"9652c0f6-09be-42fe-9307-1fc69d52d1c1",
+ CellID->470280935],
+Cell[34277, 878, 8574, 184, 60, "Output",ExpressionUUID->"ba40e3c7-9a23-4a8e-b746-deca8106fff8",
+ CellID->1271853585]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42888, 1067, 202, 5, 70, "Input",ExpressionUUID->"99bca356-e2c0-4ee0-9dc4-c746e7944ec9",
+ CellID->442556749],
+Cell[43093, 1074, 12703, 261, 70, "Output",ExpressionUUID->"096797ad-cc76-48fc-9faf-02e0b07b3eb8",
+ CellID->1875211810]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[55833, 1340, 189, 4, 70, "Input",ExpressionUUID->"de8d6cab-3afb-41d1-afaf-dec219e5b52d",
+ CellID->713179887],
+Cell[56025, 1346, 10185, 241, 76, "Output",ExpressionUUID->"d03ca68a-4aa7-4575-854e-d2da41ab9b58",
+ CellID->1237752795]
+}, Open  ]],
+Cell[66225, 1590, 167, 3, 70, "ExampleText",ExpressionUUID->"68d8caad-3859-42b2-8f3a-f7ad6fbe99d0",
+ CellID->41272196],
+Cell[CellGroupData[{
+Cell[66417, 1597, 215, 5, 70, "Input",ExpressionUUID->"8f522c1d-9736-4302-bc39-fcea395062df",
+ CellID->1163804199],
+Cell[66635, 1604, 1329, 32, 38, "Output",ExpressionUUID->"d25cb24b-87b8-4526-8df1-78f03f712cbd",
+ CellID->2056690257]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[68001, 1641, 362, 10, 70, "Input",ExpressionUUID->"e5ed3848-236b-426d-9aeb-d558233b8d89",
+ CellID->260456572],
+Cell[68366, 1653, 24737, 650, 150, "Output",ExpressionUUID->"07ba374c-fb6f-45e0-8a8a-ae9325639121",
+ CellID->1920406734]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[93140, 2308, 237, 6, 70, "Input",ExpressionUUID->"96965bc5-d944-4069-9327-809b9236abf3",
+ CellID->514743932],
+Cell[93380, 2316, 10186, 241, 76, "Output",ExpressionUUID->"98ef3041-35ca-4e41-89fb-00a0b48f2c1c",
+ CellID->1639486049]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[103603, 2562, 243, 7, 70, "Input",ExpressionUUID->"78021a60-fe48-4ce8-adb5-2e204e198660",
+ CellID->1599156439],
+Cell[103849, 2571, 127, 2, 36, "Output",ExpressionUUID->"6959946b-9a57-4d68-9750-70f6ac4c59c1",
+ CellID->218017479]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[104218, 2582, 3375, 92, 70, "SeeAlsoSection",ExpressionUUID->"9bb3e8cb-959a-4afa-b5b5-457b287d3edc"],
+Cell[107596, 2676, 1100, 28, 70, "TechNotesSection",ExpressionUUID->"d8ee24db-6bd3-4539-811b-2cf52869084d"],
+Cell[108699, 2706, 1056, 27, 70, "MoreAboutSection",ExpressionUUID->"4e0539d1-4bd4-4384-b12c-2a2a84ff2aae"],
+Cell[109758, 2735, 2079, 57, 70, "RelatedLinksSection",ExpressionUUID->"0666083f-c7f0-4bcc-b0d8-c5e49dd2f9f6"],
+Cell[111840, 2794, 78, 0, 70, "FooterCell",ExpressionUUID->"43060cc6-5b75-481b-b895-d8fbcbe042b7"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

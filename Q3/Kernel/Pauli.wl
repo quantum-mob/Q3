@@ -11,6 +11,8 @@ BeginPackage["Q3`"]
   KetSpecies, KetRegulate, KetMutate,
   KetCanonical };
 
+{ CanonicalizeVector };
+
 { KetNorm, KetNormalize, KetOrthogonalize }; 
 
 { KetPermute, KetSymmetrize };
@@ -57,9 +59,9 @@ BeginPackage["Q3`"]
 
 { RandomVector, RandomMatrix,
   RandomHermitian, RandomPositive,
-  RandomSymmetric, RandomSymplectic,
-  RandomIsometric, RandomUnitary, RandomOrthogonal,
-  RandomUnitarySymplectic };
+  RandomSymmetric, RandomAntisymmetric,
+  RandomUnitary, RandomIsometric, RandomOrthogonal,
+  RandomSymplectic RandomUnitarySymplectic };
 
 { TridiagonalToeplitzMatrix };
 
@@ -517,33 +519,37 @@ KetCanonical::usage = "KetCanonical[expr] returns the canonical form of ket expr
 SetAttributes[KetCanonical, Listable]
 
 KetCanonical[State[v_?VectorQ, rest__]] :=
-  State[theCanonicalForm @ v, rest]
+  State[CanonicalizeVector @ v, rest]
 
 KetCanonical[expr_?fKetQ] := Elaborate[
   KetCanonical[StateForm @ expr]
 ]
 
 KetCanonical[expr_?fPauliKetQ] := ExpressionFor[
-  theCanonicalForm[Matrix @ expr]
+  CanonicalizeVector[Matrix @ expr]
 ]
 
 KetCanonical[any_] = any
 
+(**** </KetCanonical> ****)
 
-theCanonicalForm::usage = "theCanonicalForm[list] returns the same list with the first non-zero element normalized to 1."
+
+(**** <CanonicalizeVector> *****)
+
+CanonicalizeVector::usage = "CanonicalizeVector[list] returns the same list with the first non-zero element normalized to 1."
 
 (* For some unknown reason, SelectFirst does not work as expected for SparseArray. *)
-theCanonicalForm[in_SparseArray?VectorQ] := With[
+CanonicalizeVector[in_SparseArray?VectorQ] := With[
   { val = SelectFirst[Values @ Most @ ArrayRules @ in, Not @* ZeroQ] },
   If[MissingQ[val], in, in / val]
 ]
 
-theCanonicalForm[in_?VectorQ] := With[
+CanonicalizeVector[in_?VectorQ] := With[
   { val = SelectFirst[in, Not @* ZeroQ] },
   If[MissingQ[val], in, in / val]
 ]
 
-(**** </KetCanonical> ****)
+(**** </CanonicalizeVector> *****)
 
 
 (**** <XBasisForm> ****)
@@ -1313,7 +1319,7 @@ SyntaxInformation[State] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
 AddElaborationPatterns[_State]
 
 State /:
-MakeBoxes[vv:State[vec_?VectorQ, ss:{__?QubitQ}, opts___?OptionQ], fmt_] :=
+MakeBoxes[vv:State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     State, vv, None,
     { BoxForm`SummaryItem @ {"Species: ", ss},
@@ -4386,6 +4392,18 @@ RandomSymmetric[sgm_?Positive, n_Integer?Positive] :=
   RandomVariate @ GaussianOrthogonalMatrixDistribution[sgm, n]
 
 
+RandomAntisymmetric::usage = "RandomAntisymmetric[\[Sigma], n] returns an n\[Times]n random anti-symmetric matrix (m-Transpose[m])/2, where m is a complex square matrix with independent identically distributed real and imaginary matrix elements that follow NormalDistribution[0, \[Sigma]].\nRandomAntisymmetric[n] is equivalent to RandomAntisymmetric[1, n].\nRandomAntisymmetric[] is equivalent to RandomAntisymmetric[1, 2]."
+
+RandomAntisymmetric[] := RandomAntisymmetric[1, 2]
+
+RandomAntisymmetric[n_Integer?Positive] := RandomAntisymmetric[1, n]
+
+RandomAntisymmetric[sgm_?Positive, n_Integer?Positive] := With[
+  { mat = RandomMatrix[sgm, n] },
+  (mat - Transpose[mat])/2 // Chop
+]
+
+
 RandomHermitian::usage = "RandomHermitian[\[Sigma], n] returns an n\[Times]n random Hermitian matrix (m+Dagger[m])/2, where m is a complex square matrix with independent identically distributed real and imaginary matrix elements that follow NormalDistribution[0,\[Sigma]].\nRandomHermitian[n] is equivalent to RandomHermitian[1, n].\nRandomHermitian[] is equivalent to RandomHermitian[1, 2]."
 
 RandomHermitian[] := RandomHermitian[1, 2]
@@ -4513,9 +4531,20 @@ FrobeniusDistance::usage = "FrobeniusDistance is an alias for HilbertSchmidtDist
 
 FrobeniusDistance = HilbertSchmidtDistance
 
+
 HilbertSchmidtDistance::usage = "HilbertSchmidtDistance[a, b] returns the Hilbert-Schmidt distance of two (pure or mixed) states a and b. It is equivalent to HilbertSchmidtNorm[a-b]."
 
-HilbertSchmidtDistance[a_, b_] := HilbertSchmidtNorm[a - b]
+HilbertSchmidtDistance[a_?MatrixQ, b_?MatrixQ] := HilbertSchmidtNorm[a - b]
+
+HilbertSchmidtDistance[a_?VectorQ, b_?MatrixQ] := HilbertSchmidtNorm[Dyad[a, a] - b]
+
+HilbertSchmidtDistance[b_?MatrixQ, a_?VectorQ] := HilbertSchmidtNorm[Dyad[a, a] - b]
+
+HilbertSchmidtDistance[a_?VectorQ, b_?VectorQ] := HilbertSchmidtNorm[Dyad[a, a] - Dyad[b, b]]
+
+
+HilbertSchmidtDistance[a_, b_, ss:(_?SpeciesQ | {___?SpeciesQ})] :=
+  HilbertSchmidtDistance[Matrix[a, ss], Matrix[b, ss]]
 
 
 FrobeniusProduct::usage = "FrobeniusProduct is an alias for HilbertSchmidtProduct."

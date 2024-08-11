@@ -3,9 +3,11 @@
 ## 3.5.4
 
 - Support for noisy fermionic quantum computation with the following new functions: NoisyWickState, NoisyWickSimulate, WickGaussian, WickElements, etc.
+- Input arguments pattern has been changed in WickRandomCircuit.
 - TimesDaggerLeft and TimesDaggerRight are renamed AbsSquare (AbsSquareRight) and AbsSquareLeft.
 - FlavorNone and FlavorNoneQ are renamed FlavorCap and FlavorCapQ, respectively.
-- New functions: Hood, ArrayShort, WickMatrix (experimental)
+- New functions: Hood, ArrayShort, RandomAntisymmetric, WickMatrix, BdGState, BdGUnitary, BdGOperator.
+- Bug fix concerning CZ: (expr) ** CZ ** Ket[...] ignored expr.
 
 ## 3.5.3
 
