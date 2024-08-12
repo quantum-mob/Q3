@@ -2,6 +2,9 @@ BeginPackage["Q3`"]
 
 { BdGState, BdGUnitary, BdGOperator, BdGOperatorFrom };
 
+{ RandomBdGState };
+
+
 Begin["`Private`"]
 
 AddElaborationPatterns[_BdGState, _BdGOperator, _BdGUnitary];
@@ -329,25 +332,35 @@ ParseGate[BdGOperator[trs_, cc:{__?FermionQ}, opts___?OptionQ], more___?OptionQ]
 
 (**** <BdGOperatorFrom> ****)
 
+(* NOTE: In principle, BdGOperatorFrom may be integrated into BdGOperator, but separating this feature keeps better the performance of BdGOperator. *)
+
 BdGOperatorFrom::usage = "BdGOperatorFrom[expr, {c1,c2,\[Ellipsis]}] constructs BdGOperator from expr, which is supposed to be a linear combination or a list of linear combinations in the creation and annihilation operators of fermion modes {c1, c2, \[Ellipsis]}."
 
-BdGOperatorFrom[expr_List, cc:{__?FermionQ}, rest___] :=
-  BdGOperator[theBdGOperator[expr, cc], cc, rest]
+BdGOperatorFrom::nlin = WickOperatorFrom::nlin
+
+BdGOperatorFrom[expr_, cc:{__?FermionQ}, rest___] :=
+  BdGOperator[theBdGOperator[expr, cc], cc, rest] /;
+  If[ theWickLinearQ[expr, cc], True,
+    Message[BdGOperatorFrom::nlin, expr, cc];
+    False
+  ]
 
 
 theBdGOperator[expr_List, cc:{__?FermionQ}] :=
-    Map[Coefficient[#, Join[cc, Dagger @ cc]] &, expr]
+  Map[Coefficient[#, Join[cc, Dagger @ cc]] &, expr]
 
 theBdGOperator[expr_, cc:{__?FermionQ}] :=
-    { Coefficient[expr, Join[cc, Dagger @ cc]] }
+  { Coefficient[expr, Join[cc, Dagger @ cc]] }
+
 
 (**** </BdGOperatorFrom> ****)
 
 
 (**** <Measurement> ****)
 
-BdGState /:
-Multiply[msr:Measurement[_?FermionQ|{__?FermionQ}], ws_BdGState] := msr[ws]
+Measurement /:
+Multiply[pre___, msr:Measurement[_?FermionQ|{__?FermionQ}], ws_BdGState] :=
+  Multiply[pre, msr[ws]]
 
 theMeasurement[ws:BdGState[uv_, trs_, cc_], c_?FermionQ] := Module[
   { msr, dgr, mat, prb },
@@ -374,11 +387,20 @@ theMeasurement[ws:BdGState[uv_, trs_, cc_], c_?FermionQ] := Module[
 (**** </Measurement> ****)
 
 
-BdGState /:
+WickExpectation[ws_BdGState][HoldPattern @ Multiply[ops__?AnyFermionQ]] :=
+  WickExpectation[ws] @ BdGOperatorFrom[{ops}, Last @ ws]
+
+WickExpectation[ws:BdGState[uu_, bb_, cc_]][BdGOperator[ops_?MatrixQ, ___]] := Module[
+  { aa = theConjugateReverse[bb],
+    mat },
+  mat = WickMatrix @ Join[aa, ops, bb];
+  Pfaffian[mat] / NormSquare[ws]
+]
+
+
 WickEntanglementEntropy[ws_BdGState, dd:{__?FermionQ}] :=
   WickEntanglementEntropy[WickGreensFunction[ws, dd], Range[Length @ dd]]
 
-BdGState /:
 WickLogarithmicNegativity[ws_BdGState, dd:{__?FermionQ}, opts:OptionsPattern[]] := Module[
   { gg = WickGreensFunction[ws],
     cc = Last[ws],
@@ -390,11 +412,9 @@ WickLogarithmicNegativity[ws_BdGState, dd:{__?FermionQ}, opts:OptionsPattern[]] 
 
 (**** <WickGreensFunction> ****)
 
-BdGState /:
 WickGreensFunction[ws_BdGState] :=
   WickGreensFunction[ws, Last @ ws]
 
-BdGState /:
 WickGreensFunction[BdGState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
   { uu = Normal @ NambuMatrix[uv, "Unitary"],
     pp = theConjugateReverse[qq],
@@ -430,6 +450,16 @@ WickGreensFunction[BdGState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
 ]
 
 (**** </WickGreensFunction> ****)
+
+
+RandomBdGState::usage = "RandomBdGState[k, {c1, c2, \[Ellipsis]}] randomly generates a depth-k BdG state with half filling on fermion modes {c1, c2, \[Ellipsis]}."
+
+RandomBdGState[k_Integer?Positive, cc:{__?FermionQ}] := Module[
+  { mm, in },
+  mm = Table[RandomVector[2 Length @ cc], k];
+  in = BdGState[Dagger @ cc[[;; ;;2]], cc];
+  BdGOperator[mm, cc][in]
+]
 
 End[]
 

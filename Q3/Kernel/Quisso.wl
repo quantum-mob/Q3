@@ -32,7 +32,7 @@ BeginPackage["Q3`"]
   Matchgate };
 
 { ProductState, BellState, GHZState, SmolinState,
-  DickeState, RandomState };
+  DickeState };
 
 { GraphState, GraphStateBasis };
 

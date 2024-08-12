@@ -14,6 +14,8 @@ BeginPackage["Q3`"]
 
 { BdGState, BdGOperator, BdGUnitary }; 
 
+{ RandomWickState, RandomBdGState };
+
 Begin["`Private`"]
 
 (**** <WickTimeReversalMoment> ****)
@@ -610,9 +612,13 @@ ParseGate[WickOperator[op:{___?AnyFermionQ}, opts___?OptionQ], more___?OptionQ] 
 
 (**** <WickOperatorFrom> ****)
 
+(* NOTE: In principle, WickOperatorFrom may be integrated into WickOperator, but separating this feature keeps better the performance of WickOperator. *)
+
 WickOperatorFrom::usage = "WickOperatorFrom[expr_, {c1, c2, \[Ellipsis]}] constructs WickOperator from linear combination (or a list of linear combinations) expr of fermion operators of fermion modes {c1, c2, \[Ellipsis]}."
 
 WickOperatorFrom::mixed = "Mixed linear combination `` of creation and annihilation operators."
+
+WickOperatorFrom::nlin = "`` is not a linear combination of the creation and annihilation operators of fermion modes ``."
 
 WickOperatorFrom[cc : {__?FermionQ}][spec_] :=
   WickOperatorFrom[spec, cc]
@@ -621,7 +627,11 @@ WickOperatorFrom[expr_List, cc:{__?FermionQ}] :=
   WickOperator[theWickOperator[cc] /@ expr, cc]
 
 WickOperatorFrom[expr_, cc:{__?FermionQ}] :=
-  WickOperator[{theWickOperator[expr, cc]}, cc]
+  WickOperator[{theWickOperator[expr, cc]}, cc] /;
+  If[ theWickLinearQ[expr, cc], True,
+    Message[WickOperatorFrom::nlin, expr, cc];
+    False
+  ]
 
 
 theWickOperator::usage = "theWickOperator[expr, {c1, c2, \[Ellipsis]}] returns the coefficient list of expr in either creation or annihilation operators of fermion modes {c1, c2, \[Ellipsis]}. theWickOperator[expr, {c1, c2, \[Ellipsis], Dagger[c1], Dagger[c2], \[Ellipsis]}] returns the coefficients list of expr in {c1, c2, \[Ellipsis], Dagger[c1], Dagger[c2], \[Ellipsis]}."
@@ -639,6 +649,19 @@ theWickOperator[expr_, cc:{__?FermionQ}] := Module[
     ZeroQ @ Norm[bb, Infinity],
     Identity -> aa,
     True, Message[WickOperator::mixed, expr]; Identity -> aa
+  ]
+]
+
+
+theWickLinearQ::usage = "theWickLinearQ[expr, {c1, c2, \[Ellipsis]}] returns True if expr is a linear combination of the creation and annihilation operators of fermion modes {c1, c2, \[Ellipsis]}, and False otherwise."
+
+theWickLinearQ[expr_List, cc : {__?FermionQ}] :=
+  AllTrue[expr, theWickLinearQ[#, cc]&]
+
+theWickLinearQ[expr_, cc : {__?FermionQ}] := TrueQ @ And[
+   ZeroQ[ expr /. Thread[cc -> 0] ],
+   FreeQ[ expr,
+    HoldPattern[Multiply][___, Alternatives @@ Join[cc, Dagger @ cc], ___]
   ]
 ]
 
@@ -675,44 +698,27 @@ theMeasurement[ws:WickState[trs:{___Rule}, cc_], c_?FermionQ] := Module[
 
 (**** <WickExpectation> ****)
 
-WickExpectation::usage = "WickExpectation[ws] represents an expectation value with respect to the Wick state ws.\nWickState[ws][{c1, c2, \[Ellipsis], cn}] returns the expectation value of c1 ** c2 ** \[Ellipsis] ** cn.\nWickState[ws][expr] returns the expectation value of a polynomial expr of fermion creation and annihilation operators.\nWickExpecation[spec] automatically converts spec to WickState; see WickState for details of spec."
-
-WickExpectation[c_, any__, Ket[a_Association]] := WickExpectation[c, any, a]
-
-WickExpectation[_?AnyFermionQ, any__, _Association] = 0
-
+WickExpectation::usage = "WickExpectation[ws] represents an expectation value with respect to the Wick state ws.\nWickState[ws][expr] returns the expectation value of expr, where expr may be WickOperator, BdGOperator, or non-commutative multinomial of fermion creation and annihilation operators."
 
 (* linearity *)
 
-WickExpectation[spec___, Ket[a_Association]] :=
-  WickExpectation[WickState[spec, a]]
+WickExpectation[ws_][z_?CommutativeQ] = z
 
-WickExpectation[spec___, a_Association] :=
-  WickExpectation[WickState[spec, a]]
-
-
-WickExpectation[ws_WickState][z_?CommutativeQ] := z
-
-WickExpectation[ws_WickState][z_?CommutativeQ op_] :=
+WickExpectation[ws_][z_?CommutativeQ op_] :=
   z * WickExpectation[ws][op]
 
-WickExpectation[ws_WickState][expr_Plus] := 
+WickExpectation[ws_][expr_Plus] := 
   WickExpectation[ws] /@ expr
 
 
 WickExpectation[ws_WickState][HoldPattern @ Multiply[ops__?AnyFermionQ]] :=
-  WickExpectation[ws][{ops}]
+  WickExpectation[ws] @ WickOperatorFrom[{ops}, Last @ ws]
 
-WickExpectation[ws_WickState][WickOperator[ops:{__?AnyFermionQ}, ___]] :=
-  WickExpectation[ws][ops]
-
-WickExpectation[ws_WickState][ops:{__?AnyFermionQ}] := Module[
-  { tt = ws["Stages"],
-    cc, dd, pp, uv, mm, gg },
-  {pp, uv, mm, cc} = List @@ ws;
-  dd = theWickCode[cc][ops, {tt}];
-  gg = Last @ wmWedge[dd, pp, uv, mm, Length[pp]/2];
-  Pfaffian[gg] / Pfaffian[mm]
+WickExpectation[ws:WickState[bb_, cc_]][WickOperator[ops:{___Rule}, ___]] := Module[
+  { aa = theConjugateReverse[bb],
+    mat },
+  mat = WickMatrix @ Join[aa, ops, bb];
+  Pfaffian[mat] / NormSquare[ws]
 ]
 
 (**** </WickExpectation> ****)
@@ -896,7 +902,7 @@ WickCircuit /:
 
 (**** <WickRandomCircuit> ****)
 
-WickRandomCircuit::usage = "WickRandomCircuit[{c1, c2, \[Ellipsis]}, in, ugate, p, t] simulates a random quantum circuit on fermion modes {c1, c2, \[Ellipsis]} starting from initial state IN, where layers of Gaussian unitary gate ugate alternate with layers of measurements on fermion modes selected randomly with probability p to form an overall depth t."
+WickRandomCircuit::usage = "WickRandomCircuit[{c1, c2, \[Ellipsis]}, in, ugate, p, dep] simulates a random quantum circuit on fermion modes {c1, c2, \[Ellipsis]} starting from initial state IN, where layers of Gaussian unitary gate ugate alternate with layers of measurements on fermion modes selected randomly with probability p to form an overall depth dep."
 
 Options[WickRandomCircuit] = {
   "Samples" -> {10, 5},
@@ -925,12 +931,12 @@ Module[
   data = Transpose @ Table[
     (* quantum circuit with randomly selected measurements *)
     qc = Riffle[ Table[uu, t], Measurement /@ RandomPick[cc, p, t] ];
-    { WickCircuit[qc, cc],
-      Table[
+    { Table[
         progress = ++k / (n*m);
         FoldList[Construct[#2, #1]&, in, qc],
         m 
-      ]
+      ],
+      WickCircuit[qc, cc]
     },
     n
   ];
@@ -956,6 +962,19 @@ Module[
 ]
 
 (**** </WickRandomCircuit> ****)
+
+
+RandomWickState::usage = "RandomWickState[k, {c1, c2, \[Ellipsis]}] randomly generates a depth k Wick state with half filling on fermion modes {c1, c2, \[Ellipsis]}."
+
+RandomWickState[k_Integer?Positive, cc:{__?FermionQ}] := Module[
+  { ff, mm, in },
+  ff = {Identity, Dagger};
+  ff = PadRight[ff, k, ff];
+  ff = Permute[ff, RandomPermutation[k]];
+  mm = Table[RandomVector[Length @ cc], k];
+  in = WickState[Dagger@cc[[;; ;;2]], cc];
+  WickOperator[Thread[ff -> mm], cc][in]
+]
 
 End[]
 

@@ -1,0 +1,786 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     29716,        776]
+NotebookOptionsPosition[     25420,        687]
+NotebookOutlinePosition[     27540,        741]
+CellTagsIndexPosition[     27455,        736]
+WindowTitle->KetNormSquare
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "209f2fb8-6a9e-410b-9a9a-bc9d615861b8"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "b0189acb-a638-4a2a-b04b-9fcf8cd250c2"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "3c8d24d0-9257-4638-8402-97d102c6bfe1"]
+         }],ExpressionUUID->"2d072ae4-c676-4adf-89e7-7c1780d64ec6"],
+         StripOnInput->False],{
+        StyleBox["\"Norm\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:ref/Norm"], Delimiter, 
+         StyleBox[
+          "\"Functions\"", "SeeAlsoSection", FontSize -> 14, FontSlant -> 
+           "Italic", StripOnInput -> False] :> 
+         NotebookFind[EvaluationNotebook[], "SeeAlsoSection", All, CellStyle],
+          StyleBox[
+          StyleBox["\"KetNorm\"", "SeeAlsoRelated", StripOnInput -> False], 
+           "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/KetNorm"], 
+         StyleBox[
+          StyleBox["\"NormSquare\"", "SeeAlsoRelated", StripOnInput -> False],
+            "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/NormSquare"], 
+         StyleBox[
+          StyleBox["\"AbsSquare\"", "SeeAlsoRelated", StripOnInput -> False], 
+           "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/AbsSquare"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "d7173156-8730-4e8d-8629-c3ade65deaab"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "ce1f328c-7a9a-40cc-9f09-37fde0a675ed"]
+         }],ExpressionUUID->"1ff698f7-3458-4b30-a867-b84071c8f022"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/guide/QuantumInformationSystems"], 
+         "\"Quantum Many-Body Systems\"" :> 
+         Documentation`HelpLookup["paclet:Q3/guide/QuantumManyBodySystems"], 
+         "\"Quantum Spin Systems\"" :> 
+         Documentation`HelpLookup["paclet:Q3/guide/QuantumSpinSystems"], 
+         "\"Q3\"" :> Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "aa6717b1-e684-4fa5-a5e1-e6e30af6dc6a"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "d43dea1b-5497-4a20-a181-4d524c16508d"]
+         }],ExpressionUUID->"c1cfbb1a-8bd7-4d37-be81-040967471525"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumInformationSystems"], 
+         "\"Q3: Quick Start\"" :> 
+         Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "67d65050-6819-419d-b390-95df980df2b9"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "be58eee2-2863-4542-a108-1137c3e48f52"]
+         }],ExpressionUUID->"7eaa985a-dd71-4ddb-84db-ffca77009f5c"],
+         StripOnInput->False],{
+        "\"Q3/ref/KetNormSquare\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{Cell["Q3/ref/KetNormSquare"]}, Visible -> 
+               DocumentationBuild`Make`Private`visible$28860]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/Q3/ref/\
+KetNormSquare.html"], StandardForm]], "Input", TextClipboardType -> 
+                 "PlainText"]}, Visible -> 
+               DocumentationBuild`Make`Private`visible$28860]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "Q3/ref/KetNormSquare" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "91473a00-ce72-4951-80e9-14c371d537b0"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "48593337-ac67-48cb-b77f-2d580e01a1dd"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"55a23caf-6a9a-42ec-88a2-52ff88afdac6"],
+
+Cell["Q3`", "ContextNameCell",ExpressionUUID->"5a76dec6-913b-4607-bc31-a41c7228b1ab"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "KetNormSquare", "ObjectName",ExpressionUUID->
+      "a1801a9c-8726-4450-a2fa-6940285c6044"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"40d8f156-f46e-4abe-9dfa-7b239d0a984b"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "be60638c-8289-47ba-a151-273b843e19c4"]
+    }],ExpressionUUID->"8ce4428a-20c5-434b-80b9-edad688e6397"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 14.1\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 14",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "af6e8f6d-cb75-4ed4-bef3-fe4b5f8eb021"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"ae7e20af-4016-47ea-b126-33376c74a7b6"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["KetNormSquare"]], "paclet:Q3/ref/KetNormSquare", 
+         "Q3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       StyleBox["expr", "TI"], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "f1e71834-1fa9-462c-9fa3-1805cd97682c"],
+     "\[LineSeparator]returns the norm square of quantum state expression ",
+     Cell[BoxData[
+      StyleBox["expr", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "b1227071-b3a1-4d0c-b12e-e74686df6f00"],
+     "."
+    }],ExpressionUUID->"dfbd22ad-f86f-4278-8eab-dac43a6ad46f"]}
+  }]], "Usage",
+ CellID->1597956709,ExpressionUUID->"6c679ed1-5014-4ae9-8634-5c5184aaedbc"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.251494140625001, 9.348505859375003}}]],
+  ExpressionUUID->"12a52159-f5c9-4b06-8a4c-b82489532467"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"3d7c5518-45f4-4f9a-825d-eb7dec769880"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "3b140df6-187d-4502-93ce-ab70c557bc82"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1706057570,ExpressionUUID->"766c2d0b-d32b-460e-990c-9ea4828b81b9"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->1375160061,ExpressionUUID->"27e31dbe-d9da-49bd-82bf-c773cad52e3d"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.551318359375001, 9.048681640625002}}]],
+  ExpressionUUID->"23095343-ae15-4a83-9397-40df381b832e"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"ebe0857c-1c0e-4a75-9e3d-534270801e6a"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "68f79174-5a44-4964-bf0f-d59b826a9422"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->507924246,ExpressionUUID->"7bd29505-a7e0-449b-80c1-e9afea1e2eed"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1234516989,ExpressionUUID->"6c4fc15a-0167-44ed-8fad-3a6a8e84b577"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"vec", "=", 
+  RowBox[{"RandomState", "[", 
+   RowBox[{"S", "@", 
+    RowBox[{"{", 
+     RowBox[{"1", ",", "2"}], "}"}]}], "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->1460444023,ExpressionUUID->"802f9e64-d4e4-4125-9f14-3d0058e49a24"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.23767652046525112`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.48067953264526897`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["S", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`S[1, Q3`$]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["S", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`S[2, Q3`$]]}, "RowWithSeparators"]]}, 
+       "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`S[1, Q3`$] -> 0, $CellContext`S[2, Q3`$] -> 0|>]]}], 
+  "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.6139731842806935`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.4245182823387859`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["S", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`S[1, Q3`$]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["S", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`S[2, Q3`$]]}, "RowWithSeparators"]]}, 
+       "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`S[1, Q3`$] -> 0, $CellContext`S[2, Q3`$] -> 1|>]]}], 
+  "+", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.0335845421441132`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.12835342979752096`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["S", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`S[1, Q3`$]]}, "RowWithSeparators"]], 
+        SubscriptBox["0", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["S", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`S[2, Q3`$]]}, "RowWithSeparators"]]}, 
+       "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`S[1, Q3`$] -> 1, $CellContext`S[2, Q3`$] -> 0|>]]}], 
+  "-", 
+  RowBox[{
+   RowBox[{"(", 
+    RowBox[{"0.2659699357221811`", "\[VeryThinSpace]", "+", 
+     RowBox[{"0.2587193157457156`", " ", "\[ImaginaryI]"}]}], ")"}], " ", 
+   InterpretationBox[
+    TemplateBox[{
+      TemplateBox[{"\[VeryThinSpace]", "\"\[VeryThinSpace]\"", 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["S", 
+             TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+            $CellContext`S[1, Q3`$]]}, "RowWithSeparators"]], 
+        SubscriptBox["1", 
+         TemplateBox[{",", "\",\"", 
+           InterpretationBox[
+            SubscriptBox["S", 
+             TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+            $CellContext`S[2, Q3`$]]}, "RowWithSeparators"]]}, 
+       "RowWithSeparators"]},
+     "Ket"],
+    Ket[<|$CellContext`S[1, Q3`$] -> 1, $CellContext`S[2, Q3`$] -> 
+      1|>]]}]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->854981814,ExpressionUUID->"c370cb30-01c3-46d4-8724-c80a5f0ddeeb"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"KetNormSquare", "[", "vec", "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1635294637,ExpressionUUID->"dfb90182-3688-42a5-aeac-6e5a168b167c"],
+
+Cell[BoxData["1.`"], "Output",
+ CellLabel->"Out[3]=",
+ CellID->157976044,ExpressionUUID->"ae87d211-abf2-4eef-bbd5-444ee465a993"]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["KetNorm"]], "paclet:Q3/ref/KetNorm", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "91d23aea-fc98-479c-a64f-b976591feb06"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Norm"]], "paclet:ref/Norm"},
+          "RefLink",
+          BaseStyle->{"InlineFormula"}]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "0888c6ba-9526-4eb1-a0b7-9e9c83532bda"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["NormSquare"]], "paclet:Q3/ref/NormSquare", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "1ee88170-3415-4574-bff1-13853d5aff7e"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["AbsSquare"]], "paclet:Q3/ref/AbsSquare", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "606cab41-fb45-40ee-b245-7e16aaf695c7"]
+       }], "SeeAlso",ExpressionUUID->"f8b4cf55-6310-4dd3-badb-3ac5c8ebcce7"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"cf76165f-650d-4c9b-853e-\
+6b13f5a13492"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTechNote.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TechNotesSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Information Systems with Q3"]], 
+           "paclet:Q3/tutorial/QuantumInformationSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "83515f4e-581d-4c10-8878-0478514979d9"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "92f9f7a8-4416-42c1-8aa4-8e49d2feb281"]}]}
+     }]}
+  }]], "TechNotesSection",ExpressionUUID->"59ac6539-51c5-4e3a-a5be-\
+93e16e4c740c"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Information Systems"]], 
+           "paclet:Q3/guide/QuantumInformationSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "3af31e0c-1c42-47d9-be84-687a98386ef5"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Many-Body Systems"]], 
+           "paclet:Q3/guide/QuantumManyBodySystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "e8b52e80-3659-4006-9b1d-8c05a2a96167"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Spin Systems"]], 
+           "paclet:Q3/guide/QuantumSpinSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "3cd68d2e-dde5-4800-96c7-c5b991a228e9"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3"]], "paclet:Q3/guide/Q3"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "f1fdbe25-360d-458f-84c0-a0d27f28166f"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"f2ffa800-a530-4bc6-b92b-\
+a38e131cd029"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "7f3f88cd-9dd3-4584-bb49-854bb8d86e17"]}]],ExpressionUUID->
+         "73df7404-07c8-4189-8e07-d696ca9aa96e"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "RelatedLinks",ExpressionUUID->
+        "2571c02c-c11e-49cf-b7bb-53893bf5507e"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"f50db119-ff61-4043-bf51-\
+72fbba8abb87"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"a4bb38a4-bbc8-42cd-86bc-9a7eee522c66"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"KetNormSquare",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2024, 8, 12, 13, 46, 33.633279}", 
+    "history" -> {"14.1", "", "", ""}, "context" -> "Q3`", "keywords" -> {}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "KetNormSquare[expr] returns the norm square of quantum state expression \
+expr.", "synonyms" -> {}, "tabletags" -> {}, "title" -> "KetNormSquare", 
+    "titlemodifier" -> "", "metadescription" -> "", "windowtitle" -> 
+    "KetNormSquare", "type" -> "Symbol", "uri" -> "Q3/ref/KetNormSquare"}},
+CellContext->"Global`",
+FrontEndVersion->"14.1 for Mac OS X ARM (64-bit) (July 16, 2024)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "14.1 for Mac OS X ARM (64-bit) (July 16, 2024)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"a3b42aa5-3e94-4012-bd6c-027089ea3ae8"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[10984, 285, 1441, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"766c2d0b-d32b-460e-990c-9ea4828b81b9",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1706057570]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 27254, 729}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[581, 21, 8015, 192, 50, "AnchorBarGrid",ExpressionUUID->"55a23caf-6a9a-42ec-88a2-52ff88afdac6",
+ CellID->1],
+Cell[8599, 215, 85, 0, 22, "ContextNameCell",ExpressionUUID->"5a76dec6-913b-4607-bc31-a41c7228b1ab"],
+Cell[CellGroupData[{
+Cell[8709, 219, 1387, 38, 57, "ObjectNameGrid",ExpressionUUID->"ae7e20af-4016-47ea-b126-33376c74a7b6"],
+Cell[10099, 259, 848, 21, 106, "Usage",ExpressionUUID->"6c679ed1-5014-4ae9-8634-5c5184aaedbc",
+ CellID->1597956709]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10984, 285, 1441, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"766c2d0b-d32b-460e-990c-9ea4828b81b9",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1706057570],
+Cell[12428, 325, 192, 3, 29, "Input",ExpressionUUID->"27e31dbe-d9da-49bd-82bf-c773cad52e3d",
+ CellID->1375160061],
+Cell[CellGroupData[{
+Cell[12645, 332, 1418, 37, 29, "ExampleSection",ExpressionUUID->"7bd29505-a7e0-449b-80c1-e9afea1e2eed",
+ CellID->507924246],
+Cell[14066, 371, 209, 5, 28, "Input",ExpressionUUID->"6c4fc15a-0167-44ed-8fad-3a6a8e84b577",
+ CellID->1234516989],
+Cell[CellGroupData[{
+Cell[14300, 380, 290, 8, 28, "Input",ExpressionUUID->"802f9e64-d4e4-4125-9f14-3d0058e49a24",
+ CellID->1460444023],
+Cell[14593, 390, 3787, 95, 57, "Output",ExpressionUUID->"c370cb30-01c3-46d4-8724-c80a5f0ddeeb",
+ CellID->854981814]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[18417, 490, 194, 4, 28, "Input",ExpressionUUID->"dfb90182-3688-42a5-aeac-6e5a168b167c",
+ CellID->1635294637],
+Cell[18614, 496, 128, 2, 36, "Output",ExpressionUUID->"ae87d211-abf2-4eef-bbd5-444ee465a993",
+ CellID->157976044]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[18984, 507, 2303, 63, 112, "SeeAlsoSection",ExpressionUUID->"cf76165f-650d-4c9b-853e-6b13f5a13492"],
+Cell[21290, 572, 1105, 28, 116, "TechNotesSection",ExpressionUUID->"59ac6539-51c5-4e3a-a5be-93e16e4c740c"],
+Cell[22398, 602, 1768, 45, 157, "MoreAboutSection",ExpressionUUID->"f2ffa800-a530-4bc6-b92b-a38e131cd029"],
+Cell[24169, 649, 1166, 34, 70, "RelatedLinksSection",ExpressionUUID->"f50db119-ff61-4043-bf51-72fbba8abb87"],
+Cell[25338, 685, 78, 0, 70, "FooterCell",ExpressionUUID->"a4bb38a4-bbc8-42cd-86bc-9a7eee522c66"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

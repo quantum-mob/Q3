@@ -13,7 +13,7 @@ BeginPackage["Q3`"]
 
 { CanonicalizeVector };
 
-{ KetNorm, KetNormalize, KetOrthogonalize }; 
+{ KetNorm, KetNormSquare, KetNormalize, KetOrthogonalize }; 
 
 { KetPermute, KetSymmetrize };
 
@@ -57,8 +57,8 @@ BeginPackage["Q3`"]
 { RotationAngle, RotationAxis, RotationSystem,
   TheEulerAngles }
 
-{ RandomVector, RandomMatrix,
-  RandomHermitian, RandomPositive,
+{ RandomVector, RandomState,
+  RandomMatrix, RandomHermitian, RandomPositive,
   RandomSymmetric, RandomAntisymmetric,
   RandomUnitary, RandomIsometric, RandomOrthogonal,
   RandomSymplectic RandomUnitarySymplectic };
@@ -1036,6 +1036,17 @@ KetSort[expr_] := expr /. { v:Ket[__] :> KetSort[v] }
 KetSort[expr_, ss:{__?SpeciesQ}] := expr /. {
   v:Ket[_Association] :> KetSort[v, ss]
  }
+
+
+KetNormSquare::usage = "KetNormSquare[expr] returns the norm square of Ket expression expr."
+
+SetAttributes[KetNorm, Listable]
+
+KetNormSquare[0] = 0
+
+KetNormSquare[z_?CommutativeQ * any_Ket] := AbsSquare[z]
+
+KetNormSquare[expr_] := NormSquare[Matrix @ expr] /; Not @ FreeQ[expr, _Ket]
 
 
 KetNorm::usage = "KetNorm[expr] returns the norm of Ket expression expr."
@@ -4303,16 +4314,24 @@ MatrixEmbed[_, kk:{__Integer}, dd:{__Integer}] :=
 
 (**** <RandomState> ****)
 
-RandomState::usage = "RandomState[{s1, s2, \[Ellipsis]}] returns a random normalized state vector in the Hilbert space of species {s1, s2, \[Ellipsis]} distributed uniformly in terms of the Haar measure."
+RandomState::usage = "RandomState[{s1, s2, \[Ellipsis]}] returns a random normalized state vector in the Hilbert space of species {s1, s2, \[Ellipsis]} distributed uniformly in terms of the Haar measure.\nRandomState[{s1, s2, \[Ellipsis]}, n] returns n mutually orthogonal and uniformly distributed state vectors (hence, n cannot be larger than the total Hilbert space dimension)."
+
+RandomState::dim = "Cannot generate more than dimension `` mutually orthogonal states."
 
 RandomState[S_?SpeciesQ, spec___] := RandomState[S @ {$}, spec]
 
-RandomState[ss:{__?SpeciesQ}, spec___] := RandomState[FlavorCap @ ss, spec]
+RandomState[ss:{__?SpeciesQ}, spec___] := RandomState[FlavorCap @ ss, spec] /; Not[FlavorCapQ @ ss]
 
 RandomState[ss:{__?SpeciesQ}] := First @ RandomState[ss, 1]
 
-RandomState[ss:{__?SpeciesQ}, n_Integer] := 
-  Basis[ss] . RandomIsometric[{Upshot @ Dimension @ ss, n}]
+RandomState[ss:{__?SpeciesQ}, n_Integer] := With[
+  { dim = Upshot[Dimension @ ss] },
+  Basis[ss] . RandomIsometric[{dim, n}] /;
+  If[ dim >= n, True,
+    Message[RandomState::dim, dim];
+    False
+  ]
+]
 
 (**** </RandomState> ****)
 
