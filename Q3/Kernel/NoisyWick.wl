@@ -56,7 +56,7 @@ NoisyWickSimulate[ham_, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}, O
 theNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
   Module[
     { res = {in},
-      new = in,
+      new = N[in],
       prb, pos, out, tmp, pp, qq, ww, t },
     t = 1;
     While[ t <= nT,

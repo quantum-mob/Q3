@@ -754,13 +754,13 @@ WickGreensFunction[WickState[qq_, cc_], dd:{___?FermionQ}] := Module[
   n = Length[dd];
   gg = Zero[{n, n}];
   Table[
-    gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ WickMatrix @ Join[pp, {aa[[i]], bb[[i]]}, qq], Det::luc],
+    gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ N @ WickMatrix @ Join[pp, {aa[[i]], bb[[i]]}, qq], Det::luc],
     (* NOTE: The Pfaffians here are supposed to be real positive. *)
     (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
     {i, 1, n}
   ];
   Table[
-    gg[[i, j]] = Pfaffian @ WickMatrix @ Join[pp, {aa[[i]], bb[[j]]}, qq];
+    gg[[i, j]] = Pfaffian @ N @ WickMatrix @ Join[pp, {aa[[i]], bb[[j]]}, qq];
     gg[[j, i]] = Conjugate @ gg[[i, j]],
     {i, 1, n},
     {j, i+1, n}
@@ -788,23 +788,23 @@ WickEntanglementEntropy[kk:{__Integer}][ay_] :=
   WickEntanglementEntropy[ay, kk]
 
 WickEntanglementEntropy[grn:NambuMatrix[{_?MatrixQ, _?MatrixQ}, "Green's"], kk:{__Integer}] :=
-  theWickEntropy[Normal @ grn[[kk, kk]]]
+  theWickEntropy[Normal @ grn[[kk, kk]]] / 2
 
 WickEntanglementEntropy[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := Module[
   { gg = Normal[grn][[kk, kk]],
     ff = Normal[anm][[kk, kk]] },
   (* NOTE: It seems that Part does not support properly SymmetrizedArray; hence, Normal in the above. *)
-  theWickEntropy @ Normal @ NambuMatrix[{gg, ff}, "Green's"]
+  theWickEntropy @ Normal @ NambuMatrix[{gg, ff}, "Green's"] / 2
 ]
 
 WickEntanglementEntropy[grn_?MatrixQ, kk:{__Integer}] :=
-  WickEntanglementEntropy[NambuMatrix @ {grn, 0}, kk]
+  theWickEntropy @ grn[[kk, kk]]
 
 
 theWickEntropy::usage = "theWickEntropy[grn] returns the entropy of the fermionic Gaussian state characterized by the matrix grn of Green's function."
 
 theWickEntropy[grn_?MatrixQ] :=
-  (QuantumLog[2, grn] + QuantumLog[2, One[Dimensions @ grn] - grn]) / 2
+  QuantumLog[2, grn] + QuantumLog[2, One[Dimensions @ grn] - grn]
 
 (**** </WickEntanglementEntropy> ****)
 
