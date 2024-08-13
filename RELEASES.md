@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.5.5
+
+- An emergency bug fix in NoisyWickSimulate.
+
 ## 3.5.4
 
 - Support for noisy fermionic quantum computation with the following new functions: NoisyWickState, NoisyWickSimulate, WickGaussian, WickElements, etc.

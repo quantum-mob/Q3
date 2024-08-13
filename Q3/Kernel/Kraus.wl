@@ -629,6 +629,8 @@ LindbladSimulate::numeric = "All elements of the matrices and initial vector as 
 
 LindbladSimulate::incmp = "The matrices and/or the initial vector are incompatible with each other."
 
+LindbladSimulate::null = "The null state is encountered."
+
 Options[LindbladSimulate] = {
   "Samples" -> 500,
   "SaveData" -> False,
@@ -728,8 +730,12 @@ goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
         t = First[tau];
         out = mat.(Exp[-I*t*val]*tmp);
         If[ pp < Norm[out]^2,
+          (* then *)
           AppendTo[res, Normalize @ out];
+          new = out;
           tau = Rest[tau],
+          (* else *)
+          out = new;
           Break[]
         ]
       ];
@@ -739,7 +745,15 @@ goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
       out = Map[(#.out)&, opL];
 
       prb = Chop @ Accumulate[(Norm /@ out)^2];
-      prb /= Last[prb];
+      Check[
+        prb /= Last[prb],
+        Message[LindbladSimulate::null];
+        new = Zero[Length @ in]; (* null state *)
+        AppendTo[res, new];
+        t += 1;
+        Break[],
+        {Divide::indet}
+      ];
 
       pos = First @ FirstPosition[prb - qq, _?NonNegative];
       new = Normalize @ Part[out, pos];

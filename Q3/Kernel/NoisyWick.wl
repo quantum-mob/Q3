@@ -12,6 +12,8 @@ NoisyWickSimulate::ham = "The Hamiltonian matrix `` needs to be numeric."
 
 NoisyWickSimulate::jmp = "Invalid form of quantum jump operators ``."
 
+NoisyWickSimulate::null = "The null state is encountered."
+
 Options[NoisyWickSimulate] = {
   "Samples" -> 500,
   "SaveData" -> False,
@@ -65,9 +67,12 @@ theNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_I
       While[ t <= nT,
         out = non[new];
         If[ pp < NormSquare[out],
+          (* then *)
           AppendTo[res, Normalize @ out];
           new = out;
           t += 1,
+          (* else *)
+          out = new;
           Break[]
         ]
       ];
@@ -78,7 +83,15 @@ theNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_I
       out = Through[jmp[out]];
 
       prb = Chop @ Accumulate[NormSquare /@ out];
-      prb /= Last[prb];
+      Check[
+        prb /= Last[prb],
+        Message[NoisyWickSimulate::null];
+        new = WickState[0, Last @ in]; (* null state *)
+        AppendTo[res, new];
+        t += 1;
+        Break[],
+        {Divide::indet}
+      ];
 
       pos = First @ FirstPosition[prb - qq, _?NonNegative];
       new = Normalize @ Part[out, pos];

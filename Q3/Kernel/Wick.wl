@@ -158,6 +158,8 @@ WickState::trs = "Inconsistent transformations ``; each transformation must be s
 
 WickState::frm = "No fermion modes in ``."
 
+WickState::null = "`` is the null state."
+
 WickState /:
 MakeBoxes[ws:WickState[ops:{___Rule}, cc:{___?FermionQ}], fmt_] :=
   BoxForm`ArrangeSummaryBox[
@@ -171,7 +173,12 @@ MakeBoxes[ws:WickState[ops:{___Rule}, cc:{___?FermionQ}], fmt_] :=
     "Interpretable" -> Automatic
   ]
 
+(* canonicalization *)
+
 WickState[cc:{__?FermionQ}] := WickState[{}, cc]
+
+WickState[0, cc:{__?FermionQ}] := (* null vector *)
+  WickState[{Identity -> Table[0, Length @ cc]}, cc]
 
 WickState[Ket[aa_Association]] := Module[
   { cc = Select[Keys @ aa, FermionQ],
@@ -204,8 +211,12 @@ Normalize[ws:WickState[{}, {__?FermionQ}]] = ws
 WickState /:
 Normalize[ws:WickState[ops:{___Rule}, cc:{___?FermionQ}]] := Module[
   { new },
-  new = Thread[Keys[ops] -> Values[ops] * Power[Norm @ ws, -1/Length[ops]]];
-  WickState[new, cc]
+  new = Check[
+    Values[ops] * Power[Norm @ ws, -1/Length[ops]],
+    Message[WickState::null, ws];
+    Zero @ {Length @ ops, Length @ cc}
+  ];
+  WickState[Thread[Keys[ops] -> new], cc]
 ]
 
 
