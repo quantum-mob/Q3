@@ -11,9 +11,9 @@ BeginPackage["Q3`"]
   TrimLeft, TrimRight };
 { KeyGroupBy, KeyReplace, CheckJoin };
 { ReplaceRules, ReplaceRulesBy };
-{ PseudoDivide, ZeroQ };
+{ ZeroQ, PseudoDivide };
 { CountsFor };
-{ IntegerParity, IntegerPowerQ };
+{ IntegerParity, IntegerPowerQ, IntegerChop };
 { RandomPick };
 { Ranking };
 { IntervalSize };
@@ -541,6 +541,26 @@ IntegerPowerQ[b_Integer, n_Integer] := IntegerQ[Log[b, n]]
 IntegerPowerQ[_, _] = False
 
 (**** </IntegerPowerQ> ****)
+
+
+(**** <IntegerChop> ****)
+(* NOTE: The idea is borrowed from IntegerChop by Ed Pegg Jr. published in the Wolfram Function Repository. *)
+
+IntegerChop::usage = "IntegerChop[z] rounds z to an integer if z is close to an integer.\nIntegerChop[z, del] compares z and integers with tolerance del."
+
+SetAttributes[IntegerChop, Listable];
+
+IntegerChop[x_?NumericQ] := With[
+  { n = Round[x] },
+  If[ZeroQ[x -n], n, x]
+]
+
+IntegerChop[x_?NumericQ, del_?Positive] := With[
+  { n = Round[x] },
+  If[ZeroQ[x - n, del], n, x]
+]
+
+(**** </IntegerChop> ****)
 
 
 (**** <RandomPick> ****)

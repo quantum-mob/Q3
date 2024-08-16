@@ -4,9 +4,8 @@ BeginPackage["Q3`"]
 (**** <obsolete> ****)
 
 { WeightedLog }; (* renamed *)
-
 { PauliDecompose, PauliDecomposeRL, PauliCompose, PauliCompseRL }; (* renamed *)
-
+{ WickGreensFunction };
 { FlavorNone, FlavorNoneQ }; (* renamed *)
 { TimesDaggerLeft, TimesLeftRight }; (* renamed *)
 { TheLower, TheRaise, RaiseLower }; (* renamed *)
@@ -176,6 +175,11 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 
 (**** <obsolete> ****)
+
+WickGreensFunction[spec_] := (
+  Message[Q3General::renamed, "WickGreensFunction", "WickGreenFunction"];
+  WickGreenFunction[spec]
+)
 
 FlavorNone[spec_] := (
   Message[Q3General::renamed, "FlavorNone", "FlavorCap"];
@@ -475,6 +479,29 @@ FockMatrixForm::usage = "FockMatrixForm has been excised. Instead, use Map[Matri
 FockMatrixForm[args___] := Message[Q3General::excised, "FockMatrixForm"]
 
 (**** </obsolete> ****)
+
+
+
+(**** <NambuMatrix> ****)
+
+NambuMatrix::obsolete = "NambuMatrix[mat, ``] is obsolete; use `` instead."
+
+NambuMatrix[mat_, "Green's"] := (
+  Message[NambuMatrix::obsolete, "\"Green's\"", NambuGreen];
+  NambuGreen[mat]
+)
+
+NambuMatrix[mat_, "Unitary"] := (
+  Message[NambuMatrix::obsolete, "Unitary", NambuUnitary];
+  NambuGreen[mat]
+)
+
+NambuMatrix[mat_, "Hermitian"] := (
+  Message[NambuMatrix::obsolete, "Hermitian", NambuHermitian];
+  NambuGreen[mat]
+)
+
+(**** </NambuMatrix> ****)
 
 
 End[]

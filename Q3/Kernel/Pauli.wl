@@ -3141,7 +3141,7 @@ HoldPattern @ CircleTimes[ pre___,
 CircleTimes[mats__?MatrixQ] := KroneckerProduct[mats]
 
 (* For vectors, our CircleTimes[] is different from KroneckerProduct[]. *)
-CircleTimes[vecs__?VectorQ] := Flatten @ TensorProduct[vecs]
+CircleTimes[vecs__?VectorQ] := Flatten @ KroneckerProduct[vecs]
 
 (**** </CircleTimes> ****)
 

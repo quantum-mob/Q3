@@ -1,5 +1,12 @@
 # Release Notes
 
+## 3.5.6
+
+- Bug fix: Pfaffian
+- New functions: NambuGaussian, NambuUnitary, NambuHermitian, NambuGreen, IntegerChop.
+- Renamed: WickGreensFunction -> WickGreenFunction, BdGState -> NambuState, BdGUnitary -> NambuUnitary, BdGOperator -> NambuOperator, NambuMatrix[..., "Unitary"] --> NambuUnitary, NambuMatrix[..., "Hermitian"] --> NambuHermitian, NambuMatrix[..., "Green's"] -> NambuGreen
+- Pfaffian is further improved.
+
 ## 3.5.5
 
 - An emergency bug fix in NoisyWickSimulate.

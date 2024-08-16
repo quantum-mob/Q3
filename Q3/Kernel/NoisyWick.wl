@@ -14,6 +14,8 @@ NoisyWickSimulate::jmp = "Invalid form of quantum jump operators ``."
 
 NoisyWickSimulate::null = "The null state is encountered."
 
+NoisyWickSimulate::save = "The result was not saved."
+
 Options[NoisyWickSimulate] = {
   "Samples" -> 500,
   "SaveData" -> False,
@@ -47,6 +49,27 @@ NoisyWickSimulate[ham_, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}, O
       theNoisyWickSimulate[non, jmp, in, {nT, dt}],
       n
     ];
+    
+    (* save data *)
+    If[Not @ OptionValue["SaveData"], Return @ data];
+
+    PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 
+    PrintTemporary["It may take some time."];
+    
+    file = OptionValue["Filename"];
+    If[ file === Automatic,
+      file = FileNameJoin @ {
+        Directory[],
+        ToString[Unique @ OptionValue @ "Prefix"]
+      };
+      file = StringJoin[file, ".mx"]
+    ];
+    If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
+    Check[
+      Export[file, data],
+      Message[NoisyWickSimulate::save]
+    ];
+    Echo[file, "Saved to"];
     Return[data]
   ] /; If[ MatrixQ[ham, NumericQ], True,
       Message[NoisyWickSimulate::ham, ham];

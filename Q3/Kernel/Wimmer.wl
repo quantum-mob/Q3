@@ -51,7 +51,10 @@ Pfaffian::Hessenberg = "Pfaffian computation with Hessenberg decomposition only 
 
 Pfaffian::sparse = "Too dense for a sparse array; converted to a normal form."
 
-Options[Pfaffian] = {Method -> Automatic}
+Options[Pfaffian] = {
+  Method -> Automatic,
+  Tolerance -> 8*$MachineEpsilon
+}
 
 
 Pfaffian[mat_SymmetrizedArray, opts:OptionsPattern[]] :=
@@ -70,14 +73,14 @@ Pfaffian[mat_?SquareMatrixQ, OptionsPattern[]] :=
   PfaffianHeuristic[mat] /; OptionValue[Method] == "Heuristic"
 
 
-Pfaffian[mat_, OptionsPattern[]] :=
+Pfaffian[mat_, opts:OptionsPattern[]] :=
   Switch[ OptionValue[Method],
     Automatic,
       If[ arrayRealQ[mat],
         PfaffianHessenberg[N @ mat],
         PfaffianLTL[mat]
       ],
-    "Parlett-Reid", PfaffianLTL[mat],
+    "Parlett-Reid", PfaffianLTL[mat, opts],
     "Householder", PfaffianHouseholder[mat], 
     "Hessenberg", PfaffianHessenberg[mat],
     _, Message[Pfaffian::method, OptionValue @ Method]; 0
@@ -129,16 +132,20 @@ If[ $VersionNumber < 13.2,
 
 (**** <Method: Parlett-Reid tridiagonalization> ****)
 
+Pfaffian::indet = "Division by zero encountered: `` / ``." 
+
 PfaffianLTL::usage = "PfaffianLTL[mat] computes the Pfaffian of the skew-symmetric matirx mat using the L T L^T decomposition."
 
-PfaffianLTL[mat_] := Module[
-  { new = mat,
+PfaffianLTL[mat_, OptionsPattern[Pfaffian]] := Module[
+  { tol = OptionValue[Tolerance],
+    new = mat,
     val = 1,
-    pos, aa, bb },
+    pos, del },
   If[OddQ[Length @ new], Return[0]];
   While[ Length[new] > 2,
-    pos = First @ PositionLargest[Abs @ First @ new];
-    If[ZeroQ @ new[[1, pos]], Return[0]];
+    pos = 1 + First @ PositionLargest[Abs @ new[[1, 2;;]]];
+    (* NOTE: In principle, matrix new must be anti-symmetric. In practice, however, it may not be. Examples occur in WickTimeReversalMoment due to numerical errors. Hence, PositionLargest should exclude new[[1, 1]], which may not vanish in practice. *)
+    If[ZeroQ[new[[1, pos]], tol], Return[0]];
     If[ pos != 2,
       new[[{2, pos}, ;;]] = new[[{pos, 2}, ;;]]; 
       new[[;;, {2, pos}]] = new[[;;, {pos, 2}]];
@@ -146,10 +153,12 @@ PfaffianLTL[mat_] := Module[
     ];
     val *= new[[1, 2]];
 
-    aa = new[[1, 3;;]] / new[[1, 2]];
-    bb = new[[2, 3;;]];
+    del = KroneckerProduct[ 
+      new[[1, 3;;]] / new[[1, 2]],
+      new[[2, 3;;]] 
+    ];
     new = new[[3;;, 3;;]];
-    new -= (# - Transpose[#]&) @ Outer[Times, aa, bb];
+    new -= del - Transpose[del];
   ];
   Return[val * new[[1, 2]]]
 ] /; MatrixQ[mat, NumericQ]
