@@ -10,6 +10,10 @@ BeginPackage["Q3`"]
 { WickOperator, WickOperatorFrom };
 { WickExpectation, WickGreenFunction };
 
+{ newWickGreenFunction };
+
+{ WickDensityMatrix };
+
 { WickCircuit, WickRandomCircuit };
 { RandomWickState, RandomNambuState };
 
@@ -45,8 +49,9 @@ WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, Opt
     zz = CircleTimes[ThePauli[3], id];
 
     (* \Gamma *)
-    gg = tameMatrix[id - grn, OptionValue["Epsilon"]];
+    gg = tameMatrix[id - N[grn], OptionValue["Epsilon"]];
     (* NOTE: When there is a fermion mode that is unoccuppied with certainty, the coherent-state representation becomes unusual, and one needs to handle such cases separately. While this is possible, Q3 offers a ditry trick. *)
+    (* NOTE: N[grn] is to avoid additional normalization (or even orthonormalization) of the eigenvectors of grn. *)
     gg = Normal @ NambuHermitian[{gg, -anm}];
   
     pf1 = Power[Pfaffian[Inverse[gg.xx]], 2];
@@ -163,7 +168,8 @@ MakeBoxes[ws:WickState[ops:{___Rule}, cc:{___?FermionQ}], fmt_] :=
     { BoxForm`SummaryItem @ { "Modes: ", cc },
       BoxForm`SummaryItem @ { "Depth: ", Length @ ops }
     },
-    { BoxForm`SummaryItem @ { "Operator transforms: ", ArrayShort @ Values @ ops }    
+    { BoxForm`SummaryItem @ { "Operator flags: ", Keys @ ops },
+      BoxForm`SummaryItem @ { "Operator transforms: ", ArrayShort @ Values @ ops }    
     },
     fmt,
     "Interpretable" -> Automatic
@@ -481,6 +487,12 @@ theConjugateReverse[ops:{Rule[Identity|Dagger, _?VectorQ]...}] :=
     Conjugate[Values @ ops]
   ]
 
+(* for normal models *)
+theConjugateReverse[{tag_?VectorQ, trs_?MatrixQ}] := {
+  Reverse @ ReplaceAll[tag, {Identity -> Dagger, Dagger -> Identity}],
+  Reverse @ Conjugate @ trs
+}
+
 (* for the BdG models *)
 theConjugateReverse[ops_?MatrixQ] := With[
   { new = ArrayFlatten[Reverse /@ PartitionInto[ops, {1, 2}]] },
@@ -562,7 +574,7 @@ WickOperator[op_?AnyFermionQ, cc:{__?FermionQ}, rest___] :=
 WickOperator[ops:{___?AnyFermionQ}, cc:{__?FermionQ}, rest___] :=
   WickOperator[theWickOperator[ops, cc], cc, rest]
 
-WickOperator[rule_Rule] := WickOperator[{rule}]
+WickOperator[rule_Rule, rest___] := WickOperator[{rule}, rest]
 
 WickOperator[ops:{__Rule}] :=
   WickOperator @ Thread[Map[Hood, Keys @ ops] -> Values[ops]] /;
@@ -578,6 +590,11 @@ WickOperator[ops:{__?AnyFermionQ}, ___][in_WickState] := WickState[
   Join[theWickOperator[ops, Last @ in], First @ in],
   Last @ in
 ]
+
+
+WickOperator /:
+Dagger @ WickOperator[ops:{__Rule}, rest___] :=
+  WickOperator[theConjugateReverse @ ops, rest]
 
 
 WickOperator /: 
@@ -746,22 +763,38 @@ WickGreenFunction[ws_WickState] :=
 
 WickGreenFunction[ws:WickState[qq_, cc_], dd:{___?FermionQ}] := Module[
   { pp = theConjugateReverse[qq],
-    aa, bb, gg, n },
+    aa, bb, gg, wm, n },
   bb = Lookup[First /@ PositionIndex[cc], dd];
   bb = One[Length @ cc][[bb]];
   aa = Thread[Identity -> bb];
   bb = Thread[Dagger -> bb];
 
+  wm = Normal @ Zero[{3, 3}];
+  wm[[1, 1]] = WickMatrix[pp];
+  wm[[1, 3]] = WickMatrix[pp, qq];
+  wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
+  wm[[3, 3]] = WickMatrix[qq];
+
   n = Length[dd];
   gg = Zero[{n, n}];
   Table[
-    gg[[i, i]] = Quiet[Re @ Sqrt @ Det @ N @ WickMatrix @ Join[pp, {aa[[i]], bb[[i]]}, qq], Det::luc],
+    wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[i]]}];
+    wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
+    wm[[2, 2]] = WickMatrix[{aa[[i]], bb[[i]]}];
+    wm[[2, 3]] = WickMatrix[{aa[[i]], bb[[i]]}, qq];
+    wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
+    gg[[i, i]] = Quiet[Re @ Sqrt @ Det @ ArrayFlatten @ N @ wm, Det::luc],
     (* NOTE: The Pfaffians here are supposed to be real positive. *)
     (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
     {i, 1, n}
   ];
   Table[
-    gg[[i, j]] = Pfaffian @ N @ WickMatrix @ Join[pp, {aa[[i]], bb[[j]]}, qq];
+    wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[j]]}];
+    wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
+    wm[[2, 2]] = WickMatrix[{aa[[i]], bb[[j]]}];
+    wm[[2, 3]] = WickMatrix[{aa[[i]], bb[[j]]}, qq];
+    wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
+    gg[[i, j]] = Pfaffian @ ArrayFlatten @ N @ wm;
     gg[[j, i]] = Conjugate @ gg[[i, j]],
     {i, 1, n},
     {j, i+1, n}
@@ -850,33 +883,44 @@ WickMatrix::usage= "WickMatrix[spec] constructs the so-called Wick matrix, an an
 
 WickMatrix::dim = "The second dimension of the `` matrix cannot be odd; something is fatally wrong."
 
+(* backward compatibility *)
+WickMatrix[ass:{Rule[Identity|Dagger, _?VectorQ]...}] :=
+  WickMatrix[{Keys @ ass, SparseArray @ Values @ ass}]
+
 (* for the normal models *)
-WickMatrix[ass:{Rule[Identity|Dagger, _?VectorQ]...}] := Module[
-  { tag = Keys[ass],
-    trs = Values[ass],
-    ff, ij, rr },
-  ij = Subsets[Range @ Length @ tag, {2}];
-  ff = Replace[tag[[#]]& /@ ij, {{Identity, Dagger} -> True, _ -> False}, {1}];
-  ij = Pick[ij, ff];
-  rr = MapApply[trs[[#1]] . trs[[#2]] &, ij];
+WickMatrix[{tag_?VectorQ, trs_?MatrixQ}] := Module[
+  { kk, ii, jj, ij, rr },
+  kk = PositionIndex[tag];
+  ii = kk[Identity];
+  jj = kk[Dagger];
+  rr = trs[[ii]] . Transpose[ trs[[jj]] ];
+  ij = Tuples @ {ii, jj};
+  kk = First[#] < Last[#]& /@ ij;
+  ij = Pick[ij, kk];
+  rr = Pick[Flatten @ rr, kk];
   rr = Join[
     Thread[ij -> rr],
     Thread[Reverse /@ ij -> -rr]
   ];
   SparseArray[rr, Length[tag]*{1, 1}]
 ]
+(* NOTE: This method makes use of the built-in function Dot, and is faster than other methods using MapApply, etc., on selected elements of ij. *)
 
-(* for the normal models; for another method of WickGreenFunction *)
-WickMatrix[aa:{___Rule}, bb:{___Rule}] := Module[
-  { ma = Values[aa],
-    mb = Values[bb],
-    kk, ij, rr },
-  ij = Tuples @ {Range[Length @ aa], Range[Length @ bb]};
-  kk = Tuples @ {Keys @ aa, Keys @ bb};
-  kk = Replace[kk, {{Identity, Dagger} -> True, _ -> False}, {1}];
-  ij = Pick[ij, kk];
-  rr = MapApply[ma[[#1]] . mb[[#2]] &, ij];
-  SparseArray[Thread[ij -> rr], {Length @ aa, Length @ bb}]
+(* backward compatibility *)
+WickMatrix[aa:{___Rule}, bb:{___Rule}] :=WickMatrix[
+  {Keys @ aa, SparseArray @ Values @ aa},
+  {Keys @ bb, SparseArray @ Values @ bb}
+]
+
+(* for the normal models *)
+WickMatrix[{atag_?VectorQ, atrs_?MatrixQ}, {btag_?VectorQ, btrs_?MatrixQ}] :=
+Module[
+  { kk, ii, jj, ij, rr },
+  ii = Lookup[PositionIndex @ atag, Identity];
+  jj = Lookup[PositionIndex @ btag, Dagger];
+  rr = atrs[[ii]] . Transpose[ btrs[[jj]] ];
+  rr = Thread[ Tuples[{ii, jj}] -> Flatten[rr] ];
+  SparseArray[rr, {Length @ atag, Length @ btag}]
 ]
 
 
@@ -885,14 +929,22 @@ WickMatrix[jmp_?MatrixQ] := Module[
   { m = Length[jmp],
     aa, bb, mat },
   {aa, bb} = First @ PartitionInto[jmp, {1, 2}];
-  mat = Normal @ Zero[{m, m}];
+  mat = aa . Transpose[bb];
+  Table[mat[[i,i]] = 0, {i, m}];
   Table[
-    mat[[i, j]] = aa[[i]] . bb[[j]];
     mat[[j, i]] = -mat[[i, j]],
     {i, m},
     {j, i+1, m}
   ];
   Return[mat]
+]
+
+(* for the BdG models *)
+WickMatrix[ma_?MatrixQ, mb_?MatrixQ] := Module[
+  { aa, bb },
+  aa = First @ First @ PartitionInto[ma, {1, 2}];
+  bb = Last  @ First @ PartitionInto[mb, {1, 2}];
+  aa . Transpose[bb]
 ]
 
 (**** </WickMatrix> ****)
@@ -929,6 +981,8 @@ WickCircuit /:
 (**** <WickRandomCircuit> ****)
 
 WickRandomCircuit::usage = "WickRandomCircuit[{c1, c2, \[Ellipsis]}, in, ugate, p, dep] simulates a random quantum circuit on fermion modes {c1, c2, \[Ellipsis]} starting from initial state IN, where layers of Gaussian unitary gate ugate alternate with layers of measurements on fermion modes selected randomly with probability p to form an overall depth dep."
+
+WickRandomCircuit::save = "The result could not be saved."
 
 Options[WickRandomCircuit] = {
   "Samples" -> {10, 5},
@@ -968,23 +1022,24 @@ Module[
   ];
 
   (* save data *)
-  If[Not @ OptionValue["SaveData"], Return @ data];
-
-  PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 
-  PrintTemporary["It may take some time."];
-    
-  file = OptionValue["Filename"];
-  If[ file === Automatic,
-    file = FileNameJoin @ {
-      Directory[],
-      ToString[Unique @ OptionValue @ "Prefix"]
-    };
-    file = StringJoin[file, ".mx"]
+  If[ OptionValue["SaveData"], 
+    PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 
+    file = OptionValue["Filename"];
+    If[ file === Automatic,
+      file = FileNameJoin @ {
+        Directory[],
+        ToString[Unique @ OptionValue @ "Prefix"]
+      };
+      file = StringJoin[file, ".mx"]
+    ];
+    If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
+    Check[
+      Export[file, data];
+      Echo[file, "Saved to"],
+      Message[WickRandomCircuit::save]
+    ]
   ];
-
-  If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
-
-  Export[file, data]
+  Return[data]
 ]
 
 (**** </WickRandomCircuit> ****)
@@ -1004,6 +1059,45 @@ RandomWickState[k_Integer?Positive, cc:{__?FermionQ}] := Module[
   in = WickState[Dagger@cc[[;; ;;2]], cc];
   Normalize[ WickOperator[Thread[ff -> mm], cc][in] ]
 ]
+
+
+(**** <WickDensityOpeator> ****)
+
+WickDensityMatrix::usage = "WickDensityMatrix[grn] returns the density matrix corresponding to the single-particle Green's function grn, assuming that grn is associated with a fermionic Gaussian state.\nWickDensityMatrix[ws] returns the density matrix corresponding to Wick state ws."
+
+WickDensityMatrix::num = "Only numerical matrices are allowed."
+
+WickDensityMatrix[grn_?MatrixQ] := Module[
+  { n = Length[grn],
+    cc, gg, uu, id },  
+  (* Jordan-Wigner transformation *)
+  cc = SparseArray[
+    { {i_, i_} -> 4,
+      {i_, j_} /; i > j -> 3,
+      {_, _} -> 0 },
+    {n, n}
+  ];
+  cc = ThePauli /@ Normal[cc]; (* bare modes *)
+
+  id = One @ Power[2, n];
+
+  {gg, uu} = Eigensystem[N @ grn];
+  (* NOTE: N[...] is to avoid additional normaliztaion of uu and sorting. *)
+  cc = Conjugate[uu] . cc; (* dressed modes *)
+  cc = MapThread[Dot, {Topple /@ cc, cc}];
+  cc = MapThread[#1*id + (1-2*#1)*#2&, {gg, cc}];
+  Dot @@ cc
+] /; If[ MatrixQ[grn, NumericQ], True,
+  Message[WickDensityMatrix::num];
+  False
+]
+
+WickDensityMatrix[ws_WickState] := With[
+  { v = Matrix[ws] },
+  Dyad[v, v]
+]
+
+(**** </WickDensityOpeator> ****)
 
 End[]
 

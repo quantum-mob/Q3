@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.5.7
+
+- Improved: WickGreenFunction
+- New functions: ArrayZeroQ
+
 ## 3.5.6
 
 - Bug fix: Pfaffian

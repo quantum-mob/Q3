@@ -14,7 +14,7 @@ NoisyWickSimulate::jmp = "Invalid form of quantum jump operators ``."
 
 NoisyWickSimulate::null = "The null state is encountered."
 
-NoisyWickSimulate::save = "The result was not saved."
+NoisyWickSimulate::save = "The result could not be saved."
 
 Options[NoisyWickSimulate] = {
   "Samples" -> 500,
@@ -46,35 +46,79 @@ NoisyWickSimulate[ham_, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}, O
     PrintTemporary @ ProgressIndicator @ Dynamic[progress];
     data = Table[
       progress = ++k / n;
-      theNoisyWickSimulate[non, jmp, in, {nT, dt}],
+      (* theNoisyWickSimulate[non, jmp, in, {nT, dt}], *)
+      altNoisyWickSimulate[non, jmp, in, {nT, dt}],
       n
     ];
     
     (* save data *)
-    If[Not @ OptionValue["SaveData"], Return @ data];
-
-    PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 
-    PrintTemporary["It may take some time."];
-    
-    file = OptionValue["Filename"];
-    If[ file === Automatic,
-      file = FileNameJoin @ {
-        Directory[],
-        ToString[Unique @ OptionValue @ "Prefix"]
-      };
-      file = StringJoin[file, ".mx"]
+    If[ OptionValue["SaveData"],
+      PrintTemporary["Saving the data (", ByteCount[data], " bytes) to ..."];
+      file = OptionValue["Filename"];
+      If[ file === Automatic,
+        file = FileNameJoin @ {
+          Directory[],
+          ToString[Unique @ OptionValue @ "Prefix"]
+        };
+        file = StringJoin[file, ".mx"]
+      ];
+      If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
+      Check[
+        Export[file, data];
+        Echo[file, "Saved to"],
+        Message[NoisyWickSimulate::save]
+      ]
     ];
-    If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
-    Check[
-      Export[file, data],
-      Message[NoisyWickSimulate::save]
-    ];
-    Echo[file, "Saved to"];
     Return[data]
   ] /; If[ MatrixQ[ham, NumericQ], True,
-      Message[NoisyWickSimulate::ham, ham];
-      False
-    ]
+    Message[NoisyWickSimulate::ham, ham];
+    False
+  ]
+
+altNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
+  Module[
+    { res = {in},
+      new = N[in],
+      prb, pos, out, tmp, pp, qq, ww, t },
+    t = 1;
+    While[ t <= nT,
+      pp = RandomReal[];
+      qq = RandomReal[];
+      
+      (* non-unitary evolution *)
+      out = non[new];
+      If[ pp < NormSquare[out],
+        new = Normalize @ out;
+        AppendTo[res, new];
+        t += 1;
+        Continue[]
+      ];
+      
+      (* quantum jumps *)
+      out = Through[jmp[out]];
+
+      prb = Chop @ Accumulate[NormSquare /@ out];
+      Quiet[
+        Check[
+          prb /= Last[prb],
+          (* error *)
+          Message[NoisyWickSimulate::null];
+          new = WickState[0, Last @ in]; (* null state *)
+          AppendTo[res, new];
+          t += 1;
+          Break[],
+          {Divide::indet}
+        ],
+        {Divide::indet}
+      ];
+
+      pos = First @ FirstPosition[prb - qq, _?NonNegative];
+      new = Normalize @ Part[out, pos];
+      AppendTo[res, new];
+      t += 1;
+    ];
+    Return[res]
+  ]
 
 theNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
   Module[
@@ -106,13 +150,17 @@ theNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_I
       out = Through[jmp[out]];
 
       prb = Chop @ Accumulate[NormSquare /@ out];
-      Check[
-        prb /= Last[prb],
-        Message[NoisyWickSimulate::null];
-        new = WickState[0, Last @ in]; (* null state *)
-        AppendTo[res, new];
-        t += 1;
-        Break[],
+      Quiet[
+        Check[
+          prb /= Last[prb],
+          (* error *)
+          Message[NoisyWickSimulate::null];
+          new = WickState[0, Last @ in]; (* null state *)
+          AppendTo[res, new];
+          t += 1;
+          Break[],
+          {Divide::indet}
+        ],
         {Divide::indet}
       ];
 

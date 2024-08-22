@@ -598,6 +598,11 @@ NambuOperator[trs_?MatrixQ, cc:{__?FermionQ}, ___][NambuState[uv_, mm_, cc_]] :=
   NambuState[uv, Join[trs . Normal[NambuUnitary @ uv], mm], cc]
 
 
+NambuOperator /:
+Dagger @ NambuOperator[ops_?MatrixQ, rest___] :=
+  NambuOperator[theConjugateReverse @ ops, rest]
+
+
 NambuOperator /: 
 NonCommutativeQ[_NambuOperator] = True
 
@@ -733,21 +738,39 @@ WickGreenFunction[ws_NambuState] :=
 WickGreenFunction[ws:NambuState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
   { uu = Normal @ NambuUnitary[uv],
     pp = theConjugateReverse[qq],
-    aa, bb, ff, gg, kk, n },
+    aa, bb, wm, ff, gg, kk, n },
   kk = First /@ PositionIndex @ Join[cc, Dagger @ cc];
   aa = uu[[ Lookup[kk, dd] ]];
   bb = uu[[ Lookup[kk, Dagger @ dd] ]];
 
+  wm = Normal @ Zero[{3, 3}];
+  wm[[1, 1]] = WickMatrix[pp];
+  wm[[1, 3]] = WickMatrix[pp, qq];
+  wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
+  wm[[3, 3]] = WickMatrix[qq];
+
   n = Length[dd];
   gg = Normal @ Zero[{n, n}];
   Table[
-    gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ WickMatrix @ Join[pp, {aa[[i]], bb[[i]]}, qq], Det::luc],
+    (* gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ WickMatrix @ Join[pp, {aa[[i]], bb[[i]]}, qq], Det::luc], *)
+    wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[i]]}];
+    wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
+    wm[[2, 2]] = WickMatrix[{aa[[i]], bb[[i]]}];
+    wm[[2, 3]] = WickMatrix[{aa[[i]], bb[[i]]}, qq];
+    wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
+    gg[[i, i]] = Quiet[Re @ Sqrt @ Det @ ArrayFlatten @ N @ wm, Det::luc],
     (* NOTE: The Pfaffians here are supposed to be real positive. *)
     (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
     {i, 1, n}
   ];
   Table[
-    gg[[i, j]] = Pfaffian @ WickMatrix @ Join[pp, {aa[[i]], bb[[j]]}, qq];
+    (* gg[[i, j]] = Pfaffian @ WickMatrix @ Join[pp, {aa[[i]], bb[[j]]}, qq]; *)
+    wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[j]]}];
+    wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
+    wm[[2, 2]] = WickMatrix[{aa[[i]], bb[[j]]}];
+    wm[[2, 3]] = WickMatrix[{aa[[i]], bb[[j]]}, qq];
+    wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
+    gg[[i, j]] = Pfaffian @ ArrayFlatten @ N @ wm;
     gg[[j, i]] = Conjugate @ gg[[i, j]],
     {i, 1, n},
     {j, i+1, n}
@@ -755,7 +778,13 @@ WickGreenFunction[ws:NambuState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
 
   ff = Normal @ Zero[{n, n}];
   Table[
-    ff[[i, j]] = Pfaffian @ WickMatrix @ Join[pp, {aa[[i]], aa[[j]]}, qq];
+    (* ff[[i, j]] = Pfaffian @ WickMatrix @ Join[pp, {aa[[i]], aa[[j]]}, qq]; *)
+    wm[[1, 2]] = WickMatrix[pp, {aa[[i]], aa[[j]]}];
+    wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
+    wm[[2, 2]] = WickMatrix[{aa[[i]], aa[[j]]}];
+    wm[[2, 3]] = WickMatrix[{aa[[i]], aa[[j]]}, qq];
+    wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
+    ff[[i, j]] = Pfaffian @ ArrayFlatten @ N @ wm;
     ff[[j, i]] = -ff[[i, j]],
     {i, 1, n},
     {j, i+1, n}
@@ -765,6 +794,46 @@ WickGreenFunction[ws:NambuState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
 ]
 
 (**** </WickGreenFunction> ****)
+
+
+(**** <WickDensityOpeator> ****)
+
+WickDensityMatrix[grn_?NambuMatrixQ] := WickDensityMatrix[NambuGreen @ grn]
+
+WickDensityMatrix[grn_NambuGreen] := Module[
+  { n = Length[First @ First @ grn],
+    cc, gg, uu, id },  
+  (* Jordan-Wigner transformation *)
+  cc = SparseArray[
+    { {i_, i_} -> 4,
+      {i_, j_} /; i > j -> 3,
+      {_, _} -> 0 },
+    {n, n}
+  ];
+  cc = ThePauli /@ Normal[cc]; (* bare modes *)
+  cc = Join[cc, Topple /@ cc];
+
+  id = One @ Power[2, n];
+
+  {gg, uu} = Eigensystem[N @ Normal @ grn];
+  (* NOTE: N[...] is to avoid additional normaliztaion of uu and sorting. *)
+  gg = Take[gg, n]; (* gg is supposed to be sorted. *)
+  cc = Take[Conjugate[uu] . cc, n]; (* dressed modes *)
+  cc = MapThread[Dot, {Topple /@ cc, cc}];
+  cc = MapThread[#1*id + (1-2*#1)*#2&, {gg, cc}];
+  (* cc = (Take[cc, n] + Take[Reverse @ cc, n])/2; *)
+  Apply[Dot, cc]
+] /; If[ ArrayQ[First @ grn, 3, NumericQ], True,
+  Message[WickDensityMatrix::num];
+  False
+]
+
+WickDensityMatrix[ws_NambuState] := With[
+  { v = Matrix[ws] },
+  Dyad[v, v]
+]
+
+(**** </WickDensityOpeator> ****)
 
 
 End[] (* Fermionic quantum computation in the Nambu space *)

@@ -361,7 +361,7 @@ LindbladSupermap[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
   { one = One @ Length @ opH,
     non = -I*(opH - I*DampingOperator[opL]) },
   Supermap[ChoiMatrix[non, one] + ChoiMatrix[one, non] + ChoiMatrix[{opL}]]
- ] /; ArrayQ @ {opH, opL}
+] /; ArrayQ @ {opH, opL}
 
 
 LindbladSupermap[{opH_, opL__}][rho_] := Module[
@@ -370,7 +370,7 @@ LindbladSupermap[{opH_, opL__}][rho_] := Module[
   non = non**rho + rho**Dagger[non];
   gen = Total @ Multiply[{opL}, rho, Dagger @ {opL}];
   Garner[non + gen]
- ]
+]
 
 LindbladSupermap /:
 MakeBoxes[spr:LindbladSupermap[{opH_, opL__}], fmt_] :=
@@ -381,7 +381,8 @@ MakeBoxes[spr:LindbladSupermap[{opH_, opL__}], fmt_] :=
     { BoxForm`SummaryItem @ {"Hamiltonian: ", opH},
       BoxForm`SummaryItem @ {"Damping operator: ", DampingOperator @ {opL}},
       BoxForm`SummaryItem @ {"Lindblad operators: ", {opL}} },
-    fmt, "Interpretable" -> Automatic ]
+    fmt, "Interpretable" -> Automatic 
+  ]
 
 
 (***** </LindbladSupermap> *****)
@@ -530,6 +531,16 @@ NLindbladSolve::usage = "NLindbladSolve[{opH, opL1, opL2, ...}, init, {t, tmin, 
 
 NLindbladSolve::incmp = "The matrices `` are not compatible with each other."
 
+NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
+  NLindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, in, {t, tmin, tmax}, opts] /;
+  ArrayQ @ Join[ops]
+
+NLindbladSolve[HoldPattern @ Supermap[tsr_?ChoiMatrixQ], in_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
+  NLindbladSolve[tsr, in, {t, tmin, tmax}, opts]
+
+NLindbladSolve[tsr_?ChoiMatrixQ, in_?VectorQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
+  NLindbladSolve[tsr, Dyad[in, in], {t, tmin, tmax}, opts]
+
 NLindbladSolve[tsr_?ChoiMatrixQ, init_?SquareMatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
   Module[
     { dim = Length[init],
@@ -550,24 +561,14 @@ NLindbladSolve[tsr_?ChoiMatrixQ, init_?SquareMatrixQ, {t_, tmin_, tmax_}, opts__
 
     var = Prepend[Through[var[t]], 1/Sqrt[dim]];
     ArrayReshape[lbm . var, {dim, dim}] /. sol
-   ]
+  ]
 
 
 NLindbladSolve[opH_, {opL__}, init_, rest__] :=
   NLindbladSolve[{opH, opL}, init, rest]
 
-
-NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?VectorQ,
-  {t_, tmin_, tmax_}, opts___?OptionQ] :=
-  NLindbladSolve[ops, Dyad[in, in], {t, tmin, tmax}]
-
-NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
-  NLindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, in, {t, tmin, tmax}] /;
-  ArrayQ @ Join[{in}, ops]
-
 NLindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
   Message[NLindbladSolve::incmp, Normal @ Append[ops, init]] 
-
 
 NLindbladSolve[LindbladSupermap[ops_], in_, {t_, tmin_, tmax_}] :=
   NLindbladSolve[ops, in, {t, tmin, tmax}]

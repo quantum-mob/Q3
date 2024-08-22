@@ -322,30 +322,30 @@ KetMutate::usage = "KetMutate[expr, {s1, s2, \[Ellipsis]}] changes every Ket[v1,
 KetMutate[any_, ss:{__?SpeciesQ}] :=
   KetMutate[any, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
-KetMutate[any_Association, ss:{__?QubitQ}] := Map[KetMutate[#, ss]&, any]
+KetMutate[any_Association, ss:{__?SpeciesQ}] := Map[KetMutate[#, ss]&, any]
 (* NOTE: Recall that Association has attribute HoldAllComplete. *)
 
-KetMutate[Ket[v__], ss:{__?SpeciesQ}] := Ket[ss -> PadRight[{v}, Length @ ss]]
+KetMutate[Ket[{v__}], ss:{__?SpeciesQ}] := Ket[ss -> PadRight[{v}, Length @ ss]]
 
-KetMutate[Bra[v__], ss:{__?SpeciesQ}] := Bra[ss -> PadRight[{v}, Length @ ss]]
+KetMutate[Bra[{v__}], ss:{__?SpeciesQ}] := Bra[ss -> PadRight[{v}, Length @ ss]]
 
-KetMutate[Ket[a_Association], ss:{__?SpeciesQ}] := Ket @@ Lookup[a, ss]
+KetMutate[Ket[a_Association], ss:{__?SpeciesQ}] := Ket @ Lookup[a, ss]
 
-KetMutate[Bra[a_Association], ss:{__?SpeciesQ}] := Bra @@ Lookup[a, ss]
+KetMutate[Bra[a_Association], ss:{__?SpeciesQ}] := Bra @ Lookup[a, ss]
 
 KetMutate[Pauli[v__], ss:{__?SpeciesQ}] := With[
   { qq = Select[ss, QubitQ] },
   Multiply @@ MapThread[
     Construct,
     {qq, PadRight[{v}, Length @ qq]}
-   ]
- ]
+  ]
+]
 
 KetMutate[expr_, ss:{__?SpeciesQ}] := ReplaceAll[ expr,
   { v_Association :> KetMutate[v, ss],
     v:(_Ket|_Bra _) :> KetMutate[v, ss],
     v_Pauli :> KetMutate[v, ss] }
- ]
+]
 
 (**** </KetMutate> ****)
 

@@ -2810,7 +2810,7 @@ GHZState[ss:{__?QubitQ}, k_Integer] := Module[
     nn },
   nn =  Mod[kk+1, 2];
   (Ket[ss->kk] + Ket[ss->nn]*Power[-1, First @ kk]) / Sqrt[2]
- ]
+]
 
 (**** </GHZState> ****)
 
@@ -3332,22 +3332,30 @@ theKetVerify[Rule[a_?QuditQ, v_]] := (
 (**** </Ket for Qubits> ****)
 
 
-(**** <GHZState for Qudits> ****)
+(**** <GHZState for arbitray species> ****)
 
-GHZState[ss:{__?QuditQ}] := Map[
-  GHZState[ss, #]&,
-  Range[0, Power[Dimension @ First @ ss, Length @ ss]-1]
- ]
+GHZState[ss:{__?SpeciesQ}] :=
+  KetMutate[GHZState @ {First @ Dimension @ ss, Length @ ss}, ss]
 
-GHZState[ss:{__?QuditQ}, k_Integer] := Module[
-  { dim = Dimension[First @ ss],
-    xx, kk, ww, vv },
+GHZState[ss:{__?SpeciesQ}, k_Integer] := KetMutate[
+  GHZState[{First @ Dimension @ ss, Length @ ss}, k],
+  ss
+]
+
+
+GHZState[{dim_Integer?Positive, n_Integer?Positive}] := Map[
+  GHZState[{dim, n}, #]&,
+  Range[0, Power[dim, n]-1]
+]
+
+GHZState[{dim_Integer?Positive, n_Integer?Positive}, k_Integer?NonNegative] := Module[
+  { xx, kk, ww, vv },
   xx = Range[0, dim-1];
-  kk = IntegerDigits[k, dim, Length @ ss];
+  kk = IntegerDigits[k, dim, n];
   vv = Map[Mod[kk + #, dim]&,  xx];
   ww = Exp[I* 2*Pi * xx * First[kk] / dim] / Sqrt[dim];
-  Map[Ket[ss -> #]&, vv] . ww
- ]
+  Map[Ket, vv] . ww
+]
 
 (**** </GHZState> ****)
 

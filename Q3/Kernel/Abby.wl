@@ -11,8 +11,8 @@ BeginPackage["Q3`"]
   TrimLeft, TrimRight };
 { KeyGroupBy, KeyReplace, CheckJoin };
 { ReplaceRules, ReplaceRulesBy };
-{ ZeroQ, PseudoDivide };
-{ CountsFor };
+{ ZeroQ, ArrayZeroQ };
+{ CountsFor, PseudoDivide };
 { IntegerParity, IntegerPowerQ, IntegerChop };
 { RandomPick };
 { Ranking };
@@ -502,6 +502,30 @@ ZeroQ[x_, del_] := (
 )
 
 (**** </ZeroQ> ****)
+
+
+(**** <ArrayZeroQ> ****)
+
+ArrayZeroQ::usage = "ArrayZeroQ[tsr] returns True if all elements of array tsr approximately equal to zero.\nArrayZeroQ[tsr, \[Delta]] returns True if |x| \[LessEqual] \[Delta] for all elements x of tsr."
+
+ArrayZeroQ::neg = "Tolerence specification `` must be a non-negative number."
+
+ArrayZeroQ[tsr_] :=
+  ZeroQ @ Norm[Flatten @ tsr, Infinity] /; ArrayQ[tsr, _, NumericQ]
+
+ArrayZeroQ[tsr_, del_?NonNegative] :=
+  ZeroQ[Norm[Flatten @ tsr, Infinity], del] /; ArrayQ[tsr, _, NumericQ]
+
+ArrayZeroQ[tsr_?ArrayQ, del_?Negative] := (
+  Message[ArrayZeroQ::neg, del];
+  ArrayZeroQ[tsr, Abs @ del]
+)
+
+ArrayZeroQ[_] = False
+
+ArrayZeroQ[_, _] = False
+
+(**** </ArrayZeroQ> ****)
 
 
 (**** <CountsFor> ****)
