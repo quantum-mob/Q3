@@ -10,8 +10,6 @@ BeginPackage["Q3`"]
 { WickOperator, WickOperatorFrom };
 { WickExpectation, WickGreenFunction };
 
-{ newWickGreenFunction };
-
 { WickDensityMatrix };
 
 { WickCircuit, WickRandomCircuit };
@@ -893,6 +891,9 @@ WickMatrix[{tag_?VectorQ, trs_?MatrixQ}] := Module[
   kk = PositionIndex[tag];
   ii = kk[Identity];
   jj = kk[Dagger];
+  If[ MissingQ[ii] || MissingQ[jj],
+    Return @ Zero @ {Length @ tag, Length @ tag}
+  ];
   rr = trs[[ii]] . Transpose[ trs[[jj]] ];
   ij = Tuples @ {ii, jj};
   kk = First[#] < Last[#]& /@ ij;
@@ -918,6 +919,9 @@ Module[
   { kk, ii, jj, ij, rr },
   ii = Lookup[PositionIndex @ atag, Identity];
   jj = Lookup[PositionIndex @ btag, Dagger];
+  If[ MissigQ[ii] || MissingQ[jj], 
+    Return @ Zero @ {Length @ atag, Length @ btag}
+  ];
   rr = atrs[[ii]] . Transpose[ btrs[[jj]] ];
   rr = Thread[ Tuples[{ii, jj}] -> Flatten[rr] ];
   SparseArray[rr, {Length @ atag, Length @ btag}]

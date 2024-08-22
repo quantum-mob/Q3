@@ -488,7 +488,7 @@ PseudoDivide[x_, y_] := x/y
 
 ZeroQ::usage = "ZeroQ[x] returns True if x approximately equals to zero.\nZeroQ[x, \[Delta]] returns True if |x| \[LessEqual] \[Delta]."
 
-ZeroQ::tol = "Tolerence specification `` must be a non-negative number."
+ZeroQ::neg = "Tolerence specification `` must be a non-negative number."
 
 SetAttributes[ZeroQ, Listable]
 
@@ -497,7 +497,7 @@ ZeroQ[x_] := TrueQ[Chop[x] == 0]
 ZeroQ[x_, del_?NonNegative] := TrueQ[Chop[x, del] == 0]
 
 ZeroQ[x_, del_] := (
-  Message[ZeroQ::tol, del];
+  Message[ZeroQ::neg, del];
   ZeroQ[x, Abs @ del]
 )
 
