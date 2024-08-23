@@ -175,9 +175,9 @@ MakeBoxes[ws:WickState[ops:{___Rule}, cc:{___?FermionQ}], fmt_] :=
 
 (* canonicalization *)
 
-WickState[cc:{__?FermionQ}] := WickState[{}, cc]
+WickState[cc:{__?FermionQ}] := WickState[{}, cc] (* vacuum state *)
 
-WickState[0, cc:{__?FermionQ}] := (* null vector *)
+WickState[0, cc:{__?FermionQ}] := (* null state *)
   WickState[{Identity -> Table[0, Length @ cc]}, cc]
 
 WickState[Ket[aa_Association]] := Module[
@@ -552,7 +552,8 @@ MakeBoxes[op:WickOperator[trs:{___Rule}, rest___], fmt_] := Module[
     { BoxForm`SummaryItem @ { "Target: ", cc },
       BoxForm`SummaryItem @ { "Operators: ", Length @ trs }
     },
-    { BoxForm`SummaryItem @ { "Transforms: ", ArrayShort[Values @ trs] }
+    { BoxForm`SummaryItem @ { "Flags: ", ArrayShort[Keys @ trs] },
+      BoxForm`SummaryItem @ { "Transforms: ", ArrayShort[Values @ trs] }
     },
     fmt,
     "Interpretable" -> Automatic
