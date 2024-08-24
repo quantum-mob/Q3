@@ -1,16 +1,40 @@
 BeginPackage["Q3`"]
 
 { NoisyWickSimulate };
+{ WickDampingOperator };
 
 Begin["`Private`"]
+
+(**** <WickDampingOperator> ****)
+
+WickDampingOperator::usage = "WickDampingOperator[jmp] returns a pair {mat, const} of the quadratic kernel mat and remaining constant term const of the effective damping operator in the normal ordering that corresponds to the list jmp of quantum jump operators."
+
+WickDampingOperator::jmp = "Invalid form of quantum jump operators ``."
+
+WickDampingOperator[jmp:{__WickOperator}] :=
+  WickDampingOperator @ Flatten[ First /@ jmp ]
+
+WickDampingOperator[jmp:{Rule[_, _?VectorQ]..}] := Module[
+  { dmp = GroupBy[jmp, First, Values],
+    aa, bb },
+  If[ !ContainsOnly[Keys @ dmp, {Identity, Dagger}] || !MatrixQ[Catenate @ dmp],
+    Message[WickDampingOperator::jmp, Short @ jmp];
+    Return[$Failed]
+  ];
+    
+  aa = Topple[dmp[Identity]] . dmp[Identity];
+  bb = Topple[dmp[Dagger]] . dmp[Dagger];
+  { aa - Transpose[bb], Tr[bb] } / 2
+]
+
+(**** </WickDampingOperator> ****)
+
 
 (**** <NoisyWickSimulate> ****)
 
 NoisyWickSimulate::usage = "NoisyWickSimulate[ham, jmp, in, {n, dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian matrix ham and the list jmp of quantum jump operators. The simulation starts from the initial WickState in at time 0 and goes n time steps by interval dt."
 
 NoisyWickSimulate::ham = "The Hamiltonian matrix `` needs to be numeric."
-
-NoisyWickSimulate::jmp = "Invalid form of quantum jump operators ``."
 
 NoisyWickSimulate::null = "The null state is encountered."
 
@@ -26,20 +50,13 @@ Options[NoisyWickSimulate] = {
 
 NoisyWickSimulate[ham_, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}, OptionsPattern[]] :=
   Module[
-    { dmp = GroupBy[Flatten[First /@ jmp], First, Values],
-      n = OptionValue["Samples"],
+    { n = OptionValue["Samples"],
       k = 0,
       progress = 0,
-      aa, bb, non },
+      aa, bb, dmp, fac, non },
     
-    If[ !ContainsOnly[Key @ dmp, {Identity, Dagger}] || !MatrixQ[Catenate @ dmp],
-      Message[NoisyWickSimulate::jmp, Short @ jmp];
-      Return[$Failed]
-    ];
-    
-    aa = Topple[dmp[Identity]].dmp[Identity];
-    bb = Topple[dmp[Dagger]].dmp[Dagger];
-    dmp = (aa - Transpose[bb] + Tr[bb] One[Dimensions @ bb]) / 2;
+    {dmp, fac} = WickDampingOperator[jmp];
+    fac = Exp[-dt*fac];
     non = ham - I * dmp;
     non = WickGaussian @ {MatrixExp[-I*dt*non], MatrixExp[+I*dt*non]};
 
@@ -47,7 +64,7 @@ NoisyWickSimulate[ham_, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}, O
     data = Table[
       progress = ++k / n;
       (* theNoisyWickSimulate[non, jmp, in, {nT, dt}], *)
-      altNoisyWickSimulate[non, jmp, in, {nT, dt}],
+      altNoisyWickSimulate[{non, fac}, jmp, in, {nT, dt}],
       n
     ];
     
@@ -75,7 +92,7 @@ NoisyWickSimulate[ham_, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}, O
     False
   ]
 
-altNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
+altNoisyWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
   Module[
     { res = {in},
       new = N[in],
@@ -87,7 +104,7 @@ altNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_I
       
       (* non-unitary evolution *)
       out = non[new];
-      If[ pp < NormSquare[out],
+      If[ pp < NormSquare[fac * out],
         new = Normalize @ out;
         AppendTo[res, new];
         t += 1;
@@ -120,7 +137,7 @@ altNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_I
     Return[res]
   ]
 
-theNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
+theNoisyWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
   Module[
     { res = {in},
       new = N[in],
@@ -132,7 +149,7 @@ theNoisyWickSimulate[non_WickGaussian, jmp:{__WickOperator}, in_WickState, {nT_I
       
       (* non-unitary evolution *)
       While[ t <= nT,
-        out = non[new];
+        out = fac * non[new];
         If[ pp < NormSquare[out],
           (* then *)
           AppendTo[res, Normalize @ out];

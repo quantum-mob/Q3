@@ -173,12 +173,27 @@ MakeBoxes[ws:WickState[ops:{___Rule}, cc:{___?FermionQ}], fmt_] :=
     "Interpretable" -> Automatic
   ]
 
+WickState /: (* vacuum state times a constant *)
+MakeBoxes[ws:WickState[z:Except[_?ListQ|_?ArrayQ], cc:{___?FermionQ}], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickState, ws, None,
+    { BoxForm`SummaryItem @ { "Modes: ", cc },
+      BoxForm`SummaryItem @ { "Type: ", Switch[z, 0, Null, _, Vacuum] }
+    },
+    { BoxForm`SummaryItem @ { "Normalization: ", z }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
 (* canonicalization *)
 
-WickState[cc:{__?FermionQ}] := WickState[{}, cc] (* vacuum state *)
+WickState[cc:{__?FermionQ}] := WickState[1, cc] (* vacuum state *)
+(* WickState[0, cc] represents the null state;  *)
+(* WickState[z, cc] represents a vacuum state times the overall constant z. *)
 
-WickState[0, cc:{__?FermionQ}] := (* null state *)
-  WickState[{Identity -> Table[0, Length @ cc]}, cc]
+WickState[{}, cc:{__?FermionQ}] := WickState[1, cc] (* vacuum state *)
+(* NOTE: The left-hand form cannot handle the multiplication by a global factor. *)
 
 WickState[Ket[aa_Association]] := Module[
   { cc = Select[Keys @ aa, FermionQ],
@@ -186,16 +201,19 @@ WickState[Ket[aa_Association]] := Module[
   WickState[theWickOperator[Dagger @ dd, cc], cc]
 ]
 
+WickState @ Rule[cc:{__?FermionQ}, vv_/;VectorQ[vv, BinaryQ]] := Module[
+  { ww = PadRight[vv, Length @ cc, vv],
+    kk },
+  kk = PositionIndex[ww];
+  If[ MissingQ @ kk[1],
+    WickState[1, cc],
+    WickState[theWickOperator[Dagger @ cc[[kk @ 1]], cc], cc]
+  ]
+]
+
 WickState[ops:{__Dagger?AnyFermionQ}, cc:{__?FermionQ}] :=
   WickState @ Ket[cc -> 0, Peel[ops] -> 1]
 
-WickState[ops:{Rule[_, _?VectorQ]..}, cc:{___?FermionQ}] :=
-  WickState[Thread[Map[Hood, Keys @ ops] -> Values[ops]], cc] /;
-  AnyTrue[Keys @ ops, AnyFermionQ]
-
-
-WickState /:
-NormSquare[WickState[{}, cc:{___?FermionQ}]] = 1
 
 WickState /:
 NormSquare[WickState[ops:{__Rule}, cc:{__?FermionQ}]] := Quiet[
@@ -204,23 +222,44 @@ NormSquare[WickState[ops:{__Rule}, cc:{__?FermionQ}]] := Quiet[
 ]
 
 WickState /:
-Norm[ws:WickState[{___Rule}, {__?FermionQ}]] := Sqrt[NormSquare @ ws]
+NormSquare[WickState[z:Except[_?ListQ|_?ArrayQ], cc:{__?FermionQ}]] :=
+  AbsSquare[z]
 
 
 WickState /:
-Normalize[ws:WickState[{}, {__?FermionQ}], ___] = ws
+Norm[ws:WickState[{___Rule}, {__?FermionQ}]] := Sqrt[NormSquare @ ws]
+
+WickState /:
+Norm[ws:WickState[z:Except[_?ListQ|_?ArrayQ], {__?FermionQ}]] := Abs[z]
+
 
 WickState /:
 Normalize[ws:WickState[ops:{___Rule}, cc:{___?FermionQ}]] := Module[
-  { flg = Keys[ops],
+  { tag = Keys[ops],
     new },
   Quiet @ Check[
     new = Values[ops] * Power[Norm @ ws, -1/Length[ops]],
-    flg = {Identity};
+    tag = {Identity};
     new = Zero @ {1, Length @ cc}
   ];
-  WickState[Thread[flg -> new], cc]
+  WickState[Thread[tag -> new], cc]
 ]
+
+WickState /:
+Normalize[ws:WickState[z:Except[_?ListQ|_?ArrayQ], cc:{___?FermionQ}], ___] =
+  WickState[1, cc]
+
+
+WickState /:
+Times[z_, WickState[ops:{___Rule}, cc:{___?FermionQ}]] := Module[
+  { new },
+  new = Values[ops] * Power[z, 1/Length[ops]];
+  WickState[Thread[Keys[ops] -> new], cc]
+]
+
+WickState /:
+Times[z_, WickState[x:Except[_?ListQ|_?ArrayQ], cc:{___?FermionQ}]] :=
+  WickState[z x, cc]
 
 
 WickState /:
@@ -237,6 +276,9 @@ Elaborate[ws:WickState[{___Rule}, cc:{__?FermionQ}]] := Module[
   KetChop[ Multiply @@ Append[ff, Ket[cc]] ]
 ]
 
+WickState /:
+Elaborate[WickState[z:Except[_?ListQ|_?ArrayQ], cc:{__?FermionQ}]] :=
+  z * Ket[cc]
 
 WickState /:
 Matrix[ws_WickState, rest___] := (
@@ -298,6 +340,11 @@ MakeBoxes[WickGaussian[{mat_?MatrixQ, inv_?MatrixQ}, rest___], fmt_] := Module[
 WickGaussian[mat_?MatrixQ, rest___] := WickGaussian[{mat, Inverse @ mat}, rest] /; 
   If[MatrixQ[mat, NumericQ], True, Message[WickGaussian::num, mat]; False]
 
+
+WickGaussian[{mat_/;MatrixQ[mat, NumericQ], inv_/;MatrixQ[inv, NumericQ]}, ___][
+  ws:WickState[Except[_?ListQ|_?ArrayQ], _]   
+] = ws
+
 WickGaussian[{mat_/;MatrixQ[mat, NumericQ], inv_/;MatrixQ[inv, NumericQ]}, ___][ws_WickState] := 
   Module[
     { new },
@@ -307,6 +354,7 @@ WickGaussian[{mat_/;MatrixQ[mat, NumericQ], inv_/;MatrixQ[inv, NumericQ]}, ___][
     ];
     WickState[new, Last @ ws]
   ]
+
 
 WickGaussian /:
 MatrixForm[op : WickGaussian[{mat_?MatrixQ, inv_?MatrixQ}, ___]] :=
@@ -455,6 +503,10 @@ Multiply[pre___, wu_WickUnitary, fs_Ket] := Multiply[pre, wu @ WickState @ fs]
 
 WickUnitary[{}, ___][any_] = any
 
+WickUnitary[mat_/;MatrixQ[mat, NumericQ], ___][
+  ws:WickState[Except[_?ListQ|_?ArrayQ], _]   
+] = ws
+
 WickUnitary[mat_/;MatrixQ[mat, NumericQ], ___][ws_WickState] := Module[
   { new },
   new = MapApply[
@@ -468,7 +520,7 @@ WickUnitary[spec__][fs_Ket] := WickUnitary[spec][WickState @ fs]
 
 
 WickUnitary /:
-ParseGate[WickUnitary[trs_, ff:{___?FermionQ}, opts___?OptionQ], more___?OptionQ] :=
+ParseGate[WickUnitary[trs_, ff:{__?FermionQ}, opts___?OptionQ], more___?OptionQ] :=
   Gate[ff, more, opts, "Label" -> "U"]
 
 (**** </WickUnitary> ****)
@@ -511,6 +563,8 @@ WickElements[ops:{___Rule}, cc:{__?FermionQ}] :=
 
 WickElements[WickState[ops:{___Rule}, cc:{__?FermionQ}], ___] :=
   WickElements[ops, cc]
+
+WickElements[WickState[z:Except[_?ListQ|_?ArrayQ], cc:{__?FermionQ}], ___] = {}
 
 WickElements[WickOperator[ops:{___Rule}, ___?OptionQ], cc:{__?FermionQ}] :=
   WickElements[ops, cc]
@@ -582,13 +636,14 @@ WickOperator[ops:{__Rule}] :=
 
 WickOperator[{}][any_] = any
 
-WickOperator[ops:{Rule[_, _?VectorQ]..}, ___][in_WickState] :=
-  WickState[Join[ops, First @ in], Last @ in]
+WickOperator[ops:{Rule[_, _?VectorQ]..}, ___][WickState[trs:{___Rule}, cc:{___?FermionQ}]] :=
+  WickState[Join[ops, trs], cc]
 
-WickOperator[ops:{__?AnyFermionQ}, ___][in_WickState] := WickState[
-  Join[theWickOperator[ops, Last @ in], First @ in],
-  Last @ in
-]
+WickOperator[ops:{Rule[_, _?VectorQ]..}, ___][WickState[z:Except[_?ListQ|_?ArrayQ], cc:{___?FermionQ}]] :=
+  z * WickState[ops, cc]
+
+WickOperator[ops:{__?AnyFermionQ}, ___][in_WickState] :=
+  WickOperator[ops, Last @ in][in]
 
 
 WickOperator /:
@@ -601,6 +656,14 @@ NonCommutativeQ[_WickOperator] = True
 
 WickOperator /:
 MultiplyKind[_WickOperator] = Fermion
+
+WickOperator /:
+Multiply[pre___, ops:Repeated[WickOperator[_, cc:{__?FermionQ}], {2, Infinity}], post___] :=
+  Multiply[pre, WickOperator[Flatten[First /@ {ops}], cc], post]
+
+WickOperator /:
+Multiply[pre___, aa_WickOperator, bb__WickOperator, post___] :=
+  Multiply[pre, WickOperator[Flatten[First /@ {aa, bb}]], post]
 
 WickOperator /:
 Multiply[pre___, opr_WickOperator, ws_WickState] := Multiply[pre, opr[ws]]
@@ -719,6 +782,11 @@ theMeasurement[ws:WickState[trs:{___Rule}, cc_], c_?FermionQ] := Module[
   ]
 ]
 
+theMeasurement[ws:WickState[z:Except[_?ListQ|_?ArrayQ], cc_], c_?FermionQ] := (
+  $MeasurementOut[c] = 0;
+  WickState[1, cc]
+)
+
 (**** </Measurement> ****)
 
 
@@ -741,12 +809,15 @@ WickExpectation[ws_][expr_Plus] :=
 WickExpectation[ws_WickState][HoldPattern @ Multiply[ops__?AnyFermionQ]] :=
   WickExpectation[ws] @ WickOperatorFrom[{ops}, Last @ ws]
 
-WickExpectation[ws:WickState[bb_, cc_]][WickOperator[ops:{___Rule}, ___]] := Module[
+WickExpectation[ws:WickState[bb:{___Rule}, cc_]][WickOperator[ops:{___Rule}, ___]] := Module[
   { aa = theConjugateReverse[bb],
     mat },
   mat = WickMatrix @ Join[aa, ops, bb];
   Pfaffian[mat] (* NOTE: The Wick state is assumed to be normalized. *)
 ]
+
+WickExpectation[ws:WickState[z:Except[_?ListQ|_?VectorQ], cc_]][op:WickOperator[ops:{___Rule}, ___]] :=
+  AbsSquare[z] * VacuumExpectation[op]
 
 (**** </WickExpectation> ****)
 
@@ -760,7 +831,7 @@ WickGreenFunction::null = "The null state is encountered: ``."
 WickGreenFunction[ws_WickState] :=
   WickGreenFunction[ws, Last @ ws]
 
-WickGreenFunction[ws:WickState[qq_, cc_], dd:{___?FermionQ}] := Module[
+WickGreenFunction[ws:WickState[qq:{__Rule}, cc_], dd:{___?FermionQ}] := Module[
   { pp = theConjugateReverse[qq],
     aa, bb, gg, wm, n },
   bb = Lookup[First /@ PositionIndex[cc], dd];
@@ -800,6 +871,9 @@ WickGreenFunction[ws:WickState[qq_, cc_], dd:{___?FermionQ}] := Module[
   ];
   Return[gg] (* NOTE: The Wick state is assumed to be normalized. *)
 ]
+
+WickGreenFunction[WickState[z:Except[_?ListQ|_?ArrayQ], cc_], dd:{___?FermionQ}] :=
+  One[Length @ dd]
 
 (**** </WickGreenFunction> ****)
 

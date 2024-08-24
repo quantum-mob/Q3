@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.5.8
+
+- New functions: WickDampingOperator
+- Bug fixes: NoisyWickSimulate
+
 ## 3.5.7
 
 - Improved: WickGreenFunction
