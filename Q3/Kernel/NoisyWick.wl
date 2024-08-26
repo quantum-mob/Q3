@@ -70,7 +70,7 @@ NoisyWickSimulate[ham_, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}, O
     
     (* save data *)
     If[ OptionValue["SaveData"],
-      PrintTemporary["Saving the data (", ByteCount[data], " bytes) to ..."];
+      PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."];
       file = OptionValue["Filename"];
       If[ file === Automatic,
         file = FileNameJoin @ {
