@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.5.9
+
+- Improved: WiclLgarithmicNegativity
+
 ## 3.5.8
 
 - New functions: WickDampingOperator

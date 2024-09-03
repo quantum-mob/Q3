@@ -36,65 +36,68 @@ WickTimeReversalMoment[alpha_, NambuGreen[{g_?MatrixQ, f_?MatrixQ}, ___], rest__
 WickTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}, opts___?OptionQ] :=
   WickTimeReversalMoment[alpha, {grn, Zero[Dimensions @ grn]}, kk, opts]
 
-WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, OptionsPattern[]] := Quiet[
-  Module[
-    { dd = Length[grn],
-      gg, oo, id, xx, zz, uu, ww, pf1, pf2, dgn, off
-    },
-    oo = Zero[{dd, dd}];
-    id = One[dd];
-    xx = CircleTimes[ThePauli[1], id];
-    zz = CircleTimes[ThePauli[3], id];
-
-    (* \Gamma *)
-    gg = tameMatrix[id - N[grn], OptionValue["Epsilon"]];
-    (* NOTE: When there is a fermion mode that is unoccuppied with certainty, the coherent-state representation becomes unusual, and one needs to handle such cases separately. While this is possible, Q3 offers a ditry trick. *)
-    (* NOTE: N[grn] is to avoid additional normalization (or even orthonormalization) of the eigenvectors of grn. *)
-    gg = Normal @ NambuHermitian[{gg, -anm}];
-  
-    pf1 = Power[Pfaffian[Inverse[gg.xx]], 2];
-
-    (* \Omega of the density operator \rho *)
-    ww = Inverse[gg] - zz;
-
-    uu = SparseArray[
-      Flatten @ {
-        Thread[Transpose@{kk, dd + kk} ->  I],
-        Thread[Transpose@{dd + kk, kk} -> -I],
-        Thread[Transpose@{kk, kk} -> 0],
-        Thread[Transpose@{dd + kk, dd + kk} -> 0],
-        {i_, i_} -> 1,
-        {_, _} -> 0
-      },
-      {2*dd, 2*dd}
-    ];
-    (* \Omega of partial TR *)
-    ww = Topple[uu] . ww . uu;
-
-    dgn = CirclePlus[ww[[;;dd, ;;dd]], ww[[dd+1;;, dd+1;;]]];
-    off = ArrayFlatten @ {
-      {oo, ww[[;;dd, dd+1;;]]},
-      {ww[[dd+1;;, ;;dd]], oo}
-    };
-    pf2 = Pfaffian[(off - zz).xx];
-    Check[pf2 /= pf1, Message[WickTimeReversalMoment::infy]; pf2 = 0];
-
-    (* effective \Omega of \Xi *)
-    ww = Inverse[zz - off];
-    ww = off + dgn . ww . dgn;
-    pf2 *= Pfaffian[xx.(ww + zz)];
-
-    (* effective \Gamma *)
-    gg = Inverse[ww + zz];
-    (* effective Green's function Gij *)
-    gg = CircleTimes[ThePauli[10], id] - gg;
-
-    (* Recall the particle-hole symmetry. *)
-    gg = Take[Eigenvalues @ gg, dd];
-    Total[Log[2, Power[gg, alpha] + Power[1-gg, alpha]]] + Log[2, Power[pf2, alpha]]
-  ],
-  Inverse::luc
+WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, opts___?OptionQ] := 
+  Quiet[theTimeReversalMoment[alpha, {grn, anm}, kk, opts], Inverse::luc]
   (* 2024-08-11: Inverse::luc is silenced; the warning message does not seem to be serious in most cases, but goes off too often. *)
+
+theTimeReversalMoment[
+  alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer},
+  OptionsPattern[WickTimeReversalMoment]
+] := Module[
+  { dd = Length[grn],
+    gg, oo, id, xx, zz, uu, ww, pf1, pf2, dgn, off
+  },
+  oo = Zero[{dd, dd}];
+  id = One[dd];
+  xx = CircleTimes[ThePauli[1], id];
+  zz = CircleTimes[ThePauli[3], id];
+
+  (* \Gamma *)
+  gg = tameMatrix[id - N[grn], OptionValue["Epsilon"]];
+  (* NOTE: When there is a fermion mode that is unoccuppied with certainty, the coherent-state representation becomes unusual, and one needs to handle such cases separately. While this is possible, Q3 offers a ditry trick. *)
+  (* NOTE: N[grn] is to avoid additional normalization (or even orthonormalization) of the eigenvectors of grn. *)
+  gg = Normal @ NambuHermitian[{gg, -anm}];
+  
+  pf1 = Power[Pfaffian[Inverse[gg.xx]], 2];
+
+  (* \Omega of the density operator \rho *)
+  ww = Inverse[gg] - zz;
+
+  uu = SparseArray[
+    Flatten @ {
+      Thread[Transpose@{kk, dd + kk} ->  I],
+      Thread[Transpose@{dd + kk, kk} -> -I],
+      Thread[Transpose@{kk, kk} -> 0],
+      Thread[Transpose@{dd + kk, dd + kk} -> 0],
+      {i_, i_} -> 1,
+      {_, _} -> 0
+    },
+    {2*dd, 2*dd}
+  ];
+  (* \Omega of partial TR *)
+  ww = Topple[uu] . ww . uu;
+
+  dgn = CirclePlus[ww[[;;dd, ;;dd]], ww[[dd+1;;, dd+1;;]]];
+  off = ArrayFlatten @ {
+    {oo, ww[[;;dd, dd+1;;]]},
+    {ww[[dd+1;;, ;;dd]], oo}
+  };
+  pf2 = Pfaffian[(off - zz).xx];
+  Check[pf2 /= pf1, Message[WickTimeReversalMoment::infy, pf2/pf1]; pf2 = 0];
+
+  (* effective \Omega of \Xi *)
+  ww = Inverse[zz - off];
+  ww = off + dgn . ww . dgn;
+  pf2 *= Pfaffian[xx.(ww + zz)];
+
+  (* effective \Gamma *)
+  gg = Inverse[ww + zz];
+  (* effective Green's function Gij *)
+  gg = CircleTimes[ThePauli[10], id] - gg;
+
+  (* Recall the particle-hole symmetry. *)
+  gg = Take[Eigenvalues @ gg, dd];
+  Total[Log[2, Power[gg, alpha] + Power[1-gg, alpha]]] + Log[2, Power[pf2, alpha]]
 ]
 
 
@@ -118,18 +121,31 @@ WickLogarithmicNegativity::usage = "WickLogarithmicNegativity[{grn,anm}, {k1,k2,
 
 Options[WickLogarithmicNegativity] = Options[WickTimeReversalMoment]
 
-
 WickLogarithmicNegativity[kk:{__Integer}][any_] :=
   WickLogarithmicNegativity[any, kk, "Epsilon" -> OptionValue[WickLogarithmicNegativity, "Epsilon"]]
 
-WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, opts:OptionsPattern[]] :=
-  WickTimeReversalMoment[1/2, grn, kk, opts, "Epsilon" -> OptionValue["Epsilon"]]
 
-WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, opts:OptionsPattern[]] :=
-  WickTimeReversalMoment[1/2, {grn, anm}, kk, opts, "Epsilon" -> OptionValue["Epsilon"]]
+(* See Shpurian and Ryu (2019b) and  Albo and Carollo (2023) *)
+WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___?OptionQ] := Module[
+  { n = Length[grn],
+    ll, gg, gp, gm, cx, id },
+  ll = Supplement[Range @ n, kk];
+  id = One[{n, n}];
+  gg = 2*Transpose[grn] - id;
+  gp = ArrayFlatten @ {
+    { -gg[[kk, kk]], +I*gg[[kk, ll]] },
+    { +I*gg[[ll, kk]], +gg[[ll, ll]] }
+  };
+  gm = ArrayFlatten @ {
+    { -gg[[kk, kk]], -I*gg[[kk, ll]] },
+    { -I*gg[[ll, kk]], +gg[[ll, ll]] }
+  };
+  cx = (id - Inverse[id + gp.gm].(gp + gm)) / 2;
+  cx = Eigenvalues[cx];
+  gg = Eigenvalues[id - Transpose[grn]];
+  Total[Log[2, Sqrt[cx] + Sqrt[1-cx]]] + Total[Log[2, gg^2 + (1-gg)^2]]/2
+]
 
-WickLogarithmicNegativity[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], rest__] :=
-  WickLogarithmicNegativity[{gg, ff}, rest]
 
 (* operator form *)
 WickLogarithmicNegativity[dd:{__?FermionQ}][any_] :=
@@ -244,6 +260,13 @@ Normalize[ws:WickState[ops:{___Rule}, cc:{___?FermionQ}]] := Module[
   ];
   WickState[Thread[tag -> new], cc]
 ]
+
+(* NOTE: Just for tests. Equivalent to the above. *)
+NormalizeQR[WickState[ops:{__Rule}, cc:{__?FermionQ}]] := Module[
+  {qq, rr},
+  {qq, rr} = QRDecomposition[Transpose @ Values @ ops];
+  WickState[Thread[Keys[ops] -> Conjugate[qq]], cc]
+] /; ContainsOnly[Keys @ ops, {Dagger}]
 
 WickState /:
 Normalize[ws:WickState[z:Except[_?ListQ|_?ArrayQ], cc:{___?FermionQ}], ___] =
@@ -874,6 +897,21 @@ WickGreenFunction[ws:WickState[qq:{__Rule}, cc_], dd:{___?FermionQ}] := Module[
 
 WickGreenFunction[WickState[z:Except[_?ListQ|_?ArrayQ], cc_], dd:{___?FermionQ}] :=
   One[Length @ dd]
+
+
+(* NOTE: Just for tests. Equivalent to the above. *)
+WickGreenFunctionQR[ws_WickState] :=
+  WickGreenFunctionQR[ws, Last @ ws]
+
+WickGreenFunctionQR[ws:WickState[qq:{__Rule}, cc_], dd:{___?FermionQ}] := Module[
+  { pos = First /@ PositionIndex[cc],
+    cor = Transpose[Values @ qq],
+    grn },
+  pos = Lookup[pos, dd];
+  grn = cor . Topple[cor];
+  grn = One[Dimensions @ grn] - grn;
+  grn[[pos, pos]]
+] /; ContainsOnly[Keys @ qq, {Dagger}]
 
 (**** </WickGreenFunction> ****)
 

@@ -701,6 +701,16 @@ theMeasurement[ws:NambuState[uv_, trs_, cc_], c_?FermionQ] := Module[
 (**** </Measurement> ****)
 
 
+(**** <WickLogarithmicNegativity> ****)
+(* for BdG models *)
+
+WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, opts:OptionsPattern[]] :=
+  WickTimeReversalMoment[1/2, {grn, anm}, kk, opts, "Epsilon" -> OptionValue["Epsilon"]]
+
+WickLogarithmicNegativity[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], rest__] :=
+  WickLogarithmicNegativity[{gg, ff}, rest]
+
+
 WickEntanglementEntropy[ws_NambuState, dd:{__?FermionQ}] :=
   WickEntanglementEntropy[WickGreenFunction[ws, dd], Range[Length @ dd]]
 
@@ -728,6 +738,8 @@ WickExpectation[ws:NambuState[uv_, bb_, cc_]][NambuOperator[ops_?MatrixQ, ___]] 
   mat = WickMatrix @ Join[aa, ops . Normal[NambuUnitary @ uv], bb];
   Pfaffian[mat] (* NOTE: The Nambu state is assumed to be normalized. *)
 ]
+
+(**** </WickLogarithmicNegativity> ****)
 
 
 (**** <WickGreenFunction> ****)

@@ -1,0 +1,2254 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.1' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     90433,       2244]
+NotebookOptionsPosition[     83564,       2106]
+NotebookOutlinePosition[     85948,       2164]
+CellTagsIndexPosition[     85862,       2159]
+WindowTitle->WickDampingOperator
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "090f4064-43b1-4c26-a6ad-b9b83c90d9e7"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "a74dcaf3-8b39-4939-b42b-fcb9ab530441"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "2839d6e3-40bf-4d5b-b158-4e765826a8c3"]
+         }],ExpressionUUID->"b05e6715-5a76-4a83-b84c-685cfff43745"],
+         StripOnInput->False],{
+        StyleBox["\"WickGaussian\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/WickGaussian"], 
+         StyleBox[
+          "\"WickOperator\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/WickOperator"], 
+         StyleBox[
+          "\"WickOperatorFrom\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:Q3/ref/WickOperatorFrom"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "16247662-9213-4979-8f59-6eb0a9095bd9"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "3f8e9f4f-69d9-41c5-a1c5-8554005296ea"]
+         }],ExpressionUUID->"7aa652d5-df1b-41e4-9d3c-31cee0425513"],
+         StripOnInput->False],{
+        "\"Fermionic Quantum Computation\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/guide/FermionicQuantumComputation"], 
+         "\"Quantum Many-Body Systems\"" :> 
+         Documentation`HelpLookup["paclet:Q3/guide/QuantumManyBodySystems"], 
+         "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/guide/QuantumInformationSystems"], "\"Q3\"" :> 
+         Documentation`HelpLookup["paclet:Q3/guide/Q3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "9cdb80fc-57be-405f-ab34-983ee0bd469d"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "c0966f99-2a98-44b4-ae5e-f25407c7dc48"]
+         }],ExpressionUUID->"00453d74-7463-49fc-a4a5-3f135857e586"],
+         StripOnInput->False],{
+        "\"Quantum Many-Body Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumManyBodySystems"], 
+         "\"Quantum Information Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:Q3/tutorial/QuantumInformationSystems"], 
+         "\"Q3: Quick Start\"" :> 
+         Documentation`HelpLookup["paclet:Q3/tutorial/Q3QuickStart"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "3c61085d-6da0-4345-8229-f2e166629fd9"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            AxesStyle->Large,
+            FrameStyle->Large,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "9db2b4e9-75e8-4f3e-a685-292e80b1797a"]
+         }],ExpressionUUID->"585789eb-ad23-4a19-92e4-4a5d38808a26"],
+         StripOnInput->False],{
+        "\"Q3/ref/WickDampingOperator\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{Cell["Q3/ref/WickDampingOperator"]}, Visible -> 
+               DocumentationBuild`Make`Private`visible$26731]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/Q3/ref/\
+WickDampingOperator.html"], StandardForm]], "Input", TextClipboardType -> 
+                 "PlainText"]}, Visible -> 
+               DocumentationBuild`Make`Private`visible$26731]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "Q3/ref/WickDampingOperator" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "552ae327-1164-4e00-94c5-da2bc9edeee9"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "9b698bec-3c4d-4071-8056-73e45aff3d68"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"84366f45-0a50-4f4e-8a51-af8101da0b7c"],
+
+Cell["Q3`", "ContextNameCell",ExpressionUUID->"49986151-0503-443f-9ee8-bb46088856d5"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "WickDampingOperator", "ObjectName",ExpressionUUID->
+      "93bbf024-42d2-4671-b0e1-93552c3bc6a3"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"ab700ea7-6a09-4fbf-8c92-d93339a209a0"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "bbd14740-4353-4a0b-9c0e-4afe47b2398f"]
+    }],ExpressionUUID->"9a230d6e-b29b-4fe8-ac78-1ec259443ae0"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 14.1\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->RGBColor[0.968627, 0.466667, 0]], {Right, Center}, {
+           Right, Center}],
+          AxesStyle->Large,
+          FrameStyle->Large,
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 14",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "f74f2b10-1812-405a-846d-f16c422201ee"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"2eabc5ac-91d8-44e7-93a5-6a83be197efe"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["WickDampingOperator"]], 
+         "paclet:Q3/ref/WickDampingOperator", "Q3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       StyleBox["jmp", "TI"], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "66f3fed9-70d6-4117-9cb3-01606e97633f"],
+     "\[LineSeparator]returns a pair ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        StyleBox["mat", "TI"], ",", " ", 
+        StyleBox["const", "TI"]}], "}"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "79ccd1ef-6726-42cb-a877-13b4116cac6a"],
+     " of the quadratic kernel ",
+     Cell[BoxData[
+      StyleBox["mat", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "99b23edf-c1a4-428f-a51b-767c320d3886"],
+     " and remaining constant term ",
+     Cell[BoxData[
+      StyleBox["const", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "dc7e81a2-68d5-4d19-b862-a84980ed2109"],
+     " of the ",
+     StyleBox["effective damping operator",
+      FontSlant->"Italic"],
+     " in the normal ordering that corresponds to the list ",
+     Cell[BoxData[
+      StyleBox["jmp", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "48d4b535-41d4-40d2-866d-96a64206fa7f"],
+     " of quantum jump operators."
+    }],ExpressionUUID->"02481367-4127-4b57-8d0b-28e0b5f20bb3"]}
+  }]], "Usage",
+ CellID->686187331,ExpressionUUID->"e436fb34-5da5-46e5-a69c-0599dcd5281d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    DynamicBox[ToBoxes[
+      If[
+       MatchQ[
+        CurrentValue[
+         EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, 
+         Closed], 
+        Alternatives[Open, True]], 
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], 
+       Rotate[
+        Style[
+         Graphics[{
+           Thickness[0.18], 
+           RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+           Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+          PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+         0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+     ImageSizeCache->{
+      13.600000000000003`, {-0.1685058593749993, 13.768505859375}}]],
+    ExpressionUUID->"3ca2aaea-239c-48cf-97ab-6c19e678e94a"],
+   Cell[BoxData[
+    TemplateBox[{1},
+     "Spacer1"]],ExpressionUUID->"dbc73662-1103-4f91-987a-f5efa97432aa"],
+   "Details and Options"
+  }], "NotesFrameText",ExpressionUUID->"e0040d34-a711-4078-b0f2-d0ad1d4a4b2f"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->
+   "Preemptive"]],ExpressionUUID->"130da8dd-0867-45bc-b216-88042ebe5cbd"]], \
+"NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->761760608,ExpressionUUID->"8fac99bf-2486-4775-886e-2eebfb75565e"],
+
+Cell[TextData[{
+ "The input argument ",
+ Cell[BoxData[
+  StyleBox["jmp", "TI"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "97fcdff6-0ecf-44a8-9e7b-d4dee2209fdf"],
+ " may be a single ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WickOperator"]], "paclet:Q3/ref/WickOperator", 
+    "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "9fa051af-7ca2-498a-99dd-846a787f15da"],
+ ", a list of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WickOperator"]], "paclet:Q3/ref/WickOperator", 
+    "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "1aee16e9-02ce-40b1-9ab3-9dc73504dfd6"],
+ "s, or a list of the form ",
+ Cell[BoxData[
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{
+     SubscriptBox[
+      StyleBox["flag", "TI"], 
+      StyleBox["1", "TR"]], "\[Rule]", 
+     SubscriptBox[
+      StyleBox["vec", "TI"], 
+      StyleBox["1", "TR"]]}], ",", 
+    RowBox[{
+     SubscriptBox[
+      StyleBox["flag", "TI"], 
+      StyleBox["2", "TR"]], "\[Rule]", 
+     SubscriptBox[
+      StyleBox["vec", "TI"], 
+      StyleBox["2", "TR"]]}], ",", 
+    StyleBox["\[Ellipsis]", "TR"]}], "}"}]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "b4e91fde-4568-4ee8-ae2b-e6452bda647f"],
+ ", where ",
+ Cell[BoxData[
+  SubscriptBox[
+   StyleBox["flag", "TI"], 
+   StyleBox["k", "TI"]]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "b64c83b8-0a81-4359-95ca-2d5ddac9afdb"],
+ " may be either ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Identity"]], "paclet:ref/Identity"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "046a3cfd-8075-4d22-99b0-09d1ce7a3016"],
+ " or ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Dagger"]], "paclet:Q3/ref/Dagger", "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "88678896-6f06-47a0-85be-a24a3173552f"],
+ "."
+}], "Notes",
+ CellID->763287727,ExpressionUUID->"1d41d651-8479-4093-9c8e-ad2a75678162"],
+
+Cell[TextData[{
+ "If ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WickOperator"]], "paclet:Q3/ref/WickOperator", 
+    "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "c630b836-bc7e-405f-9f7d-78148615b576"],
+ " includes several linear combinations of fermion creation or annihilation \
+operators,  then ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["WickDampingOperator"]], "paclet:Q3/ref/WickDampingOperator", 
+    "Q3 Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "9d5b3acd-b206-4edb-a831-7d6261878c4a"],
+ " regards each linear combination as an quantum jump operator. In other \
+words, WickDampingOpeator can only describe the situation where every quantum \
+jump operator is a linear combination of either fermion creation or \
+annihilation operators."
+}], "Notes",
+ CellID->1527671879,ExpressionUUID->"8cad630f-6fc3-4ab1-a443-e95b1143e196"]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.251494140625001, 9.348505859375003}}]],
+  ExpressionUUID->"81b5d33a-745e-4db6-8188-e17e6682c27d"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"371b9edb-fedc-498d-9abc-ac82bcc6e916"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "7b841457-546d-4622-88d7-e52fb06ddbc0"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1760518889,ExpressionUUID->"61159861-0231-4516-86a0-9e5ee3e3b5e2"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->2116821538,ExpressionUUID->"4675f313-22c6-4e7c-b760-1be8f581b537"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.551318359375001, 9.048681640625002}}]],
+  ExpressionUUID->"7d0331ea-7817-46e5-abd8-568740848ba8"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"57251676-b009-45b5-8b88-2ac9a92cc4a2"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "ba629392-5504-470e-92ac-e5a0db895404"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->1011279057,ExpressionUUID->"58362703-14ca-4b1d-84fe-527db406a74a"],
+
+Cell["Consider some fermion modes.", "ExampleText",
+ CellID->414959247,ExpressionUUID->"54c7d240-7184-48a2-ba90-9caa3bc17674"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "c"}], "]"}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->852791565,ExpressionUUID->"68b25b70-e8fb-4ab0-921e-6683bf87caeb"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$n", "=", "4"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"cc", "=", 
+  RowBox[{"c", "[", 
+   RowBox[{"Range", "@", "$n"}], "]"}]}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->544537701,ExpressionUUID->"3d550286-6ac0-49b7-bddc-bca69d66cb67"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    SubscriptBox["c", 
+     TemplateBox[{",", "\",\"", "1"},
+      "RowWithSeparators"]],
+    $CellContext`c[1]], ",", 
+   InterpretationBox[
+    SubscriptBox["c", 
+     TemplateBox[{",", "\",\"", "2"},
+      "RowWithSeparators"]],
+    $CellContext`c[2]], ",", 
+   InterpretationBox[
+    SubscriptBox["c", 
+     TemplateBox[{",", "\",\"", "3"},
+      "RowWithSeparators"]],
+    $CellContext`c[3]], ",", 
+   InterpretationBox[
+    SubscriptBox["c", 
+     TemplateBox[{",", "\",\"", "4"},
+      "RowWithSeparators"]],
+    $CellContext`c[4]]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->70513085,ExpressionUUID->"edc34ba5-09ea-4e60-98ab-b11a044e2f71"]
+}, Open  ]],
+
+Cell["Take the Hatano-Nelson model, and construct the Hamiltonian.", \
+"ExampleText",
+ CellID->1826990704,ExpressionUUID->"6121d480-577a-488d-9041-534300add05b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"ham", "=", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"-", "$J"}], "*", 
+     RowBox[{"Hop", "[", "cc", "]"}]}], "//", "PlusDagger"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ham", "=", 
+   RowBox[{"CoefficientTensor", "[", 
+    RowBox[{"ham", ",", 
+     RowBox[{"Dagger", "@", "cc"}], ",", "cc"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ham", "//", "ArrayShort"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->348506844,ExpressionUUID->"e2892a6a-4a80-4f90-927a-dc209faa6b0b"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{"-", "2"}], "0", "0"},
+     {
+      RowBox[{"-", "2"}], "0", 
+      RowBox[{"-", "2"}], "0"},
+     {"0", 
+      RowBox[{"-", "2"}], "0", 
+      RowBox[{"-", "2"}]},
+     {"0", "0", 
+      RowBox[{"-", "2"}], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {4, 4}, 0, {
+     1, {{0, 1, 3, 5, 6}, {{2}, {1}, {3}, {2}, {4}, {
+       3}}}, {-2, -2, -2, -2, -2, -2}}], {}]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->1582413819,ExpressionUUID->"20af7294-eb45-4595-8139-05eeef25aa1a"]
+}, Open  ]],
+
+Cell["Construct the quantum jump operators.", "ExampleText",
+ CellID->885870263,ExpressionUUID->"6d91c26f-e3dc-4566-9ca1-19308cd4c315"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Fermion", ",", "a", ",", "b"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"aa", "=", 
+   RowBox[{"a", "[", 
+    RowBox[{"Range", "[", 
+     RowBox[{"$n", "-", "1"}], "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"bb", "=", 
+   RowBox[{"b", "[", 
+    RowBox[{"Range", "[", 
+     RowBox[{"$n", "-", "1"}], "]"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"a", "[", "k_", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"c", "[", "k", "]"}], "+", 
+   RowBox[{"I", "*", 
+    RowBox[{"c", "[", 
+     RowBox[{"k", "+", "1"}], "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"b", "[", "k_", "]"}], ":=", 
+  RowBox[{
+   RowBox[{"c", "[", "k", "]"}], "-", 
+   RowBox[{"I", "*", 
+    RowBox[{"c", "[", 
+     RowBox[{"k", "+", "1"}], "]"}]}]}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"jmp", "=", 
+   RowBox[{"Join", "[", 
+    RowBox[{"aa", ",", 
+     RowBox[{"Dagger", "@", "bb"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"jmp", "=", 
+  RowBox[{"WickOperatorFrom", "[", 
+   RowBox[{"jmp", ",", "cc"}], "]"}]}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->317385590,ExpressionUUID->"e0a42ee3-b6e3-45c5-9895-c8fa8580ce49"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["WickOperator",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    
+    TemplateBox[{
+      PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]], 
+              ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Target: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operators: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["6", "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}], True -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
+              ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Target: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Operators: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox["6", "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Flags: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  TagBox[
+                   RowBox[{"(", "\[NoBreak]", 
+                    
+                    GridBox[{{
+                    "Identity", "Identity", "Identity", "Dagger", 
+                    "\"\[Ellipsis]\""}}, RowSpacings -> 1, ColumnSpacings -> 
+                    1, RowAlignments -> Baseline, ColumnAlignments -> Center],
+                     "\[NoBreak]", ")"}], 
+                   Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Transforms: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  TagBox[
+                   RowBox[{"(", "\[NoBreak]", 
+                    
+                    GridBox[{{"1", "\[ImaginaryI]", "0", "0"}, {
+                    "0", "1", "\[ImaginaryI]", "0"}, {
+                    "0", "0", "1", "\[ImaginaryI]"}, {
+                    "1", "\[ImaginaryI]", "0", "0"}, {
+                    "\"\[Ellipsis]\"", "\"\[Ellipsis]\"", "\"\[Ellipsis]\"", 
+                    "\"\[Ellipsis]\""}}, RowSpacings -> 1, ColumnSpacings -> 
+                    1, RowAlignments -> Baseline, ColumnAlignments -> Center],
+                     "\[NoBreak]", ")"}], 
+                   Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]], "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel"],
+    DynamicModuleValues:>{}], "]"}],
+  Q3`WickOperator[{Identity -> {1, 
+      Complex[0, 1], 0, 0}, Identity -> {0, 1, 
+      Complex[0, 1], 0}, Identity -> {0, 0, 1, 
+      Complex[0, 1]}, Q3`Dagger -> {1, 
+      Complex[0, 1], 0, 0}, Q3`Dagger -> {0, 1, 
+      Complex[0, 1], 0}, Q3`Dagger -> {0, 0, 1, 
+      Complex[0, 1]}}, {
+    $CellContext`c[1], 
+    $CellContext`c[2], 
+    $CellContext`c[3], 
+    $CellContext`c[4]}],
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1413686649,ExpressionUUID->"096ec9ac-9809-4936-96c5-a85ac8fc0227"]
+}, Open  ]],
+
+Cell["Construct the effective damping operator.", "ExampleText",
+ CellID->72439335,ExpressionUUID->"68c847de-0f4f-46cd-9dcb-007216244f4d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"dmp", ",", "const"}], "}"}], "=", 
+   RowBox[{"WickDampingOperator", "[", "jmp", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"dmp", "//", "ArrayShort"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->796280722,ExpressionUUID->"123fba85-0c44-4348-862e-b42700bb3019"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "\[ImaginaryI]", "0", "0"},
+     {
+      RowBox[{"-", "\[ImaginaryI]"}], "0", "\[ImaginaryI]", "0"},
+     {"0", 
+      RowBox[{"-", "\[ImaginaryI]"}], "0", "\[ImaginaryI]"},
+     {"0", "0", 
+      RowBox[{"-", "\[ImaginaryI]"}], "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$, {}]]]], "Output",
+ CellLabel->"Out[5]//MatrixForm=",
+ CellID->1224780425,ExpressionUUID->"455b4fe6-6d1e-40a2-b8e8-81901ebceef9"]
+}, Open  ]],
+
+Cell["Construct the effective non-Hermitian Hamiltonian.", "ExampleText",
+ CellID->104576977,ExpressionUUID->"07518fa8-20a8-45e2-b840-6f361114c099"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"non", "=", 
+   RowBox[{"ham", "-", 
+    RowBox[{"I", "*", "dmp"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"-", "non"}], "//", "ArrayShort"}]}], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[6]:=",
+ CellID->600292569,ExpressionUUID->"e41f3899-02fc-46bf-8a2b-2fc9a4e19ef2"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "1", "0", "0"},
+     {"3", "0", "1", "0"},
+     {"0", "3", "0", "1"},
+     {"0", "0", "3", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$, {}]]]], "Output",
+ CellLabel->"Out[6]//MatrixForm=",
+ CellID->1315997415,ExpressionUUID->"8ee0d4ad-e8c6-4f7f-b638-416037993b15"]
+}, Open  ]],
+
+Cell["\<\
+With the non-Hermitian Hamiltonian at hand, one can construct the non-unitary \
+time-evolution operator.\
+\>", "ExampleText",
+ CellID->183037654,ExpressionUUID->"d6c3a1c8-fe7c-4f2d-bf79-dc2df892240f"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"wg", "=", 
+  RowBox[{"WickGaussian", "[", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"MatrixExp", "[", 
+       RowBox[{
+        RowBox[{"-", "I"}], "*", "non"}], "]"}], ",", 
+      RowBox[{"MatrixExp", "[", 
+       RowBox[{
+        RowBox[{"+", "I"}], "*", "non"}], "]"}]}], "}"}], ",", "cc"}], 
+   "]"}]}]], "Input",
+ CellProlog:>Needs["Q3`"],
+ CellLabel->"In[7]:=",
+ CellID->693826902,ExpressionUUID->"955bf255-3275-4604-96d0-6433b32432fb"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox["WickGaussian",
+    "SummaryHead"], "[", 
+   DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = "Ready"}, 
+    
+    TemplateBox[{
+      PaneSelectorBox[{False -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]], 
+              ButtonFunction :> (Typeset`open$$ = True), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Target: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Dimensions: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{"4", ",", "4"}], "}"}], "SummaryItem"]}]}}, 
+             GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}], True -> GridBox[{{
+            PaneBox[
+             ButtonBox[
+              DynamicBox[
+               FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]], 
+              ButtonFunction :> (Typeset`open$$ = False), Appearance -> None, 
+              BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+              "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+             Dynamic[{
+               Automatic, 
+                3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                 Magnification])}]], 
+            GridBox[{{
+               RowBox[{
+                 TagBox["\"Target: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "1"}, "RowWithSeparators"]], 
+                    $CellContext`c[1]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+                    $CellContext`c[2]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+                    $CellContext`c[3]], ",", 
+                    InterpretationBox[
+                    SubscriptBox["c", 
+                    TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+                    $CellContext`c[4]]}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Dimensions: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{"4", ",", "4"}], "}"}], "SummaryItem"]}]}, {
+               RowBox[{
+                 TagBox["\"Transform: \"", "SummaryItemAnnotation"], 
+                 "\[InvisibleSpace]", 
+                 TagBox[
+                  RowBox[{"{", 
+                    RowBox[{
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    GridBox[{{
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "6"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}]}, {
+                    RowBox[{
+                    FractionBox["3", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", "#1"}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}]}, {
+                    RowBox[{
+                    FractionBox["9", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["3", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", "#1"}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}]}, {
+                    RowBox[{
+                    FractionBox["27", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["9", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["3", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "6"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}]}}, 
+                    RowSpacings -> 1, ColumnSpacings -> 1, RowAlignments -> 
+                    Baseline, ColumnAlignments -> Center], "\[NoBreak]", 
+                    ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]], ",", 
+                    TagBox[
+                    RowBox[{"(", "\[NoBreak]", 
+                    GridBox[{{
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "6"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["1", "2"]}], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["1", "2"]}], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}]}, {
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["3", "2"]}], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["1", "2"]}], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", "#1"}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}]}, {
+                    RowBox[{
+                    FractionBox["9", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["3", "2"]}], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", "#1"}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["1", "2"]}], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}]}, {
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["27", "2"]}], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["9", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    RowBox[{"-", 
+                    FractionBox["3", "2"]}], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "3"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "9"}], " ", "#1"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "3"]}]}]], "&"}]}], "]"}]}], 
+                    RowBox[{
+                    FractionBox["1", "2"], " ", 
+                    RowBox[{"RootSum", "[", 
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"9", "-", 
+                    RowBox[{"9", " ", 
+                    SuperscriptBox["#1", "2"]}], "+", 
+                    SuperscriptBox["#1", "4"]}], "&"}], ",", 
+                    RowBox[{
+                    FractionBox[
+                    RowBox[{
+                    RowBox[{
+                    RowBox[{"-", "6"}], " ", 
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]]}], "+", 
+                    RowBox[{
+                    SuperscriptBox["\[ExponentialE]", 
+                    RowBox[{"\[ImaginaryI]", " ", "#1"}]], " ", 
+                    SuperscriptBox["#1", "2"]}]}], 
+                    RowBox[{
+                    RowBox[{"-", "9"}], "+", 
+                    RowBox[{"2", " ", 
+                    SuperscriptBox["#1", "2"]}]}]], "&"}]}], "]"}]}]}}, 
+                    RowSpacings -> 1, ColumnSpacings -> 1, RowAlignments -> 
+                    Baseline, ColumnAlignments -> Center], "\[NoBreak]", 
+                    ")"}], 
+                    Function[BoxForm`e$, 
+                    MatrixForm[BoxForm`e$, {}]]]}], "}"}], "SummaryItem"]}]}},
+              GridBoxAlignment -> {
+              "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+             False, GridBoxItemSize -> {
+              "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+             GridBoxSpacings -> {"Columns" -> {{2}}, "Rows" -> {{Automatic}}},
+              BaseStyle -> {
+              ShowStringCharacters -> False, NumberMarks -> False, 
+               PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+          GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+          BaselinePosition -> {1, 1}]}, 
+       Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+     "SummaryPanel"],
+    DynamicModuleValues:>{}], "]"}],
+  {{Rational[1, 2] 
+    RootSum[9 - 
+      9 #^2 + #^4& , (-9 + 2 #^2)^(-1) ((-6) E^(Complex[0, 1] #) + 
+       E^(Complex[0, 1] #) #^2)& ], Rational[1, 2] 
+    RootSum[9 - 
+      9 #^2 + #^4& , ((-3) E^(Complex[0, 1] #) + 
+       E^(Complex[0, 1] #) #^2)/((-9) # + 2 #^3)& ], Rational[1, 2] 
+    RootSum[9 - 9 #^2 + #^4& , E^(Complex[0, 1] #)/(-9 + 2 #^2)& ], 
+    Rational[1, 2] 
+    RootSum[9 - 9 #^2 + #^4& , E^(Complex[0, 1] #)/((-9) # + 2 #^3)& ]}, {
+   Rational[3, 2] 
+    RootSum[9 - 
+      9 #^2 + #^4& , ((-3) E^(Complex[0, 1] #) + 
+       E^(Complex[0, 1] #) #^2)/((-9) # + 2 #^3)& ], Rational[1, 2] 
+    RootSum[9 - 
+      9 #^2 + #^4& , (-9 + 2 #^2)^(-1) ((-3) E^(Complex[0, 1] #) + 
+       E^(Complex[0, 1] #) #^2)& ], Rational[1, 2] 
+    RootSum[9 - 9 #^2 + #^4& , E^(Complex[0, 1] #) (#/(-9 + 2 #^2))& ], 
+    Rational[1, 2] 
+    RootSum[9 - 9 #^2 + #^4& , E^(Complex[0, 1] #)/(-9 + 2 #^2)& ]}, {
+   Rational[9, 2] 
+    RootSum[9 - 9 #^2 + #^4& , E^(Complex[0, 1] #)/(-9 + 2 #^2)& ], 
+    Rational[3, 2] 
+    RootSum[9 - 9 #^2 + #^4& , E^(Complex[0, 1] #) (#/(-9 + 2 #^2))& ], 
+    Rational[1, 2] 
+    RootSum[9 - 
+      9 #^2 + #^4& , (-9 + 2 #^2)^(-1) ((-3) E^(Complex[0, 1] #) + 
+       E^(Complex[0, 1] #) #^2)& ], Rational[1, 2] 
+    RootSum[9 - 
+      9 #^2 + #^4& , ((-3) E^(Complex[0, 1] #) + 
+       E^(Complex[0, 1] #) #^2)/((-9) # + 2 #^3)& ]}, {
+   Rational[27, 2] 
+    RootSum[9 - 9 #^2 + #^4& , E^(Complex[0, 1] #)/((-9) # + 2 #^3)& ], 
+    Rational[9, 2] 
+    RootSum[9 - 9 #^2 + #^4& , E^(Complex[0, 1] #)/(-9 + 2 #^2)& ], 
+    Rational[3, 2] 
+    RootSum[9 - 
+      9 #^2 + #^4& , ((-3) E^(Complex[0, 1] #) + 
+       E^(Complex[0, 1] #) #^2)/((-9) # + 2 #^3)& ], Rational[1, 2] 
+    RootSum[9 - 
+      9 #^2 + #^4& , (-9 + 2 #^2)^(-1) ((-6) E^(Complex[0, 1] #) + 
+       E^(Complex[0, 1] #) #^2)& ]}},
+  Editable->False,
+  SelectWithContents->True,
+  Selectable->False]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1992612429,ExpressionUUID->"fb96ada6-f371-471b-91e1-8da572de7d8b"]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["WickGaussian"]], "paclet:Q3/ref/WickGaussian", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "268f5369-d488-446c-bec1-d876c05783c4"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["WickOperator"]], "paclet:Q3/ref/WickOperator", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "570b93ce-6537-4098-8211-89a0ae079f27"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["WickOperatorFrom"]], "paclet:Q3/ref/WickOperatorFrom", 
+           "Q3 Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "d59b8e87-7ab7-43b3-8828-c361e55ba64e"]
+       }], "SeeAlso",ExpressionUUID->"823f3efa-d1a7-4dfb-bd17-72dbc231118b"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"52d7e919-e8f5-40aa-b458-\
+b7ffa98e38bd"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTechNote.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TechNotesSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Many-Body Systems with Q3"]], 
+           "paclet:Q3/tutorial/QuantumManyBodySystems"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "2e8c77e9-98a1-4da0-a309-5d53b9e502f8"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Information Systems with Q3"]], 
+           "paclet:Q3/tutorial/QuantumInformationSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "aaeebaf1-bae9-45fa-8440-154a725f6184"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3: Quick Start"]], "paclet:Q3/tutorial/Q3QuickStart"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "1e43e053-bb03-4a4c-bcf4-540fe4c7ab60"]}]}
+     }]}
+  }]], "TechNotesSection",ExpressionUUID->"a44d21fc-1d30-4efb-a338-\
+6aa01ced3fb3"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Fermionic Quantum Computation"]], 
+           "paclet:Q3/guide/FermionicQuantumComputation"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "806dd00e-d516-439c-82a9-524b421512f2"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Many-Body Systems"]], 
+           "paclet:Q3/guide/QuantumManyBodySystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "ffddf73a-1ae5-407d-9994-dfc46a4e2264"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Information Systems"]], 
+           "paclet:Q3/guide/QuantumInformationSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "0d307fae-87c3-436e-a269-8915fe6b5c38"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3"]], "paclet:Q3/guide/Q3"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "e0eee28d-c02b-4ba9-a350-ef4bcc7be969"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"8798d630-1b07-4ab3-aa0b-\
+f08fd57f2750"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "K. Kawabata, T. Numasawa and S. Ryu (2023)"}]]]], 
+             "https://doi.org/10.1103/PhysRevX.13.021007"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "c5193103-e00e-4d89-9e5c-f2e43cedf3af"]}]],ExpressionUUID->
+         "7a9b5c11-3d28-4180-8979-82e51175ea25"],
+        ", Physical Review X 13, 021007, \"Entanglement Phase Transition \
+Induced by the Non-Hermitian Skin Effect.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "c8d8f409-3233-4134-9f63-8b8e399d2bc3"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "N. Hatano and D. R. Nelson (1996)"}]]]], 
+             "https://doi.org/10.1103/PhysRevLett.77.570"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "a4960bc9-50c0-43ef-9d91-d0ce3f76e9b3"]}]],ExpressionUUID->
+         "82273918-8390-4526-87a0-3209d2ddf488"],
+        ", Physical Review Letters 77, 570, \"Localization Transitions in \
+Non-Hermitian Quantum Mechanics.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "7ead1630-07fc-45f9-937a-0614cdbffeab"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "N. Hatano and D. R. Nelson (1997)"}]]]], 
+             "https://doi.org/10.1103/PhysRevB.56.8651"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "32cd0e67-433b-497f-a07d-3edb10fe2e58"]}]],ExpressionUUID->
+         "d7b7b97d-796f-4dea-82ff-53bcaa794146"],
+        ", Physical Review B 56, 287, \"Vortex Pinning and Non-Hermitian \
+Quantum Mechanics.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "94d08c20-94a5-4123-9261-a99c1398254d"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "B. M. Terhal and D. P. DiVincenzo (2002)"}]]]], 
+             "https://doi.org/10.1103/PhysRevA.65.032325"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "bbcbf721-2d27-430e-b5ab-fcaf78c16599"]}]],ExpressionUUID->
+         "d2a043a7-6b18-4f23-9289-038bc75294f5"],
+        ", Physical Review A 65, 032325, \"Classical simulation of \
+noninteracting-fermion quantum circuits.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "12ea1609-2857-4a43-9cc0-ac5b1927df39"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "20173c50-71e4-44fa-827d-0541ceaf33db"]}]],ExpressionUUID->
+         "932c397f-a3f5-477e-92ed-83abcbeeb277"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "RelatedLinks",ExpressionUUID->
+        "c6fe1163-9cab-4d9c-b6ff-ce15aeba60ed"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"619fe912-573c-4385-a946-\
+d7d526c7012c"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"5db2a01e-9cff-4202-afe5-8ad4646f0611"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"WickDampingOperator",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed, "NotesSection" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2024, 8, 28, 9, 42, 27.557251}", 
+    "history" -> {"14.1", "", "", ""}, "context" -> "Q3`", 
+    "keywords" -> {"quantum master equation", "Lindblad equation"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Q3 Symbol", "language" -> "en", "paclet" -> "Q3", "status" -> 
+    "None", "summary" -> 
+    "WickDampingOperator[jmp] returns a pair {mat, const} of the quadratic \
+kernel mat and remaining constant term const of the effective damping \
+operator in the normal ordering that corresponds to the list jmp of quantum \
+jump operators.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "WickDampingOperator", "titlemodifier" -> "", "metadescription" -> "", 
+    "windowtitle" -> "WickDampingOperator", "type" -> "Symbol", "uri" -> 
+    "Q3/ref/WickDampingOperator"}},
+CellContext->"Global`",
+FrontEndVersion->"14.1 for Mac OS X ARM (64-bit) (July 16, 2024)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "14.1 for Mac OS X ARM (64-bit) (July 16, 2024)", 
+  StyleDefinitions -> "Default.nb"],
+ExpressionUUID->"c5a43008-b275-4eda-9d22-bb666e1eb8d0"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[16838, 459, 1441, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"61159861-0231-4516-86a0-9e5ee3e3b5e2",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1760518889]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 85661, 2152}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[587, 21, 7678, 186, 50, "AnchorBarGrid",ExpressionUUID->"84366f45-0a50-4f4e-8a51-af8101da0b7c",
+ CellID->1],
+Cell[8268, 209, 85, 0, 22, "ContextNameCell",ExpressionUUID->"49986151-0503-443f-9ee8-bb46088856d5"],
+Cell[CellGroupData[{
+Cell[8378, 213, 1393, 38, 57, "ObjectNameGrid",ExpressionUUID->"2eabc5ac-91d8-44e7-93a5-6a83be197efe"],
+Cell[9774, 253, 1660, 42, 127, "Usage",ExpressionUUID->"e436fb34-5da5-46e5-a69c-0599dcd5281d",
+ CellID->686187331]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11471, 300, 1916, 48, 34, "NotesSection",ExpressionUUID->"8fac99bf-2486-4775-886e-2eebfb75565e",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->761760608],
+Cell[13390, 350, 2264, 74, 70, "Notes",ExpressionUUID->"1d41d651-8479-4093-9c8e-ad2a75678162",
+ CellID->763287727],
+Cell[15657, 426, 1054, 27, 70, "Notes",ExpressionUUID->"8cad630f-6fc3-4ab1-a443-e95b1143e196",
+ CellID->1527671879]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[16838, 459, 1441, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"61159861-0231-4516-86a0-9e5ee3e3b5e2",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1760518889],
+Cell[18282, 499, 192, 3, 29, "Input",ExpressionUUID->"4675f313-22c6-4e7c-b760-1be8f581b537",
+ CellID->2116821538],
+Cell[CellGroupData[{
+Cell[18499, 506, 1419, 37, 29, "ExampleSection",ExpressionUUID->"58362703-14ca-4b1d-84fe-527db406a74a",
+ CellID->1011279057],
+Cell[19921, 545, 126, 1, 37, "ExampleText",ExpressionUUID->"54c7d240-7184-48a2-ba90-9caa3bc17674",
+ CellID->414959247],
+Cell[20050, 548, 210, 5, 28, "Input",ExpressionUUID->"68b25b70-e8fb-4ab0-921e-6683bf87caeb",
+ CellID->852791565],
+Cell[CellGroupData[{
+Cell[20285, 557, 303, 8, 45, "Input",ExpressionUUID->"3d550286-6ac0-49b7-bddc-bca69d66cb67",
+ CellID->544537701],
+Cell[20591, 567, 718, 24, 36, "Output",ExpressionUUID->"edc34ba5-09ea-4e60-98ab-b11a044e2f71",
+ CellID->70513085]
+}, Open  ]],
+Cell[21324, 594, 161, 2, 37, "ExampleText",ExpressionUUID->"6121d480-577a-488d-9041-534300add05b",
+ CellID->1826990704],
+Cell[CellGroupData[{
+Cell[21510, 600, 564, 17, 63, "Input",ExpressionUUID->"e2892a6a-4a80-4f90-927a-dc209faa6b0b",
+ CellID->348506844],
+Cell[22077, 619, 931, 29, 91, "Output",ExpressionUUID->"20af7294-eb45-4595-8139-05eeef25aa1a",
+ CellID->1582413819]
+}, Open  ]],
+Cell[23023, 651, 135, 1, 37, "ExampleText",ExpressionUUID->"6d91c26f-e3dc-4566-9ca1-19308cd4c315",
+ CellID->885870263],
+Cell[CellGroupData[{
+Cell[23183, 656, 1246, 37, 134, "Input",ExpressionUUID->"e0a42ee3-b6e3-45c5-9895-c8fa8580ce49",
+ CellID->317385590],
+Cell[24432, 695, 7458, 160, 70, "Output",ExpressionUUID->"096ec9ac-9809-4936-96c5-a85ac8fc0227",
+ CellID->1413686649]
+}, Open  ]],
+Cell[31905, 858, 138, 1, 70, "ExampleText",ExpressionUUID->"68c847de-0f4f-46cd-9dcb-007216244f4d",
+ CellID->72439335],
+Cell[CellGroupData[{
+Cell[32068, 863, 363, 10, 70, "Input",ExpressionUUID->"123fba85-0c44-4348-862e-b42700bb3019",
+ CellID->796280722],
+Cell[32434, 875, 809, 22, 91, "Output",ExpressionUUID->"455b4fe6-6d1e-40a2-b8e8-81901ebceef9",
+ CellID->1224780425]
+}, Open  ]],
+Cell[33258, 900, 148, 1, 70, "ExampleText",ExpressionUUID->"07518fa8-20a8-45e2-b840-6f361114c099",
+ CellID->104576977],
+Cell[CellGroupData[{
+Cell[33431, 905, 329, 9, 70, "Input",ExpressionUUID->"e41f3899-02fc-46bf-8a2b-2fc9a4e19ef2",
+ CellID->600292569],
+Cell[33763, 916, 671, 19, 91, "Output",ExpressionUUID->"8ee0d4ad-e8c6-4f7f-b638-416037993b15",
+ CellID->1315997415]
+}, Open  ]],
+Cell[34449, 938, 210, 4, 70, "ExampleText",ExpressionUUID->"d6c3a1c8-fe7c-4f2d-bf79-dc2df892240f",
+ CellID->183037654],
+Cell[CellGroupData[{
+Cell[34684, 946, 482, 15, 70, "Input",ExpressionUUID->"955bf255-3275-4604-96d0-6433b32432fb",
+ CellID->693826902],
+Cell[35169, 963, 38129, 866, 70, "Output",ExpressionUUID->"fb96ada6-f371-471b-91e1-8da572de7d8b",
+ CellID->1992612429]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[73540, 1838, 1876, 50, 70, "SeeAlsoSection",ExpressionUUID->"52d7e919-e8f5-40aa-b458-b7ffa98e38bd"],
+Cell[75419, 1890, 1474, 37, 70, "TechNotesSection",ExpressionUUID->"a44d21fc-1d30-4efb-a338-6aa01ced3fb3"],
+Cell[76896, 1929, 1786, 45, 70, "MoreAboutSection",ExpressionUUID->"8798d630-1b07-4ab3-aa0b-f08fd57f2750"],
+Cell[78685, 1976, 4794, 126, 70, "RelatedLinksSection",ExpressionUUID->"619fe912-573c-4385-a946-d7d526c7012c"],
+Cell[83482, 2104, 78, 0, 70, "FooterCell",ExpressionUUID->"5db2a01e-9cff-4202-afe5-8ad4646f0611"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
