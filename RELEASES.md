@@ -11,7 +11,7 @@
 
 ## 3.5.9
 
-- Improved: WiclLgarithmicNegativity
+- Improved: WickLgarithmicNegativity
 
 ## 3.5.8
 
