@@ -125,7 +125,7 @@ WickLogarithmicNegativity[kk:{__Integer}][any_] :=
   WickLogarithmicNegativity[any, kk, "Epsilon" -> OptionValue[WickLogarithmicNegativity, "Epsilon"]]
 
 
-(* See Shpurian and Ryu (2019b) and  Albo and Carollo (2023) *)
+(* See Shpurian and Ryu (2019b) and  Alba and Carollo (2023) *)
 WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___?OptionQ] := Module[
   { n = Length[grn],
     ll, gg, gp, gm, cx, id },

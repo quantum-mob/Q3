@@ -13,7 +13,8 @@ BeginPackage["Q3`"]
 { ReplaceRules, ReplaceRulesBy };
 { ZeroQ, ArrayZeroQ };
 { CountsFor, PseudoDivide };
-{ IntegerParity, IntegerPowerQ, IntegerChop };
+{ IntegerParity, ParityBoole,
+  IntegerPowerQ, IntegerChop };
 { RandomPick };
 { Ranking };
 { IntervalSize };
@@ -538,6 +539,27 @@ CountsFor[obj_List, var_List] :=
  Join[AssociationThread[var -> 0], Counts @ obj]
 
 (**** </CountsFor> ****)
+
+
+(**** <IntegerBoole> ****)
+
+ParityBoole::usage = "ParityBoole[n] converts a parity to the corresponidng binary digit, i.e., returns 0 if n is 1 and 1 if it is -1."
+
+ParityBoole::int = "`` is not 1 nor -1."
+
+SetAttributes[ParityBoole, Listable]
+
+ParityBoole[n_] := (1-n)/2 /; If[
+  IntegerQ[n], True,
+  Message[ParityBoole::int, n];
+  False
+]
+
+ParityBoole[+1] = 0
+
+ParityBoole[-1] = 1
+
+(**** </IntegerBoole> ****)
 
 
 (**** <IntegerParity> ****)

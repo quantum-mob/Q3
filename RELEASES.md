@@ -1,5 +1,14 @@
 # Release Notes
 
+## 3.5.11
+
+- New functions: FullGottesmanMatrix, FullGottesmanVector, ParityBoole
+- Improved: CliffordFactor, FromGottesmanMatrix
+
+## 3.5.10
+
+- Several demonstrations have been moved to QuantumPlaybook (v3.3.12).
+
 ## 3.5.9
 
 - Improved: WiclLgarithmicNegativity

@@ -1040,7 +1040,7 @@ Elaborate @
       not = Multiply @@ Through[tt[1]] },
     prj = Multiply @@ Garner[(1+prj)/2 - Values[cc]*prj];
     Garner @ Elaborate[(1-prj) + prj ** not]
-   ]
+  ]
 
 CNOT /:
 Multiply[pre___, CNOT[cc:{__Rule}, tt_], in_Ket] := Module[
@@ -1075,6 +1075,10 @@ HoldPattern @ Multiply[pre___, op_CNOT, post___] :=
 CNOT /:
 Matrix[op:CNOT[{Rule[_?QubitQ, _]..}, {__?QubitQ}], rest___] :=
   Matrix[Elaborate @ op, rest]
+
+CNOT /: (* for FromGottesmanMatrix and CliffordFactor *)
+Matrix[op:CNOT[c_Integer, t_Integer], n_Integer] := 
+  MatrixEmbed[CirclePlus[ThePauli[0], ThePauli[1]], {c, t}, n]
 
 CNOT /: (* fallback *)
 Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Upshot @ Dimension @ ss]
@@ -1162,8 +1166,14 @@ SWAP[a_?QubitQ, b_?QubitQ] := SWAP[b, a] /;
 SWAP /:
 Dagger[ op_SWAP ] = op
 
+
+SWAP /: (* for FromGottesmanMatrix and CliffordFactor *)
+Matrix[op:SWAP[c_Integer, t_Integer], n_Integer] := 
+  MatrixEmbed[CirclePlus[{{1}}, ThePauli[1], {{1}}], {c, t}, n]
+
 SWAP /:
 Matrix[op_SWAP, rest___] := Matrix[Elaborate[op], rest]
+
 
 SWAP /:
 Elaborate @ SWAP[x_?QubitQ, y_?QubitQ] := Module[

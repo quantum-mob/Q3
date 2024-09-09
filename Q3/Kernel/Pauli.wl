@@ -2092,6 +2092,8 @@ Matrix::rmndr = "There remain some elements, ``, that are not specified for matr
 
 Matrix::fermion = "Operator `` does not appear in the species list ``."
 
+Matrix::pauli = "The index list `` of the Pauli string is longer than ``."
+
 
 (* General Code *)
 
@@ -2113,15 +2115,18 @@ Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
 
 (* linearity *)
 
-Matrix[ expr_Plus, qq:{___?SpeciesQ}.. ] :=
+Matrix[expr_Plus, rest__] :=
   TrigToExp @ ExpToTrig @ With[
     { new = KetChop @ expr },
-    If[Head[new] === Plus, Map[Matrix[#, qq]&, new], Matrix[new, qq]]
+    If[Head[new] === Plus, Map[Matrix[#, rest]&, new], Matrix[new, rest]]
   ]
+(* NOTE: rest__ NOT rest___ *)
 (* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
 (* NOTE: KetChop is required here because "0. + Ket[...] + ..." may happen. *)
 
-Matrix[ z_?CommutativeQ op_, qq:{___?SpeciesQ}.. ] := z * Matrix[op, qq]
+Matrix[ z_?CommutativeQ op_, rest__ ] := z * Matrix[op, rest]
+(* NOTE: rest__ NOT rest___ *)
+
 
 Matrix[ z_?CommutativeQ, {} ] := z * One[2]
 
@@ -2154,10 +2159,10 @@ HoldPattern @
   ] /; And[Not @ FreeQ[expr, _Pauli], MemberQ[expr, 0]]
 
 HoldPattern @
-  Matrix[expr_Association, ss:{___?SpeciesQ}..] := Map[Matrix[#, ss]&, expr]
+  Matrix[expr_Association, rest__] := Map[Matrix[#, rest]&, expr]
 
 HoldPattern @
-  Matrix[expr_List, ss:{___?SpeciesQ}..] := Map[Matrix[#, ss]&, expr]
+  Matrix[expr_List, rest__] := Map[Matrix[#, rest]&, expr]
 (* NOTE: {SparseArray[...], SparseArray[...], ...} may not take full advantage
    of sparse array, and we may add SparseArray at the end. But I decided not
    to do it as one usually expect {...} as the output. One should handle the
@@ -2169,7 +2174,7 @@ Matrix[Bra[any_], rest___] := Conjugate @ Matrix[Ket[any], rest]
 
 
 (* For Ket of unlabelled qubits *)
-Matrix[ vec:Ket[_List], {___} ] := TheMatrix[vec]
+Matrix[vec:Ket[_List], {___}] := TheMatrix[vec]
 
 
 (* For Ket of labelled qubits *)
@@ -2185,6 +2190,15 @@ Matrix[Ket[a_Association], ss:{__?SpeciesQ}] :=
 (* For Pauli[...] *)
 
 Matrix[ op:Pauli[_List], {___} ] := TheMatrix[op]
+
+Pauli /: (* for FromGottesmanMatrix and CliffordFactor *)
+Matrix[Pauli[mm:{__Integer}], n_Integer] := Which[
+  Length[mm] == n, ThePauli[mm],
+  Length[mm] < n, MatrixEmbed[ThePauli @ mm, Range @ Length @ mm, n]
+] /; If[ Length[mm] <= n, True,
+  Message[Matrix::pauli, mm, n];
+  False
+]
 
 
 (* For Fermions *)
@@ -3163,7 +3177,7 @@ If[ $VersionNumber < 13.1,
     y = Range[Accumulate @ Most @ Prepend[y, 1], Accumulate @ y];
     x = Catenate @ Map[Tuples] @ Transpose @ {x, y};
     SparseArray @ Thread[x -> Flatten @ new]
-   ];
+  ];
 ];
 
 CirclePlus::usage = "a \[CirclePlus] b \[CirclePlus] c or CirclePlus[a,b,c]
@@ -3171,7 +3185,7 @@ returns the direct sum of the matrices a, b, and c."
 
 CirclePlus[pre___, {}, post___] := CirclePlus[pre, post]
 
-CirclePlus[mm__?MatrixQ] := BlockDiagonalMatrix[{mm}]
+CirclePlus[mm__?MatrixQ] := SparseArray @ BlockDiagonalMatrix[{mm}]
 
 CirclePlus[vv__?VectorQ] := Join[vv]
 
