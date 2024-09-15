@@ -81,6 +81,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 { Pfaffian };
 
 { PauliGroup, FullPauliGroup,
+  PauliGroupOrder, FullPauliGroupOrder,
   PauliGroupElements, FullPauliGroupElements,
   PauliQ, PauliMatrixQ };
 

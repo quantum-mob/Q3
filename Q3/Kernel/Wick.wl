@@ -12,7 +12,8 @@ BeginPackage["Q3`"]
 
 { WickDensityMatrix };
 
-{ WickCircuit, WickRandomCircuit };
+{ WickCircuit, RandomWickCircuit };
+
 { RandomWickState, RandomNambuState };
 
 { NambuState, NambuOperator, NambuUnitary, NambuGaussian,
@@ -22,8 +23,8 @@ Begin["`Private`"]
 
 (**** <WickTimeReversalMoment> ****)
 
-(* See also: Shapourian and Ryu (2017, 2019) *)
 WickTimeReversalMoment::usage = "WickTimeReversalMoment[\[Alpha], {gg, ff}, {k1, k2, \[Ellipsis]}] returns the \[Alpha]th moment of partial time reversal over the fermion modes (species) k1, k2, \[Ellipsis] for the fermionic Gaussian state characterized by the matrices gg and ff (in an L\[Times]L matrix for L fermion modes) of normal and anomalous Green's funcitons, respectively, and anomalous Green's function anm (also in an L\[Times]L matrix).\nWickTimeReversalMoment[\[Alpha], grn, {k1,k2,\[Ellipsis]}] is equivalent to WickTimeReversalMoment[\[Alpha], {grn, 0}, {k1, k2, \[Ellipsis]}]."
+(* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 
 WickTimeReversalMoment::sing = "The matrix is tamed according to option \"Epsilon\"."
 
@@ -38,8 +39,9 @@ WickTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}, opts___?OptionQ] :=
 
 WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, opts___?OptionQ] := 
   Quiet[theTimeReversalMoment[alpha, {grn, anm}, kk, opts], Inverse::luc]
-  (* 2024-08-11: Inverse::luc is silenced; the warning message does not seem to be serious in most cases, but goes off too often. *)
+(* 2024-08-11: Inverse::luc is silenced; the warning message does not seem to be serious in most cases, but goes off too often. *)
 
+(* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 theTimeReversalMoment[
   alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer},
   OptionsPattern[WickTimeReversalMoment]
@@ -116,8 +118,8 @@ tameMatrix[mat_?MatrixQ, eps_] := Module[
 
 (**** <WickLogarithmicNegtivity> ****)
 
-(* See also: Shapourian and Ryu (2017, 2019) *)
 WickLogarithmicNegativity::usage = "WickLogarithmicNegativity[{grn,anm}, {k1,k2,\[Ellipsis]}] returns the fermionic negativity over modes k1, k2, \[Ellipsis] of the fermionic Gaussian states characterized by the Green's function grn (in an L\[Times]L matrix for L fermion modes) and anomalous Green's function anm (also in an L\[Times]L matrix).\nWickLogarithmicNegativity[grn, {k1,k2,\[Ellipsis]}] is equivalent to WickLogarithmicNegativity[{grn,0}, {k1,k2,\[Ellipsis]}]."
+(* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 
 Options[WickLogarithmicNegativity] = Options[WickTimeReversalMoment]
 
@@ -125,7 +127,7 @@ WickLogarithmicNegativity[kk:{__Integer}][any_] :=
   WickLogarithmicNegativity[any, kk, "Epsilon" -> OptionValue[WickLogarithmicNegativity, "Epsilon"]]
 
 
-(* See Shpurian and Ryu (2019b) and  Alba and Carollo (2023) *)
+(* SEE ALSO: Shpurian and Ryu (2019b) and  Alba and Carollo (2023) *)
 WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___?OptionQ] := Module[
   { n = Length[grn],
     ll, gg, gp, gm, cx, id },
@@ -1095,13 +1097,13 @@ WickCircuit /:
 (**** </WickCircuit> ****)
 
 
-(**** <WickRandomCircuit> ****)
+(**** <RandomWickCircuit> ****)
 
-WickRandomCircuit::usage = "WickRandomCircuit[{c1, c2, \[Ellipsis]}, in, ugate, p, dep] simulates a random quantum circuit on fermion modes {c1, c2, \[Ellipsis]} starting from initial state IN, where layers of Gaussian unitary gate ugate alternate with layers of measurements on fermion modes selected randomly with probability p to form an overall depth dep."
+RandomWickCircuit::usage = "RandomWickCircuit[{c1, c2, \[Ellipsis]}, in, ugate, p, dep] simulates a random quantum circuit on fermion modes {c1, c2, \[Ellipsis]} starting from initial state IN, where layers of Gaussian unitary gate ugate alternate with layers of measurements on fermion modes selected randomly with probability p to form an overall depth dep."
 
-WickRandomCircuit::save = "The result could not be saved."
+RandomWickCircuit::save = "The result could not be saved."
 
-Options[WickRandomCircuit] = {
+Options[RandomWickCircuit] = {
   "Samples" -> {10, 5},
   "SaveData" -> False,
   "Overwrite" -> True,
@@ -1109,7 +1111,7 @@ Options[WickRandomCircuit] = {
   "Prefix" -> "WRC"
 }
 
-WickRandomCircuit[
+RandomWickCircuit[
   cc:{__?FermionQ},
   in:(_WickState | _NambuState),
   uu:(_WickUnitary | _NambuUnitary),
@@ -1153,13 +1155,13 @@ Module[
     Check[
       Export[file, data];
       Echo[file, "Saved to"],
-      Message[WickRandomCircuit::save]
+      Message[RandomWickCircuit::save]
     ]
   ];
   Return[data]
 ]
 
-(**** </WickRandomCircuit> ****)
+(**** </RandomWickCircuit> ****)
 
 
 RandomWickState::usage = "RandomWickState[k, {c1, c2, \[Ellipsis]}] randomly generates a depth k Wick state with half filling on fermion modes {c1, c2, \[Ellipsis]}."
@@ -1178,7 +1180,7 @@ RandomWickState[k_Integer?Positive, cc:{__?FermionQ}] := Module[
 ]
 
 
-(**** <WickDensityOpeator> ****)
+(**** <WickDensityMatrix> ****)
 
 WickDensityMatrix::usage = "WickDensityMatrix[grn] returns the density matrix corresponding to the single-particle Green's function grn, assuming that grn is associated with a fermionic Gaussian state.\nWickDensityMatrix[ws] returns the density matrix corresponding to Wick state ws."
 
@@ -1214,7 +1216,7 @@ WickDensityMatrix[ws_WickState] := With[
   Dyad[v, v]
 ]
 
-(**** </WickDensityOpeator> ****)
+(**** </WickDensityMatrix> ****)
 
 End[]
 

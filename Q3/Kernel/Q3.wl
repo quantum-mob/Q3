@@ -34,7 +34,7 @@ Get["Q3`QuantumCircuit`"];
 Get["Q3`Kraus`"];
 Get["Q3`Gray`"];
 Get["Q3`Gottesman`"];
-Get["Q3`GottesmanKnill`"];
+Get["Q3`Clifford`"];
 Get["Q3`Grassmann`"];
 Get["Q3`Fock`"];
 Get["Q3`Wick`"];

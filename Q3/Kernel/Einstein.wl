@@ -3,6 +3,7 @@ BeginPackage["Q3`"]
 
 (**** <obsolete> ****)
 
+{ WickRandomCircuit }; (* renamed *)
 { WeightedLog }; (* renamed *)
 { PauliDecompose, PauliDecomposeRL, PauliCompose, PauliCompseRL }; (* renamed *)
 { WickGreensFunction };
@@ -175,6 +176,11 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 
 (**** <obsolete> ****)
+
+WickRandomCircuit[any___] := (
+  Message[Q3General::renamed, "WickRandomCircuit", "RandomWickCircuit"];
+  RandomWickCircuit[any]
+)
 
 WickGreensFunction[spec_] := (
   Message[Q3General::renamed, "WickGreensFunction", "WickGreenFunction"];

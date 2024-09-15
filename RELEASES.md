@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.5.12
+
+- Tools for efficient simulation of Clifford quantum circuits: CliffordState, CliffordUnitary, CliffordCircuit, RandomCliffordCircuit, etc.
+- New function: UpdateStabilizerGenerators, RandomGottesmanVector, RandomCliffordUnitary, RandomCliffordState, GottesmanTimes
+- Renamed: WickRandomCircuit --> RandomWickCircuit
+
 ## 3.5.11
 
 - New functions: FullGottesmanMatrix, FullGottesmanVector, ParityBoole
