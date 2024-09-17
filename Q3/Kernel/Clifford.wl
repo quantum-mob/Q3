@@ -9,6 +9,8 @@ BeginPackage["Q3`"]
 { RandomCliffordState,
   RandomCliffordUnitary };
 
+{ CliffordLogarithmicNegativity };
+
 Begin["`Private`"]
 
 (**** <CliffordState> ****)
@@ -36,7 +38,7 @@ CliffordState[data_, ss : {___?QubitQ}, rest___] :=
 
 CliffordState /:
 StabilizerGenerators[CliffordState[gnr_, ___?OptionQ]] :=
-  Map[FromGottesmanVector, gnr]
+  Map[FromGottesmanVector[#, Pauli]&, gnr]
 
 CliffordState /:
 StabilizerGenerators[CliffordState[gnr_, ss:{__?QubitQ}, ___?OptionQ]] :=
@@ -48,8 +50,8 @@ Matrix @ CliffordState[data_?MatrixQ, ___] := Module[
     m, n },
   {m, n} = Dimensions[data];
   n = Power[2, (n - 1)/2];
-  mm = Matrix[mm*Map[Last, data]];
-  Apply[Dot, ConstantArray[One[n], m] + mm]/n
+  mm *= Map[Last, data];
+  Apply[Dot, ConstantArray[One[n], m] + mm] / n
 ]
 
 (**** </CliffordState> ****)
@@ -96,6 +98,9 @@ RandomCliffordState[n_Integer] := Module[
   op[CliffordState @ in]
 ]
 
+RandomCliffordState[ss:{__?QubitQ}] :=
+  Insert[RandomCliffordState[Length @ ss], ss, 2]
+
 
 (**** <CliffordUnitary> ****)
 
@@ -123,22 +128,13 @@ CliffordUnitary[mat_, ___][cs_CliffordState] := With[
   ReplacePart[cs, 1 -> new]
 ] /; MatrixQ[Most @ Transpose @ mat, BinaryQ]
 
-(* 
-Module[
-  { vec = Most /@ First[cs],
-    sig = Last /@ First[cs] },
-   sig *= IntegerParity[vec . Last[mat]];
-   vec = Mod[vec . Most[mat], 2];
-   CliffordState[Transpose @ Append[Transpose @ vec, sig]]
-] /; MatrixQ[Most @ Transpose @ mat, BinaryQ]
- *)
 CliffordUnitary /:
 Multiply[pre___, cu_CliffordUnitary, cs_CliffordState, post___] :=
   Multiply[pre, cu[cs], post]
 
 CliffordUnitary /:
 Matrix @ CliffordUnitary[mat_?MatrixQ, ___] :=
-  Matrix @ FromGottesmanMatrix[mat]
+  FromGottesmanMatrix[mat]
 
 (**** </CliffordUnitary> ****)
 
@@ -149,12 +145,24 @@ RandomCliffordUnitary[n_Integer, spec___] :=
   CliffordUnitary[RandomFullGottesmanMatrix @ n, spec]
 
 
+(**** <CliffordLogarithmicNegativity> ****)
+
+CliffordLogarithmicNegativity::usage = "CliffordLogarithmicNegativity[cs, {k1, k2, \[Ellipsis]}] returns the logarithmic negativity between qubits {k1, k2, \[Ellipsis]} and the rest."
 (* SEE ALSO: Sang et at. (2021) and Weinstein et al. (2022) *)
-CliffordLogarithmicNegativity[cs_CliffordState] := Module[
-  {a},
-  a
+
+CliffordLogarithmicNegativity[cs_CliffordState, kk:{___Integer}] := Module[
+  { gnr = First[cs],
+    chk },
+  gnr = Map[Partition[#, 2]&, gnr];
+  gnr = Flatten /@ gnr[[;;, kk]];
+  (* chk = IntegerParity @ Outer[GottesmanInner, gnr, gnr, 1]; *)
+  (* MatrixRank[chk] / 2 *)
+  (* NOTE: The above two lines do not seem to work; hence, the following two lines instead. *)
+  chk = Outer[GottesmanInner, gnr, gnr, 1];
+  MatrixRank[chk, Modulus -> 2] / 2
 ]
 
+(**** </CliffordLogarithmicNegativity> ****)
 
 End[]
 

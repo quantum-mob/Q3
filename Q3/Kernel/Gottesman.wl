@@ -3,7 +3,7 @@
 BeginPackage["Q3`"]
 
 { GottesmanVector, FullGottesmanVector,
-  FromGottesmanVector,
+  GottesmanVectorQ, FromGottesmanVector,
   GottesmanTest, GottesmanInner, GottesmanBasis,
   GottesmanSplit, GottesmanMerge, GottesmanFlip };
 
@@ -180,7 +180,7 @@ PauliGroupElements[n_Integer, kk:{__Integer}] :=
   Map[PauliGroupElements[n, #]&, kk]
 
 PauliGroupElements[n_Integer?Positive, k_Integer] :=
-  FromGottesmanVector @ thePauliGroupElement[n, k]
+  FromGottesmanVector[thePauliGroupElement[n, k], Pauli]
 
 
 PauliGroupElements[ss:{__?QubitQ}] :=
@@ -372,7 +372,8 @@ GroupElements[CliffordGroup[spec_], rest___] :=
 
 FullCliffordGroupElements::usage = "CliffordGroupElements[n, {k$1,k$2,$$}] returns a list of the elements numbered k$1, k$2, $$ in the full Clifford group of degree n. FullCliffordGroupElements[{s$1,s$2,$$,s$n}, {k$1,k$2,$$}] refers to the group on n labelled qubits {s$1,s$2,$$}."
 
-CliffordGroupElements::usage = "CliffordGroupElements[n, {k$1,k$2,$$}] returns a list of the elements numbered k$1, k$2, $$ in the Clifford group of degree n. CliffordGroupElements[{s$1,s$2,$$,s$n}, {k$1,k$2,$$}] refers to the group on n labelled qubits {s$1,s$2,$$}."
+FullCliffordGroupElements[spec:(_Integer|{__?QubitQ}), k_Integer] :=
+  First @ FullCliffordGroupElements[spec, {k}]
 
 FullCliffordGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
   Module[
@@ -383,6 +384,12 @@ FullCliffordGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
     rr = Mod[kk-1, gn] + 1;
     MapThread[Times, {ff[[qq]], CliffordGroupElements[spec, rr]}]
   ]
+
+
+CliffordGroupElements::usage = "CliffordGroupElements[n, {k$1,k$2,$$}] returns a list of the elements numbered k$1, k$2, $$ in the Clifford group of degree n. CliffordGroupElements[{s$1,s$2,$$,s$n}, {k$1,k$2,$$}] refers to the group on n labelled qubits {s$1,s$2,$$}."
+
+CliffordGroupElements[spec:(_Integer|{__?QubitQ}), k_Integer] :=
+  First @ CliffordGroupElements[spec, {k}]
 
 CliffordGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
   Module[
@@ -443,16 +450,21 @@ CliffordQ[expr_, ss:{__?QubitQ}] := CliffordMatrixQ[Matrix @ expr]
 (**** </CliffordQ> ****)
 
 
+GottesmanVectorQ::usage = "GottesmanVectorQ[vec] returns True if vector vec is a (reduced) Gottesman vector."
+
+GottesmanVectorQ[v_?VectorQ] := VectorQ[v, BinaryQ] && EvenQ[Length @ v]
+
+
 (**** <GottesmanVector> ****)
 
 GottesmanVector::usage = "GottesmanVector[mat] returns the Gottesman vector for the Pauli string corresponding to matrix mat.\nGottesmann[op] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on n (unlabeled) qubits.\nGottesmann[op, {S1,S2,...,Sn}] returns the vector in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\) corresponding to the coset represented by the Pauli operator op on the (labeled) qubits {S1, S2, ..., Sn}."
 
-GottesmanVector::pauli = "`` does not represent a Pauli string."
+GottesmanVector::pauli = "Matrix `` does not represent a Pauli string."
 
 GottesmanVector[mat_?MatrixQ] := With[
   { mm = Keys[PauliCoefficients @ mat] },
   If[Length[mm] > 1, Message[GottesmanVector::pauli, mat]];
-  theGottesmanCode[First @ mm]
+  Flatten[GottesmanDigits @ First @ mm]
 ] /; If[ MatrixQ[mat, NumericQ] && IntegerPowerQ[2, Length @ mat],
   True,
   Message[GottesmanVector::pauli, mat];
@@ -460,13 +472,13 @@ GottesmanVector[mat_?MatrixQ] := With[
 ]
 
 
-GottesmanVector[op_Pauli] := theGottesmanCode[First @ op]
+GottesmanVector[op_Pauli] := Flatten[GottesmanDigits @ First @ op]
 
 GottesmanVector[_?CommutativeQ op_] := GottesmanVector[op]
 
 
 GottesmanVector[_?CommutativeQ, ss:{__?QubitQ}] :=
-  theGottesmanCode @ ConstantArray[0, Length @ ss]
+  Flatten @ GottesmanDigits @ ConstantArray[0, Length @ ss]
 
 GottesmanVector[_?CommutativeQ op_, ss:{__?QubitQ}] :=
   GottesmanVector[op, ss]
@@ -480,7 +492,7 @@ GottesmanVector[op_?QubitQ, ss:{__?QubitQ}] := With[
 
 GottesmanVector[HoldPattern @ Multiply[op__?QubitQ], ss:{__?QubitQ}] := With[
   { qq = FlavorCap[ss] },
-  theGottesmanCode[
+  Flatten @ GottesmanDigits[
     qq /. Thread[FlavorMute @ {op} -> FlavorLast @ {op}] /. Thread[qq -> 0]
   ]
 ]
@@ -490,21 +502,35 @@ GottesmanVector[expr_, ss:{__?QubitQ}] := GottesmanVector @ Matrix[expr, ss]
 
 GottesmanVector[expr:Except[_?MatrixQ]] := GottesmanVector[Matrix @ expr]
 
-
-theGottesmanCode::usage = "theGottesmanCode is the behind-the-scene workhorse of GottesmanVector."
-
-theGottesmanCode[mm:Except[_List]?VectorQ] := theGottesmanCode[Normal @ mm]
-
-theGottesmanCode[mm:{(0|1|2|3)..}] := Flatten[
-  mm /. { 
-    0 -> {0, 0},
-    1 -> {1, 0},
-    2 -> {1, 1},
-    3 -> {0, 1}
-  }
-]
-
 (**** </GottesmanVector> ****)
+
+
+GottesmanDigits::usage = "GottesmanDigits[k] converts Pauli index k \[Element] {0, 1, 2, 3} into the corresponding two-bit code."
+
+SetAttributes[GottesmanDigits, Listable]
+
+GottesmanDigits[0] = {0, 0}
+
+GottesmanDigits[1] = {1, 0}
+
+GottesmanDigits[3] = {0, 1}
+
+GottesmanDigits[2] = {1, 1}
+
+GottesmanDigits[k_Integer] := GottesmanDigits @ Mod[k, 3]
+
+
+fromGottesmanDigits::usage = "fromGottesmanDigits[{b1, b2}] converts a two-bit code {b1, b2} to the corresponding Pauli index 0, 1, 2, or 3."
+
+fromGottesmanDigits[{0, 0}] = 0
+
+fromGottesmanDigits[{1, 0}] = 1
+
+fromGottesmanDigits[{0, 1}] = 3
+
+fromGottesmanDigits[{1, 1}] = 2
+
+fromGottesmanDigits[bb:{{_, _}...}] := Map[fromGottesmanDigits, bb]
 
 
 (**** <FullGottesmanVector> ****)
@@ -515,7 +541,7 @@ FullGottesmanVector[mat_?MatrixQ] := With[
   { mm = PauliCoefficients[mat] },
   If[Length[mm] > 1, Message[GottesmanVector::pauli, mat]];
   Append[
-    theGottesmanCode[First @ Keys @ mm], 
+    Flatten[GottesmanDigits @ First @ Keys @ mm], 
     First[Values @ mm]
   ]
 ] /; If[ MatrixQ[mat, NumericQ] && IntegerPowerQ[2, Length @ mat],
@@ -541,43 +567,23 @@ FullGottesmanVector[expr_, ss:{__?QubitQ}] := FullGottesmanVector @ Matrix[expr,
 FromGottesmanVector::usage = "FromGottesmanVector[vec] returns the Pauli operator on unlabeled qubits representing the coset corresponding to the GottesmanVector vec in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\), where n is the number of (unlabeled) qubits.\nFromGottesmanVector[vec, {S1,S2,...,Sn}] returns the Pauli operator on qubits {S1,S2,...,Sn} representing the coset corresponding to the GottesmanVector vec in \!\(\*SubsuperscriptBox[\[DoubleStruckCapitalZ],\"2\",\"2n\"]\)."
 
 (* from full Gottesman vector *)
-FromGottesmanVector[vec_?VectorQ] := ( 
-  FromGottesmanVector[Most @ vec] * Last[vec]
-) /; OddQ[Length @ vec]
+FromGottesmanVector[vec_?VectorQ, spec___] := ( 
+  FromGottesmanVector[Most @ vec, spec] * Last[vec]
+) /; GottesmanVectorQ[Most @ vec]
 
 (* from reduced Gottesman vector *)
-FromGottesmanVector[vec_] := Pauli @ ReplaceAll[
-  Partition[vec, 2],
-  { {0, 0} -> 0,
-    {1, 0} -> 1,
-    {1, 1} -> 2,
-    {0, 1} -> 3
-  }
-] /; VectorQ[vec, BinaryQ] && EvenQ[Length @ vec]
+FromGottesmanVector[vec_?VectorQ] := 
+  ThePauli[fromGottesmanDigits @ Partition[vec, 2]] /; 
+  GottesmanVectorQ[vec]
 
+FromGottesmanVector[vec_?VectorQ, Pauli] := 
+  Pauli[fromGottesmanDigits @ Partition[vec, 2]] /; 
+  GottesmanVectorQ[vec]
 
-(* from full Gottesman vector *)
-FromGottesmanVector[vec_?VectorQ, ss:{__?QubitQ}] := (
-  FromGottesmanVector[Most @ vec, ss] * Last[vec]
-) /; Length[vec] == 2*Length[ss] + 1
-
-(* from reduced Gottesman vector *)
-FromGottesmanVector[vec_, ss:{__?QubitQ}] := Apply[
+FromGottesmanVector[vec_?VectorQ, ss:{__?QubitQ}] := Apply[
   Multiply,
-  MapThread[
-    Construct,
-    { ss,
-      ReplaceAll[
-        Partition[vec, 2],
-        { {0, 0} -> 0,
-          {1, 0} -> 1,
-          {1, 1} -> 2,
-          {0, 1} -> 3
-        }
-      ]
-    }
-  ] /. { _?QubitQ[___, 0] -> 1 }
-] /; VectorQ[vec, BinaryQ] && Length[vec] == 2*Length[ss]
+  MapThread[Construct, {ss, fromGottesmanDigits @ Partition[vec, 2]}]
+] /; GottesmanVectorQ[vec]
 
 FromGottesmanVector[vec_?VectorQ, S_?QubitQ] :=
   FromGottesmanVector[vec, {S}]
@@ -620,21 +626,17 @@ GottesmanTest[a_, b_] := If[
 
 GottesmanInner::usage = "GottesmanInner[v, w] gives the symplectic inner product in the Gottesman vector space."
 
-GottesmanInner::incon = "Inconsistent vectors `1` and `2`."
-
-GottesmanInner::odd = "Odd-dimensional vectors `1` and `2`."
+GottesmanInner::icmp = "Incompatible vectors `1` and `2`."
 
 GottesmanInner[v_?VectorQ, w_?VectorQ] :=
-  Mod[Dot[v, Flatten[Reverse /@ Partition[w, 2]]], 2] /;
-  ArrayQ[{v, w}] && EvenQ[Length @ v]
+  Mod[Dot[v, GottesmanFlip @ w], 2] /;
+  ArrayQ[{v, w}, 2, BinaryQ] && EvenQ[Length @ v]
 
-GottesmanInner[v_?VectorQ, w_?VectorQ] := (
-  Message[GottesmanInner::odd, v, w];
-  0 ) /; ArrayQ[{v, w}] && OddQ[Length @ v]
-
-GottesmanInner[v_?VectorQ, w_?VectorQ] := (
-  Message[GottesmanInner::incon, v, w];
-  0 ) /; Not @ ArrayQ @ {v, w}
+GottesmanInner[v_?VectorQ, w_?VectorQ] :=
+  Mod[Dot[v, GottesmanFlip @ w], 2] /;
+  If[ ArrayQ[{Most @ v, Most @ w}, 2, BinaryQ] && OddQ[Length @ v], True,
+    Message[GottesmanInner::icmp, v, w]; False
+  ]
 
 (**** </GottesmanInner> ****)
 
@@ -655,9 +657,9 @@ GottesmanBasis[bs_?MatrixQ] := Module[
   new = Map[
     Mod[# + w * GottesmanInner[v, #] + v * GottesmanInner[w, #], 2]&,
     DeleteCases[Rest @ bs, w]
-   ];
+  ];
   Join[{v, w}, GottesmanBasis @ DeleteCases[new, Table[0, Length @ v]]]
- ]
+]
 
 GottesmanBasis[v_?VectorQ] := IdentityMatrix[Length @ v] /;
   v == UnitVector[Length @ v, 1]
@@ -665,7 +667,7 @@ GottesmanBasis[v_?VectorQ] := IdentityMatrix[Length @ v] /;
 GottesmanBasis[v_?VectorQ] := With[
   { id = IdentityMatrix[Length @ v] },
   GottesmanBasis @ Join[{v}, id]
- ]
+]
 
 GottesmanBasis[n_Integer] := One[2*n] /; n > 0
 
@@ -678,7 +680,7 @@ GottesmanSplit[vec_?VectorQ] := (
   Message[GottesmanSplit::odd, vec];
   { vec[[1 ;; ;; 2]],
     vec[[2 ;; ;; 2]] }
- ) /; OddQ[Length@vec]
+) /; OddQ[Length @ vec]
 
 GottesmanSplit[vec_?VectorQ] :=
   { vec[[1 ;; ;; 2]],
@@ -688,7 +690,7 @@ GottesmanSplit[mat_?MatrixQ] := (
   Message[GottesmanSplit::odd, mat];
   { mat[[;;, 1 ;; ;; 2]],
     mat[[;;, 2 ;; ;; 2]] }
- ) /; OddQ[Last @ Dimensions @ mat]
+) /; OddQ[Last @ Dimensions @ mat]
 
 GottesmanSplit[mat_?MatrixQ] :=
   { mat[[;;, 1 ;; ;; 2]],
@@ -709,10 +711,12 @@ GottesmanMerge[xx_?VectorQ, zz_?VectorQ] := Riffle[xx, zz]
 GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := (
   Message[GottesmanMerge::bad, xx, zz];
   MapThread[Riffle, {xx, xx}]
- ) /; Not[ArrayQ @ {xx, zz}]
+) /; Not[ArrayQ @ {xx, zz}]
 
 GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := MapThread[Riffle, {xx, zz}]
 
+
+(**** <GottesmanFlip> ****)
 
 GottesmanFlip::usage = "GottesmanFlip[vec] swaps the x-bit and z-bit of each qubit in Gottesman vector vec."
 
@@ -723,6 +727,8 @@ GottesmanFlip[vec_?VectorQ] :=
 GottesmanFlip[vec_] := 
   Flatten[Reverse /@ Partition[vec, 2]] /;
   VectorQ[vec, BinaryQ] && EvenQ[Length @ vec]
+
+(**** </GottesmanFlip> ****)
 
 
 (**** <Stabilizer> ****)
@@ -1156,23 +1162,25 @@ FullGottesmanMatrix[expr_, S_?QubitQ] := FullGottesmanMatrix @ Matrix[expr, S @ 
 
 FromGottesmanMatrix::usage = "FromGottesmanMatrix[mat, {s$1,s$2,$$}] returns the Clifford operator corresponding to Gottesman matrix mat."
 
-FromGottesmanMatrix[mat_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ] :=
-  Elaborate @ ExpressionFor[
-    Dot @@ Matrix[Flatten @ CliffordFactor[mat, ss, opts], ss],
-    ss
-  ]
+(* from reduced Gottesman matrix *)
+FromGottesmanMatrix[gm_?GottesmanMatrixQ] := 
+  Apply[Dot, Matrix[Flatten @ vdBergFactor @ gm, Length[gm]/2]]
 
-FromGottesmanMatrix[mat_?MatrixQ, opts___?OptionQ] := Module[
-  { S, ss, mm },
-  Let[Qubit, S];
-  ss = S[Range[Length[mat]/2], $];
-  mm = Dot @@ Matrix[Flatten @ CliffordFactor[mat, ss, opts], ss];
-  Elaborate[ExpressionFor @ mm]
-]
+(* from full Gottesman matrix *)
+FromGottesmanMatrix[gm_?MatrixQ] := Module[
+  { mat = FromGottesmanMatrix[Transpose @ Most @ Transpose @ gm],
+    fac },
+  fac = Last[Transpose @ gm] * Last[Transpose @ FullGottesmanMatrix @ mat];
+  mat . FromGottesmanVector[GottesmanFlip @ ParityBoole @ fac]
+] /; GottesmanMatrixQ[Most @ Transpose @ gm]
 
-(* for CliffordGroupElements *)
-FromGottesmanMatrix[mat_?MatrixQ, _Integer] :=
-  FromGottesmanMatrix[mat]
+
+FromGottesmanMatrix[gm_?MatrixQ, ss:{__?QubitQ}] :=
+  Elaborate @ ExpressionFor[FromGottesmanMatrix @ gm, ss]
+
+FromGottesmanMatrix[gm_?MatrixQ, Pauli|_Integer] :=
+  Elaborate @ ExpressionFor[FromGottesmanMatrix @ gm]
+(* NOTE: _integer is for CliffordGroupElements *)
 
 (**** </FromGottesmanMatrix> ****)
 
@@ -1385,25 +1393,25 @@ vdBergFactor[mat_?MatrixQ] := Module[
     ops = {},
     hdm, hh, gg },
   hh = Pauli @ PadRight[{6}, n];
-  hdm = gttsMatrix[hh];
+  hdm = theGttsMatrix[hh];
   (* the 1st row *)
-  gg = nullGottesmanZ[new[[1]]];
+  gg = nullPartZ[new[[1]]];
   AppendTo[ops, gg];
-  new = Mod[new . gttsMatrix[gg], 2];
-  gg = nullGottesmanX[new[[1]]];
+  new = Mod[new . theGttsMatrix[gg], 2];
+  gg = nullPartX[new[[1]]];
   ops = Join[ops, gg];
-  new = Mod[new . gttsMatrix[gg, n], 2];
-  (* exchange X and Z bits *)
+  new = Mod[new . theGttsMatrix[gg, n], 2];
+  (* exchange the X and Z bits of the first qubit *)
   AppendTo[ops, hh];
   new = new . hdm;
   (* the 2nd row *)
-  gg = nullGottesmanZ[new[[2]]];
+  gg = nullPartZ[new[[2]]];
   AppendTo[ops, gg];
-  new = Mod[new . gttsMatrix[gg], 2];
-  gg = nullGottesmanX[new[[2]]];
+  new = Mod[new . theGttsMatrix[gg], 2];
+  gg = nullPartX[new[[2]]];
   ops = Join[ops, gg];
-  new = Mod[new . gttsMatrix[gg, n], 2];
-  (* exchange X and Z bits *)
+  new = Mod[new . theGttsMatrix[gg, n], 2];
+  (* exchange back the X and Z bits of the first qubit *)
   AppendTo[ops, hh];
   new = new . hdm;
   (* go to the next block *)
@@ -1418,7 +1426,9 @@ vdBergFactor[mat_?MatrixQ] := Module[
 ] /; Length[mat] > 2
 
 
-nullGottesmanZ[vec_?VectorQ] := Pauli @ Replace[
+nullPartZ::usage = "nullPartZ[vec] returns a list of elementary single-qubit Clifford gates that get every entry of the Z-part of Gottesman vector vec to be zero."
+
+nullPartZ[vec_?VectorQ] := Pauli @ Replace[
   Partition[Normal @ vec, 2],
   { {0, 1} -> 6,
     {1, 1} -> 7,
@@ -1428,8 +1438,12 @@ nullGottesmanZ[vec_?VectorQ] := Pauli @ Replace[
 ]
 
 
-nullGottesmanX[vec_?VectorQ] := buildCX @ Flatten @ Position[Normal @ vec[[1;; ;;2]], 1]
+nullPartX::usage = "nullPartX[vec] returns a list of elementary two-qubit Clifford gates that get all but the first entry of the X-part of Gottesman vector vec to be zero."
 
+nullPartX[vec_?VectorQ] := buildCX @ Flatten @ Position[Normal @ vec[[1;; ;;2]], 1]
+
+
+buildCX::usage = "buildCX[{k1, k2, ...}] is the behind-the-scene workhorse for nullPartX.\nGiven the list of qubits {k1, k2, ...} that have non-zero X-entries of the Gottesman vector of concern, it returns a list of CNOT gates that get all but one entry to be zero, if necessary, including an additional element of SWAP gate to get the remaining entry to be assigned with the first qubit."
 
 buildCX[pp:{_, __}] := With[
   { qq = Partition[pp, 2] },
@@ -1439,30 +1453,31 @@ buildCX[pp:{_, __}] := With[
 buildCX[{k_}] = List @ If[k == 1, Nothing, SWAP[1, k]]
 
 
-gttsMatrix::usage = "gttsMatrix ..."
+theGttsMatrix::usage = "theGttsMatrix[spec] returns the Gottesman matrix of the elementary Clifford gate spec among the Identity, Hadamard, quadrant-phase, CNOT, and SWAP gates."
 
-(* the Gottesman mantrix of Hadarmard or phase gate *)
-gttsMatrix @ Pauli[mm_?VectorQ] := CirclePlus @@ Map[gttsMatrix, mm]
+theGttsMatrix @ Pauli[mm_?VectorQ] := CirclePlus @@ Map[theGttsMatrix, mm]
 
-gttsMatrix[0] := ThePauli[0]
-
-gttsMatrix[6] := ThePauli[1]
-
-gttsMatrix[7] := SparseArray @ {{1, 1}, {0, 1}}
+theGttsMatrix[ops_List, n_Integer] := Dot @@ Map[theGttsMatrix[#, n]&, ops]
 
 
-(* the Gottesman matrix of CNOT *)
-gttsMatrix[ops_List, n_Integer] := Dot @@ Map[gttsMatrix[#, n]&, ops]
+(* for Idenity, Hadarmard or Quadrant *)
+theGttsMatrix[0] := ThePauli[0]
 
-gttsMatrix[CNOT[i_, j_], n_Integer] := One[2n] + SparseArray[
+theGttsMatrix[6] := ThePauli[1]
+
+theGttsMatrix[7] := SparseArray @ {{1, 1}, {0, 1}}
+
+
+(* for CNOT *)
+theGttsMatrix[CNOT[i_, j_], n_Integer] := One[2n] + SparseArray[
   { {2i-1, 2j-1} -> 1,
     {2j, 2i} -> 1
   },
   {2n, 2n}
 ]
 
-(* the Gottesman matrix of SWAP *)
-gttsMatrix[SWAP[i_, j_], n_Integer] := CircleTimes[
+(* for SWAP *)
+theGttsMatrix[SWAP[i_, j_], n_Integer] := CircleTimes[
   PermutationMatrix[Cycles @ {{i, j}}, n],
   ThePauli[0]
 ]
@@ -1483,7 +1498,7 @@ GottesmanFactor[op_] := Module[
     mat },
   mat = GottesmanMatrix[op, ss];
   GottesmanFactor[mat, ss]
- ]
+]
 
 GottesmanFactor[mat_?GottesmanMatrixQ, ss:{_?QubitQ}] :=
   { FromGottesmanMatrix[mat, ss] }
@@ -1500,7 +1515,7 @@ GottesmanFactor[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   If[ MissingQ[kk], 
     Message[GottesmanFactor::badmat, MatrixForm @ mat];
     Return @ {1}
-   ];
+  ];
 
   If[ (kk = First[kk]) != 1,
     cyc = CircleTimes[
@@ -1510,7 +1525,7 @@ GottesmanFactor[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
     new = Mod[mat . cyc, 2];
     opf = SWAP @@ Part[ss, {1, kk}];
     Return @ Join[{opf}, GottesmanFactor[new, ss]]
-   ];
+  ];
 
   {qq, rr} = TakeDrop[ss, 1];
   
@@ -1532,7 +1547,7 @@ GottesmanFactor[mat_?MatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   vv = vv[[3;;, 3;;]];
 
   simplifyGate @ Join[{opf, opa, oph, opb}, GottesmanFactor[vv, rr]]
- ]
+]
 
 
 simplifyGate::usage = "simplifyGate[expr] translates expr to a simpler elementary gate."
