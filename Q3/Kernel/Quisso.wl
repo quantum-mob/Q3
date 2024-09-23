@@ -212,19 +212,6 @@ setQubit[x_Symbol] := (
 Missing["KeyAbsent", _Symbol?QubitQ[___, $]] = 0
 
 
-Raising[S_?QubitQ] := S[4]
-
-Lowering[S_?QubitQ] := S[5]
-
-Hadamard[S_?QubitQ] := S[6]
-
-Quadrant[S_?QubitQ] := S[7]
-
-Octant[S_?QubitQ] := S[8]
-
-Hexadecant[S_?QubitQ] := S[9]
-
-
 (* Override the default definition of Format[Dagger[...]]
    NOTE: This is potentially dangerous because Fock also overides it. *)
 

@@ -178,8 +178,8 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 (**** <obsolete> ****)
 
 WickRandomCircuit[any___] := (
-  Message[Q3General::renamed, "WickRandomCircuit", "RandomWickCircuit"];
-  RandomWickCircuit[any]
+  Message[Q3General::renamed, "WickRandomCircuit", "RandomWickCircuitSimulate"];
+  RandomWickCircuitSimulate[any]
 )
 
 WickGreensFunction[spec_] := (
@@ -258,16 +258,6 @@ CountYoungTableaux[args__] := (
 CountWeylTableaux[args__] := (
   Message[Q3General::renamed, "CountWeylTableaux", "WeylTableauCount"];
   WeylTableauCount[args]
-)
-
-TheRaise[args___] := (
-  Message[Q3General::renamed, "TheRaise", "TheRaising"];
-  TheRaising[args]
-)
-
-TheLower[args___] := (
-  Message[Q3General::renamed, "TheLower", "TheLowering"];
-  TheLowering[args]
 )
 
 RaiseLower[args___] := (

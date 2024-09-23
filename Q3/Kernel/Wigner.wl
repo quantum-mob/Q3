@@ -431,13 +431,13 @@ AddElaborationPatterns[
   G_?SpinQ[j___,4] -> G[j, Raising],
   G_?SpinQ[j___,5] -> G[j, Lowering],
   G_?SpinQ[j___,6] -> G[j, Hadamard]
- ]
+]
 
 $RaisingLoweringRules = Join[ $RaisingLoweringRules,
   { S_?SpinQ[j___,1] :> (S[j,4] + S[j,5]) / 2 ,
     S_?SpinQ[j___,2] :> (S[j,4] - S[j,5]) / (2 I)
-   }
- ]
+  }
+]
 
 
 (* MultiplyDegree for operators *)

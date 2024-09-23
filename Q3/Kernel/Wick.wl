@@ -12,7 +12,7 @@ BeginPackage["Q3`"]
 
 { WickDensityMatrix };
 
-{ WickCircuit, RandomWickCircuit };
+{ WickCircuit, RandomWickCircuitSimulate };
 
 { RandomWickState, RandomNambuState };
 
@@ -1097,21 +1097,21 @@ WickCircuit /:
 (**** </WickCircuit> ****)
 
 
-(**** <RandomWickCircuit> ****)
+(**** <RandomWickCircuitSimulate> ****)
 
-RandomWickCircuit::usage = "RandomWickCircuit[{c1, c2, \[Ellipsis]}, in, ugate, p, dep] simulates a random quantum circuit on fermion modes {c1, c2, \[Ellipsis]} starting from initial state IN, where layers of Gaussian unitary gate ugate alternate with layers of measurements on fermion modes selected randomly with probability p to form an overall depth dep."
+RandomWickCircuitSimulate::usage = "RandomWickCircuitSimulate[{c1, c2, \[Ellipsis]}, in, ugate, p, dep] simulates a random quantum circuit on fermion modes {c1, c2, \[Ellipsis]} starting from initial state IN, where layers of Gaussian unitary gate ugate alternate with layers of measurements on fermion modes selected randomly with probability p to form an overall depth dep."
 
-RandomWickCircuit::save = "The result could not be saved."
+RandomWickCircuitSimulate::save = "The result could not be saved."
 
-Options[RandomWickCircuit] = {
+Options[RandomWickCircuitSimulate] = {
   "Samples" -> {10, 5},
   "SaveData" -> False,
   "Overwrite" -> True,
   "Filename" -> Automatic,
-  "Prefix" -> "WRC"
+  "Prefix" -> "RWC"
 }
 
-RandomWickCircuit[
+RandomWickCircuitSimulate[
   cc:{__?FermionQ},
   in:(_WickState | _NambuState),
   uu:(_WickUnitary | _NambuUnitary),
@@ -1155,13 +1155,13 @@ Module[
     Check[
       Export[file, data];
       Echo[file, "Saved to"],
-      Message[RandomWickCircuit::save]
+      Message[RandomWickCircuitSimulate::save]
     ]
   ];
   Return[data]
 ]
 
-(**** </RandomWickCircuit> ****)
+(**** </RandomWickCircuitSimulate> ****)
 
 
 RandomWickState::usage = "RandomWickState[k, {c1, c2, \[Ellipsis]}] randomly generates a depth k Wick state with half filling on fermion modes {c1, c2, \[Ellipsis]}."

@@ -44,8 +44,8 @@ BeginPackage["Q3`"]
 
 { Affect };
 
-{ Pauli, Raising, Lowering, Hadamard, Quadrant, Octant, Hexadecant,
-  ThePauli, TheRaising, TheLowering, TheHadamard };
+{ Pauli, Raising, Lowering, Hadamard, Quadrant, Octant, Hexadecant };
+{ ThePauli };
 
 { RaisingLoweringForm };
 
@@ -139,14 +139,8 @@ TheKet[aa:{(0|1|Up|Down)..}] := Module[
 
 (**** <ThePauli> ****)
 
-ThePauli::usage = "ThePauli[n] (n=1,2,3) returns a Pauli matrix.
-  ThePauli[4]=TheRaising[] is the Raising operator, ThePauli[5]=TheLowering[] is the lowering operator, ThePauli[6]=TheHadamard[] is the Hadamard operator, and ThePauli[0] returns the 2x2 identity matrix.\nThePauli[n1,n2,n3,...]=ThePauli[n1] \[CircleTimes] ThePauli[n2] \[CircleTimes] ThePauli[n3]\[CircleTimes] ...."
-
-TheRaising::usage = "TheRaising[]=(ThePauli[1]+I*ThePauli[2])/2={{0,1},{0,0}}.\nTheRaising[{J,1}] returns the raising operator for angular momentum J.\nTheRaising[{J,0}] returns the identity operator."
-
-TheLowering::usage = "TheLowering[]=(ThePauli[1]-I*ThePauli[2])/2={{0,0},{1,0}}.\nTheLowering[{J,1}] returns the raising operator for angular momentum J.\nTheLowering[{J,0}] returns the identity matrix."
-
-TheHadamard::usage = "TheHadamard[0]=IdentityMatrix[2]. TheHadamard[1]={{1,1},{1,-1}}/Sqrt[2] is the matrix corresponding to TheRotation[Pi/2,2].ThePauli[3].\nTheHadamard[{J,1}] returns TheRotation[Pi/2, {J,2}].TheWigner[{J,3}] for angular momentum J.\nTheHadamard[{J,0}] returns the identity matrix."
+ThePauli::usage = "ThePauli[n] (n=1,2,3) returns the Pauli matrix numbered n.
+  ThePauli[0] returns the 2\[Times]2 identity matrix. ThePauli[4] and ThePauli[5] represent the raising and lowering operators, respectively, and ThePauli[6] returns the 2\[Times]2 Hadamard matrix. ThePauli[7], ThePauli[8], ThePauli[9] represent the quadrant, octant, and hexadecant phase gates, respectively.\nThePauli[{n1, n2, n3, \[Ellipsis]}] = ThePauli[n1] \[CircleTimes] ThePauli[n2] \[CircleTimes] ThePauli[n3]\[CircleTimes] \[Ellipsis]."
 
 SetAttributes[ThePauli, {NHoldAll, ReadProtected}]
 
@@ -180,22 +174,22 @@ ThePauli[2] = ThePauli[-2] = SparseArray[{{1, 2} ->-I, {2, 1} -> I}, {2, 2}]
 ThePauli[3] = ThePauli[-3] = SparseArray[{{1, 1} -> 1, {2, 2} ->-1}, {2, 2}]
 
 
-ThePauli[4] = ThePauli[-5] = TheRaising[] = TheRaising[1] = TheLowering[-1] =
+ThePauli[4] = ThePauli[-5] =
   SparseArray[{{1, 2} -> 1}, {2, 2}]
 
-ThePauli[5] = ThePauli[-4] = TheLowering[] = TheLowering[1] = TheRaising[-1] =
+ThePauli[5] = ThePauli[-4] =
   SparseArray[{{2, 1} -> 1}, {2, 2}]
 
-ThePauli[6] = ThePauli[-6] = TheHadamard[] = TheHadamard[1] =
+ThePauli[6] = ThePauli[-6] =
   {{1,1},{1,-1}}/Sqrt[2]
 
-ThePauli[7] = TheQuadrant[] = TheQuadrant[1] =
+ThePauli[7] =
   SparseArray[{{1, 1} -> 1, {2, 2} -> +I}, {2, 2}]
 
-ThePauli[8] = TheOctant[] = TheOctant[1] =
+ThePauli[8] =
   SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*Pi/4]}, {2, 2}]
 
-ThePauli[9] = TheHexadecant[] = TheHexadecant[1] =
+ThePauli[9] =
   SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*Pi/8]}, {2, 2}]
 
 ThePauli[10] = SparseArray[{{1,1} -> 1}, {2,2}]
@@ -236,8 +230,6 @@ ThePauli[Quadrant] = ThePauli[7]
 ThePauli[Octant] = ThePauli[8]
 
 ThePauli[Hexadecant] = ThePauli[9]
-
-TheRaising[0] = TheLowering[0] = TheHadamard[0] = TheQuadrant[0] = ThePauli[0]
 
 
 (* These are for Matrix[Dyad[...]]. *)
@@ -1519,37 +1511,25 @@ $RaisingLoweringRules = {
   Pauli[a___, 2, b___] :> (Pauli[a, 4, b] - Pauli[a, 5, b]) / I
  }
 
+(**** </RaisingLoweringForm> ****)
+
 
 Raising::usage = "Raising represents the raising operator."
 
-SetAttributes[Raising, Listable]
-
 Lowering::usage = "Lowering represents the lowering operator."
-
-SetAttributes[Lowering, Listable]
 
 Hadamard::usage = "Hadamard represents the Hadamard gate."
 
-SetAttributes[Hadamard, Listable]
-
 Quadrant::usage = "Quadrant represents the phase gate with phase angle 2*\[Pi]/4."
-
-SetAttributes[Quadrant, Listable]
 
 Octant::usage = "Octant represents the phase gate with phase angle 2*\[Pi]/8."
 
-SetAttributes[Octant, Listable]
-
 Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[Pi]/16."
-
-SetAttributes[Hexadecant, Listable]
-
-(**** </RaisingLoweringForm> ****)
 
 
 (**** <Pauli> ****)
 
-Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator, Pauli[4] the Pauli raising operator, Pauli[5] the Pauli lowering operator, and Pauli[6] the Hadamard operator.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
+Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator. Pauli[4] and Pauli[5] represent the Pauli raising and lowering operator, respectively. Pauli[6] represents the Hadamard operator. Pauli[7], Pauli[8], Pauli[9] represent the quadrant, octant, hexadecant phase operator, respectively.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
 SetAttributes[Pauli, NHoldAll]
 
@@ -1579,15 +1559,6 @@ Pauli /: MultiplyKind[ Pauli[_] ] = Pauli
 Pauli /: MultiplyGenus[ Pauli[_] ] = "Singleton"
 
 Pauli /: NonCommutativeQ[ Pauli[_] ] = True
-
-
-Raising[0] = Lowering[0] = Hadamard[0] = Pauli[0]
-
-Raising[1] = Lowering[-1] = Pauli[Raising]
-
-Lowering[1] = Raising[-1] = Pauli[Lowering]
-
-Hadamard[1] = Hadamard[-1] = Pauli[Hadamard]
 
 
 Pauli[k:Rule[_Integer,_Integer]] := Pauli @ {k}

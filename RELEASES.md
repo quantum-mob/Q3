@@ -1,10 +1,12 @@
 # Release Notes
 
-## 3.5.12
+## 3.6.0
 
-- Tools for efficient simulation of Clifford quantum circuits: CliffordState, CliffordUnitary, CliffordCircuit, RandomCliffordCircuit, etc.
-- New function: UpdateStabilizerGenerators, RandomGottesmanVector, RandomCliffordUnitary, RandomCliffordState, GottesmanTimes
-- Renamed: WickRandomCircuit --> RandomWickCircuit
+- Tools for efficient simulation of Clifford quantum circuits: CliffordState, CliffordUnitary, CliffordLogarithmicNegativity, CliffordCircuit, RandomCliffordCircuit, RandomCliffordCircuitSimulate, CliffordLogarithmicNegativity, RandomCliffordUnitary, RandomCliffordState, etc.
+- New function: UpdateStabilizerGenerators, RandomGottesmanVector, GottesmanTimes, GottesmanVectorEmbed, GottesmanMatrixEmbed, GottesmanMap
+- Renamed: WickRandomCircuit --> RandomWickCircuitSimulate
+- TheRaising, TheLowering, TheHadamard, TheQuadrant, TheOctant, TheHexadecant are removed.
+- Raising, Lowering, Hadamard, Quadrant, Octant, Hexadecant are just Flavor names rather than functions.
 
 ## 3.5.11
 
