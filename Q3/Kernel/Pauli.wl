@@ -1531,6 +1531,8 @@ Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[P
 
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator. Pauli[4] and Pauli[5] represent the Pauli raising and lowering operator, respectively. Pauli[6] represents the Hadamard operator. Pauli[7], Pauli[8], Pauli[9] represent the quadrant, octant, hexadecant phase operator, respectively.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
+Pauli::dot = "Different lengths of Pauli indices `` and ``."
+
 SetAttributes[Pauli, NHoldAll]
 
 SyntaxInformation[Pauli] = {"ArgumentsPattern" -> {_}};
@@ -3010,6 +3012,9 @@ PauliDot::usage = "PauliDot[a, b, \[Ellipsis]] represents the non-commutative mu
 
 SetAttributes[PauliDot, {Flat, OneIdentity}];
 
+Format[PauliDot[a_Pauli, b_Pauli]] := Row @ {"(",a,")","(",b,")"}
+(* NOTE: Normally, this should not occur. However, for example, incompatible Pauli strings are left unevaluated. *)
+
 PauliDot[expr_Plus, a_] := Map[PauliDot[#, a]&, expr]
 
 PauliDot[a_, expr_Plus] := Map[PauliDot[a, #]&, expr]
@@ -3080,7 +3085,10 @@ PauliDot[ Pauli[m_], Pauli[n_] ] :=
  *)
 
 PauliDot[ Pauli[aa_List], Pauli[bb_List] ] := CircleTimes @@
-  PauliDot @@@ Transpose[Elaborate @ {Pauli /@ aa, Pauli /@ bb}]
+  PauliDot @@@ Transpose[Elaborate @ {Pauli /@ aa, Pauli /@ bb}] /;
+  If[ ArrayQ[{aa, bb}], True,
+    Message[Pauli::dot, aa, bb]; False
+  ]
   
 PauliDot[ Pauli[aa_List], Ket[bb_List] ] := CircleTimes @@
   PauliDot @@@ Transpose[{Pauli /@ aa, Ket /@ bb}]

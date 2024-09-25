@@ -6,7 +6,7 @@ BeginPackage["Q3`"]
 
 { CliffordUnitary, RandomCliffordUnitary };
 
-{ PauliMeasurement };
+{ PauliMeasurement, PauliDecoherence };
 
 { CliffordCircuit, RandomCliffordCircuit, RandomCliffordCircuitSimulate };
 
@@ -43,12 +43,17 @@ MakeBoxes[cs:CliffordState[gnr_?MatrixQ, ___], fmt_] := Module[
 CliffordState[data_, ss:{___?QubitQ}, rest___] :=
   CliffordState[data, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
 
+(* quick initialization *)
 CliffordState[Ket[v_?VectorQ], rest___] := Module[
   { n = Length[v],
     vv, pp },
   vv = SparseArray @ NestList[RotateRight[#, 2]&, PadRight[{0, 1}, 2n], n-1];
   CliffordState[Transpose @ Append[Transpose @ vv, IntegerParity @ v], rest]
 ]
+
+(* quick initialization *)
+CliffordState[Ket[a_Association], rest___] :=
+  CliffordState[ Ket @ Values @ KeySelect[a, QubitQ] ]
 
 
 CliffordState /:
@@ -130,7 +135,7 @@ PauliMeasurement[msr_?GottesmanVectorQ, kk:{___Integer}][cs_CliffordState] := Mo
   { ii = Riffle[2kk-1, 2kk],
     vv = First[cs], ch, new, gnr },
   vv = vv[[;;, ii]];
-  ch = Map[GottesmanInner[msr, #]&, vv];
+  ch = Map[GottesmanDot[msr, #]&, vv];
   If[ ArrayZeroQ[ch],
     $MeasurementOut[msr] = Indeterminate;
     Return[cs]
@@ -157,7 +162,7 @@ PauliMeasurement[msr_?GottesmanVectorQ, kk:{___Integer}][cs_CliffordState] := Mo
 PauliMeasurement[msr_?GottesmanVectorQ][cs_CliffordState] := Module[
   { gnr = First[cs],
     chk, new },
-  chk = Map[GottesmanInner[msr, #]&, Most /@ gnr];
+  chk = Map[GottesmanDot[msr, #]&, Most /@ gnr];
   If[ ArrayZeroQ[chk],
     $MeasurementOut[msr] = Indeterminate;
     Return[cs]
@@ -177,7 +182,41 @@ PauliMeasurement /:
 Multiply[pre___, msr_PauliMeasurement, cs_CliffordState] := 
   Multiply[pre, msr @ cs]
 
-(**** </Measurement> ****)
+(**** </PauliMeasurement> ****)
+
+
+(**** <PauliDecoherence> ****)
+
+PauliDecoherence::usage = "PauliDecoherence[vec] represents the Pauli measurement corresponding to Gottesman vector vec.\nPauliDecoherence[vec, {{k1, k2, \[Ellipsis]}, n}] represents the Pauli measurement on particular qubits numbered k1, k2, \[Ellipsis] among n qubits."
+
+PauliDecoherence[msr_?GottesmanVectorQ, k_Integer] :=
+  PauliDecoherence[msr, {k}]
+
+PauliDecoherence[msr_?GottesmanVectorQ, kk:{___Integer}][cs_CliffordState] := Module[
+  { ii = Riffle[2kk-1, 2kk],
+    vv = First[cs], ch, new, gnr },
+  vv = vv[[;;, ii]];
+  ch = Map[GottesmanDot[msr, #]&, vv];
+  If[ArrayZeroQ[ch], Return[cs]];
+  (* Simulate the deocherence process. *)
+  ch = Position[ch, 1];
+  Module[
+    { gnr = First[cs],
+      alt },
+    alt = gnr[[First @ First @ ch]];
+    gnr = ReplaceAt[gnr, v_?VectorQ :> GottesmanTimes[alt, v], Rest @ ch];
+    gnr = Delete[gnr, First @ ch];
+    If[gnr == {}, gnr = Zero @ {1, Length @ alt}]; (* the maximally-mixed state *)
+    ReplacePart[cs, 1 -> SparseArray[gnr]]
+  ]
+]
+
+
+PauliDecoherence /:
+Multiply[pre___, msr_PauliDecoherence, cs_CliffordState] := 
+  Multiply[pre, msr @ cs]
+
+(**** </PauliDecoherence> ****)
 
 
 (**** <CliffordUnitary> ****)
@@ -244,7 +283,7 @@ RandomCliffordUnitary[n_Integer, spec___] :=
 
 (**** <CliffordLogarithmicNegativity> ****)
 
-CliffordLogarithmicNegativity::usage = "CliffordLogarithmicNegativity[cs, {k1, k2, \[Ellipsis]}] returns the logarithmic negativity cs between qubits {k1, k2, \[Ellipsis]} and the rest of Clifford state.\nCliffordLogarithmicNegativity[{k1, k2, \[Ellipsis]}] is an operator form of CliffordLogarithmicNegativity that can be applied to Clifford states."
+CliffordLogarithmicNegativity::usage = "CliffordLogarithmicNegativity[cs, {k1, k2, \[Ellipsis]}] returns the logarithmic negativity between qubits {k1, k2, \[Ellipsis]} and the rest in Clifford state cs.\nCliffordLogarithmicNegativity[{k1, k2, \[Ellipsis]}] is an operator form of CliffordLogarithmicNegativity that can be applied to Clifford states."
 (* SEE ALSO: Sang et at. (2021) and Weinstein et al. (2022) *)
 
 CliffordLogarithmicNegativity[kk:{___Integer}][cs_CliffordState] :=
@@ -253,12 +292,10 @@ CliffordLogarithmicNegativity[kk:{___Integer}][cs_CliffordState] :=
 CliffordLogarithmicNegativity[cs_CliffordState, kk:{___Integer}] := Module[
   { gnr = First[cs],
     chk },
-  gnr = Map[Partition[#, 2]&, gnr];
-  gnr = Flatten /@ gnr[[;;, kk]];
-  (* chk = IntegerParity @ Outer[GottesmanInner, gnr, gnr, 1]; *)
-  (* MatrixRank[chk] / 2 *)
-  (* NOTE: The above two lines do not seem to work; hence, the following two lines instead. *)
-  chk = Outer[GottesmanInner, gnr, gnr, 1];
+  gnr = gnr[[ ;; , Riffle[2kk-1, 2kk] ]];
+  chk = GottesmanDot[gnr, gnr];
+  (* MatrixRank[IntegerParity @ chk] / 2 *)
+  (* NOTE: The above line does not seem to work; hence, the following line instead. *)
   MatrixRank[chk, Modulus -> 2] / 2
 ]
 
@@ -301,18 +338,49 @@ CliffordCircuit[gg:{_CliffordState, ___}][cs_CliffordState] :=
   CliffordCircuit[Rest @ gg][cs]
 
 CliffordCircuit[gg_List][cs_CliffordState] :=
-  Fold[Construct[#2, #1]&, cs, gg]
+  Fold[Construct[#2, #1]&, cs, Flatten @ gg]
+
+CliffordCircuit /:
+Elaborate @ CliffordCircuit[gg:{_CliffordState, ___}] :=
+  Fold[Construct[#2, #1]&, Flatten @ gg]
+
+
+CliffordCircuit /:
+Show[cc_CliffordCircuit, S_Symbol?QubitQ, more___?OptionQ] :=
+  Graphics[cc, S, more]
+
+CliffordCircuit /:
+Graphics[CliffordCircuit[gg_List], S_Symbol?QubitQ, more___?OptionQ] := Module[
+  { n, cs, ss, qc },
+  n = FirstCase[gg, g:_Symbol[__] :> numberOfQubits[g], Indeterminate, Infinity];
+  If[n === Indeterminate, n = 1];
+  ss = S[Range @ n, $];
+  qc = gg /. {
+    CliffordCircuit[{}] -> "Spacer",
+    CliffordCircuit -> Identity,
+    CliffordState[__] :> Ket[ss],
+    CliffordUnitary[m_, kk_, opts___?OptionQ] :> Gate[S[kk, $], opts],
+    CliffordUnitary[m_, opts___?OptionQ] :> Gate[ss, opts, "Label" -> "U"],
+    PauliMeasurement[v_, kk_, opts___?OptionQ] :> Gate[S[kk, $], opts, "Shape" -> "Measurement"],
+    PauliDecoherence[v_, kk_, opts___?OptionQ] :> Gate[S[kk, $], opts, "Label" -> "\[ScriptCapitalD]"],
+    CNOT[i_, j_] :> Gate[{S[i,$]->1}, {S[j,$]}, "Shape" -> "CirclePlus"],
+    SWAP[i_, j_] :> Gate[{S[i,$]->1}, {S[j,$]}, "Shape" -> "Cross", "ControlShape" -> "Cross"],
+    Hadamard[kk_] :> Map[Gate[{#}, "Label" -> "H"]&, S[kk,$]],
+    Quadrant[kk_] :> Map[Gate[{#}, "Label" -> "S"]&, S[kk,$]]
+  };
+  QuantumCircuit[Sequence @@ qc, "PostMeasurementDashes" -> False]
+]
 
 
 numberOfQubits[CliffordState[mat_?MatrixQ, ___]] := (Last[Dimensions @ mat] - 1)/2
 
-numberOfQubits[CliffordUnitary[_?MatrixQ, {_, n_Integer}, ___]] = n
-
 numberOfQubits[CliffordUnitary[mat_?MatrixQ, ___?OptionQ]] := Length[mat] / 2
 
-numberOfQubits[PauliMeasurement[_?VectorQ, {_, n_Integer}, ___]] = n
-
 numberOfQubits[PauliMeasurement[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
+
+numberOfQubits[PauliDecoherence[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
+
+numberOfQubits[_] = Indeterminate
 
 (**** </CliffordCircuit> ****)
 
@@ -321,11 +389,11 @@ numberOfQubits[PauliMeasurement[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
 
 RandomCliffordCircuit::usage = "RandomCliffordCircuit[{n, t}, p] generates a Clifford circuit of depth 3t on n qubits with alternating layers of randomly selected two-qubit Clifford unitary gates and single-qubit Pauli measurements, where each qubit is measured with probability p in the computational basis."
 
-RandomCliffordCircuit[vol:{n_Integer, t_Integer}, p_?NumericQ] :=
+RandomCliffordCircuit[vol:{n_Integer, t_Integer}, pp:(_?NumericQ|{_?NumericQ, _?NumericQ})] :=
   CliffordCircuit @ Nest[
     Append[
       Join[#, randomCliffordUnitaryLayer @ n],
-      randomPauliMeasurementLayer[n, p]
+      randomPauliMeasurementLayer[n, pp]
     ]&,
     { CliffordState @ Ket @ Table[0, n] },
     t
@@ -339,6 +407,22 @@ randomPauliMeasurementLayer[n_Integer, p_?NumericQ] := Module[
   CliffordCircuit @ Map[PauliMeasurement[{0, 1}, #]&, kk]
 ]
 
+randomPauliMeasurementLayer[n_Integer, {0|0., p_?NumericQ}] := Module[
+  { kk = RandomPick[Range @ n, p],
+    mm = {{1, 0}, {0, 1}, {1, 1}} },
+  CliffordCircuit @ Map[PauliDecoherence[RandomChoice @ mm, #]&, kk]
+]
+
+randomPauliMeasurementLayer[n_Integer, pp:{_?NumericQ, _?NumericQ}] := Module[
+  { kk = RandomPick[Range @ n, Total @ pp],
+    mm = PauliMeasurement[{0, 1}],
+    dc = PauliDecoherence /@ {{1, 0}, {0, 1}, {1, 1}},
+    pm = First[pp] / Total[pp] },
+  CliffordCircuit @ Table[
+    Append[If[RandomReal[] < pm, mm, RandomChoice @ dc], k],
+    {k, kk}
+  ]
+]
 
 randomCliffordUnitaryLayer::usage = "randomPauliMeasurementLayer[n] generates a layer of random two-qubit Clifford unitaries on every pair of nearest-neighbor qubits among n qubits."
 
@@ -371,7 +455,11 @@ Options[RandomCliffordCircuitSimulate] = {
   "Prefix" -> "RCC"
 }
 
-RandomCliffordCircuitSimulate[{n_Integer, t_Integer}, p_?NumericQ, OptionsPattern[]] := Module[
+RandomCliffordCircuitSimulate[
+  {n_Integer, t_Integer},
+  pp:(_?NumericQ|{_?NumericQ, _?NumericQ}), 
+  OptionsPattern[]
+] := Module[
   { k = 0,
     progress = 0,
     save, data, qc, sn, sm },
@@ -380,7 +468,7 @@ RandomCliffordCircuitSimulate[{n_Integer, t_Integer}, p_?NumericQ, OptionsPatter
   (* simulation *)
   {sn, sm} = doAssureList[OptionValue["Samples"], 2];
   data = Transpose @ Table[
-    qc = RandomCliffordCircuit[{n, t}, p];
+    qc = RandomCliffordCircuit[{n, t}, pp];
     { Table[
         progress = ++k / (sn*sm);
         FoldList[Construct[#2, #1]&, First @ qc],

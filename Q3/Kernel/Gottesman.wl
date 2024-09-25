@@ -4,7 +4,7 @@ BeginPackage["Q3`"]
 
 { GottesmanVector, FullGottesmanVector,
   GottesmanVectorQ, FromGottesmanVector,
-  GottesmanTest, GottesmanInner, GottesmanBasis,
+  GottesmanTest, GottesmanDot, GottesmanBasis,
   GottesmanSplit, GottesmanMerge, GottesmanFlip, GottesmanVectorEmbed };
 
 { GottesmanTimes, GottesmanMap };
@@ -643,26 +643,46 @@ GottesmanTest[a_, b_] := If[
 ]
 
 
-(**** <GottesmanInner> ****)
+(**** <GottesmanDot> ****)
 
-GottesmanInner::usage = "GottesmanInner[v, w] gives the symplectic inner product in the Gottesman vector space."
-
-GottesmanInner::icmp = "Incompatible vectors `1` and `2`."
-
-GottesmanInner[v_?VectorQ, w_?VectorQ] :=
+GottesmanDot::usage = "GottesmanDot[v, w] gives the symplectic inner product in the Gottesman vector space."
+GottesmanDot[v_?VectorQ, w_?VectorQ] :=
   Mod[Dot[v, GottesmanFlip @ w], 2] /;
-  ArrayQ[{v, w}, 2, BinaryQ] && EvenQ[Length @ v]
+  MatrixQ[{v, w}, BinaryQ] && EvenQ[Length @ v]
 
-GottesmanInner[v_?VectorQ, w_?VectorQ] :=
-  Mod[Dot[v, GottesmanFlip @ w], 2] /;
-  If[ ArrayQ[{Most @ v, Most @ w}, 2, BinaryQ] && OddQ[Length @ v], True,
-    Message[GottesmanInner::icmp, v, w]; False
-  ]
+GottesmanDot[v_?MatrixQ, w_?MatrixQ] :=
+  Mod[Dot[v, GottesmanFlip @ Transpose @ w], 2] /;
+  MatrixQ[Join[v, w], BinaryQ] && EvenQ[Last @ Dimensions @ v]
 
-(**** </GottesmanInner> ****)
+GottesmanDot[v_?VectorQ, w_?MatrixQ] :=
+  Mod[Dot[v, GottesmanFlip @ Transpose @ w], 2] /;
+  MatrixQ[Join[{v}, w], BinaryQ] && EvenQ[Length @ v]
+
+GottesmanDot[v_?MatrixQ, w_?VectorQ] :=
+  Mod[Dot[v, GottesmanFlip @ Transpose @ w], 2] /;
+  MatrixQ[Join[v, {w}], BinaryQ] && EvenQ[Length @ w]
+
+(**** </GottesmanDot> ****)
 
 
-GottesmanBasis::usage = "GottesmanBasis[{v1, v2, \[Ellipsis]}] returns a symplectic basis of the vector space spanned by {v1, v2, \[Ellipsis]}.\nGottesmanBasis[v] returns a symplectic basis {v, \[Ellipsis]} spanning the Gottesman vector space containing v.\nGottesmanBasis[n] returns the standard basis of the n-qubit (2n-dimensional) Gottesman vector space, which happens to be a symplectic basis with respect to GottesmanInner."
+(**** <GottesmanFlip> ****)
+
+GottesmanFlip::usage = "GottesmanFlip[vec] swaps the x-bit and z-bit of each qubit in Gottesman vector vec."
+
+(* for a reduced Gottesman vector or a matrix consisting of COLUMNS of Gottesman vectors *)
+GottesmanFlip[obj_] :=
+  SparseArray @ Flatten[Reverse /@ Partition[obj, 2], 1] /;
+  ArrayQ[obj, 1|2, BinaryQ] && EvenQ[Length @ obj]
+
+(* for a full Gottesman vector or a matrix consisting of COLUMNS of full Gottesman vectors *)
+GottesmanFlip[obj_] := 
+  Append[GottesmanFlip[Most @ obj], Last @ obj] /;
+  ArrayQ[Most @ obj, 1|2, BinaryQ] && OddQ[Length @ obj]
+
+(**** </GottesmanFlip> ****)
+
+
+GottesmanBasis::usage = "GottesmanBasis[{v1, v2, \[Ellipsis]}] returns a symplectic basis of the vector space spanned by {v1, v2, \[Ellipsis]}.\nGottesmanBasis[v] returns a symplectic basis {v, \[Ellipsis]} spanning the Gottesman vector space containing v.\nGottesmanBasis[n] returns the standard basis of the n-qubit (2n-dimensional) Gottesman vector space, which happens to be a symplectic basis with respect to the Gottesman inner prodcut."
 (* See: Koenig and Smolin (2021) *)
 
 GottesmanBasis[{}] = {} (* fallback *)
@@ -672,11 +692,11 @@ GottesmanBasis[bs_?MatrixQ] := Module[
     w, new },
   If[ContainsOnly[v, {0}], Return @ GottesmanBasis @ Rest @ bs];
   
-  w = Select[bs, GottesmanInner[v, #]==1&];
+  w = Select[bs, GottesmanDot[v, #]==1&];
   If[Length[w] == 0, Return[bs], w = First[w]];
   
   new = Map[
-    Mod[# + w * GottesmanInner[v, #] + v * GottesmanInner[w, #], 2]&,
+    Mod[# + w * GottesmanDot[v, #] + v * GottesmanDot[w, #], 2]&,
     DeleteCases[Rest @ bs, w]
   ];
   Join[{v, w}, GottesmanBasis @ DeleteCases[new, Table[0, Length @ v]]]
@@ -735,21 +755,6 @@ GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := (
 ) /; Not[ArrayQ @ {xx, zz}]
 
 GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := MapThread[Riffle, {xx, zz}]
-
-
-(**** <GottesmanFlip> ****)
-
-GottesmanFlip::usage = "GottesmanFlip[vec] swaps the x-bit and z-bit of each qubit in Gottesman vector vec."
-
-GottesmanFlip[vec_?VectorQ] := 
-  Append[GottesmanFlip[Most @ vec], Last @ vec] /;
-  OddQ[Length @ vec]
-
-GottesmanFlip[vec_] := 
-  SparseArray @ Flatten[Reverse /@ Partition[vec, 2]] /;
-  VectorQ[vec, BinaryQ] && EvenQ[Length @ vec]
-
-(**** </GottesmanFlip> ****)
 
 
 (**** <Stabilizer> ****)
@@ -840,7 +845,7 @@ UpdateStabilizerGenerators::usage = "UpdateStabilizerGenerators[{g1, g2, \[Ellip
 UpdateStabilizerGenerators[gnr_?MatrixQ, msr_?VectorQ] := Module[
   { alt, chk, new },
   alt = Most[msr];
-  chk = Map[GottesmanInner[alt, #]&, Transpose @ Most @ Transpose @ gnr];
+  chk = Map[GottesmanDot[alt, #]&, Transpose @ Most @ Transpose @ gnr];
   chk = Position[chk, 1];
   If[chk == {}, Return @ gnr];
   alt = gnr[[First @ First @ chk]];
@@ -1029,7 +1034,7 @@ GottesmanShear::usage = "GottesmanShear[v, w] gives w + v\[LeftAngleBracket]v,w\
 GottesmanShear::incon = "Inconsistent vectors `` and ``."
 
 GottesmanShear[v_?VectorQ, w_?VectorQ] :=
-  Mod[w + v * GottesmanInner[v, w], 2] /;
+  Mod[w + v * GottesmanDot[v, w], 2] /;
   ArrayQ @ {v, w}
 
 GottesmanShear[v_?VectorQ, w_?VectorQ] := (
@@ -1047,7 +1052,7 @@ FindGottesmanShears[x_?VectorQ, y_?VectorQ] := Zero[{2, Length @ x}] /; x == y
 FindGottesmanShears[x_?VectorQ, y_?VectorQ] := {
   Mod[x + y, 2],
   Zero[Length @ x]
-} /; GottesmanInner[x, y] == 1
+} /; GottesmanDot[x, y] == 1
 
 FindGottesmanShears[x_?VectorQ, y_?VectorQ] := Module[
   { assoc, k, z },
@@ -1090,17 +1095,14 @@ solveBinaryEq[x:{_, _}] := If[First[x] == 0, {1, 0}, {0, 1}]
 
 GottesmanMatrixQ::usage = "GottesmanMatrixQ[mat] returns True if matrix mat is a (reduced) Gottesman matrix, which is symplectic with respect to the Gottesman inner prodcut."
 
-GottesmanMatrixQ[mat_?SquareMatrixQ] := Module[
-  { n = Length[mat],
-    x },
-  x = CircleTimes[One[n/2], ThePauli[1]];
-  ArrayZeroQ[Mod[mat . x . Transpose[mat], 2] - x]
-] /; MatrixQ[mat, BinaryQ] && EvenQ[Length @ mat]
+GottesmanMatrixQ[mat_?GttsMatrixQ] :=
+  ArrayZeroQ[GottesmanFlip[GottesmanDot[mat, mat]] - One[Dimensions @ mat]]
 
 GottesmanMatrixQ[_] = False
 
 
-GttsMatrixQ::usage = "GttsMatrixQ[mat] returns True if matrix mat is seemingly a (reduced) GottesmanMatrix.\nUnlike GottesmanMatrixQ, GttsMatrixQ does NOT test whether mat is actually symplectic or not. This test does not take really long, but may be expensive for a use in syntax arguments tests for functions when one has to call them repeatedly many times."
+GttsMatrixQ::usage = "GttsMatrixQ[mat] returns True if matrix mat is seemingly a (reduced) Gottesman matrix."
+(* NOTE: Unlike GottesmanMatrixQ, GttsMatrixQ does NOT test whether mat is actually symplectic or not. This test does not take really long, but may be expensive for a use in syntax arguments pattern tests for functions when one has to call them repeatedly many times." *)
 
 GttsMatrixQ[mat_?SquareMatrixQ] := MatrixQ[mat, BinaryQ] && EvenQ[Length @ mat]
 
@@ -1518,7 +1520,7 @@ GottesmanFactor[mat_?GttsMatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
     opf, oph, opa, opb, opv, cyc, new },
 
   ff = Transpose[Partition[#, 2]& /@ Take[mat, 2]];
-  kk = FirstPosition[GottesmanInner @@@ ff, 1];
+  kk = FirstPosition[GottesmanDot @@@ ff, 1];
   
   If[ MissingQ[kk], 
     Message[GottesmanFactor::badmat, MatrixForm @ mat];

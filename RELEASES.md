@@ -1,5 +1,12 @@
 # Release Notes
 
+## 3.6.1
+
+- GottesmanInner is greatly enhanced and renamed GottesmanDot.
+- GottesmanFlip is enhanced and supports matrices consisting of COLUMNS of Gottesman vectors.
+- Improved: GottesmanMatrixQ, CliffordLogarithmicNegativity
+- New: PauliDecoherence
+
 ## 3.6.0
 
 - Tools for efficient simulation of Clifford quantum circuits: CliffordState, CliffordUnitary, CliffordLogarithmicNegativity, CliffordCircuit, RandomCliffordCircuit, RandomCliffordCircuitSimulate, CliffordLogarithmicNegativity, RandomCliffordUnitary, RandomCliffordState, etc.

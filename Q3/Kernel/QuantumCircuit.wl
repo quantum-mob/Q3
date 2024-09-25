@@ -255,7 +255,8 @@ Options[QuantumCircuit] = {
   "UnitLength" -> 36, (* 72 is a good choice for presentation *)
   "Visible" -> None,
   "Invisible" -> None,
-  "PortSize" -> 0.65
+  "PortSize" -> 0.65,
+  "PostMeasurementDashes" -> True
 }
 
 Format[ qc:QuantumCircuit[__, opts___?OptionQ] ] :=
@@ -292,7 +293,10 @@ HoldPattern @
     yy = AssociationThread[ss, -yy];
 
     nodes = qcNodes[cc, Most @ xx, yy];
-    lines = qcLines[cc, xx, KeyDrop[yy, ww]];
+    lines = If[ "PostMeasurementDashes" /. {opts} /. Options[QuantumCircuit],
+      qcLines[cc, xx, KeyDrop[yy, ww]],
+      qcSimpleLines[cc, xx, KeyDrop[yy, ww]]
+    ];
 
     marks = qcMarks @ Cases[{gg}, _Mark, Infinity];
 
@@ -1175,32 +1179,40 @@ qcDrawGate[g_, x_, yy_Association] := g
 (**** </qcDrawGate> ****)
 
 
-qcLines::usage = "qcLines[gg, x, y] finds when Measurement occurs in the QuantumCircuit and renders the qubit line after Measurement in dashes."
+qcLines::usage = "qcLines[gg, x, y] finds when Measurement occurs in the QuantumCircuit and renders the qubit lines after Measurement in dashes."
 
 qcLines[ gg_List, xx_List, yy_Association ] := Module[
   { mm, zz, dashed, plain },
   mm = Map[
-    Cases[ {#}, Gate[{S_?QubitQ},
-        "Shape" -> "Measurement", ___?OptionQ] -> S, Infinity ]&,
+    Cases[ {#}, Gate[{S_?QubitQ}, "Shape" -> "Measurement", ___?OptionQ] -> S, Infinity ]&,
     gg
   ];
   mm = Flatten[ Thread /@ Thread[mm -> Most[xx]] ];
   mm = KeySort @ KeyTake[Association @ mm, Keys @ yy];
   
   zz = Lookup[yy, Keys @ mm];
-  dashed = Line @ Transpose@{
+  dashed = Line @ Transpose @ {
     Thread[ {Values @ mm, zz} ],
-    Thread[ {Last @ xx, zz} ] };
+    Thread[ {Last @ xx, zz} ]
+  };
 
-  plain = Association @ Thread[ Keys[yy] -> Last[xx] ];
-  plain = Join[ plain, mm ];
-  plain = Line @ Transpose@{
+  plain = AssociationThread[ Keys[yy] -> Last[xx] ];
+  plain = Join[plain, mm];
+  plain = Line @ Transpose @ {
     Thread[{0, Values @ yy}],
-    Transpose@{Values @ plain, Values @ yy} };
-
+    Transpose @ {Values @ plain, Values @ yy} 
+  };
   {{Dashed, dashed}, plain}
 ]
 
+
+qcSimpleLines::usage = "qcSimpleLines[gg, x, y] renders the qubit lines (ignoring measurements)."
+
+qcSimpleLines[ gg_List, xx_List, yy_Association ] :=
+  List @ Line @ Transpose @ {
+    Thread @ {0, Values @ yy},
+    Thread @ {Last @ xx, Values @ yy}
+  }
 
 (**** <qcPorts> ****)
 
