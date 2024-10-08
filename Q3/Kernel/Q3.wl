@@ -37,9 +37,14 @@ Get["Q3`Gottesman`"];
 Get["Q3`Clifford`"];
 Get["Q3`Grassmann`"];
 Get["Q3`Fock`"];
-Get["Q3`Wick`"];
-Get["Q3`NoisyWick`"];
-Get["Q3`Nambu`"];
+
+(* Get["Q3`Wick`"]; *)
+(* Get["Q3`NoisyWick`"]; *)
+(* Get["Q3`Nambu`"]; *)
+
+Get["Q3`Wick`"]; (* experimental *)
+Get["Q3`Nambu`"]; (* experimental *)
+
 Get["Q3`Wigner`"];
 Get["Q3`Dicke`"];
 Get["Q3`VonNeumann`"];

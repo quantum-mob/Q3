@@ -78,11 +78,11 @@ Pfaffian[mat_, opts:OptionsPattern[]] :=
     Automatic,
       If[ arrayRealQ[mat],
         PfaffianHessenberg[N @ mat],
-        PfaffianLTL[mat]
+        PfaffianLTL[mat, OptionValue @ Tolerance]
       ],
-    "Parlett-Reid", PfaffianLTL[mat, opts],
-    "Householder", PfaffianHouseholder[mat], 
-    "Hessenberg", PfaffianHessenberg[mat],
+    "Parlett-Reid", PfaffianLTL[mat, OptionValue @ Tolerance],
+    "Householder", PfaffianHouseholder[mat, OptionValue @ Tolerance], 
+    "Hessenberg", PfaffianHessenberg[mat, opts],
     _, Message[Pfaffian::method, OptionValue @ Method]; 0
   ] /; MatrixQ[mat, NumericQ]
 
@@ -106,7 +106,7 @@ SkewTridiagonalize[mat_, OptionsPattern[]] :=
   Switch[ OptionValue[Method],
     Automatic,
       Which[
-        arrayRealQ[mat], SkewHessenberg[N @ mat], (* cf. SkewHouseholderReal *)
+        arrayRealQ[mat], SkewHessenberg[N @ mat],
         True, SkewLTL[mat]
       ],
     "Parlett-Reid", SkewLTL[mat],
@@ -136,15 +136,15 @@ Pfaffian::indet = "Division by zero encountered: `` / ``."
 
 PfaffianLTL::usage = "PfaffianLTL[mat] computes the Pfaffian of the skew-symmetric matirx mat using the L T L^T decomposition."
 
-PfaffianLTL[mat_, OptionsPattern[Pfaffian]] := Module[
-  { tol = OptionValue[Tolerance],
+PfaffianLTL[mat_?MatrixQ, tol_?NumericQ] := Module[
+  { val = 1,
     new = mat,
-    val = 1,
     pos, del },
-  If[OddQ[Length @ new], Return[0]];
+  (* If[OddQ[Length @ new], Return[0]]; *)
+  (* NOTE: This is assumed. *)
   While[ Length[new] > 2,
     pos = 1 + First @ PositionLargest[Abs @ new[[1, 2;;]]];
-    (* NOTE: In principle, matrix new must be anti-symmetric. In practice, however, it may not be. Examples occur in WickTimeReversalMoment due to numerical errors. Hence, PositionLargest should exclude new[[1, 1]], which may not vanish in practice. *)
+    (* NOTE: In principle, matrix new must be anti-symmetric, and especially, new[[1, 1]] must vanish. In practice, however, this may not hold due to numerical errors. Examples occur often in WickTimeReversalMoment. Hence, PositionLargest should exclude new[[1, 1]], which may not vanish in practice. *)
     If[ZeroQ[new[[1, pos]], tol], Return[0]];
     If[ pos != 2,
       new[[{2, pos}, ;;]] = new[[{pos, 2}, ;;]]; 
@@ -153,7 +153,7 @@ PfaffianLTL[mat_, OptionsPattern[Pfaffian]] := Module[
     ];
     val *= new[[1, 2]];
 
-    del = KroneckerProduct[ 
+    del = KroneckerProduct[
       new[[1, 3;;]] / new[[1, 2]],
       new[[2, 3;;]] 
     ];
@@ -161,12 +161,7 @@ PfaffianLTL[mat_, OptionsPattern[Pfaffian]] := Module[
     new -= del - Transpose[del];
   ];
   Return[val * new[[1, 2]]]
-] /; MatrixQ[mat, NumericQ]
-
-PfaffianLTL[mat_] := (
-  Message[Pfaffian::number, mat];
-  Return[Indeterminate]
-)
+]
 
 
 SkewLTL::usage = "SkeyLTL[mat] computes the L T L^T decomposition of skew-symmetric matrix mat using the Parlett-Reid algorithm, and returns T, L and P, where T is a tridiagonal matrix, L a unit lower triangular matrix and P a permutation matrix such that P A P^T=L T L^T."
@@ -208,127 +203,49 @@ SkewLTL[Mat_] := Module[
 
 (**** <Method: Householder tridiagonalization> ****)
 
-HouseholderVector::usage = "HouseholderVector[vec] returns the Householder vector w of input vector vec; such that (I-2w w^\[Dagger]/w^\[Dagger]\[CenterDot]w) vec is a multiple of the unit vector Subscript[e, 1]."
-
-HouseholderVector[vec_?VectorQ] := If[
-  arrayRealQ[vec],
-  HouseholderVectorReal[vec],
-  HouseholderVectorComplex[vec]
-]
-
-HouseholderVectorReal[x_] := Module[
-  { nrm = Norm[x],
-    new, fac },
-  If[ nrm == 0, 
-    Return[{UnitVector[Lenth @ x, 1], 0, 0}],
-    fac = If[x[[1]] > 0, nrm, -nrm];
-    new = x;
-    new[[1]] += fac;
-    Return[{Normalize[new], 2, -fac} ]
-  ]
-]
-
-HouseholderVectorComplex[x_] := Module[
-  { nrm = Norm[x],
-    new, fac },
-  If[ nrm == 0,
-    Return[{UnitVector[Lenth @ x, 1], 0, 0}],
-    fac = nrm * Exp[I * Arg[First @ x]]; 
-    new = x;
-    new[[1]] += fac;
-    Return[{Normalize[new], 2, -fac} ]
-  ]
-]
-
-
 PfaffianHouseholder::usage = "PfaffianHouseholder[mat] calculates the Pfaffian of skew-symmetric matrix mat by using the Householder tridiagonalization."
 
-PfaffianHouseholder[mat_] := If[
-  arrayRealQ[mat], 
-  PfaffianHouseholderReal[mat], 
-  PfaffianHouseholderComplex[mat]
-]
-
-PfaffianHouseholderReal[mat_] := Module[
+PfaffianHouseholder[mat_?MatrixQ, tol_?NumericQ] := Module[
   { new = mat,
     dim = Length @ mat,
-    val, v, w, beta, alpha },
-  If[OddQ[dim], Return[0]];
+    val, del, vec, wec, fac },
   val = 1;
-  For[i = 1, i < dim-1, i += 2,
-    (* Compute the Householder vector. *) 
-    {v, beta, alpha} = HouseholderVectorReal[new[[i+1 ;; , i]]];
-    (* multiply with off-diagonal entry and determinant of Householder reflection *) 
-    val *= If[beta == 0, 1, -1]*(-alpha);
-    (* Update the matrix *)
-    w = beta * new[[i+1 ;; , i+1 ;;]] . v; 
-    new[[i+1 ;; , i+1 ;; ]] += Transpose[{v}] . {w} - Transpose[{w}] . {v}
-  ]; 
-  Return[ val * new[[dim-1, dim]] ]
+  While[ Length[new] > 2,
+    vec = new[[1, 2;;]];
+    If[ZeroQ[Max @ Abs @ vec, tol], Return @ 0];
+    new = new[[2;;, 2;;]];
+    {vec, fac} = HouseholderVectorShort[vec];
+    val *= fac;
+    wec = 2 * Dot[new, Conjugate @ vec];
+    del = KroneckerProduct[vec, wec];
+    new += del - Transpose[del];
+    new = new[[2;;, 2;;]]
+  ];
+  Return[ val * new[[1, 2]] ]
 ]
 
-PfaffianHouseholderComplex[mat_] := Module[
-  { new = mat,
-    dim = Length @ mat,
-    val, v, w, beta, alpha },
-  val = 1;
-  If[OddQ[dim], Return[0]];
-  For[i = 1, i < dim-1, i += 2, 
-    (* Compute the Householder vector. *) 
-    {v, beta, alpha} = HouseholderVectorComplex[new[[i+1 ;; , i]]]; 
-    (* multiply with off-diagonal entry and determinant of Householder reflection *) 
-    val *= If[beta == 0, 1, -1]*(-alpha);
-    (* Update the matrix. *)
-    w = beta * new[[i+1 ;; , i+1 ;;]] . Conjugate[v]; 
-    new[[i+1 ;; , i+1 ;; ]] += Transpose[{v}] . {w} - Transpose[{w}] . {v}
-  ]; 
-  Return[ val * new[[dim-1, dim]] ]
+HouseholderVectorShort[vec_] := Module[
+  { fac = Norm[vec],
+    new },
+  fac *= Exp[I * Arg[First @ vec]]; 
+  new = vec;
+  new[[1]] += fac;
+  Return[{Normalize[new], fac}]
 ]
 
 
 SkewHouseholder::usage = "SkewHouseholder[mat] returns {T, Q} such that mat=Q T Q^T for a skew-symmetric matrix mat, where T is a skew-symmetric tridiagonal matrix and Q is a unitary matrix.\nFor real matrices, this should be the same as what is returned from the HessenbergDecomposition.\nFor the complex case, there is no Mathematica equivalent.\nThis full tridiagonalization is at the heart of the Pfaffian calculation in the Householder method."
 
-SkewHouseholder[mat_?MatrixQ] := If[
-  arrayRealQ[mat], 
-  SkewHouseholderReal[mat],
-  SkewHouseholderComplex[mat]
-]
-
-(* NOTE: These functions are not needed for the Pfaffian calculation, they are here merely for testing. *)
-(* NOTE: These functions don't check (yet) if the input matrix is really skew-symmetric. *)
-
-SkewHouseholderReal[mat_] := Module[
+SkewHouseholder[mat_] := Module[
   {A, Q, v, beta, alpha},
   A = mat;
   Q = IdentityMatrix[Dimensions[A][[1]]];
   For[i = 1, i < Dimensions[A][[1]] - 1, i++, 
     (*Compute the Householder vector*)
-    {v, beta, alpha} = HouseholderVectorReal[A[[i + 1 ;; , i]]];
+    {v, beta, alpha} = HouseholderVectorFull[A[[i + 1 ;; , i]]]; 
     (*eliminate the entries in row and column i*) 
-    A[[i + 1, i]] = alpha;
-    A[[i, i + 1]] = -alpha;
-    A[[i + 2 ;;, i]] = 0; 
-    A[[i, i + 2 ;;]] = 0;
-    (* update the matrix *)
-    w = beta * A[[i + 1 ;; , i + 1 ;;]] . v; 
-    A[[i + 1 ;; , i + 1 ;; ]] += Transpose[{v}] . {w} - Transpose[{w}] . {v};
-    (*accumulate the Householder reflections into the full transformation*)
-    y = Q[[1 ;;, i + 1 ;;]] . v; 
-    Q[[1 ;; , i + 1 ;;]] -= beta*Transpose[{y}] . {v}
-  ]; 
-  Return[{A, Q, One @ Length @ mat}]
-]
-
-SkewHouseholderComplex[mat_] := Module[
-  {A, Q, v, beta, alpha},
-  A = mat;
-  Q = IdentityMatrix[Dimensions[A][[1]]];
-  For[i = 1, i < Dimensions[A][[1]] - 1, i++, 
-    (*Compute the Householder vector*)
-    {v, beta, alpha} = HouseholderVectorComplex[A[[i + 1 ;; , i]]]; 
-    (*eliminate the entries in row and column i*) 
-    A[[i + 1, i]] = alpha;
-    A[[i, i + 1]] = -alpha;
+    A[[i + 1, i]] = -alpha;
+    A[[i, i + 1]] = +alpha;
     A[[i + 2 ;;, i]] = 0; 
     A[[i, i + 2 ;;]] = 0;
     (*update the matrix*)
@@ -339,6 +256,20 @@ SkewHouseholderComplex[mat_] := Module[
     Q[[1 ;; , i + 1 ;;]] -= beta*Transpose[{y}] . Conjugate[{v}]
   ]; 
   Return[{A, Q, One @ Length @ mat}]
+]
+
+HouseholderVectorFull::usage = "HouseholderVectorFull[vec] returns the Householder vector w of input complex vector vec; such that (I-2w w^\[Dagger]/w^\[Dagger]\[CenterDot]w) vec is a multiple of the unit vector Subscript[e, 1]."
+
+HouseholderVectorFull[x_] := Module[
+  { fac = Norm[x],
+    new },
+  If[ ZeroQ[fac],
+    Return[{UnitVector[Lenth @ x, 1], 0, 0}],
+    fac *= Exp[I * Arg[First @ x]]; 
+    new = x;
+    new[[1]] += fac;
+    Return[{Normalize[new], 2, fac} ]
+  ]
 ]
 
 (**** </Method: Householder tridiagonalization> ****)
@@ -353,15 +284,15 @@ SkewHouseholderComplex[mat_] := Module[
 PfaffianHessenberg::usage = "PfaffianHessenberg[mat] calculates the Pfaffian of real skew-symmetric matrix mat by using the Hessenberg decomposition."
 
 (* NOTE: HessenbergDecomposition only receives a finite-preciesion matrix. *)
-PfaffianHessenberg[mat_?arrayRealQ] := Module[
+PfaffianHessenberg[mat_?arrayRealQ, ___] := Module[
   {H, Q},
   {Q, H} = HessenbergDecomposition[N @ mat];
   Det[Q] * Apply[Times, Diagonal[H, 1][[1;; ;;2]]]
 ]
 
-PfaffianHessenberg[mat_] := (
+PfaffianHessenberg[mat_, OptionsPattern[Pfaffian]] := (
   Message[Pfaffian::Hessenberg];
-  PfaffianLTL[mat]
+  PfaffianLTL[mat, OptionValue @ Tolerance]
 )
 
 
@@ -369,11 +300,11 @@ SkewHessenberg::usage = "SkewHessenberg[mat] tridiagonalize the real skew-symmet
 
 SkewHessenberg[mat_] := Which[
   Not @ FreeQ[Normal @ mat, _Complex, {2}], (* complex numbers *)
-  Message[Skew::Hessenberg];
-  SkewHouseholderComplex[mat],
+  Message[SkewTridiagonalize::Hessenberg];
+  SkewHouseholder[mat],
   FreeQ[Normal @ mat, _Real, {2}], (* exact numbers  *)
-  Message[Skew::Hessenberg];
-  SkewHouseholderReal[mat],
+  Message[SkewTridiagonalize::Hessenberg];
+  SkewHessenberg[N @ mat],
   True,
   Module[
     {H, Q},

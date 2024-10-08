@@ -374,8 +374,8 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
      },
 
     While[ True,
-      columnIdx = Part[hashPosList, Upshot @ hashPositionTupel];
-      chrVect[[columnIdx]] += Upshot @ Apply[
+      columnIdx = Part[hashPosList, Aggregate @ hashPositionTupel];
+      chrVect[[columnIdx]] += Aggregate @ Apply[
         Multinomial,
         Map[
           Part[#, 2]&,
@@ -396,7 +396,7 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
        ];
       hashPositionTupel = Join[
         Take[hashPositionTupel, r-1],
-        {Upshot @ Prime[supPartitionTupel[[r]]]},
+        {Aggregate @ Prime[supPartitionTupel[[r]]]},
         Prime @ Drop[pp,r]
        ]
      ]
@@ -886,7 +886,7 @@ KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
 yngSignatureTo::usage = "yngSignatureTo[a,b] compares the rows of (not necessarily stadnard) Young Tableaux a and b. Useful to construct polytabloid."
 
 yngSignatureTo[a_?anyTableauQ, b_?anyTableauQ] := 
- Upshot @ MapThread[SignatureTo, {a, b}]
+ Aggregate @ MapThread[SignatureTo, {a, b}]
 
 anyTableauQ::uage = "anyTableauQ[tb] returns True if tb is a legitimate (not necessarily standard) Young tableau."
 

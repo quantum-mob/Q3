@@ -7,7 +7,6 @@ BeginPackage["Q3`"]
 { WickRandomCircuit }; (* renamed *)
 { WeightedLog }; (* renamed *)
 { PauliDecompose, PauliDecomposeRL, PauliCompose, PauliCompseRL }; (* renamed *)
-{ WickGreensFunction };
 { FlavorNone, FlavorNoneQ }; (* renamed *)
 { TimesDaggerLeft, TimesLeftRight }; (* renamed *)
 { TheLower, TheRaise, RaiseLower }; (* renamed *)
@@ -186,11 +185,6 @@ GottesmanInner[any___] := (
 WickRandomCircuit[any___] := (
   Message[Q3General::renamed, "WickRandomCircuit", "RandomWickCircuitSimulate"];
   RandomWickCircuitSimulate[any]
-)
-
-WickGreensFunction[spec_] := (
-  Message[Q3General::renamed, "WickGreensFunction", "WickGreenFunction"];
-  WickGreenFunction[spec]
 )
 
 FlavorNone[spec_] := (

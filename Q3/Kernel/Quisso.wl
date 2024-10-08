@@ -1068,7 +1068,7 @@ Matrix[op:CNOT[c_Integer, t_Integer], n_Integer] :=
   MatrixEmbed[CirclePlus[ThePauli[0], ThePauli[1]], {c, t}, n]
 
 CNOT /: (* fallback *)
-Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Upshot @ Dimension @ ss]
+Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Aggregate @ Dimension @ ss]
 
 (**** </CNOT> ****)
 
@@ -1117,7 +1117,7 @@ Matrix[CZ[ss:{__?QubitQ}], tt:{___?SpeciesQ}] := With[
 CZ /:
 Multiply[pre___, CZ[ss:{__?QubitQ}], Ket[a_Association]] := (* performance booster *)
   Multiply[pre,
-    Switch[ Upshot @ Lookup[a, ss],
+    Switch[ Aggregate @ Lookup[a, ss],
       1, -Ket[a],
       _,  Ket[a]
     ]    
@@ -1485,12 +1485,12 @@ Matrix[
     { rr = Thread[Values[cc] -> Values[cc]],
       prj },
     prj = Dot @@ Matrix[MapThread[Construct, {Keys @ cc, rr}], ss];
-    Dot[prj, Matrix[op, ss]] + (One[Upshot @ Dimension @ ss] - prj)
+    Dot[prj, Matrix[op, ss]] + (One[Aggregate @ Dimension @ ss] - prj)
    ]
 
 ControlledGate /:
 Matrix[op_ControlledGate, ss:{__?SpeciesQ}] :=
-  op * One[Upshot @ Dimension @ ss] (* fallback *)
+  op * One[Aggregate @ Dimension @ ss] (* fallback *)
 
 
 ControlledGate /:
@@ -1552,7 +1552,7 @@ Elaborate @ ControlledPower[cc:{__?QubitQ}, op_, ___] :=
 
 ControlledPower /: (* fallback *)
 Matrix[op_ControlledPower, ss:{__?SpeciesQ}] :=
-  op * One[Upshot @ Dimension @ ss]
+  op * One[Aggregate @ Dimension @ ss]
 
 ControlledPower /:
 Matrix[ControlledPower[cc_, op_, ___], ss:{__?SpeciesQ}] :=
@@ -3433,7 +3433,7 @@ TheQuditKet[ cc:{_Integer, _Integer}.. ] := Module[
   pwrs = Reverse @ FoldList[ Times, 1, Reverse @ Rest @ dd ];
   bits = Last @ aa;
   p = 1 + bits.pwrs;
-  SparseArray[{p -> 1}, Upshot @ dd]
+  SparseArray[{p -> 1}, Aggregate @ dd]
 ]
 
 

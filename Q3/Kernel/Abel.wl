@@ -1333,7 +1333,7 @@ LieBasis::usage = "LieBasis[n] returns a basis of the vector space \[ScriptCapit
 LieBasis[op_?SpeciesQ] := LieBasis @ {op}
 
 LieBasis[qq:{__?SpeciesQ}] := Module[
-  { lbs = LieBasis[Upshot @ Dimension @ qq] },
+  { lbs = LieBasis[Aggregate @ Dimension @ qq] },
   ExpressionFor[#, qq]& /@ lbs
 ]
 

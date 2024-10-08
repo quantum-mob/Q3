@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.6.2
+
+- Improved: RandomWickCircuitSimulate, RandomWickCircuit, WickGreenFunction, WickEntanglementEntropy, WickMutualInformation, WickLogarithmicNegativity, WickState, WickUnitary, WickOperator, NambuState, NambuGaussian, NambuUnitary, NambuOperator, PfaffianHouseholder
+- New: RandomWickCircuit, FermiMeasurement, WickEntropy
+- Renamed: Upshot --> Aggregate
+
 ## 3.6.1
 
 - GottesmanInner is greatly enhanced and renamed GottesmanDot.

@@ -19,7 +19,7 @@ BeginPackage["Q3`"]
 { Ranking };
 { IntervalSize };
 
-{ Upshot, TheDelta};
+{ Aggregate, TheDelta};
 
 { Unless };
 
@@ -606,6 +606,8 @@ IntegerChop[x_?NumericQ, del_?Positive] := With[
   If[ZeroQ[x - n, del], n, x]
 ]
 
+IntegerChop[x_] = x
+
 (**** </IntegerChop> ****)
 
 
@@ -876,11 +878,11 @@ ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]
 
 (**** <TheDelta> ****)
 
-Upshot::usage = "Upshot[list] returns the multiplication of the elements in list.\nUpshot[list, n] multiplies all elements down to level n.\nUpshot[list, {n}] multiplies elements at level n.\nUpshot[list, {n1, n2}] multiplies elements at levels n1 through n2."
+Aggregate::usage = "Aggregate[list] returns the multiplication of the elements in list.\nAggregate[list, n] multiplies all elements down to level n.\nAggregate[list, {n}] multiplies elements at level n.\nAggregate[list, {n1, n2}] multiplies elements at levels n1 through n2."
 
-Upshot[data:(_List|_Association)] := Apply[Times, data]
+Aggregate[data:(_List|_Association)] := Apply[Times, data]
 
-Upshot[data:(_List|_Association), spec_] := Apply[Times, data, spec]
+Aggregate[data:(_List|_Association), spec_] := Apply[Times, data, spec]
 
 
 TheDelta::usage = "TheDelta[a, b, \[Ellipsis]] is almost equivalent to KroneckerDelta[a, b, \[Ellipsis]] but threads through lists."
@@ -890,7 +892,7 @@ SetAttributes[TheDelta, Orderless];
 TheDelta[x_List, y__List] := With[
   { val = KroneckerDelta[x, y] },
   Switch[ val,
-    _KroneckerDelta, Upshot[Thread @ val],
+    _KroneckerDelta, Aggregate[Thread @ val],
     _, val
   ]
 ]
@@ -1103,8 +1105,13 @@ Options[ArrayShort] = {
 ArrayShort[mat_SymmetrizedArray, rest___] := ArrayShort[Normal @ mat, rest]
 (* NOTE: SymmetrizedArray does not support Span properly. *)
 
-ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] :=
-  ArrayShort[{vec}, opts]
+ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := With[
+  { n = OptionValue["Size"] },
+  If[ Length[vec] > n,
+    Append[Take[vec, n], "\[Ellipsis]"],
+    Take[vec, UpTo @ n]
+  ] // Normal //Chop // IntegerChop
+]
 
 ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
   { dim = Flatten @ { OptionValue["Size"] },
@@ -1113,10 +1120,12 @@ ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module
   spc = Thread @ {0, Boole @ Thread[Dimensions[mat] > dim]};
   dim = Thread[1 ;; UpTo /@ dim];
   MatrixForm[
-    ArrayPad[Chop @ mat[[Sequence @@ dim]], spc, "\[Ellipsis]"],
+    ArrayPad[IntegerChop @ Chop @ mat[[Sequence @@ dim]], spc, "\[Ellipsis]"],
     FilterRules[{opts}, Options[MatrixForm]]
   ]
 ]
+
+ArrayShort[any_] = any
 
 (**** </ArrayShort> ****)
 

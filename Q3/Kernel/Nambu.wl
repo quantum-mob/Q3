@@ -1,14 +1,13 @@
 BeginPackage["Q3`"]
 
-
 { NambuMatrix, NambuMatrixQ };
-{ NambuUnitary, NambuGaussian, NambuHermitian, NambuGreen };
+{ NambuGaussian, NambuUnitary, NambuHermitian, NambuGreen };
 { NambuOne, NambuZero };
 
 { NambuState, RandomNambuState };
-{ NambuOperator, NambuOperatorFrom };
+{ NambuOperator, NambuOperatorFrom, NambuElements };
 { NambuGaussian, NambuUnitary, NambuHermitian, NambuGreen };
-{ RandomNambuGaussian, RandomNambuUnitary, RandomNambuHermitian, RandomNambuGreen };
+{ RandomNambuGaussian, RandomNambuUnitary, RandomNambuHermitian, RandomNambuGreen, RandomNambuOperator };
 
 Begin["`Private`"] (* Tools for Nambu matrices *)
 
@@ -78,106 +77,162 @@ AddElaborationPatterns[_NambuState, _NambuOperator, _NambuUnitary, _NambuGaussia
 
 (**** <NambuState> ****)
 
-NambuState::usage = "NambuState[uv, trs, {c1, c2, \[Ellipsis]}] represents a many-fermion quantum state for fermion modes {c1, c2, \[Ellipsis]} that has undergone the overall Bogoliubov-de Gennes type evolution specified by reduced Nambu matrix uv and quantum decoherence process (including measurements) specified by matrix trs."
+NambuState::usage = "NambuState[uv, trs] represents a many-body quantum state for non-interacting fermion modes that has undergone the overall Bogoliubov-de Gennes (BdG) type time evolution in the Nambu space specified by reduced Nambu matrix uv and decoherence processes (including measurements) specified by matrix trs."
 
-NambuState::bad = "Unsupported form of Wick state ``."
+NambuState::bad = "Unsupported form of Nambu state ``."
 
 NambuState /:
-MakeBoxes[ws:NambuState[uv:{_?MatrixQ, _?MatrixQ}, ops:(_?MatrixQ|{}), cc:{___?FermionQ}], fmt_] :=
+MakeBoxes[ws:NambuState[uv_?NambuMatrixQ, ops_?MatrixQ, ___], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     NambuState, ws, None,
-    { BoxForm`SummaryItem @ { "Modes: ", cc },
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ ws },
       BoxForm`SummaryItem @ { "Depth: ", Length @ ops}
     },
     { BoxForm`SummaryItem @ { "Overall unitary: ", ArrayShort /@ uv },
-      BoxForm`SummaryItem @ { "Operator transforms: ",
-        If[ops == {}, {}, ArrayShort /@ First @ PartitionInto[ops, {1, 2}]] }   
+      BoxForm`SummaryItem @ { "Operator transforms: ", ArrayShort /@ First @ PartitionInto[ops, {1, 2}] }   
     },
     fmt,
     "Interpretable" -> Automatic
   ]
 
-NambuState[cc:{__?FermionQ}] :=
-  NambuState[NambuOne[Length @ cc], {}, cc]
-
-NambuState[ops_?MatrixQ, cc:{__?FermionQ}] :=
-  NambuState[NambuOne[Length @ cc], ops, cc]
-
-NambuState[Ket[aa_Association]] := Module[
-  { cc = Select[Keys @ aa, FermionQ],
-    dd = Select[Keys @ theKetTrim @ aa, FermionQ] },
-  NambuState[
-    NambuOne[Length @ cc],
-    First @ NambuOperatorFrom[Dagger @ dd, cc],
-    cc
+NambuState /: (* vacuum state times a constant *)
+MakeBoxes[ws:NambuState[uv_?NambuMatrixQ, z_?NumericQ, ___], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    NambuState, ws, None,
+    { BoxForm`SummaryItem @ { "Modes: ", Length[First @ uv] },
+      BoxForm`SummaryItem @ { "Type: ", Switch[z, 0, Null, _, Vacuum] }
+    },
+    { BoxForm`SummaryItem @ { "Overall unitary: ", ArrayShort /@ uv },
+      BoxForm`SummaryItem @ { "Norm: ", Abs[z] }
+    },
+    fmt,
+    "Interpretable" -> Automatic
   ]
+
+
+(* vacuum & null states *)
+(* NambuState[{u, v}, 0]: the null state *)
+(* NambuState[{u, v}, 1]: the vacuum state *)
+(* NambuState[{u, v}, z]: the vacuum state with overall phase factor z *)
+NambuState[{z_?NumericQ, n_Integer}] :=
+  NambuState[NambuOne[n], z]
+
+(* vacuum state *)
+NambuState[n_Integer] :=
+  NambuState[NambuOne[n], 1]
+
+(* vacuum state *)
+NambuState[uv_?NambuMatrixQ, {}] :=
+  NambuState[NambuOne[Length @ First @ uv], 1]
+(* NOTE: The left-hand form cannot handle the multiplication by a global factor. *)
+
+(* canonicalization *)
+NambuState[ops_?MatrixQ] :=
+  NambuState[NambuOne[Last @ Dimensions @ ops], ops]
+
+(* initialization *)
+NambuState[vv_/;VectorQ[vv, BinaryQ], n_Integer, rest___] := Module[
+  { ww = PadRight[vv, n, vv],
+    kk },
+  kk = Flatten @ Position[ww, 1];
+  NambuState[NambuOne[n], One[2n][[n+kk]], rest]
 ]
 
-NambuState[ops:{__Dagger?AnyFermionQ}, cc:{__?FermionQ}] :=
-  NambuState @ Ket[cc -> 0, Peel[ops] -> 1]
+(* initialization *)
+NambuState[Rule[n_Integer, vv_/;VectorQ[vv, BinaryQ]], rest___] :=
+  NambuState[vv, n, rest]
 
+(* initialization *)
+NambuState[Rule[cc:{__?FermionQ}, vv_/;VectorQ[vv, BinaryQ]], rest___] :=
+  NambuState[vv, Length @ cc, rest]
+
+(* initialization *)
+NambuState[Ket[aa_Association]] := With[
+  { cc = Select[Keys @ aa, FermionQ] },
+  NambuState[Lookup[aa, cc], Length @ cc]
+]
+
+
+NambuState /: (* vacuum state *)
+NormSquare[NambuState[_?NambuMatrixQ, z_?NumericQ, ___]] :=
+  AbsSquare[z]
 
 NambuState /:
-NormSquare[NambuState[_, {}, cc:{___?FermionQ}]] = 1
+NormSquare[NambuState[_?NambuMatrixQ, ops_?MatrixQ, ___]] := 
+  Re @ Sqrt @ Quiet[Det @ WickMatrix @ Join[NambuConjugateReverse @ ops, ops], Det::luc]
 
 NambuState /:
-NormSquare[NambuState[_, ops_?MatrixQ, cc:{__?FermionQ}]] := 
-  Re @ Sqrt @ Quiet[Det @ WickMatrix @ Join[theConjugateReverse @ ops, ops], Det::luc]
+Norm[ws:NambuState[_?NambuMatrixQ, _, ___]] :=
+  Sqrt[NormSquare @ ws]
+(* NOTE: Both form vacuum and non-vacuum states *)
+
+
+NambuState /: (* vacuum state *)
+Normalize[NambuState[uv_?NambuMatrixQ, _?NumericQ, rest___]] :=
+  NambuState[uv, 1, rest]
 
 NambuState /:
-Norm[ws:NambuState[_, _?MatrixQ, {__?FermionQ}]] := Sqrt[NormSquare @ ws]
-
-
-NambuState /:
-Normalize[ws:NambuState[_, {}, {__?FermionQ}]] = ws
-
-NambuState /:
-Normalize[ws:NambuState[uv_?NambuMatrixQ, ops_?MatrixQ, cc:{___?FermionQ}]] := Module[
+Normalize[in:NambuState[uv_?NambuMatrixQ, ops_?MatrixQ, rest___]] := Module[
   { trs = uv,
     new },
   Quiet @ Check[
-    new = ops * Power[Norm @ ws, -1/Length[ops]],
-    trs = NambuOne[Length @ cc];
-    new = Zero @ {1, 2 * Length[cc]}
+    new = ops * Power[Norm @ in, -1/Length[ops]],
+    trs = NambuOne[Length @ First @ uv];
+    new = 0 (* null state *)
   ];
-  NambuState[trs, new, cc]
+  NambuState[trs, new, rest]
 ]
 
 
 NambuState /:
-Expand[ws:NambuState[_?NambuMatrixQ, _?MatrixQ, cc:{___?FermionQ}]] :=
-  State[Matrix[ws, cc], cc]
-
+Times[z_?NumericQ, NambuState[uv_?NambuMatrixQ, ops_?MatrixQ, rest___]] := Module[
+  { new },
+  new = ops * Power[z, 1/Length[ops]];
+  NambuState[uv, new, rest]
+]
 
 NambuState /:
-Elaborate[ws:NambuState[_?NambuMatrixQ, _?MatrixQ, cc:{__?FermionQ}]] :=
+Times[z_?NumericQ, NambuState[uv_?NambuMatrixQ, val_?NumericQ, rest___]] :=
+  NambuState[uv, z val, rest]
+
+
+NambuState /: (* vacuum state *)
+ExpressionFor[NambuState[_, z_?NumericQ, ___], cc:{__?FermionQ}] :=
+  z * Ket[cc]
+
+NambuState /:
+ExpressionFor[ws:NambuState[_?NambuMatrixQ, _?MatrixQ, ___], cc:{__?FermionQ}] :=
   ExpressionFor[Matrix[ws, cc], cc]
 
 NambuState /:
-Elaborate[ws_NambuState] = ws (* fallback *)
+ExpressionFor[ws_NambuState, ___] = ws (* fallback *)
 
+
+NambuState /: (* vacuum state *)
+Matrix[NambuState[_?NambuMatrixQ, z_?NumericQ], ss:{__?SpeciesQ}] :=
+  z * Matrix[Ket @ ss, ss]
 
 NambuState /:
-Matrix[ws:NambuState[_, _, cc:{__?FermionQ}]] := Matrix[ws, cc]
-
-NambuState /:
-Matrix[ws:NambuState[uv_?NambuMatrixQ, trs_?MatrixQ, cc:{__?FermionQ}], ss:{__?SpeciesQ}] :=
+Matrix[NambuState[uv_?NambuMatrixQ, trs_?MatrixQ, ___], ss:{__?SpeciesQ}] :=
   Module[
-    { ops = WickElements[trs, cc],
-      vec },
+    { cc = Fermions[ss],
+      ops, vec },
+    ops = NambuElements[trs, cc];
     vec = SparseArray @ Fold[
       Dot[#2, #1]&,
       Matrix[Ket[], ss],
       Reverse @ Matrix[ops, ss]
     ];
-    Matrix[NambuUnitary[uv, cc], ss] . vec
+    Matrix[NambuUnitary @ uv, ss] . vec
   ]
 
-NambuState /: (* fallback *)
-Matrix[ws_NambuState, rest___] := (
-  Message[NambuState::bad, ws];
-  Matrix[Ket[], rest]
-)
+NambuState /:
+Matrix[ws_NambuState] := Module[
+  { c, cc },
+  Let[Fermion, c];
+  cc = c[Range @ FermionCount @ ws],
+  Matrix[ws, cc]
+]
 
 
 NambuState /:
@@ -189,34 +244,55 @@ MultiplyKind[_NambuState] = Fermion
 (**** </NambuState> ****)
 
 
-RandomNambuState::usage = "RandomNambuState[k, {c1, c2, \[Ellipsis]}] randomly generates a depth-k BdG state with half filling on fermion modes {c1, c2, \[Ellipsis]}.\nNambuState[{c1, c2, \[Ellipsis]}] chooses depth k randomly from {1, 2, \[Ellipsis], 10}."
+RandomNambuState::usage = "RandomNambuState[k, n] randomly generates a depth-k BdG state with half filling on n fermion modes\nRandomNambuState[n] selects depth k randomly from {1, 2,\[Ellipsis], n}."
 
-RandomNambuState[cc:{__?FermionQ}] :=
-  RandomNambuState[RandomInteger[{1, 10}], cc]
-
-RandomNambuState[k_Integer?Positive, cc:{__?FermionQ}] := Module[
+RandomNambuState[k_Integer?Positive, n_Integer] := Module[
   { mm, in },
-  mm = Table[RandomVector[2 Length @ cc], k];
-  in = NambuState[Dagger @ cc[[;; ;;2]], cc];
-  Normalize[ RandomNambuUnitary[cc] ** NambuOperator[mm, cc][in] ]
+  mm = RandomMatrix[{k, 2 n}];
+  in = NambuState[{1, 0}, n];
+  Normalize[ RandomNambuUnitary[n] ** NambuOperator[mm][in] ]
 ]
+
+RandomNambuState[n_Integer] :=
+  RandomNambuState[RandomChoice @ Range[2, n, 2], n]
+
+(* backward compatibility *)
+RandomNambuState[k_Integer?Positive, cc:{__?FermionQ}] :=
+  RandomNambuState[k, Length @ cc]
+
+(* backward compatibility *)
+RandomNambuState[cc:{__?FermionQ}] :=
+  RandomNambuState[Length @ cc]
+
+
+(**** <NambuConjugateReverse> ****)
+
+NambuConjugateReverse::usage = "NambuConjugateReverse[mat] returns the reverse of {Conjugate[B], Conjugate[A]} for matrix mat with block structure mat = {A, B}."
+
+(* for the BdG models *)
+NambuConjugateReverse[ops_?MatrixQ] := With[
+  { new = ArrayFlatten[Reverse /@ PartitionInto[ops, {1, 2}]] },
+  Conjugate @ Reverse @ new
+]
+
+(**** </NambuConjugateReverse> ****)
 
 
 (**** <NambuUnitary> ****)
 
-NambuUnitary::usage = "NambuUnitary[{u, v}] represents a Bogoliubov-de Gennes transform in the Nambu space that is characterized by the n\[Times]n upper-left and upper-right blocks u and v, respectively.\nNambuUnitary[spec, {c1,c2,\[Ellipsis]}] indicates that the operator is acting on fermion modes {c1,c2,\[Ellipsis]}."
+NambuUnitary::usage = "NambuUnitary[{u, v}] represents a Bogoliubov-de Gennes transform in the Nambu space that is characterized by the n\[Times]n upper-left and upper-right blocks u and v, respectively."
 
 NambuUnitary /:
 MakeBoxes[op:NambuUnitary[uv_?NambuMatrixQ, rest___], fmt_] := Module[
   { cc = {rest} },
   cc = Which[ 
-    Length[cc] == 0, "Unspecified",
-    MatchQ[First @ cc, {__?FermionQ}], First[cc],
-    True, "Unspecified"
+    Length[cc] == 0, All,
+    MatchQ[First @ cc, {__Integer}], First[cc],
+    True, All
   ];
   BoxForm`ArrangeSummaryBox[
     NambuUnitary, op, None,
-    { BoxForm`SummaryItem @ { "Target: ", cc },
+    { BoxForm`SummaryItem @ { "Target: ", ArrayShort @ cc },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ uv }
     },
     { BoxForm`SummaryItem @ { "Blocks: ", Map[ArrayShort, uv] }
@@ -226,11 +302,23 @@ MakeBoxes[op:NambuUnitary[uv_?NambuMatrixQ, rest___], fmt_] := Module[
   ]
 ] /; ArrayQ[uv]
 
-NambuUnitary[0, cc:{___?FermionQ}, rest___] := (* zero in the Nambu space *)
-  NambuUnitary[NambuZero[Length @ cc], cc, rest]
+(* zero in the Nambu space *)
+NambuUnitary[0, n_Integer, rest___] :=
+  NambuUnitary[NambuZero[n], rest]
 
-NambuUnitary[1, cc:{___?FermionQ}, rest___] := (* identity in the Nambu space *)
-  NambuUnitary[NambuOne[Length @ cc], cc, rest]
+(* zero in the Nambu space *)
+(* backward compatibility *)
+NambuUnitary[0, cc:{___?FermionQ}, rest___] :=
+  NambuUnitary[0, Length @ cc, rest]
+
+(* identity in the Nambu space *)
+NambuUnitary[1, n_Integer, rest___] :=
+  NambuUnitary[NambuOne[n], rest]
+
+(* identity in the Nambu space *)
+(* backward compatibility *)
+NambuUnitary[1, cc:{___?FermionQ}, rest___] :=
+  NambuUnitary[1, Length @ cc, rest]
 
 NambuUnitary[mat_?SquareMatrixQ, rest___] :=
   NambuUnitary[NambuMatrix @ mat, rest]
@@ -238,15 +326,17 @@ NambuUnitary[mat_?SquareMatrixQ, rest___] :=
 NambuUnitary[{mat_?SquareMatrixQ, 0}, rest___] :=
   NambuUnitary[NambuMatrix @ {mat, 0}, rest]
 
-NambuUnitary[NambuUnitary[uv_?NambuMatrixQ, ___], rest___] :=
-  NambuUnitary[uv, rest]
+NambuUnitary[NambuUnitary[uv_?NambuMatrixQ, rest___], more___] :=
+  NambuUnitary[uv, more, rest]
 
 
 NambuUnitary /:
-MatrixForm @ NambuUnitary[mm_?NambuMatrixQ, rest___] := Map[MatrixForm, mm]
+MatrixForm @ NambuUnitary[mm_?NambuMatrixQ, rest___] :=
+  Map[MatrixForm, mm]
 
 NambuUnitary /:
-ArrayShort @ NambuUnitary[mm_?NambuMatrixQ, rest___] := Map[ArrayShort, mm]
+ArrayShort @ NambuUnitary[mm_?NambuMatrixQ, rest___] :=
+  Map[ArrayShort, mm]
 
 NambuUnitary /:
 Normal @ NambuUnitary[{u_?MatrixQ, v_?MatrixQ}, ___] :=
@@ -260,37 +350,31 @@ Dagger @ NambuUnitary[{u_?MatrixQ, v_?MatrixQ}, rest___] :=
   NambuUnitary[{Topple @ u, Transpose @ v}, rest]
 
 NambuUnitary /:
-Plus[NambuUnitary[a_, opts___?OptionQ], NambuUnitary[b_, more___?OptionQ]] :=
-  NambuUnitary[a + b, opts, more]
-
-NambuUnitary /:
-Plus[NambuUnitary[a_, cc_, any___], NambuUnitary[b_, cc_, other___]] :=
-  NambuUnitary[a + b, cc, any, other]
+Plus[NambuUnitary[a_, any___], NambuUnitary[b_, other___]] :=
+  NambuUnitary[a + b, any, other]
 
 NambuUnitary /:
 Times[z_, NambuUnitary[mm_, rest___]] :=
   NambuUnitary[z * mm, rest]
 
 NambuUnitary /:
-Dot[NambuUnitary[a_, opts___?OptionQ], NambuUnitary[b_, more___?OptionQ]] :=
-  NambuUnitary[theNambuDot[a, b], opts, more]
-
-NambuUnitary /:
-Dot[NambuUnitary[a_, cc_, any___], NambuUnitary[b_, cc_, other___]] :=
+Dot[NambuUnitary[a_, any___], NambuUnitary[b_, other___]] :=
   NambuUnitary[theNambuDot[a, b], any, other]
 
 
 NambuUnitary /:
-Elaborate[op:NambuUnitary[uv_?NambuMatrixQ, cc:{__?FermionQ}, ___]] :=
-  ExpressionFor[Matrix[op, cc], cc]
+ExpressionFor[op:NambuUnitary[uv_?NambuMatrixQ, ___], ss:{__?SpeciesQ}] :=
+  ExpressionFor[Matrix[op, ss], ss]
 
 NambuUnitary /: (* fallback *)
-Elaborate[op_NambuUnitary] = op
+ExpressionFor[op_NambuUnitary, ___] = op
 
 
 NambuUnitary /:
-Matrix[op:NambuUnitary[uv_?NambuMatrixQ, cc:{__?FermionQ}, ___], ss:{__?SpeciesQ}] := 
-  MatrixExp[I*Matrix[NambuHermitian[-I*MatrixLog[Normal @ op], cc], ss]]
+Matrix[op:NambuUnitary[uv_?NambuMatrixQ, ___], ss:{__?SpeciesQ}] := With[
+  { barH = -I*MatrixLog[Normal @ op] },
+  MatrixExp[I*Matrix[NambuHermitian @ barH, ss]]
+]
 
 NambuUnitary /: (* fallback *)
 Matrix[op_NambuUnitary, ss:{__?SpeciesQ}] := op * Matrix[1, ss]
@@ -308,32 +392,28 @@ Multiply[pre___, opr_NambuUnitary, ws_NambuState] := Multiply[pre, opr[ws]]
 NambuUnitary /:
 Multiply[pre___, opr_NambuUnitary, fs_Ket] := Multiply[pre, opr[NambuState @ fs]]
 
-NambuUnitary[new_?NambuMatrixQ, cc_, ___][NambuState[uv_, ops_, cc_]] :=
-  NambuState[theNambuDot[new, uv], ops, cc]
-
-
-NambuUnitary /:
-ParseGate[NambuUnitary[uv_?NambuMatrixQ, cc:{___?FermionQ}, opts___?OptionQ], more___?OptionQ] :=
-  Gate[cc, more, opts, "Label" -> "U"]
+NambuUnitary[new_?NambuMatrixQ, ___][NambuState[uv_, ops_, rest___]] :=
+  NambuState[theNambuDot[new, uv], ops, rest]
+(* NOTE: This works also for vacuum state. *)
 
 (**** </NambuUnitary> ****)
 
 
 (**** <NambuHermitian> ****)
 
-NambuHermitian::usage = "NambuHermitian[{ham, del}] represents a quadratic Hermitian operator in the Nambu space that is characterized by an n\[Times]n Hamitian matrix ham and an n\[Times]n anti-symmetric matrix del.\nNambuHermitian[spec, {c1,c2,\[Ellipsis]}] indicates that the operator is acting on fermion modes {c1,c2,\[Ellipsis]}."
+NambuHermitian::usage = "NambuHermitian[{ham, del}] represents a quadratic Hermitian operator in the Nambu space that is characterized by an n\[Times]n Hamitian matrix ham and an n\[Times]n anti-symmetric matrix del."
 
 NambuHermitian /:
 MakeBoxes[op:NambuHermitian[mm_?NambuMatrixQ, rest___], fmt_] := Module[
   { cc = {rest} },
   cc = Which[ 
-    Length[cc] == 0, "Unspecified",
-    MatchQ[First @ cc, {__?FermionQ}], First[cc],
-    True, "Unspecified"
+    Length[cc] == 0, All,
+    MatchQ[First @ cc, {__Integer}], First[cc],
+    True, All
   ];
   BoxForm`ArrangeSummaryBox[
     NambuHermitian, op, None,
-    { BoxForm`SummaryItem @ { "Target: ", cc },
+    { BoxForm`SummaryItem @ { "Target: ", ArrayShort @ cc },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ mm }
     },
     { BoxForm`SummaryItem @ { "Blocks: ", Map[ArrayShort, mm] }
@@ -343,11 +423,23 @@ MakeBoxes[op:NambuHermitian[mm_?NambuMatrixQ, rest___], fmt_] := Module[
   ]
 ] /; ArrayQ[mm]
 
-NambuHermitian[0, cc:{___?FermionQ}, rest___] := (* zero in the Nambu space *)
-  NambuHermitian[NambuZero[Length @ cc], cc, rest]
+(* zero in the Nambu space *)
+NambuHermitian[0, n_Integer, rest___] :=
+  NambuHermitian[NambuZero[n], rest]
 
-NambuHermitian[1, cc:{___?FermionQ}, rest___] := (* identity in the Nambu space *)
-  NambuHermitian[NambuOne[Length @ cc], cc, rest]
+(* zero in the Nambu space *)
+(* backward compatibility *)
+NambuHermitian[0, cc:{___?FermionQ}, rest___] :=
+  NambuHermitian[0, Length @ cc, rest]
+
+(* identity in the Nambu space *)
+NambuHermitian[1, n_Integer, rest___] :=
+  NambuHermitian[NambuOne[n], rest]
+
+(* identity in the Nambu space *)
+(* backward compatibility *)
+NambuHermitian[1, cc:{___?FermionQ}, rest___] :=
+  NambuHermitian[1, Length @ cc, rest]
 
 NambuHermitian[mat_?SquareMatrixQ, rest___] :=
   NambuHermitian[NambuMatrix @ mat, rest]
@@ -355,15 +447,17 @@ NambuHermitian[mat_?SquareMatrixQ, rest___] :=
 NambuHermitian[{mat_?SquareMatrixQ, 0}, rest___] :=
   NambuHermitian[NambuMatrix @ {mat, 0}, rest]
 
-NambuHermitian[NambuHermitian[uv_?NambuMatrixQ, ___], rest___] :=
-  NambuHermitian[uv, rest]
+NambuHermitian[NambuHermitian[uv_?NambuMatrixQ, rest___], more___] :=
+  NambuHermitian[uv, more, rest]
 
 
 NambuHermitian /:
-MatrixForm @ NambuHermitian[mm_?NambuMatrixQ, rest___] := Map[MatrixForm, mm]
+MatrixForm @ NambuHermitian[mm_?NambuMatrixQ, rest___] :=
+  Map[MatrixForm, mm]
 
 NambuHermitian /:
-ArrayShort @ NambuHermitian[mm_?NambuMatrixQ, rest___] := Map[ArrayShort, mm]
+ArrayShort @ NambuHermitian[mm_?NambuMatrixQ, rest___] :=
+  Map[ArrayShort, mm]
 
 NambuHermitian /:
 Normal @ NambuHermitian[{ham_, del_}, ___] :=
@@ -376,46 +470,36 @@ NambuHermitian /:
 Dagger[ham:NambuHermitian[{_?MatrixQ, _?MatrixQ}, rest___]] = ham
 
 NambuHermitian /:
-Plus[NambuHermitian[a_, opts___?OptionQ], NambuHermitian[b_, more___?OptionQ]] :=
-  NambuHermitian[a + b, opts, more]
-
-NambuHermitian /:
-Plus[NambuHermitian[a_, cc_, any___], NambuHermitian[b_, cc_, other___]] :=
-  NambuHermitian[a + b, cc, any, other]
+Plus[NambuHermitian[a_, any___], NambuHermitian[b_, other___]] :=
+  NambuHermitian[a + b, any, other]
 
 NambuHermitian /:
 Times[z_, NambuHermitian[mm_, rest___]] :=
   NambuHermitian[z * mm, rest]
 
 NambuHermitian /:
-Dot[NambuHermitian[a_, cc_, any___], NambuHermitian[b_, cc_, other___]] :=
+Dot[NambuHermitian[a_, any___], NambuHermitian[b_, other___]] :=
   NambuHermitian[theNambuDot[a, b], any, other]
 
 
 NambuHermitian /:
-Elaborate[op:NambuHermitian[uv_?NambuMatrixQ, cc:{__?FermionQ}, ___]] :=
-  ExpressionFor[Matrix[op, cc], cc]
+ExpressionFor[op:NambuHermitian[_?NambuMatrixQ, ___], ss:{__?SpeciesQ}] :=
+  ExpressionFor[Matrix[op, ss], ss]
 
 NambuHermitian /: (* fallback *)
-Elaborate[op_NambuHermitian] = op
+ExpressionFor[op_NambuHermitian, ___] = op
 
 
 NambuHermitian /:
-Matrix[NambuHermitian[ham_?NambuMatrixQ, cc:{__?FermionQ}, ___], ss:{__?SpeciesQ}] := Module[
+Matrix[NambuHermitian[ham_?NambuMatrixQ, ___], ss:{__?SpeciesQ}] := Module[
   { ff = Select[ss, FermionQ],
     rr = Select[ss, Not @* FermionQ],
-    mm, n },
-  n = Length[ff];
+    mm, nf },
+  nf = Length[ff];
   
   (* Jordan-Wigner transformation *)
-  mm = Table[PadRight[Table[3, k-1], n], {k, n}] + 4 * One[n];
+  mm = Table[PadRight[Table[3, k-1], nf], {k, nf}] + 4*One[nf];
   mm = ThePauli /@ mm;
-  
-  ff = Thread[ff -> mm];
-  rr = Thread[rr -> Map[One, Dimension @ rr]];
-  
-  (* Convert the Nambu spinor to a list of matrices *)
-  mm = Values @ KeyTake[Join[ff, rr], cc];
   mm = Join[mm, Topple /@ mm];
 
   TensorContract[
@@ -435,37 +519,36 @@ NambuHermitian /:
 MultiplyKind[_NambuHermitian] = Fermion
 
 NambuHermitian /:
-Multiply[pre___, opr_NambuHermitian, ws_NambuState] := Multiply[pre, opr[ws]]
+Multiply[pre___, opr_NambuHermitian, ws_NambuState] := Multiply[pre, opr @ ws]
 
 NambuHermitian /:
 Multiply[pre___, opr_NambuHermitian, fs_Ket] := Multiply[pre, opr[NambuState @ fs]]
 
-NambuHermitian[new_?NambuMatrixQ, cc_, ___][NambuState[uv_, ops_, cc_]] :=
-  NambuState[theNambuDot[new, uv], ops, cc]
-
-
-NambuHermitian /:
-ParseGate[NambuHermitian[uv_?NambuMatrixQ, cc:{___?FermionQ}, opts___?OptionQ], more___?OptionQ] :=
-  Gate[cc, more, opts, "Label" -> "U"]
+(*
+NambuHermitian[new_?NambuMatrixQ, ___][NambuState[uv_, ops_, rest___]] :=
+  NambuState[theNambuDot[new, uv], ops, rest]
+  *)
+(* NOTE: This is dangerous, the resulting uv is not unitary any longer. *)
+(* NOTE: As long as syntax is concerned, this works also for vacuum state. *)
 
 (**** </NambuHermitian> ****)
 
 
 (**** <NambuGreen> ****)
 
-NambuGreen::usage = "NambuGreen[{grn, anm}] represents the matrix of a single-particle Green's functions in the Nambu space that is characterized by the n\[Times]n matrix grn of normal Green's functions and the n\[Times]n matrix anm of anomalous Green's functions.\nNambuGreen[spec, {c1,c2,\[Ellipsis]}] indicates that the Green's functions are for fermion modes {c1,c2,\[Ellipsis]}."
+NambuGreen::usage = "NambuGreen[{grn, anm}] represents the matrix of single-particle Green's functions in the Nambu space that is characterized by the n\[Times]n matrix grn of normal Green's functions and the n\[Times]n matrix anm of anomalous Green's functions."
 
 NambuGreen /:
-MakeBoxes[op:NambuGreen[mm_?NambuMatrixQ, rest___], fmt_] := Module[
+MakeBoxes[grn:NambuGreen[mm_?NambuMatrixQ, rest___], fmt_] := Module[
   { cc = {rest} },
   cc = Which[ 
-    Length[cc] == 0, "Unspecified",
+    Length[cc] == 0, All,
     MatchQ[First @ cc, {__?FermionQ}], First[cc],
-    True, "Unspecified"
+    True, All
   ];
   BoxForm`ArrangeSummaryBox[
-    NambuGreen, op, None,
-    { BoxForm`SummaryItem @ { "Modes: ", cc },
+    NambuGreen, grn, None,
+    { BoxForm`SummaryItem @ { "Modes: ", ArrayShort @ cc },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ mm }
     },
     { BoxForm`SummaryItem @ { "Blocks: ", Map[ArrayShort, mm] }
@@ -475,11 +558,24 @@ MakeBoxes[op:NambuGreen[mm_?NambuMatrixQ, rest___], fmt_] := Module[
   ]
 ] /; ArrayQ[mm]
 
-NambuGreen[0, cc:{___?FermionQ}, rest___] := (* zero in the Nambu space *)
-  NambuGreen[NambuZero[Length @ cc], cc, rest]
+(* zero in the Nambu space *)
+NambuGreen[0, n_Integer, rest___] :=
+  NambuGreen[NambuZero[n], rest]
 
-NambuGreen[1, cc:{___?FermionQ}, rest___] := (* identity in the Nambu space *)
-  NambuGreen[NambuOne[Length @ cc], cc, rest]
+(* zero in the Nambu space *)
+(* backward compatibility *)
+NambuGreen[0, cc:{___?FermionQ}, rest___] :=
+  NambuGreen[0, Length @ cc, rest]
+
+(* identity in the Nambu space *)
+NambuGreen[1, n_Integer, rest___] :=
+  NambuGreen[NambuOne[n], cc, rest]
+
+(* identity in the Nambu space *)
+(* backward compatibility *)
+NambuGreen[1, cc:{___?FermionQ}, rest___] :=
+  NambuGreen[1, Length @ cc]
+
 
 NambuGreen[mat_?SquareMatrixQ, rest___] :=
   NambuGreen[NambuMatrix @ mat, rest]
@@ -487,15 +583,17 @@ NambuGreen[mat_?SquareMatrixQ, rest___] :=
 NambuGreen[{mat_?SquareMatrixQ, 0}, rest___] :=
   NambuGreen[NambuMatrix @ {mat, 0}, rest]
 
-NambuGreen[NambuGreen[grn_?NambuMatrixQ, ___], rest___] :=
-  NambuGreen[grn, rest]
+NambuGreen[NambuGreen[grn_?NambuMatrixQ, rest___], more___] :=
+  NambuGreen[grn, more, rest]
 
 
 NambuGreen /:
-MatrixForm @ NambuGreen[mm_?NambuMatrixQ, rest___] := Map[MatrixForm, mm]
+MatrixForm @ NambuGreen[mm_?NambuMatrixQ, rest___] :=
+  Map[MatrixForm, mm]
 
 NambuGreen /:
-ArrayShort @ NambuGreen[mm_?NambuMatrixQ, rest___] := Map[ArrayShort, mm]
+ArrayShort @ NambuGreen[mm_?NambuMatrixQ, rest___] :=
+  Map[ArrayShort, mm]
 
 NambuGreen /:
 Normal @ NambuGreen[{g_, f_}, ___] :=
@@ -508,12 +606,8 @@ NambuGreen /:
 Dagger[grn:NambuGreen[{_?MatrixQ, _?MatrixQ}, rest___]] = grn
 
 NambuGreen /:
-Plus[NambuGreen[a_], NambuGreen[b_]] :=
-  NambuGreen[a + b, opts, more]
-
-NambuGreen /:
-Plus[NambuGreen[a_, cc_], NambuGreen[b_, cc_]] :=
-  NambuGreen[a + b, cc, any, other]
+Plus[NambuGreen[a_, any___], NambuGreen[b_, other___]] :=
+  NambuGreen[a + b, any, other]
 
 NambuGreen /:
 Times[z_, NambuGreen[mm_, rest___]] :=
@@ -522,30 +616,29 @@ Times[z_, NambuGreen[mm_, rest___]] :=
 (**** </NambuGreen> ****)
 
 
-RandomNambuUnitary::usage = "RandomNambuUnitary[n] returns a random NambuUnitary[{u, v}], where u and v are the n\[Times]n upper-left and upper-right blocks of the resulting Bogoliubov-de Gennes transformation matrix.\nRandomNambuUnitary[{c1, c2, \[Ellipsis], cn}] returns a random NambuUnitary[{u, v}, {c1, c2, \[Ellipsis], cn}]."
+RandomNambuUnitary::usage = "RandomNambuUnitary[n] returns a random NambuUnitary[{u, v}], where u and v are the n\[Times]n upper-left and upper-right blocks of the resulting Bogoliubov-de Gennes transformation matrix."
 
-RandomNambuUnitary[cc:{__?FermionQ}, rest___] :=
-  NambuUnitary[RandomNambuUnitary[Length @ cc], cc, rest]
-
-RandomNambuUnitary[n_Integer] := With[
+RandomNambuUnitary[n_Integer, rest___] := With[
   { barH = Normal[RandomNambuHermitian @ n] },
-  NambuUnitary @ MatrixExp[I barH]
+  NambuUnitary[MatrixExp[I barH], rest]
 ]
 
+(* backward compatibility *)
+RandomNambuUnitary[cc:{__?FermionQ}, rest___] :=
+  RandomNambuUnitary[Length @ cc]
 
-RandomNambuHermitian::usage = "RandomNambuHermitian[n] returns a random NambuHermitian[{ham, del}], where ham is an n\[Times]n Hermitian matrix and del is an n\[Times]n anti-symmetric matrix.\nRandomNambuHermitian[{c1, c2, \[Ellipsis], cn}] returns a random NambuHermitian[{ham, del}, {c1, c2, \[Ellipsis], cn}]."
 
-RandomNambuHermitian[cc:{__?FermionQ}, rest___] :=
-  NambuHermitian[RandomNambuHermitian[Length @ cc], cc, rest]
+RandomNambuHermitian::usage = "RandomNambuHermitian[n] returns a random NambuHermitian[{ham, del}], where ham is an n\[Times]n Hermitian matrix and del is an n\[Times]n anti-symmetric matrix."
 
 RandomNambuHermitian[n_Integer, rest___] :=
   NambuHermitian[{RandomHermitian[n], RandomAntisymmetric[n]}, rest]
 
+(* backward compatibility *)
+RandomNambuHermitian[cc:{__?FermionQ}, rest___] :=
+  RandomNambuHermitian[Length @ cc, rest]
 
-RandomNambuGreen::usage = "RandomNambuGreen[n] returns a random NambuGreen[{grn, anm}], where grn is an n\[Times]n matrix representing the normal Green's function and anm is an n\[Times]n anti-symmetric matrix representing the anomalous Green's function.\nRandomNambuGreen[{c1, c2, \[Ellipsis], cn}] returns a ramdom NambuGreen[{grn, anm}, {c1, c2, \[Ellipsis], cn}]."
 
-RandomNambuGreen[cc:{__?FermionQ}, rest___] :=
-  NambuGreen[RandomNambuGreen[Length @ cc], cc, rest]
+RandomNambuGreen::usage = "RandomNambuGreen[n] returns a random NambuGreen[{grn, anm}], where grn is an n\[Times]n matrix representing the normal Green's function and anm is an n\[Times]n anti-symmetric matrix representing the anomalous Green's function."
 
 RandomNambuGreen[n_Integer, rest___] := Module[
   { trs = Normal @ RandomNambuUnitary[n],
@@ -554,24 +647,28 @@ RandomNambuGreen[n_Integer, rest___] := Module[
   NambuGreen[trs . val . Topple[trs], rest]
 ]
 
+(* backward compatibility *)
+RandomNambuGreen[cc:{__?FermionQ}, rest___] :=
+  RandomNambuGreen[Length @ cc, rest]
+
 
 (**** <NambuOperator> ****)
 
-NambuOperator::usage = "NambuOperator[m, {c1,c2,\[Ellipsis]}] represents a sequence of quantum operations that are described linear combinations in the creation and annihilation operators of the fermion modes {Subscript[c, 1],Subscript[c, 2],\[Ellipsis]} with coefficients given by the elements of matrix m."
+NambuOperator::usage = "NambuOperator[mat] represents a sequence of quantum operations that are linear combinations in the creation and annihilation operators of the fermion modes with coefficients given by the elements of matrix mat."
 
 NambuOperator /:
 MakeBoxes[NambuOperator[ops_?MatrixQ, rest___], fmt_] := Module[
   { cc = {rest}, 
     m, n },
   cc = Which[ 
-    Length[cc] == 0, "Unspecified",
-    MatchQ[First @ cc, {__?FermionQ}], First[cc],
-    True, "Unspecified"
+    Length[cc] == 0, All,
+    MatchQ[First @ cc, {__Integer}], First[cc],
+    True, All
   ];
   {m, n} = Dimensions[ops];
   BoxForm`ArrangeSummaryBox[
     NambuOperator, mat, None,
-    { BoxForm`SummaryItem @ { "Target: ", cc },
+    { BoxForm`SummaryItem @ { "Target: ", ArrayShort @ cc },
       BoxForm`SummaryItem @ { "Operators: ", m }
     },
     { BoxForm`SummaryItem @ { "Transforms: ", ArrayShort /@ First @ PartitionInto[ops, {1, 2}] }
@@ -581,7 +678,7 @@ MakeBoxes[NambuOperator[ops_?MatrixQ, rest___], fmt_] := Module[
   ]
 ]
 
-NambuOperator[msr_Measurement] = msr
+NambuOperator[msr_FermiMeasurement] = msr
 
 NambuOperator[trs_NambuUnitary] = trs
 
@@ -590,17 +687,34 @@ NambuOperator[ops:{___?AnyFermionQ}, cc:{__?FermionQ}, rest___] :=
   NambuOperatorFrom[ops, cc, rest]
 
 
+(* shortcut *)
+NambuOperator[spec:{{_Integer, _Integer}..}, n_Integer, opts___?OptionQ] := Module[
+  { id = One[2n],
+    ii, kk, flag},
+  {kk, flag} = Transpose[spec];
+  ii = n*flag + kk;
+  NambuOperator[id[[ii]], opts] /;
+  If[ VectorQ[flag, BinaryQ], True,
+    Message[NambuOperator::flag, flag]; False 
+  ]
+]
+
+(* shortcut *)
+NambuOperator[spec:{_Integer, 0|1}, n_Integer, opts___?OptionQ] :=
+  NambuOperator[{spec}, n]
+
+
 NambuOperator[{}, ___][any_] = any
 
 NambuOperator[spec__][fs_Ket] := NambuOperator[spec][NambuState @ fs]
 
-NambuOperator[trs_?MatrixQ, cc:{__?FermionQ}, ___][NambuState[uv_, mm_, cc_]] :=
-  NambuState[uv, Join[trs . Normal[NambuUnitary @ uv], mm], cc]
-
+NambuOperator[trs_?MatrixQ, ___][NambuState[uv_?NambuMatrixQ, mm_, rest___]] :=
+  NambuState[uv, Join[trs . Normal[NambuUnitary @ uv], mm], rest]
+(* NOTE: This works also for vacuum state. *)
 
 NambuOperator /:
 Dagger @ NambuOperator[ops_?MatrixQ, rest___] :=
-  NambuOperator[theConjugateReverse @ ops, rest]
+  NambuOperator[NambuConjugateReverse @ ops, rest]
 
 
 NambuOperator /: 
@@ -610,38 +724,62 @@ NambuOperator /:
 MultiplyKind[_NambuOperator] = Fermion
 
 NambuOperator /:
-Multiply[pre___, opr_NambuOperator, ws_NambuState] := Multiply[pre, opr[ws]]
+Multiply[pre___, opr_NambuOperator, ws_NambuState] := Multiply[pre, opr @ ws]
 
 NambuOperator /:
 Multiply[pre___, opr_NambuOperator, fs_Ket] := Multiply[pre, opr[NambuState @ fs]]
 
 
 NambuOperator /:
-Matrix[NambuOperator[trs_?MatrixQ, cc:{__?FermionQ}, ___], rest___] :=
-  Dot @@ Matrix[WickElements[trs, cc], rest]
+Matrix[NambuOperator[trs_?MatrixQ, ___], ss:{__?SpeciesQ}] := With[
+  { cc = Select[ss, FermionQ] },
+  Dot @@ Matrix[NambuElements[trs, cc], ss]
+]
 
 NambuOperator /: (* fallback *)
 Matrix[op_NambuOperator, rest___] := op * Matrix[1, rest]
 
 
 NambuOperator /:
-Elaborate[NambuOperator[trs_?MatrixQ, cc:{__?FermionQ}, ___]] :=
-  Apply[Multiply, WickElements[trs, cc]]
+ExpressionFor[NambuOperator[trs_?MatrixQ, ___], ss:{__?SpeciesQ}] := With[
+  { cc = Select[ss, FermionQ] },
+  Apply[Multiply, NambuElements[trs, cc]]  
+]
 
 NambuOperator /: (* fallback *)
-Elaborate[op_NambuOperator] = op 
+ExpressionFor[op_NambuOperator, ___] = op 
 
 
 NambuOperator /:
-VacuumExpectation @ NambuOperator[trs_?MatrixQ, cc:{__?FermionQ}, ___] :=
+VacuumExpectation @ NambuOperator[trs_?MatrixQ, ___] :=
   Pfaffian @ WickMatrix[trs]
 
-
-NambuOperator /:
-ParseGate[NambuOperator[trs_, cc:{__?FermionQ}, opts___?OptionQ], more___?OptionQ] :=
-  Gate[cc, more, opts]
-
 (**** </NambuOperator> ****)
+
+
+RandomNambuOperator::usage = "RandomNambuOperator[k_Integer, n_Integer] ..."
+
+RandomNambuOperator[k_Integer, n_Integer] :=
+  NambuOperator[RandomMatrix[{k, 2n}]]
+
+RandomNambuOperator[n_Integer] :=
+  RandomNambuOperator[RandomInteger[{1, n}], n]
+
+
+(**** <NambuElements> ****)
+
+NambuElements::usage = "NambuElements[spec, {c1, c2, \[Ellipsis]}] returns a list of linear combinations of bare fermion operators corresponding to specification spec."
+
+NambuElements[ops_?MatrixQ, cc:{__?FermionQ}] :=
+  ops . Join[cc, Dagger @ cc]
+
+NambuElements[NambuState[_?NambuMatrixQ, ops_?MatrixQ, ___], cc:{__?FermionQ}] :=
+  NambuElements[ops, cc]
+
+NambuElements[NambuOperator[trs_?MatrixQ, ___], cc:{__?FermionQ}] :=
+  NambuElements[trs, cc]
+
+(**** </NambuElements> ****)
 
 
 (**** <NambuOperatorFrom> ****)
@@ -670,90 +808,78 @@ theNambuOperator[expr_, cc:{__?FermionQ}] :=
 (**** </NambuOperatorFrom> ****)
 
 
-(**** <Measurement> ****)
+(**** <FermiMeasurement> ****)
 
-Measurement /:
-Multiply[pre___, msr:Measurement[_?FermionQ|{__?FermionQ}], ws_NambuState] :=
-  Multiply[pre, msr[ws]]
+FermiMeasurement /:
+Multiply[pre___, msr:FermiMeasurement[_Integer|{__Integer}], ws_NambuState] :=
+  Multiply[pre, msr @ ws]
 
-theMeasurement[ws:NambuState[uv_, trs_, cc_], c_?FermionQ] := Module[
-  { msr, dgr, mat, prb },
-  msr = First @ NambuOperator[{c, Dagger @ c}, cc];
+FermiMeasurement[k_Integer][ws:NambuState[uv_, trs_, ___]] := Module[
+  { n = FermionCount[ws],
+    nrm = NormSquare[ws],
+    msr, dgr, mat, prb },
+  msr = First @ NambuOperator[{{k, 0}, {k, 1}}, n]; (* c ** Dagger[c] *)
   msr = msr . Normal[NambuUnitary @ uv];
 
-  dgr = theConjugateReverse[trs];
+  dgr = NambuConjugateReverse[trs];
 
   mat = WickMatrix @ Join[dgr, msr, trs];
   prb = Re @ Sqrt @ Quiet[Det @ mat, Det::luc];
   (* NOTE: Here, the Pfaffian is supposed to be positive. *)
   (* 2024-08-11: Det[...] is enclosed in Quiet[..., Det::luc]. The warning message does not seem to be serious in most cases, but goes off too often. *)
-  prb /= NormSquare[ws];
+  prb /= nrm;
   
   (* Simulate the measurement process. *)
   If[ RandomReal[] < prb,
-    $MeasurementOut[c] = 0;
-    NambuOperator[{c, Dagger @ c}, cc][ws],
-    $MeasurementOut[c] = 1;
-    NambuOperator[{Dagger @ c, c}, cc][ws]
+    $MeasurementOut[k] = 0;
+    NambuOperator[{{k, 0}, {k, 1}}, n][ws] / Sqrt[prb*nrm],
+    $MeasurementOut[k] = 1;
+    NambuOperator[{{k, 1}, {k, 0}}, n][ws] / Sqrt[(1-prb)*nrm]
   ]
 ]
 
-(**** </Measurement> ****)
+(**** </FermiMeasurement> ****)
 
 
 (**** <WickLogarithmicNegativity> ****)
-(* for BdG models *)
 
+(* canonical form for BdG models *)
 WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, opts:OptionsPattern[]] :=
   WickTimeReversalMoment[1/2, {grn, anm}, kk, opts, "Epsilon" -> OptionValue["Epsilon"]]
 
+(* canonicalization *)
 WickLogarithmicNegativity[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], rest__] :=
   WickLogarithmicNegativity[{gg, ff}, rest]
 
+(* shortcut *)
+WickLogarithmicNegativity[ws_NambuState, kk:{__Integer}, opts:OptionsPattern[]] :=
+  WickLogarithmicNegativity[WickGreenFunction[ws], kk, opts, "Epsilon" -> OptionValue["Epsilon"]]
 
-WickEntanglementEntropy[ws_NambuState, dd:{__?FermionQ}] :=
-  WickEntanglementEntropy[WickGreenFunction[ws, dd], Range[Length @ dd]]
-
-WickMutualInformation[ws_NambuState, dd:{__?FermionQ}] := 
-  WickMutualInformation[
-    WickGreenFunction[ws], 
-    Lookup[First /@ PositionIndex[Last @ ws], dd]
-  ]
-
-WickLogarithmicNegativity[ws_NambuState, dd:{__?FermionQ}, opts:OptionsPattern[]] := Module[
-  { gg = WickGreenFunction[ws],
-    cc = Last[ws],
-    kk },
-  kk = dd /. Thread[cc -> Range[Length @ cc]];
-  WickTimeReversalMoment[1/2, gg, kk, opts, "Epsilon" -> OptionValue["Epsilon"]]
-]
+(**** </WickLogarithmicNegativity> ****)
 
 
-WickExpectation[ws_NambuState][HoldPattern @ Multiply[ops__?AnyFermionQ]] :=
-  WickExpectation[ws] @ NambuOperatorFrom[{ops}, Last @ ws]
-
-WickExpectation[ws:NambuState[uv_, bb_, cc_]][NambuOperator[ops_?MatrixQ, ___]] := Module[
-  { aa = theConjugateReverse[bb],
+WickExpectation[ws:NambuState[uv_, bb_, ___]][NambuOperator[ops_?MatrixQ, ___]] := Module[
+  { aa = NambuConjugateReverse[bb],
     mat },
   mat = WickMatrix @ Join[aa, ops . Normal[NambuUnitary @ uv], bb];
   Pfaffian[mat] (* NOTE: The Nambu state is assumed to be normalized. *)
 ]
 
-(**** </WickLogarithmicNegativity> ****)
-
 
 (**** <WickGreenFunction> ****)
 
+(* shortcut *)
 WickGreenFunction[ws_NambuState] :=
-  WickGreenFunction[ws, Last @ ws]
+  WickGreenFunction[ws, Range @ FermionCount @ ws]
 
-WickGreenFunction[ws:NambuState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
+(* canonical form for BdG modelsl *)
+WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, qq_?MatrixQ, ___], kk:{___Integer}] := Module[
   { uu = Normal @ NambuUnitary[uv],
-    pp = theConjugateReverse[qq],
-    aa, bb, wm, ff, gg, kk, n },
-  kk = First /@ PositionIndex @ Join[cc, Dagger @ cc];
-  aa = uu[[ Lookup[kk, dd] ]];
-  bb = uu[[ Lookup[kk, Dagger @ dd] ]];
+    pp = NambuConjugateReverse[qq],
+    aa, bb, wm, ff, gg, nc },
+  nc = FermionCount[ws];
+  aa = uu[[ kk ]];
+  bb = uu[[ kk + nc ]];
 
   wm = Normal @ Zero[{3, 3}];
   wm[[1, 1]] = WickMatrix[pp];
@@ -761,10 +887,9 @@ WickGreenFunction[ws:NambuState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
   wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
   wm[[3, 3]] = WickMatrix[qq];
 
-  n = Length[dd];
-  gg = Normal @ Zero[{n, n}];
+  nc = Length[kk];
+  gg = Normal @ Zero[{nc, nc}];
   Table[
-    (* gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ WickMatrix @ Join[pp, {aa[[i]], bb[[i]]}, qq], Det::luc], *)
     wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[i]]}];
     wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
     wm[[2, 2]] = WickMatrix[{aa[[i]], bb[[i]]}];
@@ -773,10 +898,9 @@ WickGreenFunction[ws:NambuState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
     gg[[i, i]] = Quiet[Re @ Sqrt @ Det @ ArrayFlatten @ N @ wm, Det::luc],
     (* NOTE: The Pfaffians here are supposed to be real positive. *)
     (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
-    {i, 1, n}
+    {i, 1, nc}
   ];
   Table[
-    (* gg[[i, j]] = Pfaffian @ WickMatrix @ Join[pp, {aa[[i]], bb[[j]]}, qq]; *)
     wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[j]]}];
     wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
     wm[[2, 2]] = WickMatrix[{aa[[i]], bb[[j]]}];
@@ -784,13 +908,12 @@ WickGreenFunction[ws:NambuState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
     wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
     gg[[i, j]] = Pfaffian @ ArrayFlatten @ N @ wm;
     gg[[j, i]] = Conjugate @ gg[[i, j]],
-    {i, 1, n},
-    {j, i+1, n}
+    {i, 1, nc},
+    {j, i+1, nc}
   ];
 
-  ff = Normal @ Zero[{n, n}];
+  ff = Normal @ Zero[{nc, nc}];
   Table[
-    (* ff[[i, j]] = Pfaffian @ WickMatrix @ Join[pp, {aa[[i]], aa[[j]]}, qq]; *)
     wm[[1, 2]] = WickMatrix[pp, {aa[[i]], aa[[j]]}];
     wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
     wm[[2, 2]] = WickMatrix[{aa[[i]], aa[[j]]}];
@@ -798,11 +921,45 @@ WickGreenFunction[ws:NambuState[uv_, qq_, cc_], dd:{___?FermionQ}] := Module[
     wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
     ff[[i, j]] = Pfaffian @ ArrayFlatten @ N @ wm;
     ff[[j, i]] = -ff[[i, j]],
-    {i, 1, n},
-    {j, i+1, n}
+    {i, 1, nc},
+    {j, i+1, nc}
   ];
   NambuGreen[{gg, ff}, cc]
   (* NOTE: The Nambu state is assumed to be normalized. *)
+]
+
+(* vacuum state *)
+WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, z_?NumericQ, ___], kk:{___Integer}] := Module[
+  { uu = Normal @ NambuUnitary[uv],
+    aa, bb, wm, ff, gg, nc },
+  nc = FermionCount[ws];
+  aa = uu[[ kk ]];
+  bb = uu[[ kk + nc ]];
+
+  nc = Length[kk];
+  gg = Normal @ Zero[{nc, nc}];
+  Table[
+    wm = N @ WickMatrix[{aa[[i]], bb[[i]]}];
+    gg[[i, i]] = Quiet[Re @ Sqrt @ Det @ wm, Det::luc],
+    {i, 1, nc}
+  ];
+  Table[
+    wm = N @ WickMatrix[{aa[[i]], bb[[j]]}];
+    gg[[i, j]] = Pfaffian @ wm;
+    gg[[j, i]] = Conjugate @ gg[[i, j]],
+    {i, 1, nc},
+    {j, i+1, nc}
+  ];
+
+  ff = Normal @ Zero[{nc, nc}];
+  Table[
+    wm = N @ WickMatrix[{aa[[i]], aa[[j]]}];
+    ff[[i, j]] = Pfaffian @ wm;
+    ff[[j, i]] = -ff[[i, j]],
+    {i, 1, nc},
+    {j, i+1, nc}
+  ];
+  NambuGreen[{gg, ff}, cc]
 ]
 
 (**** </WickGreenFunction> ****)

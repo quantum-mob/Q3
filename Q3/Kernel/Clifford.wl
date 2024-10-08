@@ -20,6 +20,8 @@ CliffordState::usage = "CliffordState[data, {s1, s2, \[Ellipsis]}] represents a 
 
 CliffordState::bad = "`` is not a proper set of Gottesman vectors."
 
+SetAttributes[CliffordState, NHoldAll]
+
 CliffordState /:
 MakeBoxes[cs:CliffordState[gnr_?MatrixQ, ___], fmt_] := Module[
   {m, n},
@@ -128,6 +130,8 @@ RandomCliffordState[ss:{__?QubitQ}] :=
 
 PauliMeasurement::usage = "PauliMeasurement[vec] represents the Pauli measurement corresponding to Gottesman vector vec.\nPauliMeasurement[vec, {{k1, k2, \[Ellipsis]}, n}] represents the Pauli measurement on particular qubits numbered k1, k2, \[Ellipsis] among n qubits."
 
+SetAttributes[PauliMeasurement, NHoldAll]
+
 PauliMeasurement[msr_?GottesmanVectorQ, k_Integer] :=
   PauliMeasurement[msr, {k}]
 
@@ -221,9 +225,11 @@ Multiply[pre___, msr_PauliDecoherence, cs_CliffordState] :=
 
 (**** <CliffordUnitary> ****)
 
-CliffordUnitary::usage = "CliffordUnitary[mat] represents a Clifford unitary operator."
+CliffordUnitary::usage = "CliffordUnitary[mat] represents a Clifford unitary operator corresponding to full Gottesman matrix mat."
 
 CliffordUnitary::bad = "`` is not a proper Gottesman matrix."
+
+SetAttributes[CliffordUnitary, NHoldAll]
 
 CliffordUnitary /:
 MakeBoxes[cu:CliffordUnitary[mat_?MatrixQ, ___?OptionQ], fmt_] := Module[
@@ -320,7 +326,7 @@ MakeBoxes[cc:CliffordCircuit[{}, ___?OptionQ], fmt_] :=
 
 CliffordCircuit /:
 MakeBoxes[cc:CliffordCircuit[gg:{__}, ___?OptionQ], fmt_] := Module[
-  { n = numberOfQubits[First @ gg] },
+  { n = QubitCount[First @ gg] },
   BoxForm`ArrangeSummaryBox[
     CliffordCircuit, cc, None,
     { BoxForm`SummaryItem @ { "Qubits: ", n },
@@ -346,41 +352,49 @@ Elaborate @ CliffordCircuit[gg:{_CliffordState, ___}] :=
 
 
 CliffordCircuit /:
-Show[cc_CliffordCircuit, S_Symbol?QubitQ, more___?OptionQ] :=
-  Graphics[cc, S, more]
+Show[cc_CliffordCircuit, rest___] := Graphics[cc, rest]
 
 CliffordCircuit /:
-Graphics[CliffordCircuit[gg_List], S_Symbol?QubitQ, more___?OptionQ] := Module[
+Graphics[qc:CliffordCircuit[_List, ___?OptionQ], more___?OptionQ] := Module[
+  { S },
+  Let[Qubit,S];
+  Graphics[qc, S, more]
+]
+
+CliffordCircuit /:
+Graphics[CliffordCircuit[gg_List, opts___?OptionQ], S_Symbol?QubitQ, more___?OptionQ] := Module[
   { n, cs, ss, qc },
-  n = FirstCase[gg, g:_Symbol[__] :> numberOfQubits[g], Indeterminate, Infinity];
+  n = FirstCase[gg, g:_Symbol[__] :> QubitCount[g], Indeterminate, Infinity];
   If[n === Indeterminate, n = 1];
   ss = S[Range @ n, $];
   qc = gg /. {
     CliffordCircuit[{}] -> "Spacer",
     CliffordCircuit -> Identity,
     CliffordState[__] :> Ket[ss],
-    CliffordUnitary[m_, kk_, opts___?OptionQ] :> Gate[S[kk, $], opts],
-    CliffordUnitary[m_, opts___?OptionQ] :> Gate[ss, opts, "Label" -> "U"],
-    PauliMeasurement[v_, kk_, opts___?OptionQ] :> Gate[S[kk, $], opts, "Shape" -> "Measurement"],
-    PauliDecoherence[v_, kk_, opts___?OptionQ] :> Gate[S[kk, $], opts, "Label" -> "\[ScriptCapitalD]"],
+    CliffordUnitary[_, kk_, any___?OptionQ] :> Gate[S[kk, $], any],
+    CliffordUnitary[_, any___?OptionQ] :> Gate[ss, any, "Label" -> "U"],
+    PauliMeasurement[_, kk_, any___?OptionQ] :> Gate[S[kk, $], any, "Shape" -> "Measurement"],
+    PauliDecoherence[_, kk_, any___?OptionQ] :> Gate[S[kk, $], any, "Label" -> "\[ScriptCapitalD]"],
     CNOT[i_, j_] :> Gate[{S[i,$]->1}, {S[j,$]}, "Shape" -> "CirclePlus"],
     SWAP[i_, j_] :> Gate[{S[i,$]->1}, {S[j,$]}, "Shape" -> "Cross", "ControlShape" -> "Cross"],
     Hadamard[kk_] :> Map[Gate[{#}, "Label" -> "H"]&, S[kk,$]],
     Quadrant[kk_] :> Map[Gate[{#}, "Label" -> "S"]&, S[kk,$]]
   };
-  QuantumCircuit[Sequence @@ qc, "PostMeasurementDashes" -> False]
+  QuantumCircuit[Sequence @@ qc, more, opts, "PostMeasurementDashes" -> False]
 ]
 
 
-numberOfQubits[CliffordState[mat_?MatrixQ, ___]] := (Last[Dimensions @ mat] - 1)/2
+QubitCount::usage = "QubitCount[obj] returns the number of qubits involved in object obj."
 
-numberOfQubits[CliffordUnitary[mat_?MatrixQ, ___?OptionQ]] := Length[mat] / 2
+QubitCount[CliffordState[mat_?MatrixQ, ___]] := (Last[Dimensions @ mat] - 1)/2
 
-numberOfQubits[PauliMeasurement[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
+QubitCount[CliffordUnitary[mat_?MatrixQ, ___?OptionQ]] := Length[mat] / 2
 
-numberOfQubits[PauliDecoherence[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
+QubitCount[PauliMeasurement[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
 
-numberOfQubits[_] = Indeterminate
+QubitCount[PauliDecoherence[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
+
+QubitCount[_] = Indeterminate
 
 (**** </CliffordCircuit> ****)
 

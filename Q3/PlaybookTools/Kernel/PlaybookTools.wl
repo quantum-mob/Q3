@@ -107,6 +107,11 @@ fileDeploy::usage = "fileDepoly[src, dst] does the actual job of deploying src t
 fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   { pdf, nb },
   Print["Deploying ", src];
+  If[ FailureQ[nb = NotebookOpen[src]],
+    Message[PlaybookDeploy::noopen, dst];
+    Return[$Failed],
+    NotebookSave[nb];
+  ];
   
   Print["\tCopying to ", dst, " ..."];
   If[ FailureQ @ CopyFile[src, dst, OverwriteTarget -> True],
@@ -239,7 +244,7 @@ PlaybookClean[nb_NotebookObject, styles:{__String}] :=
 
 (**** <PlaybookTrim> ****)
 
-PlaybookTrim::usage = "PlaybookTrim[nb] deletes cells and cell groups with CellTags PlaybookTrim.\nPlaybookTrim[nb, cell] deletes the particular cell or cell group."
+PlaybookTrim::usage = "PlaybookTrim[nb] deletes cells and cell groups with CellTags PlaybookEpilog.\nPlaybookTrim[nb, cell] deletes the particular cell or cell group."
 
 PlaybookTrim[nb_NotebookObject] := (
   SelectionMove[nb, Before, Notebook, AutoScroll -> False];

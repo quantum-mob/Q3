@@ -1134,13 +1134,13 @@ KetFactor[expr_] := Module[
 ketSplit[ Ket[] ] := Ket[]
 
 ketSplit[ Ket[a_Association] ] := 
-  Upshot @ Map[ Ket @* Association, Normal @ a ] /;
+  Aggregate @ Map[ Ket @* Association, Normal @ a ] /;
   Length[a] > 0
 
 ketSplit[ Bra[] ] := Bra[]
 
 ketSplit[ Bra[a_Association] ] := 
-  Upshot @ Map[ Bra @* Association, Normal @ a ] /;
+  Aggregate @ Map[ Bra @* Association, Normal @ a ] /;
   Length[a] > 0
 
 ketSplit[expr_] := KetRegulate[expr] /. {
@@ -1384,7 +1384,7 @@ CircleTimes[vv__State] := Module[
   If[ Length[dd] > 0,
     Message[State::dupe, dd];
     ss = Union @@ ss;
-    Return @ State[Zero[Upshot @ Dimension @ ss], ss, rr]
+    Return @ State[Zero[Aggregate @ Dimension @ ss], ss, rr]
   ];
   State[CircleTimes @@ Map[First, {vv}], Flatten @ ss, rr]
 ]
@@ -1775,7 +1775,7 @@ ExpressionFor[vec_?VectorQ, S_?SpeciesQ] :=
   ExpressionFor[vec, {S}]
 
 ExpressionFor[vec_?VectorQ, ss:{__?SpeciesQ}] := Module[
-  { nL = Upshot @ Dimension @ ss,
+  { nL = Aggregate @ Dimension @ ss,
     bs = Basis @ ss },
   
   If[ nL == Length[vec], Null,
@@ -1795,7 +1795,7 @@ ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
   { dd = Dimension @ ss,
     ff = Fermions @ ss,
     rr, qq, S, tsr, ops },
-  If[ Upshot[dd] == Length[mat], Null,
+  If[ Aggregate[dd] == Length[mat], Null,
     Message[ExpressionFor::incmpt, mat, FlavorCap @ ss];
     Return[0]
   ];
@@ -2104,10 +2104,10 @@ Matrix[ z_?CommutativeQ op_, rest__ ] := z * Matrix[op, rest]
 Matrix[ z_?CommutativeQ, {} ] := z * One[2]
 
 Matrix[ z_?CommutativeQ, qq:{__?SpeciesQ} ] :=
-  z * One[Upshot @ Dimension @ qq]
+  z * One[Aggregate @ Dimension @ qq]
 
 Matrix[ z_?CommutativeQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
-  z * One[{Upshot @ Dimension @ ss, Upshot @ Dimension @ tt}]
+  z * One[{Aggregate @ Dimension @ ss, Aggregate @ Dimension @ tt}]
 
 
 (* Dagger *)
@@ -2352,7 +2352,7 @@ ProperSystem[expr_, qq:{___?SpeciesQ}] := Module[
   
   rr = Complement[FlavorCap @ qq, ss];
   If[ rr == {}, Null,
-    val = Flatten @ Transpose @ ConstantArray[val, Upshot @ Dimension @ rr];
+    val = Flatten @ Transpose @ ConstantArray[val, Aggregate @ Dimension @ rr];
     vec = Flatten @ Outer[CircleTimes, vec, Basis @ rr]
    ];
   {val, vec}
@@ -2473,7 +2473,7 @@ ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
   rr = Complement[FlavorCap @ qq, ss];
   If[ rr == {},
     Return[val],
-    Return @ Flatten @ Transpose @ ConstantArray[val, Upshot @ Dimension @ rr]
+    Return @ Flatten @ Transpose @ ConstantArray[val, Aggregate @ Dimension @ rr]
   ]
 ]
 
@@ -3279,7 +3279,7 @@ Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
 Dyad /:
 Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
   ( Message[Dyad::mtrx, InputForm @ op];
-    One[Upshot @ Dimension @ ss]
+    One[Aggregate @ Dimension @ ss]
    ) /; Keys[a] != Keys[b]
 
 Dyad /:
@@ -3719,7 +3719,7 @@ SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
     ww, uu, vv },
   { ww, uu, vv } = SchmidtDecomposition[
     Matrix[expr, ab],
-    {Upshot @ Dimension @ aa, Upshot @ Dimension @ bb}
+    {Aggregate @ Dimension @ aa, Aggregate @ Dimension @ bb}
   ];
   { ww, uu . Basis[aa], vv . Basis[bb] }
 ] /; fKetQ[expr]
@@ -3879,7 +3879,7 @@ Tensorize[m_?MatrixQ, dim:{__Integer}] := Module[
     ee = dim[[2;; ;;2]],
     ll = Dimensions[m],
     ii },
-  If[ ll != {Upshot @ oo, Upshot @ ee},
+  If[ ll != {Aggregate @ oo, Aggregate @ ee},
     Message[Tensorize::badShape, ll, dim];
     Return[m]
   ];
@@ -3900,7 +3900,7 @@ Tensorize[m_?MatrixQ] := Module[
 
 Tensorize[v_?VectorQ, dim:{__Integer}] := Module[
   { l = Length[v] },
-  If[ l != Upshot[dim],
+  If[ l != Aggregate[dim],
     Message[Tensorize::badShape, l, dim];
     Return[v]
   ];
@@ -4242,7 +4242,7 @@ MatrixEmbed[any_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
 MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
     new, idx },
-  new = CircleTimes[mat, One[Upshot @ Dimension @ rmd]];
+  new = CircleTimes[mat, One[Aggregate @ Dimension @ rmd]];
   idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
   TensorFlatten @ Transpose[
     Tensorize[new, Riffle @@ Table[Dimension @ Join[ss, rmd], 2]],
@@ -4253,7 +4253,7 @@ MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
 MatrixEmbed[vec_?VectorQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
     new, idx },
-  new = CircleTimes[vec, UnitVector[Upshot @ Dimension @ rmd, 1]];
+  new = CircleTimes[vec, UnitVector[Aggregate @ Dimension @ rmd, 1]];
   idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
   Flatten @ Transpose[
     ArrayReshape[new, Dimension @ Join[ss, rmd]],
@@ -4279,7 +4279,7 @@ MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
     rmd, new, idx },
   rmd = Complement[all, kk];
-  new = CircleTimes[mat, One[Upshot @ Part[dd, rmd]]];
+  new = CircleTimes[mat, One[Aggregate @ Part[dd, rmd]]];
   idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
   TensorFlatten @ Transpose[
     Tensorize[new, Riffle @@ Table[Part[dd, Join[kk, rmd]], 2]],
@@ -4291,7 +4291,7 @@ MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
     rmd, new, idx },
   rmd = Complement[all, kk];
-  new = CircleTimes[vec, UnitVector[Upshot @ Part[dd, rmd], 1]];
+  new = CircleTimes[vec, UnitVector[Aggregate @ Part[dd, rmd], 1]];
   idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
   Flatten @ Transpose[
     ArrayReshape[new, Part[dd, Join[kk, rmd]]],
@@ -4318,7 +4318,7 @@ RandomState[ss:{__?SpeciesQ}, spec___] := RandomState[FlavorCap @ ss, spec] /; N
 RandomState[ss:{__?SpeciesQ}] := First @ RandomState[ss, 1]
 
 RandomState[ss:{__?SpeciesQ}, n_Integer] := With[
-  { dim = Upshot[Dimension @ ss] },
+  { dim = Aggregate[Dimension @ ss] },
   Basis[ss] . RandomIsometric[{dim, n}] /;
   If[ dim >= n, True,
     Message[RandomState::dim, dim];
@@ -4412,7 +4412,7 @@ RandomAntisymmetric[n_Integer?Positive] := RandomAntisymmetric[1, n]
 
 RandomAntisymmetric[sgm_?Positive, n_Integer?Positive] := With[
   { mat = RandomMatrix[sgm, n] },
-  (mat - Transpose[mat])/2 // Chop
+  (mat - Transpose[mat])/2
 ]
 
 
