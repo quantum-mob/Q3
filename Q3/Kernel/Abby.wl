@@ -15,7 +15,7 @@ BeginPackage["Q3`"]
 { CountsFor, PseudoDivide };
 { IntegerParity, ParityBoole,
   IntegerPowerQ, IntegerChop };
-{ RandomPick };
+{ RandomPick, RandomSelection };
 { Ranking };
 { IntervalSize };
 
@@ -624,6 +624,34 @@ RandomPick[list_List, p_?NumericQ] :=
 (**** </RandomPick> ****)
 
 
+(**** <RandomSelection> ****)
+
+RandomSelection::usage = "RandomSelection[{e1, e2, \[Ellipsis]}, k] randomly selects k distinct elements from the list {e1, e2, \[Ellipsis]}; cf. RandomChoice, RandomPick.\nRandomSelection[{e1, e2, \[Ellipsis]}] is equivalent to RandomChoise[{e1, e2, \[Ellipsis]}].\nRandomSelection[n, k] is equivalent to RandomSelection[{1, 2, \[Ellipsis], n}, k].\nRandomSelection[n] is equvalent to RandomChoise[{1, 2, \[Ellipsis], n}]."
+
+RandomSelection[n_Integer, k_Integer] :=
+  RandomSelection[Range @ n, k]
+
+RandomSelection[n_Integer] :=
+  RandomChoice[Range @ n]
+
+RandomSelection[any:{___Integer}, k_Integer] :=
+  RandomChoice @ Subsets[any, {k}]
+
+RandomSelection[any_List, k_Integer] :=
+  any[[ RandomSelection[Length @ any, k] ]]
+
+RandomSelection[any_SparseArray, k_Integer] :=
+  SparseArray @ RandomSelection[Normal @ any, k]
+
+RandomSelection[any_SparseArray] :=
+  SparseArray[RandomChoice @ any]
+
+RandomSelection[any_] :=
+  RandomChoice[any]
+
+(**** </RandomSelection> ****)
+
+
 (**** <IntervalSize> ****)
 
 IntervalSize::usage = "IntervalSize[interval] returns the total size of interval."
@@ -1189,6 +1217,39 @@ PanedText[expr_, OptionsPattern[]] := Module[
 ]
 
 (**** </PanedText> ****)
+
+
+(**** <SaveData> ****)
+
+SaveData::usage = "SaveData[data] saves data in a MX file."
+
+Options[SaveData] = {
+  "SaveData" -> False,
+  "Overwrite" -> True,
+  "Filename" -> Automatic,
+  "Prefix" -> "Q3"
+}
+
+SaveData[data_, OptionsPattern[]] := Module[
+  { file, result },
+  file = OptionValue["Filename"];
+  If[ file === Automatic,
+    file = FileNameJoin @ {
+      Directory[],
+      ToString[Unique @ OptionValue @ "Prefix"]
+    };
+    file = StringJoin[file, ".mx"]
+  ];
+  If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
+  result = Export[file, data];
+  If[ FailureQ[result],
+    Echo[file, "Error saving data to"],
+    Echo[file, "Data saved to"]
+  ];
+  result
+]
+
+(**** </SaveData> ****)
 
 
 (**** <doAssureList> ****)

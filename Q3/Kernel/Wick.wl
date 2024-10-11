@@ -3,27 +3,28 @@ BeginPackage["Q3`"]
 { WickLogarithmicNegativity, WickTimeReversalMoment };
 { WickEntropy, WickEntanglementEntropy, WickMutualInformation };
 
-{ FermiMeasurement };
-
 { WickMatrix, WickElements };
 
 { WickState, WickGaussian, WickUnitary };
 { WickOperator, WickOperatorFrom };
-{ WickExpectation, WickGreenFunction };
+{ WickGreenFunction, WickExpectation };
+{ FermiMeasurement };
+
+{ RandomWickState, RandomWickGaussian, RandomWickUnitary, RandomWickOperator };
 
 { WickDensityMatrix };
 
 { WickCircuit, RandomWickCircuit, RandomWickCircuitSimulate };
 
-{ NoisyWickSimulate };
-{ WickDampingOperator };
+{ WickSimulate, WickDampingOperator, 
+  WickMonitor };
 
-{ RandomWickState, RandomNambuState };
-{ RandomWickOperator };
-
+(* Nambu.wl *)
 { NambuState, NambuOperator, NambuUnitary, NambuGaussian,
   NambuHermitian, NambuGreen,  NambuMatrix, NambuMatrixQ }; 
-{ QuantumLog }; (* mainly in vonNeumann.wl *)
+
+(* vonNeumann.wl *)
+{ QuantumLog }; 
 
 Begin["`Private`"]
 
@@ -344,6 +345,10 @@ MultiplyKind[_WickState] = Fermion
 
 FermionCount::usage = "FermionCount[obj] returns the number of fermion modes that object obj is defined for."
 
+FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat]
+
+FermionCount[obj_?NambuMatrixQ] := Length[First @ obj]
+
 FermionCount[WickState[{_?NumericQ, n_Integer}, ___]] = n
 
 FermionCount[WickState[{_?VectorQ, trs_?MatrixQ}, ___]] := Last[Dimensions @ trs]
@@ -417,12 +422,10 @@ RandomWickState[n_Integer] :=
   RandomWickState[RandomChoice @ Range[2, n, 2], n]
 
 RandomWickState[k_Integer?Positive, n_Integer] := Module[
-  { in, ff, mm },
+  { in, op },
   in = WickState[{1, 0}, n];
-  ff = PadRight[{0, 1}, k, {0, 1}];
-  ff = Permute[ff, RandomPermutation @ k];
-  mm = RandomMatrix[{k, n}];
-  Normalize[WickOperator[{ff, mm}] @ in]
+  op = RandomWickOperator[k, n];
+  Normalize[op @ in]
 ]
 
 (**** </RandomWickState> ****)
@@ -522,6 +525,14 @@ WickGaussian /: (* fallback *)
 Matrix[wu_WickGaussian, rest___] := wu * Matrix[1, rest]
 
 (**** </WickGaussian> ****)
+
+
+RandomWickGaussian::usage = "RandomWickGaussian[n] ..."
+
+RandomWickGaussian[n_Integer, opts___?OptionQ] := With[
+  { mat = RandomMatrix[n] },
+  WickGaussian[{MatrixExp[+mat], MatrixExp[-mat]}, opts]
+]
 
 
 (**** <WickUnitary> ****)
@@ -639,6 +650,12 @@ WickUnitary[mat_/;MatrixQ[mat, NumericQ], ___][
 WickUnitary[spec__][fs_Ket] := WickUnitary[spec][WickState @ fs]
 
 (**** </WickUnitary> ****)
+
+
+RandomWickUnitary::usage = "RandomWickUnitary[n] is a shortcut to WickUnitary[RandomMatrix[n]]."
+
+RandomWickUnitary[n_Integer, opts___?OptionQ] :=
+  WickUnitary[RandomMatrix @ n, opts]
 
 
 (**** <WickConjugateReverse> ****)
@@ -811,8 +828,7 @@ RandomWickOperator[n_Integer] :=
 RandomWickOperator[k_Integer?Positive, n_Integer] := Module[
   { ff, mm },
   ff = RandomChoice[{{0, 1}, {1, 0}}];
-  ff = PadRight[ff, k, ff];
-  ff = Permute[ff, RandomPermutation @ k];
+  ff = RandomSample @ PadRight[ff, k, ff];
   mm = RandomMatrix[{k, n}];
   WickOperator[{ff, mm}]
 ]
@@ -967,8 +983,7 @@ WickGreenFunction[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := M
   wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
   wm[[3, 3]] = WickMatrix[qq];
 
-  nc = Length[kk];
-  gg = Zero[{nc, nc}];
+  gg = Normal @ Zero[{nc, nc}];
   Table[
     ab = WickJoin[aa[[i]], bb[[i]]];
     wm[[1, 2]] = WickMatrix[pp, ab];
@@ -976,7 +991,7 @@ WickGreenFunction[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := M
     wm[[2, 2]] = WickMatrix[ab];
     wm[[2, 3]] = WickMatrix[ab, qq];
     wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
-    gg[[i, i]] = Quiet[Re @ Sqrt @ Det @ ArrayFlatten @ N @ wm, Det::luc],
+    gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ ArrayFlatten @ N @ wm, Det::luc],
     (* NOTE: The Pfaffians here are supposed to be real positive. *)
     (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
     {i, 1, nc}
@@ -988,7 +1003,7 @@ WickGreenFunction[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := M
     wm[[2, 2]] = WickMatrix[ab];
     wm[[2, 3]] = WickMatrix[ab, qq];
     wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
-    gg[[i, j]] = Pfaffian @ ArrayFlatten @ N @ wm;
+    gg[[i, j]] = Pfaffian[ArrayFlatten @ N @ wm];
     gg[[j, i]] = Conjugate @ gg[[i, j]],
     {i, 1, nc},
     {j, i+1, nc}
@@ -1014,6 +1029,8 @@ WickGreenFunction[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
 (**** </WickGreenFunction> ****)
 
 
+(**** <WickGreenFunctionQR> ****)
+
 WickGreenFunctionQR::usage = "WickGreenFunctionQR[ws, {k1, k2, \[Ellipsis]}] returns ..."
 
 WickGreenFunctionQR::dag = "Only 1 (corresponding to a creator) is allowed in a list of binary-coded flags."
@@ -1031,6 +1048,48 @@ WickGreenFunctionQR[WickState[{flag_?VectorQ, trs_?MatrixQ}], kk:{___Integer}] :
 ] /; If[ ContainsOnly[flag, {1}], True,
     Message[WickGreenFunction::qr]; False
   ]
+
+(**** </WickGreenFunctionQR> ****)
+
+
+(**** <WickDensityMatrix> ****)
+
+WickDensityMatrix::usage = "WickDensityMatrix[grn] returns the density matrix corresponding to the single-particle Green's function grn associated with a fermionic Gaussian state.\nWickDensityMatrix[ws] returns the density matrix corresponding to Wick state ws."
+
+WickDensityMatrix::num = "Only numerical matrices are allowed."
+
+WickDensityMatrix[grn_?MatrixQ] := Module[
+  { n = Length[grn],
+    cc, gg, uu, id },  
+  (* Jordan-Wigner transformation *)
+  cc = SparseArray[
+    { {i_, i_} -> 4,
+      {i_, j_} /; i > j -> 3,
+      {_, _} -> 0 },
+    {n, n}
+  ];
+  cc = ThePauli /@ Normal[cc]; (* bare modes *)
+
+  id = One @ Power[2, n];
+
+  {gg, uu} = Eigensystem[N @ grn];
+  (* NOTE: N[...] is to avoid additional normaliztaion of uu and sorting. *)
+  cc = Conjugate[uu] . cc; (* dressed modes *)
+  cc = MapThread[Dot, {Topple /@ cc, cc}];
+  cc = MapThread[#1*id + (1-2*#1)*#2&, {gg, cc}];
+  Dot @@ cc
+] /; If[ MatrixQ[grn, NumericQ], True,
+  Message[WickDensityMatrix::num];
+  False
+]
+
+(* shortcut *)
+WickDensityMatrix[ws_WickState] := With[
+  { v = Matrix[ws] },
+  Dyad[v, v]
+]
+
+(**** </WickDensityMatrix> ****)
 
 
 (**** <WickEntropy> ****)
@@ -1129,9 +1188,7 @@ WickMutualInformation[in:(_WickState|_NambuState), kk:{__Integer}] :=
 
 WickMatrix::usage= "WickMatrix[spec] constructs the so-called Wick matrix, an anti-symmetric matrix with elements of Wick contractions between two fermion operators."
 
-WickMatrix::dim = "The second dimension of the `` matrix cannot be odd; something is fatally wrong."
-
-(* for the normal models *)
+(* for normal models *)
 WickMatrix[{tag_?VectorQ, trs_?MatrixQ}] := Module[
   { kk, ij, rr },
   kk = PositionIndex[tag];
@@ -1151,7 +1208,7 @@ WickMatrix[{tag_?VectorQ, trs_?MatrixQ}] := Module[
 ]
 (* NOTE: This method makes use of the built-in function Dot, and is faster than other methods using MapApply, etc., on selected elements of ij. *)
 
-(* for the normal models *)
+(* for normal models *)
 WickMatrix[{atag_?VectorQ, atrs_?MatrixQ}, {btag_?VectorQ, btrs_?MatrixQ}] :=
 Module[
   { kk, ii, jj, ij, rr },
@@ -1166,7 +1223,7 @@ Module[
 ]
 
 
-(* for the BdG models *)
+(* for BdG models *)
 WickMatrix[jmp_?MatrixQ] := Module[
   { m = Length[jmp],
     aa, bb, mat },
@@ -1181,7 +1238,7 @@ WickMatrix[jmp_?MatrixQ] := Module[
   Return[mat]
 ]
 
-(* for the BdG models *)
+(* for BdG models *)
 WickMatrix[ma_?MatrixQ, mb_?MatrixQ] := Module[
   { aa, bb },
   aa = First @ First @ PartitionInto[ma, {1, 2}];
@@ -1275,9 +1332,9 @@ RandomWickCircuit[{uu:(_WickUnitary | _NambuUnitary), p_?NumericQ}, k_Integer] :
   ]
 
 (* arbitrary distribution of evolution time *)
-RandomWickCircuit[{ham:(_?MatrixQ|_NambuHermitian), pdf_, p_?NumericQ}, k_Integer] :=
+RandomWickCircuit[{ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), pdf_, p_?NumericQ}, k_Integer] :=
   Module[
-    { n = If[MatrixQ @ ham, Length @ ham, FermionCount @ ham],
+    { n = FermionCount[ham],
       ab, tt, uu, mm },
     tt = RandomVariate[pdf, k];
     uu = randomUnitaryLayer[ham, tt];
@@ -1287,26 +1344,29 @@ RandomWickCircuit[{ham:(_?MatrixQ|_NambuHermitian), pdf_, p_?NumericQ}, k_Intege
   ]
 
 (* uniform distribution of evolution time *)
-RandomWickCircuit[{ham:(_?MatrixQ|_NambuHermitian), p_?NumericQ}, k_Integer] :=
+RandomWickCircuit[{ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), p_?NumericQ}, k_Integer] :=
   Module[
-    { n = If[MatrixQ @ ham, Length @ ham, FermionCount @ ham],
+    { n = FermionCount[ham],
       max, pdf },
-    max = Max @ Abs @ If[MatrixQ @ ham, ham, First @ ham];
+    max = Max @ Abs @ If[Head[ham] === NambuHermitian, First @ ham, ham];
     pdf = UniformDistribution[{0, N[2*Pi*n/max]}];
     RandomWickCircuit[{ham, pdf, p}, k]
   ]
 
 (* exponential distribution of evolution time *)
 (* P(\tau) = Exp[-n\gamma\tau]; choose a unit system such that \gamma\tau --> \tau *)
-RandomWickCircuit[ham:(_?MatrixQ|_NambuHermitian), k_Integer] :=
+RandomWickCircuit[ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), k_Integer] :=
   Module[
-    { n = If[MatrixQ @ ham, Length @ ham, FermionCount @ ham] },
+    { n = FermionCount[ham] },
     RandomWickCircuit[{ham, ExponentialDistribution[n], 1./n}, k]
   ]
 
 
 randomUnitaryLayer[ham_?MatrixQ, tt_?VectorQ] :=
   Map[WickUnitary[MatrixExp[-I*ham*#]]&, tt]
+
+randomUnitaryLayer[ham_?NambuMatrixQ, tt_?VectorQ] :=
+  randomUnitaryLayer[NambuHermitian @ ham, tt]
 
 randomUnitaryLayer[ham_NambuHermitian, tt_?VectorQ] := With[
   { mat = Normal[ham] },
@@ -1348,9 +1408,8 @@ RandomWickCircuitSimulate[
   opts:OptionsPattern[{RandomWickCircuit, RandomWickCircuitSimulate}]
 ] := 
 Module[
-  { k = 0,
-    progress = 0,
-    data, qc, n, m },
+  { progress = k = 0,
+    data, more, qc, n, m },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
 
   (* simulation *)
@@ -1358,7 +1417,7 @@ Module[
   data = Transpose @ Table[
     qc = RandomWickCircuit[spec, t];
     { Table[
-        progress = ++k / (n*m);
+        progress = ++k / N[n*m];
         FoldList[Construct[#2, #1]&, in, N @ First @ qc],
         (* NOTE: No explicit normalization here because both the unitary and measurement layers produce NORMALIZED states. *)
         m 
@@ -1368,67 +1427,14 @@ Module[
     n
   ];
 
-  (* save data *)
-  If[ OptionValue["SaveData"], 
-    PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 
-    file = OptionValue["Filename"];
-    If[ file === Automatic,
-      file = FileNameJoin @ {
-        Directory[],
-        ToString[Unique @ OptionValue @ "Prefix"]
-      };
-      file = StringJoin[file, ".mx"]
-    ];
-    If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
-    Check[
-      Export[file, data];
-      Echo[file, "Saved to"],
-      Message[RandomWickCircuitSimulate::save]
-    ]
+  If[ OptionValue["SaveData"],
+    more = Join[{opts}, Options @ RandomWickCircuitSimulate];
+    SaveData[data, FilterRules[{more}, Options @ SaveData]]
   ];
   Return[data]
 ]
 
 (**** </RandomWickCircuitSimulate> ****)
-
-
-(**** <WickDensityMatrix> ****)
-
-WickDensityMatrix::usage = "WickDensityMatrix[grn] returns the density matrix corresponding to the single-particle Green's function grn, assuming that grn is associated with a fermionic Gaussian state.\nWickDensityMatrix[ws] returns the density matrix corresponding to Wick state ws."
-
-WickDensityMatrix::num = "Only numerical matrices are allowed."
-
-WickDensityMatrix[grn_?MatrixQ] := Module[
-  { n = Length[grn],
-    cc, gg, uu, id },  
-  (* Jordan-Wigner transformation *)
-  cc = SparseArray[
-    { {i_, i_} -> 4,
-      {i_, j_} /; i > j -> 3,
-      {_, _} -> 0 },
-    {n, n}
-  ];
-  cc = ThePauli /@ Normal[cc]; (* bare modes *)
-
-  id = One @ Power[2, n];
-
-  {gg, uu} = Eigensystem[N @ grn];
-  (* NOTE: N[...] is to avoid additional normaliztaion of uu and sorting. *)
-  cc = Conjugate[uu] . cc; (* dressed modes *)
-  cc = MapThread[Dot, {Topple /@ cc, cc}];
-  cc = MapThread[#1*id + (1-2*#1)*#2&, {gg, cc}];
-  Dot @@ cc
-] /; If[ MatrixQ[grn, NumericQ], True,
-  Message[WickDensityMatrix::num];
-  False
-]
-
-WickDensityMatrix[ws_WickState] := With[
-  { v = Matrix[ws] },
-  Dyad[v, v]
-]
-
-(**** </WickDensityMatrix> ****)
 
 
 (**** <WickDampingOperator> ****)
@@ -1458,17 +1464,17 @@ WickDampingOperator[{flag_?VectorQ, trs_?MatrixQ}] := Module[
 (**** </WickDampingOperator> ****)
 
 
-(**** <NoisyWickSimulate> ****)
+(**** <WickSimulate> ****)
 
-NoisyWickSimulate::usage = "NoisyWickSimulate[ham, jmp, in, {n, dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian matrix ham and the list jmp of quantum jump operators. The simulation starts from the initial WickState in at time 0 and goes n time steps by interval dt."
+WickSimulate::usage = "WickSimulate[ham, jmp, in, {nt, dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian matrix ham and the list jmp of quantum jump operators. The simulation starts from the initial WickState in at time 0 and goes nt time steps by interval dt."
 
-NoisyWickSimulate::ham = "The Hamiltonian matrix `` needs to be numeric."
+WickSimulate::null = "The null state is encountered."
 
-NoisyWickSimulate::null = "The null state is encountered."
+WickSimulate::save = "The result could not be saved."
 
-NoisyWickSimulate::save = "The result could not be saved."
+WickSimulate::ham = "The Hamiltonian matrix `` needs to be numeric."
 
-Options[NoisyWickSimulate] = {
+Options[WickSimulate] = {
   "Samples" -> 500,
   "SaveData" -> False,
   "Overwrite" -> True,
@@ -1476,15 +1482,14 @@ Options[NoisyWickSimulate] = {
   "Prefix" -> "NWS"
 }
 
-NoisyWickSimulate[ ham_, jmp:(_WickOperator|{__WickOperator}),
+WickSimulate[ ham_, jmp:(_WickOperator|{__WickOperator}),
   in_WickState, {nT_Integer, dt_},
-  OptionsPattern[]
+  opts:OptionsPattern[]
 ] :=
   Module[
     { n = OptionValue["Samples"],
-      k = 0,
       progress = 0,
-      aa, bb, dmp, fac, non },
+      dmp, fac, non, data, more },
     
     {dmp, fac} = WickDampingOperator[jmp];
     fac = Exp[-dt*fac];
@@ -1493,39 +1498,22 @@ NoisyWickSimulate[ ham_, jmp:(_WickOperator|{__WickOperator}),
 
     PrintTemporary[ProgressIndicator @ Dynamic @ progress];
     data = Table[
-      progress = ++k / n;
-      altNoisyWickSimulate[N @ {non, fac}, WickSplit @ jmp, in, {nT, dt}],
-      n
+      progress = k / N[n];
+      altWickSimulate[N @ {non, fac}, WickSplit @ jmp, in, {nT, dt}],
+      {k, n}
     ];
-    
-    (* save data *)
+
     If[ OptionValue["SaveData"],
-      Module[
-        { file, result },
-        PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."];
-        file = OptionValue["Filename"];
-        If[ file === Automatic,
-          file = FileNameJoin @ {
-            Directory[],
-            ToString[Unique @ OptionValue @ "Prefix"]
-          };
-          file = StringJoin[file, ".mx"]
-        ];
-        If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
-        result = Export[file, data];
-        If[ FailureQ[result],
-          Echo[file, "Data saved to"],
-          Echo[file, "Error saving data to"]
-        ]
-      ]
+      more = Join[{opts}, Options @ WickSimulate];
+      SaveData[data, FilterRules[{more}, Options @ SaveData]]
     ];
     Return[data]
   ] /; If[ MatrixQ[ham, NumericQ], True,
-    Message[NoisyWickSimulate::ham, ham];
+    Message[WickSimulate::ham, ham];
     False
   ]
 
-altNoisyWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
+altWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
   Module[
     { n = FermionCount[non],
       res = {in},
@@ -1546,14 +1534,14 @@ altNoisyWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickStat
       ];
       
       (* quantum jumps *)
-      out = Through[jmp[out]];
+      out = Through[jmp[new]];
 
       prb = Chop @ Accumulate[NormSquare /@ out];
       Quiet[
         Check[
           prb /= Last[prb],
           (* error *)
-          Message[NoisyWickSimulate::null];
+          Message[WickSimulate::null];
           new = WickState[{0, n}]; (* null state *)
           AppendTo[res, new];
           t += 1;
@@ -1571,7 +1559,99 @@ altNoisyWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickStat
     Return[res]
   ]
 
-(**** </NoisyWickSimulate> ****)
+(**** </WickSimulate> ****)
+
+
+(**** <WickMonitor> ****)
+
+WickMonitor::usage = "WickMonitor[ham, in, {nt, dt}] solves the problem of continuous monitoring of the occupation number of a non-interacting many-fermion system by using the Monte Carlo simulation method. The model is specified by the single-particle Hamiltonian ham (an n\[Times]n Hermitian matrix for models without pairing or a pair {ham, del} of matrices or NambuHermitian for BdG models). The simulation starts from the initial in (either WickState or NambState) at time 0 and goes nt time steps of size dt."
+
+WickMonitor::save = "The result could not be saved."
+
+WickMonitor::ham = "The Hamiltonian matrix `` needs to be numeric."
+
+Options[WickMonitor] = {
+  "Samples" -> 500,
+  "SaveData" -> False,
+  "Overwrite" -> True,
+  "Filename" -> Automatic,
+  "Prefix" -> "WM"
+}
+
+WickMonitor[ham_?NambuMatrixQ, rest___] :=
+  WickMonitor[NambuHermitian @ ham, rest]
+
+WickMonitor[
+  ham:(_?MatrixQ|_NambuHermitian),
+  in:(_WickState|_NambuState),
+  {nT_Integer, dt_?NumericQ},
+  opts:OptionsPattern[]
+] :=
+  Module[
+    { n = OptionValue["Samples"],
+      progress = 0,
+      uni, data, more },
+    uni = theWickEvolution[ham, dt];
+    If[FailureQ[uni], Message[WickMonitor::ham]; Return @ $Failed];
+
+    PrintTemporary[ProgressIndicator @ Dynamic @ progress];
+    data = Table[
+      progress = k / N[n];
+      theWickMonitor[uni, in, {nT, dt}],
+      {k, n}
+    ];
+    
+    If[ OptionValue["SaveData"],
+      more = Join[{opts}, Options @ WickMonitor];
+      SaveData[data, FilterRules[{more}, Options @ SaveData]]
+    ];
+    Return[data]
+  ]
+
+
+theWickEvolution[ham_?MatrixQ, dt_] :=
+  If[ MatrixQ[ham, NumericQ],
+    WickUnitary @ MatrixExp[-I*ham*dt],
+    $Failed
+  ]
+
+theWickEvolution[ham_?NambuMatrixQ, dt_] :=
+  theWickEvolution[NambuHermitian @ ham, dt]
+
+theWickEvolution[ham_NambuHermitian, dt_] :=
+  If[ ArrayQ[First @ ham, 3, NumericQ],
+    NambuUnitary @ MatrixExp[-I*Normal[ham]*dt],
+    $Failed
+  ]
+
+
+theWickMonitor[uni:(_WickUnitary|_NambuUnitary), in:(_WickState|_NambuState), {nT_Integer, dt_?NumericQ}] :=
+  Module[
+    { n = FermionCount[uni],
+      t = 1,
+      res = {in},
+      new = in,
+      prb, msr },
+    prb = Exp[-n*dt];
+    While[ t <= nT,      
+      (* non-unitary evolution *)
+      If[ RandomReal[] < prb,
+        new = uni[new];
+        AppendTo[res, new];
+        t += 1;
+        Continue[]
+      ];
+      
+      (* quantum jumps *)
+      msr = FermiMeasurement @ RandomInteger[{1, n}];
+      new = msr[new];
+      AppendTo[res, new];
+      t += 1;
+    ];
+    Return[res]
+  ]
+
+(**** </WickMonitor> ****)
 
 
 End[]

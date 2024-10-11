@@ -10,7 +10,10 @@ BeginPackage["Q3`"]
 
 { CliffordCircuit, RandomCliffordCircuit, RandomCliffordCircuitSimulate };
 
-{ CliffordLogarithmicNegativity };
+{ CliffordEntropy,
+  CliffordEntanglementEntropy,
+  CliffordMutualInformation,
+  CliffordLogarithmicNegativity };
 
 Begin["`Private`"]
 
@@ -112,7 +115,7 @@ Multiply[pre___, cu:(_CNOT|_SWAP|_Hadamard|_Quadrant|_CliffordUnitary), cs_Cliff
 (**** </CliffordState> ****)
 
 
-RandomCliffordState::usage = "RandomCliffordState[n] returns a uniformly distributed random stabilizer pure state on n qubits."
+RandomCliffordState::usage = "RandomCliffordState[n] returns a uniformly distributed random stabilizer pure state on n qubits.\nRandomCliffordState[n, k] returns a stabilizer mixed state (n > k) characterized by k independent stabilizer generators."
 
 RandomCliffordState[n_Integer] := Module[
   { op = RandomCliffordUnitary[n],
@@ -122,8 +125,18 @@ RandomCliffordState[n_Integer] := Module[
   op[CliffordState @ in]
 ]
 
+RandomCliffordState[n_Integer, k_Integer] := With[
+  { gnr = First[RandomCliffordState @ n] },
+  CliffordState @ RandomSelection[gnr, k]
+]
+
 RandomCliffordState[ss:{__?QubitQ}] :=
   Insert[RandomCliffordState[Length @ ss], ss, 2]
+
+RandomCliffordState[ss:{__?QubitQ}, k_Integer] := With[
+  { gnr = First[RandomCliffordState @ Length @ ss] },
+  CliffordState[RandomSelection[gnr, k], ss]
+]
 
 
 (**** <PauliMeasurement> ****)
@@ -285,6 +298,60 @@ RandomCliffordUnitary::usage = "RandomCliffordUnitary[n] generates a uniformly d
 
 RandomCliffordUnitary[n_Integer, spec___] :=
   CliffordUnitary[RandomFullGottesmanMatrix @ n, spec]
+
+
+(**** <CliffordEntropy> ****)
+
+CliffordEntropy::usage = "CliffordEntropy[cs] returns the von Neumann entropy of Clifford state cs."
+(* SEE ALSO: Li, Chen, Fisher (2019), Nahum et al. (2017), etc. *)
+
+CliffordEntropy[cs_CliffordState] :=
+  QubitCount[cs] - Length[First @ cs]
+
+(**** </CliffordEntropy> ****)
+
+
+(**** <CliffordEntanglementEntropy> ****)
+
+CliffordEntanglementEntropy::usage = "CliffordEntanglementEntropy[cs, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between qubits {k1, k2, \[Ellipsis]} and the rest in the stabilizer pure state cs.\nCliffordEntanglementEntropy[{k1, k2, \[Ellipsis]}] is an operator form of CliffordEntanglementEntropy that can be applied to Clifford states."
+(* SEE ALSO: Li, Chen, Fisher (2019), Nahum et al. (2017), etc. *)
+
+CliffordEntanglementEntropy[kk:{___Integer}][cs_CliffordState] :=
+  CliffordEntanglementEntropy[cs, kk]
+
+CliffordEntanglementEntropy[cs_CliffordState, kk:{___Integer}] := Module[
+  { mm = First[cs],
+    ll, m, n },
+  {m, n} = Dimensions[mm];
+  n = (n-1)/2; (* the number of qubits *)
+  ll = Complement[Range @ n, kk];
+  mm = mm[[ ;; , Riffle[2ll-1, 2ll] ]];
+  Length[kk] + MatrixRank[mm, Modulus -> 2] - m
+]
+
+(**** </CliffordEntanglementEntropy> ****)
+
+
+(**** <CliffordMutualInformation> ****)
+
+CliffordMutualInformation::usage = "CliffordMutualInformation[cs, {k1, k2, \[Ellipsis]}] returns the mutual information between qubits {k1, k2, \[Ellipsis]} and the rest in Clifford state cs.\nCliffordMutualInformation[{k1, k2, \[Ellipsis]}] is an operator form of CliffordMutualInformation that can be applied to Clifford states."
+(* SEE ALSO: Li, Chen, Fisher (2019), Nahum et al. (2017), etc. *)
+
+CliffordMutualInformation[kk:{___Integer}][cs_CliffordState] :=
+  CliffordMutualInformation[cs, kk]
+
+CliffordMutualInformation[cs_CliffordState, kk:{___Integer}] := Module[
+  { bb = First[cs],
+    ll, m, n },
+  {m, n} = Dimensions[bb];
+  n = (n-1)/2; (* the number of qubits *)
+  ll = Complement[Range @ n, kk];
+  aa = bb[[ ;; , Riffle[2kk-1, 2kk] ]];
+  bb = bb[[ ;; , Riffle[2ll-1, 2ll] ]];
+  MatrixRank[aa, Modulus -> 2] + MatrixRank[bb, Modulus -> 2] - m
+]
+
+(**** </CliffordMutualInformation> ****)
 
 
 (**** <CliffordLogarithmicNegativity> ****)
@@ -472,11 +539,10 @@ Options[RandomCliffordCircuitSimulate] = {
 RandomCliffordCircuitSimulate[
   {n_Integer, t_Integer},
   pp:(_?NumericQ|{_?NumericQ, _?NumericQ}), 
-  OptionsPattern[]
+  opts:OptionsPattern[]
 ] := Module[
-  { k = 0,
-    progress = 0,
-    save, data, qc, sn, sm },
+  { progress = k = 0,
+    data, more, qc, sn, sm },
   PrintTemporary @ ProgressIndicator @ Dynamic[progress];
 
   (* simulation *)
@@ -484,7 +550,7 @@ RandomCliffordCircuitSimulate[
   data = Transpose @ Table[
     qc = RandomCliffordCircuit[{n, t}, pp];
     { Table[
-        progress = ++k / (sn*sm);
+        progress = ++k / N[sn*sm];
         FoldList[Construct[#2, #1]&, First @ qc],
         sm
       ],
@@ -493,24 +559,9 @@ RandomCliffordCircuitSimulate[
     sn
   ];
 
-  (* save data *)
-  If[ OptionValue["SaveData"], 
-    PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 
-    file = OptionValue["Filename"];
-    If[ file === Automatic,
-      file = FileNameJoin @ {
-        Directory[],
-        ToString[Unique @ OptionValue @ "Prefix"]
-      };
-      file = StringJoin[file, ".mx"]
-    ];
-    If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
-    (* NOTE: Clifford circuits are not saved. *)
-    save = Export[file, Flatten[First @ data, 1]];
-    If[ FailureQ[save],
-      Message[RandomCliffordCircuitSimulate::save],
-      Echo[file, "Saved to"]
-    ]
+  If[ OptionValue["SaveData"],
+    more = Join[{opts}, Options @ RandomCliffordCircuitSimulate];
+    SaveData[data, FilterRules[{more}, Options @ SaveData]]
   ];
   Return[data]
 ]

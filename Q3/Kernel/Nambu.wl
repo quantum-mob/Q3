@@ -34,11 +34,15 @@ NambuMatrix[{mat_?SquareMatrixQ, 0}] :=
 
 (**** <NambuMatrixQ> ****)
 
-NambuMatrixQ::usage = "NambuMatrixQ[{u, v}] returns True if the pair {a, b} of square matrices are compatible in size."
+NambuMatrixQ::usage = "NambuMatrixQ[{u, v}] returns True if the pair {u, v} of square matrices are compatible in size.\nNambuMatrixQ[{u, v}, test] requires also that test yield True when applied to each of the array elements in {u, v}. "
 
-NambuMatrixQ[uv:{_?MatrixQ, _?MatrixQ}] := ArrayQ[uv]
+NambuMatrixQ[uv:{_?SquareMatrixQ, _?SquareMatrixQ}] := ArrayQ[uv]
+
+NambuMatrixQ[uv:{_?SquareMatrixQ, _?SquareMatrixQ}, test_] := ArrayQ[uv, 3, test]
 
 NambuMatrixQ[_] = False
+
+NambuMatrixQ[_, _] = False
 
 (**** </NambuMatrixQ> ****)
 
@@ -965,10 +969,9 @@ WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, z_?NumericQ, ___], kk:{___Inte
 (**** </WickGreenFunction> ****)
 
 
-(**** <WickDensityOpeator> ****)
+(**** <WickDensityMatrix> ****)
 
-WickDensityMatrix[grn_?NambuMatrixQ] := WickDensityMatrix[NambuGreen @ grn]
-
+(* canonical form for BdG models *)
 WickDensityMatrix[grn_NambuGreen] := Module[
   { n = Length[First @ First @ grn],
     cc, gg, uu, id },  
@@ -997,12 +1000,16 @@ WickDensityMatrix[grn_NambuGreen] := Module[
   False
 ]
 
+(* canonicalization *)
+WickDensityMatrix[grn_?NambuMatrixQ] := WickDensityMatrix[NambuGreen @ grn]
+
+(* shortcut for BdG models *)
 WickDensityMatrix[ws_NambuState] := With[
   { v = Matrix[ws] },
   Dyad[v, v]
 ]
 
-(**** </WickDensityOpeator> ****)
+(**** </WickDensityMatrix> ****)
 
 
 End[] (* Fermionic quantum computation in the Nambu space *)

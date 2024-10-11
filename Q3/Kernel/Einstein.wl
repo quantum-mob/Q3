@@ -5,6 +5,7 @@ BeginPackage["Q3`"]
 
 { GottesmanInner }; (* renamed *)
 { WickRandomCircuit }; (* renamed *)
+{ NoisyWickSimulate }; (* renamed *)
 { WeightedLog }; (* renamed *)
 { PauliDecompose, PauliDecomposeRL, PauliCompose, PauliCompseRL }; (* renamed *)
 { FlavorNone, FlavorNoneQ }; (* renamed *)
@@ -180,6 +181,11 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 GottesmanInner[any___] := (
   Message[Q3General::renamed, "GottesmanInner", "GottesmanDot"];
   GottesmanDot[any]
+)
+
+NoisyWickSimulate[any___] := (
+  Message[Q3General::renamed, "NoisyWickSimulate", "WickSimulate"];
+  WickSimulate[any]
 )
 
 WickRandomCircuit[any___] := (

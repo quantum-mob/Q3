@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.6.3
+
+- New: WickMonitor, CliffordEntropy, CliffordEntanglementEntropy, CliffordMutualInformatino
+- Renamed: NoisyWickSimulate --> WickSimulate
+
 ## 3.6.2
 
 - Improved: RandomWickCircuitSimulate, RandomWickCircuit, WickGreenFunction, WickEntanglementEntropy, WickMutualInformation, WickLogarithmicNegativity, WickState, WickUnitary, WickOperator, NambuState, NambuGaussian, NambuUnitary, NambuOperator, PfaffianHouseholder

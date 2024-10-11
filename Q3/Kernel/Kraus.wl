@@ -650,10 +650,9 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
   opts:OptionsPattern[]] := Module[
     { opG = DampingOperator[opL],
       n = OptionValue["Samples"],
-      k = 0,
       progress = 0,
-      mat, val, inv,
-      data, file, time },
+      val, mat, inv,
+      data, more },
 
     If[ Not @ AllTrue[Flatten @ {opH, opL, in, tt}, NumericQ],
       Message[LindbladSimulate::numeric];
@@ -666,28 +665,19 @@ LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
 
     PrintTemporary @ ProgressIndicator @ Dynamic[progress];
     data = SparseArray @ Table[
-      progress = ++k / n;
+      progress = k / N[n];
       SparseArray @ Chop @ goMonteCarlo[{mat, val, inv}, opL, in, tt],
-      n
-    ];
-    
-    If[Not @ OptionValue["SaveData"], Return @ data];
-
-    PrintTemporary["Saving the data (", ByteCount[data], " bytes) ..."]; 
-    PrintTemporary["It may take some time."];
-    
-    file = OptionValue["Filename"];
-    If[ file === Automatic,
-      file = FileNameJoin @ {
-        Directory[],
-        ToString[Unique @ OptionValue @ "Prefix"]
-       };
-      file = StringJoin[file, ".mx"]
+      {k, n}
     ];
 
-    If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
-
-    Export[file, Association @ {"Times" -> tt, "Data" -> data}]
+    If[ OptionValue["SaveData"],
+      more = Join[{opts}, Options @ LindbladSimulate];
+      SaveData[
+        Association @ {"Times" -> tt, "Data" -> data}, 
+        FilterRules[{more}, Options @ SaveData]
+      ]
+    ];
+    Return[data]
   ] /; And[ArrayQ @ Join[{opH}, opL], Length[opH] == Length[in]]
 
 
