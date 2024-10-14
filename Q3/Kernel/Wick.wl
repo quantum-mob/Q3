@@ -24,7 +24,7 @@ BeginPackage["Q3`"]
   NambuHermitian, NambuGreen,  NambuMatrix, NambuMatrixQ }; 
 
 (* vonNeumann.wl *)
-{ QuantumLog }; 
+{ QuantumLog };
 
 Begin["`Private`"]
 
@@ -983,6 +983,7 @@ WickGreenFunction[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := M
   wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
   wm[[3, 3]] = WickMatrix[qq];
 
+  nc = Length[kk];
   gg = Normal @ Zero[{nc, nc}];
   Table[
     ab = WickJoin[aa[[i]], bb[[i]]];

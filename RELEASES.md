@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.6.4
+
+- Emergency bug fix in WickGreenFunction
+
 ## 3.6.3
 
 - New: WickMonitor, CliffordEntropy, CliffordEntanglementEntropy, CliffordMutualInformatino

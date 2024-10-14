@@ -115,7 +115,7 @@ Multiply[pre___, cu:(_CNOT|_SWAP|_Hadamard|_Quadrant|_CliffordUnitary), cs_Cliff
 (**** </CliffordState> ****)
 
 
-RandomCliffordState::usage = "RandomCliffordState[n] returns a uniformly distributed random stabilizer pure state on n qubits.\nRandomCliffordState[n, k] returns a stabilizer mixed state (n > k) characterized by k independent stabilizer generators."
+RandomCliffordState::usage = "RandomCliffordState[n] returns a uniformly distributed random stabilizer pure state on n qubits.\nRandomCliffordState[k, n] returns a random stabilizer mixed state (n > k) characterized by k independent stabilizer generators."
 
 RandomCliffordState[n_Integer] := Module[
   { op = RandomCliffordUnitary[n],
@@ -125,7 +125,7 @@ RandomCliffordState[n_Integer] := Module[
   op[CliffordState @ in]
 ]
 
-RandomCliffordState[n_Integer, k_Integer] := With[
+RandomCliffordState[k_Integer, n_Integer] := With[
   { gnr = First[RandomCliffordState @ n] },
   CliffordState @ RandomSelection[gnr, k]
 ]
@@ -133,7 +133,7 @@ RandomCliffordState[n_Integer, k_Integer] := With[
 RandomCliffordState[ss:{__?QubitQ}] :=
   Insert[RandomCliffordState[Length @ ss], ss, 2]
 
-RandomCliffordState[ss:{__?QubitQ}, k_Integer] := With[
+RandomCliffordState[k_Integer, ss:{__?QubitQ}] := With[
   { gnr = First[RandomCliffordState @ Length @ ss] },
   CliffordState[RandomSelection[gnr, k], ss]
 ]
@@ -179,7 +179,7 @@ PauliMeasurement[msr_?GottesmanVectorQ, kk:{___Integer}][cs_CliffordState] := Mo
 PauliMeasurement[msr_?GottesmanVectorQ][cs_CliffordState] := Module[
   { gnr = First[cs],
     chk, new },
-  chk = Map[GottesmanDot[msr, #]&, Most /@ gnr];
+  chk = Map[GottesmanDot[msr, #]&, Transpose @ Most @ Transpose @ gnr];
   If[ ArrayZeroQ[chk],
     $MeasurementOut[msr] = Indeterminate;
     Return[cs]
