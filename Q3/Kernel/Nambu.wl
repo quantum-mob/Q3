@@ -213,8 +213,8 @@ ExpressionFor[ws_NambuState, ___] = ws (* fallback *)
 
 
 NambuState /: (* vacuum state *)
-Matrix[NambuState[_?NambuMatrixQ, z_?NumericQ], ss:{__?SpeciesQ}] :=
-  z * Matrix[Ket @ ss, ss]
+Matrix[NambuState[uv_?NambuMatrixQ, z_?NumericQ], ss:{__?SpeciesQ}] :=
+  z * Matrix[NambuUnitary @ uv, ss] . Matrix[Ket @ ss, ss]
 
 NambuState /:
 Matrix[NambuState[uv_?NambuMatrixQ, trs_?MatrixQ, ___], ss:{__?SpeciesQ}] :=
@@ -234,7 +234,7 @@ NambuState /:
 Matrix[ws_NambuState] := Module[
   { c, cc },
   Let[Fermion, c];
-  cc = c[Range @ FermionCount @ ws],
+  cc = c[Range @ FermionCount @ ws];
   Matrix[ws, cc]
 ]
 
@@ -870,6 +870,65 @@ WickExpectation[ws:NambuState[uv_, bb_, ___]][NambuOperator[ops_?MatrixQ, ___]] 
 ]
 
 
+(**** <WickOccupation> ****)
+
+(* shortcut *)
+WickOccupation[ws_NambuState] :=
+  WickOccupation[ws, Range @ FermionCount @ ws]
+
+(* canonical form for BdG modelsl *)
+WickOccupation[ws:NambuState[uv_?NambuMatrixQ, qq_?MatrixQ, ___], kk:{___Integer}] := Module[
+  { uu = Normal @ NambuUnitary[uv],
+    pp = NambuConjugateReverse[qq],
+    aa, bb, wm, gg, nc },
+  nc = FermionCount[ws];
+  aa = uu[[ kk + nc ]];
+  bb = uu[[ kk ]];
+
+  wm = Normal @ Zero[{3, 3}];
+  wm[[1, 1]] = WickMatrix[pp];
+  wm[[1, 3]] = WickMatrix[pp, qq];
+  wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
+  wm[[3, 3]] = WickMatrix[qq];
+
+  nc = Length[kk];
+  gg = Normal @ Zero[nc];
+  Table[
+    wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[i]]}];
+    wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
+    wm[[2, 2]] = WickMatrix[{aa[[i]], bb[[i]]}];
+    wm[[2, 3]] = WickMatrix[{aa[[i]], bb[[i]]}, qq];
+    wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
+    gg[[i]] = Quiet[Re @ Sqrt @ Det @ ArrayFlatten @ N @ wm, Det::luc],
+    (* NOTE: The Pfaffians here are supposed to be real positive. *)
+    (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
+    {i, 1, nc}
+  ];
+  Return[gg]
+  (* NOTE: The Nambu state is assumed to be normalized. *)
+]
+
+(* vacuum state *)
+WickOccupation[ws:NambuState[uv_?NambuMatrixQ, z_?NumericQ, ___], kk:{___Integer}] := Module[
+  { uu = Normal @ NambuUnitary[uv],
+    aa, bb, wm, gg, nc },
+  nc = FermionCount[ws];
+  aa = uu[[ kk + nc ]];
+  bb = uu[[ kk ]];
+
+  nc = Length[kk];
+  gg = Normal @ Zero[nc];
+  Table[
+    wm = N @ WickMatrix[{aa[[i]], bb[[i]]}];
+    gg[[i]] = Quiet[Re @ Sqrt @ Det @ wm, Det::luc],
+    {i, 1, nc}
+  ];
+  Return[gg]
+]
+
+(**** </WickOccupation> ****)
+
+
 (**** <WickGreenFunction> ****)
 
 (* shortcut *)
@@ -880,10 +939,10 @@ WickGreenFunction[ws_NambuState] :=
 WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, qq_?MatrixQ, ___], kk:{___Integer}] := Module[
   { uu = Normal @ NambuUnitary[uv],
     pp = NambuConjugateReverse[qq],
-    aa, bb, wm, ff, gg, nc },
-  nc = FermionCount[ws];
+    aa, bb, wm, ff, gg, nn },
+  nn = FermionCount[ws];
   aa = uu[[ kk ]];
-  bb = uu[[ kk + nc ]];
+  bb = uu[[ kk + nn ]];
 
   wm = Normal @ Zero[{3, 3}];
   wm[[1, 1]] = WickMatrix[pp];
@@ -891,8 +950,8 @@ WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, qq_?MatrixQ, ___], kk:{___Inte
   wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
   wm[[3, 3]] = WickMatrix[qq];
 
-  nc = Length[kk];
-  gg = Normal @ Zero[{nc, nc}];
+  nn = Length[kk];
+  gg = Normal @ Zero[{nn, nn}];
   Table[
     wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[i]]}];
     wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
@@ -902,7 +961,7 @@ WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, qq_?MatrixQ, ___], kk:{___Inte
     gg[[i, i]] = Quiet[Re @ Sqrt @ Det @ ArrayFlatten @ N @ wm, Det::luc],
     (* NOTE: The Pfaffians here are supposed to be real positive. *)
     (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
-    {i, 1, nc}
+    {i, 1, nn}
   ];
   Table[
     wm[[1, 2]] = WickMatrix[pp, {aa[[i]], bb[[j]]}];
@@ -912,11 +971,11 @@ WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, qq_?MatrixQ, ___], kk:{___Inte
     wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
     gg[[i, j]] = Pfaffian @ ArrayFlatten @ N @ wm;
     gg[[j, i]] = Conjugate @ gg[[i, j]],
-    {i, 1, nc},
-    {j, i+1, nc}
+    {i, 1, nn-1},
+    {j, i+1, nn}
   ];
 
-  ff = Normal @ Zero[{nc, nc}];
+  ff = Normal @ Zero[{nn, nn}];
   Table[
     wm[[1, 2]] = WickMatrix[pp, {aa[[i]], aa[[j]]}];
     wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
@@ -925,8 +984,8 @@ WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, qq_?MatrixQ, ___], kk:{___Inte
     wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
     ff[[i, j]] = Pfaffian @ ArrayFlatten @ N @ wm;
     ff[[j, i]] = -ff[[i, j]],
-    {i, 1, nc},
-    {j, i+1, nc}
+    {i, 1, nn-1},
+    {j, i+1, nn}
   ];
   NambuGreen[{gg, ff}, cc]
   (* NOTE: The Nambu state is assumed to be normalized. *)
@@ -935,33 +994,33 @@ WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, qq_?MatrixQ, ___], kk:{___Inte
 (* vacuum state *)
 WickGreenFunction[ws:NambuState[uv_?NambuMatrixQ, z_?NumericQ, ___], kk:{___Integer}] := Module[
   { uu = Normal @ NambuUnitary[uv],
-    aa, bb, wm, ff, gg, nc },
-  nc = FermionCount[ws];
+    aa, bb, wm, ff, gg, nn },
+  nn = FermionCount[ws];
   aa = uu[[ kk ]];
-  bb = uu[[ kk + nc ]];
+  bb = uu[[ kk + nn ]];
 
-  nc = Length[kk];
-  gg = Normal @ Zero[{nc, nc}];
+  nn = Length[kk];
+  gg = Normal @ Zero[{nn, nn}];
   Table[
     wm = N @ WickMatrix[{aa[[i]], bb[[i]]}];
     gg[[i, i]] = Quiet[Re @ Sqrt @ Det @ wm, Det::luc],
-    {i, 1, nc}
+    {i, 1, nn}
   ];
   Table[
     wm = N @ WickMatrix[{aa[[i]], bb[[j]]}];
     gg[[i, j]] = Pfaffian @ wm;
     gg[[j, i]] = Conjugate @ gg[[i, j]],
-    {i, 1, nc},
-    {j, i+1, nc}
+    {i, 1, nn-1},
+    {j, i+1, nn}
   ];
 
-  ff = Normal @ Zero[{nc, nc}];
+  ff = Normal @ Zero[{nn, nn}];
   Table[
     wm = N @ WickMatrix[{aa[[i]], aa[[j]]}];
     ff[[i, j]] = Pfaffian @ wm;
     ff[[j, i]] = -ff[[i, j]],
-    {i, 1, nc},
-    {j, i+1, nc}
+    {i, 1, nn-1},
+    {j, i+1, nn}
   ];
   NambuGreen[{gg, ff}, cc]
 ]

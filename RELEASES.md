@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.6.5
+
+- New: WickOccupation
+- Improved: CliffordCircuit
+- Stability improved: Dot in Mathematica 14.1 randomly crashes WolframKernel when some arguments are in the dense matrix form and others in SparseArray.
+
 ## 3.6.4
 
 - Emergency bug fix in WickGreenFunction

@@ -441,7 +441,9 @@ Graphics[CliffordCircuit[gg_List, opts___?OptionQ], S_Symbol?QubitQ, more___?Opt
     CliffordUnitary[_, kk_, any___?OptionQ] :> Gate[S[kk, $], any],
     CliffordUnitary[_, any___?OptionQ] :> Gate[ss, any, "Label" -> "U"],
     PauliMeasurement[_, kk_, any___?OptionQ] :> Gate[S[kk, $], any, "Shape" -> "Measurement"],
-    PauliDecoherence[_, kk_, any___?OptionQ] :> Gate[S[kk, $], any, "Label" -> "\[ScriptCapitalD]"],
+    PauliDecoherence[gnr_, kk_, any___?OptionQ] :> Gate[ S[kk, $], any,
+      "Label" -> Subscript["\[ScriptCapitalD]", FromGottesmanVector[gnr, Pauli]]
+    ],
     CNOT[i_, j_] :> Gate[{S[i,$]->1}, {S[j,$]}, "Shape" -> "CirclePlus"],
     SWAP[i_, j_] :> Gate[{S[i,$]->1}, {S[j,$]}, "Shape" -> "Cross", "ControlShape" -> "Cross"],
     Hadamard[kk_] :> Map[Gate[{#}, "Label" -> "H"]&, S[kk,$]],

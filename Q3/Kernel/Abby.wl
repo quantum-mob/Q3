@@ -1242,10 +1242,7 @@ SaveData[data_, OptionsPattern[]] := Module[
   ];
   If[OptionValue["Overwrite"] && FileExistsQ[file], DeleteFile @ file];
   result = Export[file, data];
-  If[ FailureQ[result],
-    Echo[file, "Error saving data to"],
-    Echo[file, "Data saved to"]
-  ];
+  If[FailureQ[result], Echo[file, "Error"], Echo[file, "Saved"]];
   result
 ]
 

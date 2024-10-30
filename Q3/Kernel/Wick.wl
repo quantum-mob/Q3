@@ -7,7 +7,7 @@ BeginPackage["Q3`"]
 
 { WickState, WickGaussian, WickUnitary };
 { WickOperator, WickOperatorFrom };
-{ WickGreenFunction, WickExpectation };
+{ WickGreenFunction, WickOccupation, WickExpectation };
 { FermiMeasurement };
 
 { RandomWickState, RandomWickGaussian, RandomWickUnitary, RandomWickOperator };
@@ -130,6 +130,11 @@ WickLogarithmicNegativity::usage = "WickLogarithmicNegativity[grn, {k1, k2, \[El
 
 Options[WickLogarithmicNegativity] = Options[WickTimeReversalMoment]
 
+WickLogarithmicNegativity[grn_?MatrixQ, kk:{}, ___?OptionQ] = 0
+
+WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___?OptionQ] := 0 /;
+  Length[grn] == Length[kk]
+
 (* canonical form for normal models *)
 (* SEE ALSO: Shpurian and Ryu (2019b) and  Alba and Carollo (2023) *)
 WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___?OptionQ] := Module[
@@ -249,8 +254,9 @@ WickState[Ket[aa_Association]] := With[
 
 
 WickState /:
-NormSquare[WickState[jmp:{_?VectorQ, _?MatrixQ}]] := With[
-  { mat = WickMatrix @ WickJoin[WickConjugateReverse @ jmp, jmp] },
+NormSquare[WickState[jmp:{_?VectorQ, _?MatrixQ}]] := Module[
+  { mat },
+  mat = WickMatrix @ WickJoin[WickConjugateReverse @ jmp, jmp];
   If[ Length[mat] > MatrixRank[mat], 0,
     Quiet[Re @ Sqrt @ Det @ mat, Det::luc]
   ]
@@ -283,7 +289,7 @@ Normalize[ws:WickState[{flag_?VectorQ, trs_?MatrixQ}]] := Module[
 ]
 
 (* NOTE: Just for tests. Equivalent to the above. *)
-NormalizeQR[WickState[flag_?VectorQ, trs_?MatrixQ]] := Module[
+NormalizeQR[WickState[{flag_?VectorQ, trs_?MatrixQ}]] := Module[
   {qq, rr},
   {qq, rr} = QRDecomposition[Transpose @ trs];
   WickState[{flag, Conjugate @ qq}]
@@ -401,13 +407,13 @@ WickJoin[ops__WickOperator] :=
 
 WickSplit::usage = "WickSplit returns splits {flags, vectors} into individual pairs of flag and vector."
 
-WickSplit[data : {_?VectorQ, _?MatrixQ}] := 
-  Map[List, Transpose@data, {2}]
+WickSplit[data:{_?VectorQ, _?MatrixQ}] := 
+  MapThread[{{#1}, SparseArray @ {#2}}&, data]
 
-WickSplit[WickOperator[data : {_?VectorQ, _?MatrixQ}]] :=
+WickSplit[WickOperator[data:{_?VectorQ, _?MatrixQ}]] :=
   WickOperator /@ WickSplit[data]
 
-WickSplit[ops : {__WickOperator}] :=
+WickSplit[ops:{__WickOperator}] :=
   WickSplit[WickJoin @@ ops]
 
 
@@ -954,11 +960,71 @@ WickExpectation[WickState[{z_?NumericQ, n_Integer}]][op_WickOperator] :=
 (**** </WickExpectation> ****)
 
 
+(**** <WickOccupation> ****)
+
+WickOccupation::usage = "WickOccupation[in, {k1, k2, \[Ellipsis]}] returns a list of the expectation values of occupation on fermion modes in {k1, k2, \[Ellipsis]} with respect to WickState or NambuState in.\nWickOccupation[in] is equivalent to WickOccupation[in, Range[n]], where n is the number of fermion modes for which input Wick or Nambu state in is defined for.\nWickOccupation[data] or WickOccupation[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating the occupation for an (typically large) array data of Wick or BdG states.\nWickOccupation[{k1, k2, \[Ellipsis]}] represents an operator form of WickOccupation to be applied to Wick or BdG state."
+
+(* operator form *)
+WickOccupation[kk:{___Integer}][in:(_WickState|_NambuState)] :=
+  WickOccupation[in, kk]
+
+(* shortcut *)
+WickOccupation[ws_WickState] :=
+  WickOccupation[ws, Range @ FermionCount @ ws]
+
+(* canonical form for normal models *)
+WickOccupation[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := Module[
+  { nc = FermionCount[ws],
+    pp = WickConjugateReverse[qq],
+    aa, bb, ab, gg, wm },
+  bb = One[nc][[kk]];
+  aa = WickSplit @ {ConstantArray[1, Length @ kk], bb};
+  bb = WickSplit @ {ConstantArray[0, Length @ kk], bb};
+
+  wm = Normal @ Zero[{3, 3}];
+  wm[[1, 1]] = WickMatrix[pp];
+  wm[[1, 3]] = WickMatrix[pp, qq];
+  wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
+  wm[[3, 3]] = WickMatrix[qq];
+
+  nc = Length[kk];
+  gg = Normal @ Zero[nc];
+  Table[
+    ab = WickJoin[aa[[i]], bb[[i]]];
+    wm[[1, 2]] = WickMatrix[pp, ab];
+    wm[[2, 1]] = -Transpose[ wm[[1, 2]] ];
+    wm[[2, 2]] = WickMatrix[ab];
+    wm[[2, 3]] = WickMatrix[ab, qq];
+    wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
+    gg[[i]] = Sqrt @ Re @ Quiet[Det @ ArrayFlatten @ N @ wm, Det::luc],
+    (* NOTE: The Pfaffians here are supposed to be real positive. *)
+    (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
+    {i, 1, nc}
+  ];
+  Return[gg] (* NOTE: The Wick state is assumed to be normalized. *)
+]
+
+(* vacuum state *)
+WickOccupation[WickState[{z_?NumericQ, n_Integer}], kk:{___Integer}] :=
+  Zero[Length @ kk]
+
+
+(* for large data *)
+WickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
+  { progress = i = 0,
+    dim = N @ Aggregate @ Dimensions[data],
+    dep = ArrayDepth[data]
+  },
+  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
+  Map[(progress = i++/dim; WickOccupation[#, kk])&, data, {dep}]
+] /; ArrayQ[data, _, MatchQ[#, _WickState | _NambuState]&]
+
+(**** </WickOccupation> ****)
+
+
 (**** <WickGreenFunction> ****)
 
 WickGreenFunction::usage = "WickGreenFunction[ws, {k1, k2, \[Ellipsis]}] returns m\[Times]m matrix of single-particle Green's functions among fermion modes in {k1, k2, \[Ellipsis]} with respect to WickState ws.\nWickGreenFunction[ns, {k1, k2, \[Ellipsis]}] returns NambuGreen[{grn, anm}], where grn and anm are m\[Times]m matrix of single-particle normal and anomalous Green's functions, respectively, among fermion modes in {k1, k2, \[Ellipsis]} with respect to NambuState ns.\nWickGreenFunction[in] is equivalent to WickGreenFunction[in, Range[n]], where n is the number of fermion modes for which input Wick or Nambu state in is defined for.\nWickGreenFunction[data] or WickGreenFunction[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Wick or BdG states.\nWickGreenFunction[{k1, k2, \[Ellipsis]}] represents an operator form of WickGreenFunction to be applied to Wick or Nambu state."
-
-WickGreenFunction::null = "The null state is encountered: ``."
 
 (* operator form *)
 WickGreenFunction[kk:{___Integer}][in:(_WickState|_NambuState)] :=
@@ -970,12 +1036,12 @@ WickGreenFunction[ws_WickState] :=
 
 (* canonical form for normal models *)
 WickGreenFunction[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := Module[
-  { nc = FermionCount[ws],
+  { nn = FermionCount[ws],
     pp = WickConjugateReverse[qq],
     aa, bb, ab, gg, wm },
-  bb = One[nc][[kk]];
-  aa = Map[List, Transpose @ {ConstantArray[0, Length @ kk], bb}, {2}];
-  bb = Map[List, Transpose @ {ConstantArray[1, Length @ kk], bb}, {2}];
+  bb = One[nn][[kk]];
+  aa = WickSplit @ {ConstantArray[0, Length @ kk], bb};
+  bb = WickSplit @ {ConstantArray[1, Length @ kk], bb};
 
   wm = Normal @ Zero[{3, 3}];
   wm[[1, 1]] = WickMatrix[pp];
@@ -983,8 +1049,8 @@ WickGreenFunction[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := M
   wm[[3, 1]] = -Transpose[ wm[[1, 3]] ];
   wm[[3, 3]] = WickMatrix[qq];
 
-  nc = Length[kk];
-  gg = Normal @ Zero[{nc, nc}];
+  nn = Length[kk];
+  gg = Normal @ Zero[{nn, nn}];
   Table[
     ab = WickJoin[aa[[i]], bb[[i]]];
     wm[[1, 2]] = WickMatrix[pp, ab];
@@ -992,10 +1058,11 @@ WickGreenFunction[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := M
     wm[[2, 2]] = WickMatrix[ab];
     wm[[2, 3]] = WickMatrix[ab, qq];
     wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
-    gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ ArrayFlatten @ N @ wm, Det::luc],
+    ab = ArrayFlatten[N @ wm];
+    gg[[i, i]] = Re @ Sqrt @ Quiet[Det @ ab, Det::luc],
     (* NOTE: The Pfaffians here are supposed to be real positive. *)
     (* 2024-07-08: Det[...] is enclosed in Quiet[..., Det::luc] because the warning message does not seem to be serious in most cases but goes off too often. *)
-    {i, 1, nc}
+    {i, 1, nn}
   ];
   Table[
     ab = WickJoin[aa[[i]], bb[[j]]];
@@ -1004,10 +1071,11 @@ WickGreenFunction[ws:WickState[qq:{_?VectorQ, _?MatrixQ}], kk:{___Integer}] := M
     wm[[2, 2]] = WickMatrix[ab];
     wm[[2, 3]] = WickMatrix[ab, qq];
     wm[[3, 2]] = -Transpose[ wm[[2, 3]] ];
-    gg[[i, j]] = Pfaffian[ArrayFlatten @ N @ wm];
+    ab = ArrayFlatten[N @ wm];
+    gg[[i, j]] = Pfaffian[ab];
     gg[[j, i]] = Conjugate @ gg[[i, j]],
-    {i, 1, nc},
-    {j, i+1, nc}
+    {i, 1, nn-1},
+    {j, i+1, nn}
   ];
   Return[gg] (* NOTE: The Wick state is assumed to be normalized. *)
 ]
@@ -1020,7 +1088,7 @@ WickGreenFunction[WickState[{z_?NumericQ, n_Integer}], kk:{___Integer}] :=
 (* for large data *)
 WickGreenFunction[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
   { progress = i = 0,
-    dim = N @ Aggregate @ Dimensions[data],
+    dim = Aggregate[N @ Dimensions @ data],
     dep = ArrayDepth[data]
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
@@ -1049,6 +1117,16 @@ WickGreenFunctionQR[WickState[{flag_?VectorQ, trs_?MatrixQ}], kk:{___Integer}] :
 ] /; If[ ContainsOnly[flag, {1}], True,
     Message[WickGreenFunction::qr]; False
   ]
+
+(* for large data *)
+WickGreenFunctionQR[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
+  { progress = i = 0,
+    dim = Aggregate[N @ Dimensions @ data],
+    dep = ArrayDepth[data]
+  },
+  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
+  Map[(progress = i++/dim; WickGreenFunctionQR[#, kk])&, data, {dep}]
+] /; ArrayQ[data, _, MatchQ[#, _WickState | _NambuState]&]
 
 (**** </WickGreenFunctionQR> ****)
 
@@ -1122,9 +1200,15 @@ WickEntropy[in:(_WickState|_NambuState)] = 0
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
 WickEntanglementEntropy::usage = "WickEntanglementEntropy[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Wick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nWickEntanglementEntropy[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or WickEntanglementEntropy[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nWickEntanglementEntropy[state, {k1, k2, \[Ellipsis]}] is equivalent to WickEntanglementEntropy[WickGreenFunction[state, {k1, k2, \[Ellipsis]}], {k1, k2, \[Ellipsis]}] for Wick or BdG state.\nWickEntanglementEntropy[{k1, k2, \[Ellipsis]}] is an operator form of WickEntanglementEtropy to be applied to Green's functions, Wick or Nambu state."
 
+(* special case for normal models *)
+WickEntanglementEntropy[grn_?MatrixQ, {}] = 0
+
 (* canonical form for normal models *)
 WickEntanglementEntropy[grn_?MatrixQ, kk:{__Integer}] :=
   WickEntropy @ grn[[kk, kk]]
+
+(* special case for normal models *)
+WickEntanglementEntropy[_?NambuMatrixQ, {}] = 0
 
 (* canonical form for BdG models *)
 WickEntanglementEntropy[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := Module[
@@ -1140,11 +1224,11 @@ WickEntanglementEntropy[grn:NambuGreen[{_?MatrixQ, _?MatrixQ}, ___], kk:{__Integ
 
 
 (* operator form *)
-WickEntanglementEntropy[kk:{__Integer}][any_] :=
+WickEntanglementEntropy[kk:{___Integer}][any_] :=
   WickEntanglementEntropy[any, kk]
 
 (* shortcut *)
-WickEntanglementEntropy[in:(_WickState|_NambuState), kk:{__Integer}] :=
+WickEntanglementEntropy[in:(_WickState|_NambuState), kk:{___Integer}] :=
   WickEntanglementEntropy[WickGreenFunction[in, kk], kk]
 
 (**** </WickEntanglementEntropy> ****)
@@ -1191,12 +1275,14 @@ WickMatrix::usage= "WickMatrix[spec] constructs the so-called Wick matrix, an an
 
 (* for normal models *)
 WickMatrix[{tag_?VectorQ, trs_?MatrixQ}] := Module[
-  { kk, ij, rr },
+  { kk, aa, bb, ij, rr },
   kk = PositionIndex[tag];
   If[ MissingQ[kk @ 0] || MissingQ[kk @ 1],
     Return @ Zero @ {Length @ tag, Length @ tag}
   ];
-  rr = trs[[kk @ 0]] . Transpose[ trs[[kk @ 1]] ];
+  aa = trs[[kk @ 0]];
+  bb = trs[[kk @ 1]];
+  rr = Dot[aa, Transpose @ bb];
   ij = Tuples @ {kk @ 0, kk @ 1};
   kk = First[#] < Last[#]& /@ ij;
   ij = Pick[ij, kk];
@@ -1212,13 +1298,16 @@ WickMatrix[{tag_?VectorQ, trs_?MatrixQ}] := Module[
 (* for normal models *)
 WickMatrix[{atag_?VectorQ, atrs_?MatrixQ}, {btag_?VectorQ, btrs_?MatrixQ}] :=
 Module[
-  { kk, ii, jj, ij, rr },
+  { ii, jj, aa, bb, rr },
   ii = Lookup[PositionIndex @ atag, 0];
   jj = Lookup[PositionIndex @ btag, 1];
   If[ MissigQ[ii] || MissingQ[jj], 
     Return @ Zero @ {Length @ atag, Length @ btag}
   ];
-  rr = atrs[[ii]] . Transpose[ btrs[[jj]] ];
+  aa = atrs[[ii]];
+  bb = btrs[[jj]];
+  rr = Dot[aa, Transpose @  bb];
+  (* NOTe: Mathematica 14.1 bug? This part causes a random crash of WolframKernel. *)
   rr = Thread[ Tuples[{ii, jj}] -> Flatten[rr] ];
   SparseArray[rr, {Length @ atag, Length @ btag}]
 ]
@@ -1632,11 +1721,14 @@ theWickMonitor[uni:(_WickUnitary|_NambuUnitary), in:(_WickState|_NambuState), {n
       t = 1,
       res = {in},
       new = in,
-      prb, msr },
-    prb = Exp[-n*dt];
+      (* non = 0, *)
+      nrm, prb, occ, pos },
+    (* squared norm *)
+    nrm = Exp[-n*dt];
     While[ t <= nT,      
       (* non-unitary evolution *)
-      If[ RandomReal[] < prb,
+      If[ RandomReal[] < nrm,
+        (* non++; *)
         new = uni[new];
         AppendTo[res, new];
         t += 1;
@@ -1644,11 +1736,21 @@ theWickMonitor[uni:(_WickUnitary|_NambuUnitary), in:(_WickState|_NambuState), {n
       ];
       
       (* quantum jumps *)
-      msr = FermiMeasurement @ RandomInteger[{1, n}];
-      new = msr[new];
+      occ = WickOccupation[new];
+      prb = Riffle[1-occ, occ] / n;
+      prb = Chop[Accumulate @ prb];
+      prb = prb - RandomReal[];
+      pos = First @ FirstPosition[prb, _?NonNegative];
+      If[ OddQ[pos],
+        pos = (pos + 1)/2;
+        new = WickOperator[{{pos, 0}, {pos, 1}}, n][new] / Sqrt[1-occ[[pos]]],
+        pos = pos/2;
+        new = WickOperator[{{pos, 1}, {pos, 0}}, n][new] / Sqrt[occ[[pos]]]
+      ];
       AppendTo[res, new];
       t += 1;
     ];
+    (* Echo[N[non/nT], "non"]; *)
     Return[res]
   ]
 
