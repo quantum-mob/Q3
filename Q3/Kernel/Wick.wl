@@ -551,7 +551,7 @@ WickUnitary /:
 MakeBoxes[op:WickUnitary[trs_?MatrixQ, rest___], fmt_] := Module[
     { kk = {rest} },
   kk = Which[ 
-    Length[cc] == 0, All,
+    Length[kk] == 0, All,
     MatchQ[First @ kk, {__Integer}], First[kk],
     True, All
   ];
@@ -1387,8 +1387,8 @@ Graphics[wc:WickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?Op
   cc = c[Range @ n];
   qc = gg /. {
     WickCircuit[{}] -> "Spacer",
-    WickCircuit -> Identity,
-    WickState[__] :> Ket[ss],
+    ws_WickCircuit :> Graphics[ws],
+    ws_WickState :> ExpressionFor[ws, cc],
     WickUnitary[_?MatrixQ, kk:{__Integer}, any___?OptionQ] :> Gate[c[kk], any],
     WickUnitary[_?MatrixQ, any___?OptionQ] :> Gate[cc, any],
     WickUnitary[_?MatrixQ, _, any___?OptionQ] :> Gate[cc, any],
@@ -1427,7 +1427,7 @@ RandomWickCircuit[{ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), pdf_, p_?Nume
     { n = FermionCount[ham],
       ab, tt, uu, mm },
     tt = RandomVariate[pdf, k];
-    uu = randomUnitaryLayer[ham, tt];
+    uu = randomWickUnitaryLayer[ham, tt];
     mm = RandomPick[Range @ n, p, k];
     mm = Map[FermiMeasurement, mm];
     WickCircuit @ Riffle[uu, mm]
@@ -1452,13 +1452,13 @@ RandomWickCircuit[ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), k_Integer] :=
   ]
 
 
-randomUnitaryLayer[ham_?MatrixQ, tt_?VectorQ] :=
+randomWickUnitaryLayer[ham_?MatrixQ, tt_?VectorQ] :=
   Map[WickUnitary[MatrixExp[-I*ham*#]]&, tt]
 
-randomUnitaryLayer[ham_?NambuMatrixQ, tt_?VectorQ] :=
-  randomUnitaryLayer[NambuHermitian @ ham, tt]
+randomWickUnitaryLayer[ham_?NambuMatrixQ, tt_?VectorQ] :=
+  randomWickUnitaryLayer[NambuHermitian @ ham, tt]
 
-randomUnitaryLayer[ham_NambuHermitian, tt_?VectorQ] := With[
+randomWickUnitaryLayer[ham_NambuHermitian, tt_?VectorQ] := With[
   { mat = Normal[ham] },
   Map[NambuUnitary[MatrixExp[-I*mat*#]]&, tt]
 ]

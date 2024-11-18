@@ -509,6 +509,7 @@ qspFindByFindMinimum[{coeff_List, parity:(-1|1)}, opts:OptionsPattern[{QSPFind, 
   localizes the values of all variables, then evaluates the function with the
   variables being symbolic, and then repeatedly evaluates the result
   numerically. Typically, the symbolic evaluation is very slow. *)
+  (* SEE ALSO: https://support.wolfram.com/12502 *)
   { Values @ Last @ out, First @ out, itr }
 ]
 
@@ -517,13 +518,15 @@ qspFindByFindMinimum[{coeff_List, parity:(-1|1)}, opts:OptionsPattern[{QSPFind, 
 
 (**** <qspFindByNMinimize> ****)
 qspFindByNMinimize::usage = "qspFindByNMinimize[{coeff, parity}] finds a QSP using the built-in global optimizer NMinimize."
+
 (* NOTE: Both FindMinimum and NMinimize first localize the values of all
 variables, then evaluates the function with the variables being symbolic, and
-then repeatedly evaluates the result numerically. Evaluated with variables
-being symbolic, the function evaluation may be very slow; for example,
+then repeatedly evaluates the result numerically. When evaluated with
+symbolic variables, the function evaluation may be very slow; for example,
 FourierDCT cannot be used within the objective function. For FindMinimum,
-this issue may be over come by giving the Gradient option. However, I have
+this issue may be overcome by giving the Gradient option. However, I have
 found no way to avoid it for NMinimize. *)
+(* NOTE: Both for FindMininmum and NMinimize, this site is relevant: https://support.wolfram.com/12502 *)
 
 qspFindByNMinimize[{coeff_List, parity:(-1|1)}, opts:OptionsPattern[{QSPFind, NMinimize}]] := Module[
   { pst = OptionValue["PostProcessor"],

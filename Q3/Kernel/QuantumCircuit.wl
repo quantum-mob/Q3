@@ -798,7 +798,7 @@ gateShape["CirclePlus"][x_, yy_List, ___] :=
 
 gateShape["CirclePlus"][x_, y_?NumericQ, ___] := {
   Circle[{x, y}, $GateSize / 3],
-  Line@{
+  Line @ {
     { {x-$GateSize/3,y}, {x+$GateSize/3,y} },
     { {x,y-$GateSize/3}, {x,y+$GateSize/3} }
    }
@@ -869,19 +869,13 @@ gateShape["Measurement"][x_, y_, opts___?OptionQ] := Module[
 gateShape["Projector"][x_, yy_List, ___] := Module[
   { y1 = Min @ yy,
     y2 = Max @ yy,
-    pane, symb },
+    pane },
   pane = Polygon[{
-      {x, y2} + $GateSize {+1,+1}/2,
-      {x, y2} + $GateSize {-1,+1}/2,
-      {x, y1} + $GateSize {-1,-1}/2,
-      {x, y1} + $GateSize {+1,-1}/2 }];
-  symb = Polygon[{
-      {x, y2} + $GateSize {+1,+1}/2,
-      {x, y1} + $GateSize {-1,-1}/2,
-      {x, y2} + $GateSize {-1,+1}/2,
-      {x, y1} + $GateSize {+1,-1}/2 }];
-  { {EdgeForm[], White, pane},
-    {EdgeForm[Opacity[1]], White, symb} }
+      {x, y2} + $GateSize {+1/2,+1/4},
+      {x, y2} + $GateSize {-1/2,+1/2},
+      {x, y1} + $GateSize {-1/2,-1/2},
+      {x, y1} + $GateSize {+1/2,-1/4} }];
+  { {EdgeForm[Opacity[1]], White, pane} }
  ]
 
 
@@ -943,20 +937,23 @@ gateShape["Oval"][ x_, y_?NumericQ, opts___?OptionQ ] := Module[
   { {EdgeForm[Opacity[1]], White, pane}, text }
  ]
 
-gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] := Module[
+gateShape["Oval"][ x_, yy_List, opts___?OptionQ ] := Module[
   { x1 = x - $GateSize/2,
     x2 = x + $GateSize/2,
     y1 = Min @ yy,
     y2 = Max @ yy,
     y0, y3, pane, text},
   
-  text = theGateLabel[{x, Mean@{y1, y2}}, opts];
+  text = theGateLabel[{x, Mean @ {y1, y2}}, opts];
 
   y0 = y1 - $GateSize/2;
   y3 = y2 + $GateSize/2;
   pane = Rectangle[{x1, y0}, {x2, y3}, RoundingRadius -> $GateSize/2];
   { {EdgeForm[Opacity[1]], White, pane}, text }
 ]
+
+gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] :=
+  gateShape["Oval"][x, yy, opts]
 
 (**** </gateShape> ****)
 
