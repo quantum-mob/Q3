@@ -828,10 +828,12 @@ StabilizerGenerators[grp_List] := Module[
     gg, cc
   },
   gg = GottesmanVector[#, ss]& /@ grp;
-  gg = Orthogonalize[gg, Mod[Dot[#1, #2], 2]&];
+  gg = Abs @ Orthogonalize[gg, Mod[Dot[#1, #2], 2]&];
+  (* NOTE (Mathematica v14.1, 2024-11-19): For some unknown reason, Orthogonalize above produces vectors some elements of which are negative; hence, Abs. *)
   gg = DeleteCases[gg, {0..}];
+  (* gg = FromGottesmanVector[#, ss]& /@ gg; *)
   gg = FromGottesmanVector[#, ss]& /@ gg;
-  cc = FirstCase[Coefficient[grp, #], Except[0]] & /@ gg;
+  cc = FirstCase[Coefficient[grp, #], Except[0]]& /@ gg;
   cc * gg
 ]
 

@@ -4,6 +4,8 @@ BeginPackage["Q3`"]
 { QuantumCircuit,
   QuantumCircuitTrim };
 
+{ RandomQuantumCircuit, RandomQuantumCircuitSimulate };
+
 { ParseGate, Gate, Mark };
 
 { ParsePort, Port };
@@ -1374,6 +1376,92 @@ GateFactor::usage = "GateFactor[gate] factorizes a high-level gate GATE into an 
 GateFactor[expr_] = expr
 
 (**** </GateFactor> ****)
+
+
+(**** <RandomQuantumCircuit> ****)
+
+RandomQuantumCircuit::usage = "RandomQuantumCircuit[{p, t}, {s1,s2,\[Ellipsis]}] generates a quantum circuit of depth 3t on qubits {s1,s2,\[Ellipsis]} with alternating unitary and measurement layers. Each unitary layer consists of randomly selected two-qubit unitary gates arranged in a brick-wall pattern, and in a measurement layer, each qubit is measured with probability p in the computational basis.";
+
+RandomQuantumCircuit[{p_?NumericQ, t_Integer}, ss:{___?QubitQ}] :=
+ RandomQuantumCircuit[{p, t}, FlavorCap@ss] /; Not[FlavorCapQ@ss]
+
+RandomQuantumCircuit[{p_?NumericQ, t_Integer}, ss:{___?QubitQ}] := Prepend[
+  QuantumCircuit[
+    Sequence @@ Flatten @ Table[
+      Append[randomUnitaryLayer@ss, randomMeasurementLayer[p, ss]],
+      t
+    ],
+    "PostMeasurementDashes" -> False
+  ],
+  Ket @ ss
+]
+
+randomMeasurementLayer::usage = "randomMeasurementLayer[p,{s1,s2,\[Ellipsis]}] generates a layer of single-qubit measurements in the computational basis on qubits {s1,s2,\[Ellipsis]} each selected randomly with probability p.";
+
+randomMeasurementLayer[p_?NumericQ, ss : {___?QubitQ}] := Module[
+  { zz = RandomPick[ss, p] },
+  zz = Through[zz[3]];
+  Measurement[zz]
+]
+
+randomUnitaryLayer::usage = "randomMeasurementLayer[{s1,s2,\[Ellipsis]}] generates a layer of random two-qubit unitary gates on every pair of nearest neighbors in qubits {s1,s2,\[Ellipsis]}.";
+
+randomUnitaryLayer[ss : {___?QubitQ}] := {
+  randomUnitaryLayer[1, ss],
+  randomUnitaryLayer[2, ss]
+}
+
+randomUnitaryLayer[k_Integer, ss : {___?QubitQ}] := With[
+  { qq = Partition[ss[[k ;; All]], 2] },
+  QuantumCircuit @ Map[Operator[RandomUnitary[4], #]&, qq]
+]
+
+(**** </RandomQuantumCircuit> ****)
+
+
+(**** <RandomQuantumCircuitSimulate> ****)
+
+RandomQuantumCircuitSimulate::usage = "RandomQuantumCircuitSimulate[{p,t},{s1,s2,\[Ellipsis]}] simulates a random quantum circuit of depth 3t on qubits {s1,s2,\[Ellipsis]} with alternating unitary and measurement layers. Each unitary layer consists of randomly selected two-qubit unitary gates arranged in a brick-wall pattern, and in a measurement layer, each qubit is measured with probability p in the computational basis.";
+
+RandomQuantumCircuitSimulate::save = "The result could not be saved.";
+
+Options[RandomQuantumCircuitSimulate] = {
+  "Samples" -> {10, 5},
+  "SaveData" -> False,
+  "Overwrite" -> True,
+  "Filename" -> Automatic,
+  "Prefix" -> "RQC"
+}
+
+RandomQuantumCircuitSimulate[{p_, t_}, ss:{___?QubitQ}, rest___] :=
+ RandomQuantumCircuit[p, t, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
+
+RandomQuantumCircuitSimulate[{p_?NumericQ, t_Integer}, 
+  ss:{___?QubitQ}, opts:OptionsPattern[]] := Module[
+  { progress = k = 0,
+    data, more, qc, sn, sm },
+  PrintTemporary @ ProgressIndicator @ Dynamic[progress];
+
+  {sn, sm} = doAssureList[OptionValue["Samples"], 2];
+  data = Transpose @ Table[
+    qc = RandomQuantumCircuit[{p, t}, ss];
+    { Table[
+        progress = ++k / N[sn*sm];
+        Table[Normal[Matrix @ qc[[1 ;; 3 i + 1]]], {i, 0, t}],
+        sm
+      ],
+      qc },
+    sn
+  ];
+  
+  If[ OptionValue["SaveData"],
+    more = Join[{opts}, Options @ RandomQuantumCircuitSimulate];
+    SaveData[data, FilterRules[{more}, Options @ SaveData]]
+  ];
+  Return[data]
+]
+
+(**** </RandomQuantumCircuitSimulate> ****)
 
 
 End[]

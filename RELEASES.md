@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.6.6
+
+- New: RandomQuantumCircuit, RandomQuantumCircuitSimulate
+- A workaround version of StabilizerGenerators: A bug in the built-in function Orthogonalize produces vectors some elements of which are negative even with Mod[Dot[#1, #2], 2].
+
 ## 3.6.5
 
 - New: WickOccupation
