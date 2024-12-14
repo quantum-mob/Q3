@@ -916,9 +916,8 @@ HoldPattern @
    their Flavor indices. This is conventional. If you want to change this
    behavior, Multiply[] should also be modified accordingly. *)
 
-HoldPattern @ Multiply[pre___, Longest[op__?MajoranaQ], post___] :=
-  Multiply[pre, Sequence @@ Sort @ {op}, post] Signature @ {op} /;
-    Not @ OrderedQ @ {op}
+HoldPattern @ Multiply[pre___, a_?MajoranaQ, b_?MajoranaQ, post___] :=
+  -Multiply[pre, b, a, post] Signature @ {op} /; Not @ OrderedQ @ {a, b}
 
 (**** </Multiply> ****)
 

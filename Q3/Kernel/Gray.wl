@@ -272,6 +272,8 @@ GivensRotation::range = "Either or both of `` is out of [1, ``]."
 
 AddElaborationPatterns[ _GivensRotation ]
 
+SetAttributes[GivensRotation, NHoldRest]
+
 GivensRotation /:
 NonCommutativeQ[ GivensRotation[___] ] = True
 
@@ -301,12 +303,12 @@ MakeBoxes[op:GivensRotation[mat_?MatrixQ, ij:{_, _}, ss:{__?QubitQ}], fmt_] :=
 GivensRotation[mat_?MatrixQ, rest___] := (
   Message[GivensRotation::two, mat];
   GivensRotation[One[2], rest]
- ) /; Dimensions[mat] != {2, 2}
+) /; Dimensions[mat] != {2, 2}
 
 GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, n_Integer] := (
   Message[GivensRotation::range, ij, n];
   GivensRotation[mat, {1, 2}, n]
- ) /; Not[And @@ Thread[1 <= ij <= n]]
+) /; Not[And @@ Thread[1 <= ij <= n]]
 
 
 GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}] :=
@@ -334,7 +336,7 @@ ExpressionFor[
 
 
 GivensRotation /:
-MatrixForm[op:GivensRotation[_?MatrixQ, {_, _}, n_Integer]] :=
+MatrixForm[op:GivensRotation[_?MatrixQ, {_, _}, n:(_Integer|{___?QubitQ})]] :=
   MatrixForm @ Matrix @ op
 
 GivensRotation /:
@@ -344,18 +346,18 @@ Matrix @ GivensRotation[mat_?MatrixQ, {x_Integer, y_Integer}, n_Integer] :=
       val = Flatten @ mat,
       idx = Tuples[{x, y}, 2] },
     ReplacePart[new, Thread[idx -> val]]
-   ]
+  ]
 
 GivensRotation /:
 Matrix @ GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}] :=
-  Matrix[GivensRotation[mat, ij, ss], ss]
+  Matrix @ GivensRotation[mat, ij, Power[2, Length @ ss]]
 
 GivensRotation /:
 Matrix[GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}], rest__] :=
   SparseArray @ Matrix[
     ExpressionFor[Matrix @ GivensRotation[mat, ij, Power[2, Length @ ss]], ss],
     rest
-   ]
+  ]
 
 (**** </GivensRotation> *****)
 

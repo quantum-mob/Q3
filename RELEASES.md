@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.6.7
+
+- Bug fix: concerning the multiplication of Majoranas.
+
 ## 3.6.6
 
 - New: RandomQuantumCircuit, RandomQuantumCircuitSimulate

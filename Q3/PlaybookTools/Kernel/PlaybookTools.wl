@@ -106,9 +106,10 @@ fileDeploy::usage = "fileDepoly[src, dst] does the actual job of deploying src t
 
 fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
   { pdf, nb },
+  Print["Directory: ", Directory[]];
   Print["Deploying ", src];
-  If[ FailureQ[nb = NotebookOpen[src]],
-    Message[PlaybookDeploy::noopen, dst];
+  If[ FailureQ[nb = NotebookOpen[ExpandFileName @ src]],
+    Message[PlaybookDeploy::noopen, ExpandFileName @ src];
     Return[$Failed],
     NotebookSave[nb];
   ];
