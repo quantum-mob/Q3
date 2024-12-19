@@ -258,7 +258,7 @@ SkewHouseholder[mat_] := Module[
   Return[{A, Q, One @ Length @ mat}]
 ]
 
-HouseholderVectorFull::usage = "HouseholderVectorFull[vec] returns the Householder vector w of input complex vector vec; such that (I-2w w^\[Dagger]/w^\[Dagger]\[CenterDot]w) vec is a multiple of the unit vector Subscript[e, 1]."
+HouseholderVectorFull::usage = "HouseholderVectorFull[vec] returns the Householder vector w of input complex vector vec; such that (2w w^\[Dagger]/w^\[Dagger]\[CenterDot]w-I) . vec is a multiple of the unit vector Subscript[e, 1]."
 
 HouseholderVectorFull[x_] := Module[
   { fac = Norm[x],

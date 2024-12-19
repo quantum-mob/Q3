@@ -3,6 +3,7 @@
 ## 3.6.7
 
 - Bug fix: concerning the multiplication of Majoranas.
+- New: YoungDegree
 
 ## 3.6.6
 

@@ -19,9 +19,9 @@ BeginPackage["Q3`"]
 { VickSimulate, VickDampingOperator, 
   VickMonitor };
 
-(* Nambu.wl *)
-{ NambuState, NambuOperator, NambuUnitary, NambuGaussian,
-  NambuHermitian, NambuGreen,  NambuMatrix, NambuMatrixQ }; 
+(* Namvo.wl *)
+{ NamvoState, NamvoOperator, NamvoUnitary, NamvoGaussian,
+  NamvoHermitian, NamvoGreen,  NamvoMatrix, NamvoMatrixQ }; 
 
 (* vonNeumann.wl *)
 { QuantumLog };
@@ -38,7 +38,7 @@ VickTimeReversalMoment::sing = "The matrix is tamed according to option \"Epsilo
 Options[VickTimeReversalMoment] = { "Epsilon" -> 1.25*^-5 } (* 1.0*^-8 is also a reasonable choice *)
 
 
-VickTimeReversalMoment[alpha_, NambuGreen[{g_?MatrixQ, f_?MatrixQ}, ___], rest__] := 
+VickTimeReversalMoment[alpha_, NamvoGreen[{g_?MatrixQ, f_?MatrixQ}, ___], rest__] := 
   VickTimeReversalMoment[alpha, {g, f}, rest]
 
 VickTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}, opts___?OptionQ] :=
@@ -65,7 +65,7 @@ theTimeReversalMoment[
   gg = tameMatrix[id - N[grn], OptionValue["Epsilon"]];
   (* NOTE: When there is a fermion mode that is unoccuppied with certainty, the coherent-state representation becomes unusual, and one needs to handle such cases separately. While this is possible, Q3 offers a ditry trick. *)
   (* NOTE: N[grn] is to avoid additional normalization (or even orthonormalization) of the eigenvectors of grn. *)
-  gg = Normal @ NambuHermitian[{gg, -anm}];
+  gg = Normal @ NamvoHermitian[{gg, -anm}];
   
   pf1 = Power[Pfaffian[Inverse[gg.xx]], 2];
 
@@ -125,7 +125,7 @@ tameMatrix[mat_?MatrixQ, eps_] := Module[
 
 (**** <VickLogarithmicNegtivity> ****)
 
-VickLogarithmicNegativity::usage = "VickLogarithmicNegativity[grn, {k1, k2, \[Ellipsis]}] returns the logarithmic entanglement negativity between the subsystem consisting of fermion modes {k1, k2,\[Ellipsis]}\[Subset]{1,2,\[Ellipsis],n} in the Vick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nVickLogarithmicNegativity[NambuGreen[{grn, anm}], {k1, k2,\[Ellipsis]}] or VickLogarithmicNegativity[{grn, anm}, {k1, k2,\[Ellipsis]}] returns the logarithmic negativity in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nVickLogarithmicNegativity[state, {k1, k2, \[Ellipsis]}] is equivalent to VickLogarithmicNegativity[VickGreenFunction[state], {k1, k2,\[Ellipsis]}] for state = VickState or NambuState."
+VickLogarithmicNegativity::usage = "VickLogarithmicNegativity[grn, {k1, k2, \[Ellipsis]}] returns the logarithmic entanglement negativity between the subsystem consisting of fermion modes {k1, k2,\[Ellipsis]}\[Subset]{1,2,\[Ellipsis],n} in the Vick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nVickLogarithmicNegativity[NamvoGreen[{grn, anm}], {k1, k2,\[Ellipsis]}] or VickLogarithmicNegativity[{grn, anm}, {k1, k2,\[Ellipsis]}] returns the logarithmic negativity in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nVickLogarithmicNegativity[state, {k1, k2, \[Ellipsis]}] is equivalent to VickLogarithmicNegativity[VickGreenFunction[state], {k1, k2,\[Ellipsis]}] for state = VickState or NamvoState."
 (* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 
 Options[VickLogarithmicNegativity] = Options[VickTimeReversalMoment]
@@ -353,13 +353,13 @@ FermionCount::usage = "FermionCount[obj] returns the number of fermion modes tha
 
 FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat]
 
-FermionCount[obj_?NambuMatrixQ] := Length[First @ obj]
+FermionCount[obj_?NamvoMatrixQ] := Length[First @ obj]
 
 FermionCount[VickState[{_?NumericQ, n_Integer}, ___]] = n
 
 FermionCount[VickState[{_?VectorQ, trs_?MatrixQ}, ___]] := Last[Dimensions @ trs]
 
-FermionCount[NambuState[{u_?MatrixQ, _?MatrixQ}, ___]] := Length[u]
+FermionCount[NamvoState[{u_?MatrixQ, _?MatrixQ}, ___]] := Length[u]
 
 FermionCount[VickOperator[{_?VectorQ, trs_?MatrixQ}, ___]] := Last[Dimensions @ trs]
 
@@ -377,17 +377,17 @@ FermionCount[VickUnitary[_?MatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
 
 FermionCount[VickUnitary[mat_?MatrixQ, ___]] := Length[mat]
 
-FermionCount[NambuUnitary[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
+FermionCount[NamvoUnitary[_?NamvoMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
 
-FermionCount[NambuUnitary[uv_?NambuMatrixQ, ___]] := Length[First @ uv]
+FermionCount[NamvoUnitary[uv_?NamvoMatrixQ, ___]] := Length[First @ uv]
 
-FermionCount[NambuHermitian[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
+FermionCount[NamvoHermitian[_?NamvoMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
 
-FermionCount[NambuHermitian[ham_?NambuMatrixQ, ___]] := Length[First @ ham]
+FermionCount[NamvoHermitian[ham_?NamvoMatrixQ, ___]] := Length[First @ ham]
 
-FermionCount[NambuGreen[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
+FermionCount[NamvoGreen[_?NamvoMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
 
-FermionCount[NambuGreen[grn_?NambuMatrixQ, ___]] := Length[First @ grn]
+FermionCount[NamvoGreen[grn_?NamvoMatrixQ, ___]] := Length[First @ grn]
 
 FermionCount[VickCircuit[gg_List, ___?OptionQ]] := Max[FermionCount /@ gg]
 
@@ -928,7 +928,7 @@ FermiMeasurement[k_Integer][ws:VickState[trs:{_?VectorQ, _?MatrixQ}]] := Module[
   ]
 ]
 
-FermiMeasurement[kk:{___Integer}][ws:(_VickState|_NambuState)] :=
+FermiMeasurement[kk:{___Integer}][ws:(_VickState|_NamvoState)] :=
   Fold[FermiMeasurement[#2][#1]&, ws, kk]
 
 
@@ -944,7 +944,7 @@ Readout[FermiMeasurement[k_]] := Readout[k]
 
 (**** <VickExpectation> ****)
 
-VickExpectation::usage = "VickExpectation[ws] represents an expectation value with respect to the Vick or Nambu state ws.\nVickState[ws][expr] returns the expectation value of expr, where expr may be either VickOperator or NambuOperator consistent with ws."
+VickExpectation::usage = "VickExpectation[ws] represents an expectation value with respect to the Vick or Namvo state ws.\nVickState[ws][expr] returns the expectation value of expr, where expr may be either VickOperator or NamvoOperator consistent with ws."
 
 VickExpectation[VickState[bb:{_?VectorQ, _?MatrixQ}]] @
   VickOperator[ops:{_?VectorQ, _?MatrixQ}, ___] := Module[
@@ -962,10 +962,10 @@ VickExpectation[VickState[{z_?NumericQ, n_Integer}]][op_VickOperator] :=
 
 (**** <VickOccupation> ****)
 
-VickOccupation::usage = "VickOccupation[in, {k1, k2, \[Ellipsis]}] returns a list of the expectation values of occupation on fermion modes in {k1, k2, \[Ellipsis]} with respect to VickState or NambuState in.\nVickOccupation[in] is equivalent to VickOccupation[in, Range[n]], where n is the number of fermion modes for which input Vick or Nambu state in is defined for.\nVickOccupation[data] or VickOccupation[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating the occupation for an (typically large) array data of Vick or BdG states.\nVickOccupation[{k1, k2, \[Ellipsis]}] represents an operator form of VickOccupation to be applied to Vick or BdG state."
+VickOccupation::usage = "VickOccupation[in, {k1, k2, \[Ellipsis]}] returns a list of the expectation values of occupation on fermion modes in {k1, k2, \[Ellipsis]} with respect to VickState or NamvoState in.\nVickOccupation[in] is equivalent to VickOccupation[in, Range[n]], where n is the number of fermion modes for which input Vick or Namvo state in is defined for.\nVickOccupation[data] or VickOccupation[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating the occupation for an (typically large) array data of Vick or BdG states.\nVickOccupation[{k1, k2, \[Ellipsis]}] represents an operator form of VickOccupation to be applied to Vick or BdG state."
 
 (* operator form *)
-VickOccupation[kk:{___Integer}][in:(_VickState|_NambuState)] :=
+VickOccupation[kk:{___Integer}][in:(_VickState|_NamvoState)] :=
   VickOccupation[in, kk]
 
 (* shortcut *)
@@ -1017,17 +1017,17 @@ VickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   Map[(progress = i++/dim; VickOccupation[#, kk])&, data, {dep}]
-] /; ArrayQ[data, _, MatchQ[#, _VickState | _NambuState]&]
+] /; ArrayQ[data, _, MatchQ[#, _VickState | _NamvoState]&]
 
 (**** </VickOccupation> ****)
 
 
 (**** <VickGreenFunction> ****)
 
-VickGreenFunction::usage = "VickGreenFunction[ws, {k1, k2, \[Ellipsis]}] returns m\[Times]m matrix of single-particle Green's functions among fermion modes in {k1, k2, \[Ellipsis]} with respect to VickState ws.\nVickGreenFunction[ns, {k1, k2, \[Ellipsis]}] returns NambuGreen[{grn, anm}], where grn and anm are m\[Times]m matrix of single-particle normal and anomalous Green's functions, respectively, among fermion modes in {k1, k2, \[Ellipsis]} with respect to NambuState ns.\nVickGreenFunction[in] is equivalent to VickGreenFunction[in, Range[n]], where n is the number of fermion modes for which input Vick or Nambu state in is defined for.\nVickGreenFunction[data] or VickGreenFunction[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Vick or BdG states.\nVickGreenFunction[{k1, k2, \[Ellipsis]}] represents an operator form of VickGreenFunction to be applied to Vick or Nambu state."
+VickGreenFunction::usage = "VickGreenFunction[ws, {k1, k2, \[Ellipsis]}] returns m\[Times]m matrix of single-particle Green's functions among fermion modes in {k1, k2, \[Ellipsis]} with respect to VickState ws.\nVickGreenFunction[ns, {k1, k2, \[Ellipsis]}] returns NamvoGreen[{grn, anm}], where grn and anm are m\[Times]m matrix of single-particle normal and anomalous Green's functions, respectively, among fermion modes in {k1, k2, \[Ellipsis]} with respect to NamvoState ns.\nVickGreenFunction[in] is equivalent to VickGreenFunction[in, Range[n]], where n is the number of fermion modes for which input Vick or Namvo state in is defined for.\nVickGreenFunction[data] or VickGreenFunction[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Vick or BdG states.\nVickGreenFunction[{k1, k2, \[Ellipsis]}] represents an operator form of VickGreenFunction to be applied to Vick or Namvo state."
 
 (* operator form *)
-VickGreenFunction[kk:{___Integer}][in:(_VickState|_NambuState)] :=
+VickGreenFunction[kk:{___Integer}][in:(_VickState|_NamvoState)] :=
   VickGreenFunction[in, kk]
 
 (* shortcut *)
@@ -1093,7 +1093,7 @@ VickGreenFunction[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   Map[(progress = i++/dim; VickGreenFunction[#, kk])&, data, {dep}]
-] /; ArrayQ[data, _, MatchQ[#, _VickState | _NambuState]&]
+] /; ArrayQ[data, _, MatchQ[#, _VickState | _NamvoState]&]
 
 (**** </VickGreenFunction> ****)
 
@@ -1126,7 +1126,7 @@ VickGreenFunctionQR[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   Map[(progress = i++/dim; VickGreenFunctionQR[#, kk])&, data, {dep}]
-] /; ArrayQ[data, _, MatchQ[#, _VickState | _NambuState]&]
+] /; ArrayQ[data, _, MatchQ[#, _VickState | _NamvoState]&]
 
 (**** </VickGreenFunctionQR> ****)
 
@@ -1174,23 +1174,23 @@ VickDensityMatrix[ws_VickState] := With[
 (**** <VickEntropy> ****)
 
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
-VickEntropy::usage = "VickEntropy[grn] returns the von Neumann entropy of a fermionic Gaussian state characterized by the matrix grn of single-particle Green's functions. VickEntropy[NambuGreen[{grn, anm}]] or VickEntropy[{grn, anm}] considers a fermionic Gaussian state characterized by matrices grn and anm of normal and anomalous Green's functions."
+VickEntropy::usage = "VickEntropy[grn] returns the von Neumann entropy of a fermionic Gaussian state characterized by the matrix grn of single-particle Green's functions. VickEntropy[NamvoGreen[{grn, anm}]] or VickEntropy[{grn, anm}] considers a fermionic Gaussian state characterized by matrices grn and anm of normal and anomalous Green's functions."
 
 (* canonical form for normal models *)
 VickEntropy[grn_?MatrixQ] :=
   QuantumLog[2, grn] + QuantumLog[2, One[Dimensions @ grn] - grn]
 
 (* canonicalization for BdG models *)
-VickEntropy[grn:NambuGreen[{_?MatrixQ, _?MatrixQ}, ___]] :=
+VickEntropy[grn:NamvoGreen[{_?MatrixQ, _?MatrixQ}, ___]] :=
   theVickEntropy[Normal @ grn] / 2
 
 (* canonicalization for BdG models *)
 VickEntropy[grn:{_?MatrixQ, _?MatrixQ}] :=
-  VickEntropy[NambuGreen @ grn]
+  VickEntropy[NamvoGreen @ grn]
 
 
 (* shortcut *)
-VickEntropy[in:(_VickState|_NambuState)] = 0
+VickEntropy[in:(_VickState|_NamvoState)] = 0
 
 (**** </VickEntropy> ****)
 
@@ -1198,7 +1198,7 @@ VickEntropy[in:(_VickState|_NambuState)] = 0
 (**** <VickEntanglementEntropy> ****)
 
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
-VickEntanglementEntropy::usage = "VickEntanglementEntropy[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Vick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nVickEntanglementEntropy[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or VickEntanglementEntropy[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nVickEntanglementEntropy[state, {k1, k2, \[Ellipsis]}] is equivalent to VickEntanglementEntropy[VickGreenFunction[state, {k1, k2, \[Ellipsis]}], {k1, k2, \[Ellipsis]}] for Vick or BdG state.\nVickEntanglementEntropy[{k1, k2, \[Ellipsis]}] is an operator form of VickEntanglementEtropy to be applied to Green's functions, Vick or Nambu state."
+VickEntanglementEntropy::usage = "VickEntanglementEntropy[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Vick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nVickEntanglementEntropy[NamvoGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or VickEntanglementEntropy[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nVickEntanglementEntropy[state, {k1, k2, \[Ellipsis]}] is equivalent to VickEntanglementEntropy[VickGreenFunction[state, {k1, k2, \[Ellipsis]}], {k1, k2, \[Ellipsis]}] for Vick or BdG state.\nVickEntanglementEntropy[{k1, k2, \[Ellipsis]}] is an operator form of VickEntanglementEtropy to be applied to Green's functions, Vick or Namvo state."
 
 (* special case for normal models *)
 VickEntanglementEntropy[grn_?MatrixQ, {}] = 0
@@ -1208,18 +1208,18 @@ VickEntanglementEntropy[grn_?MatrixQ, kk:{__Integer}] :=
   VickEntropy @ grn[[kk, kk]]
 
 (* special case for normal models *)
-VickEntanglementEntropy[_?NambuMatrixQ, {}] = 0
+VickEntanglementEntropy[_?NamvoMatrixQ, {}] = 0
 
 (* canonical form for BdG models *)
 VickEntanglementEntropy[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := Module[
   { gg = Normal[grn][[kk, kk]],
     ff = Normal[anm][[kk, kk]] },
   (* NOTE: It seems that Part does not support properly SymmetrizedArray; hence, Normal in the above. *)
-  VickEntropy @ Normal @ NambuGreen[{gg, ff}] / 2
+  VickEntropy @ Normal @ NamvoGreen[{gg, ff}] / 2
 ]
 
 (* canonicalization for BdG models *)
-VickEntanglementEntropy[grn:NambuGreen[{_?MatrixQ, _?MatrixQ}, ___], kk:{__Integer}] :=
+VickEntanglementEntropy[grn:NamvoGreen[{_?MatrixQ, _?MatrixQ}, ___], kk:{__Integer}] :=
   VickEntanglementEntropy[First @ grn, kk]
 
 
@@ -1228,7 +1228,7 @@ VickEntanglementEntropy[kk:{___Integer}][any_] :=
   VickEntanglementEntropy[any, kk]
 
 (* shortcut *)
-VickEntanglementEntropy[in:(_VickState|_NambuState), kk:{___Integer}] :=
+VickEntanglementEntropy[in:(_VickState|_NamvoState), kk:{___Integer}] :=
   VickEntanglementEntropy[VickGreenFunction[in, kk], kk]
 
 (**** </VickEntanglementEntropy> ****)
@@ -1237,7 +1237,7 @@ VickEntanglementEntropy[in:(_VickState|_NambuState), kk:{___Integer}] :=
 (**** <VickMutualInformation> ****)
 
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
-VickMutualInformation::usage = "VickMutualInformation[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Vick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nVickMutualInformation[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or VickMutualInformation[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nVickMutualInformation[state, {k1, k2, \[Ellipsis]}] is equivalent to VickMutualInformation[VickGreenFunction[state], {k1, k2, \[Ellipsis]}] for Vick or BdG state.\nVickMutualInformation[{k1, k2, \[Ellipsis]}] is an operator form of VickEntanglementEtropy to be applied to Green's functions, Vick or Nambu state."
+VickMutualInformation::usage = "VickMutualInformation[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Vick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nVickMutualInformation[NamvoGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or VickMutualInformation[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nVickMutualInformation[state, {k1, k2, \[Ellipsis]}] is equivalent to VickMutualInformation[VickGreenFunction[state], {k1, k2, \[Ellipsis]}] for Vick or BdG state.\nVickMutualInformation[{k1, k2, \[Ellipsis]}] is an operator form of VickEntanglementEtropy to be applied to Green's functions, Vick or Namvo state."
 
 (* canonical form for normal models *)
 VickMutualInformation[gg_?MatrixQ, kk:{__Integer}] :=With[
@@ -1248,14 +1248,14 @@ VickMutualInformation[gg_?MatrixQ, kk:{__Integer}] :=With[
 (* canonical form for BdG models *)
 VickMutualInformation[{gg_?MatrixQ, ff_?MatrixQ}, kk:{__Integer}] := With[
   { ll = Supplement[Range @ Length @ gg, kk] },
-  ( VickEntropy[Normal @ NambuGreen @ {gg[[kk, kk]], ff[[kk, kk]]}] +
-    VickEntropy[Normal @ NambuGreen @ {gg[[ll, ll]], ff[[ll, ll]]}] -
-    VickEntropy[Normal @ NambuGreen @ {gg, ff}]
+  ( VickEntropy[Normal @ NamvoGreen @ {gg[[kk, kk]], ff[[kk, kk]]}] +
+    VickEntropy[Normal @ NamvoGreen @ {gg[[ll, ll]], ff[[ll, ll]]}] -
+    VickEntropy[Normal @ NamvoGreen @ {gg, ff}]
   ) / 2
 ]
 
 (* canonicalization for BdG models *)
-VickMutualInformation[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], kk:{__Integer}] :=
+VickMutualInformation[NamvoGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], kk:{__Integer}] :=
   VickMutualInformation[{gg, ff}, kk]
 
 (* operator form *)
@@ -1263,7 +1263,7 @@ VickMutualInformation[kk:{__Integer}][any_] :=
   VickMutualInformation[any, kk]
 
 (* shortcut for normal models *)
-VickMutualInformation[in:(_VickState|_NambuState), kk:{__Integer}] := 
+VickMutualInformation[in:(_VickState|_NamvoState), kk:{__Integer}] := 
   VickMutualInformation[VickGreenFunction @ in, kk]
 
 (**** </VickMutualInformation> ****)
@@ -1363,10 +1363,10 @@ VickCircuit /:
 MultiplyKind[_VickCircuit] = Fermion
 
 VickCircuit /:
-Multiply[pre___, wc_VickCircuit, in:(_VickState|_NambuState)] :=
+Multiply[pre___, wc_VickCircuit, in:(_VickState|_NamvoState)] :=
   Multiply[pre, wc @ in]
 
-VickCircuit[gg_List, ___][in:(_VickState|_NambuState)] :=
+VickCircuit[gg_List, ___][in:(_VickState|_NamvoState)] :=
   Fold[#2[#1]&, in, gg]
 
 
@@ -1392,9 +1392,9 @@ Graphics[wc:VickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?Op
     VickUnitary[_?MatrixQ, kk:{__Integer}, any___?OptionQ] :> Gate[c[kk], any],
     VickUnitary[_?MatrixQ, any___?OptionQ] :> Gate[cc, any],
     VickUnitary[_?MatrixQ, _, any___?OptionQ] :> Gate[cc, any],
-    NambuUnitary[_?NambuMatrixQ, kk:{__Integer}, any___?OptionQ] :> Gate[c[kk], any],
-    NambuUnitary[_?NambuMatrixQ, any___?OptionQ] :> Gate[cc, any],
-    NambuUnitary[_?NambuMatrixQ, _, any___?OptionQ] :> Gate[cc, any],
+    NamvoUnitary[_?NamvoMatrixQ, kk:{__Integer}, any___?OptionQ] :> Gate[c[kk], any],
+    NamvoUnitary[_?NamvoMatrixQ, any___?OptionQ] :> Gate[cc, any],
+    NamvoUnitary[_?NamvoMatrixQ, _, any___?OptionQ] :> Gate[cc, any],
     FermiMeasurement[{}, ___] -> "Spacer",
     FermiMeasurement[k_Integer, any___?OptionQ] :> Gate[c @ {k}, any, "Shape" -> "Measurement"],
     FermiMeasurement[kk:{_Integer}, any___?OptionQ] :> Gate[c[kk], any, "Shape" -> "Measurement"],
@@ -1409,9 +1409,9 @@ Graphics[wc:VickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?Op
 
 (**** <RandomVickCircuit> ****)
 
-RandomVickCircuit::usage = "RandomVickCircuit[{uni, p}, dep] generate a random quantum circuit on non-interacting fermion modes, where layers of unitary gate uni (either VickUnitary[\[Ellipsis]] or NambuUnitary[\[Ellipsis]]) alternate with layers of measurements (FermiMeasurement[\[Ellipsis]]) on fermion modes selected randomly with probability p to form an overall depth dep.\nRandomVickCircuit[{ham, pdf, p}, k] unitary layers of random unitary gate uni=Exp[-I ham \[Tau]] with single-particle Hamiltonian ham (either n\[Times]n Hermitian matrix or NambuHermitian[\[Ellipsis]]) and the random evolution time \[Tau] distributed according to the probability distribution function pdf.\nRandomVickCircuit[{ham, p}, dep] assumes that the evolution time is uniformly distributed over the interval [0,2\[Pi] n/max], where max is the maximum of the absolute values of the entries of ham.\nRandomVickCircuit[ham, dep] generates a circuit for n fermion modes where each unitary layer corresponds to time evolution U=exp[-I ham \[Tau]] with the evolution time \[Tau] distributed by P(\[Tau])\[Proportional]exp[-n \[Tau]] and each measurement layer measures a fermion mode with probability p=1/n."
+RandomVickCircuit::usage = "RandomVickCircuit[{uni, p}, dep] generate a random quantum circuit on non-interacting fermion modes, where layers of unitary gate uni (either VickUnitary[\[Ellipsis]] or NamvoUnitary[\[Ellipsis]]) alternate with layers of measurements (FermiMeasurement[\[Ellipsis]]) on fermion modes selected randomly with probability p to form an overall depth dep.\nRandomVickCircuit[{ham, pdf, p}, k] unitary layers of random unitary gate uni=Exp[-I ham \[Tau]] with single-particle Hamiltonian ham (either n\[Times]n Hermitian matrix or NamvoHermitian[\[Ellipsis]]) and the random evolution time \[Tau] distributed according to the probability distribution function pdf.\nRandomVickCircuit[{ham, p}, dep] assumes that the evolution time is uniformly distributed over the interval [0,2\[Pi] n/max], where max is the maximum of the absolute values of the entries of ham.\nRandomVickCircuit[ham, dep] generates a circuit for n fermion modes where each unitary layer corresponds to time evolution U=exp[-I ham \[Tau]] with the evolution time \[Tau] distributed by P(\[Tau])\[Proportional]exp[-n \[Tau]] and each measurement layer measures a fermion mode with probability p=1/n."
 
-RandomVickCircuit[{uu:(_VickUnitary | _NambuUnitary), p_?NumericQ}, k_Integer] :=
+RandomVickCircuit[{uu:(_VickUnitary | _NamvoUnitary), p_?NumericQ}, k_Integer] :=
   Module[
     { mm },
     mm = RandomPick[Range @ FermionCount @ uu, p, k];
@@ -1422,7 +1422,7 @@ RandomVickCircuit[{uu:(_VickUnitary | _NambuUnitary), p_?NumericQ}, k_Integer] :
   ]
 
 (* arbitrary distribution of evolution time *)
-RandomVickCircuit[{ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), pdf_, p_?NumericQ}, k_Integer] :=
+RandomVickCircuit[{ham:(_?MatrixQ|_?NamvoMatrixQ|_NamvoHermitian), pdf_, p_?NumericQ}, k_Integer] :=
   Module[
     { n = FermionCount[ham],
       ab, tt, uu, mm },
@@ -1434,18 +1434,18 @@ RandomVickCircuit[{ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), pdf_, p_?Nume
   ]
 
 (* uniform distribution of evolution time *)
-RandomVickCircuit[{ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), p_?NumericQ}, k_Integer] :=
+RandomVickCircuit[{ham:(_?MatrixQ|_?NamvoMatrixQ|_NamvoHermitian), p_?NumericQ}, k_Integer] :=
   Module[
     { n = FermionCount[ham],
       max, pdf },
-    max = Max @ Abs @ If[Head[ham] === NambuHermitian, First @ ham, ham];
+    max = Max @ Abs @ If[Head[ham] === NamvoHermitian, First @ ham, ham];
     pdf = UniformDistribution[{0, N[2*Pi*n/max]}];
     RandomVickCircuit[{ham, pdf, p}, k]
   ]
 
 (* exponential distribution of evolution time *)
 (* P(\tau) = Exp[-n\gamma\tau]; choose a unit system such that \gamma\tau --> \tau *)
-RandomVickCircuit[ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), k_Integer] :=
+RandomVickCircuit[ham:(_?MatrixQ|_?NamvoMatrixQ|_NamvoHermitian), k_Integer] :=
   Module[
     { n = FermionCount[ham] },
     RandomVickCircuit[{ham, ExponentialDistribution[n], 1./n}, k]
@@ -1455,12 +1455,12 @@ RandomVickCircuit[ham:(_?MatrixQ|_?NambuMatrixQ|_NambuHermitian), k_Integer] :=
 randomVickUnitaryLayer[ham_?MatrixQ, tt_?VectorQ] :=
   Map[VickUnitary[MatrixExp[-I*ham*#]]&, tt]
 
-randomVickUnitaryLayer[ham_?NambuMatrixQ, tt_?VectorQ] :=
-  randomVickUnitaryLayer[NambuHermitian @ ham, tt]
+randomVickUnitaryLayer[ham_?NamvoMatrixQ, tt_?VectorQ] :=
+  randomVickUnitaryLayer[NamvoHermitian @ ham, tt]
 
-randomVickUnitaryLayer[ham_NambuHermitian, tt_?VectorQ] := With[
+randomVickUnitaryLayer[ham_NamvoHermitian, tt_?VectorQ] := With[
   { mat = Normal[ham] },
-  Map[NambuUnitary[MatrixExp[-I*mat*#]]&, tt]
+  Map[NamvoUnitary[MatrixExp[-I*mat*#]]&, tt]
 ]
 
 (**** </RandomVickCircuit> ****)
@@ -1482,17 +1482,17 @@ Options[RandomVickCircuitSimulate] = {
 
 $RandomVickCircuitPatterns = Alternatives[
   {_VickUnitary, _?NumericQ}, 
-  {_NambuUnitary, _?NumericQ},
+  {_NamvoUnitary, _?NumericQ},
   {_?MatrixQ, _, _?NumericQ},
   {_?MatrixQ, _?NumericQ},
-  {_NambuHermitian, _, _?NumericQ},
-  {_NambuHermitian, _?NumericQ},
+  {_NamvoHermitian, _, _?NumericQ},
+  {_NamvoHermitian, _?NumericQ},
   _?MatrixQ,
-  _NambuHermitian
+  _NamvoHermitian
 ];
 
 RandomVickCircuitSimulate[
-  in:(_VickState | _NambuState),
+  in:(_VickState | _NamvoState),
   spec:$RandomVickCircuitPatterns,
   t_Integer, 
   opts:OptionsPattern[{RandomVickCircuit, RandomVickCircuitSimulate}]
@@ -1654,7 +1654,7 @@ altVickSimulate[{non_VickGaussian, fac_}, jmp:{__VickOperator}, in_VickState, {n
 
 (**** <VickMonitor> ****)
 
-VickMonitor::usage = "VickMonitor[ham, in, {nt, dt}] solves the problem of continuous monitoring of the occupation number of a non-interacting many-fermion system by using the Monte Carlo simulation method. The model is specified by the single-particle Hamiltonian ham (an n\[Times]n Hermitian matrix for models without pairing or a pair {ham, del} of matrices or NambuHermitian for BdG models). The simulation starts from the initial in (either VickState or NambState) at time 0 and goes nt time steps of size dt."
+VickMonitor::usage = "VickMonitor[ham, in, {nt, dt}] solves the problem of continuous monitoring of the occupation number of a non-interacting many-fermion system by using the Monte Carlo simulation method. The model is specified by the single-particle Hamiltonian ham (an n\[Times]n Hermitian matrix for models without pairing or a pair {ham, del} of matrices or NamvoHermitian for BdG models). The simulation starts from the initial in (either VickState or NambState) at time 0 and goes nt time steps of size dt."
 
 VickMonitor::save = "The result could not be saved."
 
@@ -1668,12 +1668,12 @@ Options[VickMonitor] = {
   "Prefix" -> "WM"
 }
 
-VickMonitor[ham_?NambuMatrixQ, rest___] :=
-  VickMonitor[NambuHermitian @ ham, rest]
+VickMonitor[ham_?NamvoMatrixQ, rest___] :=
+  VickMonitor[NamvoHermitian @ ham, rest]
 
 VickMonitor[
-  ham:(_?MatrixQ|_NambuHermitian),
-  in:(_VickState|_NambuState),
+  ham:(_?MatrixQ|_NamvoHermitian),
+  in:(_VickState|_NamvoState),
   {nT_Integer, dt_?NumericQ},
   opts:OptionsPattern[]
 ] :=
@@ -1705,17 +1705,17 @@ theVickEvolution[ham_?MatrixQ, dt_] :=
     $Failed
   ]
 
-theVickEvolution[ham_?NambuMatrixQ, dt_] :=
-  theVickEvolution[NambuHermitian @ ham, dt]
+theVickEvolution[ham_?NamvoMatrixQ, dt_] :=
+  theVickEvolution[NamvoHermitian @ ham, dt]
 
-theVickEvolution[ham_NambuHermitian, dt_] :=
+theVickEvolution[ham_NamvoHermitian, dt_] :=
   If[ ArrayQ[First @ ham, 3, NumericQ],
-    NambuUnitary @ MatrixExp[-I*Normal[ham]*dt],
+    NamvoUnitary @ MatrixExp[-I*Normal[ham]*dt],
     $Failed
   ]
 
 
-theVickMonitor[uni:(_VickUnitary|_NambuUnitary), in:(_VickState|_NambuState), {nT_Integer, dt_?NumericQ}] :=
+theVickMonitor[uni:(_VickUnitary|_NamvoUnitary), in:(_VickState|_NamvoState), {nT_Integer, dt_?NumericQ}] :=
   Module[
     { n = FermionCount[uni],
       t = 1,

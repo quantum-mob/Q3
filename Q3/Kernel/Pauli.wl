@@ -510,18 +510,25 @@ KetCanonical::usage = "KetCanonical[expr] returns the canonical form of ket expr
 
 SetAttributes[KetCanonical, Listable]
 
-KetCanonical[State[v_?VectorQ, rest__]] :=
-  State[CanonicalizeVector @ v, rest]
+KetCanonical[State[v_?VectorQ, rest__], nrm_:True] :=
+  State[CanonicalizeVector[v, nrm], rest]
 
-KetCanonical[expr_?fKetQ] := Elaborate[
-  KetCanonical[StateForm @ expr]
+KetCanonical[expr_?fKetQ, nrm_:True] := Elaborate[
+  KetCanonical[StateForm @ expr, nrm]
 ]
 
-KetCanonical[expr_?fPauliKetQ] := ExpressionFor[
-  CanonicalizeVector[Matrix @ expr]
+KetCanonical[expr_?fPauliKetQ, nrm_:True] := ExpressionFor[
+  CanonicalizeVector[Matrix @ expr, nrm]
 ]
 
-KetCanonical[any_] = any
+KetCanonical[expr_, nrm_:True] := Module[
+  { vv = Cases[Garner @ {expr}, _Ket, Infinity],
+    cc },
+  cc = CoefficientArrays[expr, vv][[2]];
+  CanonicalizeVector[cc, nrm] . vv
+] /; Not @ FreeQ[expr, _Ket]
+
+KetCanonical[any_, nrm_:True] = any
 
 (**** </KetCanonical> ****)
 
@@ -530,15 +537,17 @@ KetCanonical[any_] = any
 
 CanonicalizeVector::usage = "CanonicalizeVector[list] returns the same list with the first non-zero element normalized to 1."
 
-(* For some unknown reason, SelectFirst does not work as expected for SparseArray. *)
-CanonicalizeVector[in_SparseArray?VectorQ] := With[
+(* BUG (v14.1): SelectFirst gives a wrong answer for SparseArray, or evan crashes the Wolfram Kernel. *)
+CanonicalizeVector[in_SparseArray?VectorQ, nrm_:True] := Module[
   { val = SelectFirst[Values @ Most @ ArrayRules @ in, Not @* ZeroQ] },
-  If[MissingQ[val], in, in / val]
+  val = If[nrm, Conjugate[val] / Abs[val], 1 / val];
+  If[MissingQ[val], in, in * val]
 ]
 
-CanonicalizeVector[in_?VectorQ] := With[
-  { val = SelectFirst[in, Not @* ZeroQ] },
-  If[MissingQ[val], in, in / val]
+CanonicalizeVector[in_?VectorQ, nrm_:True] := Module[
+  { val = SelectFirst[in, Not[ZeroQ @ #]&] },
+  val = If[nrm, Conjugate[val] / Abs[val], 1 / val];
+  If[MissingQ[val], in, in * val]
 ]
 
 (**** </CanonicalizeVector> *****)

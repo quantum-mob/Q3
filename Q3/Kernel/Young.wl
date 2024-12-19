@@ -7,7 +7,8 @@
 BeginPackage["Q3`"];
 
 { YoungDiagram, FerrersDiagram,
-  YoungShape, YoungShapes, YoungShapeQ };
+  YoungShape, YoungShapes, YoungShapeQ,
+  YoungDegree };
 
 { YoungTranspose, YoungTrim };
 
@@ -112,6 +113,17 @@ FerrersDiagram[shape:{___Integer}] :=
 FerrersDiagram[yt:{{___Integer}..}] := FerrersDiagram[YoungShape @ yt]
 
 FerrersDiagram[yt_YoungTableau] := FerrersDiagram[YoungShape @ yt]
+
+
+(**** <YoungDegree> ****)
+
+YoungDegree::usage = "YoungDegree[obj] returns the degree of the symmetric group concerning the obj."
+
+YoungDegree[shape_YoungShape] := Total @@ shape
+
+YoungDegree[tbl_YoungTableau] := YoungDegree[YoungShape @ tbl]
+
+(**** </YoungDegree> ****)
 
 
 (**** <YoungShape> ****)
@@ -1048,11 +1060,13 @@ PileYoungShape[shape_?YoungShapeQ] := Module[
 
 YoungInvariantBasis::usage = "YoungInvariantBasis[{v1,v2,\[Ellipsis]}] returns the list of all vectors that are invariant under the symmetric group in the space spanned by computational basis {v1,v2,\[Ellipsis]}."
 
-YoungInvariantBasis[bs:{Ket[__?YoungTableauQ] ..}] := Module[
-  { n = Total @ YoungShape @ First @ First @ bs,
+YoungInvariantBasis[bs:{Ket[{__YoungTableau}]..}] := Module[
+  { n = YoungDegree @ FirstCase[bs, _YoungTableau, YoungTableau @ {{}}, Infinity],
     op },
+  (* so-called the twirling operator *)
   op = Total @ GroupElements @ SymmetricGroup[n];
-  DeleteCases[Union @ KetCanonical[op ** bs], 0]
+  op /= GroupOrder[SymmetricGroup @ n];
+  DeleteCases[Union @ KetCanonical[op ** bs, False], 0]
 ]
 
 (**** </YoungInvariantBasis> ****)

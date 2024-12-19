@@ -41,6 +41,7 @@ Get["Q3`Wick`"];
 Get["Q3`Nambu`"];
 
 Get["Q3`Vick`"];
+Get["Q3`Bravyi`"];
 
 Get["Q3`Wigner`"];
 Get["Q3`Dicke`"];
