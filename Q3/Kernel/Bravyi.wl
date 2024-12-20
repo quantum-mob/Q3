@@ -447,9 +447,11 @@ theNamvoDot[{u1_?MatrixQ, v1_?MatrixQ}, {u2_?MatrixQ, v2_?MatrixQ}] :=
 
 (**** <HouseholderMatrix> ****)
 
-HouseholderMatrix::usage = "HouseholderMatrix[v] returns the Householder reflection matrix m = (2|w><w|-1) such that m.v is proportional to {1, 0, 0, \[Ellipsis]}."
+HouseholderMatrix::usage = "HouseholderMatrix[v] returns the Householder reflection matrix m = (2|w><w|-1) such that m.v is proportional to {1, 0, 0, \[Ellipsis]}.\nHouseholderMatrix[v, k] returns the Householder reflection matrix that brings vector v to the k'th unit vector."
 
 HouseholderMatrix::numeric = "`` is supposed to be a numeric vector."
+
+HouseholderMatrix::neg = "The second input argument `` must be larger than 1."
 
 HouseholderMatrix[vec_?VectorQ] := Module[
   { fac = Norm[vec],
@@ -462,6 +464,14 @@ HouseholderMatrix[vec_?VectorQ] := Module[
   (2*Dyad[new, new] - One[Length @ vec]) * Conjugate[phs]
 ] /; If[ VectorQ[vec, NumericQ], True,
     Message[HouseholderMatrix::numeric, ArrayShort @ vec];
+    False
+  ]
+
+HouseholderMatrix[vec_?VectorQ, k_Integer] := With[
+  { mat = HouseholderMatrix[Drop[vec, k-1]] },
+  CirclePlus[One[k-1], mat]
+] /; If[ k > 1, True,
+    Message[HouseholderMatrix::neg, k];
     False
   ]
 
@@ -1070,23 +1080,23 @@ BdGJumpAction[mat_?MatrixQ] := Map[BdGJumpAction, mat]
 
 BdGCollapse::usage = "BdGCollapse[{k, m}] represents the projection to the subspace of occupation number m (0 or 1) of fermion mode k.\n BdGCollapse[{vec, m}] deals with the occupation number of the dressed mode vec . {a1, a2, \[Ellipsis]}."
 
-BdGCollapse[{k_Integer, flag:(0|1)}][BdGState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
+BdGCollapse::improper = "The first and second halves u and v of vector `` must be orthogonal, i.e., Dot[u, v]==0."
+
+
+BdGCollapse[flag:(0|1), k_Integer][BdGState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   { prb, new },
-  {prb, new} = theBdGCollapse[{k, flag}, cvr];
+  {prb, new} = theBdGCollapse[flag, k, cvr];
   BdGState[{fac * prb, new}, rest]
 ]
 
-BdGCollapse[{vec_?VectorQ, flag:(0|1)}][in:BdGState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
+BdGCollapse[flag:(0|1), vec_?VectorQ][in:BdGState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   { prb, new },
-  {prb, new} = theBdGCollapse[{vec, flag}, cvr];
+  {prb, new} = theBdGCollapse[flag, vec, cvr];
   BdGState[{fac * prb, new}, rest]
 ]
 
 
-theBdGCollapse[spec_][cvr_?MatrixQ] :=
-  theBdGCollapse[spec, cvr]
-
-theBdGCollapse[{k_Integer, flag:(0|1)}, cvr_?MatrixQ] := Module[
+theBdGCollapse[flag:(0|1), k_Integer, cvr_?MatrixQ] := Module[
   { n = Length[cvr] / 2,
     jj, ii, aa, bb, id, mm },
   aa = SparseArray[
@@ -1104,7 +1114,7 @@ theBdGCollapse[{k_Integer, flag:(0|1)}, cvr_?MatrixQ] := Module[
   ];
   id = One[2n];
   mm = id - aa . cvr; 
-  (* NOTE: Notice the minus sign since D - -A in this case. *)
+  (* NOTE: Notice the minus sign since D = -A in this case. *)
   prb = Sqrt[Det @ mm] / 2;
   If[ ZeroQ[prb],
     new = One[2n],
@@ -1113,15 +1123,22 @@ theBdGCollapse[{k_Integer, flag:(0|1)}, cvr_?MatrixQ] := Module[
   {prb, new}
 ]
 
-theBdGCollapse[{vec_?VectorQ, flag:(0|1)}, cvr_?MatrixQ] := Module[
+(* See, e.g., Gallier (2001) for the Cartan-Dieudonné theorem. *)
+theBdGCollapse[flag:(0|1), vv_?VectorQ, cvr_?MatrixQ] := Module[
   { n = Length[cvr] / 2,
-    ref = Conjugate @ HouseholderMatrix[vec],
-    trs, prb, new },
-  ref = Normal @ NamvoUnitary[{ref, 0}];
-  trs = ToMajoranaMatrix[n] / Sqrt[2];
-  trs = trs . ref . Topple[trs];
+    ww, xx, yy, trs, prb, new },
+  ww = vv . ToDiracMatrix[n];
+  xx = Re[ww];
+  yy = Im[ww];
+  If[ Not @ ZeroQ[xx . yy],
+    Message[BdGCollapse::improper, vv];
+    Return[{1, cvr}]
+  ];
+  (* The Cartan-Dieudonné theorem *)
+  trs = HouseholderMatrix[xx];
+  trs = HouseholderMatrix[trs . yy, 2] . trs;
   new = trs . cvr . Transpose[trs];
-  {prb, new} = theBdGCollapse[{1, flag}, new];
+  {prb, new} = theBdGCollapse[flag, 1, new];
   new = Transpose[trs] . new . trs;
   {prb, new}
 ]
