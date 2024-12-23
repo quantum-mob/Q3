@@ -16,7 +16,7 @@ BeginPackage["Q3`"]
 
 { WickGaussian, RandomWickGaussian };
 
-{ WickGreenFunction, WickOccupation, WickExpectation };
+{ WickGreenFunction, WickOccupation };
 
 { WickCircuit, RandomWickCircuit, RandomWickCircuitSimulate };
 { WickSimulate, WickDampingOperator };
@@ -220,7 +220,7 @@ FromWickCovariance::usage = "FromWickCovariance[cvr] returns the Green's functio
 FromWickCovariance[cvr_?MatrixQ] := Module[
   { crr = One[Dimensions @ cvr] - I*cvr },
   NambuGreen[ToDirac @ crr] / 4
-  (* NOTE: Notice the factor of 1/4 *)
+  (* NOTE: Notice the factor of 1/4. *)
 ] /; If[ arrayRealQ[cvr], True,
     Message[WickState::complex, ArrayShort @ cvr];
     False
@@ -543,15 +543,6 @@ RandomWickOperator[n_Integer] :=
   RandomWickOperator[RandomInteger[{1, n}], n]
 
 
-(**** <WickExpectation> ****)
-
-WickExpectation::usage = "WickExpectation[ws] represents an expectation value with respect to the Wick or Nambu state ws.\nWickState[ws][expr] returns the expectation value of expr, where expr may be either WickOperator or NambuOperator consistent with ws."
-
-WickExpectation[ws:WickState[{_?NumericQ, cvr_?MatrixQ}, ___]][op:WickOperator[ops_?MatrixQ, ___]] := Abs[ op[ws][[1, 1]] ]
-
-(**** </WickExpectation> ****)
-
-
 (**** <WickJump> ****)
 
 WickJump::usage = "WickJump[mat] represents a sequence of quantum jump operators, which are linear combinations of Majorana fermion modes with coefficients given by the elements of matrix mat."
@@ -799,7 +790,7 @@ theWickMeasurement[k_Integer, cvr_?MatrixQ] := Module[
   mm = id - aa . cvr; 
   (* NOTE: Notice the minus sign since D = -A in this case. *)
   Quiet[prb = Sqrt[Det @ mm] / 2, {Det::luc}];
-  If[ RandomReal[] < prb,
+  If[ RandomReal[] < Chop[prb], (* Chop to avoid a small imaginary part *)
     $MeasurementOut[k] = 1,
     $MeasurementOut[k] = 0;
     aa *= -1;
@@ -925,7 +916,8 @@ WickOccupation[in_WickState] :=
 (* canonical form for normal models *)
 WickOccupation[WickState[{_?NumericQ, cvr_?MatrixQ}, ___], kk:{___Integer}] := Module[
   { grn = FromWickCovariance[cvr] },
-  1 - Diagonal[ grn[[1, 1]] ]
+  grn = 1 - Diagonal[ grn[[1, 1]] ];
+  grn[[kk]]
 ]
 
 
@@ -1391,7 +1383,7 @@ WickMonitor[ham_?NambuMatrixQ, rest___] :=
 
 WickMonitor[
   ham:(_?MatrixQ|_NambuHermitian),
-  in:(_WickState|_NambuState),
+  in_WickState,
   {nT_Integer, dt_?NumericQ},
   opts:OptionsPattern[]
 ] :=
@@ -1417,9 +1409,10 @@ WickMonitor[
   ]
 
 
+(* NOTE: H = \frac{i}{4} c_i ham_{ij} c_j *)
 theWickEvolution[ham_?MatrixQ, dt_] :=
   If[ MatrixQ[ham, NumericQ],
-    WickUnitary @ MatrixExp[-I*ham*dt],
+    WickUnitary @ MatrixExp[ham*dt],
     $Failed
   ]
 
@@ -1427,13 +1420,10 @@ theWickEvolution[ham_?NambuMatrixQ, dt_] :=
   theWickEvolution[NambuHermitian @ ham, dt]
 
 theWickEvolution[ham_NambuHermitian, dt_] :=
-  If[ ArrayQ[First @ ham, 3, NumericQ],
-    NambuUnitary @ MatrixExp[-I*Normal[ham]*dt],
-    $Failed
-  ]
+  theWickEvolution[-2I*ToMajorana[Normal @ ham], dt]
 
 
-theWickMonitor[uni:(_WickUnitary|_NambuUnitary), in:(_WickState|_NambuState), {nT_Integer, dt_?NumericQ}] :=
+theWickMonitor[uni_WickUnitary, in_WickState, {nT_Integer, dt_?NumericQ}] :=
   Module[
     { n = FermionCount[uni],
       t = 1,
@@ -1665,7 +1655,7 @@ WickEntropy[grn:{_?MatrixQ, _?MatrixQ}] :=
 
 
 (* shortcut *)
-WickEntropy[in_WickState] = 0
+WickEntropy[in_WickState] := 0 /; WickPureQ[in]
 
 (**** </WickEntropy> ****)
 
