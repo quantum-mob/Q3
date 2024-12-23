@@ -64,6 +64,7 @@ BeginPackage["Q3`"]
   RandomSymplectic RandomUnitarySymplectic };
 
 { TridiagonalToeplitzMatrix };
+{ HouseholderMatrix };
 
 { BasisComplement };
 
@@ -524,7 +525,7 @@ KetCanonical[expr_?fPauliKetQ, nrm_:True] := ExpressionFor[
 KetCanonical[expr_, nrm_:True] := Module[
   { vv = Cases[Garner @ {expr}, _Ket, Infinity],
     cc },
-  cc = CoefficientArrays[expr, vv][[2]];
+  cc = Coefficient[expr, vv];
   CanonicalizeVector[cc, nrm] . vv
 ] /; Not @ FreeQ[expr, _Ket]
 
@@ -539,7 +540,7 @@ CanonicalizeVector::usage = "CanonicalizeVector[list] returns the same list with
 
 (* BUG (v14.1): SelectFirst gives a wrong answer for SparseArray, or evan crashes the Wolfram Kernel. *)
 CanonicalizeVector[in_SparseArray?VectorQ, nrm_:True] := Module[
-  { val = SelectFirst[Values @ Most @ ArrayRules @ in, Not @* ZeroQ] },
+  { val = First[in @ "NonzeroValues"] },
   val = If[nrm, Conjugate[val] / Abs[val], 1 / val];
   If[MissingQ[val], in, in * val]
 ]
@@ -2097,18 +2098,19 @@ Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
 
 (* linearity *)
 
-Matrix[expr_Plus, rest__] :=
-  TrigToExp @ ExpToTrig @ With[
-    { new = KetChop @ expr },
-    If[Head[new] === Plus, Map[Matrix[#, rest]&, new], Matrix[new, rest]]
+Matrix[expr_Plus, rest__] := TrigToExp @ ExpToTrig @ With[
+  { new = KetChop @ expr },
+  If[ Head[new] === Plus, 
+    Map[Matrix[#, rest]&, new],
+    Matrix[new, rest]
   ]
+]
 (* NOTE: rest__ NOT rest___ *)
 (* NOTE: TrigToExp @ ExpToTrig helps simplify in many cases. *)
 (* NOTE: KetChop is required here because "0. + Ket[...] + ..." may happen. *)
 
 Matrix[ z_?CommutativeQ op_, rest__ ] := z * Matrix[op, rest]
 (* NOTE: rest__ NOT rest___ *)
-
 
 Matrix[ z_?CommutativeQ, {} ] := z * One[2]
 
@@ -2155,11 +2157,11 @@ HoldPattern @
 Matrix[Bra[any_], rest___] := Conjugate @ Matrix[Ket[any], rest]
 
 
-(* For Ket of unlabelled qubits *)
+(* For Ket of unlabelled species *)
 Matrix[vec:Ket[_List], {___}] := TheMatrix[vec]
 
 
-(* For Ket of labelled qubits *)
+(* For Ket of labelled species *)
 
 Matrix[Ket[<||>], {}] := 0
 
@@ -2178,9 +2180,9 @@ Matrix[Pauli[mm:{__Integer}], n_Integer] := Which[
   Length[mm] == n, ThePauli[mm],
   Length[mm] < n, MatrixEmbed[ThePauli @ mm, Range @ Length @ mm, n]
 ] /; If[ Length[mm] <= n, True,
-  Message[Matrix::pauli, mm, n];
-  False
-]
+    Message[Matrix::pauli, mm, n];
+    False
+  ]
 
 
 (* For Fermions *)
@@ -2205,7 +2207,7 @@ fermionMatrix[op_?FermionQ, ff:{___?SpeciesQ}] := Module[
   ]
 ]
 
-fermionOne[f_?FermionQ] := ThePauli[3]
+fermionOne[_?FermionQ] := ThePauli[3]
 
 fermionOne[any_?SpeciesQ] := One[Dimension @ any]
 
@@ -5044,6 +5046,40 @@ Eigensystem @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] := {
  }
 
 (***** </TridiagonalToeplitzMatrix> ****)
+
+
+(**** <HouseholderMatrix> ****)
+
+HouseholderMatrix::usage = "HouseholderMatrix[v] returns the Householder reflection matrix m = (1-2|w><w|) associated with vector |w> such that m.v is proportional to {1, 0, 0, \[Ellipsis]}.\nHouseholderMatrix[v, k] returns the Householder reflection matrix that transforms {vk, \[Ellipsis], vn} with components {v1, \[Ellipsis], v(k-1)} kept intact."
+
+HouseholderMatrix::numeric = "`` is supposed to be a numeric vector."
+
+HouseholderMatrix::neg = "The second input argument `` must be larger than 1."
+
+HouseholderMatrix[vec_?VectorQ] := Module[
+  { fac = Norm[vec],
+    phs = Exp[I * Arg[First @ vec]],
+    new },
+  fac *= phs;
+  new = -vec;
+  new[[1]] += fac;
+  new = Normalize[new];
+  (One[Length @ vec] - 2*Dyad[new, new]) * Conjugate[phs]
+] /; If[ VectorQ[vec, NumericQ], True,
+    Message[HouseholderMatrix::numeric, ArrayShort @ vec];
+    False
+  ]
+
+HouseholderMatrix[vec_?VectorQ, k_Integer] := With[
+  { mat = HouseholderMatrix[Drop[vec, k-1]] },
+  CirclePlus[One[k-1], mat]
+] /; If[ k > 1, True,
+    Message[HouseholderMatrix::neg, k];
+    False
+  ]
+
+(**** </HouseholderMatrix> ****)
+
 
 Protect[ Evaluate @ $symb ]
 

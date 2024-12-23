@@ -1,9 +1,10 @@
 # Release Notes
 
-## 3.6.7
+## 3.7.0
 
-- Bug fix: concerning the multiplication of Majoranas.
+- Fermionic quantum computation is significantly improved using Bravyi's method
 - New: YoungDegree
+- Bug fix: concerning the multiplication of Majoranas.
 
 ## 3.6.6
 

@@ -20,6 +20,7 @@ BeginPackage["Q3`"]
 { FockBilinearQ, FockBilinearSystem,
   FockBilinearOperators, FockBilinearMatrix };
 
+{ ToDiracMatrix, ToMajoranaMatrix };
 { ToMajorana, ToDirac,
   ToBoson, ToHeisenberg };
 
@@ -652,6 +653,29 @@ Majoranas::usage = "Majoranas[expr] gives the list of all Majoranas appearing in
 Majoranas[expr_] := Select[NonCommutativeSpecies @ expr, MajoranaQ]
 
 
+(**** <ToMajoranaMatrix> ****)
+
+ToMajoranaMatrix::usage = "ToMajoranaMatrix[n] returns the 2n\[Times]2n matrix representing the canonical transformation from Dirac to Majorana fermions."
+
+ToMajoranaMatrix[n_Integer] :=
+  2 * Topple[ToDiracMatrix @ n]
+
+(**** </ToMajoranaMatrix> ****)
+
+
+(**** <ToDiracMatrix> ****)
+
+ToDiracMatrix::usage = "ToDiracMatrix[n] returns the 2n\[Times]2n matrix representing the canonical transformation from Majorana to Dirac fermions."
+
+ToDiracMatrix[n_Integer] := With[
+  { trs = CircleTimes[One[n], {{1, I}}] },
+  Join[trs, Conjugate @ trs]
+] / 2
+(* NOTE: The returned matrix U is NOT unitary; Topple[U].U = 1/2 *)
+
+(**** </ToDiracMatrix> ****)
+
+
 (**** <ToMajorana> ****)
 
 ToMajorana::usage = "ToMajorana[expr, {c1,c2,...} -> {h1,h2,h3,h4,...}] converts expr writtten in Dirac fermion operators c1, c2, ... into an equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, ... via a suitable transformation between them. ToMajorana[expr, c1 -> {h1,h2}, c2->{h3,h4}, ...] is the same."
@@ -685,6 +709,21 @@ ToMajorana[ HoldPattern[cc:{__} -> hh:{__}] ] := (
   Message[ToMajorana::incnst, cc, hh];
   Return[{}]
 )
+
+
+ToMajorana[vec_?VectorQ] := Module[
+  {uu, vv},
+  {uu, vv} = PartitionInto[vec, 2];
+  Riffle[uu + vv, I*(uu - vv)] / 2
+]
+
+ToMajorana[mat_?MatrixQ] := Module[
+  {uu, vv, new},
+  {uu, vv} = PartitionInto[mat, 2];
+  new = Riffle[uu + vv, -I*(uu - vv)];
+  {uu, vv} = PartitionInto[Transpose @ new, 2];
+  Transpose @ Riffle[uu + vv, +I*(uu - vv)] / 4
+]
 
 (**** </ToMajorana> ****)
 
@@ -724,6 +763,21 @@ ToDirac[ HoldPattern[hh:{__} -> cc:{__}] ] := (
   Message[ToDirac::incnst, cc, hh];
   Return[{}]
 )
+
+
+ToDirac[vec_?VectorQ] := Module[
+  {xx, yy},
+  {xx, yy} = Transpose @ Partition[vec, 2];
+  Join[xx - I*yy, xx + I*yy]
+]
+
+ToDirac[mat_?MatrixQ] := Module[
+  {xx, yy, new},
+  {xx, yy} = Transpose @ Partition[mat, 2];
+  new = Join[xx + I*yy, xx - I*yy];
+  {xx, yy} = Transpose @ Partition[Transpose @ new, 2];
+  Transpose @ Join[xx - I*yy, xx + I*yy]
+]
 
 (**** </ToDirac> ****)
 
