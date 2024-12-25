@@ -14,7 +14,7 @@ AddElaborationPatterns[_NambuUnitary];
 
 (**** <NambuMatrix> ****)
 
-NambuMatrix::usage = "NambuMatrix[mat] r the two n\[Times]n independent blocks at the upper-left and upper-right corners of the 2n\[Times]2n matrix mat."
+NambuMatrix::usage = "NambuMatrix[mat] retruns the two n\[Times]n independent blocks at the upper-left and upper-right corners of the 2n\[Times]2n matrix mat."
 
 NambuMatrix::odd = "Matrix `` has odd dimenions."
 
@@ -56,6 +56,13 @@ NambuOne[n_Integer] := {One @ n, Zero @ {n, n}}
 NambuZero::usage = "NambuZero[n] returns the pair {Zero[{n, n}], Zero[{n, n}]}, which represents the zero matrix in the Nambu space."
 
 NambuZero[n_Integer] := {Zero @ {n, n}, Zero @ {n, n}}
+
+
+ToMajorana[mat_NambuHermitian] := ToMajorana[Normal @ mat]
+
+ToMajorana[mat_NambuUnitary] := ToMajorana[Normal @ mat]
+
+ToMajorana[mat_NambuGreen] := ToMajorana[Normal @ mat]
 
 
 (**** <NambuHermitian> ****)

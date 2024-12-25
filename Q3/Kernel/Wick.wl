@@ -8,13 +8,14 @@ BeginPackage["Q3`"]
 { WickDensityMatrix };
 
 { WickUnitary, RandomWickUnitary };
-{ WickJump, RandomWickJump,
-  WickOperator, RandomWickOperator,
+{ WickJump, WickJumpOdds, $WickJumpOut,
+  RandomWickJump };
+{ WickOperator, RandomWickOperator,
   WickJumpFrom, WickOperatorFrom, WickElements };
 
 { WickMeasurement, WickCollapse };
 
-{ WickGaussian, RandomWickGaussian };
+{ WickNonunitary, RandomWickNonunitary };
 
 { WickGreenFunction, WickOccupation };
 
@@ -31,7 +32,7 @@ BeginPackage["Q3`"]
 
 Begin["`Private`"] (* Fermionic quantum computation *)
 
-AddElaborationPatterns[_WickState, _WickOperator, _WickUnitary, _WickGaussian];
+AddElaborationPatterns[_WickState, _WickOperator, _WickUnitary, _WickNonunitary];
 
 (**** <WickState> ****)
 
@@ -195,6 +196,9 @@ WickCovariance[grn_NambuGreen] := Module[
   (* NOTE: Notice the factor of 4. *)
   Re[ I * (crr - One[Dimensions @ crr]) ]
 ]
+
+(* shortcut *)
+WickCovariance[ws_WickState] := ws[[1, 2]]
 
 
 FromWickCovariance::usage = "FromWickCovariance[cvr] returns the Green's function of Dirac fermions corresponding to the Majorana covariance matrix cvr."
@@ -554,11 +558,9 @@ MakeBoxes[jmp:WickJump[mat_?MatrixQ, rest___], fmt_] := Module[
   ]
 ]
 
-
 (* canonicalization *)
 WickJump[ops:{___?AnyFermionQ}, cc:{__?FermionQ}, rest___] :=
   WickJump @@ WickOperator[ops, cc, rest]
-
 
 (* shortcut *)
 WickJump[spec:{{_Integer, _Integer}..}, n_Integer, opts___?OptionQ] := 
@@ -567,6 +569,28 @@ WickJump[spec:{{_Integer, _Integer}..}, n_Integer, opts___?OptionQ] :=
 (* shortcut *)
 WickJump[spec:{_Integer, 0|1}, n_Integer, opts___?OptionQ] :=
   WickJump[{spec}, n, opts]
+
+
+WickJump /:
+MatrixForm @ WickJump[mm_?MatrixQ, rest___] :=
+  MatrixForm[mm]
+
+WickJump /:
+ArrayShort @ WickJump[mm_?MatrixQ, rest___] :=
+  ArrayShort[mm]
+
+
+WickJump /:
+Dagger @ WickJump[mat_?MatrixQ, rest___] :=
+  WickJump[Conjugate @ mat, rest]
+
+WickJump /:
+Plus[WickJump[a_, any___], WickJump[b_, other___]] :=
+  WickJump[a + b, any, other]
+
+WickJump /:
+Times[z_, WickJump[mm_, rest___]] :=
+  WickJump[z * mm, rest]
 
 
 WickJump[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
@@ -588,6 +612,10 @@ WickJump[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :
   WickState[{1, new}, rest]
 ]
 
+
+$WickJumpOut::usage = "$WickJumpOut returs the index of quantum jump that has occurred at the last instance of WickJump."
+
+WickJumpOdds::usage = "WickJumpOdds[{v1,v2,\[Ellipsis]}] returns the probabilities for the quantum jump processes, specified by a list {v1,v2,\[Ellipsis]} of coefficient vectors, to occur."
 
 WickJumpOdds[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   { aa, bb, nn, mm, id, pp, new, k },
@@ -624,8 +652,8 @@ RandomWickJump::usage = "RandomWickJump[k_Integer, n_Integer] returns WickJump c
 RandomWickJump[k_Integer, n_Integer, opts___?OptionQ] :=
   WickJump[RandomMatrix[{k, 2n}], opts]
 
-RandomWickJump[n_Integer] :=
-  RandomWickJump[RandomInteger[{1, n}], n]
+RandomWickJump[n_Integer, opts___?OptionQ] :=
+  RandomWickJump[RandomInteger[{1, n}], n, opts]
 
 
 (**** <WickElements> ****)
@@ -644,6 +672,12 @@ WickElements[WickOperator[mat_?MatrixQ, ___], cc:{__?MajoranaQ}] :=
   WickElements[mat, cc]
 
 WickElements[WickOperator[mat_?MatrixQ, ___], cc:{__?FermionQ}] :=
+  WickElements[mat, cc]
+
+WickElements[WickJump[mat_?MatrixQ, ___], cc:{__?MajoranaQ}] :=
+  WickElements[mat, cc]
+
+WickElements[WickJump[mat_?MatrixQ, ___], cc:{__?FermionQ}] :=
   WickElements[mat, cc]
 
 (**** </WickElements> ****)
@@ -1206,87 +1240,134 @@ theWignerJordanMajorana[n_Integer] := Module[
 ]
 
 
-(**** <WickGaussian> ****)
+(**** <WickNonunitary> ****)
 
-WickGaussian::usage = "WickGaussian[{ham, gam}] represents a non-unitary time evolution operator MatrixExp[-I*(ham - I*gam)] governed by the non-Hermitian Hamiltonian ham - I*gam. The 2n\[Times]2n antisymmetic matrices ham and gam refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators)."
+WickNonunitary::usage = "WickNonunitary[{ham, dmp}] represents a non-unitary time evolution operator MatrixExp[-I*(ham - I*dmp)] governed by the non-Hermitian Hamiltonian ham - I*dmp. The 2n\[Times]2n antisymmetic matrices ham and dmp refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators).\nIf ham and dmp are given in the NambuHermitian form, they are automatically converted to the coefficients matrices of Majorana operators."
 
-WickGaussian /:
-MakeBoxes[op:WickGaussian[{ham_?MatrixQ, gam_?MatrixQ}, rest___], fmt_] :=
+WickNonunitary::icmp = "WickNonunitary for `` fermion modes cannot act on WickState for `` modes."
+
+WickNonunitary /:
+MakeBoxes[op:WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, rest___], fmt_] :=
   BoxForm`ArrangeSummaryBox[
-    WickGaussian, op, None,
+    WickNonunitary, op, None,
     { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ op },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ ham }
     },
     { BoxForm`SummaryItem @ { "Hamiltonian: ", ArrayShort @ ham },
-      BoxForm`SummaryItem @ { "Damping operator: ", ArrayShort @ gam }
+      BoxForm`SummaryItem @ { "Damping operator: ", ArrayShort @ dmp }
     },
     fmt,
     "Interpretable" -> Automatic
   ]
 
-WickGaussian /:
-Matrix[op:WickGaussian[{ham_?MatrixQ, gam_?MatrixQ}, ___]] := Module[
+(* canonicalization *)
+WickNonunitary[{ham_NambuHermitian, dmp_NambuHermitian}, rest___] :=
+  WickNonunitary[{-2I*ToMajorana[ham], -2I*ToMajorana[dmp]}, rest]
+(* CONVENTION: (1/2) (a^\dag, a) H (a, a^\dag) = (i/4) c A c. *)
+
+WickNonunitary /:
+MatrixForm @ WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, rest___] :=
+  MatrixForm /@ {ham, dmp}
+
+WickNonunitary /:
+ArrayShort @ WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, rest___] :=
+  ArrayShort /@ {ham, dmp}
+
+WickNonunitary /:
+Dagger @ WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, rest___] :=
+  WickNonunitary[{-ham, dmp}, rest]
+
+WickNonunitary /:
+Matrix[op:WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, ___]] := Module[
   { n = FermionCount[op],
-    non = ham -I*gam,
+    non = ham -I*dmp,
     mat, wjm },
   n = FermionCount[op];
   wjm = theWignerJordanMajorana[n];
   mat = Dot[Transpose[wjm, {3, 1, 2}], non, wjm] * I/4;
   mat = TensorContract[mat, {{2, 3}}];
-  MatrixExp[-I*mat]
+  SparseArray @ MatrixExp[-I*mat]
 ]
 
-WickGaussian /:
-Matrix[op:WickGaussian[{_?MatrixQ, _?MatrixQ}, ___], ss:{__?SpeciesQ}] :=
+WickNonunitary /:
+Matrix[op:WickNonunitary[{_?MatrixQ, _?MatrixQ}, ___], ss:{__?SpeciesQ}] :=
   MatrixEmbed[Matrix @ op, Select[ss, FermionQ], ss]
 
 
-WickGaussian /:
-NonCommutativeQ[_WickGaussian] = True
+WickNonunitary /:
+NonCommutativeQ[_WickNonunitary] = True
 
-WickGaussian /:
-MultiplyKind[_WickGaussian] = Fermion
+WickNonunitary /:
+MultiplyKind[_WickNonunitary] = Fermion
 
-WickGaussian /:
-Multiply[pre___, opr_WickGaussian, ws_WickState] := Multiply[pre, opr[ws]]
+WickNonunitary /:
+Multiply[pre___, opr_WickNonunitary, ws_WickState] := Multiply[pre, opr[ws]]
 
-WickGaussian /:
-Multiply[pre___, opr_WickGaussian, fs_Ket] := Multiply[pre, opr[WickState @ fs]]
+WickNonunitary /:
+Multiply[pre___, opr_WickNonunitary, fs_Ket] := Multiply[pre, opr[WickState @ fs]]
 
 
-WickGaussian[{ham_?MatrixQ, gam_?MatrixQ}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
-  { new },
-  new = wickRungeKutta[{ham, gam}, cvr, {1, 0.01}];
-  WickState[{fac, new}, rest]
+WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :=
+  nonUnitaryEvolution[{ham, dmp}, in, {1, 0.01}] /; 
+    If[ 2*FermionCount[in] == First[Dimensions @ ham], True,
+      Message[WickNonunitary::icmp, First[Dimensions @ ham]/2, FermionCount @ in];
+      False
+    ]
+
+
+nonUnitaryStep::usage = "nonUnitaryStep[{rot, dmp}, dt] is an operator acting on Majorana covariance matrix cvr to evolve it for infinitesimal time interval dt under the non-unitary Gaussian time-evolution operator governed by the non-Hermitian Hamiltonian ham -I*dmp, where ham is the Hamiltonian and dmp is the damping operator."
+
+(* canonicalization *)
+nonUnitaryStep[WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, ___], dt_?NumericQ]
+  nonUnitaryEvolution[{ham, dmp}, dt]
+
+(* Based on the Runge-Kutta method *)
+nonUnitaryStep[{ham_?MatrixQ, dmp_?MatrixQ}, dt_?NumericQ][
+  WickState[{nrm_?NumericQ, cvr_?MatrixQ}, rest___]
+] := Module[
+  { prb = nrm,
+    new = cvr,
+    aa1, aa2, aa3, aa4, bb1, bb2, bb3, bb4, trs },
+
+  aa1 = Tr[dmp.new] prb/2;
+  bb1 = (ham.new - new.ham) - dmp - new.dmp.new;
+
+  prb = nrm + aa1*dt/2;
+  new = cvr + bb1*dt/2;
+  aa2 = Tr[dmp.new] prb/2;
+  bb2 = (ham.new - new.ham) - dmp - new.dmp.new;
+
+  prb = nrm + aa2*dt/2;
+  new = cvr + bb2*dt/2;
+  aa3 = Tr[dmp.new] prb/2;
+  bb3 = (ham.new - new.ham) - dmp - new.dmp.new;
+
+  prb = nrm + aa3*dt;
+  new = cvr + bb3*dt;
+  aa4 = Tr[dmp.new] prb/2;
+  bb4 = (ham.new - new.ham) - dmp - new.dmp.new;
+
+  prb = nrm + (aa1 + 2*aa2 + 2*aa3 + aa4)*dt/6;
+  new = cvr + (bb1 + 2*bb2 + 2*bb3 + bb4)*dt/6;
+  WickState[{prb, new}, rest]
 ]
 
-
-stepRungeKutta::usage = "stepRungeKutta[{rot, gam}, dt] is an operator acting on Majorana covariance matrix cvr to evolve it for infinitesimal time interval dt under the non-unitary Gaussian time-evolution operator governed by the non-Hermitian Hamiltonian ham -I*gam, where ham is the Hamiltonian and gam is the damping operator."
-
-stepRungeKutta[{rot_?MatrixQ, gam_?MatrixQ}, dt_?NumericQ][cvr_?MatrixQ] := Module[
-  { new = cvr,
-    gmm = gam,
-    dd1, dd2, dd3, dd4, trs },
-  dd1 = -gmm - new . gmm . new;
-  new = cvr + dd1*dt/2;
-  gmm = rot . gam . Transpose[rot];
-  dd2 = -gmm - new . gmm . new;
-  new = cvr + dd2*dt/2;
-  dd3 = -gmm - new . gmm . new;
-  new = cvr + dd3*dt;
-  gmm = rot . gmm . Transpose[rot];
-  dd4 = -gmm - new . gmm . new;
-  new = cvr + (dd1 + 2 dd2 + 2 dd3 + dd4)*dt/6;
-  trs = rot . rot;
-  Transpose[trs] . new . trs
-]
-
-wickRungeKutta[{ham_?MatrixQ, gam_?MatrixQ}, cvr_?MatrixQ, {t_?NumericQ, dt_?NumericQ}] := Block[
+nonUnitaryEvolution[
+  {ham_?MatrixQ, dmp_?MatrixQ},
+  in:WickState[{_?NumericQ, _?MatrixQ}, rest___],
+  {t_?NumericQ, dt_?NumericQ}
+] := Block[
   { rot = MatrixExp[-ham*dt/2] },
-  Nest[stepRungeKutta[{rot, gam}, dt], cvr, Round[t/dt]]
+  Nest[nonUnitaryStep[{ham, dmp}, dt], in, Round[t/dt]]
 ]
 
-(**** </WickGaussian> ****)
+(**** </WickNonunitary> ****)
+
+
+RandomWickNonunitary::usage = "RandomWickNonunitary[n] randomly constructs a WickNonunitary operator on n fermion modes."
+
+RandomWickNonunitary[n_Integer, opts___?OptionQ] :=
+  WickNonunitary[Re @ {RandomAntisymmetric[2n], RandomAntisymmetric[2n]}, opts]
 
 
 (**** <FermionCount> ****)
@@ -1311,7 +1392,9 @@ FermionCount[NambuGreen[grn_?NambuMatrixQ, ___]] := Length[First @ grn]
 
 FermionCount[WickUnitary[mat_?MatrixQ, ___]] := Last[Dimensions @ mat] / 2
 
-FermionCount[WickGaussian[{ham_?MatrixQ, _?MatrixQ}, ___]] := Last[Dimensions @ ham] / 2
+FermionCount[WickNonunitary[{ham_?MatrixQ, _?MatrixQ}, ___]] := Last[Dimensions @ ham] / 2
+
+FermionCount[WickJump[mat_?MatrixQ, ___]] := Last[Dimensions @ mat] / 2
 
 FermionCount[WickOperator[mat_?MatrixQ, ___]] := Last[Dimensions @ mat] / 2
 
@@ -1332,24 +1415,21 @@ FermionCount[WickCircuit[gg_List, ___?OptionQ]] := Max[FermionCount /@ gg]
 
 WickDampingOperator::usage = "WickDampingOperator[jmp] returns a pair {mat, const} of the quadratic kernel mat and remaining constant term const of the effective damping operator in the normal ordering that corresponds to the list jmp of quantum jump operators."
 
-WickDampingOperator::jmp = "Invalid form of quantum jump operators ``."
+WickDampingOperator::jmp = "Quantum jump operators for different number of fermion modes: ``."
 
-WickDampingOperator[jmp_WickOperator] :=
+WickDampingOperator[jmp_WickJump] :=
   WickDampingOperator[First @ jmp]
 
-WickDampingOperator[jmp:{__WickOperator}] :=
-  WickDampingOperator[WickJoin @@ jmp]
+WickDampingOperator[jmp:{__WickJump}] :=
+  WickDampingOperator @ Join[First /@ jmp] /;
+    If[ Equal @@ Map[FermionCount, jmp], True,
+      Message[WickDampingOperator::jmp, FermionCount /@ jmp];
+      False
+    ]
 
-WickDampingOperator[{flag_?VectorQ, trs_?MatrixQ}] := Module[
-  { kk = PositionIndex[flag],
-    aa, bb },
-  kk = Join[<|0 -> {}, 1 -> {}|>, kk];
-  aa = Topple[trs[[kk @ 0]]] . trs[[kk @ 0]];
-  bb = Topple[trs[[kk @ 1]]] . trs[[kk @ 1]];
-  If[ MatrixQ[bb],
-    {aa - Transpose[bb], Tr[bb]} / 2,
-    {aa, 0} / 2
-  ]
+WickDampingOperator[jmp_?MatrixQ] := With[
+  { mat = Topple[jmp].jmp },
+  Re @ { -2I*(mat - Transpose[mat]), Tr[mat] } / 2
 ]
 
 (**** </WickDampingOperator> ****)
@@ -1373,10 +1453,7 @@ Options[WickSimulate] = {
   "Prefix" -> "NWS"
 }
 
-WickSimulate[ ham_, jmp:(_WickOperator|{__WickOperator}),
-  in_WickState, {nT_Integer, dt_},
-  opts:OptionsPattern[]
-] :=
+WickSimulate[ham_, jmp_WickJump, in_WickState, {nT_Integer, dt_}, opts:OptionsPattern[]] :=
   Module[
     { n = OptionValue["Samples"],
       progress = 0,
@@ -1384,13 +1461,12 @@ WickSimulate[ ham_, jmp:(_WickOperator|{__WickOperator}),
     
     {dmp, fac} = WickDampingOperator[jmp];
     fac = Exp[-dt*fac];
-    non = ham - I*dmp;
-    non = WickGaussian @ {MatrixExp[-I*dt*non], MatrixExp[+I*dt*non]};
+    non = WickNonunitary[{ham, dmp}];
 
     PrintTemporary[ProgressIndicator @ Dynamic @ progress];
     data = Table[
       progress = k / N[n];
-      altWickSimulate[N @ {non, fac}, WickSplit @ jmp, in, {nT, dt}],
+      theWickSimulate[N @ {non, fac}, jmp, in, {nT, dt}],
       {k, n}
     ];
 
@@ -1404,7 +1480,7 @@ WickSimulate[ ham_, jmp:(_WickOperator|{__WickOperator}),
     False
   ]
 
-altWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickState, {nT_Integer, dt_}] :=
+theWickSimulate[{non_WickNonunitary, fac_}, jmp_WickJump, in_WickState, {nT_Integer, dt_}] :=
   Module[
     { n = FermionCount[non],
       res = {in},
@@ -1416,8 +1492,8 @@ altWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickState, {n
       qq = RandomReal[];
       
       (* non-unitary evolution *)
-      out = non[new];
-      If[ pp < NormSquare[fac * out],
+      out = nonUnitaryStep[non, dt][new];
+      If[ pp < NormSquare[out]*fac,
         new = Normalize @ out;
         AppendTo[res, new];
         t += 1;
@@ -1425,25 +1501,7 @@ altWickSimulate[{non_WickGaussian, fac_}, jmp:{__WickOperator}, in_WickState, {n
       ];
       
       (* quantum jumps *)
-      out = Through[jmp[new]];
-
-      prb = Chop @ Accumulate[NormSquare /@ out];
-      Quiet[
-        Check[
-          prb /= Last[prb],
-          (* error *)
-          Message[WickSimulate::null];
-          new = WickState[{0, n}]; (* null state *)
-          AppendTo[res, new];
-          t += 1;
-          Continue[],
-          {Divide::indet}
-        ],
-        {Divide::indet}
-      ];
-
-      pos = First @ FirstPosition[prb - qq, _?NonNegative];
-      new = Normalize @ Part[out, pos];
+      new = jmp[new];
       AppendTo[res, new];
       t += 1;
     ];

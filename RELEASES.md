@@ -4,6 +4,7 @@
 
 - Fermionic quantum computation is significantly improved using Bravyi's method
 - New: YoungDegree, CliffordPureQ, QubitCount
+- Rename: WickGaussian --> WickNonunitary
 - Bug fix: concerning the multiplication of Majoranas.
 - You can now specify an initial state for RandomCliffordCircuit and RandomCliffordCircuitSimulate.
 
