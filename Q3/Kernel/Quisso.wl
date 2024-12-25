@@ -1,7 +1,7 @@
 (* -*- mode: math; -*- *)
 BeginPackage["Q3`"]
 
-{ Qubit, QubitQ, Qubits };
+{ Qubit, QubitQ, Qubits, QubitCount };
 
 { PauliForm };
 
@@ -84,6 +84,8 @@ AddElaborationPatterns[
   OSlash -> CircleTimes
 ]
 
+
+(**** <Qubit> ****)
 
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raising|Lowering|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
 
@@ -241,6 +243,7 @@ Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] :=
     Dagger @ c
    ]
 
+(**** </Qubit> ****)
 
 QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a Qubit through Let."
 
@@ -252,6 +255,11 @@ QubitQ[_] = False
 Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appearing in expr."
 
 Qubits[expr_] := Select[Agents @ expr, QubitQ]
+
+
+QubitCount::usage = "QubitCount[obj] returns the number of qubits involved in object obj."
+
+QubitCount[ss:{__?SpeciesQ}] := Length @ Select[ss, QubitQ]
 
 
 (**** <Multiply> ****)

@@ -31,7 +31,7 @@ BeginPackage["Q3`"]
 
 Begin["`Private`"] (* Fermionic quantum computation *)
 
-AddElaborationPatterns[_WickState, _WickOperator, _WickUnitary];
+AddElaborationPatterns[_WickState, _WickOperator, _WickUnitary, _WickGaussian];
 
 (**** <WickState> ****)
 
@@ -122,26 +122,8 @@ Matrix[WickState[{fac_?NumericQ, cvr_?MatrixQ}, ___]] :=
 WickState /: (* pure states *)
 Matrix[ws:WickState[{fac_?NumericQ, cvr_?MatrixQ}, ___]] := Module[
   { n = FermionCount[ws],
-    xx, yy, xy,
-    vv, mm, pp, id },
-  (* Jordan-Wigner transformation *)
-  xx = SparseArray[
-    { {i_, i_} -> 1,
-      {i_, j_} /; i > j -> 3,
-      {_, _} -> 0 },
-    {n, n}
-  ];
-  xx = ThePauli /@ Normal[xx]; (* bare odd modes *)
-  
-  yy = SparseArray[
-    { {i_, i_} -> 2,
-      {i_, j_} /; i > j -> 3,
-      {_, _} -> 0 },
-    {n, n}
-  ];
-  yy = ThePauli /@ Normal[yy]; (* bare even modes *)
-  
-  xy = Riffle[xx, yy];
+    xy, vv, mm, pp, id },
+  xy = theWignerJordanMajorana[n];
 
   (* NOTE: This method works only for pure states. *)
   {vv, mm, pp} = SkewTridiagonalize[cvr];
@@ -211,7 +193,7 @@ WickCovariance::usage = "WickCovariance[grn] returns the Majorana covariance mat
 WickCovariance[grn_NambuGreen] := Module[
   { crr = 4*ToMajorana[Normal @ grn] },
   (* NOTE: Notice the factor of 4. *)
-  I * (crr - One[Dimensions @ crr])
+  Re[ I * (crr - One[Dimensions @ crr]) ]
 ]
 
 
@@ -236,7 +218,7 @@ RandomWickState[n_Integer] := Module[
   yy = CircleTimes[One[n], I*ThePauli[2]];
   mm = RandomOrthogonal[2n];
   mm = Transpose[mm] . yy . mm;
-  WickState[{1, mm}]
+  WickState[{1, Chop @ mm}]
 ]
 
 (* backward compatibility *)
@@ -1200,6 +1182,113 @@ Module[
 (**** </RandomWickCircuitSimulate> ****)
 
 
+theWignerJordanMajorana::usage = "theWignerJordanMajorana[n] returns a list of matrices representing 2n Majorana nodes."
+
+theWignerJordanMajorana[n_Integer] := Module[
+  { xx, yy },
+  (* bare odd modes *)
+  xx = SparseArray[
+    { {i_, i_} -> 1,
+      {i_, j_} /; i > j -> 3,
+      {_, _} -> 0 },
+    {n, n}
+  ];
+  xx = ThePauli /@ Normal[xx];
+  (* bare even modes *)
+  yy = SparseArray[
+    { {i_, i_} -> 2,
+      {i_, j_} /; i > j -> 3,
+      {_, _} -> 0 },
+    {n, n}
+  ];
+  yy = ThePauli /@ Normal[yy];
+  Riffle[xx, yy]
+]
+
+
+(**** <WickGaussian> ****)
+
+WickGaussian::usage = "WickGaussian[{ham, gam}] represents a non-unitary time evolution operator MatrixExp[-I*(ham - I*gam)] governed by the non-Hermitian Hamiltonian ham - I*gam. The 2n\[Times]2n antisymmetic matrices ham and gam refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators)."
+
+WickGaussian /:
+MakeBoxes[op:WickGaussian[{ham_?MatrixQ, gam_?MatrixQ}, rest___], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickGaussian, op, None,
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ op },
+      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ ham }
+    },
+    { BoxForm`SummaryItem @ { "Hamiltonian: ", ArrayShort @ ham },
+      BoxForm`SummaryItem @ { "Damping operator: ", ArrayShort @ gam }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+WickGaussian /:
+Matrix[op:WickGaussian[{ham_?MatrixQ, gam_?MatrixQ}, ___]] := Module[
+  { n = FermionCount[op],
+    non = ham -I*gam,
+    mat, wjm },
+  n = FermionCount[op];
+  wjm = theWignerJordanMajorana[n];
+  mat = Dot[Transpose[wjm, {3, 1, 2}], non, wjm] * I/4;
+  mat = TensorContract[mat, {{2, 3}}];
+  MatrixExp[-I*mat]
+]
+
+WickGaussian /:
+Matrix[op:WickGaussian[{_?MatrixQ, _?MatrixQ}, ___], ss:{__?SpeciesQ}] :=
+  MatrixEmbed[Matrix @ op, Select[ss, FermionQ], ss]
+
+
+WickGaussian /:
+NonCommutativeQ[_WickGaussian] = True
+
+WickGaussian /:
+MultiplyKind[_WickGaussian] = Fermion
+
+WickGaussian /:
+Multiply[pre___, opr_WickGaussian, ws_WickState] := Multiply[pre, opr[ws]]
+
+WickGaussian /:
+Multiply[pre___, opr_WickGaussian, fs_Ket] := Multiply[pre, opr[WickState @ fs]]
+
+
+WickGaussian[{ham_?MatrixQ, gam_?MatrixQ}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
+  { new },
+  new = wickRungeKutta[{ham, gam}, cvr, {1, 0.01}];
+  WickState[{fac, new}, rest]
+]
+
+
+stepRungeKutta::usage = "stepRungeKutta[{rot, gam}, dt] is an operator acting on Majorana covariance matrix cvr to evolve it for infinitesimal time interval dt under the non-unitary Gaussian time-evolution operator governed by the non-Hermitian Hamiltonian ham -I*gam, where ham is the Hamiltonian and gam is the damping operator."
+
+stepRungeKutta[{rot_?MatrixQ, gam_?MatrixQ}, dt_?NumericQ][cvr_?MatrixQ] := Module[
+  { new = cvr,
+    gmm = gam,
+    dd1, dd2, dd3, dd4, trs },
+  dd1 = -gmm - new . gmm . new;
+  new = cvr + dd1*dt/2;
+  gmm = rot . gam . Transpose[rot];
+  dd2 = -gmm - new . gmm . new;
+  new = cvr + dd2*dt/2;
+  dd3 = -gmm - new . gmm . new;
+  new = cvr + dd3*dt;
+  gmm = rot . gmm . Transpose[rot];
+  dd4 = -gmm - new . gmm . new;
+  new = cvr + (dd1 + 2 dd2 + 2 dd3 + dd4)*dt/6;
+  trs = rot . rot;
+  Transpose[trs] . new . trs
+]
+
+wickRungeKutta[{ham_?MatrixQ, gam_?MatrixQ}, cvr_?MatrixQ, {t_?NumericQ, dt_?NumericQ}] := Block[
+  { rot = MatrixExp[-ham*dt/2] },
+  Nest[stepRungeKutta[{rot, gam}, dt], cvr, Round[t/dt]]
+]
+
+(**** </WickGaussian> ****)
+
+
 (**** <FermionCount> ****)
 
 FermionCount::usage = "FermionCount[obj] returns the number of fermion modes that object obj is defined for."
@@ -1221,6 +1310,8 @@ FermionCount[NambuGreen[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
 FermionCount[NambuGreen[grn_?NambuMatrixQ, ___]] := Length[First @ grn]
 
 FermionCount[WickUnitary[mat_?MatrixQ, ___]] := Last[Dimensions @ mat] / 2
+
+FermionCount[WickGaussian[{ham_?MatrixQ, _?MatrixQ}, ___]] := Last[Dimensions @ ham] / 2
 
 FermionCount[WickOperator[mat_?MatrixQ, ___]] := Last[Dimensions @ mat] / 2
 

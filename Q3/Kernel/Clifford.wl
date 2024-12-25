@@ -2,7 +2,8 @@
 
 BeginPackage["Q3`"]
 
-{ CliffordState, RandomCliffordState };
+{ CliffordState, RandomCliffordState,
+  CliffordPureQ, CliffordProjectors };
 
 { CliffordUnitary, RandomCliffordUnitary };
 
@@ -60,6 +61,7 @@ CliffordState[Ket[v_?VectorQ], rest___] := Module[
 CliffordState[Ket[a_Association], rest___] :=
   CliffordState[ Ket @ Values @ KeySelect[a, QubitQ] ]
 
+QubitCount[CliffordState[gnr_?MatrixQ, ___]] := (Last[Dimensions @ gnr] - 1)/2
 
 CliffordState /:
 StabilizerGenerators[CliffordState[gnr_, ___?OptionQ]] :=
@@ -69,15 +71,38 @@ CliffordState /:
 StabilizerGenerators[CliffordState[gnr_, ss:{__?QubitQ}, ___?OptionQ]] :=
   Map[FromGottesmanVector[#, ss]&, gnr]
 
-CliffordState /:
-Matrix @ CliffordState[data_?MatrixQ, ___] := Module[
-  { mm = FromGottesmanVector /@ Most /@ data,
-    m, n },
-  {m, n} = Dimensions[data];
+
+CliffordState /: (* mixed state *)
+Matrix @ CliffordState[gnr_?MatrixQ, ___] := Module[
+  { n = Last[Dimensions @ gnr],
+    mm },
   n = Power[2, (n - 1)/2];
-  mm *= Map[Last, data];
-  Apply[Dot, ConstantArray[One[n], m] + mm] / n
-]
+  mm = CliffordProjectors[gnr];
+  mm = Prepend[mm, Table[1, n]];
+  Normalize @ Apply[Dot, mm]
+] /; CliffordPureQ[gnr]
+
+CliffordState /: (* mixed state *)
+Matrix @ CliffordState[gnr_?MatrixQ, ___] := 
+  Apply[Dot, CliffordProjectors @ gnr]
+
+
+CliffordState /:
+Matrix[cs:CliffordState[_?MatrixQ, ___], ss:{__?SpeciesQ}] :=
+  MatrixEmbed[Matrix @ cs, Select[ss, Qubits], ss]
+
+
+CliffordState /:
+Elaborate[cs_CliffordState] :=
+  ExpressionFor[Matrix @ cs]
+
+CliffordState /:
+ExpressionFor[cs_CliffordState] :=
+  ExpressionFor[Matrix @ cs]
+
+CliffordState /:
+ExpressionFor[cs_CliffordState, ss:{___?SpeciesQ}] :=
+  ExpressionFor[Matrix @ cs, ss]
 
 
 CliffordState /:
@@ -136,6 +161,35 @@ RandomCliffordState[ss:{__?QubitQ}] :=
 RandomCliffordState[k_Integer, ss:{__?QubitQ}] := With[
   { gnr = First[RandomCliffordState @ Length @ ss] },
   CliffordState[RandomSelection[gnr, k], ss]
+]
+
+
+CliffordPureQ::usage = "CliffordPureQ[cs] returns True if the Clifford state cs is a pure state; Falsoe, otherwise."
+
+CliffordPureQ[CliffordState[gnr_?MatrixQ, ___]] :=
+  CliffordPureQ[gnr]
+
+CliffordPureQ[gnr_?MatrixQ] := Module[
+  {m, n},
+  {m, n} = Dimensions[gnr];
+  TrueQ[2m == n-1]
+]
+
+
+CliffordProjectors::usage = "CliffordProjectors[gnr] returns a list of projection operators corresponding to the stabilizer generators specified by the list of Gottesman vectors gnr."
+
+CliffordProjectors[CliffordState[gnr_?MatrixQ, ___]] :=
+  CliffordProjectors[gnr]
+
+CliffordProjectors[gnr_?MatrixQ] := Module[
+  { mm = SparseArray /@ FromGottesmanVector /@ Most /@ gnr,
+    m, n },
+  {m, n} = Dimensions[gnr];
+  n = Power[2, (n - 1)/2];
+  mm *= Last[Transpose @ gnr];
+  mm += ConstantArray[One @ n, m];
+  (* NOTE (Mathematica v14.1): For some unknown reason, the above statement converts mm to normal matrix; not keep the SparseArray object. *)
+  Map[SparseArray, mm / 2]
 ]
 
 
@@ -414,7 +468,7 @@ CliffordCircuit[gg_List][cs_CliffordState] :=
   Fold[Construct[#2, #1]&, cs, Flatten @ gg]
 
 CliffordCircuit /:
-Elaborate @ CliffordCircuit[gg:{_CliffordState, ___}] :=
+Elaborate @ CliffordCircuit[gg:{_CliffordState, ___}, ___] :=
   Fold[Construct[#2, #1]&, Flatten @ gg]
 
 
@@ -437,7 +491,7 @@ Graphics[CliffordCircuit[gg_List, opts___?OptionQ], S_Symbol?QubitQ, more___?Opt
   qc = gg /. {
     CliffordCircuit[{}] -> "Spacer",
     CliffordCircuit -> Identity,
-    CliffordState[__] :> Ket[ss],
+    cs_CliffordState :> ExpressionFor[cs, ss],
     CliffordUnitary[_, kk_, any___?OptionQ] :> Gate[S[kk, $], any],
     CliffordUnitary[_, any___?OptionQ] :> Gate[ss, any, "Label" -> "U"],
     PauliMeasurement[_, kk_, any___?OptionQ] :> Gate[S[kk, $], any, "Shape" -> "Measurement"],
@@ -453,10 +507,6 @@ Graphics[CliffordCircuit[gg_List, opts___?OptionQ], S_Symbol?QubitQ, more___?Opt
 ]
 
 
-QubitCount::usage = "QubitCount[obj] returns the number of qubits involved in object obj."
-
-QubitCount[CliffordState[mat_?MatrixQ, ___]] := (Last[Dimensions @ mat] - 1)/2
-
 QubitCount[CliffordUnitary[mat_?MatrixQ, ___?OptionQ]] := Length[mat] / 2
 
 QubitCount[PauliMeasurement[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
@@ -470,17 +520,37 @@ QubitCount[_] = Indeterminate
 
 (**** <RandomCliffordCircuit> ****)
 
-RandomCliffordCircuit::usage = "RandomCliffordCircuit[{n, t}, p] generates a Clifford circuit of depth 3t on n qubits with alternating layers of randomly selected two-qubit Clifford unitary gates and single-qubit Pauli measurements, where each qubit is measured with probability p in the computational basis."
+RandomCliffordCircuit::usage = "RandomCliffordCircuit[in, {n, t}, p] generates a Clifford circuit of depth 3t on n qubits with the initial state 'in' and with alternating layers of randomly selected two-qubit Clifford unitary gates and single-qubit Pauli measurements, where each qubit is measured with probability p in the computational basis.\nRandomCliffordState[{n, t}, p] assumes the conventional initial state |0,0,\[Ellipsis]>."
 
-RandomCliffordCircuit[vol:{n_Integer, t_Integer}, pp:(_?NumericQ|{_?NumericQ, _?NumericQ})] :=
-  CliffordCircuit @ Nest[
-    Append[
-      Join[#, randomCliffordUnitaryLayer @ n],
-      randomPauliMeasurementLayer[n, pp]
-    ]&,
-    { CliffordState @ Ket @ Table[0, n] },
-    t
+RandomCliffordCircuit[
+  vol:{n_Integer, t_Integer},
+  prb:(_?NumericQ|{_?NumericQ, _?NumericQ})
+] := RandomCliffordCircuit[CliffordState @ Ket @ Table[0, n], vol, prb]
+
+RandomCliffordCircuit[
+  ics:(_Ket | _CliffordState | "Random"), 
+  vol:{n_Integer, t_Integer}, 
+  prb:(_?NumericQ | {_?NumericQ, _?NumericQ}),
+  opts___?OptionQ
+] := Module[
+  { in },
+  in = Switch[ ics,
+    "Random", RandomCliffordState[n],
+    _Ket, CliffordState[ics],
+    _, ics
+  ];
+  CliffordCircuit[
+    Nest[
+      Append[
+        Join[#, randomCliffordUnitaryLayer @ n],
+        randomPauliMeasurementLayer[n, prb]
+      ]&,
+      { in },
+      t
+    ],
+    opts
   ]
+]
 
 
 randomPauliMeasurementLayer::usage = "randomPauliMeasurementLayer[n, p] generates a layer of single-qubit Pauli measurements on qubits selected randomly with probability p among n qubits."
@@ -526,7 +596,7 @@ randomCliffordUnitaryLayer[n_Integer, k_Integer] := Module[
 
 (**** <RandomCliffordCircuitSimulate> ****)
 
-RandomCliffordCircuitSimulate::usage = "RandomCliffordCircuitSimulate[{n, t}, p] simulates a Clifford quantum circuit of depth 3t on n qubits with alternating layers of randomly selected two-qubit Clifford unitary gates and single-qubit Pauli measurements, where each qubit is measured with probability p in the computational basis."
+RandomCliffordCircuitSimulate::usage = "RandomCliffordCircuitSimulate[in, {n, t}, spec] simulates Clifford circuits randomly generated by RandomCliffordCircuit[in, {n, t}, spec].\n RandomCliffordCircuitSimulate[{n, t}, spec] assumes the conventional input state |0,0,\[Ellipsis]>."
 
 RandomCliffordCircuitSimulate::save = "The result could not be saved."
 
@@ -542,6 +612,13 @@ RandomCliffordCircuitSimulate[
   {n_Integer, t_Integer},
   pp:(_?NumericQ|{_?NumericQ, _?NumericQ}), 
   opts:OptionsPattern[]
+] := RandomCliffordCircuitSimulate[CliffordState @ Ket @ Table[0, n], {n, t}, pp, opts]
+
+RandomCliffordCircuitSimulate[
+  in:(_Ket | _CliffordState | "Random"),
+  {n_Integer, t_Integer},
+  pp:(_?NumericQ|{_?NumericQ, _?NumericQ}), 
+  opts:OptionsPattern[]
 ] := Module[
   { progress = k = 0,
     data, more, qc, sn, sm },
@@ -550,7 +627,7 @@ RandomCliffordCircuitSimulate[
   (* simulation *)
   {sn, sm} = doAssureList[OptionValue["Samples"], 2];
   data = Transpose @ Table[
-    qc = RandomCliffordCircuit[{n, t}, pp];
+    qc = RandomCliffordCircuit[in, {n, t}, pp];
     { Table[
         progress = ++k / N[sn*sm];
         FoldList[Construct[#2, #1]&, First @ qc],

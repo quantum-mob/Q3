@@ -3,8 +3,9 @@
 ## 3.7.0
 
 - Fermionic quantum computation is significantly improved using Bravyi's method
-- New: YoungDegree
+- New: YoungDegree, CliffordPureQ, QubitCount
 - Bug fix: concerning the multiplication of Majoranas.
+- You can now specify an initial state for RandomCliffordCircuit and RandomCliffordCircuitSimulate.
 
 ## 3.6.6
 
