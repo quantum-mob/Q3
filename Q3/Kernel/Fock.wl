@@ -714,7 +714,7 @@ ToMajorana[ HoldPattern[cc:{__} -> hh:{__}] ] := (
 ToMajorana[vec_?VectorQ] := Module[
   {uu, vv},
   {uu, vv} = PartitionInto[vec, 2];
-  Riffle[uu + vv, I*(uu - vv)] / 2
+  SparseArray[ Riffle[uu + vv, I*(uu - vv)] / 2 ]
 ]
 
 ToMajorana[mat_?MatrixQ] := Module[
@@ -722,7 +722,7 @@ ToMajorana[mat_?MatrixQ] := Module[
   {uu, vv} = PartitionInto[mat, 2];
   new = Riffle[uu + vv, -I*(uu - vv)];
   {uu, vv} = PartitionInto[Transpose @ new, 2];
-  Transpose @ Riffle[uu + vv, +I*(uu - vv)] / 4
+  SparseArray[ Transpose @ Riffle[uu + vv, +I*(uu - vv)] / 4 ]
 ]
 
 (**** </ToMajorana> ****)
