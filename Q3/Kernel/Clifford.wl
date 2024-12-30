@@ -81,10 +81,11 @@ StabilizerGenerators[CliffordState[gnr_, ss:{__?QubitQ}, ___?OptionQ]] :=
 CliffordState /: (* pure state *)
 Matrix @ CliffordState[gnr_?MatrixQ, ___] := Module[
   { n = Last[Dimensions @ gnr],
-    mm },
+    mm, in },
   n = Power[2, (n - 1)/2];
+  in = Append[Table[1, n-1], 2];  (* initial vector *)
   mm = CliffordProjectors[gnr];
-  mm = Prepend[mm, Table[1, n]];
+  mm = Prepend[mm, in];
   Normalize @ Apply[Dot, mm]
 ] /; CliffordPureQ[gnr]
 (* TODO: At the moment, it is not clear whether the selected initial state is sufficient or not. *)

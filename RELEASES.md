@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.7.3
+
+- New: WickMean
+- Bug fix: Matrix[CliffordState[...]], WickMutualInformation
+
 ## 3.7.2
 
 - Bug fix: WickOperator, WickJump, KetChop

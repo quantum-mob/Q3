@@ -16,7 +16,8 @@ BeginPackage["Q3`"]
 { WickMeasurement, WickCollapse };
 { WickNonunitary, RandomWickNonunitary };
 
-{ WickGreenFunction, WickOccupation };
+{ WickGreenFunction, WickOccupation,
+  WickMean };
 
 { WickCircuit, RandomWickCircuit, RandomWickCircuitSimulate };
 { WickSimulate, WickDampingOperator };
@@ -63,8 +64,29 @@ MakeBoxes[ws:WickState[{fac_?NumericQ, cvr_?MatrixQ}, ___], fmt_] :=
   ] /; EvenQ[Length @ cvr]
 
 (* canonicalization *)
-WickState[{fac_, cvr_WickCovariance}, rest___] :=
+WickState[cvr_WickCovariance, opts___?OptionQ] :=
+  WickState[{1, cvr}, opts]
+
+(* canonicalization *)
+WickState[{fac_, cvr_WickCovariance}, rest___?OptionQ] :=
   WickState[{fac, First @ cvr}, rest]
+
+(* canonicalization *)
+WickState[{fac_, cvr_?MatrixQ}, rest___?OptionQ] :=
+  WickState[{fac, SparseArray @ cvr}, rest] /;
+    Head[cvr] =!= SparseArray
+
+(* canonicalization *)
+WickState[{fac_, cvr_?MatrixQ}, rest___?OptionQ] := If[
+  ArrayZeroQ[Im @ cvr], 
+  WickState[Re @ {fac, cvr}, rest],
+  With[
+    { re = Re[cvr] },
+    Message[WickState::complex, ArrayShort @ cvr];
+    WickState[{fac, (re - Transpose[re])/2}, rest]
+  ]
+] /; Not[arrayRealQ @ cvr]
+
 
 (* initialization by occupation numbers *)
 WickState[vv_?VectorQ, n_Integer, rest___?OptionQ] := Module[
@@ -72,21 +94,7 @@ WickState[vv_?VectorQ, n_Integer, rest___?OptionQ] := Module[
     gg },
   gg = NambuGreen @ {One[n] - ww, 0};
   WickState[{1, WickCovariance @ gg}, rest]
-] /;VectorQ[vv, BinaryQ]
-
-WickState[{fac_, cvr_?MatrixQ}, rest___?OptionQ] := With[
-  { re = Re[cvr] },
-  If[ ArrayZeroQ[Im @ cvr], 
-    WickState[{fac, Re @ cvr}, rest],
-    Message[WickState::complex, ArrayShort @ cvr];
-    WickState[{fac, (re - Transpose[re])/2}, rest]
-  ]
-] /; Not[arrayRealQ @ cvr]
-
-
-(* initialization *)
-WickState[Rule[n_Integer, vv_/;VectorQ[vv, BinaryQ]], rest___] :=
-  WickState[vv, n, rest]
+] /; VectorQ[vv, BinaryQ]
 
 (* initialization *)
 WickState[Ket[aa_Association]] := With[
@@ -94,9 +102,6 @@ WickState[Ket[aa_Association]] := With[
   WickState[Lookup[aa, cc], Length @ cc]
 ]
 
-(* shortcut *)
-WickState[cvr_WickCovariance, opts___?OptionQ] :=
-  WickState[{1, cvr}, opts]
 
 WickState /:
 Re[WickState[data:{_?NumericQ, _?MatrixQ}, rest___]] :=
@@ -302,6 +307,22 @@ RandomWickCovariance[n_Integer] := Module[
   mm = RandomOrthogonal[2n];
   WickCovariance @ Chop[ Transpose[mm] . yy . mm ]
 ]
+
+
+(**** <WickMean> ****)
+
+WickMean::usage = "WickMean[data] returns the average of the Wick states or Majorana covariance matrices in array data."
+
+WickMean[data_?ArrayQ] := Module[
+  { cvr },
+  cvr = Mean @ ReplaceAll[ data,
+    { ws_WickState :> ws[[1, 2]],
+      cv_WickCovariance :> First[cv] }
+  ];
+  Map[WickCovariance, cvr, {ArrayDepth[cvr] - 2}]
+] /; ArrayQ[data, _, MatchQ[#, _WickState | _WickCovariance]&]
+
+(**** <WickMean> ****)
 
 
 (**** <WickConjugateReverse> ****)
@@ -2242,7 +2263,7 @@ WickEntanglementEntropy[data_?ArrayQ, kk:{___Integer}] := Module[
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   Map[(progress = i++/dim; WickEntanglementEntropy[#, kk])&, data, {dep}]
-] /; ArrayQ[data, _, MatchQ[#, _WickState]&]
+] /; ArrayQ[data, _, MatchQ[#, _WickState | _WickCovariance | _NambuGreen]&]
 
 (* directly from covariance matrix *)
 WickEntanglementEntropy[WickCovariance[cvr_?MatrixQ, ___], kk:{__Integer}] := Module[
@@ -2282,15 +2303,22 @@ WickEntanglementEntropy[grn:NambuGreen[{_?MatrixQ, _?MatrixQ}, ___], kk:{__Integ
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
 WickMutualInformation::usage = "WickMutualInformation[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Wick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nWickMutualInformation[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or WickMutualInformation[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nWickMutualInformation[state, {k1, k2, \[Ellipsis]}] is equivalent to WickMutualInformation[WickGreenFunction[state], {k1, k2, \[Ellipsis]}] for Wick or BdG state.\nWickMutualInformation[{k1, k2, \[Ellipsis]}] is an operator form of WickEntanglementEtropy to be applied to Green's functions, Wick or Nambu state."
 
+(* operator form *)
+WickMutualInformation[kk:{__Integer}][any_] :=
+  WickMutualInformation[any, kk]
+
 (* shortcut *)
 WickMutualInformation[ws_WickState, kk:{__Integer}] :=
   WickMutualInformation[WickCovariance @ ws, kk]
 
 (* directly from covariance matrix *)
 WickMutualInformation[cvr:WickCovariance[vv_?MatrixQ, ___], kk:{__Integer}] := Module[
-  { ll = Supplement[Range @ FermionCount @ cvr, kk] },
-  ( WickEntropy[ WickCovariance @ vv[[kk, kk]] ] + 
-    WickEntropy[ WickCovariance @ vv[[ll, ll]] ] -
+  { ll = Supplement[Range @ FermionCount @ cvr, kk],
+    ii, jj },
+  ii = Riffle[2kk-1, 2kk];
+  jj = Riffle[2ll-1, 2ll];
+  ( WickEntropy[ WickCovariance @ vv[[ii, ii]] ] + 
+    WickEntropy[ WickCovariance @ vv[[jj, jj]] ] -
     WickEntropy[ WickCovariance @ vv ]
   ) / 2
 ]
@@ -2303,7 +2331,7 @@ WickMutualInformation[data_?ArrayQ, kk:{___Integer}] := Module[
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   Map[(progress = i++/dim; WickMutualInformation[#, kk])&, data, {dep}]
-] /; ArrayQ[data, _, MatchQ[#, _WickState]&]
+] /; ArrayQ[data, _, MatchQ[#, _WickState | _WickCovariance | _NambuGreen]&]
 
 
 (* canonical form for normal models *)
@@ -2328,14 +2356,6 @@ WickMutualInformation[{gg_?MatrixQ, ff_?MatrixQ}, kk:{__Integer}] := With[
 (* canonicalization for BdG models *)
 WickMutualInformation[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], kk:{__Integer}] :=
   WickMutualInformation[{gg, ff}, kk]
-
-(* operator form *)
-WickMutualInformation[kk:{__Integer}][any_] :=
-  WickMutualInformation[any, kk]
-
-(* shortcut for normal models *)
-WickMutualInformation[in_WickState, kk:{__Integer}] := 
-  WickMutualInformation[WickGreenFunction @ in, kk]
 
 (**** </WickMutualInformation> ****)
 
