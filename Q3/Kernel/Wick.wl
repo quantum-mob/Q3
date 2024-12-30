@@ -1428,11 +1428,11 @@ Options[RandomWickCircuitSimulate] = {
 $RandomWickCircuitPatterns = Alternatives[
   {_WickUnitary, _?NumericQ}, 
   {_NambuUnitary, _?NumericQ},
-  {_?MatrixQ, _, _?NumericQ},
-  {_?MatrixQ, _?NumericQ},
+  {_WickHermitian, _, _?NumericQ},
+  {_WickHermitian, _?NumericQ},
   {_NambuHermitian, _, _?NumericQ},
   {_NambuHermitian, _?NumericQ},
-  _?MatrixQ,
+  _WickHermitian,
   _NambuHermitian
 ];
 
