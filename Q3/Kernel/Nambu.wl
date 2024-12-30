@@ -127,7 +127,7 @@ ArrayShort @ NambuHermitian[mm_?NambuMatrixQ, rest___] :=
 
 NambuHermitian /:
 Normal @ NambuHermitian[{ham_, del_}, ___] :=
-  ArrayFlatten @ {
+  SparseArray @ ArrayFlatten @ {
     {ham, del},
     {Topple[del], -Transpose[ham]}
   }
@@ -160,12 +160,11 @@ NambuHermitian /:
 Matrix[ham:NambuHermitian[_?NambuMatrixQ, ___]] := Module[
   { n = FermionCount[ham],
     mm },
-  
   (* Jordan-Wigner transformation *)
   mm = Table[PadRight[Table[3, k-1], n], {k, n}] + 4*One[n];
   mm = ThePauli /@ mm;
   mm = Join[mm, Topple /@ mm];
-
+  (* calc *)
   TensorContract[
     Transpose[Topple /@ mm, {3, 1, 2}] . Normal[ham] . mm / 2,
     {{2, 3}}
@@ -251,7 +250,7 @@ ArrayShort @ NambuUnitary[mm_?NambuMatrixQ, rest___] :=
 
 NambuUnitary /:
 Normal @ NambuUnitary[{u_?MatrixQ, v_?MatrixQ}, ___] :=
-  ArrayFlatten @ {
+  SparseArray @ ArrayFlatten @ {
     {u, v},
     Conjugate @ {v, u}
   }
@@ -282,10 +281,14 @@ ExpressionFor[op_NambuUnitary, ___] = op
 
 
 NambuUnitary /:
-Matrix[op:NambuUnitary[uv_?NambuMatrixQ, ___], ss:{__?SpeciesQ}] := With[
+Matrix[op:NambuUnitary[uv_?NambuMatrixQ, ___]] := With[
   { barH = -I*MatrixLog[Normal @ op] },
-  MatrixExp[I*Matrix[NambuHermitian @ barH, ss]]
+  MatrixExp[I*Matrix[NambuHermitian @ barH]]
 ]
+
+NambuUnitary /:
+Matrix[op_NambuUnitary, ss:{__?SpeciesQ}] :=
+  MatrixEmbed[Matrix @ op, Select[ss, FermionQ], ss]
 
 NambuUnitary /: (* fallback *)
 Matrix[op_NambuUnitary, ss:{__?SpeciesQ}] := op * Matrix[1, ss]
@@ -363,7 +366,7 @@ ArrayShort @ NambuGreen[mm_?NambuMatrixQ, rest___] :=
 
 NambuGreen /:
 Normal @ NambuGreen[{g_, f_}, ___] :=
-  ArrayFlatten @ {
+  SparseArray @ ArrayFlatten @ {
     {g, f},
     {Topple[f], One[Dimensions @ g] - Transpose[g]}
   }

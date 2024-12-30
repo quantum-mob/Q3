@@ -3,18 +3,17 @@
 BeginPackage["Q3`"]
 
 { WickState, RandomWickState };
-{ WickCovariance, FromWickCovariance };
-{ WickPureQ, WickSingleQ };
+{ WickPureQ, WickPurity, 
+  WickNullQ, WickSingleQ };
 { WickDensityMatrix };
 
-{ WickUnitary, RandomWickUnitary };
+{ WickUnitary, WickHermitian, WickCovariance,
+  RandomWickUnitary, RandomWickHermitian, RandomWickCovariance };
 { WickJump, WickJumpOdds, $WickJumpOut,
   RandomWickJump };
-{ WickOperator, RandomWickOperator,
-  WickJumpFrom, WickOperatorFrom, WickElements };
-
+{ WickOperator, RandomWickOperator };
+{ WickElements, WickCoefficients };
 { WickMeasurement, WickCollapse };
-
 { WickNonunitary, RandomWickNonunitary };
 
 { WickGreenFunction, WickOccupation };
@@ -25,6 +24,8 @@ BeginPackage["Q3`"]
 
 { WickLogarithmicNegativity, WickTimeReversalMoment };
 { WickEntropy, WickEntanglementEntropy, WickMutualInformation };
+
+{ NambuMeasurement, NambuNonunitary, NambuJump, NambuOperator };
 
 { FermionCount };
 
@@ -42,6 +43,10 @@ WickState::usage = "WickState[uv, trs] represents a many-body quantum state for 
 
 WickState::complex = "The covariance matrix `` must be a real anti-symmetric matrix."
 
+WickState::cvr = "Matrix `` is not a valid covariance matrix; it must be a even-dimensional real anti-symmetric matrix."
+
+WickState::convex = "Attemp non-convex linear superposition of Gaussian states."
+
 WickState::bad = "Unsupported form of Nambu state ``."
 
 WickState /:
@@ -57,16 +62,19 @@ MakeBoxes[ws:WickState[{fac_?NumericQ, cvr_?MatrixQ}, ___], fmt_] :=
     "Interpretable" -> Automatic
   ] /; EvenQ[Length @ cvr]
 
-(* initialization by occupation numbers *)
-WickState[vv_/;VectorQ[vv, BinaryQ], n_Integer, rest___] := Module[
-  { ww = DiagonalMatrix @ PadRight[vv, n, vv],
-    gg, cv },
-  gg = NambuGreen @ {One[n] - ww, 0};
-  cv = WickCovariance[gg];
-  WickState[{1, cv}, rest]
-]
+(* canonicalization *)
+WickState[{fac_, cvr_WickCovariance}, rest___] :=
+  WickState[{fac, First @ cvr}, rest]
 
-WickState[{fac_, cvr_?MatrixQ}, rest___] := With[
+(* initialization by occupation numbers *)
+WickState[vv_?VectorQ, n_Integer, rest___?OptionQ] := Module[
+  { ww = DiagonalMatrix @ PadRight[vv, n, vv],
+    gg },
+  gg = NambuGreen @ {One[n] - ww, 0};
+  WickState[{1, WickCovariance @ gg}, rest]
+] /;VectorQ[vv, BinaryQ]
+
+WickState[{fac_, cvr_?MatrixQ}, rest___?OptionQ] := With[
   { re = Re[cvr] },
   If[ ArrayZeroQ[Im @ cvr], 
     WickState[{fac, Re @ cvr}, rest],
@@ -81,15 +89,22 @@ WickState[Rule[n_Integer, vv_/;VectorQ[vv, BinaryQ]], rest___] :=
   WickState[vv, n, rest]
 
 (* initialization *)
-WickState[Rule[cc:{__?FermionQ}, vv_/;VectorQ[vv, BinaryQ]], rest___] :=
-  WickState[vv, Length @ cc, rest]
-
-(* initialization *)
 WickState[Ket[aa_Association]] := With[
   { cc = Select[Keys @ aa, FermionQ] },
   WickState[Lookup[aa, cc], Length @ cc]
 ]
 
+(* shortcut *)
+WickState[cvr_WickCovariance, opts___?OptionQ] :=
+  WickState[{1, cvr}, opts]
+
+WickState /:
+Re[WickState[data:{_?NumericQ, _?MatrixQ}, rest___]] :=
+  WickState[Re[data], rest]
+
+WickState /:
+Im[WickState[data:{_?NumericQ, _?MatrixQ}, rest___]] :=
+  WickState[Im[data], rest]
 
 WickState /:
 NormSquare[WickState[{fac_?NumericQ, _?MatrixQ}, ___]] := Abs[fac]
@@ -103,9 +118,19 @@ Normalize[WickState[{_?NumericQ, cvr_?MatrixQ}, rest___]] :=
   WickState[{1, cvr}, rest]
 
 
+(* convex linear superposition *)
+WickState /:
+Plus[WickState[{fa_, va_}, any___], WickState[{fb_, vb_}, other___]] :=
+  WickState[{fa + fb, (fa*va + fb*vb)/(fa+fb)}, any, other]
+
 WickState /:
 Times[z_?NumericQ, WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := 
-  WickState[{fac * AbsSquare[z], cvr}, rest]
+  WickState[{z*fac, cvr}, rest] /;
+    If[ RealQ[z], True,
+      Message[WickState::convex, z];
+      False
+    ]
+(* NOTE: This feature is to support convex linear superposition of two Gaussian states as mixed states. In principle, the numerical factor must be in [0, 1]. Here, any real number is allowed for convenience. *)
 
 
 WickState /:
@@ -114,12 +139,16 @@ ExpressionFor[ws:WickState[{_?NumericQ, _?MatrixQ}, ___], cc:{__?FermionQ}] :=
 
 
 WickState /:
-Matrix[ws:WickState[{_?NumericQ, _?MatrixQ}, ___], ss:{__?SpeciesQ}] :=
+Matrix[ws:WickState[{_?NumericQ, _?MatrixQ}, ___], ss:{___?SpeciesQ}] :=
   MatrixEmbed[Matrix @ ws, Select[ss, FermionQ], ss]
+
+WickState /: (* null state *)
+Matrix[WickState[{0, cvr_?MatrixQ}, ___]] :=
+  Zero[Length @ cvr]
 
 WickState /: (* mixed states *)
 Matrix[WickState[{fac_?NumericQ, cvr_?MatrixQ}, ___]] :=
-  fac * WickDensityMatrix[FromWickCovariance @ cvr]
+  fac * WickDensityMatrix[WickCovariance @ cvr]
 (* NOTE: It might be more efficient to use the Murnaghan's canonical form; see Paardekooper (1971) and Humeniuk and Mitrik (2018). Here, we do not try it because this function is intended for elementary tests anyway. *)
 
 WickState /: (* pure states *)
@@ -152,6 +181,12 @@ MultiplyKind[_WickState] = Fermion
 (**** </WickState> ****)
 
 
+RandomWickState::usage = "RandomWickState[n] randomly generates a Gaussian pure state of n fermion modes."
+
+RandomWickState[n_Integer, opts___?OptionQ] :=
+  WickState[{1, RandomWickCovariance @ n}, opts]
+
+
 (**** <WickPureQ> ****)
 
 WickPureQ::usage = "WickPureQ[cvr] returns True if Majorana covariance matrix cvr represents a prue state; False, otherwise./nWickPureQ[bdg] tests the BdG state."
@@ -167,6 +202,15 @@ WickPureQ[WickState[{_, cvr_?MatrixQ}, ___]] :=
   WickPureQ[cvr]
 
 (**** </WickPureQ> ****)
+
+
+(**** <WickNullQ> ****)
+
+WickNullQ::usage = "WickNullQ[ws] returns True if Wick state ws is the null state; False, otherwise."
+
+WickNullQ[ws_WickState] := ZeroQ[ws[[1, 1]]]
+
+(**** </WickNullQ> ****)
 
 
 (**** <WickSingleQ> ****)
@@ -191,45 +235,73 @@ WickSingleQ[NambuGreen[{_?MatrixQ, anm_?MatrixQ}]] :=
 
 (**** <WickCovariance> ****)
 
-WickCovariance::usage = "WickCovariance[grn] returns the Majorana covariance matrix corresponding to the Green's function grn, given in the NambuGreen[...] form, of Dirac fermion modes."
+WickCovariance::usage = "WickCovariance[mat] is a wrapper of the covariance matrix mat in the Majorana spinor space.\nWickCovariance[grn] converts Green's function grn, given in the NambuGreen[...] form, to equivalent covariance matrix in the Majorana spinor space."
 
+WickCovariance /:
+MakeBoxes[vv:WickCovariance[mat_?MatrixQ, ___], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickCovariance, vv, None,
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ vv },
+      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ mat }
+    },
+    { BoxForm`SummaryItem @ { "Matrix: ", ArrayShort @ mat }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+(* shortcut *)
+WickCovariance /:
+Normal[WickCovariance[mat_?MatrixQ, ___], rest___] := Normal[mat, rest]
+
+(* shortcut *)
+WickCovariance[ws_WickState] := WickCovariance[ ws[[1, 2]] ]
+
+(* conversion *)
 WickCovariance[grn_NambuGreen] := Module[
   { crr = 4*ToMajorana[Normal @ grn] },
   (* NOTE: Notice the factor of 4. *)
-  Re[ I * (crr - One[Dimensions @ crr]) ]
+  WickCovariance @ Re[ I * (crr - One[Dimensions @ crr]) ]
 ]
 
-(* shortcut *)
-WickCovariance[ws_WickState] := ws[[1, 2]]
-
-
-FromWickCovariance::usage = "FromWickCovariance[cvr] returns the Green's function of Dirac fermions corresponding to the Majorana covariance matrix cvr."
-
-FromWickCovariance[cvr_?MatrixQ] := Module[
-  { crr = One[Dimensions @ cvr] - I*cvr },
+(* conversion *)
+NambuGreen[cvr_WickCovariance] := Module[
+  { crr = One[2*FermionCount[cvr]] - I*First[cvr] },
   NambuGreen[ToDirac @ crr] / 4
   (* NOTE: Notice the factor of 1/4. *)
-] /; If[ arrayRealQ[cvr], True,
-    Message[WickState::complex, ArrayShort @ cvr];
-    False
-  ]
+]
+
+WickCovariance /:
+Normal[WickCovariance[mm_?MatrixQ, ___], rest___] :=
+  Normal[mm, rest]
+
+WickCovariance /:
+MatrixForm[WickCovariance[mm_?MatrixQ, ___], opts___?OptionQ] :=
+  MatrixForm[mm, opts]
+
+WickCovariance /:
+ArrayShort[WickCovariance[mm_?MatrixQ, ___], opts___?OptionQ] :=
+  ArrayShort[mm, opts]
+
+WickCovariance /:
+Plus[WickCovariance[a_, any___], WickCovariance[b_, other___]] :=
+  WickCovariance[a + b, any, other]
+
+WickCovariance /:
+Times[z_, WickCovariance[mat_, rest___]] :=
+  WickCovariance[z*mat, rest]
 
 (**** </WickCovariance> ****)
 
 
-RandomWickState::usage = "RandomWickState[k, n] randomly generates a depth-k BdG state with half filling on n fermion modes\nRandomWickState[n] selects depth k randomly from {1, 2,\[Ellipsis], n}."
+RandomWickCovariance::usage = "RandomWickCovariance[n] randomly generates a coveriance matrix for a Gaussian pure state of 2n Majorana modes."
 
-RandomWickState[n_Integer] := Module[
+RandomWickCovariance[n_Integer] := Module[
   { yy, mm, in },
   yy = CircleTimes[One[n], I*ThePauli[2]];
   mm = RandomOrthogonal[2n];
-  mm = Transpose[mm] . yy . mm;
-  WickState[{1, Chop @ mm}]
+  WickCovariance @ Chop[ Transpose[mm] . yy . mm ]
 ]
-
-(* backward compatibility *)
-RandomWickState[cc:{__?FermionQ}] :=
-  RandomWickState[Length @ cc]
 
 
 (**** <WickConjugateReverse> ****)
@@ -246,16 +318,10 @@ WickConjugateReverse[ops_?MatrixQ] := Conjugate[Reverse @ ops]
 WickUnitary::usage = "WickUnitary[{u, v}] represents a Bogoliubov-de Gennes transform in the Nambu space that is characterized by the n\[Times]n upper-left and upper-right blocks u and v, respectively."
 
 WickUnitary /:
-MakeBoxes[op:WickUnitary[uu_?MatrixQ, rest___], fmt_] := Module[
-  { cc = {rest} },
-  cc = Which[ 
-    Length[cc] == 0, All,
-    MatchQ[First @ cc, {__Integer}], First[cc],
-    True, All
-  ];
+MakeBoxes[op:WickUnitary[uu_?MatrixQ, rest___], fmt_] := 
   BoxForm`ArrangeSummaryBox[
     WickUnitary, op, None,
-    { BoxForm`SummaryItem @ { "Target: ", ArrayShort @ cc },
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ op },
       BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ uu }
     },
     { BoxForm`SummaryItem @ { "Transformation matrix: ", ArrayShort @ uu }
@@ -263,7 +329,6 @@ MakeBoxes[op:WickUnitary[uu_?MatrixQ, rest___], fmt_] := Module[
     fmt,
     "Interpretable" -> Automatic
   ]
-]
 
 (* zero in the Nambu space *)
 WickUnitary[0, n_Integer, rest___] :=
@@ -282,11 +347,11 @@ Normal[WickUnitary[mm_?MatrixQ, ___], rest___] :=
   Normal[mm, rest]
 
 WickUnitary /:
-MatrixForm[WickUnitary[mm_?MatrixQ, rest___], opts___?OptionQ] :=
+MatrixForm[WickUnitary[mm_?MatrixQ, ___], opts___?OptionQ] :=
   MatrixForm[mm, opts]
 
 WickUnitary /:
-ArrayShort[WickUnitary[mm_?MatrixQ, rest___], opts__?OptionQ] :=
+ArrayShort[WickUnitary[mm_?MatrixQ, ___], opts___?OptionQ] :=
   ArrayShort[mm, opts]
 
 WickUnitary /:
@@ -351,13 +416,23 @@ WickUnitary[trs_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]
 ]
 
 (* conversion *)
-WickUnitary[uv:NambuUnitary[_?NambuMatrixQ, opts___?OptionQ], more___?OptionQ] := 
-  WickUnitary[Re[2 * ToMajorana @ Normal @ uv], more, opts]
+NambuUnitary /:
+ToMajorana[uv:NambuUnitary[_?NambuMatrixQ, opts___?OptionQ], more___?OptionQ] := 
+  WickUnitary[2*Re[ToMajorana @ Normal @ uv], more, opts]
 (* NOTE: Notice the factor of 2 to keep the result to be unitary. *)
 
 (* conversion *)
-NambuUnitary[WickUnitary[rot_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
-  NambuUnitary[ToDirac[rot] / 2, more, opts]
+NambuUnitary /:
+WickUnitary[op_NambuUnitary] := ToMajorana[op]
+
+(* conversion *)
+WickUnitary /:
+ToDirac[WickUnitary[rot_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
+  NambuUnitary[ToDirac[rot]/2, more, opts]
+
+(* conversion *)
+WickUnitary /:
+NambuUnitary[op_WickUnitary] := ToDirac[op]
 
 (**** </WickUnitary> ****)
 
@@ -384,6 +459,87 @@ RandomWickUnitary[n_Integer, rest___] := Module[
 ]
 
 
+(**** <WickHermitian> ****)
+
+WickHermitian::usage = "WickHermitian[m] represents a quadractic Hermitian operator (\[ImaginaryI]/4) \[CapitalSigma]ij ci mij cj in the Majorana spinor space, where m is a real anti-symmetric matrix."
+
+WickHermitian /:
+MakeBoxes[op:WickHermitian[mm_?MatrixQ, ___], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickHermitian, op, None,
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ op },
+      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ mm }
+    },
+    { BoxForm`SummaryItem @ { "Matrix: ", ArrayShort @ mm }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+WickHermitian /:
+Normal[WickHermitian[mat_?MatrixQ, ___], rest___] :=
+  Normal[mat, rest]
+
+(* conversion *)
+NambuHermitian /:
+ToMajorana[ham_NambuHermitian, opts___?OptionQ] :=
+  WickHermitian[-2I*ToMajorana[Normal @ ham], opts]
+
+(* conversion *)
+NambuHermitian /:
+WickHermitian[op_NambuHermitian] := ToMajorana[op]
+
+(* conversion *)
+WickHermitian /:
+ToDirac[ham_WickHermitian, opts___?OptionQ] :=
+  NambuHermitian[ToDirac[First @ ham]*I/2, opts]
+
+(* conversion *)
+WickHermitian /:
+NambuHermitian[op_WickHermitian] := ToDirac[op]
+
+
+WickHermitian /:
+MatrixForm[WickHermitian[mm_?MatrixQ, ___], opts___?OptionQ] :=
+  MatrixForm[mm, opts]
+
+WickHermitian /:
+ArrayShort[WickHermitian[mm_?MatrixQ, ___], opts___?OptionQ] :=
+  ArrayShort[mm, opts]
+
+WickHermitian /:
+Dagger[op_WickHermitian] = op
+  WickHermitian[Transpose @ mat, rest]
+
+WickHermitian /:
+Plus[WickHermitian[a_, any___], WickHermitian[b_, other___]] :=
+  WickHermitian[a + b, any, other]
+
+WickHermitian /:
+Times[z_, WickHermitian[mm_, rest___]] :=
+  WickHermitian[z * mm, rest]
+
+
+WickHermitian /:
+ExpressionFor[WickHermitian[mat_?MatrixQ, ___], cc:{__?MajoranaQ}] :=
+  Garner[ MultiplyDot[cc, mat, cc] * (I/4) ]
+
+WickHermitian /:
+Matrix[op:WickHermitian[mat_?MatrixQ, ___]] := Module[
+  { n = FermionCount[op],
+    xy, mm },
+  xy = theWignerJordanMajorana[n];
+  mm = Transpose[xy, {3, 1, 2}] . mat . xy;
+  TensorContract[mm * I/4, {{2,3}}]
+]
+  
+(**** </WickHermitian> ****)
+
+
+RandomWickHermitian[n_Integer, opts___?OptionQ] := 
+  WickHermitian[Re @ RandomAntisymmetric[2n], opts]
+
+
 (**** <WickOperator> ****)
 
 WickOperator::usage = "WickOperator[mat] represents a sequence of linear combinations of Majorana fermion operators with coefficients given by the elements of matrix mat."
@@ -392,43 +548,17 @@ WickOperator::flag = "Invalid flags ``; the flags must be binary digits."
 
 WickOperator /:
 MakeBoxes[op:WickOperator[mat_?MatrixQ, rest___], fmt_] := Module[
-  { cc = {rest},
-    m, n },
-  cc = Which[ 
-    Length[cc] == 0, All,
-    MatchQ[First @ cc, {__Integer}], First[cc],
-    True, All
-  ];
+  {m, n},
   {m, n} = Dimensions[mat];
   BoxForm`ArrangeSummaryBox[
     WickOperator, op, None,
-    { BoxForm`SummaryItem @ { "Target: ", ArrayShort @ cc },
-      BoxForm`SummaryItem @ { "Modes: ", n },
+    { BoxForm`SummaryItem @ { "Modes: ", n/2 },
       BoxForm`SummaryItem @ { "Operators: ", m }
     },
-    { BoxForm`SummaryItem @ { "Transforms: ", ArrayShort @ mat }
+    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ mat }
     },
     fmt,
     "Interpretable" -> Automatic
-  ]
-]
-
-(* canonicalization *)
-WickOperator[ops:{___?AnyFermionQ}, cc:{__?FermionQ}, rest___] :=
-  WickOperatorFrom[ops, cc, rest]
-
-
-(* shortcut *)
-WickOperator[spec:{{_Integer, _Integer}..}, n_Integer, opts___?OptionQ] := Module[
-  { id = One[2n],
-    mm = ToDiracMatrix[n],
-    ii, kk, flag },
-  {kk, flag} = Transpose[spec];
-  ii = n*flag + kk;
-  mm = id[[ii]] . mm;
-  WickOperator[mm, opts] /;
-  If[ VectorQ[flag, BinaryQ], True,
-    Message[WickOperator::flag, flag]; False 
   ]
 ]
 
@@ -436,31 +566,44 @@ WickOperator[spec:{{_Integer, _Integer}..}, n_Integer, opts___?OptionQ] := Modul
 WickOperator[spec:{_Integer, 0|1}, n_Integer, opts___?OptionQ] :=
   WickOperator[{spec}, n]
 
+(* shortcut *)
+WickOperator[ops:{___?AnyFermionQ}, cc:{__?FermionQ}, opts___?OptionQ] :=
+  WickOperator[WickCoefficients[ops, cc], opts]
 
-WickOperator[{}, ___][any_] = any
+(* shortcut *)
+WickOperator[spec:{{_Integer, _Integer}..}, n_Integer, opts___?OptionQ] := Module[
+  { id = One[2n],
+    mm, kk, flag },
+  {kk, flag} = Transpose[spec];
+  kk = n*flag + kk;
+  mm = NambuOperator[ id[[kk]] ];
+  WickOperator[mm, opts] /;
+  If[ VectorQ[flag, BinaryQ], True,
+    Message[WickOperator::flag, flag]; False 
+  ]
+]
 
-WickOperator[spec__][fs_Ket] := WickOperator[spec][WickState @ fs]
 
-WickOperator[mat_?MatrixQ, ___][in:WickState[{_?NumericQ, _?MatrixQ}, ___]] :=
-  Fold[#2[#1]&, in, Reverse @ Map[WickFlop, mat]]
+(* conversion *)
+WickOperator[jmp_WickJump] := Apply[WickOperator, jmp]
 
+
+(* canonicalization *)
+WickOperator[mat_?MatrixQ, opts___?OptionQ] :=
+  WickOperator[SparseArray @ mat, opts] /; Head[mat] =!= SparseArray
+(* NOTE: In many physical cases, the linear combinations are rather simple. *)
+
+WickOperator /:
+MatrixForm[WickOperator[mm_?MatrixQ, rest___], opts___?OptionQ] :=
+  MatrixForm[mm, opts]
+
+WickOperator /:
+ArrayShort[WickOperator[mm_?MatrixQ, rest___], opts___?OptionQ] :=
+  ArrayShort[mm, opts]
 
 WickOperator /:
 Dagger @ WickOperator[ops_?MatrixQ, rest___] :=
   WickOperator[WickConjugateReverse @ ops, rest]
-
-
-WickOperator /: 
-NonCommutativeQ[_WickOperator] = True
-
-WickOperator /:
-MultiplyKind[_WickOperator] = Fermion
-
-WickOperator /:
-Multiply[pre___, opr_WickOperator, ws_WickState] := Multiply[pre, opr @ ws]
-
-WickOperator /:
-Multiply[pre___, opr_WickOperator, fs_Ket] := Multiply[pre, opr[WickState @ fs]]
 
 
 WickOperator /:
@@ -499,9 +642,19 @@ WickOperator /: (* fallback *)
 ExpressionFor[op_WickOperator, ___] = op 
 
 
+WickOperator /: 
+NonCommutativeQ[_WickOperator] = True
+
 WickOperator /:
-VacuumExpectation @ WickOperator[trs_?MatrixQ, ___] :=
-  Pfaffian @ WickMatrix[trs]
+MultiplyKind[_WickOperator] = Fermion
+
+WickOperator /:
+Multiply[pre___, opr_WickOperator, ws_WickState] := Multiply[pre, opr @ ws]
+
+WickOperator[{}, ___][any_] = any
+
+WickOperator[mat_?MatrixQ, ___][in:WickState[{_?NumericQ, _?MatrixQ}, ___]] :=
+  Fold[#2[#1]&, in, Reverse @ Map[WickFlop, mat]]
 
 (**** </WickOperator> ****)
 
@@ -518,10 +671,10 @@ WickFlop[vec_?VectorQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :
   mm = id + aa . cvr;
   prb = nn * Sqrt[Det @ mm];
   If[ ZeroQ[prb],
-    new = One[Dimensions @ mm],
+    new = Zero[Dimensions @ mm], (* null state *)
     new = aa + bb . cvr . Inverse[mm] . Transpose[bb]
   ];
-  WickState[{fac * prb, new}, rest]
+  WickState[{fac*prb, new}, rest]
 ]
 
 (**** </WickFlop> ****)
@@ -538,24 +691,19 @@ RandomWickOperator[n_Integer] :=
 
 (**** <WickJump> ****)
 
-WickJump::usage = "WickJump[mat] represents a sequence of quantum jump operators, which are linear combinations of Majorana fermion modes with coefficients given by the elements of matrix mat."
+$WickJumpOut::usage = "$WickJumpOut returs the index of quantum jump that has occurred at the last instance of WickJump."
 
-WickJump::flag = "Invalid flags ``; the flags must be binary digits."
+WickJump::usage = "WickJump[mat] represents a set of quantum jump operators, which are linear combinations of Majorana fermion operators with coefficients given by the elements of complex matrix mat."
+
+WickJump::null = "The quantum operation returns the null state."
 
 WickJump /:
 MakeBoxes[jmp:WickJump[mat_?MatrixQ, rest___], fmt_] := Module[
-  { cc = {rest},
-    m, n },
-  cc = Which[ 
-    Length[cc] == 0, All,
-    MatchQ[First @ cc, {__Integer}], First[cc],
-    True, All
-  ];
+  {m, n},
   {m, n} = Dimensions[mat];
   BoxForm`ArrangeSummaryBox[
     WickJump, jmp, None,
-    { BoxForm`SummaryItem @ { "Target: ", ArrayShort @ cc },
-      BoxForm`SummaryItem @ { "Modes: ", n },
+    { BoxForm`SummaryItem @ { "Modes: ", n/2 },
       BoxForm`SummaryItem @ { "Operators: ", m }
     },
     { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ mat }
@@ -565,13 +713,22 @@ MakeBoxes[jmp:WickJump[mat_?MatrixQ, rest___], fmt_] := Module[
   ]
 ]
 
+(* conversion *)
+WickJump[op_WickOperator] := Apply[WickJump, op]
+
 (* canonicalization *)
-WickJump[ops:{___?AnyFermionQ}, cc:{__?FermionQ}, rest___] :=
-  WickJump @@ WickOperator[ops, cc, rest]
+WickJump[mat_?MatrixQ, opts___?OptionQ] :=
+  WickJump[SparseArray @ mat, opts] /; Head[mat] =!= SparseArray
+(* NOTE: In many physical cases, the linear combinations are rather simple. *)
+
+
+(* shortcut *)
+WickJump[ops:{___?AnyFermionQ}, cc:{__?FermionQ}, opts___?OptionQ] :=
+  WickJump @ WickOperator[ops, cc, opts]
 
 (* shortcut *)
 WickJump[spec:{{_Integer, _Integer}..}, n_Integer, opts___?OptionQ] := 
-  WickJump @@ WickOperator[spec, n, opts]
+  WickJump @ WickOperator[spec, n, opts]
 
 (* shortcut *)
 WickJump[spec:{_Integer, 0|1}, n_Integer, opts___?OptionQ] :=
@@ -600,12 +757,30 @@ Times[z_, WickJump[mm_, rest___]] :=
   WickJump[z * mm, rest]
 
 
+WickJump /: 
+NonCommutativeQ[_WickJump] = True
+
+WickJump /:
+MultiplyKind[_WickJump] = Fermion
+
+WickJump /:
+Multiply[pre___, jmp_WickJump, ws_WickState] := Multiply[pre, jmp @ ws]
+
+WickJump[mat_?MatrixQ, ___][in_WickState] := (* null state *)
+  WickState[{0, Zero[2*FermionCount[in]*{1, 1}]}, Rest @ in] /;
+  WickNullQ[in]
+
 WickJump[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   { aa, bb, nn, mm, id, pp, new, k },
   {aa, bb, nn} = Transpose @ WickJumpAction[mat];
   id = ConstantArray[One[Length @ cvr], Length @ mat];
   mm = id + aa . cvr;
-  Quiet[pp = nn * Sqrt[Det /@ mm], Det::luc];
+  Quiet[pp = nn*Sqrt[Det /@ mm], Det::luc];
+  If[ ZeroQ[Total @ pp],
+    Message[WickJump::null];
+    $WickJumpOut = Indeterminate;
+    Return @ WickState[{0, Zero[2*Length[cvr]*{1, 1}]}, rest]
+  ];
   pp /= Total[pp];
 
   k = RandomChoice[pp -> Range[Length @ mat]];
@@ -620,9 +795,10 @@ WickJump[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :
 ]
 
 
-$WickJumpOut::usage = "$WickJumpOut returs the index of quantum jump that has occurred at the last instance of WickJump."
-
 WickJumpOdds::usage = "WickJumpOdds[{v1,v2,\[Ellipsis]}] returns the probabilities for the quantum jump processes, specified by a list {v1,v2,\[Ellipsis]} of coefficient vectors, to occur."
+
+WickJumpOdds[jmp_WickJump, ___] :=
+  WickJumpOdds[First @ jmp]
 
 WickJumpOdds[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   { aa, bb, nn, mm, id, pp, new, k },
@@ -665,7 +841,7 @@ RandomWickJump[n_Integer, opts___?OptionQ] :=
 
 (**** <WickElements> ****)
 
-WickElements::usage = "WickElements[mat, {c1, c2, \[Ellipsis]}] returns a list of linear combinations of bare fermion or Majorana operators {c1, c2, \[Ellipsis]}.\nNOTE: The input matrix mat is the coefficients of Majorana modes, and when ck are fermion modes, it is automatically converted to the coefficients of the fermion modes."
+WickElements::usage = "WickElements[mat, {c1, c2, \[Ellipsis]}] returns a list of linear combinations of Majorana operators {c1, c2, \[Ellipsis]} with the coefficients specified by elements of complex matrix mat.\nWickElements[mat, {a1, a2, \[Ellipsis]}] returns a list of linear combinations of the annihilation and creation operators of Dirac fermion modes {a1, a2, \[Ellipsis]}], where the elements of complex matrix mat are the coefficients in the equivalent linear combinations of Majorana fermion operators (not the Dirac fermion operators themselves) corresponding to the Dirac fermion modes."
 
 WickElements[mat_?MatrixQ, cc:{__?MajoranaQ}] := mat . cc
 
@@ -690,49 +866,42 @@ WickElements[WickJump[mat_?MatrixQ, ___], cc:{__?FermionQ}] :=
 (**** </WickElements> ****)
 
 
-(**** <WickOperatorFrom> ****)
-(* NOTE: In principle, WickOperatorFrom may be integrated into WickOperator, but separating this feature keeps better the performance of WickOperator. *)
+(**** <WickCoefficients> ****)
 
-WickOperatorFrom::usage = "WickOperatorFrom[expr, {c1,c2,\[Ellipsis]}] constructs WickOperator from expr. If {c1,c2,\[Ellipsis]} are Dirac fermion modes, expr is a linear combination or a list of linear combinations of the creation and annihilation operators of the fermion modes. If {c1,c2,\[Ellipsis]} are Majorana fermion modes, expr is supposed to be a linear combination of Majorana fermion operators."
+WickCoefficients::usage = "WickCoefficients[expr, {c1,c2,\[Ellipsis]}] returns a vector or matrix of coefficients in a linear combination or linear combinations of Majorana fermion operators {c1,c2,\[Ellipsis]}.\nWickCoefficients[expr, {a1,a2,\[Ellipsis]}] gets a vector of matrix of coefficients in a linear combination or linear combinations of the annihilation and creation operators of Dirac fermion modes {a1,a2,\[Ellipsis]}, and transforms it to a vector or matrix of coefficients in the equivalent linear combination(s) of the Majorana operators corresponding to the Dirac fermion modes."
 
-WickOperatorFrom[spec__] := WickOperator @@ WickJumpFrom[spec]
+WickCoefficients::nlin = "`` is not a linear combination of Dirac or Majorana fermion operators of modes ``."
 
-(**** </WickOperatorFrom> ****)
+WickCoefficients[spec:({__?FermionQ} | {__?MajoranaQ})][expr_] :=
+  WickCoefficients[expr, spec]
 
+WickCoefficients[expr_List, spec:({__?FermionQ} | {__?MajoranaQ})] :=
+  Map[WickCoefficients[spec], expr]
 
-(**** <WickJumpFrom> ****)
-(* NOTE: In principle, WickJumpFrom may be integrated into WickJump, but separating this feature keeps better the performance of WickJump. *)
-
-WickJumpFrom::usage = "WickJumpFrom[expr, {c1,c2,\[Ellipsis]}] constructs WickOperator from expr, which is supposed to be a linear combination or a list of linear combinations in the creation and annihilation operators of fermion modes {c1, c2, \[Ellipsis]}."
-
-WickJumpFrom::nlin = "`` is not a linear combination of Dirac or Majorana fermion operators of modes ``."
-
-WickJumpFrom[expr_, cc:({__?FermionQ}|{__?MajoranaQ}), rest___] :=
-  WickJump[theWickJump[expr, cc], rest] /;
+WickCoefficients[expr_, cc:{__?MajoranaQ}] :=
+  Coefficient[expr, cc, 1] /;
   If[ theWickLinearQ[expr, cc], True,
-    Message[WickJumpFrom::nlin, expr, cc];
+    Message[WickCoefficients::nlin, expr, cc];
     False
   ]
 
-theWickJump[expr_List, cc:{__?FermionQ}] :=
-  ToMajorana /@ Map[Coefficient[#, Join[cc, Dagger @ cc]]&, expr]
-
-theWickJump[expr_List, cc:{__?MajoranaQ}] :=
-  Map[Coefficient[#, cc]&, expr]
-
-theWickJump[expr_, spec_] :=
-  theWickJump[{expr}, spec]
+WickCoefficients[expr_, aa:{__?FermionQ}] :=
+  ToMajorana @ Coefficient[expr, Join[aa, Dagger @ aa], 1] /;
+  If[ theWickLinearQ[expr, aa], True,
+    Message[WickCoefficients::nlin, expr, aa];
+    False
+  ]
 
 
-theWickLinearQ::usage = "theWickLinearQ[expr, {c1, c2, \[Ellipsis]}] returns True if expr is a linear combination of the creation and annihilation operators of fermion modes {c1, c2, \[Ellipsis]}, and False otherwise."
+theWickLinearQ::usage = "theWickLinearQ[expr, {c1, c2, \[Ellipsis]}] returns True if expr is a linear combination of Majorana fermion operators {c1, c2, \[Ellipsis]}, and False otherwise.\ntheWickLinearQ[expr, {a1, a2, \[Ellipsis]}] returns True if expr is a linear combination of the creation and annihilation operators of Dirac fermion modes {a1, a2, \[Ellipsis]}, and False otherwise."
 
 theWickLinearQ[expr_List, spec_] :=
   AllTrue[expr, theWickLinearQ[#, spec]&]
 
-theWickLinearQ[expr_, cc:{__?FermionQ}] := TrueQ @ And[
-   ZeroQ[ expr /. Thread[cc -> 0] ],
+theWickLinearQ[expr_, aa:{__?FermionQ}] := TrueQ @ And[
+   ZeroQ[ expr /. Thread[aa -> 0] ],
    FreeQ[ expr,
-    HoldPattern[Multiply][___, Alternatives @@ Join[cc, Dagger @ cc], ___]
+    HoldPattern[Multiply][___, Alternatives @@ Join[aa, Dagger @ aa], ___]
   ]
 ]
 
@@ -743,17 +912,45 @@ theWickLinearQ[expr_, cc:{__?MajoranaQ}] := TrueQ @ And[
   ]
 ]
 
-(**** </WickJumpFrom> ****)
+(**** </WickCoefficients> ****)
 
 
 (**** <WickMeasurement> ****)
 
-WickMeasurement::usage = "FermiMeasurement[k] represents a measurement of the occupation number on fermion mode k.\nFermiMeasurement[{k1, k2, \[Ellipsis]}] represents a sequence of measurements on fermion modes {k1, k2, \[Ellipsis]}.\nFermiMeasurement[spec][ws] simulates the measurement on Wick state ws, and returns the post-measurement state."
+WickMeasurement::usage = "WickMeasurement[k] represents a measurement of the occupation number on fermion mode k.\nWickMeasurement[{k1, k2, \[Ellipsis]}] represents a sequence of measurements on fermion modes {k1, k2, \[Ellipsis]}.\nWickMeasurement[mat] represents a sequence of measurement on the dressed Dirac fermion modes b[i] := Sum[m[[i,j]] c[j], {j, 2n}] expressed in terms of Majorana fermion modes c[k].\nWickMeasurement[spec][ws] simulates the measurement on Wick state ws, and returns the post-measurement state."
 
+WickMeasurement::odd = "The second dimension of the input matrix `` is odd: ``."
 
-WickMeasurement::improper = "The first and second halves u and v of vector `` must be orthogonal, i.e., Dot[u, v]==0."
+WickMeasurement::dressed = "Matrix `` cannot describe a set of orthogonal dressed Dirac fermion modes."
+
+WickMeasurement /:
+MakeBoxes[msr:WickMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
+  {m, n},
+  {m, n} = Dimensions[mat];
+  BoxForm`ArrangeSummaryBox[
+    WickMeasurement, msr, None,
+    { BoxForm`SummaryItem @ { "Bare modes: ", n/2 },
+      BoxForm`SummaryItem @ { "Dressed modes: ", m }
+    },
+    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ mat }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+]
 
 Readout[WickMeasurement[op_]] := Readout[op]
+
+
+WickMeasurement /:
+NonCommutativeQ[_WickMeasurement] = True
+
+WickMeasurement /:
+MultiplyKind[_WickMeasurement] = Fermion
+
+WickMeasurement /:
+Multiply[pre___, msr_WickMeasurement, ws_WickState] := Multiply[pre, msr @ ws]
+
 
 WickMeasurement[k_Integer][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :=
   WickState[{1, theWickMeasurement[k, cvr]}, rest]
@@ -762,18 +959,20 @@ WickMeasurement[kk:{___Integer}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, res
   Fold[#2[#1]&, in, WickMeasurement /@ kk]
 
 
+WickMeasurement[mat_?MatrixQ, rest___] :=
+  WickMeasurement[SparseArray @ mat, rest] /;
+  Head[mat] =!= SparseArray
+
 (* See, e.g., Gallier (2001) for the Cartan-Dieudonné theorem. *)
-WickMeasurement[{vv_?VectorQ}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
+(* The vector vec := mat[[1]] describes a dressed Dirac fermion mode
+      b := Sum[vec[[jj]] c[j], {j, 2n}]
+   in terms of Majorana modes c[k]. *)
+WickMeasurement[mat_?MatrixQ][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   { n = Length[cvr] / 2,
-    ww, xx, yy, trs, new },
-  (* ww = vv . ToDiracMatrix[n]; *) (* the vector represents a dressed Dirac fermion modes *)
-  ww = vv; (* the vector represents a dressed Majorana modes *)
-  xx = Re[ww];
-  yy = Im[ww];
-  If[ Not @ ZeroQ[xx . yy],
-    Message[WickMeasurement::improper, vv];
-    Return[{1, cvr}]
-  ];
+    vv = First[mat],
+    xx, yy, trs, new },
+  xx = Re[vv];
+  yy = Im[vv];
   (* The Cartan-Dieudonné theorem *)
   trs = HouseholderMatrix[xx];
   trs = HouseholderMatrix[trs . yy, 2] . trs;
@@ -783,14 +982,32 @@ WickMeasurement[{vv_?VectorQ}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest_
   KeyDrop[$MeasurementOut, 1];
   new = Transpose[trs] . new . trs;
   WickState[{1, new}, rest]
-]
+] /; Length[mat] == 1 /; theWickMeasurementQ[mat]
 
-WickMeasurement[mm_?MatrixQ][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :=
-  Fold[#2[#1]&, in, WickMeasurement /@ List /@ mm] /; Length[mm] > 1
 
-WickMeasurement[mm_?MatrixQ][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :=
-  WickMeasurement[{First @ mm}] /; Length[mm] == 1
-(* NOTE: mm can be a structured array such as SparseArray. *)
+(* See, e.g., Gallier (2001) for the Cartan-Dieudonné theorem. *)
+(* The matrix mat describes a list of dressed Dirac fermion modes
+      b[j] := Sum[mat[[i,j]] c[j], {j, 2n}]
+   in terms of Majorana fermion modes c[k]. *)
+WickMeasurement[mat_?MatrixQ][in_WickState] :=
+  Fold[WickMeasurement[{#2}][#1]&, in, Identity /@ mat] /;
+  theWickMeasurementQ[mat]
+(* NOTE: Identity /@ mat is necessary because mat is usually a SparseArray. *)
+
+theWickMeasurementQ[mat_?MatrixQ] :=
+  If[ OddQ[Last @ Dimensions @ mat],
+    Message[WickMeasurement::odd, ArrayShort @ mat, Dimensions @ mat];
+    False,
+    Module[
+      { new },
+      new = Join[Re @ mat, Im @ mat];
+      new = new . Transpose[new];
+      If[ DiagonalMatrixQ[new], True,
+        Message[WickMeasurement::dressed, mat];
+        False
+      ]
+    ]
+  ]
 
 
 theWickMeasurement[k_Integer, cvr_?MatrixQ] := Module[
@@ -825,7 +1042,7 @@ theWickMeasurement[k_Integer, cvr_?MatrixQ] := Module[
 (**** <WickMeasurement> ****)
 
 
-(**** <BdGCollampse> ****)
+(**** <WickCollapse> ****)
 
 WickCollapse::usage = "WickCollapse[{k, m}] represents the projection to the subspace of occupation number m (0 or 1) of fermion mode k.\n WickCollapse[{vec, m}] deals with the occupation number of the dressed mode vec . {a1, a2, \[Ellipsis]}."
 
@@ -893,7 +1110,7 @@ theWickCollapse[flag:(0|1), vv_?VectorQ, cvr_?MatrixQ] := Module[
   {prb, new}
 ]
 
-(**** </BdGCollampse> ****)
+(**** </WickCollapse> ****)
 
 
 (**** <WickGreenFunction> ****)
@@ -907,7 +1124,7 @@ WickGreenFunction[ws_WickState] :=
 (* canonical form for BdG modelsl *)
 WickGreenFunction[WickState[{_, cvr_?MatrixQ}, ___], kk:{___Integer}] := Module[
   {grn, anm},
-  {grn, anm} = First @ FromWickCovariance[cvr];
+  {grn, anm} = First @ NambuGreen[WickCovariance @ cvr];
   NambuGreen @ {grn[[kk, kk]], anm[[kk, kk]]}
 ]
 
@@ -938,7 +1155,7 @@ WickOccupation[in_WickState] :=
 
 (* canonical form for normal models *)
 WickOccupation[WickState[{_?NumericQ, cvr_?MatrixQ}, ___], kk:{___Integer}] := Module[
-  { grn = FromWickCovariance[cvr] },
+  { grn = NambuGreen[WickCovariance @ cvr] },
   grn = 1 - Diagonal[ grn[[1, 1]] ];
   grn[[kk]]
 ]
@@ -956,6 +1173,17 @@ WickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
 
 (**** </WickOccupation> ****)
 
+
+(**** <WickPurity> ****)
+
+WickPurity::usage = "WickPurity[ws] returns the purity of Wick state ws."
+
+WickPurity[ws_WickState] := Module[
+  { val = Eigenvalues[I*ws[[1, 2]]] },
+  Power[2, -FermionCount[ws]] * Sqrt[Aggregate[1 + val^2]]
+]
+
+(**** </WickPurity> ****)
 
 
 (**** <WickDensityMatrix> ****)
@@ -1027,11 +1255,14 @@ WickDensityMatrix[grn_NambuGreen] := Module[
 (* canonicalization *)
 WickDensityMatrix[grn_?NambuMatrixQ] := WickDensityMatrix[NambuGreen @ grn]
 
+WickDensityMatrix[cvr_WickCovariance] :=
+  WickDensityMatrix[NambuGreen @ cvr]
+
 (* shortcut for BdG models *)
 WickDensityMatrix[ws_WickState] := With[
   { v = Matrix[ws] },
   Dyad[v, v]
-]
+] /; WickPureQ[ws]
 
 (**** </WickDensityMatrix> ****)
 
@@ -1106,7 +1337,7 @@ Graphics[wc:WickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?Op
 RandomWickCircuit::usage = "RandomWickCircuit[{uni, p}, dep] generate a random quantum circuit on non-interacting fermion modes, where layers of unitary gate uni (either WickUnitary[\[Ellipsis]] or NambuUnitary[\[Ellipsis]]) alternate with layers of measurements (WickMeasurement[\[Ellipsis]]) on fermion modes selected randomly with probability p to form an overall depth dep.\nRandomWickCircuit[{ham, pdf, p}, k] unitary layers of random unitary gate uni=Exp[-I ham \[Tau]] with single-particle Hamiltonian ham (either n\[Times]n Hermitian matrix or NambuHermitian[\[Ellipsis]]) and the random evolution time \[Tau] distributed according to the probability distribution function pdf.\nRandomWickCircuit[{ham, p}, dep] assumes that the evolution time is uniformly distributed over the interval [0,2\[Pi] n/max], where max is the maximum of the absolute values of the entries of ham.\nRandomWickCircuit[ham, dep] generates a circuit for n fermion modes where each unitary layer corresponds to time evolution U=exp[-I ham \[Tau]] with the evolution time \[Tau] distributed by P(\[Tau])\[Proportional]exp[-n \[Tau]] and each measurement layer measures a fermion mode with probability p=1/n."
 
 (* canonicalization *)
-RandomWickCircuit[{uu_NambuUintary, p_?NumericQ}, k_Integer] :=
+RandomWickCircuit[{uu_NambuUnitary, p_?NumericQ}, k_Integer] :=
   RandomWickCircuit[{WickUnitary @ uu, p}, k]
 
 (* fixed interaction time *)
@@ -1121,42 +1352,40 @@ RandomWickCircuit[{uu_WickUnitary, p_?NumericQ}, k_Integer] :=
   ]
 
 (* canonicalization *)
-(* NOTE: U := exp(-I H) *)
-(* NOTE: H := \frac{i}{4} c_i ham_{ij} c_j for Majorana modes c. *)
-(* NOTE: H := (1/2) Dagger[a_i] ham_{ij} a_j for Dirac fermion modes a. *)
 RandomWickCircuit[{ham_NambuHermitian, spec__}, k_Integer] :=
-  RandomWickCircuit[{-2I*ToMajorana[ham], spec}, k]
+  RandomWickCircuit[{WickHermitian @ ham, spec}, k]
 
 (* arbitrary distribution of evolution time *)
-RandomWickCircuit[{ham_?MatrixQ, pdf_, p_?NumericQ}, k_Integer] :=
+RandomWickCircuit[{ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] :=
   Module[
-    { n = Length[ham]/2,
+    { n = FermionCount[ham],
+      hh = First[ham],
       ab, tt, uu, mm },
     tt = RandomVariate[pdf, k];
-    uu = Map[WickUnitary[MatrixExp[ham*#]]&, tt];
+    uu = Map[WickUnitary[MatrixExp[hh*#]]&, tt];
     mm = RandomPick[Range @ n, p, k];
     mm = Map[WickMeasurement, mm];
     WickCircuit @ Riffle[uu, mm]
   ]
 
 (* uniform distribution of evolution time *)
-RandomWickCircuit[{ham_?MatrixQ, p_?NumericQ}, k_Integer] :=
+RandomWickCircuit[{ham_WickHermitian, p_?NumericQ}, k_Integer] :=
   Module[
-    { n = Length[ham]/2,
+    { n = FermionCount[ham],
       max, pdf },
-    max = Max[Abs @ ham];
+    max = Max[Abs @ First @ ham];
     pdf = UniformDistribution[{0, N[2*Pi*n/max]}];
     RandomWickCircuit[{ham, pdf, p}, k]
   ]
 
 (* canonicalization *)
 RandomWickCircuit[ham_NambuHermitian, k_Integer] :=
-  RandomWickCircuit[-2I*ToMajorana[ham], k]
+  RandomWickCircuit[WickHermitian[ham], k]
 
 (* exponential distribution of evolution time *)
 (* P(\tau) = Exp[-n\gamma\tau]; choose a unit system such that \gamma\tau --> \tau *)
-RandomWickCircuit[ham_?MatrixQ, k_Integer] := Module[
-    { n = Length[ham]/2 },
+RandomWickCircuit[ham_WickHermitian, k_Integer] := Module[
+    { n = FermionCount[ham] },
     RandomWickCircuit[{ham, ExponentialDistribution[n], 1./n}, k]
   ]
 
@@ -1166,8 +1395,6 @@ RandomWickCircuit[ham_?MatrixQ, k_Integer] := Module[
 (**** <RandomWickCircuitSimulate> ****)
 
 RandomWickCircuitSimulate::usage = "RandomWickCircuitSimulate[in, spec, dep] simulates a random quantum circuit specified by spec (see RandomWickCircuit) on non-interacting fermion modes starting from initial state in, where layers of unitary gates alternate with layers of Fermi measurements to form an overall depth dep."
-
-RandomWickCircuitSimulate::save = "The result could not be saved."
 
 Options[RandomWickCircuitSimulate] = {
   "Samples" -> {10, 5},
@@ -1250,7 +1477,7 @@ theWignerJordanMajorana[n_Integer] := Module[
 
 (**** <WickNonunitary> ****)
 
-WickNonunitary::usage = "WickNonunitary[{ham, dmp}] represents a non-unitary time evolution operator MatrixExp[-I*(ham - I*dmp)] governed by the non-Hermitian Hamiltonian ham - I*dmp. The 2n\[Times]2n antisymmetic matrices ham and dmp refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators).\nIf ham and dmp are given in the NambuHermitian form, they are automatically converted to the coefficients matrices of Majorana operators."
+WickNonunitary::usage = "WickNonunitary[{ham, dmp, gmm}] represents a non-unitary time evolution operator Exp[-gmm/2]*MatrixExp[-I*(ham - I*dmp)] governed by the non-Hermitian Hamiltonian ham - I*dmp. The 2n\[Times]2n antisymmetic matrices ham and dmp refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators).\nIf ham and dmp are given in the NambuHermitian form, they are automatically converted to the coefficients matrices of Majorana operators."
 
 WickNonunitary::icmp = "WickNonunitary for `` fermion modes cannot act on WickState for `` modes."
 
@@ -1268,12 +1495,16 @@ MakeBoxes[op:WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, rest___
     "Interpretable" -> Automatic
   ]
 
-(* canonicalization *)
+(* conversion *)
 WickNonunitary[{ham_NambuHermitian, dmp_NambuHermitian, gmm_}, rest___] :=
-  WickNonunitary[{-2I*ToMajorana[ham], -2I*ToMajorana[dmp], gmm}, rest]
+  WickNonunitary[{WickHermitian @ ham, WickHermitian @ dmp, gmm}, rest]
 (* CONVENTION: (1/2) (a^\dag, a) H (a, a^\dag) = (i/4) c A c. *)
 
 (* canonicalization *)
+WickNonunitary[{ham_WickHermitian, dmp_WickHermitian, gmm_}, rest___] :=
+  WickNonunitary[{First @ ham, First @ dmp, gmm}, rest]
+
+(* shortcut *)
 WickNonunitary[{ham_, dmp_}, rest___] :=
   WickNonunitary[{ham, dmp, 0}, rest]
 
@@ -1326,7 +1557,7 @@ WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, rest___][in_WickStat
 
 (* Based on the Runge-Kutta method *)
 nonUnitaryEvolution[non_WickNonunitary, in_WickState, {t_?NumericQ, dt_?NumericQ}] := 
-  Nest[nonUnitaryStep[non, dt], in, Round[t/dt]]
+  Re @ Nest[nonUnitaryStep[non, dt], in, Round[t/dt]]
 
 (* Single Runge-Kutta step *)
 nonUnitaryStep[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, dt_?NumericQ][
@@ -1372,47 +1603,6 @@ RandomWickNonunitary[n_Integer, opts___?OptionQ] :=
   WickNonunitary[Re @ {RandomAntisymmetric[2n], RandomAntisymmetric[2n], 0}, opts]
 
 
-(**** <FermionCount> ****)
-
-FermionCount::usage = "FermionCount[obj] returns the number of fermion modes involved in object obj."
-
-FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat]
-
-FermionCount[obj_?NambuMatrixQ] := Length[First @ obj]
-
-FermionCount[NambuUnitary[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
-
-FermionCount[NambuUnitary[uv_?NambuMatrixQ, ___]] := Length[First @ uv]
-
-FermionCount[NambuHermitian[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
-
-FermionCount[NambuHermitian[ham_?NambuMatrixQ, ___]] := Length[First @ ham]
-
-FermionCount[NambuGreen[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
-
-FermionCount[NambuGreen[grn_?NambuMatrixQ, ___]] := Length[First @ grn]
-
-FermionCount[WickUnitary[mat_?MatrixQ, ___]] := Last[Dimensions @ mat] / 2
-
-FermionCount[WickNonunitary[{ham_?MatrixQ, _?MatrixQ, _}, ___]] := Last[Dimensions @ ham] / 2
-
-FermionCount[WickJump[mat_?MatrixQ, ___]] := Last[Dimensions @ mat] / 2
-
-FermionCount[WickOperator[mat_?MatrixQ, ___]] := Last[Dimensions @ mat] / 2
-
-FermionCount[WickState[{_?NumericQ, cvr_?MatrixQ}, ___]] := Length[cvr] / 2
-
-FermionCount[WickMeasurement[k_Integer, ___?OptionQ]] = k
-
-FermionCount[WickMeasurement[kk:{__Integer}, ___?OptionQ]] := Max[kk]
-
-FermionCount[WickMeasurement[{}, ___?OptionQ]] = 0
-
-FermionCount[WickCircuit[gg_List, ___?OptionQ]] := Max[FermionCount /@ gg]
-
-(**** </FermionCount> ****)
-
-
 (**** <WickDampingOperator> ****)
 
 WickDampingOperator::usage = "WickDampingOperator[jmp] returns a pair {mat, const} of the quadratic kernel mat and remaining constant term const of the effective damping operator in the normal ordering that corresponds to the list jmp of quantum jump operators."
@@ -1431,7 +1621,8 @@ WickDampingOperator[jmp:{__WickJump}] :=
 
 WickDampingOperator[jmp_?MatrixQ] := With[
   { mat = Topple[jmp].jmp },
-  Re @ { -2I*(mat - Transpose[mat]), Tr[mat] } / 2
+  { WickHermitian @ Re[ -I*(mat - Transpose[mat]) ],
+    Re @ Tr[mat]/2 }
 ]
 
 (**** </WickDampingOperator> ****)
@@ -1440,10 +1631,6 @@ WickDampingOperator[jmp_?MatrixQ] := With[
 (**** <WickSimulate> ****)
 
 WickSimulate::usage = "WickSimulate[ham, jmp, in, {nt, dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian matrix ham and the list jmp of quantum jump operators. The simulation starts from the initial WickState in at time 0 and goes nt time steps by interval dt."
-
-WickSimulate::null = "The null state is encountered."
-
-WickSimulate::save = "The result could not be saved."
 
 WickSimulate::ham = "The Hamiltonian matrix `` needs to be numeric."
 
@@ -1456,9 +1643,12 @@ Options[WickSimulate] = {
 }
 
 WickSimulate[ham_NambuHermitian, rest__] :=
-  WickSimulate[-2I*ToMajorana[ham], rest]
+  WickSimulate[WickHermitian @ ham, rest]
 
-WickSimulate[ham_?MatrixQ, jmp_WickJump, in_WickState, {nT_Integer, dt_}, opts:OptionsPattern[]] :=
+WickSimulate[ham_?MatrixQ, rest__] :=
+  WickSimulate[WickHermitian @ ham, rest]
+
+WickSimulate[ham_WickHermitian, jmp_WickJump, in_WickState, {nT_Integer, dt_}, opts:OptionsPattern[]] :=
   Module[
     { n = OptionValue["Samples"],
       progress = 0,
@@ -1479,7 +1669,7 @@ WickSimulate[ham_?MatrixQ, jmp_WickJump, in_WickState, {nT_Integer, dt_}, opts:O
       SaveData[data, FilterRules[{more}, Options @ SaveData]]
     ];
     Return[data]
-  ] /; If[ MatrixQ[ham, NumericQ], True,
+  ] /; If[ MatrixQ[First @ ham, NumericQ], True,
     Message[WickSimulate::ham, ham];
     False
   ]
@@ -1495,7 +1685,6 @@ theWickSimulate[non_WickNonunitary, jmp_WickJump, in_WickState, {nT_Integer, dt_
       prb = RandomReal[];
       
       (* non-unitary evolution *)
-      (* out = nonUnitaryStep[non, dt][new]; *)
       out = nonUnitaryEvolution[non, new, {dt, dt/10}];
       If[ prb < NormSquare[out],
         new = Normalize @ out;
@@ -1519,9 +1708,9 @@ theWickSimulate[non_WickNonunitary, jmp_WickJump, in_WickState, {nT_Integer, dt_
 
 WickMonitor::usage = "WickMonitor[ham, in, {nt, dt}] solves the problem of continuous monitoring of the occupation number of a non-interacting many-fermion system by using the Monte Carlo simulation method. The model is specified by the single-particle Hamiltonian ham (an n\[Times]n Hermitian matrix for models without pairing or a pair {ham, del} of matrices or NambuHermitian for BdG models). The simulation starts from the initial in (either WickState or NambState) at time 0 and goes nt time steps of size dt."
 
-WickMonitor::save = "The result could not be saved."
+WickMonitor::mat = "The matrix in the first argument of WickMonitor must be a real anti-symmetric matrix."
 
-WickMonitor::ham = "The Hamiltonian matrix `` needs to be numeric."
+WickMonitor::num = "The Hamiltonian matrix `` needs to be numeric."
 
 Options[WickMonitor] = {
   "Samples" -> 500,
@@ -1531,11 +1720,17 @@ Options[WickMonitor] = {
   "Prefix" -> "WM"
 }
 
+WickMonitor[ham_?MatrixQ, rest___] :=
+  WickMonitor[WickHermition @ ham, rest] /;
+  If[ arrayRealQ[ham] && AntisymmetricMatrixQ[ham], True,
+    Message[WickNonitor::mat]
+  ]
+
 WickMonitor[ham_?NambuMatrixQ, rest___] :=
-  WickMonitor[NambuHermitian @ ham, rest]
+  WickMonitor[WickHermition @ NambuHermitian @ ham, rest]
 
 WickMonitor[
-  ham:(_?MatrixQ|_NambuHermitian),
+  ham_WickHermitian,
   in_WickState,
   {nT_Integer, dt_?NumericQ},
   opts:OptionsPattern[]
@@ -1544,8 +1739,7 @@ WickMonitor[
     { n = OptionValue["Samples"],
       progress = 0,
       uni, data, more },
-    uni = theWickEvolution[ham, dt];
-    If[FailureQ[uni], Message[WickMonitor::ham]; Return @ $Failed];
+    uni = WickUnitary @ MatrixExp[First[ham]*dt];
 
     PrintTemporary[ProgressIndicator @ Dynamic @ progress];
     data = Table[
@@ -1559,21 +1753,10 @@ WickMonitor[
       SaveData[data, FilterRules[{more}, Options @ SaveData]]
     ];
     Return[data]
+  ] /; If[ MatrixQ[First @ ham, NumericQ], True,
+    Message[WickNonitor::num, First @ ham];
+    False
   ]
-
-
-(* NOTE: H = \frac{i}{4} c_i ham_{ij} c_j *)
-theWickEvolution[ham_?MatrixQ, dt_] :=
-  If[ MatrixQ[ham, NumericQ],
-    WickUnitary @ MatrixExp[ham*dt],
-    $Failed
-  ]
-
-theWickEvolution[ham_?NambuMatrixQ, dt_] :=
-  theWickEvolution[NambuHermitian @ ham, dt]
-
-theWickEvolution[ham_NambuHermitian, dt_] :=
-  theWickEvolution[-2I*ToMajorana[Normal @ ham], dt]
 
 
 theWickMonitor[uni_WickUnitary, in_WickState, {nT_Integer, dt_?NumericQ}] :=
@@ -1582,32 +1765,19 @@ theWickMonitor[uni_WickUnitary, in_WickState, {nT_Integer, dt_?NumericQ}] :=
       t = 1,
       res = {in},
       new = in,
-      (* non = 0, *)
-      nrm, prb, occ, pos },
-    (* squared norm *)
-    nrm = Exp[-n*dt];
+      nrm, msr },
+    msr = WickMeasurement[Range @ n];
+    nrm = Exp[-n*dt]; (* squared norm *)
     While[ t <= nT,      
-      (* non-unitary evolution *)
+      (* non-unitary (yet practically unitary) evolution *)
       If[ RandomReal[] < nrm,
-        (* non++; *)
         new = uni[new];
         AppendTo[res, new];
         t += 1;
         Continue[]
       ];
-      
       (* quantum jumps *)
-      occ = WickOccupation[new];
-      prb = Riffle[1-occ, occ] / n;
-      prb = Chop[Accumulate @ prb];
-      prb = prb - RandomReal[];
-      pos = First @ FirstPosition[prb, _?NonNegative];
-      If[ OddQ[pos],
-        pos = (pos + 1)/2;
-        new = WickOperator[{{pos, 0}, {pos, 1}}, n][new] / Sqrt[1-occ[[pos]]],
-        pos = pos/2;
-        new = WickOperator[{{pos, 1}, {pos, 0}}, n][new] / Sqrt[occ[[pos]]]
-      ];
+      new = msr[new];
       AppendTo[res, new];
       t += 1;
     ];
@@ -1617,6 +1787,222 @@ theWickMonitor[uni_WickUnitary, in_WickState, {nT_Integer, dt_?NumericQ}] :=
 
 (**** </WickMonitor> ****)
 
+
+(**** <NambuNonunitary> ****)
+
+NambuNonunitary::usage = "NambuNonunitary[{ham, dmp, gmm}] is like WickNonunitary, but matrices ham and dmp refer to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
+
+NambuNonunitary /:
+MakeBoxes[op:NambuNonunitary[{ham_NambuHermitian, dmp_NambuHermitian, gmm_?NumericQ}, rest___], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    NambuNonunitary, op, None,
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ ham },
+      BoxForm`SummaryItem @ { "Constant: ", gmm }
+    },
+    { BoxForm`SummaryItem @ { "Hamiltonian: ", ArrayShort @ ham },
+      BoxForm`SummaryItem @ { "Damping: ", ArrayShort @ dmp }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+NambuNonunitary /:
+ToMajorana[
+  NambuNonunitary[
+    {ham_NambuHermitian, dmp_NambuHermitian, gmm_?NumericQ},
+    opts___?OptionQ
+  ],
+  more___?OptionQ
+] :=
+  WickNonunitary[{WickHermitian @ ham, WickHermitian @ dmp, gmm}, more, opts]
+
+NambuNonunitary /:
+WickNonunitary[non_NambuNonunitary] := ToMajorana[non]
+
+(**** </NambuNonunitary> ****)
+
+
+(**** <NambuJump> ****)
+
+NambuJump::usage = "NambuJump[mat] is like WickJump, but matrix mat refers to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
+
+NambuJump::odd = "The second dimension of the input matrix `` is odd: ``."
+
+NambuJump /:
+MakeBoxes[jmp:NambuJump[mat_?MatrixQ, rest___], fmt_] := Module[
+  {m, n},
+  {m, n} = Dimensions[mat];
+  BoxForm`ArrangeSummaryBox[
+    NambuJump, jmp, None,
+    { BoxForm`SummaryItem @ { "Modes: ", n/2 },
+      BoxForm`SummaryItem @ { "Operators: ", m }
+    },
+    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ mat }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+]
+
+NambuJump /:
+ToMajorana[NambuJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
+  WickJump[ToMajorana /@ mat, more, opts] /; (* NOT ToMajorana @ mat. *)
+  If[ EvenQ[Last @ Dimensions @ mat], True,
+    Message[NambuJump::odd, ArrayShort @ mat, Dimensions @ mat];
+    False
+  ]
+
+NambuJump /:
+WickJump[non_NambuJump] := ToMajorana[non]
+
+(**** </NambuJump> ****)
+
+
+(**** <NambuOperator> ****)
+
+NambuOperator::usage = "NambuOperator[mat] is like WickOperator, but matrices ham and dmp refer to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
+
+NambuOperator::odd = "The second dimension of the input matrix `` is odd: ``."
+
+NambuOperator /:
+MakeBoxes[op:NambuOperator[mat_?MatrixQ, rest___], fmt_] := Module[
+  {m, n},
+  {m, n} = Dimensions[mat];
+  BoxForm`ArrangeSummaryBox[
+    NambuOperator, op, None,
+    { BoxForm`SummaryItem @ { "Modes: ", n/2 },
+      BoxForm`SummaryItem @ { "Operators: ", m }
+    },
+    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ mat }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+]
+
+NambuOperator /:
+ToMajorana[NambuOperator[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
+  WickOperator[ToMajorana /@ mat, more, opts] /;   (* NOT ToMajorana @ mat. *)
+  If[ EvenQ[Last @ Dimensions @ mat], True,
+    Message[NambuOperator::odd, ArrayShort @ mat, Dimensions @ mat];
+    False
+  ]
+
+NambuOperator /:
+WickOperator[non_NambuOperator] := ToMajorana[non]
+
+(**** </NambuOperator> ****)
+
+
+(**** <NambuMeasurement> ****)
+
+NambuMeasurement::usage = "NambuMeasurement[mat] is like WickMeasurement, but matrix mat refers to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
+
+NambuMeasurement::odd = "The second dimension of the input matrix `` is odd: ``."
+
+NambuMeasurement::dressed = "Matrix `` cannot describe a set of orthogonal dressed Dirac fermion modes."
+
+NambuMeasurement /:
+MakeBoxes[msr:NambuMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
+  {m, n},
+  {m, n} = Dimensions[mat];
+  BoxForm`ArrangeSummaryBox[
+    NambuMeasurement, msr, None,
+    { BoxForm`SummaryItem @ { "Bare modes: ", n/2 },
+      BoxForm`SummaryItem @ { "Dressed modes: ", m }
+    },
+    { BoxForm`SummaryItem @ { "Matrix: ", ArrayShort @ mat }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+]
+
+(* alias *)
+NambuMeasurement[kk:(_Integer | {___Integer}), rest___] :=
+  WickMeasurement[kk, rest]
+
+(* conversion *)
+NambuMeasurement /:
+ToMajorana @ NambuMeasurement[mat_?MatrixQ, opts___?OptionQ] :=
+  WickMeasurement[ToMajorana /@ mat, opts] /;   (* NOT ToMajorana @ mat. *)
+  theNambuMeasurementQ[mat]
+
+theNambuMeasurementQ[mat_?MatrixQ] :=
+  If[ OddQ[Last @ Dimensions @ mat],
+    Message[NambuMeasurement::odd, ArrayShort @ mat, Dimensions @ mat];
+    False,
+    Module[
+      {uu, vv},
+      {uu, vv} = First @ PartitionInto[mat, {1, 2}];
+      {uu, vv} = {
+        uu.Topple[uu] + vv.Topple[vv],
+        uu.Transpose[vv]
+      };
+      If[ DiagonalMatrixQ[uu] && ArrayZeroQ[vv + Transpose[vv]], True,
+        Message[NambuMeasurement::dressed, mat];
+        False
+      ]
+    ]
+  ]
+
+(* conversion *)
+NambuMeasurement /:
+WickMeasurement[non_NambuMeasurement] := ToMajorana[non]
+
+(**** </NambuMeasurement> ****)
+
+
+(**** <FermionCount> ****)
+
+FermionCount::usage = "FermionCount[obj] returns the number of fermion modes involved in object obj."
+
+FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat]
+
+FermionCount[obj_?NambuMatrixQ] := Length[First @ obj]
+
+FermionCount[NambuUnitary[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
+
+FermionCount[NambuUnitary[uv_?NambuMatrixQ, ___]] := Length[First @ uv]
+
+FermionCount[WickNonunitary[{ham_NambuHermitian, _NambuHermitian, _}, ___]] :=
+  FermionCount[ham]
+
+FermionCount[NambuHermitian[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
+
+FermionCount[NambuHermitian[ham_?NambuMatrixQ, ___]] := Length[First @ ham]
+
+FermionCount[NambuGreen[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
+
+FermionCount[NambuGreen[grn_?NambuMatrixQ, ___]] := Length[First @ grn]
+
+FermionCount[NambuJump[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
+
+FermionCount[WickHermitian[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
+
+FermionCount[WickUnitary[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
+
+FermionCount[WickNonunitary[{ham_?MatrixQ, _?MatrixQ, _}, ___]] := Last[Dimensions @ ham]/2
+
+FermionCount[WickJump[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
+
+FermionCount[WickOperator[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
+
+FermionCount[WickState[{_?NumericQ, cvr_?MatrixQ}, ___]] := Length[cvr]/2
+
+FermionCount[WickCovariance[cvr_?MatrixQ, ___]] := Length[cvr]/2
+
+FermionCount[WickMeasurement[k_Integer, ___?OptionQ]] = k
+
+FermionCount[WickMeasurement[kk:{__Integer}, ___?OptionQ]] := Max[kk]
+
+FermionCount[WickMeasurement[mat_?MatrixQ, ___?OptionQ]] := Last[Dimensions @ mat]/2
+
+FermionCount[WickMeasurement[{}, ___?OptionQ]] = 0
+
+FermionCount[WickCircuit[gg_List, ___?OptionQ]] := Max[FermionCount /@ gg]
+
+(**** </FermionCount> ****)
 
 End[] (* Fermionic quantum computation *)
 
@@ -1730,16 +2116,37 @@ Options[WickLogarithmicNegativity] = Options[WickTimeReversalMoment]
 WickLogarithmicNegativity[kk:{__Integer}][any_] :=
   WickLogarithmicNegativity[any, kk, "Epsilon" -> OptionValue[WickLogarithmicNegativity, "Epsilon"]]
 
+(* special case *)
+WickLogarithmicNegativity[obj_, {}, ___] = 0
+
+(* for large data *)
+WickLogarithmicNegativity[data_?ArrayQ, kk:{___Integer}] := Module[
+  { progress = i = 0,
+    dim = Aggregate[N @ Dimensions @ data],
+    dep = ArrayDepth[data]
+  },
+  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
+  Map[(progress = i++/dim; WickLogarithmicNegativity[#, kk])&, data, {dep}]
+] /; ArrayQ[data, _, MatchQ[#, _WickState | _WickCovariance | _NambuGreen]&]
+
+(* shortcut *)
+WickLogarithmicNegativity[ws_WickState, rest__] :=
+  WickLogarithmicNegativity[WickCovariance @ ws, rest]
+
+(* shortcut *)
+WickLogarithmicNegativity[cvr_WickCovariance, kk:{__Integer}, opts:OptionsPattern[]] :=
+  WickLogarithmicNegativity[ NambuGreen[cvr], kk, opts,
+    "Epsilon" -> OptionValue["Epsilon"]
+  ]
+
+
 (* normal models *)
-
-WickLogarithmicNegativity[grn_?MatrixQ, kk:{}, ___?OptionQ] = 0
-
-WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___?OptionQ] := 0 /;
+WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___] := 0 /;
   Length[grn] == Length[kk]
 
 (* Canonical form for normal models *)
 (* SEE ALSO: Shpurian and Ryu (2019b) and  Alba and Carollo (2023) *)
-WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___?OptionQ] := Module[
+WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___] := Module[
   { n = Length[grn],
     ll, gg, gp, gm, cx, id },
   ll = Supplement[Range @ n, kk];
@@ -1760,24 +2167,19 @@ WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___?OptionQ] := Module[
 ]
 
 (* BdG models *)
-
-WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, ___?OptionQ] :=
+WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, ___] :=
   WickLogarithmicNegativity[grn, kk] /; ArrayZeroQ[anm] 
 
-(* canonical form for BdG models *)
+WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, ___] := 0 /;
+  Length[grn] == Length[kk]
+
+(* Canonical form for BdG models *)
 WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, opts:OptionsPattern[]] :=
   WickTimeReversalMoment[1/2, {grn, anm}, kk, opts, "Epsilon" -> OptionValue["Epsilon"]]
 
 (* canonicalization *)
 WickLogarithmicNegativity[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], rest__] :=
   WickLogarithmicNegativity[{gg, ff}, rest]
-
-(* shortcut *)
-WickLogarithmicNegativity[WickState[{_?NumericQ, cvr_?MatrixQ}, ___], kk:{__Integer}, opts:OptionsPattern[]] :=
-  WickLogarithmicNegativity[
-    FromWickCovariance[cvr], kk, opts,
-    "Epsilon" -> OptionValue["Epsilon"]
-  ]
 
 (**** </WickLogarithmicNegtivity> ****)
 
@@ -1807,8 +2209,15 @@ WickEntropy[grn:{_?MatrixQ, _?MatrixQ}] :=
   WickEntropy[Normal @ NambuGreen @ grn] / 2
 
 
-(* shortcut *)
-WickEntropy[in_WickState] := 0 /; WickPureQ[in]
+WickEntropy[cvr_WickCovariance] := Module[
+  { vv = First[cvr],
+    id },
+  id = One[Dimensions @ vv];
+  (QuantumLog[2, (id - I*vv)/2] + QuantumLog[2, (id + I*vv)/2]) / 2
+]
+
+WickEntropy[in_WickState] :=
+  WickEntropy[WickCovariance @ in]
 
 (**** </WickEntropy> ****)
 
@@ -1818,17 +2227,38 @@ WickEntropy[in_WickState] := 0 /; WickPureQ[in]
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
 WickEntanglementEntropy::usage = "WickEntanglementEntropy[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Wick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nWickEntanglementEntropy[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or WickEntanglementEntropy[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nWickEntanglementEntropy[state, {k1, k2, \[Ellipsis]}] is equivalent to WickEntanglementEntropy[WickGreenFunction[state, {k1, k2, \[Ellipsis]}], {k1, k2, \[Ellipsis]}] for Wick or BdG state.\nWickEntanglementEntropy[{k1, k2, \[Ellipsis]}] is an operator form of WickEntanglementEtropy to be applied to Green's functions, Wick or Nambu state."
 
-(* special case for normal models *)
-WickEntanglementEntropy[grn_?MatrixQ, {}] = 0
+(* operator form *)
+WickEntanglementEntropy[kk:{___Integer}][any_] :=
+  WickEntanglementEntropy[any, kk]
 
-(* canonical form for normal models *)
+(* special case *)
+WickEntanglementEntropy[any_, {}] = 0
+
+(* for large data *)
+WickEntanglementEntropy[data_?ArrayQ, kk:{___Integer}] := Module[
+  { progress = i = 0,
+    dim = Aggregate[N @ Dimensions @ data],
+    dep = ArrayDepth[data]
+  },
+  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
+  Map[(progress = i++/dim; WickEntanglementEntropy[#, kk])&, data, {dep}]
+] /; ArrayQ[data, _, MatchQ[#, _WickState]&]
+
+(* directly from covariance matrix *)
+WickEntanglementEntropy[WickCovariance[cvr_?MatrixQ, ___], kk:{__Integer}] := Module[
+  { jj = Riffle[2kk-1, 2kk] },
+  WickEntropy[ WickCovariance @ cvr[[jj, jj]] ]
+]
+
+(* shortcut *)
+WickEntanglementEntropy[in_WickState, kk:{___Integer}] :=
+  WickEntanglementEntropy[WickCovariance @ in, kk]
+
+(* for normal models *)
 WickEntanglementEntropy[grn_?MatrixQ, kk:{__Integer}] :=
   WickEntropy @ grn[[kk, kk]]
 
-(* special case for normal models *)
-WickEntanglementEntropy[_?NambuMatrixQ, {}] = 0
-
-(* BdG models *)
+(* for BdG models *)
 WickEntanglementEntropy[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] :=
   WickEntanglementEntropy[grn, kk] /; ArrayZeroQ[anm]
 
@@ -1844,15 +2274,6 @@ WickEntanglementEntropy[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}] := Module[
 WickEntanglementEntropy[grn:NambuGreen[{_?MatrixQ, _?MatrixQ}, ___], kk:{__Integer}] :=
   WickEntanglementEntropy[First @ grn, kk]
 
-
-(* operator form *)
-WickEntanglementEntropy[kk:{___Integer}][any_] :=
-  WickEntanglementEntropy[any, kk]
-
-(* shortcut *)
-WickEntanglementEntropy[in_WickState, kk:{___Integer}] :=
-  WickEntanglementEntropy[WickGreenFunction[in, kk], kk]
-
 (**** </WickEntanglementEntropy> ****)
 
 
@@ -1860,6 +2281,30 @@ WickEntanglementEntropy[in_WickState, kk:{___Integer}] :=
 
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
 WickMutualInformation::usage = "WickMutualInformation[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Wick state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nWickMutualInformation[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or WickMutualInformation[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nWickMutualInformation[state, {k1, k2, \[Ellipsis]}] is equivalent to WickMutualInformation[WickGreenFunction[state], {k1, k2, \[Ellipsis]}] for Wick or BdG state.\nWickMutualInformation[{k1, k2, \[Ellipsis]}] is an operator form of WickEntanglementEtropy to be applied to Green's functions, Wick or Nambu state."
+
+(* shortcut *)
+WickMutualInformation[ws_WickState, kk:{__Integer}] :=
+  WickMutualInformation[WickCovariance @ ws, kk]
+
+(* directly from covariance matrix *)
+WickMutualInformation[cvr:WickCovariance[vv_?MatrixQ, ___], kk:{__Integer}] := Module[
+  { ll = Supplement[Range @ FermionCount @ cvr, kk] },
+  ( WickEntropy[ WickCovariance @ vv[[kk, kk]] ] + 
+    WickEntropy[ WickCovariance @ vv[[ll, ll]] ] -
+    WickEntropy[ WickCovariance @ vv ]
+  ) / 2
+]
+
+(* for large data *)
+WickMutualInformation[data_?ArrayQ, kk:{___Integer}] := Module[
+  { progress = i = 0,
+    dim = Aggregate[N @ Dimensions @ data],
+    dep = ArrayDepth[data]
+  },
+  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
+  Map[(progress = i++/dim; WickMutualInformation[#, kk])&, data, {dep}]
+] /; ArrayQ[data, _, MatchQ[#, _WickState]&]
+
 
 (* canonical form for normal models *)
 WickMutualInformation[gg_?MatrixQ, kk:{__Integer}] :=With[

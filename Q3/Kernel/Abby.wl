@@ -598,7 +598,7 @@ SetAttributes[IntegerChop, Listable];
 
 IntegerChop[x_?NumericQ] := With[
   { n = Round[x] },
-  If[ZeroQ[x -n], n, x]
+  If[ZeroQ[x - n], n, x]
 ]
 
 IntegerChop[x_?NumericQ, del_?Positive] := With[

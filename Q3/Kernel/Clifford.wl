@@ -45,23 +45,29 @@ MakeBoxes[cs:CliffordState[gnr_?MatrixQ, ___], fmt_] := Module[
   Message[CliffordState::bad, gnr]; False
 ]
 
+QubitCount[CliffordState[gnr_?MatrixQ, ___]] := (Last[Dimensions @ gnr] - 1)/2
+
 (* canonicalization *)
 CliffordState[data_, ss:{___?QubitQ}, rest___] :=
   CliffordState[data, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
 
-(* quick initialization *)
-CliffordState[Ket[v_?VectorQ], rest___] := Module[
-  { n = Length[v],
-    vv, pp },
-  vv = SparseArray @ NestList[RotateRight[#, 2]&, PadRight[{0, 1}, 2n], n-1];
-  CliffordState[Transpose @ Append[Transpose @ vv, IntegerParity @ v], rest]
-]
+
+(* initialization by a binary string *)
+CliffordState[v_?VectorQ, n_Integer, rest___?OptionQ] := Module[
+  { vv = PadRight[v, n, v],
+    mm, pp },
+  mm = SparseArray @ NestList[RotateRight[#, 2]&, PadRight[{0, 1}, 2n], n-1];
+  CliffordState[Transpose @ Append[Transpose @ mm, IntegerParity @ vv], rest]
+] /; VectorQ[v, BinaryQ]
 
 (* quick initialization *)
-CliffordState[Ket[a_Association], rest___] :=
+CliffordState[Ket[v_?VectorQ], rest___?OptionQ] :=
+  CliffordState[v, Length @ v, rest] /; VectorQ[v, BinaryQ]
+
+(* quick initialization *)
+CliffordState[Ket[a_Association], rest___?OptionQ] :=
   CliffordState[ Ket @ Values @ KeySelect[a, QubitQ] ]
 
-QubitCount[CliffordState[gnr_?MatrixQ, ___]] := (Last[Dimensions @ gnr] - 1)/2
 
 CliffordState /:
 StabilizerGenerators[CliffordState[gnr_, ___?OptionQ]] :=
@@ -72,7 +78,7 @@ StabilizerGenerators[CliffordState[gnr_, ss:{__?QubitQ}, ___?OptionQ]] :=
   Map[FromGottesmanVector[#, ss]&, gnr]
 
 
-CliffordState /: (* mixed state *)
+CliffordState /: (* pure state *)
 Matrix @ CliffordState[gnr_?MatrixQ, ___] := Module[
   { n = Last[Dimensions @ gnr],
     mm },
@@ -81,6 +87,7 @@ Matrix @ CliffordState[gnr_?MatrixQ, ___] := Module[
   mm = Prepend[mm, Table[1, n]];
   Normalize @ Apply[Dot, mm]
 ] /; CliffordPureQ[gnr]
+(* TODO: At the moment, it is not clear whether the selected initial state is sufficient or not. *)
 
 CliffordState /: (* mixed state *)
 Matrix @ CliffordState[gnr_?MatrixQ, ___] := 

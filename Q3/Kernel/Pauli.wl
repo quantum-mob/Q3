@@ -948,15 +948,24 @@ KetSpecies[expr_] := Select[
  ]
 
 
+(**** <KetChop> ****)
+
 KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[ImaginaryI], from expr, where the rest is a valid Ket expression."
 
 SetAttributes[KetChop, Listable]
 
-KetChop[0. + expr_] := expr /; Not @ FreeQ[expr, _Ket|_Bra]
+KetChop[any_, ___] := any /;FreeQ[any, _Ket]
 
-KetChop[Complex[0., 0.] + expr_] := expr /; Not @ FreeQ[expr, _Ket|_Bra]
+KetChop[expr_] := KetChop[expr, 1*^-10]
 
-KetChop[expr_] := expr
+KetChop[expr_, delta_] := Module[
+  { var = Cases[{expr}, _Ket, Infinity],
+    cff },
+  cff = Coefficient[expr, var];
+  IntegerChop[cff] . var
+]
+
+(**** </KetChop> ****)
 
 
 KetDrop::usage = "KetDrop[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetDrop[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr.\nKetDrop[{s1,s2,\[Ellipsis]}] is an operator form of KetDrop."
@@ -4047,9 +4056,9 @@ PartialTrace[m_?MatrixQ, dd:{__Integer}, jj:{___Integer}] := Module[
   If[ !ContainsOnly[jj, Range @ Length[dd]],
     Message[PartialTrace::nosubsys, jj];
     Return[m]
-   ];
+  ];
   TensorFlatten @ TensorContract[ M, Transpose @ {2jj-1, 2jj} ]
- ]
+]
 
 PartialTrace[m_?MatrixQ, jj:{___Integer}] :=
   PartialTrace[m, ConstantArray[2, Log[2, Length[m]]], jj]
@@ -4068,8 +4077,8 @@ PartialTrace[v_?VectorQ, dd:{__Integer}, jj:{__Integer}] := Module[
   If[ ii == {},
     Norm[v]^2,
     Total @ Map[Dyad[#, #]&, Flatten[Tensorize[v, dd], {jj, ii}]]
-   ]
- ]
+  ]
+]
 (* REMARK: In many cases, handling density matrix is computationally
    inefficient. In this sense, returning the list of states involved in the
    mixed state may provide the user with more flexibility. *)
@@ -4084,7 +4093,7 @@ PartialTrace[v_?VectorQ, jj:{__Integer}] :=
 PartialTrace[expr_, jj:{___Integer}] := Module[
   { vec = Matrix[expr] },
   ExpressionFor @ PartialTrace[vec, jj]
- ] /; Or[fPauliKetQ @ expr, Not @ FreeQ[expr, _Pauli]]
+] /; Or[fPauliKetQ @ expr, Not @ FreeQ[expr, _Pauli]]
 
 
 PartialTrace[expr_, S_?SpeciesQ] := PartialTrace[expr, {S}]
@@ -4092,7 +4101,7 @@ PartialTrace[expr_, S_?SpeciesQ] := PartialTrace[expr, {S}]
 PartialTrace[expr_, ss:{__?SpeciesQ}] := With[
   { tt = FlavorCap[ss] },
   PartialTrace[expr, Union[Agents @ expr, tt], tt]
- ]
+]
 
 PartialTrace[expr_, qq:{__?SpeciesQ}, S_?SpeciesQ] :=
   PartialTrace[expr, qq, {S}]
@@ -4109,8 +4118,8 @@ PartialTrace[expr_, qq:{__?SpeciesQ}, ss:{__?SpeciesQ}] := Module[
   If[ aa == {},
     Return[mm],
     ExpressionFor[mm, aa]
-   ]
- ]
+  ]
+]
 (* NOTE: This form is essential, e.g., for
    PartialTrace[Ket[], S@{1,2}, S@{2}] *)
 
@@ -4150,12 +4159,12 @@ ReducedMatrix[expr_, ss:{__?SpeciesQ}] := Module[
 ReducedMatrix[expr_, jj:{__Integer}] := Module[
   { nn = Length @ FirstCase[expr, Ket[ss_List] :> ss, Infinity] },
   PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
- ] /; fPauliKetQ[expr]
+] /; fPauliKetQ[expr]
 
 ReducedMatrix[expr_, jj:{__Integer}] := Module[
   { nn = Length @ FirstCase[expr, Pauli[kk_List] :> kk, Infinity] },
   PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
- ] /; Not @ FreeQ[expr, _Pauli]
+] /; Not @ FreeQ[expr, _Pauli]
 
 
 Reduced::usage = "Reduced[vec|mat, \[Ellipsis]] is equivalent to ReducedMatrix[vec|mat, \[Ellipsis]].\nReduced[expr, {k1, k2, \[Ellipsis]}] returns the reduced operator in terms of the Pauli operators on unlabelled qubits {k1, k2, \[Ellipsis]}.\nReduced[expr, {s1, s2, \[Ellipsis]}] returns the reduced operator acting on the species {s1, s2, \[Ellipsis]}."
@@ -4185,9 +4194,9 @@ Purification[mat_?MatrixQ] := Module[
   {val, vec} = Eigensystem[mat];
   If[ AllTrue[Flatten @ vec, NumericQ] && Not[UnitaryMatrixQ @ vec],
     vec = Orthogonalize[vec]
-   ];
+  ];
   Sqrt[val] . MapThread[CircleTimes, {vec, One @ Dimensions @ mat}]
- ]
+]
 (* NOTE: mat is supposed to be Hermitian. *)
 (* NOTE: Normalize is necessary because Eigensystem does not give the
    normalized eigenvectors for a matrix of exact numbers. *)
@@ -4211,7 +4220,7 @@ Purification[rho_, S_?SpeciesQ] := Purification[rho, FlavorCap @ {S}]
 Purification[rho_] := With[
   { ss = Agents[rho] },
   Purification[rho, ss]
- ] /; FreeQ[rho, _Pauli]
+] /; FreeQ[rho, _Pauli]
 
 Purification[rho_] := ExpressionFor @ Purification @ Matrix[rho] /;
   Not @ FreeQ[rho, _Pauli]
@@ -4230,7 +4239,7 @@ Snapping[m_?MatrixQ] := Module[
   {val, vec} = Last @ Sort @ Transpose @ {val, vec};
   (* returns the eigenvector belonging to the largest eigenvalue *)
   vec
- ]
+]
 
 
 (**** <MatrixEmbed> ****)
@@ -4249,6 +4258,9 @@ MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}][any_] :=
 MatrixEmbed[any_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
   MatrixEmbed[any, FlavorCap @ ss, FlavorCap @ tt] /;
   Not[FlavorCapQ @ Join[ss, tt]]
+
+MatrixEmbed[any_, ss:{___?SpeciesQ}, ss_] = any
+(* NOTE: Quite often, MatrixEmbed[expr, {}, {}] occurs from Matrix. *)
 
 MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],

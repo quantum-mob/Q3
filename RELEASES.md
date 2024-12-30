@@ -1,10 +1,14 @@
 # Release Notes
 
-## 3.7.0
+## 3.7.2
+
+- Bug fix: WickOperator, WickJump, KetChop
+
+## 3.7.1
 
 - Fermionic quantum computation is significantly improved using Bravyi's method
-- New: YoungDegree, CliffordPureQ, QubitCount
-- Rename: WickGaussian --> WickNonunitary
+- New: YoungDegree, CliffordPureQ, QubitCount, WickJump, WickMeasurement, WickNonunitary, several others for fermionic quantum computing
+- Renamed: WickGaussian --> WickNonunitary, WickOperatorFrom --> WickCoefficients
 - Bug fix: concerning the multiplication of Majoranas.
 - You can now specify an initial state for RandomCliffordCircuit and RandomCliffordCircuitSimulate.
 
