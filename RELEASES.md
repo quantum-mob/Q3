@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.7.4
+
+- Bug fix: RandomWickCircuitSimulate, $RandomWickCircuitPatterns
+
 ## 3.7.3
 
 - New: WickMean

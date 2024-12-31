@@ -224,8 +224,8 @@ WickSingleQ::usage = "WickSingleQ[cvr] returns True if Majorana covariance matri
 
 WickSingleQ[cvr_?MatrixQ] := Module[
   { aa, bb },
-  aa = Transpose[cvr[[1 ;; ;; 2]]][[1 ;; ;; 2]];
-  bb = Transpose[cvr[[2 ;; ;; 2]]][[2 ;; ;; 2]];
+  aa = Transpose[ cvr[[1 ;; ;; 2]] ][[1 ;; ;; 2]];
+  bb = Transpose[ cvr[[2 ;; ;; 2]] ][[2 ;; ;; 2]];
   ArrayZeroQ[aa - bb]
 ]
 
@@ -795,14 +795,15 @@ WickJump[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :
   { aa, bb, nn, mm, id, pp, new, k },
   {aa, bb, nn} = Transpose @ WickJumpAction[mat];
   id = ConstantArray[One[Length @ cvr], Length @ mat];
-  mm = id + aa . cvr;
+  mm = id + aa.cvr;
   Quiet[pp = nn*Sqrt[Det /@ mm], Det::luc];
-  If[ ZeroQ[Total @ pp],
+  pp = Normalize[Ramp @ Re @ pp, Norm[#, 1]&];
+  (* NOTE: Ramp and Re to quickly handle numerical errors, Normalize instead of pp/Total[pp] to handle a rare case of zero vector. *)
+  If[ ArrayZeroQ[pp],
     Message[WickJump::null];
     $WickJumpOut = Indeterminate;
     Return @ WickState[{0, Zero[2*Length[cvr]*{1, 1}]}, rest]
   ];
-  pp /= Total[pp];
 
   k = RandomChoice[pp -> Range[Length @ mat]];
   $WickJumpOut = k;
@@ -841,8 +842,8 @@ WickJumpAction[vec_?VectorQ] := Module[
   aa = Dyad[re, im] - Dyad[im, re];
   bb = Dyad[re, re] + Dyad[im, im];
   id = One[Dimensions @ aa];
-  aa *= -2 / nn;
-  bb = id - (bb * 2 / nn);
+  aa = -aa*2/nn;
+  bb = id - (bb*2/nn);
   {aa, bb, nn}
 ]
 
@@ -942,7 +943,7 @@ WickMeasurement::usage = "WickMeasurement[k] represents a measurement of the occ
 
 WickMeasurement::odd = "The second dimension of the input matrix `` is odd: ``."
 
-WickMeasurement::dressed = "Matrix `` cannot describe a set of orthogonal dressed Dirac fermion modes."
+WickMeasurement::dressed = "A vector of coefficients `` cannot describe a proper dressed Dirac fermion mode."
 
 WickMeasurement /:
 MakeBoxes[msr:WickMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
@@ -984,16 +985,32 @@ WickMeasurement[mat_?MatrixQ, rest___] :=
   WickMeasurement[SparseArray @ mat, rest] /;
   Head[mat] =!= SparseArray
 
+
+WickMeasurement /:
+MatrixForm[WickMeasurement[mm_?MatrixQ, rest___], opts___?OptionQ] :=
+  MatrixForm[mm, opts]
+
+WickMeasurement /:
+ArrayShort[WickMeasurement[mm_?MatrixQ, rest___], opts___?OptionQ] :=
+  ArrayShort[mm, opts]
+
+
 (* See, e.g., Gallier (2001) for the Cartan-Dieudonné theorem. *)
 (* The vector vec := mat[[1]] describes a dressed Dirac fermion mode
       b := Sum[vec[[jj]] c[j], {j, 2n}]
    in terms of Majorana modes c[k]. *)
 WickMeasurement[mat_?MatrixQ][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   { n = Length[cvr] / 2,
-    vv = First[mat],
+    vv = N[First @ mat], (* otherwise, it may take very long *)
     xx, yy, trs, new },
   xx = Re[vv];
   yy = Im[vv];
+  (* verify the fermion mode *)
+  If[ OddQ[Length @ vv] || Not @ ZeroQ[xx.yy],
+    Message[WickMeasurement::dressed, First @ mat];
+    $MeasurementOut[vv] = Indeterminate;
+    Return[in]
+  ];
   (* The Cartan-Dieudonné theorem *)
   trs = HouseholderMatrix[xx];
   trs = HouseholderMatrix[trs . yy, 2] . trs;
@@ -1003,8 +1020,7 @@ WickMeasurement[mat_?MatrixQ][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest__
   KeyDrop[$MeasurementOut, 1];
   new = Transpose[trs] . new . trs;
   WickState[{1, new}, rest]
-] /; Length[mat] == 1 /; theWickMeasurementQ[mat]
-
+] /; Length[mat] == 1
 
 (* See, e.g., Gallier (2001) for the Cartan-Dieudonné theorem. *)
 (* The matrix mat describes a list of dressed Dirac fermion modes
@@ -1012,23 +1028,9 @@ WickMeasurement[mat_?MatrixQ][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest__
    in terms of Majorana fermion modes c[k]. *)
 WickMeasurement[mat_?MatrixQ][in_WickState] :=
   Fold[WickMeasurement[{#2}][#1]&, in, Identity /@ mat] /;
-  theWickMeasurementQ[mat]
+  Length[mat] > 1
 (* NOTE: Identity /@ mat is necessary because mat is usually a SparseArray. *)
-
-theWickMeasurementQ[mat_?MatrixQ] :=
-  If[ OddQ[Last @ Dimensions @ mat],
-    Message[WickMeasurement::odd, ArrayShort @ mat, Dimensions @ mat];
-    False,
-    Module[
-      { new },
-      new = Join[Re @ mat, Im @ mat];
-      new = new . Transpose[new];
-      If[ DiagonalMatrixQ[new], True,
-        Message[WickMeasurement::dressed, mat];
-        False
-      ]
-    ]
-  ]
+(* NOTE: The dressed fermion modes associated with different rows in matrix mat do not have to be mutually orthogonal. Only required is that each row gives a proper dressed fermion mode, independently of other rows. *)
 
 
 theWickMeasurement[k_Integer, cvr_?MatrixQ] := Module[
@@ -1741,53 +1743,69 @@ Options[WickMonitor] = {
   "Prefix" -> "WM"
 }
 
-WickMonitor[ham_?MatrixQ, rest___] :=
-  WickMonitor[WickHermition @ ham, rest] /;
-  If[ arrayRealQ[ham] && AntisymmetricMatrixQ[ham], True,
-    Message[WickNonitor::mat]
-  ]
-
-WickMonitor[ham_?NambuMatrixQ, rest___] :=
-  WickMonitor[WickHermition @ NambuHermitian @ ham, rest]
-
-WickMonitor[
-  ham_WickHermitian,
-  in_WickState,
-  {nT_Integer, dt_?NumericQ},
-  opts:OptionsPattern[]
-] :=
-  Module[
-    { n = OptionValue["Samples"],
-      progress = 0,
-      uni, data, more },
-    uni = WickUnitary @ MatrixExp[First[ham]*dt];
-
-    PrintTemporary[ProgressIndicator @ Dynamic @ progress];
-    data = Table[
-      progress = k / N[n];
-      theWickMonitor[uni, in, {nT, dt}],
-      {k, n}
-    ];
-    
-    If[ OptionValue["SaveData"],
-      more = Join[{opts}, Options @ WickMonitor];
-      SaveData[data, FilterRules[{more}, Options @ SaveData]]
-    ];
-    Return[data]
-  ] /; If[ MatrixQ[First @ ham, NumericQ], True,
-    Message[WickNonitor::num, First @ ham];
+WickMonitor[in_, ham_?MatrixQ, rest___] :=
+  WickMonitor[in, WickHermition @ ham, rest] /;
+  If[ EvenQ[Length @ ham] && arrayRealQ[ham] && AntisymmetricMatrixQ[ham],
+    True,
+    Message[WickNonitor::mat];
     False
   ]
 
+WickMonitor[in_, ham_?NambuMatrixQ, rest___] :=
+  WickMonitor[in, WickHermition @ NambuHermitian @ ham, rest]
 
-theWickMonitor[uni_WickUnitary, in_WickState, {nT_Integer, dt_?NumericQ}] :=
-  Module[
+WickMonitor[
+  in_WickState,
+  ham_WickHermitian,
+  {nT_Integer, dt_?NumericQ}, 
+  opts___?OptionQ
+] := WickMonitor[in, ham, 
+  WickMeasurement[Range @ FermionCount @ in], 
+  {nT, dt}, 
+  opts
+]
+
+WickMonitor[
+  in_WickState,
+  ham_WickHermitian,
+  msr_WickMeasurement,
+  {nT_Integer, dt_?NumericQ},
+  opts:OptionsPattern[]
+] := Module[
+  { n = OptionValue["Samples"],
+    progress = 0,
+    uni, data, more },
+  uni = WickUnitary @ MatrixExp[N @ First[ham]*dt];
+
+  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
+  data = Table[
+    progress = k / N[n];
+    theWickMonitor[in, uni, msr, {nT, dt}],
+    {k, n}
+  ];
+    
+  If[ OptionValue["SaveData"],
+    more = Join[{opts}, Options @ WickMonitor];
+    SaveData[data, FilterRules[{more}, Options @ SaveData]]
+  ];
+  Return[data]
+] /; If[ MatrixQ[First @ ham, NumericQ], True,
+  Message[WickNonitor::num, First @ ham];
+  False
+]
+
+
+theWickMonitor[
+  in_WickState,
+  uni_WickUnitary,
+  msr_WickMeasurement,
+  {nT_Integer, dt_?NumericQ}
+] := Module[
     { n = FermionCount[uni],
       t = 1,
       res = {in},
       new = in,
-      nrm, msr },
-    msr = WickMeasurement[Range @ n];
+      nrm },
     nrm = Exp[-n*dt]; (* squared norm *)
     While[ t <= nT,      
       (* non-unitary (yet practically unitary) evolution *)
@@ -1947,7 +1965,9 @@ NambuMeasurement[kk:(_Integer | {___Integer}), rest___] :=
 NambuMeasurement /:
 ToMajorana @ NambuMeasurement[mat_?MatrixQ, opts___?OptionQ] :=
   WickMeasurement[ToMajorana /@ mat, opts] /;   (* NOT ToMajorana @ mat. *)
-  theNambuMeasurementQ[mat]
+  ArrayZeroQ[Dot @@@ Map[PartitionInto[#,2]&, mat]]
+(* NOTE: Tests whether each row represents a proper dressed fermion mode. See WickMeasure for more details. *)
+
 
 theNambuMeasurementQ[mat_?MatrixQ] :=
   If[ OddQ[Last @ Dimensions @ mat],
@@ -1969,7 +1989,7 @@ theNambuMeasurementQ[mat_?MatrixQ] :=
 
 (* conversion *)
 NambuMeasurement /:
-WickMeasurement[non_NambuMeasurement] := ToMajorana[non]
+WickMeasurement[msr_NambuMeasurement] := ToMajorana[msr]
 
 (**** </NambuMeasurement> ****)
 
