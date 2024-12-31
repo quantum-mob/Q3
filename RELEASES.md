@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.7.5
+
+- Bug fix: WickMeasurement, WickMonitor
+- Improved: WickMonito allows to specify the measurement of dressed modes.
+
 ## 3.7.4
 
 - Bug fix: RandomWickCircuitSimulate, $RandomWickCircuitPatterns
