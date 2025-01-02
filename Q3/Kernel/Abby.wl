@@ -626,7 +626,7 @@ RandomPick[list_List, p_?NumericQ] :=
 
 (**** <RandomSelection> ****)
 
-RandomSelection::usage = "RandomSelection[{e1, e2, \[Ellipsis]}, k] randomly selects k distinct elements from the list {e1, e2, \[Ellipsis]}; cf. RandomChoice, RandomPick.\nRandomSelection[{e1, e2, \[Ellipsis]}] is equivalent to RandomChoise[{e1, e2, \[Ellipsis]}].\nRandomSelection[n, k] is equivalent to RandomSelection[{1, 2, \[Ellipsis], n}, k].\nRandomSelection[n] is equvalent to RandomChoise[{1, 2, \[Ellipsis], n}]."
+RandomSelection::usage = "RandomSelection[{e1, e2, \[Ellipsis]}, k] randomly selects k distinct elements from the list {e1, e2, \[Ellipsis]}; cf. RandomChoice, RandomPick.\nRandomSelection[{e1, e2, \[Ellipsis]}] is equivalent to RandomChoise[{e1, e2, \[Ellipsis]}].\nRandomSelection[n, k] is equivalent to RandomSelection[{1, 2, \[Ellipsis], n}, k].\nRandomSelection[n] is equivalent to RandomChoise[{1, 2, \[Ellipsis], n}]."
 
 RandomSelection[n_Integer, k_Integer] :=
   RandomSelection[Range @ n, k]

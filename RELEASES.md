@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.7.6
+
+- Bug fix: WickMonitor
+- New: WickMap, WickMapOdds
+- WickSimulate: The syntax of input arguments has been changed.
+
 ## 3.7.5
 
 - Bug fix: WickMeasurement, WickMonitor

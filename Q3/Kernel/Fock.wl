@@ -48,6 +48,7 @@ BeginPackage["Q3`"]
 
 { FockAddSpin, FockAddSpinZ };
 
+{ FermionCount };
 { FermionTranspose,
   FermionTimeReversal };
 

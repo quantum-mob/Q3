@@ -7,7 +7,6 @@ BeginPackage["Q3`"]
 { NambuUnitary, NambuHermitian, NambuGreen };
 { RandomNambuUnitary, RandomNambuHermitian, RandomNambuGreen };
 
-
 Begin["`Private`"] (* Tools for Nambu matrices *)
 
 AddElaborationPatterns[_NambuUnitary];
@@ -160,11 +159,7 @@ NambuHermitian /:
 Matrix[ham:NambuHermitian[_?NambuMatrixQ, ___]] := Module[
   { n = FermionCount[ham],
     mm },
-  (* Jordan-Wigner transformation *)
-  mm = Table[PadRight[Table[3, k-1], n], {k, n}] + 4*One[n];
-  mm = ThePauli /@ mm;
-  mm = Join[mm, Topple /@ mm];
-  (* calc *)
+  mm = theWignerJordanNambu[n];
   TensorContract[
     Transpose[Topple /@ mm, {3, 1, 2}] . Normal[ham] . mm / 2,
     {{2, 3}}
@@ -186,6 +181,16 @@ NambuHermitian /:
 MultiplyKind[_NambuHermitian] = Fermion
 
 (**** </NambuHermitian> ****)
+
+
+theWignerJordanNambu::usage = "theWignerJordanNambu[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation and creations operators under the Wigner-Joran transformation."
+
+theWignerJordanNambu[n_Integer] := Module[
+  { mm },
+  mm = Table[PadRight[Table[3, k-1], n], {k, n}] + 4*One[n];
+  mm = ThePauli /@ mm;
+  SparseArray @ Join[mm, Topple /@ mm]
+]
 
 
 (**** <NambuUnitary> ****)
