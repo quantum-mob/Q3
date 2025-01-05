@@ -1,5 +1,10 @@
 # Release Notes
 
+## 3.7.7
+
+- Improved: WickSimulate supports quadratic projection operators as quantum jump operators through WickMeasurement.
+- WickMeasurement: Matrix[WickMeasurement[...]] gives the matrix represenations of the (unnormalized) projection operators rather than the dressed fermion operators themselves.
+
 ## 3.7.6
 
 - Bug fix: WickMonitor

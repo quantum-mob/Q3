@@ -20,7 +20,7 @@ BeginPackage["Q3`"]
 { WickMap, WickMapOdds, $WickMapOut };
 
 { WickGreenFunction, WickOccupation,
-  WickMean };
+  WickMean, WickCanonicalize };
 
 { WickCircuit, RandomWickCircuit, RandomWickCircuitSimulate };
 { WickSimulate, WickDampingOperator };
@@ -29,8 +29,8 @@ BeginPackage["Q3`"]
 { WickLogarithmicNegativity, WickTimeReversalMoment };
 { WickEntropy, WickEntanglementEntropy, WickMutualInformation };
 
-{ NambuMeasurement, NambuNonunitary, NambuJump, NambuOperator };
-{ RandomNambuMeasurement };
+{ NambuMeasurement, NambuJump, NambuNonunitary, NambuOperator };
+{ RandomNambuMeasurement, RandomNambuJump };
 
 (* VonNeumann.wl *)
 { QuantumLog };
@@ -311,6 +311,35 @@ RandomWickCovariance[n_Integer] := Module[
 ]
 
 
+(**** <WickCanonicalize> ****)
+
+WickCanonicalize::usage = "WickCanonicalize[obj] converts object obj (such as WickJump and WickMeasurement) into a canonical form."
+
+WickCanonicalize[WickJump[mat_?MatrixQ, rest___]] := With[
+  { max = Sqrt[2]*Max[Norm /@ mat] },
+  (* NOTE: Notice the factor of Sqrpt[2]. *)
+  WickJump[mat/max, rest]
+]
+
+WickCanonicalize[WickMeasurement[mat_?MatrixQ, rest___]] := With[
+  { max = Sqrt[2]*Max[Norm /@ mat] },
+  (* NOTE: Notice the factor of Sqrpt[2]. *)
+  WickMeasurement[mat/max, rest]
+]
+
+WickCanonicalize[NambuJump[mat_?MatrixQ, rest___]] := With[
+  { max = Max[Norm /@ mat] },
+  NambuJump[mat/max, rest]
+]
+
+WickCanonicalize[NambuMeasurement[mat_?MatrixQ, rest___]] := With[
+  { max = Max[Norm /@ mat] },
+  NambuMeasurement[mat/max, rest]
+]
+
+(**** </WickCanonicalize> ****)
+
+
 (**** <WickMean> ****)
 
 WickMean::usage = "WickMean[data] returns the average of the Wick states or Majorana covariance matrices in array data."
@@ -553,7 +582,7 @@ Matrix[op:WickHermitian[mat_?MatrixQ, ___]] := Module[
     xy, mm },
   xy = theWignerJordanMajorana[n];
   mm = Transpose[xy, {3, 1, 2}] . mat . xy;
-  TensorContract[mm * I/4, {{2,3}}]
+  TensorContract[mm * I/4, {{2, 3}}]
 ]
   
 (**** </WickHermitian> ****)
@@ -575,17 +604,15 @@ WickElements[mat_?MatrixQ, cc:{__?FermionQ}] := Module[
 ]
 
 
-WickElements[WickOperator[mat_?MatrixQ, ___], cc:{__?MajoranaQ}] :=
-  WickElements[mat, cc]
+WickElements[
+  (WickOperator|WickJump|WickMeasurement)[mat_?MatrixQ, ___],
+  aa:{__?FermionQ}
+] := WickElements[mat, aa]
 
-WickElements[WickOperator[mat_?MatrixQ, ___], cc:{__?FermionQ}] :=
-  WickElements[mat, cc]
-
-WickElements[WickJump[mat_?MatrixQ, ___], cc:{__?MajoranaQ}] :=
-  WickElements[mat, cc]
-
-WickElements[WickJump[mat_?MatrixQ, ___], cc:{__?FermionQ}] :=
-  WickElements[mat, cc]
+WickElements[
+  (WickOperator|WickJump|WickMeasurement)[mat_?MatrixQ, ___],
+  cc:{__?MajoranaQ}
+] := WickElements[mat, ss]
 
 (**** </WickElements> ****)
 
@@ -819,6 +846,13 @@ WickJump[spec:{_Integer, 0|1}, n_Integer, opts___?OptionQ] :=
 
 
 WickJump /:
+Normalize[WickJump[mat_?MatrixQ, rest___], ___] := Module[
+  { new = Map[Normalize, mat]/Sqrt[2] },
+  (* NOTE: Notice the factor of 1/Sqrt[2]. *)
+  WickJump[new, rest]
+]
+
+WickJump /:
 MatrixForm[WickJump[mm_?MatrixQ, rest___], opts___?OptionQ] :=
   MatrixForm[mm, opts]
 
@@ -943,10 +977,10 @@ WickJumpKernel[mat_?MatrixQ] := Map[WickJumpKernel, mat]
 RandomWickJump::usage = "RandomWickJump[k_Integer, n_Integer] returns WickJump consisting of k linear combinations of Majorana operators."
 
 RandomWickJump[k_Integer, n_Integer, opts___?OptionQ] :=
-  WickJump[RandomMatrix[{k, 2n}], opts]
+  WickJump[RandomMatrix @ {k, 2n}, opts]
 
 RandomWickJump[n_Integer, opts___?OptionQ] :=
-  RandomWickJump[RandomInteger[{1, n}], n, opts]
+  RandomWickJump[RandomInteger @ {1, n}, n, opts]
 
 
 (**** <WickMeasurement> ****)
@@ -976,8 +1010,18 @@ MakeBoxes[msr:WickMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
 Readout[WickMeasurement[op_]] := Readout[op]
 
 WickMeasurement /:
-Matrix[WickMeasurement[mat_?MatrixQ, ___], rest___] :=
-  Matrix[WickJump @ mat, rest]
+Matrix[WickMeasurement[mat_?MatrixQ, ___], rest___] := Module[
+  { ops = Matrix[WickJump @ mat, rest] },
+  MapThread[Dot, {Topple /@ ops, ops}]
+  (* NOTE: Returned are UNNORMALIZED projection operators. *)
+]
+
+WickMeasurement /:
+Normalize[WickMeasurement[mat_?MatrixQ, rest___], ___] := Module[
+  { new = Map[Normalize, mat]/Sqrt[2] },
+  (* NOTE: Notice the factor of 1/Sqrt[2]. *)
+  WickMeasurement[new, rest]
+]
 
 WickMeasurement /:
 NonCommutativeQ[_WickMeasurement] = True
@@ -1156,7 +1200,7 @@ WickMap::usage = "WickMap[mat] or WickMap[mat, True] represents a projective qua
 WickMap::null = "The quantum operation returns the null state."
 
 (* alias *)
-WickMap[jmp_WickJump, ___] = jmp
+WickMap[jmp_WickJump, ___][in_WickState] = jmp[in]
 
 
 WickMap[kk:{___Integer}] := WickMap[kk, True]
@@ -1785,20 +1829,17 @@ RandomWickNonunitary[n_Integer, opts___?OptionQ] :=
 
 WickDampingOperator::usage = "WickDampingOperator[jmp] returns a pair {mat, const} of the quadratic kernel mat and remaining constant term const of the effective damping operator in the normal ordering that corresponds to the list jmp of quantum jump operators."
 
-WickDampingOperator::jmp = "Quantum jump operators for different number of fermion modes: ``."
-
-WickDampingOperator[jmp_WickJump] :=
-  WickDampingOperator[First @ jmp]
-
-WickDampingOperator[jmp:{__WickJump}] :=
-  WickDampingOperator @ Join[First /@ jmp] /;
-    If[ Equal @@ Map[FermionCount, jmp], True,
-      Message[WickDampingOperator::jmp, FermionCount /@ jmp];
-      False
-    ]
-
-WickDampingOperator[jmp_?MatrixQ] := With[
+WickDampingOperator[WickJump[jmp_?MatrixQ, ___]] := With[
   { mat = Topple[jmp].jmp },
+  { WickHermitian @ Re[ -I*(mat - Transpose[mat]) ],
+    Re @ Tr[mat]/2 }
+]
+
+WickDampingOperator[WickMeasurement[msr_?MatrixQ, ___]] := Module[
+  { dig, mat },
+  dig = 2*Map[NormSquare, msr];
+  dig = SparseArray[DiagonalMatrix @ dig];
+  mat = Topple[msr] . dig . msr;
   { WickHermitian @ Re[ -I*(mat - Transpose[mat]) ],
     Re @ Tr[mat]/2 }
 ]
@@ -1829,21 +1870,22 @@ WickSimulate[in_WickState, ham_NambuHermitian, rest__] :=
 WickSimulate[
   in_WickState, 
   ham_WickHermitian, 
-  jmp_WickJump, 
+  jmp:(_WickJump | _WickMeasurement),
   {nT_Integer, dt_}, 
   opts:OptionsPattern[]
 ] := Module[
   { n = OptionValue["Samples"],
     progress = 0,
-    dmp, gmm, non, data, more },
+    dmp, gmm, non, map, data, more },
     
   {dmp, gmm} = WickDampingOperator[jmp];
   non = WickNonunitary[{ham, dmp, gmm}];
+  map = WickMap[jmp, False];
 
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
     progress = k / N[n];
-    theWickSimulate[in, non, jmp, {nT, dt}],
+    theWickSimulate[in, non, map, {nT, dt}],
     {k, n}
   ];
 
@@ -1857,7 +1899,7 @@ WickSimulate[
   False
 ]
 
-theWickSimulate[in_WickState, non_WickNonunitary, jmp_WickJump, {nT_Integer, dt_}] :=
+theWickSimulate[in_WickState, non_WickNonunitary, map_WickMap, {nT_Integer, dt_}] :=
   Module[
     { n = FermionCount[non],
       res = {in},
@@ -1877,7 +1919,7 @@ theWickSimulate[in_WickState, non_WickNonunitary, jmp_WickJump, {nT_Integer, dt_
       ];
       
       (* quantum jumps *)
-      new = jmp[new];
+      new = map[new];
       AppendTo[res, new];
       t += 1;
     ];
@@ -1955,7 +1997,6 @@ WickMonitor[
   False
 ]
 
-
 theWickMonitor[
   in_WickState,
   uni_WickUnitary,
@@ -1968,6 +2009,7 @@ theWickMonitor[
     new = in,
     nrm },
   nrm = Exp[-n*dt]; (* squared norm *)
+  (* NOTE: Effectively, the input WickMeasurement is normalized. *)
   While[ t <= nT,      
     (* non-unitary (yet practically unitary) evolution *)
     If[ RandomReal[] < nrm,
@@ -1981,7 +2023,6 @@ theWickMonitor[
     AppendTo[res, new];
     t += 1;
   ];
-    (* Echo[N[non/nT], "non"]; *)
   Return[res]
 ]
 
@@ -2037,12 +2078,17 @@ MakeBoxes[jmp:NambuJump[mat_?MatrixQ, rest___], fmt_] := Module[
     { BoxForm`SummaryItem @ { "Modes: ", n/2 },
       BoxForm`SummaryItem @ { "Operators: ", m }
     },
-    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ mat }
+    { BoxForm`SummaryItem @ { "Coefficients: ",
+        ArrayShort /@ First @ PartitionInto[mat, {1, 2}] }
     },
     fmt,
     "Interpretable" -> Automatic
   ]
 ]
+
+NambuJump /:
+Normalize[NambuJump[mat_?MatrixQ, rest___], ___] :=
+  NambuJump[Normalize /@ mat, rest]
 
 (* conversion *)
 NambuJump /:
@@ -2064,6 +2110,15 @@ Matrix[jmp_NambuJump, rest___] :=
 (**** </NambuJump> ****)
 
 
+RandomNambuJump::usage = "RandomNambuJump[k_Integer, n_Integer] returns NambuJump consisting of k linear combinations of Dirac fermion operators."
+
+RandomNambuJump[k_Integer, n_Integer, opts___?OptionQ] :=
+  NambuJump[RandomMatrix @ {k, 2n}, opts]
+
+RandomNambuJump[n_Integer, opts___?OptionQ] :=
+  RandomNambuJump[RandomInteger @ {1, n}, n, opts]
+
+
 (**** <NambuOperator> ****)
 
 NambuOperator::usage = "NambuOperator[mat] is like WickOperator, but matrices ham and dmp refer to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
@@ -2079,7 +2134,8 @@ MakeBoxes[op:NambuOperator[mat_?MatrixQ, rest___], fmt_] := Module[
     { BoxForm`SummaryItem @ { "Modes: ", n/2 },
       BoxForm`SummaryItem @ { "Operators: ", m }
     },
-    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ mat }
+    { BoxForm`SummaryItem @ { "Coefficients: ",
+        ArrayShort /@ First @ PartitionInto[mat, {1, 2}] }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -2121,12 +2177,17 @@ MakeBoxes[msr:NambuMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
     { BoxForm`SummaryItem @ { "Bare modes: ", n/2 },
       BoxForm`SummaryItem @ { "Dressed modes: ", m }
     },
-    { BoxForm`SummaryItem @ { "Matrix: ", ArrayShort @ mat }
+    { BoxForm`SummaryItem @ { "Coefficients: ",
+        ArrayShort /@ First @ PartitionInto[mat, {1, 2}] }
     },
     fmt,
     "Interpretable" -> Automatic
   ]
 ]
+
+NambuMeasurement /:
+Normalize[NambuMeasurement[mat_?MatrixQ, rest___], ___] :=
+  NambuMeasurement[Normalize /@ mat, rest]
 
 NambuMeasurement /:
 Matrix[msr_NambuMeasurement, rest___] :=
@@ -2158,12 +2219,8 @@ theNambuMeasurementQ[mat_?MatrixQ] :=
 
 RandomNambuMeasurement::usage = "RandomNambuMeasurement[k, n] randomly generates a NambuMeaurement for k dressed fermion modes from n bare fermion modes.\nRandomNambuMeasurement[n] randomly selects k from {1,2,\[Ellipsis],n}."
 
-RandomNambuMeasurement[k_Integer, n_Integer] := Module[
-  { kk = RandomSelection[n, k],
-    uv = RandomNambuUnitary[n] },
-  uv = ArrayFlatten @ {First @ uv};
-  NambuMeasurement[ uv[[kk]] ]  
-]
+RandomNambuMeasurement[k_Integer, n_Integer] := 
+  NambuMeasurement @ Table[RandomChoice @ Normal @ RandomNambuUnitary[n], k]
 
 RandomNambuMeasurement[n_Integer] :=
   RandomNambuMeasurement[RandomInteger @ {1, n}, n]
