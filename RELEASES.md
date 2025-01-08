@@ -1,5 +1,11 @@
 # Release Notes
 
+## 3.8.0
+
+- Significantly improved computational speed of WickMonitor and WickSimulate.
+- Changes: The input arguments syntax of WickMonitor and WickSimulate
+- New: $WickMinorStep
+
 ## 3.7.7
 
 - Improved: WickSimulate supports quadratic projection operators as quantum jump operators through WickMeasurement.

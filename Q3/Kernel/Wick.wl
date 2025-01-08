@@ -9,8 +9,7 @@ BeginPackage["Q3`"]
 
 { WickUnitary, WickHermitian, WickCovariance,
   RandomWickUnitary, RandomWickHermitian, RandomWickCovariance };
-{ WickJump, WickJumpOdds, $WickJumpOut,
-  RandomWickJump };
+{ WickJump, WickJumpOdds,RandomWickJump };
 { WickMeasurement, WickMeasurementOdds,
   RandomWickMeasurement };
 { WickOperator, RandomWickOperator };
@@ -23,7 +22,7 @@ BeginPackage["Q3`"]
   WickMean, WickCanonicalize };
 
 { WickCircuit, RandomWickCircuit, RandomWickCircuitSimulate };
-{ WickSimulate, WickDampingOperator };
+{ WickSimulate, WickDampingOperator, $WickMinorSteps };
 { WickMonitor };
 
 { WickLogarithmicNegativity, WickTimeReversalMoment };
@@ -776,7 +775,7 @@ WickFlop::usage = "WickFlop[vec] represents a single linear combination of Major
 
 WickFlop[vec_?VectorQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   { aa, bb, nn, id, mm, prb, new },
-  {aa, bb, nn} = WickJumpKernel[vec];
+  {aa, bb, nn} = WickFlopKernel[vec];
   id = One[Dimensions @ aa];
   mm = id + aa.cvr;
   prb = nn * Sqrt[Det @ mm];
@@ -785,6 +784,21 @@ WickFlop[vec_?VectorQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :
     new = aa + bb.cvr.Inverse[mm].Transpose[bb]
   ];
   WickState[{fac*prb, new}, rest]
+]
+
+WickFlopKernel::usage = "WickFlopKernel[vec] returns {A, B, nrm}, where A and B are 2n\[Times]2n real matrices and nrm is the norm square of vec. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] b \[Rho] Dagger[b], where b := Sum[vec[[k]] c[k], {k, 2n}] is a linear combination of bare Majorana modes c[k]."
+
+WickFlopKernel[vec_?VectorQ] := Module[
+  { nn = NormSquare[vec],
+    re = Re[vec],
+    im = Im[vec],
+    id, aa, bb },
+  aa = Dyad[re, im] - Dyad[im, re];
+  bb = Dyad[re, re] + Dyad[im, im];
+  id = One[Dimensions @ aa];
+  aa = -aa*2/nn;
+  bb = id - (bb*2/nn);
+  {aa, bb, nn}
 ]
 
 (**** </WickFlop> ****)
@@ -801,11 +815,7 @@ RandomWickOperator[n_Integer] :=
 
 (**** <WickJump> ****)
 
-$WickJumpOut::usage = "$WickJumpOut returs the index of quantum jump that has occurred at the last instance of WickJump."
-
 WickJump::usage = "WickJump[mat] represents a set of quantum jump operators, which are linear combinations of Majorana fermion operators with coefficients given by the elements of complex matrix mat."
-
-WickJump::null = "The quantum operation returns the null state."
 
 WickJump /:
 MakeBoxes[jmp:WickJump[mat_?MatrixQ, rest___], fmt_] := Module[
@@ -902,29 +912,7 @@ WickJump[mat_?MatrixQ, ___][in_WickState] := (* null state *)
   WickState[{0, Zero[2*FermionCount[in]*{1, 1}]}, Rest @ in] /;
   WickNullQ[in]
 
-WickJump[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
-  { aa, bb, nn, mm, id, pp, new, k },
-  {aa, bb, nn} = Transpose @ WickJumpKernel[mat];
-  id = ConstantArray[One[Length @ cvr], Length @ mat];
-  mm = id + aa.cvr;
-  Quiet[pp = nn*Sqrt[Det /@ mm], Det::luc];
-  pp = Ramp[Re @ pp]; (* Ramp and Re to quickly handle numerical errors. *)
-  If[ ArrayZeroQ[pp],
-    Message[WickJump::null];
-    $WickJumpOut = Indeterminate;
-    Return @ WickState[{0, Zero[Dimensions @ cvr]}, rest]
-  ];
-
-  k = RandomChoice[pp -> Range[Length @ mat]];
-  $WickJumpOut = k;
-
-  aa = aa[[k]];
-  bb = bb[[k]];
-  nn = nn[[k]];
-  mm = mm[[k]];
-  new = aa + bb . cvr . Inverse[mm] . Transpose[bb];
-  WickState[{1, new}, rest]
-]
+WickJump[mat_?MatrixQ, ___][in_WickState] := WickMap[WickJump @ mat][in]
 
 (**** </WickJump> ****)
 
@@ -934,44 +922,9 @@ WickJump[mat_?MatrixQ, ___][WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :
 WickJumpOdds::usage = "WickJumpOdds[mat][\[Rho]] returns the probabilities for the quantum jump processes \[Rho] \[RightTeeArrow] b[i]**\[Rho]**Dagger[b[i]], where b[i]:=Sum[mat[[i,j]] c[j], {j, 2n}] are the dressed Dirac fermion modes consisting of 2n bare Majorana fermion modes c[j]."
 
 WickJumpOdds[jmp_WickJump, ___] :=
-  WickJumpOdds[First @ jmp]
-
-WickJumpOdds[mat_?MatrixQ, ___][WickState[{_?NumericQ, cvr_?MatrixQ}, ___]] :=
-  WickJumpOdds[mat][cvr]
-
-WickJumpOdds[mat_?MatrixQ, ___][cvr_?MatrixQ] := Module[
-  { aa, bb, nn, mm, id, pp },
-  {aa, bb, nn} = Transpose @ WickJumpKernel[mat];
-  id = One[Length @ cvr];
-  mm = Map[(id + #.cvr)&, aa];
-  Quiet[pp = nn*Sqrt[Det /@ mm], Det::luc];
-  Normalize[Ramp @ Re @ pp, Norm[#, 1]&]
-  (* NOTE: Ramp and Re to quickly handle numerical errors, and Normalize[...] instead of pp/Total[pp] to handle a rare case of zero vector. *)
-]
+  WickMapOdds[First @ WickMap @ jmp]
 
 (**** </WickJumpOdds> ****)
-
-
-(**** <WickJumpKernel> ****)
-
-WickJumpKernel::usage = "WickJumpKernel[vec] returns {A, B, nrm}, where A and B are 2n\[Times]2n real matrices and nrm is the norm square of vec. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] b \[Rho] Dagger[b], where b := Sum[vec[[k]] c[k], {k, 2n}] is a linear combination of bare Majorana modes c[k]."
-
-WickJumpKernel[vec_?VectorQ] := Module[
-  { nn = NormSquare[vec],
-    re = Re[vec],
-    im = Im[vec],
-    id, aa, bb },
-  aa = Dyad[re, im] - Dyad[im, re];
-  bb = Dyad[re, re] + Dyad[im, im];
-  id = One[Dimensions @ aa];
-  aa = -aa*2/nn;
-  bb = id - (bb*2/nn);
-  {aa, bb, nn}
-]
-
-WickJumpKernel[mat_?MatrixQ] := Map[WickJumpKernel, mat]
-
-(**** </WickJumpKernel> ****)
 
 
 RandomWickJump::usage = "RandomWickJump[k_Integer, n_Integer] returns WickJump consisting of k linear combinations of Majorana operators."
@@ -1009,6 +962,14 @@ MakeBoxes[msr:WickMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
 
 Readout[WickMeasurement[op_]] := Readout[op]
 
+(* canonicalization *)
+WickMeasurement[k_Integer, n_Integer, rest___] :=
+  WickMeasurement[{k}, n, rest]
+
+(* canonicalization *)
+WickMeasurement[kk:{__Integer}, n_Integer, rest___] :=
+  WickMeasurement @ NambuMeasurement @ One[{n, 2n}]
+
 WickMeasurement /:
 Matrix[WickMeasurement[mat_?MatrixQ, ___], rest___] := Module[
   { ops = Matrix[WickJump @ mat, rest] },
@@ -1022,6 +983,15 @@ Normalize[WickMeasurement[mat_?MatrixQ, rest___], ___] := Module[
   (* NOTE: Notice the factor of 1/Sqrt[2]. *)
   WickMeasurement[new, rest]
 ]
+
+WickMeasurement /:
+Dagger @ WickMeasurement[mat_?MatrixQ, rest___] :=
+  WickMeasurement[Conjugate @ mat, rest]
+
+WickMeasurement /:
+Times[z_, WickMeasurement[mm_, rest___]] :=
+  WickMeasurement[z * mm, rest]
+
 
 WickMeasurement /:
 NonCommutativeQ[_WickMeasurement] = True
@@ -1049,7 +1019,7 @@ ArrayShort[WickMeasurement[mm_?MatrixQ, rest___], opts___?OptionQ] :=
 WickMeasurement[k_Integer][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   {aa, bb, new},
   {aa, bb} = WickMeasurementKernel[k, Length[cvr]/2];
-  new = theWickMeasurement[aa, bb, cvr];
+  new = theWickMeasurement[{aa, bb}, cvr];
   $MeasurementOut[k] = $MeasurementOut[0];
   KeyDrop[$MeasurementOut, 0];
   WickState[{1, new}, rest]
@@ -1067,7 +1037,7 @@ WickMeasurement[mat_?MatrixQ][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest__
   { vv = First[mat],
     aa, bb, new },
   {aa, bb} = WickMeasurementKernel[N @ vv];
-  new = theWickMeasurement[aa, bb, cvr];
+  new = theWickMeasurement[{aa, bb}, cvr];
   $MeasurementOut[vv] = $MeasurementOut[0];
   KeyDrop[$MeasurementOut, 0];
   WickState[{1, new}, rest]
@@ -1084,12 +1054,12 @@ WickMeasurement[mat_?MatrixQ][in_WickState] :=
 (* NOTE: The dressed fermion modes associated with different rows in matrix mat do not have to be mutually orthogonal. Only required is that each row gives a proper dressed fermion mode, independently of other rows. *)
 
 
-theWickMeasurement[aa_?MatrixQ, bb_?MatrixQ, cvr_?MatrixQ] := Module[
+theWickMeasurement[{aa_?MatrixQ, bb_?MatrixQ}, cvr_?MatrixQ] := Module[
   { dd = -aa,
     id, mm, pp },
   id = One[Dimensions @ cvr];
   mm = id + dd.cvr;
-  pp = Quiet[Sqrt[Det @ mm]/2, {Det::luc}];
+  pp = Quiet[Sqrt[Det @ mm]/2, {Det::luc}]; (* prefactor = 1/2 *)
   If[ RandomReal[] < Re[pp], (* Re[...] to quickly handle numerical errors. *)
     $MeasurementOut[0] = 1,
     $MeasurementOut[0] = 0;
@@ -1127,10 +1097,10 @@ WickMeasurementOdds[mat_?MatrixQ][cvr_?MatrixQ] := Module[
 theWickMeasurementOdds[vec_?VectorQ][cvr_?MatrixQ] := Module[
   { aa, bb, dd, mm, pp },
   {aa, bb} = WickMeasurementKernel[N @ vec];
-  dd = -aa;
-  mm = One[Dimensions @ cvr] + dd.cvr;
-  pp = Quiet[Sqrt[Det @ mm]/2, {Det::luc}];
-  {1- pp, pp}
+  mm = One[Dimensions @ cvr] - aa.cvr; (* D = -A *)
+  pp = Quiet[Sqrt[Det @ mm]/2, {Det::luc}]; (* prefactor = 1/2 *)
+  pp = Ramp[Re @ pp]; (* Ramp and Re to quickly handle numerical errors. *)
+  {Ramp[1 - pp], pp}
 ]
 
 (**** </WickMeasurementOdds> ****)
@@ -1156,15 +1126,11 @@ WickMeasurementKernel[k_Integer, n_Integer] := {
     {2n, 2n}
   ]
 }
+(* NOTE: This is intended for WickMeasurement (rather than WickMap), and returns only matrices A and B (but not D). *)
 
-WickMeasurementKernel[kk:{___Integer}, n_Integer] := 
-  Map[WickMeasurementKernel[#, n]&, kk]
-
-
-(* For measurement outcome = 1 *)
 WickMeasurementKernel[vec_?VectorQ] := Module[
   { n = Length[vec]/2,
-    xx, yy, aa, bb, trs },
+    xx, yy, aa, bb, nn, trs },
   xx = Re[N @ vec];  (* Notice N[...]; otherwise, it may take very long *)
   yy = Im[N @ vec];
   (* verify the dressed fermion mode *)
@@ -1175,11 +1141,11 @@ WickMeasurementKernel[vec_?VectorQ] := Module[
   (* The Cartan-Dieudonné theorem *)
   trs = HouseholderMatrix[xx];
   trs = HouseholderMatrix[trs.yy, 2] . trs;
-  {aa, bb} = WickMeasurementKernel[1, n];
-  {Transpose[trs].aa.trs, Transpose[trs].bb.trs}
+  {aa, bb} = WickMeasurementKernel[1, n]; (* nn is ignored *)
+  { Transpose[trs].aa.trs,
+    Transpose[trs].bb.trs }
 ]
-
-WickMeasurementKernel[mat_?MatrixQ] := Map[WickMeasurementKernel, mat]
+(* NOTE: This is intended for WickMeasurement (rather than WickMap), and does NOT calculate the NormSquare of vec for an efficient simulation of the measurement process. Furthermore, it returns only matrices A and B (but not D). *)
 
 (**** </WickMeasurementKernel> ****)
 
@@ -1193,84 +1159,86 @@ RandomWickMeasurement[n_Integer] :=
   WickMeasurement @ RandomNambuMeasurement[n]
 
 
+(**** <WickMapKernel> ****)
+
+WickMapKernel::usage = "WickMapKernel[type, mat] returns {A, B, D, nrm}, where A, B and D are 2n\[Times]2n real matrices and nrm is a list of prefactors. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] Sum[L[k]**\[Rho]**Dagger[L[k]], {k, m}]. For type=1, L[k] are linear superpositin of Majorana operators. For type=2, L[k] are bilinear combination of Majorana operators."
+
+(* L[k] := b[k] *)
+WickMapKernel[1, mat_?MatrixQ] := Module[
+  {aa, bb, nn},
+  {aa, bb, nn} = Transpose @ Map[WickFlopKernel, mat];
+  aa = SparseArray[aa];
+  {aa, SparseArray @ bb, aa, nn}
+]
+
+(* L[k] := Dagger[a[k]]**a[k] *)
+WickMapKernel[2, kk:{___Integer}, n_Integer] := Module[
+  {aa, bb},
+  {aa, bb} = Transpose @ Map[WickMeasurementKernel[#, n]&, kk];
+  aa = SparseArray[aa];
+  {aa, SparseArray @ bb, -aa, ConstantArray[1/2, Length @ kk]}
+]
+
+(* L[k] := Dagger[b[k]]**b[k], b[i] := Sum[mat[[i, j]]**c[j], {j, 2n}] *)
+WickMapKernel[2, mat_?MatrixQ] := Module[
+  { nn = Map[NormSquare, mat],
+    aa, bb },
+  {aa, bb} = Transpose @ Map[WickMeasurementKernel, mat];
+  aa = SparseArray[aa];
+  {aa, SparseArray @ bb, -aa, 2*nn^2}
+  (* Notice the power of 2 (rathern than just nn) and the factor of 2. *)
+]
+(* NOTE: This is intended for WickMap (rather than WickMeasurement), and returns all matrices A, B, and D as well as the squared norms of rows of matrix mat. *)
+
+(**** </WickMapKernel> ****)
+
+
 (**** <WickMap> ****)
 
 WickMap::usage = "WickMap[mat] or WickMap[mat, True] represents a projective quantum operation \[Rho] \[RightTeeArrow] Sum[p[i]**\[Rho]**p[i], {i, m}] + Sum[(1-p[i])**\[Rho]**(1-p[i]), {j, m}], where m is the number of rows in mat, p[i]:=Dagger[b[i]]**b[i] are projection operators, and b[i]:=Sum[mat[[i,j]] c[j], {j, 2n}] are the dressed Dirac fermion modes consisting of n bare Majorana fermion modes c[j].\nWickMap[mat, False] represents \[Rho] \[RightTeeArrow] Sum[p[i]**\[Rho]**p[i], {i, m}]."
 
 WickMap::null = "The quantum operation returns the null state."
 
-(* alias *)
-WickMap[jmp_WickJump, ___][in_WickState] = jmp[in]
+WickMap /:
+MakeBoxes[map:WickMap[{aa_?ArrayQ, bb_?ArrayQ, dd_?ArrayQ, nn_?VectorQ}, flag_], fmt_] := 
+  BoxForm`ArrangeSummaryBox[
+    WickMap, msr, None,
+    { BoxForm`SummaryItem @ { "Bare modes: ", Length[First @ aa]/2 },
+      BoxForm`SummaryItem @ { "Kraus elements: ", Length[nn] },
+      BoxForm`SummaryItem @ { "Completion: ", flag }
+    },
+    { BoxForm`SummaryItem @ { "Block A: ", ArrayShort /@ aa },
+      BoxForm`SummaryItem @ { "Block B: ", ArrayShort /@ bb },
+      BoxForm`SummaryItem @ { "Block D: ", ArrayShort /@ dd }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
 
+(* conversion *)
+WickMap[jmp_WickJump, ___] :=
+  WickMap[WickMapKernel[1, First @ jmp], False]
 
-WickMap[kk:{___Integer}] := WickMap[kk, True]
+(* conversion *)
+WickMap[msr_WickMeasurement, flag___] :=
+  WickMap[WickMapKernel[2, First @ msr], flag]
 
-WickMap[WickMeasurement[k_Integer, ___], flag___] :=
-  WickMap[{k}, flag]
+(* default flag *)
+WickMap[spec_] = WickMap[spec, False]
 
-WickMap[WickMeasurement[kk:{___Integer}, ___], flag___] :=
-  WickMap[kk, flag]
+(* On WickState *)
+WickMap[spec_, flag_][WickState[{_?NumericQ, cvr_?MatrixQ}, rest___]] := 
+  WickState[{1, WickMap[spec, flag] @ cvr}, rest]
 
-WickMap[kk:{___Integer}, flag:(True|False)][
-  WickState[{_?NumericQ, cvr_?MatrixQ}, rest___]
-] := WickState[{1, WickMap[kk, flag] @ cvr}, rest]
-
-WickMap[kk:{___Integer}, flag:(True|False)][cvr_?MatrixQ] := Module[
-  {aa, bb },
-  {aa, bb} = Transpose @ WickMeasurementKernel[kk, Length[cvr]/2];
-  theWickMap[aa, bb, cvr, flag]
-]
-
-
-WickMap[mat_?MatrixQ] := WickMap[mat, True]
-
-WickMap[WickMeasurement[mat_?MatrixQ, ___], flag___] :=
-  WickMap[mat, flag]
-
-WickMap[mat_?MatrixQ, flag:(True|False)][
-  WickState[{_?NumericQ, cvr_?MatrixQ}, rest___]
-] := WickState[{1, WickMap[mat, flag] @ cvr}, rest]
-
-WickMap[mat_?MatrixQ, flag:(True|False)][cvr_?MatrixQ] := Module[
-  {aa, bb },
-  {aa, bb} = Transpose @ WickMeasurementKernel[mat];
-  theWickMap[aa, bb, cvr, flag]
-]
-
-theWickMap[aa_?ArrayQ, bb_?ArrayQ, cvr_?MatrixQ, True] := Module[
-  { m = Length[aa],
-    k, an, bn, dd, mm, id, pp },
-  id = ConstantArray[One[Dimensions @ cvr], Length @ aa];
-  dd = -aa;
-  mm = id + dd.cvr;
-  Quiet[pp = Sqrt[Det /@ mm]/2, Det::luc];
-  pp = Ramp[Re @ pp]; (* Ramp and Re to quickly handle numerical errors. *)
-  pp = Join[Ramp[1 - pp], pp];
-  k = RandomChoice[pp -> Range[2m]];
-  If[ k <= m,
-    (* projection by a**Dagger[a] *)
-    $WickMapOut = {k, 0};
-    an = -aa[[k]];
-    bn = bb[[k]],
-    (* projection by Dagger[a]**a *)
-    k -= m;
-    $WickMapOut = {k, 1};
-    an = aa[[k]];
-    bn = bb[[k]]
-  ];
-  dd = -an;
-  mm = One[Dimensions @ dd] + dd.cvr;
-  an + bn.cvr.Inverse[mm].Transpose[bn]
-]
-
-theWickMap[aa_?ArrayQ, bb_?ArrayQ, cvr_?MatrixQ, False] := Module[
-  { m = Length[aa],
-    k, dd, mm, id, pp },
+(* On the covariance matrix *)
+WickMap[{aa_?ArrayQ, bb_?ArrayQ, dd_?ArrayQ, nn_?VectorQ}, False][cvr_?MatrixQ] := Module[
+  { m = Length[nn],
+    mm, id, pp, k },
   id = ConstantArray[One[Dimensions @ cvr], m];
-  dd = -aa;
   mm = id + dd.cvr;
-  Quiet[pp = Sqrt[Det /@ mm]/2, Det::luc];
-  pp = Ramp[Re @ pp]; (* Ramp and Re to quickly handle numerical errors. *)
+  pp = Quiet[Sqrt[Det /@ mm], Det::luc];
+  pp = nn*Ramp[Re @ pp];
+  (* NOTE: Ramp and Re to quickly handle numerical errors. *)
   If[ ArrayZeroQ[pp],
     Message[WickMap::null];
     $WickMapOut = Indeterminate;
@@ -1281,6 +1249,34 @@ theWickMap[aa_?ArrayQ, bb_?ArrayQ, cvr_?MatrixQ, False] := Module[
   aa[[k]] + bb[[k]].cvr.Inverse[mm[[k]]].Transpose[bb[[k]]]
 ]
 
+(* On the covariance matrix *)
+WickMap[{aa_?ArrayQ, bb_?ArrayQ, dd_?ArrayQ, nn_?VectorQ}, True][cvr_?MatrixQ] := Module[
+  { m = Length[nn],
+    ak, bk, dk, mm, id, pp, k },
+  id = ConstantArray[One[Dimensions @ cvr], m];
+  mm = id + dd.cvr;
+  pp = Quiet[Sqrt[Det /@ mm]/2, Det::luc];
+  (* NOTE: A factor of 1/2 because this case is supposed to be the measurement of a fermion mode. *)
+  pp = Ramp[Re @ pp];
+  pp = Join[nn*Ramp[1-pp], nn*pp];
+  (* NOTE: More precisely, here needs to be an additional factor 2 because the prefactors nn from WickMapKernel[2, ...] already contains the factor of 1/2. It is ignored because it is a global factor anyway. *)
+  k = RandomChoice[pp -> Range[2m]];
+  If[ k <= m,
+    (* projection by a**Dagger[a] *)
+    $WickMapOut = {k, 0};
+    ak = -aa[[k]];
+    dk = -dd[[k]],
+    (* projection by Dagger[a]**a *)
+    k -= m;
+    $WickMapOut = {k, 1};
+    ak = aa[[k]];
+    dk = dd[[k]];
+  ];
+  bk = bb[[k]];
+  mm = One[Dimensions @ dk] + dk.cvr;
+  ak + bk.cvr.Inverse[mm].Transpose[bk]
+]
+
 (**** </WickMap> ****)
 
 
@@ -1288,47 +1284,46 @@ theWickMap[aa_?ArrayQ, bb_?ArrayQ, cvr_?MatrixQ, False] := Module[
 
 WickMapOdds::usage = "WickMapOdds[mat][in] returns the probabilities for the projective process \[Rho] \[RightTeeArrow] p[i]**\[Rho]**p[i], where p[i]:=Dagger[b[i]]**b[i] and b[i]:=Sum[mat[[[i,j]] c[j], {j, 2n}] are the dressed Dirac fermion modes consisting of bare Majorana fermion modes c[j]."
 
-WickMapOdds[kk:{___Integer}] := WickMapOdds[kk, True]
+(* conversion *)
+WickMapOdds[jmp_WickJump, ___] :=
+  WickMapOdds[WickMapKernel[1, First @ jmp], False]
 
-WickMapOdds[WickMeasurement[k_Integer, ___], flag___] :=
-  WickMapOdds[{k}, flag]
+(* conversion *)
+WickMapOdds[WickMeasurement[mat_?MatrixQ, ___], flag___] :=
+  WickMapOdds[WickMapKernel[2, mat], flag]
 
-WickMapOdds[WickMeasurement[kk:{___Integer}, ___], flag___] :=
-  WickMapOdds[kk, flag]
+(* default flag *)
+WickMapOdds[spec_] = WickMapOdds[spec, False]
 
-WickMapOdds[kk:{___Integer}, flag:(True|False)][in_WickState] :=
-  WickMapOdds[kk, flag][ in[[1, 2]] ]
+(* canonicalize *)
+WickMapOdds[{_?ArrayQ, _?ArrayQ, dd_?ArrayQ, nn_?VectorQ}, flag_] :=
+  WickMapOdds[{dd, nn}, flag]
 
-WickMapOdds[kk:{___Integer}, flag:(True|False)][cvr_?MatrixQ] := Module[
-  {aa, bb},
-  {aa, bb} = Transpose @ WickMeasurementKernel[kk, Length[cvr]/2];
-  theWickMapOdds[aa, bb, cvr, flag]
+(* On WickState *)
+WickMapOdds[WickMeasurement[kk:{__Integer}, ___], flag_][in_WickState] := 
+  WickMapOdds[WickMapKernel[2, kk, FermionCount @ in], flag][in]
+
+(* On WickState *)
+WickMapOdds[spec_, flag_][WickState[{_?NumericQ, cvr_?MatrixQ}, rest___]] := 
+  WickMapOdds[spec, flag][cvr]
+
+(* On covariance matrix *)
+WickMapOdds[{dd_?ArrayQ, nn_?VectorQ}, False][cvr_?MatrixQ] := Module[
+  { mm, id, pp },
+  id = ConstantArray[One[Dimensions @ cvr], Length @ nn];
+  mm = id + dd.cvr;
+  pp = Quiet[Sqrt[Det /@ mm], Det::luc];
+  pp = nn*Ramp[Re @ pp];
+  Normalize[pp, Norm[#, 1]&]
 ]
 
-
-WickMapOdds[mat_?MatrixQ] := WickMapOdds[mat, True]
-
-WickMapOdds[WickMeasurement[mat_?MatrixQ, ___], rest___] :=
-  WickMapOdds[mat, rest]
-
-WickMapOdds[mat_?MatrixQ, flag:(True|False)][in_WickState] :=
-  WickMapOdds[mat, flag][ in[[1, 2]] ]
-
-WickMapOdds[mat_?MatrixQ, flag:(True|False)][cvr_?MatrixQ] := Module[
-  {aa, bb},
-  {aa, bb} = Transpose @ WickMeasurementKernel[mat];
-  theWickMapOdds[aa, bb, cvr, flag]
-]
-
-
-theWickMapOdds[aa_?ArrayQ, bb_?ArrayQ, cvr_?MatrixQ, flag:(True|False)] := Module[
-  { dd = -aa,
-    mm, id, pp },
-  id = ConstantArray[One[Dimensions @ cvr], Length @ aa];
+WickMapOdds[{dd_?ArrayQ, nn_?VectorQ}, True][cvr_?MatrixQ] := Module[
+  { mm, id, pp },
+  id = ConstantArray[One[Dimensions @ cvr], Length @ nn];
   mm = id + dd.cvr;
   pp = Quiet[Sqrt[Det /@ mm]/2, Det::luc];
   pp = Ramp[Re @ pp];
-  pp = If[flag, Join[Ramp[1-pp], pp], pp];
+  pp = Join[nn*Ramp[1-pp], nn*pp];
   Normalize[pp, Norm[#, 1]&]
 ]
 
@@ -1717,17 +1712,40 @@ MakeBoxes[op:WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, rest___
     "Interpretable" -> Automatic
   ]
 
-(* conversion *)
-WickNonunitary[{ham_NambuHermitian, dmp_NambuHermitian, gmm_}, rest___] :=
-  WickNonunitary[{WickHermitian @ ham, WickHermitian @ dmp, gmm}, rest]
+(* canonicalization *)
+WickNonunitary[{ham_NambuHermitian, more__}, rest___] :=
+  WickNonunitary[{First @ WickHermitian @ ham, more}, rest]
 (* CONVENTION: (1/2) (a^\dag, a) H (a, a^\dag) = (i/4) c A c. *)
 
 (* canonicalization *)
-WickNonunitary[{ham_WickHermitian, dmp_WickHermitian, gmm_}, rest___] :=
-  WickNonunitary[{First @ ham, First @ dmp, gmm}, rest]
+WickNonunitary[{ham_WickHermitian, more__}, rest___] :=
+  WickNonunitary[{First @ ham, more}, rest]
+
+(* canonicalization *)
+WickNonunitary[{ham_, dmp_NambuHermitian, gmm___}, rest___] :=
+  WickNonunitary[{ham, First @ WickHermitian @ dmp, gmm}, rest]
+(* CONVENTION: (1/2) (a^\dag, a) H (a, a^\dag) = (i/4) c A c. *)
+
+(* canonicalization *)
+WickNonunitary[{ham_, dmp_WickHermitian, gmm___}, rest___] :=
+  WickNonunitary[{ham, First @ dmp, gmm}, rest]
+
+(* conversion *)
+WickNonunitary[{ham_?MatrixQ, WickMeasurement[kk:{__Integer}, ___]}, rest___] := Module[
+  { msr = One[Dimensions @ ham] },
+  msr = WickMeasurement[NambuMeasurement @ msr[[kk]]];
+  WickNonunitary[{ham, msr}, rest]
+]
+
+(* conversion *)
+WickNonunitary[{ham_, jmp:(_WickJump|_WickMeasurement)}, rest___] := Module[
+  {dmp, gmm},
+  {dmp, gmm} = WickDampingOperator[jmp];
+  WickNonunitary[{ham, dmp, gmm}, rest]
+]
 
 (* shortcut *)
-WickNonunitary[{ham_, dmp_}, rest___] :=
+WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, rest___] :=
   WickNonunitary[{ham, dmp, 0}, rest]
 
 WickNonunitary /:
@@ -1849,7 +1867,11 @@ WickDampingOperator[WickMeasurement[msr_?MatrixQ, ___]] := Module[
 
 (**** <WickSimulate> ****)
 
-WickSimulate::usage = "WickSimulate[in, ham, jmp, {nt, dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian ham in the WickHermitian form and the quantum jump operators are specified by jmp in the WickJump form. The simulation starts from the initial state IN in the WickState at time 0 and goes nt time steps of size dt."
+$WickMinorSteps::usage = "$WickMinorSteps is a parameter that controls the behavior of WickSimulate by setting the number of minor steps for the non-unitary gate to make between major steps of update the quantum state."
+
+$WickMinorSteps = 10;
+
+WickSimulate::usage = "WickSimulate[in, ham, jmp, {\[Tau], dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian ham in the WickHermitian form and the quantum jump operators are specified by jmp in the WickJump form. The simulation starts from the initial state IN in the WickState at time 0 and runs to time \[Tau] in steps of size dt."
 
 WickSimulate::ham = "The Hamiltonian matrix `` needs to be numeric."
 
@@ -1871,22 +1893,21 @@ WickSimulate[
   in_WickState, 
   ham_WickHermitian, 
   jmp:(_WickJump | _WickMeasurement),
-  {nT_Integer, dt_}, 
+  {tau_?NumericQ, dt_?NumericQ}, 
   opts:OptionsPattern[]
 ] := Module[
-  { n = OptionValue["Samples"],
+  { ns = OptionValue["Samples"],
     progress = 0,
-    dmp, gmm, non, map, data, more },
+    non, map, data, more },
     
-  {dmp, gmm} = WickDampingOperator[jmp];
-  non = WickNonunitary[{ham, dmp, gmm}];
+  non = WickNonunitary[{ham, jmp}];
   map = WickMap[jmp, False];
 
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
-    progress = k / N[n];
-    theWickSimulate[in, non, map, {nT, dt}],
-    {k, n}
+    progress = k / N[ns];
+    theWickSimulate[in, non, map, {tau, dt}],
+    {k, ns}
   ];
 
   If[ OptionValue["SaveData"],
@@ -1899,29 +1920,26 @@ WickSimulate[
   False
 ]
 
-theWickSimulate[in_WickState, non_WickNonunitary, map_WickMap, {nT_Integer, dt_}] :=
+theWickSimulate[in_WickState, non_WickNonunitary, map_WickMap, {tau_, dt_}] :=
   Module[
-    { n = FermionCount[non],
+    { t = dt,
       res = {in},
       new = in,
-      out, prb, t },
-    t = 1;
-    While[ t <= nT,
+      out, prb },
+    While[ t <= tau,
       prb = RandomReal[];
-      
       (* non-unitary evolution *)
-      out = nonUnitaryEvolution[non, new, {dt, dt/10}];
+      out = nonUnitaryEvolution[non, new, {dt, dt/$WickMinorSteps}];
       If[ prb < NormSquare[out],
         new = Normalize @ out;
         AppendTo[res, new];
-        t += 1;
+        t += dt;
         Continue[]
       ];
-      
       (* quantum jumps *)
       new = map[new];
       AppendTo[res, new];
-      t += 1;
+      t += dt;
     ];
     Return[res]
   ]
@@ -1959,31 +1977,39 @@ WickMonitor[in_WickState, ham_?NambuMatrixQ, rest___] :=
 WickMonitor[
   in_WickState,
   ham_WickHermitian,
-  {nT_Integer, dt_?NumericQ}, 
+  {tau_?NumericQ, dt_?NumericQ},
   opts___?OptionQ
-] := WickMonitor[in, ham, 
-  WickMeasurement[Range @ FermionCount @ in], 
-  {nT, dt}, 
-  opts
+] := Module[
+  { n = FermionCount[in],
+    map },
+  map = WickMap[WickMapKernel[2, Range @ n, n], True];
+  WickMonitor[in, ham, map, {tau, dt}, opts]
 ]
 
 WickMonitor[
   in_WickState,
   ham_WickHermitian,
   msr_WickMeasurement,
-  {nT_Integer, dt_?NumericQ},
+  {tau_?NumericQ, dt_?NumericQ},
+  opts:OptionsPattern[]
+] := WickMonitor[in, ham, WickMap[msr, True], {tau, dt}, opts]
+
+WickMonitor[
+  in_WickState,
+  ham_WickHermitian,
+  map_WickMap,
+  {tau_?NumericQ, dt_?NumericQ},
   opts:OptionsPattern[]
 ] := Module[
   { n = OptionValue["Samples"],
     progress = 0,
-    map = WickMap[msr],
     uni, data, more },
   uni = WickUnitary @ MatrixExp[N @ First[ham]*dt];
 
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
     progress = k / N[n];
-    theWickMonitor[in, uni, map, {nT, dt}],
+    theWickMonitor[in, uni, map, {tau, dt}],
     {k, n}
   ];
     
@@ -2001,27 +2027,27 @@ theWickMonitor[
   in_WickState,
   uni_WickUnitary,
   map_WickMap,
-  {nT_Integer, dt_?NumericQ}
+  {tau_?NumericQ, dt_?NumericQ}
 ] := Module[
-  { n = Length[First @ map], (* the number of projective measurements *)
-    t = 1,
+  { t = dt,
     res = {in},
     new = in,
-    nrm },
-  nrm = Exp[-n*dt]; (* squared norm *)
-  (* NOTE: Effectively, the input WickMeasurement is normalized. *)
-  While[ t <= nT,      
+    gmm },
+  gmm = 2 * Total @ map[[1, 4]];
+  (* NOTE: Here, the additional factor 2 is required because the prefactors map[[1, 4]] from WickMapKernel[2, ...] already contains the factor of 1/2 associated with projection Dagger[b]**b. *)
+  gmm = Exp[-gmm*dt];
+  While[ t <= tau,     
     (* non-unitary (yet practically unitary) evolution *)
-    If[ RandomReal[] < nrm,
+    If[ RandomReal[] < gmm,
         new = uni[new];
         AppendTo[res, new];
-        t += 1;
+        t += dt;
         Continue[]
     ];
     (* quantum jumps *)
     new = map[new];
     AppendTo[res, new];
-    t += 1;
+    t += dt;
   ];
   Return[res]
 ]
@@ -2184,6 +2210,18 @@ MakeBoxes[msr:NambuMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
     "Interpretable" -> Automatic
   ]
 ]
+
+NambuMeasurement /:
+Dagger @ NambuMeasurement[mat_?MatrixQ, rest___] := NambuMeasurement[
+  ArrayFlatten[ 
+    Reverse /@ Conjugate @ PartitionInto[mat, {1, 2}] 
+  ],
+  rest
+]
+
+NambuMeasurement /:
+Times[z_, NambuMeasurement[mm_, rest___]] :=
+  NambuMeasurement[z * mm, rest]
 
 NambuMeasurement /:
 Normalize[NambuMeasurement[mat_?MatrixQ, rest___], ___] :=
