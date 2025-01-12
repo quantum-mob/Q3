@@ -155,23 +155,25 @@ fileDeploy[src_String, dst_String, OptionsPattern[PlaybookDeploy]] := Module[
 
 (**** <PlaybookCheckIn> ****)
 
-PlaybookCheckIn::usage = "PlaybookCheckIn[] swiches the current notebook to the editting mode."
+PlaybookCheckIn::usage = "PlaybookCheckIn[] swiches the current notebook to the editting mode.\nPlaybookCheckIn[nb] deals with notebook nb."
 
-PlaybookCheckIn[] := With[
-  { nb = EvaluationNotebook[] },
+PlaybookCheckIn[] := PlaybookCheckIn @ EvaluationNotebook[]
+
+PlaybookCheckIn[nb_NotebookObject] := (
   NotebookDelete[EvaluationCell[]];
-  SetOptions[nb, StyleDefinitions -> "Playbook.nb", Saveable -> True];
-]
+  SetOptions[nb, StyleDefinitions -> "Playbook.nb", Saveable -> True];  
+)
 
 
-PlaybookCheckOut::usage = "PlaybookCheckOut[] swiches the current notebook to the deployed mode."
+PlaybookCheckOut::usage = "PlaybookCheckOut[] swiches the current notebook to the deployed mode.\nPlaybookCheckOut[nb] deals with notebook nb."
 
-PlaybookCheckOut[] := With[
-  { nb = EvaluationNotebook[] },
+PlaybookCheckOut[] := PlaybookCheckOut @ EvaluationNotebook[]
+
+PlaybookCheckOut[nb_NotebookObject] := (
   NotebookDelete[EvaluationCell[]];
   SetOptions[nb, StyleDefinitions -> "PlaybookNub.nb", Saveable -> False];
   NotebookSave[nb];
-]
+)
 
 (**** </PlaybookCheckIn> ****)
 

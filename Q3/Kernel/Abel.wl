@@ -611,15 +611,20 @@ TeeTranspose[a_] := Tee[a]
 (* HoldPattern @ Tee[ Conjugate[x_] ] := Dagger[x] *)
 
 
-DaggerTranspose::usage = "DaggerTranspose is an alias for Topple."
+(**** <Topple> ****)
 
 Topple::usage = "Topple \[Congruent] Dagger @* Transpose; i.e., applies Transpose and then Dagger.\nNot to be confused with Dagger or ConjugateTranspose.\nIt is similar to ConjugateTranspose, but applies Dagger instead of Conjugate. Therefore it acts also on a tensor of operators (not just numbers)."
 
-Topple[v_?VectorQ] := Dagger[v]
+Topple[m_?ArrayQ, spec___] := ConjugateTranspose[m, spec] /; ArrayQ[m, _, NumericQ]
 
-Topple[m_?TensorQ, spec___] := Dagger @ Transpose[m, spec]
+Topple[m_?ArrayQ, spec___] := Dagger @ Transpose[m, spec]
 
 Topple[a_] := Dagger[a]
+
+
+DaggerTranspose::usage = "DaggerTranspose is an alias of Topple."
+
+(**** </Topple> ****)
 
 
 (**** <Dagger> ****)
@@ -633,9 +638,11 @@ SetAttributes[Dagger, {Listable, ReadProtected}]
    notable drawback is that it is not applicable to matrices. This is why a
    separate function Topple[m] has been defined for matrix or vector m. *)
 
-Dagger[ Dagger[a_] ] := a
+Dagger[z_?NumericQ] := Conjugate[z]
 
-Dagger[ z_?CommutativeQ ] := Conjugate[z]
+Dagger[z_?CommutativeQ] := Conjugate[z]
+
+HoldPattern @ Dagger[Dagger[a_]] := a
 
 HoldPattern @ Dagger[ Conjugate[z_?CommutativeQ] ] := z
 

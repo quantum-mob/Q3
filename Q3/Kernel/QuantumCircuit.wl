@@ -171,14 +171,16 @@ QuantumCircuit /:
 Matrix[qc_QuantumCircuit] := Matrix[qc, Qubits @ qc]
 
 QuantumCircuit /:
-Matrix[qc:QuantumCircuit[gg__, ___?OptionQ], ss:{___?QubitQ}] := Module[
+Matrix[QuantumCircuit[gg__, ___?OptionQ], ss:{___?QubitQ}] := Module[
   { ff },
   ff = SplitBy[
-    Flatten @ QuantumCircuitTrim@{gg},
+    Flatten @ QuantumCircuitTrim @ {gg},
     MatchQ[_Measurement]
-   ];
-  Apply[qcMatrix, MapApply[Dot, Reverse /@ Matrix[ff, ss]]]
- ]
+  ];
+  Apply[qcMatrix, MapApply[ReverseDot, Matrix[ff, ss]]]
+  (* NOTE: This is much faster than the line below, especially, for large systems. *)
+  (* Apply[qcMatrix, MapApply[Dot, Reverse /@ Matrix[ff, ss]]] *)
+]
 
 qcMatrix[v_?VectorQ] = v
 
@@ -206,8 +208,8 @@ SetAttributes[QuantumCircuitTrim, Listable];
 QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__, ___?OptionQ] ] :=
   Flatten @ QuantumCircuitTrim @ {gg}
 
-QuantumCircuitTrim[ PortIn[a__] ] :=
-    Multiply @@ QuantumCircuitTrim[ {a} ]
+QuantumCircuitTrim[ PortIn[vv__] ] :=
+    Multiply @@ QuantumCircuitTrim[{vv}]
 (* NOTE: Useful to apply Matrix directly to QuantumCircuit.  *)
 
 QuantumCircuitTrim[ _PortOut ] = Nothing
@@ -1443,14 +1445,13 @@ RandomQuantumCircuitSimulate[{p_?NumericQ, t_Integer},
   PrintTemporary @ ProgressIndicator @ Dynamic[progress];
 
   {sn, sm} = doAssureList[OptionValue["Samples"], 2];
-  data = Transpose @ Table[
+  data = Table[
     qc = RandomQuantumCircuit[{p, t}, ss];
-    { Table[
-        progress = ++k / N[sn*sm];
-        Table[Normal[Matrix @ qc[[1 ;; 3 i + 1]]], {i, 0, t}],
-        sm
-      ],
-      qc },
+    Table[
+      progress = ++k / N[sn*sm];
+      Table[Matrix @ qc[[1;; 3i + 1]], {i, 0, t}],
+      sm
+    ],
     sn
   ];
   

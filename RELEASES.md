@@ -1,5 +1,13 @@
 # Release Notes
 
+## 3.8.1
+
+- Bug fix: WickMonitor
+- New: ReverseDot, NambuDampingOperator
+- RandomWickCircuitSimulate, RandomCliffordCircuitSimualte, and RandomQuantumCircuitSimulate return only data but not the randomly generated circuits; they are used only internally.
+- RandomWickCircuitSimulate[in, spec, {depth, ds}] collects one state at every ds layers for each run of Wick circuits.
+- RandomCliffordCircuitSimulate[in, {n, depth, ds}, spec] collects one state at every ds layers for each run of Clifford circuits.
+
 ## 3.8.0
 
 - Significantly improved computational speed of WickMonitor and WickSimulate.

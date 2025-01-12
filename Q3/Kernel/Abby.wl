@@ -20,6 +20,7 @@ BeginPackage["Q3`"]
 { IntervalSize };
 
 { Aggregate, TheDelta};
+{ ReverseDot };
 
 { Unless };
 
@@ -902,6 +903,17 @@ ReplaceAllThrough[expr_, rules_] := ReplaceAll[
 ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]
 
 (***** </ApplyThrough> *****)
+
+
+(**** <ReverseDot> ****)
+
+ReverseDot::usage = "ReverseDot[vec,m$1,m$2,$$] returns the equivalent result as Dot[$$,m$2,m$1,vec] but calculates it faster than the latter when the first input argument vec is a vector and the rest are matrices."
+
+ReverseDot[v_?VectorQ, mm___?MatrixQ] := Fold[#2 . #1 &, v, {mm}]
+
+ReverseDot[any___] := Apply[Dot, Reverse @ {any}]
+
+(**** </ReverseDot> ****)
 
 
 (**** <TheDelta> ****)

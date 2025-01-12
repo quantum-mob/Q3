@@ -5062,7 +5062,7 @@ Eigensystem @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] := {
 
 (**** <HouseholderMatrix> ****)
 
-HouseholderMatrix::usage = "HouseholderMatrix[v] returns the Householder reflection matrix m = (1-2|w><w|) associated with vector |w> such that m.v is proportional to {1, 0, 0, \[Ellipsis]}.\nHouseholderMatrix[v, k] returns the Householder reflection matrix that transforms {vk, \[Ellipsis], vn} with components {v1, \[Ellipsis], v(k-1)} kept intact."
+HouseholderMatrix::usage = "HouseholderMatrix[v] returns the Householder reflection matrix m = (1-2|w><w|) associated with vector |w> such that m.v is proportional to {1, 0, 0, \[Ellipsis]}.\nHouseholderMatrix[v, k] returns the Householder reflection matrix that transforms {vk, \[Ellipsis], vn} with the earlier components {v1, \[Ellipsis], v(k-1)} kept intact."
 
 HouseholderMatrix::numeric = "`` is supposed to be a numeric vector."
 

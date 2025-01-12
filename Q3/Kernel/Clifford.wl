@@ -616,36 +616,32 @@ Options[RandomCliffordCircuitSimulate] = {
   "Prefix" -> "RCC"
 }
 
-RandomCliffordCircuitSimulate[
-  {n_Integer, t_Integer},
-  pp:(_?NumericQ|{_?NumericQ, _?NumericQ}), 
-  opts:OptionsPattern[]
-] := RandomCliffordCircuitSimulate[CliffordState @ Ket @ Table[0, n], {n, t}, pp, opts]
+RandomCliffordCircuitSimulate[{n_Integer, depth_Integer, any___}, rest__] :=
+  RandomCliffordCircuitSimulate[CliffordState @ Ket @ Table[0, n], {n, depth, any}, rest]
+
+RandomCliffordCircuitSimulate[in_, {n_Integer, depth_Integer}, rest__] := RandomCliffordCircuitSimulate[in, {n, depth, 3}, rest]
 
 RandomCliffordCircuitSimulate[
   in:(_Ket | _CliffordState | "Random"),
-  {n_Integer, t_Integer},
+  {n_Integer, depth_Integer, ds:(_Integer|All)},
   pp:(_?NumericQ|{_?NumericQ, _?NumericQ}), 
   opts:OptionsPattern[]
 ] := Module[
   { progress = k = 0,
     data, more, qc, sn, sm },
   PrintTemporary @ ProgressIndicator @ Dynamic[progress];
-
   (* simulation *)
   {sn, sm} = doAssureList[OptionValue["Samples"], 2];
-  data = Transpose @ Table[
-    qc = RandomCliffordCircuit[in, {n, t}, pp];
-    { Table[
-        progress = ++k / N[sn*sm];
-        FoldList[Construct[#2, #1]&, First @ qc],
-        sm
-      ],
-      qc
-    },
+  data = Table[
+    qc = RandomCliffordCircuit[in, {n, depth}, pp];
+    Table[
+      progress = ++k / N[sn*sm];
+      FoldList[Construct[#2, #1]&, First @ qc][[1;;All;;ds]],
+      sm
+    ],
     sn
   ];
-
+  (* save data *)
   If[ OptionValue["SaveData"],
     more = Join[{opts}, Options @ RandomCliffordCircuitSimulate];
     SaveData[data, FilterRules[{more}, Options @ SaveData]]

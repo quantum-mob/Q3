@@ -12,6 +12,8 @@ BeginPackage["Q3`"]
 
 { BlockEncoding };
 
+{ VQESimulate, $VQE };
+
 Begin["`Private`"]
 
 (**** <BasisEmbedding> ****)
@@ -274,6 +276,56 @@ ParseGate[
   ]
 
 (**** </BlockEncoding> ****)
+
+
+$VQE::usage = "$VQE is an association that stores the VQE (variational quantum eigensolver) simulation details."
+
+$VQE = <||>
+
+
+(**** <VQESimulate> ****)
+
+VQESimulate[
+  ham_?MatrixQ,
+  pqc_QuantumCircuit, 
+  var_List, 
+  in_?VectorQ,
+  opts___?OptionQ
+] := Module[
+  { avg },
+  (* the cost function *)
+  avg[vv_?VectorQ] := Module[
+    {out, sec},
+    {sec, out} = Timing[Matrix[pqc /. Thread[var -> vv]]];
+    lap += sec;
+    {sec, out} = Timing[Re[Conjugate[out] . mat . out]];
+    lap += sec;
+    cnt++;
+    out
+  ] /; VectorQ[vv, NumericQ];
+  (* local minimization *)
+  FindMinimum[
+    avg @ var, 
+    Transpose @ {var, in},
+    FilterRules[{opts}, Options @ FindMinimum],
+    Method -> "QuasiNewton",
+    StepMonitor :> (
+      PrintTemporary["cnt = ", cnt, "; elapsed time = ", lap];
+      AppendTo[data, avg @ var];
+      AppendTo[time, lap];
+      AppendTo[query, cnt];
+      lap = cnt = 0;
+    )
+  ]
+] /; If[
+  MatrixQ[mat, NumericQ], True,
+  Message[VQESimulate::ham, ham]; False
+] && If[
+  VectorQ[val, NumericQ], True,
+  Message[VQESimulate::in, in]; False
+]
+
+(**** </VQESimulate> ****)
 
 End[]
 

@@ -2531,8 +2531,16 @@ JordanWignerTransform[ff:{__?FermionQ} -> qq:{__?QubitQ}] := Module[
 (**** </JordanWignerTransform> ****)
 
 
-(**** <FermionTranspose> ****)
+(**** <FermionCount> ****)
 
+FermionCount::usage = "FermionCount[obj] returns the number of fermion modes involved in object (or expression) obj."
+
+FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat]
+
+(**** </FermionCount> ****)
+
+
+(**** <FermionTranspose> ****)
 (* See also: Shapourian and Ryu (2017, 2019) *)
 
 FermionTranspose::usage = "FermionTranspose[expr, {c1,c2,\[Ellipsis]}] performs on expr the fermionic partial transposition with respect to fermion modes {c1, c2, \[Ellipsis]}."
