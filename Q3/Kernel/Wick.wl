@@ -25,6 +25,8 @@ BeginPackage["Q3`"]
 { WickSimulate, WickDampingOperator, $WickMinorSteps };
 { WickMonitor };
 
+{ WickLindbladSolve };
+
 { WickLogarithmicNegativity, WickTimeReversalMoment };
 { WickEntropy, WickEntanglementEntropy, WickMutualInformation };
 
@@ -60,8 +62,15 @@ MakeBoxes[ws:WickState[{fac_?NumericQ, cvr_?MatrixQ}, ___], fmt_] :=
   ] /; EvenQ[Length @ cvr]
 
 (* canonicalization *)
+WickState[cvr_?MatrixQ, opts___?OptionQ] :=
+  WickState[{1, cvr}, opts] /; If[
+    WickHermitianQ[cvr], True,
+    Message[WickState::cvr, cvr]; False
+  ]
+
+(* canonicalization *)
 WickState[cvr_WickCovariance, opts___?OptionQ] :=
-  WickState[{1, cvr}, opts]
+  WickState[{1, First @ cvr}, opts]
 
 (* canonicalization *)
 WickState[{fac_, cvr_WickCovariance}, rest___?OptionQ] :=
@@ -265,7 +274,7 @@ WickCovariance[ws_WickState] := WickCovariance[ ws[[1, 2]] ]
 WickCovariance[grn_NambuGreen] := Module[
   { crr = 4*ToMajorana[Normal @ grn] },
   (* NOTE: Notice the factor of 4. *)
-  WickCovariance @ Re[ I * (crr - One[Dimensions @ crr]) ]
+  WickCovariance @ Re[I*(crr - One[Dimensions @ crr])]
 ]
 
 (* conversion *)
@@ -274,6 +283,16 @@ NambuGreen[cvr_WickCovariance] := Module[
   NambuGreen[ToDirac @ crr] / 4
   (* NOTE: Notice the factor of 1/4. *)
 ]
+
+(* conversion from correlation matrix *)
+WickCovariance[crr_NambuHermitian] := Module[
+  { n = FermionCount[crr],
+    mat },
+  mat = NambuHermitian[n]/2 - crr;
+  WickCovariance @ Re[4I*ToMajorana[Normal @ mat]]
+  (* NOTE: Notice the factor of 4. *)
+]
+
 
 WickCovariance /:
 Normal[WickCovariance[mm_?MatrixQ, ___], rest___] :=
@@ -613,7 +632,7 @@ WickElements[mat_?MatrixQ, aa:{__?FermionQ}] :=
 WickElements[
   (WickOperator|WickJump|WickMeasurement)[mat_?MatrixQ, ___],
   spec:({__?MajoranaQ} | {__?FermionQ} )
-] := WickElements[mat, aa]
+] := WickElements[mat, spec]
 
 (**** </WickElements> ****)
 
@@ -1859,8 +1878,7 @@ WickDampingOperator[WickJump[jmp_?MatrixQ, ___]] := With[
 WickDampingOperator[WickMeasurement[msr_?MatrixQ, ___]] := Module[
   { dig, mat },
   dig = 2*Map[NormSquare, msr];
-  dig = SparseArray[DiagonalMatrix @ dig];
-  mat = ConjugateTranspose[msr] . dig . msr;
+  mat = Dot[ConjugateTranspose @ msr, dig*msr];
   { WickHermitian @ Re[ -I*(mat - Transpose[mat]) ],
     Re @ Tr[mat]/2 }
 ]
@@ -2029,14 +2047,14 @@ WickMonitor[
     progress = 0,
     uni, data, more },
   uni = WickUnitary @ MatrixExp[N @ First[ham]*dt];
-
+  (* simulation *)
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
     progress = k / N[n];
     theWickMonitor[in, uni, map, {tau, dt}][[1;;All;;ds]],
     {k, n}
   ];
-    
+  (* save data *)
   If[ OptionValue["SaveData"],
     more = Join[{opts}, Options @ WickMonitor];
     SaveData[data, FilterRules[{more}, Options @ SaveData]]
@@ -2060,7 +2078,7 @@ theWickMonitor[
   gmm = 2 * Total @ map[[1, 4]];
   (* NOTE: Here, the additional factor 2 is required because the prefactors map[[1, 4]] from WickMapKernel[2, ...] already contains the factor of 1/2 associated with projection Dagger[b]**b. *)
   gmm = Exp[-gmm*dt];
-  While[ t <= tau,     
+  While[ t <= tau,
     (* non-unitary (yet practically unitary) evolution *)
     If[ RandomReal[] < gmm,
         new = uni[new];
@@ -2077,6 +2095,134 @@ theWickMonitor[
 ]
 
 (**** </WickMonitor> ****)
+
+
+(**** <WickLindbladSolve> ****)
+(* See also Bravyi (2012a). *)
+
+WickLindbladSolve::usage = "WickLindbladSolve[ham, jmp, in, t] solves the Lindblad equation associated with the Hamiltonia ham and a set of quantum jump operators jmp, and returns the fermionic Gaussian mixed state at t."
+
+WickLindbladSolve[ham_NambuHermitian, rest__] :=
+  WickLindbladSolve[WickHermitian @ ham, rest]
+
+WickLindbladSolve[ham_WickHermitian, jmp_NambuJump, rest__] :=
+  WickLindbladSolve[ham, WickJump @ jmp, rest]
+
+WickLindbladSolve[ham_WickHermitian, msr_NambuMeasurement, rest__] :=
+  WickLindbladSolve[ham, WickMeasurement @ msr, rest]
+
+
+WickLindbladSolve[ham_, jmp_, in_, t_?NumericQ, rest___] :=
+  First @ WickLindbladSolve[ham, jmp, in, {{t}}, rest]
+
+WickLindbladSolve[ham_, jmp_, in_, {t0_?NumericQ, tn_?NumericQ}, rest___] :=
+  WickLindbladSolve[ham, jmp, in, {Range[t0, tn]}, rest]
+
+WickLindbladSolve[ham_, jmp_, in_,
+  {ti_?NumericQ, tf_?NumericQ, dt_?NumericQ},
+  rest___
+] := WickLindbladSolve[ham, jmp, in, {Range[ti, tf, dt]}, rest]
+
+WickLindbladSolve[ham_WickHermitian, jmp_, in_WickState, rest__] :=
+  Map[WickState, WickLindbladSolve[ham, jmp, in[[1, 2]], rest]]
+
+WickLindbladSolve[ham_WickHermitian, jmp_, in_WickCovariance, rest__] :=
+  Map[WickCovariance, WickLindbladSolve[ham, jmp, First @ in, rest]]
+
+WickLindbladSolve[ham_, msr_WickMeasurement, cvr_, {tt_?VectorQ}] :=
+ WickLindbladSolve[ham, msr, cvr, {tt}, False]
+
+
+(* quantum jump operators linear in fermion operators *)
+WickLindbladSolve[
+  ham_WickHermitian,
+  jmp_WickJump,
+  cvr_?MatrixQ,
+  {tt_?VectorQ}
+] := Module[
+  { xx, vp, vv },
+  {xx, vp} = WickLindbladKernel[ham, jmp];
+  vv = cvr - vp;
+  xx = Map[MatrixExp[xx*#]&, tt];
+  vv = Map[vp + #.vv.Transpose[#]&, xx];
+  Map[(# - Transpose[#])/2&, vv]
+]
+
+(* quantum jump operators that are projection operators *)
+WickLindbladSolve[
+  ham_WickHermitian,
+  msr_WickMeasurement,
+  cvr_?MatrixQ,
+  {tt_?VectorQ},
+  flag:(True | False)
+] := Module[
+  { vec = UpperTriangular[cvr, 1],
+    spr, out },
+  spr = WickLindbladKernel[ham, msr, flag];
+  out = Map[MatrixExp[spr*#].vec&, tt];
+  Map[AntisymmetricMatrix, out]
+]
+
+
+WickLindbladKernel::usage = "WickLindbladKernel[ham, jmp] returns a pair {krn, sol}."
+
+WickLindbladKernel[ham_NambuHermitian, jmp_] :=
+  WickLindbladKernel[WickHermitian @ ham, jmp]
+
+WickLindbladKernel[ham_, jmp_NambuJump] :=
+  WickLindbladKernel[ham, WickJump @ jmp]
+
+WickLindbladKernel[ham_, msr_NambuMeasurement] :=
+  WickLindbladKernel[ham, WickMeasurement @ msr]
+
+
+(* WickJump *)
+WickLindbladKernel[ham_WickHermitian, jmp_WickJump] := Module[
+  { mm = First[jmp],
+    xx, yy },
+  mm = Transpose[mm] . Conjugate[mm];
+  xx = First[ham] - (mm + Conjugate[mm]) // Re;
+  yy = -2I*(mm - Conjugate[mm]) // Re;
+  mm = LyapunovSolve[xx, -yy];
+  {xx, (mm - Transpose[mm])/2}
+]
+(* NOTE: Matrix ham is supposed to be a even-dimensional real anti-symmetric matrix. *)
+(* NOTE: If ham is 2nx2n, then jmp must be mx2n. *)
+
+(* WickMeasurement *)
+WickLindbladKernel[ham_WickHermitian, msr_WickMeasurement] := Module[
+  { yy = First[msr],
+    mm = First[msr],
+    nn = 2*Map[NormSquare, First @ msr],
+    xx, id, kk, ll, m, n },
+  mm = Dot[Transpose @ mm, nn*Conjugate[mm]];
+  xx = First[ham] - (mm + Conjugate[mm]) // Re;
+  (* Constructs the SuperMatrix. *)
+  {m, n} = Dimensions[yy];
+  kk = Flatten[Table[{i, j}, {i, n-1}, {j, i+1, n}], 1];
+  kk = Map[FromDigits[#-1, n]+1&, kk];
+  ll = IntegerReverse[kk-1, n, 2] + 1;
+  id = One[n];
+  xx = CircleTimes[xx, id] + CircleTimes[id, xx];
+  xx = xx[[kk, kk]] - xx[[kk, ll]];
+  (* first term *)
+  yy = Flatten /@ Table[
+    yy[[k,i]]*Conjugate[yy[[k,j]]] - yy[[k,j]]*Conjugate[yy[[k,i]]],
+    {k, m},
+    {i, n-1},
+    {j, i+1, n}
+  ];
+  yy = -4*Transpose[yy] . yy;
+  Re[xx + yy]
+]
+
+WickLindbladKernel[ham_WickHermitian, msr_WickMeasurement, False] :=
+  WickLindbladKernel[ham, msr]
+
+WickLindbladKernel[ham_WickHermitian, msr_WickMeasurement, True] :=
+  WickLindbladKernel[ham, Surd[2, 4]*msr]
+
+(**** </WickLindbladSolve> ****)
 
 
 (**** <FermionCount> ****)
@@ -2123,86 +2269,80 @@ WickTimeReversalMoment::usage = "WickTimeReversalMoment[\[Alpha], {gg, ff}, {k1,
 
 WickTimeReversalMoment::sing = "The matrix is tamed according to option \"Epsilon\"."
 
-Options[WickTimeReversalMoment] = { "Epsilon" -> 1.25*^-8 }
-(* 1.0*^-8 is also a reasonable choice *)
+Options[WickTimeReversalMoment] = { "Epsilon" -> 1.25*^-20 }
 
 (* canoncialization *)
 WickTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}, opts___?OptionQ] :=
-  WickTimeReversalMoment[alpha, {grn, Zero[Dimensions @ grn]}, kk, opts]
+  WickTimeReversalMoment[alpha, NambuGreen @ {grn, 0}, kk, opts]
 
 (* canoncialization *)
-WickTimeReversalMoment[alpha_, NambuGreen[{g_?MatrixQ, f_?MatrixQ}, ___], rest__] := 
-  WickTimeReversalMoment[alpha, {g, f}, rest]
+WickTimeReversalMoment[alpha_, grn_?NambuMatrixQ, rest__] := 
+  WickTimeReversalMoment[alpha, NambuGreen @ grn, rest]
 
 (* canoncial form *)
-WickTimeReversalMoment[alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, opts___?OptionQ] := 
-  Quiet[theTimeReversalMoment[alpha, {grn, anm}, kk, opts], Inverse::luc]
-(* 2024-08-11: Inverse::luc is silenced; the warning message does not seem to be serious in most cases, but goes off too often. *)
+WickTimeReversalMoment[
+  alpha_, grn_NambuGreen, kk:{__Integer},
+  opts___?OptionQ
+] := Quiet[
+  theTimeReversalMoment[alpha, grn, kk, opts],
+  {Det::luc, Inverse::luc}
+]
+(* 2024-08-11: Dot::luc and Inverse::luc are silenced; the warning message goes off too often while it does not seem to be serious in most cases. *)
+(* 2025-01-18 (v3.8.2): All Pfaffian is replaced by Sqrt@*Det because the current implementation of Pfaffian is slow and racks accuracy. *)
 
 (* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 theTimeReversalMoment[
-  alpha_, {grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer},
+  alpha_, grn_NambuGreen, kk:{__Integer},
   OptionsPattern[WickTimeReversalMoment]
 ] := Module[
-  { dd = Length[grn],
-    gg, oo, id, xx, zz, uu, ww, pf1, pf2, dgn, off
+  { n = FermionCount[grn],
+    gg, id, xx, zz, uu, ww, pf1, pf2, pf3, dgn, off
   },
-  oo = Zero[{dd, dd}];
-  id = One[dd];
+  id = One[n];
   xx = CircleTimes[ThePauli[1], id];
   zz = CircleTimes[ThePauli[3], id];
-
   (* \Gamma *)
-  gg = id - N[grn];
-  (* NOTE: N[grn] is to avoid additional normalization (or even orthonormalization) of the eigenvectors of grn. *)
-  gg = Normal @ NambuHermitian[{gg, -anm}];
-  gg -= OptionValue["Epsilon"] * zz;
-  (* NOTE: When there is a fermion mode that is unoccuppied with certainty, the coherent-state representation becomes unusual, and one needs to handle such cases separately. While this is possible, Q3 offers a ditry trick. *)
-  
-  (* pf1 = Power[Pfaffian[Inverse[gg.xx]], 2]; *)
-  (* pf1 = Power[-1, dd] / Det[gg]; *)
-  pf1 = Quiet[Det[gg], Det::luc];
-
-  (* \Omega of the density operator \rho *)
+  gg = Normal[N @ NambuHermitian @ grn];
+  gg -= OptionValue["Epsilon"]*I;
+  (* NOTE: When there is a fermion mode that is unoccuppied with certainty, the coherent-state representation becomes unusual, and one needs to handle such cases separately. While this is possible, Q3 offers a ditry trick. *)  
+  pf1 = Det[gg];
+  (* \Omega *)
   ww = Inverse[gg] - zz;
-
-  uu = SparseArray[
-    Flatten @ {
-      Thread[Transpose@{kk, dd + kk} ->  I],
-      Thread[Transpose@{dd + kk, kk} -> -I],
-      Thread[Transpose@{kk, kk} -> 0],
-      Thread[Transpose@{dd + kk, dd + kk} -> 0],
-      {i_, i_} -> 1,
-      {_, _} -> 0
-    },
-    {2*dd, 2*dd}
-  ];
   (* \Omega of partial TR *)
+  uu = theTimeReversalUnitary[kk, n];
   ww = ConjugateTranspose[uu] . ww . uu;
-
-  dgn = CirclePlus[ww[[;;dd, ;;dd]], ww[[dd+1;;, dd+1;;]]];
+  (* \Xi *)
+  dgn = CirclePlus[ww[[;;n, ;;n]], ww[[n+1;;, n+1;;]]];
   off = ArrayFlatten @ {
-    {oo, ww[[;;dd, dd+1;;]]},
-    {ww[[dd+1;;, ;;dd]], oo}
+    {0, ww[[;;n, n+1;;]]},
+    {ww[[n+1;;, ;;n]], 0}
   };
-  (* pf2 = Pfaffian[(off - zz).xx]; *)
-  pf2 = Quiet[Det[ id + ww[[dd+1;;, ;;dd]].ww[[;;dd, dd+1;;]] ], Det::luc];
-  pf2 = Sqrt[pf2];
-  Check[pf2 *= pf1, Message[WickTimeReversalMoment::infy, pf2*pf1]; pf2 = 0];
-
+  pf2 = Sqrt @ Det[id + ww[[n+1;;, ;;n]].ww[[;;n, n+1;;]]];
   (* effective \Omega of \Xi *)
   ww = Inverse[zz - off];
   ww = off + dgn . ww . dgn;
-  pf2 *= Pfaffian[xx.(ww + zz)];
-
-  (* effective \Gamma *)
+  pf3 = Sqrt @ Det[xx.(ww + zz)];
+  (* effective \Gamma of \Xi *)
   gg = Inverse[ww + zz];
-  (* effective Green's function Gij *)
-  gg = CircleTimes[ThePauli[10], id] - gg;
-
+  (* effective Green's function of \Xi *)
+  gg = NambuGreen[NambuHermitian @ gg];
+  gg = Take[Eigenvalues @ Normal @ gg, n];
   (* Recall the particle-hole symmetry. *)
-  gg = Take[Eigenvalues @ gg, dd];
-  Total[Log[2, Power[gg, alpha] + Power[1-gg, alpha]]] + Log[2, Power[pf2, alpha]]
+  Total[Log[2, Power[gg, alpha] + Power[1-gg, alpha]]] + 
+    Log[2, Power[Abs[pf1*pf2*pf3], alpha]]
+  (* NOTE: Abs[...] to prevent a spurious imaginary part. *)
+]
+
+theTimeReversalUnitary[kk:{__Integer}, n_Integer] := SparseArray[
+  Flatten @ {
+    Thread[Transpose@{kk, kk} -> 0],
+    Thread[Transpose@{kk, n+kk} ->  I],
+    Thread[Transpose@{n+kk, kk} -> -I],
+    Thread[Transpose@{n+kk, n+kk} -> 0],
+    {i_, i_} -> 1,
+    {_, _} -> 0
+  },
+  {2n, 2n}
 ]
 
 (**** </WickTimeReversalMoment> ****)
@@ -2223,13 +2363,13 @@ WickLogarithmicNegativity[kk:{__Integer}][any_] :=
 WickLogarithmicNegativity[obj_, {}, ___] = 0
 
 (* for large data *)
-WickLogarithmicNegativity[data_?ArrayQ, kk:{___Integer}] := Module[
+WickLogarithmicNegativity[data_?ArrayQ, kk:{___Integer}, opts___?OptionQ] := Module[
   { progress = i = 0,
     dim = Aggregate[N @ Dimensions @ data],
     dep = ArrayDepth[data]
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
-  Map[(progress = i++/dim; WickLogarithmicNegativity[#, kk])&, data, {dep}]
+  Map[(progress = i++/dim; WickLogarithmicNegativity[#, kk, opts])&, data, {dep}]
 ] /; ArrayQ[data, _, MatchQ[#, _WickState | _WickCovariance | _NambuGreen]&]
 
 (* shortcut *)
@@ -2270,19 +2410,23 @@ WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___] := Module[
 ]
 
 (* BdG models *)
-WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, ___] :=
-  WickLogarithmicNegativity[grn, kk] /; ArrayZeroQ[anm] 
+WickLogarithmicNegativity[grn_NambuGreen, kk:{__Integer}, ___] :=
+  WickLogarithmicNegativity[grn[[1, 1]], kk] /; ArrayZeroQ[grn[[1,2]]] 
 
-WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, ___] := 0 /;
-  Length[grn] == Length[kk]
+WickLogarithmicNegativity[grn_NambuGreen, kk:{__Integer}, ___] := 0 /;
+  FermionCount[grn] == Length[kk]
 
 (* Canonical form for BdG models *)
-WickLogarithmicNegativity[{grn_?MatrixQ, anm_?MatrixQ}, kk:{__Integer}, opts:OptionsPattern[]] :=
-  WickTimeReversalMoment[1/2, {grn, anm}, kk, opts, "Epsilon" -> OptionValue["Epsilon"]]
+WickLogarithmicNegativity[
+  grn_NambuGreen, kk:{__Integer}, 
+  opts:OptionsPattern[]
+] := WickTimeReversalMoment[1/2, grn, kk, opts,
+    "Epsilon" -> OptionValue["Epsilon"]
+  ]
 
 (* canonicalization *)
-WickLogarithmicNegativity[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], rest__] :=
-  WickLogarithmicNegativity[{gg, ff}, rest]
+WickLogarithmicNegativity[grn_?NambuMatrixQ, rest__] :=
+  WickLogarithmicNegativity[NambuGreen @ grn, rest]
 
 (**** </WickLogarithmicNegtivity> ****)
 

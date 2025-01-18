@@ -214,7 +214,7 @@ MakeBoxes[op:NambuUnitary[uv_?NambuMatrixQ, rest___], fmt_] := Module[
   BoxForm`ArrangeSummaryBox[
     NambuUnitary, op, None,
     { BoxForm`SummaryItem @ { "Target: ", ArrayShort @ cc },
-      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ uv }
+      BoxForm`SummaryItem @ { "Modes: ", Length @ First @ uv }
     },
     { BoxForm`SummaryItem @ { "Blocks: ", Map[ArrayShort, uv] }
     },
@@ -328,8 +328,8 @@ MakeBoxes[grn:NambuGreen[mm_?NambuMatrixQ, rest___], fmt_] := Module[
   ];
   BoxForm`ArrangeSummaryBox[
     NambuGreen, grn, None,
-    { BoxForm`SummaryItem @ { "Modes: ", ArrayShort @ cc },
-      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ First @ mm }
+    { BoxForm`SummaryItem @ { "Target: ", ArrayShort @ cc },
+      BoxForm`SummaryItem @ { "Modes: ", Length @ First @ mm }
     },
     { BoxForm`SummaryItem @ { "Blocks: ", Map[ArrayShort, mm] }
     },
@@ -365,6 +365,15 @@ NambuGreen[{mat_?SquareMatrixQ, 0}, rest___] :=
 
 NambuGreen[NambuGreen[grn_?NambuMatrixQ, rest___], more___] :=
   NambuGreen[grn, more, rest]
+
+
+(* conversion to correlation matrix *)
+NambuHermitian[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, rest___], more___] :=
+  NambuHermitian[{One[Dimensions @ gg] - gg, -ff}, more, rest]
+
+(* conversion to green's Funciton matrix *)
+NambuGreen[NambuHermitian[{cc_?MatrixQ, ff_?MatrixQ}, rest___], more___] :=
+  NambuGreen[{One[Dimensions @ cc] - cc, -ff}, more, rest]
 
 
 NambuGreen /:

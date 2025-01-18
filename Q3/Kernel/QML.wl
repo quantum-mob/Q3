@@ -278,51 +278,59 @@ ParseGate[
 (**** </BlockEncoding> ****)
 
 
-$VQE::usage = "$VQE is an association that stores the VQE (variational quantum eigensolver) simulation details."
+$VQEObject::usage = "$VQEObject is an association that stores the VQE (variational quantum eigensolver) simulation details."
 
-$VQE = <||>
+$VQEObject = <||>
 
 
 (**** <VQESimulate> ****)
 
+VQESimulate::ham = "The first argument `` must be a numeric matrix."
+
+VQESimulate::in = "The forth argument `` must be a numeric vector."
+
 VQESimulate[
   ham_?MatrixQ,
   pqc_QuantumCircuit, 
-  var_List, 
   in_?VectorQ,
   opts___?OptionQ
 ] := Module[
-  { avg },
+  { lap = 0,
+    cnt = 0,
+    avg, var },
+  var = Array[x, Length @ in];
+  Echo[var, "var"];
   (* the cost function *)
   avg[vv_?VectorQ] := Module[
     {out, sec},
     {sec, out} = Timing[Matrix[pqc /. Thread[var -> vv]]];
     lap += sec;
-    {sec, out} = Timing[Re[Conjugate[out] . mat . out]];
+    {sec, out} = Timing[Re[Conjugate[out] . ham . out]];
     lap += sec;
     cnt++;
     out
   ] /; VectorQ[vv, NumericQ];
+  (* object for tracking *)
+  $VQEObject["Data"] = {};
+  $VQEObject["Time"] = {};
+  $VQEObject["Queries"] = {};
   (* local minimization *)
   FindMinimum[
-    avg @ var, 
-    Transpose @ {var, in},
+    Evaluate[ avg @ var ], 
+    Evaluate[ Transpose @ {var, in} ],
     FilterRules[{opts}, Options @ FindMinimum],
     Method -> "QuasiNewton",
     StepMonitor :> (
-      PrintTemporary["cnt = ", cnt, "; elapsed time = ", lap];
-      AppendTo[data, avg @ var];
-      AppendTo[time, lap];
-      AppendTo[query, cnt];
+      PrintTemporary[cnt, " calculations for ", lap, "seconds"];
+      AppendTo[$VQEObject @ "Data", avg @ var];
+      AppendTo[$VQEObject @ "Time", lap];
+      AppendTo[$VQEObject @ "Queries", cnt];
       lap = cnt = 0;
     )
   ]
 ] /; If[
-  MatrixQ[mat, NumericQ], True,
+  MatrixQ[ham, NumericQ], True,
   Message[VQESimulate::ham, ham]; False
-] && If[
-  VectorQ[val, NumericQ], True,
-  Message[VQESimulate::in, in]; False
 ]
 
 (**** </VQESimulate> ****)

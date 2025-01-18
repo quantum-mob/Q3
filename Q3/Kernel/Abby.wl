@@ -9,6 +9,9 @@ BeginPackage["Q3`"]
 { PartitionInto };
 { ShiftLeft, ShiftRight,
   TrimLeft, TrimRight };
+{ UpperTriangular, LowerTriangular }; (* See also Diagonal[] *)
+{ UpperRightMatrix, LowerLeftMatrix };
+{ AntisymmetricMatrix };
 { KeyGroupBy, KeyReplace, CheckJoin };
 { ReplaceRules, ReplaceRulesBy };
 { ZeroQ, ArrayZeroQ };
@@ -338,6 +341,77 @@ TrimRight[a_?VectorQ, n_Integer : 0] := Module[
   While[ZeroQ[Length[new] > n && Last@new], new = Most[new]];
   new
 ]
+
+
+UpperTriangular::usage = "UpperTriangular[m] gives the list of elements on the upper triangular part of the matrix m. UpperTriangular[m,n] ... See also Diagonal[] and UpperTriangularize[]."
+
+UpperTriangular[m_?MatrixQ, n_: 0] := With[
+  {nn = Range[n, Length[m]-1]},
+  Flatten[ MapThread[Drop, {Drop[m, -n], nn}], 1 ]
+]
+
+LowerTriangular::usage = "LowerTriangular[m] gives the list of elements on the lower triangular part of the matrix m. LowerTriangular[m,n] ... See also Diagonal[] and LowerTriangularize[].\nLowerTriangular[m] is equivalent to Values @ Most @ ArrayRules @ LowerTriangularMatrix @ LowerTriangularize[m]."
+
+LowerTriangular[m_?MatrixQ, n_: 0] := With[
+  {nn = Range[1, Length[m]-n]},
+  Flatten[ MapThread[Take, {Drop[m,n], nn}], 1 ]
+]
+
+
+(**** <UpperRightMatrix> ****)
+(* NOTE: UpperTriangularMatrix would be a proper name, but it was taken by another built-in function. *)
+
+UpperRightMatrix::usage = "UpperRightMatrix[vec] returns an upper triangular matrix with the non-zero elements given by the elements of list vec."
+
+UpperRightMatrix::len = "List `` cannot fill an upper triangular matrix."
+
+UpperRightMatrix[v_?VectorQ] := UpperRightMatrix[v, 0]
+
+UpperRightMatrix[v_?VectorQ, k_Integer] := Module[
+  { n = (2k-1 + Sqrt[1 + 8 Length[v]])/2,
+   mm },
+  mm = TakeList[v, Reverse @ Range[n-k]]; 
+  RotateLeft[PadLeft[mm, {n, n}], k] /;
+  If[IntegerQ[n], True,
+    Message[UpperRightMatrix::len, v]; False
+  ]
+]
+
+(**** </UpperRightMatrix> ****)
+
+
+(**** <LowerLeftMatrix> ****)
+(* NOTe: LowerTriangularMatrix would be a proper name, but it was taken by another built-in function. *)
+
+LowerLeftMatrix::usage = "LowerLeftMatrix[vec] returns an lower triangular matrix with the non-zero elements given by the elements of list vec."
+
+LowerLeftMatrix::len = "List `` cannot fill an upper triangular matrix."
+
+LowerLeftMatrix[v_?VectorQ] := LowerLeftMatrix[v, 0]
+
+LowerLeftMatrix[v_?VectorQ, k_Integer] := Module[
+  { n = (2k-1 + Sqrt[1 + 8 Length[v]])/2,
+   mm },
+  mm = TakeList[v, Range[n-k]]; 
+  RotateRight[PadRight[mm, {n, n}], k] /;
+  If[IntegerQ[n], True,
+    Message[LowerLeftMatrix::len, v]; False
+  ]
+]
+
+(**** </LowerLeftMatrix> ****)
+
+
+(**** <AntisymmetricMatrix> ****)
+
+AntisymmetricMatrix::usage = "AntisymmetricMatrix[vec] returns the anti-symmetric matrix with the upper triangular elements given by the elements in list vec."
+
+AntisymmetricMatrix[v_?VectorQ] := With[
+  { mat = UpperRightMatrix[v,1] },
+  mat - Transpose[mat]
+]
+
+(**** </AntisymmetricMatrix> ****)
 
 
 (**** <KeyGroupBy> ****)

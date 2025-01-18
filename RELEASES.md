@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.8.2
+
+- New: WickLindbladSolve, UpperTriangular, LowerTriangular, UpperRightMatrix, LowerLeftMatrix, AntisymmetricMatrix
+
 ## 3.8.1
 
 - Bug fix: WickMonitor
