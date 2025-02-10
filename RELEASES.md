@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.8.3
+
+- New: ConditionNumber
+
 ## 3.8.2
 
 - New: WickLindbladSolve, UpperTriangular, LowerTriangular, UpperRightMatrix, LowerLeftMatrix, AntisymmetricMatrix

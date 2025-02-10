@@ -24,6 +24,7 @@ BeginPackage["Q3`"]
 
 { Aggregate, TheDelta};
 { ReverseDot };
+{ ConditionNumber };
 
 { Unless };
 
@@ -988,6 +989,15 @@ ReverseDot[v_?VectorQ, mm___?MatrixQ] := Fold[#2 . #1 &, v, {mm}]
 ReverseDot[any___] := Apply[Dot, Reverse @ {any}]
 
 (**** </ReverseDot> ****)
+
+
+ConditionNumber::usage = "ConditionNumber[mat] returns the condition number of matrix mat."
+
+ConditionNumber[mat_?MatrixQ] := Module[
+  {min, max},
+  {min, max} = MinMax[SingularValueList @ mat];
+  max/min
+]
 
 
 (**** <TheDelta> ****)

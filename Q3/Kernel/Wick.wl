@@ -1156,7 +1156,7 @@ WickMeasurementKernel[vec_?VectorQ] := Module[
   xx = Re[N @ vec];  (* Notice N[...]; otherwise, it may take very long *)
   yy = Im[N @ vec];
   (* verify the dressed fermion mode *)
-  If[ OddQ[Length @ vec] || Not @ ZeroQ[xx.yy],
+  If[ OddQ[Length @ vec] || Not @ ZeroQ[xx.yy] || Norm[xx] != Norm[yy],
     Message[WickMeasurement::dressed, First @ mat];
     Return @ {One[2n], One[2n], 0}
   ];
