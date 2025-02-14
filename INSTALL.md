@@ -57,10 +57,10 @@ You can download the paclet archive file, and install Q3 from it.
 2. Put it in one of the folders in the search path (see Mathematica built-in symbol $Path as well as function SetDirectory).
 
 3. On Mathematica, execute
-  ```Mathematica
-  PacletInstall[File["<filename>"]]
-  ```
-  Replace <filename> in the above with the filename of the paclet archive file.
+    ```Mathematica
+    PacletInstall[File["<filename>"]]
+    ```
+    Replace <filename> in the above with the filename of the paclet archive file.
 
 ## Manual Installation of Nightly Version
 
