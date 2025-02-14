@@ -62,6 +62,11 @@ You can download the paclet archive file, and install Q3 from it.
     ```
     Replace `<filename>` in the above with the filename of the paclet archive file (enclosed in the quotation marks).
 
+4. Check your installation.
+    ```Mathematica
+    PacletFind["Q3"]
+    ```
+
 ## Manual Installation of Nightly Version
 
 If you want to try a beta version of Q3, which might be buggy, following the following steps:
