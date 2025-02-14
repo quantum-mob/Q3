@@ -25,7 +25,7 @@ Q3 supports the paclet mechanism of Mathematica packages. It allows remote insta
 
 ## Keeping Q3 Updated
 
-Once installed, Q3 will automatically check for updates and install the newest update (if any). This feature has been introducted in v1.7.3. If you have an older version, you have to manually update Q3 to the most recent one (see the instruction below).
+Once installed (using the automatic installation method), Q3 will automatically check for updates and install the newest update (if any). This feature has been introducted in v1.7.3. If you have an older version, you have to manually update Q3 to the most recent one (see the instruction below).
 
 If you want to check for updates and install them manually, follow these instructions:
 
@@ -49,6 +49,22 @@ PacletUninstall["Q3"]
 ```
 
 ## Manual Installation
+
+You can download the paclet archive file, and install Q3 from it.
+
+1. Get the paclet archive file of Q3 from the [Releases]. A paclet archive file has the extension ".paclet" such as "Q3-3.8.2.paclet".
+
+2. Put it in one of the folders in the search path (see Mathematica built-in symbol $Path as well as function SetDirectory).
+
+3. On Mathematica, execute
+  ```Mathematica
+  PacletInstall[File["<filename>"]]
+  ```
+  Replace <filename> in the above with the filename of the paclet archive file.
+
+## Manual Installation of Nightly Version
+
+If you want to try a beta version of Q3, which might be buggy, following the following steps:
 
 1. Download the whole folder as a ZIP file.
 

@@ -9,9 +9,6 @@ BeginPackage["Q3`"]
 { PartitionInto };
 { ShiftLeft, ShiftRight,
   TrimLeft, TrimRight };
-{ UpperTriangular, LowerTriangular }; (* See also Diagonal[] *)
-{ UpperRightMatrix, LowerLeftMatrix };
-{ AntisymmetricMatrix };
 { KeyGroupBy, KeyReplace, CheckJoin };
 { ReplaceRules, ReplaceRulesBy };
 { ZeroQ, ArrayZeroQ };
@@ -24,7 +21,6 @@ BeginPackage["Q3`"]
 
 { Aggregate, TheDelta};
 { ReverseDot };
-{ ConditionNumber };
 
 { Unless };
 
@@ -46,8 +42,6 @@ BeginPackage["Q3`"]
   GraySequence, GraySubsets };
 
 { Primed, DoublePrimed };
-
-{ ArrayShort, MatrixObject };
 
 { LevelsPlot };
 { PanedText };
@@ -330,7 +324,7 @@ TrimLeft::usage = "TrimLeft[list] returns a list by trimming 0 from the left.\nT
 
 TrimLeft[a_?VectorQ, n_Integer : 0] := Module[
   { new = a },
-  While[Length[new] > n && ZeroQ[First@new], new = Rest[new]];
+  While[Length[new] > n && ZeroQ[First @ new], new = Rest[new]];
   new
 ]
 
@@ -339,80 +333,9 @@ TrimRight::usage = "TrimRight[list] returns a list by trimming 0 from the right.
 
 TrimRight[a_?VectorQ, n_Integer : 0] := Module[
   { new = a },
-  While[ZeroQ[Length[new] > n && Last@new], new = Most[new]];
+  While[Length[new] > n && ZeroQ[Last @ new], new = Most[new]];
   new
 ]
-
-
-UpperTriangular::usage = "UpperTriangular[m] gives the list of elements on the upper triangular part of the matrix m. UpperTriangular[m,n] ... See also Diagonal[] and UpperTriangularize[]."
-
-UpperTriangular[m_?MatrixQ, n_: 0] := With[
-  {nn = Range[n, Length[m]-1]},
-  Flatten[ MapThread[Drop, {Drop[m, -n], nn}], 1 ]
-]
-
-LowerTriangular::usage = "LowerTriangular[m] gives the list of elements on the lower triangular part of the matrix m. LowerTriangular[m,n] ... See also Diagonal[] and LowerTriangularize[].\nLowerTriangular[m] is equivalent to Values @ Most @ ArrayRules @ LowerTriangularMatrix @ LowerTriangularize[m]."
-
-LowerTriangular[m_?MatrixQ, n_: 0] := With[
-  {nn = Range[1, Length[m]-n]},
-  Flatten[ MapThread[Take, {Drop[m,n], nn}], 1 ]
-]
-
-
-(**** <UpperRightMatrix> ****)
-(* NOTE: UpperTriangularMatrix would be a proper name, but it was taken by another built-in function. *)
-
-UpperRightMatrix::usage = "UpperRightMatrix[vec] returns an upper triangular matrix with the non-zero elements given by the elements of list vec."
-
-UpperRightMatrix::len = "List `` cannot fill an upper triangular matrix."
-
-UpperRightMatrix[v_?VectorQ] := UpperRightMatrix[v, 0]
-
-UpperRightMatrix[v_?VectorQ, k_Integer] := Module[
-  { n = (2k-1 + Sqrt[1 + 8 Length[v]])/2,
-   mm },
-  mm = TakeList[v, Reverse @ Range[n-k]]; 
-  RotateLeft[PadLeft[mm, {n, n}], k] /;
-  If[IntegerQ[n], True,
-    Message[UpperRightMatrix::len, v]; False
-  ]
-]
-
-(**** </UpperRightMatrix> ****)
-
-
-(**** <LowerLeftMatrix> ****)
-(* NOTe: LowerTriangularMatrix would be a proper name, but it was taken by another built-in function. *)
-
-LowerLeftMatrix::usage = "LowerLeftMatrix[vec] returns an lower triangular matrix with the non-zero elements given by the elements of list vec."
-
-LowerLeftMatrix::len = "List `` cannot fill an upper triangular matrix."
-
-LowerLeftMatrix[v_?VectorQ] := LowerLeftMatrix[v, 0]
-
-LowerLeftMatrix[v_?VectorQ, k_Integer] := Module[
-  { n = (2k-1 + Sqrt[1 + 8 Length[v]])/2,
-   mm },
-  mm = TakeList[v, Range[n-k]]; 
-  RotateRight[PadRight[mm, {n, n}], k] /;
-  If[IntegerQ[n], True,
-    Message[LowerLeftMatrix::len, v]; False
-  ]
-]
-
-(**** </LowerLeftMatrix> ****)
-
-
-(**** <AntisymmetricMatrix> ****)
-
-AntisymmetricMatrix::usage = "AntisymmetricMatrix[vec] returns the anti-symmetric matrix with the upper triangular elements given by the elements in list vec."
-
-AntisymmetricMatrix[v_?VectorQ] := With[
-  { mat = UpperRightMatrix[v,1] },
-  mat - Transpose[mat]
-]
-
-(**** </AntisymmetricMatrix> ****)
 
 
 (**** <KeyGroupBy> ****)
@@ -991,15 +914,6 @@ ReverseDot[any___] := Apply[Dot, Reverse @ {any}]
 (**** </ReverseDot> ****)
 
 
-ConditionNumber::usage = "ConditionNumber[mat] returns the condition number of matrix mat."
-
-ConditionNumber[mat_?MatrixQ] := Module[
-  {min, max},
-  {min, max} = MinMax[SingularValueList @ mat];
-  max/min
-]
-
-
 (**** <TheDelta> ****)
 
 Aggregate::usage = "Aggregate[list] returns the multiplication of the elements in list.\nAggregate[list, n] multiplies all elements down to level n.\nAggregate[list, {n}] multiplies elements at level n.\nAggregate[list, {n1, n2}] multiplies elements at levels n1 through n2."
@@ -1216,68 +1130,6 @@ makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
 (* NOTE: txt may include Graphics[...] such as from MaTeX. *)
 
 (***** </LevelsPlot> ****)
-
-
-(**** <ArrayShort> ****)
-
-ArrayShort::usage = "ArrayShort[mat] displays matrix mat in a short form."
-
-Options[ArrayShort] = {
-  "Size" -> 4
-}
-
-ArrayShort[mat_SymmetrizedArray, rest___] := ArrayShort[Normal @ mat, rest]
-(* NOTE: SymmetrizedArray does not support Span properly. *)
-
-ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := With[
-  { n = OptionValue["Size"] },
-  If[ Length[vec] > n,
-    Append[Take[vec, n], "\[Ellipsis]"],
-    Take[vec, UpTo @ n]
-  ] // Normal //Chop // IntegerChop
-]
-
-ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
-  { dim = Flatten @ { OptionValue["Size"] },
-    spc },
-  dim = PadRight[dim, ArrayDepth @ mat, dim];
-  spc = Thread @ {0, Boole @ Thread[Dimensions[mat] > dim]};
-  dim = Thread[1 ;; UpTo /@ dim];
-  MatrixForm[
-    ArrayPad[IntegerChop @ Chop @ mat[[Sequence @@ dim]], spc, "\[Ellipsis]"],
-    FilterRules[{opts}, Options[MatrixForm]]
-  ]
-]
-
-ArrayShort[any_] = any
-
-(**** </ArrayShort> ****)
-
-
-(**** <MatrixObject> ****)
-
-MatrixObject::usage = "MatrixObject[{{m11,m12,\[Ellipsis]}, {m21,m22,\[Ellipsis]}, \[Ellipsis]}] represents a dense matrix.\nIt may be useful to display a dense matrix in a compact form."
-
-MatrixObject /:
-MakeBoxes[MatrixObject[mat_List?MatrixQ], fmt_] :=
-  BoxForm`ArrangeSummaryBox[
-    MatrixObject, mat, None,
-    { BoxForm`SummaryItem @ { "Type: ", "Dense" },
-      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions[mat] }
-    },
-    { BoxForm`SummaryItem @ { "Elements: ", ArrayShort[mat] }
-    },
-    fmt,
-    "Interpretable" -> Automatic
-  ]
-
-MatrixObject[{}] = {}
-
-MatrixObject[mat_SparseArray?MatrixQ] = mat
-
-MatrixObject[mat_SymmetrizedArray?MatrixQ] = mat
-
-(**** </MatrixObject> ****)
 
 
 (**** <PanedText> ****)

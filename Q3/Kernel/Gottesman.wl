@@ -682,6 +682,8 @@ GottesmanFlip[obj_] :=
 (**** </GottesmanFlip> ****)
 
 
+(**** <GottesmanBasis> ****)
+
 GottesmanBasis::usage = "GottesmanBasis[{v1, v2, \[Ellipsis]}] returns a symplectic basis of the vector space spanned by {v1, v2, \[Ellipsis]}.\nGottesmanBasis[v] returns a symplectic basis {v, \[Ellipsis]} spanning the Gottesman vector space containing v.\nGottesmanBasis[n] returns the standard basis of the n-qubit (2n-dimensional) Gottesman vector space, which happens to be a symplectic basis with respect to the Gottesman inner prodcut."
 (* See: Koenig and Smolin (2021) *)
 
@@ -696,7 +698,7 @@ GottesmanBasis[bs_?MatrixQ] := Module[
   If[Length[w] == 0, Return[bs], w = First[w]];
   
   new = Map[
-    Mod[# + w * GottesmanDot[v, #] + v * GottesmanDot[w, #], 2]&,
+    Mod[# + w*GottesmanDot[v, #] + v*GottesmanDot[w, #], 2]&,
     DeleteCases[Rest @ bs, w]
   ];
   Join[{v, w}, GottesmanBasis @ DeleteCases[new, Table[0, Length @ v]]]
@@ -711,6 +713,8 @@ GottesmanBasis[v_?VectorQ] := With[
 ]
 
 GottesmanBasis[n_Integer] := One[2*n] /; n > 0
+
+(**** </GottesmanBasis> ****)
 
 
 GottesmanSplit::usage = "GottesmanSplit[vec] returns a list of two vectors {{x$1,x$2,$$,x$n},{z$1,z$2,$$,z$n}} for Gottesman vector vec={x$1,z$1,x$2,z$2,$$,x$1n,z$n}.\nGottesmanSplit[mat] returns a list of the X- and Z-part of the matrix of Gottesman vectors, mat={{x$11,z$11,x$12,z$12,$$,x$1n,z$1n},{x$21,z$21,x$22,z$22,$$,x$2n,z$2n},$$}.";
@@ -924,11 +928,11 @@ StabilizerStateCount[ss:{___?QubitQ}] :=
 
 (**** <GottesmanGroup> ****)
 
-GottesmanGroup::usage = "GottesmanGroup is an alias for BinarySymplecticGroup."
+GottesmanGroup::usage = "GottesmanGroup is an alias of BinarySymplecticGroup."
 
-GottesmanGroupOrder::usage = "GottesmanGroupOrder is an alias for BinarySymplecticGroupOrder."
+GottesmanGroupOrder::usage = "GottesmanGroupOrder is an alias of BinarySymplecticGroupOrder."
 
-GottesmanGroupElements::usage = "GottesmanGroupElements is an alias for BinarySymplecticGroupElements."
+GottesmanGroupElements::usage = "GottesmanGroupElements is an alias of BinarySymplecticGroupElements."
 
 (**** </GottesmanGroup> ****)
 

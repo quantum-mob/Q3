@@ -1157,17 +1157,16 @@ WickMeasurementKernel[vec_?VectorQ] := Module[
   yy = Im[N @ vec];
   (* verify the dressed fermion mode *)
   If[ OddQ[Length @ vec] || Not @ ZeroQ[xx.yy] || Norm[xx] != Norm[yy],
-    Message[WickMeasurement::dressed, First @ mat];
+    Message[WickMeasurement::dressed, vec];
     Return @ {One[2n], One[2n], 0}
   ];
   (* The Cartan-Dieudonné theorem *)
-  trs = HouseholderMatrix[xx];
-  trs = HouseholderMatrix[trs.yy, 2] . trs;
   {aa, bb} = WickMeasurementKernel[1, n]; (* nn is ignored *)
-  { Transpose[trs].aa.trs,
-    Transpose[trs].bb.trs }
+  trs = HouseholderMatrix[{xx, yy}];
+  { trs.aa.Transpose[trs],
+    trs.bb.Transpose[trs] }
 ]
-(* NOTE: This is intended for WickMeasurement (rather than WickMap), and does NOT calculate the NormSquare of vec for an efficient simulation of the measurement process. Furthermore, it returns only matrices A and B (but not D). *)
+(* NOTE: This is intended for WickMeasurement (rather than WickMap), and for efficiency, it does NOT calculate the NormSquare of vec. Furthermore, it returns only matrices A and B (but not D). *)
 
 (**** </WickMeasurementKernel> ****)
 

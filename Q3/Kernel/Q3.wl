@@ -24,6 +24,7 @@ EndPackage[]
 Get["Q3`Abba`"];
 Get["Q3`Abby`"];
 Get["Q3`Abel`"];
+Get["Q3`Gauss`"];
 Get["Q3`Chebyshev`"];
 Get["Q3`Wimmer`"];
 Get["Q3`Cauchy`"];
