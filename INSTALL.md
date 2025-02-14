@@ -48,11 +48,11 @@ If you do not want Q3 any longer, then you can uninstall it by evaluating the fo
 PacletUninstall["Q3"]
 ```
 
-## Manual Installation
+## Manual Installation with Paclet Archive File
 
-You can download the paclet archive file, and install Q3 from it.
+You can download a paclet archive file, and install Q3 from it.
 
-1. Get the paclet archive file of Q3 from the [Releases]. A paclet archive file has the extension ".paclet" such as "Q3-3.8.2.paclet".
+1. Get a paclet archive file of Q3 from the [Releases](/Releases). Note that a paclet archive file has file extension ".paclet" such as "Q3-3.8.2.paclet".
 
 2. Put it in one of the folders in the search path (see Mathematica built-in symbol `$Path` as well as function `SetDirectory`).
 
@@ -87,4 +87,4 @@ If you want to try a beta version of Q3, which might be buggy, following the fol
    $BaseDirectory/Applications/
    ```
 
-   Here `$UserBaseDirectory` is the Mathematica(R) symbol, the value of which you can check on your Mathematica.
+   Here, `$UserBaseDirectory` is a Mathematica(R) symbol, the value of which you can check on your Mathematica.
