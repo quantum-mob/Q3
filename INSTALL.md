@@ -52,7 +52,7 @@ PacletUninstall["Q3"]
 
 You can download a paclet archive file, and install Q3 from it.
 
-1. Get a paclet archive file of Q3 from the [Releases](/Releases). Note that a paclet archive file has file extension ".paclet" such as "Q3-3.8.2.paclet".
+1. Get a paclet archive file of Q3 from the [Releases](releases). Note that a paclet archive file has file extension ".paclet" such as "Q3-3.8.2.paclet".
 
 2. Put it in one of the folders in the search path (see Mathematica built-in symbol `$Path` as well as function `SetDirectory`).
 
