@@ -15,7 +15,8 @@ BeginPackage["Q3`"]
 
 { CommonEigensystem, CommonEigenvectors, CommonEigenvalues };
 
-{ CSDecomposition };
+{ CSDecomposition,
+  PhaseDecomposition };
 
 { GivensFactor, GivensRotation };
 { HouseholderMatrix };
@@ -84,11 +85,13 @@ ConditionNumber[mat_?MatrixQ] := Module[
 
 CanonicalizeVector::usage = "CanonicalizeVector[list] returns the same list with the first non-zero element normalized to 1."
 
-(* BUG (v14.1): SelectFirst gives a wrong answer for SparseArray, or evan crashes the Wolfram Kernel. *)
-CanonicalizeVector[in_SparseArray?VectorQ, nrm_:True] := Module[
-  { val = First[in @ "NonzeroValues"] },
-  val = If[nrm, Conjugate[val] / Abs[val], 1 / val];
-  If[MissingQ[val], in, in * val]
+(* BUG (v14.1, fixed in v14.2): SelectFirst gives a wrong answer for SparseArray, or evan crashes the Wolfram Kernel. *)
+If[ $VersionNumber <= 14.1,
+  CanonicalizeVector[in_SparseArray?VectorQ, nrm_:True] := Module[
+    { val = First[in @ "NonzeroValues"] },
+    val = If[nrm, Conjugate[val] / Abs[val], 1 / val];
+    If[MissingQ[val], in, in * val]
+  ]
 ]
 
 CanonicalizeVector[in_?VectorQ, nrm_:True] := Module[
@@ -298,6 +301,7 @@ MatrixObject[mat_SymmetrizedArray?MatrixQ] = mat
 
 
 (**** <CommonEigensystem> ****)
+(* NOTE: Here, we use a heuristic method. More techincal and sophisticate algorithm was first provided in Cardoso (1996). *)
 
 CommonEigensystem::usage = "CommonEigensystem[{m1, m2, ...}] finds the simultaneous eigenvectors and corresponding eigenvales of the mutually commuting square matrices."
 
@@ -306,21 +310,21 @@ CommonEigenvectors::usage = "CommonEigenvectors[{m1, m2, ...}] finds the simulta
 CommonEigenvalues::usage = "CommonEigenvalues[{m1, m2, ...}] finds the simultaneous eigenvalues of the mutually commuting square matrices."
 
 CommonEigensystem[mm:{__?MatrixQ}] := Module[
-  { id = IdentityMatrix[Length @ First @ mm],
+  { id = One[Dimensions @ First @ mm],
     val, vec },
-  { val, vec } = Transpose @ FoldPairList[blockEigensystem, {id}, mm, Identity];
-  { Transpose @ val, Catenate @ Last @ vec }
- ]
+  {val, vec} = Transpose @ FoldPairList[blockEigensystem, {id}, mm, Identity];
+  {Transpose @ val, Catenate @ Last @ vec}
+]
 
 CommonEigenvalues[mm:{__?MatrixQ}] := Module[
-  { id = IdentityMatrix[Length @ First @ mm] },
+  { id = One[Dimensions @ First @ mm] },
   Transpose @ FoldPairList[blockEigensystem, {id}, mm]
- ]
+]
 
 CommonEigenvectors[mm:{__?MatrixQ}] := Module[
-  { id = IdentityMatrix[Length @ First @ mm] },
+  { id = One[Dimensions @ First @ mm] },
   Catenate @ FoldPair[blockEigensystem, {id}, mm, Last]
- ]
+]
 
 
 blockEigensystem[bs:{__?MatrixQ}, mat_?MatrixQ] := Module[
@@ -328,16 +332,17 @@ blockEigensystem[bs:{__?MatrixQ}, mat_?MatrixQ] := Module[
   sys = Transpose @ Map[blockEigensystem[#, mat]&, bs];
   {val, vec} = Catenate /@ sys;
   {Catenate @ val, vec}
- ]
+]
 
 blockEigensystem[bs_?MatrixQ, mat_?MatrixQ] := Module[
   { sys, val, vec },
   sys = Transpose @ Eigensystem[Conjugate[bs] . mat . Transpose[bs]];
-  {val, vec} = Transpose[GatherBy[sys, First], {2, 3, 1}];
-  vec = Map[Normalize, vec, {2}] . bs;
+  {val, vec} = Transpose[Transpose /@ GatherBy[sys, First]];
+  vec = Map[Normalize, vec, {2}];
+  vec = Map[#.bs&, vec];
   {val, vec}
- ]
-(* The basis in bs is assumed to be orthonormal. *)
+]
+(* The basis bs is assumed to be orthonormal. *)
 
 (**** </CommonEigensystem> ****)
 
@@ -492,6 +497,53 @@ CSDecomposition[mat_?MatrixQ, p_Integer] := Module[
 (* NOTE: SelectFirst[..., test->property] used here is introduced in Mathematica v14.2. *)
 
 (**** </CSDecomposition> ****)
+
+
+(**** <PhaseDecomposition> ****)
+
+PhaseDecomposition::usage = "PhaseDecomposition[u] gives the phase decomposition of unitary matrix u as a list {v, d, w} of special orthogonal matrices v and w and digonal matrix d."
+(* SEE: Tucci (2005) *)
+
+PhaseDecomposition[uu_?MatrixQ] := Module[
+  { n = Length[uu],
+    xx = Re[uu],
+    yy = Im[uu],
+    vv, ww, dd, ff, val, trs, r },
+  If[ ArrayZeroQ[xx],
+    {vv, dd, ww} = SingularValueDecomposition[yy];
+    dd *= I,
+    
+    (* else *)
+    {vv, dd, ww} = SingularValueDecomposition[xx];
+    ff = Transpose[vv] . yy . ww;
+  
+    (* the rank of xx *)
+    r = LengthWhile[Diagonal @ dd, Not[ZeroQ @ #]&];
+    If[ r == n,
+      {val, trs} = CommonEigensystem[{dd, ff}];
+      trs = Transpose[trs];
+      dd = DiagonalMatrix[Complex @@@ val, TargetStructure -> "Sparse"];
+      vv = vv . trs;
+      ww = ww . trs,
+    
+      (* else *)
+      {val, trs} = CommonEigensystem[{Take[dd, r, r], Take[ff, r, r]}];
+      trs = Transpose[trs];
+      dd = DiagonalMatrix[Complex @@@ val, TargetStructure -> "Sparse"];
+      {vv1, ff1, ww1} = SingularValueDecomposition[Take[ff, r-n, r-n]];
+      dd = CirclePlus[dd, I*ff1];
+      vv = vv . CirclePlus[trs, vv1];
+      ww = ww . CirclePlus[trs, ww1]
+    ]
+  ];
+  (* require that vv and ww be SO(n) *)
+  If[Det[vv] < 0, vv[[All, 1]] *= -1; dd[[1, 1]] *= -1];
+  If[Det[ww] < 0, ww[[All, 1]] *= -1; dd[[1, 1]] *= -1];
+  {vv, dd, ww}
+]
+(* TODO: The current implementation uses a heuristic algorithm for CommonEigensystem. More sophisticated algorithm is needed for large matrices. *)
+
+(**** </PhaseDecomposition> ****)
 
 
 (**** <TensorFlatten> ****)
@@ -816,13 +868,13 @@ Options[GraphForm] = {
   VertexLabelFunction -> Automatic,
   EdgeLabels -> Automatic,
   EdgeLabelFunction -> Automatic
- }
+}
 
 GraphForm[A_SparseArray?MatrixQ, opts___?OptionQ] := Module[
   { data = Most @ ArrayRules[A] },
   data = KeySort @ Association @ Flatten[ survey /@ data ];
   Return @ fBuildGraph[data, opts];
- ]
+]
 
 GraphForm[A_?MatrixQ, opts___?OptionQ] := Module[
   { data = Flatten @ MapIndexed[survey, A, {2}],
@@ -830,7 +882,7 @@ GraphForm[A_?MatrixQ, opts___?OptionQ] := Module[
   data = Join[Thread[jj -> jj], data];
   data = KeySort @ Association @ data;
   fBuildGraph[data, opts]
- ]
+]
 
 GraphForm[expr_, opts___?OptionQ] := Module[
   { raw, val, data },
@@ -843,9 +895,9 @@ GraphForm[expr_, opts___?OptionQ] := Module[
     EdgeStyle -> {
       UndirectedEdge[_, _, "Pairing"] -> Directive[Red, Thick],
       UndirectedEdge[_, _, "Interaction"] -> Dashed
-     }
-   ]
- ]
+    }
+  ]
+]
 
 fBuildGraph[data_Association, opts___?OptionQ] := Module[
   { nodes, edges, jj, ee, fVertexLabel, fEdgeLabel, v },
@@ -855,7 +907,7 @@ fBuildGraph[data_Association, opts___?OptionQ] := Module[
 
   If[ "HideSelfLinks" /. {opts} /. Options[GraphForm],
     edges = DeleteCases[edges, UndirectedEdge[v_, v_] -> _]
-   ];
+  ];
 
   jj = Keys @ nodes;
   ee = Keys @ edges;
@@ -871,23 +923,23 @@ fBuildGraph[data_Association, opts___?OptionQ] := Module[
   Graph[ jj, ee,
     VertexCoordinates -> vertexRulesShort[ jj,
       VertexCoordinates /. {opts} /. Options[GraphForm] /. Options[Graph]
-     ],
+    ],
     VertexLabels -> fVertexLabel /@ vertexRules[ jj,
       VertexLabels /. {opts} /. nodes /. Options[GraphForm] /. Options[Graph]
-     ],
+    ],
     VertexStyle -> vertexRules[ jj,
       VertexStyle /. {opts} /. Options[GraphForm] /. Options[Graph]
-     ],
+    ],
     VertexSize -> vertexRules[ jj,
       VertexSize /. {opts} /. Options[GraphForm] /. Options[Graph]
-     ],
+    ],
     EdgeLabels -> fEdgeLabel /@ ReplaceAll[
       EdgeLabels, Join[ {opts}, edges, Options[GraphForm], Options[Graph]]
-     ],
+    ],
     Sequence @@ FilterRules[{opts}, Options[Graph]],
     ImageSize -> Large
-   ]
- ]
+  ]
+]
 
 survey::usage = "Surveys the matrix and constructs Vertices, Edges and relevant options for the graph corresponding to the matrix."
 
@@ -897,32 +949,32 @@ survey[_, {j_Integer, j_Integer}] := Nothing
 
 survey[val_, {i_Integer, j_Integer}] := {
   Sort @ UndirectedEdge[i, j] -> val
- }
+}
 
 survey[{i_Integer, j_Integer} -> val_] := {
   i -> i,
   j -> j,
   Sort @ UndirectedEdge[i, j] -> val
- }
+}
 
 
 HoldPattern @ survey[ Multiply[Dagger[a_], Dagger[b_]] -> val_ ] := {
   a -> a,
   b -> b,
   UndirectedEdge[Sequence @@ Sort[{a, b}], "Pairing"] -> val
- }
+}
 
 HoldPattern @ survey[ Multiply[a_?SpeciesQ, b_?SpeciesQ] -> val_ ] := {
   a -> a,
   b -> b,
   UndirectedEdge[Sequence @@ Sort[{a, b}], "Pairing"] -> val
- }
+}
 
 HoldPattern @ survey[ Multiply[Dagger[a_], b_?SpeciesQ] -> val_ ] := {
   a -> a,
   b -> b,
   UndirectedEdge @@ Sort[{a, b}] -> val
- }
+}
 
 HoldPattern @ survey[ Multiply[a_, b_, cc__] -> val_ ] := Module[
   { nodes = Sort[Peel @ {a, b, cc}],
@@ -930,7 +982,7 @@ HoldPattern @ survey[ Multiply[a_, b_, cc__] -> val_ ] := Module[
   vtx = Vertex @@ nodes;
   edges = Thread @ UndirectedEdge[vtx, nodes, "Interaction"];
   Join[ {vtx -> val}, Thread[edges -> $] ]
- ]
+]
 
 
 vertexRules::usage = "vertexRules[jj, spec] constructs a list of Rule[]s, the form appropriate for the optioncs of Graph. It uses the specificiation cyclically if it is shorter than the index list jj."

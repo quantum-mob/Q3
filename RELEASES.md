@@ -2,7 +2,7 @@
 
 ## 3.8.3
 
-- New: CSDecomposition, ConditionNumber, BasisComplete
+- New: CSDecomposition, PhaseDecomposition, ConditionNumber, BasisComplete
 - Bug fix: TrimRight
 - HouseholderMatrix is now intended to operate from the right.
 - HouseholderMatrix[m] is also defined for matrix m.
