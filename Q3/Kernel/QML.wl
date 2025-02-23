@@ -12,6 +12,8 @@ BeginPackage["Q3`"]
 
 { BlockEncoding };
 
+{ QuantumGeometricTensor, FubiniStudyTensor };
+
 { VQESimulate, $VQE };
 
 Begin["`Private`"]
@@ -47,7 +49,6 @@ BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
 
 
 (**** <AmplitudeEmbedding> ****)
-
 (* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
 
 AmplitudeEmbedding::usage = "AmplitudeEmbedding[data, {s1,s2,\[Ellipsis]}] returns a quantum state the amplitudes of which encode data on qubits s1, s2, \[Ellipsis]."
@@ -276,6 +277,70 @@ ParseGate[
   ]
 
 (**** </BlockEncoding> ****)
+
+
+(**** <QuantumGeometricTensor> ****)
+
+QuantumGeometricTensor::usage = "QuantumGeometricTensor[vec, {x1, x2, \[Ellipsis]}] returns the quantum geometric tensor for the state vector vec parametrized with parameters x1, x2, \[Ellipsis]."
+
+QuantumGeometricTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}] := Module[
+  { drv = Map[D[#, {var}]&, vec],
+    bry },
+  bry = Dot[Conjugate @ vec, drv];
+  drv = Dot[ConjugateTranspose @ drv, drv];
+  drv - KroneckerProduct[Conjugate @ bry, bry]
+]
+(* NOTE: vec is supposed to be normalized. *)
+
+QuantumGeometricTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}, val_?VectorQ] :=
+Module[
+  { drv = Map[D[#, {var}]&, vec],
+    bry },
+  bry = Dot[Conjugate @ vec, drv] /. Thread[var -> val];
+  drv = drv /. Thread[var -> val];
+  drv = Dot[ConjugateTranspose @ drv, drv];
+  drv - KroneckerProduct[Conjugate @ bry, bry]  
+]
+(* NOTE: vec is supposed to be normalized. *)
+
+(**** </QuantumGeometricTensor> ****)
+
+
+(**** <FubiniStudyTensor> ****)
+
+FubiniStudyTensor::usage = "FubiniStudyTensor[vec, {x1, x2, \[Ellipsis]}] returns the Fubini-Study metric tensor for the state vector vec parametrized with parameters x1, x2, \[Ellipsis]."
+
+FubiniStudyTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}] := 
+  Re @ QuantumGeometricTensor[vec, var]
+
+FubiniStudyTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}, val_?VectorQ] :=
+  Re @ QuantumGeometricTensor[vec, var, val]
+
+
+(* block-diagonal approximation *)
+
+FubiniStudyTensor[gnr_?ArrayQ][vec:(_?VectorQ|_?MatrixQ)] :=
+  FubiniStudyTensor[gnr, vec]
+
+FubiniStudyTensor[gnr_?ArrayQ, vec_?VectorQ] := Module[
+  { gg, hh },
+  gg = Dot[
+    Dot[Conjugate @ vec, Transpose @ gnr],
+    Transpose @ Dot[gnr, vec]
+  ];
+  hh = Map[Conjugate[vec].#.vec&, gnr];
+  hh = KroneckerProduct[hh, hh];
+  SparseArray[gg - hh]
+] /; ArrayQ[gnr, 3, NumericQ]
+(* NOTE: gnr is supposed to be a list of Hermitian matrices. *)
+
+FubiniStudyTensor[gnr_?ArrayQ, mat_?MatrixQ] :=
+  BlockDiagonalMatrix[
+    FubiniStudyTensor[gnr] /@ mat,
+    TargetStructure -> "Sparse"
+  ]
+
+(**** </FubiniStudyTensor> ****)
 
 
 $VQEObject::usage = "$VQEObject is an association that stores the VQE (variational quantum eigensolver) simulation details."

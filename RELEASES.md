@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.8.4
+
+- New: QuantumGeometricTensor, FubiniStudyMetricTensor
+
 ## 3.8.3
 
 - New: CSDecomposition, PhaseDecomposition, ConditionNumber, BasisComplete
