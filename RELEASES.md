@@ -2,7 +2,7 @@
 
 ## 3.8.4
 
-- New: QuantumGeometricTensor, FubiniStudyMetricTensor
+- New: QuantumGeometricTensor, FubiniStudyMetricTensor, NGrad
 
 ## 3.8.3
 

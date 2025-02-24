@@ -8,6 +8,7 @@ BeginPackage["Q3`"]
 
 { CauchySimplify, CauchyFullSimplify };
 
+{ NGrad };
 
 
 Begin["`Private`"]
@@ -354,6 +355,55 @@ rulesCauchySimplify = {
  }
 
 (**** </Simplifications> ****)
+
+
+(**** <NGrad> ****)
+
+NGrad::usage = "NGrad[f, {x1,x2,\[Ellipsis]}] returns a numerical approximation of function f at point {x1,x2,\[Ellipsis]}."
+
+Options[NGrad] = {
+  Method -> "Central"
+}
+
+NGrad[f_, pnt_?VectorQ, opts:OptionsPattern[]] :=
+  NGrad[f, pnt, 1.0*^-6, opts] /; VectorQ[pnt, NumericQ]
+
+NGrad[f_, pnt_?VectorQ, h_?NumericQ, OptionsPattern[]] :=
+Switch[ OptionValue[Method],
+  "Central", grad2Central[f, pnt, h],
+  "Forward", grad2Forward[f, pnt, h],
+  "Backward", grad2Backward[f, pnt, h],
+  "ThreePointForward", grad3Forward[f, pnt, h],
+  "ThreePointBackward", grad3Backward[f, pnt, h],
+  _, grad2Central[f, pnt, h]
+] /; VectorQ[pnt, NumericQ]
+
+grad2Central[f_, x_, h_] := Module[
+  { xx = h*One[Length @ x] },
+  (Map[f[x + #]&, xx] - Map[f[x - #]&, xx]) / (2*h)
+]
+
+grad2Forward[f_, x_, h_] := Module[
+  { xx = h*One[Length @ x] },
+  (Map[f[x + #]&, xx] - f[x]) / h
+]
+
+grad2Backward[f_, x_, h_] := Module[
+  { xx = h*One[Length @ x] },
+  (f[x] - Map[f[x - #]&, xx]) / h
+]
+
+grad3Forward[f_, x_, h_] := Module[
+  { xx = h*One[Length @ x] },
+  (4*Map[f[x + #]&, xx] - Map[f[x + 2*#]&, xx] - 3*f[x]) / (2*h)
+]
+
+grad3Backward[f_, x_, h_] := Module[
+  { xx = h*One[Length @ x] },
+  -(4*Map[f[x - #]&, xx] - Map[f[x - 2*#]&, xx] - 3*f[x]) / (2*h)
+]
+
+(**** </NGrad> ****)
 
 
 Protect[ Evaluate @ $symb ]
