@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.8.5
+
+- Bug fix: PauliMeasurement
+
 ## 3.8.4
 
 - New: QuantumGeometricTensor, FubiniStudyMetricTensor, NGrad

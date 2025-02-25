@@ -212,39 +212,54 @@ PauliMeasurement[msr_?GottesmanVectorQ, k_Integer] :=
 
 PauliMeasurement[msr_?GottesmanVectorQ, kk:{___Integer}][cs_CliffordState] := Module[
   { ii = Riffle[2kk-1, 2kk],
-    vv = First[cs], ch, new, gnr },
+    vv = First[cs],
+    ch, gnr, new },
   vv = vv[[;;, ii]];
   ch = Map[GottesmanDot[msr, #]&, vv];
   If[ ArrayZeroQ[ch],
-    $MeasurementOut[msr] = Indeterminate;
-    Return[cs]
+    new = GottesmanVectorEmbed[msr, {kk, QubitCount @ cs}];
+    gnr = Append[First[cs][[;;, 1;;-2]], new];
+    If[ MatrixRank[gnr, Modulus -> 2] < Length[gnr],
+      (* msr belongs to the stabilizer. *)
+      $MeasurementOut[msr] = Indeterminate;
+      Return[cs],
+      (* msr does not belong to the stabilizer. *)
+      $MeasurementOut[msr] = RandomChoice[{0, 1}];
+      new = Append[new, IntegerParity @ $MeasurementOut @ msr];
+      gnr = Append[First @ cs, new];
+      Return @ ReplacePart[cs, 1 -> SparseArray[gnr]]
+    ];
   ];
   (* Simulate the measurement process. *)
   ch = Position[ch, 1];
-  Module[
-    { gnr = First[cs],
-      new, alt },
-    If[ RandomReal[] < 0.5,
+  If[ RandomReal[] < 0.5,
       $MeasurementOut[msr] = 0;
       new = Append[msr, +1],
       $MeasurementOut[msr] = 1;
       new = Append[msr, -1]
-    ];
-    new = GottesmanVectorEmbed[new, {kk, (Last[Dimensions @ gnr] - 1)/2}];
-    alt = gnr[[First @ First @ ch]];
-    gnr = ReplacePart[gnr, First[ch] -> new];
-    gnr = ReplaceAt[gnr, v_?VectorQ :> GottesmanTimes[alt, v], Rest @ ch];
-    ReplacePart[cs, 1 -> SparseArray[gnr]]
-  ]
+  ];
+  new = GottesmanVectorEmbed[new, {kk, QubitCount @ cs}];
+  gnr = First[cs];
+  ReplacePart[cs, 1 -> UpdateStabilizerGenerators[gnr, new]]
 ]
 
 PauliMeasurement[msr_?GottesmanVectorQ][cs_CliffordState] := Module[
   { gnr = First[cs],
     chk, new },
-  chk = Map[GottesmanDot[msr, #]&, Transpose @ Most @ Transpose @ gnr];
+  gnr = gnr[[All, 1;;-2]];
+  chk = Map[GottesmanDot[msr, #]&, gnr];
   If[ ArrayZeroQ[chk],
-    $MeasurementOut[msr] = Indeterminate;
-    Return[cs]
+    gnr = Append[gnr, msr];
+    If[ MatrixRank[gnr, Modulus -> 2] < Length[gnr],
+      (* msr belongs to the stabilizer. *)
+      $MeasurementOut[msr] = Indeterminate;
+      Return[cs],
+      (* msr does not belong to the stabilizer. *)
+      $MeasurementOut[msr] = RandomChoice[{0, 1}];
+      new = Append[msr, IntegerParity @ $MeasurementOut @ msr];
+      gnr = Append[First @ cs, new];
+      Return @ ReplacePart[cs, 1 -> SparseArray[gnr]]
+    ];
   ];
   (* Simulate the measurement process. *)
   If[ RandomReal[] < 0.5,
@@ -253,6 +268,7 @@ PauliMeasurement[msr_?GottesmanVectorQ][cs_CliffordState] := Module[
     $MeasurementOut[msr] = 1;
     new = Append[msr, -1]
   ];
+  gnr = First[cs];
   ReplacePart[cs, 1 -> UpdateStabilizerGenerators[gnr, new]]
 ]
 
