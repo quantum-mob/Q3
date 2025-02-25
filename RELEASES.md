@@ -3,6 +3,7 @@
 ## 3.8.4
 
 - New: QuantumGeometricTensor, FubiniStudyMetricTensor, NGrad
+- Changes: The way of specifying the probabilities for the non-unitary circuits elements (PauliMeasurement and PauliDecoherence) has been changed.
 
 ## 3.8.3
 

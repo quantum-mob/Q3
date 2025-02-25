@@ -14,8 +14,6 @@ BeginPackage["Q3`"]
 
 { QuantumGeometricTensor, FubiniStudyTensor };
 
-{ VQESimulate, $VQE };
-
 Begin["`Private`"]
 
 (**** <BasisEmbedding> ****)
@@ -341,64 +339,6 @@ FubiniStudyTensor[gnr_?ArrayQ, mat_?MatrixQ] :=
   ]
 
 (**** </FubiniStudyTensor> ****)
-
-
-$VQEObject::usage = "$VQEObject is an association that stores the VQE (variational quantum eigensolver) simulation details."
-
-$VQEObject = <||>
-
-
-(**** <VQESimulate> ****)
-
-VQESimulate::ham = "The first argument `` must be a numeric matrix."
-
-VQESimulate::in = "The forth argument `` must be a numeric vector."
-
-VQESimulate[
-  ham_?MatrixQ,
-  pqc_QuantumCircuit, 
-  in_?VectorQ,
-  opts___?OptionQ
-] := Module[
-  { lap = 0,
-    cnt = 0,
-    avg, var },
-  var = Array[x, Length @ in];
-  Echo[var, "var"];
-  (* the cost function *)
-  avg[vv_?VectorQ] := Module[
-    {out, sec},
-    {sec, out} = Timing[Matrix[pqc /. Thread[var -> vv]]];
-    lap += sec;
-    {sec, out} = Timing[Re[Conjugate[out] . ham . out]];
-    lap += sec;
-    cnt++;
-    out
-  ] /; VectorQ[vv, NumericQ];
-  (* object for tracking *)
-  $VQEObject["Data"] = {};
-  $VQEObject["Time"] = {};
-  $VQEObject["Queries"] = {};
-  (* local minimization *)
-  FindMinimum[
-    Evaluate[ avg @ var ], 
-    Evaluate[ Transpose @ {var, in} ],
-    FilterRules[{opts}, Options @ FindMinimum],
-    Method -> "QuasiNewton",
-    StepMonitor :> (
-      PrintTemporary[cnt, " calculations for ", lap, "seconds"];
-      AppendTo[$VQEObject @ "Data", avg @ var];
-      AppendTo[$VQEObject @ "Time", lap];
-      AppendTo[$VQEObject @ "Queries", cnt];
-      lap = cnt = 0;
-    )
-  ]
-] /; If[
-  MatrixQ[ham, NumericQ], True,
-  Message[VQESimulate::ham, ham]; False
-]
-
-(**** </VQESimulate> ****)
 
 End[]
 

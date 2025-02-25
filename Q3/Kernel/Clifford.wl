@@ -530,15 +530,21 @@ QubitCount[_] = Indeterminate
 
 RandomCliffordCircuit::usage = "RandomCliffordCircuit[in, {n, t}, p] generates a Clifford circuit of depth 3t on n qubits with the initial state 'in' and with alternating layers of randomly selected two-qubit Clifford unitary gates and single-qubit Pauli measurements, where each qubit is measured with probability p in the computational basis.\nRandomCliffordState[{n, t}, p] assumes the conventional initial state |0,0,\[Ellipsis]>."
 
+RandomCliffordCircuit::num = "Probabilities `` must be a number or a list of numbers."
+
 RandomCliffordCircuit[
   vol:{n_Integer, t_Integer},
-  prb:(_?NumericQ|{_?NumericQ, _?NumericQ})
-] := RandomCliffordCircuit[CliffordState @ Ket @ Table[0, n], vol, prb]
+  prb:(_?NumericQ | _List),
+  opts___?OptionQ
+] := RandomCliffordCircuit[CliffordState @ Ket @ Table[0, n], vol, prb, opts]
+
+RandomCliffordCircuit[in_, vol_, p_?NumericQ, opts___?OptionQ] :=
+  RandomCliffordCircuit[in, vol, {p, 0}, opts]
 
 RandomCliffordCircuit[
   ics:(_Ket | _CliffordState | "Random"), 
   vol:{n_Integer, t_Integer}, 
-  prb:(_?NumericQ | {_?NumericQ, _?NumericQ}),
+  prb_List,
   opts___?OptionQ
 ] := Module[
   { in },
@@ -558,32 +564,40 @@ RandomCliffordCircuit[
     ],
     opts
   ]
+] /; If[ VectorQ[Flatten @ prb, NumericQ], True,
+  Message[RandomCliffordCircuit::num, prb]; False
 ]
 
 
 randomPauliMeasurementLayer::usage = "randomPauliMeasurementLayer[n, p] generates a layer of single-qubit Pauli measurements on qubits selected randomly with probability p among n qubits."
 
-randomPauliMeasurementLayer[n_Integer, p_?NumericQ] := Module[
-  { kk = RandomPick[Range @ n, p] },
-  CliffordCircuit @ Map[PauliMeasurement[{0, 1}, #]&, kk]
-]
+randomPauliMeasurementLayer[n_Integer, p_?NumericQ] :=
+  randomPauliMeasurementLayer[n, {{0, 0, p}, {0, 0, 0}}]
 
-randomPauliMeasurementLayer[n_Integer, {0|0., p_?NumericQ}] := Module[
-  { kk = RandomPick[Range @ n, p],
-    mm = {{1, 0}, {0, 1}, {1, 1}} },
-  CliffordCircuit @ Map[PauliDecoherence[RandomChoice @ mm, #]&, kk]
-]
+(* pp = {p, q} *)
+randomPauliMeasurementLayer[n_Integer, {p_?NumericQ, q_?NumericQ}] :=
+  randomPauliMeasurementLayer[n, {{0, 0, p}, {0, 0, q}}]
 
-randomPauliMeasurementLayer[n_Integer, pp:{_?NumericQ, _?NumericQ}] := Module[
-  { kk = RandomPick[Range @ n, Total @ pp],
-    mm = PauliMeasurement[{0, 1}],
-    dc = PauliDecoherence /@ {{1, 0}, {0, 1}, {1, 1}},
-    pm = First[pp] / Total[pp] },
-  CliffordCircuit @ Table[
-    Append[If[RandomReal[] < pm, mm, RandomChoice @ dc], k],
-    {k, kk}
-  ]
-]
+(* pp = {p, {q1, q2, q3}} *)
+randomPauliMeasurementLayer[n_Integer, {p_?NumericQ, qq_?VectorQ}] :=
+  randomPauliMeasurementLayer[n, {{0, 0, p}, qq}]
+
+(* pp = {{p1, p2, p3}, q} *)
+randomPauliMeasurementLayer[n_Integer, {pp_?VectorQ, q_?NumericQ}] :=
+  randomPauliMeasurementLayer[n, {pp, {0, 0, q}}]
+
+(* pp = {{p1, p2, p3}, {q1, q2, q3}} *)
+randomPauliMeasurementLayer[n_Integer, pp_?MatrixQ] := Module[
+  { kk, mm },
+  kk = RandomPick[Range @ n, Total @ Flatten @ pp];
+  mm = Flatten @ Join[
+    PauliMeasurement /@ {{1, 0}, {1, 1}, {0, 1}},
+    PauliDecoherence /@ {{1, 0}, {1, 1}, {0, 1}}
+  ];
+  mm = RandomChoice[Flatten[pp] -> mm, Length @ kk];
+  CliffordCircuit @ MapThread[Append, {mm, kk}]
+] /; MatrixQ[pp, NumericQ]
+
 
 randomCliffordUnitaryLayer::usage = "randomPauliMeasurementLayer[n] generates a layer of random two-qubit Clifford unitaries on every pair of nearest-neighbor qubits among n qubits."
 
@@ -608,6 +622,8 @@ RandomCliffordCircuitSimulate::usage = "RandomCliffordCircuitSimulate[in, {n, t}
 
 RandomCliffordCircuitSimulate::save = "The result could not be saved."
 
+RandomCliffordCircuitSimulate::num = RandomCliffordCircuit::num
+
 Options[RandomCliffordCircuitSimulate] = {
   "Samples" -> {10, 5},
   "SaveData" -> False,
@@ -621,10 +637,12 @@ RandomCliffordCircuitSimulate[{n_Integer, depth_Integer, any___}, rest__] :=
 
 RandomCliffordCircuitSimulate[in_, {n_Integer, depth_Integer}, rest__] := RandomCliffordCircuitSimulate[in, {n, depth, 3}, rest]
 
+RandomCliffordCircuitSimulate[in_, {n_Integer, depth_Integer}, p_?NumericQ, rest__] := RandomCliffordCircuitSimulate[in, {n, depth, 3}, {p, 0}, rest]
+
 RandomCliffordCircuitSimulate[
   in:(_Ket | _CliffordState | "Random"),
   {n_Integer, depth_Integer, ds:(_Integer|All)},
-  pp:(_?NumericQ|{_?NumericQ, _?NumericQ}), 
+  pp_List, 
   opts:OptionsPattern[]
 ] := Module[
   { progress = k = 0,
@@ -647,6 +665,8 @@ RandomCliffordCircuitSimulate[
     SaveData[data, FilterRules[{more}, Options @ SaveData]]
   ];
   Return[data]
+] /; If[ VectorQ[Flatten @ pp, NumericQ], True,
+  Message[RandomCliffordCircuitSimulate::num, pp]; False
 ]
 
 (**** </RandomCliffordCircuitSimulate> ****)

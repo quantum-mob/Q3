@@ -106,7 +106,7 @@ TheKet[aa:{(0|1|Up|Down)..}] := Module[
     k },
   k = 1 + FromDigits[bb, 2];
   SparseArray[{k -> 1}, Power[2, Length @ bb]]
- ]
+]
 
 (**** </TheKet> ****)
 
@@ -121,13 +121,15 @@ SetAttributes[ThePauli, {NHoldAll, ReadProtected}]
 SyntaxInformation[ThePauli] = {"ArgumentsPattern" -> {_}};
 
 
+ThePauli[kk_SparseArray] := ThePauli[Normal @ kk]
+
 ThePauli[kk:{___, _List, ___}] := ThePauli /@ Thread[kk]
 (* Note: similar to the Listable attribute. *)
 
 ThePauli[kk_List] := ThePauli @ ReplaceAll[ kk,
   { All -> {1, 2, 3},
     Full -> {0, 1, 2, 3} }
- ] /; ContainsAny[kk, {All, Full}]
+] /; ContainsAny[kk, {All, Full}]
 
 ThePauli[All] := ThePauli /@ {1, 2, 3}
 
@@ -276,7 +278,7 @@ KetRegulate[expr_, ss:{___?SpeciesQ}] := expr /. {
   a_Association :> KetRegulate[a, ss],
   v_Ket :> KetRegulate[v, ss],
   v_Bra :> KetRegulate[v, ss]
- }
+}
 
 (**** </KetRegulate> ****)
 
@@ -340,9 +342,9 @@ SimpleForm[expr_, {}] := Module[
     {expr},
     (Ket|Bra)[a_Association] :> Keys[a],
     Infinity
-   ];
+  ];
   SimpleForm[expr, {ss}]
- ]
+]
 
 SimpleForm[expr_, S_?SpeciesQ] := SimpleForm[expr, S @ {$}]
 
@@ -364,7 +366,7 @@ SimpleForm[expr_, gg_List] := expr /. {
   a_Aggociation :> SimpleForm[a, gg],
   v_Ket :> SimpleForm[v, gg],
   v_Bra :> SimpleForm[v, gg]
- }
+}
 
 
 theSimpleForm::usage = "theSimpleForm[ket, {s1, s2, ...}] converts ket into a simple form."
@@ -374,8 +376,8 @@ theSimpleForm[vec:Ket[_Association], gg_List] := With[
   Ket @ List @ Row[
     Map[Row[#, $KetDelimiter]&, Flatten /@ vec /@ ss],
     $KetGroupDelimiter
-   ]
- ]
+  ]
+]
 
 (**** </SimpleForm> ****)
 
@@ -408,7 +410,7 @@ ProductForm[ expr_, gg_List ] := expr /. {
   v_Aggociation :> ProductForm[v, gg],
   v_Ket :> ProductForm[v, gg],
   v_Bra :> ProductForm[v, gg]
- }
+}
 
 
 theProductForm::usage = "theProductForm[ket, {s1, s2, \[Ellipsis]}] converts ket into a product form."
@@ -417,9 +419,9 @@ theProductForm[vec:Ket[_Association], gg_List] := Row[
   Map[
     Ket @ List @ Row[#, $KetDelimiter]&,
     Flatten /@ List /@ vec /@ gg
-   ],
+  ],
   $KetProductDelimiter
- ]
+]
 
 (**** </ProductForm> ****)
 
@@ -455,7 +457,7 @@ SpinForm[expr:Except[_Ket|_Bra], rest__] := expr /. {
   a_Association :> Spinfrom[a, rest],
   v_Ket :> SpinForm[v, rest],
   v_Bra :> SpinForm[v, rest]
- }
+}
 
 
 theSpinForm[Ket[vv:(0|1)..], ___] := 
@@ -531,14 +533,14 @@ theXBasisForm[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr,
     { v_Ket :> theXBasisForm[v, qq], 
       v_Bra :> theXBasisForm[v, qq] }
-   ]
+  ]
 
 theXBasisLabel[Ket[v_], qq:{__?QubitQ}] := 
   Ket @ Join[ v,
     AssociationThread[
       qq -> ReplaceAll[Lookup[v, qq], {0 -> "+", 1 -> "-"}]
-     ]
-   ]
+    ]
+  ]
 
 theXBasisLabel[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr, v_Ket :> theXBasisLabel[v, qq] ]
@@ -561,7 +563,7 @@ YBasisForm[expr_, qq:{__?QubitQ}] :=
 theYBasisForm[v_Ket, qq:{__?QubitQ}] := With[
   { op = Multiply @@ Join[Through[qq[6]], Through[qq[7]]] },
   theYBasisLabel[op ** v, qq]
- ]
+]
 
 theYBasisForm[Bra[v_], qq:{__?QubitQ}] :=
   Dagger @ theYBasisForm[Ket[v], qq]
@@ -570,18 +572,17 @@ theYBasisForm[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr,
     { v_Ket :> theYBasisForm[v, qq], 
       v_Bra :> theYBasisForm[v, qq] }
-   ]
+  ]
 
 theYBasisLabel[Ket[v_], qq:{__?QubitQ}] := 
   Ket @ Join[ v,
     AssociationThread[
       qq -> ReplaceAll[Lookup[v, qq], {0 -> "R", 1 -> "L"}]
-     ]
-   ]
+    ]
+  ]
 
 theYBasisLabel[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr, v_Ket :> theYBasisLabel[v, qq] ]
-
 
 (**** </YBasisForm> ****)
 
@@ -1508,6 +1509,8 @@ Pauli::dot = "Different lengths of Pauli indices `` and ``."
 SetAttributes[Pauli, NHoldAll]
 
 SyntaxInformation[Pauli] = {"ArgumentsPattern" -> {_}};
+
+Pauli[kk_SparseArray] := Pauli[Normal @ kk]
 
 Pauli[kk:{___, _List, ___}] := Pauli /@ Thread[kk]
 (* Note: similar to the Listable attribute. *)
