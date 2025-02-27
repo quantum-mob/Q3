@@ -1,7 +1,8 @@
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "3.8.6",
+  "Version" -> "3.8.7",
   "WolframVersion" -> "13.1+",
+  "PrimaryContext" -> "Q3`",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
   "Extensions" -> {
@@ -55,7 +56,9 @@ Paclet[
   "Creator" -> "Mahn-Soo Choi (Korea University)",
   "URL" -> "https://github.com/quantum-mob/Q3",
   "Category" -> { "Physics", "Quantum Physics" },
-  "Keywords" -> { "quantum information", "quantum computation",
-    "quantum many-body systems", "quantum spins" },
+  "Keywords" -> { "quantum computation",
+    "quantum information",
+    "quantum many-body systems",
+    "quantum spins" },
   "Support" -> "quantum.mob21@gmail.com"
 ]
