@@ -1,5 +1,9 @@
 # Release Notes
 
+## 3.8.6
+
+- Enhanced: FubiniStudyTensor
+
 ## 3.8.5
 
 - Bug fix: PauliMeasurement

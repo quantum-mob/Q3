@@ -1,7 +1,7 @@
 Paclet[
   "Name" -> "Q3",
-  "Version" -> "3.8.5",
-  "WolframVersion" -> "12.3+",
+  "Version" -> "3.8.6",
+  "WolframVersion" -> "13.1+",
   "Updating" -> Automatic,
   "Loading" -> "Startup",
   "Extensions" -> {
@@ -51,7 +51,7 @@ Paclet[
       }
     }
   },
-  "Description" -> "A Wolfram Language framework for quantum symbolic simulations on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.",
+  "Description" -> "A symbolic quantum simulation framework on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.",
   "Creator" -> "Mahn-Soo Choi (Korea University)",
   "URL" -> "https://github.com/quantum-mob/Q3",
   "Category" -> { "Physics", "Quantum Physics" },

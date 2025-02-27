@@ -308,6 +308,8 @@ Module[
 
 FubiniStudyTensor::usage = "FubiniStudyTensor[vec, {x1, x2, \[Ellipsis]}] returns the Fubini-Study metric tensor for the state vector vec parametrized with parameters x1, x2, \[Ellipsis]."
 
+(* exact calculation *)
+
 FubiniStudyTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}] := 
   Re @ QuantumGeometricTensor[vec, var]
 
@@ -318,7 +320,7 @@ FubiniStudyTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}, val_?VectorQ] :=
 (* block-diagonal approximation *)
 
 FubiniStudyTensor[gnr_?ArrayQ][vec:(_?VectorQ|_?MatrixQ)] :=
-  FubiniStudyTensor[gnr, vec]
+  FubiniStudyTensor[gnr, vec] /; ArrayQ[gnr, 3]
 
 FubiniStudyTensor[gnr_?ArrayQ, vec_?VectorQ] := Module[
   { gg, hh },
@@ -336,7 +338,21 @@ FubiniStudyTensor[gnr_?ArrayQ, mat_?MatrixQ] :=
   BlockDiagonalMatrix[
     FubiniStudyTensor[gnr] /@ mat,
     TargetStructure -> "Sparse"
+  ] /; ArrayQ[gnr, 3]
+(* NOTE: mat is supposed to be a list of normalized vectors. *)
+
+
+FubiniStudyTensor::len = "The list of generators `` and the list of state vectors `` have different lengths."
+
+FubiniStudyTensor[gnr:{__?(ArrayQ[#,3]&)}, mat_?MatrixQ] :=
+  BlockDiagonalMatrix[
+    MapThread[FubiniStudyTensor, {gnr, mat}],
+    TargetStructure -> "Sparse"
+  ] /; If[Length[gnr] == Length[mat], True,
+    Message[FubiniStudyTensor::len, gnr, mat]; False
   ]
+(* NOTE: gnr is supposed to be a list of Hermitian matrices. *)
+(* NOTE: mat is supposed to be a list of normalized vectors. *)
 
 (**** </FubiniStudyTensor> ****)
 

@@ -6,7 +6,7 @@ BeginPackage["Q3`"]
 { Q3Info, Q3Release, Q3RemoteRelease,
   Q3Update, Q3CheckUpdate, Q3Assure, Q3Purge };
 
-$Q3Info = "A Wolfram Language framework for quantum symbolic simulations on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.";
+$Q3Info = "A Wolfram Language framework for symbolic quantum simulations on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.";
 
 Begin["`Private`"]
 

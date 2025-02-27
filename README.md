@@ -1,5 +1,5 @@
 <a href="https://github.com/quantum-mob/Q3">
-<img align="Right" src="Assets/Images/EmblemQ3S.png" width="30%"/>
+<img align="Right" src="Q3/Assets/Images/EmblemQ3S.png" width="30%"/>
 </a>
 
 # Q3: Symbolic Quantum Simulation
