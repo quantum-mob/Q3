@@ -6,7 +6,7 @@
 
 Q3S is a symbolic quantum simulation framework written in Wolfram Language to help study *quantum information systems*, *quantum many-body systems*, and *quantum spin systems*; hence the name Q3S. It provides various tools and utilities for symbolic and numerical calculations on these representative quantum systems. It was publically released in 2020.
 
-**N.B.**: The official name of this Wolfram Language Paclet has been changed to `QauntumMob/Q3S`.
+**_N.B._**: The official name of this Wolfram Language Paclet has been changed to `QauntumMob/Q3S`.
 
 ## Requirements
 
