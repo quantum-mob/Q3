@@ -8,18 +8,18 @@ Q3S supports the *Wolfram Languate Paclet* mechanism of Mathematica packages. It
 
 To install Q3S remotely, please follow these steps:
 Copy the following code, and run it on your Mathematica front end (Notebook interface).
-   ```Mathematica
-   Module[
-     { ps },
-     ps = PacletSiteRegister[
-       "https://github.com/quantum-mob/PacletRepository/raw/main",
-       "Quantum Mob Paclet Repository"
-     ];
-     PacletSiteUpdate[ps];
-     PacletInstall["QuantumMob/Q3S"]
-   ]
-   ```
-   That's all!
+```Mathematica
+Module[
+  { ps },
+  ps = PacletSiteRegister[
+    "https://github.com/quantum-mob/PacletRepository/raw/main",
+    "Quantum Mob Paclet Repository"
+  ];
+  PacletSiteUpdate[ps];
+  PacletInstall["QuantumMob/Q3S"]
+]
+```
+That's all!
 
 
 ## Keeping Q3S Updated
