@@ -4,8 +4,9 @@ You can install Q3S in two methods: The first is based on the `paclet` system th
 
 ## Automatic Installation from Remote Server (recommended)
 
-Q3S supports the paclet mechanism of Mathematica packages. It allows remote installation and update. To install remotely, please follow these steps:
+Q3S supports the Wolfram Languate Paclet mechanism of Mathematica packages. It allows remote installation and update.
 
+To install Q3S remotely, please follow these steps:
 Copy the following code, and run it on your Mathematica front end (Notebook interface).
    ```Mathematica
    Module[
@@ -69,11 +70,11 @@ You can download a paclet archive file, and install Q3S from it.
 
 If you want to try a beta version of Q3S (it might be buggy), following these steps:
 
-1. Download the whole [`Q3S`](https://github.com/quantum-mob/Q3/tree/main/Q3S) subfoler as a ZIP file.
+1. Download the whole [`Q3S`](https://github.com/quantum-mob/Q3/tree/main/Q3S)foler as a ZIP file.
 
 2. Unzip the ZIP file.
 
-3. Move (or copy) the Q3S to either
+3. Move (or copy) the `Q3S` folder to either
 
    ```
    $UserBaseDirectory/Applications/ (recommended)
