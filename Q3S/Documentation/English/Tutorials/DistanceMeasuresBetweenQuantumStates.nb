@@ -1,0 +1,4349 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[    155574,       4339]
+NotebookOptionsPosition[    127484,       3804]
+NotebookOutlinePosition[    132588,       3926]
+CellTagsIndexPosition[    132214,       3911]
+WindowTitle->Distance Measures between Quantum States
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["QUANTUM MOB/ Q3S TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "700a5d7a-aec9-489c-af7b-1deba15ffbe3"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "0d12f9e6-b48b-4985-8e30-ca509e86f42e"],
+        Background->RGBColor[
+         0.3843137254901961, 0.4627450980392157, 0.7019607843137254],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Functions",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}}]],ExpressionUUID->
+           "ac1b1806-c4be-491c-a44a-4853539e6a64"]
+         }],ExpressionUUID->"d829802a-b161-4bee-bfda-9301533add6c"],
+         StripOnInput->False],{
+        StyleBox["\"Fidelity\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3S/ref/Fidelity"], 
+         StyleBox[
+          "\"HilbertSchmidtDistance\"", "SeeAlsoRelated", StripOnInput -> 
+           False] :> Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3S/ref/HilbertSchmidtDistance"], 
+         StyleBox["\"Supermap\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3S/ref/Supermap"], 
+         StyleBox[
+          "\"TraceDistance\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3S/ref/TraceDistance"]},
+        
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"TutorialFunction"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "0398098f-1036-4a44-aae1-dcf71c65894d"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}}]],ExpressionUUID->
+           "19e2ae77-88ae-434d-ae80-4c2c31d5ea71"]
+         }],ExpressionUUID->"a14178e7-1249-4dd7-a8a7-90bc5655927e"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3S/guide/QuantumInformationSystems"], 
+         "\"Distance and Similarity Measures\"" :> 
+         Documentation`HelpLookup[
+          "paclet:guide/DistanceAndSimilarityMeasures"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"TutorialMoreAboutSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "2f43d75b-5e41-44bd-ad11-1a6c22f3b296"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}}]],ExpressionUUID->
+           "a4ccac5e-6dde-4885-ba10-072ca8604cec"]
+         }],ExpressionUUID->"82ddd6ad-3a40-4d99-bc45-f3d4ba1fb44e"],
+         StripOnInput->False],{
+        "\"Quantum Noise and Decoherence\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3S/tutorial/QuantumNoiseAndDecoherence"], 
+         "\"Quantum Information Theory\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3S/tutorial/QuantumInformationTheory"], 
+         "\"Quantum Information Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3S/tutorial/QuantumInformationSystems"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"RelatedTutorialsSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "9ffe689c-b1c0-4d2a-bcdb-2f7200f27204"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}}]],ExpressionUUID->
+           "c66c129f-a045-445e-9d22-fe4082dae896"]
+         }],ExpressionUUID->"3a9cb540-157b-4c1d-baae-1b3c2f08645a"],
+         StripOnInput->False],{
+        "\"QuantumMob/Q3S/tutorial/DistanceMeasuresBetweenQuantumStates\"" :> 
+         None, "\"Copy Wolfram Documentation Center URL\"" :> 
+         CopyToClipboard[
+          "QuantumMob/Q3S/tutorial/DistanceMeasuresBetweenQuantumStates"], 
+         Delimiter, "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/QuantumMob/Q3S/\
+tutorial/DistanceMeasuresBetweenQuantumStates.html"], StandardForm]], "Input",
+                  TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "QuantumMob/Q3S/tutorial/DistanceMeasuresBetweenQuantumStates" <> 
+               ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "e84554d1-0570-4c2d-bcf9-2069ff30a6ad"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "b1afcce2-f2cb-451f-ab76-8e699d88dd81"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"a476aafa-255d-41f0-a83f-be75d8f8bd31"],
+
+Cell[CellGroupData[{
+
+Cell["Distance Measures between Quantum States", "TechNoteTitle",
+ CellID->2031075844,ExpressionUUID->"694a4033-e0b9-4cf6-9142-193aabe3d6b9"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Norms and Distances"], 
+      "paclet:QuantumMob/Q3S/tutorial/DistanceMeasuresBetweenQuantumStates#\
+1279618553", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited, StripOnInput -> False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited, StripOnInput -> False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Hilbert-Schmidt and Trace Distances"], 
+      "paclet:QuantumMob/Q3S/tutorial/DistanceMeasuresBetweenQuantumStates#\
+1523037456", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited, StripOnInput -> False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited, StripOnInput -> False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Hilbert-Schmidt and Trace Norms"], 
+      "paclet:QuantumMob/Q3S/tutorial/DistanceMeasuresBetweenQuantumStates#\
+1933235710", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited, StripOnInput -> False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited, StripOnInput -> False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Fidelity"], 
+      "paclet:QuantumMob/Q3S/tutorial/DistanceMeasuresBetweenQuantumStates#\
+710264195", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited, StripOnInput -> False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited, StripOnInput -> False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]}
+  }]], "TechNoteJumpBox",ExpressionUUID->"1a60b59d-bded-49c0-85ce-\
+6ecbc7fb9560"],
+
+Cell[TextData[{
+ "See also Section 5.5 of the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook (2022)"]], 
+    "https://doi.org/10.1007/978-3-030-91214-7"},
+   "WebLink",
+   BaseStyle->{"Text"}]],ExpressionUUID->
+  "ba81b166-bfe8-4ec4-8d10-a9dbde3e2bfe"],
+ "."
+}], "TechNoteText",
+ TextAlignment->"Right",
+ CellID->1308734266,ExpressionUUID->"dd1cd082-34eb-443b-a54d-f265c33aa116"],
+
+Cell["\<\
+A distance measure quantifies the extent to which two quantum states share \
+similar characteristics. Quantum states undergo various operations, unitary \
+or non-unitary, intended or incidental. It is inevitable to quantitatively \
+compare the quantum states before and after those operations to assess their \
+effects.\
+\>", "TechNoteText",
+ CellID->2013395849,ExpressionUUID->"2996fa22-172d-4517-a4a4-76070dd466fa"],
+
+Cell["\<\
+ In general,  While these distance measures are usually given by certain \
+mathematical expressions, they often possess a simple operational meaning, \
+i.e., they are related to the problem of distinguishing two systems.\
+\>", "TechNoteText",
+ CellID->1244208364,ExpressionUUID->"e65e9b6b-99b7-4b4e-b06a-1232a9de011f"],
+
+Cell["\<\
+\tThere are various ways of introducing a notion of distance between two \
+quantum states. Here we introduce three methods of quantifying how close two \
+quantum states are. The first two, the Hilbert-Schmidt and trace distances, \
+are metrics, a mathematical notion of \[OpenCurlyDoubleQuote]distance\
+\[CloseCurlyDoubleQuote]. It sounds natural to say that two states are closer \
+when the distance between them are smaller. The third, fidelity, is \
+conceptually a relative angle. Since quantum states are normalized, it seems \
+reasonable to regard two quantum states closer when the relative angle is \
+smaller. Fidelity is not a metric in the precise mathematical sense and yet \
+well describes the \[OpenCurlyDoubleQuote]closeness\[CloseCurlyDoubleQuote] \
+of quantum states in many respects. Distance measures often possess a simple \
+operational meaning, and depending on the protocol or system in question, one \
+measure is favored operationally than others.\
+\>", "TechNoteText",
+ CellID->1361702909,ExpressionUUID->"e1ccb0a6-f5eb-4071-a1a0-ef144b05f243"],
+
+Cell["\<\
+\tIn quantum information, the trace distance appears far more frequently than \
+the Hilbert-Schmidt distance. One possible reason is that the classical \
+version of trace distance is widely used in statistics. However, there seems \
+to be no profound reason to prefer one to the other in general. Both share \
+many properties in common. One is more convenient in one situation but less \
+in others. It is also heuristic to compare them closely with one another.\
+\>", "TechNoteText",
+ CellID->407565484,ExpressionUUID->"12fe6cf5-ccc3-42ef-8cf9-dd0478e4b7f2"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell[
+       TextData["HilbertSchmidtDistance"]], 
+      "paclet:QuantumMob/Q3S/ref/HilbertSchmidtDistance", 
+      "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The Hilbert-Schmidt distance between two quantum states.", 
+     "TechNoteTableText",ExpressionUUID->
+     "aa083e73-bac5-4fe7-beea-1fda11d95435"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["TraceDistance"]], "paclet:QuantumMob/Q3S/ref/TraceDistance", 
+      "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The trace distance between two quantum states.", "TechNoteTableText",
+     ExpressionUUID->"00311cd6-55fd-4b0d-a860-8e3ebef3aea2"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Fidelity"]], "paclet:QuantumMob/Q3S/ref/Fidelity", 
+      "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The fidelity between two quantum states.", "TechNoteTableText",
+     ExpressionUUID->"e551013e-7212-45cc-a056-dd72a9e427b0"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["Supermap"]], "paclet:QuantumMob/Q3S/ref/Supermap", 
+      "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "Represents a supermap.", "TechNoteTableText",ExpressionUUID->
+     "09d2f0f7-9839-44c4-a2ac-dae4ec06dc07"]}
+  }]], "DefinitionBox",
+ CellID->151987228,ExpressionUUID->"8943a265-c20d-4905-9238-da6f99794bf8"],
+
+Cell["\<\
+Q3 functions useful for distance measures between two quantum states.\
+\>", "TechNoteCaption",
+ CellID->1091284713,ExpressionUUID->"152223e3-a40b-44e5-9942-5b3d2b61e4a9"],
+
+Cell[TextData[{
+ "Make sure that the ",
+ ButtonBox["Q3",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/guide/Q3"],
+ " package is loaded to use the demonstrations in this document."
+}], "TechNoteMathCaption",
+ CellID->1428640008,ExpressionUUID->"0023e83a-0c28-4254-98a5-347f114cf305"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<QuamtumMob`Q3`\>\"", "]"}]], "Input",
+ CellLabel->"In[1]:=",
+ CellID->853967906,ExpressionUUID->"eefa95cd-f556-4d2b-b97a-f871cf5700b2"],
+
+Cell[TextData[{
+ "Throughout this document, symbol ",
+ StyleBox["S", "Input"],
+ " will be used to denote qubits and Pauli operators on them. Similarly, \
+symbol c will be used to denote complex-valued coefficients."
+}], "TechNoteMathCaption",
+ CellID->1937193009,ExpressionUUID->"07b6cd2b-e824-49e5-908a-6e60ad1d65ab"],
+
+Cell[BoxData[{
+ RowBox[{"Let", "[", 
+  RowBox[{"Qubit", ",", "S"}], "]"}], "\[IndentingNewLine]", 
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "c"}], "]"}]}], "Input",
+ CellLabel->"In[2]:=",
+ CellID->403330096,ExpressionUUID->"b2e150a6-0a63-4236-9005-dfd649d85e47"],
+
+Cell[CellGroupData[{
+
+Cell["Norms and Distances", "TechNoteSection",
+ CellTags->"Section11",
+ CellID->1279618553,ExpressionUUID->"dcc5622d-5dbe-4d14-ad65-50e8a55532a1"],
+
+Cell["\<\
+Before we discuss the two metric-based closeness measures, we first recall \
+the relation between Hermitian product, norm, and distance. It will serve as \
+an outline for our discussions on the Hilbert-Schmidt and trace distances.\
+\>", "TechNoteText",
+ CellID->1647779213,ExpressionUUID->"07d5fdd5-45b7-4087-b063-457b5c0973fb"],
+
+Cell[TextData[{
+ "Any ",
+ StyleBox["Hermitian product",
+  FontSlant->"Italic"],
+ " \:27e8\[CenterDot], \[CenterDot]\:27e9 on a vector space gives the notion \
+of magnitude or ",
+ "norm",
+ ", defined by"
+}], "TechNoteText",
+ CellID->276121179,ExpressionUUID->"9c0b5af9-3603-400a-a4e3-7c6c7ce26d6c"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[DoubleVerticalBar]", "v", "\[DoubleVerticalBar]"}], ":=", 
+    SqrtBox[
+     RowBox[{"\[LeftAngleBracket]", 
+      RowBox[{"v", ",", "v"}], "\[RightAngleBracket]"}]]}], TraditionalForm]],
+  ExpressionUUID->"bf50a396-0060-4911-83de-908a86a65ac4"]
+}], "TechNoteText",
+ CellID->56494286,ExpressionUUID->"6469fb87-21c4-42fd-b369-3316678ba640"],
+
+Cell[TextData[{
+ "for a vector ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]],ExpressionUUID->
+  "d1eb98a0-3857-44a3-8792-e2498e212c82"],
+ ". It is called the ",
+ StyleBox["canonical norm",
+  FontSlant->"Italic"],
+ " associated with the Hermitian product. Of course, one can define a norm \
+independent of the given Hermitian product as well."
+}], "TechNoteText",
+ CellID->311692828,ExpressionUUID->"1632f519-4bea-4d54-bb86-fe3919f579fd"],
+
+Cell[TextData[{
+ "Given a norm, one can then measure the distance ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"D", 
+    RowBox[{"(", 
+     RowBox[{"v", ",", " ", "w"}], ")"}]}], TraditionalForm]],ExpressionUUID->
+  "86209415-e608-4d59-869e-f617d0815c1a"],
+ " between two vectors ",
+ Cell[BoxData[
+  FormBox["v", TraditionalForm]],ExpressionUUID->
+  "64548a25-a739-4566-b14e-d9310875bd31"],
+ " and ",
+ Cell[BoxData[
+  FormBox["w", TraditionalForm]],ExpressionUUID->
+  "ddb72ef9-0a85-48e6-922a-982c9b4ec75d"],
+ " by the norm (magnitude) of the difference ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"v", "\[Minus]", "w"}], TraditionalForm]],ExpressionUUID->
+  "b90116a5-5f14-425a-8371-cbdb6adba7b4"],
+ ". In other words,"
+}], "TechNoteText",
+ CellID->908745163,ExpressionUUID->"ee937a51-f676-4d76-93de-3b868693b8fa"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"D", "(", 
+     RowBox[{"v", ",", "w"}], ")"}], ":=", 
+    RowBox[{"\[DoubleVerticalBar]", 
+     RowBox[{"v", "-", "w"}], "\[DoubleVerticalBar]"}]}], TraditionalForm]],
+  ExpressionUUID->"3f269d03-2f2b-4593-a9ef-fc408096dee2"],
+ " ."
+}], "TechNoteText",
+ CellID->376257077,ExpressionUUID->"4e959ea2-a2c7-4623-90ae-6232e21b7c5c"],
+
+Cell["\<\
+Here we have deliberately avoided to use the bra-ket notation since we will \
+mainly apply these notions to operators (yet regarded as vectors) rather than \
+to state vectors. Why?\
+\>", "TechNoteText",
+ CellID->1560836371,ExpressionUUID->"3b5f021d-f99b-40d6-a92e-dee89d598363"],
+
+Cell[TextData[{
+ "For a state vector ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"v"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "f290116f-5bbb-43ad-b4c2-dbe57a826e5b"],
+ ", we have the canonical norm"
+}], "TechNoteText",
+ CellID->1464139292,ExpressionUUID->"f78e5ec6-0b0c-409b-9aa4-73ff2da28cca"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[LeftDoubleBracketingBar]", 
+     TemplateBox[{"v"},
+      "Ket"], "\[RightDoubleBracketingBar]"}], ":=", 
+    SqrtBox[
+     TemplateBox[{"v", "v"},
+      "BraKet"]]}], TraditionalForm]],ExpressionUUID->
+  "ad02e0b6-976e-48f8-9951-fbb855e1a20a"]
+}], "TechNoteText",
+ CellID->1921453318,ExpressionUUID->"4dae0d93-cae1-47eb-b8c1-7e136f31cec0"],
+
+Cell[TextData[{
+ "associated with the standard Hermitian product. Then, it might be tempting \
+to measure the closeness of ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"v"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "d020ac12-c9c3-49d8-a228-9d7e8d10a9af"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"w"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "a17d2e9b-c5fc-47a7-b252-cc23f9bec8c8"],
+ " by the distance ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[LeftDoubleBracketingBar]", 
+    RowBox[{
+     TemplateBox[{"v"},
+      "Ket"], "-", 
+     TemplateBox[{"w"},
+      "Ket"]}], "\[RightDoubleBracketingBar]"}], TraditionalForm]],
+  ExpressionUUID->"3c35577c-a7a4-4452-9dac-11f519b5fc5b"],
+ ". However, there is a serious drawback, and it is not appropriate: Consider \
+two state vectors ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"v"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "496d4885-5827-48ab-82e9-3b1610b1dc88"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"w"},
+     "Ket"], "=", 
+    RowBox[{
+     TemplateBox[{"v"},
+      "Ket"], 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}]]}]}], TraditionalForm]],
+  ExpressionUUID->"e471023c-da1a-415e-b6b1-b982b87789d5"],
+ " . Physically, they represent the same quantum state, whereas the distance \
+between them is finite,\t"
+}], "TechNoteText",
+ CellID->6832040,ExpressionUUID->"e10f47d2-5fb2-46b3-b019-26f49cde498a"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[LeftDoubleBracketingBar]", 
+     RowBox[{
+      TemplateBox[{"v"},
+       "Ket"], "-", 
+      TemplateBox[{"w"},
+       "Ket"]}], "\[RightDoubleBracketingBar]"}], "=", 
+    RowBox[{
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{
+       TemplateBox[{"v"},
+        "Ket"], "-", 
+       RowBox[{
+        TemplateBox[{"v"},
+         "Ket"], 
+        SuperscriptBox["\[ExponentialE]", 
+         RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}]]}]}], 
+      "\[RightDoubleBracketingBar]"}], "=", 
+     RowBox[{"|", 
+      RowBox[{"1", "-", 
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}]]}], "|", 
+      RowBox[{"\[NotEqual]", "0"}]}]}]}], TraditionalForm]],ExpressionUUID->
+  "8faab37a-97be-4a39-ac2b-8a5312984871"],
+ " ."
+}], "TechNoteText",
+ CellID->1009462989,ExpressionUUID->"9f761209-5261-4d33-877e-0c2bb2918420"],
+
+Cell[TextData[{
+ "Therefore, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[LeftDoubleBracketingBar]", 
+    RowBox[{
+     TemplateBox[{"v"},
+      "Ket"], "-", 
+     TemplateBox[{"w"},
+      "Ket"]}], "\[RightDoubleBracketingBar]"}], TraditionalForm]],
+  ExpressionUUID->"21af8d98-6f6d-4acc-8132-576506c09c3a"],
+ " cannot measure properly how close two quantum states ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"v"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "be0c3008-07f0-4d18-91cc-ceb5b3a426cb"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"w"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "dae73fd5-1de7-49e0-819e-99afd2757d66"],
+ " are. Another problem is that the distance ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[LeftDoubleBracketingBar]", 
+    RowBox[{
+     TemplateBox[{"v"},
+      "Ket"], "-", 
+     TemplateBox[{"w"},
+      "Ket"]}], "\[RightDoubleBracketingBar]"}], TraditionalForm]],
+  ExpressionUUID->"fe2d7820-907f-41a8-a076-84d8a76f3a01"],
+ " is defined only for pure states. No simple modification seems to provide a \
+smooth crossover from pure states to mixed states."
+}], "TechNoteText",
+ CellID->923644823,ExpressionUUID->"297a749f-3439-4786-a9d9-96cbabd04e4b"],
+
+Cell[TextData[{
+ "To overcome these problems, we thus seek, from the outset, an operator \
+norm. For a linear operator ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "35e87b26-a0bc-4fa0-823b-ffbc4daa6829"],
+ ", one can choose the canonical norm"
+}], "TechNoteText",
+ CellID->1686739645,ExpressionUUID->"829c8e30-fc5f-4080-9a5f-eb6107396a9d"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+    "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], ":=", 
+    
+    SqrtBox[
+     RowBox[{"\[LeftAngleBracket]", 
+      RowBox[{"A", ",", "A"}], "\[RightAngleBracket]"}]]}], TraditionalForm]],
+  ExpressionUUID->"78ea2955-108b-49f6-b192-e532ca338e29"]
+}], "TechNoteText",
+ CellID->101589468,ExpressionUUID->"b2d7420f-6bdc-4dac-9c33-d76d7dcbf739"],
+
+Cell[TextData[{
+ "associated with the given Hermitian product of operators, or any other \
+norm. Then one measures the closeness of two quantum states \[Rho] and \
+\[Sigma] by ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[DoubleVerticalBar]", 
+    RowBox[{"\[Rho]", "\[Minus]", " ", "\[Sigma]"}], "\[DoubleVerticalBar]"}],
+    TraditionalForm]],ExpressionUUID->
+  "fcf8ad54-9394-4f07-acd8-9a63fd5a0959"],
+ ". For pure states ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"v"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "7d8f1c21-a608-4519-ad0a-eef2295a125d"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"w"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "037fb2cf-7917-4cef-942e-c688de2e9705"],
+ ", the relevant distance is ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[LeftDoubleBracketingBar]", 
+    RowBox[{
+     RowBox[{
+      TemplateBox[{"v"},
+       "Ket"], 
+      TemplateBox[{"v"},
+       "Bra"]}], "-", 
+     RowBox[{
+      TemplateBox[{"w"},
+       "Ket"], 
+      TemplateBox[{"w"},
+       "Bra"]}]}], "\[RightDoubleBracketingBar]"}], TraditionalForm]],
+  ExpressionUUID->"444c7f07-8ccc-4972-800b-4b1dd024ca2a"],
+ ". With this measure, the distance between the two states ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"v"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "75e942b2-2020-43db-9e4b-25ef36d06252"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"w"},
+     "Ket"], "=", 
+    RowBox[{
+     TemplateBox[{"v"},
+      "Ket"], 
+     SuperscriptBox["\[ExponentialE]", 
+      RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}]]}]}], TraditionalForm]],
+  ExpressionUUID->"e8a75d4c-bb8c-4d6f-a29b-3b95e84e3e29"],
+ "  vanishes,"
+}], "TechNoteText",
+ CellID->164689311,ExpressionUUID->"f8f022f9-a3eb-4ec3-a136-8523ad4e2abd"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[LeftDoubleBracketingBar]", 
+     RowBox[{
+      RowBox[{
+       TemplateBox[{"v"},
+        "Ket"], 
+       TemplateBox[{"v"},
+        "Bra"]}], "-", 
+      RowBox[{
+       TemplateBox[{"w"},
+        "Ket"], 
+       TemplateBox[{"w"},
+        "Bra"]}]}], "\[RightDoubleBracketingBar]"}], "=", 
+    RowBox[{
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{
+       RowBox[{
+        TemplateBox[{"v"},
+         "Ket"], 
+        TemplateBox[{"v"},
+         "Bra"]}], "-", 
+       RowBox[{
+        TemplateBox[{"v"},
+         "Ket"], 
+        SuperscriptBox["\[ExponentialE]", 
+         RowBox[{"\[ImaginaryI]", " ", "\[Phi]"}]], 
+        SuperscriptBox["\[ExponentialE]", 
+         RowBox[{
+          RowBox[{"-", "\[ImaginaryI]"}], " ", "\[Phi]"}]], 
+        TemplateBox[{"v"},
+         "Bra"]}]}], "\[RightDoubleBracketingBar]"}], "=", 
+     RowBox[{
+      RowBox[{"\[LeftDoubleBracketingBar]", 
+       RowBox[{
+        RowBox[{
+         TemplateBox[{"v"},
+          "Ket"], 
+         TemplateBox[{"v"},
+          "Bra"]}], "-", 
+        RowBox[{
+         TemplateBox[{"v"},
+          "Ket"], 
+         TemplateBox[{"v"},
+          "Bra"]}]}], "\[RightDoubleBracketingBar]"}], "=", "0"}]}]}], 
+   TraditionalForm]],ExpressionUUID->"e671ee66-3e19-4e80-b7e2-f1934ba761f3"],
+ " "
+}], "TechNoteText",
+ CellID->1974312641,ExpressionUUID->"98180eba-9da8-4078-a45a-df59204bb8c6"],
+
+Cell["\<\
+as it should. Below we introduce two operator-norm-based distance measures.\
+\>", "TechNoteText",
+ CellID->1502727490,ExpressionUUID->"cb514da9-5530-4473-8834-c6bb29f56a9f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Hilbert-Schmidt and Trace Norms", "TechNoteSection",
+ CellTags->"Section12",
+ CellID->1933235710,ExpressionUUID->"38bb04d1-0ef8-48b1-a639-537c03be36e1"],
+
+Cell["\<\
+Here we introduce two operator norms and discuss their mathematical \
+properties. We will discuss the physical properties and implications of the \
+distances deduced from the corresponding norms below.\
+\>", "TechNoteText",
+ CellID->464998860,ExpressionUUID->"ae35a791-910a-4182-988b-711ca0034235"],
+
+Cell[TextData[{
+ "\tOne natural choice of the norm of a linear operator ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "56f16a32-26b5-4372-932d-b64616b9501e"],
+ " is"
+}], "TechNoteText",
+ CellID->542848587,ExpressionUUID->"2493fee5-44df-4286-9024-4f6b527a8262"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "HS"], ":=", 
+    SqrtBox[
+     RowBox[{"Tr", " ", 
+      SuperscriptBox["A", "\[Dagger]"], "A"}]]}], TraditionalForm]],
+  ExpressionUUID->"d60abb84-8960-435f-8d0c-43e2640d26e9"],
+ "."
+}], "TechNoteText",
+ CellID->1145669253,ExpressionUUID->"1b3f1ae3-f6b2-4859-8c00-dc4e604fee11"],
+
+Cell[TextData[{
+ "The subscript \[OpenCurlyQuote]HS\[CloseCurlyQuote] indicates that it is \
+the canonical norm associate with the ",
+ StyleBox[ButtonBox["Hilbert-Schmidt inner product",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/HilbertSchmidtProduct"],
+  FontSlant->"Italic"]
+}], "TechNoteText",
+ CellID->924756169,ExpressionUUID->"62a5e245-c0e7-4d5f-b529-e6b31c9f569f"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[LeftAngleBracket]", 
+     RowBox[{"A", ",", "B"}], "\[RightAngleBracket]"}], "=", 
+    RowBox[{"Tr", " ", 
+     SuperscriptBox["A", "\[Dagger]"], "B"}]}], TraditionalForm]],
+  ExpressionUUID->"80020100-57a0-4ece-af7c-d643018e7ed7"],
+ ","
+}], "TechNoteText",
+ CellID->1037779044,ExpressionUUID->"e8f44ffd-d263-461b-9689-71e2055f9767"],
+
+Cell[TextData[{
+ "of two linear operators ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "7b8e8844-6ced-47a5-8a93-39c6e29ed74a"],
+ " and ",
+ Cell[BoxData[
+  FormBox["B", TraditionalForm]],ExpressionUUID->
+  "c583b508-e9a5-43ed-805a-4096173c3aeb"],
+ ". If ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "4ee68727-fb57-4f2c-a8f2-4c98817fb097"],
+ " is the matrix representation of ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "012b4502-3af8-4f82-83c9-5b2112f5ff69"],
+ " in a given basis, then one can evaluate the ",
+ ButtonBox["Hilbert-Schmidt norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/HilbertSchmidtNorm"],
+ " ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    RowBox[{
+    "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], "HS"],
+    TraditionalForm]],ExpressionUUID->
+  "0bf3d4a3-7310-497e-8df6-d8a563aafe8e"],
+ " in terms of the matrix elements as"
+}], "TechNoteText",
+ CellID->90211574,ExpressionUUID->"69eae6d6-a682-4bcd-8628-2b712affb2d9"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "HS"], ":=", 
+    RowBox[{
+     SqrtBox[
+      RowBox[{
+       SubscriptBox["\[Sum]", 
+        RowBox[{"i", " ", "j"}]], 
+       RowBox[{
+        SubsuperscriptBox["A", 
+         RowBox[{"i", " ", "j"}], "*"], 
+        SubscriptBox["A", 
+         RowBox[{"i", " ", "j"}]]}]}]], "=", 
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{"(", 
+       RowBox[{
+        SubscriptBox["A", "11"], ",", 
+        SubscriptBox["A", "12"], ",", "\[Ellipsis]", ",", 
+        SubscriptBox["A", "21"], ",", 
+        SubscriptBox["A", "22"], ",", "\[Ellipsis]", ","}], ")"}], 
+      "\[RightDoubleBracketingBar]"}]}]}], TraditionalForm]],ExpressionUUID->
+  "62afec15-a248-4d8c-8fff-bf88a6811c6a"],
+ "."
+}], "TechNoteText",
+ CellID->62469436,ExpressionUUID->"ac55d8a6-056f-4df3-9fa5-070d3e342905"],
+
+Cell[TextData[{
+ "In other words, it equals the norm of the vector obtained by flattening the \
+matrix ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "c1fa3939-48b2-48f4-970f-3a720b6769a9"],
+ " into a row (or column) vector."
+}], "TechNoteText",
+ CellID->1951791116,ExpressionUUID->"b68912a8-2dfd-4fe7-b9ea-ff543037a78b"],
+
+Cell[TextData[{
+ "\tAnother norm we will consider is the ",
+ ButtonBox["trace norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceNorm"],
+ ". For a linear operator ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "b2c03585-ae47-424e-88b1-5d54f897f583"],
+ ", it is defined by"
+}], "TechNoteText",
+ CellID->940578687,ExpressionUUID->"2ceea437-5b73-4a86-ad5e-99ae0ae4b932"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "Tr"], ":=", 
+    RowBox[{
+     RowBox[{"Tr", 
+      SqrtBox[
+       RowBox[{" ", 
+        RowBox[{
+         SuperscriptBox["A", "\[Dagger]"], "A"}]}]]}], "=", 
+     RowBox[{"Tr", 
+      SqrtBox[
+       RowBox[{" ", 
+        RowBox[{"A", " ", 
+         SuperscriptBox["A", "\[Dagger]"]}]}]]}]}]}], TraditionalForm]],
+  ExpressionUUID->"20782683-f6ee-46d5-9957-d69c93effee4"],
+ "."
+}], "TechNoteText",
+ CellID->678866842,ExpressionUUID->"8e941f8c-c374-402a-adea-6ce668bff166"],
+
+Cell[TextData[{
+ "Note that the ",
+ ButtonBox["trace norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceNorm"],
+ " of an operator is larger than the magnitude of mere trace,"
+}], "TechNoteText",
+ CellID->134396983,ExpressionUUID->"768640e0-454c-41ba-97c9-389f543b7eb6"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"|", 
+    RowBox[{"Tr", " ", "A"}], "|", 
+    RowBox[{"\[LessEqual]", 
+     SubscriptBox[
+      RowBox[{
+      "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+      "Tr"]}]}], TraditionalForm]],ExpressionUUID->
+  "7dc6c98b-29bb-4c9e-af57-b0b95643c98b"],
+ " ."
+}], "TechNoteText",
+ CellID->1804780284,ExpressionUUID->"49490c08-1193-47fd-b2a1-1acaf4e7ce2e"],
+
+Cell[TextData[{
+ "For example, consider the Pauli operator ",
+ Cell[BoxData[
+  FormBox["X", TraditionalForm]],ExpressionUUID->
+  "9f18160a-dad9-4974-958e-05296431d750"],
+ " on a single qubit. Clearly, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"Tr", " ", "X"}], "=", "0"}], TraditionalForm]],ExpressionUUID->
+  "29636839-52c0-452c-b3b7-239d21ce9a48"],
+ ". On the contrary, the trace norm is finite,"
+}], "TechNoteText",
+ CellID->1883202960,ExpressionUUID->"36c2dae1-e401-4b06-be6f-dfed1e93ed0b"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "X", "\[RightDoubleBracketingBar]"}], 
+     "Tr"], ":=", 
+    RowBox[{
+     RowBox[{"Tr", 
+      SqrtBox[
+       RowBox[{" ", 
+        RowBox[{
+         SuperscriptBox["X", "\[Dagger]"], "X"}]}]]}], "=", 
+     RowBox[{
+      RowBox[{"Tr", 
+       SqrtBox[
+        RowBox[{" ", "I"}]]}], "=", "2"}]}]}], TraditionalForm]],
+  ExpressionUUID->"30573bfe-9ef9-43f0-a1c8-206b27f2e8a7"],
+ " ."
+}], "TechNoteText",
+ CellID->1378159234,ExpressionUUID->"eeaba40b-1fc5-47ee-9561-a0e735d4dfd3"],
+
+Cell["The inequality is even more general, and one can show that", \
+"TechNoteText",
+ CellID->2111112943,ExpressionUUID->"258b55bd-6737-475d-992f-7620a8698545"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"|", 
+    RowBox[{"Tr", " ", "A", " ", "U"}], "|", 
+    RowBox[{"\[LessEqual]", 
+     SubscriptBox[
+      RowBox[{
+      "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+      "Tr"]}]}], TraditionalForm]],ExpressionUUID->
+  "19516389-0dbf-447f-b901-edd96e16527f"]
+}], "TechNoteText",
+ CellID->750417267,ExpressionUUID->"3bcef4ed-cfb5-4c0f-914f-fc42e7122330"],
+
+Cell[TextData[{
+ "for any linear operator ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "9a832e50-ad8a-4555-8e7c-57312fad043b"],
+ " and unitary operator ",
+ Cell[BoxData[
+  FormBox["U", TraditionalForm]],ExpressionUUID->
+  "a44151d4-1e0f-4095-8b28-bf7c75cb447b"],
+ "."
+}], "TechNoteText",
+ CellID->91547638,ExpressionUUID->"440a6a14-0506-4b9b-b2ad-733be30c6e29"],
+
+Cell[TextData[{
+ "\tFor an operator of the form ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"A", "=", 
+    RowBox[{
+     TemplateBox[{"v"},
+      "Ket"], 
+     TemplateBox[{"v"},
+      "Bra"]}]}], TraditionalForm]],ExpressionUUID->
+  "648b4f75-2993-455e-a23d-e903b46a286a"],
+ ", both norms are reduced to the squared norm of the state vector ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"v"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "8d2f691b-538c-4d60-bc4f-31761db2ee24"],
+ ","
+}], "TechNoteText",
+ CellID->1042860614,ExpressionUUID->"aea1382f-2f75-425f-b211-b904b6d0807f"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{
+       TemplateBox[{"v"},
+        "Ket"], 
+       TemplateBox[{"v"},
+        "Bra"]}], "\[RightDoubleBracketingBar]"}], "HS"], "=", 
+    RowBox[{
+     SubscriptBox[
+      RowBox[{"\[LeftDoubleBracketingBar]", 
+       RowBox[{
+        TemplateBox[{"v"},
+         "Ket"], 
+        TemplateBox[{"v"},
+         "Bra"]}], "\[RightDoubleBracketingBar]"}], "Tr"], "=", 
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      TemplateBox[{"v"},
+       "Ket"], "\[RightDoubleBracketingBar]"}]}]}], TraditionalForm]],
+  ExpressionUUID->"bdf44f3d-1ee5-461a-9a6f-275853abfa91"],
+ "."
+}], "TechNoteText",
+ CellID->1744296331,ExpressionUUID->"9bfcce95-bbec-4a4a-945b-e50da40f1361"],
+
+Cell[TextData[{
+ "If ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "4d5eaebb-2f10-4810-a57f-90287688cf50"],
+ " is Hermitian, one can show by employing the spectral decomposition that \
+the ",
+ ButtonBox["Hilbert-Schmidt norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/HilbertSchmidtNorm"],
+ " is the sum of the squared eigenvalues,"
+}], "TechNoteText",
+ CellID->1089169920,ExpressionUUID->"83ac7902-fdbf-40cc-8fd8-3465a13ad923"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "HS"], "=", 
+    SqrtBox[
+     RowBox[{" ", 
+      RowBox[{
+       SubscriptBox["\[Sum]", "j"], 
+       SubsuperscriptBox["a", "j", "2"]}]}]]}], TraditionalForm]],
+  ExpressionUUID->"78e61584-b5ea-43d8-bd15-6f474749eee9"],
+ " ,"
+}], "TechNoteText",
+ CellID->528238412,ExpressionUUID->"19228813-af8d-4090-b348-94934d12eedb"],
+
+Cell[TextData[{
+ "while the ",
+ ButtonBox["trace norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceNorm"],
+ " is the sum of the absolute values of the eigenvalues,"
+}], "TechNoteText",
+ CellID->405593786,ExpressionUUID->"0213d3b2-fccc-49e6-8dd0-b2a23436bebd"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "Tr"], "=", 
+    RowBox[{
+     SubscriptBox["\[Sum]", "j"], 
+     RowBox[{"|", 
+      SubscriptBox["a", "j"], "|"}]}]}], TraditionalForm]],ExpressionUUID->
+  "1ae81ac8-b90f-41d5-aee3-7f073504aa8e"],
+ " ."
+}], "TechNoteText",
+ CellID->701665724,ExpressionUUID->"ae487028-5c2a-4ded-a600-37fa5a4c71a3"],
+
+Cell[TextData[{
+ "\tFor an arbitrary linear operator ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "1a2eda1a-4734-4db1-804d-ffb194b3a94f"],
+ ", singular-value decomposition may be more convenient. We have the relations"
+}], "TechNoteText",
+ CellID->1063117591,ExpressionUUID->"b03694f8-c1a8-4d2f-b15b-a740d6474e12"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "HS"], "=", 
+    SqrtBox[
+     RowBox[{" ", 
+      RowBox[{
+       SubscriptBox["\[Sum]", "j"], 
+       SubsuperscriptBox["s", "j", "2"]}]}]]}], TraditionalForm]],
+  ExpressionUUID->"2e41c26c-ada5-4c8a-815b-f1efd9ea4b37"],
+ " ,"
+}], "TechNoteText",
+ CellID->753408897,ExpressionUUID->"ee501e03-2318-417a-8f83-7cb7a4798c83"],
+
+Cell["and", "TechNoteText",
+ CellID->979749167,ExpressionUUID->"ebbd78c2-2320-4e31-9ea2-bb9e2c6539c6"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "Tr"], "=", 
+    RowBox[{
+     SubscriptBox["\[Sum]", "j"], 
+     SubscriptBox["s", "j"], " "}]}], TraditionalForm]],ExpressionUUID->
+  "97a9b2c5-fe9c-4d0a-9be4-5cef4f676348"],
+ " ."
+}], "TechNoteText",
+ CellID->1887128220,ExpressionUUID->"6c9c4683-b1fe-4601-9c9b-3ed90f5768ee"],
+
+Cell[CellGroupData[{
+
+Cell["Relation between the Two Norms", "Subsection",
+ CellTags->"Section13",
+ CellID->778010997,ExpressionUUID->"8002db0c-c29c-41ba-89f9-ca8ef45f26f2"],
+
+Cell[TextData[{
+ "The ",
+ ButtonBox["Hilbert-Schmidt norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/HilbertSchmidtNorm"],
+ " cannot exceed the ",
+ ButtonBox["trace norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceNorm"]
+}], "TechNoteText",
+ CellID->2899996,ExpressionUUID->"83a62cfc-c070-4016-a315-f993dbb580ce"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "HS"], "\[LessEqual]", 
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "Tr"]}], TraditionalForm]],ExpressionUUID->
+  "7fe1a85d-f54a-4a14-8382-4986936161de"]
+}], "TechNoteText",
+ CellID->1495592538,ExpressionUUID->"2df49dcc-4c5b-431a-baf7-1db5b458ec44"],
+
+Cell[TextData[{
+ "for all linear operators ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "97f5f21a-4a0a-4be6-8e76-777611485305"],
+ ". Equality holds if and only if ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "757019f1-ea0c-471c-afb0-edc5bc146041"],
+ " has rank one (that is, ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "eb890c79-508b-4db8-9eff-900fdab60433"],
+ " takes the form ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"v"},
+     "Ket"], 
+    TemplateBox[{"v"},
+     "Bra"]}], TraditionalForm]],ExpressionUUID->
+  "07d8cb24-626f-4fd6-a3c0-38c603a1439f"],
+ " for a vector ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"v"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "8d4063d9-dfb0-4303-9b24-d31b1168e18c"],
+ "). This is illustrated in the following plot for a random sample of \
+matrices."
+}], "TechNoteText",
+ CellID->127698031,ExpressionUUID->"28e581d6-48fb-4887-b24a-6e35258330c6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$d", "=", "3"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"data", "=", 
+   RowBox[{"Table", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"op", "=", 
+       RowBox[{"RandomMatrix", "[", "$d", "]"}]}], ";", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"HilbertSchmidtNorm", "[", "op", "]"}], ",", 
+        RowBox[{"TraceNorm", "[", "op", "]"}]}], "}"}]}], ",", 
+     "\[IndentingNewLine]", "10000"}], "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"max", "=", 
+   RowBox[{"Max", "[", "data", "]"}]}], ";"}], "\n", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"data", ",", "\[IndentingNewLine]", 
+   RowBox[{"PlotRange", "\[Rule]", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}], "}"}], "*", "max"}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"Epilog", "\[Rule]", 
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "*", "max"}]}], "}"}]}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"FrameLabel", "\[Rule]", 
+    RowBox[{"{", 
+     RowBox[{"\"\<\!\(TraditionalForm\`\*SubscriptBox[\(\
+\[LeftDoubleBracketingBar]A\[RightDoubleBracketingBar]\), \(HS\)]\)\>\"", 
+      ",", "\"\<\[LeftDoubleBracketingBar]A\!\(\*SubscriptBox[\(\
+\[RightDoubleBracketingBar]\), \(Tr\)]\)\>\""}], "}"}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"AspectRatio", "\[Rule]", "1"}]}], "]"}]}], "Input",
+ CellLabel->"In[14]:=",
+ CellID->884643664,ExpressionUUID->"ed400593-4319-4f5e-952b-d3e372467fb3"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+     NCache[
+      Rational[1, 360], 0.002777777777777778]], Thickness[Large], 
+    PointBox[$Failed]}, {{}, {}}},
+  AspectRatio->1,
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Epilog->LineBox[{{0, 0}, {5.207386289194414, 5.207386289194414}}],
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox[
+     "\"\[LeftDoubleBracketingBar]A\\!\\(\\*SubscriptBox[\\(\
+\[RightDoubleBracketingBar]\\), \\(Tr\\)]\\)\"", TraditionalForm], None}, {
+     FormBox[
+     "\"\\!\\(TraditionalForm\\`\\*SubscriptBox[\\(\[LeftDoubleBracketingBar]\
+A\[RightDoubleBracketingBar]\\), \\(HS\\)]\\)\"", TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImageSize->Large,
+  Method->{
+   "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0., 5.207386289194414}, {0., 5.207386289194414}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellLabel->"Out[17]=",
+ CellID->1176772667,ExpressionUUID->"d5840745-b50c-4f5d-8376-c697b6419750"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Effects of Quantum Noise", "Subsection",
+ CellTags->"Section14",
+ CellID->1841309046,ExpressionUUID->"0341447d-6fe9-49fa-8243-2932b4df6f10"],
+
+Cell["\<\
+One striking difference between the Hilbert-Schmidt and trace norms is the \
+effect of quantum operations. Needless to say, under unitary transformations, \
+both are invariant\
+\>", "TechNoteText",
+ CellID->1641782852,ExpressionUUID->"af61a0cc-9e14-44ab-ae03-2c89761c9cef"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{"U", " ", "A", " ", 
+       SuperscriptBox["U", "\[Dagger]"]}], "\[RightDoubleBracketingBar]"}], 
+     "HS"], "=", 
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "HS"]}], TraditionalForm]],ExpressionUUID->
+  "ad8635d0-767b-4de8-ba9a-326efaea315f"],
+ " ,        ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{"U", " ", "A", " ", 
+       SuperscriptBox["U", "\[Dagger]"]}], "\[RightDoubleBracketingBar]"}], 
+     "Tr"], "=", 
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "Tr"]}], TraditionalForm]],ExpressionUUID->
+  "b69105f7-eb85-4a6c-9dce-ba087af473f2"],
+ " . "
+}], "TechNoteText",
+ CellID->427013261,ExpressionUUID->"48d5456e-6544-4e4e-9e73-bc5093280082"],
+
+Cell[TextData[{
+ "However, the norms vary under general quantum operations. Interestingly, a \
+quantum operation ",
+ Cell[BoxData[
+  FormBox["F", TraditionalForm]],ExpressionUUID->
+  "c9d6274f-97d8-48e4-b2d8-f70b48e79f39"],
+ " never increases the ",
+ ButtonBox["trace norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceNorm"]
+}], "TechNoteText",
+ CellID->2069013000,ExpressionUUID->"fbf82e4d-e4b9-45df-99ce-2d1bd43146ca"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{"\[ScriptCapitalF]", "(", "A", ")"}], 
+      "\[RightDoubleBracketingBar]"}], "Tr"], "\[LessEqual]", 
+    SubscriptBox[
+     RowBox[{
+     "\[LeftDoubleBracketingBar]", "A", "\[RightDoubleBracketingBar]"}], 
+     "Tr"]}], TraditionalForm]],ExpressionUUID->
+  "58f06c9c-0306-42c3-b181-ff2c4841d028"],
+ " "
+}], "TechNoteText",
+ CellID->1846278776,ExpressionUUID->"91cdc549-c338-4bcd-913d-3319c04fc939"],
+
+Cell[TextData[{
+ "for any linear operator ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "e4e832f4-2f4b-46cd-9174-c6694f7539f4"],
+ ". On the contrary, the ",
+ ButtonBox["HilbertSchmidt norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Hilbert-SchmidtNorm"],
+ " sometimes increases under quantum operations. When applied for the \
+distance measure of quantum states, this behavior has a significant physical \
+implication as we will see soon below. This may give a reason to prefer the \
+trace norm (or distance) to the Hilbert-Schmidt norm (or distance)."
+}], "TechNoteText",
+ CellID->1416172729,ExpressionUUID->"fcd56de8-4f3c-42b4-898c-cf6a194396bc"],
+
+Cell["\<\
+\tIn the remainder of this section, we demonstrate the effect of quantum \
+operations on the Hilbert-Schmidt and trace distances.\
+\>", "TechNoteText",
+ CellID->1918828463,ExpressionUUID->"98b0e264-018b-4bf8-aa2a-9c1ccdff3040"],
+
+Cell[TextData[{
+ "\tWe define a function to construct the Kraus elements from the unitary \
+representation of the quantum operation. Here ",
+ StyleBox["U", "Input"],
+ " is the unitary operator on the total system (system plus environment) and ",
+ StyleBox["init", "Input"],
+ " is the initial (pure) state of the environment. The system and environment \
+are assumed to be initially in a product state."
+}], "TechNoteText",
+ CellID->1053796602,ExpressionUUID->"fb67c1dc-fb78-46f3-a3a3-60897d6509a9"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$d", "=", "3"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Clear", "[", "kraus", "]"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"kraus", "[", 
+   RowBox[{
+    RowBox[{"U_", "?", "MatrixQ"}], ",", 
+    RowBox[{"init_", "?", "VectorQ"}]}], "]"}], ":=", 
+  RowBox[{"Map", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"kraus", "[", 
+      RowBox[{"U", ",", "init", ",", "#"}], "]"}], "&"}], ",", 
+    RowBox[{"Range", "[", "$d", "]"}]}], "]"}]}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{"kraus", "[", 
+    RowBox[{
+     RowBox[{"U_", "?", "MatrixQ"}], ",", 
+     RowBox[{"init_", "?", "VectorQ"}], ",", "k_Integer"}], "]"}], ":=", 
+   RowBox[{"PartialTrace", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{"U", ".", 
+      RowBox[{"CircleTimes", "[", 
+       RowBox[{
+        RowBox[{"One", "[", "$d", "]"}], ",", 
+        RowBox[{"Dyad", "[", 
+         RowBox[{"init", ",", 
+          RowBox[{"UnitVector", "[", 
+           RowBox[{"$d", ",", "k"}], "]"}]}], "]"}]}], "]"}]}], ",", 
+     "\[IndentingNewLine]", 
+     RowBox[{"{", 
+      RowBox[{"$d", ",", "$d"}], "}"}], ",", 
+     RowBox[{"{", "2", "}"}]}], "]"}]}], ";"}]}], "Input",
+ CellLabel->"In[18]:=",
+ CellID->988050642,ExpressionUUID->"6d9c0a19-e2dd-4f60-87c1-3d11ecc94819"],
+
+Cell["\<\
+First, we compare the Hilbert-Schmidt norm before and after quantum \
+operations. Sometimes the Hilbert-Schmidt increases after a quantum \
+operation, especially, for operators with large trace.\
+\>", "TechNoteText",
+ CellID->1823581490,ExpressionUUID->"9848274d-3a84-470e-99aa-202fd6de2efa"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"data", "=", 
+    RowBox[{"Table", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"U", "=", 
+        RowBox[{"RandomUnitary", "[", 
+         RowBox[{"$d", "*", "$d"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"vec", "=", 
+        RowBox[{"Normalize", "[", 
+         RowBox[{"RandomVector", "[", "$d", "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"spr", "=", 
+        RowBox[{"Supermap", "[", 
+         RowBox[{"kraus", "[", 
+          RowBox[{"U", ",", "vec"}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"mat", "=", 
+        RowBox[{
+         RowBox[{
+          RowBox[{"RandomReal", "[", 
+           RowBox[{"{", 
+            RowBox[{
+             RowBox[{"-", "1"}], ",", "1"}], "}"}], "]"}], "*", 
+          RowBox[{"One", "[", "$d", "]"}]}], "+", 
+         RowBox[{"0.4", 
+          RowBox[{"RandomHermitian", "[", "$d", "]"}]}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"HilbertSchmidtNorm", "[", "mat", "]"}], ",", 
+         RowBox[{"HilbertSchmidtNorm", "[", 
+          RowBox[{"spr", "[", "mat", "]"}], "]"}]}], "}"}]}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", "10000", "}"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[22]:=",
+ CellID->47492446,ExpressionUUID->"d1507225-6ce7-4d9d-8933-8c4152ab60b2"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"20.226207`", ",", "Null"}], "}"}]], "Output",
+ CellLabel->"Out[22]=",
+ CellID->861853005,ExpressionUUID->"bd9c1825-d57f-41f9-beae-f56a14af8363"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"max", "=", 
+   RowBox[{"Max", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"data", ",", 
+   RowBox[{"Epilog", "->", 
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "*", "max"}]}], "}"}]}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"PlotRange", "->", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}], "}"}], "*", "max"}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"FrameLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{"\"\<\[DoubleVerticalBar]A\!\(\*SubscriptBox[\(\
+\[DoubleVerticalBar]\), \(HS\)]\)\>\"", 
+      ",", "\"\<\[DoubleVerticalBar]\[ScriptCapitalF](A)\!\(\*SubscriptBox[\(\
+\[DoubleVerticalBar]\), \(HS\)]\)\>\""}], "}"}]}], ",", "\[IndentingNewLine]", 
+   RowBox[{"AspectRatio", "->", "1"}]}], "]"}]}], "Input",
+ CellLabel->"In[23]:=",
+ CellID->644994057,ExpressionUUID->"05cbf684-8f53-495e-b704-e173279b8cc3"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+     NCache[
+      Rational[1, 360], 0.002777777777777778]], Thickness[Large], 
+    PointBox[$Failed]}, {{}, {}}},
+  AspectRatio->1,
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Epilog->LineBox[{{0, 0}, {2.696522807592302, 2.696522807592302}}],
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox[
+     "\"\[DoubleVerticalBar]\[ScriptCapitalF](A)\\!\\(\\*SubscriptBox[\\(\
+\[DoubleVerticalBar]\\), \\(HS\\)]\\)\"", TraditionalForm], None}, {
+     FormBox[
+     "\"\[DoubleVerticalBar]A\\!\\(\\*SubscriptBox[\\(\[DoubleVerticalBar]\\),\
+ \\(HS\\)]\\)\"", TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImageSize->Large,
+  Method->{
+   "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0., 2.696522807592302}, {0., 2.696522807592302}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellLabel->"Out[24]=",
+ CellID->386256020,ExpressionUUID->"dd9cf15a-2ddc-4a29-88f5-39f5a69392ba"]
+}, Open  ]],
+
+Cell["\<\
+Next, we compare the trace distance before and after quantum operations.\
+\>", "TechNoteText",
+ CellID->1338456316,ExpressionUUID->"10ebbfe0-30cd-46a3-a2ec-c7eb043498e0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"data", "=", 
+    RowBox[{"Table", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"U", "=", 
+        RowBox[{"RandomUnitary", "[", 
+         RowBox[{"$d", "*", "$d"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"vec", "=", 
+        RowBox[{"Normalize", "[", 
+         RowBox[{"RandomVector", "[", "$d", "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"spr", "=", 
+        RowBox[{"Supermap", "[", 
+         RowBox[{"kraus", "[", 
+          RowBox[{"U", ",", "vec"}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"mat", "=", 
+        RowBox[{"RandomMatrix", "[", "$d", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"TraceNorm", "[", "mat", "]"}], ",", 
+         RowBox[{"TraceNorm", "[", 
+          RowBox[{"spr", "[", "mat", "]"}], "]"}]}], "}"}]}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", "10000", "}"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[25]:=",
+ CellID->544100687,ExpressionUUID->"1f2ace26-90bd-4f9b-b24a-7c8899f4e80d"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"19.894035`", ",", "Null"}], "}"}]], "Output",
+ CellLabel->"Out[25]=",
+ CellID->2109346906,ExpressionUUID->"b209a64c-7a1f-49cd-a6b9-be4f12963266"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Unlike the ",
+ ButtonBox["Hilbert-Schmidt norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/HilbertSchmidtNorm"],
+ ", the ",
+ ButtonBox["trace norm",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceNorm"],
+ " never increases under a quantum operation."
+}], "TechNoteText",
+ CellID->1922335463,ExpressionUUID->"38934440-32dc-475b-aa08-d52960218403"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"max", "=", 
+   RowBox[{"Max", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"data", ",", 
+   RowBox[{"Epilog", "->", 
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "*", "max"}]}], "}"}]}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"PlotRange", "->", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}], "}"}], "*", "max"}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"FrameLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{"\"\<\[DoubleVerticalBar]A\!\(\*SubscriptBox[\(\
+\[DoubleVerticalBar]\), \(Tr\)]\)\>\"", 
+      ",", "\"\<\[DoubleVerticalBar]\[ScriptCapitalF](A)\!\(\*SubscriptBox[\(\
+\[DoubleVerticalBar]\), \(Tr\)]\)\>\""}], "}"}]}], ",", "\[IndentingNewLine]", 
+   RowBox[{"AspectRatio", "->", "1"}]}], "]"}]}], "Input",
+ CellLabel->"In[26]:=",
+ CellID->1948141173,ExpressionUUID->"083800f4-ef70-469c-aae6-12998880edec"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+     NCache[
+      Rational[1, 360], 0.002777777777777778]], Thickness[Large], 
+    PointBox[$Failed]}, {{}, {}}},
+  AspectRatio->1,
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Epilog->LineBox[{{0, 0}, {5.468869005948594, 5.468869005948594}}],
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox[
+     "\"\[DoubleVerticalBar]\[ScriptCapitalF](A)\\!\\(\\*SubscriptBox[\\(\
+\[DoubleVerticalBar]\\), \\(Tr\\)]\\)\"", TraditionalForm], None}, {
+     FormBox[
+     "\"\[DoubleVerticalBar]A\\!\\(\\*SubscriptBox[\\(\[DoubleVerticalBar]\\),\
+ \\(Tr\\)]\\)\"", TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImageSize->Large,
+  Method->{
+   "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0., 5.468869005948594}, {0., 5.468869005948594}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellLabel->"Out[27]=",
+ CellID->1133404466,ExpressionUUID->"02f76976-1fdd-4b05-8945-b883cbee108f"]
+}, Open  ]],
+
+Cell["\<\
+Let us further examine more closely the case for traceless Hermitian \
+operators, which are relevant when investigating the trace distances between \
+mixed states.\
+\>", "TechNoteText",
+ CellID->1904932617,ExpressionUUID->"fec3dc65-c77d-4176-908c-1c907d67e700"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"data", "=", 
+    RowBox[{"Table", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"U", "=", 
+        RowBox[{"RandomUnitary", "[", 
+         RowBox[{"$d", "*", "$d"}], "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"vec", "=", 
+        RowBox[{"Normalize", "[", 
+         RowBox[{"RandomVector", "[", "$d", "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"spr", "=", 
+        RowBox[{"Supermap", "[", 
+         RowBox[{"kraus", "[", 
+          RowBox[{"U", ",", "vec"}], "]"}], "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"mat", "=", 
+        RowBox[{"RandomHermitian", "[", "$d", "]"}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"mat", "=", 
+        RowBox[{"mat", "-", 
+         RowBox[{
+          RowBox[{"Tr", "[", "mat", "]"}], 
+          RowBox[{"One", "[", "$d", "]"}]}]}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"TraceNorm", "[", "mat", "]"}], ",", 
+         RowBox[{"TraceNorm", "[", 
+          RowBox[{"spr", "[", "mat", "]"}], "]"}]}], "}"}]}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", "10000", "}"}]}], "\[IndentingNewLine]", "]"}]}], ";"}], 
+  "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[28]:=",
+ CellID->1516284443,ExpressionUUID->"42ee59d4-98d4-4448-aef5-58d62ad65627"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"18.86548`", ",", "Null"}], "}"}]], "Output",
+ CellLabel->"Out[28]=",
+ CellID->948911172,ExpressionUUID->"f4b394c1-2930-4545-b4be-b9b24190b0a0"]
+}, Open  ]],
+
+Cell["As expected, the trace norm never increases.", "TechNoteText",
+ CellID->1778358760,ExpressionUUID->"186e3435-9d7d-43e2-b5cb-3171a8591dc0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"max", "=", 
+   RowBox[{"Max", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"data", ",", 
+   RowBox[{"Epilog", "->", 
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "*", "max"}]}], "}"}]}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"PlotRange", "->", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}], "}"}], "*", "max"}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"FrameLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{"\"\<\[DoubleVerticalBar]A\!\(\*SubscriptBox[\(\
+\[DoubleVerticalBar]\), \(Tr\)]\)\>\"", 
+      ",", "\"\<\[DoubleVerticalBar]\[ScriptCapitalF](A)\!\(\*SubscriptBox[\(\
+\[DoubleVerticalBar]\), \(Tr\)]\)\>\""}], "}"}]}], ",", "\[IndentingNewLine]", 
+   RowBox[{"AspectRatio", "->", "1"}]}], "]"}]}], "Input",
+ CellLabel->"In[29]:=",
+ CellID->198280374,ExpressionUUID->"cd94ddbc-18c0-4cd5-9b39-11c7b9cf43dd"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+     NCache[
+      Rational[1, 360], 0.002777777777777778]], Thickness[Large], 
+    PointBox[$Failed]}, {{}, {}}},
+  AspectRatio->1,
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Epilog->LineBox[{{0, 0}, {5.761279365761288, 5.761279365761288}}],
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox[
+     "\"\[DoubleVerticalBar]\[ScriptCapitalF](A)\\!\\(\\*SubscriptBox[\\(\
+\[DoubleVerticalBar]\\), \\(Tr\\)]\\)\"", TraditionalForm], None}, {
+     FormBox[
+     "\"\[DoubleVerticalBar]A\\!\\(\\*SubscriptBox[\\(\[DoubleVerticalBar]\\),\
+ \\(Tr\\)]\\)\"", TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImageSize->Large,
+  Method->{
+   "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0., 5.761279365761288}, {0., 5.761279365761288}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellLabel->"Out[30]=",
+ CellID->1136505182,ExpressionUUID->"7f6dd7da-39ae-4b1f-bb12-d3f8818001fb"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Hilbert-Schmidt and Trace Distances", "TechNoteSection",
+ CellTags->"Section15",
+ CellID->1523037456,ExpressionUUID->"7b6575e3-adc8-4812-9979-12934a1f12a0"],
+
+Cell[TextData[{
+ "In the above, we have introduced two frequently used operator norms, the \
+Hilbert-Schmidt and trace norms, and discussed their mathematical properties. \
+They naturally provide distance measures, the ",
+ StyleBox[ButtonBox["Hilbert-Schmidt distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/HilbertSchmidtDistance"],
+  FontSlant->"Italic"]
+}], "TechNoteText",
+ CellID->1832934399,ExpressionUUID->"064b9ec9-d9e5-42d1-b456-a5a5bb79b466"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["D", "HS"], "(", 
+     RowBox[{"A", ",", "B"}], ")"}], ":=", 
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{"A", "-", "B"}], "\[RightDoubleBracketingBar]"}], "HS"]}], 
+   TraditionalForm]],ExpressionUUID->"5231b7d8-fd2e-4797-a397-8af9f47dbb08"]
+}], "TechNoteText",
+ CellID->475527778,ExpressionUUID->"614ad012-929f-4c7e-be68-d7ee365e16c4"],
+
+Cell[TextData[{
+ "and the ",
+ StyleBox[ButtonBox["trace distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceDistance"],
+  FontSlant->"Italic"]
+}], "TechNoteText",
+ CellID->1408714359,ExpressionUUID->"fc1c248f-1f70-4ab0-b20b-8635f7d6d625"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["D", "Tr"], "(", 
+     RowBox[{"A", ",", "B"}], ")"}], ":=", 
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{"A", "-", "B"}], "\[RightDoubleBracketingBar]"}], "Tr"]}], 
+   TraditionalForm]],ExpressionUUID->"3289ca07-70bf-424f-bfd7-5ae8210e758f"],
+ " ,"
+}], "TechNoteText",
+ CellID->255023538,ExpressionUUID->"e490e785-5516-4a34-95eb-b11592ff6455"],
+
+Cell["\<\
+between linear operators on a given vector space. Here we are interested \
+distance measures between quantum states described by density operators, \
+i.e., positive operators with unit trace. Most of the properties of the two \
+distance measures directly follow from those of the corresponding norms. \
+Therefore, here will focus on their physical implications in the context of \
+quantum information.\
+\>", "TechNoteText",
+ CellID->1950727401,ExpressionUUID->"47e28fad-7c03-4cc0-b9da-99a78a94ced8"],
+
+Cell[TextData[{
+ "\tA stunning property of the ",
+ ButtonBox["trace distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceDistance"],
+ " is that it never increases under quantum operations. Suppose that ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalF]", TraditionalForm]],ExpressionUUID->
+  "1860f8c4-4562-47f5-86aa-8076979b2de7"],
+ " is a quantum operation. Then, we have"
+}], "TechNoteText",
+ CellID->242589858,ExpressionUUID->"2c8968fd-72cd-4c26-add4-dad680c3c3ef"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{
+       RowBox[{"\[ScriptCapitalF]", "(", "A", ")"}], "-", 
+       RowBox[{"\[ScriptCapitalF]", "(", "B", ")"}]}], 
+      "\[RightDoubleBracketingBar]"}], "Tr"], "\[LessEqual]", 
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{"A", "-", "B"}], "\[RightDoubleBracketingBar]"}], "Tr"]}], 
+   TraditionalForm]],ExpressionUUID->"e5dc7cde-38a9-437a-ab91-58783727df4c"],
+ " ,"
+}], "TechNoteText",
+ CellID->1283781400,ExpressionUUID->"64eb535c-4528-4bc9-a912-f5e3ccb79526"],
+
+Cell["\<\
+for any quantum states \[Rho] and \[Sigma]. Physically, one can regard that a \
+quantum operation causes a loss of some piece of information in quantum \
+states. The loss makes it more difficult to distinguish two quantum states. \
+For an analogy, consider two images. If one blurs the images through image \
+processing, then the resulting images become more similar than the original \
+images. The non-increasing feature of the trace distance under quantum \
+operations has many physical implications and applications. One example is \
+that one can construct an entanglement measure based on the trace distance.\
+\>", "TechNoteText",
+ CellID->745788391,ExpressionUUID->"11357677-5624-4f2d-b3f2-cc0d10cee976"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+Relation of the Hilbert-Schmidt Distance to a Classical Distance\
+\>", "Subsection",
+ CellTags->"Section16",
+ CellID->1750923645,ExpressionUUID->"8e5da9b0-cac3-440b-99c2-48788c634a44"],
+
+Cell["\<\
+The distance measures between quantum states are closely related to the \
+distance measures between classical probability distributions.\
+\>", "TechNoteText",
+ CellID->805286674,ExpressionUUID->"dbacea2b-dd11-49c9-8019-7afa063a8557"],
+
+Cell[TextData[{
+ "\tConsider the probability distributions ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["p", "m"], "}"}], TraditionalForm]],ExpressionUUID->
+  "1d660888-6bef-4224-ae47-d05a5588f6c2"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["q", "m"], "}"}], TraditionalForm]],ExpressionUUID->
+  "ba187d3f-ec3d-4b40-91fb-a7d30ad677b4"],
+ " for two random variables with values in a common set ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", "m", "}"}], TraditionalForm]],ExpressionUUID->
+  "1a4acdac-b365-4286-95f6-1d6455bf0130"],
+ ". One way to measure how close they are is to use the ",
+ StyleBox["Euclidean vector norm",
+  FontSlant->"Italic"]
+}], "TechNoteText",
+ CellID->1011186524,ExpressionUUID->"d2e405ed-2f48-4e74-a868-78aca310c75a"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          SubscriptBox["D", "E"], "(", 
+          RowBox[{
+           RowBox[{"{", 
+            SubscriptBox["p", "m"], "}"}], ",", 
+           RowBox[{"{", 
+            SubscriptBox["q", "m"], "}"}]}], ")"}], ":="}], 
+        "\[RightDoubleBracketingBar]"}], 
+       StyleBox["p",
+        FontWeight->"Bold"]}], "-", 
+      StyleBox["q",
+       FontWeight->"Bold"]}], "\[RightDoubleBracketingBar]"}], "=", 
+    SqrtBox[
+     RowBox[{
+      SubscriptBox["\[Sum]", "m"], 
+      SuperscriptBox[
+       RowBox[{"(", 
+        RowBox[{
+         SubscriptBox["p", "m"], "-", 
+         SubscriptBox["q", "m"]}], ")"}], "2"]}]]}], TraditionalForm]],
+  ExpressionUUID->"d46bf4c5-1801-4b82-93df-708c1b627cbb"]
+}], "TechNoteText",
+ CellID->1973810157,ExpressionUUID->"6836eaa6-94d5-4643-ad92-dffaf17cd380"],
+
+Cell[TextData[{
+ "regarding ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["p",
+     FontWeight->"Bold"], ":=", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["p", "1"], ",", 
+      SubscriptBox["p", "2"], ",", "\[Ellipsis]"}], ")"}]}], 
+   TraditionalForm]],ExpressionUUID->"7836bc40-3a66-4483-a232-58fc0a151455"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    StyleBox["q",
+     FontWeight->"Bold"], ":=", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["q", "1"], ",", 
+      SubscriptBox["q", "2"], ",", "\[Ellipsis]"}], ")"}]}], 
+   TraditionalForm]],ExpressionUUID->"a9cb804b-aa0c-4cb7-b731-7db2adc2a9a5"],
+ " as classical Euclidean vectors. To compare it with the ",
+ ButtonBox["Hilbert-Schmidt distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/HilbertSchmidtDistance"],
+ " between quantum states, let us consider the probabilities"
+}], "TechNoteText",
+ CellID->1647413490,ExpressionUUID->"27785b56-98d6-4ab8-bfac-b314714d63d6"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["p", "m"], ":=", 
+    RowBox[{"Tr", " ", 
+     SubscriptBox["E", "m"], "\[Rho]"}]}], TraditionalForm]],ExpressionUUID->
+  "5c1ffe4d-0d9e-4d33-aec0-482380e94741"],
+ " ,    ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["q", "m"], ":=", 
+    RowBox[{"Tr", " ", 
+     SubscriptBox["E", "m"], "\[Sigma]"}]}], TraditionalForm]],ExpressionUUID->
+  "9c5e0e0a-1c2e-4273-abb7-24baf0058170"]
+}], "TechNoteText",
+ CellID->571865659,ExpressionUUID->"bb850617-486c-431b-ad9d-c492ff9441ed"],
+
+Cell[TextData[{
+ "associated with a POVM ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["E", "m"], "}"}], TraditionalForm]],ExpressionUUID->
+  "5293c6f3-6621-425c-9e2e-0fbfd3a8a6e7"],
+ " measurement on the two quantum states \[Rho] and \[Sigma]. One can show \
+that"
+}], "TechNoteText",
+ CellID->1356810488,ExpressionUUID->"765fa25d-fec4-4278-aa41-d6af721213fc"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          SubscriptBox["D", "E"], "(", 
+          RowBox[{
+           RowBox[{"{", 
+            SubscriptBox["p", "m"], "}"}], ",", 
+           RowBox[{"{", 
+            SubscriptBox["q", "m"], "}"}]}], ")"}], "\[LessEqual]"}], 
+        "\[RightDoubleBracketingBar]"}], "\[Rho]"}], "-", "\[Sigma]"}], 
+     "\[RightDoubleBracketingBar]"}], "HS"], TraditionalForm]],ExpressionUUID->
+  "c5429354-24ca-4ce4-8fe7-994d532d2478"],
+ "."
+}], "TechNoteText",
+ CellID->1932507970,ExpressionUUID->"092cbd6d-8cb7-49b6-a5db-76301aa116d3"],
+
+Cell["\<\
+Note that the equality holds when the two states \[Rho] and \[Sigma] commute \
+with each other (i.e., they are diagonalized simultaneously).\
+\>", "TechNoteText",
+ CellID->1118774562,ExpressionUUID->"8e3557e2-f879-413b-9fe2-0fd71bddd16f"],
+
+Cell[TextData[{
+ "\tThe following plot illustrates the relation between the ",
+ ButtonBox["Hilbert-Schmidt distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/HilbertSchmidtDistance"],
+ " between quantum states and the vector-norm-based distance between \
+classical probability distributions."
+}], "TechNoteText",
+ CellID->2053111169,ExpressionUUID->"05528325-c936-43bf-8a0e-3c389cc17368"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"data", "=", 
+   RowBox[{"Table", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"rho", "=", 
+       RowBox[{"RandomPositive", "[", "3", "]"}]}], ";", 
+      RowBox[{"rho", "/=", 
+       RowBox[{"Tr", "[", "rho", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"sig", "=", 
+       RowBox[{"RandomPositive", "[", "3", "]"}]}], ";", 
+      RowBox[{"sig", "/=", 
+       RowBox[{"Tr", "[", "sig", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"pp", "=", 
+       RowBox[{"Chop", "@", 
+        RowBox[{"Diagonal", "[", "rho", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"qq", "=", 
+       RowBox[{"Chop", "@", 
+        RowBox[{"Diagonal", "[", "sig", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"HilbertSchmidtNorm", "[", 
+         RowBox[{"rho", "-", "sig"}], "]"}], ",", 
+        RowBox[{"Norm", "[", 
+         RowBox[{"pp", "-", "qq"}], "]"}]}], "}"}]}], ",", 
+     RowBox[{"{", "10000", "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"max", "=", 
+   RowBox[{"Max", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"data", ",", 
+   RowBox[{"PlotRange", "->", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}], "}"}], "*", "max"}]}], ",", 
+   RowBox[{"Epilog", "->", 
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "*", "max"}]}], "}"}]}]}], ",", 
+   RowBox[{"FrameLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{"\"\<\[DoubleVerticalBar]\[Rho]-\[Sigma]\!\(\*SubscriptBox[\(\
+\[DoubleVerticalBar]\), \(HS\)]\)\>\"", 
+      ",", "\"\<\[DoubleVerticalBar]{\!\(\*SubscriptBox[\(p\), \
+\(m\)]\)-\!\(\*SubscriptBox[\(q\), \(m\)]\)}\[DoubleVerticalBar]\>\""}], 
+     "}"}]}], ",", 
+   RowBox[{"AspectRatio", "\[Rule]", "1"}]}], "]"}]}], "Input",
+ CellLabel->"In[4]:=",
+ CellID->872177387,ExpressionUUID->"49be5d16-6ed8-4b20-8b7d-c1281c025705"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+     NCache[
+      Rational[1, 360], 0.002777777777777778]], Thickness[Large], 
+    PointBox[$Failed]}, {{}, {}}},
+  AspectRatio->1,
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Epilog->LineBox[{{0, 0}, {1.2027112920393819`, 1.2027112920393819`}}],
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox[
+     "\"\[DoubleVerticalBar]{\\!\\(\\*SubscriptBox[\\(p\\), \
+\\(m\\)]\\)-\\!\\(\\*SubscriptBox[\\(q\\), \
+\\(m\\)]\\)}\[DoubleVerticalBar]\"", TraditionalForm], None}, {
+     FormBox[
+     "\"\[DoubleVerticalBar]\[Rho]-\[Sigma]\\!\\(\\*SubscriptBox[\\(\
+\[DoubleVerticalBar]\\), \\(HS\\)]\\)\"", TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImageSize->Large,
+  Method->{
+   "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0., 1.2027112920393819`}, {0., 1.2027112920393819`}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->2024734049,ExpressionUUID->"bc1f1c56-a4d1-465e-962a-07914e60fab4"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Relation of the Trace Distance to a Classical Distance", "Subsection",
+ CellTags->"Section17",
+ CellID->679291181,ExpressionUUID->"4d7cff6d-0876-46cf-8d7d-f984d4fabd72"],
+
+Cell[TextData[{
+ "On the other hand, the ",
+ ButtonBox["trace distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceDistance"],
+ " is the quantum generalization of the so-called ",
+ StyleBox["Kolmogorov distance",
+  FontSlant->"Italic"]
+}], "TechNoteText",
+ CellID->823811615,ExpressionUUID->"31aebd6a-340b-4f8b-bb26-19758314c8ec"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["D", "K"], "(", 
+     RowBox[{
+      RowBox[{"{", 
+       SubscriptBox["p", "m"], "}"}], ",", 
+      RowBox[{"{", 
+       SubscriptBox["q", "m"], "}"}]}], ")"}], ":=", 
+    RowBox[{
+     SubscriptBox["\[Sum]", "m"], 
+     RowBox[{"|", 
+      RowBox[{
+       SubscriptBox["p", "m"], "-", 
+       SubscriptBox["q", "m"]}], "|"}]}]}], TraditionalForm]],ExpressionUUID->
+  "8780c216-2a3d-40fc-b3ce-57e4995c1fe7"]
+}], "TechNoteText",
+ CellID->974741096,ExpressionUUID->"e56abe78-4cd3-4b6d-9fd9-63af59f551d9"],
+
+Cell[TextData[{
+ "between two classical probability distributions ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["p", "m"], "}"}], TraditionalForm]],ExpressionUUID->
+  "208e8177-f7dc-4052-b685-dee36ef3abc1"],
+ " and",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{" ", 
+    RowBox[{"{", 
+     SubscriptBox["q", "m"], "}"}]}], TraditionalForm]],ExpressionUUID->
+  "1d4df1e5-9412-4e30-9ff7-9b559cd3d093"],
+ " for two random variables with values in a common set ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", "m", "}"}], TraditionalForm]],ExpressionUUID->
+  "59dcd812-7dd8-4b45-a498-7543228a8ffc"],
+ ". To see the relation, consider two mixed states \[Rho] and \[Sigma] and \
+the probability distributions associated with the respective states by"
+}], "TechNoteText",
+ CellID->1468341156,ExpressionUUID->"dcf93a57-214c-4b27-9841-2924ab98d78a"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["p", "m"], ":=", 
+    RowBox[{"Tr", " ", 
+     SubscriptBox["E", "m"], "\[Rho]"}]}], TraditionalForm]],ExpressionUUID->
+  "50a5f30f-7efa-4eeb-a2a7-d3c4be264a73"],
+ " ,    ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["q", "m"], ":=", 
+    RowBox[{"Tr", " ", 
+     SubscriptBox["E", "m"], "\[Sigma]"}]}], TraditionalForm]],ExpressionUUID->
+  "adbba021-cb38-4f4f-97c0-023e2355c239"]
+}], "TechNoteText",
+ CellID->1675221215,ExpressionUUID->"66b442ff-1237-42f2-87f1-f1f108d294ac"],
+
+Cell[TextData[{
+ "for a POVM ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["E", "m"], "}"}], TraditionalForm]],ExpressionUUID->
+  "6178e5e0-820b-4f8b-bf1f-50095a0cc05f"],
+ " measurement on the two quantum states \[Rho] and \[Sigma]. It turns out \
+that"
+}], "TechNoteText",
+ CellID->1932348335,ExpressionUUID->"93cd03ed-93c3-4a04-a4aa-bbcf6f1ea2fc"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox[
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        RowBox[{
+         RowBox[{
+          SubscriptBox["D", "K"], "(", 
+          RowBox[{
+           RowBox[{"{", 
+            SubscriptBox["p", "m"], "}"}], ",", 
+           RowBox[{"{", 
+            SubscriptBox["q", "m"], "}"}]}], ")"}], "\[LessEqual]"}], 
+        "\[RightDoubleBracketingBar]"}], "\[Rho]"}], "-", "\[Sigma]"}], 
+     "\[RightDoubleBracketingBar]"}], "Tr"], TraditionalForm]],ExpressionUUID->
+  "d9dae335-b6cc-46a6-9077-21238fda11da"],
+ "."
+}], "TechNoteText",
+ CellID->583272764,ExpressionUUID->"2d8407ec-59ff-4fc3-8053-f20e650cf0f8"],
+
+Cell["\<\
+Equality is attainable by maximizing the distance between probability \
+distributions with an optimal POVM. In other words,\
+\>", "TechNoteText",
+ CellID->1949979640,ExpressionUUID->"8df7a932-4ff5-49ec-9216-4726c3339c2b"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+      RowBox[{
+       RowBox[{"\[RightDoubleBracketingBar]", "\[Rho]"}], "-", "\[Sigma]"}], 
+      "\[RightDoubleBracketingBar]"}], "Tr"], "=", 
+    RowBox[{
+     RowBox[{
+      UnderscriptBox["max", 
+       RowBox[{"{", 
+        SubscriptBox["E", "m"], "}"}]], 
+      SubscriptBox["\[Sum]", "m"]}], "|", 
+     RowBox[{"Tr", " ", 
+      RowBox[{
+       SubscriptBox["E", "m"], "(", 
+       RowBox[{"\[Rho]", "-", "\[Sigma]"}], ")"}]}], "|"}]}], 
+   TraditionalForm]],ExpressionUUID->"3f035ef9-55e5-4274-9549-641e8937ef02"],
+ ","
+}], "TechNoteText",
+ CellID->559872613,ExpressionUUID->"20e2af42-e37f-4482-bdba-5d115cf6a195"],
+
+Cell[TextData[{
+ "where the maximization is over all possible POVM. Since ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["E", "m"], "\[LessEqual]", "I"}], TraditionalForm]],
+  ExpressionUUID->"d1f73342-a19d-4437-b80c-8d34fc956395"],
+ " for all POVM elements, one can simplify the above relation and write that"
+}], "TechNoteText",
+ CellID->1653149184,ExpressionUUID->"98d41db3-6d4b-4974-b936-c41f6ecc4948"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox[
+     RowBox[{
+      RowBox[{
+       RowBox[{"\[RightDoubleBracketingBar]", "\[Rho]"}], "-", "\[Sigma]"}], 
+      "\[RightDoubleBracketingBar]"}], "Tr"], "=", 
+    RowBox[{
+     UnderscriptBox["max", "P"], "Tr", " ", 
+     RowBox[{"P", "(", 
+      RowBox[{"\[Rho]", "-", "\[Sigma]"}], ")"}]}]}], TraditionalForm]],
+  ExpressionUUID->"eca81741-e648-4fba-9a9a-d7fc8e2ecdd5"],
+ ","
+}], "TechNoteText",
+ CellID->334910602,ExpressionUUID->"05686acb-51c0-4404-a345-7db5ad031c72"],
+
+Cell[TextData[{
+ "where the maximization is over all positive operators P such that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"P", "\[LessEqual]", "I"}], TraditionalForm]],ExpressionUUID->
+  "83b58a53-bef2-4b73-bfc3-f1a2c59a326d"],
+ "."
+}], "TechNoteText",
+ CellID->287849027,ExpressionUUID->"c0708a7f-ea33-4783-80f1-c2d62a7fc604"],
+
+Cell[TextData[{
+ "\tThe following plot demonstrate the relation between the ",
+ ButtonBox["trace distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceDistance"],
+ " between quantum states and the Kolmogorov distance between classical \
+probability distributions."
+}], "TechNoteText",
+ CellID->1106721126,ExpressionUUID->"ed6b1528-dad9-43f7-a91b-8604287e35ce"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"data", "=", 
+   RowBox[{"Table", "[", "\[IndentingNewLine]", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"rho", "=", 
+       RowBox[{"RandomPositive", "[", "3", "]"}]}], ";", 
+      RowBox[{"rho", "/=", 
+       RowBox[{"Tr", "[", "rho", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"sig", "=", 
+       RowBox[{"RandomPositive", "[", "3", "]"}]}], ";", 
+      RowBox[{"sig", "/=", 
+       RowBox[{"Tr", "[", "sig", "]"}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"pp", "=", 
+       RowBox[{"Chop", "@", 
+        RowBox[{"Diagonal", "[", "rho", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"qq", "=", 
+       RowBox[{"Chop", "@", 
+        RowBox[{"Diagonal", "[", "sig", "]"}]}]}], ";", "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{
+        RowBox[{"TraceNorm", "[", 
+         RowBox[{"rho", "-", "sig"}], "]"}], ",", 
+        RowBox[{"Total", "@", 
+         RowBox[{"Abs", "[", 
+          RowBox[{"pp", "-", "qq"}], "]"}]}]}], "}"}]}], ",", 
+     RowBox[{"{", "10000", "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"max", "=", 
+   RowBox[{"Max", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"data", ",", 
+   RowBox[{"PlotRange", "->", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}], ",", 
+       RowBox[{"{", 
+        RowBox[{"0", ",", "1"}], "}"}]}], "}"}], "*", "max"}]}], ",", 
+   RowBox[{"Epilog", "->", 
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "*", "max"}]}], "}"}]}]}], ",", 
+   RowBox[{"FrameLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{"\"\<\[DoubleVerticalBar]\[Rho]-\[Sigma]\!\(\*SubscriptBox[\(\
+\[DoubleVerticalBar]\), \(Tr\)]\)\>\"", 
+      ",", "\"\<\!\(\*SubscriptBox[\(D\), \(K\)]\)({\!\(\*SubscriptBox[\(p\), \
+\(m\)]\)},{\!\(\*SubscriptBox[\(q\), \(m\)]\)})\>\""}], "}"}]}], ",", 
+   RowBox[{"AspectRatio", "\[Rule]", "1"}]}], "]"}]}], "Input",
+ CellLabel->"In[10]:=",
+ CellID->1306098015,ExpressionUUID->"9c0e573d-b1ec-478c-a2d3-0fa570254141"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+     NCache[
+      Rational[1, 360], 0.002777777777777778]], Thickness[Large], 
+    PointBox[$Failed]}, {{}, {}}},
+  AspectRatio->1,
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0, 0},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Epilog->LineBox[{{0, 0}, {1.7933072413226376`, 1.7933072413226376`}}],
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox[
+     "\"\\!\\(\\*SubscriptBox[\\(D\\), \
+\\(K\\)]\\)({\\!\\(\\*SubscriptBox[\\(p\\), \
+\\(m\\)]\\)},{\\!\\(\\*SubscriptBox[\\(q\\), \\(m\\)]\\)})\"", 
+      TraditionalForm], None}, {
+     FormBox[
+     "\"\[DoubleVerticalBar]\[Rho]-\[Sigma]\\!\\(\\*SubscriptBox[\\(\
+\[DoubleVerticalBar]\\), \\(Tr\\)]\\)\"", TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImageSize->Large,
+  Method->{
+   "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0., 1.7933072413226376`}, {0., 1.7933072413226376`}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellLabel->"Out[12]=",
+ CellID->1745423745,ExpressionUUID->"39943700-e3e9-4c19-a3d0-256aebde8714"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Fidelity", "TechNoteSection",
+ CellTags->"Section18",
+ CellID->710264195,ExpressionUUID->"b868cd4b-f5d3-48ec-947e-686548b0bf2c"],
+
+Cell[TextData[{
+ "We have discussed two norm-derived distance measures. ",
+ ButtonBox["Fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " is another frequently used measure of the closeness of quantum states. \
+Unlike the Hermitian and trace distances, it is not based on a norm. Rather, \
+conceptually it is similar to the relative \[OpenCurlyDoubleQuote]angle\
+\[CloseCurlyDoubleQuote] between the two quantum states. Since quantum states \
+are normalized, it seems natural to expect closer quantum states to have a \
+smaller relative angle. The fidelity is the quantum generalization of the \
+(classical) fidelity between two probability distributions."
+}], "TechNoteText",
+ CellID->1696215339,ExpressionUUID->"7a1b6f42-56f9-4d48-abfd-056cc02a89e1"],
+
+Cell[TextData[{
+ "\tFor two quantum states described by density operators \[Rho] and \
+\[Sigma], the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " between them is defined by"
+}], "TechNoteText",
+ CellID->445788648,ExpressionUUID->"ca8d6d9a-66f1-42f2-b3c4-400fed8440a0"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], ":=", 
+    RowBox[{"Tr", 
+     SqrtBox[
+      RowBox[{
+       SqrtBox["\[Rho]"], "\[Sigma]", 
+       SqrtBox["\[Rho]"]}]]}]}], TraditionalForm]],ExpressionUUID->
+  "4887f19a-5a96-4220-9140-0e5decbc4940"],
+ "."
+}], "TechNoteText",
+ CellID->1946846200,ExpressionUUID->"5a6f5b84-93b4-4580-9fd8-9042c4664568"],
+
+Cell[TextData[{
+ "At first glance, the above definition looks asymmetric for the two states, \
+but the fidelity is actually symmetric. One way to see this is to express the \
+fidelity in terms of the ",
+ ButtonBox["trace distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceDistance"],
+ " discussed above, that is,"
+}], "TechNoteText",
+ CellID->1583237708,ExpressionUUID->"2ccee650-f55f-46ae-8796-68e136570394"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], "=", 
+    SubscriptBox[
+     RowBox[{"\[LeftDoubleBracketingBar]", 
+      RowBox[{
+       SqrtBox["\[Rho]"], 
+       SqrtBox["\[Sigma]"]}], "\[RightDoubleBracketingBar]"}], "Tr"]}], 
+   TraditionalForm]],ExpressionUUID->"b000b170-c392-434b-9d67-1d3af7c2b79d"],
+ " ."
+}], "TechNoteText",
+ CellID->6288379,ExpressionUUID->"8dafaed3-7724-4c1b-9eb0-238ecc5800c1"],
+
+Cell["\<\
+\tAlthough the fidelity is not derived from a norm, it is invariant under \
+unitary transformations\
+\>", "TechNoteText",
+ CellID->462087150,ExpressionUUID->"c8fc36d8-91b9-4ca7-bb77-6c43cf089ad7"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{
+      RowBox[{"U", " ", "\[Rho]", " ", 
+       SuperscriptBox["U", "\[Dagger]"]}], ",", 
+      RowBox[{"U", " ", "\[Sigma]", " ", 
+       SuperscriptBox["U", "\[Dagger]"]}]}], ")"}], "=", 
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}]}], TraditionalForm]],
+  ExpressionUUID->"e762451b-b1e8-49b2-ab14-1fcf7f4950c3"],
+ " ."
+}], "TechNoteText",
+ CellID->997862498,ExpressionUUID->"8b9dce17-ef0d-4ed5-af6c-319f2df0ba64"],
+
+Cell[TextData[{
+ "One can see this by recalling that for any positive operator ",
+ Cell[BoxData[
+  FormBox["A", TraditionalForm]],ExpressionUUID->
+  "4d669a1e-a5f1-4b44-a4fb-4c43feebf3ea"],
+ ", the square-root function is homomorphic under unitary transformations, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SqrtBox[
+     RowBox[{"U", " ", "A", " ", 
+      SuperscriptBox["U", "\[Dagger]"]}]], "=", 
+    RowBox[{"U", 
+     SqrtBox["A"], 
+     SuperscriptBox["U", "\[Dagger]"]}]}], TraditionalForm]],ExpressionUUID->
+  "1cd763d5-69b7-458b-9fae-060ea1cbf700"],
+ "."
+}], "TechNoteText",
+ CellID->1842400627,ExpressionUUID->"f2cfeffc-03a9-4b28-a977-ce4cd0ccd41e"],
+
+Cell["\<\
+\tWhen one or both of the two states are pure states, the expression for the \
+fidelity gets simpler,\
+\>", "TechNoteText",
+ CellID->1408901212,ExpressionUUID->"25819840-a1d3-4259-b3c8-c1adcb025c2c"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{
+      RowBox[{
+       TemplateBox[{"v"},
+        "Ket"], 
+       TemplateBox[{"v"},
+        "Bra"]}], ",", "\[Rho]"}], ")"}], "=", 
+    SqrtBox[
+     RowBox[{
+      TemplateBox[{"v"},
+       "Bra"], "\[Rho]", 
+      TemplateBox[{"v"},
+       "Ket"]}]]}], TraditionalForm]],ExpressionUUID->
+  "52208382-ab65-4346-a1e6-df08b8e7f7aa"]
+}], "TechNoteText",
+ CellID->660631896,ExpressionUUID->"f8ff0bef-83b5-4fcf-99fe-8012825dc6de"],
+
+Cell["and", "TechNoteText",
+ CellID->749821082,ExpressionUUID->"3d4a5c57-b711-46c8-b8b9-60de42b37155"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{
+      RowBox[{
+       TemplateBox[{"v"},
+        "Ket"], 
+       TemplateBox[{"v"},
+        "Bra"]}], ",", 
+      RowBox[{
+       TemplateBox[{"w"},
+        "Ket"], 
+       TemplateBox[{"w"},
+        "Bra"]}]}], ")"}], "=", 
+    RowBox[{"|", 
+     TemplateBox[{"v", "w"},
+      "BraKet"], "|"}]}], TraditionalForm]],ExpressionUUID->
+  "aeb96acd-205f-4e8e-9769-6fc20a3ed50b"],
+ " ."
+}], "TechNoteText",
+ CellID->808884578,ExpressionUUID->"db1df1e5-c665-4609-9793-78488d43ad70"],
+
+Cell[TextData[{
+ "The above two limiting cases clearly indicate that geometrically, the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " is an extension of the relative \[OpenCurlyDoubleQuote]angle\
+\[CloseCurlyDoubleQuote]. For an analogy, recall that in the \
+three-dimensional Euclidean space, the inner product of two vectors \
+normalized vectors ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["a",
+    FontWeight->"Bold"], TraditionalForm]],ExpressionUUID->
+  "6bdf35f5-6856-4e56-a007-56ff0a416fc7"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   StyleBox["b",
+    FontWeight->"Bold"], TraditionalForm]],ExpressionUUID->
+  "709817e4-4d97-413b-9d32-e9d396701e2a"],
+ " (",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[DoubleVerticalBar]", 
+     StyleBox["a",
+      FontWeight->"Bold"], "\[DoubleVerticalBar]"}], " ", "=", " ", 
+    RowBox[{
+     RowBox[{"\[DoubleVerticalBar]", 
+      StyleBox["b",
+       FontWeight->"Bold"], "\[DoubleVerticalBar]"}], " ", "=", " ", "1"}]}], 
+   TraditionalForm]],ExpressionUUID->"999d2ade-67b7-4a62-86e2-7cd791a01677"],
+ ") is given by ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     StyleBox["a",
+      FontWeight->"Bold"], "\[CenterDot]", 
+     StyleBox["b",
+      FontWeight->"Bold"]}], "=", 
+    RowBox[{"cos", "(", "\[Theta]", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "cf05dcab-9d49-4ec5-81a7-2092db236041"],
+ "."
+}], "TechNoteText",
+ CellID->1351616936,ExpressionUUID->"0ceca63f-ff6c-4f0e-bf04-9f17e1580f31"],
+
+Cell[TextData[{
+ "\tFor quantum states, parallel and anti-parallel arrangements are not \
+distinguished. Consequently, we expect the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " to be 1 for identical states, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Rho]", "=", "\[Sigma]"}], TraditionalForm]],ExpressionUUID->
+  "c2ef5a5d-984e-469d-8d3b-4eb77a30aa56"],
+ ", which is indeed true. Below, we will see that the fidelity is bounded \
+between 0 and 1,"
+}], "TechNoteText",
+ CellID->543825386,ExpressionUUID->"c5b51831-89c4-4900-abf2-eac6522ecca0"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"0", "\[LessEqual]", 
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], "\[LessEqual]", "1"}], 
+   TraditionalForm]],ExpressionUUID->"e88e59e1-1731-4399-8c8e-1f2319e4d76b"]
+}], "TechNoteText",
+ CellID->382860870,ExpressionUUID->"73c1a47b-4dc1-455a-ba64-4de80fe2e205"],
+
+Cell[TextData[{
+ "for any states \[Rho] and \[Sigma], and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], "=", "1"}], 
+   TraditionalForm]],ExpressionUUID->"f4049507-47db-4d67-befd-c2a23fab423e"],
+ " if and only if ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Rho]", "=", "\[Sigma]"}], TraditionalForm]],ExpressionUUID->
+  "472600d6-3ba2-4438-b4d1-7baddab3fd9c"],
+ ". That is, the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " approaches 1 for closer quantum states and decreases for more different \
+quantum states."
+}], "TechNoteText",
+ CellID->881635678,ExpressionUUID->"e34e46de-ca49-4818-8e35-a64b84e237bf"],
+
+Cell[CellGroupData[{
+
+Cell["Uhlmann\[CloseCurlyQuote]s Theorem", "Subsection",
+ CellTags->"Section19",
+ CellID->13675846,ExpressionUUID->"8ddef454-bc06-4f52-b5ed-cedef76a93c6"],
+
+Cell[TextData[{
+ "The most fundamental property of the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " is Uhlmann\[CloseCurlyQuote]s theorem. Suppose that ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[CapitalPsi]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "5110ac84-4603-40d0-8020-5bd91f406c2d"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[CapitalPhi]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "f5126cfc-e6d0-40fe-a46c-78e91f588436"],
+ " are the ",
+ ButtonBox["purifications",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Purification"],
+ " of \[Rho] and \[Sigma], respectively, into ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalV]", "\[CircleTimes]", "\[ScriptCapitalE]"}], 
+   TraditionalForm]],ExpressionUUID->"434186cb-93fc-4da1-9cbf-4f994167e448"],
+ " with ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"dim", " ", "\[ScriptCapitalE]"}], "=", 
+    RowBox[{"dim", " ", "\[ScriptCapitalV]"}]}], TraditionalForm]],
+  ExpressionUUID->"9d3d5e53-da96-494e-90bf-95f623264a3e"],
+ ", that is,"
+}], "TechNoteText",
+ CellID->69193493,ExpressionUUID->"677cb5ff-bd81-4d65-855a-1fe9a8649a48"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Rho]", "=", 
+    RowBox[{
+     SubscriptBox["Tr", "\[ScriptCapitalE]"], 
+     TemplateBox[{"\[CapitalPsi]"},
+      "Ket"], 
+     TemplateBox[{"\[CapitalPsi]"},
+      "Bra"]}]}], TraditionalForm]],ExpressionUUID->
+  "aaffb23e-7a6e-4de8-94b5-604298680758"],
+ " ,    ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Sigma]", "=", 
+    RowBox[{
+     SubscriptBox["Tr", "\[ScriptCapitalE]"], 
+     TemplateBox[{"\[CapitalPhi]"},
+      "Ket"], 
+     TemplateBox[{"\[CapitalPhi]"},
+      "Bra"]}]}], TraditionalForm]],ExpressionUUID->
+  "75d467c5-da1b-4fb8-acbf-1dcab9bcbee3"],
+ "."
+}], "TechNoteText",
+ CellID->1146383824,ExpressionUUID->"eb89b1a3-42aa-4fb3-b523-f0d7b44426ce"],
+
+Cell[TextData[{
+ "Uhlmann\[CloseCurlyQuote]s theorem states that the fidelity between \[Rho] \
+and \[Sigma] cannot be smaller than the fidelity between the purifications ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[CapitalPsi]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "c6bd5c0c-5ee7-4833-ad5f-a4659f80e0e7"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[CapitalPhi]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "49558fc2-0654-44ab-86f6-096d6a9d0776"],
+ ","
+}], "TechNoteText",
+ CellID->49649084,ExpressionUUID->"51b92dd4-6206-4de1-a8a7-8b116e016390"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"F", "(", 
+      RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], "\[GreaterEqual]"}], "|", 
+    TemplateBox[{"\[CapitalPsi]", "\[CapitalPhi]"},
+     "BraKet"], "|"}], TraditionalForm]],ExpressionUUID->
+  "3b4a7f58-658a-4762-b635-0f8ad7a951b0"],
+ " ."
+}], "TechNoteText",
+ CellID->1228499752,ExpressionUUID->"19cf320a-00c3-4bc2-b312-3e3741835b81"],
+
+Cell["\<\
+The bound is optimal in the sense that there always exists an optimal \
+purification attaining equality. Putting it another way,\
+\>", "TechNoteText",
+ CellID->1487549606,ExpressionUUID->"25bd2422-3278-419b-a223-6aa2feab4ddd"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], "=", 
+    RowBox[{
+     SubscriptBox["max", 
+      RowBox[{"{", 
+       RowBox[{
+        TemplateBox[{"\[CapitalPsi]"},
+         "Ket"], ",", 
+        TemplateBox[{"\[CapitalPhi]"},
+         "Ket"]}], "}"}]], "|", 
+     TemplateBox[{"\[CapitalPsi]", "\[CapitalPhi]"},
+      "BraKet"], "|"}]}], TraditionalForm]],ExpressionUUID->
+  "cd71bf71-9302-4bdf-b525-8df8ee6c53c0"],
+ ","
+}], "TechNoteText",
+ CellID->241609668,ExpressionUUID->"980e3b7f-b5ca-4aa7-9d1f-5cc999c34346"],
+
+Cell["\<\
+where the maximization is over all possible purifications of \[Rho] and \
+\[Sigma].\
+\>", "TechNoteText",
+ CellID->1989597246,ExpressionUUID->"bab17d9b-65ea-4acb-9240-f797f7cca26e"],
+
+Cell[TextData[{
+ "\tUhlmann\[CloseCurlyQuote]s theorem is not particularly useful for \
+specific calculations of the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ ". However, as we will see below, many properties of the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " can be assessed more conveniently by employing Uhlmann\[CloseCurlyQuote]s \
+theorem than the defining expression."
+}], "TechNoteText",
+ CellID->693046085,ExpressionUUID->"478b5a55-e2aa-4151-b8c8-6b5d747f8c59"],
+
+Cell["\<\
+\tAs an example of the application of Uhlmann\[CloseCurlyQuote]s theorem, we \
+note that the bounds of the fidelity,\
+\>", "TechNoteText",
+ CellID->74249267,ExpressionUUID->"39711f94-c8b4-4180-8960-f7457816162b"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"0", "\[LessEqual]", 
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], "\[LessEqual]", "1"}], 
+   TraditionalForm]],ExpressionUUID->"9ba963ad-ca91-4f9b-8197-589c3a52c6ff"]
+}], "TechNoteText",
+ CellID->219431562,ExpressionUUID->"5e67f233-214a-4a39-9af1-c7a9c6772efc"],
+
+Cell[TextData[{
+ "follow immediately from Uhlmann\[CloseCurlyQuote]s theorem. One can further \
+examine when the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " attains ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], "=", "1"}], 
+   TraditionalForm]],ExpressionUUID->"6cc491b3-fd71-4548-af3b-4d6f15b75e6a"],
+ ". If ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Rho]", "=", " ", "\[Sigma]"}], TraditionalForm]],ExpressionUUID->
+  "eca94663-b699-4bce-bb7a-ae9d7be44d66"],
+ ", then it is obvious that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", 
+     RowBox[{"(", 
+      RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}]}], "=", "1"}], 
+   TraditionalForm]],ExpressionUUID->"3f54b481-d71c-4d7b-b87a-82a91aef6c58"],
+ ". To prove the converse, suppose that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Rho]", "\[NotEqual]", "\[Sigma]"}], TraditionalForm]],
+  ExpressionUUID->"e0671cd6-7748-46f6-aaa6-0b6ffcc518fc"],
+ ". Then, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"\[CapitalPsi]"},
+     "Ket"], "\[NotEqual]", 
+    TemplateBox[{"\[CapitalPhi]"},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "91802e2c-9936-4ecb-8e3b-0c495118b6ed"],
+ " for any purifications ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[CapitalPsi]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "934c1aaa-29a2-4f9f-8fdc-8584e40353a2"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{"\[CapitalPhi]"},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "b310cf56-365b-4a8d-8cff-decc74f0c5ac"],
+ " of \[Rho] and \[Sigma], respectively. Therefore, the fidelity must be \
+strictly less than unity, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", 
+     RowBox[{"(", 
+      RowBox[{"\[Rho]", ",", " ", "\[Sigma]"}], ")"}]}], "<", "1"}], 
+   TraditionalForm]],ExpressionUUID->"484a93c2-df60-4e04-99eb-a1cc22a93735"],
+ ", contradicting the assumption. Thus we have shown that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", 
+     RowBox[{"(", 
+      RowBox[{"\[Rho]", ",", " ", "\[Sigma]"}], ")"}]}], "=", "1"}], 
+   TraditionalForm]],ExpressionUUID->"188334b9-3034-4f93-8e5a-31e0cc5e29e3"],
+ " if and only if ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Rho]", "=", "\[Sigma]"}], TraditionalForm]],ExpressionUUID->
+  "1305e0fe-e8d2-48f3-a176-2716f262a49a"],
+ "."
+}], "TechNoteText",
+ CellID->756840635,ExpressionUUID->"d5a45b35-89a6-4321-a645-c66131546806"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Effects of Quantum Noise", "Subsection",
+ CellTags->"Section20",
+ CellID->674911264,ExpressionUUID->"d7b6a6aa-b8e1-41c5-b024-846bd23dda91"],
+
+Cell[TextData[{
+ "Similar to the non-increasing feature of the ",
+ ButtonBox["trace distance",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/TraceDistance"],
+ ", the ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " never decreases under quantum operations. In other words,"
+}], "TechNoteText",
+ CellID->224990594,ExpressionUUID->"7b1d54b9-be2d-44c1-b9e3-b627d66e4f80"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{
+      RowBox[{"\[ScriptCapitalF]", "(", "\[Rho]", ")"}], ",", 
+      RowBox[{"\[ScriptCapitalF]", "(", "\[Sigma]", ")"}]}], ")"}], "\[GreaterEqual]", 
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}]}], TraditionalForm]],
+  ExpressionUUID->"db14015f-aae9-4b84-8a77-910ac2362583"]
+}], "TechNoteText",
+ CellID->1845694638,ExpressionUUID->"9c895185-4b1b-4e41-a69b-85da118f311f"],
+
+Cell[TextData[{
+ "for any quantum operation \[ScriptCapitalF] and quantum states \[Rho] and \
+\[Sigma] on a vector space ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalV]", TraditionalForm]],ExpressionUUID->
+  "736fb784-543e-4291-9423-b3948d1f76e4"],
+ "."
+}], "TechNoteText",
+ CellID->188499951,ExpressionUUID->"7b20f83f-98d4-4cfa-a747-dffadcd278e7"],
+
+Cell["\<\
+\tThe interpretation of the above inequality is the same as for the trace \
+distance. The \"damage\" due to the quantum operation makes the resulting two \
+states look more similar than the original quantum states.\
+\>", "TechNoteText",
+ CellID->580297132,ExpressionUUID->"2cb1e16c-99a9-480a-a4a6-bd7c45fe4763"],
+
+Cell["\<\
+\tThe above inequality can be proved by using Uhlmann\[CloseCurlyQuote]s \
+theorem.\
+\>", "TechNoteText",
+ CellID->1330656497,ExpressionUUID->"e4c65a80-e28f-4a88-a85f-c5645b78900b"],
+
+Cell["\<\
+\tThe following plot illustrates the non-decreasing feature of the fidelity \
+under quantum operations.\
+\>", "TechNoteText",
+ CellID->1899890048,ExpressionUUID->"c82aefe7-3e0e-49a2-8ec4-50a6fbd43c8d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Timing", "[", "\[IndentingNewLine]", 
+  RowBox[{
+   RowBox[{"$d", "=", "3"}], ";", "\[IndentingNewLine]", 
+   RowBox[{"Clear", "[", "kraus", "]"}], ";", "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"kraus", "[", 
+     RowBox[{
+      RowBox[{"U_", "?", "MatrixQ"}], ",", 
+      RowBox[{"init_", "?", "VectorQ"}]}], "]"}], ":=", 
+    RowBox[{"Map", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"kraus", "[", 
+        RowBox[{"U", ",", "init", ",", "#"}], "]"}], "&"}], ",", 
+      RowBox[{"Range", "[", "$d", "]"}]}], "]"}]}], ";", 
+   "\[IndentingNewLine]", 
+   RowBox[{
+    RowBox[{"kraus", "[", 
+     RowBox[{
+      RowBox[{"U_", "?", "MatrixQ"}], ",", 
+      RowBox[{"init_", "?", "VectorQ"}], ",", "k_Integer"}], "]"}], ":=", 
+    RowBox[{"PartialTrace", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"U", ".", 
+       RowBox[{"CircleTimes", "[", 
+        RowBox[{
+         RowBox[{"One", "[", "$d", "]"}], ",", 
+         RowBox[{"Dyad", "[", 
+          RowBox[{"init", ",", 
+           RowBox[{"UnitVector", "[", 
+            RowBox[{"$d", ",", "k"}], "]"}]}], "]"}]}], "]"}]}], ",", 
+      "\[IndentingNewLine]", 
+      RowBox[{"{", 
+       RowBox[{"$d", ",", "$d"}], "}"}], ",", 
+      RowBox[{"{", "2", "}"}]}], "]"}]}], ";", "\[IndentingNewLine]", 
+   RowBox[{"data", "=", 
+    RowBox[{"Chop", "@", 
+     RowBox[{"Table", "[", "\[IndentingNewLine]", 
+      RowBox[{
+       RowBox[{
+        RowBox[{"U", "=", 
+         RowBox[{"RandomUnitary", "[", 
+          RowBox[{"$d", "*", "$d"}], "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"vec", "=", 
+         RowBox[{"Normalize", "[", 
+          RowBox[{"RandomVector", "[", "$d", "]"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"spr", "=", 
+         RowBox[{"Supermap", "[", 
+          RowBox[{"kraus", "[", 
+           RowBox[{"U", ",", "vec"}], "]"}], "]"}]}], ";", 
+        "\[IndentingNewLine]", 
+        RowBox[{"rho", "=", 
+         RowBox[{"RandomPositive", "[", "3", "]"}]}], ";", 
+        RowBox[{"rho", "/=", 
+         RowBox[{"Tr", "[", "rho", "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"sig", "=", 
+         RowBox[{"RandomPositive", "[", "3", "]"}]}], ";", 
+        RowBox[{"sig", "/=", 
+         RowBox[{"Tr", "[", "sig", "]"}]}], ";", "\[IndentingNewLine]", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"Fidelity", "[", 
+           RowBox[{"rho", ",", "sig"}], "]"}], ",", 
+          RowBox[{"Fidelity", "[", 
+           RowBox[{
+            RowBox[{"spr", "[", "rho", "]"}], ",", 
+            RowBox[{"spr", "[", "sig", "]"}]}], "]"}]}], "}"}]}], ",", 
+       "\[IndentingNewLine]", 
+       RowBox[{"{", "10000", "}"}]}], "\[IndentingNewLine]", "]"}]}]}], ";"}],
+   "\[IndentingNewLine]", "]"}]], "Input",
+ CellLabel->"In[15]:=",
+ CellID->517689493,ExpressionUUID->"a6c13904-633b-4050-a1d0-d49b5cee8ed0"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"28.972693`", ",", "Null"}], "}"}]], "Output",
+ CellLabel->"Out[15]=",
+ CellID->449045221,ExpressionUUID->"748fb37a-ef94-421a-a811-353e7c96eb1c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"max", "=", 
+   RowBox[{"Max", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"min", "=", 
+   RowBox[{"Min", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"data", ",", 
+   RowBox[{"Epilog", "->", 
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "*", "max"}]}], "}"}]}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"PlotRange", "->", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"min", ",", "max"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"min", ",", "max"}], "}"}]}], "}"}]}], ",", 
+   "\[IndentingNewLine]", 
+   RowBox[{"FrameLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{"\"\<F(\[Rho],\[Sigma])\>\"", 
+      ",", "\"\<F(\[ScriptCapitalF](\[Rho]),\[ScriptCapitalF](\[Sigma]))\>\""}\
+], "}"}]}], ",", "\[IndentingNewLine]", 
+   RowBox[{"AspectRatio", "->", "1"}]}], "]"}]}], "Input",
+ CellLabel->"In[16]:=",
+ CellID->557988356,ExpressionUUID->"14832286-48ee-488b-be5a-b0db960d8cd6"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+     NCache[
+      Rational[1, 360], 0.002777777777777778]], Thickness[Large], 
+    PointBox[$Failed]}, {{}, {}}},
+  AspectRatio->1,
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0.3123539606880606, 0.3123539606880606},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Epilog->LineBox[{{0, 0}, {0.998321401065903, 0.998321401065903}}],
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox[
+     "\"F(\[ScriptCapitalF](\[Rho]),\[ScriptCapitalF](\[Sigma]))\"", 
+      TraditionalForm], None}, {
+     FormBox["\"F(\[Rho],\[Sigma])\"", TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImageSize->Large,
+  Method->{
+   "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0.32994286941569667`, 0.998321401065903}, {
+   0.32994286941569667`, 0.998321401065903}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellLabel->"Out[18]=",
+ CellID->845493789,ExpressionUUID->"5bafa4b6-41c9-4152-b744-0d34d87f3de1"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Relation to the Classical Fidelity", "Subsection",
+ CellTags->"Section22",
+ CellID->314819524,ExpressionUUID->"a2829369-05e7-4267-9e36-3f15ae2c7dd8"],
+
+Cell[TextData[{
+ "The ",
+ ButtonBox["fidelity",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3S/ref/Fidelity"],
+ " for two quantum states is a natural generalization of the fidelity between \
+two classical probability distributions. To examine the relation, consider a \
+POVM ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    SubscriptBox["E", "m"], "}"}], TraditionalForm]],ExpressionUUID->
+  "6fb41b54-a235-4a0f-bce3-4b30a7d11a27"],
+ " and the corresponding probability distributions"
+}], "TechNoteText",
+ CellID->1919517307,ExpressionUUID->"c5f42df7-dcc3-4c6c-9606-b693b02abe45"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["p", "m"], ":=", 
+    RowBox[{"Tr", " ", 
+     SubscriptBox["E", "m"], "\[Rho]"}]}], TraditionalForm]],ExpressionUUID->
+  "2263da33-2c0d-4f3e-8987-d031b542637b"],
+ " ,     ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["q", "m"], ":=", 
+    RowBox[{"Tr", " ", 
+     SubscriptBox["E", "m"], "\[Sigma]"}]}], TraditionalForm]],ExpressionUUID->
+  "433665eb-e2ee-4dd5-a8d3-be75542c63da"]
+}], "TechNoteText",
+ CellID->1828033515,ExpressionUUID->"93d51cb3-4344-4db4-959e-ad345d35f14d"],
+
+Cell["\<\
+associated with two quantum states \[Rho] and \[Sigma]. One can show that\
+\>", "TechNoteText",
+ CellID->1858232623,ExpressionUUID->"67ab552c-1121-406e-9db5-20b99a504bdd"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"F", "(", 
+     RowBox[{"\[Rho]", ",", "\[Sigma]"}], ")"}], "\[LessEqual]", 
+    RowBox[{
+     SubscriptBox["F", "cl"], "(", 
+     RowBox[{
+      RowBox[{"{", 
+       SubscriptBox["p", "m"], "}"}], ",", 
+      RowBox[{"{", 
+       SubscriptBox["q", "m"], "}"}]}], ")"}]}], TraditionalForm]],
+  ExpressionUUID->"b4a5e204-6024-4f71-b50b-9f6a3fe47f1e"],
+ " ."
+}], "TechNoteText",
+ CellID->461016440,ExpressionUUID->"e152df45-0144-4e45-ad2e-5723788d98ed"],
+
+Cell[TextData[{
+ "A proof is given in Problem 5.15 in the ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Quantum Workbook"]], 
+    "https://doi.org/10.1007/978-3-030-91214-7"},
+   "WebLink",
+   BaseStyle->{"TechNoteText"}]],ExpressionUUID->
+  "f8458903-edb8-482e-a744-4f1996ef1717"],
+ "."
+}], "TechNoteText",
+ CellID->182308704,ExpressionUUID->"5686e705-5b91-4398-bc32-7c5a33ed327c"],
+
+Cell["\<\
+\tThe following plot illustrates the above relation between the fidelity of \
+quantum states and the fidelity of classical probability distributions.\
+\>", "TechNoteText",
+ CellID->339048206,ExpressionUUID->"0a2be3ec-c721-4095-b69d-e467078b52c1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"data", "=", 
+   RowBox[{"Chop", "@", 
+    RowBox[{"Table", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"rho", "=", 
+        RowBox[{"RandomPositive", "[", "3", "]"}]}], ";", 
+       RowBox[{"rho", "/=", 
+        RowBox[{"Tr", "[", "rho", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"sig", "=", 
+        RowBox[{"RandomPositive", "[", "3", "]"}]}], ";", 
+       RowBox[{"sig", "/=", 
+        RowBox[{"Tr", "[", "sig", "]"}]}], ";", "\[IndentingNewLine]", 
+       RowBox[{"pp", "=", 
+        RowBox[{"Chop", "@", 
+         RowBox[{"Diagonal", "[", "rho", "]"}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"qq", "=", 
+        RowBox[{"Chop", "@", 
+         RowBox[{"Diagonal", "[", "sig", "]"}]}]}], ";", 
+       "\[IndentingNewLine]", 
+       RowBox[{"{", 
+        RowBox[{
+         RowBox[{"Fidelity", "[", 
+          RowBox[{"rho", ",", "sig"}], "]"}], ",", 
+         RowBox[{"Total", "@", 
+          RowBox[{"Sqrt", "[", 
+           RowBox[{"pp", "*", "qq"}], "]"}]}]}], "}"}]}], ",", 
+      RowBox[{"{", "10000", "}"}]}], "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"min", "=", 
+   RowBox[{"Min", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"max", "=", 
+   RowBox[{"Max", "[", "data", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ListPlot", "[", 
+  RowBox[{"data", ",", 
+   RowBox[{"PlotRange", "->", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"{", 
+       RowBox[{"min", ",", "max"}], "}"}], ",", 
+      RowBox[{"{", 
+       RowBox[{"min", ",", "max"}], "}"}]}], "}"}]}], ",", 
+   RowBox[{"Epilog", "->", 
+    RowBox[{"Line", "@", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"0", ",", "0"}], "}"}], ",", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{"1", ",", "1"}], "}"}], "*", "max"}]}], "}"}]}]}], ",", 
+   RowBox[{"FrameLabel", "->", 
+    RowBox[{"{", 
+     RowBox[{"\"\<F(\[Rho],\[Sigma])\>\"", 
+      ",", "\"\<\!\(\*SubscriptBox[\(F\), \
+\(cl\)]\)({\!\(\*SubscriptBox[\(p\), \(m\)]\)},{\!\(\*SubscriptBox[\(q\), \(m\
+\)]\)})\>\""}], "}"}]}], ",", 
+   RowBox[{"AspectRatio", "\[Rule]", "1"}]}], "]"}]}], "Input",
+ CellLabel->"In[19]:=",
+ CellID->1109082751,ExpressionUUID->"98b3a963-0602-4241-9c32-36a7550cffa6"],
+
+Cell[BoxData[
+ GraphicsBox[{{}, 
+   {RGBColor[0.368417, 0.506779, 0.709798], PointSize[
+     NCache[
+      Rational[1, 360], 0.002777777777777778]], Thickness[Large], 
+    PointBox[$Failed]}, {{}, {}}},
+  AspectRatio->1,
+  Axes->{False, False},
+  AxesLabel->{None, None},
+  AxesOrigin->{0.30480486577768123`, 0.30480486577768123`},
+  AxesStyle->Large,
+  DisplayFunction->Identity,
+  Epilog->LineBox[{{0, 0}, {0.9999989603267927, 0.9999989603267927}}],
+  Frame->{{True, True}, {True, True}},
+  FrameLabel->{{
+     FormBox[
+     "\"\\!\\(\\*SubscriptBox[\\(F\\), \
+\\(cl\\)]\\)({\\!\\(\\*SubscriptBox[\\(p\\), \
+\\(m\\)]\\)},{\\!\\(\\*SubscriptBox[\\(q\\), \\(m\\)]\\)})\"", 
+      TraditionalForm], None}, {
+     FormBox["\"F(\[Rho],\[Sigma])\"", TraditionalForm], None}},
+  FrameStyle->Large,
+  FrameTicks->{{Automatic, Automatic}, {Automatic, Automatic}},
+  GridLines->{Automatic, Automatic},
+  GridLinesStyle->Directive[
+    GrayLevel[0.5, 0.4]],
+  ImageSize->Large,
+  Method->{
+   "OptimizePlotMarkers" -> True, "OptimizePlotMarkers" -> True, 
+    "CoordinatesToolOptions" -> {"DisplayFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& ), "CopiedValueFunction" -> ({
+        Identity[
+         Part[#, 1]], 
+        Identity[
+         Part[#, 2]]}& )}},
+  PlotRange->{{0.32263035538150375`, 0.9999989603267927}, {
+   0.32263035538150375`, 0.9999989603267927}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{{
+     Scaled[0.025], 
+     Scaled[0.025]}, {
+     Scaled[0.025], 
+     Scaled[0.025]}},
+  Ticks->{Automatic, Automatic}]], "Output",
+ CellLabel->"Out[22]=",
+ CellID->1750707506,ExpressionUUID->"4337b9b0-624e-48d2-a5c0-5db2899df075"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3S/guide/QuantumInformationSystems"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "3362fb21-d68c-4c9a-9bc8-05b32d63f1f6"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Distance and Similarity Measures",
+         BaseStyle->"Link",
+         ButtonData->"paclet:guide/DistanceAndSimilarityMeasures"]], 
+         "TutorialMoreAbout",ExpressionUUID->
+         "a242166e-ec1f-48fd-968d-54293eff9332"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"dc84b3a3-1250-4072-8105-\
+03cdd002954b"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tech", " ", "Notes"}], 
+        "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Noise and Decoherence",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3S/tutorial/QuantumNoiseAndDecoherence"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "8ae81d29-c301-4931-b1b9-eccd2dbc7b13"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Theory",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3S/tutorial/QuantumInformationTheory"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "a2f2e70a-a00c-4a57-96cb-5135c67e68e4"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3S/tutorial/QuantumInformationSystems"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "4787bc6f-4902-4d26-923c-73e615ff4f74"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"9b7e3184-93aa-41c3-87ee-\
+392857696788"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "M. Nielsen and I. L. Chuang (2022)"}]]]], 
+             "https://doi.org/10.1017/CBO9780511976667"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "461bfc73-c9b7-4fbe-9146-5a5ecd7b383e"]}]],ExpressionUUID->
+         "650aa1d6-0004-4569-a2d7-c46979f0ea98"],
+        StyleBox[
+        ", Quantum Computation and Quantum Information (Cambridge University \
+Press).",
+         FontSlant->"Plain"]
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "a3032d8e-9266-4dab-9de7-54e13a7e5211"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "682e0040-8a5f-4a02-bfd1-a427406cff66"]}]],ExpressionUUID->
+         "a0b9c91e-abd6-4e4b-96dd-410935bea9e7"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "46007872-88d6-4b45-92ff-987fa5734a0f"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"70546808-9d94-4722-b3a4-\
+1b118502d4f0"]
+}, Open  ]],
+
+Cell[" ", "FooterCell",ExpressionUUID->"19ab8f9e-3b5f-4f45-914e-83ac3e3cb90e"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Distance Measures between Quantum States",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2021", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2025, 3, 2, 21, 33, 58.079857}", 
+    "history" -> {"13", "", "", ""}, "context" -> "QuantumMob`Q3S`", 
+    "keywords" -> {
+     "Hilbert-Schmidt norm", "trace norm", "fidelity", "quantum information"},
+     "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> 
+    True, "label" -> "Quantum Mob/ Q3S Tech Note", "language" -> "en", 
+    "paclet" -> "QuantumMob/Q3S", "status" -> "None", "summary" -> 
+    "See also Section 5.5 of the Quantum Workbook (2022). A distance measure \
+quantifies the extent to which two quantum states share similar \
+characteristics. Quantum states undergo various operations, unitary or \
+non-unitary, intended or incidental. It is inevitable to quantitatively \
+compare the quantum states before and after those operations to assess their \
+effects. In general, While these distance measures are usually given by \
+certain mathematical expressions, they often possess a simple operational \
+meaning, i.e., they are related to the problem of distinguishing two \
+systems.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "Distance Measures between Quantum States", "titlemodifier" -> "", 
+    "metadescription" -> "", "windowtitle" -> 
+    "Distance Measures between Quantum States", "type" -> "Tech Note", "uri" -> 
+    "QuantumMob/Q3S/tutorial/DistanceMeasuresBetweenQuantumStates"}},
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (December 26, 2024)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "14.2 for Mac OS X ARM (64-bit) (December 26, 2024)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"8d9125d7-4981-484b-9c26-206fe6d4475e"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "Section11"->{
+  Cell[17263, 422, 146, 2, 70, "TechNoteSection",ExpressionUUID->"dcc5622d-5dbe-4d14-ad65-50e8a55532a1",
+   CellTags->"Section11",
+   CellID->1279618553]},
+ "Section12"->{
+  Cell[29005, 806, 158, 2, 70, "TechNoteSection",ExpressionUUID->"38bb04d1-0ef8-48b1-a639-537c03be36e1",
+   CellTags->"Section12",
+   CellID->1933235710]},
+ "Section13"->{
+  Cell[41850, 1235, 151, 2, 70, "Subsection",ExpressionUUID->"8002db0c-c29c-41ba-89f9-ca8ef45f26f2",
+   CellTags->"Section13",
+   CellID->778010997]},
+ "Section14"->{
+  Cell[47340, 1407, 146, 2, 70, "Subsection",ExpressionUUID->"0341447d-6fe9-49fa-8243-2932b4df6f10",
+   CellTags->"Section14",
+   CellID->1841309046]},
+ "Section15"->{
+  Cell[67314, 1992, 162, 2, 70, "TechNoteSection",ExpressionUUID->"7b6575e3-adc8-4812-9979-12934a1f12a0",
+   CellTags->"Section15",
+   CellID->1523037456]},
+ "Section16"->{
+  Cell[71543, 2103, 194, 4, 70, "Subsection",ExpressionUUID->"8e5da9b0-cac3-440b-99c2-48788c634a44",
+   CellTags->"Section16",
+   CellID->1750923645]},
+ "Section17"->{
+  Cell[80981, 2392, 175, 2, 70, "Subsection",ExpressionUUID->"4d7cff6d-0876-46cf-8d7d-f984d4fabd72",
+   CellTags->"Section17",
+   CellID->679291181]},
+ "Section18"->{
+  Cell[91249, 2708, 134, 2, 70, "TechNoteSection",ExpressionUUID->"b868cd4b-f5d3-48ec-947e-686548b0bf2c",
+   CellTags->"Section18",
+   CellID->710264195]},
+ "Section19"->{
+  Cell[99952, 2980, 154, 2, 70, "Subsection",ExpressionUUID->"8ddef454-bc06-4f52-b5ed-cedef76a93c6",
+   CellTags->"Section19",
+   CellID->13675846]},
+ "Section20"->{
+  Cell[107798, 3228, 145, 2, 70, "Subsection",ExpressionUUID->"d7b6a6aa-b8e1-41c5-b024-846bd23dda91",
+   CellTags->"Section20",
+   CellID->674911264]},
+ "Section22"->{
+  Cell[115917, 3463, 155, 2, 70, "Subsection",ExpressionUUID->"a2829369-05e7-4267-9e36-3f15ae2c7dd8",
+   CellTags->"Section22",
+   CellID->314819524]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"Section11", 130346, 3864},
+ {"Section12", 130518, 3868},
+ {"Section13", 130690, 3872},
+ {"Section14", 130857, 3876},
+ {"Section15", 131025, 3880},
+ {"Section16", 131198, 3884},
+ {"Section17", 131366, 3888},
+ {"Section18", 131533, 3892},
+ {"Section19", 131705, 3896},
+ {"Section20", 131871, 3900},
+ {"Section22", 132039, 3904}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[608, 21, 7153, 171, 50, "AnchorBarGrid",ExpressionUUID->"a476aafa-255d-41f0-a83f-be75d8f8bd31",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[7786, 196, 141, 1, 67, "TechNoteTitle",ExpressionUUID->"694a4033-e0b9-4cf6-9142-193aabe3d6b9",
+ CellID->2031075844],
+Cell[7930, 199, 3654, 84, 86, "TechNoteJumpBox",ExpressionUUID->"1a60b59d-bded-49c0-85ce-6ecbc7fb9560"],
+Cell[11587, 285, 408, 13, 34, "TechNoteText",ExpressionUUID->"dd1cd082-34eb-443b-a54d-f265c33aa116",
+ CellID->1308734266],
+Cell[11998, 300, 427, 7, 80, "TechNoteText",ExpressionUUID->"2996fa22-172d-4517-a4a4-76070dd466fa",
+ CellID->2013395849],
+Cell[12428, 309, 328, 5, 57, "TechNoteText",ExpressionUUID->"e65e9b6b-99b7-4b4e-b06a-1232a9de011f",
+ CellID->1244208364],
+Cell[12759, 316, 1076, 15, 171, "TechNoteText",ExpressionUUID->"e1ccb0a6-f5eb-4071-a1a0-ef144b05f243",
+ CellID->1361702909],
+Cell[13838, 333, 568, 8, 103, "TechNoteText",ExpressionUUID->"12fe6cf5-ccc3-42ef-8cf9-dd0478e4b7f2",
+ CellID->407565484],
+Cell[14409, 343, 1575, 40, 147, "DefinitionBox",ExpressionUUID->"8943a265-c20d-4905-9238-da6f99794bf8",
+ CellID->151987228],
+Cell[15987, 385, 180, 3, 30, "TechNoteCaption",ExpressionUUID->"152223e3-a40b-44e5-9942-5b3d2b61e4a9",
+ CellID->1091284713],
+Cell[16170, 390, 295, 7, 35, "TechNoteMathCaption",ExpressionUUID->"0023e83a-0c28-4254-98a5-347f114cf305",
+ CellID->1428640008],
+Cell[16468, 399, 177, 3, 70, "Input",ExpressionUUID->"eefa95cd-f556-4d2b-b97a-f871cf5700b2",
+ CellID->853967906],
+Cell[16648, 404, 318, 6, 70, "TechNoteMathCaption",ExpressionUUID->"07b6cd2b-e824-49e5-908a-6e60ad1d65ab",
+ CellID->1937193009],
+Cell[16969, 412, 269, 6, 70, "Input",ExpressionUUID->"b2e150a6-0a63-4236-9005-dfd649d85e47",
+ CellID->403330096],
+Cell[CellGroupData[{
+Cell[17263, 422, 146, 2, 70, "TechNoteSection",ExpressionUUID->"dcc5622d-5dbe-4d14-ad65-50e8a55532a1",
+ CellTags->"Section11",
+ CellID->1279618553],
+Cell[17412, 426, 338, 5, 70, "TechNoteText",ExpressionUUID->"07d5fdd5-45b7-4087-b063-457b5c0973fb",
+ CellID->1647779213],
+Cell[17753, 433, 297, 9, 70, "TechNoteText",ExpressionUUID->"9c0b5af9-3603-400a-a4e3-7c6c7ce26d6c",
+ CellID->276121179],
+Cell[18053, 444, 415, 11, 70, "TechNoteText",ExpressionUUID->"6469fb87-21c4-42fd-b369-3316678ba640",
+ CellID->56494286],
+Cell[18471, 457, 442, 11, 70, "TechNoteText",ExpressionUUID->"1632f519-4bea-4d54-bb86-fe3919f579fd",
+ CellID->311692828],
+Cell[18916, 470, 806, 23, 70, "TechNoteText",ExpressionUUID->"ee937a51-f676-4d76-93de-3b868693b8fa",
+ CellID->908745163],
+Cell[19725, 495, 401, 12, 70, "TechNoteText",ExpressionUUID->"4e959ea2-a2c7-4623-90ae-6232e21b7c5c",
+ CellID->376257077],
+Cell[20129, 509, 288, 5, 70, "TechNoteText",ExpressionUUID->"3b5f021d-f99b-40d6-a92e-dee89d598363",
+ CellID->1560836371],
+Cell[20420, 516, 305, 9, 70, "TechNoteText",ExpressionUUID->"f78e5ec6-0b0c-409b-9aa4-73ff2da28cca",
+ CellID->1464139292],
+Cell[20728, 527, 416, 13, 70, "TechNoteText",ExpressionUUID->"4dae0d93-cae1-47eb-b8c1-7e136f31cec0",
+ CellID->1921453318],
+Cell[21147, 542, 1460, 46, 70, "TechNoteText",ExpressionUUID->"e10f47d2-5fb2-46b3-b019-26f49cde498a",
+ CellID->6832040],
+Cell[22610, 590, 937, 30, 70, "TechNoteText",ExpressionUUID->"9f761209-5261-4d33-877e-0c2bb2918420",
+ CellID->1009462989],
+Cell[23550, 622, 1203, 36, 70, "TechNoteText",ExpressionUUID->"297a749f-3439-4786-a9d9-96cbabd04e4b",
+ CellID->923644823],
+Cell[24756, 660, 364, 8, 70, "TechNoteText",ExpressionUUID->"829c8e30-fc5f-4080-9a5f-eb6107396a9d",
+ CellID->1686739645],
+Cell[25123, 670, 439, 13, 70, "TechNoteText",ExpressionUUID->"b2d7420f-6bdc-4dac-9c33-d76d7dcbf739",
+ CellID->101589468],
+Cell[25565, 685, 1759, 58, 70, "TechNoteText",ExpressionUUID->"f8f022f9-a3eb-4ec3-a136-8523ad4e2abd",
+ CellID->164689311],
+Cell[27327, 745, 1455, 51, 70, "TechNoteText",ExpressionUUID->"98180eba-9da8-4078-a45a-df59204bb8c6",
+ CellID->1974312641],
+Cell[28785, 798, 183, 3, 70, "TechNoteText",ExpressionUUID->"cb514da9-5530-4473-8834-c6bb29f56a9f",
+ CellID->1502727490]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[29005, 806, 158, 2, 70, "TechNoteSection",ExpressionUUID->"38bb04d1-0ef8-48b1-a639-537c03be36e1",
+ CellTags->"Section12",
+ CellID->1933235710],
+Cell[29166, 810, 308, 5, 70, "TechNoteText",ExpressionUUID->"ae35a791-910a-4182-988b-711ca0034235",
+ CellID->464998860],
+Cell[29477, 817, 284, 7, 70, "TechNoteText",ExpressionUUID->"2493fee5-44df-4286-9024-4f6b527a8262",
+ CellID->542848587],
+Cell[29764, 826, 452, 15, 70, "TechNoteText",ExpressionUUID->"1b3f1ae3-f6b2-4859-8c00-dc4e604fee11",
+ CellID->1145669253],
+Cell[30219, 843, 391, 8, 70, "TechNoteText",ExpressionUUID->"62a5e245-c0e7-4d5f-b529-e6b31c9f569f",
+ CellID->924756169],
+Cell[30613, 853, 409, 12, 70, "TechNoteText",ExpressionUUID->"e8f44ffd-d263-461b-9689-71e2055f9767",
+ CellID->1037779044],
+Cell[31025, 867, 1059, 31, 70, "TechNoteText",ExpressionUUID->"69eae6d6-a682-4bcd-8628-2b712affb2d9",
+ CellID->90211574],
+Cell[32087, 900, 960, 30, 70, "TechNoteText",ExpressionUUID->"ac55d8a6-056f-4df3-9fa5-070d3e342905",
+ CellID->62469436],
+Cell[33050, 932, 344, 8, 70, "TechNoteText",ExpressionUUID->"b68912a8-2dfd-4fe7-b9ea-ff543037a78b",
+ CellID->1951791116],
+Cell[33397, 942, 413, 11, 70, "TechNoteText",ExpressionUUID->"2ceea437-5b73-4a86-ad5e-99ae0ae4b932",
+ CellID->940578687],
+Cell[33813, 955, 647, 23, 70, "TechNoteText",ExpressionUUID->"8e941f8c-c374-402a-adea-6ce668bff166",
+ CellID->678866842],
+Cell[34463, 980, 292, 7, 70, "TechNoteText",ExpressionUUID->"768640e0-454c-41ba-97c9-389f543b7eb6",
+ CellID->134396983],
+Cell[34758, 989, 436, 14, 70, "TechNoteText",ExpressionUUID->"49490c08-1193-47fd-b2a1-1acaf4e7ce2e",
+ CellID->1804780284],
+Cell[35197, 1005, 505, 13, 70, "TechNoteText",ExpressionUUID->"36c2dae1-e401-4b06-be6f-dfed1e93ed0b",
+ CellID->1883202960],
+Cell[35705, 1020, 610, 22, 70, "TechNoteText",ExpressionUUID->"eeaba40b-1fc5-47ee-9561-a0e735d4dfd3",
+ CellID->1378159234],
+Cell[36318, 1044, 160, 2, 70, "TechNoteText",ExpressionUUID->"258b55bd-6737-475d-992f-7620a8698545",
+ CellID->2111112943],
+Cell[36481, 1048, 438, 13, 70, "TechNoteText",ExpressionUUID->"3bcef4ed-cfb5-4c0f-914f-fc42e7122330",
+ CellID->750417267],
+Cell[36922, 1063, 386, 11, 70, "TechNoteText",ExpressionUUID->"440a6a14-0506-4b9b-b2ad-733be30c6e29",
+ CellID->91547638],
+Cell[37311, 1076, 579, 19, 70, "TechNoteText",ExpressionUUID->"aea1382f-2f75-425f-b211-b904b6d0807f",
+ CellID->1042860614],
+Cell[37893, 1097, 800, 26, 70, "TechNoteText",ExpressionUUID->"9bfcce95-bbec-4a4a-945b-e50da40f1361",
+ CellID->1744296331],
+Cell[38696, 1125, 473, 12, 70, "TechNoteText",ExpressionUUID->"83ac7902-fdbf-40cc-8fd8-3465a13ad923",
+ CellID->1089169920],
+Cell[39172, 1139, 495, 17, 70, "TechNoteText",ExpressionUUID->"19228813-af8d-4090-b348-94934d12eedb",
+ CellID->528238412],
+Cell[39670, 1158, 283, 7, 70, "TechNoteText",ExpressionUUID->"0213d3b2-fccc-49e6-8dd0-b2a23436bebd",
+ CellID->405593786],
+Cell[39956, 1167, 471, 16, 70, "TechNoteText",ExpressionUUID->"ae487028-5c2a-4ded-a600-37fa5a4c71a3",
+ CellID->701665724],
+Cell[40430, 1185, 339, 7, 70, "TechNoteText",ExpressionUUID->"b03694f8-c1a8-4d2f-b15b-a740d6474e12",
+ CellID->1063117591],
+Cell[40772, 1194, 495, 17, 70, "TechNoteText",ExpressionUUID->"ee501e03-2318-417a-8f83-7cb7a4798c83",
+ CellID->753408897],
+Cell[41270, 1213, 102, 1, 70, "TechNoteText",ExpressionUUID->"ebbd78c2-2320-4e31-9ea2-bb9e2c6539c6",
+ CellID->979749167],
+Cell[41375, 1216, 450, 15, 70, "TechNoteText",ExpressionUUID->"6c9c4683-b1fe-4601-9c9b-3ed90f5768ee",
+ CellID->1887128220],
+Cell[CellGroupData[{
+Cell[41850, 1235, 151, 2, 70, "Subsection",ExpressionUUID->"8002db0c-c29c-41ba-89f9-ca8ef45f26f2",
+ CellTags->"Section13",
+ CellID->778010997],
+Cell[42004, 1239, 359, 10, 70, "TechNoteText",ExpressionUUID->"83a62cfc-c070-4016-a315-f993dbb580ce",
+ CellID->2899996],
+Cell[42366, 1251, 488, 15, 70, "TechNoteText",ExpressionUUID->"2df49dcc-4c5b-431a-baf7-1db5b458ec44",
+ CellID->1495592538],
+Cell[42857, 1268, 982, 31, 70, "TechNoteText",ExpressionUUID->"28e581d6-48fb-4887-b24a-6e35258330c6",
+ CellID->127698031],
+Cell[CellGroupData[{
+Cell[43864, 1303, 1757, 49, 70, "Input",ExpressionUUID->"ed400593-4319-4f5e-952b-d3e372467fb3",
+ CellID->884643664],
+Cell[45624, 1354, 1667, 47, 610, "Output",ExpressionUUID->"d5840745-b50c-4f5d-8376-c697b6419750",
+ CellID->1176772667]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[47340, 1407, 146, 2, 70, "Subsection",ExpressionUUID->"0341447d-6fe9-49fa-8243-2932b4df6f10",
+ CellTags->"Section14",
+ CellID->1841309046],
+Cell[47489, 1411, 283, 5, 70, "TechNoteText",ExpressionUUID->"af61a0cc-9e14-44ab-ae03-2c89761c9cef",
+ CellID->1641782852],
+Cell[47775, 1418, 995, 31, 70, "TechNoteText",ExpressionUUID->"48d5456e-6544-4e4e-9e73-bc5093280082",
+ CellID->427013261],
+Cell[48773, 1451, 444, 11, 70, "TechNoteText",ExpressionUUID->"fbf82e4d-e4b9-45df-99ce-2d1bd43146ca",
+ CellID->2069013000],
+Cell[49220, 1464, 537, 16, 70, "TechNoteText",ExpressionUUID->"91cdc549-c338-4bcd-913d-3319c04fc939",
+ CellID->1846278776],
+Cell[49760, 1482, 693, 14, 70, "TechNoteText",ExpressionUUID->"fcd56de8-4f3c-42b4-898c-cf6a194396bc",
+ CellID->1416172729],
+Cell[50456, 1498, 237, 4, 70, "TechNoteText",ExpressionUUID->"98b0e264-018b-4bf8-aa2a-9c1ccdff3040",
+ CellID->1918828463],
+Cell[50696, 1504, 498, 9, 70, "TechNoteText",ExpressionUUID->"fb67c1dc-fb78-46f3-a3a3-60897d6509a9",
+ CellID->1053796602],
+Cell[51197, 1515, 1293, 36, 70, "Input",ExpressionUUID->"6d9c0a19-e2dd-4f60-87c1-3d11ecc94819",
+ CellID->988050642],
+Cell[52493, 1553, 302, 5, 70, "TechNoteText",ExpressionUUID->"9848274d-3a84-470e-99aa-202fd6de2efa",
+ CellID->1823581490],
+Cell[CellGroupData[{
+Cell[52820, 1562, 1507, 39, 70, "Input",ExpressionUUID->"d1507225-6ce7-4d9d-8933-8c4152ab60b2",
+ CellID->47492446],
+Cell[54330, 1603, 184, 4, 36, "Output",ExpressionUUID->"bd9c1825-d57f-41f9-beae-f56a14af8363",
+ CellID->861853005]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[54551, 1612, 1197, 33, 70, "Input",ExpressionUUID->"05cbf684-8f53-495e-b704-e173279b8cc3",
+ CellID->644994057],
+Cell[55751, 1647, 1641, 47, 590, "Output",ExpressionUUID->"dd9cf15a-2ddc-4a29-88f5-39f5a69392ba",
+ CellID->386256020]
+}, Open  ]],
+Cell[57407, 1697, 180, 3, 70, "TechNoteText",ExpressionUUID->"10ebbfe0-30cd-46a3-a2ec-c7eb043498e0",
+ CellID->1338456316],
+Cell[CellGroupData[{
+Cell[57612, 1704, 1221, 31, 70, "Input",ExpressionUUID->"1f2ace26-90bd-4f9b-b24a-7c8899f4e80d",
+ CellID->544100687],
+Cell[58836, 1737, 185, 4, 36, "Output",ExpressionUUID->"b209a64c-7a1f-49cd-a6b9-be4f12963266",
+ CellID->2109346906]
+}, Open  ]],
+Cell[59036, 1744, 404, 11, 70, "TechNoteText",ExpressionUUID->"38934440-32dc-475b-aa08-d52960218403",
+ CellID->1922335463],
+Cell[CellGroupData[{
+Cell[59465, 1759, 1198, 33, 70, "Input",ExpressionUUID->"083800f4-ef70-469c-aae6-12998880edec",
+ CellID->1948141173],
+Cell[60666, 1794, 1642, 47, 610, "Output",ExpressionUUID->"02f76976-1fdd-4b05-8945-b883cbee108f",
+ CellID->1133404466]
+}, Open  ]],
+Cell[62323, 1844, 271, 5, 70, "TechNoteText",ExpressionUUID->"fec3dc65-c77d-4176-908c-1c907d67e700",
+ CellID->1904932617],
+Cell[CellGroupData[{
+Cell[62619, 1853, 1422, 36, 70, "Input",ExpressionUUID->"42ee59d4-98d4-4448-aef5-58d62ad65627",
+ CellID->1516284443],
+Cell[64044, 1891, 183, 4, 36, "Output",ExpressionUUID->"f4b394c1-2930-4545-b4be-b9b24190b0a0",
+ CellID->948911172]
+}, Open  ]],
+Cell[64242, 1898, 144, 1, 70, "TechNoteText",ExpressionUUID->"186e3435-9d7d-43e2-b5cb-3171a8591dc0",
+ CellID->1778358760],
+Cell[CellGroupData[{
+Cell[64411, 1903, 1197, 33, 70, "Input",ExpressionUUID->"cd94ddbc-18c0-4cd5-9b39-11c7b9cf43dd",
+ CellID->198280374],
+Cell[65611, 1938, 1642, 47, 610, "Output",ExpressionUUID->"7f6dd7da-39ae-4b1f-bb12-d3f8818001fb",
+ CellID->1136505182]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[67314, 1992, 162, 2, 70, "TechNoteSection",ExpressionUUID->"7b6575e3-adc8-4812-9979-12934a1f12a0",
+ CellTags->"Section15",
+ CellID->1523037456],
+Cell[67479, 1996, 476, 9, 70, "TechNoteText",ExpressionUUID->"064b9ec9-d9e5-42d1-b456-a5a5bb79b466",
+ CellID->1832934399],
+Cell[67958, 2007, 461, 13, 70, "TechNoteText",ExpressionUUID->"614ad012-929f-4c7e-be68-d7ee365e16c4",
+ CellID->475527778],
+Cell[68422, 2022, 264, 7, 70, "TechNoteText",ExpressionUUID->"fc1c248f-1f70-4ab0-b20b-8635f7d6d625",
+ CellID->1408714359],
+Cell[68689, 2031, 468, 14, 70, "TechNoteText",ExpressionUUID->"e490e785-5516-4a34-95eb-b11592ff6455",
+ CellID->255023538],
+Cell[69160, 2047, 509, 8, 70, "TechNoteText",ExpressionUUID->"47e28fad-7c03-4cc0-b9da-99a78a94ced8",
+ CellID->1950727401],
+Cell[69672, 2057, 490, 11, 70, "TechNoteText",ExpressionUUID->"2c8968fd-72cd-4c26-add4-dad680c3c3ef",
+ CellID->242589858],
+Cell[70165, 2070, 631, 17, 70, "TechNoteText",ExpressionUUID->"64eb535c-4528-4bc9-a912-f5e3ccb79526",
+ CellID->1283781400],
+Cell[70799, 2089, 719, 10, 70, "TechNoteText",ExpressionUUID->"11357677-5624-4f2d-b3f2-cc0d10cee976",
+ CellID->745788391],
+Cell[CellGroupData[{
+Cell[71543, 2103, 194, 4, 70, "Subsection",ExpressionUUID->"8e5da9b0-cac3-440b-99c2-48788c634a44",
+ CellTags->"Section16",
+ CellID->1750923645],
+Cell[71740, 2109, 243, 4, 70, "TechNoteText",ExpressionUUID->"dbacea2b-dd11-49c9-8019-7afa063a8557",
+ CellID->805286674],
+Cell[71986, 2115, 787, 22, 70, "TechNoteText",ExpressionUUID->"d2e405ed-2f48-4e74-a868-78aca310c75a",
+ CellID->1011186524],
+Cell[72776, 2139, 949, 32, 70, "TechNoteText",ExpressionUUID->"6836eaa6-94d5-4643-ad92-dffaf17cd380",
+ CellID->1973810157],
+Cell[73728, 2173, 980, 29, 70, "TechNoteText",ExpressionUUID->"27785b56-98d6-4ab8-bfac-b314714d63d6",
+ CellID->1647413490],
+Cell[74711, 2204, 565, 18, 70, "TechNoteText",ExpressionUUID->"bb850617-486c-431b-ad9d-c492ff9441ed",
+ CellID->571865659],
+Cell[75279, 2224, 378, 10, 70, "TechNoteText",ExpressionUUID->"765fa25d-fec4-4278-aa41-d6af721213fc",
+ CellID->1356810488],
+Cell[75660, 2236, 684, 22, 70, "TechNoteText",ExpressionUUID->"092cbd6d-8cb7-49b6-a5db-76301aa116d3",
+ CellID->1932507970],
+Cell[76347, 2260, 248, 4, 70, "TechNoteText",ExpressionUUID->"8e3557e2-f879-413b-9fe2-0fd71bddd16f",
+ CellID->1118774562],
+Cell[76598, 2266, 410, 8, 70, "TechNoteText",ExpressionUUID->"05528325-c936-43bf-8a0e-3c389cc17368",
+ CellID->2053111169],
+Cell[CellGroupData[{
+Cell[77033, 2278, 2206, 58, 70, "Input",ExpressionUUID->"49be5d16-6ed8-4b20-8b7d-c1281c025705",
+ CellID->872177387],
+Cell[79242, 2338, 1690, 48, 587, "Output",ExpressionUUID->"bc1f1c56-a4d1-465e-962a-07914e60fab4",
+ CellID->2024734049]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[80981, 2392, 175, 2, 70, "Subsection",ExpressionUUID->"4d7cff6d-0876-46cf-8d7d-f984d4fabd72",
+ CellTags->"Section17",
+ CellID->679291181],
+Cell[81159, 2396, 355, 9, 70, "TechNoteText",ExpressionUUID->"31aebd6a-340b-4f8b-bb26-19758314c8ec",
+ CellID->823811615],
+Cell[81517, 2407, 595, 20, 70, "TechNoteText",ExpressionUUID->"e56abe78-4cd3-4b6d-9fd9-63af59f551d9",
+ CellID->974741096],
+Cell[82115, 2429, 846, 22, 70, "TechNoteText",ExpressionUUID->"dcf93a57-214c-4b27-9841-2924ab98d78a",
+ CellID->1468341156],
+Cell[82964, 2453, 566, 18, 70, "TechNoteText",ExpressionUUID->"66b442ff-1237-42f2-87f1-f1f108d294ac",
+ CellID->1675221215],
+Cell[83533, 2473, 366, 10, 70, "TechNoteText",ExpressionUUID->"93cd03ed-93c3-4a04-a4aa-bbcf6f1ea2fc",
+ CellID->1932348335],
+Cell[83902, 2485, 683, 22, 70, "TechNoteText",ExpressionUUID->"2d8407ec-59ff-4fc3-8053-f20e650cf0f8",
+ CellID->583272764],
+Cell[84588, 2509, 231, 4, 70, "TechNoteText",ExpressionUUID->"8df7a932-4ff5-49ec-9216-4726c3339c2b",
+ CellID->1949979640],
+Cell[84822, 2515, 716, 23, 70, "TechNoteText",ExpressionUUID->"20e2af42-e37f-4482-bdba-5d115cf6a195",
+ CellID->559872613],
+Cell[85541, 2540, 417, 9, 70, "TechNoteText",ExpressionUUID->"98d41db3-6d4b-4974-b936-c41f6ecc4948",
+ CellID->1653149184],
+Cell[85961, 2551, 551, 17, 70, "TechNoteText",ExpressionUUID->"05686acb-51c0-4404-a345-7db5ad031c72",
+ CellID->334910602],
+Cell[86515, 2570, 329, 8, 70, "TechNoteText",ExpressionUUID->"c0708a7f-ea33-4783-80f1-c2d62a7fc604",
+ CellID->287849027],
+Cell[86847, 2580, 384, 8, 70, "TechNoteText",ExpressionUUID->"ed6b1528-dad9-43f7-a91b-8604287e35ce",
+ CellID->1106721126],
+Cell[CellGroupData[{
+Cell[87256, 2592, 2225, 58, 70, "Input",ExpressionUUID->"9c0e573d-b1ec-478c-a2d3-0fa570254141",
+ CellID->1306098015],
+Cell[89484, 2652, 1704, 49, 590, "Output",ExpressionUUID->"39943700-e3e9-4c19-a3d0-256aebde8714",
+ CellID->1745423745]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[91249, 2708, 134, 2, 70, "TechNoteSection",ExpressionUUID->"b868cd4b-f5d3-48ec-947e-686548b0bf2c",
+ CellTags->"Section18",
+ CellID->710264195],
+Cell[91386, 2712, 789, 13, 70, "TechNoteText",ExpressionUUID->"7a1b6f42-56f9-4d48-abfd-056cc02a89e1",
+ CellID->1696215339],
+Cell[92178, 2727, 326, 8, 70, "TechNoteText",ExpressionUUID->"ca8d6d9a-66f1-42f2-b3c4-400fed8440a0",
+ CellID->445788648],
+Cell[92507, 2737, 438, 15, 70, "TechNoteText",ExpressionUUID->"5a6f5b84-93b4-4580-9fd8-9042c4664568",
+ CellID->1946846200],
+Cell[92948, 2754, 436, 9, 70, "TechNoteText",ExpressionUUID->"2ccee650-f55f-46ae-8796-68e136570394",
+ CellID->1583237708],
+Cell[93387, 2765, 492, 15, 70, "TechNoteText",ExpressionUUID->"8dafaed3-7724-4c1b-9eb0-238ecc5800c1",
+ CellID->6288379],
+Cell[93882, 2782, 206, 4, 70, "TechNoteText",ExpressionUUID->"c8fc36d8-91b9-4ca7-bb77-6c43cf089ad7",
+ CellID->462087150],
+Cell[94091, 2788, 539, 16, 70, "TechNoteText",ExpressionUUID->"8b9dce17-ef0d-4ed5-af6c-319f2df0ba64",
+ CellID->997862498],
+Cell[94633, 2806, 661, 18, 70, "TechNoteText",ExpressionUUID->"f2cfeffc-03a9-4b28-a977-ce4cd0ccd41e",
+ CellID->1842400627],
+Cell[95297, 2826, 209, 4, 70, "TechNoteText",ExpressionUUID->"25819840-a1d3-4259-b3c8-c1adcb025c2c",
+ CellID->1408901212],
+Cell[95509, 2832, 524, 20, 70, "TechNoteText",ExpressionUUID->"f8ff0bef-83b5-4fcf-99fe-8012825dc6de",
+ CellID->660631896],
+Cell[96036, 2854, 102, 1, 70, "TechNoteText",ExpressionUUID->"3d4a5c57-b711-46c8-b8b9-60de42b37155",
+ CellID->749821082],
+Cell[96141, 2857, 574, 23, 70, "TechNoteText",ExpressionUUID->"db1df1e5-c665-4609-9793-78488d43ad70",
+ CellID->808884578],
+Cell[96718, 2882, 1518, 45, 70, "TechNoteText",ExpressionUUID->"0ceca63f-ff6c-4f0e-bf04-9f17e1580f31",
+ CellID->1351616936],
+Cell[98239, 2929, 601, 14, 70, "TechNoteText",ExpressionUUID->"c5b51831-89c4-4900-abf2-eac6522ecca0",
+ CellID->543825386],
+Cell[98843, 2945, 349, 9, 70, "TechNoteText",ExpressionUUID->"73c1a47b-4dc1-455a-ba64-4de80fe2e205",
+ CellID->382860870],
+Cell[99195, 2956, 732, 20, 70, "TechNoteText",ExpressionUUID->"e34e46de-ca49-4818-8e35-a64b84e237bf",
+ CellID->881635678],
+Cell[CellGroupData[{
+Cell[99952, 2980, 154, 2, 70, "Subsection",ExpressionUUID->"8ddef454-bc06-4f52-b5ed-cedef76a93c6",
+ CellTags->"Section19",
+ CellID->13675846],
+Cell[100109, 2984, 1206, 35, 70, "TechNoteText",ExpressionUUID->"677cb5ff-bd81-4d65-855a-1fe9a8649a48",
+ CellID->69193493],
+Cell[101318, 3021, 728, 25, 70, "TechNoteText",ExpressionUUID->"eb89b1a3-42aa-4fb3-b523-f0d7b44426ce",
+ CellID->1146383824],
+Cell[102049, 3048, 581, 16, 70, "TechNoteText",ExpressionUUID->"51b92dd4-6206-4de1-a8a7-8b116e016390",
+ CellID->49649084],
+Cell[102633, 3066, 429, 13, 70, "TechNoteText",ExpressionUUID->"19cf320a-00c3-4bc2-b312-3e3741835b81",
+ CellID->1228499752],
+Cell[103065, 3081, 236, 4, 70, "TechNoteText",ExpressionUUID->"25bd2422-3278-419b-a223-6aa2feab4ddd",
+ CellID->1487549606],
+Cell[103304, 3087, 604, 20, 70, "TechNoteText",ExpressionUUID->"980e3b7f-b5ca-4aa7-9d1f-5cc999c34346",
+ CellID->241609668],
+Cell[103911, 3109, 191, 4, 70, "TechNoteText",ExpressionUUID->"bab17d9b-65ea-4acb-9240-f797f7cca26e",
+ CellID->1989597246],
+Cell[104105, 3115, 587, 13, 70, "TechNoteText",ExpressionUUID->"478b5a55-e2aa-4151-b8c8-6b5d747f8c59",
+ CellID->693046085],
+Cell[104695, 3130, 222, 4, 70, "TechNoteText",ExpressionUUID->"39711f94-c8b4-4180-8960-f7457816162b",
+ CellID->74249267],
+Cell[104920, 3136, 349, 9, 70, "TechNoteText",ExpressionUUID->"5e67f233-214a-4a39-9af1-c7a9c6772efc",
+ CellID->219431562],
+Cell[105272, 3147, 2489, 76, 70, "TechNoteText",ExpressionUUID->"d5a45b35-89a6-4321-a645-c66131546806",
+ CellID->756840635]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[107798, 3228, 145, 2, 70, "Subsection",ExpressionUUID->"d7b6a6aa-b8e1-41c5-b024-846bd23dda91",
+ CellTags->"Section20",
+ CellID->674911264],
+Cell[107946, 3232, 438, 11, 70, "TechNoteText",ExpressionUUID->"7b1d54b9-be2d-44c1-b9e3-b627d66e4f80",
+ CellID->224990594],
+Cell[108387, 3245, 495, 13, 70, "TechNoteText",ExpressionUUID->"9c895185-4b1b-4e41-a69b-85da118f311f",
+ CellID->1845694638],
+Cell[108885, 3260, 347, 8, 70, "TechNoteText",ExpressionUUID->"7b20f83f-98d4-4cfa-a747-dffadcd278e7",
+ CellID->188499951],
+Cell[109235, 3270, 321, 5, 70, "TechNoteText",ExpressionUUID->"2cb1e16c-99a9-480a-a4a6-bd7c45fe4763",
+ CellID->580297132],
+Cell[109559, 3277, 191, 4, 70, "TechNoteText",ExpressionUUID->"e4c65a80-e28f-4a88-a85f-c5645b78900b",
+ CellID->1330656497],
+Cell[109753, 3283, 211, 4, 70, "TechNoteText",ExpressionUUID->"c82aefe7-3e0e-49a2-8ec4-50a6fbd43c8d",
+ CellID->1899890048],
+Cell[CellGroupData[{
+Cell[109989, 3291, 2872, 73, 70, "Input",ExpressionUUID->"a6c13904-633b-4050-a1d0-d49b5cee8ed0",
+ CellID->517689493],
+Cell[112864, 3366, 184, 4, 36, "Output",ExpressionUUID->"748fb37a-ef94-421a-a811-353e7c96eb1c",
+ CellID->449045221]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[113085, 3375, 1179, 34, 70, "Input",ExpressionUUID->"14832286-48ee-488b-be5a-b0db960d8cd6",
+ CellID->557988356],
+Cell[114267, 3411, 1601, 46, 587, "Output",ExpressionUUID->"5bafa4b6-41c9-4152-b744-0d34d87f3de1",
+ CellID->845493789]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[115917, 3463, 155, 2, 70, "Subsection",ExpressionUUID->"a2829369-05e7-4267-9e36-3f15ae2c7dd8",
+ CellTags->"Section22",
+ CellID->314819524],
+Cell[116075, 3467, 592, 15, 70, "TechNoteText",ExpressionUUID->"c5f42df7-dcc3-4c6c-9606-b693b02abe45",
+ CellID->1919517307],
+Cell[116670, 3484, 567, 18, 70, "TechNoteText",ExpressionUUID->"93d51cb3-4344-4db4-959e-ad345d35f14d",
+ CellID->1828033515],
+Cell[117240, 3504, 181, 3, 70, "TechNoteText",ExpressionUUID->"67ab552c-1121-406e-9db5-20b99a504bdd",
+ CellID->1858232623],
+Cell[117424, 3509, 524, 17, 70, "TechNoteText",ExpressionUUID->"e152df45-0144-4e45-ad2e-5723788d98ed",
+ CellID->461016440],
+Cell[117951, 3528, 395, 12, 70, "TechNoteText",ExpressionUUID->"5686e705-5b91-4398-bc32-7c5a33ed327c",
+ CellID->182308704],
+Cell[118349, 3542, 256, 4, 70, "TechNoteText",ExpressionUUID->"0a2be3ec-c721-4095-b69d-e467078b52c1",
+ CellID->339048206],
+Cell[CellGroupData[{
+Cell[118630, 3550, 2305, 64, 70, "Input",ExpressionUUID->"98b3a963-0602-4241-9c32-36a7550cffa6",
+ CellID->1109082751],
+Cell[120938, 3616, 1692, 48, 587, "Output",ExpressionUUID->"4337b9b0-624e-48d2-a5c0-5db2899df075",
+ CellID->1750707506]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[122669, 3669, 1078, 27, 70, "TutorialMoreAboutSection",ExpressionUUID->"dc84b3a3-1250-4072-8105-03cdd002954b"],
+Cell[123750, 3698, 1482, 39, 70, "RelatedTutorialsSection",ExpressionUUID->"9b7e3184-93aa-41c3-87ee-392857696788"],
+Cell[125235, 3739, 2152, 60, 70, "TutorialRelatedLinksSection",ExpressionUUID->"70546808-9d94-4722-b3a4-1b118502d4f0"]
+}, Open  ]],
+Cell[127402, 3802, 78, 0, 70, "FooterCell",ExpressionUUID->"19ab8f9e-3b5f-4f45-914e-83ac3e3cb90e"]
+}
+]
+*)
+
+(* End of internal cache information *)
+
