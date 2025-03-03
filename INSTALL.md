@@ -4,7 +4,7 @@ You can install Q3S in two methods: The first is based on the `paclet` system th
 
 ## Automatic Installation from Remote Server (recommended)
 
-Q3S supports the *Wolfram Languate Paclet* mechanism of Mathematica packages. It allows remote installation and update.
+Q3S supports the **Wolfram Languate Paclet** mechanism of Mathematica packages. It allows remote installation and update.
 
 To install Q3S remotely, please follow these steps:
 Copy the following code, and run it on your Mathematica front end (Notebook interface).
