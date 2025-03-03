@@ -75,10 +75,6 @@ BeginPackage["QuantumMob`Q3S`", {"System`"}]
 
 { Purification, Snapping };
 
-If[ $VersionNumber < 13.1,
-  { BlockDiagonalMatrix };
-];
-
 
 Begin["`Private`"]
 
@@ -3073,30 +3069,13 @@ CircleTimes[vecs__?VectorQ] := Flatten @ KroneckerProduct[vecs]
 
 (**** <CirclePlus> ****)
 
-(* BlockDiagonalMatrix (experimental) is now included in Mathematica since v13.1. *)
-
-If[ $VersionNumber < 13.1,
-  BlockDiagonalMatrix::usage = "BlockDiagonalMatrix[{a,b,c,...}] returns a matrix with the matrices a, b, c, ... as its blocks. BlockDiagonalMatrix[a,b,c,...] is the same.";
-
-  BlockDiagonalMatrix[mm:({}|_?MatrixQ)..] := BlockDiagonalMatrix @ {mm};
-
-  BlockDiagonalMatrix[mm:{({}|_?MatrixQ)..}] := Module[
-    { new = DeleteCases[mm, {}],
-      x, y },
-    { x, y } = Transpose @ Map[Dimensions] @ new;
-    x = Range[Accumulate @ Most @ Prepend[x, 1], Accumulate @ x];
-    y = Range[Accumulate @ Most @ Prepend[y, 1], Accumulate @ y];
-    x = Catenate @ Map[Tuples] @ Transpose @ {x, y};
-    SparseArray @ Thread[x -> Flatten @ new]
-  ];
-];
-
 CirclePlus::usage = "a \[CirclePlus] b \[CirclePlus] c or CirclePlus[a,b,c]
 returns the direct sum of the matrices a, b, and c."
 
 CirclePlus[pre___, {}, post___] := CirclePlus[pre, post]
 
-CirclePlus[mm__?MatrixQ] := SparseArray @ BlockDiagonalMatrix[{mm}]
+CirclePlus[mm__?MatrixQ] := 
+  SparseArray @ BlockDiagonalMatrix[{mm}, TargetStructure -> "Sparse"]
 
 CirclePlus[vv__?VectorQ] := Join[vv]
 

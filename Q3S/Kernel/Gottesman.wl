@@ -1538,9 +1538,9 @@ GottesmanFactor[mat_?GttsMatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
 
   If[ (kk = First[kk]) != 1,
     cyc = CircleTimes[
-      PermutationMatrix[Cycles @ {{1, kk}}, n],
+      System`PermutationMatrix[Cycles @ {{1, kk}}, n],
       One[2]
-     ];
+    ];
     new = Mod[mat . cyc, 2];
     opf = SWAP @@ Part[ss, {1, kk}];
     Return @ Join[{opf}, GottesmanFactor[new, ss]]

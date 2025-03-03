@@ -121,7 +121,6 @@ SkewTridiagonalize[mat_, OptionsPattern[]] :=
 (**** <PositionLargest> ****)
 
 (* PosiitionLargest used in PfaffianLTL and SkewLTL was introduced Mathematica v13.2. *)
-
 If[ $VersionNumber < 13.2,
   PositionLargest[list_?VectorQ] := FirstPosition[Normal @ list, Max @ list]
   (* NOTE: Normal is required here for older versions of Mathematica. *)

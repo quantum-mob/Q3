@@ -88,7 +88,7 @@ ConditionNumber[mat_?MatrixQ] := Module[
 CanonicalizeVector::usage = "CanonicalizeVector[list] returns the same list with the first non-zero element normalized to 1."
 
 (* BUG (v14.1, fixed in v14.2): SelectFirst gives a wrong answer for SparseArray, or evan crashes the Wolfram Kernel. *)
-If[ $VersionNumber <= 14.1,
+If[ $VersionNumber < 14.2,
   CanonicalizeVector[in_SparseArray?VectorQ, nrm_:True] := Module[
     { val = First[in @ "NonzeroValues"] },
     val = If[nrm, Conjugate[val] / Abs[val], 1 / val];

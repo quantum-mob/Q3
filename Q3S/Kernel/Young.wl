@@ -51,11 +51,6 @@ BeginPackage["QuantumMob`Q3S`", {"System`"}]
 { SpechtBasis, YoungInvariantBasis };
 
 
-If[ $VersionNumber < 13.1,
-  { PermutationMatrix };
-];
-
-
 Begin["`Private`"]
 
 PermutationForm::usage = "PermutationForm[cyc] displays permutation cycles cyc in terms of \[Pi].\nPermutationForm[perm] displays perm specified in the permutation list representation in the two-list form."
@@ -586,22 +581,6 @@ nextYoungTableau[YoungTableau[tb_]] := Module[
  ]
 
 (**** </LegacyYoungTableaux> ****)
-
-
-(**** <PermutationMatrix> ****)
-
-(* PermutationMatrix is now included in Mathematica since v13.1. *)
-If[ $VersionNumber < 13.1,
-  PermutationMatrix::usage = "PermutationMatrix[perm, n] returns the n x n matrix representation of the permutation perm.\nPermutationMatrix[perm] first tries to find the proper dimension of the matrix from perm and returns the permutation matrix.";
-
-  PermutationMatrix[perm_?PermutationCyclesQ] :=
-    PermutationMatrix[ perm, Max @ Cases[perm, _Integer, Infinity] ];
-
-  PermutationMatrix[perm_?PermutationCyclesQ, n_Integer] := 
-    Transpose @ Permute[ IdentityMatrix[n], perm ];
-];
-
-(**** </PermutationMatrix> ****)
 
 
 (**** <Permutation> ****)

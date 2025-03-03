@@ -93,23 +93,6 @@ $::usage = "$ is a flavor index referring to the species itself."
   CliffordGroupElements, FullCliffordGroupElements,
   CliffordQ, CliffordMatrixQ };
 
-(**** <compatibiliy> ****)
-
-(* Now comes as a built-in function with v13.1, but with an additional
-   Transpose compared to the old one.
-   Kept here for backward compatibility. *)
-If[ $VersionNumber < 13.1,
-{ PermutationMatrix };
-];
-
-(* Now an experimental built-in symbol since v13.1.
-   Kept here for backward compatibility. *)
-If[ $VersionNumber < 13.1,
-{ BlockDiagonalMatrix };
-];
-
-(**** </compatibiliy> ****)
-
 
 Begin["`Private`"]
 
