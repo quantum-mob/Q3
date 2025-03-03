@@ -1,10 +1,10 @@
 # Installation Guide
 
-You can install Q3 in two methods: The first is based on the `paclet` system that has recently been introduced by Wolfram Research. It is not only fully automatic but also convenient to get updates later on. The other method is to download and copy the files to a proper folder -- just the traditional method.
+You can install Q3S in two methods: The first is based on the `paclet` system that has recently been introduced by Wolfram Research. It is not only fully automatic but also convenient to get updates later on. The other method is to download and copy the files to a proper folder -- just the traditional method.
 
 ## Automatic Installation from Remote Server (recommended)
 
-Q3 supports the paclet mechanism of Mathematica packages. It allows remote installation and update. To install remotely, please follow these steps:
+Q3S supports the paclet mechanism of Mathematica packages. It allows remote installation and update. To install remotely, please follow these steps:
 
 Copy the following code, and run it on your Mathematica front end (Notebook interface).
    ```Mathematica
@@ -21,13 +21,13 @@ Copy the following code, and run it on your Mathematica front end (Notebook inte
    That's all!
 
 
-## Keeping Q3 Updated
+## Keeping Q3S Updated
 
-Once installed (using the automatic installation method), Q3 will automatically check for updates and install the newest update (if any). This feature has been introducted in v1.7.3. If you have an older version, you have to manually update Q3 to the most recent one (see the instruction below).
+Once installed (using the automatic installation method), Q3S will automatically check for updates and install the newest update (if any). This feature has been introducted in v1.7.3. If you have an older version, you have to manually update Q3S to the most recent one (see the instruction below).
 
 If you want to check for updates and install them manually, follow these instructions:
 
-- You can check for updates of Q3 by the following command.
+- You can check for updates of Q3S by the following command.
   ```Mathematica
   Q3CheckUpdate[]
   ```
@@ -43,14 +43,14 @@ If you want to check for updates and install them manually, follow these instruc
 If you do not want Q3 any longer, then you can uninstall it by evaluating the following code:
 
 ```Mathematica
-PacletUninstall["Q3"]
+PacletUninstall["QuantumMob/Q3S"]
 ```
 
 ## Manual Installation with Paclet Archive File
 
-You can download a paclet archive file, and install Q3 from it.
+You can download a paclet archive file, and install Q3S from it.
 
-1. Get a paclet archive file of Q3 from the [Releases](https://github.com/quantum-mob/Q3/releases). Each release has the "Assets" section, which includes a paclet archive file (with file extension ".paclet" such as "Q3-3.8.2.paclet"), zip source file and tar.gz source file.
+1. Get a Wolfram Language Paclet file of Q3S from the [Releases](https://github.com/quantum-mob/Q3/releases). Each release has the "Assets" section, which includes a paclet archive file (with file extension ".paclet" such as "QuantumMob__Q3S-4.0.5.paclet"), zip source file and tar.gz source file.
 
 2. Put it in one of the folders in the search path (see Mathematica built-in symbol `$Path` as well as function `SetDirectory`).
 
@@ -62,18 +62,18 @@ You can download a paclet archive file, and install Q3 from it.
 
 4. Check your installation.
     ```Mathematica
-    PacletFind["Q3"]
+    PacletFind["QuantumMob/Q3S"]
     ```
 
 ## Manual Installation of Nightly Version
 
-If you want to try a beta version of Q3, which might be buggy, following the following steps:
+If you want to try a beta version of Q3S (it might be buggy), following these steps:
 
-1. Download the whole folder as a ZIP file.
+1. Download the whole [`Q3S`](https://github.com/quantum-mob/Q3/tree/main/Q3S) subfoler as a ZIP file.
 
-2. Unzip the ZIP file to extract the files and subfolders.
+2. Unzip the ZIP file.
 
-3. Move (or copy) the folder Q3 to either
+3. Move (or copy) the Q3S to either
 
    ```
    $UserBaseDirectory/Applications/ (recommended)
