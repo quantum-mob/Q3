@@ -1,11 +1,8 @@
 # Release Notes
 
-## 4.0.6
+## 4.1.0
 
 - Code piecies for Mathematica 13.0 or before are removed.
-
-## 4.0.5
-
 - The Paclet has been renamed `QuantumMob/Q3` following the convention in the official Wolfram Language Paclet Repository.
 
 ## 3.8.6
