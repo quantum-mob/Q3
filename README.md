@@ -8,7 +8,7 @@ Q3 is a symbolic quantum simulation framework written in Wolfram Language to hel
 
 ## NOTICE
 
-The official Paclet name of this framework has been changed to "QuantumMob/Q3" (previously, "Q3") following the convention of the [Wolfram Language Paclet Repository](https://resources.wolframcloud.com/PacletRepository/). To load Q3, use `Get["QuantumMob/Q3"]` or `Needs["QuantumMob/Q3"]` (usually it is autoloaded when WolframKernel starts). The primary context is now "QuantumMob\`Q3\`" (rather than previous "Q3\`").
+The official Paclet name of this framework has been changed to "QuantumMob/Q3" (previously, "Q3") following the convention of the [Wolfram Language Paclet Repository](https://resources.wolframcloud.com/PacletRepository/). To load Q3, use `Get["QuantumMob\`Q3\`"]` or `Needs["QuantumMob\`Q3\`]` (usually it is autoloaded when WolframKernel starts). The primary context is now "QuantumMob\`Q3\`" (rather than previous "Q3\`").
 
 
 ## Requirements
