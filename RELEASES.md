@@ -6,7 +6,7 @@
 
 ## 4.0.5
 
-- The Paclet has been renamed `QuantumMob/Q3S` following the convention in the official Wolfram Language Paclet Repository.
+- The Paclet has been renamed `QuantumMob/Q3` following the convention in the official Wolfram Language Paclet Repository.
 
 ## 3.8.6
 

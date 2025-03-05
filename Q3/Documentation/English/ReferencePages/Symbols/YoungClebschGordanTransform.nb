@@ -1,0 +1,2468 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     96242,       2458]
+NotebookOptionsPosition[     86550,       2261]
+NotebookOutlinePosition[     88976,       2320]
+CellTagsIndexPosition[     88890,       2315]
+WindowTitle->YoungClebschGordanTransform
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["QUANTUM MOB/ Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "7d5d0cd7-5b56-4a09-89a3-4b5947f34ebf"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "668f5aaa-5e98-407e-96bf-1a0bad031884"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "a90b3c3f-191c-4127-b6a2-7bfa9a1b47c8"]
+         }],ExpressionUUID->"2b9a5549-dff4-419b-8767-5b7f5cc5cfb9"],
+         StripOnInput->False],{
+        StyleBox[
+          "\"YoungFourierBasis\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/ref/YoungFourierBasis"], 
+         StyleBox[
+          "\"YoungRegularBasis\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/ref/YoungRegularBasis"], 
+         StyleBox["\"SpechtBasis\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/SpechtBasis"], 
+         StyleBox[
+          "\"YoungNormalRepresentation\"", "SeeAlsoRelated", StripOnInput -> 
+           False] :> Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/ref/YoungNormalRepresentation"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "d9bf3f7c-6c6d-43fa-9ac7-74ec7bf739c2"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "e6357042-6caf-4741-a481-b21c53ba378c"]
+         }],ExpressionUUID->"e5e00339-f0ac-4678-9678-e9ca0daaecdd"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/guide/QuantumInformationSystems"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "16992bb0-f8a7-416a-8874-ef774b097a22"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "e3ffe89e-44d4-4284-aebb-b277e71fe2ff"]
+         }],ExpressionUUID->"aaa9b0dc-d004-4b2a-89cb-33007780814b"],
+         StripOnInput->False],{
+        "\"Clebsch-Gordan Transform\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/ClebschGordanTransform"], 
+         "\"Young's Representations of the Symmetric Group\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/\
+YoungRepresentationsOfTheSymmetricGroup"], 
+         "\"Quantum Information Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/QuantumInformationSystems"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "e02d3c3d-3d5f-448b-a678-7b217b0f3436"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "7369b3a0-6ecb-492b-804f-9fe0de40c988"]
+         }],ExpressionUUID->"32c82c88-ae56-4b07-84b4-1a7b1c933ccc"],
+         StripOnInput->False],{
+        "\"QuantumMob/Q3/ref/YoungClebschGordanTransform\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         CopyToClipboard["QuantumMob/Q3/ref/YoungClebschGordanTransform"], 
+         Delimiter, "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/QuantumMob/Q3/ref/\
+YoungClebschGordanTransform.html"], StandardForm]], "Input", 
+                 TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "QuantumMob/Q3/ref/YoungClebschGordanTransform" <> ".html"], 
+              None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "955cb43c-5343-4d20-a322-be945ef8748d"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "f96d887a-bb14-4c29-9f21-b7f87a28c532"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"015b4c27-1705-45ea-a63b-a6bff9c0e793"],
+
+Cell["QuantumMob`Q3`", "ContextNameCell",ExpressionUUID->"094be0c2-1ad5-4ef4-80ef-6864cc38dea8"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "YoungClebschGordanTransform", "ObjectName",ExpressionUUID->
+      "7f951638-450e-4d21-95cd-6fafda2e9c7b"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"ea9c3140-7d55-47a8-86e4-c0a08ac303f2"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "0d513d4f-45f5-4246-99be-690985b178d7"]
+    }],ExpressionUUID->"846ad823-1a7f-473c-8701-ec3f1012320e"], 
+    "\[SpanFromLeft]"}
+  }]], "ObjectNameGrid",ExpressionUUID->"daed8aaa-9c88-4a43-98c7-\
+8eb95944c3ae"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["YoungClebschGordanTransform"]], 
+         "paclet:QuantumMob/Q3/ref/YoungClebschGordanTransform", 
+         "QuantumMob Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       StyleBox["vec", "TI"], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "b7931e8e-d231-4e65-922d-73fa2a06fa28"],
+     "\[LineSeparator]returns the Clebsch-Gordan transformation of vector vec \
+associated with the symmetric group."
+    }],ExpressionUUID->"3c8787a8-a18a-4cd5-a9dd-ea62e0bedfdb"]}
+  }]], "Usage",
+ CellID->1216155202,ExpressionUUID->"2abff2ca-7902-4298-bd40-1c35af17545d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    DynamicBox[ToBoxes[
+      If[
+       MatchQ[
+        CurrentValue[
+         EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, 
+         Closed], 
+        Alternatives[Open, True]], 
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], 
+       Rotate[
+        Style[
+         Graphics[{
+           Thickness[0.18], 
+           RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+           Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+          PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+         0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+     ImageSizeCache->{
+      13.600000000000003`, {-0.1685058593749993, 13.768505859375}}]],
+    ExpressionUUID->"508b21e8-885b-497f-8ebe-a6910e7ce389"],
+   Cell[BoxData[
+    TemplateBox[{1},
+     "Spacer1"]],ExpressionUUID->"16444f13-2e24-4009-9a14-9c6b5adbb1e4"],
+   "Details and Options"
+  }], "NotesFrameText",ExpressionUUID->"5df52e41-45db-4382-ad39-a46de4f3d465"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->
+   "Preemptive"]],ExpressionUUID->"39aef0b0-2edb-473c-9041-2f4a162fea9e"]], \
+"NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->239619664,ExpressionUUID->"29538a3e-6829-4eca-a320-cb6da9853810"],
+
+Cell[TextData[{
+ "The input vector ",
+ Cell[BoxData[
+  StyleBox["vec", "TI"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "d92f7c9d-bf00-4030-9c6a-b5b9319b9ea7"],
+ " should be a superposition of products of two ",
+ ButtonBox["Specht basis",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3/ref/SpechtBasis"],
+ " vectors,\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    UnderscriptBox["\[CapitalSigma]", "\[Mu]"], 
+    UnderscriptBox["\[CapitalSigma]", 
+     RowBox[{
+      SuperscriptBox["y", "\[Mu]"], "\[Element]", "\[Mu]"}]], 
+    UnderscriptBox["\[CapitalSigma]", "\[Nu]"], 
+    UnderscriptBox["\[CapitalSigma]", 
+     RowBox[{
+      SuperscriptBox["y", "\[Nu]"], "\[Element]", "\[Nu]"}]], 
+    RowBox[{
+     TemplateBox[{
+       RowBox[{"\[Mu]", ",", 
+         SuperscriptBox["y", "\[Mu]"]}]},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{
+       RowBox[{"\[Nu]", ",", 
+         SuperscriptBox["y", "\[Nu]"]}]},
+      "Ket"]}], 
+    SubscriptBox["c", 
+     RowBox[{
+      SuperscriptBox["y", "\[Mu]"], 
+      SuperscriptBox["y", "\[Nu]"]}]]}], TraditionalForm]],ExpressionUUID->
+  "fda8cc1f-de00-4148-bd29-39f2e5200a5e"],
+ " ."
+}], "Notes",
+ CellID->171127868,ExpressionUUID->"53870458-7156-4973-ba16-3fdd83565a38"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["YoungClebschGordanTransform"]], 
+    "paclet:QuantumMob/Q3/ref/YoungClebschGordanTransform", 
+    "QuantumMob Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "ddf90b58-2e88-4c1d-bcd5-f811452bfabf"],
+ " maps each product vector into another vector of the form\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     TemplateBox[{
+       RowBox[{"\[Mu]", ",", 
+         SuperscriptBox["y", "\[Mu]"]}]},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{
+       RowBox[{"\[Nu]", ",", 
+         SuperscriptBox["y", "\[Nu]"]}]},
+      "Ket"]}], "\[RightTeeArrow]", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", "\[Lambda]"], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{
+       SuperscriptBox["y", "\[Lambda]"], "\[Element]", "\[Lambda]"}]], 
+     RowBox[{
+      TemplateBox[{
+        RowBox[{"\[Lambda]", ",", 
+          SuperscriptBox["y", "\[Lambda]"]}]},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{
+        RowBox[{
+          SubsuperscriptBox["C", "\[Lambda]", "\[Mu]\[Nu]"], "(", 
+          RowBox[{
+            RowBox[{
+              SuperscriptBox["y", "\[Lambda]"], ";", 
+              SuperscriptBox["y", "\[Mu]"]}], ",", 
+            SuperscriptBox["y", "\[Nu]"]}], ")"}]},
+       "Ket"]}]}]}], TraditionalForm]],ExpressionUUID->
+  "73412a68-fa20-4286-92ca-c72a1dd6fdcf"],
+ " ."
+}], "Notes",
+ CellID->1442479249,ExpressionUUID->"4bf99101-429a-4801-8028-d417348ec073"]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.251494140625001, 9.348505859375003}}]],
+  ExpressionUUID->"851706c1-188a-4bb7-8605-8e02c3dcc963"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"f946a632-38c5-4738-8a6f-29cebe88d902"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(4)", "ExampleCount",ExpressionUUID->
+  "5000b44b-0b37-451a-a2d4-85f8c68fbbbc"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->755854723,ExpressionUUID->"2d87bc16-4d76-4f88-b6b8-8ec513f8c8e4"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<QuantumMob`Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->1110463118,ExpressionUUID->"de74bb84-0206-4925-8201-2aef7b4811c7"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.551318359375001, 9.048681640625002}}]],
+  ExpressionUUID->"bc6c3b51-87d9-4ee5-935f-e32541c478fd"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"1bbc2734-205d-4e87-ab4e-9498b0d8d8df"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(4)", "ExampleCount",ExpressionUUID->
+  "5951dd72-3f58-4955-b326-b3daa410d916"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->1284557456,ExpressionUUID->"707e1d11-bb4d-4e1e-9858-f4cb4f4563e7"],
+
+Cell[TextData[{
+ "Consider the symmetric group of degree ",
+ StyleBox["n",
+  FontSlant->"Italic"],
+ "."
+}], "ExampleText",
+ CellID->1606806342,ExpressionUUID->"45b899f3-fbf9-4ec3-92fe-5f996d835979"],
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$n", "=", "3"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"grp", "=", 
+   RowBox[{"SymmetricGroup", "[", "$n", "]"}]}], ";"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1574882027,ExpressionUUID->"03d2d071-b34e-48d7-a0fe-60c5e0129164"],
+
+Cell["It is generated by these elementary permutations.", "ExampleText",
+ CellID->444758779,ExpressionUUID->"116466da-e7ba-4d4d-a7fe-ab24ca464485"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"gnr", "=", 
+   RowBox[{"GroupGenerators", "[", "grp", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"PermutationForm", "[", "gnr", "]"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->202254880,ExpressionUUID->"49ce5fd2-08af-407d-890d-1c62e1a6c4e5"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2", "3"}, "RowDefault"]]},
+    "RowDefault"]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->845682927,ExpressionUUID->"8760b802-daad-4fa1-ab85-75ff3533c72b"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Let us pick a pair of standard Young tableaux ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["y", "\[Mu]"], TraditionalForm]],ExpressionUUID->
+  "d61d7679-2550-4a39-808a-05f07bf03de6"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["y", "\[Nu]"], TraditionalForm]],ExpressionUUID->
+  "18803808-20a6-48d2-aadb-5300529de800"],
+ " of shape \[Mu] and \[Nu]. Recall that these Young tableaux labels the \
+elements in the ",
+ ButtonBox["Specht basis",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3/ref/SpechtBasis"],
+ ", ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Mu]", ",", 
+       SuperscriptBox["y", "\[Mu]"]}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "6658e50e-4bb2-44da-86d2-0a335edbbc2e"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Nu]", ",", 
+       SuperscriptBox["y", "\[Nu]"]}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "f8f189b6-9625-46d2-b9c3-96caaea8e504"],
+ ", associated with the corresponding Young diagrams \[Mu] and \[Nu]."
+}], "ExampleText",
+ CellID->1062495770,ExpressionUUID->"4aeea0ed-21eb-4527-b13f-6b996dc1d338"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"yy", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"Ket", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"1", ",", "3"}], "}"}], ",", 
+       RowBox[{"{", "2", "}"}]}], "}"}], "]"}], ",", 
+    RowBox[{"Ket", "[", 
+     RowBox[{"{", 
+      RowBox[{"{", 
+       RowBox[{"1", ",", "2", ",", "3"}], "}"}], "}"}], "]"}]}], 
+   "}"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1360181039,ExpressionUUID->"3d4351f2-35d9-4bf6-8995-93f1b52f49dd"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    TemplateBox[{
+      InterpretationBox[
+       TagBox[
+        GridBox[{{
+           ItemBox["1", Frame -> True, StripOnInput -> False], 
+           ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+           ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+         AutoDelete -> False, 
+         GridBoxItemSize -> {
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{1,
+         3}, {2}}]},
+     "Ket"],
+    Ket[{{1, 3}, {2}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      InterpretationBox[
+       TagBox[
+        GridBox[{{
+           ItemBox["1", Frame -> True, StripOnInput -> False], 
+           ItemBox["2", Frame -> True, StripOnInput -> False], 
+           ItemBox["3", Frame -> True, StripOnInput -> False]}}, AutoDelete -> 
+         False, GridBoxItemSize -> {
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{1,
+        2, 3}}]},
+     "Ket"],
+    Ket[{{1, 2, 3}}]]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->14301925,ExpressionUUID->"a7fb4f2d-a40a-4461-86a6-73d3cd1ce189"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Take the product ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"\[Mu]", ",", 
+        SuperscriptBox["y", "\[Mu]"]}]},
+     "Ket"], "\[CircleTimes]", 
+    TemplateBox[{
+      RowBox[{"\[Nu]", ",", 
+        SuperscriptBox["y", "\[Nu]"]}]},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "477e3461-ca76-4bee-9421-79a190a02f78"],
+ " of the vectors above, and we want to decompose it into an irreducible sum \
+of Specht basis states."
+}], "ExampleText",
+ CellID->1472544408,ExpressionUUID->"64e10879-9cde-4634-a1d6-9c8362e29471"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"in", "=", 
+  RowBox[{"CircleTimes", "@@", "yy"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->1539763097,ExpressionUUID->"e4188002-3651-41e9-9b20-2b11469b30e6"],
+
+Cell[BoxData[
+ InterpretationBox[
+  TemplateBox[{
+    RowBox[{
+      InterpretationBox[
+       TagBox[
+        GridBox[{{
+           ItemBox["1", Frame -> True, StripOnInput -> False], 
+           ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+           ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+         AutoDelete -> False, 
+         GridBoxItemSize -> {
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{1,
+         3}, {2}}], ",", 
+      InterpretationBox[
+       TagBox[
+        GridBox[{{
+           ItemBox["1", Frame -> True, StripOnInput -> False], 
+           ItemBox["2", Frame -> True, StripOnInput -> False], 
+           ItemBox["3", Frame -> True, StripOnInput -> False]}}, AutoDelete -> 
+         False, GridBoxItemSize -> {
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{1,
+        2, 3}}]}]},
+   "Ket"],
+  Ket[{{1, 3}, {2}}, {{1, 2, 3}}]]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->2039259401,ExpressionUUID->"b8311261-f71b-4d97-9cc5-1b81fc446336"]
+}, Open  ]],
+
+Cell["\<\
+Using the Clebsch-Gordan transformation, expand the product state into \
+components belonging to different irreducible subspaces.\
+\>", "ExampleText",
+ CellID->886894516,ExpressionUUID->"53a66c67-837f-432a-9b83-64358d756de5"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"out", "=", 
+  RowBox[{"YoungClebschGordanTransform", "[", "in", "]"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->36972100,ExpressionUUID->"0b9de88a-4e57-43aa-8a8a-a1f6ece7b697"],
+
+Cell[BoxData[
+ InterpretationBox[
+  RowBox[{
+   TagBox[
+    InterpretationBox[
+     TemplateBox[{
+       InterpretationBox[
+        TagBox[
+         GridBox[{{
+            ItemBox["1", Frame -> True, StripOnInput -> False], 
+            ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+            ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+          AutoDelete -> False, 
+          GridBoxItemSize -> {
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+         1, 3}, {2}}]},
+      "Ket"],
+     Ket[{{1, 3}, {2}}]],
+    HoldForm], "\[CircleTimes]", 
+   RowBox[{"(", 
+    TagBox[
+     RowBox[{
+      FractionBox[
+       InterpretationBox[
+        TemplateBox[{
+          RowBox[{
+            InterpretationBox[
+             TagBox[
+              GridBox[{{
+                 ItemBox["1", Frame -> True, StripOnInput -> False], 
+                 ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                 ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+               AutoDelete -> False, 
+               GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+              "Grid"], {{1, 2}, {3}}], ",", 
+            InterpretationBox[
+             TagBox[
+              GridBox[{{
+                 ItemBox["1", Frame -> True, StripOnInput -> False], 
+                 ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                 ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+               AutoDelete -> False, 
+               GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+              "Grid"], {{1, 2}, {3}}], ",", 
+            InterpretationBox[
+             TagBox[
+              GridBox[{{
+                 ItemBox["1", Frame -> True, StripOnInput -> False], 
+                 ItemBox["2", Frame -> True, StripOnInput -> False], 
+                 ItemBox["3", Frame -> True, StripOnInput -> False]}}, 
+               AutoDelete -> False, 
+               GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+              "Grid"], {{1, 2, 3}}]}]},
+         "Ket"],
+        Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 2, 3}}]], 
+       SqrtBox["2"]], "+", 
+      FractionBox[
+       InterpretationBox[
+        TemplateBox[{
+          RowBox[{
+            InterpretationBox[
+             TagBox[
+              GridBox[{{
+                 ItemBox["1", Frame -> True, StripOnInput -> False], 
+                 ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                 ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+               AutoDelete -> False, 
+               GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+              "Grid"], {{1, 3}, {2}}], ",", 
+            InterpretationBox[
+             TagBox[
+              GridBox[{{
+                 ItemBox["1", Frame -> True, StripOnInput -> False], 
+                 ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                 ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+               AutoDelete -> False, 
+               GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+              "Grid"], {{1, 3}, {2}}], ",", 
+            InterpretationBox[
+             TagBox[
+              GridBox[{{
+                 ItemBox["1", Frame -> True, StripOnInput -> False], 
+                 ItemBox["2", Frame -> True, StripOnInput -> False], 
+                 ItemBox["3", Frame -> True, StripOnInput -> False]}}, 
+               AutoDelete -> False, 
+               GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+              "Grid"], {{1, 2, 3}}]}]},
+         "Ket"],
+        Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 2, 3}}]], 
+       SqrtBox["2"]]}],
+     HoldForm], ")"}]}],
+  Q3`OSlash[
+   Ket[{{1, 3}, {2}}], 
+   2^Rational[-1, 2] Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 2, 3}}] + 
+   2^Rational[-1, 2] 
+    Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 2, 3}}]]]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->426766397,ExpressionUUID->"dfe5e2a0-8a10-4ade-a4c2-ffee6afc0c5b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "67441e09-19f5-4616-ad9e-f6527ed7dd41"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->70516380,ExpressionUUID->"f1058822-889d-411b-a7a8-5e1fd6987545"],
+
+Cell["Let us take another input state.", "ExampleText",
+ CellID->402873137,ExpressionUUID->"d7447273-944a-445c-97f7-3840bbe38f5d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{"yy", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"Ket", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"1", ",", "3"}], "}"}], ",", 
+       RowBox[{"{", "2", "}"}]}], "}"}], "]"}], ",", 
+    RowBox[{"Ket", "[", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"{", 
+        RowBox[{"1", ",", "2"}], "}"}], ",", 
+       RowBox[{"{", "3", "}"}]}], "}"}], "]"}]}], "}"}]}], "\[IndentingNewLine]", 
+ RowBox[{"in", "=", 
+  RowBox[{"CircleTimes", "@@", "yy"}]}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1743719743,ExpressionUUID->"feb46a2e-505b-45ee-b719-77cc60d7c60e"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    TemplateBox[{
+      InterpretationBox[
+       TagBox[
+        GridBox[{{
+           ItemBox["1", Frame -> True, StripOnInput -> False], 
+           ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+           ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+         AutoDelete -> False, 
+         GridBoxItemSize -> {
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{1,
+         3}, {2}}]},
+     "Ket"],
+    Ket[{{1, 3}, {2}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      InterpretationBox[
+       TagBox[
+        GridBox[{{
+           ItemBox["1", Frame -> True, StripOnInput -> False], 
+           ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+           ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+         AutoDelete -> False, 
+         GridBoxItemSize -> {
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{1,
+         2}, {3}}]},
+     "Ket"],
+    Ket[{{1, 2}, {3}}]]}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->252097996,ExpressionUUID->"d22e06ad-bcc9-4bec-bac0-2799ebc4baaf"],
+
+Cell[BoxData[
+ InterpretationBox[
+  TemplateBox[{
+    RowBox[{
+      InterpretationBox[
+       TagBox[
+        GridBox[{{
+           ItemBox["1", Frame -> True, StripOnInput -> False], 
+           ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+           ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+         AutoDelete -> False, 
+         GridBoxItemSize -> {
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{1,
+         3}, {2}}], ",", 
+      InterpretationBox[
+       TagBox[
+        GridBox[{{
+           ItemBox["1", Frame -> True, StripOnInput -> False], 
+           ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+           ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+         AutoDelete -> False, 
+         GridBoxItemSize -> {
+          "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{1,
+         2}, {3}}]}]},
+   "Ket"],
+  Ket[{{1, 3}, {2}}, {{1, 2}, {3}}]]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->25783241,ExpressionUUID->"2639de12-6300-41a8-8bbb-a9477974f4e6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"EchoTiming", "[", 
+  RowBox[{"out", "=", 
+   RowBox[{"YoungClebschGordanTransform", "[", "in", "]"}]}], "]"}]], "Input",\
+
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->995176987,ExpressionUUID->"c0921d65-151b-4b01-ad80-1b9265c026bf"],
+
+Cell[BoxData["0.045415`"], "EchoTiming",
+ CellID->1594521834,ExpressionUUID->"96a36f33-36a1-41cd-a1a8-92a3f45fb7bd"],
+
+Cell[BoxData[
+ RowBox[{
+  InterpretationBox[
+   RowBox[{
+    TagBox[
+     InterpretationBox[
+      TemplateBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}]},
+       "Ket"],
+      Ket[{{1, 3}, {2}}]],
+     HoldForm], "\[CircleTimes]", 
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox[
+         InterpretationBox[
+          TemplateBox[{
+            RowBox[{
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 2}, {3}}], ",", 
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 2}, {3}}], ",", 
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 2}, {3}}]}]},
+           "Ket"],
+          Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 2}, {3}}]], 
+         RowBox[{"2", " ", 
+          SqrtBox["2"]}]]}], "+", 
+       FractionBox[
+        InterpretationBox[
+         TemplateBox[{
+           RowBox[{
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 2}, {3}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}]}]},
+          "Ket"],
+         Ket[{{1, 2}, {3}}, {{1, 3}, {2}}, {{1, 3}, {2}}]], 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]], "+", 
+       FractionBox[
+        InterpretationBox[
+         TemplateBox[{
+           RowBox[{
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 2}, {3}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}]}]},
+          "Ket"],
+         Ket[{{1, 3}, {2}}, {{1, 2}, {3}}, {{1, 3}, {2}}]], 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]], "+", 
+       FractionBox[
+        InterpretationBox[
+         TemplateBox[{
+           RowBox[{
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 2}, {3}}]}]},
+          "Ket"],
+         Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 2}, {3}}]], 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}],
+      HoldForm], ")"}]}],
+   Q3`OSlash[
+    Ket[{{1, 3}, {2}}], 
+    Rational[-1, 2] 2^Rational[-1, 2] 
+     Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 2}, {3}}] + 
+    Rational[1, 2] 2^Rational[-1, 2] 
+     Ket[{{1, 2}, {3}}, {{1, 3}, {2}}, {{1, 3}, {2}}] + 
+    Rational[1, 2] 2^Rational[-1, 2] 
+     Ket[{{1, 3}, {2}}, {{1, 2}, {3}}, {{1, 3}, {2}}] + 
+    Rational[1, 2] 2^Rational[-1, 2] 
+     Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 2}, {3}}]]], "+", 
+  InterpretationBox[
+   RowBox[{
+    TagBox[
+     InterpretationBox[
+      TemplateBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False]}}, AutoDelete -> 
+           False, GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+         1}, {2}, {3}}]},
+       "Ket"],
+      Ket[{{1}, {2}, {3}}]],
+     HoldForm], "\[CircleTimes]", 
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox[
+         InterpretationBox[
+          TemplateBox[{
+            RowBox[{
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False]}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1}, {2}, {3}}], ",", 
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 2}, {3}}], ",", 
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 3}, {2}}]}]},
+           "Ket"],
+          Ket[{{1}, {2}, {3}}, {{1, 2}, {3}}, {{1, 3}, {2}}]], "2"]}], "+", 
+       FractionBox[
+        InterpretationBox[
+         TemplateBox[{
+           RowBox[{
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1}, {2}, {3}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 2}, {3}}]}]},
+          "Ket"],
+         Ket[{{1}, {2}, {3}}, {{1, 3}, {2}}, {{1, 2}, {3}}]], "2"]}],
+      HoldForm], ")"}]}],
+   Q3`OSlash[
+    Ket[{{1}, {2}, {3}}], 
+    Rational[-1, 2] Ket[{{1}, {2}, {3}}, {{1, 2}, {3}}, {{1, 3}, {2}}] + 
+    Rational[1, 2] 
+     Ket[{{1}, {2}, {3}}, {{1, 3}, {2}}, {{1, 2}, {3}}]]]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->680033125,ExpressionUUID->"e8f70d4a-f61c-47c0-9970-c34641275068"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "8d61fbef-99a5-4a3d-a9da-ff23a5bf9f03"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->713043755,ExpressionUUID->"03d8af57-8aea-4ab6-8fc6-6e2312ade2e1"],
+
+Cell[TextData[{
+ "The following is another way to achieve the Clebsch-Gordan transform by ",
+ StyleBox["explicitly",
+  FontSlant->"Italic"],
+ " performing the controlled-\[CapitalGamma] gate and quantum Fourier \
+transform. (Be warned, this takes significantly longer. It should be used \
+only for heuristic purposes.)"
+}], "ExampleText",
+ CellID->1017508556,ExpressionUUID->"05ff3bf2-8810-4ca2-8303-8f285bf90958"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"EchoTiming", "[", 
+  RowBox[{"new", "=", 
+   RowBox[{"HarrowClebschGordanTransform", "[", "in", "]"}]}], "]"}]], "Input",\
+
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->870600255,ExpressionUUID->"2cf9e476-9f6b-4b4f-963c-7ed43d9b2cb6"],
+
+Cell[BoxData["0.372371`"], "EchoTiming",
+ CellID->1344321538,ExpressionUUID->"eca10356-7c96-45fc-b20c-7584892bd5e9"],
+
+Cell[BoxData[
+ RowBox[{
+  InterpretationBox[
+   RowBox[{
+    TagBox[
+     InterpretationBox[
+      TemplateBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}]},
+       "Ket"],
+      Ket[{{1, 3}, {2}}]],
+     HoldForm], "\[CircleTimes]", 
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox[
+         InterpretationBox[
+          TemplateBox[{
+            RowBox[{
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 2}, {3}}], ",", 
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 2}, {3}}], ",", 
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 2}, {3}}]}]},
+           "Ket"],
+          Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 2}, {3}}]], 
+         RowBox[{"2", " ", 
+          SqrtBox["2"]}]]}], "+", 
+       FractionBox[
+        InterpretationBox[
+         TemplateBox[{
+           RowBox[{
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 2}, {3}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}]}]},
+          "Ket"],
+         Ket[{{1, 2}, {3}}, {{1, 3}, {2}}, {{1, 3}, {2}}]], 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]], "+", 
+       FractionBox[
+        InterpretationBox[
+         TemplateBox[{
+           RowBox[{
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 2}, {3}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}]}]},
+          "Ket"],
+         Ket[{{1, 3}, {2}}, {{1, 2}, {3}}, {{1, 3}, {2}}]], 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]], "+", 
+       FractionBox[
+        InterpretationBox[
+         TemplateBox[{
+           RowBox[{
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 2}, {3}}]}]},
+          "Ket"],
+         Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 2}, {3}}]], 
+        RowBox[{"2", " ", 
+         SqrtBox["2"]}]]}],
+      HoldForm], ")"}]}],
+   Q3`OSlash[
+    Ket[{{1, 3}, {2}}], 
+    Rational[-1, 2] 2^Rational[-1, 2] 
+     Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 2}, {3}}] + 
+    Rational[1, 2] 2^Rational[-1, 2] 
+     Ket[{{1, 2}, {3}}, {{1, 3}, {2}}, {{1, 3}, {2}}] + 
+    Rational[1, 2] 2^Rational[-1, 2] 
+     Ket[{{1, 3}, {2}}, {{1, 2}, {3}}, {{1, 3}, {2}}] + 
+    Rational[1, 2] 2^Rational[-1, 2] 
+     Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 2}, {3}}]]], "+", 
+  InterpretationBox[
+   RowBox[{
+    TagBox[
+     InterpretationBox[
+      TemplateBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False]}}, AutoDelete -> 
+           False, GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+         1}, {2}, {3}}]},
+       "Ket"],
+      Ket[{{1}, {2}, {3}}]],
+     HoldForm], "\[CircleTimes]", 
+    RowBox[{"(", 
+     TagBox[
+      RowBox[{
+       RowBox[{"-", 
+        FractionBox[
+         InterpretationBox[
+          TemplateBox[{
+            RowBox[{
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False]}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1}, {2}, {3}}], ",", 
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 2}, {3}}], ",", 
+              InterpretationBox[
+               TagBox[
+                GridBox[{{
+                   ItemBox["1", Frame -> True, StripOnInput -> False], 
+                   ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                   ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                 AutoDelete -> False, 
+                 GridBoxItemSize -> {
+                  "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                "Grid"], {{1, 3}, {2}}]}]},
+           "Ket"],
+          Ket[{{1}, {2}, {3}}, {{1, 2}, {3}}, {{1, 3}, {2}}]], "2"]}], "+", 
+       FractionBox[
+        InterpretationBox[
+         TemplateBox[{
+           RowBox[{
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1}, {2}, {3}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 3}, {2}}], ",", 
+             InterpretationBox[
+              TagBox[
+               GridBox[{{
+                  ItemBox["1", Frame -> True, StripOnInput -> False], 
+                  ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+                  ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+                AutoDelete -> False, 
+                GridBoxItemSize -> {
+                 "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+               "Grid"], {{1, 2}, {3}}]}]},
+          "Ket"],
+         Ket[{{1}, {2}, {3}}, {{1, 3}, {2}}, {{1, 2}, {3}}]], "2"]}],
+      HoldForm], ")"}]}],
+   Q3`OSlash[
+    Ket[{{1}, {2}, {3}}], 
+    Rational[-1, 2] Ket[{{1}, {2}, {3}}, {{1, 2}, {3}}, {{1, 3}, {2}}] + 
+    Rational[1, 2] 
+     Ket[{{1}, {2}, {3}}, {{1, 3}, {2}}, {{1, 2}, {3}}]]]}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->336639079,ExpressionUUID->"2ed8e73b-86fc-4248-9c59-77c2a7cbf9ac"]
+}, Open  ]],
+
+Cell["Obviously, the two methods are equivalent.", "ExampleText",
+ CellID->2036599964,ExpressionUUID->"26ac5f27-6c8d-4240-a5ea-7783aa523951"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"new", "-", "out"}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->1693851712,ExpressionUUID->"2a579d41-bc06-4a2b-9faf-5f978c79f29c"],
+
+Cell[BoxData["0"], "Output",
+ CellLabel->"Out[2]=",
+ CellID->920942665,ExpressionUUID->"dc8ef66a-d757-4e36-9a2d-65aa4f71d275"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ InterpretationBox[Cell[
+  "\t", "ExampleDelimiter",ExpressionUUID->
+   "9d7dba40-8cfb-4339-b078-602639d66ca0"],
+  $Line = 0; Null]], "ExampleDelimiter",
+ CellID->1238564973,ExpressionUUID->"f88df544-23d6-4b12-b9be-c47a4459cec1"],
+
+Cell["\<\
+In the results above, the vectors on the right side of tensor-product symbol \
+\[CircleTimes] belong to the subspace that is invariant under the symmetric \
+group. To see this, consider the whole tensor-product space.\
+\>", "ExampleText",
+ CellID->197594029,ExpressionUUID->"fe0b9dac-1e6f-4ba4-b675-7047703d5742"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"bs", "=", 
+  RowBox[{"CircleTimes", "@@@", 
+   RowBox[{"Tuples", "[", 
+    RowBox[{"yy", ",", 
+     RowBox[{"{", "3", "}"}]}], "]"}]}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1795791216,ExpressionUUID->"a6a0cc3d-8059-4464-99bb-da7aef1f2482"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}]}]},
+     "Ket"],
+    Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 3}, {2}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}]}]},
+     "Ket"],
+    Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 2}, {3}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}]}]},
+     "Ket"],
+    Ket[{{1, 3}, {2}}, {{1, 2}, {3}}, {{1, 3}, {2}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}]}]},
+     "Ket"],
+    Ket[{{1, 3}, {2}}, {{1, 2}, {3}}, {{1, 2}, {3}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}]}]},
+     "Ket"],
+    Ket[{{1, 2}, {3}}, {{1, 3}, {2}}, {{1, 3}, {2}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}]}]},
+     "Ket"],
+    Ket[{{1, 2}, {3}}, {{1, 3}, {2}}, {{1, 2}, {3}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}]}]},
+     "Ket"],
+    Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 3}, {2}}]], ",", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}]}]},
+     "Ket"],
+    Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 2}, {3}}]]}], "}"}]], "Output",
+ CellLabel->"Out[1]=",
+ CellID->1402655655,ExpressionUUID->"6174e778-1b7a-496d-bb02-aeb9f38af560"]
+}, Open  ]],
+
+Cell["\<\
+Construct the projection operator into the invariant subspace.\
+\>", "ExampleText",
+ CellID->1118514248,ExpressionUUID->"9c1bca3a-fa02-4f4f-97df-e6a575c8c5e0"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"op", "=", 
+   RowBox[{
+    RowBox[{"Total", "[", 
+     RowBox[{"GroupElements", "@", 
+      RowBox[{"SymmetricGroup", "@", "$n"}]}], "]"}], "/", 
+    RowBox[{"GroupOrder", "[", 
+     RowBox[{"SymmetricGroup", "@", "$n"}], "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"op", "//", "PermutationForm"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->887646055,ExpressionUUID->"840bb375-7760-4c9d-892e-26ba3fd43d99"],
+
+Cell[BoxData[
+ RowBox[{
+  FractionBox["1", "6"], " ", 
+  RowBox[{"(", 
+   RowBox[{
+    TemplateBox[{
+      SubscriptBox["\[Pi]", 
+       TemplateBox[{"1", "2"}, "RowDefault"]]},
+     "RowDefault"], "+", 
+    TemplateBox[{
+      SubscriptBox["\[Pi]", 
+       TemplateBox[{"1", "3"}, "RowDefault"]]},
+     "RowDefault"], "+", 
+    TemplateBox[{
+      SubscriptBox["\[Pi]", 
+       TemplateBox[{"2", "3"}, "RowDefault"]]},
+     "RowDefault"], "+", 
+    TemplateBox[{
+      SubscriptBox["\[Pi]", 
+       TemplateBox[{"1", "2", "3"}, "RowDefault"]]},
+     "RowDefault"], "+", 
+    TemplateBox[{
+      SubscriptBox["\[Pi]", 
+       TemplateBox[{"1", "3", "2"}, "RowDefault"]]},
+     "RowDefault"], "+", 
+    SubscriptBox["\[Pi]", "0"]}], ")"}]}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1790017333,ExpressionUUID->"41d3dc76-7aca-47d9-9c2d-493184fdb000"]
+}, Open  ]],
+
+Cell["Get the basis of the invariant subspace.", "ExampleText",
+ CellID->1578506926,ExpressionUUID->"d60acb20-d566-41c5-b1dc-cc4c3d1d4169"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ibs", "=", 
+  RowBox[{"Union", "@", 
+   RowBox[{"KetCanonical", "@", 
+    RowBox[{"DeleteCases", "[", 
+     RowBox[{
+      RowBox[{"op", "**", "bs"}], ",", "0"}], "]"}]}]}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1388532143,ExpressionUUID->"365096a3-1993-47c8-820b-e1d75e3db6fa"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}]}]},
+     "Ket"],
+    Ket[{{1, 2}, {3}}, {{1, 2}, {3}}, {{1, 2}, {3}}]], "-", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}]}]},
+     "Ket"],
+    Ket[{{1, 2}, {3}}, {{1, 3}, {2}}, {{1, 3}, {2}}]], "-", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}]}]},
+     "Ket"],
+    Ket[{{1, 3}, {2}}, {{1, 2}, {3}}, {{1, 3}, {2}}]], "-", 
+   InterpretationBox[
+    TemplateBox[{
+      RowBox[{
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["3", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["2", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 3}, {2}}], ",", 
+        InterpretationBox[
+         TagBox[
+          GridBox[{{
+             ItemBox["1", Frame -> True, StripOnInput -> False], 
+             ItemBox["2", Frame -> True, StripOnInput -> False]}, {
+             ItemBox["3", Frame -> True, StripOnInput -> False], ""}}, 
+           AutoDelete -> False, 
+           GridBoxItemSize -> {
+            "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], "Grid"], {{
+          1, 2}, {3}}]}]},
+     "Ket"],
+    Ket[{{1, 3}, {2}}, {{1, 3}, {2}}, {{1, 2}, {3}}]]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->177269967,ExpressionUUID->"4cd7a292-e29c-4fe1-b269-7b35ebe843fb"]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["YoungFourierBasis"]], 
+           "paclet:QuantumMob/Q3/ref/YoungFourierBasis", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "bd15e5cc-5983-433f-98a4-c666c1f71ac6"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["YoungRegularBasis"]], 
+           "paclet:QuantumMob/Q3/ref/YoungRegularBasis", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "fb0a0eec-e2e6-4957-b7ef-499e250b7ce6"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["SpechtBasis"]], "paclet:QuantumMob/Q3/ref/SpechtBasis", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "a12d4b83-af36-49bc-8a5d-4ddc3a085a02"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["YoungNormalRepresentation"]], 
+           "paclet:QuantumMob/Q3/ref/YoungNormalRepresentation", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "c634485e-6878-4465-a8c2-9e62680d6d5b"]
+       }], "SeeAlso",ExpressionUUID->"5795798b-0294-4e05-9df2-b6d0acece2bd"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"c6aa8663-1d86-47dd-9ab9-\
+aec3f3dc8279"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTechNote.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TechNotesSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Clebsch-Gordan Transform",
+         BaseStyle->"Link",
+         ButtonData->"paclet:QuantumMob/Q3/tutorial/ClebschGordanTransform"]],
+          "TechNotes",ExpressionUUID->
+         "d46466ec-3aab-4bf4-9950-ab2724bd5f40"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Young's Representations of the Symmetric Group",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3/tutorial/\
+YoungRepresentationsOfTheSymmetricGroup"]], "TechNotes",ExpressionUUID->
+         "3d7d0769-bdb9-4fa1-9d2f-c3be46fdf33b"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3/tutorial/QuantumInformationSystems"]], 
+         "TechNotes",ExpressionUUID->"36ff4252-dbf6-404a-83ef-001f7e31d40f"]}]}
+     }]}
+  }]], "TechNotesSection",ExpressionUUID->"1f92339b-5e0d-4083-957e-\
+36b9e540d249"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Information Systems"]], 
+           "paclet:QuantumMob/Q3/guide/QuantumInformationSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "9834d414-94a4-4ea6-b652-a0451ca853a8"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"775ea1c9-7f35-406e-bf47-\
+1cabe0654406"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], "B. E. Sagan (2001)"}]]]], 
+             "https://doi.org/10.1007/978-1-4757-6804-6"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "db152a39-2ed9-47f2-970d-4222c3b72e08"]}]],ExpressionUUID->
+         "24a63f9d-a543-412f-b258-f29052a52f6e"],
+        ", The Symmetric Group, 2nd ed. (Springer, 2001). "
+       }], "RelatedLinks",ExpressionUUID->
+        "ba95219e-6964-4d92-b6aa-f61c9575ebbd"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], "H. "}]]]], 
+             "https://doi.org/10.22331/q-2019-02-14-122"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "dfb2a105-f7e6-4f4e-b977-82ff0d031e0f"]}]],ExpressionUUID->
+         "4811db0c-ad2e-4836-a900-f4fb4a36387e"],
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData[
+             StyleBox[{
+               StyleBox["Krovi", IgnoreSpellCheck -> True], 
+               ", Quantum 3, 122 (2019)"}]]], 
+           "https://doi.org/10.22331/q-2019-02-14-122"},
+          "WebLink",
+          BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+         "2be76bea-65dc-49b1-9d26-3987040a8cb4"],
+        ", \"An efficient high dimensional quantum Schur transform\""
+       }], "RelatedLinks",ExpressionUUID->
+        "de797494-e1d4-4310-95d5-5850968f9747"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"ca763ea5-40ee-4693-8ad9-\
+1d927a61d664"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"15edfa50-490a-47ca-9675-fcbd10ba356b"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"YoungClebschGordanTransform",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed, "NotesSection" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2025, 3, 4, 22, 47, 34.503751}", 
+    "history" -> {"13.2", "", "", ""}, "context" -> "QuantumMob`Q3`", 
+    "keywords" -> {
+     "Clebsch-Gordan transform", 
+      "quantum Fourier transform over a finite group"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Quantum Mob/ Q3 Symbol", "language" -> "en", "paclet" -> 
+    "QuantumMob/Q3", "status" -> "None", "summary" -> 
+    "YoungClebschGordanTransform[vec] returns the Clebsch-Gordan \
+transformation of vector vec associated with the symmetric group.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "YoungClebschGordanTransform", "titlemodifier" -> "", "metadescription" -> 
+    "", "windowtitle" -> "YoungClebschGordanTransform", "type" -> "Symbol", 
+    "uri" -> "QuantumMob/Q3/ref/YoungClebschGordanTransform"}},
+CellContext->"Global`",
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (December 26, 2024)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "14.2 for Mac OS X ARM (64-bit) (December 26, 2024)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"aa0ac799-3493-4d8f-820d-5848a8f8ef43"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[14109, 381, 1440, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"2d87bc16-4d76-4f88-b6b8-8ec513f8c8e4",
+   CellTags->"PrimaryExamplesSection",
+   CellID->755854723]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 88690, 2308}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[595, 21, 7107, 173, 50, "AnchorBarGrid",ExpressionUUID->"015b4c27-1705-45ea-a63b-a6bff9c0e793",
+ CellID->1],
+Cell[7705, 196, 96, 0, 22, "ContextNameCell",ExpressionUUID->"094be0c2-1ad5-4ef4-80ef-6864cc38dea8"],
+Cell[CellGroupData[{
+Cell[7826, 200, 570, 14, 57, "ObjectNameGrid",ExpressionUUID->"daed8aaa-9c88-4a43-98c7-8eb95944c3ae"],
+Cell[8399, 216, 769, 18, 106, "Usage",ExpressionUUID->"2abff2ca-7902-4298-bd40-1c35af17545d",
+ CellID->1216155202]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9205, 239, 1916, 48, 34, "NotesSection",ExpressionUUID->"29538a3e-6829-4eca-a320-cb6da9853810",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->239619664],
+Cell[11124, 289, 1273, 38, 70, "Notes",ExpressionUUID->"53870458-7156-4973-ba16-3fdd83565a38",
+ CellID->171127868],
+Cell[12400, 329, 1582, 46, 70, "Notes",ExpressionUUID->"4bf99101-429a-4801-8028-d417348ec073",
+ CellID->1442479249]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[14109, 381, 1440, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"2d87bc16-4d76-4f88-b6b8-8ec513f8c8e4",
+ CellTags->"PrimaryExamplesSection",
+ CellID->755854723],
+Cell[15552, 421, 203, 3, 29, "Input",ExpressionUUID->"de74bb84-0206-4925-8201-2aef7b4811c7",
+ CellID->1110463118],
+Cell[CellGroupData[{
+Cell[15780, 428, 1419, 37, 29, "ExampleSection",ExpressionUUID->"707e1d11-bb4d-4e1e-9858-f4cb4f4563e7",
+ CellID->1284557456],
+Cell[17202, 467, 198, 6, 37, "ExampleText",ExpressionUUID->"45b899f3-fbf9-4ec3-92fe-5f996d835979",
+ CellID->1606806342],
+Cell[17403, 475, 320, 8, 45, "Input",ExpressionUUID->"03d2d071-b34e-48d7-a0fe-60c5e0129164",
+ CellID->1574882027],
+Cell[17726, 485, 147, 1, 37, "ExampleText",ExpressionUUID->"116466da-e7ba-4d4d-a7fe-ab24ca464485",
+ CellID->444758779],
+Cell[CellGroupData[{
+Cell[17898, 490, 323, 7, 45, "Input",ExpressionUUID->"49ce5fd2-08af-407d-890d-1c62e1a6c4e5",
+ CellID->202254880],
+Cell[18224, 499, 390, 12, 36, "Output",ExpressionUUID->"8760b802-daad-4fa1-ab85-75ff3533c72b",
+ CellID->845682927]
+}, Open  ]],
+Cell[18629, 514, 1132, 34, 60, "ExampleText",ExpressionUUID->"4aeea0ed-21eb-4527-b13f-6b996dc1d338",
+ CellID->1062495770],
+Cell[CellGroupData[{
+Cell[19786, 552, 531, 17, 28, "Input",ExpressionUUID->"3d4351f2-35d9-4bf6-8995-93f1b52f49dd",
+ CellID->1360181039],
+Cell[20320, 571, 1137, 31, 55, "Output",ExpressionUUID->"a7fb4f2d-a40a-4461-86a6-73d3cd1ce189",
+ CellID->14301925]
+}, Open  ]],
+Cell[21472, 605, 575, 17, 41, "ExampleText",ExpressionUUID->"64e10879-9cde-4634-a1d6-9c8362e29471",
+ CellID->1472544408],
+Cell[CellGroupData[{
+Cell[22072, 626, 222, 5, 28, "Input",ExpressionUUID->"e4188002-3651-41e9-9b20-2b11469b30e6",
+ CellID->1539763097],
+Cell[22297, 633, 1047, 26, 55, "Output",ExpressionUUID->"b8311261-f71b-4d97-9cc5-1b81fc446336",
+ CellID->2039259401]
+}, Open  ]],
+Cell[23359, 662, 235, 4, 37, "ExampleText",ExpressionUUID->"53a66c67-837f-432a-9b83-64358d756de5",
+ CellID->886894516],
+Cell[CellGroupData[{
+Cell[23619, 670, 241, 5, 70, "Input",ExpressionUUID->"0b9de88a-4e57-43aa-8a8a-a1f6ece7b697",
+ CellID->36972100],
+Cell[23863, 677, 4224, 103, 95, "Output",ExpressionUUID->"dfe5e2a0-8a10-4ade-a4c2-ffee6afc0c5b",
+ CellID->426766397]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[28124, 785, 241, 5, 70, "ExampleDelimiter",ExpressionUUID->"f1058822-889d-411b-a7a8-5e1fd6987545",
+ CellID->70516380],
+Cell[28368, 792, 130, 1, 70, "ExampleText",ExpressionUUID->"d7447273-944a-445c-97f7-3840bbe38f5d",
+ CellID->402873137],
+Cell[CellGroupData[{
+Cell[28523, 797, 662, 20, 70, "Input",ExpressionUUID->"feb46a2e-505b-45ee-b719-77cc60d7c60e",
+ CellID->1743719743],
+Cell[29188, 819, 1159, 32, 55, "Output",ExpressionUUID->"d22e06ad-bcc9-4bec-bac0-2799ebc4baaf",
+ CellID->252097996],
+Cell[30350, 853, 1066, 27, 55, "Output",ExpressionUUID->"2639de12-6300-41a8-8bbb-a9477974f4e6",
+ CellID->25783241]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[31453, 885, 282, 7, 70, "Input",ExpressionUUID->"c0921d65-151b-4b01-ad80-1b9265c026bf",
+ CellID->995176987],
+Cell[31738, 894, 116, 1, 70, "EchoTiming",ExpressionUUID->"96a36f33-36a1-41cd-a1a8-92a3f45fb7bd",
+ CellID->1594521834],
+Cell[31857, 897, 12379, 287, 211, "Output",ExpressionUUID->"e8f70d4a-f61c-47c0-9970-c34641275068",
+ CellID->680033125]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[44285, 1190, 242, 5, 70, "ExampleDelimiter",ExpressionUUID->"03d8af57-8aea-4ab6-8fc6-6e2312ade2e1",
+ CellID->713043755],
+Cell[44530, 1197, 414, 8, 70, "ExampleText",ExpressionUUID->"05ff3bf2-8810-4ca2-8303-8f285bf90958",
+ CellID->1017508556],
+Cell[CellGroupData[{
+Cell[44969, 1209, 283, 7, 70, "Input",ExpressionUUID->"2cf9e476-9f6b-4b4f-963c-7ed43d9b2cb6",
+ CellID->870600255],
+Cell[45255, 1218, 116, 1, 70, "EchoTiming",ExpressionUUID->"eca10356-7c96-45fc-b20c-7584892bd5e9",
+ CellID->1344321538],
+Cell[45374, 1221, 12379, 287, 211, "Output",ExpressionUUID->"2ed8e73b-86fc-4248-9c59-77c2a7cbf9ac",
+ CellID->336639079]
+}, Open  ]],
+Cell[57768, 1511, 141, 1, 70, "ExampleText",ExpressionUUID->"26ac5f27-6c8d-4240-a5ea-7783aa523951",
+ CellID->2036599964],
+Cell[CellGroupData[{
+Cell[57934, 1516, 190, 4, 70, "Input",ExpressionUUID->"2a579d41-bc06-4a2b-9faf-5f978c79f29c",
+ CellID->1693851712],
+Cell[58127, 1522, 126, 2, 36, "Output",ExpressionUUID->"dc8ef66a-d757-4e36-9a2d-65aa4f71d275",
+ CellID->920942665]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[58302, 1530, 243, 5, 70, "ExampleDelimiter",ExpressionUUID->"f88df544-23d6-4b12-b9be-c47a4459cec1",
+ CellID->1238564973],
+Cell[58548, 1537, 323, 5, 70, "ExampleText",ExpressionUUID->"fe0b9dac-1e6f-4ba4-b675-7047703d5742",
+ CellID->197594029],
+Cell[CellGroupData[{
+Cell[58896, 1546, 308, 8, 70, "Input",ExpressionUUID->"a6a0cc3d-8059-4464-99bb-da7aef1f2482",
+ CellID->1795791216],
+Cell[59207, 1556, 11840, 284, 93, "Output",ExpressionUUID->"6174e778-1b7a-496d-bb02-aeb9f38af560",
+ CellID->1402655655]
+}, Open  ]],
+Cell[71062, 1843, 169, 3, 70, "ExampleText",ExpressionUUID->"9c1bca3a-fa02-4f4f-97df-e6a575c8c5e0",
+ CellID->1118514248],
+Cell[CellGroupData[{
+Cell[71256, 1850, 488, 12, 70, "Input",ExpressionUUID->"840bb375-7760-4c9d-892e-26ba3fd43d99",
+ CellID->887646055],
+Cell[71747, 1864, 850, 27, 48, "Output",ExpressionUUID->"41d3dc76-7aca-47d9-9c2d-493184fdb000",
+ CellID->1790017333]
+}, Open  ]],
+Cell[72612, 1894, 139, 1, 70, "ExampleText",ExpressionUUID->"d60acb20-d566-41c5-b1dc-cc4c3d1d4169",
+ CellID->1578506926],
+Cell[CellGroupData[{
+Cell[72776, 1899, 346, 9, 70, "Input",ExpressionUUID->"365096a3-1993-47c8-820b-e1d75e3db6fa",
+ CellID->1388532143],
+Cell[73125, 1910, 5995, 144, 55, "Output",ExpressionUUID->"4cd7a292-e29c-4fe1-b269-7b35ebe843fb",
+ CellID->177269967]
+}, Open  ]]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[79374, 2064, 2533, 67, 70, "SeeAlsoSection",ExpressionUUID->"c6aa8663-1d86-47dd-9ab9-aec3f3dc8279"],
+Cell[81910, 2133, 1416, 36, 70, "TechNotesSection",ExpressionUUID->"1f92339b-5e0d-4083-957e-36b9e540d249"],
+Cell[83329, 2171, 769, 19, 70, "MoreAboutSection",ExpressionUUID->"775ea1c9-7f35-406e-bf47-1cabe0654406"],
+Cell[84101, 2192, 2364, 65, 70, "RelatedLinksSection",ExpressionUUID->"ca763ea5-40ee-4693-8ad9-1d927a61d664"],
+Cell[86468, 2259, 78, 0, 70, "FooterCell",ExpressionUUID->"15edfa50-490a-47ca-9675-fcbd10ba356b"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

@@ -5,5 +5,5 @@ Module[
     "Quantum Mob Paclet Repository"
   ];
   PacletSiteUpdate[ps];
-  PacletInstall["QuantumMob/Q3S"]
+  PacletInstall["QuantumMob/Q3"]
 ]
