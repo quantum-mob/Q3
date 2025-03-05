@@ -16,7 +16,8 @@ or
 ```Mathematica
 Needs["QuantumMob`Q3`"]
 ```
-(usually it is autoloaded when WolframKernel starts). The primary context is now "QuantumMob\`Q3\`" (rather than previous "Q3\`").
+(usually it is autoloaded when WolframKernel starts).
+The primary context is now "QuantumMob\`Q3\`" (rather than previous "Q3\`").
 
 
 ## Requirements
