@@ -3,6 +3,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
 
+{ Affect }; (* obsolete *)
+{ QuantumCircuitTrim }; (* renamed *)
 { GottesmanInner }; (* renamed *)
 { WickRandomCircuit }; (* renamed *)
 { NoisyWickSimulate }; (* renamed *)
@@ -177,6 +179,16 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 
 (**** <obsolete> ****)
+
+Affect[any___] := (
+  Message[Q3General::renamed, "Affect", "Multiply"];
+  Apply[Multiply, Reverse @ {any}]
+)
+
+QuantumCircuitTrim[any___] := (
+  Message[Q3General::renamed, "QuantumCircuitTrim", "QuantumElements"];
+  QuantumElements[any]
+)
 
 GottesmanInner[any___] := (
   Message[Q3General::renamed, "GottesmanInner", "GottesmanDot"];

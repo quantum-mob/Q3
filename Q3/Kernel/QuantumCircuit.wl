@@ -2,7 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { QuantumCircuit,
-  QuantumCircuitTrim };
+  QuantumElements };
 
 { RandomQuantumCircuit, RandomQuantumCircuitSimulate };
 
@@ -83,7 +83,7 @@ Qubits @ QuantumCircuit[gg__, opts___?OptionQ] := Union[
 
 QuantumCircuit /:
 Measurements[qc:QuantumCircuit[__, ___?OptionQ]] :=
-  Measurements[QuantumCircuitTrim @ qc]
+  Measurements[QuantumElements @ qc]
 
 QuantumCircuit /:
 Expand @ QuantumCircuit[gg__, opts___?OptionQ] :=
@@ -131,36 +131,38 @@ Multiply[pre___, Longest[cc__QuantumCircuit], post___] :=
 AddElaborationPatterns[_QuantumCircuit]
 
 QuantumCircuit /:
-ExpressionFor[ qc_QuantumCircuit ] := Elaborate[ qc ]
+ExpressionFor[qc_QuantumCircuit] := Elaborate[ qc ]
 
 QuantumCircuit /:
-Elaborate @ QuantumCircuit[gg__, ___?OptionQ] := Module[
-  { expr = Flatten @ QuantumCircuitTrim @ {gg} },
-  Garner[ QCAct @@ expr ]
+Elaborate[qc_QuantumCircuit] := Module[
+  { elm = QuantumElements[qc] },
+  Elaborate @ Apply[Multiply, Reverse @ elm]
+  (* Garner[ theCircuitMultiply @@ elm ] *)
 ]
-(* NOTE: This makes the evaluation much faster, especially, when the initial
-   state is specified in the circuit. *)
 
-QCAct::usage = "QCAct[elm1, elm2, \[Ellipsis]] is a version of Multiply for QuantumCircuit elements elm1, elm2, \[Ellipsis]."
+theCircuitMultiply::usage = "theCircuitMultiply[elm1, elm2, \[Ellipsis]] is a version of Multiply for quantum circuit elements elm1, elm2, \[Ellipsis]."
+(* CHECK (2025-03-09, v4.1.1): For small or shallow circuits, 
+  Apply[Multiply, Reverse @ elm] would be sufficient and even faster. However, when the circuit gets deeper or larger, this method used to be slower.
+  *)
 
-QCAct[] = 1
+theCircuitMultiply[] = 1
 
-QCAct[any_] := Elaborate[any]
+theCircuitMultiply[any_] := Elaborate[any]
 
-QCAct[pre__, op_Measurement, post___] := 
-  QCAct[op @ QCAct[pre], post] /;
+theCircuitMultiply[pre__, op_Measurement, post___] := 
+  theCircuitMultiply[op @ theCircuitMultiply[pre], post] /;
   Not @ FreeQ[{pre}, _Ket|_State]
 
-QCAct[op_Measurement, post___] :=
-  Multiply[QCAct[post], op]
+theCircuitMultiply[op_Measurement, post___] :=
+  Multiply[theCircuitMultiply[post], op]
 
-QCAct[op:Except[_Measurement]..] :=
-  Elaborate @ Fold[ Garner[Multiply[#2, #1]]&, 1, {op} ]
+theCircuitMultiply[op:Except[_Measurement]..] :=
+  Elaborate @ Fold[Multiply[#2, #1]&, {op}]
 (* NOtE: One can use Elaborate @ {op} as follows:
-   Fold[ Garner[Multiply[#2, #1]]&, 1,  Elaborate@{op} ]
+   Fold[Garner[Multiply[#2, #1]]&, 1,  Elaborate@{op}]
    However, this cannot take the advantange of op ** Ket[...]. *)
 
-QCAct[gg__] := MeasurementFunction[{gg}]
+theCircuitMultiply[gg__] := Reverse @ MeasurementFunction[gg]
 
 (**** </Elaborate> ****)
 
@@ -174,69 +176,69 @@ QuantumCircuit /:
 Matrix[QuantumCircuit[gg__, ___?OptionQ], ss:{___?QubitQ}] := Module[
   { ff },
   ff = SplitBy[
-    Flatten @ QuantumCircuitTrim @ {gg},
+    Flatten @ QuantumElements @ {gg},
     MatchQ[_Measurement]
   ];
-  Apply[qcMatrix, MapApply[ReverseDot, Matrix[ff, ss]]]
+  Apply[theCircuitDot, MapApply[ReverseDot, Matrix[ff, ss]]]
   (* NOTE: This is much faster than the line below, especially, for large systems. *)
-  (* Apply[qcMatrix, MapApply[Dot, Reverse /@ Matrix[ff, ss]]] *)
+  (* Apply[theCircuitDot, MapApply[Dot, Reverse /@ Matrix[ff, ss]]] *)
 ]
 
-qcMatrix[v_?VectorQ] = v
+theCircuitDot[v_?VectorQ] = v
 
-qcMatrix[m_?MatrixQ] = m
+theCircuitDot[m_?MatrixQ] = m
 
-qcMatrix[m_Measurement] = m
+theCircuitDot[m_Measurement] = m
 
-qcMatrix[v_?VectorQ, msr_Measurement, rest___] :=
-  qcMatrix[msr @ v, rest]
+theCircuitDot[v_?VectorQ, msr_Measurement, rest___] :=
+  theCircuitDot[msr @ v, rest]
 
-qcMatrix[v_?VectorQ, mat_?MatrixQ, rest___] :=
-  qcMatrix[mat.v, rest]
+theCircuitDot[v_?VectorQ, mat_?MatrixQ, rest___] :=
+  theCircuitDot[mat.v, rest]
 
-qcMatrix[gg__] := MeasurementFunction[{gg}]
+theCircuitDot[gg__] := Reverse @ MeasurementFunction[gg]
 
 (**** </Matrix> ****)
 
 
-(**** <QuantumCircuitTrim> ****)
+(**** <QuantumElements> ****)
 
-QuantumCircuitTrim::usage = "QuantumCircuitTrim[expr] removes visualization options and Graphics Directives that are not evaluable expressions. Useful to convert QuantumCircuit to an evaluation-ready expression."
+QuantumElements::usage = "QuantumElements[expr] returns the list of quantum circuit elements in expr after removing visualization options and Graphics Directives that are not evaluable expressions. Useful to convert QuantumCircuit to an evaluation-ready expression."
 
-SetAttributes[QuantumCircuitTrim, Listable];
+SetAttributes[QuantumElements, Listable];
 
-QuantumCircuitTrim[ HoldPattern @ QuantumCircuit[gg__, ___?OptionQ] ] :=
-  Flatten @ QuantumCircuitTrim @ {gg}
+QuantumElements[ HoldPattern @ QuantumCircuit[gg__, ___?OptionQ] ] :=
+  Flatten @ QuantumElements @ {gg}
 
-QuantumCircuitTrim[ PortIn[vv__] ] :=
-    Multiply @@ QuantumCircuitTrim[{vv}]
+QuantumElements[ PortIn[vv__] ] :=
+    Multiply @@ QuantumElements[{vv}]
 (* NOTE: Useful to apply Matrix directly to QuantumCircuit.  *)
 
-QuantumCircuitTrim[ _PortOut ] = Nothing
+QuantumElements[ _PortOut ] = Nothing
 
-QuantumCircuitTrim[ _?OptionQ ] = Nothing
+QuantumElements[ _?OptionQ ] = Nothing
 
-QuantumCircuitTrim[ g_?ComplexQ ] = g (* NOT _?CommutativeQ *)
+QuantumElements[ g_?ComplexQ ] = g (* NOT _?CommutativeQ *)
 
-QuantumCircuitTrim[ g_ ] := Nothing /;
+QuantumElements[ g_ ] := Nothing /;
   FreeQ[g, _?QubitQ | _Dyad | _Ket | _ProductState]
 
-QuantumCircuitTrim[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
+QuantumElements[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
   Dyad[v, v, qq]
 
-QuantumCircuitTrim[ v:ProductState[_Association, ___] ] := Expand[v]
+QuantumElements[ v:ProductState[_Association, ___] ] := Expand[v]
 
-QuantumCircuitTrim[ v:Ket[_Association] ] = v
+QuantumElements[ v:Ket[_Association] ] = v
 
-QuantumCircuitTrim[ ActOn[op_, __] ] = op
+QuantumElements[ ActOn[op_, __] ] = op
 
-QuantumCircuitTrim[ Gate[expr_, ___?OptionQ] ] = expr
+QuantumElements[ Gate[expr_, ___?OptionQ] ] = expr
 
-QuantumCircuitTrim[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
+QuantumElements[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
 
-QuantumCircuitTrim[ g_ ] = g
+QuantumElements[ g_ ] = g
 
-(**** </QuantumCircuitTrim> ****)
+(**** </QuantumElements> ****)
 
 
 (**** <Graphics> ****)

@@ -545,7 +545,6 @@ HoldPattern @ Multiply[pre___, x_?QubitQ, y_?QubitQ, post___] :=
 (**** </Multiply> ****)
 
 
-
 (* MultiplyDegree for operators *)
 MultiplyDegree[_?QubitQ] = 1
 
@@ -570,9 +569,8 @@ FlavorMute[S_Symbol?QubitQ[j___, _] -> m_] := S[j, $] -> m
 
 $RaisingLoweringRules = Join[ $RaisingLoweringRules,
   { S_?QubitQ[j___,1] :> (S[j,4] + S[j,5]),
-    S_?QubitQ[j___,2] :> (S[j,4] - S[j,5]) / I
-   }
- ]
+    S_?QubitQ[j___,2] :> (S[j,4] - S[j,5]) / I }
+]
 
 
 (**** <Ket for Qubit> ****)
@@ -583,10 +581,10 @@ KetVerify::qubit = "Invalid value `` for qubit ``."
 
 theKetVerify[Rule[a_?QubitQ, v_]] := (
   Message[KetVerify::qubit, v, a];
-  $Failed
+  Nothing
 ) /; Not[BinaryQ @ v]
 (* NOTE: The following definition would not allow to assign a symbolic value:
-   KetVerify[ _?QubitQ, Except[0|1] ] = $Failed *)
+   KetVerify[ _?QubitQ, Except[0|1] ] = Nothing *)
 
 (**** </Ket for Qubit> ****)
 
@@ -2411,81 +2409,7 @@ Projector[expr_, qq:{__?QubitQ}] :=
 (**** </Projector> ****)
 
 
-(***** <Measurement> ****)
-
-Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis] in the reverse order."
-
-Measurement::num = "Probability half is assumed for a state without explicitly numeric coefficients."
-
-SyntaxInformation[Measurement] = { "ArgumentsPattern" -> {_} }
-
-Measurement[op_?MatrixQ][in_?VectorQ] := theMeasurement[in, op]
-
-Measurement[op_List][in_] := Fold[theMeasurement, in , Reverse @ op]
-(* NOTE: Here, Reverse is for backward compatibility. *)
-
-Measurement[op_][in_] := theMeasurement[in, op]
-
-
-theMeasurement::usage = "The actual workhorse."
-
-theMeasurement[in_, op_] := Module[
-  { odds = MeasurementOdds[op][in],
-    rand = RandomReal[],
-    prob },
-  prob = If[ NumericQ[First @ odds[0]],
-    Re[First @ odds[0]],
-    Message[Measurement::num];
-    0.5
-  ];
-  Garner @ If[ rand < prob,
-    $MeasurementOut[op] = 0; Last @ odds[0],
-    $MeasurementOut[op] = 1; Last @ odds[1]
-  ]
-]
-
-
-Measurement /:
-Dot[Measurement[mat_?MatrixQ], vec_?VectorQ] :=
-  Measurement[mat] @ vec
-
-Measurement /:
-Dot[Measurement[mm:{__?MatrixQ}], vec_?VectorQ] :=
-  Measurement[mm] @ vec
-
-Measurement /:
-Multiply[pre___, spr_Measurement, expr_] :=
-  Multiply[pre, spr @ expr] /; Not @ FreeQ[expr, _Ket]
-
-Measurement /:
-Matrix[Measurement[op_], ss:{___?SpeciesQ}] :=
-  Measurement[Matrix[op, ss]]
-
-
-$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j."
-
-
-Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
-
-Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout."
-
-SyntaxInformation[Readout] = { "ArgumentsPattern" -> {_} }
-
-Readout[Measurement[op_]] := Readout[op]
-
-Readout[op_?MatrixQ] := $MeasurementOut[op] /; KeyExistsQ[$MeasurementOut, op]
-
-Readout[op_List] := Lookup[$MeasurementOut, op] /; ContainsAll[Keys @ $MeasurementOut, op]
-(* NOTE: op may be a list of matrices or operators. *)
-
-Readout[op_] := $MeasurementOut[op] /; KeyExistsQ[$MeasurementOut, op]
-
-
-Readout[op_] := (
-  Message[Readout::notob, op];
-  $Failed
-)
-
+(**** <MeasurementOdds> ****)
 
 MeasurementOdds::usage = "MeasurementOdds[op][vec] theoretically analyzes the process of meauring operator op on state vec and returns an association of elements of the form value->{probability, state}, where value is one of the possible measurement outcomes 0 and 1 (which correspond to eitemvalues +1 and -1, respectively, of op), probability is the probability for value to be actually observed, and state is the post-measurement state when value is actually observed."
 
@@ -2534,7 +2458,7 @@ MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] := Module[
    *)
 
 
-obsPauliQ::usage = "obsPauliQ[op] returns True if op is either a single-qubit Pauli operator or a tensor product of single-qubit Pauli operators (without any factor of \[PlusMinus]I); and False, otherwise.\nSuch an 'observable' Pauli operator has eigenvalue \[PlusMinus]1; hence 'observable'."
+obsPauliQ::usage = "obsPauliQ[op] returns True if op is a Pauli string (without any factor of \[PlusMinus]I); and False, otherwise.\nSuch an 'observable' Pauli operator has eigenvalue \[PlusMinus]1; hence 'observable'."
 
 obsPauliQ[Pauli[(0|1|2|3)..]] = True
 
@@ -2547,11 +2471,59 @@ obsPauliQ[expr_] := obsPauliQ[Elaborate @ expr] /;
 
 obsPauliQ[_] = False
 
+(**** </MeasurementOdds> ****)
 
-Measurements::usage = "Measurments[expr] returns a list of Pauli operators (including the tensor products of single-qubit Pauli operators) measured during the process of expression expr."
 
-Measurements[expr_] := Union @ Flatten @
-  Cases[{expr}, Measurement[m_] -> m, Infinity, Heads -> False]
+(***** <Measurement> ****)
+
+Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis] in the reverse order."
+
+Measurement::num = "Probability half is assumed for a state without explicitly numeric coefficients."
+
+SyntaxInformation[Measurement] = { "ArgumentsPattern" -> {_} }
+
+Measurement[op_?MatrixQ][in_?VectorQ] := theMeasurement[in, op]
+
+Measurement[op_List][in_] := Fold[theMeasurement, in , Reverse @ op]
+(* NOTE: Here, Reverse is for backward compatibility. *)
+
+Measurement[op_][in_] := theMeasurement[in, op]
+
+
+theMeasurement::usage = "The actual workhorse."
+
+theMeasurement[in_, op_] := Module[
+  { odds = MeasurementOdds[op][in],
+    rand = RandomReal[],
+    prob },
+  prob = If[ NumericQ[First @ odds[0]],
+    Re[First @ odds[0]],
+    Message[Measurement::num];
+    0.5
+  ];
+  Garner @ If[ rand < prob,
+    $MeasurementOut[op] = 0; Last @ odds[0],
+    $MeasurementOut[op] = 1; Last @ odds[1]
+  ]
+]
+
+
+Measurement /:
+Dot[Measurement[mm:(_?MatrixQ|{___?MatrixQ})], vec_?VectorQ] :=
+  Measurement[mm] @ vec
+
+Measurement /:
+Multiply[pre___, msr_Measurement, post__] :=
+  Multiply[pre, msr @ Multiply[post]] /; 
+  Not @ FreeQ[Last @ {post}, _Ket|_State]
+
+Measurement /:
+Multiply[pre___, msr_Measurement, post___] :=
+  MeasurementFunction[pre, msr, post]
+
+Measurement /:
+Matrix[Measurement[op_], ss:{___?SpeciesQ}] :=
+  Measurement[Matrix[op, ss]]
 
 (**** </Measurement> ****)
 
@@ -2560,36 +2532,72 @@ Measurements[expr_] := Union @ Flatten @
 
 MeasurementFunction::usage = "MeasurementFunction[{m1,m2,\[Ellipsis]}] represents a sequence of operations or measurements m1, m2, \[Ellipsis]."
 
-Format[fun:MeasurementFunction[gg:{(_Measurement|_?MatrixQ)..}]] := With[
-  { dim = Riffle[Dimensions @ FirstCase[gg, _?MatrixQ], "\[Times]"] },
+Format[fun:MeasurementFunction[gg:(_?MatrixQ|Measurement[_?MatrixQ]|Measurement[{__?MatrixQ}])..]] := With[
+  { dim = Riffle[Dimensions @ FirstCase[{gg}, _?MatrixQ, {{1}}, 3], "\[Times]"] },
   Interpretation[
     StringForm["MeasurementFunction[{``\[Ellipsis]}]", ToString @ Row @ dim],
-    fun ]
- ]
-
-Format[fun:MeasurementFunction[gg:{__}]] := 
-  Interpretation[
-    StringForm["MeasurementFunction[``]", Qubits @ gg],
     fun
-   ]
+  ]
+]
 
-MeasurementFunction[gg:{(_Measurement|_?MatrixQ)..}][v_?VectorQ] :=
-  Fold[Dot[#2, #1]&, v, gg]
+Format[fun:MeasurementFunction[gg__]] := 
+  Interpretation[
+    StringForm["MeasurementFunction[``]", Qubits @ {gg}],
+    fun
+  ]
 
-MeasurementFunction[gg:{__}][expr_] :=
-  Fold[Garner[Multiply[#2, #1]]&, expr, gg] /;
-  Not @ FreeQ[expr, Ket[_Association]|_ProductState]
+MeasurementFunction[mm:(_Measurement|_?MatrixQ)..][in_?VectorQ] :=
+  Fold[Dot[#2, #1]&, in, Reverse @ {mm}]
+
+MeasurementFunction[mm__][in_] :=
+  Fold[Garner[Multiply[#2, #1]]&, in, Reverse @ {mm}] /;
+  Not @ FreeQ[in, Ket[_Association]|_ProductState]
 
 
 MeasurementFunction /:
-Dot[MeasurementFunction[mm:{(_Measurement|_?MatrixQ)..}], vec_?VectorQ] :=
-  MeasurementFunction[mm][vec]
+Dot[MeasurementFunction[mm:(_Measurement|_?MatrixQ)..], in_?VectorQ] :=
+  MeasurementFunction[mm][in]
 
 MeasurementFunction /:
-Multiply[pre___, spr_MeasurementFunction, expr_] :=
-  Multiply[pre, spr @ expr] /; Not @ FreeQ[expr, _Ket|_ProductoState]
+Multiply[pre___, spr_MeasurementFunction, post___] :=
+  Multiply[pre, Sequence @@ spr, post]
 
 (**** </MeasurementFunction> ****)
+
+
+(**** <Readout> ****)
+
+$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j."
+
+
+Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
+
+Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout."
+
+SyntaxInformation[Readout] = { "ArgumentsPattern" -> {_} }
+
+Readout[Measurement[op_]] := Readout[op]
+
+Readout[op_?MatrixQ] := $MeasurementOut[op] /; KeyExistsQ[$MeasurementOut, op]
+
+Readout[op_List] := Lookup[$MeasurementOut, op] /; ContainsAll[Keys @ $MeasurementOut, op]
+(* NOTE: op may be a list of matrices or operators. *)
+
+Readout[op_] := $MeasurementOut[op] /; KeyExistsQ[$MeasurementOut, op]
+
+
+Readout[op_] := (
+  Message[Readout::notob, op];
+  $Failed
+)
+
+(**** </Readout> ****)
+
+
+Measurements::usage = "Measurments[expr] returns a list of Pauli operators (including the tensor products of single-qubit Pauli operators) measured during the process of expression expr."
+
+Measurements[expr_] := Union @ Flatten @
+  Cases[{expr}, Measurement[m_] -> m, Infinity, Heads -> False]
 
 
 (**** <ProductState> ****)
@@ -2627,7 +2635,7 @@ KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
 
 ProductState /:
 Expand[ ProductState[aa_Association, opts___?OptionQ] ] :=
-  State[CircleTimes @@ Values[aa], Keys[aa]]
+  State[CircleTimes @@ Values[aa], Keys @ aa]
 
 ProductState /:
 Elaborate[ vec:ProductState[_Association, ___] ] :=
@@ -3329,10 +3337,10 @@ KetVerify::qudit = "Invalid value `` for qudit ``."
 
 theKetVerify[Rule[a_?QuditQ, v_]] := (
   Message[KetVerify::qudit, v, a];
-  $Failed
+  Nothing
 ) /; Not[0 <= v < Dimension[a]]
 (* NOTE: The following definition would not allow to assign a symbolic value:
-   theKetVerify[Rule[_?QuditQ, Except[0|1]]] = $Failed *)
+   theKetVerify[Rule[_?QuditQ, Except[0|1]]] = Nothing *)
 
 (**** </Ket for Qubits> ****)
 

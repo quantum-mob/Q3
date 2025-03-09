@@ -14,7 +14,9 @@ ClearAll @@ Evaluate @ Unprotect[
   Seminormal2Natural,
   InvariantYMetric,
   YnrCharacterTest,
-  NormSquareOfTableau, WeakLeftBruhatGraph ];
+  NormSquareOfTableau,
+  WeakLeftBruhatGraph 
+];
 
 
 InvariantYMetric::usage="InvariantYMetric[\[Lambda]_?YoungShapeQ] is the scalar product invariant under Young's natural presentation corresponding to the integer partition \[Lambda]."

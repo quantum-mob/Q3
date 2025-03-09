@@ -909,9 +909,9 @@ ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]
 
 (**** <ReverseDot> ****)
 
-ReverseDot::usage = "ReverseDot[vec,m$1,m$2,$$] returns the equivalent result as Dot[$$,m$2,m$1,vec] but calculates it faster than the latter when the first input argument vec is a vector and the rest are matrices."
+ReverseDot::usage = "ReverseDot[vec,m1,m2,$$] returns the equivalent result as Dot[$$,m$2,m$1,vec] but calculates it faster than the latter when the first input argument vec is a vector and the rest are matrices."
 
-ReverseDot[v_?VectorQ, mm___?MatrixQ] := Fold[#2 . #1 &, v, {mm}]
+ReverseDot[in_?VectorQ, mm___?MatrixQ] := Fold[Dot[#2, #1]&, in, {mm}]
 
 ReverseDot[any___] := Apply[Dot, Reverse @ {any}]
 

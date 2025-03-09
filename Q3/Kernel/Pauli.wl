@@ -39,8 +39,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { BlochSphere, BlochVector };
 
-{ Affect };
-
 { Pauli, Raising, Lowering, Hadamard, Quadrant, Octant, Hexadecant };
 { ThePauli };
 
@@ -584,19 +582,6 @@ theYBasisLabel[expr_, qq:{__?QubitQ}] :=
 (**** </YBasisForm> ****)
 
 
-Affect::usage = "Affect[ket, op1, op2, ...] operates the operators op1, op2, ... (earlier operators first) on ket. Notice the order of the arguments. The result should be equivalent to Multiply[..., op2, op1, ket], but it is much faster than the counterpart for deep (the numer of operators is much bigger than the number of particles) expression. The first argument does not need to be a Ket, but otherwise Affect is not an advantage over Multiply."
-
-SetAttributes[Affect, Listable]
-
-Affect[ket_, op__] := Distribute[ theAffect @@ Garner[{ket, op}] ]
-
-theAffect[ket_, a_, b__] := Fold[ theAffect, ket, {a, b} ]
-
-theAffect[ket_, op_Multiply] := theAffect[ket, Sequence @@ Reverse[op]]
-
-theAffect[ket_, op_] := Garner @ Multiply[op, ket]
-
-
 (**** <fPauliKetQ> ****)
 
 fPauliKetQ::usage = "fPauliKetQ[expr] returns True if expr is a valid expression for a state vector of a system of unlabelled qubits.\nPauli[\[Ellipsis]] operates consistently on such an expression.";
@@ -778,9 +763,9 @@ Ket[ spec__Rule ] := Ket[ Ket[], spec ]
 
 Ket[ Ket[a_Association], spec__Rule ] := Module[
   { rules = Flatten @ KetRule @ {spec},
-    vec },
-  vec = theKetVerify @ Join[a, Association @ rules];
-  If[FailureQ @ vec, $Failed, fermionKeySort @ Ket @ vec]
+    assoc },
+  assoc = Join[a, Association @ rules];
+  fermionKeySort[Ket @ theKetVerify @ assoc]
 ]
 
 
@@ -838,28 +823,19 @@ KetRule[r_Rule] := r
 
 (**** <KetVerify> ****)
 
-theKetVerify::usage = "theKetVerify[assoc] returns assoc if assoc is an Association of valid Key-Value pairs; $Failed otherwise.\ntheKetVerify[a->b] returns a->b if Ket[<|a->b|>] is a valid Ket; $Failed otherwise."
-
-theKetVerify[a_Association] := With[
-  { aa = AssociationMap[theKetVerify, a] },
-  If[ AnyTrue[aa, FailureQ],
-    $Failed,
-    Association @ aa,
-    Association @ aa
-  ]
-]
-
-theKetVerify[any_Rule] = any
-
-
 KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
 
-KetVerify[Ket[a_Association]] := With[
-  { aa = theKetVerify[a] },
-  If[FailureQ[aa], $Failed, Ket @ aa, Ket @ aa]
-]
+KetVerify[Ket[a_Association]] := theKetVerify[a]
 
 KetVerify[expr_] := expr /. { v_Ket :> KetVerify[v] }
+
+
+theKetVerify::usage = "theKetVerify[assoc] removes key-value pairs from Association assoc that are not valid for a ket\ntheKetVerify[a->b] returns a->b if Ket[<|a->b|>] is valid; Nothing otherwise."
+
+theKetVerify[a_Association] :=
+  AssociationMap[theKetVerify, a]
+
+theKetVerify[any_Rule] = any
 
 (**** </KetVerify> ****)
 
@@ -2839,7 +2815,7 @@ Rotation::real = "The vector `` must be real to specify a rotation axis."
 Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] := (
   Message[Rotation::real, v];
   Rotation[phi, Re @ v, S, rest]
- ) /; Not @ AllTrue[v, QuantumMob`Q3`RealQ] /; AllTrue[v, NumericQ]
+) /; Not @ AllTrue[v, QuantumMob`Q3`RealQ] /; AllTrue[v, NumericQ]
 
 Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] :=
   Rotation[phi, v, S[$], rest] /;

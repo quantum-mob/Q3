@@ -33,7 +33,7 @@ Conjugate[ Power[b_, 1/2] ] := Sqrt[Conjugate[b]]
 (* NOTE: Branch cut is assumed to be the negative real axis. *)
 
 
-(* Conjugate[ x_?RealQ ] := x *)
+(* Conjugate[ x_?QuantumMob`Q3`RealQ ] := x *)
 
 NonNegative[ Times[_?NonNegative, a__] ] := NonNegative[ Times[a] ]
 

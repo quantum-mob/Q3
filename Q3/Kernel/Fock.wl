@@ -2012,14 +2012,14 @@ KetVerify::boson = "Invalid value `` for boson ``."
 
 theKetVerify[Rule[a_?BosonQ, v_?Negative]] := (
   Message[KetVerify::boson, v, a];
-  $Failed
+  Nothing
 )
 
 KetVerify::fermion = "Invalid value `` for fermion ``."
 
 theKetVerify[Rule[c_?FermionQ, v_]] := (
   Message[KetVerify::fermion, v, c];
-  $Failed
+  Nothing
 ) /; Not[BinaryQ @ v]
 (* NOTE: The following definition would not allow to assign a symbolic value:
    theKetVerify[Rule[_?FermionQ, Except[0|1]]] = $Failed *)

@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.1.1
+
+- Bug fix: KetVerify, Measurement (in Multiply)
+- Renamed: QuantumCircuitTrim --> QuantumElements
+
 ## 4.1.0
 
 - Code piecies for Mathematica 13.0 or before are removed.
