@@ -1358,7 +1358,7 @@ SetAttributes[ControlledGate, NHoldFirst]
 
 SyntaxInformation[ControlledGate] = {
   "ArgumentsPattern" -> {_, __}
- }
+}
 
 AddGarnerPatterns[_ControlledGate]
 
@@ -1366,7 +1366,7 @@ AddGarnerPatterns[_ControlledGate]
 ControlledGate[cc_] := (
   CheckArguments[ControlledGate[cc], 2];
   ControlledGate[cc, 1]
- )
+)
 
 
 ControlledGate[{}, op_, ___] = op (* fallback *)
@@ -1389,7 +1389,7 @@ ControlledGate[Rule[cc:{___?QubitQ}, v_], rest__] :=
 ControlledGate[Rule[cc:{__?QubitQ}, vv_List], rest__] := (
   Message[ControlledGate::incmp, cc, vv];
   ControlledGate[cc -> PadRight[vv, Length @ cc, 1], rest]
- ) /; Length[cc] != Length[vv]
+) /; Length[cc] != Length[vv]
 
 
 ControlledGate[cc:{Rule[_?QubitQ, _]..}, rest__] :=
@@ -1436,7 +1436,7 @@ theControlledGate[cc:{__Rule}, op_] := Module[
     Return @ {tt[-7], CNOT[cc, tt], tt[7], ControlledGate[cc, ff]},
     CommutativeQ[ff = Elaborate[op / tt[3]]],
     Return @ {tt[6], CNOT[cc, tt], tt[6], ControlledGate[cc, ff]}
-   ];
+  ];
   If[ Chop[Tr @ mm] == 0,
     Module[
       {val, vec},
@@ -1449,7 +1449,7 @@ theControlledGate[cc:{__Rule}, op_] := Module[
         {Dagger[vec], "Label" -> Superscript["A","\[Dagger]"]}
        }
      ]
-   ];
+  ];
   ff = Sqrt[Det @ mm];
   Module[
     {a, b, c},
@@ -1461,8 +1461,8 @@ theControlledGate[cc:{__Rule}, op_] := Module[
       CNOT[cc, tt],
       EulerRotation[{a, b/2, 0}, tt, "Label" -> "A"],
       ControlledGate[cc, ff] }
-   ]
- ]
+  ]
+]
 
 
 ControlledGate /:
@@ -1481,7 +1481,7 @@ Elaborate @
       prj },
     prj = Multiply @@ Elaborate @ MapThread[Construct, {Keys @ cc, rr}];
     Garner[prj ** Elaborate[op] + (1 - prj)]
-   ]
+  ]
 
 
 ControlledGate /:
@@ -1492,7 +1492,7 @@ Matrix[
       prj },
     prj = Dot @@ Matrix[MapThread[Construct, {Keys @ cc, rr}], ss];
     Dot[prj, Matrix[op, ss]] + (One[Aggregate @ Dimension @ ss] - prj)
-   ]
+  ]
 
 ControlledGate /:
 Matrix[op_ControlledGate, ss:{__?SpeciesQ}] :=

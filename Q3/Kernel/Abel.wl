@@ -43,7 +43,7 @@ $::usage = "$ is a flavor index referring to the species itself."
   Hermitian, HermitianQ,
   Antihermitian, AntihermitianQ };
 
-{ Dagger, HermitianConjugate = Dagger,
+{ Dagger, System`HermitianConjugate = Dagger,
   Topple, DaggerTranspose = Topple,
   Canon, Tee, TeeTranspose };
 

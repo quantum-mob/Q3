@@ -527,10 +527,10 @@ ParseGate[
 ParseGate[
   ControlledGate[
     cc:{Rule[_?QubitQ, _?BinaryQ]..},
-    op:(_Phase|_Rotation|_EulerRotation),
+    op:(_Phase|_Rotation|_EulerRotation|_ActOn),
     opts___?OptionQ
   ],
-  more___?OptionQ 
+  more___?OptionQ
 ] :=
   Gate[ cc, Qubits @ op, 
     more, opts, Options[op],
