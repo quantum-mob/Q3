@@ -3,28 +3,23 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
 
-{ Affect }; (* obsolete *)
-{ QuantumCircuitTrim }; (* renamed *)
+{ Affect }; (* obsolete 2025-03-12 *)
+{ QuantumCircuitTrim }; (* renamed 2025-03-12 *)
 { GottesmanInner }; (* renamed *)
 { WickRandomCircuit }; (* renamed *)
 { NoisyWickSimulate }; (* renamed *)
 { WeightedLog }; (* renamed *)
-{ PauliDecompose, PauliDecomposeRL, PauliCompose, PauliCompseRL }; (* renamed *)
 { FlavorNone, FlavorNoneQ }; (* renamed *)
 { TimesDaggerLeft, TimesLeftRight }; (* renamed *)
 { TheLower, TheRaise, RaiseLower }; (* renamed *)
-{ PauliEmbed, PauliApply }; (* obsolete and excised *)
 { TheState, TheOperator }; (* obsolete and excised *)
 { NormalForm }; (* renamed *)
 { LogicalForm, DefaultForm }; (* obsolete since 2023-02-18 *)
 { DyadExpression }; (* renamed *)
 { WignerFunction }; (* obsolete *)
-{ PauliExpression, PauliExpressionRL }; (* obsolete *)
-{ PauliInner }; (* obsolete *)
 
 { FockMatrix, FockMatrixForm }; (* obsolete *)
 { FockFourier, FockInverseFourier }; (* Obsolete *)
-
 
 { TwoLevelU, GrayTwoLevelU, TwoLevelDecomposition }; (* renamed *)
 { FromTwoLevelU }; (* obsolete *)
@@ -42,7 +37,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { VerifyOracle }; (* excised *)
 { ControlledU }; (* renamed *)
 { QuissoAdd, QuissoAddZ }; (* renamed *)
-{ Dirac }; (* OBSOLETE *)
 
 (**** </obsolete> ****)
 
@@ -107,7 +101,7 @@ Pauli[a_Integer, bc__Integer] := (
   Message[Q3General::changed, "Pauli",
     "The directions must be given in a list like Pauli[{k1,k2,...}]"];
   Pauli @ {a, bc}
- )
+)
 
 Rotation[phi_, S:(_?QubitQ|_?SpinQ), v:{_, _, _}, opts___?OptionQ] := (
   Message[Q3General::changed, Rotation,
@@ -180,77 +174,67 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 (**** <obsolete> ****)
 
+Affect::usage = "Affect is obsolete since v3.8.6 (2025-03-12). Just use Multiply."
+
 Affect[any___] := (
-  Message[Q3General::renamed, "Affect", "Multiply"];
+  Message[Q3General::obsolete, "Affect", "Multiply"];
   Apply[Multiply, Reverse @ {any}]
 )
 
+QuantumCircuitTrim::usage = "QuantumCircuitTrim has been renamed QuantumElements since v3.8.6 (2025-03-12)."
 QuantumCircuitTrim[any___] := (
   Message[Q3General::renamed, "QuantumCircuitTrim", "QuantumElements"];
   QuantumElements[any]
 )
+
+GottesmanInner::usage = "GottesmanInner has been renamed GottesmanDot."
 
 GottesmanInner[any___] := (
   Message[Q3General::renamed, "GottesmanInner", "GottesmanDot"];
   GottesmanDot[any]
 )
 
+NoisyWickSimulate::usage = "NoisyWickSimulate has been renamed WickSimulate."
+
 NoisyWickSimulate[any___] := (
   Message[Q3General::renamed, "NoisyWickSimulate", "WickSimulate"];
   WickSimulate[any]
 )
+
+WickRandomCircuit::usage = "WickRandomCircuit has been renamed RandomWickCircuitSimulate."
 
 WickRandomCircuit[any___] := (
   Message[Q3General::renamed, "WickRandomCircuit", "RandomWickCircuitSimulate"];
   RandomWickCircuitSimulate[any]
 )
 
+FlavorNone::usage = "FlavorNone has been renamed FlavorCap."
+
 FlavorNone[spec_] := (
   Message[Q3General::renamed, "FlavorNone", "FlavorCap"];
   FlavorCap[spec]
 )
+
+FlavorNoneQ::usage = "FlavorNoneQ has been renamed FlavorCapQ."
 
 FlavorNoneQ[spec_] := (
   Message[Q3General::renamed, "FlavorNoneQ", "FlavorCapQ"];
   FlavorCapQ[spec]
 )
 
-WeightedLog[args__] := (
-  Message[Q3General::renamed, "TimesDaggerLeft", "AbsSquare"];
-  AbsSquare[args]
-)
+TimesDaggerRight::usage = "TimesDaggerRight has been renamed AbsSquareLeft."
 
-WeightedLog[args__] := (
+TimesDaggerRight[args__] := (
   Message[Q3General::renamed, "TimesDaggerRight", "AbsSquareLeft"];
   AbsSquareLeft[args]
 )
+
+WeightedLog::usage = "WeightedLog has been renamed ShannonLog."
 
 WeightedLog[args__] := (
   Message[Q3General::renamed, "WeightedLog", "ShannonLog"];
   ShannonLog[2, args]
 )
-
-
-PauliDecompose[args__] := (
-  Message[Q3General::renamed, "PauliDecompose", "PauliCoefficients"];
-  PauliCoefficients[args]
-)
-
-PauliDecomposeRL[args__] := (
-  Message[Q3General::renamed, "PauliDecomposeRL", "PauliCoefficients"];
-  PauliCoefficients[args, "RaisingLowering" -> True]
-)
-
-PauliCompose[args__] := (
-  Message[Q3General::renamed, "PauliCompose", "PauliSeries"];
-  PauliSeries[args]
-)
-
-PauliComposeRL[args__] := (
-  Message[Q3General::renamed, "PauliComposeRL", "PauliSeries"];
-  PauliSeries[args]
-)
-
 
 TheState::usage = "TheState has been excised since 28 Feb 2024 (Q3 v3.3.3)."
 
@@ -261,22 +245,28 @@ TheOperator::usage = "TheOperator has been excised since 28 Feb 2024 (Q3 v3.3.3)
 TheOperator[___] := Message[Q3General::excised, "TheOperator"]
 
 
-PauliApply[args___] := Message[Q3General::excised, "PauliApply"]
+DefaultForm::usage = "DefaultForm is obsolete now. Use KetTrim instead."
 
 DefaultForm[args__] := (
   Message[Q3General::obsolete, "DefaultForm", "KetTrim"];
   KetTrim[args]
 )
 
+CountYoungTableaux::usage = "CountYoungTableaux has been renamed YoungTableauCount."
+
 CountYoungTableaux[args__] := (
   Message[Q3General::renamed, "CountYoungTableaux", "YoungTableauCount"];
   YoungTableauCount[args]
 )
 
+CountWeylTableaux::usage = "CountWeylTableaux has been renamed WeylTableauCount."
+
 CountWeylTableaux[args__] := (
   Message[Q3General::renamed, "CountWeylTableaux", "WeylTableauCount"];
   WeylTableauCount[args]
 )
+
+RaiseLower::usage = "RaiseLower has been renamed RaisingLoweringForm."
 
 RaiseLower[args___] := (
   Message[Q3General::renamed, "RaiseLower", "RaisingLoweringForm"];
@@ -418,52 +408,12 @@ KrausProduct[args___] := (
   HilbertSchmidtProduct[args]
 )
 
-PauliExpression::usage = "PauliExpression is obsolete now. Use ExpressionFor instead."
-
-PauliExpression[args___] := (
-  Message[Q3General::obsolete, "PauliExpression", "ExpressionFor"];
-  ExpressionFor[args]
-)
-
-
-PauliExpressionRL::usage = "PauliExpressionRL is obsolete now. Use ExpressionFor instead."
-
-PauliExpressionRL[args___] := (
-  Message[Q3General::obsolete, "PauliExpressionRL", "ExpressionFor"];
-  ExpressionFor[args]
-)
-
-PauliInner::usage = "PauliInner is obsolete. Use HilbertSchmidtProduct instead. Notice the difference in normalization -- PauliInner[m1, m2] = HilbertSchmidtProduct[m1,m2] / Length[m2] for matrices m1 and m2."
-
-PauliInner[m1_?MatrixQ, m2_?MatrixQ] := (
-  Message[Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
-  HilbertSchmidtProduct[m1, m2] / Length[m2]
-)
-
-PauliInner[v1_?VectorQ, v2_?VectorQ] := (
-  Message[Q3General::obsolete, PauliInner, HilbertSchmidtProduct];
-  HilbertSchmidtProduct[v1, v2]
-)
-
-PauliEmbed::usage = "PauliEmbed is obsolete; instead, use MatrixEmbed."
-
-PauliEmbed[args___] := (
-  Message[Q3General::obsolete, "PauliEmbed", "MatrixEmbed"];
-  MatrixEmbed[args]
-)
 
 WignerFunction::usage = "WignerFunction is now obsolete; use the build-in WignerD function."
 
 WignerFunction[j_, m_, n_, z_] := (
   Message[Q3General::obsolete, WignerFunction, WignerD];
   WignerD[{j, m, n}, z]
-)
-
-Dirac::usage = "Dirac is OBSOLETE. Instead, use Dyad."
-
-Dirac[expr__] := (
-  Message[Q3General::obsolete, Dirac, Dyad];
-  Dyad[expr]
 )
 
 ControlledU::usage = "ControlledU[...] is obsolete. Use Elaborate[ControlledGate[...]] instead."
@@ -493,7 +443,6 @@ FockMatrixForm::usage = "FockMatrixForm has been excised. Instead, use Map[Matri
 FockMatrixForm[args___] := Message[Q3General::excised, "FockMatrixForm"]
 
 (**** </obsolete> ****)
-
 
 
 (**** <NambuMatrix> ****)

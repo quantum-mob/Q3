@@ -1371,7 +1371,7 @@ WickGreenFunction[WickState[{_, cvr_?MatrixQ}, ___], kk:{___Integer}] := Module[
 (* for large data *)
 WickGreenFunction[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
   { progress = i = 0,
-    dim = Aggregate[N @ Dimensions @ data],
+    dim = Whole[N @ Dimensions @ data],
     dep = ArrayDepth[data]
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
@@ -1404,7 +1404,7 @@ WickOccupation[WickState[{_?NumericQ, cvr_?MatrixQ}, ___], kk:{___Integer}] := M
 (* for large data *)
 WickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := Module[
   { progress = i = 0,
-    dim = N @ Aggregate @ Dimensions[data],
+    dim = N @ Whole @ Dimensions[data],
     dep = ArrayDepth[data]
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
@@ -1420,7 +1420,7 @@ WickPurity::usage = "WickPurity[ws] returns the purity of Wick state ws."
 
 WickPurity[ws_WickState] := Module[
   { val = Eigenvalues[I*ws[[1, 2]]] },
-  Power[2, -FermionCount[ws]] * Sqrt[Aggregate[1 + val^2]]
+  Power[2, -FermionCount[ws]] * Sqrt[Whole[1 + val^2]]
 ]
 
 (**** </WickPurity> ****)
@@ -2366,7 +2366,7 @@ WickLogarithmicNegativity[obj_, {}, ___] = 0
 (* for large data *)
 WickLogarithmicNegativity[data_?ArrayQ, kk:{___Integer}, opts___?OptionQ] := Module[
   { progress = i = 0,
-    dim = Aggregate[N @ Dimensions @ data],
+    dim = Whole[N @ Dimensions @ data],
     dep = ArrayDepth[data]
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
@@ -2485,7 +2485,7 @@ WickEntanglementEntropy[any_, {}] = 0
 (* for large data *)
 WickEntanglementEntropy[data_?ArrayQ, kk:{___Integer}] := Module[
   { progress = i = 0,
-    dim = Aggregate[N @ Dimensions @ data],
+    dim = Whole[N @ Dimensions @ data],
     dep = ArrayDepth[data]
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
@@ -2553,7 +2553,7 @@ WickMutualInformation[cvr:WickCovariance[vv_?MatrixQ, ___], kk:{__Integer}] := M
 (* for large data *)
 WickMutualInformation[data_?ArrayQ, kk:{___Integer}] := Module[
   { progress = i = 0,
-    dim = Aggregate[N @ Dimensions @ data],
+    dim = Whole[N @ Dimensions @ data],
     dep = ArrayDepth[data]
   },
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];

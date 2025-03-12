@@ -21,7 +21,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { Ranking };
 { IntervalSize };
 
-{ Aggregate, TheDelta};
+{ Whole, TheDelta};
 { ReverseDot };
 
 (*{ Unless };*)
@@ -920,11 +920,11 @@ ReverseDot[any___] := Apply[Dot, Reverse @ {any}]
 
 (**** <TheDelta> ****)
 
-Aggregate::usage = "Aggregate[list] returns the multiplication of the elements in list.\nAggregate[list, n] multiplies all elements down to level n.\nAggregate[list, {n}] multiplies elements at level n.\nAggregate[list, {n1, n2}] multiplies elements at levels n1 through n2."
+Whole::usage = "Whole[list] returns the multiplication of the elements in list.\nWhole[list, n] multiplies all elements down to level n.\nWhole[list, {n}] multiplies elements at level n.\nWhole[list, {n1, n2}] multiplies elements at levels n1 through n2."
 
-Aggregate[data:(_List|_Association)] := Apply[Times, data]
+Whole[data:(_List|_Association)] := Apply[Times, data]
 
-Aggregate[data:(_List|_Association), spec_] := Apply[Times, data, spec]
+Whole[data:(_List|_Association), spec_] := Apply[Times, data, spec]
 
 
 TheDelta::usage = "TheDelta[a, b, \[Ellipsis]] is almost equivalent to KroneckerDelta[a, b, \[Ellipsis]] but threads through lists."
@@ -934,7 +934,7 @@ SetAttributes[TheDelta, Orderless];
 TheDelta[x_List, y__List] := With[
   { val = KroneckerDelta[x, y] },
   Switch[ val,
-    _KroneckerDelta, Aggregate[Thread @ val],
+    _KroneckerDelta, Whole[Thread @ val],
     _, val
   ]
 ]

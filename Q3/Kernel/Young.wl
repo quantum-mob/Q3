@@ -381,8 +381,8 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
      },
 
     While[ True,
-      columnIdx = Part[hashPosList, Aggregate @ hashPositionTupel];
-      chrVect[[columnIdx]] += Aggregate @ Apply[
+      columnIdx = Part[hashPosList, Whole @ hashPositionTupel];
+      chrVect[[columnIdx]] += Whole @ Apply[
         Multinomial,
         Map[
           Part[#, 2]&,
@@ -403,7 +403,7 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
        ];
       hashPositionTupel = Join[
         Take[hashPositionTupel, r-1],
-        {Aggregate @ Prime[supPartitionTupel[[r]]]},
+        {Whole @ Prime[supPartitionTupel[[r]]]},
         Prime @ Drop[pp,r]
        ]
      ]
@@ -705,7 +705,7 @@ HoldPattern @ Multiply[ pre___,
 
 (**** <KetPermute> ****)
 
-KetPermute::usage = "KetPermute[vec, perm] returns a new state vector where each Ket[\[Ellipsis]] in state vector vec is replaced by a new one with the logical values permuted according to permutation perm.\nKetPermute[vec, {q1, q2, ...}, perm] returns a new state vector permuting the values of the particles q1, q2, ... in each Ket[<|\[Ellipsis]|>] in state vector vec according to permutation perm.\nPermutation perm may be a group such as SymmetricGroup, PermutationGroup, AlternatingGroup, or a list of Cycles, where a list of state vectors are returned after applying all elements of the group or list."
+KetPermute::usage = "KetPermute[vec, perm] returns a new state vector where each Ket[\[Ellipsis]] in state vector vec is replaced by a new one with the logical values permuted according to permutation perm.\nKetPermute[vec, perm, {q1, q2, \[Ellipsis]}] returns a new state vector permuting the values of the particles q1, q2, \[Ellipsis] in each Ket[<|\[Ellipsis]|>] in state vector vec according to permutation perm.\nThe parameter perm may be a group such as SymmetricGroup, PermutationGroup, AlternatingGroup, or a list of Cycles, where a list of state vectors are returned after applying all elements of the group or list."
 
 $PermutationSpec = Alternatives[_?PermutationListQ, _?PermutationCyclesQ]
 
@@ -877,7 +877,7 @@ KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
 yngSignatureTo::usage = "yngSignatureTo[a,b] compares the rows of (not necessarily stadnard) Young Tableaux a and b. Useful to construct polytabloid."
 
 yngSignatureTo[a_?anyTableauQ, b_?anyTableauQ] := 
- Aggregate @ MapThread[SignatureTo, {a, b}]
+ Whole @ MapThread[SignatureTo, {a, b}]
 
 anyTableauQ::uage = "anyTableauQ[tb] returns True if tb is a legitimate (not necessarily standard) Young tableau."
 

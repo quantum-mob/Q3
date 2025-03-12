@@ -53,10 +53,8 @@ Power[E, Times[z_Complex, Pi, n_]] /; OddQ[n*z/I] = -1;
 (* Tip: TeXForm[expr] is equivalent to TeXForm[TraditionalForm[expr]].
    Use TeXForm[StandardForm[expr]] to use StandarfForm. *)
 
-$Star = Style["*", FontColor -> Red]
-
 Format @ HoldPattern @ Conjugate[expr_] := Interpretation[
-  SpeciesBox[expr, {}, {$Star}],
+  SpeciesBox[expr, {}, {"\[RawStar]"}],
   Conjugate[expr]
 ]
 

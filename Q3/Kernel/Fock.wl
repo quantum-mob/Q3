@@ -587,13 +587,13 @@ CreatorQ[HoldPattern @ Dagger[_?BosonQ]] = True
 CreatorQ[_?BosonQ] = False
 
 (* Fermions with Void vacuum *)
-AnnihilatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; !seaQ[op] = False
+AnnihilatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; Not[seaQ @ op] = False
 
-AnnihilatorQ[op_?FermionQ] /; !seaQ[op]  = True
+AnnihilatorQ[op_?FermionQ] /; Not[seaQ @ op]  = True
 
-CreatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; !seaQ[op] = True
+CreatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; Not[seaQ @ op] = True
 
-CreatorQ[op_?FermionQ] /; !seaQ[op] = False
+CreatorQ[op_?FermionQ] /; Not[seaQ @ op] = False
 
 (* Fermions with Sea vacuum.
    In this case, the Flavor indices should also be consistent with its Spin as
@@ -2293,7 +2293,7 @@ theBosonBasisChange[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
   { ii, jj, ij, ff },
   ii = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], pp}];
   jj = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], qq}];
-  Permanent[mat[[ii, jj]]]  / Sqrt[Aggregate @ Factorial @ pp] / Sqrt[Aggregate @ Factorial @ qq]
+  Permanent[mat[[ii, jj]]]  / Sqrt[Whole @ Factorial @ pp] / Sqrt[Whole @ Factorial @ qq]
 ]
 
 (**** </BosonBasisChange> ****)

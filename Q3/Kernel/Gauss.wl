@@ -43,7 +43,7 @@ Begin["`Private`"]
 
 (**** <Zero> ****)
 
-Zero::usage = "Zero[n] return an one-diemnsional array of lenth n with all elements zero.\nZero[{m, n, ...}] returns an m\[Times]n\[Times]\[Ellipsis] tensor with all elements zero."
+Zero::usage = "Zero[n] return an one-diemnsional array of lenth n with all elements zero.\nZero[{m, n, \[Ellipsis]}] returns an m\[Times]n\[Times]\[Ellipsis] tensor with all elements zero."
 
 Zero[n_Integer] := Zero[{n}]
 
@@ -54,7 +54,7 @@ Zero[mn:{__Integer}] := SparseArray[{}, mn]
 
 (**** <One> ****)
 
-One::usage = "One[n] or One[{n}] returns the n\[Times]n identiy matrix in a sparse array; cf. IdentityMatrix[n].\nOne[{m, n}, ...] returns the m\[Times]n\[Times]\[Ellipsis] pseudo-identity tensor, i.e., the tensor where the main diagonal elements are 1 and the other elements are all zero.\nOne[{m, n}, k] returns an m\[Times]n matrix with the elements on the \*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere."
+One::usage = "One[n] or One[{n}] returns the n\[Times]n identiy matrix in a sparse array; cf. IdentityMatrix[n].\nOne[{m, n, \[Ellipsis]}] returns the m\[Times]n\[Times]\[Ellipsis] pseudo-identity tensor, i.e., the tensor where the main diagonal elements are 1 and the other elements are all zero.\nOne[{m, n}, k] returns an m\[Times]n matrix with the elements on the \*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere."
 
 One[n_Integer] := One @ {n, n}
 
@@ -576,7 +576,7 @@ Tensorize[m_?MatrixQ, dim:{__Integer}] := Module[
     ee = dim[[2;; ;;2]],
     ll = Dimensions[m],
     ii },
-  If[ ll != {Aggregate @ oo, Aggregate @ ee},
+  If[ ll != {Whole @ oo, Whole @ ee},
     Message[Tensorize::badShape, ll, dim];
     Return[m]
   ];
@@ -597,7 +597,7 @@ Tensorize[m_?MatrixQ] := Module[
 
 Tensorize[v_?VectorQ, dim:{__Integer}] := Module[
   { l = Length[v] },
-  If[ l != Aggregate[dim],
+  If[ l != Whole[dim],
     Message[Tensorize::badShape, l, dim];
     Return[v]
   ];

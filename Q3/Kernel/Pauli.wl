@@ -86,7 +86,7 @@ TheBra::usage = "TheBra[...] is formally different from but equalt to TheKet[...
 TheBra[args__] := TheKet[args]
 
 TheKet::usage = "TheKet[0]={1,0}, TheKet[1]={0,1}.
-  TheKet[s1,s2,...] = TheKet[s1]\[CircleTimes]TheKet[s2]\[CircleTimes]...."
+  TheKet[{s1,s2,\[Ellipsis]}] = TheKet[s1]\[CircleTimes]TheKet[s2]\[CircleTimes]...."
 
 SyntaxInformation[TheKet] = {"ArgumentsPattern" -> {_}};
 
@@ -666,9 +666,9 @@ theKetFormatQ[_] = False
 
 (**** <Ket & Bra> ****)
 
-Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[s1, s2, \[Ellipsis]] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, Pauli, ThePauli, Operator."
+Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[{s1, s2, \[Ellipsis]}] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, Pauli, ThePauli, Operator."
 
-Bra::usage = "Bra[expr] := Dagger[Ket[expr]].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
+Bra::usage = "Bra[arg] := Dagger[Ket[arg]].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
 
 
 SetAttributes[{Ket, Bra}, NHoldAll]
@@ -1080,13 +1080,13 @@ KetFactor[expr_] := Module[
 ketSplit[ Ket[] ] := Ket[]
 
 ketSplit[ Ket[a_Association] ] := 
-  Aggregate @ Map[ Ket @* Association, Normal @ a ] /;
+  Whole @ Map[ Ket @* Association, Normal @ a ] /;
   Length[a] > 0
 
 ketSplit[ Bra[] ] := Bra[]
 
 ketSplit[ Bra[a_Association] ] := 
-  Aggregate @ Map[ Bra @* Association, Normal @ a ] /;
+  Whole @ Map[ Bra @* Association, Normal @ a ] /;
   Length[a] > 0
 
 ketSplit[expr_] := KetRegulate[expr] /. {
@@ -1330,7 +1330,7 @@ CircleTimes[vv__State] := Module[
   If[ Length[dd] > 0,
     Message[State::dupe, dd];
     ss = Union @@ ss;
-    Return @ State[Zero[Aggregate @ Dimension @ ss], ss, rr]
+    Return @ State[Zero[Whole @ Dimension @ ss], ss, rr]
   ];
   State[CircleTimes @@ Map[First, {vv}], Flatten @ ss, rr]
 ]
@@ -1475,7 +1475,7 @@ Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[P
 
 (**** <Pauli> ****)
 
-Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator. Pauli[4] and Pauli[5] represent the Pauli raising and lowering operator, respectively. Pauli[6] represents the Hadamard operator. Pauli[7], Pauli[8], Pauli[9] represent the quadrant, octant, hexadecant phase operator, respectively.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[n1, n2, ...] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
+Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator. Pauli[4] and Pauli[5] represent the Pauli raising and lowering operator, respectively. Pauli[6] represents the Hadamard operator. Pauli[7], Pauli[8], Pauli[9] represent the quadrant, octant, hexadecant phase operator, respectively.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[{n1, n2, \[Ellipsis]}] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
 
 Pauli::dot = "Different lengths of Pauli indices `` and ``."
 
@@ -1723,7 +1723,7 @@ ExpressionFor[vec_?VectorQ, S_?SpeciesQ] :=
   ExpressionFor[vec, {S}]
 
 ExpressionFor[vec_?VectorQ, ss:{__?SpeciesQ}] := Module[
-  { nL = Aggregate @ Dimension @ ss,
+  { nL = Whole @ Dimension @ ss,
     bs = Basis @ ss },
   
   If[ nL == Length[vec], Null,
@@ -1743,7 +1743,7 @@ ExpressionFor[mat_?MatrixQ, ss:{__?SpeciesQ}] := Module[
   { dd = Dimension @ ss,
     ff = Fermions @ ss,
     rr, qq, S, tsr, ops },
-  If[ Aggregate[dd] == Length[mat], Null,
+  If[ Whole[dd] == Length[mat], Null,
     Message[ExpressionFor::incmpt, mat, FlavorCap @ ss];
     Return[0]
   ];
@@ -2053,10 +2053,10 @@ Matrix[ z_?CommutativeQ op_, rest__ ] := z * Matrix[op, rest]
 Matrix[ z_?CommutativeQ, {} ] := z * One[2]
 
 Matrix[ z_?CommutativeQ, qq:{__?SpeciesQ} ] :=
-  z * One[Aggregate @ Dimension @ qq]
+  z * One[Whole @ Dimension @ qq]
 
 Matrix[ z_?CommutativeQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
-  z * One[{Aggregate @ Dimension @ ss, Aggregate @ Dimension @ tt}]
+  z * One[{Whole @ Dimension @ ss, Whole @ Dimension @ tt}]
 
 
 (* Dagger *)
@@ -2301,7 +2301,7 @@ ProperSystem[expr_, qq:{___?SpeciesQ}] := Module[
   
   rr = Complement[FlavorCap @ qq, ss];
   If[ rr == {}, Null,
-    val = Flatten @ Transpose @ ConstantArray[val, Aggregate @ Dimension @ rr];
+    val = Flatten @ Transpose @ ConstantArray[val, Whole @ Dimension @ rr];
     vec = Flatten @ Outer[CircleTimes, vec, Basis @ rr]
    ];
   {val, vec}
@@ -2422,7 +2422,7 @@ ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
   rr = Complement[FlavorCap @ qq, ss];
   If[ rr == {},
     Return[val],
-    Return @ Flatten @ Transpose @ ConstantArray[val, Aggregate @ Dimension @ rr]
+    Return @ Flatten @ Transpose @ ConstantArray[val, Whole @ Dimension @ rr]
   ]
 ]
 
@@ -3166,7 +3166,7 @@ Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
 Dyad /:
 Matrix[op:Dyad[a_Association, b_Association], ss:{__?SpeciesQ}] :=
   ( Message[Dyad::mtrx, InputForm @ op];
-    One[Aggregate @ Dimension @ ss]
+    One[Whole @ Dimension @ ss]
    ) /; Keys[a] != Keys[b]
 
 Dyad /:
@@ -3575,7 +3575,7 @@ SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
     ww, uu, vv },
   { ww, uu, vv } = SchmidtDecomposition[
     Matrix[expr, ab],
-    {Aggregate @ Dimension @ aa, Aggregate @ Dimension @ bb}
+    {Whole @ Dimension @ aa, Whole @ Dimension @ bb}
   ];
   { ww, uu . Basis[aa], vv . Basis[bb] }
 ] /; fKetQ[expr]
@@ -3965,7 +3965,7 @@ MatrixEmbed[any_, ss:{___?SpeciesQ}, ss_] = any
 MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
     new, idx },
-  new = CircleTimes[mat, One[Aggregate @ Dimension @ rmd]];
+  new = CircleTimes[mat, One[Whole @ Dimension @ rmd]];
   idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
   TensorFlatten @ Transpose[
     Tensorize[new, Riffle @@ Table[Dimension @ Join[ss, rmd], 2]],
@@ -3976,7 +3976,7 @@ MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
 MatrixEmbed[vec_?VectorQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
     new, idx },
-  new = CircleTimes[vec, UnitVector[Aggregate @ Dimension @ rmd, 1]];
+  new = CircleTimes[vec, UnitVector[Whole @ Dimension @ rmd, 1]];
   idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
   Flatten @ Transpose[
     ArrayReshape[new, Dimension @ Join[ss, rmd]],
@@ -4002,7 +4002,7 @@ MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
     rmd, new, idx },
   rmd = Complement[all, kk];
-  new = CircleTimes[mat, One[Aggregate @ Part[dd, rmd]]];
+  new = CircleTimes[mat, One[Whole @ Part[dd, rmd]]];
   idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
   TensorFlatten @ Transpose[
     Tensorize[new, Riffle @@ Table[Part[dd, Join[kk, rmd]], 2]],
@@ -4014,7 +4014,7 @@ MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
     rmd, new, idx },
   rmd = Complement[all, kk];
-  new = CircleTimes[vec, UnitVector[Aggregate @ Part[dd, rmd], 1]];
+  new = CircleTimes[vec, UnitVector[Whole @ Part[dd, rmd], 1]];
   idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
   Flatten @ Transpose[
     ArrayReshape[new, Part[dd, Join[kk, rmd]]],
@@ -4041,7 +4041,7 @@ RandomState[ss:{__?SpeciesQ}, spec___] := RandomState[FlavorCap @ ss, spec] /; N
 RandomState[ss:{__?SpeciesQ}] := First @ RandomState[ss, 1]
 
 RandomState[ss:{__?SpeciesQ}, n_Integer] := With[
-  { dim = Aggregate[Dimension @ ss] },
+  { dim = Whole[Dimension @ ss] },
   Basis[ss] . RandomIsometric[{dim, n}] /;
   If[ dim >= n, True,
     Message[RandomState::dim, dim];

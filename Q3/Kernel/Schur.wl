@@ -394,15 +394,15 @@ ReducedWigner[d_Integer,
     bb = PadRight[b, d-1] + (d-1) - Range[d-1];
 
     If[ k == 0,
-      x1 = Aggregate[aa[[j]] - bb];
-      y1 = Aggregate @ Delete[aa[[j]] - aa, j];
+      x1 = Whole[aa[[j]] - bb];
+      y1 = Whole @ Delete[aa[[j]] - aa, j];
       x2 = y2 = 1;
       ff = newSign[d-j],
       (* Else *)
-      x1 = Aggregate @ Delete[aa[[j]] - bb, k];
-      x2 = Aggregate @ Delete[bb[[k]] - aa + 1, j];
-      y1 = Aggregate @ Delete[aa[[j]] - aa, j];
-      y2 = Aggregate @ Delete[bb[[k]] - bb + 1, k];
+      x1 = Whole @ Delete[aa[[j]] - bb, k];
+      x2 = Whole @ Delete[bb[[k]] - aa + 1, j];
+      y1 = Whole @ Delete[aa[[j]] - aa, j];
+      y2 = Whole @ Delete[bb[[k]] - bb + 1, k];
       ff = newSign[k-j]
     ];
 
