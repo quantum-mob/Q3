@@ -459,7 +459,7 @@ AddGarnerPatterns[_?AnyFockOperatorQ]
 
 ParticleQ::usage = "ParticleQ[c] returns True if c is either a Bosonic or Fermionic operator (without Dagger on it); i.e., a normal particle distinguished from a Majorana Fermion, which is both particle and atni-particle."
 
-AnyParticleQ::usage = "AnyParticleQ[c] returns True if c is either a bosonic or fermionic operaor with or without Dagger on it."
+AnyParticleQ::usage = "AnyParticleQ[c] returns True if c is either a bosonic or fermionic operator with or without Dagger on it; and False otherwise."
 
 BosonQ::usage = "BosonQ[c] returns True if c is a bosonic operator (without Dagger on it)."
 

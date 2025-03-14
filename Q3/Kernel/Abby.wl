@@ -881,7 +881,7 @@ nameThrough[name_String] := With[
 nameThrough @ {Chop, Simplify, FullSimplify};
 
 
-ReplaceAllThrough::usage = "ReplaceAllThrough[expr, rules] applies ReplaceAll[ruels] through special objects such as Associatin and SparseArray in expr, which usually do not allow for access to internal data."
+ReplaceAllThrough::usage = "ReplaceAllThrough[expr, rules] applies ReplaceAll[ruels] through special objects such as Association and SparseArray in expr, which usually do not allow for access to internal data."
 
 ReplaceAllThrough[aa_Association, rules_] := ReplaceAll[rules] /@ aa
 
@@ -897,9 +897,12 @@ ReplaceAllThrough[aa_SparseArray, rules_] := With[
 ]
 
 ReplaceAllThrough[expr_, rules_] := ReplaceAll[
-  ReplaceAll[expr, rules],
-  { aa_Association :> ReplaceAllThrough[aa, rules],
-    aa_SparseArray :> ReplaceAllThrough[aa, rules] }
+  expr,
+  Join[
+    { aa_Association :> ReplaceAllThrough[aa, rules],
+      aa_SparseArray :> ReplaceAllThrough[aa, rules] },
+    rules
+  ]
 ]
 
 ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]

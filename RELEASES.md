@@ -1,9 +1,10 @@
 # Release Notes
 
-## 4.1.1
+## 4.1.2
 
-- Bug fix: KetVerify, Measurement (in Multiply)
+- Bug fix: KetVerify, Measurement (in Multiply), MultiplyPower
 - Renamed: QuantumCircuitTrim --> QuantumElements
+- Removed: HermitianConjugate (see System`HermitianConjugate)
 
 ## 4.1.0
 

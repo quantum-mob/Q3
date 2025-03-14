@@ -37,14 +37,16 @@ $::usage = "$ is a flavor index referring to the species itself."
   $FormatSpecies,
   $SubscriptDelimiter, $SuperscriptDelimiter };
 
-(* NOTE: Since Mathematica 13.1, these symbols are defined in the System` context: Antihermitian, Hermitian, HermitianConjugate. *)
+(* NOTE: Since Mathematica 13.1, these symbols are defined in the System` context: Antihermitian, Hermitian. *)
 { NonCommutative, NonCommutativeSpecies, NonCommutativeQ,
   CommutativeQ, AnticommutativeQ,
   Hermitian, HermitianQ,
   Antihermitian, AntihermitianQ };
 
-{ Dagger, System`HermitianConjugate = Dagger,
-  Topple, DaggerTranspose = Topple,
+(* NOTE: Usually, HermitianConjugate remains undefined, but after PacletBuild is executed, System`HermitianConjugate is defined somewhere. *)
+(* { System`HermitianConjugate = Dagger }; *)
+
+{ Dagger, Topple, DaggerTranspose = Topple,
   Canon, Tee, TeeTranspose };
 
 { Peel, Hood };
@@ -1124,7 +1126,7 @@ MultiplyPower[S_Symbol?QubitQ[i___, C[n_Integer]], m_Integer] := With[
 MultiplyPower[expr_, n:(_Integer|_Rational)] := With[
   { ss = Agents[expr] },
   ExpressionFor[MatrixPower[Matrix[expr, ss], n], ss]
-] /; Not @ FreeQ[expr, _?AgentQ] && FreeQ[expr, _?BosonQ]
+] /; Not @ FreeQ[expr, _?AgentQ] && FreeQ[expr, _?BosonQ] && FreeQ[expr, _?GrassmannQ]
 
 MultiplyPower[expr_, n:(_Integer|_Rational)] :=
   ExpressionFor @ MatrixPower[Matrix @ expr, n] /;
