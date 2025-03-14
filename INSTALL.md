@@ -51,7 +51,7 @@ PacletUninstall["QuantumMob/Q3"]
 
 You can download a paclet archive file, and install Q3 from it.
 
-1. Get a Wolfram Language Paclet file of Q3 from the [Releases](https://github.com/quantum-mob/Q3/releases). Each release has the "Assets" section, which includes a paclet archive file (with file extension ".paclet" such as "QuantumMob__Q3-4.0.5.paclet"), zip source file and tar.gz source file.
+1. Get a Wolfram Language Paclet file of Q3 from the [Releases](https://github.com/quantum-mob/Q3/releases). Each release has the "Assets" section, which includes a paclet archive file (with file extension ".paclet" such as "QuantumMob__Q3-4.1.2.paclet"), zip source file and tar.gz source file.
 
 2. Put it in one of the folders in the search path (see Mathematica built-in symbol `$Path` as well as function `SetDirectory`).
 
