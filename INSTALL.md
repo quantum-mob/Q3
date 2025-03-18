@@ -1,13 +1,13 @@
 # Installation Guide
 
-You can install Q3 in two methods: The first is based on the `paclet` system that has recently been introduced by Wolfram Research. It is not only fully automatic but also convenient to get updates later on. The other method is to download and copy the files to a proper folder -- just the traditional method.
+You can install Q3 in two methods: The first is based on the `paclet` mechanism that has recently been introduced. It is not only fully automatic but also convenient to get updates later on. The other method is to download and copy the files to a proper folder -- just the traditional method.
 
 ## Automatic Installation from Remote Server (recommended)
 
-Q3 supports the *Wolfram Languate Paclet* mechanism of Mathematica packages. It allows remote installation and update.
+Q3 supports the *Wolfram Languate Paclet* mechanism. It allows remote installation and update.
 
 To install Q3 remotely, please follow these steps:
-Copy the following code, and run it on your Mathematica front end (Notebook interface).
+Copy the code below, and run it on your Mathematica front end (Notebook interface).
 ```Mathematica
 Module[
   { ps },
@@ -22,7 +22,7 @@ Module[
 That's all!
 
 
-## Keeping Q3 Updated
+### Keeping Q3 Updated
 
 Once installed (using the automatic installation method), Q3 will automatically check for updates and install the newest update (if any). This feature has been introducted in v1.7.3. If you have an older version, you have to manually update Q3 to the most recent one (see the instruction below).
 
@@ -39,7 +39,7 @@ If you want to check for updates and install them manually, follow these instruc
   ```  
   You may like to give an option `ForceVersionInstall->True` to `Q3Update`. See the Help Documentation for `Q3Update` for more details.
 
-## Uninstall
+### Uninstall
 
 If you do not want Q3 any longer, then you can uninstall it by evaluating the following code:
 
