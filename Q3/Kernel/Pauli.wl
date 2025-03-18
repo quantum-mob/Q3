@@ -81,12 +81,12 @@ $symb = Unprotect[CircleTimes, CirclePlus, Ket, Bra]
 
 (**** <TheKet> ****)
 
-TheBra::usage = "TheBra[...] is formally different from but equalt to TheKet[...]."
+TheBra::usage = "TheBra[\[Ellipsis]] is formally different from but equalt to TheKet[\[Ellipsis]]."
 
 TheBra[args__] := TheKet[args]
 
 TheKet::usage = "TheKet[0]={1,0}, TheKet[1]={0,1}.
-  TheKet[{s1,s2,\[Ellipsis]}] = TheKet[s1]\[CircleTimes]TheKet[s2]\[CircleTimes]...."
+  TheKet[{s1,s2,\[Ellipsis]}] = TheKet[s1]\[CircleTimes]TheKet[s2]\[CircleTimes]\[Ellipsis]."
 
 SyntaxInformation[TheKet] = {"ArgumentsPattern" -> {_}};
 
@@ -217,7 +217,7 @@ ThePauli[1 -> 1] = ThePauli[11]
 
 (**** <KetRegulate> ****)
 
-theKetRegulate::usage = "theKetRegulate[assoc, {s1, s2, ...}] returns a new association with all default values assigned.\nSee also theKetTrim."
+theKetRegulate::usage = "theKetRegulate[assoc, {s1, s2, \[Ellipsis]}] returns a new association with all default values assigned.\nSee also theKetTrim."
 
 theKetRegulate[a_Association, ss:{___?SpeciesQ}] := With[
   { tt = Union[Keys @ a, FlavorCap @ ss] },
@@ -228,7 +228,7 @@ theKetRegulate[a_Association, ss:{___?SpeciesQ}] := With[
    2. It does not affect the fermion-permutation signature. *)
 
 
-KetRegulate::usage = "KetRegulate[expr] converts every Ket[...] and Bra[...] in expr into the fully logical form without dropping any element.\nKetRegulate[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, ....\nKetRegulate[expr, S] is quivalent to KetRegulate[expr, {S}].\nSee also KetTrim."
+KetRegulate::usage = "KetRegulate[expr] converts every Ket[\[Ellipsis]] and Bra[\[Ellipsis]] in expr into the fully logical form without dropping any element.\nKetRegulate[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, \[Ellipsis].\nKetRegulate[expr, S] is quivalent to KetRegulate[expr, {S}].\nSee also KetTrim."
 
 KetRegulate[expr_] := expr /;
   FreeQ[expr, Ket[_Association] | Bra[_Association]]
@@ -324,7 +324,7 @@ $KetGroupDelimiter = ";";
 $KetProductDelimiter = "\[CircleTimes]";
 
 
-SimpleForm::usage = "SimpleForm[expr] represents every Ket in expr in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {S1, ..., {S2, S3, ...}, ...}] splits each Ket into the form Ket @ Row @ {S1, ..., Ket[S2, S3, ...], ...}."
+SimpleForm::usage = "SimpleForm[expr] represents every Ket in expr in the simplest form dropping all subsystem indices.\nSimpleForm[expr, {s1, \[Ellipsis], {s2, s3, \[Ellipsis]}, \[Ellipsis]}] splits each Ket into the form Ket[{s1, \[Ellipsis], Ket[{s2, s3, \[Ellipsis]}], \[Ellipsis]}]."
 
 SimpleForm[expr_, ss_List] :=
   SimpleForm[expr, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
@@ -364,7 +364,7 @@ SimpleForm[expr_, gg_List] := expr /. {
 }
 
 
-theSimpleForm::usage = "theSimpleForm[ket, {s1, s2, ...}] converts ket into a simple form."
+theSimpleForm::usage = "theSimpleForm[ket, {s1, s2, \[Ellipsis]}] converts ket into a simple form."
 
 theSimpleForm[vec:Ket[_Association], gg_List] := With[
   { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}] },
@@ -379,7 +379,7 @@ theSimpleForm[vec:Ket[_Association], gg_List] := With[
 
 (**** <ProductForm> ****)
 
-ProductForm::usage = "ProductForm[expr] displays every Ket[...] in expr in the product form.\nProductForm[expr, {S1, ..., {S2,S3,...}, ...}] splits each Ket into the form Row[{Ket[S1], ..., Ket[S2,S3,...], ...}]."
+ProductForm::usage = "ProductForm[expr] displays every Ket[\[Ellipsis]] in expr in the product form.\nProductForm[expr, {s1, \[Ellipsis], {s2,s3,\[Ellipsis]}, \[Ellipsis]}] splits each Ket into the form Ket[{s1, \[Ellipsis]}] \[CircleTimes] Ket[{s2,s3,\[Ellipsis]}] \[CircleTimes] \[Ellipsis]]."
 
 ProductForm[expr_, ss_List] :=
   ProductForm[expr, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
@@ -423,7 +423,7 @@ theProductForm[vec:Ket[_Association], gg_List] := Row[
 
 (**** <SpinForm> ****)
 
-SpinForm::usage = "SpinForm[expr, {s1, s2, ...}] converts the values to \[UpArrow] or \[DownArrow] in every Ket[<|...|>] appearing in expr.\nIf the Species is a Qubit, SpinForm converts 0 to \[UpArrow] and 1 to \[DownArrow].\nIf the Species is a Spin, SpinForm converts 1/2 to \[UpArrow] and -1/2 to \[DownArrow]."
+SpinForm::usage = "SpinForm[expr, {s1, s2, \[Ellipsis]}] converts the values to \[UpArrow] or \[DownArrow] in every Ket[<|\[Ellipsis]|>] appearing in expr.\nIf the Species is a Qubit, SpinForm converts 0 to \[UpArrow] and 1 to \[DownArrow].\nIf the Species is a Spin, SpinForm converts 1/2 to \[UpArrow] and -1/2 to \[DownArrow]."
 
 SpinForm[expr_, a_List, b_List] :=
   SpinForm[expr, FlavorCap @ a, FlavorCap @ b] /;
@@ -666,7 +666,7 @@ theKetFormatQ[_] = False
 
 (**** <Ket & Bra> ****)
 
-Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[{s1, s2, \[Ellipsis]}] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] ....\nSee also Ket, TheKet, Bra, TheBra, State, Pauli, ThePauli, Operator."
+Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[{s1, s2, \[Ellipsis]}] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] \[Ellipsis].\nSee also Ket, TheKet, Bra, TheBra, State, Pauli, ThePauli, Operator."
 
 Bra::usage = "Bra[arg] := Dagger[Ket[arg]].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
 
@@ -823,7 +823,7 @@ KetRule[r_Rule] := r
 
 (**** <KetVerify> ****)
 
-KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|...|>] in expr."
+KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|\[Ellipsis]|>] in expr."
 
 KetVerify[Ket[a_Association]] := theKetVerify[a]
 
@@ -851,7 +851,7 @@ theKetTrim[any_Rule] = any
 theKetTrim[{} -> _] = Nothing (* fallback *)
 
 
-KetTrim::usage = "KetTrim[expr] converts every Ket[...] and Bra[...] in expr into the simplest form by dropping elements with default values.\nTo be compared with KetRegulate."
+KetTrim::usage = "KetTrim[expr] converts every Ket[<|\[Ellipsis]|>] and Bra[<|\[Ellipsis]|>] in expr into the simplest form by dropping elements with default values.\nTo be compared with KetRegulate."
 
 KetTrim[Ket[a_Association]] := Ket[theKetTrim @ a]
 
@@ -1127,7 +1127,7 @@ Dagger[expr_OTimes] := Map[Dagger, expr]
 
 (**** <OSlash> ****)
 
-OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measure[...] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
+OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measurement[\[Ellipsis]] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
 
 Format @ HoldPattern @ OSlash[a:(_Ket|_Bra), b:Times[__]] :=
   Interpretation[
@@ -1475,7 +1475,7 @@ Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[P
 
 (**** <Pauli> ****)
 
-Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator. Pauli[4] and Pauli[5] represent the Pauli raising and lowering operator, respectively. Pauli[6] represents the Hadamard operator. Pauli[7], Pauli[8], Pauli[9] represent the quadrant, octant, hexadecant phase operator, respectively.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[{n1, n2, \[Ellipsis]}] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], ... ."
+Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator. Pauli[4] and Pauli[5] represent the Pauli raising and lowering operator, respectively. Pauli[6] represents the Hadamard operator. Pauli[7], Pauli[8], Pauli[9] represent the quadrant, octant, hexadecant phase operator, respectively.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[{n1, n2, \[Ellipsis]}] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], \[Ellipsis]."
 
 Pauli::dot = "Different lengths of Pauli indices `` and ``."
 
@@ -1665,7 +1665,7 @@ HoldPattern @ Multiply[pre___, op_Pauli, more__Pauli, Shortest[post___]] :=
 
 (**** <ExpressionFor> ****)
 
-ExpressionFor::usage = "ExpressionFor[mat] returns the operator expression corresponding to the matrix representation mat.\nExpressionFor[mat, {s1, s2, ...}] returns the operator expression corresponding to the matrix representation mat and acting on the systems in {s1, s2, ...}."
+ExpressionFor::usage = "ExpressionFor[mat] returns the operator expression corresponding to the matrix representation mat.\nExpressionFor[mat, {s1, s2, \[Ellipsis]}] returns the operator expression corresponding to the matrix representation mat and acting on the systems in {s1, s2, \[Ellipsis]}."
 
 ExpressionFor::notls = "The matrix/vector `` is not representing an operator/state on a system of qubits."
 
@@ -1941,7 +1941,7 @@ theBlochSphere[OptionsPattern[{BlochSphere, Graphics3D}]] := {
 
 (**** <Basis> ****)
 
-Basis::usage = "Basis[n] constructs the standard tensor-product basis of a system of n unlabelled qubits.\nBasis[{dim1, dim2, ..., dimn}] constructs the standard tensor-product basis of a total of n unlabelled systems with the Hilbert space dimensions dim1, dim2, ..., respectively.\nBasis[q1, q2, ...] constructs the tensor product basis for the system consising of Species q1, q2, ...\nBasis[q1, {q2, q3}, ...] is equivalent to Basis[q1, q2, q3, ...].\nBasis[expr] finds the relevant systems from the expression expr and constructs the basis."
+Basis::usage = "Basis[n] constructs the standard tensor-product basis of a system of n unlabelled qubits.\nBasis[{dim1, dim2, \[Ellipsis], dimn}] constructs the standard tensor-product basis of a total of n unlabelled systems with the Hilbert space dimensions dim1, dim2, \[Ellipsis], respectively.\nBasis[q1, q2, \[Ellipsis]] constructs the tensor product basis for the system consising of Species q1, q2, \[Ellipsis]\nBasis[q1, {q2, q3}, \[Ellipsis]] is equivalent to Basis[q1, q2, q3, \[Ellipsis]].\nBasis[expr] finds the relevant systems from the expression expr and constructs the basis."
 
 Basis::incon = "Inconsistent Ket, Bra, or Pauli in ``."
 
@@ -2007,7 +2007,7 @@ TheMatrix @ Pauli[nn_List] := ThePauli @ nn
 
 (**** <Matrix> ****)
 
-Matrix::usage = "Matrix[expr, {a1, a2, ...}] constructs the matrix representation of the expression expr on the total system consisting of a1, a2, ....\nMatrix[expr] feagures out the subsystems involved in expr.\nMatrix[dyadic, {a1, a2, \[Ellipsis]}, {b1, b2, \[Ellipsis]}] is for the dyadic expression acting on {a1, a2, ...} from the right and on {b1, b2, ...} from the left."
+Matrix::usage = "Matrix[expr, {a1, a2, \[Ellipsis]}] constructs the matrix representation of the expression expr on the total system consisting of a1, a2, \[Ellipsis].\nMatrix[expr] feagures out the subsystems involved in expr.\nMatrix[dyadic, {a1, a2, \[Ellipsis]}, {b1, b2, \[Ellipsis]}] is for the dyadic expression acting on {a1, a2, \[Ellipsis]} from the right and on {b1, b2, \[Ellipsis]} from the left."
 
 Matrix::rmndr = "There remain some elements, ``, that are not specified for matrix representation."
 
@@ -2246,7 +2246,7 @@ MatrixIn[op_, aa_Association, bb_Association] := Module[
 
 (**** <ProperSystem> ****)
 
-ProperSystem::usage = "ProperSystem[expr] returns a list of {values, vectors} of the eigenvalues and eigenstates of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
+ProperSystem::usage = "ProperSystem[expr] returns a list of {values, vectors} of the eigenvalues and eigenstates of expr.\nProperSystsem[expr, {s1, s2, \[Ellipsis]}] regards expr acting on the system consisting of the Species {s1, s2, \[Ellipsis]}.\nThe operator expression may be in terms of either (but not both) Pauli[{\[Ellipsis]}] for unlabelled qubits or other labelled operators on Species."
 
 ProperSystem::mixed = "The operator `` contains the Pauli operators of unlabelled qubits as well as other labelled operators for Species."
 
@@ -2314,7 +2314,7 @@ ProperVectors::usage = "ProperVectors is an alias for " <>
     StandardForm
    ]
 
-ProperStates::usage = "ProperStates[expr] returns a list of the eigenstates of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
+ProperStates::usage = "ProperStates[expr] returns a list of the eigenstates of expr.\nProperSystsem[expr, {s1, s2, \[Ellipsis]}] regards expr acting on the system consisting of the Species {s1, s2, \[Ellipsis]}.\nThe operator expression may be in terms of either (but not both) Pauli[{\[Ellipsis]}] for unlabelled qubits or other labelled operators on Species."
 
 ProperStates::mixed = "The operator `` contains the Pauli operators of unlabelled qubits as well as other labelled operators for Species."
 
@@ -2371,7 +2371,7 @@ ProperStates[expr_, qq:{___?SpeciesQ}] := Module[
  ]
 
 
-ProperValues::usage = "ProperValues[expr] returns a list of the eigenvalues of expr.\nProperSystsem[expr, {s1, s2, ...}] regards expr acting on the system consisting of the Species {s1, s2, ...}.\nThe operator expression may be in terms of either (but not both) Pauli[...] for unlabelled qubits or other labelled operators on Species."
+ProperValues::usage = "ProperValues[expr] returns a list of the eigenvalues of expr.\nProperSystsem[expr, {s1, s2, \[Ellipsis]}] regards expr acting on the system consisting of the Species {s1, s2, \[Ellipsis]}.\nThe operator expression may be in terms of either (but not both) Pauli[{\[Ellipsis]}] for unlabelled qubits or other labelled operators on Species."
 
 ProperValues::mixed = "The operator `` contains the Pauli operators of unlabelled qubits as well as other labelled operators for Species."
 
@@ -2431,7 +2431,7 @@ ProperValues[expr_, qq:{___?SpeciesQ}] := Module[
 
 (**** <Parity> ****)
 
-Parity::usage = "Parity[op] represents the parity operator of the species op. For a particle (Boson or Fermion) op, it refers to the even-odd parity of the occupation number. For a Qubit, it refers to the Pauli-Z.\nParity[{a, b, ...}] representts the overall parity of species a, b, ...."
+Parity::usage = "Parity[op] represents the parity operator of the species op. For a particle (Boson or Fermion) op, it refers to the even-odd parity of the occupation number. For a Qubit, it refers to the Pauli-Z.\nParity[{a, b, \[Ellipsis]}] representts the overall parity of species a, b, \[Ellipsis]."
 
 AddElaborationPatterns[_Parity]
 
@@ -2461,7 +2461,7 @@ HoldPattern @ Multiply[pre___, a_Parity, b_Parity, post___] :=
   Multiply[pre, b, a, post] /; Not @ OrderedQ @ {a, b}
 
 
-ParityValue::usage = "ParityValue[state, {a, b, ...}] returns the parity eigenvalue \[PlusMinus]1 if state is a parity eigenstate of species {a,b,\[Ellipsis]} and 0 otherwise.\nParityValue[{a,b,\[Ellipsis]}] represents the operator form of ParityValue."
+ParityValue::usage = "ParityValue[state, {a, b, \[Ellipsis]}] returns the parity eigenvalue \[PlusMinus]1 if state is a parity eigenstate of species {a,b,\[Ellipsis]} and 0 otherwise.\nParityValue[{a,b,\[Ellipsis]}] represents the operator form of ParityValue."
 
 ParityValue[spec:(_?SpeciesQ|{___?SpeciesQ})] := 
   ParityValue[FlavorCap @ spec] /; Not[FlavorCapQ @ spec]
@@ -2501,9 +2501,9 @@ ParityValue[Ket[<||>], {}] = 1
 ParityValue[Ket[Vacuum], {}] = 1
 
 
-ParityEvenQ::usage = "ParityEvenQ[state_, {a, b, ...}] returns True if state (in a Ket expression) has a definite Even parity with respect to the systems a, b, .... Otherwise, False is returned.\nParityEvenQ[state] first finds all systems involved and tests the parity."
+ParityEvenQ::usage = "ParityEvenQ[state_, {a, b, \[Ellipsis]}] returns True if state (in a Ket expression) has a definite Even parity with respect to the systems a, b, \[Ellipsis]. Otherwise, False is returned.\nParityEvenQ[state] first finds all systems involved and tests the parity."
 
-ParityOddQ::usage = "ParityOddQ[state_, {a, b, ...}] returns True if state (in a Ket expression) has a definite Odd parity. Otherwise, False is returned.ParityOddQ[state] first finds all systems involved and tests the parity."
+ParityOddQ::usage = "ParityOddQ[state_, {a, b, \[Ellipsis]}] returns True if state (in a Ket expression) has a definite Odd parity. Otherwise, False is returned.ParityOddQ[state] first finds all systems involved and tests the parity."
 
 ParityEvenQ[ S_?SpeciesQ ][ expr_ ] := ParityEvenQ[expr, {S}]
 
@@ -2755,7 +2755,7 @@ TheEulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
 
 (**** <Rotation> ****)
 
-Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respectively, on a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, ...] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] ...\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], {x, y, z}, S] represents the rotation by angle \[Phi] around the axis {x, y, z} on qubit or spin S.\nRotation[\[Phi], S[i,\[Ellipsis],1]] is equivalent to Rotation[\[Phi], {1, 0, 0}, S[i,\[Ellipsis],$]].\nRotation[\[Phi], S[i,\[Ellipsis],2]] is equivalent to Rotation[\[Phi], {0, 1, 0}, S[i,\[Ellipsis],$]].\nRotation[\[Phi], S[i,\[Ellipsis],3]] is equivalent to Rotation[\[Phi], {0, 0, 1}, S[i,\[Ellipsis],$]]."
+Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respectively, on a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, \[Ellipsis]] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] \[Ellipsis]\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], {x, y, z}, S] represents the rotation by angle \[Phi] around the axis {x, y, z} on qubit or spin S.\nRotation[\[Phi], S[i,\[Ellipsis],1]] is equivalent to Rotation[\[Phi], {1, 0, 0}, S[i,\[Ellipsis],$]].\nRotation[\[Phi], S[i,\[Ellipsis],2]] is equivalent to Rotation[\[Phi], {0, 1, 0}, S[i,\[Ellipsis],$]].\nRotation[\[Phi], S[i,\[Ellipsis],3]] is equivalent to Rotation[\[Phi], {0, 0, 1}, S[i,\[Ellipsis],$]]."
 
 Rotation[_, 0] := Pauli[0]
 
@@ -3005,7 +3005,7 @@ PauliDot[ Bra[aa_List], Pauli[bb_List] ] := CircleTimes @@
 
 (**** <CircleTimes> ****)
 
-CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, ....\nWhen a, b, c, ... are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/CircleTimes\", \"paclet:Q3/ref/CircleTimes\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
+CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, \[Ellipsis].\nWhen a, b, c, \[Ellipsis] are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/CircleTimes\", \"paclet:Q3/ref/CircleTimes\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
 SetAttributes[CircleTimes, ReadProtected]
 
@@ -3368,7 +3368,7 @@ Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
 
 (**** <DyadForm> ****)
 
-DyadForm::usage = "DyadForm[expr,{s1,s2,..}] converts the operator expression expr to the form in terms of Dyad acting on the systems s1, s2, .... If the systems are not specified, then they are extracted from expr.\nDyadForm[mat,{s1,s2,...}] converts the matrix representation into an operator expresion in terms of Dyad acting on the systems s1, s2, ...."
+DyadForm::usage = "DyadForm[expr,{s1,s2,..}] converts the operator expression expr to the form in terms of Dyad acting on the systems s1, s2, \[Ellipsis]. If the systems are not specified, then they are extracted from expr.\nDyadForm[mat,{s1,s2,\[Ellipsis]}] converts the matrix representation into an operator expresion in terms of Dyad acting on the systems s1, s2, \[Ellipsis]."
 
 DyadForm[expr_] := RaisingLoweringForm[expr] /; Not @ FreeQ[expr, _Pauli]
 (* NOTE: DyaForm is pointless for Pauli expressions. *)
@@ -3501,7 +3501,7 @@ PauliSeries[aa_Association] :=
 
 (**** <SchmidtDecomposition> ****)
 
-SchmidtDecomposition::usage = "SchmidtDecomposition[v, {m, n}] returns the Schmidt decomposition of the pure state vector v of a bipartite system of dimensions m and n.\nSchmidtDecomposition[v, {d1, d2, ...}, {i1, i2, ...}, {j1, j2, ...}] returns the Schmidt decomposition of a pure state vector v for a system of multiple subsystems of dimensions d1, d2, .... The i1th, i2th, ... systems are grouped into one part and the j1th, j2th, ... subsystems are grouped into the other part."
+SchmidtDecomposition::usage = "SchmidtDecomposition[v, {m, n}] returns the Schmidt decomposition of the pure state vector v of a bipartite system of dimensions m and n.\nSchmidtDecomposition[v, {d1, d2, \[Ellipsis]}, {i1, i2, \[Ellipsis]}, {j1, j2, \[Ellipsis]}] returns the Schmidt decomposition of a pure state vector v for a system of multiple subsystems of dimensions d1, d2, \[Ellipsis]. The i1th, i2th, \[Ellipsis] systems are grouped into one part and the j1th, j2th, \[Ellipsis] subsystems are grouped into the other part."
 
 SchmidtDecomposition::baddim = "Incompatible dimensions `1` x `2` for a vector of length `3`."
 
@@ -3523,13 +3523,10 @@ SchmidtDecomposition[vec_?VectorQ, {m_Integer, n_Integer}] := Module[
   { Diagonal @ ww,
     Take[ Transpose @ uu, mn ],
     Take[ ConjugateTranspose @ vv, mn ]
-   }
- ] /; Length[vec] == m*n
-
-SchmidtDecomposition[vec_?VectorQ, {m_Integer, n_Integer}] := (
-  Message[SchmidtDecomposition::baddim, m, n, Length @ v];
-  {{1}, vec, {1}}
- )
+  }
+] /; If[ Length[vec] == m*n, True,
+  Message[SchmidtDecomposition::baddim, m, n, Length @ v]; False
+]
 
 SchmidtDecomposition[v_?VectorQ, ii:{__Integer}, jj:{__Integer}] :=
   SchmidtDecomposition[v, ConstantArray[2, Length[ii]+Length[jj]], ii, jj]
@@ -3545,20 +3542,20 @@ SchmidtDecomposition[
 
 
 SchmidtDecomposition[expr_, aa:{__Integer}, bb:{__Integer}] := Module[
-  { nn = Length @ First @ Cases[{expr}, _Ket, Infinity],
+  { nn = Length @ FirstCase[{expr}, Ket[v_List] -> v, Missing["NotFound"], Infinity],
     ww, uu, vv },
-  If[ nn == Length[aa] + Length[bb], Null,
+  If[ nn != Length[aa] + Length[bb],
     Message[SchmidtDecomposition::badspec, expr, aa, bb];
     Return @ {{1}, expr, {1}}
-   ];
+  ];
   
   {ww, uu, vv} = SchmidtDecomposition[
     Matrix[expr],
     ConstantArray[2, Length[aa] + Length[bb]],
     aa, bb
-   ];
+  ];
   { ww, ExpressionFor /@ uu, ExpressionFor /@ vv }
- ] /; fPauliKetQ[expr]
+] /; fPauliKetQ[expr]
 
 
 SchmidtDecomposition[expr_, a_?SpeciesQ, b_?SpeciesQ] := 
@@ -3580,6 +3577,10 @@ SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { ww, uu . Basis[aa], vv . Basis[bb] }
 ] /; fKetQ[expr]
 
+(**** </SchmidtDecomposition> ****)
+
+
+(**** <SchmidtForm> ****)
 
 SchmidtForm::usage = "SchmidtForm[\[Ellipsis]] is formally equivalent to SchmidtDecomposition[\[Ellipsis]], but returns the result in the form s1 Ket[u1]\[CircleTimes]Ket[v1] + s2 Ket[u2]\[CircleTimes]Ket[v2] + \[Ellipsis] keeping \[CircleTimes] unevaluated.\nSchmidtForm is for a quick overview of the Schmidt decomposition of the vector in question. For a more thorough analysis of the result, use SchmidtDecomposition."
 
@@ -3636,7 +3637,7 @@ SchmidtForm[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   ww . MapThread[ OTimes, {KetRegulate[uu, aa], KetRegulate[vv, bb]} ]
 ] /; fKetQ[expr]
 
-(**** </SchmidtDecomposition> ****)
+(**** </SchmidtForm> ****)
 
 
 (**** <PartialTranspose> ****)
@@ -3747,7 +3748,7 @@ LogarithmicNegativity[spec__] := Log[2, PartialTransposeNorm[spec]]
 
 (**** <PartialTrace> ****)
 
-PartialTrace::usage = "PartialTrace[m, {i,j,...}] takes the partial trace over the qubits i, j, ... and returns the resulting reduced matrix.\nPartialTrace[m, {m,n,...}, {i,j,...}] assumes a system of dimensions m, n, ..., takes the partial trace over the subsystems i, j, ..., and returns the resulting reduced matrix.\nPartialTrace[v, {i,j,...}] and PartialTrace[v, {m,n,...}, {i,j,...}] are the same but operate on the column vector v. Note that the result is a square matrix, i.e., the reduced density matrix, not a pure-state column vector any longer."
+PartialTrace::usage = "PartialTrace[m, {i,j,\[Ellipsis]}] takes the partial trace over the qubits i, j, \[Ellipsis] and returns the resulting reduced matrix.\nPartialTrace[m, {m,n,\[Ellipsis]}, {i,j,\[Ellipsis]}] assumes a system of dimensions m, n, \[Ellipsis], takes the partial trace over the subsystems i, j, \[Ellipsis], and returns the resulting reduced matrix.\nPartialTrace[v, {i,j,\[Ellipsis]}] and PartialTrace[v, {m,n,\[Ellipsis]}, {i,j,\[Ellipsis]}] are the same but operate on the column vector v. Note that the result is a square matrix, i.e., the reduced density matrix, not a pure-state column vector any longer."
 
 PartialTrace::nosubsys = "Some element of `` is not a subsystem."
 

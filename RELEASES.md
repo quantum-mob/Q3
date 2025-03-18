@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.1.3
+
+- An emergency bug fix in ScmidtDecomposition.
+
 ## 4.1.2
 
 - Bug fix: KetVerify, Measurement (in Multiply), MultiplyPower
