@@ -2,7 +2,7 @@
 
 ## 4.1.3
 
-- An emergency bug fix in ScmidtDecomposition.
+- An emergency bug fix in SchmidtDecomposition.
 
 ## 4.1.2
 
