@@ -3,6 +3,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
 
+{ AmplitudeEmbeddingGate,
+  BasisEmbeddingGate }; (* renamed 2025-03-19 v4.1.4 *)
 { Affect }; (* obsolete 2025-03-12 *)
 { QuantumCircuitTrim }; (* renamed 2025-03-12 *)
 { GottesmanInner }; (* renamed *)
@@ -173,6 +175,20 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 
 (**** <obsolete> ****)
+
+AmplitudeEmbeddingGate::usage = "AmplitudeEmbeddingGate has been renamed AmplitudeEncoding since v4.1.4 (2025-03-19)."
+
+AmplitudeEmbeddingGate[any___] := (
+  Message[Q3General::renamed, "AmplitudeEmbeddingGate", "AmplitudeEncoding"];
+  AmplitudeEncoding[any]
+)
+
+BasisEmbeddingGate::usage = "BasisEmbeddingGate has been renamed BasisEncoding since v4.1.4 (2025-03-19)."
+
+BasisEmbeddingGate[any___] := (
+  Message[Q3General::renamed, "BasisEmbeddingGate", "BasisEncoding"];
+  BasisEncoding[any]
+)
 
 Affect::usage = "Affect is obsolete since v3.8.6 (2025-03-12). Just use Multiply."
 

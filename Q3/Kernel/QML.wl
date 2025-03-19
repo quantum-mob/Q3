@@ -2,11 +2,8 @@
 
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
-{ BasisEmbedding,
-  BasisEmbeddingGate };
-
-{ AmplitudeEmbedding,
-  AmplitudeEmbeddingGate };
+{ BasisEncoding,
+  AmplitudeEncoding };
 
 { VertexEmbedding };
 
@@ -16,93 +13,78 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-(**** <BasisEmbedding> ****)
+(**** <BasisEncoding> ****)
 
-BasisEmbedding::usage = "BasisEmbedding[data, {s1,s2,\[Ellipsis]}] returns computational basis states encoding data."
+BasisEncoding::usage = "BasisEncoding[data, {s1,s2,\[Ellipsis]}] represents the gate sequence implementing the basis encoding of data."
 
-BasisEmbedding[vv:{__?BinaryQ}, ss:{__?QubitQ}] := 
-  Ket[ss -> PadRight[vv, Length @ ss]]
+BasisEncoding::len = "The lengths of `` and `` must be the same."
 
-BasisEmbedding[ss:{__?QubitQ}][vv:{__?BinaryQ}] := 
-  BasisEmbedding[vv, ss]
-
-
-BasisEmbeddingGate::usage = "BasisEmbeddingGate[data, {s1,s2,\[Ellipsis]}] represents the gate sequence implementing the basis embedding of data."
-
-BasisEmbeddingGate::len = "The lengths of `` and `` must be the same."
-
-BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
-  BasisEmbeddingGate[vv, FlavorCap @ ss] /;
+BasisEncoding[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
+  BasisEncoding[vv, FlavorCap @ ss] /;
   Not[FlavorCapQ @ ss]
 
-BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] := (
-  Message[BasisEmbeddingGate::len, vv, ss];
-  BasisEmbeddingGate[PadRight[vv, Length @ ss], ss]
- ) /; Length[vv] != Length[ss]
+BasisEncoding[vv:{__?BinaryQ}, ss:{__?QubitQ}] := (
+  Message[BasisEncoding::len, vv, ss];
+  BasisEncoding[PadRight[vv, Length @ ss], ss]
+) /; Length[vv] != Length[ss]
 
-BasisEmbeddingGate[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
+BasisEncoding[vv:{__?BinaryQ}, ss:{__?QubitQ}] :=
   Multiply @@ MapThrough[ss, vv]
     
-(**** </BasisEmbedding> ****)
+(**** </BasisEncoding> ****)
 
 
-(**** <AmplitudeEmbedding> ****)
+(**** <AmplitudeEncoding> ****)
 (* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
 
-AmplitudeEmbedding::usage = "AmplitudeEmbedding[data, {s1,s2,\[Ellipsis]}] returns a quantum state the amplitudes of which encode data on qubits s1, s2, \[Ellipsis]."
+AmplitudeEncoding::usage = "AmplitudeEncoding[data, {s1,s2,\[Ellipsis]}] represents the gate that implement the amplitude encoding of data into a quantum state."
 
-AmplitudeEmbedding[in_?VectorQ, ss:{__?QubitQ}] :=
-  Basis[ss] . PadRight[in, Power[2, Length @ ss]]
+AmplitudeEncoding::negative = "Some elements of `` is not real non-negative."
 
-
-AmplitudeEmbeddingGate::usage = "AmplitudeEmbedding[data, {s1,s2,\[Ellipsis]}] represents the gate that implement the amplitude embedding of data into a quantum state."
-
-AmplitudeEmbeddingGate::negative = "Some elements of `` is not real non-negative."
-
-AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] :=
-  AmplitudeEmbeddingGate[in, FlavorCap @ ss] /;
+AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] :=
+  AmplitudeEncoding[in, FlavorCap @ ss] /;
   Not[FlavorCapQ @ ss]
 
 
-AmplitudeEmbeddingGate /:
-Matrix[AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}], rest___] :=
-  Dot @@ Matrix[{ExpandAll @ AmplitudeEmbeddingGate[in, ss]}, rest]
+AmplitudeEncoding /:
+Matrix[AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}], rest___] :=
+  Dot @@ Matrix[{ExpandAll @ AmplitudeEncoding[in, ss]}, rest]
 
 
-AmplitudeEmbeddingGate /:
-Elaborate @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] :=
-  Elaborate @ ExpressionFor[Matrix[AmplitudeEmbeddingGate[in, ss], ss], ss]
+AmplitudeEncoding /:
+Elaborate @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] :=
+  Elaborate @ ExpressionFor[Matrix[AmplitudeEncoding[in, ss], ss], ss]
 
 
-AmplitudeEmbeddingGate /:
-ExpandAll @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] :=
-  Apply[QuantumCircuit, Expand @ Expand @ AmplitudeEmbeddingGate[in, ss]]
+AmplitudeEncoding /:
+ExpandAll @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] :=
+  Apply[QuantumCircuit, Expand @ Expand @ AmplitudeEncoding[in, ss]]
 
 
-AmplitudeEmbeddingGate /:
-Expand @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := Module[
-  { yy = theAmplitudeEmbeddingY[in, Length @ ss],
+AmplitudeEncoding /:
+Expand @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] := Module[
+  { yy = theAmplitudeEncodingY[in, Length @ ss],
     op, cc },
   cc = Table[Drop[ss, -k], {k, Length @ ss}];
   QuantumCircuit @@ Reverse @ Flatten @ MapThread[
     UniformlyControlledRotation,
     { cc, yy, Through[Reverse[ss][2]] }
-   ]
- ] /; AllTrue[in, NonNegative]
+  ]
+] /; AllTrue[in, NonNegative]
 
-AmplitudeEmbeddingGate /:
-Expand @ AmplitudeEmbeddingGate[in_?VectorQ, ss:{__?QubitQ}] := Module[
-  { yy = theAmplitudeEmbeddingY[in, Length @ ss],
-    zz = theAmplitudeEmbeddingZ[in, Length @ ss],
+AmplitudeEncoding /:
+Expand @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] := Module[
+  { yy = theAmplitudeEncodingY[in, Length @ ss],
+    zz = theAmplitudeEncodingZ[in, Length @ ss],
     op, cc },
   cc = Table[Drop[ss, -k], {k, Length @ ss}];
   QuantumCircuit @@ Reverse @ Flatten @ {
     MapThread[UniformlyControlledRotation, {cc, zz, Through[Reverse[ss][3]]}],
     MapThread[UniformlyControlledRotation, {cc, yy, Through[Reverse[ss][2]]}]
-   }
- ]
+  }
+]
 
-theAmplitudeEmbeddingY[in_?VectorQ, n_Integer] := Module[
+theAmplitudeEncodingY[in_?VectorQ, n_Integer] := Module[
   { dd, nn, ph },
   dd = PadRight[in, Power[2, n]];
   dd = Table[Partition[dd, Power[2, k]], {k, n}];
@@ -110,40 +92,41 @@ theAmplitudeEmbeddingY[in_?VectorQ, n_Integer] := Module[
   dd = Map[Norm, dd, {2}];
   nn = Map[Norm, nn, {2}];
   2 * ArcSin @ PseudoDivide[nn, dd]
- ]
+]
 
-theAmplitudeEmbeddingZ[in_?VectorQ, n_Integer] := Module[
+theAmplitudeEncodingZ[in_?VectorQ, n_Integer] := Module[
   { dd, nn, ph },
   dd = Arg @ PadRight[in, Power[2, n]];
   dd = Map[Total, Table[Partition[dd, Power[2, k-1]], {k, n}], {2}];
   dd = Partition[#, 2]& /@ dd;
   -Map[Apply[Subtract], dd, {2}] / Power[2, Range[n]-1]
- ]
+]
 
 
-AmplitudeEmbeddingGate /:
+AmplitudeEncoding /:
 Multiply[ pre___,
-  op:AmplitudeEmbeddingGate[_?VectorQ, {__?QubitQ}, ___?OptionQ],
+  op:AmplitudeEncoding[_?VectorQ, {__?QubitQ}, ___?OptionQ],
   in_Ket ] := With[
     { gg = {ExpandAll @ op} },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
-   ]
+  ]
 
 Multiply[ pre___,
-  op:AmplitudeEmbeddingGate[{__?QubitQ}, _, ___?OptionQ],
+  op:AmplitudeEncoding[{__?QubitQ}, _, ___?OptionQ],
   post___ ] :=
   Multiply[pre, Elaborate[op], post]
-(* NOTE: DO NOT put "AmplitudeEmbeddingGate /:". Otherwise, the above rule with
-   AmplitudeEmbeddingGate[...]**Ket[] is overridden. *)
+(* NOTE: DO NOT put "AmplitudeEncoding /:". Otherwise, the above rule with
+   AmplitudeEncoding[...]**Ket[] is overridden. *)
 
 
-AmplitudeEmbeddingGate /:
+AmplitudeEncoding /:
 ParseGate[
-  AmplitudeEmbeddingGate[_?VectorQ, ss:{__?QubitQ}, opts___?OptionQ],
+  AmplitudeEncoding[_?VectorQ, ss:{__?QubitQ}, opts___?OptionQ],
   more___?OptionQ ] :=
-  Gate[ss, "TargetShape" -> "CircleDot", opts, more]
+  Gate[ss, "Shape" -> "CircleDot", more, opts]
 
-(**** </AmplitudeEmbedding> ****)
+(**** </AmplitudeEncoding> ****)
+
 
 (**** <VertexEmbedding> ****)
 

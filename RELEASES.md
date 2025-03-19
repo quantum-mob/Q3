@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.1.4
+
+- Renamed: BasisEmbeddingGate --> BasisEncoding, AmplitudeEmbeddingGate --> AmplitudeEncoding.
+
 ## 4.1.3
 
 - An emergency bug fix in SchmidtDecomposition.

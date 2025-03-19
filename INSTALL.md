@@ -24,7 +24,7 @@ That's all!
 
 ### Keeping Q3 Updated
 
-Once installed (using the automatic installation method), Q3 will automatically check for updates and install the newest update (if any). This feature has been introducted in v1.7.3. If you have an older version, you have to manually update Q3 to the most recent one (see the instruction below).
+Once installed (using the automatic installation method), Q3 will automatically check for updates and install the newest update (if any). This feature has been introducted in Q3 v1.7.3. If you have an older version, you have to manually update Q3 to the most recent one (see the instruction below).
 
 If you want to check for updates and install them manually, follow these instructions:
 
