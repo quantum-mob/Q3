@@ -24,15 +24,17 @@ QuantumCircuit::ket = "`` is not a proper ket of the form Ket[<|...|>] or Produc
 
 QuantumCircuit::elm = "`` is not a quantum circuit element."
 
+SetAttributes[QuantumCircuit, Flat]
+
 
 PortIn::usage = "PortIn is a holder for input expression in QuantumCircuit.\nSee also PortOut."
 
 PortOut::usage = "PortOut is a holder for expected output expressions in QuantumCircuit. Note that the output expressions are just expected output and may be different from the actual output. They are used only for output label and ignored by ExpressionFor and Elaborate.\nSee also PortIn."
 
+SetAttributes[{PortOut, PortIn}, Flat]
+
 
 (**** <User Interface> ****)
-
-SetAttributes[{QuantumCircuit, PortOut, PortIn}, Flat]
 
 QuantumCircuit[rest:Except[_?qcKetQ].., Longest[vv__?qcKetQ]] :=
   QuantumCircuit[rest, PortOut[vv]]
@@ -136,14 +138,13 @@ ExpressionFor[qc_QuantumCircuit] := Elaborate[ qc ]
 QuantumCircuit /:
 Elaborate[qc_QuantumCircuit] := Module[
   { elm = QuantumElements[qc] },
-  Elaborate @ Apply[Multiply, Reverse @ elm]
+  (* Elaborate @ Apply[Multiply, Reverse @ elm] *)
+  Elaborate @ Apply[theCircuitMultiply, elm]
   (* Garner[ theCircuitMultiply @@ elm ] *)
 ]
+(* CHECK (2025-03-09 v4.1.1; Updated 2025-03-20 v4.1.4): For small or shallow circuits, Apply[Multiply, Reverse @ elm] would be sufficient and even faster. However, when the circuit gets deeper or larger, especially when there are many terms in each quantum circuit element, this method can be very slow. *)
 
 theCircuitMultiply::usage = "theCircuitMultiply[elm1, elm2, \[Ellipsis]] is a version of Multiply for quantum circuit elements elm1, elm2, \[Ellipsis]."
-(* CHECK (2025-03-09, v4.1.1): For small or shallow circuits, 
-  Apply[Multiply, Reverse @ elm] would be sufficient and even faster. However, when the circuit gets deeper or larger, this method used to be slower.
-  *)
 
 theCircuitMultiply[] = 1
 

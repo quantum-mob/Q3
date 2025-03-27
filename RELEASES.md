@@ -2,7 +2,8 @@
 
 ## 4.1.4
 
-- Renamed: BasisEmbeddingGate --> BasisEncoding, AmplitudeEmbeddingGate --> AmplitudeEncoding.
+- Renamed: BasisEmbeddingGate --> BasisEncoding, AmplitudeEmbeddingGate --> AmplitudeEncoding
+- Renamed stylesheets: Playbook.nb --> PlaybookDraft.nb, PlaybookNub.nb --> Playbook.nb
 
 ## 4.1.3
 

@@ -34,7 +34,10 @@ PacletObject[
         "Language" -> "English",
         "MainPage" -> "Guides/Q3"
       },
-      {"FrontEnd", "Prepend" -> True},
+      {
+        "FrontEnd",
+        "Prepend" -> True 
+      },
       {
         "Asset",
         "Root" -> "Asset/Images",
