@@ -592,7 +592,8 @@ HoldPattern @ fPauliKetQ[Multiply[__, Ket[{(0|1)..}]]] = True
 
 HoldPattern @ fPauliKetQ[z_?CommutativeQ expr_] := fPauliKetQ[expr]
 
-HoldPattern @ fPauliKetQ[Plus[terms__]] := AllTrue[KetChop @ {terms}, fPauliKetQ]
+HoldPattern @ fPauliKetQ[Plus[terms__]] :=
+  AllTrue[KetChop @ {terms}, fPauliKetQ]
 (* NOTE: KetChop is required since 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
 
 HoldPattern @ fPauliKetQ[expr_Times] := fPauliKetQ[Expand @ expr]
@@ -881,7 +882,10 @@ KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[Ima
 
 SetAttributes[KetChop, Listable]
 
-KetChop[any_, ___] := any /;FreeQ[any, _Ket]
+KetChop[any_, ___] := any /; FreeQ[any, _Ket]
+
+KetChop[any_, ___] := any /; 
+  Not @ FreeQ[any, HoldPattern @ Multiply[___, _Ket, _Bra, ___]]
 
 KetChop[expr_] := KetChop[expr, 1*^-10]
 
@@ -2038,7 +2042,7 @@ Matrix[ expr_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
 
 Matrix[expr_Plus, rest__] := TrigToExp @ ExpToTrig @ With[
   { new = KetChop @ expr },
-  If[ Head[new] === Plus, 
+  If[ Head[new] === Plus,
     Map[Matrix[#, rest]&, new],
     Matrix[new, rest]
   ]

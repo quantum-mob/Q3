@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.1.5
+
+- Bug fix: KetChop
+
 ## 4.1.4
 
 - Renamed: BasisEmbeddingGate --> BasisEncoding, AmplitudeEmbeddingGate --> AmplitudeEncoding
