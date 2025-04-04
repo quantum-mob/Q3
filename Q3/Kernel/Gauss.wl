@@ -1,6 +1,5 @@
 (* ::Package:: *)
 
-(* -*- mode:math -*- *)
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { Zero, One };
@@ -9,7 +8,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { UpperRightMatrix, LowerLeftMatrix };
 { AntisymmetricMatrix };
 
-{ ConditionNumber };
+{ MatrixConditionNumber };
 { CanonicalizeVector };
 { BasisComplete, BasisComplement };
 
@@ -39,7 +38,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-(**** <ConditionNumber> ****)
+(**** <MatrixConditionNumber> ****)
 
 (**** <Zero> ****)
 
@@ -72,15 +71,15 @@ One[{m_Integer, n_Integer}, k_Integer] :=
 (**** </One> ****)
 
 
-ConditionNumber::usage = "ConditionNumber[mat] returns the condition number of matrix mat."
+MatrixConditionNumber::usage = "MatrixConditionNumber[mat] returns the condition number of matrix mat."
 
-ConditionNumber[mat_?MatrixQ] := Module[
+MatrixConditionNumber[mat_?MatrixQ] := Module[
   {min, max},
   {min, max} = MinMax[SingularValueList @ mat];
   max/min
 ]
 
-(**** </ConditionNumber> ****)
+(**** </MatrixConditionNumber> ****)
 
 
 (**** <CanonicalizeVector> *****)

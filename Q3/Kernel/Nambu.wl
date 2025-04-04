@@ -1,3 +1,4 @@
+(* ::Package:: *)
 (* Tools for Nambu matrices *)
 
 BeginPackage["QuantumMob`Q3`", {"System`"}]

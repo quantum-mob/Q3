@@ -137,7 +137,7 @@ GrayControlledGate[qq:{_?QubitQ, __?QubitQ}, expr_] := Module[
   cn = CNOT @@@ Transpose[{dd, Rest @ cc}];
 
   FunctionExpand @ Riffle[cV, cn]
- ]
+]
 
 MutualComplement[a_, b_] := Union[Complement[a, b], Complement[b, a]]
 
@@ -162,7 +162,7 @@ GrayToBinary[gray_?VectorQ] := Module[
   k = Length[gray] - First[FirstPosition[gray, 1]];
   mask = Total @ Table[ShiftRight[gray, i], {i, 1, k}];
   Mod[gray + mask, 2]
- ]
+]
 
 
 GrayToInteger::usage = "GrayToInteger[gray] converts the Gray code gray to a decimal number."
@@ -206,7 +206,7 @@ GraySequence[1] = {0, 1}
 GraySequence[n_Integer] := Join[
   GraySequence[n-1],
   BitSet[Reverse @ GraySequence[n-1], n-1]
- ] /; n > 1
+] /; n > 1
 
 (**** </GraySequence> ****)
 
@@ -223,20 +223,20 @@ twoLevelDCMP[mat_?MatrixQ, k_Integer] := Module[
   If[mm == {}, Return @ UU];
   mm = Dot[ mm, Sequence @@ Reverse[Topple /@ Matrix /@ UU] ];
   Join[twoLevelDCMP[mm, k+1], UU]
- ]
+]
 
 twoLevelDCMP[vec_?VectorQ, k_Integer] := Module[
   { new, UU, U },
   {new, UU} = twoLevelDCMP[vec, k+1];
   {new, U}  = twoLevelDCMP[new, {k}];
   {new, Prepend[UU, U]}
- ] /; 1 <= k < Length[vec]-1
+] /; 1 <= k < Length[vec]-1
 
 twoLevelDCMP[vec_?VectorQ, k_Integer] := Module[
   {new, U},
   {new, U} = twoLevelDCMP[vec, {k}];
   {new, {U}}
- ] /; k >= Length[vec]-1
+] /; k >= Length[vec]-1
 
 twoLevelDCMP[vec_?VectorQ, {k_Integer}] := Module[
   { new = Take[vec, {k, k+1}],
@@ -252,13 +252,13 @@ twoLevelDCMP[vec_?VectorQ, {k_Integer}] := Module[
    } / nrm;
   new = ReplacePart[vec, {k -> nrm, k+1 -> 0}];
   {new, TwoLevelU[U, {k, k+1}, Length @ vec]}
- ] /; 1 <= k < Length[vec]
+] /; 1 <= k < Length[vec]
 
 twoLevelDCMP[vec_?VectorQ, {k_Integer}] := With[
   { z = Last @ vec },
   { ReplacePart[vec, k -> Abs @ z],
     TwoLevelU[DiagonalMatrix @ {1, z/Abs[z]}, {k-1, k}, k] }
- ] /; k == Length[vec]
+] /; k == Length[vec]
 
 
 
@@ -373,7 +373,7 @@ Expand @
     mask = Successive[grayCNOT[{#1, #2}, ss]&, Most @ gray];
     expr = grayCtrlU[Take[gray, -2], mat, ss];
     QuantumCircuit @@ Join[mask, {expr}, Reverse @ mask]
-   ] /; OrderedQ[ij]
+  ] /; OrderedQ[ij]
 
 
 grayCNOT::usage = "grayCNOT[{x, y}, {s1, s2, \[Ellipsis]}] construct the CNOT gate corresponding to transposition Cycles[{{x,y}}], where integers x and y are assumed to be in the Gray code; they are different in only one bit."
@@ -387,12 +387,12 @@ grayCNOT[pair:{_Integer, _Integer}, ss:{__?QubitQ}] := Module[
   vv = Part[IntegerDigits[First @ pair, 2, n], cc];
   cc = Part[ss, cc];
   CNOT[cc -> vv, tt]
- ]
+]
 
 grayCNOT[kk:{_Integer, _Integer, __Integer}, ss:{__?QubitQ}] := With[
   { mask = Successive[grayCNOT[{#1, #2}, ss]&, Most @ kk] },
   Join[mask, List @ grayCNOT[Take[kk, -2], ss], Reverse @ mask]
- ]
+]
 
 
 grayCtrlU::usage = "grayCtrlU[{x, y}, mat, {s1, s2, \[Ellipsis]}] construct the controlled-unitary gate corresponding to the two-level unitary matrix mat with rows and columns x and y. Here, x and y are supposed to be the Gray code."
@@ -412,7 +412,7 @@ grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
   vv = Part[IntegerDigits[First @ pair, 2, n], cc];
   cc = Part[ss, cc];
   ControlledGate[cc -> vv, op, "Label"->"U"]
- ]
+]
 
 (**** </GivensRotation/:Expand> *****)
 
@@ -431,13 +431,13 @@ GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] :=
 GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := (
   Message[GivensFactor::dim, mat, ss];
   { ActOn[1, ss] }
- ) /; Length[mat] != Power[2, Length @ ss]
+) /; Length[mat] != Power[2, Length @ ss]
 
 
 GivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := With[
   { gg = GivensFactor[mat] },
   Flatten @ Join[ {First @ gg}, Map[ExpressionFor[#, ss]&, Rest @ gg] ]
- ]
+]
 
 GivensFactor[mat_?SquareMatrixQ] := Module[
   { len = Length @ mat,
@@ -447,13 +447,13 @@ GivensFactor[mat_?SquareMatrixQ] := Module[
   Dagger @ Reverse @ Append[
     FoldPairList[theGivens, det * mat, pos] /. {Identity -> Nothing},
     det
-   ]
- ]
+  ]
+]
 
 GivensFactor[op_] := With[
   { ss = Qubits @ op },
   GivensFactor[Matrix[op, ss], ss]
- ]
+]
 
 
 theGivens::usage = "theGivens[...] represents each step of the Givens decomposition procedure in the Gray code basis, nullifying the jth column element of the ith row of mat using the (j-1)th column element."
@@ -472,7 +472,7 @@ theGivens[mat_?MatrixQ, {i_Integer, j_Integer}] :=
     (* Basis change to the Gray code basis. *)
     new = Matrix[two];
     {two, mat.new}
-   ]
+  ]
 
 (**** </GivensFactor> ****)
 
@@ -493,7 +493,7 @@ GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] :=
 GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := (
   Message[GrayGivensFactor::dim, mat, ss];
   { ActOn[1, ss] }
- ) /; Length[mat] != Power[2, Length @ ss]
+) /; Length[mat] != Power[2, Length @ ss]
 
 GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := Module[
   { len = Length[mat],
@@ -507,12 +507,12 @@ GrayGivensFactor[mat_?SquareMatrixQ, ss:{__?QubitQ}] := Module[
     FoldPairList[grayGivens[gry, ss], new, pos],
     If[Rationalize[det] == 1, Nothing, det]
    ]
- ]
+]
 
 GrayGivensFactor[op_] := With[
   { ss = Qubits @ op },
   GrayGivensFactor[Matrix[op, ss], ss]
- ]
+]
 
 
 grayGivens::usage = "grayGivens[...][...] represents each step of the Givens decomposition procedure in the Gray code basis, nullifying the jth column element of the ith row of mat using the (j-1)th column element."
@@ -530,11 +530,11 @@ grayGivens[gry_Cycles, ss:{__?QubitQ}][mat_?MatrixQ, {i_Integer, j_Integer}] :=
     cop = ControlledGate[
       ctr["Control"], 
       Elaborate @ ExpressionFor[new, ctr["Target"]]
-     ];
+    ];
     (* Basis change to the Gray code basis. *)
     new = Transpose @ Permute[Transpose @ Permute[Matrix[cop, ss], gry], gry];
     {cop, mat.new}
-   ]
+  ]
 
 
 grayTakens::usage = "Finds the minimal set of control qubits when nullifying the jth column element of the ith row using the (j-1)th column element."
@@ -551,19 +551,19 @@ grayTakens[{i_Integer, j_Integer}, ss:{__?QubitQ}] := Module[
     "Control" -> Thread[ss[[cc]] -> kk[[cc]]],
     "Target" -> ss[[p]],
     "Ordered" -> OrderedQ @ {kk[[p]], jj[[p]]}
-   ]
- ]
+  ]
+]
 
 
 findControls::usage = "The workhorce of grayTakens."
 
 findControls[{i_Integer, j_Integer}, ss_List] := Join[ {},
   findControls[{i, j}, Rest @ ss]
- ] /; j <= Power[2, Length[ss]-1]
+] /; j <= Power[2, Length[ss]-1]
 
 findControls[{i_Integer, j_Integer}, ss_List] := Join[ {First @ ss},
   findControls[{i, j} - Power[2, Length[ss]-1], Rest @ ss]
- ] /; i > Power[2, Length[ss]-1]
+] /; i > Power[2, Length[ss]-1]
 
 findControls[{i_Integer, j_Integer}, ss_List] := Module[
   { n = Length @ ss,
@@ -575,8 +575,8 @@ findControls[{i_Integer, j_Integer}, ss_List] := Module[
   If[i >= Power[2, n-p] + 1,
     Part[ss, FirstPosition[kk[[ff]], 1]],
     {}
-   ]
- ]
+  ]
+]
 
 (**** </GrayGivensFactor> ****)
 

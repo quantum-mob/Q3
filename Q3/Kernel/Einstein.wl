@@ -3,6 +3,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
 
+{ ConditionNumber }; (* renamed 2025-04-02 v4.1.5 *)
 { AmplitudeEmbeddingGate,
   BasisEmbeddingGate }; (* renamed 2025-03-19 v4.1.4 *)
 { Affect }; (* obsolete 2025-03-12 *)
@@ -175,6 +176,13 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 
 (**** <obsolete> ****)
+
+ConditionNumber::usage = "ConditionNumber has been renamed MatrixConditionNumber since v4.1.5 (2025-04-02)."
+
+ConditionNumber[any___] := (
+  Message[Q3General::renamed, "ConditionNumber", "MatrixConditionNumber"];
+  MatrixConditionNumber[any]
+)
 
 AmplitudeEmbeddingGate::usage = "AmplitudeEmbeddingGate has been renamed AmplitudeEncoding since v4.1.4 (2025-03-19)."
 

@@ -3,6 +3,7 @@
 ## 4.1.5
 
 - Bug fix: KetChop
+- Renamed: ConditionNumber --> MatrixConditionNumber
 
 ## 4.1.4
 
