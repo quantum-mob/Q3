@@ -9,7 +9,7 @@ PacletObject[
     "URL" -> "https://github.com/quantum-mob/Q3",
     "License" -> "GPL-3.0-only",
     "PublisherID" -> "QuantumMob",
-    "Version" -> "4.1.5",
+    "Version" -> "4.1.6",
     "WolframVersion" -> "13.1+",
     "Updating" -> "Automatic",
     "Loading" -> "Startup",

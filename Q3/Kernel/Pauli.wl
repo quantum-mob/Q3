@@ -3472,8 +3472,8 @@ thePauliCoeffsXY[mat_?SquareMatrixQ, n_Integer] := Module[
     {1, 0,  0, -1}
   } / 2;
   trs = CircleTimes @@ Table[trs, n];
-  KeyMap[(#-1)&] @ Association @ Most @ ArrayRules @ Chop @
-    ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]]
+  trs = ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]];
+  KeyMap[(#-1)&] @ Association[Most @ ArrayRules @ Chop @ trs]
 ]
 
 thePauliCoeffsRL[mat_?SquareMatrixQ, n_Integer] := Module[
@@ -3485,8 +3485,8 @@ thePauliCoeffsRL[mat_?SquareMatrixQ, n_Integer] := Module[
     {1, 0, 0,-1}/2
   };
   trs = CircleTimes @@ Table[trs, n];
-  trs = Association @ Most @ ArrayRules @ Chop @
-    ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]];
+  trs = ArrayReshape[trs . Flatten[Tensorize @ mat], Table[4, n]];
+  trs = Association[Most @ ArrayRules @ Chop @ trs];
   KeySort @ KeyReplace[trs, {1 -> 0, 2 -> 4, 3 -> 5, 4 -> 3}]
 ]
 
