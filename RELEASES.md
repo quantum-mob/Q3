@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.1.6
+
+- Small updates of help documents of some functions.
+
 ## 4.1.5
 
 - Bug fix: KetChop
