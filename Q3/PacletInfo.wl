@@ -6,15 +6,13 @@ PacletObject[
     "PrimaryContext" -> "QuantumMob`Q3`",
     "Description" -> "A symbolic quantum simulation framework on quantum information systems, quantum many-body systems, and quantum spin systems",
     "Creator" -> "Mahn-Soo Choi",
-    "URL" -> "https://github.com/quantum-mob/Q3",
-    "License" -> "GPL-3.0-only",
     "PublisherID" -> "QuantumMob",
-    "Version" -> "4.1.6",
+    "License" -> "GPL-3.0-only",
+    "Version" -> "4.1.7",
     "WolframVersion" -> "13.1+",
     "Updating" -> "Automatic",
     "Loading" -> "Startup",
     (* "Loading" -> "Automatic", *)
-    "Category" -> {"Physics", "Quantum Physics"},
     "Extensions" -> {
       {
         "Kernel",
@@ -24,9 +22,7 @@ PacletObject[
           "QuantumMob`Q3`Q3Assure",
           "QuantumMob`Q3`Q3CheckUpdate",
           "QuantumMob`Q3`Q3Info",
-          "QuantumMob`Q3`Q3Release",
-          "QuantumMob`Q3`Q3RemoteRelease",
-          "QuantumMob`Q3`Q3Update"
+          "QuantumMob`Q3`Q3Purge"
         }
       },
       {
@@ -55,12 +51,14 @@ PacletObject[
         }
       }
     },
+    "Category" -> {"Physics", "Quantum Physics"},
     "Keywords" -> {
       "quantum computation",
       "quantum information",
       "quantum many-body systems",
       "quantum spins"
     },
+    "URL" -> "https://github.com/quantum-mob/Q3",
     "Support" -> "quantum.mob21@gmail.com"
   |>
 ]

@@ -193,12 +193,17 @@ MultiplyKind[_NambuHermitian] = Fermion
 theWignerJordanNambu::usage = "theWignerJordanNambu[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation and creations operators under the Wigner-Joran transformation."
 
 theWignerJordanNambu[n_Integer] := Module[
-  { mm },
-  mm = Table[PadRight[Table[3, k-1], n], {k, n}] + 4*One[n];
-  mm = ThePauli /@ mm;
+  { mm = theWignerJordan[n] },
   SparseArray @ Join[mm, ConjugateTranspose /@ mm]
 ]
 
+theWignerJordan::usage = "theWignerJordan[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation operators under the Wigner-Joran transformation."
+
+theWignerJordan[n_Integer] := Module[
+  { mm },
+  mm = Table[PadRight[Table[3, k-1], n], {k, n}] + 4*One[n];
+  SparseArray @ Map[ThePauli, mm]
+]
 
 (**** <NambuUnitary> ****)
 

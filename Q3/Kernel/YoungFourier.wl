@@ -2,6 +2,12 @@
 
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
+{ YoungOGS, YoungOGSn,
+  FromOGS };
+
+{ YoungDualOGS, YoungDualOGSn,
+  FromDualOGS };
+
 { YoungFourierMatrix, YoungFourier };
 { YoungFourierBasis, YoungRegularBasis };
 { YoungNormalRepresentation };
@@ -11,6 +17,129 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { HarrowClebschGordanTransform };
 
 Begin["`Private`"]
+
+(**** <YoungOGS> ****)
+(* See also Kawano16a and Shwartz19a *)
+
+YoungOGS::usage = "YoungOGS[perm] returns the standard ordered generating system (OGS) canonical form of the symmetric group."
+
+YoungOGS[Cycles[{}]] = {0}
+
+YoungOGS[prm_Cycles] :=
+  theYoungOGS @ PermutationList[prm]
+
+YoungOGS[prm_Cycles, n_Integer] :=
+  theYoungOGS @ PermutationList[prm, n]
+
+YoungOGS[prm_?PermutationListQ] :=
+  theYoungOGS[prm]
+
+YoungOGS[prm_?PermutationListQ, n_Integer] := 
+  theYoungOGS @ PermutationList[prm, n]
+
+
+theYoungOGS[prm_List] := 
+  If[OrderedQ @ prm, {0}, {1}] /; Length[prm] == 2
+
+theYoungOGS[prm_List] := Module[
+  { n = Length[prm],
+    new = prm,
+    pow, pos },
+  pos = First @ FirstPosition[new, n];
+  pow = Mod[pos - n, n];
+  If[ pow > 0,
+    gnr = RotateLeft[Range @ n]; (* Cycles[{{1,2,...,k}}] *)
+    new = PermutationProduct[PermutationPower[gnr, pow], new];
+    pow = Mod[-pow, n]
+  ];
+  Append[theYoungOGS[Most @ new], pow] /; n > 2
+]
+
+
+YoungOGSn::usage = "YoungOGSn[prm] converts to integer the standard OGS canonical form corresponding to permutation prm."
+
+YoungOGSn[args__] := Module[
+  { ogs = YoungOGS[args],
+    fac, n },
+  n = 1 + Length[ogs];
+  fac = Range[2, n];
+  Dot[ogs, n! / fac!]
+]
+
+
+FromOGS::usage = "FromOGS[ogs] returns the permtuation corresponding to the standard OGS canonical form ogs."
+
+FromOGS[ogs_List] := Module[
+  { n = 1 + Length[ogs],
+    gg, pp },
+  gg = Table[Cycles @ {Range[k]}, {k, 2, n}];
+  pp = Thread @ PermutationPower[gg, ogs];
+  Apply[PermutationProduct, Reverse @ pp]
+]
+
+(**** </YoungOGS> ****)
+
+
+(**** <YoungDualOGS> ****)
+(* See also Kawano16a and Shwartz19a *)
+
+YoungDualOGS::usage = "YoungDualOGS[perm] returns the dual-standard ordered generating system (OGS) canonical form of the symmetric group."
+
+YoungDualOGS[Cycles[{}]] = {0}
+
+YoungDualOGS[prm_Cycles] :=
+  theYoungDualOGS @ PermutationList[prm]
+
+YoungDualOGS[prm_Cycles, n_Integer] :=
+  theYoungDualOGS @ PermutationList[prm, n]
+
+YoungDualOGS[prm_?PermutationListQ] :=
+  theYoungDualOGS[prm]
+
+YoungDualOGS[prm_?PermutationListQ, n_Integer] := 
+  theYoungDualOGS @ PermutationList[prm, n]
+
+
+theYoungDualOGS[prm_List] := 
+  If[OrderedQ @ prm, {0}, {1}] /; Length[prm] == 2
+
+theYoungDualOGS[prm_List] := Module[
+  { n = Length[prm],
+    new = prm,
+    pow },
+  pow = Mod[n - new[[n]], n];
+  If[ pow > 0,
+    gnr = RotateLeft[Range @ n]; (* Cycles[{{1,2,...,k}}] *)
+    new = PermutationProduct[new, PermutationPower[gnr, pow]];
+    pow = Mod[-pow, n]
+  ];
+  Append[theYoungDualOGS[Most @ new], pow] /; n > 2
+]
+
+
+YoungDualOGSn::usage = "YoungDualOGSn[prm] converts to integer the dual-standard OGS canonical form corresponding to permutation prm."
+
+YoungDualOGSn[args__] := Module[
+  { ogs = YoungDualOGS[args],
+    fac, n },
+  n = 1 + Length[ogs];
+  fac = Range[2, n];
+  Dot[ogs, n! / fac!]
+]
+
+
+FromDualOGS::usage = "FromDualOGS[ogs] returns the permtuation corresponding to the dual-standard OGS canonical form ogs."
+
+FromDualOGS[ogs_List] := Module[
+  { n = 1 + Length[ogs],
+    gg, pp },
+  gg = Table[Cycles @ {Range[k]}, {k, 2, n}];
+  pp = Thread @ PermutationPower[gg, ogs];
+  Apply[PermutationProduct, pp]
+]
+
+(**** </YoungDualOGS> ****)
+
 
 YoungFourierMatrix::usage = "YoungFourieMatrix[n] returns the matrix describing the Fourier transform over the symmetric group of degree n."
 
@@ -22,8 +151,8 @@ YoungFourierMatrix[n_Integer] := Module[
       (Sqrt[YoungTableauCount[#2]] *
           Topple[YoungNormalRepresentation[#2, #1]])&,
       elm, shp, 1 ] / Sqrt[Length @ elm]
-   ]
- ]
+  ]
+]
 
 
 (**** <YoungFourierBasis> ****)
@@ -38,7 +167,7 @@ YoungFourierBasis[n_Integer] := Module[
     1 ];
   val = Ket /@ List /@ GroupElements[SymmetricGroup @ n];
   AssociationThread[key -> val . mat]
- ]
+]
 
 (**** </YoungFourierBasis> ****)
 
@@ -55,7 +184,7 @@ YoungRegularBasis[n_Integer] := Module[
     Map[Tuples[YoungTableaux @ #, 2]&, YoungShapes @ n],
     1 ];
   AssociationThread[key -> val . Topple[mat]]
- ]
+]
 
 (**** </YoungRegularBasis> ****)
 
@@ -70,7 +199,7 @@ YoungNormalRepresentation[shape_YoungShape][op_Cycles] :=
 YoungNormalRepresentation[shape_YoungShape, op_Cycles] := Module[
   { bs = Ket /@ List /@ YoungTableaux[shape] },
   MatrixIn[op, bs]
- ]
+]
 
 (**** </YoungNormalRepresentation> ****)
 
@@ -93,8 +222,8 @@ YoungFourier[n_Integer][Ket[{op_Cycles}]] := With[
   Garner[
     Total @ Map[theYoungFourier[#, op]&, shp] /
       Sqrt[GroupOrder @ SymmetricGroup @ n]
-   ]
- ]
+  ]
+]
 
 theYoungFourier[shape_YoungShape, op_Cycles] :=
   Sqrt[YoungTableauCount @ shape] *
@@ -148,15 +277,15 @@ YoungClebschGordanTransform[Ket[a_?YoungTableauQ, b_?YoungTableauQ]] :=
     If[ m != n,
       Message[YoungClebschGordanTransform::mn, a, b];
       Return[0]
-     ];
+    ];
     op = Total[GroupElements @ SymmetricGroup @ n] /
       GroupOrder[SymmetricGroup @ n];
     Total @ Map[
       ( Sqrt[YoungTableauCount @ YoungShape @ #] *
           OSlash[Ket[#], op ** Ket[#, a, b]] )&,
       YoungTableaux[n]
-     ]
-   ]
+    ]
+  ]
 
 (**** </YoungClebschGordanTransform> ****)
 
@@ -183,7 +312,7 @@ HarrowClebschGordanTransform[Ket[a_?YoungTableauQ, b_?YoungTableauQ]] :=
     out = Collect[
       ReplaceAll[vec, Ket[p_, q_, rr__] -> Ket[q]*Ket[p, rr]],
       out, Garner] /. {Times -> OSlash}
-   ]
+  ]
 
 
 QFTG[z_?CommutativeQ expr_] := Garner[z * QFTG[expr]]
@@ -203,7 +332,7 @@ iQFTG[expr_Plus] := Garner@Map[iQFTG, expr]
 iQFTG[Ket[a_, b_, c_]] := CircleTimes[
   Ket[a] /. Normal[YoungRegularBasis@Total@YoungShape@b],
   Ket[b, c]
- ]
+]
 
 
 ControlledGamma[z_?CommutativeQ expr_] :=  Garner[z * ControlledGamma[expr]]

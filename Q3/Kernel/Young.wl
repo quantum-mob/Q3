@@ -46,7 +46,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { DominatesQ, Dominates, DominatedBy };
 
-{ PileYoungShape, BratteliDiagram };
+{ YoungShapePile, BratteliDiagram };
 
 { SpechtBasis, YoungInvariantBasis };
 
@@ -317,13 +317,19 @@ GroupClasses[SymmetricGroup[n_Integer], irr_?YoungShapeQ] :=
   SymmetricGroupClasses[irr] /; Total[irr] == n
 
 
-SymmetricGroupClasses::uasge = "SymmetricGroupClasses[n] returns an association of conjugacy classes of the symmetric group of degree n.\nEach key of the returned association refers to the cycle decomposition type of the permutations in the class, which in turn uniquelty corresponds to a partition of integer n."
+SymmetricGroupClasses::uasge = "SymmetricGroupClasses[n] returns an association of conjugacy classes of the symmetric group of degree n.\nEach key of the returned association refers to the 'cycle decomposition type' of the permutations in the class, which in turn uniquelty corresponds to a partition of integer n."
 
 SymmetricGroupClasses[n_Integer] := With[
   { elm = GroupElements[SymmetricGroup @ n] },
-  Reverse @ KeySort[GroupBy[elm, theIrreducibleLabel[n]], LexicographicOrder]
+  KeyMap[
+    YoungShape,
+    KeySort[
+      GroupBy[elm, theIrreducibleLabel[n]], 
+      LexicographicOrder
+    ]
+  ]
 ]
-  
+
 theIrreducibleLabel[n_Integer][Cycles[spec_List]] := With[
   { body = ReverseSort[Length /@ spec] },
   Join[body, Table[1, n-Total[body]]]
@@ -342,6 +348,9 @@ GroupClassSize[group_, g_] :=
 
 
 SymmetricGroupClassSize::usage="SymmetricGroupClassSize[class] returns the number of elements in the conjugacy class 'class' in SymmetricGroup[n].\nThe conjugacy class is specified by a partition of integer 'n'.\nThe inverse of SymmetricGroupClassSize[class] = GroupOrder[SymmetricGroup[n]] / SymmetricGroupCentralizerSize[class]; see, e.g., Sagan, The Symmetric Group (Springer, 2001) Section 1.1."
+
+SymmetricGroupClassSize[shape_YoungShape] :=
+  SymmetricGroupClassSize[First @ shape]
 
 SymmetricGroupClassSize[class_?YoungShapeQ] :=
   GroupOrder[SymmetricGroup @ Total @ class] /
@@ -616,7 +625,7 @@ Elaborate @ Permutation[cyc_?PermutationCyclesQ, ss:{__?SpeciesQ}] :=
   With[
     { bs = Basis @ ss },
     Elaborate @ Total @ Map[Dyad[KetPermute[#, cyc, ss], #, ss]&, bs]
-   ]
+  ]
 (* NOTE: Here, _?PermutationCyclesQ cannot be replaced by
    $PermutationSpec because of HoldPattern. *)
 
@@ -711,7 +720,7 @@ $PermutationSpec = Alternatives[_?PermutationListQ, _?PermutationCyclesQ]
 
 $PermutationGroups = Alternatives @@ Blank /@ {
   SymmetricGroup, AlternatingGroup, PermutationGroup, CyclicGroup
- }
+}
 
 anyPermutationSpecQ[spec:$PermutationSpec] := True
 
@@ -764,11 +773,11 @@ KetPermute[Ket[yy:{_YoungTableau, __YoungTableau}], cc_] :=
 
 (* for Pauli Kets *)
 
-KetPermute[Ket[ss__], spec:$PermutationSpec] :=
-  Ket @@ Permute[{ss}, spec]
+KetPermute[Ket[ss_List], spec:$PermutationSpec] :=
+  Ket @ Permute[ss, spec]
 
-KetPermute[Ket[ss__], group:$PermutationGroups] :=
-  Ket @@@ Permute[{ss}, group]
+KetPermute[Ket[ss_List], group:$PermutationGroups] :=
+  Ket /@ Permute[ss, group]
 
 
 (* for labelled Kets *)
@@ -777,20 +786,20 @@ KetPermute[v:Ket[_Association], spec:$PermutationSpec, ss:{__?SpeciesQ}] :=
   With[
     { vv = Permute[v @ ss, spec] },
     Ket[v, ss -> vv]
-   ]
+  ]
 
 KetPermute[v:Ket[_Association], spec:{$PermutationSpec..}, ss:{__?SpeciesQ}] :=
   Module[
     { vv = v[ss] },
     vv = Map[Permute[vv, #]&, spec];
     Map[ Ket[v, ss -> #]&, vv ]
-   ]
+  ]
 
 KetPermute[v:Ket[_Association], group:$PermutationGroups, ss:{__?SpeciesQ}] :=
   With[
     { vv = Permute[v @ ss, group] },
     Map[ Ket[v, ss -> #]&, vv ]
-   ]
+  ]
 
 
 (* multiple permutations *)
@@ -1014,15 +1023,15 @@ BratteliDiagram[n_Integer, opts : OptionsPattern[Graph]] := Module[
 ]
 
 brattelli[shape_?YoungShapeQ] := 
-  Map[UndirectedEdge[shape, #] &, PileYoungShape[shape]]
+  Map[UndirectedEdge[shape, #] &, YoungShapePile[shape]]
 
 brattelli[edges : {__UndirectedEdge}] := 
   Flatten @ Map[brattelli, Union[Last /@ edges]]
 
 
-PileYoungShape::usage = "PileYoungShape[shape] returns the list of new Young shapes resulting from adding a box to shape."
+YoungShapePile::usage = "YoungShapePile[shape] returns the list of new Young shapes resulting from adding a box to shape."
 
-PileYoungShape[shape_?YoungShapeQ] := Module[
+YoungShapePile[shape_?YoungShapeQ] := Module[
   { new = Append[YoungTrim[shape], 0],
     k },
   new = Table[

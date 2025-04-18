@@ -90,7 +90,7 @@ GroupGenerators @ PauliGroup[n_Integer] := Module[
   kk = ArrayPad[{kk}, {{0, n - 1}, {0, 0}}];
   kk = Transpose /@ NestList[RotateRight, kk, n - 1];
   Pauli /@ Flatten[kk, 1]
- ] /; n > 0
+] /; n > 0
 
 
 FullPauliGroup /:
@@ -107,21 +107,21 @@ GroupMultiplicationTable @ FullPauliGroup[n_Integer] := Module[
   { elm = GroupElements @ FullPauliGroup[n],
     mat },
   mat = Outer[Multiply, elm, elm];
-  Map[First @ FirstPosition[elm, #]&, mat, {2}]
- ]
+  ReplaceAll[mat, Thread[elm -> Range[Length @ elm]]]
+]
 
 FullPauliGroup /:
 GroupMultiplicationTable @ FullPauliGroup[ss:{__?QubitQ}] :=
-  GroupMultiplicationTable @ FullPauliGroup @ Length @ ss
-  
+  GroupMultiplicationTable[FullPauliGroup @ Length @ ss]
+
 
 PauliGroup /:
 GroupMultiplicationTable @ PauliGroup[n_Integer] := Module[
   { elm = GroupElements @ PauliGroup[n],
     mat },
   mat = Outer[Multiply, elm, elm] /. {_?CommutativeQ * op_ -> op};
-  Map[First @ FirstPosition[elm, #]&, mat, {2}]
- ]
+  ReplaceAll[mat, Thread[elm -> Range[Length @ elm]]]
+]
 
 PauliGroup /:
 GroupMultiplicationTable @ PauliGroup[ss:{__?QubitQ}] :=

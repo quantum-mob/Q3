@@ -260,12 +260,26 @@ ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := With[
 
 ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
   { dim = Flatten @ { OptionValue["Size"] },
+    hdr = OptionValue[TableHeadings],
     spc },
   dim = PadRight[dim, ArrayDepth @ mat, dim];
   spc = Thread @ {0, Boole @ Thread[Dimensions[mat] > dim]};
   dim = Thread[1 ;; UpTo /@ dim];
+  If[hdr === Automatic, hdr = Range /@ Take[Dimensions @ mat, 2]];
+  If[ Length[hdr] == 2,
+    hdr = ArrayPad[
+      hdr[[Sequence @@ Take[dim, 2]]],
+      Take[spc, 2],
+      "\[Ellipsis]"
+    ]
+  ];
   MatrixForm[
-    ArrayPad[IntegerChop @ Chop @ mat[[Sequence @@ dim]], spc, "\[Ellipsis]"],
+    ArrayPad[
+      IntegerChop @ Chop @ mat[[Sequence @@ dim]],
+      spc, 
+      "\[Ellipsis]"
+    ],
+    TableHeadings -> hdr,
     FilterRules[{opts}, Options[MatrixForm]]
   ]
 ]

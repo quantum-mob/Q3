@@ -9,6 +9,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   WickNullQ, WickSingleQ };
 { WickDensityMatrix };
 
+{ BCSState };
+
 { WickUnitary, WickHermitian, WickCovariance,
   RandomWickUnitary, RandomWickHermitian, RandomWickCovariance };
 { WickJump, WickJumpOdds,RandomWickJump };
@@ -37,6 +39,116 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 
 Begin["`Private`"] (* Fermionic quantum computation *)
+
+(**** <BCSState> ****)
+(* See Russomanno (2023) and Zanca and Santoro (2016). *)
+
+BCSState::usage = "BCSState[pair] represents a generalized BCS ground state characterized by the pairing matrix pair."
+
+BCSState::noBCS = "`` is orthogonal to the vacuum state and cannot be a generalized BCS state; see the Thouless theorem."
+
+BCSState::mixed = "A mixed state `` is encountered."
+
+BCSState /:
+MakeBoxes[ws:BCSState[{fac_?NumericQ, pair_?MatrixQ}, ___], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    BCSState, ws, None,
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ ws },
+      BoxForm`SummaryItem @ { "Prefactor: ", fac }
+    },
+    { BoxForm`SummaryItem @ { "Pairing matrix: ", ArrayShort @ pair }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+BCSState /:
+FermionCount[BCSState[{ff_?NumericQ, zz_?MatrixQ}, ___]] := Length[zz]
+
+BCSState /:
+Norm[in_BCSState] := Sqrt[NormSquare @ in]
+
+BCSState /:
+NormSquare[BCSState[{ff_?NumericQ, zz_?MatrixQ}, ___]] := With[
+  { mat = One[Dimensions @ zz] + zz.ConjugateTranspose[zz] },
+  Re[ Abs[ff]^2 * Sqrt[Det @ mat] ]
+]
+
+BCSState /:
+Normalize[BCSState[{_?NumericQ, zz_?MatrixQ}, rest___]] := With[
+  { nrm = Norm[BCSState @ zz] },
+  BCSState[{1/nrm, zz}, rest]
+]
+
+BCSState /:
+WickGreenFunction[BCSState[{_?NumericQ, zz_?MatrixQ}, ___]] := Module[
+  { id = One[Dimensions @ zz],
+    gg },
+  gg = Inverse[id + zz.ConjugateTranspose[zz]];
+  NambuGreen @ {gg, -gg.zz}
+]
+
+BCSState /:
+WickState[in_BCSState] := With[
+  { nrm = NormSquare[in],
+    grn = WickGreenFunction[in] },
+  WickState[{nrm, WickCovariance @ grn}, Options @ in]
+]
+
+BCSState /:
+ExpressionFor[in:BCSState[{_?NumericQ, _?MatrixQ}, ___], ss:{___?SpeciesQ}] :=
+  ExpressionFor[Matrix[in, ss], ss]
+
+BCSState /:
+Matrix[BCSState[{ff_?NumericQ, zz_?MatrixQ}, ___]] := Module[
+  { mm = ConjugateTranspose /@ theWignerJordan[Length @ zz],
+    op },
+  op = TensorContract[
+    Transpose[mm, {3, 1, 2}] . zz . mm,
+    {{2, 3}}
+  ] / 2;
+  SparseArray[ MatrixExp[op][[;; , 1]] ]
+]
+
+BCSState /:
+Matrix[in:BCSState[{_?NumericQ, _?MatrixQ}, ___], ss:{___?SpeciesQ}] :=
+  MatrixEmbed[Matrix @ in, Select[ss, FermionQ], ss]
+
+BCSState /: (* null state *)
+Matrix[BCSState[{0, zz_?MatrixQ}, ___]] :=
+  Zero[Length @ zz]
+
+
+(* canonicalization *)
+BCSState[pair_?MatrixQ, opts___?OptionQ] := BCSState[{1, pair}, opts]
+
+(* See also the Thouless theorem in Ring80a. *)
+BCSState[ws_WickState] := Module[
+  { n = FermionCount[ws],
+    ww = First @ WickCovariance[ws],
+    vv, id, gg, ff },
+  id = One[2*n];
+  vv = CirclePlus @@ ConstantArray[-I*ThePauli[2], n];
+  ww = ArrayFlatten @ {
+    {vv, id},
+    {-id, -ww}
+  };
+  ww = Quiet[Sqrt[Det @ ww] / 2^n, Det::luc];
+  If[ ZeroQ[ww],
+    Message[BCSState::noBCS, ws];
+    Return[$Failed]
+  ];
+  gg = WickGreenFunction[ws];
+  {gg, ff} = First[gg];
+  ff = -Inverse[gg].ff;
+  Normalize[BCSState @ ff]
+] /; If[ WickPureQ[ws], True,
+  Message[BCSState::mixed, ws];
+  False
+]
+
+(**** </BCSState> ****)
+
 
 (**** <WickState> ****)
 
@@ -1451,8 +1563,7 @@ WickDensityMatrix[grn_?MatrixQ] := Module[
   (* NOTE: N[...] is to avoid additional normaliztaion of uu and sorting. *)
   cc = Conjugate[uu] . cc; (* dressed modes *)
   cc = MapThread[Dot, {ConjugateTranspose /@ cc, cc}];
-  (* cc = MapThread[#1*id + (1-2*#1)*#2&, {gg, cc}]; *)
-  cc = gg . id + (1-2gg) . cc;
+  cc = MapThread[#1*id + (1-2*#1)*#2&, {gg, cc}];
   Dot @@ cc
 ] /; If[ MatrixQ[grn, NumericQ], True,
   Message[WickDensityMatrix::num];

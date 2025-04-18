@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.1.7
+
+- New: BCSState
+
 ## 4.1.6
 
 - Small updates of help documents of some functions.
