@@ -1,8 +1,13 @@
 # Release Notes
 
+## 4.1.8
+
+- New: YoungRegularRepresentation
+
 ## 4.1.7
 
 - New: BCSState
+- Update: Help document of WickState (about convex linear combination)
 
 ## 4.1.6
 

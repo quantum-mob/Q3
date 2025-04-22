@@ -10,7 +10,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { YoungFourierMatrix, YoungFourier };
 { YoungFourierBasis, YoungRegularBasis };
-{ YoungNormalRepresentation };
+{ YoungNormalRepresentation,
+  YoungRegularRepresentation };
 
 { YoungClebschGordanTransform,
   YoungClebschGordan };
@@ -191,7 +192,7 @@ YoungRegularBasis[n_Integer] := Module[
 
 (**** <YoungNormalRepresentation> ****)
 
-YoungNormalRepresentation::usage = "YoungNormalRepresentation[shape] represents the homomorphism from the group to the matrix representation.\nSee also SpechtBasis."
+YoungNormalRepresentation::usage = "YoungNormalRepresentation[shape] represents the homomorphism from the symmetric group to the matrix representation.\nSee also SpechtBasis."
 
 YoungNormalRepresentation[shape_YoungShape][op_Cycles] :=
   YoungNormalRepresentation[shape, op]
@@ -202,6 +203,24 @@ YoungNormalRepresentation[shape_YoungShape, op_Cycles] := Module[
 ]
 
 (**** </YoungNormalRepresentation> ****)
+
+
+(**** <YoungRegularRepresentation> ****)
+
+YoungRegularRepresentation::usage = "YoungRegularRepresentation[n] represents the left regular representation of the symmetric group of degree n."
+
+YoungRegularRepresentation[n_Integer] :=
+  YoungRegularRepresentation[SymmetricGroup @ n]
+
+YoungRegularRepresentation[grp_SymmetricGroup][op_Cycles] := Module[
+  { gmt = Transpose[GroupMultiplicationTable @ grp],
+    elm = GroupElements[grp],
+    k },
+  k = First @ FirstPosition[elm, op];
+  Transpose @ PermutationMatrix[gmt[[k]], TargetStructure -> "Sparse"]
+]
+
+(**** </YoungRegularRepresentation> ****)
 
 
 (**** <YoungFourier> ****)

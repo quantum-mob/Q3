@@ -328,7 +328,10 @@ RSKMap::usage = "RSKMap[{{a1, a2, ...}, {b1, b2, ...}}] returns {p, q}, where p 
 RSKMap[kk:{__Integer}] := RSKMap @ {Range[Length @ kk], kk}
 
 RSKMap[{aa:{__Integer}, bb:{__Integer}}] :=
-  Fold[rsk, {{}, {}}, Transpose @ {aa, bb}]
+  Map[
+    YoungTableau,
+    Fold[rsk, {{}, {}}, Transpose @ {aa, bb}]
+  ]
 
 
 rsk[{{}, {}}, {a_Integer, b_Integer}] := {{{a}}, {{b}}}
@@ -339,10 +342,10 @@ rsk[{p_?YoungTableauQ, q_?WeylTableauQ}, {a_Integer, b_Integer}] :=
     {pp, qq, aa, bb} = rowInsert[First @ p, First @ q, a, b];
     If[ bb == 0,
       Return @ {Prepend[Rest @ p, pp], Prepend[Rest @ q, qq]}
-     ];
+    ];
     {ppp, qqq} = rsk[{Rest @ p, Rest @ q}, {aa, bb}];
     { Prepend[ppp, pp], Prepend[qqq, qq] }
-   ]
+  ]
 
 
 rowInsert[{}, {}, a_Integer, b_Integer] := {{a}, {b}, 0, 0}
@@ -355,7 +358,7 @@ rowInsert[p:{__Integer}, q:{__Integer}, a_Integer, b_Integer] := Module[
   {j},
   j = First @ FirstPosition[Thread[q > b], True];
   {p, ReplacePart[q, j -> b], a, q[[j]]}
- ]
+]
 
 (**** </RSKMap> ****)
 
