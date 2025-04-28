@@ -327,8 +327,7 @@ RSKMap::usage = "RSKMap[{{a1, a2, ...}, {b1, b2, ...}}] returns {p, q}, where p 
 
 RSKMap[kk:{__Integer}] := RSKMap @ {Range[Length @ kk], kk}
 
-RSKMap[{aa:{__Integer}, bb:{__Integer}}] :=
-  Map[
+RSKMap[{aa:{__Integer}, bb:{__Integer}}] := Map[
     YoungTableau,
     Fold[rsk, {{}, {}}, Transpose @ {aa, bb}]
   ]
