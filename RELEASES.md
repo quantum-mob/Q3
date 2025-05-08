@@ -3,6 +3,8 @@
 ## 4.1.8
 
 - New: YoungRegularRepresentation
+- Bug fix: HouseholderMatrix
+- Modified: WickMesaurement
 
 ## 4.1.7
 

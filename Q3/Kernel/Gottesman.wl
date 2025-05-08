@@ -165,7 +165,7 @@ FullPauliGroupElements[spec:(_Integer|{__?QubitQ}), k_Integer] :=
 FullPauliGroupElements[spec:(_Integer|{__?QubitQ}), kk:{__Integer}] :=
   Module[
     { gn = PauliGroupOrder[spec],
-      ff = {1, -1, I, -I},
+      ff = {1, I, -1, -I},
       qq, rr },
     qq = Quotient[kk-1, gn] + 1;
     rr = Mod[kk-1, gn] + 1;

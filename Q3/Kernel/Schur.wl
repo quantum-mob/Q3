@@ -421,6 +421,7 @@ newSign[x_] := Sign[x]
 
 
 (**** <ClebschGordanX> ****)
+(* See Louck70a and Louck08a. *)
 
 CleschGordanX::usage = "ClebschGordanX[in, s, out] or ClebschGordanX[{in, s}, out] returns the extended Clebsch-Gordan coefficient of Gelfand basis state Ket[out] in terms of tensor product of Gelfand state Ket[in] and Ket[s]. Parameters out and in are specified by Gelfand patterns."
 

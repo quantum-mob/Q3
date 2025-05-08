@@ -401,11 +401,12 @@ theHouseholderMatrix[vec_?VectorQ] :=
 theHouseholderMatrix[vec_?VectorQ] := Module[
   { new = -vec,
     fac = Norm[vec],
-    phs = First[vec] / Abs[First @ vec] },
+    phs = Exp[I * Arg[First @ vec]] },
   fac *= phs;
   new[[1]] += fac;
   new = Normalize[new];
-  (One[Length @ vec] - 2*KroneckerProduct[Conjugate @ new, new]) * Conjugate[phs]
+  new = One[Length @ vec] - 2*KroneckerProduct[Conjugate @ new, new];
+  new * Conjugate[phs]
 ]
 
 theHouseholderMatrix[vv_?MatrixQ] :=

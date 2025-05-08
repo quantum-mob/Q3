@@ -1079,6 +1079,7 @@ WickMeasurement::odd = "The second dimension of the input matrix `` is odd: ``."
 
 WickMeasurement::dressed = "A vector of coefficients `` cannot describe a proper dressed Dirac fermion mode."
 
+
 WickMeasurement /:
 MakeBoxes[msr:WickMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
   {m, n},
@@ -1095,15 +1096,22 @@ MakeBoxes[msr:WickMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
   ]
 ]
 
-Readout[WickMeasurement[op_]] := Readout[op]
+Readout[WickMeasurement[m_?MatrixQ, ___]] := 
+  Readout[First @ m] /; Length[m] == 1
+
+Readout[WickMeasurement[m_?MatrixQ, ___]] := 
+  Map[Readout, m]
+
 
 (* canonicalization *)
 WickMeasurement[k_Integer, n_Integer, rest___] :=
   WickMeasurement[{k}, n, rest]
 
 (* canonicalization *)
-WickMeasurement[kk:{__Integer}, n_Integer, rest___] :=
-  WickMeasurement @ NambuMeasurement @ One[{n, 2n}]
+WickMeasurement[kk:{__Integer}, n_Integer, rest___] := With[
+  { mm = One[{n, 2*n}] },
+  WickMeasurement @ NambuMeasurement @ mm[[kk]]
+]
 
 (* canonicalization *)
 WickMeasurement[mat_?MatrixQ, rest___] :=
@@ -1150,19 +1158,6 @@ MultiplyKind[_WickMeasurement] = Fermion
 
 WickMeasurement /:
 Multiply[pre___, msr_WickMeasurement, ws_WickState] := Multiply[pre, msr @ ws]
-
-
-WickMeasurement[k_Integer][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
-  {aa, bb, new},
-  {aa, bb} = WickMeasurementKernel[k, Length[cvr]/2];
-  new = theWickMeasurement[{aa, bb}, cvr];
-  $MeasurementOut[k] = $MeasurementOut[0];
-  KeyDrop[$MeasurementOut, 0];
-  WickState[{1, new}, rest]
-]
-
-WickMeasurement[kk:{___Integer}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] :=
-  Fold[#2[#1]&, in, WickMeasurement /@ kk]
 
 
 (* See, e.g., Gallier (2001) for the Cartan-Dieudonn\[EAcute] theorem. *)

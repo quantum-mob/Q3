@@ -72,6 +72,29 @@ HoldPattern @ Multiply[ pre___,
 
 
 (**** <deprecated> *****)
+
+(* 2025-05-08 *)
+WickMeasurement::deprecated = "This form is now deprecated; use WickMeasurement[k, n] or WickMeasurment[{k1,k2,\[Ellipsis]}, n]."
+
+(* 2025-05-08 *)
+(* non-canonical form for backward compatibility *)
+WickMeasurement[k_Integer][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
+  {aa, bb, new},
+  Message[WickMeasurement::deprecated];
+  {aa, bb} = WickMeasurementKernel[k, Length[cvr]/2];
+  new = theWickMeasurement[{aa, bb}, cvr];
+  $MeasurementOut[k] = $MeasurementOut[0];
+  KeyDrop[$MeasurementOut, 0];
+  WickState[{1, new}, rest]
+]
+
+(* 2025-05-08 *)
+(* non-canonical form for backward compatibility *)
+WickMeasurement[kk:{___Integer}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := (
+  Message[WickMeasurement::deprecated];
+  Fold[#2[#1]&, in, WickMeasurement /@ kk]
+)
+
 (**** </deprecated> *****)
 
 

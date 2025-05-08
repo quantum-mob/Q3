@@ -3,15 +3,18 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { YoungOGS, YoungOGSn,
-  FromOGS };
+  FromYoungOGS };
 
 { YoungDualOGS, YoungDualOGSn,
-  FromDualOGS };
+  FromYoungDualOGS };
 
 { YoungFourierMatrix, YoungFourier };
 { YoungFourierBasis, YoungRegularBasis };
 { YoungNormalRepresentation,
   YoungRegularRepresentation };
+
+{ LeftRegularRepresentation,
+  RightRegularRepresentation };
 
 { YoungClebschGordanTransform,
   YoungClebschGordan };
@@ -57,7 +60,7 @@ theYoungOGS[prm_List] := Module[
 ]
 
 
-YoungOGSn::usage = "YoungOGSn[prm] converts to integer the standard OGS canonical form corresponding to permutation prm."
+YoungOGSn::usage = "YoungOGSn[prm] converts to an integer the standard OGS canonical form corresponding to permutation prm."
 
 YoungOGSn[args__] := Module[
   { ogs = YoungOGS[args],
@@ -68,9 +71,9 @@ YoungOGSn[args__] := Module[
 ]
 
 
-FromOGS::usage = "FromOGS[ogs] returns the permtuation corresponding to the standard OGS canonical form ogs."
+FromYoungOGS::usage = "FromYoungOGS[ogs] returns the permtuation corresponding to the standard OGS canonical form ogs."
 
-FromOGS[ogs_List] := Module[
+FromYoungOGS[ogs_List] := Module[
   { n = 1 + Length[ogs],
     gg, pp },
   gg = Table[Cycles @ {Range[k]}, {k, 2, n}];
@@ -118,7 +121,7 @@ theYoungDualOGS[prm_List] := Module[
 ]
 
 
-YoungDualOGSn::usage = "YoungDualOGSn[prm] converts to integer the dual-standard OGS canonical form corresponding to permutation prm."
+YoungDualOGSn::usage = "YoungDualOGSn[prm] converts to an integer the dual-standard OGS canonical form corresponding to permutation prm."
 
 YoungDualOGSn[args__] := Module[
   { ogs = YoungDualOGS[args],
@@ -129,9 +132,9 @@ YoungDualOGSn[args__] := Module[
 ]
 
 
-FromDualOGS::usage = "FromDualOGS[ogs] returns the permtuation corresponding to the dual-standard OGS canonical form ogs."
+FromYoungDualOGS::usage = "FromYoungDualOGS[ogs] returns the permtuation corresponding to the dual-standard OGS canonical form ogs."
 
-FromDualOGS[ogs_List] := Module[
+FromYoungDualOGS[ogs_List] := Module[
   { n = 1 + Length[ogs],
     gg, pp },
   gg = Table[Cycles @ {Range[k]}, {k, 2, n}];
@@ -212,15 +215,63 @@ YoungRegularRepresentation::usage = "YoungRegularRepresentation[n] represents th
 YoungRegularRepresentation[n_Integer] :=
   YoungRegularRepresentation[SymmetricGroup @ n]
 
-YoungRegularRepresentation[grp_SymmetricGroup][op_Cycles] := Module[
-  { gmt = Transpose[GroupMultiplicationTable @ grp],
-    elm = GroupElements[grp],
-    k },
-  k = First @ FirstPosition[elm, op];
-  Transpose @ PermutationMatrix[gmt[[k]], TargetStructure -> "Sparse"]
-]
+YoungRegularRepresentation[grp_SymmetricGroup][cyc_Cycles] := 
+  LeftRegularRepresentation[grp][cyc]
 
 (**** </YoungRegularRepresentation> ****)
+
+
+(**** <LeftRegularRepresentation> ****)
+
+LeftRegularRepresentation::usage = "LeftRegularRepresentation[group, g] returns the left regular representation of element g of group.\n LeftRegularRepresentation[group, {g1,g2,\[Ellipsis],gn}] returns the list of the left regular representations of elements g1, g2, \[Ellipsis], gn."
+
+LeftRegularRepresentation::gmt = "Group `` is not supported."
+
+LeftRegularRepresentation[grp_][elm_] :=
+  LeftRegularRepresentation[grp, elm]
+
+LeftRegularRepresentation[grp_, elm_] := Module[
+  { gmt = GroupMultiplicationTable[grp],
+    k },
+  If[ MatrixQ[gmt],
+    gmt = Transpose[gmt], (* due to Mathematica's convention *)
+    Message[LeftRegularRepresentation::gmt, grp];
+    Return[$Failed]
+  ];
+  k = GroupElementPosition[grp, elm];
+  If[ ListQ[elm],
+    Map[Transpose[PermutationMatrix[#, TargetStructure -> "Sparse"]]&, gmt[[k]]],
+    Transpose @ PermutationMatrix[gmt[[k]], TargetStructure -> "Sparse"]
+  ]
+]
+
+(**** </LeftRegularRepresentation> ****)
+
+
+(**** <RightRegularRepresentation> ****)
+
+RightRegularRepresentation::usage = "RightRegularRepresentation[group, g] returns the right regular representation of element g of group.\n RightRegularRepresentation[group, {g1,g2,\[Ellipsis],gn}] returns the list of the right regular representations of elements g1, g2, \[Ellipsis], gn."
+
+RightRegularRepresentation::gmt = "Group `` is not supported."
+
+RightRegularRepresentation[grp_][elm_] :=
+  RightRegularRepresentation[grp, elm]
+
+RightRegularRepresentation[grp_, elm_] := Module[
+  { gmt = GroupMultiplicationTable[grp],
+    k },
+  If[ Not[MatrixQ @ gmt],
+    Message[RightRegularRepresentation::gmt, grp];
+    Return[$Failed]
+  ];
+  k = GroupElementPosition[grp, elm];
+  If[ ListQ[elm],
+    Map[PermutationMatrix[#, TargetStructure -> "Sparse"]&, gmt[[k]]],
+    PermutationMatrix[gmt[[k]], TargetStructure -> "Sparse"]
+  ]
+]
+
+(**** </LeftRegularRepresentation> ****)
 
 
 (**** <YoungFourier> ****)
