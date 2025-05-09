@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.1.9
+
+- Bug fix: RandomWickCircuit, WickMeasurement
+- Update: WickSimulate, RandomWickCircuitSimulate, WickLindblodSolve, WickMonitor
+
 ## 4.1.8
 
 - New: YoungRegularRepresentation

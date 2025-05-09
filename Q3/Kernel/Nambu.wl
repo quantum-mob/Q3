@@ -712,23 +712,22 @@ NambuMeasurement /:
 Matrix[msr_NambuMeasurement, rest___] :=
   Matrix[ToMajorana @ msr, rest]
 
-(* alias *)
-NambuMeasurement[kk:(_Integer | {___Integer}), rest___] :=
-  WickMeasurement[kk, rest]
-
 (* conversion *)
 NambuMeasurement /:
 ToMajorana[msr_NambuMeasurement] := WickMeasurement[msr]
 
 (* conversion *)
 NambuMeasurement /:
-WickMeasurement[NambuMeasurement[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
+WickMeasurement[NambuMeasurement[mat:({}|_?MatrixQ), opts___?OptionQ], more___?OptionQ] :=
   WickMeasurement[ToMajorana /@ mat, more, opts] /;   (* NOT ToMajorana @ mat. *)
   theNambuMeasurementQ[mat]
 
 theNambuMeasurementQ::usage = "theNambuMeasurementQ[m] returns True if each linear combination \
   b[i] = Sum[m[[i, j]] a[j], {j, n}] + Sum[m[[i,n+j]] Dagger[a[j]], {j, n}] \
   of Dirac fermion operators a[j] and Dagger[a[j]] is individually a proper dressed Dirac fermion modes. Note that the different dressed fermion modes associated with different rows of m do not have to be mutually orthogonal."
+
+(* NOTE: This happens, e.g., in RandomWickCircuit. *)
+theNambuMeasurementQ[{}] = True 
 
 theNambuMeasurementQ[mat_?MatrixQ] :=
   ArrayZeroQ[Dot @@@ Map[PartitionInto[#,2]&, mat]]

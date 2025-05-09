@@ -541,7 +541,7 @@ NLindbladSolve[HoldPattern @ Supermap[tsr_?ChoiMatrixQ], in_, {t_, tmin_, tmax_}
 NLindbladSolve[tsr_?ChoiMatrixQ, in_?VectorQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
   NLindbladSolve[tsr, Dyad[in, in], {t, tmin, tmax}, opts]
 
-NLindbladSolve[tsr_?ChoiMatrixQ, init_?SquareMatrixQ, {t_, tmin_, tmax_}, opts___?OptionQ] :=
+NLindbladSolve[tsr_?ChoiMatrixQ, init_?SquareMatrixQ, {t_Symbol, tmin_, tmax_}, opts___?OptionQ] :=
   Module[
     { dim = Length[init],
       lbm, bgn, gen, off, sol, var, x, f },

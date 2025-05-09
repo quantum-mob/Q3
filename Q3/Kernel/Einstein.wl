@@ -78,6 +78,14 @@ WickMeasurement::deprecated = "This form is now deprecated; use WickMeasurement[
 
 (* 2025-05-08 *)
 (* non-canonical form for backward compatibility *)
+FermionCount[WickMeasurement[k_Integer, ___?OptionQ]] = k
+
+(* 2025-05-08 *)
+(* non-canonical form for backward compatibility *)
+FermionCount[WickMeasurement[kk:{__Integer}, ___?OptionQ]] := Max[kk]
+
+(* 2025-05-08 *)
+(* non-canonical form for backward compatibility *)
 WickMeasurement[k_Integer][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   {aa, bb, new},
   Message[WickMeasurement::deprecated];
@@ -90,7 +98,7 @@ WickMeasurement[k_Integer][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]]
 
 (* 2025-05-08 *)
 (* non-canonical form for backward compatibility *)
-WickMeasurement[kk:{___Integer}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := (
+WickMeasurement[kk:{__Integer}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := (
   Message[WickMeasurement::deprecated];
   Fold[#2[#1]&, in, WickMeasurement /@ kk]
 )

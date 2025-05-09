@@ -50,10 +50,10 @@ BCSState::noBCS = "`` is orthogonal to the vacuum state and cannot be a generali
 BCSState::mixed = "A mixed state `` is encountered."
 
 BCSState /:
-MakeBoxes[ws:BCSState[{fac_?NumericQ, pair_?MatrixQ}, ___], fmt_] :=
+MakeBoxes[bcs:BCSState[{fac_?NumericQ, pair_?MatrixQ}, ___], fmt_] :=
   BoxForm`ArrangeSummaryBox[
-    BCSState, ws, None,
-    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ ws },
+    BCSState, bcs, None,
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ bcs },
       BoxForm`SummaryItem @ { "Prefactor: ", fac }
     },
     { BoxForm`SummaryItem @ { "Pairing matrix: ", ArrayShort @ pair }
@@ -339,7 +339,7 @@ WickNullQ[ws_WickState] := ZeroQ[ws[[1, 1]]]
 
 (**** <WickSingleQ> ****)
 
-WickSingleQ::usage = "WickSingleQ[cvr] returns True if Majorana covariance matrix cvr represents a fermion Gaussian state resulting from single-particle potential only (without pairing potential); False, otherwise./nWickSingleQ[bdg] tests the BdG state."
+WickSingleQ::usage = "WickSingleQ[cvr] returns True if Majorana covariance matrix cvr represents a fermion Gaussian state resulting from single-particle potential only (without pairing potential); False, otherwise.\nWickSingleQ[ws] tests the Wick state ws.\nWickState[grn] tests the Green function grn."
 
 WickSingleQ[cvr_?MatrixQ] := Module[
   { aa, bb },
@@ -1096,19 +1096,14 @@ MakeBoxes[msr:WickMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
   ]
 ]
 
-Readout[WickMeasurement[m_?MatrixQ, ___]] := 
-  Readout[First @ m] /; Length[m] == 1
-
-Readout[WickMeasurement[m_?MatrixQ, ___]] := 
-  Map[Readout, m]
-
 
 (* canonicalization *)
 WickMeasurement[k_Integer, n_Integer, rest___] :=
   WickMeasurement[{k}, n, rest]
 
 (* canonicalization *)
-WickMeasurement[kk:{__Integer}, n_Integer, rest___] := With[
+(* NOTE: kk = {} may happen, e.g., in RandomWickCircuit. *)
+WickMeasurement[kk:{___Integer}, n_Integer, rest___] := With[
   { mm = One[{n, 2*n}] },
   WickMeasurement @ NambuMeasurement @ mm[[kk]]
 ]
@@ -1160,6 +1155,9 @@ WickMeasurement /:
 Multiply[pre___, msr_WickMeasurement, ws_WickState] := Multiply[pre, msr @ ws]
 
 
+(* NOTE: This may happen, e.g., in RandomWickCircuit. *)
+WickMeasurement[{}, ___][in_WickState] = in
+
 (* See, e.g., Gallier (2001) for the Cartan-Dieudonn\[EAcute] theorem. *)
 (* The vector vec := mat[[1]] describes a dressed Dirac fermion mode
       b := Sum[vec[[jj]] c[j], {j, 2n}]
@@ -1199,6 +1197,41 @@ theWickMeasurement[{aa_?MatrixQ, bb_?MatrixQ}, cvr_?MatrixQ] := Module[
   ];
   Quiet[-dd + bb . cvr . Inverse[mm] . bb, {Inverse::luc}]
   (* NOTE: A = -D *)
+]
+
+
+(* conversion *)
+WickMeasurement /:
+ToDirac[msr_WickMeasurement] := NambuMeasurement[msr]
+
+(* conversion *)
+WickMeasurement /:
+NambuMeasurement[WickMeasurement[mat:({}|_?MatrixQ), opts___?OptionQ], more___?OptionQ] :=
+  NambuMeasurement[ToDirac /@ mat, more, opts]   (* NOT ToDirac @ mat. *)
+
+
+(* NOTE: This happens when no measurement is performed such as in RandomWickCircuit. *)
+FermionCount[WickMeasurement[{}, ___?OptionQ]] = 0
+
+FermionCount[WickMeasurement[mat_?MatrixQ, ___?OptionQ]] := 
+  Last[Dimensions @ mat]/2
+
+Readout[WickMeasurement[m_?MatrixQ, ___]] := 
+  Readout[First @ m] /; Length[m] == 1
+
+Readout[WickMeasurement[m_?MatrixQ, ___]] := 
+  Map[Readout, m]
+
+
+theFermionModes::usage = "theFermionModes[msr] returns the list of Dirac fermion modes being probed by WickMeasurement msr. Used in Graphics[WickCircuit[...], ...]."
+
+theFermionModes[WickMeasurement[{}, ___]] = {}
+
+theFermionModes[msr:WickMeasurement[_?MatrixQ, ___]] := Module[
+  { mat = First[NambuMeasurement @ msr] },
+  mat = First @ PartitionInto[mat, {1, 2}];
+  mat = Map[ZeroQ, mat, {3}];
+  Union @ Flatten @ Map[Position[#, False]&, mat, {2}]
 ]
 
 (**** </WickMeasurement> ****)
@@ -1663,14 +1696,11 @@ Graphics[wc:WickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?Op
     WickCircuit[{}] -> "Spacer",
     ws_WickCircuit :> Graphics[ws],
     ws_WickState :> ExpressionFor[ws, cc],
+    WickMeasurement[{}, ___] -> "Spacer",
+    ws_WickMeasurement :> Map[Gate[{c[#]}, "Shape" -> "Measurement"]&, theFermionModes @ ws],
     WickUnitary[_?MatrixQ, kk:{__Integer}, any___?OptionQ] :> Gate[c[kk], any],
     WickUnitary[_?MatrixQ, any___?OptionQ] :> Gate[cc, any],
-    WickUnitary[_?MatrixQ, _, any___?OptionQ] :> Gate[cc, any],
-    WickMeasurement[{}, ___] -> "Spacer",
-    WickMeasurement[k_Integer, any___?OptionQ] :> Gate[c @ {k}, any, "Shape" -> "Measurement"],
-    WickMeasurement[kk:{_Integer}, any___?OptionQ] :> Gate[c[kk], any, "Shape" -> "Measurement"],
-    WickMeasurement[kk:{_, __Integer}, any___?OptionQ] :> 
-      Map[Gate[{c[#]}, any, "Shape" -> "Measurement"]&, kk]
+    WickUnitary[_?MatrixQ, _, any___?OptionQ] :> Gate[cc, any]
   };
   QuantumCircuit[Sequence @@ qc, more, opts, "PostMeasurementDashes" -> False]
 ]
@@ -1689,11 +1719,12 @@ RandomWickCircuit[{uu_NambuUnitary, p_?NumericQ}, k_Integer] :=
 (* fixed interaction time *)
 RandomWickCircuit[{uu_WickUnitary, p_?NumericQ}, k_Integer] :=
   Module[
-    { mm },
-    mm = RandomPick[Range @ FermionCount @ uu, p, k];
+    { n = FermionCount[uu],
+      mm },
+    mm = RandomPick[Range @ n, p, k];
     WickCircuit @ Riffle[
       ConstantArray[uu, k],
-      Map[WickMeasurement, mm]
+      Map[WickMeasurement[#, n]&, mm]
     ]
   ]
 
@@ -1710,7 +1741,7 @@ RandomWickCircuit[{ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] :=
     tt = RandomVariate[pdf, k];
     uu = Map[WickUnitary[MatrixExp[hh*#]]&, tt];
     mm = RandomPick[Range @ n, p, k];
-    mm = Map[WickMeasurement, mm];
+    mm = Map[WickMeasurement[#, n]&, mm];
     WickCircuit @ Riffle[uu, mm]
   ]
 
@@ -2348,14 +2379,6 @@ FermionCount[WickJump[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
 
 FermionCount[WickOperator[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
 
-FermionCount[WickMeasurement[k_Integer, ___?OptionQ]] = k
-
-FermionCount[WickMeasurement[kk:{__Integer}, ___?OptionQ]] := Max[kk]
-
-FermionCount[WickMeasurement[mat_?MatrixQ, ___?OptionQ]] := Last[Dimensions @ mat]/2
-
-FermionCount[WickMeasurement[{}, ___?OptionQ]] = 0
-
 FermionCount[WickCircuit[gg_List, ___?OptionQ]] := Max[FermionCount /@ gg]
 
 (**** </FermionCount> ****)
@@ -2376,7 +2399,10 @@ WickTimeReversalMoment::usage = "WickTimeReversalMoment[\[Alpha], {gg, ff}, {k1,
 
 WickTimeReversalMoment::sing = "The matrix is tamed according to option \"Epsilon\"."
 
-Options[WickTimeReversalMoment] = { "Epsilon" -> 1.25*^-20 }
+Options[WickTimeReversalMoment] = { 
+  "Epsilon" -> 1.25*^-16
+  (* "Epsilon" -> 1.25*^-20 *)
+}
 
 (* canoncialization *)
 WickTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}, opts___?OptionQ] :=
@@ -2410,7 +2436,7 @@ theTimeReversalMoment[
   zz = CircleTimes[ThePauli[3], id];
   (* \Gamma *)
   gg = Normal[N @ NambuHermitian @ grn];
-  gg -= OptionValue["Epsilon"]*I;
+  gg -= I * OptionValue["Epsilon"] * One[Dimensions @ gg];
   (* NOTE: When there is a fermion mode that is unoccuppied with certainty, the coherent-state representation becomes unusual, and one needs to handle such cases separately. While this is possible, Q3 offers a ditry trick. *)  
   pf1 = Det[gg];
   (* \Omega *)
