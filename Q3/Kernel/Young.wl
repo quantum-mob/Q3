@@ -32,8 +32,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   YoungCharacterInner,
   KostkaMatrix };
 
-{ GroupRegularRepresentation };
-
 { InversionVector, AdjacentTranspositions };
 
 { YoungDistance };
@@ -203,32 +201,14 @@ YoungTableauCount[n_Integer] :=
   Total @ Map[YoungTableauCount, IntegerPartitions @ n]
 
 
-(**** <GroupRegularRepresentation> ****)
+(**** <theKetFormat> ****)
+(* for YoungRegularBasis, etc. *)
 
-GroupRegularRepresentation::usage = "GroupRegularRepresentation[grp, elm] returns the matrix of group element elm in the left regular representation of group grp."
-
-GroupRegularRepresentation::elm = "`2` is not an element of group `1`."
-
-GroupRegularRepresentation[grp_, elm_] :=
-  Transpose @ Thread @ UnitVector[
-    GroupOrder @ grp,
-    Part[
-      Transpose @ GroupMultiplicationTable[grp], 
-      GroupElementPosition[grp, elm]
-     ]
-  ] /; GroupElementQ[grp, elm]
-
-GroupRegularRepresentation[grp_, elm_] := (
-  Message[GroupRegularRepresentation::elm, grp, elm];
-  One[GroupOrder @ grp]
-)
-
-(* For the regular representation of the symmetric group *)
 theKetFormatQ[_Cycles] = True
 
 theKetFormat[cyc_Cycles] := PermutationForm[cyc]
 
-(**** </GroupRegularRepresentation> ****)
+(**** </theKetFormat> ****)
 
 
 (**** <GroupCharacters> ****)

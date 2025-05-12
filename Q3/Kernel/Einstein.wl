@@ -2,7 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
-
+{ GroupRegularRepresentation }; (* obsolete 2025-05-09 *)
 { PileYoungShape }; (* renamed 2025-04-13 v4.1.7 *)
 { ConditionNumber }; (* renamed 2025-04-02 v4.1.5 *)
 { AmplitudeEmbeddingGate,
@@ -208,6 +208,13 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 
 
 (**** <obsolete> ****)
+
+GroupRegularRepresentation::usage = "GroupRegularRepresentation is obsolete since v4.1.10 (2025-05-09); use LeftRegularRepresentation instead."
+
+GroupRegularRepresentation[any___] := (
+  Message[Q3General::obsolete, "GroupRegularRepresentation", "LeftRegularRepresentation"];
+  LeftRegularRepresentation[any]
+)
 
 PileYoungShape::usage = "PileYoungShape has been renamed YoungShapePile since v4.1.7 (2025-04-13)."
 

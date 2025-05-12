@@ -147,24 +147,55 @@ FromYoungDualOGS[ogs_List] := Module[
 
 YoungFourierMatrix::usage = "YoungFourieMatrix[n] returns the matrix describing the Fourier transform over the symmetric group of degree n."
 
-YoungFourierMatrix[n_Integer] := Module[
+YoungFourierMatrix::unknown = "Unknown FourierParameters ``. \"Left\" is assumed."
+
+Options[YoungFourierMatrix] = {
+  FourierParameters -> "Left"
+}
+
+YoungFourierMatrix[n_Integer, OptionsPattern[]] := Switch[
+  OptionValue[FourierParameters],
+  "Right",
+  YoungRightFourierMatrix[n],
+  "Left",
+  YoungLeftFourierMatrix[n],
+  _,
+  Message[YoungFourierMatrix::unknown, OptionValue @ FourierParameters];
+  YoungLeftFourierMatrix[n]
+]
+
+
+YoungLeftFourierMatrix[n_Integer] := Module[
   { shp = YoungShapes[n],
     elm = GroupElements[SymmetricGroup @ n] },
   Map[ Flatten,
     Outer[
       (Sqrt[YoungTableauCount[#2]] *
-          Topple[YoungNormalRepresentation[#2, #1]])&,
+          ConjugateTranspose[YoungNormalRepresentation[#2, #1]])&,
       elm, shp, 1 ] / Sqrt[Length @ elm]
   ]
 ]
 
+YoungRightFourierMatrix[n_Integer] := Module[
+  { shp = YoungShapes[n],
+    elm = GroupElements[SymmetricGroup @ n] },
+  Map[ Flatten,
+    Outer[
+      (Sqrt[YoungTableauCount[#2]] * YoungNormalRepresentation[#2, #1])&,
+      elm, shp, 1 ] / Sqrt[Length @ elm]
+  ]
+]
 
 (**** <YoungFourierBasis> ****)
 
 YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis of degree n, i.e., the Fourier transform over the symmetric group of degree n of the canonical basis of the left regular representation of the same group."
 
-YoungFourierBasis[n_Integer] := Module[
-  { mat = YoungFourierMatrix[n],
+Options[YoungFourierBasis] = {
+  FourierParameters -> "Left"
+}
+
+YoungFourierBasis[n_Integer, opts:OptionsPattern[]] := Module[
+  { mat = YoungFourierMatrix[n, opts],
     key, val },
   key = Ket /@ Flatten[
     Map[Tuples[YoungTableaux @ #, 2]&, YoungShapes @ n],
@@ -174,6 +205,74 @@ YoungFourierBasis[n_Integer] := Module[
 ]
 
 (**** </YoungFourierBasis> ****)
+
+
+(**** <YoungFourier> ****)
+
+YoungFourier::usage = "YoungFourier[n] represents the Fourier transform over the symmetric group of degree n.\nYoungFourier[n][Ket[{g}]] returns the Fourier transform of Ket[{g}] over the symmetric group.\nYoungFourier[Ket[{y1,y2}]] returns the inverse Fourier transform of Ket[{y1,y2}] over the symmetric group."
+
+YoungFourier::unknown = "Unknown FourierParameters ``. \"Left\" is assumed."
+
+Options[YoungFourier] = {
+  FourierParameters -> "Left"
+}
+
+YoungFourier[n_Integer, rest___][expr_Plus] := 
+  Garner @ Map[YoungFourier[n, rest], expr]
+
+YoungFourier[n_Integer, rest___][z_?CommutativeQ expr_] :=
+  z * YoungFourier[n, rest][expr]
+
+
+YoungFourier /:
+Multiply[
+  pre___,
+  op:YoungFourier[_Integer, ___],
+  in:( Ket[{_Cycles}] | Ket[{ya_YoungTableau, yb_YoungTableau}] )
+  post___ 
+] := Multiply[pre, op[in], post]
+
+YoungFourier[n_Integer, opts:OptionsPattern[]][
+  Ket @ {cyc_Cycles}
+] := Module[
+  { trs = YoungFourierMatrix[n, opts],
+    fbs = YoungShapes[n],
+    pos = GroupElementPosition[SymmetricGroup @ n, cyc] },
+  fbs = Map[Tuples[YoungTableaux @ #, 2]&, fbs];
+  fbs = Flatten @ Map[Ket, fbs, {2}];
+  fbs . trs[[pos]]
+]
+
+YoungFourier[n_Integer, opts:OptionsPattern[]][
+  Ket @ {ya_YoungTableau, yb_YoungTableau}
+] := Module[
+  { trs = Transpose @ YoungFourierMatrix[n, opts],
+    fbs = YoungShapes[n],
+    cbs = GroupElements[SymmetricGroup @ n],
+    pos },
+  cbs = Ket /@ List /@ cbs;
+  fbs = Map[Tuples[YoungTableaux @ #, 2]&, fbs];
+  fbs = Flatten[fbs, 1];
+  pos = First @ FirstPosition[fbs, {ya, yb}];
+  cbs . trs[[pos]]
+]
+
+(**** </YoungFourier> ****)
+
+
+(**** <YoungNormalRepresentation> ****)
+
+YoungNormalRepresentation::usage = "YoungNormalRepresentation[shape] represents the homomorphism from the symmetric group to the matrix representation.\nSee also SpechtBasis."
+
+YoungNormalRepresentation[shape_YoungShape][op_Cycles] :=
+  YoungNormalRepresentation[shape, op]
+
+YoungNormalRepresentation[shape_YoungShape, op_Cycles] := Module[
+  { bs = Ket /@ List /@ YoungTableaux[shape] },
+  MatrixIn[op, bs]
+]
+
+(**** </YoungNormalRepresentation> ****)
 
 
 (**** <YoungRegularBasis> ****)
@@ -191,21 +290,6 @@ YoungRegularBasis[n_Integer] := Module[
 ]
 
 (**** </YoungRegularBasis> ****)
-
-
-(**** <YoungNormalRepresentation> ****)
-
-YoungNormalRepresentation::usage = "YoungNormalRepresentation[shape] represents the homomorphism from the symmetric group to the matrix representation.\nSee also SpechtBasis."
-
-YoungNormalRepresentation[shape_YoungShape][op_Cycles] :=
-  YoungNormalRepresentation[shape, op]
-
-YoungNormalRepresentation[shape_YoungShape, op_Cycles] := Module[
-  { bs = Ket /@ List /@ YoungTableaux[shape] },
-  MatrixIn[op, bs]
-]
-
-(**** </YoungNormalRepresentation> ****)
 
 
 (**** <YoungRegularRepresentation> ****)
@@ -230,6 +314,15 @@ LeftRegularRepresentation::gmt = "Group `` is not supported."
 LeftRegularRepresentation[grp_][elm_] :=
   LeftRegularRepresentation[grp, elm]
 
+LeftRegularRepresentation[grp_, All] := Module[
+  { gmt = GroupMultiplicationTable[grp] },
+  If[ Not[MatrixQ @ gmt],
+    Message[LeftRegularRepresentation::gmt, grp];
+    Return[$Failed]
+  ];
+  Transpose /@ PermutationMatrix /@ Transpose[gmt]
+]
+
 LeftRegularRepresentation[grp_, elm_] := Module[
   { gmt = GroupMultiplicationTable[grp],
     k },
@@ -239,9 +332,26 @@ LeftRegularRepresentation[grp_, elm_] := Module[
     Return[$Failed]
   ];
   k = GroupElementPosition[grp, elm];
-  If[ ListQ[elm],
+  If[ ListQ[k], (* NOT ListQ[elm] *)
     Map[Transpose[PermutationMatrix[#, TargetStructure -> "Sparse"]]&, gmt[[k]]],
     Transpose @ PermutationMatrix[gmt[[k]], TargetStructure -> "Sparse"]
+  ]
+]
+(* NOTE: For SymmetricGroup, elm may be specified by a permutation list (see PermutationList); hence, NOT ListQ[elm] instead of ListQ[k]. *)
+
+LeftRegularRepresentation[grp:{_String, _Integer}, All] :=
+  LeftRegularRepresentation[grp, FiniteGroupData[grp, "Elements"]]
+
+LeftRegularRepresentation[grp:{_String, _Integer}, kk_] := Module[
+  { gmt = FiniteGroupData[grp, "MultiplicationTable"] },
+  If[ MatrixQ[gmt],
+    gmt = Transpose[gmt], (* due to Mathematica's convention *)
+    Message[LeftRegularRepresentation::gmt, grp];
+    Return[$Failed]
+  ];
+  If[ ListQ[kk],
+    Map[Transpose[PermutationMatrix[#, TargetStructure -> "Sparse"]]&, gmt[[kk]]],
+    Transpose @ PermutationMatrix[gmt[[kk]], TargetStructure -> "Sparse"]
   ]
 ]
 
@@ -257,6 +367,15 @@ RightRegularRepresentation::gmt = "Group `` is not supported."
 RightRegularRepresentation[grp_][elm_] :=
   RightRegularRepresentation[grp, elm]
 
+RightRegularRepresentation[grp_, All] := Module[
+  { gmt = GroupMultiplicationTable[grp] },
+  If[ Not[MatrixQ @ gmt],
+    Message[RightRegularRepresentation::gmt, grp];
+    Return[$Failed]
+  ];
+  Map[PermutationMatrix, gmt]
+]
+
 RightRegularRepresentation[grp_, elm_] := Module[
   { gmt = GroupMultiplicationTable[grp],
     k },
@@ -265,66 +384,29 @@ RightRegularRepresentation[grp_, elm_] := Module[
     Return[$Failed]
   ];
   k = GroupElementPosition[grp, elm];
-  If[ ListQ[elm],
+  If[ ListQ[k], (* NOT ListQ[elm} *)
     Map[PermutationMatrix[#, TargetStructure -> "Sparse"]&, gmt[[k]]],
     PermutationMatrix[gmt[[k]], TargetStructure -> "Sparse"]
   ]
 ]
+(* NOTE: For SymmetricGroup, elm may be specified by a permutation list (see PermutationList); hence, NOT ListQ[elm] instead of ListQ[k]. *)
 
-(**** </LeftRegularRepresentation> ****)
+RightRegularRepresentation[grp:{_String, _Integer}, All] :=
+  RightRegularRepresentation[grp, FiniteGroupData[grp, "Elements"]]
 
-
-(**** <YoungFourier> ****)
-
-YoungFourier::usage = "YoungFourier[n] represents the Fourier transform over the symmetric group of degree n.\nYoungFourier[n][Ket[op]] returns the Fourier transform of Ket[op] over the symmetric group.\nYoungFourier[Ket[{y1,y2}]] returns the Fourier transform of Ket[{y1,y2}] over the symmetric group."
-
-YoungFourier[n_Integer][expr_Plus] := Garner @ Map[YoungFourier[n], expr]
-
-YoungFourier[n_Integer][z_?CommutativeQ expr_] :=
-  z * YoungFourier[n][expr]
-
-YoungFourier /:
-Multiply[pre___, op:YoungFourier[_Integer], v:Ket[{_Cycles}], post___] :=
-  Multiply[pre, op[v], post]
-
-YoungFourier[n_Integer][Ket[{op_Cycles}]] := With[
-  { shp = YoungShapes[n] },
-  Garner[
-    Total @ Map[theYoungFourier[#, op]&, shp] /
-      Sqrt[GroupOrder @ SymmetricGroup @ n]
+RightRegularRepresentation[grp:{_String, _Integer}, kk_] := Module[
+  { gmt = FiniteGroupData[grp, "MultiplicationTable"] },
+  If[ Not[MatrixQ @ gmt],
+    Message[RightRegularRepresentation::gmt, grp];
+    Return[$Failed]
+  ];
+  If[ ListQ[kk],
+    Map[PermutationMatrix[#, TargetStructure -> "Sparse"]&, gmt[[kk]]],
+    PermutationMatrix[gmt[[kk]], TargetStructure -> "Sparse"]
   ]
 ]
 
-theYoungFourier[shape_YoungShape, op_Cycles] :=
-  Sqrt[YoungTableauCount @ shape] *
-  Map[Ket, Tuples[YoungTableaux[shape], 2]] .
-  Flatten[Transpose @ YoungNormalRepresentation[shape, op]]
-
-
-YoungFourier /:
-Multiply[ pre___,
-  op:YoungFourier[_Integer],
-  v:Ket[{_?YoungTableauQ, _?YoungTableauQ}], post___ ] :=
-  Multiply[pre, op[v], post]
-
-(* Here, n is not necessary but kept for consistency. *)
-YoungFourier[n_Integer][Ket[{ya_YoungTableau, yb_YoungTableau}]] :=
-  Module[
-    { ops = GroupElements @ SymmetricGroup[n],
-      shp = YoungShape[ya],
-      mat, pos, tbl },
-    tbl = YoungTableaux[shp];
-    pos = {First @ FirstPosition[tbl, yb], First @ FirstPosition[tbl, ya]};
-    mat = YoungNormalRepresentation[shp] /@ ops;
-    mat = Map[Part[#, Sequence @@ pos]&, mat];
-    Garner[
-      Map[Ket @* List, ops] . mat *
-        Sqrt[YoungTableauCount @ shp] /
-        Sqrt[GroupOrder @ SymmetricGroup @ n]
-    ]
-  ]
-
-(**** </YoungFourier> ****)
+(**** </LeftRegularRepresentation> ****)
 
 
 (**** <YoungClebschGordanTransform> ****)
