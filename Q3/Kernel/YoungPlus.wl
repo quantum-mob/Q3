@@ -22,7 +22,7 @@ ClearAll @@ Evaluate @ Unprotect[
 InvariantYMetric::usage="InvariantYMetric[\[Lambda]_?YoungShapeQ] is the scalar product invariant under Young's natural presentation corresponding to the integer partition \[Lambda]."
 
 
-CoxeterTest::usage="CoxeterTest[ynr_] applied to the matrices of Young's natural representation checks whether these matrices satisfy Coxeter's relations, as they must. So unless you tamper with the definitions this function should always return TRUE."
+CoxeterTest::usage="CoxeterTest[ynr] applied to the matrices of Young's natural representation checks whether these matrices satisfy Coxeter's relations, as they must. So unless you tamper with the definitions this function should always return TRUE."
 
 
 YnrCharacterTest::usage="YnrCharacterTest[ynr_,\[Lambda]_] applied to the matrices of Young's natural representation corresponding to the integer partition \[Lambda] computes the character and compares it to the relevant entry in the character table. So unless you tamper with the definitions this function should always return TRUE. A complete test would be for instance: \[IndentingNewLine]testPartition=RandomPartition[5];\[IndentingNewLine]testYnr=YoungNaturalRepresentation[testPartition];\[IndentingNewLine]CoxeterTest[testYnr]&&YnrCharacterTest[testYnr,testPartition]"
@@ -76,7 +76,7 @@ YoungNaturalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] :=
       YoungNaturalRepresentation[pp],
       Partition[intoTranspositions[pi], 1]
      ]
- ] /; Total[pp]==Length[pi];
+] /; Total[pp]==Length[pi];
 
 
 YoungSeminormalRepresentation[pp_?YoungShapeQ]:=
@@ -89,7 +89,7 @@ YoungSeminormalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] :=
       YoungSeminormalRepresentation[pp],
       Partition[intoTranspositions[pi], 1]
      ]
-   ] /; Total[pp]==Length[pi];
+  ] /; Total[pp]==Length[pi];
 
 
 NormSquareOfTableau[myTableau_] := With[
@@ -124,7 +124,7 @@ YnrCharacterTest[ynr_,\[Lambda]_]:=(
      ],
     Length[ynr[[1]]]
    ] == Part[
-     SymmetricGroupCharacters @ Total[\[Lambda]],
+     LegacyYoungCharacters @ Total[\[Lambda]],
      Part[Position[IntegerPartitions[Total[\[Lambda]]],\[Lambda]], 1, 1]
     ]
  );

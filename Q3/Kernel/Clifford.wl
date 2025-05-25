@@ -383,8 +383,11 @@ RandomCliffordUnitary[n_Integer, spec___] :=
 CliffordEntropy::usage = "CliffordEntropy[cs] returns the von Neumann entropy of Clifford state cs."
 (* SEE ALSO: Li, Chen, Fisher (2019), Nahum et al. (2017), etc. *)
 
-CliffordEntropy[cs_CliffordState] :=
-  QubitCount[cs] - Length[First @ cs]
+CliffordEntropy[cs_CliffordState] := With[
+  { gnr = First[cs][[All, 1;;-2]] },
+  QubitCount[cs] - MatrixRank[gnr, Modulus -> 2]
+]
+(* NOTE: QubitCount[cs] - Length[First @ cs] does not work because the seemingly independent generators may actually be linearly dependent. Sometimes, especially after measurement or decoherence, gnr = {0, 0, ...}. *)
 
 (**** </CliffordEntropy> ****)
 
@@ -398,13 +401,14 @@ CliffordEntanglementEntropy[kk:{___Integer}][cs_CliffordState] :=
   CliffordEntanglementEntropy[cs, kk]
 
 CliffordEntanglementEntropy[cs_CliffordState, kk:{___Integer}] := Module[
-  { mm = First[cs],
-    ll, m, n },
-  {m, n} = Dimensions[mm];
+  { bb = First[cs],
+    aa, ll, m, n },
+  {m, n} = Dimensions[bb];
   n = (n-1)/2; (* the number of qubits *)
   ll = Complement[Range @ n, kk];
-  mm = mm[[ ;; , Riffle[2ll-1, 2ll] ]];
-  Length[kk] + MatrixRank[mm, Modulus -> 2] - m
+  aa = bb[[ All, Riffle[2ll-1, 2ll] ]];
+  bb = bb[[ All, 1;;-2 ]];
+  Length[kk] + MatrixRank[aa, Modulus -> 2] - MatrixRank[bb, Modulus -> 2]
 ]
 
 (**** </CliffordEntanglementEntropy> ****)
@@ -419,14 +423,15 @@ CliffordMutualInformation[kk:{___Integer}][cs_CliffordState] :=
   CliffordMutualInformation[cs, kk]
 
 CliffordMutualInformation[cs_CliffordState, kk:{___Integer}] := Module[
-  { bb = First[cs],
+  { cc = First[cs],
     ll, m, n },
-  {m, n} = Dimensions[bb];
+  {m, n} = Dimensions[cc];
   n = (n-1)/2; (* the number of qubits *)
   ll = Complement[Range @ n, kk];
-  aa = bb[[ ;; , Riffle[2kk-1, 2kk] ]];
-  bb = bb[[ ;; , Riffle[2ll-1, 2ll] ]];
-  MatrixRank[aa, Modulus -> 2] + MatrixRank[bb, Modulus -> 2] - m
+  aa = cc[[ All, Riffle[2kk-1, 2kk] ]];
+  bb = cc[[ All, Riffle[2ll-1, 2ll] ]];
+  cc = cc[[ All, 1;;-2 ]];
+  MatrixRank[aa, Modulus -> 2] + MatrixRank[bb, Modulus -> 2] - MatrixRank[cc, Modulus -> 2]
 ]
 
 (**** </CliffordMutualInformation> ****)
@@ -443,7 +448,7 @@ CliffordLogarithmicNegativity[kk:{___Integer}][cs_CliffordState] :=
 CliffordLogarithmicNegativity[cs_CliffordState, kk:{___Integer}] := Module[
   { gnr = First[cs],
     chk },
-  gnr = gnr[[ ;; , Riffle[2kk-1, 2kk] ]];
+  gnr = gnr[[ All, Riffle[2kk-1, 2kk] ]];
   chk = GottesmanDot[gnr, gnr];
   (* MatrixRank[IntegerParity @ chk] / 2 *)
   (* NOTE: The above line does not seem to work; hence, the following line instead. *)

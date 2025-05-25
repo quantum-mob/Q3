@@ -1,34 +1,30 @@
 (* ::Package:: *)
 
-(* N.B. Some functions have been borrowed from the legacy Combinatorica
-   package and from Bernd Guenther's IrrCharSymGrp.m v2.0 (posted on the
-   Wolfram Community). *)
-
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
-{ YoungDiagram, FerrersDiagram,
-  YoungShape, YoungShapes, YoungShapeQ,
-  YoungDegree };
+{ YoungDiagram, FerrersDiagram };
+{ YoungShape, YoungShapes, YoungShapeQ };
+{ YoungType, YoungTypes };
+{ YoungDegree };
 
 { YoungTranspose, YoungTrim };
 
-{ YoungTableau };
-
-{ YoungTableauQ, YoungTableaux, YoungTableauCount, YoungForm, 
-  YoungTranspose };
+{ YoungTableau, YoungTableauQ, YoungTableaux, YoungTableauCount,
+  YoungForm };
 
 { LegacyYoungTableaux };
 
-{ ToYoungTableau, ToGelfandPattern,
-  GelfandContents };
+{ WeylTableaux, WeylTableauCount, WeylTableauQ };
 
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
-{ GroupClassSize, SymmetricGroupClassSize,
-  GroupCentralizerSize, SymmetricGroupCentralizerSize,
-  GroupCharacters, SymmetricGroupCharacters,
-  GroupClasses, SymmetricGroupClasses,
-  CompoundYoungCharacters,
+{ YoungSubgroup };
+
+{ GroupCentralizerSize, YoungCentralizerSize,
+  GroupClassSize, YoungClassSize,
+  GroupClasses, YoungClasses, YoungClassCount,
+  GroupCharacters, YoungCharacters,
+  LegacyYoungCharacters, CompoundYoungCharacters,
   YoungCharacterInner,
   KostkaMatrix };
 
@@ -40,13 +36,17 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { PermutationForm };
 
-{ PermutationBasis };
+{ PermutationBasis, YoungRefersTo };
 
 { DominatesQ, Dominates, DominatedBy };
 
 { YoungShapePile, BratteliDiagram };
 
 { SpechtBasis, YoungInvariantBasis };
+
+{ RSKMap, TwoLineArray,
+  RowInsertion,
+  YoungTableauProduct };
 
 
 Begin["`Private`"]
@@ -114,12 +114,39 @@ YoungDegree::usage = "YoungDegree[obj] returns the degree of the symmetric group
 
 YoungDegree[shape_YoungShape] := Total @@ shape
 
+YoungDegree[gp_GelfandPattern] := YoungDegree[YoungShape @ gp]
+
 YoungDegree[tbl_YoungTableau] := YoungDegree[YoungShape @ tbl]
+
+YoungDegree[gp_List?GelfandPatternQ] := YoungDegree[GelfandPattern @ gp]
+
+YoungDegree[tb_List?anyYoungTableauQ] := YoungDegree[YoungTableau @ tb]
 
 (**** </YoungDegree> ****)
 
 
 (**** <YoungShape> ****)
+
+YoungShape::usage = "YoungShape[{n1,n2,\[Ellipsis],nk}] represents a Young shape.\nYoungShape[tb] returns the shape, i.e., the integer partition of Young tableau tb."
+
+SetAttributes[YoungShape, NHoldAll]
+
+Format[ys:YoungShape[data:{___Integer}]] :=
+  Interpretation[YoungDiagram @ data, ys]
+
+YoungShape[GelfandPattern[gp_]] := YoungShape[YoungTrim @ First @ gp]
+
+YoungShape[YoungTableau[tb_]] := YoungShape[Length /@ tb]
+
+YoungShape[gp_List?GelfandPatternQ] := 
+  YoungShape[GelfandPattern @ gp] /; gp != {}
+
+YoungShape[tb_List?anyYoungTableauQ] := 
+  YoungShape[YoungTableau @ tb] /; tb != {}
+(* NOTE: anyYoungTableauQ[{}] gives True. *)
+
+(**** </YoungShape> ****)
+
 
 YoungShapeQ::usage="YoungShapeQ[shape] returns True if and only if shape is an integer partition, arranged in non-increasing order.\nA Young shape defines a Young diagram."
 
@@ -131,21 +158,18 @@ YoungShapeQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
 (* NOTE: Must allow 0 since some functions uses 0 in shape specification. *)
 
 
-YoungShape::usage = "YoungShape[tb] returns the shape, i.e., the integer partition of Young tableau tb."
+(**** <YoungShapes> ****)
 
-Format[ys:YoungShape[data:{___}]] :=
-  Interpretation[YoungDiagram @ data, ys]
+YoungShapes::usage = "YoungShapes[n] returns the list of all possible Young shapes for integer n.\nYoungShapes[n, d] returns the list of Young shapes at most d rows.\nYoungShapes[n, spec] with the same spec for IntegerPartitions[n, spec] is allowed."
 
-YoungShape[YoungTableau[tb_]] := YoungShape[tb]
+YoungShapes[n_Integer, spec___] := YoungShape /@ IntegerPartitions[n, spec]
 
-YoungShape[tb:{__List}] := YoungShape[Length /@ tb]
+YoungShapes[type:{__Integer}] := Select[
+  YoungShapes[Total @ type, Length @ type], 
+  Dominates[ReverseSort @ type]
+]
 
-
-YoungShapes::usage = "YoungShapes[n] returns the list of all possible Young shapes for integer n.\nYoungShapes[n, d] returns the list of Young shapes at most d rows.\nYoungShapes[spec] with the same spec for IntegerPartitions[spec] is allowed."
-
-YoungShapes[spec__] := YoungShape /@ IntegerPartitions[spec]
-
-(**** </YoungShape> ****)
+(**** </YoungShapes> ****)
 
 
 (**** <YoungTrim> ****)
@@ -211,36 +235,96 @@ theKetFormat[cyc_Cycles] := PermutationForm[cyc]
 (**** </theKetFormat> ****)
 
 
+(**** <YoungSubgroup> ****)
+
+YoungSubgroup::usage = "YoungSubgroup[type] returns the Young subgroup with type of the symmetric group of degree n:=Total[type]."
+
+YoungSubgroup[shape_YoungShape] :=
+  YoungSubgroup[First @ shape]
+
+YoungSubgroup[type:{__Integer}] := Module[
+  {pp},
+  pp = Select[TakeList[Range[Total@type], type], Length[#] > 1 &];
+  pp = Union @ Flatten[theYoungGenerators /@ pp];
+  PermutationGroup[pp]
+]
+
+theYoungGenerators[set : {_Integer, __Integer}] := {
+  Cycles @ {Take[set, 2]}, 
+  Cycles @ {set}
+}
+
+(**** </YoungSubgroup> ****)
+
+
 (**** <GroupCharacters> ****)
 
 GroupCharacters::usage = "GroupCharacters[group] returns the table of characters of the irreducible representations of 'group'. The characters of each irreducible representation is stored in a row vector.\nGroupCharacters[group, irr] gives a list of the characters of the irreducible representation 'irr'.\nGroupCharacters[group, irr, class] returns the character of the irreducible representation 'irr' of 'group' evaluated at the conjugacy class 'class'.\nFor a symmetric group, both irreducible representation and class are specified by integer partitions."
 
 GroupCharacters[SymmetricGroup[n_Integer]] :=
-  SymmetricGroupCharacters[n] /; n > 0
+  YoungCharacters[n] /; n > 0
 
 GroupCharacters[SymmetricGroup[n_Integer], irr_?YoungShapeQ] :=
-  SymmetricGroupCharacters[irr] /; Total[irr] == n
+  YoungCharacters[irr] /; Total[First @ irr] == n
 
-GroupCharacters[SymmetricGroup[n_Integer],
-  irr_?YoungShapeQ, class_?YoungShapeQ] :=
-  SymmetricGroupCharacters[irr, class] /;
-  Total[irr] == Total[class] == n
+GroupCharacters[SymmetricGroup[n_Integer], irr_YoungShape, class_YoungShape] :=
+  YoungCharacters[irr, class] /;
+  Total[First @ irr] == Total[First @ class] == n
 
 
-SymmetricGroupCharacters::uasge = "SymmetricGroupCharacters[n] returns the table of characters of SymmetricGroup[n].\nSymmetricGroupCharacters[irr] returns a list of characters of the irreducible representation 'irr'.\nSymmetricGroupCharacters[irr, class] returns the character of the irreducible representation 'irr' evaluated at the conjugacy class 'class'.\nBoth 'irr' and 'class' are specified by partitions of integer 'n'."
+GroupCharacters[grp:{_String, _Integer}] :=
+  FiniteGroupData[grp, "CharacterTable"]
 
-SymmetricGroupCharacters[n_Integer] := Module[
+(**** </GroupCharacters> ****)
+
+
+(**** <YoungCharacters> ****)
+
+YoungCharacters::usage = "YoungCharacters[n] returns the character table of the symmetric group of degree n.\nYoungCharacters[irr] returns a list of characters of conjugacy classes in irreducible representation 'irr'.\nYoungCharacters[irr, class] returns the character of conjugacy class 'class' in irreducible representation 'irr'."
+
+YoungCharacters[n_Integer] :=
+  FiniteGroupData[{"SymmetricGroup", n}, "CharacterTable"]
+
+YoungCharacters[irr_YoungShape] := Module[
+  { n = Total[First @ irr], 
+    shp, tbl },
+  shp = YoungShapes[n];
+  tbl = YoungCharacters[n];
+  tbl[[First @ FirstPosition[shp, irr], All]]
+]
+
+YoungCharacters[irr_YoungShape, class_YoungShape] := Module[
+  { n = Total[First @ irr],
+    shp, tbl },
+  shp = YoungShapes[n];
+  tbl = YoungCharacters[n];
+  tbl[[ 
+    First @ FirstPosition[shp, irr],
+    First @ FirstPosition[Reverse @ shp, class]
+  ]]
+]
+(* NOTE: The rows of the character table is arranged as YoungShapes[n]. 
+  The columns are arranged as Reverse[YoungShapes[n]]. *)
+
+(**** </YoungCharacters> ****)
+
+
+(**** <LegacyYoungCharacters> ****)
+
+LegacyYoungCharacters::usage = "LegacyYoungCharacters[n] returns the table of characters of SymmetricGroup[n].\nLegacyYoungCharacters[irr] returns a list of characters of the irreducible representation 'irr'.\nLegacyYoungCharacters[irr, class] returns the character of the irreducible representation 'irr' evaluated at the conjugacy class 'class'.\nBoth 'irr' and 'class' are specified by partitions of integer 'n'."
+
+LegacyYoungCharacters[n_Integer] := Module[
   { pp = IntegerPartitions[n],
     wght, vecs },
-  wght = SymmetricGroupCentralizerSize /@ pp;
+  wght = YoungCentralizerSize /@ pp;
   vecs = CompoundYoungCharacters /@ pp;
   Orthogonalize[vecs, ((#1/wght) . #2)&, Method -> "GramSchmidt"]
- ]
+]
 
-SymmetricGroupCharacters[irr_?YoungShapeQ] :=
+LegacyYoungCharacters[irr_?YoungShapeQ] :=
   characterSymmetricGroup[irr, #]& /@ IntegerPartitions[Total @ irr]  
   
-SymmetricGroupCharacters[irr_?YoungShapeQ, class_?YoungShapeQ] :=
+LegacyYoungCharacters[irr_?YoungShapeQ, class_?YoungShapeQ] :=
   characterSymmetricGroup[irr, class]
 
 
@@ -283,7 +367,7 @@ characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
     First[class] > 1
   ]
 
-(**** </GroupCharacters> ****)
+(**** </LegacyYoungCharacters> ****)
 
 
 (**** <GroupClasses> ****)
@@ -291,72 +375,99 @@ characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
 GroupClasses::usage = "GroupClasses[group] returns the list of conjugacy classes of group."
 
 GroupClasses[SymmetricGroup[n_Integer]] :=
-  SymmetricGroupClasses[n] /; n > 0
+  YoungClasses[n] /; n > 0
 
 GroupClasses[SymmetricGroup[n_Integer], irr_?YoungShapeQ] :=
-  SymmetricGroupClasses[irr] /; Total[irr] == n
+  YoungClasses[irr] /; Total[irr] == n
+
+(**** </GroupClasses> ****)
 
 
-SymmetricGroupClasses::uasge = "SymmetricGroupClasses[n] returns an association of conjugacy classes of the symmetric group of degree n.\nEach key of the returned association refers to the 'cycle decomposition type' of the permutations in the class, which in turn uniquelty corresponds to a partition of integer n."
+YoungClassCount::usage = "YoungClassCount[n] returns the number of conjugacy classes of the symmetric group of degree n."
 
-SymmetricGroupClasses[n_Integer] := With[
+YoungClassCount[n_Integer] := PartitionsP[n]
+
+
+(**** <YoungClasses> ****)
+
+YoungClasses::usage = "YoungClasses[n] returns an association of conjugacy classes of the symmetric group of degree n.\nEach key of the returned association refers to the 'cycle decomposition type' of permutations in the class.\nConjugacy classes in the symmetric group of degree n are uniquely determined by the cycle decomposition type of permutations. Hence, like irreducible representations, conjugacy classes in the symmetric group are in one-to-one correspondence to partitions of n."
+
+YoungClasses[n_Integer] := With[
   { elm = GroupElements[SymmetricGroup @ n] },
-  KeyMap[
+  KeyMap[    
     YoungShape,
     KeySort[
-      GroupBy[elm, theIrreducibleLabel[n]], 
+      GroupBy[elm, cycleDecompositionType[n]], 
       LexicographicOrder
     ]
   ]
 ]
+(* NOTE: The keys are arranged so that they correspond to the columns of FiniteGroupData[{"SymmetricGroup", n}, "CharacterTable"]. The order is the same as Reverse[YoungShapes[n]] but not as ReverseSort[YoungShapes[n]]. *)
 
-theIrreducibleLabel[n_Integer][Cycles[spec_List]] := With[
+cycleDecompositionType::usage = "cycleDecompositionType[n][prm] returns the cycle decomposition type of permutation prm of n elements.\nA cycle decomposition of a permutation is an expression of the permutation as a product of disjoint cycles, where each cycle represents a cyclic rearrangement of elements. This decomposition is unique up to the order of the cycles and cyclic rotations within each cycle. The cycle decomposition type of a permutation is a list of the lengths of the cycles in its cycle decomposition. By convention, a cycle decomposition type is arranged in decreasing order, and is a partition of n."
+
+cycleDecompositionType[n_Integer][Cycles[spec_List]] := With[
   { body = ReverseSort[Length /@ spec] },
   Join[body, Table[1, n-Total[body]]]
 ]
 
-(**** </GroupClasses> ****)
+(**** </YoungClasses> ****)
 
 
 GroupClassSize::usage = "GroupGlassSize[group, class] returns the number of elements in the conjugacy class 'class'."
 
 GroupClassSize[SymmetricGroup[n_Integer], class_?YoungShapeQ] :=
-  SymmetricGroupClassSize[class] /; n > 0
+  YoungClassSize[class] /; n > 0
 
 GroupClassSize[group_, g_] :=
   GroupOrder[group] / GroupCentralizerSize[group, g]
 
 
-SymmetricGroupClassSize::usage="SymmetricGroupClassSize[class] returns the number of elements in the conjugacy class 'class' in SymmetricGroup[n].\nThe conjugacy class is specified by a partition of integer 'n'.\nThe inverse of SymmetricGroupClassSize[class] = GroupOrder[SymmetricGroup[n]] / SymmetricGroupCentralizerSize[class]; see, e.g., Sagan, The Symmetric Group (Springer, 2001) Section 1.1."
+(**** <YoungClassSize> ****)
 
-SymmetricGroupClassSize[shape_YoungShape] :=
-  SymmetricGroupClassSize[First @ shape]
+YoungClassSize::usage="YoungClassSize[class] returns the number of elements in the conjugacy class 'class' in SymmetricGroup[n].\nThe conjugacy class is specified by a partition of integer 'n'.\nThe inverse of YoungClassSize[class] = GroupOrder[SymmetricGroup[n]] / YoungCentralizerSize[class]; see, e.g., Sagan, The Symmetric Group (Springer, 2001) Section 1.1."
 
-SymmetricGroupClassSize[class_?YoungShapeQ] :=
-  GroupOrder[SymmetricGroup @ Total @ class] /
-  SymmetricGroupCentralizerSize[class]
+YoungClassSize[shape_YoungShape] :=
+  YoungClassSize[First @ shape]
+
+YoungClassSize[class_?YoungShapeQ] :=
+  Factorial[Total @ class] / YoungCentralizerSize[class]
+
+(**** </YoungClassSize> ****)
 
 
 GroupCentralizerSize::usage = "GroupCentralizerSize[group, g] returns the number of elements in the conjugacy class containing the element 'g' of the group 'group'."
 
 GroupCentralizerSize[SymmetricGroup[n_Integer], class_?YoungShapeQ] :=
-  SymmetricGroupCentralizerSize[class] /; n > 0
+  YoungCentralizerSize[class] /; n > 0
 
 GroupCentralizerSize[group_, g_] :=
   GroupOrder @ GroupCentralizer[group, g]
 
 
-SymmetricGroupCentralizerSize::usage = "SymmetricGroupCentralizerSize[class] returns the size of the centralizer class of an element of cycle type class.\nThe inverse of SymmetricGroupCentralizerSize[class] coincides, up to a factor of the group order, with the size of the conjugacy class; that is, SymmetricGroupCentralizerSize[class] = GroupOrder[SymmetricGroup[n]] / (the size of the class class)."
+(**** <YoungCentralizerSize> ****)
 
-SymmetricGroupCentralizerSize[class_?YoungShapeQ] :=
-  Apply[Times, Factorial /@ Counts[class]] * Apply[Times, class];
+YoungCentralizerSize::usage = "YoungCentralizerSize[class] returns the size of the centralizer of an element in conjugacy class, which is specified by the corresponding Young shape.\nNot that YoungCentralizerSize[class] = GroupOrder[SymmetricGroup[n]] / YoungClassSize[class]."
 
+YoungCentralizerSize[class_YoungShape] :=
+  YoungCentralizerSize[First @ class]
+
+YoungCentralizerSize[class_?YoungShapeQ] :=
+  Whole[Factorial @ Counts @ class] * Whole[class];
+
+(**** </YoungCentralizerSize> ****)
+
+
+(**** <CompoundYoungCharacters> ****)
 
 CompoundYoungCharacters::usage = "CompoundYoungCharacters[shape] returns the composite Young character corresponding to partition shape."
 
+CompoundYoungCharacters[shape_YoungShape] :=
+  CompoundYoungCharacters[First @ shape]
+
 CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
-  { chrVect = Table[0, PartitionsP[Total @ pp]],
-    supPartitionTupel = Partition[pp,1],
+  { chrVect = Table[0, YoungClassCount[Total @ pp]],
+    supPartitionTupel = Partition[pp, 1],
     hashPositionTupel = Prime[pp],
     r, columnIdx },
 
@@ -365,9 +476,9 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
         Flatten @ MapIndexed[
           {Times @@ Prime[#1] -> First[#2]}&,
           IntegerPartitions[Total[pp]]
-         ]
-       ]
-     },
+        ]
+      ]
+    },
 
     While[ True,
       columnIdx = Part[hashPosList, Whole @ hashPositionTupel];
@@ -377,9 +488,9 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
           Part[#, 2]&,
           SplitBy[Sort @ Flatten[Tally /@ supPartitionTupel, 1], First],
           {2}
-         ],
+        ],
         2
-       ];
+      ];
 
       r = Length[supPartitionTupel];
       While[(r>0) && (First[supPartitionTupel[[r]]]==1), r--];
@@ -389,17 +500,17 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
         Take[supPartitionTupel,r-1],
         {nextPartition[supPartitionTupel[[r]]]},
         Partition[Drop[pp,r],1]
-       ];
+      ];
       hashPositionTupel = Join[
         Take[hashPositionTupel, r-1],
         {Whole @ Prime[supPartitionTupel[[r]]]},
         Prime @ Drop[pp,r]
-       ]
-     ]
-   ];
+      ]
+    ]
+  ];
   
   chrVect
- ]
+]
 
 
 nextPartition[pp_?YoungShapeQ] := Module[
@@ -412,32 +523,37 @@ nextPartition[pp_?YoungShapeQ] := Module[
     Take[pp, i-1],
     ConstantArray[j-1, Part[qr, 1]],
     If[Part[qr, 2] >= 1, {Part[qr, 2]}, {}]
-   ]
- ] /; AnyTrue[pp, #>1&]
+  ]
+] /; AnyTrue[pp, #>1&]
 
 nextPartition[pp_?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
 (* Convention: at the last partition, we cycle back to the first one. *)
+
+(**** </CompoundYoungCharacters> ****)
 
 
 KostkaMatrix::usage = "KostkaMatrix[n] returns the matrix of Kostka numbers of rank n."
 
 KostkaMatrix[n_Integer] := Dot[
-  SymmetricGroupCharacters[n],
-  DiagonalMatrix[1 / (SymmetricGroupCentralizerSize /@ IntegerPartitions[n])],
+  LegacyYoungCharacters[n],
+  DiagonalMatrix[1 / (YoungCentralizerSize /@ IntegerPartitions[n])],
   Transpose[CompoundYoungCharacters /@ IntegerPartitions[n]]
- ] /; n > 0
+] /; n > 0
 
 
-YoungCharacterInner::usage = "YoungCharacterInner[f, g, n] returns the scalar product of the class vectors f and g for a symmetric group of rank n."
+YoungCharacterInner::usage = "YoungCharacterInner[n][f, g] returns the scalar product of two rows (also known as class vectors) f and g of the character table of the symmetric group of degree n."
 
-YoungCharacterInner[f_List, g_List, n_Integer] := Total[
-  f * g / (SymmetricGroupCentralizerSize /@ IntegerPartitions[n])
- ] /; And[
-   n > 0,
-   Length[f]==PartitionsP[n],
-   Length[g]==PartitionsP[n]
-  ]
+YoungCharacterInner[n_Integer] := YoungCharacterInner @ 
+  Map[YoungCentralizerSize, Reverse @ YoungShapes @ n] /; n > 0
+(* NOTE: The columns of YoungCharacters[n] and the keys of YoungClasses[n] are arranged as Reverse[YoungShapes[n]]. *)
 
+YoungCharacterInner[w_?VectorQ][f_?VectorQ, g_?VectorQ] := 
+  Dot[f, g / w] /; Length[w] == Length[f] == Length[g]
+(* NOTE: The following conditions are supposed to be satisfied (not checked):
+  Length[f]==PartitionsP[n] && Length[g]==PartitionsP[n] *)
+
+
+(**** <YoungTableauQ> ****)
 
 YoungTableauQ::usage = "YoungTableauQ[tb] yields True if tb represents a standard Young tableau and False otherwise."
 
@@ -448,8 +564,8 @@ YoungTableauQ[tb_?anyYoungTableauQ] := TrueQ[
     List[DuplicateFreeQ @ Flatten @ tb],
     Less @@@ tb,
     Less @@@ YoungTranspose[tb]
-   ]
- ]
+  ]
+]
 
 YoungTableauQ[_] = False
 
@@ -464,10 +580,14 @@ anyYoungTableauQ[tb:{{___Integer}..}] := Apply[GreaterEqual, Length /@ tb]
 
 anyYoungTableauQ[_] = False
 
+(**** </YoungTableauQ> ****)
 
-(**** <YoungForm> ****)
 
-YoungTableau::usage = "YoungPattern[data] represents a Young tableau specified by data."
+(**** <YoungTableau> ****)
+
+YoungTableau::usage = "YoungTableau[data] represents a Young tableau.\nYoungTableau[gp] converts Gelfand pattern gp to Young tableau."
+
+SetAttributes[YoungTableau, NHoldAll]
 
 Format[tbl:YoungTableau[data:{{___}..}]] :=
   Interpretation[YoungForm @ data, tbl]
@@ -475,6 +595,10 @@ Format[tbl:YoungTableau[data:{{___}..}]] :=
 YoungTableau /:
 Equal[YoungTableau[a_], YoungTableau[b_]] := Equal[a, b]
 
+(**** </YoungTableau> ****)
+
+
+(**** <YoungForm> ****)
 
 YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional form."
 
@@ -488,7 +612,8 @@ YoungForm[tb:{{___}..}] :=
 YoungForm[data_] := (
   Message[YoungForm::notyt, data];
   data
- )
+)
+
 (**** </YoungForm> ****)
 
 
@@ -580,6 +705,10 @@ Permutation::cyc = "`` does not represent a valid permutation in disjoint cyclic
 
 AddElaborationPatterns[_Permutation]
 
+Format[op:Permutation[cyc_Cycles, ss:{__?SpeciesQ}]] :=
+  Interpretation[Permutation[PermutationForm @ cyc, ss], op]
+
+
 Permutation[prm_?PermutationListQ, ss:{__?SpeciesQ}] :=
   Permutation[PermutationCycles @ prm, FlavorCap @ ss]
 
@@ -611,9 +740,22 @@ Elaborate @ Permutation[cyc_?PermutationCyclesQ, ss:{__?SpeciesQ}] :=
 
 
 Permutation /:
+Matrix[Permutation[prm_Cycles, ss:{__?SpeciesQ}]] := Module[
+  { kk = Range[Length @ ss],
+    dd = Dimension[ss],
+    pp, tt, id },
+  id = One[Whole @ dd];
+  id = Tensorize[id, Riffle[dd, dd]];
+  pp = Permute[2*kk, prm];
+  tt = Transpose[id, Riffle[2*kk-1, pp]];
+  TensorFlatten[tt]
+]
+
+Permutation /:
 Matrix[
-  op:Permutation[_?PermutationCyclesQ, {__?SpeciesQ}],
-  rest___ ] := Matrix[Elaborate @ op, rest]
+  op:Permutation[_Cycles, ss:{__?SpeciesQ}],
+  rr:{__?SpeciesQ}
+] := MatrixEmbed[Matrix @ op, ss, rr]
 
 Permutation /: (* fallback *)
 Matrix[op_Permutation, rest___] := op * Matrix[1, rest]
@@ -724,7 +866,7 @@ KetPermute[expr_, Cycles[{}], {__?SpeciesQ}] := expr
 
 (* For Specht basis and Young's normal representation *)
 (* See Sagan (2001, Section 2.7 and Exercise 2.11) and Krovi (2019). *)
-(* NOTE: that Young's normal representation should be distinguished from
+(* NOTE: Young's normal representation should be distinguished from
    Young's natural or seminormal representation. *)
 
 KetPermute[Ket[{yt_YoungTableau}], Cycles @ {{x_, y_}}] := Module[
@@ -738,8 +880,8 @@ KetPermute[Ket[{yt_YoungTableau}], Cycles @ {{x_, y_}}] := Module[
     dd = 1 / YoungDistance[{x, y}, yt];
     tt = ReplaceAll[yt, {x -> y, y -> x}];
     Ket[{yt}] * dd + Ket[{tt}] * Sqrt[1-dd^2]
-   ]
- ] /; x+1 == y
+  ]
+] /; x+1 == y
 
 
 KetPermute[Ket[{yt_YoungTableau}], cc_Cycles] :=
@@ -991,37 +1133,40 @@ YoungDistance[{x_Integer, y_Integer}, data_?YoungTableauQ] := Module[
 
 BratteliDiagram::usage = "BratteliDiagram[n] constructs the Bratteli diagram for the symmetric group of degree n."
 
-BratteliDiagram[n_Integer, opts : OptionsPattern[Graph]] := Module[
-  { grf = Graph @ Flatten @ Rest @ NestList[brattelli, {1}, n-1],
+BratteliDiagram[n_Integer, opts:OptionsPattern[Graph]] := Module[
+  { grf = NestList[brattelli, YoungShape[{1}], n-1],
     vtx },
-  vtx = VertexList[grf];
-  vtx = Map[Rule[#, YoungDiagram @ #]&, vtx];
+  grf = Graph[Flatten @ Rest @ grf];
   Graph[ grf, opts,
     GraphLayout -> "LayeredEmbedding",
-    VertexLabels -> vtx,
-    VertexLabelStyle -> Large ]
+    VertexLabels -> "Name",
+    VertexLabelStyle -> Medium
+  ]
 ]
 
-brattelli[shape_?YoungShapeQ] := 
-  Map[UndirectedEdge[shape, #] &, YoungShapePile[shape]]
+brattelli[shape_YoungShape] := 
+  Map[UndirectedEdge[shape, #]&, YoungShapePile @ shape]
 
-brattelli[edges : {__UndirectedEdge}] := 
+brattelli[edges:{__UndirectedEdge}] := 
   Flatten @ Map[brattelli, Union[Last /@ edges]]
 
+(**** </BratteliDiagram> ****)
+
+
+(**** <YoungShapePile> ****)
 
 YoungShapePile::usage = "YoungShapePile[shape] returns the list of new Young shapes resulting from adding a box to shape."
 
-YoungShapePile[shape_?YoungShapeQ] := Module[
-  { new = Append[YoungTrim[shape], 0],
-    k },
-  new = Table[
-    ReplacePart[new, k -> new[[k]]+1],
-    {k, 1, Length[new]}
-  ];
-  YoungTrim /@ Select[new, YoungShapeQ]
+YoungShapePile[data_List?YoungShapeQ] :=
+  YoungShapePile[YoungShape @ data]
+
+YoungShapePile[YoungShape[data_]] := Module[
+  { new = Append[YoungTrim[data], 0] },
+  new = Map[(new + #)&, One[Length @ new]];
+  YoungShape /@ YoungTrim /@ Select[new, YoungShapeQ]
 ]
 
-(**** </BratteliDiagram> ****)
+(**** </YoungShapePile> ****)
 
 
 (**** <YoungInvariantBasis> ****)
@@ -1046,26 +1191,14 @@ SpechtBasis::usage = "SpechtBasis[n] or SpechtBasis[SymmetricGroup[n]] construct
 
 SpechtBasis[shape_YoungShape] := Ket /@ List /@ YoungTableaux[shape]
 (* NOTE: Since v3.0, YoungTableaux is now based on GelfandYoungPatterns and
-   is already consistent with SchurBasis. *)
-(* Ket /@ ToYoungTableau /@ GelfandYoungPatterns[shape] *)
-(* OBSOLETE NOTE: To be consistent with the Schur basis,
-   we use the above method instead of the following:
-   SpechtBasis[shape_?YoungShapeQ] := Ket /@ YoungTableaux[shape]
-   *)
+   is already consistent with SpechtBasis. *)
 
 SpechtBasis[SymmetricGroup[n_Integer]] := SpechtBasis[n]
 
 SpechtBasis[n_Integer] := With[
   { pp = YoungShapes[n] },
   AssociationThread[pp -> SpechtBasis /@ pp]
- ]
-
-(* For the Specht module *)
-theKetFormatQ[_?YoungTableauQ] = True
-
-theKetFormat[tbl_?YoungTableauQ] := {YoungForm[tbl]}
-(* NOTE: Do not use test anyYoungTableauQ since it also passes Gelfand
-   patterns. *)
+]
 
 (**** </SpechtBasis> ****)
 
@@ -1110,6 +1243,24 @@ PermutationBasis[type:{__Integer?NonNegative}, ss:{__?SpeciesQ}] :=
 (**** </PermutationBasis> ****)
 
 
+(**** <YoungRefersTo> ****)
+
+YoungRefersTo::usage = "YoungRefersTo[wt,d][syt] returns True if the pair of standard Young tableau syt and type=YoungType[wt,d] refers to Weyl tableau wt in the permutation module of type; and False otherwise.";
+
+YoungRefersTo[wt_YoungTableau, d_Integer][syt_YoungTableau] := Module[
+  { cnt, new },
+  cnt = YoungType[wt, d];
+  cnt = Flatten @ MapThread[
+    ConstantArray,
+    {Range @ d, cnt}
+  ];
+  new = syt /. Thread[Range[YoungDegree @ syt] -> cnt];
+  TrueQ[new == wt]
+]
+
+(**** </YoungRefersTo> ****)
+
+
 (**** <DominatesQ> ****)
 
 DominatesQ::usage = "DominatesQ[a,b] returns True if list a dominates list b and False otherwise."
@@ -1122,20 +1273,166 @@ DominatesQ[a_?ListQ, b_?ListQ] := Module[
   AllTrue[GreaterEqual @@@ Transpose @ {aa, bb}, TrueQ]
  ]
 
+(* shortcut *)
+DominatesQ[a_YoungShape, b_] := DominatesQ[First @ a, b]
+
+(* shortcut *)
+DominatesQ[a_, b_YoungShape] := DominatesQ[a, First @ b]
+
 DominatesQ[_, _] = False
 
 
 Dominates::usage = "Dominates[b] is an operator form that yields a\[RightTriangleEqual]b when applied to an expression a."
 
-Dominates[b_?ListQ][a_?ListQ] := DominatesQ[a, b]
+Dominates[b_?ListQ][a_] := DominatesQ[a, b]
+
+(* shortcut *)
+Dominates[a_YoungShape] := Dominates[First @ a]
 
 
 DominatedBy::usage = "DominatedBy[a] is an operator form that yields b\[LeftTriangleEqual]a when applied to an expression b."
 
-DominatedBy[a_?ListQ][b_?ListQ] := DominatesQ[a, b]
+DominatedBy[a_?ListQ][b_] := DominatesQ[a, b]
+
+(* shortcut *)
+DominatedBy[a_YoungShape] := DominatedBy[First @ a]
 
 (**** </DominatesQ> ****)
 
+
+(**** <TwoLineArray> ****)
+
+TwoLineArray::usage = "TwoLineArray[mat] converts matrix mat with non-negative entries to the corresponding two-line array (generalized permutation).\nTwoLineArray[{a1,a2,\[Ellipsis],an}, {b1,b2,\[Ellipsis],bn}] returns a matrix with non-negative entries that corresponds to the two-line array {{a1,a2,\[Ellipsis],an}}, {b1,b2,\[Ellipsis],bn}}.\nTwoLineArray[{b1,b2,\[Ellipsis],bn}] is equivalent to TwoLineArray[{1,2,\[Ellipsis],n}, {b1,b2,\[Ellipsis],bn}]."
+
+TwoLineArray[mat_?MatrixQ] := Module[
+  { ww },
+  ww = MapIndexed[Table[#2, #1]&, mat, {2}];
+  ww = Catenate @ Flatten[ww, 1];
+  Transpose[ww]
+] /; MatrixQ[mat, (NumberQ[#] && IntegerQ[#] && NonNegative[#] &)]
+
+TwoLineArray[a : {__Integer}, b : {__Integer}] :=
+  SparseArray[Normal @ Counts @ Transpose @ {a, b}]
+
+TwoLineArray[b : {__Integer}] :=
+  TwoLineArray[Range @ Length @ b, b]
+
+(**** <TwoLineArray> ****)
+
+
+(**** <RSKMap> ****)
+
+RSKMap::usage = "RSKMap[{{a1, a2, ...}, {b1, b2, ...}}] returns {p, q}, where p is a standard Young tableau and b is semi-standard Young tableau, corresponding to the generalized permutation specified by words {a1, a2, ...} and {b2, b2, ...} according to the RSK algorithm."
+(** See Fulton (1997). **)
+
+RSKMap[mat_?MatrixQ] := 
+  Apply[RSKMap, TwoLineArray @ mat]
+
+
+RSKMap[kk:{__Integer}] := RSKMap[Range[Length @ kk], kk]
+
+RSKMap[aa:{__Integer}, bb:{__Integer}] :=
+    Fold[RowInsertion, YoungTableau /@ {{}, {}}, Transpose @ {aa, bb}]
+
+(**** </RSKMap> ****)
+
+
+(**** <RowInsertion> ****)
+
+RowInsertion::usage = "RowInsertion[wt, a] returns new Weyl tableau with integer a added to Weyl tableau wt by the row insertion process.\nRowInsertion[wt, {a1,a2,\[Ellipsis],an}] successively add integers a1, a2, \[Ellipsis], an."
+(** Insertion to single Weyl tableau **)
+(** See Fulton (1997). **)
+
+RowInsertion[wt_YoungTableau, aa:{___Integer}] :=
+  Fold[RowInsertion, wt, aa]
+
+
+RowInsertion[YoungTableau[{}], a_Integer] :=
+  YoungTableau[{{a}}]
+
+RowInsertion[wt_YoungTableau, a_Integer] :=
+  YoungTableau @ theRowInsertion[First @ wt, a]
+
+
+theRowInsertion[data:{{___Integer} ..}, a_] := Module[
+  {row, b},
+  {row, b} = theRowInsertion[First @ data, a];
+  Which[
+    b == 0,
+    Join[{row}, Rest @ data],
+    Length[data] == 1,
+    Join[{row}, {{b}}],
+    True,
+    Join[{row}, theRowInsertion[Rest @ data, b]]
+  ]
+]
+
+theRowInsertion[row:{___Integer}, a_Integer] := Module[
+  { k = LengthWhile[row, # <= a &] },
+  If[ k == Length[row],
+    {Append[row, a], 0},
+    {ReplacePart[row, k+1 -> a], row[[k+1]]}
+  ]
+]
+
+
+RowInsertion::usage = RowInsertion::usage <>"\nRowInsertion[{p, q}, {a, b}] returns new pair of Weyl tableaux with integers a and b added, where a is the ordering index and b is the content index.\nRowInsertion[{p, q}, {{a1,a2,\[Ellipsis],an}, {b1,b2,\[Ellipsis],bn}}] successively add integer pairs {a1, b1}, {a2, b2}, \[Ellipsis], {an, bn}.\nNote that p is the recording tableau and q is the insertion tableau."
+(** Insertion to a pair of Weyl tableaux **)
+(** See Fulton (1997). **)
+
+RowInsertion[
+  {p_YoungTableau, q_YoungTableau},
+  {Automatic, b:{___Integer}}
+] := RowInsertion[{p, q}, {Range @ Length @ b, b}]
+
+RowInsertion[
+  {p_YoungTableau, q_YoungTableau},
+  {a:{___Integer}, b:{___Integer}}
+] := Fold[RowInsertion, {p, q}, Transpose @ {a, b}]
+
+RowInsertion[{YoungTableau[{}], YoungTableau[{}]}, {a_Integer, b_Integer}] :=
+  { YoungTableau @ {{a}}, YoungTableau @ {{b}} }
+
+RowInsertion[{p_YoungTableau, q_YoungTableau}, {a_Integer, b_Integer}] :=
+  YoungTableau /@ theRowInsertion[{First @ p, First @ q}, {a, b}]
+
+
+theRowInsertion[{p:{__List}, q:{__List}}, {a_, b_}] := Module[
+  {row, new},
+  {row, new} = theRowInsertion[First /@ {p, q}, {a, b}];
+  Which[
+    new == {0, 0},
+    Catenate /@ Transpose @ {List /@ row, Rest /@ {p, q}},
+    Length[p] == 1,
+    Transpose @ {row, List /@ new},
+    True,
+    Catenate /@ Transpose @ {
+      List /@ row, 
+      theRowInsertion[Rest /@ {p, q}, new]
+    }
+  ]
+]
+
+theRowInsertion[{p:{___Integer}, q:{___Integer}}, {a_, b_}] := Module[
+  { k = LengthWhile[q, # <= b &] },
+  If[ k == Length[q],
+    { {Append[p, a], Append[q, b]}, {0, 0} },
+    { {p, ReplacePart[q, k+1 -> b]}, {a, q[[k+1]]} }
+  ]
+]
+
+(**** </RowInsertion> ****)
+
+
+(**** <YoungTableauProduct> ****)
+
+YoungTableauProduct::usage = "YoungTableauProduct[a, b] returns the composition a\[CenterDot]b of two Weyl tableaux a and b."
+(* See Fulton (1997). *)
+
+YoungTableauProduct[a_YoungTableau, b_YoungTableau] :=
+  RowInsertion[a, Flatten[Reverse @ First @ b]]
+
+(**** </YoungTableauProduct> ****)
 
 End[]
 

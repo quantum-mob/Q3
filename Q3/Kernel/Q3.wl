@@ -53,6 +53,7 @@ Get["QuantumMob`Q3`VonNeumann`"];
 Get["QuantumMob`Q3`Young`"];
 Get["QuantumMob`Q3`YoungFourier`"];
 Get["QuantumMob`Q3`Schur`"];
+Get["QuantumMob`Q3`SchurPlus`"];
 Get["QuantumMob`Q3`QSP`"];
 Get["QuantumMob`Q3`QML`"];
 Get["QuantumMob`Q3`Einstein`"]; (* should be loaded last *)

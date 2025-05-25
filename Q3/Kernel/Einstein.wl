@@ -2,6 +2,8 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ GelfandAttach }; (* rename 2025-05-23 v41.1.11 *)
+{ ToYoungTableau, ToGelfandPattern }; (* obsolete v4.1.11 2025-05-22 *)
 { GroupRegularRepresentation }; (* obsolete 2025-05-09 *)
 { PileYoungShape }; (* renamed 2025-04-13 v4.1.7 *)
 { ConditionNumber }; (* renamed 2025-04-02 v4.1.5 *)
@@ -207,7 +209,86 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
 (**** </changed> ****)
 
 
+(**** <ToYoungTableau> ****)
+(* obsolete since 2025-05-22 v4.1.11 *)
+
+ToYoungTableau::usage = "OBSOLETE. Use YoungTableau instead.\nToYoungTableau[gz] converts Gelfand pattern gz to the corresponding Weyl tableau (semi-standard Young tableau)."
+(* See Krovi119a. *)
+
+ToYoungTableau::notgp = "Data `` is not a valid Gelfand pattern."
+
+ToYoungTableau[gp_GelfandPattern] := (
+  Message[Q3General::obsolete, "ToYoungTableau", "YoungTableau"];
+  YoungTableau[gp]
+)
+
+ToYoungTableau[gp:{{___Integer}..}] := Module[
+  { n = Length @ gp,
+    dd },
+  Message[Q3General::obsolete, "ToYoungTableau", "YoungTableau"];
+  dd = Differences /@ Transpose @ Reverse @ PadRight[gp, {n+1, n}];
+  YoungTableau @ YoungTrim[ 
+    Flatten /@ Table[Table[k, dd[[j, k]]], {j, n}, {k, n}] 
+  ]
+]
+
+ToYoungTableau[gp_] := (
+  Message[Q3General::obsolete, "ToYoungTableau", "YoungTableau"];
+  Message[ToYoungTableau::notgp, gp];
+  gp
+)
+
+(**** </ToYoungTableau> ****)
+
+
+(**** <ToGelfandPattern> ****)
+(* obsolete since 2025-05-22 v4.1.11 *)
+
+ToGelfandPattern::usage = "OBSOLETE. Use GelfandPattern instead.\nToGelfandPattern[tbl, d] converts a semi-standard Young tableau tbl to the corresponding Gelfand pattern of d letters.\nToGelfandPattern[d] represents an operation form."
+
+ToGelfandPattern::notwt = "`` is not a valid Weyl tableau."
+
+ToGelfandPattern[tb_?WeylTableauQ] := (
+  CheckArguments[ToGelfandPattern[tb], 2];
+  ToGelfandPattern[tb, Max @ tb]
+)
+
+
+ToGelfandPattern[d_Integer][any_] := ToGelfandPattern[any, d]
+
+ToGelfandPattern[{}, 1] := { {0} }
+
+ToGelfandPattern[tb_?WeylTableauQ, 1] := { Length /@ tb }
+
+ToGelfandPattern[tb_List?WeylTableauQ, d_Integer] := (
+  Message[Q3General::obsolete, "ToGelfandPattern", "GelfandPattern"];
+  Prepend[
+    ToGelfandPattern[YoungTrim @ DeleteCases[tb, d, {2}], d-1],
+    PadRight[Length /@ tb, d]
+  ]  
+)
+
+ToGelfandPattern[tb_YoungTableau, d_Integer] := (
+  Message[Q3General::obsolete, "ToGelfandPattern", "GelfandPattern"];
+  GelfandPattern @ ToGelfandPattern[First @ tb, d]  
+)
+
+ToGelfandPattern[tb_, _Integer] := (
+  Message[ToGelfandPattern::notwt, tb];
+  { {0} }
+)
+
+(**** </ToGelfandPattern> ****)
+
+
 (**** <obsolete> ****)
+
+GelfandAttach::usage = "GelfandAttach is obsolete since v4.1.10 (2025-05-23); use GelfandYoungPile instead."
+
+GelfandAttach[any___] := (
+  Message[Q3General::renamed, "GelfandAttach", "GelfandYoungPile"];
+  GelfandYoungPile[any]
+)
 
 GroupRegularRepresentation::usage = "GroupRegularRepresentation is obsolete since v4.1.10 (2025-05-09); use LeftRegularRepresentation instead."
 

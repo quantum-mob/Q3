@@ -1324,7 +1324,7 @@ RandomWickMeasurement[n_Integer] :=
 
 (**** <WickMapKernel> ****)
 
-WickMapKernel::usage = "WickMapKernel[type, mat] returns {A, B, D, nrm}, where A, B and D are 2n\[Times]2n real matrices and nrm is a list of prefactors. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] Sum[L[k]**\[Rho]**Dagger[L[k]], {k, m}]. For type=1, L[k] are linear superpositin of Majorana operators. For type=2, L[k] are bilinear combination of Majorana operators."
+WickMapKernel::usage = "WickMapKernel[type, mat] returns {A, B, D, nrm}, where A, B and D are 2n\[Times]2n real matrices and nrm is a list of prefactors. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] Sum[L[k]**\[Rho]**Dagger[L[k]], {k, m}]. For type=1, L[k] are linear combination of Majorana operators. For type=2, L[k] are bilinear combination of Majorana operators."
 
 (* L[k] := b[k] *)
 WickMapKernel[1, mat_?MatrixQ] := Module[
@@ -1334,7 +1334,7 @@ WickMapKernel[1, mat_?MatrixQ] := Module[
   {aa, SparseArray @ bb, aa, nn}
 ]
 
-(* L[k] := Dagger[a[k]]**a[k] *)
+(* L[k] := Dagger[a[k]]**a[k], where a[k] are bare Dirac fermion mode. *)
 WickMapKernel[2, kk:{___Integer}, n_Integer] := Module[
   {aa, bb},
   {aa, bb} = Transpose @ Map[WickMeasurementKernel[#, n]&, kk];

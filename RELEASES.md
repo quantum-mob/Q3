@@ -1,5 +1,19 @@
 # Release Notes
 
+## 4.1.11
+
+- New: YoungType, YoungClassCount, RowInsertion, TwoLineArray, YoungTableauProduct
+- Improved: WickMap, DominatesQ, Dominates, DominatedBy, YoungShape, WeylTableaux, GelfandPatterns, YoungShapes
+- Obsolete: WeylType, WeylContents, GelfandContents, ToYoungTableau, ToGelfandPattern, YoungForm, GelfandForm
+- Renamed: SymmetricGroupClasses --> YoungClasses, SymmetricGroupCharacters --> YoungCharacters, GelfandAttach --> GelfandYoungPile
+- Improved: YoungCharacters, YoungClasses, YoungType, YoungTableau, GelfandPattern, PartialHook
+- Bug fix: RSKMap
+
+## 4.1.10
+
+- Bug fix: CliffordEntropy, CliffordEntanglementEntropy, CliffordMutualInformation
+- Improved: YoungFourier, YoungFourierBasis, YoungFourierMatrix: they support new option FourierParameters.
+
 ## 4.1.9
 
 - Bug fix: RandomWickCircuit, WickMeasurement
