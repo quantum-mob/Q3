@@ -1,9 +1,9 @@
 # Release Notes
 
-## 4.1.11
+## 4.2.0
 
-- New: YoungType, YoungClassCount, RowInsertion, TwoLineArray, YoungTableauProduct
-- Improved: WickMap, DominatesQ, Dominates, DominatedBy, YoungShape, WeylTableaux, GelfandPatterns, YoungShapes
+- New: DualSchurBasis, YoungType, YoungClassCount, RowInsertion, TwoLineArray, YoungTableauProduct
+- Improved: WickMap, DominatesQ, Dominates, DominatedBy, WeylTableaux, GelfandPatterns, YoungShape, YoungShapes
 - Obsolete: WeylType, WeylContents, GelfandContents, ToYoungTableau, ToGelfandPattern, YoungForm, GelfandForm
 - Renamed: SymmetricGroupClasses --> YoungClasses, SymmetricGroupCharacters --> YoungCharacters, GelfandAttach --> GelfandYoungPile
 - Improved: YoungCharacters, YoungClasses, YoungType, YoungTableau, GelfandPattern, PartialHook

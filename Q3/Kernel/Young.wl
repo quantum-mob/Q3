@@ -1245,7 +1245,7 @@ PermutationBasis[type:{__Integer?NonNegative}, ss:{__?SpeciesQ}] :=
 
 (**** <YoungRefersTo> ****)
 
-YoungRefersTo::usage = "YoungRefersTo[wt,d][syt] returns True if the pair of standard Young tableau syt and type=YoungType[wt,d] refers to Weyl tableau wt in the permutation module of type; and False otherwise.";
+YoungRefersTo::usage = "YoungRefersTo[wt,d][syt] returns True if the pair of standard Young tableau syt and type:=YoungType[wt,d] properly refers to Weyl tableau wt in the permutation module of type; and False otherwise.";
 
 YoungRefersTo[wt_YoungTableau, d_Integer][syt_YoungTableau] := Module[
   { cnt, new },
