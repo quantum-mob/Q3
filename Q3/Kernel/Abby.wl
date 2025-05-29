@@ -1213,7 +1213,7 @@ SaveData[data_, OptionsPattern[]] := Module[
 
 (**** <doAssureList> ****)
 
-doAssureList::usage = "doAssureList[] ..."
+doAssureList::usage = "doAssureList[x] returns x if x is already a list and {x} if not.\ndoAssureList[x, n] returns x if x is already a list of length x, a new list with 0 padded to the right if x is a list of different length, and {x, 0, 0, \[Ellipsis]} if x is not a list."
 
 doAssureList[None] = {} (* cf. doForceList *)
 

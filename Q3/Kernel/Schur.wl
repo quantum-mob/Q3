@@ -43,7 +43,7 @@ YoungType[YoungTableau[data_], d_Integer] := Values @ Join[
 ]
 
 (* flexibility *)
-YoungType[data_?GelfandPatternQ, rest___] := 
+YoungType[data_List?GelfandPatternQ, rest___] := 
   YoungType[GelfandPattern @ data, rest]
 
 (* flexibility *)
@@ -148,15 +148,17 @@ GelfandForm[data_] := (
 
 (**** <GelfandOrder> ****)
 
-GelfandOrder::usage = "GelfandOrder[a, b] returns 1 if the Young tableaux corresponding to Gelfand patterns a and b are in the standard lexicographic order for Young tableaux."
-
+GelfandOrder::usage = "GelfandOrder[a, b] returns 1 if the Young tableaux corresponding to Gelfand patterns a and b are in the lexicographic order of Young tableaux (i.e., the column-wise lexicographic order)."
 (* NOTE: The lexicographic order of Young tableaux is different from the
-   lexicographic order for normal lists. *)
+   lexicographic order for normal lists. It is the column-wise lexicographic order. *)
 
-GelfandOrder[a_?GelfandPatternQ, b_?GelfandPatternQ] := 
+GelfandOrder[a_List?GelfandPatternQ, b_List?GelfandPatternQ] :=
+  GelfandOrder[GelfandPattern @ a, GelfandPattern @ b]
+
+GelfandOrder[GelfandPattern[a_], GelfandPattern[b_]] :=
   Order[Rest @ a, Rest @ b] /; First[a] == First[b]
 
-GelfandOrder[a_?GelfandPatternQ, b_?GelfandPatternQ] :=
+GelfandOrder[GelfandPattern[a_], GelfandPattern[b_]] :=
   -Order[First @ a, First @ b]
 
 (**** </GelfandOrder> ****)
@@ -308,7 +310,7 @@ WeylTableaux::usage = "WeylTableaux[shape, d] returns a list of all possible Wey
 
 SyntaxInformation[WeylTableaux] = {"ArgumentsPattern" -> {_, _}}
 
-WeylTableaux[shape_?YoungShapeQ] := (
+WeylTableaux[shape_List?YoungShapeQ] := (
   CheckArguments[WeylTableaux[shape], 2];
   WeylTableaux[shape, Max @ shape]
 )
@@ -367,8 +369,8 @@ PartialHook[GelfandPattern[data_]] := With[
 ReducedWigner::usage = "ReducedWigner[n, {a, i}, {b, j}] returns the reduced Wigner coefficient of fundamental tensor operators of the U(n) group."
 
 ReducedWigner[d_Integer,
-  {a_?YoungShapeQ, j_Integer},
-  {b_?YoungShapeQ, k_Integer}] := Module[
+  {a_List?YoungShapeQ, j_Integer},
+  {b_List?YoungShapeQ, k_Integer}] := Module[
     {aa, bb, ff, x1, x2, y1, y2},
     
     aa = PadRight[a, d] + d - Range[d];

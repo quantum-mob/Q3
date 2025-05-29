@@ -18,7 +18,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
-{ YoungSubgroup };
+{ YoungSubgroup, YoungGenerators };
 
 { GroupCentralizerSize, YoungCentralizerSize,
   GroupClassSize, YoungClassSize,
@@ -28,12 +28,12 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   YoungCharacterInner,
   KostkaMatrix };
 
-{ InversionVector, AdjacentTranspositions };
+{ Transpositions, PermutationTranspositions,
+  InversionVector };
 
 { YoungDistance };
 
-{ Transposition };
-
+{ CycleDecompositionType };
 { PermutationForm };
 
 { PermutationBasis, YoungRefersTo };
@@ -44,12 +44,13 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { SpechtBasis, YoungInvariantBasis };
 
-{ RSKMap, TwoLineArray,
-  RowInsertion,
+{ RSKMap, TwoLineArray, RowInsertion,
   YoungTableauProduct };
 
 
 Begin["`Private`"]
+
+(**** <PermutationForm > ***)
 
 PermutationForm::usage = "PermutationForm[cyc] displays permutation cycles cyc in terms of \[Pi].\nPermutationForm[perm] displays perm specified in the permutation list representation in the two-list form."
 
@@ -60,7 +61,7 @@ PermutationForm[Cycles[pp_List]] :=
 
 PermutationForm[{}] = {}
 
-PermutationForm[prm_?PermutationListQ] := DisplayForm @ RowBox @ {
+PermutationForm[prm_List?PermutationListQ] := DisplayForm @ RowBox @ {
   "(",
   Grid @ {Range[Length @ prm], prm},
   ")"
@@ -69,19 +70,11 @@ PermutationForm[prm_?PermutationListQ] := DisplayForm @ RowBox @ {
 PermutationForm[expr_Association] := PermutationForm /@ expr
 
 PermutationForm[expr_] := ReplaceAll[ expr,
-  { pp:$PermutationSpec :> PermutationForm[pp] }
+  { pp:$PermutationSpec :> PermutationForm[pp],
+    tt_Transpositions :> PermutationForm[tt] }
 ]
 
-
-Transposition::usage = "Transposition[{i, j}] returns Cycles[{{i, j}}], representing the transposition of elements i and j. It is a shortcut to Cycles[{{i, j}}].\nTransposition[n] is equivalent to Transposition[{n, n+1}]."
-
-Transposition[{}] := Cycles[{}]
-
-Transposition[pair:{_Integer, _Integer}] := Cycles @ {pair}
-
-Transposition[x_Integer, y_Integer] := Transposition @ {x, y}
-
-Transposition[k_Integer] := Transposition @ {k, k+1}
+(**** </PermutationForm > ***)
 
 
 YoungDiagram::usage = "YoungDiagram[shape] displays shape in a Young diagram.\nYoungDiagram[yt] displays the Young diagram hosting Young tableau yt.\nA Young diagram is a finite collection of boxes, or cells, arranged in left-justified rows, with the row lengths in non-increasing order. Listing the number of boxes in each row gives a partition \[Lambda] of a non-negative integer n, the total number of boxes of the diagram. The Young diagram is said to be of shape \[Lambda], and it carries the same information as that partition.\nA Young diagram is also called a Ferrers diagram, particularly when represented using dots."
@@ -208,9 +201,10 @@ YoungTranspose[tb:{{___Integer}..}] := With[
 
 YoungTableauCount::usage = "YoungTableauCount[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nYoungTableauCount[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
 
-YoungTableauCount[YoungShape[pp_]] := YoungTableauCount[pp]
+YoungTableauCount[pp_List?YoungShapeQ] :=
+  YoungTableauCount[YoungShape[pp]]
 
-YoungTableauCount[pp_?YoungShapeQ] := Module[
+YoungTableauCount[YoungShape[pp_]] := Module[
   { qq = YoungTranspose[pp],
     j, k },
   Factorial[Total @ pp] /
@@ -222,7 +216,7 @@ YoungTableauCount[pp_?YoungShapeQ] := Module[
 ]
 
 YoungTableauCount[n_Integer] :=
-  Total @ Map[YoungTableauCount, IntegerPartitions @ n]
+  Total @ Map[YoungTableauCount, YoungShapes @ n]
 
 
 (**** <theKetFormat> ****)
@@ -242,17 +236,33 @@ YoungSubgroup::usage = "YoungSubgroup[type] returns the Young subgroup with type
 YoungSubgroup[shape_YoungShape] :=
   YoungSubgroup[First @ shape]
 
-YoungSubgroup[type:{__Integer}] := Module[
-  {pp},
-  pp = Select[TakeList[Range[Total@type], type], Length[#] > 1 &];
-  pp = Union @ Flatten[theYoungGenerators /@ pp];
-  PermutationGroup[pp]
-]
+YoungSubgroup[type:{__Integer}] :=
+  PermutationGroup[YoungGenerators @ type]
 
-theYoungGenerators[set : {_Integer, __Integer}] := {
-  Cycles @ {Take[set, 2]}, 
-  Cycles @ {set}
-}
+(**** </YoungSubgroup> ****)
+
+
+(**** <YoungGenerators> ****)
+
+YoungGenerators::usage = "YoungGenerators[type] returns a generating set of the Young subgroup with type of the symmetric group of degree n:=Total[type]."
+
+YoungGenerators::negative = "Negative value is not allowed for type."
+
+YoungGenerators[n_Integer] :=
+  GroupGenerators[SymmetricGroup @ n]
+
+YoungGenerators[shape_YoungShape] :=
+  YoungGenerators[First @ shape]
+
+YoungGenerators[type:{__Integer}] := Module[
+  { gg },
+  gg = Select[TakeList[Range[Total @ type], type], Length[#] > 1 &];
+  gg = Function[set, {Cycles @ {Take[set, 2]}, Cycles @ {set}}] /@ gg;
+  Flatten[gg]
+] /; If[
+  AllTrue[type, NonNegative], True,
+  Message[YoungGenerators::negative, type]; False
+]
 
 (**** </YoungSubgroup> ****)
 
@@ -264,7 +274,7 @@ GroupCharacters::usage = "GroupCharacters[group] returns the table of characters
 GroupCharacters[SymmetricGroup[n_Integer]] :=
   YoungCharacters[n] /; n > 0
 
-GroupCharacters[SymmetricGroup[n_Integer], irr_?YoungShapeQ] :=
+GroupCharacters[SymmetricGroup[n_Integer], irr_List?YoungShapeQ] :=
   YoungCharacters[irr] /; Total[First @ irr] == n
 
 GroupCharacters[SymmetricGroup[n_Integer], irr_YoungShape, class_YoungShape] :=
@@ -321,23 +331,23 @@ LegacyYoungCharacters[n_Integer] := Module[
   Orthogonalize[vecs, ((#1/wght) . #2)&, Method -> "GramSchmidt"]
 ]
 
-LegacyYoungCharacters[irr_?YoungShapeQ] :=
+LegacyYoungCharacters[irr_List?YoungShapeQ] :=
   characterSymmetricGroup[irr, #]& /@ IntegerPartitions[Total @ irr]  
   
-LegacyYoungCharacters[irr_?YoungShapeQ, class_?YoungShapeQ] :=
+LegacyYoungCharacters[irr_List?YoungShapeQ, class_List?YoungShapeQ] :=
   characterSymmetricGroup[irr, class]
 
 
 characterSymmetricGroup[{}, {}] := 1; 
 
-characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
+characterSymmetricGroup[shape_List?YoungShapeQ, class_List?YoungShapeQ] :=
   YoungTableauCount[shape] /; And[
     Total[shape] == Total[class],
     Length[class] >= 1,
     First[class] == 1
    ]
 
-characterSymmetricGroup[shape_?YoungShapeQ, class_?YoungShapeQ] :=
+characterSymmetricGroup[shape_List?YoungShapeQ, class_List?YoungShapeQ] :=
   With[
     { classmax = First[class],
       class0 = Rest[class],
@@ -377,7 +387,7 @@ GroupClasses::usage = "GroupClasses[group] returns the list of conjugacy classes
 GroupClasses[SymmetricGroup[n_Integer]] :=
   YoungClasses[n] /; n > 0
 
-GroupClasses[SymmetricGroup[n_Integer], irr_?YoungShapeQ] :=
+GroupClasses[SymmetricGroup[n_Integer], irr:(_YoungShape|_List?YoungShapeQ)] :=
   YoungClasses[irr] /; Total[irr] == n
 
 (**** </GroupClasses> ****)
@@ -397,26 +407,41 @@ YoungClasses[n_Integer] := With[
   KeyMap[    
     YoungShape,
     KeySort[
-      GroupBy[elm, cycleDecompositionType[n]], 
+      GroupBy[elm, theCycleDecompositionType[n]], 
       LexicographicOrder
     ]
   ]
 ]
 (* NOTE: The keys are arranged so that they correspond to the columns of FiniteGroupData[{"SymmetricGroup", n}, "CharacterTable"]. The order is the same as Reverse[YoungShapes[n]] but not as ReverseSort[YoungShapes[n]]. *)
 
-cycleDecompositionType::usage = "cycleDecompositionType[n][prm] returns the cycle decomposition type of permutation prm of n elements.\nA cycle decomposition of a permutation is an expression of the permutation as a product of disjoint cycles, where each cycle represents a cyclic rearrangement of elements. This decomposition is unique up to the order of the cycles and cyclic rotations within each cycle. The cycle decomposition type of a permutation is a list of the lengths of the cycles in its cycle decomposition. By convention, a cycle decomposition type is arranged in decreasing order, and is a partition of n."
+(**** </YoungClasses> ****)
 
-cycleDecompositionType[n_Integer][Cycles[spec_List]] := With[
+
+(**** <CycleDecompositionType> ****)
+
+CycleDecompositionType::usage = "CycleDecompositionType[prm, n] returns the cycle decomposition type of permutation prm of n elements.\nCycleDecompositionType[n] is an operator form of CycleDecompositionType to be applied to permutations.\nA cycle decomposition of a permutation is an expression of the permutation as a product of disjoint cycles, where each cycle represents a cyclic rearrangement of elements. This decomposition is unique up to the order of the cycles and cyclic rotations within each cycle. The cycle decomposition type of a permutation is a list of the lengths of the cycles in its cycle decomposition. By convention, a cycle decomposition type is arranged in decreasing order, and is a partition of n."
+
+CycleDecompositionType[n_Integer][any_] :=
+  CycleDecompositionType[any, n]
+
+CycleDecompositionType[prm_List?PermutationListQ, n_Integer] :=
+  CycleDecompositionType[PermutationCycles @ prm, n]
+
+CycleDecompositionType[cyc_Cycles, n_Integer] :=
+  YoungShape @ theCycleDecompositionType[n] @ cyc
+
+(* NOTE: This version without the YoungShape wrapper is required for YoungClasses. *)
+theCycleDecompositionType[n_Integer][Cycles[spec_]] := With[
   { body = ReverseSort[Length /@ spec] },
   Join[body, Table[1, n-Total[body]]]
 ]
 
-(**** </YoungClasses> ****)
+(**** </CycleDecompositionType> ****)
 
 
 GroupClassSize::usage = "GroupGlassSize[group, class] returns the number of elements in the conjugacy class 'class'."
 
-GroupClassSize[SymmetricGroup[n_Integer], class_?YoungShapeQ] :=
+GroupClassSize[SymmetricGroup[n_Integer], class_List?YoungShapeQ] :=
   YoungClassSize[class] /; n > 0
 
 GroupClassSize[group_, g_] :=
@@ -427,18 +452,18 @@ GroupClassSize[group_, g_] :=
 
 YoungClassSize::usage="YoungClassSize[class] returns the number of elements in the conjugacy class 'class' in SymmetricGroup[n].\nThe conjugacy class is specified by a partition of integer 'n'.\nThe inverse of YoungClassSize[class] = GroupOrder[SymmetricGroup[n]] / YoungCentralizerSize[class]; see, e.g., Sagan, The Symmetric Group (Springer, 2001) Section 1.1."
 
-YoungClassSize[shape_YoungShape] :=
-  YoungClassSize[First @ shape]
+YoungClassSize[class_YoungShape] :=
+  Factorial[YoungDegree @ class] / YoungCentralizerSize[class]
 
-YoungClassSize[class_?YoungShapeQ] :=
-  Factorial[Total @ class] / YoungCentralizerSize[class]
+YoungClassSize[class_List?YoungShapeQ] :=
+  YoungClassSize[YoungShape @ class]
 
 (**** </YoungClassSize> ****)
 
 
 GroupCentralizerSize::usage = "GroupCentralizerSize[group, g] returns the number of elements in the conjugacy class containing the element 'g' of the group 'group'."
 
-GroupCentralizerSize[SymmetricGroup[n_Integer], class_?YoungShapeQ] :=
+GroupCentralizerSize[SymmetricGroup[n_Integer], class_List?YoungShapeQ] :=
   YoungCentralizerSize[class] /; n > 0
 
 GroupCentralizerSize[group_, g_] :=
@@ -452,7 +477,7 @@ YoungCentralizerSize::usage = "YoungCentralizerSize[class] returns the size of t
 YoungCentralizerSize[class_YoungShape] :=
   YoungCentralizerSize[First @ class]
 
-YoungCentralizerSize[class_?YoungShapeQ] :=
+YoungCentralizerSize[class_List?YoungShapeQ] :=
   Whole[Factorial @ Counts @ class] * Whole[class];
 
 (**** </YoungCentralizerSize> ****)
@@ -465,7 +490,7 @@ CompoundYoungCharacters::usage = "CompoundYoungCharacters[shape] returns the com
 CompoundYoungCharacters[shape_YoungShape] :=
   CompoundYoungCharacters[First @ shape]
 
-CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
+CompoundYoungCharacters[pp_List?YoungShapeQ] := Module[
   { chrVect = Table[0, YoungClassCount[Total @ pp]],
     supPartitionTupel = Partition[pp, 1],
     hashPositionTupel = Prime[pp],
@@ -513,7 +538,7 @@ CompoundYoungCharacters[pp_?YoungShapeQ] := Module[
 ]
 
 
-nextPartition[pp_?YoungShapeQ] := Module[
+nextPartition[pp_List?YoungShapeQ] := Module[
   { i = First @ Last @ Position[pp, x_/;x>1],
     k = Length[pp],
     j, qr },
@@ -526,7 +551,7 @@ nextPartition[pp_?YoungShapeQ] := Module[
   ]
 ] /; AnyTrue[pp, #>1&]
 
-nextPartition[pp_?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
+nextPartition[pp_List?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
 (* Convention: at the last partition, we cycle back to the first one. *)
 
 (**** </CompoundYoungCharacters> ****)
@@ -648,34 +673,41 @@ LegacyYoungTableaux[sh:{___Integer}] :=
   LegacyYoungTableaux[YoungShape @ sh]
 
 LegacyYoungTableaux[s_YoungShape] :=
-  NestList[nextYoungTableau, firstYoungTableau[s], YoungTableauCount[s]-1]
+  NestList[nextYoungTableau, lastYoungTableau[s], YoungTableauCount[s]-1]
 
 LegacyYoungTableaux[n_Integer?Positive] :=
   Catenate @ Map[LegacyYoungTableaux, YoungShapes @ n]
 
+(* NOTE: This is the FIRST Young tableau for LegacyYoungTableaux, which adopts a different lexicographic oder. See the Details section of GelfandOrder. *)
+lastYoungTableau::usage = "lastYoungTableau[p] constructs the last standard Young tableau of shape p."
 
-firstYoungTableau::usage = "firstYoungTableau[p] constructs the first standard Young tableau with shape described by partition p."
+lastYoungTableau[data_List?YoungShapeQ] :=
+  lastYoungTableau[YoungShape @ data]
 
-firstYoungTableau[shape_YoungShape] :=
-  YoungTranspose @ lastYoungTableau @ YoungTranspose[shape]
+lastYoungTableau[shape_YoungShape] :=
+  YoungTranspose @ firstYoungTableau @ YoungTranspose[shape]
 
+(* NOTE: This is the LAST Young tableau for LegacyYoungTableaux, which adopts a different lexicographic order. See the Details section of GelfandOrder. *)
+firstYoungTableau::usage = "firstYoungTableau[p] constructs the first Young tableau of shape p."
 
-lastYoungTableau::usage = "lastYoungTableau[p] constructs the last Young tableau with shape described by partition p."
+firstYoungTableau[data_List?YoungShapeQ] :=
+  firstYoungTableau[YoungShape @ data]
 
-lastYoungTableau[YoungShape[shape_]] :=
+firstYoungTableau[YoungShape[shape_]] :=
   YoungTableau @ TakeList[Range @ Total @ shape, shape]
 
 
-nextYoungTableau::usage = "nextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in lexicographic order."
+nextYoungTableau::usage = "nextYoungTableau[tb] gives the standard Young tableau of the same shape as tb, following tb in the COLUMN-WISE lexicographic order."
 
-(* NOTE 2021-10-27: It seems that the standard Young tableaux are ordered
-   according to the "last letter sequence". See Pauncz (1995a, Section 3.2). *)
+nextYoungTableau[data_List?YoungShapeQ] :=
+  nextYoungTableau[YoungShape @ data]
 
+(* NOTE: LegacyYoungTableaux adopts the column-wise lexicographic odering. *)
 nextYoungTableau[YoungTableau[tb_]] := Module[
   { yy, shp, row, val, new },
 
   yy = Values @ KeySort @ Flatten @ MapIndexed[(#1->First[#2])&, tb, {2}];
-  If[LessEqual @@ yy, Return @ firstYoungTableau @ YoungShape[tb]];
+  If[LessEqual @@ yy, Return @ lastYoungTableau @ YoungShape[tb]];
 
   val = 1 + Length[First @ Split[yy, LessEqual]];
   row = First @ FirstPosition[tb, val];
@@ -684,15 +716,15 @@ nextYoungTableau[YoungTableau[tb_]] := Module[
   row = First @ Last @ Position[shp, shp[[row+1]]];
   shp[[row]]--;
 
-  new = First @ firstYoungTableau[YoungShape @ shp];
+  new = First @ lastYoungTableau[YoungShape @ shp];
   If[ Length[new] < row,
     new = Append[new, {val}],
     new[[row]] = Append[new[[row]], val]
-   ];
+  ];
 
   new = Flatten @ MapIndexed[(#2->#1)&, new, {2}];
   YoungTableau @ ReplacePart[tb, new]
- ]
+]
 
 (**** </LegacyYoungTableaux> ****)
 
@@ -807,21 +839,35 @@ Multiply[ pre___,
 
 HoldPattern @ NonCommutativeQ[ _Cycles ] = True
 
+(***
+  Group multiplication of the symmetric group. 
+  ***)
+
 HoldPattern @
   Multiply[pre___, op_Cycles, more__Cycles, post___] :=
   Multiply[pre, PermutationProduct @@ Reverse[{op, more}], post]
   
+(*** 
+  Young's normal representation.
+  See also YoungNormalRepresentation. 
+  ***)
+
 HoldPattern @
   Multiply[pre___, op_Cycles, Ket[ytx:{__YoungTableau}], post___] :=
   Multiply[pre, KetPermute[Ket[ytx], op], post]
 (* NOTE: Notice '__' in ytx, with op acting on all SYTs in ytx. *)
   
 HoldPattern @ Multiply[ pre___,
-  CircleTimes[ops__Cycles], Ket[ytx:{__?YoungTableauQ}], post___ ] :=
+  CircleTimes[ops__Cycles], Ket[ytx:{__YoungTableau}], post___ ] :=
   Multiply[ pre,
     CircleTimes @@ MapThread[KetPermute, {Ket /@ List /@ ytx, {ops}}],
     post ]
-  
+
+(***
+  The left regular reprepsentation of the symmetric group. 
+  See also YoungLeftRepresentation.
+  ***)
+
 HoldPattern @
   Multiply[pre___, op_Cycles, Ket[cc:{__Cycles}], post___] :=
   Multiply[pre, Ket @ Multiply[op, cc], post]
@@ -884,11 +930,14 @@ KetPermute[Ket[{yt_YoungTableau}], Cycles @ {{x_, y_}}] := Module[
 ] /; x+1 == y
 
 
-KetPermute[Ket[{yt_YoungTableau}], cc_Cycles] :=
-  Garner @ Fold[KetPermute, Ket @ {yt}, AdjacentTranspositions @ cc]
+KetPermute[v:Ket[{_YoungTableau}], cyc_Cycles] :=
+  KetPermute[v, PermutationList @ cyc]
 
-KetPermute[Ket[{yt_YoungTableau}], perm_?PermutationListQ] :=
-  Garner @ Fold[KetPermute, Ket @ {yt}, AdjacentTranspositions @ perm]
+KetPermute[Ket[{yt_YoungTableau}], prm_List?PermutationListQ] := Module[
+  { cc = adjacentTranspositions[prm] },
+  cc = Map[Cycles[{{#, #+1}}]&, cc];
+  Garner @ Fold[KetPermute, Ket @ {yt}, cc]
+]
 
 KetPermute[Ket[yy:{_YoungTableau, __YoungTableau}], cc_] :=
   CircleTimes @@ Map[KetPermute[#, cc]&, Ket /@ List /@ yy]
@@ -952,7 +1001,7 @@ KetSymmetrize::usage = "KetSymmetrize[expr, {s1, s2, \[Ellipsis]}, tbl] symmetri
 KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_YoungTableau] :=
   KetSymmetrize[bs, ss, First @ tbl]
 
-KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
+KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_List?YoungTableauQ] := Module[
   { ts = YoungTranspose[tbl],
     qq, bb },
   qq = TakeList[ss[[Flatten @ ts]], Length /@ ts];
@@ -987,7 +1036,7 @@ KetSymmetrize[expr_, ss:{__?SpeciesQ}, -1] :=
 KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_YoungTableau] :=
   KetSymmetrize[expr, ss, First @ tbl]
 
-KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_?YoungTableauQ] := Module[
+KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_List?YoungTableauQ] := Module[
   { qq = ss[[Flatten @ tbl]],
     aa, bb, cc, new },
   aa = Flatten /@ Tuples[Permutations /@ tbl];
@@ -1041,7 +1090,7 @@ KetSymmetrize[expr_, -1] :=
   ReplaceAll[ expr, v_Ket :> KetSymmetrize[v, -1] ]
 
 
-KetSymmetrize[expr_, tbl_?YoungTableauQ] := Module[
+KetSymmetrize[expr_, tbl_List?YoungTableauQ] := Module[
   { tt = Flatten[tbl],
     aa, bb, cc, new },
   aa = Flatten /@ Tuples[Permutations /@ tbl];
@@ -1059,7 +1108,9 @@ KetSymmetrize[expr_, tbl_?YoungTableauQ] := Module[
 (**** </KetSymmetrize> ****)
 
 
-InversionVector::usage = "InversionVector[perm] returns the inversion vector corresponding to permutation perm.\nThe number of elements greater than i to the left of i in a permutation gives the ith element of the inversion vector (Skiena 1990, p. 27).\nTotal[InversionVector[perm]] equals to the number of inversions in permtuation perm as well as to the length of perm (i.e., the smallest number of adjacent transpositions combining to perm).\nSee also Combinatorica`ToInversionVector."
+(**** <InversionVector> ****)
+
+InversionVector::usage = "InversionVector[perm] returns the inversion vector corresponding to permutation perm.\nThe number of elements greater than i to the left of i in a permutation gives the ith element of the inversion vector (Skiena 1990, p. 27).\nTotal[InversionVector[perm]] equals the number of inversions in permtuation perm as well as the length of perm (i.e., the smallest number of adjacent transpositions combining to perm).\nSee also Combinatorica`ToInversionVector."
 
 InversionVector[cyc_Cycles] := InversionVector[PermutationList @ cyc]
 
@@ -1072,25 +1123,72 @@ InversionVector[p_?PermutationListQ] := Module[
 ] /; (Length[p] > 0)
 
 
-(**** <AdjacentTranspositions> ****)
+inversionCount::usage = "inversionCount[prm] returns the number of inversions in a permutation prm; substitute for the corresponding combinatorica function.\nSee also InversionVector."
 
-AdjacentTranspositions::usage = "AdjacentTranspositions[perm] returns a list of adjacent transpositions that combine to the permtuation perm.\nNote that permutations are multiplied right to left like right operators, not like functions."
+inversionCount[pi_?PermutationListQ] := Sum[
+  If[Part[pi, i] > Part[pi, j], 1, 0],
+  {j, Length[pi]},
+  {i, j-1}
+]
 
-AdjacentTranspositions[prm_?PermutationListQ]:= 
-  Map[Transposition, intoTranspositions @ prm]
-
-AdjacentTranspositions[{}] = {}
-
-AdjacentTranspositions[cyc_Cycles] :=
-  AdjacentTranspositions[PermutationList @ cyc]
+(**** </InversionVector> ****)
 
 
-intoTranspositions::usage="intoTranspositions[perm] represents perm as product of transpositions of immediate neighbors. An entry value of k in the returned list denotes the transposition (k,k+1)."
+(**** <Transpositions> ****)
 
-intoTranspositions[cyc_Cycles] :=
-  intoTranspositions[PermutationList @ cyc]
+Transpositions::usage = "Transpositions[{k1,k2,\[Ellipsis]}] represents a sequence of adjacent transpositions (k1,k1+1) (k2,k2+1) \[Ellipsis]."
 
-intoTranspositions[prm_?PermutationListQ] := Module[
+SetAttributes[Transpositions, NHoldAll]
+
+Transpositions /:
+PermutationForm[Transpositions[{}]] :=
+  Subscript["\[Tau]", 0]
+
+Transpositions /:
+PermutationForm[Transpositions[kk:{__Integer}]] :=
+  Row @ Map[Subscript["\[Tau]", Row @ {#, #+1}]&, kk]
+
+Transpositions[cyc_Cycles] :=
+  Transpositions[adjacentTranspositions @ cyc]
+
+Transpositions /:
+PermutationCycles[Transpositions[kk:{___Integer}]] :=
+  Apply[PermutationProduct, Cycles[{{#, #+1}}]& /@ kk]
+
+Transpositions /:
+PermutationList[trs:Transpositions[{___Integer}]] :=
+  PermutationList[PermutationCycles @ trs]
+
+Transpositions /:
+PermutationProduct[trs_Transpositions, any_] :=
+  PermutationProduct[PermutationCycles @ trs, any]
+
+Transpositions /:
+PermutationProduct[any_, trs_Transpositions] :=
+  PermutationProduct[any, PermutationCycles @ trs]
+
+(**** </Transpositions> ****)
+
+
+(**** <PermutationTranspositions> ****)
+
+PermutationTranspositions::usage = "PermutationTranspositions[perm] returns a list of adjacent transpositions that combine to the permtuation perm.\nNote that permutations are multiplied right to left like right operators, not like functions."
+
+PermutationTranspositions[{}] = Transpositions[{}]
+
+PermutationTranspositions[prm_List?PermutationListQ]:= 
+  Transpositions[adjacentTranspositions @ prm]
+
+PermutationTranspositions[cyc_Cycles] :=
+  PermutationTranspositions[PermutationList @ cyc]
+
+
+adjacentTranspositions::usage="adjacentTranspositions[prm] decomposes permutation prm into a product of transpositions of immediate neighbors. An entry k in the returned list denotes ransposition (k,k+1)."
+
+adjacentTranspositions[cyc_Cycles] :=
+  adjacentTranspositions[PermutationList @ cyc]
+
+adjacentTranspositions[prm_List?PermutationListQ] := Module[
   { idx = 1,
     trs = {},
     new = prm },
@@ -1105,12 +1203,7 @@ intoTranspositions[prm_?PermutationListQ] := Module[
   Return[trs]
 ]
 
-fromTranspositions::usage = "fromTranspositions[trs] is the inverse operation of intoTranspositions.\nGiven here just for heuristic reasons."
-
-fromTranspositions[ntr_List] :=
-  Apply[PermutationProduct, Cycles[{{#,#+1}}]& /@ ntr]
-
-(**** </AdjacentTranspositions> ****)
+(**** </PermutationTranspositions> ****)
 
 
 (**** <YoungDistance> ****)
@@ -1120,7 +1213,7 @@ YoungDistance::usage = "YoungDistance[{x, y}, yt] returns the Manhattan distance
 YoungDistance[{x_Integer, y_Integer}, yt_YoungTableau] :=
   YoungDistance[{x, y}, First @ yt]
 
-YoungDistance[{x_Integer, y_Integer}, data_?YoungTableauQ] := Module[
+YoungDistance[{x_Integer, y_Integer}, data_List?YoungTableauQ] := Module[
   { xx = FirstPosition[data, x],
     yy = FirstPosition[data, y] },
   Dot[yy - xx, {-1, 1}]

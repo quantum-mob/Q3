@@ -1,5 +1,12 @@
 # Release Notes
 
+## 4.2.1
+
+- Improved: DualSchurBasis, YoungNormalRepresentation, YoungFourierMatrix, YoungFourierBasis, YoungFourier
+- New: CycleDecompositionType, YoungSeminormalRepresentation, YoungBruhatGraph, ContentVector
+- Removed: Transposition
+- Renamed: AdjacentTranspositions --> PermutationTranspositions
+
 ## 4.2.0
 
 - New: DualSchurBasis, YoungType, YoungClassCount, RowInsertion, TwoLineArray, YoungTableauProduct

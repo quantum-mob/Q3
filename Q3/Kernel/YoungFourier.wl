@@ -10,8 +10,15 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { YoungFourierMatrix, YoungFourier };
 { YoungFourierBasis, YoungRegularBasis };
-{ YoungNormalRepresentation,
-  YoungRegularRepresentation };
+{ YoungLeftRepresentation,
+  YoungRightRepresentation,
+  YoungNormalRepresentation,
+  YoungSeminormalRepresentation };
+
+{ LegacyNormalRepresentation };
+
+{ YoungBruhatGraph,
+  ContentVector };
 
 { LeftRegularRepresentation,
   RightRegularRepresentation };
@@ -145,53 +152,44 @@ FromYoungDualOGS[ogs_List] := Module[
 (**** </YoungDualOGS> ****)
 
 
+(**** <YoungFourierMatrix> ****)
+
 YoungFourierMatrix::usage = "YoungFourieMatrix[n] returns the matrix describing the Fourier transform over the symmetric group of degree n."
 
-YoungFourierMatrix::unknown = "Unknown FourierParameters ``. \"Left\" is assumed."
+YoungFourierMatrix::invalid = "Invalid FourierParameters ``. {\"Right\", \"Right\"} is assumed."
 
 Options[YoungFourierMatrix] = {
-  FourierParameters -> "Left"
+  FourierParameters -> {"Right", "Right"}
 }
 
-YoungFourierMatrix[n_Integer, OptionsPattern[]] := Switch[
-  OptionValue[FourierParameters],
-  "Right",
-  YoungRightFourierMatrix[n],
-  "Left",
-  YoungLeftFourierMatrix[n],
-  _,
-  Message[YoungFourierMatrix::unknown, OptionValue @ FourierParameters];
-  YoungLeftFourierMatrix[n]
+YoungFourierMatrix[n_Integer, OptionsPattern[]] := Module[
+  { prm = OptionValue[FourierParameters],
+    shp = YoungShapes[n],
+    elm = GroupElements[SymmetricGroup @ n],
+    rep, dim },
+  prm = doForceList[prm, 2];
+  dim = Map[YoungTableauCount, shp];
+  rep = Map[YoungNormalRepresentation, shp];
+  rep = Outer[Construct, rep, elm] * Sqrt[dim/Length[elm]];
+  rep = Switch[ prm,
+    {"Right", "Right"}, rep,
+    {"Left", "Right"}, Map[ConjugateTranspose, rep, {2}],
+    {"Right", "Left"}, Map[Transpose, rep, {2}],
+    {"Left", "Left"}, Conjugate[rep],
+    _, Message[YoungFourierMatrix::invalid, prm]
+  ];
+  Map[Flatten, Transpose @ rep]
 ]
 
+(**** </YoungFourierMatrix> ****)
 
-YoungLeftFourierMatrix[n_Integer] := Module[
-  { shp = YoungShapes[n],
-    elm = GroupElements[SymmetricGroup @ n] },
-  Map[ Flatten,
-    Outer[
-      (Sqrt[YoungTableauCount[#2]] *
-          ConjugateTranspose[YoungNormalRepresentation[#2, #1]])&,
-      elm, shp, 1 ] / Sqrt[Length @ elm]
-  ]
-]
-
-YoungRightFourierMatrix[n_Integer] := Module[
-  { shp = YoungShapes[n],
-    elm = GroupElements[SymmetricGroup @ n] },
-  Map[ Flatten,
-    Outer[
-      (Sqrt[YoungTableauCount[#2]] * YoungNormalRepresentation[#2, #1])&,
-      elm, shp, 1 ] / Sqrt[Length @ elm]
-  ]
-]
 
 (**** <YoungFourierBasis> ****)
 
 YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis of degree n, i.e., the Fourier transform over the symmetric group of degree n of the canonical basis of the left regular representation of the same group."
 
 Options[YoungFourierBasis] = {
-  FourierParameters -> "Left"
+  FourierParameters -> {"Right", "Right"}
 }
 
 YoungFourierBasis[n_Integer, opts:OptionsPattern[]] := Module[
@@ -199,7 +197,8 @@ YoungFourierBasis[n_Integer, opts:OptionsPattern[]] := Module[
     key, val },
   key = Ket /@ Flatten[
     Map[Tuples[YoungTableaux @ #, 2]&, YoungShapes @ n],
-    1 ];
+    1 
+  ];
   val = Ket /@ List /@ GroupElements[SymmetricGroup @ n];
   AssociationThread[key -> val . mat]
 ]
@@ -214,7 +213,7 @@ YoungFourier::usage = "YoungFourier[n] represents the Fourier transform over the
 YoungFourier::unknown = "Unknown FourierParameters ``. \"Left\" is assumed."
 
 Options[YoungFourier] = {
-  FourierParameters -> "Left"
+  FourierParameters -> {"Right", "Right"}
 }
 
 YoungFourier[n_Integer, rest___][expr_Plus] := 
@@ -260,19 +259,226 @@ YoungFourier[n_Integer, opts:OptionsPattern[]][
 (**** </YoungFourier> ****)
 
 
-(**** <YoungNormalRepresentation> ****)
+(**** <ContentVector> ****)
 
-YoungNormalRepresentation::usage = "YoungNormalRepresentation[shape] represents the homomorphism from the symmetric group to the matrix representation.\nSee also SpechtBasis."
+ContentVector::usage = "ContentVector[syt_?YoungTableauQ] returns the content vector of standard Young tableau syt.\nThe content of number k in a SYT is the column number minus the row number of the box containing k. The content vector has the content of k as the k'th entry."
 
-YoungNormalRepresentation[shape_YoungShape][op_Cycles] :=
-  YoungNormalRepresentation[shape, op]
+ContentVector[data_List?YoungTableauQ] :=
+  ContentVector[YoungTableau @ data]
 
-YoungNormalRepresentation[shape_YoungShape, op_Cycles] := Module[
+ContentVector[yt:YoungTableau[data_]] := Normal @ SparseArray[
+  Flatten @ MapIndexed[
+    Function[{v, ij}, {v -> Last[ij]-First[ij]}],
+    data,
+    {2}
+  ],
+  {YoungDegree @ yt}
+]
+
+(**** </ContentVector> ****)
+
+
+(**** <YoungBruhatGraph> ****)
+
+YoungBruhatGraph::usage = "YoungBruhatGraph[shape] constructs a weak left Bruhat graph of standard tableaux, starting with the row-wise ordered tableau (observe that it is smallest with respect to weak left Bruhat ordering). The edges are weighted, where weight i means that the transposition (i,i+1) induces the transition."
+
+YoungBruhatGraph[data_List?YoungShapeQ]:=
+  YoungBruhatGraph[YoungShape @ data]
+
+YoungBruhatGraph[shape_YoungShape, opts:OptionsPattern[Graph]]:= Module[
+  { init, data },
+  init = tableauToPermutation[firstYoungTableau @ shape];
+  data = Flatten @ Rest @ NestList[findBruhatEdges, init, inversionCount @ init];
+  data = Map[tableauFromPermutation[#, shape]&, data];
+  Graph[data, opts,
+    VertexLabels -> "Name",
+    EdgeLabels -> "EdgeTag"
+  ]
+]
+
+findBruhatEdges[prm:{___Integer}] := Module[
+  {trs},
+  trs = Flatten @ Position[Differences[prm], x_ /; x < 0]; 
+  trs = Map[{Cycles @ {{#, # + 1}}, #} &, trs]; 
+  Map[UndirectedEdge[prm, Permute[prm, First @ #], Last @ #] &, trs]
+]
+
+findBruhatEdges[edges:{___UndirectedEdge}] := Module[
+  {nodes},
+  nodes = Union @ Map[Part[#, 2] &, edges];
+  Flatten @ Map[findBruhatEdges, nodes]
+]
+
+
+tableauFromPermutation::usage = "tableauFromPermutation[prm, shape] maps permutation list prm back to standard Young tableau."
+
+tableauFromPermutation[prm_List?PermutationListQ, shape_YoungShape] := 
+  YoungTranspose @ YoungTableau @ TakeList[
+    InversePermutation @ prm,
+    First @ YoungTranspose @ shape
+  ]
+
+tableauFromPermutation[UndirectedEdge[src_,dst_, tag_], shape_YoungShape] := 
+  UndirectedEdge[
+    tableauFromPermutation[src, shape],
+    tableauFromPermutation[dst, shape],
+    tag
+  ]
+
+
+tableauToPermutation::usage = "tableauToPermutation[yt] maps standard Young tableau to a permutation list. The resulting permutation list is easier to find and apply adjacent transpositions."
+
+tableauToPermutation[data_List?YoungTableauQ] :=
+  tableauToPermutation[YoungTableau @ data]
+
+tableauToPermutation[yt_YoungTableau] :=
+  InversePermutation[Catenate @ First @ YoungTranspose @ yt]
+
+(**** <YoungBruhatGraph> ****)
+
+
+(**** <LegacyNormalRepresentation> ****)
+
+LegacyNormalRepresentation::usage = "LegacyNormalRepresentation[shape] represents the homomorphism from the symmetric group to the matrix representation.\nSee also SpechtBasis."
+
+LegacyNormalRepresentation[shape_YoungShape][op_Cycles] :=
+  LegacyNormalRepresentation[shape, op]
+
+LegacyNormalRepresentation[shape_YoungShape, op_Cycles] := Module[
   { bs = Ket /@ List /@ YoungTableaux[shape] },
   MatrixIn[op, bs]
 ]
 
+(**** </LegacyNormalRepresentation> ****)
+
+
+(**** <YoungNormalRepresentation> ****)
+
+YoungNormalRepresentation::usage = "YoungNormalRepresentation[shape] refers to Young's normal representation of the symmetric group corresponding to integer partition shape.\nYoungNormalRepresentation[shape][prm] returns the matrix of permutation prm in Young's normal representation.\nSee also SpechtBasis."
+
+YoungNormalRepresentation[shape_YoungShape] :=
+  YoungNormalRepresentation[
+    shape, 
+    theYoungNormalRep[shape, YoungBruhatGraph @ shape]
+  ]
+
+YoungNormalRepresentation /:
+MatrixForm[YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ]] :=
+  Map[MatrixForm, data]
+
+YoungNormalRepresentation /:
+Normal[YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ]] := data
+
+YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ][cyc_Cycles] := Module[
+  { trs = Reverse[adjacentTranspositions @ cyc] },
+  If[ trs == {},
+    One[YoungTableauCount @ shape],
+    Dot @@ Extract[data, List /@ trs] // SimplifyThrough
+  ]
+]
+
+theYoungNormalRep::usage = "theYoungNormalRep[graph] constructs the Young's normal representation using the weak leaft Bruhat graph."
+
+theYoungNormalRep[shape_YoungShape, data_Graph] := Module[
+  { n = YoungDegree[shape],
+    tableaux = YoungTableaux[shape],
+    contents, adjacency },
+  contents = Map[ContentVector, tableaux];
+  rules = Normal @ Map[First, PositionIndex @ tableaux];
+  adjacency = RotateRight /@ ReplaceAll[List @@@ EdgeList @ data, rules];
+
+  rules = Flatten @ Map[
+    Function[
+      {k, i, j},
+      { {k, i, i} -> 1/(Part[contents,i,k+1]-Part[contents,i,k]),
+        {k, i, j} -> Sqrt[1 - 1/(Part[contents,i,k+1]-Part[contents,i,k])^2],
+        {k, j, i} -> Sqrt[1 - 1/(Part[contents,i,k+1]-Part[contents,i,k])^2],
+        {k, j, j} -> -1/(Part[contents,i,k+1]-Part[contents,i,k])
+      }
+    ] @@ # &,
+    adjacency
+  ];
+  rules = Association @ Join[
+    Flatten @ Table[
+      {k, i, i} -> 1/(Part[contents,i,k+1]-Part[contents,i,k]),
+      {k, n-1},
+      {i, Length @ tableaux}
+    ],
+    rules
+  ];
+  SparseArray[Normal @ rules, {n-1, Length @ tableaux, Length @ tableaux}]
+]
+
 (**** </YoungNormalRepresentation> ****)
+
+
+(**** <YoungSeminormalRepresentation> ****)
+
+YoungSeminormalRepresentation::usage = "YoungSeminormalRepresentation[shape] refers to Young's seminormal representation of the symmetric group corresponding to the integer partition shape.\n YoungSeminormalRepresentation[shape][prm] returns the matrix of permutation prm in Young's seminormal representation."
+
+YoungSeminormalRepresentation[shape_YoungShape] :=
+  YoungSeminormalRepresentation[
+    shape, 
+    theYoungSeminormalRep[shape, YoungBruhatGraph @ shape]
+  ]
+
+YoungSeminormalRepresentation /:
+MatrixForm[YoungSeminormalRepresentation[shape_YoungShape, data_?ArrayQ]] :=
+  Map[MatrixForm, data]
+
+YoungSeminormalRepresentation /:
+Normal[YoungSeminormalRepresentation[shape_YoungShape, data_?ArrayQ]] := data
+
+YoungSeminormalRepresentation[shape_YoungShape, data_?ArrayQ][
+  prm:(_Cycles | _List?PermutationListQ)
+] := Module[
+  { trs = Reverse[adjacentTranspositions @ prm] },
+  If[ trs == {},
+    One[YoungTableauCount @ shape],
+    Dot @@ Extract[data, List /@ trs] // SimplifyThrough
+  ]
+]
+
+
+theYoungSeminormalRep::usage = "theYoungSeminormalRep[data, n] constructs the Young's seminormal representation using the weak leaft Bruhat graph specified by data."
+
+theYoungSeminormalRep[shape_YoungShape, data_Graph] := Module[
+  { n = YoungDegree[shape],
+    tableaux = YoungTableaux[shape],
+    contents, adjacency },
+  contents = Map[ContentVector, tableaux];
+  rules = Normal @ Map[First, PositionIndex @ tableaux];
+  adjacency = RotateRight /@ ReplaceAll[List @@@ EdgeList @ data, rules];
+
+  rules = Flatten @ Map[
+    Function[
+      {k, i, j},
+      Which[
+        i < j,
+        { {k, i, j} -> 1 - 1/(Part[contents,i,k+1]-Part[contents,i,k])^2,
+          {k, j, i} -> 1
+        },
+        i > j, 
+        { {k, i, j} -> 1,
+          {k, j, i} -> 1 - 1/(Part[contents,j,k+1]-Part[contents,j,k])^2
+        },
+        True, Nothing
+      ]
+    ] @@ # &,
+    adjacency
+  ];
+  rules = Join[
+    Flatten @ Table[
+      {k, i, i} -> 1/(Part[contents,i,k+1]-Part[contents,i,k]),
+      {k, n-1},
+      {i, Length @ tableaux}
+    ],
+    rules
+  ];
+  SparseArray[rules, {n-1, Length @ tableaux, Length @ tableaux}]
+]
+
+(**** </YoungSeminormalRepresentation> ****)
 
 
 (**** <YoungRegularBasis> ****)
@@ -292,17 +498,30 @@ YoungRegularBasis[n_Integer] := Module[
 (**** </YoungRegularBasis> ****)
 
 
-(**** <YoungRegularRepresentation> ****)
+(**** <YoungLeftRepresentation> ****)
 
-YoungRegularRepresentation::usage = "YoungRegularRepresentation[n] represents the left regular representation of the symmetric group of degree n."
+YoungLeftRepresentation::usage = "YoungLeftRepresentation[n] represents the left regular representation of the symmetric group of degree n."
 
-YoungRegularRepresentation[n_Integer] :=
-  YoungRegularRepresentation[SymmetricGroup @ n]
+YoungLeftRepresentation[n_Integer] :=
+  YoungLeftRepresentation[SymmetricGroup @ n]
 
-YoungRegularRepresentation[grp_SymmetricGroup][cyc_Cycles] := 
+YoungLeftRepresentation[grp_SymmetricGroup][cyc_Cycles] := 
   LeftRegularRepresentation[grp][cyc]
 
-(**** </YoungRegularRepresentation> ****)
+(**** </YoungLeftRepresentation> ****)
+
+
+(**** <YoungRightRepresentation> ****)
+
+YoungRightRepresentation::usage = "YoungRightRepresentation[n] represents the left regular representation of the symmetric group of degree n."
+
+YoungRightRepresentation[n_Integer] :=
+  YoungRightRepresentation[SymmetricGroup @ n]
+
+YoungRightRepresentation[grp_SymmetricGroup][cyc_Cycles] := 
+  RightRegularRepresentation[grp][cyc]
+
+(**** </YoungRightRepresentation> ****)
 
 
 (**** <LeftRegularRepresentation> ****)

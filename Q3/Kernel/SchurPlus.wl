@@ -8,6 +8,16 @@ Begin["`Private`"]
 
 DualSchurBasis::usage = "DualSchurBasis[n, d] returns an association of Schur basis of n qudits of dimension d."
 
+DualSchurBasis[ss:{__?SpeciesQ}] :=
+  DualSchurBasis[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
+
+DualSchurBasis[ss:{__?SpeciesQ}] := Module[
+  { cbs = Basis[ss], 
+    sbs },
+  sbs = DualSchurBasis[Length @ ss, Dimension @ First @ ss];
+  Map[Dot[#, cbs]&, sbs]
+]
+
 DualSchurBasis[n_Integer, d_Integer] := Module[
   { ss = YoungShapes[n, d],
     tt, bs },
@@ -52,15 +62,16 @@ DualSchurBasis[shape_YoungShape, type:{__Integer}] := Module[
   prj = Mean[rep /@ sub];
   prj = prj[[All, pos]];
 
-  mat = Dot[trv, prj];
+  (* NOTE: Somehow, Dot returns the result in a dense array. *)
+  mat = SparseArray @ Dot[trv, prj];
   mat = Transpose[Conjugate[mat], {3, 1, 2}];
-  mat = Map[Simplify @* Normalize, mat, {2}];
+  mat = SimplifyThrough @ Map[Normalize, mat, {2}];
 
   (* permutation/transversal basis in the computation basis *)
   pbs = 1 + Map[FromDigits[#, dim]&, pbs];
   pbs = One[ Power[dim, YoungDegree @ shape] ][[pbs]];
 
-  AssociationThread[tag -> Flatten[mat . pbs, 1]]
+  AssociationThread[tag -> SparseArray /@ Flatten[mat . pbs, 1]]
 ] /; DominatesQ[First @ shape, ReverseSort @ type]
 
 DualSchurBasis[shape_YoungShape, type:{__Integer}] := Association[]

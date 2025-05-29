@@ -1,5 +1,4 @@
 (* ::Package:: *)
-
 (* N.B.: This package contains some symbols from Bernd Guenther's
    IrrCharSymGrp.m v2.0 (posted on the Wolfram Community).  *)
 
@@ -10,116 +9,111 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 ClearAll @@ Evaluate @ Unprotect[
   CoxeterTest,
   YoungNaturalRepresentation,
-  YoungSeminormalRepresentation,
+  LegacySeminormalRepresentation,
+  LegacyBruhatGraph,
   Seminormal2Natural,
-  InvariantYMetric,
-  YnrCharacterTest,
-  NormSquareOfTableau,
-  WeakLeftBruhatGraph 
+  YoungInvariantMetric,
+  YoungCharacterTest,
+  NormSquareOfTableau
 ];
 
-
-InvariantYMetric::usage="InvariantYMetric[\[Lambda]_?YoungShapeQ] is the scalar product invariant under Young's natural presentation corresponding to the integer partition \[Lambda]."
-
-
-CoxeterTest::usage="CoxeterTest[ynr] applied to the matrices of Young's natural representation checks whether these matrices satisfy Coxeter's relations, as they must. So unless you tamper with the definitions this function should always return TRUE."
-
-
-YnrCharacterTest::usage="YnrCharacterTest[ynr_,\[Lambda]_] applied to the matrices of Young's natural representation corresponding to the integer partition \[Lambda] computes the character and compares it to the relevant entry in the character table. So unless you tamper with the definitions this function should always return TRUE. A complete test would be for instance: \[IndentingNewLine]testPartition=RandomPartition[5];\[IndentingNewLine]testYnr=YoungNaturalRepresentation[testPartition];\[IndentingNewLine]CoxeterTest[testYnr]&&YnrCharacterTest[testYnr,testPartition]"
-
-
-WeakLeftBruhatGraph::usage="WeakLeftBruhatGraph[\[Lambda]_?YoungShapeQ] Construct weak left Bruhat graph of standard tableaux.
-Start with rowwise ordered tableau (observe that it is smallest with respect to weak left Bruhat ordering) and then do breadth first algorithm.
-Output is a record with two components; first is the list of stanard tableaux.
-Second is the list of weighted edges, where weight i means that the transposition (i,i+1) the first connected tableau to the second. The edges are given as three component record with the first two components denoting the indices of the connected tableaux and the third record the weight."
-
-
-Seminormal2Natural::usage="Seminormal2natural[\[Lambda]_?YoungShapeQ] The transformation matrix turning the seminormal presentation into the natural presentation. Each row vector is the expansion of a natural basis vector in terms of the seminormal basis vectors."
-
-
-NormSquareOfTableau::usage="NormSquareOfTableau[myTableau_] computes the norm squares of the seminormal basis vectors."
-
-
-(* NOTE(2022-09-04): This representation is not unitary. *)
-YoungNaturalRepresentation::usage="YoungNaturalRepresentation[pp_?YoungShapeQ] computes the matrices of Young's natural representation of the symmetric group corresponding to the integer partition pp by transforming the seminormal representation. The function returns the images of the transpositions of immediate neighbors, listed in order of the transposed elements. The matrices are supposed to operate from the right on row vectors.\nYoungNaturalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] is the matrix assigned to permutation \[Pi] by Young's natural representation corresponding to partition pp."
-
-
-YoungSeminormalRepresentation::usage="YoungSeminormalRepresentation[pp_?YoungShapeQ] computes the matrices of Young's seminormal representation of the symmetric group corresponding to the integer partition pp. The function returns the images of the transpositions of immediate neighbors, listed in order of the transposed elements. The matrices are supposed to operate from the right on row vectors.\nYoungSeminormalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] is the matrix assigned to permutation \[Pi] by Young's seminormal representation corresponding to partition pp."
-
+{
+  CoxeterTest,
+  YoungNaturalRepresentation,
+  LegacySeminormalRepresentation,
+  LegacyBruhatGraph,
+  Seminormal2Natural,
+  YoungInvariantMetric,
+  YoungCharacterTest,
+  NormSquareOfTableau
+};
 
 Begin["`Private`"]
+
+CoxeterTest::usage = "CoxeterTest[ynr] returns True if all matices in list ynr in Young's natural representation satisfy Coxeter's relations, as they must.\nSo unless you tamper with the definitions, this function should always return True."
 
 CoxeterTest[ynr_] := And[
   Apply[And, (#.#==IdentityMatrix[Length[ynr[[1]]]])& /@ ynr],
   And @@ Table[
     ynr[[r]].ynr[[r+1]].ynr[[r]]==ynr[[r+1]].ynr[[r]].ynr[[r+1]],
     {r, Length[ynr]-1}
-   ],
+  ],
   And @@ Flatten @ Table[
     ynr[[r]].ynr[[s]]==ynr[[s]].ynr[[r]],
     {r, Length[ynr]-2}, {s,r+2,Length[ynr]}
-   ]
- ];
+  ]
+]
 
+
+Seminormal2Natural::usage = "Seminormal2natural[\[Lambda]] The transformation matrix turning the seminormal presentation into the natural presentation. Each row vector is the expansion of a natural basis vector in terms of the seminormal basis vectors."
 
 Seminormal2Natural[pp_?YoungShapeQ]:=
   youngAuxiliary[pp, 1] /; Total[pp]>1
 
 
-YoungNaturalRepresentation[pp_?YoungShapeQ]:=
-  youngAuxiliary[pp, 2] /; Total[pp]>1
+(*** <YoungNaturalRepresentation> ****)
 
-YoungNaturalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] :=
-  If[ pi == Range[Total[pp]],
-    IdentityMatrix[YoungTableauCount[pp]],
-    Dot @@ Extract[
-      YoungNaturalRepresentation[pp],
-      Partition[intoTranspositions[pi], 1]
-     ]
-] /; Total[pp]==Length[pi];
+YoungNaturalRepresentation::usage = "YoungNaturalRepresentation[shape] returns full object YoungNaturalRepresentation[shape, array] representing Young's natural representation of the symmetric group, where array is a list of matrices of the adjacent transpositions.\nThe matrices in array are supposed to operate from the right on row vectors.\nYoungNaturalRepresentation[shape, array][prm] returns the matrix representation of permutation prm in Young's natural representation associated with partition shape."
+
+YoungNaturalRepresentation[data_List?YoungShapeQ]:=
+  YoungNaturalRepresentation[YoungShape @ data]
+
+YoungNaturalRepresentation[shape_YoungShape]:=
+  YoungNaturalRepresentation[shape, SparseArray @ youngAuxiliary[shape, 2]] /; 
+  YoungDegree[shape]>1
+
+YoungNaturalRepresentation[shape_YoungShape, data_?ArrayQ][
+  prm:(_Cycles | _List?PermutationListQ)
+] := With[
+  { trs = adjacentTranspositions[prm] },
+  If[ trs == {},
+    One[YoungTableauCount @ shape],
+    Dot @@ Extract[data, List /@ trs] // SimplifyThrough
+  ]
+]
+
+YoungNaturalRepresentation /:
+MatrixForm[YoungNaturalRepresentation[shape_YoungShape, data_?ArrayQ]] :=
+  Map[MatrixForm, data]
+
+YoungNaturalRepresentation /:
+Normal[YoungNaturalRepresentation[shape_YoungShape, data_?ArrayQ]] := data
 
 
-YoungSeminormalRepresentation[pp_?YoungShapeQ]:=
-  youngAuxiliary[pp, 3] /; Total[pp]>1
-
-YoungSeminormalRepresentation[pp_?YoungShapeQ, pi_?PermutationListQ] :=
-  If[ pi==Range[Total[pp]],
-    IdentityMatrix[YoungTableauCount[pp]],
-    Dot @@ Extract[
-      YoungSeminormalRepresentation[pp],
-      Partition[intoTranspositions[pi], 1]
-     ]
-  ] /; Total[pp]==Length[pi];
+(*** </YoungNaturalRepresentation> ****)
 
 
-NormSquareOfTableau[myTableau_] := With[
-  { trshape = YoungTranspose[Length /@ myTableau] },
+NormSquareOfTableau::usage = "NormSquareOfTableau[syt] returns the norm square of the seminormal basis vector corresponding to standard Young tableau syt."
+
+NormSquareOfTableau[data_List?YoungTableauQ] :=
+  NormSquareOfTableau[YoungTableau @ data]
+
+NormSquareOfTableau[YoungTableau[data_]] := With[
+  { trshape = YoungTranspose[Length /@ data] },
   Product[
     If[
       And[
         Or[i2>i1, j2>j1],
-        Part[myTableau,i1,j1] > Part[myTableau,i2,j2]
-       ],
+        Part[data,i1,j1] > Part[data,i2,j2]
+      ],
       1-1/(i1-j1-i2+j2)^2,
       1
-     ],
+    ],
     {j1, 1, Length[trshape]},
     {i1, 1, Part[trshape,j1]},
     {j2, j1, Length[trshape]},
     {i2, 1, Part[trshape,j2]}
-   ]
- ]
+  ]
+]
 
 
-cTypeRepresentative[\[Lambda]_?YoungShapeQ] :=
-Flatten[Apply[Range,Transpose[{Prepend[Drop[#,-1]+1,1],#-1}],{1}]]&[Accumulate[\[Lambda]]];
+YoungCharacterTest::usage = "YoungCharacterTest[ynr,\[Lambda]] applied to the matrices of Young's natural representation corresponding to the integer partition \[Lambda] computes the character and compares it to the relevant entry in the character table. So unless you tamper with the definitions this function should always return TRUE. A complete test would be for instance: \[IndentingNewLine]testPartition=RandomPartition[5];\[IndentingNewLine]testYnr=YoungNaturalRepresentation[testPartition];\[IndentingNewLine]CoxeterTest[testYnr]&&YoungCharacterTest[testYnr,testPartition]."
 
-
-YnrCharacterTest[ynr_,\[Lambda]_]:=(
+YoungCharacterTest[ynr_,\[Lambda]_]:=(
   Append[
     Tr /@ Apply[
       Dot,
-      Extract[ynr,#]& /@ Partition[#,1]& /@ cTypeRepresentative /@
+      Extract[ynr,#]& /@ Partition[#,1]& /@ chrTypeRepresentative /@
         Drop[IntegerPartitions[Total[\[Lambda]]],-1], {1}
      ],
     Length[ynr[[1]]]
@@ -129,160 +123,333 @@ YnrCharacterTest[ynr_,\[Lambda]_]:=(
     ]
  );
 
-
-InvariantYMetric[\[Lambda]_?YoungShapeQ] := With[
-  { wlbg1 = WeakLeftBruhatGraph[\[Lambda]],
-    transform = Seminormal2Natural[\[Lambda]] },
-  Times @@ Factorial /@ YoungTranspose[\[Lambda]] transform . DiagonalMatrix[NormSquareOfTableau /@ First /@wlbg1] . Transpose[transform]
-];
+chrTypeRepresentative[shape_List?YoungShapeQ] := With[
+  {new = Accumulate @ shape},
+  Flatten[Range @@@ Transpose[{Prepend[Most[new] + 1, 1], new - 1}]]
+]
 
 
-predPermutations1[invPList_,curPos_,sourcePos_]:=MapIndexed[{System`Permute[invPList,First[#1]],{curPos,sourcePos,Last[#1]}}&,{System`Cycles[{{#,#+1}}],#}&/@Flatten[Position[Differences[invPList],x_/;x<0]]];
+YoungInvariantMetric::usage = "YoungInvariantMetric[shape] is the scalar product invariant under Young's natural presentation corresponding to the integer partition shape."
+
+YoungInvariantMetric[shape_List?YoungShapeQ] :=
+  YoungInvariantMetric[YoungShape @ shape]
+
+YoungInvariantMetric[YoungShape[shape_]] := With[
+  { graphData = compatibleBruhatGraph @ LegacyBruhatGraph[shape],
+    transform = Seminormal2Natural[shape] },
+  Whole[Factorial /@ YoungTranspose[shape]] *
+  Dot[
+    transform,
+    DiagonalMatrix[NormSquareOfTableau /@ First /@ graphData],
+    Transpose[transform]
+  ]
+]
 
 
-predPermutations2[invPListList_,curPos_,sourcePos_]:=
-MapIndexed[{First[Part[#1,1]],Function[x,ReplacePart[x,1->Part[x,1]+First[#2]]]/@Part[#1,2]}& ,
-Transpose/@Gather[
-Join@@MapIndexed[predPermutations1[#1,curPos,sourcePos+First[#2]]&,
-First/@invPListList],
-(Part[#1,1]==Part[#2,1])&]];
+(* mode=1: only transform;
+   mode=2: natural presentation;
+   mode=3: seminormal presentation *)
+youngAuxiliary[shape_YoungShape, mode_] :=
+  youngAuxiliary[First @ shape, mode]
 
-
-rowWiseInvPList[\[Lambda]_?YoungShapeQ]:=
-PermutationList[System`InversePermutation[PermutationCycles[Join@@YoungTranspose[(Range@@#)&/@Drop[FoldList[{1+Last[#1],#2+Last[#1]}&,{0,0},\[Lambda]],1]]]],Total[\[Lambda]]];
-
-
-WeakLeftBruhatGraph[\[Lambda]_?YoungShapeQ]:= With[
-  { x = rowWiseInvPList[\[Lambda]],n=Total[\[Lambda]],
-    shape = Drop[FoldList[{1+Last[#1],#2+Last[#1]}&,{0,0},YoungTranspose[\[Lambda]]],1] },
-  Function[
-    v,
-    { YoungTranspose[Function[w,Take[PermutationList[System`InversePermutation[PermutationCycles[Part[v,1]]],n],w]] /@ shape],
-      Part[v,2] }
-   ] /@
-    Flatten[
-      Nest[
-        Append[ #, predPermutations2[
-            Last[#],Length[Flatten[#,1]],Length[Flatten[#,1]]-Length[Last[#]]]]&,
-        {{{x,{}}}},
-        permInversions[x] ],
-      1 ]
- ];
-
-
-permInversions[pi_?PermutationListQ]:=Sum[If[Part[pi,i]>Part[pi,j],1,0],{j,Length[pi]},{i,j-1}]; (* The number of inversions in a permutation; substitute for the corresponding combinatorica function. *)
-
-
-(* modus=1: only transform;
-   modus=2: natural presentation;
-   modus=3: seminormal presentation *)
-youngAuxiliary[\[Lambda]_, modus_] := With[
-  { wlbg1 = WeakLeftBruhatGraph[\[Lambda]] },
+youngAuxiliary[shape_List?YoungShapeQ, mode_] := Module[
+  { n = Total[shape],
+    graphData = compatibleBruhatGraph @ LegacyBruhatGraph[shape] },
 
   (* The following expression computes the adjacency lists of the weak left
      Bruhat graph; an entry Subscript[a, ij] may have four different
-     meanings, depending on the following cases: (i) If Subscript[a,
-     ij]=ithen j and j+1 are contained in the same row of tableau i. (ii) If
-     Subscript[a, ij]=-ithen j and j+1 are contained in the same column of
-     tableau i. (iii) If Subscript[a, ij]\[NotEqual]\[PlusMinus]i but
-     Subscript[a, ij]<0 then i and i+1 appear inverted in tableau i and
-     application of the admissible transposition (j,j+1) turns tableau i
-     into tableauSubscript[a, ij],thus removing an inversion. (iv)
-     If Subscript[a, ij]\[NotEqual]\[PlusMinus]ibutSubscript[a, ij]>0then i
-     and i+1 appear in correct order in tableau i and application of the
+     meanings, depending on the following cases: 
+     (i) If Subscript[a, ij]=i, then j and j+1 are contained in the same row of tableau i. 
+     (ii) If Subscript[a, ij]=-i, then j and j+1 are contained in the same column of tableau i. 
+     (iii) If Subscript[a, ij]\[NotEqual]\[PlusMinus]i but Subscript[a, ij]<0, then i and i+1 appear inverted in tableau i and application of the admissible transposition (j,j+1) turns tableau i
+     into tableau Subscript[a, ij], thus removing an inversion. 
+     (iv) If Subscript[a, ij]\[NotEqual]\[PlusMinus]i but Subscript[a, ij]>0, then i and i+1 appear in correct order in tableau i and application of the
      admissible transposition (j,j+1) turns tableau i into
-     tableauSubscript[a, ij],thus adding an inversion. *)
+     tableau Subscript[a, ij], thus adding an inversion. *)
 
   Module[
-    { wlbgAdjacencyLists,
-      contentVectors, spanningTree, transform, tnorm, tinv, semimatrix },
+    { adjacency,
+      contents, spanningTree, transform, tnorm, tinv, semimatrix },
 
-    wlbgAdjacencyLists = Normal @ SparseArray[
+    adjacency = Normal @ SparseArray[
       Join[
-        ({Part[#,1],Part[#,3]}->Part[#,2])& /@ Flatten[Part[#,2]&/@wlbg1,1],
-        ({Part[#,2],Part[#,3]}->-Part[#,1])& /@ Flatten[Part[#,2]&/@wlbg1,1],
-        Flatten[
-          MapIndexed[ Function[{v,w},Function[u,{First[w],u}->First[w]]/@v],
-            Function[v,Last/@Select[Transpose[{Flatten[Function[u,Append[u,0]]/@(Differences/@v)],Flatten[v]}],Function[u,First[u]==1]]] /@ (First/@wlbg1)]
-         ],
-        Flatten[
-          MapIndexed[
-            Function[{v,w},Function[u,{First[w],u}->-First[w]]/@v],
-            Function[v,Last/@Select[Transpose[{Flatten[Function[u,Append[u,0]]/@(Differences/@v)],Flatten[v]}],Function[u,First[u]==1]]] /@
-              (YoungTranspose[#]&/@(First/@wlbg1))]]
-       ],
-      {Length[wlbg1], Total[\[Lambda]]-1} ];
-    contentVectors=Function[u,Normal[SparseArray[Flatten[MapIndexed[Function[{v1,v2},{v1->Last[v2]-First[v2]}],First[u],{2}]],{Total[\[Lambda]]}]]]/@wlbg1;
-    If[modus!=3,
-      spanningTree = If[ Length[wlbg1]==1, {},
+        ({Part[#,1],Part[#,3]}->Part[#,2])& /@ Flatten[Part[#,2]& /@ graphData, 1],
+        ({Part[#,2],Part[#,3]}->-Part[#,1])& /@ Flatten[Part[#,2]& /@ graphData, 1],
+        Flatten @ MapIndexed[ 
+          Function[{v, w}, Function[u, {First[w], u} -> First[w]] /@ v],
+          Function[
+            v,
+            Last /@ Select[
+              Transpose @ {
+                Flatten[Function[u, Append[u, 0]] /@ (Differences /@ v)],
+                Flatten[v]
+              },
+              Function[u, First[u]==1]
+            ]
+          ] /@ (First /@ graphData)
+        ],
+        Flatten @ MapIndexed[
+          Function[{v, w}, Function[u, {First[w], u} -> -First[w]] /@ v],
+          Function[
+              v,
+              Last /@ 
+              Select[
+                Transpose @ { 
+                  Flatten[Function[u, Append[u, 0]] /@ (Differences /@ v)], 
+                  Flatten[v] 
+                },
+                Function[u, First[u]==1]
+              ]
+          ] /@
+          (YoungTranspose[#]&) /@ 
+          (First /@ graphData)
+        ]
+      ],
+      {Length[graphData], n-1} 
+    ];
+
+    contents = Function[ u,
+      Normal @ SparseArray[
+        Flatten @ MapIndexed[
+          Function[{v1,v2},{v1->Last[v2]-First[v2]}],
+          First[u],
+          {2}
+        ],
+        {n}
+      ]
+    ] /@ graphData;
+    If[mode!=3,
+      spanningTree = If[ Length[graphData]==1, {},
         First /@ MapIndexed[
           Drop[#1/.(Rule[{a_},b_]):>{First[#2],a,b},-1]&,
           ArrayRules /@ SparseArray[
-            Flatten[Function[v,Function[u,{Part[u,2],Part[u,1]}->Part[u,3]]/@Last[v]] /@ Drop[wlbg1,1]],
-            {Length[wlbg1]-1, Length[wlbg1]}
-           ]
-         ]
-       ];
-      transform = SparseArray[{Length[wlbg1],Length[wlbg1]}->1,{Length[wlbg1],Length[wlbg1]}];
+            Flatten[Function[v,Function[u,{Part[u,2],Part[u,1]}->Part[u,3]]/@Last[v]] /@ Drop[graphData,1]],
+            {Length[graphData]-1, Length[graphData]}
+          ]
+        ]
+      ];
+      transform = SparseArray[
+        {Length[graphData], Length[graphData]} -> 1,
+        {Length[graphData], Length[graphData]}
+      ];
       Module[
         { k,r,s,x},
         For[ i=Length[spanningTree],i>0,i--,
           (* e_i = s_r e_k is the base vector to be constructed. *)
           k=Part[spanningTree,i,2];
           r=Part[spanningTree,i,3];
-          For[j=k,j<=Length[wlbg1],j++,
+          For[j=k,j<=Length[graphData],j++,
             (* v_j is a Young vector appearing in e_k with coefficient x. *)
             x=Part[transform,k,j];
             If[x==0,Continue[]];
-            s=Part[wlbgAdjacencyLists,j,r];
+            s=Part[adjacency,j,r];
             Switch[s,
               j, Part[transform,i,j]+=x, (* row inversion *) 
               -j, Part[transform,i,j]-=x, (* column inversion *) 
               x_/;x<0, Part[transform,i,j] += x /
-                (Part[contentVectors,j,r+1]-Part[contentVectors,j,r]);
+                (Part[contents,j,r+1]-Part[contents,j,r]);
               Part[transform,i,-s] += x * (1 -
-                  1/(Part[contentVectors,j,r+1]-Part[contentVectors,j,r])^2),
+                  1/(Part[contents,j,r+1]-Part[contents,j,r])^2),
               (* removing an inversion *) 
               _, Part[transform,i,s]+=x;
               Part[transform,i,j] += x /
-                (Part[contentVectors,j,r+1] - Part[contentVectors,j,r]);
+                (Part[contents,j,r+1] - Part[contents,j,r]);
               (* admissibly adding an inversion *)
              ]
            ]
          ]
        ];
       tnorm=Normal[transform]
-     ];
-    If[modus==1, Return[tnorm]];
-    semimatrix = Normal[ SparseArray[
-        Flatten[
-          Module[
-            {s},
-            Table[s=Part[wlbgAdjacencyLists,k,r];
-              Switch[s,
-                (* row inversion *) k,{{r,k,k}->1},
-                (* column inversion *) -k,{{r,k,k}->-1},
-                (* removing an inversion *) x_/;x<0,
-                {{r,k,k}->1/(Part[contentVectors,k,r+1]-Part[contentVectors,k,r]),
-                  {r,k,-s}->1-1/(Part[contentVectors,k,r+1]-Part[contentVectors,k,r])^2},
-                (* admissibly adding an inversion *)_,
-                {{r,k,k}->1/(Part[contentVectors,k,r+1]-Part[contentVectors,k,r]),
-                  {r,k,s}->1}],
-              {r,Total[\[Lambda]]-1},{k,Length[wlbg1]}]]],
-        {Total[\[Lambda]]-1,Length[wlbg1],Length[wlbg1]}]
-     ];
-    If[modus==3, Return[semimatrix]];
+    ];
+    If[mode==1, Return[tnorm]];
+    semimatrix = Normal @ SparseArray[
+      Flatten @ Module[
+        {s},
+        Table[
+          s = Part[adjacency, k, r];
+          Switch[ s,
+            k, {{r,k,k}->1}, (* row inversion *) 
+            -k, {{r,k,k}->-1}, (* column inversion *)
+            x_/;x<0, (* removing an inversion *)
+            { {r,k,k}->1/(Part[contents,k,r+1]-Part[contents,k,r]),
+              {r,k,-s}->1-1/(Part[contents,k,r+1]-Part[contents,k,r])^2 },
+            _, (* admissibly adding an inversion *)
+            { {r,k,k}->1/(Part[contents,k,r+1]-Part[contents,k,r]),
+              {r,k,s}->1 }
+          ],
+          {r, n-1},
+          {k, Length[graphData]}
+        ]
+      ],
+      {n-1, Length[graphData], Length[graphData]}
+    ];
+    If[mode==3, Return[semimatrix]];
     tinv=Inverse[tnorm];
-    tnorm.#.tinv&/@ semimatrix
-   ]
- ];
+    (tnorm.#.tinv&) /@ semimatrix
+  ]
+]
 
+compatibleBruhatGraph::usage = "compatibleBruhatGraph[data] coverts the new format of LegacyBruhatGraph to the old format for backward compatibility."
+
+compatibleBruhatGraph[graphData_Association] :=
+  KeyValueMap[
+    Function[{key, val}, {key, val}], 
+    graphData
+  ] /. YoungTableau -> Identity;
+
+
+LegacyBruhatGraph::usage="LegacyBruhatGraph[shape] constructs weak left Bruhat graph of standard tableaux. Start with row-wise ordered tableau (observe that it is smallest with respect to weak left Bruhat ordering) and then do breadth first algorithm. Output is a record with two components: The first is the list of standard tableaux. The second is the list of weighted edges, where weight i means that the transposition (i,i+1) the first connected tableau to the second. The edges are given as three component record with the first two components denoting the indices of the connected tableaux and the third record the weight."
+
+LegacyBruhatGraph[data_List?YoungShapeQ]:=
+  LegacyBruhatGraph[YoungShape @ data]
+
+LegacyBruhatGraph[shape_YoungShape]:= Module[
+  { k = 0,
+    init = tableauToPermutation[firstYoungTableau @ shape],
+    data },
+  data = NestList[
+    ( k += Length[#];
+      updateConnectedTableaux[#, k, k-Length[#]] 
+    )&,
+    Association[init -> {}],
+    inversionCount[init]
+  ];
+  data = Merge[data, Catenate];
+  AssociationMap[
+    Function[v, tableauFromPermutation[First @ v, shape] -> Last[v]],
+    data
+  ]
+]
+
+
+findConnectedTableaux::usage = "findConnectedTableaux[prm, curPos, srcPos] finds standard Young tableaux resulting from the present standard Young tableau prm (given in the form of permutation list; see tableauToPermutation). The result is a list of pairs {newPrm, {curPos, srcPos, weight}}."
+
+findConnectedTableaux[prm_List?PermutationListQ, curPos_, sourcePos_] := Module[
+  { trs },
+  trs = Flatten @ Position[Differences[prm], x_/;x<0];
+  trs = Map[{Cycles @ {{#, #+1}}, #}&, trs];
+  Map[
+    Rule[Permute[prm, First @ #], {curPos, sourcePos, Last @ #}]&,
+    trs
+  ]
+]
+
+
+updateConnectedTableaux::usage = "updateConnectedTableaux[data, curPos, srcPos] finds standard Young tableaux connected from those in data. "
+
+updateConnectedTableaux[data_, curPos_, sourcePos_] := Module[
+  { new, out },
+  new = Join @@ MapIndexed[
+    findConnectedTableaux[#1, curPos, sourcePos+First[#2]]&,
+    Keys @ data
+  ];
+  new = GroupBy[new, First, Values];
+  out = MapIndexed[
+    Map[Function[x, ReplacePart[x, 1->Part[x,1]+First[#2]]], #1]&, 
+    Values @ new
+  ];
+  AssociationThread[Keys @ new, out]
+]
+
+
+LegacySeminormalRepresentation::usage = "LegacySeminormalRepresentation[pp] computes the matrices of Young's seminormal representation of the symmetric group corresponding to the integer partition pp. The function returns the images of the transpositions of immediate neighbors, listed in order of the transposed elements. The matrices are supposed to operate from the right on row vectors.\nLegacySeminormalRepresentation[shape, prm] returns the matrix assigned to permutation prm by Young's seminormal representation corresponding to partition shape."
+(* NOTE: There are two important differences between LegacySeminormalRepresentation and YoungSeminormalRepresentaion: 
+  1. In LegacySeminormalRepresentation, matrices are supposed to operate from the right on row vectors.
+  2. The order of Specht basis vectors are different. *)
+
+LegacySeminormalRepresentation[data_List?YoungShapeQ]:=
+  LegacySeminormalRepresentation[YoungShape @ data]
+
+LegacySeminormalRepresentation[shape_YoungShape]:=
+  oldYoungSeminormalRep[LegacyBruhatGraph @ shape, YoungDegree @ shape]
+
+LegacySeminormalRepresentation[data_List?YoungShapeQ, any_] :=
+  LegacySeminormalRepresentation[YoungShape @ data, any]
+
+LegacySeminormalRepresentation[shape_YoungShape, cyc_Cycles] :=
+  LegacySeminormalRepresentation[
+    shape, 
+    PermutationList[cyc, YoungDegree @ shape]
+  ]
+
+LegacySeminormalRepresentation[shape_YoungShape, prm_?PermutationListQ] :=
+  If[ prm == Range[YoungDegree @ shape],
+    IdentityMatrix[YoungTableauCount @ shape],
+    Dot @@ Extract[
+      LegacySeminormalRepresentation[shape],
+      Partition[adjacentTranspositions[prm], 1]
+    ]
+  ] /; YoungDegree[shape]==Length[prm];
+
+
+oldYoungSeminormalRep::usage = "oldYoungSeminormalRep[data, n] constructs the Young's seminormal representation using the weak leaft Bruhat graph specified by data.\nA copy of youngAuxiliary particularly for Young's seminormal representation."
+
+(****
+  The following expression computes the adjacency lists of the weak left
+  Bruhat graph; an entry Subscript[a, ij] may have three different
+  meanings, depending on the following cases:
+  (i) If Subscript[a, ij] == 0, then nothing special.
+  (ii) If Subscript[a, ij]<0, then j and j+1 appear inverted in tableau i and application of the admissible transposition (j,j+1) turns tableau i into tableau -Subscript[a, ij], thus removing an inversion. 
+  (iii) If Subscript[a, ij]>0, then j and j+1 appear in correct order in tableau i and application of the admissible transposition (j,j+1) turns tableau i into tableau Subscript[a, ij], thus adding an inversion. *)
+
+oldYoungSeminormalRep[data_, n_Integer] := Module[
+  { tables = Keys[data], 
+    codes = Flatten[Values @ data, 1], 
+    adjacency, contents },
+
+  adjacency = Normal @ SparseArray[
+    Join[
+      ({Part[#,1], Part[#,3]} -> +Part[#,2])& /@ codes,
+      ({Part[#,2], Part[#,3]} -> -Part[#,1])& /@ codes
+    ],
+    {Length[data], n-1}
+  ];
+  
+  contents = ContentVector /@ tables;
+  
+  SparseArray[
+    Flatten @ Module[
+      {s},
+      Table[
+        s = Part[adjacency, k, r];
+        { {r, k, k} -> 1/(Part[contents,k,r+1]-Part[contents,k,r]),
+          Which[
+            s < 0, (* removing an inversion *)
+            {r, k, -s} -> 1 - 1/(Part[contents,k,r+1]-Part[contents,k,r])^2,
+            s > 0, (* admissibly adding an inversion *)
+            {r, k, s} -> 1,
+            True, Nothing
+          ] 
+        },
+        {r, n-1},
+        {k, Length[data]}
+      ]
+    ],
+    {n-1, Length @ data, Length @ data}
+  ]
+]
+
+
+sameRowTranspositions::usage = "sameRowTranspositions[syt] returns a list of elements k such that k and k+1 appear on the same row in standar Young tableau syt."
+
+sameRowTranspositions[data_?YoungShapeQ] :=
+  sameRowTranspositions[YoungTableau @ data]
+
+sameRowTranspositions[YoungTableau[data_]] := Module[
+  { del },
+  del = Transpose @ {
+    Flatten[data],
+    Flatten[(Append[#, 0]&) /@ Differences /@ data]
+  };
+  First /@ Select[del, Last[#]==1&]
+]
 
 End[]
 
 EndPackage[]
 
 
+(**** post-processing ****)
 
 BeginPackage["QuantumMob`Q3`"]
 
