@@ -1,9 +1,9 @@
 (* -*- mode: math; -*- *)
-(* Many features in this file were adopted from a package by M. Headrick (April 2003). *)
+(* Some features in this file were adopted from a package by M. Headrick (April 2003). *)
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { Grassmann, GrassmannQ, AnyGrassmannQ };
-{ GD, GIntegrate };
+{ GrassmannD, GrassmannIntegrate };
 { GrassmannGrade }
 
 
@@ -14,7 +14,7 @@ $symbs = Unprotect[Power]
 
 (**** <Grassmann> ****)
 
-Grassmann::usage = "Grassmann refers to the generators of a Grassmann algebra."
+Grassmann::usage = "Grassmann represents a set of generators of a Grassmann algebra."
 
 Grassmann /:
 Let[Grassmann, {ls__Symbol}] := (
@@ -54,20 +54,15 @@ AnyGrassmannQ[_] = False
 (**** </GrassmannQ> ****)
 
 
-(**** <Conjugate> ****)
-
-Multiply /:
-HoldPattern @ Conjugate[ Multiply[ops__?AnyGrassmannQ] ] :=
-  Multiply @@ Reverse[Conjugate @ {ops}]
+Power[a_?GrassmannQ, n_Integer?NonNegative] := MultiplyPower[a, n]
 
 Dagger[ z_?AnyGrassmannQ ] := Conjugate[z]
 
 Tee[ z_?GrassmannQ ] := z
 
-(**** </Conjugate> ****)
-
-
-Power[a_?GrassmannQ, n_Integer?NonNegative] := MultiplyPower[a, n]
+Multiply /:
+HoldPattern @ Conjugate[ Multiply[ops__?AnyGrassmannQ] ] :=
+  Multiply @@ Reverse[Conjugate @ {ops}]
 
 
 (**** <Multiply> ****)
@@ -98,17 +93,17 @@ HoldPattern @
 (**** </Multiply> ****)
 
 
-(**** <GD> ****)
+(**** <GrassmannD> ****)
 
-GD::usage="GD[expr, g] returns the Grassmann derivative of expr with respect to the Grassmann variable g.\nGD[expr, {g1, g2, \[Ellipsis]}] returns the derivative with respect to multiple Grassmann variables g1, g2, \[Ellipsis].\nGD[g] or GD[{g1, g2, \[Ellipsis]}] represents the operator form of GD acting on an expression."
+GrassmannD::usage = "GrassmannD[expr, g] returns the Grassmann derivative of expr with respect to the Grassmann generator g.\nGrassmannD[expr, {g1, g2, \[Ellipsis]}] returns the derivative with respect to multiple Grassmann generators g1, g2, \[Ellipsis].\nGrassmannD[g] or GrassmannD[{g1, g2, \[Ellipsis]}] represents the operator form of GrassmannD acting on an expression."
 
-GD[gg_][expr_] := GD[expr, gg]
+GrassmannD[gg_][expr_] := GrassmannD[expr, gg]
 
-GD[expr_, g_?AnyGrassmannQ] := GD[expr, {g}]
+GrassmannD[expr_, g_?AnyGrassmannQ] := GrassmannD[expr, {g}]
 
-GD[z_?CommutativeQ * expr_, gg_] := z * GD[expr, gg]
+GrassmannD[z_?CommutativeQ * expr_, gg_] := z * GrassmannD[expr, gg]
 
-GD[expr_Plus, gg_] := Map[GD[gg], expr]
+GrassmannD[expr_Plus, gg_] := Map[GrassmannD[gg], expr]
 
 
 grsFreeQ[expr_, gg:{__?AnyGrassmannQ}] := Module[
@@ -120,22 +115,22 @@ grsFreeQ[expr_, gg:{__?AnyGrassmannQ}] := Module[
   AnyTrue[gnr, FreeQ[new, #, Heads -> False]&]
 ]
 
-GD[expr_, gg:{__?AnyGrassmannQ}] := 0 /; 
+GrassmannD[expr_, gg:{__?AnyGrassmannQ}] := 0 /; 
   grsFreeQ[expr, gg]
 
 
-GD[g_?AnyGrassmannQ, {g_?AnyGrassmannQ}] = 1
+GrassmannD[g_?AnyGrassmannQ, {g_?AnyGrassmannQ}] = 1
 
 
-GD[CoherentState[aa_Association], gg:{__?AnyGrassmannQ}] :=
+GrassmannD[CoherentState[aa_Association], gg:{__?AnyGrassmannQ}] :=
   Module[
     { bb = Select[aa, Not @ FreeQ[#, Alternatives @@ gg]&] },
-    ReplaceAll[GD[FockCat[CoherentState @ bb], gg], Ket[Vacuum] -> 1] **
+    ReplaceAll[GrassmannD[FockCat[CoherentState @ bb], gg], Ket[Vacuum] -> 1] **
       CoherentState[KeyDrop[aa, Keys @ bb]]
   ]
 
 HoldPattern @
-  GD[Multiply[ff__?AnyGrassmannQ], gg:{__?AnyGrassmannQ}] := 
+  GrassmannD[Multiply[ff__?AnyGrassmannQ], gg:{__?AnyGrassmannQ}] := 
     With[
       { ss = Supplement[{ff}, gg] },
       SignatureTo[{ff}, Join[Reverse @ gg, ss]] * Apply[Multiply, ss]
@@ -143,42 +138,38 @@ HoldPattern @
 
 
 HoldPattern @
-  GD[Multiply[op:Longest[ff__?AnyGrassmannQ], post__], gg:{__?AnyGrassmannQ}] := 
-    GD[Multiply[op], gg] ** Multiply[post] + 
-        IntegerParity[Length[{ff}] * Length[gg]] * op ** GD[Multiply[post], gg]
+  GrassmannD[Multiply[op:Longest[ff__?AnyGrassmannQ], post__], gg:{__?AnyGrassmannQ}] := 
+    GrassmannD[Multiply[op], gg] ** Multiply[post] + 
+        IntegerParity[Length[{ff}] * Length[gg]] * op ** GrassmannD[Multiply[post], gg]
 
 HoldPattern @
-  GD[Multiply[v_CoherentState, post___], gg:{__?AnyGrassmannQ}] :=
-    GD[v, gg] ** Multiply[post] + v ** GD[Multiply[post], gg]
+  GrassmannD[Multiply[v_CoherentState, post___], gg:{__?AnyGrassmannQ}] :=
+    GrassmannD[v, gg] ** Multiply[post] + v ** GrassmannD[Multiply[post], gg]
 
 HoldPattern @
-  GD[Multiply[v_Ket, post___], gg:{__?AnyGrassmannQ}] :=
+  GrassmannD[Multiply[v_Ket, post___], gg:{__?AnyGrassmannQ}] :=
     Power[ParityValue[v, Fermions @ v], Length @ gg] * 
-      Multiply[v, GD[Multiply[post], gg]]
+      Multiply[v, GrassmannD[Multiply[post], gg]]
 
 HoldPattern @
-  GD[Multiply[ff__?AnyFermionQ, post___], gg:{__?AnyGrassmannQ}] :=
-    IntegerParity[Length[{ff}] * Length[gg]] * Multiply[ff, GD[Multiply[post], gg]]
+  GrassmannD[Multiply[ff__?AnyFermionQ, post___], gg:{__?AnyGrassmannQ}] :=
+    IntegerParity[Length[{ff}] * Length[gg]] * Multiply[ff, GrassmannD[Multiply[post], gg]]
 
-(**** </GD> ****)
+(**** </GrassmannD> ****)
 
 
-(**** <GIntegrate> ****)
+(**** <GrassmannIntegrate> ****)
 
-GIntegrate::usage="GIntegrate[expr, g] returns the Grassmann integration of expr with respect to the Grassmann variable g.\nGIntegrate[expr, {g1, g2, \[Ellipsis]}] returns the integration with respect to multiple Grassmann variables g1, g2, \[Ellipsis].\nGIntegrate[g] or GIntegrate[{g1, g2, \[Ellipsis]}] represents the operator form of GIntegrate acting on an expression."
+GrassmannIntegrate::usage = "GrassmannIntegrate[expr, g] returns the Grassmann integration of expr with respect to the Grassmann generator g.\nGrassmannIntegrate[expr, {g1, g2, \[Ellipsis]}] returns the integration with respect to multiple Grassmann generators g1, g2, \[Ellipsis].\nGrassmannIntegrate[g] or GrassmannIntegrate[{g1, g2, \[Ellipsis]}] represents the operator form of GrassmannIntegrate acting on an expression."
 
-GIntegrate = GD
+GrassmannIntegrate = GrassmannD
 
-(**** </GIntegrate> ****)
+(**** </GrassmannIntegrate> ****)
 
 
 (**** <GrassmannGrade> ****)
 
-GrassmannGrade::usage="GrassmannGrade[expr] returns a non-negative integer: 0, if expr is a pure boson, which can be multiplied using Times; positive and odd, if expr has fermionic statistics; or positive and even, if expr has bosonic statistics but involves Grassmann variables. Values of the function GrassmannGrade may also be defined explicitly; for example,
-
-  GrassmannGrade[ f[x_] ] := GrassmannGrade[ x ] 
-
-defines the function f to have the same grading as its argument. Any variable whose grading is not explicitly declared is assumed to be purely bosonic."
+GrassmannGrade::usage = "GrassmannGrade[expr] returns a non-negative integer: 0, if expr is a pure boson, which can be multiplied using Times; positive and odd, if expr has fermionic statistics; or positive and even, if expr has bosonic statistics but involves Grassmann generators. Any generator whose grading is not explicitly declared is assumed to be purely bosonic."
 
 GrassmannGrade[_?AnyGrassmannQ] = 1
 
@@ -188,10 +179,10 @@ GrassmannGrade[expr_Times] :=
 GrassmannGrade[expr_Plus] := 
   Max @ Map[GrassmannGrade, List @@ expr]
 
-HoldPattern @ GrassmannGrade[Multiply[ops__]] := 
+GrassmannGrade[HoldPattern @ Multiply[ops__]] := 
   Total @ Map[GrassmannGrade, {ops}]
 
-GrassmannGrade[GD[a_, _]] := GrassmannGrade[a] + 1
+GrassmannGrade[GrassmannD[a_, _]] := GrassmannGrade[a] + 1
 
 GrassmannGrade[_] = 0
 

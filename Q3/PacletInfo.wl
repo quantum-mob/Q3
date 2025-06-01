@@ -8,7 +8,7 @@ PacletObject[
     "Creator" -> "Mahn-Soo Choi",
     "PublisherID" -> "QuantumMob",
     "License" -> "GPL-3.0-only",
-    "Version" -> "4.2.1",
+    "Version" -> "4.2.2",
     "WolframVersion" -> "13.1+",
     "Updating" -> "Automatic",
     "Loading" -> "Startup",

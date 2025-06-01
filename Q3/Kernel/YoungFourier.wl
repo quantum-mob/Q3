@@ -17,15 +17,14 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { LegacyNormalRepresentation };
 
-{ YoungBruhatGraph,
-  ContentVector };
+{ YoungBruhatGraph };
 
 { LeftRegularRepresentation,
   RightRegularRepresentation };
 
-{ YoungClebschGordanTransform,
-  YoungClebschGordan };
-{ HarrowClebschGordanTransform };
+{ YoungClebschGordan,
+  YoungClebschGordanTransform,
+  HarrowClebschGordanTransform };
 
 Begin["`Private`"]
 
@@ -259,25 +258,6 @@ YoungFourier[n_Integer, opts:OptionsPattern[]][
 (**** </YoungFourier> ****)
 
 
-(**** <ContentVector> ****)
-
-ContentVector::usage = "ContentVector[syt_?YoungTableauQ] returns the content vector of standard Young tableau syt.\nThe content of number k in a SYT is the column number minus the row number of the box containing k. The content vector has the content of k as the k'th entry."
-
-ContentVector[data_List?YoungTableauQ] :=
-  ContentVector[YoungTableau @ data]
-
-ContentVector[yt:YoungTableau[data_]] := Normal @ SparseArray[
-  Flatten @ MapIndexed[
-    Function[{v, ij}, {v -> Last[ij]-First[ij]}],
-    data,
-    {2}
-  ],
-  {YoungDegree @ yt}
-]
-
-(**** </ContentVector> ****)
-
-
 (**** <YoungBruhatGraph> ****)
 
 YoungBruhatGraph::usage = "YoungBruhatGraph[shape] constructs a weak left Bruhat graph of standard tableaux, starting with the row-wise ordered tableau (observe that it is smallest with respect to weak left Bruhat ordering). The edges are weighted, where weight i means that the transposition (i,i+1) induces the transition."
@@ -382,25 +362,25 @@ theYoungNormalRep::usage = "theYoungNormalRep[graph] constructs the Young's norm
 theYoungNormalRep[shape_YoungShape, data_Graph] := Module[
   { n = YoungDegree[shape],
     tableaux = YoungTableaux[shape],
-    contents, adjacency },
-  contents = Map[ContentVector, tableaux];
+    distances, adjacency, rules },
   rules = Normal @ Map[First, PositionIndex @ tableaux];
   adjacency = RotateRight /@ ReplaceAll[List @@@ EdgeList @ data, rules];
+  distances = Map[YoungDistance, tableaux];
 
   rules = Flatten @ Map[
     Function[
       {k, i, j},
-      { {k, i, i} -> 1/(Part[contents,i,k+1]-Part[contents,i,k]),
-        {k, i, j} -> Sqrt[1 - 1/(Part[contents,i,k+1]-Part[contents,i,k])^2],
-        {k, j, i} -> Sqrt[1 - 1/(Part[contents,i,k+1]-Part[contents,i,k])^2],
-        {k, j, j} -> -1/(Part[contents,i,k+1]-Part[contents,i,k])
+      { {k, i, i} -> 1/Part[distances,i,k],
+        {k, i, j} -> Sqrt[1 - 1/Part[distances,i,k]^2],
+        {k, j, i} -> Sqrt[1 - 1/Part[distances,i,k]^2],
+        {k, j, j} -> -1/Part[distances,i,k]
       }
     ] @@ # &,
     adjacency
   ];
   rules = Association @ Join[
     Flatten @ Table[
-      {k, i, i} -> 1/(Part[contents,i,k+1]-Part[contents,i,k]),
+      {k, i, i} -> 1/Part[distances,i,k],
       {k, n-1},
       {i, Length @ tableaux}
     ],
@@ -445,22 +425,22 @@ theYoungSeminormalRep::usage = "theYoungSeminormalRep[data, n] constructs the Yo
 theYoungSeminormalRep[shape_YoungShape, data_Graph] := Module[
   { n = YoungDegree[shape],
     tableaux = YoungTableaux[shape],
-    contents, adjacency },
-  contents = Map[ContentVector, tableaux];
+    distances, adjacency, rules },
   rules = Normal @ Map[First, PositionIndex @ tableaux];
   adjacency = RotateRight /@ ReplaceAll[List @@@ EdgeList @ data, rules];
+  distances = Map[YoungDistance, tableaux];
 
   rules = Flatten @ Map[
     Function[
       {k, i, j},
       Which[
         i < j,
-        { {k, i, j} -> 1 - 1/(Part[contents,i,k+1]-Part[contents,i,k])^2,
+        { {k, i, j} -> 1 - 1/Part[distances,i,k]^2,
           {k, j, i} -> 1
         },
         i > j, 
         { {k, i, j} -> 1,
-          {k, j, i} -> 1 - 1/(Part[contents,j,k+1]-Part[contents,j,k])^2
+          {k, j, i} -> 1 - 1/Part[distances,j,k]^2
         },
         True, Nothing
       ]
@@ -469,7 +449,7 @@ theYoungSeminormalRep[shape_YoungShape, data_Graph] := Module[
   ];
   rules = Join[
     Flatten @ Table[
-      {k, i, i} -> 1/(Part[contents,i,k+1]-Part[contents,i,k]),
+      {k, i, i} -> 1/Part[distances,i,k],
       {k, n-1},
       {i, Length @ tableaux}
     ],

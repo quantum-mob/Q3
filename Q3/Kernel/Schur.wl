@@ -17,53 +17,62 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-(**** <YoungType> ****)
+(**** <YoungContent> ****)
 
-YoungType::usage = "YoungType[tb] returns the type (or content or weight) of Weyl tableau tb; i.e., a list of multiplicities of numbers (or letters) appearing in the tableau."
+YoungContent::usage = "YoungContent[tb] returns the type (or content or weight) of Weyl tableau tb; i.e., a list of multiplicities of numbers (or letters) appearing in the tableau."
 (* Definition 2.9.1 in Sagan (2001) *)
 
-YoungType::exss = "The second argument is not necessary and ignored."
+YoungContent::exss = "The second argument is not necessary and ignored."
 
-YoungType::lett = "The number of letters (levels) must be given as the second argument."
+YoungContent::lett = "The number of letters (levels) must be given as the second argument."
 
-YoungType[GelfandPattern[data_]] := With[
+YoungContent[GelfandPattern[data_]] := With[
   { nn = Append[Total /@ data, 0] },
   Differences[Reverse @ nn]
 ]
 
-YoungType[GelfandPattern[data_], d_Integer] :=
-  PadRight[YoungType[any], d]
+YoungContent[gp_GelfandPattern, d_Integer] :=
+  PadRight[YoungContent[gp], d]
 
-YoungType[YoungTableau[data_]] :=
-  YoungType[YoungTableau @ data, Max @ data]
 
-YoungType[YoungTableau[data_], d_Integer] := Values @ Join[
+YoungContent[YoungTableau[data_]] :=
+  YoungContent[YoungTableau @ data, Max @ data]
+
+YoungContent[YoungTableau[data_], d_Integer] :=
+  YoungContent[Flatten @ data, d]
+
+
+YoungContent[tuple:{___Integer?Positive}] :=
+  YoungContent[tuple, Max @ tuple]
+
+YoungContent[tuple:{___Integer?Positive}, d_Integer] := Values @ Join[
   AssociationThread[Range[d] -> 0],
-  KeySelect[Counts[Flatten @ data], #<=d&]
+  KeySelect[Counts @ tuple, #<=d&]
 ]
 
-(* flexibility *)
-YoungType[data_List?GelfandPatternQ, rest___] := 
-  YoungType[GelfandPattern @ data, rest]
 
 (* flexibility *)
-YoungType[data_?WeylTableauQ, rest___] := 
-  YoungType[YoungTableau @ data, rest]
+YoungContent[data_List?GelfandPatternQ, rest___] := 
+  YoungContent[GelfandPattern @ data, rest]
+
+(* flexibility *)
+YoungContent[data_?WeylTableauQ, rest___] := 
+  YoungContent[YoungTableau @ data, rest]
 
 (**** </Youngtype> ****)
 
 
-(**** <YoungTypes> ****)
+(**** <YoungContents> ****)
 
-YoungTypes::usage = "YoungTypes[n, d] returns a list of types of degree n for d letters.\n YoungTypes[shape, d] returns a list of types ReverseSort of which are dominated by shape."
+YoungContents::usage = "YoungContents[n, d] returns a list of types of degree n for d letters.\n YoungContents[shape, d] returns a list of types ReverseSort of which are dominated by shape."
 
-YoungTypes[n_Integer, d_Integer] := Module[
+YoungContents[n_Integer, d_Integer] := Module[
   { types = IntegerPartitions[n, d] },
   types = PadRight[types, {Length @ types, d}];
   Catenate @ Map[Permutations, types]
 ]
 
-YoungTypes[shape_YoungShape, d_Integer] := Module[
+YoungContents[shape_YoungShape, d_Integer] := Module[
   { types },
   types = Select[
     IntegerPartitions[YoungDegree @ shape, d], 
@@ -73,7 +82,7 @@ YoungTypes[shape_YoungShape, d_Integer] := Module[
   Catenate @ Map[Permutations, types]
 ]
 
-(**** </YoungTypes> ****)
+(**** </YoungContents> ****)
 
 
 (**** <GelfandPattern> ****)

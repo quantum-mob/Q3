@@ -2,8 +2,9 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
-{ AdjacentTranspositions }; (* rename 2025-05-27 v41.2.1 *)
-{ GelfandAttach }; (* rename 2025-05-23 v41.1.11 *)
+{ GD, GIntegrate }; (* 2025-05-31 v4.2.2 *)
+{ AdjacentTranspositions }; (* rename 2025-05-27 v4.2.1 *)
+{ GelfandAttach }; (* rename 2025-05-23 v4.1.11 *)
 { ToYoungTableau, ToGelfandPattern }; (* obsolete v4.1.11 2025-05-22 *)
 { GroupRegularRepresentation }; (* obsolete 2025-05-09 *)
 { PileYoungShape }; (* renamed 2025-04-13 v4.1.7 *)
@@ -283,6 +284,20 @@ ToGelfandPattern[tb_, _Integer] := (
 
 
 (**** <obsolete> ****)
+
+GD::usage = "GD is obsolete since v4.2.2 (2025-05-31); use GrassmannD instead."
+
+GD[any___] := (
+  Message[Q3General::renamed, "GD", "GrassmannD"];
+  GrassmannD[any]
+)
+
+GIntegrate::usage = "GIntegrate is obsolete since v4.2.2 (2025-05-31); use GrassmannIntegrate instead."
+
+GIntegrate[any___] := (
+  Message[Q3General::renamed, "GIntegrate", "GrassmannIntegrate"];
+  GrassmannIntegrate[any]
+)
 
 AdjacentTranspositions::usage = "AdjacentTranspositions is obsolete since v4.2.1 (2025-05-27); use PermutationTranspositions instead."
 

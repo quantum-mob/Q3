@@ -29,28 +29,28 @@ DualSchurBasis[n_Integer, d_Integer] := Module[
 
 
 DualSchurBasis[shape_YoungShape, d_Integer] := Module[
-  { types = YoungTypes[shape, d] },
-  Join @@ Map[DualSchurBasis[shape, #]&, types]
+  { contents = YoungContents[shape, d] },
+  Join @@ Map[DualSchurBasis[shape, #]&, contents]
 ]
 
-DualSchurBasis[type:{__Integer}] := Module[
-  { shapes = YoungShapes[type] },
-  Join @@ Map[DualSchurBasis[#, type]&, shapes]
+DualSchurBasis[content:{__Integer}] := Module[
+  { shapes = YoungShapes[content] },
+  Join @@ Map[DualSchurBasis[#, content]&, shapes]
 ]
 
 
-DualSchurBasis[shape_YoungShape, type:{__Integer}] := Module[
-  { dim = Length[type],
-    sub = YoungSubgroup[type],
+DualSchurBasis[shape_YoungShape, content:{__Integer}] := Module[
+  { dim = Length[content],
+    sub = YoungSubgroup[content],
     rep, pbs, trv, prj, mat, tag, pos },
 
-  {tag, pos} = DualSchurBasisNames[shape, type];
+  {tag, pos} = DualSchurBasisNames[shape, content];
 
   (* irreducible represenations *)
   rep = YoungNormalRepresentation[shape];
 
   (* permutation/transversal basis *)
-  pbs = Flatten @ MapThread[ConstantArray, {Range[dim]-1, type}];
+  pbs = Flatten @ MapThread[ConstantArray, {Range[dim]-1, content}];
   pbs = Permutations[pbs];
 
   (* transversal elements *)
@@ -72,23 +72,23 @@ DualSchurBasis[shape_YoungShape, type:{__Integer}] := Module[
   pbs = One[ Power[dim, YoungDegree @ shape] ][[pbs]];
 
   AssociationThread[tag -> SparseArray /@ Flatten[mat . pbs, 1]]
-] /; DominatesQ[First @ shape, ReverseSort @ type]
+] /; DominatesQ[First @ shape, ReverseSort @ content]
 
-DualSchurBasis[shape_YoungShape, type:{__Integer}] := Association[]
+DualSchurBasis[shape_YoungShape, content:{__Integer}] := Association[]
 
 
-DualSchurBasisNames::usage = "DualSchurBasisNames[shape, types] returns {names, positions}, where names is a list of labels referring to the irreducible basis vectors and positions is the list of positions of standard Young tableaux that properly combines with type to generate a Weyl tableau."
+DualSchurBasisNames::usage = "DualSchurBasisNames[shape, content] returns {names, poslist}, where names is a list of labels referring to the irreducible basis vectors and poslist is the list of positions of standard Young tableaux that properly combines with content to generate a Weyl tableau."
 
 (* labels of the irrep basis vectors *)
-DualSchurBasisNames[shape_YoungShape, type:{__Integer}] := Module[
-  { d = Length[type],
+DualSchurBasisNames[shape_YoungShape, content:{__Integer}] := Module[
+  { d = Length[content],
     yy = YoungTableaux[shape],
-    ww = WeylTableaux[shape, type],
+    ww = WeylTableaux[shape, content],
     kk },
   kk = Map[YoungRefersTo[#, d]&, ww];
   kk = Map[FirstPosition[yy, _?(#)]&, kk];
   { Tuples[{yy, ww}], Flatten[kk] }
-] /; YoungDegree[shape] == Total[type]
+] /; YoungDegree[shape] == Total[content]
 
 End[]
 

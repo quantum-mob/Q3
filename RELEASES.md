@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.2.2
+
+- New: UnitaryTwirling, WeingartenFunction
+- Modified: YoungDistance
+- Removed: ContentVector
+
 ## 4.2.1
 
 - Improved: DualSchurBasis, YoungNormalRepresentation, YoungFourierMatrix, YoungFourierBasis, YoungFourier

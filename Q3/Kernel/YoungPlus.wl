@@ -361,7 +361,7 @@ LegacySeminormalRepresentation[data_List?YoungShapeQ]:=
   LegacySeminormalRepresentation[YoungShape @ data]
 
 LegacySeminormalRepresentation[shape_YoungShape]:=
-  oldYoungSeminormalRep[LegacyBruhatGraph @ shape, YoungDegree @ shape]
+  legacyYoungSeminormalRep[LegacyBruhatGraph @ shape, YoungDegree @ shape]
 
 LegacySeminormalRepresentation[data_List?YoungShapeQ, any_] :=
   LegacySeminormalRepresentation[YoungShape @ data, any]
@@ -382,7 +382,7 @@ LegacySeminormalRepresentation[shape_YoungShape, prm_?PermutationListQ] :=
   ] /; YoungDegree[shape]==Length[prm];
 
 
-oldYoungSeminormalRep::usage = "oldYoungSeminormalRep[data, n] constructs the Young's seminormal representation using the weak leaft Bruhat graph specified by data.\nA copy of youngAuxiliary particularly for Young's seminormal representation."
+legacyYoungSeminormalRep::usage = "legacyYoungSeminormalRep[data, n] constructs the Young's seminormal representation using the weak leaft Bruhat graph specified by data.\nA copy of youngAuxiliary particularly for Young's seminormal representation."
 
 (****
   The following expression computes the adjacency lists of the weak left
@@ -392,10 +392,10 @@ oldYoungSeminormalRep::usage = "oldYoungSeminormalRep[data, n] constructs the Yo
   (ii) If Subscript[a, ij]<0, then j and j+1 appear inverted in tableau i and application of the admissible transposition (j,j+1) turns tableau i into tableau -Subscript[a, ij], thus removing an inversion. 
   (iii) If Subscript[a, ij]>0, then j and j+1 appear in correct order in tableau i and application of the admissible transposition (j,j+1) turns tableau i into tableau Subscript[a, ij], thus adding an inversion. *)
 
-oldYoungSeminormalRep[data_, n_Integer] := Module[
+legacyYoungSeminormalRep[data_, n_Integer] := Module[
   { tables = Keys[data], 
     codes = Flatten[Values @ data, 1], 
-    adjacency, contents },
+    adjacency, distances },
 
   adjacency = Normal @ SparseArray[
     Join[
@@ -405,17 +405,17 @@ oldYoungSeminormalRep[data_, n_Integer] := Module[
     {Length[data], n-1}
   ];
   
-  contents = ContentVector /@ tables;
+  distances = YoungDistance /@ tables;
   
   SparseArray[
     Flatten @ Module[
       {s},
       Table[
         s = Part[adjacency, k, r];
-        { {r, k, k} -> 1/(Part[contents,k,r+1]-Part[contents,k,r]),
+        { {r, k, k} -> 1/Part[distances,k,r],
           Which[
             s < 0, (* removing an inversion *)
-            {r, k, -s} -> 1 - 1/(Part[contents,k,r+1]-Part[contents,k,r])^2,
+            {r, k, -s} -> 1 - 1/Part[distances,k,r]^2,
             s > 0, (* admissibly adding an inversion *)
             {r, k, s} -> 1,
             True, Nothing
