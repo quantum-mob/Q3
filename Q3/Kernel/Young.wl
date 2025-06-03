@@ -36,7 +36,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { CycleDecompositionType };
 { PermutationForm };
 
-{ PermutationBasis, YoungRefersTo };
+{ PermutationBasis };
 
 { DominatesQ, Dominates, DominatedBy };
 
@@ -48,6 +48,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   YoungTableauProduct };
 
 { TheWeylPermutation };
+
+{ RimHooksGraph };
 
 Begin["`Private`"]
 
@@ -308,82 +310,157 @@ YoungCharacters[irrep_YoungShape] := Map[
   The columns are arranged as Reverse[YoungShapes[n]]. *)
 
 YoungCharacters[irrep_YoungShape, YoungShape[type_]] :=  
-  theMurnaghanNakayama[theBinaryPartition @ irrep, type]
+  theMurnaghanNakayama[theBinaryShape @ irrep, type]
 
 
-theBinaryPartition::usage = "<f>theBinaryPartition</f>[<v>part</v>] - gives a binary representation of a partition <v>part</v>.\nThis function is needed for the implementation of <v>MNInner</v> algorithm in function <f>YoungCharacters</f>."
+theBinaryShape::usage = "theBinaryShape[shape] returns a binary representation of partition 'shape'."
 
-theBinaryPartition[YoungShape[partition_]] := Module[
-  { in = {} },
-  Flatten @ Map[
-    Append[in, Flatten[{ConstantArray[1, #], 0}]]&,
-    Differences[Prepend[Reverse[partition], 0]]
+theBinaryShape[YoungShape[partition_]] :=
+  Fold[
+    Join[#1, Append[ConstantArray[1, #2], 0]]&, 
+    {},
+    Subtractions[Reverse @ partition]
   ]
+
+
+trimBinaryShape::usage = "trimBinaryShape[shape] removes leading 0s and trailing 1s from 'shape'."
+
+trimBinaryShape[{0 ..., Shortest[any___], 1 ...}] := {any}
+
+
+fromBinaryShape::usage = "fromBinaryShape[part] converts a binary representation of partition 'part' back to ordinary form."
+
+fromBinaryShape[binaryShape:{(0|1)...}] := Module[
+  { new = trimBinaryShape @ binaryShape },
+  new = SequenceReplace[new, {a:(Except[0]...), 0} -> {a}];
+  YoungShape @ Reverse @ Accumulate @ Map[Total, new]
 ]
 
 
-theMurnaghanNakayama::usage = "theMurnaghanNakayama[binaryPartition, type, t] returns the character of the conjugacy class 'type' in the irreducible representation 'binaryPartition' of the symmetric group, based on the Murnaghan-Nakayama algorithm from Bernstein (2004)."
+theMurnaghanNakayama::usage = "theMurnaghanNakayama[binaryShape, type] returns the character of the conjugacy class of 'type' in the irreducible representation of 'binaryShape' of the symmetric group, using the MNinner algorithm from Bernstein (2004) based on the Murnaghan-Nakayama rule."
 
-theMurnaghanNakayama[Rr_, mm_, tt_:1] := Module[
-  { R=Rr, m=mm, t=tt, c=0, s=1, 
-    i, j, temp },
-  If[ t > Length[m], 
-    c=1,
-  (*else*)
-    c=0; 
-    s=1;
-    For[j=1, j < Min[m[[t]],Length[R]], j++, If[R[[j]] == 0, s=-s];];
-    For[ i=1, i < Length[R] - m[[t]] + 1, i++,
-      If[R[[i]] != R[[ i + m[[t]]-1]], s=-s];
-      If[i + m[[t]] <= Length[R],
-        If[ R[[i]] == 1 && R[[ i + m[[t]] ]] == 0,
-          temp = R[[i]];
-          R[[i]] = R[[ i + m[[t]] ]] ;
-          R[[ i + m[[t]] ]]=temp;
-          c = c + s*theMurnaghanNakayama[R, m, t+1];
-          temp = R[[i]];
-          R[[i]] = R[[ i + m[[t]] ]];
-          R[[ i + m[[t]] ]] = temp;
-        ]; 
-      ];
-    ];
+theMurnaghanNakayama[binaryShape_List, {}] = 1
+
+theMurnaghanNakayama[binaryShape_List, type_List] := 
+  0 /; First[type] > Length[binaryShape]
+
+theMurnaghanNakayama[binaryShape_List, type_List] := Module[
+  { shp = binaryShape,
+    len = First[type],
+    chr = 0,
+    sgn },
+  sgn = IntegerParity @ Count[Take[shp, len-1], 0];
+  Do[
+    If[ shp[[i]] != shp[[i+len-1]], sgn = -sgn ];
+    If[ shp[[{i, i+len}]] == {1, 0},
+      shp[[{i, i+len}]] = shp[[{i+len, i}]];
+      chr += sgn * theMurnaghanNakayama[shp, Rest @ type];
+      shp[[{i, i+len}]] = shp[[{i+len, i}]];
+    ],
+    {i, Length[shp] - len}
   ];
-  (*return*)
-  c
+  chr
 ]
 
 (**** </YoungCharacters> ****)
 
 
-(**** <LegacyYoungCharacters> ****)
+(**** <RimHooksGraph> ****)
 
-LegacyYoungCharacters::usage = "LegacyYoungCharacters[n] returns the table of characters of SymmetricGroup[n].\nLegacyYoungCharacters[irr] returns a list of characters of the irreducible representation 'irr'.\nLegacyYoungCharacters[irr, class] returns the character of the irreducible representation 'irr' evaluated at the conjugacy class 'class'.\nBoth 'irr' and 'class' are specified by partitions of integer 'n'."
+RimHooksGraph::usage = "RimHooksGraph[shape, type] returns a graph illustrating the Murnaghan-Nakayama rule for computing the characters of the symmetric group.\nThis function is just to heuristically illustrate how the Murnaghan-Nakayama rule works."
 
-LegacyYoungCharacters[n_Integer] := Module[
-  { pp = IntegerPartitions[n],
-    wght, vecs },
-  wght = YoungCentralizerSize /@ pp;
-  vecs = CompoundYoungCharacters /@ pp;
-  Orthogonalize[vecs, ((#1/wght) . #2)&, Method -> "GramSchmidt"]
+RimHooksGraph[shape_YoungShape, type_YoungShape, opts:OptionsPattern[Graph]] := 
+  Module[
+    { edges = theRimHookEdges[theBinaryShape @ shape, First @ type] },
+    Graph[
+      edges /. bb:{(0|1)...} :> fromBinaryShape[bb], 
+      opts,
+      ImageSize -> Medium,
+      GraphLayout -> "LayeredEmbedding",
+      VertexLabels -> "Name",
+      EdgeLabels -> "EdgeTag"
+    ]
+  ]
+
+(* NOTE: This theRimHookEdges may be combined with theMurnaghanNakayama. But I keep them as they are because theRimHookEdges is just for heuristic purposes and theMurnaghanNakayama is for efficient calculation of characters. *)
+theRimHookEdges[{}, _] = {}
+
+theRimHookEdges[binaryShape_List, {}] = { 
+  DirectedEdge[binaryShape, 1, 1] 
+}
+
+theRimHookEdges[binaryShape_List, type_List] := { 
+  DirectedEdge[binaryShape, 0, 1] 
+} /; First[type] > Length[binaryShape]
+
+theRimHookEdges[shp_List, type_List] := Module[
+  { len = First[type],
+    edg = {},
+    sgn, new },
+  sgn = IntegerParity @ Count[Take[shp, len-1], 0];
+  Do[
+    If[ shp[[i]] != shp[[i+len-1]], sgn = -sgn ];
+    If[ shp[[{i, i+len}]] == {1, 0},
+      new = shp;
+      new[[{i, i+len}]] = shp[[{i+len, i}]];
+      new = trimBinaryShape[new];
+      edg = Join[ edg,
+        { DirectedEdge[shp, new, sgn] },
+        theRimHookEdges[new, Rest @ type]
+      ]
+    ],
+    {i, Length[shp] - len}
+  ];
+  If[ edg == {},
+    {DirectedEdge[shp, 0, 1]},
+    Flatten[edg]
+  ]
 ]
 
-LegacyYoungCharacters[irr_List?YoungShapeQ] :=
-  characterSymmetricGroup[irr, #]& /@ IntegerPartitions[Total @ irr]  
-  
-LegacyYoungCharacters[irr_List?YoungShapeQ, class_List?YoungShapeQ] :=
-  characterSymmetricGroup[irr, class]
+(**** </RimHooksGraph> ****)
 
 
-characterSymmetricGroup[{}, {}] := 1; 
+(**** <LegacyYoungCharacters> ****)
 
-characterSymmetricGroup[shape_List?YoungShapeQ, class_List?YoungShapeQ] :=
+LegacyYoungCharacters::usage = "LegacyYoungCharacters[n] returns the table of characters of the symmetric group of degree n.\nLegacyYoungCharacters[irrep] returns a list of characters of the irreducible representation 'irrep'.\nLegacyYoungCharacters[irrep, class] returns the character of the irreducible representation 'irrep' evaluated at the conjugacy 'class'.\nBoth 'irrep' and 'class' are specified by partitions of 'n'."
+(* This method is based on B. Günther (2019), Wolfram Community, "Characters of the Symmetric Group." *)
+
+LegacyYoungCharacters[n_Integer] := Module[
+  { shp = YoungShapes @ n,
+    wgt, chr },
+  wgt = YoungCentralizerSize /@ shp;
+  chr = CompoundYoungCharacters /@ shp;
+  chr = Orthogonalize[chr, ((#1/wgt) . #2)&, Method -> "GramSchmidt"];
+  Reverse /@ chr
+  (* NOTE: CompoundYoungCharacters[shape] are arranged in the reversed order of YoungShapes[n]. *)
+]
+
+LegacyYoungCharacters[irrep_List?YoungShapeQ, rest___] :=
+  LegacyYoungCharacters[YoungShape @ irrep, rest]
+
+LegacyYoungCharacters[irrep_, class_List?YoungShapeQ] :=
+  LegacyYoungCharacters[irrep, YoungShape @ class]
+
+
+LegacyYoungCharacters[YoungShape[irrep_]] := Map[
+  theLegacyYoungCharacters[irrep, #]&,
+  Reverse[IntegerPartitions @ Total @ irrep]
+]  
+
+LegacyYoungCharacters[YoungShape[irrep_], YoungShape[class_]] :=
+  theLegacyYoungCharacters[irrep, class]
+
+
+theLegacyYoungCharacters[{}, {}] := 1; 
+
+theLegacyYoungCharacters[shape_List, class_List] :=
   YoungTableauCount[shape] /; And[
     Total[shape] == Total[class],
     Length[class] >= 1,
     First[class] == 1
-   ]
+  ]
 
-characterSymmetricGroup[shape_List?YoungShapeQ, class_List?YoungShapeQ] :=
+theLegacyYoungCharacters[shape_List, class_List] :=
   With[
     { classmax = First[class],
       class0 = Rest[class],
@@ -393,7 +470,7 @@ characterSymmetricGroup[shape_List?YoungShapeQ, class_List?YoungShapeQ] :=
       If[shape[[j]]+mu[[i]]+1-j-i != classmax,
         0,
         If[EvenQ[classmax+i-shape[[j]]], -1, 1] * 
-          characterSymmetricGroup[
+          theLegacyYoungCharacters[
             Select[
               Table[
                 If[k<j||nu[[k]]<i, nu[[k]], Max[nu[[k+1]],i]-1],
@@ -1394,24 +1471,6 @@ PermutationBasis[content:{__Integer?NonNegative}, ss:{__?SpeciesQ}] :=
 
 
 (**** </PermutationBasis> ****)
-
-
-(**** <YoungRefersTo> ****)
-
-YoungRefersTo::usage = "YoungRefersTo[wt,d][syt] returns True if the pair of standard Young tableau syt and content:=YoungContent[wt,d] properly refers to Weyl tableau wt in the permutation module of content; and False otherwise.";
-
-YoungRefersTo[wt_YoungTableau, d_Integer][syt_YoungTableau] := Module[
-  { cnt, new },
-  cnt = YoungContent[wt, d];
-  cnt = Flatten @ MapThread[
-    ConstantArray,
-    {Range @ d, cnt}
-  ];
-  new = syt /. Thread[Range[YoungDegree @ syt] -> cnt];
-  TrueQ[new == wt]
-]
-
-(**** </YoungRefersTo> ****)
 
 
 (**** <DominatesQ> ****)

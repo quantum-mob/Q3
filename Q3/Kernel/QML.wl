@@ -224,7 +224,7 @@ Matrix @ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, ___?OptionQ
     {mm, -dd}
   };
   mm = CirclePlus[uu, uu] . dd . CirclePlus[Topple @ vv, Topple @ vv];
-  CircleTimes[One @ Power[2, Length[aa]-1], mm]
+  KroneckerProduct[One @ Power[2, Length[aa]-1], mm]
 ]
 
 BlockEncoding /:

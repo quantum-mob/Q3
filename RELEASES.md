@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.2.3
+
+- New: Subtractions, LegacyGottesmanFactor
+- Removed: YoungRefersTo
+- Improved: DualSchurBasis
+
 ## 4.2.2
 
 - New: UnitaryTwirling, WeingartenFunction

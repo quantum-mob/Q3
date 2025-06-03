@@ -3,24 +3,22 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { UnitaryTwirling,
-  NeoUnitaryTwirling };
+  UnitaryTwirling };
 { WeingartenFunction };
 
 Begin["`Private`"]
 
 (**** <UnitaryTwirling> ****)
 
-UnitaryTwirling::usage = "UnitaryTwirling[{n, d}] returns a supermap corresponding to the twirling operation over the Haar measure of the unitary group. This works well for small n (n < 5)."
+UnitaryTwirling::usage = "UnitaryTwirling[{n, d}] returns a supermap corresponding to the twirling operation over the Haar measure of the unitary group."
 
-UnitaryTwirling::big = "The number n = `` is too large (n\[GreaterEqual]5), and the calculation will take long."
+UnitaryTwirling::big = "The numbers n (= ``) and/or d (= ``) are too large. Use UnitaryTwirling[{{\[Ellipsis]}, {\[Ellipsis]}, {\[Ellipsis]}, {\[Ellipsis]}}, {n, d}] instead."
 
 UnitaryTwirling[{n_Integer, d_Integer}] := Module[
   { elm, gmt, cls, mat, wgt },
-  If[ n >= 5, Message[UnitaryTwirling::big, n]];
-
   elm = GroupElements[SymmetricGroup @ n];
   mat = Map[TheWeylPermutation[{n, d}], elm];
-  mat = SparseArray @ Outer[CircleTimes, mat, mat, 1];
+  mat = SparseArray @ Outer[KroneckerProduct, mat, mat, 1];
   (* NOTE: Matrices are all real. *)
 
   cls = YoungClasses[n];
@@ -31,6 +29,9 @@ UnitaryTwirling[{n_Integer, d_Integer}] := Module[
   wgt = SparseArray[gmt /. cls];
   mat = Total @ Flatten[mat * wgt, 1];
   Supermap @ SparseArray @ ArrayReshape[mat, ConstantArray[Power[d, n], 4]]
+] /; If[ 
+  (n<4) || (n==4 && d<6) || (n==5 && d<3), True,
+  Message[UnitaryTwirling::big, n, d]; False
 ]
 
 theInvMultiplicationTable::usage = "theInvMultiplicationTable[n] returns the matrix of elements Inverse[g_i]g_j."
@@ -46,38 +47,42 @@ theInvMultiplicationTable[n_Integer] := Module[
 (**** </UnitaryTwirling> ****)
 
 
-(**** <NeoUnitaryTwirling> ****)
+(**** <UnitaryTwirling> ****)
 
-NeoUnitaryTwirling::usage = "NeoUnitaryTwirling[i, k, j, l, {n, d}] returns the C(i,k;j,l) element of the Choi matrix representing the twiring operation over the Haar measure of the unitary group."
+UnitaryTwirling::usage = UnitaryTwirling::usage <> "\nUnitaryTwirling[{i, k, j, l}, {n, d}] returns the C(i,k;j,l) element of the Choi matrix representing the twirling operation."
 
-NeoUnitaryTwirling[{n_Integer, d_Integer}] := Module[
-  { kk = Tuples[Range[d], n],
-    nn = Power[d, 4*n],
-    progress = i = 0 },
-  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
-  SparseArray @ Outer[
-    ( progress = N[i++/nn];
-      theUnitaryTwirling[#1, #2, #3, #4, {n, d}]
-    )&,
-    kk, kk, kk, kk, 
-    1
-  ]
+UnitaryTwirling[
+  idx:{_Integer, _Integer, _Integer, _Integer}, 
+  {n_Integer, d_Integer}
+] := theUnitaryTwirling[IntegerDigits[idx-1, d, n]+1, {n, d}]
+
+UnitaryTwirling[
+  idx:{{__Integer}, {__Integer}, {__Integer}, {__Integer}}, 
+  {n_Integer, d_Integer}
+] := Module[
+  { nn = Power[d, n],
+    pp, cm },
+  pp = Transpose @ Tuples[idx];
+  pp = Union[Transpose @ pp, Transpose @ pp[[{3, 4, 1, 2}]]];
+  pp = Select[pp, OrderedQ[Partition[#, 2]]&];
+  cm = Map[theUnitaryTwirling[#, {n, d}]&, IntegerDigits[pp-1, d, n] + 1];
+  cm = SparseArray[Thread[pp -> cm], {nn, nn, nn, nn}];
+  cm += Transpose[cm, {3, 4, 1, 2}]
 ]
 
-
-theUnitaryTwirling[ii_List, kk_List, jj_List, ll_List, {n_Integer, d_Integer}] :=
+theUnitaryTwirling[{ii_, kk_, jj_, ll_}, {n_Integer, d_Integer}] :=
   0 /; Not @ And[
     YoungContent[ii, d] == YoungContent[jj, d],
     YoungContent[kk, d] == YoungContent[ll, d]
   ]
 
-theUnitaryTwirling[ii_List, kk_List, ii_List, kk_List, {n_Integer, d_Integer}] :=
+theUnitaryTwirling[{ii_, kk_, jj_, ll_}, {n_Integer, d_Integer}] :=
   Module[
     { type = YoungContent[kk, d] },
     Factorial[d-1] * Whole[Factorial @ type] / Factorial[n + d -1]
   ] /; Apply[Equal, ii]
 
-theUnitaryTwirling[ii_List, kk_List, jj_List, ll_List, {n_Integer, d_Integer}] :=
+theUnitaryTwirling[{ii_, kk_, jj_, ll_}, {n_Integer, d_Integer}] :=
   Module[
     { gg = YoungSubgroup[YoungContent @ ii],
       hh = YoungSubgroup[YoungContent @ kk],
@@ -89,7 +94,7 @@ theUnitaryTwirling[ii_List, kk_List, jj_List, ll_List, {n_Integer, d_Integer}] :
     Total[Flatten @ cc]
   ]
 
-(**** </NeoUnitaryTwirling> ****)
+(**** </UnitaryTwirling> ****)
 
 
 (**** <WeingartenFunction> ****)

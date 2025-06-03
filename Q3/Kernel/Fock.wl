@@ -670,7 +670,7 @@ ToMajoranaMatrix[n_Integer] :=
 ToDiracMatrix::usage = "ToDiracMatrix[n] returns the 2n\[Times]2n matrix representing the canonical transformation from Majorana to Dirac fermions."
 
 ToDiracMatrix[n_Integer] := With[
-  { trs = CircleTimes[One[n], {{1, I}}] },
+  { trs = KroneckerProduct[One[n], {{1, I}}] },
   Join[trs, Conjugate @ trs]
 ] / 2
 (* NOTE: The returned matrix U is NOT unitary; Topple[U].U = 1/2 *)

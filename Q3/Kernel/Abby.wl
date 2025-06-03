@@ -7,8 +7,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { Pairings, Unpaired };
 { Choices, ChoiceCount,
   OrderedPartitions };
-{ ListPartitions, Successive, FirstLast, Inbetween };
-{ PartitionInto };
+{ Successive, Subtractions, FirstLast, Inbetween };
+{ ListPartitions, PartitionInto };
 { ShiftLeft, ShiftRight,
   TrimLeft, TrimRight };
 { KeyGroupBy, KeyReplace, CheckJoin };
@@ -274,6 +274,8 @@ SignatureTo[a_, b_] :=
   Length[a] == Length[b]
 
 
+(**** <Successive> ****)
+
 Successive::usage = "Successive[f, {x1,x2,x3,\[Ellipsis]}] returns {f[x1,x2], f[x2,x3], \[Ellipsis]}.\nSuccessive[f, list, n] applies f on n successive elements of list.\nSuccessive[f, list, 2] is equivalent to Successive[f,list].\nSuccessive[f, list, 1] is equivalent to Map[f, list].\nSuccessive[f, list, n, d] applies f on n succesive elements and jumps d elements to repeat."
 
 Successive[f_, a_List] := f @@@ Transpose @ {Most @ a, Rest @ a}
@@ -285,9 +287,30 @@ Successive[f_, a_List, n_Integer?Positive] := f @@@ Drop[
 
 Successive[f_, a_List, n_Integer?Positive, d_Integer?Positive] :=
   f @@@ Part[
-    Drop[Transpose@NestList[RotateLeft, a, n-1], 1-n],
+    Drop[Transpose @ NestList[RotateLeft, a, n-1], 1-n],
     Span[1, All, d]
-   ]
+  ]
+
+(**** </Successive> ****)
+
+
+(**** <Subtractions> ****)
+
+Subtractions::usage = "Subtractions[list] returns the successive differences of elements in list with 0 padded at the beginning."
+(* TODO: Define Subtractions in parallel with Differences. *)
+
+Subtractions[data : (_List | _?ArrayQ), off_:0] := 
+  ListConvolve[{1, -1}, data, 1, off]
+
+Subtractions[data : (_List | _?ArrayQ), off_, n_Integer] := 
+  Nest[ListConvolve[{1, -1}, #, 1, off]&, data, n]
+
+Subtractions[data : (_List | _?ArrayQ), off_, n_Integer, s_Integer?Positive] := With[
+  { ker = Join[{1}, ConstantArray[0, s-1], {-1}] },
+  Nest[ListConvolve[ker, #, 1, off]&, data, n]
+]
+
+(**** </Subtractions> ****)
 
 
 FirstLast::usage = "FirstLast[expr] returns the first and last elements of expr."

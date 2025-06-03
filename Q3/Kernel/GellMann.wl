@@ -123,7 +123,7 @@ TheGellMann[8] = {
   {0, 0,-2}} / Sqrt[3];
 
 TheGellMann[ nn:(0|1|2|3|4|5|6|7|8).. ] :=
-  CircleTimes @@ Map[TheGellMann] @ {nn}
+  KroneckerProduct @@ Map[TheGellMann] @ {nn}
 
 
 GellMann::usage = "GellMann[n] represents the Gell-Mann matrix."

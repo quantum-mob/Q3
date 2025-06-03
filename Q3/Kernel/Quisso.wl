@@ -1946,7 +1946,7 @@ Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, ___] := Module[
     ThePauli,
     Total /@ Map[ThePauli, bb, {2}]
   ];
-  Total @ KeyValueMap[CircleTimes[#2, #1]&, bb]
+  Total @ KeyValueMap[KroneckerProduct[#2, #1]&, bb]
 ]
 
 (**** </Oracle> ****)

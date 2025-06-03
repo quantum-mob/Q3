@@ -2341,7 +2341,7 @@ WickLindbladKernel[ham_WickHermitian, msr_WickMeasurement] := Module[
   kk = Map[FromDigits[#-1, n]+1&, kk];
   ll = IntegerReverse[kk-1, n, 2] + 1;
   id = One[n];
-  xx = CircleTimes[xx, id] + CircleTimes[id, xx];
+  xx = KroneckerProduct[xx, id] + KroneckerProduct[id, xx];
   xx = xx[[kk, kk]] - xx[[kk, ll]];
   (* first term *)
   yy = Flatten /@ Table[
@@ -2432,8 +2432,8 @@ theTimeReversalMoment[
     gg, id, xx, zz, uu, ww, pf1, pf2, pf3, dgn, off
   },
   id = One[n];
-  xx = CircleTimes[ThePauli[1], id];
-  zz = CircleTimes[ThePauli[3], id];
+  xx = KroneckerProduct[ThePauli[1], id];
+  zz = KroneckerProduct[ThePauli[3], id];
   (* \Gamma *)
   gg = Normal[N @ NambuHermitian @ grn];
   gg -= I * OptionValue["Epsilon"] * One[Dimensions @ gg];

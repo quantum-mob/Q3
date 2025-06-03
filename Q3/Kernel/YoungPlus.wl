@@ -9,30 +9,28 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 ClearAll @@ Evaluate @ Unprotect[
   CoxeterTest,
   YoungNaturalRepresentation,
+  YoungNaturalMetric,
   LegacySeminormalRepresentation,
   LegacyBruhatGraph,
   Seminormal2Natural,
-  YoungInvariantMetric,
-  YoungCharacterTest,
-  NormSquareOfTableau
+  YoungCharacterTest
 ];
 
 {
   CoxeterTest,
   YoungNaturalRepresentation,
+  YoungNaturalMetric,
   LegacySeminormalRepresentation,
   LegacyBruhatGraph,
   Seminormal2Natural,
-  YoungInvariantMetric,
-  YoungCharacterTest,
-  NormSquareOfTableau
+  YoungCharacterTest
 };
 
 Begin["`Private`"]
 
-CoxeterTest::usage = "CoxeterTest[ynr] returns True if all matices in list ynr in Young's natural representation satisfy Coxeter's relations, as they must.\nSo unless you tamper with the definitions, this function should always return True."
+CoxeterTest::usage = "CoxeterTest[rep] returns True if all matices in Young's representation rep satisfy Coxeter's relations, as they must.\nSo unless you tamper with the definitions, this function should always return True."
 
-CoxeterTest[ynr_] := And[
+CoxeterTest[ynr_?ArrayQ] := And[
   Apply[And, (#.#==IdentityMatrix[Length[ynr[[1]]]])& /@ ynr],
   And @@ Table[
     ynr[[r]].ynr[[r+1]].ynr[[r]]==ynr[[r+1]].ynr[[r]].ynr[[r+1]],
@@ -62,15 +60,20 @@ YoungNaturalRepresentation[shape_YoungShape]:=
   YoungNaturalRepresentation[shape, SparseArray @ youngAuxiliary[shape, 2]] /; 
   YoungDegree[shape]>1
 
+
+YoungNaturalRepresentation[shape_YoungShape, data_?ArrayQ][
+  Transpositions[{}]
+] := One[YoungTableauCount @ shape]
+
+YoungNaturalRepresentation[shape_YoungShape, data_?ArrayQ][
+  Transpositions[trs_]
+] := SimplifyThrough[ Dot @@ Extract[data, List /@ trs] ]
+
+
 YoungNaturalRepresentation[shape_YoungShape, data_?ArrayQ][
   prm:(_Cycles | _List?PermutationListQ)
-] := With[
-  { trs = adjacentTranspositions[prm] },
-  If[ trs == {},
-    One[YoungTableauCount @ shape],
-    Dot @@ Extract[data, List /@ trs] // SimplifyThrough
-  ]
-]
+] := YoungNaturalRepresentation[shape, data][PermutationTranspositions @ prm]
+
 
 YoungNaturalRepresentation /:
 MatrixForm[YoungNaturalRepresentation[shape_YoungShape, data_?ArrayQ]] :=
@@ -83,64 +86,48 @@ Normal[YoungNaturalRepresentation[shape_YoungShape, data_?ArrayQ]] := data
 (*** </YoungNaturalRepresentation> ****)
 
 
-NormSquareOfTableau::usage = "NormSquareOfTableau[syt] returns the norm square of the seminormal basis vector corresponding to standard Young tableau syt."
+YoungCharacterTest::usage = "YoungCharacterTest[rep] computes the character vector in Young's representation rep and compares it to the relevant entry in the character table, where rep is YoungNaturalRepresentation, YoungSeminormalRepresentation, or YoungNormalRepresentation.\nUnless you tamper with the definitions, this function should always return True."
 
-NormSquareOfTableau[data_List?YoungTableauQ] :=
-  NormSquareOfTableau[YoungTableau @ data]
+YoungCharacterTest[rep_, shape_List?YoungShapeQ] :=
+  YoungCharacterTest[rep, YoungShape @ shape]
 
-NormSquareOfTableau[YoungTableau[data_]] := With[
-  { trshape = YoungTranspose[Length /@ data] },
-  Product[
-    If[
-      And[
-        Or[i2>i1, j2>j1],
-        Part[data,i1,j1] > Part[data,i2,j2]
-      ],
-      1-1/(i1-j1-i2+j2)^2,
-      1
-    ],
-    {j1, 1, Length[trshape]},
-    {i1, 1, Part[trshape,j1]},
-    {j2, j1, Length[trshape]},
-    {i2, 1, Part[trshape,j2]}
-  ]
+YoungCharacterTest[rep_] := Module[
+  { shape = First[rep],
+    types = Reverse[YoungShapes @ YoungDegree @ First @ rep],
+    chr, new },
+  new = Tr /@ rep /@ YoungClassRepresentative /@ types;
+  chr = LegacyYoungCharacters[shape];
+  new == chr
+]
+
+YoungClassRepresentative::usage = "YoungClassRepresentative[type] returns a representative of the conjugacy class of type in the symmetric group. The type is specified by an integer partition, and the result is given in Transpositions."
+
+YoungClassRepresentative[type_List?YoungShapeQ] :=
+  YoungClassRepresentative[YoungShape @ type]
+
+YoungClassRepresentative[YoungShape[type_]] := Module[
+  { new = Accumulate @ type,
+    trs },
+  trs = Range @@@ Transpose @ {
+    Prepend[Most[new] + 1, 1], 
+    new - 1
+  };
+  Transpositions[Flatten @ trs]
 ]
 
 
-YoungCharacterTest::usage = "YoungCharacterTest[ynr,\[Lambda]] applied to the matrices of Young's natural representation corresponding to the integer partition \[Lambda] computes the character and compares it to the relevant entry in the character table. So unless you tamper with the definitions this function should always return TRUE. A complete test would be for instance: \[IndentingNewLine]testPartition=RandomPartition[5];\[IndentingNewLine]testYnr=YoungNaturalRepresentation[testPartition];\[IndentingNewLine]CoxeterTest[testYnr]&&YoungCharacterTest[testYnr,testPartition]."
+YoungNaturalMetric::usage = "YoungNaturalMetric[shape] is the scalar product invariant under Young's natural presentation corresponding to the integer partition shape."
 
-YoungCharacterTest[ynr_,\[Lambda]_]:=(
-  Append[
-    Tr /@ Apply[
-      Dot,
-      Extract[ynr,#]& /@ Partition[#,1]& /@ chrTypeRepresentative /@
-        Drop[IntegerPartitions[Total[\[Lambda]]],-1], {1}
-     ],
-    Length[ynr[[1]]]
-   ] == Part[
-     LegacyYoungCharacters @ Total[\[Lambda]],
-     Part[Position[IntegerPartitions[Total[\[Lambda]]],\[Lambda]], 1, 1]
-    ]
- );
+YoungNaturalMetric[shape_List?YoungShapeQ] :=
+  YoungNaturalMetric[YoungShape @ shape]
 
-chrTypeRepresentative[shape_List?YoungShapeQ] := With[
-  {new = Accumulate @ shape},
-  Flatten[Range @@@ Transpose[{Prepend[Most[new] + 1, 1], new - 1}]]
-]
-
-
-YoungInvariantMetric::usage = "YoungInvariantMetric[shape] is the scalar product invariant under Young's natural presentation corresponding to the integer partition shape."
-
-YoungInvariantMetric[shape_List?YoungShapeQ] :=
-  YoungInvariantMetric[YoungShape @ shape]
-
-YoungInvariantMetric[YoungShape[shape_]] := With[
+YoungNaturalMetric[YoungShape[shape_]] := With[
   { graphData = compatibleBruhatGraph @ LegacyBruhatGraph[shape],
     transform = Seminormal2Natural[shape] },
   Whole[Factorial /@ YoungTranspose[shape]] *
   Dot[
     transform,
-    DiagonalMatrix[NormSquareOfTableau /@ First /@ graphData],
+    DiagonalMatrix[YoungSeminormalMetric /@ First /@ graphData],
     Transpose[transform]
   ]
 ]

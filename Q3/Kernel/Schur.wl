@@ -26,10 +26,8 @@ YoungContent::exss = "The second argument is not necessary and ignored."
 
 YoungContent::lett = "The number of letters (levels) must be given as the second argument."
 
-YoungContent[GelfandPattern[data_]] := With[
-  { nn = Append[Total /@ data, 0] },
-  Differences[Reverse @ nn]
-]
+YoungContent[GelfandPattern[data_]] :=
+  Subtractions @ Reverse[Total /@ data]
 
 YoungContent[gp_GelfandPattern, d_Integer] :=
   PadRight[YoungContent[gp], d]
@@ -315,7 +313,7 @@ WeylTableauQ[_] = False
 
 (**** <WeylTableaux> ****)
 
-WeylTableaux::usage = "WeylTableaux[shape, d] returns a list of all possible Weyl tableaux (semi-standard Young tableaux) of shape with entries of d letters.\nWeylTableax[n, d] returns the list of all Weyl tableaux of order n with entries of d letters.\nWeylTableaux[shape, type] returns a list of Weyl tableaux of type."
+WeylTableaux::usage = "WeylTableaux[shape, d] returns a list of all possible Weyl tableaux (semi-standard Young tableaux) of shape with entries of d letters.\nWeylTableax[n, d] returns the list of all Weyl tableaux of order n with entries of d letters.\nWeylTableaux[shape, content] returns a list of Weyl tableaux of shape and content."
 
 SyntaxInformation[WeylTableaux] = {"ArgumentsPattern" -> {_, _}}
 

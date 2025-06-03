@@ -67,14 +67,14 @@ TheWigner[{J_?SpinNumberQ, n:(1|2|3), theta_, phi_}] := With[
  ]
 
 TheWigner[ nn:{_?SpinNumberQ, (0|1|2|3|4|5|6|Raising|Lowering)}.. ] :=
-  CircleTimes @@ Map[TheWigner] @ {nn}
+  KroneckerProduct @@ Map[TheWigner] @ {nn}
 
 TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raising|Lowering)..} } ] :=
-  CircleTimes @@ Map[TheWigner] @ Tuples[{{j}, n}]
+  KroneckerProduct @@ Map[TheWigner] @ Tuples[{{j}, n}]
 
 TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raising|Lowering)..},
     th:Except[_List], ph:Except[_List] } ] :=
-  CircleTimes @@ Map[TheWigner] @ Tuples[{{j}, n, {th}, {ph}}]
+  KroneckerProduct @@ Map[TheWigner] @ Tuples[{{j}, n, {th}, {ph}}]
 
 
 TheWignerKet::usage = "TheWignerKet[{j,m}] or TheWignerKet[j,m] returns column vector representation of the spin angular momentum basis state Ket[j,m].\nTheWignerKet[{j1,m1}, {j2,m2}, ...] returns the direct product of TheWignerKet[{j1,m1}], TheWignerKet[{j2,m2}], ....\nTheWignerKet[j, {m1, m2, ...}] is equivalent to TheWignerKet[{j,m1}, {j,m2}, ...]."
@@ -123,7 +123,7 @@ TheEulerRotation[{{a_, b_, c_}, J_?SpinNumberQ}] :=
 TheEulerRotation[
   a:{{_, _, _}, _?SpinNumberQ},
   b:{{_, _, _}, _?SpinNumberQ}.. ] :=
-  CircleTimes @@ Map[TheEulerRotation, {a, b}]
+  KroneckerProduct @@ Map[TheEulerRotation, {a, b}]
 
 (**** </TheEulerRotation> ****)
 

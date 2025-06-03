@@ -6,7 +6,9 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-DualSchurBasis::usage = "DualSchurBasis[n, d] returns an association of Schur basis of n qudits of dimension d."
+(**** <DualSchurBasis> ****)
+
+DualSchurBasis::usage = "DualSchurBasis[n, d] returns an association of Schur basis of n qudits of dimension d, based on the dual Schur transform algorithm."
 
 DualSchurBasis[ss:{__?SpeciesQ}] :=
   DualSchurBasis[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
@@ -79,16 +81,19 @@ DualSchurBasis[shape_YoungShape, content:{__Integer}] := Association[]
 
 DualSchurBasisNames::usage = "DualSchurBasisNames[shape, content] returns {names, poslist}, where names is a list of labels referring to the irreducible basis vectors and poslist is the list of positions of standard Young tableaux that properly combines with content to generate a Weyl tableau."
 
-(* labels of the irrep basis vectors *)
-DualSchurBasisNames[shape_YoungShape, content:{__Integer}] := Module[
-  { d = Length[content],
-    yy = YoungTableaux[shape],
-    ww = WeylTableaux[shape, content],
-    kk },
-  kk = Map[YoungRefersTo[#, d]&, ww];
-  kk = Map[FirstPosition[yy, _?(#)]&, kk];
-  { Tuples[{yy, ww}], Flatten[kk] }
+DualSchurBasisNames[shape_YoungShape, content : {___Integer}] := Module[
+  { yy = YoungTableaux[shape],
+    ss, ww },
+  ss = Flatten @ MapThread[
+    ConstantArray, 
+    {Range @ Length @ content, content}
+  ];
+  ww = yy /. Thread[Range @ Total @ content -> ss];
+  ww = First /@ KeySelect[PositionIndex @ ww, WeylTableauQ];
+  { Tuples @ {yy, Keys @ ww}, Values @ ww }
 ] /; YoungDegree[shape] == Total[content]
+
+(**** </DualSchurBasis> ****)
 
 End[]
 

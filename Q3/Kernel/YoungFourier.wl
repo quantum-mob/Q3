@@ -13,7 +13,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { YoungLeftRepresentation,
   YoungRightRepresentation,
   YoungNormalRepresentation,
-  YoungSeminormalRepresentation };
+  YoungSeminormalRepresentation,
+  YoungSeminormalMetric };
 
 { LegacyNormalRepresentation };
 
@@ -271,14 +272,16 @@ YoungBruhatGraph[shape_YoungShape, opts:OptionsPattern[Graph]]:= Module[
   data = Flatten @ Rest @ NestList[findBruhatEdges, init, inversionCount @ init];
   data = Map[tableauFromPermutation[#, shape]&, data];
   Graph[data, opts,
+    (* GraphLayout -> "LayeredEmbedding", *)
+    ImageSize -> Medium,
     VertexLabels -> "Name",
     EdgeLabels -> "EdgeTag"
   ]
 ]
 
 findBruhatEdges[prm:{___Integer}] := Module[
-  {trs},
-  trs = Flatten @ Position[Differences[prm], x_ /; x < 0]; 
+  { trs },
+  trs = First /@ SequencePosition[prm, {a_, b_} /; Not[OrderedQ @ {a, b}]];
   trs = Map[{Cycles @ {{#, # + 1}}, #} &, trs]; 
   Map[UndirectedEdge[prm, Permute[prm, First @ #], Last @ #] &, trs]
 ]
@@ -349,13 +352,20 @@ MatrixForm[YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ]] :=
 YoungNormalRepresentation /:
 Normal[YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ]] := data
 
-YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ][cyc_Cycles] := Module[
-  { trs = Reverse[adjacentTranspositions @ cyc] },
-  If[ trs == {},
-    One[YoungTableauCount @ shape],
-    Dot @@ Extract[data, List /@ trs] // SimplifyThrough
-  ]
-]
+
+YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ][
+  Transpositions[{}]
+] := One[YoungTableauCount @ shape]
+
+YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ][
+  Transpositions[trs_]
+] := SimplifyThrough[ Dot @@ Extract[data, List /@ Reverse @ trs] ]
+
+
+YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ][
+  prm:(_Cycles | _List?PermutationListQ)
+] := YoungNormalRepresentation[shape, data][PermutationTranspositions @ prm]
+
 
 theYoungNormalRep::usage = "theYoungNormalRep[graph] constructs the Young's normal representation using the weak leaft Bruhat graph."
 
@@ -409,15 +419,19 @@ MatrixForm[YoungSeminormalRepresentation[shape_YoungShape, data_?ArrayQ]] :=
 YoungSeminormalRepresentation /:
 Normal[YoungSeminormalRepresentation[shape_YoungShape, data_?ArrayQ]] := data
 
+
+YoungSeminormalRepresentation[shape_YoungShape, data_?ArrayQ][
+  Transpositions[{}]
+] := One[YoungTableauCount @ shape]
+
+YoungSeminormalRepresentation[shape_YoungShape, data_?ArrayQ][
+  Transpositions[trs_]
+] := SimplifyThrough[ Dot @@ Extract[data, List /@ Reverse @ trs] ]
+
+
 YoungSeminormalRepresentation[shape_YoungShape, data_?ArrayQ][
   prm:(_Cycles | _List?PermutationListQ)
-] := Module[
-  { trs = Reverse[adjacentTranspositions @ prm] },
-  If[ trs == {},
-    One[YoungTableauCount @ shape],
-    Dot @@ Extract[data, List /@ trs] // SimplifyThrough
-  ]
-]
+] := YoungSeminormalRepresentation[shape, data][PermutationTranspositions @ prm]
 
 
 theYoungSeminormalRep::usage = "theYoungSeminormalRep[data, n] constructs the Young's seminormal representation using the weak leaft Bruhat graph specified by data."
@@ -459,6 +473,41 @@ theYoungSeminormalRep[shape_YoungShape, data_Graph] := Module[
 ]
 
 (**** </YoungSeminormalRepresentation> ****)
+
+
+(**** <YoungSeminormalMetric> ****)
+
+YoungSeminormalMetric::usage = "YoungSeminormalMetric[syt] returns the norm square of the seminormal basis vector corresponding to standard Young tableau syt.\nYoungSeminormalMetric[shape] returns a list of the norm squares of the seminormal basis vectors belonging to shape.\nNote that Young's seminormal representation is not orthogonal in the canonical Hermitian product. However, it is orthogonal with respect to a diagonal scalar prodcut given by YoungSeminormalMetric."
+
+YoungSeminormalMetric[data_List?YoungShapeQ] :=
+  YoungSeminormalMetric[YoungShape @ data]
+
+YoungSeminormalMetric[shape_YoungShape] :=
+  Map[YoungSeminormalMetric, YoungTableaux @ shape]
+
+
+YoungSeminormalMetric[data_List?YoungTableauQ] :=
+  YoungSeminormalMetric[YoungTableau @ data]
+
+YoungSeminormalMetric[YoungTableau[data_]] := With[
+  { trshape = YoungTranspose[Length /@ data] },
+  Product[
+    If[
+      And[
+        Or[i2>i1, j2>j1],
+        Part[data,i1,j1] > Part[data,i2,j2]
+      ],
+      1-1/(i1-j1-i2+j2)^2,
+      1
+    ],
+    {j1, 1, Length[trshape]},
+    {i1, 1, Part[trshape,j1]},
+    {j2, j1, Length[trshape]},
+    {i2, 1, Part[trshape,j2]}
+  ]
+]
+
+(**** </YoungSeminormalMetric> ****)
 
 
 (**** <YoungRegularBasis> ****)

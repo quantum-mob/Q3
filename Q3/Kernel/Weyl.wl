@@ -74,7 +74,7 @@ TheWeyl[{x_, z_, d_}] := SparseArray @ Dot[
   DiagonalMatrix @ Exp[2*Pi*I * Range[0, d-1] * z/d]
  ]
 
-TheWeyl[kk:{{_, _, _}..}] := Apply[CircleTimes, TheWeyl /@ kk]
+TheWeyl[kk:{{_, _, _}..}] := Apply[KroneckerProduct, TheWeyl /@ kk]
 
 (**** </TheWeyl> ****)
 

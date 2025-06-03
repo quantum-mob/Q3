@@ -21,7 +21,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { GottesmanStandard, GottesmanSolve };
 
-{ CliffordDecompose = CliffordFactor };
+{ CliffordDecompose = CliffordFactor,
+  LegacyCliffordFactor };
 
 { Stabilizer, StabilizerGenerators, UpdateStabilizerGenerators };
 
@@ -1213,7 +1214,7 @@ GottesmanInverse::usage = "GottesmanInverse[mat] returns the inverse of binary s
 GottesmanInverse[mat_] := Module[
   { n = Length[mat] / 2,
     JX },
-  JX = CircleTimes[One[n], ThePauli[1]];
+  JX = KroneckerProduct[One[n], ThePauli[1]];
   Mod[JX . Transpose[mat] . JX, 2]
 ]
 
@@ -1386,7 +1387,7 @@ columnPivoting[mat_?MatrixQ, off_Integer, k_Integer] := Module[
 (**** <CliffordFactor> ****)
 
 CliffordFactor::usage = "CliffordFactor[op] returns a list of generators of the Clifford group that combine to yield Clifford operator op.\nCliffordFactor[mat,{s1,s2,\[Ellipsis]}] decomposes the Clifford operator corresponding to Gottesman matrix mat."
-(* NOTE: Since v3.5.11, CliffordFactor is based on the method in van den Berg (2021) through the vdBergFactor function. Previously, it was based on Gottesman's theorem, implemented through the GottesmanFactor function.  *)
+(* NOTE: Since v3.5.11, CliffordFactor is based on the method in van den Berg (2021) through the vdBergFactor function. Previously, it was based on Gottesman's theorem, implemented through the LegacyCliffordFactor function.  *)
 
 (* from reduced Gottesman matrix *)
 CliffordFactor[gm_?GttsMatrixQ, ss:{___?QubitQ}] := 
@@ -1415,7 +1416,7 @@ CliffordFactor[op:Except[_?MatrixQ]] := With[
 
 vdBergFactor::usage = "vdBergFactor[mat] returns a list of elementary Clifford operators that generates the Clifford unitary operator corresponding to full Gottesman matrix mat.\nThis is the base of CliffordFactor and FromGottesmanMatrix."
 (* SEE: van den Berg (2021) *)
-(* NOTE: Since v3.5.11, CliffordFactor and FromGottesmanMatrix are based on vdBergFactor, which replaces GottesmanFactor. Compared with GottesmanFactor, vdBergFactor is faster and the generated set of gates are completely elementary. Moreover, it is easier to trace the change of signs along the transformation of Pauli strings. *)
+(* NOTE: Since v3.5.11, CliffordFactor and FromGottesmanMatrix are based on vdBergFactor, which replaces LegacyCliffordFactor. Compared with LegacyCliffordFactor, vdBergFactor is faster and the generated set of gates are completely elementary. Moreover, it is easier to trace the change of signs along the transformation of Pauli strings. *)
 
 (* for reduced Gottesman matrix *)
 vdBergFactor[gm_?GttsMatrixQ] := 
@@ -1504,25 +1505,25 @@ buildCX[{k_}] = List @ If[k == 1, Nothing, SWAP[1, k]]
 (**** </vdBergFactor> ****)
 
 
-(**** <GottesmanFactor> ****)
+(**** <LegacyCliffordFactor> ****)
 
-GottesmanFactor::usage = "GottesmanFactor[op] returns a list of generators of the Clifford group that combine to yield Clifford operator op.\nGottesmanFactor[mat,{s1,s2,\[Ellipsis]}] decomposes the Clifford operator corresponding to Gottesman matrix mat."
+LegacyCliffordFactor::usage = "LegacyCliffordFactor[op] returns a list of generators of the Clifford group that combine to yield Clifford operator op.\nLegacyCliffordFactor[mat,{s1,s2,\[Ellipsis]}] decomposes the Clifford operator corresponding to Gottesman matrix mat."
 (* SEE ALSO: Gottesman (1998), QuantumWorkbook (2022, Section 6.3.4). *)
-(* NOTE: Before v3.5.11, CliffordFactor was based on GottesmanFactor. Compared with vdBergFactor, GottesmanFactor provides a more compact set of gates, but the gates are of a bit higher level. *)
+(* NOTE: Before v3.5.11, CliffordFactor was based on LegacyCliffordFactor. Compared with vdBergFactor, LegacyCliffordFactor provides a more compact set of gates, but the gates are of a bit higher level. *)
 
-GottesmanFactor::badmat = "`` is not a valid binary symplectic matrix."
+LegacyCliffordFactor::badmat = "`` is not a valid binary symplectic matrix."
 
-GottesmanFactor[op_] := Module[
+LegacyCliffordFactor[op_] := Module[
   { ss = Qubits @ op,
     mat },
   mat = GottesmanMatrix[op, ss];
-  GottesmanFactor[mat, ss]
+  LegacyCliffordFactor[mat, ss]
 ]
 
-GottesmanFactor[mat_?GttsMatrixQ, ss:{_?QubitQ}] :=
+LegacyCliffordFactor[mat_?GttsMatrixQ, ss:{_?QubitQ}] :=
   { FromGottesmanMatrix[mat, ss] }
 
-GottesmanFactor[mat_?GttsMatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
+LegacyCliffordFactor[mat_?GttsMatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   { n = Length @ ss,
     kk, qq, rr,
     ff, hh, aa, bb, vv,
@@ -1532,18 +1533,18 @@ GottesmanFactor[mat_?GttsMatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   kk = FirstPosition[GottesmanDot @@@ ff, 1];
   
   If[ MissingQ[kk], 
-    Message[GottesmanFactor::badmat, MatrixForm @ mat];
+    Message[LegacyCliffordFactor::badmat, MatrixForm @ mat];
     Return @ {1}
   ];
 
   If[ (kk = First[kk]) != 1,
-    cyc = CircleTimes[
-      System`PermutationMatrix[Cycles @ {{1, kk}}, n],
+    cyc = KroneckerProduct[
+      PermutationMatrix[Cycles @ {{1, kk}}, n],
       One[2]
     ];
     new = Mod[mat . cyc, 2];
     opf = SWAP @@ Part[ss, {1, kk}];
-    Return @ Join[{opf}, GottesmanFactor[new, ss]]
+    Return @ Join[{opf}, LegacyCliffordFactor[new, ss]]
   ];
 
   {qq, rr} = TakeDrop[ss, 1];
@@ -1565,7 +1566,7 @@ GottesmanFactor[mat_?GttsMatrixQ, ss:{_?QubitQ, __?QubitQ}] := Module[
   vv = Mod[new . aa . hh . bb, 2];
   vv = vv[[3;;, 3;;]];
 
-  simplifyGate @ Join[{opf, opa, oph, opb}, GottesmanFactor[vv, rr]]
+  simplifyGate @ Join[{opf, opa, oph, opb}, LegacyCliffordFactor[vv, rr]]
 ]
 
 
@@ -1586,7 +1587,7 @@ simplifyGate[S_[j___, 1]/Sqrt[2] + S_[j___, 3]/Sqrt[2]] := S[j, 6]
 
 simplifyGate[(S_[j___, 1] + S_[j___, 3])/Sqrt[2]] := S[j, 6]
 
-(**** </GottesmanFactor> ****)
+(**** </LegacyCliffordFactor> ****)
 
 
 (**** <PauliMutate> ****)
