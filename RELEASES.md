@@ -2,8 +2,9 @@
 
 ## 4.2.3
 
-- New: Subtractions, LegacyGottesmanFactor
-- Removed: YoungRefersTo
+- New: Subtractions, LegacyGottesmanFactor, ContentVector, YoungByte, RimHookGraph
+- Renamed: KostkaMatrix --> KostkaNumber
+- Removed: YoungRefersTo, LegacyYoungCharacters, LegacyKostkaNumber, LegacyCompoundYoungCharacters
 - Improved: DualSchurBasis
 
 ## 4.2.2

@@ -52,8 +52,7 @@ DualSchurBasis[shape_YoungShape, content:{__Integer}] := Module[
   rep = YoungNormalRepresentation[shape];
 
   (* permutation/transversal basis *)
-  pbs = Flatten @ MapThread[ConstantArray, {Range[dim]-1, content}];
-  pbs = Permutations[pbs];
+  pbs = Permutations[ContentVector[content]-1];
 
   (* transversal elements *)
   trv = Map[FindPermutation, pbs];
@@ -83,11 +82,8 @@ DualSchurBasisNames::usage = "DualSchurBasisNames[shape, content] returns {names
 
 DualSchurBasisNames[shape_YoungShape, content : {___Integer}] := Module[
   { yy = YoungTableaux[shape],
-    ss, ww },
-  ss = Flatten @ MapThread[
-    ConstantArray, 
-    {Range @ Length @ content, content}
-  ];
+    ss = ContentVector[content], 
+    ww },
   ww = yy /. Thread[Range @ Total @ content -> ss];
   ww = First /@ KeySelect[PositionIndex @ ww, WeylTableauQ];
   { Tuples @ {yy, Keys @ ww}, Values @ ww }

@@ -4,6 +4,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { YoungDiagram, FerrersDiagram };
 { YoungShape, YoungShapes, YoungShapeQ };
+{ YoungByte, YoungByteQ };
 { YoungContent, YoungContents };
 { YoungDegree };
 
@@ -23,10 +24,10 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { GroupCentralizerSize, YoungCentralizerSize,
   GroupClassSize, YoungClassSize,
   GroupClasses, YoungClasses, YoungClassCount,
-  GroupCharacters, YoungCharacters,
-  LegacyYoungCharacters, CompoundYoungCharacters,
-  YoungCharacterInner,
-  KostkaMatrix };
+  GroupCharacters, YoungCharacters };
+
+{ KostkaNumber };
+{ InterlaceGraph };
 
 { Transpositions, PermutationTranspositions,
   InversionVector };
@@ -49,7 +50,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { TheWeylPermutation };
 
-{ RimHooksGraph };
+{ RimHookGraph };
 
 Begin["`Private`"]
 
@@ -202,6 +203,41 @@ YoungTranspose[tb:{{___Integer}..}] := With[
    tableau is allowed. This is useful in Schur transform. *)
 
 
+(**** <YoungByte> ****)
+
+YoungByte::usage = "YoungByte[{b1,b2,\[Ellipsis]}] is a binary representation of an integer partition of n:=b1+b2+\[Ellipsis] with (b1, b2, \[Ellipsis] \[Element] {0, 1}."
+
+(* Returns the degree of the symmetric group. *)
+YoungByte /:
+YoungDegree[yb_YoungByte] := YoungDegree[YoungShape @ yb]
+
+(* Returns the binary representation of a Young shape. *)
+YoungByte @ YoungShape[partition_] := YoungByte @ Fold[
+  Join[#1, Append[ConstantArray[1, #2], 0]]&, 
+  {},
+  Subtractions[Reverse @ YoungTrim @ partition]
+]
+
+(* Converts back a binary representation to the normal form. *)
+YoungByte /:
+YoungShape[yb_YoungByte] := Module[
+  { byte = First[YoungTrim @ yb] },
+  byte = SequenceReplace[byte, {a:(Except[0]...), 0} -> {a}];
+  YoungShape @ Reverse @ Accumulate @ Map[Total, byte]
+]
+
+(* Removes leading 0s and trailing 1s in the binary representation. *)
+YoungByte /:
+YoungTrim @ YoungByte[{0..., Shortest[any___], 1...}] := 
+  YoungByte @ {any}
+
+YoungByte /:
+YoungTranspose @ YoungByte[byte_] :=
+  YoungByte @ Reverse @ ReplaceAll[byte, {0 -> 1, 1 -> 0}]
+
+(**** </YoungByte> ****)
+
+
 YoungTableauCount::usage = "YoungTableauCount[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nYoungTableauCount[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
 
 YoungTableauCount[pp_List?YoungShapeQ] :=
@@ -293,7 +329,7 @@ GroupCharacters[grp:{_String, _Integer}] :=
 
 (**** <YoungCharacters> ****)
 
-YoungCharacters::usage = "YoungCharacters[n] returns the character table of the symmetric group of degree n.\nYoungCharacters[irr] returns a list of characters of conjugacy classes in irreducible representation 'irr'.\nYoungCharacters[irr, class] returns the character of conjugacy class 'class' in irreducible representation 'irr'."
+YoungCharacters::usage = "YoungCharacters[n] returns the character table of the symmetric group of degree n.\nYoungCharacters[irr] returns a list of characters of conjugacy classes in irreducible representation 'irr'.\nYoungCharacters[irr, class] returns the character of 'class' in irreducible representation 'irr'."
 
 YoungCharacters[n_Integer] := With[
   { shapes = YoungShapes[n] },
@@ -310,42 +346,18 @@ YoungCharacters[irrep_YoungShape] := Map[
   The columns are arranged as Reverse[YoungShapes[n]]. *)
 
 YoungCharacters[irrep_YoungShape, YoungShape[type_]] :=  
-  theMurnaghanNakayama[theBinaryShape @ irrep, type]
+  yngMurnaghanNakayama[YoungByte @ irrep, type]
 
 
-theBinaryShape::usage = "theBinaryShape[shape] returns a binary representation of partition 'shape'."
+yngMurnaghanNakayama::usage = "yngMurnaghanNakayama[binaryShape, type] returns the character of the conjugacy class of 'type' in the irreducible representation of 'binaryShape' of the symmetric group, using the MNinner algorithm from Bernstein (2004) based on the Murnaghan-Nakayama rule."
 
-theBinaryShape[YoungShape[partition_]] :=
-  Fold[
-    Join[#1, Append[ConstantArray[1, #2], 0]]&, 
-    {},
-    Subtractions[Reverse @ partition]
-  ]
+yngMurnaghanNakayama[binaryShape_YoungByte, {}] = 1
 
+yngMurnaghanNakayama[binaryShape_YoungByte, type_List] := 
+  0 /; Length[First @ binaryShape] < First[type]
 
-trimBinaryShape::usage = "trimBinaryShape[shape] removes leading 0s and trailing 1s from 'shape'."
-
-trimBinaryShape[{0 ..., Shortest[any___], 1 ...}] := {any}
-
-
-fromBinaryShape::usage = "fromBinaryShape[part] converts a binary representation of partition 'part' back to ordinary form."
-
-fromBinaryShape[binaryShape:{(0|1)...}] := Module[
-  { new = trimBinaryShape @ binaryShape },
-  new = SequenceReplace[new, {a:(Except[0]...), 0} -> {a}];
-  YoungShape @ Reverse @ Accumulate @ Map[Total, new]
-]
-
-
-theMurnaghanNakayama::usage = "theMurnaghanNakayama[binaryShape, type] returns the character of the conjugacy class of 'type' in the irreducible representation of 'binaryShape' of the symmetric group, using the MNinner algorithm from Bernstein (2004) based on the Murnaghan-Nakayama rule."
-
-theMurnaghanNakayama[binaryShape_List, {}] = 1
-
-theMurnaghanNakayama[binaryShape_List, type_List] := 
-  0 /; First[type] > Length[binaryShape]
-
-theMurnaghanNakayama[binaryShape_List, type_List] := Module[
-  { shp = binaryShape,
+yngMurnaghanNakayama[binaryShape_YoungByte, type_List] := Module[
+  { shp = First[binaryShape],
     len = First[type],
     chr = 0,
     sgn },
@@ -354,7 +366,7 @@ theMurnaghanNakayama[binaryShape_List, type_List] := Module[
     If[ shp[[i]] != shp[[i+len-1]], sgn = -sgn ];
     If[ shp[[{i, i+len}]] == {1, 0},
       shp[[{i, i+len}]] = shp[[{i+len, i}]];
-      chr += sgn * theMurnaghanNakayama[shp, Rest @ type];
+      chr += sgn * yngMurnaghanNakayama[YoungByte @ shp, Rest @ type];
       shp[[{i, i+len}]] = shp[[{i+len, i}]];
     ],
     {i, Length[shp] - len}
@@ -365,132 +377,58 @@ theMurnaghanNakayama[binaryShape_List, type_List] := Module[
 (**** </YoungCharacters> ****)
 
 
-(**** <RimHooksGraph> ****)
+(**** <RimHookGraph> ****)
 
-RimHooksGraph::usage = "RimHooksGraph[shape, type] returns a graph illustrating the Murnaghan-Nakayama rule for computing the characters of the symmetric group.\nThis function is just to heuristically illustrate how the Murnaghan-Nakayama rule works."
+RimHookGraph::usage = "RimHookGraph[irrep, class] returns a graph of Young shapes connected by revmoving a rim hook. Both irreducible representation irrep and conjugacy class are specified in YoungShape.\nThis function is just to heuristically illustrate the Murnaghan-Nakayama rule for computing the characters of the symmetric group."
 
-RimHooksGraph[shape_YoungShape, type_YoungShape, opts:OptionsPattern[Graph]] := 
+RimHookGraph[shape_YoungShape, type_YoungShape, opts:OptionsPattern[Graph]] := 
   Module[
-    { edges = theRimHookEdges[theBinaryShape @ shape, First @ type] },
-    Graph[
-      edges /. bb:{(0|1)...} :> fromBinaryShape[bb], 
-      opts,
-      ImageSize -> Medium,
-      GraphLayout -> "LayeredEmbedding",
+    { edges = yngRimHookEdges[YoungByte @ shape, First @ type] },
+    Graph[ Union @ edges, opts,
       VertexLabels -> "Name",
-      EdgeLabels -> "EdgeTag"
+      EdgeLabels -> "EdgeTag",
+      GraphLayout -> "LayeredDigraphEmbedding",
+      ImageSize -> Medium
     ]
   ]
 
-(* NOTE: This theRimHookEdges may be combined with theMurnaghanNakayama. But I keep them as they are because theRimHookEdges is just for heuristic purposes and theMurnaghanNakayama is for efficient calculation of characters. *)
-theRimHookEdges[{}, _] = {}
+(* NOTE: This yngRimHookEdges may be combined with yngMurnaghanNakayama. But I keep them as they are because yngRimHookEdges is just for heuristic purposes and yngMurnaghanNakayama is for efficient calculation of characters. *)
+yngRimHookEdges[YoungByte @ {}, _] = {}
 
-theRimHookEdges[binaryShape_List, {}] = { 
-  DirectedEdge[binaryShape, 1, 1] 
+yngRimHookEdges[binaryShape_YoungByte, {}] = { 
+  DirectedEdge[YoungShape @ binaryShape, 1, 1] 
 }
 
-theRimHookEdges[binaryShape_List, type_List] := { 
-  DirectedEdge[binaryShape, 0, 1] 
-} /; First[type] > Length[binaryShape]
+yngRimHookEdges[binaryShape_YoungByte, type_List] := { 
+  DirectedEdge[YoungShape @ binaryShape, 0, 1] 
+} /; Length[First @ binaryShape] < First[type]
 
-theRimHookEdges[shp_List, type_List] := Module[
-  { len = First[type],
+yngRimHookEdges[byte_YoungByte, type_List] := Module[
+  { bin = First[byte],
+    len = First[type],
     edg = {},
     sgn, new },
-  sgn = IntegerParity @ Count[Take[shp, len-1], 0];
+  sgn = IntegerParity @ Count[Take[bin, len-1], 0];
   Do[
-    If[ shp[[i]] != shp[[i+len-1]], sgn = -sgn ];
-    If[ shp[[{i, i+len}]] == {1, 0},
-      new = shp;
-      new[[{i, i+len}]] = shp[[{i+len, i}]];
-      new = trimBinaryShape[new];
+    If[ bin[[i]] != bin[[i+len-1]], sgn = -sgn ];
+    If[ bin[[{i, i+len}]] == {1, 0},
+      new = bin;
+      new[[{i, i+len}]] = bin[[{i+len, i}]];
+      new = YoungTrim[YoungByte @ new];
       edg = Join[ edg,
-        { DirectedEdge[shp, new, sgn] },
-        theRimHookEdges[new, Rest @ type]
+        { DirectedEdge[YoungShape @ byte, YoungShape @ new, sgn] },
+        yngRimHookEdges[new, Rest @ type]
       ]
     ],
-    {i, Length[shp] - len}
+    {i, Length[bin] - len}
   ];
   If[ edg == {},
-    {DirectedEdge[shp, 0, 1]},
+    {DirectedEdge[YoungShape @ byte, 0, 1]},
     Flatten[edg]
   ]
 ]
 
-(**** </RimHooksGraph> ****)
-
-
-(**** <LegacyYoungCharacters> ****)
-
-LegacyYoungCharacters::usage = "LegacyYoungCharacters[n] returns the table of characters of the symmetric group of degree n.\nLegacyYoungCharacters[irrep] returns a list of characters of the irreducible representation 'irrep'.\nLegacyYoungCharacters[irrep, class] returns the character of the irreducible representation 'irrep' evaluated at the conjugacy 'class'.\nBoth 'irrep' and 'class' are specified by partitions of 'n'."
-(* This method is based on B. Günther (2019), Wolfram Community, "Characters of the Symmetric Group." *)
-
-LegacyYoungCharacters[n_Integer] := Module[
-  { shp = YoungShapes @ n,
-    wgt, chr },
-  wgt = YoungCentralizerSize /@ shp;
-  chr = CompoundYoungCharacters /@ shp;
-  chr = Orthogonalize[chr, ((#1/wgt) . #2)&, Method -> "GramSchmidt"];
-  Reverse /@ chr
-  (* NOTE: CompoundYoungCharacters[shape] are arranged in the reversed order of YoungShapes[n]. *)
-]
-
-LegacyYoungCharacters[irrep_List?YoungShapeQ, rest___] :=
-  LegacyYoungCharacters[YoungShape @ irrep, rest]
-
-LegacyYoungCharacters[irrep_, class_List?YoungShapeQ] :=
-  LegacyYoungCharacters[irrep, YoungShape @ class]
-
-
-LegacyYoungCharacters[YoungShape[irrep_]] := Map[
-  theLegacyYoungCharacters[irrep, #]&,
-  Reverse[IntegerPartitions @ Total @ irrep]
-]  
-
-LegacyYoungCharacters[YoungShape[irrep_], YoungShape[class_]] :=
-  theLegacyYoungCharacters[irrep, class]
-
-
-theLegacyYoungCharacters[{}, {}] := 1; 
-
-theLegacyYoungCharacters[shape_List, class_List] :=
-  YoungTableauCount[shape] /; And[
-    Total[shape] == Total[class],
-    Length[class] >= 1,
-    First[class] == 1
-  ]
-
-theLegacyYoungCharacters[shape_List, class_List] :=
-  With[
-    { classmax = First[class],
-      class0 = Rest[class],
-      mu = YoungTranspose[shape],
-      nu = Append[shape,0] },
-    Sum[
-      If[shape[[j]]+mu[[i]]+1-j-i != classmax,
-        0,
-        If[EvenQ[classmax+i-shape[[j]]], -1, 1] * 
-          theLegacyYoungCharacters[
-            Select[
-              Table[
-                If[k<j||nu[[k]]<i, nu[[k]], Max[nu[[k+1]],i]-1],
-                {k, Length[shape]}
-               ],
-              (#>0)&
-             ],
-            class0
-           ]
-       ],
-      {j, 1, Length[shape]},
-      {i, 1, shape[[j]]}
-     ]
-  ] /; And[
-    Total[shape] == Total[class],
-    Length[class] >= 1,
-    First[class] > 1
-  ]
-
-(**** </LegacyYoungCharacters> ****)
+(**** </RimHookGraph> ****)
 
 
 (**** <GroupClasses> ****)
@@ -594,7 +532,7 @@ GroupCentralizerSize[group_, g_] :=
 YoungCentralizerSize::usage = "YoungCentralizerSize[class] returns the size of the centralizer of an element in conjugacy class, which is specified by the corresponding Young shape.\nNot that YoungCentralizerSize[class] = GroupOrder[SymmetricGroup[n]] / YoungClassSize[class]."
 
 YoungCentralizerSize[n_Integer] :=
-  AssociationMap[YoungCentralizerSize, Reverse @ YoungShapes @ n]
+  Map[YoungCentralizerSize, Reverse @ YoungShapes @ n]
 
 YoungCentralizerSize[class_List?YoungShapeQ] :=
   YoungCentralizerSize[YoungShape @ class]
@@ -605,99 +543,76 @@ YoungCentralizerSize[YoungShape[class_List]] :=
 (**** </YoungCentralizerSize> ****)
 
 
-(**** <CompoundYoungCharacters> ****)
+(**** <KostkaNumber> ****)
 
-CompoundYoungCharacters::usage = "CompoundYoungCharacters[shape] returns the composite Young character corresponding to partition shape."
+KostkaNumber::usage = "KostkaNumber[shape, content] returns the Kostka nunber, i.e., the number of Weyl tableaux of shape and content.\nKostkaNumber[n] returns a matrix of Kostka numbers of degree n."
 
-CompoundYoungCharacters[shape_YoungShape] :=
-  CompoundYoungCharacters[First @ shape]
+KostkaNumber[n_Integer?Positive] := With[
+  { shp = YoungShapes[n] },
+  Outer[KostkaNumber, shp, shp]
+]
+(* TODO: There is a room for improvement here. *)
 
-CompoundYoungCharacters[pp_List?YoungShapeQ] := Module[
-  { chrVect = Table[0, YoungClassCount[Total @ pp]],
-    supPartitionTupel = Partition[pp, 1],
-    hashPositionTupel = Prime[pp],
-    r, columnIdx },
+KostkaNumber[irrep_YoungShape, content_List] :=
+  KostkaNumber[irrep, YoungShape @ YoungTrim @ ReverseSort @ content]
 
-  With[
-    { hashPosList = SparseArray[
-        Flatten @ MapIndexed[
-          {Times @@ Prime[#1] -> First[#2]}&,
-          IntegerPartitions[Total[pp]]
-        ]
-      ]
-    },
+KostkaNumber[shape_YoungShape, shape_YoungShape] = 1
 
-    While[ True,
-      columnIdx = Part[hashPosList, Whole @ hashPositionTupel];
-      chrVect[[columnIdx]] += Whole @ Apply[
-        Multinomial,
-        Map[
-          Part[#, 2]&,
-          SplitBy[Sort @ Flatten[Tally /@ supPartitionTupel, 1], First],
-          {2}
-        ],
-        2
-      ];
+KostkaNumber[shape_YoungShape, YoungShape@{}] = 0
 
-      r = Length[supPartitionTupel];
-      While[(r>0) && (First[supPartitionTupel[[r]]]==1), r--];
-      If[r<=0, Break[]];
-      
-      supPartitionTupel = Join[
-        Take[supPartitionTupel,r-1],
-        {nextPartition[supPartitionTupel[[r]]]},
-        Partition[Drop[pp,r],1]
-      ];
-      hashPositionTupel = Join[
-        Take[hashPositionTupel, r-1],
-        {Whole @ Prime[supPartitionTupel[[r]]]},
-        Prime @ Drop[pp,r]
-      ]
-    ]
-  ];
-  
-  chrVect
+KostkaNumber[shape_YoungShape, content_YoungShape] := 0 /;
+  YoungDegree[shape] != YoungDegree[content]
+
+KostkaNumber[shape_YoungShape, content_YoungShape] := 0 /;
+  Not @ DominatesQ[First @ shape, First @ content]
+
+(* Pieri rule *)
+KostkaNumber[shape_YoungShape, content_YoungShape] := Module[
+  { new = yngInterlaces[shape],
+    rst = Rest /@ content },
+  Total @ Map[KostkaNumber[#, rst]&, new]
 ]
 
 
-nextPartition[pp_List?YoungShapeQ] := Module[
-  { i = First @ Last @ Position[pp, x_/;x>1],
-    k = Length[pp],
-    j, qr },
-  j = Part[pp, i];
-  qr = QuotientRemainder[j+k-i, j-1];
-  Join[
-    Take[pp, i-1],
-    ConstantArray[j-1, Part[qr, 1]],
-    If[Part[qr, 2] >= 1, {Part[qr, 2]}, {}]
+yngInterlaces::usage = "yngInterlaces[shape] returns a list of Young shapes obtained from removing zero or one cells from each column of shape."
+(* Section 3.2.1 in Bacon et al. (2017a) *)
+
+yngInterlaces[YoungShape[shape_]] := Module[
+  { del = Subtractions[Reverse @ shape] },
+  del = Reverse /@ Tuples[Range[0, #] & /@ del];
+  Map[YoungTrim @ YoungShape[shape - #] &, del]
+]
+
+(**** </KostkaNumber> ****)
+
+
+(**** <InterlaceGraph> ****)
+
+InterlaceGraph::usage = "InterlaceGraph[shape, d] returns a graph of Young shapes obtained from removing zero or one cells in each column of shape and consecutively. Illustrates the Gelfand-Zetlin basis of the unitary group U(d)."
+(* Section 3.2.1 in Bacon et al. (2017a) *)
+
+InterlaceGraph[shape_YoungShape, d_Integer, opts:OptionsPattern[Graph]] :=
+  Module[
+    { edges = yngInterlaceEdges[shape, d] },
+    Graph[ edges, opts,
+      (* GraphLayout -> "LayeredEmbedding", *)
+      VertexLabels -> "Name",
+      ImageSize -> Medium
+    ]
   ]
-] /; AnyTrue[pp, #>1&]
 
-nextPartition[pp_List?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
-(* Convention: at the last partition, we cycle back to the first one. *)
+yngInterlaceEdges[shape_YoungShape, 0] = {}
 
-(**** </CompoundYoungCharacters> ****)
+yngInterlaceEdges[shape_YoungShape, d_Integer] := Module[
+  { new },
+  new = Select[yngInterlaces @ shape, 0 < Length[First @ #] < d &];
+  Union @ Join[
+    Thread @ DirectedEdge[shape, new],
+    Flatten @ Map[yngInterlaceEdges[#, d-1]&, new]
+  ]
+]
 
-
-KostkaMatrix::usage = "KostkaMatrix[n] returns the matrix of Kostka numbers of rank n."
-
-KostkaMatrix[n_Integer] := Dot[
-  LegacyYoungCharacters[n],
-  DiagonalMatrix[1 / (YoungCentralizerSize /@ IntegerPartitions[n])],
-  Transpose[CompoundYoungCharacters /@ IntegerPartitions[n]]
-] /; n > 0
-
-
-YoungCharacterInner::usage = "YoungCharacterInner[n][f, g] returns the scalar product of two rows (also known as class vectors) f and g of the character table of the symmetric group of degree n."
-
-YoungCharacterInner[n_Integer] := YoungCharacterInner @ 
-  Map[YoungCentralizerSize, Reverse @ YoungShapes @ n] /; n > 0
-(* NOTE: The columns of YoungCharacters[n] and the keys of YoungClasses[n] are arranged as Reverse[YoungShapes[n]]. *)
-
-YoungCharacterInner[w_?VectorQ][f_?VectorQ, g_?VectorQ] := 
-  Dot[f, g / w] /; Length[w] == Length[f] == Length[g]
-(* NOTE: The following conditions are supposed to be satisfied (not checked):
-  Length[f]==PartitionsP[n] && Length[g]==PartitionsP[n] *)
+(**** </InterlaceGraph> ****)
 
 
 (**** <YoungTableauQ> ****)
@@ -776,7 +691,7 @@ YoungTableaux[shape:{___Integer}, opts___?OptionQ] :=
 YoungTableaux[shape_YoungShape, OptionsPattern[]] := With[
   { result = YoungTableau /@ GelfandYoungPatterns[shape] },
   If[OptionValue["LexicographicOrder"], Reverse @ result, result, result]
- ]
+]
 (* NOTE: Since v3.0, based on GelfandYoungPatterns.
    Now, the resulting list is not in lexicographic order and consistent with
    SchurBasis. *)
@@ -1125,14 +1040,15 @@ KetPermute[expr_, spec_?anyPermutationSpecQ, ss:{__?SpeciesQ}] :=
 (**** </KetPermute> ****)
 
 
-(**** KetSymmetrize ****)
+(**** <KetSymmetrize> ****)
 
-KetSymmetrize::usage = "KetSymmetrize[expr, {s1, s2, \[Ellipsis]}, tbl] symmetrizes every kets appearing in expr according to polytabloid specified by standard Young tableau tbl.\n"
+KetSymmetrize::usage = "KetSymmetrize[expr, {s1, s2, \[Ellipsis]}, tbl] symmetrizes every kets appearing in expr according to polytabloid specified by standard Young tableau tbl."
+(* TODO: YoungSymmetrizer *)
 
-KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_YoungTableau] :=
-  KetSymmetrize[bs, ss, First @ tbl]
+KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_List?YoungTableauQ] :=
+  KetSymmetrize[bs, ss, YoungTableau @ tbl]
 
-KetSymmetrize[bs_List, ss:{__?SpeciesQ}, tbl_List?YoungTableauQ] := Module[
+KetSymmetrize[bs_List, ss:{__?SpeciesQ}, YoungTableau[tbl_]] := Module[
   { ts = YoungTranspose[tbl],
     qq, bb },
   qq = TakeList[ss[[Flatten @ ts]], Length /@ ts];
@@ -1152,53 +1068,43 @@ KetSymmetrize[expr_, {}, ___] := expr /;
   Not @ FreeQ[expr, Ket[_Association]]
 
 KetSymmetrize[expr_, ss:{__?SpeciesQ}] :=
-  KetSymmetrize[expr, ss, {Range[Length @ ss]}] /;
+  KetSymmetrize[expr, ss, 1] /;
   Not @ FreeQ[expr, Ket[_Association]]
 
 KetSymmetrize[expr_, ss:{__?SpeciesQ}, 1] :=
-  KetSymmetrize[expr, ss, {Range[Length @ ss]}] /;
+  KetSymmetrize[expr, ss, YoungTableau @ {Range @ Length @ ss}] /;
   Not @ FreeQ[expr, Ket[_Association]]
 
 KetSymmetrize[expr_, ss:{__?SpeciesQ}, -1] :=
-  KetSymmetrize[expr, ss, Transpose @ {Range[Length @ ss]}] /;
+  KetSymmetrize[expr, ss, YoungTableau @ Transpose @ {Range @ Length @ ss}] /;
   Not @ FreeQ[expr, Ket[_Association]]
 
 
-KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_YoungTableau] :=
-  KetSymmetrize[expr, ss, First @ tbl]
+KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_List?YoungTableauQ] :=
+  KetSymmetrize[expr, ss, YoungTableau @ tbl]
 
-KetSymmetrize[expr_, ss:{__?SpeciesQ}, tbl_List?YoungTableauQ] := Module[
-  { qq = ss[[Flatten @ tbl]],
+KetSymmetrize[expr_, ss:{__?SpeciesQ}, YoungTableau[tbl_]] := Module[
+  { ts = YoungTranspose[tbl],
+    qq = ss[[Flatten @ tbl]],
     aa, bb, cc, new },
   aa = Flatten /@ Tuples[Permutations /@ tbl];
-  new = YoungTranspose[tbl];
-  bb = Tuples[Permutations /@ new];
-  cc = yngSignatureTo[new, #] & /@ bb;
+  bb = Tuples[Permutations /@ ts];
+  cc = yngSignatureTo[ts, #] & /@ bb;
   bb = Flatten /@ YoungTranspose /@ bb;
   expr /. {
     v:Ket[_Association] :> 
       Dot[Ket[ss -> Permute[v[qq], #]]& /@ bb, cc]
   } /. {
-     w:Ket[_Association] :> 
-       Total[Ket[ss -> Permute[w[qq], #]]& /@ aa]
+    w:Ket[_Association] :> 
+      Total[Ket[ss -> Permute[w[qq], #]]& /@ aa]
   }
 ] /; Not @ FreeQ[expr, Ket[_Association]]
 
 
-yngSignatureTo::usage = "yngSignatureTo[a,b] compares the rows of (not necessarily stadnard) Young Tableaux a and b. Useful to construct polytabloid."
+yngSignatureTo::usage = "yngSignatureTo[a, b] compares the rows of (not necessarily stadnard) Young Tableaux a and b, and returns the products of the signatures. Useful to construct polytabloid."
 
-yngSignatureTo[a_?anyTableauQ, b_?anyTableauQ] := 
- Whole @ MapThread[SignatureTo, {a, b}]
+yngSignatureTo[a_, b_] := Whole @ MapThread[SignatureTo, {a, b}]
 
-anyTableauQ::uage = "anyTableauQ[tb] returns True if tb is a legitimate (not necessarily standard) Young tableau."
-
-anyTableauQ[tb : {__List}] := And[
-  Apply[GreaterEqual, Length /@ tb], 
-  Apply[GreaterEqual, Length /@ YoungTranspose[tb]]
-]
-
-
-(* total symmetrization for Pauli Kets *)
 
 KetSymmetrize[expr_] := KetSymmetrize[expr, 1]
 
@@ -1213,7 +1119,6 @@ KetSymmetrize[v_Ket, -1] := Module[
     ff },
   vv = Permute[vv, SymmetricGroup[n]];
   ff = Signature /@ vv;
-
   ff . vv
 ]
 
@@ -1221,13 +1126,18 @@ KetSymmetrize[expr_, -1] :=
   ReplaceAll[ expr, v_Ket :> KetSymmetrize[v, -1] ]
 
 
-KetSymmetrize[expr_, tbl_List?YoungTableauQ] := Module[
+(* Young symmetrizer *)
+KetSymmetrize[expr_, tbl_List?YoungTableauQ] :=
+  KetSymmetrize[expr, YoungTableau @ tbl]
+
+(* Young symmetrizer *)
+KetSymmetrize[expr_, YoungTableau[tbl_]] := Module[
   { tt = Flatten[tbl],
+    ts = YoungTranspose[tbl],
     aa, bb, cc, new },
   aa = Flatten /@ Tuples[Permutations /@ tbl];
-  new = YoungTranspose[tbl];
-  bb = Tuples[Permutations /@ new];
-  cc = yngSignatureTo[new, #] & /@ bb;
+  bb = Tuples[Permutations /@ ts];
+  cc = yngSignatureTo[ts, #] & /@ bb;
   bb = Flatten /@ YoungTranspose /@ bb;
   expr /. {
     v_Ket :> Dot[Permute[v[[tt]], #]& /@ bb, cc]
@@ -1437,38 +1347,46 @@ SpechtBasis[n_Integer] := With[
 
 PermutationBasis::usage = "PermutationBasis[{m1,m2,\[Ellipsis],md}, {s1,s2,\[Ellipsis],sn}] returns the basis of the permutation module consisting of n-tuples of d letters (or levels) with content (or type) {m1,m2,\[Ellipsis],md} for the symmetric group associated with set {s1,s2,\[Ellipsis],sn} of d-level species.\nPermutationBasis[{s1,s2,\[Ellipsis],sn}] returns an association of the bases of all possible permutation modules for the symmetric group associated with set {s1,s2,\[Ellipsis],sn} of d-level species."
 
-PermutationBasis::baddim = "The dimensions of species in `` are not equal to each other."
+PermutationBasis::dim = "The dimensions of species in `` are not the same."
 
-PermutationBasis[ss:{__?SpeciesQ}] := 
+PermutationBasis::len = "The dimension of species `` is not the same as the length of content ``."
+
+PermutationBasis::num = "The number of particles in `` is not the same as that in content ``."
+
+PermutationBasis[n_Integer, d_Integer] := 
+  AssociationMap[PermutationBasis, OrderedPartitions[n, d]]
+
+PermutationBasis[content:{__Integer?NonNegative}] :=
+  Ket /@ Permutations[ContentVector[content]-1]
+
+
+PermutationBasis[ss:{__?SpeciesQ}] :=
   PermutationBasis[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
 PermutationBasis[ss:{__?SpeciesQ}] := Module[
-  { dim = Dimension[ss],
-    shp, occ },
-  If[ Apply[Equal, dim],
-    dim = First @ dim,
-    Message[PermutationBasis::baddim, ss];
-    Return[$Failed]
-   ];
-  shp = PadRight[#, dim]& /@ IntegerPartitions[Length @ ss, dim];
-  occ = Flatten[Permutations /@ shp, 1];
+  { occ },
+  occ = OrderedPartitions[Length @ ss, Dimension @ First @ ss];
   AssociationMap[PermutationBasis[#, ss]&, occ]
- ]
+] /; If[ 
+  Apply[Equal, Dimension @ ss], True,
+  Message[PermutationBasis::dim, ss]; False
+]
 
-PermutationBasis[content:{__Integer?NonNegative}, ss:{__?SpeciesQ}] :=
-  Module[
-    { dim = Dimension[ss],
-      occ, tpl},
-    If[ Apply[Equal, dim],
-      dim = First @ dim,
-      Message[PermutationBasis::baddim, ss];
-      Return[$Failed]
-     ];
-    occ = PadRight[content, dim];
-    tpl = Permutations @ Flatten @ MapThread[Table, {Range[dim]-1, occ}];
-    Return[Ket[ss -> #]& /@ tpl]
-   ] /; Total[content] == Length[ss]
-
+PermutationBasis[content:{__Integer?NonNegative}, ss:{__?SpeciesQ}] := Module[
+  { tpl },
+  tpl = Permutations[ContentVector[content]-1];
+  Return[Ket[ss -> #]& /@ tpl]
+] /; 
+If[ Apply[Equal, Dimension @ ss],
+  If[ Dimension[First @ ss] == Length[content],
+    If[ Total[content] == Length[ss],
+      True,
+      Message[PermutationBasis::num, ss, content]; False  
+    ],
+    Message[PermutationBasis::len, ss, content]; False
+  ],
+  Message[PermutationBasis::dim, ss]; False
+]
 
 (**** </PermutationBasis> ****)
 
@@ -1483,7 +1401,7 @@ DominatesQ[a_?ListQ, b_?ListQ] := Module[
   aa = Accumulate @ PadRight[a, n];
   bb = Accumulate @ PadRight[b, n];
   AllTrue[GreaterEqual @@@ Transpose @ {aa, bb}, TrueQ]
- ]
+]
 
 (* shortcut *)
 DominatesQ[a_YoungShape, b_] := DominatesQ[First @ a, b]
@@ -1563,23 +1481,23 @@ RowInsertion[YoungTableau[{}], a_Integer] :=
   YoungTableau[{{a}}]
 
 RowInsertion[wt_YoungTableau, a_Integer] :=
-  YoungTableau @ theRowInsertion[First @ wt, a]
+  YoungTableau @ yngRowInsertion[First @ wt, a]
 
 
-theRowInsertion[data:{{___Integer} ..}, a_] := Module[
+yngRowInsertion[data:{{___Integer} ..}, a_] := Module[
   {row, b},
-  {row, b} = theRowInsertion[First @ data, a];
+  {row, b} = yngRowInsertion[First @ data, a];
   Which[
     b == 0,
     Join[{row}, Rest @ data],
     Length[data] == 1,
     Join[{row}, {{b}}],
     True,
-    Join[{row}, theRowInsertion[Rest @ data, b]]
+    Join[{row}, yngRowInsertion[Rest @ data, b]]
   ]
 ]
 
-theRowInsertion[row:{___Integer}, a_Integer] := Module[
+yngRowInsertion[row:{___Integer}, a_Integer] := Module[
   { k = LengthWhile[row, # <= a &] },
   If[ k == Length[row],
     {Append[row, a], 0},
@@ -1606,12 +1524,12 @@ RowInsertion[{YoungTableau[{}], YoungTableau[{}]}, {a_Integer, b_Integer}] :=
   { YoungTableau @ {{a}}, YoungTableau @ {{b}} }
 
 RowInsertion[{p_YoungTableau, q_YoungTableau}, {a_Integer, b_Integer}] :=
-  YoungTableau /@ theRowInsertion[{First @ p, First @ q}, {a, b}]
+  YoungTableau /@ yngRowInsertion[{First @ p, First @ q}, {a, b}]
 
 
-theRowInsertion[{p:{__List}, q:{__List}}, {a_, b_}] := Module[
+yngRowInsertion[{p:{__List}, q:{__List}}, {a_, b_}] := Module[
   {row, new},
-  {row, new} = theRowInsertion[First /@ {p, q}, {a, b}];
+  {row, new} = yngRowInsertion[First /@ {p, q}, {a, b}];
   Which[
     new == {0, 0},
     Catenate /@ Transpose @ {List /@ row, Rest /@ {p, q}},
@@ -1620,12 +1538,12 @@ theRowInsertion[{p:{__List}, q:{__List}}, {a_, b_}] := Module[
     True,
     Catenate /@ Transpose @ {
       List /@ row, 
-      theRowInsertion[Rest /@ {p, q}, new]
+      yngRowInsertion[Rest /@ {p, q}, new]
     }
   ]
 ]
 
-theRowInsertion[{p:{___Integer}, q:{___Integer}}, {a_, b_}] := Module[
+yngRowInsertion[{p:{___Integer}, q:{___Integer}}, {a_, b_}] := Module[
   { k = LengthWhile[q, # <= b &] },
   If[ k == Length[q],
     { {Append[p, a], Append[q, b]}, {0, 0} },

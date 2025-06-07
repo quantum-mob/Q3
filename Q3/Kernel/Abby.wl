@@ -6,7 +6,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { Supplement, SupplementBy, Common, CommonBy, SignatureTo };
 { Pairings, Unpaired };
 { Choices, ChoiceCount,
-  OrderedPartitions };
+  OrderedPartitions, ContentVector };
 { Successive, Subtractions, FirstLast, Inbetween };
 { ListPartitions, PartitionInto };
 { ShiftLeft, ShiftRight,
@@ -135,6 +135,12 @@ theOrderedPartitions[pp:{___List}] :=
 (* NOTE: ReverseSort is necessary for consistency with BosonBasis and BosonBasisChange. *)
 
 (**** <OrderedPartitions> ****)
+
+
+ContentVector::usage = "ContentVector[{m1,m2,\[Ellipsis],md}] returns an n-tuple of content {m1,m2,\[Ellipsis],md}, where n=m1+m2+\[Ellipsis]+md. The content of a tuple is a sequence of the multiplicities of entries in the tuple."
+
+ContentVector[content : {___Integer}] :=
+  Flatten @ MapThread[ConstantArray, {Range @ Length @ content, content}]
 
 
 (**** <Choices> ****)

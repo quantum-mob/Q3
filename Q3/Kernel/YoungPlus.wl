@@ -1,5 +1,5 @@
 (* ::Package:: *)
-(* N.B.: This package contains some symbols from Bernd Guenther's
+(* N.B.: This file contains some symbols from Bernd Guenther's
    IrrCharSymGrp.m v2.0 (posted on the Wolfram Community).  *)
 
 Get["QuantumMob`Q3`"]
@@ -8,22 +8,30 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 ClearAll @@ Evaluate @ Unprotect[
   CoxeterTest,
+  YoungCharacterTest,
   YoungNaturalRepresentation,
   YoungNaturalMetric,
+  SeminormalToNatural,
   LegacySeminormalRepresentation,
   LegacyBruhatGraph,
-  Seminormal2Natural,
-  YoungCharacterTest
+  LegacyYoungCharacters, 
+  LegacyKostkaNumber,
+  CompoundYoungCharacters,
+  YoungCharacterInner
 ];
 
 {
   CoxeterTest,
+  YoungCharacterTest,
   YoungNaturalRepresentation,
   YoungNaturalMetric,
+  SeminormalToNatural,
   LegacySeminormalRepresentation,
   LegacyBruhatGraph,
-  Seminormal2Natural,
-  YoungCharacterTest
+  LegacyYoungCharacters, 
+  LegacyKostkaNumber,
+  CompoundYoungCharacters, 
+  YoungCharacterInner
 };
 
 Begin["`Private`"]
@@ -43,9 +51,9 @@ CoxeterTest[ynr_?ArrayQ] := And[
 ]
 
 
-Seminormal2Natural::usage = "Seminormal2natural[\[Lambda]] The transformation matrix turning the seminormal presentation into the natural presentation. Each row vector is the expansion of a natural basis vector in terms of the seminormal basis vectors."
+SeminormalToNatural::usage = "Seminormal2natural[\[Lambda]] The transformation matrix turning the seminormal presentation into the natural presentation. Each row vector is the expansion of a natural basis vector in terms of the seminormal basis vectors."
 
-Seminormal2Natural[pp_?YoungShapeQ]:=
+SeminormalToNatural[pp_?YoungShapeQ]:=
   youngAuxiliary[pp, 1] /; Total[pp]>1
 
 
@@ -116,6 +124,203 @@ YoungClassRepresentative[YoungShape[type_]] := Module[
 ]
 
 
+(**** <LegacyYoungCharacters> ****)
+
+LegacyYoungCharacters::usage = "LegacyYoungCharacters[n] returns the table of characters of the symmetric group of degree n.\nLegacyYoungCharacters[irrep] returns a list of characters of the irreducible representation 'irrep'.\nLegacyYoungCharacters[irrep, class] returns the character of the irreducible representation 'irrep' evaluated at the conjugacy 'class'.\nBoth 'irrep' and 'class' are specified by partitions of 'n'."
+(* This method is based on B. Günther (2019), Wolfram Community, "Characters of the Symmetric Group." *)
+
+LegacyYoungCharacters[n_Integer] := Module[
+  { shp = YoungShapes @ n,
+    wgt, chr },
+  wgt = YoungCentralizerSize /@ Reverse[shp];
+  (* NOTE: Conjugacy classes are arranged in the reversed order of YoungShapes[n]. *)
+  chr = CompoundYoungCharacters /@ shp;
+  chr = Orthogonalize[chr, ((#1/wgt) . #2)&, Method -> "GramSchmidt"];
+  chr
+  (* NOTE: The columns of LegacyYoungCharacters[n] are also arranged in the reversed order of YoungShapes[n]. *)
+]
+
+LegacyYoungCharacters[irrep_List?YoungShapeQ, rest___] :=
+  LegacyYoungCharacters[YoungShape @ irrep, rest]
+
+LegacyYoungCharacters[irrep_, class_List?YoungShapeQ] :=
+  LegacyYoungCharacters[irrep, YoungShape @ class]
+
+
+LegacyYoungCharacters[YoungShape[irrep_]] := Map[
+  theLegacyYoungCharacters[irrep, #]&,
+  Reverse[IntegerPartitions @ Total @ irrep]
+]  
+(* NOTE: The conjugacy classes are arranged in the reversed order of irrep, i.e., YoungShapes[n]; hence, so is LegacyYoungCharacters[shape]. *)
+
+LegacyYoungCharacters[YoungShape[irrep_], YoungShape[class_]] :=
+  theLegacyYoungCharacters[irrep, class]
+
+
+theLegacyYoungCharacters[{}, {}] := 1; 
+
+theLegacyYoungCharacters[shape_List, class_List] :=
+  YoungTableauCount[shape] /; And[
+    Total[shape] == Total[class],
+    Length[class] >= 1,
+    First[class] == 1
+  ]
+
+theLegacyYoungCharacters[shape_List, class_List] :=
+  With[
+    { classmax = First[class],
+      class0 = Rest[class],
+      mu = YoungTranspose[shape],
+      nu = Append[shape,0] },
+    Sum[
+      If[shape[[j]]+mu[[i]]+1-j-i != classmax,
+        0,
+        If[EvenQ[classmax+i-shape[[j]]], -1, 1] * 
+          theLegacyYoungCharacters[
+            Select[
+              Table[
+                If[k<j||nu[[k]]<i, nu[[k]], Max[nu[[k+1]],i]-1],
+                {k, Length[shape]}
+               ],
+              (#>0)&
+             ],
+            class0
+           ]
+       ],
+      {j, 1, Length[shape]},
+      {i, 1, shape[[j]]}
+     ]
+  ] /; And[
+    Total[shape] == Total[class],
+    Length[class] >= 1,
+    First[class] > 1
+  ]
+
+(**** </LegacyYoungCharacters> ****)
+
+
+(**** <LegacyKostkaNumber> ****)
+
+LegacyKostkaNumber::usage = "LegacyKostkaNumber[n] returns the matrix of Kostka numbers of rank n."
+
+LegacyKostkaNumber::degree = "The degrees of shape `` and content `` do not coincide."
+
+LegacyKostkaNumber[n_Integer?Positive] := With[
+  { irrep = YoungShapes[n] },
+  Dot[
+    YoungCharacters[n],
+    Transpose[CompoundYoungCharacters /@ irrep] / Reverse[YoungCentralizerSize /@ irrep]
+    (* NOTE: Conjugacy classes are arranged in the reversed order of irrep. *)
+  ]
+]
+
+LegacyKostkaNumber[irrep_YoungShape, content_List] :=
+  LegacyKostkaNumber[irrep, YoungShape @ YoungTrim @ ReverseSort @ content] /;
+  If[ YoungDegree[irrep] == Total[content], True,
+    Message[LegacyKostkaNumber::degree, irrep, content]; False
+  ]
+
+LegacyKostkaNumber[irrep_YoungShape, shape_YoungShape] := With[
+  { wgt = YoungCentralizerSize[YoungDegree @ irrep] },
+  Dot[YoungCharacters @ irrep, CompoundYoungCharacters[shape] / wgt]
+]
+
+(**** </LegacyKostkaNumber> ****)
+
+
+(**** <YoungCharacterInner> ****)
+
+YoungCharacterInner::usage = "YoungCharacterInner[n][f, g] returns the scalar product of two rows (also known as class vectors) f and g of the character table of the symmetric group of degree n."
+
+YoungCharacterInner[n_Integer] := YoungCharacterInner @ 
+  Map[YoungCentralizerSize, Reverse @ YoungShapes @ n] /; n > 0
+(* NOTE: The columns of YoungCharacters[n] and the keys of YoungClasses[n] are arranged as Reverse[YoungShapes[n]]. *)
+
+YoungCharacterInner[w_?VectorQ][f_?VectorQ, g_?VectorQ] := 
+  Dot[f, g / w] /; Length[w] == Length[f] == Length[g]
+(* NOTE: The following conditions are supposed to be satisfied (not checked):
+  Length[f]==PartitionsP[n] && Length[g]==PartitionsP[n] *)
+
+(**** </YoungCharacterInner> ****)
+
+
+(**** <CompoundYoungCharacters> ****)
+
+CompoundYoungCharacters::usage = "CompoundYoungCharacters[shape] returns a list of the composite Young characters of irrep corresponding to partition shape."
+
+CompoundYoungCharacters[n_Integer] :=
+  Map[CompoundYoungCharacters, YoungShapes @ n]
+
+CompoundYoungCharacters[partition_List?YoungShapeQ] :=
+  CompoundYoungCharacters[YoungShape @ partition]
+
+CompoundYoungCharacters[YoungShape[pp_]] := Module[
+  { chrVect = Table[0, YoungClassCount[Total @ pp]],
+    supPartitionTupel = Partition[pp, 1],
+    hashPositionTupel = Prime[pp],
+    r, columnIdx },
+
+  With[
+    { hashPosList = SparseArray[
+        Flatten @ MapIndexed[
+          {Times @@ Prime[#1] -> First[#2]}&,
+          IntegerPartitions[Total[pp]]
+        ]
+      ]
+    },
+
+    While[ True,
+      columnIdx = Part[hashPosList, Whole @ hashPositionTupel];
+      chrVect[[columnIdx]] += Whole @ Apply[
+        Multinomial,
+        Map[
+          Part[#, 2]&,
+          SplitBy[Sort @ Flatten[Tally /@ supPartitionTupel, 1], First],
+          {2}
+        ],
+        2
+      ];
+
+      r = Length[supPartitionTupel];
+      While[(r>0) && (First[supPartitionTupel[[r]]]==1), r--];
+      If[r<=0, Break[]];
+      
+      supPartitionTupel = Join[
+        Take[supPartitionTupel,r-1],
+        {nextPartition[supPartitionTupel[[r]]]},
+        Partition[Drop[pp,r],1]
+      ];
+      hashPositionTupel = Join[
+        Take[hashPositionTupel, r-1],
+        {Whole @ Prime[supPartitionTupel[[r]]]},
+        Prime @ Drop[pp,r]
+      ]
+    ]
+  ];
+  
+  Reverse[chrVect]
+]
+
+
+nextPartition[pp_List?YoungShapeQ] := Module[
+  { i = First @ Last @ Position[pp, x_/;x>1],
+    k = Length[pp],
+    j, qr },
+  j = Part[pp, i];
+  qr = QuotientRemainder[j+k-i, j-1];
+  Join[
+    Take[pp, i-1],
+    ConstantArray[j-1, Part[qr, 1]],
+    If[Part[qr, 2] >= 1, {Part[qr, 2]}, {}]
+  ]
+] /; AnyTrue[pp, #>1&]
+
+nextPartition[pp_List?YoungShapeQ] := {Total @ pp} /; AllTrue[pp, #==1&]
+(* Convention: at the last partition, we cycle back to the first one. *)
+
+(**** </CompoundYoungCharacters> ****)
+
+
 YoungNaturalMetric::usage = "YoungNaturalMetric[shape] is the scalar product invariant under Young's natural presentation corresponding to the integer partition shape."
 
 YoungNaturalMetric[shape_List?YoungShapeQ] :=
@@ -123,7 +328,7 @@ YoungNaturalMetric[shape_List?YoungShapeQ] :=
 
 YoungNaturalMetric[YoungShape[shape_]] := With[
   { graphData = compatibleBruhatGraph @ LegacyBruhatGraph[shape],
-    transform = Seminormal2Natural[shape] },
+    transform = SeminormalToNatural[shape] },
   Whole[Factorial /@ YoungTranspose[shape]] *
   Dot[
     transform,

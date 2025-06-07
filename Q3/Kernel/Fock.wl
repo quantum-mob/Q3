@@ -2290,10 +2290,10 @@ BosonBasisChange[mat_?MatrixQ, {pp_?MatrixQ, qq_?MatrixQ}] := With[
 
 
 theBosonBasisChange[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
-  { ii, jj, ij, ff },
-  ii = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], pp}];
-  jj = Catenate @ MapThread[ConstantArray, {Range[Length @ mat], qq}];
-  Permanent[mat[[ii, jj]]]  / Sqrt[Whole @ Factorial @ pp] / Sqrt[Whole @ Factorial @ qq]
+  { ii = ContentVector[pp],
+    jj = ContentVector[qq],
+    ij, ff },
+  Permanent[mat[[ii, jj]]] / Sqrt[Whole @ Factorial @ pp] / Sqrt[Whole @ Factorial @ qq]
 ]
 
 (**** </BosonBasisChange> ****)

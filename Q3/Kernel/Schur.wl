@@ -507,7 +507,6 @@ nextSchurBasis[yt_GelfandPattern, bs_Association, node_List] := Module[
   src = Tuples @ {Keys[bs], Range[d]};
   dst = SchurLabelPile[yt, d];
   mat = SparseArray @ Outer[ClebschGordanX, src, Last @ Transpose @ dst, 1];
-
   tsr = Flatten @ Outer[CircleTimes, Values[bs], node, 1];
   AssociationThread[dst -> Garner[tsr . mat]]
 ]
