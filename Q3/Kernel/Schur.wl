@@ -13,7 +13,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { PartialHook };
 
-{ SchurBasisQ, SchurBasis, SchurLabelPile, GelfandYoungPile };
+{ SchurBasisQ, SchurBasis, SchurPileUp };
 
 Begin["`Private`"]
 
@@ -505,7 +505,7 @@ nextSchurBasis[yt_GelfandPattern, bs_Association, node_List] := Module[
   { d = Length @ node,
     src, dst, mat, tsr },
   src = Tuples @ {Keys[bs], Range[d]};
-  dst = SchurLabelPile[yt, d];
+  dst = SchurPileUp[yt, d];
   mat = SparseArray @ Outer[ClebschGordanX, src, Last @ Transpose @ dst, 1];
   tsr = Flatten @ Outer[CircleTimes, Values[bs], node, 1];
   AssociationThread[dst -> Garner[tsr . mat]]
@@ -519,44 +519,21 @@ regroupSchurBasis[bs_Association] := Merge[
 (**** </SchurBasis> ****)
 
 
-(**** <SchurLabelPile> ****)
+(**** <SchurPileUp> ****)
 
-SchurLabelPile::usage = "SchurLabelPile[gy, d] returns a list of pairs {yt, wt} of Gelfand patterns that are allowed to arise when one adds a node of d letters to the existing representation specified by Gelfand-Young pattern gy. Each of the resulting pairs refers uniquely to an element of the Schur basis for U(d) and S(n) where n = YoungDegree[gy] + 1."
+SchurPileUp::usage = "SchurPileUp[gy, d] returns a list of pairs {yt, wt} of Gelfand patterns that are allowed to arise when one adds a node of d letters to the existing representation specified by Gelfand-Young pattern gy. Each of the resulting pairs refers uniquely to an element of the Schur basis for U(d) and S(n) where n = YoungDegree[gy] + 1."
 
-SchurLabelPile[d_Integer][gy_GelfandPattern] :=
-  SchurLabelPile[gy, d]
+SchurPileUp[d_Integer][gy_GelfandPattern] :=
+  SchurPileUp[gy, d]
           
-SchurLabelPile[gy_GelfandPattern, d_Integer] := 
+SchurPileUp[gy_GelfandPattern, d_Integer] := 
   Join @@ Map[
     Tuples[{List @ #, GelfandPatterns[YoungShape @ #, d]}]&,
-    GelfandYoungPile[gy, d]
+    YoungPileUp[gy, d]
   ]
 (* TODO (2025-05-24): This can be implemented in a more efficient way by using the braching rule of Gelfand-Zetlin basis in Section 3.2.1 of Bacon07a. *)
 
-(**** </SchurLabelPile> ****)
-
-
-(**** <GelfandYoungPile> ****)
-
-GelfandYoungPile::usage = "GelfandYoungPile[gy, d] generates a list of new Gelfand-Young patterns that may arise when one adds a node of d-dimensional Hilbert space to the existing irreducible space associated with Gelfand-Young pattern gy."
-
-GelfandYoungPile[d_Integer][gy_GelfandPattern] :=
-  GelfandYoungPile[gy, d]  
-
-GelfandYoungPile[GelfandPattern[gy_], d_Integer] := Module[
-  { L = Length[gy] + 1,
-    new },
-  new = PadRight[First @ gy, L];
-  new = Table[new + UnitVector[L, j], {j, 1, Min @ {d, L}}];
-  GelfandPattern /@ Map[Prepend[gy, #]&, Select[new, YoungShapeQ]]
-]
-
-GelfandYoungPile[yt_YoungTableau, d_Integer] := With[
-  { n = YoungDegree[yt] },
-  GelfandYoungPile[GelfandPattern[yt, n], d]
-]
-
-(**** </GelfandYoungPile> ****)
+(**** </SchurPileUp> ****)
 
 End[]
 

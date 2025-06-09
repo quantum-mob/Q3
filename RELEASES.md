@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.2.5
+
+- Improved: YoungBratteliDiagram
+- Renamed: YoungShapePile and GelfandYoungPile are merged to YoungPileUp, SchurLabelPile --> SchurPileUp
+
 ## 4.2.4
 
 - New: Subtractions, LegacyGottesmanFactor, ContentVector, YoungByte, RimHookGraph

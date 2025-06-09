@@ -17,6 +17,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { WeylTableaux, WeylTableauCount, WeylTableauQ };
 
+{ GelfandPattern, GelfandPatternQ };
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
 { YoungElements, YoungGenerators, YoungSubgroup };
@@ -41,7 +42,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { DominatesQ, Dominates, DominatedBy };
 
-{ YoungShapePile, YoungBratteliDiagram };
+{ YoungPileUp, YoungBratteliDiagram };
 
 { SpechtBasis, YoungInvariantBasis };
 
@@ -1313,10 +1314,10 @@ YoungDistance[syt_YoungTableau] := With[
 
 (**** <YoungBratteliDiagram> ****)
 
-YoungBratteliDiagram::usage = "YoungBratteliDiagram[n] constructs the Bratteli diagram for the symmetric group of degree n."
+YoungBratteliDiagram::usage = "YoungBratteliDiagram[n] constructs the Bratteli diagram corresponding to the canonical tower of subgrups of the symmetric group of degree n."
 
 YoungBratteliDiagram[n_Integer, opts:OptionsPattern[Graph]] := Module[
-  { grf = NestList[brattelli, YoungShape[{1}], n-1],
+  { grf = NestList[yngBrattelli, YoungShape[{1}], n-1],
     vtx },
   grf = Graph[Flatten @ Rest @ grf];
   Graph[ grf, opts,
@@ -1326,29 +1327,78 @@ YoungBratteliDiagram[n_Integer, opts:OptionsPattern[Graph]] := Module[
   ]
 ]
 
-brattelli[shape_YoungShape] := 
-  Map[UndirectedEdge[shape, #]&, YoungShapePile @ shape]
+yngBrattelli[shape_YoungShape] := 
+  Map[DirectedEdge[shape, #]&, YoungPileUp @ shape]
 
-brattelli[edges:{__UndirectedEdge}] := 
-  Flatten @ Map[brattelli, Union[Last /@ edges]]
+yngBrattelli[edges:{__DirectedEdge}] := 
+  Flatten @ Map[yngBrattelli, Union[Last /@ edges]]
 
 (**** </YoungBratteliDiagram> ****)
 
 
-(**** <YoungShapePile> ****)
+(**** <YoungPileUp> ****)
 
-YoungShapePile::usage = "YoungShapePile[shape] returns the list of new Young shapes resulting from adding a box to shape."
+YoungPileUp::usage = "YoungPileUp[gyp] returns a list of Gelfand-Young patterns resulting from adding a new cell numbered n+1 to the Gelfand-Young pattern 'gyp' of degree n.\nYoungPileUp[gyp, d] returns a list in which the standard Young tableau corresponding to each Gelfand-Young pattern has at most d rows."
 
-YoungShapePile[data_List?YoungShapeQ] :=
-  YoungShapePile[YoungShape @ data]
+YoungPileUp::rows = "The standard Young tableau corresponding to Gelfand-Young pattern `` already has more than `` rows."
 
-YoungShapePile[YoungShape[data_]] := Module[
-  { new = Append[YoungTrim[data], 0] },
-  new = Map[(new + #)&, One[Length @ new]];
+(* Young shapes *)
+
+YoungPileUp[YoungShape[{}], ___] := { YoungShape @ {1} }
+
+YoungPileUp[YoungShape[data_]] := 
+  YoungPileUp[YoungShape @ data, Length[data] + 1]
+
+YoungPileUp[YoungShape[data_], d_Integer] := Module[
+  { new = Append[YoungTrim @ data, 0] },
+  new = Table[
+    ReplacePart[new, k -> new[[k]]+1],
+    {k, Min @ {d, Length @ new}}
+  ];
   YoungShape /@ YoungTrim /@ Select[new, YoungShapeQ]
 ]
 
-(**** </YoungShapePile> ****)
+(* Young tableaux *)
+
+YoungPileUp[YoungTableau[{}], ___] := { YoungTableau[{{1}}] }
+
+YoungPileUp[syt_YoungTableau] :=
+ YoungPileUp[syt, Length[First @ syt] + 1]
+
+YoungPileUp[syt_YoungTableau, d_Integer] := Module[
+  { n = YoungDegree[syt] + 1,
+    new = Append[First @ syt, {}] },
+  new = Table[
+    ReplacePart[new, k -> Append[new[[k]], n]],
+    {k, Min @ {d, Length @ new}}
+  ];
+  new = Select[new, YoungTableauQ];
+  YoungTableau /@ YoungTrim /@ new
+]
+
+
+(* Gelfand-Young patterns *)
+
+YoungPileUp[GelfandPattern[{}], ___] := { GelfandPattern[{{1}}] }
+
+YoungPileUp[gy_GelfandPattern] :=
+  YoungPileUp[gy, YoungDegree[gy]+1]
+
+YoungPileUp[GelfandPattern[gyp_], d_Integer] := Module[
+  { deg = Length[gyp] + 1,
+    new },
+  new = PadRight[First @ gyp, deg];
+  new = Table[
+    ReplacePart[new, k -> new[[k]]+1],
+    {k, Min @ {d, deg}}
+  ];
+  GelfandPattern /@ Map[Prepend[gyp, #]&, Select[new, YoungShapeQ]]
+] /; If[
+  LengthWhile[First @ gyp, Positive] <= d, True,
+  Message[YoungPileUp::rows, GelfandPattern @ gyp, d]; False
+]
+
+(**** </YoungPileUp> ****)
 
 
 (**** <YoungInvariantBasis> ****)

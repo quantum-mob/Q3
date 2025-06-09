@@ -1,0 +1,1912 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.2' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     63331,       1902]
+NotebookOptionsPosition[     56966,       1771]
+NotebookOutlinePosition[     59418,       1830]
+CellTagsIndexPosition[     59332,       1825]
+WindowTitle->SchurPileUp
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["QUANTUM MOB/ Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "54b16b5f-9777-4ca3-9c46-ace56ce04eb1"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "f09d5fb6-53c0-4b9e-96ae-3ab0074dde39"],
+        Background->RGBColor[0.490196, 0.576471, 0.690196],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "74f4a0db-a07b-47f9-88ca-776eb773fac4"]
+         }],ExpressionUUID->"c00b9ac9-2367-4557-aeca-d0b3544fcced"],
+         StripOnInput->False],{
+        StyleBox["\"SchurBasis\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/SchurBasis"], 
+         StyleBox["\"YoungPileUp\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/YoungPileUp"], 
+         StyleBox[
+          "\"GelfandPatterns\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/GelfandPatterns"],
+          StyleBox[
+          "\"WeylTableaux\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/WeylTableaux"], 
+         StyleBox[
+          "\"YoungTableaux\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/YoungTableaux"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "9b553ea3-ccb7-4c30-bf7c-702898bb35c2"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "5e2d4d84-26ab-4691-b5dd-8ed1a1e7b312"]
+         }],ExpressionUUID->"aba03f98-7bd7-401e-85c1-d0adf62fc7bf"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/guide/QuantumInformationSystems"], 
+         "\"Quantum Many-Body Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/guide/QuantumManyBodySystems"], 
+         "\"Quantum Spin Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/guide/QuantumSpinSystems"], 
+         "\"Q3: Symbolic Quantum Simulation\"" :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/guide/Q3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "3af17a3a-363c-480c-8a2f-cc96fd0cb78e"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "7a083471-6071-4b36-8e7e-bf017573d91e"]
+         }],ExpressionUUID->"8bc7e59b-c00c-4a14-b196-3b516cd5681a"],
+         StripOnInput->False],{
+        "\"Schur Transform\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/SchurTransform"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "aa38e63c-8c4c-4fd4-98f8-6d32f3e234ad"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "a50fb419-081c-4732-b959-4e7e5c49093a"]
+         }],ExpressionUUID->"38bea5cc-4798-4b00-9a7c-51190b9740d0"],
+         StripOnInput->False],{
+        "\"QuantumMob/Q3/ref/SchurPileUp\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         CopyToClipboard["QuantumMob/Q3/ref/SchurPileUp"], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/QuantumMob/Q3/ref/\
+SchurPileUp.html"], StandardForm]], "Input", TextClipboardType -> 
+                 "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "QuantumMob/Q3/ref/SchurPileUp" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "017d7201-8333-49af-850f-7b7334360d7f"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "6384043e-9557-4e69-adeb-86c94dff9737"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"2b72e699-6158-4485-9b92-6bb9e62a0f2c"],
+
+Cell["QuantumMob`Q3`", "ContextNameCell",ExpressionUUID->"02a4f657-eded-4354-8390-0277dba40e11"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "SchurPileUp", "ObjectName",ExpressionUUID->
+      "36e1f99e-7e33-4a91-ae01-ec55e7005b0e"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"2f8bf3d2-8f27-4396-aeb8-fbd6c63d218c"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "e3dc9f59-4a33-451d-95ce-969b2d22e66e"]
+    }],ExpressionUUID->"bab97859-6b6e-4df9-a3be-9255b40355bd"], 
+    "\[SpanFromLeft]"}
+  }]], "ObjectNameGrid",ExpressionUUID->"83dae3fb-9acd-4714-9ab7-\
+26f3142f72ad"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["SchurPileUp"]], "paclet:QuantumMob/Q3/ref/SchurPileUp", 
+         "QuantumMob Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{
+        StyleBox["gy", "TI"], ",", 
+        StyleBox["d", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "c04ec049-9b20-4743-b02b-2681428e07be"],
+     " \[LineSeparator]returns a list of pairs ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        StyleBox["yt", "TI"], ",", 
+        StyleBox["wt", "TI"]}], "}"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "3a20e503-a169-4d3d-858a-5be22c4016d1"],
+     " of Gelfand-Young and Gelfand-Weyl patterns that may arise when one \
+adds a node of ",
+     Cell[BoxData[
+      StyleBox["d", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "494e3193-6935-4777-9e6a-006128326fa6"],
+     " letters to the existing Gelfand-Young pattern ",
+     Cell[BoxData[
+      StyleBox["gy", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "34610ec4-09e0-44ed-ae04-22f54fd28f65"],
+     ". The degree of Gelfand-Young pattern ",
+     Cell[BoxData[
+      StyleBox["yt", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "9e26661c-8034-49e1-91da-277896dba57c"],
+     " is one degree higher than ",
+     Cell[BoxData[
+      StyleBox["gy", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "a85afcb1-39af-4cd3-8529-813f30f73df6"],
+     " while Gelfand-Weyl pattern ",
+     Cell[BoxData[
+      StyleBox["wt", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "2759865a-50f7-4fdd-89e6-91874f6a8c4c"],
+     " is of dimension ",
+     Cell[BoxData[
+      StyleBox["d", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "e06fa6c9-a5c7-4077-af8d-d0ca271b8ce7"],
+     "."
+    }],ExpressionUUID->"165abb55-5059-418a-8b07-6bed61aa685b"]}
+  }]], "Usage",
+ CellID->1547637990,ExpressionUUID->"fda052df-1585-41b0-9328-04b0dcb1fe69"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    DynamicBox[ToBoxes[
+      If[
+       MatchQ[
+        CurrentValue[
+         EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, 
+         Closed], 
+        Alternatives[Open, True]], 
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], 
+       Rotate[
+        Style[
+         Graphics[{
+           Thickness[0.18], 
+           RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+           Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+          PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+         0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+     ImageSizeCache->{
+      13.600000000000003`, {-0.1685058593749993, 13.768505859375}}]],
+    ExpressionUUID->"94e61523-c3b5-4623-a207-a7ec28f5c8fd"],
+   Cell[BoxData[
+    TemplateBox[{1},
+     "Spacer1"]],ExpressionUUID->"c5697ad5-f248-49e8-b089-80100abcaf41"],
+   "Details and Options"
+  }], "NotesFrameText",ExpressionUUID->"07bd9be0-70b0-4fab-94b3-98bf57394e2b"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->
+   "Preemptive"]],ExpressionUUID->"c02746a7-3d00-4e01-a3b6-4147801c3cb9"]], \
+"NotesSection",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->1275142070,ExpressionUUID->"365c800a-e479-4c24-a362-c2a0ef7530d9"],
+
+Cell[TextData[{
+ "Each of the resulting pairs of Gelfand-Young and Gelfand-Weyl patterns \
+refers to a unique element of the Schur basis associated with irreducible \
+representations of ",
+ ButtonBox["symmetric group",
+  BaseStyle->"Link",
+  ButtonData->"paclet:ref/SymmetricGroup"],
+ " S(",
+ StyleBox["n",
+  FontSlant->"Italic"],
+ ") with ",
+ Cell[BoxData[
+  RowBox[{
+   StyleBox["n", "TI"], "=", 
+   RowBox[{
+    RowBox[{
+     TemplateBox[{
+       Cell[
+        TextData["YoungDegree"]], "paclet:ref/SymmetricGroup"},
+      "RefLink",
+      BaseStyle->{"InlineFormula"}], "[", 
+     StyleBox["gy", "TI"], "]"}], "+", "1"}]}]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "7455b3d8-c76f-4c71-ab23-7c675af341bf"],
+ " and unitary group U(",
+ Cell[BoxData[
+  StyleBox["d", "TI"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "6ad7dfe0-3467-4924-ade2-7a5e3ed42658"],
+ ")."
+}], "Notes",
+ CellID->829765466,ExpressionUUID->"b0bae9fd-1273-468d-aae7-02bcb80423b5"]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.251494140625001, 9.348505859375003}}]],
+  ExpressionUUID->"6e9d6009-6abe-44fd-8fbe-a43846b4892e"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"b234f9e1-dad3-4c9e-969a-366ef4736643"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "090421f8-6dc1-439f-b9dc-9104dda4c12a"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1573457077,ExpressionUUID->"c2b2493c-80fe-4821-af08-d5359e02b108"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<QuantumMob`Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->118244947,ExpressionUUID->"5dcc5d75-b193-4e7a-8d36-adb2336ceae3"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.551318359375001, 9.048681640625002}}]],
+  ExpressionUUID->"e0651b14-1f1d-4686-8cb1-67349db33458"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"a79e3b14-4a6c-4c68-8d12-bcff1fe1eaff"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "efc5713b-4da7-4d04-b277-78d240a26327"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->979463981,ExpressionUUID->"8ce6c1da-5679-4a6d-9ec4-bbacb9bbf5f6"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"$d", "=", "2"}], ";"}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->314029186,ExpressionUUID->"beb2c673-85fd-4e37-85e7-b6173b060543"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"p", "=", 
+  RowBox[{"GelfandPattern", "@", 
+   RowBox[{"{", 
+    RowBox[{"{", "1", "}"}], "}"}]}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->1029185791,ExpressionUUID->"ec36750e-55c6-4e55-887c-efceca0ea8cf"],
+
+Cell[BoxData[
+ InterpretationBox[
+  TagBox[
+   RowBox[{"(", 
+    TagBox[GridBox[{
+       {"1"}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+      GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+     "Grid"], ")"}],
+   DisplayForm],
+  QuantumMob`Q3`GelfandPattern[{{1}}]]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1848621504,ExpressionUUID->"818f5da3-9ca9-41ab-b144-204cb8a17693"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"pq", "=", 
+  RowBox[{"SchurPileUp", "[", 
+   RowBox[{"p", ",", "$d"}], "]"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1408874834,ExpressionUUID->"e54f6612-19bf-4c49-badb-82445839d63b"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "0"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "0"},
+           {"2", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 0}, {2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "0"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "0"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 0}, {1}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "0"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "0"},
+           {"0", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 0}, {0}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"1", "1"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{1, 1}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"1", "1"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{1, 1}, {1}}]]}], "}"}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->1517861483,ExpressionUUID->"5fbe5026-8791-4b97-897d-5c7c9bd1376c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"p", "=", 
+  RowBox[{"Union", "[", 
+   RowBox[{"First", "/@", "pq"}], "]"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->444754876,ExpressionUUID->"67db1d3b-a987-4d2a-be22-f271bd9b7834"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    TagBox[
+     RowBox[{"(", 
+      TagBox[GridBox[{
+         {"1", "1"},
+         {"1", ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+        GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+       "Grid"], ")"}],
+     DisplayForm],
+    QuantumMob`Q3`GelfandPattern[{{1, 1}, {1}}]], ",", 
+   InterpretationBox[
+    TagBox[
+     RowBox[{"(", 
+      TagBox[GridBox[{
+         {"2", "0"},
+         {"1", ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+        GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+       "Grid"], ")"}],
+     DisplayForm],
+    QuantumMob`Q3`GelfandPattern[{{2, 0}, {1}}]]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->155151947,ExpressionUUID->"0181892e-fdba-449f-8f80-f62dde93cd40"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"new", "=", 
+  RowBox[{"Catenate", "[", 
+   RowBox[{
+    RowBox[{
+     RowBox[{"SchurPileUp", "[", 
+      RowBox[{"#", ",", "$d"}], "]"}], "&"}], "/@", "p"}], "]"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->2023303140,ExpressionUUID->"a99a5359-144d-4ea6-bafe-51ef5246edd7"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "1", "0"},
+           {"1", "1", ""},
+           {"1", "", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 1, 0}, {1, 1}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "1"},
+           {"2", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 1}, {2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "1", "0"},
+           {"1", "1", ""},
+           {"1", "", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 1, 0}, {1, 1}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "1"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 1}, {1}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"3", "0", "0"},
+           {"2", "0", ""},
+           {"1", "", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{3, 0, 0}, {2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"3", "0"},
+           {"3", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{3, 0}, {3}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"3", "0", "0"},
+           {"2", "0", ""},
+           {"1", "", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{3, 0, 0}, {2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"3", "0"},
+           {"2", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{3, 0}, {2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"3", "0", "0"},
+           {"2", "0", ""},
+           {"1", "", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{3, 0, 0}, {2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"3", "0"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{3, 0}, {1}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"3", "0", "0"},
+           {"2", "0", ""},
+           {"1", "", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{3, 0, 0}, {2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"3", "0"},
+           {"0", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{3, 0}, {0}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "1", "0"},
+           {"2", "0", ""},
+           {"1", "", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 1, 0}, {2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "1"},
+           {"2", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 1}, {2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "1", "0"},
+           {"2", "0", ""},
+           {"1", "", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 1, 0}, {2, 0}, {1}}]], ",", 
+     InterpretationBox[
+      TagBox[
+       RowBox[{"(", 
+        TagBox[GridBox[{
+           {"2", "1"},
+           {"1", ""}
+          },
+          AutoDelete->False,
+          
+          GridBoxItemSize->{
+           "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}},
+          GridBoxSpacings->{"Columns" -> {{0.5}}, "Rows" -> {{0}}}],
+         "Grid"], ")"}],
+       DisplayForm],
+      QuantumMob`Q3`GelfandPattern[{{2, 1}, {1}}]]}], "}"}]}], 
+  "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->391506232,ExpressionUUID->"8b9f4b61-b3c9-4575-a4f1-63551ac34532"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Map", "[", 
+  RowBox[{"YoungTableau", ",", "new", ",", 
+   RowBox[{"{", "2", "}"}]}], "]"}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[6]:=",
+ CellID->28882378,ExpressionUUID->"1ab44e64-073a-4228-96f0-8fcc541a6f0f"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["3",
+           Frame->True,
+           StripOnInput->False]},
+         {
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 3}, {2}}]], ",", 
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False]},
+         {
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 1}, {2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["3",
+           Frame->True,
+           StripOnInput->False]},
+         {
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 3}, {2}}]], ",", 
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False]},
+         {
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2}, {2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["3",
+           Frame->True,
+           StripOnInput->False]}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2, 3}}]], ",", 
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False]}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 1, 1}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["3",
+           Frame->True,
+           StripOnInput->False]}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2, 3}}]], ",", 
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False]}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 1, 2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["3",
+           Frame->True,
+           StripOnInput->False]}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2, 3}}]], ",", 
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False]}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2, 2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["3",
+           Frame->True,
+           StripOnInput->False]}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2, 3}}]], ",", 
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False]}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{2, 2, 2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False]},
+         {
+          ItemBox["3",
+           Frame->True,
+           StripOnInput->False], ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2}, {3}}]], ",", 
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False]},
+         {
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 1}, {2}}]]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False]},
+         {
+          ItemBox["3",
+           Frame->True,
+           StripOnInput->False], ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2}, {3}}]], ",", 
+     InterpretationBox[
+      TagBox[GridBox[{
+         {
+          ItemBox["1",
+           Frame->True,
+           StripOnInput->False], 
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False]},
+         {
+          ItemBox["2",
+           Frame->True,
+           StripOnInput->False], ""}
+        },
+        AutoDelete->False,
+        GridBoxItemSize->{
+         "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+       "Grid"],
+      QuantumMob`Q3`YoungTableau[{{1, 2}, {2}}]]}], "}"}]}], "}"}]], "Output",\
+
+ CellLabel->"Out[6]=",
+ CellID->1400777389,ExpressionUUID->"b1c02ccf-fa3a-4943-8848-7cef7ef6c9b5"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"YoungTableau", "/@", 
+  RowBox[{"Union", "[", 
+   RowBox[{"First", "/@", "new"}], "]"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[7]:=",
+ CellID->393237678,ExpressionUUID->"ace6ae46-b7c2-484a-9c03-30a5bcbe7148"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    TagBox[GridBox[{
+       {
+        ItemBox["1",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["3",
+         Frame->True,
+         StripOnInput->False]},
+       {
+        ItemBox["2",
+         Frame->True,
+         StripOnInput->False], ""}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+     
+     "Grid"],
+    QuantumMob`Q3`YoungTableau[{{1, 3}, {2}}]], ",", 
+   InterpretationBox[
+    TagBox[GridBox[{
+       {
+        ItemBox["1",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["2",
+         Frame->True,
+         StripOnInput->False]},
+       {
+        ItemBox["3",
+         Frame->True,
+         StripOnInput->False], ""}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+     
+     "Grid"],
+    QuantumMob`Q3`YoungTableau[{{1, 2}, {3}}]], ",", 
+   InterpretationBox[
+    TagBox[GridBox[{
+       {
+        ItemBox["1",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["2",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["3",
+         Frame->True,
+         StripOnInput->False]}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+     
+     "Grid"],
+    QuantumMob`Q3`YoungTableau[{{1, 2, 3}}]]}], "}"}]], "Output",
+ CellLabel->"Out[7]=",
+ CellID->1647037317,ExpressionUUID->"2afaa183-21bd-4244-82cd-34af8f54fed1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"yt", "=", 
+  RowBox[{"Catenate", "[", 
+   RowBox[{"YoungTableaux", "/@", 
+    RowBox[{"YoungShapes", "[", 
+     RowBox[{"3", ",", "2"}], "]"}]}], "]"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[8]:=",
+ CellID->1406447540,ExpressionUUID->"8b949138-8e8c-4433-a797-383f38dcdda1"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    TagBox[GridBox[{
+       {
+        ItemBox["1",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["2",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["3",
+         Frame->True,
+         StripOnInput->False]}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+     
+     "Grid"],
+    QuantumMob`Q3`YoungTableau[{{1, 2, 3}}]], ",", 
+   InterpretationBox[
+    TagBox[GridBox[{
+       {
+        ItemBox["1",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["2",
+         Frame->True,
+         StripOnInput->False]},
+       {
+        ItemBox["3",
+         Frame->True,
+         StripOnInput->False], ""}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+     
+     "Grid"],
+    QuantumMob`Q3`YoungTableau[{{1, 2}, {3}}]], ",", 
+   InterpretationBox[
+    TagBox[GridBox[{
+       {
+        ItemBox["1",
+         Frame->True,
+         StripOnInput->False], 
+        ItemBox["3",
+         Frame->True,
+         StripOnInput->False]},
+       {
+        ItemBox["2",
+         Frame->True,
+         StripOnInput->False], ""}
+      },
+      AutoDelete->False,
+      GridBoxItemSize->{"Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+     
+     "Grid"],
+    QuantumMob`Q3`YoungTableau[{{1, 3}, {2}}]]}], "}"}]], "Output",
+ CellLabel->"Out[8]=",
+ CellID->628871723,ExpressionUUID->"3c3dad43-967b-4339-bc24-ca4fccac5aa7"]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["SchurBasis"]], "paclet:QuantumMob/Q3/ref/SchurBasis", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "50ab321d-4d2f-439b-9c9d-7e5c2e34bc7f"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["YoungPileUp"]], "paclet:QuantumMob/Q3/ref/YoungPileUp", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "4d06308d-764f-4ccd-a219-2adf8bf725c5"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["GelfandPatterns"]], 
+           "paclet:QuantumMob/Q3/ref/GelfandPatterns", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "0498d49f-f678-4e6f-8149-60fe2b4446ad"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["WeylTableaux"]], 
+           "paclet:QuantumMob/Q3/ref/WeylTableaux", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "af3a7060-56c3-4521-aa75-7c0a3f850584"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["YoungTableaux"]], 
+           "paclet:QuantumMob/Q3/ref/YoungTableaux", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "8f18d530-58e7-4fb5-bd5b-97d4eb65cc5c"]
+       }], "SeeAlso",ExpressionUUID->"7c94f928-3587-4274-8d1e-1184fa1b29d1"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"af7cd00f-efba-4383-8a68-\
+fc737fd19b71"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TutorialsSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Schur Transform"]], 
+           "paclet:QuantumMob/Q3/tutorial/SchurTransform"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "48d15d96-2a0e-4752-a0a3-896334426dfd"]}]}
+     }]}
+  }]], "TutorialsSection",ExpressionUUID->"a14f388e-27db-456c-836b-\
+3099040af52a"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Information Systems"]], 
+           "paclet:QuantumMob/Q3/guide/QuantumInformationSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "875612d8-d986-4a40-9aba-1eb67c2037cd"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Many-Body Systems"]], 
+           "paclet:QuantumMob/Q3/guide/QuantumManyBodySystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "2c16a892-0a98-4e9f-a435-feb8f05a2d16"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Quantum Spin Systems"]], 
+           "paclet:QuantumMob/Q3/guide/QuantumSpinSystems"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "52038d9e-e6cf-459d-8b56-5a8ba9161192"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3: Symbolic Quantum Simulation"]], 
+           "paclet:QuantumMob/Q3/guide/Q3"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "9b78da3e-5e61-4050-804d-e5bd5b020164"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"16c731f6-6b9e-43a6-9970-\
+24eae25e08b7"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "D. Bacon, I. L. Chuang, and A. W. Harrow (2006)"}]]]], 
+             "https://doi.org/10.1103/physrevlett.97.170502"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "fa08c873-5dd7-4dec-822b-9691b2672d35"]}]],ExpressionUUID->
+         "bba12ce8-6e01-4b35-a804-11c9c9c87ab3"],
+        ",  Physical Review Letters 97, 170502 (2006), \"Efficient Quantum \
+Circuits for Schur and Clebsch-Gordan Transforms.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "f1c28212-c7ac-4c0b-91ea-5df4e97bee00"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "D. Bacon, I. L. Chuang, and A. W. Harrow (2007)"}]]]], 
+             "https://arxiv.org/abs/quant-ph/0601001"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "545c4fb5-20e4-488b-9542-8903feb29a45"]}]],ExpressionUUID->
+         "d63b243d-42dc-4572-8664-26d9a368fb82"],
+        ", Proceedings of the eighteenth annual ACM-SIAM symposium on \
+discrete algorithms (SODA), 1235 (2007), \"The Quantum Schur and \
+Clebsch-Gordan Transforms: I. Efficient Qudit Circuits.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "17851274-ae3c-40af-9e0d-0e4611f7bf18"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "L. C. Biedenharn and J. D. Louck (1968)"}]]]], 
+             "https://projecteuclid.org/journals/communications-in-\
+mathematical-physics/volume-8/issue-2/A-pattern-calculus-for-tensor-operators-\
+in-the-unitary-groups/cmp/1103840555.full"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "7452e112-04e9-4717-9e8e-d7b1f22798f0"]}]],ExpressionUUID->
+         "783f2971-60d5-4af7-b35a-fab8b0be6abe"],
+        ", Communications in Mathematical Physics 8, 89 (1968), \"A pattern \
+calculus for tensor operators in the unitary groups.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "3664565f-a4e3-4c0d-ac53-f3c7049e8779"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], "H. Krovi (2019)"}]]]], 
+             "https://doi.org/10.22331/q-2019-02-14-122"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "e436ebb4-96e9-4844-bfdd-01398510ed3b"]}]],ExpressionUUID->
+         "d2bd1020-f0ed-47a2-bad9-ed566e7571be"],
+        ", Quantum 3, 122 (2019), \"An efficient high dimensional quantum \
+Schur transform.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "af5bcffb-0355-4934-9410-262c0cdc1334"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], "B. E. Sagan (2001)"}]]]], 
+             "https://doi.org/10.1007/978-1-4757-6804-6"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "dd69622c-7681-4020-8214-096f9729df07"]}]],ExpressionUUID->
+         "35dfc007-8914-4a2b-a7bb-7855b12574b4"],
+        ", The Symmetric Group, 2nd ed. (Springer, 2001). "
+       }], "RelatedLinks",ExpressionUUID->
+        "c5574f4b-6e96-4973-b28f-342632f2c808"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "R. Goodman and N. R. Wallach (2009)"}]]]], 
+             "https://doi.org/10.1007%2F978-0-387-79852-3"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "ad10939a-dcb1-43ad-b3d5-538717e1c00d"]}]],ExpressionUUID->
+         "04249ded-c2b9-4a78-8a66-c030f92c8f20"],
+        ", Symmetry, Representations, and Invariants (Springer, 2009)."
+       }], "RelatedLinks",ExpressionUUID->
+        "98f25df6-6f9d-403a-b9b9-0ccdb7670862"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "c91762e6-b9a0-470c-9603-e0a4162b1155"]}]],ExpressionUUID->
+         "5ca58d68-e83f-49b1-84e9-fb83a836bf05"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "RelatedLinks",ExpressionUUID->
+        "49b72eb0-e2f6-46f2-8fbf-a9609ba79d29"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"bf752670-84c7-4382-9090-\
+47ce814b9994"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"87230608-c863-4622-ac00-8c665b0618cd"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"SchurPileUp",
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed, "NotesSection" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2025, 6, 10, 0, 46, 58.052354}", 
+    "history" -> {"12", "13.3", "", ""}, "context" -> "QuantumMob`Q3`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quantum Mob/ Q3 Symbol", "language" -> "en", "paclet" -> "QuantumMob/Q3",
+     "status" -> "None", "summary" -> 
+    "SchurPileUp[gy, d] returns a list of pairs {yt, wt} of Gelfand-Young and \
+Gelfand-Weyl patterns that may arise when one adds a node of d letters to the \
+existing Gelfand-Young pattern gy. The degree of Gelfand-Young pattern yt is \
+one degree higher than gy while Gelfand-Weyl pattern wt is of dimension d.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "SchurPileUp", 
+    "titlemodifier" -> "", "metadescription" -> "", "windowtitle" -> 
+    "SchurPileUp", "type" -> "Symbol", "uri" -> 
+    "QuantumMob/Q3/ref/SchurPileUp"}},
+CellContext->"Global`",
+FrontEndVersion->"14.2 for Mac OS X ARM (64-bit) (March 16, 2025)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "14.2 for Mac OS X ARM (64-bit) (March 16, 2025)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"76966659-4343-4c15-9228-c1d58766a309"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[13748, 364, 1441, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"c2b2493c-80fe-4821-af08-d5359e02b108",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1573457077]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 59131, 1818}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[579, 21, 7146, 172, 50, "AnchorBarGrid",ExpressionUUID->"2b72e699-6158-4485-9b92-6bb9e62a0f2c",
+ CellID->1],
+Cell[7728, 195, 96, 0, 22, "ContextNameCell",ExpressionUUID->"02a4f657-eded-4354-8390-0277dba40e11"],
+Cell[CellGroupData[{
+Cell[7849, 199, 554, 14, 57, "ObjectNameGrid",ExpressionUUID->"83dae3fb-9acd-4714-9ab7-26f3142f72ad"],
+Cell[8406, 215, 2253, 57, 147, "Usage",ExpressionUUID->"fda052df-1585-41b0-9328-04b0dcb1fe69",
+ CellID->1547637990]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[10696, 277, 1917, 48, 34, "NotesSection",ExpressionUUID->"365c800a-e479-4c24-a362-c2a0ef7530d9",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->1275142070],
+Cell[12616, 327, 1005, 31, 70, "Notes",ExpressionUUID->"b0bae9fd-1273-468d-aae7-02bcb80423b5",
+ CellID->829765466]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[13748, 364, 1441, 38, 34, "PrimaryExamplesSection",ExpressionUUID->"c2b2493c-80fe-4821-af08-d5359e02b108",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1573457077],
+Cell[15192, 404, 202, 3, 29, "Input",ExpressionUUID->"5dcc5d75-b193-4e7a-8d36-adb2336ceae3",
+ CellID->118244947],
+Cell[CellGroupData[{
+Cell[15419, 411, 1418, 37, 29, "ExampleSection",ExpressionUUID->"8ce6c1da-5679-4a6d-9ec4-bbacb9bbf5f6",
+ CellID->979463981],
+Cell[16840, 450, 204, 5, 28, "Input",ExpressionUUID->"beb2c673-85fd-4e37-85e7-b6173b060543",
+ CellID->314029186],
+Cell[CellGroupData[{
+Cell[17069, 459, 271, 7, 28, "Input",ExpressionUUID->"ec36750e-55c6-4e55-887c-efceca0ea8cf",
+ CellID->1029185791],
+Cell[17343, 468, 459, 14, 36, "Output",ExpressionUUID->"818f5da3-9ca9-41ab-b144-204cb8a17693",
+ CellID->1848621504]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[17839, 487, 250, 6, 28, "Input",ExpressionUUID->"e54f6612-19bf-4c49-badb-82445839d63b",
+ CellID->1408874834],
+Cell[18092, 495, 3895, 133, 43, "Output",ExpressionUUID->"5fbe5026-8791-4b97-897d-5c7c9bd1376c",
+ CellID->1517861483]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22024, 633, 247, 6, 28, "Input",ExpressionUUID->"67db1d3b-a987-4d2a-be22-f271bd9b7834",
+ CellID->444754876],
+Cell[22274, 641, 949, 30, 43, "Output",ExpressionUUID->"0181892e-fdba-449f-8f80-f62dde93cd40",
+ CellID->155151947]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23260, 676, 337, 9, 28, "Input",ExpressionUUID->"a99a5359-144d-4ea6-bafe-51ef5246edd7",
+ CellID->2023303140],
+Cell[23600, 687, 8010, 269, 89, "Output",ExpressionUUID->"8b9f4b61-b3c9-4575-a4f1-63551ac34532",
+ CellID->391506232]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[31647, 961, 261, 6, 28, "Input",ExpressionUUID->"1ab44e64-073a-4228-96f0-8fcc541a6f0f",
+ CellID->28882378],
+Cell[31911, 969, 8586, 317, 93, "Output",ExpressionUUID->"b1c02ccf-fa3a-4943-8848-7cef7ef6c9b5",
+ CellID->1400777389]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40534, 1291, 260, 6, 70, "Input",ExpressionUUID->"ace6ae46-b7c2-484a-9c03-30a5bcbe7148",
+ CellID->393237678],
+Cell[40797, 1299, 1565, 60, 55, "Output",ExpressionUUID->"2afaa183-21bd-4244-82cd-34af8f54fed1",
+ CellID->1647037317]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[42399, 1364, 325, 8, 70, "Input",ExpressionUUID->"8b949138-8e8c-4433-a797-383f38dcdda1",
+ CellID->1406447540],
+Cell[42727, 1374, 1564, 60, 55, "Output",ExpressionUUID->"3c3dad43-967b-4339-bc24-ca4fccac5aa7",
+ CellID->628871723]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[44533, 1443, 3019, 81, 70, "SeeAlsoSection",ExpressionUUID->"af7cd00f-efba-4383-8a68-fc737fd19b71"],
+Cell[47555, 1526, 756, 20, 70, "TutorialsSection",ExpressionUUID->"a14f388e-27db-456c-836b-3099040af52a"],
+Cell[48314, 1548, 1853, 46, 70, "MoreAboutSection",ExpressionUUID->"16c731f6-6b9e-43a6-9970-24eae25e08b7"],
+Cell[50170, 1596, 6711, 171, 70, "RelatedLinksSection",ExpressionUUID->"bf752670-84c7-4382-9090-47ce814b9994"],
+Cell[56884, 1769, 78, 0, 70, "FooterCell",ExpressionUUID->"87230608-c863-4622-ac00-8c665b0618cd"]
+}
+]
+*)
+
+(* End of internal cache information *)
+

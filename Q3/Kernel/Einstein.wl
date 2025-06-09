@@ -2,6 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ YoungShapePile, GelfandYoungPile, SchurLabelPile };  (* 2025-06-10 v4.2.5 *)
 { BratteliDiagram, KostkaMatrix }; (* 2025-06-09 v4.2.4 *)
 { GD, GIntegrate }; (* 2025-05-31 v4.2.2 *)
 { AdjacentTranspositions }; (* rename 2025-05-27 v4.2.1 *)
@@ -285,6 +286,27 @@ ToGelfandPattern[tb_, _Integer] := (
 
 
 (**** <obsolete> ****)
+
+GelfandYoungPile::usage = "GelfandYoungPile is obsolete since v4.2.5 (2025-06-10); use YoungPileUp instead."
+
+GelfandYoungPile[any___] := (
+  Message[Q3General::obsolete, "GelfandYoungPile", "YoungPileUp"];
+  YoungPileUp[any]
+)
+
+YoungShapePile::usage = "YoungShapePile is obsolete since v4.2.5 (2025-06-10); use YoungPileUp instead."
+
+YoungShapePile[any___] := (
+  Message[Q3General::obsolete, "YoungShapePile", "YoungPileUp"];
+  YoungPileUp[any]
+)
+
+SchurLabelPile::usage = "SchurLabelPile has been renamed SchurPileUp since v4.2.4 (2025-06-09)."
+
+SchurLabelPile[any___] := (
+  Message[Q3General::renamed, "SchurLabelPile", "SchurPileUp"];
+  SchurPileUp[any]
+)
 
 BratteliDiagram::usage = "BratteliDiagram has been renamed YoungBratteliDiagram since v4.2.4 (2025-06-09)."
 
