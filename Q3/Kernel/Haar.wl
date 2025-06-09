@@ -84,11 +84,11 @@ theUnitaryTwirling[{ii_, kk_, jj_, ll_}, {n_Integer, d_Integer}] :=
 
 theUnitaryTwirling[{ii_, kk_, jj_, ll_}, {n_Integer, d_Integer}] :=
   Module[
-    { gg = YoungSubgroup[YoungContent @ ii],
-      hh = YoungSubgroup[YoungContent @ kk],
+    { gg = YoungElements[YoungContent @ ii],
+      hh = YoungElements[YoungContent @ kk],
       cc },
-    gg = FindPermutation[jj, ii] ** GroupElements[gg];
-    hh = FindPermutation[ll, kk] ** GroupElements[hh];
+    gg = FindPermutation[jj, ii] ** gg;
+    hh = FindPermutation[ll, kk] ** hh;
     cc = Outer[Multiply, InversePermutation /@ gg, hh];
     cc = Map[WeingartenFunction[#, {n, d}]&, cc, {2}];
     Total[Flatten @ cc]

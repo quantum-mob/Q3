@@ -2,6 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ BratteliDiagram, KostkaMatrix }; (* 2025-06-09 v4.2.4 *)
 { GD, GIntegrate }; (* 2025-05-31 v4.2.2 *)
 { AdjacentTranspositions }; (* rename 2025-05-27 v4.2.1 *)
 { GelfandAttach }; (* rename 2025-05-23 v4.1.11 *)
@@ -285,28 +286,42 @@ ToGelfandPattern[tb_, _Integer] := (
 
 (**** <obsolete> ****)
 
-GD::usage = "GD is obsolete since v4.2.2 (2025-05-31); use GrassmannD instead."
+BratteliDiagram::usage = "BratteliDiagram has been renamed YoungBratteliDiagram since v4.2.4 (2025-06-09)."
+
+BratteliDiagram[any___] := (
+  Message[Q3General::renamed, "BratteliDiagram", "YoungBratteliDiagram"];
+  YoungBratteliDiagram[any]
+)
+
+KostkaMatrix::usage = "KostkaMatrix has been renamed KostkaNumber since v4.2.4 (2025-06-09)."
+
+KostkaMatrix[any___] := (
+  Message[Q3General::renamed, "KostkaMatrix", "KostkaNumber"];
+  KostkaNumber[any]
+)
+
+GD::usage = "GD has been renamed GrassmannD since v4.2.2 (2025-05-31)."
 
 GD[any___] := (
   Message[Q3General::renamed, "GD", "GrassmannD"];
   GrassmannD[any]
 )
 
-GIntegrate::usage = "GIntegrate is obsolete since v4.2.2 (2025-05-31); use GrassmannIntegrate instead."
+GIntegrate::usage = "GIntegrate has been renamed GrassmannIntegrate since v4.2.2 (2025-05-31)."
 
 GIntegrate[any___] := (
   Message[Q3General::renamed, "GIntegrate", "GrassmannIntegrate"];
   GrassmannIntegrate[any]
 )
 
-AdjacentTranspositions::usage = "AdjacentTranspositions is obsolete since v4.2.1 (2025-05-27); use PermutationTranspositions instead."
+AdjacentTranspositions::usage = "AdjacentTranspositions has been renamed PermutationTranspositions since v4.2.1 (2025-05-27)."
 
 AdjacentTranspositions[any___] := (
   Message[Q3General::renamed, "AdjacentTranspositions", "PermutationTranspositions"];
   PermutationTranspositions[any]
 )
 
-GelfandAttach::usage = "GelfandAttach is obsolete since v4.1.10 (2025-05-23); use GelfandYoungPile instead."
+GelfandAttach::usage = "GelfandAttach has been renamed GelfandYoungPile since v4.1.10 (2025-05-23)."
 
 GelfandAttach[any___] := (
   Message[Q3General::renamed, "GelfandAttach", "GelfandYoungPile"];

@@ -43,7 +43,7 @@ DualSchurBasis[content:{__Integer}] := Module[
 
 DualSchurBasis[shape_YoungShape, content:{__Integer}] := Module[
   { dim = Length[content],
-    sub = YoungSubgroup[content],
+    sub = YoungElements[content],
     rep, pbs, trv, prj, mat, tag, pos },
 
   {tag, pos} = DualSchurBasisNames[shape, content];
@@ -59,7 +59,6 @@ DualSchurBasis[shape_YoungShape, content:{__Integer}] := Module[
   trv = Map[rep, trv];
 
   (* projections *)
-  sub = GroupElements[sub];
   prj = Mean[rep /@ sub];
   prj = prj[[All, pos]];
 

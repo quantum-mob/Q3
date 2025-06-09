@@ -19,7 +19,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
-{ YoungSubgroup, YoungGenerators };
+{ YoungElements, YoungGenerators, YoungSubgroup };
 
 { GroupCentralizerSize, YoungCentralizerSize,
   GroupClassSize, YoungClassSize,
@@ -41,7 +41,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { DominatesQ, Dominates, DominatedBy };
 
-{ YoungShapePile, BratteliDiagram };
+{ YoungShapePile, YoungBratteliDiagram };
 
 { SpechtBasis, YoungInvariantBasis };
 
@@ -141,6 +141,14 @@ YoungShape[gp_List?GelfandPatternQ] :=
 YoungShape[tb_List?anyYoungTableauQ] := 
   YoungShape[YoungTableau @ tb] /; tb != {}
 (* NOTE: anyYoungTableauQ[{}] gives True. *)
+
+(* EXPERIMENTAL *)
+YoungShape /:
+Plus[shapes__YoungShape] := Module[
+  { new = First /@ {shapes} },
+  new = Plus @@ PadRight[new, {Length @ new, Max[Length /@ new]}];
+  YoungShape[YoungTrim @ new]
+]
 
 (**** </YoungShape> ****)
 
@@ -283,7 +291,7 @@ YoungSubgroup[content:{__Integer}] :=
 
 (**** <YoungGenerators> ****)
 
-YoungGenerators::usage = "YoungGenerators[content] returns a generating set of the Young subgroup with content of the symmetric group of degree n:=Total[content]."
+YoungGenerators::usage = "YoungGenerators[content] returns a generating set of the Young subgroup with content of the symmetric group of degree n:=Total[content].\nYoungGenerators[n] is an alias of GroupGenerators[SymmetricGroup[n]]."
 
 YoungGenerators::negative = "Negative value is not allowed as a part of content."
 
@@ -293,7 +301,7 @@ YoungGenerators[n_Integer] :=
 YoungGenerators[shape_YoungShape] :=
   YoungGenerators[First @ shape]
 
-YoungGenerators[content:{__Integer}] := Module[
+YoungGenerators[content:{__Integer?NonNegative}] := Module[
   { gg },
   gg = Select[TakeList[Range[Total @ content], content], Length[#] > 1 &];
   gg = Function[set, Union @ {Cycles @ {Take[set, 2]}, Cycles @ {set}}] /@ gg;
@@ -302,6 +310,30 @@ YoungGenerators[content:{__Integer}] := Module[
   AllTrue[content, NonNegative], True,
   Message[YoungGenerators::negative, content]; False
 ]
+
+(**** </YoungSubgroup> ****)
+
+
+(**** <YoungElements> ****)
+
+YoungElements::usage = "YoungElements[content] returns a list of elements in the Young subgroup with content of the symmetric group of degree n:=Total[content].\nYoungElements[n] and YoungElements[n, {k1, k2, \[Ellipsis]}] are aliases of GroupElements[SymmetricGroup[n]] and GroupElements[SymmetricGroup[n], {k1, k2, \[Ellipsis]}], respectively."
+
+YoungElements::negative = "Negative value is not allowed as a part of content."
+
+YoungElements[n_Integer] :=
+  GroupElements[SymmetricGroup @ n]
+
+YoungElements[n_Integer, kk:{___Integer}] :=
+  GroupElements[SymmetricGroup @ n, kk]
+
+YoungElements[shape_YoungShape] :=
+  YoungElements[First @ shape]
+
+YoungElements[content:{__Integer?NonNegative}] := 
+  GroupElements[YoungSubgroup @ content]
+
+YoungElements[content:{__Integer?NonNegative}, kk:{___Integer}] :=
+  GroupElements[YoungSubgroup @ content, kk]
 
 (**** </YoungSubgroup> ****)
 
@@ -553,8 +585,18 @@ KostkaNumber[n_Integer?Positive] := With[
 ]
 (* TODO: There is a room for improvement here. *)
 
-KostkaNumber[irrep_YoungShape, content_List] :=
-  KostkaNumber[irrep, YoungShape @ YoungTrim @ ReverseSort @ content]
+KostkaNumber[shape_List?YoungShapeQ, any_] :=
+  KostkaNumber[YoungShape @ shape, any]
+
+KostkaNumber[any_, content_List] :=
+  KostkaNumber[any, YoungShape @ YoungTrim @ ReverseSort @ content]
+
+KostkaNumber[All, content_YoungShape] :=
+  Map[KostkaNumber[#, content]&, YoungShapes @ YoungDegree @ content]
+
+KostkaNumber[shape_YoungShape, All] :=
+  Map[KostkaNumber[shape, #]&, YoungShapes @ YoungDegree @ shape]
+
 
 KostkaNumber[shape_YoungShape, shape_YoungShape] = 1
 
@@ -739,7 +781,7 @@ nextYoungTableau::usage = "nextYoungTableau[tb] gives the standard Young tableau
 nextYoungTableau[data_List?YoungShapeQ] :=
   nextYoungTableau[YoungShape @ data]
 
-(* NOTE: LegacyYoungTableaux adopts the column-wise lexicographic odering. *)
+(* NOTE: LegacyYoungTableaux adopts the lexicographic odering. See the Details section of GelfandOrder. *)
 nextYoungTableau[YoungTableau[tb_]] := Module[
   { yy, shp, row, val, new },
 
@@ -1269,11 +1311,11 @@ YoungDistance[syt_YoungTableau] := With[
 (**** </YoungDistance> ****)
 
 
-(**** <BratteliDiagram> ****)
+(**** <YoungBratteliDiagram> ****)
 
-BratteliDiagram::usage = "BratteliDiagram[n] constructs the Bratteli diagram for the symmetric group of degree n."
+YoungBratteliDiagram::usage = "YoungBratteliDiagram[n] constructs the Bratteli diagram for the symmetric group of degree n."
 
-BratteliDiagram[n_Integer, opts:OptionsPattern[Graph]] := Module[
+YoungBratteliDiagram[n_Integer, opts:OptionsPattern[Graph]] := Module[
   { grf = NestList[brattelli, YoungShape[{1}], n-1],
     vtx },
   grf = Graph[Flatten @ Rest @ grf];
@@ -1290,7 +1332,7 @@ brattelli[shape_YoungShape] :=
 brattelli[edges:{__UndirectedEdge}] := 
   Flatten @ Map[brattelli, Union[Last /@ edges]]
 
-(**** </BratteliDiagram> ****)
+(**** </YoungBratteliDiagram> ****)
 
 
 (**** <YoungShapePile> ****)
@@ -1317,7 +1359,7 @@ YoungInvariantBasis[bs:{Ket[{__YoungTableau}]..}] := Module[
   { n = YoungDegree @ FirstCase[bs, _YoungTableau, YoungTableau @ {{}}, Infinity],
     op },
   (* so-called the twirling operator *)
-  op = Total @ GroupElements @ SymmetricGroup[n];
+  op = Total[GroupElements @ SymmetricGroup @ n];
   op /= GroupOrder[SymmetricGroup @ n];
   DeleteCases[Union @ KetCanonical[op ** bs, False], 0]
 ]
@@ -1556,8 +1598,12 @@ yngRowInsertion[{p:{___Integer}, q:{___Integer}}, {a_, b_}] := Module[
 
 (**** <YoungTableauProduct> ****)
 
-YoungTableauProduct::usage = "YoungTableauProduct[a, b] returns the composition a\[CenterDot]b of two Weyl tableaux a and b."
+YoungTableauProduct::usage = "YoungTableauProduct[a, b, \[Ellipsis]] returns the composition a\[CenterDot]b\[CenterDot]\[Ellipsis] of Weyl tableaux a, b, \[Ellipsis]."
 (* See Fulton (1997). *)
+
+SetAttributes[YoungTableauProduct, {Flat, OneIdentity, Listable}]
+
+YoungTableauProduct[a_] := a
 
 YoungTableauProduct[a_YoungTableau, b_YoungTableau] :=
   RowInsertion[a, Flatten[Reverse @ First @ b]]

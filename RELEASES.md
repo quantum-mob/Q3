@@ -1,11 +1,11 @@
 # Release Notes
 
-## 4.2.3
+## 4.2.4
 
 - New: Subtractions, LegacyGottesmanFactor, ContentVector, YoungByte, RimHookGraph
-- Renamed: KostkaMatrix --> KostkaNumber
+- Renamed: KostkaMatrix --> KostkaNumber, BratteliDiagram --> YoungBratteliDiagram
 - Removed: YoungRefersTo, LegacyYoungCharacters, LegacyKostkaNumber, LegacyCompoundYoungCharacters
-- Improved: DualSchurBasis
+- Improved: DualSchurBasis, YoungTableauProduct
 
 ## 4.2.2
 
