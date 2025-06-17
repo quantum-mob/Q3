@@ -32,21 +32,20 @@ Begin["`Private`"]
 (**** <YoungOGS> ****)
 (* See also Kawano16a and Shwartz19a *)
 
-YoungOGS::usage = "YoungOGS[perm] returns the standard ordered generating system (OGS) canonical form of the symmetric group."
+YoungOGS::usage = "YoungOGS[perm, n] returns the standard ordered generating system (OGS) canonical form of the symmetric group of degree n."
 
-YoungOGS[Cycles[{}]] = {0}
-
-YoungOGS[prm_Cycles] :=
-  theYoungOGS @ PermutationList[prm]
+SyntaxInformation[YoungOGS] = {
+  "ArgumentsPattern" -> {_, _}
+ }
 
 YoungOGS[prm_Cycles, n_Integer] :=
   theYoungOGS @ PermutationList[prm, n]
 
-YoungOGS[prm_?PermutationListQ] :=
-  theYoungOGS[prm]
-
 YoungOGS[prm_?PermutationListQ, n_Integer] := 
   theYoungOGS @ PermutationList[prm, n]
+
+YoungOGS[elm:{(_Cycles|_List?PermutationListQ)...}, n_Integer] :=
+  Map[YoungOGS[#, n]&, elm]
 
 
 theYoungOGS[prm_List] := 
@@ -67,12 +66,15 @@ theYoungOGS[prm_List] := Module[
 ]
 
 
-YoungOGSn::usage = "YoungOGSn[prm] converts to an integer the standard OGS canonical form corresponding to permutation prm."
+YoungOGSn::usage = "YoungOGSn[prm, n] converts to an integer the standard OGS canonical form corresponding to permutation prm for the symmetric group of degree n."
 
-YoungOGSn[args__] := Module[
-  { ogs = YoungOGS[args],
-    fac, n },
-  n = 1 + Length[ogs];
+SyntaxInformation[YoungOGSn] = {
+  "ArgumentsPattern" -> {_, _}
+ }
+
+YoungOGSn[spec_, n_Integer] := Module[
+  { ogs = YoungOGS[spec, n],
+    fac },
   fac = Range[2, n];
   Dot[ogs, n! / fac!]
 ]
@@ -94,18 +96,14 @@ FromYoungOGS[ogs_List] := Module[
 (**** <YoungDualOGS> ****)
 (* See also Kawano16a and Shwartz19a *)
 
-YoungDualOGS::usage = "YoungDualOGS[perm] returns the dual-standard ordered generating system (OGS) canonical form of the symmetric group."
+YoungDualOGS::usage = "YoungDualOGS[perm, n] returns the dual-standard ordered generating system (OGS) canonical form of the symmetric group of degree n."
 
-YoungDualOGS[Cycles[{}]] = {0}
-
-YoungDualOGS[prm_Cycles] :=
-  theYoungDualOGS @ PermutationList[prm]
+SyntaxInformation[YoungDualOGS] = {
+  "ArgumentsPattern" -> {_, _}
+ }
 
 YoungDualOGS[prm_Cycles, n_Integer] :=
   theYoungDualOGS @ PermutationList[prm, n]
-
-YoungDualOGS[prm_?PermutationListQ] :=
-  theYoungDualOGS[prm]
 
 YoungDualOGS[prm_?PermutationListQ, n_Integer] := 
   theYoungDualOGS @ PermutationList[prm, n]
@@ -130,10 +128,13 @@ theYoungDualOGS[prm_List] := Module[
 
 YoungDualOGSn::usage = "YoungDualOGSn[prm] converts to an integer the dual-standard OGS canonical form corresponding to permutation prm."
 
-YoungDualOGSn[args__] := Module[
-  { ogs = YoungDualOGS[args],
-    fac, n },
-  n = 1 + Length[ogs];
+SyntaxInformation[YoungDualOGSn] = {
+  "ArgumentsPattern" -> {_, _}
+ }
+
+YoungDualOGSn[spec_, n_Integer] := Module[
+  { ogs = YoungDualOGS[spec, n],
+    fac },
   fac = Range[2, n];
   Dot[ogs, n! / fac!]
 ]

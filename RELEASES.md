@@ -4,6 +4,7 @@
 
 - Improved: YoungBratteliDiagram
 - Renamed: YoungShapePile and GelfandYoungPile are merged to YoungPileUp, SchurLabelPile --> SchurPileUp
+- Modified: YoungOGS, YoungOGSn, YoungDualOGS, YoungDualOGSn require the degree n of the symmetric group.
 
 ## 4.2.4
 

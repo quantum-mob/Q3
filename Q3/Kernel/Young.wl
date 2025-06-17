@@ -13,6 +13,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { YoungTableau, YoungTableauQ, YoungTableaux, YoungTableauCount,
   YoungForm };
 
+{ YoungVector, YoungVectorQ };
+
 { LegacyYoungTableaux };
 
 { WeylTableaux, WeylTableauCount, WeylTableauQ };
@@ -143,14 +145,6 @@ YoungShape[tb_List?anyYoungTableauQ] :=
   YoungShape[YoungTableau @ tb] /; tb != {}
 (* NOTE: anyYoungTableauQ[{}] gives True. *)
 
-(* EXPERIMENTAL *)
-YoungShape /:
-Plus[shapes__YoungShape] := Module[
-  { new = First /@ {shapes} },
-  new = Plus @@ PadRight[new, {Length @ new, Max[Length /@ new]}];
-  YoungShape[YoungTrim @ new]
-]
-
 (**** </YoungShape> ****)
 
 
@@ -247,6 +241,109 @@ YoungTranspose @ YoungByte[byte_] :=
 (**** </YoungByte> ****)
 
 
+(**** <YoungTableauQ> ****)
+
+YoungTableauQ::usage = "YoungTableauQ[tb] yields True if tb represents a standard Young tableau and False otherwise."
+
+YoungTableauQ[{}] = True
+
+YoungTableauQ[tb_?anyYoungTableauQ] := TrueQ[
+  And @@ Join[
+    List[DuplicateFreeQ @ Flatten @ tb],
+    Less @@@ tb,
+    Less @@@ YoungTranspose[tb]
+  ]
+]
+
+YoungTableauQ[_] = False
+
+
+anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau (not necessarily semi-standard) and False otherwise."
+
+anyYoungTableauQ[{}] = True
+
+anyYoungTableauQ[tb:{{___Integer}..}] := Apply[GreaterEqual, Length /@ tb]
+(* NOTE: It must be ___Integer (not __Integer) so as to allow trailing {}s;
+   see YoungTrim. *)
+
+anyYoungTableauQ[_] = False
+
+(**** </YoungTableauQ> ****)
+
+
+(**** <YoungTableau> ****)
+
+YoungTableau::usage = "YoungTableau[data] represents a Young tableau.\nYoungTableau[gp] converts Gelfand pattern gp to Young tableau."
+
+SetAttributes[YoungTableau, NHoldAll]
+
+Format[tbl:YoungTableau[data:{{___}..}]] :=
+  Interpretation[YoungForm @ data, tbl]
+
+YoungTableau /:
+Equal[YoungTableau[a_], YoungTableau[b_]] := Equal[a, b]
+
+(**** </YoungTableau> ****)
+
+
+(**** <YoungForm> ****)
+
+YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional form."
+
+YoungForm::notyt = "`` is not a Young tableau."
+
+YoungForm[yt_YoungTableau] = yt
+
+YoungForm[tb:{{___}..}] :=
+  Grid @ Map[Item[#, Frame->True]&, tb, {2}]
+
+YoungForm[data_] := (
+  Message[YoungForm::notyt, data];
+  data
+)
+
+(**** </YoungForm> ****)
+
+
+(**** <YoungVector> ****)
+
+YoungVector::usage = "YoungVector[{r1,r2,r3,\[Ellipsis],rn}] encodes a standard Young tableau of degree n such that the cell numbered k appears in the rkth row. Always r1 = 1, and it may be omitted as sometimes adopted for convention. It also refers to a path in the Bratteli diagram for the canonical tower of subgroups of the symmetric group."
+(* Kawano & Sekigawa (2016) *)
+
+Format[YoungVector[pp:{___Integer?Positive}]] := 
+ Interpretation[MatrixForm @ {pp}, YoungVector @ pp]
+
+YoungVector @ YoungTableau[data_] := Module[
+  { vec = Flatten @ MapIndexed[#1 -> First[#2] &, data, {2}] },
+  YoungVector[Values @ KeySort @ vec]
+]
+
+YoungVector /:
+YoungTableau @ YoungVector[pp:{___Integer}] :=
+ YoungTableau[Values @ KeySort @ PositionIndex @ pp]
+
+YoungVector /:
+YoungShape @ YoungVector[pp_] := 
+  YoungShape[Values @ KeySort @ Counts @ pp]
+
+YoungVector /:
+YoungDegree[YoungVector[pp_]] := Length[pp]
+
+
+YoungVectorQ::usage = "YoungVectorQ[{r1,r2,\[Ellipsis],rn}] returns True if the list represents a valid Young vector."
+
+YoungVectorQ[pp:{___Integer?Positive}] := And[
+  OrderedQ[Reverse @ KeySort @ Counts @ pp],
+  Sequence @@ Thread[pp <= Range[Length @ pp]]
+]
+
+YoungVectorQ[_] = False
+
+(**** </YoungVector> ****)
+
+
+(**** <YoungTableauCount> ****)
+
 YoungTableauCount::usage = "YoungTableauCount[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nYoungTableauCount[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
 
 YoungTableauCount[pp_List?YoungShapeQ] :=
@@ -265,6 +362,8 @@ YoungTableauCount[YoungShape[pp_]] := Module[
 
 YoungTableauCount[n_Integer] :=
   Total @ Map[YoungTableauCount, YoungShapes @ n]
+
+(**** <YoungTableauCount> ****)
 
 
 (**** <theKetFormat> ****)
@@ -656,70 +755,6 @@ yngInterlaceEdges[shape_YoungShape, d_Integer] := Module[
 ]
 
 (**** </InterlaceGraph> ****)
-
-
-(**** <YoungTableauQ> ****)
-
-YoungTableauQ::usage = "YoungTableauQ[tb] yields True if tb represents a standard Young tableau and False otherwise."
-
-YoungTableauQ[{}] = True
-
-YoungTableauQ[tb_?anyYoungTableauQ] := TrueQ[
-  And @@ Join[
-    List[DuplicateFreeQ @ Flatten @ tb],
-    Less @@@ tb,
-    Less @@@ YoungTranspose[tb]
-  ]
-]
-
-YoungTableauQ[_] = False
-
-
-anyYoungTableauQ::usage = "anyYoungTableauQ[tb] yields True if tb represents a Young tableau (not necessarily semi-standard) and False otherwise."
-
-anyYoungTableauQ[{}] = True
-
-anyYoungTableauQ[tb:{{___Integer}..}] := Apply[GreaterEqual, Length /@ tb]
-(* NOTE: It must be ___Integer (not __Integer) so as to allow trailing {}s;
-   see YoungTrim. *)
-
-anyYoungTableauQ[_] = False
-
-(**** </YoungTableauQ> ****)
-
-
-(**** <YoungTableau> ****)
-
-YoungTableau::usage = "YoungTableau[data] represents a Young tableau.\nYoungTableau[gp] converts Gelfand pattern gp to Young tableau."
-
-SetAttributes[YoungTableau, NHoldAll]
-
-Format[tbl:YoungTableau[data:{{___}..}]] :=
-  Interpretation[YoungForm @ data, tbl]
-
-YoungTableau /:
-Equal[YoungTableau[a_], YoungTableau[b_]] := Equal[a, b]
-
-(**** </YoungTableau> ****)
-
-
-(**** <YoungForm> ****)
-
-YoungForm::usage = "YoungForm[tb] displays Young tableau tb in the conventional form."
-
-YoungForm::notyt = "`` is not a Young tableau."
-
-YoungForm[yt_YoungTableau] = yt
-
-YoungForm[tb:{{___}..}] :=
-  Grid @ Map[Item[#, Frame->True]&, tb, {2}]
-
-YoungForm[data_] := (
-  Message[YoungForm::notyt, data];
-  data
-)
-
-(**** </YoungForm> ****)
 
 
 (**** <YoungTableaux> ****)
@@ -1323,7 +1358,8 @@ YoungBratteliDiagram[n_Integer, opts:OptionsPattern[Graph]] := Module[
   Graph[ grf, opts,
     GraphLayout -> "LayeredEmbedding",
     VertexLabels -> "Name",
-    VertexLabelStyle -> Medium
+    VertexLabelStyle -> Medium,
+    ImageSize -> Medium
   ]
 ]
 
