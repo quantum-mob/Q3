@@ -8,6 +8,9 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { YoungDualOGS, YoungDualOGSn,
   FromYoungDualOGS };
 
+{ KawanoSekigawaMatrix,
+  AdaptedYoungFourier };
+
 { YoungFourierMatrix, YoungFourier };
 { YoungFourierBasis, YoungRegularBasis };
 { YoungLeftRepresentation,
@@ -153,17 +156,42 @@ FromYoungDualOGS[ogs_List] := Module[
 (**** </YoungDualOGS> ****)
 
 
+(**** <KawanoSekigawaMatrix> ****)
+
+KawanoSekigawaMatrix::usage = "YoungFourieMatrix[n] returns the matrix describing the basis change from the Young-Fourier basis to the subgroup-adapted Young-Fourier basis."
+
+KawanoSekigawaMatrix::invalid = "Invalid FourierParameters ``. {\"Right\", \"Right\"} is assumed."
+
+Options[KawanoSekigawaMatrix] = {
+  FourierParameters -> {"Right", "Right"}
+}
+
+KawanoSekigawaMatrix[n_Integer, OptionsPattern[]] := Module[
+  { prm = OptionValue[FourierParameters],
+    yng = Map[YoungTableaux, YoungShapes @ n],
+    new = YoungTableaux[n-1] },
+  prm = doForceList[prm, 2];
+  (* Young-Fourier basis *)
+  yng = Map[Tuples[#,2]&, yng];
+  yng = Flatten[yng, 1];
+  (* Subgroup-adapted Young-Fourier basis *)
+  new = Flatten @ Map[YoungPileUp, new];
+  new = Map[Thread @ {#, YoungTableaux @ YoungShape @ #} &, new];
+  new = Flatten[new, 1];
+  PermutationMatrix[
+    PermutationList[FindPermutation[yng, new], Length @ yng],
+    TargetStructure -> "SparseArray"
+  ]
+]
+
+(**** </KawanoSekigawaMatrix> ****)
+
+
 (**** <YoungFourierMatrix> ****)
 
 YoungFourierMatrix::usage = "YoungFourieMatrix[n] returns the matrix describing the Fourier transform over the symmetric group of degree n."
 
-YoungFourierMatrix::invalid = "Invalid FourierParameters ``. {\"Right\", \"Right\"} is assumed."
-
-Options[YoungFourierMatrix] = {
-  FourierParameters -> {"Right", "Right"}
-}
-
-YoungFourierMatrix[n_Integer, OptionsPattern[]] := Module[
+YoungFourierMatrix[n_Integer, OptionsPattern[YoungFourier]] := Module[
   { prm = OptionValue[FourierParameters],
     shp = YoungShapes[n],
     elm = GroupElements[SymmetricGroup @ n],
@@ -177,7 +205,7 @@ YoungFourierMatrix[n_Integer, OptionsPattern[]] := Module[
     {"Left", "Right"}, Map[ConjugateTranspose, rep, {2}],
     {"Right", "Left"}, Map[Transpose, rep, {2}],
     {"Left", "Left"}, Conjugate[rep],
-    _, Message[YoungFourierMatrix::invalid, prm]
+    _, Message[YoungFourier::invalid, prm]
   ];
   Map[Flatten, Transpose @ rep]
 ]
@@ -189,11 +217,7 @@ YoungFourierMatrix[n_Integer, OptionsPattern[]] := Module[
 
 YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis of degree n, i.e., the Fourier transform over the symmetric group of degree n of the canonical basis of the left regular representation of the same group."
 
-Options[YoungFourierBasis] = {
-  FourierParameters -> {"Right", "Right"}
-}
-
-YoungFourierBasis[n_Integer, opts:OptionsPattern[]] := Module[
+YoungFourierBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
   { mat = YoungFourierMatrix[n, opts],
     key, val },
   key = Ket /@ Flatten[
@@ -211,7 +235,7 @@ YoungFourierBasis[n_Integer, opts:OptionsPattern[]] := Module[
 
 YoungFourier::usage = "YoungFourier[n] represents the Fourier transform over the symmetric group of degree n.\nYoungFourier[n][Ket[{g}]] returns the Fourier transform of Ket[{g}] over the symmetric group.\nYoungFourier[Ket[{y1,y2}]] returns the inverse Fourier transform of Ket[{y1,y2}] over the symmetric group."
 
-YoungFourier::unknown = "Unknown FourierParameters ``. \"Left\" is assumed."
+YoungFourier::invalid = "Invalid FourierParameters `` for the Young-Fourier transform. {\"Right\", \"Right\"} is assumed."
 
 Options[YoungFourier] = {
   FourierParameters -> {"Right", "Right"}

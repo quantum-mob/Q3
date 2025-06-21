@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.2.6
+
+- New: AdaptedYoungFourierMatrix, AdaptedYoungFourierBasis, KawanoSekigawaMatrix
+- Improved: YoungFourier, YoungFourierMatrix, YoungFourierBasis
+
 ## 4.2.5
 
 - Improved: YoungBratteliDiagram
