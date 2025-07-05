@@ -2,8 +2,9 @@
 
 ## 4.2.6
 
-- New: AdaptedYoungFourierMatrix, AdaptedYoungFourierBasis, KawanoSekigawaMatrix
+- New: KawanoSekigawaMatrix, KawanoSekigawaBasis
 - Improved: YoungFourier, YoungFourierMatrix, YoungFourierBasis
+- Removed: LegacyNormalRepresentation
 
 ## 4.2.5
 

@@ -12,13 +12,11 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { YoungTableau, YoungTableauQ, YoungTableaux, YoungTableauCount,
   YoungForm };
+{ LegacyYoungTableaux };
 
 { YoungVector, YoungVectorQ };
 
-{ LegacyYoungTableaux };
-
 { WeylTableaux, WeylTableauCount, WeylTableauQ };
-
 { GelfandPattern, GelfandPatternQ };
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 

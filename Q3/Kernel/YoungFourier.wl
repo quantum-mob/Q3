@@ -8,26 +8,22 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { YoungDualOGS, YoungDualOGSn,
   FromYoungDualOGS };
 
-{ KawanoSekigawaMatrix,
-  AdaptedYoungFourier };
+{ YoungFourierMatrix, YoungFourierBasis, YoungFourier };
+{ KawanoSekigawaMatrix, KawanoSekigawaBasis };
 
-{ YoungFourierMatrix, YoungFourier };
-{ YoungFourierBasis, YoungRegularBasis };
-{ YoungLeftRepresentation,
+{ YoungRegularBasis,
+  YoungLeftRepresentation,
   YoungRightRepresentation,
   YoungNormalRepresentation,
   YoungSeminormalRepresentation,
   YoungSeminormalMetric };
-
-{ LegacyNormalRepresentation };
 
 { YoungBruhatGraph };
 
 { LeftRegularRepresentation,
   RightRegularRepresentation };
 
-{ YoungClebschGordan,
-  YoungClebschGordanTransform,
+{ YoungClebschGordanTransform,
   HarrowClebschGordanTransform };
 
 Begin["`Private`"]
@@ -39,7 +35,7 @@ YoungOGS::usage = "YoungOGS[perm, n] returns the standard ordered generating sys
 
 SyntaxInformation[YoungOGS] = {
   "ArgumentsPattern" -> {_, _}
- }
+}
 
 YoungOGS[prm_Cycles, n_Integer] :=
   theYoungOGS @ PermutationList[prm, n]
@@ -73,7 +69,7 @@ YoungOGSn::usage = "YoungOGSn[prm, n] converts to an integer the standard OGS ca
 
 SyntaxInformation[YoungOGSn] = {
   "ArgumentsPattern" -> {_, _}
- }
+}
 
 YoungOGSn[spec_, n_Integer] := Module[
   { ogs = YoungOGS[spec, n],
@@ -103,7 +99,7 @@ YoungDualOGS::usage = "YoungDualOGS[perm, n] returns the dual-standard ordered g
 
 SyntaxInformation[YoungDualOGS] = {
   "ArgumentsPattern" -> {_, _}
- }
+}
 
 YoungDualOGS[prm_Cycles, n_Integer] :=
   theYoungDualOGS @ PermutationList[prm, n]
@@ -133,7 +129,7 @@ YoungDualOGSn::usage = "YoungDualOGSn[prm] converts to an integer the dual-stand
 
 SyntaxInformation[YoungDualOGSn] = {
   "ArgumentsPattern" -> {_, _}
- }
+}
 
 YoungDualOGSn[spec_, n_Integer] := Module[
   { ogs = YoungDualOGS[spec, n],
@@ -154,37 +150,6 @@ FromYoungDualOGS[ogs_List] := Module[
 ]
 
 (**** </YoungDualOGS> ****)
-
-
-(**** <KawanoSekigawaMatrix> ****)
-
-KawanoSekigawaMatrix::usage = "YoungFourieMatrix[n] returns the matrix describing the basis change from the Young-Fourier basis to the subgroup-adapted Young-Fourier basis."
-
-KawanoSekigawaMatrix::invalid = "Invalid FourierParameters ``. {\"Right\", \"Right\"} is assumed."
-
-Options[KawanoSekigawaMatrix] = {
-  FourierParameters -> {"Right", "Right"}
-}
-
-KawanoSekigawaMatrix[n_Integer, OptionsPattern[]] := Module[
-  { prm = OptionValue[FourierParameters],
-    yng = Map[YoungTableaux, YoungShapes @ n],
-    new = YoungTableaux[n-1] },
-  prm = doForceList[prm, 2];
-  (* Young-Fourier basis *)
-  yng = Map[Tuples[#,2]&, yng];
-  yng = Flatten[yng, 1];
-  (* Subgroup-adapted Young-Fourier basis *)
-  new = Flatten @ Map[YoungPileUp, new];
-  new = Map[Thread @ {#, YoungTableaux @ YoungShape @ #} &, new];
-  new = Flatten[new, 1];
-  PermutationMatrix[
-    PermutationList[FindPermutation[yng, new], Length @ yng],
-    TargetStructure -> "SparseArray"
-  ]
-]
-
-(**** </KawanoSekigawaMatrix> ****)
 
 
 (**** <YoungFourierMatrix> ****)
@@ -215,7 +180,7 @@ YoungFourierMatrix[n_Integer, OptionsPattern[YoungFourier]] := Module[
 
 (**** <YoungFourierBasis> ****)
 
-YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis of degree n, i.e., the Fourier transform over the symmetric group of degree n of the canonical basis of the left regular representation of the same group."
+YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis of degree n, i.e., the Fourier transform of the canonical basis for the group algebra of the symmetric group of degree n."
 
 YoungFourierBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
   { mat = YoungFourierMatrix[n, opts],
@@ -284,6 +249,65 @@ YoungFourier[n_Integer, opts:OptionsPattern[]][
 (**** </YoungFourier> ****)
 
 
+(**** <KawanoSekigawaMatrix> ****)
+
+KawanoSekigawaMatrix::usage = "KawanoSekigawaMatrix[n] returns the matrix describing the basis change from the Young-Fourier basis to the Kawano-Sekigawa basis for the symmetric group of degree n."
+
+KawanoSekigawaMatrix[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
+  { new = yngKawanoSekigawa[n, False, opts],
+    yng = Map[YoungTableaux, YoungShapes @ n] },
+  yng = Map[Tuples[#, 2]&, yng];
+  yng = Flatten[yng, 1];
+  PermutationMatrix[
+    PermutationList[FindPermutation[yng, new], Length @ yng],
+    TargetStructure -> "SparseArray"
+  ]
+]
+
+(**** </KawanoSekigawaMatrix> ****)
+
+
+(**** <KawanoSekigawaBasis> ****)
+
+KawanoSekigawaBasis::usage = "KawanoSekigawaBasis[n] returns the Kawano-Sekigawa basis of degree n, a modified Young-Fourier basis."
+
+KawanoSekigawaBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
+  { key = yngKawanoSekigawa[n, True, opts], 
+    val, mat },
+  mat = YoungFourierMatrix[n, opts] . KawanoSekigawaMatrix[n, opts];
+  val = Ket /@ List /@ GroupElements[SymmetricGroup @ n];
+  AssociationThread[key -> val . mat]
+]
+
+yngKawanoSekigawa[n_Integer, drop_, opts:OptionsPattern[YoungFourier]] := Module[
+  { prm = OptionValue[FourierParameters],
+    key = YoungTableaux[n-1] },
+  prm = doForceList[prm, 2];
+  key = Flatten @ Map[YoungPileUp, key];
+  key = Switch[ prm,
+    {"Right", "Right"} | {"Left", "Right"},
+    If[ drop, 
+      Map[Thread @ {yngMost @ #, YoungTableaux @ YoungShape @ #} &, key],
+      Map[Thread @ {#, YoungTableaux @ YoungShape @ #} &, key]
+    ],
+    {"Right", "Left"} | {"Left", "Left"}, 
+    If[ drop,
+      Map[Thread @ {YoungTableaux @ YoungShape @ #, yngMost @ #} &, key],
+      Map[Thread @ {YoungTableaux @ YoungShape @ #, #} &, key]
+    ],
+    _, Message[YoungFourier::invalid, prm]
+  ];
+  Flatten[key, 1]
+]
+
+yngMost[YoungTableau[data_]] := With[
+  { n = Max[data] },
+  YoungTableau @ YoungTrim @ DeleteCases[data, n, {2}]
+]
+
+(**** </KawanoSekigawaBasis> ****)
+
+
 (**** <YoungBruhatGraph> ****)
 
 YoungBruhatGraph::usage = "YoungBruhatGraph[shape] constructs a weak left Bruhat graph of standard tableaux, starting with the row-wise ordered tableau (observe that it is smallest with respect to weak left Bruhat ordering). The edges are weighted, where weight i means that the transposition (i,i+1) induces the transition."
@@ -343,21 +367,6 @@ tableauToPermutation[yt_YoungTableau] :=
   InversePermutation[Catenate @ First @ YoungTranspose @ yt]
 
 (**** <YoungBruhatGraph> ****)
-
-
-(**** <LegacyNormalRepresentation> ****)
-
-LegacyNormalRepresentation::usage = "LegacyNormalRepresentation[shape] represents the homomorphism from the symmetric group to the matrix representation.\nSee also SpechtBasis."
-
-LegacyNormalRepresentation[shape_YoungShape][op_Cycles] :=
-  LegacyNormalRepresentation[shape, op]
-
-LegacyNormalRepresentation[shape_YoungShape, op_Cycles] := Module[
-  { bs = Ket /@ List /@ YoungTableaux[shape] },
-  MatrixIn[op, bs]
-]
-
-(**** </LegacyNormalRepresentation> ****)
 
 
 (**** <YoungNormalRepresentation> ****)
@@ -736,7 +745,8 @@ HarrowClebschGordanTransform[Ket[a_?YoungTableauQ, b_?YoungTableauQ]] :=
     out = Cases[vec, Ket[p_, q_, rr__] -> Ket[q], Infinity];
     out = Collect[
       ReplaceAll[vec, Ket[p_, q_, rr__] -> Ket[q]*Ket[p, rr]],
-      out, Garner] /. {Times -> OSlash}
+      out, Garner
+    ] /. {Times -> OSlash}
   ]
 
 
@@ -745,9 +755,9 @@ QFTG[z_?CommutativeQ expr_] := Garner[z * QFTG[expr]]
 QFTG[expr_Plus] := Garner@Map[QFTG, expr]
 
 QFTG[Ket[a_, b_, c_, d_]] := CircleTimes[
-  Ket[b, a] /. Normal[YoungFourierBasis@Total@YoungShape@a],
+  Ket[b, a] /. Normal[YoungFourierBasis @ Total @ YoungShape @ a],
   Ket[c, d]
- ]
+]
 
 
 iQFTG[z_?CommutativeQ expr_] := Garner[z * iQFTG[expr]]
@@ -755,7 +765,7 @@ iQFTG[z_?CommutativeQ expr_] := Garner[z * iQFTG[expr]]
 iQFTG[expr_Plus] := Garner@Map[iQFTG, expr]
 
 iQFTG[Ket[a_, b_, c_]] := CircleTimes[
-  Ket[a] /. Normal[YoungRegularBasis@Total@YoungShape@b],
+  Ket[a] /. Normal[YoungRegularBasis @ Total @ YoungShape @ b],
   Ket[b, c]
 ]
 
