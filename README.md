@@ -76,9 +76,10 @@ Any comment, suggestion, or bug report will be appreciated. Please address it to
 
 ## Trivia
 
+<a href="https://github.com/quantum-mob/Q3">
+<img align="Right" src="Q3/Asset/Images/WolframCommunityStaffPicks.png" width="15%"/>
+</a>
+
 Q3 has been selected for [Staff Picks](https://community.wolfram.com/groups/-/m/t/3514978) on the Wolfram Community.
 
-<a href="https://github.com/quantum-mob/Q3">
-<img align="Right" src="Q3/Asset/Images/WolframCommunityStaffPicks.png" width="30%"/>
-</a>
 
