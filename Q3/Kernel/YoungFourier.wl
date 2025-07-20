@@ -548,8 +548,8 @@ YoungSeminormalMetric[YoungTableau[data_]] := With[
 
 YoungRegularBasis::usage = "YoungRegularBasis[n] returns the Young regular basis of degree n, i.e., the canonical basis of the left regular representation of the symmetric group of degree n."
 
-YoungRegularBasis[n_Integer] := Module[
-  { mat = YoungFourierMatrix[n],
+YoungRegularBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
+  { mat = YoungFourierMatrix[n, opts],
     key, val },
   key = Ket /@ List /@ GroupElements[SymmetricGroup @ n];
   val = Ket /@ Flatten[
@@ -695,7 +695,7 @@ RightRegularRepresentation[grp:{_String, _Integer}, kk_] := Module[
 
 YoungClebschGordanTransform::usage = "YoungClebschGordanTransform[vec] returns the Clebsch-Gordan transformation of vector vec associated with the symmetric group."
 
-YoungClebschGordanTransform::mn = "`` and `` have different ranks."
+YoungClebschGordanTransform::mn = "`` and `` have different degrees."
 
 YoungClebschGordanTransform[z_?CommutativeQ expr_] :=
   Garner[z * YoungClebschGordanTransform[expr]]
@@ -703,10 +703,10 @@ YoungClebschGordanTransform[z_?CommutativeQ expr_] :=
 YoungClebschGordanTransform[expr_Plus] :=
   Garner @ Map[YoungClebschGordanTransform, expr]
 
-YoungClebschGordanTransform[Ket[a_?YoungTableauQ, b_?YoungTableauQ]] :=
+YoungClebschGordanTransform[Ket @ {a_YoungTableau, b_YoungTableau}] :=
   Module[
-    { m = Total @ YoungShape[a],
-      n = Total @ YoungShape[b],
+    { m = YoungDegree[a],
+      n = YoungDegree[b],
       op },
     If[ m != n,
       Message[YoungClebschGordanTransform::mn, a, b];
@@ -716,7 +716,7 @@ YoungClebschGordanTransform[Ket[a_?YoungTableauQ, b_?YoungTableauQ]] :=
       GroupOrder[SymmetricGroup @ n];
     Total @ Map[
       ( Sqrt[YoungTableauCount @ YoungShape @ #] *
-          OSlash[Ket[#], op ** Ket[#, a, b]] )&,
+          OSlash[Ket @ {#}, op ** Ket[{#, a, b}]] )&,
       YoungTableaux[n]
     ]
   ]
@@ -734,17 +734,20 @@ HarrowClebschGordanTransform[z_?CommutativeQ expr_] :=
 HarrowClebschGordanTransform[expr_Plus] :=
   Garner @ Map[HarrowClebschGordanTransform, expr]
 
-HarrowClebschGordanTransform[Ket[a_?YoungTableauQ, b_?YoungTableauQ]] := 
+HarrowClebschGordanTransform[Ket @ {a_YoungTableau, b_YoungTableau}] := 
   Module[
     { shp = YoungShape[a],
       vec, out },
-    vec = CircleTimes[Ket[a], Total[Ket[#, #] & /@ YoungTableaux[shp]], 
-      Ket[b]];
+    vec = CircleTimes[
+      Ket[{a}], 
+      Total[Ket @ {#, #} & /@ YoungTableaux[shp]], 
+      Ket[{b}]
+    ];
     vec /= Sqrt[YoungTableauCount @ shp];
     vec = iQFTG @ ControlledGamma @ QFTG[vec];
-    out = Cases[vec, Ket[p_, q_, rr__] -> Ket[q], Infinity];
+    out = Cases[vec, Ket[{p_, q_, rr__}] -> Ket[{q}], Infinity];
     out = Collect[
-      ReplaceAll[vec, Ket[p_, q_, rr__] -> Ket[q]*Ket[p, rr]],
+      ReplaceAll[vec, Ket[{p_, q_, rr__}] -> Ket[{q}]*Ket[{p, rr}]],
       out, Garner
     ] /. {Times -> OSlash}
   ]
@@ -752,21 +755,21 @@ HarrowClebschGordanTransform[Ket[a_?YoungTableauQ, b_?YoungTableauQ]] :=
 
 QFTG[z_?CommutativeQ expr_] := Garner[z * QFTG[expr]]
 
-QFTG[expr_Plus] := Garner@Map[QFTG, expr]
+QFTG[expr_Plus] := Garner @ Map[QFTG, expr]
 
-QFTG[Ket[a_, b_, c_, d_]] := CircleTimes[
-  Ket[b, a] /. Normal[YoungFourierBasis @ Total @ YoungShape @ a],
-  Ket[c, d]
+QFTG[Ket @ {a_, b_, c_, d_}] := CircleTimes[
+  Ket @ {b, a} /. Normal[YoungFourierBasis[YoungDegree @ a, FourierParameters -> {"Left", "Right"}]],
+  Ket @ {c, d}
 ]
 
 
 iQFTG[z_?CommutativeQ expr_] := Garner[z * iQFTG[expr]]
 
-iQFTG[expr_Plus] := Garner@Map[iQFTG, expr]
+iQFTG[expr_Plus] := Garner @ Map[iQFTG, expr]
 
-iQFTG[Ket[a_, b_, c_]] := CircleTimes[
-  Ket[a] /. Normal[YoungRegularBasis @ Total @ YoungShape @ b],
-  Ket[b, c]
+iQFTG[Ket @ {a_, b_, c_}] := CircleTimes[
+  Ket @ {a} /. Normal[YoungRegularBasis[YoungDegree @ b, FourierParameters -> {"Left", "Right"}]],
+  Ket @ {b, c}
 ]
 
 
@@ -774,8 +777,8 @@ ControlledGamma[z_?CommutativeQ expr_] :=  Garner[z * ControlledGamma[expr]]
 
 ControlledGamma[expr_Plus] := Garner @ Map[ControlledGamma, expr]
 
-ControlledGamma[Ket[a_, b_, c_]] :=
-  CircleTimes[Ket[a, b], InversePermutation[a] ** Ket[c]]
+ControlledGamma[Ket @ {a_, b_, c_}] :=
+  CircleTimes[Ket @ {a, b}, InversePermutation[a] ** Ket[{c}]]
 
 (**** </HarrowClebschGordanTransform> ****)
 
