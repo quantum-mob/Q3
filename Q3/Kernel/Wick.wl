@@ -2382,7 +2382,7 @@ WickLindbladKernel[ham_WickHermitian, msr_WickMeasurement, True] :=
 (**** <WickSteadyState> ****)
 (* See also Bravyi (2012a). *)
 
-WickSteadyState::usage = "WickSteadyState[ham, jmp, in] returns the steady-state solution (i.e., a fermionic Gaussian mixed state) to the Lindblad equation associated with the Hamiltonia ham and a set of quantum jump operators jmp.\nWickSteadyState[ham, msr, in] assumes that the Lindblad operators are projective and given by Wick measurement msr."
+WickSteadyState::usage = "WickSteadyState[ham, jmp, in] returns the steady-state solution (i.e., a fermionic Gaussian mixed state) to the Lindblad equation associated with the Hamiltonian ham and a set of quantum jump operators jmp.\nWickSteadyState[ham, msr, in] assumes that the Lindblad operators are projective and given by Wick measurement msr."
 
 WickSteadyState::more = "The Lindblad equation has additional steady states."
 
