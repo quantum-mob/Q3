@@ -29,7 +29,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { WickSimulate, WickDampingOperator, $WickMinorSteps };
 { WickMonitor };
 
-{ WickLindbladSolve };
+{ WickLindbladSolve,
+  WickSteadyState };
 
 { WickLogarithmicNegativity, WickTimeReversalMoment };
 { WickEntropy, WickEntanglementEntropy, WickMutualInformation };
@@ -952,6 +953,8 @@ RandomWickOperator[n_Integer] :=
 
 WickJump::usage = "WickJump[mat] represents a set of quantum jump operators, which are linear combinations of Majorana fermion operators with coefficients given by the elements of complex matrix mat."
 
+WickJump::odd = "The second dimension of the input matrix `` is odd: ``."
+
 WickJump /:
 MakeBoxes[jmp:WickJump[mat_?MatrixQ, rest___], fmt_] := Module[
   {m, n},
@@ -970,6 +973,19 @@ MakeBoxes[jmp:WickJump[mat_?MatrixQ, rest___], fmt_] := Module[
 
 (* conversion *)
 WickJump[op_WickOperator] := Apply[WickJump, op]
+
+(* conversion *)
+WickJump /:
+NambuJump[WickJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
+  NambuJump[ToDirac /@ mat, more, opts] /; (* NOT ToDiract @ mat. *)
+  If[ EvenQ[Last @ Dimensions @ mat], True,
+    Message[WickJump::odd, ArrayShort @ mat, Dimensions @ mat];
+    False
+]
+
+(* conversion *)
+WickJump /:
+ToDirac[jmp_WickJump] := NambuJump[jmp]
 
 (* canonicalization *)
 WickJump[mat_?MatrixQ, opts___?OptionQ] :=
@@ -2271,7 +2287,7 @@ WickLindbladSolve[ham_, msr_WickMeasurement, cvr_, {tt_?VectorQ}] :=
  WickLindbladSolve[ham, msr, cvr, {tt}, False]
 
 
-(* quantum jump operators linear in fermion operators *)
+(* quantum jump operators are linear in fermion operators *)
 WickLindbladSolve[
   ham_WickHermitian,
   jmp_WickJump,
@@ -2286,7 +2302,7 @@ WickLindbladSolve[
   Map[(# - Transpose[#])/2&, vv]
 ]
 
-(* quantum jump operators that are projection operators *)
+(* quantum jump operators are projection operators *)
 WickLindbladSolve[
   ham_WickHermitian,
   msr_WickMeasurement,
@@ -2302,7 +2318,7 @@ WickLindbladSolve[
 ]
 
 
-WickLindbladKernel::usage = "WickLindbladKernel[ham, jmp] returns a pair {krn, sol}."
+WickLindbladKernel::usage = "WickLindbladKernel[ham, jmp] returns a pair {krn, sol}, where krn is the kernel of the vectorized equation for the Majorana covariance matrix and sol is a stationary solution.\nWickLindbladKernel[ham, msr] or WickLindbladKernel[ham, msr, flag] returns krn."
 
 WickLindbladKernel[ham_NambuHermitian, jmp_] :=
   WickLindbladKernel[WickHermitian @ ham, jmp]
@@ -2343,7 +2359,7 @@ WickLindbladKernel[ham_WickHermitian, msr_WickMeasurement] := Module[
   id = One[n];
   xx = KroneckerProduct[xx, id] + KroneckerProduct[id, xx];
   xx = xx[[kk, kk]] - xx[[kk, ll]];
-  (* first term *)
+  (* the first term *)
   yy = Flatten /@ Table[
     yy[[k,i]]*Conjugate[yy[[k,j]]] - yy[[k,j]]*Conjugate[yy[[k,i]]],
     {k, m},
@@ -2361,6 +2377,64 @@ WickLindbladKernel[ham_WickHermitian, msr_WickMeasurement, True] :=
   WickLindbladKernel[ham, Surd[2, 4]*msr]
 
 (**** </WickLindbladSolve> ****)
+
+
+(**** <WickSteadyState> ****)
+(* See also Bravyi (2012a). *)
+
+WickSteadyState::usage = "WickSteadyState[ham, jmp, in] returns the steady-state solution (i.e., a fermionic Gaussian mixed state) to the Lindblad equation associated with the Hamiltonia ham and a set of quantum jump operators jmp.\nWickSteadyState[ham, msr, in] assumes that the Lindblad operators are projective and given by Wick measurement msr."
+
+WickSteadyState::more = "The Lindblad equation has additional steady states."
+
+WickSteadyState[ham_NambuHermitian, rest__] :=
+  WickSteadyState[WickHermitian @ ham, rest]
+
+WickSteadyState[ham_WickHermitian, jmp_NambuJump, rest__] :=
+  WickSteadyState[ham, WickJump @ jmp, rest]
+
+WickSteadyState[ham_WickHermitian, msr_NambuMeasurement, rest__] :=
+  WickSteadyState[ham, WickMeasurement @ msr, rest]
+
+
+WickSteadyState[ham_WickHermitian, jmp_, in_WickState, rest___] :=
+  WickState @ WickSteadyState[ham, jmp, in[[1, 2]], rest]
+
+WickSteadyState[ham_WickHermitian, jmp_, in_WickCovariance, rest___] :=
+  WickCovariance @ WickSteadyState[ham, jmp, First @ in, rest]
+
+WickSteadyState[ham_, msr_WickMeasurement, cvr_] :=
+ WickSteadyState[ham, msr, cvr, False]
+
+
+(* quantum jump operators are linear in fermion operators *)
+WickSteadyState[
+  ham_WickHermitian,
+  jmp_WickJump,
+  cvr_?MatrixQ
+] := Module[
+  { xx, vp, vv },
+  {xx, vp} = WickLindbladKernel[ham, jmp];
+  If[ZeroQ[Det @ xx], Message[WickSteadyState::more]];
+  Return[vp]
+]
+
+(* quantum jump operators are projection operators *)
+WickSteadyState[
+  ham_WickHermitian,
+  msr_WickMeasurement,
+  cvr_?MatrixQ,
+  flag:(True | False)
+] := Module[
+  { in = UpperTriangular[cvr, 1],
+    spr, vec, out },
+  spr = WickLindbladKernel[ham, msr, flag];
+  vec = Eigenvectors[spr];
+  out = Inverse[Transpose @ vec] . in;
+  out = Last[vec] * Last[out];
+  AntisymmetricMatrix[Re @ out]
+]
+
+(**** </WickSteadyState> ****)
 
 
 (**** <FermionCount> ****)

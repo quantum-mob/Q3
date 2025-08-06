@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.2.7
+
+- New: WickSteadyState
+
 ## 4.2.6
 
 - New: KawanoSekigawaMatrix, KawanoSekigawaBasis

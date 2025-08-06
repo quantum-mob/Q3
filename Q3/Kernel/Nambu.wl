@@ -584,7 +584,7 @@ WickJump[NambuJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
 
 (* conversion *)
 NambuJump /:
-ToMajorana[non_NambuJump] := WickJump[non]
+ToMajorana[jmp_NambuJump] := WickJump[jmp]
 
 NambuJump /:
 Matrix[jmp_NambuJump, rest___] :=
