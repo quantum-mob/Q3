@@ -88,12 +88,12 @@ Measurements[qc:QuantumCircuit[__, ___?OptionQ]] :=
   Measurements[QuantumElements @ qc]
 
 QuantumCircuit /:
-Expand @ QuantumCircuit[gg__, opts___?OptionQ] :=
-  QuantumCircuit[Sequence @@ Map[Expand, {gg}], opts]
+Unfold @ QuantumCircuit[gg__, opts___?OptionQ] :=
+  QuantumCircuit[Sequence @@ Map[Unfold, {gg}], opts]
 
 QuantumCircuit /:
-ExpandAll @ QuantumCircuit[gg__, opts___?OptionQ] :=
-  QuantumCircuit[Sequence @@ Map[ExpandAll, {gg}], opts]
+UnfoldAll @ QuantumCircuit[gg__, opts___?OptionQ] :=
+  QuantumCircuit[Sequence @@ Map[UnfoldAll, {gg}], opts]
 
 QuantumCircuit /:
 GateFactor @ QuantumCircuit[gg__, opts___?OptionQ] :=
@@ -227,13 +227,15 @@ QuantumElements[ g_ ] := Nothing /;
 QuantumElements[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
   Dyad[v, v, qq]
 
-QuantumElements[ v:ProductState[_Association, ___] ] := Expand[v]
+QuantumElements[ v:ProductState[_Association, ___] ] := Unfold[v]
 
 QuantumElements[ v:Ket[_Association] ] = v
 
 QuantumElements[ ActOn[op_, __] ] = op
 
 QuantumElements[ Gate[expr_, ___?OptionQ] ] = expr
+
+QuantumElements[ op_QFT ] := op (* The "Numeric" option matters for QFT. *)
 
 QuantumElements[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
 
@@ -698,10 +700,10 @@ ParseGate @
     "LabelAngle" -> -Pi/2 ]
 
 
-ParseGate[op:QFT[_, qq:{__?QubitQ}, _, opts___?OptionQ], more___?OptionQ] := 
+ParseGate[op:QFT[type_, qq:{__?QubitQ}, opts___?OptionQ], more___?OptionQ] := 
   Gate[ qq, 
     FilterRules[{more, opts}, Options @ Gate],
-    "Label" -> gateLabel[op],
+    "Label" -> gateLabel[QFT[type, qq, more, opts]],
     "LabelAngle" -> Pi/2
   ]
 
@@ -784,12 +786,14 @@ gateLabel @ EulerRotation[{_, _, _}, _?QubitQ, ___?OptionQ] :=
   Subscript["R", "E"]
 
 
-gateLabel @ QFT[type_, _List, _?BooleanQ, ___] :=
+gateLabel @ QFT[type_, _List, opts___?OptionQ] := Module[
+  { qft = OptionValue[QFT, {opts}, "Label"] },
   Switch[ type,
-    -1, SuperDagger["QFT"],
-    +1, "QFT",
+    -1, SuperDagger[qft],
+    +1, qft,
     _, "DFT"
   ]
+]
 
 gateLabel[expr_] := "U"
 

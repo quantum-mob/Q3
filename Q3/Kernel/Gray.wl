@@ -362,10 +362,10 @@ Matrix[GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}], rest__] :=
 (**** </GivensRotation> *****)
 
 
-(**** <GivensRotation/:Expand> *****)
+(**** <GivensRotation:Unfold> *****)
 
 GivensRotation /:
-Expand @
+Unfold @
   GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, ss:{__?QubitQ}] :=
   Module[
     { gray = GraySequence[ij-1, Length @ ss],
@@ -414,7 +414,7 @@ grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
   ControlledGate[cc -> vv, op, "Label"->"U"]
 ]
 
-(**** </GivensRotation/:Expand> *****)
+(**** </GivensRotation:Unfold> *****)
 
 
 (**** <GivensFactor> ****)

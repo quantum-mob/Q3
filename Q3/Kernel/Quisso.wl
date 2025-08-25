@@ -1,6 +1,8 @@
 (* -*- mode: math; -*- *)
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
+{ Unfold, UnfoldAll };
+
 { Qubit, QubitQ, Qubits, QubitCount };
 
 { PauliForm };
@@ -83,6 +85,15 @@ AddElaborationPatterns[
   OTimes -> CircleTimes,
   OSlash -> CircleTimes
 ]
+
+
+Unfold::usage = "Unfold[gate] gives an unfolded form of gate."
+
+Unfold[any_] = any
+
+UnfoldAll::usage = "UnfoldAll[gate] gives a fully unfolded form of gate."
+
+UnfoldAll[any_] = any
 
 
 (**** <Qubit> ****)
@@ -962,7 +973,7 @@ Multiply[pre___, op:Rotation[_, {_, _, _}, S_?QubitQ, ___], in_Ket, post___] :=
 (**** <EulerRotation> ****)
 
 EulerRotation /:
-Expand @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
+Unfold @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
   QuantumCircuit[
     Rotation[c, S[3], opts],
     Rotation[b, S[2], opts],
@@ -1176,7 +1187,7 @@ Elaborate @ SWAP[x_?QubitQ, y_?QubitQ] := Module[
 ]
 
 SWAP /:
-Expand @ SWAP[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+Unfold @ SWAP[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
   CNOT[s, t], CNOT[t, s], CNOT[s, t]
 ]
 
@@ -1231,7 +1242,7 @@ Multiply[pre___, iSWAP[s_?QubitQ, t_?QubitQ], Ket[a_Association]] := With[
   ]
 
 iSWAP /:
-Expand @ iSWAP[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+Unfold @ iSWAP[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
   {s[7], t[7]}, s[6], CNOT[s, t], CNOT[t, s], t[6]
  ]
 
@@ -1408,12 +1419,12 @@ ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=
 
 
 ControlledGate /:
-Expand @ ControlledGate[cc:{__Rule},
+Unfold @ ControlledGate[cc:{__Rule},
   ActOn[z_?CommutativeQ, ___], ___?OptionQ] :=
   ControlledGate[cc, z]
 
 ControlledGate /:
-Expand @ ControlledGate[ cc:{__Rule},
+Unfold @ ControlledGate[ cc:{__Rule},
   HoldPattern @ Multiply[ss__?QubitQ],
   opts___?OptionQ 
 ] := With[
@@ -1422,7 +1433,7 @@ Expand @ ControlledGate[ cc:{__Rule},
 ]
 
 ControlledGate /:
-Expand @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] :=
+Unfold @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] :=
   QuantumCircuit @@ theControlledGate[cc, op] /; Length[Qubits @ op] == 1
 
 theControlledGate[cc:{__Rule}, op_] := Module[
@@ -1588,7 +1599,7 @@ HoldPattern @ Multiply[pre___, op_ControlledPower, post___] :=
 *)
 
 ControlledPower /:
-Expand @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[Gate]] :=
+Unfold @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[Gate]] :=
   Module[
     { n = Length @ ss,
       tt = Qubits[op],
@@ -1702,7 +1713,7 @@ UniformlyControlledRotation /:
 Matrix[
   op:UniformlyControlledRotation[
     {__?QubitQ}, _?VectorQ, {_, _, _}, _?QubitQ, ___?OptionQ ],
-  rest___ ] := Matrix[Expand @ op, rest]
+  rest___ ] := Matrix[Unfold @ op, rest]
 
 
 UniformlyControlledRotation /:
@@ -1719,7 +1730,7 @@ Multiply[ pre___,
   in_Ket
 ] := 
   With[
-    { gg = List @@ Expand @ op },
+    { gg = List @@ Unfold @ op },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
   ]
 
@@ -1735,7 +1746,7 @@ Multiply[ pre___,
 
 
 UniformlyControlledRotation /:
-Expand @ UniformlyControlledRotation[
+Unfold @ UniformlyControlledRotation[
   cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ
 ] := 
   QuantumCircuit @@ ReleaseHold @ Thread @
@@ -1748,7 +1759,7 @@ Expand @ UniformlyControlledRotation[
 
 (* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
 UniformlyControlledRotation /:
-ExpandAll @ UniformlyControlledRotation[
+UnfoldAll @ UniformlyControlledRotation[
   cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ,
   opts___?OptionQ
 ] := 
@@ -1806,7 +1817,7 @@ Dagger @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] :=
   UniformlyControlledGate[cc, Dagger[Reverse @ tt], opts]
 
 UniformlyControlledGate /:
-Expand @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] := Module[
+Unfold @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] := Module[
   { nn = Power[2, Length @ cc],
     mint = Lookup[Flatten @ {opts}, "Label"] },
   mint = Switch[ mint,
@@ -1828,7 +1839,7 @@ Expand @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] := M
 UniformlyControlledGate /:
 Matrix[
   op:UniformlyControlledGate[{__?QubitQ}, _List, ___],
-  rest___ ] := Matrix[Expand @ op, rest]
+  rest___ ] := Matrix[Unfold @ op, rest]
 
 
 UniformlyControlledGate /:
@@ -1841,7 +1852,7 @@ UniformlyControlledGate /:
 Multiply[ pre___,
   op:UniformlyControlledGate[{__?QubitQ}, _List, ___?OptionQ],
   in_Ket ] := With[
-    { gg = List @@ Expand @ op },
+    { gg = List @@ Unfold @ op },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
    ]
 
@@ -1960,22 +1971,20 @@ QFT::mat = "Some elements of `` do not appear in `` for Matrix[QFT[\[Ellipsis]]]
 
 SetAttributes[QFT, NHoldAll];
 
-N[ QFT[type_, ss_, False, opts___?OptionQ] ] := 
-  QFT[type, ss, True, opts]
-
+Options[QFT] = {
+  "Label" -> "QFT",
+  "ApproximationLevel" -> Full,
+  "Numeric" -> False,
+  "Reversed" -> False,
+  "Pushed" -> False
+}
 
 QFT /:
 NonCommutativeQ[ QFT[___] ] = True
 
 QFT /:
-MultiplyKind @ QFT[{__?QubitQ}] = Qubit
+MultiplyKind @ QFT[_, {__?QubitQ}, ___?OptionQ] = Qubit
 
-
-QFT /:
-Dagger[ op:QFT[type:-1|1, rest___] ] := QFT[-type, rest]
-
-
-QFT[type_, ss_, opts___?OptionQ] := QFT[type, ss, False, opts]
 
 QFT[S_?QubitQ, rest___] := QFT[1, {S}, rest]
 
@@ -1986,9 +1995,15 @@ QFT[ss:{___?QubitQ}, rest___] := QFT[1, FlavorCap @ ss, rest]
 QFT[type_, ss:{__?QubitQ}, rest___] :=
   QFT[type, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
 
-
 QFT[-1|1, {}, ___] = 1
 
+QFT /:
+N[ QFT[type_, ss:{___?QubitQ}, opts___?OptionQ] ] :=
+  QFT[type, ss, "Numeric" -> True, opts] /; 
+  Not["Numeric" /. {opts} /. Options[QFT]]
+
+QFT /:
+Dagger[ op:QFT[type:-1|1, rest___] ] := QFT[-type, rest]
 
 QFT /: 
 Elaborate[op_QFT] = op (* fallback *)
@@ -2003,17 +2018,17 @@ Matrix[op_QFT, tt:{___?QubitQ}] :=
   op * One @ Power[2, Length @ tt] (* fallback *)
 
 QFT /:
-Matrix[QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, opts___?OptionQ], tt:{__?QubitQ}] := 
+Matrix[QFT[type:(-1|1), ss:{__?QubitQ}, opts___?OptionQ], tt:{__?QubitQ}] := 
   Module[
-    { new = FilterRules[Flatten @ {opts}, Options @ QFT],
-      mat },
+    { mat },
     mat = FourierMatrix[
       Power[2, Length @ ss],
       FourierParameters -> {0, type}
     ];
-    If[flag, mat = N[mat]];
+    If[OptionValue[QFT, {opts}, "Numeric"], mat = N[mat]];
     MatrixEmbed[mat, ss, FlavorCap @ tt]
   ] /; ContainsAll[FlavorCap @ tt, ss]
+(* TODO: Handle the "ApproximationLevel" option. *)
 
 QFT /:
 Matrix[QFT[_, ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := (
@@ -2023,7 +2038,7 @@ Matrix[QFT[_, ss:{__?QubitQ}, ___], tt:{__?QubitQ}] := (
 
 
 QFT /:
-MultiplyPower[op:QFT[_, ss_List, _, ___], n_Integer] :=
+MultiplyPower[op:QFT[_, ss_List, ___], n_Integer] :=
   Switch[ Mod[n, 4],
     0, 1,
     1, op,
@@ -2033,28 +2048,33 @@ MultiplyPower[op:QFT[_, ss_List, _, ___], n_Integer] :=
 
 
 QFT /:
-Multiply[pre___, QFT[type_, ss_List, _, ___], QFT[type_, ss_List, _, ___], post___] :=
+Multiply[pre___, QFT[type_, ss_List, ___], QFT[type_, ss_List, ___], post___] :=
   Multiply[pre, QCR[ss], post]
 
 QFT /:
-HoldPattern @ Multiply[pre___, QCR[ss_List, ___], op:QFT[_, ss_List, _, ___], post___] :=
+Multiply[pre___, QFT[m:(-1|1), ss_, ___], QFT[n:(-1|1), ss_, ___], post___] :=
+  Multiply[pre, post] /; m + n == 0
+
+QFT /:
+HoldPattern @ Multiply[pre___, QCR[ss_List, ___], op:QFT[_, ss_List, ___], post___] :=
   Multiply[pre, Dagger @ op, post]
 
 QFT /:
-HoldPattern @ Multiply[pre___, op:QFT[_, ss_List, _, ___], QCR[ss_List, ___], post___] :=
+HoldPattern @ Multiply[pre___, op:QFT[_, ss_List, ___], QCR[ss_List, ___], post___] :=
   Multiply[pre, Dagger @ op, post]
 
 
 QFT /:
-Multiply[pre___, op:QFT[type_, ss:{__?QubitQ}, flag_?BooleanQ, opts___?OptionQ], in_Ket] :=
+Multiply[pre___, op:QFT[type_, ss:{__?QubitQ}, opts___?OptionQ], in_Ket] :=
   Garner @ Module[
     { k = FromDigits[in[ss], 2],
       L = Power[2, Length @ ss],
       v },
     v = Exp[type * (2*Pi*I) * Range[0, L-1] * k / L] / Sqrt[L];
-    If[flag, v = N[v]];
+    If[OptionValue[QFT, {opts}, "Numeric"], v = N[v]];
     Dot[Basis[ss], v] ** Ket[KeyDrop[First @ in, ss]]
   ]
+(* TODO: Handle the "ApproximationLevel" option. *)
 
 QFT /:
 Multiply[in_Bra, op_QFT, post___] :=
@@ -2070,47 +2090,43 @@ Multiply[pre___, Dyad[a_Association, b_Association], op:QFT[_, ss_List, ___], po
 
 
 QFT /:
-Multiply[pre___, QFT[m:(-1|1), ss_, ___], QFT[n:(-1|1), ss_, ___], post___] :=
-  Multiply[pre, post] /; m + n == 0
-
+Unfold[op_QFT, ___] = op (* fallback *)
 
 QFT /:
-Expand[op_QFT, ___] = op (* fallback *)
-
-QFT /:
-Expand[op_QFT, "Conventional"] := Expand[op]
-
-QFT /:
-Expand[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Reversed"] :=
-  QuantumCircuit[
-    QBR[ss] @ Reverse @ Most[
-      Expand[op] /. cp_ControlledPower :> ReplaceRulesBy[cp, "ControlLabel" -> OverTilde]
-    ],
-    QBR[ss]
+Unfold[QFT[type:(-1|1), ss:{__?QubitQ}, opts___?OptionQ], more___?OptionQ] := 
+  Module[
+    { flag = OptionValue[QFT, {more, opts}, "Numeric"],
+      rvrs = OptionValue[QFT, {more, opts}, "Reversed"],
+      elm },
+    elm = qftCtrlPower[flag, type, ss][All];
+    If[ rvrs,
+      elm = QBR[ss] /@ Reverse[elm] /. {
+        cp_ControlledPower :> ReplaceRulesBy[cp, "ControlLabel" -> OverTilde]
+      }
+    ];
+    Append[QuantumCircuit @@ elm, QBR @ ss]
   ]
 
-QFT /:
-Expand @ QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___] := 
-  QuantumCircuit @@ Append[qftCtrlPower[type, ss, flag][All], QBR[ss]]
 
+qftCtrlPower[flag_, type_, ss:{__?QubitQ}][All] := Flatten @
+  Map[qftCtrlPower[flag, type, ss], Range @ Length @ ss]
 
-qftCtrlPower[type_, ss:{__?QubitQ}, flag_][All] := Flatten @
-  Map[qftCtrlPower[type, ss, flag], Range @ Length @ ss]
-
-qftCtrlPower[type_, ss:{__?QubitQ}, flag_][k_Integer] := 
+qftCtrlPower[flag_, _, ss:{__?QubitQ}][k_Integer] := 
   { Last[ss][6] } /; Length[ss] == k
 
-qftCtrlPower[-1, ss:{__?QubitQ}, flag_][k_Integer] :=
-  Dagger[ qftCtrlPower[1, ss, flag][k] ]
+qftCtrlPower[flag_, -1, ss:{__?QubitQ}][k_Integer] :=
+  Dagger[ qftCtrlPower[flag, 1, ss][k] ]
 
-qftCtrlPower[+1, ss:{__?QubitQ}, flag_][k_Integer] := With[
-  { n = Length @ ss,
+qftCtrlPower[flag_, 1, ss:{__?QubitQ}][k_Integer] := With[
+  { n = Length[ss],
     T = ss[[k]] },
   { T[6],
     ControlledPower[
       Drop[ss, k],
       If[ flag, 
-        Phase[ N[2*Pi*Power[2, k-n-1]], T[3], "Label" -> thePauliForm @ T[C[n-k+1]] ], 
+        Phase[ N[2*Pi/Power[2, n-k+1]], T[3], 
+          "Label" -> thePauliForm @ T[C[n-k+1]] 
+        ], 
         T[C[n-k+1]] 
       ],
       "ControlLabel" -> "x"
@@ -2120,32 +2136,38 @@ qftCtrlPower[+1, ss:{__?QubitQ}, flag_][k_Integer] := With[
 
 
 QFT /:
-ExpandAll[op_QFT, ___] = op (* fallback *)
+UnfoldAll[op_QFT, ___] = op (* fallback *)
 
 QFT /:
-ExpandAll[op_QFT, "Conventional"] := ExpandAll[op]
+UnfoldAll[
+  op:QFT[type:(-1|1), ss:{__?QubitQ}, opts___?OptionQ], 
+  more___?OptionQ
+] :=
+Module[
+  { flag = OptionValue[QFT, {more, opts}, "Numeric"],
+    rvrs = OptionValue[QFT, {more, opts}, "Reversed"],
+    push = OptionValue[QFT, {more, opts}, "Pushed"],
+    aprx = OptionValue[QFT, {more, opts}, "ApproximationLevel"],
+    elm },
+  If[aprx === Full, aprx = Length[ss]];
+  elm = If[ push,
+    qftPushPhase[type, ss, flag, aprx][All],
+    qftCtrlPhase[type, ss, flag, aprx][All]
+  ];
+  If[rvrs, elm = QBR[ss] /@ Reverse[elm]];
+  Append[QuantumCircuit @@ elm, QBR @ ss]
+]
 
-QFT /:
-ExpandAll[op:QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___], "Reversed"] := 
-  QuantumCircuit[
-    QBR[ss] @ Reverse @ Most @ ExpandAll[op],
-    QBR[ss]
-  ]
 
-QFT /:
-ExpandAll @ QFT[type:(-1|1), ss:{__?QubitQ}, flag_?BooleanQ, ___] := 
-  QuantumCircuit @@ Append[qftCtrlPhase[type, ss, flag][All], QBR[ss]]
+qftCtrlPhase[type_, ss:{__?QubitQ}, flag_, m_Integer][All] := Flatten @
+  Map[qftCtrlPhase[type, ss, flag, m], Range @ Length @ ss]
 
+qftCtrlPhase[-1, ss:{__?QubitQ}, flag_, m_Integer][k_Integer] :=
+  Dagger[ qftCtrlPhase[1, ss, flag, m][k] ]
 
-qftCtrlPhase[type_, ss:{__?QubitQ}, flag_][All] := Flatten @
-  Map[qftCtrlPhase[type, ss, flag], Range @ Length @ ss]
-
-qftCtrlPhase[-1, ss:{__?QubitQ}, flag_][k_Integer] :=
-  Dagger[ qftCtrlPhase[1, ss, flag][k] ]
-
-qftCtrlPhase[+1, ss:{__?QubitQ}, flag_][k_Integer] :=
+qftCtrlPhase[+1, ss:{__?QubitQ}, flag_, m_Integer][k_Integer] :=
   Module[
-    { n = Length @ ss,
+    { n = Length[ss],
       T = ss[[k]] },
     Prepend[
       Table[
@@ -2156,8 +2178,34 @@ qftCtrlPhase[+1, ss:{__?QubitQ}, flag_][k_Integer] :=
             T[C[j-k+1]]
           ]
         ],
-        {j, k+1, n} ],
+        {j, k+1, Min[k+m-1, n]} ],
       T[6]
+    ]
+  ]
+
+(* See Coppersmith (1994) *)
+qftPushPhase[type_, ss:{__?QubitQ}, flag_, m_Integer][All] := Flatten @
+  Map[qftPushPhase[type, ss, flag, m], Range @ Length @ ss]
+
+qftPushPhase[-1, ss:{__?QubitQ}, flag_, m_Integer][k_Integer] :=
+  Dagger[ qftPushPhase[1, ss, flag, m][k] ]
+
+qftPushPhase[+1, ss:{__?QubitQ}, flag_, m_Integer][k_Integer] :=
+  Module[
+    { n = Length @ ss,
+      T },
+    Append[
+      Table[
+        T = ss[[j]];
+        ControlledGate[
+          ss[[{k}]] -> {1},
+          If[ flag,
+            Phase[ N[2*Pi/Power[2, k-j+1]], T[3], "Label" -> thePauliForm @ T[C[k-j+1]] ], 
+            T[C[k-j+1]]
+          ]
+        ],
+        {j, Max[1, k-m+1], k-1} ],
+      ss[[k]][6]
     ]
   ]
 
@@ -2254,19 +2302,19 @@ QBR[ss:{___?QubitQ}, ___][expr_] := Module[
 
 
 QBR /:
-Expand[op_QBR] = op (* fallback *)
+Unfold[op_QBR] = op (* fallback *)
 
 QBR /:
-Expand @ QBR[ss:{__?QubitQ}, ___] :=
+Unfold @ QBR[ss:{__?QubitQ}, ___] :=
   QuantumCircuit @@ Table[ SWAP[ss[[k]], ss[[-k]]], {k, Length[ss]/2} ]
 
 
 QBR /:
-ExpandAll[op_QBR] = op (* fallback *)
+UnfoldAll[op_QBR] = op (* fallback *)
 
 QBR /:
-ExpandAll[ op:QBR[ss:{__?QubitQ}, ___] ] := 
-  Expand[Expand @ op]
+UnfoldAll[ op:QBR[ss:{__?QubitQ}, ___] ] := 
+  Unfold[Unfold @ op]
 
 (**** </QBR> ****)
 
@@ -2350,21 +2398,21 @@ Multiply[pre___, Dyad[a_Association, b_Association], op:QCR[ss_List, ___], post_
 
 
 QCR /:
-Expand[op_QCR] = op (* fallback *)
+Unfold[op_QCR] = op (* fallback *)
 
 QCR /:
-Expand[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
-  { qft = Drop[Expand[QFT @ ss], -2] },
+Unfold[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
+  { qft = Drop[Unfold[QFT @ ss], -2] },
   QuantumCircuit[qft, Reverse @ qft]
 ]
 
 
 QCR /:
-ExpandAll[op_QCR] = op (* fallback *)
+UnfoldAll[op_QCR] = op (* fallback *)
 
 QCR /:
-ExpandAll[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
-  { qft = Drop[ExpandAll[QFT @ ss], -2] },
+UnfoldAll[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
+  { qft = Drop[UnfoldAll[QFT @ ss], -2] },
   QuantumCircuit[qft, Reverse @ qft]
 ]
 
@@ -2381,13 +2429,13 @@ Projector /:
 Dagger[ op_Projector ] = op
 
 Projector /:
-Expand[ Projector[v_, qq_List] ] := Dyad[v, v, qq]
+Unfold[ Projector[v_, qq_List] ] := Dyad[v, v, qq]
 
 Projector /:
 DyadForm[ Projector[v_, qq_List] ] := Dyad[v, v, qq]
 
 Projector /:
-Elaborate[ op:Projector[_, _List] ] := Elaborate[Expand @ op]
+Elaborate[ op:Projector[_, _List] ] := Elaborate[Unfold @ op]
 
 Projector /:
 Matrix[ op:Projector[_, _List], qq:{__?SpeciesQ}] :=
@@ -2634,16 +2682,16 @@ KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
 
 
 ProductState /:
-Expand[ ProductState[aa_Association, opts___?OptionQ] ] :=
+Unfold[ ProductState[aa_Association, opts___?OptionQ] ] :=
   State[CircleTimes @@ Values[aa], Keys @ aa]
 
 ProductState /:
 Elaborate[ vec:ProductState[_Association, ___] ] :=
-  Elaborate[Expand @ vec]
+  Elaborate[Unfold @ vec]
 
 ProductState /:
 Matrix[ ket_ProductState, rest___ ] :=
-  Matrix[Expand @ ket, rest]
+  Matrix[Unfold @ ket, rest]
 
 
 ProductState /:
@@ -2700,11 +2748,11 @@ Multiply[ pre___,
 
 ProductState /:
 Multiply[pre___, op_Measurement, in_ProductState, post___] :=
-  Multiply[pre, op[Expand @ in], post]
+  Multiply[pre, op[Unfold @ in], post]
 
 ProductState /:
 Multiply[pre___, op_, in_ProductState, post___] :=
-  Multiply[pre, Multiply[op, Expand @ in], post]
+  Multiply[pre, Multiply[op, Unfold @ in], post]
 
 (* 
 HoldPattern @
@@ -3094,7 +3142,7 @@ UnitaryInteraction[phi:Except[_?ListQ], rest__] :=
 
 
 UnitaryInteraction /:
-Expand @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] := With[
+Unfold @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] := With[
   { cn = ReleaseHold @ Thread[Hold[CNOT][Most @ ss, Last @ ss]] },
   QuantumCircuit[
     Sequence @@ cn,
@@ -3104,7 +3152,7 @@ Expand @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] := With[
  ]
 
 UnitaryInteraction /:
-Expand @ UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}] :=
+Unfold @ UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}] :=
   QuantumCircuit[
     CNOT[a, b],
     ControlledGate[b, Rotation[4*phi, a[1]]],
@@ -3112,7 +3160,7 @@ Expand @ UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}] :=
    ]
 
 UnitaryInteraction /:
-Expand @ UnitaryInteraction[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}] :=
+Unfold @ UnitaryInteraction[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}] :=
   QuantumCircuit[
     CNOT[a, b],
     ControlledGate[b, Rotation[4*phi, a[1]]],

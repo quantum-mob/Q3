@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.2.8
+
+- New: Unfold, UnfoldAll
+- Improved: QFT supports the new option "ApproximationLevel" for approximate QFT.
+- Note: Expand and ExpandAll for gates are replaced by Unfold and UnfoldAll, respectively.
+
 ## 4.2.7
 
 - New: WickSteadyState

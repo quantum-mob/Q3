@@ -79,6 +79,23 @@ HoldPattern @ Multiply[ pre___,
 
 (**** <deprecated> *****)
 
+(* 2025-08-24 *)
+
+Q3General::expand = "Expand[`1`[\[Ellipsis]]] and ExpandAll[`1`[\[Ellipsis]]] are deprecated; use Unfold[`1`[\[Ellipsis]]] and UnfoldAll[`1`[\[Ellipsis]]], respectively."
+
+Scan[
+  ( # /: Expand[HoldPattern[#[any__]], rest___] := (
+      Message[Q3General::expand, #];
+      Unfold[#[any], rest]
+    );
+    # /: ExpandAll[HoldPattern[#[any__]], rest___] := (
+      Message[Q3General::expand, #];
+      UnfoldAll[#[any], rest]
+    );
+  )&,
+  { GivensRotation, ProductState, AmplitudeEncoding, BlockEncoding, QuantumCircuit, EulerRotation, SWAP, iSWAP, ControlledGate, UniformlyControlledRotation, UniformlyControlledGate, QFT, QBR, QCR, Projector, UnitaryInteraction }
+]
+
 (* 2025-05-08 *)
 WickMeasurement::deprecated = "This form is now deprecated; use WickMeasurement[k, n] or WickMeasurment[{k1,k2,\[Ellipsis]}, n]."
 
@@ -521,15 +538,15 @@ GrayTwoLevelU[args___] := (
 )
 
 
-FromTwoLevelU::usage = "FromTwoLevelU is obsolte now. Use Expand instead."
+FromTwoLevelU::usage = "FromTwoLevelU is obsolte now. Use Unfold instead."
 
 FromTwoLevelU[mat_?MatrixQ, rest__] := (
-  Message[Q3General::obsolete, FromTwoLevelU, Expand];
+  Message[Q3General::obsolete, FromTwoLevelU, Unfold];
   Expand @ GivensRotation[mat, rest]
 )
 
 FromTwoLevelU[GivensRotation[mat_?MatrixQ, ij_, _Integer], ss:{__?QubitQ}] :=
-  ( Message[Q3General::obsolete, FromTwoLevelU, Expand];
+  ( Message[Q3General::obsolete, FromTwoLevelU, Unfold];
     List @@ Expand @ GivensRotation[mat, ij, ss] )
 
 
@@ -537,7 +554,7 @@ TwoLevelDecomposition::usage = "TwoLevelDecomposition is obsolte now. Use Givens
 
 TwoLevelDecomposition[args__] := (
   Message[Q3General::obsolete, FromTwoLevelU, GivensFactor|GrayGivensFactor];
-  Expand @ GivensFactor[mat, rest]
+  Unfold @ GivensFactor[mat, rest]
 )
 
 

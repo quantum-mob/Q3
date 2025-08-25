@@ -1066,6 +1066,7 @@ LevelsPlot::usage = "LevelsPlot[{y1,y2,\[Ellipsis]}] generates a plot of levels 
 Options[LevelsPlot] = {
   "Size" -> 1,
   "Gap" -> 0.5,
+  "Joined" -> True,
   "Labels" -> None,
   "DataLabels" -> None,
   "DataStyles" -> None
@@ -1099,32 +1100,35 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
     If[ sty === Automatic || sty === None, Null,
       sty = padCyclic[sty, Length @ data];
       lines = Thread[{sty, lines}];
-     ];
+    ];
 
     new = MapThread[Part[#1, #2;;]&, {data, off}];
     min = Min[Length /@ new];
     new = Take[#, min]& /@ new;
     
-    links = {
-      MapThread[Thread[{#1, #2}]&, {Most @ (loc+wid), Most @ new}],
-      MapThread[Thread[{#1, #2}]&, {Rest @ loc, Rest @ new}]
-     };
-    links = If[ links == {{}, {}},
-      Nothing,
-      Line /@ Catenate @ Transpose[links, 1 <-> 3]
-     ];
+    If[ OptionValue["Joined"],
+      links = {
+        MapThread[Thread[{#1, #2}]&, {Most @ (loc+wid), Most @ new}],
+        MapThread[Thread[{#1, #2}]&, {Rest @ loc, Rest @ new}]
+      };
+      links = If[ links == {{}, {}},
+        Nothing,
+        Line /@ Catenate @ Transpose[links, 1 <-> 3]
+      ],
+      links = Nothing
+    ];
 
     ticks = If[ tag === None,
       None,
       tag = padCyclic[tag, Length @ data];
       Thread[{loc+wid/2, tag, 0}]
-     ];
+    ];
 
     texts = If[ txt === None,
       Nothing,
       txt = padCyclic[txt, Length @ data];
       makeLabels @@@ Thread[{loc+wid/2, data, txt}]
-     ];
+    ];
 
     Graphics[
       { {Thick, lines},
@@ -1132,12 +1136,12 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
         texts },
       FilterRules[{opts}, Options @ Graphics],
       Frame -> {{True, False}, {True, False}},
-      FrameStyle -> {{Directive[Black,Large], None}, {White, None}},
+      FrameStyle -> {{Directive[Black, Large], None}, {White, None}},
       FrameTicks -> {{Automatic, None}, {ticks, None}},
       FrameTicksStyle -> Directive[Large, Black],
       ImageSize -> Medium
-     ]
-   ]
+    ]
+  ]
 
 padCyclic[set_, len_] := Module[
   { new },

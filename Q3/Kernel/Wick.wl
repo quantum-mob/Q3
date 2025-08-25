@@ -2428,7 +2428,7 @@ WickSteadyState[
   { in = UpperTriangular[cvr, 1],
     spr, vec, out },
   spr = WickLindbladKernel[ham, msr, flag];
-  vec = Eigenvectors[spr];
+  vec = Eigenvectors[N @ spr];
   out = Inverse[Transpose @ vec] . in;
   out = Last[vec] * Last[out];
   AntisymmetricMatrix[Re @ out]

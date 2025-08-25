@@ -1377,7 +1377,7 @@ StateForm[expr_?fKetQ] := With[
   State[Matrix[expr, ss], ss]
 ]
 
-StateForm[vec_ProductState] := Expand[vec]
+StateForm[vec_ProductState] := Unfold[vec]
 
 (**** </StateForm> ****)
 
@@ -2908,7 +2908,7 @@ Elaborate @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
   Multiply[ Rotation[a, S[3]], Rotation[b, S[2]], Rotation[c, S[3]] ]
 
 EulerRotation /:
-Expand @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
+Unfold @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
   QuantumCircuit[ Rotation[a, S[3]], Rotation[b, S[2]], Rotation[c, S[3]] ]
 
 (**** </EulerRotation> ****)
