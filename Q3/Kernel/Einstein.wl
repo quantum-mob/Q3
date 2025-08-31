@@ -79,6 +79,19 @@ HoldPattern @ Multiply[ pre___,
 
 (**** <deprecated> *****)
 
+(* 2025-08-31 *)
+(* Mathematica 14.3 has added multiple functions to represent noncommutative algebras and perform operations on polynomials in such algebras: https://www.wolfram.com/mathematica/quick-revision-history/ *)
+If[ $VersionNumber < 14.3,
+  Commutator[a_, b_, n_Integer] := (
+    Message[Q3General::deprecated];
+    LiePower[a, b, n]
+  );
+  Anticommutator[a_, b_, n_Integer] := (
+    Message[Q3General::deprecated];
+    Fold[Anticommutator, b, ConstantArray[a, n]]    
+  );
+];
+
 (* 2025-08-24 *)
 
 Q3General::expand = "Expand[`1`[\[Ellipsis]]] and ExpandAll[`1`[\[Ellipsis]]] are deprecated; use Unfold[`1`[\[Ellipsis]]] and UnfoldAll[`1`[\[Ellipsis]]], respectively."

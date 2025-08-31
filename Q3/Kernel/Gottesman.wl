@@ -640,10 +640,10 @@ GottesmanVectorEmbed[vec_?VectorQ, {kk:{__Integer}, n_Integer}] := Append[
 
 GottesmanTest::usage = "GottesmanTest[a, b] returns 1 if the two operators a and b commute with each other, -1 if they anti-commute, and 0 otherwise."
 
-GottesmanTest[a_, b_] := If[
-  TrueQ[Commutator[a, b] == 0],
-  1,
-  If[Anticommutator[a, b] == 0, -1, 0, 0]
+GottesmanTest[a_, b_] := Which[
+  TrueQ[Commutator[a, b] == 0], 1,
+  TrueQ[Anticommutator[a, b] == 0], -1,
+  True, 0
 ]
 
 

@@ -767,33 +767,28 @@ AntihermitianQ[ Conjugate[a_?AntihermitianQ] ] = True;
 
 (**** <Commutator> ***)
 
-Commutator::usage = "Commutator[a,b] = Multiply[a,b] - Multiply[b,a].\nCommutator[a, b, n] = [a, [a, \[Ellipsis] [a, b]]],
-this is order-n nested commutator."
+(* Mathematica 14.3 has added multiple functions to represent noncommutative algebras and perform operations on polynomials in such algebras: https://www.wolfram.com/mathematica/quick-revision-history/ *)
 
-Anticommutator::usage = "Anticommutator[a,b] = Multiply[a,b] + Multiply[b,a].\nAnticommutator[a, b, n] = {a, {a, \[Ellipsis] {a, b}}}, this is order-n nested anti-commutator."
-
-SetAttributes[{Commutator, Anticommutator}, {Listable, ReadProtected}]
-
-Commutator[a_, b_] := Garner[ Multiply[a, b] - Multiply[b, a] ]
-
-Commutator[a_, b_, 0] := b
-
-Commutator[a_, b_, 1] := Commutator[a, b]
-
-Commutator[a_, b_, n_Integer] := 
-  Commutator[a, Commutator[a, b, n-1] ] /; n > 1
-
-
-Anticommutator[a_, b_] := Garner[ Multiply[a, b] + Multiply[b, a] ]
-
-Anticommutator[a_, b_, 0] := b
-
-Anticommutator[a_, b_, 1] :=  Anticommutator[a, b]
-
-Anticommutator[a_, b_, n_Integer] := 
-  Anticommutator[a, Anticommutator[a, b, n-1] ] /; n > 1
+If[ $VersionNumber < 14.3,
+  Commutator::usage = "Commutator[a,b] = Multiply[a,b] - Multiply[b,a].\nCommutator[a, b, n] = [a, [a, \[Ellipsis] [a, b]]], this is order-n nested commutator.";
+  SetAttributes[Commutator, {Listable, ReadProtected}];
+  Commutator[a_, b_] := Garner[ Multiply[a, b] - Multiply[b, a] ]
+];
 
 (**** </Commutator> ***)
+
+
+(**** <Anticommutator> ***)
+
+(* Mathematica 14.3 has added multiple functions to represent noncommutative algebras and perform operations on polynomials in such algebras: https://www.wolfram.com/mathematica/quick-revision-history/ *)
+
+If[ $VersionNumber < 14.3,
+  Anticommutator::usage = "Anticommutator[a,b] = Multiply[a,b] + Multiply[b,a].\nAnticommutator[a, b, n] = {a, {a, \[Ellipsis] {a, b}}}, this is order-n nested anti-commutator.";
+  SetAttributes[Anticommutator, {Listable, ReadProtected}];
+  Anticommutator[a_, b_] := Garner[ Multiply[a, b] + Multiply[b, a] ]
+];
+
+(**** </Anticommutator> ***)
 
 
 (**** <CoefficientTensor> ****)
@@ -1231,8 +1226,8 @@ HoldPattern @
       MultiplyExp[ a + b + Commutator[a, b]/2 ],
       Multiply[post]
     ] /;
-      Garner[ Commutator[a, b, 2] ] === 0 /;
-      Garner[ Commutator[b, a, 2] ] === 0
+      Garner[ LiePower[a, b, 2] ] === 0 /;
+      Garner[ LiePower[b, a, 2] ] === 0
 
 HoldPattern @
   Multiply[pre___, MultiplyExp[a_], b_?AnySpeciesQ, post___] :=
@@ -1246,10 +1241,10 @@ HoldPattern @
       { new = Multiply[post] },
       Multiply[ Multiply[pre, b], MultiplyExp[a], new] +
         Multiply[ Multiply[pre, Commutator[a, b]], MultiplyExp[a], new]
-    ] /; Garner[ Commutator[a, b, 2] ] === 0
+    ] /; Garner[ LiePower[a, b, 2] ] === 0
 (* NOTE: Exp is pushed to the right. *)
 (* NOTE: Here, notice the PatternTest AnySpeciesQ is put in order to skip
-   Exp[op] or MultiplyExp[op]. Commutators involving Exp[op] or
+   Exp[op] or MultiplyExp[op]. The commutators involving Exp[op] or
    MultiplyExp[op] usually takes long in vain. *)
 
 (**** </Baker-Hausdorff Lemma: Simple Cases> ****)
@@ -1261,6 +1256,10 @@ Lie::usage = "Lie[a, b] returns the commutator [a, b]."
 
 Lie[a_, b_] := Commutator[a, b]
 
+(**** </Lie> ****)
+
+
+(**** <LiePower> ****)
 
 LiePower::usage = "LiePower[a, b, n] returns the nth order commutator [a, [a, \[Ellipsis], [a, b]\[Ellipsis]]]."
 
@@ -1270,9 +1269,9 @@ LiePower[a_, b_, 0] := b
 
 LiePower[a_, b_, 1] := Commutator[a, b]
 
-LiePower[a_, b_, n_Integer] := Garner[
-  Power[-1, n] Fold[ Commutator, b, ConstantArray[a, n] ]
- ] /; n>1
+LiePower[a_, b_, n_Integer] := Lie[a, LiePower[a, b, n-1] ] /; n > 1
+
+(**** </LiePower> ****)
 
 
 LieSeries::usage = "LieSeries[a, b, n] returns the finite series up to the nth order of Exp[a] ** b ** Exp[-a].\nLieSeries[a, b, Infinity] is equivalent to LieExp[a, b]."
@@ -1283,8 +1282,10 @@ LieSeries[a_, b_, n_Integer] := With[
   { aa = FoldList[Commutator, b, ConstantArray[a, n]],
     ff = Table[Power[-1, k]/(k!), {k, 0, n}] },
   Garner[ aa . ff ]
- ] /; n>=0
+] /; n>=0
 
+
+(**** <LieExp> ****)
 
 LieExp::usage = "LieExp[a, b] returns Exp[a] ** b ** Exp[-a]."
 
@@ -1306,7 +1307,7 @@ LieExp[a_, b_] := b /;
   Garner[ Commutator[a, b] ] == 0
 
 LieExp[a_, b_] := b + Commutator[a, b] /;
-  Garner[ Commutator[a, b, 2] ] == 0
+  Garner[ LiePower[a, b, 2] ] == 0
 
 (* Mendas-Milutinovic Lemma: The anticommutator analogues of the
    Baker-Hausdorff lemma.  See Mendas and Milutinovic (1989a) *)
@@ -1318,10 +1319,10 @@ LieExp[a_, b_] := Multiply[MultiplyExp[2 a], b] /;
 LieExp[a_, b_] :=
   Multiply[ MultiplyExp[2 a], b ] -
   Multiply[ MultiplyExp[2 a], Anticommutator[a, b] ] /;
-  Garner @ Anticommutator[a, b, 2] == 0 
+  Garner[Anticommutator[a, Anticommutator[a, b]]] == 0 
 (* NOTE: Exp is pushed to the left. *)
 
-(**** </Lie> ****)
+(**** </LieExp> ****)
 
 
 (**** <LieBasis> ****)
