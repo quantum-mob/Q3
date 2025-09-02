@@ -89,9 +89,14 @@ AddElaborationPatterns[
 
 Unfold::usage = "Unfold[gate] gives an unfolded form of gate."
 
+Unfold[any_?CommutativeQ op_] := any * Unfold[op]
+
 Unfold[any_] = any
 
+
 UnfoldAll::usage = "UnfoldAll[gate] gives a fully unfolded form of gate."
+
+UnfoldAll[any_?CommutativeQ op_] := any * UnfoldAll[op]
 
 UnfoldAll[any_] = any
 
@@ -1433,10 +1438,7 @@ Unfold @ ControlledGate[ cc:{__Rule},
 ]
 
 ControlledGate /:
-Unfold @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] :=
-  QuantumCircuit @@ theControlledGate[cc, op] /; Length[Qubits @ op] == 1
-
-theControlledGate[cc:{__Rule}, op_] := Module[
+Unfold @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] := Module[
   { tt = First[Qubits @ op],
     mm = Matrix[op],
     ff },
@@ -1465,15 +1467,16 @@ theControlledGate[cc:{__Rule}, op_] := Module[
   Module[
     {a, b, c},
     {a, b, c} = TheEulerAngles[mm / ff];
-    Garner @ {
+    QuantumCircuit[
       Rotation[-(a-c)/2, tt[3], "Label" -> "C"],
       CNOT[cc, tt],
       EulerRotation[{0, -b/2, -(a+c)/2}, tt, "Label" -> "B"],
       CNOT[cc, tt],
       EulerRotation[{a, b/2, 0}, tt, "Label" -> "A"],
-      ControlledGate[cc, ff] }
+      ControlledGate[cc, ff]
+    ]
   ]
-]
+] /; Length[Qubits @ op] == 1
 
 
 ControlledGate /:

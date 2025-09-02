@@ -555,12 +555,12 @@ FromTwoLevelU::usage = "FromTwoLevelU is obsolte now. Use Unfold instead."
 
 FromTwoLevelU[mat_?MatrixQ, rest__] := (
   Message[Q3General::obsolete, FromTwoLevelU, Unfold];
-  Expand @ GivensRotation[mat, rest]
+  Unfold @ GivensRotation[mat, rest]
 )
 
 FromTwoLevelU[GivensRotation[mat_?MatrixQ, ij_, _Integer], ss:{__?QubitQ}] :=
   ( Message[Q3General::obsolete, FromTwoLevelU, Unfold];
-    List @@ Expand @ GivensRotation[mat, ij, ss] )
+    List @@ Unfold @ GivensRotation[mat, ij, ss] )
 
 
 TwoLevelDecomposition::usage = "TwoLevelDecomposition is obsolte now. Use GivensFactor or GrayGivensFactor instead."

@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.2.9
+
+- Support for the dark mode in Mathematica 14.3.
+- Deprecated: Commutator and Anticommutator are now introduced in Mathematica 14.3. The corresponding Q# symbols are deprecated.
+
 ## 4.2.8
 
 - New: Unfold, UnfoldAll

@@ -823,8 +823,8 @@ gateShape["CircleCross"][x_, yy_List, ___] :=
   gateShape["CircleCross"] @@@ Thread@{x, yy}
 
 gateShape["CircleCross"][x_, y_?NumericQ, ___] := {
-  {EdgeForm[Black], White, Disk[{x, y}, $GateSize / 3]},
-  Line@{
+  {EdgeForm[Opacity[1]], LightDarkSwitched @ White, Disk[{x, y}, $GateSize / 3]},
+  Line @ {
     { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
     { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
    }
@@ -837,10 +837,10 @@ gateShape["Cross"][x_, Rule[yy_List, _], ___] :=
 gateShape["Cross"][x_, yy_List, ___] :=
   gateShape["Cross"] @@@ Thread@{x, yy}
 
-gateShape["Cross"][x_, y_, ___] := List @ Line@{
+gateShape["Cross"][x_, y_, ___] := List @ Line @ {
     { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
     { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
-   }
+  }
 
 
 gateShape["Measurement"][x_, {y_}, opts___?OptionQ] :=
@@ -857,12 +857,12 @@ gateShape["Measurement"][x_, yy:{_, __}, opts___?OptionQ] := Module[
    ];
 
   cc = {
-    Line @ Thread@{x-$DotSize/2, yy},
-    Line @ Thread@{x+$DotSize/2, yy}
+    Line @ Thread @ {x-$DotSize/2, yy},
+    Line @ Thread @ {x+$DotSize/2, yy}
    };
 
   {cc, mm}
- ]
+]
 
 gateShape["Measurement"][x_, y_, opts___?OptionQ] := Module[
   {pane, text, arc, needle},
@@ -874,7 +874,7 @@ gateShape["Measurement"][x_, y_, opts___?OptionQ] := Module[
   needle = Line[{ {x, y - 0.25 $GateSize}, {x,y} + .3{1,1}$GateSize }];
   
   {pane, text, arc, needle}
- ]
+]
 
 
 gateShape["Projector"][x_, yy_List, ___] := Module[
@@ -886,7 +886,7 @@ gateShape["Projector"][x_, yy_List, ___] := Module[
       {x, y2} + $GateSize {-1/2,+1/2},
       {x, y1} + $GateSize {-1/2,-1/2},
       {x, y1} + $GateSize {+1/2,-1/4} }];
-  { {EdgeForm[Opacity[1]], White, pane} }
+  { {EdgeForm[Opacity[1]], LightDarkSwitched @ White, pane} }
  ]
 
 
@@ -901,7 +901,7 @@ gateShape["Dot"][x_, y_?NumericQ -> 1, ___] :=
   Disk[{x, y}, $DotSize]
 
 gateShape["Dot"][x_, y_?NumericQ -> 0, ___] :=
-  {EdgeForm[Opacity[1]], White, Disk[{x, y}, $DotSize]}
+  {EdgeForm[Opacity[1]], LightDarkSwitched @ White, Disk[{x, y}, $DotSize]}
 
 
 gateShape["MixedDot"][x_, rr:Rule[_List, _List], ___] :=
@@ -909,20 +909,20 @@ gateShape["MixedDot"][x_, rr:Rule[_List, _List], ___] :=
 
 gateShape["MixedDot"][x_, y_?NumericQ -> _, ___] :=
   { EdgeForm[Opacity[1]],
-    White, Disk[{x, y}, $DotSize, {1, 5}*Pi/4],
-    Black, Disk[{x, y}, $DotSize, {-3, 1}*Pi/4]
+    LightDarkSwitched @ White, Disk[{x, y}, $DotSize, {1, 5}*Pi/4],
+    LightDarkSwitched @ Black, Disk[{x, y}, $DotSize, {-3, 1}*Pi/4]
   }
 
 
 gateShape["CircleDot"][x_, yy_List, ___] := {
-  Line[Thread@{x, yy}],
+  Line[Thread @ {x, yy}],
   gateShape["CircleDot"] @@@ Thread@{x, yy}
  }
 
 gateShape["CircleDot"][x_, y_, ___] :=
   { EdgeForm[Opacity[1]],
-    White, Disk[{x, y}, 2.00*$DotSize],
-    Black, Disk[{x, y}, 0.75*$DotSize]
+    LightDarkSwitched @ White, Disk[{x, y}, 2.00*$DotSize],
+    LightDarkSwitched @ Black, Disk[{x, y}, 0.75*$DotSize]
   }
 
 
@@ -934,7 +934,7 @@ gateShape["Rectangle"][x_, yy_List, opts___?OptionQ] := Module[
   pane = Rectangle[
     {x, y1} - 0.5*{1,1}*$GateSize,
     {x, y2} + 0.5*{1,1}*$GateSize ];
-  {{EdgeForm[Opacity[1]], White, pane}, text}
+  {{EdgeForm[Opacity[1]], LightDarkSwitched @ White, pane}, text}
  ]
 
 gateShape["Rectangle"][ x_, y_?NumericQ, opts___?OptionQ ] :=
@@ -945,7 +945,7 @@ gateShape["Oval"][ x_, y_?NumericQ, opts___?OptionQ ] := Module[
   { pane, text},
   text = theGateLabel[{x, y}, opts];
   pane = Disk[{x, y}, $GateSize/2];
-  { {EdgeForm[Opacity[1]], White, pane}, text }
+  { {EdgeForm[Opacity[1]], LightDarkSwitched @ White, pane}, text }
  ]
 
 gateShape["Oval"][ x_, yy_List, opts___?OptionQ ] := Module[
@@ -960,7 +960,7 @@ gateShape["Oval"][ x_, yy_List, opts___?OptionQ ] := Module[
   y0 = y1 - $GateSize/2;
   y3 = y2 + $GateSize/2;
   pane = Rectangle[{x1, y0}, {x2, y3}, RoundingRadius -> $GateSize/2];
-  { {EdgeForm[Opacity[1]], White, pane}, text }
+  { {EdgeForm[Opacity[1]], LightDarkSwitched @ White, pane}, text }
 ]
 
 gateShape["Oval"][ x_, Rule[yy_List, _], opts___?OptionQ ] :=
@@ -1158,7 +1158,7 @@ qcDrawGate[
 qcDrawGate[Gate[tt:{__?SpeciesQ}, opts___?OptionQ], x_, yy_Association] :=
   Module[
     { yt = Lookup[yy, tt],
-      new = FilterRules[Flatten@{opts}, Options @ Gate] },
+      new = FilterRules[Flatten @ {opts}, Options @ Gate] },
     target = gateShape @ OptionValue[Gate, new, "Shape"];
     target[x, yt, opts]
   ]

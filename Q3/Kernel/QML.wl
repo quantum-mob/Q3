@@ -130,7 +130,7 @@ ParseGate[
 
 (**** <VertexEmbedding> ****)
 
-VertexEmbedding::usage = ""
+VertexEmbedding::usage = "VertexEmbedding[graph, {s1,s2,\[Ellipsis]}] replaces the vertices in graph with qubits s1, s2, \[Ellipsis]."
 
 VertexEmbedding[g_Graph, s_?QubitQ] :=
  VertexEmbedding[g, FlavorCap @ s] /; Not[FlavorCapQ @ s]
