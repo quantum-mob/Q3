@@ -255,7 +255,7 @@ ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := With[
   If[ Length[vec] > n,
     Append[Take[vec, n], "\[Ellipsis]"],
     Take[vec, UpTo @ n]
-  ] // Normal //Chop // IntegerChop
+  ] // Normal[#, SparseArray]& // Chop // IntegerChop
 ]
 
 ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[

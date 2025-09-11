@@ -2850,6 +2850,8 @@ BellState[g:{_?QubitQ, _?QubitQ}, 3] :=
   ( Ket[g->{0,0}] - Ket[g->{1,1}] ) / Sqrt[2]
 
 
+(**** <GHZState> ****)
+
 DickeState::usage = "DickeState[qubits, n] gives the generalized Dicke state for the qubits, where n qubits are in the state Ket[1]."
 
 DickeState[ss:{__?QubitQ}, n_] := Module[
@@ -2857,9 +2859,11 @@ DickeState[ss:{__?QubitQ}, n_] := Module[
   byte = PadRight[byte, Length @ ss];
   byte = Permutations[byte];
   Total[ Map[Ket[ss -> #]&, byte] ] / Sqrt[Length[byte]]
- ]
+]
 
 DickeState[ss:{__?QubitQ}] := Table[DickeState[ss, n], {n, 0, Length @ ss}]
+
+(**** </GHZState> ****)
 
 
 (**** <GHZState for Qubits> ****)

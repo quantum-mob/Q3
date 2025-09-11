@@ -373,6 +373,9 @@ tableauToPermutation[yt_YoungTableau] :=
 
 YoungNormalRepresentation::usage = "YoungNormalRepresentation[shape] refers to Young's normal representation of the symmetric group corresponding to integer partition shape.\nYoungNormalRepresentation[shape][prm] returns the matrix of permutation prm in Young's normal representation.\nSee also SpechtBasis."
 
+YoungNormalRepresentation[n_Integer] :=
+  Map[YoungNormalRepresentation, YoungShapes @ n]
+
 YoungNormalRepresentation[shape_YoungShape] :=
   YoungNormalRepresentation[
     shape, 

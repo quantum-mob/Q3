@@ -571,6 +571,9 @@ GroupClasses[SymmetricGroup[n_Integer]] :=
 GroupClasses[SymmetricGroup[n_Integer], irr:(_YoungShape|_List?YoungShapeQ)] :=
   YoungClasses[irr] /; Total[irr] == n
 
+GroupClasses[grp:{_String, _Integer}] := 
+  FiniteGroupData[grp, "ConjugacyClasses"]
+
 (**** </GroupClasses> ****)
 
 
@@ -626,6 +629,9 @@ theCycleDecompositionType[n_Integer][Cycles[spec_]] := With[
 GroupClassSize::usage = "GroupGlassSize[group, class] returns the number of elements in the conjugacy class 'class'."
 
 GroupClassSize[SymmetricGroup[n_Integer], class_List?YoungShapeQ] :=
+  YoungClassSize[class] /; n > 0
+
+GroupClassSize[SymmetricGroup[n_Integer], class_YoungShape] :=
   YoungClassSize[class] /; n > 0
 
 GroupClassSize[group_, g_] :=

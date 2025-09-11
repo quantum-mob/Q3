@@ -527,6 +527,8 @@ LindbladSolve[ops:{_, __}, in_, t_] := Module[
 
 (**** <NLindbladSolve> ****)
 
+(* TODO: Use the Schur decompoistion; see https://community.wolfram.com/groups/-/m/t/3529901 *)
+
 NLindbladSolve::usage = "NLindbladSolve[{opH, opL1, opL2, ...}, init, {t, tmin, tmax}] finds a numerical solution to the Lindblad equation defined by Hamiltonian opH and Lindblad operators opL1, opL2, \[Ellipsis].NLindblad[tsr, init, {t, tmin, tmax}] assumes that the Lindblad generator is specified by Choi matrix tsr.\nInternally, it uses the NDSolve built-in function and hence takes all options of NDSolve."
 
 NLindbladSolve::incmp = "The matrices `` are not compatible with each other."

@@ -111,7 +111,7 @@ pushPair[a:{_, _}, b_List] := Map[Join[{a}, #]&, Pairings[b]]
 
 (**** <OrderedPartitions> ****)
 
-OrderedPartitions::usage = "OrderedPartitions[n, spec] returns a inversely sorted list of ordered partitions of integer n, with the same spec as for IntegerPartitions."
+OrderedPartitions::usage = "OrderedPartitions[n, spec] returns an inversely sorted list of ordered partitions of integer n, with the same spec as for IntegerPartitions."
 
 OrderedPartitions[n_Integer] := 
  theOrderedPartitions @ PadRight @ IntegerPartitions[n]

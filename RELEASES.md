@@ -1,6 +1,11 @@
 # Release Notes
 
-## 4.2.9
+## 4.2.11
+
+- Bug fixes: GroupClassSize
+- Enhanced: YoungNormalRepresentation
+
+## 4.2.10
 
 - Support for the dark mode in Mathematica 14.3.
 - Deprecated: Commutator and Anticommutator are now introduced in Mathematica 14.3. The corresponding Q# symbols are deprecated.
