@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.2.12
+
+- Improved: LevelsPlot
+- Documents: Generalized Quantum Fourier Transform, Dual Quantum Schur Transform
+
 ## 4.2.11
 
 - Bug fixes: GroupClassSize

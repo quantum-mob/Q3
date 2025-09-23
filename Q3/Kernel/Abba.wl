@@ -9,9 +9,6 @@ BeginPackage["QuantumMob`Q3`"]
 
 Q3::summary = "A symbolic quantum simulation framework on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.";
 
-If[$VersionNumber < 14.2, System`LightDarkSwitched = Identity];
-(* NOTE: PlaybookTools defines $PlaybookBannerColor using LightDarkSwitched, which was introduced in Mathematica 14.2. This affects the Q3/Playbook and Q3/PlaybookDraft stylesheets. *)
-
 
 Begin["`Private`"]
 

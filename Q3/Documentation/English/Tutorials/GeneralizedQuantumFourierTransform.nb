@@ -1,0 +1,4905 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[    178631,       4896]
+NotebookOptionsPosition[    159633,       4535]
+NotebookOutlinePosition[    163336,       4611]
+CellTagsIndexPosition[    163293,       4608]
+WindowTitle->Generalized Quantum Fourier Transform
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["QUANTUM MOB/ Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "9d9bce37-c552-45fd-a625-a8a0ba249ebe"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "fcc05297-c663-42a9-9294-8a90f35f3252"],
+        Background->LightDarkSwitched[
+          RGBColor[
+          0.3843137254901961, 0.4627450980392157, 0.7019607843137254]],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Functions",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "c78882f6-93cc-4790-afb6-5ccebf51a4fb"]
+         }],ExpressionUUID->"6601e0cf-48f5-458a-963b-f206c1477b39"],
+         StripOnInput->False],{
+        StyleBox["\"YoungFourier\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/YoungFourier"], 
+         StyleBox[
+          "\"YoungFourierBasis\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/ref/YoungFourierBasis"], 
+         StyleBox[
+          "\"YoungFourierMatrix\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/ref/YoungFourierMatrix"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"TutorialFunction"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "af483515-3974-45b4-b905-c5ffa7b7e464"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "f562e511-b02e-4430-b7ef-e50049a50819"]
+         }],ExpressionUUID->"8a890a09-1a4b-40d9-8534-272970b7290c"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/guide/QuantumInformationSystems"], 
+         "\"Q3: Symbolic Quantum Simulation\"" :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/guide/Q3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"TutorialMoreAboutSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "42ea6a97-28f6-487e-85e0-ea98333cdbe5"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "46350883-1423-466d-acc9-0048f87ac130"]
+         }],ExpressionUUID->"c0f06f44-a89b-489b-a879-151035aeade1"],
+         StripOnInput->False],{
+        "\"Dual Quantum Schur Transform\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/DualQuantumSchurTransform"], 
+         "\"Quantum Fourier Transform\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/QuantumFourierTransform"], 
+         "\"Quantum Phase Estimation\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/QuantumPhaseEstimation"], 
+         "\"Quantum Algorithms\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/QuantumAlgorithms"], 
+         "\"Quantum Information Systems with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/QuantumInformationSystems"], 
+         "\"Quick Quantum Computing with Q3\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/QuickQuantumComputingWithQ3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"RelatedTutorialsSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "798d796f-bf24-473c-84bd-d4999a385e17"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "a9fb82ee-24cd-49c8-b957-0e0b7fcec0e9"]
+         }],ExpressionUUID->"82c8b77d-5c43-4e36-a37a-20a5cdb0c561"],
+         StripOnInput->False],{
+        "\"QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform\"" :> 
+         None, "\"Copy Wolfram Documentation Center URL\"" :> 
+         CopyToClipboard[
+          "QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform"], 
+         Delimiter, "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/QuantumMob/Q3/\
+tutorial/GeneralizedQuantumFourierTransform.html"], StandardForm]], "Input", 
+                 TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[(If[TrueQ[False], 
+                  "http://reference.wolfram.com/system-modeler/", 
+                  "http://reference.wolfram.com/language/"] <> 
+                "QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform") <> 
+               ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "838f094f-ced1-42b1-8536-38d4ccb54f06"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "866f6293-ae29-4159-b010-4fadb870cf9f"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"c13a6aaf-a62b-453a-b851-80a7d74b2df1"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Generalized Quantum Fourier Transform", "TechNoteTitle",ExpressionUUID->
+      "38cd7fdd-3f2b-491e-a5bb-405d3ebc0931"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"df776117-79af-45ea-8595-ba89cb25009b"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "cfab98d3-8ab5-4a7f-be69-f0238bc0e635"]
+    }],ExpressionUUID->"1e74884a-23d6-4449-bcd4-26d668ea8b4b"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 14.3\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->LightDarkSwitched[
+              RGBColor[0.968627, 0.466667, 0]]], {Right, Center}, {
+           Right, Center}],
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 14",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "46a33050-3149-48ec-a0ab-86b78c729d03"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"24aaeada-8213-429e-925f-e3be99a57b45"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Preliminaries"], 
+      "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform#\
+689630454", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Basic Application for Induced Representations"], 
+      "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform#\
+295059906", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Definition"], 
+      "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform#\
+48377149", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Generalized Quantum Phase Estimation"], 
+      "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform#\
+109423420", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Quantum Implementation"], 
+      "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform#\
+1540694772", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Appendix"], 
+      "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform#\
+1632728188", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Basic Application for Restricted Representations"], 
+      "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform#\
+422878995", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], ""}
+  }]], "TechNoteJumpBox",ExpressionUUID->"c305856d-0c10-4788-942e-\
+d5dffc7734b9"],
+
+Cell["\<\
+The generalized quantum Fourier transform (QFT) over a non-Abelian group is \
+an extension of the standard (Abelian) QFT, critical in quantum algorithms \
+and simulations involving non-commutative symmetries. Instead of mapping \
+states to characters (as in Abelian groups), it maps them to matrix elements \
+of the irreducible representations of the group. More specifically, it is a \
+unitary change of basis from the computational basis of the group algebra to \
+a basis that block-diagonalizes the  regular representation of the group. For \
+many common non-Abelian groups including the symmetric group, efficient \
+quantum algorithms for the QFT are known. Many quantum algorithms including \
+the hidden subgroup problem and quantum simulations of non-Abelian symmetries \
+rely on the generalized QFT.\
+\>", "TechNoteText",
+ CellID->713219453,ExpressionUUID->"e8a35b8b-c923-4ec8-bf41-f193678bcde2"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell[
+       TextData["YoungFourier"]], "paclet:QuantumMob/Q3/ref/YoungFourier", 
+      "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "The quantum Fourier transform over the symmetric group", 
+     "TechNoteTableText",ExpressionUUID->
+     "2cc9efe5-8dbd-4eeb-a599-2d387509fb3a"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["YoungFourierMatrix"]], 
+      "paclet:QuantumMob/Q3/ref/YoungFourierMatrix", 
+      "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell["\<\
+The matrix form of the quantum Fourier transform over the symmetric group\
+\>", "TechNoteTableText",ExpressionUUID->
+     "167e1af0-f5cf-4f3e-ac79-94925070ff11"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["YoungFourierBasis"]], 
+      "paclet:QuantumMob/Q3/ref/YoungFourierBasis", 
+      "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "Constructs the Fourier basis over the symmetric group", 
+     "TechNoteTableText",ExpressionUUID->
+     "4e65492d-7d08-4dd3-a2e5-8481a3c411d9"]}
+  }]], "DefinitionBox",
+ CellID->1973112664,ExpressionUUID->"c2586c80-7560-4bbd-b967-be8534ec658e"],
+
+Cell["The quantum Fourier transform over the symmetric group.", \
+"TechNoteCaption",
+ CellID->662066874,ExpressionUUID->"0bb604ae-3029-4380-ac5b-98c580c404a0"],
+
+Cell["Load Q3 to use the demonstrations in this note:", "TechNoteMathCaption",
+ CellID->1245176211,ExpressionUUID->"7f0f3a4f-8cb6-4267-acc9-91b305edbed5"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<QuantumMob`Q3`\>\"", "]"}]], "Input",
+ CellLabel->"In[141]:=",
+ CellID->448438262,ExpressionUUID->"abf33ee1-531c-4799-bb3d-5235abeb3ff9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Preliminaries", "TechNoteSection",
+ CellID->689630454,ExpressionUUID->"0736f828-a601-4e7e-80c9-0a04540d6005"],
+
+Cell[CellGroupData[{
+
+Cell["Restricted Representation", "Subsection",
+ CellID->642671379,ExpressionUUID->"eb4e8b99-153f-4baa-810c-6b26aaeda2b1"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "b42b61fe-b8c4-43ee-b81b-bc43e5fd5364"],
+ " be a subgroup of a group ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "fd47d2e7-892e-4e8c-8160-b0c49f49dff4"],
+ ". Consider a representation ",
+ Cell[BoxData[
+  FormBox["\[CapitalGamma]", TraditionalForm]],ExpressionUUID->
+  "f4316488-e345-4e02-ad0b-2cb418b91fed"],
+ " of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "7347f41f-71c6-42d2-92df-4a679c832f6f"],
+ ". The restriction (or restricted representation) of ",
+ Cell[BoxData[
+  FormBox["\[CapitalGamma]", TraditionalForm]],ExpressionUUID->
+  "71629a6a-5493-45a6-9958-4eac129a0f92"],
+ " to ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "8c078688-781e-4e52-9f93-2f30eb2500eb"],
+ ", denoted by ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[CapitalGamma]", 
+    SubsuperscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "575fe821-b0e7-41cb-b1e2-4e06ac8b9673"],
+ ", is given by\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[CapitalGamma]", 
+     SubsuperscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+      "\[ScriptCapitalG]"], 
+     RowBox[{"(", "h", ")"}]}], "=", 
+    RowBox[{"\[CapitalGamma]", "(", "h", ")"}]}], TraditionalForm]],
+  ExpressionUUID->"3214a401-7ad1-4fee-a9e4-7e5af39f152c"],
+ "\[LineSeparator]for all ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}], TraditionalForm]],
+  ExpressionUUID->"ae9b8447-de9e-4055-a7ff-314374f92ba2"],
+ "."
+}], "TechNoteText",
+ CellID->1089892442,ExpressionUUID->"a6e4f039-a3c6-4305-9ff9-39ea97ffdabf"],
+
+Cell[TextData[{
+ "In general, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[CapitalGamma]", 
+    SubsuperscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "881bfc55-c450-4230-82ff-a465c00289bd"],
+ " is not irreducible for ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "e8fe7a71-399b-421d-ba48-7c90dcb1ce0d"],
+ " even if ",
+ Cell[BoxData[
+  FormBox["\[CapitalGamma]", TraditionalForm]],ExpressionUUID->
+  "b87b2c77-3a9e-4614-98aa-5cc41b17dd2d"],
+ " is an irreducible representation of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "6ef35054-0e71-421a-ad8d-8802dea58488"],
+ "."
+}], "TechNoteText",
+ CellID->1134264984,ExpressionUUID->"c5d88340-ba10-4425-91ba-02918df374c1"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Induced Representation", "Subsection",
+ CellID->901900807,ExpressionUUID->"d7b45caa-54c3-45a0-a551-f9d4d6881a30"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "df5abe97-a293-47aa-800e-5b7703f8a8b3"],
+ " be a subgroup of a finite group ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "9658dab8-110b-4ca2-8d9e-779c854c2030"],
+ ", and choose a transversal ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalT]", ":=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        SubscriptBox["t", "i"], ":", "i"}], "=", "1"}], ",", "2", ",", 
+      "\[Ellipsis]", ",", 
+      RowBox[{
+       RowBox[{
+       "\[LeftBracketingBar]", "\[ScriptCapitalG]", "\[RightBracketingBar]"}],
+        "/", 
+       RowBox[{
+       "\[LeftBracketingBar]", "\[ScriptCapitalH]", 
+        "\[RightBracketingBar]"}]}]}], "}"}]}], TraditionalForm]],
+  ExpressionUUID->"ac57dd1b-bced-4842-8e1a-f1e04bc0213a"],
+ " for the left cosets of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "06cb3fe7-004a-4f3f-ad72-741bee2de2bc"],
+ " in ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "8161f9e3-f8ef-4dfc-9787-1f0087d4603b"],
+ ". Designate the canonical basis of the coset module by ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       TemplateBox[{
+         SubscriptBox["t", "i"]},
+        "Ket"], ":", "i"}], "=", "1"}], ",", "2", ",", "\[Ellipsis]", ",", 
+     RowBox[{
+      RowBox[{
+      "\[LeftBracketingBar]", "\[ScriptCapitalG]", "\[RightBracketingBar]"}], 
+      "/", 
+      RowBox[{
+      "\[LeftBracketingBar]", "\[ScriptCapitalH]", 
+       "\[RightBracketingBar]"}]}]}], "}"}], TraditionalForm]],ExpressionUUID->
+  "5e8990d9-bf4f-4d14-8b8e-a57e0da7fdc9"],
+ ". Let ",
+ Cell[BoxData[
+  FormBox["\[CapitalGamma]", TraditionalForm]],ExpressionUUID->
+  "55dd64d7-4b19-4969-9522-f14e5fdf6620"],
+ " be a ",
+ Cell[BoxData[
+  FormBox["d", TraditionalForm]],ExpressionUUID->
+  "f23fc6ed-0c34-4cae-bb0d-01bb4e633eea"],
+ "-dimensional representation of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "80888f27-70c3-4608-8663-d5646ebaf28e"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       TemplateBox[{
+         SubscriptBox["v", "j"]},
+        "Ket"], ":", "j"}], "=", "1"}], ",", "\[Ellipsis]", ",", "d"}], "}"}],
+    TraditionalForm]],ExpressionUUID->
+  "947a4b12-cd27-48a5-a505-82b7ae671322"],
+ " be the associated basis of representation ",
+ Cell[BoxData[
+  FormBox["\[CapitalGamma]", TraditionalForm]],ExpressionUUID->
+  "777811af-f4c8-410b-9464-7c7d572e0033"],
+ ".   Then, its induced representation ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[CapitalGamma]", 
+    SubsuperscriptBox["\[UpArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "3fa95dc0-0d4c-4357-b75b-fdbb33c1c93d"],
+ " into ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "e7934fe0-4641-421d-8685-473c6bd16603"],
+ " is defined by \n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      OverscriptBox["\[CapitalGamma]", "^"], 
+      SubsuperscriptBox["\[UpArrow]", "\[ScriptCapitalH]", 
+       "\[ScriptCapitalG]"], 
+      RowBox[{"(", "g", ")"}]}], 
+     RowBox[{"(", 
+      RowBox[{
+       TemplateBox[{
+         SubscriptBox["t", "i"]},
+        "Ket"], "\[CircleTimes]", 
+       TemplateBox[{
+         SubscriptBox["v", "j"]},
+        "Ket"]}], ")"}]}], ":=", 
+    RowBox[{
+     RowBox[{
+      TemplateBox[{
+        SubscriptBox["t", "p"]},
+       "Ket"], "\[CircleTimes]", 
+      RowBox[{"(", 
+       RowBox[{
+        RowBox[{
+         OverscriptBox["\[CapitalGamma]", "^"], "(", 
+         RowBox[{
+          SubsuperscriptBox["t", "p", 
+           RowBox[{"-", "1"}]], "g", "\[VeryThinSpace]", 
+          SubscriptBox["t", "i"]}], ")"}], 
+        TemplateBox[{
+          SubscriptBox["v", "j"]},
+         "Ket"]}], ")"}]}], "=", 
+     RowBox[{
+      UnderoverscriptBox["\[CapitalSigma]", 
+       RowBox[{"q", "=", "1"}], "d"], 
+      RowBox[{
+       TemplateBox[{
+         SubscriptBox["t", "p"]},
+        "Ket"], "\[CircleTimes]", 
+       TemplateBox[{
+         SubscriptBox["v", "q"]},
+        "Ket"]}], 
+      RowBox[{
+       SubscriptBox["\[CapitalGamma]", 
+        RowBox[{"q", "\[VeryThinSpace]", "j"}]], "(", 
+       RowBox[{
+        SubsuperscriptBox["t", "p", 
+         RowBox[{"-", "1"}]], "g", "\[VeryThinSpace]", 
+        SubscriptBox["t", "i"]}], ")"}]}]}]}], TraditionalForm]],
+  ExpressionUUID->"c9251664-2918-4fd8-84f1-0b319a71269c"],
+ " ,\[LineSeparator]where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["t", "p"], "\[Element]", "\[ScriptCapitalT]"}], 
+   TraditionalForm]],ExpressionUUID->"6be2e89e-2a45-40ab-b333-d8438cc6d1ba"],
+ " is the (unique) transversal element corresponding to the coset that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"g", "\[VeryThinSpace]", 
+    SubscriptBox["t", "i"]}], TraditionalForm]],ExpressionUUID->
+  "76c292f3-7578-4bca-b1df-634ae37bd8ff"],
+ " belongs to, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"g", "\[VeryThinSpace]", 
+     SubscriptBox["t", "i"]}], "\[Element]", 
+    RowBox[{
+     SubscriptBox["t", "p"], "\[ScriptCapitalH]"}]}], TraditionalForm]],
+  ExpressionUUID->"18df3cf8-c475-478e-85c0-933a45659da4"],
+ "."
+}], "TechNoteText",
+ CellID->2052456620,ExpressionUUID->"2f995097-4b0e-4a75-8a00-85933f85448b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Subgroup Adapted Basis", "Subsection",
+ CellID->1892872179,ExpressionUUID->"1ac0edf7-3fcb-4fb3-b0e6-5e8b19912c49"],
+
+Cell[TextData[{
+ "Given a finite group or compact Lie group ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "f898843a-dfa4-47d0-b12d-da19b624eba2"],
+ ", let\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalG]", ":=", 
+    RowBox[{
+     RowBox[{
+      SubscriptBox["\[ScriptCapitalG]", "m"], "\[Superset]", "\[Ellipsis]", "\[Superset]", 
+      SubscriptBox["\[ScriptCapitalG]", "2"], "\[Superset]", 
+      SubscriptBox["\[ScriptCapitalG]", "1"], "\[Superset]", 
+      SubscriptBox["\[ScriptCapitalG]", "0"]}], ":=", 
+     RowBox[{"{", "1", "}"}]}]}], TraditionalForm]],ExpressionUUID->
+  "4cc114aa-f446-4c2f-b003-a7418adc4a4a"],
+ "\[LineSeparator]be a tower of subgroups of length ",
+ Cell[BoxData[
+  FormBox["m", TraditionalForm]],ExpressionUUID->
+  "41b688ba-f2ca-404e-bdaf-92b7d1fb2bf4"],
+ " for ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "30a4ea55-e737-432c-8cc1-ba4cc5d68add"],
+ ". The corresponding ",
+ StyleBox["Bratteli diagram",
+  FontSlant->"Italic"],
+ " is a leveled graph whose nodes of level ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"k", "=", "0"}], ",", "1", ",", "2", ",", "\[Ellipsis]", ",", 
+    "m"}], TraditionalForm]],ExpressionUUID->
+  "2af9343f-8c9a-46ca-b7c1-f9165a9e712f"],
+ " are in one-to-one correspondence with the (inequivalent) irreducible \
+representations of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "cd5a77ea-866a-4b90-bb69-f25463df0f31"],
+ ". Conventionally, the vertices in the diagram are referred to by the \
+representation with which they are associated. The number of edges from an \
+irreducible representation ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Lambda]", 
+    RowBox[{"k", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "76d75517-148f-4207-a90e-8216a3af4222"],
+ " of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", 
+    RowBox[{"k", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "7742e488-c3eb-4036-ba5c-ac64e54dbbbc"],
+ "  to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Lambda]", "k"], TraditionalForm]],ExpressionUUID->
+  "d1190190-4efd-4fd9-8878-2be97f1b5c27"],
+ "  of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", "k"], TraditionalForm]],ExpressionUUID->
+  "806c9d21-64c9-45f9-804d-e9ee4e44679b"],
+ " is equal to the ",
+ StyleBox["multiplicity",
+  FontSlant->"Italic"],
+ " ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["m", 
+    RowBox[{"k", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "e8916251-ec4e-4e9f-b6aa-e53960ceafee"],
+ " of  ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Lambda]", 
+    RowBox[{"k", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "a26c0697-0538-4577-81ce-b1f3e0d3eb38"],
+ " in the restriction of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Lambda]", "k"], TraditionalForm]],ExpressionUUID->
+  "a648a2d3-8a64-44e1-915c-6ead0aa79a8d"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", 
+    RowBox[{"k", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "ce83dd17-6551-41ff-aa51-a649474784ce"],
+ ". A Bratteli diagram for a given tower is a rooted tree starting from a \
+unique irreducible representation of the trivial group. If the branching for \
+each ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["G", "k"], "\[Superset]", 
+    SubscriptBox["G", 
+     RowBox[{"k", "-", "1"}]]}], TraditionalForm]],ExpressionUUID->
+  "e7048a8a-dbc1-4460-8fd9-9ff55bf893ff"],
+ " is multiplicity-free (i.e., ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["m", "k"], "=", "0"}], TraditionalForm]],ExpressionUUID->
+  "19c83b07-a9c4-4ac6-bed7-081657a68585"],
+ " or ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["m", "k"], "=", "1"}], TraditionalForm]],ExpressionUUID->
+  "04f42bdb-b196-41aa-a6c9-32d5c916a2ba"],
+ " for all ",
+ Cell[BoxData[
+  FormBox["k", TraditionalForm]],ExpressionUUID->
+  "b43e379f-b970-4bf6-8aef-38f63877d218"],
+ "), the Bratteli diagram is said to be ",
+ StyleBox["multiplicity-free",
+  FontSlant->"Italic"],
+ " and the tower of subgroup is called ",
+ StyleBox["canonical",
+  FontSlant->"Italic"],
+ "."
+}], "TechNoteText",
+ CellID->1643613333,ExpressionUUID->"8c412e48-1d27-4915-9289-69eb9e93df91"],
+
+Cell[TextData[Cell[BoxData[
+ GraphicsBox[
+  NamespaceBox["NetworkGraphics",
+   DynamicModuleBox[{Typeset`graph = HoldComplete[
+     Graph[{
+       QuantumMob`Q3`YoungShape[{1}], 
+       QuantumMob`Q3`YoungShape[{2}], 
+       QuantumMob`Q3`YoungShape[{1, 1}], 
+       QuantumMob`Q3`YoungShape[{3}], 
+       QuantumMob`Q3`YoungShape[{2, 1}], 
+       QuantumMob`Q3`YoungShape[{1, 1, 1}], 
+       QuantumMob`Q3`YoungShape[{4}], 
+       QuantumMob`Q3`YoungShape[{3, 1}], 
+       QuantumMob`Q3`YoungShape[{2, 2}], 
+       QuantumMob`Q3`YoungShape[{2, 1, 1}], 
+       QuantumMob`Q3`YoungShape[{1, 1, 1, 1}]}, {{{1, 2}, {1, 3}, {2, 4}, {2, 
+       5}, {3, 5}, {3, 6}, {4, 7}, {4, 8}, {5, 8}, {5, 9}, {5, 10}, {6, 10}, {
+       6, 11}}, Null}, {
+      GraphLayout -> {"Dimension" -> 2, "VertexLayout" -> "LayeredEmbedding"},
+        ImageSize -> Medium, VertexLabels -> {"Name"}, 
+       VertexLabelStyle -> {Medium}}]]}, 
+    TagBox[GraphicsGroupBox[{
+       {Hue[0.6, 0.7, 0.7], Opacity[0.7], CapForm["Round"], Arrowheads[
+        Medium], ArrowBox[CompressedData["
+1:eJxTTMoPSmVmYGDgBWImKN5QncZu/OO//dXttVelCxgdIPRH++Pzl8uoOny3
+R5c/BhZnd4DJo6uHyF+3PwGmn2PI72i/mKwn8Bcuj24eIXkYH1UeYR8DGkCX
+P4amDrt9hOS/45SHhROq/Qj3EpKH8WHyAHqboxE=
+         "], 0.02956393075586808]}, 
+       {Hue[0.6, 0.5, 1.], EdgeForm[{GrayLevel[0], Opacity[
+        0.7]}], {
+         DiskBox[{1.998095539958495, 2.179740589045631}, 0.02956393075586808],
+          InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{1}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], 
+          Offset[{0, 2}, {1.998095539958495, 2.209304519801499}], 
+          ImageScaled[{0.5, 0}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{1.0898702945228156`, 1.4531603926970875`}, 
+          0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{2}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], {1.0622667466166853, 1.4840008710721062}, 
+          ImageScaled[{1.0001910967734722, -0.05884601341384821}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{2.9063207853941746`, 1.4531603926970875`}, 
+          0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{1, 1}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], {2.9436252784496766, 1.471089858982452}, 
+          ImageScaled[{-0.17597742723014198, 0.1751084521331494}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{0.3632900981742718, 0.7265801963485439}, 
+          0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{3}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], {0.3297131872699947, 0.7507810644638047}, 
+          ImageScaled[{1.1084316388816706, 0.061467286502176144}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{1.8164504908713592`, 0.7265801963485439}, 
+          0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], ""}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{2, 1}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], {1.8205289139115388, 0.7677682702160039}, 
+          ImageScaled[{0.42609678652501837, -0.2463499950010526}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{2.9063207853941746`, 0.7265801963485439}, 
+          0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{1, 1, 1}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], {2.94771028845239, 0.7265801963485439}, 
+          ImageScaled[{-0.25, 0.5000000000000002}],
+          BaseStyle->"Graphics"]}, {DiskBox[{0., 0.}, 0.02956393075586808], 
+         InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{4}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], Offset[{0, -2}, {0., -0.02956393075586808}], 
+          ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{0.7265801963485436, 0.}, 0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], "", ""}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{3, 1}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], 
+          Offset[{0, -2}, {0.7265801963485436, -0.02956393075586808}], 
+          ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{1.4531603926970873`, 0.}, 0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{2, 2}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], 
+          Offset[{0, -2}, {1.4531603926970873, -0.02956393075586808}], 
+          ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{2.179740589045631, 0.}, 0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], 
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], ""},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False], ""}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{2, 1, 1}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], 
+          Offset[{0, -2}, {2.179740589045631, -0.02956393075586808}], 
+          ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}, {
+         DiskBox[{2.9063207853941746`, 0.}, 0.02956393075586808], InsetBox[
+          StyleBox[
+           FormBox[
+            InterpretationBox[
+             TagBox[GridBox[{
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]},
+                {
+                 ItemBox["\<\" \"\>",
+                  Frame->True,
+                  StripOnInput->False]}
+               },
+               AutoDelete->False,
+               
+               GridBoxItemSize->{
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}],
+              "Grid"],
+             QuantumMob`Q3`YoungShape[{1, 1, 1, 1}]],
+            TraditionalForm],
+           StripOnInput->False,
+           FontSize->Medium], 
+          Offset[{0, -2}, {2.9063207853941746, -0.02956393075586808}], 
+          ImageScaled[{0.5, 1}],
+          BaseStyle->"Graphics"]}}}],
+     MouseAppearanceTag["NetworkGraphics"]],
+    AllowKernelInitialization->False]],
+  DefaultBaseStyle->"NetworkGraphics",
+  FormatType->TraditionalForm,
+  FrameTicks->None,
+  ImageSize->Medium,
+  PlotRangePadding->
+   Automatic]],ExpressionUUID->"291b9a9e-9de8-47a3-aeaa-adbfe02401e4"]], \
+"Picture",
+ CellID->1656843951,ExpressionUUID->"5eab9381-cba7-42bd-b3f4-a3117dce1791"],
+
+Cell[TextData[{
+ StyleBox["Figure 1",
+  FontWeight->"Bold"],
+ ". The Bratteli diagram for the canonical tower of subgroups for the \
+symmetric group ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "4"], TraditionalForm]],ExpressionUUID->
+  "38ed159c-2760-4bce-b9a3-1449b39ab573"],
+ "."
+}], "TechNoteCaption",
+ CellID->2032447193,ExpressionUUID->"eb485ae5-acc7-4666-a1de-95f414a4158b"],
+
+Cell[TextData[{
+ "The edges out of a node ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Lambda]", 
+    RowBox[{"k", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "02219164-4448-4903-a889-875bbba3ab94"],
+ " of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", 
+    RowBox[{"k", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "7d9e1e3d-38a0-4d85-8952-3fccd70b8efb"],
+ " represent a complete set of orthogonal embeddings of the corresponding \
+representation space into the representations ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Lambda]", "k"], TraditionalForm]],ExpressionUUID->
+  "fa611dbd-e5b3-4195-93fc-6b06899c4116"],
+ " of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", "k"], TraditionalForm]],ExpressionUUID->
+  "24e5fbcc-e45d-4e52-aa60-33a217a4a84e"],
+ ". Conversely, the edges into a given representation ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Lambda]", "k"], TraditionalForm]],ExpressionUUID->
+  "4ba9c921-2f10-4dbb-9a0d-572c9a7fa940"],
+ " of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", "k"], TraditionalForm]],ExpressionUUID->
+  "900871b2-53e8-4859-9c92-406a0ee3b36f"],
+ " index a set of mutually orthogonal subspaces of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalV]", 
+    SubscriptBox["\[Lambda]", "k"]], TraditionalForm]],ExpressionUUID->
+  "bc70b7bd-6fea-4e8b-85ba-2f90e612734a"],
+ " whose direct sum represents the decomposition of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalV]", 
+    SubscriptBox["\[Lambda]", "k"]], TraditionalForm]],ExpressionUUID->
+  "96815520-4d98-47df-9610-5f77440985cc"],
+ " under the restriction of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Lambda]", "k"], TraditionalForm]],ExpressionUUID->
+  "6655adc4-3dca-438e-abd0-0939b2f2ee9a"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", 
+    RowBox[{"k", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "fc8b021a-3610-48f8-a7eb-28e7d07b8272"],
+ "."
+}], "TechNoteText",
+ CellID->1847223333,ExpressionUUID->"433509e1-4c5a-4a06-9fea-8b4a99bd546f"],
+
+Cell[TextData[{
+ "More generally, the paths from the root node to a node \[Lambda] of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "8beed484-6c41-48f9-a2a7-f8142c5ff5c9"],
+ " index a basis of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalV]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"01c2f759-bc06-4e99-8914-9247e8d2e214"],
+ " with following property: For any ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["\[ScriptCapitalG]", "k"], "\[Subset]", 
+    "\[ScriptCapitalG]"}], TraditionalForm]],ExpressionUUID->
+  "fed9c9c3-fc97-4fb3-8bc6-6da1d3b976e7"],
+ ", there is a partition of basis vectors of into subsets such that each \
+subset spans an irreducible ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", "k"], TraditionalForm]],ExpressionUUID->
+  "171b6ed9-c47f-42c5-8beb-e04a36dce340"],
+ "-invariant subspace. Under this partition, the associated matrix \
+representation restricted to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalG]", "k"], TraditionalForm]],ExpressionUUID->
+  "87b89057-0efc-47f8-9e67-c83899b40ef6"],
+ " is block-diagonal, and the blocks corresponding to equivalent irreducible \
+representations are identical. Such basis is called a subgroup-adapted basis \
+or Gelfand-Tsetlin basis."
+}], "TechNoteText",
+ CellID->1796261742,ExpressionUUID->"547feb3d-55f9-485f-a985-82618b91f053"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Definition", "TechNoteSection",
+ CellID->48377149,ExpressionUUID->"2b88f4aa-9cfa-4c80-9fbc-f27673d8533c"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     TemplateBox[{"g"},
+      "Ket"], "|", 
+     RowBox[{"g", "\[Element]", "\[ScriptCapitalG]"}]}], "}"}], 
+   TraditionalForm]],ExpressionUUID->"4f78f6d8-b2a7-4ab2-a0bb-d52e03d7ee4d"],
+ " is the ",
+ StyleBox["right regular basis",
+  FontSlant->"Italic"],
+ " of group ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "cd826d52-d210-422e-b118-86dbaf2563b8"],
+ ", i.e.,  the canonical basis of the vector space that carries the ",
+ StyleBox["right regular representation",
+  FontSlant->"Italic"],
+ " ",
+ Cell[BoxData[
+  FormBox["R", TraditionalForm]],ExpressionUUID->
+  "96f4c812-f4ac-4837-8719-8477b4266b04"],
+ " of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "795f7a59-1d12-4b9a-9fd1-c791803b81ba"],
+ ". For all elements ",
+ Cell[BoxData[
+  FormBox["g", TraditionalForm]],ExpressionUUID->
+  "00c1b5f0-d417-49f1-acf6-dc42fc7287d1"],
+ " and ",
+ Cell[BoxData[
+  FormBox["h", TraditionalForm]],ExpressionUUID->
+  "2d5f9ee1-129f-451d-922d-91e164f1003b"],
+ " of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "fce201b1-788f-4108-a635-6a28b599f8ad"],
+ ",\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      OverscriptBox["R", "^"], "(", "g", ")"}], 
+     TemplateBox[{"h"},
+      "Ket"]}], "=", 
+    TemplateBox[{
+      RowBox[{"h", "\[VeryThinSpace]", 
+        SuperscriptBox["g", 
+         RowBox[{"-", "1"}]]}]},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "28ecb3fe-886e-4cb1-a857-aac1597a7d14"],
+ " ."
+}], "TechNoteText",
+ CellID->1048209744,ExpressionUUID->"4bd5ff80-e505-46bb-adac-8187bee3eeec"],
+
+Cell[TextData[{
+ "The ",
+ StyleBox["right Fourier basis",
+  FontSlant->"Italic"],
+ " consists of vectors ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Lambda]", ",", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "c4036493-fd9f-41c2-aa2c-4782807e2059"],
+ " defined by\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+     "Ket"], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"g", "\[Element]", "\[ScriptCapitalG]"}]], 
+     TemplateBox[{"g"},
+      "Ket"], 
+     SqrtBox[
+      FractionBox[
+       SubscriptBox["d", "\[Lambda]"], 
+       RowBox[{"|", "\[ScriptCapitalG]", "|"}]]], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "b6cf58ed-e143-412d-a94e-40f0e6967092"],
+ "\[LineSeparator]for each irreducible representation  ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"964affb8-cf4b-407b-a2da-b43495421020"],
+ " of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "d8cf3d26-ee11-4086-a424-03d3cd172c52"],
+ " and each index ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"i", ",", 
+    RowBox[{"j", "=", "1"}], ",", "2", ",", "\[Ellipsis]", ",", 
+    SubscriptBox["d", "\[Lambda]"]}], TraditionalForm]],ExpressionUUID->
+  "84f59ea8-862a-4da3-a98d-4c1a06a697ae"],
+ ". The basis change from the canonical to Fourier basis is called the ",
+ StyleBox["quantum Fourier transform over group",
+  FontSlant->"Italic"],
+ " ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "4e691b79-e0d1-42ca-bc0e-9d745735df5b"],
+ " or simply the ",
+ StyleBox["generalized quantum Fourier transform",
+  FontSlant->"Italic"],
+ ". The inverse transform gives\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"g"},
+     "Ket"], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", "\[Lambda]"], 
+     UnderoverscriptBox["\[CapitalSigma]", 
+      RowBox[{"i", ",", 
+       RowBox[{"j", "=", "1"}]}], 
+      SubscriptBox["d", "\[Lambda]"]], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"], " ", 
+     SuperscriptBox[
+      RowBox[{
+       SqrtBox[
+        FractionBox[
+         SubscriptBox["d", "\[Lambda]"], 
+         RowBox[{"|", "\[ScriptCapitalG]", "|"}]]], "[", 
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+        ")"}], "]"}], "*"]}]}], TraditionalForm]],ExpressionUUID->
+  "17a5d412-79fc-435f-b9a6-2d77517740c8"],
+ " ,\nwhere the first summation is over all inequivalent irreducible \
+representations of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "1865a11a-cd3e-41b4-b888-a0b3d491312a"],
+ ". Note that the dimension of an irreducible representation ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "84dc3a72-f75b-4c89-9ffd-9a5e82a75cc8"],
+ " of a finite group ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "75b5d440-6caf-43bf-a43c-468dc28759eb"],
+ " always divides the order of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "ee2051cd-4bdf-4170-830d-bc80017e393f"],
+ ", i.e., ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+     "\[LeftBracketingBar]", "\[ScriptCapitalG]", "\[RightBracketingBar]"}], "/", 
+     RowBox[{"dim", "(", "\[Lambda]", ")"}]}], "\[Element]", 
+    "\[DoubleStruckCapitalZ]"}], TraditionalForm]],ExpressionUUID->
+  "f6aba1da-1d28-4390-87ea-32f97ec68239"],
+ "."
+}], "TechNoteText",
+ CellID->1790577104,ExpressionUUID->"1b1705e4-3f85-4502-a78f-395d621960ea"],
+
+Cell[TextData[{
+ "Under the group action, the Fourier basis transforms as\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      OverscriptBox["R", "^"], "(", "g", ")"}], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"]}], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", "k"], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "k"}]}]},
+      "Ket"], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"k", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "e26d9bae-60e7-4b2a-a642-1cffb152578f"],
+ "\[LineSeparator]with index ",
+ Cell[BoxData[
+  FormBox["i", TraditionalForm]],ExpressionUUID->
+  "4e3fd57a-026d-4307-8c61-d175d1d3ee2a"],
+ " labeling the multiplicity space. Note that every basis vector ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Lambda]", ",", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "dac34a6d-6cbb-45ef-a844-3de6b84207c5"],
+ " transforms in the same way regardless of index ",
+ Cell[BoxData[
+  StyleBox["i", "TI"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "c1215046-143d-497c-a05b-1f52580a9db9"],
+ ". That is to say, in the Fourier basis ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+     "Ket"], "}"}], TraditionalForm]],ExpressionUUID->
+  "c19d9ed5-1b69-4bb4-83a0-b1e760120331"],
+ ", the right regular representation ",
+ Cell[BoxData[
+  FormBox["R", TraditionalForm]],ExpressionUUID->
+  "e67261c4-e51b-48fb-992f-ac982b28e58e"],
+ " is block-diagonal in the form\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"R", "(", "g", ")"}], "=", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", "\[Lambda]"], "\[VeryThinSpace]", 
+     RowBox[{
+      SubscriptBox["I", "\[Lambda]"], "\[CircleTimes]", 
+      SuperscriptBox["\[CapitalGamma]", "\[Lambda]"]}]}]}], TraditionalForm]],
+  ExpressionUUID->"01a3f2ab-ae6d-4836-853c-05740c16d61c"],
+ ",\[LineSeparator]where ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["I", "\[Lambda]"], TraditionalForm]],ExpressionUUID->
+  "415b7f27-cb12-4d60-8841-76313b1cb7a2"],
+ " refers to the ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["d", "\[Lambda]"], "\[Times]", 
+    SubscriptBox["d", "\[Lambda]"]}], TraditionalForm]],ExpressionUUID->
+  "533b5ff3-dc9d-46fc-93dc-9a9c24177efb"],
+ " identity matrix in the multiplicity space."
+}], "TechNoteText",
+ CellID->882427163,ExpressionUUID->"b854e184-8272-495b-806a-7a4f40960508"],
+
+Cell[CellGroupData[{
+
+Cell["Conventions", "Subsection",
+ CellID->1959714211,ExpressionUUID->"69b36cfc-863b-4d22-afbb-1c928ece1900"],
+
+Cell["\<\
+Depending on which of the left and right regular representations is assumed \
+and on whether the representation space is put on the left or right side of \
+the multiplicity space, we have four conventions.\
+\>", "TechNoteText",
+ CellID->305439758,ExpressionUUID->"0ffa9eb7-7792-46e7-a1e9-0b8d9d085ff1"],
+
+Cell[TextData[{
+ "The Right-Right Convention (",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["FourierParameters"]], "paclet:ref/FourierParameters"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "\[Rule]", 
+   RowBox[{"{", 
+    RowBox[{"\"\<Right\>\"", ",", " ", "\"\<Right\>\""}], "}"}]}]], 
+  "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "fdd3e01f-0c10-4a10-af31-dbc81cdd4c21"],
+ "):"
+}], "TechNoteText",
+ CellID->918872256,ExpressionUUID->"cb8b9dc8-1e80-4f75-9f47-7e19d63e21dc"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+     "Ket"], ":=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"g", "\[Element]", "\[ScriptCapitalG]"}]], 
+     TemplateBox[{"g"},
+      "Ket"], "\[VeryThinSpace]", 
+     SqrtBox[
+      FractionBox[
+       SubscriptBox["d", "\[Lambda]"], 
+       RowBox[{
+       "\[LeftBracketingBar]", "\[ScriptCapitalG]", 
+        "\[RightBracketingBar]"}]]], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "171f03b6-f354-45be-aae6-ea7a7457a0bf"]
+}], "TechNoteText",
+ CellID->267329929,ExpressionUUID->"34e89680-fdf3-40bc-a316-9d44db92c62f"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"g"},
+     "Ket"], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"\[Lambda]", "\[Element]", 
+       RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalG]", ")"}]}]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"i", ",", 
+       RowBox[{"j", "\[Element]", "\[Lambda]"}]}]], 
+     SuperscriptBox[
+      RowBox[{
+       TemplateBox[{
+         RowBox[{"\[Lambda]", ",", 
+           RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+        "Ket"], "[", 
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+        ")"}], "]"}], "*"]}]}], TraditionalForm]],ExpressionUUID->
+  "d11b5202-7ee8-4e41-a164-d5f5c31779cd"]
+}], "TechNoteText",
+ CellID->13745288,ExpressionUUID->"c8da8f49-17cd-4c91-adac-08caf4798458"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      OverscriptBox["R", "^"], "(", "g", ")"}], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"]}], ":=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", "k"], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "k"}]}]},
+      "Ket"], "\[VeryThinSpace]", 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"k", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "aa13ef9a-8df7-4110-9f7b-d7b02a205084"]
+}], "TechNoteText",
+ CellID->188634819,ExpressionUUID->"214bb702-6fbb-4e41-ab3b-649407afc772"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"R", "\[DotEqual]", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", "\[Lambda]"], " ", 
+     RowBox[{
+      SubscriptBox["I", 
+       SubscriptBox["d", "\[Lambda]"]], "\[CircleTimes]", 
+      SuperscriptBox["\[CapitalGamma]", "\[Lambda]"]}]}]}], TraditionalForm]],
+  ExpressionUUID->"610f8a13-f604-41fb-9fa5-570528f00578"]
+}], "TechNoteText",
+ CellID->1496585701,ExpressionUUID->"85f193ce-c7fc-44d9-9c79-a150d7b4d659"],
+
+Cell[TextData[{
+ "The Left-Right Convention (",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["FourierParameters"]], "paclet:ref/FourierParameters"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "\[Rule]", 
+   RowBox[{"{", 
+    RowBox[{"\"\<Left\>\"", ",", " ", "\"\<Right\>\""}], "}"}]}]], 
+  "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "670b4e54-89d4-4a73-a4e9-8e9d2f25306d"],
+ "):"
+}], "TechNoteText",
+ CellID->1630599361,ExpressionUUID->"6eb003e8-ed11-496f-8de8-66713e9e8c9b"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+     "Ket"], ":=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"g", "\[Element]", "\[ScriptCapitalG]"}]], 
+     TemplateBox[{"g"},
+      "Ket"], "\[VeryThinSpace]", 
+     SqrtBox[
+      FractionBox[
+       SubscriptBox["d", "\[Lambda]"], 
+       RowBox[{
+       "\[LeftBracketingBar]", "\[ScriptCapitalG]", 
+        "\[RightBracketingBar]"}]]], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", 
+      SuperscriptBox["g", 
+       RowBox[{"-", "1"}]], ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "2efc969b-04db-47be-acec-6b55080a44c7"]
+}], "TechNoteText",
+ CellID->951799700,ExpressionUUID->"e4f138a3-1b5c-4734-9d4e-881783ded5e2"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"g"},
+     "Ket"], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"\[Lambda]", "\[Element]", 
+       RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalG]", ")"}]}]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"i", ",", 
+       RowBox[{"j", "\[Element]", "\[Lambda]"}]}]], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"j", "\[VeryThinSpace]", "i"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "d7352546-fc6e-47e1-9e61-a9271a73631d"]
+}], "TechNoteText",
+ CellID->1400639354,ExpressionUUID->"36df7544-55be-4327-ae05-99acd83d1d02"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      OverscriptBox["L", "^"], "(", "g", ")"}], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"]}], ":=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", "k"], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "k"}]}]},
+      "Ket"], "\[VeryThinSpace]", 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"k", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "49f40c3d-1a01-4c72-a906-0ad3bcb5afd3"]
+}], "TechNoteText",
+ CellID->291871397,ExpressionUUID->"37b32375-0ea0-48d1-a640-e8985388872e"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"L", "\[DotEqual]", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", "\[Lambda]"], " ", 
+     RowBox[{
+      SubscriptBox["I", 
+       SubscriptBox["d", "\[Lambda]"]], "\[CircleTimes]", 
+      SuperscriptBox["\[CapitalGamma]", "\[Lambda]"]}]}]}], TraditionalForm]],
+  ExpressionUUID->"eed4e960-ae5c-4ac0-a20f-eac7181a7066"]
+}], "TechNoteText",
+ CellID->1840988057,ExpressionUUID->"faad123d-2b10-46b0-b466-fd99b02e596c"],
+
+Cell[TextData[{
+ "The Right-Left Convention (",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["FourierParameters"]], "paclet:ref/FourierParameters"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "\[Rule]", 
+   RowBox[{"{", 
+    RowBox[{"\"\<Right\>\"", ",", " ", "\"\<Left\>\""}], "}"}]}]], 
+  "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "e634bb29-5f6d-4b88-ba79-91457ea15f8f"],
+ "):"
+}], "TechNoteText",
+ CellID->2017241567,ExpressionUUID->"0234f303-be5e-4c36-b01e-b709823912bc"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+     "Ket"], ":=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"g", "\[Element]", "\[ScriptCapitalG]"}]], 
+     TemplateBox[{"g"},
+      "Ket"], "\[VeryThinSpace]", 
+     RowBox[{
+      SqrtBox[
+       FractionBox[
+        SubscriptBox["d", "\[Lambda]"], 
+        RowBox[{
+        "\[LeftBracketingBar]", "\[ScriptCapitalG]", 
+         "\[RightBracketingBar]"}]]], "[", 
+      RowBox[{
+       SubsuperscriptBox["\[CapitalGamma]", 
+        RowBox[{"j", "\[VeryThinSpace]", "i"}], "\[Lambda]"], "(", "g", ")"}],
+       "]"}]}]}], TraditionalForm]],ExpressionUUID->
+  "715f0b63-3258-4ed9-bd53-e29e3a42d9f9"]
+}], "TechNoteText",
+ CellID->759730800,ExpressionUUID->"8a119b97-a50b-406a-8835-23e206d4dd1a"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"g"},
+     "Ket"], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"\[Lambda]", "\[Element]", 
+       RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalG]", ")"}]}]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"i", ",", 
+       RowBox[{"j", "\[Element]", "\[Lambda]"}]}]], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", 
+      SuperscriptBox["g", 
+       RowBox[{"-", "1"}]], ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "05bc955d-e953-4c0d-ad1b-7af502dc26a6"]
+}], "TechNoteText",
+ CellID->132143169,ExpressionUUID->"8248152e-5fe1-408e-9906-f1de8e411b3f"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      OverscriptBox["R", "^"], "(", "g", ")"}], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"]}], ":=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", "k"], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"k", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"], "\[VeryThinSpace]", 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"k", "\[VeryThinSpace]", "i"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "22b2ce5b-e589-4114-b074-ee9b33784cef"]
+}], "TechNoteText",
+ CellID->2005274185,ExpressionUUID->"152fa75d-e7cb-4f9a-bd31-df77a65f1efd"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"R", "\[DotEqual]", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", "\[Lambda]"], " ", 
+     RowBox[{
+      SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], "\[CircleTimes]", 
+      SubscriptBox["I", 
+       SubscriptBox["d", "\[Lambda]"]]}]}]}], TraditionalForm]],
+  ExpressionUUID->"c15c843f-8508-4f31-93a5-d2ea413ba77f"]
+}], "TechNoteText",
+ CellID->1423110232,ExpressionUUID->"81f5aede-18cf-4af9-8815-25c95d85a347"],
+
+Cell[TextData[{
+ "The Left-Left Convention (",
+ Cell[BoxData[
+  RowBox[{
+   TemplateBox[{
+     Cell[
+      TextData["FourierParameters"]], "paclet:ref/FourierParameters"},
+    "RefLink",
+    BaseStyle->{"InlineFormula"}], "\[Rule]", 
+   RowBox[{"{", 
+    RowBox[{"\"\<Left\>\"", ",", " ", "\"\<Left\>\""}], "}"}]}]], 
+  "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "25c20473-c292-4cd5-81b8-08700584f5d3"],
+ "):"
+}], "TechNoteText",
+ CellID->647000092,ExpressionUUID->"77c1d9bd-6344-4b80-94f8-e5ab7776f752"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+     "Ket"], ":=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"g", "\[Element]", "\[ScriptCapitalG]"}]], 
+     TemplateBox[{"g"},
+      "Ket"], "\[VeryThinSpace]", 
+     SuperscriptBox[
+      RowBox[{
+       SqrtBox[
+        FractionBox[
+         SubscriptBox["d", "\[Lambda]"], 
+         RowBox[{
+         "\[LeftBracketingBar]", "\[ScriptCapitalG]", 
+          "\[RightBracketingBar]"}]]], "[", 
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+        ")"}], "]"}], "*"]}]}], TraditionalForm]],ExpressionUUID->
+  "df3ee469-6206-4c11-9955-5c9cfab1fdce"]
+}], "TechNoteText",
+ CellID->1648577850,ExpressionUUID->"840a8279-90ed-4aca-a0b6-2873b42d6465"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"g"},
+     "Ket"], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"\[Lambda]", "\[Element]", 
+       RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalG]", ")"}]}]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"i", ",", 
+       RowBox[{"j", "\[Element]", "\[Lambda]"}]}]], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "4dae8a9d-bb88-4e1e-bde5-529a0cb0c556"]
+}], "TechNoteText",
+ CellID->1147978744,ExpressionUUID->"b0f74a82-200e-4263-a46d-a119e1f7570b"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      OverscriptBox["L", "^"], "(", "g", ")"}], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"]}], ":=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", "k"], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"k", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"], "\[VeryThinSpace]", 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"k", "\[VeryThinSpace]", "i"}], "\[Lambda]"], "(", "g", 
+      ")"}]}]}], TraditionalForm]],ExpressionUUID->
+  "3c99467e-d83a-4b0a-92ee-f0bc11bc2b86"]
+}], "TechNoteText",
+ CellID->813911356,ExpressionUUID->"e7d2ba98-64d5-4556-8ac9-54bc1a4dbb0f"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"L", "\[DotEqual]", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", "\[Lambda]"], " ", 
+     RowBox[{
+      SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], "\[CircleTimes]", 
+      SubscriptBox["I", 
+       SubscriptBox["d", "\[Lambda]"]]}]}]}], TraditionalForm]],
+  ExpressionUUID->"7f08a3ca-2588-4953-9209-30f3b22891f6"]
+}], "TechNoteText",
+ CellID->1961181348,ExpressionUUID->"06596f07-86e8-43ee-b687-4f06d5c9dad4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Example", "Subsection",
+ CellID->305856997,ExpressionUUID->"14b49c32-004d-4275-8797-6da9023d1c20"],
+
+Cell["\<\
+Here, we demonstrate that in the Fourier basis, the regular representation is \
+block diagonalized.\
+\>", "TechNoteText",
+ CellID->731031747,ExpressionUUID->"e5e170c0-94b7-4161-9529-22127030e365"],
+
+Cell[TextData[{
+ "Consider the symmetric group ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", "n"], TraditionalForm]],ExpressionUUID->
+  "be4c57bc-39f9-45c5-ac56-1f622b8097ed"],
+ ":"
+}], "TechNoteMathCaption",
+ CellID->1156872368,ExpressionUUID->"8d914e57-6faf-4452-a487-2b080ddfbd3c"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"$n", "=", "3"}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"grp", "=", 
+  RowBox[{"SymmetricGroup", "[", "$n", "]"}]}]}], "Input",
+ CellLabel->"In[110]:=",
+ CellID->696627342,ExpressionUUID->"119faf92-a3aa-4ac1-b61a-c8e48522b7e6"],
+
+Cell[BoxData[
+ RowBox[{"SymmetricGroup", "[", "3", "]"}]], "Output",
+ CellLabel->"Out[111]=",
+ CellID->484548468,ExpressionUUID->"535e185f-cb23-4ef2-ac78-dc1859fec19a"]
+}, Open  ]],
+
+Cell["Consider the group generators:", "TechNoteMathCaption",
+ CellID->321087941,ExpressionUUID->"38765595-51aa-4199-a3dd-8863d7de9b5d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"gnr", "=", 
+   RowBox[{"GroupGenerators", "[", 
+    RowBox[{"SymmetricGroup", "@", "$n"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"gnr", "//", "PermutationForm"}]}], "Input",
+ CellLabel->"In[112]:=",
+ CellID->433318397,ExpressionUUID->"81f53cb8-53f9-4377-86fd-7de36ed62836"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2", "3"}, "RowDefault"]]},
+    "RowDefault"]}], "}"}]], "Output",
+ CellLabel->"Out[113]=",
+ CellID->1645051260,ExpressionUUID->"47378dfa-072f-4966-a678-65fd99f2c59b"]
+}, Open  ]],
+
+Cell["\<\
+Get the left regular representation of the group generators in the regular \
+basis (i.e., computational basis):\
+\>", "TechNoteMathCaption",
+ CellID->1046215163,ExpressionUUID->"05102835-c121-400e-b4cf-26e7f0e61245"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"rep", "=", 
+  RowBox[{"YoungRightRepresentation", "[", "$n", "]"}]}]], "Input",
+ CellLabel->"In[123]:=",
+ CellID->1080447132,ExpressionUUID->"30d0bc44-2c20-4be4-beb9-f208648c61f0"],
+
+Cell[BoxData[
+ RowBox[{"YoungRightRepresentation", "[", 
+  RowBox[{"SymmetricGroup", "[", "3", "]"}], "]"}]], "Output",
+ CellLabel->"Out[123]=",
+ CellID->1574253386,ExpressionUUID->"2f6b813a-e0d1-4d91-8fd1-8ab805ff1916"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"mat", "=", 
+  RowBox[{"rep", "/@", "gnr"}]}]], "Input",
+ CellLabel->"In[124]:=",
+ CellID->2037763493,ExpressionUUID->"82c452f0-6254-4615-adf0-2cfa4c945715"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    RowBox[{
+     TagBox["SparseArray",
+      "SummaryHead"], "[", 
+     DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = 
+      "Ready"}, 
+      TemplateBox[{
+        PaneSelectorBox[{False -> GridBox[{{
+              PaneBox[
+               ButtonBox[
+                DynamicBox[
+                 FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]],
+                 ButtonFunction :> (Typeset`open$$ = True), Appearance -> 
+                None, BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+                "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}]], 
+              GraphicsBox[
+               RasterBox[CompressedData["
+1:eJxTTMoPSmVmYGBgg2IQ26p8d9wspXP2c4wXbTH/ccX+xSLFx4GrXtmTKr6z
+28B155YX9jfcl6+rmfbW/mRE7r/4r+9JNmegzB9s4rj8OxoOQytdAQC0idJB
+
+                "], {{0, 0}, {6, 6}}, {0, 1}], AspectRatio -> 1, Axes -> 
+               False, Frame -> False, FrameLabel -> {None, None}, FrameStyle -> 
+               Directive[
+                 Opacity[0.5], 
+                 Thickness[Tiny], 
+                 RGBColor[0.368417, 0.506779, 0.709798]], 
+               FrameTicks -> {{None, None}, {None, None}}, GridLinesStyle -> 
+               Directive[
+                 GrayLevel[0.5, 0.4]], ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}], 
+               Method -> {
+                "GridLinesInFront" -> True, "AxisPadding" -> Scaled[0.02], 
+                 "DefaultBoundaryStyle" -> Automatic, 
+                 "DefaultGraphicsInteraction" -> {
+                  "Version" -> 1.2, "TrackMousePosition" -> {True, False}, 
+                   "Effects" -> {
+                    "Highlight" -> {"ratio" -> 2}, 
+                    "HighlightPoint" -> {"ratio" -> 2}, 
+                    "Droplines" -> {
+                    "freeformCursorMode" -> True, 
+                    "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
+                 "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
+                 Scaled[0.02], "RangePadding" -> Scaled[0.05]}, 
+               PlotRangePadding -> Automatic, PlotRangePadding -> 
+               Scaled[0.025]], 
+              GridBox[{{
+                 RowBox[{
+                   TagBox[
+                   "\"Specified elements: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["6", "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Dimensions: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox[
+                    RowBox[{"{", 
+                    RowBox[{"6", ",", "6"}], "}"}], "SummaryItem"]}]}}, 
+               GridBoxAlignment -> {
+                "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+               False, GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+               GridBoxSpacings -> {
+                "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+               BaseStyle -> {
+                ShowStringCharacters -> False, NumberMarks -> False, 
+                 PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+            GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+            AutoDelete -> False, 
+            GridBoxItemSize -> {
+             "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+            BaselinePosition -> {1, 1}], True -> GridBox[{{
+              PaneBox[
+               ButtonBox[
+                DynamicBox[
+                 FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]],
+                 ButtonFunction :> (Typeset`open$$ = False), Appearance -> 
+                None, BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+                "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}]], 
+              GraphicsBox[
+               RasterBox[CompressedData["
+1:eJxTTMoPSmVmYGBgg2IQ26p8d9wspXP2c4wXbTH/ccX+xSLFx4GrXtmTKr6z
+28B155YX9jfcl6+rmfbW/mRE7r/4r+9JNmegzB9s4rj8OxoOQytdAQC0idJB
+
+                "], {{0, 0}, {6, 6}}, {0, 1}], AspectRatio -> 1, Axes -> 
+               False, Frame -> False, FrameLabel -> {None, None}, FrameStyle -> 
+               Directive[
+                 Opacity[0.5], 
+                 Thickness[Tiny], 
+                 RGBColor[0.368417, 0.506779, 0.709798]], 
+               FrameTicks -> {{None, None}, {None, None}}, GridLinesStyle -> 
+               Directive[
+                 GrayLevel[0.5, 0.4]], ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}], 
+               Method -> {
+                "GridLinesInFront" -> True, "AxisPadding" -> Scaled[0.02], 
+                 "DefaultBoundaryStyle" -> Automatic, 
+                 "DefaultGraphicsInteraction" -> {
+                  "Version" -> 1.2, "TrackMousePosition" -> {True, False}, 
+                   "Effects" -> {
+                    "Highlight" -> {"ratio" -> 2}, 
+                    "HighlightPoint" -> {"ratio" -> 2}, 
+                    "Droplines" -> {
+                    "freeformCursorMode" -> True, 
+                    "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
+                 "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
+                 Scaled[0.02], "RangePadding" -> Scaled[0.05]}, 
+               PlotRangePadding -> Automatic, PlotRangePadding -> 
+               Scaled[0.025]], 
+              GridBox[{{
+                 RowBox[{
+                   TagBox[
+                   "\"Specified elements: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["6", "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Dimensions: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox[
+                    RowBox[{"{", 
+                    RowBox[{"6", ",", "6"}], "}"}], "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Default: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["0", "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Density: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["0.16666666666666666`", "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Elements:\"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["\"\"", "SummaryItem"]}]}, {
+                 TagBox[
+                  TagBox[
+                   GridBox[{{
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"1", ",", "3"}], "}"}], "\[Rule]", 
+                    StyleBox[
+                    PaneBox[
+                    "1", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
+                    ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
+                    False]}]}, {
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"2", ",", "5"}], "}"}], "\[Rule]", 
+                    StyleBox[
+                    PaneBox[
+                    "1", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
+                    ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
+                    False]}]}, {
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"3", ",", "1"}], "}"}], "\[Rule]", 
+                    StyleBox[
+                    PaneBox[
+                    "1", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
+                    ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
+                    False]}]}, {
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"4", ",", "6"}], "}"}], "\[Rule]", 
+                    StyleBox[
+                    PaneBox[
+                    "1", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
+                    ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
+                    False]}]}, {
+                    ItemBox[
+                    "\"\[VerticalEllipsis]\"", Alignment -> Center, 
+                    StripOnInput -> False]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                   "Column"], "SummaryItem"]}}, 
+               GridBoxAlignment -> {
+                "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+               False, GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+               GridBoxSpacings -> {
+                "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+               BaseStyle -> {
+                ShowStringCharacters -> False, NumberMarks -> False, 
+                 PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+            GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+            AutoDelete -> False, 
+            GridBoxItemSize -> {
+             "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+            BaselinePosition -> {1, 1}]}, 
+         Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+       "SummaryPanel"],
+      DynamicModuleValues:>{}], "]"}],
+    SparseArray[
+    Automatic, {6, 6}, 0, {
+     1, {{0, 1, 2, 3, 4, 5, 6}, {{3}, {5}, {1}, {6}, {2}, {4}}}, {1, 1, 1, 1, 
+      1, 1}}],
+    Editable->False,
+    SelectWithContents->True,
+    Selectable->False], ",", 
+   InterpretationBox[
+    RowBox[{
+     TagBox["SparseArray",
+      "SummaryHead"], "[", 
+     DynamicModuleBox[{Typeset`open$$ = False, Typeset`embedState$$ = 
+      "Ready"}, 
+      TemplateBox[{
+        PaneSelectorBox[{False -> GridBox[{{
+              PaneBox[
+               ButtonBox[
+                DynamicBox[
+                 FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxOpener"]],
+                 ButtonFunction :> (Typeset`open$$ = True), Appearance -> 
+                None, BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+                "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}]], 
+              GraphicsBox[
+               RasterBox[CompressedData["
+1:eJxTTMoPSmVmYGBgg2IQ26p8d9wspXP2c4wXbTH/ccX+xSLFx4GrXtnjEt/Z
+beC6c8sL+xvuy9fVTHtrfzIi91/81/c41Q828webOLX8OxpugzMdAgC0idJB
+
+                "], {{0, 0}, {6, 6}}, {0, 1}], AspectRatio -> 1, Axes -> 
+               False, Frame -> False, FrameLabel -> {None, None}, FrameStyle -> 
+               Directive[
+                 Opacity[0.5], 
+                 Thickness[Tiny], 
+                 RGBColor[0.368417, 0.506779, 0.709798]], 
+               FrameTicks -> {{None, None}, {None, None}}, GridLinesStyle -> 
+               Directive[
+                 GrayLevel[0.5, 0.4]], ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}], 
+               Method -> {
+                "GridLinesInFront" -> True, "AxisPadding" -> Scaled[0.02], 
+                 "DefaultBoundaryStyle" -> Automatic, 
+                 "DefaultGraphicsInteraction" -> {
+                  "Version" -> 1.2, "TrackMousePosition" -> {True, False}, 
+                   "Effects" -> {
+                    "Highlight" -> {"ratio" -> 2}, 
+                    "HighlightPoint" -> {"ratio" -> 2}, 
+                    "Droplines" -> {
+                    "freeformCursorMode" -> True, 
+                    "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
+                 "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
+                 Scaled[0.02], "RangePadding" -> Scaled[0.05]}, 
+               PlotRangePadding -> Automatic, PlotRangePadding -> 
+               Scaled[0.025]], 
+              GridBox[{{
+                 RowBox[{
+                   TagBox[
+                   "\"Specified elements: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["6", "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Dimensions: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox[
+                    RowBox[{"{", 
+                    RowBox[{"6", ",", "6"}], "}"}], "SummaryItem"]}]}}, 
+               GridBoxAlignment -> {
+                "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+               False, GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+               GridBoxSpacings -> {
+                "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+               BaseStyle -> {
+                ShowStringCharacters -> False, NumberMarks -> False, 
+                 PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+            GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+            AutoDelete -> False, 
+            GridBoxItemSize -> {
+             "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+            BaselinePosition -> {1, 1}], True -> GridBox[{{
+              PaneBox[
+               ButtonBox[
+                DynamicBox[
+                 FEPrivate`FrontEndResource["FEBitmaps", "SummaryBoxCloser"]],
+                 ButtonFunction :> (Typeset`open$$ = False), Appearance -> 
+                None, BaseStyle -> {}, Evaluator -> Automatic, Method -> 
+                "Preemptive"], Alignment -> {Center, Center}, ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}]], 
+              GraphicsBox[
+               RasterBox[CompressedData["
+1:eJxTTMoPSmVmYGBgg2IQ26p8d9wspXP2c4wXbTH/ccX+xSLFx4GrXtnjEt/Z
+beC6c8sL+xvuy9fVTHtrfzIi91/81/c41Q828webOLX8OxpugzMdAgC0idJB
+
+                "], {{0, 0}, {6, 6}}, {0, 1}], AspectRatio -> 1, Axes -> 
+               False, Frame -> False, FrameLabel -> {None, None}, FrameStyle -> 
+               Directive[
+                 Opacity[0.5], 
+                 Thickness[Tiny], 
+                 RGBColor[0.368417, 0.506779, 0.709798]], 
+               FrameTicks -> {{None, None}, {None, None}}, GridLinesStyle -> 
+               Directive[
+                 GrayLevel[0.5, 0.4]], ImageSize -> 
+               Dynamic[{
+                 Automatic, 
+                  3.5 (CurrentValue["FontCapHeight"]/AbsoluteCurrentValue[
+                   Magnification])}], 
+               Method -> {
+                "GridLinesInFront" -> True, "AxisPadding" -> Scaled[0.02], 
+                 "DefaultBoundaryStyle" -> Automatic, 
+                 "DefaultGraphicsInteraction" -> {
+                  "Version" -> 1.2, "TrackMousePosition" -> {True, False}, 
+                   "Effects" -> {
+                    "Highlight" -> {"ratio" -> 2}, 
+                    "HighlightPoint" -> {"ratio" -> 2}, 
+                    "Droplines" -> {
+                    "freeformCursorMode" -> True, 
+                    "placement" -> {"x" -> "All", "y" -> "None"}}}}, 
+                 "DefaultPlotStyle" -> Automatic, "DomainPadding" -> 
+                 Scaled[0.02], "RangePadding" -> Scaled[0.05]}, 
+               PlotRangePadding -> Automatic, PlotRangePadding -> 
+               Scaled[0.025]], 
+              GridBox[{{
+                 RowBox[{
+                   TagBox[
+                   "\"Specified elements: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["6", "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Dimensions: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox[
+                    RowBox[{"{", 
+                    RowBox[{"6", ",", "6"}], "}"}], "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Default: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["0", "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Density: \"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["0.16666666666666666`", "SummaryItem"]}]}, {
+                 RowBox[{
+                   TagBox["\"Elements:\"", "SummaryItemAnnotation"], 
+                   "\[InvisibleSpace]", 
+                   TagBox["\"\"", "SummaryItem"]}]}, {
+                 TagBox[
+                  TagBox[
+                   GridBox[{{
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"1", ",", "4"}], "}"}], "\[Rule]", 
+                    StyleBox[
+                    PaneBox[
+                    "1", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
+                    ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
+                    False]}]}, {
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"2", ",", "6"}], "}"}], "\[Rule]", 
+                    StyleBox[
+                    PaneBox[
+                    "1", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
+                    ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
+                    False]}]}, {
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"3", ",", "2"}], "}"}], "\[Rule]", 
+                    StyleBox[
+                    PaneBox[
+                    "1", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
+                    ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
+                    False]}]}, {
+                    RowBox[{
+                    RowBox[{"{", 
+                    RowBox[{"4", ",", "5"}], "}"}], "\[Rule]", 
+                    StyleBox[
+                    PaneBox[
+                    "1", ContentPadding -> False, FrameMargins -> 0, 
+                    StripOnInput -> True, BaselinePosition -> Baseline, 
+                    ImageSize -> {{1, 300}, Automatic}], LineBreakWithin -> 
+                    False]}]}, {
+                    ItemBox[
+                    "\"\[VerticalEllipsis]\"", Alignment -> Center, 
+                    StripOnInput -> False]}}, 
+                    GridBoxAlignment -> {"Columns" -> {{Left}}}, 
+                    DefaultBaseStyle -> "Column", 
+                    GridBoxItemSize -> {
+                    "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}], 
+                   "Column"], "SummaryItem"]}}, 
+               GridBoxAlignment -> {
+                "Columns" -> {{Left}}, "Rows" -> {{Automatic}}}, AutoDelete -> 
+               False, GridBoxItemSize -> {
+                "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+               GridBoxSpacings -> {
+                "Columns" -> {{2}}, "Rows" -> {{Automatic}}}, 
+               BaseStyle -> {
+                ShowStringCharacters -> False, NumberMarks -> False, 
+                 PrintPrecision -> 3, ShowSyntaxStyles -> False}]}}, 
+            GridBoxAlignment -> {"Columns" -> {{Left}}, "Rows" -> {{Top}}}, 
+            AutoDelete -> False, 
+            GridBoxItemSize -> {
+             "Columns" -> {{Automatic}}, "Rows" -> {{Automatic}}}, 
+            BaselinePosition -> {1, 1}]}, 
+         Dynamic[Typeset`open$$], ImageSize -> Automatic]},
+       "SummaryPanel"],
+      DynamicModuleValues:>{}], "]"}],
+    SparseArray[
+    Automatic, {6, 6}, 0, {
+     1, {{0, 1, 2, 3, 4, 5, 6}, {{4}, {6}, {2}, {5}, {1}, {3}}}, {1, 1, 1, 1, 
+      1, 1}}],
+    Editable->False,
+    SelectWithContents->True,
+    Selectable->False]}], "}"}]], "Output",
+ CellLabel->"Out[124]=",
+ CellID->957720311,ExpressionUUID->"51013a9f-43c7-46b7-9c89-88dea04ebf4f"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"MatrixForm", "/@", "mat"}]], "Input",
+ CellLabel->"In[125]:=",
+ CellID->1348861163,ExpressionUUID->"309719e0-1934-4bef-8566-b1e2c271ed52"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"0", "0", "1", "0", "0", "0"},
+       {"0", "0", "0", "0", "1", "0"},
+       {"1", "0", "0", "0", "0", "0"},
+       {"0", "0", "0", "0", "0", "1"},
+       {"0", "1", "0", "0", "0", "0"},
+       {"0", "0", "0", "1", "0", "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {6, 6}, 0, {
+       1, {{0, 1, 2, 3, 4, 5, 6}, {{3}, {5}, {1}, {6}, {2}, {4}}}, {1, 1, 1, 
+        1, 1, 1}}]]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"0", "0", "0", "1", "0", "0"},
+       {"0", "0", "0", "0", "0", "1"},
+       {"0", "1", "0", "0", "0", "0"},
+       {"0", "0", "0", "0", "1", "0"},
+       {"1", "0", "0", "0", "0", "0"},
+       {"0", "0", "1", "0", "0", "0"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[
+     SparseArray[
+      Automatic, {6, 6}, 0, {
+       1, {{0, 1, 2, 3, 4, 5, 6}, {{4}, {6}, {2}, {5}, {1}, {3}}}, {1, 1, 1, 
+        1, 1, 1}}]]]]}], "}"}]], "Output",
+ CellLabel->"Out[125]=",
+ CellID->654968642,ExpressionUUID->"fc5050ec-29ae-4055-a6ce-e01a01c70521"]
+}, Open  ]],
+
+Cell["\<\
+To examine the regular representation in the Fourier basis, construct the \
+matrix of basis change:\
+\>", "TechNoteMathCaption",
+ CellID->1596388322,ExpressionUUID->"9868a316-5e86-4081-ba8d-ea3e123f111e"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"trs", "=", 
+   RowBox[{"YoungFourierMatrix", "[", "$n", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"trs", "//", "MatrixForm"}]}], "Input",
+ CellLabel->"In[126]:=",
+ CellID->1918215776,ExpressionUUID->"c64fdae5-007a-4dc0-b5f7-515c376a63b0"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      FractionBox["1", 
+       SqrtBox["6"]], 
+      FractionBox["1", 
+       SqrtBox["3"]], "0", "0", 
+      FractionBox["1", 
+       SqrtBox["3"]], 
+      FractionBox["1", 
+       SqrtBox["6"]]},
+     {
+      FractionBox["1", 
+       SqrtBox["6"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["3"]}]]}], 
+      FractionBox["1", "2"], 
+      FractionBox["1", "2"], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["3"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["6"]]}]},
+     {
+      FractionBox["1", 
+       SqrtBox["6"]], 
+      FractionBox["1", 
+       SqrtBox["3"]], "0", "0", 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["3"]]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["6"]]}]},
+     {
+      FractionBox["1", 
+       SqrtBox["6"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["3"]}]]}], 
+      FractionBox["1", "2"], 
+      RowBox[{"-", 
+       FractionBox["1", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["3"]}]]}], 
+      FractionBox["1", 
+       SqrtBox["6"]]},
+     {
+      FractionBox["1", 
+       SqrtBox["6"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["3"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", "2"]}], 
+      FractionBox["1", "2"], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["3"]}]]}], 
+      FractionBox["1", 
+       SqrtBox["6"]]},
+     {
+      FractionBox["1", 
+       SqrtBox["6"]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        RowBox[{"2", " ", 
+         SqrtBox["3"]}]]}], 
+      RowBox[{"-", 
+       FractionBox["1", "2"]}], 
+      RowBox[{"-", 
+       FractionBox["1", "2"]}], 
+      FractionBox["1", 
+       RowBox[{"2", " ", 
+        SqrtBox["3"]}]], 
+      RowBox[{"-", 
+       FractionBox["1", 
+        SqrtBox["6"]]}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[127]//MatrixForm=",
+ CellID->958393498,ExpressionUUID->"ae9b1c9a-80c9-42cc-97f1-081e3a6126ac"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"Options", "[", "YoungFourierMatrix", "]"}]], "Input",
+ CellLabel->"In[128]:=",
+ CellID->737048099,ExpressionUUID->"7249a863-d856-4727-be55-4e11bd6e6217"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{"FourierParameters", "\[Rule]", 
+   RowBox[{"{", 
+    RowBox[{"\<\"Right\"\>", ",", "\<\"Right\"\>"}], "}"}]}], "}"}]], "Output",\
+
+ CellLabel->"Out[128]=",
+ CellID->1669476768,ExpressionUUID->"e5ea70eb-77d3-4e2f-a659-c875ef97f8c0"]
+}, Open  ]],
+
+Cell["\<\
+Get the regular representation of the group generators in the Fourier basis:\
+\>", "TechNoteMathCaption",
+ CellID->192107077,ExpressionUUID->"183e3b9e-06eb-40ae-bd39-bf94b0d67e44"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"Transpose", "[", "trs", "]"}], ".", 
+    RowBox[{"mat", "[", 
+     RowBox[{"[", "1", "]"}], "]"}], ".", "trs"}], "//", "Simplify"}], "//", 
+  "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{
+   RowBox[{
+    RowBox[{"Transpose", "[", "trs", "]"}], ".", 
+    RowBox[{"mat", "[", 
+     RowBox[{"[", "2", "]"}], "]"}], ".", "trs"}], "//", "Simplify"}], "//", 
+  "MatrixForm"}]}], "Input",
+ CellLabel->"In[129]:=",
+ CellID->765292804,ExpressionUUID->"c914bcfa-35c6-492c-8683-fdfbf47931f3"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "0", "0", "0"},
+     {"0", "1", "0", "0", "0", "0"},
+     {"0", "0", 
+      RowBox[{"-", "1"}], "0", "0", "0"},
+     {"0", "0", "0", "1", "0", "0"},
+     {"0", "0", "0", "0", 
+      RowBox[{"-", "1"}], "0"},
+     {"0", "0", "0", "0", "0", 
+      RowBox[{"-", "1"}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[129]//MatrixForm=",
+ CellID->279438368,ExpressionUUID->"97f19f41-cbda-462e-87b9-151e920fbbc8"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0", "0", "0", "0", "0"},
+     {"0", 
+      RowBox[{"-", 
+       FractionBox["1", "2"]}], 
+      FractionBox[
+       SqrtBox["3"], "2"], "0", "0", "0"},
+     {"0", 
+      RowBox[{"-", 
+       FractionBox[
+        SqrtBox["3"], "2"]}], 
+      RowBox[{"-", 
+       FractionBox["1", "2"]}], "0", "0", "0"},
+     {"0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox["1", "2"]}], 
+      FractionBox[
+       SqrtBox["3"], "2"], "0"},
+     {"0", "0", "0", 
+      RowBox[{"-", 
+       FractionBox[
+        SqrtBox["3"], "2"]}], 
+      RowBox[{"-", 
+       FractionBox["1", "2"]}], "0"},
+     {"0", "0", "0", "0", "0", "1"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[130]//MatrixForm=",
+ CellID->2121398634,ExpressionUUID->"09a7d638-ed10-47b6-9d98-3f599a8df948"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Implementation", "TechNoteSection",
+ CellID->1540694772,ExpressionUUID->"c0eafded-5d82-4ea3-80ab-7d5d4b80f9dc"],
+
+Cell["\<\
+We first find the Fourier basis for the induced representation. Using the \
+resulting basis, we then show how to implement the QFT efficiently on a \
+quantum computer.\
+\>", "TechNoteText",
+ CellID->1186339691,ExpressionUUID->"5d612f55-21a0-4133-897c-1c7e960af191"],
+
+Cell[CellGroupData[{
+
+Cell["Fourier Basis for Induced Representation", "Subsection",
+ CellID->1799840078,ExpressionUUID->"91278d5d-b4cd-47ef-bac8-5aa39b03d4f0"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "f6534efa-761d-406d-96c8-9feb27479eb6"],
+ " be a subgroup of a finite group ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "84ebb654-56f2-4fea-8e60-14c2d65e7d23"],
+ ". Consider an irreducible representation ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[CapitalGamma]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"5431b045-cdc3-44c3-9432-a75acc3998ad"],
+ " of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "a822236c-9ab9-4108-b780-eaad8d73ad95"],
+ ", and its induced representation ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[CapitalGamma]", "\[Mu]"], 
+    SubsuperscriptBox["\[UpArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "3e34cb67-76cb-4cab-8c27-0f17ca4fc35f"],
+ " into ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "cac9ca98-2321-474c-a171-30ef9b370869"],
+ ". Note that an induced representation can be defined for any representation \
+of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "26f95445-dbd7-4fb8-8d22-ccca8621df35"],
+ ", but the representation must be irreducible in order to define the QFT for \
+its induced representation. The computational basis of the induced \
+representation is given by ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      SubscriptBox["t", "i"]},
+     "Ket"], "\[CircleTimes]", 
+    TemplateBox[{
+      SubscriptBox["v", "j"]},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "150b8282-54cb-49c2-8c5e-874e822fa729"],
+ ", where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalT]", ":=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        SubscriptBox["t", "i"], ":", "i"}], "=", "1"}], ",", "2", ",", 
+      "\[Ellipsis]", ",", 
+      RowBox[{
+       RowBox[{
+       "\[LeftBracketingBar]", "\[ScriptCapitalG]", "\[RightBracketingBar]"}],
+        "/", 
+       RowBox[{
+       "\[LeftBracketingBar]", "\[ScriptCapitalH]", 
+        "\[RightBracketingBar]"}]}]}], "}"}]}], TraditionalForm]],
+  ExpressionUUID->"f1b6fd7f-cbb3-4325-874e-2b74c81ea963"],
+ " is a fixed transversal for the left cosets of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "fd9f33e8-0f0a-4fbe-8bf9-ecab85c0bc21"],
+ " in ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "03db61a3-bfad-46cd-b9f2-c236ec740df7"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       TemplateBox[{
+         SubscriptBox["t", "i"]},
+        "Ket"], ":", "i"}], "=", "1"}], ",", "2", ",", "\[Ellipsis]", ",", 
+     RowBox[{
+      RowBox[{
+      "\[LeftBracketingBar]", "\[ScriptCapitalG]", "\[RightBracketingBar]"}], 
+      "/", 
+      RowBox[{
+      "\[LeftBracketingBar]", "\[ScriptCapitalH]", 
+       "\[RightBracketingBar]"}]}]}], "}"}], TraditionalForm]],ExpressionUUID->
+  "1303fed5-eb50-4e31-9877-6d8cdaea53f4"],
+ " is the corresponding transversal basis, and  ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       TemplateBox[{
+         SubscriptBox["v", "j"]},
+        "Ket"], ":", "j"}], "=", "1"}], ",", "\[Ellipsis]", ",", 
+     SubscriptBox["d", "\[Mu]"]}], "}"}], TraditionalForm]],ExpressionUUID->
+  "15f68e45-704d-4344-b51d-93a7be7e56c0"],
+ " is the ",
+ StyleBox["irreducible basis",
+  FontSlant->"Italic"],
+ " associated with the representation ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[CapitalGamma]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"9b269034-ec6d-46ef-9e41-8021bf9c3c52"],
+ "."
+}], "TechNoteText",
+ CellID->2084128042,ExpressionUUID->"1a9c6e83-ecbb-4f5a-a065-00b2709d52d6"],
+
+Cell[TextData[{
+ "The QFT for the induced representation gives a basis ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{"p", "\[VeryThinSpace]", "q"}]}]},
+     "Ket"], "}"}], TraditionalForm]],ExpressionUUID->
+  "cbe90775-4b9a-4111-8aee-2dcd455f28c1"],
+ " in which the above representation is block diagonal. Here, ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "e93501e4-5679-4589-95c4-bb0eba48f3d9"],
+ " labels the irreducible representations of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "e15e397a-b638-49e9-8835-75167b422483"],
+ ", ",
+ Cell[BoxData[
+  FormBox["p", TraditionalForm]],ExpressionUUID->
+  "dde20293-8c0a-4217-9d10-927627789ab6"],
+ " the multiplicity space and ",
+ Cell[BoxData[
+  FormBox["q", TraditionalForm]],ExpressionUUID->
+  "a2b5463b-e8b3-4fea-99e6-dcc94059771e"],
+ " the irreducible space."
+}], "TechNoteText",
+ CellID->1074001700,ExpressionUUID->"3cf43289-919d-4ebb-888c-f69f5d51479e"],
+
+Cell["The QFT is given by", "TechNoteText",
+ CellID->1581754903,ExpressionUUID->"f5011e46-6b4e-4af4-8496-3030078cc5b6"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      RowBox[{
+        RowBox[{"\[Mu]", ";", "\[Lambda]"}], ",", 
+        RowBox[{"p", "\[VeryThinSpace]", "q"}]}]},
+     "Ket"], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"i", "\[Element]", "\[Mu]"}]], 
+     RowBox[{
+      TemplateBox[{"t"},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{
+        SubscriptBox["v", "i"]},
+       "Ket"]}], 
+     SqrtBox[
+      FractionBox[
+       SubscriptBox["d", "\[Lambda]"], 
+       RowBox[{"\[VeryThinSpace]", 
+        RowBox[{"|", "\[ScriptCapitalG]", "|"}]}]]], 
+     SqrtBox[
+      FractionBox[
+       SubscriptBox["d", "\[Mu]"], 
+       RowBox[{"|", "\[ScriptCapitalH]", "|", "\[VeryThinSpace]"}]]], 
+     SuperscriptBox[
+      RowBox[{
+       UnderscriptBox["\[CapitalSigma]", 
+        RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}]], "[", 
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"p", "\[VeryThinSpace]", "q"}], "\[Lambda]"], "(", 
+        RowBox[{"t", "\[VeryThinSpace]", "h"}], ")"}], "]"}], "*"], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Mu]"], "(", "h", ")"}]}]}], 
+   TraditionalForm]],ExpressionUUID->"5e6c2bfa-032d-4fca-882d-5655172759ed"],
+ " ."
+}], "TechNoteText",
+ CellID->334235677,ExpressionUUID->"16b098d4-5afd-4bac-a085-9940d3a69c39"],
+
+Cell[TextData[{
+ "for a fixed ",
+ Cell[BoxData[
+  FormBox["j", TraditionalForm]],ExpressionUUID->
+  "de84068b-9c3d-4a98-a485-27e366a9b19c"],
+ " referring to a multiplicity space of irreducible representation ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "84f71e56-835e-472c-ac98-39bdd9834cb7"],
+ " of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "0e14012c-d51e-4d8f-866d-1b10de102871"],
+ ". On quantum computers, this can be achieved by the QFT over ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "bea580c8-6414-492e-b5e6-359d388d20dd"],
+ " and then the inverse QFT over ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "fe0d3a28-5d7e-4fb0-9027-b527f8c3c185"],
+ " (both using the left-left convention)."
+}], "TechNoteText",
+ CellID->962178780,ExpressionUUID->"54401760-30f1-4334-b812-8859b04ab264"],
+
+Cell["The inverse QFT is given by", "TechNoteText",
+ CellID->1829286434,ExpressionUUID->"73eb8c94-9bf4-4e7c-a9fd-86f5a14e405d"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     TemplateBox[{"t"},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{
+       SubscriptBox["v", "i"]},
+      "Ket"]}], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"\[Lambda]", "\[Element]", 
+       RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalG]", ")"}]}]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"p", ",", 
+       RowBox[{"q", "\[Element]", "\[Lambda]"}]}]], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"p", "\[VeryThinSpace]", "q"}]}]},
+      "Ket"], 
+     SqrtBox[
+      FractionBox[
+       RowBox[{
+        SubscriptBox["d", "\[Mu]"], 
+        SubscriptBox["d", "\[Lambda]"]}], 
+       RowBox[{
+       "|", "\[ScriptCapitalH]", "|", "\[VeryThinSpace]", "|", 
+        "\[ScriptCapitalG]", "|"}]]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}]], 
+     SuperscriptBox[
+      RowBox[{
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"p", "\[VeryThinSpace]", "q"}], "\[Lambda]"], "(", 
+        RowBox[{"t", "\[VeryThinSpace]", "h"}], ")"}], "[", 
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Mu]"], "(", "h", ")"}], 
+       "]"}], "*"]}]}], TraditionalForm]],ExpressionUUID->
+  "35c81f48-d4dd-4481-bf3a-027c12736965"],
+ " ,"
+}], "TechNoteText",
+ CellID->1441205786,ExpressionUUID->"28ca1551-28f6-4dbe-b075-9581b04fbf85"],
+
+Cell[TextData[{
+ "where ",
+ Cell[BoxData[
+  FormBox["k", TraditionalForm]],ExpressionUUID->
+  "8970e27a-016e-4225-8cdc-9839ea794f81"],
+ " is a fixed parameter referring to a multiplicity space of irreducible \
+representation \[Mu] of \[ScriptCapitalH] and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalG]", ")"}], 
+   TraditionalForm]],ExpressionUUID->"84c4d89c-393a-471e-82ca-48724ef75a97"],
+ " is the set of all (inequivalent) irreducible representations of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "0f44178b-cf8c-4365-8a7f-7fa19e356f23"],
+ "."
+}], "TechNoteText",
+ CellID->877590789,ExpressionUUID->"582dec83-3987-46c9-9002-97f49ca90920"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Recursive Implementation", "Subsection",
+ CellID->1680508545,ExpressionUUID->"693c658e-6781-4212-83a7-88ab7dcd74df"],
+
+Cell[TextData[{
+ "Now, to implement the generalized QFT, let us rewrite ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     SubscriptBox["v", "i"]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "8cae22df-cfc6-4d6b-8b47-caca684cff8b"],
+ " as ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Mu]", ",", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "6f5723c8-1c17-45d5-8dce-192df3f208d8"],
+ " for a fixed ",
+ Cell[BoxData[
+  FormBox["j", TraditionalForm]],ExpressionUUID->
+  "ffd77bd3-f1d7-4b1e-aa02-d992c0870cb4"],
+ " and the above equation as"
+}], "TechNoteText",
+ CellID->763469690,ExpressionUUID->"1ee8c61c-dde6-4d89-aad7-edfef053542a"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     TemplateBox[{"t"},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{
+       RowBox[{"\[Mu]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"]}], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"\[Lambda]", "\[Element]", 
+       RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalG]", ")"}]}]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"p", ",", 
+       RowBox[{"q", "\[Element]", "\[Lambda]"}]}]], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{"p", "\[VeryThinSpace]", "q"}]}]},
+      "Ket"], 
+     SqrtBox[
+      FractionBox[
+       RowBox[{
+        SubscriptBox["d", "\[Mu]"], 
+        SubscriptBox["d", "\[Lambda]"]}], 
+       RowBox[{
+       "|", "\[ScriptCapitalH]", "|", "\[VeryThinSpace]", "|", 
+        "\[ScriptCapitalG]", "|"}]]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}]], 
+     SuperscriptBox[
+      RowBox[{
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"p", "\[VeryThinSpace]", "q"}], "\[Lambda]"], "(", 
+        RowBox[{"t", "\[VeryThinSpace]", "h"}], ")"}], "[", 
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Mu]"], "(", "h", ")"}], 
+       "]"}], "*"]}]}], TraditionalForm]],ExpressionUUID->
+  "a7496c49-38bd-450d-8399-24a3e3cc9c48"],
+ " ."
+}], "TechNoteText",
+ CellID->1915370142,ExpressionUUID->"e3625be6-126c-4e34-b77b-82776e948286"],
+
+Cell["\<\
+Using the great orthogonality theorem, one can rewrite the above equation as\
+\>", "TechNoteText",
+ CellID->109833868,ExpressionUUID->"e25555f4-be21-4e71-b918-aa6366c1df0c"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     TemplateBox[{"t"},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{
+       RowBox[{"\[Mu]", ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"]}], "=", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       UnderscriptBox["\[CapitalSigma]", 
+        RowBox[{"\[Lambda]", "\[Element]", 
+         SubscriptBox["\[ScriptCapitalC]", "\[Mu]"]}]], "(", 
+       RowBox[{
+        RowBox[{
+         SuperscriptBox[
+          OverscriptBox["\[CapitalGamma]", "^"], "\[Lambda]"], "(", "t", 
+         ")"}], "\[CircleTimes]", 
+        OverscriptBox["I", "^"]}], ")"}], 
+      RowBox[{"(", 
+       RowBox[{
+        TemplateBox[{
+          RowBox[{"\[Lambda]", ",", 
+            SubscriptBox["i", "\[Lambda]"]}]},
+         "Ket"], "\[CircleTimes]", 
+        TemplateBox[{
+          RowBox[{"\[Lambda]", ",", 
+            SubscriptBox["j", "\[Lambda]"]}]},
+         "Ket"]}], ")"}]}], "=", 
+     RowBox[{
+      UnderscriptBox["\[CapitalSigma]", 
+       RowBox[{"\[Lambda]", "\[Element]", 
+        SubscriptBox["\[ScriptCapitalC]", "\[Mu]"]}]], 
+      UnderscriptBox["\[CapitalSigma]", "k"], 
+      TemplateBox[{
+        RowBox[{"\[Lambda]", ",", 
+          RowBox[{"k", ";", "\[Mu]"}], ",", "j"}]},
+       "Ket"], 
+      RowBox[{
+       SubsuperscriptBox["\[CapitalGamma]", 
+        RowBox[{"k", "\[VeryThinSpace]", 
+         SubscriptBox["i", "\[Lambda]"]}], "\[Lambda]"], "(", 
+       SubscriptBox["t", "i"], ")"}]}]}]}], TraditionalForm]],ExpressionUUID->
+  "85ecc44c-0e68-4121-876d-6e85446af3b2"],
+ " ,"
+}], "TechNoteText",
+ CellID->825024611,ExpressionUUID->"09338c26-ed9f-4b83-b7c1-3b60cfdd408e"],
+
+Cell[TextData[{
+ "where ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["i", "\[Lambda]"], TraditionalForm]],ExpressionUUID->
+  "78dcb19f-e186-4f73-a251-7eaee11085ab"],
+ " (and similarly ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["j", "\[Lambda]"], TraditionalForm]],ExpressionUUID->
+  "2bb2e627-d2d3-4c46-91bf-90be51b769b0"],
+ ") is the unique path in the Bratteli diagram such that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["i", "\[Lambda]"], 
+     SubscriptBox["|", 
+      RowBox[{"n", "-", "1"}]]}], "=", "i"}], TraditionalForm]],
+  ExpressionUUID->"66502b60-cd26-4202-be43-2d40e54f41be"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalC]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"4a7b47a7-15bc-4f08-af4f-931a7dc45caf"],
+ " is the set of children of ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "40802514-8dab-45c4-8d8a-1ab1e0d1b408"],
+ " in the Bratteli diagram. This relation induces a basis change from ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"t"},
+     "Ket"], "\[CircleTimes]", 
+    TemplateBox[{
+      RowBox[{"\[Mu]", ",", 
+        RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "24564459-1e29-4470-a7c8-94a02537f0eb"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Lambda]", ",", 
+       RowBox[{"p", ";", "\[Mu]"}], ",", "q"}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "cd7b53da-4e13-4725-83d1-f1489f1b727d"],
+ ". Another basis change from ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Lambda]", ",", 
+       RowBox[{"p", ";", "\[Mu]"}], ",", "q"}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "292f71a6-7923-40e5-8e72-327fa84276b1"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Lambda]", ",", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "caad351d-8816-4e39-803b-7eb9f658c417"],
+ " is a simple rearrangement. Finally, the inverse transformation of the \
+above is given by"
+}], "TechNoteText",
+ CellID->2026047036,ExpressionUUID->"8a3d1adf-3348-4e5f-9421-9b5b07b7ebcb"],
+
+Cell[TextData[{
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{"p", ";", "\[Mu]"}], ",", "q"}]},
+     "Ket"], "=", 
+    RowBox[{
+     RowBox[{
+      UnderscriptBox["\[CapitalSigma]", 
+       RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}]], 
+      UnderscriptBox["\[CapitalSigma]", "k"], 
+      RowBox[{
+       TemplateBox[{"t"},
+        "Ket"], "\[CircleTimes]", 
+       TemplateBox[{
+         RowBox[{"\[Mu]", ",", 
+           RowBox[{"k", "\[VeryThinSpace]", "q"}]}]},
+        "Ket"]}], 
+      RowBox[{
+       SubsuperscriptBox["\[CapitalGamma]", 
+        RowBox[{
+         SubscriptBox["k", "\[Lambda]"], "p"}], "\[Lambda]"], "(", "t", 
+       ")"}]}], "=", 
+     RowBox[{
+      UnderscriptBox["\[CapitalSigma]", 
+       RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}]], 
+      RowBox[{
+       TemplateBox[{"t"},
+        "Ket"], "\[CircleTimes]", 
+       RowBox[{"(", 
+        RowBox[{
+         RowBox[{
+          OverscriptBox["L", "^"], "(", "t", ")"}], 
+         TemplateBox[{
+           RowBox[{"\[Lambda]", ",", 
+             RowBox[{"p", "\[VeryThinSpace]", 
+               SubscriptBox["q", "\[Lambda]"]}]}]},
+          "Ket"]}], ")"}]}]}]}]}], TraditionalForm]],ExpressionUUID->
+  "00a07956-e3c2-45b4-874b-cf05f5a543a7"],
+ " ."
+}], "TechNoteText",
+ CellID->887299626,ExpressionUUID->"ecc46fd2-2519-493b-99e4-eb045c57a811"],
+
+Cell[TextData[{
+ "On a quantum computer, this may be regarded as the controlled-",
+ Cell[BoxData[
+  FormBox[
+   OverscriptBox["L", "^"], TraditionalForm]],ExpressionUUID->
+  "b9d2f8de-9b61-41d1-99d1-917b1d1baee9"],
+ " transformation on the embedded basis ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Lambda]", ",", 
+       RowBox[{"p", "\[VeryThinSpace]", 
+         SubscriptBox["q", "\[Lambda]"]}]}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "847f2ddb-7d1b-42c0-8aa8-abe4bec1e48f"],
+ ". Recall that the left regular representation is a native operator on the \
+group algebra residing on the quantum register of the quantum computer."
+}], "TechNoteText",
+ CellID->699272628,ExpressionUUID->"30362d88-a12d-4b23-a272-f13d52fa5dae"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Basic Application for Restricted Representations", "TechNoteSection",
+ CellID->422878995,ExpressionUUID->"b37cf314-e109-4b6d-97b2-9601e6f31800"],
+
+Cell[TextData[{
+ "Consider a subgroup ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "7d33d775-e8b1-4aa6-839d-67cc75069652"],
+ " of a finite group ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "eda043e0-7ccc-43a4-8370-40a177caf5c6"],
+ ". Let ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"1c041d13-2b44-4562-a516-27b5f0406ae2"],
+ " be an irreducible representation of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "f5023ad4-8bcd-4e94-be4a-9f05fa83be20"],
+ " with basis \[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       TemplateBox[{
+         RowBox[{"\[Lambda]", ",", "i"}]},
+        "Ket"], ":", "i"}], "=", "1"}], ",", "\[Ellipsis]", ",", 
+     SubscriptBox["d", "\[Lambda]"]}], "}"}], TraditionalForm]],
+  ExpressionUUID->"65601ec7-ad59-4801-af10-261d932e5de0"],
+ ".\[LineSeparator]We want to find a \[ScriptCapitalH]-adapted basis\
+\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      TemplateBox[{
+        RowBox[{
+          RowBox[{"\[Lambda]", "\[DownArrow]", "\[Mu]"}], ",", 
+          RowBox[{"k", "\[VeryThinSpace]", "l"}]}]},
+       "Ket"], ":", 
+      RowBox[{"\[Mu]", "\[Element]", 
+       RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalH]", ")"}]}]}], ",", 
+     " ", 
+     RowBox[{
+      RowBox[{"\[Mu]", "\[Element]", 
+       SubscriptBox["\[ScriptCapitalC]", "\[Lambda]"]}], ";", " ", 
+      RowBox[{"k", "\[Element]", "\[Mu]"}], ";", 
+      RowBox[{"l", "=", "1"}]}], ",", "\[Ellipsis]", ",", 
+     SubscriptBox["m", 
+      RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Lambda]"}]]}], "}"}], 
+   TraditionalForm]],ExpressionUUID->"744489df-62c4-448e-a0fe-e8b3afe592ee"],
+ " ,\nwhere ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Lambda]", "\[DownArrow]", "\[Mu]"}], TraditionalForm]],
+  ExpressionUUID->"26ed5d6d-7c88-4ea0-acef-3e51d2626dac"],
+ " indicates the restriction of ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "9bb380c3-5d2f-484b-b984-d034fe7111da"],
+ ",\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["\[ScriptCapitalC]", "\[Lambda]"], ":=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"\[Mu]", "\[Element]", 
+        RowBox[{"\[ScriptCapitalR]", "(", "\[ScriptCapitalH]", ")"}]}], ":", 
+       "\[Mu]"}], "->", "\[Lambda]"}], "}"}]}], TraditionalForm]],
+  ExpressionUUID->"5a0892df-08a9-4353-861b-77b7303a4f75"],
+ "\[LineSeparator]with \[Mu]\[RightArrow]\[Lambda] indicating that ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "541a2c67-917b-4b9d-9ab7-e791ee10b109"],
+ " is a parent of ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "daa6f82f-15c8-46b6-9aaa-6d46c6001b51"],
+ " in the Bratteli diagram, and ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["m", 
+    RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Lambda]"}]], TraditionalForm]],
+  ExpressionUUID->"fbfe19b7-4e0a-4714-8d4f-19e1f8fb160f"],
+ " is the multiplicity of ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[CapitalGamma]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"b958eabc-6473-47fb-a5b1-c12e0159e5d1"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], 
+    UnderoverscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "6a892573-25ab-4685-a89e-cc350e980383"],
+ ". This basis transforms as\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], 
+      UnderoverscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+       "\[ScriptCapitalG]"], 
+      RowBox[{"(", "h", ")"}]}], 
+     TemplateBox[{
+       RowBox[{"\[Mu]", ",", 
+         RowBox[{"q", "\[VeryThinSpace]", "l"}]}]},
+      "Ket"]}], "=", 
+    RowBox[{
+     UnderoverscriptBox["\[CapitalSigma]", 
+      RowBox[{"p", "=", "1"}], 
+      SubscriptBox["d", "\[Mu]"]], 
+     TemplateBox[{
+       RowBox[{"\[Mu]", ",", 
+         RowBox[{"p", "\[VeryThinSpace]", "l"}]}]},
+      "Ket"], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"p", "\[VeryThinSpace]", "q"}], "\[Mu]"], "(", "h", ")"}]}]}], 
+   TraditionalForm]],ExpressionUUID->"dba3e54b-0edd-4ea8-a268-c8f5e8e4b686"],
+ "\[LineSeparator]for all ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}], TraditionalForm]],
+  ExpressionUUID->"ec038afa-7caa-4009-a4af-20117f0e1b18"],
+ "; that is, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], 
+    UnderoverscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "7cbe850e-f330-4362-a222-564339f0b314"],
+ " is block-diagonal in this basis. Such a basis is called the \
+subgroup-adapted basis."
+}], "TechNoteText",
+ CellID->366095719,ExpressionUUID->"10024a88-a999-4189-9cd2-2dd0e04d7e5b"],
+
+Cell[TextData[{
+ "The ",
+ StyleBox["computational",
+  FontSlant->"Italic"],
+ " (or ",
+ StyleBox["canonical",
+  FontSlant->"Italic"],
+ ") ",
+ StyleBox["basis",
+  FontSlant->"Italic"],
+ " of the restricted representation ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], 
+    UnderoverscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "98f5cdf2-256b-4343-a2e9-65604aab7f19"],
+ " is \[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     TemplateBox[{"h"},
+      "Ket"], ":", 
+     RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}]}], "}"}], 
+   TraditionalForm]],ExpressionUUID->"17b762f9-237c-4198-ba08-0b0407ff4404"],
+ ". \[LineSeparator]To use the quantum Fourier transform, we regard ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Lambda]", ",", "i"}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "c488c1e1-74ed-4c47-9cb8-20dbf0d20ebc"],
+ "  as ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{"\[Lambda]", ",", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "3774843b-fc6b-4bcd-ba6c-fed74c56453e"],
+ "  for fixed ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"j", "\[Element]", "\[Lambda]"}], TraditionalForm]],ExpressionUUID->
+  "531a4c3d-2ab2-4bcf-a621-bf0c64032482"],
+ ", and extend the computational basis of ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], 
+    UnderoverscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "1e0edfd5-c8d4-4266-a5ae-f1ef4015b122"],
+ " to\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      TemplateBox[{"h"},
+       "Ket"], "\[CircleTimes]", 
+      RowBox[{
+       TemplateBox[{"t"},
+        "Ket"], ":", 
+       RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}]}]}], ";", " ", 
+     RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}]}], " ", "}"}], 
+   TraditionalForm]],ExpressionUUID->"21b43fc2-8ab1-4a35-8d0c-e6fc2325208a"],
+ ",\nwhere ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalT]", TraditionalForm]],ExpressionUUID->
+  "4acc7d4e-9ee5-42b6-a916-4afd8f2d1950"],
+ " is a transversal for the left cosets of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "2e4b5576-0d77-4468-95f5-2ba3b9cfd914"],
+ " in ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "a0e12c8c-71a3-4962-bfcd-628d4455ffa6"],
+ ". The required ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "e2ec9df1-4d28-47c0-87f5-a898c0c012ba"],
+ "-adapted basis has the form\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{
+       TemplateBox[{
+         RowBox[{"\[Mu]", ",", 
+           RowBox[{"k", "\[VeryThinSpace]", "l"}]}]},
+        "Ket"], "\[CircleTimes]", 
+       RowBox[{
+        TemplateBox[{"t"},
+         "Ket"], ":", 
+        RowBox[{"\[Mu]", "\[Element]", 
+         RowBox[{"\[ScriptCapitalR]", "(", "H", ")"}]}]}]}], ";", " ", "k"}], 
+     ",", 
+     RowBox[{
+      RowBox[{"l", "\[Element]", "\[Mu]"}], ";", " ", 
+      RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}]}]}], " ", "}"}], 
+   TraditionalForm]],ExpressionUUID->"9593c03d-50ea-4148-bef5-649ec87c646b"],
+ ".\[LineSeparator]Here, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"l", "\[Element]", "\[Mu]"}], TraditionalForm]],ExpressionUUID->
+  "5a9ea18f-3d40-4dd3-89d3-9bafc179e3bc"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}], TraditionalForm]],
+  ExpressionUUID->"5413e383-0f3a-4083-8f42-0ed82d50029e"],
+ " together refer to the basis vectors of the ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["m", 
+    RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Lambda]"}]], TraditionalForm]],
+  ExpressionUUID->"4bb30652-7844-4f46-85d1-08a04d3407cf"],
+ "-dimensional multiplicity space of ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[CapitalGamma]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"89334ea1-7c4f-4010-91d8-fbca44992977"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], 
+    UnderoverscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "38c1111f-152f-46b9-8afd-01d46018be33"],
+ ". Note that transversal elements are required because it may happen that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["m", 
+     RowBox[{"\[Mu]", "\[VeryThinSpace]", "\[Lambda]"}]], ">", 
+    SubscriptBox["d", "\[Mu]"]}], TraditionalForm]],ExpressionUUID->
+  "7f3cc194-ded1-4f62-91ac-f630219a5041"],
+ ", and in such a case, ",
+ Cell[BoxData[
+  FormBox["l", TraditionalForm]],ExpressionUUID->
+  "352cdd8e-b920-49f3-a87b-172ab99f2d42"],
+ " alone cannot refer to all basis vectors of the multiplicity space. One \
+drawback of this approach is that all pairs ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", 
+    RowBox[{"l", ",", "t"}], ")"}], TraditionalForm]],ExpressionUUID->
+  "dd2c853e-dee7-4b80-80c3-45a371fc7e35"],
+ " may not be linearly independent; the resulting basis may have some \
+redundancy."
+}], "TechNoteText",
+ CellID->2066817213,ExpressionUUID->"6e821c52-40d3-4fc4-aa21-e40db37bcf7e"],
+
+Cell[TextData[{
+ "Now, performing the inverse quantum Fourier transform over ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "186114e5-7804-4db7-9c02-c4b0b72688e0"],
+ " and successively quantum Fourier transform over ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "63c838f7-8014-459b-9b86-7ee821fefbf9"],
+ " leads to\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     TemplateBox[{
+       RowBox[{"\[Mu]", ",", 
+         RowBox[{"k", "\[VeryThinSpace]", "l"}]}]},
+      "Ket"], "\[CircleTimes]", 
+     TemplateBox[{"t"},
+      "Ket"]}], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"i", ",", 
+       RowBox[{"j", "\[Element]", "\[Lambda]"}]}]], 
+     TemplateBox[{
+       RowBox[{"\[Lambda]", ",", 
+         RowBox[{
+          "i", "\[VeryThinSpace]", "j", 
+           "\[VeryThinSpace]\[VeryThinSpace]"}]}]},
+      "Ket"], " ", 
+     SqrtBox[
+      FractionBox[
+       SubscriptBox["d", "\[Lambda]"], 
+       RowBox[{
+       "\[LeftBracketingBar]", "\[ScriptCapitalG]", 
+        "\[RightBracketingBar]"}]]], 
+     SqrtBox[
+      FractionBox[
+       SubscriptBox["d", "\[Mu]"], 
+       RowBox[{
+       "\[LeftBracketingBar]", "\[ScriptCapitalH]", 
+        "\[RightBracketingBar]"}]]], 
+     SuperscriptBox[
+      RowBox[{
+       UnderscriptBox["\[CapitalSigma]", 
+        RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}]], "[", 
+       RowBox[{
+        SubsuperscriptBox["\[CapitalGamma]", 
+         RowBox[{"k", "\[VeryThinSpace]", "l"}], "\[Mu]"], "(", "h", ")"}], 
+       "\[VeryThinSpace]", "]"}], "*"], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}], "\[Lambda]"], "(", 
+      RowBox[{"h", "\[VeryThinSpace]", "t"}], ")"}]}]}], TraditionalForm]],
+  ExpressionUUID->"269e2d0a-54a4-4cda-8540-8b3db4f4d01d"],
+ "\nfor fixed ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"j", "\[Element]", "\[Lambda]"}], TraditionalForm]],ExpressionUUID->
+  "5a9873c4-b423-4cbf-b742-d2f75837b56d"],
+ ". One can show that for fixed ",
+ Cell[BoxData[
+  FormBox["l", TraditionalForm]],ExpressionUUID->
+  "2ef09e11-1ffc-40e6-bab7-c8552dfa8383"],
+ ", this Fourier basis transforms as\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{
+      SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], 
+      UnderoverscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+       "\[ScriptCapitalG]"], 
+      RowBox[{"(", "h", ")"}]}], 
+     RowBox[{
+      TemplateBox[{
+        RowBox[{"\[Mu]", ",", 
+          RowBox[{"q", "\[VeryThinSpace]", "l"}]}]},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{"t"},
+       "Ket"]}]}], "=", 
+    RowBox[{
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"p", "\[Element]", "\[Mu]"}]], 
+     RowBox[{
+      TemplateBox[{
+        RowBox[{"\[Mu]", ",", 
+          RowBox[{"p", "\[VeryThinSpace]", "l"}]}]},
+       "Ket"], "\[CircleTimes]", 
+      TemplateBox[{"t"},
+       "Ket"]}], 
+     RowBox[{
+      SubsuperscriptBox["\[CapitalGamma]", 
+       RowBox[{"p", "\[VeryThinSpace]", "q"}], "\[Mu]"], "(", "h", ")"}]}]}], 
+   TraditionalForm]],ExpressionUUID->"20d78a5b-dc0d-4926-babd-828a2b87749c"],
+ " ,\[LineSeparator]and hence it block-diagonalizes ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], 
+    UnderoverscriptBox["\[DownArrow]", "\[ScriptCapitalH]", 
+     "\[ScriptCapitalG]"]}], TraditionalForm]],ExpressionUUID->
+  "53dd3b5c-0184-487a-a62b-aeb89f8df399"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalH]", "\[Subset]", "\[ScriptCapitalG]"}], 
+   TraditionalForm]],ExpressionUUID->"22b21560-a678-449c-8cb4-b516499cd531"],
+ ", meaning that the basis is indeed a subgroup-adapted basis, and the \
+associated representation is called a ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalH]", TraditionalForm]],ExpressionUUID->
+  "22f104c2-9ac3-4944-910d-44ee9cc34cb1"],
+ "-adapted representation of ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalG]", TraditionalForm]],ExpressionUUID->
+  "7e2f4de1-6777-4779-996b-2c6ec55aafd7"],
+ "."
+}], "TechNoteText",
+ CellID->1175103296,ExpressionUUID->"87da3388-a59b-458d-9ae9-a95f78e5162c"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Basic Application for Induced Representations", "TechNoteSection",
+ CellID->295059906,ExpressionUUID->"fdec4528-a28d-4b3c-9d10-fd4905d2b40f"],
+
+Cell["\<\
+This has already been seen in the quantum implementation of the generalized \
+QFT. In fact, the implementation uses the QFT for the induced representation.\
+\
+\>", "TechNoteText",
+ CellID->519577339,ExpressionUUID->"5bfb278a-38aa-415f-9a13-8fc574554358"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Generalized Quantum Phase Estimation", "TechNoteSection",
+ CellID->109423420,ExpressionUUID->"aea4fab4-3e37-44c6-8d52-083e0e7e672f"],
+
+Cell["\<\
+The generalized quantum phase estimation is an algorithm to find an \
+irreducible representation in a reducible representation. It uses the \
+generalized quantum Fourier transform.\
+\>", "TechNoteText",
+ CellID->2015731515,ExpressionUUID->"f53012ec-2b97-43e7-8eaf-c0ab7fc20455"],
+
+Cell["(to be completed later)", "TechNoteText",
+ CellID->2067854559,ExpressionUUID->"e12d2b64-f89a-4d4e-b1af-ff906bcf5b49"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Appendix", "TechNoteSection",
+ CellID->1632728188,ExpressionUUID->"0ad5b028-dedb-47bd-8b4e-925d5d0d89d8"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ "Transversal for Cosets of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", 
+    RowBox[{"n", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "644dc97b-0fc7-4fc3-8919-e7ba477c4abc"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", "n"], TraditionalForm]],ExpressionUUID->
+  "77d4dd18-f1a6-4af0-8c87-d62fbbf473f2"]
+}], "Subsection",
+ CellID->1600974025,ExpressionUUID->"8010b5de-f47b-4b51-bf62-aadea8f707f4"],
+
+Cell[TextData[{
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalT]", ":=", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{
+       RowBox[{
+        SubsuperscriptBox["\[Pi]", 
+         RowBox[{"12", "\[Ellipsis]", "\[VeryThinSpace]", "n"}], "k"], ":", 
+        "k"}], "=", "0"}], ",", "1", ",", "2", ",", "\[Ellipsis]", ",", 
+      RowBox[{"n", "-", "1"}]}], "}"}]}], TraditionalForm]],ExpressionUUID->
+  "5cb66c10-81de-4d77-ad77-424341d0e851"],
+ " is a transversal for the left cosets of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", 
+    RowBox[{"n", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "6e43a2b4-eebb-4949-b659-82c0c798a9c2"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", "n"], TraditionalForm]],ExpressionUUID->
+  "e92a09f5-e5d2-49c2-95aa-b5d8c48b9fb8"],
+ " as illustrated below. This transversal is useful to construct a subgroup \
+adapted basis associated with the canonical tower of subgroups of the \
+symmetric group."
+}], "TechNoteText",
+ CellID->1424062491,ExpressionUUID->"8c7a80b0-0b07-4c26-a943-805d55406d3c"],
+
+Cell["Set the degree of the symmetric group:", "TechNoteText",
+ CellID->107258115,ExpressionUUID->"35b491c4-661f-4f4b-80a2-de6920e37fa1"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"$n", "=", "4"}], ";"}]], "Input",
+ CellLabel->"In[2]:=",
+ CellID->246153581,ExpressionUUID->"19cf0a9d-c637-481b-97b2-177a34888e92"],
+
+Cell[TextData[{
+ "Get the elements of the symmetric group ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", "n"], TraditionalForm]],ExpressionUUID->
+  "53591c46-4e82-438d-8ec6-d0c046dffce0"],
+ ":"
+}], "TechNoteText",
+ CellID->916575127,ExpressionUUID->"8f8224cd-fc3c-41aa-b223-96765151fee6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"elm", "=", 
+   RowBox[{"YoungElements", "[", "$n", "]"}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{"elm", "//", "PermutationForm"}]}], "Input",
+ CellLabel->"In[3]:=",
+ CellID->221359957,ExpressionUUID->"ffdd67d4-6a59-4dee-adc2-44b96fb3f443"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   SubscriptBox["\[Pi]", "0"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"3", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"2", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"2", "3", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"2", "4", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"2", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2"}, "RowDefault"]], 
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"3", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2", "3", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2", "4", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3", "4", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3"}, "RowDefault"]], 
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"2", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3", "2", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "4", "3", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "4", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "4", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "4", "2", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "4"}, "RowDefault"]], 
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"2", "3"}, "RowDefault"]]},
+    "RowDefault"]}], "}"}]], "Output",
+ CellLabel->"Out[4]=",
+ CellID->1184520081,ExpressionUUID->"47a2877e-ddbf-4060-8418-08336d43aef5"]
+}, Open  ]],
+
+Cell[TextData[{
+ "Get the elements of the subgroup ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", 
+    RowBox[{"n", "-", "1"}]], TraditionalForm]],ExpressionUUID->
+  "ebd41c85-9edd-4d7b-93b0-ef70e6343b16"],
+ ":"
+}], "TechNoteText",
+ CellID->960775985,ExpressionUUID->"3498a6b1-ef52-48ef-b7a3-fa93a6dd9030"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"sub", "=", 
+   RowBox[{"YoungElements", "[", 
+    RowBox[{"$n", "-", "1"}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"sub", "//", "PermutationForm"}]}], "Input",
+ CellLabel->"In[9]:=",
+ CellID->692093660,ExpressionUUID->"17cbf9c7-cc9a-4984-9c09-4feb032dfa5d"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   SubscriptBox["\[Pi]", "0"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"2", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2", "3"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3", "2"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3"}, "RowDefault"]]},
+    "RowDefault"]}], "}"}]], "Output",
+ CellLabel->"Out[10]=",
+ CellID->72039047,ExpressionUUID->"c9c68010-bf34-4294-9a44-a4b8f9f0e330"]
+}, Open  ]],
+
+Cell["Pick the transversal:", "TechNoteText",
+ CellID->120249242,ExpressionUUID->"e665ad47-c8be-4819-8d3d-13018996a2fa"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"trs", "=", 
+   RowBox[{"Table", "[", 
+    RowBox[{
+     RowBox[{"PermutationPower", "[", 
+      RowBox[{
+       RowBox[{"Cycles", "@", 
+        RowBox[{"{", 
+         RowBox[{"Range", "@", "$n"}], "}"}]}], ",", "k"}], "]"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"k", ",", "0", ",", 
+       RowBox[{"$n", "-", "1"}]}], "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"trs", "//", "PermutationForm"}]}], "Input",
+ CellLabel->"In[5]:=",
+ CellID->570207935,ExpressionUUID->"dc23a91b-e1ec-466b-b6ea-e22b48685963"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   SubscriptBox["\[Pi]", "0"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "2", "3", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "3"}, "RowDefault"]], 
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"2", "4"}, "RowDefault"]]},
+    "RowDefault"], ",", 
+   TemplateBox[{
+     SubscriptBox["\[Pi]", 
+      TemplateBox[{"1", "4", "3", "2"}, "RowDefault"]]},
+    "RowDefault"]}], "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1168802353,ExpressionUUID->"781fdd18-1e91-4b23-9588-d22a6336de18"]
+}, Open  ]],
+
+Cell["\<\
+To verify that it is indeed a transversal, get the cosets from the \
+transversal:\
+\>", "TechNoteText",
+ CellID->896081908,ExpressionUUID->"077fe94e-d080-44c7-b076-1c81afce1d6d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"cosets", "=", 
+   RowBox[{"Sort", "/@", 
+    RowBox[{"Outer", "[", 
+     RowBox[{
+      RowBox[{
+       RowBox[{"PermutationProduct", "[", 
+        RowBox[{"#2", ",", "#1"}], "]"}], "&"}], ",", "trs", ",", "sub"}], 
+     "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"cosets", "//", "PermutationForm"}]}], "Input",
+ CellLabel->"In[17]:=",
+ CellID->375199477,ExpressionUUID->"34ae0a33-1bfe-4584-bf84-3d4a1ad346ea"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{
+     SubscriptBox["\[Pi]", "0"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "2"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "3"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"2", "3"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "2", "3"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "3", "2"}, "RowDefault"]]},
+      "RowDefault"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "4"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "2", "4"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "3", "4"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "2", "3", "4"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "3", "2", "4"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "4"}, "RowDefault"]], 
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"2", "3"}, "RowDefault"]]},
+      "RowDefault"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"2", "4"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "4", "2"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"2", "3", "4"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "3", "4", "2"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "4", "2", "3"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "3"}, "RowDefault"]], 
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"2", "4"}, "RowDefault"]]},
+      "RowDefault"]}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"3", "4"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "4", "3"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"2", "4", "3"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "2", "4", "3"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "4", "3", "2"}, "RowDefault"]]},
+      "RowDefault"], ",", 
+     TemplateBox[{
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"1", "2"}, "RowDefault"]], 
+       SubscriptBox["\[Pi]", 
+        TemplateBox[{"3", "4"}, "RowDefault"]]},
+      "RowDefault"]}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[18]=",
+ CellID->1132510529,ExpressionUUID->"41992705-7ed3-484a-99c0-068cb895d9ab"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems",
+         BaseStyle->"Link",
+         ButtonData->"paclet:QuantumMob/Q3/guide/QuantumInformationSystems"]],
+          "TutorialMoreAbout",ExpressionUUID->
+         "572b093b-e68f-4e9a-a08f-f4e7038af266"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Q3: Symbolic Quantum Simulation",
+         BaseStyle->"Link",
+         ButtonData->"paclet:QuantumMob/Q3/guide/Q3"]], "TutorialMoreAbout",
+         ExpressionUUID->"8a22aa37-0390-4f19-9b5b-f39329768f94"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"ff8f306e-bfa3-4eda-87ae-\
+01d89a72b538"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tech", " ", "Notes"}], 
+        "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Dual Quantum Schur Transform",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3/tutorial/DualQuantumSchurTransform"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "61aa35f8-0ebf-41cf-977f-4d5f6b032ec1"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Fourier Transform",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3/tutorial/QuantumFourierTransform"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "54aed3e8-581e-41ce-82c4-308d027347c2"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Phase Estimation",
+         BaseStyle->"Link",
+         ButtonData->"paclet:QuantumMob/Q3/tutorial/QuantumPhaseEstimation"]],
+          "RelatedTutorials",ExpressionUUID->
+         "196f7b54-f17c-4e3d-aed6-db896dc0d752"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Algorithms",
+         BaseStyle->"Link",
+         ButtonData->"paclet:QuantumMob/Q3/tutorial/QuantumAlgorithms"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "96ff79f5-5fe0-41da-bbfd-293cbb71e807"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3/tutorial/QuantumInformationSystems"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "fb3d019a-90f2-4720-9bf5-f95c7d04aece"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quick Quantum Computing with Q3",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3/tutorial/QuickQuantumComputingWithQ3"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "f93d9560-f89f-4f1d-b6a7-5a4ea89ae2c9"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"8d0db54c-5b50-4361-b80e-\
+2a5ee8c88774"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], "R. Beals (1997)"}]]]], 
+             "https://doi.org/10.1145/258533.258548"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "e74d8a2a-5a31-4d45-a8e0-eed9e9f8021e"]}]],ExpressionUUID->
+         "be9503f6-2eca-45b2-beac-4f508be87f44"],
+        ", \[OpenCurlyDoubleQuote]Quantum computation of Fourier transforms \
+over symmetric groups\[CloseCurlyDoubleQuote] in Proceedings of the \
+twenty-ninth annual {ACM} symposium on Theory of computing  (1997)."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "d9ab7e26-208d-47c1-abd5-6d65ff6c2e7d"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "C. Moore, D. Rockmore and A. Russell (2004)"}]]]], 
+             "https://dl.acm.org/doi/10.5555/982792.982910"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "687b7b82-8b8c-41f6-8d0e-230ea7a7aa5a"]}]],ExpressionUUID->
+         "6ab1269b-a72b-42a2-b640-131163f335b1"],
+        ", \[OpenCurlyDoubleQuote]Generic quantum Fourier transforms\
+\[CloseCurlyDoubleQuote] in Proceedings of the fifteenth annual ACM-SIAM \
+symposium on Discrete algorithms (SODA) (January, 2004)."
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "b71eb788-246c-425b-ab0b-cac957cfafdc"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], "B. E. Sagan (2001)"}]]]], 
+             "https://doi.org/10.1007/978-1-4757-6804-6"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "9459043f-bdfc-4734-8545-ea54a3861b38"]}]],ExpressionUUID->
+         "fe7467f2-7796-4c9a-805e-e4102df81d27"],
+        ", The Symmetric Group, 2nd ed. (Springer, 2001). "
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "5d338e1b-9379-454c-a890-0d0bda0de783"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"7db68f0c-7259-45fe-ab9d-\
+44d33fee0c5b"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"81a95d03-0d86-4e29-8f1e-91fa766f4241"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Generalized Quantum Fourier Transform",
+Visible->True,
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2025", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2025, 9, 22, 2, 5, 18.482784}", 
+    "history" -> {"14.3", "", "", ""}, "context" -> "QuantumMob`Q3`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quantum Mob/ Q3 Tech Note", "language" -> "en", "paclet" -> 
+    "QuantumMob/Q3", "status" -> "None", "summary" -> 
+    "The generalized quantum Fourier transform (QFT) over a non-Abelian group \
+is an extension of the standard (Abelian) QFT, critical in quantum algorithms \
+and simulations involving non-commutative symmetries. Instead of mapping \
+states to characters (as in Abelian groups), it maps them to matrix elements \
+of the irreducible representations of the group. More specifically, it is a \
+unitary change of basis from the computational basis of the group algebra to \
+a basis that block-diagonalizes the regular representation of the group. For \
+many common non-Abelian groups including the symmetric group, efficient \
+quantum algorithms for the QFT are known. Many quantum algorithms including \
+the hidden subgroup problem and quantum simulations of non-Abelian symmetries \
+rely on the generalized QFT. Let \\[ScriptCapitalH] be a subgroup of a group \
+\\[ScriptCapitalG]. Consider a representation \\[CapitalGamma] of \
+\\[ScriptCapitalG]. The restriction (or restricted representation) of \
+\\[CapitalGamma] to \\[ScriptCapitalH], denoted by \
+\\[CapitalGamma]\\[DownArrow]_\\[ScriptCapitalH]^\\[ScriptCapitalG], is given \
+by \\[CapitalGamma]\\[DownArrow]_\\[ScriptCapitalH]^\\[ScriptCapitalG](h)=\\[\
+CapitalGamma](h) for all h\\[Element]\\[ScriptCapitalH]. In general, \
+\\[CapitalGamma]\\[DownArrow]_\\[ScriptCapitalH]^\\[ScriptCapitalG] is not \
+irreducible for \\[ScriptCapitalH] even if \\[CapitalGamma] is an irreducible \
+representation of \\[ScriptCapitalG].", "synonyms" -> {}, "tabletags" -> {}, 
+    "title" -> "Generalized Quantum Fourier Transform", "titlemodifier" -> "",
+     "metadescription" -> "", "windowtitle" -> 
+    "Generalized Quantum Fourier Transform", "type" -> "Tech Note", "uri" -> 
+    "QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform"}},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "14.3 for Mac OS X ARM (64-bit) (July 8, 2025)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"de6981b2-64d8-41dd-a6eb-d78ca0f7398a"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[605, 21, 7617, 182, 70, "AnchorBarGrid",ExpressionUUID->"c13a6aaf-a62b-453a-b851-80a7d74b2df1",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[8247, 207, 1391, 37, 70, "ObjectNameGrid",ExpressionUUID->"24aaeada-8213-429e-925f-e3be99a57b45"],
+Cell[9641, 246, 6933, 160, 70, "TechNoteJumpBox",ExpressionUUID->"c305856d-0c10-4788-942e-d5dffc7734b9"],
+Cell[16577, 408, 913, 13, 70, "TechNoteText",ExpressionUUID->"e8a35b8b-c923-4ec8-bf41-f193678bcde2",
+ CellID->713219453],
+Cell[17493, 423, 1303, 34, 70, "DefinitionBox",ExpressionUUID->"c2586c80-7560-4bbd-b967-be8534ec658e",
+ CellID->1973112664],
+Cell[18799, 459, 159, 2, 70, "TechNoteCaption",ExpressionUUID->"0bb604ae-3029-4380-ac5b-98c580c404a0",
+ CellID->662066874],
+Cell[18961, 463, 154, 1, 70, "TechNoteMathCaption",ExpressionUUID->"7f0f3a4f-8cb6-4267-acc9-91b305edbed5",
+ CellID->1245176211],
+Cell[19118, 466, 179, 3, 70, "Input",ExpressionUUID->"abf33ee1-531c-4799-bb3d-5235abeb3ff9",
+ CellID->448438262]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19334, 474, 115, 1, 70, "TechNoteSection",ExpressionUUID->"0736f828-a601-4e7e-80c9-0a04540d6005",
+ CellID->689630454],
+Cell[CellGroupData[{
+Cell[19474, 479, 122, 1, 70, "Subsection",ExpressionUUID->"eb4e8b99-153f-4baa-810c-6b26aaeda2b1",
+ CellID->642671379],
+Cell[19599, 482, 1794, 49, 70, "TechNoteText",ExpressionUUID->"a6e4f039-a3c6-4305-9ff9-39ea97ffdabf",
+ CellID->1089892442],
+Cell[21396, 533, 812, 22, 70, "TechNoteText",ExpressionUUID->"c5d88340-ba10-4425-91ba-02918df374c1",
+ CellID->1134264984]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[22245, 560, 119, 1, 70, "Subsection",ExpressionUUID->"d7b45caa-54c3-45a0-a551-f9d4d6881a30",
+ CellID->901900807],
+Cell[22367, 563, 5458, 167, 70, "TechNoteText",ExpressionUUID->"2f995097-4b0e-4a75-8a00-85933f85448b",
+ CellID->2052456620]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27862, 735, 120, 1, 70, "Subsection",ExpressionUUID->"1ac0edf7-3fcb-4fb3-b0e6-5e8b19912c49",
+ CellID->1892872179],
+Cell[27985, 738, 4264, 124, 70, "TechNoteText",ExpressionUUID->"8c412e48-1d27-4915-9289-69eb9e93df91",
+ CellID->1643613333],
+Cell[32252, 864, 13187, 361, 70, "Picture",ExpressionUUID->"5eab9381-cba7-42bd-b3f4-a3117dce1791",
+ CellID->1656843951],
+Cell[45442, 1227, 402, 11, 70, "TechNoteCaption",ExpressionUUID->"eb485ae5-acc7-4666-a1de-95f414a4158b",
+ CellID->2032447193],
+Cell[45847, 1240, 2080, 59, 70, "TechNoteText",ExpressionUUID->"433509e1-4c5a-4a06-9fea-8b4a99bd546f",
+ CellID->1847223333],
+Cell[47930, 1301, 1412, 33, 70, "TechNoteText",ExpressionUUID->"547feb3d-55f9-485f-a985-82618b91f053",
+ CellID->1796261742]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[49391, 1340, 111, 1, 70, "TechNoteSection",ExpressionUUID->"2b88f4aa-9cfa-4c80-9fbc-f27673d8533c",
+ CellID->48377149],
+Cell[49505, 1343, 1728, 57, 70, "TechNoteText",ExpressionUUID->"4bd5ff80-e505-46bb-adac-8187bee3eeec",
+ CellID->1048209744],
+Cell[51236, 1402, 3994, 116, 70, "TechNoteText",ExpressionUUID->"1b1705e4-3f85-4502-a78f-395d621960ea",
+ CellID->1790577104],
+Cell[55233, 1520, 2738, 78, 70, "TechNoteText",ExpressionUUID->"b854e184-8272-495b-806a-7a4f40960508",
+ CellID->882427163],
+Cell[CellGroupData[{
+Cell[57996, 1602, 109, 1, 70, "Subsection",ExpressionUUID->"69b36cfc-863b-4d22-afbb-1c928ece1900",
+ CellID->1959714211],
+Cell[58108, 1605, 312, 5, 70, "TechNoteText",ExpressionUUID->"0ffa9eb7-7792-46e7-a1e9-0b8d9d085ff1",
+ CellID->305439758],
+Cell[58423, 1612, 533, 16, 70, "TechNoteText",ExpressionUUID->"cb8b9dc8-1e80-4f75-9f47-7e19d63e21dc",
+ CellID->918872256],
+Cell[58959, 1630, 851, 26, 70, "TechNoteText",ExpressionUUID->"34e89680-fdf3-40bc-a316-9d44db92c62f",
+ CellID->267329929],
+Cell[59813, 1658, 896, 26, 70, "TechNoteText",ExpressionUUID->"c8da8f49-17cd-4c91-adac-08caf4798458",
+ CellID->13745288],
+Cell[60712, 1686, 782, 24, 70, "TechNoteText",ExpressionUUID->"214bb702-6fbb-4e41-ab3b-649407afc772",
+ CellID->188634819],
+Cell[61497, 1712, 479, 13, 70, "TechNoteText",ExpressionUUID->"85f193ce-c7fc-44d9-9c79-a150d7b4d659",
+ CellID->1496585701],
+Cell[61979, 1727, 532, 16, 70, "TechNoteText",ExpressionUUID->"6eb003e8-ed11-496f-8de8-66713e9e8c9b",
+ CellID->1630599361],
+Cell[62514, 1745, 895, 27, 70, "TechNoteText",ExpressionUUID->"e4f138a3-1b5c-4734-9d4e-881783ded5e2",
+ CellID->951799700],
+Cell[63412, 1774, 828, 24, 70, "TechNoteText",ExpressionUUID->"36df7544-55be-4327-ae05-99acd83d1d02",
+ CellID->1400639354],
+Cell[64243, 1800, 782, 24, 70, "TechNoteText",ExpressionUUID->"37b32375-0ea0-48d1-a640-e8985388872e",
+ CellID->291871397],
+Cell[65028, 1826, 479, 13, 70, "TechNoteText",ExpressionUUID->"faad123d-2b10-46b0-b466-fd99b02e596c",
+ CellID->1840988057],
+Cell[65510, 1841, 532, 16, 70, "TechNoteText",ExpressionUUID->"0234f303-be5e-4c36-b01e-b709823912bc",
+ CellID->2017241567],
+Cell[66045, 1859, 886, 27, 70, "TechNoteText",ExpressionUUID->"8a119b97-a50b-406a-8835-23e206d4dd1a",
+ CellID->759730800],
+Cell[66934, 1888, 871, 25, 70, "TechNoteText",ExpressionUUID->"8248152e-5fe1-408e-9906-f1de8e411b3f",
+ CellID->132143169],
+Cell[67808, 1915, 783, 24, 70, "TechNoteText",ExpressionUUID->"152fa75d-e7cb-4f9a-bd31-df77a65f1efd",
+ CellID->2005274185],
+Cell[68594, 1941, 479, 13, 70, "TechNoteText",ExpressionUUID->"81f5aede-18cf-4af9-8815-25c95d85a347",
+ CellID->1423110232],
+Cell[69076, 1956, 529, 16, 70, "TechNoteText",ExpressionUUID->"77c1d9bd-6344-4b80-94f8-e5ab7776f752",
+ CellID->647000092],
+Cell[69608, 1974, 926, 28, 70, "TechNoteText",ExpressionUUID->"840a8279-90ed-4aca-a0b6-2873b42d6465",
+ CellID->1648577850],
+Cell[70537, 2004, 828, 24, 70, "TechNoteText",ExpressionUUID->"b0f74a82-200e-4263-a46d-a119e1f7570b",
+ CellID->1147978744],
+Cell[71368, 2030, 782, 24, 70, "TechNoteText",ExpressionUUID->"e7d2ba98-64d5-4556-8ac9-54bc1a4dbb0f",
+ CellID->813911356],
+Cell[72153, 2056, 479, 13, 70, "TechNoteText",ExpressionUUID->"06596f07-86e8-43ee-b687-4f06d5c9dad4",
+ CellID->1961181348]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[72669, 2074, 104, 1, 70, "Subsection",ExpressionUUID->"14b49c32-004d-4275-8797-6da9023d1c20",
+ CellID->305856997],
+Cell[72776, 2077, 206, 4, 70, "TechNoteText",ExpressionUUID->"e5e170c0-94b7-4161-9529-22127030e365",
+ CellID->731031747],
+Cell[72985, 2083, 288, 8, 70, "TechNoteMathCaption",ExpressionUUID->"8d914e57-6faf-4452-a487-2b080ddfbd3c",
+ CellID->1156872368],
+Cell[CellGroupData[{
+Cell[73298, 2095, 264, 6, 70, "Input",ExpressionUUID->"119faf92-a3aa-4ac1-b61a-c8e48522b7e6",
+ CellID->696627342],
+Cell[73565, 2103, 168, 3, 70, "Output",ExpressionUUID->"535e185f-cb23-4ef2-ac78-dc1859fec19a",
+ CellID->484548468]
+}, Open  ]],
+Cell[73748, 2109, 136, 1, 70, "TechNoteMathCaption",ExpressionUUID->"38765595-51aa-4199-a3dd-8863d7de9b5d",
+ CellID->321087941],
+Cell[CellGroupData[{
+Cell[73909, 2114, 320, 7, 70, "Input",ExpressionUUID->"81f53cb8-53f9-4377-86fd-7de36ed62836",
+ CellID->433318397],
+Cell[74232, 2123, 393, 12, 70, "Output",ExpressionUUID->"47378dfa-072f-4966-a678-65fd99f2c59b",
+ CellID->1645051260]
+}, Open  ]],
+Cell[74640, 2138, 226, 4, 70, "TechNoteMathCaption",ExpressionUUID->"05102835-c121-400e-b4cf-26e7f0e61245",
+ CellID->1046215163],
+Cell[CellGroupData[{
+Cell[74891, 2146, 204, 4, 70, "Input",ExpressionUUID->"30d0bc44-2c20-4be4-beb9-f208648c61f0",
+ CellID->1080447132],
+Cell[75098, 2152, 220, 4, 70, "Output",ExpressionUUID->"2f6b813a-e0d1-4d91-8fd1-8ab805ff1916",
+ CellID->1574253386]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[75355, 2161, 180, 4, 70, "Input",ExpressionUUID->"82c452f0-6254-4615-adf0-2cfa4c945715",
+ CellID->2037763493],
+Cell[75538, 2167, 20949, 438, 70, "Output",ExpressionUUID->"51013a9f-43c7-46b7-9c89-88dea04ebf4f",
+ CellID->957720311]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[96524, 2610, 162, 3, 70, "Input",ExpressionUUID->"309719e0-1934-4bef-8566-b1e2c271ed52",
+ CellID->1348861163],
+Cell[96689, 2615, 1803, 50, 70, "Output",ExpressionUUID->"fc5050ec-29ae-4055-a6ce-e01a01c70521",
+ CellID->654968642]
+}, Open  ]],
+Cell[98507, 2668, 214, 4, 70, "TechNoteMathCaption",ExpressionUUID->"9868a316-5e86-4081-ba8d-ea3e123f111e",
+ CellID->1596388322],
+Cell[CellGroupData[{
+Cell[98746, 2676, 281, 6, 70, "Input",ExpressionUUID->"c64fdae5-007a-4dc0-b5f7-515c376a63b0",
+ CellID->1918215776],
+Cell[99030, 2684, 2560, 99, 70, "Output",ExpressionUUID->"ae9b1c9a-80c9-42cc-97f1-081e3a6126ac",
+ CellID->958393498]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[101627, 2788, 177, 3, 70, "Input",ExpressionUUID->"7249a863-d856-4727-be55-4e11bd6e6217",
+ CellID->737048099],
+Cell[101807, 2793, 271, 7, 70, "Output",ExpressionUUID->"e5ea70eb-77d3-4e2f-a659-c875ef97f8c0",
+ CellID->1669476768]
+}, Open  ]],
+Cell[102093, 2803, 190, 3, 70, "TechNoteMathCaption",ExpressionUUID->"183e3b9e-06eb-40ae-bd39-bf94b0d67e44",
+ CellID->192107077],
+Cell[CellGroupData[{
+Cell[102308, 2810, 557, 16, 70, "Input",ExpressionUUID->"c914bcfa-35c6-492c-8683-fdfbf47931f3",
+ CellID->765292804],
+Cell[102868, 2828, 848, 24, 70, "Output",ExpressionUUID->"97f19f41-cbda-462e-87b9-151e920fbbc8",
+ CellID->279438368],
+Cell[103719, 2854, 1191, 39, 70, "Output",ExpressionUUID->"09a7d638-ed10-47b6-9d98-3f599a8df948",
+ CellID->2121398634]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[104971, 2900, 125, 1, 70, "TechNoteSection",ExpressionUUID->"c0eafded-5d82-4ea3-80ab-7d5d4b80f9dc",
+ CellID->1540694772],
+Cell[105099, 2903, 275, 5, 70, "TechNoteText",ExpressionUUID->"5d612f55-21a0-4133-897c-1c7e960af191",
+ CellID->1186339691],
+Cell[CellGroupData[{
+Cell[105399, 2912, 138, 1, 70, "Subsection",ExpressionUUID->"91278d5d-b4cd-47ef-bac8-5aa39b03d4f0",
+ CellID->1799840078],
+Cell[105540, 2915, 3857, 114, 70, "TechNoteText",ExpressionUUID->"1a9c6e83-ecbb-4f5a-a065-00b2709d52d6",
+ CellID->2084128042],
+Cell[109400, 3031, 1048, 28, 70, "TechNoteText",ExpressionUUID->"3cf43289-919d-4ebb-888c-f69f5d51479e",
+ CellID->1074001700],
+Cell[110451, 3061, 119, 1, 70, "TechNoteText",ExpressionUUID->"f5011e46-6b4e-4af4-8496-3030078cc5b6",
+ CellID->1581754903],
+Cell[110573, 3064, 1517, 44, 70, "TechNoteText",ExpressionUUID->"16b098d4-5afd-4bac-a085-9940d3a69c39",
+ CellID->334235677],
+Cell[112093, 3110, 943, 23, 70, "TechNoteText",ExpressionUUID->"54401760-30f1-4334-b812-8859b04ab264",
+ CellID->962178780],
+Cell[113039, 3135, 127, 1, 70, "TechNoteText",ExpressionUUID->"73eb8c94-9bf4-4e7c-a9fd-86f5a14e405d",
+ CellID->1829286434],
+Cell[113169, 3138, 1526, 45, 70, "TechNoteText",ExpressionUUID->"28ca1551-28f6-4dbe-b075-9581b04fbf85",
+ CellID->1441205786],
+Cell[114698, 3185, 722, 17, 70, "TechNoteText",ExpressionUUID->"582dec83-3987-46c9-9002-97f49ca90920",
+ CellID->877590789]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[115457, 3207, 122, 1, 70, "Subsection",ExpressionUUID->"693c658e-6781-4212-83a7-88ab7dcd74df",
+ CellID->1680508545],
+Cell[115582, 3210, 708, 22, 70, "TechNoteText",ExpressionUUID->"1ee8c61c-dde6-4d89-aad7-edfef053542a",
+ CellID->763469690],
+Cell[116293, 3234, 1576, 46, 70, "TechNoteText",ExpressionUUID->"e3625be6-126c-4e34-b77b-82776e948286",
+ CellID->1915370142],
+Cell[117872, 3282, 183, 3, 70, "TechNoteText",ExpressionUUID->"e25555f4-be21-4e71-b918-aa6366c1df0c",
+ CellID->109833868],
+Cell[118058, 3287, 1683, 51, 70, "TechNoteText",ExpressionUUID->"09338c26-ed9f-4b83-b7c1-3b60cfdd408e",
+ CellID->825024611],
+Cell[119744, 3340, 2168, 67, 70, "TechNoteText",ExpressionUUID->"8a3d1adf-3348-4e5f-9421-9b5b07b7ebcb",
+ CellID->2026047036],
+Cell[121915, 3409, 1401, 44, 70, "TechNoteText",ExpressionUUID->"ecc46fd2-2519-493b-99e4-eb045c57a811",
+ CellID->887299626],
+Cell[123319, 3455, 755, 18, 70, "TechNoteText",ExpressionUUID->"30362d88-a12d-4b23-a272-f13d52fa5dae",
+ CellID->699272628]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[124123, 3479, 150, 1, 70, "TechNoteSection",ExpressionUUID->"b37cf314-e109-4b6d-97b2-9601e6f31800",
+ CellID->422878995],
+Cell[124276, 3482, 5106, 143, 70, "TechNoteText",ExpressionUUID->"10024a88-a999-4189-9cd2-2dd0e04d7e5b",
+ CellID->366095719],
+Cell[129385, 3627, 5346, 157, 70, "TechNoteText",ExpressionUUID->"6e821c52-40d3-4fc4-aa21-e40db37bcf7e",
+ CellID->2066817213],
+Cell[134734, 3786, 4199, 119, 70, "TechNoteText",ExpressionUUID->"87da3388-a59b-458d-9ae9-a95f78e5162c",
+ CellID->1175103296]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[138970, 3910, 147, 1, 70, "TechNoteSection",ExpressionUUID->"fdec4528-a28d-4b3c-9d10-fd4905d2b40f",
+ CellID->295059906],
+Cell[139120, 3913, 264, 5, 70, "TechNoteText",ExpressionUUID->"5bfb278a-38aa-415f-9a13-8fc574554358",
+ CellID->519577339]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[139421, 3923, 138, 1, 70, "TechNoteSection",ExpressionUUID->"aea4fab4-3e37-44c6-8d52-083e0e7e672f",
+ CellID->109423420],
+Cell[139562, 3926, 288, 5, 70, "TechNoteText",ExpressionUUID->"f53012ec-2b97-43e7-8eaf-c0ab7fc20455",
+ CellID->2015731515],
+Cell[139853, 3933, 123, 1, 70, "TechNoteText",ExpressionUUID->"e12d2b64-f89a-4d4e-b1af-ff906bcf5b49",
+ CellID->2067854559]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[140013, 3939, 111, 1, 70, "TechNoteSection",ExpressionUUID->"0ad5b028-dedb-47bd-8b4e-925d5d0d89d8",
+ CellID->1632728188],
+Cell[CellGroupData[{
+Cell[140149, 3944, 435, 13, 70, "Subsection",ExpressionUUID->"8010b5de-f47b-4b51-bf62-aadea8f707f4",
+ CellID->1600974025],
+Cell[140587, 3959, 1055, 28, 70, "TechNoteText",ExpressionUUID->"8c7a80b0-0b07-4c26-a943-805d55406d3c",
+ CellID->1424062491],
+Cell[141645, 3989, 137, 1, 70, "TechNoteText",ExpressionUUID->"35b491c4-661f-4f4b-80a2-de6920e37fa1",
+ CellID->107258115],
+Cell[141785, 3992, 166, 4, 70, "Input",ExpressionUUID->"19cf0a9d-c637-481b-97b2-177a34888e92",
+ CellID->246153581],
+Cell[141954, 3998, 291, 8, 70, "TechNoteText",ExpressionUUID->"8f8224cd-fc3c-41aa-b223-96765151fee6",
+ CellID->916575127],
+Cell[CellGroupData[{
+Cell[142270, 4010, 281, 7, 70, "Input",ExpressionUUID->"ffdd67d4-6a59-4dee-adc2-44b96fb3f443",
+ CellID->221359957],
+Cell[142554, 4019, 3205, 103, 70, "Output",ExpressionUUID->"47a2877e-ddbf-4060-8418-08336d43aef5",
+ CellID->1184520081]
+}, Open  ]],
+Cell[145774, 4125, 309, 9, 70, "TechNoteText",ExpressionUUID->"3498a6b1-ef52-48ef-b7a3-fa93a6dd9030",
+ CellID->960775985],
+Cell[CellGroupData[{
+Cell[146108, 4138, 303, 7, 70, "Input",ExpressionUUID->"17cbf9c7-cc9a-4984-9c09-4feb032dfa5d",
+ CellID->692093660],
+Cell[146414, 4147, 783, 25, 70, "Output",ExpressionUUID->"c9c68010-bf34-4294-9a44-a4b8f9f0e330",
+ CellID->72039047]
+}, Open  ]],
+Cell[147212, 4175, 120, 1, 70, "TechNoteText",ExpressionUUID->"e665ad47-c8be-4819-8d3d-13018996a2fa",
+ CellID->120249242],
+Cell[CellGroupData[{
+Cell[147357, 4180, 556, 15, 70, "Input",ExpressionUUID->"dc23a91b-e1ec-466b-b6ea-e22b48685963",
+ CellID->570207935],
+Cell[147916, 4197, 635, 19, 70, "Output",ExpressionUUID->"781fdd18-1e91-4b23-9588-d22a6336de18",
+ CellID->1168802353]
+}, Open  ]],
+Cell[148566, 4219, 188, 4, 70, "TechNoteText",ExpressionUUID->"077fe94e-d080-44c7-b076-1c81afce1d6d",
+ CellID->896081908],
+Cell[CellGroupData[{
+Cell[148779, 4227, 454, 12, 70, "Input",ExpressionUUID->"34ae0a33-1bfe-4584-bf84-3d4a1ad346ea",
+ CellID->375199477],
+Cell[149236, 4241, 3560, 111, 70, "Output",ExpressionUUID->"41992705-7ed3-484a-99c0-068cb895d9ab",
+ CellID->1132510529]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[152835, 4357, 1042, 25, 70, "TutorialMoreAboutSection",ExpressionUUID->"ff8f306e-bfa3-4eda-87ae-01d89a72b538"],
+Cell[153880, 4384, 2465, 64, 70, "RelatedTutorialsSection",ExpressionUUID->"8d0db54c-5b50-4361-b80e-2a5ee8c88774"],
+Cell[156348, 4450, 3200, 81, 70, "TutorialRelatedLinksSection",ExpressionUUID->"7db68f0c-7259-45fe-ab9d-44d33fee0c5b"],
+Cell[159551, 4533, 78, 0, 70, "FooterCell",ExpressionUUID->"81a95d03-0d86-4e29-8f1e-91fa766f4241"]
+}
+]
+*)
+
+(* End of internal cache information *)

@@ -8,7 +8,7 @@ Begin["`Private`"]
 
 (**** <DualSchurBasis> ****)
 
-DualSchurBasis::usage = "DualSchurBasis[n, d] returns an association of Schur basis of n qudits of dimension d, based on the dual Schur transform algorithm."
+DualSchurBasis::usage = "DualSchurBasis[n, d] returns an association of Schur basis of n qudits of dimension d, based on the dual Schur transform algorithm.\nDualSchurBasis[type] returns the Schur basis of the permutation module associated with type.\nDualSchurBasis[shape, d] returns the Schur basis of ... . \nDualSchurBasis[shape, content] returns the Schur basis of ... ."
 
 DualSchurBasis[ss:{__?SpeciesQ}] :=
   DualSchurBasis[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]

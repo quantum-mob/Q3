@@ -1,11 +1,15 @@
 (* -*- mode:math -*- *)
 
+BeginPackage["QuantumMob`Q3`", {"System`"}]
+
 If[ $VersionNumber < 13.1,
   Version::old = "Q3 requires Mathematica 13.1 or later.";
   Message[Version::old];
 ];
 
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+If[$VersionNumber < 14.2, System`LightDarkSwitched = Identity];
+(* NOTE: PlaybookTools defines $PlaybookBannerColor using LightDarkSwitched, which was introduced in Mathematica 14.2. This affects the Q3/Playbook and Q3/PlaybookDraft stylesheets. *)
+
 
 Unprotect["`*"];
 ClearAll["`*"];

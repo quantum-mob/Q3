@@ -1174,7 +1174,7 @@ Multiply[pre___, msr_WickMeasurement, ws_WickState] := Multiply[pre, msr @ ws]
 (* NOTE: This may happen, e.g., in RandomWickCircuit. *)
 WickMeasurement[{}, ___][in_WickState] = in
 
-(* See, e.g., Gallier (2001) for the Cartan-Dieudonn\[EAcute] theorem. *)
+(* See, e.g., Gallier (2001) for the Cartan-Dieudonné theorem. *)
 (* The vector vec := mat[[1]] describes a dressed Dirac fermion mode
       b := Sum[vec[[jj]] c[j], {j, 2n}]
    in terms of Majorana modes c[k]. *)
@@ -1188,7 +1188,7 @@ WickMeasurement[mat_?MatrixQ, ___][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, r
   WickState[{1, new}, rest]
 ] /; Length[mat] == 1
 
-(* See, e.g., Gallier (2001) for the Cartan-Dieudonn\[EAcute] theorem. *)
+(* See, e.g., Gallier (2001) for the Cartan-Dieudonné theorem. *)
 (* The matrix mat describes a list of dressed Dirac fermion modes
       b[j] := Sum[mat[[i,j]] c[j], {j, 2n}]
    in terms of Majorana fermion modes c[k]. *)
@@ -1318,7 +1318,7 @@ WickMeasurementKernel[vec_?VectorQ] := Module[
     Message[WickMeasurement::dressed, vec];
     Return @ {One[2n], One[2n], 0}
   ];
-  (* The Cartan-Dieudonn\[EAcute] theorem *)
+  (* The Cartan-Dieudonné theorem *)
   {aa, bb} = WickMeasurementKernel[1, n]; (* nn is ignored *)
   trs = HouseholderMatrix[{xx, yy}];
   { trs . aa . Transpose[trs],

@@ -1087,22 +1087,23 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ},
 LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
   opts:OptionsPattern[{LevelsPlot, Graphics, Plot}]] :=
   Module[
-    { wid = OptionValue["Size"],
+    { set = Rescale[data, MinMax @ data, {0, 10}],
+      wid = OptionValue["Size"],
       gap = OptionValue["Gap"],
       sty = OptionValue["DataStyles"],
       tag = OptionValue["DataLabels"],
       txt = OptionValue["Labels"],
       off = padCyclic[offset, Length @ data],
       min, new, loc, lines, links, ticks, texts },
-    loc = padAccumulate[locale, Length @ data, wid + gap];
-    lines = MapThread[makeLines, {loc, loc+wid, data}];
+    loc = padAccumulate[locale, Length @ set, wid + gap];
+    lines = MapThread[makeLines, {loc, loc+wid, set}];
 
     If[ sty === Automatic || sty === None, Null,
-      sty = padCyclic[sty, Length @ data];
+      sty = padCyclic[sty, Length @ set];
       lines = Thread[{sty, lines}];
     ];
 
-    new = MapThread[Part[#1, #2;;]&, {data, off}];
+    new = MapThread[Part[#1, #2;;]&, {set, off}];
     min = Min[Length /@ new];
     new = Take[#, min]& /@ new;
     
@@ -1120,14 +1121,14 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
 
     ticks = If[ tag === None,
       None,
-      tag = padCyclic[tag, Length @ data];
+      tag = padCyclic[tag, Length @ set];
       Thread[{loc+wid/2, tag, 0}]
     ];
 
     texts = If[ txt === None,
       Nothing,
-      txt = padCyclic[txt, Length @ data];
-      makeLabels @@@ Thread[{loc+wid/2, data, txt}]
+      txt = padCyclic[txt, Length @ set];
+      makeLabels @@@ Thread[{loc+wid/2, set, txt}]
     ];
 
     Graphics[
@@ -1136,9 +1137,12 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
         texts },
       FilterRules[{opts}, Options @ Graphics],
       Frame -> {{True, False}, {True, False}},
-      FrameStyle -> {{Directive[Black, Large], None}, {White, None}},
-      FrameTicks -> {{Automatic, None}, {ticks, None}},
-      FrameTicksStyle -> Directive[Large, Black],
+      FrameStyle -> {
+        {Directive[LightDarkSwitched @ Black, Large], None}, 
+        {LightDarkSwitched @ White, None}},
+      (* FrameTicks -> {{Automatic, None}, {ticks, None}}, *)
+      FrameTicks -> {{makeTicks[data], None}, {ticks, None}},
+      (* FrameTicksStyle -> Directive[Large, LightDarkSwitched @ Black], *)
       ImageSize -> Medium
     ]
   ]
@@ -1147,13 +1151,13 @@ padCyclic[set_, len_] := Module[
   { new },
   new =  If[ListQ @ set, set, List @ set];
   PadRight[new, len, new]
- ]
+]
 
 padAccumulate[set_, len_, span_] := If[ len > Length[set],
   Join[ set,
     Max[set] + Accumulate @ Table[span, len-Length[set]] ],
   Take[set, len]
- ]
+]
 
 makeLines[xmin_, xmax_, val:{__?NumericQ}] :=
   Line /@ Transpose @ {Thread @ {xmin, val}, Thread @ {xmax, val}}
@@ -1166,8 +1170,13 @@ makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
   new = padCyclic[txt, Length @ val];
   loc = Thread[{x, val}];
   MapThread[Text[#1, #2, Bottom]&, {new, loc}]
- ]
+]
 (* NOTE: txt may include Graphics[...] such as from MaTeX. *)
+
+makeTicks[data:{__?ListQ}][xmin_, xmax_] := Thread @ {
+  Subdivide[0, 10, 5],
+  Subdivide[Min @ data, Max @ data, 5]
+}
 
 (***** </LevelsPlot> ****)
 

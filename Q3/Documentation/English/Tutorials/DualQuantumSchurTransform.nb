@@ -1,0 +1,1698 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     64771,       1689]
+NotebookOptionsPosition[     55493,       1519]
+NotebookOutlinePosition[     60439,       1614]
+CellTagsIndexPosition[     60396,       1611]
+WindowTitle->Dual Quantum Schur Transform
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["QUANTUM MOB/ Q3 TECH NOTE", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "223f2c08-c034-4b1c-ab64-e6cc16d6c13f"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "595f297b-3aa1-4b96-8d70-ee7632b3259e"],
+        Background->LightDarkSwitched[
+          RGBColor[
+          0.3843137254901961, 0.4627450980392157, 0.7019607843137254]],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Functions",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "28d7cc5e-0c4e-4e71-a084-d756697c616d"]
+         }],ExpressionUUID->"6feecf4b-9d4c-4007-bc94-8a5e549c863f"],
+         StripOnInput->False],{
+        StyleBox[
+          "\"DualSchurBasis\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/DualSchurBasis"], 
+         StyleBox["\"SchurBasis\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/SchurBasis"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"TutorialFunction"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "feedf5e8-a188-4b01-b107-f36935540e93"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "0a9d3a3c-3671-4f64-8ddb-fb2e3b02bf9f"]
+         }],ExpressionUUID->"d830050a-6ae9-4094-be2d-f16b027d9e13"],
+         StripOnInput->False],{
+        "\"Quantum Information Systems\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/guide/QuantumInformationSystems"], 
+         "\"Q3: Symbolic Quantum Simulation\"" :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/guide/Q3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"TutorialMoreAboutSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "af83b0d6-cd4c-4174-96e0-0cfe743dde05"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "d0190c38-b69a-4e97-85aa-7ee29bdc967c"]
+         }],ExpressionUUID->"42a63999-410c-4038-bdb7-44ebbe4b12db"],
+         StripOnInput->False],{
+        "\"Quantum Schur Transform\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/QuantumSchurTransform"], 
+         "\"Generalized Quantum Fourier Transform\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"RelatedTutorialsSection"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "638c289d-658e-419e-94f8-ad54560e8e72"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "1811b440-bad9-49d5-9f00-02cefeff21cd"]
+         }],ExpressionUUID->"ca400ebe-8acd-4d10-9367-7e77b086d1f3"],
+         StripOnInput->False],{
+        "\"QuantumMob/Q3/tutorial/DualQuantumSchurTransform\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         CopyToClipboard["QuantumMob/Q3/tutorial/DualQuantumSchurTransform"], 
+         Delimiter, "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/QuantumMob/Q3/\
+tutorial/DualQuantumSchurTransform.html"], StandardForm]], "Input", 
+                 TextClipboardType -> "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[(If[TrueQ[False], 
+                  "http://reference.wolfram.com/system-modeler/", 
+                  "http://reference.wolfram.com/language/"] <> 
+                "QuantumMob/Q3/tutorial/DualQuantumSchurTransform") <> 
+               ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "4747f94c-ce94-4157-85bc-318645b1e662"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "866534e4-f3be-44c4-9e6e-edbe545e35a4"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"452b07c8-b0b1-4d3c-8707-0a945e95695a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "Dual Quantum Schur Transform", "TechNoteTitle",ExpressionUUID->
+      "8bb1dec5-70ef-4025-8764-9f01e95663ee"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"cc34cd72-df8f-4f55-b623-8663991e1517"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "c6009fcf-3bed-4cff-8c1a-c80d12c218a3"]
+    }],ExpressionUUID->"b8b08fbf-ba0f-4db9-b6de-d643fde8bd8d"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 14.3\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->LightDarkSwitched[
+              RGBColor[0.968627, 0.466667, 0]]], {Right, Center}, {
+           Right, Center}],
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 14",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "555730cd-3c79-4cb3-a209-1a962d348695"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"a6245cea-a7c0-4a88-b816-411a667d707d"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell["Schur Basis"], 
+      "paclet:QuantumMob/Q3/tutorial/DualQuantumSchurTransform#954056626", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["QFT for Permutation Modules"], 
+      "paclet:QuantumMob/Q3/tutorial/DualQuantumSchurTransform#197057484", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Permutation Module"], 
+      "paclet:QuantumMob/Q3/tutorial/DualQuantumSchurTransform#1543514506", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], 
+    TemplateBox[{
+      Cell["Quantum Implementation"], 
+      "paclet:QuantumMob/Q3/tutorial/DualQuantumSchurTransform#1892500224", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}]},
+   {
+    TemplateBox[{
+      Cell["Irreducible Subspaces"], 
+      "paclet:QuantumMob/Q3/tutorial/DualQuantumSchurTransform#1029174584", 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.3843137254901961, 0.4627450980392157, 0.7019607843137254], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False], 
+      StyleBox[
+       GraphicsBox[{
+         Thickness[0.18], 
+         RGBColor[0.9686274509803922, 0.4666666666666667, 0.], 
+         LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20, PlotRangePadding -> 
+        Scaled[0.025]], Magnification -> 0.68 Inherited, StripOnInput -> 
+       False]},
+     "GrayLinkWithIcon",
+     BaseStyle->{"TutorialJumpBoxLink"}], ""}
+  }]], "TechNoteJumpBox",ExpressionUUID->"982a72a1-973c-47c3-bd25-\
+842d1c03dfa5"],
+
+Cell[TextData[{
+ "The Schur basis is a basis of tensor-product space ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+    RowBox[{"\[CircleTimes]", "n"}]], TraditionalForm]],ExpressionUUID->
+  "02fa51f1-0e4f-4283-afd8-55a0f9f12298"],
+ " in which the action of both symmetric and unitary groups on ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+    RowBox[{"\[CircleTimes]", "n"}]], TraditionalForm]],ExpressionUUID->
+  "7dbda256-ef15-49fe-be54-f4746fe7d001"],
+ " is block-diagonalized. The dual Schur transform is a unitary \
+transformation changing the computational basis of ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+    RowBox[{"\[CircleTimes]", "n"}]], TraditionalForm]],ExpressionUUID->
+  "40595d55-d3b7-4c9b-a059-c6ad2bfe00d8"],
+ " to the Schur basis. While the Schur transform algorithm of Bacon, Chuang \
+and Harrow (2007) is based on the representations of the unitary group, the \
+dual Schur transform algorithm uses the representations of the symmetric \
+group. Technically, the Schur transform uses the Clebsch-Gordan transform of \
+the unitary group whereas the dual Schur transform utilizes the generalized \
+quantum Fourier transform over the symmetric group."
+}], "TechNoteText",
+ CellID->1521250694,ExpressionUUID->"81dfb90a-9b0a-4cdf-8800-36a60383102e"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{
+      Cell[
+       TextData["DualSchurBasis"]], "paclet:QuantumMob/Q3/ref/DualSchurBasis",
+       "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell["\<\
+Constructs the Schur basis using the dual quantum Schur transform\
+\>", "TechNoteTableText",ExpressionUUID->
+     "0100236d-c8d3-43bb-be7a-918693f0d1fb"]},
+   {
+    TemplateBox[{
+      Cell[
+       TextData["SchurBasis"]], "paclet:QuantumMob/Q3/ref/SchurBasis", 
+      "QuantumMob Package Symbol"},
+     "PackageLink",
+     BaseStyle->{"DefinitionBox", CellFrame -> 0}], Cell[
+    "Constructs the Schur basis using the quantum Schur transform", 
+     "TechNoteTableText",ExpressionUUID->
+     "12c605f1-4072-41c5-a574-d102bb54a88e"]}
+  }]], "DefinitionBox",
+ CellID->1867596523,ExpressionUUID->"868676e1-a51a-4bdb-a91d-f5f1ce7bddea"],
+
+Cell["Two methods to construct the Schur basis.", "TechNoteCaption",
+ CellID->1073777509,ExpressionUUID->"1519aa14-aa7b-4d6c-8bf2-b59c32a5803e"],
+
+Cell["Load Q3 to use the demonstrations in this note:", "TechNoteMathCaption",
+ CellID->1245176211,ExpressionUUID->"8b948c60-6898-47d9-a1a4-550ca6f00d28"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<QuantumMob`Q3`\>\"", "]"}]], "Input",
+ CellLabel->"In[141]:=",
+ CellID->448438262,ExpressionUUID->"9139522f-55fa-4e42-8908-f57cce92cf4e"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Schur Basis", "TechNoteSection",
+ CellID->954056626,ExpressionUUID->"d5b82797-64b8-4162-942b-9b1bc69d6120"],
+
+Cell[TextData[{
+ "Consider a system of ",
+ Cell[BoxData[
+  FormBox["n", TraditionalForm]],ExpressionUUID->
+  "d959346c-5b1a-4880-a08a-451345d36285"],
+ " identical particles, each of which is associated with a ",
+ Cell[BoxData[
+  FormBox["d", TraditionalForm]],ExpressionUUID->
+  "deb793f6-010a-470d-8d71-0a972f198255"],
+ "-dimensional Hilbert space ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalV]", "d"], TraditionalForm]],ExpressionUUID->
+  "1ad43fa9-0735-4d84-941d-beb993888add"],
+ ". The Schur-Weyl duality assures that the tensor-product space ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+    RowBox[{"\[CircleTimes]", "n"}]], TraditionalForm]],ExpressionUUID->
+  "0bb9b156-0824-457c-a36b-cfea5c890ea8"],
+ " may be decomposed as\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+     RowBox[{"\[CircleTimes]", "n"}]], "=", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", "\[Lambda]"], 
+     RowBox[{
+      SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], "\[CircleTimes]", 
+      SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"]}]}]}], 
+   TraditionalForm]],ExpressionUUID->"5757849a-6b07-4eef-b640-604f2df64bff"],
+ " ,\[LineSeparator]where ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"ba5dc590-7170-457c-bb49-851fb8e749cd"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"0ca78f54-39f4-44cd-92cd-2a2f546c68eb"],
+ " are irreducible representation spaces associated with integer partition ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "7e2da615-703b-4153-b535-637fd5aad9a8"],
+ " of the symmetric and unitary groups, respectively. The Schur basis\
+\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    TemplateBox[{
+      RowBox[{"\[Lambda]", ",", 
+        RowBox[{
+          SubscriptBox["y", "\[Lambda]"], "\[VeryThinSpace]", 
+          SubscriptBox["w", "\[Lambda]"]}]}]},
+     "Ket"], " ", "}"}], TraditionalForm]],ExpressionUUID->
+  "bd67cb85-2b5d-4cca-bfd2-93a0b0a58bcd"],
+ "\[LineSeparator]is a basis of ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+    RowBox[{"\[CircleTimes]", "n"}]], TraditionalForm]],ExpressionUUID->
+  "5b551f32-fcd5-44b8-a689-b66e681b6881"],
+ " consistent with the above decomposition such that standard Young tableaux ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["y", "\[Lambda]"], TraditionalForm]],ExpressionUUID->
+  "52c623de-e256-426b-9265-ec027b782986"],
+ " and Weyl tableaux ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["w", "\[Lambda]"], TraditionalForm]],ExpressionUUID->
+  "a3a8bb78-159b-4769-bb9c-62bc1eb6b3ee"],
+ " label the basis vectors in ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"7c9a6512-141a-4f88-91ee-aa660b074a78"],
+ " and ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"2c5ca9cc-f19e-47c4-8d24-47bd17e9f802"],
+ ", respectively."
+}], "TechNoteText",
+ CellID->1580417735,ExpressionUUID->"8b522cc1-e273-4b6c-9bf2-bed4e741a628"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Permutation Module", "TechNoteSection",
+ CellID->1543514506,ExpressionUUID->"3a942b41-ac36-48d2-b8fe-b738c261c1bc"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"1b427f04-80e1-4861-9349-bc36ce1e9524"],
+ " be a permutation module of content ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "4fde89db-0903-4a78-8e7d-9620e7d9be00"],
+ ":\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], "=", 
+    RowBox[{"Span", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{
+        TemplateBox[{
+          RowBox[{
+            SubscriptBox["i", "1"], ",", 
+            SubscriptBox["i", "2"], ",", "\[Ellipsis]", ",", 
+            SubscriptBox["i", "n"]}]},
+         "Ket"], ":", 
+        RowBox[{"content", "(", 
+         RowBox[{"{", 
+          RowBox[{
+           SubscriptBox["i", "1"], ",", 
+           SubscriptBox["i", "2"], ",", "\[Ellipsis]", ",", 
+           SubscriptBox["i", "n"]}], "}"}], ")"}]}], "=", "\[Mu]"}], 
+      "}"}]}]}], TraditionalForm]],ExpressionUUID->
+  "a8ac5f6a-7ddc-4c7d-89a3-73ebb14bebcf"],
+ ".\[LineSeparator]It can be rewritten in terms of permutations as\
+\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], "=", 
+    RowBox[{"Span", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"\[CapitalPi]", "(", "g", ")"}], 
+       RowBox[{
+        TemplateBox[{"\[Mu]"},
+         "Ket"], ":", 
+        RowBox[{"g", "\[Element]", 
+         SubscriptBox["\[ScriptCapitalS]", "n"]}]}]}], "}"}]}]}], 
+   TraditionalForm]],ExpressionUUID->"ad5c76c9-b2ce-45fd-bf34-9425cea6bbf5"],
+ ",\[LineSeparator]where\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    TemplateBox[{"\[Mu]"},
+     "Ket"], ":=", 
+    TemplateBox[{
+      RowBox[{
+        UnderscriptBox[
+         UnderscriptBox[
+          RowBox[{"1", ",", "1", ",", "1"}], "\[UnderBrace]"], 
+         SubscriptBox["\[Mu]", "1"]], ",", 
+        UnderscriptBox[
+         UnderscriptBox[
+          RowBox[{"2", ",", "2", ",", "2"}], "\[UnderBrace]"], 
+         SubscriptBox["\[Mu]", "2"]], ",", "\[Ellipsis]", ",", 
+        UnderscriptBox[
+         UnderscriptBox[
+          RowBox[{"d", ",", "d", ",", "d"}], "\[UnderBrace]"], 
+         SubscriptBox["\[Mu]", "d"]]}]},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "6bf76f2d-cea4-4903-9a05-3a02bf694cfa"],
+ " ."
+}], "TechNoteText",
+ CellID->1346838239,ExpressionUUID->"5603e9bb-864f-498c-bac2-2e2b50cecd18"],
+
+Cell[TextData[{
+ "States ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"\[CapitalPi]", "(", "g", ")"}], 
+    TemplateBox[{"\[Mu]"},
+     "Ket"]}], TraditionalForm]],ExpressionUUID->
+  "cbf0af14-252c-41b3-8e1a-70be41266e44"],
+ " for different group elements ",
+ Cell[BoxData[
+  FormBox["g", TraditionalForm]],ExpressionUUID->
+  "dd8312f9-8746-475d-b612-cc7a0259eae6"],
+ " are not always distinct. More specifically, ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"\[CapitalPi]", "(", "f", ")"}], 
+     TemplateBox[{"\[Mu]"},
+      "Ket"]}], "=", 
+    RowBox[{
+     RowBox[{"\[CapitalPi]", "(", "g", ")"}], 
+     TemplateBox[{"\[Mu]"},
+      "Ket"]}]}], TraditionalForm]],ExpressionUUID->
+  "47cc0c1c-1bb9-4fe9-9cf4-61a95086be63"],
+ " whenever ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"f", "=", 
+    RowBox[{"g", "\[VeryThinSpace]", "h"}]}], TraditionalForm]],
+  ExpressionUUID->"1010623b-0ce0-4433-b25f-148373e25f6c"],
+ " for some element ",
+ Cell[BoxData[
+  FormBox["h", TraditionalForm]],ExpressionUUID->
+  "30e017d9-ce6e-476b-b10d-9fcc51bb3f63"],
+ " of ",
+ ButtonBox["Young subgroup",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3/ref/YoungSubgroup"],
+ " ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"c1049834-07b3-49e3-b9dc-7702d727057f"],
+ ", that is, ",
+ Cell[BoxData[
+  FormBox["f", TraditionalForm]],ExpressionUUID->
+  "c329fbe5-1ba3-4687-8e76-fd533cff7e01"],
+ " and ",
+ Cell[BoxData[
+  FormBox["g", TraditionalForm]],ExpressionUUID->
+  "4f68f1f3-350d-4db4-b1bf-55eec6932407"],
+ " belongs to the same left coset of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"06a1df04-8bc6-4b32-bf58-00b1f395d4e6"],
+ ". Therefore, it is convenient to consider a transversal ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[ScriptCapitalT]", ":=", 
+    RowBox[{"{", 
+     RowBox[{
+      SubscriptBox["t", "1"], ",", 
+      SubscriptBox["t", "2"], ",", "\[Ellipsis]", ",", 
+      RowBox[{
+       RowBox[{"\[LeftBracketingBar]", 
+        SubscriptBox["\[ScriptCapitalS]", "n"], "\[RightBracketingBar]"}], "/", 
+       RowBox[{"\[LeftBracketingBar]", 
+        SubscriptBox["\[ScriptCapitalS]", "\[Tau]"], 
+        "\[RightBracketingBar]"}]}]}], "}"}]}], TraditionalForm]],
+  ExpressionUUID->"1f5f3da5-9ee1-46f2-ae10-4efbe4ace96a"],
+ " for the left cosets of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"a9905568-ac02-44e6-bf6d-8f26624a3911"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "ad7d1a7f-32d3-464e-93c9-900d9798b116"],
+ ". Then, the permutation module is given by\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], "=", 
+    RowBox[{"Span", 
+     RowBox[{"{", 
+      RowBox[{
+       RowBox[{"\[CapitalPi]", "(", "t", ")"}], 
+       RowBox[{
+        TemplateBox[{"\[Mu]"},
+         "Ket"], ":", 
+        RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}]}]}], "}"}]}]}], 
+   TraditionalForm]],ExpressionUUID->"815e696b-5009-44d2-b5b0-4a95b7725cff"],
+ "."
+}], "TechNoteText",
+ CellID->47162978,ExpressionUUID->"65d7fedb-8809-4de6-a20c-51265b45c669"],
+
+Cell[TextData[{
+ "It is then evident that  permutation module ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"b1eaf600-16ec-499e-bdbd-233c3d0a8182"],
+ " is isomorphic to the left coset module\[LineSeparator]\t ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], "=", 
+    RowBox[{
+     RowBox[{"Span", 
+      RowBox[{"{", 
+       RowBox[{
+        TemplateBox[{
+          RowBox[{"g", "\[VeryThinSpace]", 
+            SubscriptBox["\[ScriptCapitalS]", "\[Mu]"]}]},
+         "Ket"], ":", 
+        RowBox[{"g", "\[Element]", 
+         SubscriptBox["\[ScriptCapitalS]", "n"]}]}], "}"}]}], "=", 
+     RowBox[{"Span", 
+      RowBox[{"{", 
+       RowBox[{
+        TemplateBox[{
+          RowBox[{"t", "\[VeryThinSpace]", 
+            SubscriptBox["\[ScriptCapitalS]", "\[Mu]"]}]},
+         "Ket"], ":", 
+        RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}]}], "}"}]}]}]}], 
+   TraditionalForm]],ExpressionUUID->"0f21d70f-4fab-4a49-bef3-a94b3050978f"],
+ ",\nand hence an induced representation of the trivial representation of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"874e8b65-0e6e-42f3-a1f6-29f3b6cb38ba"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "2e560ddf-0386-47a0-8250-2de3ba1f4761"],
+ "."
+}], "TechNoteText",
+ CellID->1793598696,ExpressionUUID->"fb361075-68ba-498a-8c51-d9d1c6f04ec6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Irreducible Subspaces", "TechNoteSection",
+ CellID->1029174584,ExpressionUUID->"0b39b700-843c-4b4f-ac50-581f9ff77c41"],
+
+Cell[TextData[{
+ "To understand the motivation behind the dual Schur transform, recall that",
+ "\n",
+ "\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+     RowBox[{"\[CircleTimes]", "n"}]], "=", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", "\[Mu]"], 
+     SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"]}]}], TraditionalForm]],
+  ExpressionUUID->"5f869108-e546-4d70-ad0f-e5dd91743b8a"],
+ "\n",
+ "where ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"c608d815-d62f-4904-a667-1f61a3643335"],
+ " is the ",
+ StyleBox["permutation module",
+  FontSlant->"Italic"],
+ " associated with content ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\[Mu]", ":=", 
+    RowBox[{"(", 
+     RowBox[{
+      SubscriptBox["\[Mu]", "1"], ",", 
+      SubscriptBox["\[Mu]", "2"], ",", "\[Ellipsis]", ",", 
+      SubscriptBox["\[Mu]", "d"]}], ")"}]}], TraditionalForm]],ExpressionUUID->
+  "33ea47af-26c3-4465-89bb-921c8877f4a4"],
+ " such that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SubscriptBox["\[Mu]", "1"], "+", 
+     SubscriptBox["\[Mu]", "2"], "+", "\[Ellipsis]", "+", 
+     SubscriptBox["\[Mu]", "d"]}], "=", "n"}], TraditionalForm]],
+  ExpressionUUID->"80a25339-7ae6-44eb-bdc2-5ef8e3d3b317"],
+ ". "
+}], "TechNoteText",
+ CellID->1223599087,ExpressionUUID->"34f5c435-9b30-4b84-b661-29086ac16e47"],
+
+Cell[TextData[{
+ "Permutation module is reducible, and decomposes into ",
+ StyleBox["Specht module",
+  FontSlant->"Italic"],
+ " ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"bbbefdd4-3405-4797-b9e8-30947cf54719"],
+ ", the basis elements of which are labeled by the standard Young tableaux of \
+shape \[Lambda]:\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], "=", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", 
+      RowBox[{"\[Lambda]", "\[RightTriangleEqual]", "\[Mu]"}]], 
+     RowBox[{
+      SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], "\[CircleTimes]", 
+      SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"]}]}]}], 
+   TraditionalForm]],ExpressionUUID->"a9791ba6-f8f8-47c7-9ef6-891e1c71c95b"],
+ " ,\nwhere the direct sum ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[CirclePlus]", 
+    RowBox[{"\[Lambda]", "\[RightTriangleEqual]", "\[Tau]"}]], 
+   TraditionalForm]],ExpressionUUID->"6246ced3-2531-4e05-a577-4bd1c53e2b9f"],
+ " is over partitions ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "c4fdbb9d-a431-40aa-b71d-c6c01d44c232"],
+ " that ",
+ ButtonBox["dominate",
+  BaseStyle->"Link",
+  ButtonData->"paclet:QuantumMob/Q3/ref/DominatesQ"],
+ " ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "17a9b318-c1d4-4e19-b829-cc572de65dfc"],
+ " ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"(", 
+    RowBox[{"\[Lambda]", "\[RightTriangleEqual]", "\[Mu]"}]}], 
+   TraditionalForm]],ExpressionUUID->"c8e7ab96-81c8-47f0-a181-a7c5c2037699"],
+ "). The basis vectors of the multiplicity space ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"], 
+   TraditionalForm]],ExpressionUUID->"f4c1cd49-5bea-4eb8-b828-a30be1bf3278"],
+ " are labeled by Weyl tableaux of shape ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "d86869c4-81b2-410b-be02-c0cffae483f0"],
+ " and content ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "d43f3b90-a532-480c-a9a6-66e89632d0c8"],
+ ". Putting them together, the tensor product space is decomposed into\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+     RowBox[{"\[CircleTimes]", "n"}]], "=", 
+    RowBox[{
+     RowBox[{
+      SubscriptBox["\[CirclePlus]", "\[Mu]"], 
+      SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"]}], "=", 
+     RowBox[{
+      RowBox[{
+       SubscriptBox["\[CirclePlus]", "\[Mu]"], 
+       RowBox[{
+        SubscriptBox["\[CirclePlus]", 
+         RowBox[{"\[Lambda]", "\[RightTriangleEqual]", "\[Mu]"}]], 
+        RowBox[{
+         SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], "\[CircleTimes]", 
+         SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"]}]}]}], "=", 
+      RowBox[{
+       RowBox[{
+        SubscriptBox["\[CirclePlus]", "\[Lambda]"], 
+        RowBox[{
+         SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], "\[CircleTimes]", 
+         RowBox[{"(", 
+          RowBox[{
+           SubscriptBox["\[CirclePlus]", 
+            RowBox[{"\[Mu]", "\[LeftTriangleEqual]", "\[Lambda]"}]], 
+           SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"]}], 
+          ")"}]}]}], "=", 
+       RowBox[{
+        SubscriptBox["\[CirclePlus]", "\[Lambda]"], 
+        RowBox[{
+         SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], "\[CircleTimes]", 
+         SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"]}]}]}]}]}]}], 
+   TraditionalForm]],ExpressionUUID->"f9cf601f-ecc0-4db8-bb02-46773ed577b7"],
+ ",\[LineSeparator]where for the last equality, we have identified\
+\[LineSeparator]\t",
+ Cell[BoxData[
+  RowBox[{
+   SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"], "=", 
+   RowBox[{
+    SubscriptBox["\[CirclePlus]", 
+     RowBox[{"\[Mu]", "\[LeftTriangleEqual]", "\[Lambda]"}]], 
+    SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"]}]}]],
+  ExpressionUUID->"6d919b83-0381-4e31-b3ca-00b6d02051c4"],
+ " \[LineSeparator]according to the Schur-Weyl duality."
+}], "TechNoteText",
+ CellID->494624109,ExpressionUUID->"0a993487-e954-4de0-9473-bbd50ef3e96d"],
+
+Cell[TextData[{
+ "It is then clear that the desired Schur basis can be found by \
+block-diagonalizing the action of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "2833fb57-94a2-4bdf-a605-f3b2a1b5d3df"],
+ " on ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"205ecdee-6993-42bf-ab66-d33ada5ebd73"],
+ " for all  ",
+ Cell[BoxData["\[Mu]"], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "7b978d0f-40fc-4041-b234-f19bbcd546b1"],
+ ". This is the key idea behind the dual quantum Schur transform."
+}], "TechNoteText",
+ CellID->1819887037,ExpressionUUID->"5bc89426-80c3-4328-b64d-41b1c9e7f000"],
+
+Cell[CellGroupData[{
+
+Cell["Remarks", "Subsection",
+ CellID->1268898005,ExpressionUUID->"4055545f-0c28-4fa2-a8a3-aa4c85f95073"],
+
+Cell[TextData[{
+ "Recall that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"], "\[TildeEqual]", 
+    SubsuperscriptBox["\[ScriptCapitalW]", "\[Nu]", "\[Lambda]"]}], 
+   TraditionalForm]],ExpressionUUID->"60f7260f-4aa0-4328-9e77-ef39d9bf3f26"],
+ " for any contents ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "dd09d710-e72c-4da6-b5a7-11a80300e5ff"],
+ " and ",
+ Cell[BoxData[
+  FormBox["\[Nu]", TraditionalForm]],ExpressionUUID->
+  "073b5e89-fb81-42fe-9677-3b5967dee03b"],
+ " such that ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"shape", "(", "\[Mu]", ")"}], "=", 
+    RowBox[{"shape", "(", "\[Nu]", ")"}]}], TraditionalForm]],ExpressionUUID->
+  "ee23de3c-4425-4fd4-baa1-b6bad3707cef"],
+ ". This means that the irreducible space of the unitary group is given by\n\t\
+",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"], "\[Congruent]", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", 
+      RowBox[{"\[Mu]", "\[LeftTriangleEqual]", "\[Lambda]"}]], 
+     SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"]}], "\[TildeEqual]", 
+    RowBox[{
+     SubsuperscriptBox["\[CirclePlus]", 
+      RowBox[{"\[Mu]", "\[LeftTriangleEqual]", "\[Lambda]"}], "\[Prime]"], 
+     RowBox[{
+      SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"], 
+      SubscriptBox["m", "\[Mu]"]}]}]}], TraditionalForm]],ExpressionUUID->
+  "e418f3a9-5c40-4d0c-adea-bcfa96805e63"],
+ " ,\[LineSeparator]where ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["m", "\[Lambda]"], TraditionalForm]],ExpressionUUID->
+  "17ea9bd7-5c84-491e-8b45-5c54d62345b7"],
+ " is the number of distinct permutations of partition ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "65858d30-2cc5-42b7-b716-b964a2c8b50f"],
+ " (assuming that has length ",
+ Cell[BoxData[
+  FormBox["d", TraditionalForm]],ExpressionUUID->
+  "21f94660-5a16-46ee-9b70-e2ae70980ad7"],
+ " by padding it with 0 on the right if necessary), and the first direct sum ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[CirclePlus]", "\[Mu]"], TraditionalForm]],ExpressionUUID->
+  "c26a5389-f2ae-4c8f-9e6a-02f6f2fb009f"],
+ " is over contents ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "e6b50752-442b-40b3-99f1-e1fec4798307"],
+ " (not necessarily partitions) of ",
+ Cell[BoxData[
+  FormBox["n", TraditionalForm]],ExpressionUUID->
+  "fe09e21e-ccea-4601-81f0-d31e343d4071"],
+ " whereas the second direct sum ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[CirclePlus]", "\[Mu]", "\[Prime]"], TraditionalForm]],
+  ExpressionUUID->"10fd92f5-f313-4966-b8d3-b8780133c849"],
+ " is over partitions ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "a9e82871-a5da-4d65-ac78-b30513293982"],
+ " of ",
+ Cell[BoxData[
+  FormBox["n", TraditionalForm]],ExpressionUUID->
+  "9b4a96bb-fcf8-4fa5-98f0-6c55c50828fa"],
+ ". The dimension of ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"], 
+   TraditionalForm]],ExpressionUUID->"52c2647b-1e2f-4d28-990a-faf5011d7ca5"],
+ " is given by the Kostka number ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["K", 
+    RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Mu]"}]], TraditionalForm]],
+  ExpressionUUID->"f9ab1ad5-d141-4f68-b03f-fbdac5055a49"],
+ ", the number of Weyl tableaux of shape ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "c08b52b9-6925-48bd-a841-739a10a1c7cb"],
+ " and content ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "44bb9a56-787f-4429-b28c-d0644e0d1200"],
+ " ,  ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"dim", "\[VeryThinSpace]", 
+     SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"]}], "=", 
+    SubscriptBox["K", 
+     RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Mu]"}]]}], TraditionalForm]],
+  ExpressionUUID->"562fa48c-e2fe-4819-9db5-4bf9889ebe25"],
+ ". Hence,  ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubscriptBox["\[CapitalSigma]", "\[Mu]"], 
+    SubscriptBox["K", 
+     RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Mu]"}]], 
+    SubscriptBox["m", "\[Mu]"]}], TraditionalForm]],ExpressionUUID->
+  "da314cbc-4e64-4f68-8f88-944ad3054c86"],
+ " must equal the dimension of ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"5b46ca29-80a2-403a-a355-cbc51d7e176f"],
+ ", i.e., the number of Weyl tableaux of shape ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "84d3956b-87e6-4cee-ae98-097e004130ce"],
+ " (of arbitrary content)."
+}], "TechNoteText",
+ CellID->833580814,ExpressionUUID->"a34c1a4e-7f1a-49f1-86e1-4461f56e2b44"],
+
+Cell[TextData[{
+ "According to the Frobenius reciprocity theorem, the multiplicity of the \
+trivial representation of the Young subgroup ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"72f3eeff-3e88-40be-b8ea-a6439d5518b0"],
+ " in the restriction of irreducible representation ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"6bf108c3-3ac2-4d5a-9fb6-504c45449147"],
+ " of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "6fd6fafb-8266-47b8-a01b-28fd3af671a5"],
+ "  to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"bc28c78d-e99a-4bf3-827e-d17d0776cae4"],
+ " equals the multiplicity of irreducible representation ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], TraditionalForm]],
+  ExpressionUUID->"9e4ce769-685a-4175-9212-19dfd17bff4b"],
+ " of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "3ceb6b34-992d-434c-afab-f5eb1d54523e"],
+ " in the induced representation of the trivial representation of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"ada73184-1fa6-4ae1-b0b8-656a4d421518"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "5e8c99ec-fc38-412e-9d14-19c3fce607fa"],
+ ", i.e., the permutation module ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"d2f6ae24-7186-4c95-a649-8b95fa5f42df"],
+ ". Therefore, both multiplicity factor is given by the Kostka number ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["K", 
+    RowBox[{"\[Lambda]", "\[VeryThinSpace]", "\[Mu]"}]], TraditionalForm]],
+  ExpressionUUID->"16c2cdc4-1628-4715-92fb-6203bf93d803"],
+ "."
+}], "TechNoteText",
+ CellID->325513803,ExpressionUUID->"d16ef99c-a214-4442-a6fe-6a8fc328e385"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["QFT for Permutation Modules", "TechNoteSection",
+ CellID->197057484,ExpressionUUID->"82f99601-98a6-4713-b85e-3b7b869d07cc"],
+
+Cell[TextData[{
+ "Let ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "364581bb-0be4-4292-8b7d-ddefb4187547"],
+ " be an integer content of ",
+ Cell[BoxData[
+  FormBox["n", TraditionalForm]],ExpressionUUID->
+  "81ca687e-bad2-4bfd-b6d8-3128942bdb7b"],
+ ", and ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", "\[Lambda]"], TraditionalForm]],ExpressionUUID->
+  "e4681856-a47d-4b82-9b82-1aca1075eeb7"],
+ " its associated Young subgroup of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["S", "n"], TraditionalForm]],ExpressionUUID->
+  "5effc9f6-6d8f-4e13-b305-7fa5e4fa75bb"],
+ ". The permutation module ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"602a76ed-23fe-4c4a-a2d6-31eddc324802"],
+ " is the induced representation of the trivial representation of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"3a6121d7-7964-469c-8e17-3c3210f1315f"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "98785d35-c463-4c34-87be-6a96ef3ea83e"],
+ "; that is, \[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], "=", 
+    RowBox[{"1", 
+     SubsuperscriptBox["\[UpArrow]", 
+      SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], 
+      SubscriptBox["\[ScriptCapitalS]", "n"]]}]}], TraditionalForm]],
+  ExpressionUUID->"40952cd0-a1c9-4ed9-8fb6-9c99e8d3116c"],
+ " ."
+}], "TechNoteText",
+ CellID->249215652,ExpressionUUID->"cf04991f-3e54-4775-bd91-26f8c6a16cba"],
+
+Cell[TextData[{
+ "A convenient choice of transversal ",
+ Cell[BoxData[
+  FormBox["\[ScriptCapitalT]", TraditionalForm]],ExpressionUUID->
+  "5e1e096a-ec8f-4999-813d-2fdd527761e8"],
+ " for the cosets of ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"3de2201b-3a52-4f1b-855a-bf965136fe52"],
+ " in ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "b121feb7-d370-4531-8db5-afdef059f484"],
+ " is given by the set of permutations ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[Pi]", "k"], TraditionalForm]],ExpressionUUID->
+  "6ea7918e-d24d-4b0c-a2c0-f75b1770237e"],
+ "  that lead the tuple\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     UnderscriptBox[
+      UnderscriptBox[
+       RowBox[{"1", ",", "...", ",", "1"}], "\[UnderBrace]"], 
+      SubscriptBox["\[Mu]", "1"]], ",", 
+     UnderscriptBox[
+      UnderscriptBox[
+       RowBox[{"2", ",", "...", ",", "2"}], "\[UnderBrace]"], 
+      SubscriptBox["\[Mu]", "2"]], ",", "\[Ellipsis]", ",", 
+     UnderscriptBox[
+      UnderscriptBox[
+       RowBox[{"n", ",", "...", ",", "n"}], "\[UnderBrace]"], 
+      SubscriptBox["\[Mu]", "n"]]}], "}"}], TraditionalForm]],ExpressionUUID->
+  "5f8aa611-a991-43e0-9213-09a73a3c47b8"],
+ "\[LineSeparator]into distinct tuples. In fact, this is how the permutation \
+basis is constructed for ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+    RowBox[{"\[CircleTimes]", "n"}]], TraditionalForm]],ExpressionUUID->
+  "893bd512-1300-431e-abe9-1fbbaa1e6a9e"],
+ ", and thus the permutation module is isomorphic to the subspace spanned by ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    TemplateBox[{
+      SubscriptBox["\[Pi]", "k"]},
+     "Ket"], "}"}], TraditionalForm]],ExpressionUUID->
+  "62fbd246-9bd4-4c32-a60e-27f853eb1773"],
+ "."
+}], "TechNoteText",
+ CellID->261087420,ExpressionUUID->"1400f20e-69f7-44ce-849d-99c091dc928d"],
+
+Cell[TextData[{
+ "The Fourier basis is given by\[LineSeparator]",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"\t", 
+    RowBox[{
+     TemplateBox[{
+       RowBox[{
+         RowBox[{"\[Mu]", ";", "\[Lambda]"}], ",", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]}]},
+      "Ket"], "=", 
+     RowBox[{
+      UnderscriptBox["\[CapitalSigma]", 
+       RowBox[{"t", "\[Element]", "\[ScriptCapitalT]"}]], 
+      TemplateBox[{"t"},
+       "Ket"], 
+      SubsuperscriptBox[
+       RowBox[{
+        SqrtBox[
+         FractionBox[
+          SubscriptBox["d", "\[Lambda]"], 
+          RowBox[{"|", "\[ScriptCapitalG]", "|", 
+           RowBox[{"/", 
+            RowBox[{"|", "\[ScriptCapitalH]", "|"}]}]}]]], "[", 
+        RowBox[{
+         RowBox[{
+          SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], "(", "t", ")"}], 
+         RowBox[{
+          SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], "(", 
+          "\[ScriptCapitalH]", ")"}]}], "]"}], 
+       RowBox[{"i", "\[VeryThinSpace]", "j"}], "*"], " "}]}]}], 
+   TraditionalForm]],ExpressionUUID->"cf6560e0-4425-4294-a4ca-cbf66a6e9f0c"],
+ ",\[LineSeparator]where ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], "(", "\[ScriptCapitalH]", 
+    ")"}], TraditionalForm]],ExpressionUUID->
+  "42436dc8-2c68-4e20-9d56-e2566e094987"],
+ " is the projection operator into the irreducible space of ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "7b219685-3742-427a-b296-f7d8ae69b0f9"],
+ ":\[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], "(", "\[ScriptCapitalH]",
+      ")"}], ":=", 
+    RowBox[{
+     FractionBox["1", 
+      RowBox[{"|", "\[ScriptCapitalH]", "|"}]], 
+     UnderscriptBox["\[CapitalSigma]", 
+      RowBox[{"h", "\[Element]", "\[ScriptCapitalH]"}]], 
+     RowBox[{
+      SuperscriptBox["\[CapitalGamma]", "\[Lambda]"], "(", "h", ")"}]}]}], 
+   TraditionalForm]],ExpressionUUID->"47cb61db-6f80-47fd-9095-951476be3229"],
+ ".\[LineSeparator]The QFT for the permutation module can be implemented \
+efficiently on a quantum computer for many non-Abelian groups."
+}], "TechNoteText",
+ CellID->1825301940,ExpressionUUID->"55d6e60b-29c7-41aa-91e6-65e155a60e4d"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Quantum Implementation", "TechNoteSection",
+ CellID->1892500224,ExpressionUUID->"f459c407-bb71-46de-8f53-eaa49ee4377d"],
+
+Cell[TextData[{
+ "Recall that\n\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+     RowBox[{"\[CircleTimes]", "n"}]], "=", 
+    RowBox[{
+     RowBox[{
+      SubscriptBox["\[CirclePlus]", "\[Mu]"], 
+      SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"]}], "=", 
+     RowBox[{
+      SubscriptBox["\[CirclePlus]", "\[Lambda]"], 
+      RowBox[{
+       SuperscriptBox["\[ScriptCapitalY]", "\[Lambda]"], "\[CircleTimes]", 
+       SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"]}]}]}]}], 
+   TraditionalForm]],ExpressionUUID->"4fa2faaf-80b1-4ed8-87c4-942accd99a8f"],
+ "\[LineSeparator]with \[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    SuperscriptBox["\[ScriptCapitalW]", "\[Lambda]"], ":=", 
+    RowBox[{
+     SubscriptBox["\[CirclePlus]", 
+      RowBox[{"\[Mu]", "\[LeftTriangleEqual]", "\[Lambda]"}]], 
+     SubsuperscriptBox["\[ScriptCapitalW]", "\[Mu]", "\[Lambda]"]}]}], 
+   TraditionalForm]],ExpressionUUID->"7687518f-020b-4565-a9b7-d25255a066c7"],
+ " .\nThis means that the basis block-diagonalizing the permutation module \
+automatically block-diagonalizes the symmetric and unitary groups on the \
+tensor-product space ",
+ Cell[BoxData[
+  FormBox[
+   SubsuperscriptBox["\[ScriptCapitalV]", "d", 
+    RowBox[{"\[CircleTimes]", "n"}]], TraditionalForm]],ExpressionUUID->
+  "90688311-3fff-4ca4-9e96-0b7b41da59be"],
+ "."
+}], "TechNoteText",
+ CellID->673623048,ExpressionUUID->"0ff4acc8-4757-437a-923c-0d802eb56bce"],
+
+Cell[TextData[{
+ "Then, since the permutation module ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"e5b010d1-8f54-429f-8993-6b3f989c64e0"],
+ " is the induced representation of the trivial representation of the Young \
+subgroup ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"ff258f7f-a0d6-42bf-a595-c3434ab7eec8"],
+ " to ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["\[ScriptCapitalS]", "n"], TraditionalForm]],ExpressionUUID->
+  "11577956-ac9b-4617-ab0a-20699ec1ed0c"],
+ ", the basis block-diagonalizes it is obtained by the quantum Fourier \
+transform for the permutation module."
+}], "TechNoteText",
+ CellID->535222336,ExpressionUUID->"c6e498ff-20eb-4a29-82fd-1530c808e15e"],
+
+Cell[TextData[{
+ "Get the set of all compositions of ",
+ Cell[BoxData[
+  FormBox["n", TraditionalForm]],ExpressionUUID->
+  "70e28d58-eabc-4915-b028-c275049a62cb"],
+ " with length ",
+ Cell[BoxData[
+  FormBox["d", TraditionalForm]],ExpressionUUID->
+  "cb7bc349-8ec5-49e1-80c7-a2e45bc8547e"],
+ ", ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{
+      RowBox[{"\[Mu]", "\[Congruent]", 
+       RowBox[{"(", 
+        RowBox[{
+         SubscriptBox["\[Mu]", "1"], ",", 
+         RowBox[{
+          SubscriptBox["\[Mu]", 
+           RowBox[{"2", ","}]], "..."}], ",", 
+         SubscriptBox["\[Mu]", "d"]}], ")"}]}], " ", ":", " ", 
+      RowBox[{
+       SubscriptBox["\[CapitalSigma]", "k"], 
+       SubscriptBox["\[Mu]", "k"]}]}], "=", "n"}], "}"}], TraditionalForm]],
+  ExpressionUUID->"73da4238-2bc1-4cd8-88a3-3aa55f1765e9"],
+ ". Call the compositions contents."
+}], "ItemNumbered",
+ CellID->365503015,ExpressionUUID->"b8de76a2-b45e-4fcd-b936-605653eaee7a"],
+
+Cell[TextData[{
+ "For each content ",
+ Cell[BoxData[
+  FormBox["\[Mu]", TraditionalForm]],ExpressionUUID->
+  "6cef6dca-480f-444a-ad60-036682079092"],
+ ", get the set of all partitions ",
+ Cell[BoxData[
+  FormBox["\[Lambda]", TraditionalForm]],ExpressionUUID->
+  "7915d009-9894-40c8-b42c-c43453c3aa17"],
+ " of ",
+ Cell[BoxData[
+  FormBox["n", TraditionalForm]],ExpressionUUID->
+  "65db7ca7-d866-4d2e-a97e-04ebd8001ee5"],
+ " with length ",
+ Cell[BoxData[
+  FormBox["d", TraditionalForm]],ExpressionUUID->
+  "7f33dd2b-450f-4ede-9f79-1233aca6d8e1"],
+ " that dominates \[Mu], ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"\[Lambda]", "\[RightTee]", "n"}], "|", 
+     RowBox[{"d", " ", ":", " ", 
+      RowBox[{"\[Lambda]", "\[RightTriangleEqual]", "\[Mu]"}]}]}], "}"}], 
+   TraditionalForm]],ExpressionUUID->"daa864c7-76fe-4131-adda-f626944563c5"],
+ "."
+}], "ItemNumbered",
+ CellID->1047140541,ExpressionUUID->"c096b7fb-a1a7-4e2a-bf6e-c5e4434bd00d"],
+
+Cell[TextData[{
+ "For each \[Lambda], use the quantum Fourier transform for permutation \
+module ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"09e798ca-d501-4800-a9b1-9c5d3782c8df"],
+ " to get the Fourier basis ",
+ Cell[BoxData[
+  FormBox[
+   TemplateBox[{
+     RowBox[{
+       RowBox[{"\[Mu]", ";", "\[Lambda]"}], ",", "y", ",", "w"}]},
+    "Ket"], TraditionalForm]],ExpressionUUID->
+  "21717564-7d41-4ee0-8d67-9040cda15aac"],
+ " that block-diagonalizes ",
+ Cell[BoxData[
+  FormBox[
+   SuperscriptBox["\[ScriptCapitalM]", "\[Mu]"], TraditionalForm]],
+  ExpressionUUID->"9752173d-249a-4b26-b0ab-214429c1bd3e"],
+ "."
+}], "ItemNumbered",
+ CellID->1826379949,ExpressionUUID->"c79bcd3b-eabe-495a-814c-d9fffe57ce01"]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "TutorialMoreAboutSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Information Systems",
+         BaseStyle->"Link",
+         ButtonData->"paclet:QuantumMob/Q3/guide/QuantumInformationSystems"]],
+          "TutorialMoreAbout",ExpressionUUID->
+         "a014afbe-a762-4ce5-a267-d7da0ed4db1b"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Q3: Symbolic Quantum Simulation",
+         BaseStyle->"Link",
+         ButtonData->"paclet:QuantumMob/Q3/guide/Q3"]], "TutorialMoreAbout",
+         ExpressionUUID->"ddb82eaf-eff1-48c0-af1e-2d700c18a112"]}]}
+     }]}
+  }]], "TutorialMoreAboutSection",ExpressionUUID->"170b044e-82c2-4714-a2f8-\
+85113c8d6352"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTutorial.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Tech", " ", "Notes"}], 
+        "RelatedTutorialsSection"]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Quantum Schur Transform",
+         BaseStyle->"Link",
+         ButtonData->"paclet:QuantumMob/Q3/tutorial/QuantumSchurTransform"]], 
+         "RelatedTutorials",ExpressionUUID->
+         "03d4e6d4-0c8a-4b6f-b6f6-abf599ff31d4"]}]},
+      {
+       RowBox[{
+       "\[FilledVerySmallSquare]", Cell[TextData[ButtonBox[
+        "Generalized Quantum Fourier Transform",
+         BaseStyle->"Link",
+         ButtonData->
+          "paclet:QuantumMob/Q3/tutorial/GeneralizedQuantumFourierTransform"]]\
+, "RelatedTutorials",ExpressionUUID->"89043064-a60a-458a-8872-dff1919bb139"]}]}
+     }]}
+  }]], "RelatedTutorialsSection",ExpressionUUID->"28cd6ad8-b935-42df-bf12-\
+a5bc6b86db95"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], 
+         "TutorialRelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], "H. Krovi (2019)"}]]]], 
+             "https://doi.org/10.22331/q-2019-02-14-122"},
+            "WebLink",
+            BaseStyle->{"TutorialRelatedLinks"}]],ExpressionUUID->
+           "4b0f42cd-2400-46b4-88e1-8a3c60036790"]}]],ExpressionUUID->
+         "7709f8a3-8c4b-4a6f-b68c-83b9ff1f60fa"],
+        ", Quantum 3, 122 (2019), \"An efficient high dimensional quantum \
+Schur transform.\""
+       }], "TutorialRelatedLinks",ExpressionUUID->
+        "aaa27942-9781-430e-8076-0c95771d159c"]}
+     }]}
+  }]], "TutorialRelatedLinksSection",ExpressionUUID->"16025588-02f8-45af-a1d1-\
+d2c32501b331"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"6d0f8ddd-ca38-4133-b7b4-e43f98ba6b61"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"Dual Quantum Schur Transform",
+Visible->True,
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}}, 
+  "NewStyles" -> True, "CitationPopupData" -> {"2025", ""}, "ShowCitation" -> 
+  False, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2025, 9, 22, 12, 48, 51.759906}", 
+    "history" -> {"14.3", "", "", ""}, "context" -> "QuantumMob`Q3`", 
+    "keywords" -> {"Schur-Weyl duality", "Schur basis"}, 
+    "specialkeywords" -> {}, "tutorialcollectionlinks" -> {}, "index" -> True,
+     "label" -> "Quantum Mob/ Q3 Tech Note", "language" -> "en", "paclet" -> 
+    "QuantumMob/Q3", "status" -> "None", "summary" -> 
+    "The Schur basis is a basis of tensor-product space \
+\\[ScriptCapitalV]_d^RowBox[{\\[CircleTimes, n}]] in which the action of both \
+symmetric and unitary groups on \\[ScriptCapitalV]_d^RowBox[{\\[CircleTimes, \
+n}]] is block-diagonalized. The dual Schur transform is a unitary \
+transformation changing the computational basis of \
+\\[ScriptCapitalV]_d^RowBox[{\\[CircleTimes, n}]] to the Schur basis. While \
+the Schur transform algorithm of Bacon, Chuang and Harrow (2007) is based on \
+the representations of the unitary group, the dual Schur transform algorithm \
+uses the representations of the symmetric group. Technically, the Schur \
+transform uses the Clebsch-Gordan transform of the unitary group whereas the \
+dual Schur transform utilizes the generalized quantum Fourier transform over \
+the symmetric group. Consider a system of n identical particles, each of \
+which is associated with a d-dimensional Hilbert space \\[ScriptCapitalV]_d. \
+The Schur-Weyl duality assures that the tensor-product space \
+\\[ScriptCapitalV]_d^RowBox[{\\[CircleTimes, n}]] may be decomposed as \
+\\[ScriptCapitalV]_d^RowBox[{\\[CircleTimes, \
+n}]]=\\[CirclePlus]_\\[Lambda]\\[ScriptCapitalY]^\\[Lambda]\\[CircleTimes]\\[\
+ScriptCapitalW]^\\[Lambda] , where \\[ScriptCapitalY]^\\[Lambda] and \
+\\[ScriptCapitalW]^\\[Lambda] are irreducible representation spaces \
+associated with integer partition \\[Lambda] of the symmetric and unitary \
+groups, respectively. The Schur basis {TemplateBox[{RowBox[{\\[Lambda], ,, \
+RowBox[{SubscriptBox[y, \\[Lambda]], , SubscriptBox[w, \\[Lambda]]}]}]}, Ket] \
+} is a basis of \\[ScriptCapitalV]_d^RowBox[{\\[CircleTimes, n}]] consistent \
+with the above decomposition such that standard Young tableaux y_\\[Lambda] \
+and Weyl tableaux w_\\[Lambda] label the basis vectors in \\[ScriptCapitalY]^\
+\\[Lambda] and \\[ScriptCapitalW]^\\[Lambda], respectively. Let \
+\\[ScriptCapitalM]^\\[Mu] be a permutation module of content \\[Mu]: \
+\\[ScriptCapitalM]^\\[Mu]=Span {TemplateBox[{RowBox[{SubscriptBox[i, 1], ,, \
+SubscriptBox[i, 2], ,, \\[Ellipsis], ,, SubscriptBox[i, n]}]}, \
+Ket]:content({i_ 1,i_ 2,\\[Ellipsis],i_n})=\\[Mu]}. It can be rewritten in \
+terms of permutations as \
+\\[ScriptCapitalM]^\\[Mu]=Span{\\[CapitalPi](g)TemplateBox[{\\[Mu]}, \
+Ket]:g\\[Element]\\[ScriptCapitalS]_n}, where TemplateBox[{\\[Mu]}, \
+Ket]:=TemplateBox[{RowBox[{UnderscriptBox[UnderscriptBox[RowBox[{1, ,, 1, ,, \
+1}], \\[UnderBrace]], SubscriptBox[\\[Mu], 1]], ,, \
+UnderscriptBox[UnderscriptBox[RowBox[{2, ,, 2, ,, 2}], \\[UnderBrace]], \
+SubscriptBox[\\[Mu], 2]], ,, \\[Ellipsis], ,, \
+UnderscriptBox[UnderscriptBox[RowBox[{d, ,, d, ,, d}], \\[UnderBrace]], \
+SubscriptBox[\\[Mu], d]]}]}, Ket] .", "synonyms" -> {}, "tabletags" -> {}, 
+    "title" -> "Dual Quantum Schur Transform", "titlemodifier" -> "", 
+    "metadescription" -> "", "windowtitle" -> "Dual Quantum Schur Transform", 
+    "type" -> "Tech Note", "uri" -> 
+    "QuantumMob/Q3/tutorial/DualQuantumSchurTransform"}},
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> Notebook], 
+   Cell[
+    StyleData["Output"], CellContext -> Notebook], 
+   Cell[
+    StyleData["TutorialMoreAboutSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["RelatedTutorialsSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}], 
+   Cell[
+    StyleData["TutorialRelatedLinksSection"], 
+    CellGroupingRules -> {"SectionGrouping", 30}]}, Visible -> False, 
+  FrontEndVersion -> "14.3 for Mac OS X ARM (64-bit) (July 8, 2025)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"895747c0-01be-4720-aec5-eb360090d14e"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[596, 21, 6766, 164, 70, "AnchorBarGrid",ExpressionUUID->"452b07c8-b0b1-4d3c-8707-0a945e95695a",
+ CellID->1],
+Cell[CellGroupData[{
+Cell[7387, 189, 1382, 37, 70, "ObjectNameGrid",ExpressionUUID->"a6245cea-a7c0-4a88-b816-411a667d707d"],
+Cell[8772, 228, 4900, 110, 70, "TechNoteJumpBox",ExpressionUUID->"982a72a1-973c-47c3-bd25-842d1c03dfa5"],
+Cell[13675, 340, 1364, 27, 70, "TechNoteText",ExpressionUUID->"81dfb90a-9b0a-4cdf-8800-36a60383102e",
+ CellID->1521250694],
+Cell[15042, 369, 889, 22, 70, "DefinitionBox",ExpressionUUID->"868676e1-a51a-4bdb-a91d-f5f1ce7bddea",
+ CellID->1867596523],
+Cell[15934, 393, 144, 1, 70, "TechNoteCaption",ExpressionUUID->"1519aa14-aa7b-4d6c-8bf2-b59c32a5803e",
+ CellID->1073777509],
+Cell[16081, 396, 154, 1, 70, "TechNoteMathCaption",ExpressionUUID->"8b948c60-6898-47d9-a1a4-550ca6f00d28",
+ CellID->1245176211],
+Cell[16238, 399, 179, 3, 70, "Input",ExpressionUUID->"9139522f-55fa-4e42-8908-f57cce92cf4e",
+ CellID->448438262]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16454, 407, 113, 1, 70, "TechNoteSection",ExpressionUUID->"d5b82797-64b8-4162-942b-9b1bc69d6120",
+ CellID->954056626],
+Cell[16570, 410, 3267, 86, 70, "TechNoteText",ExpressionUUID->"8b522cc1-e273-4b6c-9bf2-bed4e741a628",
+ CellID->1580417735]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[19874, 501, 121, 1, 70, "TechNoteSection",ExpressionUUID->"3a942b41-ac36-48d2-b8fe-b738c261c1bc",
+ CellID->1543514506],
+Cell[19998, 504, 2452, 73, 70, "TechNoteText",ExpressionUUID->"5603e9bb-864f-498c-bac2-2e2b50cecd18",
+ CellID->1346838239],
+Cell[22453, 579, 3292, 99, 70, "TechNoteText",ExpressionUUID->"65d7fedb-8809-4de6-a20c-51265b45c669",
+ CellID->47162978],
+Cell[25748, 680, 1540, 42, 70, "TechNoteText",ExpressionUUID->"fb361075-68ba-498a-8c51-d9d1c6f04ec6",
+ CellID->1793598696]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[27325, 727, 124, 1, 70, "TechNoteSection",ExpressionUUID->"0b39b700-843c-4b4f-ac50-581f9ff77c41",
+ CellID->1029174584],
+Cell[27452, 730, 1401, 43, 70, "TechNoteText",ExpressionUUID->"34f5c435-9b30-4b84-b661-29086ac16e47",
+ CellID->1223599087],
+Cell[28856, 775, 4180, 107, 70, "TechNoteText",ExpressionUUID->"0a993487-e954-4de0-9473-bbd50ef3e96d",
+ CellID->494624109],
+Cell[33039, 884, 738, 18, 70, "TechNoteText",ExpressionUUID->"5bc89426-80c3-4328-b64d-41b1c9e7f000",
+ CellID->1819887037],
+Cell[CellGroupData[{
+Cell[33802, 906, 105, 1, 70, "Subsection",ExpressionUUID->"4055545f-0c28-4fa2-a8a3-aa4c85f95073",
+ CellID->1268898005],
+Cell[33910, 909, 4749, 127, 70, "TechNoteText",ExpressionUUID->"a34c1a4e-7f1a-49f1-86e1-4461f56e2b44",
+ CellID->833580814],
+Cell[38662, 1038, 2109, 55, 70, "TechNoteText",ExpressionUUID->"d16ef99c-a214-4442-a6fe-6a8fc328e385",
+ CellID->325513803]
+}, Open  ]]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[40820, 1099, 129, 1, 70, "TechNoteSection",ExpressionUUID->"82f99601-98a6-4713-b85e-3b7b869d07cc",
+ CellID->197057484],
+Cell[40952, 1102, 1619, 46, 70, "TechNoteText",ExpressionUUID->"cf04991f-3e54-4775-bd91-26f8c6a16cba",
+ CellID->249215652],
+Cell[42574, 1150, 1986, 55, 70, "TechNoteText",ExpressionUUID->"1400f20e-69f7-44ce-849d-99c091dc928d",
+ CellID->261087420],
+Cell[44563, 1207, 2256, 61, 70, "TechNoteText",ExpressionUUID->"55d6e60b-29c7-41aa-91e6-65e155a60e4d",
+ CellID->1825301940]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[46856, 1273, 125, 1, 70, "TechNoteSection",ExpressionUUID->"f459c407-bb71-46de-8f53-eaa49ee4377d",
+ CellID->1892500224],
+Cell[46984, 1276, 1473, 37, 70, "TechNoteText",ExpressionUUID->"0ff4acc8-4757-437a-923c-0d802eb56bce",
+ CellID->673623048],
+Cell[48460, 1315, 812, 20, 70, "TechNoteText",ExpressionUUID->"c6e498ff-20eb-4a29-82fd-1530c808e15e",
+ CellID->535222336],
+Cell[49275, 1337, 978, 29, 70, "ItemNumbered",ExpressionUUID->"b8de76a2-b45e-4fcd-b936-605653eaee7a",
+ CellID->365503015],
+Cell[50256, 1368, 971, 28, 70, "ItemNumbered",ExpressionUUID->"c096b7fb-a1a7-4e2a-bf6e-c5e4434bd00d",
+ CellID->1047140541],
+Cell[51230, 1398, 781, 22, 70, "ItemNumbered",ExpressionUUID->"c79bcd3b-eabe-495a-814c-d9fffe57ce01",
+ CellID->1826379949]
+}, Open  ]],
+Cell[52026, 1423, 1042, 25, 70, "TutorialMoreAboutSection",ExpressionUUID->"170b044e-82c2-4714-a2f8-85113c8d6352"],
+Cell[53071, 1450, 1109, 28, 70, "RelatedTutorialsSection",ExpressionUUID->"28cd6ad8-b935-42df-bf12-a5bc6b86db95"],
+Cell[54183, 1480, 1225, 35, 70, "TutorialRelatedLinksSection",ExpressionUUID->"16025588-02f8-45af-a1d1-d2c32501b331"],
+Cell[55411, 1517, 78, 0, 70, "FooterCell",ExpressionUUID->"6d0f8ddd-ca38-4133-b7b4-e43f98ba6b61"]
+}
+]
+*)
+
+(* End of internal cache information *)

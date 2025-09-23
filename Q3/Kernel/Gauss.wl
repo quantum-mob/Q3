@@ -853,8 +853,8 @@ defaultEdgeLabelFunction[ Rule[edge_, $] ] := Nothing
 
 defaultEdgeLabelFunction[ Rule[edge_, lbl_] ] := Rule[
   edge,
-  Framed[lbl, FrameStyle -> None, Background -> White]
- ]
+  Framed[lbl, FrameStyle -> None, Background -> LightDarkSwitched @ White]
+]
 
 defaultEdgeLabelFunction[ RuleDelayed[edge_, cnd_Condition] ] := With[
   { lbl = First @ cnd,
@@ -862,18 +862,18 @@ defaultEdgeLabelFunction[ RuleDelayed[edge_, cnd_Condition] ] := With[
   RuleDelayed @@ List[
     edge,
     Condition[
-      Framed[lbl, FrameStyle -> None, Background -> White],
+      Framed[lbl, FrameStyle -> None, Background -> LightDarkSwitched @ White],
       tst
-     ]
-   ]
- ]
+    ]
+  ]
+]
 (* NOTE: This includes dirty tricks to overcome the restrictions put by
    the HoldRest attribute of RuleDelayed. *)
 
 defaultEdgeLabelFunction[ RuleDelayed[edge_, lbl_] ] := RuleDelayed[
   edge,
-  Framed[lbl, FrameStyle -> None, Background -> White]
- ]
+  Framed[lbl, FrameStyle -> None, Background -> LightDarkSwitched @ White]
+]
 
 
 GraphForm::usage = "GraphForm[A] converts the matrix A to a graph revealing the connectivity, assuming that the matrix is a linear map on one vector space.\nGraphForm allows the same options as Graph, but their specifications may be slightly different.\nGraphForm is a variation of the built-in function GraphPlot.\nGraphForm[expr] returns a graph visualizing the connectivity of different particles in the expression.\nGraphForm allows all options of Graph.\nSee also ChiralGraphForm, GraphPlot, AdjacencyGraph, IncidenceGraph."
@@ -909,7 +909,8 @@ GraphForm[expr_, opts___?OptionQ] := Module[
   
   fBuildGraph[ data, opts,
     EdgeStyle -> {
-      UndirectedEdge[_, _, "Pairing"] -> Directive[Red, Thick],
+      UndirectedEdge[_, _, "Pairing"] -> 
+        Directive[LightDarkSwitched @ Red, Thick],
       UndirectedEdge[_, _, "Interaction"] -> Dashed
     }
   ]
