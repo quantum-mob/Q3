@@ -38,7 +38,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { VacuumState[] = Ket[Vacuum],
   NullState[] = Ket[Null] };
 { VacuumExpectation, SurviveVacuum,
-  Displacement, CoherentState, SqueezedState };
+  Displacement, TheDisplacement,
+  CoherentState, SqueezedState };
 
 { FockKet, FockCat, FockPad };
 { FockNorm, FockAvg };
@@ -539,7 +540,7 @@ SpinZ[ _?AnyParticleQ ] = 0
 (**** </SpinZ> ****)
 
 
-(*** Canonical Conjugate ***)
+(*** <Canon> ***)
 
 CanonicalConjugate::usage = "CanonicalConjugate[op] or Canon[op] denotes the canonical conjugate of a Heisenberg operator op.\nSee also Heisenberg."
 
@@ -547,7 +548,13 @@ Canon::usage = "Canon[x] denotes the canonical conjugate of a Heisenberg canonic
 
 SetAttributes[Canon, Listable]
 
-Canon[ Canon[q_?HeisenbergQ] ] := q
+Canon /: 
+Format @ Canon[c_Symbol?SpeciesQ[j___]] :=
+  Interpretation[SpeciesBox[c, {j}, {"c"}], c[j]]
+
+Canon /:
+Format @ Canon[c_Symbol?SpeciesQ] :=
+  Interpretation[SpeciesBox[c, {}, {"c"}], c]
 
 Canon /:
 MultiplyKind[ Canon[q_] ] := MultiplyKind[q]
@@ -558,17 +565,13 @@ MultiplyGenus[ Canon[q_] ] := MultiplyGenus[q]
 Canon /:
 Dagger[ Canon[q_?HeisenbergQ] ] := Canon[q]
 
-Canon /: 
-Format @ Canon[c_Symbol?SpeciesQ[j___]] :=
-  Interpretation[SpeciesBox[c, {j}, {"c"}], c[j]]
-
-Canon /:
-Format @ Canon[c_Symbol?SpeciesQ] :=
-  Interpretation[SpeciesBox[c, {}, {"c"}], c]
-
 (* Allows op^Canon as a equivalent to Canon[op] *)
 Canon /:
 HoldPattern[ Power[expr_, Canon] ] := Canon[expr]
+
+HoldPattern @ Canon[ Canon[a_] ] := a
+
+(*** </Canon> ***)
 
 
 (**** <CreatorQ> <AnnihilatorQ> ****)
@@ -1578,6 +1581,8 @@ HoldPattern @ Multiply[Bra[Vacuum], FockColon[_], Ket[Vacuum]] = 0
 
 Displacement::usage = "Displacement[z, a] represents the displacement operator of the Bosonic mode a, where z is a complex number.\nDisplacement[\[Xi], c] for Fermion c, \[Xi] is a Grassmann number."
 
+SetAttributes[Displacement, Listable]
+
 Displacement /:
 Peel[ Displacement[_, a_] ] := a (* for Matrix[] *)
 
@@ -1597,14 +1602,7 @@ Dagger @ Displacement[z_?CommutativeQ, a_?BosonQ] :=
 
 Displacement[a_?ParticleQ -> z_] := Displacement[z, a]
 
-
 Displacement[0, _?BosonQ] = 1
-
-Displacement[z_, op:{__?BosonQ}] :=
-  Displacement @@@ Thread[{z, op}]
-
-Displacement[zz_List, a_?BosonQ] :=
-  Displacement @@@ Thread[{zz, a}]
 
 
 HoldPattern @ Multiply[pre___,
@@ -1646,7 +1644,8 @@ HoldPattern @ Multiply[pre___,
   Multiply[pre, CoherentState[CoherentState @ vv, a -> vv[a]+z], post]
 
 
-(* For Fermion *)
+(**** For Fermions ****)
+
 (* D(z) := Exp[ -z ** Dagger[c] + c ** Conjugate[z] ] *)
 Displacement[z_?AnyGrassmannQ, c_?FermionQ] := Multiply[
   1 - z ** Dagger[c],
@@ -1655,6 +1654,36 @@ Displacement[z_?AnyGrassmannQ, c_?FermionQ] := Multiply[
 ]
 
 (**** </Displacement> ****)
+
+
+(**** <TheDisplacement> ****)
+
+TheDisplacement::usage = "TheDisplacement[z, min, max] returns an approximate matrix representation of the displacement operator D[z] in the truncated basis {Ket[n]:n=min,\[Ellipsis],max}."
+
+SetAttributes[TheDisplacement, Listable]
+
+TheDisplacement[z_?NumericQ] :=
+  TheDisplacement[z, 0, 5]
+
+TheDisplacement[z_?NumericQ, top_Integer] :=
+  TheDisplacement[z, 0, top]
+
+TheDisplacement[z_?NumericQ, bottom_Integer, top_Integer] :=
+  Table[
+    TheDisplacementElement[z, i, j], 
+    {i, bottom, top},
+    {j, bottom, top}
+  ]
+
+TheDisplacementElement[z_, m_Integer, n_Integer] := Module[
+  { zz = AbsSquare[z] },
+  Exp[-zz/2] * Sqrt[n!/m!] * LaguerreL[n, m-n, zz] * Power[z, m-n]
+] /; m >= n
+
+TheDisplacementElement[z_, m_Integer, n_Integer] := 
+  Conjugate[TheDisplacementElement[-z, n, m]] /; m < n
+
+(**** </TheDisplacement> ****)
 
 
 (**** <CoherentState> ****)

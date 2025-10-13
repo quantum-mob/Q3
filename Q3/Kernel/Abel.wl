@@ -986,7 +986,7 @@ AddGarnerPatterns[_Multiply]
 Format @ HoldPattern @ Multiply[a__] := Interpretation[
   Row @ List @ Row[{a}, "\[VeryThinSpace]"],
   Multiply[a]
- ]
+]
 (* NOTE 1: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 Dagger[f]**f is formated as
    -2(f^\dag f). For more details on spurious parentheses, see
@@ -1341,7 +1341,7 @@ LieBasis[n_Integer?Positive] := Module[
   { bs },
   bs = Catenate @ Table[{j, k}, {k, 1, n}, {j, 1, k}];
   Catenate[theLieGenerators[n] /@ bs]
- ]
+]
 
 theLieGenerators[n_Integer][{1, 1}] :=
   { SparseArray @ IdentityMatrix[n] / Sqrt[n] }
@@ -1353,7 +1353,7 @@ theLieGenerators[n_Integer][{k_Integer, k_Integer}] :=
 theLieGenerators[n_Integer][{j_Integer, k_Integer}] := {
   SparseArray[{{j, k} ->  1, {k, j} -> 1}, {n, n}] / Sqrt[2],
   SparseArray[{{j, k} -> -I, {k, j} -> I}, {n, n}] / Sqrt[2]
- } /; j < k
+} /; j < k
 
 (**** </LieBasis> ****)
 

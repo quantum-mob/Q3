@@ -10,20 +10,20 @@ If[ $VersionNumber < 13.1,
 If[$VersionNumber < 14.2, System`LightDarkSwitched = Identity];
 (* NOTE: PlaybookTools defines $PlaybookBannerColor using LightDarkSwitched, which was introduced in Mathematica 14.2. This affects the Q3/Playbook and Q3/PlaybookDraft stylesheets. *)
 
-
-Unprotect["`*"];
-ClearAll["`*"];
-
-Q3General::legacy = "A legacy version of Q3 is removed, and instead new QuantumMob/Q3 is installed."
-
-Begin["`Private`"]
-
-ClearAll["`*"];
+Q3General::legacy = "A legacy version of Q3 is removed, and instead new paclet 'QuantumMob/Q3' is installed.";
 
 If[ Length[PacletFind @ "Q3"] > 0,
   Message[Q3General::legacy];
   PacletUninstall["Q3"]
 ];
+
+
+Unprotect["`*"];
+ClearAll["`*"];
+
+Begin["`Private`"]
+
+ClearAll["`*"];
 
 End[]
 

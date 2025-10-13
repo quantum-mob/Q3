@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.2.13
+
+- New: TheDisplacement
+- Oboslete: GateFactor
+- Bug fix: Rotation (incorrect formating for spins)
+
 ## 4.2.12
 
 - Improved: LevelsPlot

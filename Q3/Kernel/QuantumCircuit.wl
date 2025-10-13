@@ -79,7 +79,7 @@ QuantumCircuit[pre___, g_Graph, post___] := Module[
 
 QuantumCircuit /:
 Qubits @ QuantumCircuit[gg__, opts___?OptionQ] := Union[
-  Qubits@{gg},
+  Qubits @ {gg},
   FlavorCap @ doAssureList["Visible" /. {opts} /. Options[QuantumCircuit]]
 ]
 
@@ -88,16 +88,12 @@ Measurements[qc:QuantumCircuit[__, ___?OptionQ]] :=
   Measurements[QuantumElements @ qc]
 
 QuantumCircuit /:
-Unfold @ QuantumCircuit[gg__, opts___?OptionQ] :=
+Unfold[QuantumCircuit[gg__, opts___?OptionQ], ___] :=
   QuantumCircuit[Sequence @@ Map[Unfold, {gg}], opts]
 
 QuantumCircuit /:
-UnfoldAll @ QuantumCircuit[gg__, opts___?OptionQ] :=
+UnfoldAll[QuantumCircuit[gg__, opts___?OptionQ], ___] :=
   QuantumCircuit[Sequence @@ Map[UnfoldAll, {gg}], opts]
-
-QuantumCircuit /:
-GateFactor @ QuantumCircuit[gg__, opts___?OptionQ] :=
-  QuantumCircuit[Sequence @@ Map[GateFactor, {gg}], opts]
 
 (**** </Utility Tools> ****)
 
@@ -365,6 +361,8 @@ Options[Gate] = {
   "LabelAlignment" -> {0, 0} (* See PanedText for details. *)
 }
 
+Gate[S_?QubitQ, opts___] := Gate[S @ {$}, opts]
+
 Gate[ss:{__?QubitQ}, opts:OptionsPattern[]] :=
   Gate[FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
 
@@ -530,7 +528,7 @@ ParseGate[
 ParseGate[
   ControlledGate[
     cc:{Rule[_?QubitQ, _?BinaryQ]..},
-    op:(_Phase|_Rotation|_EulerRotation|_ActOn),
+    op:(_Phase|_Rotation|_EulerRotation|_ActOn|_Gate),
     opts___?OptionQ
   ],
   more___?OptionQ
@@ -812,8 +810,8 @@ gateShape["CirclePlus"][x_, y_?NumericQ, ___] := {
   Line @ {
     { {x-$GateSize/3,y}, {x+$GateSize/3,y} },
     { {x,y-$GateSize/3}, {x,y+$GateSize/3} }
-   }
- }
+  }
+}
 
 
 gateShape["CircleCross"][x_, Rule[yy_List, _], ___] :=
@@ -827,8 +825,8 @@ gateShape["CircleCross"][x_, y_?NumericQ, ___] := {
   Line @ {
     { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
     { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
-   }
- }
+  }
+}
 
 
 gateShape["Cross"][x_, Rule[yy_List, _], ___] :=
@@ -854,12 +852,12 @@ gateShape["Measurement"][x_, yy:{_, __}, opts___?OptionQ] := Module[
   mm = MapThread[
     gateShape["Measurement"][x, #1, "Label" -> #2, opts]&,
     {yy, tt}
-   ];
+  ];
 
   cc = {
     Line @ Thread @ {x-$DotSize/2, yy},
     Line @ Thread @ {x+$DotSize/2, yy}
-   };
+  };
 
   {cc, mm}
 ]
@@ -887,7 +885,7 @@ gateShape["Projector"][x_, yy_List, ___] := Module[
       {x, y1} + $GateSize {-1/2,-1/2},
       {x, y1} + $GateSize {+1/2,-1/4} }];
   { {EdgeForm[Opacity[1]], LightDarkSwitched @ White, pane} }
- ]
+]
 
 
 gateShape["Dot"][x_, yy_List, ___] :=
@@ -917,7 +915,7 @@ gateShape["MixedDot"][x_, y_?NumericQ -> _, ___] :=
 gateShape["CircleDot"][x_, yy_List, ___] := {
   Line[Thread @ {x, yy}],
   gateShape["CircleDot"] @@@ Thread@{x, yy}
- }
+}
 
 gateShape["CircleDot"][x_, y_, ___] :=
   { EdgeForm[Opacity[1]],
@@ -935,7 +933,7 @@ gateShape["Rectangle"][x_, yy_List, opts___?OptionQ] := Module[
     {x, y1} - 0.5*{1,1}*$GateSize,
     {x, y2} + 0.5*{1,1}*$GateSize ];
   {{EdgeForm[Opacity[1]], LightDarkSwitched @ White, pane}, text}
- ]
+]
 
 gateShape["Rectangle"][ x_, y_?NumericQ, opts___?OptionQ ] :=
   gateShape["Rectangle"][x, {y}, opts]
@@ -946,7 +944,7 @@ gateShape["Oval"][ x_, y_?NumericQ, opts___?OptionQ ] := Module[
   text = theGateLabel[{x, y}, opts];
   pane = Disk[{x, y}, $GateSize/2];
   { {EdgeForm[Opacity[1]], LightDarkSwitched @ White, pane}, text }
- ]
+]
 
 gateShape["Oval"][ x_, yy_List, opts___?OptionQ ] := Module[
   { x1 = x - $GateSize/2,
@@ -1179,8 +1177,8 @@ qcDrawGate["Separator", x_, yy_Association] := Module[
     Line@{
       {0,-$CircuitUnit/2} + First @ xy,
       {0,+$CircuitUnit/2} + Last @ xy }
-   }
- ]
+  }
+]
 
 qcDrawGate[g_, x_, yy_Association] := g
 
@@ -1251,7 +1249,12 @@ qcDrawPort::usage = "qcDrawPort renders the input/output ports."
 
 qcDrawPort[gg_List, xy_Association] := Map[qcDrawPort[#, xy]&, gg]
 
-qcDrawPort[ Port[type_, Ket[v_], opts___?OptionQ], xy_Association ] := Module[
+qcDrawPort[ 
+  Port[type_, 
+  Ket[v_Association], 
+  opts___?OptionQ], 
+  xy_Association 
+] := Module[
   { new = FilterRules[Flatten @ {opts}, Options @ Port],
     txt, tt, label },
   txt = OptionValue[Port, new, "Label"];
@@ -1262,15 +1265,18 @@ qcDrawPort[ Port[type_, Ket[v_], opts___?OptionQ], xy_Association ] := Module[
     txt = AssociationThread[Keys[v] -> doForceList[txt, Length @ v] ]
   ];
 
+  (* txt = txt /. {Ket[{any_}] -> any}; *)
   txt = Association @ KeyValueMap[
     Switch[ #2,
       None, Nothing,
-      Automatic, #1 -> Ket[Lookup[v, #1]],
-      _, #1 -> #2 ]&,
-    txt ];
+      Automatic, #1 -> Ket[Lookup[v, {#1}]],
+      _, #1 -> #2
+    ]&,
+    txt
+  ];
   
   Values @ MapThread[
-    thePortLabel[type, #1, #2, new]&,
+    qcPortLabel[type, #1, #2, new]&,
     KeyIntersection @ {txt, xy}
   ]
 ]
@@ -1299,7 +1305,7 @@ qcDrawPort[
     ];
      
     Values @ MapThread[
-      thePortLabel[type, #1, #2, new]&,
+      qcPortLabel[type, #1, #2, new]&,
       KeyIntersection @ {txt, xy}
     ]
   ]
@@ -1323,10 +1329,10 @@ qcDrawPort[ Port[type_, expr_, opts___?OptionQ], xy_Association ] := Module[
   pos = Transpose[ MinMax /@ Transpose @ Lookup[xy, qq] ];
 
   If[ Length[qq] > 1,
-    brace = thePortBrace[type, pos];
+    brace = qcPortBrace[type, pos];
     pos = Mean[pos] + ($PortGap + $BraceWidth) * {type, 0};
-    { brace, thePortLabel[type, txt, pos, new] },
-    thePortLabel[type, txt, Mean @ pos, new]
+    { brace, qcPortLabel[type, txt, pos, new] },
+    qcPortLabel[type, txt, Mean @ pos, new]
   ]
 ]
 
@@ -1335,11 +1341,11 @@ qcDrawPort[g_, _Association] := g
 (**** </qcDrawPort> ****)
 
 
-(**** <thePortLabel> ****)
+(**** <qcPortLabel> ****)
 
-thePortLabel::usage = "thePortLabel[type, expr, {x, y}] renders the port label expr at position {x, y} with type = -1 for input and type = 1 for output."
+qcPortLabel::usage = "qcPortLabel[type, expr, {x, y}] renders the port label expr at position {x, y} with type = -1 for input and type = 1 for output."
 
-thePortLabel[type:(-1|1), text_, pos:{_, _}, opts___?OptionQ] := Module[
+qcPortLabel[type:(-1|1), text_, pos:{_, _}, opts___?OptionQ] := Module[
   { new, fit },
   new = KeyReplace[
     FilterRules[Flatten @ Join[{opts}, Options @ Port], Options @ Port],
@@ -1350,7 +1356,7 @@ thePortLabel[type:(-1|1), text_, pos:{_, _}, opts___?OptionQ] := Module[
   If[ Lookup[new, "Alignment"] === Automatic,
     new = ReplaceRules[new, "Alignment" -> {-type, 0}]
   ]; 
-  fit = Lookup[new, "LabelSize"];  
+  fit = Lookup[new, "LabelSize"];
   PanedText[ text,
     FilterRules[new, Options @ PanedText],
     (* "Paned" -> True, *)
@@ -1364,27 +1370,18 @@ thePortLabel[type:(-1|1), text_, pos:{_, _}, opts___?OptionQ] := Module[
   ]
 ]
 
-(**** </thePortLabel> ****)
+(**** </qcPortLabel> ****)
 
 
-(**** <thePortBrace> ****)
+(**** <qcPortBrace> ****)
 
-thePortBrace[-1, { a:{_, _}, b:{_, _} } ] :=
+qcPortBrace[-1, { a:{_, _}, b:{_, _} } ] :=
   LeftBrace[a, b, "Width" -> $BraceWidth]
 
-thePortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
+qcPortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
   RightBrace[a, b, "Width" -> $BraceWidth]
 
-(**** </thePortBrace> ****)
-
-
-(**** <GateFactor> ****)
-
-GateFactor::usage = "GateFactor[gate] factorizes a high-level gate GATE into an efficient sequence of elementary gates."
-
-GateFactor[expr_] = expr
-
-(**** </GateFactor> ****)
+(**** </qcPortBrace> ****)
 
 
 (**** <RandomQuantumCircuit> ****)

@@ -130,17 +130,18 @@ setInteger[n_Symbol] := (
   n /: Element[n[___], Integers] = True;
  )
 
+
 IntegerQ[ Mod[_?IntegerQ, 2] ] = True
 
-Mod[ a_?IntegerQ + Mod[b_?IntegerQ, 2], 2] := Mod[a+b, 2]
+Mod[ a_?IntegerQ + Mod[b_?IntegerQ, 2], 2 ] := Mod[a+b, 2]
 
-Mod[ a_?IntegerQ - Mod[b_?IntegerQ, 2], 2] := Mod[a-b, 2]
+Mod[ a_?IntegerQ - Mod[b_?IntegerQ, 2], 2 ] := Mod[a-b, 2]
 
 Mod[ a_?EvenQ + b_, 2 ] := Mod[b, 2]
 
 Mod[ a_?OddQ + b_, 2 ]  := Mod[b+1, 2] /; a != 1
 
-Format[ Mod[nn_Plus, 2] ] := CirclePlus @@ nn
+Format[ Mod[nn_Plus, 2] ] := Interpretation[CirclePlus @@ nn, Mod[nn, 2]]
 
 
 (**** <Binary> ****)

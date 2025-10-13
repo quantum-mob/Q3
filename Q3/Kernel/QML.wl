@@ -57,12 +57,12 @@ Elaborate @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] :=
 
 
 AmplitudeEncoding /:
-UnfoldAll @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] :=
+UnfoldAll[AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}], ___] :=
   Apply[QuantumCircuit, Unfold @ Unfold @ AmplitudeEncoding[in, ss]]
 
 
 AmplitudeEncoding /:
-Unfold @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] := Module[
+Unfold[AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}], ___] := Module[
   { yy = theAmplitudeEncodingY[in, Length @ ss],
     op, cc },
   cc = Table[Drop[ss, -k], {k, Length @ ss}];
@@ -73,7 +73,7 @@ Unfold @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] := Module[
 ] /; AllTrue[in, NonNegative]
 
 AmplitudeEncoding /:
-Unfold @ AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}] := Module[
+Unfold[AmplitudeEncoding[in_?VectorQ, ss:{__?QubitQ}], ___] := Module[
   { yy = theAmplitudeEncodingY[in, Length @ ss],
     zz = theAmplitudeEncodingZ[in, Length @ ss],
     op, cc },
@@ -181,11 +181,17 @@ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, opts___?OptionQ] :=
 
 
 BlockEncoding /:
-UnfoldAll[enc:BlockEncoding[_?MatrixQ, {__?QubitQ}, {__?QubitQ}, ___?OptionQ]] :=
+UnfoldAll[
+  enc:BlockEncoding[_?MatrixQ, {__?QubitQ}, {__?QubitQ}, ___?OptionQ],
+  ___
+] :=
   Unfold[Unfold @ enc]
 
 BlockEncoding /:
-Unfold @ BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, opts___?OptionQ] := Module[
+Unfold[
+  BlockEncoding[mat_?MatrixQ, ss:{__?QubitQ}, aa:{__?QubitQ}, opts___?OptionQ],
+  ___
+] := Module[
   { mint = {"V", "\[CapitalOmega]", "W"},
     text, uu, dd, vv },
   {uu, dd, vv} = SingularValueDecomposition[mat];

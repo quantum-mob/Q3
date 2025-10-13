@@ -86,7 +86,7 @@ TheWignerKet[j:Except[_List], m:Except[_List]] := TheWignerKet @ {j, m}
 TheWignerKet[j:Except[_List], mm:{__?NumericQ}] := With[
   { jm = Thread @ {j, mm} },
   TheWignerKet @@ jm /; AllTrue[jm, SpinNumberQ]
- ]
+]
 
 TheWignerKet[jm:{_, _}, more:{_, _}..] :=
   CircleTimes @@ Map[TheWignerKet, {jm, more}] /;
@@ -552,29 +552,29 @@ WignerAddZ[a_?SpinQ] := Module[
   { aa = FlavorCap @ a,
     bs = Basis @ a },
   GroupBy[bs, #[aa]&]
- ]
+]
 
 WignerAddZ[a___, b_?SpinQ, c___] := WignerAddZ[a, WignerAddZ[b], c]
 
 WignerAddZ[irb_Association, irc_Association, ird__Association] :=
-  WignerAddZ[ WignerAddZ[irb, irc], ird]
+  WignerAddZ[WignerAddZ[irb, irc], ird]
 
 WignerAddZ[irb_Association, irc_Association] := Module[
-  { kk = Flatten@Outer[Plus, Keys[irb], Keys[irc]],
-    vv = Map[Tuples]@Tuples[{Values[irb], Values[irc]}],
+  { kk = Flatten @ Outer[Plus, Keys[irb], Keys[irc]],
+    vv = Map[Tuples] @ Tuples[{Values[irb], Values[irc]}],
     gb = Union @ Cases[Normal @ Values @ irb, _?SpinQ, Infinity],
     gc = Union @ Cases[Normal @ Values @ irc, _?SpinQ, Infinity],
     rr },
   If[ ContainsAny[gb, gc],
-    Message[ WignerAddZ::duplicate ];
-    Return[ irb ]
-   ];
+    Message[WignerAddZ::duplicate];
+    Return[irb]
+  ];
 
   vv = Apply[CircleTimes, vv, {2}];
   rr = Thread[kk -> vv];
   rr = Merge[rr, Catenate];
   Map[ReverseSort, rr]
- ]
+]
 
 (**** </WignerAddZ> ****)
 
@@ -596,7 +596,7 @@ WignerAdd[a_?SpinQ] := Module[
   { aa = FlavorCap @ a,
     bs = Basis @ a },
   GroupBy[bs, {Spin[aa], #[aa]}&]
- ]
+]
 
 WignerAdd[a___, b_?SpinQ, c___] := WignerAdd[a, WignerAdd[b], c]
 
@@ -604,8 +604,8 @@ WignerAdd[irb_Association, irc_Association, ird__Association] :=
   WignerAdd[ WignerAdd[irb, irc], ird]
 
 WignerAdd[irb_Association, irc_Association] := Module[
-  { S1 = Union@Map[First]@Keys[irb],
-    S2 = Union@Map[First]@Keys[irc],
+  { S1 = Union @ Map[First] @ Keys[irb],
+    S2 = Union @ Map[First] @ Keys[irc],
     SS,
     gb = Union @ Cases[Normal @ Values @ irb, _?SpinQ, Infinity],
     gc = Union @ Cases[Normal @ Values @ irc, _?SpinQ, Infinity],
@@ -613,7 +613,7 @@ WignerAdd[irb_Association, irc_Association] := Module[
   If[ ContainsAny[gb, gc],
     Message[ WignerAdd::duplicate ];
     Return[ irb ]
-   ];
+  ];
   SS = Flatten[
     Outer[Thread[{#1, #2, Range[Abs[#1 - #2], #1 + #2]}]&, S1, S2], 
     2];
@@ -622,23 +622,32 @@ WignerAdd[irb_Association, irc_Association] := Module[
     1];
   new = doWignerAdd[irb, irc, #] & /@ SS;
   Merge[new, Catenate]
- ]
+]
 
 doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
   { new, min, max },
   min = Max[-S1, Sz - S2, (Sz - (S1 + S2))/2];
-  max = Min[S1, Sz + S2, (Sz + (S1 + S2))/2];
+  max = Min[+S1, Sz + S2, (Sz + (S1 + S2))/2];
   new = Sum[
     CircleTimes @@@ Tuples[{irb[{S1, m}], irc[{S2, Sz - m}]}]*
       ClebschGordan[{S1, m}, {S2, Sz - m}, {S, Sz}],
-    {m, Range[min, max]}];
-  Association[ {S, Sz} -> new ]
- ]
+    {m, Range[min, max]}
+  ];
+  Association[{S, Sz} -> new]
+]
 
 (**** </WignerAddZ> ****)
 
 
 (**** <Rotation> ****)
+
+Format[ op:Rotation[phi_, v:{_, _, _}, S_?SpinQ, rest___] ] :=
+  Interpretation[
+    DisplayForm @ RowBox @ { Exp,
+      RowBox @ {"(", -I * phi * Dot[S @ All, Normalize @ v], ")"}
+    },
+    op 
+  ]
 
 Rotation /:
 Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] :=
@@ -656,7 +665,7 @@ Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
     TheWigner[{Spin[S], 3}] };
   Rn = MatrixExp[ -I phi Rn ];
   Inner[Dyad[S], bs . Rn, bs]
- ]
+]
 
 (**** </Rotation> ****)
 

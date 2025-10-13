@@ -87,18 +87,48 @@ AddElaborationPatterns[
 ]
 
 
+(**** <Unfold> ****)
+
 Unfold::usage = "Unfold[gate] gives an unfolded form of gate."
 
-Unfold[any_?CommutativeQ op_] := any * Unfold[op]
+Unfold::unknown = "Unknown method ``."
 
-Unfold[any_] = any
+Options[Unfold] = {
+  Method -> Default, (* CZ, CNOT, Toffoli  *)
+  "ApproximationLevel" -> Full, (* QFT *)
+  "Numeric" -> False, (* QFT *)
+  "Reversed" -> False, (* QFT *)
+  "Pushed" -> False (* QFT *)
+}
 
+SyntaxInformation[Unfold] = {
+  "ArgumentsPattern" -> {_, OptionsPattern[]}
+}
+
+Unfold[any_?CommutativeQ op_, opts___?OptionQ] := any * Unfold[op, opts]
+
+Unfold[any_, ___?OptionQ] = any
+
+(**** </Unfold> ****)
+
+
+(**** <UnfoldAll> ****)
 
 UnfoldAll::usage = "UnfoldAll[gate] gives a fully unfolded form of gate."
 
-UnfoldAll[any_?CommutativeQ op_] := any * UnfoldAll[op]
+UnfoldAll::unknown = "Unknown method ``."
 
-UnfoldAll[any_] = any
+Options[UnfoldAll] = Options[Unfold]
+
+SyntaxInformation[UnfoldAll] = {
+  "ArgumentsPattern" -> {_, OptionsPattern[]}
+}
+
+UnfoldAll[any_?CommutativeQ op_, opts___?OptionQ] := any * UnfoldAll[op, opts]
+
+UnfoldAll[any_, ___?OptionQ] = any
+
+(**** </UnfoldAll> ****)
 
 
 (**** <Qubit> ****)
@@ -595,10 +625,10 @@ theKetTrim[Rule[_?QubitQ, 0]] = Nothing
 
 KetVerify::qubit = "Invalid value `` for qubit ``."
 
-theKetVerify[Rule[a_?QubitQ, v_]] := (
-  Message[KetVerify::qubit, v, a];
-  Nothing
-) /; Not[BinaryQ @ v]
+theKetVerify[Rule[key_?QubitQ, val_]] := (
+  Message[KetVerify::qubit, val, key];
+  Rule[key, val]
+) /; Not[BinaryQ @ val]
 (* NOTE: The following definition would not allow to assign a symbolic value:
    KetVerify[ _?QubitQ, Except[0|1] ] = Nothing *)
 
@@ -964,6 +994,14 @@ Multiply[
 
 (**** <Rotation> ****)
 
+Format[ op:Rotation[phi_, v:{_, _, _}, S_?QubitQ, rest___] ] :=
+  Interpretation[
+    DisplayForm @ RowBox @ { Exp,
+      RowBox @ {"(", -I * (phi/2) * Dot[S @ All, Normalize @ v], ")"}
+    },
+    op 
+  ]
+
 Rotation /:
 Elaborate @ Rotation[phi_, v:{_, _, _}, S_?QubitQ, ___] :=
   Garner[ Cos[phi/2] - I*Sin[phi/2]*Dot[S @ All, Normalize @ v] ]
@@ -978,7 +1016,7 @@ Multiply[pre___, op:Rotation[_, {_, _, _}, S_?QubitQ, ___], in_Ket, post___] :=
 (**** <EulerRotation> ****)
 
 EulerRotation /:
-Unfold @ EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ] :=
+Unfold[EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ], ___] :=
   QuantumCircuit[
     Rotation[c, S[3], opts],
     Rotation[b, S[2], opts],
@@ -1004,12 +1042,12 @@ SetAttributes[CNOT, NHoldFirst]
 
 SyntaxInformation[CNOT] = {
   "ArgumentsPattern" -> {_, _}
- }
+}
 
 CNOT[cc:(_?QubitQ|{__?QubitQ})] := (
   CheckArguments[CNOT[cc], 2];
   CNOT[cc, 1]
- )
+)
 
 
 CNOT[c_?QubitQ, t_] := CNOT[{c[$] -> 1}, t]
@@ -1092,6 +1130,12 @@ Matrix[op:CNOT[c_Integer, t_Integer], n_Integer] :=
 CNOT /: (* fallback *)
 Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Whole @ Dimension @ ss]
 
+
+(* See also Smolin and DiVincenzo (1996) for the optimization of the Fredkin gate. *)
+CNOT /:
+Unfold[CNOT[{a_?QubitQ -> 1, b_?QubitQ -> 1}, {c_?QubitQ}], opts___?OptionQ] :=
+  Prepend[Append[Unfold[CZ @ {a,b,c}, opts], c[6]], c[6]]
+
 (**** </CNOT> ****)
 
 
@@ -1107,13 +1151,13 @@ CZ[c_?QubitQ, t_?QubitQ] := CZ[FlavorCap @ c, FlavorCap @ t] /;
 CZ /:
 Dagger[ op_CZ ] := op
 
-CZ[a_?QubitQ, bb_?QubitQ] := CZ @ FlavorCap @ {a, bb}
+CZ[c_?QubitQ, t_?QubitQ] := CZ @ FlavorCap @ {c, t}
 
 CZ[cc:{__?QubitQ}, t_?QubitQ] := CZ @ FlavorCap @ Append[cc, t]
 
 CZ[ss:{__?QubitQ}] := CZ[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
 
-CZ[ss:{S_?QubitQ}] := ( Message[CZ::few, S[3]]; S[3] )
+CZ[ss:{S_?QubitQ}] := (Message[CZ::few, S[3]]; S[3])
 
 CZ /:
 Elaborate @ CZ[any___] := 1 (* fallback *)
@@ -1157,6 +1201,34 @@ CZ /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:CZ[ss_List], post___] :=
   Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, ss]
 
+
+(* See also Smolin and DiVincenzo (1996) for the optimization of the Fredkin gate. *)
+CZ /:
+Unfold[CZ[ss:{_?QubitQ, _?QubitQ, _?QubitQ}], OptionsPattern[]] := 
+  Switch[ OptionValue[Method],
+    Default, theSmolinCZ[ss],
+    "Gray", theGrayCZ[ss],
+    _, Message[Unfold::unknown, OptionValue @ Method]; theSmolinCZ[ss]
+  ]
+
+(* See also Smolin and DiVincenzo (1996) for the optimization of the Fredkin gate. *)
+theSmolinCZ[{a_, b_, c_}] := QuantumCircuit[
+  CNOT[a, b],
+  ControlledGate[b, c[-7]],
+  CNOT[a, b],
+  ControlledGate[a, c[7]],
+  ControlledGate[b, c[7]]
+]
+
+(* Based on the Gray-code method. *)
+theGrayCZ[{a_, b_, c_}] := QuantumCircuit[
+  ControlledGate[a, c[7]],
+  CNOT[a, b],
+  ControlledGate[b, c[-7]],
+  CNOT[a, b],
+  ControlledGate[b, c[7]]
+]
+
 (**** </CZ> ****)
 
 
@@ -1192,7 +1264,7 @@ Elaborate @ SWAP[x_?QubitQ, y_?QubitQ] := Module[
 ]
 
 SWAP /:
-Unfold @ SWAP[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+Unfold[SWAP[s_?QubitQ, t_?QubitQ], ___] := QuantumCircuit[
   CNOT[s, t], CNOT[t, s], CNOT[s, t]
 ]
 
@@ -1243,13 +1315,13 @@ Multiply[pre___, iSWAP[s_?QubitQ, t_?QubitQ], Ket[a_Association]] := With[
   If[OddQ[Total @ ts], I, 1] *
   Multiply[ pre,
     Ket @ KeySort @ Join[a, AssociationThread[{s, t} -> ts]]
-   ]
   ]
+]
 
 iSWAP /:
-Unfold @ iSWAP[s_?QubitQ, t_?QubitQ] := QuantumCircuit[
+Unfold[iSWAP[s_?QubitQ, t_?QubitQ], ___] := QuantumCircuit[
   {s[7], t[7]}, s[6], CNOT[s, t], CNOT[t, s], t[6]
- ]
+]
 
 (**** </iSWAP> ****)
 
@@ -1272,8 +1344,8 @@ HoldPattern @ Elaborate @ Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ] := Garner[
   ( 3 + a[3] + b[3] + c[1] -
       a[3]**b[3] - a[3]**c[1] - b[3]**c[1] +
       a[3]**b[3]**c[1]
-   ) / 4
- ]
+  ) / 4
+]
 
 Toffoli /:
 HoldPattern @ Multiply[pre___, op_Toffoli, post___] :=
@@ -1281,6 +1353,11 @@ HoldPattern @ Multiply[pre___, op_Toffoli, post___] :=
 
 Toffoli /:
 HoldPattern @ Matrix[op_Toffoli, rest___] := Matrix[Elaborate[op], rest]
+
+(* See also Smolin and DiVincenzo (1996) for the optimization of the Fredkin gate. *)
+Toffoli /:
+Unfold[Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ], opts___?OptionQ] :=
+  Prepend[Append[Unfold[CZ @ {a,b,c}, opts], c[6]], c[6]]
 
 (**** </Toffoli> ****)
 
@@ -1319,6 +1396,17 @@ Fredkin[a_?QubitQ, b_?QubitQ, c_?QubitQ] := (
   CheckArguments[Fredkin[a, b, c], 2];
   Fredkin[a, {b, c}]
  )
+
+Fredkin /: (* fallback *)
+Unfold[op_Fredkin, ___] = op
+
+Fredkin /:
+Unfold[Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}, ___], ___] := 
+  QuantumCircuit[
+    CNOT[c, b],
+    CNOT[{a, b}, c],
+    CNOT[c, b]
+  ]
 
 (**** </Fredkin> ****)
 
@@ -1424,21 +1512,26 @@ ControlledGate[cc:{__Rule}, z_?CommutativeQ, opts___?OptionQ] :=
 
 
 ControlledGate /:
-Unfold @ ControlledGate[cc:{__Rule},
-  ActOn[z_?CommutativeQ, ___], ___?OptionQ] :=
+Unfold[
+  ControlledGate[cc:{__Rule}, ActOn[z_?CommutativeQ, ___], ___?OptionQ],
+  ___
+] :=
   ControlledGate[cc, z]
 
 ControlledGate /:
-Unfold @ ControlledGate[ cc:{__Rule},
-  HoldPattern @ Multiply[ss__?QubitQ],
-  opts___?OptionQ 
+Unfold[
+  ControlledGate[ cc:{__Rule},
+    HoldPattern @ Multiply[ss__?QubitQ],
+    opts___?OptionQ 
+  ], 
+  ___
 ] := With[
   { new = Normal @ KeyDrop[Flatten @ {opts}, "Label"] },
   QuantumCircuit @@ Map[ControlledGate[cc, #, new]&, {ss}]
 ]
 
 ControlledGate /:
-Unfold @ ControlledGate[cc:{__Rule}, op_, ___?OptionQ] := Module[
+Unfold[ControlledGate[cc:{__Rule}, op_, ___?OptionQ], ___] := Module[
   { tt = First[Qubits @ op],
     mm = Matrix[op],
     ff },
@@ -1602,7 +1695,7 @@ HoldPattern @ Multiply[pre___, op_ControlledPower, post___] :=
 *)
 
 ControlledPower /:
-Unfold @ ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[Gate]] :=
+Unfold[ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[Gate]], ___] :=
   Module[
     { n = Length @ ss,
       tt = Qubits[op],
@@ -1733,7 +1826,7 @@ Multiply[ pre___,
   in_Ket
 ] := 
   With[
-    { gg = List @@ Unfold @ op },
+    { gg = List @@ Unfold[op] },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
   ]
 
@@ -1749,8 +1842,11 @@ Multiply[ pre___,
 
 
 UniformlyControlledRotation /:
-Unfold @ UniformlyControlledRotation[
-  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ
+Unfold[
+  UniformlyControlledRotation[
+    cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ
+  ],
+  ___
 ] := 
   QuantumCircuit @@ ReleaseHold @ Thread @
     ControlledGate[
@@ -1762,9 +1858,12 @@ Unfold @ UniformlyControlledRotation[
 
 (* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
 UniformlyControlledRotation /:
-UnfoldAll @ UniformlyControlledRotation[
-  cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ,
-  opts___?OptionQ
+UnfoldAll[
+  UniformlyControlledRotation[
+    cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ,
+    opts___?OptionQ
+  ],
+  ___
 ] := 
   Module[
     { n = Length[cc],
@@ -1820,7 +1919,10 @@ Dagger @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] :=
   UniformlyControlledGate[cc, Dagger[Reverse @ tt], opts]
 
 UniformlyControlledGate /:
-Unfold @ UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ ] := Module[
+Unfold[
+  UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ],
+  ___ 
+] := Module[
   { nn = Power[2, Length @ cc],
     mint = Lookup[Flatten @ {opts}, "Label"] },
   mint = Switch[ mint,
@@ -1855,7 +1957,7 @@ UniformlyControlledGate /:
 Multiply[ pre___,
   op:UniformlyControlledGate[{__?QubitQ}, _List, ___?OptionQ],
   in_Ket ] := With[
-    { gg = List @@ Unfold @ op },
+    { gg = List @@ Unfold[op] },
     Multiply[pre, Fold[Multiply[#2, #1]&, in, gg]]
    ]
 
@@ -2305,18 +2407,18 @@ QBR[ss:{___?QubitQ}, ___][expr_] := Module[
 
 
 QBR /:
-Unfold[op_QBR] = op (* fallback *)
+Unfold[op_QBR, ___] = op (* fallback *)
 
 QBR /:
-Unfold @ QBR[ss:{__?QubitQ}, ___] :=
+Unfold[QBR[ss:{__?QubitQ}, ___], ___] :=
   QuantumCircuit @@ Table[ SWAP[ss[[k]], ss[[-k]]], {k, Length[ss]/2} ]
 
 
 QBR /:
-UnfoldAll[op_QBR] = op (* fallback *)
+UnfoldAll[op_QBR, ___] = op (* fallback *)
 
 QBR /:
-UnfoldAll[ op:QBR[ss:{__?QubitQ}, ___] ] := 
+UnfoldAll[op:QBR[ss:{__?QubitQ}, ___], ___] := 
   Unfold[Unfold @ op]
 
 (**** </QBR> ****)
@@ -2401,20 +2503,20 @@ Multiply[pre___, Dyad[a_Association, b_Association], op:QCR[ss_List, ___], post_
 
 
 QCR /:
-Unfold[op_QCR] = op (* fallback *)
+Unfold[op_QCR, ___] = op (* fallback *)
 
 QCR /:
-Unfold[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
+Unfold[op:QCR[ss:{__?QubitQ}, ___], ___] := With[
   { qft = Drop[Unfold[QFT @ ss], -2] },
   QuantumCircuit[qft, Reverse @ qft]
 ]
 
 
 QCR /:
-UnfoldAll[op_QCR] = op (* fallback *)
+UnfoldAll[op_QCR, ___] = op (* fallback *)
 
 QCR /:
-UnfoldAll[ op:QCR[ss:{__?QubitQ}, ___] ] := With[
+UnfoldAll[op:QCR[ss:{__?QubitQ}, ___], ___] := With[
   { qft = Drop[UnfoldAll[QFT @ ss], -2] },
   QuantumCircuit[qft, Reverse @ qft]
 ]
@@ -2432,7 +2534,7 @@ Projector /:
 Dagger[ op_Projector ] = op
 
 Projector /:
-Unfold[ Projector[v_, qq_List] ] := Dyad[v, v, qq]
+Unfold[Projector[v_, qq_List], ___] := Dyad[v, v, qq]
 
 Projector /:
 DyadForm[ Projector[v_, qq_List] ] := Dyad[v, v, qq]
@@ -2685,7 +2787,7 @@ KetRegulate[ProductState[a_Association, opts___?OptionQ], gg_List] :=
 
 
 ProductState /:
-Unfold[ ProductState[aa_Association, opts___?OptionQ] ] :=
+Unfold[ProductState[aa_Association, opts___?OptionQ], ___] :=
   State[CircleTimes @@ Values[aa], Keys @ aa]
 
 ProductState /:
@@ -3149,31 +3251,31 @@ UnitaryInteraction[phi:Except[_?ListQ], rest__] :=
 
 
 UnitaryInteraction /:
-Unfold @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] := With[
+Unfold[UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}], ___] := With[
   { cn = ReleaseHold @ Thread[Hold[CNOT][Most @ ss, Last @ ss]] },
   QuantumCircuit[
     Sequence @@ cn,
     Rotation[2 * phi, Last[ss][3]],
     Sequence @@ Reverse[cn]
-   ]
- ]
+  ]
+]
 
 UnitaryInteraction /:
-Unfold @ UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}] :=
+Unfold[UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}], ___] :=
   QuantumCircuit[
     CNOT[a, b],
     ControlledGate[b, Rotation[4*phi, a[1]]],
     CNOT[a, b]
-   ]
+  ]
 
 UnitaryInteraction /:
-Unfold @ UnitaryInteraction[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}] :=
+Unfold[UnitaryInteraction[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}], ___] :=
   QuantumCircuit[
     CNOT[a, b],
     ControlledGate[b, Rotation[4*phi, a[1]]],
     Rotation[2*phi, b[3]],
     CNOT[a, b]
-   ]
+  ]
 
 
 UnitaryInteraction /:

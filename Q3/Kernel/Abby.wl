@@ -544,10 +544,14 @@ ArrayZeroQ::usage = "ArrayZeroQ[tsr] returns True if all elements of array tsr a
 ArrayZeroQ::neg = "Tolerence specification `` must be a non-negative number."
 
 ArrayZeroQ[tsr_] :=
-  ZeroQ @ Norm[Flatten @ tsr, Infinity] /; ArrayQ[tsr, _, NumericQ]
+  ZeroQ @ Norm[Flatten @ tsr] /; ArrayQ[tsr, _, NumericQ]
+  (* ZeroQ @ Norm[Flatten @ tsr, Infinity] /; ArrayQ[tsr, _, NumericQ] *)
+  (* NOTE: The above code causes N::meprec error in many cases. *)
 
 ArrayZeroQ[tsr_, del_?NonNegative] :=
-  ZeroQ[Norm[Flatten @ tsr, Infinity], del] /; ArrayQ[tsr, _, NumericQ]
+  ZeroQ[Norm[Flatten @ tsr], del] /; ArrayQ[tsr, _, NumericQ]
+  (* ZeroQ[Norm[Flatten @ tsr, Infinity], del] /; ArrayQ[tsr, _, NumericQ] *)
+  (* NOTE: The above code causes N::meprec error in many cases. *)
 
 ArrayZeroQ[tsr_?ArrayQ, del_?Negative] := (
   Message[ArrayZeroQ::neg, del];
@@ -628,17 +632,21 @@ IntegerChop::usage = "IntegerChop[z] rounds z to an integer if z is close to an 
 
 SetAttributes[IntegerChop, Listable];
 
+IntegerChop[n_Integer] = n
+
 IntegerChop[x_?NumericQ] := With[
   { n = Round[x] },
-  If[ZeroQ[x - n], n, x]
+  (* NOTE: Chop here to handle x + 0.*I *)
+  If[ZeroQ[x - n], n, Chop @ x]
 ]
 
 IntegerChop[x_?NumericQ, del_?Positive] := With[
   { n = Round[x] },
-  If[ZeroQ[x - n, del], n, x]
+  (* NOTE: Chop here to handle x + 0.*I *)
+  If[ZeroQ[x - n, del], n, Chop @ x]
 ]
 
-IntegerChop[x_] = x
+IntegerChop[any_] := Map[IntegerChop, any]
 
 (**** </IntegerChop> ****)
 

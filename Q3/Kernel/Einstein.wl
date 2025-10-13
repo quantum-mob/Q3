@@ -2,6 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ GateFactor }; (* 2025-10-10 v4.2.13  *)
 { YoungShapePile, GelfandYoungPile, SchurLabelPile };  (* 2025-06-10 v4.2.5 *)
 { BratteliDiagram, KostkaMatrix }; (* 2025-06-09 v4.2.4 *)
 { GD, GIntegrate }; (* 2025-05-31 v4.2.2 *)
@@ -317,6 +318,14 @@ ToGelfandPattern[tb_, _Integer] := (
 
 (**** <obsolete> ****)
 
+GateFactor::usage = "GateFactor is obsolte since v4.2.13 (2025-10-10); Use Unfold or UnfoldAll instead."
+
+GateFactor[expr_] = expr
+GateFactor[any___] := (
+  Message[Q3General::obsolete, "GateFactor", "Unfold"];
+  Unfold[any]
+)
+
 GelfandYoungPile::usage = "GelfandYoungPile is obsolete since v4.2.5 (2025-06-10); use YoungPileUp instead."
 
 GelfandYoungPile[any___] := (
@@ -566,8 +575,12 @@ FromTwoLevelU[GivensRotation[mat_?MatrixQ, ij_, _Integer], ss:{__?QubitQ}] :=
 TwoLevelDecomposition::usage = "TwoLevelDecomposition is obsolte now. Use GivensFactor or GrayGivensFactor instead."
 
 TwoLevelDecomposition[args__] := (
-  Message[Q3General::obsolete, FromTwoLevelU, GivensFactor|GrayGivensFactor];
-  Unfold @ GivensFactor[mat, rest]
+  Message[
+    Q3General::obsolete, 
+    "TwoLevelDecomposition", 
+    "GivensFactor or GrayGivensFactor"
+  ];
+  Unfold /@ GivensFactor[args]
 )
 
 

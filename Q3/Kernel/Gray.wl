@@ -211,57 +211,6 @@ GraySequence[n_Integer] := Join[
 (**** </GraySequence> ****)
 
 
-TwoLevelDecomposition::usage = "TwoLevelDecomposition[mat] returns a list of two-level unitary matrices U1, U2, ... in terms of TwoLevelU, where Dot[U1, U2, ...] is formally equivalent to mat."
-
-TwoLevelDecomposition[mat_?MatrixQ] := twoLevelDCMP[mat, 1]
-
-twoLevelDCMP[mat_?MatrixQ, k_Integer] := Module[
-  { mm = Rest @ mat,
-    UU, vv },
-  {vv, UU} = twoLevelDCMP[First @ mat, k] /. {Identity -> Nothing};
-  If[k == Length[First @ mat], Return @ UU];
-  If[mm == {}, Return @ UU];
-  mm = Dot[ mm, Sequence @@ Reverse[Topple /@ Matrix /@ UU] ];
-  Join[twoLevelDCMP[mm, k+1], UU]
-]
-
-twoLevelDCMP[vec_?VectorQ, k_Integer] := Module[
-  { new, UU, U },
-  {new, UU} = twoLevelDCMP[vec, k+1];
-  {new, U}  = twoLevelDCMP[new, {k}];
-  {new, Prepend[UU, U]}
-] /; 1 <= k < Length[vec]-1
-
-twoLevelDCMP[vec_?VectorQ, k_Integer] := Module[
-  {new, U},
-  {new, U} = twoLevelDCMP[vec, {k}];
-  {new, {U}}
-] /; k >= Length[vec]-1
-
-twoLevelDCMP[vec_?VectorQ, {k_Integer}] := Module[
-  { new = Take[vec, {k, k+1}],
-    nrm, U },
-  If[Chop @ Norm[new-{1,0}] == 0, Return @ {vec, Identity}];
-
-  nrm = Norm[new];
-  If[Chop[nrm] == 0, Return @ {vec, Identity}];
-  
-  U = {
-    new,
-    {-1, 1} Reverse[Conjugate @ new]
-   } / nrm;
-  new = ReplacePart[vec, {k -> nrm, k+1 -> 0}];
-  {new, TwoLevelU[U, {k, k+1}, Length @ vec]}
-] /; 1 <= k < Length[vec]
-
-twoLevelDCMP[vec_?VectorQ, {k_Integer}] := With[
-  { z = Last @ vec },
-  { ReplacePart[vec, k -> Abs @ z],
-    TwoLevelU[DiagonalMatrix @ {1, z/Abs[z]}, {k-1, k}, k] }
-] /; k == Length[vec]
-
-
-
 (**** <GivensRotation> *****)
 
 GivensRotation::usage = "GivensRotation[mat, {i, j}, n] represents the Givens foration in the plane spanned by the two coordinate axes i and j in an n-dimensional space.\nGivensRotation[mat, {i, j}, {s1, s2, \[Ellipsis]}] represents the Givens rotatation operator acting on qubits s1, s2, \[Ellipsis]."
@@ -365,8 +314,10 @@ Matrix[GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}], rest__] :=
 (**** <GivensRotation:Unfold> *****)
 
 GivensRotation /:
-Unfold @
-  GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, ss:{__?QubitQ}] :=
+Unfold[
+  GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, ss:{__?QubitQ}],
+  ___
+] := 
   Module[
     { gray = GraySequence[ij-1, Length @ ss],
       mask, expr },

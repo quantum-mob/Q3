@@ -16,8 +16,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { KetPermute, KetSymmetrize };
 
-{ GateFactor };
-
 { Permutation };
 
 { OTimes, OSlash, ReleaseTimes };
@@ -2785,15 +2783,6 @@ Rotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
 
 Rotation::axis = "The axis in `` is not proper."
 
-Format[ op:Rotation[phi_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), rest___] ] :=
-  Interpretation[
-    DisplayForm @ RowBox @ { Exp,
-      RowBox @ {"(", -I * (phi/2) * Dot[S @ All, Normalize @ v], ")"}
-    },
-    op 
-  ]
-
-
 Options[Rotation] = { "Label" -> Automatic }
 
 Rotation[phi_, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] := (
@@ -2908,7 +2897,10 @@ Elaborate @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
   Multiply[ Rotation[a, S[3]], Rotation[b, S[2]], Rotation[c, S[3]] ]
 
 EulerRotation /:
-Unfold @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___] :=
+Unfold[
+  EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), ___],
+  ___
+] :=
   QuantumCircuit[ Rotation[a, S[3]], Rotation[b, S[2]], Rotation[c, S[3]] ]
 
 (**** </EulerRotation> ****)
