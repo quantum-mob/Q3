@@ -1,10 +1,11 @@
 # Release Notes
 
-## 4.2.13
+## 4.3.0
 
 - New: TheDisplacement
 - Oboslete: GateFactor
 - Bug fix: Rotation (incorrect formating for spins)
+- Help documents support dark mode.
 
 ## 4.2.12
 
