@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.3.2
+
+- Elaborations in the documentation
+
 ## 4.3.0
 
 - New: TheDisplacement
