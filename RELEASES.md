@@ -1,5 +1,15 @@
 # Release Notes
 
+## 4.4.0
+
+- ToMajorana, ToDirac: Majorana modes are encoded in the block form (rather than the form where the odd and even modes are alternating)
+- Affected symbols: WickHermitian, WickUnitary, theWignerJordanMajorana, WickEntanglementEntropy, WickMutualInformation
+- Bug fix: WickCovariance[_NambuHermitian]
+
+## 4.3.3
+
+- Minor changes
+
 ## 4.3.2
 
 - Elaborations in the documentation

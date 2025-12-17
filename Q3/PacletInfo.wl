@@ -8,7 +8,7 @@ PacletObject[
     "Creator" -> "Mahn-Soo Choi",
     "PublisherID" -> "QuantumMob",
     "License" -> "GPL-3.0-only",
-    "Version" -> "4.3.3",
+    "Version" -> "4.4.0",
     "WolframVersion" -> "13.1+",
     "Updating" -> "Automatic",
     "Loading" -> "Startup",
@@ -32,7 +32,7 @@ PacletObject[
       },
       {
         "FrontEnd",
-        "Prepend" -> True 
+        "Prepend" -> True
       },
       {
         "Asset",

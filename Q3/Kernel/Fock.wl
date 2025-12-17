@@ -672,10 +672,12 @@ ToMajoranaMatrix[n_Integer] :=
 
 ToDiracMatrix::usage = "ToDiracMatrix[n] returns the 2n\[Times]2n matrix representing the canonical transformation from Majorana to Dirac fermions."
 
-ToDiracMatrix[n_Integer] := With[
-  { trs = KroneckerProduct[One[n], {{1, I}}] },
-  Join[trs, Conjugate @ trs]
-] / 2
+ToDiracMatrix[n_Integer] := KroneckerProduct[
+  { {1, I}, 
+    {1, -I}
+  } / 2,
+  One[n]
+]
 (* NOTE: The returned matrix U is NOT unitary; Topple[U].U = 1/2 *)
 
 (**** </ToDiracMatrix> ****)
@@ -683,7 +685,7 @@ ToDiracMatrix[n_Integer] := With[
 
 (**** <ToMajorana> ****)
 
-ToMajorana::usage = "ToMajorana[expr, {c1,c2,...} -> {h1,h2,h3,h4,...}] converts expr writtten in Dirac fermion operators c1, c2, ... into an equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, ... via a suitable transformation between them. ToMajorana[expr, c1 -> {h1,h2}, c2->{h3,h4}, ...] is the same."
+ToMajorana::usage = "ToMajorana[expr, {c1,c2,...,cn} -> {a1,a2,\[Ellipsis],an,b1,b2,\[Ellipsis],bn}] converts expr writtten in Dirac fermion operators c1, c2, \[Ellipsis], cn into an equivalent form in terms of the Majorana fermion operators a1, a2, ..., \[Ellipsis], an and b1, b2, \[Ellipsis], bn via a suitable transformation between them. ToMajorana[expr, c1 -> {a1,b1}, c2->{a2,b2}, \[Ellipsis]] is the same."
 
 ToMajorana::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators."
 
@@ -698,17 +700,20 @@ ToMajorana[expr:Except[_Rule],
 ] := Garner[ expr /. ToMajorana[rr] ]
 
 
-ToMajorana[c_?FermionQ -> {h1_?MajoranaQ, h2_?MajoranaQ}] := 
-  { c -> (h1 + I*h2)/2 }
+ToMajorana[c_?FermionQ -> {a_?MajoranaQ, b_?MajoranaQ}] := 
+  { c -> (a + I*b)/2 }
 
 ToMajorana[
   rr:Repeated[_?FermionQ -> {_?MajoranaQ, _?MajoranaQ}, {2, Infinity}]
 ] := Flatten[ToMajorana /@ {rr}, 1]
 
 ToMajorana[
-  cc:{__?FermionQ} -> hh:{PatternSequence[_?MajoranaQ, _?MajoranaQ]..}
-] := Apply[ToMajorana, Thread[Rule[cc, Partition[hh, 2]]]]  /; 
-  2 * Length[cc] == Length[hh]
+  cc:{__?FermionQ} -> ab:{PatternSequence[_?MajoranaQ, _?MajoranaQ]..}
+] := Module[
+  {aa, bb},
+  {aa, bb} = PartitionInto[ab, 2];
+  Thread[cc -> (aa + I*bb)/2]
+] /; 2 * Length[cc] == Length[ab]
 
 ToMajorana[ HoldPattern[cc:{__} -> hh:{__}] ] := (
   Message[ToMajorana::incnst, cc, hh];
@@ -719,15 +724,15 @@ ToMajorana[ HoldPattern[cc:{__} -> hh:{__}] ] := (
 ToMajorana[vec_?VectorQ] := Module[
   {uu, vv},
   {uu, vv} = PartitionInto[vec, 2];
-  SparseArray[ Riffle[uu + vv, I*(uu - vv)] / 2 ]
+  SparseArray[ Join[uu + vv, I*(uu - vv)] / 2 ]
 ]
 
 ToMajorana[mat_?MatrixQ] := Module[
   {uu, vv, new},
   {uu, vv} = PartitionInto[mat, 2];
-  new = Riffle[uu + vv, -I*(uu - vv)];
-  {uu, vv} = PartitionInto[Transpose @ new, 2];
-  SparseArray[ Transpose @ Riffle[uu + vv, +I*(uu - vv)] / 4 ]
+  new = Join[uu + vv, (uu - vv)/I];
+  {uu, vv} = First @ PartitionInto[new, {1, 2}];
+  SparseArray[ArrayFlatten @ {{uu + vv, I*(uu - vv)} / 4}]
 ]
 
 (**** </ToMajorana> ****)
@@ -750,19 +755,25 @@ ToDirac[expr:Except[_Rule],
 ] := Garner[ expr /. ToDirac[rr] ]
 
 
-ToDirac[{h1_?MajoranaQ, h2_?MajoranaQ} -> c_?FermionQ] := Module[
+ToDirac[{a_?MajoranaQ, b_?MajoranaQ} -> c_?FermionQ] := Module[
   { d = Peel[c] },
-  { h1 -> (d + Dagger[d]),
-    h2 -> (d - Dagger[d])/I }
+  { a -> (d + Dagger[d]),
+    b -> (d - Dagger[d])/I }
 ]
 
 ToDirac[
   rr:HoldPattern[{_?MajoranaQ, _?MajoranaQ} -> _?FermionQ]..
 ] := Flatten[ToDirac /@ {rr}, 1]
 
-ToDirac[hh:{PatternSequence[_?MajoranaQ, _?MajoranaQ]..} -> cc:{__?FermionQ}] := 
-  Apply[ToDirac, Thread[Rule[Partition[hh, 2], cc]]] /;
-    2 Length[cc] == Length[hh]
+ToDirac[ab:{PatternSequence[_?MajoranaQ, _?MajoranaQ]..} -> cc:{__?FermionQ}] := 
+Module[
+  {aa, bb},
+  {aa, bb} = PartitionInto[ab, 2];
+  Join[
+    Thread[aa -> (cc + Dagger[cc])],
+    Thread[bb -> (cc - Dagger[cc])/I]
+  ]
+] /; 2 Length[cc] == Length[ab]
 
 ToDirac[ HoldPattern[hh:{__} -> cc:{__}] ] := (
   Message[ToDirac::incnst, cc, hh];
@@ -772,16 +783,16 @@ ToDirac[ HoldPattern[hh:{__} -> cc:{__}] ] := (
 
 ToDirac[vec_?VectorQ] := Module[
   {xx, yy},
-  {xx, yy} = Transpose @ Partition[vec, 2];
+  {xx, yy} = PartitionInto[vec, 2];
   Join[xx - I*yy, xx + I*yy]
 ]
 
 ToDirac[mat_?MatrixQ] := Module[
   {xx, yy, new},
-  {xx, yy} = Transpose @ Partition[mat, 2];
+  {xx, yy} = PartitionInto[mat, 2];
   new = Join[xx + I*yy, xx - I*yy];
-  {xx, yy} = Transpose @ Partition[Transpose @ new, 2];
-  Transpose @ Join[xx - I*yy, xx + I*yy]
+  {xx, yy} = First @ PartitionInto[new, {1, 2}];
+  SparseArray[ArrayFlatten @ {{xx - I*yy, xx + I*yy}}]
 ]
 
 (**** </ToDirac> ****)

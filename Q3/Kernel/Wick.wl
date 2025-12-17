@@ -399,11 +399,11 @@ NambuGreen[cvr_WickCovariance] := Module[
   (* NOTE: Notice the factor of 1/4. *)
 ]
 
-(* conversion from correlation matrix *)
+(* conversion from "correlation matrix" (see NambuGreen) *)
 WickCovariance[crr_NambuHermitian] := Module[
   { n = FermionCount[crr],
     mat },
-  mat = NambuHermitian[n]/2 - crr;
+  mat = NambuHermitian[1, n]/2 - crr;
   WickCovariance @ Re[4I*ToMajorana[Normal @ mat]]
   (* NOTE: Notice the factor of 4. *)
 ]
@@ -1844,7 +1844,7 @@ Module[
 (**** </RandomWickCircuitSimulate> ****)
 
 
-theWignerJordanMajorana::usage = "theWignerJordanMajorana[n] returns a list of matrices representing 2n Majorana nodes, taking into account the Wigner-Jordan transformation."
+theWignerJordanMajorana::usage = "theWignerJordanMajorana[n] returns a list of matrices representing 2n Majorana modes, taking into account the Wigner-Jordan transformation."
 
 theWignerJordanMajorana[n_Integer] := Module[
   { xx, yy },
@@ -1864,7 +1864,7 @@ theWignerJordanMajorana[n_Integer] := Module[
     {n, n}
   ];
   yy = ThePauli /@ Normal[yy];
-  SparseArray @ Riffle[xx, yy]
+  SparseArray @ Join[xx, yy]
 ]
 
 
@@ -2618,7 +2618,7 @@ WickLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___] := Module[
 
 (* BdG models *)
 WickLogarithmicNegativity[grn_NambuGreen, kk:{__Integer}, ___] :=
-  WickLogarithmicNegativity[grn[[1, 1]], kk] /; ArrayZeroQ[grn[[1,2]]] 
+  WickLogarithmicNegativity[grn[[1, 1]], kk] /; ArrayZeroQ[grn[[1, 2]]] 
 
 WickLogarithmicNegativity[grn_NambuGreen, kk:{__Integer}, ___] := 0 /;
   FermionCount[grn] == Length[kk]
@@ -2700,7 +2700,7 @@ WickEntanglementEntropy[data_?ArrayQ, kk:{___Integer}] := Module[
 
 (* directly from covariance matrix *)
 WickEntanglementEntropy[WickCovariance[cvr_?MatrixQ, ___], kk:{__Integer}] := Module[
-  { jj = Riffle[2kk-1, 2kk] },
+  { jj = Join[kk, kk + Length[cvr]/2] },
   WickEntropy[ WickCovariance @ cvr[[jj, jj]] ]
 ]
 
@@ -2746,10 +2746,11 @@ WickMutualInformation[ws_WickState, kk:{__Integer}] :=
 
 (* directly from covariance matrix *)
 WickMutualInformation[cvr:WickCovariance[vv_?MatrixQ, ___], kk:{__Integer}] := Module[
-  { ll = Supplement[Range @ FermionCount @ cvr, kk],
-    ii, jj },
-  ii = Riffle[2kk-1, 2kk];
-  jj = Riffle[2ll-1, 2ll];
+  { n = FermionCount[cvr],
+    ii, jj, ll },
+  ll = Supplement[Range @ n, kk];
+  ii = Riffle[kk, n + kk];
+  jj = Riffle[ll, n + ll];
   ( WickEntropy[ WickCovariance @ vv[[ii, ii]] ] + 
     WickEntropy[ WickCovariance @ vv[[jj, jj]] ] -
     WickEntropy[ WickCovariance @ vv ]
