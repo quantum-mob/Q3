@@ -1289,6 +1289,7 @@ theWickMeasurementOdds[vec_?VectorQ][cvr_?MatrixQ] := Module[
 (**** <WickMeasurementKernel> ****)
 
 WickMeasurementKernel::usage = "WickMeasurementKernel[vec] returns {A, B, nrm}, where A and B are 2n\[Times]2n real matrices and nrm is the norm square of vec. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], -A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] Dagger[b]**b \[Rho] Dagger[b]**b, where b := Sum[vec[[k]] c[k], {k, 2n}] is a dressed Dirac fermion mode superposed of bare Majorana modes c[k]."
+(* NOTE: The following two code pieces were for vec in the (2k-1, 2k)-encoding of Majorana modes in WickMeasurementKernel[vec]. However, they still work for vec in the (k, n+k)-encoding. *)
 
 (* For measurement outcome = 1 *)
 WickMeasurementKernel[k_Integer, n_Integer] := {
