@@ -683,7 +683,9 @@ NormSquare[obj:(_?VectorQ|_?MatrixQ), spec___] := Norm[obj, spec]^2
 
 AbsSquare::usage = "AbsSquare[expr] returns the absolute square of expr, i.e., Dagger[expr]**expr."
 
-AbsSquare[mat_?MatrixQ] := Topple[mat] . mat
+AbsSquare[z_?NumericQ] := Abs[z]^2
+
+AbsSquare[mat_?MatrixQ] := ConjugateTranspose[mat] . mat
 
 AbsSquare[expr_] := Multiply[Dagger @ expr, expr]
 

@@ -849,37 +849,33 @@ VertexLabelFunction::usage = "VertexLabelFunction is an option for GraphForm and
 
 EdgeLabelFunction::usage = "EdgeLabelFunction is an option for GraphForm and ChiralGraphForm that speicifes the function to generate primities for redering each edge label.\nSee also EdgeLabels."
 
-defaultEdgeLabelFunction[ Rule[edge_, $] ] := Nothing
-
-defaultEdgeLabelFunction[ Rule[edge_, lbl_] ] := Rule[
-  edge,
+defaultEdgeLabelFunction[lbl_] :=
   Framed[lbl, FrameStyle -> None, Background -> LightDarkSwitched @ White]
-]
 
-defaultEdgeLabelFunction[ RuleDelayed[edge_, cnd_Condition] ] := With[
+defaultEdgeLabelFunction[Placed[lbl_, rest__]] := 
+  Placed[defaultEdgeLabelFunction @ lbl, rest]
+
+
+makeEdgeLabel[func_][ Rule[edge_, $] ] := Nothing
+
+makeEdgeLabel[func_][ Rule[edge_, lbl_] ] := Rule[edge, func @ lbl] 
+
+makeEdgeLabel[func_][ RuleDelayed[edge_, cnd_Condition] ] := With[
   { lbl = First @ cnd,
     tst = Last @ cnd },
-  RuleDelayed @@ List[
-    edge,
-    Condition[
-      Framed[lbl, FrameStyle -> None, Background -> LightDarkSwitched @ White],
-      tst
-    ]
-  ]
+  RuleDelayed @@ List[edge, Condition[func @ lbl, tst]]
 ]
 (* NOTE: This includes dirty tricks to overcome the restrictions put by
    the HoldRest attribute of RuleDelayed. *)
 
-defaultEdgeLabelFunction[ RuleDelayed[edge_, lbl_] ] := RuleDelayed[
-  edge,
-  Framed[lbl, FrameStyle -> None, Background -> LightDarkSwitched @ White]
-]
+makeEdgeLabel[func_][ RuleDelayed[edge_, lbl_] ] :=
+  RuleDelayed[edge, func @ lbl]
 
 
 GraphForm::usage = "GraphForm[A] converts the matrix A to a graph revealing the connectivity, assuming that the matrix is a linear map on one vector space.\nGraphForm allows the same options as Graph, but their specifications may be slightly different.\nGraphForm is a variation of the built-in function GraphPlot.\nGraphForm[expr] returns a graph visualizing the connectivity of different particles in the expression.\nGraphForm allows all options of Graph.\nSee also ChiralGraphForm, GraphPlot, AdjacencyGraph, IncidenceGraph."
 
 Options[GraphForm] = {
-  "HideSelfLinks" -> True, (* Not implemented yet. *)
+  "HideSelfLinks" -> True,
   VertexLabels -> Automatic,
   VertexLabelFunction -> Automatic,
   EdgeLabels -> Automatic,
@@ -936,6 +932,7 @@ fBuildGraph[data_Association, opts___?OptionQ] := Module[
     { Automatic -> Identity };
   fEdgeLabel = EdgeLabelFunction /. {opts} /. Options[GraphForm] /.
     { Automatic -> defaultEdgeLabelFunction };
+  fEdgeLabel = makeEdgeLabel[fEdgeLabel];
   
   Graph[ jj, ee,
     VertexCoordinates -> vertexRulesShort[ jj,
@@ -951,7 +948,7 @@ fBuildGraph[data_Association, opts___?OptionQ] := Module[
       VertexSize /. {opts} /. Options[GraphForm] /. Options[Graph]
     ],
     EdgeLabels -> fEdgeLabel /@ ReplaceAll[
-      EdgeLabels, Join[ {opts}, edges, Options[GraphForm], Options[Graph]]
+      EdgeLabels, Join[{opts}, edges, Options @ GraphForm, Options @ Graph]
     ],
     Sequence @@ FilterRules[{opts}, Options[Graph]],
     ImageSize -> Large
@@ -1074,6 +1071,7 @@ fChiralBuildGraph[
      { Automatic -> Identity };
    fEdgeLabel = EdgeLabelFunction /. {opts} /. Options[GraphForm] /.
      { Automatic -> defaultEdgeLabelFunction };
+   fEdgeLabel = makeEdgeLabel[fEdgeLabel];
    
    Graph[ Join[ii, jj], ee,
      VertexCoordinates -> chiralVertexRulesShort[ ii, jj,
@@ -1090,7 +1088,7 @@ fChiralBuildGraph[
        VertexSize /. {opts} /. Options[ChiralGraphForm] /. Options[Graph]
       ],
      EdgeLabels -> fEdgeLabel /@ ReplaceAll[
-       EdgeLabels, Join[ {opts}, Options[GraphForm], Options[Graph]]
+       EdgeLabels, Join[{opts}, Options @ GraphForm, Options @ Graph]
       ],
      Sequence @@ FilterRules[{opts}, Options[Graph]],
      ImageSize -> Large

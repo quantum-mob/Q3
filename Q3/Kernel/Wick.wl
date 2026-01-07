@@ -6,10 +6,11 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { WickState, RandomWickState };
 { WickPureQ, WickPurity, 
-  WickNullQ, WickSingleQ };
+  WickNullQ, WickSingleQ,
+  WickCount };
 { WickDensityMatrix };
 
-{ BCSState };
+{ BCSState, BCSStateQ };
 
 { WickUnitary, WickHermitian, WickCovariance,
   RandomWickUnitary, RandomWickHermitian, RandomWickCovariance };
@@ -26,7 +27,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   WickMean, WickCanonicalize };
 
 { WickCircuit, RandomWickCircuit, RandomWickCircuitSimulate };
-{ WickSimulate, WickDampingOperator, $WickMinorSteps };
+{ WickSimulate, WickDamping, $WickMinorSteps };
 { WickMonitor };
 
 { WickLindbladSolve,
@@ -82,7 +83,7 @@ Normalize[BCSState[{_?NumericQ, zz_?MatrixQ}, rest___]] := With[
 ]
 
 BCSState /:
-WickGreenFunction[BCSState[{_?NumericQ, zz_?MatrixQ}, ___]] := Module[
+NambuGreen[BCSState[{_?NumericQ, zz_?MatrixQ}, ___]] := Module[
   { id = One[Dimensions @ zz],
     gg },
   gg = Inverse[id + zz.ConjugateTranspose[zz]];
@@ -92,7 +93,7 @@ WickGreenFunction[BCSState[{_?NumericQ, zz_?MatrixQ}, ___]] := Module[
 BCSState /:
 WickState[in_BCSState] := With[
   { nrm = NormSquare[in],
-    grn = WickGreenFunction[in] },
+    grn = NambuGreen[in] },
   WickState[{nrm, WickCovariance @ grn}, Options @ in]
 ]
 
@@ -125,30 +126,37 @@ BCSState[pair_?MatrixQ, opts___?OptionQ] := BCSState[{1, pair}, opts]
 
 (* See also the Thouless theorem in Ring80a. *)
 BCSState[ws_WickState] := Module[
-  { n = FermionCount[ws],
-    ww = First @ WickCovariance[ws],
-    vv, id, gg, ff },
-  id = One[2*n];
-  vv = CirclePlus @@ ConstantArray[-I*ThePauli[2], n];
-  ww = ArrayFlatten @ {
-    {vv, id},
-    {-id, -ww}
-  };
-  ww = Quiet[Sqrt[Det @ ww] / 2^n, Det::luc];
-  If[ ZeroQ[ww],
-    Message[BCSState::noBCS, ws];
-    Return[$Failed]
-  ];
-  gg = WickGreenFunction[ws];
-  {gg, ff} = First[gg];
-  ff = -Inverse[gg].ff;
-  Normalize[BCSState @ ff]
-] /; If[ WickPureQ[ws], True,
+  { gg, ff, ww },
+  {gg, ff} = First[NambuGreen @ ws];
+  ww = -Inverse[gg].ff;
+  Normalize[BCSState @ ww]
+] /; 
+If[ WickPureQ[ws],
+  If[ BCSStateQ[ws], True,
+    Message[BCSState::noBCS, ws]; 
+    False
+  ],
   Message[BCSState::mixed, ws];
   False
 ]
 
 (**** </BCSState> ****)
+
+
+(**** <BCSStateQ> ****)
+
+BCSStateQ::usage = "BCSStateQ[grn] returns True if the single-particle Green's function grn charaterizes a valid BCS state. First of all, grn must correspond to a pure Gaussian state. Second, the normal part must be non-singular."
+
+BCSStateQ[ws_WickState] :=
+  BCSStateQ[NambuGreen @ ws]
+
+(* See also the Thouless theorem (Appendix E.3) in Ring80a. *)
+BCSStateQ[grn_NambuGreen] :=
+  Not[ ZeroQ @  Det @ grn[[1, 1]] ] /; WickPureQ[grn]
+
+BCSStateQ[grn_NambuGreen] = False
+
+(**** </BCSStateQ> ****)
 
 
 (**** <WickState> ****)
@@ -188,6 +196,10 @@ WickState[cvr_WickCovariance, opts___?OptionQ] :=
   WickState[{1, First @ cvr}, opts]
 
 (* canonicalization *)
+WickState[grn_NambuGreen, opts___?OptionQ] :=
+  WickState[{1, WickCovariance @ grn}, opts]
+
+(* canonicalization *)
 WickState[{fac_, cvr_WickCovariance}, rest___?OptionQ] :=
   WickState[{fac, First @ cvr}, rest]
 
@@ -222,6 +234,9 @@ WickState[Ket[aa_Association]] := With[
   WickState[Lookup[aa, cc], Length @ cc]
 ]
 
+WickState /:
+NambuGreen[WickState[{_?NumericQ, cvr_?MatrixQ}, ___]] :=
+  NambuGreen[WickCovariance @ cvr]
 
 WickState /:
 Re[WickState[data:{_?NumericQ, _?MatrixQ}, rest___]] :=
@@ -276,11 +291,12 @@ Matrix[WickState[{fac_?NumericQ, cvr_?MatrixQ}, ___]] :=
   fac * WickDensityMatrix[WickCovariance @ cvr]
 (* NOTE: It might be more efficient to use the Murnaghan's canonical form; see Paardekooper (1971) and Humeniuk and Mitrik (2018). Here, we do not try it because this function is intended for elementary tests anyway. *)
 
+(* NOTE: This was originally for cvr in the (2k-1, 2k)-encoding of Majorana modes. However, it still works for cvr in the (k, n+k)-encoding. *)
 WickState /: (* pure states *)
 Matrix[ws:WickState[{fac_?NumericQ, cvr_?MatrixQ}, ___]] := Module[
   { n = FermionCount[ws],
     xy, vv, mm, pp, id },
-  xy = theWignerJordanMajorana[n];
+  xy = theWignerJordanMajorana[n]; (* now both cvr and xy in the (k,n+k)-encoding *)
 
   (* NOTE: This method works only for pure states. *)
   {vv, mm, pp} = SkewTridiagonalize[cvr];
@@ -316,11 +332,8 @@ RandomWickState[n_Integer, opts___?OptionQ] :=
 
 WickPureQ::usage = "WickPureQ[cvr] returns True if Majorana covariance matrix cvr represents a prue state; False, otherwise./nWickPureQ[bdg] tests the BdG state."
 
-WickPureQ[cvr_?MatrixQ] := Module[
-  { val },
-  val = First @ SkewTridiagonalize[cvr];
-  val = Diagonal[val, 1][[1;;All;;2]];
-  ArrayZeroQ[Abs[val] - 1]
+WickPureQ[cvr_?MatrixQ] := ArrayZeroQ[
+  One[Dimensions @ cvr] + cvr.cvr
 ]
 
 WickPureQ[WickState[{_, cvr_?MatrixQ}, ___]] :=
@@ -387,9 +400,12 @@ WickCovariance[ws_WickState] := WickCovariance[ ws[[1, 2]] ]
 
 (* conversion *)
 WickCovariance[grn_NambuGreen] := Module[
-  { crr = 4*ToMajorana[Normal @ grn] },
+  { crr = 4*ToMajorana[Normal @ grn],
+    cvr },
   (* NOTE: Notice the factor of 4. *)
-  WickCovariance @ Re[I*(crr - One[Dimensions @ crr])]
+  cvr = I*(crr - One[Dimensions @ crr]);
+  If[MatrixQ[cvr, NumericQ], cvr = Re[cvr]];
+  WickCovariance[cvr]
 ]
 
 (* conversion *)
@@ -692,7 +708,6 @@ ArrayShort[WickHermitian[mm_?MatrixQ, ___], opts___?OptionQ] :=
 
 WickHermitian /:
 Dagger[op_WickHermitian] = op
-  WickHermitian[Transpose @ mat, rest]
 
 WickHermitian /:
 Plus[WickHermitian[a_, any___], WickHermitian[b_, other___]] :=
@@ -702,6 +717,13 @@ WickHermitian /:
 Times[z_, WickHermitian[mm_, rest___]] :=
   WickHermitian[z * mm, rest]
 
+
+WickHermitian /:
+ExpressionFor[op:WickHermitian[_?MatrixQ, ___], aa:{__?FermionQ}] := Module[
+  { mat = Normal[NambuHermitian @ op],
+    aaa = Join[aa, Dagger @ aa] },
+  Garner[ MultiplyDot[Dagger @ aaa, mat.aaa] / 2 ]
+]
 
 WickHermitian /:
 ExpressionFor[WickHermitian[mat_?MatrixQ, ___], cc:{__?MajoranaQ}] :=
@@ -1515,8 +1537,10 @@ WickMapOdds[{dd_?ArrayQ, nn_?VectorQ}, True][cvr_?MatrixQ] := Module[
 WickGreenFunction::usage = "WickGreenFunction[ws, {k1, k2, \[Ellipsis]}] returns m\[Times]m matrix of single-particle Green's functions among fermion modes in {k1, k2, \[Ellipsis]} with respect to WickState ws.\nWickGreenFunction[ns, {k1, k2, \[Ellipsis]}] returns NambuGreen[{grn, anm}], where grn and anm are m\[Times]m matrix of single-particle normal and anomalous Green's functions, respectively, among fermion modes in {k1, k2, \[Ellipsis]} with respect to NambuState ns.\nWickGreenFunction[in] is equivalent to WickGreenFunction[in, Range[n]], where n is the number of fermion modes for which input Wick or Nambu state in is defined for.\nWickGreenFunction[data] or WickGreenFunction[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Wick or BdG states.\nWickGreenFunction[{k1, k2, \[Ellipsis]}] represents an operator form of WickGreenFunction to be applied to Wick or Nambu state."
 
 (* shortcut *)
-WickGreenFunction[ws_WickState] :=
-  WickGreenFunction[ws, Range @ FermionCount @ ws]
+WickGreenFunction[bc_BCSState] := NambuGreen[bc]
+
+(* shortcut *)
+WickGreenFunction[ws_WickState] := NambuGreen[ws]
 
 (* canonical form for BdG modelsl *)
 WickGreenFunction[WickState[{_, cvr_?MatrixQ}, ___], kk:{___Integer}] := Module[
@@ -1900,7 +1924,7 @@ WickNonunitary[{ham_, dmp_NambuHermitian, gmm___}, rest___] :=
 (* CONVENTION: (1/2) (a^\dag, a) H (a, a^\dag) = (i/4) c A c. *)
 
 (* canonicalization *)
-WickNonunitary[{ham_WickHermitian, more__}, rest___] :=
+WickNonunitary[{ham:WickHermitian[_?MatrixQ, ___], more__}, rest___] :=
   WickNonunitary[{First @ ham, more}, rest]
 
 (* canonicalization *)
@@ -1915,9 +1939,9 @@ WickNonunitary[{ham_?MatrixQ, WickMeasurement[kk:{__Integer}, ___]}, rest___] :=
 ]
 
 (* conversion *)
-WickNonunitary[{ham_, jmp:(_WickJump|_WickMeasurement)}, rest___] := Module[
+WickNonunitary[{ham_?MatrixQ, jmp:(_WickJump|_WickMeasurement)}, rest___] := Module[
   {dmp, gmm},
-  {dmp, gmm} = WickDampingOperator[jmp];
+  {dmp, gmm} = WickDamping[jmp];
   WickNonunitary[{ham, dmp, gmm}, rest]
 ]
 
@@ -1943,7 +1967,6 @@ Matrix[op:WickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, ___]] := M
   { n = FermionCount[op],
     non = ham - I*dmp,
     mat, wjm },
-  n = FermionCount[op];
   wjm = theWignerJordanMajorana[n];
   mat = Dot[Transpose[wjm, {3, 1, 2}], non, wjm] * I/4;
   mat = TensorContract[mat, {{2, 3}}];
@@ -2020,17 +2043,17 @@ RandomWickNonunitary[n_Integer, opts___?OptionQ] :=
   WickNonunitary[Re @ {RandomAntisymmetric[2n], RandomAntisymmetric[2n], 0}, opts]
 
 
-(**** <WickDampingOperator> ****)
+(**** <WickDamping> ****)
 
-WickDampingOperator::usage = "WickDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp in the WickJump or WickMeasurement form."
+WickDamping::usage = "WickDamping[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp in the WickJump or WickMeasurement form."
 
-WickDampingOperator[WickJump[jmp_?MatrixQ, ___]] := With[
+WickDamping[WickJump[jmp_?MatrixQ, ___]] := With[
   { mat = ConjugateTranspose[jmp] . jmp },
   { WickHermitian @ Re[ -I*(mat - Transpose[mat]) ],
     Re @ Tr[mat]/2 }
 ]
 
-WickDampingOperator[WickMeasurement[msr_?MatrixQ, ___]] := Module[
+WickDamping[WickMeasurement[msr_?MatrixQ, ___]] := Module[
   { dig, mat },
   dig = 2*Map[NormSquare, msr];
   mat = Dot[ConjugateTranspose @ msr, dig*msr];
@@ -2038,7 +2061,7 @@ WickDampingOperator[WickMeasurement[msr_?MatrixQ, ___]] := Module[
     Re @ Tr[mat]/2 }
 ]
 
-(**** </WickDampingOperator> ****)
+(**** </WickDamping> ****)
 
 
 (**** <WickSimulate> ****)

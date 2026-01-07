@@ -2,6 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ RandomSelection }; (* 2026-01-02 v4.4.0 *)
 { GateFactor }; (* 2025-10-10 v4.2.13  *)
 { YoungShapePile, GelfandYoungPile, SchurLabelPile };  (* 2025-06-10 v4.2.5 *)
 { BratteliDiagram, KostkaMatrix }; (* 2025-06-09 v4.2.4 *)
@@ -317,6 +318,14 @@ ToGelfandPattern[tb_, _Integer] := (
 
 
 (**** <obsolete> ****)
+
+RandomSelection::usage = "RandomSelection is obsolte since v4.4.0 (2026-01-02). It was intended to randomly select DISTINCT elements, which is already implemented by the built-in function RandomSample."
+
+RandomSelection[any___] := (
+  Message[Q3General::obsolete, "RandomSelection", "RandomSample"];
+  RandomSample[any]
+)
+
 
 GateFactor::usage = "GateFactor is obsolte since v4.2.13 (2025-10-10); Use Unfold or UnfoldAll instead."
 

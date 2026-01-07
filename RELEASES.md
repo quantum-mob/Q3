@@ -5,6 +5,10 @@
 - ToMajorana, ToDirac: Majorana modes are encoded in the block form (rather than the form where the odd and even modes are alternating)
 - Affected symbols: WickHermitian, WickUnitary, theWignerJordanMajorana, WickEntanglementEntropy, WickMutualInformation
 - Bug fix: WickCovariance[_NambuHermitian]
+- Improved: BCSState, SpinForm
+- New: BCSStateQ
+- Removed: RandomSelection
+- Renamed: WickDampingOperator --> WickDamping, NambuDampingOperator --> NambuDamping
 
 ## 4.3.3
 

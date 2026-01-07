@@ -642,20 +642,6 @@ Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorCap[S] -> {0, 1}]
 (**** </Basis for Qubit> ****)
 
 
-(**** <SpinForm> ****)
-
-SpinForm[vec:Ket[_Association], qq:{__?QubitQ}] := Module[
-  { ss },
-  ss = vec[FlavorCap @ qq] /. {
-    0 -> "\[UpArrow]",
-    1 -> "\[DownArrow]"
-   };
-  Ket[vec, qq -> ss]
- ]
-
-(**** </SpinForm> ****)
-
-
 (**** <PauliForm> ****)
 
 singleQubitGateQ::usage = "singleQubitGateQ[op] returns True if operator op is an 'elementary' single-qubit gate; and False, otherwise."

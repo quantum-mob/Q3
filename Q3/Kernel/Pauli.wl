@@ -423,29 +423,29 @@ theProductForm[vec:Ket[_Association], gg_List] := Row[
 
 SpinForm::usage = "SpinForm[expr, {s1, s2, \[Ellipsis]}] converts the values to \[UpArrow] or \[DownArrow] in every Ket[<|\[Ellipsis]|>] appearing in expr.\nIf the Species is a Qubit, SpinForm converts 0 to \[UpArrow] and 1 to \[DownArrow].\nIf the Species is a Spin, SpinForm converts 1/2 to \[UpArrow] and -1/2 to \[DownArrow]."
 
-SpinForm[expr_, a_List, b_List] :=
-  SpinForm[expr, FlavorCap @ a, FlavorCap @ b] /;
+SpinForm[Bra[spec___], rest___] :=
+  Interpretation[Dagger @ theSpinForm[Ket[spec], rest], Bra[spec]]
+  
+
+SpinForm[any_, a_List] :=
+  SpinForm[any, FlavorCap @ a] /; Not[FlavorCapQ @ a]
+
+SpinForm[any_, a_List, b_List] :=
+  SpinForm[any, FlavorCap @ a, FlavorCap @ b] /;
   Not[FlavorCapQ @ {a, b}]
 
-SpinForm[expr_] := SpinForm[expr, Agents @ expr, {}]
 
-SpinForm[expr_, s_?SpeciesQ, rest_] := SpinForm[expr, s @ {$}, rest]
+SpinForm[any_] := SpinForm[any, Cases[Agents @ any, _?QubitQ | _?SpinQ]]
 
-SpinForm[expr_, qq_List, s_?SpeciesQ] := SpinForm[expr, qq, s @ {$}]
+SpinForm[any_, s:(_?QubitQ | _?SpinQ), rest___] := SpinForm[any, s @ {$}, rest]
+
 
 SpinForm[v_Ket, rest__] :=
   Interpretation[theSpinForm[v, rest], v]
   
-SpinForm[Bra[spec___], rest___] :=
-  Interpretation[Dagger @ theSpinForm[Ket[spec], rest], Bra[spec]]
+SpinForm[any_Association, rest__] := Map[SpinForm[#, rest]&, any]
   
-SpinForm[expr_, qq_List] := SpinForm[ expr, FlavorCap @ qq,
-  Complement[Agents @ expr, FlavorCap @ qq]
- ]
-
-SpinForm[expr_Association, rest__] := Map[SpinForm[#, rest]&, expr]
-  
-SpinForm[expr:Except[_Ket|_Bra], rest__] := expr /. {
+SpinForm[any:Except[_Ket|_Bra], rest__] := any /. {
   Interpretation[__, v_] :> SpinForm[v, rest],
   a_Association :> Spinfrom[a, rest],
   v_Ket :> SpinForm[v, rest],
@@ -453,22 +453,25 @@ SpinForm[expr:Except[_Ket|_Bra], rest__] := expr /. {
 }
 
 
-theSpinForm[Ket[vv:(0|1)..], ___] := 
+theSpinForm[Ket @ {vv:(0|1)...}, ___] := 
   Ket @ List @ Row[{vv} /. {0 -> "\[UpArrow]", 1 -> "\[DownArrow]"}]
 
-theSpinForm[vec:Ket[a_Association], gg_List, kk_List] := Module[
-  { ss = SequenceReplace[gg, {xx:Except[_List]..} -> {xx}],
-    rr = Flatten @ kk,
-    vv },
-  vv = Join[
-    (vec /@ ss) /. {(0|1/2) -> "\[UpArrow]", (1|-1/2) -> "\[DownArrow]"},
-    {vec @ rr} /. {{} -> Nothing}
-  ];
-  Ket @ List @ Row[
-    Map[Row[#, $KetDelimiter]&, Flatten /@ vv],
-    $KetGroupDelimiter
-  ]
+theSpinForm[aa_Association, qq:{(_?QubitQ | _?SpinQ)...}] := Module[
+  { ss },
+  ss = Lookup[aa, qq] /. {
+    (0| 1/2) -> "\[UpArrow]",
+    (1|-1/2) -> "\[DownArrow]"
+  };
+  Join[aa, AssociationThread[qq -> ss]]
 ]
+
+theSpinForm[Ket[aa_Association], qq:{(_?QubitQ | _?SpinQ)...}] := With[
+  { ss = theSpinForm[aa, qq] },
+  theSimpleForm[Ket @ ss, Keys @ ss]
+]
+
+theSpinForm[Ket[aa_Association], qq:{(_?QubitQ | _?SpinQ)...}, kk_List] :=
+  theSimpleForm[Ket @ theSpinForm[aa, qq], kk]
 
 (**** </SpinForm> ****)
 

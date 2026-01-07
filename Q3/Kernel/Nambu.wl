@@ -10,7 +10,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { NambuNonunitary, NambuJump, NambuOperator, NambuMeasurement };
 { RandomNambuNonunitary, RandomNambuJump, RandomNambuOperator, RandomNambuMeasurement };
-{ NambuDampingOperator };
+{ NambuDamping };
 
 { NambuElements, NambuCoefficients };
 
@@ -190,7 +190,7 @@ MultiplyKind[_NambuHermitian] = Fermion
 (**** </NambuHermitian> ****)
 
 
-theWignerJordanNambu::usage = "theWignerJordanNambu[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation and creations operators under the Wigner-Joran transformation."
+theWignerJordanNambu::usage = "theWignerJordanNambu[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation and creation operators under the Wigner-Joran transformation."
 
 theWignerJordanNambu[n_Integer] := Module[
   { mm = theWignerJordan[n] },
@@ -474,11 +474,11 @@ NambuConjugateReverse[mat_?MatrixQ] :=
 (**** </NambuConjugateReverse> ****)
 
 
-(**** <NambuDampingOperator> ****)
+(**** <NambuDamping> ****)
 
-NambuDampingOperator::usage = "NambuDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator in the Nambu normal ordering that corresponds to the quantum jump operators jmp in the NambuJump or NambuMeasurement form.\nThis function is intended for self-consistency checks. Most calculations concerning fermionic quantum computation are more efficient with  WickDampingOperator."
+NambuDamping::usage = "NambuDamping[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator in the Nambu normal ordering that corresponds to the quantum jump operators jmp in the NambuJump or NambuMeasurement form.\nThis function is intended for self-consistency checks. Most calculations concerning fermionic quantum computation are more efficient with  WickDamping."
 
-NambuDampingOperator[NambuJump[jmp_?MatrixQ, ___]] := Module[
+NambuDamping[NambuJump[jmp_?MatrixQ, ___]] := Module[
   {uu, vv, aa, bb, dd},
   {uu, vv} = First @ PartitionInto[jmp, {1, 2}];
   aa = ConjugateTranspose[uu] . uu / 2;
@@ -488,7 +488,7 @@ NambuDampingOperator[NambuJump[jmp_?MatrixQ, ___]] := Module[
     Re[Tr[aa] + Tr[dd]]/2 }
 ]
 
-NambuDampingOperator[NambuMeasurement[msr_?MatrixQ, ___]] := Module[
+NambuDamping[NambuMeasurement[msr_?MatrixQ, ___]] := Module[
   {uu, vv, aa, bb, dd, nn},
   {uu, vv} = First @ PartitionInto[msr, {1, 2}];
   nn = Map[NormSquare, msr];
@@ -500,7 +500,7 @@ NambuDampingOperator[NambuMeasurement[msr_?MatrixQ, ___]] := Module[
     Re[Tr[aa] + Tr[dd]]/2 }
 ]
 
-(**** </NambuDampingOperator> ****)
+(**** </NambuDamping> ****)
 
 
 (**** <NambuNonunitary> ****)

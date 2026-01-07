@@ -160,7 +160,7 @@ RandomCliffordState[n_Integer] := Module[
 
 RandomCliffordState[k_Integer, n_Integer] := With[
   { gnr = First[RandomCliffordState @ n] },
-  CliffordState @ RandomSelection[gnr, k]
+  CliffordState @ RandomSample[gnr, k]
 ]
 
 RandomCliffordState[ss:{__?QubitQ}] :=
@@ -168,7 +168,7 @@ RandomCliffordState[ss:{__?QubitQ}] :=
 
 RandomCliffordState[k_Integer, ss:{__?QubitQ}] := With[
   { gnr = First[RandomCliffordState @ Length @ ss] },
-  CliffordState[RandomSelection[gnr, k], ss]
+  CliffordState[RandomSample[gnr, k], ss]
 ]
 
 
