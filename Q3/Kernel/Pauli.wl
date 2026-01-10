@@ -1411,16 +1411,10 @@ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
   Operator[mat, FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
 
 Operator /:
-Dagger @ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] := Module[
-  { lbl = OptionValue[Gate, {opts}, "Label"] },
-  If[ lbl === None,
-    Operator[ConjugateTranspose @ mat, ss, opts],
-    Operator[ConjugateTranspose @ mat, ss, 
-      DeleteDuplicatesBy[Flatten @ {"Label" -> mySuperDagger[lbl], opts}, First]
-    ]
+Dagger @ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] := 
+  Operator[ ConjugateTranspose @ mat, ss, 
+    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
   ]
-]
-
 
 Operator /:
 Matrix[ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{__?QubitQ} ] :=
