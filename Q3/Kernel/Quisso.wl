@@ -87,50 +87,6 @@ AddElaborationPatterns[
 ]
 
 
-(**** <Unfold> ****)
-
-Unfold::usage = "Unfold[gate] gives an unfolded form of gate."
-
-Unfold::unknown = "Unknown method ``."
-
-Options[Unfold] = {
-  Method -> Default, (* CZ, CNOT, Toffoli  *)
-  "ApproximationLevel" -> Full, (* QFT *)
-  "Numeric" -> False, (* QFT *)
-  "Reversed" -> False, (* QFT *)
-  "Pushed" -> False (* QFT *)
-}
-
-SyntaxInformation[Unfold] = {
-  "ArgumentsPattern" -> {_, OptionsPattern[]}
-}
-
-Unfold[any_?CommutativeQ op_, opts___?OptionQ] := any * Unfold[op, opts]
-
-Unfold[any_, ___?OptionQ] = any
-
-(**** </Unfold> ****)
-
-
-(**** <UnfoldAll> ****)
-
-UnfoldAll::usage = "UnfoldAll[gate] gives a fully unfolded form of gate."
-
-UnfoldAll::unknown = "Unknown method ``."
-
-Options[UnfoldAll] = Options[Unfold]
-
-SyntaxInformation[UnfoldAll] = {
-  "ArgumentsPattern" -> {_, OptionsPattern[]}
-}
-
-UnfoldAll[any_?CommutativeQ op_, opts___?OptionQ] := any * UnfoldAll[op, opts]
-
-UnfoldAll[any_, ___?OptionQ] = any
-
-(**** </UnfoldAll> ****)
-
-
 (**** <Qubit> ****)
 
 Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raising|Lowering|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
@@ -893,14 +849,29 @@ mySuperscript::usage = "mySuperscript[expr, x] is like Superscript, but handles 
 
 mySuperscript[Subscript[a_, b_], x_] := Subsuperscript[a, b, x]
 
-mySuperscript[Subsuperscript[a_, b_, c_], x_] := Subsuperscript[a, b, Row @ {c, "\[ThinSpace]", x}]
+mySuperscript[Subsuperscript[a_, b_, Row[c_List, "\[ThinSpace]"]], x_] := 
+  Subsuperscript[a, b, Row[Append[c, x], "\[ThinSpace]"]]
 
 mySuperscript[a_, x_] := Superscript[a, x]
 
 
 mySuperDagger::usage = "mySuperDagger[expr] is like SuperDagger, but handles subscript or superscript better."
 
-mySuperDagger[a_] := mySuperscript[a, "\[Dagger]"]
+mySuperDagger[a_] := Superscript[a, "\[Dagger]"]
+
+mySuperDagger[Superscript[a_, "\[Dagger]"]] := a
+
+mySuperDagger[Superscript[a_, Row[b_, "\[ThinSpace]"]]] :=
+  Superscript[a, Row[exclusiveAppend[b, "\[Dagger]"], "\[ThinSpace]"]]
+
+mySuperDagger[Subsuperscript[a_, b_, Row[c_List, "\[ThinSpace]"]]] := 
+  Subsuperscript[a, b, Row[exclusiveAppend[c, "\[Dagger]"], "\[ThinSpace]"]]
+
+exclusiveAppend[a_List, b_] := If[
+  MemberQ[a, b],
+  DeleteCases[a, b],
+  Append[a, b]
+]
 
 (**** </mySuperscript> ****)
 
@@ -1308,6 +1279,9 @@ iSWAP /:
 Unfold[iSWAP[s_?QubitQ, t_?QubitQ], ___] := QuantumCircuit[
   {s[7], t[7]}, s[6], CNOT[s, t], CNOT[t, s], t[6]
 ]
+
+Unfold[HoldPattern @ Dagger[op_iSWAP], ___] := 
+  Dagger[Unfold @ op]
 
 (**** </iSWAP> ****)
 
@@ -2556,6 +2530,8 @@ MeasurementOdds::pauli = "`` is not an observable Pauli operator."
 
 SyntaxInformation[MeasurementOdds] = { "ArgumentsPattern" -> {_} }
 
+MeasurementOdds[Measurement[op_]] := MeasurementOdds[op]
+
 (* NOTE: DO NOT use op_?PauliQ; it will inerfere with mat_?MatrixQ below.
    NOTE ADDED: Maybe not any longer (v3.4.4) because PauliQ and PauliMatrixQ are now separate. *)
 MeasurementOdds[op_][vec:(_State|_?fKetQ)] := Module[
@@ -2619,7 +2595,30 @@ Measurement::usage = "Measurement[op] represents the measurement of Pauli operat
 
 Measurement::num = "Probability half is assumed for a state without explicitly numeric coefficients."
 
+Measurement::non = "Matrix `` does not represent a Pauli string."
+
 SyntaxInformation[Measurement] = { "ArgumentsPattern" -> {_} }
+
+Measurement /:
+MakeBoxes[msr:Measurement[mat_?MatrixQ, ___], fmt_] := Module[
+  { mm = First @ Keys @ PauliCoefficients[mat] },
+  BoxForm`ArrangeSummaryBox[
+    Measurement, msr, None,
+    { BoxForm`SummaryItem @ { Pauli @ DeleteCases[mm, 0] },
+      BoxForm`SummaryItem @ { 
+        Flatten @ Position[mm, Except[0], {1}, Heads -> False],
+        " of ",
+        Length[mm]
+      }
+    },
+    { },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+] /; If[ PauliMatrixQ[mat], True,
+    Message[Measurement::non, mat];
+    False
+  ]
 
 Measurement[op_?MatrixQ][in_?VectorQ] := theMeasurement[in, op]
 
@@ -3674,6 +3673,54 @@ TransformByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
 Protect[Evaluate @ $symb]
 
 End[] (* Qudits *)
+
+
+Begin["`Private`"]
+
+(**** <Unfold> ****)
+
+Unfold::usage = "Unfold[gate] gives an unfolded form of gate."
+
+Unfold::unknown = "Unknown method ``."
+
+Options[Unfold] = {
+  Method -> Default, (* CZ, CNOT, Toffoli  *)
+  "ApproximationLevel" -> Full, (* QFT *)
+  "Numeric" -> False, (* QFT *)
+  "Reversed" -> False, (* QFT *)
+  "Pushed" -> False (* QFT *)
+}
+
+SyntaxInformation[Unfold] = {
+  "ArgumentsPattern" -> {_, OptionsPattern[]}
+}
+
+Unfold[any_?CommutativeQ op_, opts___?OptionQ] := any * Unfold[op, opts]
+
+Unfold[any_, ___?OptionQ] = any
+
+(**** </Unfold> ****)
+
+
+(**** <UnfoldAll> ****)
+
+UnfoldAll::usage = "UnfoldAll[gate] gives a fully unfolded form of gate."
+
+UnfoldAll::unknown = "Unknown method ``."
+
+Options[UnfoldAll] = Options[Unfold]
+
+SyntaxInformation[UnfoldAll] = {
+  "ArgumentsPattern" -> {_, OptionsPattern[]}
+}
+
+UnfoldAll[any_?CommutativeQ op_, opts___?OptionQ] := any * UnfoldAll[op, opts]
+
+UnfoldAll[any_, ___?OptionQ] = any
+
+(**** </UnfoldAll> ****)
+
+End[] (* Untilities *)
 
 
 EndPackage[]

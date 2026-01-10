@@ -71,6 +71,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { Purification, Snapping };
 
+{ Gate }; (* QuantumCircuit *)
+
 
 Begin["`Private`"]
 
@@ -1397,7 +1399,7 @@ MakeBoxes[op:Operator[mat_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ], fmt_] :=
     Operator, op, None,
     { BoxForm`SummaryItem @ {"Species: ", ss},
       BoxForm`SummaryItem @ {"Dimension: ", Dimensions @ mat} },
-    { BoxForm`SummaryItem @ {"Matrix (5\[Times]5): ", MatrixForm@mat[[;;UpTo[5], ;;UpTo[5]]]},
+    { BoxForm`SummaryItem @ {"Matrix: ", MatrixForm@mat[[;;UpTo[5], ;;UpTo[5]]]},
       BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
     fmt, "Interpretable" -> Automatic ]
 
@@ -1407,6 +1409,17 @@ Operator[mat_?MatrixQ, S_?SpeciesQ, opts___?OptionQ] :=
 
 Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
   Operator[mat, FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
+
+Operator /:
+Dagger @ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] := Module[
+  { lbl = OptionValue[Gate, {opts}, "Label"] },
+  If[ lbl === None,
+    Operator[ConjugateTranspose @ mat, ss, opts],
+    Operator[ConjugateTranspose @ mat, ss, 
+      DeleteDuplicatesBy[Flatten @ {"Label" -> mySuperDagger[lbl], opts}, First]
+    ]
+  ]
+]
 
 
 Operator /:
@@ -2065,10 +2078,8 @@ Matrix[ z_?CommutativeQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ} ] :=
 
 
 (* Dagger *)
-
-HoldPattern @ Matrix[Dagger[op_?AgentQ], rest___] := Topple @ Matrix[op, rest]
-(* NOTE: Matrix[a] may still include some operators; hence, Topple instead
-   of ConjugateTranspose. *)
+HoldPattern @ Matrix[Dagger[op_], rest___] := 
+  ConjugateTranspose @ Matrix[op, rest]
 
 
 (* Arrays *)

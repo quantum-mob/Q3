@@ -575,6 +575,12 @@ ParseGate[iSWAP[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?OptionQ] :=
     "Shape" -> "CircleCross"
   ]
 
+ParseGate[HoldPattern @ Dagger @ iSWAP[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?OptionQ] :=
+  Gate[ {c}, {t},
+    "ControlShape" -> "ReversedCircleCross",
+    "Shape" -> "ReversedCircleCross"
+  ]
+
 
 ParseGate[
   UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}, opts___?OptionQ],
@@ -825,6 +831,24 @@ gateShape["CircleCross"][x_, y_?NumericQ, ___] := {
   Line @ {
     { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
     { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
+  }
+}
+
+
+gateShape["ReversedCircleCross"][x_, Rule[yy_List, _], ___] :=
+  gateShape["ReversedCircleCross"][x, yy]
+
+gateShape["ReversedCircleCross"][x_, yy_List, ___] :=
+  gateShape["ReversedCircleCross"] @@@ Thread@{x, yy}
+
+gateShape["ReversedCircleCross"][x_, y_?NumericQ, ___] := {
+  { EdgeForm[Opacity[1]], 
+    LightDarkSwitched @ Black, Disk[{x, y}, $GateSize / 3] },
+  { LightDarkSwitched @ White,
+    Line @ {
+      { {x,y}+{-1,-1}*2*$DotSize, {x,y}+{+1,+1}*2*$DotSize },
+      { {x,y}+{-1,+1}*2*$DotSize, {x,y}+{+1,-1}*2*$DotSize }
+    }
   }
 }
 

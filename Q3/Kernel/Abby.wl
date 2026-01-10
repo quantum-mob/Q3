@@ -1235,7 +1235,7 @@ SaveData[data_, OptionsPattern[]] := Module[
 
 (**** <doAssureList> ****)
 
-doAssureList::usage = "doAssureList[x] returns x if x is already a list and {x} if not.\ndoAssureList[x, n] returns x if x is already a list of length x, a new list with 0 padded to the right if x is a list of different length, and {x, 0, 0, \[Ellipsis]} if x is not a list."
+doAssureList::usage = "doAssureList[x] returns x if x is already a list and {x} if not.\ndoAssureList[x, n] is equivalent to PadRight[x, n, x] if x is already a list of length x and returns {x, x, x, \[Ellipsis]} if x is not a list.\ndoAssureList[None] or doAssureList[None, n] returns {}."
 
 doAssureList[None] = {} (* cf. doForceList *)
 
@@ -1255,7 +1255,7 @@ doAssureList[a_, n_Integer] := Table[a, n]
 
 (**** <doForceList> ****)
 
-doForceList::usage = "doForceList[] ..."
+doForceList::usage = "doForceList is similar to doAssureList except for input None."
 
 doForceList[a_?ListQ] = a
 

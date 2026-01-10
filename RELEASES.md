@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.4.1
+
+- Improved: Dagger[iSWAP[...]] supports Matrix, Unfold and QuantumCircuit.
+- Improved: Measurement, MeasurementOdds
+- Bug fix: Operator did not support Dagger.
+
 ## 4.4.0
 
 - ToMajorana, ToDirac: Majorana modes are encoded in the block form (rather than the form where the odd and even modes are alternating)
