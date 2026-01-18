@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.4.2
+
+- New: WignerBasis
+- Renamed: ClebschGordanTable --> ClebschGordanMatrix
+
 ## 4.4.1
 
 - Improved: Dagger[iSWAP[...]] supports Matrix, Unfold and QuantumCircuit.

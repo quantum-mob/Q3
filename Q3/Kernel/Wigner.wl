@@ -13,6 +13,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { WignerDecompose, WignerCompose,
   WignerCoefficients };
 
+{ WignerBasis };
+
 { WignerAdd, WignerAddZ };
 
 { SpinCoherentState };
@@ -20,7 +22,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { WignerDistributionW,
   WignerDistributionC };
 
-{ ClebschGordanTable };
+{ ClebschGordanMatrix };
 
 { NineJSymbol, WignerEckart };
 
@@ -601,7 +603,7 @@ WignerAdd[a_?SpinQ] := Module[
 WignerAdd[a___, b_?SpinQ, c___] := WignerAdd[a, WignerAdd[b], c]
 
 WignerAdd[irb_Association, irc_Association, ird__Association] :=
-  WignerAdd[ WignerAdd[irb, irc], ird]
+  WignerAdd[WignerAdd[irb, irc], ird]
 
 WignerAdd[irb_Association, irc_Association] := Module[
   { S1 = Union @ Map[First] @ Keys[irb],
@@ -636,7 +638,64 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
   Association[{S, Sz} -> new]
 ]
 
-(**** </WignerAddZ> ****)
+(**** </WignerAdd> ****)
+
+
+(**** <WignerBasis> ****)
+
+WignerBasis::usage = "WignerBasis[n, s] returns the SU(2) irreducible basis (the total angular momentum basis) for the system of n spins of magnitude s, where each basis vector is expressed in the row vector representation.\n WignerBasis[{s1,s2,\[Ellipsis],sn}] returns the basis with each basis vector expressed in the ket form."
+
+WignerBasis[S_?SpinQ] := Association[{Spin @ S} -> Basis[S]]
+
+WignerBasis[{S_?SpinQ}] := WignerBasis[S]
+
+WignerBasis[ss:{_, __?SpinQ}] :=
+  Fold[theWignerBasis, WignerBasis @ First @ ss, Rest @ ss]
+
+
+WignerBasis[s_?SpinNumberQ] := WignerBasis[1, s]
+
+WignerBasis[n_Integer, s_?SpinNumberQ] := Module[
+  { in, bs },
+  in = Association[{s} -> One[2*s + 1]];
+  bs = Nest[theWignerBasis[s], in, n-1];
+  Map[Map[Identity], bs] 
+  (* each value is a list of sparse vectors; not a whole matrix; this is to make it easier to use KeyGroupBy in order to reorganize the basis vectors. *)
+]
+
+
+theWignerBasis[bs_Association, S_?SpinQ] :=
+  Join @ AssociationMap[theWignerBasis[S], bs]
+
+theWignerBasis[S_?SpinQ][jj:{__?SpinNumberQ} -> bs_] := Module[
+  { j = Last[jj],
+    s = Spin[S],
+    njj, nbs },
+  njj = Range[j+s, Abs[j-s], -1];
+  nbs = Flatten @ Outer[CircleTimes, bs, Basis @ S];
+  nbs = Garner[nbs . ClebschGordanMatrix[j, s]];
+  nbs = TakeList[nbs, 2*njj+1];
+  njj = Thread @ Append[jj, njj];
+  AssociationThread[njj -> nbs]
+]
+
+
+theWignerBasis[s_?SpinNumberQ][bs_Association] :=
+  Join @ AssociationMap[theWignerBasis[s], bs]
+
+(* NOTE: One could use theWignerBasis[S] and then convert the result to vectors. However, the following is faster. *)
+theWignerBasis[s_?SpinNumberQ][jj:{__?SpinNumberQ} -> bs_?MatrixQ] := Module[
+  { j = Last[jj],
+    njj, nbs },
+  njj = Range[j+s, Abs[j-s], -1];
+  nbs = Flatten[TensorProduct[bs, One[2*s+1]], {{1,3}, {2,4}}];
+  nbs = Transpose[ClebschGordanMatrix[j, s]].nbs;
+  nbs = TakeList[nbs, 2*njj+1];
+  njj = Thread @ Append[jj, njj];
+  AssociationThread[njj -> nbs]
+]
+
+(**** </WignerBasis> ****)
 
 
 (**** <Rotation> ****)
@@ -818,13 +877,13 @@ WignerDistributionC[th_, ph_, v_List] := Module[
 (**** </WignerDistributionC> ****)
 
 
-(**** <ClebschGordanTable> ****)
+(**** <ClebschGordanMatrix> ****)
 
-ClebschGordanTable::usage = "ClebschGordanTable[j1,j2] returns the matrix of the Clebsch-Gordan coefficients."
+ClebschGordanMatrix::usage = "ClebschGordanMatrix[j1,j2] returns the matrix of the Clebsch-Gordan coefficients."
 
-Options[ClebschGordanTable] = { "PrintTable" -> True }
+Options[ClebschGordanMatrix] = {"Print" -> False}
 
-ClebschGordanTable[j1_?SpinNumberQ, j2_?SpinNumberQ, OptionsPattern[]] := Module[
+ClebschGordanMatrix[j1_?SpinNumberQ, j2_?SpinNumberQ, OptionsPattern[]] := Module[
   { JJ = Range[j1+j2, Abs[j1-j2], -1],
     JM, printQ },
 
@@ -835,9 +894,9 @@ ClebschGordanTable[j1_?SpinNumberQ, j2_?SpinNumberQ, OptionsPattern[]] := Module
        1 ],
      ClebschGordan::phy
   ];
-  cg = Flatten[cg, 1];
+  cg = SparseArray @ Flatten[cg, 1];
    
-  If[OptionValue["PrintTable"], printCG[j1, j2, cg]];
+  If[OptionValue["Print"], printCG[j1, j2, cg]];
   Return[cg]
 ]
 
@@ -870,7 +929,7 @@ printCG[j1_, j2_, cg_] := Module[
   mm = 2 + Accumulate @ ConstantArray[2*j2+1, 2*j1];
   mm = Thread[ Rule[mm, Dashed] ];
   
-  Grid[
+  Print @ Grid[
     table,
     Frame -> True,
     Dividers -> {
@@ -880,7 +939,7 @@ printCG[j1_, j2_, cg_] := Module[
   ]
 ]
 
-(**** </ClebschGordanTable> ****)
+(**** </ClebschGordanMatrix> ****)
 
 
 (**** <NineJSymbol> ****)

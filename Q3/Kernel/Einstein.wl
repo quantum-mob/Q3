@@ -37,6 +37,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { FromTwoLevelU }; (* obsolete *)
 { GrayControlledW }; (* obsolete *)
 
+{ ClebschGordanTable }; (* renamed v4.4.2 2026-01-18 *)
 { CountWeylTableaux }; (* renamed *)
 { CountYoungTableaux }; (* renamed *)
 { YoungDominatesQ }; (* renamed *)
@@ -353,6 +354,13 @@ SchurLabelPile::usage = "SchurLabelPile has been renamed SchurPileUp since v4.2.
 
 SchurLabelPile[any___] := (
   Message[Q3General::renamed, "SchurLabelPile", "SchurPileUp"];
+  SchurPileUp[any]
+)
+
+ClebschGordanTable::usage = "ClebschGordanTable has been renamed ClebschGordanMatrix since v4.4.2 (2026-01-18)."
+
+ClebschGordanTable[any___] := (
+  Message[Q3General::renamed, "ClebschGordanTable", "ClebschGordanMatrix"];
   SchurPileUp[any]
 )
 
