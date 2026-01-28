@@ -2,7 +2,7 @@
 
 ## 4.4.3
 
-- New: WickTranspose, DropWhile
+- New: WickTranspose, DropWhile, QuantumScramblingCircuit, QuantumScramblingSimulate, WickScrambingCircuit, WickScramblingSimulte
 - Improved: CliffordCircuit, RandomCliffordCircuit, QubitCount, CliffordState
 
 ## 4.4.2
