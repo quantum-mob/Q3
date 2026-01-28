@@ -480,29 +480,29 @@ theSpinForm[Ket[aa_Association], qq:{(_?QubitQ | _?SpinQ)...}, kk_List] :=
 
 (**** <KetCanonical> ****)
 
-KetCanonical::usage = "KetCanonical[expr] returns the canonical form of ket expression expr."
+KetCanonical::usage = "KetCanonical[expr] returns the canonical form of ket expression expr.\nKetCanonical[expr, a] rescales the coefficients so that the first non-zero coefficient is normalized to a."
 
 SetAttributes[KetCanonical, Listable]
 
-KetCanonical[State[v_?VectorQ, rest__], nrm_:True] :=
-  State[CanonicalizeVector[v, nrm], rest]
+KetCanonical[State[v_?VectorQ, rest__], a___] :=
+  State[CanonicalizeVector[v, a], rest]
 
-KetCanonical[expr_?fKetQ, nrm_:True] := Elaborate[
-  KetCanonical[StateForm @ expr, nrm]
+KetCanonical[expr_?fKetQ, a___] := Elaborate[
+  KetCanonical[StateForm @ expr, a]
 ]
 
-KetCanonical[expr_?fPauliKetQ, nrm_:True] := ExpressionFor[
-  CanonicalizeVector[Matrix @ expr, nrm]
+KetCanonical[expr_?fPauliKetQ, a___] := ExpressionFor[
+  CanonicalizeVector[Matrix @ expr, a]
 ]
 
-KetCanonical[expr_, nrm_:True] := Module[
+KetCanonical[expr_, a___] := Module[
   { vv = Cases[Garner @ {expr}, _Ket, Infinity],
     cc },
   cc = Coefficient[expr, vv];
-  CanonicalizeVector[cc, nrm] . vv
+  CanonicalizeVector[cc, a] . vv
 ] /; Not @ FreeQ[expr, _Ket]
 
-KetCanonical[any_, nrm_:True] = any
+KetCanonical[any_, ___] = any
 
 (**** </KetCanonical> ****)
 

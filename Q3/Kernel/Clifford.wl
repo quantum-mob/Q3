@@ -16,13 +16,23 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   CliffordMutualInformation,
   CliffordLogarithmicNegativity };
 
+{ CliffordScramblingCircuit,
+  CliffordScramblingSimulate };
+
 Begin["`Private`"]
+
+AtLeast::usage = "AtLest[n] represents a certain number that is not smaller than n."
+
+Format @ AtLeast[n_Integer] := 
+  Interpretation["at least " <> ToString[n], AtLeast @ n]
 
 (**** <CliffordState> ****)
 
 CliffordState::usage = "CliffordState[data, {s1, s2, \[Ellipsis]}] represents a stabilizer state on qubits s1, s2, \[Ellipsis] with the generating set of stabilizer subgroup specified by data.\nThe data is a matrix each row of which is a full Gottesman vaector referring to the Pauli string corresponding to a stabilizer generator."
 
 CliffordState::bad = "`` is not a proper set of Gottesman vectors."
+
+CliffordState::null = "The CliffordState `` represents a null state."
 
 SetAttributes[CliffordState, NHoldAll]
 
@@ -44,8 +54,6 @@ MakeBoxes[cs:CliffordState[gnr_?MatrixQ, ___], fmt_] := Module[
 ] /; If[ MatrixQ[Most @ Transpose @ gnr, BinaryQ], True,
   Message[CliffordState::bad, gnr]; False
 ]
-
-QubitCount[CliffordState[gnr_?MatrixQ, ___]] := (Last[Dimensions @ gnr] - 1)/2
 
 (* canonicalization *)
 CliffordState[data_, ss:{___?QubitQ}, rest___] :=
@@ -78,21 +86,19 @@ StabilizerGenerators[CliffordState[gnr_, ss:{__?QubitQ}, ___?OptionQ]] :=
   Map[FromGottesmanVector[#, ss]&, gnr]
 
 
-CliffordState /: (* pure state *)
-Matrix @ CliffordState[gnr_?MatrixQ, ___] := Module[
-  { n = Last[Dimensions @ gnr],
-    mm, in },
-  n = Power[2, (n - 1)/2];
-  in = Append[Table[1, n-1], 2];  (* initial vector *)
-  mm = CliffordProjectors[gnr];
-  mm = Prepend[mm, in];
-  Normalize @ Apply[Dot, mm]
-] /; CliffordPureQ[gnr]
-(* TODO: At the moment, it is not clear whether the selected initial state is sufficient or not. *)
-
-CliffordState /: (* mixed state *)
-Matrix @ CliffordState[gnr_?MatrixQ, ___] := 
-  Apply[Dot, CliffordProjectors @ gnr]
+CliffordState /:
+Matrix[cs:CliffordState[gnr_?MatrixQ, ___]] := Module[
+  { rho, vec },
+  rho = Apply[Dot, CliffordProjectors @ gnr];
+  If[Not[CliffordPureQ @ cs], Return @ rho];
+  (* pure state *)
+  vec = DropWhile[Identity /@ rho, ArrayZeroQ];
+  If[ Length[vec] === 0, 
+    Message[CliffordState::null, cs];
+    Return[Zero @ Length @ rho]
+  ];
+  CanonicalizeVector[Normalize @ First @ vec]
+]
 
 
 CliffordState /:
@@ -272,6 +278,8 @@ PauliMeasurement[msr_?GottesmanVectorQ][cs_CliffordState] := Module[
   ReplacePart[cs, 1 -> UpdateStabilizerGenerators[gnr, new]]
 ]
 
+PauliMeasurement /:
+Dagger[op_PauliMeasurement] = op
 
 PauliMeasurement /:
 Multiply[pre___, msr_PauliMeasurement, cs_CliffordState] := 
@@ -305,6 +313,9 @@ PauliDecoherence[msr_?GottesmanVectorQ, kk:{___Integer}][cs_CliffordState] := Mo
     ReplacePart[cs, 1 -> SparseArray[gnr]]
   ]
 ]
+
+PauliDecoherence /:
+Dagger[op_PauliDecoherence] = op
 
 
 PauliDecoherence /:
@@ -360,6 +371,28 @@ MakeBoxes[cu:CliffordUnitary[mat_?MatrixQ, kk:{__Integer}, ___?OptionQ], fmt_] :
 CliffordUnitary[mat_, k_Integer, rest___] :=
   CliffordUnitary[mat, {k}, rest]
 
+CliffordUnitary /:
+GottesmanMap[CliffordUnitary[any__, ___?OptionQ]] := GottesmanMap[any]
+
+CliffordUnitary[GottesmanMap[any__]] := CliffordUnitary[any]
+
+(* TODO: One can improve this code (2026-01-27). *)
+CliffordUnitary /:
+Dagger[CliffordUnitary[mat_?MatrixQ, more___, opts___?OptionQ]] := Module[
+  { n = Length[mat],
+    inv, fac },
+  (* up to a Pauli string *)
+  inv = GottesmanInverse[Transpose @ Most @ Transpose @ mat];
+  inv = Transpose @ Append[Transpose @ inv, ConstantArray[1, n]];
+  (* find the Pauli string *)
+  fac = Last @ Transpose[GottesmanMap[inv] @ mat];
+  fac = Transpose @ Append[One[n], fac];
+  (* remove the Pauli string *)
+  inv = GottesmanMap[fac] @ inv;
+  CliffordUnitary[ inv, more,
+    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
+  ]
+]
 
 CliffordUnitary /:
 Matrix[CliffordUnitary[mat_?MatrixQ, kk:{__Integer}, ___?OptionQ], n_Integer] :=
@@ -374,8 +407,11 @@ Matrix @ CliffordUnitary[mat_?MatrixQ, ___?OptionQ] :=
 
 RandomCliffordUnitary::usage = "RandomCliffordUnitary[n] generates a uniformly distributed random Clifford unitary operator on n qubits."
 
-RandomCliffordUnitary[n_Integer, spec___] :=
-  CliffordUnitary[RandomFullGottesmanMatrix @ n, spec]
+RandomCliffordUnitary[n_Integer, rest___] :=
+  CliffordUnitary[RandomFullGottesmanMatrix @ n, rest]
+
+RandomCliffordUnitary[kk:{__Integer}, rest___] :=
+  CliffordUnitary[RandomFullGottesmanMatrix @ Length @ kk, kk, rest]
 
 
 (**** <CliffordEntropy> ****)
@@ -463,20 +499,8 @@ CliffordLogarithmicNegativity[cs_CliffordState, kk:{___Integer}] := Module[
 CliffordCircuit::usage = "CliffordCircuit[{g1, g2, \[Ellipsis]}] represents a quantum circuit with Clifford unitary gates or Pauli measurements g1, g2, \[Ellipsis]."
 
 CliffordCircuit /:
-MakeBoxes[cc:CliffordCircuit[{}, ___?OptionQ], fmt_] :=
-  BoxForm`ArrangeSummaryBox[
-    CliffordCircuit, cc, None,
-    { BoxForm`SummaryItem @ { "Qubits: ", Indeterminate },
-      BoxForm`SummaryItem @ { "Depth: ", Length @ gg }
-    },
-    { },
-    fmt,
-    "Interpretable" -> Automatic
-  ]
-
-CliffordCircuit /:
-MakeBoxes[cc:CliffordCircuit[gg:{__}, ___?OptionQ], fmt_] := Module[
-  { n = QubitCount[First @ gg] },
+MakeBoxes[cc:CliffordCircuit[gg_List, ___?OptionQ], fmt_] := Module[
+  { n = QubitCount[cc] },
   BoxForm`ArrangeSummaryBox[
     CliffordCircuit, cc, None,
     { BoxForm`SummaryItem @ { "Qubits: ", n },
@@ -488,6 +512,11 @@ MakeBoxes[cc:CliffordCircuit[gg:{__}, ___?OptionQ], fmt_] := Module[
   ]
 ]
 
+CliffordCircuit /:
+Dagger @ CliffordCircuit[gg_List, opts___?OptionQ] :=
+  CliffordCircuit[Reverse @ Dagger @ gg, opts]
+
+(* operation on Clifford states *)
 CliffordCircuit[{}][cs_CliffordState] = cs
 
 CliffordCircuit[gg:{_CliffordState, ___}][cs_CliffordState] :=
@@ -499,6 +528,14 @@ CliffordCircuit[gg_List][cs_CliffordState] :=
 CliffordCircuit /:
 Elaborate @ CliffordCircuit[gg:{_CliffordState, ___}, ___] :=
   Fold[Construct[#2, #1]&, Flatten @ gg]
+
+
+CliffordCircuit /:
+Matrix[cc:CliffordCircuit[gg_List, ___]] := Module[
+  { n = QubitCount[cc] },
+  mm = Flatten[gg /. CliffordCircuit -> Identity];
+  Dot @@ Map[Matrix[#, n]&, mm]
+]
 
 
 CliffordCircuit /:
@@ -535,6 +572,17 @@ Graphics[CliffordCircuit[gg_List, opts___?OptionQ], S_Symbol?QubitQ, more___?Opt
   QuantumCircuit[Sequence @@ qc, more, opts, "PostMeasurementDashes" -> False]
 ]
 
+(**** </CliffordCircuit> ****)
+
+
+(**** <QubitCount> ****)
+
+QubitCount[CliffordCircuit[{}, ___?OptionQ]] = 0
+
+QubitCount[CliffordCircuit[gg:{__}, ___?OptionQ]] :=
+  Max @ ReplaceAll[QubitCount /@ gg, AtLeast -> Identity]
+
+QubitCount[CliffordState[gnr_?MatrixQ, ___]] := (Last[Dimensions @ gnr] - 1)/2
 
 QubitCount[CliffordUnitary[mat_?MatrixQ, ___?OptionQ]] := Length[mat] / 2
 
@@ -542,9 +590,16 @@ QubitCount[PauliMeasurement[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
 
 QubitCount[PauliDecoherence[vec_?VectorQ, ___?OptionQ]] := Length[vec] / 2
 
-QubitCount[_] = Indeterminate
+QubitCount[CliffordUnitary[mat_?MatrixQ, kk:{___}, ___?OptionQ]] := 
+  AtLeast[Max @ kk]
 
-(**** </CliffordCircuit> ****)
+QubitCount[PauliMeasurement[vec_?VectorQ, kk:{___}, ___?OptionQ]] := 
+  AtLeast[Max @ kk]
+
+QubitCount[PauliDecoherence[vec_?VectorQ, kk:{___}, ___?OptionQ]] := 
+  AtLeast[Max @ kk]
+
+(**** </QubitCount> ****)
 
 
 (**** <RandomCliffordCircuit> ****)
@@ -553,41 +608,26 @@ RandomCliffordCircuit::usage = "RandomCliffordCircuit[in, {n, t}, p] generates a
 
 RandomCliffordCircuit::num = "Probabilities `` must be a number or a list of numbers."
 
-RandomCliffordCircuit[
-  vol:{n_Integer, t_Integer},
-  prb:(_?NumericQ | _List),
-  opts___?OptionQ
-] := RandomCliffordCircuit[CliffordState @ Ket @ Table[0, n], vol, prb, opts]
-
-RandomCliffordCircuit[in_, vol_, p_?NumericQ, opts___?OptionQ] :=
-  RandomCliffordCircuit[in, vol, {p, 0}, opts]
+RandomCliffordCircuit[vol_, p_?NumericQ, opts___?OptionQ] :=
+  RandomCliffordCircuit[vol, {p, 0}, opts]
 
 RandomCliffordCircuit[
-  ics:(_Ket | _CliffordState | "Random"), 
   vol:{n_Integer, t_Integer}, 
   prb_List,
   opts___?OptionQ
-] := Module[
-  { in },
-  in = Switch[ ics,
-    "Random", RandomCliffordState[n],
-    _Ket, CliffordState[ics],
-    _, ics
-  ];
-  CliffordCircuit[
+] := CliffordCircuit[
     Nest[
       Append[
         Join[#, randomCliffordUnitaryLayer @ n],
         randomPauliMeasurementLayer[n, prb]
       ]&,
-      { in },
+      {},
       t
     ],
     opts
+  ] /; If[ VectorQ[Flatten @ prb, NumericQ], True,
+    Message[RandomCliffordCircuit::num, prb]; False
   ]
-] /; If[ VectorQ[Flatten @ prb, NumericQ], True,
-  Message[RandomCliffordCircuit::num, prb]; False
-]
 
 
 randomPauliMeasurementLayer::usage = "randomPauliMeasurementLayer[n, p] generates a layer of single-qubit Pauli measurements on qubits selected randomly with probability p among n qubits."
@@ -667,15 +707,20 @@ RandomCliffordCircuitSimulate[
   opts:OptionsPattern[]
 ] := Module[
   { progress = k = 0,
-    data, more, qc, sn, sm },
+    data, more, cs, qc, sn, sm },
   PrintTemporary @ ProgressIndicator @ Dynamic[progress];
-  (* simulation *)
+  cs = Switch[ in,
+    "Random", RandomCliffordState[n],
+    _Ket, CliffordState[in],
+    _, in
+  ];
   {sn, sm} = doAssureList[OptionValue["Samples"], 2];
+  (* simulation *)
   data = Table[
-    qc = RandomCliffordCircuit[in, {n, depth}, pp];
+    qc = RandomCliffordCircuit[{n, depth}, pp];
     Table[
       progress = ++k / N[sn*sm];
-      FoldList[Construct[#2, #1]&, First @ qc][[1;;All;;ds]],
+      FoldList[Construct[#2, #1]&, cs, First @ qc][[1;;All;;ds]],
       sm
     ],
     sn
@@ -692,6 +737,101 @@ RandomCliffordCircuitSimulate[
 
 (**** </RandomCliffordCircuitSimulate> ****)
 
+
+(**** <CliffordScramblingCircuit> ****)
+
+CliffordScramblingCircuit::num = RandomCliffordCircuit::num
+
+CliffordScramblingCircuit[k_Integer, rest__] :=
+  CliffordScramblingCircuit[
+    CliffordUnitary[FullGottesmanMatrix @ ThePauli[1], {k}, 
+    "Label"->"X"], 
+    rest
+  ]
+
+CliffordScramblingCircuit[u_CliffordUnitary, vol_, p_?NumericQ, 
+  opts___?OptionQ] := CliffordScramblingCircuit[u, vol, {p, 0}, opts]
+
+CliffordScramblingCircuit[
+  cop_CliffordUnitary,
+  vol:{n_Integer, t_Integer}, 
+  prb_List,
+  opts___?OptionQ
+] := Module[
+  { uu, ma, mb },
+  uu = Table[randomCliffordUnitaryLayer[n, Mod[i, 2, 1]], {i, 1, t}];
+  If[ ArrayZeroQ @ prb,
+    ma = mb = Nothing,
+    ma = Table[randomPauliMeasurementLayer[n, prb], t];
+    mb = Table[randomPauliMeasurementLayer[n, prb], t];    
+  ];
+  CliffordCircuit @ Join[
+    Riffle[uu, ma], {cop},
+    Riffle[Reverse @ Dagger @ uu, mb]
+  ]
+] /; If[ VectorQ[Flatten @ prb, NumericQ], True,
+    Message[CliffordScramblingCircuit::num, prb]; False
+  ]
+
+(**** </CliffordScramblingCircuit> ****)
+
+
+(**** <CliffordScramblingSimulate> ****)
+
+CliffordScramblingSimulate::usage = "CliffordScramblingSimulate[in, {n, t}, spec] simulates Clifford circuits randomly generated by RandomCliffordCircuit[in, {n, t}, spec].\n CliffordScramblingSimulate[{n, t}, spec] assumes the conventional input state |0,0,\[Ellipsis]>."
+
+CliffordScramblingSimulate::num = RandomCliffordCircuit::num
+
+Options[CliffordScramblingSimulate] = {
+  "Samples" -> {20, 2},
+  "Input" -> Automatic
+}
+
+CliffordScramblingSimulate[a_Integer, rest__] :=
+  CliffordScramblingSimulate[{a, 1}, rest]
+
+CliffordScramblingSimulate[{a_Integer, b_Integer}, rest__] :=
+  CliffordScramblingSimulate[
+    { CliffordUnitary[FullGottesmanMatrix @ ThePauli[1], {a}, "Label"->"X"],
+      CliffordUnitary[FullGottesmanMatrix @ ThePauli[3], {b}, "Label"->"Y"] }, 
+    rest
+  ]
+
+CliffordScramblingSimulate[ops_List, vol_List, p_?NumericQ, rest___] := CliffordScramblingSimulate[ops, vol, {p, 0}, rest]
+
+CliffordScramblingSimulate[
+  {ua_CliffordUnitary, ub_CliffordUnitary},
+  vol:{n_Integer, t_Integer},
+  prb_List,
+  opts:OptionsPattern[]
+] := Module[
+  { qc, in, sn, sm },
+  in = Switch[ OptionValue["Input"],
+    Automatic, CliffordState @ Ket @ Table[0, n],
+    "Random", RandomCliffordState[n],
+    v_Ket, CliffordState[v],
+    _, None
+  ];
+  {sn, sm} = doAssureList[OptionValue["Samples"], 2];
+  (* simulation *)
+  Mean @ Flatten @ Table[
+    qc = CliffordScramblingCircuit[ua, {n, t}, prb];
+    Table[theCliffordOTOC[in, ub, qc], sm],
+    sn
+  ]
+] /; If[ VectorQ[Flatten @ prb, NumericQ], True,
+  Message[CliffordScramblingSimulate::num, prb]; False
+]
+
+(* TODO: This must be handled far better (2026-01-27). *)
+theCliffordOTOC[in_, ub_, qc_CliffordCircuit] := Module[
+  { aa, bb },
+  aa = qc[in];
+  bb = Dagger[ub] @ qc @ ub @ in;
+  Conjugate[N @ Matrix @ aa] . Matrix[bb]
+]
+
+(**** </CliffordScramblingSimulate> ****)
 
 End[]
 

@@ -259,9 +259,15 @@ Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appear
 Qubits[expr_] := Select[Agents @ expr, QubitQ]
 
 
+(**** <QubitCount> ****)
+
 QubitCount::usage = "QubitCount[obj] returns the number of qubits involved in object obj."
 
 QubitCount[ss:{__?SpeciesQ}] := Length @ Select[ss, QubitQ]
+
+QubitCount[_] = Indeterminate
+
+(**** </QubitCount> ****)
 
 
 (**** <Multiply> ****)

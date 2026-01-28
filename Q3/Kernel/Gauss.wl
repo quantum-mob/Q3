@@ -84,21 +84,28 @@ MatrixConditionNumber[mat_?MatrixQ] := Module[
 
 (**** <CanonicalizeVector> *****)
 
-CanonicalizeVector::usage = "CanonicalizeVector[list] returns the same list with the first non-zero element normalized to 1."
+CanonicalizeVector::usage = "CanonicalizeVector[vec] returns a vector with elements are rescaled so that the first non-zero element is real positive with the same magnitude as vec.\nCanonicalizeVector[vec, a] returns the same vector with elements rescaled so that the first non-zero element is normalized to a. That is, it does not preserve the norm of vec."
 
 (* BUG (v14.1, fixed in v14.2): SelectFirst gives a wrong answer for SparseArray, or evan crashes the Wolfram Kernel. *)
 If[ $VersionNumber < 14.2,
-  CanonicalizeVector[in_SparseArray?VectorQ, nrm_:True] := Module[
+  CanonicalizeVector[in_SparseArray?VectorQ, a_:Automatic] := Module[
     { val = First[in @ "NonzeroValues"] },
-    val = If[nrm, Conjugate[val] / Abs[val], 1 / val];
-    If[MissingQ[val], in, in * val]
+    If[val === {}, Return @ in];
+    If[a === Automatic || a === False, 
+      in * (Conjugate[val] / Abs[val]),
+      in * (a / val)
+    ]
   ]
 ]
 
-CanonicalizeVector[in_?VectorQ, nrm_:True] := Module[
+CanonicalizeVector[in_?VectorQ, a_:Automatic] := Module[
   { val = SelectFirst[in, Not[ZeroQ @ #]&] },
-  val = If[nrm, Conjugate[val] / Abs[val], 1 / val];
-  If[MissingQ[val], in, in * val]
+  If[MissingQ @ val, Return @ in];
+  If[a === Automatic || a === False, 
+    (* NOTE: Here, a === False is for backward compatibility. *)
+    in * (Conjugate[val] / Abs[val]),
+    in * (a / val)
+  ]
 ]
 
 (**** </CanonicalizeVector> *****)
@@ -785,7 +792,10 @@ RandomAntisymmetric[n_Integer?Positive] := RandomAntisymmetric[1, n]
 
 RandomAntisymmetric[sgm_?Positive, n_Integer?Positive] := With[
   { mat = RandomMatrix[sgm, n] },
-  (mat - Transpose[mat])/2
+  ReplacePart[
+    (mat - Transpose[mat])/2,
+    {i_, i_} -> 0
+  ]
 ]
 
 

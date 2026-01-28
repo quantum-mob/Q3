@@ -18,6 +18,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { IntegerParity, ParityBoole,
   IntegerPowerQ, IntegerChop };
 { RandomPick };
+{ DropWhile };
 { Ranking };
 { IntervalSize };
 
@@ -928,6 +929,17 @@ ReverseDot[in_?VectorQ, mm___?MatrixQ] := Fold[Dot[#2, #1]&, in, {mm}]
 ReverseDot[any___] := Apply[Dot, Reverse @ {any}]
 
 (**** </ReverseDot> ****)
+
+
+(**** <DropWhile> ****)
+
+DropWhile::usage = "DropWhile[list, cri] drops elements ei from the beginning of list, continuing so long as cri[ei] is True.\nDropWhile[cri] represents an operator form of DropWhile that can be applied to expressions."
+
+DropWhile[crit_][lst:(h_)[___]] := Drop[lst, LengthWhile[lst, crit]]
+ 
+DropWhile[lst:(h_)[___], crit_] := Drop[lst, LengthWhile[lst, crit]]
+
+(**** </DropWhile> ****)
 
 
 (**** <TheDelta> ****)

@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.4.3
+
+- New: WickTranspose, DropWhile
+- Improved: CliffordCircuit, RandomCliffordCircuit, QubitCount, CliffordState
+
 ## 4.4.2
 
 - New: WignerBasis

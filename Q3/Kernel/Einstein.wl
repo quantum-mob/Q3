@@ -147,6 +147,13 @@ WickMeasurement[kk:{__Integer}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest
 
 (**** <changed> ****)
 
+(* 2026-01-23 *)
+RandomCliffordCircuit[in:(_Ket | _CliffordState | "Random"), vol_List, rest__] := (
+  Message[Q3General::changed, "RandomCliffordCircuit",
+    "RandomCliffordCircuit does not take an input state; put it in RandomCliffordCircuitSimulate."];
+  RandomCliffordCircuit[vol, rest]
+)
+
 TheKet[a_Integer, bc__Integer] := (
   Message[Q3General::changed, "TheKet",
     "The directions must be given in a list like TheKet[{k1,k2,...}]"];

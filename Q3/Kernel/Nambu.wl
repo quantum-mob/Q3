@@ -205,6 +205,7 @@ theWignerJordan[n_Integer] := Module[
   SparseArray @ Map[ThePauli, mm]
 ]
 
+
 (**** <NambuUnitary> ****)
 
 NambuUnitary::usage = "NambuUnitary[{u, v}] represents a Bogoliubov-de Gennes transform in the Nambu space that is characterized by the n\[Times]n upper-left and upper-right blocks u and v, respectively."

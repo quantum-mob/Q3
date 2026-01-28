@@ -5,6 +5,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   QuantumElements };
 
 { RandomQuantumCircuit, RandomQuantumCircuitSimulate };
+{ QuantumScramblingCircuit, QuantumScramblingSimulate };
 
 { ParseGate, Gate, Mark };
 
@@ -1413,12 +1414,12 @@ qcPortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
 RandomQuantumCircuit::usage = "RandomQuantumCircuit[{p, t}, {s1,s2,\[Ellipsis]}] generates a quantum circuit of depth 3t on qubits {s1,s2,\[Ellipsis]} with alternating unitary and measurement layers. Each unitary layer consists of randomly selected two-qubit unitary gates arranged in a brick-wall pattern, and in a measurement layer, each qubit is measured with probability p in the computational basis.";
 
 RandomQuantumCircuit[{p_?NumericQ, t_Integer}, ss:{___?QubitQ}] :=
- RandomQuantumCircuit[{p, t}, FlavorCap@ss] /; Not[FlavorCapQ@ss]
+  RandomQuantumCircuit[{p, t}, FlavorCap @ ss] /; Not[FlavorCapQ@ss]
 
 RandomQuantumCircuit[{p_?NumericQ, t_Integer}, ss:{___?QubitQ}] := Prepend[
   QuantumCircuit[
     Sequence @@ Flatten @ Table[
-      Append[randomUnitaryLayer@ss, randomMeasurementLayer[p, ss]],
+      Append[randomUnitaryLayer @ ss, randomMeasurementLayer[p, ss]],
       t
     ],
     "PostMeasurementDashes" -> False
@@ -1492,6 +1493,86 @@ RandomQuantumCircuitSimulate[{p_?NumericQ, t_Integer},
 
 (**** </RandomQuantumCircuitSimulate> ****)
 
+
+(**** <QuantumScramblingCircuit> ****)
+
+QuantumScramblingCircuit::usage = "QuantumScramblingCircuit[k, {p, t}, {s1,s2,\[Ellipsis]}] generates the main part of a quantum scrambling circuit on qubits {s1,s2,\[Ellipsis]}.";
+
+QuantumScramblingCircuit[k_Integer, {p_, t_}, ss:{___?QubitQ}, rest___] :=
+  QuantumScramblingCircuit[ss[[k]][1], {p, t}, ss, rest]
+
+QuantumScramblingCircuit[op_, {p_, t_}, ss:{___?QubitQ}, rest___] :=
+  QuantumScramblingCircuit[op, {p, t}, FlavorCap @ ss, rest] /; 
+  Not[FlavorCapQ @ ss]
+
+QuantumScramblingCircuit[op_, t_Integer, rest___] :=
+  QuantumScramblingCircuit[op, {0, t}, rest]
+
+QuantumScramblingCircuit[op_, {p_?NumericQ, t_Integer}, ss:{___?QubitQ}] := 
+  Module[
+    { uu, dg, aa, bb },
+    uu = Table[randomUnitaryLayer[Mod[k, 2, 1], ss], {k, 1, t}];
+    dg = Reverse[Reverse /@ Dagger[uu]];
+    aa = If[ZeroQ[p], Nothing, Table[randomMeasurementLayer[p, ss], t]];
+    bb = If[ZeroQ[p], Nothing, Table[randomMeasurementLayer[p, ss], t]];
+    QuantumCircuit[
+      Sequence @@ Riffle[uu, aa], op,
+      Sequence @@ Riffle[dg, bb],
+      "PostMeasurementDashes" -> False,
+      "Visible" -> ss (* for t = 0 *)
+    ]
+  ]
+
+(**** </QuantumScramblingCircuit> ****)
+
+
+(**** <QuantumScramblingSimulate> ****)
+
+QuantumScramblingSimulate::usage = "QuantumScramblingSimulate[{a, b}, {p, t}, {s1,s2,\[Ellipsis]}] classically simulates the quantum scrambling circuit on qubits {s1,s2,\[Ellipsis]}.";
+
+Options[QuantumScramblingSimulate] = {
+  "Input" -> Ket[],
+  "Samples" -> 30
+}
+
+QuantumScramblingSimulate[a_Integer, {p_, t_}, ss:{___?QubitQ}, rest___] :=
+  QuantumScramblingSimulate[{ss[[a]][1], ss[[1]][3]}, {p, t}, ss, rest]
+
+QuantumScramblingSimulate[ua_, {p_, t_}, ss:{___?QubitQ}, rest___] :=
+  QuantumScramblingSimulate[{ua, First[ss][3]}, {p, t}, ss, rest]
+
+QuantumScramblingSimulate[{a_Integer, b_Integer}, {p_, t_}, ss:{___?QubitQ}, rest___] :=
+  QuantumScramblingSimulate[{ss[[a]][1], ss[[b]][3]}, {p, t}, ss, rest]
+
+QuantumScramblingSimulate[ops_, pt_, ss:{___?QubitQ}, rest___] :=
+  QuantumScramblingSimulate[ops, pt, FlavorCap @ ss, rest] /; 
+  Not[FlavorCapQ @ ss]
+
+QuantumScramblingSimulate[ops_, t_Integer, rest___] :=
+  QuantumScramblingSimulate[ops, {0, t}, rest]
+
+QuantumScramblingSimulate[
+  {ua_, ub_}, 
+  {p_?NumericQ, t_Integer}, 
+  ss:{___?QubitQ}, OptionsPattern[]] := Module[
+    { in = OptionValue["Input"],
+      nn = OptionValue["Samples"], 
+      qc },
+    Mean @ Table[
+      qc = QuantumScramblingCircuit[ua, {p, t}, ss];
+      theOTOC[in, ub, qc],
+      nn
+    ]
+  ]
+
+theOTOC[in_, ub_, qc_QuantumCircuit] := Module[
+  { va, vb },
+  va = QuantumCircuit[in, qc];
+  vb = QuantumCircuit[in, ub, qc, Dagger @ ub];
+  Conjugate[Matrix @ va] . Matrix[vb]
+]
+
+(**** </QuantumScramblingSimulate> ****)
 
 End[]
 

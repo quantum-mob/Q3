@@ -11,6 +11,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { GottesmanTimes, GottesmanMap };
 
+{ oldGottesmanMap };
+
 { RandomGottesmanVector, RandomFullGottesmanVector };
 
 { GottesmanMatrix, FullGottesmanMatrix,
@@ -650,6 +652,7 @@ GottesmanTest[a_, b_] := Which[
 (**** <GottesmanDot> ****)
 
 GottesmanDot::usage = "GottesmanDot[v, w] gives the symplectic inner product in the Gottesman vector space."
+
 GottesmanDot[v_?VectorQ, w_?VectorQ] :=
   Mod[Dot[v, GottesmanFlip @ w], 2] /;
   MatrixQ[{v, w}, BinaryQ] && EvenQ[Length @ v]
@@ -721,7 +724,7 @@ GottesmanBasis[n_Integer] := One[2*n] /; n > 0
 (**** </GottesmanBasis> ****)
 
 
-GottesmanSplit::usage = "GottesmanSplit[vec] returns a list of two vectors {{x$1,x$2,$$,x$n},{z$1,z$2,$$,z$n}} for Gottesman vector vec={x$1,z$1,x$2,z$2,$$,x$1n,z$n}.\nGottesmanSplit[mat] returns a list of the X- and Z-part of the matrix of Gottesman vectors, mat={{x$11,z$11,x$12,z$12,$$,x$1n,z$1n},{x$21,z$21,x$22,z$22,$$,x$2n,z$2n},$$}.";
+GottesmanSplit::usage = "GottesmanSplit[vec] returns a list of two vectors {{x1,x2,,xn},{z1,z2,,zn}} for Gottesman vector vec={x1,z1,x2,z2,,x1n,zn}.\nGottesmanSplit[mat] returns a list of the X- and Z-part of the matrix of Gottesman vectors, mat={{x11,z11,x12,z12,,x1n,z1n},{x21,z21,x22,z22,,x2n,z2n},}.";
 
 GottesmanSplit::odd = "`` is not a valid Gottesman vector (or a set of valid Gottesman vectors)."
 
@@ -878,16 +881,79 @@ GottesmanTimes[a_?VectorQ, b_?VectorQ] :=
 
 (* for full Gottesman vectors *)
 GottesmanTimes[a_?VectorQ, b_?VectorQ] := Module[
-  { aa = Partition[a, 2],
-    bb = Partition[b, 2],
-    cc, ff },
-  cc = Mod[aa + bb, 2];
-  ff = Map[FromDigits[#, 2]&, Transpose @ {aa, bb, cc}, {2}];
-  ff = Total[Signature /@ ff];
-  Append[Flatten[cc], Power[I, ff] * Last[a] * Last[b]]
+  { cc = Mod[Most[a] + Most[b], 2],
+    ff },
+  ff = GottesmanPhase[a, b, cc];
+  Append[cc, ff * Last[a] * Last[b]]
 ] /; ArrayQ[{a, b}, 2] && OddQ[Length @ a]
 
 (**** </GottesmanTimes> ****)
+
+
+GottesmanPhase::usage = "GottesmanPhase[a, b] returns the EXTRA phase factor that arises when two Pauli strings corresponding to Gottesman matrices a and b are multiplied."
+
+GottesmanPhase::bad = "Incompatible Gottesman vectors ``, `` and ``."
+
+(* for reduced or full Gottesman vectors a and b *)
+GottesmanPhase[a_?VectorQ, b_?VectorQ] :=
+  GottesmanPhase[a, b, Mod[a + b, 2]]
+
+(* for reduced or full Gottesman vectors a, b, c; the final entry of full Gottesman vectors is ignored. *)
+GottesmanPhase[c_?VectorQ][a_?VectorQ, b_?VectorQ] :=
+  GottesmanPhase[a, b, c]
+
+GottesmanPhase[a_?VectorQ, b_?VectorQ, c_?VectorQ] := Module[
+  { aa = Partition[a, 2],
+    bb = Partition[b, 2],
+    cc = Partition[c, 2], 
+    ff },
+  ff = Map[FromDigits[#, 2]&, Transpose @ {aa, bb, cc}, {2}];
+  ff = Total[Signature /@ ff];
+  Power[I, ff] /;
+  If[ ArrayQ[{aa, bb, cc}, 3, BinaryQ], True,
+    Message[GottesmanPhase::bad, a, b, c]; 
+    False
+  ]
+]
+
+
+(**** <GottesmanMap> ****)
+
+GottesmanMap::usage = "GottesmanMap[mat] represents the Clifford operator corresponding to Gottesman matrix mat, and operates on a Gottesman vector or a matrix consisting of rows of Gottesman vectors."
+(* NOTE: One can get GottesmanMap to directly operate on CliffordState. For general users, However, this role is reserved for CliffordUnitary. *)
+
+GottesmanMap[mat_?MatrixQ, kk:{__Integer}][vec_?VectorQ] :=
+  First @ GottesmanMap[mat, kk] @ {vec}
+
+GottesmanMap[mat_?MatrixQ, kk:{__Integer}][gnr_?MatrixQ] := Module[
+  { ii = Append[Riffle[2kk-1, 2kk], -1],
+    vv = gnr },
+  vv[[;;, ii]] = GottesmanMap[mat] /@ vv[[;;, ii]];
+  Return[vv]
+]
+
+
+GottesmanMap[mat_?MatrixQ][gnr_?MatrixQ] :=
+  SparseArray @ Map[GottesmanMap[mat], gnr]
+
+GottesmanMap[mat_?MatrixQ][vec_?VectorQ] := Module[
+  { pos = Flatten @ Position[Normal @ Most @ vec, 1],
+    new, sig },
+  If[pos == {}, Return @ vec];
+  new = mat[[pos]];
+  new = Fold[GottesmanTimes, Normal @ new];
+  (* NOTE: The following line is surprisingly slow; hence, the above line instead. *)
+  (* new = GottesmanTimes @@ new; *)
+  sig = Last[vec] * Power[I, Count[Normal @ Partition[vec, 2], {1, 1}]];
+  SparseArray @ ReplaceAt[new, v_ :> v * sig, -1]
+]
+
+
+(* NOTE: Intended for internal use *)
+GottesmanMap[ops:{(_CNOT|_SWAP|_Hadamard|_Quadrant|_GottesmanMap)...}][spec_] :=
+  Fold[#2[#1]&, spec, ops]
+
+(**** </GottesmanMap> ****)
 
 
 (**** <StabilizerState> ****)
@@ -1209,6 +1275,8 @@ FromGottesmanMatrix[gm_?MatrixQ, Pauli|_Integer] :=
 (**** </FromGottesmanMatrix> ****)
 
 
+(**** <GottesmanInverse> ****)
+
 GottesmanInverse::usage = "GottesmanInverse[mat] returns the inverse of binary symplectic matrix mat (with respect to the Gottesman inner product)."
 
 GottesmanInverse[mat_] := Module[
@@ -1218,6 +1286,10 @@ GottesmanInverse[mat_] := Module[
   Mod[JX . Transpose[mat] . JX, 2]
 ]
 
+(**** </GottesmanInverse> ****)
+
+
+(**** <GottesmanMatrix> ****)
 
 RandomGottesmanMatrix::usage = "RandomGottesmanMatrix[n] randomly generates a 2n\[Times]2n Gottesman matrix."
 
@@ -1235,6 +1307,8 @@ RandomFullGottesmanMatrix[n_Integer] :=
 
 RandomFullGottesmanMatrix[ss:{__?QubitQ}] :=
   RandomFullGottesmanMatrix[Length @ ss]
+
+(**** </GottesmanMatrix> ****)
 
 
 (**** <GottesmanMatrixEmbed> ****)
@@ -1635,45 +1709,6 @@ PauliMutate[expr_, ss:{__?QubitQ}] := ReplaceAll[
 ]
 
 (**** </PauliMutate> ****)
-
-
-(**** <GottesmanMap> ****)
-
-GottesmanMap::usage = "GottesmanMap[mat] represents the Clifford operator corresponding to Gottesman matrix mat, and operates on a Gottesman vector or a matrix consisting of rows of Gottesman vectors."
-(* NOTE: One can get GottesmanMap to directly operate on CliffordState. For general users, However, this role is reserved for CliffordUnitary. *)
-
-GottesmanMap[mat_?MatrixQ, kk:{__Integer}][vec_?VectorQ] :=
-  First @ GottesmanMap[mat, kk] @ {vec}
-
-GottesmanMap[mat_?MatrixQ, kk:{__Integer}][gnr_?MatrixQ] := Module[
-  { ii = Append[Riffle[2kk-1, 2kk], -1],
-    vv = gnr },
-  vv[[;;, ii]] = GottesmanMap[mat] /@ vv[[;;, ii]];
-  Return[vv]
-]
-
-
-GottesmanMap[mat_?MatrixQ][gnr_?MatrixQ] :=
-  SparseArray @ Map[GottesmanMap[mat], gnr]
-
-GottesmanMap[mat_?MatrixQ][vec_?VectorQ] := Module[
-  { pos = Flatten @ Position[Normal @ Most @ vec, 1],
-    new, sig },
-  If[pos == {}, Return @ vec];
-  new = mat[[pos]];
-  new = Fold[GottesmanTimes, Normal @ new];
-  (* NOTE: The following line is surprisingly slow; hence, the above line instead. *)
-  (* new = GottesmanTimes @@ new; *)
-  sig = Last[vec] * Power[I, Count[Normal @ Partition[vec, 2], {1, 1}]];
-  SparseArray @ ReplaceAt[new, v_ :> v * sig, -1]
-]
-
-
-(* NOTE: Intended for internal use *)
-GottesmanMap[ops:{(_CNOT|_SWAP|_Hadamard|_Quadrant|_GottesmanMap)...}][spec_] :=
-  Fold[#2[#1]&, spec, ops]
-
-(**** </GottesmanMap> ****)
 
 
 (**** <Clifford Generators> ****)
