@@ -45,6 +45,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { Rotation, EulerRotation,
   TheRotation, TheEulerRotation };
 
+{ Exchange, TheExchange };
+
 { RotationAngle, RotationAxis, RotationSystem,
   TheEulerAngles }
 
@@ -2914,6 +2916,53 @@ Unfold[
 (**** </EulerRotation> ****)
 
 
+(**** <TheExchange> ****)
+
+TheExchange::usage = "TheExchange[{gx,gy,gz}] returns the 4\[Times]4 unitary matrix due to the exchange interaction between two qubits or spins.\nTheExchange[mat] assumes that the exchange interaction is governed by the 3\[Times]3 real symmetric matrix mat."
+
+TheExchange[gg:{gx_, gy_, gz_}] := Module[
+  { ee, mm },
+  ee = ChainBy[{gy, gz, gx, gy}, Plus];
+  ee = Exp[-I*ee/2];
+  mm = (Total[ee] + 1)*ThePauli[{0, 0}] +
+    ({-1, 1, 1}.ee - 1)*ThePauli[{1, 1}] +
+    ({1, -1, 1}.ee - 1)*ThePauli[{2, 2}] +
+    ({1, 1, -1}.ee - 1)*ThePauli[{3, 3}];
+  mm * Exp[I*(gx+gy+gz)/4] / 4
+] /; VectorQ[gg]
+
+TheExchange[gg_?MatrixQ] := Module[
+  { mm = Tuples[Range @ 3, 2] },
+  mm = Map[ThePauli, mm];
+  mm = Flatten[gg] . mm;
+  MatrixExp[-I*mm/4]
+] /; MatrixQ[gg, NumericQ]
+
+(**** </TheExchange> ****)
+
+
+(**** <Exchange> ****)
+
+Exchange::usage = "Exchange[{gx,gy,gz}, {{i_, j_}, n_Integer}] represents the unitary gate due to the exchange interaction between two qubits i and j within a n-qubit quantum register.\nExchange[mat, spec] assumes that the exchange interaction is governed by the 3\[Times]3 real symmetric matrix mat."
+
+SetAttributes[Exchange, NHoldRest]
+
+Exchange /: 
+MultiplyKind[ Exchange[_, {{_, _}, _Integer}] ] = Pauli
+
+Exchange /: 
+MultiplyGenus[ Exchange[_, __] ] = "Singleton"
+
+Exchange /: 
+NonCommutativeQ[ Exchange[_, __] ] = True
+
+Exchange /:
+Matrix[Exchange[gg_?ArrayQ, {{i_Integer, j_Integer}, n_Integer}]] := 
+  MatrixEmbed[TheExchange @ gg, {i, j}, n]
+
+(**** </Exchange> ****)
+
+
 (**** <PauliDot> ****)
 
 PauliDot::usage = "PauliDot[a, b, \[Ellipsis]] represents the non-commutative multiplication between Pauli operators a, b, \[Ellipsis]."
@@ -2927,10 +2976,10 @@ PauliDot[expr_Plus, a_] := Map[PauliDot[#, a]&, expr]
 
 PauliDot[a_, expr_Plus] := Map[PauliDot[a, #]&, expr]
 
-PauliDot[ a_ * b_, c_] :=
+PauliDot[a_ * b_, c_] :=
   a * PauliDot[b, c] /; FreeQ[a, _PauliDot|_Pauli|_Ket|_Bra]
 
-PauliDot[ a_, b_ * c_] :=
+PauliDot[a_, b_ * c_] :=
   b * PauliDot[a, c] /; FreeQ[b, _PauliDot|_Pauli|_Ket|_Bra]
 
 
@@ -4181,13 +4230,11 @@ Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states 
 
 Fidelity::num = "For efficiency, Fidelity supports only numerical matrices. For symbolic matrices, resort to the definition."
 
-Fidelity[a_?MatrixQ, b_?MatrixQ] := With[
-  { c = MatrixPower[a, 1/2] },
-  Tr @ MatrixPower[c . b . c, 1/2]
-] /; If[ MatrixQ[a, NumericQ] && MatrixQ[b, NumericQ],
-    True,
-    Message[Fidelity::num];
-    False
+(* See Baldwin and Jones (2023) *)
+Fidelity[a_?MatrixQ, b_?MatrixQ] := Re[
+  Total @ Sqrt @ Eigenvalues @ Dot[a, b]
+] /; If[ MatrixQ[a, NumericQ] && MatrixQ[b, NumericQ], True,
+    Message[Fidelity::num]; False
   ]
 
 

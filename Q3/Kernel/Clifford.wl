@@ -144,7 +144,7 @@ CliffordState /:
 CliffordUnitary[mat_, ___?OptionQ][cs_CliffordState] := With[
   { new = GottesmanMap[mat] @ First @ cs },
   ReplacePart[cs, 1 -> new]
-] /; GttsMatrixQ[Most @ Transpose @ mat]
+] /; rGtsMatrixQ[Most @ Transpose @ mat]
 
 
 CliffordState /:
@@ -348,7 +348,7 @@ MakeBoxes[cu:CliffordUnitary[mat_?MatrixQ, ___?OptionQ], fmt_] := Module[
     fmt,
     "Interpretable" -> Automatic
   ]
-] /; If[ GttsMatrixQ[Most @ Transpose @ mat], True,
+] /; If[ rGtsMatrixQ[Most @ Transpose @ mat], True,
   Message[CliffordUnitary::bad, mat]; False
 ]
 
@@ -364,7 +364,7 @@ MakeBoxes[cu:CliffordUnitary[mat_?MatrixQ, kk:{__Integer}, ___?OptionQ], fmt_] :
     },
     fmt,
     "Interpretable" -> Automatic
-  ] /; If[ GttsMatrixQ[Most @ Transpose @ mat], True,
+  ] /; If[ rGtsMatrixQ[Most @ Transpose @ mat], True,
     Message[CliffordUnitary::bad, mat]; False
   ]
 

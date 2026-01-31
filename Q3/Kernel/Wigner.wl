@@ -157,6 +157,24 @@ SpinNumberQ[__] = False
 (**** </SpinQuantumNumberQ> ****)
 
 
+(**** <Exchange> ****)
+
+Exchange::usage = "Exchange[{gx,gy,gz}, {{i_, j_}, n_Integer}] represents the unitary gate due to the exchange interaction between two qubits i and j within a n-qubit quantum register.\nExchange[mat, spec] assumes that the exchange interaction is governed by the 3\[Times]3 real symmetric matrix mat."
+
+SetAttributes[Exchange, NHoldRest]
+
+Exchange /: 
+MultiplyKind[ Exchange[_, {__?SpinQ}] ] = Spin
+
+Exchange /:
+Matrix[
+  Exchange[gg_?ArrayQ, {a_?SpinQ, b_?SpinQ}, rest___], 
+  ss:{__?SpeciesQ}
+] := MatrixEmbed[TheExchange @ gg, {a, b}, ss]
+
+(**** </Exchange> ****)
+
+
 (**** <Spin> ****)
 
 Spin::usage = "Spin refers to either the Spin species or an option for the Boson, Fermion or Spin species.\nSpin[c] returns the Spin quantum number of Species c."

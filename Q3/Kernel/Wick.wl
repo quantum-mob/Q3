@@ -8,7 +8,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   WickCovariance, WickCount };
 { WickPureQ, WickPurity, 
   WickNullQ, WickSingleQ };
-{ WickTranspose };
+{ WickInner, WickTranspose };
 { WickDensityMatrix };
 
 { BCSState, BCSStateQ };
@@ -339,6 +339,9 @@ WickPureQ[cvr_?MatrixQ] := ArrayZeroQ[
   One[Dimensions @ cvr] + cvr.cvr
 ]
 
+WickPureQ[cvr_WickCovariance] :=
+  WickPureQ[First @ cvr]
+
 WickPureQ[WickState[{_, cvr_?MatrixQ}, ___]] :=
   WickPureQ[cvr]
 
@@ -488,6 +491,24 @@ WickCanonicalize[NambuMeasurement[mat_?MatrixQ, rest___]] := With[
 ]
 
 (**** </WickCanonicalize> ****)
+
+
+(**** <WickInner> ****)
+
+WickInner::usage = "WickInner[a, b] calculate the Hilbert-Schmidt product Tr[Dagger[\[Rho]]\[Sigma]] of two density matrices \[Rho] and \[Sigma] corresponding to Wick state a and b."
+
+WickInner[a_WickState, b_WickState] :=
+  theWickInner[ a[[1, 2]], b[[1, 2]] ]
+
+WickInner[a_WickCovariance, b_WickCovariance] :=
+  theWickInner[First @ a, First @ b]
+
+(* Assuming va and vb are 2n x 2n real anti-symmetric matrices. *)
+theWickInner[va_?MatrixQ, vb_?MatrixQ] := Quiet[
+  Sqrt[Det[One[Dimensions @ va] - Dot[va, vb]] / Power[2, Length @ va]]
+]
+
+(**** </WickInner> ****)
 
 
 (**** <WickTranspose> ****)
@@ -2058,9 +2079,7 @@ theWickOTOC[in_, ub_, qc_WickCircuit] := Module[
   va = Fold[Construct[#2, #1]&, in, First @ qc];
   vb = Join[{ub}, First @ qc, Dagger @ {ub}];
   vb = Fold[Construct[#2, #1]&, in, vb];
-  va = First @ WickCovariance[va];
-  vb = First @ WickCovariance[vb];
-  Sqrt @ Quiet[Sqrt[Det[va + vb]] / Power[2, FermionCount @ qc], Det::luc]
+  Sqrt @ WickInner[va, vb]
 ]
 
 (**** </WickScramblingSimulate> ****)

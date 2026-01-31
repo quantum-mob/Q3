@@ -1,6 +1,10 @@
 # Release Notes
 
 ## 4.4.3
+- New: WickInner
+- Improved: WickScramblingSimulate
+
+## 4.4.3
 
 - New: WickTranspose, DropWhile, QuantumScramblingCircuit, QuantumScramblingSimulate, WickScrambingCircuit, WickScramblingSimulte
 - Improved: CliffordCircuit, RandomCliffordCircuit, QubitCount, CliffordState
