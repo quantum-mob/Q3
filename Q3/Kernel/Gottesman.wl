@@ -754,34 +754,66 @@ GottesmanBasis[n_Integer] := One[2*n] /; n > 0
 (**** </GottesmanBasis> ****)
 
 
+(**** <GottesmanSplit> ****)
+
 GottesmanSplit::usage = "GottesmanSplit[vec] returns a list of two vectors {{x1,x2,,xn},{z1,z2,,zn}} for Gottesman vector vec={x1,z1,x2,z2,,x1n,zn}.\nGottesmanSplit[mat] returns a list of the X- and Z-part of the matrix of Gottesman vectors, mat={{x11,z11,x12,z12,,x1n,z1n},{x21,z21,x22,z22,,x2n,z2n},}.";
 
-GottesmanSplit[vec_?VectorQ] :=
-  Transpose @ Partition[vec, 2]
+GottesmanSplit[vec_?VectorQ] := Append[
+  GottesmanSplit[Most @ vec],
+  Last @ vec  
+] /; OddQ[Length @ vec]
 
-GottesmanSplit[mat_?MatrixQ] := Transpose[
+GottesmanSplit[vec_?VectorQ] :=
+  SparseArray /@ Transpose @ Partition[vec, 2]
+
+
+GottesmanSplit[mat_?MatrixQ] := Append[
+  GottesmanSplit[trimGottesmanArray @ mat],
+  Last @ Transpose @ mat
+] /; OddQ[Last @ Dimensions @ mat]
+
+GottesmanSplit[mat_?MatrixQ] := SparseArray /@ Transpose[
   Map[Partition[#, 2]&, mat], 
   {2, 3, 1}
 ]
 
+(**** </GottesmanSplit> ****)
+
+
+(**** <GottesmanMerge> ****)
 
 GottesmanMerge::usage = "GottesmanMerge[{x$1,x$2,$$,x$n}, {z$1,z$2,$$,z$n}] returns Gottesman vector {x$1,z$1,x$2,z$2,$$,x$n,z$n}.\nGottesmanMerge[xmat, zmat] returns the list of Gottesman vectors {{x$11,z$11,x$12,z$12,$$,x$1n,z$1n},{x$21,z$21,x$22,z$22,$$,x$2n,z$2n},$$} for xmat={{x$11,x$12,$$,x$1n},{x$21,x$22,$$,x$2n},$$} and zmat={{z$11,z$12,$$,z$1n},{z$21,z$22,$$,z$2n},$$}.";
 
-GottesmanMerge::bad = "`` and `` cannot be the X- and Z-part of a valid Gottesman vector."
+GottesmanMerge::incmp = "Incompatible data `` for a valid Gottesman array."
 
-GottesmanMerge[xx_?VectorQ, zz_?VectorQ] := (
-  Message[GottesmanMerge::bad, xx, zz];
-  Riffle[xx, zz]
- ) /; Not[ArrayQ @ {xx, zz}]
+GottesmanMerge[{x_?VectorQ, z_?VectorQ}] := 
+  Riffle[x, z] /; 
+  If[ MatrixQ[{x, z}], True,
+    Message[GottesmanMerge::incmp, {x, z}]; False
+  ]
 
-GottesmanMerge[xx_?VectorQ, zz_?VectorQ] := Riffle[xx, zz]
+GottesmanMerge[{x_?VectorQ, z_?VectorQ, f_}] :=
+  Append[GottesmanMerge[{x, z}], f] /;
+  If[ MatrixQ[{x, z}], True,
+    Message[GottesmanMerge::incmp, {x, z, f}]; False
+  ]
 
-GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := (
-  Message[GottesmanMerge::bad, xx, zz];
-  MapThread[Riffle, {xx, xx}]
-) /; Not[ArrayQ @ {xx, zz}]
 
-GottesmanMerge[xx_?MatrixQ, zz_?MatrixQ] := MapThread[Riffle, {xx, zz}]
+GottesmanMerge[{x_?MatrixQ, z_?MatrixQ}] := 
+  SparseArray @ Transpose @ Riffle[Transpose @ x, Transpose @ z] /;
+  If[ ArrayQ[{x, z}], True,
+    Message[GottesmanMerge::incmp, {x, z}]; False
+  ]
+
+GottesmanMerge[{x_?MatrixQ, z_?MatrixQ, f_?VectorQ}] := 
+  SparseArray @ Transpose @ Append[
+    Riffle[Transpose @ x, Transpose @ z], 
+    f
+  ] /; If[ ArrayQ[{x, z}] && Length[x] == Length[f], True,
+    Message[GottesmanMerge::incmp, {x, z, f}]; False
+  ]
+
+(**** </GottesmanMerge> ****)
 
 
 (**** <Stabilizer> ****)
@@ -1613,8 +1645,7 @@ CliffordFactor[op:Except[_?MatrixQ]] := With[
 (**** <GottesmanFactor> ****)
 
 GottesmanFactor::usage = "GottesmanFactor[mat] returns a list of elementary Clifford operators that generates the Clifford unitary operator corresponding to full Gottesman matrix mat.\nThis is the base of CliffordFactor and FromGottesmanMatrix."
-(* SEE: van den Berg (2021) *)
-(* NOTE: Since v3.5.11, CliffordFactor and FromGottesmanMatrix are based on GottesmanFactor, which replaces LegacyCliffordFactor. Compared with LegacyCliffordFactor, GottesmanFactor is faster and the generated set of gates are completely elementary. Moreover, it is easier to trace the change of signs along the transformation of Pauli strings. *)
+(* Based on van den Berg (2021) *)
 
 (* for reduced Gottesman matrix *)
 GottesmanFactor[rgm_?rGtsMatrixQ] := 
@@ -1996,54 +2027,54 @@ FullGottesmanMatrix[op:Quadrant[{___Integer}], n_Integer] :=
 (**** <GottesmanRowReduce> ****)
 
 GottesmanRowReduce::usage = "GottesmanRowReduce[mat] returns the row-reduced form of the full Gottesman matrix mat. If mat is a reduced Gottesman matrix, each row is padded with 1."
-(* SEE: Garcia, Markov, Cross (arXiv:1210.6646). *)
+(* SEE: Garcia, Markov, Cross (2014). *)
 
-GottesmanRowReduce[mat_?MatrixQ] := mat /;
-  MemberQ[Dimensions @ mat, 1]
+GottesmanRowReduce[mat_?rGtsArrayQ, rest___] :=
+  GottesmanRowReduce[padGottesmanArray @ mat, rest]
 
-GottesmanRowReduce[mat_?fGtsArrayQ] := Module[
-  { i = 1,
-    j = 1,
-    k, m, n, new },
-  {m, n} = Dimensions[mat];
-  new = Normal[mat];
+GottesmanRowReduce[mat_?fGtsArrayQ] :=
+  GottesmanRowReduce[mat, {{1, _}, {0, 1}}] (* XY-block on top of Z-block *)
+(* Alternative:
+  GottesmanRowReduce[mat, {{_, 1}, {1, 0}}] (* ZY-block on top of X-block *)
+  *)
+
+GottesmanRowReduce[mat_?fGtsArrayQ, {upper_, lower_}] := Module[
+  { new, k },
   (* reduce the X-block *)
-  While[ i < m && j < n,
-    If[ Not @ MatchQ[new[[i, j;;j+1]], {1, _}],
-      k = FirstPosition[new[[i+1;;All, j;;j+1]], {1, _}];
-      If[MissingQ[k], j += 2; Continue[]];
-      k = i + First[k];
-      new[[{i, k}]] = new[[{k, i}]]
-    ];
-    k = Position[new[[i+1;;All, j;;j+1]], {1, _}];
-    If[k == {}, i++; j += 2; Continue[]];
-    k = i + Flatten[k];
-    new[[k]] = Map[ GottesmanTimes[new[[i]], #]&, new[[k]] ];
-    i++; j += 2
-  ];
+  new = gtsRowReduce[mat, upper, 1];
   (* find the Z-block *)
   k = FirstPosition[
-    Map[Total, First @ GottesmanSplit @ new],
-    0
-  ];
+    Map[Count[#, upper]&] @ Map[Partition[#, 2]&] @ new,
+    0 ];
   If[MissingQ[k], Return @ SparseArray @ new];
   (* reduce the Z-block *)
-  i = First[k];
-  j = 1;
-  While[ i < m && j < n,
-    If[ Not @ MatchQ[new[[i, j;;j+1]], {0, 1}],
-      k = FirstPosition[new[[i+1;;All, j;;j+1]], {0, 1}];
+  new = gtsRowReduce[new, lower, First @ k];
+  SparseArray[new]
+]
+
+(* pattern: {_, 1} for XY-block, {1, _} for YZ-block, 
+    {0, 1} for Z-block, {1, 0} for X-block *)
+gtsRowReduce[mat_?fGtsArrayQ, pattern_List, off_Integer:1] := Module[
+  { new = Normal[mat], (* Normal for Position and FirstPosition *)
+    var = ReplaceAll[pattern, {0 -> _}],
+    i = off,
+    j = 1,
+    k, m, n },
+  {m, n} = Dimensions[mat];
+  While[ i <= m && j < n,
+    If[ Not @ MatchQ[new[[i, j;;j+1]], pattern],
+      k = FirstPosition[new[[i+1;;All, j;;j+1]], pattern];
       If[MissingQ[k], j += 2; Continue[]];
       k = i + First[k];
       new[[{i, k}]] = new[[{k, i}]]
     ];
-    k = Position[new[[i+1;;All, j;;j+1]], {0, 1}];
-    If[k == {}, i++; j += 2; Continue[]];
-    k = i + Flatten[k];
+    k = Flatten @ Position[new[[All, j;;j+1]], var];
+    If[Length[k] == 1, i++; j += 2; Continue[]];
+    k = DeleteCases[k, i];
     new[[k]] = Map[ GottesmanTimes[new[[i]], #]&, new[[k]] ];
     i++; j += 2
   ];
-  SparseArray[new]
+  Return[new]
 ]
 
 (**** </GottesmanRowReduce> ****)

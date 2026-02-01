@@ -4,6 +4,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { CliffordState, RandomCliffordState,
   CliffordPureQ, CliffordProjectors };
+{ CliffordInner };
 
 { CliffordUnitary, RandomCliffordUnitary };
 
@@ -178,16 +179,22 @@ RandomCliffordState[k_Integer, ss:{__?QubitQ}] := With[
 ]
 
 
+(**** <CliffordPureQ> ****)
+
 CliffordPureQ::usage = "CliffordPureQ[cs] returns True if the Clifford state cs is a pure state; Falsoe, otherwise."
 
 CliffordPureQ[CliffordState[gnr_?MatrixQ, ___]] :=
   CliffordPureQ[gnr]
 
-CliffordPureQ[gnr_?MatrixQ] := Module[
+CliffordPureQ[gnr_?fGtsArrayQ] := Module[
   {m, n},
   {m, n} = Dimensions[gnr];
   TrueQ[2m == n-1]
 ]
+
+CliffordPureQ[_] = False
+
+(**** </CliffordPureQ> ****)
 
 
 CliffordProjectors::usage = "CliffordProjectors[gnr] returns a list of projection operators corresponding to the stabilizer generators specified by the list of Gottesman vectors gnr."
@@ -205,6 +212,39 @@ CliffordProjectors[gnr_?MatrixQ] := Module[
   (* NOTE (Mathematica v14.1): For some unknown reason, the above statement converts mm to normal matrix; not keep the SparseArray object. *)
   Map[SparseArray, mm / 2]
 ]
+
+
+(**** <CliffordInner> ****)
+
+CliffordInner::usage = "CliffordInner[a, b] returns the Hilbert-Schmidt product of the two density matrices corresponding the Clifford states a and b.\nNote that for pure Clifford states, this only gives the absolute value of the Hermitian product."
+(* Based on Garcia, Markov, Cross (2014), but working in the X-basis rather than the Z-basis. *)
+
+CliffordInner[a_CliffordState, b_CliffordState] :=
+  CliffordInner[First @ a, First @ b] /;
+  And[CliffordPureQ @ a, CliffordPureQ @ b]
+
+CliffordInner[a_?fGtsArrayQ, b_?fGtsArrayQ] := Module[
+  { n = Length[a],
+    mma, mmb, ops, hdm, fac,
+    xb, zb, fb, fa, k },
+  (* find Clifford circuit to reduce "a" to a product state in the X basis. *)
+  {mma, ops} = GottesmanColumnReduce[a];
+  ops = Flatten[ops];
+  mma = GottesmanRowReduce[mma, {{_, 1}, {1, 0}}];
+  mmb = GottesmanRowReduce[GottesmanMap[ops] @ b, {{_, 1}, {1, 0}}];
+  (* analyse the X-block *)
+  {xb, zb, fb} = GottesmanSplit[mmb];
+  k = FirstPosition[Total /@ zb, 0];
+  If[MissingQ[k], Return @ Power[2, -n/2], k = First[k]];
+  fb = fb[[k;;All]];
+  xb = xb[[k;;All]];
+  fa = Map[Flatten @ Position[#, 1]&, Normal @ xb];
+  fa = Map[mma[[#, -1]]&, fa];
+  fa = MapApply[Times, fa];
+  If[fa == fb, Power[2, -(k-1)/2], 0]
+] /; ArrayQ[{a, b}]
+
+(**** </CliffordInner> ****)
 
 
 (**** <PauliMeasurement> ****)
@@ -828,7 +868,7 @@ theCliffordOTOC[in_, ub_, qc_CliffordCircuit] := Module[
   { aa, bb },
   aa = qc[in];
   bb = Dagger[ub] @ qc @ ub @ in;
-  Conjugate[N @ Matrix @ aa] . Matrix[bb]
+  CliffordInner[aa, bb]
 ]
 
 (**** </CliffordScramblingSimulate> ****)

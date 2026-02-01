@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.4.4
+
+- New: GottesmanColumnReduce, GottesmanRowReduce, GottesmanFactor, CliffordScramblingCircuit, CliffordScramblingSimulate
+- Improved: GottesmanSplit, GottesmanMerge
+
 ## 4.4.3
 - New: WickInner
 - Improved: WickScramblingSimulate
