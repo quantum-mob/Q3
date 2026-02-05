@@ -30,8 +30,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { ModMultiply, ModAdd, ModExp = ModPower };
 
-{ UnitaryInteraction,
-  Matchgate };
+{ Matchgate };
 
 { ProductState, BellState, GHZState, SmolinState,
   DickeState };
@@ -62,7 +61,7 @@ AddElaborationPatterns[
   _Phase, _Rotation, _EulerRotation,
   _Projector, _ProductState,
   _ControlledPower,
-  _UnitaryInteraction,
+  _ExchangeGate,
   _Matchgate
 ]
 
@@ -2943,7 +2942,7 @@ BellState[g:{_?QubitQ, _?QubitQ}, 3] :=
   ( Ket[g->{0,0}] - Ket[g->{1,1}] ) / Sqrt[2]
 
 
-(**** <GHZState> ****)
+(**** <DickeState> ****)
 
 DickeState::usage = "DickeState[qubits, n] gives the generalized Dicke state for the qubits, where n qubits are in the state Ket[1]."
 
@@ -2956,15 +2955,14 @@ DickeState[ss:{__?QubitQ}, n_] := Module[
 
 DickeState[ss:{__?QubitQ}] := Table[DickeState[ss, n], {n, 0, Length @ ss}]
 
-(**** </GHZState> ****)
+(**** </DickeState> ****)
 
 
 (**** <GHZState for Qubits> ****)
 
 GHZState::usage = "GHZState[{s1,s2,\[Ellipsis]}, k] returns the kth generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nGHZState[{s1,s2,\[Ellipsis]}] returns the list of all GHZ states of species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
 
-GHZState[ss:{__?QubitQ}] :=
-  Map[GHZState[ss, #]&, Range[0, Power[2, Length @ ss] - 1]]
+GHZState[ss:{__?QubitQ}] := GHZState[ss, 0]
 
 GHZState[ss:{__?QubitQ}, k_Integer] := Module[
   { kk = IntegerDigits[k, 2, Length @ ss],
@@ -2972,6 +2970,11 @@ GHZState[ss:{__?QubitQ}, k_Integer] := Module[
   nn =  Mod[kk+1, 2];
   (Ket[ss->kk] + Ket[ss->nn]*Power[-1, First @ kk]) / Sqrt[2]
 ]
+
+GHZState[ss:{__?QubitQ}, kk:{___Integer}] := Map[GHZState[ss, #]&, kk]
+
+GHZState[ss:{__?QubitQ}, All] :=
+  GHZState[ss, Range[0, Power[2, Length @ ss] - 1]]
 
 (**** </GHZState> ****)
 
@@ -3201,66 +3204,71 @@ ModPower::usage = "ModPower represents the modular power or modular exponentiati
 (**** </ModPower> ****)
 
 
-(**** <UnitaryInteraction> ****)
+(**** <ExchangeGate> ****)
 
-UnitaryInteraction::usage = "UnitaryInteraction[{gx, gy, gz}, {s1, s2, \[Ellipsis]}] represents the unitary interaction among qubits s1, s2, \[Ellipsis]."
+ExchangeGate::usage = "ExchangeGate[array,{s1,s2,\[Ellipsis]}] represents the unintary gate governed by the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy."
 
-Format[ op:UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}, rest___] ] :=
-  With[
-    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
-    Interpretation[
-      DisplayForm @ RowBox @ { Exp,
-        RowBox @ {"(", -I * Dot[vec, ops], ")"}
-       },
-      op ]
-   ]
+SetAttributes[ExchangeGate, NHoldRest]
 
-Format[ op:UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}, rest___] ] :=
-  With[
-    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
-    Interpretation[
-      DisplayForm @ RowBox @ { Exp,
-        RowBox @ {"(", -I * Inner[Multiply, ops, mat . ops], ")"}
-       },
-      op ]
-   ]
-
-
-UnitaryInteraction /:
-MultiplyKind[_UnitaryInteraction] = Qubit
-
-UnitaryInteraction /:
-NonCommutativeQ[_UnitaryInteraction] = True
-
-
-UnitaryInteraction[any_, ss:{__?QubitQ}, opts___?OptionQ] :=
-  UnitaryInteraction[any, FlavorCap @ ss, opts] /;
-  Not[FlavorCapQ @ ss]
-
-UnitaryInteraction[phi:Except[_?ListQ], rest__] :=
-  UnitaryInteraction[{0, 0, phi}, rest]
-
-
-UnitaryInteraction /:
-Unfold[UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}], ___] := With[
-  { cn = ReleaseHold @ Thread[Hold[CNOT][Most @ ss, Last @ ss]] },
-  QuantumCircuit[
-    Sequence @@ cn,
-    Rotation[2 * phi, Last[ss][3]],
-    Sequence @@ Reverse[cn]
+ExchangeGate /:
+MakeBoxes[op:ExchangeGate[gg_?ArrayQ, ss_List, opts___?OptionQ], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    ExchangeGate, op, None,
+    { BoxForm`SummaryItem @ {"Species: ", Flatten @ ss},
+      BoxForm`SummaryItem @ {"Coupling constants: ", ArrayShort @ gg} },
+    { BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
+    fmt, 
+    "Interpretable" -> Automatic 
+  ] /; Or[
+    AllTrue[Flatten @ ss, QubitQ],
+    AllTrue[Flatten @ ss, SpinQ]
   ]
+
+
+ExchangeGate /:
+NonCommutativeQ[ ExchangeGate[_, __] ] = True
+
+ExchangeGate /:
+MultiplyKind[ ExchangeGate[_, ss:{___?SpeciesQ}, ___] ] := 
+  MultiplyKind[First @ Flatten @ ss]
+
+ExchangeGate /:
+MultiplyGenus[ ExchangeGate[_, __] ] = "Singleton"
+
+
+ExchangeGate[gg_, ss_List, rest___] :=
+  ExchangeGate[gg, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
+
+
+ExchangeGate /:
+Elaborate[op:ExchangeGate[_?ArrayQ, ss_List, ___]] :=
+  Elaborate @ ExpressionFor[Matrix @ op, Flatten @ ss] 
+
+ExchangeGate /:
+Matrix[ExchangeGate[gg_?ArrayQ, ss_List, ___]] := 
+  MatrixExp[-I*Matrix[Exchange[gg, ss]]]
+
+ExchangeGate /:
+Matrix[op:ExchangeGate[gg_?ArrayQ, ss_List, ___], tt:{___?SpeciesQ}] := 
+  MatrixEmbed[Matrix @ op, Flatten @ ss, tt]
+
+
+ExchangeGate /:
+Unfold[ExchangeGate[{0, 0, phi_}, ss:{_?QubitQ, _?QubitQ}, ___]] := With[
+  { cn = CNOT @@ ss },
+  QuantumCircuit[cn, Rotation[2*phi, Last[ss][3]], cn]
 ]
 
-UnitaryInteraction /:
-Unfold[UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}], ___] :=
+ExchangeGate /:
+Unfold[ExchangeGate[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}, ___]] :=
   QuantumCircuit[
     CNOT[a, b],
     ControlledGate[b, Rotation[4*phi, a[1]]],
     CNOT[a, b]
   ]
 
-UnitaryInteraction /:
-Unfold[UnitaryInteraction[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}], ___] :=
+ExchangeGate /:
+Unfold[ExchangeGate[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}, ___]] :=
   QuantumCircuit[
     CNOT[a, b],
     ControlledGate[b, Rotation[4*phi, a[1]]],
@@ -3268,62 +3276,64 @@ Unfold[UnitaryInteraction[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}], ___] :=
     CNOT[a, b]
   ]
 
+(* NOTE: Put it at the end; otherwise, HoldPattern is required everywhere. *)
+ExchangeGate[phi:Except[_List], rest__] := ExchangeGate[{0, 0, phi}, rest]
 
-UnitaryInteraction /:
-Elaborate @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] :=
-  Cos[phi] - I * Sin[phi] * Apply[Multiply, Through[ss[3]]]
-
-UnitaryInteraction /:
-Elaborate @ UnitaryInteraction[{phi_, phi_, 0}, ss:{__?QubitQ}] := (
-  Cos[phi]^2 -
-    Power[-1, Length[ss]/2] * Sin[phi]^2 * Apply[Multiply, Through[ss[3]]] -
-    I * Cos[phi] * Sin[phi] * (
-      Apply[Multiply, Through[ss[1]]] + Apply[Multiply, Through[ss[2]]] )
- ) /; EvenQ[Length @ ss]
-
-UnitaryInteraction /:
-Elaborate @ UnitaryInteraction[{phi_, phi_, 0}, ss:{__?QubitQ}] := (
-  Cos[phi*Sqrt[2]] -
-    I * (
-      Apply[Multiply, Through[ss[1]]] + Apply[Multiply, Through[ss[2]]]
-     ) * Sin[phi*Sqrt[2]] / Sqrt[2]
- )
-
-UnitaryInteraction /:
-Elaborate @ HoldPattern[op:UnitaryInteraction[_, ss:{__?QubitQ}]] :=
-  Elaborate @ ExpressionFor[Matrix[op], ss]
+(**** </ExchangeGate> ****)
 
 
-UnitaryInteraction /:
-Matrix[op:UnitaryInteraction[{phi_, phi_, 0}, {__?QubitQ}], rest___] :=
-  Matrix[Elaborate @ op, rest]
+(**** <Exchange> ****)
 
-UnitaryInteraction /:
-Matrix[op:UnitaryInteraction[{0, 0, phi_}, {__?QubitQ}], rest___] :=
-  Matrix[Elaborate @ op, rest]
+Exchange::usage = "Exchange[array,{s1,s2,\[Ellipsis]}] represents the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy."
 
-UnitaryInteraction /:
-Matrix[
-  HoldPattern @ UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}],
-  rest___] :=
-  MatrixExp[ -I *
-      Matrix[Dot[vec, Multiply @@@ Transpose @ Through[ss[All]]], rest]
-   ]
+SetAttributes[Exchange, NHoldRest];
 
-UnitaryInteraction /:
-Matrix[
-  HoldPattern @ UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}],
-  rest___ ] := With[
-    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
-    MatrixExp[ -I * Matrix[Inner[Multiply, ops, mat . ops], rest] ]
-   ]
+Exchange /: 
+NonCommutativeQ[ _Exchange ] = True
 
-(**** </UnitaryInteraction> ****)
+Exchange /: 
+MultiplyKind[ op_Exchange ] := MultiplyKind[ op[[2]] ]
+
+Exchange /: 
+MultiplyGenus[ _Exchange ] = "Singleton"
+
+
+Exchange[gg_, ss_List, rest___] :=
+  Exchange[gg, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
+
+Exchange /:
+OperatorExp[op:Exchange[gg_?ArrayQ, ss_List, rest___], more___] := 
+  OperatorExp[Matrix @ op, Flatten @ ss, rest, more]
+
+Exchange /:
+Matrix[op:Exchange[gg_?ArrayQ, ss_List, ___]] := 
+  Matrix[Elaborate @ op, Flatten @ ss]
+
+Exchange /:
+Matrix[op:Exchange[gg_?ArrayQ, ss_List, ___], tt:{___?SpeciesQ}] := 
+  MatrixEmbed[Matrix @ op, Flatten @ ss, tt]
+
+Exchange /:
+Elaborate @ Exchange[gg_?ArrayQ, ss_List, ___] := Total[
+  ChainBy[FlavorCap @ ss, theExchange @ gg]
+] /; Or[
+  AllTrue[Flatten @ ss, SpinQ],
+  AllTrue[Flatten @ ss, QubitQ]
+]
+
+theExchange[gg_?VectorQ][a_, b_] := MultiplyDot[a[All], gg * b[All]]
+
+theExchange[gg_?MatrixQ][a_, b_] := MultiplyDot[a[All], gg . b[All]]
+
+(* NOTE: Put it at the end; otherwise, HoldPattern is required everywhere. *)
+Exchange[phi:Except[_List], rest__] := Exchange[{0, 0, phi}, rest]
+
+(**** </Exchange> ****)
 
 
 (**** <Matchgate> ****)
 
-Matchgate::usage = "Matchgate[{a1,b1,c1}, {a2,b2,c2}] ... "
+Matchgate::usage = "Matchgate[{a1,b1,c1}, {a2,b2,c2}, {s1,s2}] represents the matchgate on two qubits s1 and s2 parametrized by two sets, {a1,b1,c1} and {a2,b2,c2}, of Euler angles."
 
 Matchgate[aa_, bb_, ss:{__?QubitQ}] :=
   Matchgate[aa, bb, FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
@@ -3348,7 +3358,7 @@ Matrix[
 Matchgate[aa:{_, _, _}, bb:{_, _, _}] := Dot[
   Matrix @ GivensRotation[TheEulerRotation[aa], {1, 4}, 4],
   Matrix @ GivensRotation[TheEulerRotation[bb], {2, 3}, 4]
- ]
+]
 
 (**** </Matchgate> ****)
 
@@ -3493,21 +3503,14 @@ theKetVerify[Rule[a_?QuditQ, v_]] := (
 (**** </Ket for Qubits> ****)
 
 
-(**** <GHZState for arbitray species> ****)
+(**** <GHZState> ****)
+(*  for arbitray species *)
 
-GHZState[ss:{__?SpeciesQ}] :=
-  KetMutate[GHZState @ {First @ Dimension @ ss, Length @ ss}, ss]
-
-GHZState[ss:{__?SpeciesQ}, k_Integer] := KetMutate[
-  GHZState[{First @ Dimension @ ss, Length @ ss}, k],
+GHZState[ss:{__?SpeciesQ}, rest___] := KetMutate[
+  GHZState[{First @ Dimension @ ss, Length @ ss}, rest],
   ss
 ]
 
-
-GHZState[{dim_Integer?Positive, n_Integer?Positive}] := Map[
-  GHZState[{dim, n}, #]&,
-  Range[0, Power[dim, n]-1]
-]
 
 GHZState[{dim_Integer?Positive, n_Integer?Positive}, k_Integer?NonNegative] := Module[
   { xx, kk, ww, vv },
@@ -3516,6 +3519,13 @@ GHZState[{dim_Integer?Positive, n_Integer?Positive}, k_Integer?NonNegative] := M
   vv = Map[Mod[kk + #, dim]&,  xx];
   ww = Exp[I* 2*Pi * xx * First[kk] / dim] / Sqrt[dim];
   Map[Ket, vv] . ww
+]
+
+GHZState[{dim_Integer?Positive, n_Integer?Positive}] := GHZState[{dim, n}, 0]
+
+GHZState[{dim_Integer?Positive, n_Integer?Positive}, All] := Map[
+  GHZState[{dim, n}, #]&,
+  Range[0, Power[dim, n]-1]
 ]
 
 (**** </GHZState> ****)

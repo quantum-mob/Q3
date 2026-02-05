@@ -4,7 +4,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { TheKet, TheBra };
 
-{ State, StateForm, Operator };
+{ State, StateForm, Operator, OperatorExp };
 { RandomState, RandomOperator };
 
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
@@ -45,7 +45,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { Rotation, EulerRotation,
   TheRotation, TheEulerRotation };
 
-{ Exchange, TheExchange };
+{ Exchange, ExchangeGate };
 
 { RotationAngle, RotationAxis, RotationSystem,
   TheEulerAngles }
@@ -1302,9 +1302,11 @@ State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ] := With[
 ] /; Not[OrderedQ @ ss]
 (* TODO: To support fermions *)
 
+State /:
+Matrix @ State[vec_?VectorQ, {__?SpeciesQ}, ___?OptionQ] = vec
 
 State /:
-Matrix[ State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{___?QubitQ} ] :=
+Matrix[ State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{___?SpeciesQ} ] :=
   MatrixEmbed[vec, ss, tt]
 
 State /:
@@ -1401,7 +1403,7 @@ MakeBoxes[op:Operator[mat_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ], fmt_] :=
     Operator, op, None,
     { BoxForm`SummaryItem @ {"Species: ", ss},
       BoxForm`SummaryItem @ {"Dimension: ", Dimensions @ mat} },
-    { BoxForm`SummaryItem @ {"Matrix: ", MatrixForm@mat[[;;UpTo[5], ;;UpTo[5]]]},
+    { BoxForm`SummaryItem @ {"Matrix: ", ArrayShort @ mat},
       BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
     fmt, "Interpretable" -> Automatic ]
 
@@ -1417,6 +1419,9 @@ Dagger @ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
   Operator[ ConjugateTranspose @ mat, ss, 
     ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
   ]
+
+Operator /:
+Matrix[ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ] ] := mat
 
 Operator /:
 Matrix[ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{__?QubitQ} ] :=
@@ -1458,6 +1463,82 @@ Multiply[
   ]
 
 (**** </Operator> ****)
+
+
+(**** <OperatorExp> ****)
+
+OperatorExp::usage = "OperatorExp[mat, {s1,s2,\[Ellipsis]}] represents the operator acting on systems {s1, s2, \[Ellipsis]} with the matrix representation Exp[-I*mat]."
+
+SyntaxInformation[OperatorExp] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
+
+AddElaborationPatterns[_OperatorExp]
+
+OperatorExp /:
+MakeBoxes[op:OperatorExp[mat_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    OperatorExp, op, None,
+    { BoxForm`SummaryItem @ {"Species: ", ss},
+      BoxForm`SummaryItem @ {"Dimension: ", Dimensions @ mat} },
+    { BoxForm`SummaryItem @ {"Matrix: ", ArrayShort @ mat},
+      BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
+    fmt, "Interpretable" -> Automatic ]
+
+
+OperatorExp[mat_?MatrixQ, S_?SpeciesQ, opts___?OptionQ] := 
+  OperatorExp[mat, S @ {$}, opts]
+
+OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
+  OperatorExp[mat, FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
+
+OperatorExp /:
+Dagger @ OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] := 
+  OperatorExp[ -ConjugateTranspose[mat], ss,
+    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
+  ]
+
+OperatorExp /:
+Matrix[ OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ] ] := MatrixExp[-I*mat]
+
+OperatorExp /:
+Matrix[ OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ], tt:{__?QubitQ} ] :=
+  MatrixEmbed[MatrixExp[-I*mat], ss, tt]
+
+OperatorExp /:
+Elaborate[ OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ] ] :=
+  Elaborate @ ExpressionFor[MatrixExp[-I*mat], ss]
+
+
+OperatorExp /:
+Multiply[
+  pre___,
+  OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ],
+  Ket[aa_Association], 
+  post___
+] :=
+  Multiply[
+    pre,
+    ExpressionFor[MatrixExp[-I*mat] . Matrix[Ket @ KeyTake[aa, ss], ss], ss],
+    Ket @ KeyDrop[aa, ss],
+    post
+  ]
+
+OperatorExp /:
+Multiply[
+  pre___, 
+  OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, ___?OptionQ], 
+  State[vec_?VectorQ, tt:{__?SpeciesQ}, ___?OptionQ],
+  post___
+] :=
+  With[
+    { qq = Union[ss, tt] },
+    Multiply[
+    pre,
+    State[ MatrixEmbed[MatrixExp[-I*mat], ss, qq] . MatrixEmbed[vec, tt, qq], qq ],
+    post
+    ]
+  ]
+
+(**** </OperatorExp> ****)
 
 
 (**** <RaisingLoweringForm> ****)
@@ -2916,51 +2997,30 @@ Unfold[
 (**** </EulerRotation> ****)
 
 
-(**** <TheExchange> ****)
+(**** <TheExchangeGate> ****)
+(* 2026-02-06 Not open to the public yet *)
 
-TheExchange::usage = "TheExchange[{gx,gy,gz}] returns the 4\[Times]4 unitary matrix due to the exchange interaction between two qubits or spins.\nTheExchange[mat] assumes that the exchange interaction is governed by the 3\[Times]3 real symmetric matrix mat."
+TheExchangeGate::usage = "TheExchangeGate[{gx,gy,gz}] returns the 4\[Times]4 unitary matrix due to the ExchangeGate interaction between two qubits or spins.\nTheExchangeGate[mat] assumes that the ExchangeGate interaction is governed by the 3\[Times]3 real symmetric matrix mat."
 
-TheExchange[gg:{gx_, gy_, gz_}] := Module[
+TheExchangeGate[gg:{gx_, gy_, gz_}] := Module[
   { ee, mm },
   ee = ChainBy[{gy, gz, gx, gy}, Plus];
-  ee = Exp[-I*ee/2];
+  ee = Exp[-I*2*ee];
   mm = (Total[ee] + 1)*ThePauli[{0, 0}] +
     ({-1, 1, 1}.ee - 1)*ThePauli[{1, 1}] +
     ({1, -1, 1}.ee - 1)*ThePauli[{2, 2}] +
     ({1, 1, -1}.ee - 1)*ThePauli[{3, 3}];
-  mm * Exp[I*(gx+gy+gz)/4] / 4
+  mm * Exp[I*(gx+gy+gz)] / 4
 ] /; VectorQ[gg]
 
-TheExchange[gg_?MatrixQ] := Module[
+TheExchangeGate[gg_?MatrixQ] := Module[
   { mm = Tuples[Range @ 3, 2] },
   mm = Map[ThePauli, mm];
   mm = Flatten[gg] . mm;
-  MatrixExp[-I*mm/4]
+  MatrixExp[-I*mm]
 ] /; MatrixQ[gg, NumericQ]
 
-(**** </TheExchange> ****)
-
-
-(**** <Exchange> ****)
-
-Exchange::usage = "Exchange[{gx,gy,gz}, {{i_, j_}, n_Integer}] represents the unitary gate due to the exchange interaction between two qubits i and j within a n-qubit quantum register.\nExchange[mat, spec] assumes that the exchange interaction is governed by the 3\[Times]3 real symmetric matrix mat."
-
-SetAttributes[Exchange, NHoldRest]
-
-Exchange /: 
-MultiplyKind[ Exchange[_, {{_, _}, _Integer}] ] = Pauli
-
-Exchange /: 
-MultiplyGenus[ Exchange[_, __] ] = "Singleton"
-
-Exchange /: 
-NonCommutativeQ[ Exchange[_, __] ] = True
-
-Exchange /:
-Matrix[Exchange[gg_?ArrayQ, {{i_Integer, j_Integer}, n_Integer}]] := 
-  MatrixEmbed[TheExchange @ gg, {i, j}, n]
-
-(**** </Exchange> ****)
+(**** </TheExchangeGate> ****)
 
 
 (**** <PauliDot> ****)
@@ -4025,7 +4085,9 @@ MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
     Tensorize[new, Riffle @@ Table[Dimension @ Join[ss, rmd], 2]],
     Riffle[2*idx - 1, 2*idx]
   ]
-] /; ContainsAll[tt, ss]
+] /; If[ ContainsAll[tt, ss], True,
+  Message[MatrixEmbed::rmdr, ss, tt]; False
+]
 
 MatrixEmbed[vec_?VectorQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
   { rmd = Complement[tt, ss],
@@ -4036,10 +4098,9 @@ MatrixEmbed[vec_?VectorQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
     ArrayReshape[new, Dimension @ Join[ss, rmd]],
     idx
   ]
-] /; ContainsAll[tt, ss]
-
-MatrixEmbed[_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
-  Message[MatrixEmbed::rmdr, ss, tt]
+] /; If[ ContainsAll[tt, ss], True,
+  Message[MatrixEmbed::rmdr, ss, tt]; False
+]
 
 
 MatrixEmbed[kk:{__Integer}, n_Integer] :=
@@ -4062,7 +4123,9 @@ MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
     Tensorize[new, Riffle @@ Table[Part[dd, Join[kk, rmd]], 2]],
     Riffle[2*idx - 1, 2*idx]
   ]
-] /; And @@ Thread[kk <= Length[dd]]
+] /; If[ And @@ Thread[kk <= Length[dd]], True,
+  Message[Matrix::rmndr, kk, Range @ Length @ dd]; False
+]
 
 MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
   { all = Range @ Length @ dd,
@@ -4074,10 +4137,9 @@ MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
     ArrayReshape[new, Part[dd, Join[kk, rmd]]],
     idx
   ]
-] /; And @@ Thread[kk <= Length[dd]]
-
-MatrixEmbed[_, kk:{__Integer}, dd:{__Integer}] :=
-  Message[MatrixEmbed::rmdr, kk, Range @ Length @ tt]
+] /; If[ And @@ Thread[kk <= Length[dd]], True,
+  Message[Matrix::rmndr, kk, Range @ Length @ dd]; False
+]
 
 (**** </MatrixEmbed> ****)
 

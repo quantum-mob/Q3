@@ -584,24 +584,24 @@ ParseGate[HoldPattern @ Dagger @ iSWAP[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?O
 
 
 ParseGate[
-  UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}, opts___?OptionQ],
+  ExchangeGate[{0, 0, phi_}, ss_List, opts___?OptionQ],
   more___?OptionQ
 ] :=
   Gate[ Most @ ss, {Last @ ss}, more, opts,
     "Shape" -> "Dot",
     "ControlShape" -> "Dot",
     "LinkShape" -> "Wiggly"
-  ]
+  ] /; AllTrue[Flatten @ ss, QubitQ]
 
 HoldPattern @ ParseGate[ 
-  UnitaryInteraction[_?VectorQ|_?MatrixQ, ss:{__?QubitQ}, opts___?OptionQ],
+  ExchangeGate[_?VectorQ|_?MatrixQ, ss_List, opts___?OptionQ],
   more___?OptionQ
 ] :=
   Gate[ Most @ ss, {Last @ ss}, more, opts,
     "Shape" -> "Dot",
     "ControlShape" -> "Dot",
     "LinkShape" -> "Wiggly"
-  ]
+  ] /; AllTrue[Flatten @ ss, QubitQ]
 
 
 ParseGate[

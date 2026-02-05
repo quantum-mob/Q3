@@ -2,6 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ UnitaryInteraction, WignerSpinSpin }; (* 2026-02-05 *)
 { RandomSelection }; (* 2026-01-02 v4.4.0 *)
 { GateFactor }; (* 2025-10-10 v4.2.13  *)
 { YoungShapePile, GelfandYoungPile, SchurLabelPile };  (* 2025-06-10 v4.2.5 *)
@@ -50,9 +51,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { VerifyOracle }; (* excised *)
 { ControlledU }; (* renamed *)
 { QuissoAdd, QuissoAddZ }; (* renamed *)
-
 (**** </obsolete> ****)
-
 
 Begin["`Private`"]
 
@@ -81,6 +80,147 @@ HoldPattern @ Multiply[ pre___,
 
 
 (**** <deprecated> *****)
+
+(**** <UnitaryInteraction> ****)
+(* 2026-02-05 *)
+UnitaryInteraction::usage = "UnitaryInteraction is deprecated; use ExchangeGate instead.\nUnitaryInteraction[{gx, gy, gz}, {s1, s2, \[Ellipsis]}] represents the unitary interaction among qubits s1, s2, \[Ellipsis]."
+
+Format[ op:UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}, rest___] ] :=
+  With[
+    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+    Interpretation[
+      DisplayForm @ RowBox @ { Exp,
+        RowBox @ {"(", -I * Dot[vec, ops], ")"}
+       },
+      op ]
+   ]
+
+Format[ op:UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}, rest___] ] :=
+  With[
+    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+    Interpretation[
+      DisplayForm @ RowBox @ { Exp,
+        RowBox @ {"(", -I * Inner[Multiply, ops, mat . ops], ")"}
+       },
+      op ]
+   ]
+
+AddElaborationPatterns[_UnitaryInteraction]
+
+UnitaryInteraction /:
+MultiplyKind[_UnitaryInteraction] = Qubit
+
+UnitaryInteraction /:
+NonCommutativeQ[_UnitaryInteraction] = True
+
+
+UnitaryInteraction[any_, ss:{__?QubitQ}, opts___?OptionQ] :=
+  UnitaryInteraction[any, FlavorCap @ ss, opts] /;
+  Not[FlavorCapQ @ ss]
+
+UnitaryInteraction[phi:Except[_?ListQ], rest__] :=
+  UnitaryInteraction[{0, 0, phi}, rest]
+
+
+UnitaryInteraction /:
+Unfold[UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}], ___] := With[
+  { cn = ReleaseHold @ Thread[Hold[CNOT][Most @ ss, Last @ ss]] },
+  QuantumCircuit[
+    Sequence @@ cn,
+    Rotation[2 * phi, Last[ss][3]],
+    Sequence @@ Reverse[cn]
+  ]
+]
+
+UnitaryInteraction /:
+Unfold[UnitaryInteraction[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}], ___] :=
+  QuantumCircuit[
+    CNOT[a, b],
+    ControlledGate[b, Rotation[4*phi, a[1]]],
+    CNOT[a, b]
+  ]
+
+UnitaryInteraction /:
+Unfold[UnitaryInteraction[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}], ___] :=
+  QuantumCircuit[
+    CNOT[a, b],
+    ControlledGate[b, Rotation[4*phi, a[1]]],
+    Rotation[2*phi, b[3]],
+    CNOT[a, b]
+  ]
+
+
+UnitaryInteraction /:
+Elaborate @ UnitaryInteraction[{0, 0, phi_}, ss:{__?QubitQ}] :=
+  Cos[phi] - I * Sin[phi] * Apply[Multiply, Through[ss[3]]]
+
+UnitaryInteraction /:
+Elaborate @ UnitaryInteraction[{phi_, phi_, 0}, ss:{__?QubitQ}] := (
+  Cos[phi]^2 -
+    Power[-1, Length[ss]/2] * Sin[phi]^2 * Apply[Multiply, Through[ss[3]]] -
+    I * Cos[phi] * Sin[phi] * (
+      Apply[Multiply, Through[ss[1]]] + Apply[Multiply, Through[ss[2]]] )
+) /; EvenQ[Length @ ss]
+
+UnitaryInteraction /:
+Elaborate @ UnitaryInteraction[{phi_, phi_, 0}, ss:{__?QubitQ}] := (
+  Cos[phi*Sqrt[2]] -
+    I * (
+      Apply[Multiply, Through[ss[1]]] + Apply[Multiply, Through[ss[2]]]
+    ) * Sin[phi*Sqrt[2]] / Sqrt[2]
+)
+
+UnitaryInteraction /:
+Elaborate @ HoldPattern[op:UnitaryInteraction[_, ss:{__?QubitQ}]] :=
+  Elaborate @ ExpressionFor[Matrix[op], ss]
+
+
+UnitaryInteraction /:
+Matrix[op:UnitaryInteraction[{phi_, phi_, 0}, {__?QubitQ}], rest___] :=
+  Matrix[Elaborate @ op, rest]
+
+UnitaryInteraction /:
+Matrix[op:UnitaryInteraction[{0, 0, phi_}, {__?QubitQ}], rest___] :=
+  Matrix[Elaborate @ op, rest]
+
+UnitaryInteraction /:
+Matrix[
+  HoldPattern @ UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}],
+  rest___] :=
+  MatrixExp[ -I *
+      Matrix[Dot[vec, Multiply @@@ Transpose @ Through[ss[All]]], rest]
+  ]
+
+UnitaryInteraction /:
+Matrix[
+  HoldPattern @ UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}],
+  rest___ ] := With[
+    { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+    MatrixExp[ -I * Matrix[Inner[Multiply, ops, mat . ops], rest] ]
+  ]
+(**** </UnitaryInteraction> ****)
+
+
+
+(**** <WignerSpinSpin> ****)
+(* 2026-02-05 *)
+WignerSpinSpin::usage = "WignerSpinSpin is deprecated; use Exchange instead.\nWignerSpinSpin[dir][S1, S2, ...] returns the sum of exchange couplings between Spins S1, S2, ... for components specified by dir."
+
+WignerSpinSpin[All][ss__] := WignerSpinSpin[{1,2,3}][ss]
+
+WignerSpinSpin[dir:(1|2|3|{(1|2|3)..})][ss__] := Module[
+  { tt = FlavorCap @ {ss},
+    links },
+  Message[Q3General::deprecated];
+  links = Chain @@ tt;
+  Total[ linkSpinSpin[dir] /@ links ]
+] /; AllTrue[Flatten @ {ss}, SpinQ]
+
+linkSpinSpin[dir:(1|2|3)][a_ -> b_] := a[dir] ** b[dir]
+
+linkSpinSpin[dir:{(1|2|3)..}][a_ -> b_] := MultiplyDot[a[dir], b[dir]]
+(**** </WignerSpinSpin> ****)
+
 
 (* 2025-08-31 *)
 (* Mathematica 14.3 has added multiple functions to represent noncommutative algebras and perform operations on polynomials in such algebras: https://www.wolfram.com/mathematica/quick-revision-history/ *)

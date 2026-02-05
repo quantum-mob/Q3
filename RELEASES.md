@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.4.5
+
+- New: Exchange, ExchangeGate
+- Deprecate: UnitaryInteraction, WignerSpinSpin
+- Changed: GHZState
+
 ## 4.4.4
 
 - New: GottesmanColumnReduce, GottesmanRowReduce, GottesmanFactor, CliffordScramblingCircuit, CliffordScramblingSimulate

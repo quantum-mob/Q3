@@ -8,8 +8,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { SpinNumbers, SpinNumberQ };
 
-{ WignerSpinSpin };
-
 { WignerDecompose, WignerCompose,
   WignerCoefficients };
 
@@ -32,6 +30,8 @@ Begin["`Private`"]
 $symb = Unprotect[Missing]
 
 
+(**** <TheWigner> ****)
+
 TheWigner::usage = "TheWigner[{J,k}] returns the matrix representation of the angular momentum operator of magnitude J in the k'th direction.\nTheWigner[{J,k,theta,phi}] = U.TheWigner[{J,k}].Topple[U] returns the matrix representation in the rotated frame.\nTheWigner[{J1,k1},{J2,k2},...] returns TheWigner[{J1,k1}] \[CircleTimes] TheWigner[{J2,k2}] \[CircleTimes] ...\nTheWigner[{J, {k1,k2,...}, th, ph}] = TheWigner[{J,k1,th,ph}, {J,k2,th,ph}, ...]."
 
 TheWigner[{J_?SpinNumberQ, 0}] := SparseArray @ IdentityMatrix[2J+1]
@@ -42,15 +42,19 @@ TheWigner[{J_?SpinNumberQ, 2}] := (TheWigner[{J,4}]-TheWigner[{J,5}])/(2I)
 
 TheWigner[{J_?SpinNumberQ, 3}] := SparseArray @ DiagonalMatrix @ Range[J,-J,-1]
 
-TheWigner[{J_?SpinNumberQ, 4}] := SparseArray @ With[
-  { v = Table[Sqrt[J*(J+1)-M*(M+1)], {M, J, -J, -1}] },
-  RotateLeft[ DiagonalMatrix[v] ]
- ]
+TheWigner[{J_?SpinNumberQ, 4}] := Module[
+  { mm = Range[J-1, -J, -1] },
+  DiagonalMatrix[ Sqrt[J*(J+1) - mm*(mm+1)], 1,
+    TargetStructure -> "Sparse"
+  ]
+]
 
-TheWigner[{J_?SpinNumberQ, 5}] := SparseArray @ With[
-  { v = Table[Sqrt[J*(J+1)-M*(M-1)], {M, J, -J, -1}] },
-  RotateRight[ DiagonalMatrix[v] ]
- ]
+TheWigner[{J_?SpinNumberQ, 5}] := Module[
+  { mm = Range[J, 1-J, -1] },
+  DiagonalMatrix[ Sqrt[J*(J+1) - mm*(mm-1)], -1,
+    TargetStructure -> "Sparse"
+  ]
+]
 
 TheWigner[{J_?SpinNumberQ, Raising}] := TheWigner[{J,4}]
 
@@ -59,14 +63,14 @@ TheWigner[{J_?SpinNumberQ, Lowering}] := TheWigner[{J,5}]
 TheWigner[{J_?SpinNumberQ, s_ -> t_}] := SparseArray[
   {J+1 - t, J+1 - s} -> 1,
   {2*J+1, 2*J+1}
- ]
+]
 
 TheWigner[{J_?SpinNumberQ, 0, theta_, phi_}] := TheWigner[{J,0}]
 
 TheWigner[{J_?SpinNumberQ, n:(1|2|3), theta_, phi_}] := With[
   { R = EulerMatrix[{phi, theta, 0}] },
   TheWigner[{J, 1}]*R[[1, n]] + TheWigner[{J, 2}]*R[[2, n]] + TheWigner[{J, 3}]*R[[3, n]]
- ]
+]
 
 TheWigner[ nn:{_?SpinNumberQ, (0|1|2|3|4|5|6|Raising|Lowering)}.. ] :=
   KroneckerProduct @@ Map[TheWigner] @ {nn}
@@ -78,6 +82,10 @@ TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raising|Lowering)..},
     th:Except[_List], ph:Except[_List] } ] :=
   KroneckerProduct @@ Map[TheWigner] @ Tuples[{{j}, n, {th}, {ph}}]
 
+(**** </TheWigner> ****)
+
+
+(**** <TheWignerKet> ****)
 
 TheWignerKet::usage = "TheWignerKet[{j,m}] or TheWignerKet[j,m] returns column vector representation of the spin angular momentum basis state Ket[j,m].\nTheWignerKet[{j1,m1}, {j2,m2}, ...] returns the direct product of TheWignerKet[{j1,m1}], TheWignerKet[{j2,m2}], ....\nTheWignerKet[j, {m1, m2, ...}] is equivalent to TheWignerKet[{j,m1}, {j,m2}, ...]."
 
@@ -93,6 +101,8 @@ TheWignerKet[j:Except[_List], mm:{__?NumericQ}] := With[
 TheWignerKet[jm:{_, _}, more:{_, _}..] :=
   CircleTimes @@ Map[TheWignerKet, {jm, more}] /;
   AllTrue[{jm, more}, SpinNumberQ]
+
+(**** </TheWignerKet> ****)
 
 
 (**** <TheRotation> ****)
@@ -110,14 +120,25 @@ TheRotation[
   b:{_, {_?SpinNumberQ, (0|1|2|3)}}.. ] :=
   CircleTimes @@ Map[TheRotation, {a, b}]
 
-(**** <TheRotation> ****)
+(**** </TheRotation> ****)
 
 
 (**** <TheEulerRotation> ****)
 
-TheEulerRotation[ {phi_, theta_, chi_}, J_?SpinNumberQ ] :=
-  TheRotation[phi, {J, 3}] . TheRotation[theta, {J, 2}] .
-  TheRotation[chi, {J, 3}]
+TheEulerRotation[{a_, b_, c_}, J_?SpinNumberQ] := Dot[
+  TheRotation[a, {J, 3}],
+  TheRotation[b, {J, 2}],
+  TheRotation[c, {J, 3}]
+]
+
+(* NOTE: This gives the same result, but turns out to be slower: *)
+(*
+TheEulerRotation[{a_, b_, c_}, J_?SpinNumberQ] := Table[
+  WignerD[{J, i, j}, -a, -b, -c],
+  {i, J, -J, -1},
+  {j, J, -J, -1}
+]
+  *)
 
 TheEulerRotation[{{a_, b_, c_}, J_?SpinNumberQ}] :=
   TheEulerRotation[{a, b, c}, J]
@@ -155,24 +176,6 @@ SpinNumberQ[{j_, m_}] := SpinNumberQ[j, m]
 SpinNumberQ[__] = False
 
 (**** </SpinQuantumNumberQ> ****)
-
-
-(**** <Exchange> ****)
-
-Exchange::usage = "Exchange[{gx,gy,gz}, {{i_, j_}, n_Integer}] represents the unitary gate due to the exchange interaction between two qubits i and j within a n-qubit quantum register.\nExchange[mat, spec] assumes that the exchange interaction is governed by the 3\[Times]3 real symmetric matrix mat."
-
-SetAttributes[Exchange, NHoldRest]
-
-Exchange /: 
-MultiplyKind[ Exchange[_, {__?SpinQ}] ] = Spin
-
-Exchange /:
-Matrix[
-  Exchange[gg_?ArrayQ, {a_?SpinQ, b_?SpinQ}, rest___], 
-  ss:{__?SpeciesQ}
-] := MatrixEmbed[TheExchange @ gg, {a, b}, ss]
-
-(**** </Exchange> ****)
 
 
 (**** <Spin> ****)
@@ -534,26 +537,6 @@ TheExpression[S_?SpinQ] := {
 (**** </ExpressionFor> ****)
 
 
-(**** <WignerSpinSpin> ****)
-
-WignerSpinSpin::usage = "WignerSpinSpin[dir][S1, S2, ...] returns the sum of exchange couplings between Spins S1, S2, ... for components specified by dir."
-
-WignerSpinSpin[All][ss__] := WignerSpinSpin[{1,2,3}][ss]
-
-WignerSpinSpin[dir:(1|2|3|{(1|2|3)..})][ss__] := Module[
-  { tt = FlavorCap @ {ss},
-    links },
-  links = Chain @@ tt;
-  Total[ wSpinSpin[dir] /@ links ]
- ] /; And @@ SpinQ /@ Flatten @ {ss}
-
-wSpinSpin[dir:(1|2|3)][a_ -> b_] := a[dir] ** b[dir]
-
-wSpinSpin[dir:{(1|2|3)..}][a_ -> b_] := MultiplyDot[a[dir], b[dir]]
-
-(**** </WignerSpinSpin> ****)
-
-
 (**** <WignerAddZ> ****)
 
 WignerAddZ::usage = "WignerAddZ[J1, J2, ...] returns in an Association the irreducible basis of the total angular momentum J1 + J2 + ... invariant under the U(1) rotation around spin z-axis."
@@ -913,15 +896,15 @@ ClebschGordanMatrix[j1_?SpinNumberQ, j2_?SpinNumberQ, OptionsPattern[]] := Modul
      ClebschGordan::phy
   ];
   cg = SparseArray @ Flatten[cg, 1];
-   
-  If[OptionValue["Print"], printCG[j1, j2, cg]];
+  If[OptionValue["Print"], printCGM[j1, j2, cg]];
   Return[cg]
 ]
+(* NOTE: At the moment, this is just for heuristic purposes. It can be significantly improved for efficiency. *)
 
 
-printCG::usage = "Displays the Clebsch-Gordan table."
+printCGM::usage = "Displays the Clebsch-Gordan table."
 
-printCG[j1_, j2_, cg_] := Module[
+printCGM[j1_, j2_, cg_] := Module[
   { JJ = Range[j1+j2, Abs[j1-j2], -1], JM,
     m1 = Range[j1, -j1, -1],
     m2 = Range[j2, -j2, -1], m1m2,
@@ -965,95 +948,35 @@ printCG[j1_, j2_, cg_] := Module[
 NineJSymbol::usage = "NineJSymbol[{j1,j2,j3}, {j4,j5,j6},{j7,j8,j9}] gives the Wigner 9j-symbol."
 
 (* Special cases with one of J's is zero, in which case the Nine-J symbol is related to the Six-J symbol. *)
-
-NineJSymbol[
+NineJSymbol @ {
   {j1_,  j2_,  j12_},
   {j3_,  j4_,  j34_},
   {j13_, j24_,  0 }
- ] :=
+} :=
   KroneckerDelta[j12, j34] *
   KroneckerDelta[j13, j24] *
   Power[-1, j2+j3+j12+j13] / Sqrt[(2*j12+1)(2*j13+1)] *
   SixJSymbol[{j1,j2,j12}, {j4,j3,j13}]
 
-NineJSymbol[
-  {j1_, j2_, j3_},
-  {j4_, j5_,  0 },
-  {j7_, j8_, j9_}] :=
-  NineJSymbol[
-    {j7, j8, j9},
-    {j1, j2, j3},
-    {j4, j5, 0 }]
-
-NineJSymbol[
-  {j1_, j2_,  0 },
-  {j4_, j5_, j6_},
-  {j7_, j8_, j9_}] :=
-  NineJSymbol[
-    {j4, j5, j6},
-    {j7, j8, j9},
-    {j1, j2, 0 }]
-
-NineJSymbol[
-  {j1_, j2_, j3_},
-  {j4_,  0 , j6_},
-  {j7_, j8_, j9_}] :=
-  NineJSymbol[
-    {j9, j7, j8},
-    {j3, j1, j2},
-    {j6, j4, 0 }]
-
-NineJSymbol[
-  { 0 , j2_, j3_},
-  {j4_, j5_, j6_},
-  {j7_, j8_, j9_}] := 
-  NineJSymbol[
-    {j9, j6, j3},
-    {j8, j5, j2},
-    {j7, j4, 0 }]
-
-NineJSymbol[
-  {j1_,  0 , j3_},
-  {j4_, j5_, j6_},
-  {j7_, j8_, j9_}] := 
-  NineJSymbol[
-    {0 , j3, j1},
-    {j5, j6, j4},
-    {j8, j9, j7}]
-
-NineJSymbol[
-  {j1_, j2_, j3_},
-  {j4_, j5_, j6_},
-  {j7_,  0 , j9_}] := 
-  NineJSymbol[
-    {j3, j1, j2},
-    {j6, j4, j5},
-    {j9, j7, 0 }]
-
-NineJSymbol[
-  {j1_, j2_, j3_},
-  {j4_, j5_, j6_},
-  { 0 , j8_, j9_}] := 
-  NineJSymbol[
-    {j2, j3, j1},
-    {j5, j6, j4},
-    {j8, j9, 0 }]
-
-NineJSymbol[
-  {j1_, j2_, j3_},
-  { 0 , j5_, j6_},
-  {j7_, j8_, j9_}] := 
-  NineJSymbol[
-    {0 , j5, j6},
-    {j7, j8, j9},
-    {j1, j2, j3}]
+(* cyclic permutations of rows and columns *)
+(* A 9-j symbol is invariant under reflection about either diagonal as well as even permutations of its rows or columns. *)
+NineJSymbol[jj_?MatrixQ] := Module[
+  { mm = Normal[jj],
+    k },
+  k = FirstPosition[mm, 0];
+  mm = Transpose @ RotateRight[
+    Transpose @ RotateRight[mm, 3 - First[k]], 
+    3 - Last[k]
+  ];
+  NineJSymbol[mm]
+] /; MemberQ[Flatten @ Normal @ jj, 0]
 
 (* General case *)
-
 NineJSymbol[
   {j1_,  j2_,  j12_},
   {j3_,  j4_,  j34_},
   {j13_, j24_, j_} ] := Simplify @ Sum[
+    Echo["Here?"];
     (-1)^(2*g)*(2*g+1) *
       SixJSymbol[{j1,j2,j12}, {j34,j,g}] *
       SixJSymbol[{j3,j4,j34}, {j2,g,j24}] *
