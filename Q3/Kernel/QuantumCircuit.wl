@@ -12,7 +12,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { ParsePort, Port };
 { PortIn, PortOut };
 
-
 Begin["`Private`"]
 
 QuantumCircuit::usage = "QuantumCircuit[a, b, ...] represents the quantum circuit model consisting of the gate operations a, b, ..., and it is displayed the circuit in a graphical form.\nExpressionFor[ QuantumCircuit[...] ] takes the non-commutative product of the elements in the quantum circuit; namely, converts the quantum circuit to a operator or vector expression.\nMatrix[ QuantumCircuit[...] ] returns the matrix representation of the quantum circuit model."
@@ -23,7 +22,7 @@ QuantumCircuit::nofunc = "Unknown function \"``\" to draw the gate. \"Rectangle\
 
 QuantumCircuit::ket = "`` is not a proper ket of the form Ket[<|...|>] or ProductState[<|...|>]."
 
-QuantumCircuit::elm = "`` is not a quantum circuit element."
+QuantumCircuit::elm = "`` is not a valid quantum circuit element."
 
 SetAttributes[QuantumCircuit, Flat]
 
@@ -443,8 +442,6 @@ ParsePort[type_][expr:Except[_List], opts___?OptionQ] :=
 
 ParseGate::usage = "ParseGate[expr, opts] is a low-level function to preprocess quantum circuit element expr."
 
-ParseGate::unknown = "Unknown quantum circuit element ``."
-
 ParseGate[ {gg:Except[_?OptionQ].., opts___?OptionQ}, more___?OptionQ ] := 
   Map[ParseGate[#, more, opts]&, {gg}]
 
@@ -459,10 +456,7 @@ ParseGate[_?NumericQ, ___?OptionQ] = "Spacer"
 
 ParseGate[gate:("Separator" | "Spacer"), ___?OptionQ] = gate
 
-ParseGate[any_?StringQ, ___?OptionQ] := (
-  Message[QuantumCircuit::elm, any];
-  "Spacer"
-)
+ParseGate[any_?graphicsDirectiveQ, ___?OptionQ] = any
 
 
 (* Single-qubit gates *)  
@@ -727,12 +721,12 @@ ParseGate[op:QCR[qq:{__?QubitQ}, opts___?OptionQ], more___?OptionQ] :=
     "LabelAngle" -> Pi/2
   ]
 
-ParseGate[Gate[args__, opts___?OptionQ], more___?OptionQ] := 
-  Gate[args, more, opts]
+ParseGate[Gate[ss:{__?AgentQ}, any__, opts___?OptionQ], more___?OptionQ] := 
+  Gate[ss, any, more, opts]
 
 (* fallback *)
 
-ParseGate[expr_, ___?OptionQ] := expr /; FreeQ[expr, _?QubitQ | _?FermionQ]
+(* ParseGate[expr_, ___?OptionQ] := expr /; FreeQ[expr, _?AgentQ] *)
 (* Graphics primitives and directivescorrespond to this case. *)
 
 (* NOTE: This is dangerous because Plus and Times can happen. *)
@@ -741,8 +735,11 @@ ParseGate[op_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
   ParseGate @ op[any, more, opts]
  *)
 
-ParseGate[expr:Except[_List], opts___?OptionQ] :=
-  Gate[Qubits @ expr, FilterRules[{opts, Options @ expr}, Options @ Gate]]
+ParseGate[expr:Except[_List], opts___?OptionQ] := 
+  If[ FreeQ[expr, _?AgentQ],
+    Message[QuantumCircuit::elm, expr]; Nothing,
+    Gate[Agents @ expr, FilterRules[{opts, Options @ expr}, Options @ Gate]]
+  ]
 
 (**** </ParseGate> *****)
 
@@ -1573,6 +1570,31 @@ theOTOC[in_, ub_, qc_QuantumCircuit] := Module[
 ]
 
 (**** </QuantumScramblingSimulate> ****)
+
+
+(**** <graphicsDirectiveQ> ****)
+
+graphicsDirectiveQ::usage = "graphicsDirectiveQ[g] returns True if g is a valid graphics directive.";
+
+graphicsDirectiveQ[g_] := MemberQ[$graphicsDirectives, Head @ g]
+
+$graphicsDirectives::usage = "$graphicsDirectives gives the list of all valid graphics directives allowed in QuantumCircuit.";
+
+$graphicsDirectives = {
+  RGBColor, GrayLevel, Hue, Blend, Opacity,
+  PointSize, AbsolutePointSize, 
+  Thickness, AbsoluteThickness, 
+  Dashing, AbsoluteDashing,
+  Arrowheads, JoinForm, CapForm,
+  EdgeForm, FaceForm, Texture,
+  PatternFilling, HatchFilling,
+  LinearGradientFilling, RadialGradientFilling, ConicGradientFilling,
+  DropShadowing, Blurring, Haloing,
+  (* text & formatting *)
+  FontSize, FontFamily, Directive
+};
+
+(**** </graphicsDirectiveQ> ****)
 
 End[]
 

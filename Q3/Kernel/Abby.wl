@@ -1246,7 +1246,6 @@ SaveData[data_, OptionsPattern[]] := Module[
 
 
 (**** <doAssureList> ****)
-
 doAssureList::usage = "doAssureList[x] returns x if x is already a list and {x} if not.\ndoAssureList[x, n] is equivalent to PadRight[x, n, x] if x is already a list of length x and returns {x, x, x, \[Ellipsis]} if x is not a list.\ndoAssureList[None] or doAssureList[None, n] returns {}."
 
 doAssureList[None] = {} (* cf. doForceList *)
@@ -1261,12 +1260,10 @@ doAssureList[None, _Integer] = {} (* cf. doForceList *)
 doAssureList[a_?ListQ, n_Integer] := PadRight[a, n, a]
 
 doAssureList[a_, n_Integer] := Table[a, n]
-
 (**** </doAssureList> ****)
 
 
 (**** <doForceList> ****)
-
 doForceList::usage = "doForceList is similar to doAssureList except for input None."
 
 doForceList[a_?ListQ] = a
@@ -1277,8 +1274,25 @@ doForceList[a_] = List[a]
 doForceList[a_?ListQ, n_Integer] := PadRight[a, n, a]
 
 doForceList[a_, n_Integer] := Table[a, n]
-
 (**** </doForceList> ****)
+
+
+(**** <arrayMap> ****)
+arrayMap::usage = "arrayMap[f, data] applies f to each element on the array-depth level in the array data.\narrayMap[f, data, levelspec] applies f to parts of expr specified by levelspec. Note that negative integers in levelspec is relative to ArrayDepth[data]."
+
+arrayMap[f_, data_?ArrayQ] := 
+  arrayMap[f, data, {ArrayDepth @ data}]
+
+arrayMap[f_, data_?ArrayQ, spec_] := Module[
+  { cnt = i = 0,
+    prg, out, new },
+  (* Negative integers in levelspec is regarded relative to the array depth. *)
+  new = spec /. {n_Integer?Negative :> ArrayDepth[data]+n};
+  Map[(cnt++)&, data, new];
+  PrintTemporary[ProgressIndicator @ Dynamic @ prg];
+  Map[(out = f[#]; prg = i++/cnt; out)&, data, new]
+]
+(**** </arrayMap> ****)
 
 End[]
 

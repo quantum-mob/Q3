@@ -50,8 +50,8 @@ Get["QuantumMob`Q3`Clifford`"];
 Get["QuantumMob`Q3`Grassmann`"];
 Get["QuantumMob`Q3`Fock`"];
 Get["QuantumMob`Q3`Nambu`"];
+Get["QuantumMob`Q3`Bravyi`"];
 Get["QuantumMob`Q3`Wick`"];
-(* Get["QuantumMob`Q3`WickPlus`"]; *)
 Get["QuantumMob`Q3`Wigner`"];
 Get["QuantumMob`Q3`Dicke`"];
 Get["QuantumMob`Q3`VonNeumann`"];

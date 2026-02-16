@@ -1,0 +1,870 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 14.3' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     31469,        861]
+NotebookOptionsPosition[     26257,        753]
+NotebookOutlinePosition[     28830,        814]
+CellTagsIndexPosition[     28745,        809]
+WindowTitle->LyapunovFunction
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["QUANTUM MOB/ Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "fd907cc3-d5c6-4f03-847a-d9370ec4a402"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "570167fe-68e5-4129-825f-5886800ba683"],
+        Background->LightDarkSwitched[
+          RGBColor[0.490196, 0.576471, 0.690196]],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "21ce06ca-4104-46cd-a468-7724be4161a8"]
+         }],ExpressionUUID->"e804e9f1-1070-4277-83d7-047e4e45524c"],
+         StripOnInput->False],{
+        StyleBox[
+          "\"LyapunovSolve\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:ref/LyapunovSolve"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "2942fab5-19bd-4aaf-b690-833d1cc52f54"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "b79dc92c-752e-4b32-bfec-8e5218a3d6b0"]
+         }],ExpressionUUID->"e050d5fe-7ce6-4fa5-8e57-c308c5178c10"],
+         StripOnInput->False],{
+        "\"QuantumMob/Q3/ref/LyapunovFunction\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         CopyToClipboard["QuantumMob/Q3/ref/LyapunovFunction"], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/QuantumMob/Q3/ref/\
+LyapunovFunction.html"], StandardForm]], "Input", TextClipboardType -> 
+                 "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[(If[TrueQ[False], 
+                  "http://reference.wolfram.com/system-modeler/", 
+                  "http://reference.wolfram.com/language/"] <> 
+                "QuantumMob/Q3/ref/LyapunovFunction") <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "e121866d-8e9c-4bfa-a1ad-6d5cd9c4239d"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "4bf6016d-d6ab-4555-a87e-9c236f578c79"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"3225cfcf-38ca-407b-9d37-b87c8ccf6b82"],
+
+Cell["QuantumMob`Q3`", "ContextNameCell",ExpressionUUID->"8a408479-c5b0-4503-be11-60651a9f9a4d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "LyapunovFunction", "ObjectName",ExpressionUUID->
+      "eb290a38-595f-4262-b531-78a9fadc4a0e"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"62e4b1fa-79ab-4fae-8f93-416342b89572"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "e8cfa6ff-a96b-4a54-8084-c8331b6d31b3"]
+    }],ExpressionUUID->"19e482f6-9add-4cca-9742-316531c716de"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 14.3\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->LightDarkSwitched[
+              RGBColor[0.968627, 0.466667, 0]]], {Right, Center}, {
+           Right, Center}],
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 14",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "6c5b6912-d553-4d6e-99dd-7eb7f2148a63"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"e15c8c62-9da9-43ca-abe9-4f83381a5a42"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["LyapunovFunction"]], 
+         "paclet:QuantumMobQ3/ref/LyapunovFunction", 
+         "QuantumMobQ3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["c", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "c663d245-065c-4173-b5dd-45c7d3dd73f2"],
+     "\[LineSeparator]represents the solution of the Lyapunov differential \
+equation ",
+     Cell[BoxData[
+      FormBox[
+       RowBox[{
+        RowBox[{"x", "'"}], "==", 
+        RowBox[{
+         RowBox[{"a", ".", "x"}], "+", 
+         RowBox[{"x", ".", 
+          SuperscriptBox["a", "\[Dagger]"]}], "+", "c"}]}], TraditionalForm]],
+      ExpressionUUID->"e763ac1a-64ee-4d7a-a6dd-3203620cc75e"],
+     "."
+    }],ExpressionUUID->"5f5a7425-dd61-47f3-8546-0a4d6d0c94be"]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["LyapunovFunction"]], 
+         "paclet:QuantumMobQ3/ref/LyapunovFunction", 
+         "QuantumMobQ3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"], ",", 
+        StyleBox["c", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "04d75d32-c6d6-4765-8103-e8f347ce4a3d"],
+     "\[LineSeparator]represents ",
+     Cell[BoxData[
+      FormBox[
+       RowBox[{
+        RowBox[{"x", "'"}], "==", 
+        RowBox[{
+         RowBox[{"a", ".", "x"}], "+", 
+         RowBox[{"x", ".", "b"}], "+", "c"}]}], TraditionalForm]],
+      ExpressionUUID->"1d3eba79-1e14-4f6c-974d-2583570e71aa"],
+     "."
+    }],ExpressionUUID->"4cdd87a0-00df-4404-83ec-f9f21ddee861"]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{
+        TemplateBox[{
+          Cell[
+           TextData["LyapunovFunction"]], 
+          "paclet:QuantumMob/Q3/ref/LyapunovFunction", 
+          "QuantumMob Package Symbol"},
+         "PackageLink",
+         BaseStyle->"InlineFormula"], "[", 
+        StyleBox["spec", "TI"], "]"}], "[", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["x", "TI"], 
+         StyleBox["0", "TR"]], ",", 
+        StyleBox["t", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "72498913-d435-49c9-83c2-a1c9301d2829"],
+     "\[LineSeparator]returns the value at time ",
+     Cell[BoxData[
+      StyleBox["t", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "ae59e062-af62-4b9d-a07c-a863bea1bd55"],
+     " for initial condition ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["x", "TI"], 
+       StyleBox["0", "TR"]]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "abc6ff4d-8ec7-4105-938d-c690dbd93d56"],
+     "."
+    }],ExpressionUUID->"485f75a0-bc38-487f-b290-cb5efd6de594"]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{
+        TemplateBox[{
+          Cell[
+           TextData["LyapunovFunction"]], 
+          "paclet:QuantumMob/Q3/ref/LyapunovFunction", 
+          "QuantumMob Package Symbol"},
+         "PackageLink",
+         BaseStyle->"InlineFormula"], "[", 
+        StyleBox["spec", "TI"], "]"}], "[", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["x", "TI"], 
+         StyleBox["0", "TR"]], ",", 
+        RowBox[{"{", 
+         RowBox[{
+          SubscriptBox[
+           StyleBox["t", "TI"], 
+           StyleBox["1", "TR"]], ",", 
+          SubscriptBox[
+           StyleBox["t", "TI"], 
+           StyleBox["2", "TR"]], ",", 
+          StyleBox["\[Ellipsis]", "TR"], ",", 
+          SubscriptBox[
+           StyleBox["t", "TI"], 
+           StyleBox["n", "TI"]]}], "}"}]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "56dca8a8-ccbc-4fe2-a8f0-a8a36111ef01"],
+     "\[LineSeparator]returns a list of values at times ",
+     Cell[BoxData[
+      RowBox[{"{", 
+       RowBox[{
+        SubscriptBox[
+         StyleBox["t", "TI"], 
+         StyleBox["1", "TR"]], ",", 
+        SubscriptBox[
+         StyleBox["t", "TI"], 
+         StyleBox["2", "TR"]], ",", 
+        StyleBox["\[Ellipsis]", "TR"], ",", 
+        SubscriptBox[
+         StyleBox["t", "TI"], 
+         StyleBox["n", "TI"]]}], "}"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "12643056-7686-4160-985c-187300786610"],
+     "."
+    }],ExpressionUUID->"c5cf7416-da06-4885-ae36-f0c0787e7eef"]}
+  }]], "Usage",
+ CellID->421827453,ExpressionUUID->"33703f7c-5188-4a17-9e64-5db3ec7cda98"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[
+ ButtonBox[Cell[TextData[{
+   Cell[BoxData[
+    DynamicBox[ToBoxes[
+      If[CurrentValue[
+         EvaluationCell[], "CellGroupOpen"] =!= Closed, 
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], 
+       Rotate[
+        Style[
+         Graphics[{
+           Thickness[0.18], 
+           RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+           Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+          PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+         0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+     ImageSizeCache->{
+      13.600000000000003`, {-0.1685058593749993, 13.768505859375}}]],
+    ExpressionUUID->"505b440b-776b-4360-9e65-9ad91e0050cf"],
+   Cell[BoxData[
+    TemplateBox[{1},
+     "Spacer1"]],ExpressionUUID->"2d846b02-a5de-4fb8-bf48-e9d904d1b823"],
+   "Details and Options"
+  }], "NotesFrameText",ExpressionUUID->"71343e50-00c8-410c-a6a6-fec123479dc2"],
+  Appearance->{Automatic, None, "Normal", Automatic},
+  BaseStyle->None,
+  ButtonFunction:>(FrontEndExecute[{
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], All, ButtonCell], 
+     FrontEndToken["OpenCloseGroup"], 
+     FrontEnd`SelectionMove[
+      FrontEnd`SelectedNotebook[], After, CellContents]}]& ),
+  Evaluator->None,
+  Method->
+   "Preemptive"]],ExpressionUUID->"14fee439-fe3d-4fdd-9294-95da46e4f251"]], \
+"NotesSection",
+ ShowGroupOpener->"Thumbnail",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->989422635,ExpressionUUID->"35d2669f-3a2e-4365-9ac6-71644384fe53"],
+
+Cell[TextData[{
+ "The Lyapunov differential equation \[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    FractionBox[
+     RowBox[{"d", " ", "X"}], 
+     RowBox[{"d", " ", "t"}]], "=", 
+    RowBox[{
+     RowBox[{"A", "\[VeryThinSpace]", "X"}], "+", 
+     RowBox[{"X", "\[VeryThinSpace]", 
+      SuperscriptBox["A", "\[Dagger]"]}], "+", "C"}]}], TraditionalForm]],
+  ExpressionUUID->"7d874035-4503-4cd1-a140-a3e1cefafb5d"],
+ " ,\[LineSeparator]has the solution of the form\[LineSeparator]\t ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"X", "(", "t", ")"}], "=", 
+    RowBox[{
+     SubscriptBox["X", "s"], "+", 
+     RowBox[{
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"A", "\[VeryThinSpace]", "t"}]], "[", 
+       RowBox[{
+        RowBox[{"X", "(", "0", ")"}], "-", 
+        SubscriptBox["X", "s"]}], "]"}], 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{
+        SuperscriptBox["A", "\[Dagger]"], "t"}]]}]}]}], TraditionalForm]],
+  ExpressionUUID->"cbc7f7b5-8ca4-43ed-a70a-22e82ce71a32"],
+ ", \nwhere ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["X", "s"], TraditionalForm]],ExpressionUUID->
+  "1b07faa3-6b9c-438f-a977-98a20dac400a"],
+ " is the solution of the Lyapunov equation ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"A", " ", 
+      SubscriptBox["X", "s"]}], "+", 
+     RowBox[{
+      SubscriptBox["X", "s"], 
+      SuperscriptBox["A", "\[Dagger]"]}], "+", "C"}], "==", "0"}], 
+   TraditionalForm]],ExpressionUUID->"9ea4cbd1-7e8f-4cec-9173-c7cd4bbcbfd0"],
+ "."
+}], "Notes",
+ CellID->810483824,ExpressionUUID->"78bf28dd-4919-4bc8-b787-b007e5efaf83"],
+
+Cell[TextData[{
+ "The Lyapunov differential equation \[LineSeparator]\t",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    FractionBox[
+     RowBox[{"d", " ", "X"}], 
+     RowBox[{"d", " ", "t"}]], "=", 
+    RowBox[{
+     RowBox[{"A", "\[VeryThinSpace]", "X"}], "+", 
+     RowBox[{"X", "\[VeryThinSpace]", "B"}], "+", "C"}]}], TraditionalForm]],
+  ExpressionUUID->"3b7c2115-2ddf-4de6-8021-c0a454238ce7"],
+ " ,\[LineSeparator]has the solution of the form\[LineSeparator]\t ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{"X", "(", "t", ")"}], "=", 
+    RowBox[{
+     SubscriptBox["X", "s"], "+", 
+     RowBox[{
+      RowBox[{
+       SuperscriptBox["\[ExponentialE]", 
+        RowBox[{"A", "\[VeryThinSpace]", "t"}]], "[", 
+       RowBox[{
+        RowBox[{"X", "(", "0", ")"}], "-", 
+        SubscriptBox["X", "s"]}], "]"}], 
+      SuperscriptBox["\[ExponentialE]", 
+       RowBox[{"B", "\[VeryThinSpace]", "t"}]]}]}]}], TraditionalForm]],
+  ExpressionUUID->"eea08334-89d5-4aa5-a733-21bb99116706"],
+ ", \nwhere ",
+ Cell[BoxData[
+  FormBox[
+   SubscriptBox["X", "s"], TraditionalForm]],ExpressionUUID->
+  "f9a7bcb2-9cbd-43c3-acd1-536b8622bbe7"],
+ " is the solution of the Lyapunov equation ",
+ Cell[BoxData[
+  FormBox[
+   RowBox[{
+    RowBox[{
+     RowBox[{"A", " ", 
+      SubscriptBox["X", "s"]}], "+", 
+     RowBox[{
+      SubscriptBox["X", "s"], "B"}], "+", "C"}], "==", "0"}], 
+   TraditionalForm]],ExpressionUUID->"94ce9fcd-158b-41f7-af72-15943d4bca07"],
+ "."
+}], "Notes",
+ CellID->352908215,ExpressionUUID->"376eda7e-66ef-4459-b696-dc13eb145d2e"]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.251494140625001, 9.348505859375003}}]],
+  ExpressionUUID->"66b6899c-4c7f-4db4-a34f-5890c2e63f06"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"cad667e3-ed09-4f09-9a10-78d5e0003517"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "fd6c25de-a65c-4d7f-b5f0-eb9d551e6d0f"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellTags->"PrimaryExamplesSection",
+ CellID->1260347724,ExpressionUUID->"5f7dc8af-c28d-461d-bac7-d84faacf770c"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<QuantumMob`Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->1219246832,ExpressionUUID->"04208122-9a4e-4bd4-b5dc-0319a93dfe5b"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"},
+        Closed], 
+      Alternatives[Open, True]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.551318359375001, 9.048681640625002}}]],
+  ExpressionUUID->"785d8b14-8287-41c9-bc10-c136347d0c1a"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"5600d4a0-00cc-493e-b725-44f35516e754"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "14876cca-610b-484f-be0d-8425ebcf88e0"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->2032986907,ExpressionUUID->"bd1628be-2ef5-408b-b12e-d9d89632284b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"a", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"2", ",", "I"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"I", ",", 
+       RowBox[{"-", "1"}]}], "}"}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"a", "//", "MatrixForm"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"c", "=", 
+   RowBox[{"{", 
+    RowBox[{
+     RowBox[{"{", 
+      RowBox[{"1", ",", "0"}], "}"}], ",", 
+     RowBox[{"{", 
+      RowBox[{"1", ",", "2"}], "}"}]}], "}"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"c", "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->2011443424,ExpressionUUID->"49b55dda-04fa-4e1b-b90e-a72bc5604469"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"2", "\[ImaginaryI]"},
+     {"\[ImaginaryI]", 
+      RowBox[{"-", "1"}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->1722827291,ExpressionUUID->"4223d096-32bb-411a-a693-7b8d6315d756"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"1", "0"},
+     {"1", "2"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[1]//MatrixForm=",
+ CellID->1036267336,ExpressionUUID->"281bea99-5cf0-4969-ae21-c552e49f07ca"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"in", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"1", ",", "0"}], "}"}], ",", 
+    RowBox[{"{", 
+     RowBox[{"0", ",", "1"}], "}"}]}], "}"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->191732532,ExpressionUUID->"53eb695e-3a76-4d36-8db5-0b05c560abe3"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"1", ",", "0"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"0", ",", "1"}], "}"}]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->2146130756,ExpressionUUID->"65574261-905f-4744-aea1-b7b185638dc6"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"val", "=", 
+   RowBox[{
+    RowBox[{"LyapunovFunction", "[", 
+     RowBox[{"a", ",", "c"}], "]"}], "[", 
+    RowBox[{"in", ",", 
+     RowBox[{"{", 
+      RowBox[{"0", ",", "0.1", ",", "0.2"}], "}"}]}], "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"MatrixForm", "/@", "val"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1325144887,ExpressionUUID->"f378aefb-20d6-43e9-98f8-27c4b5e4154a"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {"1", "0"},
+       {"0", "1"}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{"1.6126910377024863`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.005909186036036573`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{"0.0003602686432598312`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.02954593018018148`", " ", "\[ImaginaryI]"}]}]},
+       {
+        RowBox[{"0.10481064943238816`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.029545930180181923`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{"1.0018013432162984`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.004828380106257191`", " ", "\[ImaginaryI]"}]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]], ",", 
+   TagBox[
+    RowBox[{"(", "\[NoBreak]", GridBox[{
+       {
+        RowBox[{"2.5109043954098285`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.027970103781137012`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{"0.003132190421615222`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.13985051890568512`", " ", "\[ImaginaryI]"}]}]},
+       {
+        RowBox[{"0.2182705677385548`", "\[VeryThinSpace]", "+", 
+         RowBox[{"0.13985051890568512`", " ", "\[ImaginaryI]"}]}], 
+        RowBox[{"1.0156609521080764`", "\[VeryThinSpace]", "-", 
+         RowBox[{"0.018573532516291458`", " ", "\[ImaginaryI]"}]}]}
+      },
+      GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+      GridBoxSpacings->{"Columns" -> {
+          Offset[0.27999999999999997`], {
+           Offset[0.7]}, 
+          Offset[0.27999999999999997`]}, "Rows" -> {
+          Offset[0.2], {
+           Offset[0.4]}, 
+          Offset[0.2]}}], "\[NoBreak]", ")"}],
+    Function[BoxForm`e$, 
+     MatrixForm[BoxForm`e$]]]}], "}"}]], "Output",
+ CellLabel->"Out[3]=",
+ CellID->779836344,ExpressionUUID->"0eeba060-2654-4657-81b9-fac0efa6a6db"]
+}, Open  ]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, 
+  Closed]]]]
+}, Dynamic[CurrentValue[
+ EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, 
+  Closed]]]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[Cell[BoxData[
+        TemplateBox[{
+          Cell[
+           TextData["LyapunovSolve"]], "paclet:ref/LyapunovSolve"},
+         "RefLink",
+         BaseStyle->{"InlineFormula"}]], "InlineFormula",
+        FontFamily->"Source Sans Pro",ExpressionUUID->
+        "0253014a-5e01-42b4-b751-83a5bd31b303"]], "SeeAlso",ExpressionUUID->
+        "9878ec05-af5f-47e4-b510-8e7d4f1dfcbb"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"e0e60ba0-eda0-4f5c-a4ce-\
+61e9afab1080"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"732e201e-328c-45a5-8c06-2e6cabde7e52"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"LyapunovFunction",
+Visible->True,
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed, "NotesSection" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2026, 2, 14, 3, 34, 2.357637}", 
+    "history" -> {"14.3", "", "", ""}, "context" -> "QuantumMob`Q3`", 
+    "keywords" -> {"Lyapunov differential equation"}, "specialkeywords" -> {},
+     "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quantum Mob/ Q3 Symbol", "language" -> "en", "paclet" -> "QuantumMob/Q3",
+     "status" -> "None", "summary" -> 
+    "LyapunovFunction[a, c] represents the solution of the Lyapunov \
+differential equation x' == a . x + x . a^\\[Dagger] + c. LyapunovFunction[a, \
+b, c] represents x' == a . x + x . b + c. LyapunovFunction[spec][x0, t] \
+returns the value at time t for initial condition x0. \
+LyapunovFunction[spec][x0, {t1, t2, ..., tn}] returns a list of values at \
+times {t1, t2, ..., tn}.", "synonyms" -> {}, "tabletags" -> {}, "title" -> 
+    "LyapunovFunction", "titlemodifier" -> "", "metadescription" -> "", 
+    "windowtitle" -> "LyapunovFunction", "type" -> "Symbol", "uri" -> 
+    "QuantumMob/Q3/ref/LyapunovFunction"}},
+CellContext->"Global`",
+FrontEndVersion->"14.3 for Mac OS X ARM (64-bit) (July 8, 2025)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "14.3 for Mac OS X ARM (64-bit) (July 8, 2025)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"aa11d615-fc62-4cb0-83b2-e83dd00171af"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{
+ "PrimaryExamplesSection"->{
+  Cell[16236, 462, 1441, 38, 70, "PrimaryExamplesSection",ExpressionUUID->"5f7dc8af-c28d-461d-bac7-d84faacf770c",
+   CellTags->"PrimaryExamplesSection",
+   CellID->1260347724]}
+ }
+*)
+(*CellTagsIndex
+CellTagsIndex->{
+ {"PrimaryExamplesSection", 28544, 802}
+ }
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[584, 21, 4179, 103, 70, "AnchorBarGrid",ExpressionUUID->"3225cfcf-38ca-407b-9d37-b87c8ccf6b82",
+ CellID->1],
+Cell[4766, 126, 96, 0, 70, "ContextNameCell",ExpressionUUID->"8a408479-c5b0-4503-be11-60651a9f9a4d"],
+Cell[CellGroupData[{
+Cell[4887, 130, 1367, 37, 70, "ObjectNameGrid",ExpressionUUID->"e15c8c62-9da9-43ca-abe9-4f83381a5a42"],
+Cell[6257, 169, 4773, 138, 70, "Usage",ExpressionUUID->"33703f7c-5188-4a17-9e64-5db3ec7cda98",
+ CellID->421827453]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11067, 312, 1850, 45, 70, "NotesSection",ExpressionUUID->"35d2669f-3a2e-4365-9ac6-71644384fe53",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->989422635],
+Cell[12920, 359, 1638, 49, 70, "Notes",ExpressionUUID->"78bf28dd-4919-4bc8-b787-b007e5efaf83",
+ CellID->810483824],
+Cell[14561, 410, 1548, 46, 70, "Notes",ExpressionUUID->"376eda7e-66ef-4459-b696-dc13eb145d2e",
+ CellID->352908215]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "NotesSection"}, Closed]]]],
+Cell[CellGroupData[{
+Cell[16236, 462, 1441, 38, 70, "PrimaryExamplesSection",ExpressionUUID->"5f7dc8af-c28d-461d-bac7-d84faacf770c",
+ CellTags->"PrimaryExamplesSection",
+ CellID->1260347724],
+Cell[17680, 502, 203, 3, 70, "Input",ExpressionUUID->"04208122-9a4e-4bd4-b5dc-0319a93dfe5b",
+ CellID->1219246832],
+Cell[CellGroupData[{
+Cell[17908, 509, 1419, 37, 70, "ExampleSection",ExpressionUUID->"bd1628be-2ef5-408b-b12e-d9d89632284b",
+ CellID->2032986907],
+Cell[CellGroupData[{
+Cell[19352, 550, 727, 22, 70, "Input",ExpressionUUID->"49b55dda-04fa-4e1b-b90e-a72bc5604469",
+ CellID->2011443424],
+Cell[20082, 574, 639, 18, 70, "Output",ExpressionUUID->"4223d096-32bb-411a-a693-7b8d6315d756",
+ CellID->1722827291],
+Cell[20724, 594, 593, 17, 70, "Output",ExpressionUUID->"281bea99-5cf0-4969-ae21-c552e49f07ca",
+ CellID->1036267336]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21354, 616, 335, 10, 70, "Input",ExpressionUUID->"53eb695e-3a76-4d36-8db5-0b05c560abe3",
+ CellID->191732532],
+Cell[21692, 628, 270, 8, 70, "Output",ExpressionUUID->"65574261-905f-4744-aea1-b7b185638dc6",
+ CellID->2146130756]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[21999, 641, 463, 12, 70, "Input",ExpressionUUID->"f378aefb-20d6-43e9-98f8-27c4b5e4154a",
+ CellID->1325144887],
+Cell[22465, 655, 2668, 65, 70, "Output",ExpressionUUID->"0eeba060-2654-4657-81b9-fac0efa6a6db",
+ CellID->779836344]
+}, Open  ]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "ExampleSection", "0"}, Closed]]]]
+}, Dynamic[CurrentValue[EvaluationNotebook[], {TaggingRules, "Openers", "PrimaryExamplesSection"}, Closed]]]],
+Cell[25375, 729, 797, 20, 70, "SeeAlsoSection",ExpressionUUID->"e0e60ba0-eda0-4f5c-a4ce-61e9afab1080"],
+Cell[26175, 751, 78, 0, 70, "FooterCell",ExpressionUUID->"732e201e-328c-45a5-8c06-2e6cabde7e52"]
+}
+]
+*)
+
+(* End of internal cache information *)

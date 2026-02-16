@@ -2,7 +2,8 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
-{ UnitaryInteraction, WignerSpinSpin }; (* 2026-02-05 *)
+{ BravyiGreenFunction }; (* 2026-02-10 v4.5.0  *)
+{ UnitaryInteraction, WignerSpinSpin }; (* 2026-02-05 v4.4.5 *)
 { RandomSelection }; (* 2026-01-02 v4.4.0 *)
 { GateFactor }; (* 2025-10-10 v4.2.13  *)
 { YoungShapePile, GelfandYoungPile, SchurLabelPile };  (* 2025-06-10 v4.2.5 *)
@@ -19,8 +20,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { Affect }; (* obsolete 2025-03-12 *)
 { QuantumCircuitTrim }; (* renamed 2025-03-12 *)
 { GottesmanInner }; (* renamed *)
-{ WickRandomCircuit }; (* renamed *)
-{ NoisyWickSimulate }; (* renamed *)
+{ BravyiRandomCircuit }; (* renamed *)
+{ NoisyBravyiSimulate }; (* renamed *)
 { WeightedLog }; (* renamed *)
 { FlavorNone, FlavorNoneQ }; (* renamed *)
 { TimesDaggerLeft, TimesLeftRight }; (* renamed *)
@@ -82,12 +83,13 @@ HoldPattern @ Multiply[ pre___,
 (**** <deprecated> *****)
 
 (**** <UnitaryInteraction> ****)
-(* 2026-02-05 *)
+(* 2026-02-05 v4.4.5 *)
 UnitaryInteraction::usage = "UnitaryInteraction is deprecated; use ExchangeGate instead.\nUnitaryInteraction[{gx, gy, gz}, {s1, s2, \[Ellipsis]}] represents the unitary interaction among qubits s1, s2, \[Ellipsis]."
 
 Format[ op:UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}, rest___] ] :=
   With[
     { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+    Message[Q3General::deprecated];
     Interpretation[
       DisplayForm @ RowBox @ { Exp,
         RowBox @ {"(", -I * Dot[vec, ops], ")"}
@@ -98,6 +100,7 @@ Format[ op:UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}, rest___] ] :=
 Format[ op:UnitaryInteraction[mat_?MatrixQ, ss:{__?QubitQ}, rest___] ] :=
   With[
     { ops = Multiply @@@ Transpose @ Through[ss[All]] },
+    Message[Q3General::deprecated];
     Interpretation[
       DisplayForm @ RowBox @ { Exp,
         RowBox @ {"(", -I * Inner[Multiply, ops, mat . ops], ")"}
@@ -201,9 +204,8 @@ Matrix[
 (**** </UnitaryInteraction> ****)
 
 
-
 (**** <WignerSpinSpin> ****)
-(* 2026-02-05 *)
+(* 2026-02-05 v4.4.5 *)
 WignerSpinSpin::usage = "WignerSpinSpin is deprecated; use Exchange instead.\nWignerSpinSpin[dir][S1, S2, ...] returns the sum of exchange couplings between Spins S1, S2, ... for components specified by dir."
 
 WignerSpinSpin[All][ss__] := WignerSpinSpin[{1,2,3}][ss]
@@ -253,33 +255,33 @@ Scan[
 ]
 
 (* 2025-05-08 *)
-WickMeasurement::deprecated = "This form is now deprecated; use WickMeasurement[k, n] or WickMeasurment[{k1,k2,\[Ellipsis]}, n]."
+BravyiMeasurement::deprecated = "This form is now deprecated; use BravyiMeasurement[k, n] or BravyiMeasurment[{k1,k2,\[Ellipsis]}, n]."
 
 (* 2025-05-08 *)
 (* non-canonical form for backward compatibility *)
-FermionCount[WickMeasurement[k_Integer, ___?OptionQ]] = k
+FermionCount[BravyiMeasurement[k_Integer, ___?OptionQ]] = k
 
 (* 2025-05-08 *)
 (* non-canonical form for backward compatibility *)
-FermionCount[WickMeasurement[kk:{__Integer}, ___?OptionQ]] := Max[kk]
+FermionCount[BravyiMeasurement[kk:{__Integer}, ___?OptionQ]] := Max[kk]
 
 (* 2025-05-08 *)
 (* non-canonical form for backward compatibility *)
-WickMeasurement[k_Integer][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
+BravyiMeasurement[k_Integer][in:BravyiState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := Module[
   {aa, bb, new},
-  Message[WickMeasurement::deprecated];
-  {aa, bb} = WickMeasurementKernel[k, Length[cvr]/2];
-  new = theWickMeasurement[{aa, bb}, cvr];
+  Message[BravyiMeasurement::deprecated];
+  {aa, bb} = BravyiMeasurementKernel[k, Length[cvr]/2];
+  new = theBravyiMeasurement[{aa, bb}, cvr];
   $MeasurementOut[k] = $MeasurementOut[0];
   KeyDrop[$MeasurementOut, 0];
-  WickState[{1, new}, rest]
+  BravyiState[{1, new}, rest]
 ]
 
 (* 2025-05-08 *)
 (* non-canonical form for backward compatibility *)
-WickMeasurement[kk:{__Integer}][in:WickState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := (
-  Message[WickMeasurement::deprecated];
-  Fold[#2[#1]&, in, WickMeasurement /@ kk]
+BravyiMeasurement[kk:{__Integer}][in:BravyiState[{fac_?NumericQ, cvr_?MatrixQ}, rest___]] := (
+  Message[BravyiMeasurement::deprecated];
+  Fold[#2[#1]&, in, BravyiMeasurement /@ kk]
 )
 
 (**** </deprecated> *****)
@@ -497,6 +499,13 @@ YoungShapePile[any___] := (
   YoungPileUp[any]
 )
 
+BravyiGreenFunction::usage = "BravyiGreenFunction has been renamed BravyiGreen since v4.5.0 (2026-02-10)."
+
+BravyiGreenFunction[any___] := (
+  Message[Q3General::renamed, "BravyiGreenFunction", "BravyiGreen"];
+  BravyiGreen[any]
+)
+
 SchurLabelPile::usage = "SchurLabelPile has been renamed SchurPileUp since v4.2.4 (2025-06-09)."
 
 SchurLabelPile[any___] := (
@@ -608,18 +617,18 @@ GottesmanInner[any___] := (
   GottesmanDot[any]
 )
 
-NoisyWickSimulate::usage = "NoisyWickSimulate has been renamed WickSimulate."
+NoisyBravyiSimulate::usage = "NoisyBravyiSimulate has been renamed BravyiSimulate."
 
-NoisyWickSimulate[any___] := (
-  Message[Q3General::renamed, "NoisyWickSimulate", "WickSimulate"];
-  WickSimulate[any]
+NoisyBravyiSimulate[any___] := (
+  Message[Q3General::renamed, "NoisyBravyiSimulate", "BravyiSimulate"];
+  BravyiSimulate[any]
 )
 
-WickRandomCircuit::usage = "WickRandomCircuit has been renamed RandomWickCircuitSimulate."
+BravyiRandomCircuit::usage = "BravyiRandomCircuit has been renamed RandomBravyiCircuitSimulate."
 
-WickRandomCircuit[any___] := (
-  Message[Q3General::renamed, "WickRandomCircuit", "RandomWickCircuitSimulate"];
-  RandomWickCircuitSimulate[any]
+BravyiRandomCircuit[any___] := (
+  Message[Q3General::renamed, "BravyiRandomCircuit", "RandomBravyiCircuitSimulate"];
+  RandomBravyiCircuitSimulate[any]
 )
 
 FlavorNone::usage = "FlavorNone has been renamed FlavorCap."

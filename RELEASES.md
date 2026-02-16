@@ -1,5 +1,13 @@
 # Release Notes
 
+## 4.5.0
+
+- Renamed: WickXXX --> BravyiXXX, BravyiGreenFunction --> BravyiGreen
+- New: WickState, WickUnitary, WickMeasurement etc for model without pairing potential
+- New: LyapunovFunction
+- Improved numerical stability: HouseholderMatrix
+- Improved: JordanWignerTransform
+
 ## 4.4.5
 
 - New: Exchange, ExchangeGate

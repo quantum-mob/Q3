@@ -32,6 +32,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   RandomUnitary, RandomIsometric, RandomOrthogonal,
   RandomSymplectic RandomUnitarySymplectic };
 
+{ LyapunovFunction };
+
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
@@ -406,15 +408,16 @@ theHouseholderMatrix[vec_?VectorQ] :=
 (* NOTE: In principle, this does not need to be handled separately. However, sometimes an additional factor of -1 is added due to numerical errors (Normalize and Dyad in the following code). *)
 
 theHouseholderMatrix[vec_?VectorQ] := Module[
-  { new = -vec,
-    fac = Norm[vec],
-    phs = Exp[I * Arg[First @ vec]] },
-  fac *= phs;
-  new[[1]] += fac;
-  new = Normalize[new];
-  new = One[Length @ vec] - 2*KroneckerProduct[Conjugate @ new, new];
-  new * Conjugate[phs]
+  { nrm = Norm[vec],
+    phs = Exp[I * Arg[First @ vec]],
+    mat, new },
+  new = vec;
+  new[[1]] -= nrm * phs;
+  new = Normalize[Chop @ new]; (* NOTE *)
+  mat = One[Length @ vec] - 2*KroneckerProduct[Conjugate @ new, new];
+  mat * Conjugate[phs]
 ]
+(* NOTE: Here, notice Chop, to properly handle vectors close to yet not exactly equal to {x, 0, ..., 0} for x < 0. *)
 
 theHouseholderMatrix[vv_?MatrixQ] :=
   theHouseholderMatrix[First @ vv] /;
@@ -847,6 +850,37 @@ RandomUnitarySymplectic[n_Integer?Positive] :=
   RandomVariate[CircularQuaternionMatrixDistribution @ n]
 
 (**** </RandomMatrix> ****)
+
+
+(**** <LyapunovFunction ****)
+LyapunovFunction::usage = "LyapunovFunction[a, c] represents the solution of the Lyapunov differential equation D[x, t] == a.x + x.ConjugateTranspose[a] + c.\nLyapunovFunction[a, b, c] represents D[x, t] == a.x + x.b + c."
+
+LyapunovFunction::bad = "Some matrices are incompatible."
+
+LyapunovFunction[any__][in_, t_?NumericQ] :=
+  First @ LyapunovFunction[any][in, {t}]
+
+LyapunovFunction[a_, c_][in_, tt:{__?NumericQ}] := Module[
+  { aa, sp, ss },
+  sp = LyapunovSolve[a, -c];
+  aa = Map[MatrixExp[a*#]&, tt];
+  ss = in - sp;
+  Map[sp + Dot[#, ss, ConjugateTranspose @ #]&, aa]
+] /; If[ ArrayQ[{a, c, in}], True,
+  Message[LyapunovFunction::bad]; False
+]
+
+LyapunovFunction[a_, b_, c_][in_, tt:{__?NumericQ}] := Module[
+  { aa, bb, sp, ss },
+  sp = LyapunovSolve[a, b, -c];
+  aa = Map[MatrixExp[a*#]&, tt];
+  bb = Map[MatrixExp[b*#]&, tt];
+  ss = sp - in;
+  MapThread[sp + Dot[#1, bb, #2]&, {aa, bb}]
+] /; If[ ArrayQ[{a, b, c, in}], True,
+  Message[LyapunovFunction::bad]; False
+]
+(**** </LyapunovFunction ****)
 
 
 (**** <GraphForm> ****)

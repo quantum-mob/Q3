@@ -401,16 +401,14 @@ LindbladConvert[tsr_?ChoiMatrixQ] := Module[
     gen = ToSuperMatrix[tsr],
     mat },
   mat = LieBasisMatrix[dim];
-  gen = Topple[mat] . ToSuperMatrix[tsr] . mat;
-  { gen[[2;;, 2;;]],
-    gen[[2;;, 1]] / Sqrt[dim]
-   }
- ] /; Equal @@ Dimensions[tsr]
-
-LindbladConvert[tsr_?ChoiMatrixQ] := (
-  Message[LindbladConvert::badcm, Dimensions @ tsr];
-  {{{}}, {}}
- )
+  gen = ConjugateTranspose[mat] . ToSuperMatrix[tsr] . mat;
+  { gen[[2;;All, 2;;All]],
+    gen[[2;;All, 1]] / Sqrt[dim]
+  }
+] /; If[ Equal @@ Dimensions[tsr], True,
+    Message[LindbladConvert::badcm, Dimensions @ tsr];
+    False
+  ]
 
 LindbladConvert[opH_, {opL__}] := LindbladConvert[{opH, opL}]
 

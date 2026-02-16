@@ -14,7 +14,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { NambuElements, NambuCoefficients };
 
-{ WickNonunitary, WickHermitian, WickJump, WickOperator, WickMeasurement };
+{ BravyiNonunitary, BravyiHermitian, BravyiJump, BravyiOperator, BravyiMeasurement };
 
 Begin["`Private`"] (* Tools for Nambu matrices *)
 
@@ -166,7 +166,7 @@ NambuHermitian /:
 Matrix[ham:NambuHermitian[_?NambuMatrixQ, ___]] := Module[
   { n = FermionCount[ham],
     mm },
-  mm = theWignerJordanNambu[n];
+  mm = theJordanWignerNambu[n];
   TensorContract[
     Transpose[ConjugateTranspose /@ mm, {3, 1, 2}] . Normal[ham] . mm / 2,
     {{2, 3}}
@@ -190,19 +190,11 @@ MultiplyKind[_NambuHermitian] = Fermion
 (**** </NambuHermitian> ****)
 
 
-theWignerJordanNambu::usage = "theWignerJordanNambu[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation and creation operators under the Wigner-Joran transformation."
+theJordanWignerNambu::usage = "theJordanWignerNambu[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation and creation operators under the Wigner-Joran transformation."
 
-theWignerJordanNambu[n_Integer] := Module[
-  { mm = theWignerJordan[n] },
+theJordanWignerNambu[n_Integer] := Module[
+  { mm = JordanWignerTransform[n] },
   SparseArray @ Join[mm, ConjugateTranspose /@ mm]
-]
-
-theWignerJordan::usage = "theWignerJordan[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation operators under the Wigner-Joran transformation."
-
-theWignerJordan[n_Integer] := Module[
-  { mm },
-  mm = Table[PadRight[Table[3, k-1], n], {k, n}] + 4*One[n];
-  SparseArray @ Map[ThePauli, mm]
 ]
 
 
@@ -477,7 +469,7 @@ NambuConjugateReverse[mat_?MatrixQ] :=
 
 (**** <NambuDamping> ****)
 
-NambuDamping::usage = "NambuDamping[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator in the Nambu normal ordering that corresponds to the quantum jump operators jmp in the NambuJump or NambuMeasurement form.\nThis function is intended for self-consistency checks. Most calculations concerning fermionic quantum computation are more efficient with  WickDamping."
+NambuDamping::usage = "NambuDamping[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator in the Nambu normal ordering that corresponds to the quantum jump operators jmp in the NambuJump or NambuMeasurement form.\nThis function is intended for self-consistency checks. Most calculations concerning fermionic quantum computation are more efficient with  BravyiDamping."
 
 NambuDamping[NambuJump[jmp_?MatrixQ, ___]] := Module[
   {uu, vv, aa, bb, dd},
@@ -506,7 +498,7 @@ NambuDamping[NambuMeasurement[msr_?MatrixQ, ___]] := Module[
 
 (**** <NambuNonunitary> ****)
 
-NambuNonunitary::usage = "NambuNonunitary[{ham, dmp, gmm}] is like WickNonunitary, but matrices ham and dmp refer to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
+NambuNonunitary::usage = "NambuNonunitary[{ham, dmp, gmm}] is like BravyiNonunitary, but matrices ham and dmp refer to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
 
 NambuNonunitary /:
 MakeBoxes[op:NambuNonunitary[{ham_NambuHermitian, dmp_NambuHermitian, gmm_?NumericQ}, rest___], fmt_] :=
@@ -524,17 +516,17 @@ MakeBoxes[op:NambuNonunitary[{ham_NambuHermitian, dmp_NambuHermitian, gmm_?Numer
 
 (* conversion *)
 NambuNonunitary /:
-WickNonunitary[
+BravyiNonunitary[
   NambuNonunitary[
     {ham_NambuHermitian, dmp_NambuHermitian, gmm_?NumericQ},
     opts___?OptionQ
   ],
   more___?OptionQ
-] := WickNonunitary[{WickHermitian @ ham, WickHermitian @ dmp, gmm}, more, opts]
+] := BravyiNonunitary[{BravyiHermitian @ ham, BravyiHermitian @ dmp, gmm}, more, opts]
 
 (* conversion *)
 NambuNonunitary /:
-ToMajorana[non_NambuNonunitary] := WickNonunitary[non]
+ToMajorana[non_NambuNonunitary] := BravyiNonunitary[non]
 
 (**** </NambuNonunitary> ****)
 
@@ -549,7 +541,7 @@ RandomNambuNonunitary[n_Integer, opts___?OptionQ] := NambuNonunitary[
 
 (**** <NambuJump> ****)
 
-NambuJump::usage = "NambuJump[mat] is like WickJump, but matrix mat refers to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
+NambuJump::usage = "NambuJump[mat] is like BravyiJump, but matrix mat refers to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
 
 NambuJump::odd = "The second dimension of the input matrix `` is odd: ``."
 
@@ -576,8 +568,8 @@ Normalize[NambuJump[mat_?MatrixQ, rest___], ___] :=
 
 (* conversion *)
 NambuJump /:
-WickJump[NambuJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
-  WickJump[ToMajorana /@ mat, more, opts] /; (* NOT ToMajorana @ mat. *)
+BravyiJump[NambuJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
+  BravyiJump[ToMajorana /@ mat, more, opts] /; (* NOT ToMajorana @ mat. *)
   If[ EvenQ[Last @ Dimensions @ mat], True,
     Message[NambuJump::odd, ArrayShort @ mat, Dimensions @ mat];
     False
@@ -585,7 +577,7 @@ WickJump[NambuJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
 
 (* conversion *)
 NambuJump /:
-ToMajorana[jmp_NambuJump] := WickJump[jmp]
+ToMajorana[jmp_NambuJump] := BravyiJump[jmp]
 
 NambuJump /:
 Matrix[jmp_NambuJump, rest___] :=
@@ -625,7 +617,7 @@ RandomNambuJump[n_Integer, opts___?OptionQ] :=
 
 (**** <NambuOperator> ****)
 
-NambuOperator::usage = "NambuOperator[mat] is like WickOperator, but matrices ham and dmp refer to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
+NambuOperator::usage = "NambuOperator[mat] is like BravyiOperator, but matrices ham and dmp refer to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
 
 NambuOperator::odd = "The second dimension of the input matrix `` is odd: ``."
 
@@ -647,15 +639,15 @@ MakeBoxes[op:NambuOperator[mat_?MatrixQ, rest___], fmt_] := Module[
 ]
 
 NambuOperator /:
-WickOperator[NambuOperator[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
-  WickOperator[ToMajorana /@ mat, more, opts] /;   (* NOT ToMajorana @ mat. *)
+BravyiOperator[NambuOperator[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
+  BravyiOperator[ToMajorana /@ mat, more, opts] /;   (* NOT ToMajorana @ mat. *)
   If[ EvenQ[Last @ Dimensions @ mat], True,
     Message[NambuOperator::odd, ArrayShort @ mat, Dimensions @ mat];
     False
   ]
 
 NambuOperator /:
-ToMajorana[non_NambuOperator] := WickOperator[non]
+ToMajorana[non_NambuOperator] := BravyiOperator[non]
 
 NambuOperator /:
 Matrix[opr_NambuOperator, rest___] :=
@@ -666,7 +658,7 @@ Matrix[opr_NambuOperator, rest___] :=
 
 (**** <NambuMeasurement> ****)
 
-NambuMeasurement::usage = "NambuMeasurement[mat] is like WickMeasurement, but matrix mat refers to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
+NambuMeasurement::usage = "NambuMeasurement[mat] is like BravyiMeasurement, but matrix mat refers to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
 
 NambuMeasurement::odd = "The second dimension of the input matrix `` is odd: ``."
 
@@ -715,19 +707,19 @@ Matrix[msr_NambuMeasurement, rest___] :=
 
 (* conversion *)
 NambuMeasurement /:
-ToMajorana[msr_NambuMeasurement] := WickMeasurement[msr]
+ToMajorana[msr_NambuMeasurement] := BravyiMeasurement[msr]
 
 (* conversion *)
 NambuMeasurement /:
-WickMeasurement[NambuMeasurement[mat:({}|_?MatrixQ), opts___?OptionQ], more___?OptionQ] :=
-  WickMeasurement[ToMajorana /@ mat, more, opts] /;   (* NOT ToMajorana @ mat. *)
+BravyiMeasurement[NambuMeasurement[mat:({}|_?MatrixQ), opts___?OptionQ], more___?OptionQ] :=
+  BravyiMeasurement[ToMajorana /@ mat, more, opts] /;   (* NOT ToMajorana @ mat. *)
   theNambuMeasurementQ[mat]
 
 theNambuMeasurementQ::usage = "theNambuMeasurementQ[m] returns True if each linear combination \
   b[i] = Sum[m[[i, j]] a[j], {j, n}] + Sum[m[[i,n+j]] Dagger[a[j]], {j, n}] \
   of Dirac fermion operators a[j] and Dagger[a[j]] is individually a proper dressed Dirac fermion modes. Note that the different dressed fermion modes associated with different rows of m do not have to be mutually orthogonal."
 
-(* NOTE: This happens, e.g., in RandomWickCircuit. *)
+(* NOTE: This happens, e.g., in RandomBravyiCircuit. *)
 theNambuMeasurementQ[{}] = True 
 
 theNambuMeasurementQ[mat_?MatrixQ] :=
@@ -736,13 +728,13 @@ theNambuMeasurementQ[mat_?MatrixQ] :=
 (**** </NambuMeasurement> ****)
 
 
-RandomNambuMeasurement::usage = "RandomNambuMeasurement[k, n] randomly generates a NambuMeaurement for k dressed fermion modes from n bare fermion modes.\nRandomNambuMeasurement[n] randomly selects k from {1,2,\[Ellipsis],n}."
+RandomNambuMeasurement::usage = "RandomNambuMeasurement[{k, n}] randomly generates a NambuMeaurement for k dressed fermion modes from n bare fermion modes.\nRandomNambuMeasurement[n] randomly selects k from {1,2,\[Ellipsis],n}."
 
-RandomNambuMeasurement[k_Integer, n_Integer] := 
+RandomNambuMeasurement[{k_Integer, n_Integer}] := 
   NambuMeasurement @ Table[RandomChoice @ Normal @ RandomNambuUnitary[n], k]
 
 RandomNambuMeasurement[n_Integer] :=
-  RandomNambuMeasurement[RandomInteger @ {1, n}, n]
+  RandomNambuMeasurement @ {RandomInteger @ {1, n}, n}
 
 
 (**** <NambuElements> ****)
@@ -756,7 +748,7 @@ NambuElements[mat_?MatrixQ, cc:{__?MajoranaQ}] :=
   Dot[ToMajorana /@ mat, cc]
 
 NambuElements[
-  (WickOperator|WickJump|WickMeasurement)[mat_?MatrixQ, ___],
+  (BravyiOperator|BravyiJump|BravyiMeasurement)[mat_?MatrixQ, ___],
   spec:({__?FermionQ} | {__?MajoranaQ})
 ] := NambuElements[mat, spec]
 
@@ -777,14 +769,14 @@ NambuCoefficients[expr_List, spec:({__?FermionQ} | {__?MajoranaQ})] :=
 
 NambuCoefficients[expr_, cc:{__?MajoranaQ}] :=
   ToDirac @ Coefficient[expr, cc, 1] /;
-  If[ theWickLinearQ[expr, cc], True,
+  If[ theBravyiLinearQ[expr, cc], True,
     Message[NambuCoefficients::nlin, expr, cc];
     False
   ]
 
 NambuCoefficients[expr_, aa:{__?FermionQ}] :=
   Coefficient[expr, Join[aa, Dagger @ aa], 1] /;
-  If[ theWickLinearQ[expr, aa], True,
+  If[ theBravyiLinearQ[expr, aa], True,
     Message[NambuCoefficients::nlin, expr, aa];
     False
   ]

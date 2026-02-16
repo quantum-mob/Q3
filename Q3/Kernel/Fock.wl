@@ -1542,7 +1542,7 @@ speciesForm[ a_Symbol?ParticleQ ] := {a, {}, -1}
 (* The most general case for TWO operators with Vacuum == "Sea".
    Note that it allows for variables in the Flavor indices.
    This is required for more general expression, for example, in
-   conjunction with Wick's theorem. *)
+   conjunction with Bravyi's theorem. *)
 
 HoldPattern @ Multiply[
   Bra[Vacuum],
@@ -2568,6 +2568,22 @@ JordanWignerTransform[ff:{__?FermionQ} -> qq:{__?QubitQ}] := Module[
   Thread[ff -> cc]
  ] /; Length[qq] == Length[ff]
 
+
+JordanWignerTransform::usage = StringJoin[
+  JordanWignerTransform::usage,
+  "\nJordanWignerTransform[n] returns a list of matrix representations (in a single SparseArray) of spin operators that are associated with n fermion annihilation operators under the Joran-Wigner transformation."
+];
+
+JordanWignerTransform[n_Integer] := Module[
+  { mm },
+  mm = Normal @ SparseArray[
+    { {i_, i_} -> 4,
+      {i_, j_} /; i > j -> 3
+    },
+    {n, n}
+  ];
+  SparseArray @ Map[ThePauli, mm]
+]
 
 (**** </JordanWignerTransform> ****)
 

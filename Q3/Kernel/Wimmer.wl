@@ -143,7 +143,7 @@ PfaffianLTL[mat_?MatrixQ, tol_?NumericQ] := Module[
   (* NOTE: This is assumed. *)
   While[ Length[new] > 2,
     pos = 1 + First @ PositionLargest[Abs @ new[[1, 2;;]]];
-    (* NOTE: In principle, matrix new must be anti-symmetric, and especially, new[[1, 1]] must vanish. In practice, however, this may not hold due to numerical errors. Examples occur often in WickTimeReversalMoment. Hence, PositionLargest should exclude new[[1, 1]], which may not vanish in practice. *)
+    (* NOTE: In principle, matrix new must be anti-symmetric, and especially, new[[1, 1]] must vanish. In practice, however, this may not hold due to numerical errors. Examples occur often in BravyiTimeReversalMoment. Hence, PositionLargest should exclude new[[1, 1]], which may not vanish in practice. *)
     If[ZeroQ[new[[1, pos]], tol], Return[0]];
     If[ pos != 2,
       new[[{2, pos}, ;;]] = new[[{pos, 2}, ;;]]; 
