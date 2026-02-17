@@ -140,17 +140,30 @@ RandomWickState[{m_Integer, n_Integer}, opts___?OptionQ] := Module[
 ]
 
 
+(**** <globalGateQ> ****)
+globalGateQ::usage = "globalGateQ[op] returns True if the gate op acts on the whole system; and False otherwise."
+
+globalGateQ[op:_Symbol[__]] := Or[Length[op] == 1, OptionQ @ op[[2]]]
+
+globalGateQ[_] = False
+(**** </globalGateQ> ****)
+
+
 (**** <WickUnitary> ****)
 WickUnitary::usage = "WickUnitary[u] represents the Gaussian unitary gate corresponding to the canonical transformation of the fermion modes characterized by the unitary matrix u."
 
 WickUnitary /:
-MakeBoxes[op:WickUnitary[uu_?MatrixQ, rest___], fmt_] := 
+MakeBoxes[op:WickUnitary[uu_?MatrixQ, ___], fmt_] := 
   BoxForm`ArrangeSummaryBox[
     WickUnitary, op, None,
-    { BoxForm`SummaryItem @ { "Modes: ", Length @ uu },
-      BoxForm`SummaryItem @ { "Dimensions: ", Dimensions @ uu }
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ op },
+      BoxForm`SummaryItem @ If[
+        globalGateQ[op],
+        { "Dimensions: ", Dimensions @ uu },
+        { "Acting on: ", op[[2]] }
+      ]
     },
-    { BoxForm`SummaryItem @ { "Transformation matrix: ", ArrayShort @ uu }
+    { BoxForm`SummaryItem @ { "Transformation: ", ArrayShort @ uu }
     },
     fmt,
     "Interpretable" -> Automatic
@@ -172,10 +185,11 @@ ArrayShort[WickUnitary[mm_?MatrixQ, ___], opts___?OptionQ] :=
   ArrayShort[mm, opts]
 
 WickUnitary /:
-Dagger @ WickUnitary[mat_?MatrixQ, opts___?OptionQ] := WickUnitary[
-  ConjugateTranspose @ mat,
-  ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
-]
+Dagger @ WickUnitary[mat_?MatrixQ, kk:Repeated[{___Integer}, {0, 1}], opts___?OptionQ] := 
+  WickUnitary[
+    ConjugateTranspose @ mat, kk,
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
+  ]
 
 WickUnitary /:
 Dot[
@@ -194,10 +208,17 @@ ExpressionFor[op_WickUnitary, ___] = op
 
 
 WickUnitary /:
-Matrix[WickUnitary[mat_?MatrixQ, ___]] := Module[
-  { n = Last[Dimensions @ mat],
-    hh = MatrixLog[mat],
-    mm },
+Matrix[op:WickUnitary[_?MatrixQ, kk:{__Integer}, ___], n_Integer] := 
+  MatrixEmbed[Matrix @ op, kk, n]
+
+WickUnitary /:
+Matrix[op:WickUnitary[mat_?MatrixQ, ___]] := Module[
+  { hh = MatrixLog[mat],
+    mm, n },
+  n = If[ globalGateQ[op],
+    Last[Dimensions @ mat], 
+    Length @ op[[2]]
+  ];
   mm = JordanWignerTransform[n];
   mm = TensorContract[
     Transpose[ConjugateTranspose /@ mm, {3, 1, 2}] . hh . mm,
@@ -207,15 +228,29 @@ Matrix[WickUnitary[mat_?MatrixQ, ___]] := Module[
 ]
 
 WickUnitary /:
-Matrix[op:WickUnitary[_?MatrixQ, ___], ss:{__?SpeciesQ}] := 
+Matrix[op:WickUnitary[_?MatrixQ, kk:{__Integer}, ___?OptionQ], ss:{__?SpeciesQ}] := Module[
+  { cc = Select[ss, FermionQ] },
+  MatrixEmbed[Matrix[op, Length @ cc], cc, ss]
+]
+
+WickUnitary /:
+Matrix[op:WickUnitary[_?MatrixQ, ___?OptionQ], ss:{__?SpeciesQ}] := 
   MatrixEmbed[Matrix @ op, Select[ss, FermionQ], ss]
 
 WickUnitary /: (* fallback *)
 Matrix[op_WickUnitary, ss:{__?SpeciesQ}] := op * Matrix[1, ss]
 
 (* acting on Wick state *)
-WickUnitary[uu_?MatrixQ, ___][WickState[mm_?MatrixQ, rest___]] :=
+WickUnitary[uu_?MatrixQ, ___?OptionQ][WickState[mm_?MatrixQ, rest___]] :=
   WickState[mm . ConjugateTranspose[uu], rest]
+
+(* acting on Wick state *)
+WickUnitary[uu_?MatrixQ, kk:{__Integer}, ___?OptionQ][WickState[mm_?MatrixQ, rest___]] :=
+  Module[
+    { new = mm },
+    new[[All, kk]] = new[[All, kk]] . ConjugateTranspose[uu];
+    WickState[new, rest]
+  ]
 
 
 WickUnitary[uu_?MatrixQ, opts___?OptionQ][c_?FermionQ] :=
@@ -226,13 +261,15 @@ WickUnitary[uu_?MatrixQ, kk:{__Integer}, opts___?OptionQ][c_?FermionQ] :=
 
 WickUnitary /:
 ParseGate[WickUnitary[u_, cc:{__?FermionQ}, rest___]] :=
-  Gate[cc, rest, "Label" -> "U"]
+  Gate[cc, rest]
 (**** </WickUnitary> ****)
 
 
 RandomWickUnitary[n_Integer, rest___] :=
   WickUnitary[RandomUnitary @ n, rest]
 
+RandomWickUnitary[kk:{__Integer}, rest___] :=
+  WickUnitary[RandomUnitary @ Length @ kk, kk, rest]
 
 (**** <WickHermitian> ****)
 WickHermitian::usage = "WickHermitian[m] represents a quadractic Hermitian operator (\[CapitalSigma]ij Dagger[ai] mij ajj, where m is a Hermitian matrix."
@@ -819,10 +856,11 @@ Graphics[wc:WickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?Op
   cc = c[Range @ n];
   qc = gg /. {
     WickCircuit[{}] -> "Spacer",
-    ws_WickCircuit :> Graphics[ws],
-    ws_WickState :> ExpressionFor[ws, cc],
-    ws_WickMeasurement :> ParseGate[ws @ c],
-    ws_WickUnitary :> ParseGate[ws @ c]
+    elm_WickCircuit :> Graphics[elm],
+    elm_WickState :> ExpressionFor[elm, cc],
+    elm_WickMeasurement :> ParseGate[elm @ c],
+    elm_WickUnitary :> ParseGate[elm @ c],
+    elm_WickNonunitary :> ParseGate[elm @ c]
   };
   QuantumCircuit[Sequence @@ qc, more, opts, "PostMeasurementDashes" -> False]
 ]
@@ -889,13 +927,10 @@ Options[RandomWickCircuitSimulate] = {
 
 $RandomWickCircuitPatterns = Alternatives[
   {_WickUnitary, _?NumericQ}, 
-  {_NambuUnitary, _?NumericQ},
+  {_WickNonunitary, _?NumericQ}, 
   {_WickHermitian, _, _?NumericQ},
   {_WickHermitian, _?NumericQ},
-  {_NambuHermitian, _, _?NumericQ},
-  {_NambuHermitian, _?NumericQ},
-  _WickHermitian,
-  _NambuHermitian
+  _WickHermitian
 ];
 
 RandomWickCircuitSimulate[in_, spec_, depth_Integer, opts___?OptionQ] := 
@@ -940,7 +975,8 @@ WickNonunitary /:
 MakeBoxes[op:WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, rest___], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     WickNonunitary, op, None,
-    { BoxForm`SummaryItem @ { "Modes: ", Length @ non },
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ non },
+      If[Not[globalGateQ @ op], BoxForm`SummaryItem @ {"Acting on: ", op[[2]]}, Nothing],
       BoxForm`SummaryItem @ { "Prefactor: ", fac }
     },
     { BoxForm`SummaryItem @ { "Transformation: ", ArrayShort @ non }
@@ -980,12 +1016,25 @@ ArrayShort @ WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, rest___] :=
   ArrayShort[non]
 
 WickNonunitary /:
-Dagger @ WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, rest___] :=
-  WickNonunitary[{fac, ConjugateTranspose @ non}, rest]
+Dagger @ WickNonunitary[{
+  fac_?NumericQ, non_?MatrixQ},
+  kk:Repeated[{___Integer}, {0, 1}], 
+  opts___?OptionQ
+] := WickNonunitary[
+    {fac, ConjugateTranspose @ non}, kk,
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
+  ]
+
 
 WickNonunitary /:
-Matrix[WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, ___]] := Module[
-  { n = Length[non],
+Matrix[
+  op:WickNonunitary[{_?NumericQ, _?MatrixQ}, kk:{__Integer}, ___], 
+  n_Integer
+] := MatrixEmbed[Matrix @ op, kk, n]
+
+WickNonunitary /:
+Matrix[op:WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, ___]] := Module[
+  { n = FermionCount[non],
     log = MatrixLog[non],
     mat, wjt },
   wjt = JordanWignerTransform[n];
@@ -994,13 +1043,33 @@ Matrix[WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, ___]] := Module[
   SparseArray[fac * MatrixExp[mat]]
 ]
 
+
 (* acting on WickState *)
-WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, rest___][in_WickState] := 
+WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, kk:{__Integer}, ___][in_WickState] :=
+  Module[
+    { new = One[FermionCount @ in] },
+    new[[kk, kk]] = non;
+    WickNonunitary[{fac, new}] @ in
+  ]
+
+WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, ___?OptionQ][in_WickState] := 
   First[WickOdds[non -> fac] @ in]
+
 
 (* shortcut *)
 WickNonunitary /:
 WickOdds[WickNonunitary[{fac_, non_}, ___]] := WickOdds[non -> fac]
+
+
+WickNonunitary[spec_, opts___?OptionQ][c_?FermionQ] :=
+  WickNonunitary[spec, c[Range @ FermionCount @ Last @ spec], opts]
+
+WickNonunitary[spec_, kk:{__Integer}, opts___?OptionQ][c_?FermionQ] :=
+  WickNonunitary[spec, c @ kk, opts]
+
+WickNonunitary /:
+ParseGate[WickNonunitary[_, cc:{__?FermionQ}, rest___]] :=
+  Gate[cc, rest, "Label" -> "W"]
 (**** </WickNonunitary> ****)
 
 
@@ -1013,6 +1082,11 @@ RandomWickNonunitary[n_Integer, opts___?OptionQ] := Module[
     {RandomReal[], MatrixExp[-I*ham - dmp]},
     opts
   ]
+]
+
+RandomWickNonunitary[kk:{__Integer}, opts___?OptionQ] := With[
+  { tmp = RandomWickNonunitary[Length @ kk] },
+  WickNonunitary[First @ tmp, kk, opts]
 ]
 
 
@@ -1225,59 +1299,11 @@ theWickMonitor[in_WickState, evo_WickUnitary, prb_?NumericQ, jmp_WickJump, {tau_
 (**** <WickScramblingCircuit> ****)
 WickScramblingCircuit::usage = "WickScramblingCircuit[op, spec, dep] generates the main part of a Wick scrambling circuit."
 
-(* 1 - 2*Dagger[a[k]]**a[k] *)
-theWickZ[k_Integer, n_Integer] := WickUnitary[
-  SparseArray[
-    { {k, k} -> -1,
-      {i_, i_} -> 1,
-      {_, _} -> 0
-    },
-    {n, n}
-  ],
-  "Label" -> Subscript["Z", k]
-]
-
-(* Exp[(Pi/2)*(Dagger[a[1]]**a[2] - Dagger[a[2]]**a[1])] *)
-theWickX[k_Integer, n_Integer] := WickUnitary[
-  SparseArray[
-    { {k, k+1} -> -1,
-      {k+1, k} -> +1,
-      {k, k} -> 0,
-      {k+1, k+1} -> 0,
-      {i_, i_} -> 1,
-      {_, _} -> 0
-    },
-    {n, n}
-  ],
-  "Label" -> Subscript["X", k]
-]
-
-(* fallback *)
-theWickX[n_Integer, n_Integer] := WickUnitary[
-  SparseArray[
-    { {n, 1} -> -1,
-      {1, n} -> +1,
-      {n, n} -> 0,
-      {1, 1} -> 0,
-      {i_, i_} -> 1,
-      {_, _} -> 0
-    },
-    {n, n}
-  ],
-  "Label" -> Subscript["X", n]
-]
-
-
-WickScramblingCircuit[a_Integer,
-  spec:$RandomWickCircuitPatterns, t_Integer] := Module[
-    { n = spec },
-    If[ListQ @ spec, n = First @ spec];
-    n = FermionCount[n];
-    WickScramblingCircuit[theWickX[a, n], spec, t]
-  ]
+WickScramblingCircuit[a_Integer, rest__] :=
+    WickScramblingCircuit[theWickX[a], spec, t]
 
 (* fixed interaction time *)
-WickScramblingCircuit[op_, {uu_WickUnitary, p_?NumericQ}, k_Integer] :=
+WickScramblingCircuit[op_, {uu:(_WickUnitary|elm_WickNonunitary), p_?NumericQ}, k_Integer] :=
   Module[
     { n = FermionCount[uu],
       vv, ma, mb },
@@ -1335,6 +1361,21 @@ WickScramblingCircuit[op_, ham_WickHermitian, k_Integer] := Module[
     { n = FermionCount[ham] },
     WickScramblingCircuit[op, {ham, ExponentialDistribution[n], 1./n}, k]
   ]
+
+theWickZ::usage = "theWickZ[k] returns the default local unitary operator, A := 1 - 2*Dagger[a[k]]**a[k], for the OTOC."
+
+theWickZ[k_Integer] := WickUnitary[{{-1}}, {k}, "Label" -> Z]
+
+theWickX::usage = "theWickX[k] returns the default local unitary operator, B := Exp[(Pi/2)*(Dagger[a[k]]**a[k+1] - Dagger[a[k+1]]**a[k])], for the OTOC."
+
+theWickX[k_Integer] := WickUnitary[
+  SparseArray @ { 
+    {0, -1},
+    {1,  0}
+  },
+  {k, k + 1},
+  "Label" -> "X"
+]
 (**** </WickScramblingCircuit> ****)
 
 
@@ -1353,11 +1394,11 @@ WickScramblingSimulate[in_, {a_Integer, b_Integer},
     { n = spec },
     If[ListQ @ spec, n = First @ spec];
     n = FermionCount[n];
-    WickScramblingSimulate[in, {theWickX[a, n], theWickZ[b, n]}, spec, rest]
+    WickScramblingSimulate[in, {theWickX[a], theWickZ[b]}, spec, rest]
   ]
 
 WickScramblingSimulate[in_, ua_WickUnitary, rest__] :=
-  WickScramblingSimulate[in, {ua, theWickZ[1, FermionCount @ ua]}, rest]
+  WickScramblingSimulate[in, {ua, theWickZ[1]}, rest]
 
 WickScramblingSimulate[
   in_WickState,
@@ -1563,8 +1604,14 @@ FermionCount[WickHermitian[mat_?MatrixQ, ___]] :=
 FermionCount[WickUnitary[mat_?MatrixQ, ___]] := 
   Last[Dimensions @ mat]
 
+FermionCount[WickUnitary[_?MatrixQ, kk:{__Integer}, ___?OptionQ]] :=
+  AtLeast[Max @ kk]
+
 FermionCount[WickNonunitary[{_?NumericQ, non_?MatrixQ}, ___]] := 
   Last[Dimensions @ non]
+
+FermionCount[WickNonunitary[_, kk:{__Integer}, ___?OptionQ]] :=
+  AtLeast[Max @ kk]
 
 FermionCount[WickJump[jmp:{__?patternWickJumpQ}, ___]] := 
   Last[Dimensions @ Keys @ jmp]
@@ -1576,7 +1623,7 @@ FermionCount[WickMeasurement[mat_?MatrixQ, ___?OptionQ]] :=
   Last[Dimensions @ mat]
 
 FermionCount[WickCircuit[gg_List, ___?OptionQ]] := 
-  Max[FermionCount /@ gg]
+  Max @ ReplaceAll[FermionCount /@ Flatten[gg], AtLeast -> Identity]
 (**** </FermionCount> ****)
 
 End[] (* Fermionic quantum computation *)

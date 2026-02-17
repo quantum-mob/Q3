@@ -1417,7 +1417,7 @@ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
 Operator /:
 Dagger @ Operator[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] := 
   Operator[ ConjugateTranspose @ mat, ss, 
-    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
   ]
 
 Operator /:
@@ -1493,7 +1493,7 @@ OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] :=
 OperatorExp /:
 Dagger @ OperatorExp[mat_?MatrixQ, ss:{__?SpeciesQ}, opts___?OptionQ] := 
   OperatorExp[ -ConjugateTranspose[mat], ss,
-    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
   ]
 
 OperatorExp /:
@@ -2934,7 +2934,7 @@ Multiply[
 
 Rotation /:
 Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] ] :=
-  Rotation[-Conjugate[ang], v, S, ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]]
+  Rotation[-Conjugate[ang], v, S, ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]]
 
 
 Rotation /:
@@ -2975,7 +2975,7 @@ Multiply[pre___, op_EulerRotation, post___ ] :=
 
 EulerRotation /:
 Dagger @ EulerRotation[{a_, b_, c_}, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] :=
-  EulerRotation[{-c, -b, -a}, S, ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]]
+  EulerRotation[{-c, -b, -a}, S, ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]]
 
 
 EulerRotation /:

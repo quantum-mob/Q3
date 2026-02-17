@@ -2,10 +2,9 @@
 
 ## 4.5.0
 
-- Renamed: WickXXX --> BravyiXXX, BravyiGreenFunction --> BravyiGreen
-- New: WickState, WickUnitary, WickMeasurement etc for model without pairing potential
+- Two sets of functions to simulate fermionic Gaussian processes: {WickXXX} optimized for the case without pairing correlation and {BravyiXXX} for the general case.
 - New: LyapunovFunction
-- Improved numerical stability: HouseholderMatrix
+- HouseholderMatrix: improved numerical stability
 - Improved: JordanWignerTransform
 
 ## 4.4.5

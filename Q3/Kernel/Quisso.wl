@@ -848,39 +848,6 @@ TheExpression[S_?QubitQ] := {
 (**** </ExpressionFor> ****)
 
 
-(**** <mySuperscript> <***)
-
-mySuperscript::usage = "mySuperscript[expr, x] is like Superscript, but handles subscript or superscript better."
-
-mySuperscript[Subscript[a_, b_], x_] := Subsuperscript[a, b, x]
-
-mySuperscript[Subsuperscript[a_, b_, Row[c_List, "\[ThinSpace]"]], x_] := 
-  Subsuperscript[a, b, Row[Append[c, x], "\[ThinSpace]"]]
-
-mySuperscript[a_, x_] := Superscript[a, x]
-
-
-mySuperDagger::usage = "mySuperDagger[expr] is like SuperDagger, but handles subscript or superscript better."
-
-mySuperDagger[a_] := Superscript[a, "\[Dagger]"]
-
-mySuperDagger[Superscript[a_, "\[Dagger]"]] := a
-
-mySuperDagger[Superscript[a_, Row[b_, "\[ThinSpace]"]]] :=
-  Superscript[a, Row[exclusiveAppend[b, "\[Dagger]"], "\[ThinSpace]"]]
-
-mySuperDagger[Subsuperscript[a_, b_, Row[c_List, "\[ThinSpace]"]]] := 
-  Subsuperscript[a, b, Row[exclusiveAppend[c, "\[Dagger]"], "\[ThinSpace]"]]
-
-exclusiveAppend[a_List, b_] := If[
-  MemberQ[a, b],
-  DeleteCases[a, b],
-  Append[a, b]
-]
-
-(**** </mySuperscript> ****)
-
-
 (**** <Phase> ****)
 
 Phase::usage = "Phase[\[Phi], S[\[Ellipsis],n]] represents the relative phase shift by \[Phi] between the posiive and negative eigenstates of S[\[Ellipsis],n]."
@@ -908,7 +875,7 @@ Phase[aa_List, ss:{__?QubitQ}, opts___?OptionQ] :=
 
 Phase /:
 Dagger @ Phase[phi_, S_?QubitQ, opts___?OptionQ] :=
-  Phase[-Conjugate[phi], S, ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]]
+  Phase[-Conjugate[phi], S, ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]]
   
 
 Phase /:
@@ -1539,7 +1506,7 @@ Unfold[ControlledGate[cc:{__Rule}, op_, ___?OptionQ], ___] := Module[
 
 ControlledGate /:
 Dagger @ ControlledGate[cc:{__Rule}, expr_, opts___?OptionQ] :=
-  ControlledGate[cc, Dagger @ expr, ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]]
+  ControlledGate[cc, Dagger @ expr, ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]]
 
 
 ControlledGate /:
@@ -1611,7 +1578,7 @@ ControlledPower /:
 Dagger @ ControlledPower[ss:{__?QubitQ}, expr_, opts___?OptionQ] :=
   ControlledPower[ ss,
     Dagger[expr],
-    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
   ]
 
 
@@ -1669,7 +1636,7 @@ Unfold[ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[Gate]], ___] :=
     (* NOTE: Without ActOn, some elements in pwr may be 1. *)
 
     txt = OptionValue[Gate, {opts, Options @ op, "Label" -> gateLabel @ op}, "Label"];
-    txt = Table["Label" -> mySuperscript[txt, Superscript[2, n-k]], {k, n}];
+    txt = Table["Label" -> auxSuperscript[txt, Superscript[2, n-k]], {k, n}];
     new = ReplaceAll[
       MapThread[ControlledGate, {ss, pwr, txt}],
       HoldPattern @ ControlledGate[args__] ->
@@ -1766,7 +1733,7 @@ UniformlyControlledRotation /:
 Dagger @ UniformlyControlledRotation[
   cc:{__?QubitQ}, aa_?VectorQ, vv:{_, _, _}, S_?QubitQ, opts___?OptionQ ] :=
   UniformlyControlledRotation[ cc, -aa, vv, S,
-    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
   ]
 
 

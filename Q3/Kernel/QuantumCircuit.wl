@@ -641,7 +641,7 @@ ParseGate[
       Options @ Gate
     ];
     Gate[ cc, Qubits @ op,
-      "Label" -> mySuperscript[
+      "Label" -> auxSuperscript[
         OptionValue[Gate, new, "Label"], 
         OptionValue[Gate, new, "ControlLabel"]
       ], 

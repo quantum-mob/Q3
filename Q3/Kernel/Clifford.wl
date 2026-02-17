@@ -22,11 +22,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-AtLeast::usage = "AtLest[n] represents a certain number that is not smaller than n."
-
-Format @ AtLeast[n_Integer] := 
-  Interpretation["at least " <> ToString[n], AtLeast @ n]
-
 (**** <CliffordState> ****)
 
 CliffordState::usage = "CliffordState[data, {s1, s2, \[Ellipsis]}] represents a stabilizer state on qubits s1, s2, \[Ellipsis] with the generating set of stabilizer subgroup specified by data.\nThe data is a matrix each row of which is a full Gottesman vaector referring to the Pauli string corresponding to a stabilizer generator."
@@ -430,7 +425,7 @@ Dagger[CliffordUnitary[mat_?MatrixQ, more___, opts___?OptionQ]] := Module[
   (* remove the Pauli string *)
   inv = GottesmanMap[fac] @ inv;
   CliffordUnitary[ inv, more,
-    ReplaceRulesBy[{opts}, "Label" -> mySuperDagger]
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
   ]
 ]
 

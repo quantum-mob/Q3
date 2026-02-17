@@ -1277,6 +1277,41 @@ doForceList[a_, n_Integer] := Table[a, n]
 (**** </doForceList> ****)
 
 
+(**** <auxSuperscript> <***)
+auxSuperscript::usage = "auxSuperscript[expr, x] is like Superscript, but handles subscript or superscript better."
+
+auxSuperscript[Subscript[a_, b_], x_] := Subsuperscript[a, b, x]
+
+auxSuperscript[Subsuperscript[a_, b_, Row[c_List, "\[ThinSpace]"]], x_] := 
+  Subsuperscript[a, b, Row[Append[c, x], "\[ThinSpace]"]]
+
+auxSuperscript[a_, x_] := Superscript[a, x]
+(**** </auxSuperscript> ****)
+
+
+(**** <auxSuperDagger> <***)
+auxSuperDagger::usage = "auxSuperDagger[expr] is like SuperDagger, but handles subscript or superscript better."
+
+auxSuperDagger[a_] := Superscript[a, "\[Dagger]"]
+
+auxSuperDagger[Subscript[a_, b_]] := Subsuperscript[a, b, "\[Dagger]"]
+
+auxSuperDagger[Superscript[a_, "\[Dagger]"]] := a
+
+auxSuperDagger[Superscript[a_, Row[b_, "\[ThinSpace]"]]] :=
+  Superscript[a, Row[exclusiveAppend[b, "\[Dagger]"], "\[ThinSpace]"]]
+
+auxSuperDagger[Subsuperscript[a_, b_, Row[c_List, "\[ThinSpace]"]]] := 
+  Subsuperscript[a, b, Row[exclusiveAppend[c, "\[Dagger]"], "\[ThinSpace]"]]
+
+exclusiveAppend[a_List, b_] := If[
+  MemberQ[a, b],
+  DeleteCases[a, b],
+  Append[a, b]
+]
+(**** </auxSuperDagger> <***)
+
+
 (**** <arrayMap> ****)
 arrayMap::usage = "arrayMap[f, data] applies f to each element on the array-depth level in the array data.\narrayMap[f, data, levelspec] applies f to parts of expr specified by levelspec. Note that negative integers in levelspec is relative to ArrayDepth[data]."
 
@@ -1293,6 +1328,14 @@ arrayMap[f_, data_?ArrayQ, spec_] := Module[
   Map[(out = f[#]; prg = i++/cnt; out)&, data, new]
 ]
 (**** </arrayMap> ****)
+
+
+(**** <AtLeast> ****)
+AtLeast::usage = "AtLest[n] represents a certain number that is not smaller than n. See also UpTo."
+
+Format @ AtLeast[n_Integer] := 
+  Interpretation["at least " <> ToString[n], AtLeast @ n]
+(**** </AtLeast> ****)
 
 End[]
 

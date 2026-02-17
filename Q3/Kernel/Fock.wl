@@ -2589,11 +2589,9 @@ JordanWignerTransform[n_Integer] := Module[
 
 
 (**** <FermionCount> ****)
-
 FermionCount::usage = "FermionCount[obj] returns the number of fermion modes involved in object (or expression) obj."
 
 FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat]
-
 (**** </FermionCount> ****)
 
 
