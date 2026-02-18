@@ -2,6 +2,8 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ BravyiOperator, RandomBravyiOperator,
+  NambuOperator, RandomNambuOperator }; (* 2026-02-18 v4.5.1 *)
 { BravyiGreenFunction }; (* 2026-02-10 v4.5.0  *)
 { UnitaryInteraction, WignerSpinSpin }; (* 2026-02-05 v4.4.5 *)
 { RandomSelection }; (* 2026-01-02 v4.4.0 *)

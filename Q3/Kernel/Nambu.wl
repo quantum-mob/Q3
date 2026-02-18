@@ -8,13 +8,13 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { NambuUnitary, NambuHermitian, NambuGreen };
 { RandomNambuUnitary, RandomNambuHermitian, RandomNambuGreen };
 
-{ NambuNonunitary, NambuJump, NambuOperator, NambuMeasurement };
-{ RandomNambuNonunitary, RandomNambuJump, RandomNambuOperator, RandomNambuMeasurement };
+{ NambuNonunitary, NambuJump, NambuMeasurement };
+{ RandomNambuNonunitary, RandomNambuJump, RandomNambuMeasurement };
 { NambuDamping };
 
 { NambuElements, NambuCoefficients };
 
-{ BravyiNonunitary, BravyiHermitian, BravyiJump, BravyiOperator, BravyiMeasurement };
+{ BravyiNonunitary, BravyiHermitian, BravyiJump, BravyiMeasurement };
 
 Begin["`Private`"] (* Tools for Nambu matrices *)
 
@@ -615,47 +615,6 @@ RandomNambuJump[n_Integer, opts___?OptionQ] :=
   RandomNambuJump[RandomInteger @ {1, n}, n, opts]
 
 
-(**** <NambuOperator> ****)
-
-NambuOperator::usage = "NambuOperator[mat] is like BravyiOperator, but matrices ham and dmp refer to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
-
-NambuOperator::odd = "The second dimension of the input matrix `` is odd: ``."
-
-NambuOperator /:
-MakeBoxes[op:NambuOperator[mat_?MatrixQ, rest___], fmt_] := Module[
-  {m, n},
-  {m, n} = Dimensions[mat];
-  BoxForm`ArrangeSummaryBox[
-    NambuOperator, op, None,
-    { BoxForm`SummaryItem @ { "Modes: ", n/2 },
-      BoxForm`SummaryItem @ { "Operators: ", m }
-    },
-    { BoxForm`SummaryItem @ { "Coefficients: ",
-        ArrayShort /@ First @ PartitionInto[mat, {1, 2}] }
-    },
-    fmt,
-    "Interpretable" -> Automatic
-  ]
-]
-
-NambuOperator /:
-BravyiOperator[NambuOperator[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
-  BravyiOperator[ToMajorana /@ mat, more, opts] /;   (* NOT ToMajorana @ mat. *)
-  If[ EvenQ[Last @ Dimensions @ mat], True,
-    Message[NambuOperator::odd, ArrayShort @ mat, Dimensions @ mat];
-    False
-  ]
-
-NambuOperator /:
-ToMajorana[non_NambuOperator] := BravyiOperator[non]
-
-NambuOperator /:
-Matrix[opr_NambuOperator, rest___] :=
-  Matrix[ToMajorana @ opr, rest]
-
-(**** </NambuOperator> ****)
-
-
 (**** <NambuMeasurement> ****)
 
 NambuMeasurement::usage = "NambuMeasurement[mat] is like BravyiMeasurement, but matrix mat refers to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
@@ -748,7 +707,7 @@ NambuElements[mat_?MatrixQ, cc:{__?MajoranaQ}] :=
   Dot[ToMajorana /@ mat, cc]
 
 NambuElements[
-  (BravyiOperator|BravyiJump|BravyiMeasurement)[mat_?MatrixQ, ___],
+  (BravyiJump|BravyiMeasurement)[mat_?MatrixQ, ___],
   spec:({__?FermionQ} | {__?MajoranaQ})
 ] := NambuElements[mat, spec]
 
@@ -785,7 +744,6 @@ NambuCoefficients[expr_, aa:{__?FermionQ}] :=
 
 
 (**** <FermionCount> ****)
-
 FermionCount[obj_?NambuMatrixQ] := Length[First @ obj]
 
 FermionCount[NambuUnitary[_?NambuMatrixQ, kk:{__Integer}, ___?OptionQ]] := Max[kk]
@@ -803,9 +761,6 @@ FermionCount[NambuGreen[grn_?NambuMatrixQ, ___]] := Length[First @ grn]
 FermionCount[NambuJump[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
 
 FermionCount[NambuMeasurement[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
-
-FermionCount[NambuOperator[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
-
 (**** </FermionCount> ****)
 
 End[]

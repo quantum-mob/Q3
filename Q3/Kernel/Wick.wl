@@ -39,6 +39,10 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 (* VonNeumann.wl *)
 { QuantumLog };
 
+(* backward compatibility for renamed symbols *)
+(* 2026-02-18 v4.5.1 *)
+{ WickCovariance, WickInner, WickOperator, WickMap };
+
 
 Begin["`Private`"] (* Fermionic quantum computation *)
 
@@ -1410,7 +1414,7 @@ WickScramblingSimulate[
 Module[
   { qc, n, m },
   {n, m} = doAssureList[OptionValue["Samples"], 2];
-  Mean @ Flatten @ Table[
+  Operator @ Flatten @ Table[
     qc = WickScramblingCircuit[ua, spec, depth];
     Table[theWickOTOC[in, ub, qc], m],
     n
@@ -1764,5 +1768,50 @@ WickMutualInformation[data_, kk:{___Integer}] :=
 
 End[] (* quantum information theory for fermionic Gaussian states *)
 
+
+(*********************************************************************************)
+(**** backward compatibility                                                  ****)
+(*********************************************************************************)
+
+Bravyi::renamed = "Use ``: function names with prefix Wick are reserved for the optimized version in the case without pairing correlation."
+
+Begin["`Private`"]
+
+WickState[spec:{_?NumericQ, _?MatrixQ}, rest___] := (
+  Message[Bravyi::renamed, BravyiState];
+  BravyiState[spec, rest]
+)
+
+WickFlop[vec_?VectorQ, rest___] := (
+  Message[Bravyi::renamed, BravyiFlop];
+  BravyiFlop[spec, rest]
+) /; VectorQ[vec, NumericQ]
+
+WickJump[mat_?MatrixQ, rest___] := (
+  Message[Bravyi::renamed, BravyiJump];
+  BravyiJump[spec, rest]
+) /; MatrixQ[mat, NumericQ]
+
+WickDensityMatrix[gnr:(_NambuGreen|_?NambuMatrixQ), rest___] := (
+  Message[Bravyi::renamed, BravyiDensityMatrix];
+  BravyiDensityMatrix[spec, rest]
+)
+
+WickCovariance[any__] := (
+  Message[Bravyi::renamed, BravyiCovariance];
+  BravyiCovariance[any]
+)
+
+WickInner[any__] := (
+  Message[Bravyi::renamed, BravyiInner];
+  BravyiInner[any]
+)
+
+WickMap[any__] := (
+  Message[Bravyi::renamed, BravyiMap];
+  BravyiMap[any]
+)
+
+End[] (* backward compatibility *)
 
 EndPackage[]

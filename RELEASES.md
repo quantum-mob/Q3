@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.5.1
+
+- Removed: BravyiOperator, RandomBravyiOperator, NambuOperator, RandomNambuOperator, BravyiJumpOdds, BravyiMeasurementOdds, BravryiMapOdds, BravyiFlopKernel, BravyiMeasurementKernel, BravyiMapKernel
+- New: BravyiOdds, BravyiKernel
+- Changed: BravyiMap, BravyiJump, BravyiMeasurement
+
 ## 4.5.0
 
 - Two sets of functions to simulate fermionic Gaussian processes: {WickXXX} optimized for the case without pairing correlation and {BravyiXXX} for the general case.
