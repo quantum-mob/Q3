@@ -21,14 +21,15 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { BravyiJump, RandomBravyiJump };
 { BravyiMeasurement, RandomBravyiMeasurement };
 { BravyiOdds, BravyiKernel };
+{ BravyiDampingOperator, BravyiDampingConstant };
 
 { BravyiElements, BravyiCoefficients };
 
 { BravyiGreen, BravyiOccupation,
-  BravyiMean, BravyiCanonicalize };
+  BravyiMean, Canonicalize };
 
 { BravyiCircuit, RandomBravyiCircuit, RandomBravyiCircuitSimulate };
-{ BravyiSimulate, BravyiDamping, $BravyiMinorSteps };
+{ BravyiSimulate, $BravyiMinorSteps };
 { BravyiMonitor };
 
 { BravyiScramblingCircuit, BravyiScramblingSimulate };
@@ -458,31 +459,31 @@ RandomBravyiCovariance[n_Integer] := Module[
 ]
 
 
-(**** <BravyiCanonicalize> ****)
-BravyiCanonicalize::usage = "BravyiCanonicalize[obj] converts object obj (such as BravyiJump and BravyiMeasurement) into a canonical form."
+(**** <Canonicalize> ****)
+Canonicalize::usage = "Canonicalize[obj] converts named object obj into a canonical form.\nFor BravyiJump,  BravyiMeasurement, WickJump and WickMeasurement, each vector is renormalized by the largest norm of all vectors."
 
-BravyiCanonicalize[BravyiJump[mat_?MatrixQ, rest___]] := With[
+Canonicalize[BravyiJump[mat_?MatrixQ, rest___]] := With[
   { max = Sqrt[2]*Max[Norm /@ mat] },
   (* NOTE: Notice the factor of Sqrpt[2]. *)
   BravyiJump[mat/max, rest]
 ]
 
-BravyiCanonicalize[BravyiMeasurement[mat_?MatrixQ, rest___]] := With[
+Canonicalize[BravyiMeasurement[mat_?MatrixQ, rest___]] := With[
   { max = Sqrt[2]*Max[Norm /@ mat] },
   (* NOTE: Notice the factor of Sqrpt[2]. *)
   BravyiMeasurement[mat/max, rest]
 ]
 
-BravyiCanonicalize[NambuJump[mat_?MatrixQ, rest___]] := With[
+Canonicalize[NambuJump[mat_?MatrixQ, rest___]] := With[
   { max = Max[Norm /@ mat] },
   NambuJump[mat/max, rest]
 ]
 
-BravyiCanonicalize[NambuMeasurement[mat_?MatrixQ, rest___]] := With[
+Canonicalize[NambuMeasurement[mat_?MatrixQ, rest___]] := With[
   { max = Max[Norm /@ mat] },
   NambuMeasurement[mat/max, rest]
 ]
-(**** </BravyiCanonicalize> ****)
+(**** </Canonicalize> ****)
 
 
 (**** <BravyiInner> ****)
@@ -869,7 +870,7 @@ BravyiKernel[vec_?VectorQ -> 2] := Module[
   {aa, bb} = theBravyiKernel[vec -> 2];
   nn = NormSquare[vec];
   {aa, bb} -> {-1, 2*NormSquare[vec]^2} 
-  (* NOTE: Here, factor of 1/4 since BravyiOdds[v -> 2] do not put the factor of 1/2. *)
+  (* NOTE: Here, factor of 2 (instead of 4) since BravyiOdds[v -> 2] do not put the factor of 1/2. *)
 ]
 
 theBravyiKernel[vec_?VectorQ -> 2] := Module[
@@ -955,7 +956,7 @@ BravyiOdds[{aa_?MatrixQ, bb_?MatrixQ, dd_?MatrixQ} -> nrm_?NumericQ][
   If[ ZeroQ[pp],
     Return[BravyiState[{0, Zero @ Dimensions @ cvr}, rest] -> 0]
   ];
-  new = aa + bb . cvr . Inverse[mm] . Transpose[bb];
+  new = Quiet[aa + bb . cvr . Inverse[mm] . Transpose[bb], {Inverse::luc}];
   BravyiState[{1, new}] -> pp
 ]
 (**** </BravyiOdds> ****)
@@ -1198,7 +1199,7 @@ theBravyiMeasurement[in:BravyiState[{_, cvr_?MatrixQ}, rest___], vec_?VectorQ] :
     aa *= -1;
     mm = id - aa . cvr (* D = -A *)
   ];
-  new = Quiet[aa + bb . cvr . Inverse[mm] . bb, {Inverse::luc}];
+  new = Quiet[aa + bb . cvr . Inverse[mm] . Transpose[bb], {Inverse::luc}];
   BravyiState[{1, new}, rest]
 ]
 
@@ -1813,7 +1814,7 @@ BravyiNonunitary[{ham_?MatrixQ, BravyiMeasurement[kk:{__Integer}, ___]}, rest___
 (* conversion *)
 BravyiNonunitary[{ham_?MatrixQ, jmp:(_BravyiJump|_BravyiMeasurement)}, rest___] := Module[
   {dmp, gmm},
-  {dmp, gmm} = BravyiDamping[jmp];
+  {dmp, gmm} = BravyiDampingOperator[jmp];
   BravyiNonunitary[{ham, dmp, gmm}, rest]
 ]
 
@@ -1914,23 +1915,34 @@ RandomBravyiNonunitary[n_Integer, opts___?OptionQ] :=
   BravyiNonunitary[Re @ {RandomAntisymmetric[2n], RandomAntisymmetric[2n], 0}, opts]
 
 
-(**** <BravyiDamping> ****)
-BravyiDamping::usage = "BravyiDamping[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form."
+(**** <BravyiDampingOperator> ****)
+BravyiDampingOperator::usage = "BravyiDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form."
 
-BravyiDamping[BravyiJump[jmp_?MatrixQ, ___]] := With[
+BravyiDampingOperator[BravyiJump[jmp_?MatrixQ, ___]] := With[
   { mat = ConjugateTranspose[jmp] . jmp },
   { BravyiHermitian @ Re[ -I*(mat - Transpose[mat]) ],
     Re @ Tr[mat]/2 }
 ]
 
-BravyiDamping[BravyiMeasurement[msr_?MatrixQ, ___]] := Module[
-  { dig, mat },
-  dig = 2*Map[NormSquare, msr];
-  mat = Dot[ConjugateTranspose @ msr, dig*msr];
+BravyiDampingOperator[BravyiMeasurement[msr_?MatrixQ, ___]] := Module[
+  { nrm, mat },
+  nrm = 2*Map[NormSquare, msr];
+  mat = Dot[ConjugateTranspose @ msr, nrm*msr];
   { BravyiHermitian @ Re[ -I*(mat - Transpose[mat]) ],
     Re @ Tr[mat]/2 }
 ]
-(**** </BravyiDamping> ****)
+(**** </BravyiDampingOperator> ****)
+
+
+(**** <BravyiDampingConstant> ****)
+BravyiDampingConstant::usage = "BravyiDampingConstant[jmp] returns the damping constantcorresponds to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form."
+
+BravyiDampingConstant[BravyiJump[jmp_?MatrixQ, ___]] := 
+  Total @ Map[NormSquare, jmp] / 2
+
+BravyiDampingConstant[BravyiMeasurement[msr_?MatrixQ, ___]] :=
+  Total[ Map[NormSquare, msr]^2 ]
+(**** </BravyiDampingConstant> ****)
 
 
 (**** <BravyiSimulate> ****)
@@ -2059,43 +2071,41 @@ BravyiMonitor[
   opts___?OptionQ
 ] := Module[
   { n = FermionCount[in],
-    map },
-  map = BravyiMap[BravyiMapKernel[2, Range @ n, n], True];
-  BravyiMonitor[in, ham, map, spec, opts]
+    msr },
+  (* To monitor all bare fermion modes by default *)
+  msr = BravyiMeasurement[Range @ n, n];
+  BravyiMonitor[in, ham, msr, spec, opts]
 ]
 
 BravyiMonitor[
   in_BravyiState,
   ham_BravyiHermitian,
   msr_BravyiMeasurement,
-  spec:{_?NumericQ, _?NumericQ, ___},
-  opts___?OptionQ
-] := BravyiMonitor[in, ham, BravyiMap[msr, True], spec, opts]
-
-BravyiMonitor[
-  in_BravyiState,
-  ham_BravyiHermitian,
-  map_BravyiMap,
   {tau_?NumericQ, dt_?NumericQ},
   opts___?OptionQ
-] := BravyiMonitor[in, ham, map, {tau, dt, All}, opts]
+] := BravyiMonitor[in, ham, msr, {tau, dt, All}, opts]
 
 BravyiMonitor[
   in_BravyiState,
   ham_BravyiHermitian,
-  map_BravyiMap,
+  msr_BravyiMeasurement,
   {tau_?NumericQ, dt_?NumericQ, ds:(_Integer|All)},
   opts:OptionsPattern[]
 ] := Module[
   { n = OptionValue["Samples"],
     progress = 0,
-    uni, data, more },
+    uni, gmm, prb, map, data, more },
+  (* damping constant: factor of 2 because both prj and 1-prj are considerd. *)
+  gmm = 2*BravyiDampingConstant[msr];
+  (* probability to governed by the non-Hermitian Hamiltonian dynamics *)
+  prb = Exp[-2*gmm*dt];
   uni = BravyiUnitary @ MatrixExp[N @ First[ham]*dt];
+  map = BravyiMap[msr, True];
   (* simulation *)
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
     progress = k / N[n];
-    theBravyiMonitor[in, uni, map, {tau, dt}][[1;;All;;ds]],
+    theBravyiMonitor[in, uni, prb, map, {tau, dt}][[1;;All;;ds]],
     {k, n}
   ];
   (* save data *)
@@ -2112,19 +2122,16 @@ BravyiMonitor[
 theBravyiMonitor[
   in_BravyiState,
   uni_BravyiUnitary,
+  prb_?NumericQ,
   map_BravyiMap,
   {tau_?NumericQ, dt_?NumericQ}
 ] := Module[
   { t = dt,
     res = {in},
-    new = in,
-    gmm },
-  gmm = 2 * Total @ map[[1, 4]];
-  (* NOTE: Here, the additional factor 2 is required because the prefactors map[[1, 4]] from BravyiMapKernel[2, ...] already contains the factor of 1/2 associated with projection Dagger[b]**b. *)
-  gmm = Exp[-gmm*dt];
+    new = in },
   While[ t <= tau,
     (* non-unitary (yet practically unitary) evolution *)
-    If[ RandomReal[] < gmm,
+    If[ RandomReal[] < prb,
         new = uni[new];
         AppendTo[res, new];
         t += dt;

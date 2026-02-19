@@ -2,6 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ BravyiCanonicalize, KetCanonical }; (* renamed 2026-02-20 v4.5.1 *)
 { BravyiOperator, RandomBravyiOperator,
   NambuOperator, RandomNambuOperator }; (* 2026-02-18 v4.5.1 *)
 { BravyiGreenFunction }; (* 2026-02-10 v4.5.0  *)
@@ -11,7 +12,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { YoungShapePile, GelfandYoungPile, SchurLabelPile };  (* 2025-06-10 v4.2.5 *)
 { BratteliDiagram, KostkaMatrix }; (* 2025-06-09 v4.2.4 *)
 { GD, GIntegrate }; (* 2025-05-31 v4.2.2 *)
-{ AdjacentTranspositions }; (* rename 2025-05-27 v4.2.1 *)
+{ AdjacentTranspositions }; (* renamed 2025-05-27 v4.2.1 *)
 { GelfandAttach }; (* rename 2025-05-23 v4.1.11 *)
 { ToYoungTableau, ToGelfandPattern }; (* obsolete v4.1.11 2025-05-22 *)
 { GroupRegularRepresentation }; (* obsolete 2025-05-09 *)
@@ -471,6 +472,20 @@ ToGelfandPattern[tb_, _Integer] := (
 
 (**** <obsolete> ****)
 
+BravyiCanonicalize::usage = "BravyiCanonicalize has been renamed Canonicalize since v4.5.1 (2026-02-20)."
+
+BravyiCanonicalize[any___] := (
+  Message[Q3General::renamed, "KetCanonical", "Canonicalize"];
+  Canonicalize[any]
+)
+
+KetCanonical::usage = "KetCanonical has been renamed KetCanonicalize since v4.5.1 (2026-02-20)."
+
+KetCanonical[any___] := (
+  Message[Q3General::renamed, "KetCanonical", "KetCanonicalize"];
+  KetCanonicalize[any]
+)
+
 RandomSelection::usage = "RandomSelection is obsolte since v4.4.0 (2026-01-02). It was intended to randomly select DISTINCT elements, which is already implemented by the built-in function RandomSample."
 
 RandomSelection[any___] := (
@@ -705,11 +720,11 @@ DyadExpression[args__] := (
   DyadForm[args]
 )
 
-NormalForm::usage = "NormalForm has been renamed KetCanonical."
+NormalForm::usage = "NormalForm has been renamed KetCanonicalize."
 
 NormalForm[args___] := (
-  Message[Q3General::renamed, "NormalForm", "KetCanonical"];
-  KetCanonical[args]
+  Message[Q3General::renamed, "NormalForm", "KetCanonicalize"];
+  KetCanonicalize[args]
 )
 
 LogicalForm::usage = "LogicalForm has been renamed KetRegulate since v2.11.8."

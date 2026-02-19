@@ -4,7 +4,9 @@
 
 - Removed: BravyiOperator, RandomBravyiOperator, NambuOperator, RandomNambuOperator, BravyiJumpOdds, BravyiMeasurementOdds, BravryiMapOdds, BravyiFlopKernel, BravyiMeasurementKernel, BravyiMapKernel
 - New: BravyiOdds, BravyiKernel
+- Renamed: KetCanonical --> KetCanonicalize, BravyiCanonicalize --> Canonicalize
 - Changed: BravyiMap, BravyiJump, BravyiMeasurement
+- Bug fix: Multiply[ ..., S[..., 4|5], ...] for qubit S.
 
 ## 4.5.0
 

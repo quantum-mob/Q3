@@ -272,7 +272,6 @@ QubitCount[_] = Indeterminate
 (**** <Multiply> ****)
 
 (* Speical Rules: Involving identity *)
-
 HoldPattern @ Multiply[pre___, _?QubitQ[___, 0], post___] := 
   Multiply[pre, post]
 
@@ -280,21 +279,27 @@ HoldPattern @ Multiply[pre___, _?QubitQ[___, 0], post___] :=
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,4], Ket[b_Association], post___ ] :=
-  Switch[ b @ a[j, $],
-    0, 0,
-    1, Ket @ KeySort @ Append[b, a[j,$] -> 0],
-    _?BinaryQ, Garner[(a[j, 1] + I*a[j, 2]) ** Ket[b] / 2],
-    _, Ket[b]
-   ]
+  Multiply[ pre,
+    Switch[ b @ a[j, $],
+      0, 0,
+      1, Ket @ KeySort @ Append[b, a[j,$] -> 0],
+      _?BinaryQ, Garner[(a[j, 1] + I*a[j, 2]) ** Ket[b] / 2],
+      _, Ket[b]
+    ],
+    post
+  ]
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,5], Ket[b_Association], post___ ] :=
-  Switch[ b @ a[j, $],
-    1, 0,
-    0, Ket @ KeySort @ Append[b, a[j,$] -> 1],
-    _?BinaryQ, Garner[(a[j, 1] - I*a[j, 2]) ** Ket[b] / 2],
-    _, Ket[b]
-   ]
+  Multiply[ pre, 
+    Switch[ b @ a[j, $],
+      1, 0,
+      0, Ket @ KeySort @ Append[b, a[j,$] -> 1],
+      _?BinaryQ, Garner[(a[j, 1] - I*a[j, 2]) ** Ket[b] / 2],
+      _, Ket[b]
+    ],
+    post
+  ]  
 
 HoldPattern @
   Multiply[ pre___, a_?QubitQ[j___,1], Ket[b_Association], post___ ] :=
@@ -526,8 +531,7 @@ HoldPattern @ Multiply[
   pre___,
   x_Symbol?QubitQ[j___,m_], x_Symbol?QubitQ[j___,n_], 
   post___ 
-] :=
-  Multiply[pre, post] /; m + n == 0
+] := Multiply[pre, post] /; m + n == 0
 
 HoldPattern @ Multiply[ 
   pre___,

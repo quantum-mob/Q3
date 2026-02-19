@@ -1451,7 +1451,7 @@ YoungInvariantBasis[bs:{Ket[{__YoungTableau}]..}] := Module[
   (* so-called the twirling operator *)
   op = Total[GroupElements @ SymmetricGroup @ n];
   op /= GroupOrder[SymmetricGroup @ n];
-  DeleteCases[Union @ KetCanonical[op ** bs, False], 0]
+  DeleteCases[Union @ KetCanonicalize[op ** bs, False], 0]
 ]
 
 (**** </YoungInvariantBasis> ****)

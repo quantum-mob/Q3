@@ -10,7 +10,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { NambuNonunitary, NambuJump, NambuMeasurement };
 { RandomNambuNonunitary, RandomNambuJump, RandomNambuMeasurement };
-{ NambuDamping };
+{ NambuDampingOperator,
+  NambuDampingConstant };
 
 { NambuElements, NambuCoefficients };
 
@@ -467,11 +468,10 @@ NambuConjugateReverse[mat_?MatrixQ] :=
 (**** </NambuConjugateReverse> ****)
 
 
-(**** <NambuDamping> ****)
+(**** <NambuDampingOperator> ****)
+NambuDampingOperator::usage = "NambuDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator in the Nambu normal ordering that corresponds to the quantum jump operators jmp in the NambuJump or NambuMeasurement form.\nThis function is intended for self-consistency checks. Most calculations concerning fermionic quantum computation are more efficient with  BravyiDampingOperator."
 
-NambuDamping::usage = "NambuDamping[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator in the Nambu normal ordering that corresponds to the quantum jump operators jmp in the NambuJump or NambuMeasurement form.\nThis function is intended for self-consistency checks. Most calculations concerning fermionic quantum computation are more efficient with  BravyiDamping."
-
-NambuDamping[NambuJump[jmp_?MatrixQ, ___]] := Module[
+NambuDampingOperator[NambuJump[jmp_?MatrixQ, ___]] := Module[
   {uu, vv, aa, bb, dd},
   {uu, vv} = First @ PartitionInto[jmp, {1, 2}];
   aa = ConjugateTranspose[uu] . uu / 2;
@@ -481,7 +481,7 @@ NambuDamping[NambuJump[jmp_?MatrixQ, ___]] := Module[
     Re[Tr[aa] + Tr[dd]]/2 }
 ]
 
-NambuDamping[NambuMeasurement[msr_?MatrixQ, ___]] := Module[
+NambuDampingOperator[NambuMeasurement[msr_?MatrixQ, ___]] := Module[
   {uu, vv, aa, bb, dd, nn},
   {uu, vv} = First @ PartitionInto[msr, {1, 2}];
   nn = Map[NormSquare, msr];
@@ -492,8 +492,16 @@ NambuDamping[NambuMeasurement[msr_?MatrixQ, ___]] := Module[
   { NambuHermitian @ {aa - Transpose[dd], bb - Transpose[bb]},
     Re[Tr[aa] + Tr[dd]]/2 }
 ]
+(**** </NambuDampingOperator> ****)
 
-(**** </NambuDamping> ****)
+
+NambuDampingConstant::usage = "NambuDampingConstant[jmp] returns the damping constant ... .\nNambuDampingConstant[msr] returns the dampig constant regarding each measurement in msr as a quantum jump operator."
+
+NambuDampingConstant[NambuJump[jmp_?MatrixQ, ___]] := 
+  Total @ Map[NormSquare, jmp] / 2
+
+NambuDampingConstant[NambuMeasurement[msr_?MatrixQ, ___]] :=
+  Total[ Map[NormSquare, msr]^2 ] / 4
 
 
 (**** <NambuNonunitary> ****)
@@ -616,12 +624,11 @@ RandomNambuJump[n_Integer, opts___?OptionQ] :=
 
 
 (**** <NambuMeasurement> ****)
-
 NambuMeasurement::usage = "NambuMeasurement[mat] is like BravyiMeasurement, but matrix mat refers to the coefficients of the Dirac fermion operators rather than the Majorana fermion operators.\nIt merely provides a shortcut tool for convenience as most calculations in fermionic quantum computing are based on Majorana operators for efficiency while sometimes the Dirac fermion representation is more intuitive."
 
 NambuMeasurement::odd = "The second dimension of the input matrix `` is odd: ``."
 
-NambuMeasurement::dressed = "Matrix `` cannot describe a set of orthogonal dressed Dirac fermion modes."
+NambuMeasurement::dressed = "The rows of matrix `` cannot describe individual dressed Dirac fermion modes."
 
 NambuMeasurement /:
 MakeBoxes[msr:NambuMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
@@ -672,7 +679,9 @@ ToMajorana[msr_NambuMeasurement] := BravyiMeasurement[msr]
 NambuMeasurement /:
 BravyiMeasurement[NambuMeasurement[mat:({}|_?MatrixQ), opts___?OptionQ], more___?OptionQ] :=
   BravyiMeasurement[ToMajorana /@ mat, more, opts] /;   (* NOT ToMajorana @ mat. *)
-  theNambuMeasurementQ[mat]
+  If[ theNambuMeasurementQ[mat], True,
+    Message[NambuMeasurement::dressed, mat]; False
+  ]
 
 theNambuMeasurementQ::usage = "theNambuMeasurementQ[m] returns True if each linear combination \
   b[i] = Sum[m[[i, j]] a[j], {j, n}] + Sum[m[[i,n+j]] Dagger[a[j]], {j, n}] \
@@ -683,7 +692,6 @@ theNambuMeasurementQ[{}] = True
 
 theNambuMeasurementQ[mat_?MatrixQ] :=
   ArrayZeroQ[Dot @@@ Map[PartitionInto[#,2]&, mat]]
-
 (**** </NambuMeasurement> ****)
 
 

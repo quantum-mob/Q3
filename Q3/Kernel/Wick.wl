@@ -15,7 +15,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   WickJump, RandomWickJump,
   WickMeasurement, RandomWickMeasurement };
 
-{ WickOdds, WickDamping };
+{ WickOdds, WickDampingOperator, WickDampingConstant };
 
 { WickGreen, RandomWickGreen, 
   WickPureQ, WickDensityMatrix,
@@ -303,6 +303,17 @@ WickHermitian /:
 ArrayShort[WickHermitian[mm_?MatrixQ, ___], opts___?OptionQ] :=
   ArrayShort[mm, opts]
 
+WickHermitian /:
+Dagger[op_WickHermitian] = op
+
+WickHermitian /:
+Plus[WickHermitian[a_, any___], WickHermitian[b_, other___]] :=
+  WickHermitian[a + b, any, other]
+
+WickHermitian /:
+Times[z_, WickHermitian[mat_, rest___]] :=
+  WickHermitian[z * mat, rest]
+
 
 WickHermitian /:
 ExpressionFor[WickHermitian[mat_?MatrixQ, ___], aa:{__?FermionQ}] :=
@@ -466,9 +477,11 @@ MakeBoxes[jmp:WickJump[spec:{__?patternWickJumpQ}, ___], fmt_] := Module[
 ]
 
 (* conversion *)
+(* Note that each measurement is automatically completed. *)
+(* application: WickMonitor *)
 WickJump[WickMeasurement[msr_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
   WickJump[
-    Riffle[Thread[mat -> 2], Thread[mat -> 3]],
+    Riffle[Thread[msr -> 2], Thread[msr -> 3]],
     more, opts
   ]
 
@@ -572,6 +585,22 @@ WickFlop[ops:{___?patternWickJumpQ}][in_WickState] :=
 RandomWickFlop::usage = "RandomWickFlop[{k_Integer, n_Integer}] returns WickFlop consisting of k linear combinations of n Dirac fermion operators.\nRandomWickFlop[n] chooses k randomly from 1 through n."
 
 RandomWickFlop[spec_] := Apply[WickFlop, RandomWickJump[spec]]
+
+
+(**** <Canonicalize> ****)
+Canonicalize[WickJump[jmp:{__?patternWickJumpQ}, rest___]] := Module[
+  { max = Max[Norm /@ Keys[jmp]],
+    new },
+  new = Keys[jmp] / max;
+  new = Thread[new -> Values[jmp]];
+  WickJump[new, rest]
+]
+
+Canonicalize[WickMeasurement[mat_?MatrixQ, rest___]] := With[
+  { max = Max[Norm /@ mat] },
+  WickMeasurement[mat/max, rest]
+]
+(**** </Canonicalize> ****)
 
 
 (**** <WickMeasurement> ****)
@@ -973,7 +1002,7 @@ Module[
 
 
 (**** <WickNonunitary> ****)
-WickNonunitary::usage = "WickNonunitary[{fac, non}] represents a fermionic Gaussian gate (without pairing correlation) characterized by the damping factor fac := Exp[-gmm*\[Tau]] and n\[Times]n non-unitary matrix non := MatrixExp[-\[ImaginaryI](ham - \[ImaginaryI] dmp)\[Tau]].\nWickNonunitary[{ham, jmp}, \[Tau]] is a shortcut to construct WickNonunitary using WickDamping."
+WickNonunitary::usage = "WickNonunitary[{fac, non}] represents a fermionic Gaussian gate (without pairing correlation) characterized by the damping factor fac := Exp[-gmm*\[Tau]] and n\[Times]n non-unitary matrix non := MatrixExp[-\[ImaginaryI](ham - \[ImaginaryI] dmp)\[Tau]].\nWickNonunitary[{ham, jmp}, \[Tau]] is a shortcut to construct WickNonunitary using WickDampingOperator."
 
 WickNonunitary /:
 MakeBoxes[op:WickNonunitary[{fac_?NumericQ, non_?MatrixQ}, rest___], fmt_] :=
@@ -997,18 +1026,14 @@ WickNonunitary[{ham_WickHermitian, jmp:{__?patternWickJumpQ}}, dt_?NumericQ, res
 
 (* shortcut *)
 WickNonunitary[
-  {WickHermitian[ham_?MatrixQ], jmp_WickJump},
+  {ham_WickHermitian, jmp_WickJump},
   dt_?NumericQ, 
   rest___
 ] := Module[
-  {dmp, gmm},
-  {dmp, gmm} = WickDamping[jmp];
-  WickNonunitary[
-    { Exp[-dt*gmm], 
-      MatrixExp[-I*dt*(ham - I*dmp)] 
-    },
-    rest
-  ]
+  {dmp, gmm, eff},
+  {dmp, gmm} = WickDampingOperator[jmp];
+  eff = First[ham] - I*First[dmp];
+  WickNonunitary[{Exp[-dt*gmm], MatrixExp[-I*dt*eff]}, rest]
 ]
 
 WickNonunitary /:
@@ -1094,30 +1119,31 @@ RandomWickNonunitary[kk:{__Integer}, opts___?OptionQ] := With[
 ]
 
 
-(**** <WickDamping> ****)
-WickDamping::usage = "WickDamping[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp."
+(**** <WickDampingOperator> ****)
+WickDampingOperator::usage = "WickDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp."
 
-WickDamping[jmp:{___?patternWickJumpQ}] :=
-  WickDamping[WickJump @ jmp]
+WickDampingOperator[jmp:{___?patternWickJumpQ}] :=
+  WickDampingOperator[WickJump @ jmp]
 
-WickDamping[WickJump[jmp_List]] := Module[
-  { cls },
+WickDampingOperator[WickJump[jmp_List]] := Module[
+  { cls, res },
   cls = Merge[Reverse /@ jmp, SparseArray];
-  Total @ KeyValueMap[theWickDamping, cls]
+  res = Total @ KeyValueMap[theWickDampingOperator, cls];
+  MapAt[WickHermitian, res, 1]
 ]
 
-theWickDamping[0, mat_] := {
+theWickDampingOperator[0, mat_] := {
   Dot[ConjugateTranspose @ mat, mat],
   0
 } / 2
 
-theWickDamping[1, mat_] := Module[
+theWickDampingOperator[1, mat_] := Module[
   { new },
   new = Dot[ConjugateTranspose @ mat, mat];
   {-new, Re @ Tr @ new} / 2 
 ]
 
-theWickDamping[2, mat_] := Module[
+theWickDampingOperator[2, mat_] := Module[
   { new },
   new = Dot[
     ConjugateTranspose @ mat,
@@ -1126,7 +1152,7 @@ theWickDamping[2, mat_] := Module[
   {new, 0} / 2
 ]
 
-theWickDamping[3, mat_] := Module[
+theWickDampingOperator[3, mat_] := Module[
   { new },
   new = Dot[
     ConjugateTranspose @ mat,
@@ -1134,7 +1160,25 @@ theWickDamping[3, mat_] := Module[
   ];
   {-new, Re @ Tr @ new} / 2
 ]
-(**** </WickDamping> ****)
+(**** </WickDampingOperator> ****)
+
+
+(**** <WickDampingConstant> ****)
+WickDampingConstant::usage = "WickDampingConstant[jmp] returns the damping constant corresponding to quantum jump operators jmp."
+
+WickDampingConstant[jmp_WickJump] := WickDampingConstant[First @ jmp]
+
+WickDampingConstant[jmp:{___?patternWickJumpQ}] := 
+  Total @ Map[theWickDampingConstant, jmp]
+
+theWickDampingConstant[v_ -> 0] = 0
+
+theWickDampingConstant[v_ -> 1] := NormSquare[v] / 2
+
+theWickDampingConstant[v_ -> 2] = 0
+
+theWickDampingConstant[v_ -> 3] := NormSquare[v]^2 / 2
+(**** </WickDampingConstant> ****)
 
 
 (**** <WickSimulate> ****)
@@ -1239,6 +1283,15 @@ WickMonitor[in_WickState, ham_?MatrixQ, rest___] :=
 WickMonitor[in_WickState, ham_WickHermitian, msr_?MatrixQ, rest___] :=
   WickMonitor[in, ham, WickMeasurement @ msr, rest]
 
+WickMonitor[in_WickState, ham_WickHermitian, spec:{_?NumericQ, _?NumericQ, ___}, rest___] := 
+  Module[
+    { n = FermionCount[in],
+      msr },
+    (* To monitor all bare fermion modes by default *)
+    msr = WickMeasurement[Range @ n, n];
+    WickMonitor[in, ham, msr, spec, rest]
+  ]
+
 WickMonitor[in_WickState, ham_WickHermitian, msr_WickMeasurement, 
   {tau_, dt_}, rest___] :=
   WickMonitor[in, ham, msr, {tau, dt, All}, rest]
@@ -1252,18 +1305,17 @@ WickMonitor[
 ] := Module[
   { ns = OptionValue["Samples"],
     progress = 0,
-    jmp, dmp, gmm, evo, data, more },
+    jmp, dmp, gmm, prb, evo, data, more },
   
-  (* NOTE: The unit of time is 1/\gamma, where \gamma is the monitoring rate. *)
-  jmp = WickJump[msr];
-  {dmp, gmm} = WickDamping[jmp];
+  jmp = WickJump[msr]; (* p and 1-p *)
+  gmm = WickDampingConstant[jmp];
   evo = WickUnitary[ham, dt];
-  gmm = Exp[-gmm*dt];
+  prb = Exp[-2*gmm*dt]; (* Notice the factor of 2. *)
 
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
     progress = k / N[ns];
-    theWickMonitor[in, evo, gmm, jmp, {tau, dt}][[1;;All;;ds]],
+    theWickMonitor[in, evo, prb, jmp, {tau, dt}][[1;;All;;ds]],
     {k, ns}
   ];
 
@@ -1414,7 +1466,7 @@ WickScramblingSimulate[
 Module[
   { qc, n, m },
   {n, m} = doAssureList[OptionValue["Samples"], 2];
-  Operator @ Flatten @ Table[
+  Mean @ Flatten @ Table[
     qc = WickScramblingCircuit[ua, spec, depth];
     Table[theWickOTOC[in, ub, qc], m],
     n
@@ -1718,7 +1770,7 @@ WickEntanglementEntropy[any_, {}] = 0
 
 (* shortcut *)
 WickEntanglementEntropy[in_WickState, kk:{___Integer}] :=
-  WickEntanglementEntropy[WickGreen @ in, kk]
+  WickEntanglementEntropy[WickGreen[in, kk], kk]
 
 (* for normal models *)
 WickEntanglementEntropy[grn_?MatrixQ, kk:{__Integer}] :=

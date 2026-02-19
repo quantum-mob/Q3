@@ -10,7 +10,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { KetChop, KetDrop, KetUpdate, KetRule, KetTrim, KetVerify,
   KetFactor, KetPurge, KetSort,
   KetSpecies, KetRegulate, KetMutate,
-  KetCanonical };
+  KetCanonicalize };
 
 { KetNorm, KetNormSquare, KetNormalize, KetOrthogonalize }; 
 
@@ -480,33 +480,33 @@ theSpinForm[Ket[aa_Association], qq:{(_?QubitQ | _?SpinQ)...}, kk_List] :=
 (**** </SpinForm> ****)
 
 
-(**** <KetCanonical> ****)
+(**** <KetCanonicalize> ****)
 
-KetCanonical::usage = "KetCanonical[expr] returns the canonical form of ket expression expr.\nKetCanonical[expr, a] rescales the coefficients so that the first non-zero coefficient is normalized to a."
+KetCanonicalize::usage = "KetCanonicalize[expr] returns the canonical form of ket expression expr.\nKetCanonicalize[expr, a] rescales the coefficients so that the first non-zero coefficient is normalized to a."
 
-SetAttributes[KetCanonical, Listable]
+SetAttributes[KetCanonicalize, Listable]
 
-KetCanonical[State[v_?VectorQ, rest__], a___] :=
+KetCanonicalize[State[v_?VectorQ, rest__], a___] :=
   State[CanonicalizeVector[v, a], rest]
 
-KetCanonical[expr_?fKetQ, a___] := Elaborate[
-  KetCanonical[StateForm @ expr, a]
+KetCanonicalize[expr_?fKetQ, a___] := Elaborate[
+  KetCanonicalize[StateForm @ expr, a]
 ]
 
-KetCanonical[expr_?fPauliKetQ, a___] := ExpressionFor[
+KetCanonicalize[expr_?fPauliKetQ, a___] := ExpressionFor[
   CanonicalizeVector[Matrix @ expr, a]
 ]
 
-KetCanonical[expr_, a___] := Module[
+KetCanonicalize[expr_, a___] := Module[
   { vv = Cases[Garner @ {expr}, _Ket, Infinity],
     cc },
   cc = Coefficient[expr, vv];
   CanonicalizeVector[cc, a] . vv
 ] /; Not @ FreeQ[expr, _Ket]
 
-KetCanonical[any_, ___] = any
+KetCanonicalize[any_, ___] = any
 
-(**** </KetCanonical> ****)
+(**** </KetCanonicalize> ****)
 
 
 (**** <XBasisForm> ****)
