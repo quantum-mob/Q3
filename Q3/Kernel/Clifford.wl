@@ -685,7 +685,7 @@ randomPauliMeasurementLayer[n_Integer, {pp_?VectorQ, q_?NumericQ}] :=
 (* pp = {{p1, p2, p3}, {q1, q2, q3}} *)
 randomPauliMeasurementLayer[n_Integer, pp_?MatrixQ] := Module[
   { kk, mm },
-  kk = RandomPick[Range @ n, Total @ Flatten @ pp];
+  kk = RandomPick[Total[Flatten @ pp] -> n];
   mm = Flatten @ Join[
     PauliMeasurement /@ {{1, 0}, {1, 1}, {0, 1}},
     PauliDecoherence /@ {{1, 0}, {1, 1}, {0, 1}}

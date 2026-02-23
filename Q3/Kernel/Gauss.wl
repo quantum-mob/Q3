@@ -249,7 +249,6 @@ AntisymmetricMatrix[v_?VectorQ] := With[
 
 
 (**** <ArrayShort> ****)
-
 ArrayShort::usage = "ArrayShort[mat] displays matrix mat in a short form."
 
 Options[ArrayShort] = {
@@ -259,47 +258,42 @@ Options[ArrayShort] = {
 ArrayShort[mat_SymmetrizedArray, rest___] := ArrayShort[Normal @ mat, rest]
 (* NOTE: SymmetrizedArray does not support Span properly. *)
 
-ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := With[
-  { n = OptionValue["Size"] },
-  If[ Length[vec] > n,
-    Append[Take[vec, n], "\[Ellipsis]"],
-    Take[vec, UpTo @ n]
-  ] // Normal[#, SparseArray]& // Chop // IntegerChop
+ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
+  { new },
+  new = theArrayShort[vec, FilterRules[{opts}, ArrayShort]];
+  Normal[new, SparseArray]
 ]
 
 ArrayShort[mat_?ArrayQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
-  { dim = Flatten @ { OptionValue["Size"] },
-    hdr = OptionValue[TableHeadings],
-    spc },
-  dim = PadRight[dim, ArrayDepth @ mat, dim];
-  spc = Thread @ {0, Boole @ Thread[Dimensions[mat] > dim]};
-  dim = Thread[1 ;; UpTo /@ dim];
+  { hdr = OptionValue[TableHeadings],
+    new },
   If[hdr === Automatic, hdr = Range /@ Take[Dimensions @ mat, 2]];
-  If[ Length[hdr] == 2,
-    hdr = ArrayPad[
-      hdr[[Sequence @@ Take[dim, 2]]],
-      Take[spc, 2],
-      "\[Ellipsis]"
-    ]
-  ];
-  MatrixForm[
-    ArrayPad[
-      IntegerChop @ Chop @ mat[[Sequence @@ dim]],
-      spc, 
-      "\[Ellipsis]"
-    ],
+  hdr = theArrayShort[hdr, FilterRules[{opts}, Options @ ArrayShort]];
+  new = theArrayShort[mat, FilterRules[{opts}, Options @ ArrayShort]];
+  MatrixForm[ new,
     TableHeadings -> hdr,
     FilterRules[{opts}, Options[MatrixForm]]
   ]
 ]
 
-ArrayShort[any_] = any
+theArrayShort[arr_?ArrayQ, opts:OptionsPattern[ArrayShort]] := Module[
+  { dim = Flatten @ { OptionValue["Size"] },
+    spc },
+  dim = PadRight[dim, ArrayDepth @ arr, dim];
+  spc = Thread @ {0, Boole @ Thread[Dimensions[arr] > dim]};
+  dim = Thread[1 ;; UpTo /@ dim];
+  ArrayPad[
+    IntegerChop @ Chop @ arr[[Sequence @@ dim]],
+    spc, 
+    "\[Ellipsis]"
+  ]
+]
 
+ArrayShort[any_] = any
 (**** </ArrayShort> ****)
 
 
 (**** <MatrixObject> ****)
-
 MatrixObject::usage = "MatrixObject[{{m11,m12,\[Ellipsis]}, {m21,m22,\[Ellipsis]}, \[Ellipsis]}] represents a dense matrix.\nIt may be useful to display a dense matrix in a compact form."
 
 MatrixObject /:
@@ -320,7 +314,6 @@ MatrixObject[{}] = {}
 MatrixObject[mat_SparseArray?MatrixQ] = mat
 
 MatrixObject[mat_SymmetrizedArray?MatrixQ] = mat
-
 (**** </MatrixObject> ****)
 
 
@@ -367,12 +360,10 @@ blockEigensystem[bs_?MatrixQ, mat_?MatrixQ] := Module[
   {val, vec}
 ]
 (* The basis bs is assumed to be orthonormal. *)
-
 (**** </CommonEigensystem> ****)
 
 
 (**** <HouseholderMatrix> ****)
-
 HouseholderMatrix::usage = "HouseholderMatrix[v] returns the Householder reflection matrix h such that v.h is proportional to {1, 0, 0, \[Ellipsis]} for a vector v.\nHouseholderMatrix[v, k] returns the Householder reflection matrix that transforms {vk, \[Ellipsis], vn} with the earlier components {v1, \[Ellipsis], v(k-1)} kept intact.\nHouseholderMatrix[m], for a rectangular matrix m, returns the Householder matrix h such that m.h is a lower triangular matrix with all diagonal elements are real positive."
 
 HouseholderMatrix::numeric = "`` is supposed to be a numeric vector."
@@ -430,12 +421,10 @@ theHouseholderMatrix[vv_?MatrixQ] := Module[
   ww = CirclePlus[{{1}}, theHouseholderMatrix @ ww]; 
   Dot[uu, ww]
 ]
-
 (**** </HouseholderMatrix> ****)
 
 
 (***** <TridiagonalToeplitzMatrix> ****)
-
 TridiagonalToeplitzMatrix::usage = "TridiagonalToeplitzMatrix[n, {a,b,c}] represents an n\[Times]n tridiagonal Toeplitz matrix with a, b, and c on the lower-diagonal, main-diagonal, and upper-diagonal, respectively. See also Noschese et al. (Numerical Linear Algebra with Applications, 2012) and Jocobi matrices.\nEigenvalues[TridiagonalToeplitzMatrix[n,{a,b,c}]] gives the eigenvalues.\nEigenvalues[TridiagonalToeplitzMatrix[n,{a,b,c}]] gives the normalized eigenvectors."
 
 TridiagonalToeplitzMatrix /:
@@ -463,12 +452,10 @@ Eigensystem @ TridiagonalToeplitzMatrix[n_Integer, {a_, b_, c_}] := {
   Eigenvalues @ TridiagonalToeplitzMatrix[n, {a, b, c}],
   Eigenvectors @ TridiagonalToeplitzMatrix[n, {a, b, c}]
  }
-
 (***** </TridiagonalToeplitzMatrix> ****)
 
 
 (**** <CSDecomposition> ****)
-
 CSDecomposition::usage = "CSDecomposition[u, p] returns the cosine-sine (CS) decomposition of unitary matrix u."
 (* NOTE: We follow the convention in Horn (2013a). *)
 
@@ -521,12 +508,10 @@ CSDecomposition[mat_?MatrixQ, p_Integer] := Module[
   True
 ]
 (* NOTE: SelectFirst[..., test->property] used here is introduced in Mathematica v14.2. *)
-
 (**** </CSDecomposition> ****)
 
 
 (**** <PhaseDecomposition> ****)
-
 PhaseDecomposition::usage = "PhaseDecomposition[u] gives the phase decomposition of unitary matrix u as a list {v, d, w} of special orthogonal matrices v and w and digonal matrix d."
 (* SEE: Tucci (2005) *)
 
@@ -568,12 +553,10 @@ PhaseDecomposition[uu_?MatrixQ] := Module[
   {vv, dd, ww}
 ]
 (* TODO: The current implementation uses a heuristic algorithm for CommonEigensystem. More sophisticated algorithm is needed for large matrices. *)
-
 (**** </PhaseDecomposition> ****)
 
 
 (**** <TensorFlatten> ****)
-
 TensorFlatten::usage = "TensorFlatten[tsr] flattens out the given tensor tsr to a matrix and returns it.\nIt generalizes ArrayFlatten and operates on tensors of any rank.\nTo flatten out a tensor to a vector (rather than a matrix), just use Flatten."
 
 TensorFlatten[t_?TensorQ] := With[
@@ -582,12 +565,10 @@ TensorFlatten[t_?TensorQ] := With[
  ]
 
 TensorFlatten[c:Except[_List]] := c
-
 (**** </TensorFlatten> ****)
 
 
 (**** <Tensorize> ****)
-
 Tensorize::usage = "Tensorize[m] gives the tensor product form of the matrix m. The matrix m is supposed to be the matrix representation of a multi-qubit system and hence a square matrix of size 2^n, where n is the number of qubits.\nTensorize[v] gives the tensor product form of the vector v. The vector v is supposed to be the matrix representation of a multi-qubit system and hence a column vector of size 2^n.\nTensorize[m, dim] and Tensor[v, dim] are the same but for general subsystems of dimensions dim.\nNotice the difference between TensorProduct and CircleTimes. While TensorProduct preseves the tensor product form (in blocks), CircleTimes gives the matrix direct product with component blocks flattened. In fact, CircleTimes = Flatten @ TensorProdut for vectors and CircleTimes = TensorFlatten @ TensorProduct for matrices. Tensorize recovers the tensor product form from the matrix direct product form."
 
 Tensorize::badShape = "The dimenion(s) `` of the matrix is (are) not compatible with the subdimensions ``."
@@ -636,12 +617,10 @@ Tensorize[v_?VectorQ] := Module[
    ];
   ArrayReshape[v, ConstantArray[2,n]]
  ]
-
 (**** </Tensorize> ****)
 
 
 (**** <ArrayPermute> ****)
-
 ArrayPermute::usage = "ArrayPermute[array, perm, n] permutes the elements of array by perm at level n.\nArrayPermute[array, perm, {n1, n2, \[Ellipsis]}] performs the permutation perm at levels n1, n2, \[Ellipsis].\nArrayPermute[array, perm] or ArrayPermute[array, perm, All] is equivalent to ArrayPermute[array, perm, Range[ArrayDepth @ array]].\nThe argument perm may be specified by using TwoWayRules, Cycles or a permutation list (see PermutationList)."
 
 SyntaxInformation[ArrayPermute] = {"ArgumentsPattern" -> {_, _, _.}}
@@ -670,7 +649,6 @@ ArrayPermute[obj_, ss:{{(_TwoWayRule|_Cycles|_?PermutationListQ), _Integer}..}] 
 
 
 (* structured array: symmetry preserved *)
-
 ArrayPermute[obj_SymmetrizedArray, cc_Cycles, nn:{__Integer}] :=
   Module[
     { dd = Most[ArrayRules @ obj] },
@@ -680,7 +658,6 @@ ArrayPermute[obj_SymmetrizedArray, cc_Cycles, nn:{__Integer}] :=
 
 
 (* structured array: symmetry not preserved *)
-
 ArrayPermute[obj:(_SymmetrizedArray|_SparseArray), cc_Cycles, nn:{__Integer}] := 
   Module[
     { dd = Most[ArrayRules @ obj] },
@@ -690,7 +667,6 @@ ArrayPermute[obj:(_SymmetrizedArray|_SparseArray), cc_Cycles, nn:{__Integer}] :=
 
 
 (* dense array *)
-
 ArrayPermute[obj_List?ArrayQ, spec_, All] :=
   ArrayPermute[obj, spec, Range[ArrayDepth @ obj]]
 
@@ -702,31 +678,26 @@ ArrayPermute[obj_List?ArrayQ, cc_Cycles, nn:{__Integer}] :=
 
 
 (* tool *)
-
 xchPositions[pp:{{__}..}, cc_Cycles, nn:{__Integer}] := Module[
   { rr = PermutationList[cc] },
   rr = DeleteCases[Thread[Sort[rr] -> rr], Rule[i_, i_]];
   Transpose @ MapAt[ReplaceAll[rr], Transpose @ pp, List /@ nn]
 ]
-
 (**** </ArrayPermute> ****)
 
 
 (**** <RandomVector> ****)
-
 RandomVector::usage = "RandomVector[n] generates an n-dimensional random normalized complex vector distributed uniformly in terms of the Haar measure.\nRandomVector[] is equivalent to RandomVector[2]."
 
 RandomVector[] := RandomVector[2]
 
 RandomVector[n_Integer?Positive] := Flatten[RandomIsometric @ {n, 1}]
-
 (**** </RandomVector> ****)
 
 
 (**** <RandomIsometric> ****)
-
-(* See Mezzadri (2007) *)
 RandomIsometric::usage = "RandomIsometric[{m, n}] generates an m\[Times]n random isometric matrix uniformly distributed in the terms of the Haar measure."
+(* See Mezzadri (2007) *)
 
 RandomIsometric::dim = "The first dimenion of an isometric matrix cannot be smaller than the second dimension."
 
@@ -743,12 +714,10 @@ RandomIsometric[{m_Integer?Positive, n_Integer?Positive}] := Module[
   Topple[qq] . rr
 ] /; If[TrueQ[m > n], True, Message[RandomIsometric::dim]; False]
 (* NOTE: For m ~ n, RandomUnitary[m][[;;, ;;n]] is faster since RandomUnitary is based on the built-in function CircularUnitaryMatrixDistribution. *)
-
 (**** </RandomIsometric> ****)
 
 
 (**** <RandomMatrix> ****)
-
 RandomMatrix::usage = "RandomMatrix[\[Sigma], {m, n}] returns an m\[Times]n random complex matrix with independent identically distributed real and imaginary matrix elements that follow NormalDistribution[0,\[Sigma]].\nRandomMatrix[\[Sigma], n] is equivalent to RandomMatrix[\[Sigma], {n, n}].\nRandomMatrix[nspec] is equivalent to RandomMatrix[1, nspec].\nRandomMatrix[] is equivalent to RandomMatrix[1, {2, 2}]."
 
 RandomMatrix[] := RandomMatrix[1, {2, 2}]
@@ -848,7 +817,6 @@ RandomUnitarySymplectic[] := RandomUnitarySymplectic[1]
 
 RandomUnitarySymplectic[n_Integer?Positive] :=
   RandomVariate[CircularQuaternionMatrixDistribution @ n]
-
 (**** </RandomMatrix> ****)
 
 

@@ -23,6 +23,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { BravyiOdds, BravyiKernel };
 { BravyiDampingOperator, BravyiDampingConstant };
 
+{ BravyiFlop, RandomBravyiFlop };
 { BravyiElements, BravyiCoefficients };
 
 { BravyiGreen, BravyiOccupation,
@@ -462,10 +463,13 @@ RandomBravyiCovariance[n_Integer] := Module[
 (**** <Canonicalize> ****)
 Canonicalize::usage = "Canonicalize[obj] converts named object obj into a canonical form.\nFor BravyiJump,  BravyiMeasurement, WickJump and WickMeasurement, each vector is renormalized by the largest norm of all vectors."
 
-Canonicalize[BravyiJump[mat_?MatrixQ, rest___]] := With[
-  { max = Sqrt[2]*Max[Norm /@ mat] },
+Canonicalize[BravyiJump[jmp:{__?patternBravyiJumpQ}, rest___]] := Module[
+  { mat = Keys[jmp],
+    max },
+  max = Sqrt[2]*Max[Norm /@ mat];
   (* NOTE: Notice the factor of Sqrpt[2]. *)
-  BravyiJump[mat/max, rest]
+  mat /= max;
+  BravyiJump[Thread[mat -> Values[jmp]], rest]
 ]
 
 Canonicalize[BravyiMeasurement[mat_?MatrixQ, rest___]] := With[
@@ -790,10 +794,11 @@ BravyiElements[mat_?MatrixQ, cc:{__?MajoranaQ}] :=
 BravyiElements[mat_?MatrixQ, aa:{__?FermionQ}] := 
   Dot[ToDirac /@ mat, Join[aa, Dagger @ aa]]
 
-BravyiElements[
-  (BravyiJump|BravyiMeasurement)[mat_?MatrixQ, ___],
-  spec:({__?MajoranaQ} | {__?FermionQ} )
-] := BravyiElements[mat, spec]
+BravyiElements[jmp_BravyiJump, spec_] :=
+  BravyiElements[Keys @ First @ jmp, spec]
+
+BravyiElements[msr_BravyiMeasurement, spec_] := 
+  BravyiElements[First @ msr, spec]
 (**** </BravyiElements> ****)
 
 
@@ -847,11 +852,14 @@ theBravyiLinearQ[expr_, cc:{__?MajoranaQ}] := TrueQ @ And[
 (**** <BravyiKernel> ****)
 BravyiKernel::usage = "BravyiKernel[vec -> 1] returns {A, B} -> {1, nrm}, where A and B are 2n\[Times]2n real matrices and nrm is the norm square of vec. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] b \[Rho] Dagger[b], where b := Sum[vec[[k]] c[k], {k, 2n}] is a linear combination of bare Majorana modes c[k].\nBravyiKernel[vec -> 2] returns {A, B} -> {-1, nrm}. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], -A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] Dagger[b]**b \[Rho] Dagger[b]**b, where b := Sum[vec[[k]] c[k], {k, 2n}] is a dressed Dirac fermion mode superposed of bare Majorana modes c[k]."
 
+BravyiKernel::dressed = "A vector of coefficients `` cannot describe a proper dressed Dirac fermion mode."
+
+
 BravyiKernel[jmp:{__?patternBravyiJumpQ}] := 
-  Map[BravyiKernel, jmp]
+  Flatten @ Map[BravyiKernel, jmp]
 
-
-BravyiKernel[vec_?VectorQ -> 1] := Module[
+(* L = d *)
+BravyiKernel[vec_?VectorQ -> 0] := Module[
   { nn = NormSquare[vec],
     re = Re[vec],
     im = Im[vec],
@@ -864,24 +872,43 @@ BravyiKernel[vec_?VectorQ -> 1] := Module[
   {aa, bb} -> {1, 2*nn}
 ]
 
+(* L = Dagger[d] *)
+BravyiKernel[vec_?VectorQ -> 1] := 
+  BravyiKernel[Conjugate[vec] -> 0]
 
+(* L = Dagger[d] ** d *)
 BravyiKernel[vec_?VectorQ -> 2] := Module[
   {aa, bb},
   {aa, bb} = theBravyiKernel[vec -> 2];
-  nn = NormSquare[vec];
   {aa, bb} -> {-1, 2*NormSquare[vec]^2} 
   (* NOTE: Here, factor of 2 (instead of 4) since BravyiOdds[v -> 2] do not put the factor of 1/2. *)
+]
+
+(* L = d ** Dagger[d] *)
+BravyiKernel[vec_?VectorQ -> 3] := Module[
+  {aa, bb},
+  {aa, bb} = theBravyiKernel[vec -> 2];
+  {-aa, bb} -> {-1, 2*NormSquare[vec]^2} 
+]
+
+(* both Dagger[d] ** d and d ** Dagger[d] *)
+BravyiKernel[vec_?VectorQ -> 4] := Module[
+  {aa, bb},
+  {aa, bb} = theBravyiKernel[vec -> 2];
+  { {+aa, bb} -> {-1, 2*NormSquare[vec]^2}, 
+    {-aa, bb} -> {-1, 2*NormSquare[vec]^2}
+  }
 ]
 
 theBravyiKernel[vec_?VectorQ -> 2] := Module[
   { n = Length[vec]/2,
     vv = Normalize[N @ vec] / Sqrt[2],
-    xx, yy, aa, bb, nn, uu },
+    xx, yy, aa, bb, uu },
   xx = Re[vv];
   yy = Im[vv];
   (* verify the dressed fermion mode *)
   If[ Not @ AllTrue[{xx . yy, Norm[xx] - Norm[yy]}, ZeroQ],
-    Message[BravyiMeasurement::dressed, vec]
+    Message[BravyiKernel::dressed, vec]
   ];
   (* The Cartan-Dieudonné theorem *)
   {aa, bb} = theBravyiKernel[1, n];
@@ -919,11 +946,10 @@ BravyiOdds[jmp_?patternBravyiJumpQ] :=
 
 (* shortcut *)
 BravyiOdds[jmp:{__?patternBravyiJumpQ}] :=
-  BravyiOdds @ Map[BravyiKernel, jmp];
+  BravyiOdds[BravyiKernel @ jmp];
 
 (* shortcut  *)
-BravyiOdds[jmp_BravyiJump] := 
-  BravyiOdds @ Thread[First[jmp] -> 1]
+BravyiOdds[jmp_BravyiJump] := BravyiOdds[First @ jmp]
 
 (* shortcut *)
 BravyiOdds[map_BravyiMap] := BravyiOdds[First @ map]
@@ -963,16 +989,55 @@ BravyiOdds[{aa_?MatrixQ, bb_?MatrixQ, dd_?MatrixQ} -> nrm_?NumericQ][
 
 
 (**** <BravyiFlop> ****)
-BravyiFlop::usage = "BravyiFlop[vec] represents a single linear combination of Majorana operators."
+BravyiFlop::usage = "BravyiFlop[vec] represents a single linear combination of Majorana operators. BravyiFlop is for heuristic purposes or for tests."
 
-BravyiFlop[jmp_?patternBravyiJumpQ, ___][in_BravyiState] := 
-  First[BravyiOdds[jmp] @ in]
+BravyiFlop /:
+MakeBoxes[jmp:BravyiFlop[spec:{__?patternBravyiJumpQ}, ___], fmt_] := Module[
+  { m = Length[spec], 
+    n = Length @ spec[[1, 1]] },
+  BoxForm`ArrangeSummaryBox[
+    BravyiFlop, jmp, None,
+    { BoxForm`SummaryItem @ { "Modes: ", n },
+      BoxForm`SummaryItem @ { "Operators: ", m }
+    },
+    { BoxForm`SummaryItem @ { "Coefficients: ", MatrixForm @ Map[ArrayShort, spec, {2}] }
+    },
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+]
+
+(* conversion *)
+BravyiFlop[jmp_BravyiJump] := BravyiFlop[First @ jmp]
+
+(* conversion *)
+BravyiFlop[msr_BravyiMeasurement] := 
+  BravyiFlop @ Thread[First[msr] -> 2]
+
+BravyiElements[flop_BravyiFlop, cc:({__?FermionQ|__?MajoranaQ})] := 
+  BravyiElements[Keys @ First @ flop, cc]
+
+
+BravyiFlop[op_?patternBravyiJumpQ][in_BravyiState] :=
+  First[BravyiOdds[op] @ in]
+
+BravyiFlop[ops:{___?patternBravyiJumpQ}][in_BravyiState] :=
+  Fold[#2[#1]&, in, Map[BravyiFlop, ops]]
 (**** </BravyiFlop> ****)
+
+
+RandomBravyiFlop::usage = "RandomBravyiFlop[{k_Integer, n_Integer}] returns BravyiFlop consisting of k linear combinations of n Dirac fermion operators.\nRandomBravyiFlop[n] chooses k randomly from 1 through n."
+
+RandomBravyiFlop[spec_] := Module[
+  { jmp = RandomBravyiJump[spec],
+    msr = RandomBravyiMeasurement[spec] },
+  RandomChoice @ {BravyiFlop @ jmp, BravyiFlop @ msr}
+]
 
 
 patternBravyiJumpQ::usage = "patternBravyiJumpQ[pat] returns True if pat is a pattern of the form v -> k, v is a even-dimensional vector and k = 1 or 2 for linear (dissipative) or quadratic (projective) type, respectively."
 
-patternBravyiJumpQ[_?VectorQ -> (1|2)] = True
+patternBravyiJumpQ[_?VectorQ -> (0|1|2|3|4)] = True
 
 patternBravyiJumpQ[_] = False
 
@@ -989,78 +1054,90 @@ patternBravyiMapQ[_] = False
 (**** <BravyiJump> ****)
 BravyiJump::usage = "BravyiJump[mat] represents a set of quantum jump operators, which are linear combinations of Majorana fermion operators with coefficients given by the elements of complex matrix mat."
 
+BravyiJump::null = "The quantum operation returns the null state."
+
 BravyiJump::odd = "The second dimension of the input matrix `` is odd: ``."
 
 BravyiJump /:
-MakeBoxes[jmp:BravyiJump[mat_?MatrixQ, rest___], fmt_] := Module[
-  {m, n},
-  {m, n} = Dimensions[mat];
+MakeBoxes[jmp:BravyiJump[spec:{___?patternBravyiJumpQ}, rest___], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     BravyiJump, jmp, None,
-    { BoxForm`SummaryItem @ { "Modes: ", n/2 },
-      BoxForm`SummaryItem @ { "Operators: ", m }
+    { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ jmp },
+      BoxForm`SummaryItem @ { "Operators: ", Length @ spec }
     },
-    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ mat }
+    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ jmp }
     },
     fmt,
     "Interpretable" -> Automatic
   ]
-]
+
+Options[BravyiJump] := {
+  "Completion" -> True
+}
+
+(* conversion *)
+(* application: BravyiMonitor *)
+BravyiJump[BravyiMeasurement[msr_?MatrixQ, rest___?OptionQ], OptionsPattern[]] :=
+  BravyiJump[
+    If[ OptionValue["Completion"], 
+      Thread[msr -> 4],
+      Thread[msr -> 2]
+    ],
+    rest
+  ]
+
+BravyiJump[msr_NambuMeasurement, rest___] :=
+  BravyiJump[BravyiMeasurement @ msr, rest]
+
 
 (* conversion *)
 BravyiJump /:
-NambuJump[BravyiJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
-  NambuJump[ToDirac /@ mat, more, opts] /; (* NOT ToDiract @ mat. *)
-  If[ EvenQ[Last @ Dimensions @ mat], True,
-    Message[BravyiJump::odd, ArrayShort @ mat, Dimensions @ mat];
-    False
-]
+NambuJump[BravyiJump[jmp:{__?patternBravyiJumpQ}, opts___?OptionQ], more___?OptionQ] := 
+  Module[
+    { mat = Keys[jmp] },
+    NambuJump[ToDirac /@ mat, more, opts] (* NOT ToDiract @ mat. *)
+  ]
 
 (* conversion *)
 BravyiJump /:
 ToDirac[jmp_BravyiJump] := NambuJump[jmp]
 
-(* canonicalization *)
-BravyiJump[mat_?MatrixQ, opts___?OptionQ] :=
-  BravyiJump[SparseArray @ mat, opts] /; Head[mat] =!= SparseArray
-(* NOTE: In many physical cases, the linear combinations are rather simple. *)
+(* shortcut *)
+BravyiJump[mat_?MatrixQ, rest___] := 
+  BravyiJump[Thread[SparseArray[mat] -> 0], rest]
+(* NOTE: SparseArray since in many physical cases, the linear combinations are rather simple. *)
 
 
 BravyiJump /:
-Normalize[BravyiJump[mat_?MatrixQ, rest___], ___] := Module[
-  { new = Map[Normalize, mat]/Sqrt[2] },
-  (* NOTE: Notice the factor of 1/Sqrt[2]. *)
+Times[z_, BravyiJump[jmp_, rest___]] :=
+  BravyiJump[Thread[z*Keys[jmp] -> Values[jmp]], rest]
+
+
+BravyiJump /:
+Normalize[BravyiJump[jmp_List, rest___]] := Module[
+  { new },
+  new = Map[Normalize, Keys @ jmp]/Sqrt[2];
+  (* NOTE: the factor of 1/Sqrt[2]. *)
+  new = Thread[new -> Values[jmp]];
   BravyiJump[new, rest]
 ]
 
 BravyiJump /:
-MatrixForm[BravyiJump[mm_?MatrixQ, rest___], opts___?OptionQ] :=
-  MatrixForm[mm, opts]
-
-BravyiJump /:
-ArrayShort[BravyiJump[mm_?MatrixQ, rest___], opts___?OptionQ] :=
-  ArrayShort[mm, opts]
-
-
-BravyiJump /:
-Dagger @ BravyiJump[mat_?MatrixQ, rest___] :=
-  BravyiJump[BravyiConjugateReverse @ mat, rest]
-
-BravyiJump /:
-Plus[BravyiJump[a_, any___], BravyiJump[b_, other___]] :=
-  BravyiJump[a + b, any, other]
-
-BravyiJump /:
-Times[z_, BravyiJump[mm_, rest___]] :=
-  BravyiJump[z * mm, rest]
-
-
-BravyiJump /:
-Matrix[jmp:BravyiJump[mat_?MatrixQ, ___]] := Module[
-  { xy = theJordanWignerMajorana[FermionCount @ jmp] },
-  Identity /@ Dot[mat, xy]
-  (* NOTE: Identoity /@ ... to put the results into a list of matrices rather than a single large SparseArray. *)
+ArrayShort[BravyiJump[jmp_List, ___], rest___] := Module[
+  { mat = theArrayShort[Keys @ jmp, rest],
+    flg = theArrayShort[Values @ jmp, rest],
+    sep },
+  sep = theArrayShort[ConstantArray["\[RightArrow]", Length @ jmp], rest];
+  MatrixForm[Transpose @ Join[Transpose @ mat, {sep, flg}], rest]
 ]
+
+BravyiJump /:
+MatrixForm[BravyiJump[jmp_List, ___], rest___] := Module[
+  { sep },
+  sep = ConstantArray["\[RightArrow]", Length @ jmp];
+  MatrixForm[Transpose @ Join[Transpose @ Keys @ jmp, {sep, Values @ jmp}], rest]
+]
+
 
 BravyiJump /:
 Matrix[jmp_BravyiJump, ss:{___?SpeciesQ}] := With[
@@ -1069,8 +1146,35 @@ Matrix[jmp_BravyiJump, ss:{___?SpeciesQ}] := With[
   Map[MatrixEmbed[#, cc, ss]&, mm]
 ]
 
+BravyiJump /:
+Matrix[BravyiJump[jmp_List]] := Map[matBravyiJump, jmp]
+(* Returns the list of the matrices representing the jump operators. *)
 
-BravyiJump /: 
+(* Kraus operator F := d *)
+matBravyiJump[vec_?VectorQ -> 0] := Dot[
+  vec,
+  theJordanWignerMajorana[Length[vec]/2]
+]
+
+(* Kraus operator F := Dagger[d] *)
+matBravyiJump[vec_?VectorQ -> 1] := 
+  ConjugateTranspose @ matBravyiJump[vec -> 0]
+
+
+(* Kraus operator F := Dagger[d] ** d *)
+matBravyiJump[vec_?VectorQ -> 2] := With[
+  { mat = matBravyiJump[vec -> 0] },
+  Dot[ConjugateTranspose @ mat, mat]
+]
+
+(* Kraus operator F := d ** Dagger[d] *)
+matBravyiJump[vec_?VectorQ -> 3] := With[
+  { mat = matBravyiJump[vec -> 0] },
+  Dot[mat, ConjugateTranspose @ mat]
+]
+
+
+BravyiJump /:
 NonCommutativeQ[_BravyiJump] = True
 
 BravyiJump /:
@@ -1079,30 +1183,43 @@ MultiplyKind[_BravyiJump] = Fermion
 BravyiJump /:
 Multiply[pre___, jmp_BravyiJump, ws_BravyiState] := Multiply[pre, jmp @ ws]
 
-BravyiJump[mat_?MatrixQ, ___][in_BravyiState] := (* null state *)
-  BravyiState[{0, Zero[2*FermionCount[in]*{1, 1}]}, Rest @ in] /;
-  BravyiNullQ[in]
-
-BravyiJump[mat_?MatrixQ, ___][in_BravyiState] := BravyiMap[BravyiJump @ mat][in]
+BravyiJump[jmp:{__?patternBravyiJumpQ}, ___][in_BravyiState] := Module[
+  { odds = BravyiOdds[jmp][in] },
+  If[ ArrayZeroQ[Values @ odds],
+    Message[BravyiJump::null];
+    Return[First @ Keys @ odds]
+  ];
+  RandomChoice[Values[odds] -> Keys[odds]]
+]
 (**** </BravyiJump> ****)
 
 
 RandomBravyiJump::usage = "RandomBravyiJump[{k_Integer, n_Integer}] returns BravyiJump consisting of k linear combinations of 2n Majorana operators."
-
-RandomBravyiJump[{k_Integer, n_Integer}, opts___?OptionQ] :=
-  BravyiJump[RandomMatrix @ {k, 2n}, opts]
+(* 
+RandomBravyiJump[{k_Integer, n_Integer}, opts___?OptionQ] := Module[
+  { vv = RandomMatrix[{k, 2*n}],
+    mm = First @ RandomBravyiMeasurement[{k, n}],
+    jmp },
+  jmp = Join[Thread[vv -> 0], Thread[mm -> 2]];
+  jmp = RandomSample[jmp, k];
+  BravyiJump[jmp, opts]
+]
+ *)
+RandomBravyiJump[{k_Integer, n_Integer}, opts___?OptionQ] := Module[
+  { vv = RandomMatrix[{k, 2*n}],
+    jmp },
+  jmp = Thread[vv -> 0];
+  BravyiJump[jmp, opts]
+]
 
 RandomBravyiJump[n_Integer, opts___?OptionQ] :=
-  RandomBravyiJump[{RandomInteger @ {1, n}, n}, opts]
+  RandomBravyiJump[{RandomInteger[{1, n}], n}, opts]
 
 
 (**** <BravyiMeasurement> ****)
 BravyiMeasurement::usage = "BravyiMeasurement[k] represents a measurement of the occupation number on fermion mode k.\nBravyiMeasurement[{k1, k2, \[Ellipsis]}] represents a sequence of measurements on fermion modes {k1, k2, \[Ellipsis]}.\nBravyiMeasurement[mat] represents a sequence of measurement on the dressed Dirac fermion modes b[i] := Sum[m[[i,j]] c[j], {j, 2n}] expressed in terms of Majorana fermion modes c[k].\nBravyiMeasurement[spec][ws] simulates the measurement on Bravyi state ws, and returns the post-measurement state."
 
 BravyiMeasurement::odd = "The second dimension of the input matrix `` is odd: ``."
-
-BravyiMeasurement::dressed = "A vector of coefficients `` cannot describe a proper dressed Dirac fermion mode."
-
 
 BravyiMeasurement /:
 MakeBoxes[msr:BravyiMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
@@ -1184,23 +1301,14 @@ BravyiMeasurement[{}, ___][in_BravyiState] = in
 
 (* Dagger[d] ** d, where d := Sum[v[[j]] c[j], {j, 2n}] and c[k] are bare Majorana modes. *)
 BravyiMeasurement[mat_?MatrixQ, ___][in_BravyiState] :=
-  Fold[theBravyiMeasurement, in, Identity /@ mat]
+  Fold[msrBravyi, in, Identity /@ mat]
 
-theBravyiMeasurement[in:BravyiState[{_, cvr_?MatrixQ}, rest___], vec_?VectorQ] := Module[
-  { vv = Normalize[N @ vec]/Sqrt[2], (* just in case *)
-    aa, bb, id, mm, pp, new },
-  {aa, bb} = theBravyiKernel[vv -> 2];
-  id = One[Dimensions @ cvr];
-  mm = id - aa. cvr; (* D = -A *)
-  pp = Quiet[Sqrt[Det @ mm]/2, {Det::luc}];
-  If[ RandomReal[] < Re[pp], (* Re[...] to quickly handle numerical errors. *)
-    $MeasurementOut[vec] = 1,
-    $MeasurementOut[vec] = 0;
-    aa *= -1;
-    mm = id - aa . cvr (* D = -A *)
-  ];
-  new = Quiet[aa + bb . cvr . Inverse[mm] . Transpose[bb], {Inverse::luc}];
-  BravyiState[{1, new}, rest]
+msrBravyi[in:BravyiState[{_, _?MatrixQ}, rest___], vec_?VectorQ] := Module[
+  { odd = BravyiOdds[vec -> 4] @ in },
+  out = RandomChoice[Values[odd] -> Keys[odd]];
+  val = First @ FirstPosition[Keys @ odd, out];
+  $MeasurementOut[vec] = Mod[val, 2];
+  Return[out]
 ]
 
 
@@ -1250,7 +1358,7 @@ RandomBravyiMeasurement[n_Integer] :=
 
 
 (**** <BravyiMap> ****)
-BravyiMap::usage = "BravyiMap[mat] or BravyiMap[mat, True] represents a projective quantum operation \[Rho] \[RightTeeArrow] Sum[p[i]**\[Rho]**p[i], {i, m}] + Sum[(1-p[i])**\[Rho]**(1-p[i]), {j, m}], where m is the number of rows in mat, p[i]:=Dagger[b[i]]**b[i] are projection operators, and b[i]:=Sum[mat[[i,j]] c[j], {j, 2n}] are the dressed Dirac fermion modes consisting of n bare Majorana fermion modes c[j].\nBravyiMap[mat, False] represents \[Rho] \[RightTeeArrow] Sum[p[i]**\[Rho]**p[i], {i, m}]."
+BravyiMap::usage = "BravyiMap[map] represents a fermionic Gaussian linear map with the Kraus operators are either linear or quadratic combinations of bare fermion modes."
 
 BravyiMap::null = "The quantum operation returns the null state."
 
@@ -1266,30 +1374,28 @@ MakeBoxes[map:BravyiMap[krn:{__?patternBravyiMapQ}], fmt_] :=
     "Interpretable" -> Automatic
   ]
 
+Options[BravyiMap] = {
+  "Completion" -> True
+}
+
 (* conversion *)
 BravyiMap[jmp_BravyiJump, ___] :=
-  BravyiMap @ BravyiKernel @ Thread[First[jmp] -> 1];
+  BravyiMap[BravyiKernel @ First @ jmp];
 
 (* conversion *)
-BravyiMap[msr_BravyiMeasurement] := BravyiMap[msr, False]
-
-BravyiMap[msr_BravyiMeasurement, False] :=
-  BravyiMap @ BravyiKernel @ Thread[First[msr] -> 2]
-
-BravyiMap[msr_BravyiMeasurement, True] :=
-  BravyiMap @ BravyiKernel @ Riffle[
-    Thread[Conjugate[First @ msr] -> 2], (* outcome: 0*)
-    Thread[First[msr] -> 2] (* outcome: 1 *)
-  ]
+BravyiMap[msr_BravyiMeasurement, OptionsPattern[]] := Module[
+  { jmp },
+  jmp = If[ OptionValue["Completion"],
+    Thread[First[msr] -> 4],
+    Thread[First[msr] -> 2]
+  ];
+  BravyiMap[BravyiKernel @ jmp]
+]
 
 (* On BravyiState *)
-BravyiMap[spec_, flag_][BravyiState[{_?NumericQ, cvr_?MatrixQ}, rest___]] := 
-  BravyiState[{1, BravyiMap[spec, flag] @ cvr}, rest]
-
-
 BravyiMap[map:{__?patternBravyiMapQ}][in_BravyiState] := Module[
   { odds = BravyiOdds[map][in] },
-  If[ ArrayZeroQ[Values @ odds], 
+  If[ ArrayZeroQ[Values @ odds],
     Message[BravyiMap::null];
     Return[First @ Keys @ odds]
   ];
@@ -1483,7 +1589,7 @@ RandomBravyiCircuit[{uu_BravyiUnitary, p_?NumericQ}, k_Integer] :=
   Module[
     { n = FermionCount[uu],
       mm },
-    mm = RandomPick[Range @ n, p, k];
+    mm = RandomPick[p -> n, k];
     BravyiCircuit @ Riffle[
       ConstantArray[uu, k],
       Map[BravyiMeasurement[#, n]&, mm]
@@ -1502,7 +1608,7 @@ RandomBravyiCircuit[{ham_BravyiHermitian, pdf_, p_?NumericQ}, k_Integer] :=
       tt, uu, mm },
     tt = RandomVariate[pdf, k];
     uu = Map[BravyiUnitary[MatrixExp[hh*#]]&, tt];
-    mm = RandomPick[Range @ n, p, k];
+    mm = RandomPick[p -> n, k];
     mm = Map[BravyiMeasurement[#, n]&, mm];
     BravyiCircuit @ Riffle[uu, mm]
   ]
@@ -1660,10 +1766,10 @@ BravyiScramblingCircuit[op_, {uu_BravyiUnitary, p_?NumericQ}, k_Integer] :=
       vv, ma, mb },
     vv = ConstantArray[uu, k];
     ma = If[ ZeroQ @ p, Nothing, 
-      Table[BravyiMeasurement[RandomPick[Range @ n, p], n], k]
+      Table[BravyiMeasurement[RandomPick[p -> n], n], k]
     ];
     mb = If[ ZeroQ @ p, Nothing, 
-      Table[BravyiMeasurement[RandomPick[Range @ n, p], n], k]
+      Table[BravyiMeasurement[RandomPick[p -> n], n], k]
     ];
     BravyiCircuit @ Join[
       Riffle[vv, ma], {op},
@@ -1685,10 +1791,10 @@ BravyiScramblingCircuit[op_, {ham_BravyiHermitian, pdf_, p_?NumericQ}, k_Integer
     uu = Map[BravyiUnitary[MatrixExp[hh*#]]&, tt];
     dg = Reverse[Dagger @ uu];
     ma = If[ ZeroQ @ p, Nothing, 
-      Table[BravyiMeasurement[RandomPick[Range @ n, p], n], k]
+      Table[BravyiMeasurement[RandomPick[p -> n], n], k]
     ];
     mb = If[ ZeroQ @ p, Nothing, 
-      Table[BravyiMeasurement[RandomPick[Range @ n, p], n], k]
+      Table[BravyiMeasurement[RandomPick[p -> n], n], k]
     ];
     BravyiCircuit @ Join[
       Riffle[uu, ma], {op},
@@ -1740,19 +1846,28 @@ BravyiScramblingSimulate[in_, {a_Integer, b_Integer},
 BravyiScramblingSimulate[in_, ua_BravyiUnitary, rest__] :=
   BravyiScramblingSimulate[in, {ua, theBravyiZ[1, FermionCount @ ua]}, rest]
 
+BravyiScramblingSimulate[in_, ab_, spec_, dep_Integer, rest___] :=
+  BravyiScramblingSimulate[in, ab, spec, {dep, 1}, rest]
+
 BravyiScramblingSimulate[
   in_BravyiState,
   {ua_BravyiUnitary, ub_BravyiUnitary},
   spec:$RandomBravyiCircuitPatterns,
-  depth_Integer,
+  {depth_Integer, ds_Integer},
   OptionsPattern[]
 ] := 
 Module[
-  { qc, n, m },
+  { progress = k = 0,
+    kk, qc, n, m },
+  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   {n, m} = doAssureList[OptionValue["Samples"], 2];
-  Mean @ Flatten @ Table[
-    qc = BravyiScramblingCircuit[ua, spec, depth];
-    Table[theBravyiOTOC[in, ub, qc], m],
+  kk = N[m * n * (1 + Floor[depth / ds])];
+  Mean @ Table[
+    Table[
+      qc = BravyiScramblingCircuit[ua, spec, t];
+      Mean @ Table[progress = ++k/kk; theBravyiOTOC[in, ub, qc], m],
+      {t, 0, depth, ds}
+    ],
     n
   ]
 ]
@@ -1918,30 +2033,64 @@ RandomBravyiNonunitary[n_Integer, opts___?OptionQ] :=
 (**** <BravyiDampingOperator> ****)
 BravyiDampingOperator::usage = "BravyiDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form."
 
-BravyiDampingOperator[BravyiJump[jmp_?MatrixQ, ___]] := With[
-  { mat = ConjugateTranspose[jmp] . jmp },
-  { BravyiHermitian @ Re[ -I*(mat - Transpose[mat]) ],
-    Re @ Tr[mat]/2 }
+BravyiDampingOperator[jmp_BravyiJump] :=
+  BravyiDampingOperator[First @ jmp]
+
+BravyiDampingOperator[msr_BravyiMeasurement] :=
+  BravyiDampingOperator[BravyiJump[msr, "Completion" -> False]]
+
+BravyiDampingOperator[jmp:{___?patternBravyiJumpQ}] := Module[
+  { cls, res },
+  cls = Merge[Reverse /@ jmp, SparseArray];
+  res = Total @ KeyValueMap[theBravyiDampingOperator, cls];
+  MapAt[BravyiHermitian, res, 1]
 ]
 
-BravyiDampingOperator[BravyiMeasurement[msr_?MatrixQ, ___]] := Module[
+theBravyiDampingOperator[0, jmp_?MatrixQ] := With[
+  { mat = ConjugateTranspose[jmp] . jmp },
+  Re @ { -I*(mat - Transpose[mat]), Tr[mat]/2 }
+]
+
+theBravyiDampingOperator[1, mat_] := 
+  BravyiDampingOperator[0, Conjugate @ mat]
+
+theBravyiDampingOperator[2, msr_?MatrixQ] := Module[
   { nrm, mat },
   nrm = 2*Map[NormSquare, msr];
   mat = Dot[ConjugateTranspose @ msr, nrm*msr];
-  { BravyiHermitian @ Re[ -I*(mat - Transpose[mat]) ],
-    Re @ Tr[mat]/2 }
+  Re @ { -I*(mat - Transpose[mat]), Tr[mat]/2 }
 ]
+
+theBravyiDampingOperator[3, msr_?MatrixQ] :=
+  theBravyiDampingOperator[2, Conjugate @ msr]
+
+theBravyiDampingOperator[4, msr_?MatrixQ] :=
+  { One[Dimensions @ msr], theBravyiDampingConstant[4, msr] }
 (**** </BravyiDampingOperator> ****)
 
 
 (**** <BravyiDampingConstant> ****)
 BravyiDampingConstant::usage = "BravyiDampingConstant[jmp] returns the damping constantcorresponds to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form."
 
-BravyiDampingConstant[BravyiJump[jmp_?MatrixQ, ___]] := 
+BravyiDampingConstant[jmp_BravyiJump] := 
+  BravyiDampingConstant[First @ jmp]
+
+BravyiDampingConstant[jmp:{___?patternBravyiJumpQ}] := Module[
+  { cls, res },
+  cls = Merge[Reverse /@ jmp, SparseArray];
+  res = Total @ KeyValueMap[theBravyiDampingConstant, cls];
+  MapAt[BravyiHermitian, res, 1]
+]
+
+
+theBravyiDampingConstant[0|1, jmp_?MatrixQ] := 
   Total @ Map[NormSquare, jmp] / 2
 
-BravyiDampingConstant[BravyiMeasurement[msr_?MatrixQ, ___]] :=
+theBravyiDampingConstant[2|3, msr_?MatrixQ] :=
   Total[ Map[NormSquare, msr]^2 ]
+
+theBravyiDampingConstant[4, msr_?MatrixQ] :=
+  2 * theBravyiDampingConstant[2, msr]
 (**** </BravyiDampingConstant> ****)
 
 
@@ -1972,7 +2121,7 @@ BravyiSimulate[in_BravyiState, ham_BravyiHermitian, jmp_NambuJump, rest__] :=
   BravyiSimulate[in, ham, BravyiJump @ jmp, rest]
 
 BravyiSimulate[in_BravyiState, ham_BravyiHermitian, msr_NambuMeasurement, rest__] :=
-  BravyiSimulate[in, ham, BravyiMeasurement @ msr, rest]
+  BravyiSimulate[in, ham, BravyiJump[msr, "Completion" -> False], rest]
 
 BravyiSimulate[in_, ham_, jmp_, {tau_?NumericQ, dt_?NumericQ}, opts___?OptionQ] :=
   BravyiSimulate[in, ham, jmp, {tau, dt, All}, opts]
@@ -1980,7 +2129,7 @@ BravyiSimulate[in_, ham_, jmp_, {tau_?NumericQ, dt_?NumericQ}, opts___?OptionQ] 
 BravyiSimulate[
   in_BravyiState, 
   ham_BravyiHermitian, 
-  jmp:(_BravyiJump | _BravyiMeasurement),
+  jmp_BravyiJump,
   {tau_?NumericQ, dt_?NumericQ, ds:(_Integer|All)}, 
   opts:OptionsPattern[]
 ] := Module[
@@ -1989,7 +2138,7 @@ BravyiSimulate[
     non, map, data, more },
     
   non = BravyiNonunitary[{ham, jmp}];
-  map = BravyiMap[jmp, False];
+  map = BravyiMap[jmp];
 
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
@@ -2052,7 +2201,7 @@ Options[BravyiMonitor] = {
 BravyiMonitor[in_BravyiState, ham_?MatrixQ, rest___] :=
   BravyiMonitor[in, BravyiHermitian @ ham, rest] /;
   If[ BravyiHermitianQ[ham], True,
-    Message[BravyiNonitor::mat]; False
+    Message[BravyiMonitor::mat]; False
   ]
 
 BravyiMonitor[in_BravyiState, ham_?NambuMatrixQ, rest___] :=
@@ -2100,7 +2249,7 @@ BravyiMonitor[
   (* probability to governed by the non-Hermitian Hamiltonian dynamics *)
   prb = Exp[-2*gmm*dt];
   uni = BravyiUnitary @ MatrixExp[N @ First[ham]*dt];
-  map = BravyiMap[msr, True];
+  map = BravyiMap[msr, "Completion" -> True];
   (* simulation *)
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
@@ -2115,7 +2264,7 @@ BravyiMonitor[
   ];
   Return[data]
 ] /; If[ MatrixQ[First @ ham, NumericQ], True,
-  Message[BravyiNonitor::num, First @ ham];
+  Message[BravyiMonitor::num, First @ ham];
   False
 ]
 
@@ -2157,9 +2306,6 @@ BravyiLindbladSolve[ham_NambuHermitian, rest__] :=
 BravyiLindbladSolve[ham_BravyiHermitian, jmp_NambuJump, rest__] :=
   BravyiLindbladSolve[ham, BravyiJump @ jmp, rest]
 
-BravyiLindbladSolve[ham_BravyiHermitian, msr_NambuMeasurement, rest__] :=
-  BravyiLindbladSolve[ham, BravyiMeasurement @ msr, rest]
-
 
 BravyiLindbladSolve[ham_, jmp_, in_, t_?NumericQ, rest___] :=
   First @ BravyiLindbladSolve[ham, jmp, in, {{t}}, rest]
@@ -2178,9 +2324,6 @@ BravyiLindbladSolve[ham_BravyiHermitian, jmp_, in_BravyiState, rest__] :=
 BravyiLindbladSolve[ham_BravyiHermitian, jmp_, in_BravyiCovariance, rest__] :=
   Map[BravyiCovariance, BravyiLindbladSolve[ham, jmp, First @ in, rest]]
 
-BravyiLindbladSolve[ham_, msr_BravyiMeasurement, cvr_, {tt_?VectorQ}] :=
- BravyiLindbladSolve[ham, msr, cvr, {tt}, False]
-
 
 (* quantum jump operators are linear in fermion operators *)
 BravyiLindbladSolve[
@@ -2189,61 +2332,61 @@ BravyiLindbladSolve[
   cvr_?MatrixQ,
   {tt_?VectorQ}
 ] := Module[
-  { xx, vp, vv },
-  {xx, vp} = BravyiLindbladKernel[ham, jmp];
-  vv = cvr - vp;
-  xx = Map[MatrixExp[xx*#]&, tt];
-  vv = Map[vp + # . vv . Transpose[#]&, xx];
+  { xx, yy, vv },
+  {xx, yy} = BravyiLyapunov[ham, jmp];
+  vv = LyapunovFunction[xx, yy][cvr, tt];
   Map[(# - Transpose[#])/2&, vv]
-]
+] /; ContainsOnly[Values @ First @ jmp, {0, 1}]
 
-(* quantum jump operators are projection operators *)
+(* quantum jump operators are projection operators without completion *)
 BravyiLindbladSolve[
   ham_BravyiHermitian,
-  msr_BravyiMeasurement,
+  jmp_BravyiJump,
   cvr_?MatrixQ,
-  {tt_?VectorQ},
-  flag:(True | False)
+  {tt_?VectorQ}
 ] := Module[
   { vec = UpperTriangular[cvr, 1],
     spr, out },
-  spr = BravyiLindbladKernel[ham, msr, flag];
+  spr = linBravyiSuperMatrix[ham, jmp];
   out = Map[MatrixExp[spr*#] . vec&, tt];
   Map[AntisymmetricMatrix, out]
-]
+] /; ContainsOnly[Values @ First @ jmp, {2, 3}]
+
+(* quantum jump operators are projection operators with completion *)
+BravyiLindbladSolve[
+  ham_BravyiHermitian,
+  jmp_BravyiJump,
+  cvr_?MatrixQ,
+  {tt_?VectorQ}
+] := Module[
+  { vec = UpperTriangular[cvr, 1],
+    spr, out },
+  spr = linBravyiSuperMatrix[ham, Power[2, 1/4] * jmp];
+  out = Map[MatrixExp[spr*#] . vec&, tt];
+  Map[AntisymmetricMatrix, out]
+] /; ContainsOnly[Values @ First @ jmp, {4}]
 
 
-BravyiLindbladKernel::usage = "BravyiLindbladKernel[ham, jmp] returns a pair {krn, sol}, where krn is the kernel of the vectorized equation for the Majorana covariance matrix and sol is a stationary solution.\nBravyiLindbladKernel[ham, msr] or BravyiLindbladKernel[ham, msr, flag] returns krn."
+BravyiLyapunov::usage = "BravyiLyapunov[ham, jmp] returns a pair {X, Y} of matrics for the Lyapunov equation D[G[t], t] == X.G + G.ConjugateTranspose[X] + Y."
 
-BravyiLindbladKernel[ham_NambuHermitian, jmp_] :=
-  BravyiLindbladKernel[BravyiHermitian @ ham, jmp]
-
-BravyiLindbladKernel[ham_, jmp_NambuJump] :=
-  BravyiLindbladKernel[ham, BravyiJump @ jmp]
-
-BravyiLindbladKernel[ham_, msr_NambuMeasurement] :=
-  BravyiLindbladKernel[ham, BravyiMeasurement @ msr]
-
-
-(* BravyiJump *)
-BravyiLindbladKernel[ham_BravyiHermitian, jmp_BravyiJump] := Module[
-  { mm = First[jmp],
+BravyiLyapunov[ham_BravyiHermitian, jmp_BravyiJump] := Module[
+  { mm = Keys[First @ jmp],
     xx, yy },
   mm = Transpose[mm] . Conjugate[mm];
-  xx = First[ham] - (mm + Conjugate[mm]) // Re;
-  yy = -2I*(mm - Conjugate[mm]) // Re;
-  mm = LyapunovSolve[xx, -yy];
-  {xx, (mm - Transpose[mm])/2}
+  xx = First[ham] - (mm + Conjugate[mm]);
+  yy = -2I*(mm - Conjugate[mm]);
+  Re @ {xx, yy}
 ]
-(* NOTE: Matrix ham is supposed to be a even-dimensional real anti-symmetric matrix. *)
-(* NOTE: If ham is 2nx2n, then jmp must be mx2n. *)
+(* NOTE: Matrix ham is supposed to be an even-dimensional real anti-symmetric matrix. *)
+(* NOTE: If ham is 2nx2n, then jmp must be (essentially) mx2n. *)
+
+linBravyiSuperMatrix::usage = "linBravyiSuperMatrix[ham, msr] returns the SuperMatrix of the Lindbladian for the Majorana covariance matrix."
 
 (* BravyiMeasurement *)
-BravyiLindbladKernel[ham_BravyiHermitian, msr_BravyiMeasurement] := Module[
-  { yy = First[msr],
-    mm = First[msr],
-    nn = 2*Map[NormSquare, First @ msr],
-    xx, id, kk, ll, m, n },
+linBravyiSuperMatrix[ham_BravyiHermitian, jmp_BravyiJump] := Module[
+  { mm = yy = Keys[First @ jmp],
+    nn, xx, id, kk, ll, m, n },
+  nn = 2 * Map[NormSquare, mm];
   mm = Dot[Transpose @ mm, nn*Conjugate[mm]];
   xx = First[ham] - (mm + Conjugate[mm]) // Re;
   (* Constructs the SuperMatrix. *)
@@ -2264,12 +2407,6 @@ BravyiLindbladKernel[ham_BravyiHermitian, msr_BravyiMeasurement] := Module[
   yy = -4*Transpose[yy] . yy;
   Re[xx + yy]
 ]
-
-BravyiLindbladKernel[ham_BravyiHermitian, msr_BravyiMeasurement, False] :=
-  BravyiLindbladKernel[ham, msr]
-
-BravyiLindbladKernel[ham_BravyiHermitian, msr_BravyiMeasurement, True] :=
-  BravyiLindbladKernel[ham, Surd[2, 4]*msr]
 (**** </BravyiLindbladSolve> ****)
 
 
@@ -2306,7 +2443,7 @@ BravyiSteadyState[
   cvr_?MatrixQ
 ] := Module[
   { xx, vp, vv },
-  {xx, vp} = BravyiLindbladKernel[ham, jmp];
+  {xx, vp} = linBravyiSuperMatrix[ham, jmp];
   If[ZeroQ[Det @ xx], Message[BravyiSteadyState::more]];
   Return[vp]
 ]
@@ -2320,7 +2457,7 @@ BravyiSteadyState[
 ] := Module[
   { in = UpperTriangular[cvr, 1],
     spr, vec, out },
-  spr = BravyiLindbladKernel[ham, msr, flag];
+  spr = linBravyiSuperMatrix[ham, msr, flag];
   vec = Eigenvectors[N @ spr];
   out = Inverse[Transpose @ vec] . in;
   out = Last[vec] * Last[out];
@@ -2340,7 +2477,7 @@ FermionCount[BravyiUnitary[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
 
 FermionCount[BravyiNonunitary[{ham_?MatrixQ, _?MatrixQ, _}, ___]] := Last[Dimensions @ ham]/2
 
-FermionCount[BravyiJump[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
+FermionCount[BravyiJump[jmp:{__?patternBravyiJumpQ}, ___]] := Last[Dimensions @ Keys @ jmp]/2
 
 FermionCount[BravyiCircuit[gg_List, ___?OptionQ]] := Max[FermionCount /@ gg]
 (**** </FermionCount> ****)

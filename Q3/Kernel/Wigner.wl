@@ -976,7 +976,6 @@ NineJSymbol[
   {j1_,  j2_,  j12_},
   {j3_,  j4_,  j34_},
   {j13_, j24_, j_} ] := Simplify @ Sum[
-    Echo["Here?"];
     (-1)^(2*g)*(2*g+1) *
       SixJSymbol[{j1,j2,j12}, {j34,j,g}] *
       SixJSymbol[{j3,j4,j34}, {j2,g,j24}] *

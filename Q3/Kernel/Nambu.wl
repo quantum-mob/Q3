@@ -576,9 +576,10 @@ Normalize[NambuJump[mat_?MatrixQ, rest___], ___] :=
 
 (* conversion *)
 NambuJump /:
-BravyiJump[NambuJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
-  BravyiJump[ToMajorana /@ mat, more, opts] /; (* NOT ToMajorana @ mat. *)
-  If[ EvenQ[Last @ Dimensions @ mat], True,
+BravyiJump[NambuJump[mat_?MatrixQ, opts___?OptionQ], more___?OptionQ] := With[
+  { new = Map[ToMajorana, mat] },  (* NOT ToMajorana @ mat. *)
+  BravyiJump[Thread[new -> 0], more, opts]
+] /; If[ EvenQ[Last @ Dimensions @ mat], True,
     Message[NambuJump::odd, ArrayShort @ mat, Dimensions @ mat];
     False
   ]

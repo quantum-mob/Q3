@@ -52,9 +52,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-
 (**** <PartitionInto> ****)
-
 PartitionInto::usage = "PartitionInto[list, k] partitions list into k non-overlapping sublists of equal length.\nPartitionInto[list, {k1, k2, \[Ellipsis]}] partitions a nested list into k1\[Times]k2\[Times]\[Ellipsis] blocks of equal size.\nPartitionInto[list, kspec, rest] is like Partition[list, nspec, rest] with the nspec determined by kspec so that nspec species the lengths of sublists whereas kspec specifies the number of sublists."
 
 PartitionInto::depth = Partition::pdep
@@ -70,14 +68,12 @@ PartitionInto[list_, kk:{__Integer}, rest___] := Module[
     Message[PartitionInto::depth, Length @ kk, Dimensions @ list];
     False
   ]
-
 (**** <PartitionInto> ****)
 
 
-(**** <Pairings> ****)
-
 Unpaired::usage = "Unpaired[a] represents an unpaired element a."
 
+(**** <Pairings> ****)
 Pairings::usage = "Pairings[list] generates all possible pairings of the elements in list.\nSee also ListPartitions and the built-in function Groupings."
 
 Pairings::odd = "There are an odd number of elements in ``."
@@ -106,12 +102,10 @@ Pairings[a_List] := Module[
 pushPair[a:{_, _}, b:{_, _}] := {{a, b}}
 
 pushPair[a:{_, _}, b_List] := Map[Join[{a}, #]&, Pairings[b]]
-
 (**** </Pairings> ****)
 
 
 (**** <OrderedPartitions> ****)
-
 OrderedPartitions::usage = "OrderedPartitions[n, spec] returns an inversely sorted list of ordered partitions of integer n, with the same spec as for IntegerPartitions."
 
 OrderedPartitions[n_Integer] := 
@@ -134,7 +128,6 @@ OrderedPartitions[n_Integer, kk:{_Integer, _Integer}, ss:{___Integer}] :=
 theOrderedPartitions[pp:{___List}] :=
   ReverseSort @ Catenate[Permutations /@ pp]
 (* NOTE: ReverseSort is necessary for consistency with BosonBasis and BosonBasisChange. *)
-
 (**** <OrderedPartitions> ****)
 
 
@@ -145,7 +138,6 @@ ContentVector[content : {___Integer}] :=
 
 
 (**** <Choices> ****)
-
 Choices::usage = "Choices[list] gives a list of all possible choices of varying numbers of elements from list.\nChoices[list, n] gives all possible choices of at most n elements.\nChoices[list, {n}] gives the choices of exactly n elements.\nChoices[list, {m, n}] gives all possible choices containing between m and n elements.\nChoices[p,spec] chooses from {1, 2, \[Ellipsis]}.\nChoices[p, nspec, {r1, r2, \[Ellipsis], rs}] allows any element to appear only r1, r2, \[Ellipsis], or rs times in each choice.\nUnlike Subsets, it allows to choose duplicate elements.\nSee also: Subsets, Tuples."
 
 Choices[p_Integer?Positive] := Choices[p, {0, p}]
@@ -179,12 +171,10 @@ Choices[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer})] :=
 
 Choices[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer}), kk:{___Integer}] :=
   Map[aa[[#]]&, Choices[Length @ aa, spec, kk]]
-
 (**** </Choices> ****)
 
 
 (**** <ChoiceCount> ****)
-
 ChoiceCount::usage = "ChoiceCount[spec] returns the number of choices for spec, i.e., Length[Choices[spec]]."
 
 ChoiceCount[p_Integer?Positive] := ChoiceCount[p, {0, p}]
@@ -218,7 +208,6 @@ ChoiceCount[aa_List] := ChoiceCount[Length @ aa, {0, Length @ aa}]
 
 ChoiceCount[aa_List, spec:(_Integer | {_Integer} | {_Integer,_Integer})] :=
   ChoiceCount[Length @ aa, spec]
-
 (**** </ChoiceCount> ****)
 
 
@@ -282,7 +271,6 @@ SignatureTo[a_, b_] :=
 
 
 (**** <Successive> ****)
-
 Successive::usage = "Successive[f, {x1,x2,x3,\[Ellipsis]}] returns {f[x1,x2], f[x2,x3], \[Ellipsis]}.\nSuccessive[f, list, n] applies f on n successive elements of list.\nSuccessive[f, list, 2] is equivalent to Successive[f,list].\nSuccessive[f, list, 1] is equivalent to Map[f, list].\nSuccessive[f, list, n, d] applies f on n succesive elements and jumps d elements to repeat."
 
 Successive[f_, a_List] := f @@@ Transpose @ {Most @ a, Rest @ a}
@@ -297,12 +285,10 @@ Successive[f_, a_List, n_Integer?Positive, d_Integer?Positive] :=
     Drop[Transpose @ NestList[RotateLeft, a, n-1], 1-n],
     Span[1, All, d]
   ]
-
 (**** </Successive> ****)
 
 
 (**** <Subtractions> ****)
-
 Subtractions::usage = "Subtractions[list] returns the successive differences of elements in list with 0 padded at the beginning."
 (* TODO: Define Subtractions in parallel with Differences. *)
 
@@ -316,7 +302,6 @@ Subtractions[data : (_List | _?ArrayQ), off_, n_Integer, s_Integer?Positive] := 
   { ker = Join[{1}, ConstantArray[0, s-1], {-1}] },
   Nest[ListConvolve[ker, #, 1, off]&, data, n]
 ]
-
 (**** </Subtractions> ****)
 
 
@@ -371,7 +356,6 @@ TrimRight[a_?VectorQ, n_Integer : 0] := Module[
 
 
 (**** <KeyGroupBy> ****)
-
 KeyGroupBy::usage = "KeyGroupBy[assoc, f] gives an Association that groups key$j->value$j into different Associations associated with distinct keys f[key$j].\nKeyGroupBy[assoc, f->g] groups key$j->g[value$j] according to f[key$j].\nKeyGroupBy[assoc, f->g, post] applies function post to Associations that are generated.\nKeyGroupBy[assoc, f, post] is equivalent to KeyGroupBy[assoc, f->Indeity, post]."
 
 KeyGroupBy[assoc_Association, f_] := 
@@ -387,12 +371,10 @@ KeyGroupBy[assoc_Association, f_ -> g_, post_] := Merge[
   KeyValueMap[(f[#1] -> Rule[#1, g[#2]])&, assoc],
   post @* Association
 ]
-
 (**** </KeyGroupBy> ****)
 
 
 (**** <KeyReplace> ****)
-
 KeyReplace::usage = "KeyReplace[assoc, {key1 -> new1, key2 -> new2, ...}] replace key1 with new1, key2 with new2, ... in association assoc.\nKeyReplace[{key1 -> val1, key2 -> val2, ...}, {key1 -> new1, key2 -> new2, ...}] is similar but returns a list rather than an association."
 
 KeyReplace[any_, rr:(_Rule|_RuleDelayed)] :=
@@ -403,12 +385,10 @@ KeyReplace[aa_Association, kk:{(_Rule|_RuleDelayed)...}] :=
 
 KeyReplace[aa:{___Rule}, kk:{(_Rule|_RuleDelayed)...}] :=
   Thread @ Rule[Keys[aa] /. kk, Values @ aa]
-
 (**** </KeyReplace> ****)
 
 
 (**** <ReplaceRules> ****)
-
 ReplaceRules::usage = "ReplaceRules[{key1 -> val1, key2 -> val2, \[Ellipsis]}, key -> val] replaces the value corresponding to key by val.\nSee also FilterRules."
 
 ReplaceRules[opts_List?OptionQ, key_ -> val_] :=
@@ -442,19 +422,16 @@ ReplaceRulesBy[head_[args___, opts___?OptionQ], key_ -> fun_] :=
       head[args, new, opts]
     ]
   ]
-
 (**** </ReplaceRules> ****)
 
 
 (**** <CheckJoin> ****)
-
 CheckJoin::usage = "CheckJoin[assc1,assc2,\[Ellipsis]] checks whether any key appears multiple times before joining associations assc1, assc2, \[Ellipsis]."
 
 CheckJoin::dupl = "Duplicate keys in ``; keeping the first value for each of the duplicate keys."
 
 CheckJoin[aa__Association] := Merge[ {aa},
   (If[Length[#] > 1, Message[CheckJoin::dupl, {aa}]]; First[#])& ]
-
 (**** </CheckJoin> ****)
 
 
@@ -519,7 +496,6 @@ PseudoDivide[x_, y_] := x/y
 
 
 (**** <ZeroQ> ****)
-
 ZeroQ::usage = "ZeroQ[x] returns True if x approximately equals to zero.\nZeroQ[x, \[Delta]] returns True if |x| \[LessEqual] \[Delta]."
 
 ZeroQ::neg = "Tolerence specification `` must be a non-negative number."
@@ -534,12 +510,10 @@ ZeroQ[x_, del_] := (
   Message[ZeroQ::neg, del];
   ZeroQ[x, Abs @ del]
 )
-
 (**** </ZeroQ> ****)
 
 
 (**** <ArrayZeroQ> ****)
-
 ArrayZeroQ::usage = "ArrayZeroQ[tsr] returns True if all elements of array tsr approximately equal to zero.\nArrayZeroQ[tsr, \[Delta]] returns True if |x| \[LessEqual] \[Delta] for all elements x of tsr."
 
 ArrayZeroQ::neg = "Tolerence specification `` must be a non-negative number."
@@ -562,24 +536,20 @@ ArrayZeroQ[tsr_?ArrayQ, del_?Negative] := (
 ArrayZeroQ[_] = False
 
 ArrayZeroQ[_, _] = False
-
 (**** </ArrayZeroQ> ****)
 
 
 (**** <CountsFor> ****)
-
 CountsFor::usage = "CountsFor[list, {k1,k2,\[Ellipsis]}] gives an association whose keys are k1, k2, \[Ellipsis], and whose values are the number of times those keys appear in list.\nCountsFor[{k1,k2,\[Ellipsis]}] represents the operator form of CountsFor that can be applied to a list.\nCounts is almost the same as Counts, but keys are specified explicitly."
 
 CountsFor[var_List][obj_List] := CountsFor[obj, var]
 
 CountsFor[obj_List, var_List] := 
  Join[AssociationThread[var -> 0], Counts @ obj]
-
 (**** </CountsFor> ****)
 
 
 (**** <IntegerBoole> ****)
-
 ParityBoole::usage = "ParityBoole[n] converts a parity to the corresponidng binary digit, i.e., returns 0 if n is 1 and 1 if it is -1."
 
 ParityBoole::int = "`` is not 1 nor -1."
@@ -595,23 +565,19 @@ ParityBoole[n_] := (1-n)/2 /; If[
 ParityBoole[+1] = 0
 
 ParityBoole[-1] = 1
-
 (**** </IntegerBoole> ****)
 
 
 (**** <IntegerParity> ****)
-
 IntegerParity::usage = "IntegerParity[n] returns 1 if n is an even integer and -1 if n is odd."
 
 SetAttributes[IntegerParity, Listable]
 
 IntegerParity[n_Integer] := 1 - 2*Mod[n, 2]
-
 (**** </IntegerParity> ****)
 
 
 (**** <IntegerPowerQ> ****)
-
 IntegerPowerQ::usage = "IntegerPowerQ[b, n] returns True if n is an integer power of b.\nIntegerPower[n] is equivalent to IntegerPower[10, n]."
 
 SetAttributes[IntegerPowerQ, Listable]
@@ -622,14 +588,12 @@ IntegerPowerQ[b_Integer, n_Integer] := IntegerQ[Log[b, n]]
 (* NOTE: This is 3 times faster than using IntegerQ[Log2[n]], and is twice faster than using DigitCount[n,b,1]==1. *)
 
 IntegerPowerQ[_, _] = False
-
 (**** </IntegerPowerQ> ****)
 
 
 (**** <IntegerChop> ****)
-(* NOTE: The idea is borrowed from IntegerChop by Ed Pegg Jr. published in the Wolfram Function Repository. *)
-
 IntegerChop::usage = "IntegerChop[z] rounds z to an integer if z is close to an integer.\nIntegerChop[z, del] compares z and integers with tolerance del."
+(* NOTE: The idea is borrowed from IntegerChop by Ed Pegg Jr. published in the Wolfram Function Repository. *)
 
 SetAttributes[IntegerChop, Listable];
 
@@ -648,34 +612,38 @@ IntegerChop[x_?NumericQ, del_?Positive] := With[
 ]
 
 IntegerChop[any_] := Map[IntegerChop, any]
-
 (**** </IntegerChop> ****)
 
 
 (**** <RandomPick> ****)
+RandomPick::usage = "RandomPick[p -> {e1, e2, \[Ellipsis]}] picks each element ek with probability p independent of others and returns the list of picked elements.\nRandomPick[{p1, p2, \[Ellipsis]} -> {e1, e2, \[Ellipsis]}] applies different probabilities for individual elements.\nRandomPick[p -> n] is equivalent to RandomPick[p -> Range[n]].\nRandomPick[spec, m] repeats m times and returns the collection of lists."
 
-RandomPick::usage = "RandomPick[{e1, e2, \[Ellipsis]}, p] picks each element ek with probability p and returns the list of picked elements.\nRandomPick[{e1, e2, \[Ellipsis]}, p, n] repeats n times and returns the collected elements."
+RandomPick::icmp = "Incompatible lists in ``."
 
-RandomPick[list_List, p_?NumericQ, n_Integer] :=
-  Table[RandomPick[list, p], n]
+RandomPick[spec_Rule, m_Integer] := Table[RandomPick @ spec, m]
 
-RandomPick[list_List, p_?NumericQ] :=
-  Pick[list, Thread[RandomReal[{0, 1}, Length @ list] < p]]
+RandomPick[p_?NumericQ -> n_Integer] :=
+  RandomPick[Table[p, n] -> Range[n]]
 
+RandomPick[p_?NumericQ -> elm:(_List|_SparseArray)] :=
+  RandomPick[ConstantArray[p, Length @ elm] -> elm]
+
+RandomPick[prb:(_List|_SparseArray) -> elm:(_List|_SparseArray)] :=
+  Pick[elm, Thread[RandomReal[{0, 1}, Length @ prb] < prb]] /;
+  If[ Length[prb] == Length[elm], True,
+    Message[RandomPick::icmp, prb -> elm]; False
+  ]
 (**** </RandomPick> ****)
 
 
 (**** <IntervalSize> ****)
-
 IntervalSize::usage = "IntervalSize[interval] returns the total size of interval."
 
 IntervalSize[int_Interval] := -Total @ MapApply[Subtract, List @@ int]
-
 (**** </IntervalSize> ****)
 
 
 (**** <Chain> ****)
-
 Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting a, b, \[Ellipsis] consecutively."
 
 Chain[] = {}
@@ -709,7 +677,6 @@ Chain[aa_List] := Chain @@ aa
 ChainBy::usage = "ChainBy[a, b, \[Ellipsis], func] constructs a chain of links connecting a, b, \[Ellipsis] consecutively with each link created by means of func."
 
 ChainBy[args___, func_] := func @@@ Chain[args]
-
 (**** </Chain> ****)
 
 
@@ -751,7 +718,6 @@ GraphPivot[g_, {v_, w_}, opts___?OptionQ] := Module[
 
 
 (**** <Bead> ****)
-
 Bead::usage = "Bead[pt] or Bead[{pt1, pt2, \[Ellipsis]}] is a shortcut to render bead-like small spheres of a small scaled radius Scaled[0.01].\nBead[spec] is equvalent to Sphere[spec, Scaled[0.01]].\nBead[spec, r] is equivalent to Sphere[spec, r].\nBead has been motivated by Tube."
 
 Bead[pnt:{_, _, _}, r_:Scaled[0.01]] := Sphere[pnt, r]
@@ -764,7 +730,6 @@ Bead[Point[spec:(_?VectorQ|_?MatrixQ)], r_:Scaled[0.01]] := Bead[spec, r]
 Bead[Line[spec_?MatrixQ], r_:Scaled[0.01]] := Bead[spec, r]
 
 Bead[Line[spec:{__?MatrixQ}], r_:Scaled[0.01]] := Map[Bead[#, r]&, spec]
-
 (**** </Bead> ****)
 
 

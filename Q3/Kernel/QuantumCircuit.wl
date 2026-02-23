@@ -1427,7 +1427,7 @@ RandomQuantumCircuit[{p_?NumericQ, t_Integer}, ss:{___?QubitQ}] := Prepend[
 randomMeasurementLayer::usage = "randomMeasurementLayer[p,{s1,s2,\[Ellipsis]}] generates a layer of single-qubit measurements in the computational basis on qubits {s1,s2,\[Ellipsis]} each selected randomly with probability p.";
 
 randomMeasurementLayer[p_?NumericQ, ss : {___?QubitQ}] := Module[
-  { zz = RandomPick[ss, p] },
+  { zz = RandomPick[p -> ss] },
   zz = Through[zz[3]];
   Measurement[zz]
 ]

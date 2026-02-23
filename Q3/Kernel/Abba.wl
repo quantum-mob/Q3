@@ -5,7 +5,7 @@ BeginPackage["QuantumMob`Q3`"]
 
 { Q3General };
 
-{ Q3Info, Q3CheckUpdate, Q3Assure, Q3Purge };
+{ Q3Info, Q3CheckUpdate, Q3Assure, Q3Purge, Q3Reload };
 
 Q3::summary = "A symbolic quantum simulation framework on quantum information systems, quantum many-body systems, and quantum spin systems. First released to the public in 2020.";
 
@@ -30,8 +30,8 @@ Q3General::changed = "The patterns for the arguments sequence of `1` have been c
 
 Q3General::angle = "An angle should come first in the sequence of arguments for ``. Effective since Q3 v1.2.0."
 
-(**** <Q3Info> ****)
 
+(**** <Q3Info> ****)
 Q3Info::usage = "Q3Info[] prints the information about the Q3 release and versions of packages included in it."
 
 Q3Info[] := Module[
@@ -53,7 +53,6 @@ Q3Info[] := Module[
 
   StringJoin["Q3 v", pac["Version"], " ", Q3::summary]
 ]
-
 (**** </Q3Info> ****)
 
 
@@ -76,7 +75,6 @@ Q3RemoteRelease[] := Module[
 
 
 (***** <Paclet Server> ****)
-
 $serverURL = "https://github.com/quantum-mob/PacletRepository/raw/main"
 
 serverRegisteredQ[url_:$serverURL] := Module[
@@ -99,12 +97,10 @@ versionNumber[ver_String] := With[
   { new = StringSplit[ver, "."] },
   If[AllTrue[new, DigitQ], ToExpression @ new, ver]
 ]
-
 (***** </Paclet Server> ****)
 
 
 (***** <Q3Assure> ****)
-
 Q3Assure::usage = "Q3Assure[version] checks whether Q3 has the specified version or later."
 
 Q3Assure[version_?StringQ] := With[
@@ -115,12 +111,10 @@ Q3Assure[version_?StringQ] := With[
     If[FailureQ @ Q3Update[], $Failed, Get["QuantumMob`Q3`"]]
   ]
 ]
-
 (***** </Q3Assure> ****)
 
 
 (***** <Q3CheckUpdate> ****)
-
 Q3CheckUpdate::usage = "Q3CheckUpdate[] checks if there is a newer release of Q3 in the GitHub repository."
 
 Q3CheckUpdate::fresh = "You are using the latest release v`` of Q3."
@@ -141,7 +135,6 @@ Q3CheckUpdate[] := Module[
     Q3Update[]
   ]
 ]
-
 (***** </Q3CheckUpdate> ****)
 
 
@@ -156,7 +149,6 @@ Q3Update[opts___?OptionQ] := (
 
 
 (***** <Q3Purge> ****)
-
 Q3Purge::ussage = "Q3Purge[] uninstalls all but the lastest version of Q3."
 
 Q3Purge::noQ3 = "Q3 is not found."
@@ -176,9 +168,15 @@ Q3Purge[] := Module[
   ];
   PacletUninstall[Rest @ pacs]
 ]
-
 (***** </Q3Purge> ****)
 
+
+Q3Reload::usage = "Q3Reload[] reload the Q3."
+
+Q3Reload[] := (
+  NotebookDelete[EvaluationCell[]];
+  Get["QuantumMob`Q3`"]
+)
 
 End[]
 

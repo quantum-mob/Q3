@@ -1,5 +1,12 @@
 # Release Notes
 
+## 4.5.2
+
+- Improved: RandomWickMeasurement, RandomWickUnitary, RandomWickNonunitary, RandomWickCircuit, RandomWickCircuitSimulate
+- Improved: WickScramblingCircuit, WickScramblingSimulate 
+- Improved: BravyiJump, BravyiKernel, BravyiMap
+- Improved: ArrayShort, RandomPick
+
 ## 4.5.1
 
 - Removed: BravyiOperator, RandomBravyiOperator, NambuOperator, RandomNambuOperator, BravyiJumpOdds, BravyiMeasurementOdds, BravryiMapOdds, BravyiFlopKernel, BravyiMeasurementKernel, BravyiMapKernel

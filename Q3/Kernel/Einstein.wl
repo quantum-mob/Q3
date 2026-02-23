@@ -292,10 +292,32 @@ BravyiMeasurement[kk:{__Integer}][in:BravyiState[{fac_?NumericQ, cvr_?MatrixQ}, 
 
 (**** <changed> ****)
 
-(* 2026-01-23 *)
+WickScramblingCircuit[op_, {ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] := (
+  Message[Q3General::changed, "WickScramblingCircuit",
+    "This argumens pattern is now deprecated: use the WickScramblingCircuit[op, {ham -> pdf, p -> n}, k] form. 2026-02-21 v4.5.2"
+  ];
+  WickScramblingCircuit[op, {ham -> pdf, p -> FermionCount[ham]}, k]    
+)
+
+RandomWickCircuit[{ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] := (
+  Message[Q3General::changed, "RandomWickCircuit",
+    "This argumens pattern is now deprecated: use the RandomWickCircuit[{ham -> pdf, p -> n}, k] form. 2026-02-21 v4.5.2"
+  ];
+  RandomWickCircuit[{ham -> pdf, p -> FermionCount[ham]}, k]  
+)
+
+
+RandomPick[list_List, p_?NumericQ, rest___] := (
+  Message[Q3General::changed, "RandomPick",
+    "The arguments syntax has been changed: use p -> {e1, e2, \[Ellipsis]} or {p1, p2, \[Ellipsis]} -> {e1, e2, \[Ellipsis]}. 2026-02-20 v4.5.2"
+  ];
+  RandomPick[p -> list, rest]
+)
+
+(*  *)
 RandomCliffordCircuit[in:(_Ket | _CliffordState | "Random"), vol_List, rest__] := (
   Message[Q3General::changed, "RandomCliffordCircuit",
-    "RandomCliffordCircuit does not take an input state; put it in RandomCliffordCircuitSimulate."];
+    "RandomCliffordCircuit does not take an input state; put it in RandomCliffordCircuitSimulate. 2026-01-23 v4.4.2"];
   RandomCliffordCircuit[vol, rest]
 )
 

@@ -269,11 +269,62 @@ ParseGate[WickUnitary[u_, cc:{__?FermionQ}, rest___]] :=
 (**** </WickUnitary> ****)
 
 
+(**** <RandomWickUnitary> ****)
+RandomWickUnitary::usage = "RandomWickUnitary[n] returns a uniformly distributed random Wick unitary on n fermion modes.\nRandomWickUnitary[ham, {t1, t2}] chooses an evolution time \[Tau] uniformly distributed in the interval {t1, t2} and returns exp(-\[ImaginaryI]*\[Tau]*ham)."
+
 RandomWickUnitary[n_Integer, rest___] :=
   WickUnitary[RandomUnitary @ n, rest]
 
 RandomWickUnitary[kk:{__Integer}, rest___] :=
   WickUnitary[RandomUnitary @ Length @ kk, kk, rest]
+
+RandomWickUnitary[ham_WickHermitian -> any_, rest___] :=
+  RandomWickUnitary[First[ham] -> any, rest]
+
+(* uniform distribution of evolution time *)
+RandomWickUnitary[ham_?MatrixQ -> tt:{_?NumericQ, _?NumericQ}, rest___] :=
+  RandomWickUnitary[ham -> UniformDistribution @ tt, rest]
+
+RandomWickUnitary[ham_?MatrixQ -> "Uniform", rest___] := With[
+  { max = Max[Abs @ ham] },
+  RandomWickUnitary[ham -> {0, N[2*Pi*FermionCount[ham]/max]}, rest]
+]
+
+(* exponential distribution of evolution time *)
+(* P(\tau) = Exp[-n\gamma\tau] *)
+(* NOTE: Alternating unitary and measurement layers, where the unitary layer has exponential distribution of evolution time and the measurement layer picks the modes with probabiliyt p := 1/n, the random circuit may simulate the continuous monitoring with strength \gamma. *)
+RandomWickUnitary[ham_?MatrixQ -> gmm_?NumericQ, rest___] := Module[
+  { n = FermionCount[ham] },
+  RandomWickUnitary[ham -> ExponentialDistribution[n*gmm], rest]
+]
+
+RandomWickUnitary[ham_?MatrixQ -> "Exponential", rest___] :=
+  RandomWickUnitary[ham -> 1, rest]
+
+(* arbitrary distribution of evolution time *)
+RandomWickUnitary[ham_?MatrixQ -> pdf_, rest___] :=
+  Module[
+    { tau = RandomVariate[pdf] },
+    WickUnitary[MatrixExp[-I*tau*ham], rest]
+  ] /; MatrixQ[ham, NumericQ]
+
+
+randWickUnitaryQ::usage = "randWickUnitaryQ[pat] returns True if pat is a valid arguments pattern of RandomWickUnitary, or False otherwise."
+
+randWickUnitaryQ[ham_WickHermitian -> any_] :=
+  randWickUnitaryQ[First[ham] -> any]
+
+randWickUnitaryQ[_?MatrixQ -> _Symbol[___]] = True
+
+randWickUnitaryQ[_?MatrixQ -> 
+  Alternatives[
+    "Uniform", {_?NumericQ, _?NumericQ}, 
+    "Exponential", _?NumericQ]
+] = True
+
+randWickUnitaryQ[_] = False
+(**** </RandomWickUnitary> ****)
+
 
 (**** <WickHermitian> ****)
 WickHermitian::usage = "WickHermitian[m] represents a quadractic Hermitian operator (\[CapitalSigma]ij Dagger[ai] mij ajj, where m is a Hermitian matrix."
@@ -364,10 +415,9 @@ WickOdds[vec_?VectorQ -> 0][WickState[trs_?MatrixQ, rest___]] := Module[
 ]
 
 
-(* creator on fully occupied state *)
-WickOdds[vec_?VectorQ -> 1|3][WickState[trs_?MatrixQ, rest___]] := 
-  Rule[WickState[{Null, Length @ vec}, rest], 0] /; (* the null state *)
-  Length[trs] == Length[vec]
+(* creator on the fully occupied state *)
+WickOdds[vec_?VectorQ -> 1|3][in:WickState[_?SquareMatrixQ, ___]] := 
+  Rule[WickState[{Null, FermionCount @ in}, rest], 0] (* the null state *)
 
 (* creator on the vacuuum state *)
 WickOdds[vec_?VectorQ -> 1][WickState[{0, _Integer}, rest___]] := Rule[
@@ -387,19 +437,28 @@ WickOdds[vec_?VectorQ -> 1][WickState[trs_?MatrixQ, rest___]] := Module[
 ]
 
 
+(* Dagger[d]**d on the fully occupied state; the global phase factor is ignore *)
+WickOdds[vec_?VectorQ -> 2][in:WickState[_?SquareMatrixQ, ___]] :=
+  Rule[in, NormSquare[vec]^2]
+
 (* Dagger[d]**d on Wick state *)
 WickOdds[vec_?VectorQ -> 2][WickState[trs_?MatrixQ, rest___]] := Module[
-  { ovr = Dot[vec, ConjugateTranspose @ trs],
+  { ovr = Dot[vec, N @ ConjugateTranspose @ trs],
     hhd, new, rmd },
   hhd = HouseholderMatrix[ovr];
   new = Rest[ConjugateTranspose[hhd] . trs];
   new = Prepend[new, vec];
-  {new, rmd} = QRDecomposition[N @ ConjugateTranspose @ new];
+  {new, rmd} = QRDecomposition[ConjugateTranspose @ new];
   Rule[
     WickState[new, rest],
     NormSquare[ovr] * AbsSquare[Whole @ Diagonal @ rmd]
   ]
 ]
+(* NOTE: The above is equivalent to the following, but is twice faster for large systems. *)
+(* 
+WickOdds[vec_?VectorQ -> 2][in_WickState] := 
+  WickOdds[vec -> 1] @ WickOdds[vec -> 0] @ in 
+  *)
 
 
 (* d**Dagger[d] on the vacuuum state *)
@@ -411,15 +470,19 @@ WickOdds[vec_?VectorQ -> 3][WickState[trs_?MatrixQ, rest___]] := Module[
   { new = Prepend[trs, vec], 
     rmd, ovr, prb },
   {new, rmd} = QRDecomposition[N @ ConjugateTranspose @ new];
-  prb = AbsSquare[Whole @ Diagonal @ rmd];
-  If[ ZeroQ[prb], (* null state *)
-    Return @ Rule[WickState[{Null, Length @ vec}, rest], 0]
-  ];
   ovr = Dot[vec, ConjugateTranspose @ new];
   hhd = HouseholderMatrix[ovr];
   new = Rest[ConjugateTranspose[hhd] . new];
-  Rule[WickState[new, rest], NormSquare[ovr] * prb]
+  Rule[ 
+    WickState[new, rest], 
+    NormSquare[ovr] * AbsSquare[Whole @ Diagonal @ rmd]
+  ]
 ]
+(* NOTE: The above is equivalent to the following, but is twice faster for large systems. *)
+(* 
+WickOdds[vec_?VectorQ -> 3][in_WickState] := 
+  WickOdds[vec -> 0] @ WickOdds[vec -> 1] @ in 
+  *)
 
 
 (* WickNonunitary on WickState *)
@@ -442,7 +505,7 @@ WickOdds[non_?SquareMatrixQ -> fac_?NumericQ][in_WickState] =
   Rule[in, 0]
 
 
-(* Nesting WickNonunitary *)
+(* for nesting: e.g., WickNonunitary *)
 WickOdds[spec_Rule][in_WickState -> prb_?NumericQ] := Module[
   { res = WickOdds[spec][in] },
   MapAt[Times[#, prb]&, res, 2]
@@ -469,21 +532,52 @@ MakeBoxes[jmp:WickJump[spec:{__?patternWickJumpQ}, ___], fmt_] := Module[
     { BoxForm`SummaryItem @ { "Modes: ", n },
       BoxForm`SummaryItem @ { "Operators: ", m }
     },
-    { BoxForm`SummaryItem @ { "Coefficients: ", MatrixForm @ Map[ArrayShort, spec, {2}] }
+    { BoxForm`SummaryItem @ { "Coefficients: ", ArrayShort @ jmp }
     },
     fmt,
     "Interpretable" -> Automatic
   ]
 ]
 
+Options[WickJump] := {
+  "Completion" -> True
+}
+
 (* conversion *)
-(* Note that each measurement is automatically completed. *)
 (* application: WickMonitor *)
-WickJump[WickMeasurement[msr_?MatrixQ, opts___?OptionQ], more___?OptionQ] :=
+WickJump[WickMeasurement[msr_?MatrixQ, rest___?OptionQ], OptionsPattern[]] :=
   WickJump[
-    Riffle[Thread[msr -> 2], Thread[msr -> 3]],
-    more, opts
+    If[ OptionValue["Completion"], 
+      Riffle[Thread[msr -> 2], Thread[msr -> 3]],
+      Thread[msr -> 2]
+    ],
+    rest
   ]
+
+WickJump /:
+Normalize[WickJump[jmp_List, rest___]] := Module[
+  { new },
+  new = Map[Normalize, Keys @ jmp];
+  new = Thread[new -> Values[jmp]];
+  WickJump[new, rest]
+]
+
+
+WickJump /:
+ArrayShort[WickJump[jmp_List, ___], rest___] := Module[
+  { mat = theArrayShort[Keys @ jmp, rest],
+    flg = theArrayShort[Values @ jmp, rest],
+    sep },
+  sep = theArrayShort[ConstantArray["\[RightArrow]", Length @ jmp], rest];
+  MatrixForm[Transpose @ Join[Transpose @ mat, {sep, flg}], rest]
+]
+
+WickJump /:
+MatrixForm[WickJump[jmp_List, ___], rest___] := Module[
+  { sep },
+  sep = ConstantArray["\[RightArrow]", Length @ jmp];
+  MatrixForm[Transpose @ Join[Transpose @ Keys @ jmp, {sep, Values @ jmp}], rest]
+]
 
 
 WickJump /:
@@ -501,22 +595,22 @@ WickJump /:
 Matrix[WickJump[jmp_List]] := Map[matWickJump, jmp]
 (* Returns the list of the matrices representing the jump operators. *)
 
-(* d ** rho ** Dagger[d] *)
+(* Kraus operator F := d *)
 matWickJump[vec_?VectorQ -> 0] := 
   Dot[vec, JordanWignerTransform @ Length @ vec]
 
-(* Dagger[d] ** rho ** d *)
+(* Kraus operator F := Dagger[d] *)
 matWickJump[vec_?VectorQ -> 1] := 
   ConjugateTranspose @ matWickJump[vec -> 0]
 
 
-(* Dagger[d] ** d ** rho ** Dagger[d] ** d *)
+(* Kraus operator F := Dagger[d] ** d *)
 matWickJump[vec_?VectorQ -> 2] := With[
   { mat = matWickJump[vec -> 0] },
   Dot[ConjugateTranspose @ mat, mat]
 ]
 
-(* d ** Dagger[d] ** rho ** d ** Dagger[d] *)
+(* Kraus operator F := d ** Dagger[d] *)
 matWickJump[vec_?VectorQ -> 3] := With[
   { mat = matWickJump[vec -> 0] },
   Dot[mat, ConjugateTranspose @ mat]
@@ -732,6 +826,7 @@ Readout[WickMeasurement[m_?MatrixQ, ___]] :=
 (**** </WickMeasurement> ****)
 
 
+(**** <RandomWickMeasurement> ****)
 RandomWickMeasurement::usage = "RandomWickMeasurement[{k, n}] randomly generates a WickMeaurement for k dressed fermion modes from n bare fermion modes.\nRandomWickMeasurement[n] randomly selects k from {1, 2, \[Ellipsis], n}."
 
 RandomWickMeasurement[{k_Integer, n_Integer}] :=
@@ -739,6 +834,28 @@ RandomWickMeasurement[{k_Integer, n_Integer}] :=
 
 RandomWickMeasurement[n_Integer] :=
   RandomWickMeasurement @ {RandomInteger @ {1, n}, n}
+
+(* shortcut *)
+RandomWickMeasurement[p_?NumericQ -> n_Integer, rest___] :=
+  WickMeasurement[RandomPick[p -> n], n, rest]
+
+(* shortcut *)
+RandomWickMeasurement[p_?NumericQ -> msr_WickMeasurement, rest___] :=
+  RandomWickMeasurement[Table[p, Length @ First @ msr] -> msr, rest]
+
+RandomWickMeasurement[prb_ -> msr_WickMeasurement, rest___] :=
+  WickMeasurement[RandomPick[prb -> First[msr]], rest] /;
+  VectorQ[prb, NumericQ]
+
+
+randWickMeasurementQ::usage = "randWickMeasurementQ[pat] return True if pat is a valid arguments pattern of RandomWickMeasurement, or False otherwise."
+
+randWickMeasurementQ[_?NumericQ -> (_Integer|_WickMeasurement)] = True
+
+randWickMeasurementQ[_?(VectorQ[#, NumericQ]&) -> (_Integer|_WickMeasurement)] = True
+
+randWickMeasurementQ[_] = False
+(**** </RandomWickMeasurement> ****)
 
 
 (**** <WickGreen> ****)
@@ -903,47 +1020,70 @@ Graphics[wc:WickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?Op
 (**** <RandomWickCircuit> ****)
 RandomWickCircuit::usage = "RandomWickCircuit[{uni, p}, dep] generate a random quantum circuit on non-interacting fermion modes, where layers of unitary gate uni (WickUnitary[\[Ellipsis]]) alternate with layers of measurements (WickMeasurement[\[Ellipsis]]) on fermion modes selected randomly with probability p to form an overall depth dep.\nRandomWickCircuit[{ham, pdf, p}, k] unitary layers of random unitary gate uni=Exp[-\[ImaginaryI] ham \[Tau]] with single-particle Hamiltonian ham ( n\[Times]n Hermitian matrix or WickHermitian[\[Ellipsis]]) and the random evolution time \[Tau] distributed according to the probability distribution function pdf.\nRandomWickCircuit[{ham, p}, dep] assumes that the evolution time is uniformly distributed over the interval [0,2\[Pi] n/max], where max is the maximum of the absolute values of the entries of ham.\nRandomWickCircuit[ham, dep] generates a circuit for n fermion modes where each unitary layer corresponds to time evolution U=exp[-\[ImaginaryI] ham \[Tau]] with the evolution time \[Tau] distributed by P(\[Tau])\[Proportional]exp[-n \[Tau]] and each measurement layer measures a fermion mode with probability p=1/n."
 
-(* fixed interaction time *)
-RandomWickCircuit[{uu_WickUnitary, p_?NumericQ}, k_Integer] :=
+(* random evolution time *)
+RandomWickCircuit[{uspec_?randWickUnitaryQ, mspec_?randWickMeasurementQ}, k_Integer] := 
   Module[
-    { n = FermionCount[uu],
-      mm },
-    mm = RandomPick[Range @ n, p, k];
-    WickCircuit @ Riffle[
-      ConstantArray[uu, k],
-      Map[WickMeasurement[#, n]&, mm]
-    ]
-  ]
+    { uu, mm },
+    uu = Table[RandomWickUnitary[uspec], k];
+    mm = Table[RandomWickMeasurement[mspec], k];
+    WickCircuit @ Riffle[uu, mm]
+  ] 
 
-(* arbitrary distribution of evolution time *)
-RandomWickCircuit[{ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] :=
+(* random evolution time *)
+RandomWickCircuit[{uspec_?randWickNonunitaryQ, mspec_?randWickMeasurementQ}, k_Integer] := 
   Module[
-    { n = FermionCount[ham],
-      hh = First[ham],
-      ab, tt, uu, mm },
-    tt = RandomVariate[pdf, k];
-    uu = Map[WickUnitary[MatrixExp[-I*hh*#]]&, tt];
-    mm = RandomPick[Range @ n, p, k];
-    mm = Map[WickMeasurement[#, n]&, mm];
+    { uu, mm },
+    uu = Table[RandomWickNonunitary[uspec], k];
+    mm = Table[RandomWickMeasurement[mspec], k];
+    WickCircuit @ Riffle[uu, mm]
+  ] 
+
+(* fixed evolution time *)
+RandomWickCircuit[
+  {op:(_WickUnitary|_WickNonunitary), mspec_?randWickMeasurementQ}, 
+  k_Integer
+] := Module[
+    { uu, mm },
+    uu = ConstantArray[op, k];
+    mm = Table[RandomWickMeasurement[mspec], k];
     WickCircuit @ Riffle[uu, mm]
   ]
 
-(* uniform distribution of evolution time *)
+(* shortcut: uniform distribution of evolution time *)
 RandomWickCircuit[{ham_WickHermitian, p_?NumericQ}, k_Integer] :=
-  Module[
-    { n = FermionCount[ham],
-      max, pdf },
-    max = Max[Abs @ First @ ham];
-    pdf = UniformDistribution[{0, N[2*Pi*n/max]}];
-    RandomWickCircuit[{ham, pdf, p}, k]
-  ]
+  RandomWickCircuit[{ham -> "Uniform", p -> FermionCount[ham]}, k]
 
-(* exponential distribution of evolution time *)
+(* shortcut: exponential distribution of evolution time *)
 (* P(\tau) = Exp[-n\gamma\tau]; choose a unit system such that \gamma\tau --> \tau *)
 RandomWickCircuit[ham_WickHermitian, k_Integer] := Module[
-  { n = FermionCount[ham] },
-  RandomWickCircuit[{ham, ExponentialDistribution[n], 1./n}, k]
+  { n, p },
+  n = FermionCount[ham];
+  p = 1. / n;
+  RandomWickCircuit[{ham -> "Exponential", p -> n}, k]
 ]
+
+(* shortcut: fixed evolution time *)
+RandomWickCircuit[{uu:(_WickUnitary|_WickNonunitary), p_?NumericQ}, k_Integer] :=
+  RandomWickCircuit[{uu, p -> FermionCount[uu]}, k]
+
+randWickCircuitQ::usage = "randWickCircuitQ[pat] returns True if pat is a valid arguments pattern of RandomWickCircuit, or False otherwise."
+
+randWickCircuitQ[{_WickUnitary|_WickNonunitary, _?randWickMeasurementQ}] = True
+
+randWickCircuitQ[{_?randWickUnitaryQ, _?randWickMeasurementQ}] = True
+
+randWickCircuitQ[{_?randWickNonunitaryQ, _?randWickMeasurementQ}] = True
+
+(* shortcuts *)
+randWickCircuitQ @ Alternatives[
+  {_WickUnitary, _?NumericQ}, 
+  {_WickNonunitary, _?NumericQ}, 
+  {_WickHermitian, _?NumericQ},
+  {_WickHermitian, _, _?NumericQ}, (* deprecated *)
+  _WickHermitian
+] = True
+
+randWickCircuitQ[_] = False
 (**** </RandomWickCircuit> ****)
 
 
@@ -958,20 +1098,12 @@ Options[RandomWickCircuitSimulate] = {
   "Prefix" -> "RWC"
 }
 
-$RandomWickCircuitPatterns = Alternatives[
-  {_WickUnitary, _?NumericQ}, 
-  {_WickNonunitary, _?NumericQ}, 
-  {_WickHermitian, _, _?NumericQ},
-  {_WickHermitian, _?NumericQ},
-  _WickHermitian
-];
-
 RandomWickCircuitSimulate[in_, spec_, depth_Integer, opts___?OptionQ] := 
   RandomWickCircuitSimulate[in, spec, {depth, 2}, opts]
 
 RandomWickCircuitSimulate[
   in_WickState,
-  spec:$RandomWickCircuitPatterns,
+  spec_?randWickCircuitQ,
   {depth_Integer, ds:(_Integer|All)},
   opts:OptionsPattern[{RandomWickCircuit, RandomWickCircuitSimulate}]
 ] := 
@@ -1102,7 +1234,8 @@ ParseGate[WickNonunitary[_, cc:{__?FermionQ}, rest___]] :=
 (**** </WickNonunitary> ****)
 
 
-RandomWickNonunitary::usage = "RandomWickNonunitary[n] randomly constructs a WickNonunitary operator on n fermion modes."
+(**** <RandomWickNonunitary> ****)
+RandomWickNonunitary::usage = "RandomWickNonunitary[n] randomly constructs a WickNonunitary operator on n fermion modes.\nRandomWickNonunitary[{k1,k2,\[Ellipsis]}] construct a random WickNonunitary gate on fermion modes {k1,k2,\[Ellipsis]}."
 
 RandomWickNonunitary[n_Integer, opts___?OptionQ] := Module[
   { ham = RandomHermitian[n],
@@ -1119,13 +1252,67 @@ RandomWickNonunitary[kk:{__Integer}, opts___?OptionQ] := With[
 ]
 
 
+RandomWickNonunitary[{ham_WickHermitian, jmp_WickJump} -> any_, rest___] := Module[
+  {dmp, gmm},
+  {dmp, gmm} = WickDampingOperator[jmp];
+  RandomWickNonunitary[{First @ ham, First @ dmp, gmm} -> any, rest]
+]
+
+(* uniform distribution of evolution time *)
+RandomWickNonunitary[spec:{_?MatrixQ, _, _} -> tt:{_?NumericQ, _?NumericQ}, rest___] :=
+  RandomWickNonunitary[spec -> UniformDistribution @ tt, rest]
+
+RandomWickNonunitary[spec:{m_?MatrixQ, _, _} -> "Uniform", rest___] := 
+  With[
+    { n = Length[m],
+      max = Max[Abs @ spec] },
+    RandomWickNonunitary[spec -> {0, N[2*Pi*n/max]}, rest]
+  ]
+
+(* exponential distribution of evolution time *)
+RandomWickNonunitary[spec:{_?MatrixQ, _, _} -> "Exponential", rest___] :=
+  RandomWickNonunitary[spec -> 1, rest]
+
+RandomWickNonunitary[spec:{_?MatrixQ, _, _} -> gmm_?NumericQ, rest___] := Module[
+  { n = Length[First @ spec] },
+  RandomWickNonunitary[spec -> ExponentialDistribution[n*gmm], rest]
+]
+
+(* arbitrary distribution of evolution time *)
+RandomWickNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ} -> pdf_, opts___?OptionQ] :=
+  Module[
+    { tau = RandomVariate[pdf],
+      non, fac },
+    fac = Exp[-gmm*tau];
+    non = MatrixExp[-I*tau*(ham - I*dmp)];
+    WickNonunitary[{fac, non}, opts]
+  ] /; ArrayQ[{ham, dmp}, _, NumericQ]
+
+
+randWickNonunitaryQ::usage = "randWickNonunitaryQ[pat] returns True if pat is a valid arguments pattern of RandomWickNonunitary, or False otherwise."
+
+randWickNonunitaryQ[ham_WickHermitian -> any_] :=
+  randWickNonunitaryQ[First[ham] -> any]
+
+randWickNonunitaryQ[_?MatrixQ -> _Symbol[___]] = True
+
+randWickNonunitaryQ[{_?MatrixQ, _?MatrixQ, _?NumericQ} -> 
+  Alternatives[
+    "Uniform", {_?NumericQ, _?NumericQ}, 
+    "Exponential", _?NumericQ]
+] = True
+
+randWickNonunitaryQ[_] = False
+(**** </RandomWickNonunitary> ****)
+
+
 (**** <WickDampingOperator> ****)
 WickDampingOperator::usage = "WickDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp."
 
-WickDampingOperator[jmp:{___?patternWickJumpQ}] :=
-  WickDampingOperator[WickJump @ jmp]
+WickDampingOperator[jmp_WickJump] := 
+  WickDampingOperator[First @ jmp]
 
-WickDampingOperator[WickJump[jmp_List]] := Module[
+WickDampingOperator[jmp:{___?patternWickJumpQ}] := Module[
   { cls, res },
   cls = Merge[Reverse /@ jmp, SparseArray];
   res = Total @ KeyValueMap[theWickDampingOperator, cls];
@@ -1307,7 +1494,7 @@ WickMonitor[
     progress = 0,
     jmp, dmp, gmm, prb, evo, data, more },
   
-  jmp = WickJump[msr]; (* p and 1-p *)
+  jmp = WickJump[msr, "Completion" -> True]; (* p and 1-p *)
   gmm = WickDampingConstant[jmp];
   evo = WickUnitary[ham, dt];
   prb = Exp[-2*gmm*dt]; (* Notice the factor of 2. *)
@@ -1356,67 +1543,67 @@ theWickMonitor[in_WickState, evo_WickUnitary, prb_?NumericQ, jmp_WickJump, {tau_
 WickScramblingCircuit::usage = "WickScramblingCircuit[op, spec, dep] generates the main part of a Wick scrambling circuit."
 
 WickScramblingCircuit[a_Integer, rest__] :=
-    WickScramblingCircuit[theWickX[a], spec, t]
+    WickScramblingCircuit[theWickX[a], rest]
 
-(* fixed interaction time *)
-WickScramblingCircuit[op_, {uu:(_WickUnitary|elm_WickNonunitary), p_?NumericQ}, k_Integer] :=
+(* random evolution time *)
+WickScramblingCircuit[op_, {uspec_?randWickUnitaryQ, mspec_?randWickMeasurementQ}, k_Integer] := 
   Module[
-    { n = FermionCount[uu],
-      vv, ma, mb },
-    vv = ConstantArray[uu, k];
-    ma = If[ ZeroQ @ p, Nothing, 
-      Table[WickMeasurement[RandomPick[Range @ n, p], n], k]
-    ];
-    mb = If[ ZeroQ @ p, Nothing, 
-      Table[WickMeasurement[RandomPick[Range @ n, p], n], k]
-    ];
-    WickCircuit @ Join[
-      Riffle[vv, ma], {op},
-      Riffle[Dagger @ vv, mb]
-    ]
-  ]
-
-(* arbitrary distribution of evolution time *)
-WickScramblingCircuit[op_, {ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] :=
-  Module[
-    { n = FermionCount[ham],
-      hh = First[ham],
-      tt, uu, dg, ma, mb },
-    tt = RandomVariate[pdf, k];
-    uu = Map[WickUnitary[MatrixExp[-I*hh*#]]&, tt];
-    dg = Reverse[Dagger @ uu];
-    ma = If[ ZeroQ @ p, Nothing, 
-      Table[WickMeasurement[RandomPick[Range @ n, p], n], k]
-    ];
-    mb = If[ ZeroQ @ p, Nothing, 
-      Table[WickMeasurement[RandomPick[Range @ n, p], n], k]
-    ];
+    { uu, ma, mb },
+    uu = Table[RandomWickUnitary[uspec], k];
+    ma = Table[RandomWickMeasurement[mspec], k];
+    mb = Table[RandomWickMeasurement[mspec], k];
     WickCircuit @ Join[
       Riffle[uu, ma], {op},
-      Riffle[dg, mb]
+      Riffle[Dagger @ uu, mb]
+    ]
+  ] 
+
+(* random evolution time *)
+WickScramblingCircuit[op_, {uspec_?randWickNonunitaryQ, mspec_?randWickMeasurementQ}, k_Integer] := 
+  Module[
+    { uu, ma, mb },
+    uu = Table[RandomWickNonunitary[uspec], k];
+    ma = Table[RandomWickMeasurement[mspec], k];
+    mb = Table[RandomWickMeasurement[mspec], k];
+    WickCircuit @ Join[
+      Riffle[uu, ma], {op},
+      Riffle[Dagger @ uu, mb]
+    ]
+  ] 
+
+(* fixed evolution time *)
+WickScramblingCircuit[
+  op_,
+  {wu:(_WickUnitary|_WickNonunitary), mspec_?randWickMeasurementQ}, 
+  k_Integer
+] := Module[
+    { uu, ma, mb },
+    uu = ConstantArray[wu, k];
+    ma = Table[RandomWickMeasurement[mspec], k];
+    mb = Table[RandomWickMeasurement[mspec], k];
+    WickCircuit @ Join[
+      Riffle[uu, ma], {op},
+      Riffle[Dagger @ uu, mb]
     ]
   ]
 
-(* uniform distribution of evolution time *)
+(* shortcut: uniform distribution of evolution time *)
 WickScramblingCircuit[op_, {ham_WickHermitian, p_?NumericQ}, k_Integer] :=
-  Module[
-    { n = FermionCount[ham],
-      max, pdf },
-    max = Max[Abs @ First @ ham];
-    pdf = UniformDistribution[{0, N[2*Pi*n/max]}];
-    WickScramblingCircuit[op, {ham, pdf, p}, k]
-  ]
+  WickScramblingCircuit[op, {ham -> "Uniform", p -> FermionCount[ham]}, k]
 
-(* canonicalization *)
-WickScramblingCircuit[op_, ham_NambuHermitian, k_Integer] :=
-  WickScramblingCircuit[op, WickHermitian[ham], k]
-
-(* exponential distribution of evolution time *)
+(* shortcut: exponential distribution of evolution time *)
 (* P(\tau) = Exp[-n\gamma\tau]; choose a unit system such that \gamma\tau --> \tau *)
 WickScramblingCircuit[op_, ham_WickHermitian, k_Integer] := Module[
-    { n = FermionCount[ham] },
-    WickScramblingCircuit[op, {ham, ExponentialDistribution[n], 1./n}, k]
-  ]
+  { n, p },
+  n = FermionCount[ham];
+  p = 1. / n;
+  WickScramblingCircuit[op, {ham -> "Exponential", p -> n}, k]
+]
+
+(* shortcut: fixed evolution time *)
+WickScramblingCircuit[op_, {uu:(_WickUnitary|_WickNonunitary), p_?NumericQ}, k_Integer] :=
+  WickScramblingCircuit[op, {uu, p -> FermionCount[uu]}, k]
+
 
 theWickZ::usage = "theWickZ[k] returns the default local unitary operator, A := 1 - 2*Dagger[a[k]]**a[k], for the OTOC."
 
@@ -1442,38 +1629,51 @@ Options[WickScramblingSimulate] = {
   "Samples" -> {10, 3}
 }
 
-WickScramblingSimulate[in_, a_Integer, rest__] :=
+WickScramblingSimulate[in_WickState, a_Integer, rest__] :=
   WickScramblingSimulate[in, {a, 1}, rest]
 
-WickScramblingSimulate[in_, {a_Integer, b_Integer}, 
-  spec:$RandomWickCircuitPatterns, rest__] := Module[
+WickScramblingSimulate[in_WickState, {a_Integer, b_Integer}, 
+  spec_?randWickCircuitQ, rest__] := Module[
     { n = spec },
     If[ListQ @ spec, n = First @ spec];
     n = FermionCount[n];
     WickScramblingSimulate[in, {theWickX[a], theWickZ[b]}, spec, rest]
   ]
 
-WickScramblingSimulate[in_, ua_WickUnitary, rest__] :=
+WickScramblingSimulate[in_WickState, ua_WickUnitary, rest__] :=
   WickScramblingSimulate[in, {ua, theWickZ[1]}, rest]
+
+WickScramblingSimulate[in_WickState, ops_, spec_, depth_Integer, rest___] :=
+  WickScramblingSimulate[in, ops, spec, {depth, 1}, rest]
 
 WickScramblingSimulate[
   in_WickState,
   {ua_WickUnitary, ub_WickUnitary},
-  spec:$RandomWickCircuitPatterns,
-  depth_Integer,
+  spec_?randWickCircuitQ,
+  {depth_Integer, ds_Integer},
   OptionsPattern[]
 ] := 
 Module[
-  { qc, n, m },
+  { progress = k = 0,
+    kk, qc, t, n, m },
+  PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   {n, m} = doAssureList[OptionValue["Samples"], 2];
-  Mean @ Flatten @ Table[
-    qc = WickScramblingCircuit[ua, spec, depth];
-    Table[theWickOTOC[in, ub, qc], m],
+  kk = N[m * n * (1 + Floor[depth / ds])];
+  Mean @ Table[
+    Table[
+      qc = WickScramblingCircuit[ua, spec, t];
+      Mean @ Table[ 
+        progress = ++k / kk;
+        theWickOTOC[in, ub, qc], 
+        m
+      ],
+      {t, 0, depth, ds}
+    ],
     n
   ]
 ]
 
-theWickOTOC[in_, ub_, qc_WickCircuit] := Module[
+theWickOTOC[in_WickState, ub_WickUnitary, qc_WickCircuit] := Module[
   { va, vb },
   va = Fold[Construct[#2, #1]&, in, First @ qc];
   vb = Join[{ub}, First @ qc, Dagger @ {ub}];
@@ -1553,9 +1753,10 @@ WickLindbladSolve[
   { n = Length[First @ ham],
     lop, krn, chk, trs, evo },
   (* Lindblad operators *)
+  {dmp, gmm} = WickDampingOperator[jmp];
   lop = Keys[First @ jmp];
   lop = Map[KroneckerProduct[Conjugate @ #, #]&, lop];
-  {krn, chk} = LindbladConvert[First @ ham, lop];
+  {krn, chk} = LindbladConvert[N @ First @ ham, lop];
   (* \varL(I) =  0 *)
   If[ Not[ArrayZeroQ @ chk], 
     Message[WickLindbladSolve::chk, ArrayShort @ chk]
@@ -1819,51 +2020,5 @@ WickMutualInformation[data_, kk:{___Integer}] :=
 (**** </WickMutualInformation> ****)
 
 End[] (* quantum information theory for fermionic Gaussian states *)
-
-
-(*********************************************************************************)
-(**** backward compatibility                                                  ****)
-(*********************************************************************************)
-
-Bravyi::renamed = "Use ``: function names with prefix Wick are reserved for the optimized version in the case without pairing correlation."
-
-Begin["`Private`"]
-
-WickState[spec:{_?NumericQ, _?MatrixQ}, rest___] := (
-  Message[Bravyi::renamed, BravyiState];
-  BravyiState[spec, rest]
-)
-
-WickFlop[vec_?VectorQ, rest___] := (
-  Message[Bravyi::renamed, BravyiFlop];
-  BravyiFlop[spec, rest]
-) /; VectorQ[vec, NumericQ]
-
-WickJump[mat_?MatrixQ, rest___] := (
-  Message[Bravyi::renamed, BravyiJump];
-  BravyiJump[spec, rest]
-) /; MatrixQ[mat, NumericQ]
-
-WickDensityMatrix[gnr:(_NambuGreen|_?NambuMatrixQ), rest___] := (
-  Message[Bravyi::renamed, BravyiDensityMatrix];
-  BravyiDensityMatrix[spec, rest]
-)
-
-WickCovariance[any__] := (
-  Message[Bravyi::renamed, BravyiCovariance];
-  BravyiCovariance[any]
-)
-
-WickInner[any__] := (
-  Message[Bravyi::renamed, BravyiInner];
-  BravyiInner[any]
-)
-
-WickMap[any__] := (
-  Message[Bravyi::renamed, BravyiMap];
-  BravyiMap[any]
-)
-
-End[] (* backward compatibility *)
 
 EndPackage[]
