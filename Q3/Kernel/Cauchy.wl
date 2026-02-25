@@ -316,7 +316,6 @@ HalfIntegerQ[n_] := OddQ[ Expand[2 n] ]
 
 
 (**** <Simplification> ****)
-
 CauchySimplify::usage = "CauchySimplify[expr] calls the built-in function Simplify but performs some extra transformations concerning complex variables. All options of Simplify are also available to CauchySimplify."
 
 CauchyFullSimplify::usage = "CauchyFullSimplify[expr] call the built-in function FullSimplify and performs some extra transformations concerning complex variables. All options of FullSimplify is also available to CauchyFullSimplify."
@@ -354,12 +353,10 @@ rulesCauchySimplify = {
   Tanh[a_. * Sqrt[z_] * Sqrt[Conjugate[z_]]] :> 
     Tanh[a * Abs[z]] * Sqrt[z] Sqrt[Conjugate[z]] / Abs[z]
  }
-
-(**** </Simplifications> ****)
+(**** </Simplification> ****)
 
 
 (**** <NGrad> ****)
-
 NGrad::usage = "NGrad[f, {x1,x2,\[Ellipsis]}] returns a numerical approximation of function f at point {x1,x2,\[Ellipsis]}."
 
 Options[NGrad] = {
@@ -403,7 +400,6 @@ grad3Backward[f_, x_, h_] := Module[
   { xx = h*One[Length @ x] },
   -(4*Map[f[x - #]&, xx] - Map[f[x - 2*#]&, xx] - 3*f[x]) / (2*h)
 ]
-
 (**** </NGrad> ****)
 
 

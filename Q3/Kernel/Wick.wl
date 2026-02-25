@@ -1000,7 +1000,7 @@ Graphics[wc:WickCircuit[gg_List], more___?OptionQ] := Module[
 ]
 
 WickCircuit /:
-Graphics[wc:WickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?OptionQ] := Module[
+Graphics[wc:WickCircuit[gg_List, opts___?OptionQ], c_?FermionQ, more___?OptionQ] := Module[
   { n = FermionCount[wc],
     cc, qc },
   cc = c[Range @ n];
@@ -1012,7 +1012,10 @@ Graphics[wc:WickCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?Op
     elm_WickUnitary :> ParseGate[elm @ c],
     elm_WickNonunitary :> ParseGate[elm @ c]
   };
-  QuantumCircuit[Sequence @@ qc, more, opts, "PostMeasurementDashes" -> False]
+  QuantumCircuit[Sequence @@ qc, more, opts,
+    "Visible" -> cc,
+    "PostMeasurementDashes" -> False
+  ]
 ]
 (**** </WickCircuit> ****)
 

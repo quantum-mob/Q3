@@ -2998,8 +2998,7 @@ Unfold[
 
 
 (**** <TheExchangeGate> ****)
-(* 2026-02-06 Not open to the public yet *)
-
+(* 2026-02-06 Experimental; Not open to the public yet *)
 TheExchangeGate::usage = "TheExchangeGate[{gx,gy,gz}] returns the 4\[Times]4 unitary matrix due to the ExchangeGate interaction between two qubits or spins.\nTheExchangeGate[mat] assumes that the ExchangeGate interaction is governed by the 3\[Times]3 real symmetric matrix mat."
 
 TheExchangeGate[gg:{gx_, gy_, gz_}] := Module[
@@ -3019,7 +3018,6 @@ TheExchangeGate[gg_?MatrixQ] := Module[
   mm = Flatten[gg] . mm;
   MatrixExp[-I*mm]
 ] /; MatrixQ[gg, NumericQ]
-
 (**** </TheExchangeGate> ****)
 
 

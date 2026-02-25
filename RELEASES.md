@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.5.3
+
+- Improved: QuantumGeometricTensor, FubiniStudyTensor
+- Improved: QuantumCircuit (support other species like Spin and Fermion)
+
 ## 4.5.2
 
 - Improved: RandomWickMeasurement, RandomWickUnitary, RandomWickNonunitary, RandomWickCircuit, RandomWickCircuitSimulate

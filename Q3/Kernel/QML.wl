@@ -267,7 +267,6 @@ ParseGate[
 
 
 (**** <QuantumGeometricTensor> ****)
-
 QuantumGeometricTensor::usage = "QuantumGeometricTensor[vec, {x1, x2, \[Ellipsis]}] returns the quantum geometric tensor for the state vector vec parametrized with parameters x1, x2, \[Ellipsis]."
 
 QuantumGeometricTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}] := Module[
@@ -290,12 +289,50 @@ Module[
 ]
 (* NOTE: vec is supposed to be normalized. *)
 
+(* operator form *)
+QuantumGeometricTensor[gnr_?ArrayQ][vec:(_?VectorQ|_?MatrixQ)] :=
+  QuantumGeometricTensor[gnr, vec]
+
+(* special case *)
+QuantumGeometricTensor[gnr_?ArrayQ, vec_?VectorQ] := Module[
+  { gg, hh },
+  hh = Transpose[gnr . vec];
+  gg = Dot[Conjugate @ vec, Transpose @ gnr];
+  gg = Dot[gg, hh]; (* <G_\mu G_\nu> *)
+  hh = Dot[Conjugate[vec], hh];
+  hh = KroneckerProduct[hh, hh]; (* <G_\mu><G_\nu> *)
+  SparseArray[gg - hh]
+] /; ArrayQ[gnr, 3, NumericQ] && VectorQ[vec, NumericQ]
+(* NOTE 1: gnr is supposed to be a list of Hermitian matrices. *)
+(* NOTE 2: vec is supposed to be a normalized vector. *)
+
+(* block-diagonal approximation for simply repeating layers *)
+QuantumGeometricTensor[gnr_?ArrayQ, vv_?MatrixQ] :=
+  BlockDiagonalMatrix[
+    QuantumGeometricTensor[gnr] /@ vv,
+    TargetStructure -> "Sparse"
+  ] /; ArrayQ[gnr, 3]
+(* NOTE 1: gnr is supposed to be a list of Hermitian matrices. *)
+(* NOTE 2: Each row of vv is supposed to be a normalized vector. *)
+
+(* block-diagonal approximation for cyclically repeating layers *)
+QuantumGeometricTensor[gnr_?ArrayQ, vv_?MatrixQ] := With[
+  { cyc = Length[gnr] },
+  BlockDiagonalMatrix[
+    Table[
+      QuantumGeometricTensor[ gnr[[ Mod[k, cyc, 1] ]], vv[[k]] ],
+      {k, Length @ vv}
+    ],
+    TargetStructure -> "Sparse"
+  ]
+] /; ArrayQ[grn, 4]
+(* NOTE 1: gnr is supposed to be a two-dimensional array of Hermitian matrices. *)
+(* NOTE 2: Each row of vv is supposed to be a normalized vector. *)
 (**** </QuantumGeometricTensor> ****)
 
 
 (**** <FubiniStudyTensor> ****)
-
-FubiniStudyTensor::usage = "FubiniStudyTensor[vec, {x1, x2, \[Ellipsis]}] returns the Fubini-Study metric tensor for the state vector vec parametrized with parameters x1, x2, \[Ellipsis]."
+FubiniStudyTensor::usage = "FubiniStudyTensor[vec, {x1, x2, \[Ellipsis]}] returns an expression of the Fubini-Study metric tensor for the state vector vec parametrized with parameters x1, x2, \[Ellipsis]."
 
 (* exact calculation *)
 
@@ -305,44 +342,15 @@ FubiniStudyTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}] :=
 FubiniStudyTensor[vec_?VectorQ, var:{(_Symbol|_Symbol[___])..}, val_?VectorQ] :=
   Re @ QuantumGeometricTensor[vec, var, val]
 
+(* operator form *)
+FubiniStudyTensor[gnr_?ArrayQ][any:(_?VectorQ|_?MatrixQ)] :=
+  FubiniStudyTensor[gnr, any]
 
-(* block-diagonal approximation *)
-
-FubiniStudyTensor[gnr_?ArrayQ][vec:(_?VectorQ|_?MatrixQ)] :=
-  FubiniStudyTensor[gnr, vec] /; ArrayQ[gnr, 3]
-
-FubiniStudyTensor[gnr_?ArrayQ, vec_?VectorQ] := Module[
-  { gg, hh },
-  gg = Dot[
-    Dot[Conjugate @ vec, Transpose @ gnr],
-    Transpose @ Dot[gnr, vec]
-  ];
-  hh = Map[Conjugate[vec].#.vec&, gnr];
-  hh = KroneckerProduct[hh, hh];
-  SparseArray[gg - hh]
-] /; ArrayQ[gnr, 3, NumericQ]
-(* NOTE: gnr is supposed to be a list of Hermitian matrices. *)
-
-FubiniStudyTensor[gnr_?ArrayQ, mat_?MatrixQ] :=
-  BlockDiagonalMatrix[
-    FubiniStudyTensor[gnr] /@ mat,
-    TargetStructure -> "Sparse"
-  ] /; ArrayQ[gnr, 3]
-(* NOTE: mat is supposed to be a list of normalized vectors. *)
-
-
-FubiniStudyTensor::len = "The list of generators `` and the list of state vectors `` have different lengths."
-
-FubiniStudyTensor[gnr:{__?(ArrayQ[#,3]&)}, mat_?MatrixQ] :=
-  BlockDiagonalMatrix[
-    MapThread[FubiniStudyTensor, {gnr, mat}],
-    TargetStructure -> "Sparse"
-  ] /; If[Length[gnr] == Length[mat], True,
-    Message[FubiniStudyTensor::len, gnr, mat]; False
-  ]
-(* NOTE: gnr is supposed to be a list of Hermitian matrices. *)
-(* NOTE: mat is supposed to be a list of normalized vectors. *)
-
+(* special case and block-digonal approximation *)
+FubiniStudyTensor[gnr_?ArrayQ, any:(_?VectorQ|_?MatrixQ)] :=
+  QuantumGeometricTensor[gnr, any] /; ArrayQ[gnr, 3|4]
+(* NOTE 1: gnr is supposed to be a one- or two-dimensional array of Hermitian matrices. *)
+(* NOTE 2: any is supposed to be a normalized vector or a list of normalized vectors. *)
 (**** </FubiniStudyTensor> ****)
 
 End[]

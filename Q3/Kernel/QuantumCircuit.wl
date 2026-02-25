@@ -2,7 +2,8 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { QuantumCircuit,
-  QuantumElements };
+  QuantumElements,
+  QuantumDepth };
 
 { RandomQuantumCircuit, RandomQuantumCircuitSimulate };
 { QuantumScramblingCircuit, QuantumScramblingSimulate };
@@ -35,7 +36,6 @@ SetAttributes[{PortOut, PortIn}, Flat]
 
 
 (**** <User Interface> ****)
-
 QuantumCircuit[rest:Except[_?qcKetQ].., Longest[vv__?qcKetQ]] :=
   QuantumCircuit[rest, PortOut[vv]]
 
@@ -57,13 +57,7 @@ QuantumCircuit[rest__, in_PortIn] :=
 QuantumCircuit[out_PortOut, rest:Except[_?OptionQ|_PortOut]..] :=
   QuantumCircuit[rest, out]
 
-
-qcKetQ[_PortIn | _PortOut | _Projector] = False
-
-qcKetQ[expr_] := Not @ FreeQ[expr, _Ket | _ProductState | _State]
-
-
-(* See also GraphState[] *)
+(* Applications: GraphState *)
 QuantumCircuit[pre___, g_Graph, post___] := Module[
   { qubits = VertexList[g],
     links  = EdgeList[g] },
@@ -72,16 +66,26 @@ QuantumCircuit[pre___, g_Graph, post___] := Module[
   /; AllTrue[qubits, QubitQ]
 ]
 
+qcKetQ::usage = "qcKetQ[expr] returns True if expr expresses a quantum state in the quantum circuit model."
+
+qcKetQ[_PortIn | _PortOut | _Projector] = False
+
+qcKetQ[expr_] := Not @ FreeQ[expr, _Ket | _ProductState | _State]
 (**** </User Interface> ****)
 
 
 (**** <Utility Tools> ****)
+QuantumCircuit /:
+Qubits @ QuantumCircuit[gg__, opts___?OptionQ] := Union @ Qubits @ {
+  gg,
+  FlavorCap @ doAssureList["Visible" /. {opts} /. Options[QuantumCircuit]]
+}
 
 QuantumCircuit /:
-Qubits @ QuantumCircuit[gg__, opts___?OptionQ] := Union[
-  Qubits @ {gg},
+Agents @ QuantumCircuit[gg__, opts___?OptionQ] := Union @ Agents @ {
+  gg,
   FlavorCap @ doAssureList["Visible" /. {opts} /. Options[QuantumCircuit]]
-]
+}
 
 QuantumCircuit /:
 Measurements[qc:QuantumCircuit[__, ___?OptionQ]] :=
@@ -94,12 +98,10 @@ Unfold[QuantumCircuit[gg__, opts___?OptionQ], ___] :=
 QuantumCircuit /:
 UnfoldAll[QuantumCircuit[gg__, opts___?OptionQ], ___] :=
   QuantumCircuit[Sequence @@ Map[UnfoldAll, {gg}], opts]
-
 (**** </Utility Tools> ****)
 
 
 (**** <Multiply> ****)
-
 QuantumCircuit /:
 NonCommutativeQ[_QuantumCircuit] = True
 
@@ -120,12 +122,10 @@ Multiply[pre___, QuantumCircuit[elm__], post___] :=
 QuantumCircuit /:
 Multiply[pre___, Longest[cc__QuantumCircuit], post___] :=
   Multiply[pre, Elaborate @ Apply[QuantumCircuit, Reverse@{cc}], post]
-
 (**** </Multiply> ****)
 
 
 (**** <Elaborate> ****)
-
 AddElaborationPatterns[_QuantumCircuit]
 
 QuantumCircuit /:
@@ -160,17 +160,15 @@ theCircuitMultiply[op:Except[_Measurement]..] :=
    However, this cannot take the advantange of op ** Ket[...]. *)
 
 theCircuitMultiply[gg__] := Reverse @ MeasurementFunction[gg]
-
 (**** </Elaborate> ****)
 
 
 (**** <Matrix> ****)
+QuantumCircuit /:
+Matrix[qc_QuantumCircuit] := Matrix[qc, Agents @ qc]
 
 QuantumCircuit /:
-Matrix[qc_QuantumCircuit] := Matrix[qc, Qubits @ qc]
-
-QuantumCircuit /:
-Matrix[QuantumCircuit[gg__, ___?OptionQ], ss:{___?QubitQ}] := Module[
+Matrix[QuantumCircuit[gg__, ___?OptionQ], ss:{___?AgentQ}] := Module[
   { ff },
   ff = SplitBy[
     Flatten @ QuantumElements @ {gg},
@@ -194,12 +192,10 @@ theCircuitDot[v_?VectorQ, mat_?MatrixQ, rest___] :=
   theCircuitDot[mat.v, rest]
 
 theCircuitDot[gg__] := Reverse @ MeasurementFunction[gg]
-
 (**** </Matrix> ****)
 
 
 (**** <QuantumElements> ****)
-
 QuantumElements::usage = "QuantumElements[expr] returns the list of quantum circuit elements in expr after removing visualization options and Graphics Directives that are not evaluable expressions. Useful to convert QuantumCircuit to an evaluation-ready expression."
 
 SetAttributes[QuantumElements, Listable];
@@ -218,7 +214,7 @@ QuantumElements[ _?OptionQ ] = Nothing
 QuantumElements[ g_?ComplexQ ] = g (* NOT _?CommutativeQ *)
 
 QuantumElements[ g_ ] := Nothing /;
-  FreeQ[g, _?QubitQ | _Dyad | _Ket | _ProductState]
+  FreeQ[g, _?AgentQ | _Dyad | _Ket | _ProductState]
 
 QuantumElements[ HoldPattern @ Projector[v_, qq_, ___?OptionQ] ] :=
   Dyad[v, v, qq]
@@ -236,12 +232,10 @@ QuantumElements[ op_QFT ] := op (* The "Numeric" option matters for QFT. *)
 QuantumElements[ op_Symbol[expr__, ___?OptionQ] ] := op[expr]
 
 QuantumElements[ g_ ] = g
-
 (**** </QuantumElements> ****)
 
 
 (**** <Graphics> ****)
-
 $CircuitDepth = 1 (* dynamically change *)
 
 $CircuitUnit = 1
@@ -278,7 +272,7 @@ HoldPattern @
     {vv, ww, unit, $PortSize} =
       {"Visible", "Invisible", "UnitLength", "PortSize"} /.
       Flatten[{opts}] /. Options[QuantumCircuit];
-    (* NOTE: Here, Flatten is required since OptionQ[{}] returns True and in
+    (* NOTE: Flatten is required here since OptionQ[{}] returns True and in
        such a case, {...} /. {} /. {...} returns {{...}} instead of {...}. *)
 
     $PortSize = doAssureList[$PortSize, 2] * $CircuitUnit;
@@ -290,15 +284,17 @@ HoldPattern @
     cc = DeleteCases[cc, {}]; (* E.g., Measurement[{}] *)
     If[cc == {}, cc = {"Spacer"}]; (* E.g., only input elements *)
     
-    xx  = 1 + Accumulate[Prepend[Map[qcDepth, cc], 0]];
+    xx  = 1 + Accumulate[Prepend[Map[QuantumDepth, cc], 0]];
     xx *= $CircuitUnit;
     $CircuitDepth = Last[xx];
-    
+
     yy = Range[Length @ ss] * $CircuitUnit;
     yy = AssociationThread[ss, -yy];
 
     nodes = qcNodes[cc, Most @ xx, yy];
-    lines = If[ "PostMeasurementDashes" /. {opts} /. Options[QuantumCircuit],
+    lines = If[ 
+      "PostMeasurementDashes" /. Flatten[{opts}] /. Options[QuantumCircuit],
+      (* NOTE: Flatten here; see the note above. *)
       qcLines[cc, xx, KeyDrop[yy, ww]],
       qcSimpleLines[cc, xx, KeyDrop[yy, ww]]
     ];
@@ -319,25 +315,21 @@ HoldPattern @
       ImageSize -> unit * ( $CircuitDepth + Total[$PortSize] )
     ]
   ]
-
 (**** </Graphics> ****)
 
 
-(**** <qcDepth> *****)
+(**** <QuantumDepth> *****)
+QuantumDepth::usage = "QuantumDepth[obj] returns the quantum depth of object obj, which may be QuantumCircuit, a quantum circuit element or a list of them."
 
-qcDepth::usage = "qcDepth[expr] returns the depth of quantum circuit element expr."
+QuantumDepth[qc_QuantumCircuit] := Total @ Map[QuantumDepth, List @@ qc]
 
-qcDepth[qc_QuantumCircuit] := Total @ Map[qcDepth, List @@ qc]
+QuantumDepth[gg_List] := Max @ Map[QuantumDepth, gg]
 
-qcDepth[gg_List] := Max @ Map[qcDepth, gg]
-
-qcDepth[any_] := Boole @ Not @ FreeQ[any, _?QubitQ | _?FermionQ | "Separator" | "Spacer" ]
-
-(**** </qcDepth> *****)
+QuantumDepth[any_] := Boole @ Not @ FreeQ[any, _?AgentQ | "Separator" | "Spacer"]
+(**** </QuantumDepth> *****)
 
 
 (**** <Gate> *****)
-
 Gate::usage = "Gate[{s1,s2,\[Ellipsis]}, opts] represents a low-level quantum circuit element operating on qubits {s1,s2,\[Ellipsis]}.\nGate[{c1,c2,\[Ellipsis]}\[RightArrow]{v1,v2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}, opts] represents a low-level quantum circuit element operating on target qubits {t1,t2,\[Ellipsis]} conditioned on control qubits {c1,c2,\[Ellipsis]} having values {v1,v2,\[Ellipsis]}."
 
 Options[Gate] = {
@@ -361,26 +353,24 @@ Options[Gate] = {
   "LabelAlignment" -> {0, 0} (* See PanedText for details. *)
 }
 
-Gate[S_?QubitQ, opts___] := Gate[S @ {$}, opts]
+Gate[S_?AgentQ, opts___] := Gate[S @ {$}, opts]
 
-Gate[ss:{__?QubitQ}, opts:OptionsPattern[]] :=
+Gate[ss:{__?AgentQ}, opts:OptionsPattern[]] :=
   Gate[FlavorCap @ ss, opts] /; Not[FlavorCapQ @ ss]
 
-Gate[cc:{__?QubitQ}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
+Gate[cc:{__?AgentQ}, tt:{__?AgentQ}, opts:OptionsPattern[]] :=
   Gate[Thread[cc -> 1], tt, opts]
 
-Gate[Rule[cc:{__?QubitQ}, v_], tt:{__?QubitQ}, opts:OptionsPattern[]] :=
+Gate[Rule[cc:{__?AgentQ}, v_], tt:{__?AgentQ}, opts:OptionsPattern[]] :=
   Gate[Thread[cc -> v], tt, opts]
 
-Gate[cc:{Rule[_?QubitQ, _]..}, tt:{__?QubitQ}, opts:OptionsPattern[]] :=
+Gate[cc:{Rule[_?AgentQ, _]..}, tt:{__?AgentQ}, opts:OptionsPattern[]] :=
   Gate[FlavorCap @ cc, FlavorCap @ tt, opts] /;
   Not @ FlavorCapQ @ Join[Keys @ cc, tt]
-
 (**** </Gate> *****)
 
 
 (**** <Port> ****)
-
 Port::usage = "Port[expr] is a low-level object representing an input port which is fed value expr or an output port producing value expr in a quantum circuit."
 
 Options[Port] = {
@@ -391,15 +381,13 @@ Options[Port] = {
   "LabelAlignment" -> Automatic (* Usually, {11, 0} for input, and {-1, 0} for output  *)
   (* "Type"  -> 1 (* -1: input, 1: output *) *)
 }
-
 (**** </Port> ****)
 
 
 (**** <ParsePort> ****)
-
 ParsePort::usage = "ParsePort[type][ports] preprocesses ports of type (type = -1 for input and type = 1 for output) in QuantumCircuit."
 
-ParsePort[type_][g_, opts___?OptionQ] := g /; 
+ParsePort[type_][g_, ___?OptionQ] := g /; 
   FreeQ[g, _Ket | _ProductState | _State]
 
 
@@ -434,12 +422,10 @@ ParsePort[type_][vv_Symbol[any__, opts___?OptionQ], more__?OptionQ] :=
 ParsePort[type_][expr:Except[_List], opts___?OptionQ] :=
   Port[type, expr, FilterRules[{opts}, Options @ Port]] /;
     Not @ FreeQ[expr, _Ket|_State]
-
 (**** </ParsePort> ****)
 
 
 (**** <ParseGate> *****)
-
 ParseGate::usage = "ParseGate[expr, opts] is a low-level function to preprocess quantum circuit element expr."
 
 ParseGate[ {gg:Except[_?OptionQ].., opts___?OptionQ}, more___?OptionQ ] := 
@@ -461,12 +447,12 @@ ParseGate[any_?graphicsDirectiveQ, ___?OptionQ] = any
 
 (* Single-qubit gates *)  
 
-ParseGate[op_?QubitQ, opts___?OptionQ] :=
-  Gate[ Qubits @ op, opts, "Label" -> thePauliForm @ op ]
+ParseGate[op_?AgentQ, opts___?OptionQ] :=
+  Gate[ Agents @ op, opts, "Label" -> thePauliForm @ op ]
 
 
 ParseGate[
-  HoldPattern @ Multiply[ss__?QubitQ], 
+  HoldPattern @ Multiply[ss__?AgentQ], 
   opts___?OptionQ
 ] :=
   Map[ParseGate[#, opts]&, Reverse @ {ss}]
@@ -501,12 +487,12 @@ HoldPattern @ ParseGate[Projector[v_, qq_, ___?OptionQ], ___?OptionQ] :=
 
 
 ParseGate[ op:Phase[_, _?QubitQ, opts___?OptionQ], more___?OptionQ ] :=
-  Gate[ Qubits @ op, more, opts, "Label" -> thePauliForm[op] ]
+  Gate[Qubits @ op, more, opts, "Label" -> thePauliForm[op]]
 
-ParseGate[ op:Rotation[_, {_, _, _}, G_?QubitQ, opts___?OptionQ], more___?OptionQ ] :=
+ParseGate[ op:Rotation[_, {_, _, _}, G:(_?QubitQ|_?SpinQ), opts___?OptionQ], more___?OptionQ ] :=
   Gate[Qubits @ G, more, opts, "Label" -> gateLabel @ op]
 
-ParseGate[ op:EulerRotation[{_, _, _}, G_?QubitQ, opts___?OptionQ], more___?OptionQ ] :=
+ParseGate[ op:EulerRotation[{_, _, _}, G:(_?QubitQ|_?SpinQ), opts___?OptionQ], more___?OptionQ ] :=
   Gate[{G}, more, opts, "Label" -> gateLabel @ op]
 
 
@@ -577,31 +563,20 @@ ParseGate[HoldPattern @ Dagger @ iSWAP[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?O
   ]
 
 
-ParseGate[
-  ExchangeGate[{0, 0, phi_}, ss_List, opts___?OptionQ],
-  more___?OptionQ
-] :=
-  Gate[ Most @ ss, {Last @ ss}, more, opts,
-    "Shape" -> "Dot",
-    "ControlShape" -> "Dot",
-    "LinkShape" -> "Wiggly"
-  ] /; AllTrue[Flatten @ ss, QubitQ]
-
 HoldPattern @ ParseGate[ 
   ExchangeGate[_?VectorQ|_?MatrixQ, ss_List, opts___?OptionQ],
   more___?OptionQ
-] :=
-  Gate[ Most @ ss, {Last @ ss}, more, opts,
+] := With[
+  { tt = Flatten[ss] },
+  Gate[ Most @ tt, {Last @ tt}, more, opts,
     "Shape" -> "Dot",
     "ControlShape" -> "Dot",
     "LinkShape" -> "Wiggly"
-  ] /; AllTrue[Flatten @ ss, QubitQ]
+  ] /; AllTrue[tt, AgentQ]
+]
 
 
-ParseGate[
-  Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}, ___?OptionQ],
-  ___?OptionQ
-] :=
+ParseGate[Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}], ___?OptionQ] :=
   Gate[ {a}, {b, c},
     "ControlShape" -> "Dot",
     "Shape" -> "Cross"
@@ -740,12 +715,10 @@ ParseGate[expr:Except[_List], opts___?OptionQ] :=
     Message[QuantumCircuit::elm, expr]; Nothing,
     Gate[Agents @ expr, FilterRules[{opts, Options @ expr}, Options @ Gate]]
   ]
-
 (**** </ParseGate> *****)
 
 
 (**** <measurementLabel> *****)
-
 measurementLabel::usage = "measurementLabel[op] returns the default label of the measurement operator op (only Pauli operators allowed)."
 
 measurementLabel[op_Multiply] := Map[measurementLabel, List @@ op]
@@ -754,7 +727,6 @@ measurementLabel[ss:{___?QubitQ}] := measurementLabel /@ ss
 
 measurementLabel[S_?QubitQ] :=
   FlavorLast[S] /. {0 -> "I", 1 -> "X", 2 -> "Y", 3 -> None, _ -> "?"}
-
 (**** </measurementLabel> *****)
 
 
@@ -1030,7 +1002,6 @@ theSawtooth[a:{_, _}, b:{_, _}, n_Integer, scale_] := Module[
 
 
 (**** <Mark> ****)
-
 Mark::usage = "Mark[text, {x, y}] is similar to Text[text, {x, -y}] but the coordinates {x, -y} are scaled by unit scale of QuantumCircuit and is supposed to be used only inside QuantumCircuit."
 
 
@@ -1040,12 +1011,10 @@ SetAttributes[qcMarks, Listable];
 
 qcMarks @ Mark[text_, {x_, y_}, opts___?OptionQ] := 
   theGateLabel[{x, -y}, "Label" -> text, opts, "LabelStyle" -> {FontSlant -> Plain}]
-
 (**** </Mark> ****)
 
 
 (**** <theGateLabel> ****)
-
 theGateLabel::usage = "theGateLabel[{x, y}] renders the gate label at position {x, y}."
 
 theGateLabel[{x_, y_}, opts___?OptionQ] := Module[
@@ -1073,12 +1042,10 @@ theGateLabel[{x_, y_}, opts___?OptionQ] := Module[
     ]
   ]
 ]
-
 (**** </theGateLabel> ****)
 
 
 (**** <theLinkLabel> ****)
-
 theLinkLabel::usage = "theLinkLabel[{x, y}] renders the link label at position {x, y}."
 
 theLinkLabel[{x_, y_}, opts___?OptionQ] := Module[
@@ -1107,12 +1074,10 @@ theLinkLabel[{x_, y_}, opts___?OptionQ] := Module[
     ]
   ]
 ]
-
 (**** </theLinkLabel> ****)
 
 
 (**** <theMeasurementLabel> ****)
-
 theMeasurementLabel[{x_, y_}, opts___?OptionQ] := Module[
   { label = OptionValue[Gate, {opts}, "Label"],
     factor = OptionValue[Gate, {opts}, "LabelSize"] },
@@ -1127,7 +1092,6 @@ theMeasurementLabel[{x_, y_}, opts___?OptionQ] := Module[
     {-1, -1}
   ]
 ]
-
 (**** </theMeasurementLabel> ****)
 
 
@@ -1185,7 +1149,7 @@ qcDrawGate[Gate[tt:{__?SpeciesQ}, opts___?OptionQ], x_, yy_Association] :=
 
 
 qcDrawGate[qc_QuantumCircuit, x_, yy_Association] := With[
-  { xx = Range[x, qcDepth[qc] + x - 1] },
+  { xx = Range[x, QuantumDepth[qc] + x - 1] },
   ReleaseHold @ Thread[Hold[qcDrawGate][List @@ qc, xx, yy]]
 ]
 (* NOTE: The Inactive-Activate pair may also be used, but is slower. *)
@@ -1243,7 +1207,6 @@ qcSimpleLines[ gg_List, xx_List, yy_Association ] :=
   }
 
 (**** <qcPorts> ****)
-
 qcPorts::usage = "qcPorts[type, expr] handles input (type = -1) or output (type = 1) states expr."
 
 qcPorts[-1|1, Missing["NotFound"], xx_List, yy_Association ] = {}
@@ -1261,12 +1224,10 @@ qcPorts[+1, gg:{___}, xx_List, yy_Association ] := Module[
   ff = ParsePort[+1] @ gg;
   Map[qcDrawPort[#, xy]&, ff]
 ]
-
 (**** </qcPorts> ****)
 
 
 (**** <qcDrawPort> ****)
-
 qcDrawPort::usage = "qcDrawPort renders the input/output ports."
 
 qcDrawPort[gg_List, xy_Association] := Map[qcDrawPort[#, xy]&, gg]
@@ -1335,10 +1296,10 @@ qcDrawPort[
 qcDrawPort[ Port[type_, expr_, ___], _Association ] := (
   Message[QuantumCircuit::noqubit, expr];
   Return @ {};
-) /; Qubits[expr] == {}
+) /; Agents[expr] == {}
 
 qcDrawPort[ Port[type_, expr_, opts___?OptionQ], xy_Association ] := Module[
-  { qq = Qubits @ expr,
+  { qq = Agents @ expr,
     new = FilterRules[Flatten @ {opts, Options @ expr}, Options @ Port],
     txt, brace, pos },
 
@@ -1359,12 +1320,10 @@ qcDrawPort[ Port[type_, expr_, opts___?OptionQ], xy_Association ] := Module[
 ]
 
 qcDrawPort[g_, _Association] := g
-
 (**** </qcDrawPort> ****)
 
 
 (**** <qcPortLabel> ****)
-
 qcPortLabel::usage = "qcPortLabel[type, expr, {x, y}] renders the port label expr at position {x, y} with type = -1 for input and type = 1 for output."
 
 qcPortLabel[type:(-1|1), text_, pos:{_, _}, opts___?OptionQ] := Module[
@@ -1391,23 +1350,19 @@ qcPortLabel[type:(-1|1), text_, pos:{_, _}, opts___?OptionQ] := Module[
     }
   ]
 ]
-
 (**** </qcPortLabel> ****)
 
 
 (**** <qcPortBrace> ****)
-
 qcPortBrace[-1, { a:{_, _}, b:{_, _} } ] :=
   LeftBrace[a, b, "Width" -> $BraceWidth]
 
 qcPortBrace[+1, { a:{_, _}, b:{_, _} } ] :=
   RightBrace[a, b, "Width" -> $BraceWidth]
-
 (**** </qcPortBrace> ****)
 
 
 (**** <RandomQuantumCircuit> ****)
-
 RandomQuantumCircuit::usage = "RandomQuantumCircuit[{p, t}, {s1,s2,\[Ellipsis]}] generates a quantum circuit of depth 3t on qubits {s1,s2,\[Ellipsis]} with alternating unitary and measurement layers. Each unitary layer consists of randomly selected two-qubit unitary gates arranged in a brick-wall pattern, and in a measurement layer, each qubit is measured with probability p in the computational basis.";
 
 RandomQuantumCircuit[{p_?NumericQ, t_Integer}, ss:{___?QubitQ}] :=
@@ -1443,12 +1398,10 @@ randomUnitaryLayer[k_Integer, ss : {___?QubitQ}] := With[
   { qq = Partition[ss[[k ;; All]], 2] },
   QuantumCircuit @ Map[Operator[RandomUnitary[4], #]&, qq]
 ]
-
 (**** </RandomQuantumCircuit> ****)
 
 
 (**** <RandomQuantumCircuitSimulate> ****)
-
 RandomQuantumCircuitSimulate::usage = "RandomQuantumCircuitSimulate[{p,t},{s1,s2,\[Ellipsis]}] simulates a random quantum circuit of depth 3t on qubits {s1,s2,\[Ellipsis]} with alternating unitary and measurement layers. Each unitary layer consists of randomly selected two-qubit unitary gates arranged in a brick-wall pattern, and in a measurement layer, each qubit is measured with probability p in the computational basis.";
 
 RandomQuantumCircuitSimulate::save = "The result could not be saved.";
@@ -1487,12 +1440,10 @@ RandomQuantumCircuitSimulate[{p_?NumericQ, t_Integer},
   ];
   Return[data]
 ]
-
 (**** </RandomQuantumCircuitSimulate> ****)
 
 
 (**** <QuantumScramblingCircuit> ****)
-
 QuantumScramblingCircuit::usage = "QuantumScramblingCircuit[k, {p, t}, {s1,s2,\[Ellipsis]}] generates the main part of a quantum scrambling circuit on qubits {s1,s2,\[Ellipsis]}.";
 
 QuantumScramblingCircuit[k_Integer, {p_, t_}, ss:{___?QubitQ}, rest___] :=
@@ -1519,12 +1470,10 @@ QuantumScramblingCircuit[op_, {p_?NumericQ, t_Integer}, ss:{___?QubitQ}] :=
       "Visible" -> ss (* for t = 0 *)
     ]
   ]
-
 (**** </QuantumScramblingCircuit> ****)
 
 
 (**** <QuantumScramblingSimulate> ****)
-
 QuantumScramblingSimulate::usage = "QuantumScramblingSimulate[{a, b}, {p, t}, {s1,s2,\[Ellipsis]}] classically simulates the quantum scrambling circuit on qubits {s1,s2,\[Ellipsis]}.";
 
 Options[QuantumScramblingSimulate] = {
@@ -1568,12 +1517,10 @@ theOTOC[in_, ub_, qc_QuantumCircuit] := Module[
   vb = QuantumCircuit[in, ub, qc, Dagger @ ub];
   Conjugate[Matrix @ va] . Matrix[vb]
 ]
-
 (**** </QuantumScramblingSimulate> ****)
 
 
 (**** <graphicsDirectiveQ> ****)
-
 graphicsDirectiveQ::usage = "graphicsDirectiveQ[g] returns True if g is a valid graphics directive.";
 
 graphicsDirectiveQ[g_] := MemberQ[$graphicsDirectives, Head @ g]
@@ -1593,7 +1540,6 @@ $graphicsDirectives = {
   (* text & formatting *)
   FontSize, FontFamily, Directive
 };
-
 (**** </graphicsDirectiveQ> ****)
 
 End[]

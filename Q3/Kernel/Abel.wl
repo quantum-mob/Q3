@@ -343,21 +343,22 @@ AnySpeciesQ[ _ ] = False
 
 
 (**** <Agents> ****)
-
-Agents::usage = "Agents[expr] returns the list of all Agents appearing in EXPR."
+Agents::usage = "Agents[expr] returns the list of all Agents appearing in EXPR.\nAngents include Qubit, Qudit, Fermion, Boson, Heisenberg, and Spin."
 
 Agents[expr_] := Select[
   Union @ FlavorMute @ Cases[{expr}, _?SpeciesQ, Infinity],
   AgentQ
- ] /; FreeQ[expr, _Association|_Dyad]
+] /; FreeQ[expr, _Association|_Dyad]
 
 Agents[expr_] :=
   Agents @ Normal[expr /. Dyad -> Hold[Dyad]]
 (* NOTE: This recursion is necessary since Association inside Association is
    not expanded by a single Normal. *)
+(**** </Agents> ****)
 
 
-AgentQ::usage = "AgentQ[a] returns True if a is an Agent.\nAngents include Qubit, Qudit, Fermioin, Boson, Heisenberg, and Spin."
+(**** <AgentQ> ****)
+AgentQ::usage = "AgentQ[a] returns True if a is an Agent.\nAngents include Qubit, Qudit, Fermion, Boson, Heisenberg, and Spin."
 
 AgentQ[_] = False
 
@@ -375,12 +376,10 @@ AnyAgentQ[ Dagger[_?AgentQ] ] = True
 AnyAgentQ[ Tee[_?AgentQ] ] = True
 
 AnyAgentQ[ _ ] = False
-
-(**** </Agents> ****)
+(**** </AgentQ> ****)
 
 
 (**** <NonCommutative> ****)
-
 NonCommutative::usage = "NonCommutative represents a non-commutative element.\nLet[NonCommutative, a, b, \[Ellipsis]] declares a[\[Ellipsis]], b[\[Ellipsis]], \[Ellipsis] to be NonCommutative."
 
 Let[NonCommutative, {ls__Symbol}] := (
@@ -397,6 +396,7 @@ setNonCommutative[x_Symbol] := (
   MultiplyGenus[x] ^= "Singleton";
   MultiplyGenus[x[___]] ^= "Singleton";
 )
+(**** </NonCommutative> ****)
 
 
 (* DEPRECATED *)
@@ -457,11 +457,8 @@ NonCommutativeSpecies[expr_] :=
 (* NOTE: This recursion is necessary since Association inside Association is
    not expanded by a single Normal. *)
 
-(**** </NonCommutative> ****)
-
 
 (**** <SpeciesBox> ****)
-
 $FormatSpecies::usage = "$FormatSpecies controls the formatting of Species. If True, the ouputs of Species are formatted."
 
 $FormatSpecies = True;
@@ -511,7 +508,6 @@ SpeciesBox[c_, sub:{__}, sup:{__}] :=
    when $SubscriptDelimiter=Nothing (or similar). *)
 (* NOTE: ToBoxes have been removed; with it, TeXForm generates spurious
    \text{\[Ellipsis]} *)
-
 (**** </SpeciesBox> ****)
 
 

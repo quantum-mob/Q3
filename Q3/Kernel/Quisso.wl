@@ -1299,7 +1299,6 @@ Unfold[Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ], opts___?OptionQ] :=
 
 
 (**** <Fredkin> ****)
-
 Fredkin::usage = "Fredkin[a, {b, c}] represents the Fredkin gate, i.e., the SWAP gate on b and c controlled by a."
 
 SyntaxInformation[Fredkin] = {
@@ -1337,13 +1336,12 @@ Fredkin /: (* fallback *)
 Unfold[op_Fredkin, ___] = op
 
 Fredkin /:
-Unfold[Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}, ___], ___] := 
+Unfold[Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}], ___] := 
   QuantumCircuit[
     CNOT[c, b],
     CNOT[{a, b}, c],
     CNOT[c, b]
   ]
-
 (**** </Fredkin> ****)
 
 
@@ -3176,7 +3174,6 @@ ModPower::usage = "ModPower represents the modular power or modular exponentiati
 
 
 (**** <ExchangeGate> ****)
-
 ExchangeGate::usage = "ExchangeGate[array,{s1,s2,\[Ellipsis]}] represents the unintary gate governed by the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy."
 
 SetAttributes[ExchangeGate, NHoldRest]
@@ -3249,12 +3246,10 @@ Unfold[ExchangeGate[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}, ___]] :=
 
 (* NOTE: Put it at the end; otherwise, HoldPattern is required everywhere. *)
 ExchangeGate[phi:Except[_List], rest__] := ExchangeGate[{0, 0, phi}, rest]
-
 (**** </ExchangeGate> ****)
 
 
 (**** <Exchange> ****)
-
 Exchange::usage = "Exchange[array,{s1,s2,\[Ellipsis]}] represents the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy."
 
 SetAttributes[Exchange, NHoldRest];
@@ -3298,12 +3293,10 @@ theExchange[gg_?MatrixQ][a_, b_] := MultiplyDot[a[All], gg . b[All]]
 
 (* NOTE: Put it at the end; otherwise, HoldPattern is required everywhere. *)
 Exchange[phi:Except[_List], rest__] := Exchange[{0, 0, phi}, rest]
-
 (**** </Exchange> ****)
 
 
 (**** <Matchgate> ****)
-
 Matchgate::usage = "Matchgate[{a1,b1,c1}, {a2,b2,c2}, {s1,s2}] represents the matchgate on two qubits s1 and s2 parametrized by two sets, {a1,b1,c1} and {a2,b2,c2}, of Euler angles."
 
 Matchgate[aa_, bb_, ss:{__?QubitQ}] :=
@@ -3330,7 +3323,6 @@ Matchgate[aa:{_, _, _}, bb:{_, _, _}] := Dot[
   Matrix @ GivensRotation[TheEulerRotation[aa], {1, 4}, 4],
   Matrix @ GivensRotation[TheEulerRotation[bb], {2, 3}, 4]
 ]
-
 (**** </Matchgate> ****)
 
 Protect[Evaluate @ $symb]
