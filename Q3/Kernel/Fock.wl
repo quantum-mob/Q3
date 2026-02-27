@@ -1069,7 +1069,6 @@ FockPairing[x__] := FockHopping[x] /. {Dagger -> Identity}
 
 
 (**** <FockSpin> ****)
-
 FockSpin::usage = "FockSpin[c] returns the list of the spin operators in all three directions. FockSpin[c,dir] returns the spin operator in the dir direction (dir = 1 for X, 2 for Y, 3 for Z). The spin raising and lowering operator is returned by dir = 4 and 5, respectively. FockSpin[c1, c2, ...] returns the total spin associated with the operators c1, c2, .... FockSpin[c1, c2, ..., dir] returns the total spin in the particular direction dir."
 
 FockSpin[ c_?ParticleQ ] := FockSpin[c, {1,2,3}]
@@ -1079,7 +1078,7 @@ FockSpin[ c_?ParticleQ, dd:{ Repeated[1|2|3,3] } ] :=
 
 FockSpin[ c_?ParticleQ, dir:(1|2|3|4|5) ] := With[
   { cc = c[All] },
-  MultiplyDot[ Dagger @ cc, theWigner[{Spin[c[Any]], dir}], cc]
+  MultiplyDot[ Dagger @ cc, TheWigner[{Spin[c[Any]], dir}], cc]
 ] /; spinfulQ[ c[Any] ]
 (* dir = 4 for Raising,
    dir = 5 for Lowering *)
@@ -1103,28 +1102,6 @@ FockSpin[ ops:{(_?ParticleQ|{__?ParticleQ})..},
 FockSpin[dir:(PatternSequence[]|1|2|3|4|5|{Repeated[1|2|3,3]})][op__] := FockSpin[op, dir]
 
 FockSpin[dir:Repeated[1|2|3,3]][op__] := FockSpin[op, {dir}]
-
-
-theWigner::usage = "theWigner[{J, k}] returns the matrix representation of the angular momentum operator of magnitude J in the k'th direction."
-
-theWigner[{J_?SpinNumberQ, 0}] := IdentityMatrix[2J+1]
-
-theWigner[{J_?SpinNumberQ, 1}] := (theWigner[{J,4}]+theWigner[{J,5}])/2
-
-theWigner[{J_?SpinNumberQ, 2}] := (theWigner[{J,4}]-theWigner[{J,5}])/(2I)
-
-theWigner[{J_?SpinNumberQ, 3}] := DiagonalMatrix @ Range[J,-J,-1]
-
-theWigner[{J_?SpinNumberQ, 4}] := With[
-  { v = Table[Sqrt[J*(J+1)-M*(M+1)], {M, J, -J, -1}] },
-  RotateLeft[ DiagonalMatrix[v] ]
-]
-
-theWigner[{J_?SpinNumberQ, 5}] := With[
-  { v = Table[Sqrt[J*(J+1)-M*(M-1)], {M, J, -J, -1}] },
-  RotateRight[ DiagonalMatrix[v] ]
-]
-
 (**** </FockSpin> ****)
 
 
@@ -1191,7 +1168,6 @@ FockSpinor[c_?ParticleQ] := { c } (* spinless case *)
 
 
 (**** <FockIsospinor> ****)
-
 FockIsospinor::usage = "FockIsospinor[c] returns the (2S+1)-component spinor in the Nambu (i.e., particle-hole) space associate with the fermionic operator c. Unlike FockSpinor, FockIsospinor is defined only for operators with half-integer spins."
 
 SetAttributes[FockIsospinor, Listable]
@@ -1200,7 +1176,6 @@ FockIsospinor[c_?FermionQ] :=
   Garner @ ( c[All] /. { c[j___,s_?Negative] :> Dagger[c[j,s]] } ) /;
   HalfIntegerQ[ TrueSpin[c[Any]] ]
 (* Recall that integer spins are allowed for Fermions. *)
-
 (**** </FockIsospinor> ****)
 
 
@@ -1210,7 +1185,7 @@ SetAttributes[FockIsospin, Listable]
 
 FockIsospin[op_?FermionQ, dir:(1|2|3)] := With[
   { cc = FockIsospinor[op] },
-  Garner @ MultiplyDot[Dagger @ cc, theWigner[{Spin[op[Any]], dir}] . cc]
+  Garner @ MultiplyDot[Dagger @ cc, TheWigner[{Spin[op[Any]], dir}] . cc]
 ] /; HalfIntegerQ[ TrueSpin[op[Any]] ]
 
 FockIsospin[op_] := FockIsospin[op, {1, 2, 3}]

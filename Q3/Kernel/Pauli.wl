@@ -2997,32 +2997,7 @@ Unfold[
 (**** </EulerRotation> ****)
 
 
-(**** <TheExchangeGate> ****)
-(* 2026-02-06 Experimental; Not open to the public yet *)
-TheExchangeGate::usage = "TheExchangeGate[{gx,gy,gz}] returns the 4\[Times]4 unitary matrix due to the ExchangeGate interaction between two qubits or spins.\nTheExchangeGate[mat] assumes that the ExchangeGate interaction is governed by the 3\[Times]3 real symmetric matrix mat."
-
-TheExchangeGate[gg:{gx_, gy_, gz_}] := Module[
-  { ee, mm },
-  ee = ChainBy[{gy, gz, gx, gy}, Plus];
-  ee = Exp[-I*2*ee];
-  mm = (Total[ee] + 1)*ThePauli[{0, 0}] +
-    ({-1, 1, 1}.ee - 1)*ThePauli[{1, 1}] +
-    ({1, -1, 1}.ee - 1)*ThePauli[{2, 2}] +
-    ({1, 1, -1}.ee - 1)*ThePauli[{3, 3}];
-  mm * Exp[I*(gx+gy+gz)] / 4
-] /; VectorQ[gg]
-
-TheExchangeGate[gg_?MatrixQ] := Module[
-  { mm = Tuples[Range @ 3, 2] },
-  mm = Map[ThePauli, mm];
-  mm = Flatten[gg] . mm;
-  MatrixExp[-I*mm]
-] /; MatrixQ[gg, NumericQ]
-(**** </TheExchangeGate> ****)
-
-
 (**** <PauliDot> ****)
-
 PauliDot::usage = "PauliDot[a, b, \[Ellipsis]] represents the non-commutative multiplication between Pauli operators a, b, \[Ellipsis]."
 
 SetAttributes[PauliDot, {Flat, OneIdentity}];
@@ -3110,12 +3085,10 @@ PauliDot[ Pauli[aa_List], Ket[bb_List] ] := CircleTimes @@
 
 PauliDot[ Bra[aa_List], Pauli[bb_List] ] := CircleTimes @@
   PauliDot @@@ Transpose[{Bra /@ aa, Pauli /@ bb}]
-
 (**** </PauliDot> ****)
 
 
 (**** <CircleTimes> ****)
-
 CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, \[Ellipsis].\nWhen a, b, c, \[Ellipsis] are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/CircleTimes\", \"paclet:Q3/ref/CircleTimes\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
 
 SetAttributes[CircleTimes, ReadProtected]
@@ -3165,12 +3138,10 @@ CirclePlus[mm__?MatrixQ] :=
   SparseArray @ BlockDiagonalMatrix[{mm}, TargetStructure -> "Sparse"]
 
 CirclePlus[vv__?VectorQ] := Join[vv]
-
 (**** </CirclePlus> ****)
 
 
 (**** <Dyad> ****)
-
 Dyad::usage = "Dyad[a, b] for two vectors a and b return the dyad (a tensor of order 2 and rank 1) corresponding to the dyadic product of two vectors.\nDyad[a, b, qq] for two associations a and b and for a list qq of Species represents the dyadic product of Ket[a] and Ket[b], i.e., Ket[a]**Bra[b], operating on the systems in qq."
 
 Dyad::one = "Dyad explicitly requires a pair of vectors now."
@@ -3473,12 +3444,10 @@ Dyad[a_?VectorQ] := ( Message[Dyad::one]; Dyad[a, a] ) /; FreeQ[a, _?SpeciesQ]
 
 Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
 (* NOTE: Dagger -- not Conjugate -- in the above two definitions. *)
-
 (**** </Dyad> ****)
 
 
 (**** <DyadForm> ****)
-
 DyadForm::usage = "DyadForm[expr,{s1,s2,..}] converts the operator expression expr to the form in terms of Dyad acting on the systems s1, s2, \[Ellipsis]. If the systems are not specified, then they are extracted from expr.\nDyadForm[mat,{s1,s2,\[Ellipsis]}] converts the matrix representation into an operator expresion in terms of Dyad acting on the systems s1, s2, \[Ellipsis]."
 
 DyadForm[expr_] := RaisingLoweringForm[expr] /; Not @ FreeQ[expr, _Pauli]
@@ -3525,12 +3494,10 @@ theDyadForm[val:{__}, spc:{__?SpeciesQ}] := Module[
   b = MapThread[Part, {LogicalValues @ spc, b}];
   Dyad[AssociationThread[spc -> a], AssociationThread[spc -> b]]
 ]
-
 (**** </DyadForm> ****)
 
 
 (**** <PauliVector> ****)
-
 PauliVector::usage = "PauliVector[mat] returns the Pauli expansion coefficients of the traceless part of 2\[Times]2 matrix mat."
 
 PauliVector::dim = "`` is not a 2\[Times]2 matrix."
@@ -3544,12 +3511,10 @@ PauliVector[mat_] := (
   Message[PauliVector::dim, mat];
   {0, 0, 0}
 )
-
 (**** </PauliVector> ****)
 
 
 (**** <PauliCoefficients> ****)
-
 PauliCoefficients::usage = "PauliCoefficients[mat] gives an Association of coefficients in the expansion of 2^n\[Times]2^n matrix mat in the Pauli matrices."
 
 PauliCoefficients::dim = "The dimensions `` of matrix `` are not integer powers of 2."
@@ -3596,22 +3561,18 @@ thePauliCoeffsRL[mat_?SquareMatrixQ, n_Integer] := Module[
   trs = Association[Most @ ArrayRules @ Chop @ trs];
   KeySort @ KeyReplace[trs, {1 -> 0, 2 -> 4, 3 -> 5, 4 -> 3}]
 ]
-
 (**** </PauliCoefficients> ****)
 
 
 (**** <PauliSeries> ****)
-
 PauliSeries::usage = "PauliSeries[assc] reconstructs the matrix using the Pauli expansion coefficients given in Association assc."
 
 PauliSeries[aa_Association] :=
   Total @ KeyValueMap[(ThePauli[#1] * #2)&, aa]
-
 (**** </PauliSeries> ****)
 
 
 (**** <SchmidtDecomposition> ****)
-
 SchmidtDecomposition::usage = "SchmidtDecomposition[v, {m, n}] returns the Schmidt decomposition of the pure state vector v of a bipartite system of dimensions m and n.\nSchmidtDecomposition[v, {d1, d2, \[Ellipsis]}, {i1, i2, \[Ellipsis]}, {j1, j2, \[Ellipsis]}] returns the Schmidt decomposition of a pure state vector v for a system of multiple subsystems of dimensions d1, d2, \[Ellipsis]. The i1th, i2th, \[Ellipsis] systems are grouped into one part and the j1th, j2th, \[Ellipsis] subsystems are grouped into the other part."
 
 SchmidtDecomposition::baddim = "Incompatible dimensions `1` x `2` for a vector of length `3`."
@@ -3687,12 +3648,10 @@ SchmidtDecomposition[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   ];
   { ww, uu . Basis[aa], vv . Basis[bb] }
 ] /; fKetQ[expr]
-
 (**** </SchmidtDecomposition> ****)
 
 
 (**** <SchmidtForm> ****)
-
 SchmidtForm::usage = "SchmidtForm[\[Ellipsis]] is formally equivalent to SchmidtDecomposition[\[Ellipsis]], but returns the result in the form s1 Ket[u1]\[CircleTimes]Ket[v1] + s2 Ket[u2]\[CircleTimes]Ket[v2] + \[Ellipsis] keeping \[CircleTimes] unevaluated.\nSchmidtForm is for a quick overview of the Schmidt decomposition of the vector in question. For a more thorough analysis of the result, use SchmidtDecomposition."
 
 SchmidtForm[vec_?VectorQ] :=
@@ -3747,12 +3706,10 @@ SchmidtForm[expr_, aa:{__?SpeciesQ}, bb:{__?SpeciesQ}] := Module[
   { ww, uu, vv } = SchmidtDecomposition[expr, aa, bb];
   ww . MapThread[ OTimes, {KetRegulate[uu, aa], KetRegulate[vv, bb]} ]
 ] /; fKetQ[expr]
-
 (**** </SchmidtForm> ****)
 
 
 (**** <PartialTranspose> ****)
-
 PartialTranspose::usage = "PartialTranspose[mat, {i, j, \[Ellipsis]}] returns the partial transposition of the matrix mat with respect to the ith, jth, \[Ellipsis] qubits.\nPartialTranspose[mat, {m, n, \[Ellipsis]}, {i, j, \[Ellipsis]}] assumes subsystems of dimensions m, n, \[Ellipsis].\nPartialTranspose[expr, {s1, s2, \[Ellipsis]}] considers subsystems for the species {s1, s2, \[Ellipsis]}."
 
 PartialTranspose[vec_?VectorQ, dd:{__Integer}, jj:{___Integer}] :=
@@ -3785,12 +3742,10 @@ PartialTranspose[expr_, qq:{__?SpeciesQ}] := Module[
   mm = PartialTranspose[Matrix[expr, ss], dd, jj];
   ExpressionFor[mm, ss]
 ]
-
 (**** </PartialTranspose> ****)
 
 
 (**** <PartialTransposeNorm> ****)
-
 PartialTransposeNorm::usage = "PartialTransposeNorm[rho, spec] returns the trace norm of the partial transpose of rho, where the partial transposition is specified by spec (see PartialTranspose)."
 
 PartialTransposeNorm[vec_?VectorQ, spec__] := TraceNorm @ PartialTranspose[vec, spec]
@@ -3853,12 +3808,10 @@ Negativity[spec__] := (PartialTransposeNorm[spec] - 1) / 2
 LogarithmicNegativity::usage = "LogarithmicNegativity[rho, spec] returns the logarithmic negativity of quantum state rho.\nFor specification spec of the rest of the arguments, see PartialTranspose."
 
 LogarithmicNegativity[spec__] := Log[2, PartialTransposeNorm[spec]]
-
 (**** </PartialTransposeNorm> ****)
 
 
 (**** <PartialTrace> ****)
-
 PartialTrace::usage = "PartialTrace[m, {i,j,\[Ellipsis]}] takes the partial trace over the qubits i, j, \[Ellipsis] and returns the resulting reduced matrix.\nPartialTrace[m, {m,n,\[Ellipsis]}, {i,j,\[Ellipsis]}] assumes a system of dimensions m, n, \[Ellipsis], takes the partial trace over the subsystems i, j, \[Ellipsis], and returns the resulting reduced matrix.\nPartialTrace[v, {i,j,\[Ellipsis]}] and PartialTrace[v, {m,n,\[Ellipsis]}, {i,j,\[Ellipsis]}] are the same but operate on the column vector v. Note that the result is a square matrix, i.e., the reduced density matrix, not a pure-state column vector any longer."
 
 PartialTrace::nosubsys = "Some element of `` is not a subsystem."
@@ -3934,12 +3887,10 @@ PartialTrace[expr_, qq:{__?SpeciesQ}, ss:{__?SpeciesQ}] := Module[
 ]
 (* NOTE: This form is essential, e.g., for
    PartialTrace[Ket[], S@{1,2}, S@{2}] *)
-
 (**** </PartialTrace> ****)
 
 
 (**** <ReducedMatrix> ****)
-
 ReducedMatrix::usage = "ReducedMatrix[vec|mat, {d1, d2, \[Ellipsis]}, {k1, k2, \[Ellipsis]}] returns the reduced matrix from 'vec' or 'mat' after tracing out the subsystems other than k1, k2, \[Ellipsis]. The subsystems are assumed to be associated with the Hilbert spaces with dimensions d1, d2, \[Ellipsis].\nReducedMatrix[vec|mat, {k1, k2, \[Ellipsis]}] assumes that the subsystems are qubits.\nReducedMatrix[expr, {k1, k2, \[Ellipsis]}] assumes that 'expr' is an ket or operator expression for unlabelled qubits k1, k2, \[Ellipsis].\nReducedMatrix[expr, {s1, s2, \[Ellipsis]}] assumes subsystems specified by the species {s1, s2, \[Ellipsis]}."
 
 ReducedMatrix::noqubit = "`` does not seem to be a vector or matrix for qubits."
@@ -3993,12 +3944,10 @@ Reduced[expr_, ss:{__?SpeciesQ}] :=
 Reduced[expr_, jj:{__Integer}] := 
   ExpressionFor[ReducedMatrix[expr, jj]] /;
   Or[fPauliKetQ @ expr, Not @ FreeQ[expr, _Pauli]]
-
 (**** </ReducedMatrix> ****)
 
 
 (**** <Purification> ****)
-
 Purification::usage = "Purification[m] returns the purification of the mixed state m."
 
 Purification[mat_?MatrixQ] := Module[
@@ -4039,7 +3988,6 @@ Purification[rho_] := ExpressionFor @ Purification @ Matrix[rho] /;
 
 Purification[z_?CommutativeQ] := ExpressionFor @ Purification[z * One[2]]
 (* NOTE: Single qubit is assumed. *)
-
 (**** </Purification> ****)
 
 
@@ -4055,7 +4003,6 @@ Snapping[m_?MatrixQ] := Module[
 
 
 (**** <MatrixEmbed> ****)
-
 MatrixEmbed::usage = "MatrixEmbed[mat, {s1,s2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] returns the fully-expanded form of matrix mat that acts on the entire tensor-product space of species {t1,t2,\[Ellipsis]}, where mat represents a linear operator on the Hilbert space of species {s1,s2,\[Ellipsis]}\[Subset]{t1,t2,\[Ellipsis]}."
 
 MatrixEmbed::rmdr = "`` is not entirely contained in ``."
@@ -4138,12 +4085,10 @@ MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
 ] /; If[ And @@ Thread[kk <= Length[dd]], True,
   Message[Matrix::rmndr, kk, Range @ Length @ dd]; False
 ]
-
 (**** </MatrixEmbed> ****)
 
 
 (**** <RandomState> ****)
-
 RandomState::usage = "RandomState[{s1, s2, \[Ellipsis]}] returns a random normalized state vector in the Hilbert space of species {s1, s2, \[Ellipsis]} distributed uniformly in terms of the Haar measure.\nRandomState[{s1, s2, \[Ellipsis]}, n] returns n mutually orthogonal and uniformly distributed state vectors (hence, n cannot be larger than the total Hilbert space dimension)."
 
 RandomState::dim = "Cannot generate more than dimension `` mutually orthogonal states."
@@ -4162,12 +4107,10 @@ RandomState[ss:{__?SpeciesQ}, n_Integer] := With[
     False
   ]
 ]
-
 (**** </RandomState> ****)
 
 
 (**** <HilbertSchmidtNorm> *****)
-
 FrobeniusNorm::usage = "FrobeniusNorm is an alias for HilbertSchmidtNorm."
 
 FrobeniusNorm = HilbertSchmidtNorm
@@ -4245,7 +4188,6 @@ HilbertSchmidtProduct[ss:{___?SpeciesQ}][a_, b_] :=
 
 HilbertSchmidtProduct[a_, b_, ss:{___?SpeciesQ}] :=
   HilbertSchmidtProduct[Matrix[a, ss], Matrix[b, ss]]
-
 (**** </HilbertSchmidtNorm> *****)
 
 

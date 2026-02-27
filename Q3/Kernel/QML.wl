@@ -10,6 +10,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { BlockEncoding };
 
 { QuantumGeometricTensor, FubiniStudyTensor };
+{ QuantumLayer };
 
 Begin["`Private`"]
 
@@ -352,6 +353,32 @@ FubiniStudyTensor[gnr_?ArrayQ, any:(_?VectorQ|_?MatrixQ)] :=
 (* NOTE 1: gnr is supposed to be a one- or two-dimensional array of Hermitian matrices. *)
 (* NOTE 2: any is supposed to be a normalized vector or a list of normalized vectors. *)
 (**** </FubiniStudyTensor> ****)
+
+
+(**** <QuantumLayer> ****)
+QuantumLayer::usage = "QuatnumLayer[gts, gnr] represents a parameterized quantum circuit layer with a list gts of gates, a list gnr of generators and a list prm of parameters."
+(* EXPERIMENTAL: 2026-02-27 v4.5.4 *)
+
+QuantumLayer /:
+MakeBoxes[lyr:QuantumLayer[gg_List, gnr_List], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    QuantumLayer, lyr, None,
+    { BoxForm`SummaryItem @ { "Agents: ", Length @ Agents @ gg },
+      BoxForm`SummaryItem @ { "Depth: ", QuantumDepth @ gg },
+      BoxForm`SummaryItem @ { "Generators: ", gnr }
+    },
+    {},
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+QuantumLayer[gg_?ArrayQ, gnr_?ArrayQ][in_?VectorQ, prm_, val_] := Module[
+  { tsr, out },
+  tsr = FubiniStudyTensor[gnr, in];
+  out = gg . in;
+  {tsr, out}
+]
+(**** </QuantumLayer> ****)
 
 End[]
 

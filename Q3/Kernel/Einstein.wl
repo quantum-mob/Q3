@@ -292,16 +292,28 @@ BravyiMeasurement[kk:{__Integer}][in:BravyiState[{fac_?NumericQ, cvr_?MatrixQ}, 
 
 (**** <changed> ****)
 
+ClebschGordanMatrix[j1_?SpinNumberQ, j2_?SpinNumberQ] := (
+  Message[Q3General::changed, "ClebschGordanMatrix", 
+    "Use the form ClebschGordanMatrix[{j1, j2}]. 2026-02-28 v4.5.4"];
+  ClebschGordanMatrix[{j1, j2}]
+)
+
+WignerBasis[n_Integer, s_?SpinNumberQ] := (
+  Message[Q3General::changed, "WignerBasis", 
+    "Use the form WignerBasis[{n, s}]. 2026-02-28 v4.5.4"];
+  WignerBasis[{n, s}]
+)
+
 WickScramblingCircuit[op_, {ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] := (
   Message[Q3General::changed, "WickScramblingCircuit",
-    "This argumens pattern is now deprecated: use the WickScramblingCircuit[op, {ham -> pdf, p -> n}, k] form. 2026-02-21 v4.5.2"
+    "Use the WickScramblingCircuit[op, {ham -> pdf, p -> n}, k] form. 2026-02-21 v4.5.2"
   ];
   WickScramblingCircuit[op, {ham -> pdf, p -> FermionCount[ham]}, k]    
 )
 
 RandomWickCircuit[{ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] := (
   Message[Q3General::changed, "RandomWickCircuit",
-    "This argumens pattern is now deprecated: use the RandomWickCircuit[{ham -> pdf, p -> n}, k] form. 2026-02-21 v4.5.2"
+    "Use the RandomWickCircuit[{ham -> pdf, p -> n}, k] form. 2026-02-21 v4.5.2"
   ];
   RandomWickCircuit[{ham -> pdf, p -> FermionCount[ham]}, k]  
 )
@@ -309,7 +321,7 @@ RandomWickCircuit[{ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] := (
 
 RandomPick[list_List, p_?NumericQ, rest___] := (
   Message[Q3General::changed, "RandomPick",
-    "The arguments syntax has been changed: use p -> {e1, e2, \[Ellipsis]} or {p1, p2, \[Ellipsis]} -> {e1, e2, \[Ellipsis]}. 2026-02-20 v4.5.2"
+    "Use p -> {e1, e2, \[Ellipsis]} or {p1, p2, \[Ellipsis]} -> {e1, e2, \[Ellipsis]}. 2026-02-20 v4.5.2"
   ];
   RandomPick[p -> list, rest]
 )

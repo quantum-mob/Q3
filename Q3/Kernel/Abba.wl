@@ -26,7 +26,7 @@ Q3General::renamed = "Symbol `` has been renamed ``."
 
 Q3General::deprecated = "Symbol `` is deprecated."
 
-Q3General::changed = "The patterns for the arguments sequence of `1` have been changed: `2`"
+Q3General::changed = "The arguements syntax of `1` has been changed: `2`"
 
 Q3General::angle = "An angle should come first in the sequence of arguments for ``. Effective since Q3 v1.2.0."
 

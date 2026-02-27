@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.5.4
+
+- New: KeyReverseSort, KeyReverseSortBy, PrintClebschGordanMatrix
+- Improved: WignerBasis, ClebschGordanMatrix
+
 ## 4.5.3
 
 - Improved: QuantumGeometricTensor, FubiniStudyTensor

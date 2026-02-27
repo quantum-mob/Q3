@@ -18,7 +18,8 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { CoefficientTensor };
 
-{ Spin, Spins, SpinQ, SpinNumberQ };
+{ Spin, Spins, SpinQ, SpinNumberQ,
+  TheWigner };
 { Qubit, Qubits, QubitQ };
 { Qudit, Qudits, QuditQ };
 { Boson, Bosons, BosonQ, AnyBosonQ };

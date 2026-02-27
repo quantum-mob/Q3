@@ -11,7 +11,9 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { ListPartitions, PartitionInto };
 { ShiftLeft, ShiftRight,
   TrimLeft, TrimRight };
-{ KeyGroupBy, KeyReplace, CheckJoin };
+{ KeyReverseSort, KeyReverseSortBy, 
+  KeyGroupBy, KeyReplace, 
+  CheckJoin };
 { ReplaceRules, ReplaceRulesBy };
 { ZeroQ, ArrayZeroQ };
 { CountsFor, PseudoDivide };
@@ -353,6 +355,20 @@ TrimRight[a_?VectorQ, n_Integer : 0] := Module[
   While[Length[new] > n && ZeroQ[Last @ new], new = Most[new]];
   new
 ]
+
+
+KeyReverseSort::usage = "KeyReverseSort[assoc] reversely orders the elements of an association by sorting its keys."
+
+KeyReverseSort[a__Association] := KeyReverseSort[Normal @ a]
+
+KeyReverseSort[a:{___Rule}] := Association @ ReverseSortBy[a, First]
+
+
+KeyReverseSortBy::usage = "KeyReverseSortBy[assoc] reversely sorts the elements of an association in the order defined by applying f to each of their keys."
+
+KeyReverseSortBy[a__Association, f_] := KeyReverseSortBy[Normal @ a, f]
+
+KeyReverseSortBy[a:{___Rule}, f_] := Association @ ReverseSortBy[a, f @* First]
 
 
 (**** <KeyGroupBy> ****)
