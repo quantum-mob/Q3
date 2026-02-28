@@ -654,16 +654,15 @@ addWignerBasis[s_?SpinNumberQ][bs_Association] := KeyReverseSortBy[
   Reverse
 ]
 
-(* NOTE: One could use addWignerBasis[S] and then convert the result to vectors. However, the following is faster. *)
-addWignerBasis[s_?SpinNumberQ][jj:{__?SpinNumberQ} -> bs_?MatrixQ] := Module[
-  { j = Last[jj],
-    njj, nbs },
-  njj = Range[j+s, Abs[j-s], -1];
-  nbs = Flatten[TensorProduct[bs, One[2*s+1]], {{1,3}, {2,4}}];
-  nbs = Transpose[ClebschGordanMatrix[{j, s}]].nbs;
-  nbs = TakeList[nbs, 2*njj+1];
-  njj = Thread @ Append[jj, njj];
-  AssociationThread[njj -> nbs]
+addWignerBasis[s_?SpinNumberQ][key:{__?SpinNumberQ} -> val_?MatrixQ] := Module[
+  { j = Last[key],
+    new, elm },
+  new = Range[j+s, Abs[j-s], -1];
+  elm = Flatten[TensorProduct[val, One[2*s+1]], {{1, 3}, {2, 4}}];
+  elm = Transpose[ClebschGordanMatrix[{j, s}]] . elm;
+  elm = TakeList[elm, 2*new+1];
+  new = Thread @ Append[key, new];
+  AssociationThread[new -> elm]
 ]
 
 (* single node *)
@@ -673,24 +672,23 @@ WignerBasis[{1, s_?SpinNumberQ} -> s_] := WignerBasis[{1, s}]
 WignerBasis[{1, s_?SpinNumberQ} -> _] := <||>
 
 WignerBasis[{n_Integer, s_?SpinNumberQ} -> t_?SpinNumberQ] := Module[
-  { sub, new },
+  { sub, new, bs },
   sub = Range[t+s, Abs[t-s], -1];
   sub = Select[sub, # <= (n-1)*s &];
   new = Association @ Table[
     bs = WignerBasis[{n-1, s} -> j];
-    Join @ AssociationMap[addWignerBasis[{j, s} -> t], bs],
+    Join @ AssociationMap[addWignerBasis[s -> t], bs],
     {j, sub}
   ];
   new = Map[Map @ Identity, new];
   KeyReverseSortBy[new, Reverse]
 ]
 
-addWignerBasis[{j1_, j2_} -> j_][jj:{__?SpinNumberQ} -> bs_?MatrixQ] := Module[
-  { njj, nbs },
-  nbs = Flatten[TensorProduct[SparseArray @ bs, One[2*j2+1]], {{1,3}, {2,4}}];
-  nbs = Transpose[ClebschGordanMatrix[{j1, j2} -> j]].nbs;
-  njj = Append[jj, j];
-  njj -> nbs
+addWignerBasis[s_ -> t_][key:{__?SpinNumberQ} -> val_?MatrixQ] := Module[
+  { elm },
+  elm = Flatten[TensorProduct[SparseArray @ val, One[2*s+1]], {{1, 3}, {2, 4}}];
+  elm = Transpose[ClebschGordanMatrix[{Last @ key, s} -> t]] . elm;
+  Append[key, t] -> elm
 ]
 (**** </WignerBasis> ****)
 

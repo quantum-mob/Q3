@@ -56,7 +56,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-$symbs = Unprotect[Missing]
+$symb = Unprotect[Missing]
 
 (**** <Boson> ****)
 
@@ -2654,7 +2654,7 @@ HoldPattern @
 (**** </FermionTimeReversal> ****)
 
 
-Protect[ Evaluate @ $symbs ]
+Protect[ Evaluate @ $symb ]
 
 End[]
 

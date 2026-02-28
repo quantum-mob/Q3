@@ -130,7 +130,7 @@ OrderedPartitions[n_Integer, kk:{_Integer, _Integer}, ss:{___Integer}] :=
 theOrderedPartitions[pp:{___List}] :=
   ReverseSort @ Catenate[Permutations /@ pp]
 (* NOTE: ReverseSort is necessary for consistency with BosonBasis and BosonBasisChange. *)
-(**** <OrderedPartitions> ****)
+(**** </OrderedPartitions> ****)
 
 
 ContentVector::usage = "ContentVector[{m1,m2,\[Ellipsis],md}] returns an n-tuple of content {m1,m2,\[Ellipsis],md}, where n=m1+m2+\[Ellipsis]+md. The content of a tuple is a sequence of the multiplicities of entries in the tuple."
@@ -248,6 +248,7 @@ SupplementBy[a_List, b__List, f_] := Module[
   Pick[a, aa]
  ]
 
+
 Common::usage = "Common[a, b, c, \[Ellipsis]] returns the elements of a that appear in all subsequent lists.\nIt is similar to the built-in function Intersection, but treats the first argument as a List (not mathematical sets) and hence preserves the order."
 
 Common[a_List, b__List] := Cases[ a, Alternatives @@ Intersection[b], 1 ]
@@ -255,6 +256,7 @@ Common[a_List, b__List] := Cases[ a, Alternatives @@ Intersection[b], 1 ]
 
 (* Common[a_List, b_List] := Select[a, MemberQ[b,#]& ] *)
 (* Implementation 1: Straightforward, but slow. *)
+
 
 CommonBy::usage = "CommonBy[a, b, c, \[Ellipsis], func] returns the elements of a that appear in all of b, c, \[Ellipsis] with all the tests made after applying func.\nLike Common, the order is preserved."
   
@@ -266,7 +268,9 @@ CommonBy[a_List, b__List, func_] := Module[
   Pick[a, aa]
  ]
 
+
 SignatureTo::usage = "SignatureTo[a, b] returns the signature of the permutation that converts the list a to b, where the two lists are assumed to differ only in the order of their elements."
+
 SignatureTo[a_, b_] := 
   Signature @ PermutationList @ FindPermutation[a, b] /;
   Length[a] == Length[b]
@@ -452,30 +456,11 @@ CheckJoin[aa__Association] := Merge[ {aa},
 
 
 (**** <Ranking> ****)
-
-(* Ordering vs Ranking in terms of MATLAB
- 
-   idx = Ordering[A], then A[idx] == sort(A)
-   jdx = Ranking [A], A = B(jdx), where B = sort (A)
- 
-   In other words, the ranking index jdx indicates at what position a given
-   elemetn of a will appear if the elements are sorted.
-
-   Of course, Ordering() is redundant in MATLAB since the same idx can be
-   obtained from [B, idx] = sort(A).
-
-   See also:
-   Mason/Mathey/Ranking()
-   Mason/Mathey/Ordering()
-   
-   *)
-
 Ranking::usage="Ranking[LIST] returns a list whose entries are the ranks of the corresponding elements in LIST when put in order.\nRanking[LIST, TEST] determines the ordering with the test function TEST.\nOrdering vs Ranking: see the Mathematica built-in function Ordering."
 
-Ranking[list_] := Ordering[Ordering[list]]
+Ranking[list_] := Ordering[Ordering @ list]
 
 Ranking[list_, f_] := Ordering[Ordering[list, All, f]]
-
 (**** </Ranking> ****)
 
 

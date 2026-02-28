@@ -9,7 +9,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-$symbs = Unprotect[Power]
+$symb = Unprotect[Power]
 
 
 (**** <Grassmann> ****)
@@ -189,7 +189,7 @@ GrassmannGrade[_] = 0
 (**** </GrassmannGrade> ****)
 
 
-Protect[ Evaluate @ $symbs ]
+Protect[ Evaluate @ $symb ]
 
 End[]
 

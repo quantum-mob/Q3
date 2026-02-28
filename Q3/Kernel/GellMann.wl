@@ -16,7 +16,7 @@ Begin["`Private`"]
 
 ClearAll["`*"];
 
-$symbs = Unprotect[Dot]
+$symb = Unprotect[Dot]
 
 TheGellMann::usage="TheGellMann[n] (n=1,2,...,8) gives the original Gell-Mann matrices, a particular basis for the su(3) algebra by Murray Gell-Mann.\n TheGellMann[{i,j}] ..."
 
@@ -283,7 +283,7 @@ Dot[ Bra[c_, d__], GellMann[a_, b__] ] := CircleTimes @@
   Dot @@@ Transpose[{ Bra /@ {c,d}, GellMann /@ {a,b} }]
 
 
-Protect[ Evaluate @ $symbs ]
+Protect[ Evaluate @ $symb ]
 
 End[]
 
