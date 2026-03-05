@@ -918,7 +918,7 @@ WickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] :=
 
 
 (**** <WickPureQ> ****)
-WickPureQ::usage = "WickPureQ[grn] returns True if the single-particle Green's function matrix grn represents a prue state; False, otherwise.\nWickPureQ[ws] always return True for a Wick state ws."
+WickPureQ::usage = "WickPureQ[grn] returns True if the single-particle Green's function matrix grn represents a prue state; and False, otherwise.\nWickPureQ[ws] always returns True for a Wick state ws."
 
 WickPureQ[ws_WickState] = True
 
