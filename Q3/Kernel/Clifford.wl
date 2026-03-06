@@ -361,7 +361,6 @@ Multiply[pre___, msr_PauliDecoherence, cs_CliffordState] :=
 
 
 (**** <CliffordUnitary> ****)
-
 CliffordUnitary::usage = "CliffordUnitary[mat] represents a Clifford unitary operator corresponding to full Gottesman matrix mat."
 
 CliffordUnitary::bad = "`` is not a proper Gottesman matrix."
@@ -430,13 +429,23 @@ Dagger[CliffordUnitary[mat_?MatrixQ, more___, opts___?OptionQ]] := Module[
 ]
 
 CliffordUnitary /:
-Matrix[CliffordUnitary[mat_?MatrixQ, kk:{__Integer}, ___?OptionQ], n_Integer] :=
-  MatrixEmbed[FromGottesmanMatrix[mat], kk, n]
+MatrixForm[cu_CliffordUnitary, rest___] := MatrixForm[First @ cu, rest]
+
+CliffordUnitary /:
+ArrayShort[cu_CliffordUnitary, rest___] := ArrayShort[First @ cu, rest]
+
 
 CliffordUnitary /:
 Matrix @ CliffordUnitary[mat_?MatrixQ, ___?OptionQ] :=
   FromGottesmanMatrix[mat]
 
+CliffordUnitary /:
+Matrix[CliffordUnitary[mat_?MatrixQ, kk:{__Integer}, ___?OptionQ]] :=
+  MatrixEmbed[FromGottesmanMatrix[mat], kk, Max @ kk]
+
+CliffordUnitary /:
+Matrix[CliffordUnitary[mat_?MatrixQ, kk:{__Integer}, ___?OptionQ], n_Integer] :=
+  MatrixEmbed[FromGottesmanMatrix[mat], kk, n]
 (**** </CliffordUnitary> ****)
 
 

@@ -45,7 +45,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { Rotation, EulerRotation,
   TheRotation, TheEulerRotation };
 
-{ Exchange, ExchangeGate };
+{ Exchange, ExchangeExp };
 
 { RotationAngle, RotationAxis, RotationSystem,
   TheEulerAngles }
@@ -1004,7 +1004,7 @@ KetNorm[0] = 0
 
 KetNorm[z_?CommutativeQ * any_Ket] := Abs[z]
 
-KetNorm[expr_] := Norm[Matrix @ expr] /; Not @ FreeQ[expr, _Ket]
+KetNorm[expr_] := Norm[Matrix @ expr] /; Not @ FreeQ[expr, _Ket | _State]
 
 
 KetNormalize::usage = "KetNormalize[expr] returns the normalized form of a ket expression expr.\nKetNormalize[expr, f] normalizes with respect to the norm function f."
@@ -1269,7 +1269,6 @@ BraKet[a_Association, b_Association] := With[
 
 
 (**** <State> ****)
-
 State::usage = "State[vec, {s1,s2,\[Ellipsis]}] represents the state of the systems {s1, s2, \[Ellipsis]} with the vector representation vec."
 
 SyntaxInformation[State] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
@@ -1370,27 +1369,47 @@ Multiply[pre___, op:Except[_Plus|_Times], State[vec_?VectorQ, ss:{__?SpeciesQ}, 
       post
     ]
   ]
-
-
 (**** </State> ****)
 
 
 (**** <StateForm> ****)
-
 StateForm::usage = "StateForm[expr] converts the Ket expression expr to State[vec, {s1, s2, \[Ellipsis]}."
 
-StateForm[expr_?fKetQ] := With[
+StateForm[expr_?fKetQ, opts___?OptionQ] := With[
   { ss = Agents @ expr },
-  State[Matrix[expr, ss], ss]
+  State[Matrix[expr, ss], ss, opts]
 ]
 
 StateForm[vec_ProductState] := Unfold[vec]
-
 (**** </StateForm> ****)
 
 
-(**** <Operator> ****)
+(**** <RandomState> ****)
+RandomState::usage = "RandomState[{s1, s2, \[Ellipsis]}] returns a random normalized state vector in the Hilbert space of species {s1, s2, \[Ellipsis]} distributed uniformly in terms of the Haar measure.\nRandomState[{s1, s2, \[Ellipsis]}, n] returns n mutually orthogonal and uniformly distributed state vectors (hence, n cannot be larger than the total Hilbert space dimension)."
 
+RandomState::dim = "Cannot generate more than dimension `` mutually orthogonal states."
+
+RandomState[S_?SpeciesQ, rest___] := RandomState[S @ {$}, rest]
+
+RandomState[ss:{__?SpeciesQ}, rest___] := RandomState[FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
+
+RandomState[ss:{__?SpeciesQ}, rest___] := First @ RandomState[ss, 1, rest]
+
+RandomState[ss:{__?SpeciesQ}, n_Integer, opts___?OptionQ] := With[
+  { dim = Whole[Dimension @ ss] },
+  Map[
+    State[#, ss, opts]&,
+    Transpose @ RandomIsometric[{dim, n}]
+  ] /;
+  If[ dim >= n, True,
+    Message[RandomState::dim, dim];
+    False
+  ]
+]
+(**** </RandomState> ****)
+
+
+(**** <Operator> ****)
 Operator::usage = "Operator[mat, {s1,s2,\[Ellipsis]}] represents the operator acting on systems {s1, s2, \[Ellipsis]} with the matrix representation mat."
 
 SyntaxInformation[Operator] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
@@ -1461,12 +1480,10 @@ Multiply[
     post
     ]
   ]
-
 (**** </Operator> ****)
 
 
 (**** <OperatorExp> ****)
-
 OperatorExp::usage = "OperatorExp[mat, {s1,s2,\[Ellipsis]}] represents the operator acting on systems {s1, s2, \[Ellipsis]} with the matrix representation Exp[-I*mat]."
 
 SyntaxInformation[OperatorExp] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
@@ -1537,12 +1554,10 @@ Multiply[
     post
     ]
   ]
-
 (**** </OperatorExp> ****)
 
 
 (**** <RaisingLoweringForm> ****)
-
 RaisingLoweringForm::usage = "RaisingLoweringForm[expr] converts expr by rewriting Pauli or Spin X and Y operators in terms of the raising and lowering operators."
 
 RaisingLoweringForm[expr_] := Garner[expr //. $RaisingLoweringRules]
@@ -1551,7 +1566,6 @@ $RaisingLoweringRules = {
   Pauli[a___, 1, b___] :> (Pauli[a, 4, b] + Pauli[a, 5, b]),
   Pauli[a___, 2, b___] :> (Pauli[a, 4, b] - Pauli[a, 5, b]) / I
  }
-
 (**** </RaisingLoweringForm> ****)
 
 
@@ -1569,7 +1583,6 @@ Hexadecant::usage = "Hexadecant represents the phase gate with phase angle 2*\[P
 
 
 (**** <Pauli> ****)
-
 Pauli::usage = "Pauli[n] represents the Pauli operator (n=1,2,3). Pauli[0] represents the 2x2 identity operator. Pauli[4] and Pauli[5] represent the Pauli raising and lowering operator, respectively. Pauli[6] represents the Hadamard operator. Pauli[7], Pauli[8], Pauli[9] represent the quadrant, octant, hexadecant phase operator, respectively.\nPauli[10] returns (Pauli[0]+Pauli[1])/2, the Projection to Ket[0].\nPauli[11] returns (Pauli[0]-Paui[1])/2, the projection to Ket[1].\nPauli[{n1, n2, \[Ellipsis]}] represents the tensor product of the Pauli operators Pauil[n1], Pauli[n2], \[Ellipsis]."
 
 Pauli::dot = "Different lengths of Pauli indices `` and ``."
@@ -1754,7 +1767,6 @@ HoldPattern @ Multiply[pre___, op__Pauli, vec_Ket, post___] :=
 
 HoldPattern @ Multiply[pre___, op_Pauli, more__Pauli, Shortest[post___]] :=
   Multiply[pre, PauliDot[op, more], post]
-
 (**** </Pauli> ****)
 
 
@@ -4086,28 +4098,6 @@ MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
   Message[Matrix::rmndr, kk, Range @ Length @ dd]; False
 ]
 (**** </MatrixEmbed> ****)
-
-
-(**** <RandomState> ****)
-RandomState::usage = "RandomState[{s1, s2, \[Ellipsis]}] returns a random normalized state vector in the Hilbert space of species {s1, s2, \[Ellipsis]} distributed uniformly in terms of the Haar measure.\nRandomState[{s1, s2, \[Ellipsis]}, n] returns n mutually orthogonal and uniformly distributed state vectors (hence, n cannot be larger than the total Hilbert space dimension)."
-
-RandomState::dim = "Cannot generate more than dimension `` mutually orthogonal states."
-
-RandomState[S_?SpeciesQ, spec___] := RandomState[S @ {$}, spec]
-
-RandomState[ss:{__?SpeciesQ}, spec___] := RandomState[FlavorCap @ ss, spec] /; Not[FlavorCapQ @ ss]
-
-RandomState[ss:{__?SpeciesQ}] := First @ RandomState[ss, 1]
-
-RandomState[ss:{__?SpeciesQ}, n_Integer] := With[
-  { dim = Whole[Dimension @ ss] },
-  Basis[ss] . RandomIsometric[{dim, n}] /;
-  If[ dim >= n, True,
-    Message[RandomState::dim, dim];
-    False
-  ]
-]
-(**** </RandomState> ****)
 
 
 (**** <HilbertSchmidtNorm> *****)

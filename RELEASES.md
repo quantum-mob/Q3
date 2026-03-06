@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.5.6
+
+- Improved: State, StateForm, RandomState, ControlledGate
+- Renamed: ExchangeGate --> ExchangeExp
+
 ## 4.5.4
 
 - New: KeyReverseSort, KeyReverseSortBy, PrintClebschGordanMatrix

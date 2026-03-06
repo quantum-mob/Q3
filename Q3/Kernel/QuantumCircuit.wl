@@ -509,7 +509,7 @@ ParseGate[
 ParseGate[
   ControlledGate[
     cc:{Rule[_?QubitQ, _?BinaryQ]..},
-    op:(_Phase|_Rotation|_EulerRotation|_ActOn|_Gate),
+    op:(_Phase|_Rotation|_EulerRotation|_ActOn|_ExchangeExp|_Gate),
     opts___?OptionQ
   ],
   more___?OptionQ
@@ -564,7 +564,7 @@ ParseGate[HoldPattern @ Dagger @ iSWAP[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?O
 
 
 HoldPattern @ ParseGate[ 
-  ExchangeGate[_?VectorQ|_?MatrixQ, ss_List, opts___?OptionQ],
+  ExchangeExp[_?VectorQ|_?MatrixQ, ss_List, opts___?OptionQ],
   more___?OptionQ
 ] := With[
   { tt = Flatten[ss] },

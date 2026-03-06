@@ -904,16 +904,26 @@ WickOccupation[ws_WickState] :=
   WickOccupation[ws, Range @ FermionCount @ ws]
 
 (* canonical form for normal models *)
-WickOccupation[ws_WickState, kk:{___Integer}] := Module[
-  { grn = WickGreen[ws, kk] },
-  grn = 1 - Diagonal[grn];
-  grn[[kk]]
-]
+WickOccupation[ws_WickState, kk:{___Integer}] := 
+  WickOccupation[WickGreen[ws, kk], kk]
 
-(* for large data *)
+(* shortcut *)
+WickOccupation[grn_?MatrixQ] := 
+  WickOccupation[grn, Range @ Length @ grn]
+
+(* for a Green's function matrix *)
+WickOccupation[grn_?MatrixQ, kk:{___Integer}] := 
+  1 - Part[Diagonal @ grn, kk]
+
+(* for an array of Wick states *)
 WickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := 
   arrayMap[WickOccupation[#, kk]&, data] /;
   ArrayQ[data, _, MatchQ[#, _WickState]&]
+
+(* for an array of Green's function matrices *)
+WickOccupation[data_, kk:Repeated[{___Integer}, {0, 1}]] := 
+  arrayMap[WickOccupation[#, kk]&, data, {-2}] /;
+  And[ArrayDepth[data] > 2, ArrayQ[data, _, NumericQ]]
 (**** </WickOccupation> ****)
 
 
@@ -1976,7 +1986,7 @@ WickEntanglementEntropy[any_, {}] = 0
 WickEntanglementEntropy[in_WickState, kk:{___Integer}] :=
   WickEntanglementEntropy[WickGreen[in, kk], kk]
 
-(* for normal models *)
+(* for a Green's function matrix *)
 WickEntanglementEntropy[grn_?MatrixQ, kk:{__Integer}] :=
   WickEntropy @ grn[[kk, kk]] /; 
   MatrixQ[grn, NumericQ]

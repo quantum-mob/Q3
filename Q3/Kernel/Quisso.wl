@@ -61,7 +61,7 @@ AddElaborationPatterns[
   _Phase, _Rotation, _EulerRotation,
   _Projector, _ProductState,
   _ControlledPower,
-  _ExchangeGate,
+  _ExchangeExp,
   _Matchgate
 ]
 
@@ -1824,7 +1824,6 @@ sequenceCNOT[cc:{_, __}] := With[
 
 
 (**** <UniformlyControlledGate> ****)
-
 UniformlyControlledGate::usage = "UniformlyControlledGate[{c1,c2,\[Ellipsis],cn}, {op1,op2,\[Ellipsis],op2n}] represents the uniformly-controlled unitary gate operating op1, op2, \[Ellipsis], op2n depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis], cn."
 
 UniformlyControlledGate::list = "The length of `` is not an integer power of 2."
@@ -1903,12 +1902,10 @@ Multiply[ pre___,
  *)
 (* NOTE: DO NOT put "UniformlyControlledGate /:". Otherwise, the above
    rule with UniformlyControlledGate[...]**Ket[] is overridden. *)
-
 (**** </UniformlyControlledGate> ****)
 
 
 (**** <Oracle/Classical> ****)
-
 Oracle::range = "Input value `` is out of the domain of function `` from ``-bit string to ``-bit string; Mod[`1`,Power[2,`3`]] is used.";
 
 Oracle::undef = "Function `` from ``-bit string to ``-bit string is ill-defined at ``.";
@@ -1936,12 +1933,10 @@ Oracle[f_, m_Integer, n_Integer][x:{(0|1) ..}] := Module[
      )
    ]
  ]
-
 (**** </Oracle/Classical> ****)
 
 
 (**** <Oracle> ****)
-
 Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits.\nOracle[f, m, n] represents the classical oracle f:{0,1}^m \[RightArrow] {0,1}^n that provides the flexibility for input form while keeping the consistency of output form."
 
 Oracle /:
@@ -1998,12 +1993,10 @@ Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, ___] := Module[
   ];
   Total @ KeyValueMap[KroneckerProduct[#2, #1]&, bb]
 ]
-
 (**** </Oracle> ****)
 
 
 (**** <QFT> ****)
-
 QFT::usage = "QFT[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transform on the qubits S1, S2, \[Ellipsis].\nDagger[QFT[\[Ellipsis]]] represents the inverse quantum Fourier transform.\nElaborate[QFT[\[Ellipsis]]] returns the explicit expression of the operator in terms of the Pauli operators."
 
 QFT::mat = "Some elements of `` do not appear in `` for Matrix[QFT[\[Ellipsis]]]."
@@ -2247,12 +2240,10 @@ qftPushPhase[+1, ss:{__?QubitQ}, flag_, m_Integer][k_Integer] :=
       ss[[k]][6]
     ]
   ]
-
 (**** </QFT> ****)
 
 
 (**** <QBR> ****)
-
 QBR::usage = "QBR[{s1, s2, \[Ellipsis]}] represents the quantum bit-reversal transform on the qubits s1, s2, \[Ellipsis].\nQBR is a generalization of the SWAP gate for more than two qubits."
 
 QBR::mat = "Some elements of `` do not appear in `` for Matrix[QBR[\[Ellipsis]]]."
@@ -2354,12 +2345,10 @@ UnfoldAll[op_QBR, ___] = op (* fallback *)
 QBR /:
 UnfoldAll[op:QBR[ss:{__?QubitQ}, ___], ___] := 
   Unfold[Unfold @ op]
-
 (**** </QBR> ****)
 
 
 (**** <QCR> ****)
-
 QCR::usage = "QCR[{s1, s2, \[Ellipsis]}] represents the quantum circle reflection on the qubits s1, s2, \[Ellipsis]."
 
 QCR::mat = "Some elements of `` do not appear in `` for Matrix[QCR[\[Ellipsis]]]."
@@ -2454,12 +2443,10 @@ UnfoldAll[op:QCR[ss:{__?QubitQ}, ___], ___] := With[
   { qft = Drop[UnfoldAll[QFT @ ss], -2] },
   QuantumCircuit[qft, Reverse @ qft]
 ]
-
 (**** </QCR> ****)
 
 
 (**** <Projector> ****)
-
 Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection operator on the qubits {q1, q2, ...} into state, which is given in the Ket expression.\nProjector[expr] automatically extracts the list of qubits from expr."
 
 Projector::noket = "No Ket expression found for projection in the provided expression ``. Identity operator is returned."
@@ -2492,7 +2479,6 @@ Projector[expr_, qq:{__?QubitQ}] :=
 
 Projector[expr_, qq:{__?QubitQ}] :=
   (Message[Projector::noket, expr]; 1) /; FreeQ[expr, _Ket]
-
 (**** </Projector> ****)
 
 
@@ -3173,15 +3159,15 @@ ModPower::usage = "ModPower represents the modular power or modular exponentiati
 (**** </ModPower> ****)
 
 
-(**** <ExchangeGate> ****)
-ExchangeGate::usage = "ExchangeGate[array,{s1,s2,\[Ellipsis]}] represents the unintary gate governed by the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy."
+(**** <ExchangeExp> ****)
+ExchangeExp::usage = "ExchangeExp[array,{s1,s2,\[Ellipsis]}] represents the unintary gate governed by the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy."
 
-SetAttributes[ExchangeGate, NHoldRest]
+SetAttributes[ExchangeExp, NHoldRest]
 
-ExchangeGate /:
-MakeBoxes[op:ExchangeGate[gg_?ArrayQ, ss_List, opts___?OptionQ], fmt_] :=
+ExchangeExp /:
+MakeBoxes[op:ExchangeExp[gg_?ArrayQ, ss_List, opts___?OptionQ], fmt_] :=
   BoxForm`ArrangeSummaryBox[
-    ExchangeGate, op, None,
+    ExchangeExp, op, None,
     { BoxForm`SummaryItem @ {"Species: ", Flatten @ ss},
       BoxForm`SummaryItem @ {"Coupling constants: ", ArrayShort @ gg} },
     { BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
@@ -3193,50 +3179,50 @@ MakeBoxes[op:ExchangeGate[gg_?ArrayQ, ss_List, opts___?OptionQ], fmt_] :=
   ]
 
 
-ExchangeGate /:
-NonCommutativeQ[ ExchangeGate[_, __] ] = True
+ExchangeExp /:
+NonCommutativeQ[ ExchangeExp[_, __] ] = True
 
-ExchangeGate /:
-MultiplyKind[ ExchangeGate[_, ss:{___?SpeciesQ}, ___] ] := 
+ExchangeExp /:
+MultiplyKind[ ExchangeExp[_, ss:{___?SpeciesQ}, ___] ] := 
   MultiplyKind[First @ Flatten @ ss]
 
-ExchangeGate /:
-MultiplyGenus[ ExchangeGate[_, __] ] = "Singleton"
+ExchangeExp /:
+MultiplyGenus[ ExchangeExp[_, __] ] = "Singleton"
 
 
-ExchangeGate[gg_, ss_List, rest___] :=
-  ExchangeGate[gg, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
+ExchangeExp[gg_, ss_List, rest___] :=
+  ExchangeExp[gg, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
 
 
-ExchangeGate /:
-Elaborate[op:ExchangeGate[_?ArrayQ, ss_List, ___]] :=
+ExchangeExp /:
+Elaborate[op:ExchangeExp[_?ArrayQ, ss_List, ___]] :=
   Elaborate @ ExpressionFor[Matrix @ op, Flatten @ ss] 
 
-ExchangeGate /:
-Matrix[ExchangeGate[gg_?ArrayQ, ss_List, ___]] := 
+ExchangeExp /:
+Matrix[ExchangeExp[gg_?ArrayQ, ss_List, ___]] := 
   MatrixExp[-I*Matrix[Exchange[gg, ss]]]
 
-ExchangeGate /:
-Matrix[op:ExchangeGate[gg_?ArrayQ, ss_List, ___], tt:{___?SpeciesQ}] := 
+ExchangeExp /:
+Matrix[op:ExchangeExp[gg_?ArrayQ, ss_List, ___], tt:{___?SpeciesQ}] := 
   MatrixEmbed[Matrix @ op, Flatten @ ss, tt]
 
 
-ExchangeGate /:
-Unfold[ExchangeGate[{0, 0, phi_}, ss:{_?QubitQ, _?QubitQ}, ___]] := With[
+ExchangeExp /:
+Unfold[ExchangeExp[{0, 0, phi_}, ss:{_?QubitQ, _?QubitQ}, ___]] := With[
   { cn = CNOT @@ ss },
   QuantumCircuit[cn, Rotation[2*phi, Last[ss][3]], cn]
 ]
 
-ExchangeGate /:
-Unfold[ExchangeGate[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}, ___]] :=
+ExchangeExp /:
+Unfold[ExchangeExp[{phi_, phi_, 0}, {a_?QubitQ, b_?QubitQ}, ___]] :=
   QuantumCircuit[
     CNOT[a, b],
     ControlledGate[b, Rotation[4*phi, a[1]]],
     CNOT[a, b]
   ]
 
-ExchangeGate /:
-Unfold[ExchangeGate[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}, ___]] :=
+ExchangeExp /:
+Unfold[ExchangeExp[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}, ___]] :=
   QuantumCircuit[
     CNOT[a, b],
     ControlledGate[b, Rotation[4*phi, a[1]]],
@@ -3245,8 +3231,8 @@ Unfold[ExchangeGate[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}, ___]] :=
   ]
 
 (* NOTE: Put it at the end; otherwise, HoldPattern is required everywhere. *)
-ExchangeGate[phi:Except[_List], rest__] := ExchangeGate[{0, 0, phi}, rest]
-(**** </ExchangeGate> ****)
+ExchangeExp[phi:Except[_List], rest__] := ExchangeExp[{0, 0, phi}, rest]
+(**** </ExchangeExp> ****)
 
 
 (**** <Exchange> ****)

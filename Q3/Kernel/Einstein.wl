@@ -2,6 +2,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (**** <obsolete> ****)
+{ ExchangeGate }; (* renamed 2026-03-06 v4.5.6 *)
 { BravyiCanonicalize, KetCanonical }; (* renamed 2026-02-20 v4.5.1 *)
 { BravyiOperator, RandomBravyiOperator,
   NambuOperator, RandomNambuOperator }; (* 2026-02-18 v4.5.1 *)
@@ -87,7 +88,7 @@ HoldPattern @ Multiply[ pre___,
 
 (**** <UnitaryInteraction> ****)
 (* 2026-02-05 v4.4.5 *)
-UnitaryInteraction::usage = "UnitaryInteraction is deprecated; use ExchangeGate instead.\nUnitaryInteraction[{gx, gy, gz}, {s1, s2, \[Ellipsis]}] represents the unitary interaction among qubits s1, s2, \[Ellipsis]."
+UnitaryInteraction::usage = "UnitaryInteraction is deprecated; use ExchangeExp instead.\nUnitaryInteraction[{gx, gy, gz}, {s1, s2, \[Ellipsis]}] represents the unitary interaction among qubits s1, s2, \[Ellipsis]."
 
 Format[ op:UnitaryInteraction[vec_?VectorQ, ss:{__?QubitQ}, rest___] ] :=
   With[
@@ -506,10 +507,17 @@ ToGelfandPattern[tb_, _Integer] := (
 
 (**** <obsolete> ****)
 
+ExchangeGate::usage = "ExchangeGate has been renamed ExchangeExp since v4.5.1 (2026-02-20)."
+
+ExchangeGate[any___] := (
+  Message[Q3General::renamed, "ExchangeGate", "ExchangeExp"];
+  Canonicalize[any]
+)
+
 BravyiCanonicalize::usage = "BravyiCanonicalize has been renamed Canonicalize since v4.5.1 (2026-02-20)."
 
 BravyiCanonicalize[any___] := (
-  Message[Q3General::renamed, "KetCanonical", "Canonicalize"];
+  Message[Q3General::renamed, "BravyiCanonicalize", "Canonicalize"];
   Canonicalize[any]
 )
 
