@@ -899,6 +899,16 @@ RandomWickGreen[n_Integer] := Module[
 (**** <WickOccupation> ****)
 WickOccupation::usage = "WickOccupation[in, {k1, k2, \[Ellipsis]}] returns a list of the expectation values of occupation on fermion modes in {k1, k2, \[Ellipsis]} with respect to WickState in.\nWickOccupation[in] is equivalent to WickOccupation[in, Range[n]], where n is the number of fermion modes for which input Wick state in is defined for."
 
+(* for an array of Wick states *)
+WickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := 
+  arrayMap[WickOccupation[#, kk]&, data] /;
+  ArrayQ[data, _, MatchQ[#, _WickState]&]
+
+(* for an array of Green's function matrices *)
+WickOccupation[data_, kk:Repeated[{___Integer}, {0, 1}]] := 
+  arrayMap[WickOccupation[#, kk]&, data, {-2}] /;
+  And[ArrayDepth[data] > 2, ArrayQ[data, _, NumericQ]]
+
 (* shortcut *)
 WickOccupation[ws_WickState] :=
   WickOccupation[ws, Range @ FermionCount @ ws]
@@ -914,16 +924,6 @@ WickOccupation[grn_?MatrixQ] :=
 (* for a Green's function matrix *)
 WickOccupation[grn_?MatrixQ, kk:{___Integer}] := 
   1 - Part[Diagonal @ grn, kk]
-
-(* for an array of Wick states *)
-WickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := 
-  arrayMap[WickOccupation[#, kk]&, data] /;
-  ArrayQ[data, _, MatchQ[#, _WickState]&]
-
-(* for an array of Green's function matrices *)
-WickOccupation[data_, kk:Repeated[{___Integer}, {0, 1}]] := 
-  arrayMap[WickOccupation[#, kk]&, data, {-2}] /;
-  And[ArrayDepth[data] > 2, ArrayQ[data, _, NumericQ]]
 (**** </WickOccupation> ****)
 
 

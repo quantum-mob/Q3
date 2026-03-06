@@ -1,5 +1,12 @@
 # Release Notes
 
+## 4.5.7
+
+This is an ememrgency release for the bug fix of WickOccupation.
+
+- Improved: ExchangeExp, State
+- Bug fix: WickOccupation
+
 ## 4.5.6
 
 - Improved: State, StateForm, RandomState, ControlledGate
