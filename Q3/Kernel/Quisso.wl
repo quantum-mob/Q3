@@ -608,7 +608,6 @@ Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorCap[S] -> {0, 1}]
 
 
 (**** <PauliForm> ****)
-
 singleQubitGateQ::usage = "singleQubitGateQ[op] returns True if operator op is an 'elementary' single-qubit gate; and False, otherwise."
 
 (* SetAttributes[singleQubitGateQ, ReadProtected] *)
@@ -703,12 +702,10 @@ PauliForm[op_Pauli] := Interpretation[thePauliForm @ op, op]
 PauliForm[assc_Association] := Map[PauliForm, assc]
 
 PauliForm[expr_] := expr /. { op_Pauli :> PauliForm[op] }
-
 (**** </PauliForm> ****)
 
 
 (**** <Parity for Qubits> ****)
-
 Parity[S_?QubitQ] := S[3]
 
 ParityValue[v_Ket, a_?QubitQ] := 1 - 2*v[a]
@@ -716,12 +713,10 @@ ParityValue[v_Ket, a_?QubitQ] := 1 - 2*v[a]
 ParityEvenQ[v_Ket, a_?QubitQ] := EvenQ @ v @ a
 
 ParityOddQ[v_Ket, a_?QubitQ] := OddQ @ v @ a
-
 (**** </Parity> ****)
 
 
 (**** <Matrix for Qubits> ****)
-
 TheMatrix[ _?QubitQ[___, +C[m_Integer?Positive]] ] :=
   SparseArray[{{1, 1} -> 1, {2, 2} -> Exp[+I*2*Pi*Power[2, -m]]}, {2, 2}]
 
@@ -732,11 +727,8 @@ TheMatrix[ _?QubitQ[___, m_] ] := ThePauli[m]
 
 TheMatrix @ Ket @ Association[_?QubitQ -> s_] :=
   SparseArray @ TheKet[s]
-
 (**** </Matrix> ****)
 
-
-(**** <QubitAdd> ****)
 
 QubitAddZ::usage = "QubitAddZ[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... invariant under the U(1) rotation around spin z-axis, regarding the qubits S$1, S$2, ... as 1/2 spins."
 
@@ -779,6 +771,7 @@ QubitAddZ[irb_Association, irc_Association] := Module[
  ]
 
 
+(**** <QubitAdd> ****)
 QubitAdd::usage = "QubitAdd[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... that are invariant under arbitrary SU(2) rotations. Here, the qubits S$1, S$2, ... are regarded 1/2 spins."
 
 QubitAdd::duplicate = "Duplicate angular momentum operators appear."
@@ -833,12 +826,10 @@ theQubitAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
    ];
   Association[ {S, Sz} -> new ]
  ]
-
 (**** </QubitAdd> ****)
 
 
 (**** <ExpressionFor> ****)
-
 TheExpression[S_?QubitQ] := {
   {1/2 + S[3]/2, S[4]},
   {S[5], 1/2 - S[3]/2}
@@ -848,12 +839,10 @@ TheExpression[S_?QubitQ] := {
    operators. Many evaluations are faster with the raising and lowering
    operators rather than X and Y operators. When an expression in terms of the
    X and Y operators are necessary, one can use Elaborate. *)
-
 (**** </ExpressionFor> ****)
 
 
 (**** <Phase> ****)
-
 Phase::usage = "Phase[\[Phi], S[\[Ellipsis],n]] represents the relative phase shift by \[Phi] between the posiive and negative eigenstates of S[\[Ellipsis],n]."
 
 Phase::bad = "Phase gate is defined only for three axis, X (1), Y (2), and Z (3). You enterned ``."
@@ -921,12 +910,10 @@ Multiply[
   post___
 ] :=
   Multiply[pre, Phase[a+b, ss, more, opts], post]
-
 (**** </Phase> ****)
 
 
 (**** <Rotation> ****)
-
 Format[ op:Rotation[phi_, v:{_, _, _}, S_?QubitQ, rest___] ] :=
   Interpretation[
     DisplayForm @ RowBox @ { Exp,
@@ -942,12 +929,10 @@ Elaborate @ Rotation[phi_, v:{_, _, _}, S_?QubitQ, ___] :=
 Rotation /:
 Multiply[pre___, op:Rotation[_, {_, _, _}, S_?QubitQ, ___], in_Ket, post___] :=
   Garner @ Multiply[pre, Garner @ Multiply[Elaborate @ op, in], post]
-
 (**** </Rotation> ****)
 
 
 (**** <EulerRotation> ****)
-
 EulerRotation /:
 Unfold[EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ], ___] :=
   QuantumCircuit[
@@ -959,12 +944,10 @@ Unfold[EulerRotation[{a_,b_,c_}, S_?QubitQ, opts___?OptionQ], ___] :=
 EulerRotation /:
 Multiply[pre___, op:EulerRotation[{_, _, _}, S_?QubitQ, ___], in_Ket, post___] :=
   Garner @ Multiply[pre, Garner @ Multiply[Elaborate @ op, in], post]
-
 (**** </EulerRotation> ****)
 
 
 (**** <CNOT> ****)
-
 CX::usage = "CX is an alias for CNOT."
 
 CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. Note that it does not expand until necessary (e.g., multiplied to a Ket); use Elaborate in order to expand it."
@@ -1068,12 +1051,10 @@ Matrix[op_CNOT, ss:{__?SpeciesQ}] := op * One[Whole @ Dimension @ ss]
 CNOT /:
 Unfold[CNOT[{a_?QubitQ -> 1, b_?QubitQ -> 1}, {c_?QubitQ}], opts___?OptionQ] :=
   Prepend[Append[Unfold[CZ @ {a,b,c}, opts], c[6]], c[6]]
-
 (**** </CNOT> ****)
 
 
 (**** <CZ> ****)
-
 CZ::usage = "CZ[{c1, c2, \[Ellipsis]}, t] represents the single-target controlled-Z gate with multiple control qubits {c1, c2, \[Ellipsis]} and a single target qubit t.\noCZ[{s1,s2,\[Ellipsis],sn}] is equivalent to CZ[{s1, s2, \[Ellipsis]}, sn]."
 
 CZ::few = "CZ gate requires two or more qubits; `` is returned."
@@ -1161,12 +1142,10 @@ theGrayCZ[{a_, b_, c_}] := QuantumCircuit[
   CNOT[a, b],
   ControlledGate[b, c[7]]
 ]
-
 (**** </CZ> ****)
 
 
 (**** <SWAP> ****)
-
 SWAP::usage = "SWAP[A, B] operates the SWAP gate on the two qubits A and B."
 
 SetAttributes[SWAP, Listable]
@@ -1219,12 +1198,10 @@ Multiply[pre___, op:SWAP[s_, t_], Dyad[a_Association, b_Association], post___] :
 SWAP /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:SWAP[s_, t_], post___] :=
   Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, {s, t}]
-
 (**** </SWAP> ****)
 
 
 (**** <iSWAP> ****)
-
 iSWAP::usage = "iSWAP[A, B] operates the iSWAP gate on the two qubits A and B."
 
 SetAttributes[iSWAP, Listable]
@@ -1258,7 +1235,6 @@ Unfold[iSWAP[s_?QubitQ, t_?QubitQ], ___] := QuantumCircuit[
 
 Unfold[HoldPattern @ Dagger[op_iSWAP], ___] := 
   Dagger[Unfold @ op]
-
 (**** </iSWAP> ****)
 
 
@@ -1693,10 +1669,8 @@ Multiply[pre___, ActOn[op_, {___?SpeciesQ}, ___], post___] :=
 
 
 (**** <UniformlyControlledRotation> ****)
-
-(* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
-
 UniformlyControlledRotation::usage = "UniformlyControlledRotation[{c1,c2,\[Ellipsis],cn}, {a1,a2,\[Ellipsis],a2n}, s[\[Ellipsis],k]] represents the uniformly controlled rotation on qubit s[\[Ellipsis],$] around the k-axis by andles a1, a2, \[Ellipsis], a2n  depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis], cn."
+(* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
 
 UniformlyControlledRotation::list = "The length of `` is not an integer power of 2."
 
@@ -1819,7 +1793,6 @@ sequenceCNOT[cc:{_, __}] := With[
   { new = ReplacePart[sequenceCNOT[Rest@cc], -1 -> First[cc]] },
   Join[new, new]
 ]
-
 (**** </UniformlyControlledRotation> ****)
 
 
@@ -3168,9 +3141,12 @@ ExchangeExp /:
 MakeBoxes[op:ExchangeExp[gg_?ArrayQ, ss_List, opts___?OptionQ], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     ExchangeExp, op, None,
-    { BoxForm`SummaryItem @ {"Species: ", Flatten @ ss},
-      BoxForm`SummaryItem @ {"Coupling constants: ", ArrayShort @ gg} },
-    { BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
+    { BoxForm`SummaryItem @ {"Species: ", Union @ Flatten @ ss},
+      BoxForm`SummaryItem @ {"Nodes: ", ss}
+    },
+    { BoxForm`SummaryItem @ {"Coupling: ", ArrayShort @ gg},
+      BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} 
+    },
     fmt, 
     "Interpretable" -> Automatic 
   ] /; Or[
@@ -3189,6 +3165,12 @@ MultiplyKind[ ExchangeExp[_, ss:{___?SpeciesQ}, ___] ] :=
 ExchangeExp /:
 MultiplyGenus[ ExchangeExp[_, __] ] = "Singleton"
 
+ExchangeExp /:
+Dagger[ExchangeExp[gg_?ArrayQ, ss_List, opts___?OptionQ]] :=
+  ExchangeExp[ -ConjugateTranspose[gg], Reverse @ ss,
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
+  ]
+
 
 ExchangeExp[gg_, ss_List, rest___] :=
   ExchangeExp[gg, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
@@ -3196,7 +3178,7 @@ ExchangeExp[gg_, ss_List, rest___] :=
 
 ExchangeExp /:
 Elaborate[op:ExchangeExp[_?ArrayQ, ss_List, ___]] :=
-  Elaborate @ ExpressionFor[Matrix @ op, Flatten @ ss] 
+  Elaborate @ ExpressionFor[Matrix @ op, Union @ Flatten @ ss] 
 
 ExchangeExp /:
 Matrix[ExchangeExp[gg_?ArrayQ, ss_List, ___]] := 
@@ -3204,7 +3186,7 @@ Matrix[ExchangeExp[gg_?ArrayQ, ss_List, ___]] :=
 
 ExchangeExp /:
 Matrix[op:ExchangeExp[gg_?ArrayQ, ss_List, ___], tt:{___?SpeciesQ}] := 
-  MatrixEmbed[Matrix @ op, Flatten @ ss, tt]
+  MatrixEmbed[Matrix @ op, Union @ Flatten @ ss, tt]
 
 
 ExchangeExp /:
@@ -3240,6 +3222,21 @@ Exchange::usage = "Exchange[array,{s1,s2,\[Ellipsis]}] represents the exchange c
 
 SetAttributes[Exchange, NHoldRest];
 
+Exchange /:
+MakeBoxes[op:Exchange[gg_?ArrayQ, ss_List], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    Exchange, op, None,
+    { BoxForm`SummaryItem @ {"Species: ", Union @ Flatten @ ss},
+      BoxForm`SummaryItem @ {"Nodes: ", ss}
+    },
+    { BoxForm`SummaryItem @ {"Coupling: ", ArrayShort @ gg} },
+    fmt, 
+    "Interpretable" -> Automatic 
+  ] /; Or[
+    AllTrue[Flatten @ ss, QubitQ],
+    AllTrue[Flatten @ ss, SpinQ]
+  ]
+
 Exchange /: 
 NonCommutativeQ[ _Exchange ] = True
 
@@ -3248,6 +3245,9 @@ MultiplyKind[ op_Exchange ] := MultiplyKind[ op[[2]] ]
 
 Exchange /: 
 MultiplyGenus[ _Exchange ] = "Singleton"
+
+Exchange /:
+Dagger[Exchange[gg_?ArrayQ, ss_List]] := Exchange[ConjugateTranspose @ gg, Reverse @ ss]
 
 
 Exchange[gg_, ss_List, rest___] :=
@@ -3259,11 +3259,11 @@ OperatorExp[op:Exchange[gg_?ArrayQ, ss_List, rest___], more___] :=
 
 Exchange /:
 Matrix[op:Exchange[gg_?ArrayQ, ss_List, ___]] := 
-  Matrix[Elaborate @ op, Flatten @ ss]
+  Matrix[Elaborate @ op, Union @ Flatten @ ss]
 
 Exchange /:
 Matrix[op:Exchange[gg_?ArrayQ, ss_List, ___], tt:{___?SpeciesQ}] := 
-  MatrixEmbed[Matrix @ op, Flatten @ ss, tt]
+  MatrixEmbed[Matrix @ op, Union @ Flatten @ ss, tt]
 
 Exchange /:
 Elaborate @ Exchange[gg_?ArrayQ, ss_List, ___] := Total[

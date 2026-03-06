@@ -507,11 +507,11 @@ ToGelfandPattern[tb_, _Integer] := (
 
 (**** <obsolete> ****)
 
-ExchangeGate::usage = "ExchangeGate has been renamed ExchangeExp since v4.5.1 (2026-02-20)."
+ExchangeGate::usage = "ExchangeGate has been renamed ExchangeExp since v4.5.6 (2026-03-06)."
 
 ExchangeGate[any___] := (
   Message[Q3General::renamed, "ExchangeGate", "ExchangeExp"];
-  Canonicalize[any]
+  ExchangeExp[any]
 )
 
 BravyiCanonicalize::usage = "BravyiCanonicalize has been renamed Canonicalize since v4.5.1 (2026-02-20)."

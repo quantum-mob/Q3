@@ -836,19 +836,17 @@ ToHeisenberg[rr:({__?BosonQ} -> {__?HeisenbergQ})] :=
 
 
 (**** <Conjugate> ****)
-
 Dagger /:
 HoldPattern @ Conjugate @ Dagger[q_?FockOperatorQ] := Dagger[q]
 
 Multiply /:
 HoldPattern @
   Conjugate[ Multiply[a_?AnyFockOperatorQ, b__?AnyFockOperatorQ] ] :=
-  Multiply[ a, b ]
+  Multiply[a, b]
 (* NOTE: Do not generalize it too much. For example, <a|op|b> is a complex
    number and under Dagger switches to complex conjugation. If the above is
-   generalized too much, then it may results in, i.e., Conjugate[Ket[]]
+   generalized too much, then it may results in, e.g., Conjugate[Ket[]]
    instead of <b|Dagger[op]|a>. *)
-
 (**** </Conjugate> ****)
 
 
@@ -891,7 +889,6 @@ CMT[_?AnyBosonQ, _?AnyBosonQ] = 0
 
 
 (**** <ACMT> ****)
-
 ACMT::usage = "ACMT[a, b] returns the anti-commutation between two fermion operators a and b."
 
 SetAttributes[ACMT, Orderless]
@@ -907,14 +904,12 @@ ACMT[_?AnyFermionQ, _?AnyFermionQ] = 0
 (* NOTE: Operators with different Heads are regarded different regardless of
    their Flavor indices. This is conventional. If you want to change this
    behavior, Multiply[] should also be modified accordingly. *)
-
 (**** <ACMT> ****)
 
 
 (**** <Multiply> ****)
 
 (** Heisenbergs **)
-
 HoldPattern @
   Multiply[pre___, a:_?HeisenbergQ, b:Canon[_?HeisenbergQ], post___] :=
   Multiply[pre, CMT[a, b], post] + Multiply[pre, b, a, post]
@@ -930,7 +925,6 @@ HoldPattern @
 
 
 (** Bosons **)
-
 HoldPattern @
   Multiply[pre___, a:_?BosonQ, b:Dagger[_?BosonQ], post___] :=
   Multiply[pre, CMT[a, b], post] + Multiply[pre, b, a, post]
@@ -988,7 +982,6 @@ HoldPattern @
 
 HoldPattern @ Multiply[pre___, a_?MajoranaQ, b_?MajoranaQ, post___] :=
   -Multiply[pre, b, a, post] Signature @ {op} /; Not @ OrderedQ @ {a, b}
-
 (**** </Multiply> ****)
 
 

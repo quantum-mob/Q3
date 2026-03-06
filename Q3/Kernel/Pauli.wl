@@ -73,7 +73,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { Purification, Snapping };
 
-{ Gate }; (* QuantumCircuit *)
+{ Gate, Port }; (* QuantumCircuit *)
 
 
 Begin["`Private`"]
@@ -1234,7 +1234,6 @@ HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
 
 
 (**** <BraKet> ****)
-
 BraKet::usage = "BraKet[{a}, {b}] represents the Hermitian product \[LeftAngleBracket]a|b\[RightAngleBracket] of the two states Ket[a] and Ket[b]."
 
 SetAttributes[BraKet, NHoldAll]
@@ -1264,12 +1263,13 @@ BraKet[a_Association, b_Association] := With[
   { qq = Union[Keys @ a, Keys @ b] },
   TheDelta[Lookup[a, qq], Lookup[b, qq]]
 ]
-
 (**** </BraKet> ****)
 
 
 (**** <State> ****)
 State::usage = "State[vec, {s1,s2,\[Ellipsis]}] represents the state of the systems {s1, s2, \[Ellipsis]} with the vector representation vec."
+
+State::dupe = "Species `` appear in multiple states to be multiplied or tensor-producted."
 
 SyntaxInformation[State] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
 
@@ -1281,8 +1281,8 @@ MakeBoxes[vv:State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ], fmt_] :=
     State, vv, None,
     { BoxForm`SummaryItem @ {"Species: ", ss},
       BoxForm`SummaryItem @ {"Dimension: ", Length @ vec} },
-    { BoxForm`SummaryItem @ {"Vector (up to 5): ", Normal@vec[[;;UpTo[5]]]},
-      BoxForm`SummaryItem @ {"Options: ", Flatten @ {opts}} },
+    { BoxForm`SummaryItem @ {"Vector: ", ArrayShort @ vec},
+      BoxForm`SummaryItem @ {"Label: ", OptionValue[Port, {opts}, "Label"]} },
     fmt, "Interpretable" -> Automatic ]
 
 
@@ -1329,8 +1329,6 @@ Plus[State[a_, ss:{__?SpeciesQ}, opts___?OptoinQ], State[b_, tt:{__?SpeciesQ}, m
   ]
 
 
-State::dupe = "Species `` appear in multiple states to be multiplied or tensor-producted."
-
 State /:
 CircleTimes[vv__State] := Module[
   { rr = Flatten[Options /@ {vv}],
@@ -1358,17 +1356,33 @@ State /:
 Multiply[ pre___, v_State, w_Ket, Shortest[post___] ] :=
   Multiply[pre, CircleTimes[v, StateForm @ w], post]
 
+HoldPattern @
+Multiply[pre___, a_State, Dagger[b_State], post___] := Module[
+  { tt = Agents[{a, b}],
+    aa, bb },
+  aa = Matrix[a, tt];
+  bb = Matrix[b, tt];
+  Multiply[pre, Operator[Dyad[aa, bb], tt], post]
+]
 
-State /:
-Multiply[pre___, op:Except[_Plus|_Times], State[vec_?VectorQ, ss:{__?SpeciesQ}, ___?OptionQ], post___] :=
-  With[
-    { tt = Agents @ {op, ss} },
-    Multiply[
-      pre,
-      State[Matrix[op, tt] . MatrixEmbed[vec, ss, tt], tt],
-      post
-    ]
+HoldPattern @
+Multiply[pre___, Dagger[a_State], b_State, post___] := Module[
+  { tt = Agents[{a, b}],
+    aa, bb },
+  aa = Matrix[a, tt];
+  bb = Matrix[b, tt];
+  Multiply[pre, post] * Dot[Conjugate @ aa, bb]
+]
+
+HoldPattern @
+Multiply[ pre___, op:Except[_Plus|_Times], vec_State, post___ ] := With[
+  { tt = Agents @ {op, vec} },
+  Multiply[
+    pre,
+    State[Matrix[op, tt] . Matrix[vec, tt], tt],
+    post
   ]
+]
 (**** </State> ****)
 
 

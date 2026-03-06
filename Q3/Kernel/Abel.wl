@@ -618,7 +618,6 @@ DaggerTranspose::usage = "DaggerTranspose is an alias of Topple."
 
 
 (**** <Dagger> ****)
-
 Dagger::usage = "Dagger[expr] returns the Hermitian conjugate the expression expr.\nWARNING: Dagger has the attribute Listable, meaning that the common expectation Dagger[m] == Tranpose[Conjugate[m]] for a matrix m of c-numbers does NOT hold any longer. For such purposes use Topple[] instead.\nSee also Conjugate[], Topple[], and TeeTranspose[]."
 
 SetAttributes[Dagger, {Listable, ReadProtected}]
@@ -664,20 +663,18 @@ Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] :=
 Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] :=
   Interpretation[SpeciesBox[c, {}, {"\[Dagger]"}], Dagger @ c]
 
+(* for the undefined *)
 Format @ HoldPattern @ Dagger[a_] :=
   Interpretation[Superscript[a, "\[Dagger]"], Dagger @ a]
-(* for the undefined *)
+(**** </Dagger> ****)
 
 
 NormSquare::usage = "NormSquare[vec] returns the norm square of quantum state vector vec."
 
 NormSquare[obj:(_?VectorQ|_?MatrixQ), spec___] := Norm[obj, spec]^2
 
-(**** </Dagger> ****)
-
 
 (**** <AbsSquare> ****)
-
 AbsSquare::usage = "AbsSquare[expr] returns the absolute square of expr, i.e., Dagger[expr]**expr."
 
 AbsSquare[z_?NumericQ] := Abs[z]^2
@@ -695,7 +692,6 @@ AbsSquareLeft::usage = "AbsSquareLeft[expr] returns the left-absolute square of 
 AbsSquareLeft[mat_?MatrixQ] := mat . Topple[mat]
 
 AbsSquareLeft[expr_] := Multiply[expr, Dagger @ expr]
-
 (**** </AbsSquare> ****)
 
 
@@ -765,7 +761,6 @@ AntihermitianQ[ Conjugate[a_?AntihermitianQ] ] = True;
 
 
 (**** <Commutator> ***)
-
 (* Mathematica 14.3 has added multiple functions to represent noncommutative algebras and perform operations on polynomials in such algebras: https://www.wolfram.com/mathematica/quick-revision-history/ *)
 
 If[ $VersionNumber < 14.3,
@@ -773,12 +768,10 @@ If[ $VersionNumber < 14.3,
   SetAttributes[Commutator, {Listable, ReadProtected}];
   Commutator[a_, b_] := Garner[ Multiply[a, b] - Multiply[b, a] ]
 ];
-
 (**** </Commutator> ***)
 
 
 (**** <Anticommutator> ***)
-
 (* Mathematica 14.3 has added multiple functions to represent noncommutative algebras and perform operations on polynomials in such algebras: https://www.wolfram.com/mathematica/quick-revision-history/ *)
 
 If[ $VersionNumber < 14.3,
@@ -786,12 +779,10 @@ If[ $VersionNumber < 14.3,
   SetAttributes[Anticommutator, {Listable, ReadProtected}];
   Anticommutator[a_, b_] := Garner[ Multiply[a, b] + Multiply[b, a] ]
 ];
-
 (**** </Anticommutator> ***)
 
 
 (**** <CoefficientTensor> ****)
-
 CoefficientTensor::usage = "CoefficientTensor[expr, opList1, opList2, \[Ellipsis]] returns the tensor of coefficients of Multiply[opList1[i], opList2[j], \[Ellipsis]] in expr. Note that when calculating the coefficients, lower-order terms are ignored.\nCoefficientTensor[expr, list1, list2, \[Ellipsis], func] returns the tensor of coefficients of func[list1[i], list2[j], \[Ellipsis]]."
 
 CoefficientTensor[expr_List, ops:{__?AnySpeciesQ} ..] :=
@@ -840,12 +831,10 @@ CoefficientTensor[expr_, ops:{__?AnySpeciesQ}.., Times] := Module[
   mm = Coefficient[expr, pp] / cc;
   ArrayReshape[mm, Length /@ {ops}]
 ]
-
 (**** <CoefficientTensor> ****)
 
 
 (**** <Garner> ****)
-
 FullGarner::usage = "FullGarner[expr] collects together terms involving the same species objects (operators, Kets, Bras, etc.) and simplifies the coefficients by using FullSimplify."
 
 SetAttributes[FullGarner, Listable]
@@ -898,7 +887,6 @@ $GarnerPatterns = Association[
   "Heads" -> Alternatives[],
   "Tests" -> Alternatives[]
 ]
-
 (**** </Garner> ****)
 
 
@@ -974,7 +962,6 @@ DistributableQ[ops_List] := Not @ MissingQ @ FirstCase[ops, _Plus]
 
 
 (**** <Multiply> ****)
-
 Multiply::usage = "Multiply[a, b, \[Ellipsis]] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[\[Ellipsis]], it does not have the attributes Flat and OneIdentity."
 
 SetAttributes[Multiply, {Listable, ReadProtected}]
@@ -989,8 +976,8 @@ Format @ HoldPattern @ Multiply[a__] := Interpretation[
 (* NOTE 1: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 Dagger[f]**f is formated as
    -2(f^\dag f). For more details on spurious parentheses, see
-   https://goo.gl/MfCwMF
-   NOTE 2 (Version 12.1.1): The inner DisplayForm is to avoid the spurious
+   https://goo.gl/MfCwMF *)
+(* NOTE 2 (Version 12.1.1): The inner DisplayForm is to avoid the spurious
    multiplication ("x") sign for non-Species symbols. *)
 
 NonCommutativeMultiply[a___] := Multiply[a]
@@ -1004,7 +991,6 @@ Multiply[c_] = c
 
 
 (* Associativity *)
-
 HoldPattern @
   Multiply[pre___, Multiply[op__], post___] := Multiply[pre, op, post]
 (* NOTE: An alternative approach is to set the attributes Flat and
@@ -1022,7 +1008,6 @@ HoldPattern @
 
 
 (* Linearity *)
-
 HoldPattern @ Multiply[args__] := Garner[
   ReleaseHold @ Distribute[ Hold[Multiply][args] ]
 ] /; DistributableQ[{args}]
@@ -1072,6 +1057,7 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
     Cases[ Flatten @ aa, _?AnticommutativeQ ]
   ]  
 ] /; Not @ KindsOrderedQ @ {ops}
+(**** </Multiply> ****)
 
 
 KindsOrderedQ::usage = "KindsOrderedQ[list] returns True if all iterms in list are ordered within each section, where items are split into sections by MultiplyGenus."
@@ -1080,8 +1066,6 @@ KindsOrderedQ[ops_List] := Module[
   { qq = MultiplyKind @ SplitBy[ops, MultiplyGenus] },
   AllTrue[qq, OrderedQ]
 ]
-
-(**** </Multiply> ****)
 
 
 MultiplyDot::usage = "MultiplyDot[a, b, \[Ellipsis]] returns the products of vectors, matrices, and tensors of Species.\nMultiplyDot is a non-commutative equivalent to the native Dot with Times replaced with Multiply"
@@ -1095,7 +1079,6 @@ MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
 
 
 (**** <MultiplyPower> ****)
-
 MultiplyPower::usage = "MultiplyPower[expr, i] raises an expression to the i-th
 power using the non-commutative multiplication Multiply."
 
@@ -1137,12 +1120,11 @@ MultiplyPower[1, _] = 1
 
 MultiplyPower[E, expr_] := MultiplyExp[expr]
 
-(* NOTE: fallback in Einstein *)
+(* NOTE: fallback in Einstein.wl *)
 (**** </MultiplyPower> ****)
 
 
 (**** <MultiplyExp> ****)
-
 MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[]."
 
 SetAttributes[MultiplyExp, Listable]
@@ -1212,7 +1194,6 @@ Elaborate[ MultiplyExp[expr_] ] :=
 
 
 (**** <Baker-Hausdorff Lemma: Simple Cases> ****)
-
 HoldPattern @
   Multiply[ pre___, MultiplyExp[a_], MultiplyExp[b_], post___ ] :=
     Multiply[ Multiply[pre], MultiplyExp[a+b], Multiply[post] ] /;
@@ -1245,21 +1226,17 @@ HoldPattern @
 (* NOTE: Here, notice the PatternTest AnySpeciesQ is put in order to skip
    Exp[op] or MultiplyExp[op]. The commutators involving Exp[op] or
    MultiplyExp[op] usually takes long in vain. *)
-
 (**** </Baker-Hausdorff Lemma: Simple Cases> ****)
 
 
 (**** <Lie> ****)
-
 Lie::usage = "Lie[a, b] returns the commutator [a, b]."
 
 Lie[a_, b_] := Commutator[a, b]
-
 (**** </Lie> ****)
 
 
 (**** <LiePower> ****)
-
 LiePower::usage = "LiePower[a, b, n] returns the nth order commutator [a, [a, \[Ellipsis], [a, b]\[Ellipsis]]]."
 
 LiePower[a_, b_List, n_Integer] := Map[LiePower[a, #, n]&, b] /; n>1
@@ -1269,7 +1246,6 @@ LiePower[a_, b_, 0] := b
 LiePower[a_, b_, 1] := Commutator[a, b]
 
 LiePower[a_, b_, n_Integer] := Lie[a, LiePower[a, b, n-1] ] /; n > 1
-
 (**** </LiePower> ****)
 
 
@@ -1285,7 +1261,6 @@ LieSeries[a_, b_, n_Integer] := With[
 
 
 (**** <LieExp> ****)
-
 LieExp::usage = "LieExp[a, b] returns Exp[a] ** b ** Exp[-a]."
 
 LieExp[a_, z_?CommutativeQ] := z
@@ -1320,12 +1295,10 @@ LieExp[a_, b_] :=
   Multiply[ MultiplyExp[2 a], Anticommutator[a, b] ] /;
   Garner[Anticommutator[a, Anticommutator[a, b]]] == 0 
 (* NOTE: Exp is pushed to the left. *)
-
 (**** </LieExp> ****)
 
 
 (**** <LieBasis> ****)
-
 LieBasis::usage = "LieBasis[n] returns a basis of the vector space \[ScriptCapitalM](n) of n\[Times]n matrices; equivalently, the standard generating set of Lie algebra u(n).\nThe basis is orthonormal with respect to the Hilbert-Schmidt product, and all but one elements are traceless."
 
 LieBasis[op_?SpeciesQ] := LieBasis @ {op}
@@ -1353,7 +1326,6 @@ theLieGenerators[n_Integer][{j_Integer, k_Integer}] := {
   SparseArray[{{j, k} ->  1, {k, j} -> 1}, {n, n}] / Sqrt[2],
   SparseArray[{{j, k} -> -I, {k, j} -> I}, {n, n}] / Sqrt[2]
 } /; j < k
-
 (**** </LieBasis> ****)
 
 

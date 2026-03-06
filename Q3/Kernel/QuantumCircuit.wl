@@ -564,14 +564,15 @@ ParseGate[HoldPattern @ Dagger @ iSWAP[c_?QubitQ, t_?QubitQ, ___?OptionQ], ___?O
 
 
 HoldPattern @ ParseGate[ 
-  ExchangeExp[_?VectorQ|_?MatrixQ, ss_List, opts___?OptionQ],
+  ExchangeExp[_?ArrayQ, ss_List, opts___?OptionQ],
   more___?OptionQ
 ] := With[
   { tt = Flatten[ss] },
   Gate[ Most @ tt, {Last @ tt}, more, opts,
     "Shape" -> "Dot",
     "ControlShape" -> "Dot",
-    "LinkShape" -> "Wiggly"
+    "LinkShape" -> "Wiggly",
+    "LinkLabel" -> OptionValue[Gate, {opts}, "Label"]
   ] /; AllTrue[tt, AgentQ]
 ]
 

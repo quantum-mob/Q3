@@ -177,6 +177,8 @@ SetAttributes[Spin, Listable]
 
 Spin[ HoldPattern @ Dagger[c_?ParticleQ] ] := Spin[c]
 
+Spin[_?QubitQ] = 1/2
+
 Spin[_] = 0 (* by default every thing is spinless *)
 
 
@@ -283,10 +285,8 @@ SpinHalfQ[J_Symbol?SpinQ[k___]] := Spin[J[k]]==1/2
 SpinHalfQ[_] = False
 
 
-(* Multiply *)
-
+(**** <Multiply> ****)
 (* Speical Rules: Involving identity *)
-
 HoldPattern @
   Multiply[pre___, x_?SpinQ[j___,0], x_?SpinQ[j___,n_], post___] :=
   Multiply[pre, x[j,n], post]
@@ -300,8 +300,7 @@ HoldPattern @
 
 
 (* Special Rules: Spin = 1/2 *)
- 
-HoldPattern @ Multiply[
+ HoldPattern @ Multiply[
   a___,
   x_Symbol?SpinHalfQ[j___,k:(1|2|3|6)], x_Symbol?SpinHalfQ[j___,k:(1|2|3|6)],
   b___ ] := (1/4) Multiply[a, b]
@@ -395,13 +394,11 @@ CMT[_?SpinQ, _?SpinQ] = 0
 
 
 (* General Rules *)
-
 HoldPattern @ Multiply[a___, x1_?SpinQ, x2_?SpinQ, b___] :=
   Multiply[a, CMT[x1,x2], b] + Multiply[a, x2, x1, b] /;
   Not @ OrderedQ @ {x1, x2}
 
 (* Wigner on Ket *)
-
 HoldPattern @
   Multiply[ x___, a_?SpinQ[j___,0], Ket[b_Association], y___ ] :=
   Multiply[ x, Ket[b], y ]
@@ -449,6 +446,7 @@ $RaisingLoweringRules = Join[ $RaisingLoweringRules,
     S_?SpinQ[j___,2] :> (S[j,4] - S[j,5]) / (2 I)
   }
 ]
+(**** </Multiply> ****)
 
 
 (* MultiplyDegree for operators *)
@@ -456,18 +454,15 @@ MultiplyDegree[_?SpinQ] = 1
 
 
 (* Base: See Cauchy *)
-
 Base[ S_?SpinQ[j___, _] ] := S[j]
 (* For Spins, the final Flavor index is special. *)
 
 
 (* FlavorCap: See Cauchy package *)
-
 FlavorCap[S_?SpinQ] := S[$]
 
 
 (* FlavorMute: See Cauchy *)
-
 FlavorMute[S_Symbol?SpinQ] := S[$]
 
 FlavorMute[S_Symbol?SpinQ[j___, _]] := S[j, $]
