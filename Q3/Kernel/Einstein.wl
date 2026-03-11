@@ -293,6 +293,62 @@ BravyiMeasurement[kk:{__Integer}][in:BravyiState[{fac_?NumericQ, cvr_?MatrixQ}, 
 
 (**** <changed> ****)
 
+QSPFind[{coeff_?VectorQ, parity:(-1|1)}, opts:OptionsPattern[]] := (
+  Message[Q3General::changed, "QSPFind",
+    "Use the form QSPFind[coeff -> parity]. 2026-03-11 Q3 v4.5.8"
+  ];
+  QSPFind[coeff -> parity]
+)
+
+QSPConvert[{phi_?VectorQ, parity:(-1|1)}, rest___] := (
+  Message[Q3General::changed, "QSPConvert",
+    "Use the form QSPConvert[phi -> parity, \[Ellipsis]]. 2026-03-11 Q3 v4.5.8"
+  ];
+  QSPConvert[phi -> parity, rest]
+)
+
+QSP[{phi_?VectorQ, parity:(-1|1)}, rest___] := (
+  Message[Q3General::changed, "QSP",
+    "Use the form QSP[phi -> parity, \[Ellipsis]]. 2026-03-11 Q3 v4.5.8"
+  ];
+  QSP[phi -> parity, rest]
+)
+
+ChebyshevApproximation[fun_, {n_Integer?NonNegative, parity:(-1|1)}, int_Interval, rest___] := (
+  Message[Q3General::changed, "ChebyshevApproximation",
+    "Use the form ChebyshevApproximation[fun, n -> parity, int]. 2026-03-11 Q3 v4.5.8"
+  ];
+  ChebyshevApproximation[fun, n -> parity, int, rest]
+)
+
+ChebyshevSeries[cc_?VectorQ, parity:(-1|1|0)] := (
+  Message[Q3General::changed, "ChebyshevSeries",
+    "Use the form ChebyshevSeries[cc -> parity]. 2026-03-11 Q3 v4.5.8"
+  ];
+  ChebyshevSeries[cc -> parity]
+)
+
+ChebyshevSeries[{cc_?VectorQ, parity:(-1|1|0)}] := (
+  Message[Q3General::changed, "ChebyshevSeries",
+    "Use the form ChebyshevSeries[cc -> parity]. 2026-03-11 Q3 v4.5.8"
+  ];
+  ChebyshevSeries[cc -> parity]
+)
+
+ChebyshevCoefficients[fun_, {n_Integer?Positive, parity:(-1|1)}] := (
+  Message[Q3General::changed, "ChebyshevCoefficients",
+    "Use the form ChebyshevCoefficients[fun, n -> parity]. 2026-03-11 Q3 v4.5.8"
+  ];
+  ChebyshevCoefficients[fun, n -> parity]
+)
+
+ChebyshevPoints[{n_Integer?Positive, parity:(-1|1)}, kind_] := (
+  Message[Q3General::changed, "ChebyshevPoints",
+    "Use the form ChebyshevPoints[n -> parity, kind]. 2026-03-11 Q3 v4.5.8"
+  ];
+  ChebyshevPoints[n -> parity, kind]
+)
+
 ClebschGordanMatrix[j1_?SpinNumberQ, j2_?SpinNumberQ] := (
   Message[Q3General::changed, "ClebschGordanMatrix", 
     "Use the form ClebschGordanMatrix[{j1, j2}]. 2026-02-28 v4.5.4"];

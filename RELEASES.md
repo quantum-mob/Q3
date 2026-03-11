@@ -2,7 +2,7 @@
 
 ## 4.5.8
 
-- Improved: 
+- Modified: QSP, QSPConvert, QSPFind, ChebyshevPoints, ChebyshevCoefficients, ChebyshevSeries, ChebyshevApproximation
 
 ## 4.5.7
 
