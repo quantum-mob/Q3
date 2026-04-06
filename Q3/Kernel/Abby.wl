@@ -656,29 +656,29 @@ Chain[a:Except[_List], b:Except[_List]] := {Rule[a, b]}
 Chain[m_List] := 
   Flatten[Chain /@ Transpose[m]] /; ArrayQ[m, Except[1]]
 
-Chain[m_List, b_] := Flatten @ { Chain@m, Chain[Last@m, b] } /;
+Chain[m_List, b_] := Flatten @ {Chain @ m, Chain[Last @ m, b]} /;
   ArrayQ[m, Except[1]]
 
 Chain[m_?VectorQ, b_] := Flatten @ Map[Chain[#, b]&, m]
 
-Chain[a_, m_List] := Flatten @ { Chain[a, First@m], Chain@m } /;
+Chain[a_, m_List] := Flatten @ {Chain[a, First @ m], Chain @ m} /;
   ArrayQ[m, Except[1]]
 
 Chain[a_, m_?VectorQ] := Map[Chain[a, #] &, m]
 
 Chain[a__, m_List, b__] :=
-  Flatten @ { Chain[a, First@m], Chain@m, Chain[Last@m, b] } /;
+  Flatten @ {Chain[a, First @ m], Chain @ m, Chain[Last @ m, b]} /;
   ArrayQ[m, Except[1]]
 
-Chain[a_, b_, c__] := Flatten @ { Chain[a, b], Chain[b, c] }
+Chain[a_, b_, c__] := Flatten @ {Chain[a, b], Chain[b, c]}
 
 Chain[aa_List] := Chain @@ aa
+(**** </Chain> ****)
 
 
 ChainBy::usage = "ChainBy[a, b, \[Ellipsis], func] constructs a chain of links connecting a, b, \[Ellipsis] consecutively with each link created by means of func."
 
 ChainBy[args___, func_] := func @@@ Chain[args]
-(**** </Chain> ****)
 
 
 GraphLocalComplement::usage = "GraphLocalComplement[g, v] gives the local complement of graph g according to vertex g.\nThe local complement of a graph g according to vertex v, denoted by g*v, is a graph that has the same vertices as g, but all the neighbors of of v are connected if and only if they are not connected in g."
@@ -689,7 +689,7 @@ GraphLocalComplement[g_Graph, v_, opts___?OptionQ] := Module[
   new = GraphUnion[GraphDifference[g, nbr], GraphComplement @ nbr];
   Graph[ VertexList @ new, EdgeList @ new, opts,
     VertexCoordinates -> Thread[VertexList[g] -> GraphEmbedding[g]] ]
- ]
+]
 
 
 GraphNeighborhoodSans::usage = "GraphNeighborhoodSans[g, v] returns the graph neighborhood of vertex v in graph g excluding v and edges connecting it."
@@ -702,9 +702,9 @@ GraphNeighborhoodSans[g_Graph, v_] := With[
       EdgeList @ nbr,
       EdgeList[ nbr,
         UndirectedEdge[v, _] | DirectedEdge[v, _] | DirectedEdge[_, v] ]
-     ]
-   ]
- ]
+    ]
+  ]
+]
 
 
 GraphPivot::usage = "GraphPivot[g, {v, w}] returns the graph pivot of graph g along the edge connecting vertices v and w.\nThe graph pivot of g along the edge between v and w is the graph g*v*w*v."
@@ -809,17 +809,14 @@ GreatCircle[
 
 
 (**** <MapThrough> ****)
-
 MapThrough::usage = "MapThrough[{f,g,\[Ellipsis]}, {x,y,\[Ellipsis]}] gives {f[x],g[y],\[Ellipsis]}.\nMapThrough[functions, expr, levelspec] operates at the level of expr indicated by spec.\nThe level specificiation is the same as in Map.\nSee also Through, Thread, Apply, Map, MapThread, and MapApply."
 
 MapThrough[ff_List, expr_, spec___] :=
   First @ Map[MapThread[Construct, {ff, #}]&, {expr}, spec]
-
 (**** </MapThrough> ****)
 
 
 (***** <ApplyThrough> *****)
-
 ApplyThrough::usage = "ApplyThrough[f, expr] applies function f through special objects such as Association and SparseArray in expr, which usually do not work on the specifically represented form of data.\nApplyThrough[f] is an operator form."
 
 ApplyThrough[func_][expr_] := ApplyThrough[func, expr]
@@ -882,41 +879,37 @@ ReplaceAllThrough[expr_, rules_] := ReplaceAll[
 ]
 
 ReplaceAllThrough[rules_][expr_] := ReplaceAllThrough[expr, rules]
-
 (***** </ApplyThrough> *****)
 
 
 (**** <ReverseDot> ****)
-
 ReverseDot::usage = "ReverseDot[vec,m1,m2,$$] returns the equivalent result as Dot[$$,m$2,m$1,vec] but calculates it faster than the latter when the first input argument vec is a vector and the rest are matrices."
 
 ReverseDot[in_?VectorQ, mm___?MatrixQ] := Fold[Dot[#2, #1]&, in, {mm}]
 
 ReverseDot[any___] := Apply[Dot, Reverse @ {any}]
-
 (**** </ReverseDot> ****)
 
 
 (**** <DropWhile> ****)
-
 DropWhile::usage = "DropWhile[list, cri] drops elements ei from the beginning of list, continuing so long as cri[ei] is True.\nDropWhile[cri] represents an operator form of DropWhile that can be applied to expressions."
 
 DropWhile[crit_][lst:(h_)[___]] := Drop[lst, LengthWhile[lst, crit]]
  
 DropWhile[lst:(h_)[___], crit_] := Drop[lst, LengthWhile[lst, crit]]
-
 (**** </DropWhile> ****)
 
 
-(**** <TheDelta> ****)
-
+(**** <Whole> ****)
 Whole::usage = "Whole[list] returns the multiplication of the elements in list.\nWhole[list, n] multiplies all elements down to level n.\nWhole[list, {n}] multiplies elements at level n.\nWhole[list, {n1, n2}] multiplies elements at levels n1 through n2."
 
 Whole[data:(_List|_Association)] := Apply[Times, data]
 
 Whole[data:(_List|_Association), spec_] := Apply[Times, data, spec]
+(**** </Whole> ****)
 
 
+(**** <TheDelta> ****)
 TheDelta::usage = "TheDelta[a, b, \[Ellipsis]] is almost equivalent to KroneckerDelta[a, b, \[Ellipsis]] but threads through lists."
 
 SetAttributes[TheDelta, Orderless];
@@ -930,12 +923,10 @@ TheDelta[x_List, y__List] := With[
 ]
 
 TheDelta[x__] := KroneckerDelta[x]
-
 (**** </TheDelta> ****)
 
 
 (**** <LeftBrace> ****)
-
 LeftBrace::usage = "LeftBrace[y] returns the left brace spanning from -y to y."
 
 Options[LeftBrace] = {
@@ -952,15 +943,15 @@ LeftBrace[y_, OptionsPattern[]] := Module[
     {-width/2, y - width/2},
     {-width/2, y - width/4},
     {0, y}
-   };
+  };
   BSplineCurve /@ {pts, Transpose[Transpose[pts]*{1, -1}]}
- ]
+]
 
 LeftBrace[x_, {ymin_, ymax_}, opts___?OptionQ] := Map[
   TranslationTransform[Mean @ {{x, ymin}, {x, ymax}}], 
   LeftBrace[Abs[(ymax - ymin)/2], opts],
   {2}
- ]
+]
 
 LeftBrace[{xmin_, ymin_}, {xmax_, ymax_}, opts___?OptionQ] :=
   LeftBrace[xmin, {ymin, ymax}, opts] /; xmin == xmax
@@ -972,9 +963,12 @@ LeftBrace[{xmin_, ymin_}, {xmax_, ymax_}, opts___?OptionQ] := Module[
     TranslationTransform[center] @* RotationTransform[{{0, 1}, dir}],
     LeftBrace[Norm[dir]/2, opts],
     {2}
-   ]
- ]
+  ]
+]
+(**** </LeftBrace> ****)
 
+
+(**** <RightBrace> ****)
 RightBrace::usage = "RightBrace[y] returns the right brace spanning from -y to y."
 
 RightBrace[y_, opts___?OptionQ] := Map[
@@ -1001,8 +995,7 @@ RightBrace[{xmin_, ymin_}, {xmax_, ymax_}, opts___?OptionQ] := Module[
     {2}
    ]
  ]
-
-(**** </LeftBrace> ****)
+(**** </RightBrace> ****)
 
 
 Primed::usage = "Primed[a] represents another object closely related to a."
@@ -1018,7 +1011,6 @@ Format @ DoublePrimed[a_] :=
 
 
 (***** <LevelsPlot> *****)
-
 LevelsPlot::usage = "LevelsPlot[{y1,y2,\[Ellipsis]}] generates a plot of levels at values y1, y2, \[Ellipsis]."
 
 Options[LevelsPlot] = {
@@ -1135,12 +1127,10 @@ makeTicks[data:{__?ListQ}][xmin_, xmax_] := Thread @ {
   Subdivide[0, 10, 5],
   Subdivide[Min @ data, Max @ data, 5]
 }
-
 (***** </LevelsPlot> ****)
 
 
 (**** <PanedText> ****)
-
 PanedText::usage = "PanedText[expr] displays with expr in a paned area. See also Text."
 
 Options[PanedText] = {
@@ -1170,12 +1160,10 @@ PanedText[expr_, OptionsPattern[]] := Module[
     txt
   ]
 ]
-
 (**** </PanedText> ****)
 
 
 (**** <SaveData> ****)
-
 SaveData::usage = "SaveData[data] saves data in a MX file."
 
 SaveData::saved = "Successfully save to file ``."
@@ -1207,7 +1195,6 @@ SaveData[data_, OptionsPattern[]] := Module[
   ];
   result
 ]
-
 (**** </SaveData> ****)
 
 

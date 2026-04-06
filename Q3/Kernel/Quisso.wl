@@ -2672,7 +2672,6 @@ Measurements[expr_] := Union @ Flatten @
 
 
 (**** <ProductState> ****)
-
 ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
 
 ProductState::pair = "The value must be a pair of complex numbers or a list of such pairs instead of ``."
@@ -2847,7 +2846,6 @@ ProductState[a_Association, opts___][qq:(_?QubitQ | {__?QubitQ})] :=
     Missing["KeyAbsent", _Symbol?QubitQ[___, $]] := {1, 0};
     Lookup[a, FlavorCap @ qq]
    ]
-
 (**** </ProductState> ****)
 
 
@@ -2871,7 +2869,6 @@ BellState[g:{_?QubitQ, _?QubitQ}, 3] :=
 
 
 (**** <DickeState> ****)
-
 DickeState::usage = "DickeState[qubits, n] gives the generalized Dicke state for the qubits, where n qubits are in the state Ket[1]."
 
 DickeState[ss:{__?QubitQ}, n_] := Module[
@@ -2882,12 +2879,10 @@ DickeState[ss:{__?QubitQ}, n_] := Module[
 ]
 
 DickeState[ss:{__?QubitQ}] := Table[DickeState[ss, n], {n, 0, Length @ ss}]
-
 (**** </DickeState> ****)
 
 
 (**** <GHZState for Qubits> ****)
-
 GHZState::usage = "GHZState[{s1,s2,\[Ellipsis]}, k] returns the kth generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nGHZState[{s1,s2,\[Ellipsis]}] returns the list of all GHZ states of species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
 
 GHZState[ss:{__?QubitQ}] := GHZState[ss, 0]
@@ -2903,12 +2898,10 @@ GHZState[ss:{__?QubitQ}, kk:{___Integer}] := Map[GHZState[ss, #]&, kk]
 
 GHZState[ss:{__?QubitQ}, All] :=
   GHZState[ss, Range[0, Power[2, Length @ ss] - 1]]
-
 (**** </GHZState> ****)
 
 
 (**** <SmolinState> ****)
-
 SmolinState::usage = "SmolinState[{s1,s2,\[Ellipsis]}] returns the generalized Smolin state for qubits {s1,s2,\[Ellipsis]}. See also Augusiak and Horodecki (2006).";
 
 SmolinState::badsys = "A generalized Smolin state is defined only for an even number of qubits: `` has an odd number of qubits. Returning the generalized Smolin state for the qubits excluding the last."
@@ -2922,12 +2915,10 @@ SmolinState[ss:{__?QubitQ}] :=
   (1 + Power[-1, Length[ss]/2] *
       Total @ MapThread[Multiply, Through[ss[All]]]) /
   Power[2, Length @ ss]
-
 (**** </SmolinState> ****)
 
 
 (**** <GraphState> ****)
-
 GraphState::usage = "GraphState[g] gives the graph state correponding to the graph g."
 
 GraphState::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``."
@@ -3004,12 +2995,10 @@ GraphStateBasis[g_Graph, n_Integer] := Module[
   cz = Dot @@ theCZ[n] @@@ cz;
   ExpressionFor[cz . in]
  ] /; AllTrue[VertexList @ g, (#<=n)&]
-
 (**** </GraphState> ****)
 
 
 (**** <ModMultiply> ****)
-
 ModMultiply::usage = "ModMultiply[n, {c1,c2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] represents the modular multiplication between two quantum registers {c1,c2,\[Ellipsis]} and {t1,t2,\[Ellipsis]}."
 
 ModMultiply::order = "`` cannot be larger than ``."
@@ -3119,16 +3108,13 @@ Matrix[
   op:ModMultiply[_Integer, _Integer, tt:{__?QubitQ}, ___?OptionQ],
   qq:{__?SpeciesQ} ]:=
   MatrixEmbed[Matrix @ op, tt, qq]
-  
 (**** </ModMultiply> ****)
 
 
 (**** <ModPower> ****)
-
 ModExp::usage = "ModExp is an alias of ModPower and refers to the modular exponentiation."
 
 ModPower::usage = "ModPower represents the modular power or modular exponentiation."
-
 (**** </ModPower> ****)
 
 
@@ -3437,7 +3423,6 @@ FlavorMute[S_Symbol?QuditQ[k___, _] -> m_] := S[k, $] -> m
 
 
 (**** <Ket for Qudits> ****)
-
 theKetTrim[Rule[_?QuditQ, 0]] = Nothing
 
 KetVerify::qudit = "Invalid value `` for qudit ``."
@@ -3448,13 +3433,11 @@ theKetVerify[Rule[a_?QuditQ, v_]] := (
 ) /; Not[0 <= v < Dimension[a]]
 (* NOTE: The following definition would not allow to assign a symbolic value:
    theKetVerify[Rule[_?QuditQ, Except[0|1]]] = Nothing *)
-
 (**** </Ket for Qubits> ****)
 
 
 (**** <GHZState> ****)
 (*  for arbitray species *)
-
 GHZState[ss:{__?SpeciesQ}, rest___] := KetMutate[
   GHZState[{First @ Dimension @ ss, Length @ ss}, rest],
   ss
@@ -3476,7 +3459,6 @@ GHZState[{dim_Integer?Positive, n_Integer?Positive}, All] := Map[
   GHZState[{dim, n}, #]&,
   Range[0, Power[dim, n]-1]
 ]
-
 (**** </GHZState> ****)
 
 
@@ -3534,10 +3516,8 @@ HoldPattern @ Multiply[pre___, A_?QuditQ, B_?QuditQ, post___] :=
 
 
 (**** <Basis> ****)
-
 Basis[ S_?QuditQ ] :=
   Ket /@ Thread[FlavorCap[S] -> Range[0, Dimension[S]-1]]
-
 (**** </Basis> ****)
 
 
@@ -3561,7 +3541,6 @@ TheQuditKet[ cc:{_Integer, _Integer}.. ] := Module[
 
 
 (**** <Parity> ****)
-
 Parity[A_?QuditQ] := Module[
   { jj = Range[0, Dimension[A]-1],
     op },
@@ -3574,12 +3553,10 @@ ParityValue[v_Ket, a_?QuditQ] := IntegerParity[v[a]]
 ParityEvenQ[v_Ket, a_?QuditQ] := EvenQ @ v @ a
 
 ParityOddQ[v_Ket, a_?QuditQ] := OddQ @ v @ a
-
 (**** </Parity> ****)
 
 
 (**** <Matrix for Qudits> ****)
-
 TheMatrix[A_?QuditQ[___, i_ -> j_]] :=
   SparseArray[{1+j, 1+i} -> 1, Dimension[A]*{1, 1}]
 
@@ -3590,12 +3567,10 @@ TheMatrix @ Ket @ Association[A_?QuditQ -> n_Integer] := SparseArray[
 
 TheMatrix[A_?QuditQ[___, $ @ {x_Integer, z_Integer}]] :=
   TheWeyl[{x, z, Dimension @ A}]
-
 (**** </Matrix> *****)
 
 
 (**** <TransformByFourier for Qudits> ****)
-
 TransformBy[a__?QuditQ, mat_?MatrixQ] :=
   TransformBy[Sequence @@ Thread[{a} -> {a}], mat]
 
@@ -3632,7 +3607,6 @@ TransformByFourier[
 
 TransformByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
   Garner[ expr /. TransformByFourier[old -> new, opts] ]
-
 (**** </TransformByFourier for Qudits> ****)
 
 Protect[Evaluate @ $symb]
@@ -3643,7 +3617,6 @@ End[] (* Qudits *)
 Begin["`Private`"]
 
 (**** <Unfold> ****)
-
 Unfold::usage = "Unfold[gate] gives an unfolded form of gate."
 
 Unfold::unknown = "Unknown method ``."
@@ -3663,12 +3636,10 @@ SyntaxInformation[Unfold] = {
 Unfold[any_?CommutativeQ op_, opts___?OptionQ] := any * Unfold[op, opts]
 
 Unfold[any_, ___?OptionQ] = any
-
 (**** </Unfold> ****)
 
 
 (**** <UnfoldAll> ****)
-
 UnfoldAll::usage = "UnfoldAll[gate] gives a fully unfolded form of gate."
 
 UnfoldAll::unknown = "Unknown method ``."
@@ -3682,7 +3653,6 @@ SyntaxInformation[UnfoldAll] = {
 UnfoldAll[any_?CommutativeQ op_, opts___?OptionQ] := any * UnfoldAll[op, opts]
 
 UnfoldAll[any_, ___?OptionQ] = any
-
 (**** </UnfoldAll> ****)
 
 End[] (* Untilities *)

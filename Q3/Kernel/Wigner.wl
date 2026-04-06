@@ -11,7 +11,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { WignerDecompose, WignerCompose,
   WignerCoefficients };
 
-{ WignerBasis };
+{ WignerBasis, WignerBasisKeys,
+  WignerBratteliDiagram };
 
 { WignerAdd, WignerAddZ };
 
@@ -613,31 +614,84 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
 (**** </WignerAdd> ****)
 
 
+(**** <WignerBasisKeys> ****)
+WignerBasisKeys::usage = "WignerBasisKeys[{n, s}] returns the SU(2) irreducible basis (the total angular momentum basis) for the system of n spins of magnitude s in the symbolic form.\nWignerBasisKeys[{s1,s2,\[Ellipsis],sn}] is equivalent to WignerBasisKeys[{n, Spin[s1]}]."
+
+WignerBasisKeys[S:_?QubitQ|_?SpinQ] := {Spin @ S}
+
+WignerBasisKeys[ss:{(_?QubitQ|_?SpinQ)..}] := 
+  WignerBasisKeys[{Length @ ss, Spin @ First @ ss}]
+
+
+WignerBasisKeys[s_?SpinNumberQ] := WignerBasisKeys[{1, s}]
+
+WignerBasisKeys[{n_Integer, s_?SpinNumberQ}, OptionsPattern[]] :=
+  Nest[addWignerBasisKeys[s], {{s}}, n-1]
+
+
+addWignerBasisKeys[s_?SpinNumberQ][bs:{__List}] := ReverseSortBy[
+  Flatten[Map[addWignerBasisKeys[s], bs], 1],
+  Reverse
+]
+
+addWignerBasisKeys[s_?SpinNumberQ][key:{__?SpinNumberQ}] := Module[
+  { j = Last[key],
+    new },
+  new = Range[j+s, Abs[j-s], -1];
+  Thread @ Append[key, new]
+]
+
+(* single node *)
+
+WignerBasisKeys[{1, s_?SpinNumberQ} -> s_] :=
+  WignerBasisKeys[{1, s}]
+
+WignerBasisKeys[{1, s_?SpinNumberQ} -> _] := {}
+
+WignerBasisKeys[{n_Integer, s_?SpinNumberQ} -> t_?SpinNumberQ] := Module[
+  { sub, new, nbs },
+  sub = Range[t+s, Abs[t-s], -1];
+  sub = Select[sub, # <= (n-1)*s &];
+  new = Table[
+    nbs = WignerBasisKeys[{n-1, s} -> j];
+    Map[Append[#, t]&, nbs],
+    {j, sub}
+  ];
+  ReverseSortBy[Flatten[new, 1], Reverse]
+]
+(**** </WignerBasisKeys> ****)
+
+
 (**** <WignerBasis> ****)
-WignerBasis::usage = "WignerBasis[n, s] returns the SU(2) irreducible basis (the total angular momentum basis) for the system of n spins of magnitude s, where each basis vector is expressed in the row vector representation.\n WignerBasis[{s1,s2,\[Ellipsis],sn}] returns the basis with each basis vector expressed in the ket form."
+WignerBasis::usage = "WignerBasis[{n, s}] returns the SU(2) irreducible basis (the total angular momentum basis) for the system of n spins of magnitude s, where each basis vector is expressed in the row vector representation.\nWignerBasis[{s1,s2,\[Ellipsis],sn}] returns the basis with each basis vector expressed in the ket form."
 
-WignerBasis[S_?SpinQ] := Association[{Spin @ S} -> Basis[S]]
+Options[WignerBasis] = {
+  "Numeric" -> False
+};
 
-WignerBasis[{S_?SpinQ}] := WignerBasis[S]
+WignerBasis[S:_?QubitQ|_?SpinQ, rest___] := Association[{Spin @ S} -> Basis[S], rest]
 
-WignerBasis[ss:{_?SpinQ, __?SpinQ}] := Module[
+WignerBasis[{S:_?QubitQ|_?SpinQ}, rest___] := WignerBasis[S, rest]
+
+WignerBasis[ss:{_?QubitQ|_?SpinQ, (_?QubitQ|_?SpinQ)..}, opts___?OptionQ] := Module[
   { wbs },
-  wbs = WignerBasis[{Length @ ss, Spin @ First @ ss}];
+  wbs = WignerBasis[{Length @ ss, Spin @ First @ ss}, opts];
   Map[Map[ExpressionFor[#, ss]&], wbs]
 ]
 
-WignerBasis[ss:{_?SpinQ, __?SpinQ} -> t_?SpinNumberQ] := Module[
+WignerBasis[ss:{_?QubitQ|_?SpinQ, (_?QubitQ|_?SpinQ)..} -> t_?SpinNumberQ, opts___?OptionQ] := Module[
   { wbs },
-  wbs = WignerBasis[{Length @ ss, Spin @ First @ ss} -> t];
+  wbs = WignerBasis[{Length @ ss, Spin @ First @ ss} -> t, opts];
   Map[Map[ExpressionFor[#, ss]&], wbs]
 ]
 
 
-WignerBasis[s_?SpinNumberQ] := WignerBasis[{1, s}]
+WignerBasis[s_?SpinNumberQ, rest___] := WignerBasis[{1, s}, rest]
 
-WignerBasis[{n_Integer, s_?SpinNumberQ}] := Module[
+WignerBasis[{n_Integer, s_?SpinNumberQ}, OptionsPattern[]] := Module[
   { in, bs },
   in = Association[{s} -> One[2*s + 1]];
+  If[OptionValue["Numeric"], in = N[in]];
   bs = Nest[addWignerBasis[s], in, n-1];
   Map[Map[Identity], bs]
   (* each value is a list of sparse vectors; not a whole matrix; this is to make it easier to use KeyGroupBy in order to reorganize the basis vectors. *)
@@ -662,17 +716,18 @@ addWignerBasis[s_?SpinNumberQ][key:{__?SpinNumberQ} -> val_?MatrixQ] := Module[
 
 (* single node *)
 
-WignerBasis[{1, s_?SpinNumberQ} -> s_] := WignerBasis[{1, s}]
+WignerBasis[{1, s_?SpinNumberQ} -> s_, opts___?OptionQ] :=
+  WignerBasis[{1, s}, opts]
 
-WignerBasis[{1, s_?SpinNumberQ} -> _] := <||>
+WignerBasis[{1, s_?SpinNumberQ} -> _, ___?OptionQ] := <||>
 
-WignerBasis[{n_Integer, s_?SpinNumberQ} -> t_?SpinNumberQ] := Module[
-  { sub, new, bs },
+WignerBasis[{n_Integer, s_?SpinNumberQ} -> t_?SpinNumberQ, opts___?OptionQ] := Module[
+  { sub, new, nbs },
   sub = Range[t+s, Abs[t-s], -1];
   sub = Select[sub, # <= (n-1)*s &];
   new = Association @ Table[
-    bs = WignerBasis[{n-1, s} -> j];
-    Join @ AssociationMap[addWignerBasis[s -> t], bs],
+    nbs = WignerBasis[{n-1, s} -> j, opts];
+    Join @ AssociationMap[addWignerBasis[s -> t], nbs],
     {j, sub}
   ];
   new = Map[Map @ Identity, new];
@@ -686,6 +741,33 @@ addWignerBasis[s_ -> t_][key:{__?SpinNumberQ} -> val_?MatrixQ] := Module[
   Append[key, t] -> elm
 ]
 (**** </WignerBasis> ****)
+
+
+(**** <WignerBratteliDiagram> ****)
+WignerBratteliDiagram::usage = "WignerBratteliDiagram[{n, s}] gives the Bratteli diagram corresponding to the irreducible basis of n spins of magnitude s."
+
+WignerBratteliDiagram[{n_Integer, s_?SpinNumberQ}, opts___?OptionQ] := Module[
+  { edg = NestList[wgnBratteli[s], {1, s}, n-1],
+    vtx, pos },
+  edg = Flatten[Rest @ edg];
+  vtx = VertexList[edg];
+  pos = vtx . RotationMatrix[Pi/2];
+  Graph[ edg, opts,
+    VertexCoordinates -> Thread[vtx -> pos],
+    VertexLabels -> {{_Integer, S_} -> S},
+    VertexLabelStyle -> Medium,
+    ImageSize -> Medium
+  ]
+]
+
+wgnBratteli[s_][{k_Integer, j_}] := Map[
+  DirectedEdge[{k, j}, #]&, 
+  Thread @ {k+1, Range[Abs[j-s], j+s]}
+]
+
+wgnBratteli[s_][edges:{__DirectedEdge}] :=
+  Flatten @ Map[wgnBratteli[s], Union[Last /@ edges]]
+(**** </WignerBratteliDiagram> ****)
 
 
 (**** <Rotation> ****)
@@ -716,10 +798,6 @@ Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
 ]
 (**** </Rotation> ****)
 
-
-(* ***************
-   Special Topics
-   *************** *)
 
 WignerDecompose::usage = "WignerDecompose[v] gives the Pauli decomposition of the density matrix for the PURE state v for Spin=1/2 particles."
 

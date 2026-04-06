@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.5.9
+
+- New: WignerBasisKeys, WignerBratteliDiagram 
+
 ## 4.5.8
 
 - Modified: QSP, QSPConvert, QSPFind, ChebyshevPoints, ChebyshevCoefficients, ChebyshevSeries, ChebyshevApproximation
