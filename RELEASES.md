@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.5.10
+
+- Improved: NineJSymbol, LevelsPlot
+
 ## 4.5.9
 
 - New: WignerBasisKeys, WignerBratteliDiagram 

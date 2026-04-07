@@ -1022,49 +1022,74 @@ PrintClebschGordanMatrix[cgm_?MatrixQ, {j1_, j2_} -> JJ_] := Module[
 
 
 (**** <NineJSymbol> ****)
-NineJSymbol::usage = "NineJSymbol[{j1,j2,j3}, {j4,j5,j6},{j7,j8,j9}] gives the Wigner 9j-symbol."
+NineJSymbol::usage = "NineJSymbol[{{j1,j2,j3},{j4,j5,j6},{j7,j8,j9}}] gives the value of the Wigner 9-j symbol."
+(* Source: Jan Mangaldan, Wolfram Function Repository (1998) based on Wei (1998). *)
 
-(* Special cases with one of J's is zero, in which case the Nine-J symbol is related to the Six-J symbol. *)
-NineJSymbol @ {
-  {j1_,  j2_,  j12_},
-  {j3_,  j4_,  j34_},
-  {j13_, j24_,  0 }
-} :=
-  KroneckerDelta[j12, j34] *
-  KroneckerDelta[j13, j24] *
-  Power[-1, j2+j3+j12+j13] / Sqrt[(2*j12+1)(2*j13+1)] *
-  SixJSymbol[{j1,j2,j12}, {j4,j3,j13}]
+NineJSymbol::phy = "`1` is not physical.";
 
-(* cyclic permutations of rows and columns *)
-(* A 9-j symbol is invariant under reflection about either diagonal as well as even permutations of its rows or columns. *)
-NineJSymbol[jj_?MatrixQ] := Module[
-  { mm = Normal[jj],
-    k },
-  k = FirstPosition[mm, 0];
-  mm = Transpose @ RotateRight[
-    Transpose @ RotateRight[mm, 3 - First[k]], 
-    3 - Last[k]
+NineJSymbol[mat_?halfIntMatQ] := Module[
+  { ma = mat, 
+    res },
+  If[ !validNineJQ[ma],
+    Message[NineJSymbol::phy, ma]; 
+    Return[0, Module]
   ];
-  NineJSymbol[mm]
-] /; MemberQ[Flatten @ Normal @ jj, 0]
+  RootReduce[res] /; NumericQ[res = theNineJSymbol[ma]]
+]
 
-(* General case *)
-NineJSymbol[
-  {j1_,  j2_,  j12_},
-  {j3_,  j4_,  j34_},
-  {j13_, j24_, j_} ] := Simplify @ Sum[
-    (-1)^(2*g)*(2*g+1) *
-      SixJSymbol[{j1,j2,j12}, {j34,j,g}] *
-      SixJSymbol[{j3,j4,j34}, {j2,g,j24}] *
-      SixJSymbol[{j13,j24,j}, {g,j1,j3}], 
-    { g,
-      Max[Abs[j1-j], Abs[j2-j34], Abs[j3-j24]], 
-      Min[j1+j, j2+j34, j3+j24],
-      1-Mod[2*(j1+j),2]/2 }
+NineJSymbol[mat_?inexactHalfIntMatQ] := N[
+  NineJSymbol[Round[2 mat]/2],
+ Internal`EffectivePrecision[mat]
+]
+
+NineJSymbol[mat_List] := (Message[NineJSymbol::phy, mat]; 0) /;
+  And[Dimensions[mat] === {3, 3}, MatrixQ[mat, NumericQ]]
+
+
+theNineJSymbol[mat_] := With[
+  { id = Table[Diagonal[mat, k][[{1, -1}]], {k, -1, 1}] },
+  Sum[ (-1)^(2 k) (2 k + 1) * 
+    Apply[ Times, 
+      MapThread[
+        SixJSymbol, {Transpose[mat], 
+        Table[Insert[Delete[mat[[4 - j]], j], k, 4 - j], {j, 3}]}
+      ]
+    ],
+    {k, Norm[id . {1, -1}, \[Infinity]], Min[Total[id, {2}]]}, 
+    Method -> "Procedural"
   ]
-(* QUESTION::2016-02-22: Mathematica says that SixJSymbol[] givs the Racah 6-j
-   symbol. Is it the same as the Wigner 6-j symbol? Messiah says that they are
-   different in sign. *)
+]
+
+
+triangularQ[{j1_, j2_, j3_}] := And[
+  Internal`NonNegativeIntegerQ[j1 + j2 + j3],
+  Abs[j1 - j2] <= j3 <= j1 + j2
+]
+
+
+halfIntMatQ[mat_List] := And[
+  Dimensions[mat] === {3, 3},
+  MatrixQ[mat, Internal`NonNegativeIntegerQ[2 #] &]  
+]
+
+halfIntMatQ[_] := False;
+
+
+inexactHalfIntMatQ[mat_List] := And[
+  Dimensions[mat] === {3, 3},
+  MatrixQ[mat, RealValuedNumericQ[#] && NonNegative[#] &],
+  Norm[Mod[2 mat, 1], 1] == 0
+]
+
+inexactHalfIntMatQ[_] := False;
+
+
+validNineJQ[mat_List] := And[
+  TrueQ[And @@ Map[triangularQ, mat]],
+  TrueQ[And @@ Map[triangularQ, Transpose @ mat]]
+]
+
+validNineJQ[_] := False
 (**** </NineJSymbol> ****)
 
 

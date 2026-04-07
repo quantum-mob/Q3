@@ -1043,13 +1043,13 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
       sty = OptionValue["DataStyles"],
       tag = OptionValue["DataLabels"],
       txt = OptionValue["Labels"],
-      off = padCyclic[offset, Length @ data],
+      off = doAssureList[offset, Length @ data],
       min, new, loc, lines, links, ticks, texts },
     loc = padAccumulate[locale, Length @ set, wid + gap];
     lines = MapThread[makeLines, {loc, loc+wid, set}];
 
     If[ sty === Automatic || sty === None, Null,
-      sty = padCyclic[sty, Length @ set];
+      sty = doAssureList[sty, Length @ set];
       lines = Thread[{sty, lines}];
     ];
 
@@ -1069,15 +1069,15 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
       links = Nothing
     ];
 
-    ticks = If[ tag === None,
-      None,
-      tag = padCyclic[tag, Length @ set];
+    (* x-ticks *)
+    ticks = If[ tag === None, None,
+      tag = doAssureList[tag, Length @ set];
       Thread[{loc+wid/2, tag, 0}]
     ];
 
-    texts = If[ txt === None,
-      Nothing,
-      txt = padCyclic[txt, Length @ set];
+    (* labels of the levels *)
+    texts = If[ txt === None, Nothing,
+      txt = doAssureList[txt, Length @ set];
       makeLabels @@@ Thread[{loc+wid/2, set, txt}]
     ];
 
@@ -1088,20 +1088,15 @@ LevelsPlot[data:{__?ListQ}, locale:{__?NumericQ}, offset:{__Integer},
       FilterRules[{opts}, Options @ Graphics],
       Frame -> {{True, False}, {True, False}},
       FrameStyle -> {
-        {Directive[LightDarkSwitched @ Black, Large], None}, 
-        {LightDarkSwitched @ White, None}},
+        {LightDarkSwitched @ Black, None},
+        {LightDarkSwitched @ White, None}
+      },
       (* FrameTicks -> {{Automatic, None}, {ticks, None}}, *)
       FrameTicks -> {{makeTicks[data], None}, {ticks, None}},
-      (* FrameTicksStyle -> Directive[Large, LightDarkSwitched @ Black], *)
+      FrameTicksStyle -> LightDarkSwitched[Black],
       ImageSize -> Medium
     ]
   ]
-
-padCyclic[set_, len_] := Module[
-  { new },
-  new =  If[ListQ @ set, set, List @ set];
-  PadRight[new, len, new]
-]
 
 padAccumulate[set_, len_, span_] := If[ len > Length[set],
   Join[ set,
@@ -1117,7 +1112,7 @@ makeLabels[x_, val:{__?NumericQ}, None] := {}
 
 makeLabels[x_, val:{__?NumericQ}, txt_List] := Module[
   { new, loc },
-  new = padCyclic[txt, Length @ val];
+  new = doAssureList[txt, Length @ val];
   loc = Thread[{x, val}];
   MapThread[Text[#1, #2, Bottom]&, {new, loc}]
 ]
