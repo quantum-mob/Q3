@@ -18,7 +18,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 Begin["`Private`"]
 
 (**** <YoungContent> ****)
-
 YoungContent::usage = "YoungContent[tb] returns the type (or content or weight) of Weyl tableau tb; i.e., a list of multiplicities of numbers (or letters) appearing in the tableau."
 (* Definition 2.9.1 in Sagan (2001) *)
 
@@ -56,12 +55,10 @@ YoungContent[data_List?GelfandPatternQ, rest___] :=
 (* flexibility *)
 YoungContent[data_?WeylTableauQ, rest___] := 
   YoungContent[YoungTableau @ data, rest]
-
-(**** </Youngtype> ****)
+(**** </YoungContent> ****)
 
 
 (**** <YoungContents> ****)
-
 YoungContents::usage = "YoungContents[n, d] returns a list of types of degree n for d letters.\n YoungContents[shape, d] returns a list of types ReverseSort of which are dominated by shape."
 
 YoungContents[n_Integer, d_Integer] := Module[
@@ -79,12 +76,10 @@ YoungContents[shape_YoungShape, d_Integer] := Module[
   types = PadRight[types, {Length @ types, d}];
   Catenate @ Map[Permutations, types]
 ]
-
 (**** </YoungContents> ****)
 
 
 (**** <GelfandPattern> ****)
-
 GelfandPattern::usage = "GelfandPattern[data] represents a Gelfand pattern specified by data.\nGelfandPattern[yt, d] converts Young tableau yt with entries of d letters to Gelfand pattern."
 (* See Louck (2008). *)
 
@@ -130,12 +125,10 @@ GelfandPattern[YoungTableau[data_], d_Integer] := Module[
 theKetFormatQ[_GelfandPattern] = True
 
 theKetFormat[gp_GelfandPattern] := YoungTableau[gp]
-
 (**** </GelfandPattern> ****)
 
 
 (**** <GelfandForm> ****)
-
 GelfandForm::usage = "GelfandForm[tb] displays Gelfand pattern tb in the upper-left triangluar form."
 
 GelfandForm::notgp = "Data `` is not of the Gelfand-pattern form."
@@ -149,12 +142,10 @@ GelfandForm[data_] := (
   Message[GelfandForm::notgp, data];
   data
 )
-
 (**** </GelfandForm> ****)
 
 
 (**** <GelfandOrder> ****)
-
 GelfandOrder::usage = "GelfandOrder[a, b] returns 1 if the Young tableaux corresponding to Gelfand patterns a and b are in the lexicographic order of Young tableaux (i.e., the column-wise lexicographic order)."
 (* NOTE: The lexicographic order of Young tableaux is different from the
    lexicographic order for normal lists. It is the column-wise lexicographic order. *)
@@ -167,12 +158,10 @@ GelfandOrder[GelfandPattern[a_], GelfandPattern[b_]] :=
 
 GelfandOrder[GelfandPattern[a_], GelfandPattern[b_]] :=
   -Order[First @ a, First @ b]
-
 (**** </GelfandOrder> ****)
 
 
 (**** <GelfandPatternQ> ****)
-
 GelfandYoungPatternQ::usage = "GelfandYoungPatternQ[tb] returns True if tb is a valid Gelfand-Young pattern and False otherwise.\nA Gelfand pattern is called a Gelfand-Young pattern if it corresponds to a standard Young tableau."
 
 GelfandYoungPatternQ[gp_GelfandPattern] :=
@@ -182,12 +171,10 @@ GelfandYoungPatternQ[gp_List?GelfandPatternQ] :=
   ContainsOnly[Differences[Total /@ gp], {-1}]
 
 GelfandYoungPatternQ[_] = False
-
 (**** </GelfandPatternQ> ****)
 
 
 (**** <GelfandPatterns> ****)
-
 GelfandPatterns::usage = "GelfandPatterns[shape, d] constructs all possible Gelfand patterns for shape with d letters.\nGelfandPattern[n, d] returns all Gelfand patterns of order n with d letters.\nGelfandPatterns[shape, type] returns a list of Gelfand patterns of shape and type."
 
 SyntaxInformation[GelfandPatterns] = {"ArgumentsPattern" -> {_, _}}
@@ -240,12 +227,10 @@ theGelfandPatterns[pp:{_Integer, __Integer}, aa:{__Integer}] := Module[
   qq = Catenate[theGelfandPatterns[#, Most @ aa]& /@ qq];
   Map[Prepend[#, pp]&, qq]
 ]
-
 (**** </GelfandPatterns> ****)
 
 
 (**** <GelfandPatternQ> ****)
-
 GelfandPatternQ::usage = "GelfandPatternQ[tb] returns True if tb represents a valid Gelfand pattern."
 
 GelfandPatternQ[GelfandPattern[data_List]] := GelfandPatternQ[data]
@@ -262,13 +247,11 @@ anyGelfandPatternQ[data:{{__Integer}..}] :=
   Equal[Length /@ data, Reverse @ Range @ Length @ data]
 
 anyGelfandPatternQ[_] = False
-
 (**** </GelfandPatternQ> ****)
 
 
 (**** <GelfandYoungPatterns> ****)
-
-GelfandYoungPatterns::usage = "GelfandYoungPatterns[shape] gives a list of all Gelfand-Young patterns of shape.\nGelfandYoungPatterns[n] returns the list of all Standrd Young Tableaux of roder n.\nA Gelfand pattern is called a Gelfand-Young pattern if it corresponds to a standard Young tableau."
+GelfandYoungPatterns::usage = "GelfandYoungPatterns[shape] gives a list of all Gelfand-Young patterns of shape.\nGelfandYoungPatterns[n] returns the list of all Gelfand-Young patterns of degree n.\nA Gelfand pattern is called a Gelfand-Young pattern if it corresponds to a standard Young tableau."
 
 GelfandYoungPatterns[n_Integer] :=
   Catenate @ Map[GelfandYoungPatterns, YoungShapes @ n]
@@ -284,14 +267,13 @@ GelfandYoungPatterns[YoungShape[p_]] :=
 
 theGelfandYoung[{1}] = {{{1}}}
 
-theGelfandYoung[p:{___Integer}] := Module[
+theGelfandYoung[pp:{___Integer}] := Module[
   { qq },
-  qq = Tuples @ Successive[Range[#1, Max[#1-1, #2], -1]&, p];
+  qq = Tuples @ Successive[Range[#1, Max[#1-1, #2], -1]&, pp];
   qq = Select[qq, Length[#] == Total[#]&];
   qq = Catenate[theGelfandYoung /@ qq];
-  Map[Prepend[#, p]&, qq]
+  Map[Prepend[#, pp]&, qq]
 ]
-
 (**** </GelfandYoungPatterns> ****)
 
 
@@ -312,7 +294,6 @@ WeylTableauQ[_] = False
 
 
 (**** <WeylTableaux> ****)
-
 WeylTableaux::usage = "WeylTableaux[shape, d] returns a list of all possible Weyl tableaux (semi-standard Young tableaux) of shape with entries of d letters.\nWeylTableax[n, d] returns the list of all Weyl tableaux of order n with entries of d letters.\nWeylTableaux[shape, content] returns a list of Weyl tableaux of shape and content."
 
 SyntaxInformation[WeylTableaux] = {"ArgumentsPattern" -> {_, _}}
@@ -330,12 +311,10 @@ WeylTableaux[shape:(_YoungShape|_List?YoungShapeQ), d_Integer] :=
 
 WeylTableaux[shape:(_YoungShape|_List?YoungShapeQ), type:{__Integer}] :=
   YoungTableau /@ GelfandPatterns[shape, type]
-
 (**** </WeylTableaux> ****)
 
 
 (**** <WeylTableauCount> ****)
-
 WeylTableauCount::usage = "WeylTableauCount[shape, d] returns the number of Weyl tableaux of d letters consistent with shape."
 
 WeylTableauCount[n_Integer, d_Integer] :=
@@ -350,12 +329,10 @@ WeylTableauCount[YoungShape[data_List], d_Integer] := With[
    Product[j - i, {i, 1, d}, {j, i + 1, d}]
 ]
 (* cf. ChoiceCount *)
-
 (**** </WeylTableauCount> ****)
 
 
 (**** <PartialHook> ****)
-
 PartialHook::usage = "PartialHook[gz] returns a matrix with elements of the partial hooks of Gelfand pattern gz."
 (* See Biedenharn68a. *)
 
@@ -366,14 +343,12 @@ PartialHook[GelfandPattern[data_]] := With[
   { d = Length[data] },
   Reverse @ PadRight[data, {d, d}] + Array[(#1-#2)&, {d, d}]
 ]
-
 (**** </PartialHook> ****)
 
 
 (**** <ReducedWigner> ****)
-(* See Bacon07a *)
-
 ReducedWigner::usage = "ReducedWigner[n, {a, i}, {b, j}] returns the reduced Wigner coefficient of fundamental tensor operators of the U(n) group."
+(* See Bacon07a *)
 
 ReducedWigner[d_Integer,
   {a_List?YoungShapeQ, j_Integer},
@@ -404,14 +379,12 @@ ReducedWigner[d_Integer,
 
 newSign[0] = 1;
 newSign[x_] := Sign[x]
-
 (**** </ReducedWigner> ****)
 
 
 (**** <ClebschGordanX> ****)
-(* See Louck70a and Louck08a. *)
-
 CleschGordanX::usage = "ClebschGordanX[in, s, out] or ClebschGordanX[{in, s}, out] returns the extended Clebsch-Gordan coefficient of Gelfand basis state Ket[out] in terms of tensor product of Gelfand state Ket[in] and Ket[s]. Parameters out and in are specified by Gelfand patterns."
+(* See Louck70a and Louck08a. *)
 
 ClebschGordanX[{in_GelfandPattern, s_Integer}, out_GelfandPattern] :=
   ClebschGordanX[in, s, out]
@@ -448,7 +421,6 @@ ClebschGordanX[GelfandPattern[in_], s_Integer, GelfandPattern[out_]] :=
       GelfandPattern @ Rest @ in, s,
       GelfandPattern @ Rest @ out ]
   ] /; s < Length[out] == Length[in]
-
 (**** </ClebschGordanX> ****)
 
 
@@ -462,7 +434,6 @@ SchurBasisQ[_] = False
 
 
 (**** <SchurBasis> ****)
-
 SchurBasis::usage = "SchurBasis[n, d] constructs the Schur basis for a system of n particles with d-dimensional Hilbert space.\nSchurBasis[{q1, q2, \[Ellipsis], qn}] is equivalent to SchurBasis[d, n] with d = Dimension[q1] = Dimension[q2] = \[Ellipsis] = Dimension[qn] but the states are expressed in terms of labelled species {q1, q2, \[Ellipsis]}."
 
 SchurBasis::dimen = "Non-identical dimensions ``. All the dimensions of the Hilbert spaces associated with the systems should be the same."
@@ -515,12 +486,10 @@ regroupSchurBasis[bs_Association] := Merge[
   KeyValueMap[(First[#1] -> Rule[Last[#1], #2])&, bs],
   Association
 ]
-
 (**** </SchurBasis> ****)
 
 
 (**** <SchurPileUp> ****)
-
 SchurPileUp::usage = "SchurPileUp[gy, d] returns a list of pairs {yt, wt} of Gelfand patterns that are allowed to arise when one adds a node of d letters to the existing representation specified by Gelfand-Young pattern gy. Each of the resulting pairs refers uniquely to an element of the Schur basis for U(d) and S(n) where n = YoungDegree[gy] + 1."
 
 SchurPileUp[d_Integer][gy_GelfandPattern] :=
@@ -532,7 +501,6 @@ SchurPileUp[gy_GelfandPattern, d_Integer] :=
     YoungPileUp[gy, d]
   ]
 (* TODO (2025-05-24): This can be implemented in a more efficient way by using the braching rule of Gelfand-Zetlin basis in Section 3.2.1 of Bacon07a. *)
-
 (**** </SchurPileUp> ****)
 
 End[]

@@ -8,8 +8,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { YoungDualOGS, YoungDualOGSn,
   FromYoungDualOGS };
 
-{ YoungFourierMatrix, YoungFourierBasis, YoungFourier };
-{ KawanoSekigawaMatrix, KawanoSekigawaBasis };
+{ YoungFourier, YoungFourierMatrix, YoungFourierBasis };
+{ YoungInterim, YoungInterimMatrix, YoungInterimBasis };
 
 { YoungRegularBasis,
   YoungLeftRepresentation,
@@ -29,9 +29,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 Begin["`Private`"]
 
 (**** <YoungOGS> ****)
-(* See also Kawano16a and Shwartz19a *)
-
 YoungOGS::usage = "YoungOGS[perm, n] returns the standard ordered generating system (OGS) canonical form of the symmetric group of degree n."
+(* See also Kawano16a and Shwartz19a *)
 
 SyntaxInformation[YoungOGS] = {
   "ArgumentsPattern" -> {_, _}
@@ -88,14 +87,12 @@ FromYoungOGS[ogs_List] := Module[
   pp = Thread @ PermutationPower[gg, ogs];
   Apply[PermutationProduct, Reverse @ pp]
 ]
-
 (**** </YoungOGS> ****)
 
 
 (**** <YoungDualOGS> ****)
-(* See also Kawano16a and Shwartz19a *)
-
 YoungDualOGS::usage = "YoungDualOGS[perm, n] returns the dual-standard ordered generating system (OGS) canonical form of the symmetric group of degree n."
+(* See also Kawano16a and Shwartz19a *)
 
 SyntaxInformation[YoungDualOGS] = {
   "ArgumentsPattern" -> {_, _}
@@ -148,12 +145,10 @@ FromYoungDualOGS[ogs_List] := Module[
   pp = Thread @ PermutationPower[gg, ogs];
   Apply[PermutationProduct, pp]
 ]
-
 (**** </YoungDualOGS> ****)
 
 
 (**** <YoungFourierMatrix> ****)
-
 YoungFourierMatrix::usage = "YoungFourieMatrix[n] returns the matrix describing the Fourier transform over the symmetric group of degree n."
 
 YoungFourierMatrix[n_Integer, OptionsPattern[YoungFourier]] := Module[
@@ -174,30 +169,26 @@ YoungFourierMatrix[n_Integer, OptionsPattern[YoungFourier]] := Module[
   ];
   Map[Flatten, Transpose @ rep]
 ]
-
 (**** </YoungFourierMatrix> ****)
 
 
 (**** <YoungFourierBasis> ****)
-
 YoungFourierBasis::usage = "YoungFourierBasis[n] returns the Young-Fourier basis of degree n, i.e., the Fourier transform of the canonical basis for the group algebra of the symmetric group of degree n."
 
 YoungFourierBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
   { mat = YoungFourierMatrix[n, opts],
     key, val },
-  key = Ket /@ Flatten[
+  key = Flatten[
     Map[Tuples[YoungTableaux @ #, 2]&, YoungShapes @ n],
     1 
   ];
   val = Ket /@ List /@ GroupElements[SymmetricGroup @ n];
   AssociationThread[key -> val . mat]
 ]
-
 (**** </YoungFourierBasis> ****)
 
 
 (**** <YoungFourier> ****)
-
 YoungFourier::usage = "YoungFourier[n] represents the Fourier transform over the symmetric group of degree n.\nYoungFourier[n][Ket[{g}]] returns the Fourier transform of Ket[{g}] over the symmetric group.\nYoungFourier[Ket[{y1,y2}]] returns the inverse Fourier transform of Ket[{y1,y2}] over the symmetric group."
 
 YoungFourier::invalid = "Invalid FourierParameters `` for the Young-Fourier transform. {\"Right\", \"Right\"} is assumed."
@@ -245,16 +236,14 @@ YoungFourier[n_Integer, opts:OptionsPattern[]][
   pos = First @ FirstPosition[fbs, {ya, yb}];
   cbs . trs[[pos]]
 ]
-
 (**** </YoungFourier> ****)
 
 
-(**** <KawanoSekigawaMatrix> ****)
+(**** <YoungInterimMatrix> ****)
+YoungInterimMatrix::usage = "YoungInterimMatrix[n] returns the matrix describing the basis change from the Young-Fourier basis to the Kawano-Sekigawa basis for the symmetric group of degree n."
 
-KawanoSekigawaMatrix::usage = "KawanoSekigawaMatrix[n] returns the matrix describing the basis change from the Young-Fourier basis to the Kawano-Sekigawa basis for the symmetric group of degree n."
-
-KawanoSekigawaMatrix[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
-  { new = yngKawanoSekigawa[n, False, opts],
+YoungInterimMatrix[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
+  { new = yngYoungInterim[n, False, opts],
     yng = Map[YoungTableaux, YoungShapes @ n] },
   yng = Map[Tuples[#, 2]&, yng];
   yng = Flatten[yng, 1];
@@ -263,23 +252,21 @@ KawanoSekigawaMatrix[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
     TargetStructure -> "SparseArray"
   ]
 ]
+(**** </YoungInterimMatrix> ****)
 
-(**** </KawanoSekigawaMatrix> ****)
 
+(**** <YoungInterimBasis> ****)
+YoungInterimBasis::usage = "YoungInterimBasis[n] returns the Kawano-Sekigawa basis of degree n, a modified Young-Fourier basis."
 
-(**** <KawanoSekigawaBasis> ****)
-
-KawanoSekigawaBasis::usage = "KawanoSekigawaBasis[n] returns the Kawano-Sekigawa basis of degree n, a modified Young-Fourier basis."
-
-KawanoSekigawaBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
-  { key = yngKawanoSekigawa[n, True, opts], 
+YoungInterimBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
+  { key = yngYoungInterim[n, True, opts], 
     val, mat },
-  mat = YoungFourierMatrix[n, opts] . KawanoSekigawaMatrix[n, opts];
+  mat = YoungFourierMatrix[n, opts] . YoungInterimMatrix[n, opts];
   val = Ket /@ List /@ GroupElements[SymmetricGroup @ n];
   AssociationThread[key -> val . mat]
 ]
 
-yngKawanoSekigawa[n_Integer, drop_, opts:OptionsPattern[YoungFourier]] := Module[
+yngYoungInterim[n_Integer, drop_, opts:OptionsPattern[YoungFourier]] := Module[
   { prm = OptionValue[FourierParameters],
     key = YoungTableaux[n-1] },
   prm = doForceList[prm, 2];
@@ -304,13 +291,11 @@ yngMost[YoungTableau[data_]] := With[
   { n = Max[data] },
   YoungTableau @ YoungTrim @ DeleteCases[data, n, {2}]
 ]
-
-(**** </KawanoSekigawaBasis> ****)
+(**** </YoungInterimBasis> ****)
 
 
 (**** <YoungBruhatGraph> ****)
-
-YoungBruhatGraph::usage = "YoungBruhatGraph[shape] constructs a weak left Bruhat graph of standard tableaux, starting with the row-wise ordered tableau (observe that it is smallest with respect to weak left Bruhat ordering). The edges are weighted, where weight i means that the transposition (i,i+1) induces the transition."
+YoungBruhatGraph::usage = "YoungBruhatGraph[shape] constructs a weak left Bruhat graph of standard Young tableaux, starting with the row-wise ordered tableau (observe that it is smallest with respect to weak left Bruhat ordering). The edges are weighted, where weight i means that the transposition (i,i+1) induces the transition."
 
 YoungBruhatGraph[data_List?YoungShapeQ]:=
   YoungBruhatGraph[YoungShape @ data]
@@ -365,12 +350,10 @@ tableauToPermutation[data_List?YoungTableauQ] :=
 
 tableauToPermutation[yt_YoungTableau] :=
   InversePermutation[Catenate @ First @ YoungTranspose @ yt]
-
 (**** <YoungBruhatGraph> ****)
 
 
 (**** <YoungNormalRepresentation> ****)
-
 YoungNormalRepresentation::usage = "YoungNormalRepresentation[shape] refers to Young's normal representation of the symmetric group corresponding to integer partition shape.\nYoungNormalRepresentation[shape][prm] returns the matrix of permutation prm in Young's normal representation.\nSee also SpechtBasis."
 
 YoungNormalRepresentation[n_Integer] :=
@@ -404,7 +387,7 @@ YoungNormalRepresentation[shape_YoungShape, data_?ArrayQ][
 ] := YoungNormalRepresentation[shape, data][PermutationTranspositions @ prm]
 
 
-theYoungNormalRep::usage = "theYoungNormalRep[graph] constructs the Young's normal representation using the weak leaft Bruhat graph."
+theYoungNormalRep::usage = "theYoungNormalRep[graph] constructs the Young's normal representation of adjacent transpositions in the symmetric group by using the weak left Bruhat graph."
 
 theYoungNormalRep[shape_YoungShape, data_Graph] := Module[
   { n = YoungDegree[shape],
@@ -435,12 +418,10 @@ theYoungNormalRep[shape_YoungShape, data_Graph] := Module[
   ];
   SparseArray[Normal @ rules, {n-1, Length @ tableaux, Length @ tableaux}]
 ]
-
 (**** </YoungNormalRepresentation> ****)
 
 
 (**** <YoungSeminormalRepresentation> ****)
-
 YoungSeminormalRepresentation::usage = "YoungSeminormalRepresentation[shape] refers to Young's seminormal representation of the symmetric group corresponding to the integer partition shape.\n YoungSeminormalRepresentation[shape][prm] returns the matrix of permutation prm in Young's seminormal representation."
 
 YoungSeminormalRepresentation[shape_YoungShape] :=
@@ -508,12 +489,10 @@ theYoungSeminormalRep[shape_YoungShape, data_Graph] := Module[
   ];
   SparseArray[rules, {n-1, Length @ tableaux, Length @ tableaux}]
 ]
-
 (**** </YoungSeminormalRepresentation> ****)
 
 
 (**** <YoungSeminormalMetric> ****)
-
 YoungSeminormalMetric::usage = "YoungSeminormalMetric[syt] returns the norm square of the seminormal basis vector corresponding to standard Young tableau syt.\nYoungSeminormalMetric[shape] returns a list of the norm squares of the seminormal basis vectors belonging to shape.\nNote that Young's seminormal representation is not orthogonal in the canonical Hermitian product. However, it is orthogonal with respect to a diagonal scalar prodcut given by YoungSeminormalMetric."
 
 YoungSeminormalMetric[data_List?YoungShapeQ] :=
@@ -543,12 +522,70 @@ YoungSeminormalMetric[YoungTableau[data_]] := With[
     {i2, 1, Part[trshape,j2]}
   ]
 ]
-
 (**** </YoungSeminormalMetric> ****)
 
 
-(**** <YoungRegularBasis> ****)
+(**** <YoungProjector> ****)
+YoungProjector::usage = "YoungProjector[shape, content] returns the projection over the Young subgroup associated with content onto the irreducible representation of the symmetric group associated with shape.\nYoungProjector[shape] represents an operatoform of YoungProjector to be applied to a content.\nYoungProjector[shape, rep] is equivalent to YoungProjector[shape] with the array rep of matrices of the adjacent transpositions in the symmetric group Sn.";
 
+YoungProjector::incmp = "Both shape `` and content `` must be an integer composition of the same integer.";
+
+(* shortcut *)
+YoungProjector[rep_YoungNormalRepresentation] :=
+  Apply[YoungProjector, rep]
+
+(* shortcut *)
+YoungProjector[shape_YoungShape, content:{__Integer}] :=
+  YoungProjector[shape][content]
+
+YoungProjector[shape_YoungShape] :=
+  YoungProjector[shape, theYoungNormalRep[shape, YoungBruhatGraph @ shape]]
+
+YoungProjector[shape_YoungShape, rep_?ArrayQ][content:{__Integer}] := Module[
+  { n = Total[content],
+    dim = YoungTableauCount[shape],
+    mat, a, m },
+  If[ YoungDegree[shape] =!= n,
+    Message[YoungProjector::incmp, shape, content];
+    Return[$Failed]
+  ];
+  mat = One[dim];
+  a = 1;
+  Do[
+    m = content[[k]];
+    If[m >= 2, mat = mat . theYoungPrj[shape, rep][a, m]];
+    a += m,
+    {k, Length @ content}
+  ];
+  mat
+]
+
+
+theYoungPrj::usage = "Constructs the symmetrizer P_k over S_m acting on positions {a, ..., a+m-1} based on the staircase recursion: Sigma_j = Sigma_{j-1} . R_j, where R_j = I + s_{a+j-2} + s_{a+j-2} s_{a+j-3} + ... + s_{a+j-2}...s_a and s_k is the adjacent transposition (k, k+1)."
+
+theYoungPrj[shape_YoungShape, rep_?ArrayQ][a_Integer, m_Integer] := Module[
+  { dim = YoungTableauCount[shape],
+    sgm, arr, prt, j, t },
+  If[m == 1, Return[One @ dim]];
+  sgm = One[dim];  (* corresponds to S_1 *)
+  Do[
+    (* Build R_j = sum_{t=0}^{j-1} prod_{u=0}^{t-1} gammaS[shape, a+j-2-u] *)
+    arr = One[dim];          (* the t=0 term *)
+    prt = One[dim];
+    Do[
+      prt = prt . rep[[a + j - 2 - (t - 1)]];
+      arr = arr + prt,
+      {t, 1, j - 1}
+    ];
+    sgm = sgm . arr,
+    {j, 2, m}
+  ];
+  sgm / (m!)
+]
+(**** </YoungProjector> ****)
+
+
+(**** <YoungRegularBasis> ****)
 YoungRegularBasis::usage = "YoungRegularBasis[n] returns the Young regular basis of degree n, i.e., the canonical basis of the left regular representation of the symmetric group of degree n."
 
 YoungRegularBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
@@ -560,12 +597,10 @@ YoungRegularBasis[n_Integer, opts:OptionsPattern[YoungFourier]] := Module[
     1 ];
   AssociationThread[key -> val . Topple[mat]]
 ]
-
 (**** </YoungRegularBasis> ****)
 
 
 (**** <YoungLeftRepresentation> ****)
-
 YoungLeftRepresentation::usage = "YoungLeftRepresentation[n] represents the left regular representation of the symmetric group of degree n."
 
 YoungLeftRepresentation[n_Integer] :=
@@ -573,12 +608,10 @@ YoungLeftRepresentation[n_Integer] :=
 
 YoungLeftRepresentation[grp_SymmetricGroup][cyc_Cycles] := 
   LeftRegularRepresentation[grp][cyc]
-
 (**** </YoungLeftRepresentation> ****)
 
 
 (**** <YoungRightRepresentation> ****)
-
 YoungRightRepresentation::usage = "YoungRightRepresentation[n] represents the left regular representation of the symmetric group of degree n."
 
 YoungRightRepresentation[n_Integer] :=
@@ -586,12 +619,10 @@ YoungRightRepresentation[n_Integer] :=
 
 YoungRightRepresentation[grp_SymmetricGroup][cyc_Cycles] := 
   RightRegularRepresentation[grp][cyc]
-
 (**** </YoungRightRepresentation> ****)
 
 
 (**** <LeftRegularRepresentation> ****)
-
 LeftRegularRepresentation::usage = "LeftRegularRepresentation[group, g] returns the left regular representation of element g of group.\n LeftRegularRepresentation[group, {g1,g2,\[Ellipsis],gn}] returns the list of the left regular representations of elements g1, g2, \[Ellipsis], gn."
 
 LeftRegularRepresentation::gmt = "Group `` is not supported."
@@ -639,12 +670,10 @@ LeftRegularRepresentation[grp:{_String, _Integer}, kk_] := Module[
     Transpose @ PermutationMatrix[gmt[[kk]], TargetStructure -> "Sparse"]
   ]
 ]
-
 (**** </LeftRegularRepresentation> ****)
 
 
 (**** <RightRegularRepresentation> ****)
-
 RightRegularRepresentation::usage = "RightRegularRepresentation[group, g] returns the right regular representation of element g of group.\n RightRegularRepresentation[group, {g1,g2,\[Ellipsis],gn}] returns the list of the right regular representations of elements g1, g2, \[Ellipsis], gn."
 
 RightRegularRepresentation::gmt = "Group `` is not supported."
@@ -690,12 +719,10 @@ RightRegularRepresentation[grp:{_String, _Integer}, kk_] := Module[
     PermutationMatrix[gmt[[kk]], TargetStructure -> "Sparse"]
   ]
 ]
-
 (**** </LeftRegularRepresentation> ****)
 
 
 (**** <YoungClebschGordanTransform> ****)
-
 YoungClebschGordanTransform::usage = "YoungClebschGordanTransform[vec] returns the Clebsch-Gordan transformation of vector vec associated with the symmetric group."
 
 YoungClebschGordanTransform::mn = "`` and `` have different degrees."
@@ -723,12 +750,10 @@ YoungClebschGordanTransform[Ket @ {a_YoungTableau, b_YoungTableau}] :=
       YoungTableaux[n]
     ]
   ]
-
 (**** </YoungClebschGordanTransform> ****)
 
 
 (**** <HarrowClebschGordanTransform> ****)
-
 HarrowClebschGordanTransform::usage = "HarrowClebschGordanTransform[vec] returns the Clebsch-Gordan transformation of vector vec associated with the symmetric group.\nIt is equivalent to YoungClebschGordanTransform, but is based on the method suggested by Harrow (PhD Thesis, 2005)."
 
 HarrowClebschGordanTransform[z_?CommutativeQ expr_] :=
@@ -782,7 +807,6 @@ ControlledGamma[expr_Plus] := Garner @ Map[ControlledGamma, expr]
 
 ControlledGamma[Ket @ {a_, b_, c_}] :=
   CircleTimes[Ket @ {a, b}, InversePermutation[a] ** Ket[{c}]]
-
 (**** </HarrowClebschGordanTransform> ****)
 
 End[]

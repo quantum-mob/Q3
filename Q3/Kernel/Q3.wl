@@ -1,5 +1,3 @@
-(* -*- mode:math -*- *)
-
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 If[ $VersionNumber < 13.1,

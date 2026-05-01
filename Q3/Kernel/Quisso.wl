@@ -3199,7 +3199,12 @@ Unfold[ExchangeExp[{phi_, phi_, phi_}, {a_?QubitQ, b_?QubitQ}, ___]] :=
   ]
 
 (* NOTE: Put it at the end; otherwise, HoldPattern is required everywhere. *)
-ExchangeExp[phi:Except[_List], rest__] := ExchangeExp[{0, 0, phi}, rest]
+ExchangeExp[phi:Except[_List], rest__] := ExchangeExp[phi*{1, 1, 1}, rest]
+
+ExchangeExp[ss_List, rest___] := ExchangeExp[{1, 1, 1}, ss, rest] /; Or[
+  AllTrue[Flatten @ ss, SpinQ],
+  AllTrue[Flatten @ ss, QubitQ]
+]
 (**** </ExchangeExp> ****)
 
 
@@ -3219,24 +3224,25 @@ MakeBoxes[op:Exchange[gg_?ArrayQ, ss_List], fmt_] :=
     fmt, 
     "Interpretable" -> Automatic 
   ] /; Or[
-    AllTrue[Flatten @ ss, QubitQ],
-    AllTrue[Flatten @ ss, SpinQ]
+    AllTrue[Flatten @ ss, SpinQ],
+    AllTrue[Flatten @ ss, QubitQ]
   ]
 
-Exchange /: 
+Exchange /:
 NonCommutativeQ[ _Exchange ] = True
 
-Exchange /: 
+Exchange /:
 MultiplyKind[ op_Exchange ] := MultiplyKind[ op[[2]] ]
 
-Exchange /: 
+Exchange /:
 MultiplyGenus[ _Exchange ] = "Singleton"
 
 Exchange /:
-Dagger[Exchange[gg_?ArrayQ, ss_List]] := Exchange[ConjugateTranspose @ gg, Reverse @ ss]
+Dagger[Exchange[gg_?ArrayQ, ss_List]] := 
+  Exchange[ConjugateTranspose @ gg, Reverse @ ss]
 
 
-Exchange[gg_, ss_List, rest___] :=
+Exchange[gg_?ArrayQ, ss_List, rest___] :=
   Exchange[gg, FlavorCap @ ss, rest] /; Not[FlavorCapQ @ ss]
 
 Exchange /:
@@ -3264,7 +3270,12 @@ theExchange[gg_?VectorQ][a_, b_] := MultiplyDot[a[All], gg * b[All]]
 theExchange[gg_?MatrixQ][a_, b_] := MultiplyDot[a[All], gg . b[All]]
 
 (* NOTE: Put it at the end; otherwise, HoldPattern is required everywhere. *)
-Exchange[phi:Except[_List], rest__] := Exchange[{0, 0, phi}, rest]
+Exchange[phi:Except[_List], rest__] := Exchange[phi*{1, 1, 1}, rest]
+
+Exchange[ss_List, rest___] := Exchange[{1, 1, 1}, ss, rest] /; Or[
+  AllTrue[Flatten @ ss, SpinQ],
+  AllTrue[Flatten @ ss, QubitQ]
+]
 (**** </Exchange> ****)
 
 

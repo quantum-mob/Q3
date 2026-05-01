@@ -20,7 +20,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { GelfandPattern, GelfandPatternQ };
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
-{ YoungElements, YoungGenerators, YoungSubgroup };
+{ YoungElements, YoungGenerators, YoungSubgroup, YoungProjector };
 
 { GroupCentralizerSize, YoungCentralizerSize,
   GroupClassSize, YoungClassSize,
@@ -56,7 +56,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 Begin["`Private`"]
 
 (**** <PermutationForm > ***)
-
 PermutationForm::usage = "PermutationForm[cyc] displays permutation cycles cyc in terms of \[Pi].\nPermutationForm[perm] displays perm specified in the permutation list representation in the two-list form."
 
 PermutationForm[Cycles[{}]] := Subscript[\[Pi], 0]
@@ -78,7 +77,6 @@ PermutationForm[expr_] := ReplaceAll[ expr,
   { pp:$PermutationSpec :> PermutationForm[pp],
     tt_Transpositions :> PermutationForm[tt] }
 ]
-
 (**** </PermutationForm > ***)
 
 
@@ -107,7 +105,6 @@ FerrersDiagram[yt_YoungTableau] := FerrersDiagram[YoungShape @ yt]
 
 
 (**** <YoungDegree> ****)
-
 YoungDegree::usage = "YoungDegree[obj] returns the degree of the symmetric group concerning the obj."
 
 YoungDegree[shape_YoungShape] := Total @@ shape
@@ -119,12 +116,10 @@ YoungDegree[tbl_YoungTableau] := YoungDegree[YoungShape @ tbl]
 YoungDegree[gp_List?GelfandPatternQ] := YoungDegree[GelfandPattern @ gp]
 
 YoungDegree[tb_List?anyYoungTableauQ] := YoungDegree[YoungTableau @ tb]
-
 (**** </YoungDegree> ****)
 
 
 (**** <YoungShape> ****)
-
 YoungShape::usage = "YoungShape[{n1,n2,\[Ellipsis],nk}] represents a Young shape.\nYoungShape[tb] returns the shape, i.e., the integer partition of Young tableau tb."
 
 SetAttributes[YoungShape, NHoldAll]
@@ -142,7 +137,6 @@ YoungShape[gp_List?GelfandPatternQ] :=
 YoungShape[tb_List?anyYoungTableauQ] := 
   YoungShape[YoungTableau @ tb] /; tb != {}
 (* NOTE: anyYoungTableauQ[{}] gives True. *)
-
 (**** </YoungShape> ****)
 
 
@@ -157,7 +151,6 @@ YoungShapeQ[pp:{__Integer?NonNegative}] := Apply[GreaterEqual, pp]
 
 
 (**** <YoungShapes> ****)
-
 YoungShapes::usage = "YoungShapes[n] returns the list of all possible Young shapes for integer n.\nYoungShapes[n, d] returns the list of Young shapes at most d rows.\nYoungShapes[n, spec] with the same spec for IntegerPartitions[n, spec] is allowed.\nYoungShapes[content] returns a list of Young shapes that dominates ReverseSort[content]."
 
 YoungShapes[n_Integer, spec___] := YoungShape /@ IntegerPartitions[n, spec]
@@ -166,7 +159,6 @@ YoungShapes[content:{__Integer}] := Select[
   YoungShapes[Total @ content, Length @ content],
   Dominates[ReverseSort @ content]
 ]
-
 (**** </YoungShapes> ****)
 
 
@@ -238,9 +230,11 @@ YoungTranspose @ YoungByte[byte_] :=
 (**** <YoungTableauQ> ****)
 YoungTableauQ::usage = "YoungTableauQ[tb] yields True if tb represents a standard Young tableau and False otherwise."
 
+YoungTableauQ[YoungTableau[_List?YoungTableauQ]] = True
+
 YoungTableauQ[{}] = True
 
-YoungTableauQ[tb_?anyYoungTableauQ] := TrueQ[
+YoungTableauQ[tb_List?anyYoungTableauQ] := TrueQ[
   And @@ Join[
     List[DuplicateFreeQ @ Flatten @ tb],
     Less @@@ tb,
@@ -300,14 +294,32 @@ YoungVector::usage = "YoungVector[{r1,r2,r3,\[Ellipsis],rn}] encodes a standard 
 Format[YoungVector[pp:{___Integer?Positive}]] := 
  Interpretation[MatrixForm @ {pp}, YoungVector @ pp]
 
-YoungVector @ YoungTableau[data_] := Module[
+(* conversion *)
+YoungVector @ YoungTableau[data_List] := Module[
   { vec = Flatten @ MapIndexed[#1 -> First[#2] &, data, {2}] },
   YoungVector[Values @ KeySort @ vec]
 ]
 
-YoungVector /:
+(* conversion *)
 YoungTableau @ YoungVector[pp:{___Integer}] :=
  YoungTableau[Values @ KeySort @ PositionIndex @ pp]
+
+(* conversion *)
+YoungVector @ GelfandPattern[data_List] := Module[
+  { kk = PadRight[data] },
+  kk = Differences[Reverse @ kk];
+  kk = Map[First @ FirstPosition[#, _?Positive]&, kk];
+  YoungVector @ Prepend[kk, 1]
+]
+(* NOTE: data is supposed to be a Gelfand-Young pattern. *)
+
+(* conversion *)
+GelfandPattern @ YoungVector[data_List] := Module[
+  { kk = PadRight[{1}, Length @ data] },
+  kk = Map[RotateRight[kk, #]&, data-1];
+  kk = Reverse[Accumulate @ kk];
+  GelfandPattern @ Table[Drop[kk[[i]], 1-i], {i, 1, Length @ data}]
+]
 
 YoungVector /:
 YoungShape @ YoungVector[pp_] := 
@@ -315,6 +327,7 @@ YoungShape @ YoungVector[pp_] :=
 
 YoungVector /:
 YoungDegree[YoungVector[pp_]] := Length[pp]
+(**** </YoungVector> ****)
 
 
 YoungVectorQ::usage = "YoungVectorQ[{r1,r2,\[Ellipsis],rn}] returns True if the list represents a valid Young vector."
@@ -325,7 +338,6 @@ YoungVectorQ[pp:{___Integer?Positive}] := And[
 ]
 
 YoungVectorQ[_] = False
-(**** </YoungVector> ****)
 
 
 (**** <YoungTableauCount> ****)
@@ -820,7 +832,6 @@ TheWeylPermutation[prm:(_Cycles|_?PermutationListQ), {n_Integer, d_Integer}] :=
 
 
 (**** <Permutation> ****)
-
 Permutation::usage = "Permutation[cyc,{s1,s2,\[Ellipsis]}] represents the permutation operator acting on species {s1,s2,\[Ellipsis]}."
 
 Permutation::cyc = "`` does not represent a valid permutation in disjoint cyclic form. See PermutationCyclesQ."
@@ -913,12 +924,10 @@ Multiply[ pre___,
     Dyad[ a,
       Join[b, AssociationThread[Keys[b] -> Permute[Lookup[b, qq], spec]]] ],
     post ] /; ContainsAll[Keys @ b, FlavorCap @ qq]
-
 (**** </Permutation> ****)
 
 
 (**** <Cycles> ****)
-
 HoldPattern @ NonCommutativeQ[ _Cycles ] = True
 
 (***
@@ -958,12 +967,10 @@ HoldPattern @
 HoldPattern @ Multiply[ pre___,
   CircleTimes[ops__Cycles], Ket[cc:{__Cycles}], post___ ] :=
   Multiply[pre, Ket @ Multiply[{ops}, cc], post]
-  
 (**** </Cycles> ****)
 
 
 (**** <KetPermute> ****)
-
 KetPermute::usage = "KetPermute[vec, perm] returns a new state vector where each Ket[\[Ellipsis]] in state vector vec is replaced by a new one with the logical values permuted according to permutation perm.\nKetPermute[vec, perm, {q1, q2, \[Ellipsis]}] returns a new state vector permuting the values of the particles q1, q2, \[Ellipsis] in each Ket[<|\[Ellipsis]|>] in state vector vec according to permutation perm.\nThe parameter perm may be a group such as SymmetricGroup, PermutationGroup, AlternatingGroup, or a list of Cycles, where a list of state vectors are returned after applying all elements of the group or list."
 
 $PermutationSpec = Alternatives[_?PermutationListQ, _?PermutationCyclesQ]
@@ -1072,12 +1079,10 @@ KetPermute[expr_, spec_?anyPermutationSpecQ] :=
 
 KetPermute[expr_, spec_?anyPermutationSpecQ, ss:{__?SpeciesQ}] :=
   ReplaceAll[expr, v:Ket[_Association] :> KetPermute[v, spec, ss]]
-
 (**** </KetPermute> ****)
 
 
 (**** <KetSymmetrize> ****)
-
 KetSymmetrize::usage = "KetSymmetrize[expr, {s1, s2, \[Ellipsis]}, tbl] symmetrizes every kets appearing in expr according to polytabloid specified by standard Young tableau tbl."
 (* TODO: YoungSymmetrizer *)
 
@@ -1181,12 +1186,10 @@ KetSymmetrize[expr_, YoungTableau[tbl_]] := Module[
     w_Ket :> Total[Permute[w[[tt]], #]& /@ aa]
   }
 ]
-
 (**** </KetSymmetrize> ****)
 
 
 (**** <InversionVector> ****)
-
 InversionVector::usage = "InversionVector[perm] returns the inversion vector corresponding to permutation perm.\nThe number of elements greater than i to the left of i in a permutation gives the ith element of the inversion vector (Skiena 1990, p. 27).\nTotal[InversionVector[perm]] equals the number of inversions in permtuation perm as well as the length of perm (i.e., the smallest number of adjacent transpositions combining to perm).\nSee also Combinatorica`ToInversionVector."
 
 InversionVector[cyc_Cycles] := InversionVector[PermutationList @ cyc]
@@ -1207,12 +1210,10 @@ inversionCount[pi_?PermutationListQ] := Sum[
   {j, Length[pi]},
   {i, j-1}
 ]
-
 (**** </InversionVector> ****)
 
 
 (**** <Transpositions> ****)
-
 Transpositions::usage = "Transpositions[{k1,k2,\[Ellipsis]}] represents a sequence of adjacent transpositions (k1,k1+1) (k2,k2+1) \[Ellipsis]."
 
 SetAttributes[Transpositions, NHoldAll]
@@ -1243,12 +1244,10 @@ PermutationProduct[trs_Transpositions, any_] :=
 Transpositions /:
 PermutationProduct[any_, trs_Transpositions] :=
   PermutationProduct[any, PermutationCycles @ trs]
-
 (**** </Transpositions> ****)
 
 
 (**** <PermutationTranspositions> ****)
-
 PermutationTranspositions::usage = "PermutationTranspositions[perm] returns a list of adjacent transpositions that combine to the permtuation perm.\nNote that permutations are multiplied right to left like right operators, not like functions."
 
 PermutationTranspositions[{}] = Transpositions[{}]
@@ -1279,12 +1278,10 @@ adjacentTranspositions[prm_List?PermutationListQ] := Module[
    ];
   Return[trs]
 ]
-
 (**** </PermutationTranspositions> ****)
 
 
 (**** <YoungDistance> ****)
-
 YoungDistance::usage = "YoungDistance[yt, {x, y}] returns the Manhattan distance between boxes corresponding to letters x and y in standard Young tableau yt.\nNote that unlike usual 'distances', it may be negative.\nIt is also known as the axial distance (Sagan, 2001) or Manhattan distance (Krovi, 2019).\nIt is used in the construction of Young's normal, seminormal and natural representations of the symmetric group."
 
 YoungDistance[data_List?YoungTableauQ, rest___] := 
@@ -1351,7 +1348,7 @@ YoungPileUp[YoungShape[data_], d_Integer] := Module[
 YoungPileUp[YoungTableau[{}], ___] := { YoungTableau[{{1}}] }
 
 YoungPileUp[syt_YoungTableau] :=
- YoungPileUp[syt, Length[First @ syt] + 1]
+ YoungPileUp[syt, YoungDegree[syt] + 1]
 
 YoungPileUp[syt_YoungTableau, d_Integer] := Module[
   { n = YoungDegree[syt] + 1,

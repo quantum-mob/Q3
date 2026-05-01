@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.5.11
+
+- New: YoungProjector
+- Renamed: KawanoSekigawaMatrix -> YoungInterimMatrix, KawanoSekigawaBasis -> YoungInterimBasis
+
 ## 4.5.10
 
 - Improved: NineJSymbol, LevelsPlot

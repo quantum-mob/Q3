@@ -7,8 +7,9 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 Begin["`Private`"]
 
 (**** <DualSchurBasis> ****)
-
 DualSchurBasis::usage = "DualSchurBasis[n, d] returns an association of Schur basis of n qudits of dimension d, based on the dual Schur transform algorithm.\nDualSchurBasis[type] returns the Schur basis of the permutation module associated with type.\nDualSchurBasis[shape, d] returns the Schur basis of ... . \nDualSchurBasis[shape, content] returns the Schur basis of ... ."
+
+DualSchurBasis::incmp = "Shape `` must dominate the shape of content ``."
 
 DualSchurBasis[ss:{__?SpeciesQ}] :=
   DualSchurBasis[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
@@ -52,14 +53,14 @@ DualSchurBasis[shape_YoungShape, content:{__Integer}] := Module[
   rep = YoungNormalRepresentation[shape];
 
   (* permutation/transversal basis *)
-  pbs = Permutations[ContentVector[content]-1];
+  pbs = Permutations[ContentVector @ content];
 
   (* transversal elements *)
   trv = Map[FindPermutation, pbs];
   trv = Map[rep, trv];
 
   (* projections *)
-  prj = Mean[rep /@ sub];
+  prj = YoungProjector[rep][content];
   prj = prj[[All, pos]];
 
   (* NOTE: Somehow, Dot returns the result in a dense array. *)
@@ -67,19 +68,22 @@ DualSchurBasis[shape_YoungShape, content:{__Integer}] := Module[
   mat = Transpose[Conjugate[mat], {3, 1, 2}];
   mat = SimplifyThrough @ Map[Normalize, mat, {2}];
 
-  (* permutation/transversal basis in the computation basis *)
-  pbs = 1 + Map[FromDigits[#, dim]&, pbs];
+  (* permutation/transversal basis in the computational basis *)
+  pbs = 1 + Map[FromDigits[#, dim]&, pbs - 1];
   pbs = One[ Power[dim, YoungDegree @ shape] ][[pbs]];
 
   AssociationThread[tag -> SparseArray /@ Flatten[mat . pbs, 1]]
-] /; DominatesQ[First @ shape, ReverseSort @ content]
+] /; If[ DominatesQ[First @ shape, ReverseSort @ content], True,
+  Message[DualSchurBasis::incmp, shape, content]; False
+]
 
 DualSchurBasis[shape_YoungShape, content:{__Integer}] := Association[]
+(**** </DualSchurBasis> ****)
 
 
 DualSchurBasisNames::usage = "DualSchurBasisNames[shape, content] returns {names, poslist}, where names is a list of labels referring to the irreducible basis vectors and poslist is the list of positions of standard Young tableaux that properly combines with content to generate a Weyl tableau."
 
-DualSchurBasisNames[shape_YoungShape, content : {___Integer}] := Module[
+DualSchurBasisNames[shape_YoungShape, content:{___Integer}] := Module[
   { yy = YoungTableaux[shape],
     ss = ContentVector[content], 
     ww },
@@ -88,7 +92,6 @@ DualSchurBasisNames[shape_YoungShape, content : {___Integer}] := Module[
   { Tuples @ {yy, Keys @ ww}, Values @ ww }
 ] /; YoungDegree[shape] == Total[content]
 
-(**** </DualSchurBasis> ****)
 
 End[]
 
