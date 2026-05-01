@@ -4,6 +4,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { DualSchurBasis };
 
+{ GelfandClasses, GelfandClass };
+
 Begin["`Private`"]
 
 (**** <DualSchurBasis> ****)
@@ -91,6 +93,92 @@ DualSchurBasisNames[shape_YoungShape, content:{___Integer}] := Module[
   ww = First /@ KeySelect[PositionIndex @ ww, WeylTableauQ];
   { Tuples @ {yy, Keys @ ww}, Values @ ww }
 ] /; YoungDegree[shape] == Total[content]
+
+
+(**** <GelfandClasses> ****)
+GelfandClasses::usage = "GelfandClasses[shape, content] returns an association grouping the standard Young tableaux of the specified shape into Gelfand-Tsetlin classes with respect to the given content.\nThe keys of the returned association are semistandard Young tableaux of the specified shape and content, each labeling one Gelfand-Tsetlin class. The values are lists of standard Young tableaux belonging to the corresponding class.\nThe number of classes equals the Kostka number K(shape, content), and only admissible classes (whose keys are valid semistandard tableaux) are included.";
+
+GelfandClasses[shape_YoungShape, content:{___Integer}] := Module[
+   { yy = YoungTableaux[shape],
+     ss = ContentVector[content],
+     ww },
+   ww = yy /. Thread[Range[Total @ content] -> ss];
+   ww = Merge[Thread[ww -> yy], Identity];
+   KeySelect[ww, WeylTableauQ]
+] /; YoungDegree[shape] == Total[content]
+(**** </GelfandClasses> ****)
+
+
+(**** <GelfandClass> ****)
+GelfandClass::usage = "GelfandClass[weyl, content] returns the standard Young tableaux in the Gelfand-Tsetlin class labeled by the Weyl tableau weyl with the given content.\nThe resulting standard Young tableaux form a basis spanning the Gelfand-Tsetlin subspace of the irreducible representation that is labeled by the Weyl tableau weyl with the given content.\nThis subspace is one-dimensional after applying the Young subgroup projector and is preserved by the chain of subgroups associated with content.";
+
+GelfandClass[ssyt_List?WeylTableauQ, any_] :=
+  GelfandClass[YoungTableau @ ssyt, any_]
+
+GelfandClass[weyl_YoungTableau, d_Integer] :=
+  GelfandClass[weyl, YoungContent[weyl, d]]
+
+GelfandClass[YoungTableau[weyl_List], mu:{___Integer}] := Module[
+  { nn = Prepend[Accumulate[mu], 0], 
+    stripFillingsList, buildTableau },
+  stripFillingsList = Table[
+    Module[
+      {rowBoxes},
+      rowBoxes = Association @@ Table[
+        Module[{cols = Flatten[Position[weyl[[i]], k]]},
+          If[cols === {}, Nothing, i -> cols]
+        ],
+        {i, Length[weyl]}
+      ];
+      stripFillings[rowBoxes, nn[[k]]]
+    ],
+    {k, Length @ mu}
+  ];
+  buildTableau[fillings_] := Module[
+    {syt, rules},
+    syt = Map[ConstantArray[0, #] &,  Length /@ weyl];
+    rules = Join @@ fillings;
+    Do[syt[[r[[1, 1]], r[[1, 2]]]] = r[[2]], {r, rules}];
+    YoungTableau[syt]
+  ];
+  buildTableau /@ Tuples[stripFillingsList]
+]
+
+(* --- Standard fillings of a single horizontal strip --- *)
+(* rowBoxes: an association <| rowIndex -> {colIdx_1, colIdx_2, ...} |>
+   listing the columns of boxes in this strip, by row.
+   offset: the value N_{k-1}, so entries are filled as offset + 1, ..., offset + m. *)
+
+stripFillings[rowBoxes_Association, offset_Integer] := Module[
+  { rows = Keys[rowBoxes], 
+    sizes, m, shuffles },
+  sizes = Length /@ Values[rowBoxes];
+  m = Total[sizes];
+  (* Enumerate ordered set partitions of {1,...,m} with block sizes 'sizes' *)
+  shuffles = Permutations[Flatten[MapIndexed[ConstantArray[#2[[1]], #1] &, sizes]]];
+  shuffles = DeleteDuplicates[shuffles];
+  (* Each shuffle assigns a row-index to each of the m positions;
+     for shuffle s, position j (with value offset+j) goes to the next
+     unfilled column in row s[[j]]. *)
+  Function[
+    {shuffle},
+    Module[
+      { cursor = ConstantArray[1, Length[rows]], 
+        filling = {}, 
+        rowIdx },
+      Do[
+        rowIdx = shuffle[[j]];
+        AppendTo[ filling,
+          {rows[[rowIdx]], rowBoxes[rows[[rowIdx]]][[cursor[[rowIdx]]]]} -> offset + j
+        ];
+        cursor[[rowIdx]] += 1,
+        {j, m}
+      ];
+      filling
+    ]
+  ] /@ shuffles
+]
+(**** </GelfandClass> ****)
 
 
 End[]
