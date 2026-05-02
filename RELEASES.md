@@ -2,7 +2,7 @@
 
 ## 4.5.11
 
-- New: YoungProjector
+- New: YoungProjector, GelfandClass, GelfandClasses
 - Renamed: KawanoSekigawaMatrix -> YoungInterimMatrix, KawanoSekigawaBasis -> YoungInterimBasis
 
 ## 4.5.10

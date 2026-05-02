@@ -103,8 +103,9 @@ GelfandClasses[shape_YoungShape, content:{___Integer}] := Module[
      ss = ContentVector[content],
      ww },
    ww = yy /. Thread[Range[Total @ content] -> ss];
+   ww = Map[If[WeylTableauQ[#], #, None]&, ww];
    ww = Merge[Thread[ww -> yy], Identity];
-   KeySelect[ww, WeylTableauQ]
+   Join[KeyDrop[ww, None], KeyTake[ww, None]]
 ] /; YoungDegree[shape] == Total[content]
 (**** </GelfandClasses> ****)
 
@@ -113,15 +114,15 @@ GelfandClasses[shape_YoungShape, content:{___Integer}] := Module[
 GelfandClass::usage = "GelfandClass[weyl, content] returns the standard Young tableaux in the Gelfand-Tsetlin class labeled by the Weyl tableau weyl with the given content.\nThe resulting standard Young tableaux form a basis spanning the Gelfand-Tsetlin subspace of the irreducible representation that is labeled by the Weyl tableau weyl with the given content.\nThis subspace is one-dimensional after applying the Young subgroup projector and is preserved by the chain of subgroups associated with content.";
 
 GelfandClass[ssyt_List?WeylTableauQ, any_] :=
-  GelfandClass[YoungTableau @ ssyt, any_]
+  GelfandClass[YoungTableau @ ssyt, any]
 
 GelfandClass[weyl_YoungTableau, d_Integer] :=
   GelfandClass[weyl, YoungContent[weyl, d]]
 
 GelfandClass[YoungTableau[weyl_List], mu:{___Integer}] := Module[
   { nn = Prepend[Accumulate[mu], 0], 
-    stripFillingsList, buildTableau },
-  stripFillingsList = Table[
+    strips, buildTableau },
+  strips = Table[
     Module[
       {rowBoxes},
       rowBoxes = Association @@ Table[
@@ -141,13 +142,12 @@ GelfandClass[YoungTableau[weyl_List], mu:{___Integer}] := Module[
     Do[syt[[r[[1, 1]], r[[1, 2]]]] = r[[2]], {r, rules}];
     YoungTableau[syt]
   ];
-  buildTableau /@ Tuples[stripFillingsList]
+  buildTableau /@ Tuples[strips]
 ]
 
-(* --- Standard fillings of a single horizontal strip --- *)
-(* rowBoxes: an association <| rowIndex -> {colIdx_1, colIdx_2, ...} |>
-   listing the columns of boxes in this strip, by row.
-   offset: the value N_{k-1}, so entries are filled as offset + 1, ..., offset + m. *)
+(** Standard fillings of a single horizontal strip -- 
+    rowBoxes: an association <| rowIndex -> {colIdx_1, colIdx_2, ...} |> listing the columns of boxes in this strip, by row.
+    offset: the value N_{k-1}:=\mu_1+\mu_2+...+\mu_{k-1}, so entries are filled as offset + 1, ..., offset + m. **)
 
 stripFillings[rowBoxes_Association, offset_Integer] := Module[
   { rows = Keys[rowBoxes], 
