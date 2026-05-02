@@ -57,11 +57,12 @@ DualSchurBasis[shape_YoungShape, content:{__Integer}] := Module[
   (* permutation/transversal basis *)
   pbs = Permutations[ContentVector @ content];
 
-  (* transversal elements *)
+  (* minimal-length left coset transversal *)
+  (* NOTE: Not using YoungTransversal since pbs is necessary anyway. *)
   trv = Map[FindPermutation, pbs];
   trv = Map[rep, trv];
 
-  (* projections *)
+  (* Young subgroup projector *)
   prj = YoungProjector[rep][content];
   prj = prj[[All, pos]];
 
@@ -81,6 +82,12 @@ DualSchurBasis[shape_YoungShape, content:{__Integer}] := Module[
 
 DualSchurBasis[shape_YoungShape, content:{__Integer}] := Association[]
 (**** </DualSchurBasis> ****)
+
+
+YoungTransversal::usage = "YoungTransversal[mu] returns a left transversal of the Young subgroup S_mu in the symmetric group S_n, where n is the total of content mu.\nThe transversal consists of the distinguished (minimal-length) left coset representatives of S_n / S_mu, equivalently the shuffles of d sorted sequences of lengths mu_1, ..., mu_d. Each element is returned as a Cycles object.\nThe number of elements equals the multinomial coefficient n! / (mu_1! mu_2! ... mu_d!).";
+
+YoungTransversal[content:{__Integer}] :=
+  Map[FindPermutation, Permutations @ ContentVector @ content]  
 
 
 DualSchurBasisNames::usage = "DualSchurBasisNames[shape, content] returns {names, poslist}, where names is a list of labels referring to the irreducible basis vectors and poslist is the list of positions of standard Young tableaux that properly combines with content to generate a Weyl tableau."
@@ -153,18 +160,16 @@ stripFillings[rowBoxes_Association, offset_Integer] := Module[
   { rows = Keys[rowBoxes], 
     sizes, m, shuffles },
   sizes = Length /@ Values[rowBoxes];
+  shuffles = Permutations[ContentVector @ sizes];
   m = Total[sizes];
-  (* Enumerate ordered set partitions of {1,...,m} with block sizes 'sizes' *)
-  shuffles = Permutations[Flatten[MapIndexed[ConstantArray[#2[[1]], #1] &, sizes]]];
-  shuffles = DeleteDuplicates[shuffles];
   (* Each shuffle assigns a row-index to each of the m positions;
      for shuffle s, position j (with value offset+j) goes to the next
      unfilled column in row s[[j]]. *)
   Function[
     {shuffle},
     Module[
-      { cursor = ConstantArray[1, Length[rows]], 
-        filling = {}, 
+      { cursor = ConstantArray[1, Length @ rows],
+        filling = {},
         rowIdx },
       Do[
         rowIdx = shuffle[[j]];

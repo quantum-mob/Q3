@@ -20,7 +20,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { GelfandPattern, GelfandPatternQ };
 { GelfandYoungPatterns, GelfandYoungPatternQ };
 
-{ YoungElements, YoungGenerators, YoungSubgroup, YoungProjector };
+{ YoungElements, YoungGenerators, 
+  YoungSubgroup, YoungProjector, YoungTransversal };
 
 { GroupCentralizerSize, YoungCentralizerSize,
   GroupClassSize, YoungClassSize,

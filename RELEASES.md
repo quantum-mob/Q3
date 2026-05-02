@@ -2,7 +2,8 @@
 
 ## 4.5.11
 
-- New: YoungProjector, GelfandClass, GelfandClasses
+- New: YoungProjector, YoungTransversal, GelfandClass, GelfandClasses
+- Improved: DualSchurBasis
 - Renamed: KawanoSekigawaMatrix -> YoungInterimMatrix, KawanoSekigawaBasis -> YoungInterimBasis
 
 ## 4.5.10
