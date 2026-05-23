@@ -21,6 +21,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   WickPureQ, WickDensityMatrix,
   WickOccupation };
 
+{ WickSample };
+
 (* supporting utilities *)
 { WickFlop, RandomWickFlop };
 
@@ -38,10 +40,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (* VonNeumann.wl *)
 { QuantumLog };
-
-(* backward compatibility for renamed symbols *)
-(* 2026-02-18 v4.5.1 *)
-{ WickCovariance, WickInner, WickOperator, WickMap };
 
 
 Begin["`Private`"] (* Fermionic quantum computation *)
@@ -429,7 +427,7 @@ WickOdds[vec_?VectorQ -> 1][WickState[{0, _Integer}, rest___]] := Rule[
 WickOdds[vec_?VectorQ -> 1][WickState[trs_?MatrixQ, rest___]] := Module[
   { qq = Prepend[trs, vec],
     rr },
-  {qq, rr} = QRDecomposition[N @ ConjugateTranspose @ qq];
+  {qq, rr} = QRDecomposition[ConjugateTranspose @ N @ qq];
   Rule[
     WickState[qq, rest], 
     AbsSquare[Whole @ Diagonal @ rr]
@@ -443,7 +441,7 @@ WickOdds[vec_?VectorQ -> 2][in:WickState[_?SquareMatrixQ, ___]] :=
 
 (* Dagger[d]**d on Wick state *)
 WickOdds[vec_?VectorQ -> 2][WickState[trs_?MatrixQ, rest___]] := Module[
-  { ovr = Dot[vec, N @ ConjugateTranspose @ trs],
+  { ovr = Dot[vec, ConjugateTranspose @ N @ trs],
     hhd, new, rmd },
   hhd = HouseholderMatrix[ovr];
   new = Rest[ConjugateTranspose[hhd] . trs];
@@ -473,7 +471,7 @@ WickOdds[vec_?VectorQ -> 3][WickState[trs_?MatrixQ, rest___]] := Module[
   ovr = Dot[vec, ConjugateTranspose @ new];
   hhd = HouseholderMatrix[ovr];
   new = Rest[ConjugateTranspose[hhd] . new];
-  Rule[ 
+  Rule[
     WickState[new, rest], 
     NormSquare[ovr] * AbsSquare[Whole @ Diagonal @ rmd]
   ]
@@ -511,6 +509,54 @@ WickOdds[spec_Rule][in_WickState -> prb_?NumericQ] := Module[
   MapAt[Times[#, prb]&, res, 2]
 ]
 (**** </WickOdds> ****)
+
+
+(**** <WickSample> ****)
+WickSample::usage = "WickSample[grn] draws a single occupation outcome from a fermionic Gaussian state characterized by single-particle Green's function matrix grn.";
+
+Options[WickSample] = {Tolerance -> 10^-10};
+
+WickSample[grn_?MatrixQ, OptionsPattern[]] := Module[
+  { m = Length[grn], 
+    mat = N[grn], 
+    prb = 1.0,
+    tol = OptionValue[Tolerance],
+    out, occ, gi, pi, v, w },
+  out = ConstantArray[0, m];
+
+  Do[
+    gi = Re[mat[[i, i]]];         (* diagonal of G = probability empty *)
+    gi = Clip[gi, {0, 1}];        (* numerical safety *)
+    pi = 1 - gi;                  (* probability mode i is occupied *)
+
+    (* Draw outcome; force the deterministic case when gi is 0 or 1. *)
+    occ = Which[
+      ZeroQ[gi, tol],   1,           (* G[i,i]=0 => definitely occupied *)
+      ZeroQ[pi, tol],   0,           (* G[i,i]=1 => definitely empty *)
+      True,          If[RandomReal[] < pi, 1, 0]
+    ];
+    out[[i]] = occ;
+    prb *= If[occ == 1, pi, gi];
+
+    (* Schur-complement update of the remaining block.
+       Skipped in the deterministic case, where the update is 0/0
+       and the correct limit is "no change". *)
+    If[i < m,
+      v = mat[[i + 1 ;;, i]];
+      w = mat[[i, i + 1 ;;]];
+      Which[
+        occ == 1 && pi > tol,
+          mat[[i + 1 ;;, i + 1 ;;]] += KroneckerProduct[v, {w}] / pi,
+        occ == 0 && gi > tol,
+          mat[[i + 1 ;;, i + 1 ;;]] -= KroneckerProduct[v, {w}] / gi
+      ]
+    ],
+
+    {i, 1, m}
+  ];
+  Rule[out, prb]
+]
+(**** </WickSample> ****)
 
 
 patternWickJumpQ::usage = "patternWickJumpQ[pat] returns True if pat is a pattern of the form v -> k, v is a vector and k = 0, 1, 2, 3."
@@ -785,15 +831,51 @@ Multiply[pre___, msr_WickMeasurement, ws_WickState] := Multiply[pre, msr @ ws]
 WickMeasurement[{}, ___][in_WickState] = in
 
 
-WickMeasurement[mat_?MatrixQ, ___][in_WickState] :=
-  Fold[theWickMeasurement, in, Identity /@ mat]
+WickMeasurement[mat_?MatrixQ, ___][in_WickState] := If[
+  MatrixRank[mat] < Length[mat],
+  Fold[singleWickMeasurement, in, Identity /@ mat], (* one-by-one *)
+  multipleWickMeasurement[in, mat] (* simultaneous *)
+]
 
-theWickMeasurement[in:WickState[trs_?MatrixQ, rest___], vec_?VectorQ] := Module[
+singleWickMeasurement[in_WickState, vec_?VectorQ] := Module[
   { odds, pick },
   odds = WickOdds[{vec -> 2, vec -> 3}] @ in;
   pick = RandomChoice[Values[odds] -> Keys[odds]];
   $MeasurementOut[vec] = pick /. Thread[Keys[odds] -> {1, 0}];
   pick
+]
+
+(** Simultaneous measurement of independent dressed modes specified by coefficients matrix mat. The rows of mat must be linearly independent. **)
+multipleWickMeasurement[in_WickState, mat_?MatrixQ] := Module[
+  { msr = Map[Normalize, mat], (* numerical safety *)
+    trs = First[in],
+    grn = WickGreen[in],
+    ovr, prb, out, pos, new, rem },
+  (* measurement outcome  *)
+  grn = Dot[msr, grn, ConjugateTranspose @ msr];
+  out = First[WickSample @ grn];
+  $MeasurementOut = Join[$MeasurementOut, AssociationThread[mat -> out]];
+  (* Apply the projectors to get post-measurement state *)
+  new = trs;
+  pos = PositionIndex[out];
+  (* Apply some annihilators *)
+  ovr = Dot[msr, ConjugateTranspose @ N @ trs];
+  If[ KeyExistsQ[pos, 1],
+    hhd = HouseholderMatrix[ ovr[[pos @ 1]] ];
+    new = Dot[ConjugateTranspose @ hhd, new];
+    new = Drop[new, Length[pos @ 1]]
+  ];
+  (* Apply all creators *)
+  new = Join[mat, new];
+  {new, rem} = QRDecomposition[ConjugateTranspose @ N @ new];
+  (* Apply other annihilators *)
+  If[ KeyExistsQ[pos, 0],
+    ovr = Dot[msr[[pos @ 0]], ConjugateTranspose @ new];
+    hhd = HouseholderMatrix[ovr];
+    new = Dot[ConjugateTranspose @ hhd, new];
+    new = Drop[new, Length[pos @ 0]]
+  ];
+  WickState[new, Options @ in]
 ]
 
 
@@ -1691,7 +1773,7 @@ theWickOTOC[in_WickState, ub_WickUnitary, qc_WickCircuit] := Module[
   va = Fold[Construct[#2, #1]&, in, First @ qc];
   vb = Join[{ub}, First @ qc, Dagger @ {ub}];
   vb = Fold[Construct[#2, #1]&, in, vb];
-  Sqrt @ WickFidelity[va, vb]
+  WickFidelity[va, vb]
 ]
 (**** </WickScramblingSimulate> ****)
 

@@ -9,7 +9,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 Begin["`Private`"]
 
 (**** <UnitaryTwirling> ****)
-
 UnitaryTwirling::usage = "UnitaryTwirling[{n, d}] returns a supermap corresponding to the twirling operation over the Haar measure of the unitary group."
 
 UnitaryTwirling::big = "The numbers n (= ``) and/or d (= ``) are too large. Use UnitaryTwirling[{{\[Ellipsis]}, {\[Ellipsis]}, {\[Ellipsis]}, {\[Ellipsis]}}, {n, d}] instead."
@@ -43,12 +42,10 @@ theInvMultiplicationTable[n_Integer] := Module[
   inv = SparseArray[Thread[inv -> 1], {1, 1}*n!];
   Transpose[gmt . inv]
 ]
-
 (**** </UnitaryTwirling> ****)
 
 
 (**** <UnitaryTwirling> ****)
-
 UnitaryTwirling::usage = UnitaryTwirling::usage <> "\nUnitaryTwirling[{i, k, j, l}, {n, d}] returns the C(i,k;j,l) element of the Choi matrix representing the twirling operation."
 
 UnitaryTwirling[
@@ -93,12 +90,10 @@ theUnitaryTwirling[{ii_, kk_, jj_, ll_}, {n_Integer, d_Integer}] :=
     cc = Map[WeingartenFunction[#, {n, d}]&, cc, {2}];
     Total[Flatten @ cc]
   ]
-
 (**** </UnitaryTwirling> ****)
 
 
 (**** <WeingartenFunction> ****)
-
 WeingartenFunction::usage = "WeingartenFunction[prm, {n, d}] returns the value at permutation prm of the Weingarten function for the symmetric group S(n) and the unitary group U(d).\nWeingartenFunction[type, d] assumes that the permutation belongs to the conjugacy class of cycle decomposition type in the symmmetric group S(n).\nSee Colllins and Śniady (2006)."
 
 WeingartenFunction::len = "The length of permutation vector `` is different from the specified value ``."
@@ -130,7 +125,6 @@ WeingartenFunction[prm_List?PermutationListQ, {n_Integer, d_Integer?Positive}] :
 
 WeingartenFunction[cyc_Cycles, {n_Integer, d_Integer?Positive}] :=
   WeingartenFunction[CycleDecompositionType[cyc, n], d]
-
 (**** </WeingartenFunction> ****)
 
 End[]

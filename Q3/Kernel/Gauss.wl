@@ -40,21 +40,16 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 Begin["`Private`"]
 
-(**** <MatrixConditionNumber> ****)
-
 (**** <Zero> ****)
-
 Zero::usage = "Zero[n] return an one-diemnsional array of lenth n with all elements zero.\nZero[{m, n, \[Ellipsis]}] returns an m\[Times]n\[Times]\[Ellipsis] tensor with all elements zero."
 
 Zero[n_Integer] := Zero[{n}]
 
 Zero[mn:{__Integer}] := SparseArray[{}, mn]
-
 (**** </Zero> ****)
 
 
 (**** <One> ****)
-
 One::usage = "One[n] or One[{n}] returns the n\[Times]n identiy matrix in a sparse array; cf. IdentityMatrix[n].\nOne[{m, n, \[Ellipsis]}] returns the m\[Times]n\[Times]\[Ellipsis] pseudo-identity tensor, i.e., the tensor where the main diagonal elements are 1 and the other elements are all zero.\nOne[{m, n}, k] returns an m\[Times]n matrix with the elements on the \*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere."
 
 One[n_Integer] := One @ {n, n}
@@ -69,23 +64,24 @@ One[{n_Integer}, p_Integer] := One[{n, n}, p]
 
 One[{m_Integer, n_Integer}, k_Integer] := 
   SparseArray[{i_, j_} :> 1 /; j == i+k, {m, n}]
-
 (**** </One> ****)
 
 
-MatrixConditionNumber::usage = "MatrixConditionNumber[mat] returns the condition number of matrix mat."
+(**** <MatrixConditionNumber> ****)
+MatrixConditionNumber::usage = "MatrixConditionNumber[mat] returns the 2-norm condition number of matrix mat."
 
-MatrixConditionNumber[mat_?MatrixQ] := Module[
-  {min, max},
-  {min, max} = MinMax[SingularValueList @ mat];
-  max/min
+Options[MatrixConditionNumber] = {Tolerance -> $MachineEpsilon};
+
+MatrixConditionNumber[mat_?MatrixQ, opts:OptionsPattern[]] := Module[
+  { max = First @ SingularValueList[mat,  1],
+    min = First @ SingularValueList[mat, -1, opts],
+    tol = OptionValue[Tolerance] },
+  If[ZeroQ[min/max, tol], Infinity, max/min]
 ]
-
 (**** </MatrixConditionNumber> ****)
 
 
 (**** <CanonicalizeVector> *****)
-
 CanonicalizeVector::usage = "CanonicalizeVector[vec] returns a vector with elements are rescaled so that the first non-zero element is real positive with the same magnitude as vec.\nCanonicalizeVector[vec, a] returns the same vector with elements rescaled so that the first non-zero element is normalized to a. That is, it does not preserve the norm of vec."
 
 (* BUG (v14.1, fixed in v14.2): SelectFirst gives a wrong answer for SparseArray, or evan crashes the Wolfram Kernel. *)
@@ -109,22 +105,18 @@ CanonicalizeVector[in_?VectorQ, a_:Automatic] := Module[
     in * (a / val)
   ]
 ]
-
 (**** </CanonicalizeVector> *****)
 
 
 (**** <BasisComplete> *****)
-
 BasisComplete::usage = "BasisComplete[{v1, v2, \[Ellipsis]}] returns a complete basis of the n-dimensional complex vector spaces that are spanned by the n-dimensional vectors v1, v2, \[Ellipsis]."
 
 BasisComplete[vv_?MatrixQ] :=
   ConjugateTranspose[HouseholderMatrix @ vv]
-
 (**** </BasisComplete> *****)
 
 
 (**** <BasisComplement> *****)
-
 svdBasisComplement::usage = "svdBasisComplement[{v1,v2,\[Ellipsis]}, {w1,w2,\[Ellipsis]}] returns a new basis of the subspace W\[UpTee]\[Subset]\[ScriptCapitalV] that is orgohtonal to \[ScriptCapitalW], where \[ScriptCapitalV] is the vector space spanned by the basis {v1,v2,\[Ellipsis]}, and \[ScriptCapitalW] is a subspace of \[ScriptCapitalV] spanned by the basis {w1,w2,\[Ellipsis]}."
 
 svdBasisComplement[aa_?MatrixQ, bb_?MatrixQ] := Module[
@@ -173,7 +165,6 @@ BasisComplement[aa_List, bb_List, opts:OptionsPattern[]] := Module[
   ExpressionFor[#, ss]& /@ new
  ] /; NoneTrue[Join[aa, bb], FreeQ[#, _Ket]&]
 (* NOTE: This works even if aa and bb are not orthonormal. *)
-
 (**** </BasisComplement> *****)
 
 
@@ -194,7 +185,6 @@ LowerTriangular[m_?MatrixQ, n_: 0] := With[
 
 (**** <UpperRightMatrix> ****)
 (* NOTE: UpperTriangularMatrix would be a proper name, but it was taken by a built-in function. *)
-
 UpperRightMatrix::usage = "UpperRightMatrix[vec] returns an upper triangular matrix with the non-zero elements given by the elements of list vec."
 
 UpperRightMatrix::len = "List `` cannot fill an upper triangular matrix."
@@ -210,13 +200,11 @@ UpperRightMatrix[v_?VectorQ, k_Integer] := Module[
     Message[UpperRightMatrix::len, v]; False
   ]
 ]
-
 (**** </UpperRightMatrix> ****)
 
 
 (**** <LowerLeftMatrix> ****)
 (* NOTe: LowerTriangularMatrix would be a proper name, but it was taken by a built-in function. *)
-
 LowerLeftMatrix::usage = "LowerLeftMatrix[vec] returns an lower triangular matrix with the non-zero elements given by the elements of list vec."
 
 LowerLeftMatrix::len = "List `` cannot fill an upper triangular matrix."
@@ -232,19 +220,16 @@ LowerLeftMatrix[v_?VectorQ, k_Integer] := Module[
     Message[LowerLeftMatrix::len, v]; False
   ]
 ]
-
 (**** </LowerLeftMatrix> ****)
 
 
 (**** <AntisymmetricMatrix> ****)
-
 AntisymmetricMatrix::usage = "AntisymmetricMatrix[vec] returns the anti-symmetric matrix with the upper triangular elements given by the elements in list vec."
 
 AntisymmetricMatrix[v_?VectorQ] := With[
   { mat = UpperRightMatrix[v,1] },
   mat - Transpose[mat]
 ]
-
 (**** </AntisymmetricMatrix> ****)
 
 
@@ -318,9 +303,8 @@ MatrixObject[mat_SymmetrizedArray?MatrixQ] = mat
 
 
 (**** <CommonEigensystem> ****)
-(* NOTE: Here, we use a heuristic method. More techincal and sophisticate algorithm was first provided in Cardoso (1996). *)
-
 CommonEigensystem::usage = "CommonEigensystem[{m1, m2, ...}] finds the simultaneous eigenvectors and corresponding eigenvales of the mutually commuting square matrices."
+(* NOTE: Here, we use a heuristic method. More techincal and sophisticate algorithm was first provided in Cardoso (1996). *)
 
 CommonEigenvectors::usage = "CommonEigenvectors[{m1, m2, ...}] finds the simultaneous eigenvectors of the mutually commuting square matrices."
 
@@ -852,7 +836,6 @@ LyapunovFunction[a_, b_, c_][in_, tt:{__?NumericQ}] := Module[
 
 
 (**** <GraphForm> ****)
-
 Vertex::usage = "Vertex[a, b, ...] represents an interaction vertex.\nNot to be confused with Vertices in Graph or related functions."
 
 
@@ -1035,8 +1018,10 @@ vertexRulesShort[ jj_, spec_List ] := With[
  ]
 
 vertexRulesShort[ jj_, spec_ ] := { First[jj] -> spec }
+(**** </GraphForm> ****)
 
 
+(**** <ChiralGraphForm> ****)
 ChiralGraphForm::usage = "ChiralGraphForm[M] converts the matrix M to a graph exhibiting its connectivity. Here it is assumed that the matrix M maps one vector space (say, B) to a different space (say, A), M: B\[RightArrow]A. Such a matrix typically appears in the off-diagonal block of chiral-symmetric matrices in the chiral basis.\nChiralGraphForm allows the same options as Graph, but their specifications may be slightly different.\nChiralGraphForm is a variation of GraphPlot.\nSee also GraphForm, GraphPlot."
 
 Options[ChiralGraphForm] = {
@@ -1140,8 +1125,7 @@ chiralVertexRulesShort[ii_List, jj_List, spec:{__Rule}] := spec
 
 chiralVertexRulesShort[ii_List, jj_List, spec:{row_, col_}] :=
   Join[ vertexRulesShort[ii, row], vertexRulesShort[jj, col] ]
-
-(**** </GraphForm> ****)
+(**** </ChiralGraphForm> ****)
 
 
 End[]

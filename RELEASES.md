@@ -3,7 +3,9 @@
 ## 4.5.11
 
 - New: YoungProjector, YoungTransversal, GelfandClass, GelfandClasses
+- Bug fix: MatrixConditionNumber (gives wrong value for singular matrices)
 - Improved: DualSchurBasis
+- Improved documents: Dual Quantum Schur Transform
 - Renamed: KawanoSekigawaMatrix -> YoungInterimMatrix, KawanoSekigawaBasis -> YoungInterimBasis
 
 ## 4.5.10
