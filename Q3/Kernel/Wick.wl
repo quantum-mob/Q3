@@ -832,9 +832,9 @@ WickMeasurement[{}, ___][in_WickState] = in
 
 
 WickMeasurement[mat_?MatrixQ, ___][in_WickState] := If[
-  MatrixRank[mat] < Length[mat],
-  Fold[singleWickMeasurement, in, Identity /@ mat], (* one-by-one *)
-  multipleWickMeasurement[in, mat] (* simultaneous *)
+  rowOrthogonalQ[mat],
+  multipleWickMeasurement[in, mat], (* simultaneous *)
+  Fold[singleWickMeasurement, in, Identity /@ mat] (* one-by-one *)
 ]
 
 singleWickMeasurement[in_WickState, vec_?VectorQ] := Module[
@@ -847,28 +847,28 @@ singleWickMeasurement[in_WickState, vec_?VectorQ] := Module[
 
 (** Simultaneous measurement of independent dressed modes specified by coefficients matrix mat. The rows of mat must be linearly independent. **)
 multipleWickMeasurement[in_WickState, mat_?MatrixQ] := Module[
-  { msr = Map[Normalize, mat], (* numerical safety *)
+  { msr = Map[Normalize, N @ mat], (* numerical safety *)
     trs = First[in],
     grn = WickGreen[in],
-    ovr, prb, out, pos, new, rem },
+    ovr, out, pos, new, rem },
   (* measurement outcome  *)
   grn = Dot[msr, grn, ConjugateTranspose @ msr];
   out = First[WickSample @ grn];
   $MeasurementOut = Join[$MeasurementOut, AssociationThread[mat -> out]];
   (* Apply the projectors to get post-measurement state *)
-  new = trs;
+  new = N[trs];
   pos = PositionIndex[out];
-  (* Apply some annihilators *)
-  ovr = Dot[msr, ConjugateTranspose @ N @ trs];
+  (* Apply annihilators of dressed modes with outcome 1 *)
   If[ KeyExistsQ[pos, 1],
-    hhd = HouseholderMatrix[ ovr[[pos @ 1]] ];
+    ovr = Dot[msr[[pos @ 1]], ConjugateTranspose @ new];
+    hhd = HouseholderMatrix[ovr];
     new = Dot[ConjugateTranspose @ hhd, new];
     new = Drop[new, Length[pos @ 1]]
   ];
-  (* Apply all creators *)
+  (* Apply creators of all dressed modes *)
   new = Join[mat, new];
-  {new, rem} = QRDecomposition[ConjugateTranspose @ N @ new];
-  (* Apply other annihilators *)
+  {new, rem} = QRDecomposition[ConjugateTranspose @ new];
+  (* Apply annihilators of dressed modes with outcome 0 *)
   If[ KeyExistsQ[pos, 0],
     ovr = Dot[msr[[pos @ 0]], ConjugateTranspose @ new];
     hhd = HouseholderMatrix[ovr];
@@ -906,6 +906,15 @@ Readout[WickMeasurement[m_?MatrixQ, ___]] :=
 Readout[WickMeasurement[m_?MatrixQ, ___]] := 
   Map[Readout, m]
 (**** </WickMeasurement> ****)
+
+
+rowOrthogonalQ::usage = "rowOrthogonalQ[mat] returns True if rows of matrix mat is orthogonal to each other with respect to the Hermitian product."
+
+rowOrthogonalQ[mat_?MatrixQ] := Module[
+  { off = Dot[mat, ConjugateTranspose @ mat] },
+  off = off - DiagonalMatrix[Diagonal @ off];
+  ZeroQ[Norm @ off]
+]
 
 
 (**** <RandomWickMeasurement> ****)
