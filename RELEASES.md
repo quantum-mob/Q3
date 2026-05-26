@@ -4,7 +4,7 @@
 
 - New: YoungProjector, YoungTransversal, GelfandClass, GelfandClasses
 - Bug fix: MatrixConditionNumber (gives wrong value for singular matrices)
-- Improved: DualSchurBasis
+- Improved: DualSchurBasis, WickMeasurement
 - Improved documents: Dual Quantum Schur Transform
 - Renamed: KawanoSekigawaMatrix -> YoungInterimMatrix, KawanoSekigawaBasis -> YoungInterimBasis
 
