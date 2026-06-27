@@ -560,24 +560,75 @@ WickSample[grn_?MatrixQ, OptionsPattern[]] := Module[
 
 
 (**** <WickProject> ****)
-WickProject::usage = "WickProject[ws, {k1, k2, \[Ellipsis]} -> {s1, s2, \[Ellipsis]}] applies the projection 1 - n_{k_j} or n_{k_j} on the Wick state ws depending on the occupation s_{k_j} = 0 or 1, respectively, of the bare fermion mode k_j."
+WickProject::usage = "WickProject[ws, {k1, k2, \[Ellipsis]} -> {s1, s2, \[Ellipsis]}] applies the projection 1 - n_{k_j} or n_{k_j} on the Wick state ws depending on the occupation s_{k_j} = 0 or 1, respectively, of the bare fermion mode k_j.";
 
+WickProject::incmp = "The key and value in `` should have the same length.";
+
+(* null state *)
+WickProject[in:WickState[{Null, _Integer}, ___], _Rule] := in
+
+(* vacuum state *)
+WickProject[in:WickState[{0, n_Integer}, opts___], any_ -> out_?VectorQ] :=
+  If[MemberQ[out, 1], WickState[{Null, n}, opts],  in]
+
+(* projection by bare modes *)
 WickProject[in_WickState, kk:{__Integer} -> out_?VectorQ] := Module[
   { n = FermionCount[in],
     trs = N[First @ in],
-    hhm, k, i },
+    hhm, vec, k, i },
   Do[
     k = kk[[i]];
-    hhm = HouseholderMatrix[ Conjugate @ trs[[All, k]] ];
+    vec = trs[[All, k]];
+    hhm = HouseholderMatrix[Conjugate @ vec];
     trs = Dot[ConjugateTranspose @ hhm, trs];
     Switch[ out[[i]],
-      1, trs[[1]] = UnitVector[n, k],
+      1, If[ ArrayZeroQ[vec], 
+        trs = {Null, n}; (* null state *)
+        Break[],
+        trs[[1]] = UnitVector[n, k]
+      ],
       0, trs[[1]] = Normalize @ ReplacePart[trs[[1]], k -> 0],
-      _, $Failed
+      _, Return[$Failed]
     ],
     {i, Length @ kk}
   ];
   WickState[trs, Options @ in]
+] /; If[ Length[kk] == Length[out], True,
+  Message[WickProject::incmp, kk -> out]; False
+]
+
+(* projection by dressed modes *)
+WickProject[in_WickState, mat_?MatrixQ -> out_?VectorQ] := Module[
+  { msr = Map[Normalize, N @ mat], (* numerical safety *)
+    trs = N[First @ in],
+    pos = PositionIndex[out],
+    ovr, hhm, rem },
+  If[ Count[out, 1] > Length[trs],
+    Return @ WickState[{Null, FermionCount @ in}, Options @ in]
+  ];
+  (* Apply annihilators of dressed modes with outcome 1: *)
+  If[ KeyExistsQ[pos, 1],
+    ovr = Dot[msr[[pos @ 1]], ConjugateTranspose @ trs];
+    If[ AnyTrue[Identity /@ ovr, ArrayZeroQ],
+      Return @ WickState[{Null, FermionCount @ in}, Options @ in]
+    ];
+    hhm = HouseholderMatrix[ovr];
+    trs = Dot[ConjugateTranspose @ hhm, trs];
+    trs = Drop[trs, Length[pos @ 1]]
+  ];
+  (* Apply creators of all dressed modes: *)
+  trs = Join[mat, trs];
+  {trs, rem} = QRDecomposition[ConjugateTranspose @ trs];
+  (* Apply annihilators of dressed modes with outcome 0: *)
+  If[ KeyExistsQ[pos, 0],
+    ovr = Dot[msr[[pos @ 0]], ConjugateTranspose @ trs];
+    hhm = HouseholderMatrix[ovr];
+    trs = Dot[ConjugateTranspose @ hhm, trs];
+    trs = Drop[trs, Length[pos @ 0]]
+  ];
+  WickState[trs, Options @ in]
+] /; If[ Length[mat] == Length[out], True,
+  Message[WickProject::incmp, mat -> out]; False
 ]
 (**** </WickProject> ****)
 
@@ -616,7 +667,7 @@ Options[WickJump] := {
 (* application: WickMonitor *)
 WickJump[WickMeasurement[msr_?MatrixQ, rest___?OptionQ], OptionsPattern[]] :=
   WickJump[
-    If[ OptionValue["Completion"], 
+    If[ OptionValue["Completion"],
       Riffle[Thread[msr -> 2], Thread[msr -> 3]],
       Thread[msr -> 2]
     ],
@@ -879,26 +930,7 @@ jointWickMeasurement[in_WickState, mat_?MatrixQ] := Module[
   out = First[WickSample @ grn];
   $MeasurementOut = Join[$MeasurementOut, AssociationThread[mat -> out]];
   (* Apply the projectors to get post-measurement state *)
-  trs = N[First @ in];
-  pos = PositionIndex[out];
-  (* Apply annihilators of dressed modes with outcome 1: *)
-  If[ KeyExistsQ[pos, 1],
-    ovr = Dot[msr[[pos @ 1]], ConjugateTranspose @ trs];
-    hhd = HouseholderMatrix[ovr];
-    trs = Dot[ConjugateTranspose @ hhd, trs];
-    trs = Drop[trs, Length[pos @ 1]]
-  ];
-  (* Apply creators of all dressed modes: *)
-  trs = Join[mat, trs];
-  {trs, rem} = QRDecomposition[ConjugateTranspose @ trs];
-  (* Apply annihilators of dressed modes with outcome 0: *)
-  If[ KeyExistsQ[pos, 0],
-    ovr = Dot[msr[[pos @ 0]], ConjugateTranspose @ trs];
-    hhd = HouseholderMatrix[ovr];
-    trs = Dot[ConjugateTranspose @ hhd, trs];
-    trs = Drop[trs, Length[pos @ 0]]
-  ];
-  WickState[trs, Options @ in]
+  WickProject[in, mat -> out]
 ]
 
 (** Joint measurement of bare modes. **)
@@ -909,26 +941,7 @@ jointWickMeasurement[in_WickState, kk:{__Integer}] := Module[
   out = First[WickSample @ grn];
   $MeasurementOut = Join[$MeasurementOut, AssociationThread[kk -> out]];
   (* Apply the projectors to get post-measurement state *)
-  trs = N[First @ in];
-  pos = PositionIndex[out];
-  (* Apply annihilators of bare modes with outcome 1: *)
-  If[ KeyExistsQ[pos, 1],
-    ovr = trs[[ All, kk[[pos @ 1]] ]];
-    hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
-    trs = Dot[ConjugateTranspose @ hhd, trs];
-    trs = Drop[trs, Length[pos @ 1]]
-  ];
-  (* Apply creators of all bare modes: *)
-  trs = Join[One[FermionCount @ in][[kk]], trs];
-  {trs, rem} = QRDecomposition[ConjugateTranspose @ trs];
-  (* Apply annihilators of bare modes with outcome 0: *)
-  If[ KeyExistsQ[pos, 0],
-    ovr = trs[[ All, kk[[pos @ 0]] ]];
-    hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
-    trs = Dot[ConjugateTranspose @ hhd, trs];
-    trs = Drop[trs, Length[pos @ 0]]
-  ];
-  WickState[trs, Options @ in]
+  WickProject[in, kk -> out]
 ]
 
 (** for WickCircuit **)
