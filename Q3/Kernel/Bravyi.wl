@@ -2520,6 +2520,7 @@ BravyiTimeReversalMoment[
 ]
 (* 2024-08-11: Dot::luc and Inverse::luc are silenced; the warning message goes off too often while it does not seem to be serious in most cases. *)
 (* 2025-01-18 (v3.8.2): All Pfaffian is replaced by Sqrt@*Det because the current implementation of Pfaffian is slow and racks accuracy. *)
+(* 2026-06-27 TODO: Mathematica 15 introduces the native PfaffianDet. *)
 
 (* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 theTimeReversalMoment[

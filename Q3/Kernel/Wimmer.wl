@@ -1,5 +1,7 @@
 (* ::Package:: *)
 
+(* Wolfram 15 introduces PfaffianDet superseding Pfaffian. *)
+
 (* Algorithms to calculate the Pfaffian of skew-symmetric matrices. *)
 (* Source: M. Wimmer, ACM Transactions on Mathematical Software, Vol. 38, No. 4, Article 30 (2012), "Algorithm 923: Efficient Numerical Computation of the Pfaffian for Dense and Banded Skew-Symmetric Matrices." *)
 
@@ -15,11 +17,10 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 Begin["`Private`"]
 
 (**** <array tools> ****)
+arrayRealQ::usage = "arrayRealQ[array] returns True if array is an array of real numbers.\narrayRealQ[array, test] first invokes ArrayQ[array, 1|2, test]."
 (**** REMARK:
   Depending on the type of entries, different methods must chosen. However, for large arrays, the type test itself takes time. Therefore, it is important to have an efficient test method.
-  *)
-
-arrayRealQ::usage = "arrayRealQ[array] returns True if array is an array of real numbers.\narrayRealQ[array, test] first invokes ArrayQ[array, 1|2, test]."
+  ****)
 
 arrayRealQ[obj_, test_] := And[
   ArrayQ[obj, 1|2, test],
@@ -35,12 +36,10 @@ arrayRealQ[obj_SparseArray] :=
 arrayRealQ[obj_] :=
   FreeQ[obj, _Complex]
 (* NOTE: FreeQ is much fastern than, e.g., MatrixQ[obj, Not[MatchQ[#, _Complex]]&] *)
-
 (**** </array tools> ****)
 
 
 (**** <Pfafian> ****)
-
 Pfaffian::usage = "Pfaffian[mat] returns the Pfaffian of an anti-symmetric matrix mat."
 
 Pfaffian::method = "Unrecognized option `1`; must be Automatic, \"Parlett-Reid\", \"Householder\", \"Hessenberg\" or \"Heuristic\".";
@@ -85,12 +84,10 @@ Pfaffian[mat_, opts:OptionsPattern[]] :=
     "Hessenberg", PfaffianHessenberg[mat, opts],
     _, Message[Pfaffian::method, OptionValue @ Method]; 0
   ] /; MatrixQ[mat, NumericQ]
-
 (**** </Pfaffian> ****)
 
 
 (**** <SkewTridiagonalize> ****)
-
 SkewTridiagonalize::usage = "SkewTridiagonalize[mat] tridiagonalizes the skew-symmetric matrix mat and returns {T, L, P} such that P.mat.P^T = L.T.L^T, where T is a skew-symmetric tridiagonal matrix.\nIn the Parlett-Reid method, L is a unit lower triangular matrix and P is a permutation matrix.\nIn the Householder method, L is a unitary matrix and P is the identity matrix."
 
 SkewTridiagonalize::method = "Unrecognized option `1`; must be Automatic, \"Parlett-Reid\", \"Householder\", \"Hessenberg\" or \"Heuristic\".";
@@ -114,23 +111,19 @@ SkewTridiagonalize[mat_, OptionsPattern[]] :=
     "Hessenberg", SkewHessenberg[mat],
     _, Message[Skew::method, OptionValue @ Method]; 0
   ] /; MatrixQ[mat, NumericQ]
-
 (**** </SkewTridiagonalize> ****)
 
 
 (**** <PositionLargest> ****)
-
-(* PosiitionLargest used in PfaffianLTL and SkewLTL was introduced Mathematica v13.2. *)
+(* PosiitionLargest used in PfaffianLTL and SkewLTL is introduced Mathematica v13.2. *)
 If[ $VersionNumber < 13.2,
   PositionLargest[list_?VectorQ] := FirstPosition[Normal @ list, Max @ list]
   (* NOTE: Normal is required here for older versions of Mathematica. *)
 ];
-
 (**** </PositionLargest> ****)
 
 
 (**** <Method: Parlett-Reid tridiagonalization> ****)
-
 Pfaffian::indet = "Division by zero encountered: `` / ``." 
 
 PfaffianLTL::usage = "PfaffianLTL[mat] computes the Pfaffian of the skew-symmetric matirx mat using the L T L^T decomposition."
@@ -196,12 +189,10 @@ SkewLTL[Mat_] := Module[
   ];
   Return[{A, L, SparseArray[{i_, i_} -> 1, {dim, dim}][[Pv]]}]
 ]
-
 (**** </Method: Parlett-Reid tridiagonalization> ****)
 
 
 (**** <Method: Householder tridiagonalization> ****)
-
 PfaffianHouseholder::usage = "PfaffianHouseholder[mat] calculates the Pfaffian of skew-symmetric matrix mat by using the Householder tridiagonalization."
 
 PfaffianHouseholder[mat_?MatrixQ, tol_?NumericQ] := Module[
@@ -270,14 +261,11 @@ HouseholderVectorFull[x_] := Module[
     Return[{Normalize[new], 2, fac} ]
   ]
 ]
-
 (**** </Method: Householder tridiagonalization> ****)
 
 
 (**** <Method: Hessenberg decomposition> ****)
-
 (* Essentially the same as the Householder tridiagonalization. *)
-
 (* For real matrices, the Pfaffian can also be computed using the Hessenberg decomposition. Since the Hessenberg decomposition is implemented efficiently in Mathematica (in contrast to the above implementation of Householder tridiagonalization), this approach is usually fastest for real matrices. For complex matrices there is no alternative and the algorithms here are the only option. *)
 
 PfaffianHessenberg::usage = "PfaffianHessenberg[mat] calculates the Pfaffian of real skew-symmetric matrix mat by using the Hessenberg decomposition."
@@ -311,12 +299,10 @@ SkewHessenberg[mat_] := Which[
     {H, Q, One[Length @ mat]}
   ]
 ] /; MatrixQ[mat, NumericQ]
-
 (**** </Method: Hessenberg decomposition> ****)
 
 
 (**** <Method: Heuristic recursion> ****)
-
 PfaffianHeuristic::usage = "Pfaffian[mat] calculates the Pfaffian of an skew-symmetric matrix mat by using the heuristic recursive method.\nNote that this method is very slow for large matrices."
 
 PfaffianHeuristic[mat_?SquareMatrixQ] := mat[[1, 2]] /; Length[mat] == 2
@@ -331,7 +317,6 @@ colDelete[mat_, k_] := Delete[
   Transpose @ Delete[Transpose @ mat, {{1}, {k}}],
   {{1}, {k}}
 ]
-
 (**** </Method: Heuristic recursion> ****)
 
 End[]
