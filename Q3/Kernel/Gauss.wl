@@ -379,7 +379,7 @@ HouseholderMatrix[vec_?VectorQ, k_Integer] := With[
   ]
 
 theHouseholderMatrix[vec_?VectorQ] :=
-  {Conjugate @ vec} /; Length[vec] == 1
+  {Conjugate @ vec} / Norm[vec] /; Length[vec] == 1
 (* NOTE: In principle, this does not need to be handled separately. However, sometimes an additional factor of -1 is added due to numerical errors (Normalize and Dyad in the following code). *)
 
 theHouseholderMatrix[vec_?VectorQ] := Module[

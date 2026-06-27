@@ -563,26 +563,19 @@ WickSample[grn_?MatrixQ, OptionsPattern[]] := Module[
 WickProject::usage = "WickProject[ws, {k1, k2, \[Ellipsis]} -> {s1, s2, \[Ellipsis]}] applies the projection 1 - n_{k_j} or n_{k_j} on the Wick state ws depending on the occupation s_{k_j} = 0 or 1, respectively, of the bare fermion mode k_j."
 
 WickProject[in_WickState, kk:{__Integer} -> out_?VectorQ] := Module[
-  { ovr, pos, trs, rem },
-  (* Apply the projectors to get post-measurement state *)
-  trs = N[First @ in];
-  pos = PositionIndex[out];
-  (* Apply annihilators of bare modes with outcome 1: *)
-  If[ KeyExistsQ[pos, 1],
-    ovr = trs[[ All, kk[[pos @ 1]] ]];
-    hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
-    trs = Dot[ConjugateTranspose @ hhd, trs];
-    trs = Drop[trs, Length[pos @ 1]]
-  ];
-  (* Apply creators of all bare modes: *)
-  trs = Join[One[FermionCount @ in][[kk]], trs];
-  {trs, rem} = QRDecomposition[ConjugateTranspose @ trs];
-  (* Apply annihilators of bare modes with outcome 0: *)
-  If[ KeyExistsQ[pos, 0],
-    ovr = trs[[ All, kk[[pos @ 0]] ]];
-    hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
-    trs = Dot[ConjugateTranspose @ hhd, trs];
-    trs = Drop[trs, Length[pos @ 0]]
+  { n = FermionCount[in],
+    trs = N[First @ in],
+    hhm, k, i },
+  Do[
+    k = kk[[i]];
+    hhm = HouseholderMatrix[ Conjugate @ trs[[All, k]] ];
+    trs = Dot[ConjugateTranspose @ hhm, trs];
+    Switch[ out[[i]],
+      1, trs[[1]] = UnitVector[n, k],
+      0, trs[[1]] = Normalize @ ReplacePart[trs[[1]], k -> 0],
+      _, $Failed
+    ],
+    {i, Length @ kk}
   ];
   WickState[trs, Options @ in]
 ]
