@@ -892,7 +892,7 @@ jointWickMeasurement[in_WickState, kk:{__Integer}] := Module[
   pos = PositionIndex[out];
   (* Apply annihilators of bare modes with outcome 1: *)
   If[ KeyExistsQ[pos, 1],
-    ovr = new[[ kk[[pos @ 1]] ]];
+    ovr = new[[ All, kk[[pos @ 1]] ]];
     hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
     new = Dot[ConjugateTranspose @ hhd, new];
     new = Drop[new, Length[pos @ 1]]
@@ -902,8 +902,8 @@ jointWickMeasurement[in_WickState, kk:{__Integer}] := Module[
   {new, rem} = QRDecomposition[ConjugateTranspose @ new];
   (* Apply annihilators of bare modes with outcome 0: *)
   If[ KeyExistsQ[pos, 0],
-    ovr = new[[ kk[[pos @ 0]] ]];
-    hhd = HouseholderMatrix[ovr];
+    ovr = new[[ All, kk[[pos @ 0]] ]];
+    hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
     new = Dot[ConjugateTranspose @ hhd, new];
     new = Drop[new, Length[pos @ 0]]
   ];
