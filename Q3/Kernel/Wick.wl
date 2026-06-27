@@ -21,7 +21,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   WickPureQ, WickDensityMatrix,
   WickOccupation };
 
-{ WickSample };
+{ WickSample, WickProject };
 
 (* supporting utilities *)
 { WickFlop, RandomWickFlop };
@@ -559,6 +559,36 @@ WickSample[grn_?MatrixQ, OptionsPattern[]] := Module[
 (**** </WickSample> ****)
 
 
+(**** <WickProject> ****)
+WickProject::usage = "WickProject[ws, {k1, k2, \[Ellipsis]} -> {s1, s2, \[Ellipsis]}] applies the projection 1 - n_{k_j} or n_{k_j} on the Wick state ws depending on the occupation s_{k_j} = 0 or 1, respectively, of the bare fermion mode k_j."
+
+WickProject[in_WickState, kk:{__Integer} -> out_?VectorQ] := Module[
+  { ovr, pos, trs, rem },
+  (* Apply the projectors to get post-measurement state *)
+  trs = N[First @ in];
+  pos = PositionIndex[out];
+  (* Apply annihilators of bare modes with outcome 1: *)
+  If[ KeyExistsQ[pos, 1],
+    ovr = trs[[ All, kk[[pos @ 1]] ]];
+    hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
+    trs = Dot[ConjugateTranspose @ hhd, trs];
+    trs = Drop[trs, Length[pos @ 1]]
+  ];
+  (* Apply creators of all bare modes: *)
+  trs = Join[One[FermionCount @ in][[kk]], trs];
+  {trs, rem} = QRDecomposition[ConjugateTranspose @ trs];
+  (* Apply annihilators of bare modes with outcome 0: *)
+  If[ KeyExistsQ[pos, 0],
+    ovr = trs[[ All, kk[[pos @ 0]] ]];
+    hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
+    trs = Dot[ConjugateTranspose @ hhd, trs];
+    trs = Drop[trs, Length[pos @ 0]]
+  ];
+  WickState[trs, Options @ in]
+]
+(**** </WickProject> ****)
+
+
 patternWickJumpQ::usage = "patternWickJumpQ[pat] returns True if pat is a pattern of the form v -> k, v is a vector and k = 0, 1, 2, 3."
 
 patternWickJumpQ[_?VectorQ -> (0|1|2|3)] = True
@@ -849,65 +879,63 @@ singleWickMeasurement[in_WickState, vec_?VectorQ] := Module[
   The rows of mat must be orthogonal. **)
 jointWickMeasurement[in_WickState, mat_?MatrixQ] := Module[
   { msr = Map[Normalize, N @ mat], (* numerical safety *)
-    trs = First[in],
     grn = WickGreen[in],
-    ovr, out, pos, new, rem },
+    ovr, out, pos, trs, rem },
   (* measurement outcome  *)
   grn = Dot[msr, grn, ConjugateTranspose @ msr];
   out = First[WickSample @ grn];
   $MeasurementOut = Join[$MeasurementOut, AssociationThread[mat -> out]];
   (* Apply the projectors to get post-measurement state *)
-  new = N[trs];
+  trs = N[First @ in];
   pos = PositionIndex[out];
   (* Apply annihilators of dressed modes with outcome 1: *)
   If[ KeyExistsQ[pos, 1],
-    ovr = Dot[msr[[pos @ 1]], ConjugateTranspose @ new];
+    ovr = Dot[msr[[pos @ 1]], ConjugateTranspose @ trs];
     hhd = HouseholderMatrix[ovr];
-    new = Dot[ConjugateTranspose @ hhd, new];
-    new = Drop[new, Length[pos @ 1]]
+    trs = Dot[ConjugateTranspose @ hhd, trs];
+    trs = Drop[trs, Length[pos @ 1]]
   ];
   (* Apply creators of all dressed modes: *)
-  new = Join[mat, new];
-  {new, rem} = QRDecomposition[ConjugateTranspose @ new];
+  trs = Join[mat, trs];
+  {trs, rem} = QRDecomposition[ConjugateTranspose @ trs];
   (* Apply annihilators of dressed modes with outcome 0: *)
   If[ KeyExistsQ[pos, 0],
-    ovr = Dot[msr[[pos @ 0]], ConjugateTranspose @ new];
+    ovr = Dot[msr[[pos @ 0]], ConjugateTranspose @ trs];
     hhd = HouseholderMatrix[ovr];
-    new = Dot[ConjugateTranspose @ hhd, new];
-    new = Drop[new, Length[pos @ 0]]
+    trs = Dot[ConjugateTranspose @ hhd, trs];
+    trs = Drop[trs, Length[pos @ 0]]
   ];
-  WickState[new, Options @ in]
+  WickState[trs, Options @ in]
 ]
 
 (** Joint measurement of bare modes. **)
 jointWickMeasurement[in_WickState, kk:{__Integer}] := Module[
-  { trs = First[in],
-    grn = WickGreen[in, kk],
-    ovr, out, pos, new, rem },
+  { grn = WickGreen[in, kk],
+    ovr, out, pos, trs, rem },
   (* measurement outcome  *)
   out = First[WickSample @ grn];
-  $MeasurementOut = Join[$MeasurementOut, AssociationThread[mat -> out]];
+  $MeasurementOut = Join[$MeasurementOut, AssociationThread[kk -> out]];
   (* Apply the projectors to get post-measurement state *)
-  new = N[trs];
+  trs = N[First @ in];
   pos = PositionIndex[out];
   (* Apply annihilators of bare modes with outcome 1: *)
   If[ KeyExistsQ[pos, 1],
-    ovr = new[[ All, kk[[pos @ 1]] ]];
+    ovr = trs[[ All, kk[[pos @ 1]] ]];
     hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
-    new = Dot[ConjugateTranspose @ hhd, new];
-    new = Drop[new, Length[pos @ 1]]
+    trs = Dot[ConjugateTranspose @ hhd, trs];
+    trs = Drop[trs, Length[pos @ 1]]
   ];
   (* Apply creators of all bare modes: *)
-  new = Join[One[FermionCount @ in][[kk]], new];
-  {new, rem} = QRDecomposition[ConjugateTranspose @ new];
+  trs = Join[One[FermionCount @ in][[kk]], trs];
+  {trs, rem} = QRDecomposition[ConjugateTranspose @ trs];
   (* Apply annihilators of bare modes with outcome 0: *)
   If[ KeyExistsQ[pos, 0],
-    ovr = new[[ All, kk[[pos @ 0]] ]];
+    ovr = trs[[ All, kk[[pos @ 0]] ]];
     hhd = HouseholderMatrix[ConjugateTranspose @ ovr];
-    new = Dot[ConjugateTranspose @ hhd, new];
-    new = Drop[new, Length[pos @ 0]]
+    trs = Dot[ConjugateTranspose @ hhd, trs];
+    trs = Drop[trs, Length[pos @ 0]]
   ];
-  WickState[new, Options @ in]
+  WickState[trs, Options @ in]
 ]
 
 (** for WickCircuit **)
