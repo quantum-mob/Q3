@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.5.12
+
+- New: WickProject, WickSample
+- New forms of WickMeasurement: WickMeasurement[{k1,k2,...}] and WickMeasurement[{k1,k2,...}->{s1,s2,...}]
+
 ## 4.5.11
 
 - New: YoungProjector, YoungTransversal, GelfandClass, GelfandClasses

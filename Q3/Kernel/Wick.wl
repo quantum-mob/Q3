@@ -21,7 +21,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   WickPureQ, WickDensityMatrix,
   WickOccupation };
 
-{ WickSample, WickProject };
+{ WickSample, WickProject, WickReset };
 
 (* supporting utilities *)
 { WickFlop, RandomWickFlop };
@@ -514,7 +514,7 @@ WickOdds[spec_Rule][in_WickState -> prb_?NumericQ] := Module[
 (**** <WickSample> ****)
 WickSample::usage = "WickSample[grn] draws a single occupation outcome from a fermionic Gaussian state characterized by single-particle Green's function matrix grn.";
 
-Options[WickSample] = {Tolerance -> 10^-10};
+Options[WickSample] = {Tolerance -> 1.0*^-10};
 
 WickSample[grn_?MatrixQ, OptionsPattern[]] := Module[
   { m = Length[grn], 
@@ -633,6 +633,53 @@ WickProject[in_WickState, mat_?MatrixQ -> out_?VectorQ] := Module[
 (**** </WickProject> ****)
 
 
+(**** <WickReset> ****)
+WickReset::usage = "WickReset[ws, {k1,k2,\[Ellipsis]} -> {s1,s2,\[Ellipsis]} -> {t1,t2,\[Ellipsis]}] applies on the input Wick state ws the projection operators corresponding to the occupation s1,s2,\[Ellipsis] of the bare modes k1,k2,\[Ellipsis] and then reset the bare modes to occupation t1,t2,\[Ellipsis].\nWickReset[ws, {k1,k2,\[Ellipsis]} -> {t1,t2,\[Ellipsis]}] takes measurement  on the bare modes Subscript[k, 1],Subscript[k, 2],\[Ellipsis] and then reset them to the occupation t1,t2,\[Ellipsis].";
+
+WickReset[in_WickState, kk:{__Integer} -> new_?VectorQ] := Module[
+  { grn = WickGreen[in, kk],
+    out },
+  out = First[WickSample @ grn];
+  $MeasurementOut = Join[$MeasurementOut, AssociationThread[kk -> out]];
+  WickReset[in, kk -> out -> new]
+]
+
+WickReset[in_WickState, kk:{__Integer} -> out_?VectorQ -> new_?VectorQ] := Module[
+  { n = FermionCount[in],
+    trs = N[First @ in],
+    hhm, vec, k, i },
+  Do[
+    k = kk[[i]];
+    vec = trs[[All, k]];
+    hhm = HouseholderMatrix[Conjugate @ vec];
+    trs = Dot[ConjugateTranspose @ hhm, trs];
+    Switch[ out[[i]],
+      1, If[ ArrayZeroQ[vec], 
+        trs = {Null, n}; (* null state *)
+        Break[],
+        Switch[ new[[i]],
+          1, trs[[1]] = UnitVector[n, k],
+          0, trs = Rest[trs],
+          _, Return[$Failed]
+        ]
+      ],
+      0, (
+        trs[[1]] = Normalize @ ReplacePart[trs[[1]], k -> 0];
+        If[ new[[i]] == 1,
+          trs = Append[trs, UnitVector[n, k]]
+        ]
+      ), 
+      _, Return[$Failed]
+    ],
+    {i, Length @ kk}
+  ];
+  WickState[trs, Options @ in]
+] /; If[ Length[kk] == Length[out] == Length[new], True,
+  Message[WickProject::incmp, kk -> out -> new]; False
+]
+(**** </WickReset> ****)
+
+
 patternWickJumpQ::usage = "patternWickJumpQ[pat] returns True if pat is a pattern of the form v -> k, v is a vector and k = 0, 1, 2, 3."
 
 patternWickJumpQ[_?VectorQ -> (0|1|2|3)] = True
@@ -662,6 +709,11 @@ MakeBoxes[jmp:WickJump[spec:{__?patternWickJumpQ}, ___], fmt_] := Module[
 Options[WickJump] := {
   "Completion" -> True
 }
+
+(* conversion *)
+(* application: WickMonitor *)
+WickJump[WickMeasurement[kk:{__Integer}, n_Integer, rest___?OptionQ], more___] :=
+  WickJump[WickMeasurement[One[n][[kk]], rest], more]
 
 (* conversion *)
 (* application: WickMonitor *)
@@ -841,15 +893,33 @@ MakeBoxes[msr:WickMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
   ]
 ]
 
+WickMeasurement /:
+MakeBoxes[msr:WickMeasurement[kk:{___Integer}, ___], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickMeasurement, msr, None,
+    { BoxForm`SummaryItem @ { "Bare modes: ", kk },
+      BoxForm`SummaryItem @ { "Reset: ", False }
+    },
+    {},
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
+WickMeasurement /:
+MakeBoxes[msr:WickMeasurement[kk:{___Integer} -> new_?VectorQ, ___], fmt_] :=
+  BoxForm`ArrangeSummaryBox[
+    WickMeasurement, msr, None,
+    { BoxForm`SummaryItem @ { "Bare modes: ", kk },
+      BoxForm`SummaryItem @ { "Reset: ", new }
+    },
+    {},
+    fmt,
+    "Interpretable" -> Automatic
+  ]
+
 
 (* canonicalization *)
-WickMeasurement[k_Integer, n_Integer, rest___] :=
-  WickMeasurement[{k}, n, rest]
-
-(* canonicalization *)
-(* NOTE: kk = {} may happen, e.g., in RandomWickCircuit. *)
-WickMeasurement[kk:{___Integer}, n_Integer, rest___] :=
-  WickMeasurement @ One[n][[kk]]
+WickMeasurement[k_Integer, rest___] := WickMeasurement[{k}, rest]
 
 (* canonicalization *)
 WickMeasurement[mat_?MatrixQ, rest___] :=
@@ -904,6 +974,11 @@ Multiply[pre___, msr_WickMeasurement, ws_WickState] := Multiply[pre, msr @ ws]
 (* NOTE: This may happen, e.g., in RandomWickCircuit. *)
 WickMeasurement[{}, ___][in_WickState] = in
 
+WickMeasurement[kk:{__Integer}, ___][in_WickState] :=
+  jointWickMeasurement[in, kk]
+
+WickMeasurement[kk:{__Integer} -> new_?VectorQ, ___][in_WickState] :=
+  WickReset[in, kk -> new]
 
 WickMeasurement[mat_?MatrixQ, ___][in_WickState] := If[
   rowOrthogonalQ[mat],
@@ -947,6 +1022,12 @@ jointWickMeasurement[in_WickState, kk:{__Integer}] := Module[
 (** for WickCircuit **)
 WickMeasurement[any__][c_?FermionQ] := WickMeasurement[any]
 
+WickMeasurement[kk:{___Integer}, n:Repeated[_Integer, {0, 1}], opts___?OptionQ][c_?FermionQ] :=
+  WickMeasurement[kk, c @ kk, opts]
+
+WickMeasurement[kk:{___Integer} -> out_, n:Repeated[_Integer, {0, 1}], opts___?OptionQ][c_?FermionQ] :=
+  WickMeasurement[kk -> out, c @ kk, opts]
+
 WickMeasurement[mat_?MatrixQ, opts___?OptionQ][c_?FermionQ] := Module[
   { mm = Normal[ZeroQ @ mat],
     kk, cc },
@@ -960,13 +1041,26 @@ ParseGate[WickMeasurement[{}, ___]] = "Spacer"
 
 WickMeasurement /:
 ParseGate[
-  WickMeasurement[mat_?MatrixQ, cc:{__?FermionQ}, opts___?OptionQ], 
+  WickMeasurement[spec_Rule, cc:{__?FermionQ}, opts___?OptionQ], 
+  more___?OptionQ
+] := MapThread[
+  Gate[{#1}, "Shape" -> "Measurement", "Label" -> #2, more, opts]&, 
+  {cc, Last @ spec}
+]
+
+WickMeasurement /:
+ParseGate[
+  WickMeasurement[_, cc:{__?FermionQ}, opts___?OptionQ], 
   more___?OptionQ
 ] :=
   Map[Gate[{#}, "Shape" -> "Measurement", more, opts]&, cc]
 
 
 (** for Readout **)
+Readout[WickMeasurement[kk:{__Integer}, ___]] := Readout[kk]
+
+Readout[WickMeasurement[kk:{__Integer} -> _, ___]] := Readout[kk]
+
 Readout[WickMeasurement[m_?MatrixQ, ___]] := 
   Readout[First @ m] /; Length[m] == 1
 
@@ -995,7 +1089,7 @@ RandomWickMeasurement[n_Integer] :=
 
 (* shortcut *)
 RandomWickMeasurement[p_?NumericQ -> n_Integer, rest___] :=
-  WickMeasurement[RandomPick[p -> n], n, rest]
+  WickMeasurement[RandomPick[p -> n], rest]
 
 (* shortcut *)
 RandomWickMeasurement[p_?NumericQ -> msr_WickMeasurement, rest___] :=
@@ -2046,6 +2140,16 @@ FermionCount[WickJump[jmp:{__?patternWickJumpQ}, ___]] :=
 
 (* NOTE: This happens when no measurement is performed such as in RandomWickCircuit. *)
 FermionCount[WickMeasurement[{}, ___?OptionQ]] = 0
+
+FermionCount[WickMeasurement[kk:{__Integer}, n_Integer, ___]] = n
+
+FermionCount[WickMeasurement[kk:{__Integer}, ___?OptionQ]] := 
+  AtLeast[Max @ kk]
+
+FermionCount[WickMeasurement[kk:{__Integer} -> _, n_Integer, ___]] = n
+
+FermionCount[WickMeasurement[kk:{__Integer} -> _, ___?OptionQ]] := 
+  AtLeast[Max @ kk]
 
 FermionCount[WickMeasurement[mat_?MatrixQ, ___?OptionQ]] := 
   Last[Dimensions @ mat]

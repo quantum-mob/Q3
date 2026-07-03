@@ -23,7 +23,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 Begin["`Private`"]
 
 (**** <CliffordState> ****)
-
 CliffordState::usage = "CliffordState[data, {s1, s2, \[Ellipsis]}] represents a stabilizer state on qubits s1, s2, \[Ellipsis] with the generating set of stabilizer subgroup specified by data.\nThe data is a matrix each row of which is a full Gottesman vaector referring to the Pauli string corresponding to a stabilizer generator."
 
 CliffordState::bad = "`` is not a proper set of Gottesman vectors."
@@ -146,7 +145,6 @@ CliffordUnitary[mat_, ___?OptionQ][cs_CliffordState] := With[
 CliffordState /:
 Multiply[pre___, cu:(_CNOT|_SWAP|_Hadamard|_Quadrant|_CliffordUnitary), cs_CliffordState, post___] :=
   Multiply[pre, cu[cs], post]
-
 (**** </CliffordState> ****)
 
 
@@ -175,7 +173,6 @@ RandomCliffordState[k_Integer, ss:{__?QubitQ}] := With[
 
 
 (**** <CliffordPureQ> ****)
-
 CliffordPureQ::usage = "CliffordPureQ[cs] returns True if the Clifford state cs is a pure state; Falsoe, otherwise."
 
 CliffordPureQ[CliffordState[gnr_?MatrixQ, ___]] :=
@@ -188,7 +185,6 @@ CliffordPureQ[gnr_?fGtsArrayQ] := Module[
 ]
 
 CliffordPureQ[_] = False
-
 (**** </CliffordPureQ> ****)
 
 
@@ -210,7 +206,6 @@ CliffordProjectors[gnr_?MatrixQ] := Module[
 
 
 (**** <CliffordInner> ****)
-
 CliffordInner::usage = "CliffordInner[a, b] returns the Hilbert-Schmidt product of the two density matrices corresponding the Clifford states a and b.\nNote that for pure Clifford states, this only gives the absolute value of the Hermitian product."
 (* Based on Garcia, Markov, Cross (2014), but working in the X-basis rather than the Z-basis. *)
 
@@ -238,12 +233,10 @@ CliffordInner[a_?fGtsArrayQ, b_?fGtsArrayQ] := Module[
   fa = MapApply[Times, fa];
   If[fa == fb, Power[2, -(k-1)/2], 0]
 ] /; ArrayQ[{a, b}]
-
 (**** </CliffordInner> ****)
 
 
 (**** <PauliMeasurement> ****)
-
 PauliMeasurement::usage = "PauliMeasurement[vec] represents the Pauli measurement corresponding to Gottesman vector vec.\nPauliMeasurement[vec, {{k1, k2, \[Ellipsis]}, n}] represents the Pauli measurement on particular qubits numbered k1, k2, \[Ellipsis] among n qubits."
 
 SetAttributes[PauliMeasurement, NHoldAll]
@@ -319,12 +312,10 @@ Dagger[op_PauliMeasurement] = op
 PauliMeasurement /:
 Multiply[pre___, msr_PauliMeasurement, cs_CliffordState] := 
   Multiply[pre, msr @ cs]
-
 (**** </PauliMeasurement> ****)
 
 
 (**** <PauliDecoherence> ****)
-
 PauliDecoherence::usage = "PauliDecoherence[vec] represents the Pauli measurement corresponding to Gottesman vector vec.\nPauliDecoherence[vec, {{k1, k2, \[Ellipsis]}, n}] represents the Pauli measurement on particular qubits numbered k1, k2, \[Ellipsis] among n qubits."
 
 PauliDecoherence[msr_?GottesmanVectorQ, k_Integer] :=
@@ -356,7 +347,6 @@ Dagger[op_PauliDecoherence] = op
 PauliDecoherence /:
 Multiply[pre___, msr_PauliDecoherence, cs_CliffordState] := 
   Multiply[pre, msr @ cs]
-
 (**** </PauliDecoherence> ****)
 
 
@@ -459,7 +449,6 @@ RandomCliffordUnitary[kk:{__Integer}, rest___] :=
 
 
 (**** <CliffordEntropy> ****)
-
 CliffordEntropy::usage = "CliffordEntropy[cs] returns the von Neumann entropy of Clifford state cs."
 (* SEE ALSO: Li, Chen, Fisher (2019), Nahum et al. (2017), etc. *)
 
@@ -468,12 +457,10 @@ CliffordEntropy[cs_CliffordState] := With[
   QubitCount[cs] - MatrixRank[gnr, Modulus -> 2]
 ]
 (* NOTE: QubitCount[cs] - Length[First @ cs] does not work because the seemingly independent generators may actually be linearly dependent. Sometimes, especially after measurement or decoherence, gnr = {0, 0, ...}. *)
-
 (**** </CliffordEntropy> ****)
 
 
 (**** <CliffordEntanglementEntropy> ****)
-
 CliffordEntanglementEntropy::usage = "CliffordEntanglementEntropy[cs, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between qubits {k1, k2, \[Ellipsis]} and the rest in the stabilizer pure state cs.\nCliffordEntanglementEntropy[{k1, k2, \[Ellipsis]}] is an operator form of CliffordEntanglementEntropy that can be applied to Clifford states."
 (* SEE ALSO: Li, Chen, Fisher (2019), Nahum et al. (2017), etc. *)
 
@@ -513,12 +500,10 @@ CliffordMutualInformation[cs_CliffordState, kk:{___Integer}] := Module[
   cc = cc[[ All, 1;;-2 ]];
   MatrixRank[aa, Modulus -> 2] + MatrixRank[bb, Modulus -> 2] - MatrixRank[cc, Modulus -> 2]
 ]
-
 (**** </CliffordMutualInformation> ****)
 
 
 (**** <CliffordLogarithmicNegativity> ****)
-
 CliffordLogarithmicNegativity::usage = "CliffordLogarithmicNegativity[cs, {k1, k2, \[Ellipsis]}] returns the logarithmic negativity between qubits {k1, k2, \[Ellipsis]} and the rest in Clifford state cs.\nCliffordLogarithmicNegativity[{k1, k2, \[Ellipsis]}] is an operator form of CliffordLogarithmicNegativity that can be applied to Clifford states."
 (* SEE ALSO: Sang et at. (2021) and Weinstein et al. (2022) *)
 
@@ -534,12 +519,10 @@ CliffordLogarithmicNegativity[cs_CliffordState, kk:{___Integer}] := Module[
   (* NOTE: The above line does not seem to work; hence, the following line instead. *)
   MatrixRank[chk, Modulus -> 2] / 2
 ]
-
 (**** </CliffordLogarithmicNegativity> ****)
 
 
 (**** <CliffordCircuit> ****)
-
 CliffordCircuit::usage = "CliffordCircuit[{g1, g2, \[Ellipsis]}] represents a quantum circuit with Clifford unitary gates or Pauli measurements g1, g2, \[Ellipsis]."
 
 CliffordCircuit /:
@@ -615,12 +598,10 @@ Graphics[CliffordCircuit[gg_List, opts___?OptionQ], S_Symbol?QubitQ, more___?Opt
   };
   QuantumCircuit[Sequence @@ qc, more, opts, "PostMeasurementDashes" -> False]
 ]
-
 (**** </CliffordCircuit> ****)
 
 
 (**** <QubitCount> ****)
-
 QubitCount[CliffordCircuit[{}, ___?OptionQ]] = 0
 
 QubitCount[CliffordCircuit[gg:{__}, ___?OptionQ]] :=
@@ -642,12 +623,10 @@ QubitCount[PauliMeasurement[vec_?VectorQ, kk:{___}, ___?OptionQ]] :=
 
 QubitCount[PauliDecoherence[vec_?VectorQ, kk:{___}, ___?OptionQ]] := 
   AtLeast[Max @ kk]
-
 (**** </QubitCount> ****)
 
 
 (**** <RandomCliffordCircuit> ****)
-
 RandomCliffordCircuit::usage = "RandomCliffordCircuit[in, {n, t}, p] generates a Clifford circuit of depth 3t on n qubits with the initial state 'in' and with alternating layers of randomly selected two-qubit Clifford unitary gates and single-qubit Pauli measurements, where each qubit is measured with probability p in the computational basis.\nRandomCliffordState[{n, t}, p] assumes the conventional initial state |0,0,\[Ellipsis]>."
 
 RandomCliffordCircuit::num = "Probabilities `` must be a number or a list of numbers."
@@ -717,12 +696,10 @@ randomCliffordUnitaryLayer[n_Integer, k_Integer] := Module[
   gg = Table[RandomFullGottesmanMatrix[2], Length @ kk];
   CliffordCircuit @ MapThread[CliffordUnitary, {gg, kk}]
 ]
-
 (**** </RandomCliffordCircuit> ****)
 
 
 (**** <RandomCliffordCircuitSimulate> ****)
-
 RandomCliffordCircuitSimulate::usage = "RandomCliffordCircuitSimulate[in, {n, t}, spec] simulates Clifford circuits randomly generated by RandomCliffordCircuit[in, {n, t}, spec].\n RandomCliffordCircuitSimulate[{n, t}, spec] assumes the conventional input state |0,0,\[Ellipsis]>."
 
 RandomCliffordCircuitSimulate::save = "The result could not be saved."
@@ -778,12 +755,10 @@ RandomCliffordCircuitSimulate[
 ] /; If[ VectorQ[Flatten @ pp, NumericQ], True,
   Message[RandomCliffordCircuitSimulate::num, pp]; False
 ]
-
 (**** </RandomCliffordCircuitSimulate> ****)
 
 
 (**** <CliffordScramblingCircuit> ****)
-
 CliffordScramblingCircuit::num = RandomCliffordCircuit::num
 
 CliffordScramblingCircuit[k_Integer, rest__] :=
@@ -816,12 +791,10 @@ CliffordScramblingCircuit[
 ] /; If[ VectorQ[Flatten @ prb, NumericQ], True,
     Message[CliffordScramblingCircuit::num, prb]; False
   ]
-
 (**** </CliffordScramblingCircuit> ****)
 
 
 (**** <CliffordScramblingSimulate> ****)
-
 CliffordScramblingSimulate::usage = "CliffordScramblingSimulate[in, {n, t}, spec] simulates Clifford circuits randomly generated by RandomCliffordCircuit[in, {n, t}, spec].\n CliffordScramblingSimulate[{n, t}, spec] assumes the conventional input state |0,0,\[Ellipsis]>."
 
 CliffordScramblingSimulate::num = RandomCliffordCircuit::num
@@ -874,7 +847,6 @@ theCliffordOTOC[in_, ub_, qc_CliffordCircuit] := Module[
   bb = Dagger[ub] @ qc @ ub @ in;
   CliffordInner[aa, bb]
 ]
-
 (**** </CliffordScramblingSimulate> ****)
 
 End[]
