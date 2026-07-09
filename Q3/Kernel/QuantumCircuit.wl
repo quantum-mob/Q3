@@ -236,15 +236,15 @@ QuantumElements[ g_ ] = g
 
 
 (**** <Graphics> ****)
-$CircuitDepth = 1 (* dynamically change *)
+$CircuitDepth = 1; (* dynamically change *)
 
-$CircuitUnit = 1
+$CircuitUnit = 1;
 
 $GateSize := 0.80 * $CircuitUnit
 
-$PortSize := 0.65 * $CircuitUnit * {1, 1} (* subject to modification *)
-
 $DotSize := 0.09 * $CircuitUnit
+
+$PortSize := 0.65 * $CircuitUnit * {1, 1} (* subject to modification *)
 
 $PortGap := 0.20 * $CircuitUnit
 

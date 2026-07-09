@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.5.13
+
+- Extended: MatrixConditionNumber
+- Bug fix: ArrayShort
+
 ## 4.5.12
 
 - New: WickProject, WickSample

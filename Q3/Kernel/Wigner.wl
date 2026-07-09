@@ -32,33 +32,35 @@ $symb = Unprotect[Missing]
 
 
 (**** <TheWigner> ****)
-TheWigner::usage = "TheWigner[{J,k}] returns the matrix representation of the angular momentum operator of magnitude J in the k'th direction.\nTheWigner[{J,k,theta,phi}] = U.TheWigner[{J,k}].Topple[U] returns the matrix representation in the rotated frame.\nTheWigner[{J1,k1},{J2,k2},...] returns TheWigner[{J1,k1}] \[CircleTimes] TheWigner[{J2,k2}] \[CircleTimes] ...\nTheWigner[{J, {k1,k2,...}, th, ph}] = TheWigner[{J,k1,th,ph}, {J,k2,th,ph}, ...]."
+TheWigner::usage = "TheWigner[{J,k}] returns the matrix representation of the angular momentum operator of magnitude J in the k'th direction.\nTheWigner[{J,k,theta,phi}] = U.TheWigner[{J,k}].Topple[U] returns the matrix representation in the rotated frame.\nTheWigner[{J1,k1},{J2,k2},\[Ellipsis]] returns TheWigner[{J1,k1}] \[CircleTimes] TheWigner[{J2,k2}] \[CircleTimes]\[Ellipsis].\nTheWigner[{J, {k1,k2,...}, th, ph}] = TheWigner[{J,k1,th,ph},{J,k2,th,ph},\[Ellipsis]]."
 
 TheWigner[{J_?SpinNumberQ, 0}] := SparseArray @ IdentityMatrix[2J+1]
 
-TheWigner[{J_?SpinNumberQ, 1}] := (TheWigner[{J,4}]+TheWigner[{J,5}])/2
+TheWigner[{J_?SpinNumberQ, 1}] := (TheWigner[{J, 4}] + TheWigner[{J, 5}])/2
 
-TheWigner[{J_?SpinNumberQ, 2}] := (TheWigner[{J,4}]-TheWigner[{J,5}])/(2I)
+TheWigner[{J_?SpinNumberQ, 2}] := (TheWigner[{J, 4}] - TheWigner[{J, 5}])/(2*I)
 
-TheWigner[{J_?SpinNumberQ, 3}] := SparseArray @ DiagonalMatrix @ Range[J,-J,-1]
+TheWigner[{J_?SpinNumberQ, 3}] := SparseArray @ DiagonalMatrix @ Range[J, -J, -1]
 
 TheWigner[{J_?SpinNumberQ, 4}] := Module[
   { mm = Range[J-1, -J, -1] },
-  DiagonalMatrix[ Sqrt[J*(J+1) - mm*(mm+1)], 1,
+  DiagonalMatrix[ 
+    Sqrt[J*(J+1) - mm*(mm+1)], 1,
     TargetStructure -> "Sparse"
   ]
 ]
 
 TheWigner[{J_?SpinNumberQ, 5}] := Module[
   { mm = Range[J, 1-J, -1] },
-  DiagonalMatrix[ Sqrt[J*(J+1) - mm*(mm-1)], -1,
+  DiagonalMatrix[ 
+    Sqrt[J*(J+1) - mm*(mm-1)], -1,
     TargetStructure -> "Sparse"
   ]
 ]
 
-TheWigner[{J_?SpinNumberQ, Raising}] := TheWigner[{J,4}]
+TheWigner[{J_?SpinNumberQ, Raising}] := TheWigner[{J, 4}]
 
-TheWigner[{J_?SpinNumberQ, Lowering}] := TheWigner[{J,5}]
+TheWigner[{J_?SpinNumberQ, Lowering}] := TheWigner[{J, 5}]
 
 TheWigner[{J_?SpinNumberQ, s_ -> t_}] := SparseArray[
   {J+1 - t, J+1 - s} -> 1,
@@ -72,13 +74,13 @@ TheWigner[{J_?SpinNumberQ, n:(1|2|3), theta_, phi_}] := With[
   TheWigner[{J, 1}]*R[[1, n]] + TheWigner[{J, 2}]*R[[2, n]] + TheWigner[{J, 3}]*R[[3, n]]
 ]
 
-TheWigner[ nn:{_?SpinNumberQ, (0|1|2|3|4|5|6|Raising|Lowering)}.. ] :=
+TheWigner[ nn:{_?SpinNumberQ, (0|1|2|3|4|5|Raising|Lowering)}.. ] :=
   KroneckerProduct @@ Map[TheWigner] @ {nn}
 
-TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raising|Lowering)..} } ] :=
-  KroneckerProduct @@ Map[TheWigner] @ Tuples[{{j}, n}]
+TheWigner[ nn:{_?SpinNumberQ, {(0|1|2|3|4|5|Raising|Lowering)..}} ] :=
+  Apply[TheWigner, Thread @ nn]
 
-TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|6|Raising|Lowering)..},
+TheWigner[ { j_?SpinNumberQ, n:{(0|1|2|3|4|5|Raising|Lowering)..},
     th:Except[_List], ph:Except[_List] } ] :=
   KroneckerProduct @@ Map[TheWigner] @ Tuples[{{j}, n, {th}, {ph}}]
 (**** </TheWigner> ****)

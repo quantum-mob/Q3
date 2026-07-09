@@ -23,6 +23,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { HouseholderMatrix };
 { TridiagonalToeplitzMatrix };
 
+{ MatrixEmbed };
 { TensorFlatten, Tensorize };
 { ArrayPermute };
 
@@ -70,13 +71,27 @@ One[{m_Integer, n_Integer}, k_Integer] :=
 (**** <MatrixConditionNumber> ****)
 MatrixConditionNumber::usage = "MatrixConditionNumber[mat] returns the 2-norm condition number of matrix mat."
 
-Options[MatrixConditionNumber] = {Tolerance -> $MachineEpsilon};
+Options[MatrixConditionNumber] = {
+  Tolerance -> $MachineEpsilon,
+  "Standard" -> True
+};
 
-MatrixConditionNumber[mat_?MatrixQ, opts:OptionsPattern[]] := Module[
-  { max = First @ SingularValueList[mat,  1],
-    min = First @ SingularValueList[mat, -1, opts],
-    tol = OptionValue[Tolerance] },
-  If[ZeroQ[min/max, tol], Infinity, max/min]
+MatrixConditionNumber[mat_?MatrixQ, ___?OptionQ] := Infinity /; ArrayZeroQ[mat]
+
+MatrixConditionNumber[mat_?MatrixQ, opts___?OptionQ] := Module[
+  { less = FilterRules[{opts}, Options @ SingularValueList],
+    vals },
+  vals = SingularValueList[mat, less];
+  If[ vals === {}, 
+    Infinity,
+    If[ And[
+        OptionValue[MatrixConditionNumber, {opts}, "Standard"],
+        Length[vals] < Min[Dimensions @ mat]
+      ],
+      Infinity,
+      First[vals] / Last[vals]
+    ]
+  ]
 ]
 (**** </MatrixConditionNumber> ****)
 
@@ -245,7 +260,7 @@ ArrayShort[mat_SymmetrizedArray, rest___] := ArrayShort[Normal @ mat, rest]
 
 ArrayShort[vec_?VectorQ, opts:OptionsPattern[{ArrayShort, MatrixForm}]] := Module[
   { new },
-  new = theArrayShort[vec, FilterRules[{opts}, ArrayShort]];
+  new = theArrayShort[vec, FilterRules[{opts}, Options @ ArrayShort]];
   Normal[new, SparseArray]
 ]
 
@@ -668,6 +683,80 @@ xchPositions[pp:{{__}..}, cc_Cycles, nn:{__Integer}] := Module[
   Transpose @ MapAt[ReplaceAll[rr], Transpose @ pp, List /@ nn]
 ]
 (**** </ArrayPermute> ****)
+
+
+(**** <MatrixEmbed> ****)
+MatrixEmbed::usage = "MatrixEmbed[mat, {s1,s2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] returns the fully-expanded form of matrix mat that acts on the entire tensor-product space of species {t1,t2,\[Ellipsis]}, where mat represents a linear operator on the Hilbert space of species {s1,s2,\[Ellipsis]}\[Subset]{t1,t2,\[Ellipsis]}."
+
+MatrixEmbed::rmdr = "`` is not entirely contained in ``."
+
+MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+  MatrixEmbed[FlavorCap @ ss, FlavorCap @ tt] /;
+  Not[FlavorCapQ @ Join[ss, tt]]
+
+MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}][any_] :=
+  MatrixEmbed[any, ss, tt]
+
+MatrixEmbed[any_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
+  MatrixEmbed[any, FlavorCap @ ss, FlavorCap @ tt] /;
+  Not[FlavorCapQ @ Join[ss, tt]]
+
+MatrixEmbed[any_, ss:{___?SpeciesQ}, ss_] = any
+(* NOTE: Quite often, MatrixEmbed[expr, {}, {}] occurs from Matrix. *)
+
+MatrixEmbed[obj:(_?MatrixQ | _?VectorQ), ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
+  { kk = PositionIndex[tt] },
+  kk = Flatten @ Lookup[kk, ss];
+  MatrixEmbed[obj, kk, Dimension @ tt]
+] /; If[ ContainsAll[tt, ss], True,
+  Message[MatrixEmbed::rmdr, ss, tt]; False
+]
+
+
+MatrixEmbed[kk:{__Integer}, n_Integer -> d_Integer] :=
+  MatrixEmbed[kk, Table[2, n]]
+
+MatrixEmbed[kk:{__Integer}, n_Integer] :=
+  MatrixEmbed[kk, Table[2, n]]
+
+MatrixEmbed[kk:{__Integer}, dd:{__Integer}][any_] :=
+  MatrixEmbed[any, kk, dd]
+
+
+MatrixEmbed[any_, kk:{__Integer}, n_Integer -> d_Integer] :=
+  MatrixEmbed[any, kk, Table[d, n]]
+
+MatrixEmbed[any_, kk:{__Integer}, n_Integer] :=
+  MatrixEmbed[any, kk, Table[2, n]]
+
+MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
+  { all = Range @ Length @ dd,
+    rmd, new, idx },
+  rmd = Complement[all, kk];
+  new = KroneckerProduct[mat, One[Whole @ Part[dd, rmd]]];
+  idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
+  TensorFlatten @ Transpose[
+    Tensorize[new, Riffle @@ Table[Part[dd, Join[kk, rmd]], 2]],
+    Riffle[2*idx - 1, 2*idx]
+  ]
+] /; If[ And @@ Thread[kk <= Length[dd]], True,
+  Message[Matrix::rmndr, kk, Range @ Length @ dd]; False
+]
+
+MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
+  { all = Range @ Length @ dd,
+    rmd, new, idx },
+  rmd = Complement[all, kk];
+  new = Flatten @ KroneckerProduct[vec, UnitVector[Whole @ Part[dd, rmd], 1]];
+  idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
+  Flatten @ Transpose[
+    ArrayReshape[new, Part[dd, Join[kk, rmd]]],
+    idx
+  ]
+] /; If[ And @@ Thread[kk <= Length[dd]], True,
+  Message[Matrix::rmndr, kk, Range @ Length @ dd]; False
+]
+(**** </MatrixEmbed> ****)
 
 
 (**** <RandomVector> ****)

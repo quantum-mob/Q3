@@ -172,8 +172,8 @@ MakeBoxes[op:WickUnitary[uu_?MatrixQ, ___], fmt_] :=
   ]
 
 (* conversion *)
-WickUnitary[ham_WickHermitian, dt_?NumericQ, opts___?OptionQ] :=
-  WickUnitary[MatrixExp[-I*dt*First[ham]], opts]
+WickUnitary[ham_WickHermitian, dt_?NumericQ, rest___] :=
+  WickUnitary[MatrixExp[-I*dt*First[ham]], rest]
 
 WickUnitary /:
 Normal[WickUnitary[mm_?MatrixQ, ___], rest___] := Normal[mm, rest]

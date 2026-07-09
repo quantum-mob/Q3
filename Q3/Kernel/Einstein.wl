@@ -18,7 +18,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { ToYoungTableau, ToGelfandPattern }; (* obsolete v4.1.11 2025-05-22 *)
 { GroupRegularRepresentation }; (* obsolete 2025-05-09 *)
 { PileYoungShape }; (* renamed 2025-04-13 v4.1.7 *)
-{ ConditionNumber }; (* renamed 2025-04-02 v4.1.5 *)
 { AmplitudeEmbeddingGate, BasisEmbeddingGate }; (* renamed 2025-03-19 v4.1.4 *)
 { Affect }; (* obsolete 2025-03-12 *)
 { QuantumCircuitTrim }; (* renamed 2025-03-12 *)
@@ -688,13 +687,6 @@ PileYoungShape::usage = "PileYoungShape has been renamed YoungShapePile since v4
 PileYoungShape[any___] := (
   Message[Q3General::renamed, "PileYoungShape", "YoungShapePile"];
   YoungShapePile[any]
-)
-
-ConditionNumber::usage = "ConditionNumber has been renamed MatrixConditionNumber since v4.1.5 (2025-04-02)."
-
-ConditionNumber[any___] := (
-  Message[Q3General::renamed, "ConditionNumber", "MatrixConditionNumber"];
-  MatrixConditionNumber[any]
 )
 
 AmplitudeEmbeddingGate::usage = "AmplitudeEmbeddingGate has been renamed AmplitudeEncoding since v4.1.4 (2025-03-19)."

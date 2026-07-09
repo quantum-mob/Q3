@@ -60,8 +60,6 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { PauliCoefficients, PauliSeries, PauliVector };
 
-{ MatrixEmbed };
-
 { SchmidtDecomposition, SchmidtForm };
 
 { HilbertSchmidtProduct, HilbertSchmidtNorm, HilbertSchmidtDistance,
@@ -3149,12 +3147,10 @@ CircleTimes[mats__?MatrixQ] := KroneckerProduct[mats]
 
 (* For vectors, our CircleTimes[] is different from KroneckerProduct[]. *)
 CircleTimes[vecs__?VectorQ] := Flatten @ KroneckerProduct[vecs]
-
 (**** </CircleTimes> ****)
 
 
 (**** <CirclePlus> ****)
-
 CirclePlus::usage = "a \[CirclePlus] b \[CirclePlus] c or CirclePlus[a,b,c]
 returns the direct sum of the matrices a, b, and c."
 
@@ -4026,92 +4022,6 @@ Snapping[m_?MatrixQ] := Module[
   (* returns the eigenvector belonging to the largest eigenvalue *)
   vec
 ]
-
-
-(**** <MatrixEmbed> ****)
-MatrixEmbed::usage = "MatrixEmbed[mat, {s1,s2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] returns the fully-expanded form of matrix mat that acts on the entire tensor-product space of species {t1,t2,\[Ellipsis]}, where mat represents a linear operator on the Hilbert space of species {s1,s2,\[Ellipsis]}\[Subset]{t1,t2,\[Ellipsis]}."
-
-MatrixEmbed::rmdr = "`` is not entirely contained in ``."
-
-MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
-  MatrixEmbed[FlavorCap @ ss, FlavorCap @ tt] /;
-  Not[FlavorCapQ @ Join[ss, tt]]
-
-MatrixEmbed[ss:{__?SpeciesQ}, tt:{__?SpeciesQ}][any_] :=
-  MatrixEmbed[any, ss, tt]
-
-MatrixEmbed[any_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
-  MatrixEmbed[any, FlavorCap @ ss, FlavorCap @ tt] /;
-  Not[FlavorCapQ @ Join[ss, tt]]
-
-MatrixEmbed[any_, ss:{___?SpeciesQ}, ss_] = any
-(* NOTE: Quite often, MatrixEmbed[expr, {}, {}] occurs from Matrix. *)
-
-MatrixEmbed[mat_?MatrixQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
-  { rmd = Complement[tt, ss],
-    new, idx },
-  new = CircleTimes[mat, One[Whole @ Dimension @ rmd]];
-  idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
-  TensorFlatten @ Transpose[
-    Tensorize[new, Riffle @@ Table[Dimension @ Join[ss, rmd], 2]],
-    Riffle[2*idx - 1, 2*idx]
-  ]
-] /; If[ ContainsAll[tt, ss], True,
-  Message[MatrixEmbed::rmdr, ss, tt]; False
-]
-
-MatrixEmbed[vec_?VectorQ, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Module[
-  { rmd = Complement[tt, ss],
-    new, idx },
-  new = CircleTimes[vec, UnitVector[Whole @ Dimension @ rmd, 1]];
-  idx = PermutationList @ FindPermutation[Join[ss, rmd], tt];
-  Flatten @ Transpose[
-    ArrayReshape[new, Dimension @ Join[ss, rmd]],
-    idx
-  ]
-] /; If[ ContainsAll[tt, ss], True,
-  Message[MatrixEmbed::rmdr, ss, tt]; False
-]
-
-
-MatrixEmbed[kk:{__Integer}, n_Integer] :=
-  MatrixEmbed[kk, Table[2, n]]
-
-MatrixEmbed[kk:{__Integer}, dd:{__Integer}][any_] :=
-  MatrixEmbed[any, kk, dd]
-
-
-MatrixEmbed[any_, kk:{__Integer}, n_Integer] :=
-  MatrixEmbed[any, kk, Table[2, n]]
-
-MatrixEmbed[mat_?MatrixQ, kk:{__Integer}, dd:{__Integer}] := Module[
-  { all = Range @ Length @ dd,
-    rmd, new, idx },
-  rmd = Complement[all, kk];
-  new = CircleTimes[mat, One[Whole @ Part[dd, rmd]]];
-  idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
-  TensorFlatten @ Transpose[
-    Tensorize[new, Riffle @@ Table[Part[dd, Join[kk, rmd]], 2]],
-    Riffle[2*idx - 1, 2*idx]
-  ]
-] /; If[ And @@ Thread[kk <= Length[dd]], True,
-  Message[Matrix::rmndr, kk, Range @ Length @ dd]; False
-]
-
-MatrixEmbed[vec_?VectorQ, kk:{__Integer}, dd:{__Integer}] := Module[
-  { all = Range @ Length @ dd,
-    rmd, new, idx },
-  rmd = Complement[all, kk];
-  new = CircleTimes[vec, UnitVector[Whole @ Part[dd, rmd], 1]];
-  idx = PermutationList @ FindPermutation[Join[kk, rmd], all];
-  Flatten @ Transpose[
-    ArrayReshape[new, Part[dd, Join[kk, rmd]]],
-    idx
-  ]
-] /; If[ And @@ Thread[kk <= Length[dd]], True,
-  Message[Matrix::rmndr, kk, Range @ Length @ dd]; False
-]
-(**** </MatrixEmbed> ****)
 
 
 (**** <HilbertSchmidtNorm> *****)
