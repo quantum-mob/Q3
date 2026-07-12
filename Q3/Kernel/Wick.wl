@@ -1939,7 +1939,7 @@ WickFidelity::usage = "WickFidelity[a, b] returns the fidelity, i.e., |<a|b>|, b
 
 SetAttributes[WickFidelity, Orderless];
 
-WickFidelity[a_WickState, b_WickState] := Abs @ WickInner[a, b]
+WickFidelity[a_WickState, b_WickState] := Abs @ WickInner[a, b];
 (**** </WickFidelity> ****)
 
 
@@ -1948,20 +1948,21 @@ WickInner::usage = "WickInner[a, b] returns the Hermitian product, <a|b>, betwee
 
 (* null and vacuum states *)
 WickInner[WickState[_Integer -> a_, ___], WickState[_Integer -> b_, ___]] := 
-  Conjugate[a] b
+  Conjugate[a] * b;
 
-WickInner[WickState[_Rule, ___], _WickState] = 0
+WickInner[WickState[_Rule, ___], _WickState] = 0;
+WickInner[_WickState, WickState[_Rule, ___]] = 0;
 
-WickInner[_WickState, WickState[_Rule, ___]] = 0
 
+(* identical states *)
+WickInner[WickState[m_?MatrixQ, ___], WickState[m_?MatrixQ, ___]] = 1;
 
-WickInner[a_WickState, b_WickState] := 0 /;
-  Length[First @ a] != Length[First @ b]
-
-WickInner[WickState[m_?MatrixQ, ___], WickState[m_?MatrixQ, ___]] = 1
+(* states with different numbers of particles *)
+WickInner[WickState[a_?MatrixQ, ___], WickState[b_?MatrixQ, ___]] /;
+  Length[a] != Length[b] = 0;
 
 WickInner[WickState[a_?MatrixQ, ___], WickState[b_?MatrixQ, ___]] := 
-  Det @ Dot[a, ConjugateTranspose @ b]
+  Det @ Dot[a, ConjugateTranspose @ b];
 (**** </WickInner> ****)
 
 
