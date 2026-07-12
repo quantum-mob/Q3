@@ -1962,7 +1962,7 @@ WickInner[WickState[a_?MatrixQ, ___], WickState[b_?MatrixQ, ___]] /;
   Length[a] != Length[b] = 0;
 
 WickInner[WickState[a_?MatrixQ, ___], WickState[b_?MatrixQ, ___]] := 
-  Det @ Dot[a, ConjugateTranspose @ b];
+  Quiet[Det @ Dot[a, ConjugateTranspose @ b], Det::luc];
 (**** </WickInner> ****)
 
 
