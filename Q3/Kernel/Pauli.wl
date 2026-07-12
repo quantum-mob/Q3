@@ -880,7 +880,6 @@ KetSpecies[expr_] := Select[
 
 
 (**** <KetChop> ****)
-
 KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[ImaginaryI], from expr, where the rest is a valid Ket expression."
 
 SetAttributes[KetChop, Listable]
@@ -898,7 +897,6 @@ KetChop[expr_, delta_] := Module[
   cff = Coefficient[expr, var];
   IntegerChop[cff] . var
 ]
-
 (**** </KetChop> ****)
 
 

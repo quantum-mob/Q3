@@ -394,14 +394,15 @@ HouseholderMatrix[vec_?VectorQ, k_Integer] := With[
   ]
 
 theHouseholderMatrix[vec_?VectorQ] :=
-  {Conjugate @ vec} / Norm[vec] /; Length[vec] == 1
+  {Conjugate @ Sign @ vec} /; Length[vec] == 1
 (* NOTE: In principle, this does not need to be handled separately. However, sometimes an additional factor of -1 is added due to numerical errors (Normalize and Dyad in the following code). *)
 
 theHouseholderMatrix[vec_?VectorQ] := Module[
   { nrm = Norm[vec],
-    phs = Exp[I * Arg[First @ vec]],
+    phs = Sign[First @ vec],
     mat, new },
   new = vec;
+  If[ZeroQ @ phs, phs = 1]; (* sometimes, vec[[1]] = 0 *)
   new[[1]] -= nrm * phs;
   new = Normalize[Chop @ new]; (* NOTE *)
   mat = One[Length @ vec] - 2*KroneckerProduct[Conjugate @ new, new];

@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.5.14
+
+- Change: WickState carries the global phase.
+- New: WickInner
+- Improved: WickFidelity, WickReset (WickProject, WickMeasurement)
+
 ## 4.5.13
 
 - Extended: MatrixConditionNumber

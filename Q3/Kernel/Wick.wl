@@ -7,7 +7,7 @@
 BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { WickState, RandomWickState };
-{ WickFidelity };
+{ WickInner, WickFidelity };
 
 { WickUnitary, RandomWickUnitary,
   WickHermitian, RandomWickHermitian,
@@ -17,7 +17,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { WickOdds, WickDampingOperator, WickDampingConstant };
 
-{ WickGreen, RandomWickGreen, 
+{ WickGreen, RandomWickGreen,
   WickPureQ, WickDensityMatrix,
   WickOccupation };
 
@@ -42,19 +42,19 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { QuantumLog };
 
 
-Begin["`Private`"] (* Fermionic quantum computation *)
+Begin["`Private`"]; (* Fermionic quantum computation *)
 
 (**** <WickState> ****)
 WickState::usage = "WickState[mat] represents a fermionic Gaussian pure state without pairing correlation, which consists of occupied dressed fermion modes di that are related to the bare modes di = Sum[mat[i,j] c[j], {j, 1, n}]."
 
 WickState /:
-MakeBoxes[ws:WickState[{type:(0|Null), n_Integer},  ___], fmt_] :=
+MakeBoxes[ws:WickState[n_Integer -> phs_,  ___], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     WickState, ws, None,
     { BoxForm`SummaryItem @ { "Modes: ", n },
-      BoxForm`SummaryItem @ { If[type === Null, "Null state", "Vacuum state"] }
+      BoxForm`SummaryItem @ { If[ZeroQ @ phs, "Null sate", "Vacuum state"] }
     },
-    {},
+    { BoxForm`SummaryItem @ { "Phase: ", phs } },
     fmt,
     "Interpretable" -> Automatic
   ]
@@ -91,8 +91,10 @@ Normalize[ws:WickState[{0|1, _Integer}, ___]] = ws
 
 WickState /:
 Normalize[WickState[trs_?MatrixQ, rest___]] := Module[
-  {qq, rr},
+  {qq, rr, ph},
   {qq, rr} = QRDecomposition[ConjugateTranspose @ trs];
+  ph = Whole[Sign @ Diagonal @ rr]; (* global phase *)
+  qq[[1]] *= ph;
   WickState[qq, rest]
 ]
 
@@ -109,19 +111,17 @@ WickState /:
 Matrix[ws:WickState[_?MatrixQ, ___], ss:{___?SpeciesQ}] :=
   MatrixEmbed[Matrix @ ws, Select[ss, FermionQ], ss]
 
-WickState /: (* null state *)
-Matrix[WickState[{Null, n_Integer}, ___]] := Zero @ Power[2, n]
-
-WickState /: (* vacuum state *)
-Matrix[WickState[{0, n_Integer}, ___]] := PadRight[{1}, Power[2, n]]
+WickState /: (* vacuum and null states *)
+Matrix[WickState[n_Integer -> phase_, ___]] :=
+  SparseArray[{1} -> phase, Power[2, n]]
 
 WickState /:
 Matrix[WickState[trs_?MatrixQ, ___]] := Module[
   { n = Last[Dimensions @ trs],
     mm, vv },
   mm = JordanWignerTransform[n]; (* fermion annihilators *)
-  vv = ConjugateTranspose[Apply[Dot, trs.mm]] . PadRight[{1}, Power[2, n]];
-  CanonicalizeVector[vv]
+  Conjugate[First @ Apply[Dot, Reverse[trs.mm]]]
+  (* Notice Reverse[] to get d_1^\dagger ** d_2^\dagger ** \ket{}. *)
 ]
 (**** </WickState> ****)
 
@@ -131,8 +131,11 @@ RandomWickState::usage = "RandomWickState[{n, 0}] randomly generates a Gaussian 
 RandomWickState[n_Integer, opts___?OptionQ] := 
   RandomWickState[{RandomInteger @ {0, n}, n}, opts]
 
-RandomWickState[{0, n_Integer}, opts___?OptionQ] :=
-  WickState[{0, n}, opts] (* the vacuum state *)
+RandomWickState[{0, n_Integer}, opts___?OptionQ] := Module[
+  { phase },
+  phase = Exp[2 Pi I RandomReal[]];
+  WickState[n -> phase, opts] (* the vacuum state *)
+]
 
 RandomWickState[{m_Integer, n_Integer}, opts___?OptionQ] := Module[
   { uu, kk },
@@ -241,6 +244,9 @@ Matrix[op:WickUnitary[_?MatrixQ, ___?OptionQ], ss:{__?SpeciesQ}] :=
 
 WickUnitary /: (* fallback *)
 Matrix[op_WickUnitary, ss:{__?SpeciesQ}] := op * Matrix[1, ss]
+
+(* null and vacuum states *)
+WickUnitary[_?MatrixQ, ___][in:WickState[_Rule, ___]] = in
 
 (* acting on Wick state *)
 WickUnitary[uu_?MatrixQ, ___?OptionQ][WickState[mm_?MatrixQ, rest___]] :=
@@ -393,29 +399,29 @@ WickOdds[jmp:{__?patternWickJumpQ}][in_WickState] := Module[
 ]
 
 (* on the null state *)
-WickOdds[_][in:WickState[{Null, _}, ___]] = Rule[in, 0]
+WickOdds[_][in:WickState[_ -> 0, ___]] = Rule[in, 0]
 
 
-(* annihilator on the vacuuum state *)
-WickOdds[_?VectorQ -> 0|2][WickState[{0, n_Integer}, rest___]] = 
-  Rule[WickState[{0, n}, rest], 0]
+(* annihilator on the vacuum state *)
+WickOdds[_?VectorQ -> 0|2][WickState[n_Integer -> phs_, rest___]] = 
+  Rule[WickState[n -> 0, rest], 0]
 
 (* annihilator on Wick state *)
 WickOdds[vec_?VectorQ -> 0][WickState[trs_?MatrixQ, rest___]] := Module[
   { ovr = Dot[vec, ConjugateTranspose @ trs] },
   If[ ArrayZeroQ[ovr], (* null state *)
-    Return @ Rule[WickState[{Null, Length @ vec}, rest], 0]
+    Return @ Rule[WickState[Length[vec] -> 0, rest], 0]
   ];
   hhd = HouseholderMatrix[ovr];
   new = Rest[ConjugateTranspose[hhd] . trs];
-  If[new == {}, new = {0, Length @ vec}]; (* the vacuum state *)
+  If[new == {}, new = Length[vec] -> Sign[First @ ovr]]; (* vacuum state *)
   Rule[WickState[new, rest], NormSquare @ ovr]
 ]
 
 
 (* creator on the fully occupied state *)
 WickOdds[vec_?VectorQ -> 1|3][in:WickState[_?SquareMatrixQ, ___]] := 
-  Rule[WickState[{Null, FermionCount @ in}, rest], 0] (* the null state *)
+  Rule[WickState[FermionCount[in] -> 0, rest], 0] (* the null state *)
 
 (* creator on the vacuuum state *)
 WickOdds[vec_?VectorQ -> 1][WickState[{0, _Integer}, rest___]] := Rule[
@@ -426,8 +432,10 @@ WickOdds[vec_?VectorQ -> 1][WickState[{0, _Integer}, rest___]] := Rule[
 (* creattor on the Wick state *)
 WickOdds[vec_?VectorQ -> 1][WickState[trs_?MatrixQ, rest___]] := Module[
   { qq = Prepend[trs, vec],
-    rr },
+    rr, ph },
   {qq, rr} = QRDecomposition[ConjugateTranspose @ N @ qq];
+  ph = Whole[Sign @ Diagonal @ rr]; (* global pp *)
+  qq[[1]] *= ph;
   Rule[
     WickState[qq, rest], 
     AbsSquare[Whole @ Diagonal @ rr]
@@ -442,11 +450,13 @@ WickOdds[vec_?VectorQ -> 2][in:WickState[_?SquareMatrixQ, ___]] :=
 (* Dagger[d]**d on Wick state *)
 WickOdds[vec_?VectorQ -> 2][WickState[trs_?MatrixQ, rest___]] := Module[
   { ovr = Dot[vec, ConjugateTranspose @ N @ trs],
-    hhd, new, rmd },
+    hhd, new, rmd, phs },
   hhd = HouseholderMatrix[ovr];
   new = Rest[ConjugateTranspose[hhd] . trs];
   new = Prepend[new, vec];
   {new, rmd} = QRDecomposition[ConjugateTranspose @ new];
+  phs = Whole[Sign @ Diagonal @ rmd]; (* global phase *)
+  new[[1]] *= phs;
   Rule[
     WickState[new, rest],
     NormSquare[ovr] * AbsSquare[Whole @ Diagonal @ rmd]
@@ -466,8 +476,10 @@ WickOdds[vec_?VectorQ -> 3][in:WickState[{0, _Integer}, rest___]] :=
 (* d**Dagger[d] on the Wick state *)
 WickOdds[vec_?VectorQ -> 3][WickState[trs_?MatrixQ, rest___]] := Module[
   { new = Prepend[trs, vec], 
-    rmd, ovr, prb },
+    rmd, phs, ovr, prb },
   {new, rmd} = QRDecomposition[N @ ConjugateTranspose @ new];
+  phs = Whole[Sign @ Diagonal @ rmd]; (* global phase *)
+  new[[1]] *= phs;
   ovr = Dot[vec, ConjugateTranspose @ new];
   hhd = HouseholderMatrix[ovr];
   new = Rest[ConjugateTranspose[hhd] . new];
@@ -485,22 +497,24 @@ WickOdds[vec_?VectorQ -> 3][in_WickState] :=
 
 (* WickNonunitary on WickState *)
 WickOdds[non_?SquareMatrixQ -> fac_?NumericQ][in_WickState] := Module[
-  { new, rmd },
+  { new, rmd, phs },
   new = non . ConjugateTranspose[First @ in];
   {new, rmd} = QRDecomposition[N @ new];
+  phs = Whole[Sign @ Diagonal @ rmd];
+  new[[1]] *= phs;
   Rule[
     WickState[new],
     AbsSquare[fac] * AbsSquare[Whole @ Diagonal @ rmd]
   ]
 ] /; MatrixQ[First @ in]
 
-(* WickNonunitary on the vacuum state  *)
-WickOdds[non_?SquareMatrixQ -> fac_?NumericQ][in_WickState] :=
-  Rule[in, AbsSquare @ fac] /; in[[1, 1]] == 0
-
 (* WickNonunitary on the null state  *)
-WickOdds[non_?SquareMatrixQ -> fac_?NumericQ][in_WickState] = 
+WickOdds[non_?SquareMatrixQ -> fac_?NumericQ][in:WickState[_Integer -> 0, ___]] = 
   Rule[in, 0]
+
+(* WickNonunitary on the vacuum state  *)
+WickOdds[non_?SquareMatrixQ -> fac_?NumericQ][in:WickState[_Rule, ___]] :=
+  Rule[in, AbsSquare @ fac]
 
 
 (* for nesting: e.g., WickNonunitary *)
@@ -565,118 +579,86 @@ WickProject::usage = "WickProject[ws, {k1, k2, \[Ellipsis]} -> {s1, s2, \[Ellips
 WickProject::incmp = "The key and value in `` should have the same length.";
 
 (* null state *)
-WickProject[in:WickState[{Null, _Integer}, ___], _Rule] := in
+WickProject[in:WickState[_Integer -> 0, ___], _Rule] := in
 
 (* vacuum state *)
-WickProject[in:WickState[{0, n_Integer}, opts___], any_ -> out_?VectorQ] :=
-  If[MemberQ[out, 1], WickState[{Null, n}, opts],  in]
+WickProject[in:WickState[n_Integer -> phs_, opts___], any_ -> out_?VectorQ] :=
+  If[MemberQ[out, 1], WickState[n -> 0, opts],  in]
 
-(* projection by bare modes *)
-WickProject[in_WickState, kk:{__Integer} -> out_?VectorQ] := Module[
-  { n = FermionCount[in],
-    trs = N[First @ in],
-    hhm, vec, k, i },
-  Do[
-    k = kk[[i]];
-    vec = trs[[All, k]];
-    hhm = HouseholderMatrix[Conjugate @ vec];
-    trs = Dot[ConjugateTranspose @ hhm, trs];
-    Switch[ out[[i]],
-      1, If[ ArrayZeroQ[vec], 
-        trs = {Null, n}; (* null state *)
-        Break[],
-        trs[[1]] = UnitVector[n, k]
-      ],
-      0, trs[[1]] = Normalize @ ReplacePart[trs[[1]], k -> 0],
-      _, Return[$Failed]
-    ],
-    {i, Length @ kk}
-  ];
-  WickState[trs, Options @ in]
-] /; If[ Length[kk] == Length[out], True,
-  Message[WickProject::incmp, kk -> out]; False
-]
-
-(* projection by dressed modes *)
-WickProject[in_WickState, mat_?MatrixQ -> out_?VectorQ] := Module[
-  { msr = Map[Normalize, N @ mat], (* numerical safety *)
-    trs = N[First @ in],
-    pos = PositionIndex[out],
-    ovr, hhm, rem },
-  If[ Count[out, 1] > Length[trs],
-    Return @ WickState[{Null, FermionCount @ in}, Options @ in]
-  ];
-  (* Apply annihilators of dressed modes with outcome 1: *)
-  If[ KeyExistsQ[pos, 1],
-    ovr = Dot[msr[[pos @ 1]], ConjugateTranspose @ trs];
-    If[ AnyTrue[Identity /@ ovr, ArrayZeroQ],
-      Return @ WickState[{Null, FermionCount @ in}, Options @ in]
-    ];
-    hhm = HouseholderMatrix[ovr];
-    trs = Dot[ConjugateTranspose @ hhm, trs];
-    trs = Drop[trs, Length[pos @ 1]]
-  ];
-  (* Apply creators of all dressed modes: *)
-  trs = Join[mat, trs];
-  {trs, rem} = QRDecomposition[ConjugateTranspose @ trs];
-  (* Apply annihilators of dressed modes with outcome 0: *)
-  If[ KeyExistsQ[pos, 0],
-    ovr = Dot[msr[[pos @ 0]], ConjugateTranspose @ trs];
-    hhm = HouseholderMatrix[ovr];
-    trs = Dot[ConjugateTranspose @ hhm, trs];
-    trs = Drop[trs, Length[pos @ 0]]
-  ];
-  WickState[trs, Options @ in]
-] /; If[ Length[mat] == Length[out], True,
-  Message[WickProject::incmp, mat -> out]; False
-]
+WickProject[in_WickState, spec:({__Integer}|_?MatrixQ) -> out_?VectorQ] := 
+  WickReset[in, spec -> out -> out]
 (**** </WickProject> ****)
-
 
 (**** <WickReset> ****)
 WickReset::usage = "WickReset[ws, {k1,k2,\[Ellipsis]} -> {s1,s2,\[Ellipsis]} -> {t1,t2,\[Ellipsis]}] applies on the input Wick state ws the projection operators corresponding to the occupation s1,s2,\[Ellipsis] of the bare modes k1,k2,\[Ellipsis] and then reset the bare modes to occupation t1,t2,\[Ellipsis].\nWickReset[ws, {k1,k2,\[Ellipsis]} -> {t1,t2,\[Ellipsis]}] takes measurement  on the bare modes Subscript[k, 1],Subscript[k, 2],\[Ellipsis] and then reset them to the occupation t1,t2,\[Ellipsis].";
+
+WickReset::incmp = "The key and value in `` should have the same length.";
+
+(* operator form *)
+WickReset[spec_Rule][any_] := WickReset[any, spec]
 
 WickReset[in_WickState, kk:{__Integer} -> new_?VectorQ] := Module[
   { grn = WickGreen[in, kk],
     out },
   out = First[WickSample @ grn];
-  $MeasurementOut = Join[$MeasurementOut, AssociationThread[kk -> out]];
-  WickReset[in, kk -> out -> new]
+  {out, WickReset[in, kk -> out -> new]}
 ]
 
-WickReset[in_WickState, kk:{__Integer} -> out_?VectorQ -> new_?VectorQ] := Module[
+WickReset[in_WickState, spec:({__Integer}|_?MatrixQ) -> out_?VectorQ -> new_?VectorQ] := Module[
+  { rr },
+  rr = Thread[spec -> Thread[out -> new]];
+  Fold[WickReset, in, rr]
+] /; If[ Length[spec] == Length[out] == Length[new], True,
+  Message[WickReset::incmp, kk -> out -> new]; False
+]
+
+(* null state *)
+WickReset[in:WickState[_ -> 0, ___], __] = in
+
+(* vacuum state *)
+WickReset[in:WickState[n_ -> phs_, rest___], vec_?VectorQ -> out_ -> new_ ] :=
+  Switch[ out,
+    1, WickState[n -> 0, rest],
+    0, Switch[ new,
+      1, WickState[{phs * vec}, rest],
+      0, in
+    ]
+  ]
+
+(* bare mode *)
+WickReset[in_WickState, k_Integer -> out_?NumericQ -> new_?NumericQ] := 
+  WickReset[in, UnitVector[FermionCount @ in, k] -> out -> new]
+
+(* dressed mode *)
+WickReset[in_WickState, vv_?VectorQ -> out_?NumericQ -> new_?NumericQ] := Module[
   { n = FermionCount[in],
+    vec = Normalize[vv],
     trs = N[First @ in],
-    hhm, vec, k, i },
-  Do[
-    k = kk[[i]];
-    vec = trs[[All, k]];
-    hhm = HouseholderMatrix[Conjugate @ vec];
-    trs = Dot[ConjugateTranspose @ hhm, trs];
-    Switch[ out[[i]],
-      1, If[ ArrayZeroQ[vec], 
-        trs = {Null, n}; (* null state *)
-        Break[],
-        Switch[ new[[i]],
-          1, trs[[1]] = UnitVector[n, k],
-          0, trs = Rest[trs],
-          _, Return[$Failed]
-        ]
-      ],
-      0, (
-        trs[[1]] = Normalize @ ReplacePart[trs[[1]], k -> 0];
-        If[ new[[i]] == 1,
-          trs = Append[trs, UnitVector[n, k]]
-        ]
-      ), 
-      _, Return[$Failed]
+    hhm, ovr },
+  ovr = Dot[vec, ConjugateTranspose @ trs];
+  hhm = HouseholderMatrix[ovr];
+  trs = Dot[ConjugateTranspose @ hhm, trs];
+  trs[[-1]] *= Det[hhm]; (* global phase *)
+  (* NOTE: Encode the global phase at the last row since the first row is modified. *)
+  Switch[ out,
+    1, If[ ArrayZeroQ[ovr], 
+      trs = n -> 0, (* null state *)
+      Switch[ new,
+        1, trs[[1]] = vec,
+        0, trs = If[Length[trs] == 1, n -> Conjugate[Det @ hhm], Rest @ trs],
+        _, Return[$Failed]
+      ]
     ],
-    {i, Length @ kk}
+    0, (
+      trs[[1]] = Normalize[trs[[1]] - Norm[ovr]*vec];
+      If[ new == 1,
+        trs = Prepend[trs, vec]
+      ]
+    ), 
+     _, Return[$Failed]
   ];
   WickState[trs, Options @ in]
-] /; If[ Length[kk] == Length[out] == Length[new], True,
-  Message[WickProject::incmp, kk -> out -> new]; False
-]
+];
 (**** </WickReset> ****)
 
 
@@ -977,8 +959,12 @@ WickMeasurement[{}, ___][in_WickState] = in
 WickMeasurement[kk:{__Integer}, ___][in_WickState] :=
   jointWickMeasurement[in, kk]
 
-WickMeasurement[kk:{__Integer} -> new_?VectorQ, ___][in_WickState] :=
-  WickReset[in, kk -> new]
+WickMeasurement[kk:{__Integer} -> new_?VectorQ, ___][in_WickState] := Module[
+  {val, out},
+  {val, out} = WickReset[in, kk -> new];
+  $MeasurementOut = Join[$MeasurementOut, AssociationThread[kk -> val]];
+  out
+]
 
 WickMeasurement[mat_?MatrixQ, ___][in_WickState] := If[
   rowOrthogonalQ[mat],
@@ -1117,12 +1103,12 @@ WickGreen::usage = "WickGreen[ws, {k1, k2, \[Ellipsis], km}] returns m\[Times]m 
 WickGreen[ws_WickState] :=
   WickGreen[ws, Range @ FermionCount @ ws]
 
-(* vacuum state *)
-WickGreen[WickState[{0, _Integer}, ___], kk:{___Integer}] :=
-  One[Length @ kk]
-
 (* null state *)
-WickGreen[WickState[{Null, _Integer}, ___], kk:{___Integer}] = {{}}
+WickGreen[WickState[_Integer -> 0, ___], kk:{___Integer}] = {{}}
+
+(* vacuum state *)
+WickGreen[WickState[_Rule, ___], kk:{___Integer}] :=
+  One[Length @ kk]
 
 WickGreen[WickState[trs_?MatrixQ, ___], kk:{___Integer}] := Module[
   { n = Length[kk],
@@ -1943,41 +1929,40 @@ theWickOTOC[in_WickState, ub_WickUnitary, qc_WickCircuit] := Module[
   va = Fold[Construct[#2, #1]&, in, First @ qc];
   vb = Join[{ub}, First @ qc, Dagger @ {ub}];
   vb = Fold[Construct[#2, #1]&, in, vb];
-  WickFidelity[va, vb]
+  WickInner[va, vb]
 ]
 (**** </WickScramblingSimulate> ****)
 
 
 (**** <WickFidelity> ****)
-WickFidelity::usage = "WickFidelity[a, b] returns the fidelity, i.e., |<a|b>|, between two Wick states a and b."
+WickFidelity::usage = "WickFidelity[a, b] returns the fidelity, i.e., |<a|b>|, between two Wick states a and b.";
 
 SetAttributes[WickFidelity, Orderless];
 
-WickFidelity[WickState[{Null, _}, ___], WickState] = 0
+WickFidelity[a_WickState, b_WickState] := Abs @ WickInner[a, b]
+(**** </WickFidelity> ****)
 
 
-WickFidelity[WickState[{0, _}, ___], WickState[{0, _}, ___]] = 1
+(**** <WickInner> ****)
+WickInner::usage = "WickInner[a, b] returns the Hermitian product, <a|b>, between two Wick states a and b."
 
-WickFidelity[WickState[{0, _}, ___], _WickState] = 0
+(* null and vacuum states *)
+WickInner[WickState[_Integer -> a_, ___], WickState[_Integer -> b_, ___]] := 
+  Conjugate[a] b
+
+WickInner[WickState[_Rule, ___], _WickState] = 0
+
+WickInner[_WickState, WickState[_Rule, ___]] = 0
 
 
-WickFidelity[a_WickState, b_WickState] := 0 /;
+WickInner[a_WickState, b_WickState] := 0 /;
   Length[First @ a] != Length[First @ b]
 
-WickFidelity[WickState[m_?MatrixQ, ___], WickState[m_?MatrixQ, ___]] = 1
+WickInner[WickState[m_?MatrixQ, ___], WickState[m_?MatrixQ, ___]] = 1
 
-WickFidelity[a_WickState, b_WickState] := Module[
-  { jmp, prb },
-  jmp = Thread[First[a] -> 0];
-  prb = FoldPairList[theWickFidelity, b, jmp];
-  Sqrt[Whole @ prb]
-]
-
-theWickFidelity[in_WickState, jmp_?patternWickJumpQ] := With[
-  { odds = WickOdds[jmp] @ in },
-  {Last @ odds, First @ odds}
-]
-(**** </WickFidelity> ****)
+WickInner[WickState[a_?MatrixQ, ___], WickState[b_?MatrixQ, ___]] := 
+  Det @ Dot[a, ConjugateTranspose @ b]
+(**** </WickInner> ****)
 
 
 (**** <WickLindbladSolve> ****)
@@ -2115,7 +2100,7 @@ WickSteadyState[ham_WickHermitian, jmp_WickJump, grn_?MatrixQ] := Module[
 
 
 (**** <FermionCount> ****)
-FermionCount[WickState[{_?NumericQ, n_Integer}, ___]] = n
+FermionCount[WickState[n_Integer -> _, ___]] = n
 
 FermionCount[WickState[trs_?MatrixQ, ___]] := 
   Last[Dimensions @ trs]
@@ -2294,6 +2279,6 @@ WickMutualInformation[data_, kk:{___Integer}] :=
   And[ArrayDepth[data] > 2, ArrayQ[data, _, NumericQ]]
 (**** </WickMutualInformation> ****)
 
-End[] (* quantum information theory for fermionic Gaussian states *)
+End[]; (* quantum information theory for fermionic Gaussian states *)
 
-EndPackage[]
+EndPackage[];
