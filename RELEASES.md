@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.5.15
+
+- New: WickDistribution
+- Enhanced: WickSample, WickGreen
+- Bug fix: WickReset
+
 ## 4.5.14
 
 - Change: WickState carries the global phase.

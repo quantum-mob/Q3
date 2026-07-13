@@ -21,7 +21,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   WickPureQ, WickDensityMatrix,
   WickOccupation };
 
-{ WickSample, WickProject, WickReset };
+{ WickSample, WickDistribution,
+  WickProjection, WickReset };
 
 (* supporting utilities *)
 { WickFlop, RandomWickFlop };
@@ -494,7 +495,6 @@ WickOdds[vec_?VectorQ -> 3][in_WickState] :=
   WickOdds[vec -> 0] @ WickOdds[vec -> 1] @ in 
   *)
 
-
 (* WickNonunitary on WickState *)
 WickOdds[non_?SquareMatrixQ -> fac_?NumericQ][in_WickState] := Module[
   { new, rmd, phs },
@@ -525,10 +525,36 @@ WickOdds[spec_Rule][in_WickState -> prb_?NumericQ] := Module[
 (**** </WickOdds> ****)
 
 
+(**** <WickDistribution> ****)
+WickDistribution::usage = "WickDistribution[grn] represents the occupation probability distribution characterized by the single-particle Green's function matrix grn.\nWickDistribution[ws, {k1,k2,\[Ellipsis]}] represents the distribution of the bare modes {k1,k2,\[Ellipsis]} in the Wick state ws.\nWickDistribution[ws, mat] represents the distribution of the dressed modes specified by row-orthonormal matrix mat.";
+
+WickDistribution[in_WickState, mm_?MatrixQ] :=
+  WickDistribution[WickGreen[in, mm]];
+
+WickDistribution[in_WickState, kk:{__Integer}] :=
+  WickDistribution[WickGreen[in, kk]];
+
+WickDistribution[grn_?MatrixQ][ss:{(0|1)..}] := Module[
+  { cor = One[Dimensions @ grn] - grn },
+  Re @ Det[ss*cor + (1 - ss)*grn]
+];
+(**** </WickDistribution> ****)
+
+
 (**** <WickSample> ****)
 WickSample::usage = "WickSample[grn] draws a single occupation outcome from a fermionic Gaussian state characterized by single-particle Green's function matrix grn.";
 
 Options[WickSample] = {Tolerance -> 1.0*^-10};
+
+(* shortcut *)
+WickSample[in_WickState, kk:{__Integer}, opts___?OptionQ] :=
+  WickSample[WickGreen[in, kk], opts]
+
+(* the rows of mat are supposed to be orthonormal. *)
+WickSample[in_WickState, mat_?MatrixQ, opts___?OptionQ] := Module[
+  { grn = WickGreen[in, mat] },
+  WickSample[grn, opts]
+]
 
 WickSample[grn_?MatrixQ, OptionsPattern[]] := Module[
   { m = Length[grn], 
@@ -573,21 +599,22 @@ WickSample[grn_?MatrixQ, OptionsPattern[]] := Module[
 (**** </WickSample> ****)
 
 
-(**** <WickProject> ****)
-WickProject::usage = "WickProject[ws, {k1, k2, \[Ellipsis]} -> {s1, s2, \[Ellipsis]}] applies the projection 1 - n_{k_j} or n_{k_j} on the Wick state ws depending on the occupation s_{k_j} = 0 or 1, respectively, of the bare fermion mode k_j.";
+(**** <WickProjection> ****)
+WickProjection::usage = "WickProjection[ws, {k1, k2, \[Ellipsis]} -> {s1, s2, \[Ellipsis]}] applies the projection 1 - n_{k_j} or n_{k_j} on the Wick state ws depending on the occupation s_{k_j} = 0 or 1, respectively, of the bare fermion mode k_j.";
 
-WickProject::incmp = "The key and value in `` should have the same length.";
+WickProjection::incmp = "The key and value in `` should have the same length.";
 
 (* null state *)
-WickProject[in:WickState[_Integer -> 0, ___], _Rule] := in
+WickProjection[in:WickState[_Integer -> 0, ___], _Rule] := in
 
 (* vacuum state *)
-WickProject[in:WickState[n_Integer -> phs_, opts___], any_ -> out_?VectorQ] :=
+WickProjection[in:WickState[n_Integer -> phs_, opts___], any_ -> out_?VectorQ] :=
   If[MemberQ[out, 1], WickState[n -> 0, opts],  in]
 
-WickProject[in_WickState, spec:({__Integer}|_?MatrixQ) -> out_?VectorQ] := 
+WickProjection[in_WickState, spec:({__Integer}|_?MatrixQ) -> out_?VectorQ] := 
   WickReset[in, spec -> out -> out]
-(**** </WickProject> ****)
+(**** </WickProjection> ****)
+
 
 (**** <WickReset> ****)
 WickReset::usage = "WickReset[ws, {k1,k2,\[Ellipsis]} -> {s1,s2,\[Ellipsis]} -> {t1,t2,\[Ellipsis]}] applies on the input Wick state ws the projection operators corresponding to the occupation s1,s2,\[Ellipsis] of the bare modes k1,k2,\[Ellipsis] and then reset the bare modes to occupation t1,t2,\[Ellipsis].\nWickReset[ws, {k1,k2,\[Ellipsis]} -> {t1,t2,\[Ellipsis]}] takes measurement  on the bare modes Subscript[k, 1],Subscript[k, 2],\[Ellipsis] and then reset them to the occupation t1,t2,\[Ellipsis].";
@@ -598,9 +625,7 @@ WickReset::incmp = "The key and value in `` should have the same length.";
 WickReset[spec_Rule][any_] := WickReset[any, spec]
 
 WickReset[in_WickState, kk:{__Integer} -> new_?VectorQ] := Module[
-  { grn = WickGreen[in, kk],
-    out },
-  out = First[WickSample @ grn];
+  { out = First @ WickSample[in, kk] },
   {out, WickReset[in, kk -> out -> new]}
 ]
 
@@ -634,18 +659,17 @@ WickReset[in_WickState, vv_?VectorQ -> out_?NumericQ -> new_?NumericQ] := Module
   { n = FermionCount[in],
     vec = Normalize[vv],
     trs = N[First @ in],
-    hhm, ovr },
+    hhm, ovr, phs },
   ovr = Dot[vec, ConjugateTranspose @ trs];
   hhm = HouseholderMatrix[ovr];
   trs = Dot[ConjugateTranspose @ hhm, trs];
-  trs[[-1]] *= Det[hhm]; (* global phase *)
-  (* NOTE: Encode the global phase at the last row since the first row is modified. *)
+  phs = Det[hhm]; (* global phase *)
   Switch[ out,
     1, If[ ArrayZeroQ[ovr], 
       trs = n -> 0, (* null state *)
       Switch[ new,
         1, trs[[1]] = vec,
-        0, trs = If[Length[trs] == 1, n -> Conjugate[Det @ hhm], Rest @ trs],
+        0, trs = If[Length[trs] == 1, n -> Conjugate[phs], Rest @ trs],
         _, Return[$Failed]
       ]
     ],
@@ -657,6 +681,7 @@ WickReset[in_WickState, vv_?VectorQ -> out_?NumericQ -> new_?NumericQ] := Module
     ), 
      _, Return[$Failed]
   ];
+  If[MatrixQ[trs], trs[[1]] *= phs];
   WickState[trs, Options @ in]
 ];
 (**** </WickReset> ****)
@@ -981,28 +1006,22 @@ singleWickMeasurement[in_WickState, vec_?VectorQ] := Module[
 ]
 
 (** Joint measurement of independent dressed modes specified by coefficients matrix mat. 
-  The rows of mat must be orthogonal. **)
+  The rows of mat must be orthonormal. **)
 jointWickMeasurement[in_WickState, mat_?MatrixQ] := Module[
-  { msr = Map[Normalize, N @ mat], (* numerical safety *)
-    grn = WickGreen[in],
-    ovr, out, pos, trs, rem },
-  (* measurement outcome  *)
-  grn = Dot[msr, grn, ConjugateTranspose @ msr];
-  out = First[WickSample @ grn];
+  { out = First @ WickSample[in, mat] },
   $MeasurementOut = Join[$MeasurementOut, AssociationThread[mat -> out]];
   (* Apply the projectors to get post-measurement state *)
-  WickProject[in, mat -> out]
+  WickProjection[in, mat -> out]
 ]
 
 (** Joint measurement of bare modes. **)
 jointWickMeasurement[in_WickState, kk:{__Integer}] := Module[
-  { grn = WickGreen[in, kk],
-    ovr, out, pos, trs, rem },
+  { out },
   (* measurement outcome  *)
-  out = First[WickSample @ grn];
+  out = First @ WickSample[in, kk];
   $MeasurementOut = Join[$MeasurementOut, AssociationThread[kk -> out]];
   (* Apply the projectors to get post-measurement state *)
-  WickProject[in, kk -> out]
+  WickProjection[in, kk -> out]
 ]
 
 (** for WickCircuit **)
@@ -1103,18 +1122,24 @@ WickGreen::usage = "WickGreen[ws, {k1, k2, \[Ellipsis], km}] returns m\[Times]m 
 WickGreen[ws_WickState] :=
   WickGreen[ws, Range @ FermionCount @ ws]
 
+WickGreen[in_WickState, {}] = {{}};
+
 (* null state *)
-WickGreen[WickState[_Integer -> 0, ___], kk:{___Integer}] = {{}}
+WickGreen[WickState[_Integer -> 0, ___], kk:{__Integer}] = {{}};
 
 (* vacuum state *)
-WickGreen[WickState[_Rule, ___], kk:{___Integer}] :=
+WickGreen[WickState[_Rule, ___], kk:{__Integer}] :=
   One[Length @ kk]
 
-WickGreen[WickState[trs_?MatrixQ, ___], kk:{___Integer}] := Module[
+WickGreen[WickState[trs_?MatrixQ, ___], kk:{__Integer}] := Module[
   { n = Length[kk],
     alt = trs[[All, kk]] },
   One[n] - ConjugateTranspose[alt].alt
 ]
+
+(* dressed modes; the rows of mm are supposed to be orthonormal. *)
+WickGreen[in_WickState, mm_?MatrixQ] :=
+  Dot[mm, WickGreen[in], ConjugateTranspose @ mm]
 
 
 (* for large data *)
