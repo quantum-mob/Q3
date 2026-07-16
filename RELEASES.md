@@ -2,8 +2,8 @@
 
 ## 4.5.15
 
-- New: WickDistribution
-- Enhanced: WickSample, WickGreen
+- New: WickDistribution, CommutatorFree4
+- Enhanced: WickSample, WickGreen, TrimLeft, TrimRight
 - Bug fix: WickReset
 
 ## 4.5.14
