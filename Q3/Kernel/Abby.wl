@@ -343,22 +343,46 @@ ShiftRight[a_List, 0, x_:0] := a
 ShiftRight[a_List] := ShiftRight[a, 1, 0]
 
 
+(**** <TrimLeft> ****)
 TrimLeft::usage = "TrimLeft[list] returns a list by trimming 0 from the left.\nTrimLeft[list, n] prevents the list from getting shorter than n."
+
+TrimLeft[a_] := Module[
+  { dep = ArrayDepth[a],
+    len },
+  If[ And @@ Flatten @ Map[ListQ, a, {dep}],
+    len = Min @ Map[Length, a, {dep}];
+    Map[Take[#, -len]&, a, {dep}],
+    a
+  ]
+] /; VectorQ[a, ListQ]
 
 TrimLeft[a_?VectorQ, n_Integer : 0] := Module[
   { new = a },
   While[Length[new] > n && ZeroQ[First @ new], new = Rest[new]];
   new
 ]
+(**** </TrimLeft> ****)
 
 
+(**** <TrimRight> ****)
 TrimRight::usage = "TrimRight[list] returns a list by trimming 0 from the right.\nTrimRight[list, n] prevents the list from getting shorter than n."
 
-TrimRight[a_?VectorQ, n_Integer : 0] := Module[
+TrimRight[a_] := Module[
+  { dep = ArrayDepth[a],
+    len },
+  If[ And @@ Flatten @ Map[ListQ, a, {dep}],
+    len = Min @ Map[Length, a, {dep}];
+    Map[Take[#, len]&, a, {dep}],
+    a
+  ]
+] /; VectorQ[a, ListQ]
+
+TrimRight[a_?VectorQ, n_Integer:0] := Module[
   { new = a },
   While[Length[new] > n && ZeroQ[Last @ new], new = Most[new]];
   new
 ]
+(**** </TrimRight> ****)
 
 
 KeyReverseSort::usage = "KeyReverseSort[assoc] reversely orders the elements of an association by sorting its keys."

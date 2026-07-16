@@ -35,6 +35,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { LyapunovFunction };
 
+{ CommutatorFree4 };
+
 { GraphForm, ChiralGraphForm,
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
@@ -923,6 +925,46 @@ LyapunovFunction[a_, b_, c_][in_, tt:{__?NumericQ}] := Module[
   Message[LyapunovFunction::bad]; False
 ]
 (**** </LyapunovFunction ****)
+
+
+(**** <CommutatorFree4> ****)
+CommutatorFree4::usage = "CommutatorFree4[mat, {min, max, dt}] returns the propagator (i.e., the time-ordered evolution operator) from time min to time max for the time-dependent Hamiltonian matrix mat[t], where mat is a function that gives an n\[Times]n Hermitian matrix for a numeric value of t.\nCommutatorFree4[mat, {min, max}] is equivalent to CommutatorFree4[mat, {min, max, (max-main)/100}].\nCommutatorFree4[mat, max] is equivalent to CommutatorFree4[mat, {0, max, max/100}].";
+
+Options[CommutatorFree4] = { "List" -> True };
+
+CommutatorFree4[mat_, max_?NumericQ, rest___] :=
+  CommutatorFree4[mat, {0, max, max/100}, rest];
+
+CommutatorFree4[mat_, {min_?NumericQ, max_?NumericQ}, rest___] :=
+  CommutatorFree4[mat, {min, max, (max-min)/100}, rest];
+
+CommutatorFree4[mat_, {min_?NumericQ, max_?NumericQ, dt_?NumericQ}, rest___] :=
+  CommutatorFree4[mat, List @ Range[min, max, dt], rest]
+
+CommutatorFree4[mat_, {ss_?VectorQ}, rest___][One|Identity] :=
+  CommutatorFree4[mat, {ss}, rest][One @ Dimensions @ mat @ First @ ss]
+
+CommutatorFree4[mat_, {ss_?VectorQ}, OptionsPattern[]][in_] := With[
+  { tp = Transpose @ {Most @ ss, Differences @ ss} },
+  If[ OptionValue["List"],
+    FoldList[evoCommutatorFree4[mat], in, tp],
+    Fold[evoCommutatorFree4[mat], in, tp]
+  ]
+] /; ArrayQ[in, 1|2]
+
+evoCommutatorFree4[mat_][in_, {t_?NumericQ, dt_?NumericQ}] = Module[
+    { c1 = 1/2 - Sqrt[3]/6,
+      c2 = 1/2 + Sqrt[3]/6,
+      w1 = 1/4 + Sqrt[3]/6,
+      w2 = 1/4 - Sqrt[3]/6,
+      t1, t2, m1, m2 },
+  t1 = t + c1*dt;
+  t2 = t + c2*dt;
+  m1 = w2*mat[t1] + w1*mat[t2];
+  m2 = w1*mat[t1] + w2*mat[t2];
+  Dot[MatrixExp[-I*dt*m1], MatrixExp[-I*dt*m2], in]
+]
+(**** </CommutatorFree4> ****)
 
 
 (**** <GraphForm> ****)
