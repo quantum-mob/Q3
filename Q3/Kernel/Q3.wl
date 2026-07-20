@@ -1,4 +1,4 @@
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 If[ $VersionNumber < 13.1,
   Version::old = "Q3 requires Mathematica 13.1 or later.";
@@ -17,8 +17,7 @@ If[ Length[PacletFind @ "Q3"] > 0,
 Unprotect["`*"];
 ClearAll["`*"];
 ClearAll["`Private`*"];
-
-EndPackage[]
+EndPackage[];
 
 
 (**** <Packages Loading> ****)
@@ -57,15 +56,12 @@ Get["QuantumMob`Q3`Custom`"];
 (**** </Packages Loading> ****)
 
 
-BeginPackage["QuantumMob`Q3`"]
-
+BeginPackage["QuantumMob`Q3`"];
 SetAttributes[Evaluate @ Names["`Private`*"], ReadProtected];
 SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
 
 (* Users are allowed to change global variables. *)
 Unprotect["`$*"];
-
-(* Too dangerous to change these global variables. *)
+(* However, too dangerous to change these global variables. *)
 Protect[$GarnerPatterns, $ElaborationPatterns];
-
-EndPackage[]
+EndPackage[];
