@@ -84,8 +84,8 @@ theUnitaryTwirling[{ii_, kk_, jj_, ll_}, {n_Integer, d_Integer}] :=
     { gg = YoungElements[YoungContent @ ii],
       hh = YoungElements[YoungContent @ kk],
       cc },
-    gg = FindPermutation[jj, ii] ** gg;
-    hh = FindPermutation[ll, kk] ** hh;
+    gg = Multiply[FindPermutation[jj, ii], gg];
+    hh = Multiply[FindPermutation[ll, kk], hh];
     cc = Outer[Multiply, InversePermutation /@ gg, hh];
     cc = Map[WeingartenFunction[#, {n, d}]&, cc, {2}];
     Total[Flatten @ cc]

@@ -351,8 +351,8 @@ grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
   tt = FlavorCap @ Part[ss, Flatten @ Position[cc, 1]];
   op = Elaborate @ ExpressionFor[mat, tt];
   If[ Not @ OrderedQ @ pair,
-    op = With[{X = First[tt][1]}, X ** op ** X]
-   ];
+    op = With[{X = First[tt][1]}, Multiply[X, op, X]]
+  ];
     
   cc = Flatten @ Position[cc, 0];
   vv = Part[IntegerDigits[First @ pair, 2, n], cc];

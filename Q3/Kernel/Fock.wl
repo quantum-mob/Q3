@@ -1767,7 +1767,7 @@ Elaborate[v:CoherentState[aa_Association, opts___?OptionQ]] :=
       nn = csNormFactor[aa, opts] },
     bb = Multiply @@ KeyValueMap[MultiplyExp[#2*Dagger[#1]]&, bb];
     ff = Multiply @@ KeyValueMap[(1 + Multiply[Dagger[#1], #2])&, ff];
-    nn ** bb ** Multiply[ff, Ket[]]
+    Multiply[nn, bb, Multiply[ff, Ket[]]]
   ]
 
 
