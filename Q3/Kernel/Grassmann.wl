@@ -117,8 +117,10 @@ GrassmannD[g_?AnyGrassmannQ, {g_?AnyGrassmannQ}] = 1
 GrassmannD[CoherentState[aa_Association], gg:{__?AnyGrassmannQ}] :=
   Module[
     { bb = Select[aa, Not @ FreeQ[#, Alternatives @@ gg]&] },
-    ReplaceAll[GrassmannD[FockCat[CoherentState @ bb], gg], Ket[Vacuum] -> 1] **
+    Multiply[
+      ReplaceAll[GrassmannD[FockCat[CoherentState @ bb], gg], Ket[Vacuum] -> 1],
       CoherentState[KeyDrop[aa, Keys @ bb]]
+    ]
   ]
 
 HoldPattern @

@@ -1597,7 +1597,7 @@ Multiply[pre___, ControlledPower[cc_, op_, ___], in_Ket] := With[
   { x = FromDigits[in[cc], 2] },
   (* Multiply[pre, Nest[Multiply[op, #]&, in, x]] *)
   (* NOTE: The following method is faster than the above. It is probably because MultiplyPower calculates recursively and makes better use of the caching capabilities. *)
-  Multiply[pre, Elaborate[MultiplyPower[op, x] ** in]]
+  Multiply[pre, Elaborate @ Multiply[MultiplyPower[op, x], in]]
 ]
 
 (* NOTE: The following code makes many calculations significantly slow. It is far better to use high-level features instead. *)

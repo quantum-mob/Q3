@@ -1078,12 +1078,12 @@ DoubleStarAs[name_String] := (
 
 DoubleStarAsMultiply::usage = "DoubleStarAsMultiply[] redefines the ** operator as Multiply.";
 
-DoubleStarAsMultiply[] := DoubleStarAs["Multiply"];
+DoubleStarAsMultiply[] := DoubleStarAs["QuantumMob`Q3`Multiply"];
 DoubleStarAsMultiply[]; (* turned on by default *)
 
 DoubleStarAsBuiltin::usage = "DoubleStarAsBuiltin[] restores the built-in meaning of the ** operator, i.e., NonCommutativeMultiply.";
 
-DoubleStarAsBuiltin[] := DoubleStarAs["NonCommutativeMultiply"];
+DoubleStarAsBuiltin[] := DoubleStarAs["System`NonCommutativeMultiply"];
 (**** </DoubleStarAs> ****)
 
 

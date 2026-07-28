@@ -746,7 +746,7 @@ YoungClebschGordanTransform[Ket @ {a_YoungTableau, b_YoungTableau}] :=
       GroupOrder[SymmetricGroup @ n];
     Total @ Map[
       ( Sqrt[YoungTableauCount @ YoungShape @ #] *
-          OSlash[Ket @ {#}, op ** Ket[{#, a, b}]] )&,
+        OSlash[Ket @ {#}, Multiply[op, Ket @ {#, a, b}]] )&,
       YoungTableaux[n]
     ]
   ]
