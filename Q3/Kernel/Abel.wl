@@ -1061,6 +1061,8 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
 (**** <DoubleStarAs> ****)
 DoubleStarAs::usage = "DoubleStarAs[\"name\"] redefines the ** operator as name.";
 
+DoubleStarAs[s_Symbol] := DoubleStarAs[Context[s] <> SymbolName[s]];
+
 DoubleStarAs[name_String] := (
   MakeExpression[
     RowBox @ {first_, rest:PatternSequence["**", _]..},
