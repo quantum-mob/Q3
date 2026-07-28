@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.6.1
+
+- Bug fix: There remained some internal uses of the ** operator. All removed.
+- Bug fix: YoungInvariantBasis
+
 ## 4.6.0
 
 - NonCommutativeMultiply is reserved for the built-in meaning for NonCommutativeAlgebra and similar functions. The operator ** is reserved for NonCommutativeMultiply.
