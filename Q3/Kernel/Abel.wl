@@ -1061,22 +1061,36 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
 DoubleStarAsMultiply::usage = "DoubleStarAsMultiply[] redefines the ** operator as Multiply.";
 
 DoubleStarAsMultiply[] := (
-  MakeExpression[RowBox @ {a_, "**", b_}, StandardForm] := 
-    MakeExpression[
-      RowBox @ {"Multiply", "[", a, ",", b, "]"},
-      StandardForm
-    ]
+  MakeExpression[
+    RowBox @ {first_, rest:PatternSequence["**", _]..},
+    StandardForm
+  ] := MakeExpression[
+    RowBox @ {
+      "Multiply", 
+      "[",
+      RowBox @ Riffle[Prepend[{rest}[[2 ;; ;; 2]], first], ","], 
+      "]"
+    },
+    StandardForm
+  ]
 );
 DoubleStarAsMultiply[];
 
 DoubleStarAsBuiltin::usage = "DoubleStarAsBuiltin[] restores the built-in meaning of the ** operator, i.e., NonCommutativeMultiply.";
 
 DoubleStarAsBuiltin[] := (
-  MakeExpression[RowBox @ {a_, "**", b_}, StandardForm] := 
-    MakeExpression[
-      RowBox @ {"NonCommutativeMultiply", "[", a, ",", b, "]"},
-      StandardForm
-    ]
+  MakeExpression[
+    RowBox @ {first_, rest:PatternSequence["**", _]..},
+    StandardForm
+  ] := MakeExpression[
+    RowBox @ {
+      "NonCommutativeMultiply", 
+      "[",
+      RowBox @ Riffle[Prepend[{rest}[[2 ;; ;; 2]], first], ","], 
+      "]"
+    },
+    StandardForm
+  ]
 );
 
 
