@@ -100,7 +100,7 @@ HoldPattern @ Supermap[ops:{__}, cc_?VectorQ][rho_] :=
   Garner[ cc . Multiply[ops, rho, Dagger @ ops] ]
 
 HoldPattern @ Supermap[ops:{__}, cc_?MatrixQ][rho_] := Garner @ Total @ Total[
-  cc * Outer[Multiply, ops, rho ** Dagger[ops]]
+  cc * Outer[Multiply, ops, Multiply[rho, Dagger @ ops]]
 ]
 
 
@@ -367,7 +367,7 @@ LindbladSupermap[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
 LindbladSupermap[{opH_, opL__}][rho_] := Module[
   { non = -I*(opH - I*DampingOperator[opL]),
     gen },
-  non = non**rho + rho**Dagger[non];
+  non = Multiply[non, rho] + Multiply[rho, Dagger @ non];
   gen = Total @ Multiply[{opL}, rho, Dagger @ {opL}];
   Garner[non + gen]
 ]

@@ -1,13 +1,13 @@
 (* -*- mode:math -*- *)
 (* To simulate the universal quantum computation based on the Gray code. *)
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 `Gray`$Version = StringJoin[
   $Input, " v",
   StringSplit["$Revision: 1.90 $"][[2]], " (",
   StringSplit["$Date: 2023-08-06 09:20:27+09 $"][[2]], ") ",
   "Mahn-Soo Choi"
- ];
+];
 
 { GrayBasis, GrayTransform, TheGrayTransform, GrayCycles };
 
@@ -16,13 +16,13 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { GrayControlledGate };
 
 
-Begin["`Private`"]
+Begin["`Private`"];
 
-GraySubsets::usage = "GraySubsets[set] constructs a binary-reflected Gray code on set, that is, returns the list of all subsets of set each of which differs from its predecessor by only one element."
+GraySubsets::usage = "GraySubsets[set] constructs a binary-reflected Gray code on set, that is, returns the list of all subsets of set each of which differs from its predecessor by only one element.";
 
 (* NOTE: The code has just been copied from Combinatorica package. *)
 
-GraySubsets[n_Integer?Positive] := GraySubsets @ Range[n]
+GraySubsets[n_Integer?Positive] := GraySubsets @ Range[n];
 
 GraySubsets[{}] := { {} }
 
@@ -35,7 +35,6 @@ GraySubsets[ls_List] := Block[
 
 
 (**** <GrayTransform> ****)
-
 GrayBasis::usage = "GrayBasis[{s1,s2,\[Ellipsis]}] returns the computational basis of qubits or spins s1, s2, \[Ellipsis] arranged in the Gray code (i.e., reflected binary code) sequence.\nGrayBasis[n] returns the computational basis of n (unlabelled) qubits arranged in the Gray code."
 
 GrayBasis[n_Integer] := Basis[n] . TheGrayTransform[n]
@@ -99,7 +98,6 @@ GrayCycles::usage = "GrayCycles[n] returns the cycles representation of the Gray
 
 GrayCycles[n_Integer] := InversePermutation @
   PermutationCycles[1 + BitReflect[Range[Power[2, n]] - 1]]
-
 (**** </GrayTransform> ****)
 
 
@@ -212,22 +210,21 @@ GraySequence[n_Integer] := Join[
 
 
 (**** <GivensRotation> *****)
+GivensRotation::usage = "GivensRotation[mat, {i, j}, n] represents the Givens foration in the plane spanned by the two coordinate axes i and j in an n-dimensional space.\nGivensRotation[mat, {i, j}, {s1, s2, \[Ellipsis]}] represents the Givens rotatation operator acting on qubits s1, s2, \[Ellipsis].";
 
-GivensRotation::usage = "GivensRotation[mat, {i, j}, n] represents the Givens foration in the plane spanned by the two coordinate axes i and j in an n-dimensional space.\nGivensRotation[mat, {i, j}, {s1, s2, \[Ellipsis]}] represents the Givens rotatation operator acting on qubits s1, s2, \[Ellipsis]."
+GivensRotation::two = "The first argument of GivensRotation must be a 2\[Times]2 matrix.";
 
-GivensRotation::two = "The first argument of GivensRotation must be a 2\[Times]2 matrix."
+GivensRotation::range = "Either or both of `` is out of [1, ``].";
 
-GivensRotation::range = "Either or both of `` is out of [1, ``]."
+AddElaborationPatterns[ _GivensRotation ];
 
-AddElaborationPatterns[ _GivensRotation ]
-
-SetAttributes[GivensRotation, NHoldRest]
-
-GivensRotation /:
-NonCommutativeQ[ GivensRotation[___] ] = True
+SetAttributes[GivensRotation, NHoldRest];
 
 GivensRotation /:
-MultiplyKind @ GivensRotation[_?MatrixQ, _, {__?QubitQ}] = Qubit
+NonCommutativeQ[ GivensRotation[___] ] = True;
+
+GivensRotation /:
+MultiplyKind @ GivensRotation[_?MatrixQ, _, {__?QubitQ}] = Qubit;
 
 
 GivensRotation /:
@@ -237,7 +234,7 @@ MakeBoxes[op:GivensRotation[mat_?MatrixQ, ij:{_, _}, n_Integer], fmt_] :=
     { BoxForm`SummaryItem @ {"Dimensions: ", {n, n}},
       BoxForm`SummaryItem @ {"Affected columns and rows: ", ij} },
     { BoxForm`SummaryItem @ {"Matrix: ", mat} },
-    fmt, "Interpretable" -> Automatic ]
+    fmt, "Interpretable" -> Automatic ];
 
 GivensRotation /:
 MakeBoxes[op:GivensRotation[mat_?MatrixQ, ij:{_, _}, ss:{__?QubitQ}], fmt_] :=
@@ -246,36 +243,36 @@ MakeBoxes[op:GivensRotation[mat_?MatrixQ, ij:{_, _}, ss:{__?QubitQ}], fmt_] :=
     { BoxForm`SummaryItem @ {"Acting on: ", ss},
       BoxForm`SummaryItem @ {"Affected columns and rows: ", ij} },
     { BoxForm`SummaryItem @ {"Matrix: ", mat} },
-    fmt, "Interpretable" -> Automatic ]
+    fmt, "Interpretable" -> Automatic ];
 
 
 GivensRotation[mat_?MatrixQ, rest___] := (
   Message[GivensRotation::two, mat];
   GivensRotation[One[2], rest]
-) /; Dimensions[mat] != {2, 2}
+) /; Dimensions[mat] != {2, 2};
 
 GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, n_Integer] := (
   Message[GivensRotation::range, ij, n];
   GivensRotation[mat, {1, 2}, n]
-) /; Not[And @@ Thread[1 <= ij <= n]]
+) /; Not[And @@ Thread[1 <= ij <= n]];
 
 
 GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}] :=
   GivensRotation[mat, ij, FlavorCap @ ss] /;
-  Not[FlavorCapQ @ ss]
+  Not[FlavorCapQ @ ss];
 
 
 GivensRotation /:
-Dagger[op_GivensRotation] = op (* fallback *)
+Dagger[op_GivensRotation] = op; (* fallback *)
 
 GivensRotation /:
 Dagger @ GivensRotation[mat_?MatrixQ, rest__] :=
-  GivensRotation[Topple @ mat, rest]
+  GivensRotation[Topple @ mat, rest];
 
 
 GivensRotation /:
 Elaborate[op:GivensRotation[_, _, ss:{__?QubitQ}, ___]] :=
-  Elaborate @ ExpressionFor[Matrix[op], ss]
+  Elaborate @ ExpressionFor[Matrix[op], ss];
 
 
 GivensRotation /:
@@ -307,12 +304,10 @@ Matrix[GivensRotation[mat_?MatrixQ, ij_, ss:{__?QubitQ}], rest__] :=
     ExpressionFor[Matrix @ GivensRotation[mat, ij, Power[2, Length @ ss]], ss],
     rest
   ]
-
 (**** </GivensRotation> *****)
 
 
 (**** <GivensRotation:Unfold> *****)
-
 GivensRotation /:
 Unfold[
   GivensRotation[mat_?MatrixQ, ij:{_Integer, _Integer}, ss:{__?QubitQ}],
@@ -364,12 +359,10 @@ grayCtrlU[pair:{_Integer, _Integer}, mat_, ss:{__?QubitQ}] := Module[
   cc = Part[ss, cc];
   ControlledGate[cc -> vv, op, "Label"->"U"]
 ]
-
 (**** </GivensRotation:Unfold> *****)
 
 
 (**** <GivensFactor> ****)
-
 GivensFactor::usage = "GivensFactor[mat] returns a list of Givens matrices that compose the unitary matrix mat.\nGivensFactor[op]
 returns a list of controlled-unitary and single-qubit gates that compose the unitary operator op.\nGivensFactor[mat,{Subscript[s, 1],Subscript[s, 2],\[Ellipsis]}] regards the matrix mat as the matrix representation of a unitary operator acting on qubits Subscript[s, 1],Subscript[s, 2],\[Ellipsis]."
 
@@ -424,14 +417,11 @@ theGivens[mat_?MatrixQ, {i_Integer, j_Integer}] :=
     new = Matrix[two];
     {two, mat.new}
   ]
-
 (**** </GivensFactor> ****)
 
 
 (**** <GrayGivensFactor> ****)
-
 (* See: Vartiainen et al. (2004). *)
-
 GrayGivensFactor::usage = "GrayGivensFactor[op]
 returns a list of controlled-unitary and single-qubit gates that compose the unitary operator op.\nGrayGivensFactor[mat,{Subscript[s, 1],Subscript[s, 2],\[Ellipsis]}] regards the matrix mat as the matrix representation of a unitary operator acting on qubits Subscript[s, 1],Subscript[s, 2],\[Ellipsis]."
 
@@ -528,10 +518,8 @@ findControls[{i_Integer, j_Integer}, ss_List] := Module[
     {}
   ]
 ]
-
 (**** </GrayGivensFactor> ****)
 
 
-End[]
-
-EndPackage[]
+End[];
+EndPackage[];

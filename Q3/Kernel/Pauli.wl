@@ -521,7 +521,7 @@ XBasisForm[expr_, qq:{__?QubitQ}] :=
 
 theXBasisForm[v_Ket, qq:{__?QubitQ}] := With[
   { op = Multiply @@ Through[qq[6]] },
-  theXBasisLabel[op ** v, qq]
+  theXBasisLabel[Multiply[op, v], qq]
  ]
 
 theXBasisForm[Bra[v_], qq:{__?QubitQ}] :=
@@ -560,7 +560,7 @@ YBasisForm[expr_, qq:{__?QubitQ}] :=
 
 theYBasisForm[v_Ket, qq:{__?QubitQ}] := With[
   { op = Multiply @@ Join[Through[qq[6]], Through[qq[7]]] },
-  theYBasisLabel[op ** v, qq]
+  theYBasisLabel[Multiply[op, v], qq]
 ]
 
 theYBasisForm[Bra[v_], qq:{__?QubitQ}] :=
@@ -2288,8 +2288,8 @@ Matrix[
   HoldPattern @ Multiply[pre___, ket_Ket, bra_Bra, post___],
   qq:{___?SpeciesQ}
 ] := Dyad[
-   Matrix[pre ** ket, qq],
-   Dagger @ Matrix[bra ** post, qq]
+   Matrix[Multiply[pre, ket], qq],
+   Dagger @ Matrix[Multiply[bra, post], qq]
 ]
 (* NOTE: Dagger (not Conjugate) here. *)
 
@@ -2314,7 +2314,7 @@ SyntaxInformation[MatrixIn] = {
 
 MatrixIn[op_, bs_List] := (
   Message[MatrixIn::nullv, bs];
-  Garner @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
+  Garner @ Outer[Multiply, Dagger[bs], Garner @ Multiply[op, bs]]
  ) /; ContainsAny[bs, {0, 0.}]
 (* NOTE: This may happen numerically or in a illdefined basis. *)
 
@@ -2342,10 +2342,10 @@ MatrixIn[bra_, bs_List] := SparseArray @ Multiply[bra, bs] /;
   ]
 
 MatrixIn[op_, bs_List] :=
-  SparseArray @ Outer[Multiply, Dagger[bs], Garner[op ** bs]]
+  SparseArray @ Outer[Multiply, Dagger[bs], Garner @ Multiply[op, bs]]
 
 MatrixIn[op_, aa_List, bb_List] :=
-  SparseArray @ Outer[Multiply, Dagger[aa], Garner[op ** bb]]
+  SparseArray @ Outer[Multiply, Dagger[aa], Garner @ Multiply[op, bb]]
 
 MatrixIn[op_, bs_Association] := Map[MatrixIn[op, #]&, bs]
 
@@ -3206,7 +3206,7 @@ Elaborate @ Dyad[a_Association, b_Association] := Module[
   nn = (1 - na)*(1 - nb);
   Multiply[
     Multiply @@ Power[Dagger @ cc, na],
-    Multiply @@ Power[1 - Dagger[cc] ** cc, nn],
+    Multiply @@ Power[1 - Multiply[Dagger[cc], cc], nn],
     Multiply @@ Power[Reverse @ cc, Reverse @ nb]
   ]
 ] /; AllTrue[Keys @ a, FermionQ] && Keys[a] == Keys[b]
@@ -3386,7 +3386,7 @@ HoldPattern @ Multiply[
   post___
  ] := Multiply[
    pre,
-   Dyad[op ** Ket[a], Ket[b], Keys @ a, Keys @ b],
+   Dyad[Multiply[op, Ket @ a], Ket @ b, Keys @ a, Keys @ b],
    post
   ] /; MemberQ[Keys @ a, FlavorMute @ Peel @ op]
 
@@ -3396,7 +3396,7 @@ HoldPattern @ Multiply[
   post___
  ] := Multiply[
    pre,
-   Dyad[Ket[a], Dagger[op] ** Ket[b], Keys @ a, Keys @ b],
+   Dyad[Ket @ a, Multiply[Dagger @ op, Ket @ b], Keys @ a, Keys @ b],
    post
   ] /; MemberQ[Keys @ b, FlavorMute @ Peel @ op]
 
@@ -4170,13 +4170,13 @@ Fidelity[rho_, sgm_] := Fidelity @@ Matrix @ {rho, sgm} /;
 (* NOTE: Too dangerous! *)
 
 (*  
-Fidelity[vec_, rho_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
+Fidelity[vec_, rho_] := Chop @ Sqrt @ Multiply[Dagger[vec], rho, vec] /;
   And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
 
-Fidelity[rho_, vec_] := Chop @ Sqrt[Dagger[vec] ** rho ** vec] /;
+Fidelity[rho_, vec_] := Chop @ Sqrt @ Multiply[[Dagger[vec], rho, vec] /;
   And[Not @ FreeQ[vec, _Ket], FreeQ[rho, _Ket]]
 
-Fidelity[vec_, wec_] := Abs[Dagger[vec] ** wec] /;
+Fidelity[vec_, wec_] := Abs @ Multiply[Dagger[vec], wec] /;
   And[Not @ FreeQ[vec, _Ket], Not @ FreeQ[wec, _Ket]]
 *)
 (* NOTE: Not big benefits. *)

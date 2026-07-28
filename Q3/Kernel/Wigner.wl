@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { TheWigner, TheWignerKet };
 
@@ -26,9 +26,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { NineJSymbol, WignerEckart };
 
 
-Begin["`Private`"]
-
-$symb = Unprotect[Missing]
+Begin["`Private`"];
+$symb = Unprotect[Missing];
 
 
 (**** <TheWigner> ****)
@@ -236,7 +235,7 @@ setSpin[spin_][x_Symbol] := (
   x[j___, Raising] := x[j,1] + I x[j,2];
   x[j___, Lowering] := x[j,1] - I x[j,2];
   
-  x[j___, Hadamard] := MultiplyExp[-I (Pi/2) x[j,2]] ** x[j,3] / spin;
+  x[j___, Hadamard] := Multiply[MultiplyExp[-I (Pi/2) x[j,2]], x[j,3]] / spin;
   (* NOTE: For Spin-1/2, this is enough to reduce it to (X+Z)/Sqrt[2].
      See Cauchy.m for Exp[ (Clifford- or Grassmann-like elements) ] .*)
   
@@ -381,15 +380,22 @@ CMT[J_?SpinQ[j___,5], J_?SpinQ[j___,4]] := -2 J[j,3]
 (* Hadamard *)
 
 CMT[J_?SpinQ[j___,6], J_?SpinQ[j___,1]] :=
-  Exp[-I (Pi/2) J[j,2]] ** ( I J[j,2] + (J[j,1]-J[j,3])**J[j,3] ) / Spin[J]
+  Multiply[
+    MultiplyExp[-I (Pi/2) J[j,2]],
+    I*J[j,2] + Multiply[J[j,1] - J[j,3], J[j,3]]
+  ] / Spin[J]
 (* Exp[] is pushed to the left; see Cauchy *)
 
 CMT[J_?SpinQ[j___,6], J_?SpinQ[j___,2]] :=
-  -I Exp[-I (Pi/2) J[j,2]] ** J[j,1] / Spin[J]
+  Multiply[-I MultiplyExp[-I (Pi/2) J[j,2]], J[j,1]] / Spin[J]
 (* Exp[] is pushed to the left; see Cauchy *)
 
 CMT[J_?SpinQ[j___,6], J_?SpinQ[j___,3]] :=
-  Exp[-I (Pi/2) J[j,2]] ** (J[j,1] + J[j,3]) ** J[j,3] / Spin[J]
+  Multiply[
+    MultiplyExp[-I (Pi/2) J[j,2]],
+    J[j,1] + J[j,3],
+    J[j,3]
+  ] / Spin[J]
 (* Exp[] is pushed to the left; see Cauchy *)
 
 
@@ -426,11 +432,11 @@ HoldPattern @
 
 HoldPattern @
   Multiply[pre___, a_?SpinQ[j___,1], b:Ket[_Association], post___] :=
-  Multiply[pre, (a[j,4]**b + a[j,5]**b)/2, post]
+  Multiply[pre, (Multiply[a[j,4], b] + Multiply[a[j,5], b])/2, post]
 
 HoldPattern @
   Multiply[pre___, a_?SpinQ[j___,2], b:Ket[_Association], post___] :=
-  Multiply[pre, (a[j,4]**b - a[j,5]**b)/(2*I), post]
+  Multiply[pre, (Multiply[a[j,4], b] - Multiply[a[j,5], b])/(2*I), post]
 
 HoldPattern @
   Multiply[pre___, a_?SpinQ[j___,3], Ket[b_Association], post___] :=
@@ -828,7 +834,7 @@ WignerDecompose[v_, {n_Integer}] := Module[
     Map[ ( Multiply @@ MapThread[Construct, {jj, #}] )&, kk, {n} ],
     {jj, ss}
   ];
-  vv = Dagger[v]**op**v / Power[2,nS-n];
+  vv = Multiply[Dagger[v], op, v] / Power[2,nS-n];
   Association[ Thread[ss->vv] ]
 ]
 
@@ -1104,8 +1110,6 @@ WignerEckart[{i1_,i2_,ii_}, {k1_,k2_,kk_}, {j1_,j2_,jj_}] :=
 (**** </WignerEckart> ****)
 
 
-Protect[Evaluate @ $symb]
-
-End[]
-
-EndPackage[]
+Protect[Evaluate @ $symb];
+End[];
+EndPackage[];

@@ -806,7 +806,7 @@ ControlledGamma[z_?CommutativeQ expr_] :=  Garner[z * ControlledGamma[expr]]
 ControlledGamma[expr_Plus] := Garner @ Map[ControlledGamma, expr]
 
 ControlledGamma[Ket @ {a_, b_, c_}] :=
-  CircleTimes[Ket @ {a, b}, InversePermutation[a] ** Ket[{c}]]
+  CircleTimes[Ket @ {a, b}, Multiply[InversePermutation[a], Ket @ {c}]]
 (**** </HarrowClebschGordanTransform> ****)
 
 End[]

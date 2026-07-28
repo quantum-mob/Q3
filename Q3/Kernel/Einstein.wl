@@ -220,7 +220,7 @@ WignerSpinSpin[dir:(1|2|3|{(1|2|3)..})][ss__] := Module[
   Total[ linkSpinSpin[dir] /@ links ]
 ] /; AllTrue[Flatten @ {ss}, SpinQ]
 
-linkSpinSpin[dir:(1|2|3)][a_ -> b_] := a[dir] ** b[dir]
+linkSpinSpin[dir:(1|2|3)][a_ -> b_] := Multiply[a[dir], b[dir]]
 
 linkSpinSpin[dir:{(1|2|3)..}][a_ -> b_] := MultiplyDot[a[dir], b[dir]]
 (**** </WignerSpinSpin> ****)

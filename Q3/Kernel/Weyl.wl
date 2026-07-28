@@ -1,17 +1,15 @@
 (* -*- mode: math; -*- *)
 (* See Gross (2006) and Singal et al. (2023) *)
 
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Weyl, TheWeyl };
-
 { WeylBasis };
 
 
-Begin["`Private`"]
+Begin["`Private`"];
 
 (**** <Weyl> ****)
-
 Weyl::usage = "Weyl[{m, n, d}] represents the generalized Pauli operator X^mZ^n on a d-dimensional Hilbert space.\nWeyl[{{m1,n1,d1},{m2,n2,d2},...}] represents (X^m1Z^n1)\[CircleTimes](X^m2Z^n2)\[CircleTimes]\[Ellipsis]."
 
 SyntaxInformation[Weyl] = {"ArgumentsPattern" -> {_}}
@@ -48,7 +46,7 @@ Multiply[pre___,
 Weyl /:
 Multiply[pre___, aa:Weyl[{{_, _, _}..}], bb:Weyl[{{_, _, _}..}], post___] :=
   Multiply[ pre,
-    Apply[Multiply, Thread[aa] ** Thread[bb]],
+    Apply[Multiply, Multiply[Thread @ aa, Thread @ bb]],
     post ]
 
 Weyl /:
@@ -58,14 +56,12 @@ Multiply[pre___, Weyl[{x_, z_, d_}], Ket[s_]] :=
 
 Weyl /:
 Multiply[pre___, op:Weyl[{{_, _, _}..}], Ket[ss__]] :=
-  Multiply[pre, Apply[CircleTimes, Thread[op] ** Thread[Ket @ {ss}]]]
-
+  Multiply[pre, Apply[CircleTimes, Multiply[Thread @ op, Thread @ Ket @ {ss}]]]
 (**** </Weyl> ****)
 
 
 (**** <TheWeyl> ****)
-
-TheWeyl::usage = "TheWeyl[{m, n, d}] returns the matrix representation of the generalized Pauli operator X^mZ^n on a d-dimensional Hilbert space.\n TheWeyl[{{m1,n1,d1},{m2,n2,d2},...}] returns the matrix representaiton of (X^m1Z^n1)\[CircleTimes](X^m2Z^n2)\[CircleTimes]\[Ellipsis]."
+TheWeyl::usage = "TheWeyl[{m, n, d}] returns the matrix representation of the generalized Pauli operator X^mZ^n on a d-dimensional Hilbert space.\n TheWeyl[{{m1,n1,d1},{m2,n2,d2},...}] returns the matrix representaiton of (X^m1Z^n1)\[CircleTimes](X^m2Z^n2)\[CircleTimes]\[Ellipsis].";
 
 SyntaxInformation[TheWeyl] = {"ArgumentsPattern" -> {_}}
 
@@ -75,20 +71,16 @@ TheWeyl[{x_, z_, d_}] := SparseArray @ Dot[
  ]
 
 TheWeyl[kk:{{_, _, _}..}] := Apply[KroneckerProduct, TheWeyl /@ kk]
-
 (**** </TheWeyl> ****)
 
 
 (**** <WeylBasis> ****)
-
-WeylBasis::usage = "WeylBasis[n] returns a generating set of matrices in GL(n).\nSee also Lie basis."
+WeylBasis::usage = "WeylBasis[n] returns a generating set of matrices in GL(n).\nSee also Lie basis.";
 
 WeylBasis[d_Integer] :=
   TheWeyl /@ PadRight[Tuples[Range[0, d-1], 2], {d*d, 3}, d];
-
 (**** </WeylBasis> ****)
 
 
-End[]
-
-EndPackage[]
+End[];
+EndPackage[];

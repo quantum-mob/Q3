@@ -1,19 +1,17 @@
 (* -*- mode: math; -*- *)
 (* Some features in this file were adopted from a package by M. Headrick (April 2003). *)
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Grassmann, GrassmannQ, AnyGrassmannQ };
 { GrassmannD, GrassmannIntegrate };
 { GrassmannGrade }
 
 
-Begin["`Private`"]
-
-$symb = Unprotect[Power]
+Begin["`Private`"];
+$symb = Unprotect[Power];
 
 
 (**** <Grassmann> ****)
-
 Grassmann::usage = "Grassmann represents a set of generators of a Grassmann algebra."
 
 Grassmann /:
@@ -32,12 +30,10 @@ setGrassmann[x_Symbol] := (
   GrassmannGrade[x] ^= 1;
   GrassmannGrade[x[___]] ^= 1;
 )
-
 (**** </Grassmann> ****)
 
 
 (**** <GrassmannQ> ****)
-
 GrassmannQ::usage = "GrassmannQ[z] returns True if z is a *generator* (but not a generic element) of the Grassmann algebra over complex numbers."
 
 GrassmannQ[_] = False
@@ -50,7 +46,6 @@ AnyGrassmannQ[ _?GrassmannQ ] = True
 AnyGrassmannQ[ Conjugate[_?GrassmannQ] ] = True
 
 AnyGrassmannQ[_] = False
-
 (**** </GrassmannQ> ****)
 
 
@@ -66,7 +61,6 @@ HoldPattern @ Conjugate[ Multiply[ops__?AnyGrassmannQ] ] :=
 
 
 (**** <Multiply> ****)
-
 HoldPattern @ Multiply[___, op_?AnyGrassmannQ, op_?AnyGrassmannQ, ___] = 0
 
 HoldPattern @ 
@@ -89,12 +83,10 @@ HoldPattern @
 HoldPattern @ 
   Multiply[pre___, v_Bra, op_?AnyGrassmannQ, post___] :=
     ParityValue[v, Fermions @ v] * Multiply[pre, op, v, post]
-
 (**** </Multiply> ****)
 
 
 (**** <GrassmannD> ****)
-
 GrassmannD::usage = "GrassmannD[expr, g] returns the Grassmann derivative of expr with respect to the Grassmann generator g.\nGrassmannD[expr, {g1, g2, \[Ellipsis]}] returns the derivative with respect to multiple Grassmann generators g1, g2, \[Ellipsis].\nGrassmannD[g] or GrassmannD[{g1, g2, \[Ellipsis]}] represents the operator form of GrassmannD acting on an expression."
 
 GrassmannD[gg_][expr_] := GrassmannD[expr, gg]
@@ -139,12 +131,12 @@ HoldPattern @
 
 HoldPattern @
   GrassmannD[Multiply[op:Longest[ff__?AnyGrassmannQ], post__], gg:{__?AnyGrassmannQ}] := 
-    GrassmannD[Multiply[op], gg] ** Multiply[post] + 
-        IntegerParity[Length[{ff}] * Length[gg]] * op ** GrassmannD[Multiply[post], gg]
+    Multiply[GrassmannD[Multiply[op], gg], Multiply[post]] + 
+      IntegerParity[Length[{ff}] * Length[gg]] * Multiply[op, GrassmannD[Multiply[post], gg]]
 
 HoldPattern @
   GrassmannD[Multiply[v_CoherentState, post___], gg:{__?AnyGrassmannQ}] :=
-    GrassmannD[v, gg] ** Multiply[post] + v ** GrassmannD[Multiply[post], gg]
+    Multiply[GrassmannD[v, gg], Multiply[post]] + Multiply[v, GrassmannD[Multiply[post], gg]]
 
 HoldPattern @
   GrassmannD[Multiply[v_Ket, post___], gg:{__?AnyGrassmannQ}] :=
@@ -154,21 +146,17 @@ HoldPattern @
 HoldPattern @
   GrassmannD[Multiply[ff__?AnyFermionQ, post___], gg:{__?AnyGrassmannQ}] :=
     IntegerParity[Length[{ff}] * Length[gg]] * Multiply[ff, GrassmannD[Multiply[post], gg]]
-
 (**** </GrassmannD> ****)
 
 
 (**** <GrassmannIntegrate> ****)
-
 GrassmannIntegrate::usage = "GrassmannIntegrate[expr, g] returns the Grassmann integration of expr with respect to the Grassmann generator g.\nGrassmannIntegrate[expr, {g1, g2, \[Ellipsis]}] returns the integration with respect to multiple Grassmann generators g1, g2, \[Ellipsis].\nGrassmannIntegrate[g] or GrassmannIntegrate[{g1, g2, \[Ellipsis]}] represents the operator form of GrassmannIntegrate acting on an expression."
 
 GrassmannIntegrate = GrassmannD
-
 (**** </GrassmannIntegrate> ****)
 
 
 (**** <GrassmannGrade> ****)
-
 GrassmannGrade::usage = "GrassmannGrade[expr] returns a non-negative integer: 0, if expr is a pure boson, which can be multiplied using Times; positive and odd, if expr has fermionic statistics; or positive and even, if expr has bosonic statistics but involves Grassmann generators. Any generator whose grading is not explicitly declared is assumed to be purely bosonic."
 
 GrassmannGrade[_?AnyGrassmannQ] = 1
@@ -185,12 +173,8 @@ GrassmannGrade[HoldPattern @ Multiply[ops__]] :=
 GrassmannGrade[GrassmannD[a_, _]] := GrassmannGrade[a] + 1
 
 GrassmannGrade[_] = 0
-
 (**** </GrassmannGrade> ****)
 
-
-Protect[ Evaluate @ $symb ]
-
-End[]
-
-EndPackage[]
+Protect[Evaluate @ $symb];
+End[];
+EndPackage[];

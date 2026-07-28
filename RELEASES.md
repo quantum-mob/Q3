@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.6.0
+
+- NonCommutativeMultiply is reserved for the built-in meaning for NonCommutativeAlgebra and similar functions. The operator ** is reserved for NonCommutativeMultiply.
+- New: DoubleStarAsMultiply, DoubleStarAsBuiltin
+
 ## 4.5.15
 
 - New: WickDistribution, CommutatorFree4

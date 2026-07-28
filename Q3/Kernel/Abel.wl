@@ -74,6 +74,7 @@ $::usage = "$ is a flavor index referring to the species itself."
 
 { Multiply, MultiplyGenus, MultiplyKind, MultiplyDegree,
   MultiplyExp, MultiplyPower, MultiplyDot };
+{ DoubleStarAsMultiply, DoubleStarAsBuiltin };
 
 { DistributableQ };
 
@@ -100,7 +101,6 @@ $::usage = "$ is a flavor index referring to the species itself."
 Begin["`Private`"]
 
 $symb = Unprotect[
-  NonCommutativeMultiply, 
   Conjugate, Inverse,
   DiscreteDelta, UnitStep
 ]
@@ -953,26 +953,23 @@ HoldPattern @ MultiplyGenus[ Dagger[any_] ] := "Ket" /;
 
 
 (**** <DistributableQ> ****)
-
 DistributableQ::usage = "DistributableQ[{expr1, expr2, \[Ellipsis]}] returns True if any of the expressions expr1, expr2, \[Ellipsis] has Head Plus."
 
 DistributableQ[ops_List] := Not @ MissingQ @ FirstCase[ops, _Plus]
-
 (**** </DistributableQ> ****)
 
 
 (**** <Multiply> ****)
-Multiply::usage = "Multiply[a, b, \[Ellipsis]] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[\[Ellipsis]], it does not have the attributes Flat and OneIdentity."
+Multiply::usage = "Multiply[a, b, \[Ellipsis]] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[\[Ellipsis]], it does not have the attributes Flat and OneIdentity.";
 
-SetAttributes[Multiply, {Listable, ReadProtected}]
+SetAttributes[Multiply, {Listable, ReadProtected}];
 
-AddGarnerPatterns[_Multiply]
-
+AddGarnerPatterns[_Multiply];
 
 Format @ HoldPattern @ Multiply[a__] := Interpretation[
   Row @ List @ Row[{a}, "\[VeryThinSpace]"],
   Multiply[a]
-]
+];
 (* NOTE 1: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 Dagger[f]**f is formated as
    -2(f^\dag f). For more details on spurious parentheses, see
@@ -980,7 +977,8 @@ Format @ HoldPattern @ Multiply[a__] := Interpretation[
 (* NOTE 2 (Version 12.1.1): The inner DisplayForm is to avoid the spurious
    multiplication ("x") sign for non-Species symbols. *)
 
-NonCommutativeMultiply[a___] := Multiply[a]
+(* NOTE: NonCommutativeMultiply had no built-in meaning. This has changed since Mathematica 14.3. NonCommutativeAlgebra, introduced in 14.3, uses NonCommutativeMultiply as the default operator. This causes many conflicts if NonCommutativeMultiply is redefined. Q3 v4.6.0 2026-07-28 *)
+(* NonCommutativeMultiply[a___] := Multiply[a] *)
 (* NOTE: This definition is different from the following:
    a_ ** b_ := Multiply[a, b]
    Still one can now use '**' for Multiply. *)
@@ -1058,6 +1056,28 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
   ]  
 ] /; Not @ KindsOrderedQ @ {ops}
 (**** </Multiply> ****)
+
+
+DoubleStarAsMultiply::usage = "DoubleStarAsMultiply[] redefines the ** operator as Multiply.";
+
+DoubleStarAsMultiply[] := (
+  MakeExpression[RowBox @ {a_, "**", b_}, StandardForm] := 
+    MakeExpression[
+      RowBox @ {"Multiply", "[", a, ",", b, "]"},
+      StandardForm
+    ]
+);
+DoubleStarAsMultiply[];
+
+DoubleStarAsBuiltin::usage = "DoubleStarAsBuiltin[] restores the built-in meaning of the ** operator, i.e., NonCommutativeMultiply.";
+
+DoubleStarAsBuiltin[] := (
+  MakeExpression[RowBox @ {a_, "**", b_}, StandardForm] := 
+    MakeExpression[
+      RowBox @ {"NonCommutativeMultiply", "[", a, ",", b, "]"},
+      StandardForm
+    ]
+);
 
 
 KindsOrderedQ::usage = "KindsOrderedQ[list] returns True if all iterms in list are ordered within each section, where items are split into sections by MultiplyGenus."

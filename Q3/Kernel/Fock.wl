@@ -1627,9 +1627,9 @@ HoldPattern @ Multiply[pre___,
 
 (* D(z) := Exp[ -z ** Dagger[c] + c ** Conjugate[z] ] *)
 Displacement[z_?AnyGrassmannQ, c_?FermionQ] := Multiply[
-  1 - z ** Dagger[c],
-  1 + c ** Conjugate[z],
-  1 - Conjugate[z] ** z / 2
+  1 - Multiply[z, Dagger[c]],
+  1 + Multiply[c, Conjugate[z]],
+  1 - Multiply[Conjugate[z], z] / 2
 ]
 
 (**** </Displacement> ****)
@@ -1723,7 +1723,7 @@ KetNorm @ CoherentState[aa_Association, OptionsPattern[]] :=
     Module[
       { nn },
       nn = Values @ KeySelect[aa, FermionQ];
-      nn = Apply[Multiply, 1 + Conjugate[nn] ** nn / 2];
+      nn = Apply[Multiply, 1 + Multiply[Conjugate[nn], nn] / 2];
       nn *= Exp @ Total[ Abs[Values @ KeySelect[aa, BosonQ]]^2 / 2 ]
     ]
   ]
@@ -1735,7 +1735,7 @@ csNormFactor @ CoherentState[aa_Association, OptionsPattern[]] :=
     Module[
       { nn },
       nn = Values @ KeySelect[aa, FermionQ];
-      nn = Apply[Multiply, 1 - Conjugate[nn] ** nn / 2];
+      nn = Apply[Multiply, 1 - Multiply[Conjugate[nn], nn] / 2];
       nn *= Exp @ Total[ -Abs[Values @ KeySelect[aa, BosonQ]]^2 / 2 ]
     ],
     1
@@ -1766,7 +1766,7 @@ Elaborate[v:CoherentState[aa_Association, opts___?OptionQ]] :=
       ff = KeySelect[aa, FermionQ],
       nn = csNormFactor[aa, opts] },
     bb = Multiply @@ KeyValueMap[MultiplyExp[#2*Dagger[#1]]&, bb];
-    ff = Multiply @@ KeyValueMap[(1 + Dagger[#1] ** #2)&, ff];
+    ff = Multiply @@ KeyValueMap[(1 + Multiply[Dagger[#1], #2])&, ff];
     nn ** bb ** Multiply[ff, Ket[]]
   ]
 
@@ -1775,9 +1775,14 @@ Elaborate[v:CoherentState[aa_Association, opts___?OptionQ]] :=
 
 CoherentState /:
 Matrix[ cs:CoherentState[aa_Association, ___], ss:{__?SpeciesQ} ] := 
-  MatrixEmbed[
-    CircleTimes @@ AssociationMap[csVector, aa],
-    Keys[aa], ss ] ** csNormFactor[cs]
+  Multiply[
+    MatrixEmbed[
+      CircleTimes @@ AssociationMap[csVector, aa],
+      Keys[aa], 
+      ss
+    ],
+    csNormFactor[cs]
+  ]
 
 csVector[c_?FermionQ -> g_] := {1, g}
 
@@ -1843,7 +1848,7 @@ HoldPattern @ Multiply[
   Dagger[op_?ParticleQ],
   post___ 
 ] := 
-  Multiply[pre, Dagger[op ** v], post]
+  Multiply[pre, Dagger @ Multiply[op, v], post]
 
 (**** </CoherentState> ****)
 
@@ -2517,7 +2522,7 @@ JordanWignerTransform[qq:{__?QubitQ} -> ff:{__?FermionQ}] := Module[
     zz = Through[Construct[qq, 3]],
     cc, pp },
   pp = FoldList[Multiply, 1, Parity /@ Most[ff]];
-  cc = pp ** ff;
+  cc = Multiply[pp, ff];
   Join[
     Thread[Dagger[rr] -> Dagger[cc]],
     Thread[rr -> cc],

@@ -283,7 +283,7 @@ HoldPattern @
     Switch[ b @ a[j, $],
       0, 0,
       1, Ket @ KeySort @ Append[b, a[j,$] -> 0],
-      _?BinaryQ, Garner[(a[j, 1] + I*a[j, 2]) ** Ket[b] / 2],
+      _?BinaryQ, Garner[Multiply[a[j, 1] + I*a[j, 2], Ket @ b] / 2],
       _, Ket[b]
     ],
     post
@@ -295,7 +295,7 @@ HoldPattern @
     Switch[ b @ a[j, $],
       1, 0,
       0, Ket @ KeySort @ Append[b, a[j,$] -> 1],
-      _?BinaryQ, Garner[(a[j, 1] - I*a[j, 2]) ** Ket[b] / 2],
+      _?BinaryQ, Garner[Multiply[a[j, 1] - I*a[j, 2], Ket @ b] / 2],
       _, Ket[b]
     ],
     post
@@ -383,10 +383,10 @@ HoldPattern @ Multiply[ pre___, op_?QubitQ, vec_Ket, post___] :=
 (* Gates on Bra *)
 
 HoldPattern @ Multiply[ x___, Bra[v_Association], G_?QubitQ, y___ ] :=
-  Multiply[ x, Dagger[Dagger[G]**Ket[v]], y ]
+  Multiply[x, Dagger @ Multiply[Dagger @ G, Ket @ v], y]
 
 HoldPattern @ Multiply[ x___, Bra[v_Association, s_List], G_?QubitQ, y___ ] :=
-  Multiply[ x, Dagger[Dagger[G]**Ket[v,s]], y ]
+  Multiply[x, Dagger @ Multiply[Dagger @ G, Ket[v, s]], y]
 
 
 (* Special rules for Pauli operators *)
@@ -1002,7 +1002,7 @@ Elaborate @
     { prj = Through[Keys[cc][3]],
       not = Multiply @@ Through[tt[1]] },
     prj = Multiply @@ Garner[(1+prj)/2 - Values[cc]*prj];
-    Garner @ Elaborate[(1-prj) + prj ** not]
+    Garner @ Elaborate[1 - prj + Multiply[prj, not]]
   ]
 
 CNOT /:
@@ -1010,7 +1010,7 @@ Multiply[pre___, CNOT[cc:{__Rule}, tt_], in_Ket] := Module[
   { op = Multiply @@ Through[tt[1]],
     xx },
   If[ in[Keys @ cc] == Values[cc],
-    Multiply[pre, op ** in],
+    Multiply[pre, Multiply[op, in]],
     Multiply[pre, in],
     xx = Mod[in[tt] + Apply[Times, Mod[in[Keys @ cc]+Values[cc]+1, 2]], 2];
     Multiply[pre, in[tt -> xx]]
@@ -1019,15 +1019,17 @@ Multiply[pre___, CNOT[cc:{__Rule}, tt_], in_Ket] := Module[
 
 CNOT /:
 Multiply[in_Bra, op_CNOT, post___] :=
-  Multiply[ Dagger[op ** Dagger[in]], post ]
+  Multiply[Dagger @ Multiply[op, Dagger @ in], post]
 
 CNOT /:
 Multiply[pre___, op:CNOT[cc_List, tt_List], Dyad[a_Association, b_Association], post___] :=
-  Multiply[pre, op ** Ket[a], Bra[b], post] /; ContainsAll[Keys @ a, Join[Keys @ cc, tt]]
+  Multiply[pre, Multiply[op, Ket @ a], Bra @ b, post] /; 
+  ContainsAll[Keys @ a, Join[Keys @ cc, tt]]
 
 CNOT /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:CNOT[cc_List, tt_List], post___] :=
-  Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, Join[Keys @ cc, tt]]
+  Multiply[pre, Ket[a], Multiply[Bra @ b, op], post] /; 
+  ContainsAll[Keys @ b, Join[Keys @ cc, tt]]
 
 (*
 HoldPattern @ Multiply[pre___, op_CNOT, post___] :=
@@ -1105,15 +1107,15 @@ Multiply[pre___, CZ[ss:{__?QubitQ}], Ket[a_Association]] := (* performance boost
 
 CZ /:
 Multiply[in_Bra, op_CZ, post___] :=
-  Multiply[ Dagger[op ** Dagger[in]], post ]
+  Multiply[Dagger @ Multiply[op, Dagger @ in], post]
 
 CZ /:
 Multiply[pre___, op:CZ[ss_List], Dyad[a_Association, b_Association], post___] :=
-  Multiply[pre, op ** Ket[a], Bra[b], post] /; ContainsAll[Keys @ a, ss]
+  Multiply[pre, Multiply[op, Ket @ a], Bra[b], post] /; ContainsAll[Keys @ a, ss]
 
 CZ /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:CZ[ss_List], post___] :=
-  Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, ss]
+  Multiply[pre, Ket[a], Multiply[Bra[b], op], post] /; ContainsAll[Keys @ b, ss]
 
 
 (* See also Smolin and DiVincenzo (1996) for the optimization of the Fredkin gate. *)
@@ -1172,7 +1174,7 @@ SWAP /:
 Elaborate @ SWAP[x_?QubitQ, y_?QubitQ] := Module[
   { a = Most @ x,
     b = Most @ y },
-  Garner[ (1 + a[1]**b[1] + a[2]**b[2] + a[3]**b[3]) / 2 ]
+  Garner[(1 + Multiply[a[1], b[1]] + Multiply[a[2], b[2]] + Multiply[a[3], b[3]]) / 2]
 ]
 
 SWAP /:
@@ -1189,15 +1191,15 @@ Multiply[pre___, SWAP[s_?QubitQ, t_?QubitQ], Ket[a_Association]] :=
 
 SWAP /:
 Multiply[in_Bra, op_SWAP, post___] :=
-  Multiply[ Dagger[op ** Dagger[in]], post ]
+  Multiply[Dagger @ Multiply[op, Dagger @ in], post]
 
 SWAP /:
 Multiply[pre___, op:SWAP[s_, t_], Dyad[a_Association, b_Association], post___] :=
-  Multiply[pre, op ** Ket[a], Bra[b], post] /; ContainsAll[Keys @ a, {s, t}]
+  Multiply[pre, Multiply[op, Ket @ a], Bra[b], post] /; ContainsAll[Keys @ a, {s, t}]
 
 SWAP /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:SWAP[s_, t_], post___] :=
-  Multiply[pre, Ket[a], Bra[b] ** op, post] /; ContainsAll[Keys @ b, {s, t}]
+  Multiply[pre, Ket[a], Multiply[Bra[b], op], post] /; ContainsAll[Keys @ b, {s, t}]
 (**** </SWAP> ****)
 
 
@@ -1216,8 +1218,9 @@ iSWAP /:
 Matrix[op_iSWAP, rest___] := Matrix[Elaborate[op], rest]
 
 iSWAP /:
-Elaborate @ iSWAP[a_?QubitQ, b_?QubitQ] :=
-  Garner[ (1 + I*a[1]**b[1] + I*a[2]**b[2] + a[3]**b[3]) / 2 ]
+Elaborate @ iSWAP[a_?QubitQ, b_?QubitQ] := Garner[
+  (1 + I*Multiply[a[1], b[1]] + I*Multiply[a[2], b[2]] + Multiply[a[3], b[3]]) / 2 
+]
 
 iSWAP /:
 Multiply[pre___, iSWAP[s_?QubitQ, t_?QubitQ], Ket[a_Association]] := With[
@@ -1254,8 +1257,8 @@ Dagger[ op_Toffoli ] := op
 Toffoli /:
 HoldPattern @ Elaborate @ Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ] := Garner[
   ( 3 + a[3] + b[3] + c[1] -
-      a[3]**b[3] - a[3]**c[1] - b[3]**c[1] +
-      a[3]**b[3]**c[1]
+      Multiply[a[3], b[3]] - Multiply[a[3], c[1]] - Multiply[b[3], c[1]] +
+      Multiply[a[3], b[3], c[1]]
   ) / 4
 ]
 
@@ -1290,7 +1293,7 @@ Dagger[ op_Fredkin ] := op
 
 Fredkin /:
 Elaborate @ Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}] :=
-  Garner @ Elaborate[ a[10] + a[11] ** SWAP[b, c] ]
+  Garner @ Elaborate[ a[10] + Multiply[a[11], SWAP[b, c]] ]
 
 (*
 Fredkin /:
@@ -1338,8 +1341,8 @@ Dagger[ Deutsch[ph_, qq:{__?QubitQ}, opts___?OptionQ] ] :=
 Deutsch /:
 HoldPattern @ Elaborate @
   Deutsch[ph_, {a_?QubitQ, b_?QubitQ, c_?QubitQ}, opts___?OptionQ] := With[
-    { P = a[11]**b[11] },
-    Garner @ Elaborate[(1-P) + I*P**Rotation[ph, c[1]]]
+    { P = Multiply[a[11], b[11]] },
+    Garner @ Elaborate[1 - P + I*Multiply[P, Rotation[ph, c[1]]]]
    ]
 
 Deutsch /:
@@ -1497,7 +1500,7 @@ Elaborate @
     { rr = Thread[Values[cc] -> Values[cc]],
       prj },
     prj = Multiply @@ Elaborate @ MapThread[Construct, {Keys @ cc, rr}];
-    Garner[prj ** Elaborate[op] + (1 - prj)]
+    Garner[1 - prj + Multiply[prj, Elaborate @ op]]
   ]
 
 
@@ -1522,7 +1525,7 @@ Multiply[ pre___,
   in_Ket
 ] :=
   If[ in[Keys @ cc] == Values[cc],
-    Multiply[pre, op ** in],
+    Multiply[pre, Multiply[op, in]],
     Multiply[pre, in],
     Multiply[pre, in]
   ]
@@ -2077,21 +2080,21 @@ Multiply[pre___, op:QFT[type_, ss:{__?QubitQ}, opts___?OptionQ], in_Ket] :=
       v },
     v = Exp[type * (2*Pi*I) * Range[0, L-1] * k / L] / Sqrt[L];
     If[OptionValue[QFT, {opts}, "Numeric"], v = N[v]];
-    Dot[Basis[ss], v] ** Ket[KeyDrop[First @ in, ss]]
+    Multiply[Dot[Basis @ ss, v], Ket @ KeyDrop[First @ in, ss]]
   ]
 (* TODO: Handle the "ApproximationLevel" option. *)
 
 QFT /:
 Multiply[in_Bra, op_QFT, post___] :=
-  Multiply[ Dagger[Dagger[op] ** Dagger[in]], post ]
+  Multiply[Dagger @ Multiply[Dagger @ op, Dagger @ in], post]
 
 QFT /:
 Multiply[pre___, op:QFT[_, ss_List, ___], Dyad[a_Association, b_Association], post___] :=
-  Multiply[pre, Multiply[op ** Ket[a], Bra[b]], post] /; ContainsAll[Keys @ a, ss]
+  Multiply[pre, Multiply[Multiply[op, Ket @ a], Bra @ b], post] /; ContainsAll[Keys @ a, ss]
 
 QFT /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:QFT[_, ss_List, ___], post___] :=
-  Multiply[pre, Multiply[Ket[a], Bra[b] ** op], post] /; ContainsAll[Keys @ b, ss]
+  Multiply[pre, Multiply[Ket @ a, Multiply[Bra @ b, op]], post] /; ContainsAll[Keys @ b, ss]
 
 
 QFT /:
@@ -2279,15 +2282,15 @@ Multiply[pre___, op:QBR[ss:{__?QubitQ}, ___], in:Ket[aa_Association]] :=
 
 QBR /:
 Multiply[in_Bra, op_QBR, post___] :=
-  Multiply[ Dagger[op ** Dagger[in]], post ]
+  Multiply[Dagger @ Multiply[op, Dagger@ in], post]
 
 QBR /:
 Multiply[pre___, op:QBR[ss_List, ___], Dyad[a_Association, b_Association], post___] :=
-  Multiply[pre, Multiply[op ** Ket[a], Bra[b]], post] /; ContainsAll[Keys @ a, ss]
+  Multiply[pre, Multiply[Multiply[op, Ket @ a], Bra @ b], post] /; ContainsAll[Keys @ a, ss]
 
 QBR /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:QBR[ss_List, ___], post___] :=
-  Multiply[pre, Ket[a], Multiply[Bra[b] ** op], post] /; ContainsAll[Keys @ b, ss]
+  Multiply[pre, Ket[a], Multiply[Bra @ b, op], post] /; ContainsAll[Keys @ b, ss]
 
 
 QBR /:
@@ -2387,15 +2390,15 @@ Multiply[pre___, op:QCR[ss:{__?QubitQ}, ___], in:Ket[aa_Association]] :=
 
 QCR /:
 Multiply[in_Bra, op_QCR, post___] :=
-  Multiply[ Dagger[op ** Dagger[in]], post ]
+  Multiply[Dagger @ Multiply[op, Dagger @ in], post]
 
 QCR /:
 Multiply[pre___, op:QCR[ss_List, ___], Dyad[a_Association, b_Association], post___] :=
-  Multiply[pre, Multiply[op ** Ket[a], Bra[b]], post] /; ContainsAll[Keys @ a, ss]
+  Multiply[pre, Multiply[Multiply[op, Ket @ a], Bra @ b], post] /; ContainsAll[Keys @ a, ss]
 
 QCR /:
 Multiply[pre___, Dyad[a_Association, b_Association], op:QCR[ss_List, ___], post___] :=
-  Multiply[pre, Ket[a], Multiply[Bra[b] ** op], post] /; ContainsAll[Keys @ b, ss]
+  Multiply[pre, Ket[a], Multiply[Bra @ b, op], post] /; ContainsAll[Keys @ b, ss]
 
 
 QCR /:
@@ -3090,12 +3093,12 @@ Matrix @ ModMultiply[n_Integer, x_Integer, tt:{__?QubitQ}, ___?OptionQ] :=
   Module[
     { yy, zz },
     yy = Range[0, Power[2, Length @ tt]-1];
-    zz = Mod[x ** yy, n];
+    zz = Mod[x * yy, n];
     SparseArray[
       MapIndexed[Rule[Flatten[{#1, #2}], 1]&, Map[FirstPosition[yy, #]&, zz]],
       Table[Length @ yy, 2]
-     ]
-   ]
+    ]
+  ]
 
 ModMultiply /:
 Matrix[
@@ -3287,17 +3290,20 @@ Matchgate[aa_, bb_, ss:{__?QubitQ}] :=
 
 Matchgate /:
 Elaborate @ Matchgate[aa:{_, _, _}, bb:{_, _, _}, ss:{_?QubitQ, _?QubitQ}] :=
-  Elaborate[
-    GivensRotation[TheEulerRotation[aa], {1, 4}, ss] **
-      GivensRotation[TheEulerRotation[bb], {2, 3}, ss] ]
+  Elaborate @ Multiply[
+    GivensRotation[TheEulerRotation[aa], {1, 4}, ss],
+    GivensRotation[TheEulerRotation[bb], {2, 3}, ss]
+  ]
 
 Matrix /:
 Matrix[
   Matchgate[aa:{_, _, _}, bb:{_, _, _}, ss:{_?QubitQ, _?QubitQ}],
   rest___ ] :=
   Matrix[
-    GivensRotation[TheEulerRotation[aa], {1, 4}, ss] **
-      GivensRotation[TheEulerRotation[bb], {2, 3}, ss],
+    Multiply[
+      GivensRotation[TheEulerRotation[aa], {1, 4}, ss]
+      GivensRotation[TheEulerRotation[bb], {2, 3}, ss]
+    ],
     rest
   ]
 
