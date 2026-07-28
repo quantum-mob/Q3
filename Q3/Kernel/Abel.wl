@@ -1059,7 +1059,7 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
 
 
 (**** <DoubleStarAs> ****)
-DoubleStarAs::usage = "DoubleStarAs[\"name\"] redefines the ** operator as name.";
+DoubleStarAs::usage = "DoubleStarAs[\"name\"] redefines the ** operator as name.\nDoubleStarAs[symb] assigns the ** operator to the existing symb.";
 
 DoubleStarAs[s_Symbol] := DoubleStarAs[Context[s] <> SymbolName[s]];
 
