@@ -1058,15 +1058,16 @@ HoldPattern @ Multiply[ops__?NonCommutativeQ] := Module[
 (**** </Multiply> ****)
 
 
-DoubleStarAsMultiply::usage = "DoubleStarAsMultiply[] redefines the ** operator as Multiply.";
+(**** <DoubleStarAs> ****)
+DoubleStarAs::usage = "DoubleStarAs[\"name\"] redefines the ** operator as name.";
 
-DoubleStarAsMultiply[] := (
+DoubleStarAs[name_String] := (
   MakeExpression[
     RowBox @ {first_, rest:PatternSequence["**", _]..},
     StandardForm
   ] := MakeExpression[
     RowBox @ {
-      "Multiply", 
+      name,
       "[",
       RowBox @ Riffle[Prepend[{rest}[[2 ;; ;; 2]], first], ","], 
       "]"
@@ -1074,24 +1075,16 @@ DoubleStarAsMultiply[] := (
     StandardForm
   ]
 );
-DoubleStarAsMultiply[];
+
+DoubleStarAsMultiply::usage = "DoubleStarAsMultiply[] redefines the ** operator as Multiply.";
+
+DoubleStarAsMultiply[] := DoubleStarAs["Multiply"];
+DoubleStarAsMultiply[]; (* turned on by default *)
 
 DoubleStarAsBuiltin::usage = "DoubleStarAsBuiltin[] restores the built-in meaning of the ** operator, i.e., NonCommutativeMultiply.";
 
-DoubleStarAsBuiltin[] := (
-  MakeExpression[
-    RowBox @ {first_, rest:PatternSequence["**", _]..},
-    StandardForm
-  ] := MakeExpression[
-    RowBox @ {
-      "NonCommutativeMultiply", 
-      "[",
-      RowBox @ Riffle[Prepend[{rest}[[2 ;; ;; 2]], first], ","], 
-      "]"
-    },
-    StandardForm
-  ]
-);
+DoubleStarAsBuiltin[] := DoubleStarAs["NonCommutativeMultiply"];
+(**** </DoubleStarAs> ****)
 
 
 KindsOrderedQ::usage = "KindsOrderedQ[list] returns True if all iterms in list are ordered within each section, where items are split into sections by MultiplyGenus."
