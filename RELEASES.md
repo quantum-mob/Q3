@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.6.3
+
+- Emergency bug fix: Matrix[Rotation[...], ...] involving Spin may give Zero matrix.
+
 ## 4.6.2
 
 - New: Help documents for DoubleStarAsMultiply and DoubleStarAsBuiltin

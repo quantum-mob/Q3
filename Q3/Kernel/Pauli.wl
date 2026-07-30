@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { TheKet, TheBra };
 
@@ -74,13 +74,11 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { Gate, Port }; (* QuantumCircuit *)
 
 
-Begin["`Private`"]
-
-$symb = Unprotect[CircleTimes, CirclePlus, Ket, Bra]
+Begin["`Private`"];
+$symb = Unprotect[CircleTimes, CirclePlus, Ket, Bra];
 
 
 (**** <TheKet> ****)
-
 TheBra::usage = "TheBra[\[Ellipsis]] is formally different from but equalt to TheKet[\[Ellipsis]]."
 
 TheBra[args__] := TheKet[args]
@@ -102,12 +100,10 @@ TheKet[aa:{(0|1|Up|Down)..}] := Module[
   k = 1 + FromDigits[bb, 2];
   SparseArray[{k -> 1}, Power[2, Length @ bb]]
 ]
-
 (**** </TheKet> ****)
 
 
 (**** <ThePauli> ****)
-
 ThePauli::usage = "ThePauli[n] (n=1,2,3) returns the Pauli matrix numbered n.
   ThePauli[0] returns the 2\[Times]2 identity matrix. ThePauli[4] and ThePauli[5] represent the raising and lowering operators, respectively, and ThePauli[6] returns the 2\[Times]2 Hadamard matrix. ThePauli[7], ThePauli[8], ThePauli[9] represent the quadrant, octant, and hexadecant phase gates, respectively.\nThePauli[{n1, n2, n3, \[Ellipsis]}] = ThePauli[n1] \[CircleTimes] ThePauli[n2] \[CircleTimes] ThePauli[n3]\[CircleTimes] \[Ellipsis]."
 
@@ -211,12 +207,10 @@ ThePauli[0 -> 1] = ThePauli[5]
 ThePauli[0 -> 0] = ThePauli[10]
 
 ThePauli[1 -> 1] = ThePauli[11]
-
 (**** </ThePauli> ****)
 
 
 (**** <KetRegulate> ****)
-
 theKetRegulate::usage = "theKetRegulate[assoc, {s1, s2, \[Ellipsis]}] returns a new association with all default values assigned.\nSee also theKetTrim."
 
 theKetRegulate[a_Association, ss:{___?SpeciesQ}] := With[
@@ -274,12 +268,10 @@ KetRegulate[expr_, ss:{___?SpeciesQ}] := expr /. {
   v_Ket :> KetRegulate[v, ss],
   v_Bra :> KetRegulate[v, ss]
 }
-
 (**** </KetRegulate> ****)
 
 
 (**** <KetMutate> ****)
-
 KetMutate::usage = "KetMutate[expr, {s1, s2, \[Ellipsis]}] changes every Ket[v1,v2,\[Ellipsis]] to Ket[<|s1->v1, s2->v2, \[Ellipsis]|>] and vice versa in expr."
 
 KetMutate[any_, ss:{__?SpeciesQ}] :=
@@ -309,12 +301,10 @@ KetMutate[expr_, ss:{__?SpeciesQ}] := ReplaceAll[ expr,
     v:(_Ket|_Bra) :> KetMutate[v, ss],
     v_Pauli :> KetMutate[v, ss] }
 ]
-
 (**** </KetMutate> ****)
 
 
 (**** <SimpleForm> ****)
-
 $KetDelimiter::usage = "The charater delimiting values in a Ket."
 
 $KetGroupDelimiter::usage = "The charater delimiting groups of values in a Ket."
@@ -373,12 +363,10 @@ theSimpleForm[vec:Ket[_Association], gg_List] := With[
     $KetGroupDelimiter
   ]
 ]
-
 (**** </SimpleForm> ****)
 
 
 (**** <ProductForm> ****)
-
 ProductForm::usage = "ProductForm[expr] displays every Ket[\[Ellipsis]] in expr in the product form.\nProductForm[expr, {s1, \[Ellipsis], {s2,s3,\[Ellipsis]}, \[Ellipsis]}] splits each Ket into the form Ket[{s1, \[Ellipsis]}] \[CircleTimes] Ket[{s2,s3,\[Ellipsis]}] \[CircleTimes] \[Ellipsis]]."
 
 ProductForm[expr_, ss_List] :=
@@ -417,12 +405,10 @@ theProductForm[vec:Ket[_Association], gg_List] := Row[
   ],
   $KetProductDelimiter
 ]
-
 (**** </ProductForm> ****)
 
 
 (**** <SpinForm> ****)
-
 SpinForm::usage = "SpinForm[expr, {s1, s2, \[Ellipsis]}] converts the values to \[UpArrow] or \[DownArrow] in every Ket[<|\[Ellipsis]|>] appearing in expr.\nIf the Species is a Qubit, SpinForm converts 0 to \[UpArrow] and 1 to \[DownArrow].\nIf the Species is a Spin, SpinForm converts 1/2 to \[UpArrow] and -1/2 to \[DownArrow]."
 
 SpinForm[Bra[spec___], rest___] :=
@@ -474,7 +460,6 @@ theSpinForm[Ket[aa_Association], qq:{(_?QubitQ | _?SpinQ)...}] := With[
 
 theSpinForm[Ket[aa_Association], qq:{(_?QubitQ | _?SpinQ)...}, kk_List] :=
   theSimpleForm[Ket @ theSpinForm[aa, qq], kk]
-
 (**** </SpinForm> ****)
 
 
@@ -506,7 +491,6 @@ KetCanonicalize[any_, ___] = any;
 
 
 (**** <XBasisForm> ****)
-
 XBasisForm::usage = "XBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum state in expression expr in the eigenbasis of the Pauli X operator for qubits q1, q2, \[Ellipsis]."
 
 XBasisForm[expr_, q_?QubitQ] := XBasisForm[expr, q @ {$}] 
@@ -540,12 +524,10 @@ theXBasisLabel[Ket[v_], qq:{__?QubitQ}] :=
 
 theXBasisLabel[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr, v_Ket :> theXBasisLabel[v, qq] ]
-
 (**** </XBasisForm> ****)
 
 
 (**** <YBasisForm> ****)
-
 YBasisForm::usage = "YBasisForm[expr, {q1,q2,\[Ellipsis]}] displays the quantum state in expression expr in the eigenbasis of the Pauli Y operator for qubits q1, q2, \[Ellipsis]."
 
 YBasisForm[expr_, q_?QubitQ] := YBasisForm[expr, q @ {$}] 
@@ -579,12 +561,10 @@ theYBasisLabel[Ket[v_], qq:{__?QubitQ}] :=
 
 theYBasisLabel[expr_, qq:{__?QubitQ}] :=
   ReplaceAll[ expr, v_Ket :> theYBasisLabel[v, qq] ]
-
 (**** </YBasisForm> ****)
 
 
 (**** <fPauliKetQ> ****)
-
 fPauliKetQ::usage = "fPauliKetQ[expr] returns True if expr is a valid expression for a state vector of a system of unlabelled qubits.\nPauli[\[Ellipsis]] operates consistently on such an expression.";
 
 HoldPattern @ fPauliKetQ[Ket[{(0|1)..}]] = True
@@ -603,12 +583,10 @@ HoldPattern @ fPauliKetQ[expr_] := False /; FreeQ[expr, Ket[(0 | 1) ..]]
 
 HoldPattern @ fPauliKetQ[expr_] := False /;
   Not[Equal @@ Length /@ Cases[{expr}, Ket[kk_List] :> kk, Infinity]]
-
 (**** </fPauliKetQ> ****)
 
 
 (**** <fKetQ> ****)
-
 fKetQ::usage = "fKetQ[expr] returns True if expr is a valid expression for a state vector of labelled qubits.";
 
 HoldPattern @ fKetQ[Ket[_Association]] = True
@@ -623,12 +601,10 @@ HoldPattern @ fKetQ[Plus[terms__]] := TrueQ[
 (* NOTE: 0. or Complex[0., 0.] can ocur in numerical evaluattions. *)
 
 HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
-
 (**** </fKetQ> ****)
 
 
 (**** <KetFormat> <BraFormat>****)
-
 KetFormat::usage = "KetFormat[\[Ellipsis]] is a low-level function to display Ket[\[Ellipsis]]."
 
 KetFormat[a_] :=
@@ -662,12 +638,10 @@ theKetFormat[v_] = v
 
 
 theKetFormatQ[_] = False
-
 (**** </KetFormat> </BraFormat> ****)
 
 
 (**** <Ket & Bra> ****)
-
 Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[{s1, s2, \[Ellipsis]}] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] \[Ellipsis].\nSee also Ket, TheKet, Bra, TheBra, State, Pauli, ThePauli, Operator."
 
 Bra::usage = "Bra[arg] := Dagger[Ket[arg]].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
@@ -808,7 +782,6 @@ Bra[a_Association][spec__Rule] := Bra[ Bra[a], spec ]
 Bra[a_Association][ss_List] := Lookup[a, FlavorCap @ ss]
 
 Bra[a_Association][s_] := a[FlavorCap @ s]
-
 (**** </Ket & Bra> ****)
 
 
@@ -2822,7 +2795,6 @@ TheEulerAngles[expr_] := Module[
 
 
 (**** <TheRotation> ****)
-
 TheRotation::usage = "TheRotation[\[Phi], 1], TheRotation[\[Phi], 2], TheRotation[\[Phi], 3] give the 2x2 matrix representing the rotation by angle \[Phi] around the x, y, and z axis, respective in the two-dimensional Hilbert  space.\nTheRotation[{x1, n1,}, {x2, n2,}, \[Ellipsis]] = TheRotation[x1, n1] \[CircleTimes] Rotation[x2, n2] \[CircleTimes] \[Ellipsis].\nTheRotation[\[Phi], {J, 1}], TheRotation[\[Phi], {J, 2}], TheRotation[\[Phi], {J, 3}] give the rotation matrices by angle \[Phi] around the x, y, and z axis, respective, for Spin = J."
 
 TheRotation[_, 0] := ThePauli[0]
@@ -2845,12 +2817,10 @@ TheRotation[ph_, v:{_, _, _}] := Cos[ph/2] * ThePauli[0] -
 
 TheRotation[a:{_, {_, _, _}}, b:{_, {_, _, _}}..] :=
   Apply[CircleTimes, TheRotation @@@ {a, b}]
-
 (**** </TheRotation> ****)
 
 
 (**** <TheEulerRotation> ****)
-
 TheEulerRotation::usage = "TheEulerRotation[{a,b,c}] = TheRotation[a,3].TheRotation[b,2].TheRotation[c,3] and TheEulerRotation[{a,b}]=TheEulerRotation[{a,b,0}] return the matrices corresponding to the Euler rotations in SU(2) space.\nTheEulerRotation[{a, b, c}, J] gives the Euler rotation matrix in the angular momentum J representation."
 
 TheEulerRotation[ {phi_, theta_, chi_} ] := {
@@ -2862,12 +2832,10 @@ TheEulerRotation[ {phi_,theta_} ] := TheEulerRotation[ {phi, theta, 0} ]
 
 TheEulerRotation[a:{_, _, _}, b:{_, _, _}..] :=
   CircleTimes @@ Map[TheEulerRotation, {a, b}]
-
 (**** </TheEulerRotation> ****)
 
 
 (**** <Rotation> ****)
-
 Rotation::usage = "Rotation[\[Phi], 1], Rotation[\[Phi], 2], and Rotation[\[Phi], 3] returns an operator corresponding to the rotations by angle \[Phi] around the x, y, and z axis, respectively, on a two-dimensioinal Hilbert space.\nRotation[{a1, n1}, {a2, n2}, \[Ellipsis]] = Rotation[a1, n1] \[CircleTimes] Rotation[a2, n2] \[CircleTimes] \[Ellipsis]\nRotation[a, {x, y, z}] returns an operator corresponding the rotation by angle a around the axis along the vector {x, y, z}.\nRotation[\[Phi], {x, y, z}, S] represents the rotation by angle \[Phi] around the axis {x, y, z} on qubit or spin S.\nRotation[\[Phi], S[i,\[Ellipsis],1]] is equivalent to Rotation[\[Phi], {1, 0, 0}, S[i,\[Ellipsis],$]].\nRotation[\[Phi], S[i,\[Ellipsis],2]] is equivalent to Rotation[\[Phi], {0, 1, 0}, S[i,\[Ellipsis],$]].\nRotation[\[Phi], S[i,\[Ellipsis],3]] is equivalent to Rotation[\[Phi], {0, 0, 1}, S[i,\[Ellipsis],$]]."
 
 Rotation[_, 0] := Pauli[0]
@@ -2959,12 +2927,10 @@ Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] ] :=
 
 Rotation /:
 Matrix[op_Rotation, rest___] := Matrix[Elaborate @ op, rest]
-
 (**** </Rotation> ****)
 
 
 (**** <EulerRotation> ****)
-
 EulerRotation::usage = "EulerRotation[{a, b, c}] = Rotation[a, 3].Rotation[b, 2].Rotation[c, 3] represent the Euler rotation by angles a, b, c in a two-dimensional Hilbert space."
 
 EulerRotation[{a_, b_, c_}] :=
@@ -3013,7 +2979,6 @@ Unfold[
   ___
 ] :=
   QuantumCircuit[ Rotation[a, S[3]], Rotation[b, S[2]], Rotation[c, S[3]] ]
-
 (**** </EulerRotation> ****)
 
 
@@ -3239,13 +3204,13 @@ Matrix[ Dyad[a_Association, b_Association],
     If[sa != tb,
       Message[Dyad::mtrx, Row @ {ss, Keys @ a, Keys @ b, tt}];
       Return[Zero @ {Length @ ss, Length @ tt}]
-     ];
+    ];
     aa = Map[TheMatrix] @ Map[KeyTake[ss]] @ Map[Join[a, #]&] @
       Map[AssociationThread[sa -> #]&] @ Tuples[LogicalValues @ sa];
     bb = Map[TheMatrix] @ Map[KeyTake[tt]] @ Map[Join[b, #]&] @
       Map[AssociationThread[tb -> #]&] @ Tuples[LogicalValues @ tb];
-    Total @ MapThread[ Dyad, {CircleTimes @@@ aa, CircleTimes @@@ bb}]
-   ]
+    Total @ MapThread[Dyad, {CircleTimes @@@ aa, CircleTimes @@@ bb}]
+  ];
 
 
 Dyad /: (* fallback *)
@@ -3288,7 +3253,7 @@ Dyad[a_] := Module[
   { qq = Agents[a] },
   Message[Dyad::one];
   Dyad[a, a, qq]
-] /; Not @ FreeQ[a, _Ket]
+] /; Not @ FreeQ[a, _Ket];
 
 Dyad[a_, b_] := Module[
   { qq = Agents @ {a, b} },
@@ -3309,56 +3274,56 @@ Dyad[{aa___Rule, ss:{__?SpeciesQ}...}, {bb___Rule, tt:{__?SpeciesQ}...}] :=
       KeySort @ Join[
         AssociationThread[ttt -> Lookup[<||>, ttt]],
         Association @ KetRule @ {bb} ]
-     ]
-   ]
+    ]
+  ];
 
 
-Dyad[<||>, <||>] = 1
+Dyad[<||>, <||>] = 1;
 
-Dyad[0, _, __List] = 0
+Dyad[_?ZeroQ, _, __List] = 0;
 
-Dyad[_, 0, __List] = 0
-
-
-Dyad[S_?SpeciesQ] := Dyad[FlavorCap @ {S}]
-
-Dyad[ss:{__?SpeciesQ}] := Dyad[FlavorCap @ ss] /; Not[FlavorCapQ @ ss]
-
-Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss]
+Dyad[_, _?ZeroQ, __List] = 0;
 
 
-Dyad[a_, b_, ss_] := Dyad[a, b, ss, ss]
+Dyad[S_?SpeciesQ] := Dyad[FlavorCap @ {S}];
 
-Dyad[a_, b_, S_?SpeciesQ, tt_] := Dyad[a, b, S @ {$}, tt]
+Dyad[ss:{__?SpeciesQ}] := Dyad[FlavorCap @ ss] /; Not[FlavorCapQ @ ss];
 
-Dyad[a_, b_, ss_, T_?SpeciesQ] := Dyad[a, b, ss, T @ {$}]
+Dyad[ss:{__?SpeciesQ}][a_, b_] := Dyad[a, b, ss];
+
+
+Dyad[a_, b_, ss_] := Dyad[a, b, ss, ss];
+
+Dyad[a_, b_, S_?SpeciesQ, tt_] := Dyad[a, b, S @ {$}, tt];
+
+Dyad[a_, b_, ss_, T_?SpeciesQ] := Dyad[a, b, ss, T @ {$}];
 
 Dyad[a_, b_, ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] :=
   Dyad[a, b, FlavorCap @ ss, FlavorCap @ tt] /;
-  Not[FlavorCapQ @ {ss, tt}]
+  Not[FlavorCapQ @ {ss, tt}];
 
 Dyad[Ket[a_Association], Ket[b_Association], ss:{__?SpeciesQ}] :=
-  Dyad[Ket[a], Ket[b], ss, ss]
+  Dyad[Ket[a], Ket[b], ss, ss];
 
 Dyad[Ket[a_Association], Ket[b_Association],
   ss:{__?SpeciesQ}, tt:{__?SpeciesQ}] := Dyad[
     AssociationThread[ss -> Lookup[a, ss]],
     AssociationThread[tt -> Lookup[b, tt]]
-   ]
+  ]
 
 Dyad[a_Association, b_Association] := Module[
   { ss = GroupBy[Union[Keys @ a, Keys @ b], MultiplyKind] },
   Multiply @@ Map[Dyad[KeyTake[a, #], KeyTake[b, #]]&, Values @ ss]
- ] /; Length[Union @ MultiplyKind @ Flatten @ {Keys @ a, Keys @ b}] > 1
+] /; Length[Union @ MultiplyKind @ Flatten @ {Keys @ a, Keys @ b}] > 1;
 
 
-Dyad[a_Plus, b_, qq___] := Garner @ Map[Dyad[#, b, qq]&, a]
+Dyad[a_Plus, b_, qq___] := Garner @ Map[Dyad[#, b, qq]&, a];
 
-Dyad[a_, b_Plus, qq___] := Garner @ Map[Dyad[a, #, qq]&, b]
+Dyad[a_, b_Plus, qq___] := Garner @ Map[Dyad[a, #, qq]&, b];
 
-Dyad[z_?CommutativeQ a_, b_, qq___] := Garner[z * Dyad[a, b, qq]]
+Dyad[z_?CommutativeQ a_, b_, qq___] := Garner[z * Dyad[a, b, qq]];
 
-Dyad[a_, z_?CommutativeQ b_, qq___] := Garner[Conjugate[z] * Dyad[a, b, qq]]
+Dyad[a_, z_?CommutativeQ b_, qq___] := Garner[Conjugate[z] * Dyad[a, b, qq]];
 
 
 HoldPattern @ Multiply[
@@ -3366,65 +3331,65 @@ HoldPattern @ Multiply[
   xx:Dyad[a_Association, b_Association],
   yy:Dyad[c_Association, d_Association],
   post___
- ] := Module[
-   { bb = Complement[Keys @ b, Keys @ c],
-     cc = Complement[Keys @ c, Keys @ b],
-     bc = Intersection[Keys @ b, Keys @ c] },
-   Multiply[ pre,
-     Dyad[
-       KeySort @ CheckJoin[a, KeyTake[c, cc]],
-       KeySort @ CheckJoin[d, KeyTake[b, bb]]
+] := Module[
+    { bb = Complement[Keys @ b, Keys @ c],
+      cc = Complement[Keys @ c, Keys @ b],
+      bc = Intersection[Keys @ b, Keys @ c] },
+    Multiply[ pre,
+      Dyad[
+        KeySort @ CheckJoin[a, KeyTake[c, cc]],
+        KeySort @ CheckJoin[d, KeyTake[b, bb]]
       ] * BraKet[KeyTake[b, bc], KeyTake[c, bc]],
-     post ]
-  ] /; MultiplyKind[xx] == MultiplyKind[yy]
+      post ]
+  ] /; MultiplyKind[xx] == MultiplyKind[yy];
 
 HoldPattern @ Multiply[
   pre___,
   op_?AnySpeciesQ, Dyad[a_Association, b_Association],
   post___
- ] := Multiply[
-   pre,
-   Dyad[Multiply[op, Ket @ a], Ket @ b, Keys @ a, Keys @ b],
-   post
-  ] /; MemberQ[Keys @ a, FlavorMute @ Peel @ op]
+] := Multiply[
+    pre,
+    Dyad[Multiply[op, Ket @ a], Ket @ b, Keys @ a, Keys @ b],
+    post
+  ] /; MemberQ[Keys @ a, FlavorMute @ Peel @ op];
 
 HoldPattern @ Multiply[
   pre___,
   Dyad[a_Association, b_Association], op_?AnySpeciesQ,
   post___
- ] := Multiply[
-   pre,
-   Dyad[Ket @ a, Multiply[Dagger @ op, Ket @ b], Keys @ a, Keys @ b],
-   post
-  ] /; MemberQ[Keys @ b, FlavorMute @ Peel @ op]
+] := Multiply[
+    pre,
+    Dyad[Ket @ a, Multiply[Dagger @ op, Ket @ b], Keys @ a, Keys @ b],
+    post
+  ] /; MemberQ[Keys @ b, FlavorMute @ Peel @ op];
 
 
 HoldPattern @ Multiply[
   pre___,
   op_?AnySpeciesQ, Dyad[a_Association, b_Association],
   post___
- ] := Multiply[pre, Dyad[a, b], op, post] /;
+] := Multiply[pre, Dyad[a, b], op, post] /;
   With[
     { sp = FlavorMute @ Peel @ op },
     And[
       MultiplyKind[Dyad[a, b]] == MultiplyKind[op],
       Not @ MemberQ[Union[Keys @ a, Keys @ b], sp],
       Not @ OrderedQ @ {sp, First @ Keys @ a}
-     ]
-   ]
+    ]
+  ];
 
 HoldPattern @ Multiply[
   pre___,
   Dyad[a_Association, b_Association], op_?AnySpeciesQ,
   post___
- ] := Multiply[pre, op, Dyad[a, b], post] /; With[
-   { sp = FlavorMute @ Peel @ op },
-   And[
-     MultiplyKind[Dyad[a, b]] == MultiplyKind[op],
-     Not @ MemberQ[Union[Keys @ a, Keys @ b], sp],
-     Not @ OrderedQ @ {First @ Keys @ b, sp}
+] := Multiply[pre, op, Dyad[a, b], post] /; With[
+    { sp = FlavorMute @ Peel @ op },
+    And[
+      MultiplyKind[Dyad[a, b]] == MultiplyKind[op],
+      Not @ MemberQ[Union[Keys @ a, Keys @ b], sp],
+      Not @ OrderedQ @ {First @ Keys @ b, sp}
     ]
-  ]
+  ];
 
 
 HoldPattern @ Multiply[
@@ -3432,35 +3397,35 @@ HoldPattern @ Multiply[
   Bra[v_Association],
   Dyad[a_Association, b_Association],
   post___
- ] := Garner @ With[
-   { w = KeyDrop[v, Keys @ a],
-     u = KeyTake[v, Keys @ a] },
-   BraKet[u, a] * Multiply[pre, Bra[w], Bra[b], post]
-  ]
+] := Garner @ With[
+  { w = KeyDrop[v, Keys @ a],
+    u = KeyTake[v, Keys @ a] },
+  BraKet[u, a] * Multiply[pre, Bra[w], Bra[b], post]
+];
 
 HoldPattern @ Multiply[
   pre___,
   Dyad[a_Association, b_Association],
   Ket[v_Association],
   post___
- ] := Garner @ With[
-   { w = KeyDrop[v, Keys @ b],
-     u = KeyTake[v, Keys @ b] },
-   BraKet[b, u] * Multiply[pre, Ket[a], Ket[w], post]
-  ]
+] := Garner @ With[
+  { w = KeyDrop[v, Keys @ b],
+    u = KeyTake[v, Keys @ b] },
+  BraKet[b, u] * Multiply[pre, Ket[a], Ket[w], post]
+];
 
 (* For Pauli Kets *)
-Dyad[Ket[a:{(0|1)..}], Ket[b:{(0|1)..}], ___] := Pauli @ Thread[b -> a]
+Dyad[Ket[a:{(0|1)..}], Ket[b:{(0|1)..}], ___] := Pauli @ Thread[b -> a];
 
 (* For general kets for unlabelled systems *)
-Dyad[a_Ket, b_Ket, ___] := Multiply[a, Dagger @ b]
+Dyad[a_Ket, b_Ket, ___] := Multiply[a, Dagger @ b];
 
 
 (* For simple column vectors *)
 
-Dyad[a_?VectorQ] := ( Message[Dyad::one]; Dyad[a, a] ) /; FreeQ[a, _?SpeciesQ]
+Dyad[a_?VectorQ] := ( Message[Dyad::one]; Dyad[a, a] ) /; FreeQ[a, _?SpeciesQ];
 
-Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b]
+Dyad[a_?VectorQ, b_?VectorQ] := KroneckerProduct[a, Dagger @ b];
 (* NOTE: Dagger -- not Conjugate -- in the above two definitions. *)
 (**** </Dyad> ****)
 
@@ -4102,7 +4067,6 @@ HilbertSchmidtProduct[a_, b_, ss:{___?SpeciesQ}] :=
 
 
 (**** <TraceNorm> *****)
-
 TraceNorm::usage = "TraceNorm[mat] returns the trace norm of matrix mat.\nTraceNorm[vec] is equivalent to TraceNorm[Dyad[vec, vec]] and Norm[vec]^2.\nTraceNorma[op, {s1, s2, \[Ellipsis]}] returns the trace norm of operator op acting on a system of species s1, s2, \[Ellipsis]."
 
 TraceNorm[m_?MatrixQ] := Total @ SingularValueList[m]
@@ -4132,12 +4096,10 @@ TraceDistance[a_?VectorQ, b_?VectorQ] := TraceNorm[Dyad[a, a] - Dyad[b, b]]
 
 TraceDistance[a_, b_, ss:(_?SpeciesQ | {___?SpeciesQ})] :=
   TraceDistance[Matrix[a, ss], Matrix[b, ss]]
-
 (**** </TraceNorm> *****)
 
 
 (**** <Fidelity> *****)
-
 Fidelity::usage = "Fidelity[\[Rho],\[Sigma]] returns the fidelity of the states \[Rho] and \[Sigma]. \[Rho] and \[Sigma] can take a vector (pure state), matrix (mixed state), ket expression (pure state), or opertor expression (mixed state).\nSee also ClassicalFidelity."
 
 Fidelity::num = "For efficiency, Fidelity supports only numerical matrices. For symbolic matrices, resort to the definition."
@@ -4196,18 +4158,14 @@ ClassicalFidelity[p:{__?NumericQ}, q:{__?NumericQ}] := Which[
   True, Total @ Sqrt[p * q]
  ]
 
-ClassicalFidelity[p_List, q_List] := Total @ Sqrt[p * q] /; ArrayQ[{p, q}]
+ClassicalFidelity[p_List, q_List] := Total @ Sqrt[p * q] /; ArrayQ[{p, q}];
 
 
-probabilityQ[p:{__?NonNegative}] := Chop[Total @ p] == 1
+probabilityQ[p:{__?NonNegative}] := Chop[Total @ p] == 1;
 
-probabilityQ[_] = False
-
+probabilityQ[_] = False;
 (**** </Fidelity> *****)
 
-
-Protect[ Evaluate @ $symb ]
-
-End[]
-
-EndPackage[]
+Protect[ Evaluate @ $symb ];
+End[];
+EndPackage[];
