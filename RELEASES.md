@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.6.2
+
+- New: Help documents for DoubleStarAsMultiply and DoubleStarAsBuiltin
+
 ## 4.6.1
 
 - Bug fix: There remained some internal uses of the ** operator. All removed.
@@ -7,7 +11,7 @@
 
 ## 4.6.0
 
-- NonCommutativeMultiply is reserved for the built-in meaning for NonCommutativeAlgebra and similar functions. The operator ** is reserved for NonCommutativeMultiply.
+- NonCommutativeMultiply is reserved for the built-in meaning for NonCommutativeAlgebra and similar functions; NonCommutativeMultiply is no longer an alias of Multiply. In (and only in) the frontend interface, however, the operator ** is still interpreted as Multiply.
 - New: DoubleStarAsMultiply, DoubleStarAsBuiltin
 
 ## 4.5.15
