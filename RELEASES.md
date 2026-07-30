@@ -2,7 +2,7 @@
 
 ## 4.6.3
 
-- Emergency bug fix: Matrix[Rotation[...], ...] involving Spin may give Zero matrix.
+- Emergency bug fix: Elaborate[Rotation[...]] involving Spin leads to wrong Dyad expression. This also affects Matrix[Rotation[...], ...].
 
 ## 4.6.2
 
