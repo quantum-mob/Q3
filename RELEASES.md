@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.6.4
+
+- Improved: Elaborate[Rotation[...]], Matrix[Rotation[...], ...]
+
 ## 4.6.3
 
 - Emergency bug fix: Elaborate[Rotation[...]] involving Spin leads to wrong Dyad expression. This also affects Matrix[Rotation[...], ...].

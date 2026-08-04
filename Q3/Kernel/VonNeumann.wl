@@ -1,7 +1,5 @@
-(* -*- mode:math -*- *)
-(* Package for stabilizer formalism *)
-
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+(* ::Package:: *)
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { ShannonLog, ShannonEntropy };
 { QuantumLog, QuantumEntropy = VonNeumannEntropy };
@@ -12,37 +10,34 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { MutualInformation };
 
 
-Begin["`Private`"]
+Begin["`Private`"];
 
 (**** <ShannonLog> ****)
+ShannonLog::usage = "ShannonLog[b,z] returns -z*Log[b, z] for z\[NotEqual]0 and 0 for z=0.\nShannonLog[b, p, q] returns -p*Log[2, q] for p,q\[NotEqual]0, ShannonLog[b, 0, q] = 0 for p=0 and all q, and ShannonLog[p>0, 0] = \[Infinity] for and positive p and q=0.";
 
-ShannonLog::usage = "ShannonLog[b,z] returns -z*Log[b, z] for z\[NotEqual]0 and 0 for z=0.\nShannonLog[b, p, q] returns -p*Log[2, q] for p,q\[NotEqual]0, ShannonLog[b, 0, q] = 0 for p=0 and all q, and ShannonLog[p>0, 0] = \[Infinity] for and positive p and q=0."
-
-SetAttributes[ShannonLog, Listable]
-
-
-ShannonLog[_?Positive, 0] = 0
-
-ShannonLog[_?Positive, _?ZeroQ] = 0
-
-ShannonLog[base_?Positive, z_] := -z * Log[base, z]
+SetAttributes[ShannonLog, Listable];
 
 
-ShannonLog[_?Positive, 0, _] = 0
+ShannonLog[_?Positive, 0] = 0;
 
-ShannonLog[_?Positive, _?ZeroQ, _] = 0
+ShannonLog[_?Positive, _?ZeroQ] = 0;
 
-ShannonLog[_?Positive, _?Positive, _?ZeroQ] = Infinity
+ShannonLog[base_?Positive, z_] := -z * Log[base, z];
 
-ShannonLog[_?Positive, _, _?ZeroQ] = ComplexInfinity
 
-ShannonLog[base_?Positive, p_, q_] := -p * Log[base, q]
+ShannonLog[_?Positive, 0, _] = 0;
 
+ShannonLog[_?Positive, _?ZeroQ, _] = 0;
+
+ShannonLog[_?Positive, _?Positive, _?ZeroQ] = Infinity;
+
+ShannonLog[_?Positive, _, _?ZeroQ] = ComplexInfinity;
+
+ShannonLog[base_?Positive, p_, q_] := -p * Log[base, q];
 (**** </ShannonLog> ****)
 
 
 (**** <QuantumLog> ****)
-
 QuantumLog::usage = "QuantumLog[b, rho] retruns -Tr[rho ** Log[b, rho]].\nQuantumLog[b, rho, sgm] returns -Tr[rho ** Log[b, sgm]] for density operators rho and sgm.\nQuantumLog[b, rho, {s1, s2, \[Ellipsis]}] or QuantumLog[b, rho, sgm, {s1, s2, \[Ellipsis]}] assumes that states rho and sgm, either density operators or ket vectors, are defined for systems {s1, s2, \[Ellipsis]}.\nQuantumLog is a low-level mathematical function intended for the use in VonNeumannEntropy or related functions."
 
 QuantumLog[base_?Positive, mat_?MatrixQ] := Total @ ShannonLog[base, Eigenvalues @ mat]
@@ -81,12 +76,10 @@ QuantumLog[base_?Positive, a_, b_, ss:{___?SpeciesQ}] :=
   QuantumLog[base, Matrix[a, ss], Matrix[b, ss]]
 
 QuantumLog[base_?Positive, a_, b_] := QuantumLog[base, a, b, Agents @ {a, b}]
-
 (**** </QuantumLog> ****)
 
 
 (**** <ShannonEntropy> ****)
-
 ShannonEntropy::usage = "ShannonEntropy[{p1, p2, \[Ellipsis]}] returns the base 2 Shannon entropy of the probability distribution {p1, p2, \[Ellipsis]}.\nShannonEntropy[{p1, p2, \[Ellipsis]}, {q1, q2, \[Ellipsis]}] returns the relative entropy between the two probability distributions {p1, p2, \[Ellipsis]} and {q1, q2, \[Ellipsis]}."
 
 ShannonEntropy::noprb = "`` does not seem to be a probability distribution."
@@ -108,12 +101,10 @@ ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
 
 ShannonEntropy[pp_?VectorQ, qq_?VectorQ] :=
   Total[ShannonLog[2, pp, qq]] - Total[ShannonLog[2, pp]]
-
 (**** </ShannonEntropy> ****)
 
 
 (**** <VonNeumannEntropy> ****)
-
 QuantumEntropy::usage = "QuantumEntropy is an alias of VonNeumannEntropy."
 
 VonNeumannEntropy::usage = "VonNeumannEntropy[mat|vec] returns the base 2 VonNeumann entropy of the quantum state described by the density matrix 'mat' or vector 'vec'.\nVonNeumannEntropy[mat1, mat2] returns the quantum relative entropy of the mixed state mat1 with respect to mat2."
@@ -140,12 +131,10 @@ VonNeumannEntropy[rho_, sgm_, ss:{___?SpeciesQ}] :=
 
 VonNeumannEntropy[rho_, sgm_] :=
   VonNeumannEntropy[rho, sgm, Agents @ {rho, sgm}]
-
 (**** </VonNeumannEntropy> ****)
 
 
 (**** <MutualInformation> ****)
-
 MutualInformation::usage = "MutualInformation[p] returns the classical information between two random variables X and Y associated with the joint probability distriubtion {p(xi,yj):i=1,2,\[Ellipsis]; j=1,2,\[Ellipsis]}.\nMutualInformation[rho, {s1,s2,\[Ellipsis]}] returns the mutual information between the system consisting of {s1,s2,\[Ellipsis]} and the rest in the state rho."
 
 MutualInformation[p_?MatrixQ] :=
@@ -174,12 +163,10 @@ MutualInformation[rho_, ss:{__?SpeciesQ}] := Module[
     VonNeumannEntropy[PartialTrace[rho, ss], rr] -
     VonNeumannEntropy[rho, qq]
 ]
-
 (**** </MutualInformation> ****)
 
 
 (**** <RenyiEntropy> ****)
-
 RenyiEntropy::usage = "RenyiEntropy[\[Alpha], {p1,p2,\[Ellipsis]}] returns the Renyi entropy of order \[Alpha] for a random variable associated with probability distribution {p1,p2,\[Ellipsis]}.\nRenyiEntropy[\[Alpha],\[Rho]] returns the quantum Renyie entropy of order \[Alpha] for density matrix \[Rho].\nRenyiEntropy[\[Alpha],\[Rho],\[Sigma]] returns the relative Renyi entropy of density matrix \[Rho] with respect to another density matrix \[Sigma].\nRenyiEntropy[\[Alpha], \[Rho], {s1,s2,\[Ellipsis]}] or RenyiEntropy[\[Alpha], \[Rho], \[Sigma]] allows to specify otherwise unclear systems by {s1,s2,\[Ellipsis]}."
 
 RenyiEntropy[1, pp_?VectorQ] := ShannonEntropy[pp]
@@ -227,12 +214,10 @@ RenyiEntropy[a_, rho_, sgm_, S_?SpeciesQ] :=
 
 RenyiEntropy[a_?NonNegative, rho_, sgm_, ss:{___?SpeciesQ}] :=
   RenyiEntropy[a, Matrix[rho, ss], Matrix[sgm, ss]]
-
 (**** </RenyiEntropy> ****)
 
 
 (**** <EntanglementEntropy> ****)
-
 EntanglementEntropy::usage = "EntanglementEntropy[vec, {d1, d2, \[Ellipsis]}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in pure state 'vec' between subsystem k1, k2, \[Ellipsis] and the rest. The subsystems are assumed to be associated with the Hilbert spaces with dimensions d1, d2, \[Ellipsis].\nEntanglementEntropy[vec, {k1, k2, \[Ellipsis]}] assumes that the subsystems are qubits.\nEntanglementEntropy[expr, {k1, k2, \[Ellipsis]}] assumes that 'expr' is a ket expression for unlabelled qubits k1, k2, \[Ellipsis].\nEntanglementEntropy[expr, {s1, s2, \[Ellipsis]}] assumes subsystems specified by species {s1, s2, \[Ellipsis]}."
 
 EntanglementEntropy::qubit = "`` does not seem to be a vector or matrix for qubits."
@@ -271,12 +256,10 @@ EntanglementEntropy[expr_, jj:{__Integer}] := Module[
   { nn = Length @ FirstCase[expr, _Pauli, Infinity] },
   VonNeumannEntropy @ PartialTrace[Matrix[expr], Complement[Range @ nn, jj]]
 ] /; Not @ FreeQ[expr, _Pauli]
-
 (**** </EntanglementEntropy> ****)
 
 
 (**** <CrossEntropy> ****)
-
 CrossEntropy::usage = "CrossEntropy[{p1, p2, \[Ellipsis]}, {q1, q2, \[Ellipsis]}] returns the classical cross-entropy between two probability distributions {p1, p2, \[Ellipsis]} and {q1, q2, \[Ellipsis]}.\nCrossEntropy[rho, sgm] returns the quantum cross-entropy between two density matrices rho and sgm."
 
 CrossEntropy[pp_?VectorQ, qq_?VectorQ] := Total @ ShannonLog[2, pp, pp]
@@ -287,9 +270,7 @@ CrossEntropy[rho_, sgm_] := With[
   { ss = Agents @ {rho, sgm} },
   QuantumLog[2, Matrix[rho, ss], Matrix[sgm, ss]]
 ]
-
 (**** </CrossEntropy> ****)
 
-End[]
-
-EndPackage[]
+End[];
+EndPackage[];

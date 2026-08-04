@@ -32,6 +32,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   RandomSymmetric, RandomAntisymmetric,
   RandomUnitary, RandomIsometric, RandomOrthogonal,
   RandomSymplectic RandomUnitarySymplectic };
+{ RandomToeplitz, RandomHermitianToeplitz, HermitianToeplitz };
 
 { LyapunovFunction };
 
@@ -894,6 +895,52 @@ RandomUnitarySymplectic[] := RandomUnitarySymplectic[1]
 RandomUnitarySymplectic[n_Integer?Positive] :=
   RandomVariate[CircularQuaternionMatrixDistribution @ n]
 (**** </RandomMatrix> ****)
+
+
+(**** <RandomToeplitz ****)
+(* Wolfram Language provides the deterministic constructor
+   ToeplitzMatrix[col, row], but no native *random* Toeplitz generator;
+   the following fill that gap. *)
+RandomToeplitz::usage = "RandomToeplitz[n, dist] returns an n\[Times]n random Toeplitz matrix with independent first column and first row (sharing the corner element), entries drawn from the distribution dist.\nRandomToeplitz[n, \[Sigma]] for numeric \[Sigma] is a shortcut for RandomToeplitz[n, NormalDistribution[0, \[Sigma]]].\nRandomToeplitz[n] assumes the standard normal distribution.";
+
+RandomToeplitz[n_Integer?Positive] :=
+  RandomToeplitz[n, NormalDistribution[]];
+
+RandomToeplitz[n_Integer?Positive, sigma_?NumericQ] :=
+  RandomToeplitz[n, NormalDistribution[0, sigma]]
+
+RandomToeplitz[n_Integer?Positive, dist_] := Module[
+  { c = RandomVariate[dist, n], r },
+  r = Prepend[RandomVariate[dist, n - 1], First @ c];
+  ToeplitzMatrix[c, r]
+];
+(**** </RandomToeplitz ****)
+
+
+(**** <RandomHermitianToeplitz ****)
+RandomHermitianToeplitz::usage = "RandomHermitianToeplitz[n, dist] returns an n\[Times]n random Hermitian Toeplitz matrix whose defining moments are independent with t0 \[Distributed] dist (real) and tm = (Xm + I Ym)/Sqrt[2] for m \[GreaterEqual] 1, where Xm, Ym \[Distributed] dist i.i.d.; for a zero-mean dist of variance \[Sigma]^2 this gives \[LeftAngleBracket]|tm|^2\[RightAngleBracket] = \[Sigma]^2 for every m.\nRandomHermitianToeplitz[n, \[Sigma]] for numeric \[Sigma] is a shortcut for RandomHermitianToeplitz[n, NormalDistribution[0, \[Sigma]]].\nRandomHermitianToeplitz[n] assumes the standard normal distribution.";
+
+RandomHermitianToeplitz[n_Integer?Positive] :=
+  RandomHermitianToeplitz[n, NormalDistribution[]];
+
+RandomHermitianToeplitz[n_Integer?Positive, sigma_?NumericQ] :=
+  RandomHermitianToeplitz[n, NormalDistribution[0, sigma]];
+
+RandomHermitianToeplitz[n_Integer?Positive, dist_] := HermitianToeplitz @ Join[
+  { RandomVariate[dist] },
+  RandomVariate[dist, {n - 1, 2}] . {1, I} / Sqrt[2]
+];
+(**** </RandomHermitianToeplitz ****)
+
+
+(**** <HermitianToeplitz ****)
+HermitianToeplitz::usage = "HermitianToeplitz[{t0, t1, \[Ellipsis], t(n-1)}] returns the n\[Times]n Hermitian Toeplitz matrix T with T[[j,k]] = t(k-j) for k \[GreaterEqual] j and T[[j,k]] = Conjugate[t(j-k)] for j > k. The zeroth moment t0 is projected onto its real part.";
+
+HermitianToeplitz[t_List] := With[
+  { tt = ReplacePart[t, 1 -> Re @ First @ t] },
+  ToeplitzMatrix[Conjugate @ tt, tt]
+];
+(**** </HermitianToeplitz ****)
 
 
 (**** <LyapunovFunction ****)

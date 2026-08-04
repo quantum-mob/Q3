@@ -1,5 +1,4 @@
 (* ::Package:: *)
-
 BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { TheWigner, TheWignerKet };
@@ -783,21 +782,32 @@ Format[ op:Rotation[phi_, v:{_, _, _}, S_?SpinQ, rest___] ] :=
   ]
 
 Rotation /:
+Matrix @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
+  { dir = Normalize[v],
+    gnr },
+  gnr = dir . {
+    TheWigner[{Spin[S], 1}],
+    TheWigner[{Spin[S], 2}],
+    TheWigner[{Spin[S], 3}] 
+  };
+  MatrixExp[-I phi gnr]
+] /; Spin[S] != 1/2;
+
+Rotation /:
+Matrix[rot:Rotation[_, {_,_,_}, S_?SpinQ, ___], ss:{__?SpeciesQ}] := 
+  MatrixEmbed[Matrix @ rot, {S}, ss] /; Spin[S] != 1/2
+
+Rotation /:
 Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] :=
   Cos[phi/2] - I*Sin[phi/2]*Dot[2*S[All], Normalize @ v] /;
   Spin[S] == 1/2;
 
 Rotation /:
-Elaborate @ Rotation[phi_, v:{_,_,_}, S_?SpinQ, ___] := Module[
+Elaborate @ op:Rotation[_, {_,_,_}, S_?SpinQ, ___] := Module[
   { bs = Basis[S],
-    vn = Normalize[v],
-    Rn },
-  Rn = vn . {
-    TheWigner[{Spin[S], 1}],
-    TheWigner[{Spin[S], 2}],
-    TheWigner[{Spin[S], 3}] };
-  Rn = MatrixExp[ -I phi Rn ];
-  Inner[Dyad[S], bs . Rn, bs]
+    mm = Matrix[op] },
+  bs = Outer[Dyad[S], bs, bs];
+  Total @ Flatten[bs * mm]
 ];
 (**** </Rotation> ****)
 

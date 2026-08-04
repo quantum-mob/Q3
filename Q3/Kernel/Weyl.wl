@@ -1,4 +1,4 @@
-(* -*- mode: math; -*- *)
+(* ::Package:: *)
 (* See Gross (2006) and Singal et al. (2023) *)
 
 BeginPackage["QuantumMob`Q3`", {"System`"}];

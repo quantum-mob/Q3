@@ -1,5 +1,4 @@
 (* ::Package:: *)
-
 BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { TheKet, TheBra };
@@ -2926,7 +2925,7 @@ Dagger[ Rotation[ang_, v:{_, _, _}, S:(_?SpinQ|_?QubitQ), opts___?OptionQ] ] :=
 
 
 Rotation /:
-Matrix[op_Rotation, rest___] := Matrix[Elaborate @ op, rest]
+Matrix[op_Rotation, ss:{__?SpeciesQ}] := Matrix[Elaborate @ op, ss]
 (**** </Rotation> ****)
 
 
@@ -4140,32 +4139,32 @@ Fidelity[vec_, wec_] := Abs @ Multiply[Dagger[vec], wec] /;
   And[Not @ FreeQ[vec, _Ket], Not @ FreeQ[wec, _Ket]]
 *)
 (* NOTE: Not big benefits. *)
-
-
-ClassicalFidelity::usage = "ClassicalFidelity[{p1,p2,\[Ellipsis]}, {q1,q2,\[Ellipsis]}] returns the classical fidelity between two probability distributions {p1,p2,\[Ellipsis]} and {q1,q2,\[Ellipsis]}.\nSee also Fidelity."
-
-ClassicalFidelity::noprb = "`` is not a probability distribution."
-
-ClassicalFidelity::incmp = "Probability distributions `1` and `2` cannot describe the same random variable."
-
-ClassicalFidelity[p:{__?NumericQ}, q:{__?NumericQ}] := Which[
-  Not @ probabilityQ[p],
-  Message[ClassicalFidelity::noprb, p],
-  Not @ probabilityQ[q],
-  Message[ClassicalFidelity::noprb, q],
-  Not @ ArrayQ @ {p, q},
-  Message[ClassicalFidelity::incmp, p, q],
-  True, Total @ Sqrt[p * q]
- ]
-
-ClassicalFidelity[p_List, q_List] := Total @ Sqrt[p * q] /; ArrayQ[{p, q}];
-
-
-probabilityQ[p:{__?NonNegative}] := Chop[Total @ p] == 1;
-
-probabilityQ[_] = False;
 (**** </Fidelity> *****)
 
-Protect[ Evaluate @ $symb ];
+
+(**** <ClassicalFidelity> *****)
+ClassicalFidelity::usage = "ClassicalFidelity[{p1,p2,\[Ellipsis]}, {q1,q2,\[Ellipsis]}] returns the classical fidelity between two probability distributions {p1,p2,\[Ellipsis]} and {q1,q2,\[Ellipsis]}.\nSee also Fidelity.";
+ClassicalFidelity::noprb = "`` is not a probability distribution.";
+ClassicalFidelity::incmp = "Probability distributions `1` and `2` cannot describe the same random variable.";
+
+ClassicalFidelity[p:{__?NumericQ}, q:{__?NumericQ}] := Module[
+  { probabilityQ },
+  probabilityQ[pp:{__?NonNegative}] := ZeroQ[Total[pp] - 1];
+  probabilityQ[_] = False;
+  Which[
+    Not @ probabilityQ[p],
+    Message[ClassicalFidelity::noprb, p],
+    Not @ probabilityQ[q],
+    Message[ClassicalFidelity::noprb, q],
+    Not @ ArrayQ @ {p, q},
+    Message[ClassicalFidelity::incmp, p, q],
+    True, Total @ Sqrt[p * q]
+  ]
+];
+
+ClassicalFidelity[p_List, q_List] := Total @ Sqrt[p * q] /; ArrayQ[{p, q}];
+(**** </ClassicalFidelity> *****)
+
+Protect[Evaluate @ $symb];
 End[];
 EndPackage[];

@@ -1,10 +1,9 @@
 (* ::Package:: *)
-
 (* Classical simulation of fermionic Gaussian processes without pairing potential *)
 (* See Appendix B in Feng & Chen (2024). *)
 (* See also Cano, Tilloy and De Luca (2019). *)
 
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { WickState, RandomWickState };
 { WickInner, WickFidelity };
@@ -46,7 +45,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 Begin["`Private`"]; (* Fermionic quantum computation *)
 
 (**** <WickState> ****)
-WickState::usage = "WickState[mat] represents a fermionic Gaussian pure state without pairing correlation, which consists of occupied dressed fermion modes di that are related to the bare modes di = Sum[mat[i,j] c[j], {j, 1, n}]."
+WickState::usage = "WickState[mat] represents a fermionic Gaussian pure state without pairing correlation, which consists of occupied dressed fermion modes di that are related to the bare modes di = Sum[mat[i,j] c[j], {j, 1, n}].";
 
 WickState /:
 MakeBoxes[ws:WickState[n_Integer -> phs_,  ___], fmt_] :=
@@ -127,7 +126,7 @@ Matrix[WickState[trs_?MatrixQ, ___]] := Module[
 (**** </WickState> ****)
 
 
-RandomWickState::usage = "RandomWickState[{n, 0}] randomly generates a Gaussian pure state of n fermion modes."
+RandomWickState::usage = "RandomWickState[{n, 0}] randomly generates a Gaussian pure state of n fermion modes.";
 
 RandomWickState[n_Integer, opts___?OptionQ] := 
   RandomWickState[{RandomInteger @ {0, n}, n}, opts]
@@ -1116,11 +1115,11 @@ randWickMeasurementQ[_] = False
 
 
 (**** <WickGreen> ****)
-WickGreen::usage = "WickGreen[ws, {k1, k2, \[Ellipsis], km}] returns m\[Times]m matrix of single-particle Green's functions among fermion modes in {k1, k2, \[Ellipsis], km} with respect to WickState ws.\nWickGreen[data] or WickGreen[data, {k1, k2, \[Ellipsis], km}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Wick or BdG states.\nWickGreen[{k1, k2, \[Ellipsis], km}] represents an operator form of WickGreen to be applied to Wick or Nambu state."
+WickGreen::usage = "WickGreen[ws, {k1, k2, \[Ellipsis], km}] returns m\[Times]m matrix of single-particle Green's functions among fermion modes in {k1, k2, \[Ellipsis], km} with respect to WickState ws.\nWickGreen[data] or WickGreen[data, {k1, k2, \[Ellipsis], km}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Wick or BdG states.\nWickGreen[{k1, k2, \[Ellipsis], km}] represents an operator form of WickGreen to be applied to Wick or Nambu state.";
 
 (* shortcut *)
 WickGreen[ws_WickState] :=
-  WickGreen[ws, Range @ FermionCount @ ws]
+  WickGreen[ws, Range @ FermionCount @ ws];
 
 WickGreen[in_WickState, {}] = {{}};
 
@@ -1129,38 +1128,38 @@ WickGreen[WickState[_Integer -> 0, ___], kk:{__Integer}] = {{}};
 
 (* vacuum state *)
 WickGreen[WickState[_Rule, ___], kk:{__Integer}] :=
-  One[Length @ kk]
+  One[Length @ kk];
 
 WickGreen[WickState[trs_?MatrixQ, ___], kk:{__Integer}] := Module[
   { n = Length[kk],
     alt = trs[[All, kk]] },
   One[n] - ConjugateTranspose[alt].alt
-]
+];
 
 (* dressed modes; the rows of mm are supposed to be orthonormal. *)
 WickGreen[in_WickState, mm_?MatrixQ] :=
-  Dot[mm, WickGreen[in], ConjugateTranspose @ mm]
+  Dot[mm, WickGreen[in], ConjugateTranspose @ mm];
 
 
 (* for large data *)
 WickGreen[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := 
   arrayMap[WickGreen[#, kk]&, data] /;
-  ArrayQ[data, _, MatchQ[#, _WickState]&]
+  ArrayQ[data, _, MatchQ[#, _WickState]&];
 (**** </WickGreen> ****)
 
 
-RandomWickGreen::usage = "RandomWickGreen[n] generates a ..."
+RandomWickGreen::usage = "RandomWickGreen[n] generates a ...";
 
 RandomWickGreen[n_Integer] := Module[
   { dd, uu },
   dd = RandomReal[{0, 1}, n];
   uu = RandomUnitary[n];
   uu . DiagonalMatrix[dd] . Conjugate[uu]
-]
+];
 
 
 (**** <WickOccupation> ****)
-WickOccupation::usage = "WickOccupation[in, {k1, k2, \[Ellipsis]}] returns a list of the expectation values of occupation on fermion modes in {k1, k2, \[Ellipsis]} with respect to WickState in.\nWickOccupation[in] is equivalent to WickOccupation[in, Range[n]], where n is the number of fermion modes for which input Wick state in is defined for."
+WickOccupation::usage = "WickOccupation[in, {k1, k2, \[Ellipsis]}] returns a list of the expectation values of occupation on fermion modes in {k1, k2, \[Ellipsis]} with respect to WickState in.\nWickOccupation[in] is equivalent to WickOccupation[in, Range[n]], where n is the number of fermion modes for which input Wick state in is defined for.";
 
 (* for an array of Wick states *)
 WickOccupation[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := 
@@ -2306,5 +2305,4 @@ WickMutualInformation[data_, kk:{___Integer}] :=
 (**** </WickMutualInformation> ****)
 
 End[]; (* quantum information theory for fermionic Gaussian states *)
-
 EndPackage[];
