@@ -1,6 +1,5 @@
 (* ::Package:: *)
-
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Zero, One };
 
@@ -42,44 +41,43 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
   Vertex, VertexLabelFunction, EdgeLabelFunction };
 
 
-Begin["`Private`"]
+Begin["`Private`"];
 
 (**** <Zero> ****)
-Zero::usage = "Zero[n] return an one-diemnsional array of lenth n with all elements zero.\nZero[{m, n, \[Ellipsis]}] returns an m\[Times]n\[Times]\[Ellipsis] tensor with all elements zero."
+Zero::usage = "Zero[n] return an one-diemnsional array of lenth n with all elements zero.\nZero[{m, n, \[Ellipsis]}] returns an m\[Times]n\[Times]\[Ellipsis] tensor with all elements zero.";
 
-Zero[n_Integer] := Zero[{n}]
+Zero[n_Integer] := Zero[{n}];
 
-Zero[mn:{__Integer}] := SparseArray[{}, mn]
+Zero[mn:{__Integer}] := SparseArray[{}, mn];
 (**** </Zero> ****)
 
 
 (**** <One> ****)
-One::usage = "One[n] or One[{n}] returns the n\[Times]n identiy matrix in a sparse array; cf. IdentityMatrix[n].\nOne[{m, n, \[Ellipsis]}] returns the m\[Times]n\[Times]\[Ellipsis] pseudo-identity tensor, i.e., the tensor where the main diagonal elements are 1 and the other elements are all zero.\nOne[{m, n}, k] returns an m\[Times]n matrix with the elements on the \*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere."
+One::usage = "One[n] or One[{n}] returns the n\[Times]n identiy matrix in a sparse array; cf. IdentityMatrix[n].\nOne[{m, n, \[Ellipsis]}] returns the m\[Times]n\[Times]\[Ellipsis] pseudo-identity tensor, i.e., the tensor where the main diagonal elements are 1 and the other elements are all zero.\nOne[{m, n}, k] returns an m\[Times]n matrix with the elements on the \*SuperscriptBox[k,th] diagonal being 1 and zero elsewhere.";
 
-One[n_Integer] := One @ {n, n}
+One[n_Integer] := One @ {n, n};
 
-One[{n_Integer}] := One @ {n, n}
+One[{n_Integer}] := One @ {n, n};
 
 One[{m_Integer, n__Integer}] :=
-  SparseArray[ConstantArray[j_, Length @ {m, n}] -> 1, {m, n}]
+  SparseArray[ConstantArray[j_, Length @ {m, n}] -> 1, {m, n}];
 
-
-One[{n_Integer}, p_Integer] := One[{n, n}, p]
+One[{n_Integer}, p_Integer] := One[{n, n}, p];
 
 One[{m_Integer, n_Integer}, k_Integer] := 
-  SparseArray[{i_, j_} :> 1 /; j == i+k, {m, n}]
+  SparseArray[{i_, j_} :> 1 /; j == i+k, {m, n}];
 (**** </One> ****)
 
 
 (**** <MatrixConditionNumber> ****)
-MatrixConditionNumber::usage = "MatrixConditionNumber[mat] returns the 2-norm condition number of matrix mat."
+MatrixConditionNumber::usage = "MatrixConditionNumber[mat] returns the 2-norm condition number of matrix mat.";
 
 Options[MatrixConditionNumber] = {
   Tolerance -> $MachineEpsilon,
   "Standard" -> True
 };
 
-MatrixConditionNumber[mat_?MatrixQ, ___?OptionQ] := Infinity /; ArrayZeroQ[mat]
+MatrixConditionNumber[mat_?MatrixQ, ___?OptionQ] := Infinity /; ArrayZeroQ[mat];
 
 MatrixConditionNumber[mat_?MatrixQ, opts___?OptionQ] := Module[
   { less = FilterRules[{opts}, Options @ SingularValueList],
@@ -95,7 +93,7 @@ MatrixConditionNumber[mat_?MatrixQ, opts___?OptionQ] := Module[
       First[vals] / Last[vals]
     ]
   ]
-]
+];
 (**** </MatrixConditionNumber> ****)
 
 
@@ -907,7 +905,7 @@ RandomToeplitz[n_Integer?Positive] :=
   RandomToeplitz[n, NormalDistribution[]];
 
 RandomToeplitz[n_Integer?Positive, sigma_?NumericQ] :=
-  RandomToeplitz[n, NormalDistribution[0, sigma]]
+  RandomToeplitz[n, NormalDistribution[0, sigma]];
 
 RandomToeplitz[n_Integer?Positive, dist_] := Module[
   { c = RandomVariate[dist, n], r },
@@ -1307,7 +1305,6 @@ chiralVertexRulesShort[ii_List, jj_List, spec:{row_, col_}] :=
 (**** </ChiralGraphForm> ****)
 
 
-End[]
+End[];
+EndPackage[];
 
-
-EndPackage[]

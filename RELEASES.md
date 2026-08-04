@@ -2,6 +2,7 @@
 
 ## 4.6.4
 
+- New: RandomToeplitz, RandomHermitianToeplitz, HermitianToeplitz
 - Improved: Elaborate[Rotation[...]], Matrix[Rotation[...], ...]
 
 ## 4.6.3
