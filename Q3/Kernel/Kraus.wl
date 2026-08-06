@@ -1,35 +1,33 @@
 (* -*- mode:math -*- *)
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Supermap, ChoiMatrix, ChoiMatrixQ,
   SuperMatrixQ, ToSuperMatrix, ToChoiMatrix };
 
 { ChoiMultiply, ChoiTopple };
 
-{ LindbladSupermap, DampingOperator };
+{ Lindbladian, DampingOperator };
 
 { LieBasisSupermap, LieBasisMatrix };
 
 { LindbladSolve, NLindbladSolve,
   LindbladConvert };
 
-{ LindbladStationary };
+{ LindbladSteady };
 
 { LindbladSimulate };
 
 
-Begin["`Private`"]
+Begin["`Private`"];
 
 (**** <Supermap> ****)
+Supermap::usage = "Supermap[{op1, op2, \[Ellipsis]}] represents a completely positive supermap specified by the Kraus elements op1, op2, \[Ellipsis], which may be matrices or operators.";
 
-Supermap::usage = "Supermap[{op1, op2, \[Ellipsis]}] represents a completely positive supermap specified by the Kraus elements op1, op2, \[Ellipsis], which may be matrices or operators."
+Supermap::incmp = "The operators/matrices `` are not compatible with each other.";
 
-Supermap::incmp = "The operators/matrices `` are not compatible with each other."
-
-Supermap::wrong = "`` trying to operate on a wrong object ``."
+Supermap::wrong = "`` trying to operate on a wrong object ``.";
 
 (* In terms of Choi matrix *)
-
 Supermap /:
 Dagger @ Supermap[tsr_?ChoiMatrixQ] :=
   Supermap[ChoiTopple @ tsr]
@@ -48,7 +46,6 @@ Supermap[tsr_?ChoiMatrixQ][rho_?SquareMatrixQ] := (
 
 
 (* In terms of matrices *)
-
 Supermap[a_?MatrixQ, b_?MatrixQ] := (
   Message[Supermap::incmp, Normal @ {a, b}];
   Identity
@@ -88,7 +85,6 @@ Supermap[ops:{__?MatrixQ}, cc_?MatrixQ] :=
 
 
 (* In terms of operator expressions *)
-
 Supermap[a_] := Supermap[{a}] /; Not @ Or[ListQ @ a, ChoiMatrixQ @ a]
 
 Supermap[a_, b_] := Supermap[{a, b}, ThePauli[4]] /; Not[ListQ @ a]
@@ -105,7 +101,6 @@ HoldPattern @ Supermap[ops:{__}, cc_?MatrixQ][rho_] := Garner @ Total @ Total[
 
 
 (* Formatting *)
-
 Supermap /:
 MakeBoxes[spr:Supermap[ops:{__}], fmt_] :=
   BoxForm`ArrangeSummaryBox[
@@ -138,13 +133,11 @@ MakeBoxes[spr:Supermap[ops:{__}, cc_?MatrixQ], fmt_] :=
     { BoxForm`SummaryItem @ {"Operators: ", ops},
       BoxForm`SummaryItem @ {"Factors: ", MatrixForm @ cc} },
     fmt, "Interpretable" -> Automatic ]
-
 (**** </Supermap> ****)
 
 
 (**** <ChoiMultiply> ****)
-
-ChoiMultiply::usage = "ChoiMultiply[a,b,\[Ellipsis]] returns the successive multiplication of Choi matrices a, b, \[Ellipsis]."
+ChoiMultiply::usage = "ChoiMultiply[a,b,\[Ellipsis]] returns the successive multiplication of Choi matrices a, b, \[Ellipsis].";
 
 ChoiMultiply[a_?ChoiMatrixQ, b_?ChoiMatrixQ] :=
   ToChoiMatrix[ToSuperMatrix[a] . ToSuperMatrix[b]]
@@ -169,19 +162,17 @@ ChoiMultiply[a_?ChoiMatrixQ, bb__?ChoiMatrixQ, rest___] :=
   ChoiMultiply[Fold[ChoiMultiply, a, {bb}], rest]
 
 
-ChoiTopple::usage = "ChoiTopple[tsr] returns the Hermitian conjugate of Choi matrix tsr."
+ChoiTopple::usage = "ChoiTopple[tsr] returns the Hermitian conjugate of Choi matrix tsr.";
 ChoiTopple[tsr_?ChoiMatrixQ] := Transpose[Conjugate @ tsr, {2, 1, 4, 3}]
-
 (**** </ChoiMultiply> ****)
 
 
 (**** <ChoiMatrix> ****)
+ChoiMatrix::usage = "ChoiMatrix[op1, op2, \[Ellipsis]] returns the Choi matrix corresponding to the superoperator represented by the Kraus elements op1, op2, \[Ellipsis].";
 
-ChoiMatrix::usage = "ChoiMatrix[op1, op2, \[Ellipsis]] returns the Choi matrix corresponding to the superoperator represented by the Kraus elements op1, op2, \[Ellipsis]."
+ChoiMatrix[Supermap[tsr_?ChoiMatrixQ]] := tsr;
 
-ChoiMatrix[Supermap[tsr_?ChoiMatrixQ]] := tsr
-
-ChoiMatrix[Supermap[spec__]] := ChoiMatrix[spec]
+ChoiMatrix[Supermap[spec__]] := ChoiMatrix[spec];
 
 
 ChoiMatrix[a_?MatrixQ] := TensorProduct[a, Conjugate @ a]
@@ -189,18 +180,18 @@ ChoiMatrix[a_?MatrixQ] := TensorProduct[a, Conjugate @ a]
 ChoiMatrix[a_?MatrixQ, b_?MatrixQ] :=
   TensorProduct[a, Conjugate @ b] /; ArrayQ @ {a, b}
 
-ChoiMatrix[ops:{__?MatrixQ}] := With[
-  { tsr = SparseArray[ops] },
+ChoiMatrix[array_?(ArrayQ[#, 3]&)] := With[
+  { tsr = SparseArray[array] },
   Dot[Transpose[tsr, {3, 1, 2}], Conjugate @ tsr]
- ] /; ArrayQ[ops]
+];
 
-ChoiMatrix[ops:{__?MatrixQ}, cc_?VectorQ] :=
-  ChoiMatrix[ops, DiagonalMatrix @ cc] /; ArrayQ[ops]
+ChoiMatrix[array_?(ArrayQ[#, 3]&), cc_?VectorQ] :=
+  ChoiMatrix[array, DiagonalMatrix @ cc];
 
-ChoiMatrix[ops:{__?MatrixQ}, cc_?MatrixQ] := With[
-  { tsr = SparseArray[ops] },
+ChoiMatrix[array_?(ArrayQ[#, 3]&), cc_?MatrixQ] := With[
+  { tsr = SparseArray[array] },
   Dot[Transpose[tsr, {3, 1, 2}], SparseArray @ cc, Conjugate @ tsr]
- ] /; ArrayQ[ops]
+ ];
 
 
 ChoiMatrix[most__, S_?SpeciesQ] := ChoiMatrix[most, FlavorCap @ {S}]
@@ -236,11 +227,12 @@ ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := With[
 ChoiMatrix[ops:{__}, cc:(_?MatrixQ|_?VectorQ)] := ChoiMatrix[Matrix[ops], cc]
 
 
-HoldPattern @ ChoiMatrix @ LindbladSupermap[ops:{_, __}] :=
-  ChoiMatrix @ LindbladSupermap @ Matrix[ops]
+HoldPattern @ ChoiMatrix @ Lindbladian[ops:{_, __}] :=
+  ChoiMatrix @ Lindbladian @ Matrix[ops]
+(**** </ChoiMatrix> ****)
 
 
-ChoiMatrixQ::usage = "ChoiMatrixQ[tensor] returns True if tensor has the structure of Choi matrix, i.e., a tensor of rank four with dimensions m x n x m x n."
+ChoiMatrixQ::usage = "ChoiMatrixQ[tensor] returns True if tensor has the structure of Choi matrix, i.e., a tensor of rank four with dimensions m x n x m x n.";
 
 ChoiMatrixQ[tsr_?ArrayQ] := And[
   TensorRank[tsr] == 4,
@@ -249,11 +241,10 @@ ChoiMatrixQ[tsr_?ArrayQ] := And[
 
 (* Too dangerous! *)
 (* ChoiMatrixQ[assoc_Association] := AllTrue[assoc, ChoiMatrixQ] *)
-
 ChoiMatrixQ[_] = False
 
 
-SuperMatrixQ::usage = "SuperMatrixQ[mat] returns True if matrix mat is a super-matrix, i.e., a matrix with dimensions of m^2 x n^2."
+SuperMatrixQ::usage = "SuperMatrixQ[mat] returns True if matrix mat is a super-matrix, i.e., a matrix with dimensions of m^2 x n^2.";
 
 SuperMatrixQ[mat_?MatrixQ] := AllTrue[Sqrt[Dimensions @ mat], IntegerQ]
 
@@ -263,7 +254,7 @@ SuperMatrixQ[mat_?MatrixQ] := AllTrue[Sqrt[Dimensions @ mat], IntegerQ]
 SuperMatrixQ[_] = False
 
 
-ToSuperMatrix::usage = "ToSuperMatrix[cm] converts Choi matrix cm to a regular matrix form; C[i,j;k,l] -> M[{i,k},{j,l}]."
+ToSuperMatrix::usage = "ToSuperMatrix[cm] converts Choi matrix cm to a regular matrix form; C[i,j;k,l] -> M[{i,k},{j,l}].";
 
 ToSuperMatrix[cm_?ChoiMatrixQ] := Module[
   { dd = Times @@@ Transpose @ Partition[Dimensions @ cm, 2] },
@@ -274,7 +265,7 @@ ToSuperMatrix[assoc_Association] := Map[ToSuperMatrix, assoc] /;
   AllTrue[assoc, ChoiMatrixQ]
 
 
-ToChoiMatrix::usage = "ToChoiMatrix[sm] converts super-matrix sm to a Choi matrix form;  M[{i,k},{j,l}] -> C[i,j;k,l]."
+ToChoiMatrix::usage = "ToChoiMatrix[sm] converts super-matrix sm to a Choi matrix form;  M[{i,k},{j,l}] -> C[i,j;k,l].";
 
 ToChoiMatrix[sm_?SuperMatrixQ] := Module[
   { dd = Sqrt @ Dimensions @ sm },
@@ -285,12 +276,9 @@ ToChoiMatrix[sm_?SuperMatrixQ] := Module[
 ToChoiMatrix[assoc_Association] := Map[ToChoiMatrix, assoc] /;
   AllTrue[assoc, SuperMatrixQ]
 
-(**** </ChoiMatrix> ****)
-
 
 (**** <LieBasisSupermap> ****)
-
-LieBasisSupermap::usage = "LieBasisSupermap[n] returns the supermap that changes the standard basis of \[ScriptCapitalL](n) to the Lie basis.\n LieBasisSupermap[{m1,m2,\[Ellipsis]}] returns the supermap that changes the standard basis of \[ScriptCapitalL](n) to the given basis {m1, m2, \[Ellipsis]}, which is supposed to be complete in \[ScriptCapitalL](n)."
+LieBasisSupermap::usage = "LieBasisSupermap[n] returns the supermap that changes the standard basis of \[ScriptCapitalL](n) to the Lie basis.\n LieBasisSupermap[{m1,m2,\[Ellipsis]}] returns the supermap that changes the standard basis of \[ScriptCapitalL](n) to the given basis {m1, m2, \[Ellipsis]}, which is supposed to be complete in \[ScriptCapitalL](n).";
 
 LieBasisSupermap[n_] := LieBasisSupermap @ LieBasis[n]
 
@@ -302,99 +290,80 @@ LieBasisSupermap[lbs:{__?SquareMatrixQ}] := With[
    ]
  ] /; ArrayQ[lbs]
 (* NOTE: lbs is supposed to be complete. *)
-
 (**** </LieBasisSupermap> ****)
 
 
 (**** <LieBasisMatrix> ****)
-
-LieBasisMatrix::usage = "LieBasisMatrix[n] returns the supermatrix that changes the standard basis of \[ScriptCapitalL](n) to the Lie basis.\n LieBasisMatrix[{m1,m2,\[Ellipsis]}] returns the supermatrix that changes the standard basis of \[ScriptCapitalL](n) to the given basis {m1, m2, \[Ellipsis]}."
+LieBasisMatrix::usage = "LieBasisMatrix[n] returns the supermatrix that changes the standard basis of \[ScriptCapitalL](n) to the Lie basis.\n LieBasisMatrix[{m1,m2,\[Ellipsis]}] returns the supermatrix that changes the standard basis of \[ScriptCapitalL](n) to the given basis {m1, m2, \[Ellipsis]}.";
 
 LieBasisMatrix[n_] := LieBasisMatrix @ LieBasis[n]
 
 LieBasisMatrix[lbs:{__?SquareMatrixQ}] :=
   Transpose[Flatten /@ lbs] /; ArrayQ[lbs]
-
 (**** </LieBasisMatrix> ****)
 
 
-DampingOperator::usage = "DampingOperator[{b1, b2, \[Ellipsis]}] or DampingOperator[b1, b2, \[Ellipsis]]  returns the effective damping operator corresponding to the Lindblad operators b1, b2, \[Ellipsis]."
+DampingOperator::usage = "DampingOperator[{b1, b2, \[Ellipsis]}] or DampingOperator[b1, b2, \[Ellipsis]]  returns the effective damping operator corresponding to the Lindblad operators b1, b2, \[Ellipsis].";
 
-DampingOperator[opL__] := DampingOperator @ {opL}
-
-DampingOperator[opL:{__?MatrixQ}] := SparseArray[
+DampingOperator[opL_?(ArrayQ[#, 3]&)] := SparseArray[
   Plus @@ MapThread[Dot, {Topple /@ opL, opL}] / 2
- ] /; ArrayQ[opL]
+];
 
-DampingOperator[opL:{Except[_?ListQ]..}] :=
-  Garner[ MultiplyDot[Dagger @ opL, opL] / 2 ]
+DampingOperator[opL__] := DampingOperator @ {opL};
 
-DampingOperator[{}] = 0
+DampingOperator[opL_List] :=
+  Garner[ MultiplyDot[Dagger @ opL, opL] / 2 ];
+
+DampingOperator[{}] = 0;
 
 
-(***** <LindbladSupermap> *****)
-
-LindbladSupermap::usage = "LindbladSupermap[opH, opL1, opL2, \[Ellipsis]] represents a superoperator generating the Lindblad equation specified by the effective Hamiltonian opH and the Lindblad operators opL1, opL2, \[Ellipsis].\nLindbladSupermap[opH, opL1, opL2, \[Ellipsis]][rho] transforms the matrix rho."
+(***** <Lindbladian> *****)
+Lindbladian::usage = "Lindbladian[opH, opL1, opL2, \[Ellipsis]] represents a superoperator generating the Lindblad equation specified by the effective Hamiltonian opH and the Lindblad operators opL1, opL2, \[Ellipsis].\nLindbladian[opH, opL1, opL2, \[Ellipsis]][rho] transforms the matrix rho.";
   
-LindbladSupermap::incmp = "The matrices `` are not compatible with each other."
+Lindbladian[opH_, opL_] := 
+  Lindbladian @ Prepend[opL, opH] /; ArrayQ[opL, 1|3];
 
-LindbladSupermap[ops:{_?MatrixQ, __?MatrixQ}] := (
-  Message[LindbladSupermap::incmp, Normal @ ops];
-  (Zero @ Dimensions @ #)&
- ) /; Not @ ArrayQ @ ops
+Lindbladian[opH_, None] := Lindbladian[{opH, None}];
 
-LindbladSupermap[opH_, {opL__}] := LindbladSupermap @ {opH, opL}
+Lindbladian[{opH_?MatrixQ, None}] :=
+  Lindbladian @ {opH, Zero @ Dimensions @ opH}
 
-LindbladSupermap[opH_, None] := LindbladSupermap[{opH, None}]
+Lindbladian[{opH_, None}] := Lindbladian @ {opH, 0}
 
-LindbladSupermap[{opH_?MatrixQ, None}] :=
-  LindbladSupermap @ {opH, Zero @ Dimensions @ opH}
+Lindbladian[{None, opL__?MatrixQ}] :=
+  Lindbladian @ {Zero @ Dimensions @ First @ {opL}, opL}
 
-LindbladSupermap[{opH_, None}] := LindbladSupermap @ {opH, 0}
+Lindbladian[{None, opL__}] := Lindbladian @ {0, opL}
 
-LindbladSupermap[{None, opL__?MatrixQ}] :=
-  LindbladSupermap @ {Zero @ Dimensions @ First @ {opL}, opL}
+(* for matrices *)
+Lindbladian[array_] := Module[
+  { opH = First[array],
+    opL = Rest[array],
+    one, non },
+  one = One[Dimensions @ opH];
+  non = -I*(opH - I*DampingOperator[opL]);
+  Supermap[ChoiMatrix[non, one] + ChoiMatrix[one, non] + ChoiMatrix[opL]]
+] /; ArrayQ[array, 3];
 
-LindbladSupermap[{None, opL__}] := LindbladSupermap @ {0, opL}
-
-LindbladSupermap[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
-  { one = One @ Length @ opH,
-    non = -I*(opH - I*DampingOperator[opL]) },
-  Supermap[ChoiMatrix[non, one] + ChoiMatrix[one, non] + ChoiMatrix[{opL}]]
-] /; ArrayQ @ {opH, opL}
-
-
-LindbladSupermap[{opH_, opL__}][rho_] := Module[
+(* for operator expressions *)
+Lindbladian[{opH_, opL__}] := Module[
   { non = -I*(opH - I*DampingOperator[opL]),
-    gen },
-  non = Multiply[non, rho] + Multiply[rho, Dagger @ non];
-  gen = Total @ Multiply[{opL}, rho, Dagger @ {opL}];
-  Garner[non + gen]
-]
-
-LindbladSupermap /:
-MakeBoxes[spr:LindbladSupermap[{opH_, opL__}], fmt_] :=
-  BoxForm`ArrangeSummaryBox[
-    LindbladSupermap, spr, None,
-    { BoxForm`SummaryItem @ {"Lindblad supermap"},
-      BoxForm`SummaryItem @ {"Lindblad operators: ", Length @ {opL}} },
-    { BoxForm`SummaryItem @ {"Hamiltonian: ", opH},
-      BoxForm`SummaryItem @ {"Damping operator: ", DampingOperator @ {opL}},
-      BoxForm`SummaryItem @ {"Lindblad operators: ", {opL}} },
-    fmt, "Interpretable" -> Automatic 
-  ]
-
-
-(***** </LindbladSupermap> *****)
+    cff = One[Length @ {opL}] },
+  cff = BlockDiagonalMatrix[{ThePauli[1], cff}, TargetStructure -> "Sparse"];
+  Supermap[{1, Garner @ non, opL}, cff]
+];
+(***** </Lindbladian> *****)
 
 
 (**** <LindbladConvert> ****)
+LindbladConvert::usage = "LindbladConvert[{opH,L1,L2,\[Ellipsis]}] or LindbladConvert[opH, {L1,L2,\[Ellipsis]}] converts the Lindblad equation into an ordinary differential equation for the column vector consisting of the components of the density operator in the so-called Lindblad basis.\nLindbladConvert[cm] assumes that Choi matrix cm corresponds to the Lindblad generator.\nIt returns the pair {generator matrix, offset vector}.";
 
-LindbladConvert::usage = "LindbladConvert[{opH,L1,L2,\[Ellipsis]}] or LindbladConvert[opH, {L1,L2,\[Ellipsis]}] converts the Lindblad equation into an ordinary differential equation for the column vector consisting of the components of the density operator in the so-called Lindblad basis.\nLindbladConvert[cm] assumes that Choi matrix cm corresponds to the Lindblad generator.\nIt returns the pair {generator matrix, offset vector}."
+LindbladConvert::incmp = "The matrices `` are not compatible with each other.";
 
-LindbladConvert::incmp = "The matrices `` are not compatible with each other."
+LindbladConvert::badcm = "The given Choi matrix corresponds to a supermap between two spaces of different dimenions: ``.";
 
-LindbladConvert::badcm = "The given Choi matrix corresponds to a supermap between two spaces of different dimenions: ``."
+LindbladConvert[Supermap[tsr_?ChoiMatrixQ]] := 
+  LindbladConvert[tsr];
 
 LindbladConvert[tsr_?ChoiMatrixQ] := Module[
   { dim = First @ Dimensions[tsr],
@@ -408,64 +377,53 @@ LindbladConvert[tsr_?ChoiMatrixQ] := Module[
 ] /; If[ Equal @@ Dimensions[tsr], True,
     Message[LindbladConvert::badcm, Dimensions @ tsr];
     False
-  ]
+  ];
 
-LindbladConvert[opH_, {opL__}] := LindbladConvert[{opH, opL}]
+(* Lindblad equation specified by matrices *)
+LindbladConvert[arr_] :=
+  LindbladConvert[ChoiMatrix @ Lindbladian @ arr] /;
+  ArrayQ[arr, 3];
 
-LindbladConvert[{opH_?MatrixQ, opL__?MatrixQ}] :=
-  LindbladConvert[ChoiMatrix @ LindbladSupermap @ {opH, opL}] /;
-  ArrayQ @ {opH, opL}
+(* Lindblad equation specified by operators *)
+LindbladConvert[opH_, {opL__}] := LindbladConvert[{opH, opL}];
 
-LindbladConvert[ops:{__?MatrixQ}] :=
-  Message[LindbladConvert::incmp, Normal @ ops]
+LindbladConvert[{None, opL__}] := LindbladConvert[{0, opL}];
 
-LindbladConvert[{None, opL__}] := LindbladConvert[{0, opL}]
-
-LindbladConvert[ops:{_, __}] := LindbladConvert @ Matrix[ops]
-
-
-LindbladConvert[Supermap[tsr_?ChoiMatrixQ]] := LindbladConvert[tsr]
-
-LindbladConvert[LindbladSupermap[spec_]] := LindbladConvert[spec]
-
+LindbladConvert[ops:{_, __}] := LindbladConvert @ Matrix[ops];
 (**** </LindbladConvert> ****)
 
 
-LindbladStationary::usage = "LindbladStationary[{op, b1, b2, \[Ellipsis]}] returns the stationary state of the Lindblad equation specified by the effective Hamiltonian op and the Lindblad operators b1, b2, \[Ellipsis]."
+(**** <LindbladSteady> ****)
+LindbladSteady::usage = "LindbladSteady[{op, b1, b2, \[Ellipsis]}] returns the stationary state of the Lindblad equation specified by the effective Hamiltonian op and the Lindblad operators b1, b2, \[Ellipsis].";
 
-LindbladStationary::incmp = "The matrices `` are not compatible with each other."
-
-LindbladStationary[opH_, {opL__}] := LindbladStationary[{opH, opL}]
-
-LindbladStationary[{opH_?MatrixQ, opL__?MatrixQ}] := Module[
-  { len = Length @ opH,
+LindbladSteady[array_] := Module[
+  { dim = Length[First @ array],
     mat, gen, rho, lbs },
-  { mat, gen } = LindbladConvert @ {opH, opL};
+  { mat, gen } = LindbladConvert[array];
   rho = - Inverse[mat] . gen;
-  rho = Prepend[rho, 1/Sqrt[len]];
-  lbs = LieBasis @ len;
+  rho = Prepend[rho, 1/Sqrt[dim]];
+  lbs = LieBasis @ dim;
   Return[rho . lbs]
- ] /; ArrayQ @ {opH, opL}
+] /; ArrayQ[array, 3];
 
-LindbladStationary[ops:{__?MatrixQ}] :=
-  Message[LindbladStationary::incmp, Normal @ ops]
+LindbladSteady[opH_, {opL__}] := LindbladSteady[{opH, opL}]
 
-LindbladStationary[{None, opL__}] := LindbladStationary[{0, opL}]
+LindbladSteady[{None, opL__}] := LindbladSteady[{0, opL}]
 
-LindbladStationary[ops:{_, __}] :=
-  ExpressionFor @ LindbladStationary @ Matrix[ops] /;
+LindbladSteady[ops:{_, __}] :=
+  ExpressionFor @ LindbladSteady @ Matrix[ops] /;
   Not @ FreeQ[ops, _Pauli]
 
-LindbladStationary[ops:{_, __}] := Module[
+LindbladSteady[ops:{_, __}] := Module[
   { ss = Agents @ ops,
     rho },
-  rho = LindbladStationary @ Matrix[ops, ss];
+  rho = LindbladSteady @ Matrix[ops, ss];
   ExpressionFor[rho, ss]
- ]
+];
+(**** </LindbladSteady> ****)
 
 
 (**** <LindbladSolve> ****)
-
 LindbladSolve::usage = "LindbladSolve[{opH, opL1, opL2, ...}, init, t] returns the solution of the Lindblad equation."
 
 LindbladSolve::incmp = "The matrices `` are not compatible with each other."
@@ -475,11 +433,11 @@ LindbladSolve[opH_, {opL__}, in_, rest__] :=
 
 
 LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?VectorQ, t_] :=
-  LindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, Dyad[in, in], t] /;
+  LindbladSolve[ChoiMatrix @ Lindbladian @ ops, Dyad[in, in], t] /;
   ArrayQ[ops]
 
 LindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_?MatrixQ, t_] :=
-  LindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, in, t] /;
+  LindbladSolve[ChoiMatrix @ Lindbladian @ ops, in, t] /;
   ArrayQ @ Join[{in}, ops]
 
 LindbladSolve[tsr_?ChoiMatrixQ, in_?MatrixQ, t_] := Module[
@@ -506,7 +464,7 @@ LindbladSolve[ops:{_, __}, in_?MatrixQ, _] :=
   Message[LindbladSolve::incmp, Normal @ Append[ops, in]] 
 
 
-LindbladSolve[LindbladSupermap[ops_], in_, t_] :=
+LindbladSolve[Lindbladian[ops_], in_, t_] :=
   LindbladSolve[ops, in, t]
 
 LindbladSolve[ops:{_, __}, in_, t_] :=
@@ -519,20 +477,17 @@ LindbladSolve[ops:{_, __}, in_, t_] := Module[
   rho = LindbladSolve[Matrix[ops, ss], Matrix[in, ss], t];
   ExpressionFor[rho, ss]
  ]
-
 (**** </LindbladSolve> ****)
 
 
 (**** <NLindbladSolve> ****)
-
 (* TODO: Use the Schur decompoistion; see https://community.wolfram.com/groups/-/m/t/3529901 *)
+NLindbladSolve::usage = "NLindbladSolve[{opH, opL1, opL2, ...}, init, {t, tmin, tmax}] finds a numerical solution to the Lindblad equation defined by Hamiltonian opH and Lindblad operators opL1, opL2, \[Ellipsis].NLindblad[tsr, init, {t, tmin, tmax}] assumes that the Lindblad generator is specified by Choi matrix tsr.\nInternally, it uses the NDSolve built-in function and hence takes all options of NDSolve.";
 
-NLindbladSolve::usage = "NLindbladSolve[{opH, opL1, opL2, ...}, init, {t, tmin, tmax}] finds a numerical solution to the Lindblad equation defined by Hamiltonian opH and Lindblad operators opL1, opL2, \[Ellipsis].NLindblad[tsr, init, {t, tmin, tmax}] assumes that the Lindblad generator is specified by Choi matrix tsr.\nInternally, it uses the NDSolve built-in function and hence takes all options of NDSolve."
-
-NLindbladSolve::incmp = "The matrices `` are not compatible with each other."
+NLindbladSolve::incmp = "The matrices `` are not compatible with each other.";
 
 NLindbladSolve[ops:{_?MatrixQ, __?MatrixQ}, in_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
-  NLindbladSolve[ChoiMatrix @ LindbladSupermap @ ops, in, {t, tmin, tmax}, opts] /;
+  NLindbladSolve[ChoiMatrix @ Lindbladian @ ops, in, {t, tmin, tmax}, opts] /;
   ArrayQ @ Join[ops]
 
 NLindbladSolve[HoldPattern @ Supermap[tsr_?ChoiMatrixQ], in_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
@@ -570,7 +525,7 @@ NLindbladSolve[opH_, {opL__}, init_, rest__] :=
 NLindbladSolve[ops:{_, __}, init_?MatrixQ, _] :=
   Message[NLindbladSolve::incmp, Normal @ Append[ops, init]] 
 
-NLindbladSolve[LindbladSupermap[ops_], in_, {t_, tmin_, tmax_}] :=
+NLindbladSolve[Lindbladian[ops_], in_, {t_, tmin_, tmax_}] :=
   NLindbladSolve[ops, in, {t, tmin, tmax}]
 
 NLindbladSolve[ops:{_, __}, init_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
@@ -593,13 +548,12 @@ NLindbladSolve[ops:{_, __}, init_, {t_, tmin_, tmax_}, opts___?OptionQ] :=
      ];
     ExpressionFor[rho, ss]
    ]
-
 (**** </NLindbladSolve> ****)
 
 
-LindbladSolveNaive::usage = "LindbladSolveNaive[...] returns the solution of the Lindblad equation."
+LindbladSolveNaive::usage = "LindbladSolveNaive[...] returns the solution of the Lindblad equation.";
 
-LindbladSolveNaive::incmp = "The matrices `` are not compatible with each other."
+LindbladSolveNaive::incmp = "The matrices `` are not compatible with each other.";
 
 LindbladSolveNaive[opH_?MatrixQ, {opL__?MatrixQ}, init_?MatrixQ, t_] :=
   LindbladSolveNaive[{opH, opL}, init, t]
@@ -623,14 +577,13 @@ LindbladSolveNaive[ops:{_, __}, in_?MatrixQ, _] :=
 
 
 (**** <LindbladSimulate> ****)
+LindbladSimulate::usage = "LindbladSimulate[h, {a1,a2,...}, in, {t1,t2,...}] simulates the dynamics governed by the Lindblad equation associated with the effective Hamiltonian h and the Lindblad operators a1, a2, \[Ellipsis] starting with the initial vector in and using the quantum jump approach, and returns the random trajectories of vector representation {c1,c2,\[Ellipsis],cd} in the computational basis of the Hilbert space of dimension d at each time instants t1, t2, \[Ellipsis].";
 
-LindbladSimulate::usage = "LindbladSimulate[h, {a1,a2,...}, in, {t1,t2,...}] simulates the dynamics governed by the Lindblad equation associated with the effective Hamiltonian h and the Lindblad operators a1, a2, \[Ellipsis] starting with the initial vector in and using the quantum jump approach, and returns the random trajectories of vector representation {c1,c2,\[Ellipsis],cd} in the computational basis of the Hilbert space of dimension d at each time instants t1, t2, \[Ellipsis]."
+LindbladSimulate::numeric = "All elements of the matrices and initial vector as well as the final time must be numeric.";
 
-LindbladSimulate::numeric = "All elements of the matrices and initial vector as well as the final time must be numeric."
+LindbladSimulate::incmp = "The matrices and/or the initial vector are incompatible with each other.";
 
-LindbladSimulate::incmp = "The matrices and/or the initial vector are incompatible with each other."
-
-LindbladSimulate::null = "The null state is encountered."
+LindbladSimulate::null = "The null state is encountered.";
 
 Options[LindbladSimulate] = {
   "Samples" -> 500,
@@ -638,12 +591,12 @@ Options[LindbladSimulate] = {
   "Overwrite" -> True,
   "Filename" -> Automatic,
   "Prefix" -> "Carlo"
-}
+};
 
 (* TODO: 2023-05-27 *)
 (* LindbladSimulate[tsr_?ChoiMatrixQ, in_?VectorQ, tt_List,
    opts:OptionsPattern[]] *)
-(* Note that since v2.39, LindbladSupermap[{__?MatrixQ}, ...] generates
+(* Note that since v2.39, Lindbladian[{__?MatrixQ}, ...] generates
    Supermap[_?ChoiMatrixQ]. *)
 
 LindbladSimulate[opH_?MatrixQ, opL:{__?MatrixQ}, in_?VectorQ, tt_List,
@@ -697,12 +650,12 @@ LindbladSimulate[opH_, opL:{__}, in_, tt_List, opts___?OptionQ] := Module[
 LindbladSimulate[{opH_, opL__}, in_, tt_List] :=
   LindbladSimulate[opH, {opL}, in, tt]
 
-LindbladSimulate[spr_LindbladSupermap, in_, tt_List, opts___?OptionQ] :=
+LindbladSimulate[spr_Lindbladian, in_, tt_List, opts___?OptionQ] :=
   LindbladSimulate[Sequence @@ spr, in, tt, opts] /;
   Not @ FreeQ[in, _Ket]
 
 
-goMonteCarlo::usage = "goMonteCarlo[non, {a1,a2,...}, in, {t1,t2,...}] generates a quantum trajectory based on the non-Hermitian Hamiltonian non (see below) and Lindblad operators a1, a2, ..., starting from the initial state in at time instants t1, t2, ....\nIn fact, the non-Hermitian Hamiltonian is provided in the form {mat, val, inv}, where non = mat.DiagonalMatrix[val].inv."
+goMonteCarlo::usage = "goMonteCarlo[non, {a1,a2,...}, in, {t1,t2,...}] generates a quantum trajectory based on the non-Hermitian Hamiltonian non (see below) and Lindblad operators a1, a2, ..., starting from the initial state in at time instants t1, t2, ....\nIn fact, the non-Hermitian Hamiltonian is provided in the form {mat, val, inv}, where non = mat.DiagonalMatrix[val].inv.";
 
 goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
   in_?VectorQ, tt_List] := Module[
@@ -752,11 +705,7 @@ goMonteCarlo[{mat_?MatrixQ, val_?VectorQ, inv_?MatrixQ}, opL:{__?MatrixQ},
     ];
     Return[res];
   ]
-
 (**** </LindbladSimulate> ****)
 
-
-
-End[]
-
-EndPackage[]
+End[];
+EndPackage[];

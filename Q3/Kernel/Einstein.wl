@@ -1,7 +1,8 @@
 (* -*- mode:math -*- *)
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 (**** <obsolete> ****)
+{ LindbladSupermap, LindbladStationary, WickSteadyState }; (* renamed 2026-08-06 v4.6.5 *)
 { ExchangeGate }; (* renamed 2026-03-06 v4.5.6 *)
 { BravyiCanonicalize, KetCanonical }; (* renamed 2026-02-20 v4.5.1 *)
 { BravyiOperator, RandomBravyiOperator,
@@ -56,29 +57,25 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { QuissoAdd, QuissoAddZ }; (* renamed *)
 (**** </obsolete> ****)
 
-Begin["`Private`"]
+Begin["`Private`"];
 
 (**** <FALLBACK> ****)
-
 MultiplyPower[a_?CommutativeQ, b_?CommutativeQ] := Power[a, b]
 
 MultiplyExp[z_?CommutativeQ] := Power[E, z]
 
 MultiplyExp /:
 Elaborate[ HoldPattern @ MultiplyExp[expr_] ] := MultiplyExp[expr]
-
 (**** </FALLBACK> ****)
 
 
 (**** <EXPERIMENTAL> ****)
-
 HoldPattern @ Multiply[ pre___,
   Ket[a_Association], Bra[b_Association], post___] :=
   Multiply[pre, Dyad[a, b], post]
 (* NOTE: This must come at the final stage and is moved to here.
    Otherwise, for example, Dagger[a[1]] ** Ket[] ** Bra[] ** a[1]
    results in Dagger[a[1]] ** Dyad[<||>,<|a[1]->1|>]. *)
-
 (**** </EXPERIMENTAL> ****)
 
 
@@ -240,7 +237,6 @@ If[ $VersionNumber < 14.3,
 ];
 
 (* 2025-08-24 *)
-
 Q3General::expand = "Expand[`1`[\[Ellipsis]]] and ExpandAll[`1`[\[Ellipsis]]] are deprecated; use Unfold[`1`[\[Ellipsis]]] and UnfoldAll[`1`[\[Ellipsis]]], respectively."
 
 Scan[
@@ -290,7 +286,6 @@ BravyiMeasurement[kk:{__Integer}][in:BravyiState[{fac_?NumericQ, cvr_?MatrixQ}, 
 
 
 (**** <changed> ****)
-
 QSPFind[{coeff_?VectorQ, parity:(-1|1)}, opts:OptionsPattern[]] := (
   Message[Q3General::changed, "QSPFind",
     "Use the form QSPFind[coeff -> parity]. 2026-03-11 Q3 v4.5.8"
@@ -483,13 +478,11 @@ Phase[qq:{__?QubitQ}, phi_, rest___] := (
   Message[Q3General::angle, Phase];
   Phase[phi, qq, rest]
 )
-
 (**** </changed> ****)
 
 
 (**** <ToYoungTableau> ****)
 (* obsolete since 2025-05-22 v4.1.11 *)
-
 ToYoungTableau::usage = "OBSOLETE. Use YoungTableau instead.\nToYoungTableau[gz] converts Gelfand pattern gz to the corresponding Weyl tableau (semi-standard Young tableau)."
 (* See Krovi119a. *)
 
@@ -515,13 +508,11 @@ ToYoungTableau[gp_] := (
   Message[ToYoungTableau::notgp, gp];
   gp
 )
-
 (**** </ToYoungTableau> ****)
 
 
 (**** <ToGelfandPattern> ****)
 (* obsolete since 2025-05-22 v4.1.11 *)
-
 ToGelfandPattern::usage = "OBSOLETE. Use GelfandPattern instead.\nToGelfandPattern[tbl, d] converts a semi-standard Young tableau tbl to the corresponding Gelfand pattern of d letters.\nToGelfandPattern[d] represents an operation form."
 
 ToGelfandPattern::notwt = "`` is not a valid Weyl tableau."
@@ -555,11 +546,30 @@ ToGelfandPattern[tb_, _Integer] := (
   Message[ToGelfandPattern::notwt, tb];
   { {0} }
 )
-
 (**** </ToGelfandPattern> ****)
 
 
 (**** <obsolete> ****)
+WickSteadyState::usage = "WickSteadyState has been renamed WickLindbladSteady since v4.6.5 (2026-08-06 14:34)."
+
+WickSteadyState[any___] := (
+  Message[Q3General::renamed, "WickSteadyState", "WickLindbladSteady"];
+  WickLindbladSteady[any]
+)
+
+LindbladSupermap::usage = "LindbladSupermap has been renamed Lindbladian since v4.6.5 (2026-08-06 14:34)."
+
+LindbladSupermap[any___] := (
+  Message[Q3General::renamed, "LindbladSupermap", "Lindbladian"];
+  Lindbladian[any]
+)
+
+LindbladStationary::usage = "LindbladStationary has been renamed LindbladSteady since v4.6.5 (2026-08-06 14:34)."
+
+LindbladStationary[any___] := (
+  Message[Q3General::renamed, "LindbladStationary", "LindbladSteady"];
+  LindbladSteady[any]
+)
 
 ExchangeGate::usage = "ExchangeGate has been renamed ExchangeExp since v4.5.6 (2026-03-06)."
 
@@ -892,11 +902,11 @@ LindbladBasis[args___] := (
   LieBasis[args]
 )
 
-LindbladGenerator::usage = "LindbladGenerator has been renamed LindbladSupermap."
+LindbladGenerator::usage = "LindbladGenerator has been renamed Lindbladian."
 
 LindbladGenerator[args__] := (
-  Message[Q3General::renamed, "LindbladGenerator", "LindbladSupermap"];
-  LindbladSupermap[args]
+  Message[Q3General::renamed, "LindbladGenerator", "Lindbladian"];
+  Lindbladian[args]
 )
 
 QuissoAdd::usage = "QuissoAdd has been renamed QubitAdd."
@@ -974,12 +984,10 @@ FockMatrix[args___] := (
 FockMatrixForm::usage = "FockMatrixForm has been excised. Instead, use Map[MatrixForm, ...]."
 
 FockMatrixForm[args___] := Message[Q3General::excised, "FockMatrixForm"]
-
 (**** </obsolete> ****)
 
 
 (**** <NambuMatrix> ****)
-
 NambuMatrix::obsolete = "NambuMatrix[mat, ``] is obsolete; use `` instead."
 
 NambuMatrix[mat_, "Green's"] := (
@@ -996,10 +1004,8 @@ NambuMatrix[mat_, "Hermitian"] := (
   Message[NambuMatrix::obsolete, "Hermitian", NambuHermitian];
   NambuGreen[mat]
 )
-
 (**** </NambuMatrix> ****)
 
 
-End[]
-
-EndPackage[]
+End[];
+EndPackage[];

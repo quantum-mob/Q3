@@ -30,17 +30,14 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { WickScramblingCircuit, WickScramblingSimulate };
 
-{ WickLindbladSolve,
-  WickSteadyState };
+{ WickLindbladian, WickLindbladSolve, WickLindbladSteady };
 { WickSimulate, $WickMinorSteps };
 { WickMonitor };
 
 { WickLogarithmicNegativity };
 { WickEntropy, WickEntanglementEntropy, WickMutualInformation };
 
-(* VonNeumann.wl *)
-{ QuantumLog };
-
+{ QuantumLog }; (* VonNeumann.wl *)
 
 Begin["`Private`"]; (* Fermionic quantum computation *)
 
@@ -1990,31 +1987,61 @@ WickInner[WickState[a_?MatrixQ, ___], WickState[b_?MatrixQ, ___]] :=
 (**** </WickInner> ****)
 
 
-(**** <WickLindbladSolve> ****)
-WickLindbladSolve::usage = "WickLindbladSolve[ham, jmp, in, t] solves the Lindblad equation associated with the Hamiltonia ham (either n\[Times]n matrix or WickHermitian) and a set of quantum jump operators jmp (WickJump), and returns the single-particle Green's function matrix characterizing a fermionic Gaussian mixed state at t. The initial state in may be given in the WickState form or n\[Times]n Green's function matrix."
+(**** <WickLindbladian> ****)
+WickLindbladian::usage = "WickLindbladian[ham, jmp] returns {C, Heff, {M1, M2, \[Ellipsis]}} describing the Lindblad equation for the single-particle Green's function matrix, [D[G[t],t] = C - i(Heff.G - G.ConjugateTranspose[Heff]) + Sum[Mk.G.Mk, {k, ...}], associated with the Hamiltonia ham (either n\[Times]n matrix or WickHermitian) and a set of quantum jump operators jmp (WickJump).";
 
-WickLindbladSolve::chk = "Something is wrong: vector `` is supposed to be zero."
+WickLindbladian[ham_?MatrixQ, rest__] :=
+  WickLindbladian[WickHermitian @ ham, rest];
+
+WickLindbladian[ham_WickHermitian, jmp:{__?patternWickJumpQ}] :=
+  WickLindbladian[ham, WickJump @ jmp];
+
+WickLindbladian[ham_WickHermitian, jmp_WickJump] := Module[
+  { cls, bob, off, tmp, eff },
+  Block[
+    { Missing },
+    Missing["KeyAbsent", _] = {};
+    cls = Merge[Reverse /@ First[jmp], SparseArray];
+    bob = Join @@ Lookup[cls, {2, 3}];
+    bob = MapThread[KroneckerProduct, {Conjugate @ bob, bob}];
+    If[bob != {}, bob = SparseArray[bob]];
+    off = Lookup[cls, 0];
+    off = Dot[ConjugateTranspose @ off, off];
+    tmp = Lookup[cls, 1];
+    tmp = Dot[ConjugateTranspose @ tmp, tmp];
+  ];
+  eff = First[ham] - (I/2)*(off + tmp);
+  eff += -(I/2)*Total[Map[#.#&, bob]];
+  {off, eff, bob}
+];
+(**** </WickLindbladian> ****)
+
+
+(**** <WickLindbladSolve> ****)
+WickLindbladSolve::usage = "WickLindbladSolve[ham, jmp, in, t] solves the Lindblad equation associated with the Hamiltonia ham (either n\[Times]n matrix or WickHermitian) and a set of quantum jump operators jmp (WickJump), and returns the single-particle Green's function matrix characterizing a fermionic Gaussian mixed state at t. The initial state in may be given in the WickState form or n\[Times]n Green's function matrix.";
+
+WickLindbladSolve::chk = "Something is wrong: vector `` is supposed to be zero.";
 
 WickLindbladSolve[ham_?MatrixQ, rest__] :=
-  WickLindbladSolve[WickHermitian @ ham, rest]
+  WickLindbladSolve[WickHermitian @ ham, rest];
 
 WickLindbladSolve[ham_WickHermitian, jmp:{__?patternWickJumpQ}, rest__] :=
-  WickLindbladSolve[ham, WickJump @ jmp, rest]
+  WickLindbladSolve[ham, WickJump @ jmp, rest];
 
 
 WickLindbladSolve[ham_, jmp_, in_, t_?NumericQ, rest___] :=
-  First @ WickLindbladSolve[ham, jmp, in, {{t}}, rest]
+  First @ WickLindbladSolve[ham, jmp, in, {{t}}, rest];
 
 WickLindbladSolve[ham_, jmp_, in_, {t0_?NumericQ, tn_?NumericQ}, rest___] :=
-  WickLindbladSolve[ham, jmp, in, {Range[t0, tn]}, rest]
+  WickLindbladSolve[ham, jmp, in, {Range[t0, tn]}, rest];
 
 WickLindbladSolve[ham_, jmp_, in_,
   {ti_?NumericQ, tf_?NumericQ, dt_?NumericQ},
   rest___
-] := WickLindbladSolve[ham, jmp, in, {Range[ti, tf, dt]}, rest]
+] := WickLindbladSolve[ham, jmp, in, {Range[ti, tf, dt]}, rest];
 
 WickLindbladSolve[ham_, jmp_, in_WickState, rest__] :=
-  WickLindbladSolve[ham, jmp, WickGreen @ in, rest]
+  WickLindbladSolve[ham, jmp, WickGreen @ in, rest];
 
 
 (* projective case *)
@@ -2025,26 +2052,24 @@ WickLindbladSolve[
   grn_?MatrixQ,
   {tt_?VectorQ}
 ] := Module[
-  { n = Length[First @ ham],
-    lop, krn, chk, trs, evo },
-  (* Lindblad operators *)
-  {dmp, gmm} = WickDampingOperator[jmp];
-  lop = Keys[First @ jmp];
-  lop = Map[KroneckerProduct[Conjugate @ #, #]&, lop];
-  {krn, chk} = LindbladConvert[N @ First @ ham, lop];
-  (* \varL(I) =  0 *)
-  If[ Not[ArrayZeroQ @ chk], 
+  { n = FermionCount[ham],
+    one, off, eff, bob, krn, chk, trs, evo, out },
+  one = One[n];
+  {off, eff, bob} = WickLindbladian[ham, jmp];
+  eff *= -I;
+  spr = ChoiMatrix[eff, one] + ChoiMatrix[one, eff] + ChoiMatrix[bob];  
+  {krn, chk} = LindbladConvert[spr];
+  If[ Not[ArrayZeroQ @ chk], (* \varL(I) =  0 *)
     Message[WickLindbladSolve::chk, ArrayShort @ chk]
   ];
   evo = Map[MatrixExp[krn*#]&, tt];
   trs = LieBasisMatrix[n];
-  in = ConjugateTranspose[trs].Flatten[grn];
+  in = ConjugateTranspose[trs] . Flatten[grn];
   out = evo . Rest[in];
   out = ArrayPad[out, {{0, 0}, {1, 0}}, First @ in];
   out = out . Transpose[trs];
   ArrayReshape[out, {Length @ out, n, n}]
-] /; ContainsOnly[Values @ First @ jmp, {2, 3}]
-
+] /; ContainsOnly[Values @ First @ jmp, {2, 3}];
 
 (* dissipative case *)
 WickLindbladSolve[
@@ -2053,75 +2078,64 @@ WickLindbladSolve[
   grn_?MatrixQ,
   {tt_?VectorQ}
 ] := Module[
-  { xx, yy },
-  {xx, yy} = WickLyapunov[First @ ham, First @ jmp];
-  LyapunovFunction[xx, yy][grn, tt]
-] /; ContainsOnly[Values @ First @ jmp, {0, 1}]
-
-WickLyapunov::usage = "WickLyapunov[ham, jmp] returns a pair {X, Y} of matrics for the Lyapunov equation D[G[t], t] == X.G + G.ConjugateTranspose[X] + Y."
-
-WickLyapunov[ham_?MatrixQ, jmp:{__?patternWickJumpQ}] := Module[
-  { cls, xx, yy },
-  cls = Merge[Reverse /@ jmp, SparseArray];
-  cls = KeyDrop[cls, {2, 3}];
-  {xx, yy} = Total @ KeyValueMap[theWickLyapunov, cls];
-  {-I*ham - xx, yy}
-]
-
-theWickLyapunov[0, mat_?MatrixQ] := Module[
-  { dmp },
-  dmp = Dot[ConjugateTranspose @ mat, mat];
-  {dmp/2, dmp}
-]
-
-theWickLyapunov[1, mat_?MatrixQ] := Module[
-  { dmp },
-   (* effective non-Hermitian Hamiltonian *)
-  dmp = Dot[ConjugateTranspose @ mat, mat];
-  {dmp/2, Zero[Dimensions @ dmp]}
-]
+  {off, eff, bob},
+  {off, eff, bob} = WickLindbladian[ham, jmp];
+  LyapunovFunction[-I*eff, off][grn, tt]
+] /; ContainsOnly[Values @ First @ jmp, {0, 1}];
 (**** </WickLindbladSolve> ****)
 
 
-(**** <WickSteadyState> ****)
-WickSteadyState::usage = "WickSteadyState[ham, jmp] returns the steady-state solution (i.e., a fermionic Gaussian mixed state) to the Lindblad equation associated with the Hamiltonian ham and a set of quantum jump operators jmp.\nWickSteadyState[ham, msr] assumes that the Lindblad operators are projective and given by Wick measurement msr."
+(**** <WickLindbladSteady> ****)
+WickLindbladSteady::usage = "WickLindbladSteady[ham, jmp, in] returns the steady-state solution (i.e., a fermionic Gaussian mixed state) to the Lindblad equation associated with the Hamiltonian ham and a set of quantum jump operators jmp for the initial state 'in' (either WickState or Green's function matrix).\nWickLindbladSteady[ham, msr, in] assumes that the Lindblad operators are projective and are specified by Wick measurement msr.";
 
-WickSteadyState::more = "The Lindblad equation has additional steady states."
+WickLindbladSteady::chk = "Something is wrong: vector `` is supposed to be zero.";
+WickLindbladSteady::more = "The Lindblad equation has additional steady states.";
+WickLindbladSteady::init = StringJoin[
+  "Initial state required; the Néel state ",
+  ToString[Ket[{1, 0, 1, 0, \[Ellipsis]}], StandardForm],
+  " assumed."
+];
 
 (* canonicalization *)
-WickSteadyState[ham_WickHermitian, jmp_WickJump, ws_WickState] :=
-  WickSteadyState[ham, jmp, WickGreen @ ws]
+WickLindbladSteady[ham_WickHermitian, jmp_WickJump, ws_WickState] :=
+  WickLindbladSteady[ham, jmp, WickGreen @ ws];
 
-(* dissipative case *)
-WickSteadyState[ham_WickHermitian, jmp_WickJump, _] := Module[
-  { xx, yy },
-  {xx, yy} = WickLyapunov[First @ ham, First @ jmp];
-  If[ZeroQ[Det @ xx], Message[WickSteadyState::more]];
-  LyapunovSolve[xx, -yy]
-] /; ContainsOnly[Values @ First @ jmp, {0, 1}]
+(* dissipative case: initial state-independent *)
+WickLindbladSteady[ham_WickHermitian, jmp_WickJump, _:None] := Module[
+  {off, eff, any},
+  {off, eff, any} = WickLindbladian[ham, jmp];
+  If[ZeroQ[Det @ eff], Message[WickLindbladSteady::more]];
+  LyapunovSolve[-I*eff, -off]
+] /; ContainsOnly[Values @ First @ jmp, {0, 1}];
 
 (* projective case *)
-WickSteadyState[ham_WickHermitian, jmp_WickJump, grn_?MatrixQ] := Module[
-  { n = Length[First @ ham],
-    lop, krn, chk, trs, evo },
-  (* Lindblad operators *)
-  lop = Keys[First @ jmp];
-  lop = Map[KroneckerProduct[Conjugate @ #, #]&, lop];
-  {krn, chk} = LindbladConvert[First @ ham, lop];
-  (* \varL(I) = 0 *)
-  If[ Not[ArrayZeroQ @ chk], 
-    Message[WickLindbladSolve::chk, ArrayShort @ chk]
+WickLindbladSteady[ham_WickHermitian, jmp_WickJump, grn_?MatrixQ] := Module[
+  { n = FermionCount[ham],
+    off, eff, bob, spr, krn, chk, trs, out, evo },
+  one = One[n];
+  {off, eff, bob} = WickLindbladian[ham, jmp];
+  eff *= -I;
+  spr = ChoiMatrix[eff, one] + ChoiMatrix[one, eff] + ChoiMatrix[bob];
+  {krn, chk} = LindbladConvert[spr];
+  If[ Not[ArrayZeroQ @ chk], (* \varL(I) = 0 *)
+    Message[WickLindbladSteady::chk, ArrayShort @ chk]
   ];
   evo = Eigenvectors[krn];
   trs = LieBasisMatrix[n];
-  in = ConjugateTranspose[trs].Flatten[grn];
+  in = ConjugateTranspose[trs] . Flatten[grn];
   out = Inverse[Transpose @ evo] . Rest[in];
   out = Last[evo] * Last[out];
   out = Prepend[out, First @ in];
   out = out . Transpose[trs];
   ArrayReshape[out, {n, n}]
-] /; ContainsOnly[Values @ First @ jmp, {2, 3}]
-(**** </WickSteadyState> ****)
+] /; ContainsOnly[Values @ First @ jmp, {2, 3}];
+
+WickLindbladSteady[ham_WickHermitian, jmp_WickJump] := With[
+  { in = WickState[{1, 0}, FermionCount @ ham] },
+  Message[WickLindbladSteady::init];
+  WickLindbladSteady[ham, jmp, WickGreen @ in]
+];
+(**** </WickLindbladSteady> ****)
 
 
 (**** <FermionCount> ****)

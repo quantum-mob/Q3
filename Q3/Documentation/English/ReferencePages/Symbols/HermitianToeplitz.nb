@@ -1,0 +1,837 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     30036,        828]
+NotebookOptionsPosition[     25953,        742]
+NotebookOutlinePosition[     28096,        794]
+CellTagsIndexPosition[     28053,        791]
+WindowTitle->HermitianToeplitz
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["QUANTUM MOB/ Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "b9d04d2b-2470-42aa-b4b0-079187efc5f8"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "1e848870-82c7-4fbd-9b15-2ad7b9599b74"],
+        Background->LightDarkSwitched[
+          RGBColor[0.490196, 0.576471, 0.690196]],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "389376ef-e6e7-4197-8010-0485eb69a083"]
+         }],ExpressionUUID->"85c9da16-af11-4ead-9235-bc0e5a09fffb"],
+         StripOnInput->False],{
+        StyleBox[
+          "\"ToeplitzMatrix\"", "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:ref/ToeplitzMatrix"], Delimiter, 
+         StyleBox[
+          "\"Functions\"", "SeeAlsoSection", FontSize -> 14, FontSlant -> 
+           "Italic", StripOnInput -> False] :> 
+         NotebookFind[EvaluationNotebook[], "SeeAlsoSection", All, CellStyle],
+          StyleBox[
+          StyleBox[
+           "\"RandomToeplitz\"", "SeeAlsoRelated", StripOnInput -> False], 
+           "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/ref/RandomToeplitz"], 
+         StyleBox[
+          StyleBox[
+           "\"RandomHermitianToeplitz\"", "SeeAlsoRelated", StripOnInput -> 
+            False], "SeeAlsoRelated", StripOnInput -> False] :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/ref/RandomHermitianToeplitz"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "e4948c98-6bef-4fc0-9f12-8c9cdbf35322"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Related Guides",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "fc670b1d-64b8-46eb-993f-ce3f2a2800aa"]
+         }],ExpressionUUID->"e5c39264-47f5-4f09-96e3-7942783d5cad"],
+         StripOnInput->False],{
+        "\"Matrix Distributions\"" :> 
+         Documentation`HelpLookup["paclet:guide/MatrixDistributions"], 
+         "\"Q3: Symbolic Quantum Simulation\"" :> 
+         Documentation`HelpLookup["paclet:QuantumMob/Q3/guide/Q3"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"MoreAbout"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "0b435fd8-72db-4793-8476-319dde07eea0"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "Tech Notes",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "a8fcc405-74a7-412c-a4d2-e0848b92c0ac"]
+         }],ExpressionUUID->"c57e81fb-e9a0-4ad4-a16e-ba766296dba7"],
+         StripOnInput->False],{
+        "\"Q3: Quick Start\"" :> 
+         Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/tutorial/Q3QuickStart"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"Tutorials"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "8a1999f9-757d-4277-a948-528bea35d9eb"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "7260c243-1613-4b38-9ccb-cc67bb41d892"]
+         }],ExpressionUUID->"4c00d4ff-c577-4050-81fb-bbd3ef35c791"],
+         StripOnInput->False],{
+        "\"QuantumMob/Q3/ref/HermitianToeplitz\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         CopyToClipboard["QuantumMob/Q3/ref/HermitianToeplitz"], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/QuantumMob/Q3/ref/\
+HermitianToeplitz.html"], StandardForm]], "Input", TextClipboardType -> 
+                 "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "QuantumMob/Q3/ref/HermitianToeplitz" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "ae3aa718-3b2b-4321-9cc1-1107c9dec379"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "981839ac-1a02-40b4-a5c7-b96809e4bd6a"]}
+  }]], "AnchorBarGrid",
+ CellID->1,ExpressionUUID->"641b90e8-7a89-48bf-b0a9-9f32735dc35d"],
+
+Cell["QuantumMob`Q3`", "ContextNameCell",ExpressionUUID->"79ff4727-445c-4cd9-af83-f03e82cf4c2a"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "HermitianToeplitz", "ObjectName",ExpressionUUID->
+      "a8011b5b-2a48-4688-819c-c86d26d8cbd5"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"53e18c1f-3720-4cda-873c-6e71710f959e"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "36391a48-85f4-40db-9f9a-d0229261c7df"]
+    }],ExpressionUUID->"37c32ce5-dcb2-42c8-a6b4-72e72cdf6ce7"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 15.0\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->LightDarkSwitched[
+              RGBColor[0.968627, 0.466667, 0]]], {Right, Center}, {
+           Right, Center}],
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 15",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "ed2d3680-8777-487f-b882-ed5dd5a34778"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"3feb9599-2693-4cac-b697-18700efb14ba"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["HermitianToeplitz"]], 
+         "paclet:QuantumMob/Q3/ref/HermitianToeplitz", 
+         "QuantumMob Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{"{", 
+        RowBox[{
+         SubscriptBox[
+          StyleBox["t", "TI"], 
+          StyleBox["1", "TR"]], ",", 
+         SubscriptBox[
+          StyleBox["t", "TI"], 
+          StyleBox["2", "TR"]], ",", 
+         StyleBox["\[Ellipsis]", "TR"], ",", 
+         SubscriptBox[
+          StyleBox["t", "TI"], 
+          StyleBox["n", "TI"]]}], "}"}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "9fbd1e8b-5657-4138-ac33-6a07ef79df5c"],
+     "\[LineSeparator]returns the ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["n", "TI"], "\[Times]", 
+       StyleBox["n", "TI"]}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "464cb710-44d2-4392-8f3f-7e874d653c20"],
+     " Hermitian Toeplitz matrix ",
+     Cell[BoxData[
+      StyleBox["m", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "bb573502-fb65-468d-aac8-2529b823c08a"],
+     " with ",
+     Cell[BoxData[
+      FormBox[
+       RowBox[{
+        SubscriptBox["m", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]], "=", 
+        SubscriptBox["t", 
+         RowBox[{"j", "-", "i", "+", "1"}]]}], TraditionalForm]],
+      ExpressionUUID->"5a317cb6-e0d7-4fdb-9b8d-ea821ec02d4c"],
+     " for ",
+     Cell[BoxData[
+      StyleBox[
+       RowBox[{"i", "\[LessEqual]", "j"}], "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "325db83c-8d20-41c1-a585-28935115aa0f"],
+     " and ",
+     Cell[BoxData[
+      FormBox[
+       RowBox[{
+        SubscriptBox["m", 
+         RowBox[{"i", "\[VeryThinSpace]", "j"}]], "=", 
+        SubsuperscriptBox["m", 
+         RowBox[{"j", "\[VeryThinSpace]", "i"}], "*"]}], TraditionalForm]],
+      ExpressionUUID->"88109f26-6b62-499b-a0e1-3a00ab9a9789"],
+     " for ",
+     Cell[BoxData[
+      RowBox[{
+       StyleBox["i", "TI"], ">", 
+       StyleBox["j", "TI"]}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "7269951b-c20f-4d8f-a749-990d64b95279"],
+     ". The first element ",
+     Cell[BoxData[
+      SubscriptBox[
+       StyleBox["t", "TI"], 
+       StyleBox["1", "TR"]]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "4f8ffa61-b48b-44f3-aad1-e26dd0af3a77"],
+     " for the main diagonal is projected onto its real part."
+    }],ExpressionUUID->"6a6ddb60-1830-43bc-9cc8-9c6bacb2d95b"]}
+  }]], "Usage",
+ CellID->1859481603,ExpressionUUID->"bef1e50a-20da-4a3c-8ccf-594412df35e7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.251494140625001, 9.348505859375003}}]],
+  ExpressionUUID->"53db28c1-a302-4cf7-b0ae-85383ab2a468"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"977b304f-d2aa-4118-a8b6-28c4d6548f03"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "96b88429-4f30-4f98-84c4-1643a56e2615"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->1119038326,ExpressionUUID->"649461bb-c13f-4619-a4bc-17a3641d6923"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<QuantumMob`Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->1728024441,ExpressionUUID->"53effd63-d4c6-48b4-8629-ad80d809d512"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[CurrentValue[
+       EvaluationCell[], "CellGroupOpen"] =!= Closed, 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]]]],ExpressionUUID->
+  "56e4bb12-e1a8-44f6-937c-679129c8a9de"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"8c89c294-97ac-4cdd-a450-1244f487034f"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "be835d2d-8d0c-40d6-8868-90040b181df6"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->15364656,ExpressionUUID->"216aa8b0-e14a-4655-813f-e1282f07abd4"],
+
+Cell[BoxData[
+ RowBox[{"Let", "[", 
+  RowBox[{"Complex", ",", "z"}], "]"}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->679040409,ExpressionUUID->"c8fadcde-2b54-41dd-8ec2-e466cd33886b"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"zz", "=", 
+  RowBox[{"z", "[", 
+   RowBox[{"{", 
+    RowBox[{"1", ",", "2", ",", "3", ",", "4"}], "}"}], "]"}]}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->81014468,ExpressionUUID->"27d2e039-27f1-4221-8dae-58f3a52076a4"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   InterpretationBox[
+    SubscriptBox["z", 
+     TemplateBox[{",", "\",\"", "1"},
+      "RowWithSeparators"]],
+    $CellContext`z[1]], ",", 
+   InterpretationBox[
+    SubscriptBox["z", 
+     TemplateBox[{",", "\",\"", "2"},
+      "RowWithSeparators"]],
+    $CellContext`z[2]], ",", 
+   InterpretationBox[
+    SubscriptBox["z", 
+     TemplateBox[{",", "\",\"", "3"},
+      "RowWithSeparators"]],
+    $CellContext`z[3]], ",", 
+   InterpretationBox[
+    SubscriptBox["z", 
+     TemplateBox[{",", "\",\"", "4"},
+      "RowWithSeparators"]],
+    $CellContext`z[4]]}], "}"}]], "Output",
+ CellLabel->"Out[2]=",
+ CellID->1056344282,ExpressionUUID->"91eaa61f-45bd-46ca-953b-bd3ad0093bd9"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"mat", "=", 
+   RowBox[{"HermitianToeplitz", "[", "zz", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"mat", "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1820191565,ExpressionUUID->"3bf4c3f6-5512-4766-be7a-53e11b69c44a"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {
+      RowBox[{"Re", "[", 
+       InterpretationBox[
+        SubscriptBox["z", 
+         TemplateBox[{",", "\",\"", "1"},
+          "RowWithSeparators"]],
+        $CellContext`z[1]], "]"}], 
+      InterpretationBox[
+       SubscriptBox["z", 
+        TemplateBox[{",", "\",\"", "2"},
+         "RowWithSeparators"]],
+       $CellContext`z[2]], 
+      InterpretationBox[
+       SubscriptBox["z", 
+        TemplateBox[{",", "\",\"", "3"},
+         "RowWithSeparators"]],
+       $CellContext`z[3]], 
+      InterpretationBox[
+       SubscriptBox["z", 
+        TemplateBox[{",", "\",\"", "4"},
+         "RowWithSeparators"]],
+       $CellContext`z[4]]},
+     {
+      InterpretationBox[
+       TemplateBox[{
+         InterpretationBox[
+          SubscriptBox["z", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+          $CellContext`z[2]], 
+         TemplateBox[{"\[ThinSpace]", "\"\[ThinSpace]\"", "\"*\""}, 
+          "RowWithSeparators"]},
+        "Superscript"],
+       Conjugate[
+        $CellContext`z[2]]], 
+      RowBox[{"Re", "[", 
+       InterpretationBox[
+        SubscriptBox["z", 
+         TemplateBox[{",", "\",\"", "1"},
+          "RowWithSeparators"]],
+        $CellContext`z[1]], "]"}], 
+      InterpretationBox[
+       SubscriptBox["z", 
+        TemplateBox[{",", "\",\"", "2"},
+         "RowWithSeparators"]],
+       $CellContext`z[2]], 
+      InterpretationBox[
+       SubscriptBox["z", 
+        TemplateBox[{",", "\",\"", "3"},
+         "RowWithSeparators"]],
+       $CellContext`z[3]]},
+     {
+      InterpretationBox[
+       TemplateBox[{
+         InterpretationBox[
+          SubscriptBox["z", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+          $CellContext`z[3]], 
+         TemplateBox[{"\[ThinSpace]", "\"\[ThinSpace]\"", "\"*\""}, 
+          "RowWithSeparators"]},
+        "Superscript"],
+       Conjugate[
+        $CellContext`z[3]]], 
+      InterpretationBox[
+       TemplateBox[{
+         InterpretationBox[
+          SubscriptBox["z", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+          $CellContext`z[2]], 
+         TemplateBox[{"\[ThinSpace]", "\"\[ThinSpace]\"", "\"*\""}, 
+          "RowWithSeparators"]},
+        "Superscript"],
+       Conjugate[
+        $CellContext`z[2]]], 
+      RowBox[{"Re", "[", 
+       InterpretationBox[
+        SubscriptBox["z", 
+         TemplateBox[{",", "\",\"", "1"},
+          "RowWithSeparators"]],
+        $CellContext`z[1]], "]"}], 
+      InterpretationBox[
+       SubscriptBox["z", 
+        TemplateBox[{",", "\",\"", "2"},
+         "RowWithSeparators"]],
+       $CellContext`z[2]]},
+     {
+      InterpretationBox[
+       TemplateBox[{
+         InterpretationBox[
+          SubscriptBox["z", 
+           TemplateBox[{",", "\",\"", "4"}, "RowWithSeparators"]], 
+          $CellContext`z[4]], 
+         TemplateBox[{"\[ThinSpace]", "\"\[ThinSpace]\"", "\"*\""}, 
+          "RowWithSeparators"]},
+        "Superscript"],
+       Conjugate[
+        $CellContext`z[4]]], 
+      InterpretationBox[
+       TemplateBox[{
+         InterpretationBox[
+          SubscriptBox["z", 
+           TemplateBox[{",", "\",\"", "3"}, "RowWithSeparators"]], 
+          $CellContext`z[3]], 
+         TemplateBox[{"\[ThinSpace]", "\"\[ThinSpace]\"", "\"*\""}, 
+          "RowWithSeparators"]},
+        "Superscript"],
+       Conjugate[
+        $CellContext`z[3]]], 
+      InterpretationBox[
+       TemplateBox[{
+         InterpretationBox[
+          SubscriptBox["z", 
+           TemplateBox[{",", "\",\"", "2"}, "RowWithSeparators"]], 
+          $CellContext`z[2]], 
+         TemplateBox[{"\[ThinSpace]", "\"\[ThinSpace]\"", "\"*\""}, 
+          "RowWithSeparators"]},
+        "Superscript"],
+       Conjugate[
+        $CellContext`z[2]]], 
+      RowBox[{"Re", "[", 
+       InterpretationBox[
+        SubscriptBox["z", 
+         TemplateBox[{",", "\",\"", "1"},
+          "RowWithSeparators"]],
+        $CellContext`z[1]], "]"}]}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[BoxForm`e$]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->731037825,ExpressionUUID->"75a48279-27f9-4ad1-8ea7-57abe4d68d02"]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["ToeplitzMatrix"]], "paclet:ref/ToeplitzMatrix"},
+          "RefLink",
+          BaseStyle->{"InlineFormula"}]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "60294f50-6f0e-4e39-95ee-585cd258f459"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["RandomToeplitz"]], 
+           "paclet:QuantumMob/Q3/ref/RandomToeplitz", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "eed66b7d-3c8c-4b5e-b2cd-b3e76b5a5f4a"],
+        "\[NonBreakingSpace]",
+        StyleBox[
+        "\[MediumSpace]\[FilledVerySmallSquare]\[MediumSpace]", 
+         "InlineSeparator"],
+        " ",
+        Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["RandomHermitianToeplitz"]], 
+           "paclet:QuantumMob/Q3/ref/RandomHermitianToeplitz", 
+           "QuantumMob Package Symbol"},
+          "PackageLink",
+          BaseStyle->"InlineFormula"]], "InlineFormula",
+         FontFamily->"Source Sans Pro",ExpressionUUID->
+         "5b740a15-d696-461b-a86e-87c2c8aa2886"]
+       }], "SeeAlso",ExpressionUUID->"5df54e40-3ee9-4989-9c40-a03e1f72ab6b"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"6c239273-498c-4fbc-aa7b-\
+53526daa5563"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedTechNote.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Tech", " ", "Notes"}], "TechNotesSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3: Quick Start"]], 
+           "paclet:QuantumMob/Q3/tutorial/Q3QuickStart"},
+          "RefLinkPlain",
+          BaseStyle->{"Tutorials"}]], "Tutorials",ExpressionUUID->
+         "ed5fe438-aac0-4026-b74c-31e252751633"]}]}
+     }]}
+  }]], "TechNotesSection",ExpressionUUID->"0c5fe6d1-8863-43ac-8f4a-\
+a428ee8c530f"],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, "RelatedGuide.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"Related", " ", "Guides"}], "MoreAboutSection"]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Matrix Distributions"]], 
+           "paclet:guide/MatrixDistributions"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "f547e5f0-c7aa-415f-9404-953d2f220965"]}]},
+      {
+       RowBox[{"\[FilledVerySmallSquare]", Cell[BoxData[
+         TemplateBox[{
+           Cell[
+            TextData["Q3: Symbolic Quantum Simulation"]], 
+           "paclet:QuantumMob/Q3/guide/Q3"},
+          "RefLinkPlain",
+          BaseStyle->{"MoreAbout"}]], "MoreAbout",ExpressionUUID->
+         "86331252-6437-43b8-9f79-7fd142c6b28c"]}]}
+     }]}
+  }]], "MoreAboutSection",ExpressionUUID->"a9a4397b-ff37-4f5b-8f0e-\
+07cbd84799ee"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "Mahn-Soo Choi (2022)"}]]]], 
+             "https://doi.org/10.1007/978-3-030-91214-7"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "5a02add4-19d3-4f00-9487-e1c48d2d765e"]}]],ExpressionUUID->
+         "26eb4215-61e0-486a-a18a-2f140feabdd5"],
+        ", A Quantum Computation Workbook (Springer)."
+       }], "RelatedLinks",ExpressionUUID->
+        "d0f0f57f-6951-49e7-a229-045574555658"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"fc40929d-e8d3-44ce-9074-\
+222dc85ff28b"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"d7d01c2e-742c-4679-bcfc-7dd9407b035d"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"HermitianToeplitz",
+Visible->True,
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2026, 8, 5, 7, 15, 11.180010}", 
+    "history" -> {"15.0", "", "", ""}, "context" -> "QuantumMob`Q3`", 
+    "keywords" -> {"Toeplitz matrix"}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quantum Mob/ Q3 Symbol", "language" -> "en", "paclet" -> "QuantumMob/Q3",
+     "status" -> "None", "summary" -> 
+    "HermitianToeplitz[{t1, t2, ..., tn}] returns the n*n Hermitian Toeplitz \
+matrix m with m i j = t j - i + 1 for i <= j and m i j = m_j i^* for i > j. \
+The first element t1 for the main diagonal is projected onto its real part.", 
+    "synonyms" -> {}, "tabletags" -> {}, "title" -> "HermitianToeplitz", 
+    "titlemodifier" -> "", "metadescription" -> "", "windowtitle" -> 
+    "HermitianToeplitz", "type" -> "Symbol", "uri" -> 
+    "QuantumMob/Q3/ref/HermitianToeplitz"}},
+CellContext->"Global`",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (July 2, 2026)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "15.0 for Mac OS X ARM (64-bit) (July 2, 2026)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"f98ea409-340d-4e34-9ba8-bd1743767b12"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[585, 21, 6968, 171, 70, "AnchorBarGrid",ExpressionUUID->"641b90e8-7a89-48bf-b0a9-9f32735dc35d",
+ CellID->1],
+Cell[7556, 194, 96, 0, 70, "ContextNameCell",ExpressionUUID->"79ff4727-445c-4cd9-af83-f03e82cf4c2a"],
+Cell[CellGroupData[{
+Cell[7677, 198, 1368, 37, 70, "ObjectNameGrid",ExpressionUUID->"3feb9599-2693-4cac-b697-18700efb14ba"],
+Cell[9048, 237, 2803, 78, 70, "Usage",ExpressionUUID->"bef1e50a-20da-4a3c-8ccf-594412df35e7",
+ CellID->1859481603]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[11888, 320, 1404, 37, 70, "PrimaryExamplesSection",ExpressionUUID->"649461bb-c13f-4619-a4bc-17a3641d6923",
+ CellID->1119038326],
+Cell[13295, 359, 203, 3, 70, "Input",ExpressionUUID->"53effd63-d4c6-48b4-8629-ad80d809d512",
+ CellID->1728024441],
+Cell[CellGroupData[{
+Cell[13523, 366, 1234, 31, 70, "ExampleSection",ExpressionUUID->"216aa8b0-e14a-4655-813f-e1282f07abd4",
+ CellID->15364656],
+Cell[14760, 399, 221, 5, 70, "Input",ExpressionUUID->"c8fadcde-2b54-41dd-8ec2-e466cd33886b",
+ CellID->679040409],
+Cell[CellGroupData[{
+Cell[15006, 408, 282, 7, 70, "Input",ExpressionUUID->"27d2e039-27f1-4221-8dae-58f3a52076a4",
+ CellID->81014468],
+Cell[15291, 417, 720, 24, 70, "Output",ExpressionUUID->"91eaa61f-45bd-46ca-953b-bd3ad0093bd9",
+ CellID->1056344282]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[16048, 446, 316, 7, 70, "Input",ExpressionUUID->"3bf4c3f6-5512-4766-be7a-53e11b69c44a",
+ CellID->1820191565],
+Cell[16367, 455, 4514, 139, 70, "Output",ExpressionUUID->"75a48279-27f9-4ad1-8ea7-57abe4d68d02",
+ CellID->731037825]
+}, Open  ]]
+}, Open  ]]
+}, Open  ]],
+Cell[20920, 599, 1922, 51, 70, "SeeAlsoSection",ExpressionUUID->"6c239273-498c-4fbc-aa7b-53526daa5563"],
+Cell[22845, 652, 754, 20, 70, "TechNotesSection",ExpressionUUID->"0c5fe6d1-8863-43ac-8f4a-a428ee8c530f"],
+Cell[23602, 674, 1097, 28, 70, "MoreAboutSection",ExpressionUUID->"a9a4397b-ff37-4f5b-8f0e-07cbd84799ee"],
+Cell[24702, 704, 1166, 34, 70, "RelatedLinksSection",ExpressionUUID->"fc40929d-e8d3-44ce-9074-222dc85ff28b"],
+Cell[25871, 740, 78, 0, 70, "FooterCell",ExpressionUUID->"d7d01c2e-742c-4679-bcfc-7dd9407b035d"]
+}
+]
+*)
+
+(* End of internal cache information *)

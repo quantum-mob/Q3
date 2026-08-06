@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.6.5
+
+- Renamed: LindbladStationary --> LindbladSteady, LindbladSupermap --> Lindbladian
+- Impreoved: LindbladConvert, LindbladSupermap
+
 ## 4.6.4
 
 - New: RandomToeplitz, RandomHermitianToeplitz, HermitianToeplitz
