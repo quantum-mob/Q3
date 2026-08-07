@@ -1,6 +1,6 @@
 # Release Notes
 
-## 4.6.5
+## 4.6.6
 
 - Renamed: LindbladStationary --> LindbladSteady, LindbladSupermap --> Lindbladian
 - Impreoved: LindbladConvert, LindbladSupermap

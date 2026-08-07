@@ -1623,31 +1623,31 @@ theWickDampingOperator[3, mat_] := Module[
 
 
 (**** <WickDampingConstant> ****)
-WickDampingConstant::usage = "WickDampingConstant[jmp] returns the damping constant corresponding to quantum jump operators jmp."
+WickDampingConstant::usage = "WickDampingConstant[jmp] returns the damping constant corresponding to quantum jump operators jmp.";
 
 WickDampingConstant[jmp_WickJump] := WickDampingConstant[First @ jmp]
 
 WickDampingConstant[jmp:{___?patternWickJumpQ}] := 
   Total @ Map[theWickDampingConstant, jmp]
 
-theWickDampingConstant[v_ -> 0] = 0
+theWickDampingConstant[v_ -> 0] = 0;
 
 theWickDampingConstant[v_ -> 1] := NormSquare[v] / 2
 
-theWickDampingConstant[v_ -> 2] = 0
+theWickDampingConstant[v_ -> 2] = 0;
 
 theWickDampingConstant[v_ -> 3] := NormSquare[v]^2 / 2
 (**** </WickDampingConstant> ****)
 
 
 (**** <WickSimulate> ****)
-$WickMinorSteps::usage = "$WickMinorSteps is a parameter that controls the behavior of WickSimulate by setting the number of minor steps for the non-unitary gate to make between major steps to update the quantum state."
+$WickMinorSteps::usage = "$WickMinorSteps is a parameter that controls the behavior of WickSimulate by setting the number of minor steps for the non-unitary gate to make between major steps to update the quantum state.";
 
 $WickMinorSteps = 20;
 
-WickSimulate::usage = "WickSimulate[in, ham, jmp, {\[Tau], dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian ham in the WickHermitian form and the quantum jump operators are specified by jmp in the WickJump form. The simulation starts from the initial state IN in the WickState at time 0 and runs to time \[Tau] in steps of size dt."
+WickSimulate::usage = "WickSimulate[in, ham, jmp, {\[Tau], dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian ham in the WickHermitian form and the quantum jump operators are specified by jmp in the WickJump form. The simulation starts from the initial state IN in the WickState at time 0 and runs to time \[Tau] in steps of size dt.";
 
-WickSimulate::ham = "The Hamiltonian matrix `` needs to be numeric."
+WickSimulate::ham = "The Hamiltonian matrix `` needs to be numeric.";
 
 Options[WickSimulate] = {
   "Samples" -> 500,
@@ -1655,7 +1655,7 @@ Options[WickSimulate] = {
   "Overwrite" -> True,
   "Filename" -> Automatic,
   "Prefix" -> "NWS"
-}
+};
 
 WickSimulate[in_WickState, ham_?MatrixQ, rest__] :=
   WickSimulate[in, WickHermitian @ ham, rest]
@@ -1722,11 +1722,11 @@ theWickSimulate[in_WickState, non_WickNonunitary, jmp_WickJump, {tau_, dt_}] :=
 
 
 (**** <WickMonitor> ****)
-WickMonitor::usage = "WickMonitor[in, ham, msr, {nt, dt}] solves the problem of continuous monitoring of a non-interacting many-fermion system by using the Monte Carlo simulation method. The model is specified by the single-particle Hamiltonian ham in the WickHermitian form, and the dressed fermion modes the occupation numbers of which to be monitored are specified by measurement msr in the WickMeasurement form. The simulation starts from the initial state IN in the WickState form at time 0 and goes nt time steps of size dt."
+WickMonitor::usage = "WickMonitor[in, ham, msr, {nt, dt}] solves the problem of continuous monitoring of a non-interacting many-fermion system by using the Monte Carlo simulation method. The model is specified by the single-particle Hamiltonian ham in the WickHermitian form, and the dressed fermion modes the occupation numbers of which to be monitored are specified by measurement msr in the WickMeasurement form. The simulation starts from the initial state IN in the WickState form at time 0 and goes nt time steps of size dt.";
 
-WickMonitor::mat = "The matrix in the first argument of WickMonitor must be a real anti-symmetric matrix."
+WickMonitor::mat = "The matrix in the first argument of WickMonitor must be a real anti-symmetric matrix.";
 
-WickMonitor::num = "The Hamiltonian matrix `` needs to be numeric."
+WickMonitor::num = "The Hamiltonian matrix `` needs to be numeric.";
 
 Options[WickMonitor] = {
   "Samples" -> 500,
@@ -1812,7 +1812,7 @@ theWickMonitor[in_WickState, evo_WickUnitary, prb_?NumericQ, jmp_WickJump, {tau_
 
 
 (**** <WickScramblingCircuit> ****)
-WickScramblingCircuit::usage = "WickScramblingCircuit[op, spec, dep] generates the main part of a Wick scrambling circuit."
+WickScramblingCircuit::usage = "WickScramblingCircuit[op, spec, dep] generates the main part of a Wick scrambling circuit.";
 
 WickScramblingCircuit[a_Integer, rest__] :=
     WickScramblingCircuit[theWickX[a], rest]
@@ -2108,7 +2108,7 @@ WickLindbladSteady[ham_WickHermitian, jmp_WickJump, _:None] := Module[
   LyapunovSolve[-I*eff, -off]
 ] /; ContainsOnly[Values @ First @ jmp, {0, 1}];
 
-(* projective case *)
+(* projective case: unital and hence initial state-dependent *)
 WickLindbladSteady[ham_WickHermitian, jmp_WickJump, grn_?MatrixQ] := Module[
   { n = FermionCount[ham],
     off, eff, bob, spr, krn, chk, trs, out, evo },
