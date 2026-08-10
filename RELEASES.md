@@ -1,6 +1,6 @@
 # Release Notes
 
-## 4.6.8
+## 4.6.9
 
 - Improved: BravyiNonunitary, BravyiSimulate
 - New: SpectralRadius, SpectralExtremum, SpectralLowest, SpectralHighest

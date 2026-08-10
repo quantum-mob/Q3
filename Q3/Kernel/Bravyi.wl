@@ -29,7 +29,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
   BravyiMean, Canonicalize };
 
 { BravyiCircuit, RandomBravyiCircuit, RandomBravyiCircuitSimulate };
-{ BravyiSimulate, $BravyiMinorSteps };
+{ BravyiSimulate };
 { BravyiMonitor };
 
 { BravyiScramblingCircuit, BravyiScramblingSimulate };
@@ -1882,7 +1882,9 @@ theBravyiOTOC[in_, ub_, qc_BravyiCircuit] := Module[
 
 
 (**** <BravyiNonunitary> ****)
-BravyiNonunitary::usage = "BravyiNonunitary[{ham, dmp, gmm}] represents a non-unitary time evolution operator Exp[-gmm/2]*MatrixExp[-I*(ham - I*dmp)] governed by the non-Hermitian Hamiltonian ham - I*dmp. The 2n\[Times]2n antisymmetic matrices ham and dmp refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators).\nIf ham and dmp are given in the NambuHermitian form, they are automatically converted to the coefficients matrices of Majorana operators.";
+BravyiNonunitary::usage = "BravyiNonunitary[{ham, dmp, gmm}] represents a non-unitary time evolution operator Exp[-gmm]*MatrixExp[-I*(ham - I*dmp)] governed by the non-Hermitian Hamiltonian ham - I*dmp. The 2n\[Times]2n antisymmetic matrices ham and dmp refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators).\nIf ham and dmp are given in the NambuHermitian form, they are automatically converted to the coefficients matrices of Majorana operators.";
+
+BravyiNonunitary::num = "Both Hamiltonian `` and damping `` must be numeric matrices.";
 
 BravyiNonunitary /:
 MakeBoxes[op:BravyiNonunitary[{fac_, mat_?MatrixQ} -> k_Integer, rest___], fmt_] :=
@@ -1901,9 +1903,11 @@ MakeBoxes[op:BravyiNonunitary[{fac_, mat_?MatrixQ} -> k_Integer, rest___], fmt_]
 (* conversion *)
 BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, opts___?OptionQ] := Module[
   { k },
-  k = Max[1, Round @ Norm @ dmp];
+  k = Max[1, Round @ Norm @ dmp, Ceiling[Norm[ham]/Pi]];
   BravyiNonunitary[{Exp[-2*gmm/k], MatrixExp[(ham - I*dmp)/k]} -> k, opts]
-]
+] /; If[ MatrixQ[ham, NumericQ] && MatrixQ[dmp, NumericQ], True,
+    Message[BravyiNonunitary::num, ham, dmp]; False
+  ]
 
 (* shortcut *)
 BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, dt_?NumericQ, rest___] := 
@@ -2081,10 +2085,6 @@ theBravyiDampingConstant[4, msr_?MatrixQ] :=
 
 
 (**** <BravyiSimulate> ****)
-$BravyiMinorSteps::usage = "$BravyiMinorSteps is a parameter that controls the behavior of BravyiSimulate by setting the number of minor steps for the non-unitary gate to make between major steps of update the quantum state.";
-
-$BravyiMinorSteps = 10;
-
 BravyiSimulate::usage = "BravyiSimulate[in, ham, jmp, {\[Tau], dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian ham in the BravyiHermitian form and the quantum jump operators are specified by jmp in the BravyiJump form. The simulation starts from the initial state IN in the BravyiState at time 0 and runs to time \[Tau] in steps of size dt.";
 
 BravyiSimulate::ham = "The Hamiltonian matrix `` needs to be numeric.";
@@ -2129,7 +2129,7 @@ BravyiSimulate[
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
   data = Table[
     progress = k / N[ns];
-    theBravyiSimulate[in, non, map, {tau, dt}][[1;;All;;ds]],
+    theBravyiSimulate[in, non, map, Round[tau/dt]][[1;;All;;ds]],
     {k, ns}
   ];
 
@@ -2143,29 +2143,27 @@ BravyiSimulate[
   False
 ]
 
-theBravyiSimulate[in_BravyiState, non_BravyiNonunitary, map_BravyiMap, {tau_, dt_}] :=
+theBravyiSimulate[in_BravyiState, non_BravyiNonunitary, map_BravyiMap, nT_Integer] :=
   Module[
-    { t = dt,
-      res = {in},
+    { res = {in},
       new = in,
       out, prb },
-    While[ t <= tau,
+    Do[ 
       prb = RandomReal[];
       (* non-unitary evolution *)
       out = non[new];
       If[ prb < NormSquare[out],
         new = Normalize @ out;
         AppendTo[res, new];
-        t += dt;
         Continue[]
       ];
       (* quantum jumps *)
       new = map[new];
-      AppendTo[res, new];
-      t += dt;
+      AppendTo[res, new],
+      {nT}
     ];
     Return[res]
-  ]
+  ];
 (**** </BravyiSimulate> ****)
 
 
@@ -2479,111 +2477,69 @@ End[]; (* Fermionic quantum computation *)
 Begin["`Private`"];
 
 (**** <BravyiTimeReversalMoment> ****)
-BravyiTimeReversalMoment::usage = "BravyiTimeReversalMoment[\[Alpha], {gg, ff}, {k1, k2, \[Ellipsis]}] returns the \[Alpha]th moment of partial time reversal over the fermion modes (species) k1, k2, \[Ellipsis] for the fermionic Gaussian state characterized by the matrices gg and ff (in an L\[Times]L matrix for L fermion modes) of normal and anomalous Green's funcitons, respectively, and anomalous Green's function anm (also in an L\[Times]L matrix).\nBravyiTimeReversalMoment[\[Alpha], grn, {k1,k2,\[Ellipsis]}] is equivalent to BravyiTimeReversalMoment[\[Alpha], {grn, 0}, {k1, k2, \[Ellipsis]}].";
+BravyiTimeReversalMoment::usage = "BravyiTimeReversalMoment[\[Alpha], cvr, {k1, k2, \[Ellipsis]}] returns the \[Alpha]th moment of partial time reversal over the fermion modes (species) k1, k2, \[Ellipsis] for the fermionic Gaussian state characterized by the covariance matrix cvr.";
 (* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 
-BravyiTimeReversalMoment::sing = "The matrix is tamed according to option \"Epsilon\".";
+BravyiTimeReversalMoment::odd = "Odd-dimensional matrix `` cannot be a Majorana covariance matrix.";
 
-Options[BravyiTimeReversalMoment] = { 
-  "Epsilon" -> 1.25*^-16
-  (* "Epsilon" -> 1.25*^-20 *)
-};
-
-(* canoncialization *)
-BravyiTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}, opts___?OptionQ] :=
-  BravyiTimeReversalMoment[alpha, NambuGreen @ {grn, 0}, kk, opts]
-
-(* canoncialization *)
 BravyiTimeReversalMoment[alpha_, grn_?NambuMatrixQ, rest__] := 
   BravyiTimeReversalMoment[alpha, NambuGreen @ grn, rest]
 
-(* canoncial form *)
-BravyiTimeReversalMoment[
-  alpha_, grn_NambuGreen, kk:{__Integer},
-  opts___?OptionQ
-] := Quiet[
-  theTimeReversalMoment[alpha, grn, kk, opts],
-  {Det::luc, Inverse::luc}
-]
-(* 2024-08-11: Dot::luc and Inverse::luc are silenced; the warning message goes off too often while it does not seem to be serious in most cases. *)
-(* 2025-01-18 (v3.8.2): All Pfaffian is replaced by Sqrt@*Det because the current implementation of Pfaffian is slow and racks accuracy. *)
-(* 2026-06-27 TODO: Mathematica 15 introduces the native PfaffianDet. *)
+BravyiTimeReversalMoment[alpha_, grn_NambuGreen, rest__] := 
+  BravyiTimeReversalMoment[alpha, BravyiCovariance @ grn, rest]
 
-(* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
-theTimeReversalMoment[
-  alpha_, grn_NambuGreen, kk:{__Integer},
-  OptionsPattern[BravyiTimeReversalMoment]
-] := Module[
-  { n = FermionCount[grn],
-    gg, id, xx, zz, uu, ww, pf1, pf2, pf3, dgn, off
-  },
-  id = One[n];
-  xx = KroneckerProduct[ThePauli[1], id];
-  zz = KroneckerProduct[ThePauli[3], id];
-  (* \Gamma *)
-  gg = Normal[N @ NambuHermitian @ grn];
-  gg -= I * OptionValue["Epsilon"] * One[Dimensions @ gg];
-  (* NOTE: When there is a fermion mode that is unoccuppied with certainty, the coherent-state representation becomes unusual, and one needs to handle such cases separately. While this is possible, Q3 offers a ditry trick. *)  
-  pf1 = Det[gg];
-  (* \Omega *)
-  ww = Inverse[gg] - zz;
-  (* \Omega of partial TR *)
-  uu = theTimeReversalUnitary[kk, n];
-  ww = ConjugateTranspose[uu] . ww . uu;
-  (* \Xi *)
-  dgn = CirclePlus[ww[[;;n, ;;n]], ww[[n+1;;, n+1;;]]];
-  off = ArrayFlatten @ {
-    {0, ww[[;;n, n+1;;]]},
-    {ww[[n+1;;, ;;n]], 0}
-  };
-  pf2 = Sqrt @ Det[id + ww[[n+1;;, ;;n]] . ww[[;;n, n+1;;]]];
-  (* effective \Omega of \Xi *)
-  ww = Inverse[zz - off];
-  ww = off + dgn . ww . dgn;
-  pf3 = Sqrt @ Det[xx . (ww + zz)];
-  (* effective \Gamma of \Xi *)
-  gg = Inverse[ww + zz];
-  (* effective Green's function of \Xi *)
-  gg = NambuGreen[NambuHermitian @ gg];
-  gg = Take[Eigenvalues @ Normal @ gg, n];
-  (* Recall the particle-hole symmetry. *)
-  Total[Log[2, Power[gg, alpha] + Power[1-gg, alpha]]] + 
-    Log[2, Power[Abs[pf1*pf2*pf3], alpha]]
-  (* NOTE: Abs[...] to prevent a spurious imaginary part. *)
-]
+BravyiTimeReversalMoment[alpha_, in_BravyiState, rest__] := 
+  BravyiTimeReversalMoment[alpha, BravyiCovariance @ in, rest]
 
-theTimeReversalUnitary[kk:{__Integer}, n_Integer] := SparseArray[
-  Flatten @ {
-    Thread[Transpose@{kk, kk} -> 0],
-    Thread[Transpose@{kk, n+kk} ->  I],
-    Thread[Transpose@{n+kk, kk} -> -I],
-    Thread[Transpose@{n+kk, n+kk} -> 0],
-    {i_, i_} -> 1,
-    {_, _} -> 0
-  },
-  {2n, 2n}
-]
+BravyiTimeReversalMoment[alpha_, cvr_BravyiCovariance, rest__] := 
+  BravyiTimeReversalMoment[alpha, First @ cvr, rest]
+
+BravyiTimeReversalMoment[alpha_, cvr_?MatrixQ, kk:{__Integer}] := Module[
+  { n = Length[cvr]/2,
+    uu, gp, gm, dd, zz, xi },
+  (* partial time reversal at the covariance level *)
+  uu = SparseArray[
+    Flatten @ {
+      Thread[Transpose @ {kk, kk} -> I],
+      Thread[Transpose @ {n + kk, n + kk} -> I],
+      {i_, i_} -> 1,
+      {_, _} -> 0
+    },
+    {2 n, 2 n}
+  ];
+  gp = uu . cvr . uu;     (* covariance of rho^{T1} *)
+  gm = Conjugate[gp];     (* covariance of (rho^{T1})^\[Dagger] *)
+  dd = One[2 n] - gp . gm;
+  (* zz = tr(rho^2) = tr(rho^{T1} rho^{T1 \[Dagger]}); Det[dd] >= 1, always regular *)
+  zz = Sqrt @ Abs @ Det[dd / 2];
+  (* covariance of Xi = rho^{T1} rho^{T1\[Dagger]} / tr(rho^2)
+     via the composition rule for Gaussian operators *)
+  xi = I * ((One[2 n] - I*gm) . LinearSolve[dd, One[2 n] - I*gp] - One[2 n]);
+  (* occupation spectrum of Xi; eigenvalues of xi come in pairs \[PlusMinus]I nu *)
+  xi = (1 + Clip[Re[Eigenvalues[xi] / I], {-1, 1}]) / 2;
+  (* each pair is counted twice; hence the overall factor 1/2 *)
+  Total[Log[2, Power[xi, alpha] + Power[1 - xi, alpha]]] / 2 +
+    alpha * Log[2, zz]
+] /; If[ EvenQ[Length @ cvr], True,
+  Message[BravyiTimeReversalMoment::odd, cvr]; False
+];
 (**** </BravyiTimeReversalMoment> ****)
 
 
 (**** <BravyiLogarithmicNegtivity> ****)
-BravyiLogarithmicNegativity::usage = "BravyiLogarithmicNegativity[grn, {k1, k2, \[Ellipsis]}] returns the logarithmic entanglement negativity between the subsystem consisting of fermion modes {k1, k2,\[Ellipsis]}\[Subset]{1,2,\[Ellipsis],n} in the Bravyi state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nBravyiLogarithmicNegativity[NambuGreen[{grn, anm}], {k1, k2,\[Ellipsis]}] or BravyiLogarithmicNegativity[{grn, anm}, {k1, k2,\[Ellipsis]}] returns the logarithmic negativity in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nBravyiLogarithmicNegativity[state, {k1, k2, \[Ellipsis]}] is equivalent to BravyiLogarithmicNegativity[BravyiGreen[state], {k1, k2,\[Ellipsis]}] for state = BravyiState or NambuState.";
+BravyiLogarithmicNegativity::usage = "BravyiLogarithmicNegativity[cvr, {k1, k2, \[Ellipsis]}] returns the logarithmic entanglement negativity between the subsystem consisting of fermion modes {k1, k2,\[Ellipsis]}\[Subset]{1,2,\[Ellipsis],n} in the Bravyi state characterized by 2n\[Times]2n covariance matrix cvr.";
 (* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
-
-Options[BravyiLogarithmicNegativity] = Options[BravyiTimeReversalMoment]
 
 (* operator form *)
 BravyiLogarithmicNegativity[kk:{__Integer}][any_] :=
-  BravyiLogarithmicNegativity[ any, kk, 
-    "Epsilon" -> OptionValue[BravyiLogarithmicNegativity, "Epsilon"]
-  ];
+  BravyiLogarithmicNegativity[any, kk];
 
 (* special case *)
-BravyiLogarithmicNegativity[obj_, {}, ___] = 0;
+BravyiLogarithmicNegativity[obj_, {}] = 0;
 
 (* for large data *)
-BravyiLogarithmicNegativity[data_?ArrayQ, kk:{___Integer}, opts___?OptionQ] := 
-  arrayMap[BravyiLogarithmicNegativity[kk], data] /; 
+BravyiLogarithmicNegativity[data_?ArrayQ, kk:{___Integer}] := 
+  arrayMap[BravyiLogarithmicNegativity[kk], data] /;
   ArrayQ[data, _, MatchQ[#, _BravyiState | _BravyiCovariance | _NambuGreen]&]
 
 (* shortcut *)
@@ -2591,34 +2547,16 @@ BravyiLogarithmicNegativity[ws_BravyiState, rest__] :=
   BravyiLogarithmicNegativity[BravyiCovariance @ ws, rest]
 
 (* shortcut *)
-BravyiLogarithmicNegativity[cvr_BravyiCovariance, kk:{__Integer}, opts:OptionsPattern[]] :=
-  BravyiLogarithmicNegativity[ NambuGreen[cvr], kk, opts,
-    "Epsilon" -> OptionValue["Epsilon"]
-  ]
-
-
-(* Canonical form for normal models *)
-BravyiLogarithmicNegativity[grn_?MatrixQ, kk:{__Integer}, ___] := 
-  WickLogarithmicNegativity[grn, kk]
+BravyiLogarithmicNegativity[cvr_BravyiCovariance, kk:{__Integer}] :=
+  BravyiLogarithmicNegativity[First @ cvr, kk]
 
 (* BdG models *)
 BravyiLogarithmicNegativity[grn_NambuGreen, kk:{__Integer}, ___] :=
-  BravyiLogarithmicNegativity[grn[[1, 1]], kk] /; ArrayZeroQ[grn[[1, 2]]] 
-
-BravyiLogarithmicNegativity[grn_NambuGreen, kk:{__Integer}, ___] := 0 /;
-  FermionCount[grn] == Length[kk]
+  BravyiLogarithmicNegativity[BravyiCovariance @ grn, kk]
 
 (* Canonical form for BdG models *)
-BravyiLogarithmicNegativity[
-  grn_NambuGreen, kk:{__Integer}, 
-  opts:OptionsPattern[]
-] := BravyiTimeReversalMoment[1/2, grn, kk, opts,
-    "Epsilon" -> OptionValue["Epsilon"]
-  ]
-
-(* canonicalization *)
-BravyiLogarithmicNegativity[grn_?NambuMatrixQ, rest__] :=
-  BravyiLogarithmicNegativity[NambuGreen @ grn, rest]
+BravyiLogarithmicNegativity[cvr_?MatrixQ, kk:{__Integer}] := 
+  BravyiTimeReversalMoment[1/2, cvr, kk]
 (**** </BravyiLogarithmicNegtivity> ****)
 
 
