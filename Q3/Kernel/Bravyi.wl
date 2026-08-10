@@ -547,7 +547,7 @@ BravyiConjugateReverse[ops_?MatrixQ] := Conjugate[Reverse @ ops]
 
 
 (**** <BravyiUnitary> ****)
-BravyiUnitary::usage = "BravyiUnitary[{u, v}] represents a Bogoliubov-de Gennes transform in the Nambu space that is characterized by the n\[Times]n upper-left and upper-right blocks u and v, respectively.";
+BravyiUnitary::usage = "BravyiUnitary[r] represents the Gaussian-type unitary operator that transforms 2n Majorana fermion modes according to 2n\[Times]2n orthogonal matrix r:=MatrixExp[a] associated with a 2n\[Times]2n real anti-symmetric matrix a.";
 
 BravyiUnitary /:
 MakeBoxes[op:BravyiUnitary[uu_?MatrixQ, rest___], fmt_] := 
@@ -1884,37 +1884,50 @@ theBravyiOTOC[in_, ub_, qc_BravyiCircuit] := Module[
 (**** <BravyiNonunitary> ****)
 BravyiNonunitary::usage = "BravyiNonunitary[{ham, dmp, gmm}] represents a non-unitary time evolution operator Exp[-gmm/2]*MatrixExp[-I*(ham - I*dmp)] governed by the non-Hermitian Hamiltonian ham - I*dmp. The 2n\[Times]2n antisymmetic matrices ham and dmp refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators).\nIf ham and dmp are given in the NambuHermitian form, they are automatically converted to the coefficients matrices of Majorana operators.";
 
-BravyiNonunitary::icmp = "BravyiNonunitary for `` fermion modes cannot act on BravyiState for `` modes.";
-
 BravyiNonunitary /:
-MakeBoxes[op:BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, rest___], fmt_] :=
+MakeBoxes[op:BravyiNonunitary[{fac_, mat_?MatrixQ} -> k_Integer, rest___], fmt_] :=
   BoxForm`ArrangeSummaryBox[
     BravyiNonunitary, op, None,
     { BoxForm`SummaryItem @ { "Modes: ", FermionCount @ op },
-      BoxForm`SummaryItem @ { "Constant: ", gmm }
+      BoxForm`SummaryItem @ { "Prefactor: ", fac },
+      BoxForm`SummaryItem @ { "Steps: ", k }
     },
-    { BoxForm`SummaryItem @ { "Hamiltonian: ", ArrayShort @ ham },
-      BoxForm`SummaryItem @ { "Damping: ", ArrayShort @ dmp }
+    { BoxForm`SummaryItem @ { "Propagator: ", ArrayShort @ mat }
     },
     fmt,
     "Interpretable" -> Automatic
   ]
 
-(* canonicalization *)
+(* conversion *)
+BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, opts___?OptionQ] := Module[
+  { k },
+  k = Max[1, Round @ Norm @ dmp];
+  BravyiNonunitary[{Exp[-2*gmm/k], MatrixExp[(ham - I*dmp)/k]} -> k, opts]
+]
+
+(* shortcut *)
+BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, dt_?NumericQ, rest___] := 
+  BravyiNonunitary[{ham, dmp, gmm}*dt, rest]
+
+(* shortcut *)
+BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, rest___] :=
+  BravyiNonunitary[{ham, dmp, 0}, rest]
+
+(* shortcut *)
 BravyiNonunitary[{ham_NambuHermitian, more__}, rest___] :=
   BravyiNonunitary[{First @ BravyiHermitian @ ham, more}, rest]
 (* CONVENTION: (1/2) (a^\dag, a) H (a, a^\dag) = (i/4) c A c. *)
 
-(* canonicalization *)
+(* shortcut *)
 BravyiNonunitary[{ham_, dmp_NambuHermitian, gmm___}, rest___] :=
   BravyiNonunitary[{ham, First @ BravyiHermitian @ dmp, gmm}, rest]
 (* CONVENTION: (1/2) (a^\dag, a) H (a, a^\dag) = (i/4) c A c. *)
 
-(* canonicalization *)
+(* shortcut *)
 BravyiNonunitary[{ham:BravyiHermitian[_?MatrixQ, ___], more__}, rest___] :=
   BravyiNonunitary[{First @ ham, more}, rest]
 
-(* canonicalization *)
+(* shortcut *)
 BravyiNonunitary[{ham_, dmp_BravyiHermitian, gmm___}, rest___] :=
   BravyiNonunitary[{ham, First @ dmp, gmm}, rest]
 
@@ -1932,94 +1945,68 @@ BravyiNonunitary[{ham_?MatrixQ, jmp:(_BravyiJump|_BravyiMeasurement)}, rest___] 
   BravyiNonunitary[{ham, dmp, gmm}, rest]
 ]
 
-(* shortcut *)
-BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ}, rest___] :=
-  BravyiNonunitary[{ham, dmp, 0}, rest]
+BravyiNonunitary /:
+MatrixForm @ BravyiNonunitary[{fac_, mat_?MatrixQ} -> k_Integer, rest___] :=
+  MatrixForm[mat]
 
 BravyiNonunitary /:
-MatrixForm @ BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_}, rest___] :=
-  MatrixForm /@ {ham, dmp}
+ArrayShort @ BravyiNonunitary[{fac_, mat_?MatrixQ} -> k_Integer, rest___] :=
+  ArrayShort[mat]
 
 BravyiNonunitary /:
-ArrayShort @ BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_}, rest___] :=
-  ArrayShort /@ {ham, dmp}
+Dagger @ BravyiNonunitary[{fac_, mat_?MatrixQ} -> k_Integer, opts___?OptionQ] :=
+  BravyiNonunitary[
+    {fac, ConjugateTranspose @ mat} -> k,
+    ReplaceRulesBy[{opts}, "Label" -> auxSuperDagger]
+  ];
+(* NOTE: fac is supposed to be real. *)
+
 
 BravyiNonunitary /:
-Dagger @ BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_}, rest___] :=
-  BravyiNonunitary[{-ham, dmp, gmm}, rest]
-(* NOTE: gmm is supposed to be real. *)
-
-BravyiNonunitary /:
-Matrix[op:BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, ___]] := Module[
+Matrix[op:BravyiNonunitary[{fac_, pro_?MatrixQ} -> k_Integer, ___]] := Module[
   { n = FermionCount[op],
-    non = ham - I*dmp,
+    non = k*MatrixLog[pro],
     mat, wjm },
   wjm = theJordanWignerMajorana[n];
   mat = Dot[Transpose[wjm, {3, 1, 2}], non, wjm] * I/4;
   mat = TensorContract[mat, {{2, 3}}];
-  mat -= I*gmm*One[Power[2, n]];
-  SparseArray @ MatrixExp[-I*mat]
+  SparseArray[ Power[fac, k/2] MatrixExp[-I*mat] ]
 ]
 
 BravyiNonunitary /:
-Matrix[op:BravyiNonunitary[{_?MatrixQ, _?MatrixQ, _?NumericQ}, ___], ss:{__?SpeciesQ}] :=
+Matrix[op_BravyiNonunitary, ss:{__?SpeciesQ}] :=
   MatrixEmbed[Matrix @ op, Select[ss, FermionQ], ss]
 
 
 BravyiNonunitary /:
-NonCommutativeQ[_BravyiNonunitary] = True
+NonCommutativeQ[_BravyiNonunitary] = True;
 
 BravyiNonunitary /:
-MultiplyKind[_BravyiNonunitary] = Fermion
+MultiplyKind[_BravyiNonunitary] = Fermion;
 
 BravyiNonunitary /:
-Multiply[pre___, opr_BravyiNonunitary, ws_BravyiState] := Multiply[pre, opr[ws]]
+Multiply[pre___, opr_BravyiNonunitary, ws_BravyiState] := Multiply[pre, opr[ws]];
 
 BravyiNonunitary /:
-Multiply[pre___, opr_BravyiNonunitary, fs_Ket] := Multiply[pre, opr[BravyiState @ fs]]
+Multiply[pre___, opr_BravyiNonunitary, fs_Ket] := Multiply[pre, opr[BravyiState @ fs]];
 
 
-BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, rest___][in_BravyiState] :=
-  nonUnitaryEvolution[BravyiNonunitary @ {ham, dmp, gmm}, in, {1, 0.01}]
+BravyiNonunitary[{fac_, mat_?MatrixQ} -> k_Integer, ___][in_BravyiState] :=
+  Nest[BravyiNonunitary[{fac, mat}], in, k]
 
-(* Based on the Runge-Kutta method *)
-nonUnitaryEvolution[non_BravyiNonunitary, in_BravyiState, {t_?NumericQ, dt_?NumericQ}] := 
-  Re @ Nest[nonUnitaryStep[non, dt], in, Round[t/dt]]
-
-(* Single Runge-Kutta step *)
-nonUnitaryStep[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, dt_?NumericQ][
-  BravyiState[{nrm_?NumericQ, cvr_?MatrixQ}, rest___]
+BravyiNonunitary[{fac_?NumericQ, mat_?MatrixQ}, ___][
+  in:BravyiState[{nrm_?NumericQ, cvr_?MatrixQ}, rest___]
 ] := Module[
-  { prb = nrm,
-    new = cvr,
-    aa1, aa2, aa3, aa4, bb1, bb2, bb3, bb4, trs },
-
-  aa1 = -2*gmm*prb + Tr[dmp . new]*prb/2;
-  bb1 = (ham . new - new . ham) - dmp - new . dmp . new;
-
-  prb = nrm + aa1*dt/2;
-  new = cvr + bb1*dt/2;
-  aa2 = -2*gmm*prb + Tr[dmp . new]*prb/2;
-  bb2 = (ham . new - new . ham) - dmp - new . dmp . new;
-
-  prb = nrm + aa2*dt/2;
-  new = cvr + bb2*dt/2;
-  aa3 = -2*gmm*prb + Tr[dmp . new]*prb/2;
-  bb3 = (ham . new - new . ham) - dmp - new . dmp . new;
-
-  prb = nrm + aa3*dt;
-  new = cvr + bb3*dt;
-  aa4 = -2*gmm*prb + Tr[dmp . new]*prb/2;
-  bb4 = (ham . new - new . ham) - dmp - new . dmp . new;
-
-  prb = nrm + (aa1 + 2*aa2 + 2*aa3 + aa4)*dt/6;
-  new = cvr + (bb1 + 2*bb2 + 2*bb3 + bb4)*dt/6;
+  { zz, xx, yy, new, prb },
+  zz = mat . (One[Dimensions @ cvr] + I*cvr);
+  xx = Re[zz];
+  yy = Im[zz];
+  (* yy . Inverse[xx], but via LinearSolve *)
+  new = Transpose @ LinearSolve[Transpose @ xx, Transpose @ yy];
+  new = (new - Transpose[new]) / 2;  (* kill round-off asymmetry *)
+  prb = nrm * fac * Sqrt[Det @ xx];
   BravyiState[{prb, new}, rest]
 ]
-
-(* canonicalization *)
-nonUnitaryStep[non_BravyiNonunitary, dt_?NumericQ] :=
-  nonUnitaryStep[First @ non, dt]
 (**** </BravyiNonunitary> ****)
 
 
@@ -2136,7 +2123,7 @@ BravyiSimulate[
     progress = 0,
     non, map, data, more },
     
-  non = BravyiNonunitary[{ham, jmp}];
+  non = BravyiNonunitary[{ham, jmp}, dt];
   map = BravyiMap[jmp];
 
   PrintTemporary[ProgressIndicator @ Dynamic @ progress];
@@ -2165,7 +2152,7 @@ theBravyiSimulate[in_BravyiState, non_BravyiNonunitary, map_BravyiMap, {tau_, dt
     While[ t <= tau,
       prb = RandomReal[];
       (* non-unitary evolution *)
-      out = nonUnitaryEvolution[non, new, {dt, dt/$BravyiMinorSteps}];
+      out = non[new];
       If[ prb < NormSquare[out],
         new = Normalize @ out;
         AppendTo[res, new];
@@ -2474,7 +2461,8 @@ FermionCount[BravyiHermitian[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
 
 FermionCount[BravyiUnitary[mat_?MatrixQ, ___]] := Last[Dimensions @ mat]/2
 
-FermionCount[BravyiNonunitary[{ham_?MatrixQ, _?MatrixQ, _}, ___]] := Last[Dimensions @ ham]/2
+FermionCount[BravyiNonunitary[{_, mat_?MatrixQ} -> _Integer, ___]] := 
+  Last[Dimensions @ mat]/2;
 
 FermionCount[BravyiJump[jmp:{__?patternBravyiJumpQ}, ___]] := Last[Dimensions @ Keys @ jmp]/2
 

@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.6.7
+
+- Improved: BravyiNonunitary, BravyiSimulate
+- New: SpectralRadius, SpectralExtremum, SpectralLowest, SpectralHighest
+
 ## 4.6.6
 
 - Renamed: LindbladStationary --> LindbladSteady, LindbladSupermap --> Lindbladian
