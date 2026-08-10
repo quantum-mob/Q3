@@ -1,8 +1,7 @@
 (* ::Package:: *)
-
 (* Fermionic Quantum Computing *)
 
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { BravyiState, RandomBravyiState,
   BravyiCovariance, BravyiCount };
@@ -49,15 +48,15 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { QuantumLog };
 
 
-Begin["`Private`"] (* Fermionic quantum computation *)
+Begin["`Private`"]; (* Fermionic quantum computation *)
 
 (**** <BCSState> ****)
-BCSState::usage = "BCSState[pair] represents a generalized BCS ground state characterized by the pairing matrix pair."
+BCSState::usage = "BCSState[pair] represents a generalized BCS ground state characterized by the pairing matrix pair.";
 (* See Russomanno (2023) and Zanca and Santoro (2016). *)
 
-BCSState::noBCS = "`` is orthogonal to the vacuum state and cannot be a generalized BCS state; see the Thouless theorem."
+BCSState::noBCS = "`` is orthogonal to the vacuum state and cannot be a generalized BCS state; see the Thouless theorem.";
 
-BCSState::mixed = "A mixed state `` is encountered."
+BCSState::mixed = "A mixed state `` is encountered.";
 
 BCSState /:
 MakeBoxes[bcs:BCSState[{fac_?NumericQ, pair_?MatrixQ}, ___], fmt_] :=
@@ -151,7 +150,7 @@ If[ BravyiPureQ[ws],
 
 
 (**** <BCSStateQ> ****)
-BCSStateQ::usage = "BCSStateQ[grn] returns True if the single-particle Green's function grn charaterizes a valid BCS state. First of all, grn must correspond to a pure Gaussian state. Second, the normal part must be non-singular."
+BCSStateQ::usage = "BCSStateQ[grn] returns True if the single-particle Green's function grn charaterizes a valid BCS state. First of all, grn must correspond to a pure Gaussian state. Second, the normal part must be non-singular.";
 
 BCSStateQ[ws_BravyiState] :=
   BCSStateQ[NambuGreen @ ws]
@@ -165,15 +164,15 @@ BCSStateQ[grn_NambuGreen] = False
 
 
 (**** <BravyiState> ****)
-BravyiState::usage = "BravyiState[uv, trs] represents a many-body quantum state for non-interacting fermion modes that has undergone the overall Bogoliubov-de Gennes (BdG) type time evolution in the Nambu space specified by reduced Nambu matrix uv and decoherence processes (including measurements) specified by matrix trs."
+BravyiState::usage = "BravyiState[uv, trs] represents a many-body quantum state for non-interacting fermion modes that has undergone the overall Bogoliubov-de Gennes (BdG) type time evolution in the Nambu space specified by reduced Nambu matrix uv and decoherence processes (including measurements) specified by matrix trs.";
 
-BravyiState::complex = "The covariance matrix `` must be a real anti-symmetric matrix."
+BravyiState::complex = "The covariance matrix `` must be a real anti-symmetric matrix.";
 
-BravyiState::cvr = "Matrix `` is not a valid covariance matrix; it must be a even-dimensional real anti-symmetric matrix."
+BravyiState::cvr = "Matrix `` is not a valid covariance matrix; it must be a even-dimensional real anti-symmetric matrix.";
 
-BravyiState::convex = "Attemp non-convex linear superposition of Gaussian states."
+BravyiState::convex = "Attemp non-convex linear superposition of Gaussian states.";
 
-BravyiState::bad = "Unsupported form of Nambu state ``."
+BravyiState::bad = "Unsupported form of Nambu state ``.";
 
 BravyiState /:
 MakeBoxes[ws:BravyiState[{fac_?NumericQ, cvr_?MatrixQ}, ___], fmt_] :=
@@ -329,14 +328,14 @@ MultiplyKind[_BravyiState] = Fermion
 (**** </BravyiState> ****)
 
 
-RandomBravyiState::usage = "RandomBravyiState[n] randomly generates a Gaussian pure state of n fermion modes."
+RandomBravyiState::usage = "RandomBravyiState[n] randomly generates a Gaussian pure state of n fermion modes.";
 
 RandomBravyiState[n_Integer, opts___?OptionQ] :=
   BravyiState[{1, RandomBravyiCovariance @ n}, opts]
 
 
 (**** <BravyiPureQ> ****)
-BravyiPureQ::usage = "BravyiPureQ[cvr] returns True if Majorana covariance matrix cvr represents a prue state; False, otherwise./nBravyiPureQ[bdg] tests the BdG state."
+BravyiPureQ::usage = "BravyiPureQ[cvr] returns True if Majorana covariance matrix cvr represents a prue state; False, otherwise./nBravyiPureQ[bdg] tests the BdG state.";
 
 BravyiPureQ[cvr_?MatrixQ] := ArrayZeroQ[
   One[Dimensions @ cvr] + cvr.cvr
@@ -351,14 +350,14 @@ BravyiPureQ[BravyiState[{_, cvr_?MatrixQ}, ___]] :=
 
 
 (**** <BravyiNullQ> ****)
-BravyiNullQ::usage = "BravyiNullQ[ws] returns True if Bravyi state ws is the null state; False, otherwise."
+BravyiNullQ::usage = "BravyiNullQ[ws] returns True if Bravyi state ws is the null state; False, otherwise.";
 
 BravyiNullQ[ws_BravyiState] := ZeroQ[ws[[1, 1]]]
 (**** </BravyiNullQ> ****)
 
 
 (**** <BravyiSingleQ> ****)
-BravyiSingleQ::usage = "BravyiSingleQ[cvr] returns True if Majorana covariance matrix cvr represents a fermion Gaussian state resulting from single-particle potential only (without pairing potential); False, otherwise.\nBravyiSingleQ[ws] tests the Bravyi state ws.\nBravyiState[grn] tests the Green function grn."
+BravyiSingleQ::usage = "BravyiSingleQ[cvr] returns True if Majorana covariance matrix cvr represents a fermion Gaussian state resulting from single-particle potential only (without pairing potential); False, otherwise.\nBravyiSingleQ[ws] tests the Bravyi state ws.\nBravyiState[grn] tests the Green function grn.";
 
 BravyiSingleQ[cvr_?MatrixQ] := Module[
   { aa, bb },
@@ -379,7 +378,7 @@ BravyiSingleQ[NambuGreen[{_?MatrixQ, anm_?MatrixQ}]] :=
 
 
 (**** <BravyiCovariance> ****)
-BravyiCovariance::usage = "BravyiCovariance[mat] is a wrapper of the covariance matrix mat in the Majorana spinor space.\nBravyiCovariance[grn] converts Green's function grn, given in the NambuGreen[...] form, to equivalent covariance matrix in the Majorana spinor space."
+BravyiCovariance::usage = "BravyiCovariance[mat] is a wrapper of the covariance matrix mat in the Majorana spinor space.\nBravyiCovariance[grn] converts Green's function grn, given in the NambuGreen[...] form, to equivalent covariance matrix in the Majorana spinor space.";
 
 BravyiCovariance /:
 MakeBoxes[vv:BravyiCovariance[mat_?MatrixQ, ___], fmt_] :=
@@ -450,7 +449,7 @@ Times[z_, BravyiCovariance[mat_, rest___]] :=
 (**** </BravyiCovariance> ****)
 
 
-RandomBravyiCovariance::usage = "RandomBravyiCovariance[n] randomly generates a coveriance matrix for a Gaussian pure state of 2n Majorana modes."
+RandomBravyiCovariance::usage = "RandomBravyiCovariance[n] randomly generates a coveriance matrix for a Gaussian pure state of 2n Majorana modes.";
 
 RandomBravyiCovariance[n_Integer] := Module[
   { yy, mm, in },
@@ -461,7 +460,7 @@ RandomBravyiCovariance[n_Integer] := Module[
 
 
 (**** <Canonicalize> ****)
-Canonicalize::usage = "Canonicalize[obj] converts named object obj into a canonical form.\nFor BravyiJump,  BravyiMeasurement, WickJump and WickMeasurement, each vector is renormalized by the largest norm of all vectors."
+Canonicalize::usage = "Canonicalize[obj] converts named object obj into a canonical form.\nFor BravyiJump,  BravyiMeasurement, WickJump and WickMeasurement, each vector is renormalized by the largest norm of all vectors.";
 
 Canonicalize[BravyiJump[jmp:{__?patternBravyiJumpQ}, rest___]] := Module[
   { mat = Keys[jmp],
@@ -491,7 +490,7 @@ Canonicalize[NambuMeasurement[mat_?MatrixQ, rest___]] := With[
 
 
 (**** <BravyiInner> ****)
-BravyiInner::usage = "BravyiInner[a, b] calculate the Hilbert-Schmidt product Tr[Dagger[\[Rho]]\[Sigma]] of two density matrices \[Rho] and \[Sigma] corresponding to Bravyi state a and b."
+BravyiInner::usage = "BravyiInner[a, b] calculate the Hilbert-Schmidt product Tr[Dagger[\[Rho]]\[Sigma]] of two density matrices \[Rho] and \[Sigma] corresponding to Bravyi state a and b.";
 
 BravyiInner[a_BravyiState, b_BravyiState] :=
   theBravyiInner[ a[[1, 2]], b[[1, 2]] ]
@@ -507,7 +506,7 @@ theBravyiInner[va_?MatrixQ, vb_?MatrixQ] := Quiet[
 
 
 (**** <BravyiTranspose> ****)
-BravyiTranspose::usage = "BravyiTranspose[cvr] returns the Majorana covariance matrix of the partial transpose of the Gaussian state specified by the Majorana covariance matrix cvr.\nNote that the resulting covariance matrix is not real any longer (though still anti-symmetric), implying that the corresponding Gaussian operator is not Hermitian any longer."
+BravyiTranspose::usage = "BravyiTranspose[cvr] returns the Majorana covariance matrix of the partial transpose of the Gaussian state specified by the Majorana covariance matrix cvr.\nNote that the resulting covariance matrix is not real any longer (though still anti-symmetric), implying that the corresponding Gaussian operator is not Hermitian any longer.";
 (* SEE ALSO: Bravyi (2005) and Shapourian and Ryu (2017, 2019) *)
 
 BravyiTranspose[BravyiState[{fac_, cvr_}, rest___], kk:{___Integer}] :=
@@ -527,7 +526,7 @@ BravyiTranspose[cvr_?MatrixQ, kk:{___Integer}] := Module[
 
 
 (**** <BravyiMean> ****)
-BravyiMean::usage = "BravyiMean[data] returns the average of the Bravyi states or Majorana covariance matrices in array data."
+BravyiMean::usage = "BravyiMean[data] returns the average of the Bravyi states or Majorana covariance matrices in array data.";
 
 BravyiMean[data_?ArrayQ] := Module[
   { cvr },
@@ -541,14 +540,14 @@ BravyiMean[data_?ArrayQ] := Module[
 
 
 (**** <BravyiConjugateReverse> ****)
-BravyiConjugateReverse::usage = "BravyiConjugateReverse[mat] is equivalent to Conjugate[Reverse @ mat].\nIt is useful to handle the Hermitian conjugate of BravyiJump and BravyiMeasurement."
+BravyiConjugateReverse::usage = "BravyiConjugateReverse[mat] is equivalent to Conjugate[Reverse @ mat].\nIt is useful to handle the Hermitian conjugate of BravyiJump and BravyiMeasurement.";
 
 BravyiConjugateReverse[ops_?MatrixQ] := Conjugate[Reverse @ ops]
 (**** </BravyiConjugateReverse> ****)
 
 
 (**** <BravyiUnitary> ****)
-BravyiUnitary::usage = "BravyiUnitary[{u, v}] represents a Bogoliubov-de Gennes transform in the Nambu space that is characterized by the n\[Times]n upper-left and upper-right blocks u and v, respectively."
+BravyiUnitary::usage = "BravyiUnitary[{u, v}] represents a Bogoliubov-de Gennes transform in the Nambu space that is characterized by the n\[Times]n upper-left and upper-right blocks u and v, respectively.";
 
 BravyiUnitary /:
 MakeBoxes[op:BravyiUnitary[uu_?MatrixQ, rest___], fmt_] := 
@@ -690,7 +689,7 @@ RandomBravyiUnitary[n_Integer, rest___] := Module[
 
 
 (**** <BravyiHermitian> ****)
-BravyiHermitian::usage = "BravyiHermitian[m] represents a quadractic Hermitian operator (\[ImaginaryI]/4) \[CapitalSigma]ij ci mij cj in the Majorana spinor space, where m is a real anti-symmetric matrix."
+BravyiHermitian::usage = "BravyiHermitian[m] represents a quadractic Hermitian operator (\[ImaginaryI]/4) \[CapitalSigma]ij ci mij cj in the Majorana spinor space, where m is a real anti-symmetric matrix.";
 
 BravyiHermitian /:
 MakeBoxes[op:BravyiHermitian[mm_?MatrixQ, ___], fmt_] :=
@@ -769,7 +768,7 @@ Matrix[op:BravyiHermitian[mat_?MatrixQ, ___]] := Module[
 ]
 
 
-BravyiHermitianQ::usage = "BravyiHermitianQ[mat] returns True if matrix mat is an even-dimensional real anti-symmetric matrix, which can represent a Hermitian operator quadratic in Majorana fermion operators."
+BravyiHermitianQ::usage = "BravyiHermitianQ[mat] returns True if matrix mat is an even-dimensional real anti-symmetric matrix, which can represent a Hermitian operator quadratic in Majorana fermion operators.";
 
 BravyiHermitianQ[mat_?SquareMatrixQ] := And[
   EvenQ[Length @ mat],
@@ -786,7 +785,7 @@ RandomBravyiHermitian[n_Integer, opts___?OptionQ] :=
 
 
 (**** <BravyiElements> ****)
-BravyiElements::usage = "BravyiElements[mat, {c1, c2, \[Ellipsis]}] returns a list of linear combinations of Majorana operators {c1, c2, \[Ellipsis]} with the coefficients specified by elements of complex matrix mat.\nBravyiElements[mat, {a1, a2, \[Ellipsis]}] returns a list of linear combinations of the annihilation and creation operators of Dirac fermion modes {a1, a2, \[Ellipsis]}, where the elements of complex matrix mat are the coefficients in the equivalent linear combinations of Majorana fermion operators (not the Dirac fermion operators themselves) corresponding to the Dirac fermion modes."
+BravyiElements::usage = "BravyiElements[mat, {c1, c2, \[Ellipsis]}] returns a list of linear combinations of Majorana operators {c1, c2, \[Ellipsis]} with the coefficients specified by elements of complex matrix mat.\nBravyiElements[mat, {a1, a2, \[Ellipsis]}] returns a list of linear combinations of the annihilation and creation operators of Dirac fermion modes {a1, a2, \[Ellipsis]}, where the elements of complex matrix mat are the coefficients in the equivalent linear combinations of Majorana fermion operators (not the Dirac fermion operators themselves) corresponding to the Dirac fermion modes.";
 
 BravyiElements[mat_?MatrixQ, cc:{__?MajoranaQ}] :=
   Dot[mat, cc]
@@ -803,9 +802,9 @@ BravyiElements[msr_BravyiMeasurement, spec_] :=
 
 
 (**** <BravyiCoefficients> ****)
-BravyiCoefficients::usage = "BravyiCoefficients[expr, {c1,c2,\[Ellipsis]}] returns a vector or matrix of coefficients in a linear combination or linear combinations of Majorana fermion operators {c1,c2,\[Ellipsis]}.\nBravyiCoefficients[expr, {a1,a2,\[Ellipsis]}] gets a vector or matrix of coefficients in a linear combination or linear combinations of the annihilation and creation operators of Dirac fermion modes {a1,a2,\[Ellipsis]}, and transforms it to a vector or matrix of coefficients in the equivalent linear combination(s) of the Majorana operators corresponding to the Dirac fermion modes."
+BravyiCoefficients::usage = "BravyiCoefficients[expr, {c1,c2,\[Ellipsis]}] returns a vector or matrix of coefficients in a linear combination or linear combinations of Majorana fermion operators {c1,c2,\[Ellipsis]}.\nBravyiCoefficients[expr, {a1,a2,\[Ellipsis]}] gets a vector or matrix of coefficients in a linear combination or linear combinations of the annihilation and creation operators of Dirac fermion modes {a1,a2,\[Ellipsis]}, and transforms it to a vector or matrix of coefficients in the equivalent linear combination(s) of the Majorana operators corresponding to the Dirac fermion modes.";
 
-BravyiCoefficients::nlin = "`` is not a linear combination of Dirac or Majorana fermion operators of modes ``."
+BravyiCoefficients::nlin = "`` is not a linear combination of Dirac or Majorana fermion operators of modes ``.";
 
 BravyiCoefficients[spec:({__?FermionQ} | {__?MajoranaQ})][expr_] :=
   BravyiCoefficients[expr, spec]
@@ -828,7 +827,7 @@ BravyiCoefficients[expr_, aa:{__?FermionQ}] :=
   ]
 
 
-theBravyiLinearQ::usage = "theBravyiLinearQ[expr, {c1, c2, \[Ellipsis]}] returns True if expr is a linear combination of Majorana fermion operators {c1, c2, \[Ellipsis]}, and False otherwise.\ntheBravyiLinearQ[expr, {a1, a2, \[Ellipsis]}] returns True if expr is a linear combination of the creation and annihilation operators of Dirac fermion modes {a1, a2, \[Ellipsis]}, and False otherwise."
+theBravyiLinearQ::usage = "theBravyiLinearQ[expr, {c1, c2, \[Ellipsis]}] returns True if expr is a linear combination of Majorana fermion operators {c1, c2, \[Ellipsis]}, and False otherwise.\ntheBravyiLinearQ[expr, {a1, a2, \[Ellipsis]}] returns True if expr is a linear combination of the creation and annihilation operators of Dirac fermion modes {a1, a2, \[Ellipsis]}, and False otherwise.";
 
 theBravyiLinearQ[expr_List, spec_] :=
   AllTrue[expr, theBravyiLinearQ[#, spec]&]
@@ -850,9 +849,9 @@ theBravyiLinearQ[expr_, cc:{__?MajoranaQ}] := TrueQ @ And[
 
 
 (**** <BravyiKernel> ****)
-BravyiKernel::usage = "BravyiKernel[vec -> 1] returns {A, B} -> {1, nrm}, where A and B are 2n\[Times]2n real matrices and nrm is the norm square of vec. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] b \[Rho] Dagger[b], where b := Sum[vec[[k]] c[k], {k, 2n}] is a linear combination of bare Majorana modes c[k].\nBravyiKernel[vec -> 2] returns {A, B} -> {-1, nrm}. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], -A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] Dagger[b]**b \[Rho] Dagger[b]**b, where b := Sum[vec[[k]] c[k], {k, 2n}] is a dressed Dirac fermion mode superposed of bare Majorana modes c[k]."
+BravyiKernel::usage = "BravyiKernel[vec -> 1] returns {A, B} -> {1, nrm}, where A and B are 2n\[Times]2n real matrices and nrm is the norm square of vec. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] b \[Rho] Dagger[b], where b := Sum[vec[[k]] c[k], {k, 2n}] is a linear combination of bare Majorana modes c[k].\nBravyiKernel[vec -> 2] returns {A, B} -> {-1, nrm}. The 4n\[Times]4n matrix {{A, B}, {-Transpose[B], -A}} gives the Gaussian kernel of the Grassmann representation of the Gaussian map \[Rho] \[RightTeeArrow] Dagger[b]**b \[Rho] Dagger[b]**b, where b := Sum[vec[[k]] c[k], {k, 2n}] is a dressed Dirac fermion mode superposed of bare Majorana modes c[k].";
 
-BravyiKernel::dressed = "A vector of coefficients `` cannot describe a proper dressed Dirac fermion mode."
+BravyiKernel::dressed = "A vector of coefficients `` cannot describe a proper dressed Dirac fermion mode.";
 
 
 BravyiKernel[jmp:{__?patternBravyiJumpQ}] := 
@@ -938,7 +937,7 @@ theBravyiKernel[k_Integer, n_Integer] := {
 
 
 (**** <BravyiOdds> ****)
-BravyiOdds::usage = "BravyiOdds[spec] represents probability for the fermionic Gaussian process specified by spec. See BravyiJump for spec."
+BravyiOdds::usage = "BravyiOdds[spec] represents probability for the fermionic Gaussian process specified by spec. See BravyiJump for spec.";
 
 (* shortcut *)
 BravyiOdds[jmp_?patternBravyiJumpQ] :=
@@ -989,7 +988,7 @@ BravyiOdds[{aa_?MatrixQ, bb_?MatrixQ, dd_?MatrixQ} -> nrm_?NumericQ][
 
 
 (**** <BravyiFlop> ****)
-BravyiFlop::usage = "BravyiFlop[vec] represents a single linear combination of Majorana operators. BravyiFlop is for heuristic purposes or for tests."
+BravyiFlop::usage = "BravyiFlop[vec] represents a single linear combination of Majorana operators. BravyiFlop is for heuristic purposes or for tests.";
 
 BravyiFlop /:
 MakeBoxes[jmp:BravyiFlop[spec:{__?patternBravyiJumpQ}, ___], fmt_] := Module[
@@ -1026,7 +1025,7 @@ BravyiFlop[ops:{___?patternBravyiJumpQ}][in_BravyiState] :=
 (**** </BravyiFlop> ****)
 
 
-RandomBravyiFlop::usage = "RandomBravyiFlop[{k_Integer, n_Integer}] returns BravyiFlop consisting of k linear combinations of n Dirac fermion operators.\nRandomBravyiFlop[n] chooses k randomly from 1 through n."
+RandomBravyiFlop::usage = "RandomBravyiFlop[{k_Integer, n_Integer}] returns BravyiFlop consisting of k linear combinations of n Dirac fermion operators.\nRandomBravyiFlop[n] chooses k randomly from 1 through n.";
 
 RandomBravyiFlop[spec_] := Module[
   { jmp = RandomBravyiJump[spec],
@@ -1035,14 +1034,14 @@ RandomBravyiFlop[spec_] := Module[
 ]
 
 
-patternBravyiJumpQ::usage = "patternBravyiJumpQ[pat] returns True if pat is a pattern of the form v -> k, v is a even-dimensional vector and k = 1 or 2 for linear (dissipative) or quadratic (projective) type, respectively."
+patternBravyiJumpQ::usage = "patternBravyiJumpQ[pat] returns True if pat is a pattern of the form v -> k, v is a even-dimensional vector and k = 1 or 2 for linear (dissipative) or quadratic (projective) type, respectively.";
 
 patternBravyiJumpQ[_?VectorQ -> (0|1|2|3|4)] = True
 
 patternBravyiJumpQ[_] = False
 
 
-patternBravyiMapQ::usage = "patternBravyiMapQ[pat] returns True if pat is a pattern of the form {a, b} -> {sgn, nrm} or {a, b, d} -> nrm, where a, b and d are 2n\[Times]2n matrices and sgn = 1 or -1 for linear (dissipative) or quadratic (projective) type, respectively."
+patternBravyiMapQ::usage = "patternBravyiMapQ[pat] returns True if pat is a pattern of the form {a, b} -> {sgn, nrm} or {a, b, d} -> nrm, where a, b and d are 2n\[Times]2n matrices and sgn = 1 or -1 for linear (dissipative) or quadratic (projective) type, respectively.";
 
 patternBravyiMapQ[{_?MatrixQ, _?MatrixQ} -> {-1|1, _?NumericQ}] = True
 
@@ -1052,11 +1051,11 @@ patternBravyiMapQ[_] = False
 
 
 (**** <BravyiJump> ****)
-BravyiJump::usage = "BravyiJump[mat] represents a set of quantum jump operators, which are linear combinations of Majorana fermion operators with coefficients given by the elements of complex matrix mat."
+BravyiJump::usage = "BravyiJump[mat] represents a set of quantum jump operators, which are linear combinations of Majorana fermion operators with coefficients given by the elements of complex matrix mat.";
 
-BravyiJump::null = "The quantum operation returns the null state."
+BravyiJump::null = "The quantum operation returns the null state.";
 
-BravyiJump::odd = "The second dimension of the input matrix `` is odd: ``."
+BravyiJump::odd = "The second dimension of the input matrix `` is odd: ``.";
 
 BravyiJump /:
 MakeBoxes[jmp:BravyiJump[spec:{___?patternBravyiJumpQ}, rest___], fmt_] :=
@@ -1194,7 +1193,7 @@ BravyiJump[jmp:{__?patternBravyiJumpQ}, ___][in_BravyiState] := Module[
 (**** </BravyiJump> ****)
 
 
-RandomBravyiJump::usage = "RandomBravyiJump[{k_Integer, n_Integer}] returns BravyiJump consisting of k linear combinations of 2n Majorana operators."
+RandomBravyiJump::usage = "RandomBravyiJump[{k_Integer, n_Integer}] returns BravyiJump consisting of k linear combinations of 2n Majorana operators.";
 (* 
 RandomBravyiJump[{k_Integer, n_Integer}, opts___?OptionQ] := Module[
   { vv = RandomMatrix[{k, 2*n}],
@@ -1217,9 +1216,9 @@ RandomBravyiJump[n_Integer, opts___?OptionQ] :=
 
 
 (**** <BravyiMeasurement> ****)
-BravyiMeasurement::usage = "BravyiMeasurement[k] represents a measurement of the occupation number on fermion mode k.\nBravyiMeasurement[{k1, k2, \[Ellipsis]}] represents a sequence of measurements on fermion modes {k1, k2, \[Ellipsis]}.\nBravyiMeasurement[mat] represents a sequence of measurement on the dressed Dirac fermion modes b[i] := Sum[m[[i,j]] c[j], {j, 2n}] expressed in terms of Majorana fermion modes c[k].\nBravyiMeasurement[spec][ws] simulates the measurement on Bravyi state ws, and returns the post-measurement state."
+BravyiMeasurement::usage = "BravyiMeasurement[k] represents a measurement of the occupation number on fermion mode k.\nBravyiMeasurement[{k1, k2, \[Ellipsis]}] represents a sequence of measurements on fermion modes {k1, k2, \[Ellipsis]}.\nBravyiMeasurement[mat] represents a sequence of measurement on the dressed Dirac fermion modes b[i] := Sum[m[[i,j]] c[j], {j, 2n}] expressed in terms of Majorana fermion modes c[k].\nBravyiMeasurement[spec][ws] simulates the measurement on Bravyi state ws, and returns the post-measurement state.";
 
-BravyiMeasurement::odd = "The second dimension of the input matrix `` is odd: ``."
+BravyiMeasurement::odd = "The second dimension of the input matrix `` is odd: ``.";
 
 BravyiMeasurement /:
 MakeBoxes[msr:BravyiMeasurement[mat_?MatrixQ, ___], fmt_] := Module[
@@ -1335,7 +1334,7 @@ Readout[BravyiMeasurement[m_?MatrixQ, ___]] :=
   Map[Readout, m]
 
 
-theFermionModes::usage = "theFermionModes[msr] returns the list of Dirac fermion modes being probed by BravyiMeasurement msr. Used in Graphics[BravyiCircuit[...], ...]."
+theFermionModes::usage = "theFermionModes[msr] returns the list of Dirac fermion modes being probed by BravyiMeasurement msr. Used in Graphics[BravyiCircuit[...], ...].";
 
 theFermionModes[BravyiMeasurement[{}, ___]] = {}
 
@@ -1348,7 +1347,7 @@ theFermionModes[msr:BravyiMeasurement[_?MatrixQ, ___]] := Module[
 (**** </BravyiMeasurement> ****)
 
 
-RandomBravyiMeasurement::usage = "RandomBravyiMeasurement[{k, n}] randomly generates a BravyiMeaurement for k dressed fermion modes from n bare fermion modes.\nRandomBravyiMeasurement[n] randomly selects k from {1,2,\[Ellipsis],n}."
+RandomBravyiMeasurement::usage = "RandomBravyiMeasurement[{k, n}] randomly generates a BravyiMeaurement for k dressed fermion modes from n bare fermion modes.\nRandomBravyiMeasurement[n] randomly selects k from {1,2,\[Ellipsis],n}.";
 
 RandomBravyiMeasurement[{k_Integer, n_Integer}] :=
   BravyiMeasurement @ RandomNambuMeasurement[{k, n}]
@@ -1358,9 +1357,9 @@ RandomBravyiMeasurement[n_Integer] :=
 
 
 (**** <BravyiMap> ****)
-BravyiMap::usage = "BravyiMap[map] represents a fermionic Gaussian linear map with the Kraus operators are either linear or quadratic combinations of bare fermion modes."
+BravyiMap::usage = "BravyiMap[map] represents a fermionic Gaussian linear map with the Kraus operators are either linear or quadratic combinations of bare fermion modes.";
 
-BravyiMap::null = "The quantum operation returns the null state."
+BravyiMap::null = "The quantum operation returns the null state.";
 
 BravyiMap /:
 MakeBoxes[map:BravyiMap[krn:{__?patternBravyiMapQ}], fmt_] := 
@@ -1405,7 +1404,7 @@ BravyiMap[map:{__?patternBravyiMapQ}][in_BravyiState] := Module[
 
 
 (**** <BravyiGreen> ****)
-BravyiGreen::usage = "BravyiGreen[ws, {k1, k2, \[Ellipsis]}] returns m\[Times]m matrix of single-particle Green's functions among fermion modes in {k1, k2, \[Ellipsis]} with respect to BravyiState ws.\nBravyiGreen[ns, {k1, k2, \[Ellipsis]}] returns NambuGreen[{grn, anm}], where grn and anm are m\[Times]m matrix of single-particle normal and anomalous Green's functions, respectively, among fermion modes in {k1, k2, \[Ellipsis]} with respect to NambuState ns.\nBravyiGreen[in] is equivalent to BravyiGreen[in, Range[n]], where n is the number of fermion modes for which input Bravyi or Nambu state in is defined for.\nBravyiGreen[data] or BravyiGreen[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Bravyi or BdG states.\nBravyiGreen[{k1, k2, \[Ellipsis]}] represents an operator form of BravyiGreen to be applied to Bravyi or Nambu state."
+BravyiGreen::usage = "BravyiGreen[ws, {k1, k2, \[Ellipsis]}] returns m\[Times]m matrix of single-particle Green's functions among fermion modes in {k1, k2, \[Ellipsis]} with respect to BravyiState ws.\nBravyiGreen[ns, {k1, k2, \[Ellipsis]}] returns NambuGreen[{grn, anm}], where grn and anm are m\[Times]m matrix of single-particle normal and anomalous Green's functions, respectively, among fermion modes in {k1, k2, \[Ellipsis]} with respect to NambuState ns.\nBravyiGreen[in] is equivalent to BravyiGreen[in, Range[n]], where n is the number of fermion modes for which input Bravyi or Nambu state in is defined for.\nBravyiGreen[data] or BravyiGreen[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Bravyi or BdG states.\nBravyiGreen[{k1, k2, \[Ellipsis]}] represents an operator form of BravyiGreen to be applied to Bravyi or Nambu state.";
 
 (* shortcut *)
 BravyiGreen[bc_BCSState] := NambuGreen[bc]
@@ -1428,7 +1427,7 @@ BravyiGreen[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] :=
 
 
 (**** <BravyiOccupation> ****)
-BravyiOccupation::usage = "BravyiOccupation[in, {k1, k2, \[Ellipsis]}] returns a list of the expectation values of occupation on fermion modes in {k1, k2, \[Ellipsis]} with respect to BravyiState or NambuState in.\nBravyiOccupation[in] is equivalent to BravyiOccupation[in, Range[n]], where n is the number of fermion modes for which input Bravyi or Nambu state in is defined for.\nBravyiOccupation[data] or BravyiOccupation[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating the occupation for an (typically large) array data of Bravyi or BdG states.\nBravyiOccupation[{k1, k2, \[Ellipsis]}] represents an operator form of BravyiOccupation to be applied to Bravyi or BdG state."
+BravyiOccupation::usage = "BravyiOccupation[in, {k1, k2, \[Ellipsis]}] returns a list of the expectation values of occupation on fermion modes in {k1, k2, \[Ellipsis]} with respect to BravyiState or NambuState in.\nBravyiOccupation[in] is equivalent to BravyiOccupation[in, Range[n]], where n is the number of fermion modes for which input Bravyi or Nambu state in is defined for.\nBravyiOccupation[data] or BravyiOccupation[data, {k1, k2, \[Ellipsis]}] shows a dynamic progress indicator while calculating the occupation for an (typically large) array data of Bravyi or BdG states.\nBravyiOccupation[{k1, k2, \[Ellipsis]}] represents an operator form of BravyiOccupation to be applied to Bravyi or BdG state.";
 
 (* operator form *)
 BravyiOccupation[kk:{___Integer}][in_] :=
@@ -1469,9 +1468,9 @@ BravyiPurity[ws_BravyiState] := Module[
 
 
 (**** <BravyiDensityMatrix> ****)
-BravyiDensityMatrix::usage = "BravyiDensityMatrix[grn] returns the density matrix corresponding to the single-particle Green's function grn associated with a fermionic Gaussian state.\nBravyiDensityMatrix[ws] returns the density matrix corresponding to Bravyi state ws."
+BravyiDensityMatrix::usage = "BravyiDensityMatrix[grn] returns the density matrix corresponding to the single-particle Green's function grn associated with a fermionic Gaussian state.\nBravyiDensityMatrix[ws] returns the density matrix corresponding to Bravyi state ws.";
 
-BravyiDensityMatrix::num = "Only numerical matrices are allowed."
+BravyiDensityMatrix::num = "Only numerical matrices are allowed.";
 
 (* canonical form for normal models *)
 BravyiDensityMatrix[grn_?MatrixQ] := WickDensityMatrix[grn]
@@ -1515,7 +1514,7 @@ BravyiDensityMatrix[ws_BravyiState] := With[
 
 
 (**** <BravyiCircuit> ****)
-BravyiCircuit::usage = "BravyiCircuit[{g1, g2, \[Ellipsis]}] represents a quantum circuit consisting of BdG gates (i.e., non-interacting fermionic gates) g1, g2, \[Ellipsis] on fermion modes."
+BravyiCircuit::usage = "BravyiCircuit[{g1, g2, \[Ellipsis]}] represents a quantum circuit consisting of BdG gates (i.e., non-interacting fermionic gates) g1, g2, \[Ellipsis] on fermion modes.";
 
 BravyiCircuit /:
 MakeBoxes[wc:BravyiCircuit[gg_List, ___], fmt_] :=
@@ -1578,7 +1577,7 @@ Graphics[wc:BravyiCircuit[gg_List, opts___?OptionQ], c_Symbol?FermionQ, more___?
 
 
 (**** <RandomBravyiCircuit> ****)
-RandomBravyiCircuit::usage = "RandomBravyiCircuit[{uni, p}, dep] generate a random quantum circuit on non-interacting fermion modes, where layers of unitary gate uni (either BravyiUnitary[\[Ellipsis]] or NambuUnitary[\[Ellipsis]]) alternate with layers of measurements (BravyiMeasurement[\[Ellipsis]]) on fermion modes selected randomly with probability p to form an overall depth dep.\nRandomBravyiCircuit[{ham, pdf, p}, k] unitary layers of random unitary gate uni=Exp[-I ham \[Tau]] with single-particle Hamiltonian ham (either n\[Times]n Hermitian matrix or NambuHermitian[\[Ellipsis]]) and the random evolution time \[Tau] distributed according to the probability distribution function pdf.\nRandomBravyiCircuit[{ham, p}, dep] assumes that the evolution time is uniformly distributed over the interval [0,2\[Pi] n/max], where max is the maximum of the absolute values of the entries of ham.\nRandomBravyiCircuit[ham, dep] generates a circuit for n fermion modes where each unitary layer corresponds to time evolution U=exp[-I ham \[Tau]] with the evolution time \[Tau] distributed by P(\[Tau])\[Proportional]exp[-n \[Tau]] and each measurement layer measures a fermion mode with probability p=1/n."
+RandomBravyiCircuit::usage = "RandomBravyiCircuit[{uni, p}, dep] generate a random quantum circuit on non-interacting fermion modes, where layers of unitary gate uni (either BravyiUnitary[\[Ellipsis]] or NambuUnitary[\[Ellipsis]]) alternate with layers of measurements (BravyiMeasurement[\[Ellipsis]]) on fermion modes selected randomly with probability p to form an overall depth dep.\nRandomBravyiCircuit[{ham, pdf, p}, k] unitary layers of random unitary gate uni=Exp[-I ham \[Tau]] with single-particle Hamiltonian ham (either n\[Times]n Hermitian matrix or NambuHermitian[\[Ellipsis]]) and the random evolution time \[Tau] distributed according to the probability distribution function pdf.\nRandomBravyiCircuit[{ham, p}, dep] assumes that the evolution time is uniformly distributed over the interval [0,2\[Pi] n/max], where max is the maximum of the absolute values of the entries of ham.\nRandomBravyiCircuit[ham, dep] generates a circuit for n fermion modes where each unitary layer corresponds to time evolution U=exp[-I ham \[Tau]] with the evolution time \[Tau] distributed by P(\[Tau])\[Proportional]exp[-n \[Tau]] and each measurement layer measures a fermion mode with probability p=1/n.";
 
 (* canonicalization *)
 RandomBravyiCircuit[{uu_NambuUnitary, p_?NumericQ}, k_Integer] :=
@@ -1637,7 +1636,7 @@ RandomBravyiCircuit[ham_BravyiHermitian, k_Integer] := Module[
 
 
 (**** <RandomBravyiCircuitSimulate> ****)
-RandomBravyiCircuitSimulate::usage = "RandomBravyiCircuitSimulate[in, spec, dep] simulates a random quantum circuit specified by spec (see RandomBravyiCircuit) on non-interacting fermion modes starting from initial state in, where layers of unitary gates alternate with layers of Fermi measurements to form an overall depth dep."
+RandomBravyiCircuitSimulate::usage = "RandomBravyiCircuitSimulate[in, spec, dep] simulates a random quantum circuit specified by spec (see RandomBravyiCircuit) on non-interacting fermion modes starting from initial state in, where layers of unitary gates alternate with layers of Fermi measurements to form an overall depth dep.";
 
 Options[RandomBravyiCircuitSimulate] = {
   "Samples" -> {10, 5},
@@ -1645,7 +1644,7 @@ Options[RandomBravyiCircuitSimulate] = {
   "Overwrite" -> True,
   "Filename" -> Automatic,
   "Prefix" -> "RBC"
-}
+};
 
 $RandomBravyiCircuitPatterns = Alternatives[
   {_BravyiUnitary, _?NumericQ}, 
@@ -1693,7 +1692,7 @@ Module[
 (**** </RandomBravyiCircuitSimulate> ****)
 
 
-theJordanWignerMajorana::usage = "theJordanWignerMajorana[n] returns a list of matrices representing 2n Majorana modes, taking into account the Wigner-Jordan transformation."
+theJordanWignerMajorana::usage = "theJordanWignerMajorana[n] returns a list of matrices representing 2n Majorana modes, taking into account the Wigner-Jordan transformation.";
 
 theJordanWignerMajorana[n_Integer] := Module[
   { xx, yy },
@@ -1718,7 +1717,7 @@ theJordanWignerMajorana[n_Integer] := Module[
 
 
 (**** <BravyiScramblingCircuit> ****)
-BravyiScramblingCircuit::usage = "BravyiScramblingCircuit[op, spec, dep] generates the main part of a Bravyi scrambling circuit."
+BravyiScramblingCircuit::usage = "BravyiScramblingCircuit[op, spec, dep] generates the main part of a Bravyi scrambling circuit.";
 
 (* 1 - 2*Dagger[a[k]]**a[k] *)
 theBravyiZ[k_Integer, n_Integer] := BravyiUnitary[
@@ -1826,11 +1825,11 @@ BravyiScramblingCircuit[op_, ham_BravyiHermitian, k_Integer] := Module[
 
 
 (**** <BravyiScramblingSimulate> ****)
-BravyiScramblingSimulate::usage = "BravyiScramblingSimulate[in, spec, dep] simulates a random quantum circuit specified by spec (see RandomBravyiCircuit) on non-interacting fermion modes starting from initial state in, where layers of unitary gates alternate with layers of Fermi measurements to form an overall depth dep."
+BravyiScramblingSimulate::usage = "BravyiScramblingSimulate[in, spec, dep] simulates a random quantum circuit specified by spec (see RandomBravyiCircuit) on non-interacting fermion modes starting from initial state in, where layers of unitary gates alternate with layers of Fermi measurements to form an overall depth dep.";
 
 Options[BravyiScramblingSimulate] = {
   "Samples" -> {10, 3}
-}
+};
 
 BravyiScramblingSimulate[in_, a_Integer, rest__] :=
   BravyiScramblingSimulate[in, {a, 1}, rest]
@@ -1883,9 +1882,9 @@ theBravyiOTOC[in_, ub_, qc_BravyiCircuit] := Module[
 
 
 (**** <BravyiNonunitary> ****)
-BravyiNonunitary::usage = "BravyiNonunitary[{ham, dmp, gmm}] represents a non-unitary time evolution operator Exp[-gmm/2]*MatrixExp[-I*(ham - I*dmp)] governed by the non-Hermitian Hamiltonian ham - I*dmp. The 2n\[Times]2n antisymmetic matrices ham and dmp refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators).\nIf ham and dmp are given in the NambuHermitian form, they are automatically converted to the coefficients matrices of Majorana operators."
+BravyiNonunitary::usage = "BravyiNonunitary[{ham, dmp, gmm}] represents a non-unitary time evolution operator Exp[-gmm/2]*MatrixExp[-I*(ham - I*dmp)] governed by the non-Hermitian Hamiltonian ham - I*dmp. The 2n\[Times]2n antisymmetic matrices ham and dmp refer to the coefficients matrices in the bilinear combination of Majorana operators (not Dirac fermion operators).\nIf ham and dmp are given in the NambuHermitian form, they are automatically converted to the coefficients matrices of Majorana operators.";
 
-BravyiNonunitary::icmp = "BravyiNonunitary for `` fermion modes cannot act on BravyiState for `` modes."
+BravyiNonunitary::icmp = "BravyiNonunitary for `` fermion modes cannot act on BravyiState for `` modes.";
 
 BravyiNonunitary /:
 MakeBoxes[op:BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, rest___], fmt_] :=
@@ -2024,14 +2023,14 @@ nonUnitaryStep[non_BravyiNonunitary, dt_?NumericQ] :=
 (**** </BravyiNonunitary> ****)
 
 
-RandomBravyiNonunitary::usage = "RandomBravyiNonunitary[n] randomly constructs a BravyiNonunitary operator on n fermion modes."
+RandomBravyiNonunitary::usage = "RandomBravyiNonunitary[n] randomly constructs a BravyiNonunitary operator on n fermion modes.";
 
 RandomBravyiNonunitary[n_Integer, opts___?OptionQ] :=
   BravyiNonunitary[Re @ {RandomAntisymmetric[2n], RandomAntisymmetric[2n], 0}, opts]
 
 
 (**** <BravyiDampingOperator> ****)
-BravyiDampingOperator::usage = "BravyiDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form."
+BravyiDampingOperator::usage = "BravyiDampingOperator[jmp] returns a pair {dmp, gmm} of the quadratic kernel dmp and remaining constant term gmm of the effective damping operator that corresponds to to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form.";
 
 BravyiDampingOperator[jmp_BravyiJump] :=
   BravyiDampingOperator[First @ jmp]
@@ -2070,7 +2069,7 @@ theBravyiDampingOperator[4, msr_?MatrixQ] :=
 
 
 (**** <BravyiDampingConstant> ****)
-BravyiDampingConstant::usage = "BravyiDampingConstant[jmp] returns the damping constantcorresponds to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form."
+BravyiDampingConstant::usage = "BravyiDampingConstant[jmp] returns the damping constantcorresponds to quantum jump operators jmp in the BravyiJump or BravyiMeasurement form.";
 
 BravyiDampingConstant[jmp_BravyiJump] := 
   BravyiDampingConstant[First @ jmp]
@@ -2095,13 +2094,13 @@ theBravyiDampingConstant[4, msr_?MatrixQ] :=
 
 
 (**** <BravyiSimulate> ****)
-$BravyiMinorSteps::usage = "$BravyiMinorSteps is a parameter that controls the behavior of BravyiSimulate by setting the number of minor steps for the non-unitary gate to make between major steps of update the quantum state."
+$BravyiMinorSteps::usage = "$BravyiMinorSteps is a parameter that controls the behavior of BravyiSimulate by setting the number of minor steps for the non-unitary gate to make between major steps of update the quantum state.";
 
 $BravyiMinorSteps = 10;
 
-BravyiSimulate::usage = "BravyiSimulate[in, ham, jmp, {\[Tau], dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian ham in the BravyiHermitian form and the quantum jump operators are specified by jmp in the BravyiJump form. The simulation starts from the initial state IN in the BravyiState at time 0 and runs to time \[Tau] in steps of size dt."
+BravyiSimulate::usage = "BravyiSimulate[in, ham, jmp, {\[Tau], dt}] solves the quantum master equation for a non-interacting dissipative fermionic many-body system by using the Monte Carlo simulation method (alos known as the quantum jump approach or quantum trajectory method). The model is specified by the single-particle Hamiltonian ham in the BravyiHermitian form and the quantum jump operators are specified by jmp in the BravyiJump form. The simulation starts from the initial state IN in the BravyiState at time 0 and runs to time \[Tau] in steps of size dt.";
 
-BravyiSimulate::ham = "The Hamiltonian matrix `` needs to be numeric."
+BravyiSimulate::ham = "The Hamiltonian matrix `` needs to be numeric.";
 
 Options[BravyiSimulate] = {
   "Samples" -> 500,
@@ -2109,7 +2108,7 @@ Options[BravyiSimulate] = {
   "Overwrite" -> True,
   "Filename" -> Automatic,
   "Prefix" -> "NBS"
-}
+};
 
 BravyiSimulate[in_BravyiState, ham_?MatrixQ, rest__] :=
   BravyiSimulate[in, BravyiHermitian @ ham, rest]
@@ -2184,11 +2183,11 @@ theBravyiSimulate[in_BravyiState, non_BravyiNonunitary, map_BravyiMap, {tau_, dt
 
 
 (**** <BravyiMonitor> ****)
-BravyiMonitor::usage = "BravyiMonitor[in, ham, msr, {nt, dt}] solves the problem of continuous monitoring of a non-interacting many-fermion system by using the Monte Carlo simulation method. The model is specified by the single-particle Hamiltonian ham in the BravyiHermitian form, and the dressed fermion modes the occupation numbers of which to be monitored are specified by measurement msr in the BravyiMeasurement form. The simulation starts from the initial state IN in the BravyiState form at time 0 and goes nt time steps of size dt."
+BravyiMonitor::usage = "BravyiMonitor[in, ham, msr, {nt, dt}] solves the problem of continuous monitoring of a non-interacting many-fermion system by using the Monte Carlo simulation method. The model is specified by the single-particle Hamiltonian ham in the BravyiHermitian form, and the dressed fermion modes the occupation numbers of which to be monitored are specified by measurement msr in the BravyiMeasurement form. The simulation starts from the initial state IN in the BravyiState form at time 0 and goes nt time steps of size dt.";
 
-BravyiMonitor::mat = "The matrix in the first argument of BravyiMonitor must be a real anti-symmetric matrix."
+BravyiMonitor::mat = "The matrix in the first argument of BravyiMonitor must be a real anti-symmetric matrix.";
 
-BravyiMonitor::num = "The Hamiltonian matrix `` needs to be numeric."
+BravyiMonitor::num = "The Hamiltonian matrix `` needs to be numeric.";
 
 Options[BravyiMonitor] = {
   "Samples" -> 500,
@@ -2196,7 +2195,7 @@ Options[BravyiMonitor] = {
   "Overwrite" -> True,
   "Filename" -> Automatic,
   "Prefix" -> "BM"
-}
+};
 
 BravyiMonitor[in_BravyiState, ham_?MatrixQ, rest___] :=
   BravyiMonitor[in, BravyiHermitian @ ham, rest] /;
@@ -2297,7 +2296,7 @@ theBravyiMonitor[
 
 
 (**** <BravyiLindbladSolve> ****)
-BravyiLindbladSolve::usage = "BravyiLindbladSolve[ham, jmp, in, t] solves the Lindblad equation associated with the Hamiltonia ham and a set of quantum jump operators jmp, and returns the fermionic Gaussian mixed state at t."
+BravyiLindbladSolve::usage = "BravyiLindbladSolve[ham, jmp, in, t] solves the Lindblad equation associated with the Hamiltonia ham and a set of quantum jump operators jmp, and returns the fermionic Gaussian mixed state at t.";
 (* See also Bravyi (2012a). *)
 
 BravyiLindbladSolve[ham_NambuHermitian, rest__] :=
@@ -2367,7 +2366,7 @@ BravyiLindbladSolve[
 ] /; ContainsOnly[Values @ First @ jmp, {4}]
 
 
-BravyiLyapunov::usage = "BravyiLyapunov[ham, jmp] returns a pair {X, Y} of matrics for the Lyapunov equation D[G[t], t] == X.G + G.ConjugateTranspose[X] + Y."
+BravyiLyapunov::usage = "BravyiLyapunov[ham, jmp] returns a pair {X, Y} of matrics for the Lyapunov equation D[G[t], t] == X.G + G.ConjugateTranspose[X] + Y.";
 
 BravyiLyapunov[ham_BravyiHermitian, jmp_BravyiJump] := Module[
   { mm = Keys[First @ jmp],
@@ -2380,7 +2379,7 @@ BravyiLyapunov[ham_BravyiHermitian, jmp_BravyiJump] := Module[
 (* NOTE: Matrix ham is supposed to be an even-dimensional real anti-symmetric matrix. *)
 (* NOTE: If ham is 2nx2n, then jmp must be (essentially) mx2n. *)
 
-linBravyiSuperMatrix::usage = "linBravyiSuperMatrix[ham, msr] returns the SuperMatrix of the Lindbladian for the Majorana covariance matrix."
+linBravyiSuperMatrix::usage = "linBravyiSuperMatrix[ham, msr] returns the SuperMatrix of the Lindbladian for the Majorana covariance matrix.";
 
 (* BravyiMeasurement *)
 linBravyiSuperMatrix[ham_BravyiHermitian, jmp_BravyiJump] := Module[
@@ -2411,10 +2410,10 @@ linBravyiSuperMatrix[ham_BravyiHermitian, jmp_BravyiJump] := Module[
 
 
 (**** <BravyiSteadyState> ****)
-BravyiSteadyState::usage = "BravyiSteadyState[ham, jmp, in] returns the steady-state solution (i.e., a fermionic Gaussian mixed state) to the Lindblad equation associated with the Hamiltonian ham and a set of quantum jump operators jmp.\nBravyiSteadyState[ham, msr, in] assumes that the Lindblad operators are projective and given by Bravyi measurement msr."
+BravyiSteadyState::usage = "BravyiSteadyState[ham, jmp, in] returns the steady-state solution (i.e., a fermionic Gaussian mixed state) to the Lindblad equation associated with the Hamiltonian ham and a set of quantum jump operators jmp.\nBravyiSteadyState[ham, msr, in] assumes that the Lindblad operators are projective and given by Bravyi measurement msr.";
 (* See also Bravyi (2012a). *)
 
-BravyiSteadyState::more = "The Lindblad equation has additional steady states."
+BravyiSteadyState::more = "The Lindblad equation has additional steady states.";
 
 BravyiSteadyState[ham_NambuHermitian, rest__] :=
   BravyiSteadyState[BravyiHermitian @ ham, rest]
@@ -2482,25 +2481,25 @@ FermionCount[BravyiJump[jmp:{__?patternBravyiJumpQ}, ___]] := Last[Dimensions @ 
 FermionCount[BravyiCircuit[gg_List, ___?OptionQ]] := Max[FermionCount /@ gg]
 (**** </FermionCount> ****)
 
-End[] (* Fermionic quantum computation *)
+End[]; (* Fermionic quantum computation *)
 
 
 (**********************************************************************)
 (**** quantum information theory for fermionic Gaussian states     ****)
 (**********************************************************************)
 
-Begin["`Private`"]
+Begin["`Private`"];
 
 (**** <BravyiTimeReversalMoment> ****)
-BravyiTimeReversalMoment::usage = "BravyiTimeReversalMoment[\[Alpha], {gg, ff}, {k1, k2, \[Ellipsis]}] returns the \[Alpha]th moment of partial time reversal over the fermion modes (species) k1, k2, \[Ellipsis] for the fermionic Gaussian state characterized by the matrices gg and ff (in an L\[Times]L matrix for L fermion modes) of normal and anomalous Green's funcitons, respectively, and anomalous Green's function anm (also in an L\[Times]L matrix).\nBravyiTimeReversalMoment[\[Alpha], grn, {k1,k2,\[Ellipsis]}] is equivalent to BravyiTimeReversalMoment[\[Alpha], {grn, 0}, {k1, k2, \[Ellipsis]}]."
+BravyiTimeReversalMoment::usage = "BravyiTimeReversalMoment[\[Alpha], {gg, ff}, {k1, k2, \[Ellipsis]}] returns the \[Alpha]th moment of partial time reversal over the fermion modes (species) k1, k2, \[Ellipsis] for the fermionic Gaussian state characterized by the matrices gg and ff (in an L\[Times]L matrix for L fermion modes) of normal and anomalous Green's funcitons, respectively, and anomalous Green's function anm (also in an L\[Times]L matrix).\nBravyiTimeReversalMoment[\[Alpha], grn, {k1,k2,\[Ellipsis]}] is equivalent to BravyiTimeReversalMoment[\[Alpha], {grn, 0}, {k1, k2, \[Ellipsis]}].";
 (* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 
-BravyiTimeReversalMoment::sing = "The matrix is tamed according to option \"Epsilon\"."
+BravyiTimeReversalMoment::sing = "The matrix is tamed according to option \"Epsilon\".";
 
 Options[BravyiTimeReversalMoment] = { 
   "Epsilon" -> 1.25*^-16
   (* "Epsilon" -> 1.25*^-20 *)
-}
+};
 
 (* canoncialization *)
 BravyiTimeReversalMoment[alpha_, grn_?MatrixQ, kk:{__Integer}, opts___?OptionQ] :=
@@ -2580,17 +2579,19 @@ theTimeReversalUnitary[kk:{__Integer}, n_Integer] := SparseArray[
 
 
 (**** <BravyiLogarithmicNegtivity> ****)
-BravyiLogarithmicNegativity::usage = "BravyiLogarithmicNegativity[grn, {k1, k2, \[Ellipsis]}] returns the logarithmic entanglement negativity between the subsystem consisting of fermion modes {k1, k2,\[Ellipsis]}\[Subset]{1,2,\[Ellipsis],n} in the Bravyi state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nBravyiLogarithmicNegativity[NambuGreen[{grn, anm}], {k1, k2,\[Ellipsis]}] or BravyiLogarithmicNegativity[{grn, anm}, {k1, k2,\[Ellipsis]}] returns the logarithmic negativity in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nBravyiLogarithmicNegativity[state, {k1, k2, \[Ellipsis]}] is equivalent to BravyiLogarithmicNegativity[BravyiGreen[state], {k1, k2,\[Ellipsis]}] for state = BravyiState or NambuState."
+BravyiLogarithmicNegativity::usage = "BravyiLogarithmicNegativity[grn, {k1, k2, \[Ellipsis]}] returns the logarithmic entanglement negativity between the subsystem consisting of fermion modes {k1, k2,\[Ellipsis]}\[Subset]{1,2,\[Ellipsis],n} in the Bravyi state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nBravyiLogarithmicNegativity[NambuGreen[{grn, anm}], {k1, k2,\[Ellipsis]}] or BravyiLogarithmicNegativity[{grn, anm}, {k1, k2,\[Ellipsis]}] returns the logarithmic negativity in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nBravyiLogarithmicNegativity[state, {k1, k2, \[Ellipsis]}] is equivalent to BravyiLogarithmicNegativity[BravyiGreen[state], {k1, k2,\[Ellipsis]}] for state = BravyiState or NambuState.";
 (* SEE ALSO: Shapourian and Ryu (2017, 2019) *)
 
 Options[BravyiLogarithmicNegativity] = Options[BravyiTimeReversalMoment]
 
 (* operator form *)
 BravyiLogarithmicNegativity[kk:{__Integer}][any_] :=
-  BravyiLogarithmicNegativity[any, kk, "Epsilon" -> OptionValue[BravyiLogarithmicNegativity, "Epsilon"]]
+  BravyiLogarithmicNegativity[ any, kk, 
+    "Epsilon" -> OptionValue[BravyiLogarithmicNegativity, "Epsilon"]
+  ];
 
 (* special case *)
-BravyiLogarithmicNegativity[obj_, {}, ___] = 0
+BravyiLogarithmicNegativity[obj_, {}, ___] = 0;
 
 (* for large data *)
 BravyiLogarithmicNegativity[data_?ArrayQ, kk:{___Integer}, opts___?OptionQ] := 
@@ -2634,7 +2635,7 @@ BravyiLogarithmicNegativity[grn_?NambuMatrixQ, rest__] :=
 
 
 (**** <BravyiEntropy> ****)
-BravyiEntropy::usage = "BravyiEntropy[grn] returns the von Neumann entropy of a fermionic Gaussian state characterized by the matrix grn of single-particle Green's functions. BravyiEntropy[NambuGreen[{grn, anm}]] or BravyiEntropy[{grn, anm}] considers a fermionic Gaussian state characterized by matrices grn and anm of normal and anomalous Green's functions."
+BravyiEntropy::usage = "BravyiEntropy[grn] returns the von Neumann entropy of a fermionic Gaussian state characterized by the matrix grn of single-particle Green's functions. BravyiEntropy[NambuGreen[{grn, anm}]] or BravyiEntropy[{grn, anm}] considers a fermionic Gaussian state characterized by matrices grn and anm of normal and anomalous Green's functions.";
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
 
 (* canonical form for normal models *)
@@ -2670,7 +2671,7 @@ BravyiEntropy[in_BravyiState] :=
 
 
 (**** <BravyiEntanglementEntropy> ****)
-BravyiEntanglementEntropy::usage = "BravyiEntanglementEntropy[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Bravyi state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nBravyiEntanglementEntropy[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or BravyiEntanglementEntropy[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nBravyiEntanglementEntropy[state, {k1, k2, \[Ellipsis]}] is equivalent to BravyiEntanglementEntropy[BravyiGreen[state, {k1, k2, \[Ellipsis]}], {k1, k2, \[Ellipsis]}] for Bravyi or BdG state.\nBravyiEntanglementEntropy[{k1, k2, \[Ellipsis]}] is an operator form of BravyiEntanglementEtropy to be applied to Green's functions, Bravyi or Nambu state."
+BravyiEntanglementEntropy::usage = "BravyiEntanglementEntropy[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Bravyi state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nBravyiEntanglementEntropy[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or BravyiEntanglementEntropy[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nBravyiEntanglementEntropy[state, {k1, k2, \[Ellipsis]}] is equivalent to BravyiEntanglementEntropy[BravyiGreen[state, {k1, k2, \[Ellipsis]}], {k1, k2, \[Ellipsis]}] for Bravyi or BdG state.\nBravyiEntanglementEntropy[{k1, k2, \[Ellipsis]}] is an operator form of BravyiEntanglementEtropy to be applied to Green's functions, Bravyi or Nambu state.";
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
 
 (* operator form *)
@@ -2718,7 +2719,7 @@ BravyiEntanglementEntropy[grn:NambuGreen[{_?MatrixQ, _?MatrixQ}, ___], kk:{__Int
 
 
 (**** <BravyiMutualInformation> ****)
-BravyiMutualInformation::usage = "BravyiMutualInformation[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Bravyi state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nBravyiMutualInformation[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or BravyiMutualInformation[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nBravyiMutualInformation[state, {k1, k2, \[Ellipsis]}] is equivalent to BravyiMutualInformation[BravyiGreen[state], {k1, k2, \[Ellipsis]}] for Bravyi or BdG state.\nBravyiMutualInformation[{k1, k2, \[Ellipsis]}] is an operator form of BravyiEntanglementEtropy to be applied to Green's functions, Bravyi or Nambu state."
+BravyiMutualInformation::usage = "BravyiMutualInformation[grn, {k1, k2, \[Ellipsis]}] returns the entanglement entropy between the subsystem consisting of fermion modes {k1, k2, \[Ellipsis]}\[Subset]{1, 2, \[Ellipsis], n} in the Bravyi state characterized by n\[Times]n matrix grn of single-particle Green's functions.\nBravyiMutualInformation[NambuGreen[{grn, anm}], {k1, k2, \[Ellipsis]}] or BravyiMutualInformation[{grn, anm}, {k1, k2, \[Ellipsis]}] returns the entanglement entropy in the BdG state characterized by n\[Times]n matrices grn and anm of normal and anomalous Green's functions, respectively.\nBravyiMutualInformation[state, {k1, k2, \[Ellipsis]}] is equivalent to BravyiMutualInformation[BravyiGreen[state], {k1, k2, \[Ellipsis]}] for Bravyi or BdG state.\nBravyiMutualInformation[{k1, k2, \[Ellipsis]}] is an operator form of BravyiEntanglementEtropy to be applied to Green's functions, Bravyi or Nambu state.";
 (* See, e.g., Calabrese and Carday (2004) and Peschel (2003). *)
 
 (* operator form *)
@@ -2769,6 +2770,5 @@ BravyiMutualInformation[NambuGreen[{gg_?MatrixQ, ff_?MatrixQ}, ___], kk:{__Integ
   BravyiMutualInformation[{gg, ff}, kk]
 (**** </BravyiMutualInformation> ****)
 
-End[] (* quantum information theory for fermionic Gaussian states *)
-
-EndPackage[]
+End[]; (* quantum information theory for fermionic Gaussian states *)
+EndPackage[];
