@@ -11,6 +11,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { WignerBasis, WignerBasisKeys,
   WignerBratteliDiagram };
+{ WignerZBasis };
 
 { WignerAdd, WignerAddZ };
 
@@ -609,11 +610,54 @@ doWignerAdd[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
   new = Sum[
     CircleTimes @@@ Tuples[{irb[{S1, m}], irc[{S2, Sz - m}]}]*
       ClebschGordan[{S1, m}, {S2, Sz - m}, {S, Sz}],
-    {m, Range[min, max]}
+    {m, Range[mcin, max]}
   ];
   Association[{S, Sz} -> new]
 ]
 (**** </WignerAdd> ****)
+
+
+(**** <WignerZBasis> ****)
+WignerZBasis::usage = "WignerZBasis[{n, S} -> Jz] returns the basis states spanning the sector of the n-site spin-S system with the given total Jz.\nWignerZBasis[{n, S}] returns the basis for all possible Jz.";
+
+WignerZBasis::badJz = "Total Jz = `` is not attainable for `` spins of size S = ``.";
+
+WignerZBasis::unknown = "Unknown option ``.";
+
+Options[WignerZBasis] = {
+  "TargetForm" -> "Code" (* "Code": digits, "Ket": Ket[...], "Vector": row vectors *)
+};
+
+WignerZBasis[{n_Integer?Positive, S_}, opts___?OptionQ] := Module[
+  { zz = Range[n*S, -n*S, -1] },
+  AssociationMap[WignerZBasis[{n, S} -> #, opts]&, zz]
+];
+
+WignerZBasis[{n_Integer?Positive, S_} -> Jz_, OptionsPattern[]] := Block[
+  { d = Round[2 S + 1],
+    m = Rationalize[n S - Jz],
+    code },
+  If[ IntegerQ[m] && 0 <= m <= n*(d - 1),
+    code = codeWignerZ[n, d, m];
+    Switch[ OptionValue["TargetForm"],
+      "Code", code,
+      "Ket", Map[Ket, S - IntegerDigits[code, d, n]],
+      "Vector", SparseArray @ Map[SparseArray[(1 + #) -> 1, d^n]&, code],
+      _, Message[WignerZBasis::unknown, OptionValue["TargetForm"]]; code
+    ],
+    Message[WignerZBasis::badJz, Jz, n, S]; {}
+  ]
+];
+
+(* the low-level recursion over the most significant digit *)
+codeWignerZ[0, _, m_Integer] := If[m == 0, {0}, {}];
+
+codeWignerZ[n_Integer?Positive, d_Integer, m_Integer] :=
+  codeWignerZ[n, d, m] = Flatten @ Table[
+    d^(n - 1)*k + codeWignerZ[n - 1, d, m - k],
+    {k, Max[0, m - (n - 1)*(d - 1)], Min[d - 1, m]}
+  ];
+(**** </WignerZBasis> ****)
 
 
 (**** <WignerBasisKeys> ****)

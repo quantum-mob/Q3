@@ -14,6 +14,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
 { ArrayShort, MatrixObject };
 
 { CommonEigensystem, CommonEigenvectors, CommonEigenvalues };
+{ SpectralRadius, SpectralExtremum, SpectralLowest, SpectralHighest };
 
 { CSDecomposition,
   PhaseDecomposition };
@@ -361,6 +362,44 @@ blockEigensystem[bs_?MatrixQ, mat_?MatrixQ] := Module[
 ]
 (* The basis bs is assumed to be orthonormal. *)
 (**** </CommonEigensystem> ****)
+
+
+(**** <SpectralRadius> ****)
+SpectralRadius::usage = "SpectralRadius[ham] returns max(|Emin|, |Emax|).";
+
+SpectralRadius[ham_?MatrixQ, opts:OptionsPattern[Eigenvalues]] := 
+  Abs @ First @ Eigenvalues[ham, 1, opts];
+(**** </SpectralRadius> ****)
+
+
+(**** <SpectralExtremum> ****)
+SpectralExtremum::usage = "SpectralExtremum[mat, flag] returns {val, vec} of the lowest (flag = -1) or highest (flag = 1) eigenvalue for a (sparse) Hermitian matrix mat, using Arnoldi iteration for large matrices.";
+
+SpectralExtremum[ham_?MatrixQ, flag:(1|-1):-1, opts___?OptionQ] := Module[
+  { sys, pos, val, vec },
+  If[ Length[ham] <= 64,
+    sys = Eigensystem[Normal @ N @ ham];
+    pos = First @ Ordering[sys[[1]], -flag];
+    {sys[[1, pos]], Normalize @ sys[[2, pos]]},
+    (* else: smallest eigenvalue = -largest of -H *)
+    {val, vec} = Eigensystem[ flag*N[ham], 1,
+      Method -> {
+        "Arnoldi", 
+        "Criteria" -> "RealPart",
+        opts,
+        "MaxIterations" -> 10^5 
+      }
+    ];
+    {flag*First[val], Normalize[First @ vec]}
+  ]
+];
+
+SpectralLowest::usage = "SpectralLowest[mat] is an alias of SpectralExtremum[mat, -1].";
+SpectralHighest::usage = "SpectralHighest[mat] is an alias of SpectralExtremum[mat, 1].";
+
+SpectralLowest[ham_?MatrixQ] := SpectralExtremum[ham, -1];
+SpectralHighest[ham_?MatrixQ] := SpectralExtremum[ham, +1];
+(**** <SpectralExtremum> ****)
 
 
 (**** <HouseholderMatrix> ****)
@@ -1303,7 +1342,6 @@ chiralVertexRulesShort[ii_List, jj_List, spec:{__Rule}] := spec
 chiralVertexRulesShort[ii_List, jj_List, spec:{row_, col_}] :=
   Join[ vertexRulesShort[ii, row], vertexRulesShort[jj, col] ]
 (**** </ChiralGraphForm> ****)
-
 
 End[];
 EndPackage[];
