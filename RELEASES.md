@@ -2,7 +2,7 @@
 
 ## 4.6.9
 
-- Improved: BravyiNonunitary, BravyiSimulate
+- Improved: BravyiNonunitary, BravyiSimulate, BravyiTimeReversalMoment, BravyiLogarithmicNegativity
 - New: SpectralRadius, SpectralExtremum, SpectralLowest, SpectralHighest
 
 ## 4.6.6

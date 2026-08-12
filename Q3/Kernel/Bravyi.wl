@@ -1904,6 +1904,7 @@ MakeBoxes[op:BravyiNonunitary[{fac_, mat_?MatrixQ} -> k_Integer, rest___], fmt_]
 BravyiNonunitary[{ham_?MatrixQ, dmp_?MatrixQ, gmm_?NumericQ}, opts___?OptionQ] := Module[
   { k },
   k = Max[1, Round @ Norm @ dmp, Ceiling[Norm[ham]/Pi]];
+  (* NOTE: Norm[[ham]/Pi to prevent branch-cut issue with MatrixLog in Matrix[BravyiNonunitary[...]]. *)
   BravyiNonunitary[{Exp[-2*gmm/k], MatrixExp[(ham - I*dmp)/k]} -> k, opts]
 ] /; If[ MatrixQ[ham, NumericQ] && MatrixQ[dmp, NumericQ], True,
     Message[BravyiNonunitary::num, ham, dmp]; False
@@ -2507,19 +2508,17 @@ BravyiTimeReversalMoment[alpha_, cvr_?MatrixQ, kk:{__Integer}] := Module[
     },
     {2 n, 2 n}
   ];
-  gp = uu . cvr . uu;     (* covariance of rho^{T1} *)
+  gp = uu . Normal[N @ cvr] . uu;     (* covariance of rho^{T1} *)
   gm = Conjugate[gp];     (* covariance of (rho^{T1})^\[Dagger] *)
   dd = One[2 n] - gp . gm;
-  (* zz = tr(rho^2) = tr(rho^{T1} rho^{T1 \[Dagger]}); Det[dd] >= 1, always regular *)
-  zz = Sqrt @ Abs @ Det[dd / 2];
+  zz = (Total[Log[2, Abs @ Eigenvalues @ dd]] - 2 n)/2;  (* = Log2 tr(rho^2) *)
   (* covariance of Xi = rho^{T1} rho^{T1\[Dagger]} / tr(rho^2)
      via the composition rule for Gaussian operators *)
   xi = I * ((One[2 n] - I*gm) . LinearSolve[dd, One[2 n] - I*gp] - One[2 n]);
   (* occupation spectrum of Xi; eigenvalues of xi come in pairs \[PlusMinus]I nu *)
   xi = (1 + Clip[Re[Eigenvalues[xi] / I], {-1, 1}]) / 2;
   (* each pair is counted twice; hence the overall factor 1/2 *)
-  Total[Log[2, Power[xi, alpha] + Power[1 - xi, alpha]]] / 2 +
-    alpha * Log[2, zz]
+  Total[Log[2, Power[xi, alpha] + Power[1 - xi, alpha]]] / 2 + alpha * zz
 ] /; If[ EvenQ[Length @ cvr], True,
   Message[BravyiTimeReversalMoment::odd, cvr]; False
 ];
@@ -2551,7 +2550,7 @@ BravyiLogarithmicNegativity[cvr_BravyiCovariance, kk:{__Integer}] :=
   BravyiLogarithmicNegativity[First @ cvr, kk]
 
 (* BdG models *)
-BravyiLogarithmicNegativity[grn_NambuGreen, kk:{__Integer}, ___] :=
+BravyiLogarithmicNegativity[grn_NambuGreen, kk:{__Integer}] :=
   BravyiLogarithmicNegativity[BravyiCovariance @ grn, kk]
 
 (* Canonical form for BdG models *)
