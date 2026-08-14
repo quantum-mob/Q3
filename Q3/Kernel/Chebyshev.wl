@@ -12,25 +12,25 @@ ChebyshevPoints::usage = "ChebyshevPoints[n] returns a list of n Chebyshev point
 ChebyshevPoints[spec_] := ChebyshevPoints[spec, 1] (* the first kind by default *)
 
 (* the first kind *)
-ChebyshevPoints[n_Integer?Positive, 1] :=
- Cos[(Range[n] - 1/2) * Pi/n]
+ChebyshevPoints[n_Integer?Positive, 1, numQ:(True|False):False] :=
+  Cos @ If[numQ, N, Identity] @ ((Range[n] - 1/2)*Pi/n)
 
 (* the second kind *)
-ChebyshevPoints[n_Integer?Positive, 2] :=
-  Cos[Range[0, n-1] * Pi/(n-1)]
+ChebyshevPoints[n_Integer?Positive, 2, numQ:(True|False):False] :=
+  Cos @ If[numQ, N, Identity] @ (Range[0, n-1] * Pi/(n-1))
 
 (* definite parity *)
-ChebyshevPoints[n_Integer?Positive -> parity:(-1|1), 1] := With[
+ChebyshevPoints[n_Integer?Positive -> parity:(-1|1), 1, numQ:(True|False):False] := With[
   { nn = 2*n - (1+parity)/2 },
-  Cos[(Range[n] - 1/2) * Pi/nn]
+  Cos @ If[numQ, N, Identity] @ ((Range[n] - 1/2) * Pi/nn)
 ]
 
 
 ChebyshevPoints[n_Integer?Positive, kind:(1|2), Interval @ {a_, b_}] :=
-  ChebyshevPoints[n, kind, {a, b}]
+  ChebyshevPoints[n, kind, {a, b}, numQ]
 
 ChebyshevPoints[n_Integer?Positive, kind:(1|2), int:{a_, b_}] := With[
-  { xx = ChebyshevPoints[n, kind] },
+  { xx = ChebyshevPoints[n, kind, AnyTrue[{a, b}, InexactNumberQ]] },
   a*(1 - xx)/2 + b*(1 + xx)/2
 ]
 (**** </ChebyshevPoints> ****)
@@ -158,22 +158,18 @@ ChebyshevSeries[cc_?VectorQ] := With[
 
 
 (**** <ChebyshevSupremum> ****)
-ChebyshevSupremum::usage = "ChebyshevSupremum[c] returns max |p(x)| over x \[Element] [-1, 1] for p(x) = Sum_k c_k ChebyshevT[k-1, x], on a Chebyshev-dense grid including the endpoints by Clenshaw-style three-term recursion.";
+ChebyshevSupremum::usage = "ChebyshevSupremum[c] returns max |p(x)| over x \[Element] [-1, 1] for p(x) = Sum_k c_k ChebyshevT[k-1, x], on the grid of Chebyshev points.";
 
-ChebyshevSupremum[c_?VectorQ, m_Integer:8192] := Module[
-  { xs, tp, tc, tn, acc },
-  (* xs = N @ ChebyshevPoints[m + 1, 2]; *) (* slower *)
-  xs = Cos[Pi*Range[0., m]/m];  (* includes x = +1 and x = -1 *)
-  tp = ConstantArray[1., m + 1];
-  tc = xs;
-  acc = c[[1]]*tp + If[Length[c] > 1, c[[2]]*tc, 0.];
-  Do[
-    tn = 2. xs tc - tp;
-    acc += c[[k]]*tn;
-    {tp, tc} = {tc, tn},
-    {k, 3, Length @ c}
-  ];
-  Max[Abs @ acc]
+ChebyshevSupremum[c_?VectorQ, kind : (1 | 2) : 2, m_Integer : Automatic] := Module[
+  { n, cc, dd },
+  n = If[m === Automatic, 90 Length[c], m];
+  cc = SparseArray@PadRight[c, n + 1];
+  dd = Switch[kind,
+      1, Sqrt[n]/2*FourierDCT[cc, 3], (* on the grid of ChebyshevPoints[n, 1] *)
+      2, Sqrt[n/2]*FourierDCT[cc, 1]  (* on the grid of ChebyshevPoints[n, 2] *)
+    ] + First[c]/2;
+    (* NOTE: assuming n >= Length[c]; otherwise an additional term required for kind=2. *)
+  Max[Abs @ dd]
 ]
 (**** </ChebyshevSupremum> ****)
 
