@@ -1,7 +1,8 @@
 (* ::Package:: *)
 BeginPackage["QuantumMob`Q3`", {"System`"}];
 
-{ Zero, One };
+{ Zero, One, 
+  BasisVector };
 
 { UpperTriangular, LowerTriangular }; (* See also Diagonal[] *)
 { UpperRightMatrix, LowerLeftMatrix };
@@ -68,6 +69,19 @@ One[{n_Integer}, p_Integer] := One[{n, n}, p];
 One[{m_Integer, n_Integer}, k_Integer] := 
   SparseArray[{i_, j_} :> 1 /; j == i+k, {m, n}];
 (**** </One> ****)
+
+
+BasisVector::usage = "BasisVector[n, k] gives the n-dimensional unit vector in the k\[Null]th direction. It is equivalent to UnitVector[n,k] excepth that it returns an SparseArray.";
+
+BasisVector::nokun = UnitVector::nokun;
+
+Options[BasisVector] = Options[UnitVector];
+
+BasisVector[n_Integer:2, k_Integer, OptionsPattern[]] :=
+  SparseArray[{k} -> N[1, OptionValue @ WorkingPrecision], n] /;
+  If[ k <= n, True,
+    Message[BasisVector::nokun, k, n]; False
+  ];
 
 
 (**** <MatrixConditionNumber> ****)

@@ -4,21 +4,18 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Grassmann, GrassmannQ, AnyGrassmannQ };
 { GrassmannD, GrassmannIntegrate };
-{ GrassmannGrade }
-
+{ GrassmannGrade };
 
 Begin["`Private`"];
-$symb = Unprotect[Power];
-
 
 (**** <Grassmann> ****)
-Grassmann::usage = "Grassmann represents a set of generators of a Grassmann algebra."
+Grassmann::usage = "Grassmann represents a set of generators of a Grassmann algebra.";
 
 Grassmann /:
 Let[Grassmann, {ls__Symbol}] := (
   Let[NonCommutative, {ls}];
   Scan[setGrassmann, {ls}];
-)
+);
 
 setGrassmann[x_Symbol] := (
   MultiplyKind[x] ^= Grassmann;
@@ -29,27 +26,33 @@ setGrassmann[x_Symbol] := (
   
   GrassmannGrade[x] ^= 1;
   GrassmannGrade[x[___]] ^= 1;
+
+  x /: Power[x, n_Integer?NonNegative] := MultiplyPower[x, n];
+  x /: Power[x[j___], n_Integer?NonNegative] := MultiplyPower[x[j], n];
 )
 (**** </Grassmann> ****)
 
 
 (**** <GrassmannQ> ****)
-GrassmannQ::usage = "GrassmannQ[z] returns True if z is a *generator* (but not a generic element) of the Grassmann algebra over complex numbers."
+GrassmannQ::usage = "GrassmannQ[z] returns True if z is a *generator* (but not a generic element) of the Grassmann algebra over complex numbers.";
 
-GrassmannQ[_] = False
+GrassmannQ[_] = False;
 
 
-AnyGrassmannQ::usage = "AnyGrassmannQ[z] returns true z itself a Grassmann generator or a conjugate z = Conjugate[x] of another Grassmann generator x."
+AnyGrassmannQ::usage = "AnyGrassmannQ[z] returns true z itself a Grassmann generator or a conjugate z = Conjugate[x] of another Grassmann generator x.";
 
-AnyGrassmannQ[ _?GrassmannQ ] = True
+AnyGrassmannQ[ _?GrassmannQ ] = True;
 
-AnyGrassmannQ[ Conjugate[_?GrassmannQ] ] = True
+AnyGrassmannQ[ Conjugate[_?GrassmannQ] ] = True;
 
-AnyGrassmannQ[_] = False
+AnyGrassmannQ[_] = False;
 (**** </GrassmannQ> ****)
 
 
-Power[a_?GrassmannQ, n_Integer?NonNegative] := MultiplyPower[a, n]
+(* WARNING (2026-08-15 v4.6.10): This makes Abs/Re/Im 100 times slower. *)
+(* Unprotect[Power]; *)
+(* Power[a_?GrassmannQ, n_Integer?NonNegative] := MultiplyPower[a, n] *)
+(* Protect[Power]; *)
 
 Dagger[ z_?AnyGrassmannQ ] := Conjugate[z]
 
@@ -87,7 +90,7 @@ HoldPattern @
 
 
 (**** <GrassmannD> ****)
-GrassmannD::usage = "GrassmannD[expr, g] returns the Grassmann derivative of expr with respect to the Grassmann generator g.\nGrassmannD[expr, {g1, g2, \[Ellipsis]}] returns the derivative with respect to multiple Grassmann generators g1, g2, \[Ellipsis].\nGrassmannD[g] or GrassmannD[{g1, g2, \[Ellipsis]}] represents the operator form of GrassmannD acting on an expression."
+GrassmannD::usage = "GrassmannD[expr, g] returns the Grassmann derivative of expr with respect to the Grassmann generator g.\nGrassmannD[expr, {g1, g2, \[Ellipsis]}] returns the derivative with respect to multiple Grassmann generators g1, g2, \[Ellipsis].\nGrassmannD[g] or GrassmannD[{g1, g2, \[Ellipsis]}] represents the operator form of GrassmannD acting on an expression.";
 
 GrassmannD[gg_][expr_] := GrassmannD[expr, gg]
 
@@ -152,31 +155,30 @@ HoldPattern @
 
 
 (**** <GrassmannIntegrate> ****)
-GrassmannIntegrate::usage = "GrassmannIntegrate[expr, g] returns the Grassmann integration of expr with respect to the Grassmann generator g.\nGrassmannIntegrate[expr, {g1, g2, \[Ellipsis]}] returns the integration with respect to multiple Grassmann generators g1, g2, \[Ellipsis].\nGrassmannIntegrate[g] or GrassmannIntegrate[{g1, g2, \[Ellipsis]}] represents the operator form of GrassmannIntegrate acting on an expression."
+GrassmannIntegrate::usage = "GrassmannIntegrate[expr, g] returns the Grassmann integration of expr with respect to the Grassmann generator g.\nGrassmannIntegrate[expr, {g1, g2, \[Ellipsis]}] returns the integration with respect to multiple Grassmann generators g1, g2, \[Ellipsis].\nGrassmannIntegrate[g] or GrassmannIntegrate[{g1, g2, \[Ellipsis]}] represents the operator form of GrassmannIntegrate acting on an expression.";
 
-GrassmannIntegrate = GrassmannD
+GrassmannIntegrate = GrassmannD;
 (**** </GrassmannIntegrate> ****)
 
 
 (**** <GrassmannGrade> ****)
-GrassmannGrade::usage = "GrassmannGrade[expr] returns a non-negative integer: 0, if expr is a pure boson, which can be multiplied using Times; positive and odd, if expr has fermionic statistics; or positive and even, if expr has bosonic statistics but involves Grassmann generators. Any generator whose grading is not explicitly declared is assumed to be purely bosonic."
+GrassmannGrade::usage = "GrassmannGrade[expr] returns a non-negative integer: 0, if expr is a pure boson, which can be multiplied using Times; positive and odd, if expr has fermionic statistics; or positive and even, if expr has bosonic statistics but involves Grassmann generators. Any generator whose grading is not explicitly declared is assumed to be purely bosonic.";
 
-GrassmannGrade[_?AnyGrassmannQ] = 1
+GrassmannGrade[_?AnyGrassmannQ] = 1;
 
 GrassmannGrade[expr_Times] :=
-  GrassmannGrade[DeleteCases[expr, _?CommutativeQ]]
+  GrassmannGrade[DeleteCases[expr, _?CommutativeQ]];
 
 GrassmannGrade[expr_Plus] := 
-  Max @ Map[GrassmannGrade, List @@ expr]
+  Max @ Map[GrassmannGrade, List @@ expr];
 
 GrassmannGrade[HoldPattern @ Multiply[ops__]] := 
-  Total @ Map[GrassmannGrade, {ops}]
+  Total @ Map[GrassmannGrade, {ops}];
 
-GrassmannGrade[GrassmannD[a_, _]] := GrassmannGrade[a] + 1
+GrassmannGrade[GrassmannD[a_, _]] := GrassmannGrade[a] + 1;
 
-GrassmannGrade[_] = 0
+GrassmannGrade[_] = 0;
 (**** </GrassmannGrade> ****)
 
-Protect[Evaluate @ $symb];
 End[];
 EndPackage[];

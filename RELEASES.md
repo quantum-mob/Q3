@@ -1,5 +1,11 @@
 # Release Notes
 
+## 4.6.10
+
+- New: ChebyshevSupremum, BasisVector
+- Improved: ChebyshevSeries, ChebyshevPoints
+- Bug fix: Performance issues affecting Abs / Re / Im / Conjugate / Power have been fixed in Cauchy and Grassmann.
+
 ## 4.6.9
 
 - Improved: BravyiNonunitary, BravyiSimulate, BravyiTimeReversalMoment, BravyiLogarithmicNegativity
