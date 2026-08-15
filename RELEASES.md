@@ -1,6 +1,6 @@
 # Release Notes
 
-## 4.6.10
+## 4.7.0
 
 - New: ChebyshevSupremum, BasisVector
 - Improved: ChebyshevSeries, ChebyshevPoints
