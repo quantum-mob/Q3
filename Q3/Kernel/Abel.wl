@@ -1,9 +1,7 @@
 (* ::Package:: *)
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
-(* -*- mode:math -*- *)
-BeginPackage["QuantumMob`Q3`", {"System`"}]
-
-$::usage = "$ is a flavor index referring to the species itself."
+$::usage = "$ is a flavor index referring to the species itself.";
 
 { Let };
 
@@ -98,12 +96,8 @@ $::usage = "$ is a flavor index referring to the species itself."
   CliffordQ, CliffordMatrixQ };
 
 
-Begin["`Private`"]
-
-$symb = Unprotect[
-  Conjugate, Inverse,
-  DiscreteDelta, UnitStep
-]
+Begin["`Private`"];
+$symb = Unprotect[Inverse, DiscreteDelta];
 
 
 Base::usage = "Base[c[j,\[Ellipsis],s]] returns the generator c[j,\[Ellipsis]] with the Flavor indices sans the final if c is a Species and the final Flavor index is special at all; otherwise just c[j,\[Ellipsis],s]."
@@ -381,12 +375,12 @@ AnyAgentQ[ _ ] = False
 
 
 (**** <NonCommutative> ****)
-NonCommutative::usage = "NonCommutative represents a non-commutative element.\nLet[NonCommutative, a, b, \[Ellipsis]] declares a[\[Ellipsis]], b[\[Ellipsis]], \[Ellipsis] to be NonCommutative."
+NonCommutative::usage = "NonCommutative represents a non-commutative element.\nLet[NonCommutative, a, b, \[Ellipsis]] declares a[\[Ellipsis]], b[\[Ellipsis]], \[Ellipsis] to be NonCommutative.";
 
 Let[NonCommutative, {ls__Symbol}] := (
   Let[Species, {ls}];
   Scan[setNonCommutative, {ls}]
- )
+);
 
 setNonCommutative[x_Symbol] := (
   NonCommutativeQ[x] ^= True;
@@ -396,7 +390,10 @@ setNonCommutative[x_Symbol] := (
   MultiplyKind[x[___]] ^= NonCommutative;
   MultiplyGenus[x] ^= "Singleton";
   MultiplyGenus[x[___]] ^= "Singleton";
-)
+
+  x /: Power[x, n_Integer?NonNegative] := MultiplyPower[x, n];
+  x /: Power[x[j___], n_Integer?NonNegative] := MultiplyPower[x[j], n];
+);
 (**** </NonCommutative> ****)
 
 
@@ -1421,8 +1418,7 @@ TransformByInverseFourier[args__, opts___?OptionQ] :=
 
 
 (**** <Observation> ****)
-
-Observation::usage = "Observation[spec] represents an operator that has the spectrum specified by spec."
+Observation::usage = "Observation[spec] represents an operator that has the spectrum specified by spec.";
 
 (* Observation /: Peel[ Observation[a_] ] := a *)
 (* for Matrix[] *)
@@ -1512,29 +1508,27 @@ ObservationValue[Ket[a_Association], spec_] := Activate[
 (* NOTE: Remember that the spec may involve Hold or HoldForm. *)
 
 
-Indefinite::usage = "Indefinite[val$1,val$2,\[Ellipsis]] represents an indefinite value among the possible values {val$1,val$2,\[Ellipsis]}."
-
+Indefinite::usage = "Indefinite[val$1,val$2,\[Ellipsis]] represents an indefinite value among the possible values {val$1,val$2,\[Ellipsis]}.";
 (**** </Observation> ****)
 
 
 (**** <Occupation> ****)
 (* It is a simple application of Observation. *)
-
-Occupation::usage = "Occupation[{s1,s2,\[Ellipsis]},k] represents the occupation operator of species {s1,s2,\[Ellipsis]} in the computational basis state \[LeftBracketingBar]k\[RightAngleBracket].\nOccupation is a simple application of Observation."
+Occupation::usage = "Occupation[{s1,s2,\[Ellipsis]},k] represents the occupation operator of species {s1,s2,\[Ellipsis]} in the computational basis state \[LeftBracketingBar]k\[RightAngleBracket].\nOccupation is a simple application of Observation.";
 
 SyntaxInformation[Occupation] = {
   "ArgumentsPattern" -> {_, _}
- }
+};
 
-Occupation[{}, _] = 0
+Occupation[{}, _] = 0;
 
 Occupation[ss:{__?SpeciesQ}, k_] :=
   Occupation[FlavorCap @ ss, k] /;
-  Not[FlavorCapQ @ ss]
+  Not[FlavorCapQ @ ss];
 
 Occupation[ss:{__?SpeciesQ}, k_] :=
   Observation[Inactive[Count][ss, k]] /;
-  And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]]
+  And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]];
 
 Occupation /:
 HoldPattern @ Dagger[ op_Occupation ] := op
@@ -1545,9 +1539,10 @@ HoldPattern @ Agents[Occupation[ss:{__?SpeciesQ}, _]] := Agents[ss]
 Occupation /:
 HoldPattern @ NonCommutativeSpecies[Occupation[ss:{__?SpeciesQ}, _]] :=
   NonCommutativeSpecies[ss]
+(**** </Occupation> ****)
 
 
-OccupationValue::usage = "OccupationValue[{s1,s2,\[Ellipsis]},k] returns the occupation number of species {s1,s2,\[Ellipsis]} in the level k (logical state Ket[k]).\nOccupationValue is a simple application of ObservationValue."
+OccupationValue::usage = "OccupationValue[{s1,s2,\[Ellipsis]},k] returns the occupation number of species {s1,s2,\[Ellipsis]} in the level k (logical state Ket[k]).\nOccupationValue is a simple application of ObservationValue.";
 
 OccupationValue[ss:{__?SpeciesQ}, val_][expr_] :=
   OccupationValue[expr, ss, val] /;
@@ -1557,22 +1552,13 @@ OccupationValue[expr_, ss:{__?SpeciesQ}, val_] :=
   ObservationValue[expr, Inactive[Count][ss, val]] /;
   And[Equal @@ MultiplyKind[ss], Equal @@ Dimension[ss]]
 
-(**** </Occupation> ****)
 
-
+(* Installed as UpValues on DiscreteDelta: consulted only when DiscreteDelta appears 
+   literally as an argument, so numeric arrays are never affected *)
 DiscreteDelta /:
 HoldPattern[ Power[DiscreteDelta[x__], _?Positive] ] :=
   DiscreteDelta[x]
 
-
-Format[ UnitStep[x_], StandardForm ] := Interpretation[
-  DisplayForm @ RowBox @ {"\[Theta]", "(", x, ")"},
-  UnitStep[x]
-]
-
-
-Protect[ Evaluate @ $symb ]
-
-End[]
-
-EndPackage[]
+Protect[ Evaluate @ $symb ];
+End[];
+EndPackage[];

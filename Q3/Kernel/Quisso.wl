@@ -50,9 +50,8 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 (**** </preload> ****)
 
 
-Begin["`Private`"]
-
-$symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing]
+Begin["`Private`"];
+$symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing];
 
 AddElaborationPatterns[
   _QFT, _QBR, _Oracle,
@@ -63,7 +62,7 @@ AddElaborationPatterns[
   _ControlledPower,
   _ExchangeExp,
   _Matchgate
-]
+];
 
 AddElaborationPatterns[
   G_?QubitQ[j___, 0] -> 1,
@@ -83,18 +82,17 @@ AddElaborationPatterns[
   G_?QuditQ[j___, 0 -> 0] :> 1 - Total @ Rest @ G[j, Diagonal],
   OTimes -> CircleTimes,
   OSlash -> CircleTimes
-]
+];
 
 
 (**** <Qubit> ****)
-
-Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raising|Lowering|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit."
+Qubit::usage = "Qubit denotes a quantum two-level system or \"quantum bit\".\nLet[Qubit, S, T, ...] or Let[Qubit, {S, T,...}] declares that the symbols S, T, ... are dedicated to represent qubits and quantum gates operating on them. For example, S[j,..., $] represents the qubit located at the physical site specified by the indices j, .... On the other hand, S[j, ..., k] represents the quantum gate operating on the qubit S[j,..., $].\nS[..., 0] represents the identity operator.\nS[..., 1], S[..., 2] and S[..., 3] means the Pauli-X, Pauli-Y and Pauli-Z gates, respectively.\nS[..., 4] and S[..., 5] represent the raising and lowering operators, respectively.\nS[..., 6], S[..., 7], S[..., 8] represent the Hadamard, Quadrant (Pi/4) and Octant (Pi/8) gate, resepctively.\nS[..., 10] represents the projector into Ket[0].\nS[..., 11] represents the projector into Ket[1].\nS[..., (Raising|Lowering|Hadamard|Quadrant|Octant)] are equivalent to S[..., (4|5|6|7|8)], respectively, but expanded immediately in terms of S[..., 1] (Pauli-X), S[..., 2] (Y), and S[..., 3] (Z).\nS[..., $] represents the qubit.";
 
 Qubit /:
 Let[Qubit, ss:{__Symbol}, ___?OptionQ] := (
   Let[NonCommutative, ss];
   Scan[setQubit, ss];
-)
+);
 
 setQubit[x_Symbol] := (
   MultiplyKind[x] ^= Qubit;
@@ -210,9 +208,9 @@ setQubit[x_Symbol] := (
     Subscript[Row @ {"(", Ket[1], Bra[1], ")"}, x[j, $]],
     x[j, 11]
   ];
-)
+);
 
-Missing["KeyAbsent", _Symbol?QubitQ[___, $]] = 0
+Missing["KeyAbsent", _Symbol?QubitQ[___, $]] = 0;
 
 
 (* Override the default definition of Format[Dagger[...]]
@@ -242,35 +240,31 @@ Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] :=
   Interpretation[
     SpeciesBox[c, {}, {"\[Dagger]"} ],
     Dagger @ c
-   ]
-
+  ];
 (**** </Qubit> ****)
 
-QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a Qubit through Let."
+QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a Qubit through Let.";
 
-AddGarnerPatterns[_?QubitQ]
+AddGarnerPatterns[_?QubitQ];
 
-QubitQ[_] = False
+QubitQ[_] = False;
 
 
-Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appearing in expr."
+Qubits::usage = "Qubits[expr] gives the list of all qubits (quantum bits) appearing in expr.";
 
-Qubits[expr_] := Select[Agents @ expr, QubitQ]
+Qubits[expr_] := Select[Agents @ expr, QubitQ];
 
 
 (**** <QubitCount> ****)
+QubitCount::usage = "QubitCount[obj] returns the number of qubits involved in object obj.";
 
-QubitCount::usage = "QubitCount[obj] returns the number of qubits involved in object obj."
+QubitCount[ss:{__?SpeciesQ}] := Length @ Select[ss, QubitQ];
 
-QubitCount[ss:{__?SpeciesQ}] := Length @ Select[ss, QubitQ]
-
-QubitCount[_] = Indeterminate
-
+QubitCount[_] = Indeterminate;
 (**** </QubitCount> ****)
 
 
 (**** <Multiply> ****)
-
 (* Speical Rules: Involving identity *)
 HoldPattern @ Multiply[pre___, _?QubitQ[___, 0], post___] := 
   Multiply[pre, post]
@@ -552,7 +546,6 @@ HoldPattern @ Multiply[ pre___,
 HoldPattern @ Multiply[pre___, x_?QubitQ, y_?QubitQ, post___] :=
   Multiply[pre, y, x, post] /;
   Not @ OrderedQ @ {x, y}
-
 (**** </Multiply> ****)
 
 
@@ -600,11 +593,9 @@ theKetVerify[Rule[key_?QubitQ, val_]] := (
 (**** </Ket for Qubit> ****)
 
 
-(**** <Basis for Qubit> ****)
-
+(**** <Basis> ****)
 Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorCap[S] -> {0, 1}]
-
-(**** </Basis for Qubit> ****)
+(**** </Basis> ****)
 
 
 (**** <PauliForm> ****)
@@ -730,9 +721,9 @@ TheMatrix @ Ket @ Association[_?QubitQ -> s_] :=
 (**** </Matrix> ****)
 
 
-QubitAddZ::usage = "QubitAddZ[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... invariant under the U(1) rotation around spin z-axis, regarding the qubits S$1, S$2, ... as 1/2 spins."
+QubitAddZ::usage = "QubitAddZ[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... invariant under the U(1) rotation around spin z-axis, regarding the qubits S$1, S$2, ... as 1/2 spins.";
 
-QubitAddZ::duplicate = "Duplicate angular momentum operators appear."
+QubitAddZ::duplicate = "Duplicate angular momentum operators appear.";
 
 
 QubitAddZ[ ls:{(_?QubitQ|_Association)..} ] :=
@@ -768,13 +759,13 @@ QubitAddZ[irb_Association, irc_Association] := Module[
   rr = Thread[kk -> vv];
   rr = Merge[rr, Catenate];
   Map[ReverseSort, rr]
- ]
+];
 
 
 (**** <QubitAdd> ****)
-QubitAdd::usage = "QubitAdd[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... that are invariant under arbitrary SU(2) rotations. Here, the qubits S$1, S$2, ... are regarded 1/2 spins."
+QubitAdd::usage = "QubitAdd[S$1, S$2, ...] returns in an Association the irreducible basis of the total angular momentum S$1 + S$2 + ... that are invariant under arbitrary SU(2) rotations. Here, the qubits S$1, S$2, ... are regarded 1/2 spins.";
 
-QubitAdd::duplicate = "Duplicate angular momentum operators appear."
+QubitAdd::duplicate = "Duplicate angular momentum operators appear.";
 
 QubitAdd[ ls:{(_?QubitQ|_Association)..} ] :=
   QubitAdd @@ Map[QubitAdd] @ ls
@@ -843,9 +834,9 @@ TheExpression[S_?QubitQ] := {
 
 
 (**** <Phase> ****)
-Phase::usage = "Phase[\[Phi], S[\[Ellipsis],n]] represents the relative phase shift by \[Phi] between the posiive and negative eigenstates of S[\[Ellipsis],n]."
+Phase::usage = "Phase[\[Phi], S[\[Ellipsis],n]] represents the relative phase shift by \[Phi] between the posiive and negative eigenstates of S[\[Ellipsis],n].";
 
-Phase::bad = "Phase gate is defined only for three axis, X (1), Y (2), and Z (3). You enterned ``."
+Phase::bad = "Phase gate is defined only for three axis, X (1), Y (2), and Z (3). You enterned ``.";
 
 Format[op:Phase[phi_, S_?QubitQ, ___]] :=
   Interpretation[TraditionalForm @ HoldForm[S[phi]], op]
@@ -950,20 +941,20 @@ Multiply[pre___, op:EulerRotation[{_, _, _}, S_?QubitQ, ___], in_Ket, post___] :
 (**** <CNOT> ****)
 CX::usage = "CX is an alias for CNOT."
 
-CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. Note that it does not expand until necessary (e.g., multiplied to a Ket); use Elaborate in order to expand it."
+CNOT::usage = "CNOT[C, T] represents the CNOT gate on the two qubits C and T, which are the control and target qubits, respectively. Note that it does not expand until necessary (e.g., multiplied to a Ket); use Elaborate in order to expand it.";
 
-CNOT::incmp = "Control register `` and control values set `` have unequal lengths."
+CNOT::incmp = "Control register `` and control values set `` have unequal lengths.";
 
 SetAttributes[CNOT, NHoldFirst]
 
 SyntaxInformation[CNOT] = {
   "ArgumentsPattern" -> {_, _}
-}
+};
 
 CNOT[cc:(_?QubitQ|{__?QubitQ})] := (
   CheckArguments[CNOT[cc], 2];
   CNOT[cc, 1]
-)
+);
 
 
 CNOT[c_?QubitQ, t_] := CNOT[{c[$] -> 1}, t]
@@ -1148,7 +1139,7 @@ theGrayCZ[{a_, b_, c_}] := QuantumCircuit[
 
 
 (**** <SWAP> ****)
-SWAP::usage = "SWAP[A, B] operates the SWAP gate on the two qubits A and B."
+SWAP::usage = "SWAP[A, B] operates the SWAP gate on the two qubits A and B.";
 
 SetAttributes[SWAP, Listable]
 
@@ -1242,10 +1233,9 @@ Unfold[HoldPattern @ Dagger[op_iSWAP], ___] :=
 
 
 (**** <Toffoli> ****)
+Toffoli::usage = "Toffoli[A, B, C] operates the Toffoli gate, i.e., the three-qubit controlled-note gate on C controlled by A and B.";
 
-Toffoli::usage = "Toffoli[A, B, C] operates the Toffoli gate, i.e., the three-qubit controlled-note gate on C controlled by A and B."
-
-SetAttributes[Toffoli, Listable]
+SetAttributes[Toffoli, Listable];
 
 Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ] :=
   Toffoli @@ FlavorCap @ {a, b, c} /;
@@ -1273,16 +1263,15 @@ HoldPattern @ Matrix[op_Toffoli, rest___] := Matrix[Elaborate[op], rest]
 Toffoli /:
 Unfold[Toffoli[a_?QubitQ, b_?QubitQ, c_?QubitQ], opts___?OptionQ] :=
   Prepend[Append[Unfold[CZ @ {a,b,c}, opts], c[6]], c[6]]
-
 (**** </Toffoli> ****)
 
 
 (**** <Fredkin> ****)
-Fredkin::usage = "Fredkin[a, {b, c}] represents the Fredkin gate, i.e., the SWAP gate on b and c controlled by a."
+Fredkin::usage = "Fredkin[a, {b, c}] represents the Fredkin gate, i.e., the SWAP gate on b and c controlled by a.";
 
 SyntaxInformation[Fredkin] = {
   "ArgumentsPattern" -> {_, _}
- }
+};
 
 Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}] :=
   Fredkin[FlavorCap @ a, FlavorCap @ {b, c}] /;
@@ -1325,8 +1314,7 @@ Unfold[Fredkin[a_?QubitQ, {b_?QubitQ, c_?QubitQ}], ___] :=
 
 
 (**** <Deutsch> ****)
-
-Deutsch::usage = "Deutsch[angle, {a, b, c}] represents the Deutsch gate, i.e., \[ImaginaryI] times the rotation by angle around the x-axis on qubit c controlled by two qubits a and b."
+Deutsch::usage = "Deutsch[angle, {a, b, c}] represents the Deutsch gate, i.e., \[ImaginaryI] times the rotation by angle around the x-axis on qubit c controlled by two qubits a and b.";
 
 Deutsch[ph_, qq:{__?QubitQ}, opts___?OptionQ] :=
   Deutsch[ph, FlavorCap @ qq, opts] /;
@@ -1359,25 +1347,23 @@ HoldPattern @ Multiply[pre___, Dagger[op_Deutsch], post___] :=
 Dagger /:
 HoldPattern @ Matrix[Dagger[op_Deutsch], rest___] :=
   Topple @ Matrix[Elaborate[op], rest]
-
 (**** </Deutsch> ****)
 
 
 (**** <ControlledGate> ****)
+ControlledGate::usage = "ControlledGate[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., $] controlled by the qubits C1, C2.\nControlledGate[C, T] is equivalent to ControlledGate[{C}, T].\nControlledGate[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it.";
 
-ControlledGate::usage = "ControlledGate[{C1, C2, ...}, T[j, ..., k]] represents a multi-qubit controlled-U gate. It operates the gate T[j, ..., k] on the qubit T[j, ..., $] controlled by the qubits C1, C2.\nControlledGate[C, T] is equivalent to ControlledGate[{C}, T].\nControlledGate[{C1, C2, ...}, expr] represents a general controlled gate operating expr on the qubits involved in it."
+ControlledGate::unitary = "The operator `` is not unitary.";
 
-ControlledGate::unitary = "The operator `` is not unitary."
+ControlledGate::incmp =  "Control register `` and value set `` have unequal lengths.";
 
-ControlledGate::incmp =  "Control register `` and value set `` have unequal lengths."
-
-SetAttributes[ControlledGate, NHoldFirst]
+SetAttributes[ControlledGate, NHoldFirst];
 
 SyntaxInformation[ControlledGate] = {
   "ArgumentsPattern" -> {_, __}
-}
+};
 
-AddGarnerPatterns[_ControlledGate]
+AddGarnerPatterns[_ControlledGate];
 
 
 ControlledGate[cc_] := (
@@ -1539,13 +1525,11 @@ Multiply[ pre___,
   post___ ] :=
   Multiply[pre, Elaborate[op], post]
  *)
-
 (**** </ControlledGate> ****)
 
 
 (**** <ControlledPower> ****)
-
-ControlledPower::usage = "ControlledPower[{c1, c2, ...}, op] represents a controlled exponentiation gate."
+ControlledPower::usage = "ControlledPower[{c1, c2, ...}, op] represents a controlled exponentiation gate.";
 
 ControlledPower[S_?QubitQ, expr_, opts___?OptionQ] :=
   ControlledPower[{S[$]}, expr, opts]
@@ -1625,15 +1609,13 @@ Unfold[ControlledPower[ss:{__?QubitQ}, op_, opts:OptionsPattern[Gate]], ___] :=
     ];
     QuantumCircuit @@ new
   ]
-
 (**** </ControlledPower> ****)
 
 
 (**** <ActOn> ****)
+ActOn::usage = "ActOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting on the system of species {s1, s2, \[Ellipsis]}.\nActOn[{s1, s2, \[Ellipsis]}] represents the operator form of ActOn.\nActOn is a low-level function intended for internal use.";
 
-ActOn::usage = "ActOn[op, {s1, s2, \[Ellipsis]}] represents an operator acting on the system of species {s1, s2, \[Ellipsis]}.\nActOn[{s1, s2, \[Ellipsis]}] represents the operator form of ActOn.\nActOn is a low-level function intended for internal use."
-
-AddElaborationPatterns[_ActOn]
+AddElaborationPatterns[_ActOn];
 
 ActOn[S_?SpeciesQ, opts___?OptionQ] := 
   ActOn[{S[$]}, opts]
@@ -1667,21 +1649,20 @@ ActOn /:
 Multiply[pre___, ActOn[op_, {___?SpeciesQ}, ___], post___] :=
   Multiply[pre, op, post]
  *)
-
 (**** </ActOn> ****)
 
 
 (**** <UniformlyControlledRotation> ****)
-UniformlyControlledRotation::usage = "UniformlyControlledRotation[{c1,c2,\[Ellipsis],cn}, {a1,a2,\[Ellipsis],a2n}, s[\[Ellipsis],k]] represents the uniformly controlled rotation on qubit s[\[Ellipsis],$] around the k-axis by andles a1, a2, \[Ellipsis], a2n  depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis], cn."
+UniformlyControlledRotation::usage = "UniformlyControlledRotation[{c1,c2,\[Ellipsis],cn}, {a1,a2,\[Ellipsis],a2n}, s[\[Ellipsis],k]] represents the uniformly controlled rotation on qubit s[\[Ellipsis],$] around the k-axis by andles a1, a2, \[Ellipsis], a2n  depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis], cn.";
 (* SEE: Schuld and Pertruccione (2018), Mottonen et al. (2005) *)
 
-UniformlyControlledRotation::list = "The length of `` is not an integer power of 2."
+UniformlyControlledRotation::list = "The length of `` is not an integer power of 2.";
 
 SyntaxInformation[UniformlyControlledRotation] = {
   "ArgumentsPattern" -> {_, _, _, ___}
- }
+};
 
-AddElaborationPatterns[_UniformlyControlledRotation]
+AddElaborationPatterns[_UniformlyControlledRotation];
 
 
 UniformlyControlledRotation[
@@ -1788,7 +1769,7 @@ UnfoldAll[
   ] /; Chop[First @ vv] == 0
 
 
-sequenceCNOT::usage = "Returns a list of control qubits of CNOT gates to be used to efficiently factorize a uniformly-controlled gate."
+sequenceCNOT::usage = "Returns a list of control qubits of CNOT gates to be used to efficiently factorize a uniformly-controlled gate.";
 
 sequenceCNOT[{c_}] := {c, c}
 
@@ -1800,15 +1781,15 @@ sequenceCNOT[cc:{_, __}] := With[
 
 
 (**** <UniformlyControlledGate> ****)
-UniformlyControlledGate::usage = "UniformlyControlledGate[{c1,c2,\[Ellipsis],cn}, {op1,op2,\[Ellipsis],op2n}] represents the uniformly-controlled unitary gate operating op1, op2, \[Ellipsis], op2n depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis], cn."
+UniformlyControlledGate::usage = "UniformlyControlledGate[{c1,c2,\[Ellipsis],cn}, {op1,op2,\[Ellipsis],op2n}] represents the uniformly-controlled unitary gate operating op1, op2, \[Ellipsis], op2n depending on all possible bit sequences of control qubits c1, c2, \[Ellipsis], cn.";
 
-UniformlyControlledGate::list = "The length of `` is not an integer power of 2."
+UniformlyControlledGate::list = "The length of `` is not an integer power of 2.";
 
 SyntaxInformation[UniformlyControlledGate] = {
   "ArgumentsPattern" -> {_, _, ___}
- }
+};
 
-AddElaborationPatterns[_UniformlyControlledGate]
+AddElaborationPatterns[_UniformlyControlledGate];
 
 
 UniformlyControlledGate[cc:{__?QubitQ}, tt_List, opts___?OptionQ] :=
@@ -1913,10 +1894,10 @@ Oracle[f_, m_Integer, n_Integer][x:{(0|1) ..}] := Module[
 
 
 (**** <Oracle> ****)
-Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits.\nOracle[f, m, n] represents the classical oracle f:{0,1}^m \[RightArrow] {0,1}^n that provides the flexibility for input form while keeping the consistency of output form."
+Oracle::usage = "Oracle[f, control, target] represents the quantum oracle which maps Ket[x]\[CircleTimes]Ket[y] to Ket[x]\[CircleTimes]Ket[f(x)\[CirclePlus]y]. Each control and target can be list of qubits.\nOracle[f, m, n] represents the classical oracle f:{0,1}^m \[RightArrow] {0,1}^n that provides the flexibility for input form while keeping the consistency of output form.";
 
 Oracle /:
-NonCommutativeQ[ Oracle[___] ] = True
+NonCommutativeQ[ Oracle[___] ] = True;
 
 Oracle[f_, c_?QubitQ, t_?QubitQ, opts___?OptionQ] :=
   Oracle[f, {c}, {t}, opts]
@@ -1973,9 +1954,9 @@ Matrix @ Oracle[f_, cc:{__?QubitQ}, tt:{__?QubitQ}, ___] := Module[
 
 
 (**** <QFT> ****)
-QFT::usage = "QFT[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transform on the qubits S1, S2, \[Ellipsis].\nDagger[QFT[\[Ellipsis]]] represents the inverse quantum Fourier transform.\nElaborate[QFT[\[Ellipsis]]] returns the explicit expression of the operator in terms of the Pauli operators."
+QFT::usage = "QFT[{S1, S2, \[Ellipsis]}] represents the quantum Fourier transform on the qubits S1, S2, \[Ellipsis].\nDagger[QFT[\[Ellipsis]]] represents the inverse quantum Fourier transform.\nElaborate[QFT[\[Ellipsis]]] returns the explicit expression of the operator in terms of the Pauli operators.";
 
-QFT::mat = "Some elements of `` do not appear in `` for Matrix[QFT[\[Ellipsis]]]."
+QFT::mat = "Some elements of `` do not appear in `` for Matrix[QFT[\[Ellipsis]]].";
 
 SetAttributes[QFT, NHoldAll];
 
@@ -1985,7 +1966,7 @@ Options[QFT] = {
   "Numeric" -> False,
   "Reversed" -> False,
   "Pushed" -> False
-}
+};
 
 QFT /:
 NonCommutativeQ[ QFT[___] ] = True
@@ -2325,12 +2306,12 @@ UnfoldAll[op:QBR[ss:{__?QubitQ}, ___], ___] :=
 
 
 (**** <QCR> ****)
-QCR::usage = "QCR[{s1, s2, \[Ellipsis]}] represents the quantum circle reflection on the qubits s1, s2, \[Ellipsis]."
+QCR::usage = "QCR[{s1, s2, \[Ellipsis]}] represents the quantum circle reflection on the qubits s1, s2, \[Ellipsis].";
 
-QCR::mat = "Some elements of `` do not appear in `` for Matrix[QCR[\[Ellipsis]]]."
+QCR::mat = "Some elements of `` do not appear in `` for Matrix[QCR[\[Ellipsis]]].";
 
 QCR /: 
-NonCommutativeQ[ QCR[___] ] = True
+NonCommutativeQ[ QCR[___] ] = True;
 
 QCR /:
 MultiplyKind @ QCR[{__?QubitQ}] = Qubit
@@ -2423,9 +2404,9 @@ UnfoldAll[op:QCR[ss:{__?QubitQ}, ___], ___] := With[
 
 
 (**** <Projector> ****)
-Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection operator on the qubits {q1, q2, ...} into state, which is given in the Ket expression.\nProjector[expr] automatically extracts the list of qubits from expr."
+Projector::usage = "Projector[state, {q1, q2, ...}] represents the projection operator on the qubits {q1, q2, ...} into state, which is given in the Ket expression.\nProjector[expr] automatically extracts the list of qubits from expr.";
 
-Projector::noket = "No Ket expression found for projection in the provided expression ``. Identity operator is returned."
+Projector::noket = "No Ket expression found for projection in the provided expression ``. Identity operator is returned.";
 
 Projector /:
 Dagger[ op_Projector ] = op
@@ -2459,14 +2440,13 @@ Projector[expr_, qq:{__?QubitQ}] :=
 
 
 (**** <MeasurementOdds> ****)
+MeasurementOdds::usage = "MeasurementOdds[op][vec] theoretically analyzes the process of meauring operator op on state vec and returns an association of elements of the form value->{probability, state}, where value is one of the possible measurement outcomes 0 and 1 (which correspond to eitemvalues +1 and -1, respectively, of op), probability is the probability for value to be actually observed, and state is the post-measurement state when value is actually observed.";
 
-MeasurementOdds::usage = "MeasurementOdds[op][vec] theoretically analyzes the process of meauring operator op on state vec and returns an association of elements of the form value->{probability, state}, where value is one of the possible measurement outcomes 0 and 1 (which correspond to eitemvalues +1 and -1, respectively, of op), probability is the probability for value to be actually observed, and state is the post-measurement state when value is actually observed."
+MeasurementOdds::pauli = "`` is not an observable Pauli operator.";
 
-MeasurementOdds::pauli = "`` is not an observable Pauli operator."
+SyntaxInformation[MeasurementOdds] = { "ArgumentsPattern" -> {_} };
 
-SyntaxInformation[MeasurementOdds] = { "ArgumentsPattern" -> {_} }
-
-MeasurementOdds[Measurement[op_]] := MeasurementOdds[op]
+MeasurementOdds[Measurement[op_]] := MeasurementOdds[op];
 
 (* NOTE: DO NOT use op_?PauliQ; it will inerfere with mat_?MatrixQ below.
    NOTE ADDED: Maybe not any longer (v3.4.4) because PauliQ and PauliMatrixQ are now separate. *)
@@ -2509,7 +2489,7 @@ MeasurementOdds[mat_?MatrixQ][vec_?VectorQ] := Module[
    *)
 
 
-obsPauliQ::usage = "obsPauliQ[op] returns True if op is a Pauli string (without any factor of \[PlusMinus]I); and False, otherwise.\nSuch an 'observable' Pauli operator has eigenvalue \[PlusMinus]1; hence 'observable'."
+obsPauliQ::usage = "obsPauliQ[op] returns True if op is a Pauli string (without any factor of \[PlusMinus]I); and False, otherwise.\nSuch an 'observable' Pauli operator has eigenvalue \[PlusMinus]1; hence 'observable'.";
 
 obsPauliQ[Pauli[(0|1|2|3)..]] = True
 
@@ -2520,22 +2500,19 @@ obsPauliQ[HoldPattern @ Multiply[(_?QubitQ[___, 0|1|2|3])..]] = True
 obsPauliQ[expr_] := obsPauliQ[Elaborate @ expr] /;
   Not @ FreeQ[expr, _?QubitQ[___, 4|5|6|7|8|9|10|11]]
 
-obsPauliQ[_] = False
-
+obsPauliQ[_] = False;
 (**** </MeasurementOdds> ****)
 
 
 (***** <Measurement> ****)
+Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis] in the reverse order.";
 
-Measurement::usage = "Measurement[op] represents the measurement of Pauli operator op. Pauli operators include tensor products of the single-qubit Pauli operators.\nMeasurement[{op1, op2, \[Ellipsis]}] represents consecutive measurement of Pauli operators op1, op2, \[Ellipsis] in the reverse order."
+Measurement::num = "Probability half is assumed for a state without explicitly numeric coefficients.";
 
-Measurement::num = "Probability half is assumed for a state without explicitly numeric coefficients."
+Measurement::non = "Matrix `` does not represent a Pauli string.";
 
-Measurement::non = "Matrix `` does not represent a Pauli string."
+SyntaxInformation[Measurement] = { "ArgumentsPattern" -> {_} };
 
-SyntaxInformation[Measurement] = { "ArgumentsPattern" -> {_} }
-
-Measurement /:
 MakeBoxes[msr:Measurement[mat_?MatrixQ, ___], fmt_] := Module[
   { mm = First @ Keys @ PauliCoefficients[mat] },
   BoxForm`ArrangeSummaryBox[
@@ -2598,13 +2575,11 @@ Multiply[pre___, msr_Measurement, post___] :=
 Measurement /:
 Matrix[Measurement[op_], ss:{___?SpeciesQ}] :=
   Measurement[Matrix[op, ss]]
-
 (**** </Measurement> ****)
 
 
 (**** <MeasurementFunction> ****)
-
-MeasurementFunction::usage = "MeasurementFunction[{m1,m2,\[Ellipsis]}] represents a sequence of operations or measurements m1, m2, \[Ellipsis]."
+MeasurementFunction::usage = "MeasurementFunction[{m1,m2,\[Ellipsis]}] represents a sequence of operations or measurements m1, m2, \[Ellipsis].";
 
 Format[fun:MeasurementFunction[gg:(_?MatrixQ|Measurement[_?MatrixQ]|Measurement[{__?MatrixQ}])..]] := With[
   { dim = Riffle[Dimensions @ FirstCase[{gg}, _?MatrixQ, {{1}}, 3], "\[Times]"] },
@@ -2612,7 +2587,7 @@ Format[fun:MeasurementFunction[gg:(_?MatrixQ|Measurement[_?MatrixQ]|Measurement[
     StringForm["MeasurementFunction[{``\[Ellipsis]}]", ToString @ Row @ dim],
     fun
   ]
-]
+];
 
 Format[fun:MeasurementFunction[gg__]] := 
   Interpretation[
@@ -2635,20 +2610,15 @@ Dot[MeasurementFunction[mm:(_Measurement|_?MatrixQ)..], in_?VectorQ] :=
 MeasurementFunction /:
 Multiply[pre___, spr_MeasurementFunction, post___] :=
   Multiply[pre, Sequence @@ spr, post]
-
 (**** </MeasurementFunction> ****)
 
 
 (**** <Readout> ****)
+Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements.";
 
-$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j."
+Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout.";
 
-
-Readout::usage = "Readout[expr, S] or Readout[expr, {S1, S2, ...}] reads the measurement result from the expr that is supposed to be the state vector after measurements."
-
-Readout::notob = "`` (or some of its elements if it is a list) has never been measured. First use Measurement before using Readout."
-
-SyntaxInformation[Readout] = { "ArgumentsPattern" -> {_} }
+SyntaxInformation[Readout] = { "ArgumentsPattern" -> {_} };
 
 Readout[Measurement[op_]] := Readout[op]
 
@@ -2659,29 +2629,30 @@ Readout[op_List] := Lookup[$MeasurementOut, op] /; ContainsAll[Keys @ $Measureme
 
 Readout[op_] := $MeasurementOut[op] /; KeyExistsQ[$MeasurementOut, op]
 
-
 Readout[op_] := (
   Message[Readout::notob, op];
   $Failed
-)
+);
 
+
+$MeasurementOut::usage = "$MeasurementOut gives the measurement results in an Association of elements op$j->value$j.";
 (**** </Readout> ****)
 
 
-Measurements::usage = "Measurments[expr] returns a list of Pauli operators (including the tensor products of single-qubit Pauli operators) measured during the process of expression expr."
+Measurements::usage = "Measurments[expr] returns a list of Pauli operators (including the tensor products of single-qubit Pauli operators) measured during the process of expression expr.";
 
 Measurements[expr_] := Union @ Flatten @
   Cases[{expr}, Measurement[m_] -> m, Infinity, Heads -> False]
 
 
 (**** <ProductState> ****)
-ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1]."
+ProductState::usage = "ProductState[<|...|>] is similar to Ket[...] but reserved only for product states. ProductState[<|..., S -> {a, b}, ...|>] represents the qubit S is in a linear combination of a Ket[0] + b Ket[1].";
 
-ProductState::pair = "The value must be a pair of complex numbers or a list of such pairs instead of ``."
+ProductState::pair = "The value must be a pair of complex numbers or a list of such pairs instead of ``.";
 
-Options[ProductState] = {"Label" -> None}
+Options[ProductState] = {"Label" -> None};
 
-AddGarnerPatterns[_ProductState]
+AddGarnerPatterns[_ProductState];
 
 Format @ ProductState[assoc:Association[], rest___] :=
   Interpretation[Ket[Any], ProductState[assoc, rest]]
@@ -2852,8 +2823,7 @@ ProductState[a_Association, opts___][qq:(_?QubitQ | {__?QubitQ})] :=
 (**** </ProductState> ****)
 
 
-BellState::usage = "BellState[{S$1, S$2}, n] with n=0,1,2,3 gives the nth Bell states on the two qubits S$1 and S$2.
-  BellState[{S$1, S$2}] returns the list of all Bell states."
+BellState::usage = "BellState[{S$1, S$2}, n] with n=0,1,2,3 gives the nth Bell states on the two qubits S$1 and S$2.\nBellState[{S$1, S$2}] returns the list of all Bell states.";
 
 BellState[g:{_?QubitQ, _?QubitQ}] :=
   Table[ BellState[g, j], {j, 0, 3} ]
@@ -2872,7 +2842,7 @@ BellState[g:{_?QubitQ, _?QubitQ}, 3] :=
 
 
 (**** <DickeState> ****)
-DickeState::usage = "DickeState[qubits, n] gives the generalized Dicke state for the qubits, where n qubits are in the state Ket[1]."
+DickeState::usage = "DickeState[qubits, n] gives the generalized Dicke state for the qubits, where n qubits are in the state Ket[1].";
 
 DickeState[ss:{__?QubitQ}, n_] := Module[
   { byte = ConstantArray[1, n] },
@@ -2885,7 +2855,7 @@ DickeState[ss:{__?QubitQ}] := Table[DickeState[ss, n], {n, 0, Length @ ss}]
 (**** </DickeState> ****)
 
 
-(**** <GHZState for Qubits> ****)
+(**** <GHZState> ****)
 GHZState::usage = "GHZState[{s1,s2,\[Ellipsis]}, k] returns the kth generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nGHZState[{s1,s2,\[Ellipsis]}] returns the list of all GHZ states of species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
 
 GHZState[ss:{__?QubitQ}] := GHZState[ss, 0]
@@ -2907,24 +2877,22 @@ GHZState[ss:{__?QubitQ}, All] :=
 (**** <SmolinState> ****)
 SmolinState::usage = "SmolinState[{s1,s2,\[Ellipsis]}] returns the generalized Smolin state for qubits {s1,s2,\[Ellipsis]}. See also Augusiak and Horodecki (2006).";
 
-SmolinState::badsys = "A generalized Smolin state is defined only for an even number of qubits: `` has an odd number of qubits. Returning the generalized Smolin state for the qubits excluding the last."
+SmolinState::badsys = "A generalized Smolin state is defined only for an even number of qubits: `` has an odd number of qubits. Returning the generalized Smolin state for the qubits excluding the last.";
 
 SmolinState[ss:{__?QubitQ}] := (
-  Message[SmolinState::badsys, FlavorCap @ ss];
-  SmolinState[Most @ ss]
- ) /; OddQ[Length @ ss]
-
-SmolinState[ss:{__?QubitQ}] :=
-  (1 + Power[-1, Length[ss]/2] *
-      Total @ MapThread[Multiply, Through[ss[All]]]) /
+  ( 1 + Power[-1, Length[ss]/2] *
+        Total @ MapThread[Multiply, Through[ss[All]]] ) /
   Power[2, Length @ ss]
+) /; If[ EvenQ[Length @ ss], True,
+  Message[SmolinState::badsys, FlavorCap @ ss]; False
+]
 (**** </SmolinState> ****)
 
 
 (**** <GraphState> ****)
-GraphState::usage = "GraphState[g] gives the graph state correponding to the graph g."
+GraphState::usage = "GraphState[g] gives the graph state correponding to the graph g.";
 
-GraphState::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``."
+GraphState::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``.";
 
 GraphState[g_Graph] := GraphState[g, FlavorCap @ VertexList @ g] /;
   AllTrue[VertexList @ g, QubitQ]
@@ -2968,9 +2936,9 @@ theCZ[n_Integer][i_Integer, j_Integer] := Module[
  ]
 
 
-GraphStateBasis::usage = "GraphStateBasis[g] returns the graph state basis for the system of qubits on the vertices of graph g."
+GraphStateBasis::usage = "GraphStateBasis[g] returns the graph state basis for the system of qubits on the vertices of graph g.";
 
-GraphStateBasis::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``."
+GraphStateBasis::msmtch = "The number of vertices in `` is not the same as the number of qubits in ``.";
 
 GraphStateBasis[g_Graph] := GraphStateBasis[g, FlavorCap @ VertexList @ g] /;
   AllTrue[VertexList @ g, QubitQ]
@@ -3002,15 +2970,15 @@ GraphStateBasis[g_Graph, n_Integer] := Module[
 
 
 (**** <ModMultiply> ****)
-ModMultiply::usage = "ModMultiply[n, {c1,c2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] represents the modular multiplication between two quantum registers {c1,c2,\[Ellipsis]} and {t1,t2,\[Ellipsis]}."
+ModMultiply::usage = "ModMultiply[n, {c1,c2,\[Ellipsis]}, {t1,t2,\[Ellipsis]}] represents the modular multiplication between two quantum registers {c1,c2,\[Ellipsis]} and {t1,t2,\[Ellipsis]}.";
 
-ModMultiply::order = "`` cannot be larger than ``."
+ModMultiply::order = "`` cannot be larger than ``.";
 
 AddElaborationPatterns[_ModMultiply];
 
-ModMultiply /: NonCommutativeQ[_ModMultiply] = True
+ModMultiply /: NonCommutativeQ[_ModMultiply] = True;
 
-ModMultiply /: MultiplyKind[_ModMultiply] = Qubit
+ModMultiply /: MultiplyKind[_ModMultiply] = Qubit;
 
 
 ModMultiply[n_Integer, cc:{__?QubitQ}, tt:{__?QubitQ}, opts___?OptionQ] := (
@@ -3115,16 +3083,15 @@ Matrix[
 
 
 (**** <ModPower> ****)
-ModExp::usage = "ModExp is an alias of ModPower and refers to the modular exponentiation."
-
-ModPower::usage = "ModPower represents the modular power or modular exponentiation."
+ModExp::usage = "ModExp is an alias of ModPower and refers to the modular exponentiation.";
+ModPower::usage = "ModPower represents the modular power or modular exponentiation.";
 (**** </ModPower> ****)
 
 
 (**** <ExchangeExp> ****)
-ExchangeExp::usage = "ExchangeExp[array,{s1,s2,\[Ellipsis]}] represents the unintary gate governed by the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy."
+ExchangeExp::usage = "ExchangeExp[array,{s1,s2,\[Ellipsis]}] represents the unintary gate governed by the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy.";
 
-SetAttributes[ExchangeExp, NHoldRest]
+SetAttributes[ExchangeExp, NHoldRest];
 
 ExchangeExp /:
 MakeBoxes[op:ExchangeExp[gg_?ArrayQ, ss_List, opts___?OptionQ], fmt_] :=
@@ -3212,7 +3179,7 @@ ExchangeExp[ss_List, rest___] := ExchangeExp[{1, 1, 1}, ss, rest] /; Or[
 
 
 (**** <Exchange> ****)
-Exchange::usage = "Exchange[array,{s1,s2,\[Ellipsis]}] represents the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy."
+Exchange::usage = "Exchange[array,{s1,s2,\[Ellipsis]}] represents the exchange coupling Hamiltoinan between qubits or spins s1,s2,\[Ellipsis].\nFor the connectivity of the coupling, see Chain or ChainBy.";
 
 SetAttributes[Exchange, NHoldRest];
 
@@ -3314,21 +3281,18 @@ Matchgate[aa:{_, _, _}, bb:{_, _, _}] := Dot[
 ]
 (**** </Matchgate> ****)
 
-Protect[Evaluate @ $symb]
-
-End[] (* Qubits *)
-
+Protect[Evaluate @ $symb];
+End[]; (* Qubits *)
 
 
-Begin["`Private`"]
+Begin["`Private`"];
+$symb = Unprotect[Missing];
 
-$symb = Unprotect[Missing]
+Qudit::usage = "Qudit represents a multidimensional system.";
 
-Qudit::usage = "Qudit represents a multidimensional system."
+Qudit::range = "The quantum level specification s should be within the range 0 \[LessEqual] s < d, where the dimension d = `` for ``.";
 
-Qudit::range = "The quantum level specification s should be within the range 0 \[LessEqual] s < d, where the dimension d = `` for ``."
-
-Options[Qudit] = { Dimension -> 3 }
+Options[Qudit] = { Dimension -> 3 };
 
 Qudit /:
 Let[Qudit, {ls__Symbol}, opts___?OptionQ] := Module[
@@ -3398,18 +3362,18 @@ setQudit[x_Symbol, dim_Integer] := (
 )
 
 
-QuditQ::usage = "QuditQ[op] returns True if op is a species representing a qudit and False otherwise."
+QuditQ::usage = "QuditQ[op] returns True if op is a species representing a qudit and False otherwise.";
 
-AddGarnerPatterns[_?QuditQ]
+AddGarnerPatterns[_?QuditQ];
 
-QuditQ[_] = False
+QuditQ[_] = False;
 
-Missing["KeyAbsent", _Symbol?QuditQ[___, $]] := 0
+Missing["KeyAbsent", _Symbol?QuditQ[___, $]] := 0;
 
 
-Qudits::usage = "Qudits[expr] gives the list of all qudits appearing in expr."
+Qudits::usage = "Qudits[expr] gives the list of all qudits appearing in expr.";
 
-Qudits[expr_] := Select[Agents @ expr, QuditQ]
+Qudits[expr_] := Select[Agents @ expr, QuditQ];
 
 
 (* MultiplyDegree for operators *)
@@ -3538,7 +3502,7 @@ Basis[ S_?QuditQ ] :=
 (**** </Basis> ****)
 
 
-TheQuditKet::usage = "TheQuditKet[{j,m}] returns the (m+1)th unit column vector in the j-dimensional complex vector space.\nTheQuditKet[{j1,m1}, {j2,m2}, ...] returns the direct product of vectors.\nTheQuditKet[j, {m1, m2, ...}] is equivalent to TheQuditKet[{j,m1}, {j,m2}, ...]."
+TheQuditKet::usage = "TheQuditKet[{j,m}] returns the (m+1)th unit column vector in the j-dimensional complex vector space.\nTheQuditKet[{j1,m1}, {j2,m2}, ...] returns the direct product of vectors.\nTheQuditKet[j, {m1, m2, ...}] is equivalent to TheQuditKet[{j,m1}, {j,m2}, ...].";
 
 TheQuditKet[ {dim_Integer, m_Integer} ] :=
   SparseArray[{(m+1) -> 1}, dim] /; 0 <= m < dim
@@ -3626,17 +3590,16 @@ TransformByFourier[expr_, old_?QuditQ -> new_?QuditQ, opts___?OptionQ] :=
   Garner[ expr /. TransformByFourier[old -> new, opts] ]
 (**** </TransformByFourier for Qudits> ****)
 
-Protect[Evaluate @ $symb]
-
-End[] (* Qudits *)
+Protect[Evaluate @ $symb];
+End[]; (* Qudits *)
 
 
 Begin["`Private`"]
 
 (**** <Unfold> ****)
-Unfold::usage = "Unfold[gate] gives an unfolded form of gate."
+Unfold::usage = "Unfold[gate] gives an unfolded form of gate.";
 
-Unfold::unknown = "Unknown method ``."
+Unfold::unknown = "Unknown method ``.";
 
 Options[Unfold] = {
   Method -> Default, (* CZ, CNOT, Toffoli  *)
@@ -3644,15 +3607,15 @@ Options[Unfold] = {
   "Numeric" -> False, (* QFT *)
   "Reversed" -> False, (* QFT *)
   "Pushed" -> False (* QFT *)
-}
+};
 
 SyntaxInformation[Unfold] = {
   "ArgumentsPattern" -> {_, OptionsPattern[]}
-}
+};
 
-Unfold[any_?CommutativeQ op_, opts___?OptionQ] := any * Unfold[op, opts]
+Unfold[any_?CommutativeQ op_, opts___?OptionQ] := any * Unfold[op, opts];
 
-Unfold[any_, ___?OptionQ] = any
+Unfold[any_, ___?OptionQ] = any;
 (**** </Unfold> ****)
 
 
@@ -3672,7 +3635,5 @@ UnfoldAll[any_?CommutativeQ op_, opts___?OptionQ] := any * UnfoldAll[op, opts]
 UnfoldAll[any_, ___?OptionQ] = any
 (**** </UnfoldAll> ****)
 
-End[] (* Untilities *)
-
-
-EndPackage[]
+End[]; (* Untilities *)
+EndPackage[];

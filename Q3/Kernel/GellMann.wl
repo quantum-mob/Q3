@@ -1,9 +1,7 @@
-(* -*- mode: math; -*- *)
+(* ::Package:: *)
 (* SU(3) Algebra *)
 
-BeginPackage["QuantumMob`Q3`", {"System`"}]
-
-BeginPackage["QuantumMob`Q3`"]
+BeginPackage["QuantumMob`Q3`"];
 
 ClearAll @@ Evaluate @ Unprotect[
   GellMann, TheGellMann,
@@ -12,13 +10,11 @@ ClearAll @@ Evaluate @ Unprotect[
  ];
 
 
-Begin["`Private`"]
-
+Begin["`Private`"];
 ClearAll["`*"];
+$symb = Unprotect[Dot];
 
-$symb = Unprotect[Dot]
-
-TheGellMann::usage="TheGellMann[n] (n=1,2,...,8) gives the original Gell-Mann matrices, a particular basis for the su(3) algebra by Murray Gell-Mann.\n TheGellMann[{i,j}] ..."
+TheGellMann::usage="TheGellMann[n] (n=1,2,...,8) gives the original Gell-Mann matrices, a particular basis for the su(3) algebra by Murray Gell-Mann.\n TheGellMann[{i,j}] ...";
 
 TheGellMann[{1|2|3,0}] = IdentityMatrix[3];
 
@@ -126,14 +122,14 @@ TheGellMann[ nn:(0|1|2|3|4|5|6|7|8).. ] :=
   KroneckerProduct @@ Map[TheGellMann] @ {nn}
 
 
-GellMann::usage = "GellMann[n] represents the Gell-Mann matrix."
+GellMann::usage = "GellMann[n] represents the Gell-Mann matrix.";
 
-AddGarnerPatterns[_GellMann]
+AddGarnerPatterns[_GellMann];
 
 Format @ GellMann[a:(0|1|2|3|4|5|6|7|8)..] := Interpretation[
   CircleTimes @@ Map[SuperscriptBox["\[Lambda]",#]&, {a}],
   GelMann @ a
- ]
+];
 
 GellMann[0] = Sqrt[2 / 3]
 
@@ -166,7 +162,7 @@ GellMannExpression[a_SparseArray?VectorQ] := Module[
 ]
 
 GellMannExpression[a_?VectorQ] :=
-  GellMannExpression @ SparseArray[ ArrayRules[a], {Length @ a} ]
+  GellMannExpression @ SparseArray[ ArrayRules[a], {Length @ a} ];
 
 GellMannExpression[m_?MatrixQ] := Block[
   {nn, ss, vv, jj},
@@ -177,23 +173,23 @@ GellMannExpression[m_?MatrixQ] := Block[
   ss = Apply[GellMann, ss[[jj]], {1}];
   vv = vv[[jj]];
   Garner @ Dot[vv, ss]
- ]
+];
 
 
-GellMannMatrix::usage = "GellMannMatrix[expr] converts the expression expr, which may involve the Pauli operators and Kets and/or Bras, into the vector and/or matrix representation. It is done by replacing Ket by TheKet, Bra by TheBra, and Pauli by ThePauli."
+GellMannMatrix::usage = "GellMannMatrix[expr] converts the expression expr, which may involve the Pauli operators and Kets and/or Bras, into the vector and/or matrix representation. It is done by replacing Ket by TheKet, Bra by TheBra, and Pauli by ThePauli.";
 
-SetAttributes[GellMannMatrix, {Listable, ReadProtected}]
+SetAttributes[GellMannMatrix, {Listable, ReadProtected}];
 
 GellMannMatrix[expr_] := expr /. {
   Ket -> TheKet,
   Bra -> TheBra,
   GellMann -> TheGellMann
- }
+};
 (* NOTE: 2020-01-05 Mathematica 12.0.0 Bug? DO NOT apply Simplify to the
    resulting SparseArray. The Mathematica Kernel will be frozen. *)
 
 
-structureF::usage = "..."
+structureF::usage = "...";
 
 structureF[1, 2, 3] = 1
 
@@ -283,29 +279,21 @@ Dot[ Bra[c_, d__], GellMann[a_, b__] ] := CircleTimes @@
   Dot @@@ Transpose[{ Bra /@ {c,d}, GellMann /@ {a,b} }]
 
 
-Protect[ Evaluate @ $symb ]
-
-End[]
-
-EndPackage[]
+Protect[ Evaluate @ $symb ];
+End[];
+EndPackage[];
 
 
-BeginPackage["QuantumMob`Q3`"]
-
-Begin["`Private`"]
-
+BeginPackage["QuantumMob`Q3`"];
+Begin["`Private`"];
 SetAttributes[Evaluate @ Names["`*"], ReadProtected];
-
-End[]
+End[];
 
 SetAttributes[Evaluate @ Protect["`*"], ReadProtected];
-
 (* Users are allowed to change variables. *)
 Unprotect["`$*"];
-
 (* Too dangerous to allow users to change these. *)
 Protect[$GarnerPatterns, $ElaborationPatterns];
-
-EndPackage[]
+EndPackage[];
 
 

@@ -26,10 +26,7 @@ setGrassmann[x_Symbol] := (
   
   GrassmannGrade[x] ^= 1;
   GrassmannGrade[x[___]] ^= 1;
-
-  x /: Power[x, n_Integer?NonNegative] := MultiplyPower[x, n];
-  x /: Power[x[j___], n_Integer?NonNegative] := MultiplyPower[x[j], n];
-)
+);
 (**** </Grassmann> ****)
 
 
@@ -49,7 +46,7 @@ AnyGrassmannQ[_] = False;
 (**** </GrassmannQ> ****)
 
 
-(* WARNING (2026-08-15 v4.6.10): This makes Abs/Re/Im 100 times slower. *)
+(* WARNING (2026-08-15 v4.7.0): This makes Abs/Re/Im on array 100 times slower. *)
 (* Unprotect[Power]; *)
 (* Power[a_?GrassmannQ, n_Integer?NonNegative] := MultiplyPower[a, n] *)
 (* Protect[Power]; *)

@@ -12,7 +12,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 
 Begin["`Private`"];
-$symb = Unprotect[E, NonNegative];
+$symb = Unprotect[E, NonNegative, Mod, IntegerQ, OddQ, EvenQ];
 
 (**** <Conjugate> ****)
 (* Conjugate carries NO definitions of any kind. Measured on Mathematica
@@ -37,9 +37,12 @@ AddElaborationPatterns[
 (* NOTE: Branch cut is assumed to be the negative real axis. *)
 
 
+(* WARNING (2026-08-15 v4.7.0): This makes Conjugate on array 100 times slower. *)
+(* Unprotect[Conjugate]; *)
 (* Conjugate[ x_?RealQ ] := x *)
+(* Protect[Conjugate]; *)
 
-NonNegative[ Times[_?NonNegative, a__] ] := NonNegative[ Times[a] ]
+NonNegative[ Times[_?NonNegative, a__] ] := NonNegative[ Times[a] ];
 
 NonNegative[ z_ * Conjugate[z_] ] = True;
 
@@ -49,9 +52,9 @@ NonNegative[ HoldPattern[ _?NonNegative + _?NonNegative ] ] = True;
 
 (* installed as UpValues on E: consulted only when E appears literally as
    an argument, so numeric arrays are never affected *)
-E /: Power[E, Times[z_Complex, Pi, n_]] /; EvenQ[n*z/I] = +1;
+E /: Power[E, Times[n_, z_Complex, Pi]] /; EvenQ[n*z/I] = +1;
 
-E /: Power[E, Times[z_Complex, Pi, n_]] /; OddQ[n*z/I] = -1;
+E /: Power[E, Times[n_, z_Complex, Pi]] /; OddQ[n*z/I] = -1;
 
 
 (**** <Formatting> ****)
@@ -68,13 +71,6 @@ MakeBoxes[expr : Abs[z_], fmt_] :=
 
 
 AddElaborationPatterns[ Abs[z_] :> Sqrt[z Conjugate[z]] ];
-
-Protect[ Evaluate @ $symb ];
-End[];
-
-
-Begin["`Private`"]; (* Complex *)
-$symb = Unprotect[Mod, IntegerQ, OddQ, EvenQ]
 
 
 Let[Complex, {ls__Symbol}] := (
@@ -279,9 +275,8 @@ RealQ[Times[_?RealQ, a__]] := RealQ[Times[a]];
 RealQ[Plus[_?RealQ, a__]] := RealQ[Plus[a]];
 
 RealQ[_] = False;
-(* Like IntegerQ, EvenQ, OddQ, etc., it returns False unless expr passes
-   definitely the corresponding test. Namely, they return False if expr is
-   undetermined. *)
+(* Returns False unless expr passes definitely the corresponding test. 
+   Namely, they return False if expr is undetermined. *)
 (**** </RealQ> ****)
 
 
@@ -293,20 +288,20 @@ RealQ[_] = False;
    returns False unless expr is manifestly an integer (i.e. has head
    Integer)." *)
 
-IntegerQ[Times[a_?IntegerQ, b_?IntegerQ]] = True
+IntegerQ[Times[_?IntegerQ, _?IntegerQ]] = True;
 
-IntegerQ[Plus[a_?IntegerQ, b_?IntegerQ]] = True
+IntegerQ[Plus[_?IntegerQ, _?IntegerQ]] = True;
 
 
-EvenQ[Times[m_?EvenQ, n_?IntegerQ]] = True
+EvenQ[Times[_?EvenQ, _?IntegerQ]] = True;
 
-OddQ[Times[m_?OddQ, n_?OddQ]] = True
+OddQ[Times[_?OddQ, _?OddQ]] = True;
 
-EvenQ[Plus[x_?EvenQ, y_?EvenQ]] = True
+EvenQ[Plus[_?EvenQ, _?EvenQ]] = True;
 
-EvenQ[Plus[x_?OddQ, y_?OddQ]] = True
+EvenQ[Plus[_?OddQ, _?OddQ]] = True;
 
-OddQ[Plus[x_?EvenQ, y_?OddQ]] = True
+OddQ[Plus[_?EvenQ, _?OddQ]] = True;
 
 
 HalfIntegerQ::usage = "HalfIntegerQ[z] returns True if z is exclusively a half-integer. Integer is not regarded as a half-integer.";
