@@ -1,6 +1,6 @@
 (* ::Package:: *)
 
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Heisenberg, Boson, Fermion, Majorana };
 { Bosons, Heisenbergs, Fermions, Majoranas };
@@ -54,13 +54,11 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { FermionTranspose,
   FermionTimeReversal };
 
-Begin["`Private`"]
-
-$symb = Unprotect[Missing]
+Begin["`Private`"];
+$symb = Unprotect[Missing];
 
 (**** <Boson> ****)
-
-Boson::usage = "Boson represents Bosonic annihilation operators.\nLet[Boson, a, b, ...] or Let[Boson, {a,b,...}] declares a, b, ... to be bosonic operators. They obey canonical commutation relations."
+Boson::usage = "Boson represents Bosonic annihilation operators.\nLet[Boson, a, b, ...] or Let[Boson, {a,b,...}] declares a, b, ... to be bosonic operators. They obey canonical commutation relations.";
 
 Options[Boson] = {Spin -> 0, Bottom -> 0, Top -> 5};
 
@@ -135,14 +133,12 @@ setBoson[spin_, bottom_Integer, top_Integer][x_Symbol] := (
       x[j, -1/2]
      ]
   ];
-)
-
+);
 (**** </Boson> ****)
 
 
 (**** <Heisenberg> ****)
-
-Heisenberg::usage = "Heisenberg represents the operators obeying the canonical commutation relations.\nLet[Heisenberg, a, b, ...] or Let[Heisenberg, {a,b,...}] declares a, b, ... to be Heisenberg canonical operators. Heisenberg cannonical variables are essentially Bosonic. Indeed, a complex Weyl algebra is generated either by Bosonic creators and annihilators or by Heisenberg caonical operators."
+Heisenberg::usage = "Heisenberg represents the operators obeying the canonical commutation relations.\nLet[Heisenberg, a, b, ...] or Let[Heisenberg, {a,b,...}] declares a, b, ... to be Heisenberg canonical operators. Heisenberg cannonical variables are essentially Bosonic. Indeed, a complex Weyl algebra is generated either by Bosonic creators and annihilators or by Heisenberg caonical operators.";
 
 Options[Heisenberg] = {Spin -> 0, Bottom -> 0, Top -> 5};
 
@@ -210,30 +206,26 @@ setHeisenberg[x_Symbol, spin_?SpinNumberQ, top_Integer] := (
     x[j___,All] := Flatten @ x[j, Range[spin,-spin,-1]];
   ];
 )
-
 (**** </Heisenberg> ****)
 
 
 (**** <Vacuum> ****)
+Vacuum::usage = "Vacuum is an option to Let[Fermion, ...]. Its value should be either \"Void\" or \"Sea\". \"Void\" (\"Sea\") declares that the vacuum state for the fermion operator is the completely empty state (Fermi sea with all levels below the Fermi level filled up). The vacuum state determines how the fermionic operators are reordered. Vacuum is alos a function: Vacuum[c] gives the vacuum state for the fermion operator c.";
 
-Vacuum::usage = "Vacuum is an option to Let[Fermion, ...]. Its value should be either \"Void\" or \"Sea\". \"Void\" (\"Sea\") declares that the vacuum state for the fermion operator is the completely empty state (Fermi sea with all levels below the Fermi level filled up). The vacuum state determines how the fermionic operators are reordered. Vacuum is alos a function: Vacuum[c] gives the vacuum state for the fermion operator c."
+Vacuum::type = "Unknown vacuum type ``. \"Void\" is used instead.";
 
-Vacuum::type = "Unknown vacuum type ``. \"Void\" is used instead."
+Vacuum::flavor = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as \"Void\".";
 
-Vacuum::flavor = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as \"Void\"."
+Vacuum[ HoldPattern @ Dagger[c_?ParticleQ] ] := Vacuum[c];
 
-Vacuum[ HoldPattern @ Dagger[c_?ParticleQ] ] := Vacuum[c]
-
-Vacuum[_] = "Void" (* by default every thing has Void vacuum. *)
-
+Vacuum[_] = "Void"; (* by default every thing has Void vacuum. *)
 (**** </Vacuum> ****)
 
 
 (**** <Fermion> ****)
+Fermion::usage = "Fermion represents Fermionic annihilation operators.\nLet[Fermion, a, b, ...] or Let[Fermion, {a,b,...}] declares a, b, ... to be Dirac fermion operators. They obey canonical anti-commutation relations.";
 
-Fermion::usage = "Fermion represents Fermionic annihilation operators.\nLet[Fermion, a, b, ...] or Let[Fermion, {a,b,...}] declares a, b, ... to be Dirac fermion operators. They obey canonical anti-commutation relations."
-
-Fermion::error = "Something wrong has happened when declaring a fermion operator ``."
+Fermion::error = "Something wrong has happened when declaring a fermion operator ``.";
 
 Options[Fermion] = {Spin -> 1/2, Vacuum -> "Void"};
 
@@ -342,19 +334,17 @@ Format[
       SpeciesBox[c , {j,"\[DownArrow]"}, {"\[Dagger]"}],
       Dagger @ c[j, -1/2]
     ]
-
 (**** </Fermion> ****)
 
 
 (**** <Majorana> ****)
-
-Majorana::usage = "Majorana represents Majorana Fermion operators.\nLet[Majorana, a, b, ...] or Let[Majorana, {a,b,...}] declares a, b, ... to be real (Majorana) fermionic operators."
+Majorana::usage = "Majorana represents Majorana Fermion operators.\nLet[Majorana, a, b, ...] or Let[Majorana, {a,b,...}] declares a, b, ... to be real (Majorana) fermionic operators.";
 
 Majorana /:
 Let[Majorana, ss:{__Symbol}] := (
   Let[NonCommutative, ss];
   Scan[setMajorana, ss]
-)
+);
 
 setMajorana[x_Symbol] := (
   MultiplyKind[x] ^= Majorana;
@@ -375,7 +365,6 @@ setMajorana[x_Symbol] := (
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 )
-
 (**** </Majorana> ****)
 
 
@@ -2570,8 +2559,7 @@ FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat]
 
 (**** <FermionTranspose> ****)
 (* See also: Shapourian and Ryu (2017, 2019) *)
-
-FermionTranspose::usage = "FermionTranspose[expr, {c1,c2,\[Ellipsis]}] performs on expr the fermionic partial transposition with respect to fermion modes {c1, c2, \[Ellipsis]}."
+FermionTranspose::usage = "FermionTranspose[expr, {c1,c2,\[Ellipsis]}] performs on expr the fermionic partial transposition with respect to fermion modes {c1, c2, \[Ellipsis]}.";
 
 FermionTranspose[expr_Plus, rest_] :=
   Map[FermionTranspose[#, rest] &, expr]
@@ -2604,15 +2592,12 @@ HoldPattern @
   aa = a @ Range[2 * Length[ff]];
   ToDirac[FermionTranspose[ToMajorana[op, ff -> aa], aa], aa -> ff]
 ]
-
 (**** </FermionTranspose> ****)
 
 
 (**** <FermionTimeReversal> ****)
-
 (* See also: Shapourian and Ryu (2017, 2019) *)
-
-FermionTimeReversal::usage = "FermionTimeReversal[expr, {c1,c2,\[Ellipsis]}] performs on expr the fermionic partial time-reversal transform with respect to fermion modes {c1, c2, \[Ellipsis]}."
+FermionTimeReversal::usage = "FermionTimeReversal[expr, {c1,c2,\[Ellipsis]}] performs on expr the fermionic partial time-reversal transform with respect to fermion modes {c1, c2, \[Ellipsis]}.";
 
 FermionTimeReversal[expr_Plus, rest_] :=
   Map[FermionTimeReversal[#, rest] &, expr]
@@ -2648,12 +2633,9 @@ HoldPattern @
   ToDirac[FermionTimeReversal[ToMajorana[op, ff -> aa], aa], aa -> ff]
 ]
 (* NOTE: Works only for spinless fermions. *)
-
 (**** </FermionTimeReversal> ****)
 
 
-Protect[ Evaluate @ $symb ]
-
-End[]
-
-EndPackage[]
+Protect[ Evaluate @ $symb ];
+End[];
+EndPackage[];

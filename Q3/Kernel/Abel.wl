@@ -298,21 +298,22 @@ setSpecies[x_Symbol] := (
   x[i___, $, j__] = x[i, j];
   (* In particular, x[j,$,$] = x[j,$]. *)
 
-  x[k__] := x @@ ReplaceAll[{k}, s_?SpeciesQ :> ToString[s, InputForm]] /;
-    AnyTrue[{k}, SpeciesQ];
+  (* species flavor index -> string *)
+  x[i___, s_?SpeciesQ, j___] := x[i, ToString[s, InputForm], j];
   (* NOTE: If a Flavor index itself is a species, many tests fail to work
      properly. A common example is CommutativeQ. To prevent nasty errors, such
      Flavor indices are converted to String. *)
 
-  x[k___] := Flatten @ ReleaseHold @ Distribute[Hold[x][k], List] /; 
-    AnyTrue[{k}, MatchQ[_List]];
+  (* distribute over list flavor indices *)
+  x[i___, l_List, j___] :=
+    Flatten @ ReleaseHold @ Distribute[Hold[x][i, l, j], List];
   (* NOTE: Flavor indices in {k} cannot have Hold or HoldForm; for the, use the Inactive-Activate pair, instead. Hold-ReleaseHold pair is faster than Inactive-Activate pair. *)
   (* NOTE: Flatten is required for c[{1,2,...}, All] for spinful boson or
      fermion c and for S[{1,2,...}, All] for qubit S, etc. *)
   (* NOTE: Distribute[x[j], List] will hit the recursion limit. *)
 
   Format @ x[k___] := Interpretation[SpeciesBox[x, {k}, {}], x[k]];
-)
+);
 
 
 SpeciesQ::usage = "SpeciesQ[a] returns True if a is a Species."
