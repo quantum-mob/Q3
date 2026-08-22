@@ -654,16 +654,16 @@ HoldPattern[ Power[expr_, Dagger] ] := Dagger[expr]
 Dagger /:
 HoldPattern[ Power[op_Dagger, n_Integer] ] := MultiplyPower[op, n]
 
-
-Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] :=
-  Interpretation[SpeciesBox[c, {j}, {"\[Dagger]"}], Dagger @ c[j]]
-
-Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] :=
-  Interpretation[SpeciesBox[c, {}, {"\[Dagger]"}], Dagger @ c]
-
-(* for the undefined *)
-Format @ HoldPattern @ Dagger[a_] :=
-  Interpretation[Superscript[a, "\[Dagger]"], Dagger @ a]
+(* 
+MakeBoxes[Dagger[c_Symbol?SpeciesQ[j___]], fmt_] := ToBoxes[
+  Interpretation[SpeciesBox[c, {j}, {"\[Dagger]"}], Dagger @ c[j]],
+  fmt
+];
+MakeBoxes[Dagger[a_], fmt_] := ToBoxes[
+  Interpretation[Superscript[a, "\[Dagger]"], Dagger @ a],
+  fmt
+];
+ *)
 (**** </Dagger> ****)
 
 

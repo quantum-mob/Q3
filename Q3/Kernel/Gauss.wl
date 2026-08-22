@@ -1045,12 +1045,12 @@ CommutatorFree4[mat_, {ss_?VectorQ}, rest___][One|Identity] :=
 CommutatorFree4[mat_, {ss_?VectorQ}, OptionsPattern[]][in_] := With[
   { tp = Transpose @ {Most @ ss, Differences @ ss} },
   If[ OptionValue["List"],
-    FoldList[evoCommutatorFree4[mat], in, tp],
-    Fold[evoCommutatorFree4[mat], in, tp]
+    FoldList[stepCommutatorFree4[mat], in, tp],
+    Fold[stepCommutatorFree4[mat], in, tp]
   ]
 ] /; ArrayQ[in, 1|2]
 
-evoCommutatorFree4[mat_][in_, {t_?NumericQ, dt_?NumericQ}] = Module[
+stepCommutatorFree4[mat_][in_, {t_?NumericQ, dt_?NumericQ}] = Module[
     { c1 = 1/2 - Sqrt[3]/6,
       c2 = 1/2 + Sqrt[3]/6,
       w1 = 1/4 + Sqrt[3]/6,

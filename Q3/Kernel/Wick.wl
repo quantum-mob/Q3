@@ -19,6 +19,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
 { WickGreen, RandomWickGreen,
   WickPureQ, WickDensityMatrix,
   WickOccupation };
+{ WickCovariance };
 
 { WickSample, WickDistribution,
   WickProjection, WickReset };
@@ -1109,6 +1110,41 @@ randWickMeasurementQ[_?(VectorQ[#, NumericQ]&) -> (_Integer|_WickMeasurement)] =
 
 randWickMeasurementQ[_] = False
 (**** </RandomWickMeasurement> ****)
+
+
+(**** <WickCovariance> ****)
+WickCovariance::usage = "WickCovariance[ws, {k1, k2, \[Ellipsis], km}] returns m\[Times]m covariance matrix \[CapitalGamma] := 2*G-I, where G is the single-particle Green's function matrix, among fermion modes in {k1, k2, \[Ellipsis], km} with respect to WickState ws.\nWickCovariance[data] or WickCovariance[data, {k1, k2, \[Ellipsis], km}] shows a dynamic progress indicator while calculating Green's functions for an (typically large) array data of Wick or BdG states.\nWickCovariance[{k1, k2, \[Ellipsis], km}] represents an operator form of WickCovariance to be applied to Wick or Nambu state.";
+
+(* shortcut *)
+WickCovariance[ws_WickState] :=
+  WickCovariance[ws, Range @ FermionCount @ ws];
+
+WickCovariance[in_WickState, {}] = {{}};
+
+(* null state *)
+WickCovariance[WickState[_Integer -> 0, ___], kk:{__Integer}] = {{}};
+
+(* vacuum state *)
+WickCovariance[WickState[_Rule, ___], kk:{__Integer}] :=
+  One[Length @ kk];
+
+WickCovariance[WickState[trs_?MatrixQ, ___], kk:{__Integer}] := Module[
+  { n = Length[kk],
+    alt = trs[[All, kk]] },
+  One[n] - 2*ConjugateTranspose[alt].alt
+  (* \Gamma = 2G-I *)
+];
+
+(* dressed modes; the rows of mm are supposed to be orthonormal. *)
+WickCovariance[in_WickState, mm_?MatrixQ] :=
+  Dot[mm, WickCovariance[in], ConjugateTranspose @ mm];
+
+
+(* for large data *)
+WickCovariance[data_?ArrayQ, kk:Repeated[{___Integer}, {0, 1}]] := 
+  arrayMap[WickCovariance[#, kk]&, data] /;
+  ArrayQ[data, _, MatchQ[#, _WickState]&];
+(**** </WickCovariance> ****)
 
 
 (**** <WickGreen> ****)

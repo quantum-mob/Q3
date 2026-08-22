@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.7.1
+
+- New: WickCovariance
+- Improved: Let[Species, ...]
+
 ## 4.7.0
 
 - New: ChebyshevSupremum, BasisVector

@@ -317,10 +317,8 @@ setFermion[spin_, vac:("Void"|"Sea")][x_Symbol] := (
       x[j, -1/2]
     ];
   ];
-)
-
-(* Override the default definition of Format[Dagger[...]] *)
-
+);
+(* 
 Format[
   HoldPattern @ Dagger[c_Symbol?SpeciesQ[j___, Rational[1,2]]] /;
     Spin[c] == 1/2 ] := Interpretation[
@@ -334,7 +332,20 @@ Format[
       SpeciesBox[c , {j,"\[DownArrow]"}, {"\[Dagger]"}],
       Dagger @ c[j, -1/2]
     ]
-(**** </Fermion> ****)
+ *)
+
+(* Override the default definition of Format[Dagger[...]] *)
+(* HoldPattern @ MakeBoxes[Dagger[c_Symbol?SpeciesQ[j___, s_Rational]], fmt_] := With[
+  { sz = Switch[s, 1/2, "\[UpArrow", -1/2, "\[DownArrow]", _, s] },
+  ToBoxes[
+    Interpretation[
+      SpeciesBox[c , {j, sz}, {"\[Dagger]"}],
+      Dagger @ c[j, 1/2]
+    ],
+    fmt
+  ]
+];
+ *)(**** </Fermion> ****)
 
 
 (**** <Majorana> ****)
