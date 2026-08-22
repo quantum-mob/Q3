@@ -121,32 +121,30 @@ GelfandPattern[YoungTableau[data_], d_Integer] := Module[
   False
 ]
 
-
-theKetFormatQ[_GelfandPattern] = True
-
-theKetFormat[gp_GelfandPattern] := YoungTableau[gp]
+formatKetQ[_GelfandPattern] = True;
+formatKet[gp_GelfandPattern] := YoungTableau[gp];
 (**** </GelfandPattern> ****)
 
 
 (**** <GelfandForm> ****)
-GelfandForm::usage = "GelfandForm[tb] displays Gelfand pattern tb in the upper-left triangluar form."
+GelfandForm::usage = "GelfandForm[tb] displays Gelfand pattern tb in the upper-left triangluar form.";
 
-GelfandForm::notgp = "Data `` is not of the Gelfand-pattern form."
+GelfandForm::notgp = "Data `` is not of the Gelfand-pattern form.";
 
-GelfandForm[gp_GelfandPattern] = gp
+GelfandForm[gp_GelfandPattern] = gp;
 
 GelfandForm[tb:{{___}..}] :=
-  DisplayForm @ RowBox @ { "(", Grid[tb, Spacings -> {0.5, 0}], ")" }
+  DisplayForm @ RowBox @ { "(", Grid[tb, Spacings -> {0.5, 0}], ")" };
 
 GelfandForm[data_] := (
   Message[GelfandForm::notgp, data];
   data
-)
+);
 (**** </GelfandForm> ****)
 
 
 (**** <GelfandOrder> ****)
-GelfandOrder::usage = "GelfandOrder[a, b] returns 1 if the Young tableaux corresponding to Gelfand patterns a and b are in the lexicographic order of Young tableaux (i.e., the column-wise lexicographic order)."
+GelfandOrder::usage = "GelfandOrder[a, b] returns 1 if the Young tableaux corresponding to Gelfand patterns a and b are in the lexicographic order of Young tableaux (i.e., the column-wise lexicographic order).";
 (* NOTE: The lexicographic order of Young tableaux is different from the
    lexicographic order for normal lists. It is the column-wise lexicographic order. *)
 

@@ -340,33 +340,33 @@ ChebyshevPoints[{n_Integer?Positive, parity:(-1|1)}, kind_] := (
     "Use the form ChebyshevPoints[n -> parity, kind]. 2026-03-11 Q3 v4.5.8"
   ];
   ChebyshevPoints[n -> parity, kind]
-)
+);
 
 ClebschGordanMatrix[j1_?SpinNumberQ, j2_?SpinNumberQ] := (
   Message[Q3General::changed, "ClebschGordanMatrix", 
     "Use the form ClebschGordanMatrix[{j1, j2}]. 2026-02-28 v4.5.4"];
   ClebschGordanMatrix[{j1, j2}]
-)
+);
 
 WignerBasis[n_Integer, s_?SpinNumberQ] := (
   Message[Q3General::changed, "WignerBasis", 
     "Use the form WignerBasis[{n, s}]. 2026-02-28 v4.5.4"];
   WignerBasis[{n, s}]
-)
+);
 
 WickScramblingCircuit[op_, {ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] := (
   Message[Q3General::changed, "WickScramblingCircuit",
     "Use the WickScramblingCircuit[op, {ham -> pdf, p -> n}, k] form. 2026-02-21 v4.5.2"
   ];
   WickScramblingCircuit[op, {ham -> pdf, p -> FermionCount[ham]}, k]    
-)
+);
 
 RandomWickCircuit[{ham_WickHermitian, pdf_, p_?NumericQ}, k_Integer] := (
   Message[Q3General::changed, "RandomWickCircuit",
     "Use the RandomWickCircuit[{ham -> pdf, p -> n}, k] form. 2026-02-21 v4.5.2"
   ];
   RandomWickCircuit[{ham -> pdf, p -> FermionCount[ham]}, k]  
-)
+);
 
 
 RandomPick[list_List, p_?NumericQ, rest___] := (

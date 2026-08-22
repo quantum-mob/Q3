@@ -60,20 +60,26 @@ $symb = Unprotect[Missing];
 (**** <Boson> ****)
 Boson::usage = "Boson represents Bosonic annihilation operators.\nLet[Boson, a, b, ...] or Let[Boson, {a,b,...}] declares a, b, ... to be bosonic operators. They obey canonical commutation relations.";
 
+Boson::spnhf = "A half-integer spin `` for boson; physically impossible yet allowed for convenience.";
+Boson::badsp = "A bad spin `` for boson; reset to 0.";
+
 Options[Boson] = {Spin -> 0, Bottom -> 0, Top -> 5};
 
 Boson /:
 Let[Boson, ss:{__Symbol}, OptionsPattern[Boson]] := Module[
   { spin = OptionValue[Spin] },
-  If[Not[IntegerQ[spin] && NonNegative[spin]], Message[Spin::bad, spin]];
-    (** NOTE: In NON-RELATIVISTIC theory, there is no constraint between spin
-      and statistics. Sometimes, it is useful to allow bosons to have
-      half-integer spins; for example, consider the Schwinger boson
-      representation of the spin. Of course, in such caes, the "spin" does not
-      refer to real spins but to pseudo-spins. **)
+  Which[
+    HalfIntegerQ[spin], Message[Boson::spnhf, spin],
+    Not[SpinNumberQ @ spin], Message[Boson::badsp, spin]; spin = 0
+  ];
+  (* NOTE: In NON-RELATIVISTIC theory, there is no constraint between spin
+     and statistics. Sometimes, it is useful to allow bosons to have
+     half-integer spins; for example, consider the Schwinger boson
+     representation of the spin. Of course, in such caes, the "spin" does not
+     refer to real spins but to pseudo-spins. *)
   Let[NonCommutative, ss];  
-  Scan[ setBoson[spin, OptionValue[Bottom], OptionValue[Top]], ss ];
-]
+  Scan[setBoson[spin, OptionValue[Bottom], OptionValue[Top]], ss];
+];
 
 setBoson[spin_, bottom_Integer, top_Integer][x_Symbol] := (
   BosonQ[x] ^= True;
@@ -120,19 +126,6 @@ setBoson[spin_, bottom_Integer, top_Integer][x_Symbol] := (
        See also spinfulQ[]. *)
     x[j___,All] := Flatten @ x[j, Range[spin,-spin,-1]]
   ];
-  (* Special formatting for Spin 1/2 Boson operators. *)
-  If[ spin == 1/2,
-    x[j___, Up] := x[j, 1/2];
-    x[j___, Down] := x[j, -1/2];
-    Format @ x[j___, +1/2] := Interpretation[
-      SpeciesBox[x , {j,"\[UpArrow]"}, {}],
-      x[j, +1/2]
-     ];
-    Format @ x[j___, -1/2] := Interpretation[
-      SpeciesBox[x , {j,"\[DownArrow]"}, {}],
-      x[j, -1/2]
-     ]
-  ];
 );
 (**** </Boson> ****)
 
@@ -140,31 +133,27 @@ setBoson[spin_, bottom_Integer, top_Integer][x_Symbol] := (
 (**** <Heisenberg> ****)
 Heisenberg::usage = "Heisenberg represents the operators obeying the canonical commutation relations.\nLet[Heisenberg, a, b, ...] or Let[Heisenberg, {a,b,...}] declares a, b, ... to be Heisenberg canonical operators. Heisenberg cannonical variables are essentially Bosonic. Indeed, a complex Weyl algebra is generated either by Bosonic creators and annihilators or by Heisenberg caonical operators.";
 
+Heisenberg::spnhf = Boson::spnhf;
+Heisenberg::badsp = Boson::badsp;
+
 Options[Heisenberg] = {Spin -> 0, Bottom -> 0, Top -> 5};
 
 Heisenberg /:
 Let[Heisenberg, {ls__Symbol}, opts___?OptionQ] := Module[
   { spin, top },
   { spin, top } = {Spin, Top} /. {opts} /. Options[Heisenberg];
-  
-  Let[NonCommutative, {ls}];
-    
-  If[ !And[IntegerQ[spin], NonNegative[spin]],
-    Message[Spin::bad, spin];
-    (* spin = 0 *)
-    (* NOTE that in NON-RELATIVISTIC theory, there is no constraint between
-       spin and statistics. It is useful to allow Bosons to have half-integer
-       spins, for example, in Schwinger heisenberg representation of the
-       spin. Of course, in such caes, the "spin" does not refer to real spins
-       but to pseudo-spins. *)
+  Let[NonCommutative, {ls}];    
+  Which[
+    HalfIntegerQ[spin], Message[Heisenberg::spnhf, spin],
+    Not[SpinNumberQ @ spin], Message[Heisenberg::badsp, spin]; spin = 0
   ];
   Scan[setHeisenberg[#, spin, top]&, {ls}];
-]
+];
 
 setHeisenberg[x_Symbol] := setHeisenberg[x, 0]
 (* By default, Spin 0 Heisenberg. *)
 
-setHeisenberg[x_Symbol, spin_?SpinNumberQ, top_Integer] := (
+setHeisenberg[x_Symbol, spin_, top_Integer] := (
   HeisenbergQ[x] ^= True;
   HeisenbergQ[x[___]] ^= True;
 
@@ -212,9 +201,8 @@ setHeisenberg[x_Symbol, spin_?SpinNumberQ, top_Integer] := (
 (**** <Vacuum> ****)
 Vacuum::usage = "Vacuum is an option to Let[Fermion, ...]. Its value should be either \"Void\" or \"Sea\". \"Void\" (\"Sea\") declares that the vacuum state for the fermion operator is the completely empty state (Fermi sea with all levels below the Fermi level filled up). The vacuum state determines how the fermionic operators are reordered. Vacuum is alos a function: Vacuum[c] gives the vacuum state for the fermion operator c.";
 
-Vacuum::type = "Unknown vacuum type ``. \"Void\" is used instead.";
-
-Vacuum::flavor = "Invalid Flavor index `` for the operator `` with Spin `` and Vacuum ``. Regarded as \"Void\".";
+Vacuum::type = "Unknown vacuum type ``; reset to \"Void\".";
+Vacuum::flvr = "Invalid flavor `` for operator `` with Spin `` and Vacuum ``; regarded as \"Void\".";
 
 Vacuum[ HoldPattern @ Dagger[c_?ParticleQ] ] := Vacuum[c];
 
@@ -225,7 +213,9 @@ Vacuum[_] = "Void"; (* by default every thing has Void vacuum. *)
 (**** <Fermion> ****)
 Fermion::usage = "Fermion represents Fermionic annihilation operators.\nLet[Fermion, a, b, ...] or Let[Fermion, {a,b,...}] declares a, b, ... to be Dirac fermion operators. They obey canonical anti-commutation relations.";
 
-Fermion::error = "Something wrong has happened when declaring a fermion operator ``.";
+Fermion::intsp = "An integer spin `` for fermion; physically impossible yet allowed for convenience.";
+Fermion::badsp = Boson::badsp;
+Fermion::error = "Inconsistent combination of Spin `` and Vacuum `` for fermions.";
 
 Options[Fermion] = {Spin -> 1/2, Vacuum -> "Void"};
 
@@ -237,16 +227,19 @@ Let[Fermion, ss:{__Symbol}, OptionsPattern[Fermion]] := Module[
     Message[Vacuum::type, vac];
     vac = "Void"
   ];
-  If[spin != 0 && Not[OddQ[2*spin] && Positive[spin]], Message[Spin::bad, spin]];
-  (** NOTE that in NON-RELATIVISTIC theory, there is no constraint between
-    spin and statistics. Sometimes, it is useful to allow fermions to have
-    integer spins; for example, consider the Schwinger fermion representation
-    of the spin. Of course, in such caes, the "spin" does not refer to real
-    spins but to pseudo-spins. **)
+  Which[
+    IntegerQ[spin], Message[Fermion::intsp, spin],
+    Not[SpinNumberQ @ spin], Message[Fermion::badsp, spin]; spin = 0
+  ];
+  (* NOTE that in NON-RELATIVISTIC theory, there is no constraint between
+     spin and statistics. Sometimes, it is useful to allow fermions to have
+     integer spins; for example, consider the Schwinger fermion representation
+     of the spin. Of course, in such caes, the "spin" does not refer to real
+     spins but to pseudo-spins. *)
   
   Let[NonCommutative, ss];    
   Scan[setFermion[spin, vac], ss];
-]
+];
 
 setFermion[spin_, vac:("Void"|"Sea")][x_Symbol] := (
   FermionQ[x] ^= True;
@@ -270,82 +263,23 @@ setFermion[spin_, vac:("Void"|"Sea")][x_Symbol] := (
   x /: Power[x, n_Integer] := MultiplyPower[x, n];
   x /: Power[x[j___], n_Integer] := MultiplyPower[x[j], n];
 
-  x[j___, $, k___] := x[j, k];
+  x[i___, $, j___] := x[i, j];
   x[] := x; (* NOTE: This affects Vacuum[f[]]. *)
   
-  Spin[x] ^= spin;
   Vacuum[x] ^= vac;
-  Which[
-    spin == 0 && vac == "Void", (
-      Spin[x[___]] ^= spin;
-      Vacuum[x[___]] ^= vac;
-      x[j___,All] := x[j];
-    ),
-    spin == 0 && vac == "Sea", (
-      Spin[x[__]] ^= spin;
-      Vacuum[x[__]] ^= vac;
-      x[j___,All] := x[j];
-    ),
-    spin > 0 && vac == "Void", (
-      Spin[x[__]] ^= spin;
-      Vacuum[x[__]] ^= vac;
-      x[j___,All] := Flatten @ x[j, Range[spin,-spin,-1]];
-    ),
-    spin > 0 && vac == "Sea", (
-      (* the first index indicates above or below the Fermi sea *)
-      (* the final index indicates the spin component *)
-      Spin[x[__,_]] ^= spin;
-      Vacuum[x[__,_]] ^= vac;
-      x[k_,j___,All] := Flatten @ x[k, j, Range[spin,-spin,-1]];
-    ),
-    True, Message[Fermion::error, x]
-  ];
+  Vacuum[x[__]] ^= vac;
+
+  Spin[x] ^= spin;
+  Spin[x[__]] ^= spin;
   (* The value of spin index s is assumed to be consistent with Spin. Stricter
      checking is complicated and may cause slow performance.
      See also spinfulQ[]. *)
-
-  (* Special formatting for Spin 1/2 fermion operators. *)
   If[ spin == 1/2,
     x[j___, Up] := x[j, 1/2];
     x[j___, Down] := x[j, -1/2];
-    Format @ x[j___, +1/2] := Interpretation[
-      SpeciesBox[x , {j,"\[UpArrow]"}, {}],
-      x[j, +1/2]
-    ];
-    Format @ x[j___, -1/2] := Interpretation[
-      SpeciesBox[x , {j,"\[DownArrow]"}, {}],
-      x[j, -1/2]
-    ];
   ];
 );
-(* 
-Format[
-  HoldPattern @ Dagger[c_Symbol?SpeciesQ[j___, Rational[1,2]]] /;
-    Spin[c] == 1/2 ] := Interpretation[
-      SpeciesBox[c , {j,"\[UpArrow]"}, {"\[Dagger]"}],
-      Dagger @ c[j, 1/2]
-    ]
-
-Format[
-  HoldPattern @ Dagger[c_Symbol?SpeciesQ[j___, Rational[-1,2]]] /;
-    Spin[c] == 1/2 ] := Interpretation[
-      SpeciesBox[c , {j,"\[DownArrow]"}, {"\[Dagger]"}],
-      Dagger @ c[j, -1/2]
-    ]
- *)
-
-(* Override the default definition of Format[Dagger[...]] *)
-(* HoldPattern @ MakeBoxes[Dagger[c_Symbol?SpeciesQ[j___, s_Rational]], fmt_] := With[
-  { sz = Switch[s, 1/2, "\[UpArrow", -1/2, "\[DownArrow]", _, s] },
-  ToBoxes[
-    Interpretation[
-      SpeciesBox[c , {j, sz}, {"\[Dagger]"}],
-      Dagger @ c[j, 1/2]
-    ],
-    fmt
-  ]
-];
- *)(**** </Fermion> ****)
+(**** </Fermion> ****)
 
 
 (**** <Majorana> ****)
@@ -380,26 +314,35 @@ setMajorana[x_Symbol] := (
 
 
 (**** <TrueSpin> ****)
+TrueSpin::usage = "TrueSpin[c[i,j,\[Ellipsis]]] returns Spin[c] if the Flavor indices i, j, \[Ellipsis] are consistent with Spin[c]; otherwise returns 0 with a warning message. TrueSpin[c] always returns zero, wheather with or without warning message.";
 
-TrueSpin::usage = "TrueSpin[c[i,j,\[Ellipsis]]] returns Spin[c] if the Flavor indices i, j, \[Ellipsis] are consistent with Spin[c]; otherwise returns 0 with a warning message. TrueSpin[c] always returns zero, wheather with or without warning message."
-
-
-TrueSpin[ HoldPattern @ Dagger[c_?ParticleQ] ] := TrueSpin[c]
+TrueSpin[ HoldPattern @ Dagger[c_?ParticleQ] ] := TrueSpin[c];
 
 TrueSpin[ c_Symbol?ParticleQ ] :=
-  If[ Spin[c] == 0,
+  If[ Spin[c] == 0 && Vacuum[c] == "Void",
     Spin[c],
-    Message[Flavors::bad, {}, c, Spin[c], Vacuum[c]];
-    0
-  ]
+    Message[Flavors::bad, {}, c, Spin[c], Vacuum[c]]; 0
+  ];
 
-TrueSpin[ op:c_Symbol?ParticleQ[j__] ] :=
-  If[ Spin[op] === Spin[c],
-    Spin[c],
-    Message[Flavors::bad, {j}, c, Spin[c], Vacuum[c]];
-    0
+TrueSpin[ c_Symbol?ParticleQ[k___, s_] ] := Module[
+  { spin = Spin[c],
+    vcum = Vacuum[c],
+    warn },
+  warn := (
+    Message[Flavors::bad, {k, s}, c, spin, vcum];
+    Return[0]
+  );
+  Switch[ vcum,
+    "Void",
+    If[ spin == 0, spin,
+      If[SpinNumberQ[spin, s], spin, warn]
+    ],
+    "Sea",
+    If[ spin == 0, spin,
+      If[Length[{k}] > 0 && SpinNumberQ[spin, s], spin, warn]
+    ]
   ]
-
+];
 (**** </TrueSpin> ****)
 
 
@@ -415,7 +358,8 @@ spinlessQ[op_?AnyParticleQ] := If[TrueSpin[op] == 0, True, False, True]
 spinfulQ[op_?AnyParticleQ] := TrueQ[TrueSpin[op] > 0]
 
 
-seaQ::usage = "seaQ[c[i,j,...]] returns True if Vacuum[c] is \"Sea\" and the Flavor indices i, j, ... are consistent.\nNote that seaQ[c] always returns False wheather with or withour warning message."
+(**** <seeQ> ****)
+seaQ::usage = "seaQ[c[i,j,...]] returns True if Vacuum[c] is \"Sea\" and the Flavor indices i, j, ... are consistent.\nNote that seaQ[c] always returns False wheather with or withour warning message.";
 
 (* For a spinless (Spin = 0) Fermion to have the Sea vacuum, at least one
    Flavor index is required for the expected answer. Otherwise, in effect the
@@ -428,22 +372,35 @@ seaQ::usage = "seaQ[c[i,j,...]] returns True if Vacuum[c] is \"Sea\" and the Fla
    regarded to be Void.
    See also: CreatorQ[], AnnihilatorQ[] *)
 
-seaQ[ HoldPattern @ Dagger[op_?FermionQ] ] := seaQ[op]
+seaQ[ HoldPattern @ Dagger[op_?FermionQ] ] := seaQ[op];
 
 seaQ[ c_Symbol?FermionQ ] := (
-  If[ Spin[c] > 0, Message[Vacuum::flavor, {}, c, Spin[c], Vacuum[c]] ];
+  If[ Spin[c] > 0, Message[Vacuum::flvr, {}, c, Spin[c], Vacuum[c]] ];
   Return[False]
-)
+);
 (* NOTE: For any species c, c[] is automatically converted to c. *)
 
-seaQ[ op:c_Symbol?FermionQ[j__] ] := (
-  If[ Vacuum[op] =!= Vacuum[c],
-    Message[Vacuum::flavor, {j}, c, Spin[c], Vacuum[c]]
-  ];
-  Vacuum[op] == Vacuum[c] == "Sea"
-)
+seaQ[ c_Symbol?FermionQ[k___, s_] ] := Module[
+  { spin = Spin[c],
+    vcum = Vacuum[c],
+    warn },
+  warn := (
+    Message[Vacuum::flvr, {k, s}, c, spin, vcum];
+    False
+  );
+  Switch[ vcum,
+    "Void", 
+    False,
+    "Sea",
+    If[ spin == 0,
+      True,
+      If[Length[{k}] > 0, True, warn]
+    ]
+  ]
+];
 
-seaQ[_] = False
+seaQ[_] = False;
+(**** </seeQ> ****)
 
 
 Missing["KeyAbsent", _?BosonQ] = 0
@@ -575,28 +532,27 @@ HoldPattern @ Canon[ Canon[a_] ] := a
 
 
 (**** <CreatorQ> <AnnihilatorQ> ****)
+AnnihilatorQ::usage = "AnnihilatorQ[op[j]] returns 1 if op[j] is an annihilation operator and 0 otherwise.";
 
-AnnihilatorQ::usage = "AnnihilatorQ[op[j]] returns 1 if op[j] is an annihilation operator and 0 otherwise."
-
-CreatorQ::usage = "CreatorQ[op[j]] returns 1 if op[j] is a cration operator and 0 otherwise."
+CreatorQ::usage = "CreatorQ[op[j]] returns 1 if op[j] is a cration operator and 0 otherwise.";
 
 (* Bosons *)
-AnnihilatorQ[HoldPattern @ Dagger[_?BosonQ]] = False
+AnnihilatorQ[HoldPattern @ Dagger[_?BosonQ]] = False;
 
-AnnihilatorQ[_?BosonQ] = True
+AnnihilatorQ[_?BosonQ] = True;
 
-CreatorQ[HoldPattern @ Dagger[_?BosonQ]] = True
+CreatorQ[HoldPattern @ Dagger[_?BosonQ]] = True;
 
-CreatorQ[_?BosonQ] = False
+CreatorQ[_?BosonQ] = False;
 
 (* Fermions with Void vacuum *)
-AnnihilatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; Not[seaQ @ op] = False
+AnnihilatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; Not[seaQ @ op] = False;
 
-AnnihilatorQ[op_?FermionQ] /; Not[seaQ @ op]  = True
+AnnihilatorQ[op_?FermionQ] /; Not[seaQ @ op]  = True;
 
-CreatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; Not[seaQ @ op] = True
+CreatorQ[HoldPattern @ Dagger[op_?FermionQ]] /; Not[seaQ @ op] = True;
 
-CreatorQ[op_?FermionQ] /; Not[seaQ @ op] = False
+CreatorQ[op_?FermionQ] /; Not[seaQ @ op] = False;
 
 (* Fermions with Sea vacuum.
    In this case, the Flavor indices should also be consistent with its Spin as
@@ -635,41 +591,37 @@ HoldPattern @
 HoldPattern @
   CreatorQ[ op:_Symbol?FermionQ[k_?NonNegative, ___] ] := False /; seaQ[op]
 
-CreatorQ[_?AnyFermionQ] := False
-
+CreatorQ[_?AnyFermionQ] = False;
 (**** </CreatorQ> </AnnihilatorQ> ****)
 
 
-Bosons::usage = "Bosons[expr] gives the list of all Bosons appearing in expr."
+Bosons::usage = "Bosons[expr] gives the list of all Bosons appearing in expr.";
 
-Bosons[expr_] := Select[Agents @ expr, BosonQ]
+Bosons[expr_] := Select[Agents @ expr, BosonQ];
 
 
-Fermions::usage = "Fermions[expr] gives the list of all Fermions appearing in expr."
+Fermions::usage = "Fermions[expr] gives the list of all Fermions appearing in expr.";
 
-Fermions[expr_] := Select[Agents @ expr, FermionQ]
+Fermions[expr_] := Select[Agents @ expr, FermionQ];
 
-Heisenbergs::usage = "Heisenbergs[expr] gives the list of all Heisenbergs appearing in expr."
+Heisenbergs::usage = "Heisenbergs[expr] gives the list of all Heisenbergs appearing in expr.";
 
-Heisenbergs[expr_] := Select[Agents @ expr, HeisenbergQ]
+Heisenbergs[expr_] := Select[Agents @ expr, HeisenbergQ];
 
-Majoranas::usage = "Majoranas[expr] gives the list of all Majoranas appearing in expr."
+Majoranas::usage = "Majoranas[expr] gives the list of all Majoranas appearing in expr.";
 
-Majoranas[expr_] := Select[NonCommutativeSpecies @ expr, MajoranaQ]
+Majoranas[expr_] := Select[NonCommutativeSpecies @ expr, MajoranaQ];
 
 
 (**** <ToMajoranaMatrix> ****)
-
-ToMajoranaMatrix::usage = "ToMajoranaMatrix[n] returns the 2n\[Times]2n matrix representing the canonical transformation from Dirac to Majorana fermions."
+ToMajoranaMatrix::usage = "ToMajoranaMatrix[n] returns the 2n\[Times]2n matrix representing the canonical transformation from Dirac to Majorana fermions.";
 
 ToMajoranaMatrix[n_Integer] :=
   2 * Topple[ToDiracMatrix @ n]
-
 (**** </ToMajoranaMatrix> ****)
 
 
 (**** <ToDiracMatrix> ****)
-
 ToDiracMatrix::usage = "ToDiracMatrix[n] returns the 2n\[Times]2n matrix representing the canonical transformation from Majorana to Dirac fermions."
 
 ToDiracMatrix[n_Integer] := KroneckerProduct[
@@ -677,17 +629,15 @@ ToDiracMatrix[n_Integer] := KroneckerProduct[
     {1, -I}
   } / 2,
   One[n]
-]
+];
 (* NOTE: The returned matrix U is NOT unitary; Topple[U].U = 1/2 *)
-
 (**** </ToDiracMatrix> ****)
 
 
 (**** <ToMajorana> ****)
+ToMajorana::usage = "ToMajorana[expr, {c1,c2,...,cn} -> {a1,a2,\[Ellipsis],an,b1,b2,\[Ellipsis],bn}] converts expr writtten in Dirac fermion operators c1, c2, \[Ellipsis], cn into an equivalent form in terms of the Majorana fermion operators a1, a2, ..., \[Ellipsis], an and b1, b2, \[Ellipsis], bn via a suitable transformation between them. ToMajorana[expr, c1 -> {a1,b1}, c2->{a2,b2}, \[Ellipsis]] is the same.";
 
-ToMajorana::usage = "ToMajorana[expr, {c1,c2,...,cn} -> {a1,a2,\[Ellipsis],an,b1,b2,\[Ellipsis],bn}] converts expr writtten in Dirac fermion operators c1, c2, \[Ellipsis], cn into an equivalent form in terms of the Majorana fermion operators a1, a2, ..., \[Ellipsis], an and b1, b2, \[Ellipsis], bn via a suitable transformation between them. ToMajorana[expr, c1 -> {a1,b1}, c2->{a2,b2}, \[Ellipsis]] is the same."
-
-ToMajorana::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators."
+ToMajorana::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators.";
 
 ToMajorana[expr:Except[_Rule],
   rr:HoldPattern[
@@ -733,16 +683,14 @@ ToMajorana[mat_?MatrixQ] := Module[
   new = Join[uu + vv, (uu - vv)/I];
   {uu, vv} = First @ PartitionInto[new, {1, 2}];
   SparseArray[ArrayFlatten @ {{uu + vv, I*(uu - vv)} / 4}]
-]
-
+];
 (**** </ToMajorana> ****)
 
 
 (**** <ToDirac> ****)
+ToDirac::usage = "ToDirac[expr, {h1,h2,h3,h4,...} -> {c1,c2,...}] converts expr writtten in Dirac fermion operators c1, c2, ... into an equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, ... via a suitable transformation between them. ToDirac[expr, {h1,h2} -> c1, {h3,h4} -> c2, ...] is the same.";
 
-ToDirac::usage = "ToDirac[expr, {h1,h2,h3,h4,...} -> {c1,c2,...}] converts expr writtten in Dirac fermion operators c1, c2, ... into an equivalent form in terms of the Majorana fermion operators h1, h2, h3, h4, ... via a suitable transformation between them. ToDirac[expr, {h1,h2} -> c1, {h3,h4} -> c2, ...] is the same."
-
-ToDirac::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators."
+ToDirac::incnst = "Inconsistent Dirac and Majorana fermion operators, `` and ``. There should be twice more Majorana fermion operators than Dirac fermion operators.";
 
 ToDirac[expr:Except[_Rule],
   rr:HoldPattern[
@@ -793,12 +741,11 @@ ToDirac[mat_?MatrixQ] := Module[
   new = Join[xx + I*yy, xx - I*yy];
   {xx, yy} = First @ PartitionInto[new, {1, 2}];
   SparseArray[ArrayFlatten @ {{xx - I*yy, xx + I*yy}}]
-]
-
+];
 (**** </ToDirac> ****)
 
 
-ToBoson::usage = "ToBoson[expr, {x1, x2, ...} -> {a1, a2, ...}] converts expr writtten in canonical Heisenberg operators x1, x2, ... into an equivalent form in terms of the Boson operators a1, a2, ... via a suitable transformation between them. ToBoson[expr, x1 -> a1, x2 -> a2, ...] is the same."
+ToBoson::usage = "ToBoson[expr, {x1, x2, ...} -> {a1, a2, ...}] converts expr writtten in canonical Heisenberg operators x1, x2, ... into an equivalent form in terms of the Boson operators a1, a2, ... via a suitable transformation between them. ToBoson[expr, x1 -> a1, x2 -> a2, ...] is the same.";
 
 ToBoson[expr:Except[_Rule], rr:(_?HeisenbergQ -> _?BosonQ)..] :=
   Simplify[ expr /. ToBoson[rr] ]
@@ -817,7 +764,7 @@ ToBoson[rr:({__?HeisenbergQ} -> {__?BosonQ})] :=
   Apply[ ToBoson, Thread[rr] ]
 
 
-ToHeisenberg::usage = "ToHeisenberg[expr, {x1, x2, ...} -> {a1, a2, ...}] converts expr writtten in canonical Heisenberg operators x1, x2, ... into an equivalent form in terms of the Boson operators a1, a2, ... via a suitable transformation between them. ToHeisenberg[expr, x1 -> a1, x2 -> a2, ...] is the same."
+ToHeisenberg::usage = "ToHeisenberg[expr, {x1, x2, ...} -> {a1, a2, ...}] converts expr writtten in canonical Heisenberg operators x1, x2, ... into an equivalent form in terms of the Boson operators a1, a2, ... via a suitable transformation between them. ToHeisenberg[expr, x1 -> a1, x2 -> a2, ...] is the same.";
 
 ToHeisenberg[expr:Except[_Rule], rr:(_?BosonQ -> _?HeisenbergQ)..] :=
   Simplify[ expr /. ToHeisenberg[rr] ]

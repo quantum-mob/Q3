@@ -342,7 +342,7 @@ YoungVectorQ[_] = False
 
 
 (**** <YoungTableauCount> ****)
-YoungTableauCount::usage = "YoungTableauCount[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nYoungTableauCount[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package."
+YoungTableauCount::usage = "YoungTableauCount[shape] uses the hook length formula to count the number of standard Young tableaux of 'shape'.\nYoungTableauCount[n] gives the total number of standard Young tableaux for all partitions of integer 'n'.\nBorrowed from NumberOfTableaux in Combinatorica package.";
 
 YoungTableauCount[pp_List?YoungShapeQ] :=
   YoungTableauCount[YoungShape[pp]]
@@ -363,29 +363,28 @@ YoungTableauCount[n_Integer] :=
 (**** <YoungTableauCount> ****)
 
 
-(**** <theKetFormat> ****)
+(**** <formatKet> ****)
 (* for YoungRegularBasis, etc. *)
-theKetFormatQ[_Cycles] = True
-
-theKetFormat[cyc_Cycles] := PermutationForm[cyc]
-(**** </theKetFormat> ****)
+formatKetQ[_Cycles] = True;
+formatKet[cyc_Cycles] := PermutationForm[cyc];
+(**** </formatKet> ****)
 
 
 (**** <YoungSubgroup> ****)
-YoungSubgroup::usage = "YoungSubgroup[content] returns the Young subgroup with content of the symmetric group of degree n:=Total[content]."
+YoungSubgroup::usage = "YoungSubgroup[content] returns the Young subgroup with content of the symmetric group of degree n:=Total[content].";
 
 YoungSubgroup[shape_YoungShape] :=
-  YoungSubgroup[First @ shape]
+  YoungSubgroup[First @ shape];
 
 YoungSubgroup[content:{__Integer}] :=
-  PermutationGroup[YoungGenerators @ content]
+  PermutationGroup[YoungGenerators @ content];
 (**** </YoungSubgroup> ****)
 
 
 (**** <YoungGenerators> ****)
-YoungGenerators::usage = "YoungGenerators[content] returns a generating set of the Young subgroup with content of the symmetric group of degree n:=Total[content].\nYoungGenerators[n] is an alias of GroupGenerators[SymmetricGroup[n]]."
+YoungGenerators::usage = "YoungGenerators[content] returns a generating set of the Young subgroup with content of the symmetric group of degree n:=Total[content].\nYoungGenerators[n] is an alias of GroupGenerators[SymmetricGroup[n]].";
 
-YoungGenerators::negative = "Negative value is not allowed as a part of content."
+YoungGenerators::negative = "Negative value is not allowed as a part of content.";
 
 YoungGenerators[n_Integer] :=
   GroupGenerators[SymmetricGroup @ n]

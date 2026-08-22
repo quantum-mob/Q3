@@ -51,7 +51,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 
 Begin["`Private`"];
-$symb = Unprotect[CircleTimes, Dagger, Ket, Bra, Missing];
+$symb = Unprotect[CircleTimes, Ket, Bra, Missing];
 
 AddElaborationPatterns[
   _QFT, _QBR, _Oracle,
@@ -172,23 +172,7 @@ setQubit[x_Symbol] := (
   
   x[j___, All]  := Flatten @ x[j, {1, 2, 3}];
   x[j___, Full] := Flatten @ x[j, {0, 1, 2, 3}];
-  
-  Format @ x[j___, $] :=
-    Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];
 
-  Format[ x[j___, n_Integer?Negative] ] :=
-    Interpretation[Superscript[x[j, -n], "\[Dagger]"], x[j, n]];
-
-  Format[ x[j___, C[n_Integer?Positive]] ] := Interpretation[
-    SpeciesBox[x, {j}, {2 Pi / HoldForm[Power[2, n]]}],
-    x[j, C[n]]
-  ];
-  
-  Format[ x[j___, -C[n_Integer?Positive]] ] := Interpretation[
-    SpeciesBox[x, {j}, {-2 Pi / HoldForm[Power[2, n]]}],
-    x[j, -C[n]]
-  ];
-  
   Format @ x[j___, 0] := Interpretation[SpeciesBox[x, {j}, {0}], x[j, 0]];
   Format @ x[j___, 1] := Interpretation[SpeciesBox[x, {j}, {"X"}], x[j, 1]];
   Format @ x[j___, 2] := Interpretation[SpeciesBox[x, {j}, {"Y"}], x[j, 2]];
@@ -199,48 +183,34 @@ setQubit[x_Symbol] := (
   Format @ x[j___, 7] := Interpretation[SpeciesBox[x, {j}, {"S"}], x[j, 7]];
   Format @ x[j___, 8] := Interpretation[SpeciesBox[x, {j}, {"T"}], x[j, 8]];
   Format @ x[j___, 9] := Interpretation[SpeciesBox[x, {j}, {"F"}], x[j, 9]];
+  Format @ x[j___, -7] := Interpretation[SpeciesBox[x, {j}, {"S\[Dagger]"}], x[j, -7]];
+  Format @ x[j___, -8] := Interpretation[SpeciesBox[x, {j}, {"T\[Dagger]"}], x[j, -8]];
+  Format @ x[j___, -9] := Interpretation[SpeciesBox[x, {j}, {"F\[Dagger]"}], x[j, -9]];
   
   Format @ x[j___, 10] := Interpretation[
     Subscript[Row @ {"(", Ket[0], Bra[0], ")"}, x[j, $]],
     x[j, 10]
-   ];
+  ];
   Format @ x[j___, 11] := Interpretation[
     Subscript[Row @ {"(", Ket[1], Bra[1], ")"}, x[j, $]],
     x[j, 11]
   ];
+
+  Format[ x[j___, n_Integer?Negative] ] :=
+    Interpretation[SpeciesBox[x, {j, -n}, {"\[Dagger]"}], x[j, n]];
+
+  Format[ x[j___, C[n_Integer?Positive]] ] := Interpretation[
+    SpeciesBox[x, {j}, {2 Pi / HoldForm[Power[2, n]]}],
+    x[j, C[n]]
+  ];
+  
+  Format[ x[j___, -C[n_Integer?Positive]] ] := Interpretation[
+    SpeciesBox[x, {j}, {-2 Pi / HoldForm[Power[2, n]]}],
+    x[j, -C[n]]
+  ];
 );
 
 Missing["KeyAbsent", _Symbol?QubitQ[___, $]] = 0;
-
-
-(* Override the default definition of Format[Dagger[...]]
-   NOTE: This is potentially dangerous because Fock also overides it. *)
-
-Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] =. ;
-
-Format @ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 7] ] :=
-  Interpretation[
-    SpeciesBox[c, {j}, {"S\[Dagger]"}],
-    Dagger @ c[j, 7]
-   ]
-
-Format @ HoldPattern @ Dagger[ c_Symbol?QubitQ[j___, 8] ] :=
-  Interpretation[
-    SpeciesBox[c, {j}, {"T\[Dagger]"}],
-    Dagger @ c[j, 8]
-   ]
-
-Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ[j___] ] :=
-  Interpretation[
-    SpeciesBox[c, {j}, {"\[Dagger]"} ],
-    Dagger @ c[j]
-   ]
-
-Format @ HoldPattern @ Dagger[ c_Symbol?SpeciesQ ] :=
-  Interpretation[
-    SpeciesBox[c, {}, {"\[Dagger]"} ],
-    Dagger @ c
-  ];
 (**** </Qubit> ****)
 
 QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a Qubit through Let.";
@@ -599,9 +569,7 @@ Basis[ S_?QubitQ ] := Ket /@ Thread[FlavorCap[S] -> {0, 1}]
 
 
 (**** <PauliForm> ****)
-singleQubitGateQ::usage = "singleQubitGateQ[op] returns True if operator op is an 'elementary' single-qubit gate; and False, otherwise."
-
-(* SetAttributes[singleQubitGateQ, ReadProtected] *)
+singleQubitGateQ::usage = "singleQubitGateQ[op] returns True if operator op is an 'elementary' single-qubit gate; and False, otherwise.";
 
 HoldPattern @ singleQubitGateQ @ Dagger[_?QubitQ] = True
 
@@ -614,7 +582,7 @@ singleQubitGateQ[Rotation[_, {_, _, _}, _?QubitQ, ___]] = True
 singleQubitGateQ[_] = False
 
 
-thePauliForm::usage = "thePauliForm[op] or thePauliForm[Dagger[op]] rewrites op in a more conventional form, where the Pauli operators are denoted by I, X, Y, Z, H, S, and T."
+thePauliForm::usage = "thePauliForm[op] or thePauliForm[Dagger[op]] rewrites op in a more conventional form, where the Pauli operators are denoted by I, X, Y, Z, H, S, and T.";
 
 HoldPattern @ thePauliForm @ Pauli[{k_Integer?Negative}] :=
   Superscript[thePauliForm @ Pauli[{-k}], "\[Dagger]"]
@@ -3336,8 +3304,6 @@ setQudit[x_Symbol, dim_Integer] := (
     0
   ) /; Or[ a < 0, a >= Dimension[x], b < 0, b >= Dimension[x] ];
 
-  Format @ x[j___, $] :=
-    Interpretation[SpeciesBox[x, {j}, {}], x[j, $]];  
   Format @ x[j___, 0] :=
     Interpretation[SpeciesBox[1, {j}, {0}], x[j, 0]];
   Which[

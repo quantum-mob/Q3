@@ -3,7 +3,7 @@
 ## 4.7.1
 
 - New: WickCovariance
-- Improved: Let[Species, ...]
+- Improved: Let[Species, ...], TrueSpin, Fermion, Boson, Heisenberg, Dagger, SpinNumberQ
 
 ## 4.7.0
 

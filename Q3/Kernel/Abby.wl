@@ -857,7 +857,7 @@ ApplyThrough[func_, expr_] := func @ ReplaceAll[
  ]
 
 
-nameThrough::usage = "nameThrough[\"name\"] defines new function \"nameThrough\"."
+nameThrough::usage = "nameThrough[\"name\"] defines new function \"nameThrough\".";
 
 SetAttributes[nameThrough, Listable];
 
@@ -870,9 +870,8 @@ nameThrough[name_String] := With[
   full::usage = 
     SymbolName[full] <> "[expr] applies " <> name <> 
     " through special objects such as Association and SparseArray in expr, which usually do not allow for access to internal data.";
-  full[expr_] := ApplyThrough[func, expr];
-  SetAttributes[full, ReadProtected]
- ]
+  full[expr_] := ApplyThrough[func, expr]
+];
 
 (* Aliases for some frequently used functions. *)
 nameThrough @ {Chop, Simplify, FullSimplify};

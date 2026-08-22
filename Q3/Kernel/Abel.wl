@@ -16,8 +16,7 @@ $::usage = "$ is a flavor index referring to the species itself.";
 
 { CoefficientTensor };
 
-{ Spin, Spins, SpinQ, SpinNumberQ,
-  TheWigner };
+{ Spin, Spins, SpinQ, SpinNumberQ, TheWigner };
 { Qubit, Qubits, QubitQ };
 { Qudit, Qudits, QuditQ };
 { Boson, Bosons, BosonQ, AnyBosonQ };
@@ -155,46 +154,43 @@ FlavorLast[ _?SpeciesQ ] = Missing["NoFlavor"]
 
 
 (**** <FlavorCap> ****)
-
-FlavorCap::usage = "FlavorCap[S[i, j, \[Ellipsis]]] for some Species S gives S[i, j, \[Ellipsis], $]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorCap is Listable."
+FlavorCap::usage = "FlavorCap[S[i, j, \[Ellipsis]]] for some Species S gives S[i, j, \[Ellipsis], $]. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorCap is Listable.";
   
-SetAttributes[FlavorCap, Listable]
+SetAttributes[FlavorCap, Listable];
 
-FlavorCap[a_] := a (* Does nothing unless specified explicitly *)
+FlavorCap[a_] = a; (* Does nothing unless specified explicitly *)
 
-FlavorCap[S_?SpeciesQ -> v_] := FlavorCap[S] -> v
+FlavorCap[S_?SpeciesQ -> v_] := FlavorCap[S] -> v;
 
-FlavorCap[ss:{__?SpeciesQ} -> vv:{__}] := FlavorCap[ss] -> vv
+FlavorCap[ss:{__?SpeciesQ} -> vv:{__}] := FlavorCap[ss] -> vv;
+(**** </FlavorCap> ****)
 
 
-FlavorCapQ::usage = "FlavorCapQ[{s$1,s$2,\[Ellipsis]}] returns True if the flavor index ends properly with None for every species s$j. Note that for some species, the flavor index is not required to end with None."
+FlavorCapQ::usage = "FlavorCapQ[{s$1,s$2,\[Ellipsis]}] returns True if the flavor index ends properly with None for every species s$j. Note that for some species, the flavor index is not required to end with None.";
 
-SyntaxInformation[FlavorCapQ] = {"ArgumentsPattern" -> {_}}
+SyntaxInformation[FlavorCapQ] = { "ArgumentsPattern" -> {_} };
 
 FlavorCapQ[a_, b__] := (
   CheckArguments[FlavorCapQ[a, b], 1];
   FlavorCapQ @ {a, b}
- )
+);
 
 FlavorCapQ[s_?SpeciesQ] := FlavorCap[s] === s
 
-FlavorCapQ[ss_List] := AllTrue[Flatten @ ss, FlavorCapQ]
+FlavorCapQ[ss_List] := AllTrue[Flatten @ ss, FlavorCapQ];
 
-FlavorCapQ[_] = True
-
-(**** </FlavorCap> ****)
+FlavorCapQ[_] = True;
 
 
-FlavorMute::usage = "FlavorMute[S[i, j, \[Ellipsis], k]] for some Species S gives S[i, j, \[Ellipsis], $], i.e., with the last Flavor replaced with None. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorMute is Listable."
+FlavorMute::usage = "FlavorMute[S[i, j, \[Ellipsis], k]] for some Species S gives S[i, j, \[Ellipsis], $], i.e., with the last Flavor replaced with None. Notable examples are Qubit in Quisso package and Spin in Wigner package. Note that FlavorMute is Listable.";
   
-SetAttributes[FlavorMute, Listable]
+SetAttributes[FlavorMute, Listable];
 
-FlavorMute[a_] := a (* Does nothing unless specified explicitly *)
+FlavorMute[a_] = a; (* Does nothing unless specified explicitly *)
 
 
 (**** <FlavorThread> ****)
-
-FlavorThread::usage = "FlavorThread[{s1, s2, \[Ellipsis]}, m] returns {s1[m], s2[m], \[Ellipsis]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {m1, m2, \[Ellipsis]}] returns {s1[m1], s2[m2], s3[m3]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {list1, list2, \[Ellipsis]}] maps over the lists."
+FlavorThread::usage = "FlavorThread[{s1, s2, \[Ellipsis]}, m] returns {s1[m], s2[m], \[Ellipsis]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {m1, m2, \[Ellipsis]}] returns {s1[m1], s2[m2], s3[m3]}.\nFlavorThread[{s1, s2, \[Ellipsis]}, {list1, list2, \[Ellipsis]}] maps over the lists.";
 
 FlavorThread[ss:{__?SpeciesQ}][any_] := FlavorThread[ss, any]
 
@@ -207,20 +203,17 @@ FlavorThread[ss:{__?SpeciesQ}, flv:{__List}] :=
 
 FlavorThread[ss:{__?SpeciesQ}, flv:{__}] :=
   MapThread[Construct, {ss, flv}]
-
 (**** </FlavorThread> ****)
 
 
-Any::usage = "Any represents a dummy Flavor index."
+Any::usage = "Any represents a dummy Flavor index.";
 
-SetAttributes[Any, ReadProtected]
-
-Format[Any] = "\[SpaceIndicator]"
+Format[Any] = "\[SpaceIndicator]";
 
 
 MultiplyKind::usage = "MultiplyKind[op] returns the type of op, which may be a Species or related function.\nMultiplyKind is the lowest category class of Species and functions for Multiply. It affects how Multiply rearranges the non-commutative elements.\nIt is intended for internal use.\nSee also MultiplyGenus."
 
-SetAttributes[MultiplyKind, Listable]
+SetAttributes[MultiplyKind, Listable];
 
 (* NOTE: HoldPattern is necessary here to prevent $IterationLimit::itlim error
    when the package is loaded again. *)
@@ -245,21 +238,19 @@ SetAttributes[LogicalValues, Listable]
 
 
 (***** <Let> ****)
+Let::usage = "Let[Symbol, a, b, \[Ellipsis]] defines the symbols a, b, \[Ellipsis] to be Symbol, which can be Species, Complex, Real, Integer, etc.";
 
-Let::usage = "Let[Symbol, a, b, \[Ellipsis]] defines the symbols a, b, \[Ellipsis] to be Symbol, which can be Species, Complex, Real, Integer, etc."
+Let::unknown = "Unknown species ``.";
 
-Let::unknown = "Unknown species ``."
-
-SetAttributes[Let, {HoldAll, ReadProtected}]
+SetAttributes[Let, HoldAll];
 
 SyntaxInformation[Let] = {
   "ArgumentsPattern" -> {_, __}
- }
+};
 
 Let[name_Symbol, ls__Symbol, opts___?OptionQ] := Let[name, {ls}, opts]
 
 Let[name_Symbol, ___] := (Message[Let::unknown, name]; $Failed)
-
 (***** </Let> ****)
 
 
@@ -316,9 +307,9 @@ setSpecies[x_Symbol] := (
 );
 
 
-SpeciesQ::usage = "SpeciesQ[a] returns True if a is a Species."
+SpeciesQ::usage = "SpeciesQ[a] returns True if a is a Species.";
 
-SpeciesQ[_] = False
+SpeciesQ[_] = False;
 
 
 AnySpeciesQ::usaage = "AnySpeciesQ[z] returns True if z itself is an Species or a modified form z = Conjugate[x], Dagger[x], Tee[x] of another Species x."
@@ -457,47 +448,45 @@ NonCommutativeSpecies[expr_] :=
    not expanded by a single Normal. *)
 
 
-(**** <SpeciesBox> ****)
-$FormatSpecies::usage = "$FormatSpecies controls the formatting of Species. If True, the ouputs of Species are formatted."
-
+$FormatSpecies::usage = "$FormatSpecies controls the formatting of Species. If True, the ouputs of Species are formatted.";
 $FormatSpecies = True;
 
-$SuperscriptDelimiter::usage = "$SuperscriptDelimiter stores the character delimiting superscripts in SpeciesBox."
-
-$SubscriptDelimiter::usage = "$SubscriptDelimiter gives the character delimiting subscripts in SpeciesBox."
-
+$SuperscriptDelimiter::usage = "$SuperscriptDelimiter stores the character delimiting superscripts in SpeciesBox.";
 $SuperscriptDelimiter = ",";
+$SubscriptDelimiter::usage = "$SubscriptDelimiter gives the character delimiting subscripts in SpeciesBox.";
 $SubscriptDelimiter = ",";
 
-SpeciesBox::usage = "SpeciesBox[c,sub,sup] formats a tensor-like quantity."
+
+(**** <SpeciesBox> ****)
+SpeciesBox::usage = "SpeciesBox[c,sub,sup] formats a tensor-like quantity.";
 
 (* SpeciesBox[c_?AtomQ] = c *)
 
-SpeciesBox[c_Symbol] = c
+SpeciesBox[c_Symbol] = c;
 
-SpeciesBox[c_Symbol?SpeciesQ[a___]] = c[a]
+SpeciesBox[c_Symbol?SpeciesQ[a___]] = c[a];
 
-SpeciesBox[c_Symbol[a___]] := DisplayForm @ RowBox @ {"(", c[a], ")"}
+SpeciesBox[c_Symbol[a___]] := DisplayForm @ RowBox @ {"(", c[a], ")"};
 
-SpeciesBox[c_?Negative] := DisplayForm @ RowBox @ {"(", c, ")"}
+SpeciesBox[c_?Negative] := DisplayForm @ RowBox @ {"(", c, ")"};
 
-SpeciesBox[c_?AtomQ] = c
+SpeciesBox[c_?AtomQ] = c;
 
 
-SpeciesBox[c_, {}, {}] := c
+SpeciesBox[c_, {}, {}] := c;
 
 SpeciesBox[c_, {}, sup:{__}, delimiter_String:"\[ThinSpace]"] :=
-  Superscript[SpeciesBox @ c, Row[sup, delimiter]]
+  Superscript[SpeciesBox @ c, Row[sup, delimiter]];
 
 SpeciesBox[c_, sub:{__}, {}] :=
-  Subscript[SpeciesBox @ c, Row[FlavorForm @ sub, $SubscriptDelimiter]]
+  Subscript[SpeciesBox @ c, Row[FlavorForm[c, sub], $SubscriptDelimiter]];
 
 SpeciesBox[c_, sub:{__}, sup:{__}] :=
   Subsuperscript[
     SpeciesBox @ c,
-    Row[FlavorForm @ sub, $SubscriptDelimiter],
+    Row[FlavorForm[c, sub], $SubscriptDelimiter],
     Row[sup, $SuperscriptDelimiter]
-  ]
+  ];
 (* NOTE(2020-10-14): Superscript[] instead of SuperscriptBox[], etc.
    This is for Complex Species with NonCommutative elements as index
    (see Let[Complex, \[Ellipsis]]), but I am not sure if this is a right choice.
@@ -510,44 +499,46 @@ SpeciesBox[c_, sub:{__}, sup:{__}] :=
 (**** </SpeciesBox> ****)
 
 
-FlavorForm::usage = "FlavorForm[j] converts the flavor index j into a more intuitively appealing form."
+FlavorForm::usage = "FlavorForm[j] converts the flavor index j into a more intuitively appealing form.";
 
-SetAttributes[FlavorForm, Listable]
+FlavorForm[s_/;Spin[s]==1/2, Up|1/2] = "\[UpArrow]";
 
-FlavorForm[Up] := "\[UpArrow]"
+FlavorForm[s_/;Spin[s]==1/2, Down|-1/2] = "\[DownArrow]";
 
-FlavorForm[Down] := "\[DownArrow]"
+FlavorForm[s_, {k___, $}] = {k};
 
-FlavorForm[j_] := j
+FlavorForm[s_, fvr_List] := Append[Most @ fvr, FlavorForm[s, Last @ fvr]] /; Length[fvr] > 0;
 
-
-Hood::usage = "Hood[func[s]] retruns func for species s.\nHood[s] returns Identity for a species s."
-
-SetAttributes[Hood, Listable]
-
-Hood[_?SpeciesQ] = Identity
-
-Hood[fun_Symbol[_?SpeciesQ]] = fun
+FlavorForm[_, any_] = any;
 
 
-Peel::usage = "Peel[op] removes any conjugation (such as Dagger and Conjugate) from op."
+Hood::usage = "Hood[func[s]] retruns func for species s.\nHood[s] returns Identity for a species s.";
 
-SetAttributes[Peel, Listable]
+SetAttributes[Hood, Listable];
 
-Peel[ HoldPattern @ Tee[a_] ] = a
+Hood[_?SpeciesQ] = Identity;
 
-Peel[ HoldPattern @ Dagger[a_] ] = a
-
-Peel[ HoldPattern @ Canon[a_] ] = a
-
-Peel[ Conjugate[a_] ] = a
-
-Peel[ a_ ] := a
+Hood[fun_Symbol[_?SpeciesQ]] = fun;
 
 
-Tee::usage = "Tee[expr] or equivalanetly Tee[expr] represents the Algebraic transpose of the expression expr. It is distinguished from the native Transpose[] as it respects symbols.\nSee also Transpose, TeeTranspose, Conjugate, Dagger, Topple."
+Peel::usage = "Peel[op] removes any conjugation (such as Dagger and Conjugate) from op.";
 
-SetAttributes[Tee, {Listable, ReadProtected}]
+SetAttributes[Peel, Listable];
+
+Peel[ HoldPattern @ Tee[a_] ] = a;
+
+Peel[ HoldPattern @ Dagger[a_] ] = a;
+
+Peel[ HoldPattern @ Canon[a_] ] = a;
+
+Peel[ Conjugate[a_] ] = a;
+
+Peel[ a_ ] := a;
+
+
+Tee::usage = "Tee[expr] or equivalanetly Tee[expr] represents the Algebraic transpose of the expression expr. It is distinguished from the native Transpose[] as it respects symbols.\nSee also Transpose, TeeTranspose, Conjugate, Dagger, Topple.";
+
+SetAttributes[Tee, Listable];
 
 HoldPattern @ Tee[ Tee[a_] ] := a
 
@@ -616,9 +607,9 @@ DaggerTranspose::usage = "DaggerTranspose is an alias of Topple."
 
 
 (**** <Dagger> ****)
-Dagger::usage = "Dagger[expr] returns the Hermitian conjugate the expression expr.\nWARNING: Dagger has the attribute Listable, meaning that the common expectation Dagger[m] == Tranpose[Conjugate[m]] for a matrix m of c-numbers does NOT hold any longer. For such purposes use Topple[] instead.\nSee also Conjugate[], Topple[], and TeeTranspose[]."
+Dagger::usage = "Dagger[expr] returns the Hermitian conjugate the expression expr.\nWARNING: Dagger has the attribute Listable, meaning that the common expectation Dagger[m] == Tranpose[Conjugate[m]] for a matrix m of c-numbers does NOT hold any longer. For such purposes use Topple[] instead.\nSee also Conjugate[], Topple[], and TeeTranspose[].";
 
-SetAttributes[Dagger, {Listable, ReadProtected}]
+SetAttributes[Dagger, Listable];
 (* Enabling Dagger[\[Ellipsis]] Listable makes many things much simpler. One
    notable drawback is that it is not applicable to matrices. This is why a
    separate function Topple[m] has been defined for matrix or vector m. *)
@@ -654,16 +645,14 @@ HoldPattern[ Power[expr_, Dagger] ] := Dagger[expr]
 Dagger /:
 HoldPattern[ Power[op_Dagger, n_Integer] ] := MultiplyPower[op, n]
 
-(* 
-MakeBoxes[Dagger[c_Symbol?SpeciesQ[j___]], fmt_] := ToBoxes[
-  Interpretation[SpeciesBox[c, {j}, {"\[Dagger]"}], Dagger @ c[j]],
+MakeBoxes[Dagger[op:c_Symbol?SpeciesQ[j___]], fmt_] := ToBoxes[
+  Interpretation[SpeciesBox[c, {j}, {"\[Dagger]"}], Dagger @ op],
   fmt
 ];
 MakeBoxes[Dagger[a_], fmt_] := ToBoxes[
   Interpretation[Superscript[a, "\[Dagger]"], Dagger @ a],
   fmt
 ];
- *)
 (**** </Dagger> ****)
 
 
@@ -763,7 +752,7 @@ AntihermitianQ[ Conjugate[a_?AntihermitianQ] ] = True;
 
 If[ $VersionNumber < 14.3,
   Commutator::usage = "Commutator[a,b] = Multiply[a,b] - Multiply[b,a].\nCommutator[a, b, n] = [a, [a, \[Ellipsis] [a, b]]], this is order-n nested commutator.";
-  SetAttributes[Commutator, {Listable, ReadProtected}];
+  SetAttributes[Commutator, Listable];
   Commutator[a_, b_] := Garner[ Multiply[a, b] - Multiply[b, a] ]
 ];
 (**** </Commutator> ***)
@@ -774,7 +763,7 @@ If[ $VersionNumber < 14.3,
 
 If[ $VersionNumber < 14.3,
   Anticommutator::usage = "Anticommutator[a,b] = Multiply[a,b] + Multiply[b,a].\nAnticommutator[a, b, n] = {a, {a, \[Ellipsis] {a, b}}}, this is order-n nested anti-commutator.";
-  SetAttributes[Anticommutator, {Listable, ReadProtected}];
+  SetAttributes[Anticommutator, Listable];
   Anticommutator[a_, b_] := Garner[ Multiply[a, b] + Multiply[b, a] ]
 ];
 (**** </Anticommutator> ***)
@@ -960,13 +949,16 @@ DistributableQ[ops_List] := Not @ MissingQ @ FirstCase[ops, _Plus]
 (**** <Multiply> ****)
 Multiply::usage = "Multiply[a, b, \[Ellipsis]] represents non-commutative multiplication of a, b, etc. Unlike the native NonCommutativeMultiply[\[Ellipsis]], it does not have the attributes Flat and OneIdentity.";
 
-SetAttributes[Multiply, {Listable, ReadProtected}];
+SetAttributes[Multiply, Listable];
 
 AddGarnerPatterns[_Multiply];
 
-Format @ HoldPattern @ Multiply[a__] := Interpretation[
-  Row @ List @ Row[{a}, "\[VeryThinSpace]"],
-  Multiply[a]
+MakeBoxes[expr:Multiply[a__], fmt_] := ToBoxes[
+  Interpretation[
+    Row @ List @ Row[{a}, "\[VeryThinSpace]"],
+    expr
+  ],
+  fmt
 ];
 (* NOTE 1: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 Dagger[f]**f is formated as
@@ -1099,7 +1091,7 @@ MultiplyDot::usage = "MultiplyDot[a, b, \[Ellipsis]] returns the products of vec
 
 (* Makes MultiplyDot associative for the case
    MultiplyDot[vector, matrix, matrix, \[Ellipsis]] *)
-SetAttributes[MultiplyDot, {Flat, OneIdentity, ReadProtected}]
+SetAttributes[MultiplyDot, {Flat, OneIdentity}]
 
 MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
 (* TODO: Special algorithm is required for SparseArray *)
@@ -1109,7 +1101,7 @@ MultiplyDot[a_?ArrayQ, b_?ArrayQ] := Inner[Multiply, a, b]
 MultiplyPower::usage = "MultiplyPower[expr, i] raises an expression to the i-th
 power using the non-commutative multiplication Multiply."
 
-SetAttributes[MultiplyPower, {Listable, ReadProtected}];
+SetAttributes[MultiplyPower, Listable];
 
 MultiplyPower[op_, 0] = 1
 
@@ -1152,25 +1144,25 @@ MultiplyPower[E, expr_] := MultiplyExp[expr]
 
 
 (**** <MultiplyExp> ****)
-MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[]."
+MultiplyExp::usage = "MultiplyExp[expr] evaluates the Exp function of operator expression expr.\nIt has been introduced to facilitate some special rules in Exp[].";
 
-SetAttributes[MultiplyExp, Listable]
+SetAttributes[MultiplyExp, Listable];
 
 AddElaborationPatterns[_MultiplyExp];
 
 AddElaborationPatterns[
   Exp[a_] :> MultiplyExp[a] /; Not[FreeQ[a, _?NonCommutativeQ]]
-]
+];
 
 
-Format @ HoldPattern @ MultiplyExp[expr_] :=
-  Interpretation[Power[E, expr], MultiplyExp @ expr]
+MakeBoxes[expr:MultiplyExp[a_], fmt_] := ToBoxes[
+  Interpretation[Power[E, a], expr],
+  fmt
+];
 
 
-MultiplyExp[] = 1
-
-MultiplyExp[0] = 1
-
+MultiplyExp[] = 1;
+MultiplyExp[0] = 1;
 
 MultiplyExp /:
 Dagger[ MultiplyExp[expr_] ] := MultiplyExp[ Dagger[expr] ]

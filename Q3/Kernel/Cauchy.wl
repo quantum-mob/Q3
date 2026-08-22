@@ -308,7 +308,7 @@ HalfIntegerQ::usage = "HalfIntegerQ[z] returns True if z is exclusively a half-i
 
 HalfIntegerQ[Rational[_, 2]] = True;
 
-HalfIntegerQ[n_] := OddQ[ Expand[2 n] ];
+HalfIntegerQ[n_] := OddQ[Expand[2 n]];
 
 
 (**** <Simplification> ****)

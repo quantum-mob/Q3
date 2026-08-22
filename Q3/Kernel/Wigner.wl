@@ -89,12 +89,11 @@ TheWignerKet[j:Except[_List], m:Except[_List]] := TheWignerKet @ {j, m}
 
 TheWignerKet[j:Except[_List], mm:{__?NumericQ}] := With[
   { jm = Thread @ {j, mm} },
-  TheWignerKet @@ jm /; AllTrue[jm, SpinNumberQ]
+  TheWignerKet @@ jm
 ]
 
 TheWignerKet[jm:{_, _}, more:{_, _}..] :=
-  CircleTimes @@ Map[TheWignerKet, {jm, more}] /;
-  AllTrue[{jm, more}, SpinNumberQ]
+  CircleTimes @@ Map[TheWignerKet, {jm, more}]
 (**** </TheWignerKet> ****)
 
 
@@ -142,26 +141,20 @@ TheEulerRotation[
 
 SpinNumbers::usage = "SpinNumbers[s] returns a list of spin quantum numbers {{s, s}, {s, s-1}, \[Ellipsis], {s, -s}}."
 
-SpinNumbers[j_?SpinNumberQ] := Thread[{j, Range[j,-j,-1]}]
+SpinNumbers[j_?SpinNumberQ] := Thread[{j, Range[j, -j, -1]}]
 
 
 (**** <SpinNumberQ> ****)
-SpinNumberQ::usage = "SpinNumberQ[J] returns True if J is a valid angular momentum quantum number (non-negative integer or half-integer).\nSpinNumberQ[J,M] returns True if J is a valid angular momentum quantum number and M is a valid magnetic quantum number (-j<=m<=j)."
-(* To be defined further in other packages; e.g., Wigner. *)
+SpinNumberQ::usage = "SpinNumberQ[J] returns True if J is a valid angular momentum quantum number (non-negative integer or half-integer).\nSpinNumberQ[J, M] returns True if J is a valid angular momentum quantum number and M is a valid magnetic quantum number (-j<=m<=j).";
 
-SetAttributes[SpinNumberQ, {NHoldAll, ReadProtected}]
+SpinNumberQ[_Integer?NonNegative] = True;
 
-SpinNumberQ[_Integer?NonNegative] = True
+SpinNumberQ[Rational[_?Positive, 2]] = True;
 
-SpinNumberQ[Rational[_?Positive, 2]] = True
+SpinNumberQ[s_?SpinNumberQ, m_] := And[IntegerQ[2 m], -s <= m <= s];
+(* NOTE: DO NOT define the SpinNumberQ[{s, m}] form; it may pass {j, m} in many input arguments patterns.. *)
 
-SpinNumberQ[j_Integer?NonNegative, m_Integer] := And[ -j <= m <= j ]
-
-SpinNumberQ[j:Rational[_?Positive, 2], m:Rational[_, 2]] := And[ -j <= m <= j ]
-
-SpinNumberQ[__] = False
-
-(* SpinNumberQ[{j_, m_}] := SpinNumberQ[j, m] *)
+SpinNumberQ[__] = False;
 (**** </SpinNumberQ> ****)
 
 
@@ -191,7 +184,7 @@ Let[Spin, ss:{__Symbol}, OptionsPattern[Spin]] := Module[
   
   Let[NonCommutative, ss];    
   Scan[setSpin[spin], ss];
-]
+];
 
 setSpin[spin_][x_Symbol] := (
   MultiplyKind[x] ^= Spin;
@@ -255,9 +248,9 @@ setSpin[spin_][x_Symbol] := (
     ],
     x[j, a -> b]
   ]
-)
+);
 
-Missing["KeyAbsent", S_Symbol?SpinQ[___, $]] := Spin[S]
+Missing["KeyAbsent", S_Symbol?SpinQ[___, $]] := Spin[S];
 (**** </Spin> ****)
 
 

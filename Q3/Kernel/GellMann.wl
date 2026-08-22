@@ -178,7 +178,7 @@ GellMannExpression[m_?MatrixQ] := Block[
 
 GellMannMatrix::usage = "GellMannMatrix[expr] converts the expression expr, which may involve the Pauli operators and Kets and/or Bras, into the vector and/or matrix representation. It is done by replacing Ket by TheKet, Bra by TheBra, and Pauli by ThePauli.";
 
-SetAttributes[GellMannMatrix, {Listable, ReadProtected}];
+SetAttributes[GellMannMatrix, Listable];
 
 GellMannMatrix[expr_] := expr /. {
   Ket -> TheKet,

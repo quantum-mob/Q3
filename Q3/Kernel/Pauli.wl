@@ -104,22 +104,19 @@ TheKet[aa:{(0|1|Up|Down)..}] := Module[
 
 (**** <ThePauli> ****)
 ThePauli::usage = "ThePauli[n] (n=1,2,3) returns the Pauli matrix numbered n.
-  ThePauli[0] returns the 2\[Times]2 identity matrix. ThePauli[4] and ThePauli[5] represent the raising and lowering operators, respectively, and ThePauli[6] returns the 2\[Times]2 Hadamard matrix. ThePauli[7], ThePauli[8], ThePauli[9] represent the quadrant, octant, and hexadecant phase gates, respectively.\nThePauli[{n1, n2, n3, \[Ellipsis]}] = ThePauli[n1] \[CircleTimes] ThePauli[n2] \[CircleTimes] ThePauli[n3]\[CircleTimes] \[Ellipsis]."
-
-SetAttributes[ThePauli, {NHoldAll, ReadProtected}]
+  ThePauli[0] returns the 2\[Times]2 identity matrix. ThePauli[4] and ThePauli[5] represent the raising and lowering operators, respectively, and ThePauli[6] returns the 2\[Times]2 Hadamard matrix. ThePauli[7], ThePauli[8], ThePauli[9] represent the quadrant, octant, and hexadecant phase gates, respectively.\nThePauli[{n1, n2, n3, \[Ellipsis]}] = ThePauli[n1] \[CircleTimes] ThePauli[n2] \[CircleTimes] ThePauli[n3]\[CircleTimes] \[Ellipsis].";
 
 SyntaxInformation[ThePauli] = {"ArgumentsPattern" -> {_}};
 
+ThePauli[kk_SparseArray] := ThePauli[Normal @ kk];
 
-ThePauli[kk_SparseArray] := ThePauli[Normal @ kk]
-
-ThePauli[kk:{___, _List, ___}] := ThePauli /@ Thread[kk]
+ThePauli[kk:{___, _List, ___}] := ThePauli /@ Thread[kk];
 (* Note: similar to the Listable attribute. *)
 
 ThePauli[kk_List] := ThePauli @ ReplaceAll[ kk,
   { All -> {1, 2, 3},
     Full -> {0, 1, 2, 3} }
-] /; ContainsAny[kk, {All, Full}]
+] /; ContainsAny[kk, {All, Full}];
 
 ThePauli[All] := ThePauli /@ {1, 2, 3}
 
@@ -210,7 +207,7 @@ ThePauli[1 -> 1] = ThePauli[11]
 
 
 (**** <KetRegulate> ****)
-theKetRegulate::usage = "theKetRegulate[assoc, {s1, s2, \[Ellipsis]}] returns a new association with all default values assigned.\nSee also theKetTrim."
+theKetRegulate::usage = "theKetRegulate[assoc, {s1, s2, \[Ellipsis]}] returns a new association with all default values assigned.\nSee also theKetTrim.";
 
 theKetRegulate[a_Association, ss:{___?SpeciesQ}] := With[
   { tt = Union[Keys @ a, FlavorCap @ ss] },
@@ -603,65 +600,57 @@ HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
 (**** </fKetQ> ****)
 
 
-(**** <KetFormat> <BraFormat>****)
-KetFormat::usage = "KetFormat[\[Ellipsis]] is a low-level function to display Ket[\[Ellipsis]]."
+(**** <KetFormat> <BraFormat> ****)
+KetFormat::usage = "KetFormat[\[Ellipsis]] is a low-level function to display Ket[\[Ellipsis]].";
 
 KetFormat[a_] :=
-  DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Ket"]
-
-KetFormat[a_?theKetFormatQ] :=
-  DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Ket"]
-(* NOTE: This is necessary to handle special formats such as YoungTableau. *)
+  DisplayForm @ TemplateBox[List @ Row[formatKet @ a, $KetDelimiter], "Ket"]
 
 KetFormat[a_List] :=
-  DisplayForm @ TemplateBox[List @ Row[theKetFormat /@ a, ","], "Ket"]
+  DisplayForm @ TemplateBox[List @ Row[formatKet /@ a, ","], "Ket"]
 
 BraFormat[a_] :=
-  DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Bra"]
-
-BraFormat[a_?theKetFormatQ] :=
-  DisplayForm @ TemplateBox[List @ Row[theKetFormat @ a, $KetDelimiter], "Bra"]
-(* NOTE: This is necessary to handle special formats such as YoungTableau. *)
+  DisplayForm @ TemplateBox[List @ Row[formatKet @ a, $KetDelimiter], "Bra"]
 
 BraFormat[a_List] :=
-  DisplayForm @ TemplateBox[List @ Row[theKetFormat /@ a, ","], "Bra"]
+  DisplayForm @ TemplateBox[List @ Row[formatKet /@ a, ","], "Bra"]
 
 
-theKetFormat[Vacuum] = Any
+formatKet[Vacuum] = Any;
 
-theKetFormat[Association[]] = {Any}
+formatKet[Association[]] = {Any};
 
-theKetFormat[a_Association] := KeyValueMap[SpeciesBox[#2, {#1}, {}]&, a]
+formatKet[a_Association] := KeyValueMap[SpeciesBox[#2, {#1}, {}]&, a];
 
-theKetFormat[v_] = v
+formatKet[v_] = v;
 
 
-theKetFormatQ[_] = False
+formatKetQ[_] = False;
 (**** </KetFormat> </BraFormat> ****)
 
 
 (**** <Ket & Bra> ****)
-Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[{s1, s2, \[Ellipsis]}] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] \[Ellipsis].\nSee also Ket, TheKet, Bra, TheBra, State, Pauli, ThePauli, Operator."
+Ket::usage = "Ket represents a basis state of a system of Spins or similar systems.\nKet[0] and Ket[1] represent the two eigenvectors of the Pauli-Z matrix Pauli[3].\nKet[{s1, s2, \[Ellipsis]}] represents the tensor product Ket[s1] \[CircleTimes] Ket[s2] \[CircleTimes] \[Ellipsis].\nSee also Ket, TheKet, Bra, TheBra, State, Pauli, ThePauli, Operator.";
 
-Bra::usage = "Bra[arg] := Dagger[Ket[arg]].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli."
+Bra::usage = "Bra[arg] := Dagger[Ket[arg]].\nSee also Bra, TheBra, Ket, TheKet, Pauli, ThePauli.";
 
 
-SetAttributes[{Ket, Bra}, NHoldAll]
+SetAttributes[{Ket, Bra}, NHoldAll];
 (* The integers in Ket[...] and Bra[...] should not be converted to real
    numbers by N[]. *)
 
-SetAttributes[{Ket, Bra}, ReadProtected]
+SetAttributes[{Ket, Bra}, ReadProtected];
 (* Prevent values associated with Ket and Bra from being seen. *)
 (* Recall that Ket adn Bra has the System` context. *)
 
 If[ $VersionNumber > 13.2,
   SyntaxInformation[Ket] = {"ArgumentsPattern" -> {___}};
   SyntaxInformation[Bra] = {"ArgumentsPattern" -> {___}};
-]
+];
 
 Ket /:
 MakeBoxes[expr:Ket[v_Association], StandardForm|TraditionalForm] := With[
-  { box = ToBoxes @ Ket @ List @ Row[theKetFormat @ v, $KetDelimiter] },
+  { box = ToBoxes @ Ket @ List @ Row[formatKet @ v, $KetDelimiter] },
   InterpretationBox[box, expr]
 ]
 
@@ -669,13 +658,13 @@ Format[Ket[Vacuum]] := Interpretation[Ket @ {"\[CupCap]"}, Ket[Vacuum]]
 
 Format[Ket[{}]] := Interpretation[Ket @ {Any}, Ket[{}]]
 
-Format[Ket[v_List]] := Interpretation[Ket[theKetFormat /@ v], Ket[v]] /;
-  AnyTrue[v, theKetFormatQ]
+Format[Ket[v_List]] := Interpretation[Ket[formatKet /@ v], Ket[v]] /;
+  AnyTrue[v, formatKetQ]
 
 
 Bra /:
 MakeBoxes[expr:Bra[v_Association], StandardForm|TraditionalForm] := With[
-  { box = ToBoxes @ Bra @ List @ Row[theKetFormat @ v, $KetDelimiter] },
+  { box = ToBoxes @ Bra @ List @ Row[formatKet @ v, $KetDelimiter] },
   InterpretationBox[box, expr]
 ]
 
@@ -683,8 +672,8 @@ Format[Bra[Vacuum]] := Interpretation[Bra @ {"\[CupCap]"}, Bra[Vacuum]]
 
 Format[Bra[{}]] := Interpretation[Bra @ {Any}, Bra[{}]]
 
-Format[Bra[v_List]] := Interpretation[Bra[theKetFormat /@ v], Bra[v]] /;
-  AnyTrue[v, theKetFormatQ]
+Format[Bra[v_List]] := Interpretation[Bra[formatKet /@ v], Bra[v]] /;
+  AnyTrue[v, formatKetQ]
 
 
 Ket /: Dagger[Ket[a___]] := Bra[a]
@@ -3073,26 +3062,26 @@ PauliDot[ Bra[aa_List], Pauli[bb_List] ] := CircleTimes @@
 
 
 (**** <CircleTimes> ****)
-CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, \[Ellipsis].\nWhen a, b, c, \[Ellipsis] are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/CircleTimes\", \"paclet:Q3/ref/CircleTimes\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details."
+CircleTimes::usage = "CircleTimes[a,b,c] or a \[CircleTimes] b \[CircleTimes] c represents the tensor product of (abstract) algebraic tensors a, b, c, \[Ellipsis].\nWhen a, b, c, \[Ellipsis] are vectors or matrices, it returns the matrix direct product of them.\nCirlceTimes is a built-in symbol with context System`, and has been extended in Q3.\nSee \!\(\*TemplateBox[{\"Q3/ref/CircleTimes\", \"paclet:Q3/ref/CircleTimes\"}, \"RefLink\", BaseStyle->\"InlineFunctionSans\"]\) for more details.";
 
-SetAttributes[CircleTimes, ReadProtected]
+SetAttributes[CircleTimes, ReadProtected];
 
-CircleTimes[] = 1 (* See also Times[]. *)
+CircleTimes[] = 1; (* See also Times[]. *)
 
-CircleTimes[a_] := a (* See also Times[]. *)
+CircleTimes[a_] = a; (* See also Times[]. *)
 
 (* NOTE: DO NOT set the Flat and OneIdentity attributes for
    Cirlcetimes. Otherwise, the following definitions cause infinite loops. *)
 
 HoldPattern @ CircleTimes[args__] := Garner @ ReleaseHold[
   Distribute @ Hold[CircleTimes][args]
-] /; DistributableQ[{args}]
+] /; DistributableQ[{args}];
 (* NOTE: The Inactive-Activate pair may also be used, but is slower. *)
 
 CircleTimes[pre___, z_?CommutativeQ op_, post___] :=
-  z * CircleTimes[pre, op, post]
+  z * CircleTimes[pre, op, post];
 
-CircleTimes[___, 0, ___] = 0
+CircleTimes[___, 0, ___] = 0;
 (* This happens when some vectors or operators are null. *)
 
 HoldPattern @ CircleTimes[ pre___,
@@ -3100,13 +3089,13 @@ HoldPattern @ CircleTimes[ pre___,
   more:(Multiply[Ket[__], Bra[__]]..),
   Shortest[post___] ] := CircleTimes[ pre,
     Apply[Multiply, CircleTimes @@@ Transpose[List @@@ {op, more}]],
-    post ]
+    post ];
 
 (* On matrices, it operates the same as KroneckerProduct[]. *)
-CircleTimes[mats__?MatrixQ] := KroneckerProduct[mats]
+CircleTimes[mats__?MatrixQ] := KroneckerProduct[mats];
 
 (* For vectors, our CircleTimes[] is different from KroneckerProduct[]. *)
-CircleTimes[vecs__?VectorQ] := Flatten @ KroneckerProduct[vecs]
+CircleTimes[vecs__?VectorQ] := Flatten @ KroneckerProduct[vecs];
 (**** </CircleTimes> ****)
 
 
