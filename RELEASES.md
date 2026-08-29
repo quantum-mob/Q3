@@ -1,5 +1,9 @@
 # Release Notes
 
+## 4.7.2
+
+- New: PowerSubdivide, ShanonLog, MeanStd
+
 ## 4.7.1
 
 - New: WickCovariance

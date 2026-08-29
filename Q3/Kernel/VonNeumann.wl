@@ -17,21 +17,12 @@ ShannonLog::usage = "ShannonLog[b,z] returns -z*Log[b, z] for z\[NotEqual]0 and 
 
 SetAttributes[ShannonLog, Listable];
 
-
-ShannonLog[_?Positive, 0] = 0;
-
-ShannonLog[_?Positive, _?ZeroQ] = 0;
+ShannonLog[_, 0|0.|0.I] = 0;
 
 ShannonLog[base_?Positive, z_] := -z * Log[base, z];
 
 
-ShannonLog[_?Positive, 0, _] = 0;
-
-ShannonLog[_?Positive, _?ZeroQ, _] = 0;
-
-ShannonLog[_?Positive, _?Positive, _?ZeroQ] = Infinity;
-
-ShannonLog[_?Positive, _, _?ZeroQ] = ComplexInfinity;
+ShannonLog[_, 0|0.|0.I, _] = 0;
 
 ShannonLog[base_?Positive, p_, q_] := -p * Log[base, q];
 (**** </ShannonLog> ****)

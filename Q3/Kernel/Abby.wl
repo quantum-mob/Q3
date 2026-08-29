@@ -23,6 +23,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 { DropWhile };
 { Ranking };
 { IntervalSize };
+{ MeanStd, PowerSubdivide };
 
 { Whole, TheDelta};
 { ReverseDot };
@@ -662,20 +663,34 @@ RandomPick[prb:(_List|_SparseArray) -> elm:(_List|_SparseArray)] :=
 
 
 (**** <IntervalSize> ****)
-IntervalSize::usage = "IntervalSize[interval] returns the total size of interval."
+IntervalSize::usage = "IntervalSize[interval] returns the total size of interval.";
 
 IntervalSize[int_Interval] := -Total @ MapApply[Subtract, List @@ int]
 (**** </IntervalSize> ****)
 
 
+MeanStd::usage = "MeanStd[data] gives Around[mean, strerr] of the data.";
+
+MeanStd[a_?ArrayQ] := Around[Mean @ a, Sqrt[Variance[a]/Length[a]]];
+
+
+(* Sander Huisman *)
+(* https://resources.wolframcloud.com/FunctionRepository/resources/PowerSubdivide *)
+PowerSubdivide::usage = "PowerSubdivide[xmax, n] generates the list of values obtained by subdiving the interval from 1 to Subscript[x, max] into n parts such that the ratio of subsequent elements is constant.\nPowerSubdivide[xmin, xmax, n] generates the list of values obtained by subdiving the interval from Subscript[x, min] to Subscript[x, max] into n parts such that the ratio of subsequent elements is constant.";
+PowerSubdivide[stop_, n_Integer] := PowerSubdivide[1, stop, n];
+PowerSubdivide[start_, stop_, n_Integer] := Exp[
+  Subdivide[Log[start], Log[stop], n]
+];
+
+
 (**** <Chain> ****)
-Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting a, b, \[Ellipsis] consecutively."
+Chain::usage = "Chain[a, b, \[Ellipsis]] constructs a chain of links connecting a, b, \[Ellipsis] consecutively.";
 
-Chain[] = {}
+Chain[] = {};
 
-Chain[a:Except[_List]] = {}
+Chain[a:Except[_List]] = {};
 
-Chain[a:Except[_List], b:Except[_List]] := {Rule[a, b]}
+Chain[a:Except[_List], b:Except[_List]] := {Rule[a, b]};
 
 Chain[m_List] := 
   Flatten[Chain /@ Transpose[m]] /; ArrayQ[m, Except[1]]
@@ -696,13 +711,13 @@ Chain[a__, m_List, b__] :=
 
 Chain[a_, b_, c__] := Flatten @ {Chain[a, b], Chain[b, c]}
 
-Chain[aa_List] := Chain @@ aa
+Chain[aa_List] := Chain @@ aa;
 (**** </Chain> ****)
 
 
-ChainBy::usage = "ChainBy[a, b, \[Ellipsis], func] constructs a chain of links connecting a, b, \[Ellipsis] consecutively with each link created by means of func."
+ChainBy::usage = "ChainBy[a, b, \[Ellipsis], func] constructs a chain of links connecting a, b, \[Ellipsis] consecutively with each link created by means of func.";
 
-ChainBy[args___, func_] := func @@@ Chain[args]
+ChainBy[args___, func_] := func @@@ Chain[args];
 
 
 GraphLocalComplement::usage = "GraphLocalComplement[g, v] gives the local complement of graph g according to vertex g.\nThe local complement of a graph g according to vertex v, denoted by g*v, is a graph that has the same vertices as g, but all the neighbors of of v are connected if and only if they are not connected in g."

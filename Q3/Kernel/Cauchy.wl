@@ -321,16 +321,16 @@ CauchySimplify[expr_, opts___?OptionQ] := Simplify[
   opts,
   TransformationFunctions->
     {Automatic, doCauchySimplify}
-]
+];
 
 CauchyFullSimplify[expr_, opts___?OptionQ] := FullSimplify[
   expr,
   opts,
   TransformationFunctions->
     {Automatic, doCauchySimplify}
-]
+];
 
-doCauchySimplify[expr_] := expr //. rulesCauchySimplify
+doCauchySimplify[expr_] := expr //. rulesCauchySimplify;
 
 rulesCauchySimplify = {
   HoldPattern @ Conjugate[expr_Plus] :> Map[Conjugate, expr],
@@ -353,7 +353,7 @@ rulesCauchySimplify = {
     Tan[a * Abs[z]] * Sqrt[z] Sqrt[Conjugate[z]] / Abs[z],
   Tanh[a_. * Sqrt[z_] * Sqrt[Conjugate[z_]]] :> 
     Tanh[a * Abs[z]] * Sqrt[z] Sqrt[Conjugate[z]] / Abs[z]
-}
+};
 (**** </Simplification> ****)
 
 
@@ -403,8 +403,6 @@ grad3Backward[f_, x_, h_] := Module[
 ]
 (**** </NGrad> ****)
 
-
 Protect[ Evaluate @ $symb ];
 End[]; (* Complex *)
-
 EndPackage[];
