@@ -30,6 +30,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 (*{ Unless };*)
 
+{ RangeAlong, SubdivideAlong };
 { Chain, ChainBy };
 { GraphLocalComplement, GraphPivot, GraphNeighborhoodSans };
 { Bead, GreatCircle };
@@ -677,10 +678,40 @@ MeanStd[a_?ArrayQ] := Around[Mean @ a, Sqrt[Variance[a]/Length[a]]];
 (* Sander Huisman *)
 (* https://resources.wolframcloud.com/FunctionRepository/resources/PowerSubdivide *)
 PowerSubdivide::usage = "PowerSubdivide[xmax, n] generates the list of values obtained by subdiving the interval from 1 to Subscript[x, max] into n parts such that the ratio of subsequent elements is constant.\nPowerSubdivide[xmin, xmax, n] generates the list of values obtained by subdiving the interval from Subscript[x, min] to Subscript[x, max] into n parts such that the ratio of subsequent elements is constant.";
+
 PowerSubdivide[stop_, n_Integer] := PowerSubdivide[1, stop, n];
+
 PowerSubdivide[start_, stop_, n_Integer] := Exp[
   Subdivide[Log[start], Log[stop], n]
 ];
+
+
+(**** <SubdivideAlong> ****)
+RangeAlong::usage = "RangeAlong[{a, b}, d] returns the list of points from a to be in step d.\nRangeAlong[{a, b, c, ...}, d] applies to each successive segments.\nThe objecgts a, b, c, \[Ellipsis] can be higher dimensional coordinates.\nRangeAlong[d] is an operator form of RangeAlong.\nSee also Subdivide, PowerSubdivide, Range and PowerRange.";
+
+RangeAlong[d_?NumericQ][spec_] := RangeAlong[spec, d];
+
+RangeAlong[{a_, b_}, d_:1] := Subdivide[a, b, Ceiling @ Norm[(a-b)/d]];
+
+RangeAlong[pp:{a_, _, __}, d_:1] := Prepend[
+  Catenate[Rest /@ Map[RangeAlong[d], Partition[pp, 2, 1]]],
+  a
+];
+(**** </SubdivideAlong> ****)
+
+
+(**** <SubdivideAlong> ****)
+SubdivideAlong::usage = "SubdivideAlong[{a, b}, n] is equvialent to Subdivide[a, b, n].\nSubdivideAlong[{a, b, c, ...}, n] applies to each successive segments.\nThe objecgts a, b, c, \[Ellipsis] can be higher dimensional coordinates.\nSee also Subdivide, PowerSubdivide, Range and PowerRange.\nSubdivideAlong[n] is an operator form of Subdivide.";
+
+SubdivideAlong[n_Integer][spec_] := SubdivideAlong[spec, n];
+
+SubdivideAlong[{a_, b_}, n_Integer:10] := Subdivide[a, b, n];
+
+SubdivideAlong[pp:{a_, b_, c__}, n_Integer:10] := Prepend[
+  Catenate[Rest /@ Map[SubdivideAlong[n], Partition[pp, 2, 1]]],
+  a
+];
+(**** </SubdivideAlong> ****)
 
 
 (**** <Chain> ****)

@@ -1,8 +1,13 @@
 # Release Notes
 
+## 4.7.3
+
+- New: Slice
+
 ## 4.7.2
 
-- New: PowerSubdivide, ShanonLog, MeanStd
+- New: PowerSubdivide, MeanStd
+- Improved: ShanonLog
 
 ## 4.7.1
 

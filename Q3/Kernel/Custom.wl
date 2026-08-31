@@ -1,15 +1,11 @@
 (* -*- mode:math -*- *)
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Customize, $Customizations };
 
-{ $EmptyPlotMarkers };
+Begin["`Private`"];
 
-
-Begin["`Private`"]
-
-$Customizations::usage = "Custom options for various frequently used functions."
-
+$Customizations::usage = "Custom options for various frequently used functions.";
 $Customizations = {
   (** Common **)
   (* PlotStyle -> Thick, *)
@@ -27,11 +23,10 @@ $Customizations = {
 
 
 (**** <Customize> ****)
-
-Customize::usage = "Customize[symb, options] sets the options for symb with the specified options and $Customizations."
+Customize::usage = "Customize[symb, options] sets the options for symb with the specified options and $Customizations.";
 
 Customize[ss:{__Symbol}, opts___?OptionQ] :=
-  Scan[Customize[opts], ss]
+  Scan[Customize[opts], ss];
 
 Customize[symb_Symbol, opts___?OptionQ] := Module[
   { mint },
@@ -40,20 +35,17 @@ Customize[symb_Symbol, opts___?OptionQ] := Module[
     Options[symb]
   ];
   SetOptions[symb, mint]
-]
+];
 
 Customize[opts___?OptionQ][symb_Symbol] :=
-  Customize[symb, opts]
-  
+  Customize[symb, opts];
 (**** </Customize> ****)
 
 
 (* Graphics *)
-
 Customize[Graphics, Frame -> False, Axes -> False, GridLines -> None];
 
 (* Graphics-related functions *)
-
 Customize @ {
   Histogram,
   Plot, ParametricPlot, LogPlot, LogLinearPlot, LogLogPlot,
@@ -63,10 +55,9 @@ Customize @ {
 
 (* 2022-07-23 (v13.1): For some unknown reason, AxesStyle->Large causes a
    problem with ComplexListPlot. *)
-Customize[ComplexListPlot, AxesStyle->{}];
+Customize[ComplexListPlot, AxesStyle -> {}];
 
 (* Graphics3D-related functions *)
-
 Customize[Graphics3D];
 
 Customize[
@@ -74,20 +65,7 @@ Customize[
     ParametricPlot3D
    },
   Axes -> True
-]
+];
 
-
-$EmptyPlotMarkers::usage = "$EmptyPlotMarkers gives a list of predefined empty markers."
-
-$EmptyPlotMarkers = {
-  "\[EmptyCircle]",
-  "\[EmptyUpTriangle]",
-  "\[EmptyDiamond]",
-  "\[EmptySquare]",
-  "\[EmptyDownTriangle]"
-};
-
-
-End[]
-
-EndPackage[]
+End[];
+EndPackage[];
