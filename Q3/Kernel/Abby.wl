@@ -670,9 +670,17 @@ IntervalSize[int_Interval] := -Total @ MapApply[Subtract, List @@ int]
 (**** </IntervalSize> ****)
 
 
+(**** <MeanStd> ****)
 MeanStd::usage = "MeanStd[data] gives Around[mean, strerr] of the data.";
 
-MeanStd[a_?ArrayQ] := Around[Mean @ a, Sqrt[Variance[a]/Length[a]]];
+MeanStd[a_?VectorQ] := Around[Mean @ a, Sqrt[Variance[a]/Length[a]]];
+
+MeanStd[a_?ArrayQ] := Module[
+  { avg = Mean[a],
+    std = Sqrt[Variance[a]/Length[a]] },
+  MapThread[Around, {avg, std}, ArrayDepth[a] - 1]
+];
+(**** </MeanStd> ****)
 
 
 (* Sander Huisman *)

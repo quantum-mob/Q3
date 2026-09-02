@@ -14,8 +14,7 @@ If[ Length[PacletFind @ "Q3"] > 0,
   PacletUninstall["Q3"]
 ];
 
-Unprotect["`*"];
-ClearAll["`*"];
+ClearAll[Evaluate @ Unprotect["`*"]];
 ClearAll["`Private`*"];
 EndPackage[];
 

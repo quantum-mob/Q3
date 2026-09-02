@@ -311,38 +311,42 @@ HalfIntegerQ[Rational[_, 2]] = True;
 HalfIntegerQ[n_] := OddQ[Expand[2 n]];
 
 
-(**** <Simplification> ****)
+(**** <CauchySimplify> ****)
 CauchySimplify::usage = "CauchySimplify[expr] calls the built-in function Simplify but performs some extra transformations concerning complex variables. All options of Simplify are also available to CauchySimplify.";
+CauchySimplify[expr_, opts:OptionsPattern[Simplify]] := Simplify[
+  expr,
+  opts,
+  TransformationFunctions -> {Automatic, CauchyExpand}
+];
 
 CauchyFullSimplify::usage = "CauchyFullSimplify[expr] call the built-in function FullSimplify and performs some extra transformations concerning complex variables. All options of FullSimplify is also available to CauchyFullSimplify.";
-
-CauchySimplify[expr_, opts___?OptionQ] := Simplify[
+CauchyFullSimplify[expr_, opts:OptionsPattern[FullSimplify]] := FullSimplify[
   expr,
   opts,
-  TransformationFunctions->
-    {Automatic, doCauchySimplify}
+  TransformationFunctions -> {Automatic, CauchyExpand}
 ];
+(**** </CauchySimplify> ****)
 
-CauchyFullSimplify[expr_, opts___?OptionQ] := FullSimplify[
-  expr,
-  opts,
-  TransformationFunctions->
-    {Automatic, doCauchySimplify}
-];
 
-doCauchySimplify[expr_] := expr //. rulesCauchySimplify;
+(**** <CauchyExpand> ****)
+CauchyExpand::usage = "CauchySimplify[expr] calls the built-in function Simplify but performs some extra transformations concerning complex variables. All options of Simplify are also available to CauchySimplify.";
 
-rulesCauchySimplify = {
-  HoldPattern @ Conjugate[expr_Plus] :> Map[Conjugate, expr],
-  HoldPattern @ Conjugate[expr_Times] :> Map[Conjugate, expr],
-  HoldPattern @ Conjugate[ Power[b_, -1] ] :> 1 / Conjugate[b],
-  HoldPattern @ Conjugate[ Power[b_, -1/2] ] :> 1 / Conjugate[Sqrt[b]],
-  HoldPattern @ Conjugate[ Power[b_, 1/2] ] :> Sqrt[Conjugate[b]],
+CauchyExpand[expr_] := expr //. $CauchyRules;
+
+$CauchyRules = {
+  Conjugate[expr_Plus] :> Map[Conjugate, expr],
+  Conjugate[expr_Times] :> Map[Conjugate, expr],
+
+  (* The branch cut is assumed to be the negative real axis. *)
+  Conjugate[ Power[z_, -1] ] :> 1 / Conjugate[z],
+  Conjugate[ Power[z_, -1/2] ] :> 1 / Conjugate[Sqrt[z]],
+  Conjugate[ Power[z_,  1/2] ] :> Sqrt[Conjugate[z]], 
+
+  Power[z_, 1/2] * Power[Conjugate[z_], 1/2] :> Abs[z],
   z_ * Conjugate[z_] :> Abs[z]^2,
   z_ + Conjugate[z_] :> 2 Re[z],
   z_ - Conjugate[z_] :> 2 I Im[z],
   Conjugate[z_] - z_ :> -2 I Im[z],
-  Power[z_,1/2] * Power[Conjugate[z_],1/2] :> Abs[z],
   Cos[a_. * Sqrt[z_] * Sqrt[Conjugate[z_]]] :> Cos[a Abs[z]],
   Cosh[a_. * Sqrt[z_] * Sqrt[Conjugate[z_]]] :> Cosh[a Abs[z]],
   Sin[a_. * Sqrt[z_] * Sqrt[Conjugate[z_]]] :> 
@@ -354,7 +358,7 @@ rulesCauchySimplify = {
   Tanh[a_. * Sqrt[z_] * Sqrt[Conjugate[z_]]] :> 
     Tanh[a * Abs[z]] * Sqrt[z] Sqrt[Conjugate[z]] / Abs[z]
 };
-(**** </Simplification> ****)
+(**** </CauchyExpand> ****)
 
 
 (**** <NGrad> ****)
