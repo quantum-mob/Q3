@@ -6,7 +6,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
   Integer, IntegerQ, HalfIntegerQ,
   Binary, BinaryQ, Binaries };
 
-{ CauchySimplify, CauchyFullSimplify };
+{ CauchyExpand, CauchySimplify, CauchyFullSimplify };
 
 { NGrad };
 
@@ -331,16 +331,15 @@ CauchyFullSimplify[expr_, opts:OptionsPattern[FullSimplify]] := FullSimplify[
 (**** <CauchyExpand> ****)
 CauchyExpand::usage = "CauchySimplify[expr] calls the built-in function Simplify but performs some extra transformations concerning complex variables. All options of Simplify are also available to CauchySimplify.";
 
-CauchyExpand[expr_] := expr //. $CauchyRules;
+CauchyExpand[expr_] := expr //. $CauchyRules[[;;4]] //. $CauchyRules;
 
 $CauchyRules = {
   Conjugate[expr_Plus] :> Map[Conjugate, expr],
   Conjugate[expr_Times] :> Map[Conjugate, expr],
 
-  (* The branch cut is assumed to be the negative real axis. *)
-  Conjugate[ Power[z_, -1] ] :> 1 / Conjugate[z],
-  Conjugate[ Power[z_, -1/2] ] :> 1 / Conjugate[Sqrt[z]],
-  Conjugate[ Power[z_,  1/2] ] :> Sqrt[Conjugate[z]], 
+  (* Conjugate[ Power[z_, -1] ] :> 1 / Conjugate[z], *) (* Mathematica 15.0 *)
+  Conjugate[ Power[z_, -1/2] ] :> 1 / Conjugate[Sqrt[z]], (* branch cut: negative real axis *)
+  Conjugate[ Power[z_,  1/2] ] :> Sqrt[Conjugate[z]], (* branch cut: neagive real axis *)
 
   Power[z_, 1/2] * Power[Conjugate[z_], 1/2] :> Abs[z],
   z_ * Conjugate[z_] :> Abs[z]^2,

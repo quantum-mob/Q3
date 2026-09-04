@@ -212,13 +212,13 @@ theKetRegulate::usage = "theKetRegulate[assoc, {s1, s2, \[Ellipsis]}] returns a 
 theKetRegulate[a_Association, ss:{___?SpeciesQ}] := With[
   { tt = Union[Keys @ a, FlavorCap @ ss] },
   KeySort @ AssociationThread[tt -> Lookup[a, tt]]
-]
+];
 (* NOTE:
    1. Does not drop any key from a.
    2. It does not affect the fermion-permutation signature. *)
 
 
-KetRegulate::usage = "KetRegulate[expr] converts every Ket[\[Ellipsis]] and Bra[\[Ellipsis]] in expr into the fully logical form without dropping any element.\nKetRegulate[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, \[Ellipsis].\nKetRegulate[expr, S] is quivalent to KetRegulate[expr, {S}].\nSee also KetTrim."
+KetRegulate::usage = "KetRegulate[expr] converts every Ket[\[Ellipsis]] and Bra[\[Ellipsis]] in expr into the fully logical form without dropping any element.\nKetRegulate[expr, {S1, S2, \[Ellipsis]}] assumes that expr involves systems labeled by S1, S2, \[Ellipsis].\nKetRegulate[expr, S] is quivalent to KetRegulate[expr, {S}].\nSee also KetTrim.";
 
 KetRegulate[expr_] := expr /;
   FreeQ[expr, Ket[_Association] | Bra[_Association]]
@@ -234,24 +234,24 @@ KetRegulate[expr_, ss:{__?SpeciesQ}] := With[
   { tt = KetSpecies[expr] },
   KetRegulate[expr, Union[ss, tt]] /;
     Not @ ContainsAll[ss, tt]
- ]
+];
 
 
-KetRegulate[v:(_Ket|_Bra), ss:{___?SpeciesQ}] = v
+KetRegulate[v:(_Ket|_Bra), ss:{___?SpeciesQ}] = v;
 
-KetRegulate[Ket[a_Association], ss:{___?SpeciesQ}] := Ket @ theKetRegulate[a, ss]
+KetRegulate[Ket[a_Association], ss:{___?SpeciesQ}] := Ket @ theKetRegulate[a, ss];
 
 KetRegulate[Bra[a_Association], ss:{___?SpeciesQ}] :=
-  Dagger @ KetRegulate[Ket @ a, ss]
+  Dagger @ KetRegulate[Ket @ a, ss];
 
 KetRegulate[OTimes[args__], ___] :=
-  OTimes @@ Map[KetRegulate, {args}]
+  OTimes @@ Map[KetRegulate, {args}];
 
 KetRegulate[OSlash[Ket[a_Association], expr_], ss:{__?SpeciesQ}] :=
-  OSlash[Ket[a], KetRegulate[expr, Supplement[ss, Keys @ a]]]
+  OSlash[Ket[a], KetRegulate[expr, Supplement[ss, Keys @ a]]];
 
 KetRegulate[expr_Association, ss:{___?SpeciesQ}] :=
-  Map[KetRegulate[#, ss]&, expr]
+  Map[KetRegulate[#, ss]&, expr];
 (* NOTE: Association needs to be handled carefully due to HoldAllComplete
    Attribute of Association. Otherwise, the result may be different from what
    you would expect.  *)
@@ -263,7 +263,7 @@ KetRegulate[expr_, ss:{___?SpeciesQ}] := expr /. {
   a_Association :> KetRegulate[a, ss],
   v_Ket :> KetRegulate[v, ss],
   v_Bra :> KetRegulate[v, ss]
-}
+};
 (**** </KetRegulate> ****)
 
 
@@ -604,16 +604,16 @@ HoldPattern @ fKetQ[expr_] := False /; FreeQ[expr, Ket[_Association]]
 KetFormat::usage = "KetFormat[\[Ellipsis]] is a low-level function to display Ket[\[Ellipsis]].";
 
 KetFormat[a_] :=
-  DisplayForm @ TemplateBox[List @ Row[formatKet @ a, $KetDelimiter], "Ket"]
+  DisplayForm @ TemplateBox[List @ Row[formatKet @ a, $KetDelimiter], "Ket"];
 
 KetFormat[a_List] :=
-  DisplayForm @ TemplateBox[List @ Row[formatKet /@ a, ","], "Ket"]
+  DisplayForm @ TemplateBox[List @ Row[formatKet /@ a, ","], "Ket"];
 
 BraFormat[a_] :=
-  DisplayForm @ TemplateBox[List @ Row[formatKet @ a, $KetDelimiter], "Bra"]
+  DisplayForm @ TemplateBox[List @ Row[formatKet @ a, $KetDelimiter], "Bra"];
 
 BraFormat[a_List] :=
-  DisplayForm @ TemplateBox[List @ Row[formatKet /@ a, ","], "Bra"]
+  DisplayForm @ TemplateBox[List @ Row[formatKet /@ a, ","], "Bra"];
 
 
 formatKet[Vacuum] = Any;
@@ -709,7 +709,7 @@ Bra /:
 CircleTimes[a:Bra[_List], b:Bra[_List]..] := Join[a, b, 2]
 
 
-fermionKeySort::usage = "fermionKeySort[Ket[assoc]] sorts the Keys of assoc and multiply a factor of the signature of fermion Keys."
+fermionKeySort::usage = "fermionKeySort[Ket[assoc]] sorts the Keys of assoc and multiply a factor of the signature of fermion Keys.";
 
 fermionKeySort[(head:(Ket|Bra))[a_Association]] := 
   Signature[Keys @ theKetTrim @ KeySelect[a, FermionQ]] * head[KeySort @ a]
@@ -773,7 +773,7 @@ Bra[a_Association][s_] := a[FlavorCap @ s]
 (**** </Ket & Bra> ****)
 
 
-KetRule::usage = "KetRule[rule] is a low-level function used when constructing Ket[<|\[Ellipsis]|>] to generate proper elementary rules from the compound rule specified in rule."
+KetRule::usage = "KetRule[rule] is a low-level function used when constructing Ket[<|\[Ellipsis]|>] to generate proper elementary rules from the compound rule specified in rule.";
 
 SetAttributes[KetRule, Listable]
 
@@ -785,101 +785,97 @@ KetRule[r_Rule] := r
 
 
 (**** <KetVerify> ****)
+KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|\[Ellipsis]|>] in expr.";
 
-KetVerify::usage = "KetVerify[ket] returns ket if ket is a valid Ket; $Failed otherwise.\nKetVerify[expr] checks every Ket[<|\[Ellipsis]|>] in expr."
+KetVerify[Ket[a_Association]] := theKetVerify[a];
 
-KetVerify[Ket[a_Association]] := theKetVerify[a]
-
-KetVerify[expr_] := expr /. { v_Ket :> KetVerify[v] }
+KetVerify[expr_] := expr /. { v_Ket :> KetVerify[v] };
 
 
-theKetVerify::usage = "theKetVerify[assoc] removes key-value pairs from Association assoc that are not valid for a ket\ntheKetVerify[a->b] returns a->b if Ket[<|a->b|>] is valid; Nothing otherwise."
+theKetVerify::usage = "theKetVerify[assoc] removes key-value pairs from Association assoc that are not valid for a ket\ntheKetVerify[a->b] returns a->b if Ket[<|a->b|>] is valid; Nothing otherwise.";
 
 theKetVerify[a_Association] :=
-  AssociationMap[theKetVerify, a]
+  AssociationMap[theKetVerify, a];
 
-theKetVerify[any_Rule] = any
-
+theKetVerify[any_Rule] = any;
 (**** </KetVerify> ****)
 
 
 (**** <KetTrim> ****)
+theKetTrim::usage = "theKetTrim[assoc] removes from assoc the elements that are either irrelevant or associated with the default value.";
 
-theKetTrim::usage = "theKetTrim[assoc] removes from assoc the elements that are either irrelevant or associated with the default value."
+theKetTrim[a_Association] := AssociationMap[theKetTrim, a];
 
-theKetTrim[a_Association] := AssociationMap[theKetTrim, a]
+theKetTrim[any_Rule] = any;
 
-theKetTrim[any_Rule] = any
-
-theKetTrim[{} -> _] = Nothing (* fallback *)
+theKetTrim[{} -> _] = Nothing; (* fallback *)
 
 
-KetTrim::usage = "KetTrim[expr] converts every Ket[<|\[Ellipsis]|>] and Bra[<|\[Ellipsis]|>] in expr into the simplest form by dropping elements with default values.\nTo be compared with KetRegulate."
+KetTrim::usage = "KetTrim[expr] converts every Ket[<|\[Ellipsis]|>] and Bra[<|\[Ellipsis]|>] in expr into the simplest form by dropping elements with default values.\nTo be compared with KetRegulate.";
 
-KetTrim[Ket[a_Association]] := Ket[theKetTrim @ a]
+KetTrim[Ket[a_Association]] := Ket[theKetTrim @ a];
 
 KetTrim[expr_] := expr /. {
   a_OTimes -> a, (* NOTE *)
   HoldPattern[OSlash[v_Ket, new_]] :> OSlash[v, KetTrim @ new],
   Ket[a_Association] :> Ket[theKetTrim @ a],
   Bra[a_Association] :> Bra[theKetTrim @ a]
-}
+};
 (* NOTE: This line is necessary to prevent the Kets and Bras in OTimes from
    being affected. *)
-
 (**** </KetTrim> ****)
 
 
-KetSpecies::usage = "KetSpecies[expr] returns the list of all species of Ket-like objects in expression expr."
+KetSpecies::usage = "KetSpecies[expr] returns the list of all species of Ket-like objects in expression expr.";
 
 KetSpecies[expr_] := Select[
   Union @ Flatten @ Cases[{expr}, (Ket|Bra|ProductState|CoherentState)[a_Association] :> Keys[a], Infinity],
   NonCommutativeQ
- ]
+];
 
 
 (**** <KetChop> ****)
-KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[ImaginaryI], from expr, where the rest is a valid Ket expression."
+KetChop::usage = "KetChop[expr] removes approximate zeros, 0.` or 0.` + 0.`\[ImaginaryI], from expr, where the rest is a valid Ket expression.";
 
-SetAttributes[KetChop, Listable]
+SetAttributes[KetChop, Listable];
 
-KetChop[any_, ___] := any /; FreeQ[any, _Ket]
+KetChop[any_, ___] := any /; FreeQ[any, _Ket];
 
 KetChop[any_, ___] := any /; 
-  Not @ FreeQ[any, HoldPattern @ Multiply[___, _Ket, _Bra, ___]]
+  Not @ FreeQ[any, HoldPattern @ Multiply[___, _Ket, _Bra, ___]];
 
-KetChop[expr_] := KetChop[expr, 1*^-10]
+KetChop[expr_] := KetChop[expr, 1*^-10];
 
 KetChop[expr_, delta_] := Module[
   { var = Cases[{expr}, _Ket, Infinity],
     cff },
   cff = Coefficient[expr, var];
   IntegerChop[cff] . var
-]
+];
 (**** </KetChop> ****)
 
 
-KetDrop::usage = "KetDrop[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetDrop[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr.\nKetDrop[{s1,s2,\[Ellipsis]}] is an operator form of KetDrop."
+KetDrop::usage = "KetDrop[v, {s1, s2, \[Ellipsis]}] returns Ket[<|\[Ellipsis]|>] with the species {s1, s2, \[Ellipsis]} removed from v.\nKetDrop[expr, {s1, s2, \[Ellipsis]}] removes {s1, s2, \[Ellipsis]} from every ket in expr.\nKetDrop[{s1,s2,\[Ellipsis]}] is an operator form of KetDrop.";
 
 KetDrop[Ket[a_Association], ss:{__?SpeciesQ}] :=
-  Ket @ KeyDrop[a, FlavorCap @ ss]
+  Ket @ KeyDrop[a, FlavorCap @ ss];
 
-KetDrop[assoc_Association, ss:{__?SpeciesQ}] := Map[KetDrop[ss], assoc]
+KetDrop[assoc_Association, ss:{__?SpeciesQ}] := Map[KetDrop[ss], assoc];
 
 KetDrop[expr_, ss:{__?SpeciesQ}] := expr /. {
   v:Ket[_Association] :> KetDrop[v, ss]
- }
+};
 
-KetDrop[any_, S_?SpeciesQ] := KetDrop[any, {S}]
+KetDrop[any_, S_?SpeciesQ] := KetDrop[any, {S}];
 
-KetDrop[S_?SpeciesQ][any_] := KetDrop[any, {S}]
+KetDrop[S_?SpeciesQ][any_] := KetDrop[any, {S}];
 
-KetDrop[ss:{__?SpeciesQ}][any_] := KetDrop[any, ss]
+KetDrop[ss:{__?SpeciesQ}][any_] := KetDrop[any, ss];
 
 
-KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if test holds true. Here, test is an inequality or equality in terms of species.\nKetPurge[test] represents an operator form of KetPurge."
+KetPurge::usage = "KetPurge[expr, test] puts every Ket[\[Ellipsis]] to zero if test holds true. Here, test is an inequality or equality in terms of species.\nKetPurge[test] represents an operator form of KetPurge.";
 
-KetPurge[test_][expr_] := KetPurge[expr, test]
+KetPurge[test_][expr_] := KetPurge[expr, test];
 
 KetPurge[Ket[asso_Association], test_] := Module[
   { cond },
@@ -890,16 +886,16 @@ KetPurge[Ket[asso_Association], test_] := Module[
      }
    ];
   If[cond, 0, Ket[asso], Ket[asso]]
- ]
+];
 
 KetPurge[expr:(_List|_Association), test_] :=
   DeleteCases[KetPurge[test] /@ expr, 0|{}]
 
 KetPurge[expr_, test_] := expr /. {
   v:Ket[_Association] :> KetPurge[v, test]
- }
+};
 
-KetUpdate::usage = "KetUpdate[ket, {s1->expr1, s2->expr2, \[Ellipsis]}] updates ket according to the rules specified by {s1->expr1, s2->expr2, \[Ellipsis]}.\nKetUpdate[expr, spec] converts every ket in expr."
+KetUpdate::usage = "KetUpdate[ket, {s1->expr1, s2->expr2, \[Ellipsis]}] updates ket according to the rules specified by {s1->expr1, s2->expr2, \[Ellipsis]}.\nKetUpdate[expr, spec] converts every ket in expr.";
 
 KetUpdate[Ket[asso_Association], spec:{__Rule}] := Module[
   { new, kk, vv, qq },
@@ -911,7 +907,7 @@ KetUpdate[Ket[asso_Association], spec:{__Rule}] := Module[
     Association @ spec
    ];
   Ket[Ket @ asso, Sequence @@ Normal[new, Association]]
- ]
+];
 
 KetUpdate[asso_Association, spec__] := KetUpdate[#, spec]& /@ asso
 
@@ -921,12 +917,12 @@ KetUpdate[expr_, spec:{__Rule}] :=
 KetUpdate[expr_, spec__Rule] := KetUpdate[expr, {spec}]
 
 
-KetSort::usage = "KetSort[expr, {s1, s2, \[Ellipsis]}] sorts the logical values of species s1, s2, \[Ellipsis] in every Ket[<|\[Ellipsis]|>] appearing in expr.\nKetSort[expr] applies to all species involved in expr. When expr involves Ket[\[Ellipsis]] for unlabelled qubits, KetSort applies Sort[Ket[\[Ellipsis]]] to every Ket[\[Ellipsis]] in expr."
+KetSort::usage = "KetSort[expr, {s1, s2, \[Ellipsis]}] sorts the logical values of species s1, s2, \[Ellipsis] in every Ket[<|\[Ellipsis]|>] appearing in expr.\nKetSort[expr] applies to all species involved in expr. When expr involves Ket[\[Ellipsis]] for unlabelled qubits, KetSort applies Sort[Ket[\[Ellipsis]]] to every Ket[\[Ellipsis]] in expr.";
 
 KetSort[vec:Ket[_Association], ss:{__?SpeciesQ}] := Module[
   { val = Sort @ vec[ss] },
   vec[ss -> val]
- ]
+]
 
 KetSort[Ket[vv_List]] := Ket @ Sort[vv] (* Pauli Ket *)
 
@@ -937,10 +933,10 @@ KetSort[expr_] := expr /. { v:Ket[__] :> KetSort[v] }
 
 KetSort[expr_, ss:{__?SpeciesQ}] := expr /. {
   v:Ket[_Association] :> KetSort[v, ss]
- }
+};
 
 
-KetNormSquare::usage = "KetNormSquare[expr] returns the norm square of Ket expression expr."
+KetNormSquare::usage = "KetNormSquare[expr] returns the norm square of Ket expression expr.";
 
 SetAttributes[KetNorm, Listable]
 
@@ -951,33 +947,33 @@ KetNormSquare[z_?CommutativeQ * any_Ket] := AbsSquare[z]
 KetNormSquare[expr_] := NormSquare[Matrix @ expr] /; Not @ FreeQ[expr, _Ket]
 
 
-KetNorm::usage = "KetNorm[expr] returns the norm of Ket expression expr."
+KetNorm::usage = "KetNorm[expr] returns the norm of Ket expression expr.";
 
-SetAttributes[KetNorm, Listable]
+SetAttributes[KetNorm, Listable];
 
-KetNorm[0] = 0
+KetNorm[0] = 0;
 
 KetNorm[z_?CommutativeQ * any_Ket] := Abs[z]
 
 KetNorm[expr_] := Norm[Matrix @ expr] /; Not @ FreeQ[expr, _Ket | _State]
 
 
-KetNormalize::usage = "KetNormalize[expr] returns the normalized form of a ket expression expr.\nKetNormalize[expr, f] normalizes with respect to the norm function f."
+KetNormalize::usage = "KetNormalize[expr] returns the normalized form of a ket expression expr.\nKetNormalize[expr, f] normalizes with respect to the norm function f.";
 
-KetNormalize[0] = 0
+KetNormalize[0] = 0;
 
 KetNormalize[expr_] := Garner[expr / KetNorm[expr]] /;
-  Not @ FreeQ[expr, _Ket]
+  Not @ FreeQ[expr, _Ket];
 
 KetNormalize[expr_, func_] := Garner[expr / func[expr]] /;
-  Not @ FreeQ[expr, _Ket]
+  Not @ FreeQ[expr, _Ket];
 
-KetNormalize[expr_, ___] = expr
+KetNormalize[expr_, ___] = expr;
 
 
-KetOrthogonalize::usage = "KetOrthogonalize[vecs] orthgonalizes the vectors in vecs."
+KetOrthogonalize::usage = "KetOrthogonalize[vecs] orthgonalizes the vectors in vecs.";
 
-KetOrthogonalize[{}] := {}
+KetOrthogonalize[{}] := {};
 
 KetOrthogonalize[vv:{__}] := Module[
   { ss = Agents[vv],
@@ -985,7 +981,7 @@ KetOrthogonalize[vv:{__}] := Module[
   bs = Basis[ss];
   mm = Matrix[vv, ss];
   DeleteCases[Garner[Orthogonalize[mm] . bs], 0]
- ] /; NoneTrue[vv, FreeQ[#, Ket[_Association]]&]
+] /; NoneTrue[vv, FreeQ[#, Ket[_Association]]&];
 
 KetOrthogonalize[vv:{__}] := Module[
   { nn, bs, mm },
@@ -993,12 +989,11 @@ KetOrthogonalize[vv:{__}] := Module[
   bs = Basis[nn];
   mm = Matrix[vv];
   DeleteCases[Garner[Orthogonalize[mm] . bs], 0]
- ] /; NoneTrue[vv, FreeQ[#, Ket[(0|1)..]]&]
+] /; NoneTrue[vv, FreeQ[#, Ket[(0|1)..]]&];
 
 
 (**** <KetFactor> ****)
-
-KetFactor::usage = "KetFactor[expr] tries to factorize the ket expression expr, and if successful, it returns the result in terms of OTimes[\[Ellipsis]]. Otherwise it just throws expr out.\nKetFactor[expr, s] or KetFactor[expr, {s1, s2, \[Ellipsis]}] factors out the state concerning the specified species and returns the result in terms of OSlash[\[Ellipsis]]."
+KetFactor::usage = "KetFactor[expr] tries to factorize the ket expression expr, and if successful, it returns the result in terms of OTimes[\[Ellipsis]]. Otherwise it just throws expr out.\nKetFactor[expr, s] or KetFactor[expr, {s1, s2, \[Ellipsis]}] factors out the state concerning the specified species and returns the result in terms of OSlash[\[Ellipsis]].";
 
 KetFactor[in_Association, qq:{__?SpeciesQ}] :=
   Map[KetFactor[#, qq]&, in]
@@ -1056,53 +1051,49 @@ ketSplit[ Bra[a_Association] ] :=
 ketSplit[expr_] := KetRegulate[expr] /. {
   v_Ket :> ketSplit[v],
   v_Bra :> ketSplit[v]
- }
-
+};
 (**** </KetFactor> ****)
 
 
-ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression."
+ReleaseTimes::usage = "ReleaseTimes[expr] replace OTimes and OSlash with CirlceTimes (\[CircleTimes]) to recover the standard expression.";
 
 ReleaseTimes[expr_] := KetRegulate[
   expr /. {OTimes -> CircleTimes, OSlash -> CircleTimes}
- ]
+];
 
 
 (**** <OTimes> ****)
-
-OTimes::usage = "OTimes represents CircleTimes, but holds the arguments. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
+OTimes::usage = "OTimes represents CircleTimes, but holds the arguments. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators).";
 (* It is used, e.g., for KetFactor[]. *)
 
 Format @ HoldPattern @ OTimes[a__] :=
-  Interpretation[HoldForm @ CircleTimes @ a, OTimes @ a]
+  Interpretation[HoldForm @ CircleTimes @ a, OTimes @ a];
 
-OTimes[a_] := a
+OTimes[a_] = a;
 
 OTimes[pre___, z_?CommutativeQ, post___] := z OTimes[pre, post]
 
 OTimes[pre___, vv:Repeated[_Ket, {2, Infinity}], post___] :=
-  OTimes[pre, CircleTimes[vv], post]
+  OTimes[pre, CircleTimes[vv], post];
 
 OTimes /:
-Dagger[expr_OTimes] := Map[Dagger, expr]
-
+Dagger[expr_OTimes] := Map[Dagger, expr];
 (**** </OTimes> ****)
 
 
 (**** <OSlash> ****)
-
-OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measurement[\[Ellipsis]] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators)."
+OSlash::usage = "OSlash represents a special form of CircleTimes. It is useful, for example, to find the results of Measurement[\[Ellipsis]] and to find the reduced Ket expressions. Note that both OTimes and OSlash, two variants of CircleTimes, are intended for state vectors (but not gate operators).";
 
 Format @ HoldPattern @ OSlash[a:(_Ket|_Bra), b:Times[__]] :=
   Interpretation[
     CircleTimes[HoldForm @ a, Row @ {"(",b,")"}],
     OSlash[a, b]
-   ]
+  ];
 
 Format @ OSlash[a:(_Ket|_Bra), b_] := Interpretation[
   CircleTimes[HoldForm @ a, HoldForm @ b],
   OSlash[a, b]
- ]
+];
 
 OSlash /: Times[z_, OSlash[a_Ket, b_]] := OSlash[a, Garner[z*b]]
 
@@ -1127,12 +1118,10 @@ HoldPattern @ OSlash[vec_, z_?CommutativeQ OTimes[ff__]] :=
 AddGarnerPatterns[_Pauli, _Dyad, _Ket, _Bra, _OTimes, _OSlash]
 
 AddElaborationPatterns[_Pauli, _Dyad]
-
 (**** </OSlash> ****)
 
 
 (**** <Multiply> ****)
-
 HoldPattern @ Multiply[ pre___,
   a:Ket[_Association], bb:Ket[_Association]..,
   Shortest[post___] ] :=
@@ -1184,14 +1173,13 @@ HoldPattern @ ComplexQ[ Multiply[Bra[___], ___, Ket[___]] ] = True
 Multiply /:
 HoldPattern @ Conjugate[ Multiply[Bra[a___], op___, Ket[b___]] ] :=
   Multiply[Bra[b], Dagger @ Multiply[op], Ket[a]]
-
 (**** </Multiply> ****)
 
 
 (**** <BraKet> ****)
-BraKet::usage = "BraKet[{a}, {b}] represents the Hermitian product \[LeftAngleBracket]a|b\[RightAngleBracket] of the two states Ket[a] and Ket[b]."
+BraKet::usage = "BraKet[{a}, {b}] represents the Hermitian product \[LeftAngleBracket]a|b\[RightAngleBracket] of the two states Ket[a] and Ket[b].";
 
-SetAttributes[BraKet, NHoldAll]
+SetAttributes[BraKet, NHoldAll];
 (* The integers in BraKet[] should not be converted to real numbers by N[]. *)
 
 Format @ BraKet[{}, b_List] :=
@@ -1207,28 +1195,28 @@ BraKet /: Conjugate[ BraKet[a_, b_] ] := BraKet[b, a]
 (* General evaluation rules *)
 
 BraKet[a_List, b_List] := TheDelta[a, b] /;
-  AllTrue[Flatten @ {a, b}, NumericQ]
+  AllTrue[Flatten @ {a, b}, NumericQ];
 
 BraKet[a_List, b_List] := 0 /; Length[a] != Length[b]
 
-BraKet[a_List, b_List] := TheDelta[a, b]
+BraKet[a_List, b_List] := TheDelta[a, b];
 
 
 BraKet[a_Association, b_Association] := With[
   { qq = Union[Keys @ a, Keys @ b] },
   TheDelta[Lookup[a, qq], Lookup[b, qq]]
-]
+];
 (**** </BraKet> ****)
 
 
 (**** <State> ****)
-State::usage = "State[vec, {s1,s2,\[Ellipsis]}] represents the state of the systems {s1, s2, \[Ellipsis]} with the vector representation vec."
+State::usage = "State[vec, {s1,s2,\[Ellipsis]}] represents the state of the systems {s1, s2, \[Ellipsis]} with the vector representation vec.";
 
-State::dupe = "Species `` appear in multiple states to be multiplied or tensor-producted."
+State::dupe = "Species `` appear in multiple states to be multiplied or tensor-producted.";
 
 SyntaxInformation[State] = {"ArgumentsPattern" -> {_, _, OptionsPattern[]}};
 
-AddElaborationPatterns[_State]
+AddElaborationPatterns[_State];
 
 State /:
 MakeBoxes[vv:State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ], fmt_] :=
@@ -1238,7 +1226,9 @@ MakeBoxes[vv:State[vec_?VectorQ, ss:{__?SpeciesQ}, opts___?OptionQ], fmt_] :=
       BoxForm`SummaryItem @ {"Dimension: ", Length @ vec} },
     { BoxForm`SummaryItem @ {"Vector: ", ArrayShort @ vec},
       BoxForm`SummaryItem @ {"Label: ", OptionValue[Port, {opts}, "Label"]} },
-    fmt, "Interpretable" -> Automatic ]
+    fmt, 
+    "Interpretable" -> Automatic 
+  ];
 
 
 State[vec_?VectorQ, S_?SpeciesQ, opts___?OptionQ] := 
@@ -1337,19 +1327,19 @@ Multiply[ pre___, op:Except[_Plus|_Times], vec_State, post___ ] := With[
     State[Matrix[op, tt] . Matrix[vec, tt], tt],
     post
   ]
-]
+];
 (**** </State> ****)
 
 
 (**** <StateForm> ****)
-StateForm::usage = "StateForm[expr] converts the Ket expression expr to State[vec, {s1, s2, \[Ellipsis]}."
+StateForm::usage = "StateForm[expr] converts the Ket expression expr to State[vec, {s1, s2, \[Ellipsis]}.";
 
 StateForm[expr_?fKetQ, opts___?OptionQ] := With[
   { ss = Agents @ expr },
   State[Matrix[expr, ss], ss, opts]
-]
+];
 
-StateForm[vec_ProductState] := Unfold[vec]
+StateForm[vec_ProductState] := Unfold[vec];
 (**** </StateForm> ****)
 
 

@@ -227,14 +227,14 @@ HoldPattern @ MultiplyKind[ Dagger[x_] ] := MultiplyKind[x]
 HoldPattern @ MultiplyKind[ Tee[x_] ] := MultiplyKind[x]
 
 
-Dimension::usage = "Dimension[A] gives the Hilbert space dimension associated with the system A."
+Dimension::usage = "Dimension[A] gives the Hilbert space dimension associated with the system A.";
 
-SetAttributes[Dimension, Listable]
+SetAttributes[Dimension, Listable];
 
 
-LogicalValues::usage = "LogicalValues[spc] gives the list of logical values labeling the logical basis states of the system spc."
+LogicalValues::usage = "LogicalValues[spc] gives the list of logical values labeling the logical basis states of the system spc.";
 
-SetAttributes[LogicalValues, Listable]
+SetAttributes[LogicalValues, Listable];
 
 
 (***** <Let> ****)
@@ -248,20 +248,19 @@ SyntaxInformation[Let] = {
   "ArgumentsPattern" -> {_, __}
 };
 
-Let[name_Symbol, ls__Symbol, opts___?OptionQ] := Let[name, {ls}, opts]
+Let[name_Symbol, ls__Symbol, opts___?OptionQ] := Let[name, {ls}, opts];
 
-Let[name_Symbol, ___] := (Message[Let::unknown, name]; $Failed)
+Let[name_Symbol, ___] := (Message[Let::unknown, name]; $Failed);
 (***** </Let> ****)
 
 
 (**** <Species> ****)
-
-Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, \[Ellipsis]] declares the symbols a, b, \[Ellipsis] to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, \[Ellipsis]] does not take a specific structure, but only regarded seemingly so."
+Species::usage = "Species represents a tensor-like quantity, which is regarded as a multi-dimensional regular array of numbers.\nLet[Species, a, b, \[Ellipsis]] declares the symbols a, b, \[Ellipsis] to be Species.\nIn the Wolfram Language, a tensor is represented by a multi-dimenional regular List. A tensor declared by Let[Species, \[Ellipsis]] does not take a specific structure, but only regarded seemingly so.";
 
 Let[Species, ss:{__Symbol}] := (
   Clear[ss]; (* NOTE: This must come before Scan. *)
   Scan[setSpecies, ss]
-)
+);
 
 setSpecies[x_Symbol] := (
   ClearAttributes[x, Attributes[x]];
@@ -287,7 +286,7 @@ setSpecies[x_Symbol] := (
   x[i___, Null] = x[i, $];
   x[i___][j___] = x[i, j];
   x[i___, $, j__] = x[i, j];
-  (* In particular, x[j,$,$] = x[j,$]. *)
+  (* In particular, x[j, $, $] = x[j, $]. *)
 
   (* species flavor index -> string *)
   x[i___, s_?SpeciesQ, j___] := x[i, ToString[s, InputForm], j];
@@ -305,6 +304,7 @@ setSpecies[x_Symbol] := (
 
   Format @ x[k___] := Interpretation[SpeciesBox[x, {k}, {}], x[k]];
 );
+(**** </Species> ****)
 
 
 SpeciesQ::usage = "SpeciesQ[a] returns True if a is a Species.";
@@ -312,21 +312,19 @@ SpeciesQ::usage = "SpeciesQ[a] returns True if a is a Species.";
 SpeciesQ[_] = False;
 
 
-AnySpeciesQ::usaage = "AnySpeciesQ[z] returns True if z itself is an Species or a modified form z = Conjugate[x], Dagger[x], Tee[x] of another Species x."
+AnySpeciesQ::usaage = "AnySpeciesQ[z] returns True if z itself is an Species or a modified form z = Conjugate[x], Dagger[x], Tee[x] of another Species x.";
 
-AnySpeciesQ[ _?SpeciesQ ] = True
+AnySpeciesQ[ _?SpeciesQ ] = True;
 
-AnySpeciesQ[ Inverse[_?SpeciesQ] ] = True
+AnySpeciesQ[ Inverse[_?SpeciesQ] ] = True;
 
-AnySpeciesQ[ Conjugate[_?SpeciesQ] ] = True
+AnySpeciesQ[ Conjugate[_?SpeciesQ] ] = True;
 
-AnySpeciesQ[ Dagger[_?SpeciesQ] ] = True
+AnySpeciesQ[ Dagger[_?SpeciesQ] ] = True;
 
-AnySpeciesQ[ Tee[_?SpeciesQ] ] = True
+AnySpeciesQ[ Tee[_?SpeciesQ] ] = True;
 
-AnySpeciesQ[ _ ] = False
-
-(**** </Species> ****)
+AnySpeciesQ[ _ ] = False;
 
 
 (**** <Agents> ****)
@@ -473,9 +471,9 @@ SpeciesBox[c_?Negative] := DisplayForm @ RowBox @ {"(", c, ")"};
 SpeciesBox[c_?AtomQ] = c;
 
 
-SpeciesBox[c_, {}, {}] := c;
+SpeciesBox[c_, {}|{$}, {}] = c;
 
-SpeciesBox[c_, {}, sup:{__}, delimiter_String:"\[ThinSpace]"] :=
+SpeciesBox[c_, {}|{$}, sup:{__}, delimiter_String:"\[ThinSpace]"] :=
   Superscript[SpeciesBox @ c, Row[sup, delimiter]];
 
 SpeciesBox[c_, sub:{__}, {}] :=
@@ -662,23 +660,23 @@ NormSquare[obj:(_?VectorQ|_?MatrixQ), spec___] := Norm[obj, spec]^2
 
 
 (**** <AbsSquare> ****)
-AbsSquare::usage = "AbsSquare[expr] returns the absolute square of expr, i.e., Dagger[expr]**expr."
+AbsSquare::usage = "AbsSquare[expr] returns the absolute square of expr, i.e., Dagger[expr]**expr.";
 
 AbsSquare[z_?NumericQ] := Abs[z]^2
 
-AbsSquare[mat_?MatrixQ] := ConjugateTranspose[mat] . mat
+AbsSquare[mat_?MatrixQ] := ConjugateTranspose[mat] . mat;
 
-AbsSquare[expr_] := Multiply[Dagger @ expr, expr]
-
-
-AbsSquareRight::usage = "AbsSquareRight[expr] is equivalent to AbsSquare[expr]."
+AbsSquare[expr_] := Multiply[Dagger @ expr, expr];
 
 
-AbsSquareLeft::usage = "AbsSquareLeft[expr] returns the left-absolute square of expr, i.e., expr**Dagger[expr], regarding expr to operate on the left from the right."
+AbsSquareRight::usage = "AbsSquareRight[expr] is equivalent to AbsSquare[expr].";
 
-AbsSquareLeft[mat_?MatrixQ] := mat . Topple[mat]
 
-AbsSquareLeft[expr_] := Multiply[expr, Dagger @ expr]
+AbsSquareLeft::usage = "AbsSquareLeft[expr] returns the left-absolute square of expr, i.e., expr**Dagger[expr], regarding expr to operate on the left from the right.";
+
+AbsSquareLeft[mat_?MatrixQ] := mat . Topple[mat];
+
+AbsSquareLeft[expr_] := Multiply[expr, Dagger @ expr];
 (**** </AbsSquare> ****)
 
 
@@ -1471,7 +1469,7 @@ Observation[spec_][expr_Plus] := Observation[spec] /@ expr
 Observation[spec_][z_?CommutativeQ expr_] := z * Observation[spec][expr]
 
 
-ObservationValue::usage = "ObservationValue[state, spec] returns the eigenvalue of operator Observation[spec] that state belongs to if state is an eigenstate of the operator. Otherwise, it returns Indefinite[value1, value2, \[Ellipsis]]."
+ObservationValue::usage = "ObservationValue[state, spec] returns the eigenvalue of operator Observation[spec] that state belongs to if state is an eigenstate of the operator. Otherwise, it returns Indefinite[value1, value2, \[Ellipsis]].";
 
 ObservationValue[spec_][expr_] :=
   ObservationValue[expr, spec]
@@ -1494,10 +1492,10 @@ ObservationValue[expr_Plus, spec_] := With[
 
 ObservationValue[Ket[a_Association], spec_] := Activate[
   spec /. {
-    S_?SpeciesQ[j___] :> Lookup[a, S[j,$]],
+    S_?SpeciesQ[j___] :> Lookup[a, S[j, $]],
     S_Symbol?SpeciesQ :> Lookup[a, S[$]]
   }
-]
+];
 (* NOTE: Remember that the spec may involve Hold or HoldForm. *)
 
 

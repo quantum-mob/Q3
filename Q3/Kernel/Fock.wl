@@ -1184,12 +1184,11 @@ FockBilinearQ[expr_, True] = False
 
 
 (**** <FockBilinearSystem> ****)
+FockBilinarSystem::usage = "FockBilinearSystem[expr] returns a list of {operators, matrix} of the bilinear combination.";
 
-FockBilinarSystem::usage = "FockBilinearSystem[expr] returns a list of {operators, matrix} of the bilinear combination."
+FockBilinearMatrix::usage = "FockBilinearMatrix[expr] gives the coefficient matrix of the bilinear form.";
 
-FockBilinearMatrix::usage = "FockBilinearMatrix[expr] gives the coefficient matrix of the bilinear form."
-
-FockBilinearOperators::usage = "FockBilinearOperators[expr] returns the list of all operators involved in the bilinear combination."
+FockBilinearOperators::usage = "FockBilinearOperators[expr] returns the list of all operators involved in the bilinear combination.";
 
 
 FockBilinearSystem[expr_] := Module[
@@ -1203,7 +1202,7 @@ FockBilinearMatrix[expr_] := Last @ FockBilinearSystem[expr] /; FockBilinearQ[ex
 FockBilinearOperators[expr_] := With[
   {ops = getOperators[expr]},
   Join[ops, Dagger[ops]]
- ] /; FockBilinearQ[expr, True]
+] /; FockBilinearQ[expr, True]
 
 (* Not including the anomalous bilinear terms. *)
 FockBilinearOperators[expr_] := getOperators[expr] /; FockBilinearQ[expr, False]
@@ -1262,31 +1261,27 @@ AddElaborationPatterns[
   ] :> Multiply[pre, LieExp[a, Multiply[b]], post] /;
     Garner[a + c] == 0
 ]
-
 (**** </FockBilinearSystem> ****)
 
 
-NullState::usage = "NullState[] refers to an impossible Fock-space vector in the creation-operator representation. It is denoted by Ket[Null]. The arising of NullState[] implies something is going wrong during the evaluation. Any operator on NullState[] simply returns NullState[] again."
+NullState::usage = "NullState[] refers to an impossible Fock-space vector in the creation-operator representation. It is denoted by Ket[Null]. The arising of NullState[] implies something is going wrong during the evaluation. Any operator on NullState[] simply returns NullState[] again.";
 
-HoldPattern @ Multiply[___, Ket[Null], ___] = Ket[Null]
+HoldPattern @ Multiply[___, Ket[Null], ___] = Ket[Null];
 
-HoldPattern @ Multiply[___, Bra[Null], ___] = Bra[Null]
+HoldPattern @ Multiply[___, Bra[Null], ___] = Bra[Null];
 
 
 (**** <VacuumState> ****)
-
-VacuumState::usage = "VacuumState[] returns Ket[Vacuum] which refers to the vacuum state in the Fock space. It is the state that is annihilated by any annihilation operator."
+VacuumState::usage = "VacuumState[] returns Ket[Vacuum] which refers to the vacuum state in the Fock space. It is the state that is annihilated by any annihilation operator.";
 
 AddElaborationPatterns[
   Ket[Vacuum] -> Ket[<||>], 
   Bra[Vacuum] -> Bra[<||>]  
-]
-
+];
 (**** </VacuumState> ****)
 
 
 (*** Vacuum Expectation Values ***)
-
 HoldPattern @
   Multiply[ pre___, Bra[a_Association], Ket[Vacuum], post___ ] :=
   BraKet[a, Association[]] Multiply[pre, post]
@@ -1314,20 +1309,18 @@ HoldPattern @ Multiply[___, Bra[Vacuum], more__, op_?AnyFermionQ, ___] := 0 /;
    not directly see VacuumState[] when mixed with other types. *)
 
 
-SurviveVacuum::usage = "SurviveVacuum[expr] drops vacuum-annihilating parts of expression expr."
+SurviveVacuum::usage = "SurviveVacuum[expr] drops vacuum-annihilating parts of expression expr.";
 
-SurviveVacuum[expr_] := Multiply[expr, Ket[Vacuum]] /. {Ket[Vacuum] -> 1}
+SurviveVacuum[expr_] := Multiply[expr, Ket[Vacuum]] /. {Ket[Vacuum] -> 1};
 
 
 (**** <VacuumExpectation> ****)
+VacuumExpectation::usage = "VacuumExpectation[expr] returns the vacuum expectation value of an operator expression. The option Method specifies the evaluation method: With
+\"Algebra\" it uses the standard algebraic method and with \"Occupations\" using the Fock states Ket[<|...|>].";
 
-VacuumExpectation::usage = "VacuumExpectation[expr] returns the vacuum expectation value of an operator expression.
-  The option Method specifies the evaluation method: With
-\"Algebra\" it uses the standard algebraic method and with \"Occupations\" using the Fock states Ket[<|...|>]."
+SetAttributes[VacuumExpectation, Listable];
 
-SetAttributes[VacuumExpectation, Listable]
-
-Options[VacuumExpectation] = { Method -> "Algebra" }
+Options[VacuumExpectation] = { Method -> "Algebra" };
 
 VacuumExpectation[expr_Plus, rest___] :=
   Map[VacuumExpectation[#, rest]&, expr]
@@ -1343,17 +1336,14 @@ VacuumExpectation[expr_, OptionsPattern[]] :=
 fVacuumExpectation["Algebra"][expr_] :=
   Multiply[Bra[Vacuum], expr, Ket[Vacuum]]
 
-fVacuumExpectation["Occupations"][expr_] := Multiply[Bra[<||>], expr, Ket[<||>]]
-
+fVacuumExpectation["Occupations"][expr_] := Multiply[Bra[<||>], expr, Ket[<||>]];
 (**** </VacuumExpectation> ****)
 
 
 (* Odd number of operators *)
-
 HoldPattern @ Multiply[Bra[Vacuum], x__?AnyParticleQ, Ket[Vacuum]] /; OddQ[Length @ {x}] = 0
 
 (* Special rules for bosons *)
-
 HoldPattern @ Multiply[ Bra[Vacuum], __?BosonQ, Ket[Vacuum] ] = 0
 
 HoldPattern @ Multiply[ Bra[Vacuum], Dagger[_?BosonQ].., Ket[Vacuum] ] = 0
@@ -1613,12 +1603,11 @@ TheDisplacementElement[z_, m_Integer, n_Integer] :=
 
 
 (**** <CoherentState> ****)
+CoherentState::usage = "CoherentState[c->z] represents the coherent state of the bosonic/fermionic mode c.\nCoherentState is normalized to 1.\nIt is actually a place holder, but using Elaborate, you can represent it explicitly in terms of the creation and annihilation operator.";
 
-CoherentState::usage = "CoherentState[c->z] represents the coherent state of the bosonic/fermionic mode c.\nCoherentState is normalized to 1.\nIt is actually a place holder, but using Elaborate, you can represent it explicitly in terms of the creation and annihilation operator."
+CoherentState::boson = "The resulting expression may have been truncated. Recall that coherent states of bosons involves infinitely many Fock states.";
 
-CoherentState::boson = "The resulting expression may have been truncated. Recall that coherent states of bosons involves infinitely many Fock states."
-
-Options[CoherentState] = {"Normalized" -> False}
+Options[CoherentState] = {"Normalized" -> False};
 
 AddGarnerPatterns[_CoherentState]
 
@@ -1796,16 +1785,14 @@ HoldPattern @ Multiply[
   post___ 
 ] := 
   Multiply[pre, Dagger @ Multiply[op, v], post]
-
 (**** </CoherentState> ****)
 
 
 (**** <FockAddSpin> ****)
-
-FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of the total angular momentum S[c1] + S[c2] + ....\nFockAddSpin[] returns the trivial basis including only VacuumState[]."
+FockAddSpin::usage = "FockAddSpin[c1, c2, ...] returns the irreducible basis of the total angular momentum S[c1] + S[c2] + ....\nFockAddSpin[] returns the trivial basis including only VacuumState[].";
 
 FockAddSpin[ ls:{(_?ParticleQ|_Association)...} ] :=
-  FockAddSpin @@ Map[FockAddSpin] @ ls
+  FockAddSpin @@ Map[FockAddSpin, ls];
 
 FockAddSpin[] := Association[ {0,0} -> {Ket[Vacuum]} ]
 
@@ -1848,7 +1835,7 @@ FockAddSpin[irb_Association, irc_Association] := Module[
     (* 0 or {} occurs when spins at the same site are added. *)
    ];
   Return[ new ]
- ]
+]
 
 doFockAddSpin[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
   { new, min, max },
@@ -1861,18 +1848,17 @@ doFockAddSpin[irb_, irc_, {S1_, S2_, S_, Sz_}] := Module[
    ];
   new = Garner @ Multiply[(new /. Ket[Vacuum] -> 1), Ket[Vacuum]];
   Association[ {S, Sz} -> new ]
- ]
+]
 
 trimIrreducibleBasis[irb_Association] := Module[
   { irc = Simplify @ Map[(#/FockNorm[#])&] @ irb },
   irc = Map[ DeleteDuplicates[#, Simplify @ Or[#1==#2, #1==-#2]&]& ] @ irc;
   irc
- ]
-
+]
 (**** </FockAddSpin> ****)
 
 
-FockAddSpinZ::usage = "FockAddSpinZ[c1, c2, ...] returns the irreducible basis of the total directional angular momentum Sz[c1] + Sz[c2] + ....\nFockAddSpinZ[] returns the trivial basis including only VacuumState[]."
+FockAddSpinZ::usage = "FockAddSpinZ[c1, c2, ...] returns the irreducible basis of the total directional angular momentum Sz[c1] + Sz[c2] + ....\nFockAddSpinZ[] returns the trivial basis including only VacuumState[].";
 
 FockAddSpinZ[ops__?FermionQ] := FockAddSpinZ @ {ops}
 
@@ -1893,22 +1879,22 @@ FockAddSpinZ[] := Association[ 0 -> Ket[Vacuum] ]
 (* Cat := The creation-operator represenation of a basis vector in the Fock space.
    Hence, Cat is an multiplication of creators on VacuumState[]. *)
 
-catQ[ Ket[Vacuum] ] = True
+catQ[ Ket[Vacuum] ] = True;
 
-catQ[ z_?CommutativeQ Ket[Vacuum] ] = True
+catQ[ z_?CommutativeQ Ket[Vacuum] ] = True;
 
-catQ[ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True
+catQ[ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True;
 
-catQ[ z_?CommutativeQ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True
+catQ[ z_?CommutativeQ HoldPattern @ Multiply[__, Ket[Vacuum]] ] = True;
 
-catQ[ z_?CommutativeQ expr_ ] := catQ[expr]
+catQ[ z_?CommutativeQ expr_ ] := catQ[expr];
 
-catQ[ a_ + b_ ] := catQ[a] && catQ[b]
+catQ[ a_ + b_ ] := catQ[a] && catQ[b];
 
-catQ[ _ ] = False
+catQ[ _ ] = False;
 
 
-FockCat::usage = "FockCat[n1,n2,...] or equivalently FockCat[Ket[n1,n2,...] converts the occupation-number representation into the creation-operator representation, i.e., as a multiplication of a series of generators on VacuumState[]."
+FockCat::usage = "FockCat[n1,n2,...] or equivalently FockCat[Ket[n1,n2,...] converts the occupation-number representation into the creation-operator representation, i.e., as a multiplication of a series of generators on VacuumState[].";
 
 FockCat[rr:(_?AnyParticleQ -> _Integer?NonNegative) ...] :=
   toCatForm @ Ket[rr]
@@ -1921,7 +1907,7 @@ FockCat[expr_] := toCatForm[expr] /; Not @ FreeQ[expr, _Ket|_CoherentState]
 FockCat[0] = 0
 
 
-toCatForm::usage = "Returns a multiplication of generators (creation operators generating the Fock space basis) equivalent to the Fock state v in the occupation number representation."
+toCatForm::usage = "Returns a multiplication of generators (creation operators generating the Fock space basis) equivalent to the Fock state v in the occupation number representation.";
 
 SetAttributes[toCatForm, Listable]
 
@@ -1946,8 +1932,7 @@ toCatForm[expr_] := expr /. {
 }
 
 (**** <FockKet> ****)
-
-FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall that FockCat[] gives a Fock state with VacuumState[] is multiplied at the rightmost."
+FockKet::usage = "FockKet[expr] converts FockCat[] form to Ket[] form. Recall that FockCat[] gives a Fock state with VacuumState[] is multiplied at the rightmost.";
 
 FockKet[expr_] := KetRegulate[theFockKet @ expr]
 (* NOTE: Two layers are required to handle Association properly. *)
@@ -1957,10 +1942,9 @@ theFockKet[expr_Association] := Map[theFockKet, expr]
 theFockKet[expr_] := expr /. {
   Ket[Vacuum] -> Ket[<||>], 
   Bra[Vacuum] -> Bra[<||>]
-}
+};
 (* TODO: This does not properly handle Fermion state with the Fermi sea as the
    vacuum. *)
-
 (**** </FockKet> ****)
 
 
@@ -2064,34 +2048,31 @@ HoldPattern @
 (**** </Multiply> ****)
 
 
-FockNorm::usage = "FockNorm[v] returns the norm of the state v, which is either in the occupation number representation or in the creation-operator representation."
+FockNorm::usage = "FockNorm[v] returns the norm of the state v, which is either in the occupation number representation or in the creation-operator representation.";
 
-SetAttributes[FockNorm, Listable]
+SetAttributes[FockNorm, Listable];
 
-FockNorm[expr_] := Sqrt @ Multiply[Dagger @ expr, expr]
+FockNorm[expr_] := Sqrt @ Multiply[Dagger @ expr, expr];
 
-FockAvg::usage = "FockAvg[op, a] computes the braket <a|op|a>, where op is an operator expression and a is some state."
+FockAvg::usage = "FockAvg[op, a] computes the braket <a|op|a>, where op is an operator expression and a is some state.";
 
-SetAttributes[FockAvg, Listable]
+SetAttributes[FockAvg, Listable];
 
-FockAvg[op_, a_] := Multiply[Dagger @ a, op, a]
+FockAvg[op_, a_] := Multiply[Dagger @ a, op, a];
 
 
 (**** <Matrix> ****)
-
 (* for Fermions *)
-
-TheMatrix[ _?FermionQ ] := SparseArray[{1,2} -> 1, {2, 2}]
+TheMatrix[ _?FermionQ ] := SparseArray[{1,2} -> 1, {2, 2}];
 
 TheMatrix[ Parity[a_?FermionQ] ] :=
-  SparseArray[{{1,1} -> 1, {2,2} -> -1}, {2, 2}]
+  SparseArray[{{1,1} -> 1, {2,2} -> -1}, {2, 2}];
 
 TheMatrix[ Ket @ Association[_?FermionQ -> n:(0|1)] ] :=
-  SparseArray[n+1 -> 1, 2]
+  SparseArray[n+1 -> 1, 2];
 
 
 (* for Bosons *)
-
 TheMatrix[ a_?BosonQ ] := Module[
   { nn, ii, jj, rr },
   nn = Range[Bottom @ a, Top @ a];
@@ -2099,7 +2080,7 @@ TheMatrix[ a_?BosonQ ] := Module[
   jj = Rest @ nn - Bottom[a] + 1;
   rr = MapThread[ Rule, { Transpose @ {ii, jj}, Sqrt @ Rest @ nn } ];
   SparseArray[ rr, {1, 1} (1+Top[a]-Bottom[a]) ]
- ]
+];
 
 TheMatrix[ Parity[a_?BosonQ] ] := Module[
   { jj = Range[Bottom @ a, Top @ a],
@@ -2107,18 +2088,16 @@ TheMatrix[ Parity[a_?BosonQ] ] := Module[
   pp = Power[-1, jj];
   jj = jj - Bottom[a] + 1;
   SparseArray @ Thread[ Transpose @ {jj, jj} -> pp ]
- ]
+];
 
 TheMatrix[ Ket[ Association[a_?BosonQ -> n_Integer] ] ] := SparseArray[
   If[Bottom[a] <= n <= Top[a], (1+n-Bottom[a])->1, {}, {}],
   Dimension[a]
- ]
-
+];
 (**** </Matrix> ****)
 
 
 (**** <Parity> ****)
-
 Parity /:
 Elaborate[ op:Parity[_?BosonQ] ] = op
 (* NOTE: There is no simple way to express the parity for bosons. *)
@@ -2154,22 +2133,18 @@ ParityValue[v_Ket, a_?ParticleQ] := IntegerParity[v[a]]
 ParityEvenQ[v_Ket, a_?ParticleQ] := EvenQ @ v @ a
 
 ParityOddQ[v_Ket, a_?ParticleQ] := OddQ @ v @ a
-
 (**** </Parity> ****)
 
 
 (**** <Basis> ****)
+Basis[c_?FermionQ] := Ket /@ Thread[ c->{0, 1} ];
 
-Basis[c_?FermionQ] := Ket /@ Thread[ c->{0, 1} ]
-
-Basis[b_?BosonQ] := Ket /@ Thread[ b->Range[Bottom@b, Top@b] ]
-
+Basis[b_?BosonQ] := Ket /@ Thread[ b->Range[Bottom@b, Top@b] ];
 (**** </Basis> ****)
 
 
 (**** <BosonBasis> ****)
-
-BosonBasis::usage = "BosonBasis[{b1, b2, ...}, n] returns the Fock-state basis for Bosons b1, b2, ... with total number of particles up to n.\nBosonBasis[{b1, b2, ...}, {n}] gives the basis with exactly n particles.\nBosonBasis[{b1, b2, ...}, {m, n}] gives the basis with m to n particles.\nBosonBasis[{b1, b2, \[Ellipsis]}, nspec, {k1, k2, \[Ellipsis]}] allows only k1, k2, \[Ellipsis] as the occupation number of each bosonic mode."
+BosonBasis::usage = "BosonBasis[{b1, b2, ...}, n] returns the Fock-state basis for Bosons b1, b2, ... with total number of particles up to n.\nBosonBasis[{b1, b2, ...}, {n}] gives the basis with exactly n particles.\nBosonBasis[{b1, b2, ...}, {m, n}] gives the basis with m to n particles.\nBosonBasis[{b1, b2, \[Ellipsis]}, nspec, {k1, k2, \[Ellipsis]}] allows only k1, k2, \[Ellipsis] as the occupation number of each bosonic mode.";
 
 Options[BosonBasis] = { "Restricted" -> False };
 
@@ -2191,22 +2166,20 @@ BosonBasis[ss:{__?BosonQ}, {n_Integer}] :=
   Ket /@ Map[AssociationThread[ss -> #]&, OrderedPartitions[n, Length @ ss]]
 
 BosonBasis[ss:{__?BosonQ}, {n_Integer}, kk:{___Integer?NonNegative}] := 
-  Ket /@ Map[AssociationThread[ss -> #]&, OrderedPartitions[n, Length @ ss, kk]]
-
+  Ket /@ Map[AssociationThread[ss -> #]&, OrderedPartitions[n, Length @ ss, kk]];
 (**** </BosonBasis> ****)
 
 
 (**** <BosonBasisChange> ****)
+BosonBasisChange::usage = "BosonBasisChange[mat, {n}] returns the unitary matrix describing the change of n-particle basis between two modes related by the canonical transformation matrix mat.";
 
-BosonBasisChange::usage = "BosonBasisChange[mat, {n}] returns the unitary matrix describing the change of n-particle basis between two modes related by the canonical transformation matrix mat."
+BosonBasisChange::dim = "The dimension of the canonical transformation matrix `` is not the same as the lengths of the occupation-number lists in `` or in ``.";
 
-BosonBasisChange::dim = "The dimension of the canonical transformation matrix `` is not the same as the lengths of the occupation-number lists in `` or in ``."
-
-BosonBasisChange::num = "The total numbers of particles of the occupation-number lists in `` and/or in `` are not equal."
+BosonBasisChange::num = "The total numbers of particles of the occupation-number lists in `` and/or in `` are not equal.";
 
 
 BosonBasisChange[mat_?MatrixQ, n_Integer] :=
-  BosonBasisChange[mat, {0, n}]
+  BosonBasisChange[mat, {0, n}];
 
 BosonBasisChange[mat_?MatrixQ, {m_Integer, n_Integer}] :=
   Association @ Table[k -> BosonBasisChange[mat, {k}], {k, m, n}]
@@ -2255,15 +2228,13 @@ theBosonBasisChange[mat_?MatrixQ][pp_?VectorQ, qq_?VectorQ] := Module[
     ij, ff },
   Permanent[mat[[ii, jj]]] / Sqrt[Whole @ Factorial @ pp] / Sqrt[Whole @ Factorial @ qq]
 ]
-
 (**** </BosonBasisChange> ****)
 
 
 (**** <FermionBasis> ****)
+FermionBasis::usage = "FermionBasis[{c1, c2, ...}] returns the many-particle basis states (in the creation operators representation) for a single site, i.e. for operators c1, c2, .... It accepts two options \"Representation\" and \"Conserved\".";
 
-FermionBasis::usage = "FermionBasis[{c1, c2, ...}] returns the many-particle basis states (in the creation operators representation) for a single site, i.e. for operators c1, c2, .... It accepts two options \"Representation\" and \"Conserved\"."
-
-FermionBasis::spin = "Fermions with spin bigger than 1/2 are not supported yet; `` are ignored."
+FermionBasis::spin = "Fermions with spin bigger than 1/2 are not supported yet; `` are ignored.";
 
 Options[FermionBasis] = {
   "Representation" -> "Occupations",
@@ -2370,12 +2341,12 @@ basisCatNumberSpin[cc:{__?FermionQ}] := Module[
     irb
    ];
   irb = KeySort @ Merge[irb, Catenate]
- ]
+];
 
-basisKetNumberSpin[cc:{__?FermionQ}] := FockKet @ basisCatNumberSpin[cc]
+basisKetNumberSpin[cc:{__?FermionQ}] := FockKet @ basisCatNumberSpin[cc];
 
 
-PrintFermionBasis::usage = "PrintFermionBasis[bs] prints the Fermion basis bs in table form. Note that a Fermion basis is an association of particular structure.\nSee also FermionBasis."
+PrintFermionBasis::usage = "PrintFermionBasis[bs] prints the Fermion basis bs in table form. Note that a Fermion basis is an association of particular structure.\nSee also FermionBasis.";
 
 Options[PrintFermionBasis] = {
   Frame -> False,
@@ -2384,22 +2355,19 @@ Options[PrintFermionBasis] = {
 };
 
 PrintFermionBasis[bs_Association] :=
-  Grid[ Normal[bs] /. {Rule -> List}, Options[PrintFermionBasis] ]
-
+  Grid[ Normal[bs] /. {Rule -> List}, Options[PrintFermionBasis] ];
 (**** </FermionBasis> ****)
 
 
-(* ******************************************************************** *)
-
-FockDecompose::usage = "FockDecompose[vec, basis] decomposes a vector into components with respect to the given basis in the creation operator representation."
+FockDecompose::usage = "FockDecompose[vec, basis] decomposes a vector into components with respect to the given basis in the creation operator representation.";
 
 FockDecompose[vec_, basis_Association] := Map[Multiply[Dagger[#],vec]&, basis]
 
 FockDecompose[vec_, basis_?VectorQ] := Map[Multiply[Dagger[#], vec]&, basis]
 
-FockOrthogonalize::usage = "FockOrthogonalize[m] = Orthogonalize[m,Method->\"Householder\"] for matrix m. FockOrthogonalize[vecs, basis] orthogonalizes a list of vectors vecs in the creation operator representation basis 'basis'."
+FockOrthogonalize::usage = "FockOrthogonalize[m] = Orthogonalize[m,Method->\"Householder\"] for matrix m. FockOrthogonalize[vecs, basis] orthogonalizes a list of vectors vecs in the creation operator representation basis 'basis'.";
 
-FockOrthogonalize[m_?MatrixQ] := Orthogonalize[m, Method->"Householder"]
+FockOrthogonalize[m_?MatrixQ] := Orthogonalize[m, Method->"Householder"];
 
 (* FockOrthogonalize[{{0}}] = {} *)
 (* Workaround for a bug in Mathematica 6 *)
@@ -2420,20 +2388,20 @@ FockOrthogonalize[vecs_?VectorQ, basis_?VectorQ] := Module[
 (* TODO: Any other more efficient way? *)
 
 
-NormalOrder::usage = "NormalOrder[expr] normal orders an expression by subtracting its vacuum expectation value (VacuumExpectation)."
+NormalOrder::usage = "NormalOrder[expr] normal orders an expression by subtracting its vacuum expectation value (VacuumExpectation).";
 
-SetAttributes[NormalOrder, Listable]
+SetAttributes[NormalOrder, Listable];
 
-NormalOrder[expr_] := expr - VacuumExpectation[expr]
+NormalOrder[expr_] := expr - VacuumExpectation[expr];
 
 
-FockColon::usage = "FockColon[expr] denotes the normal ordering of the operators in expr.\nThis is merely a placeholder, although its output is displayed with double dots surrounding expr. To explicitly evaluate the normal ordered expression, use NormalOrder function."
+FockColon::usage = "FockColon[expr] denotes the normal ordering of the operators in expr.\nThis is merely a placeholder, although its output is displayed with double dots surrounding expr. To explicitly evaluate the normal ordered expression, use NormalOrder function.";
 
-FockColon[pre___, expr_Plus, post___] := FockColon[pre, #, post]& /@ expr
+FockColon[pre___, expr_Plus, post___] := FockColon[pre, #, post]& /@ expr;
 
-FockColon[pre___, z_?CommutativeQ expr_, post___] := z * FockColon[pre, expr, post]
+FockColon[pre___, z_?CommutativeQ expr_, post___] := z * FockColon[pre, expr, post];
 
-FockColon[] = 1
+FockColon[] = 1;
 
 Format @ HoldPattern @ FockColon[op__] := Interpretation[
   DisplayForm @ Row @ List @ Row @ {
@@ -2441,7 +2409,7 @@ Format @ HoldPattern @ FockColon[op__] := Interpretation[
       StyleBox["\[Colon]", FontColor -> Red]
   },
   FockColon[op]
-]
+];
 (* NOTE: The outer RowBox is to avoid spurious parentheses around the Multiply
    expression. For example, without it, -2 :f**f: is formated as
    -2(:f f:). For more details on spurious parentheses, see
@@ -2449,18 +2417,17 @@ Format @ HoldPattern @ FockColon[op__] := Interpretation[
 
 
 (**** JordanWignerTransform ****)
+JordanWignerTransform::usage = "JordanWignerTransform[{q1,q2,\[Ellipsis]}->{f1,f2,\[Ellipsis]}] returns a list of rules {q1->op1, q2->op2, \[Ellipsis]} corresponding to the Jordan-Wigner transformation of qubit operators q1, q2, \[Ellipsis] onto operators op1, op2, \[Ellipsis] in terms of fermion operators f1, f2, \[Ellipsis].\nJordanWignerTransform[{f1,f2,\[Ellipsis]}->{q1,q2,\[Ellipsis]}] returns a list of rules {q1->op1, q2->op2, \[Ellipsis]} corresponding to the inverse Jordan-Wigner transformation of fermion operators f1, f2, \[Ellipsis] onto operators op1, op2, \[Ellipsis] in terms of qubit operators q1, q2, \[Ellipsis].";
 
-JordanWignerTransform::usage = "JordanWignerTransform[{q1,q2,\[Ellipsis]}->{f1,f2,\[Ellipsis]}] returns a list of rules {q1->op1, q2->op2, \[Ellipsis]} corresponding to the Jordan-Wigner transformation of qubit operators q1, q2, \[Ellipsis] onto operators op1, op2, \[Ellipsis] in terms of fermion operators f1, f2, \[Ellipsis].\nJordanWignerTransform[{f1,f2,\[Ellipsis]}->{q1,q2,\[Ellipsis]}] returns a list of rules {q1->op1, q2->op2, \[Ellipsis]} corresponding to the inverse Jordan-Wigner transformation of fermion operators f1, f2, \[Ellipsis] onto operators op1, op2, \[Ellipsis] in terms of qubit operators q1, q2, \[Ellipsis]."
-
-JordanWignerTransform[expr_, {} -> {}] := expr
+JordanWignerTransform[expr_, {} -> {}] = expr;
 
 JordanWignerTransform[expr_, qq:{__?QubitQ} -> ff:{__?FermionQ}] :=
-  Garner @ Elaborate[ expr /. JordanWignerTransform[qq -> ff] ]
+  Garner @ Elaborate[ expr /. JordanWignerTransform[qq -> ff] ];
 
 JordanWignerTransform[expr_, ff:{__?FermionQ} -> qq:{__?QubitQ}] :=
   Garner @ Elaborate[ expr /. JordanWignerTransform[ff -> qq] ]
 
-JordanWignerTransform[{} -> {}] := {}
+JordanWignerTransform[{} -> {}] = {};
 
 JordanWignerTransform[qq:{__?QubitQ} -> ff:{__?FermionQ}] := Module[
   { rr = Through[Construct[qq, 4]],
@@ -2477,7 +2444,7 @@ JordanWignerTransform[qq:{__?QubitQ} -> ff:{__?FermionQ}] := Module[
     Thread[yy -> I*(Dagger[cc] - cc)],
     Thread[zz -> Map[Parity, ff]]
    ]
- ] /; Length[qq] == Length[ff]
+] /; Length[qq] == Length[ff];
 
 JordanWignerTransform[ff:{__?FermionQ} -> qq:{__?QubitQ}] := Module[
   { rr = Through[Construct[qq, 4]],
@@ -2486,7 +2453,7 @@ JordanWignerTransform[ff:{__?FermionQ} -> qq:{__?QubitQ}] := Module[
   pp = FoldList[Multiply, 1, Most @ zz];
   cc = Multiply @@@ Transpose @ {pp, rr};
   Thread[ff -> cc]
- ] /; Length[qq] == Length[ff]
+] /; Length[qq] == Length[ff];
 
 
 JordanWignerTransform::usage = StringJoin[
@@ -2503,15 +2470,14 @@ JordanWignerTransform[n_Integer] := Module[
     {n, n}
   ];
   SparseArray @ Map[ThePauli, mm]
-]
-
+];
 (**** </JordanWignerTransform> ****)
 
 
 (**** <FermionCount> ****)
-FermionCount::usage = "FermionCount[obj] returns the number of fermion modes involved in object (or expression) obj."
+FermionCount::usage = "FermionCount[obj] returns the number of fermion modes involved in object (or expression) obj.";
 
-FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat]
+FermionCount[mat_?MatrixQ] := Last[Dimensions @ mat];
 (**** </FermionCount> ****)
 
 
@@ -2549,7 +2515,7 @@ HoldPattern @
   Let[Majorana, a];
   aa = a @ Range[2 * Length[ff]];
   ToDirac[FermionTranspose[ToMajorana[op, ff -> aa], aa], aa -> ff]
-]
+];
 (**** </FermionTranspose> ****)
 
 

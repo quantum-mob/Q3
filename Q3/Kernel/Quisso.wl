@@ -1,5 +1,5 @@
 (* -*- mode: math; -*- *)
-BeginPackage["QuantumMob`Q3`", {"System`"}]
+BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Unfold, UnfoldAll };
 
@@ -209,9 +209,11 @@ setQubit[x_Symbol] := (
     x[j, -C[n]]
   ];
 );
+(**** </Qubit> ****)
+
 
 Missing["KeyAbsent", _Symbol?QubitQ[___, $]] = 0;
-(**** </Qubit> ****)
+
 
 QubitQ::usage = "QubitQ[S] or QubitQ[S[...]] returns True if S is declared as a Qubit through Let.";
 
