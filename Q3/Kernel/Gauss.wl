@@ -441,9 +441,8 @@ HouseholderMatrix[vec_?VectorQ, k_Integer] := With[
   { mat = HouseholderMatrix[Drop[vec, k-1]] },
   CirclePlus[One[k-1], mat]
 ] /; If[ k > 1, True,
-    Message[HouseholderMatrix::neg, k];
-    False
-  ]
+    Message[HouseholderMatrix::neg, k]; False
+  ];
 
 theHouseholderMatrix[vec_?VectorQ] := Module[
   { phs = Sign[First @ vec],
@@ -452,7 +451,9 @@ theHouseholderMatrix[vec_?VectorQ] := Module[
   If[ v === None,
     (* tail already zero: at most the phase of the first component needs fixing *)
     DiagonalMatrix @ ReplacePart[
-      ConstantArray[1. + 0. I, Length @ vec], 1 -> Conjugate[phs] ],
+      ConstantArray[1. + 0. I, Length @ vec], 
+      1 -> Conjugate[phs] 
+    ],
     -Conjugate[phs] * ReflectionMatrix[v]
   ]
 ];
