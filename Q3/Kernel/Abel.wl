@@ -654,9 +654,9 @@ MakeBoxes[Dagger[a_], fmt_] := ToBoxes[
 (**** </Dagger> ****)
 
 
-NormSquare::usage = "NormSquare[vec] returns the norm square of quantum state vector vec."
+NormSquare::usage = "NormSquare[vec] returns the norm square of quantum state vector vec.";
 
-NormSquare[obj:(_?VectorQ|_?MatrixQ), spec___] := Norm[obj, spec]^2
+NormSquare[obj:(_?VectorQ|_?MatrixQ), spec___] := Norm[obj, spec]^2;
 
 
 (**** <AbsSquare> ****)

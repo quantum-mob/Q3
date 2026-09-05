@@ -21,7 +21,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
   PhaseDecomposition };
 
 { GivensFactor, GivensRotation };
-{ HouseholderMatrix };
+{ HouseholderVector, HouseholderMatrix };
 { TridiagonalToeplitzMatrix };
 
 { MatrixEmbed };
@@ -417,11 +417,11 @@ SpectralHighest[ham_?MatrixQ] := SpectralExtremum[ham, +1];
 
 
 (**** <HouseholderMatrix> ****)
-HouseholderMatrix::usage = "HouseholderMatrix[v] returns the Householder reflection matrix h such that v.h is proportional to {1, 0, 0, \[Ellipsis]} for a vector v.\nHouseholderMatrix[v, k] returns the Householder reflection matrix that transforms {vk, \[Ellipsis], vn} with the earlier components {v1, \[Ellipsis], v(k-1)} kept intact.\nHouseholderMatrix[m], for a rectangular matrix m, returns the Householder matrix h such that m.h is a lower triangular matrix with all diagonal elements are real positive."
+HouseholderMatrix::usage = "HouseholderMatrix[v] returns the Householder reflection matrix h such that v.h is proportional to {1, 0, 0, \[Ellipsis]} for a vector v.\nHouseholderMatrix[v, k] returns the Householder reflection matrix that transforms {vk, \[Ellipsis], vn} with the earlier components {v1, \[Ellipsis], v(k-1)} kept intact.\nHouseholderMatrix[m], for a rectangular matrix m, returns the Householder matrix h such that m.h is a lower triangular matrix with all diagonal elements are real positive.";
 
-HouseholderMatrix::numeric = "`` is supposed to be a numeric vector."
+HouseholderMatrix::numeric = "`` is supposed to be a numeric vector.";
 
-HouseholderMatrix::neg = "The second input argument `` must be larger than 1."
+HouseholderMatrix::neg = "The second input argument `` must be larger than 1.";
 
 HouseholderMatrix[vec_?VectorQ] := theHouseholderMatrix[vec] /; 
   If[ VectorQ[vec, NumericQ], True,
@@ -449,20 +449,17 @@ HouseholderMatrix[vec_?VectorQ, k_Integer] := With[
 
 theHouseholderMatrix[vec_?VectorQ] :=
   {Conjugate @ Sign @ vec} /; Length[vec] == 1
-(* NOTE: In principle, this does not need to be handled separately. However, sometimes an additional factor of -1 is added due to numerical errors (Normalize and Dyad in the following code). *)
+(* NOTE: In principle, this does not need to be handled separately. However, sometimes an additional factor of -1 is added due to numerical errors (Normalize and Dyad in the subsequent code). *)
 
 theHouseholderMatrix[vec_?VectorQ] := Module[
   { nrm = Norm[vec],
     phs = Sign[First @ vec],
-    mat, new },
+    new },
   new = vec;
   If[ZeroQ @ phs, phs = 1]; (* sometimes, vec[[1]] = 0 *)
   new[[1]] -= nrm * phs;
-  new = Normalize[Chop @ new]; (* NOTE *)
-  mat = One[Length @ vec] - 2*KroneckerProduct[Conjugate @ new, new];
-  mat * Conjugate[phs]
-]
-(* NOTE: Here, notice Chop, to properly handle vectors close to yet not exactly equal to {x, 0, ..., 0} for x < 0. *)
+  Conjugate[phs] * ReflectionMatrix[new];
+];
 
 theHouseholderMatrix[vv_?MatrixQ] :=
   theHouseholderMatrix[First @ vv] /;
@@ -476,6 +473,31 @@ theHouseholderMatrix[vv_?MatrixQ] := Module[
   Dot[uu, ww]
 ]
 (**** </HouseholderMatrix> ****)
+
+
+(**** <HouseholderVector> ****)
+HouseholderVector::usage = "HouseholderVector[v, i] returns the Householder vector v such that u = ReflectionMatrix[v], applied as w = v.u, annihilates the elements later than i;  or None if there is nothing to annihilate.\nHouseholderVector[v] is equivalent to HouseholderVector[v, 1].";
+
+HouseholderVector[vec_?VectorQ] := HouseholderVector[vec, 1];
+
+HouseholderVector[vec_?VectorQ, i_Integer] := Module[
+  { v = ConstantArray[0. + 0. I, Length @ vec],
+    x, a, nrm },
+  v[[i ;; All]] = Conjugate @ vec[[i ;; All]];
+  nrm = Total[ Abs[ v[[i ;; All]] ]^2 ];
+  If[nrm == 0., Return @ None];
+  If[Total[Abs[Rest @ v[[i ;; All]]]^2] == 0., Return @ None];
+  x = v[[i]];
+  If[ x == 0.,
+    v[[i]] -= Sqrt[nrm],
+    a = Sqrt[nrm] Sign[x];
+    (* sign choice avoids catastrophic cancellation *)
+    a *= If[Abs[x + a] >= Abs[x - a], 1, -1];
+    v[[i]] -= a
+  ];
+  v
+];
+(**** </HouseholderVector> ****)
 
 
 (***** <TridiagonalToeplitzMatrix> ****)
@@ -1359,4 +1381,3 @@ chiralVertexRulesShort[ii_List, jj_List, spec:{row_, col_}] :=
 
 End[];
 EndPackage[];
-

@@ -2,7 +2,8 @@
 
 ## 4.7.3
 
-- New: Slice
+- New: SubdivideAlong, RangeAlong, CauchyExpand
+- Improved: CauchySimplify, CaucyFullSimplify
 
 ## 4.7.2
 

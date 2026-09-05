@@ -24,6 +24,7 @@ Get["QuantumMob`Q3`Abba`"];
 Get["QuantumMob`Q3`Abby`"];
 Get["QuantumMob`Q3`Abel`"];
 Get["QuantumMob`Q3`Gauss`"];
+Get["QuantumMob`Q3`SkewJacobi`"];
 Get["QuantumMob`Q3`Chebyshev`"];
 Get["QuantumMob`Q3`Wimmer`"];
 Get["QuantumMob`Q3`Cauchy`"];

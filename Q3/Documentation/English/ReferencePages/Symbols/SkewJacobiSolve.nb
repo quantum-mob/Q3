@@ -1,0 +1,960 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Wolfram 15.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       154,          7]
+NotebookDataLength[     36029,        951]
+NotebookOptionsPosition[     30318,        830]
+NotebookOutlinePosition[     32474,        882]
+CellTagsIndexPosition[     32431,        879]
+WindowTitle->SkewJacobiSolve
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[GridBox[{
+   {GridBox[{
+      {
+       ItemBox[Cell[BoxData[
+         RowBox[{
+          TemplateBox[{12},
+           "Spacer1"], Cell["QUANTUM MOB/ Q3 SYMBOL", "PacletNameCell",
+           TextAlignment->Center,ExpressionUUID->
+           "7cfbdcfb-e3c5-493b-b8ee-dc853bdba55a"], 
+          TemplateBox[{8},
+           "Spacer1"]}]],
+         TextAlignment->Center,ExpressionUUID->
+         "516da59b-8f33-458b-8409-849c808ca65b"],
+        Background->LightDarkSwitched[
+          RGBColor[0.490196, 0.576471, 0.690196]],
+        ItemSize->Full], ""}
+     },
+     GridBoxAlignment->{"Rows" -> {{Center}}},
+     GridBoxItemSize->{"Columns" -> {Full, 
+         Scaled[0.02]}, "Rows" -> {{2.5}}}], Cell[TextData[{
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "See Also",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "2ba3a502-de4c-4619-b107-b2dab88f20a2"]
+         }],ExpressionUUID->"1a049913-1fe9-478b-81af-008134540be1"],
+         StripOnInput->False],{
+        StyleBox[
+          "\"SkewJacobiDecomposition\"", "SeeAlsoRelated", StripOnInput -> 
+           False] :> Documentation`HelpLookup[
+          "paclet:QuantumMob/Q3/ref/SkewJacobiDecomposition"]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"SeeAlso"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "cefd9eab-acc4-46d4-97f3-f8f96960719a"],
+     "\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\[ThickSpace]\
+\[ThickSpace]",
+     Cell[BoxData[
+      TagBox[
+       ActionMenuBox[
+        FrameBox[Cell[TextData[{
+          "URL",
+          " ",
+          Cell[BoxData[
+           GraphicsBox[
+            {GrayLevel[0.66667], Thickness[0.13], 
+             LineBox[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]},
+            AspectRatio->1,
+            ImageSize->20,
+            PlotRange->{{-3, 4}, {-1, 1}},
+            PlotRangePadding->Scaled[0.025]]],ExpressionUUID->
+           "de2e38f8-f778-48e9-9f25-0fd7be21ca79"]
+         }],ExpressionUUID->"be36f290-f017-4bef-91d8-e43d69af9f3a"],
+         StripOnInput->False],{
+        "\"QuantumMob/Q3/ref/SkewJacobiSolve\"" :> None, 
+         "\"Copy Wolfram Documentation Center URL\"" :> 
+         CopyToClipboard["QuantumMob/Q3/ref/SkewJacobiSolve"], Delimiter, 
+         "\"Copy web URL\"" :> 
+         Module[{DocumentationSearch`Private`nb$}, 
+           DocumentationSearch`Private`nb$ = 
+            NotebookPut[
+             Notebook[{
+               Cell[BoxData[
+                 MakeBoxes[
+                  Hyperlink[
+                   "http://reference.wolfram.com/language/QuantumMob/Q3/ref/\
+SkewJacobiSolve.html"], StandardForm]], "Input", TextClipboardType -> 
+                 "PlainText"]}, Visible -> False]]; 
+           SelectionMove[DocumentationSearch`Private`nb$, All, Notebook]; 
+           FrontEndTokenExecute[DocumentationSearch`Private`nb$, "Copy"]; 
+           NotebookClose[DocumentationSearch`Private`nb$]; Null], 
+         "\"Go to web URL\"" :> 
+         FrontEndExecute[{
+           NotebookLocate[{
+             URL[If[TrueQ[False], 
+                 "http://reference.wolfram.com/system-modeler/", 
+                 "http://reference.wolfram.com/language/"] <> 
+               "QuantumMob/Q3/ref/SkewJacobiSolve" <> ".html"], None}]}]},
+        Appearance->None,
+        MenuAppearance->Automatic,
+        MenuStyle->"URLMenu"],
+       MouseAppearanceTag["LinkHand"]]],
+      LineSpacing->{1.4, 0},ExpressionUUID->
+      "db34675d-b636-40f9-8da8-bcef866eeea2"]
+    }], "AnchorBar",
+     CacheGraphics->False,ExpressionUUID->
+     "021bf9e2-54c5-46b6-b78f-d41ff7952a51"]}
+  }]], "AnchorBarGrid",
+ GridBoxOptions->{GridBoxItemSize->{"Columns" -> {
+     Scaled[0.65], {
+      Scaled[0.34]}}, "ColumnsIndexed" -> {}, "Rows" -> {{1.}}, 
+   "RowsIndexed" -> {}}},
+ CellID->1,ExpressionUUID->"2d1f92a0-473a-44cb-929a-e6a043f56b6b"],
+
+Cell["QuantumMob`Q3`", "ContextNameCell",ExpressionUUID->"19108b5d-8bfc-4581-88e1-8ebe0b45e9c6"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[GridBox[{
+   {Cell[TextData[{
+     Cell[
+     "SkewJacobiSolve", "ObjectName",ExpressionUUID->
+      "a7a59e5f-08aa-4ce9-80b5-1b02a1a0c245"],
+     Cell[BoxData[
+      TemplateBox[{8},
+       "Spacer1"]],ExpressionUUID->"42574ae0-ec08-46a1-b27f-d28e8508c81b"],
+     Cell[BoxData[
+     ""], "ObjectNameTranslation",ExpressionUUID->
+      "cf1b767e-754b-4671-918a-06b76459bc81"]
+    }],ExpressionUUID->"1f32f86e-be43-489f-8aba-f0b67432b6a3"], Cell[BoxData[
+     TooltipBox[
+      StyleBox[
+       TagBox[
+        StyleBox[
+         GraphicsBox[InsetBox[
+           StyleBox["\<\"NEW IN 15.0\"\>",
+            StripOnInput->False,
+            FontFamily->"Source Sans Pro",
+            FontSize->18,
+            FontWeight->"Bold",
+            FontSlant->"Italic",
+            FontColor->LightDarkSwitched[
+              RGBColor[0.968627, 0.466667, 0]]], {Right, Center}, {
+           Right, Center}],
+          ImageSize->{125, 24},
+          PlotRangePadding->Scaled[0.025]], "NewInGraphic",
+         StripOnInput->False],
+        Deploy,
+        DefaultBaseStyle->"Deploy"], "NewInGraphic",
+       StripOnInput->False],
+      "New in 15",
+      TooltipDelay->0.3]],
+     Magnification->1,ExpressionUUID->
+     "876ee246-28c5-481b-97ee-1b250247784f"]}
+  }]], "ObjectNameGrid",
+ CacheGraphics->False,ExpressionUUID->"926b8a27-7519-45c6-81d0-3c695d1bb816"],
+
+Cell[BoxData[GridBox[{
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["SkewJacobiSolve"]], 
+         "paclet:QuantumMobQ3/ref/SkewJacobiSolve", 
+         "QuantumMobQ3 Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "284e1c17-3ab7-40fa-8ea7-b7179e4ea851"],
+     "\[LineSeparator]solves ",
+     Cell[BoxData[
+      RowBox[{
+       RowBox[{
+        StyleBox["a", "TI"], ".", 
+        StyleBox["x", "TI"]}], "==", 
+       StyleBox["b", "TI"]}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "f391cb1e-05ec-458c-9043-362a6d89a2b2"],
+     " in the least-square (pseudoinverse) sense for a possibly singular \
+complex skew-symmetric matrix ",
+     Cell[BoxData[
+      StyleBox["a", "TI"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "a995e0ca-cb58-4f71-b4a1-9e06b5706eaa"],
+     "."
+    }],ExpressionUUID->"dd9b2cda-bd4a-458c-b6be-71e43e968215"]},
+   {"", Cell[TextData[{
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["SkewJacobiSolve"]], 
+         "paclet:QuantumMob/Q3/ref/SkewJacobiSolve", 
+         "QuantumMob Package Symbol"},
+        "PackageLink",
+        BaseStyle->"InlineFormula"], "[", 
+       RowBox[{
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{
+            SubscriptBox[
+             StyleBox["s", "TI"], 
+             StyleBox["1", "TR"]], ",", 
+            SubscriptBox[
+             StyleBox["s", "TI"], 
+             StyleBox["2", "TR"]], ",", 
+            StyleBox["\[Ellipsis]", "TR"]}], "}"}], ",", 
+          StyleBox["u", "TI"]}], "}"}], ",", 
+        StyleBox["b", "TI"], ",", 
+        StyleBox["\[Epsilon]", "TR"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "3e3ccd58-6672-4c12-b70b-1826abcacad7"],
+     "\[LineSeparator]reuses a decomposition previously computed with ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["SkewJacobiDecomposition"]], 
+        "paclet:QuantumMob/Q3/ref/SkewJacobiDecomposition", 
+        "QuantumMob Package Symbol"},
+       "PackageLink",
+       BaseStyle->"InlineFormula"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "38d14131-4e95-4288-95f3-349fa9cfc403"],
+     "."
+    }],ExpressionUUID->"0136b048-4cb7-4770-8181-32a7f0c47429"]}
+  }]], "Usage",
+ CellID->104049115,ExpressionUUID->"e192cf0b-edf5-43a7-af8d-ac3477f08ac7"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[Cell[BoxData[Cell[TextData[{
+  Cell[BoxData[
+   DynamicBox[ToBoxes[
+     If[CurrentValue[
+        EvaluationCell[], "CellGroupOpen"] =!= Closed, 
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], 
+      Rotate[
+       Style[
+        Graphics[{
+          Thickness[0.18], 
+          RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+          Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+         PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+        0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+    ImageSizeCache->{
+     13.600000000000003`, {-0.1685058593749993, 13.768505859375}}]],
+   ExpressionUUID->"c2e07518-bc7a-4a5b-8f7d-11d4f695d7d0"],
+  Cell[BoxData[
+   TemplateBox[{1},
+    "Spacer1"]],ExpressionUUID->"dc88b38f-fb8f-4ade-b146-2b4576fb65db"],
+  "Details and Options"
+ }], "NotesFrameText",ExpressionUUID->
+  "72075e6f-33c6-4724-a18c-447ab814ffaf"]],ExpressionUUID->"e2422c74-fca8-\
+4144-b519-85363bd6f5a4"]], "NotesSection",
+ ShowGroupOpener->"Thumbnail",
+ WholeCellGroupOpener->True,
+ CellGroupingRules->{"SectionGrouping", 50},
+ CacheGraphics->False,
+ CellID->210661928,ExpressionUUID->"b6065f0f-cbfe-421e-94b5-1ac714e51454"],
+
+Cell[TextData[{
+ "Singular values smaller than \"Tolerance\" (default ",
+ Cell[BoxData[
+  SuperscriptBox["10", 
+   RowBox[{"-", "8"}]]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "7ac60126-8672-49ab-a10d-e28740905ff5"],
+ ") are treated as zero and discarded in pairs, so that the skew-symmetric \
+structure of the pseudoinverse is retained. "
+}], "Notes",
+ CellID->190253929,ExpressionUUID->"db162170-651e-49ac-88fe-f46705c24d84"],
+
+Cell["The following options can be given: ", "Notes",
+ CellID->701787147,ExpressionUUID->"1a5a0544-8ef8-41e0-ab4c-e0344d361f13"],
+
+Cell[BoxData[GridBox[{
+   {Cell["      ", "TableRowIcon",ExpressionUUID->
+     "1741373f-b8ce-42b9-bf29-583e3de65d3c"], "\"\<Threshold\>\"", 
+    RowBox[{"1.", "\[Times]", 
+     SuperscriptBox["10", 
+      RowBox[{"-", "8"}]]}], Cell[TextData[{
+     "Singular values smaller than \"Tolerance\" (default ",
+     Cell[BoxData[
+      SuperscriptBox["10", 
+       RowBox[{"-", "8"}]]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "c0fd0c8d-7f2a-40ea-92f5-3f7ec935c1a1"],
+     ") are treated as zero and discarded in pairs, so that the \
+skew-symmetric structure of the pseudoinverse is retained. "
+    }], "TableText",ExpressionUUID->"ff080026-aaa2-4f6c-860b-7477302888ec"]},
+   {Cell["      ", "TableRowIcon",ExpressionUUID->
+     "c7fb0ba5-cb05-4cf6-aa97-5e1b8e0ebafb"], "\"\<Tolerance\>\"", "1.0*^-13",
+     Cell[TextData[{
+     "The tolerance for the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["SkewJacobiDecomposition"]], 
+        "paclet:QuantumMob/Q3/ref/SkewJacobiDecomposition", 
+        "QuantumMob Package Symbol"},
+       "PackageLink",
+       BaseStyle->"3ColumnTableMod"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "4ea8cbfc-fddd-44f6-b7fa-bbcfccf8663a"],
+     " in the ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["SkewJacobySolve"]], 
+         "paclet:QuantumMob/Q3/ref/SkewJacobySolve", 
+         "QuantumMob Package Symbol"},
+        "PackageLink",
+        BaseStyle->"3ColumnTableMod"], "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "88d93aad-f2b1-4132-b36a-933633f51e97"],
+     " form."
+    }], "TableText",ExpressionUUID->"39d7bc83-57b3-4ccd-8bc2-dff114db2ca9"]},
+   {Cell["      ", "TableRowIcon",ExpressionUUID->
+     "a0c4f315-98a0-4c34-b8a8-82299b1afa95"], "\"\<MaxSweeps\>\"", "100", 
+    Cell[TextData[{
+     "The max iteration number for the ",
+     Cell[BoxData[
+      TemplateBox[{
+        Cell[
+         TextData["SkewJacobiDecomposition"]], 
+        "paclet:QuantumMob/Q3/ref/SkewJacobiDecomposition", 
+        "QuantumMob Package Symbol"},
+       "PackageLink",
+       BaseStyle->"3ColumnTableMod"]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "722423f6-d881-4318-9998-1625646a18bc"],
+     " in the ",
+     Cell[BoxData[
+      RowBox[{
+       TemplateBox[{
+         Cell[
+          TextData["SkewJacobySolve"]], 
+         "paclet:QuantumMob/Q3/ref/SkewJacobySolve", 
+         "QuantumMob Package Symbol"},
+        "PackageLink",
+        BaseStyle->"3ColumnTableMod"], "[", 
+       RowBox[{
+        StyleBox["a", "TI"], ",", 
+        StyleBox["b", "TI"]}], "]"}]], "InlineFormula",
+      FontFamily->"Source Sans Pro",ExpressionUUID->
+      "e2d464c9-51d4-4994-bdc4-b5af0bd52f06"],
+     " form."
+    }], "TableText",ExpressionUUID->"442f487f-100f-4882-a2be-d723e0eec9ce"]}
+  }]], "3ColumnTableMod",
+ GridBoxOptions->{
+ GridBoxBackground->{"Columns" -> {{None}}, "Rows" -> {None, None, {None}}},
+ GridBoxDividers->{"Rows" -> {{True, True, True, True}}}},
+ CellID->956390305,ExpressionUUID->"3c7fa194-a3eb-44c1-85ef-9e29405a8b61"]
+}, Closed]],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[
+     MatchQ[
+      CurrentValue[
+       EvaluationNotebook[], {
+       TaggingRules, "Openers", "PrimaryExamplesSection"}, Open], 
+      Alternatives[True, Open]], 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]],
+   ImageSizeCache->{
+    13.600000000000001`, {4.251494140625001, 9.348505859375003}}]],
+  ExpressionUUID->"18fd30ce-c4c3-44a3-b1bf-9b32d2e4809c"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"2379af33-6d8d-4510-825d-6bd4c54facf9"],
+ "Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "5428b1d4-725f-4224-870a-05a799363309"]
+}], "PrimaryExamplesSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->1541973640,ExpressionUUID->"44ad9245-6b71-488f-964f-e92ad653c18c"],
+
+Cell[BoxData[
+ RowBox[{"Needs", "[", "\"\<QuantumMob`Q3`\>\"", "]"}]], "Input", "ExampleInitialization",
+ CellLabel->"In[1]:=",
+ CellID->1782800964,ExpressionUUID->"d1fe1e6c-6842-454c-888c-c2145c74b94e"],
+
+Cell[CellGroupData[{
+
+Cell[TextData[{
+ Cell[BoxData[
+  DynamicBox[ToBoxes[
+    If[CurrentValue[
+       EvaluationCell[], "CellGroupOpen"] =!= Closed, 
+     Style[
+      Graphics[{
+        Thickness[0.18], 
+        RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+        Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+       PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+      0.68 Inherited], 
+     Rotate[
+      Style[
+       Graphics[{
+         Thickness[0.18], 
+         RGBColor[0.8509803921568627, 0.396078431372549, 0], 
+         Line[{{-1.8, 0.5}, {0, 0}, {1.8, 0.5}}]}, AspectRatio -> 1, 
+        PlotRange -> {{-3, 4}, {-1, 1}}, ImageSize -> 20], Magnification -> 
+       0.68 Inherited], Rational[1, 2] Pi, {-1.65, -1}]]]]],ExpressionUUID->
+  "9b66e73e-adae-4323-903f-889054a52220"],
+ Cell[BoxData[
+  TemplateBox[{1},
+   "Spacer1"]],ExpressionUUID->"50203cdf-a543-410f-80e6-2210b845ec26"],
+ "Basic Examples",
+ "\[NonBreakingSpace]\[NonBreakingSpace]",
+ Cell["(1)", "ExampleCount",ExpressionUUID->
+  "537baf61-9652-4c7a-aca6-a6f0169260d7"]
+}], "ExampleSection", "ExampleSection",
+ WholeCellGroupOpener->True,
+ CacheGraphics->False,
+ CellID->118315484,ExpressionUUID->"b40684e8-28ba-41c5-9768-49fcf9a308c6"],
+
+Cell["\<\
+Construct a singular skew-symmetric matrix with prescribed singular value \
+pairs (including zeros) from A = Conjugate[V] . N0 . ConjugateTranspose[V] \
+with a random unitary V:\
+\>", "ExampleText",
+ CellID->670745623,ExpressionUUID->"fead219a-2cc0-429b-bf79-a3945057c437"],
+
+Cell["\<\
+m = 5; 
+n = 2 m;
+valTrue = {3., 1.5, 0.7, 1.*10^-15, 0.};\
+\>", "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[1]:=",
+ CellID->1080022658,ExpressionUUID->"21c2bed5-1500-4a89-a18a-11b632bab899"],
+
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"SeedRandom", "[", "11", "]"}], ";"}]], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[2]:=",
+ CellID->1232067152,ExpressionUUID->"c3552a84-9d5e-4a52-95cc-af315a49376d"],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"blk", "=", 
+   RowBox[{"BlockDiagonalMatrix", "@", 
+    RowBox[{"Map", "[", "\[IndentingNewLine]", 
+     RowBox[{
+      RowBox[{"Function", "[", 
+       RowBox[{"x", ",", 
+        RowBox[{"{", 
+         RowBox[{
+          RowBox[{"{", 
+           RowBox[{"0", ",", "x"}], "}"}], ",", 
+          RowBox[{"{", 
+           RowBox[{
+            RowBox[{"-", "x"}], ",", "0"}], "}"}]}], "}"}]}], "]"}], ",", 
+      "\[IndentingNewLine]", "valTrue"}], "\[IndentingNewLine]", "]"}]}]}], 
+  ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"blk", "//", "Chop"}], "//", "MatrixForm"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[3]:=",
+ CellID->1044475206,ExpressionUUID->"3ae5735b-77c2-4f7e-9dc3-0a0593e89ad7"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", "3.`", "0", "0", "0", "0", "0", "0", "0", "0"},
+     {
+      RowBox[{"-", "3.`"}], "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "1.5`", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", 
+      RowBox[{"-", "1.5`"}], "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0.7`", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", 
+      RowBox[{"-", "0.7`"}], "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"},
+     {"0", "0", "0", "0", "0", "0", "0", "0", "0", "0"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   SparseArray[
+    Automatic, {10, 10}, 0, {
+     1, {{0, 1, 2, 3, 4, 5, 6, 6, 6, 6, 6}, {{2}, {1}, {4}, {3}, {6}, {5}}}, {
+      3., -3., 1.5, -1.5, 0.7, -0.7}}]]]]], "Output",
+ CellLabel->"Out[3]//MatrixForm=",
+ CellID->1778191945,ExpressionUUID->"11e80f59-98d8-4081-af4c-e00f40d12cd4"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{"V", "=", 
+   RowBox[{"RandomUnitary", "[", "n", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{
+  RowBox[{"ant", "=", 
+   RowBox[{
+    RowBox[{"Conjugate", "[", "V", "]"}], ".", "blk", ".", 
+    RowBox[{"ConjugateTranspose", "[", "V", "]"}]}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"ant", "//", "ArrayShort"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[4]:=",
+ CellID->324685057,ExpressionUUID->"1d0f3cba-133a-45eb-87b2-8ee6395933b2"],
+
+Cell[BoxData[
+ TagBox[
+  RowBox[{"(", "\[NoBreak]", GridBox[{
+     {"0", 
+      RowBox[{
+       RowBox[{"-", "0.3495956738964197`"}], "+", 
+       RowBox[{"0.07933414254855327`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.11990867500487065`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.6713505368654188`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.19633705414819458`", "\[VeryThinSpace]", "+", 
+       RowBox[{
+       "0.023804227483507568`", " ", 
+        "\[ImaginaryI]"}]}], "\<\"\[Ellipsis]\"\>"},
+     {
+      RowBox[{"0.3495956738964197`", "\[VeryThinSpace]", "-", 
+       RowBox[{"0.07933414254855327`", " ", "\[ImaginaryI]"}]}], "0", 
+      RowBox[{"0.7307086022956234`", "\[VeryThinSpace]", "+", 
+       RowBox[{"0.12438743751841776`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{"0.1341415995688404`", "\[VeryThinSpace]", "+", 
+       RowBox[{
+       "0.17988645864528013`", " ", 
+        "\[ImaginaryI]"}]}], "\<\"\[Ellipsis]\"\>"},
+     {
+      RowBox[{
+       RowBox[{"-", "0.11990867500487062`"}], "+", 
+       RowBox[{"0.6713505368654188`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.7307086022956234`"}], "-", 
+       RowBox[{"0.1243874375184178`", " ", "\[ImaginaryI]"}]}], "0", 
+      RowBox[{"0.16661564375885052`", "\[VeryThinSpace]", "-", 
+       RowBox[{
+       "0.18917720089211731`", " ", 
+        "\[ImaginaryI]"}]}], "\<\"\[Ellipsis]\"\>"},
+     {
+      RowBox[{
+       RowBox[{"-", "0.19633705414819455`"}], "-", 
+       RowBox[{"0.023804227483507537`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.1341415995688404`"}], "-", 
+       RowBox[{"0.17988645864528016`", " ", "\[ImaginaryI]"}]}], 
+      RowBox[{
+       RowBox[{"-", "0.16661564375885055`"}], "+", 
+       RowBox[{"0.18917720089211734`", " ", "\[ImaginaryI]"}]}], 
+      "0", "\<\"\[Ellipsis]\"\>"},
+     {"\<\"\[Ellipsis]\"\>", "\<\"\[Ellipsis]\"\>", "\<\"\[Ellipsis]\"\>", \
+"\<\"\[Ellipsis]\"\>", "\<\"\[Ellipsis]\"\>"}
+    },
+    GridBoxAlignment->{"Columns" -> {{Center}}, "Rows" -> {{Baseline}}},
+    GridBoxSpacings->{"Columns" -> {
+        Offset[0.27999999999999997`], {
+         Offset[0.7]}, 
+        Offset[0.27999999999999997`]}, "Rows" -> {
+        Offset[0.2], {
+         Offset[0.4]}, 
+        Offset[0.2]}}], "\[NoBreak]", ")"}],
+  Function[BoxForm`e$, 
+   MatrixForm[
+   BoxForm`e$, TableHeadings -> 
+    QuantumMob`Q3`Private`theArrayShort[None, {}], {}]]]], "Output",
+ CellLabel->"Out[4]//MatrixForm=",
+ CellID->1689587963,ExpressionUUID->"b8ce092b-4a80-429e-94f5-f1f3772ece9b"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[{
+ RowBox[{
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"val", ",", "U"}], "}"}], "=", 
+   RowBox[{"SkewJacobiDecomposition", "[", "ant", "]"}]}], ";"}], "\[IndentingNewLine]", 
+ RowBox[{"Sort", "[", 
+  RowBox[{"val", ",", "Greater"}], "]"}]}], "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[5]:=",
+ CellID->10826581,ExpressionUUID->"5906f7ff-cc0e-4192-9e2a-e544cd3aea85"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+  "3.0000000000000013`", ",", "1.500000000000001`", ",", "0.7`", ",", 
+   "4.887987280750937`*^-16", ",", "1.6421957672769988`*^-16"}], 
+  "}"}]], "Output",
+ CellLabel->"Out[5]=",
+ CellID->728629860,ExpressionUUID->"08b5d9b5-f2e0-48a9-b5a0-298dbe3c8457"]
+}, Open  ]],
+
+Cell["\<\
+The two smallest singular value pairs are zero to machine precision. Solve A \
+. x == b in the least-square sense, reusing the decomposition; singular \
+values below eps = 10.^-8 are discarded in pairs:\
+\>", "ExampleText",
+ CellID->1240866065,ExpressionUUID->"dc0d44ed-043a-4b2e-9355-8a020f731b44"],
+
+Cell[CellGroupData[{
+
+Cell["\<\
+b = RandomVector[n];
+x = SkewJacobiSolve[{val, U}, b, \"Threshold\"->10.^-8];
+x//ArrayShort\
+\>", "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[6]:=",
+ CellID->1022258438,ExpressionUUID->"d05ca8ba-f729-4550-ac09-2923d75b7fc3"],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{
+    RowBox[{"-", "0.06799271143000622`"}], "+", 
+    RowBox[{"0.07436537504251986`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{
+    RowBox[{"-", "0.08227747293751975`"}], "-", 
+    RowBox[{"0.34708558974025194`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.14310932990365557`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.23788288447482892`", " ", "\[ImaginaryI]"}]}], ",", 
+   RowBox[{"0.22366966807577743`", "\[VeryThinSpace]", "+", 
+    RowBox[{"0.09249382547710025`", " ", "\[ImaginaryI]"}]}], 
+   ",", "\<\"\[Ellipsis]\"\>"}], "}"}]], "Output",
+ CellLabel->"Out[6]=",
+ CellID->1130301826,ExpressionUUID->"d18fd225-7146-401e-905e-110724c361ba"]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell["Norm[x - PseudoInverse[ant, Tolerance -> 10.^-8] . b]", "Input",
+ CellProlog:>Needs["QuantumMob`Q3`"],
+ CellLabel->"In[7]:=",
+ CellID->1325803050,ExpressionUUID->"9fefe211-9b9e-4465-bae4-d4c28b826f81"],
+
+Cell[BoxData["1.3261969482947918`*^-15"], "Output",
+ CellLabel->"Out[7]=",
+ CellID->342448220,ExpressionUUID->"6ab40f01-a9da-45c5-b966-8cca7a02e1c4"]
+}, Open  ]],
+
+Cell[TextData[{
+ "The comparison with ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PseudoInverse"]], "paclet:ref/PseudoInverse"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "c32afb9c-a708-424d-9239-f88519c632ff"],
+ " is illustrative: note that the Tolerance option of ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PseudoInverse"]], "paclet:ref/PseudoInverse"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "36b497ec-39ca-482d-8040-67ed6f2d0f3c"],
+ " is relative to the largest singular value, whereas \"Threshold\" in ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SkewJacobiSolve"]], "paclet:QuantumMob/Q3/ref/SkewJacobiSolve",
+     "QuantumMob Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "8e76b967-24f8-4a78-af75-28e5915808ef"],
+ " is an absolute threshold, so the two agree here only because the retained \
+and discarded singular values are well separated. More importantly, when a \
+degenerate pair of singular values straddles the threshold due to round-off, ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["PseudoInverse"]], "paclet:ref/PseudoInverse"},
+   "RefLink",
+   BaseStyle->{"InlineFormula"}]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "76cd3588-8923-46a3-bace-d7527e5861e4"],
+ " may discard only one member of the pair and thereby break the \
+skew-symmetry of the pseudoinverse; ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["SkewJacobiSolve"]], "paclet:QuantumMob/Q3/ref/SkewJacobiSolve",
+     "QuantumMob Package Symbol"},
+   "PackageLink",
+   BaseStyle->"InlineFormula"]], "InlineFormula",
+  FontFamily->"Source Sans Pro",ExpressionUUID->
+  "00752b74-5a49-4b03-afaa-ba4e26bb7941"],
+ " always removes them in pairs. This is precisely the property required for \
+stable TDVP propagation; see ",
+ Cell[BoxData[
+  TemplateBox[{
+    Cell[
+     TextData["Humeniuk and Mitric (2018)"]], 
+    "https://doi.org/10.1016/j.cpc.2018.04.026"},
+   "WebLink",
+   BaseStyle->{"ExampleText"}]],ExpressionUUID->
+  "257b9305-f943-4453-a9f9-d8c7e0fa5b1b"],
+ "."
+}], "ExampleText",
+ CellID->1815070451,ExpressionUUID->"240c4a61-ff14-464a-bac5-31f49ed832b8"]
+}, Open  ]]
+}, Open  ]],
+
+Cell[BoxData[GridBox[{
+   {
+    DynamicBox[FEPrivate`ImportImage[
+      FrontEnd`FileName[{"Documentation", "FooterIcons"}, 
+       "RelatedFunction.png"]],
+     ImageSizeCache->{50., {26.47265625, 33.52734375}}], GridBox[{
+      {
+       StyleBox[
+        RowBox[{"See", " ", "Also"}], "SeeAlsoSection"]},
+      {Cell[TextData[Cell[BoxData[
+        TemplateBox[{
+          Cell[
+           TextData["SkewJacobiDecomposition"]], 
+          "paclet:QuantumMob/Q3/ref/SkewJacobiDecomposition", 
+          "QuantumMob Package Symbol"},
+         "PackageLink",
+         BaseStyle->"InlineFormula"]], "InlineFormula",
+        FontFamily->"Source Sans Pro",ExpressionUUID->
+        "f24dfb6e-c767-4f8c-a818-9ea6b040c0ab"]], "SeeAlso",ExpressionUUID->
+        "f4cf26cc-8be9-449c-941c-f9582d43465b"]}
+     }]}
+  }]], "SeeAlsoSection",ExpressionUUID->"191898a1-c1d9-45f9-a83a-\
+16efca445063"],
+
+Cell[BoxData[GridBox[{
+   {
+    TemplateBox[{29},
+     "Spacer1"], GridBox[{
+      {
+       RowBox[{
+        TemplateBox[{17},
+         "Spacer1"], 
+        StyleBox[
+         RowBox[{"Related", " ", "Links"}], "RelatedLinksSection"]}]},
+      {Cell[TextData[{
+        Cell[BoxData[
+         RowBox[{
+          TemplateBox[{16},
+           "Spacer1"], "\[FilledVerySmallSquare]", Cell[BoxData[
+           TemplateBox[{
+             Cell[
+              TextData[
+               Cell[
+                TextData[{
+                  Cell[
+                   BoxData[
+                    TemplateBox[{2}, "Spacer1"]]], 
+                  "A. Humeniuk and R. Mitric (2018)"}]]]], 
+             "https://doi.org/10.1016/j.cpc.2018.04.026"},
+            "WebLink",
+            BaseStyle->{"RelatedLinks"}]],ExpressionUUID->
+           "28e90cf1-51dc-44d6-925b-b862dd15d0ae"]}]],ExpressionUUID->
+         "b113dd32-7218-45e8-ab28-d9c4eaca5c9b"],
+        ",  Computer Physics Communications 231 (2018) 187-197, \"A block \
+Jacobi method for complex skew-symmetric matrices with applications in the \
+time-dependent variational principle.\""
+       }], "RelatedLinks",ExpressionUUID->
+        "3b286a68-b299-418a-b5af-1f2e03bba686"]}
+     }]}
+  }]], "RelatedLinksSection",ExpressionUUID->"11c78603-2ca8-4d2a-9437-\
+4ac11c158333"],
+
+Cell[" ", "FooterCell",ExpressionUUID->"d0f47df2-8420-4f50-a354-31e9d53df0b5"]
+},
+Saveable->False,
+ScreenStyleEnvironment->"Working",
+WindowSize->{900, 830},
+WindowMargins->{{0, Automatic}, {Automatic, 0}},
+WindowTitle->"SkewJacobiSolve",
+Visible->True,
+TaggingRules->{
+ "ModificationHighlight" -> False, "ColorType" -> "", "LinkTrails" -> "", 
+  "ExampleCounter" -> 1, 
+  "Openers" -> {
+   "PrimaryExamplesSection" -> Open, "ExampleSection" -> {"0" -> Open}, 
+    "AllOptsTable" -> Closed}, "NewStyles" -> True, 
+  "CitationPopupData" -> $Failed, "ShowCitation" -> False, "HasOptions" -> 
+  True, "RootCaptions" -> "", "HeaderCoreAreaLink" -> {}, 
+  "Metadata" -> {
+   "built" -> "{2026, 9, 5, 19, 51, 12.984666}", 
+    "history" -> {"15.0", "", "", ""}, "context" -> "QuantumMob`Q3`", 
+    "keywords" -> {}, "specialkeywords" -> {}, 
+    "tutorialcollectionlinks" -> {}, "index" -> True, "label" -> 
+    "Quantum Mob/ Q3 Symbol", "language" -> "en", "paclet" -> "QuantumMob/Q3",
+     "status" -> "None", "summary" -> 
+    "SkewJacobiSolve[a, b] solves a . x == b in the least-square \
+(pseudoinverse) sense for a possibly singular complex skew-symmetric matrix \
+a. SkewJacobiSolve[{{s1, s2, ...}, u}, b, \\[Epsilon]] reuses a decomposition \
+previously computed with SkewJacobiDecomposition.", "synonyms" -> {}, 
+    "tabletags" -> {}, "title" -> "SkewJacobiSolve", "titlemodifier" -> "", 
+    "metadescription" -> "", "windowtitle" -> "SkewJacobiSolve", "type" -> 
+    "Symbol", "uri" -> "QuantumMob/Q3/ref/SkewJacobiSolve"}},
+CellContext->"Global`",
+FrontEndVersion->"15.0 for Mac OS X ARM (64-bit) (July 2, 2026)",
+StyleDefinitions->Notebook[{
+   Cell[
+    StyleData[
+    StyleDefinitions -> FrontEnd`FileName[{"Wolfram"}, "Reference.nb"]]], 
+   Cell[
+    StyleData["Input"], CellContext -> "Global`"], 
+   Cell[
+    StyleData["Output"], CellContext -> "Global`"]}, Visible -> False, 
+  FrontEndVersion -> "15.0 for Mac OS X ARM (64-bit) (July 2, 2026)", 
+  StyleDefinitions -> "PrivateStylesheetFormatting.nb"],
+ExpressionUUID->"f5821828-772c-4394-a930-0e4687eeb3b3"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[583, 21, 4217, 104, 70, "AnchorBarGrid",ExpressionUUID->"2d1f92a0-473a-44cb-929a-e6a043f56b6b",
+ CellID->1],
+Cell[4803, 127, 96, 0, 70, "ContextNameCell",ExpressionUUID->"19108b5d-8bfc-4581-88e1-8ebe0b45e9c6"],
+Cell[CellGroupData[{
+Cell[4924, 131, 1366, 37, 70, "ObjectNameGrid",ExpressionUUID->"926b8a27-7519-45c6-81d0-3c695d1bb816"],
+Cell[6293, 170, 2688, 74, 70, "Usage",ExpressionUUID->"e192cf0b-edf5-43a7-af8d-ac3477f08ac7",
+ CellID->104049115]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[9018, 249, 1443, 34, 70, "NotesSection",ExpressionUUID->"b6065f0f-cbfe-421e-94b5-1ac714e51454",
+ CellGroupingRules->{"SectionGrouping", 50},
+ CellID->210661928],
+Cell[10464, 285, 456, 10, 70, "Notes",ExpressionUUID->"db162170-651e-49ac-88fe-f46705c24d84",
+ CellID->190253929],
+Cell[10923, 297, 128, 1, 70, "Notes",ExpressionUUID->"1a5a0544-8ef8-41e0-ab4c-e0344d361f13",
+ CellID->701787147],
+Cell[11054, 300, 3260, 81, 70, "3ColumnTableMod",ExpressionUUID->"3c7fa194-a3eb-44c1-85ef-9e29405a8b61",
+ CellID->956390305]
+}, Closed]],
+Cell[CellGroupData[{
+Cell[14351, 386, 1404, 37, 70, "PrimaryExamplesSection",ExpressionUUID->"44ad9245-6b71-488f-964f-e92ad653c18c",
+ CellID->1541973640],
+Cell[15758, 425, 203, 3, 70, "Input",ExpressionUUID->"d1fe1e6c-6842-454c-888c-c2145c74b94e",
+ CellID->1782800964],
+Cell[CellGroupData[{
+Cell[15986, 432, 1235, 31, 70, "ExampleSection",ExpressionUUID->"b40684e8-28ba-41c5-9768-49fcf9a308c6",
+ CellID->118315484],
+Cell[17224, 465, 283, 5, 70, "ExampleText",ExpressionUUID->"fead219a-2cc0-429b-bf79-a3945057c437",
+ CellID->670745623],
+Cell[17510, 472, 219, 7, 70, "Input",ExpressionUUID->"21c2bed5-1500-4a89-a18a-11b632bab899",
+ CellID->1080022658],
+Cell[17732, 481, 219, 5, 70, "Input",ExpressionUUID->"c3552a84-9d5e-4a52-95cc-af315a49376d",
+ CellID->1232067152],
+Cell[CellGroupData[{
+Cell[17976, 490, 762, 21, 70, "Input",ExpressionUUID->"3ae5735b-77c2-4f7e-9dc3-0a0593e89ad7",
+ CellID->1044475206],
+Cell[18741, 513, 1365, 32, 70, "Output",ExpressionUUID->"11e80f59-98d8-4081-af4c-e00f40d12cd4",
+ CellID->1778191945]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[20143, 550, 499, 12, 70, "Input",ExpressionUUID->"1d0f3cba-133a-45eb-87b2-8ee6395933b2",
+ CellID->324685057],
+Cell[20645, 564, 2529, 60, 70, "Output",ExpressionUUID->"b8ce092b-4a80-429e-94f5-f1f3772ece9b",
+ CellID->1689587963]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[23211, 629, 397, 10, 70, "Input",ExpressionUUID->"5906f7ff-cc0e-4192-9e2a-e544cd3aea85",
+ CellID->10826581],
+Cell[23611, 641, 294, 7, 70, "Output",ExpressionUUID->"08b5d9b5-f2e0-48a9-b5a0-298dbe3c8457",
+ CellID->728629860]
+}, Open  ]],
+Cell[23920, 651, 309, 5, 70, "ExampleText",ExpressionUUID->"dc0d44ed-043a-4b2e-9355-8a020f731b44",
+ CellID->1240866065],
+Cell[CellGroupData[{
+Cell[24254, 660, 253, 7, 70, "Input",ExpressionUUID->"d05ca8ba-f729-4550-ac09-2923d75b7fc3",
+ CellID->1022258438],
+Cell[24510, 669, 700, 15, 70, "Output",ExpressionUUID->"d18fd225-7146-401e-905e-110724c361ba",
+ CellID->1130301826]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[25247, 689, 207, 3, 70, "Input",ExpressionUUID->"9fefe211-9b9e-4465-bae4-d4c28b826f81",
+ CellID->1325803050],
+Cell[25457, 694, 149, 2, 70, "Output",ExpressionUUID->"6ab40f01-a9da-45c5-b966-8cca7a02e1c4",
+ CellID->342448220]
+}, Open  ]],
+Cell[25621, 699, 2381, 63, 70, "ExampleText",ExpressionUUID->"240c4a61-ff14-464a-bac5-31f49ed832b8",
+ CellID->1815070451]
+}, Open  ]]
+}, Open  ]],
+Cell[28029, 766, 884, 22, 70, "SeeAlsoSection",ExpressionUUID->"191898a1-c1d9-45f9-a83a-16efca445063"],
+Cell[28916, 790, 1317, 36, 70, "RelatedLinksSection",ExpressionUUID->"11c78603-2ca8-4d2a-9437-4ac11c158333"],
+Cell[30236, 828, 78, 0, 70, "FooterCell",ExpressionUUID->"d0f47df2-8420-4f50-a354-31e9d53df0b5"]
+}
+]
+*)
+
+(* End of internal cache information *)
