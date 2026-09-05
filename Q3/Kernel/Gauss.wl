@@ -494,6 +494,7 @@ HouseholderVector[vec_?VectorQ, i_Integer] := Module[
   ];
   v
 ];
+(* NOTE: It is important to keep the sign convension, which affects HouseholderMatrix and other functions. *)
 (**** </HouseholderVector> ****)
 
 
