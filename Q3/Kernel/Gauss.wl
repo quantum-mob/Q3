@@ -425,9 +425,8 @@ HouseholderMatrix::neg = "The second input argument `` must be larger than 1.";
 
 HouseholderMatrix[vec_?VectorQ] := theHouseholderMatrix[vec] /; 
   If[ VectorQ[vec, NumericQ], True,
-    Message[HouseholderMatrix::numeric, ArrayShort @ vec];
-    False
-  ]
+    Message[HouseholderMatrix::numeric, ArrayShort @ vec]; False
+  ];
 
 HouseholderMatrix[mat_?MatrixQ] := Module[
   { new, m, n },
@@ -435,9 +434,8 @@ HouseholderMatrix[mat_?MatrixQ] := Module[
   new = If[m > n, Take[mat, n], mat];
   theHouseholderMatrix[new]
 ] /; If[ MatrixQ[mat, NumericQ], True,
-    Message[HouseholderMatrix::numeric, ArrayShort @ mat];
-    False
-  ]
+    Message[HouseholderMatrix::numeric, ArrayShort @ mat]; False
+  ];
 
 HouseholderMatrix[vec_?VectorQ, k_Integer] := With[
   { mat = HouseholderMatrix[Drop[vec, k-1]] },
@@ -447,31 +445,29 @@ HouseholderMatrix[vec_?VectorQ, k_Integer] := With[
     False
   ]
 
-theHouseholderMatrix[vec_?VectorQ] :=
-  {Conjugate @ Sign @ vec} /; Length[vec] == 1
-(* NOTE: In principle, this does not need to be handled separately. However, sometimes an additional factor of -1 is added due to numerical errors (Normalize and Dyad in the subsequent code). *)
-
 theHouseholderMatrix[vec_?VectorQ] := Module[
-  { nrm = Norm[vec],
-    phs = Sign[First @ vec],
-    new },
-  new = vec;
-  If[ZeroQ @ phs, phs = 1]; (* sometimes, vec[[1]] = 0 *)
-  new[[1]] -= nrm * phs;
-  Conjugate[phs] * ReflectionMatrix[new];
+  { phs = Sign[First @ vec],
+    v = HouseholderVector[vec] },
+  If[ZeroQ @ phs, phs = 1];
+  If[ v === None,
+    (* tail already zero: at most the phase of the first component needs fixing *)
+    DiagonalMatrix @ ReplacePart[
+      ConstantArray[1. + 0. I, Length @ vec], 1 -> Conjugate[phs] ],
+    -Conjugate[phs] * ReflectionMatrix[v]
+  ]
 ];
 
 theHouseholderMatrix[vv_?MatrixQ] :=
   theHouseholderMatrix[First @ vv] /;
-  Length[vv] == 1
+  Length[vv] == 1;
 
 theHouseholderMatrix[vv_?MatrixQ] := Module[
   { uu = theHouseholderMatrix[First @ vv],
     ww = Rest[vv] },
   ww = Dot[ww, uu][[All, 2;;All]];
-  ww = CirclePlus[{{1}}, theHouseholderMatrix @ ww]; 
+  ww = BlockDiagonalMatrix @ {{{1}}, theHouseholderMatrix @ ww}; 
   Dot[uu, ww]
-]
+];
 (**** </HouseholderMatrix> ****)
 
 
