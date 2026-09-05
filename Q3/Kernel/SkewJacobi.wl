@@ -13,30 +13,8 @@ Begin["`Private`"];
    applied as A' = Transpose[Uh].A.Uh, annihilates the elements of column j
    below row i. Returns None if there is nothing to annihilate. *)
 (* cf. QuantumMob`Q3`HouseholderMatrix *)
-householderVector[A_, {i_Integer, j_Integer}] := HouseholderVector[A[[All, j]], i];
-
-(* 
-householderVector[A_, {i_Integer, j_Integer}] := Module[
-  { n = Length[A], 
-    x, xHx, v, xi, a, sigma },
-  x = A[[All, j]];
-  xHx = Total[Abs[x[[i ;;]]]^2];
-  If[xHx == 0., Return[None]];
-  If[Total[Abs[x[[i + 1 ;;]]]^2] == 0., Return[None]];
-  v = ConstantArray[0. + 0. I, n];
-  v[[i ;;]] = Conjugate[x[[i ;;]]];
-  xi = x[[i]];
-  If[ xi == 0.,
-    v[[i]] += Sqrt[xHx],                       (* either sign works *)
-    (* alpha = +/- Sqrt[x^H.x] Conjugate[xi]/Abs[xi]   (Eq. 58) *)
-    a = Sqrt[xHx] Conjugate[xi]/Abs[xi];
-    (* sign choice avoids catastrophic cancellation *)
-    sigma = If[Abs[Conjugate[xi] + a] >= Abs[Conjugate[xi] - a], 1., -1.];
-    v[[i]] += sigma a
-  ];
-  v
-];
- *)
+householderVector[A_, {i_Integer, j_Integer}] := 
+  HouseholderVector[A[[All, j]], i];
 
 
 (* Complex Jacobi rotation tangents *)

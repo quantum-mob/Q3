@@ -489,11 +489,11 @@ HouseholderVector[vec_?VectorQ, i_Integer] := Module[
   If[Total[Abs[Rest @ v[[i ;; All]]]^2] == 0., Return @ None];
   x = v[[i]];
   If[ x == 0.,
-    v[[i]] -= Sqrt[nrm],
+    v[[i]] += Sqrt[nrm],
     a = Sqrt[nrm] Sign[x];
     (* sign choice avoids catastrophic cancellation *)
     a *= If[Abs[x + a] >= Abs[x - a], 1, -1];
-    v[[i]] -= a
+    v[[i]] += a
   ];
   v
 ];
