@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.7.4
+
+- New: SkewJacobiDecomposition, SkewJacobiSolve
+- Improved: HouseholderMatrix, HouseholderVector
+
 ## 4.7.3
 
 - New: SubdivideAlong, RangeAlong, CauchyExpand
