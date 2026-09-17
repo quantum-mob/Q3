@@ -37,23 +37,23 @@ ChebyshevPoints[n_Integer?Positive, kind:(1|2), int:{a_, b_}] := With[
 
 
 (**** <ChebyshevCoefficients> ****)
-ChebyshevCoefficients::usage = "ChebyshevCoefficients[func, n] returns a list {c0, c1, c2, \[Ellipsis], c(n-1)} of n Chebyshev expansion coefficients assuming that function func is a polynomial of degree n+1 or less.\nChebyshevCoefficients[func, n -> parity] returns the n non-zero Chebyshev expansion coefficients {c0, c2, \[Ellipsis], c2(n-1)} or {c1, c2,\[Ellipsis], c2n-1} of an even (parity = 1) or odd (parity = -1) polynomial, respectively, by evaluating func only on the positive side of the domain. It does not check the actual parity of func, but simply assumes the given parity.";
+ChebyshevCoefficients::usage = "ChebyshevCoefficients[func, n] returns a list {c0, c1, c2, \[Ellipsis], c(n-1)} of n Chebyshev expansion coefficients assuming that function func is a polynomial of degree n-1 or less.\nChebyshevCoefficients[func, n -> parity] returns the n non-zero Chebyshev expansion coefficients {c0, c2, \[Ellipsis], c2(n-1)} or {c1, c2,\[Ellipsis], c2n-1} of an even (parity = 1) or odd (parity = -1) polynomial, respectively, by evaluating func only on the positive side of the domain. It does not check the actual parity of func, but simply assumes the given parity.";
 
 ChebyshevCoefficients[fun_, n_Integer?Positive] := Module[
   { xx = ChebyshevPoints[n] },
   theChebyshevFourier @ Map[fun, xx]
-]
+];
 
 ChebyshevCoefficients[fun_, n_Integer?Positive -> parity:(-1|1)] := Module[
   { xx = ChebyshevPoints[n -> parity] },
   theChebyshevFourier[Map[fun, xx] -> parity]
-]
+];
 
 
 theChebyshevFourier::usage = "theChebyshevFourier[{y0, y1, ..., yn}] returns the Chebyshev expansion coefficients of the polynomial, which gives {y0, y1, ..., yn} at the Chebyshev points {x0, x1, ..., xn} of the first kind. Note that yk itself could be a vector as the polynomial may be a vector-valued function.";
 
 theChebyshevFourier[yy_/;MatrixQ[yy, NumericQ]] :=
-  Transpose @ Map[theChebyshevFourier, Transpose @ yy]
+  Transpose @ Map[theChebyshevFourier, Transpose @ yy];
 (* NOTE: the Fourier transform for each COLUMN. *)
 (* NOTE: FourierDCT[mat] performs a multi-dimensional Fourier transform, and cannot be directly used here. *)
 
@@ -61,14 +61,14 @@ theChebyshevFourier[yy_/;VectorQ[yy, NumericQ]] := Module[
   { cc = FourierDCT[yy, 2] * 2/Sqrt[Length @ yy] },
   cc[[1]] /= 2;
   Return[cc]
-]
+];
 
 theChebyshevFourier[yy:(_?VectorQ|_?MatrixQ) -> parity:(-1|1)] := Module[
   { cc = If[parity == 1, Most @ yy, yy] },
   cc = Join[yy, parity*Reverse[cc]];
   cc = theChebyshevFourier[cc];
   cc[[1+(1-parity)/2;; ;;2]]
-]
+];
 
 (* For non-numeric input *)
 theChebyshevFourier[yy:(_?VectorQ|_?MatrixQ)] := Module[
@@ -78,7 +78,7 @@ theChebyshevFourier[yy:(_?VectorQ|_?MatrixQ)] := Module[
   (* NOTE: the Fourier transform for each COLUMN. *)
   cc[[1]] /= 2;
   Return[cc]
-]
+];
 (**** </ChebyshevCoefficients> ****)
 
 

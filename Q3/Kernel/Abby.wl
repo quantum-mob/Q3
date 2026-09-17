@@ -50,6 +50,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}]
 
 { Primed, DoublePrimed };
 
+{ MatrixPlot3D };
 { LevelsPlot };
 { PanedText };
 
@@ -1085,6 +1086,31 @@ Format @ Primed[a_] := Interpretation[Superscript[a,"\[Prime]"], Primed @ a]
 
 Format @ DoublePrimed[a_] :=
   Interpretation[Superscript[a,"\[DoublePrime]"], DoublePrimed @ a]
+
+
+(***** <MatrixPlot3D> *****)
+MatrixPlot3D::usage = "MatrixPlot3D[mat] returns the Graphics3D object visualizing the matrix elements with cuboids.";
+
+Options[MatrixPlot3D] = {
+  "Gap" -> 0.2
+};
+
+MatrixPlot3D[mat_?MatrixQ, opts:OptionsPattern[{MatrixPlot3D, Graphics3D}]] := Module[
+  { d = (1. - OptionValue["Gap"])/2,
+    max = Max[Abs@mat],
+    bar },
+  bar[h_, {x_, y_}] := {
+    ColorData["Rainbow", h/max],
+    If[h == 0., Opacity[0.25], Nothing],
+    Cuboid[{x - d, y - d, 0}, {x + d, y + d, h}]
+  };
+  Graphics3D[
+    {EdgeForm[], MapIndexed[bar, mat, {2}]},
+    FilterRules[{opts}, Options @ Graphics3D],
+    Axes -> True
+  ]
+] /; MatrixQ[mat, NumericQ]
+(***** </MatrixPlot3D> *****)
 
 
 (***** <LevelsPlot> *****)

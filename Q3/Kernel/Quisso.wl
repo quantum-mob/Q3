@@ -32,7 +32,7 @@ BeginPackage["QuantumMob`Q3`", {"System`"}];
 
 { Matchgate };
 
-{ ProductState, BellState, GHZState, SmolinState,
+{ ProductState, BellState, GHZState, WernerState, SmolinState,
   DickeState };
 
 { GraphState, GraphStateBasis };
@@ -2825,25 +2825,6 @@ DickeState[ss:{__?QubitQ}] := Table[DickeState[ss, n], {n, 0, Length @ ss}]
 (**** </DickeState> ****)
 
 
-(**** <GHZState> ****)
-GHZState::usage = "GHZState[{s1,s2,\[Ellipsis]}, k] returns the kth generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nGHZState[{s1,s2,\[Ellipsis]}] returns the list of all GHZ states of species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
-
-GHZState[ss:{__?QubitQ}] := GHZState[ss, 0]
-
-GHZState[ss:{__?QubitQ}, k_Integer] := Module[
-  { kk = IntegerDigits[k, 2, Length @ ss],
-    nn },
-  nn =  Mod[kk+1, 2];
-  (Ket[ss->kk] + Ket[ss->nn]*Power[-1, First @ kk]) / Sqrt[2]
-]
-
-GHZState[ss:{__?QubitQ}, kk:{___Integer}] := Map[GHZState[ss, #]&, kk]
-
-GHZState[ss:{__?QubitQ}, All] :=
-  GHZState[ss, Range[0, Power[2, Length @ ss] - 1]]
-(**** </GHZState> ****)
-
-
 (**** <SmolinState> ****)
 SmolinState::usage = "SmolinState[{s1,s2,\[Ellipsis]}] returns the generalized Smolin state for qubits {s1,s2,\[Ellipsis]}. See also Augusiak and Horodecki (2006).";
 
@@ -3386,29 +3367,65 @@ theKetVerify[Rule[a_?QuditQ, v_]] := (
 
 
 (**** <GHZState> ****)
-(*  for arbitray species *)
-GHZState[ss:{__?SpeciesQ}, rest___] := KetMutate[
-  GHZState[{First @ Dimension @ ss, Length @ ss}, rest],
-  ss
+GHZState::usage = "GHZState[{s1,s2,\[Ellipsis]}, k] returns the kth generalized GHZ state for species {s1,s2,\[Ellipsis]}.\nGHZState[{s1,s2,\[Ellipsis]}] returns the list of all GHZ states of species {s1,s2,\[Ellipsis]}.\nSee also Wolf (2003).";
+
+GHZState::target = "Unknown target ``; Instead, \"Ket\" is used.";
+
+Options[GHZState] = {"TargetForm" -> "Ket"};
+
+GHZState[{d_Integer, n_Integer}, spec___, OptionsPattern[]] :=
+  theGHZ[OptionValue @ "TargetForm"][{d, n}, spec]
+
+GHZState[ss:{__?SpeciesQ}, spec___, opts:OptionsPattern[]] := Module[
+  { ghz },
+  ghz = theGHZ[OptionValue @ "TargetForm"][{First @ Dimension @ ss, Length @ ss}, spec];
+  If[ OptionValue["TargetForm"] == "Ket",
+    KetMutate[ghz, ss]
+  ]
 ]
 
 
-GHZState[{dim_Integer?Positive, n_Integer?Positive}, k_Integer?NonNegative] := Module[
-  { xx, kk, ww, vv },
-  xx = Range[0, dim-1];
-  kk = IntegerDigits[k, dim, n];
-  vv = Map[Mod[kk + #, dim]&,  xx];
-  ww = Exp[I* 2*Pi * xx * First[kk] / dim] / Sqrt[dim];
-  Map[Ket, vv] . ww
+theGHZ[target_][{d_Integer, n_Integer}, All, opts:OptionsPattern[]] :=
+  theGHZ[target][{d, n}, Range[d^n] - 1, opts]
+
+theGHZ[target_][{d_Integer, n_Integer}, kk:{___Integer}, opts:OptionsPattern[]] :=
+  Map[theGHZ[target][{d, n}, #, opts]&, kk]
+
+theGHZ[target_][{d_Integer, n_Integer}] :=
+  theGHZ[target][{d, n}, 0]
+
+theGHZ[target:("Ket"|"Vector")][{d_Integer, n_Integer}, k_Integer] := Module[
+  { kk = IntegerDigits[k, d, n],
+    xx = Range[0, d - 1],
+    ph },
+  ph = Exp[2 Pi xx First[kk] I / d] / Sqrt[d];
+  xx = Map[Mod[# + kk, d]&, xx];
+  If[target == "Ket", Return[Map[Ket, xx] . ph]];
+  xx = Map[FromDigits[#, d]&, xx];
+  SparseArray[
+    Thread[xx + 1 -> ph],
+    Power[d, n]
+  ]
 ]
 
-GHZState[{dim_Integer?Positive, n_Integer?Positive}] := GHZState[{dim, n}, 0]
-
-GHZState[{dim_Integer?Positive, n_Integer?Positive}, All] := Map[
-  GHZState[{dim, n}, #]&,
-  Range[0, Power[dim, n]-1]
-]
+theGHZ[any:Except["Ket"|"Vector"]] := (
+  Message[GHZState::target, any];
+  theGHZ["Ket"]
+)
 (**** </GHZState> ****)
+
+
+WernerState::usage = "WernerState[p] returns the two-qubit Werner state.\nWernerState[p, d] returns the Werner state for two qudits of dimension d.";
+
+WernerState[p_, d_Integer:2] := Module[
+  { one = One[d^2],
+    mat },
+  mat = SparseArray[
+    Flatten @ Table[{(i - 1)*d + j, (j - 1)*d + i} -> 1, {i, d}, {j, d}],
+    {d^2, d^2}
+  ];
+  (one + mat)*p/(d(d + 1)) + (one - mat)*(1-p)/(d(d - 1))
+]
 
 
 (* Qudit on Ket *)

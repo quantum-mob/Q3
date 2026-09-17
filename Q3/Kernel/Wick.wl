@@ -153,7 +153,7 @@ globalGateQ[_] = False
 
 
 (**** <WickUnitary> ****)
-WickUnitary::usage = "WickUnitary[u] represents the Gaussian unitary gate corresponding to the canonical transformation of the fermion modes characterized by the unitary matrix u."
+WickUnitary::usage = "WickUnitary[u] represents the Gaussian unitary gate corresponding to the canonical transformation of the fermion modes characterized by the unitary matrix u.";
 
 WickUnitary /:
 MakeBoxes[op:WickUnitary[uu_?MatrixQ, ___], fmt_] := 
@@ -170,7 +170,7 @@ MakeBoxes[op:WickUnitary[uu_?MatrixQ, ___], fmt_] :=
     },
     fmt,
     "Interpretable" -> Automatic
-  ]
+  ];
 
 (* conversion *)
 WickUnitary[ham_WickHermitian, dt_?NumericQ, rest___] :=
