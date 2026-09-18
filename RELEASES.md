@@ -1,5 +1,10 @@
 # Release Notes
 
+## 4.7.5
+
+- New: WernerState, MatrixPlot3D
+- Improved: GHZState
+
 ## 4.7.4
 
 - New: SkewJacobiDecomposition, SkewJacobiSolve

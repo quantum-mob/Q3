@@ -3415,7 +3415,8 @@ theGHZ[any:Except["Ket"|"Vector"]] := (
 (**** </GHZState> ****)
 
 
-WernerState::usage = "WernerState[p] returns the two-qubit Werner state.\nWernerState[p, d] returns the Werner state for two qudits of dimension d.";
+(**** <WernerState> ****)
+WernerState::usage = "WernerState[p] returns the two-qubit Werner state.\nWernerState[p, d] returns the Werner state for two qudits of dimension d. \nWernerState[p, d, k] returns the pseudo-Werner state interpolating between the maximally mixed state and the kth bipartite GHZ state.";
 
 WernerState[p_, d_Integer:2] := Module[
   { one = One[d^2],
@@ -3427,9 +3428,17 @@ WernerState[p_, d_Integer:2] := Module[
   (one + mat)*p/(d(d + 1)) + (one - mat)*(1-p)/(d(d - 1))
 ]
 
+WernerState[p_, d_Integer, k_Integer] := Module[
+  { lda = 1 - p d^2/(d^2-1),
+    one = One[d^2],
+    ghz },
+  ghz = theGHZ["Vector"][{d, 2}, k];
+  One[d^2] (1 - lda)/d^2 + lda KroneckerProduct[ghz, Conjugate @ ghz]
+]
+(**** </WernerState> ****)
+
 
 (* Qudit on Ket *)
-
 HoldPattern @
   Multiply[ pre___,
     S_?QuditQ[k___, Rule[x_,y_]], v:Ket[_Association],
